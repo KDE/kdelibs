@@ -68,7 +68,6 @@
 #endif
 
 #include <kdebug.h>
-#include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <klocale.h>
@@ -98,7 +97,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
 extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app( argc, argv ); // needed for QSocketNotifier
-  KComponentData componentData( "kio_file", "kdelibs4" );
+  app.setApplicationName("kio_file");
   ( void ) KLocale::global();
 
   kDebug(7101) << "Starting" << getpid();

@@ -38,7 +38,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtNetwork/QLocalSocket>
 
 #include <kcmdlineargs.h>
-#include <kcomponentdata.h>
 #include <kdatetime.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -734,7 +733,6 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    KComponentData componentData(appName);
 
     // we need a QCoreApplication so QCoreApplication::processEvents() works as intended
     QCoreApplication app(argc, argv);

@@ -61,7 +61,6 @@
 #include <kconfiggroup.h>
 #include <kservice.h>
 #include <kdatetime.h>
-#include <kcomponentdata.h>
 
 #include <kremoteencoding.h>
 #include <ktcpsocket.h>
@@ -130,7 +129,7 @@ using namespace KIO;
 extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
     QCoreApplication app( argc, argv ); // needed for QSocketNotifier
-    KComponentData componentData( "kio_http", "kdelibs4" );
+    app.setApplicationName("kio_http");
     (void) KLocale::global();
 
     if (argc != 4)
@@ -5509,5 +5508,3 @@ try_next_auth_scheme:
     return authRequiresAnotherRoundtrip;
 }
 
-
-#include "http.moc"

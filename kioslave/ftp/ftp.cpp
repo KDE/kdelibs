@@ -57,9 +57,7 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kcomponentdata.h>
 #include <kio/ioslave_defaults.h>
-#include <kio/slaveconfig.h>
 #include <kremoteencoding.h>
 #include <ksocketfactory.h>
 #include <kde_file.h>
@@ -172,7 +170,7 @@ using namespace KIO;
 extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app(argc, argv);
-  KComponentData componentData( "kio_ftp", "kdelibs4" );
+  app.setApplicationName("kio_ftp");
   ( void ) KLocale::global();
 
   kDebug(7102) << "Starting " << getpid();
