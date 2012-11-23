@@ -31,7 +31,7 @@
 using namespace QTest;
 
 void KManagerSelectionTest::testAcquireRelease()
-    { // test that newOwner() is emitted when there is a new selection owner
+{ // test that newOwner() is emitted when there is a new selection owner
     KSelectionWatcher watcher( SNAME );
     KSelectionOwner owner( SNAME );
     QVERIFY( owner.ownerWindow() == None );
@@ -43,10 +43,10 @@ void KManagerSelectionTest::testAcquireRelease()
     QVERIFY( sw.newowner == true );
     QVERIFY( sw.lostowner == false );
     QVERIFY( so.lostownership == false );
-    }
+}
 
 void KManagerSelectionTest::testInitiallyOwned()
-    { // test that lostOwner() is emitted when the selection is disowned
+{ // test that lostOwner() is emitted when the selection is disowned
     KSelectionOwner owner( SNAME );
     SigCheckOwner so( owner );
     QVERIFY( owner.claim( false ));
@@ -57,10 +57,10 @@ void KManagerSelectionTest::testInitiallyOwned()
     QVERIFY( sw.newowner == false );
     QVERIFY( sw.lostowner == true );
     QVERIFY( so.lostownership == false );
-    }
+}
 
 void KManagerSelectionTest::testLostOwnership()
-    { // test that lostOwnership() is emitted when something else forces taking the ownership
+{ // test that lostOwnership() is emitted when something else forces taking the ownership
     KSelectionOwner owner1( SNAME );
     KSelectionOwner owner2( SNAME );
     QVERIFY( owner1.claim( false ));
@@ -79,10 +79,10 @@ void KManagerSelectionTest::testLostOwnership()
     QVERIFY( kWaitForSignal( &owner1, SIGNAL(lostOwnership()), 2000 ));
     QVERIFY( owner1.ownerWindow() == None );
     QVERIFY( owner2.ownerWindow() != None );
-    }
+}
 
 void KManagerSelectionTest::testWatching()
-    { // test that KSelectionWatcher reports changes properly
+{ // test that KSelectionWatcher reports changes properly
     KSelectionWatcher watcher( SNAME );
     KSelectionOwner owner1( SNAME );
     KSelectionOwner owner2( SNAME );
@@ -106,63 +106,35 @@ void KManagerSelectionTest::testWatching()
     QVERIFY( kWaitForSignal( &watcher, SIGNAL(newOwner(Window)), 2000 ));
     QVERIFY( sw.newowner == true );
     QVERIFY( sw.lostowner == false );
-    }
+}
 
 SigCheckOwner::SigCheckOwner( const KSelectionOwner& owner )
     : lostownership( false )
-    {
+{
     connect( &owner, SIGNAL(lostOwnership()), this, SLOT(lostOwnership()));
-    }
+}
 
 void SigCheckOwner::lostOwnership()
-    {
+{
     lostownership = true;
-    }
+}
 
 SigCheckWatcher::SigCheckWatcher( const KSelectionWatcher& watcher )
     : newowner( false )
     , lostowner( false )
-    {
+{
     connect( &watcher, SIGNAL(newOwner(Window)), this, SLOT(newOwner()));
     connect( &watcher, SIGNAL(lostOwner()), this, SLOT(lostOwner()));
-    }
-
-void SigCheckWatcher::newOwner()
-    {
-    newowner = true;
-    }
-
-void SigCheckWatcher::lostOwner()
-    {
-    lostowner = true;
-    }
-
-
-#include <QApplication>
-
-// the tested classes need KApplication - this is from qtest_kde.h, with QApp -> KApp
-#define QTEST_KDEMAIN_WITH_COMPONENTNAME_KAPP(TestObject, flags, componentName) \
-int main(int argc, char *argv[]) \
-{ \
-    qputenv("LC_ALL", "C"); \
-    assert( !QDir::homePath().isEmpty() ); \
-    qputenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local") )); \
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName( QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config") )); \
-    qputenv("KDE_SKIP_KDERC", "1"); \
-    unsetenv("KDE_COLOR_DEBUG"); \
-    QFile::remove(QDir::homePath() + QLatin1String("/.kde-unit-test/share/config/qttestrc"));  \
-    KAboutData aboutData( QByteArray(componentName), QByteArray(), qi18n("KDE Test Program"), QByteArray("version") );  \
-    KDEMainFlags mainFlags = flags;                         \
-    QApplication::setApplicationName(aboutData.appName()); \
-    QApplication app(argc, argv); \
-    app.setApplicationName( QLatin1String("qttest") ); \
-    qRegisterMetaType<KUrl>(); /*as done by kapplication*/ \
-    qRegisterMetaType<QList<QUrl> >(); \
-    TestObject tc; \
-    KGlobal::ref(); /* don't quit qeventloop after closing a mainwindow */ \
-    return QTest::qExec( &tc, argc, argv ); \
 }
 
-#define QTEST_KDEMAIN_KAPP(TestObject, flags) QTEST_KDEMAIN_WITH_COMPONENTNAME_KAPP(TestObject, flags, "qttest")
+void SigCheckWatcher::newOwner()
+{
+    newowner = true;
+}
 
-QTEST_KDEMAIN_KAPP(KManagerSelectionTest, GUI)
+void SigCheckWatcher::lostOwner()
+{
+    lostowner = true;
+}
+
+QTEST_MAIN(KManagerSelectionTest)
