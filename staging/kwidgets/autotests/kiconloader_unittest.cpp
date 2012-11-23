@@ -34,8 +34,11 @@ class KIconLoader_UnitTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
-        // Remove icon cache (from ~/.kde-unit-test)
-        const QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + "/icon-cache.kcache";
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QStandardPaths::enableTestMode(true);
+#endif
+        // Remove icon cache
+        const QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/icon-cache.kcache";
         QFile::remove(cacheFile);
 
         // Clear SHM cache

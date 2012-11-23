@@ -1010,7 +1010,7 @@ void KPixmapCache::Private::init()
     mValid = false;
 
     // Find locations of the files
-    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
     mEnabled = QDir().mkpath(cacheDir);
     mIndexFile = cacheDir + "/kpc/" + mName + ".index";
     mDataFile  = cacheDir + "/kpc/" + mName + ".data";
@@ -1217,7 +1217,7 @@ bool KPixmapCache::recreateCacheFiles()
 
 void KPixmapCache::deleteCache(const QString& name)
 {
-    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+    const QString cacheDir = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation);
     const QString indexFile = cacheDir + "/kpc/" + name + ".index";
     const QString dataFile = cacheDir + "/kpc/" + name + ".data";
 

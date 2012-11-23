@@ -206,7 +206,7 @@ static QString filenameFromUrl(const QByteArray &url)
 
 static QString filePath(const QString &baseName)
 {
-    QString cacheDirName = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + "http";
+    QString cacheDirName = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + '/' + "http";
     if (!cacheDirName.endsWith('/')) {
         cacheDirName.append('/');
     }
@@ -774,7 +774,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     g_maxCacheAge = KProtocolManager::maxCacheAge();
     g_maxCacheSize = mode == DeleteCache ? -1 : KProtocolManager::maxCacheSize() * 1024;
 
-    QString cacheDirName = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + "http";
+    QString cacheDirName = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + '/' + "http";
     QDir cacheDir(cacheDirName);
     if (!cacheDir.exists()) {
         fprintf(stderr, "%s: '%s' does not exist.\n", appName, qPrintable(cacheDirName));

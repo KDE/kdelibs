@@ -81,7 +81,7 @@ QString lookForCache( const QString &filename )
     cache = '/' + fi.absolutePath().remove(KStandardDirs::installPath("html"),Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
 #endif
     if ( readCache( filename,
-                    QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1Char('/') + "kio_help" + cache + "cache.bz2", output ) )
+                    QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1Char('/') + "kio_help" + cache + "cache.bz2", output ) )
         return output;
 
     return QString();

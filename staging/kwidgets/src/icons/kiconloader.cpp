@@ -1189,7 +1189,7 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
     if (name.startsWith(QLatin1String("favicons/")))
     {
        favIconOverlay = true;
-       name = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + '/' + name + ".png";
+       name = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + '/' + name + ".png";
     }
 
     bool absolutePath = !pathIsRelative(name);
