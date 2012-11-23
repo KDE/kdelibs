@@ -25,7 +25,6 @@ set_package_properties(ZLIB PROPERTIES
 
 include_directories(
   ${QT_INCLUDES}
-  ${CMAKE_CURRENT_BINARY_DIR}
   ${ZLIB_INCLUDE_DIR}
 )
 
