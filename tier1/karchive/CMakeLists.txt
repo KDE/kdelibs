@@ -4,7 +4,7 @@ project(karchive)
 
 find_package(ECM 0.0.5 REQUIRED NO_MODULE)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 include(ECMVersion)
 
