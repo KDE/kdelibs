@@ -27,6 +27,11 @@
 
 #include <QDebug>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define EndOfItem EndWord
+#define StartOfItem StartWord
+#endif
+
 namespace Sonnet
 {
 
@@ -121,10 +126,10 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
 {
     QTextBoundaryFinder::BoundaryReasons boundary = finder.boundaryReasons();
     int start = finder.position(), end = finder.position();
-    bool inWord = (boundary & QTextBoundaryFinder::StartWord) != 0;
+    bool inWord = (boundary & QTextBoundaryFinder::StartOfItem) != 0;
     while (finder.toNextBoundary() > 0) {
         boundary = finder.boundaryReasons();
-        if ((boundary & QTextBoundaryFinder::EndWord) && inWord) {
+        if ((boundary & QTextBoundaryFinder::EndOfItem) && inWord) {
             end = finder.position();
             QString str = finder.string().mid(start, end - start);
             if (isValidWord(str)) {
@@ -138,7 +143,7 @@ finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
             }
             inWord = false;
         }
-        if ((boundary & QTextBoundaryFinder::StartWord)) {
+        if ((boundary & QTextBoundaryFinder::StartOfItem)) {
             start = finder.position();
             inWord = true;
         }
@@ -153,7 +158,7 @@ static bool finderWordAt(QTextBoundaryFinder &finder,
     int oldPosition = finder.position();
 
     finder.setPosition(at);
-    if (!finder.isAtBoundary() || (finder.boundaryReasons() & QTextBoundaryFinder::EndWord)) {
+    if (!finder.isAtBoundary() || (finder.boundaryReasons() & QTextBoundaryFinder::EndOfItem)) {
         if (finder.toPreviousBoundary() <= 0) {
             /* QTextBoundaryIterator doesn't consider start of the string
              * a boundary so we need to rewind to the beginning to catch
