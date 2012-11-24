@@ -6,16 +6,9 @@ find_package(ECM 0.0.5 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-include(ECMVersion)
-
-# -- Maintained by scripty
-ecm_version(5 0 0)
-# --
-
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-include(ECMQtFramework)
-include(ECMWriteVersionHeader)
+include(FeatureSummary)
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core)
 
@@ -32,11 +25,38 @@ include_directories(
   ${ZLIB_INCLUDE_DIR}
 )
 
-ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h)
+include(ECMSetupVersion)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h
-        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+ecm_setup_version(5 0 0 VARIABLE_PREFIX KARCHIVE
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfigVersion.cmake")
+
 
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
+
+
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/karchive")
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file(
+  "${CMAKE_CURRENT_LIST_DIR}/karchiveConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfig.cmake"
+  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+  PATH_VARS  INCLUDE_INSTALL_DIR LIB_INSTALL_DIR CMAKE_INSTALL_PREFIX
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfigVersion.cmake"
+  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+  COMPONENT Devel
+)
+
+install(EXPORT karchiveTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE karchiveTargets.cmake NAMESPACE KDE4__ )

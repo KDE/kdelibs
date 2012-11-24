@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(karchive_VERSION_MAJOR "@KARCHIVE_VERSION_MAJOR@")
+set(karchive_VERSION_MINOR "@KARCHIVE_VERSION_MINOR@")
+set(karchive_VERSION_PATCH "@KARCHIVE_VERSION_PATCH@")
+
+set(karchive_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(karchive_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(karchive_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/karchiveTargets.cmake")
+
+set(karchive_LIBRARY KDE4__karchive)
