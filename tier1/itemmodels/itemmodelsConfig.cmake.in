@@ -1,0 +1,15 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(itemmodels_VERSION_MAJOR "@ITEMMODELS_VERSION_MAJOR@")
+set(itemmodels_VERSION_MINOR "@ITEMMODELS_VERSION_MINOR@")
+set(itemmodels_VERSION_PATCH "@ITEMMODELS_VERSION_PATCH@")
+
+set(itemmodels_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(itemmodels_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(itemmodels_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/itemmodelsTargets.cmake")
+
+set(itemmodels_LIBRARY KDE4__itemmodels)

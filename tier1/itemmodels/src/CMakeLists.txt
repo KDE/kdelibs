@@ -16,11 +16,11 @@ generate_export_header(itemmodels)
 
 target_link_libraries(itemmodels ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
 
-set_target_properties(itemmodels PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                            SOVERSION ${ECM_SOVERSION}
+set_target_properties(itemmodels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
+                                            SOVERSION ${ITEMMODELS_SOVERSION}
 )
 
-install(TARGETS itemmodels EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS itemmodels EXPORT itemmodelsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kbreadcrumbselectionmodel.h
