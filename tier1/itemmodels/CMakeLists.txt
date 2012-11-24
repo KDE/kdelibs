@@ -17,7 +17,7 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 
-find_package(Qt5Transitional REQUIRED Core Gui)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core Gui)
 
 include(FeatureSummary)
 
