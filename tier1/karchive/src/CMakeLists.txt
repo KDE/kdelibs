@@ -1,5 +1,10 @@
-# Configure checks for compression/
-include(ConfigureChecks.cmake)
+set(HAVE_BZIP2_SUPPORT ${BZIP2_FOUND})
+if(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
+    set(NEED_BZ2_PREFIX 1)
+endif(BZIP2_FOUND AND BZIP2_NEED_PREFIX)
+
+set(HAVE_XZ_SUPPORT ${LIBLZMA_FOUND})
+
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 

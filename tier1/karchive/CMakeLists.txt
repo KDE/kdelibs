@@ -19,6 +19,21 @@ set_package_properties(ZLIB PROPERTIES
   PURPOSE "Required by the core KDE libraries and some criti cal kioslaves"
 )
 
+find_package(BZip2)
+set_package_properties(BZip2 PROPERTIES
+  URL "http://www.bzip.org"
+  DESCRIPTION "Support for BZip2 compressed files and data streams"
+  TYPE RECOMMENDED
+  PURPOSE "Support for BZip2 compressed files and data streams"
+)
+
+find_package(LibLZMA)
+set_package_properties(LibLZMA PROPERTIES
+  URL "http://tukaani.org/xz/"
+  DESCRIPTION "Support for xz compressed files and data streams"
+  PURPOSE "Support for xz compressed files and data streams"
+)
+
 include_directories(
   ${QT_INCLUDES}
   ${CMAKE_CURRENT_BINARY_DIR}
