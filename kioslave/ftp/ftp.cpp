@@ -72,6 +72,10 @@
 #define FTP_LOGIN   "anonymous"
 #define FTP_PASSWD  "anonymous@"
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define mimeTypeForFileNameAndData mimeTypeForNameAndData
+#endif
+
 //#undef  kDebug
 #define ENABLE_CAN_RESUME
 
@@ -2561,7 +2565,7 @@ Ftp::StatusCode Ftp::ftpSendMimeType(int& iError, const QUrl& url)
 
   if (!buffer.isEmpty()) {
       QMimeDatabase db;
-      QMimeType mime = db.mimeTypeForNameAndData(url.path(), buffer);
+      QMimeType mime = db.mimeTypeForFileNameAndData(url.path(), buffer);
       kDebug(7102) << "Emitting mimetype" << mime.name();
       mimeType(mime.name()); // emit the mime type...
   }

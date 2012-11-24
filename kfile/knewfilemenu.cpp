@@ -53,6 +53,10 @@
 #include <qmimedatabase.h>
 #include <utime.h>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define mimeTypeForFileNameAndData mimeTypeForNameAndData
+#endif
+
 static QString expandTilde(const QString& name, bool isfile = false)
 {
     if (!name.isEmpty() && (!isfile || name[0] == '\\'))
@@ -525,7 +529,7 @@ void KNewFileMenuPrivate::executeStrategy()
             if (srcFile.open(QIODevice::ReadOnly)) {
                 QMimeDatabase db;
                 QMimeType wantedMime = db.mimeTypeForUrl(uSrc);
-                QMimeType mime = db.mimeTypeForNameAndData(m_copyData.m_chosenFileName, srcFile.read(1024));
+                QMimeType mime = db.mimeTypeForFileNameAndData(m_copyData.m_chosenFileName, srcFile.read(1024));
                 //kDebug() << "mime=" << mime->name() << "wantedMime=" << wantedMime->name();
                 if (!mime.inherits(wantedMime.name()))
                     if (!wantedMime.preferredSuffix().isEmpty())

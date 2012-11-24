@@ -88,6 +88,7 @@
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #define toDisplayString toString
+#define mimeTypeForFileNameAndData mimeTypeForNameAndData
 #endif
 
 // KDE5 TODO (QT5) : use QString::htmlEscape or whatever https://qt.gitorious.org/qt/qtbase/merge_requests/56
@@ -4258,7 +4259,7 @@ void HTTPProtocol::slotData(const QByteArray &_d)
         kDebug(7113) << "Mimetype buffer size:" << m_mimeTypeBuffer.size();
 
         QMimeDatabase db;
-        QMimeType mime = db.mimeTypeForNameAndData(m_request.url.path(), m_mimeTypeBuffer);
+        QMimeType mime = db.mimeTypeForFileNameAndData(m_request.url.path(), m_mimeTypeBuffer);
         if (mime.isValid() && !mime.isDefault())
         {
           m_mimeType = mime.name();

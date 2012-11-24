@@ -34,6 +34,10 @@
 #include <QtDBus/QtDBus>
 #include <QBuffer>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define mimeTypeForFileNameAndData mimeTypeForNameAndData
+#endif
+
 extern int servicesDebugArea();
 
 template class KSharedPtr<KMimeType>;
@@ -191,7 +195,7 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, const QByte
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
     QMimeDatabase db;
-    return KMimeType::Ptr(new KMimeType(db.mimeTypeForNameAndData(name, data)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForFileNameAndData(name, data)));
 }
 
 KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, QIODevice* device,
@@ -201,7 +205,7 @@ KMimeType::Ptr KMimeType::findByNameAndContent( const QString& name, QIODevice* 
     if (accuracy)
         *accuracy = 80; // not supported anymore; was it really used for anything?
     QMimeDatabase db;
-    return KMimeType::Ptr(new KMimeType(db.mimeTypeForNameAndData(name, device)));
+    return KMimeType::Ptr(new KMimeType(db.mimeTypeForFileNameAndData(name, device)));
 }
 
 QString KMimeType::extractKnownExtension(const QString &fileName)
