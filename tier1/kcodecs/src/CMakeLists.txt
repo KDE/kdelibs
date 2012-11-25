@@ -37,11 +37,11 @@ generate_export_header(kcodecs)
 
 target_link_libraries(kcodecs LINK_PUBLIC ${QT_QTCORE_LIBRARY} )
 
-set_target_properties(kcodecs PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                         SOVERSION ${ECM_SOVERSION}
+set_target_properties(kcodecs PROPERTIES VERSION   ${KCODECS_VERSION_STRING}
+                                         SOVERSION ${KCODECS_SOVERSION}
 )
 
-install(TARGETS kcodecs EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kcodecs EXPORT kcodecsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kcharsets.h
