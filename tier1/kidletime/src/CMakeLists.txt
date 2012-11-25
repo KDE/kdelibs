@@ -64,10 +64,10 @@ if (X11_FOUND)
    target_link_libraries(kidletime ${X11_LIBRARIES} ${kdeqt5staging_LIBRARY})
 endif ()
 
-set_target_properties(kidletime PROPERTIES  VERSION ${ECM_VERSION_STRING}
-                                            SOVERSION ${ECM_SOVERSION})
+set_target_properties(kidletime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
+                                            SOVERSION ${KIDLETIME_SOVERSION})
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kidletime_export.h
                kidletime.h
          DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(TARGETS kidletime EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kidletime EXPORT kidletimeTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
