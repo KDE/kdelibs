@@ -1142,7 +1142,11 @@ public:
 #endif
                               ) const
     {
-        return KLocalizedString::translateQt(context, sourceText, comment);
+        return KLocalizedString::translateQt(context, sourceText, comment
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                                             , n
+#endif
+            );
     }
 
     virtual bool isEmpty() const

@@ -299,7 +299,11 @@ void KLocalizedStringTest::translateToFrench()
 void KLocalizedStringTest::translateQt()
 {
     KLocalizedString::insertCatalog("kdeqt");
-    QString result = KLocalizedString::translateQt("QPrintPreviewDialog", "Landscape", 0);
+    QString result = KLocalizedString::translateQt("QPrintPreviewDialog", "Landscape", 0
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+            , 0
+#endif
+            );
     // When we use the default language, translateQt returns an empty string.
     QString expected = m_hasFrench ? QString("Paysage") : QString();
     QCOMPARE(result, expected);
