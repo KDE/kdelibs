@@ -274,13 +274,6 @@ KCompletionBox * KComboBox::completionBox( bool create )
     return 0;
 }
 
-// QWidget::create() turns off mouse-Tracking which would break auto-hiding
-void KComboBox::create( WId id, bool initializeWindow, bool destroyOldWindow )
-{
-    QComboBox::create( id, initializeWindow, destroyOldWindow );
-    KCursor::setAutoHideCursor( lineEdit(), true, true );
-}
-
 void KComboBox::wheelEvent( QWheelEvent *ev )
 {
     // Not necessary anymore

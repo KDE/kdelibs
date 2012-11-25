@@ -509,12 +509,6 @@ protected:
     */
     virtual void setCompletedText( const QString& /* */, bool /*marked*/ );
 
-    /**
-     * Reimplemented for internal reasons, the API is not affected.
-     */
-    virtual void create( WId = 0, bool initializeWindow = true,
-                         bool destroyOldWindow = true );
-
     virtual void wheelEvent( QWheelEvent *ev );
 
     virtual QSize minimumSizeHint() const;

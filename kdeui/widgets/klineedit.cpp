@@ -1648,13 +1648,6 @@ void KLineEdit::setCompletionObject( KCompletion* comp, bool hsig )
     KCompletionBase::setCompletionObject( comp, hsig );
 }
 
-// QWidget::create() turns off mouse-Tracking which would break auto-hiding
-void KLineEdit::create( WId id, bool initializeWindow, bool destroyOldWindow )
-{
-    QLineEdit::create( id, initializeWindow, destroyOldWindow );
-    KCursor::setAutoHideCursor( this, true, true );
-}
-
 void KLineEdit::setUserSelection(bool userSelection)
 {
     //if !d->userSelection && userSelection we are accepting a completion,

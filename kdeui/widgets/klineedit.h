@@ -624,12 +624,6 @@ protected:
     void setUserSelection( bool userSelection );
 
     /**
-     * Reimplemented for internal reasons, the API is not affected.
-     */
-    virtual void create( WId = 0, bool initializeWindow = true,
-                         bool destroyOldWindow = true );
-
-    /**
      * Whether in current state text should be auto-suggested
     */
     bool autoSuggest() const;
