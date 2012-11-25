@@ -83,11 +83,11 @@ if(NOT WIN32)
     target_link_libraries(kcoreaddons LINK_PRIVATE pthread)
 endif(NOT WIN32)
 
-set_target_properties(kcoreaddons PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                       SOVERSION ${ECM_SOVERSION}
+set_target_properties(kcoreaddons PROPERTIES VERSION   ${KCOREADDONS_VERSION_STRING}
+                                             SOVERSION ${KCOREADDONS_SOVERSION}
 )
 
-install(TARGETS kcoreaddons EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kcoreaddons EXPORT kcoreaddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     caching/kshareddatacache.h
