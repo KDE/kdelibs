@@ -27,7 +27,7 @@ remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
-find_package(Qt5Transitional REQUIRED Core DBus Gui Test)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core DBus Gui Test)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/sonnet_version.h)
 

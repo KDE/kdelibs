@@ -17,7 +17,7 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5Transitional REQUIRED Core Gui)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core Gui)
 
 include(FeatureSummary)
 

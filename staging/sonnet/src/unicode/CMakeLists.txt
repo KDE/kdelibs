@@ -4,7 +4,7 @@ set( SOURCE_FILES
     parseucd/parseucd.cpp
 )
 
-find_package( Qt5Transitional REQUIRED )
+find_package( Qt5Transitional REQUIRED MODULE)
 
 include_directories( ${CMAKE_BINARY_DIR}
                      ${X11_INCLUDE_DIR}

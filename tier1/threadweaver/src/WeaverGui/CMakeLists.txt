@@ -2,7 +2,7 @@
 
 set(ThreadWeaverGui_LIB_SRCS  WeaverThreadGrid.cpp )
 
-find_package(Qt5Transitional REQUIRED Gui)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Gui)
 
 include_directories(${QT_INCLUDES}
                     ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}

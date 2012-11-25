@@ -17,7 +17,7 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5Transitional REQUIRED Core Test)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core Test)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kcodecs_version.h)
 

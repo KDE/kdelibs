@@ -1,4 +1,4 @@
-find_package(Qt5Transitional REQUIRED Test Gui)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Test Gui)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 

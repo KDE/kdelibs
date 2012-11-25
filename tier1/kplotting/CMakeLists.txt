@@ -17,7 +17,7 @@ ecm_version(5 0 0)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5Transitional REQUIRED Core Gui)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core Gui)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kplotting_version.h)
 

@@ -3,7 +3,7 @@ include_directories(
    ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
-find_package(Qt5Transitional REQUIRED Test Gui)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Test Gui)
 
 include(ECMMarkAsTest)
 
