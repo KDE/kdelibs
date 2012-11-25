@@ -32,13 +32,11 @@ set(kidletime_LIB_SRCS
 
 if (X11_FOUND)
    if (HAVE_XSCREENSAVER)
-      set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
-          xscreensaverbasedpoller.cpp)
+      set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} xscreensaverbasedpoller.cpp)
       qt4_add_dbus_interface(kidletime_LIB_SRCS org.freedesktop.ScreenSaver.xml screensaver_interface)
    endif ()
    if (HAVE_XSYNC)
-      set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS}
-          xsyncbasedpoller.cpp )
+      set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} xsyncbasedpoller.cpp )
    endif ()
 elseif (Q_OS_MAC)
    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} macpoller.cpp)
