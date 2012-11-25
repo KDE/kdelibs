@@ -1,7 +1,8 @@
 include_directories(
- ${KDE4_KDECORE_INCLUDES}
  ${CMAKE_CURRENT_SOURCE_DIR}
  ${CMAKE_BINARY_SOURCE_DIR}
+ ${kconfig_BINARY_DIR}/src/core
+ ${kconfig_SOURCE_DIR}/src/core
 )
 
 set(kguiaddons_LIB_SRCS
@@ -17,7 +18,7 @@ add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 
 generate_export_header(kguiaddons)
 
-target_link_libraries(kguiaddons ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})
+target_link_libraries(kguiaddons kconfigcore ${kdeqt5staging_LIBRARY} ${inqt5_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 
 install(TARGETS kguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 

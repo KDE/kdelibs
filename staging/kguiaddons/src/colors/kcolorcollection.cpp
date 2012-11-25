@@ -22,6 +22,7 @@
 #include "kcolorcollection.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 #include <QtCore/QTextStream>
 #include <qsavefile.h>
 #include <qstandardpaths.h>
@@ -105,19 +106,15 @@ KColorCollectionPrivate::KColorCollectionPrivate(const KColorCollectionPrivate& 
 }
 //END KColorCollectionPrivate
 
-QStringList
-KColorCollection::installedCollections()
+QStringList KColorCollection::installedCollections()
 {
-  QStringList paletteList;
-  KGlobal::dirs()->findAllResources("config", "colors/*", KStandardDirs::NoDuplicates, paletteList);
+  QStringList paletteDirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, "colors", QStandardPaths::LocateDirectory);
 
-  int strip = strlen("colors/");
-  for(QStringList::Iterator it = paletteList.begin();
-      it != paletteList.end();
-      ++it)
-  {
-      (*it) = (*it).mid(strip);
+  QStringList paletteList;
+  Q_FOREACH(const QString& dir, paletteDirs) {
+      paletteList += QDir(dir).entryList(QDir::NoDotAndDotDot);
   }
+  paletteList.removeDuplicates();
 
   return paletteList;
 }
