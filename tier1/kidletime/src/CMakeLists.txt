@@ -30,14 +30,19 @@ set(kidletime_LIB_SRCS
     widgetbasedpoller.cpp # TODO: make optional, to avoid always depending on QtWidgets? Or port to QtGui?
 )
 
+set(kidletime_LIBS)
+
 if (X11_FOUND)
    if (HAVE_XSCREENSAVER)
       set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} xscreensaverbasedpoller.cpp)
       qt4_add_dbus_interface(kidletime_LIB_SRCS org.freedesktop.ScreenSaver.xml screensaver_interface)
+      set(kidletime_LIBS ${kidletime_LIBS} ${X11_Xscreensaver_LIB} ${QT_QTDBUS_LIBRARY})
    endif ()
    if (HAVE_XSYNC)
       set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} xsyncbasedpoller.cpp )
+      set(kidletime_LIBS ${kidletime_LIBS} ${X11_Xext_LIB} ${XCB_XCB_LIBRARIES} ${X11_XCB_LIBRARIES} ${XCB_SYNC_LIBRARIES})
    endif ()
+   set(kidletime_LIBS ${kidletime_LIBS} ${X11_LIBRARIES} ${kdeqt5staging_LIBRARY})
 elseif (Q_OS_MAC)
    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} macpoller.cpp)
 elseif (Q_OS_WIN)
@@ -46,17 +51,7 @@ endif (X11_FOUND)
 
 add_library(kidletime ${kidletime_LIB_SRCS})
 generate_export_header(kidletime)
-target_link_libraries(kidletime LINK_PUBLIC ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
-
-if (X11_FOUND)
-   if (HAVE_XSCREENSAVER)
-      target_link_libraries(kidletime ${X11_Xscreensaver_LIB} ${QT_QTDBUS_LIBRARY})
-   endif ()
-   if (HAVE_XSYNC)
-      target_link_libraries(kidletime ${X11_Xext_LIB} ${XCB_XCB_LIBRARIES} ${X11_XCB_LIBRARIES} ${XCB_SYNC_LIBRARIES})
-   endif ()
-   target_link_libraries(kidletime ${X11_LIBRARIES} ${kdeqt5staging_LIBRARY})
-endif ()
+target_link_libraries(kidletime LINK_PUBLIC ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${kidletime_LIBS} )
 
 set_target_properties(kidletime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
                                             SOVERSION ${KIDLETIME_SOVERSION})
