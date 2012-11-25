@@ -42,7 +42,6 @@
 
 #include <kcomponentdata.h>
 #include <kstandarddirs.h>
-#include <kapplication.h>
 #include <kdeversion.h>
 
 //#define ENABLE_SUICIDE 
