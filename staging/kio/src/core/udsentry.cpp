@@ -26,6 +26,7 @@
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QList>
+#include <QtCore/QDataStream>
 
 using namespace KIO;
 
