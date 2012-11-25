@@ -10,11 +10,11 @@ generate_export_header(kdbusaddons)
 
 target_link_libraries(kdbusaddons ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY})
 
-set_target_properties(kdbusaddons PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                             SOVERSION ${ECM_SOVERSION}
+set_target_properties(kdbusaddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
+                                             SOVERSION ${KDBUSADDONS_SOVERSION}
 )
 
-install(TARGETS kdbusaddons EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kdbusaddons EXPORT kdbusaddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kdbusconnectionpool.h
