@@ -61,10 +61,10 @@ generate_export_header(kwindowsystem)
 
 target_link_libraries(kwindowsystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
 
-set_target_properties(kwindowsystem PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                               SOVERSION ${ECM_SOVERSION})
+set_target_properties(kwindowsystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
+                                               SOVERSION ${KWINDOWSYSTEM_SOVERSION})
 
-install(TARGETS kwindowsystem EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kwindowsystem EXPORT kwindowsystemTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    kstartupinfo.h

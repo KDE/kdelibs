@@ -2,32 +2,43 @@ cmake_minimum_required(VERSION 2.8.10.1)
 
 project(kwindowsystem)
 
-find_package(ECM 0.0.5 REQUIRED NO_MODULE)
+find_package(ECM 0.0.6 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-include(ECMVersion)
-
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-
-# -- Maintained by scripty
-ecm_version(5 0 0)
-# --
-
-include(ECMQtFramework)
-include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core Test)
 
-ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h)
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h
-        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+ecm_setup_version(5 0 0 VARIABLE_PREFIX KWINDOWSYSTEM
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfigVersion.cmake")
 
 add_subdirectory(src)
 add_subdirectory(autotests)
 
-include(FeatureSummary)
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kwindowsystem")
+
+configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/kwindowsystemConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfig.cmake"
+                              INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+                              PATH_VARS  INCLUDE_INSTALL_DIR LIB_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfigVersion.cmake"
+        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel )
+
+install(EXPORT kwindowsystemTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwindowsystemTargets.cmake NAMESPACE KDE4__ )
+
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
