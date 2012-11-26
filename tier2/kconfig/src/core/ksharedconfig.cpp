@@ -20,6 +20,7 @@
 */
 
 #include "ksharedconfig.h"
+#include "kcoreauthorized.h"
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 #include "kconfig_p.h"
@@ -59,8 +60,20 @@ KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
         }
     }
     KSharedConfigPtr ptr(new KSharedConfig(fileName, flags, resType));
-    if (_fileName.isEmpty() && flags == FullConfig && resType == QStandardPaths::ConfigLocation)
+    if (_fileName.isEmpty() && flags == FullConfig && resType == QStandardPaths::ConfigLocation) {
         list->mainConfig = ptr;
+
+        static bool userWarned = false;
+        if (!userWarned) {
+            userWarned = true;
+            QByteArray readOnly = qgetenv("KDE_HOME_READONLY");
+            if (readOnly.isEmpty() && QCoreApplication::applicationName() != QLatin1String("kdialog")) {
+                if (KAuthorized::authorize(QLatin1String("warn_unwritable_config")))
+                    ptr->isConfigWritable(true);
+            }
+        }
+    }
+
     return ptr;
 }
 
