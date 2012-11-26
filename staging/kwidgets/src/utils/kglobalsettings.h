@@ -520,7 +520,7 @@ public:
      */
     enum ChangeType { PaletteChanged = 0, FontChanged, StyleChanged,
                       SettingsChanged, IconChanged, CursorChanged,
-                      ToolbarStyleChanged, ClipboardConfigChanged,
+                      ToolbarStyleChanged,
                       BlockShortcuts, NaturalSortingChanged };
 
     /**
