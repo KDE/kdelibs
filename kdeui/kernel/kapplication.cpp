@@ -108,7 +108,6 @@
 #include <kcomponentdata.h>
 
 KApplication* KApplication::KApp = 0L;
-bool KApplication::loadedByKdeinit = false;
 
 #if HAVE_X11
 static Atom atom_DesktopWindow;

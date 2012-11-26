@@ -78,6 +78,10 @@
 # include <windows.h>
 #endif
 
+namespace KCrash {
+    KDEUI_EXPORT bool loadedByKdeinit = false;
+}
+
 static KCrash::HandlerType s_emergencySaveFunction = 0;
 static KCrash::HandlerType s_crashHandler = 0;
 static char *s_appName = 0;
@@ -398,7 +402,7 @@ KCrash::defaultCrashHandler (int sig)
         argv[i++] = "--appname";
         argv[i++] = s_appName ? s_appName : "<unknown>";
 
-        if (KApplication::loadedByKdeinit)
+        if (loadedByKdeinit)
             argv[i++] = "--kdeinit";
 
         // only add apppath if it's not NULL

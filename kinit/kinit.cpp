@@ -97,6 +97,10 @@ static const char *extra_libs[] = {
 
 // #define SKIP_PROCTITLE 1
 
+namespace KCrash {
+    extern KDEUI_EXPORT bool loadedByKdeinit;
+}
+
 extern char **environ;
 
 #if HAVE_X11
@@ -1780,7 +1784,7 @@ int main(int argc, char **argv, char **envp)
    // don't change envvars before proctitle_init()
    unsetenv("LD_BIND_NOW");
    unsetenv("DYLD_BIND_AT_LAUNCH");
-   KApplication::loadedByKdeinit = true;
+   KCrash::loadedByKdeinit = true;
 
    d.maxname = strlen(argv[0]);
    d.launcher_pid = 0;
