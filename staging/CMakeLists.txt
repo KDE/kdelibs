@@ -5,5 +5,6 @@ add_subdirectory(kwidgets)
 add_subdirectory(kio)
 add_subdirectory(frameworkintegration)
 
+add_subdirectory(kinterprocesswindowing)
 add_subdirectory(kde4support)
 add_subdirectory(kemoticons)
