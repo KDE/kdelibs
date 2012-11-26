@@ -90,6 +90,25 @@ static char *s_kdeinit_socket_file = 0;
 static KCrash::CrashFlags s_flags = 0;
 static bool s_launchDrKonqi = false;
 
+// KDE5: Port to qAddPreRoutine when available
+extern "C" void Q_CORE_EXPORT qt_startup_hook()
+{
+    const QStringList args = QCoreApplication::arguments();
+    if (qgetenv("KDE_DEBUG").isEmpty()
+     && !args.contains("--nocrashhandler")) {
+        // enable drkonqi
+        KCrash::setDrKonqiEnabled(true);
+    }
+
+    // Always set the app name, can be usefuls for apps that call setEmergencySaveFunction or enable AutoRestart
+    const QString appPath = args[0];
+    const QString appName = appPath.mid(appPath.lastIndexOf('/'));
+    KCrash::setApplicationName(appName);
+    if (!QCoreApplication::applicationDirPath().isEmpty()) {
+        KCrash::setApplicationPath(QCoreApplication::applicationDirPath());
+    }
+}
+
 namespace KCrash
 {
     void startProcess(int argc, const char *argv[], bool waitAndExit);
