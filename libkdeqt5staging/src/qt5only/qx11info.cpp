@@ -115,7 +115,7 @@ Display *QX11Info::display()
 {
     QPlatformNativeInterface *native = qApp->platformNativeInterface();
 
-    void *display = native->nativeResourceForWindow(QByteArray("display"), 0);
+    void *display = native->nativeResourceForScreen(QByteArray("display"), QGuiApplication::primaryScreen());
     return reinterpret_cast<Display *>(display);
 }
 
