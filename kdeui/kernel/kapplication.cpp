@@ -53,6 +53,7 @@
 #include "kmessageboxmessagehandler.h"
 #include <kiconloader.h>
 #include <kconfiggui.h>
+#include <kusertimestamp.h>
 
 #if HAVE_X11
 #include <qx11info_x11.h>
@@ -856,34 +857,12 @@ bool KApplication::x11EventFilter( XEvent *_event )
 
 void KApplication::updateUserTimestamp( int time )
 {
-#if HAVE_X11
-    if( time == 0 )
-    { // get current X timestamp
-        Window w = XCreateSimpleWindow( QX11Info::display(), QX11Info::appRootWindow(), 0, 0, 1, 1, 0, 0, 0 );
-        XSelectInput( QX11Info::display(), w, PropertyChangeMask );
-        unsigned char data[ 1 ];
-        XChangeProperty( QX11Info::display(), w, XA_ATOM, XA_ATOM, 8, PropModeAppend, data, 1 );
-        XEvent ev;
-        XWindowEvent( QX11Info::display(), w, PropertyChangeMask, &ev );
-        time = ev.xproperty.time;
-        XDestroyWindow( QX11Info::display(), w );
-    }
-    if( QX11Info::appUserTime() == 0
-        || NET::timestampCompare( time, QX11Info::appUserTime()) > 0 ) // time > appUserTime
-        QX11Info::setAppUserTime(time);
-    if( QX11Info::appTime() == 0
-        || NET::timestampCompare( time, QX11Info::appTime()) > 0 ) // time > appTime
-        QX11Info::setAppTime(time);
-#endif
+    KUserTimestamp::updateUserTimestamp(time);
 }
 
 unsigned long KApplication::userTimestamp() const
 {
-#if HAVE_X11
-    return QX11Info::appUserTime();
-#else
-    return 0;
-#endif
+    return KUserTimestamp::userTimestamp();
 }
 
 void KApplication::updateRemoteUserTimestamp( const QString& service, int time )
