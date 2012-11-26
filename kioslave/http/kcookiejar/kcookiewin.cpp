@@ -51,6 +51,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kiconloader.h>
 #include <kapplication.h>
 #include <kdatetime.h>
+#include <kusertimestamp.h>
 
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
@@ -76,7 +77,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 #if HAVE_X11
         KWindowSystem::setState( winId(), NET::KeepAbove );
 #endif
-        kapp->updateUserTimestamp();
+        KUserTimestamp::updateUserTimestamp();
     }
 
     const int count = cookieList.count();

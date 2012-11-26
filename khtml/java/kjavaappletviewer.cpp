@@ -42,6 +42,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kio/authinfo.h>
+#include <kusertimestamp.h>
 
 
 K_EXPORT_PLUGIN( KJavaAppletViewerFactory )
@@ -341,7 +342,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
 
         // make the call
         QDBusInterface kpasswdserver("org.kde.kded5", "/modules/kpasswdserver", "org.kde.KPasswdServer");
-        QDBusReply<QByteArray> reply = kpasswdserver.call ("checkAuthInfo", params, qlonglong(m_view->topLevelWidget()->winId()), qlonglong(kapp->userTimestamp()));
+        QDBusReply<QByteArray> reply = kpasswdserver.call ("checkAuthInfo", params, qlonglong(m_view->topLevelWidget()->winId()), qlonglong(KUserTimestamp::userTimestamp()));
 
         if (!reply.isValid()) {
             kWarning() << "checkAuthInfo DBUS call failed: " << reply.error().message();

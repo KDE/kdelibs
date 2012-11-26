@@ -3,6 +3,7 @@ add_subdirectory( tests )
 
 include_directories( ${CMAKE_SOURCE_DIR}/khtml ${CMAKE_SOURCE_DIR}/kio/kssl )
 include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
+include_directories( ${kinterprocesswindowing_SOURCE_DIR}/src ${kinterprocesswindowing_BINARY_DIR}/src )
 
 
 ########### next target ###############
@@ -23,7 +24,7 @@ set(kjavaappletviewer_PART_SRCS
 
 kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
 
-target_link_libraries(kjavaappletviewer ${KDE4_KPARTS_LIBS} ${kwindowsystem_LIBRARY})
+target_link_libraries(kjavaappletviewer ${KDE4_KPARTS_LIBS} ${kwindowsystem_LIBRARY} ${kinterprocesswindowing_LIBRARY})
 
 install(TARGETS kjavaappletviewer  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

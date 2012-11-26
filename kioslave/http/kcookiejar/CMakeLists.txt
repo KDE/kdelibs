@@ -3,6 +3,8 @@ add_subdirectory( tests )
 
 # all done by parent dir
 # include_directories( ${KDE4_KIO_INCLUDES} )
+include_directories( ${kinterprocesswindowing_SOURCE_DIR}/src )
+include_directories( ${kinterprocesswindowing_BINARY_DIR}/src )
 
 ####### kcookiejar4: command line tool for talking to the kded kcookiejar module #######
 
@@ -38,7 +40,7 @@ qt4_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.K
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_SRCS})
 
-target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${kwindowsystem_LIBRARY} kcoreaddons kwidgets kwidgetsaddons)
+target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${kwindowsystem_LIBRARY} kcoreaddons kwidgets kwidgetsaddons kinterprocesswindowing)
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
