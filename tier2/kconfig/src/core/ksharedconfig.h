@@ -57,7 +57,9 @@ public:
      * to influence the values returned by this object.  See KConfig::OpenFlags for
      * more details.
      *
-     * @param fileName     the configuration file to open
+     * @param fileName     the configuration file to open. If empty, it will be determined
+     *                     automatically (from --config on the command line, otherwise
+     *                     from the application name + "rc")
      * @param mode         how global settings should affect the configuration
      *                     options exposed by this KConfig object
      * @param resourceType The standard directory to look for the configuration
@@ -70,11 +72,6 @@ public:
                                          QStandardPaths::StandardLocation type = QStandardPaths::ConfigLocation);
 
     virtual ~KSharedConfig();
-
-    /**
-     * @internal (kde4 KComponentData compat)
-     */
-    static void setMainConfigName(const QString& str);
 
 private:
     virtual KConfigGroup groupImpl(const QByteArray& aGroup);

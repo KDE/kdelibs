@@ -31,7 +31,6 @@ public:
     // in addition to the list, we need to hold the main config,
     // so that it's not created and destroyed all the time.
     KSharedConfigPtr mainConfig;
-    QString mainConfigName;
 };
 
 
@@ -43,17 +42,9 @@ KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
 {
     QString fileName(_fileName);
     GlobalSharedConfigList *list = globalSharedConfigList();
-    if (fileName.isEmpty())
-        fileName = list->mainConfigName;
     if (fileName.isEmpty()) {
         // Determine the config file name that KConfig will make up (see KConfigPrivate::changeFileName)
-        QString appName = QCoreApplication::applicationName();
-        if (appName.isEmpty()) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            appName = qAppName();
-#endif
-        }
-        fileName = appName + QLatin1String("rc");
+        fileName = KConfig::mainConfigName();
     }
 
     if (list) {
@@ -105,10 +96,4 @@ const KConfigGroup KSharedConfig::groupImpl(const QByteArray &groupName) const
 {
     const KSharedConfigPtr ptr(const_cast<KSharedConfig*>(this));
     return KConfigGroup( ptr, groupName.constData());
-}
-
-void KSharedConfig::setMainConfigName(const QString& str)
-{
-    GlobalSharedConfigList *list = globalSharedConfigList();
-    list->mainConfigName = str;
 }

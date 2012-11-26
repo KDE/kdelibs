@@ -511,6 +511,34 @@ QString KConfig::name() const
     return d->fileName;
 }
 
+Q_GLOBAL_STATIC(QString, globalMainConfigName)
+
+void KConfig::setMainConfigName(const QString& str)
+{
+    *globalMainConfigName() = str;
+}
+
+QString KConfig::mainConfigName()
+{
+    // --config on the command line overrides everything else
+    const QStringList args = QCoreApplication::arguments();
+    for (int i = 1; i < args.count() ; ++i) {
+        if (args.at(i) == QLatin1String("--config") && i < args.count()-1) {
+            return args.at(i+1);
+        }
+    }
+    const QString globalName = *globalMainConfigName();
+    if (!globalName.isEmpty())
+        return globalName;
+
+    QString appName = QCoreApplication::applicationName();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    if (appName.isEmpty())
+        appName = qAppName();
+#endif
+    return appName + QLatin1String("rc");
+}
+
 void KConfigPrivate::changeFileName(const QString& name)
 {
     fileName = name;
@@ -518,14 +546,7 @@ void KConfigPrivate::changeFileName(const QString& name)
     QString file;
     if (name.isEmpty()) {
         if (wantDefaults()) { // accessing default app-specific config "appnamerc"
-            // Note: any change in this block must be sync'ed with KSharedConfig::openConfig
-            QString appName = QCoreApplication::applicationName();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            if (appName.isEmpty()) {
-                appName = qAppName();
-            }
-#endif
-            fileName = appName + QLatin1String("rc");
+            fileName = KConfig::mainConfigName();
             file = QStandardPaths::writableLocation(resourceType) + QLatin1Char('/') + fileName;
         } else if (wantGlobals()) { // accessing "kdeglobals" - XXX used anywhere?
             resourceType = QStandardPaths::ConfigLocation;

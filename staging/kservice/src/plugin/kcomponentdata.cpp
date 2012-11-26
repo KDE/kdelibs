@@ -88,7 +88,7 @@ public:
             return;
         }
         mainComponent = c;
-        KSharedConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
+        KConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
 #if 0 // TEMP_KF5_REENABLE
         KLocale::setMainCatalog(c.catalogName());
 #endif
