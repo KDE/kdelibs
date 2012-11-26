@@ -203,7 +203,6 @@ set(kdeui_LIB_SRCS
  jobs/kstatusbarjobtracker.cpp
  jobs/kuiserverjobtracker.cpp
  kernel/kapplication.cpp
- kernel/kclipboard.cpp
  kernel/ksessionmanager.cpp
  kernel/kstyle.cpp
  notifications/knotification.cpp

@@ -40,7 +40,6 @@
 #include "kcrash.h"
 #include "kconfig.h"
 #include "kcmdlineargs.h"
-#include "kclipboard.h"
 #include "kglobalsettings.h"
 #include "kdebug.h"
 #include "kglobal.h"
@@ -402,17 +401,10 @@ void KApplicationPrivate::init(bool GUIenabled)
 
   KApplication::KApp = q;
 
-  // make sure the clipboard is created before setting the window icon (bug 209263)
-  if(GUIenabled)
-    (void) QApplication::clipboard();
-
   extern KDECORE_EXPORT bool kde_kdebug_enable_dbus_interface;
   kde_kdebug_enable_dbus_interface = true;
 
   parseCommandLine();
-
-  if(GUIenabled)
-    (void) KClipboardSynchronizer::self();
 
   QApplication::setDesktopSettingsAware( false );
 
@@ -1003,12 +995,6 @@ void KApplicationPrivate::_k_slot_KToolInvocation_hook(QStringList& envs,QByteAr
     Q_UNUSED(envs);
     Q_UNUSED(startup_id);
 #endif
-}
-
-void KApplication::setSynchronizeClipboard(bool synchronize)
-{
-    KClipboardSynchronizer::self()->setSynchronizing(synchronize);
-    KClipboardSynchronizer::self()->setReverseSynchronizing(synchronize);
 }
 
 #include "moc_kapplication.cpp"

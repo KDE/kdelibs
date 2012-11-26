@@ -278,11 +278,6 @@ public:
   void clearStartupId();
 
   /**
-   * Sets how the primary and clipboard selections are synchronized in an X11 environment
-   */
-  void setSynchronizeClipboard(bool synchronize);
-
-  /**
    * Returns the last user action timestamp or 0 if no user activity has taken place yet.
    * @see updateuserTimestamp
    */
