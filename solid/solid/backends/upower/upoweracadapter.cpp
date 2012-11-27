@@ -37,17 +37,21 @@ AcAdapter::~AcAdapter()
 
 bool AcAdapter::isPlugged() const
 {
-    return m_device->prop("Online").toBool();
+    return m_device.data()->prop("Online").toBool();
 }
 
 void AcAdapter::slotChanged()
 {
-    const bool old_isPlugged = m_isPlugged;
-    updateCache();
+    QSharedPointer<UPowerDevice> strong = m_device.toStrongRef();
 
-    if (old_isPlugged != m_isPlugged)
-    {
-        emit plugStateChanged(m_isPlugged, m_device->udi());
+    if (strong) {
+        const bool old_isPlugged = m_isPlugged;
+        updateCache();
+
+        if (old_isPlugged != m_isPlugged)
+        {
+            emit plugStateChanged(m_isPlugged, m_device.data()->udi());
+        }
     }
 }
 
