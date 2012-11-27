@@ -93,7 +93,7 @@ void Polkit1Backend::preAuthAction(const QString& action, QWidget* parent)
     // Are we running our KDE auth agent?
     if (QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.Polkit1AuthAgent"))) {
         // Check if we actually are entitled to use GUI capabilities
-        if (qApp == 0 || QApplication::type() == QApplication::Tty) {
+        if (qApp == 0 || !qobject_cast<QApplication *>(qApp)) {
             qDebug() << "Not streaming parent as we are on a TTY application";
         }
 

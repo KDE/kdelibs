@@ -755,7 +755,7 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
     args.append(arg);
     message.setArguments(args);
     QDBusConnection::sessionBus().send(message);
-#if HAVE_X11
+#if 0 // none of this exists in Qt5 anymore
     if (qApp && qApp->type() != QApplication::Tty) {
         //notify non-kde qt applications of the change
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
@@ -978,9 +978,7 @@ void KGlobalSettings::Private::kdisplaySetPalette()
         return;
     }
 
-    if (qApp->type() == QApplication::GuiClient) {
-        QApplication::setPalette( q->createApplicationPalette() );
-    }
+    QApplication::setPalette( q->createApplicationPalette() );
     emit q->kdisplayPaletteChanged();
     emit q->appearanceChanged();
 #endif
@@ -994,16 +992,14 @@ void KGlobalSettings::Private::kdisplaySetFont()
         return;
     }
 
-    if (qApp->type() == QApplication::GuiClient) {
-        KGlobalSettingsData* data = KGlobalSettingsData::self();
+    KGlobalSettingsData* data = KGlobalSettingsData::self();
 
-        QApplication::setFont( data->font(KGlobalSettingsData::GeneralFont) );
-        const QFont menuFont = data->font( KGlobalSettingsData::MenuFont );
-        QApplication::setFont( menuFont, "QMenuBar" );
-        QApplication::setFont( menuFont, "QMenu" );
-        QApplication::setFont( menuFont, "KPopupTitle" );
-        QApplication::setFont( data->font(KGlobalSettingsData::ToolbarFont), "QToolBar" );
-    }
+    QApplication::setFont( data->font(KGlobalSettingsData::GeneralFont) );
+    const QFont menuFont = data->font( KGlobalSettingsData::MenuFont );
+    QApplication::setFont( menuFont, "QMenuBar" );
+    QApplication::setFont( menuFont, "QMenu" );
+    QApplication::setFont( menuFont, "KPopupTitle" );
+    QApplication::setFont( data->font(KGlobalSettingsData::ToolbarFont), "QToolBar" );
     emit q->kdisplayFontChanged();
     emit q->appearanceChanged();
 #endif
@@ -1012,12 +1008,10 @@ void KGlobalSettings::Private::kdisplaySetFont()
 
 void KGlobalSettings::Private::kdisplaySetStyle()
 {
-    if (qApp->type() == QApplication::GuiClient) {
-        applyGUIStyle();
+    applyGUIStyle();
 
-        // Reread palette from config file.
-        kdisplaySetPalette();
-    }
+    // Reread palette from config file.
+    kdisplaySetPalette();
 }
 
 

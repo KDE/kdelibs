@@ -417,7 +417,6 @@ void KApplicationPrivate::init(bool GUIenabled)
 
 #if HAVE_X11
   // create all required atoms in _one_ roundtrip to the X server
-  if ( q->type() == KApplication::GuiClient ) {
       const int max = 20;
       Atom* atoms[max];
       char* names[max];
@@ -437,7 +436,6 @@ void KApplicationPrivate::init(bool GUIenabled)
 
       for (int i = 0; i < n; i++ )
         *atoms[i] = atoms_return[i];
-  }
 #endif
 
 
@@ -487,8 +485,6 @@ void KApplicationPrivate::init(bool GUIenabled)
        config->isConfigWritable(true);
   }
 
-  if (q->type() == KApplication::GuiClient)
-  {
 #if HAVE_X11
     // this is important since we fork() to launch the help (Matthias)
     fcntl(ConnectionNumber(QX11Info::display()), F_SETFD, FD_CLOEXEC);
@@ -507,10 +503,8 @@ void KApplicationPrivate::init(bool GUIenabled)
 
     q->connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&,QByteArray&)),
                q, SLOT(_k_slot_KToolInvocation_hook(QStringList&,QByteArray&)));
-  }
 
 #ifdef Q_OS_MAC
-  if (q->type() == KApplication::GuiClient) {
       // This is a QSystemTrayIcon instead of K* because we can't be sure q is a QWidget
       QSystemTrayIcon *trayIcon; //krazy:exclude=qclasses
       if (QSystemTrayIcon::isSystemTrayAvailable()) //krazy:exclude=qclasses
@@ -521,7 +515,6 @@ void KApplicationPrivate::init(bool GUIenabled)
              dock icon... ->show actually shows an icon in the menu bar too  :P */
           // trayIcon->show();
       }
-  }
 #endif
 
   qRegisterMetaType<KUrl>();
@@ -768,14 +761,10 @@ void KApplicationPrivate::parseCommandLine( )
         componentData.setConfigName(config);
     }
 
-    if ( q->type() != KApplication::Tty ) {
-        if (args && args->isSet("icon"))
-        {
-            q->setWindowIcon(KDE::icon(args->getOption("icon")));
-        }
-        else {
-            q->setWindowIcon(KDE::icon(componentData.aboutData()->programIconName()));
-        }
+    if (args && args->isSet("icon")) {
+        q->setWindowIcon(KDE::icon(args->getOption("icon")));
+    } else {
+        q->setWindowIcon(KDE::icon(componentData.aboutData()->programIconName()));
     }
 
     if (!args)

@@ -30,25 +30,27 @@
 class KIO_EXPORT KMessageBoxWrapper : public KMessageBox
 {
 public:
-  static void error(QWidget *parent, 
-                    const QString &text, 
-                    const QString &caption = QString())
+    static void error(QWidget *parent,
+                      const QString &text,
+                      const QString &caption = QString())
     {
-	if (qApp && qApp->type() == QApplication::GuiClient) {
-      	  KMessageBox::error( parent, text, caption );
-	} else 
-	  kWarning() << text;
+	if (qApp && qobject_cast<QApplication *>(qApp)) {
+            KMessageBox::error( parent, text, caption );
+	} else {
+            kWarning() << text;
+        }
     }
 
-  static void sorry(QWidget *parent, 
-                    const QString &text,
-                    const QString &caption = QString())
+    static void sorry(QWidget *parent,
+                      const QString &text,
+                      const QString &caption = QString())
     {
-      if (qApp && qApp->type() == QApplication::GuiClient) {
-         KMessageBox::sorry( parent, text, caption );
-      } else
-	kWarning() << text;
+	if (qApp && qobject_cast<QApplication *>(qApp)) {
+            KMessageBox::sorry( parent, text, caption );
+	} else {
+            kWarning() << text;
+        }
     }
-  
+
 };
 #endif

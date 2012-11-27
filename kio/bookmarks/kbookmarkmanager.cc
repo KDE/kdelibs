@@ -444,7 +444,7 @@ bool KBookmarkManager::saveAs( const QString & filename, bool toolbarCache ) con
                          "of the error needs to be fixed as quickly as possible, "
                          "which is most likely a full hard drive.").arg(filename).arg(file.errorString());
 
-        if (d->m_dialogAllowed && qApp->type() != QApplication::Tty && QThread::currentThread() == qApp->thread())
+        if (d->m_dialogAllowed && qobject_cast<QApplication *>(qApp) && QThread::currentThread() == qApp->thread())
             QMessageBox::critical( QApplication::activeWindow(), QApplication::applicationName(), err );
 
         qCritical() << QString("Unable to save bookmarks in %1. File reported the following error-code: %2.").arg(filename).arg(file.error());
