@@ -1,5 +1,6 @@
 /*  This file is part of the KDE libraries
     Copyright (C) 1999 Waldo Bastian (bastian@kde.org)
+    Copyright 2012 David Faure <faure+bluesystems@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -18,6 +19,7 @@
 */
 
 #include "kmessagebox.h"
+#include "kmessageboxdontaskagaininterface.h"
 
 #include <QtCore/QPointer>
 #include <QCheckBox>
@@ -29,16 +31,14 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QTextDocumentFragment>
+#include <QPluginLoader>
 
 #include <qapplication.h>
-#include <kconfig.h>
 #include <kdialog.h>
 #include <kdialogqueue_p.h>
-#include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <knotification.h>
 #include <kiconloader.h>
-#include <kconfiggroup.h>
 #include <ktextedit.h>
 #include <ksqueezedtextlabel.h>
 #include <kwindowsystem.h>
@@ -77,7 +77,6 @@
     i18nc( "@action:button post-filter", "." );
 
 static bool KMessageBox_queue = false;
-KConfig* KMessageBox_againConfig = 0;
 
 
 static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
@@ -289,7 +288,7 @@ int KMessageBox::createKMessageBox(KDialog *dialog, const QIcon &icon,
             detailsLabel->setWordWrap(true);
             detailsLayout->addWidget(detailsLabel,50);
         } else {
-            KTextEdit *detailTextEdit = new KTextEdit(details);
+            KTextEdit *detailTextEdit = new KTextEdit(details); // TODO: QTextBrowser
             detailTextEdit->setReadOnly(true);
             detailTextEdit->setMinimumHeight(detailTextEdit->fontMetrics().lineSpacing() * 11);
             detailsLayout->addWidget(detailTextEdit,50);
@@ -374,23 +373,70 @@ int KMessageBox::questionYesNoWId(WId parent_id, const QString &text,
                             buttonYes, buttonNo, dontAskAgainName, options);
 }
 
+class KMessageBoxDontAskAgainMemoryStorage : public KMessageBoxDontAskAgainInterface
+{
+public:
+    KMessageBoxDontAskAgainMemoryStorage() {}
+    virtual ~KMessageBoxDontAskAgainMemoryStorage() {}
+
+    virtual bool shouldBeShownYesNo(const QString &dontShowAgainName, KMessageBox::ButtonCode &result) {
+        KMessageBox::ButtonCode code = m_saved.value(dontShowAgainName, KMessageBox::ButtonCode(0));
+        if (code == KMessageBox::Yes || code == KMessageBox::No) {
+            result = code;
+            return false;
+        }
+        return true;
+    }
+    virtual bool shouldBeShownContinue(const QString &dontShowAgainName) {
+        KMessageBox::ButtonCode code = m_saved.value(dontShowAgainName, KMessageBox::Yes);
+        return code == KMessageBox::Yes;
+    }
+    virtual void saveDontShowAgainYesNo(const QString &dontShowAgainName, KMessageBox::ButtonCode result) {
+        m_saved[dontShowAgainName] = result;
+    }
+    virtual void saveDontShowAgainContinue(const QString &dontShowAgainName) {
+        m_saved[dontShowAgainName] = KMessageBox::No;
+    }
+    virtual void enableAllMessages() {
+        m_saved.clear();
+    }
+    virtual void enableMessage(const QString& dontShowAgainName) {
+        m_saved.remove(dontShowAgainName);
+    }
+    virtual void setConfig(KConfig *) {}
+
+private:
+    QHash<QString, KMessageBox::ButtonCode> m_saved;
+};
+
+static KMessageBoxDontAskAgainInterface* s_dontAskAgainInterface = 0;
+static KMessageBoxDontAskAgainInterface* dontAskAgainInterface() {
+    if (!s_dontAskAgainInterface) {
+        static bool triedLoadingPlugin = false;
+        if (!triedLoadingPlugin) {
+            triedLoadingPlugin = true;
+
+            QPluginLoader lib("kf5/frameworkintegrationplugin");
+            QObject* rootObj = lib.instance();
+            if (rootObj) {
+                s_dontAskAgainInterface = rootObj->property(KMESSAGEBOXDONTASKAGAIN_PROPERTY).value<KMessageBoxDontAskAgainInterface *>();
+            }
+        }
+        // TODO use Qt-5.1's Q_GLOBAL_STATIC
+        if (!s_dontAskAgainInterface) {
+            s_dontAskAgainInterface = new KMessageBoxDontAskAgainMemoryStorage;
+        }
+    }
+    return s_dontAskAgainInterface;
+}
+
 bool KMessageBox::shouldBeShownYesNo(const QString &dontShowAgainName,
-                                ButtonCode &result)
+                                     ButtonCode &result)
 {
     if ( dontShowAgainName.isEmpty() ) {
         return true;
     }
-    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data(), "Notification Messages" );
-    const QString dontAsk = cg.readEntry(dontShowAgainName, QString()).toLower();
-    if (dontAsk == "yes" || dontAsk == "true") {
-        result = Yes;
-        return false;
-    }
-    if (dontAsk == "no" || dontAsk == "false") {
-        result = No;
-        return false;
-    }
-    return true;
+    return dontAskAgainInterface()->shouldBeShownYesNo(dontShowAgainName, result);
 }
 
 bool KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
@@ -398,23 +444,16 @@ bool KMessageBox::shouldBeShownContinue(const QString &dontShowAgainName)
     if ( dontShowAgainName.isEmpty() ) {
         return true;
     }
-    KConfigGroup cg( KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data(), "Notification Messages" );
-    return cg.readEntry(dontShowAgainName, true);
+    return dontAskAgainInterface()->shouldBeShownContinue(dontShowAgainName);
 }
 
 void KMessageBox::saveDontShowAgainYesNo(const QString &dontShowAgainName,
-                                    ButtonCode result)
+                                         ButtonCode result)
 {
     if ( dontShowAgainName.isEmpty() ) {
         return;
     }
-    KConfigGroup::WriteConfigFlags flags = KConfig::Persistent;
-    if (dontShowAgainName[0] == ':') {
-        flags |= KConfigGroup::Global;
-    }
-    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig : KSharedConfig::openConfig().data(), "Notification Messages" );
-    cg.writeEntry( dontShowAgainName, result==Yes, flags );
-    cg.sync();
+    dontAskAgainInterface()->saveDontShowAgainYesNo(dontShowAgainName, result);
 }
 
 void KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
@@ -422,18 +461,22 @@ void KMessageBox::saveDontShowAgainContinue(const QString &dontShowAgainName)
     if ( dontShowAgainName.isEmpty() ) {
         return;
     }
-    KConfigGroup::WriteConfigFlags flags = KConfigGroup::Persistent;
-    if (dontShowAgainName[0] == ':') {
-        flags |= KConfigGroup::Global;
-    }
-    KConfigGroup cg( KMessageBox_againConfig? KMessageBox_againConfig: KSharedConfig::openConfig().data(), "Notification Messages" );
-    cg.writeEntry( dontShowAgainName, false, flags );
-    cg.sync();
+    dontAskAgainInterface()->saveDontShowAgainContinue(dontShowAgainName);
+}
+
+void KMessageBox::enableAllMessages()
+{
+    dontAskAgainInterface()->enableAllMessages();
+}
+
+void KMessageBox::enableMessage(const QString &dontShowAgainName)
+{
+    dontAskAgainInterface()->enableMessage(dontShowAgainName);
 }
 
 void KMessageBox::setDontShowAskAgainConfig(KConfig* cfg)
 {
-    KMessageBox_againConfig = cfg;
+    dontAskAgainInterface()->setConfig(cfg);
 }
 
 int KMessageBox::questionYesNoList(QWidget *parent, const QString &text,
@@ -1009,38 +1052,6 @@ void KMessageBox::informationListWId(WId parent_id,const QString &text, const QS
     if (checkboxResult) {
         saveDontShowAgainContinue(dontShowAgainName);
     }
-}
-
-void KMessageBox::enableAllMessages()
-{
-   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data();
-   if (!config->hasGroup("Notification Messages")) {
-      return;
-   }
-
-   KConfigGroup cg(config, "Notification Messages" );
-
-   typedef QMap<QString, QString> configMap;
-
-   const configMap map = cg.entryMap();
-
-   configMap::ConstIterator it;
-   for (it = map.begin(); it != map.end(); ++it) {
-      cg.deleteEntry( it.key() );
-   }
-}
-
-void KMessageBox::enableMessage(const QString &dontShowAgainName)
-{
-   KConfig *config = KMessageBox_againConfig ? KMessageBox_againConfig : KSharedConfig::openConfig().data();
-   if (!config->hasGroup("Notification Messages")) {
-      return;
-   }
-
-   KConfigGroup cg( config, "Notification Messages" );
-
-   cg.deleteEntry(dontShowAgainName);
-   config->sync();
 }
 
 void KMessageBox::about(QWidget *parent, const QString &text,

@@ -882,7 +882,7 @@ public:
   static void enableAllMessages();
 
   /**
-   * Re-enable a specific @p dontShowAgainName messages that had 
+   * Re-enable a specific @p dontShowAgainName messages that had
    * previously been turned off.
    * @see saveDontShowAgainYesNo()
    * @see saveDontShowAgainContinue()
@@ -1040,7 +1040,7 @@ public:
      * Use @p cfg for all settings related to the dontShowAgainName feature.
      * If @p cfg is 0 (default) KGlobal::config() will be used.
      */
-    static void setDontShowAskAgainConfig(KConfig* cfg);
+    static void setDontShowAskAgainConfig(KConfig* cfg); // TODO rename to setDontShowAgainConfig
 
     /**
      * Create content and layout of a standard dialog
@@ -1058,9 +1058,9 @@ public:
      * @param details Detailed message string.
      * @return A KDialog button code, not a KMessageBox button code,
      *         based on the buttonmask given to the constructor of the
-     *         @p dialog (ie. will return KDialog::Yes [256] instead of 
+     *         @p dialog (ie. will return KDialog::Yes [256] instead of
      *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
-     *         if the message box is queued for display instead of 
+     *         if the message box is queued for display instead of
      *         exec()ed immediately or if the option NoExec is set.
      * @note   Unless NoExec is used,
      *         the @p dialog that is passed in is deleted by this
@@ -1090,9 +1090,9 @@ public:
      *                is presentend.
      * @return A KDialog button code, not a KMessageBox button code,
      *         based on the buttonmask given to the constructor of the
-     *         @p dialog (ie. will return KDialog::Yes [256] instead of 
+     *         @p dialog (ie. will return KDialog::Yes [256] instead of
      *         KMessageBox::Yes [3]). Will return KMessageBox::Cancel
-     *         if the message box is queued for display instead of 
+     *         if the message box is queued for display instead of
      *         exec()ed immediately or if the option NoExec is set.
      * @note   Unless NoExec is used,
      *         the @p dialog that is passed in is deleted by this
@@ -1106,6 +1106,5 @@ public:
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KMessageBox::Options)
-
 
 #endif
