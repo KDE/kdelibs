@@ -51,10 +51,11 @@
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
-#include <kapplication.h>
+#include <kstartupinfo.h>
 
 #include <../kinit/klauncher_cmds.h>
 
+#include <QCoreApplication>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
@@ -442,9 +443,9 @@ KCrash::defaultCrashHandler (int sig)
         }
 
         char sidtxt[256];
-        if ( kapp && !kapp->startupId().isNull()) {
+        if ( !KStartupInfo::startupId().isNull()) {
             argv[i++] = "--startupid";
-            strlcpy(sidtxt, kapp->startupId().constData(), sizeof(sidtxt));
+            strlcpy(sidtxt, KStartupInfo::startupId().constData(), sizeof(sidtxt));
             argv[i++] = sidtxt;
         }
 
