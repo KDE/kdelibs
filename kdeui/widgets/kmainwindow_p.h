@@ -80,7 +80,6 @@ class KMWSessionManager : public QObject
 public:
     KMWSessionManager();
     ~KMWSessionManager();
-    bool dummyInit();
 
 private Q_SLOTS:
     bool saveState(QSessionManager&);

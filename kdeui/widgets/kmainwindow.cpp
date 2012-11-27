@@ -129,11 +129,6 @@ KMWSessionManager::~KMWSessionManager()
 {
 }
 
-bool KMWSessionManager::dummyInit()
-{
-    return true;
-}
-
 bool KMWSessionManager::saveState(QSessionManager&)
 {
     KConfig* config = KConfigGui::sessionConfig();
@@ -200,8 +195,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     QObject::connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)),
                      q, SLOT(_k_slotSettingsChanged(int)));
 
-    // force KMWSessionManager creation - someone a better idea?
-    ksm()->dummyInit();
+    // force KMWSessionManager creation
+    ksm();
 
     sMemberList()->append( q );
 
