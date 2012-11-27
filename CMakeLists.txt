@@ -86,6 +86,10 @@ include_directories(${kdeqt5staging_INCLUDE_DIR})
 # TODO: Move to where it's really needed/remove.
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
+if (NOT QT5_BUILD)
+add_definitions(-DQ_DECL_OVERRIDE=)
+endif()
+
 add_subdirectory( tier1 )
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.

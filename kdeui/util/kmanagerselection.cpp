@@ -46,9 +46,12 @@ DEALINGS IN THE SOFTWARE.
 #include <kapplication.h>
 #include <kxerrorhandler.h>
 #include <X11/Xatom.h>
+#include <xcb/xcb.h>
 
-
-class KSelectionOwner::Private : public QWidget
+class KSelectionOwner::Private
+#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+    : public QAbstractNativeEventFilter
+#endif
 {
 public:
     Private( KSelectionOwner* owner_P, Atom selection_P, int screen_P )
@@ -60,7 +63,9 @@ public:
           extra2( 0 ),
           owner( owner_P )
     {
-        kapp->installX11EventFilter( this );
+#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+        QCoreApplication::instance()->installNativeEventFilter(this);
+#endif
     }
 
     const Atom selection;
@@ -74,16 +79,20 @@ public:
     static Atom xa_timestamp;
 
 protected:
-    virtual bool x11Event( XEvent* ev_P )
+    bool nativeEventFilter(const QByteArray& eventType, void *message, long *result) Q_DECL_OVERRIDE
     {
-        return owner->filterEvent( ev_P );
+        Q_UNUSED(result);
+        if (eventType != "xcb_generic_event_t")
+            return false;
+        owner->filterEvent(message);
+        return false;
     }
 
 private:
     KSelectionOwner* owner;
 };
 
-    
+
 KSelectionOwner::KSelectionOwner( Atom selection_P, int screen_P, QObject* parent_P )
     :   QObject( parent_P ),
         d( new Private( this, selection_P, screen_P ) )
@@ -109,6 +118,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
     if( d->timestamp != CurrentTime )
         release();
     Display* const dpy = QX11Info::display();
+    XFlush(dpy);
     Window prev_owner = XGetSelectionOwner( dpy, d->selection );
     if( prev_owner != None )
         {
@@ -121,7 +131,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
         }
     XSetWindowAttributes attrs;
     attrs.override_redirect = True;
-    d->window = XCreateWindow( dpy, RootWindow( dpy, d->screen ), 0, 0, 1, 1, 
+    d->window = XCreateWindow( dpy, RootWindow( dpy, d->screen ), 0, 0, 1, 1,
         0, CopyFromParent, InputOnly, CopyFromParent, CWOverrideRedirect, &attrs );
 //    kDebug() << "Using owner window " << window;
     Atom tmp = XA_ATOM;
@@ -139,6 +149,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
         {
 //        kDebug() << "Failed to claim selection : " << new_owner;
         XDestroyWindow( dpy, d->window );
+        XFlush(dpy);
         d->timestamp = CurrentTime;
         return false;
         }
@@ -177,6 +188,7 @@ bool KSelectionOwner::claim( bool force_P, bool force_kill_P )
     ev.xclient.data.l[ 3 ] = d->extra1;
     ev.xclient.data.l[ 4 ] = d->extra2;
     XSendEvent( dpy, RootWindow( dpy, d->screen ), False, StructureNotifyMask, &ev );
+    XFlush(dpy);
 //    kDebug() << "Claimed selection";
     return true;
     }
@@ -203,68 +215,82 @@ void KSelectionOwner::setData( long extra1_P, long extra2_P )
     d->extra1 = extra1_P;
     d->extra2 = extra2_P;
     }
-    
-bool KSelectionOwner::filterEvent( XEvent* ev_P )
-    {
+
+bool KSelectionOwner::filterEvent( void* ev_P )
+{
+    xcb_generic_event_t* event = reinterpret_cast<xcb_generic_event_t *>(ev_P);
+    const uint response_type = event->response_type & ~0x80;
+
+#if 0
+    // There's no generic way to get the window for an event in xcb, it depends on the type of event
+    // This handleMessage virtual doesn't seem used anyway.
     if( d->timestamp != CurrentTime && ev_P->xany.window == d->window )
-        {
+    {
         if( handleMessage( ev_P ))
             return true;
-        }
-    switch( ev_P->type )
-	{
-	case SelectionClear:
-	    {
-	    if( d->timestamp == CurrentTime || ev_P->xselectionclear.selection != d->selection )
-	        return false;
-	    d->timestamp = CurrentTime;
-//	    kDebug() << "Lost selection";
-            Window window = d->window;
-	    emit lostOwnership();
-	    XSelectInput( QX11Info::display(), window, 0 );
-	    XDestroyWindow( QX11Info::display(), window );
-	  return true;
-	    }
-	case DestroyNotify:
-	    {
-	    if( d->timestamp == CurrentTime || ev_P->xdestroywindow.window != d->window )
-	        return false;
-	    d->timestamp = CurrentTime;
-//	    kDebug() << "Lost selection (destroyed)";
-	    emit lostOwnership();
-	  return true;
-	    }
-	case SelectionNotify:
-	    {
-	    if( d->timestamp == CurrentTime || ev_P->xselection.selection != d->selection )
-	        return false;
-	    // ignore?
-	  return false;
-	    }
-	case SelectionRequest:
-	    filter_selection_request( ev_P->xselectionrequest );
-	  return false;
-	}
-    return false;
     }
+#endif
+    switch( response_type )
+    {
+    case XCB_SELECTION_CLEAR:
+    {
+        xcb_selection_clear_event_t* ev = reinterpret_cast<xcb_selection_clear_event_t *>(event);
+        if( d->timestamp == CurrentTime || ev->selection != d->selection )
+            return false;
+        d->timestamp = CurrentTime;
+//	    kDebug() << "Lost selection";
+        Window window = d->window;
+        emit lostOwnership();
+        XSelectInput( QX11Info::display(), window, 0 );
+        XDestroyWindow( QX11Info::display(), window );
+        return true;
+    }
+    case XCB_DESTROY_NOTIFY:
+    {
+        xcb_destroy_notify_event_t* ev = reinterpret_cast<xcb_destroy_notify_event_t *>(event);
+        if( d->timestamp == CurrentTime || ev->window != d->window )
+            return false;
+        d->timestamp = CurrentTime;
+//	    kDebug() << "Lost selection (destroyed)";
+        emit lostOwnership();
+        return true;
+    }
+    case XCB_SELECTION_NOTIFY:
+    {
+        xcb_selection_notify_event_t* ev = reinterpret_cast<xcb_selection_notify_event_t *>(event);
+        if( d->timestamp == CurrentTime || ev->selection != d->selection )
+            return false;
+        // ignore?
+        return false;
+    }
+    case XCB_SELECTION_REQUEST:
+        filter_selection_request(event);
+        return false;
+    }
+    return false;
+}
 
+#if 0
 bool KSelectionOwner::handleMessage( XEvent* )
     {
     return false;
     }
+#endif
 
-void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
-    {
-    if( d->timestamp == CurrentTime || ev_P.selection != d->selection )
+void KSelectionOwner::filter_selection_request( void* event )
+{
+    xcb_selection_request_event_t* ev = reinterpret_cast<xcb_selection_request_event_t *>(event);
+
+    if( d->timestamp == CurrentTime || ev->selection != d->selection )
         return;
-    if( ev_P.time != CurrentTime
-        && ev_P.time - d->timestamp > 1U << 31 )
+    if( ev->time != CurrentTime
+        && ev->time - d->timestamp > 1U << 31 )
         return; // too old or too new request
 //    kDebug() << "Got selection request";
     bool handled = false;
-    if( ev_P.target == Private::xa_multiple )
+    if( ev->target == Private::xa_multiple )
         {
-        if( ev_P.property != None )
+        if( ev->property != None )
             {
             const int MAX_ATOMS = 100; // no need to handle more?
             int format;
@@ -272,7 +298,7 @@ void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
             unsigned long items;
             unsigned long after;
             unsigned char* data;
-            if( XGetWindowProperty( QX11Info::display(), ev_P.requestor, ev_P.property, 0,
+            if( XGetWindowProperty( QX11Info::display(), ev->requestor, ev->property, 0,
                 MAX_ATOMS, False, AnyPropertyType, &type, &format, &items, &after,
                 &data ) == Success && format == 32 && items % 2 == 0 )
                 {
@@ -282,7 +308,7 @@ void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
                      i < items / 2;
                      ++i )
                     handled_array[ i ] = handle_selection(
-                        atoms[ i * 2 ], atoms[ i * 2 + 1 ], ev_P.requestor );
+                        atoms[ i * 2 ], atoms[ i * 2 + 1 ], ev->requestor );
                 bool all_handled = true;
                 for( unsigned int i = 0;
                      i < items / 2;
@@ -293,7 +319,7 @@ void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
                         atoms[ i * 2 + 1 ] = None;
                         }
                 if( !all_handled )
-                    XChangeProperty( QX11Info::display(), ev_P.requestor, ev_P.property, XA_ATOM,
+                    XChangeProperty( QX11Info::display(), ev->requestor, ev->property, XA_ATOM,
                         32, PropModeReplace, reinterpret_cast< unsigned char* >( atoms ), items );
                 handled = true;
                 XFree( data );
@@ -302,18 +328,18 @@ void KSelectionOwner::filter_selection_request( XSelectionRequestEvent& ev_P )
         }
     else
         {
-        if( ev_P.property == None ) // obsolete client
-            ev_P.property = ev_P.target;
-        handled = handle_selection( ev_P.target, ev_P.property, ev_P.requestor );
+        if( ev->property == None ) // obsolete client
+            ev->property = ev->target;
+        handled = handle_selection( ev->target, ev->property, ev->requestor );
         }
-    XEvent ev;
-    ev.xselection.selection = ev_P.selection;
-    ev.xselection.type = SelectionNotify;
-    ev.xselection.display = QX11Info::display();
-    ev.xselection.requestor = ev_P.requestor;
-    ev.xselection.target = ev_P.target;
-    ev.xselection.property = handled ? ev_P.property : None;
-    XSendEvent( QX11Info::display(), ev_P.requestor, False, 0, &ev );
+    XEvent xev;
+    xev.xselection.selection = ev->selection;
+    xev.xselection.type = SelectionNotify;
+    xev.xselection.display = QX11Info::display();
+    xev.xselection.requestor = ev->requestor;
+    xev.xselection.target = ev->target;
+    xev.xselection.property = handled ? ev->property : None;
+    XSendEvent( QX11Info::display(), ev->requestor, False, 0, &xev );
     }
 
 bool KSelectionOwner::handle_selection( Atom target_P, Atom property_P, Window requestor_P )
@@ -371,7 +397,10 @@ Atom KSelectionOwner::Private::xa_timestamp = None;
 //*******************************************
 
 
-class KSelectionWatcher::Private : public QWidget
+class KSelectionWatcher::Private
+#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+    : public QAbstractNativeEventFilter
+#endif
 {
 public:
     Private( KSelectionWatcher* watcher_P, Atom selection_P, int screen_P )
@@ -380,7 +409,9 @@ public:
           selection_owner( None ),
           watcher( watcher_P )
     {
-        kapp->installX11EventFilter( this );
+#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+        QCoreApplication::instance()->installNativeEventFilter(this);
+#endif
     }
 
     const Atom selection;
@@ -389,9 +420,12 @@ public:
     static Atom manager_atom;
 
 protected:
-    virtual bool x11Event( XEvent* ev_P )
+    bool nativeEventFilter(const QByteArray& eventType, void *message, long *result) Q_DECL_OVERRIDE
     {
-        watcher->filterEvent( ev_P );
+        Q_UNUSED(result);
+        if (eventType != "xcb_generic_event_t")
+            return false;
+        watcher->filterEvent(message);
         return false;
     }
 
@@ -405,7 +439,7 @@ KSelectionWatcher::KSelectionWatcher( Atom selection_P, int screen_P, QObject* p
     {
     init();
     }
-    
+
 KSelectionWatcher::KSelectionWatcher( const char* selection_P, int screen_P, QObject* parent_P )
     :   QObject( parent_P ),
         d( new Private( this, XInternAtom( QX11Info::display(), selection_P, False ), screen_P ))
@@ -417,7 +451,7 @@ KSelectionWatcher::~KSelectionWatcher()
     {
     delete d;
     }
-    
+
 void KSelectionWatcher::init()
     {
     if( Private::manager_atom == None )
@@ -429,9 +463,10 @@ void KSelectionWatcher::init()
         long event_mask = attrs.your_event_mask;
         // StructureNotifyMask on the root window is needed
         XSelectInput( dpy, RootWindow( dpy, d->screen ), event_mask | StructureNotifyMask );
+        XFlush(dpy);
         }
     owner(); // trigger reading of current selection status
-    }    
+    }
 
 Window KSelectionWatcher::owner()
     {
@@ -454,33 +489,31 @@ Window KSelectionWatcher::owner()
     return d->selection_owner;
     }
 
-// void return value in order to allow more watchers in one process
-void KSelectionWatcher::filterEvent( XEvent* ev_P )
-    {
-    if( ev_P->type == ClientMessage )
-        {
-//        kDebug() << "got ClientMessage";
-        if( ev_P->xclient.message_type != Private::manager_atom
-            || ev_P->xclient.data.l[ 1 ] != static_cast< long >( d->selection ))
-            return;
+void KSelectionWatcher::filterEvent(void* ev_P)
+{
+    xcb_generic_event_t* event = reinterpret_cast<xcb_generic_event_t *>(ev_P);
+    const uint response_type = event->response_type & ~0x80;
+//    if (response_type == XCB_CLIENT_MESSAGE) {
+//        xcb_client_message_event_t * cm_event = reinterpret_cast<xcb_client_message_event_t *>(event);
+
+//        if( cm_event->type != Private::manager_atom
+//            || cm_event->data.l[ 1 ] != static_cast< long >( d->selection ))
+//            return;
 //        kDebug() << "handling message";
-        if( static_cast< long >( owner()) == ev_P->xclient.data.l[ 2 ] )
-            {
+        //if( static_cast< long >( owner()) == cm_event->data.l[ 2 ] ) {
             // owner() emits newOwner() if needed, no need to do it twice
-            }
-        return;
-        }
-    if( ev_P->type == DestroyNotify )
-        {
-        if( d->selection_owner == None || ev_P->xdestroywindow.window != d->selection_owner )
+        //}
+//        return;
+//    }
+    if (response_type == XCB_DESTROY_NOTIFY) {
+        xcb_destroy_notify_event_t* ev = reinterpret_cast<xcb_destroy_notify_event_t *>(event);
+        if( d->selection_owner == None || ev->window != d->selection_owner )
             return;
         d->selection_owner = None; // in case the exactly same ID gets reused as the owner
         if( owner() == None )
             emit lostOwner(); // it must be safe to delete 'this' in a slot
         return;
-        }
-    return;
     }
+}
 
 Atom KSelectionWatcher::Private::manager_atom = None;
-

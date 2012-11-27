@@ -91,7 +91,7 @@ class KDEUI_EXPORT KSelectionOwner
         /**
          * @internal
          */
-	bool filterEvent( XEvent* ev_P ); // internal
+	bool filterEvent( void* ev_P ); // internal
     Q_SIGNALS:
         /**
          * This signal is emitted if the selection was owned and the ownership
@@ -105,7 +105,7 @@ class KDEUI_EXPORT KSelectionOwner
          * Called for every X event received on the window used for owning
          * the selection. If true is returned, the event is filtered out.
          */
-        virtual bool handleMessage( XEvent* ev );
+        //virtual bool handleMessage( XEvent* ev ); // removed for KF5, please shout if you need this
         /**
          * Called when a SelectionRequest event is received. A reply should
          * be sent using the selection handling mechanism described in the ICCCM
@@ -136,7 +136,7 @@ class KDEUI_EXPORT KSelectionOwner
          */
         void setData( long extra1, long extra2 );
     private:
-        void filter_selection_request( XSelectionRequestEvent& ev_P );
+        void filter_selection_request( void* ev_P );
         bool handle_selection( Atom target_P, Atom property_P, Window requestor_P );
 
         class Private;
@@ -184,7 +184,7 @@ class KDEUI_EXPORT KSelectionWatcher
         /**
          * @internal
          */
-        void filterEvent( XEvent* ev_P ); // internal
+        void filterEvent( void* ev_P ); // internal
     Q_SIGNALS:
         /**
          * This signal is emitted when the selection is successfully claimed by a new
