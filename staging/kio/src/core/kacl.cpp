@@ -31,6 +31,7 @@
 #include <acl/libacl.h>
 #endif
 #include <QHash>
+#include <QString>
 
 #include <QList>
 #include <QPair>
