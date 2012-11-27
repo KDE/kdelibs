@@ -63,8 +63,6 @@
 #include <ctype.h>
 #include <assert.h>
 
-static bool no_query_exit = false;
-
 static KMenuBar *internalMenuBar(KMainWindow *mw)
 {
     return KGlobal::findDirectChild<KMenuBar *>(mw);
@@ -148,56 +146,6 @@ public:
 
         KConfigGroup group( config, "Number" );
         group.writeEntry("NumberOfWindows", n );
-        return true;
-    }
-
-    bool commitData( QSessionManager& sm )
-    {
-        // not really a fast method but the only compatible one
-        if ( sm.allowsInteraction() ) {
-            bool canceled = false;
-            ::no_query_exit = true;
-
-            foreach (KMainWindow *window, KMainWindow::memberList()) {
-                if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
-                    QCloseEvent e;
-                    QApplication::sendEvent( window, &e );
-                    canceled = !e.isAccepted();
-                    if (canceled)
-                        break;
-                    /* Don't even think_about deleting widgets with
-                       Qt::WDestructiveClose flag set at this point. We
-                       are faking a close event, but we are *not*_
-                       closing the window. The purpose of the faked
-                       close event is to prepare the application so it
-                       can safely be quit without the user losing data
-                       (possibly showing a message box "do you want to
-                       save this or that?"). It is possible that the
-                       session manager quits the application later
-                       (emitting QApplication::aboutToQuit() when this
-                       happens), but it is also possible that the user
-                       cancels the shutdown, so the application will
-                       continue to run.
-                    */
-                }
-            }
-            ::no_query_exit = false;
-            if (canceled)
-               return false;
-
-            KMainWindow* last = 0;
-            foreach (KMainWindow *window, KMainWindow::memberList()) {
-                if ( !window->testAttribute( Qt::WA_WState_Hidden ) ) {
-                    last = window;
-                }
-            }
-            if ( last )
-                return last->queryExit();
-            // else
-            return true;
-        }
-
-        // the user wants it, the user gets it
         return true;
     }
 };
@@ -541,8 +489,8 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
                 not_withdrawn++;
         }
 
-        if ( !no_query_exit && not_withdrawn <= 0 ) { // last window close accepted?
-            if (!( queryExit() && ( !kapp || !kapp->sessionSaving() ) && !d->shuttingDown )) {
+        if ( not_withdrawn <= 0 ) { // last window close accepted?
+            if ( !queryExit() || d->shuttingDown ) {
               // cancel closing, it's stupid to end up with no windows at all....
               e->ignore();
             }
