@@ -19,7 +19,6 @@
 
 #include <klocalizedstring.h>
 
-#include <klibrary.h>
 #include <kglobal.h> // K_GLOBAL_STATIC (TODO port to Q_GLOBAL_STATIC)
 
 #include <common_helpers_p.h>
@@ -37,6 +36,9 @@
 #include <QVector>
 #include <QFile>
 #include <QFileInfo>
+#include <QLibrary>
+#include <QDir>
+#include <QCoreApplication>
 #include <qstandardpaths.h>
 
 // Truncate string, for output of long messages.
@@ -284,7 +286,7 @@ class KLocalizedStringPrivateStatics
         foreach (const KCatalogPtrHash &langCatalogs, catalogs) {
             qDeleteAll(langCatalogs);
         }
-        // ktrs is handled by KLibLoader.
+        // ktrs is handled by QLibrary.
         //delete ktrs;
         qDeleteAll(formatters);
     }
@@ -1301,14 +1303,37 @@ void KLocalizedStringPrivate::loadTranscript ()
     s->loadTranscriptCalled = true;
     s->ktrs = NULL; // null indicates that Transcript is not available
 
-    KLibrary lib(QLatin1String("ktranscript"));
+    #if 0
+    // FIXME: Automatic plugin path resolution does not work at the moment,
+    // so search manually through library paths.
+    QString pluginPathNoExt = QLatin1String("kf5/ktranscript");
+    #else
+    QString pluginPathNoExt;
+    QStringList nameFilters;
+    QString pluginSubdir = QLatin1String("kf5");
+    QString pluginName = QLatin1String("ktranscript");
+    nameFilters.append(pluginName + QLatin1String(".*"));
+    foreach (const QString &dirPath, QCoreApplication::libraryPaths()) {
+        QString dirPathKf = dirPath + QLatin1Char('/') + pluginSubdir;
+        if (!QDir(dirPathKf).entryList(nameFilters).isEmpty()) {
+            pluginPathNoExt = dirPathKf + QLatin1Char('/') + pluginName;
+            break;
+        }
+    }
+    if (pluginPathNoExt.isEmpty()) {
+        qWarning() << QString::fromLatin1("Cannot find Transcript plugin.");
+        return;
+    }
+    #endif
+
+    QLibrary lib(pluginPathNoExt);
     if (!lib.load()) {
         qWarning() << QString::fromLatin1("Cannot load Transcript plugin:")
                    << lib.errorString();
         return;
     }
 
-    InitFunc initf = (InitFunc) lib.resolveFunction("load_transcript");
+    InitFunc initf = (InitFunc) lib.resolve("load_transcript");
     if (!initf) {
         lib.unload();
         qWarning() << QString::fromLatin1(

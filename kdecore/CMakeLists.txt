@@ -209,7 +209,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs ki18n
+    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs kservice ki18n
   LINK_PRIVATE
     ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
@@ -264,7 +264,7 @@ generate_export_header(ki18n)
 
 target_link_libraries(ki18n
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} kservice
+    ${QT_QTCORE_LIBRARY}
   LINK_PRIVATE
     ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY}
 )
