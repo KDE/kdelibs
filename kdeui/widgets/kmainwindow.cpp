@@ -29,8 +29,8 @@
 #include "kmainwindowiface_p.h"
 #include "ktoolbarhandler_p.h"
 #include "ktoggleaction.h"
-#include "ksessionmanager.h"
 
+#include <QApplication>
 #include <QtCore/QList>
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
@@ -43,7 +43,7 @@
 #include <QWidget>
 
 #include <kaction.h>
-#include <kapplication.h>
+#include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <kdialog.h>
@@ -119,36 +119,40 @@ bool DockResizeListener::eventFilter(QObject *watched, QEvent *event)
     return QObject::eventFilter(watched, event);
 }
 
-class KMWSessionManager : public KSessionManager
+KMWSessionManager::KMWSessionManager()
 {
-public:
-    KMWSessionManager()
-    {
-    }
-    ~KMWSessionManager()
-    {
-    }
-    bool dummyInit() { return true; }
-    bool saveState( QSessionManager& )
-    {
-        KConfig* config = KConfigGui::sessionConfig();
-        if ( KMainWindow::memberList().count() ){
-            // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
-            // hook is useful for better document orientation
-            KMainWindow::memberList().first()->saveGlobalProperties(config);
-        }
+    connect(qApp, SIGNAL(saveStateRequest(QSessionManager&)),
+            this, SLOT(saveState(QSessionManager&)));
+}
 
-        int n = 0;
-        foreach (KMainWindow* mw, KMainWindow::memberList()) {
-            n++;
-            mw->savePropertiesInternal(config, n);
-        }
+KMWSessionManager::~KMWSessionManager()
+{
+}
 
-        KConfigGroup group( config, "Number" );
-        group.writeEntry("NumberOfWindows", n );
-        return true;
+bool KMWSessionManager::dummyInit()
+{
+    return true;
+}
+
+bool KMWSessionManager::saveState(QSessionManager&)
+{
+    KConfig* config = KConfigGui::sessionConfig();
+    if ( KMainWindow::memberList().count() ){
+        // According to Jochen Wilhelmy <digisnap@cs.tu-berlin.de>, this
+        // hook is useful for better document orientation
+        KMainWindow::memberList().first()->saveGlobalProperties(config);
     }
-};
+
+    int n = 0;
+    foreach (KMainWindow* mw, KMainWindow::memberList()) {
+        n++;
+        mw->savePropertiesInternal(config, n);
+    }
+
+    KConfigGroup group( config, "Number" );
+    group.writeEntry("NumberOfWindows", n );
+    return true;
+}
 
 Q_GLOBAL_STATIC(KMWSessionManager, ksm)
 Q_GLOBAL_STATIC(QList<KMainWindow*>, sMemberList)

@@ -35,8 +35,10 @@
 #define K_D(Class) Class##Private * const d = k_func()
 
 class QObject;
+class QSessionManager;
 class QTimer;
 class KHelpMenu;
+class KMainWindow;
 
 class KMainWindowPrivate
 {
@@ -70,6 +72,18 @@ public:
     };
     void setSettingsDirty(CallCompression callCompression = NoCompressCalls);
     void setSizeDirty();
+};
+
+class KMWSessionManager : public QObject
+{
+    Q_OBJECT
+public:
+    KMWSessionManager();
+    ~KMWSessionManager();
+    bool dummyInit();
+
+private Q_SLOTS:
+    bool saveState(QSessionManager&);
 };
 
 #endif
