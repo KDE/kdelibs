@@ -22,7 +22,7 @@
 
 
 #include <sys/types.h>
-#include "kio_export.h"
+#include "kiocore_export.h"
 
 #include <QtCore/QPair>
 #include <QtCore/QList>
@@ -44,7 +44,7 @@ typedef QList<ACLGroupPermissions>::const_iterator ACLGroupPermissionsConstItera
  * @short a POSIX ACL encapsulation
  * @author Till Adam <adam@kde.org>
  */
-class KIO_EXPORT KACL
+class KIOCORE_EXPORT KACL
 {
 public:
   /**
@@ -195,11 +195,11 @@ protected:
 private:
   class KACLPrivate;
   KACLPrivate* const d;
-  KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KACL & a );
-  KIO_EXPORT friend QDataStream & operator>> ( QDataStream & s, KACL & a );
+  KIOCORE_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KACL & a );
+  KIOCORE_EXPORT friend QDataStream & operator>> ( QDataStream & s, KACL & a );
 };
 
-KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KACL & a );
-KIO_EXPORT QDataStream & operator>> ( QDataStream & s, KACL & a );
+KIOCORE_EXPORT QDataStream & operator<< ( QDataStream & s, const KACL & a );
+KIOCORE_EXPORT QDataStream & operator>> ( QDataStream & s, KACL & a );
 
 #endif

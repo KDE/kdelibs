@@ -22,6 +22,7 @@ set(kiocore_SRCS
   connection.cpp
   kdirnotify.cpp
   kauthorized.cpp
+  kacl.cpp
   udsentry.cpp
   global.cpp
   metadata.cpp
@@ -54,6 +55,10 @@ target_link_libraries(kiocore
  ${QtMimeTypes_LIBRARY}
 )
 
+if(ACL_FOUND)
+  target_link_libraries(kiocore ${ACL_LIBS})
+endif(ACL_FOUND)
+
 set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}
 )
@@ -61,6 +66,7 @@ set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
+  kacl.h
   http_slave_defaults.h
   global.h
   ioslave_defaults.h

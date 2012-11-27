@@ -124,7 +124,6 @@ set(kiocore_STAT_SRCS
   kio/jobuidelegate.cpp
   kio/joburlcache.cpp
   kio/kabstractfileitemactionplugin.cpp
-  kio/kacl.cpp
   kio/kbuildsycocaprogressdialog.cpp
   kio/kdatatool.cpp
   kio/kdbusservicestarter.cpp
@@ -426,7 +425,6 @@ endif( NOT WIN32 )
 
 install( FILES
   kio/kabstractfileitemactionplugin.h
-  kio/kacl.h
   kio/kautomount.h
   kio/kbuildsycocaprogressdialog.h
   kio/kdatatool.h

@@ -20,7 +20,7 @@
 
 #include "kacl.h"
 
-#include <config-kio.h>
+#include <config-kiocore.h>
 
 #include <sys/types.h>
 #include <pwd.h>
@@ -31,8 +31,6 @@
 #include <acl/libacl.h>
 #endif
 #include <QHash>
-
-#include <kdebug.h>
 
 #include <QList>
 #include <QPair>
@@ -178,7 +176,7 @@ static void permissionsToEntry( acl_entry_t entry, unsigned short v )
 static void printACL( acl_t acl, const QString &comment )
 {
     const char* txt = acl_to_text(acl);
-    kDebug() << comment << txt;
+    qDebug() << comment << txt;
     acl_free(txt);
 }
 #endif
