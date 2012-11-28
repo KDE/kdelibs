@@ -11,6 +11,8 @@ include_directories(
   ${kcoreaddons_BINARY_DIR}/src
   ${kconfig_SOURCE_DIR}/src/core
   ${kconfig_BINARY_DIR}/src/core
+  ${ki18n_SOURCE_DIR}/src
+  ${ki18n_BINARY_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -49,6 +51,7 @@ target_link_libraries(kiocore
  ${KDE4_KDECORE_LIBS} # TODO remove once i18n is in a framework
  kconfigcore
  kcoreaddons
+ ki18n
  ${QT_QTCORE_LIBRARY}
  ${QT_QTNETWORK_LIBRARY}
  ${QT_QTDBUS_LIBRARY}

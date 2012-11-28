@@ -5,6 +5,8 @@ include_directories(
   ${KDE4_KCONFIG_INCLUDES}
   ${kdbusaddons_SOURCE_DIR}/src
   ${kdbusaddons_BINARY_DIR}/src
+  ${ki18n_SOURCE_DIR}/src
+  ${ki18n_BINARY_DIR}/src
 )
 
 add_subdirectory( tests )
@@ -31,7 +33,7 @@ if (Q_OS_MAC)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (Q_OS_MAC)
 
-target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons kdbusaddons)
+target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons kdbusaddons ki18n)
 
 install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -78,7 +80,7 @@ endif(KBUILDSYCOCA_NO_KCRASH)
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
 kde4_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} kcoreaddons ${QT_QTXML_LIBRARY} ${QtMimeTypes_LIBRARY})
+target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} kcoreaddons ki18n ${QT_QTXML_LIBRARY} ${QtMimeTypes_LIBRARY})
 
 install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 

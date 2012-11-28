@@ -55,12 +55,13 @@ if(NOT KUNITCONVERSION_NO_SOLID)
 endif(NOT KUNITCONVERSION_NO_SOLID)
 
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${KDE4_KDECORE_INCLUDES})
+include_directories (${ki18n_SOURCE_DIR}/src ${ki18n_BINARY_DIR}/src)
 
 add_subdirectory(tests)
 
 kde4_add_library(kunitconversion ${LIBRARY_TYPE} ${kunitconversion_LIB_SRCS})
 generate_export_header(kunitconversion)
-target_link_libraries(kunitconversion ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS} kcoreaddons)
+target_link_libraries(kunitconversion ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS} kcoreaddons ki18n)
 set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS kunitconversion EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES ${kunitconversion_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kunitconversion COMPONENT Devel)

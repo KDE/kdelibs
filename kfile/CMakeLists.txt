@@ -9,6 +9,8 @@ include_directories(
   ${CMAKE_BINARY_DIR}/tier1/solid/src
   ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
   ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
+  ${ki18n_SOURCE_DIR}/src
+  ${ki18n_BINARY_DIR}/src
 )
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})
@@ -58,6 +60,7 @@ target_link_libraries(kfile
    kcoreaddons
    kwidgets
    kwidgetsaddons
+   ki18n
 )
 
 if(X11_Xrender_FOUND)

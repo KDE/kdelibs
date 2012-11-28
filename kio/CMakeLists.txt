@@ -53,6 +53,8 @@ include_directories(
    ${kiocore_SOURCE_DIR}/
    ${kiocore_BINARY_DIR}/
    ${CMAKE_BINARY_DIR}/staging/kio/src/include
+   ${ki18n_SOURCE_DIR}/src
+   ${ki18n_BINARY_DIR}/src
 )
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})
@@ -338,10 +340,10 @@ generate_export_header(kio)
 
 if(NOT KIO_NO_NEPOMUK)
   kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
-  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils kcoreaddons kde4support)
+  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils kcoreaddons ki18n kde4support)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
-target_link_libraries(kio kdeqt5staging ${QtMimeTypes_LIBRARY} kiocore kcoreaddons kwidgetsaddons ${kwindowsystem_LIBRARY} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
+target_link_libraries(kio kdeqt5staging ${QtMimeTypes_LIBRARY} kiocore kcoreaddons ki18n kwidgetsaddons ${kwindowsystem_LIBRARY} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kiocore kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTGUI_LIBRARY} )
 
 if(ACL_FOUND)

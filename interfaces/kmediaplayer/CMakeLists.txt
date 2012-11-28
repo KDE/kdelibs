@@ -2,6 +2,8 @@ add_subdirectory( kfileaudiopreview )
 
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
+include_directories( ${ki18n_SOURCE_DIR}/src )
+include_directories( ${ki18n_BINARY_DIR}/src )
 
 ########### next target ###############
 
@@ -17,7 +19,7 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/kmediaplayer)
 generate_export_header(kmediaplayer EXPORT_FILE_NAME kmediaplayer/kmediaplayer_export.h)
 
 target_link_libraries(kmediaplayer  ${KDE4_KPARTS_LIBS} )
-target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} ${QT_QTGUI_LIBRARY} )
+target_link_libraries(kmediaplayer  LINK_INTERFACE_LIBRARIES ${KDE4_KPARTS_LIBS} ${QT_QTGUI_LIBRARY} ki18n )
 
 set_target_properties(kmediaplayer PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

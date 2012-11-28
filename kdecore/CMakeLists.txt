@@ -59,6 +59,8 @@ include_directories( ${CMAKE_BINARY_DIR}/staging/kservice/src
                      ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
                      ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
 )
+include_directories( ${ki18n_SOURCE_DIR}/src )
+include_directories( ${ki18n_BINARY_DIR}/src )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
@@ -249,65 +251,6 @@ target_link_libraries(kde5-config ${KDE4_KDECORE_LIBS} kcoreaddons)
 install(TARGETS kde5-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
-########### next target ###############
-
-set(ki18n_LIB_SRCS
-   localization/klocalizedstring.cpp
-   localization/kcatalog.cpp
-   localization/kuitsemantics.cpp
-   localization/kuitformats.cpp
-   localization/common_helpers.cpp
-)
-
-kde4_add_library(ki18n ${LIBRARY_TYPE} ${ki18n_LIB_SRCS})
-generate_export_header(ki18n)
-
-target_link_libraries(ki18n
-  LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY}
-  LINK_PRIVATE
-    ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY}
-)
-
-target_link_libraries(ki18n LINK_INTERFACE_LIBRARIES ${ki18n_LINK_INTERFACE_LIBRARIES})
-
-set_target_properties(ki18n PROPERTIES
-                            VERSION ${KDE_NON_GENERIC_LIB_VERSION}
-                            SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
-                     )
-
-install(TARGETS ki18n EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-
-########### next target ###############
-
-if(NOT WINCE)
-    # kjs hash stuff for transcript plugin
-    set( CREATE_HASH_TABLE ${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs/create_hash_table )
-
-    add_custom_command(
-       OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
-       COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE}
-               ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
-               > ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
-       DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp
-    )
-
-    # the transcript plugin
-    set( ktranscript_LIB_SRCS
-       localization/ktranscript.cpp
-       localization/common_helpers.cpp
-    )
-
-    kde4_add_plugin( ktranscript ${ktranscript_LIB_SRCS} )
-
-    target_link_libraries( ktranscript kjs ${QT_QTCORE_LIBRARY} )
-
-    macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/localization/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
-
-    install( TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-endif(NOT WINCE)
-
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en_US )
@@ -337,7 +280,6 @@ install(FILES
    network/ktcpsocket.h
    localization/kcurrencycode.h
    localization/klocale.h
-   localization/klocalizedstring.h
    util/kautostart.h
    util/kde_file.h
    util/kdedmodule.h

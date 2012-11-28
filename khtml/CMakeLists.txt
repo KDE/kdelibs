@@ -469,6 +469,8 @@ include_directories(
    ${CMAKE_BINARY_DIR}/tier1/karchive/src
    ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness/
    ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core/
+   ${ki18n_SOURCE_DIR}/src
+   ${ki18n_BINARY_DIR}/src
 )
 
 include_directories(
@@ -564,7 +566,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${KDE4_PHONON_LIBS} kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kguiaddons kwidgetsaddons ${kwindowsystem_LIBRARY} ${QtMimeTypes_LIBRARY})
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${KDE4_PHONON_LIBS} kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kguiaddons kwidgetsaddons ki18n ${kwindowsystem_LIBRARY} ${QtMimeTypes_LIBRARY})
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()

@@ -2,6 +2,7 @@ project(kdeinit)
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/staging/kio/src/core )
+include_directories( ${ki18n_SOURCE_DIR}/src ${ki18n_BINARY_DIR}/src )
 
 ########### Configuring (mainly for proctitle) ###########
 
@@ -46,7 +47,7 @@ else (Q_OS_MAC)
   kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
 endif (Q_OS_MAC)
 
-target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons )
+target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons ki18n )
 if (X11_FOUND)
   target_link_libraries(kdeinit5 ${X11_X11_LIB})
 endif()

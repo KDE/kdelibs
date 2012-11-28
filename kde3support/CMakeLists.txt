@@ -15,6 +15,8 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/kdecore ${CMAKE_CURRENT_SOURCE_
                      ${kde4support_SOURCE_DIR}/src/kdeui
                      ${kde4support_BINARY_DIR}/src
                      ${kguiaddons_SOURCE_DIR}/src/text
+                     ${ki18n_SOURCE_DIR}/src
+                     ${ki18n_BINARY_DIR}/src
                      ${CMAKE_SOURCE_DIR}/solid
                      ${CMAKE_BINARY_DIR}/kpty)
 #${CMAKE_CURRENT_SOURCE_DIR}/kparts ${CMAKE_CURRENT_SOURCE_DIR}/kutils )
@@ -92,7 +94,7 @@ remove_definitions(-DQT3_SUPPORT_WARNINGS -DKDE_DEPRECATED_WARNINGS)
 
 kde4_add_library(kde3support ${LIBRARY_TYPE} ${kde3support_LIB_SRCS})
 
-target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QTXML_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${KDE4_KFILE_LIBS} kwindowsystem ${X11_LIBRARIES} kguiaddons kwidgets kwidgetsaddons kde4support)
+target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QTXML_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${KDE4_KFILE_LIBS} kwindowsystem ${X11_LIBRARIES} kguiaddons kwidgets kwidgetsaddons kde4support ki18n)
 target_link_libraries(kde3support  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} )
 
 set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION} 

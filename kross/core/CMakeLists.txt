@@ -1,4 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES})
+include_directories(${ki18n_SOURCE_DIR}/src ${ki18n_BINARY_DIR}/src)
 
 set(krosscore_LIB_SRCS
    krossconfig.cpp
@@ -12,7 +13,7 @@ set(krosscore_LIB_SRCS
 
 kde4_add_library(krosscore ${LIBRARY_TYPE} ${krosscore_LIB_SRCS})
 target_link_libraries(krosscore ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${QT_QTSCRIPT_LIBRARY} ${QT_QTXML_LIBRARY} ${QtMimeTypes_LIBRARY})
-target_link_libraries(krosscore LINK_INTERFACE_LIBRARIES kdecore ${QT_QTSCRIPT_LIBRARY} ${QT_QTXML_LIBRARY})
+target_link_libraries(krosscore LINK_INTERFACE_LIBRARIES kdecore ki18n ${QT_QTSCRIPT_LIBRARY} ${QT_QTXML_LIBRARY})
 
 set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                 SOVERSION ${GENERIC_LIB_SOVERSION}

@@ -17,6 +17,10 @@ else (NOT QTONLY_WEBKIT)
    )
 endif (NOT QTONLY_WEBKIT)
 
+include_directories(
+    ${ki18n_SOURCE_DIR}/src
+    ${ki18n_BINARY_DIR}/src
+)
 
 ########### next target ###############
 

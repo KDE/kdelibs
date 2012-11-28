@@ -4,6 +4,8 @@ include(ConfigureChecks.cmake)
 configure_file(config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
 include_directories( ${KDE4_KDECORE_INCLUDES} )
+include_directories( ${ki18n_SOURCE_DIR}/src )
+include_directories( ${ki18n_BINARY_DIR}/src )
 
 find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
@@ -65,7 +67,7 @@ generate_export_header(kdnssd
 )
 
 # Currently uses kdecore for i18n, TODO port to QCoreApplication::translate
-target_link_libraries(kdnssd kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY})
+target_link_libraries(kdnssd kdecore ki18n ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY})
 if (HAVE_DNSSD)
   target_link_libraries(kdnssd ${DNSSD_LIBRARIES})
 endif (HAVE_DNSSD)

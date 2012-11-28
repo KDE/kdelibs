@@ -22,13 +22,13 @@
 
 #include <locale.h>
 
-#include <kdebug.h>
-#include "qtest_kde.h"
+#include <QDebug>
+#include <QtTest/QtTest>
+#include <qstandardpaths.h>
 
 #include <libintl.h>
 
 #include "klocalizedstring.h"
-#include "kconfiggroup.h"
 
 #include <QtCore/QString>
 
@@ -40,7 +40,7 @@ void KLocalizedStringTest::initTestCase ()
     if (m_hasFrench) {
         setlocale(LC_ALL, "fr_FR.utf8");
         if (setlocale(LC_ALL, NULL) != QByteArray("fr_FR.utf8")) {
-            kDebug() << "Setting locale to fr_FR.utf8 failed";
+            qDebug() << "Setting locale to fr_FR.utf8 failed";
             m_hasFrench = false;
         }
     }
@@ -174,11 +174,6 @@ void KLocalizedStringTest::correctSubs ()
 
 void KLocalizedStringTest::correctButIllFormed()
 {
-    // ...and some ill-formed i18n, to test markup salvage.
-    // (prevent debug info about bad markup).
-    KConfig dc( "kdebugrc", KConfig::SimpleConfig );
-    dc.group(QString::number(173)).writeEntry("InfoOutput", 4);
-    dc.sync();
     QCOMPARE(i18n("E < %1 * mc^2", 10),
              QString("E < 10 * mc^2"));
     QCOMPARE(i18n("<emphasis>%1</emphasis> &lt; mc^2", QString("<E>")),
@@ -277,9 +272,9 @@ void KLocalizedStringTest::miscMethods ()
 void KLocalizedStringTest::translateToFrenchLowlevel()
 {
     if (!m_hasFrench) {
-        QSKIP_PORTING("l10n/fr not installed", SkipAll);
+        QSKIP("l10n/fr not installed", SkipAll);
     }
-    QSKIP_PORTING("skipped by default to avoid changing global state", SkipAll);
+    QSKIP("skipped by default to avoid changing global state", SkipAll);
     // fr_FR locale was set by initTestCase already.
     if (QFile::exists("/usr/share/locale/fr/LC_MESSAGES/kdelibs4.mo")) {
         bindtextdomain("kdelibs4", "/usr/share/locale");
@@ -290,7 +285,7 @@ void KLocalizedStringTest::translateToFrenchLowlevel()
 void KLocalizedStringTest::translateToFrench()
 {
     if (!m_hasFrench) {
-        QSKIP_PORTING("l10n/fr not installed", SkipAll);
+        QSKIP("l10n/fr not installed", SkipAll);
     }
     QCOMPARE(i18n("Loadable modules"), QString::fromUtf8("Modules chargeables"));
     QCOMPARE(i18n("Job"), QString::fromUtf8("Tâche"));
@@ -343,4 +338,4 @@ void KLocalizedStringTest::testThreads()
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
 
-QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(KLocalizedStringTest, "kdelibs4" /*so that the .po exists*/)
+QTEST_MAIN(KLocalizedStringTest)

@@ -1,5 +1,6 @@
 project(kparts)
 
+include_directories(${ki18n_BINARY_DIR}/src ${ki18n_SOURCE_DIR}/src)
 include_directories(${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR})
 
 add_subdirectory( tests )
@@ -37,7 +38,7 @@ set(kparts_LIB_SRCS
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 generate_export_header(kparts)
 
-target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio kcoreaddons kwidgets ${QtMimeTypes_LIBRARY})
+target_link_libraries(kparts  ${KDE4_KDECORE_LIBS} kdeui kio kcoreaddons kwidgets ki18n ${QtMimeTypes_LIBRARY})
 target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui kdecore ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} kwidgets)
 if(HAVE_NEPOMUK)
   target_link_libraries(kparts  nepomuk nepomukutils)

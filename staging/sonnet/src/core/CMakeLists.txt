@@ -7,6 +7,8 @@ include_directories(
 
   ${kcoreaddons_SOURCE_DIR}/src/io
   ${kcoreaddons_BINARY_DIR}/src
+  ${ki18n_SOURCE_DIR}/src
+  ${ki18n_BINARY_DIR}/src
   ${kconfig_SOURCE_DIR}/src/core # ksharedptr.h, used by kservice
   ${kconfig_BINARY_DIR}/src/core
   ${kservice_BINARY_DIR}/src # KServiceTypeTrader, KService
@@ -34,7 +36,7 @@ add_library(sonnetcore ${sonnetcore_SRCS})
 generate_export_header(sonnetcore)
 
 # TODO: port away from KDE4_KDECORE_LIBS
-target_link_libraries(sonnetcore ${QT_QTCORE_LIBRARY} ${KDE4_KDECORE_LIBS})
+target_link_libraries(sonnetcore ${QT_QTCORE_LIBRARY} ${KDE4_KDECORE_LIBS} ki18n)
 
 set_target_properties(sonnetcore PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}

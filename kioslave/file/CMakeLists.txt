@@ -2,6 +2,8 @@
 project(kioslave-file)
 
 include_directories( ${KDE4_KIO_INCLUDES} )
+include_directories( ${ki18n_SOURCE_DIR}/src )
+include_directories( ${ki18n_BINARY_DIR}/src )
 
 include(ConfigureChecks.cmake)
 configure_file(config-kioslave-file.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kioslave-file.h )
@@ -21,7 +23,7 @@ macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control li
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
 
-target_link_libraries(kio_file  ${KDE4_KDECORE_LIBS} kio kcoreaddons ${QtMimeTypes_LIBRARY})
+target_link_libraries(kio_file  ${KDE4_KDECORE_LIBS} kio kcoreaddons ki18n ${QtMimeTypes_LIBRARY})
 
 if (HAVE_VOLMGT AND CMAKE_SYSTEM_NAME MATCHES SunOS)
     target_link_libraries(kio_file -lvolmgt)

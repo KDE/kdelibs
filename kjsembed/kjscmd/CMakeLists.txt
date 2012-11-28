@@ -7,6 +7,8 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}/../kjsembed
     ${KDE4_KDECORE_INCLUDES}
     ${KDE4_KDEUI_INCLUDES}
+    ${ki18n_SOURCE_DIR}/src
+    ${ki18n_BINARY_DIR}/src
 )
 
 

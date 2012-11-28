@@ -19,7 +19,7 @@
 #ifndef KLOCALIZEDSTRING_H
 #define KLOCALIZEDSTRING_H
 
-#include <kdecore_export.h>
+#include <ki18n_export.h>
 
 #include <QtCore/QChar>
 #include <QtCore/QLatin1Char>
@@ -300,13 +300,13 @@ class KLocalizedStringPrivate;
  * @see KLocale
  * @author Chusslove Illich \<caslav.ilic@gmx.net\>
  */
-class KDECORE_EXPORT KLocalizedString
+class KI18N_EXPORT KLocalizedString
 {
 
-    friend KLocalizedString KDECORE_EXPORT ki18n (const char* msg);
-    friend KLocalizedString KDECORE_EXPORT ki18nc (const char *ctxt, const char *msg);
-    friend KLocalizedString KDECORE_EXPORT ki18np (const char *singular, const char *plural);
-    friend KLocalizedString KDECORE_EXPORT ki18ncp (const char *ctxt,
+    friend KLocalizedString KI18N_EXPORT ki18n (const char* msg);
+    friend KLocalizedString KI18N_EXPORT ki18nc (const char *ctxt, const char *msg);
+    friend KLocalizedString KI18N_EXPORT ki18np (const char *singular, const char *plural);
+    friend KLocalizedString KI18N_EXPORT ki18ncp (const char *ctxt,
                                      const char *singular, const char *plural);
 
 public:
@@ -335,7 +335,7 @@ public:
      */
     ~KLocalizedString ();
 
-    KDECORE_DEPRECATED operator QLocalizedString() const { return QLocalizedString(toString().toLatin1().constData()); }
+    KI18N_DEPRECATED operator QLocalizedString() const { return QLocalizedString(toString().toLatin1().constData()); }
 
     /**
      * Finalize the translation.
@@ -722,7 +722,7 @@ private:
 * @param msg message text
 * @return created @c KLocalizedString
 */
-extern KLocalizedString KDECORE_EXPORT ki18n (const char* msg);
+extern KLocalizedString KI18N_EXPORT ki18n (const char* msg);
 
 /**
 * Create translated string from a given message, with added context.
@@ -737,7 +737,7 @@ extern KLocalizedString KDECORE_EXPORT ki18n (const char* msg);
 * @param msg message text
 * @return created @c KLocalizedString
 */
-extern KLocalizedString KDECORE_EXPORT ki18nc (const char *ctxt, const char *msg);
+extern KLocalizedString KI18N_EXPORT ki18nc (const char *ctxt, const char *msg);
 
 /**
 * Create translated string from a given plural and singular form.
@@ -750,7 +750,7 @@ extern KLocalizedString KDECORE_EXPORT ki18nc (const char *ctxt, const char *msg
 * @param plural message text in plural
 * @return created @c KLocalizedString
 */
-extern KLocalizedString KDECORE_EXPORT ki18np (const char *singular, const char *plural);
+extern KLocalizedString KI18N_EXPORT ki18np (const char *singular, const char *plural);
 
 /**
 * Create translated string from a given plural and singular form,
@@ -767,7 +767,7 @@ extern KLocalizedString KDECORE_EXPORT ki18np (const char *singular, const char 
 * @param plural message text in plural
 * @return created @c KLocalizedString
 */
-extern KLocalizedString KDECORE_EXPORT ki18ncp (const char *ctxt, const char *singular, const char *plural);
+extern KLocalizedString KI18N_EXPORT ki18ncp (const char *ctxt, const char *singular, const char *plural);
 
 /**
  * Qt's uic generated translation calls go through numerous indirections

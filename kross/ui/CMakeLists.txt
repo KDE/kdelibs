@@ -3,6 +3,8 @@ include_directories(
     ${KDE4_KDECORE_INCLUDES}
     ${KDE4_KDEUI_INCLUDES}
     ${KDE4_KIO_INCLUDES}
+    ${ki18n_SOURCE_DIR}/src
+    ${ki18n_BINARY_DIR}/src
 )
 
 
@@ -14,7 +16,7 @@ set(krossui_LIB_SRCS
    )
 
 kde4_add_library(krossui ${LIBRARY_TYPE} ${krossui_LIB_SRCS})
-target_link_libraries(krossui krosscore ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} ${KDE4_KIO_LIBS} kcoreaddons)
+target_link_libraries(krossui krosscore ${KDE4_KDEUI_LIBS} ${KDE4_KPARTS_LIBS} ${KDE4_KIO_LIBS} kcoreaddons ki18n)
 set_target_properties(krossui PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
                                          SOVERSION ${GENERIC_LIB_SOVERSION}
                      )

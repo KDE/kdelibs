@@ -19,7 +19,7 @@
 #include <ktranscript_p.h>
 #include <common_helpers_p.h>
 
-#include <kdecore_export.h>
+#include <ki18n_export.h>
 
 //#include <unistd.h>
 
@@ -447,7 +447,7 @@ TsConfig readConfig (const QString &fname)
 Q_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
 {
-    KDECORE_EXPORT KTranscript *load_transcript ()
+    KI18N_EXPORT KTranscript *load_transcript ()
     {
         return globalKTI();
     }

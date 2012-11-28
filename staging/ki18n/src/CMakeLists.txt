@@ -1,0 +1,53 @@
+set(libki18n_SRCS
+    klocalizedstring.cpp
+    kcatalog.cpp
+    kuitformats.cpp
+    kuitsemantics.cpp
+    common_helpers.cpp
+)
+
+add_library(ki18n ${libki18n_SRCS})
+generate_export_header(ki18n)
+
+target_link_libraries(ki18n LINK_PUBLIC  ${QT_QTCORE_LIBRARY}
+                            LINK_PRIVATE ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY})
+
+set_target_properties(ki18n PROPERTIES VERSION   ${KI18N_VERSION_STRING}
+                                       SOVERSION ${KI18N_SOVERSION}
+)
+
+install(TARGETS ki18n EXPORT ki18nTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+install(FILES
+    klocalizedstring.h
+    ${CMAKE_CURRENT_BINARY_DIR}/ki18n_export.h
+    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+
+
+### ktranscript plugin
+
+# kjs hash stuff for transcript plugin
+set(CREATE_HASH_TABLE ${kjs_SOURCE_DIR}/src/kjs/create_hash_table)
+
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
+    COMMAND ${PERL_EXECUTABLE} ${CREATE_HASH_TABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/ktranscript.cpp
+            > ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/ktranscript.cpp
+)
+macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
+
+include_directories(${kjs_SOURCE_DIR}/src ${kjs_SOURCE_DIR}/src/kjs ${kjs_BINARY_DIR}/src ${kjs_BINARY_DIR}/src/kjs)
+set(ktranscript_LIB_SRCS
+    ktranscript.cpp
+    common_helpers.cpp
+)
+
+add_library(ktranscript MODULE ${ktranscript_LIB_SRCS})
+set_target_properties(ktranscript PROPERTIES PREFIX "") # remove lib prefix
+target_link_libraries(ktranscript kjs ${QT_QTCORE_LIBRARY})
+
+install(TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR})
+

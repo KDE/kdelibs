@@ -10,7 +10,8 @@ include_directories(
    ${karchive_BINARY_DIR}/src
    ${kcoreaddons_SOURCE_DIR}/src/randomness
    ${kcoreaddons_BINARY_DIR}/src
-
+   ${ki18n_SOURCE_DIR}/src
+   ${ki18n_BINARY_DIR}/src
 )
 
 set(knewstuff3_SRCS
@@ -58,6 +59,7 @@ target_link_libraries(knewstuff3
     kwidgets
     ${LIBATTICA_LIBRARIES}
     karchive
+    ki18n
     ${QtMimeTypes_LIBRARY}
 )
 

@@ -38,6 +38,8 @@ include_directories( ${KDE4_KIO_INCLUDES}
                      ${kcoreaddons_SOURCE_DIR}/src/io
                      ${kcoreaddons_SOURCE_DIR}/src/text
                      ${kcoreaddons_BINARY_DIR}/src
+                     ${ki18n_SOURCE_DIR}/src
+                     ${ki18n_BINARY_DIR}/src
 )
 include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
 
@@ -53,7 +55,7 @@ set(kio_http_cache_cleaner_KDEINIT_SRCS
 
 kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY} kcoreaddons ${QtMimeTypes_LIBRARY})
+target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY} kcoreaddons ki18n ${QtMimeTypes_LIBRARY})
 
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -74,7 +76,7 @@ set(kio_http_PART_SRCS
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http karchive ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_LIBRARY} kcoreaddons ${QtMimeTypes_LIBRARY})
+target_link_libraries(kio_http karchive ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_LIBRARY} kcoreaddons ki18n ${QtMimeTypes_LIBRARY})
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)
