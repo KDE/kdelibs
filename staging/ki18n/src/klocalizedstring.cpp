@@ -19,8 +19,6 @@
 
 #include <klocalizedstring.h>
 
-#include <kglobal.h> // K_GLOBAL_STATIC (TODO port to Q_GLOBAL_STATIC)
-
 #include <common_helpers_p.h>
 #include <kcatalog_p.h>
 #include <ktranscriptinterface.h>
@@ -291,8 +289,8 @@ class KLocalizedStringPrivateStatics
         qDeleteAll(formatters);
     }
 };
-//TODO wait for Qt 5.1, uses isDestroyed()
-K_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP)
+
+Q_GLOBAL_STATIC(KLocalizedStringPrivateStatics, staticsKLSP)
 
 // FIXME: Temporary, until locales ready.
 void KLocalizedStringPrivateStatics::initLocaleLanguages ()
@@ -365,7 +363,7 @@ void KLocalizedStringPrivate::translateRaw (const QStringList &catalogNames,
                                             QString &language,
                                             QString &translation)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     // Empty msgid would result in returning the catalog header,
     // which is never intended, so warn and return empty translation.
@@ -432,13 +430,13 @@ void KLocalizedStringPrivate::translateRaw (const QStringList &catalogNames,
 
 QString KLocalizedString::toString () const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
     return d->toString(s->catalogNames, s->languages);
 }
 
 QString KLocalizedString::toString (const QString &catalogName) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
     QStringList catalogNames;
     catalogNames.append(catalogName);
     return d->toString(catalogNames, s->languages);
@@ -446,7 +444,7 @@ QString KLocalizedString::toString (const QString &catalogName) const
 
 QString KLocalizedString::toString (const QStringList &languages) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
     return d->toString(s->catalogNames, languages);
 }
 
@@ -461,7 +459,7 @@ QString KLocalizedString::toString (const QString &catalogName,
 QString KLocalizedStringPrivate::toString (const QStringList &catalogNames,
                                            const QStringList &languages) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -718,7 +716,7 @@ QString KLocalizedStringPrivate::postFormat (const QString &text,
                                              const QString &lang,
                                              const QString &ctxt) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QString ftrans = text;
 
@@ -738,7 +736,7 @@ QString KLocalizedStringPrivate::substituteTranscript (const QString &strans,
                                                        const QString &ftrans,
                                                        bool &fallback) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     if (s->ktrs == NULL)
         // Scripting engine not available.
@@ -801,7 +799,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
     // result is set to result of Transcript evaluation.
     // fallback is set to true if Transcript evaluation requested so.
 
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     result.clear();
     fallback = false;
@@ -957,7 +955,7 @@ int KLocalizedStringPrivate::resolveInterpolation (const QString &strans,
 
 QVariant KLocalizedStringPrivate::segmentToValue (const QString &seg) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     // Return invalid variant if segment is either not a proper
     // value reference, or the reference is out of bounds.
@@ -990,7 +988,7 @@ QString KLocalizedStringPrivate::postTranscript (const QString &pcall,
                                                  const QString &ctry,
                                                  const QString &ftrans) const
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     if (s->ktrs == NULL)
         // Scripting engine not available.
@@ -1171,7 +1169,7 @@ KLocalizedString KLocalizedString::inContext (const QString &key,
 
 void KLocalizedString::insertCatalog (const QString &catalogName)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1189,7 +1187,7 @@ void KLocalizedString::insertCatalog (const QString &catalogName)
 
 void KLocalizedString::removeCatalog (const QString &catalogName)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1203,7 +1201,7 @@ void KLocalizedString::removeCatalog (const QString &catalogName)
 
 void KLocalizedString::setApplicationCatalog (const QString &catalogName)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1213,7 +1211,7 @@ void KLocalizedString::setApplicationCatalog (const QString &catalogName)
 
 void KLocalizedString::setLanguages (const QStringList &languages)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1222,7 +1220,7 @@ void KLocalizedString::setLanguages (const QStringList &languages)
 
 void KLocalizedString::clearLanguages ()
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1231,7 +1229,7 @@ void KLocalizedString::clearLanguages ()
 
 bool KLocalizedString::isApplicationTranslatedInto (const QString &language)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     return !KCatalog::catalogLocaleDir(s->appCatalogName, language).isEmpty();
 }
@@ -1239,7 +1237,7 @@ bool KLocalizedString::isApplicationTranslatedInto (const QString &language)
 const KCatalog &KLocalizedStringPrivate::getCatalog (const QString &catalogName,
                                                      const QString &language)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1258,7 +1256,7 @@ const KCatalog &KLocalizedStringPrivate::getCatalog (const QString &catalogName,
 void KLocalizedStringPrivate::locateScriptingModule (const QString &catalogName,
                                                      const QString &language)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1296,7 +1294,7 @@ extern "C"
 
 void KLocalizedStringPrivate::loadTranscript ()
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1376,7 +1374,7 @@ QString KLocalizedString::translateQt (const char *context,
     // If neither comment nor context are given, it's just an ordinary call
     // on sourceText.
 
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     QMutexLocker lock(&s->klspMutex);
 
@@ -1418,7 +1416,7 @@ QString KLocalizedString::translateQt (const char *context,
 
 QString KLocalizedString::localizedFilePath (const QString &filePath)
 {
-    KLocalizedStringPrivateStatics *s = staticsKLSP;
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
 
     // Check if l10n subdirectory is present, stop if not.
     QFileInfo fileInfo(filePath);
