@@ -21,7 +21,7 @@
 #ifndef KSESSIONMANAGER_H
 #define KSESSIONMANAGER_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QtCore/QList>
 #include <QSessionManager>
@@ -42,7 +42,7 @@
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
  */
-class KDEUI_EXPORT KSessionManager
+class KDE4SUPPORT_EXPORT KSessionManager
 {
 public:
   KSessionManager();

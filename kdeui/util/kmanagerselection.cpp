@@ -43,7 +43,6 @@ DEALINGS IN THE SOFTWARE.
 #include <qx11info_x11.h>
 #include <qwidget.h>
 #include <kdebug.h>
-#include <kapplication.h>
 #include <kxerrorhandler.h>
 #include <X11/Xatom.h>
 #include <xcb/xcb.h>

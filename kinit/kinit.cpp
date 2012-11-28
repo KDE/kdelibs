@@ -53,6 +53,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <QFont>
+#include <kcrash.h>
 #include <kcomponentdata.h>
 #include <klibrary.h>
 #include <kconfig.h>

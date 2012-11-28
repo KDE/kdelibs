@@ -24,6 +24,8 @@ set(libkde4support_SRCS
     kdecore/netsupp.cpp
     kdecore/kascii.cpp
 
+    kdeui/kapplication.cpp
+    kdeui/ksessionmanager.cpp
     kdeui/kfadewidgeteffect.cpp
     kdeui/kicon.cpp
     kdeui/knumvalidator.cpp
@@ -35,6 +37,10 @@ set(libkde4support_SRCS
     kdeui/khbox.cpp
     kdeui/kvbox.cpp
 )
+
+if (Q_OS_WIN)
+    set(libkde4support_SRCS ${libkde4support_SRCS} kernel/kapplication_win.cpp)
+endif (Q_OS_WIN)
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # for KComponentData
@@ -60,6 +66,8 @@ include_directories(
     ${kwidgets_SOURCE_DIR}/src/widgets # kpushbutton
     ${kauth_BINARY_DIR}/src
     ${kauth_SOURCE_DIR}/src # kpushbutton -> kauthaction
+    ${kinterprocesswindowing_BINARY_DIR}/src
+    ${kinterprocesswindowing_SOURCE_DIR}/src
 )
 
 # Configure checks for network/ but also for netsupp.*
@@ -101,6 +109,8 @@ install(FILES
     kdecore/ktypelist.h
     kdecore/kascii.h
 
+    kdeui/kapplication.h
+    kdeui/ksessionmanager.h
     kdeui/kfadewidgeteffect.h
     kdeui/kicon.h
     kdeui/knumvalidator.h

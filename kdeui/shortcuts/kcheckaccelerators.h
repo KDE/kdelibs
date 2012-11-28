@@ -81,7 +81,7 @@ class QTextBrowser;
 
 */
 
-class KCheckAccelerators: public QObject
+class KDEUI_EXPORT KCheckAccelerators: public QObject
 {
     Q_OBJECT
 public:

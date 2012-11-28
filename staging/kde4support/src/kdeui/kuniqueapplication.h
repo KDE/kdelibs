@@ -194,7 +194,7 @@ public:
    * @internal
    */
 #ifndef KDE_NO_DEPRECATED
-  KDEUI_DEPRECATED static void setHandleAutoStarted();
+  KDE4SUPPORT_DEPRECATED static void setHandleAutoStarted();
 #endif
 
 private:

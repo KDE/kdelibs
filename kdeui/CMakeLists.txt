@@ -204,8 +204,6 @@ set(kdeui_LIB_SRCS
  jobs/kwidgetjobtracker.cpp
  jobs/kstatusbarjobtracker.cpp
  jobs/kuiserverjobtracker.cpp
- kernel/kapplication.cpp
- kernel/ksessionmanager.cpp
  kernel/kstyle.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp
@@ -349,7 +347,7 @@ if (Q_OS_MAC)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp )
 endif (Q_OS_MAC)
 if (Q_OS_WIN)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} kernel/kapplication_win.cpp util/kkeyserver_win.cpp )
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_win.cpp )
 endif (Q_OS_WIN)
 
 message("Port to Qt5 native filter")
@@ -562,8 +560,6 @@ install( FILES
  jobs/kwidgetjobtracker.h
  jobs/kstatusbarjobtracker.h
  jobs/kuiserverjobtracker.h
- kernel/kapplication.h
- kernel/ksessionmanager.h
  kernel/kstyle.h
  notifications/kstatusnotifieritem.h
  notifications/knotification.h

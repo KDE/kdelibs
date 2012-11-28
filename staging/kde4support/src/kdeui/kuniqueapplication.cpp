@@ -100,7 +100,7 @@ bool KUniqueApplication::start()
 bool
 KUniqueApplication::start(StartFlags flags)
 {
-  extern KDEUI_EXPORT bool s_kuniqueapplication_startCalled;
+  extern bool s_kuniqueapplication_startCalled;
   if( s_kuniqueapplication_startCalled )
     return true;
   s_kuniqueapplication_startCalled = true;

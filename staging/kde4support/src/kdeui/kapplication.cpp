@@ -381,9 +381,8 @@ void KApplicationPrivate::iceIOErrorHandler( _IceConn *conn )
 }
 #endif
 
-// TODO remove this KDEUI_EXPORT completely once this is in kde4support
 // (only called by KUniqueApplication, no need to export)
-KDEUI_EXPORT bool s_kuniqueapplication_startCalled = false;
+bool s_kuniqueapplication_startCalled = false;
 
 void KApplicationPrivate::init(bool GUIenabled)
 {

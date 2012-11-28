@@ -9,6 +9,8 @@ include_directories(
     ${KDE4_KDEUI_INCLUDES}
     ${ki18n_SOURCE_DIR}/src
     ${ki18n_BINARY_DIR}/src
+    ${kde4support_SOURCE_DIR}/src/kdeui
+    ${kde4support_BINARY_DIR}/src
 )
 
 
@@ -37,7 +39,7 @@ endif (NOT DEFINED QT_ONLY)
 
 kde4_add_executable(${KJSCMDNAME} ${kjscmd_SRCS})
 
-target_link_libraries(${KJSCMDNAME} ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} kcoreaddons ${KJSEMBEDLIBNAME} kjs )
+target_link_libraries(${KJSCMDNAME} ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} kcoreaddons ${KJSEMBEDLIBNAME} kjs kde4support)
 
 install(TARGETS ${KJSCMDNAME} ${INSTALL_TARGETS_DEFAULT_ARGS} )
 

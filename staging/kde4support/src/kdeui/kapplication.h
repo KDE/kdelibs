@@ -22,7 +22,7 @@
 #define KAPP_H
 
 // Version macros. Never put this further down.
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 class KConfig;
 
@@ -69,7 +69,7 @@ class KApplicationPrivate;
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 */
-class KDEUI_EXPORT KApplication : public QApplication
+class KDE4SUPPORT_EXPORT KApplication : public QApplication
 {
   Q_OBJECT
   Q_CLASSINFO("D-Bus Interface", "org.kde.KApplication")
@@ -122,7 +122,7 @@ public:
    * @see sessionConfig()
    * @deprecated use qApp->isSessionRestored()
    */
-  inline KDEUI_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
+  inline KDE4SUPPORT_DEPRECATED bool isRestored() const { return QApplication::isSessionRestored(); }
 #endif
 
   /**
@@ -171,7 +171,7 @@ public:
    * @return the application icon
    * @deprecated Use QApplication::windowIcon()
    */
-  inline KDEUI_DEPRECATED QPixmap icon() const {
+  inline KDE4SUPPORT_DEPRECATED QPixmap icon() const {
       int size = IconSize(KIconLoader::Desktop);
       return windowIcon().pixmap(size,size);
   }
@@ -181,7 +181,7 @@ public:
    * @return the application's mini icon
    * @deprecated Use QApplication::windowIcon()
    */
-  inline KDEUI_DEPRECATED QPixmap miniIcon() const {
+  inline KDE4SUPPORT_DEPRECATED QPixmap miniIcon() const {
       int size = IconSize(KIconLoader::Small);
       return windowIcon().pixmap(size,size);
   }
@@ -208,7 +208,7 @@ public:
    * @deprecated use QTemporaryFile, QSaveFile or KAutoSaveFile instead
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDEUI_DEPRECATED QString tempSaveName( const QString& pFilename );
+  static KDE4SUPPORT_DEPRECATED QString tempSaveName( const QString& pFilename );
 #endif
 
   /**
@@ -245,7 +245,7 @@ public:
    * @return A truly unpredictable number in the range [0, RAND_MAX)
    * @deprecated Use KRandom::random()
    */
-  static inline KDEUI_DEPRECATED int random() { return KRandom::random(); }
+  static inline KDE4SUPPORT_DEPRECATED int random() { return KRandom::random(); }
 
   /**
    * Generates a random string.  It operates in the range [A-Za-z0-9]
@@ -253,7 +253,7 @@ public:
    * @return the random string
    * @deprecated use KRandom::randomString() instead.
    */
-  static inline KDEUI_DEPRECATED QString randomString(int length) { return KRandom::randomString(length); }
+  static inline KDE4SUPPORT_DEPRECATED QString randomString(int length) { return KRandom::randomString(length); }
 #endif
 
   /**
@@ -307,7 +307,7 @@ public:
     *
     * </code>
     */
-  static inline KDEUI_DEPRECATED QString geometryArgument() {
+  static inline KDE4SUPPORT_DEPRECATED QString geometryArgument() {
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     return args->isSet("geometry") ? args->getOption("geometry") : QString();
   }
