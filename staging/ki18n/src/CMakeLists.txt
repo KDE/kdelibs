@@ -44,7 +44,6 @@ macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/ktranscript.cpp ${CMAKE_
 include_directories(${kjs_SOURCE_DIR}/src ${kjs_SOURCE_DIR}/src/kjs ${kjs_BINARY_DIR}/src ${kjs_BINARY_DIR}/src/kjs)
 set(ktranscript_LIB_SRCS
     ktranscript.cpp
-    common_helpers.cpp
 )
 
 add_library(ktranscript MODULE ${ktranscript_LIB_SRCS})

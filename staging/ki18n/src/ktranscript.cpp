@@ -17,7 +17,7 @@
 */
 
 #include <ktranscriptinterface.h>
-#include <common_helpers_p.h>
+#include <klocalizedstring.h>
 
 #include <ki18n_export.h>
 
@@ -324,7 +324,7 @@ QByteArray normKeystr (const QString &raw, bool mayHaveAcc = true)
 
     // Strip accelerator marker.
     if (mayHaveAcc) {
-        key = removeAcceleratorMarker(key);
+        key = KLocalizedString::removeAcceleratorMarker(key);
     }
 
     // Convert to lower case.
