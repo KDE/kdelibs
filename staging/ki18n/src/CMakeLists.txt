@@ -1,6 +1,7 @@
 set(libki18n_SRCS
     klocalizedstring.cpp
     kcatalog.cpp
+    ktranscriptinterface.cpp
     kuitformats.cpp
     kuitsemantics.cpp
     common_helpers.cpp
@@ -20,6 +21,7 @@ install(TARGETS ki18n EXPORT ki18nTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     klocalizedstring.h
+    ktranscriptinterface.h
     ${CMAKE_CURRENT_BINARY_DIR}/ki18n_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
@@ -47,7 +49,7 @@ set(ktranscript_LIB_SRCS
 
 add_library(ktranscript MODULE ${ktranscript_LIB_SRCS})
 set_target_properties(ktranscript PROPERTIES PREFIX "") # remove lib prefix
-target_link_libraries(ktranscript kjs ${QT_QTCORE_LIBRARY})
+target_link_libraries(ktranscript kjs ki18n ${QT_QTCORE_LIBRARY})
 
 install(TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR})
 

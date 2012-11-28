@@ -17,13 +17,15 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KTRANSCRIPT_P_H
-#define KTRANSCRIPT_P_H
+#ifndef KTRANSCRIPTINTERFACE_H
+#define KTRANSCRIPTINTERFACE_H
 
 #include <QVariant>
 #include <QList>
 #include <QStringList>
 #include <QHash>
+
+#include <ki18n_export.h>
 
 /**
   * @internal
@@ -35,7 +37,7 @@
   * @author Chusslove Illich <caslav.ilic@gmx.net>
   * @short class for supporting programmable translations
   */
-class KTranscript
+class KI18N_EXPORT KTranscriptInterface
 {
     public:
 
@@ -84,7 +86,7 @@ class KTranscript
     /**
      * Destructor.
      */
-    virtual ~KTranscript () {}
+    virtual ~KTranscriptInterface ();
 };
 
 #endif
