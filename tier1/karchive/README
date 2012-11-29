@@ -1,2 +1,6 @@
 This is KArchive for Qt4
 
+It features KCompressionDevice, a QIODevice that can compress/uncompress data on the fly, in GZIP or BZIP2 or XZ/LZMA format.
+
+It also features support for "archive" formats: ZIP, TAR, AR, 7Zip, through a common API, KArchive.
+
