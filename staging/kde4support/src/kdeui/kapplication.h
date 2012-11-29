@@ -157,6 +157,8 @@ public:
   void saveState( QSessionManager& sm );
 
   /**
+   * @deprecated since 5.0, use QGuiApplication::isSavingSession()
+   *
    * Returns true if the application is currently saving its session
    * data (most probably before KDE logout). This is intended for use
    * mainly in KMainWindow::queryClose() and KMainWindow::queryExit().
@@ -224,6 +226,7 @@ public:
   static QString checkRecoverFile( const QString& pFilename, bool& bRecover );
 
   /**
+   * @deprecated since 5.0, use QCoreApplication::installNativeEventFilter
    *  Installs widget filter as global X11 event filter.
    *
    * The widget
@@ -231,10 +234,11 @@ public:
    *
    *  Warning: Only do this when absolutely necessary. An installed X11 filter
    *  can slow things down.
-   **/
+   */
   void installX11EventFilter( QWidget* filter );
 
   /**
+   * @deprecated since 5.0, use QCoreApplication::removeNativeEventFilter
    * Removes global X11 event filter previously installed by
    * installX11EventFilter().
    */
@@ -341,7 +345,9 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   /**
-      Session management asks you to save the state of your application.
+     @deprecated since 5.0, connect to saveStateRequest instead
+
+     Session management asks you to save the state of your application.
 
      This signal is provided for compatibility only. For new
      applications, simply use KMainWindow. By reimplementing
@@ -375,13 +381,6 @@ protected:
    */
   KApplication(bool GUIenabled, const KComponentData &cData);
 
-#if 0
-  /**
-   * Used to catch X11 events
-   */
-  bool x11EventFilter( XEvent * );
-#endif
-
   /// Current application object.
   static KApplication *KApp;
 
@@ -390,7 +389,7 @@ private:
   KApplication& operator=(const KApplication&);
 
 private:
-  //### KDE4: This is to catch invalid implicit conversions, may want to reconsider
+  // This is to catch invalid implicit conversions
   KApplication(bool, bool);
 
   friend class KApplicationPrivate;
