@@ -16,7 +16,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <ktranscriptinterface.h>
+#include <ktranscript_p.h>
 #include <common_helpers_p.h>
 
 #include <ki18n_export.h>
@@ -53,7 +53,7 @@ typedef QHash<QString, QString> TsConfigGroup;
 typedef QHash<QString, TsConfigGroup> TsConfig;
 
 // Transcript implementation (used as singleton).
-class KTranscriptImp : public KTranscriptInterface
+class KTranscriptImp : public KTranscript
 {
     public:
 
@@ -447,7 +447,7 @@ TsConfig readConfig (const QString &fname)
 Q_GLOBAL_STATIC(KTranscriptImp, globalKTI)
 extern "C"
 {
-    KI18N_EXPORT KTranscriptInterface *load_transcript ()
+    KI18N_EXPORT KTranscript *load_transcript ()
     {
         return globalKTI();
     }

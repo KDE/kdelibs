@@ -21,7 +21,7 @@
 
 #include <common_helpers_p.h>
 #include <kcatalog_p.h>
-#include <ktranscriptinterface.h>
+#include <ktranscript_p.h>
 #include <kuitsemantics_p.h>
 
 #include <QDebug>
@@ -234,7 +234,7 @@ class KLocalizedStringPrivateStatics
     QList<QStringList> scriptModulesToLoad;
 
     bool loadTranscriptCalled;
-    KTranscriptInterface *ktrs;
+    KTranscript *ktrs;
 
     QHash<QString, KuitSemantics*> formatters;
 
@@ -1289,7 +1289,7 @@ void KLocalizedStringPrivate::locateScriptingModule (const QString &catalogName,
 
 extern "C"
 {
-    typedef KTranscriptInterface *(*InitFunc)();
+    typedef KTranscript *(*InitFunc)();
 }
 
 void KLocalizedStringPrivate::loadTranscript ()
