@@ -4,3 +4,12 @@ It features KCompressionDevice, a QIODevice that can compress/uncompress data on
 
 It also features support for "archive" formats: ZIP, TAR, AR, 7Zip, through a common API, KArchive.
 
+Here's how to use karchive in your own program, with cmake:
+
+cmake_minimum_required(VERSION 2.8)
+project(karchive_qt4_package_test)
+find_package(KArchive_Qt4)
+include_directories(${KArchive_Qt4_INCLUDE_DIRS})
+add_executable(karchive_package_test main.cpp)
+target_link_libraries(karchive_package_test KArchive::karchive-qt4)
+
