@@ -34,10 +34,6 @@
 #include <QtDBus/QtDBus>
 #include <QBuffer>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define mimeTypeForFileNameAndData mimeTypeForNameAndData
-#endif
-
 extern int servicesDebugArea();
 
 template class KSharedPtr<KMimeType>;

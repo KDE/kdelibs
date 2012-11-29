@@ -79,8 +79,8 @@ public:
     QMimeType mimeTypeForData(QIODevice *device) const;
 
     QMimeType mimeTypeForUrl(const QUrl &url) const;
-    QMimeType mimeTypeForNameAndData(const QString &fileName, QIODevice *device) const;
-    QMimeType mimeTypeForNameAndData(const QString &fileName, const QByteArray &data) const;
+    QMimeType mimeTypeForFileNameAndData(const QString &fileName, QIODevice *device) const;
+    QMimeType mimeTypeForFileNameAndData(const QString &fileName, const QByteArray &data) const;
 
     QString suffixForFileName(const QString &fileName) const;
 

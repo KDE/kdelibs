@@ -310,7 +310,7 @@ void FileProtocol::get( const QUrl& url )
 
     // Determine the mimetype of the file to be retrieved, and emit it.
     // This is mandatory in all slaves (for KRun/BrowserRun to work)
-    // In real "remote" slaves, this is usually done using mimeTypeForNameAndData
+    // In real "remote" slaves, this is usually done using mimeTypeForFileNameAndData
     // after receiving some data. But we don't know how much data the mimemagic rules
     // need, so for local files, better use mimeTypeForFile.
     QMimeDatabase db;

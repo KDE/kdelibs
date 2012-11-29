@@ -53,10 +53,6 @@
 #include <qmimedatabase.h>
 #include <utime.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define mimeTypeForFileNameAndData mimeTypeForNameAndData
-#endif
-
 static QString expandTilde(const QString& name, bool isfile = false)
 {
     if (!name.isEmpty() && (!isfile || name[0] == '\\'))

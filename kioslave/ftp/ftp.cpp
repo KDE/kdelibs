@@ -72,10 +72,6 @@
 #define FTP_LOGIN   "anonymous"
 #define FTP_PASSWD  "anonymous@"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define mimeTypeForFileNameAndData mimeTypeForNameAndData
-#endif
-
 //#undef  kDebug
 #define ENABLE_CAN_RESUME
 

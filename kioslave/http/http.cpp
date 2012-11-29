@@ -88,7 +88,6 @@
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #define toDisplayString toString
-#define mimeTypeForFileNameAndData mimeTypeForNameAndData
 #endif
 
 // KDE5 TODO (QT5) : use QString::htmlEscape or whatever https://qt.gitorious.org/qt/qtbase/merge_requests/56
