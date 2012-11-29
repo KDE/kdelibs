@@ -47,6 +47,7 @@
 #include <ksharedconfig.h>
 #include <kstandarddirs.h>
 #include <kurl.h>
+#include <kmimetype.h>
 #include <kmimetypetrader.h>
 #include <kprotocolinfofactory.h>
 
@@ -1189,7 +1190,23 @@ QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
             }
         }
     }
-    return d->protocolForArchiveMimetypes.value(mimeType);
+    const QString prot = d->protocolForArchiveMimetypes.value(mimeType);
+    if (!prot.isEmpty())
+        return prot;
+
+    // Check parent mimetypes
+    KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
+    if (mime) {
+        const QStringList parentMimeTypes = mime->allParentMimeTypes();
+        Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
+            const QString res = d->protocolForArchiveMimetypes.value(parentMimeType);
+            if (!res.isEmpty()) {
+                return res;
+            }
+        }
+    }
+
+    return QString();
 }
 
 #undef PRIVATE_DATA
