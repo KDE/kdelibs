@@ -172,18 +172,22 @@ bool KDirListerCache::listDir( KDirLister *lister, const KUrl& _u,
 
         dirData.listersCurrentlyListing.append(lister);
 
-        DirItem *itemFromCache;
+        DirItem *itemFromCache = 0;
         if (itemU || (!_reload && (itemFromCache = itemsCached.take(urlStr)) ) ) {
             if (itemU) {
                 kDebug(7004) << "Entry already in use:" << _url;
                 // if _reload is set, then we'll emit cached items and then updateDirectory.
-                if (lister->d->autoUpdate)
-                    itemU->incAutoUpdate();
             } else {
                 kDebug(7004) << "Entry in cache:" << _url;
-                // In this code path, the itemsFromCache->decAutoUpdate + itemU->incAutoUpdate is optimized out
                 itemsInUse.insert(urlStr, itemFromCache);
                 itemU = itemFromCache;
+            }
+            if (lister->d->autoUpdate) {
+                itemU->incAutoUpdate();
+            }
+            if (itemFromCache && itemFromCache->watchedWhileInCache) {
+                itemFromCache->watchedWhileInCache = false;;
+                itemFromCache->decAutoUpdate();
             }
 
             emit lister->started(_url);
@@ -416,7 +420,7 @@ void KDirListerCache::stop( KDirLister *lister, bool silent )
     Q_FOREACH(const KUrl& url, urls) {
         stopListingUrl(lister, url, silent);
     }
-    
+
 #if 0 // test code
     QHash<QString,KDirListerCacheDirectoryData>::iterator dirit = directoryData.begin();
     const QHash<QString,KDirListerCacheDirectoryData>::iterator dirend = directoryData.end();
@@ -618,9 +622,10 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const KUrl& _url, bool not
                 kDebug(7004) << "Not adding a watch on " << item->url << " because it " <<
                     ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" );
                 item->complete = false; // set to "dirty"
-            }
-            else
+            } else {
                 item->incAutoUpdate(); // keep watch
+                item->watchedWhileInCache = true;
+            }
         }
         else
         {
@@ -746,7 +751,10 @@ bool KDirListerCache::checkUpdate( const QString& _dir )
     DirItem *item = itemsCached[_dir];
     if ( item && item->complete )
     {
+      // Stop watching items once they are only in the cache and not used anymore.
+      // We'll trigger an update when listing that dir again later.
       item->complete = false;
+      item->watchedWhileInCache = false;
       item->decAutoUpdate();
       // Hmm, this debug output might include login/password from the _dir URL.
       //kDebug(7004) << "directory " << _dir << " not in use, marked dirty.";
