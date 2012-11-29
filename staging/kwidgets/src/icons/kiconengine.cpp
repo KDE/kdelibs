@@ -21,17 +21,13 @@
 #include <kiconloader.h>
 
 #include <QPainter>
-#include <QMenu>
-#include <QToolBar>
-#include <QApplication>
 
 
 KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader, const QStringList& overlays)
     : mIconName(iconName),
-      mOverlays(overlays), 
+      mOverlays(overlays),
       mIconLoader(iconLoader)
 {
-    
 }
 
 KIconEngine::KIconEngine(const QString& iconName, KIconLoader* iconLoader)
@@ -75,17 +71,8 @@ void KIconEngine::paint(QPainter * painter, const QRect & rect, QIcon::Mode mode
     Q_UNUSED(state)
 
     const int kstate = qIconModeToKIconState(mode);
-    KIconLoader::Group group = KIconLoader::Desktop;
-
-    if (QWidget* targetWidget = dynamic_cast<QWidget*>(painter->device())) {
-        if (qobject_cast<QMenu*>(targetWidget))
-            group = KIconLoader::Small;
-        else if (qobject_cast<QToolBar*>(targetWidget->parent()))
-            group = KIconLoader::Toolbar;
-    }
-
     const int iconSize = qMin(rect.width(), rect.height());
-    const QPixmap pix = mIconLoader.data()->loadIcon(mIconName, group, iconSize, kstate, mOverlays);
+    const QPixmap pix = mIconLoader.data()->loadIcon(mIconName, KIconLoader::Desktop, iconSize, kstate, mOverlays);
     painter->drawPixmap(rect, pix);
 }
 
