@@ -19,7 +19,7 @@
 //Added by qt3to4:
 #include <QPixmap>
 #include <kiconloader.h>
-#include <kstatusbar.h>
+#include <QStatusBar>
 #include <kmenubar.h>
 #include <ktoolbar.h>
 #include <Qt3Support/Q3PopupMenu>
@@ -204,8 +204,8 @@ void DockApplication::initToolBars()
 
 void DockApplication::initStatusBar()
 {
-  KStatusBar* status_bar = statusBar();
-  status_bar->insertItem("Welcome to KDockWidget test...", 1);
+  QStatusBar* status_bar = statusBar();
+  status_bar->showMessage("Welcome to KDockWidget test...");
 }
 
 void DockApplication::cap()

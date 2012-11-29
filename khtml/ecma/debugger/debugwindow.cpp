@@ -27,7 +27,6 @@
 #include <QtAlgorithms>
 
 #include <ktoolbar.h>
-#include <kstatusbar.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kiconloader.h>
@@ -68,6 +67,7 @@
 
 #include <QVBoxLayout>
 #include <QSplitter>
+#include <QStatusBar>
 #include <QTabWidget>
 #include <QToolButton>
 

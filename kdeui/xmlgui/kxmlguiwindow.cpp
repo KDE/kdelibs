@@ -37,6 +37,7 @@
 #include <QtXml/QDomDocument>
 #include <QLayout>
 #include <QObject>
+#include <QStatusBar>
 #include <QStyle>
 #include <QWidget>
 #include <QList>
@@ -47,7 +48,6 @@
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
 #include <kmenubar.h>
-#include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
@@ -307,7 +307,7 @@ void KXmlGuiWindow::createStandardStatusBarAction(){
     K_D(KXmlGuiWindow);
     if(!d->showStatusBarAction){
         d->showStatusBarAction = KStandardAction::showStatusbar(this, SLOT(setSettingsDirty()), actionCollection());
-        KStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
+        QStatusBar *sb = statusBar(); // Creates statusbar if it doesn't exist already.
         connect(d->showStatusBarAction, SIGNAL(toggled(bool)), sb, SLOT(setVisible(bool)));
         d->showStatusBarAction->setChecked(sb->isHidden());
     } else {
@@ -334,7 +334,7 @@ void KXmlGuiWindow::applyMainWindowSettings(const KConfigGroup &config, bool for
 {
     K_D(KXmlGuiWindow);
     KMainWindow::applyMainWindowSettings(config, force);
-    KStatusBar *sb = findChild<KStatusBar *>();
+    QStatusBar *sb = findChild<QStatusBar *>();
     if (sb && d->showStatusBarAction)
         d->showStatusBarAction->setChecked(!sb->isHidden());
 }

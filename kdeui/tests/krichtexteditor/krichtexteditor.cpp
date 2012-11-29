@@ -30,7 +30,7 @@
 #include <kmessagebox.h>
 #include <kio/netaccess.h>
 #include <qsavefile.h>
-#include <kstatusbar.h>
+#include <QStatusBar>
 
 
 KRichTextEditor::KRichTextEditor() : KXmlGuiWindow()
@@ -43,8 +43,8 @@ KRichTextEditor::KRichTextEditor() : KXmlGuiWindow()
     textArea->createActions(actionCollection());
     setupGUI();
 
-    statusBar()->insertItem(QString(), 0, 1);
-    statusBar()->setItemAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    itemLabel = new QLabel;
+    statusBar()->addWidget(itemLabel);
 
     connect(textArea, SIGNAL(cursorPositionChanged()),
             SLOT(cursorPositionChanged()));
@@ -78,9 +78,9 @@ void KRichTextEditor::cursorPositionChanged()
     if (textArea->textCursor().charFormat().isAnchor()) {
         QString text = textArea->currentLinkText();
         QString url = textArea->currentLinkUrl();
-        statusBar()->changeItem(text + " -> " + url, 0);
+        itemLabel->setText(text + " -> " + url);
     } else {
-        statusBar()->changeItem(QString(), 0);
+        itemLabel->setText(QString());
     }
 }
 

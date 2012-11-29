@@ -39,6 +39,7 @@
 #include <QDockWidget>
 #include <QLayout>
 #include <QSessionManager>
+#include <QStatusBar>
 #include <QStyle>
 #include <QWidget>
 
@@ -50,7 +51,6 @@
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
 #include <kmenubar.h>
-#include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
@@ -68,11 +68,11 @@ static KMenuBar *internalMenuBar(KMainWindow *mw)
     return KGlobal::findDirectChild<KMenuBar *>(mw);
 }
 
-static KStatusBar *internalStatusBar(KMainWindow *mw)
+static QStatusBar *internalStatusBar(KMainWindow *mw)
 {
     // Don't use qFindChild here, it's recursive!
     // (== slow, but also finds konqueror's per-view statusbars)
-    return KGlobal::findDirectChild<KStatusBar *>(mw);
+    return KGlobal::findDirectChild<QStatusBar *>(mw);
 }
 
 /**
@@ -865,18 +865,6 @@ KMenuBar *KMainWindow::menuBar()
         setMenuBar(mb);
     }
     return mb;
-}
-
-KStatusBar *KMainWindow::statusBar()
-{
-    KStatusBar * sb = internalStatusBar(this);
-    if ( !sb ) {
-        sb = new KStatusBar( this );
-        // trigger a re-layout and trigger a call to the private
-        // setStatusBar method.
-        setStatusBar(sb);
-    }
-    return sb;
 }
 
 void KMainWindowPrivate::_k_shuttingDown()

@@ -25,7 +25,6 @@
 #include "kmenubar.h"
 #include "kmenu.h"
 #include "ktoolbar.h"
-#include "kstatusbar.h"
 #include "kmainwindow.h"
 #include "kxmlguiwindow.h"
 #include "kaction.h"
@@ -36,6 +35,7 @@
 #include <QtXml/QDomElement>
 #include <QtCore/QObject>
 #include <QtCore/QMutableStringListIterator>
+#include <QStatusBar>
 #include "kmenumenuhandler_p.h"
 #include <kcomponentdata.h>
 
@@ -232,7 +232,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
           mainWin->statusBar()->show();
           return mainWin->statusBar();
       }
-      KStatusBar *bar = new KStatusBar( d->m_widget );
+      QStatusBar *bar = new QStatusBar( d->m_widget );
       return bar;
   }
 
@@ -267,12 +267,12 @@ void KXMLGUIBuilder::removeContainer( QWidget *container, QWidget *parent, QDomE
     // sure that QMainWindow::d->mb does not point to a deleted
     // menubar object.
   }
-  else if ( qobject_cast<KStatusBar*>( container ) )
+  else if ( qobject_cast<QStatusBar*>( container ) )
   {
     if ( qobject_cast<KMainWindow*>( d->m_widget ) )
         container->hide();
     else
-      delete static_cast<KStatusBar *>(container);
+      delete static_cast<QStatusBar *>(container);
   }
   else
      kWarning() << "Unhandled container to remove : " << container->metaObject()->className();

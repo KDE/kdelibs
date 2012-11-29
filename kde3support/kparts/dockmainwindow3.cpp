@@ -24,11 +24,11 @@
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <kparts/plugin.h>
-#include <kstatusbar.h>
 #include <kcomponentdata.h>
 #include <khelpmenu.h>
 #include <kstandarddirs.h>
 #include <QApplication>
+#include <QStatusBar>
 
 #include <kdebug.h>
 #include <kxmlguifactory.h>
@@ -125,7 +125,7 @@ void DockMainWindow3::createGUI( Part * part )
 
 void DockMainWindow3::slotSetStatusBarText( const QString & text )
 {
-  statusBar()->message( text );
+  statusBar()->showMessage( text );
 }
 
 void DockMainWindow3::createShellGUI( bool create )

@@ -14,13 +14,13 @@
 #include <QMessageBox>
 #include <QtCore/QDir>
 #include <QGroupBox>
+#include <QStatusBar>
 
 #include <unistd.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kurl.h>
-#include <kstatusbar.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kio/copyjob.h>

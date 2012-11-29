@@ -26,6 +26,7 @@
 #include <QSplitter>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <QStatusBar>
 #include <QTextEdit>
 
 #include <kaboutdata.h>
@@ -33,7 +34,6 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
-#include <kstatusbar.h>
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(NotepadFactory, registerPlugin<NotepadPart>();)

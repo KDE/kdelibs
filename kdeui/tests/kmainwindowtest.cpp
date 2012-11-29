@@ -22,7 +22,7 @@
 #include <QtCore/QTimer>
 #include <QLabel>
 
-#include <kstatusbar.h>
+#include <QStatusBar>
 #include <kmenubar.h>
 
 #include "kmainwindowtest.h"

@@ -22,8 +22,8 @@
 #include <QPointer>
 
 #include <QtCore/QObject>
+#include <QStatusBar>
 
-#include <kstatusbar.h>
 #include <kmainwindow.h>
 #include <kdebug.h>
 #include <kglobal.h>
@@ -47,7 +47,7 @@ class KParts::StatusBarItem {
 
     QWidget * widget() const { return m_widget; }
 
-    void ensureItemShown( KStatusBar * sb )
+    void ensureItemShown( QStatusBar * sb )
     {
       if ( m_widget && !m_visible )
       {
@@ -59,7 +59,7 @@ class KParts::StatusBarItem {
         m_widget->show();
       }
     }
-    void ensureItemHidden( KStatusBar * sb )
+    void ensureItemHidden( QStatusBar * sb )
     {
       if ( m_widget && m_visible )
       {
@@ -83,7 +83,7 @@ public:
 
   StatusBarExtension *q;
   QList<StatusBarItem> m_statusBarItems; // Our statusbar items
-  KStatusBar* m_statusBar;
+  QStatusBar* m_statusBar;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ StatusBarExtension::StatusBarExtension(KParts::ReadOnlyPart *parent)
 
 StatusBarExtension::~StatusBarExtension()
 {
-  KStatusBar * sb = d->m_statusBar;
+  QStatusBar * sb = d->m_statusBar;
   for ( int i = d->m_statusBarItems.count () - 1; i >= 0 ; --i ) {
     if ( d->m_statusBarItems[i].widget() ) {
       if ( sb ) {
@@ -121,7 +121,7 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
        !::qobject_cast<KParts::ReadOnlyPart *>(watched)  )
       return QObject::eventFilter(watched, ev);
 
-  KStatusBar * sb = statusBar();
+  QStatusBar * sb = statusBar();
   if ( !sb )
       return QObject::eventFilter(watched, ev);
 
@@ -144,7 +144,7 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
 
 }
 
-KStatusBar * StatusBarExtension::statusBar() const
+QStatusBar * StatusBarExtension::statusBar() const
 {
   if ( !d->m_statusBar )  {
     KParts::ReadOnlyPart* part = qobject_cast<KParts::ReadOnlyPart*>(parent());
@@ -156,7 +156,7 @@ KStatusBar * StatusBarExtension::statusBar() const
   return d->m_statusBar;
 }
 
-void StatusBarExtension::setStatusBar( KStatusBar* status )
+void StatusBarExtension::setStatusBar( QStatusBar* status )
 {
   d->m_statusBar = status;
 }
@@ -165,14 +165,14 @@ void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool p
 {
   d->m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
   StatusBarItem& it = d->m_statusBarItems.last();
-  KStatusBar * sb = statusBar();
+  QStatusBar * sb = statusBar();
   if (sb)
     it.ensureItemShown( sb );
 }
 
 void StatusBarExtension::removeStatusBarItem( QWidget * widget )
 {
-  KStatusBar * sb = statusBar();
+  QStatusBar * sb = statusBar();
   QList<StatusBarItem>::iterator it = d->m_statusBarItems.begin();
   for ( ; it != d->m_statusBarItems.end() ; ++it )
     if ( (*it).widget() == widget )

@@ -28,6 +28,8 @@
 
 //@cond PRIVATE
 
+class QLabel;
+
 /**
  * @internal
  * Test window for testing KRichTextWidget
@@ -52,6 +54,7 @@ private slots:
 private:
     KRichTextWidget *textArea;
     QString fileName;
+    QLabel *itemLabel;
 };
 
 //@endcond

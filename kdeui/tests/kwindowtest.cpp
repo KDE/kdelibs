@@ -4,8 +4,8 @@
 
 #include <stdlib.h>
 
-#include <kstatusbar.h>
 #include <QApplication>
+#include <QStatusBar>
 #include <kcombobox.h>
 #include <khelpmenu.h>
 #include <kmenu.h>
@@ -134,7 +134,7 @@ TestWindow::TestWindow (QWidget *parent)
     /**************************************************/
     /*Now, we setup statusbar; order is not important. */
     /**************************************************/
-    statusBar = new KStatusBar (this);
+    statusBar = new QStatusBar (this);
     //statusBar->insertItem("Hi there!                         ", 0);
     //statusBar->insertItem("Look for tooltips to see functions", 1);
     setStatusBar(statusBar);
@@ -226,12 +226,12 @@ void TestWindow::slotGoGoGoo()
 void TestWindow::slotSave()
 {
   qApp->beep();
-  statusBar->changeItem("Saving properties...", 0);
+  statusBar->showMessage("Saving properties...");
 }
 
 void TestWindow::slotPrint()
 {
-    statusBar->changeItem("Print file pressed", 0);
+    statusBar->showMessage("Print file pressed");
     ena=!ena;
     qobject_cast<KAction*>(sender())->setEnabled(ena);
 }
@@ -239,14 +239,14 @@ void TestWindow::slotReturn()
 {
     QString s = "You entered ";
     s = s + testLineEdit->text();
-    statusBar->changeItem(s, 0);
+    statusBar->showMessage(s);
 
 }
 void TestWindow::slotList(const QString &str)
 {
     QString s = "You chose ";
     s = s + str;
-    statusBar->changeItem(s, 0);
+    statusBar->showMessage(s);
 }
 
 void TestWindow::slotCompletion()
@@ -334,9 +334,9 @@ void TestWindow::slotLined()
 void TestWindow::slotToggle (bool on)
 {
   if (on == true)
-    statusBar->changeItem("Toggle is on", 0);
+    statusBar->showMessage("Toggle is on");
   else
-    statusBar->changeItem("Toggle is off", 0);
+    statusBar->showMessage("Toggle is off");
 }
 
 void TestWindow::slotFrame()

@@ -235,7 +235,7 @@ const char* imageMissingIcon =
 #include <QtCore/QTextStream>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTimer>
-#include <kstatusbar.h>
+#include <QStatusBar>
 
 #include "dom/dom2_range.h"
 #include "dom/dom_exception.h"

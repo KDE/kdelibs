@@ -30,6 +30,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
 #include <QLabel>
+#include <QStatusBar>
 #include <QTableWidget>
 #include <QtDBus/QtDBus>
 
@@ -37,7 +38,6 @@
 #include <kauthorized.h>
 #include <kaboutdata.h>
 #include <klocalizedstring.h>
-#include <kstatusbar.h>
 #include <kiconloader.h>
 #include <kdebug.h>
 #include <kconfig.h>
@@ -417,7 +417,7 @@ bool KJavaAppletViewer::openUrl (const QUrl & url) {
         applet->setSize (w->sizeHint());
     }
     if (!m_statusbar_icon) {
-        KStatusBar *sb = m_statusbar->statusBar();
+        QStatusBar *sb = m_statusbar->statusBar();
         if (sb) {
             m_statusbar_icon = new StatusBarIcon (sb);
             m_statusbar->addStatusBarItem (m_statusbar_icon, 0, false);

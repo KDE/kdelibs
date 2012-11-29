@@ -110,7 +110,6 @@ using namespace DOM;
 
 #include <kfileitem.h>
 #include <kurifilter.h>
-#include <kstatusbar.h>
 #include <kurllabel.h>
 #include <kurlmimedata.h>
 
@@ -122,6 +121,7 @@ using namespace DOM;
 #include <QTextDocument>
 #include <QtCore/QDate>
 #include <QtNetwork/QSslCertificate>
+#include <QStatusBar>
 #include <QStyle>
 #include <qmimedatabase.h>
 

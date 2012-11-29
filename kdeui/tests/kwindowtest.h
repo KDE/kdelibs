@@ -3,8 +3,8 @@
 
 #include <QtCore/QTimer>
 #include <QProgressBar>
+#include <QStatusBar>
 #include <kmenubar.h>
-#include <kstatusbar.h>
 #include <ktoolbar.h>
 #include <kxmlguiwindow.h>
 
@@ -47,7 +47,7 @@ public Q_SLOTS:
 protected:
     QMenu *itemsMenu;
     QMenu *completions;
-    KStatusBar *statusBar;
+    QStatusBar *statusBar;
     KToolBar *tb;
     KToolBar *tb1;
     class KLineEdit* testLineEdit;

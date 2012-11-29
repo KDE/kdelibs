@@ -24,11 +24,11 @@
 #include <kparts/part.h>
 #include <kparts/plugin.h>
 #include <kcomponentdata.h>
-#include <kstatusbar.h>
 #include <khelpmenu.h>
 
 #include <QApplication>
 #include <QPointer>
+#include <QStatusBar>
 #include <kxmlguifactory.h>
 #include <kconfiggroup.h>
 

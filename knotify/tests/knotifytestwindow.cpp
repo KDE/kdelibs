@@ -6,7 +6,6 @@
 #include "knotification.h"
 #include "knotifyconfigwidget.h"
 
-#include <kstatusbar.h>
 #include <kmessagebox.h>
 #include <klocalizedstring.h>
 #include <kstandardaction.h>
@@ -15,6 +14,8 @@
 #include <kxmlguifactory.h>
 #include <kdialog.h>
 #include <kstandarddirs.h>
+
+#include <QStatusBar>
 
 // ------------------------------------------------------------------------
 

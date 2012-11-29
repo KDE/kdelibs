@@ -26,7 +26,7 @@
 #include <kparts/kparts_export.h>
 #include <QtCore/QList>
 
-class KStatusBar;
+class QStatusBar;
 class KMainWindow;
 class QEvent;
 
@@ -93,16 +93,16 @@ namespace KParts
        * @return the statusbar of the KMainWindow in which this part is currently embedded.
        * WARNING: this could return 0L
        */
-      KStatusBar* statusBar() const;
+      QStatusBar* statusBar() const;
 
       /**
-       * This allows the hosting application to set a particular KStatusBar
+       * This allows the hosting application to set a particular QStatusBar
        * for this part. If it doesn't do this, the statusbar used will be
        * the one of the KMainWindow in which the part is embedded.
        * Konqueror uses this to assign a view-statusbar to the part.
        * The part should never call this method!
        */
-      void setStatusBar( KStatusBar* status );
+      void setStatusBar( QStatusBar* status );
 
       /**
        * Queries @p obj for a child object which inherits from this

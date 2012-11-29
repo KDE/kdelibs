@@ -20,7 +20,7 @@
 #include "qtest_kde.h"
 #include "kmainwindow_unittest.h"
 #include <kmainwindow.h>
-#include <kstatusbar.h>
+#include <QStatusBar>
 #include <kglobal.h>
 #include <QResizeEvent>
 #include <ktoolbar.h>
@@ -192,10 +192,10 @@ void KMainWindow_UnitTest::testNoAutoSave()
 
 void KMainWindow_UnitTest::testWidgetWithStatusBar()
 {
-    // KMainWindow::statusBar() should not find any indirect KStatusBar child
+    // KMainWindow::statusBar() should not find any indirect QStatusBar child
     // (e.g. in a case like konqueror, with one statusbar per frame)
     MyMainWindow mw;
     QWidget* frame1 = new QWidget(&mw);
-    KStatusBar* frameStatusBar = new KStatusBar(frame1);
+    QStatusBar* frameStatusBar = new QStatusBar(frame1);
     QVERIFY(mw.statusBar() != frameStatusBar);
 }
