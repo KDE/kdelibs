@@ -1,8 +1,8 @@
 #include <QApplication>
+#include <QMenuBar>
 #include <QToolBar>
 #include <QtCore/QTextCodec>
 
-#include <kmenubar.h>
 #include <kdebug.h>
 
 #include "kcodecactiontest.h"

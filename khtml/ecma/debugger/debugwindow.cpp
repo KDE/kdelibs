@@ -33,7 +33,6 @@
 #include <kmessagebox.h>
 #include <kguiitem.h>
 #include <kmenu.h>
-#include <kmenubar.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
@@ -65,6 +64,7 @@
 #include <kjs/context.h>
 #include <ecma/kjs_window.h>
 
+#include <QMenuBar>
 #include <QVBoxLayout>
 #include <QSplitter>
 #include <QStatusBar>

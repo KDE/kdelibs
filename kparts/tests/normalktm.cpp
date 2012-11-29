@@ -28,6 +28,7 @@
 #include <QtCore/QDir>
 #include <QCoreApplication>
 #include <QMenu>
+#include <QMenuBar>
 
 #include <kiconloader.h>
 
@@ -36,7 +37,6 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
-#include <kmenubar.h>
 #include <qstandardpaths.h>
 
 TestMainWindow::TestMainWindow()

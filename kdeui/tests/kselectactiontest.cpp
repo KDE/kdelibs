@@ -20,8 +20,8 @@
 
 #include <QToolBar>
 #include <QApplication>
+#include <QMenuBar>
 
-#include <kmenubar.h>
 #include <kdebug.h>
 
 #include "kselectactiontest.h"

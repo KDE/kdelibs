@@ -38,6 +38,7 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 #include <QLayout>
+#include <QMenuBar>
 #include <QSessionManager>
 #include <QStatusBar>
 #include <QStyle>
@@ -50,7 +51,6 @@
 #include <kdialog.h>
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
-#include <kmenubar.h>
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
@@ -63,9 +63,9 @@
 #include <ctype.h>
 #include <assert.h>
 
-static KMenuBar *internalMenuBar(KMainWindow *mw)
+static QMenuBar *internalMenuBar(KMainWindow *mw)
 {
-    return KGlobal::findDirectChild<KMenuBar *>(mw);
+    return KGlobal::findDirectChild<QMenuBar *>(mw);
 }
 
 static QStatusBar *internalStatusBar(KMainWindow *mw)
@@ -853,18 +853,6 @@ bool KMainWindow::event( QEvent* ev )
 bool KMainWindow::hasMenuBar()
 {
     return internalMenuBar(this);
-}
-
-KMenuBar *KMainWindow::menuBar()
-{
-    KMenuBar * mb = internalMenuBar(this);
-    if ( !mb ) {
-        mb = new KMenuBar( this );
-        // trigger a re-layout and trigger a call to the private
-        // setMenuBar method.
-        setMenuBar(mb);
-    }
-    return mb;
 }
 
 void KMainWindowPrivate::_k_shuttingDown()

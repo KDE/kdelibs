@@ -20,7 +20,7 @@
 #include <QPixmap>
 #include <kiconloader.h>
 #include <QStatusBar>
-#include <kmenubar.h>
+#include <QMenuBar>
 #include <ktoolbar.h>
 #include <Qt3Support/Q3PopupMenu>
 
@@ -187,7 +187,7 @@ void DockApplication::initMenuBar()
   file_menu->insertItem(p, "Set Blue Widget as MainDockWidget", this, SLOT(blueMain()) );
   file_menu->insertItem(p, "Set NULL as MainDockWidget", this, SLOT(nullMain()) );
 
-  KMenuBar* menu_bar = menuBar();
+  QMenuBar* menu_bar = menuBar();
   menu_bar->insertItem( "&Test", file_menu );
   menu_bar->insertItem( "&Docking Windows", dockHideShowMenu() );
 }

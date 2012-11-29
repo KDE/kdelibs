@@ -21,10 +21,10 @@
 #include "qtest_kde.h"
 #include "kxmlgui_unittest.h"
 #include <QShowEvent>
+#include <QMenuBar>
 #include <kedittoolbar.h>
 #include <kaction.h>
 #include <kpushbutton.h>
-#include <kmenubar.h>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
 #include "testxmlguiwindow.h"

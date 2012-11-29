@@ -36,6 +36,7 @@
 #include <QCloseEvent>
 #include <QtXml/QDomDocument>
 #include <QLayout>
+#include <QMenuBar>
 #include <QObject>
 #include <QStatusBar>
 #include <QStyle>
@@ -47,7 +48,6 @@
 #include <kedittoolbar.h>
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
-#include <kmenubar.h>
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>

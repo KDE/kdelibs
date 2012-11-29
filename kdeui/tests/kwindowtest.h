@@ -4,7 +4,7 @@
 #include <QtCore/QTimer>
 #include <QProgressBar>
 #include <QStatusBar>
-#include <kmenubar.h>
+#include <QMenuBar>
 #include <ktoolbar.h>
 #include <kxmlguiwindow.h>
 

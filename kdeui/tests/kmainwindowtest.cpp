@@ -23,7 +23,7 @@
 #include <QLabel>
 
 #include <QStatusBar>
-#include <kmenubar.h>
+#include <QMenuBar>
 
 #include "kmainwindowtest.h"
 
