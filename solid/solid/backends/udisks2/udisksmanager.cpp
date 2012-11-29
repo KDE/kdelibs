@@ -32,9 +32,10 @@ using namespace Solid::Backends::Shared;
 
 Manager::Manager(QObject *parent)
     : Solid::Ifaces::DeviceManager(parent),
+      m_connection(QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2")),
       m_manager(UD2_DBUS_SERVICE,
                 UD2_DBUS_PATH,
-                QDBusConnection::systemBus())
+                m_connection)
 {
     m_supportedInterfaces
             << Solid::DeviceInterface::GenericInterface
@@ -59,9 +60,9 @@ Manager::Manager(QObject *parent)
                                                               "org.freedesktop.DBus",
                                                               "ListActivatableNames");
 
-        QDBusReply<QStringList> reply = QDBusConnection::systemBus().call(message);
+        QDBusReply<QStringList> reply = m_connection.call(message);
         if (reply.isValid() && reply.value().contains(UD2_DBUS_SERVICE)) {
-            QDBusConnection::systemBus().interface()->startService(UD2_DBUS_SERVICE);
+            m_connection.interface()->startService(UD2_DBUS_SERVICE);
             serviceFound = true;
         }
     }
@@ -154,7 +155,7 @@ void Manager::introspect(const QString & path, bool checkOptical)
                 if (checkOptical) {
                     Device device(udi);
                     if (device.mightBeOpticalDisc()) {
-                        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                        m_connection.connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                                              SLOT(slotMediaChanged(QDBusMessage)));
                         if (!device.isOpticalDisc())  // skip empty CD disc
                             continue;

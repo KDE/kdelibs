@@ -60,6 +60,7 @@ private:
     const QStringList &deviceCache();
     void introspect(const QString & path, bool checkOptical = false);
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
+    QDBusConnection m_connection;
     org::freedesktop::DBus::ObjectManager m_manager;
     QStringList m_deviceCache;
 };

@@ -45,6 +45,7 @@ public:
     virtual int deviceMinor() const;
     virtual int deviceMajor() const;
 private:
+    QDBusConnection m_connection;
     dev_t m_devNum;
     QString m_devFile;
 };
