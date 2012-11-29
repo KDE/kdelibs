@@ -58,7 +58,6 @@
 #include "kcurrencycode.h"
 #include "klocalizedstring.h"
 #include "kconfiggroup.h"
-#include "common_helpers_p.h"
 #include "kdayperiod_p.h"
 
 class KLocaleStaticData

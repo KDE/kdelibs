@@ -42,7 +42,6 @@
 #include "kcalendarsystem.h"
 #include "kdayperiod_p.h"
 #include "kcurrencycode.h"
-#include "common_helpers_p.h"
 
 KLocale::KLocale(KSharedConfig::Ptr config)
 #if defined Q_OS_WIN

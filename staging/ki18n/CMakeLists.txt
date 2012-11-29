@@ -16,7 +16,7 @@ find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core Test)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KI18N
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ki18n_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ki18n.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ki18nConfigVersion.cmake")
 
 remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

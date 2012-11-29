@@ -61,8 +61,6 @@ include_directories( ${CMAKE_BINARY_DIR}/staging/kservice/src
 )
 include_directories( ${ki18n_SOURCE_DIR}/src )
 include_directories( ${ki18n_BINARY_DIR}/src )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/ki18n/src )
-include_directories( ${CMAKE_BINARY_DIR}/staging/ki18n/src )
 
 if (KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDECORE_NO_KDE3SUPPORT TRUE)
