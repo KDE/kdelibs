@@ -27,7 +27,7 @@
  * Allows KIO classes to display dialog boxes with the correct
  * theme/style even in non-GUI apps like kded and kfmclient
  */
-class KIO_EXPORT KMessageBoxWrapper : public KMessageBox
+class KIO_EXPORT KMessageBoxWrapper // : public KMessageBox
 {
 public:
     static void error(QWidget *parent,

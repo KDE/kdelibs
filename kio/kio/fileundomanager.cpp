@@ -781,7 +781,7 @@ bool FileUndoManager::UiInterface::copiedFileWasModified(const QUrl& src, const 
         KStandardGuiItem::cont(),
         KStandardGuiItem::cancel(),
         QString(),
-        KMessageBox::Notify | KMessageBox::Dangerous) == KMessageBox::Continue;
+        KMessageBox::Options( KMessageBox::Notify ) | KMessageBox::Dangerous) == KMessageBox::Continue;
 }
 
 bool FileUndoManager::UiInterface::confirmDeletion(const QList<QUrl>& files)

@@ -27,8 +27,6 @@
 #include <kguiitem.h>
 #include <kstandardguiitem.h>
 
-#include <kdeui_export.h>
-
 class QWidget;
 class QStringList;
 class KConfig;
@@ -44,7 +42,7 @@ class KDialog;
   * be plaintext or richtext. If the text is plaintext, a newline-character
   * may be used to indicate the end of a paragraph.
   *
-  * @port4 Where applicable, the static functions now take an additional
+  * @port4 Where applicable, the functions now take an additional
   *        argument to specify the cancel button. Since a default argument is
   *        provided, this will affect your code only, if you specified
   *        dontAskAgainName and/or options. In those cases, adding an additional
@@ -61,9 +59,8 @@ class KDialog;
   *
   * @author Waldo Bastian (bastian@kde.org)
   */
-class KDEUI_EXPORT KMessageBox
+namespace KMessageBox
 {
-public:
   /**
    * Button types.
    **/
@@ -101,6 +98,13 @@ public:
 
  Q_DECLARE_FLAGS(Options,Option)
 
+} // namespace
+
+// This declaration must be defined before first Option is used in method signatures AND outside the namespace
+Q_DECLARE_OPERATORS_FOR_FLAGS(KMessageBox::Options)
+
+namespace KMessageBox
+{
  /**
   * Display a simple "question" dialog.
   *
@@ -129,7 +133,7 @@ public:
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
 
- static int questionYesNo(QWidget *parent,
+ int questionYesNo(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -140,7 +144,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- static int questionYesNoWId(WId parent_id,
+ int questionYesNoWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -177,7 +181,7 @@ public:
   * The default button is "Yes". Pressing "Esc" selects "Cancel".
   */
 
-  static int questionYesNoCancel(QWidget *parent,
+  int questionYesNoCancel(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -190,7 +194,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static int questionYesNoCancelWId(WId parent_id,
+  int questionYesNoCancelWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -231,7 +235,7 @@ public:
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
 
- static int questionYesNoList(QWidget *parent,
+ int questionYesNoList(QWidget *parent,
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString(),
@@ -244,7 +248,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- static int questionYesNoListWId(WId parent_id,
+ int questionYesNoListWId(WId parent_id,
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString(),
@@ -281,7 +285,7 @@ public:
   *
   * The default button is "No". Pressing "Esc" selects "No".
   */
- static int warningYesNo(QWidget *parent,
+ int warningYesNo(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -293,7 +297,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- static int warningYesNoWId(WId parent_id,
+ int warningYesNoWId(WId parent_id,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -333,7 +337,7 @@ public:
   * The default button is "No". Pressing "Esc" selects "No".
   */
 
- static int warningYesNoList(QWidget *parent,
+ int warningYesNoList(QWidget *parent,
                             const QString &text,
                             const QStringList &strlist,
                             const QString &caption = QString(),
@@ -346,7 +350,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- static int warningYesNoListWId(WId parent_id,
+ int warningYesNoListWId(WId parent_id,
                             const QString &text,
                             const QStringList &strlist,
                             const QString &caption = QString(),
@@ -383,7 +387,7 @@ public:
   *
   * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
   */
- static int warningContinueCancel(QWidget *parent,
+ int warningContinueCancel(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
@@ -395,7 +399,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- static int warningContinueCancelWId(WId parent_id,
+ int warningContinueCancelWId(WId parent_id,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
@@ -435,7 +439,7 @@ public:
   *
   * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
   */
- static int warningContinueCancelList(QWidget *parent,
+ int warningContinueCancelList(QWidget *parent,
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString(),
@@ -448,7 +452,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- static int warningContinueCancelListWId(WId parent_id,
+ int warningContinueCancelListWId(WId parent_id,
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString(),
@@ -491,7 +495,7 @@ public:
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   */
 
-  static int warningYesNoCancel(QWidget *parent,
+  int warningYesNoCancel(QWidget *parent,
                                 const QString &text,
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -504,7 +508,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static int warningYesNoCancelWId(WId parent_id,
+  int warningYesNoCancelWId(WId parent_id,
                                 const QString &text,
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -550,7 +554,7 @@ public:
   *
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   */
-  static int warningYesNoCancelList(QWidget *parent,
+  int warningYesNoCancelList(QWidget *parent,
                                 const QString &text,
                                 const QStringList &strlist,
                                 const QString &caption = QString(),
@@ -564,7 +568,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static int warningYesNoCancelListWId(WId parent_id,
+  int warningYesNoCancelListWId(WId parent_id,
                                 const QString &text,
                                 const QStringList &strlist,
                                 const QString &caption = QString(),
@@ -595,7 +599,7 @@ public:
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  static void error(QWidget *parent,
+  void error(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -604,7 +608,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static void errorWId(WId parent_id,
+  void errorWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -633,7 +637,7 @@ public:
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  static void errorList(QWidget *parent,
+  void errorList(QWidget *parent,
                     const QString &text,
                     const QStringList &strlist,
                     const QString &caption = QString(),
@@ -644,7 +648,7 @@ public:
   * of QWidget*. It should be used only when necessary.
   */
 
-  static void errorListWId(WId parent_id,
+  void errorListWId(WId parent_id,
                     const QString &text,
                     const QStringList &strlist,
                     const QString &caption = QString(),
@@ -674,7 +678,7 @@ public:
   *
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
-  static void detailedError(QWidget *parent,
+  void detailedError(QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -684,7 +688,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static void detailedErrorWId(WId parent_id,
+  void detailedErrorWId(WId parent_id,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -700,7 +704,7 @@ public:
    * Note that if the parent gets deleted, the messagebox will not be
    * shown.
    */
-  static void queuedDetailedError( QWidget *parent,
+  void queuedDetailedError( QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString());
@@ -709,7 +713,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static void queuedDetailedErrorWId( WId parent_id,
+  void queuedDetailedErrorWId( WId parent_id,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString());
@@ -734,7 +738,7 @@ public:
   * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
 
-  static void sorry(QWidget *parent,
+  void sorry(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -743,7 +747,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static void sorryWId(WId parent_id,
+  void sorryWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -774,7 +778,7 @@ public:
   * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
 
-  static void detailedSorry(QWidget *parent,
+  void detailedSorry(QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -784,7 +788,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static void detailedSorryWId(WId parent_id,
+  void detailedSorryWId(WId parent_id,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -814,7 +818,7 @@ public:
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  static void information(QWidget *parent,
+  void information(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const QString &dontShowAgainName = QString(),
@@ -824,7 +828,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static void informationWId(WId parent_id,
+  void informationWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
                           const QString &dontShowAgainName = QString(),
@@ -857,7 +861,7 @@ public:
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  static void informationList(QWidget *parent,
+  void informationList(QWidget *parent,
 			      const QString &text,
 			      const QStringList & strlist,
 			      const QString &caption = QString(),
@@ -868,7 +872,7 @@ public:
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  static void informationListWId(WId parent_id,
+  void informationListWId(WId parent_id,
 			      const QString &text,
 			      const QStringList & strlist,
 			      const QString &caption = QString(),
@@ -879,7 +883,7 @@ public:
    * Enable all messages which have been turned off with the
    * @p dontShowAgainName feature.
    */
-  static void enableAllMessages();
+  void enableAllMessages();
 
   /**
    * Re-enable a specific @p dontShowAgainName messages that had
@@ -887,7 +891,7 @@ public:
    * @see saveDontShowAgainYesNo()
    * @see saveDontShowAgainContinue()
    */
-  static void enableMessage(const QString &dontShowAgainName);
+  void enableMessage(const QString &dontShowAgainName);
 
   /**
    * Display an "About" dialog.
@@ -906,7 +910,7 @@ public:
    *
    *  NOTE: The ok button will always have the i18n'ed text '&OK'.
    */
-  static void about(QWidget *parent,
+  void about(QWidget *parent,
 		    const QString& text,
 		    const QString& caption = QString(),
                     Options options = Notify);
@@ -936,7 +940,7 @@ public:
      * @return a button code, as defined in KMessageBox.
      */
 
-    static int messageBox( QWidget *parent, DialogType type, const QString &text,
+    int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
@@ -948,7 +952,7 @@ public:
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      */
-    static int messageBoxWId( WId parent_id, DialogType type, const QString &text,
+    int messageBoxWId( WId parent_id, DialogType type, const QString &text,
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
@@ -968,7 +972,7 @@ public:
      * Note that if the parent gets deleted, the messagebox will not be
      * shown.
      */
-    static void queuedMessageBox( QWidget *parent,
+    void queuedMessageBox( QWidget *parent,
                     DialogType type, const QString &text,
                     const QString &caption,
                     Options options );
@@ -977,7 +981,7 @@ public:
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      */
-    static void queuedMessageBoxWId( WId parent_id,
+    void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
                     const QString &caption,
                     Options options );
@@ -988,7 +992,7 @@ public:
      * This is an overloaded member function, provided for convenience.
      * It behaves essentially like the above function.
      */
-    static void queuedMessageBox( QWidget *parent,
+    void queuedMessageBox( QWidget *parent,
                     DialogType type, const QString &text,
                     const QString &caption = QString() );
 
@@ -996,7 +1000,7 @@ public:
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      */
-    static void queuedMessageBoxWId( WId parent_id,
+    void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
                     const QString &caption = QString() );
 
@@ -1008,7 +1012,7 @@ public:
      * time the message box was shown. Only meaningful, if the message box
      * should not be shown.
      */
-    static bool shouldBeShownYesNo(const QString &dontShowAgainName,
+    bool shouldBeShownYesNo(const QString &dontShowAgainName,
                                    ButtonCode &result);
     /**
      * @return true if the corresponding continue/cancel message box should be
@@ -1016,7 +1020,7 @@ public:
      * @param dontShowAgainName the name that identify the message box. If
      * empty, true is always returned.
      */
-    static bool shouldBeShownContinue(const QString &dontShowAgainName);
+    bool shouldBeShownContinue(const QString &dontShowAgainName);
 
     /**
      * Save the fact that the yes/no message box should not be shown again.
@@ -1025,7 +1029,7 @@ public:
      * @param result the value (Yes or No) that should be used as the result
      * for the message box.
      */
-    static void saveDontShowAgainYesNo(const QString &dontShowAgainName,
+    void saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                        ButtonCode result);
 
     /**
@@ -1034,13 +1038,13 @@ public:
      * @param dontShowAgainName the name that identify the message box. If
      * empty, this method does nothing.
      */
-    static void saveDontShowAgainContinue(const QString &dontShowAgainName);
+    void saveDontShowAgainContinue(const QString &dontShowAgainName);
 
     /**
      * Use @p cfg for all settings related to the dontShowAgainName feature.
      * If @p cfg is 0 (default) KGlobal::config() will be used.
      */
-    static void setDontShowAskAgainConfig(KConfig* cfg); // TODO rename to setDontShowAgainConfig
+    void setDontShowAskAgainConfig(KConfig* cfg); // TODO rename to setDontShowAgainConfig
 
     /**
      * Create content and layout of a standard dialog
@@ -1066,7 +1070,7 @@ public:
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    static int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon, //krazy:exclude=qclasses
+    int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon, //krazy:exclude=qclasses
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString());
@@ -1098,13 +1102,11 @@ public:
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    static int createKMessageBox(KDialog *dialog, const QIcon &icon,
+    int createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information); //krazy:exclude=qclasses
-};
-
-Q_DECLARE_OPERATORS_FOR_FLAGS(KMessageBox::Options)
+}
 
 #endif
