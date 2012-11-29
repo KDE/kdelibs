@@ -282,7 +282,6 @@ set(kdeui_LIB_SRCS
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
  widgets/ksqueezedtextlabel.cpp
- widgets/kstatusbar.cpp
  widgets/kstringvalidator.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
@@ -633,7 +632,6 @@ install( FILES
  widgets/ktabbar.h
  widgets/ktabwidget.h
  widgets/kshortcutwidget.h
- widgets/kstatusbar.h
  widgets/ktoolbar.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h

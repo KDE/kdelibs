@@ -12,7 +12,7 @@ include(ECMMarkAsTest)
 macro(KDE4SUPPORT_EXAMPLES)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
-    target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTMAIN_LIBRARY} kdecore kcoreaddons ki18n)
+    target_link_libraries(${_testname} kde4support ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTMAIN_LIBRARY} kdecore kdeui kcoreaddons ki18n)
     if(WINCE)
       target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
     endif(WINCE)
@@ -25,6 +25,7 @@ kde4support_examples(
   kcmdlineargstest
   kdialogbuttonboxtest
   khboxtest
+  kstatusbartest
   ksystemtraytest
 )
 

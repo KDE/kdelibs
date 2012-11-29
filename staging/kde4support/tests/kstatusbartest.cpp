@@ -31,6 +31,7 @@ testWindow::testWindow (QWidget *)
     connect( action, SIGNAL(triggered()), qApp, SLOT(quit()) );
 
     statusbar = new KStatusBar (this);
+    setStatusBar(statusbar);
     statusbar->insertItem("Zoom: XXXX", 0);
     statusbar->insertItem("XXX", 1);
     statusbar->insertItem("Line: XXXXX", 2);

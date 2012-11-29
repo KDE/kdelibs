@@ -99,7 +99,6 @@ KDEUI_EXECUTABLE_TESTS(
   kprogressdialogtest
   krulertest
   kselectactiontest
-  kstatusbartest
   ksqueezedtextlabeltest
   ktabwidgettest
   ktextedittest
