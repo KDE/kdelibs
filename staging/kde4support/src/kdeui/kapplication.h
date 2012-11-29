@@ -104,11 +104,12 @@ public:
   static KApplication* kApplication();
 
   /**
+   * @deprecated
    * Returns the application session config object.
    *
    * @return A pointer to the application's instance specific
    * KConfig object.
-   * @see KConfig
+   * @see KConfigGui::sessionConfig
    */
   KConfig* sessionConfig();
 
@@ -257,17 +258,21 @@ public:
 #endif
 
   /**
+   * @deprecated
    * Returns the app startup notification identifier for this running
    * application.
    * @return the startup notification identifier
+   * @see KStartupInfo::startupId
    */
   QByteArray startupId() const;
 
   /**
    * @internal
+   * @deprecated
    * Sets a new value for the application startup notification window property for newly
    * created toplevel windows.
    * @param startup_id the startup notification identifier
+   * @see KStartupInfo::setStartupId
    * @see KStartupInfo::setNewStartupId
    */
   void setStartupId( const QByteArray& startup_id );
@@ -278,8 +283,10 @@ public:
   void clearStartupId();
 
   /**
+   * @deprecated
    * Returns the last user action timestamp or 0 if no user activity has taken place yet.
    * @see updateuserTimestamp
+   * @see KUserTimestamp::userTimestamp
    */
   unsigned long userTimestamp() const;
 
@@ -320,9 +327,11 @@ public:
 
 public Q_SLOTS:
   /**
+   * @deprecated
    * Updates the last user action timestamp to the given time, or to the current time,
    * if 0 is given. Do not use unless you're really sure what you're doing.
    * Consult focus stealing prevention section in kdebase/kwin/README.
+   * @see KUserTimestamp::updateUserTimestamp
    */
   Q_SCRIPTABLE void updateUserTimestamp( int time = 0 );
 

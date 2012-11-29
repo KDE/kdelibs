@@ -27,6 +27,7 @@
 #include <QSessionManager>
 
 /**
+   @deprecated
    Provides highlevel access to session management on a per-object
    base.
 
@@ -41,6 +42,8 @@
 
   @short Highlevel access to session management.
   @author Matthias Ettrich <ettrich@kde.org>
+  @see QApplication::saveStateRequest
+  @see QApplication::commitDataRequest
  */
 class KDE4SUPPORT_EXPORT KSessionManager
 {
