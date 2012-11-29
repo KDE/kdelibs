@@ -6,7 +6,7 @@ set(kjsapi_LIB_SRCS
     kjsarguments.cpp
    )
 
-add_library(kjsapi ${LIBRARY_TYPE} ${kjsapi_LIB_SRCS})
+add_library(kjsapi ${kjsapi_LIB_SRCS})
 generate_export_header(kjsapi)
 
 target_link_libraries(kjsapi ${KJSLIBNAME} ${QT_QTCORE_LIBRARY})

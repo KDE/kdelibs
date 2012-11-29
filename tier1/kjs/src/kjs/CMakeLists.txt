@@ -41,9 +41,9 @@ if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
 
    cmake_pop_check_state()
 
-   # Even though we "support" non-PCRE builds, if we build PCRE, we want a version 
-   # recent enough, and we don't want to fallback to a completely crippled 
-   # POSIX code just like that. 
+   # Even though we "support" non-PCRE builds, if we build PCRE, we want a version
+   # recent enough, and we don't want to fallback to a completely crippled
+   # POSIX code just like that.
    if (NOT HAVE_PCRE_UTF8  OR NOT  HAVE_PCRE_STACK)
       message(FATAL_ERROR "Your libPCRE is too old. KJS requires at least PCRE4.5")
    endif (NOT HAVE_PCRE_UTF8  OR NOT  HAVE_PCRE_STACK)
@@ -188,7 +188,7 @@ else (NOT DEFINED QT_ONLY)
 endif (NOT DEFINED QT_ONLY)
 
 
-add_library(${KJSLIBNAME} ${LIBRARY_TYPE} ${kjs_LIB_SRCS})
+add_library(${KJSLIBNAME} ${kjs_LIB_SRCS})
 
 if(WIN32)
    target_link_libraries(${KJSLIBNAME} ${KDEWIN_LIBRARIES})
@@ -256,7 +256,7 @@ add_subdirectory(api)
 #     CommonIdentifiers.h
 #
 #     ${CMAKE_CURRENT_BINARY_DIR}/global.h
-# 
+#
 #     DESTINATION  ${INCLUDE_INSTALL_DIR}/kjs COMPONENT Devel )
 
 

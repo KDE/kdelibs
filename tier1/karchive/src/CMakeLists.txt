@@ -45,7 +45,7 @@ set(karchive_SRCS
    kzip.cpp
 )
 
-add_library(karchive ${LIBRARY_TYPE} ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
+add_library(karchive ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 generate_export_header(karchive)
 
 target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${QtMimeTypes_LIBRARY} kdeqt5staging)

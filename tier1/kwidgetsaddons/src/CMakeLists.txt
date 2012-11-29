@@ -8,7 +8,7 @@ set(kwidgetsaddons_SRCS
   kseparator.cpp
 )
 
-add_library(kwidgetsaddons SHARED ${kwidgetsaddons_SRCS})
+add_library(kwidgetsaddons ${kwidgetsaddons_SRCS})
 generate_export_header(kwidgetsaddons)
 
 target_link_libraries(kwidgetsaddons ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
