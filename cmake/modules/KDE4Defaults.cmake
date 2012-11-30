@@ -22,11 +22,11 @@ set(CMAKE_INCLUDE_DIRECTORIES_PROJECT_BEFORE ON)
 # this makes it easy to advance it when the next KDE release comes
 # Use this version number for libraries which are at version n in KDE version n
 set(GENERIC_LIB_VERSION "4.9.4")
-set(GENERIC_LIB_SOVERSION "5")
+set(GENERIC_LIB_SOVERSION "4")
 
 # Use this version number for libraries which are already at version n+1 in KDE version n
 set(KDE_NON_GENERIC_LIB_VERSION "5.9.4")
-set(KDE_NON_GENERIC_LIB_SOVERSION "6")
+set(KDE_NON_GENERIC_LIB_SOVERSION "5")
 
 # windows does not support LD_LIBRARY_PATH or similar
 # all searchable directories has to be defined by the PATH environment var
