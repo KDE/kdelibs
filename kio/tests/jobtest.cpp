@@ -1410,6 +1410,20 @@ void JobTest::mimeType()
 #endif
 }
 
+void JobTest::mimeTypeError()
+{
+    // KIO::mimetype() on a file that doesn't exist
+    const QString filePath = homeTmpDir() + "doesNotExist";
+    KIO::MimetypeJob* job = KIO::mimetype(QUrl::fromLocalFile(filePath), KIO::HideProgressInfo);
+    QVERIFY(job);
+    QSignalSpy spyMimeType(job, SIGNAL(mimetype(KIO::Job*,QString)));
+    QSignalSpy spyResult(job, SIGNAL(result(KJob*)));
+    bool ok = KIO::NetAccess::synchronousRun(job, 0);
+    QVERIFY(!ok);
+    QCOMPARE(spyMimeType.count(), 0);
+    QCOMPARE(spyResult.count(), 1);
+}
+
 void JobTest::moveFileDestAlreadyExists() // #157601
 {
     const QString file1 = homeTmpDir() + "fileFromHome";

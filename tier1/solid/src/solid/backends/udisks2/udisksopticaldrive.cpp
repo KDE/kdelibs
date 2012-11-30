@@ -59,7 +59,7 @@ bool OpticalDrive::eject()
     m_device->broadcastActionRequested("eject");
 
     const QString path = m_device->udi();
-    QDBusConnection c = QDBusConnection::systemBus();
+    QDBusConnection c = QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2::OpticalDrive::" + path);
 
     // if the device is mounted, unmount first
     QString blockPath;

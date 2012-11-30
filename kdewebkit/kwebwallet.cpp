@@ -32,6 +32,8 @@
 #include <QtCore/QScopedPointer>
 #include <QtWebKit/QWebPage>
 #include <QtWebKit/QWebFrame>
+#include <QtWebKit/QWebElement>
+#include <QtWebKit/QWebElementCollection>
 #include <qwindowdefs.h>
 
 #define QL1S(x)   QLatin1String(x)
@@ -44,26 +46,37 @@
     if (formList.length > 0) { \
         forms = new Array; \
         for (var i = 0; i < formList.length; ++i) { \
-            var inputList = formList[i].querySelectorAll('input[type=text]:not([disabled]):not([autocomplete=off]),\
-                                                          input[type=email]:not([disabled]):not([autocomplete=off]),\
-                                                          input[type=password]:not([disabled]):not([autocomplete=off]),\
-                                                          input:not([type]):not([disabled]):not([autocomplete=off])'); \
+            var inputList = formList[i].elements; \
             if (inputList.length < 1) { \
                 continue; \
             } \
             var formObject = new Object; \
             formObject.name = formList[i].name; \
+            if (typeof(formObject.name) != 'string') { \
+                formObject.name = String(formList[i].id); \
+            } \
             formObject.index = i; \
             formObject.elements = new Array; \
             for (var j = 0; j < inputList.length; ++j) { \
+                if (inputList[j].type != 'text' && inputList[j].type != 'email' && inputList[j].type != 'password') { \
+                    continue; \
+                } \
+                if (inputList[j].disabled || inputList[j].autocomplete == 'off') { \
+                    continue; \
+                } \
                 var element = new Object; \
                 element.name = inputList[j].name; \
-                element.value = inputList[j].value; \
-                element.type = inputList[j].type; \
-                element.readonly = inputList[j].hasAttribute('readonly'); \
+                if (typeof(element.name) != 'string' ) { \
+                    element.name = String(inputList[j].id); \
+                } \
+                element.value = String(inputList[j].value); \
+                element.type = String(inputList[j].type); \
+                element.readonly = Boolean(inputList[j].readOnly); \
                 formObject.elements.push(element); \
             } \
-            forms.push(formObject); \
+            if (formObject.elements.length > 0) { \
+                forms.push(formObject); \
+            } \
         } \
     } \
     return forms; \
@@ -152,9 +165,9 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
     Q_ASSERT(frame);
 
     KWebWallet::WebFormList list;
+
     const QVariant result (frame->evaluateJavaScript(QL1S(FILLABLE_FORM_ELEMENT_EXTRACTOR_JS)));
     const QVariantList results (result.toList());
-
     Q_FOREACH (const QVariant &formVariant, results) {
         QVariantMap map = formVariant.toMap();
         KWebWallet::WebForm form;
@@ -536,7 +549,7 @@ void KWebWallet::fillWebForm(const QUrl &url, const KWebWallet::WebFormList &for
     Q_FOREACH (const KWebWallet::WebForm& form, forms) {
         Q_FOREACH(const KWebWallet::WebForm::WebField& field, form.fields) {
             QString value = field.second;
-            value.replace(QLatin1Char('\\'), QLatin1String("\\\\"));
+            value.replace(QL1C('\\'), QL1S("\\\\"));
             script += QString::fromLatin1("if (document.forms[\"%1\"].elements[\"%2\"]) document.forms[\"%1\"].elements[\"%2\"].value=\"%3\";\n")
                         .arg((form.name.isEmpty() ? form.index : form.name))
                         .arg(field.first).arg(value);

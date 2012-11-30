@@ -92,18 +92,19 @@ static QString formatByteSize(double size)
 Device::Device(const QString &udi)
     : Solid::Ifaces::Device()
     , m_udi(udi)
+    , m_connection(QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2::Device::" + udi))
 {
     m_device = new QDBusInterface(UD2_DBUS_SERVICE, m_udi,
                                   QString(), // no interface, we aggregate them
-                                  QDBusConnection::systemBus());
+                                  m_connection);
 
     if (m_device->isValid()) {
-        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+        m_connection.connect(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                              SLOT(slotPropertiesChanged(QString,QVariantMap,QStringList)));
 
-        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesAdded",
+        m_connection.connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesAdded",
                                              this, SLOT(slotInterfacesAdded(QDBusObjectPath,QVariantMapMap)));
-        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesRemoved",
+        m_connection.connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesRemoved",
                                              this, SLOT(slotInterfacesRemoved(QDBusObjectPath,QStringList)));
 
         initInterfaces();
@@ -493,9 +494,9 @@ QString Device::volumeDescription() const
     if (isEncryptedContainer())
     {
         if (!size_str.isEmpty())
-            description = QCoreApplication::translate("", "%1 Encrypted Container", "%1 is the size").arg(size_str);
+            description = QCoreApplication::translate("", "%1 Encrypted Drive", "%1 is the size").arg(size_str);
         else
-            description = QCoreApplication::translate("", "Encrypted Container");
+            description = QCoreApplication::translate("", "Encrypted Drive");
     }
     else if (drive_type == Solid::StorageDrive::HardDisk && !drive_is_removable)
     {
@@ -618,20 +619,21 @@ QString Device::icon() const
 
 QString Device::product() const
 {
-    QString product = prop("Model").toString();
-
     if (!isDrive()) {
-        QString label = prop("IdLabel").toString();
-        if (!label.isEmpty()) {
-            product = label;
-        }
+        Device drive(drivePath());
+        return drive.prop("Model").toString();
     }
 
-    return product;
+    return prop("Model").toString();
 }
 
 QString Device::vendor() const
 {
+    if (!isDrive()) {
+        Device drive(drivePath());
+        return drive.prop("Vendor").toString();
+    }
+
     return prop("Vendor").toString();
 }
 
@@ -644,9 +646,7 @@ QString Device::parentUdi() const
 {
     QString parent;
 
-    if (isEncryptedContainer())
-        parent = prop("CryptoBackingDevice").value<QDBusObjectPath>().path();
-    else if (propertyExists("Drive"))  // block
+    if (propertyExists("Drive"))  // block
         parent = prop("Drive").value<QDBusObjectPath>().path();
     else if (propertyExists("Table"))  // partition
         parent = prop("Table").value<QDBusObjectPath>().path();
@@ -669,7 +669,7 @@ void Device::checkCache(const QString &key) const
     if (reply.isValid()) {
         m_cache.insert(key, reply);
     } else {
-        qWarning() << "got invalid reply for cache:" << key;
+        //qDebug() << "got invalid reply for cache:" << key;
     }
 }
 
@@ -677,7 +677,7 @@ QString Device::introspect() const
 {
     QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi,
                                                        DBUS_INTERFACE_INTROSPECT, "Introspect");
-    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
+    QDBusPendingReply<QString> reply = m_connection.asyncCall(call);
     reply.waitForFinished();
 
     if (reply.isValid())
@@ -707,7 +707,7 @@ QVariantMap Device::allProperties() const
         if (iface.startsWith("org.freedesktop.DBus"))
             continue;
         call.setArguments(QVariantList() << iface);
-        QDBusPendingReply<QVariantMap> reply = QDBusConnection::systemBus().asyncCall(call);
+        QDBusPendingReply<QVariantMap> reply = m_connection.asyncCall(call);
         reply.waitForFinished();
 
         if (reply.isValid())

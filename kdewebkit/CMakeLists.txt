@@ -1,5 +1,7 @@
 project(kdewebkit)
 
+macro_log_feature(QT_QTWEBKIT_FOUND "QtWebKit" "Needed for building kdelibs" "http://trac.webkit.org/wiki/QtWebKit" TRUE "" "")
+
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${KDE4_KDEUI_INCLUDES}

@@ -30,7 +30,8 @@
 using namespace Solid::Backends::UDisks2;
 
 Block::Block(Device *dev)
-    : DeviceInterface(dev)
+    : DeviceInterface(dev),
+    m_connection(QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2::Block::" + dev->udi()))
 {
     m_devNum = m_device->prop("DeviceNumber").toULongLong();
     m_devFile = QFile::decodeName(m_device->prop("Device").toByteArray());
@@ -40,7 +41,7 @@ Block::Block(Device *dev)
         const QString path = "/org/freedesktop/UDisks2/block_devices";
         QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path,
                                                            DBUS_INTERFACE_INTROSPECT, "Introspect");
-        QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
+        QDBusPendingReply<QString> reply = m_connection.asyncCall(call);
         reply.waitForFinished();
 
         if (reply.isValid()) {

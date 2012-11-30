@@ -251,8 +251,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& mimeType)
 {
-    KService::Ptr dummy;
-    return handleNonEmbeddable(mimeType, &dummy);
+    return handleNonEmbeddable(mimeType, NULL);
 }
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _mimeType, KService::Ptr* selectedService)
@@ -306,8 +305,11 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                          this, SLOT(slotCopyToTempFileResult(KJob*)) );
                 return Delayed; // We'll continue after the job has finished
             }
-            if (selectedService)
+            if (selectedService) {
                 *selectedService = question.selectedService();
+                // KRun will use this when starting an app
+                KRun::setPreferredService(question.selectedService()->desktopEntryName());
+            }
         }
     }
 

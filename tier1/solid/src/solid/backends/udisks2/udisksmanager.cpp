@@ -32,9 +32,10 @@ using namespace Solid::Backends::Shared;
 
 Manager::Manager(QObject *parent)
     : Solid::Ifaces::DeviceManager(parent),
+      m_connection(QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2")),
       m_manager(UD2_DBUS_SERVICE,
                 UD2_DBUS_PATH,
-                QDBusConnection::systemBus())
+                m_connection)
 {
     m_supportedInterfaces
             << Solid::DeviceInterface::GenericInterface
@@ -59,9 +60,9 @@ Manager::Manager(QObject *parent)
                                                               "org.freedesktop.DBus",
                                                               "ListActivatableNames");
 
-        QDBusReply<QStringList> reply = QDBusConnection::systemBus().call(message);
+        QDBusReply<QStringList> reply = m_connection.call(message);
         if (reply.isValid() && reply.value().contains(UD2_DBUS_SERVICE)) {
-            QDBusConnection::systemBus().interface()->startService(UD2_DBUS_SERVICE);
+            m_connection.interface()->startService(UD2_DBUS_SERVICE);
             serviceFound = true;
         }
     }
@@ -129,37 +130,6 @@ QStringList Manager::allDevices()
 {
     m_deviceCache.clear();
 
-#if 0
-    QDBusPendingReply<DBUSManagerStruct> reply = m_manager.GetManagedObjects();
-    reply.waitForFinished();
-    if (!reply.isError()) {  // enum devices
-        m_deviceCache << udiPrefix();
-
-        Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
-            const QString udi = path.path();
-            //qDebug() << "Adding device" << udi;
-
-            if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
-                continue;
-
-            Device device(udi);
-            if (device.mightBeOpticalDisc()) {
-                QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
-                                                     SLOT(slotMediaChanged(QDBusMessage)));
-                if (!device.isOpticalDisc())  // skip empty CD disc
-                    continue;
-            }
-
-            m_deviceCache.append(udi);
-        }
-    }
-    else  // show error
-    {
-        qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
-    }
-
-#endif
-
     introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
     introspect("/org/freedesktop/UDisks2/drives");
 
@@ -185,7 +155,7 @@ void Manager::introspect(const QString & path, bool checkOptical)
                 if (checkOptical) {
                     Device device(udi);
                     if (device.mightBeOpticalDisc()) {
-                        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                        m_connection.connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                                              SLOT(slotMediaChanged(QDBusMessage)));
                         if (!device.isOpticalDisc())  // skip empty CD disc
                             continue;

@@ -1579,6 +1579,7 @@ void Ftp::listDir( const QUrl &url )
       //   kDebug(7102) << "is a link to " << ftpEnt.link;
       ftpCreateUDSEntry( ftpEnt.name, ftpEnt, entry, false );
       listEntry( entry, false );
+      entry.clear();
     }
   }
 
@@ -1587,6 +1588,7 @@ void Ftp::listDir( const QUrl &url )
     fixupEntryName(&ftpEnt);
     ftpCreateUDSEntry( ftpEnt.name, ftpEnt, entry, false );
     listEntry( entry, false );
+    entry.clear();
   }
 
   listEntry( entry, true ); // ready

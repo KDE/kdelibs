@@ -104,6 +104,8 @@ private:
 
     void checkCache(const QString &key) const;
     QString introspect() const;
+
+    QDBusConnection m_connection;
 };
 
 }

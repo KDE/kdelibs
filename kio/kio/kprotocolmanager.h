@@ -679,7 +679,7 @@ public:
   /**
    * Returns the charset to use for the specified @ref url.
    *
-   * @since 5.0
+   * @since 4.10
    */
   static QString charsetFor(const QUrl& url);
 

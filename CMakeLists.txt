@@ -25,7 +25,7 @@ set (KDE_VERSION_MINOR 90)
 set (KDE_VERSION_RELEASE 00)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
 # For git master, use this:
-set (KDE_VERSION_STRING "${KDE_VERSION} (KDE Frameworks >= 20120113)")
+set (KDE_VERSION_STRING "${KDE_VERSION} (KDE Frameworks >= 20121130)")
 # For a stable release, use this:
 #set (KDE_VERSION_STRING "${KDE_VERSION}")
 

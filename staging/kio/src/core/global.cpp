@@ -23,6 +23,7 @@
 #include <klocale.h>
 #include <qmimedatabase.h>
 #include <QtDBus/QtDBus>
+#include <QHash>
 
 // If someone wants the SI-standard prefixes kB/MB/GB/TB, I would recommend
 // a hidden kconfig option and getting the code from #57240 into the same
@@ -191,15 +192,37 @@ static bool useFavIcons()
 
 QString KIO::favIconForUrl(const QUrl& url)
 {
+    /* The kded module also caches favicons, for one week, without any way
+     * to clean up the cache meanwhile.
+     * On the other hand, this QHash will get cleaned up after 5000 request
+     * (a selection in konsole of 80 chars generates around 500 requests)
+     * or by simply restarting the application (or the whole desktop,
+     * more likely, for the case of konqueror or konsole).
+     */
+    static QHash<QUrl, QString> iconNameCache;
+    static int autoClearCache = 0;
+    const QString notFound = QLatin1String("NOTFOUND");
+
     if (url.isLocalFile()
         || !url.scheme().startsWith(QLatin1String("http"))
         || !useFavIcons())
         return QString();
 
+    QString iconNameFromCache = iconNameCache.value(url, notFound);
+    if (iconNameFromCache != notFound) {
+        if ((++autoClearCache) < 5000) {
+            return iconNameFromCache;
+        } else {
+            iconNameCache.clear();
+            autoClearCache = 0;
+        }
+    }
+
     QDBusInterface kded( QString::fromLatin1("org.kde.kded5"),
                          QString::fromLatin1("/modules/favicons"),
                          QString::fromLatin1("org.kde.FavIcon") );
     QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.toString() );
+    iconNameCache.insert(url, result.value());
     return result;              // default is QString()
 }
 

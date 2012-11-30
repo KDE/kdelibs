@@ -49,6 +49,7 @@
 #include <kbookmark.h>
 
 #include <kio/netaccess.h>
+#include <kprotocolinfo.h>
 
 #include <solid/devicenotifier.h>
 #include <solid/storageaccess.h>
@@ -56,6 +57,7 @@
 #include <solid/storagevolume.h>
 #include <solid/opticaldrive.h>
 #include <solid/opticaldisc.h>
+#include <solid/portablemediaplayer.h>
 #include <solid/predicate.h>
 #include <qstandardpaths.h>
 
@@ -150,14 +152,21 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     // create after, so if we have own places, they are added afterwards, in case of equal priorities
     d->sharedBookmarks = new KFilePlacesSharedBookmarks(d->bookmarkManager);
 
-    d->predicate = Solid::Predicate::fromString(
-        "[[[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
+    QString predicate("[[[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
         " OR "
         "[ IS StorageAccess AND StorageDrive.driveType == 'Floppy' ]]"
         " OR "
         "OpticalDisc.availableContent & 'Audio' ]"
         " OR "
         "StorageAccess.ignored == false ]");
+
+    if (KProtocolInfo::isKnownProtocol("mtp")) {
+        predicate.prepend("[");
+        predicate.append(" OR PortableMediaPlayer.supportedProtocols == 'mtp']");
+    }
+
+    d->predicate = Solid::Predicate::fromString(predicate);
+
     Q_ASSERT(d->predicate.isValid());
 
     connect(d->bookmarkManager, SIGNAL(changed(QString,QString)),

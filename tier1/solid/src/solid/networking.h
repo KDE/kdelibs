@@ -29,14 +29,13 @@
 namespace Solid
 {
     /**
-     * This class allow to query the underlying system to discover the available
-     * network interfaces and reachable network.It has also the
-     * responsibility to notify when a network interface or a network appear or disappear.
+     * This namespace contains all the network-related high-level methods:
+     * querying the underlying system for network availability,
+     * being notified when network availability changes
+     * (e.g. due to interfaces appearing or disappearing).
      *
-     * It's the unique entry point for network management. Applications should use
-     * it to find network interfaces, or to be notified about network related changes.
-     *
-     * Note that it's implemented as a singleton and encapsulates the backend logic.
+     * It also allows application to specify the connection and disconnection policies
+     * that it would like to use, for the network.
      */
     namespace Networking
     {

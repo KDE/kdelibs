@@ -34,6 +34,7 @@
 #include <QShowEvent>
 #include <QTimeLine>
 #include <QToolButton>
+#include <QStyle>
 
 //---------------------------------------------------------------------
 // KMessageWidgetPrivate
@@ -60,6 +61,8 @@ public:
     void updateLayout();
     void slotTimeLineChanged(qreal);
     void slotTimeLineFinished();
+
+    int bestContentHeight() const;
 };
 
 void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
@@ -181,6 +184,15 @@ void KMessageWidgetPrivate::slotTimeLineFinished()
     }
 }
 
+int KMessageWidgetPrivate::bestContentHeight() const
+{
+    int height = content->heightForWidth(q->width());
+    if (height == -1) {
+        height = content->sizeHint().height();
+    }
+    return height;
+}
+
 
 //---------------------------------------------------------------------
 // KMessageWidget
@@ -268,13 +280,16 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
             "    stop: 1.0 %3);"
             "border-radius: 5px;"
             "border: 1px solid %4;"
+            "margin: %5px;"
             "}"
-            ".QLabel { color: %5; }"
+            ".QLabel { color: %6; }"
             )
         .arg(bg0.name())
         .arg(bg1.name())
         .arg(bg2.name())
         .arg(border.name())
+        // DefaultFrameWidth returns the size of the external margin + border width. We know our border is 1px, so we subtract this from the frame normal QStyle FrameWidth to get our margin
+        .arg(style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, this) -1)
         .arg(fg.name())
         );
 
@@ -306,12 +321,13 @@ bool KMessageWidget::event(QEvent* event)
 void KMessageWidget::resizeEvent(QResizeEvent* event)
 {
     QFrame::resizeEvent(event);
+    int contentHeight = d->bestContentHeight();
+
     if (d->timeLine->state() == QTimeLine::NotRunning) {
-        int contentHeight = d->content->heightForWidth(width());
-        if (contentHeight == -1) {
-            contentHeight = d->content->sizeHint().height();
-        }
         d->content->resize(width(), contentHeight);
+    } else if (event->size().width() != event->oldSize().width()) {
+        d->content->resize(width(), contentHeight);
+        d->updateSnapShot();
     }
 }
 
@@ -395,7 +411,7 @@ void KMessageWidget::animatedShow()
 
     QFrame::show();
     setFixedHeight(0);
-    int wantedHeight = d->content->sizeHint().height();
+    int wantedHeight = d->bestContentHeight();
     d->content->setGeometry(0, -wantedHeight, width(), wantedHeight);
 
     d->updateSnapShot();
