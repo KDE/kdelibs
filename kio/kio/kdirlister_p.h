@@ -319,6 +319,7 @@ private:
     {
       autoUpdates = 0;
       complete = false;
+      watchedWhileInCache = false;
     }
 
     ~DirItem()
@@ -391,6 +392,9 @@ private:
 
     // this directory is up-to-date
     bool complete;
+
+    // the directory is watched while being in the cache (useful for proper incAutoUpdate/decAutoUpdate count)
+    bool watchedWhileInCache;
 
     // the complete url of this directory
     KUrl url;
