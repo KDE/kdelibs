@@ -1,5 +1,6 @@
 
 find_package(X11)
+find_package(XCB)
 
 if (X11_FOUND)
    set (HAVE_X11 1)
@@ -39,10 +40,11 @@ endif()
 set(platformLinkLibraries)
 
 if (HAVE_X11)
-   set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${kdeqt5staging_LIBRARY})
+   set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${XCB_XCB_LIBRARIES})
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
                                                 kxmessages.cpp
+                                                kmanagerselection.cpp
                                                 netwm.cpp )
 endif ()
 
@@ -59,7 +61,7 @@ endif ()
 add_library(kwindowsystem ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
 
-target_link_libraries(kwindowsystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
+target_link_libraries(kwindowsystem ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} ${kdeqt5staging_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
 
 set_target_properties(kwindowsystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
                                                SOVERSION ${KWINDOWSYSTEM_SOVERSION})
@@ -72,6 +74,7 @@ install( FILES
    kwindowinfo.h
    kwindowsystem.h
    kxmessages.h
+   kmanagerselection.h
    netwm_def.h
    netwm.h
 

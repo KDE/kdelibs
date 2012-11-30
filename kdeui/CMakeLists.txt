@@ -336,7 +336,6 @@ endif(NOT WINCE)
 
 if (X11_FOUND)
     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
-                                         util/kmanagerselection.cpp
                                          util/kxerrorhandler.cpp
                                          dialogs/kcupsoptionswidget_p.cpp
                                          dialogs/kcupsoptionsjobwidget_p.cpp
@@ -581,7 +580,6 @@ install( FILES
  util/kcrash.h
  util/kcursor.h
  util/kkeyserver.h
- util/kmanagerselection.h
  util/kmodifierkeyinfo.h
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
