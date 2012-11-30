@@ -171,7 +171,7 @@ void KMenuBar::setTopLevelMenuInternal(bool top_level)
   d->topLevel = top_level;
   if ( isTopLevelMenu() )
   {
-#if HAVE_X11
+#if HAVE_X11 && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) /*KSelectionWatcher requires Qt5*/
       d->selection = new KSelectionWatcher( KMenuBarPrivate::makeSelectionAtom(),
           DefaultScreen( QX11Info::display()));
       connect( d->selection, SIGNAL(newOwner(Window)),
@@ -286,7 +286,7 @@ void KMenuBar::updateFallbackSize()
 {
     if( !d->topLevel )
 	return;
-#if HAVE_X11
+#if HAVE_X11 && QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if( d->selection->owner() != None )
 #endif
     { // somebody is managing us, don't mess anything, undo changes
