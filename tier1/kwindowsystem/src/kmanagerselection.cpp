@@ -24,19 +24,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include "kmanagerselection.h"
 
-#include <config-kdeui.h>
-
-#if HAVE_SYS_TYPES_H
-#include <sys/types.h>
-#endif
-
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-
-#if HAVE_UNISTD_H
-#include <unistd.h>
-#endif
+#include <config-kwindowsystem.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QBasicTimer>
@@ -44,7 +32,6 @@ DEALINGS IN THE SOFTWARE.
 
 #include <qx11info_x11.h>
 #include <qwidget.h>
-#include <kdebug.h>
 
 static xcb_window_t get_selection_owner(xcb_connection_t *c, xcb_atom_t selection)
 {
@@ -167,7 +154,7 @@ void KSelectionOwner::Private::claimSucceeded()
 
     // kDebug() << "Claimed selection";
 
-    emit owner->claimedOwnership();
+    Q_EMIT owner->claimedOwnership();
 }
 
 void KSelectionOwner::Private::gotTimestamp()
@@ -189,7 +176,7 @@ void KSelectionOwner::Private::gotTimestamp()
         timestamp = XCB_CURRENT_TIME;
         window = XCB_NONE;
 
-        emit owner->failedToClaimOwnership();
+        Q_EMIT owner->failedToClaimOwnership();
         return;
     }
 
@@ -225,7 +212,7 @@ void KSelectionOwner::Private::timeout()
         return;
     }
 
-    emit owner->failedToClaimOwnership();
+    Q_EMIT owner->failedToClaimOwnership();
 }
 
 void KSelectionOwner::claim(bool force_P, bool force_kill_P)
@@ -246,7 +233,7 @@ void KSelectionOwner::claim(bool force_P, bool force_kill_P)
         if (!force_P)
         {
             // kDebug() << "Selection already owned, failing";
-            emit failedToClaimOwnership();
+            Q_EMIT failedToClaimOwnership();
             return;
         }
 
@@ -326,7 +313,7 @@ bool KSelectionOwner::filterEvent( void* ev_P )
 //	    kDebug() << "Lost selection";
 
         xcb_window_t window = d->window;
-        emit lostOwnership();
+        Q_EMIT lostOwnership();
 
         // Unset the event mask before we destroy the window so we don't get a destroy event
         uint32_t event_mask = XCB_NONE;
@@ -353,7 +340,7 @@ bool KSelectionOwner::filterEvent( void* ev_P )
 
         d->timestamp = XCB_CURRENT_TIME;
 //	    kDebug() << "Lost selection (destroyed)";
-        emit lostOwnership();
+        Q_EMIT lostOwnership();
         return true;
     }
     case XCB_SELECTION_NOTIFY:
@@ -430,11 +417,11 @@ void KSelectionOwner::filter_selection_request( void* event )
                 xcb_atom_t *atoms = reinterpret_cast<xcb_atom_t *>(xcb_get_property_value(reply));
                 bool handled_array[MAX_ATOMS];
 
-                for (int i = 0; i < reply->value_len / 2; i++)
+                for (uint i = 0; i < reply->value_len / 2; i++)
                     handled_array[i] = handle_selection(atoms[i * 2], atoms[i * 2 + 1], ev->requestor);
 
                 bool all_handled = true;
-                for (int i = 0; i < reply->value_len / 2; i++) {
+                for (uint i = 0; i < reply->value_len / 2; i++) {
                     if (!handled_array[i]) {
                         all_handled = false;
                         atoms[i * 2 + 1] = XCB_NONE;
@@ -645,7 +632,7 @@ xcb_window_t KSelectionWatcher::owner()
 
     if (!err && current_owner == new_owner) {
         d->selection_owner = current_owner;
-        emit newOwner(d->selection_owner);
+        Q_EMIT newOwner(d->selection_owner);
     } else {
         // ### This doesn't look right - the selection could have an owner
         d->selection_owner = XCB_NONE;
@@ -681,7 +668,7 @@ void KSelectionWatcher::filterEvent(void* ev_P)
         d->selection_owner = XCB_NONE; // in case the exactly same ID gets reused as the owner
 
         if (owner() == XCB_NONE)
-            emit lostOwner(); // it must be safe to delete 'this' in a slot
+            Q_EMIT lostOwner(); // it must be safe to delete 'this' in a slot
         return;
     }
 }

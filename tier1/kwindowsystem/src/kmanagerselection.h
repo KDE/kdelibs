@@ -25,7 +25,7 @@ DEALINGS IN THE SOFTWARE.
 #ifndef KMANAGERSELECTION_H
 #define KMANAGERSELECTION_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 #include <QtCore/QObject>
 
 #include <xcb/xcb.h>
@@ -39,7 +39,7 @@ DEALINGS IN THE SOFTWARE.
  is claimed by another owner.
  @short ICCCM manager selection owner
 */
-class KDEUI_EXPORT KSelectionOwner
+class KWINDOWSYSTEM_EXPORT KSelectionOwner
     : public QObject
     {
     Q_OBJECT
@@ -179,7 +179,7 @@ class KDEUI_EXPORT KSelectionOwner
  out current owner of the selection, owner() can be used.
  @short ICCCM manager selection watching
 */
-class KDEUI_EXPORT KSelectionWatcher
+class KWINDOWSYSTEM_EXPORT KSelectionWatcher
     : public QObject
     {
     Q_OBJECT
