@@ -28,9 +28,8 @@ DEALINGS IN THE SOFTWARE.
 #include <kdeui_export.h>
 #include <QtCore/QObject>
 
-#include <X11/Xlib.h>
-#include <fixx11h.h>
-
+#include <xcb/xcb.h>
+#include <xcb/xproto.h>
 
 /**
  This class implements claiming and owning manager selections, as described
@@ -53,7 +52,8 @@ class KDEUI_EXPORT KSelectionOwner
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        explicit KSelectionOwner( Atom selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionOwner(xcb_atom_t selection, int screen = -1, QObject* parent = NULL);
+
         /**
          * @overload
          * This constructor accepts the selection name and creates the appropriate atom
@@ -63,35 +63,50 @@ class KDEUI_EXPORT KSelectionOwner
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        explicit KSelectionOwner( const char* selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionOwner(const char *selection, int screen = -1, QObject* parent = NULL);
+
         /**
          * Destructor. Calls release().
          */
 	virtual ~KSelectionOwner();
+
         /**
-         * This function attemps to claim ownership of the manager selection, using
-         * the current X timestamp. If @p force is false, and the selection is already
-         * owned, the selection is not claimed, and false is returned. If claiming
-         * is forced and the selection is owned by another client, it is waited for up to 1 second
-         * for the previous owner to disown the selection, if @p force_kill is true,
-         * and the previous owner fails to disown the selection in time,
-         * it will be forcibly killed. True is returned after successfully claiming
-         * ownership of the selection.
+         * Try to claim ownership of the manager selection using the current X timestamp.
+         *
+         * This function returns immediately, but it may take up to one second for the claim
+         * to succeed or fail, at which point either the claimedOwnership() or
+         * failedToClaimOwnership() signal is emitted. The claim will not be completed until
+         * the caller has returned to the event loop.
+         *
+         * If @p force is false, and the selection is already owned, the selection is not claimed,
+         * and failedToClaimOwnership() is emitted. If @p force is true and the selection is
+         * owned by another client, the client will be given one second to relinquish ownership
+         * of the selection. If @p force_kill is true, and the previous owner fails to disown
+         * the selection in time, it will be forcibly killed.
          */
-        bool claim( bool force, bool force_kill = true );
+        void claim(bool force, bool force_kill = true);
+
         /**
          * If the selection is owned, the ownership is given up.
          */
         void release();
+
         /**
          * If the selection is owned, returns the window used internally
          * for owning the selection.
          */
-        Window ownerWindow() const; // None if not owning the selection
+        xcb_window_t ownerWindow() const; // None if not owning the selection
+
         /**
          * @internal
          */
-	bool filterEvent( void* ev_P ); // internal
+	bool filterEvent(void *ev_P); // internal
+
+        /**
+         * @internal
+         */
+        void timerEvent(QTimerEvent *event);
+
     Q_SIGNALS:
         /**
          * This signal is emitted if the selection was owned and the ownership
@@ -100,6 +115,19 @@ class KDEUI_EXPORT KSelectionOwner
          * to this signal.
          */
         void lostOwnership();
+
+        /**
+         * This signal is emitted when claim() was succesful in claiming
+         * ownership of the selection.
+         */
+        void claimedOwnership();
+
+        /**
+         * This signal is emitted when claim() failed to claim ownership
+         * of the selection.
+         */
+        void failedToClaimOwnership();
+
     protected:
         /**
          * Called for every X event received on the window used for owning
@@ -115,13 +143,13 @@ class KDEUI_EXPORT KSelectionOwner
          * @param property property to use for the reply data
          * @param requestor requestor window
          */
-        virtual bool genericReply( Atom target, Atom property, Window requestor );
+        virtual bool genericReply(xcb_atom_t target, xcb_atom_t property, xcb_window_t requestor);
         /**
          * Called to announce the supported targets, as described in the ICCCM
          * section 2.6. The default implementation announces the required targets
          * MULTIPLE, TIMESTAMP and TARGETS.
          */
-        virtual void replyTargets( Atom property, Window requestor );
+        virtual void replyTargets(xcb_atom_t property, xcb_window_t requestor);
         /**
          * Called to create atoms needed for claiming the selection and
          * communication using the selection handling mechanism. The default
@@ -134,10 +162,11 @@ class KDEUI_EXPORT KSelectionOwner
          * after successfully claiming a selection. These extra data
          * are in data.l[3] and data.l[4] fields of the XClientMessage.
          */
-        void setData( long extra1, long extra2 );
+        void setData(uint32_t extra1, uint32_t extra2);
+
     private:
-        void filter_selection_request( void* ev_P );
-        bool handle_selection( Atom target_P, Atom property_P, Window requestor_P );
+        void filter_selection_request(void *ev_P);
+        bool handle_selection(xcb_atom_t target_P, xcb_atom_t property_P, xcb_window_t requestor_P);
 
         class Private;
         Private* const d;
@@ -163,7 +192,7 @@ class KDEUI_EXPORT KSelectionWatcher
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        explicit KSelectionWatcher( Atom selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionWatcher(xcb_atom_t selection, int screen = -1, QObject *parent = NULL);
         /**
          * @overload
          * This constructor accepts the selection name and creates the appropriate atom
@@ -173,25 +202,25 @@ class KDEUI_EXPORT KSelectionWatcher
          * @param screen X screen, or -1 for default
          * @param parent parent object, or NULL if there is none
          */
-        explicit KSelectionWatcher( const char* selection, int screen = -1, QObject* parent = NULL );
+        explicit KSelectionWatcher(const char *selection, int screen = -1, QObject *parent = NULL);
 	virtual ~KSelectionWatcher();
         /**
          * Return the current owner of the manager selection, if any. Note that if the event
          * informing about the owner change is still in the input queue, newOwner() might
          * have been emitted yet.
          */
-        Window owner();
+        xcb_window_t owner();
         /**
          * @internal
          */
-        void filterEvent( void* ev_P ); // internal
+        void filterEvent(void *ev_P); // internal
     Q_SIGNALS:
         /**
          * This signal is emitted when the selection is successfully claimed by a new
          * owner.
          * @param owner the new owner of the selection
          */
-        void newOwner( Window owner );
+        void newOwner(xcb_window_t owner);
         /**
          * This signal is emitted when the selection is given up, i.e. there's no
          * owner. Note that the selection may be immediatelly claimed again,
