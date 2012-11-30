@@ -501,7 +501,7 @@ QString KMimeType::favIconForUrl( const KUrl& url )
         || !KMimeTypeRepository::self()->useFavIcons())
         return QString();
 
-    QString iconNameFromCache = iconNameCache.value( url.url(), notFound );
+    QString iconNameFromCache = iconNameCache.value(url, notFound);
     if ( iconNameFromCache != notFound ) {
         if ( (++autoClearCache) < 5000 ) {
             return iconNameFromCache;
@@ -516,7 +516,7 @@ QString KMimeType::favIconForUrl( const KUrl& url )
                          QString::fromLatin1("/modules/favicons"),
                          QString::fromLatin1("org.kde.FavIcon") );
     QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.url() );
-    iconNameCache.insert( url.url(), result.value() );
+    iconNameCache.insert(url, result.value());
     return result;              // default is QString()
 }
 
