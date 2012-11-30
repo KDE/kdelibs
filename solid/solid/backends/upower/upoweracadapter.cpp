@@ -42,9 +42,7 @@ bool AcAdapter::isPlugged() const
 
 void AcAdapter::slotChanged()
 {
-    QSharedPointer<UPowerDevice> strong = m_device.toStrongRef();
-
-    if (strong) {
+    if (m_device) {
         const bool old_isPlugged = m_isPlugged;
         updateCache();
 

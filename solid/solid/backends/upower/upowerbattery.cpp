@@ -112,9 +112,7 @@ Solid::Battery::ChargeState Battery::chargeState() const
 
 void Battery::slotChanged()
 {
-    QSharedPointer<UPowerDevice> strong = m_device.toStrongRef();
-
-    if (strong) {
+    if (m_device) {
         const bool old_isPlugged = m_isPlugged;
         const int old_chargePercent = m_chargePercent;
         const Solid::Battery::ChargeState old_chargeState = m_chargeState;
