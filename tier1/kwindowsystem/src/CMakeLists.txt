@@ -33,6 +33,11 @@ if (QT5_BUILD)
   set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
     ksystemeventfilter.cpp
   )
+  if (HAVE_X11)
+    set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
+      kmanagerselection.cpp
+    )
+  endif()
 else()
   set(qt5CompatLib ${inqt5_LIBRARY})
 endif()
@@ -44,7 +49,6 @@ if (HAVE_X11)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
                                                 kxmessages.cpp
-                                                kmanagerselection.cpp
                                                 netwm.cpp )
 endif ()
 
