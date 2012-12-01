@@ -129,6 +129,9 @@ void KRunUnitTest::testProcessDesktopExec()
     process.setShellCommand("");
     const QString shellPath = process.program().at(0);
 
+    // Arch moved /bin/date to /usr/bin/date...
+    const QString datePath = QStandardPaths::findExecutable("date");
+
     for (int su = 0; su < 2; su++)
         for (int te = 0; te < 2; te++)
             for (int ex = 0; ex < 2; ex++) {
@@ -136,7 +139,9 @@ void KRunUnitTest::testProcessDesktopExec()
                 QString exe;
                 if (pt == 4 || pt == 5)
                     exe = QStandardPaths::findExecutable("kdesu");
-                const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", shellPath);
+                const QString result = QString::fromLatin1(rslts[pt])
+                    .replace("/bin/sh", shellPath)
+                    .replace("/bin/date", datePath);
                 checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + result);
             }
 }

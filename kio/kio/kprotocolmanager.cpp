@@ -60,6 +60,7 @@
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
 #include <qstandardpaths.h>
+#include <qmimedatabase.h>
 
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
@@ -1215,7 +1216,24 @@ QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
             }
         }
     }
-    return d->protocolForArchiveMimetypes.value(mimeType);
+    const QString prot = d->protocolForArchiveMimetypes.value(mimeType);
+    if (!prot.isEmpty())
+        return prot;
+
+    // Check parent mimetypes
+    QMimeDatabase db;
+    QMimeType mime = db.mimeTypeForName(mimeType);
+    if (mime.isValid()) {
+        const QStringList parentMimeTypes = mime.allAncestors();
+        Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
+            const QString res = d->protocolForArchiveMimetypes.value(parentMimeType);
+            if (!res.isEmpty()) {
+                return res;
+            }
+        }
+    }
+
+    return QString();
 }
 
 QString KProtocolManager::charsetFor(const QUrl& url)

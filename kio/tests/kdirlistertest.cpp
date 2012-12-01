@@ -32,6 +32,7 @@ QTEST_MAIN(KDirListerTest)
 #include <kprotocolinfo.h>
 #include <kio/job.h>
 #include <kio/copyjob.h>
+#include <qurlpathinfo.h>
 
 #define WORKAROUND_BROKEN_INOTIFY 0
 
@@ -872,6 +873,68 @@ void KDirListerTest::testOpenAndStop()
     disconnect(&m_dirLister, 0, this, 0);
 }
 
+// A bug in the decAutoUpdate/incAutoUpdate logic made KDirLister stop watching a directory for changes,
+// and never watch it again when opening it from the cache.
+void KDirListerTest::testBug211472()
+{
+    m_items.clear();
+
+    QTemporaryDir newDir;
+    const QString path = newDir.path() + "/newsubdir/";
+    QDir().mkdir(path);
+    MyDirLister dirLister;
+    connect(&dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+
+    dirLister.openUrl(QUrl::fromLocalFile(path));
+    QVERIFY(QTest::kWaitForSignal(&dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(dirLister.isFinished());
+    QVERIFY(m_items.isEmpty());
+
+    if (true) {
+        // This block is required to trigger bug 211472.
+
+        // Go 'up' to the parent of 'newsubdir'.
+        dirLister.openUrl(QUrl::fromLocalFile(newDir.path()));
+        QVERIFY(QTest::kWaitForSignal(&dirLister, SIGNAL(completed()), 1000));
+        QVERIFY(dirLister.isFinished());
+        QVERIFY(!m_items.isEmpty());
+        m_items.clear();
+
+        // Create a file in 'newsubdir' while we are listing its parent dir.
+        createTestFile(path + "newFile-1");
+        // At this point, newsubdir is not used, so it's moved to the cache.
+        // This happens in checkUpdate, called when receiving a notification for the cached dir,
+        // this is why this unittest needs to create a test file in the subdir.
+        QTest::qWait(1000);
+        QVERIFY(m_items.isEmpty());
+
+        // Return to 'newsubdir'. It will be emitted from the cache, then an update will happen.
+        dirLister.openUrl(QUrl::fromLocalFile(path));
+        QVERIFY(QTest::kWaitForSignal(&dirLister, SIGNAL(completed()), 1000));
+        QVERIFY(QTest::kWaitForSignal(&dirLister, SIGNAL(completed()), 1000));
+        QVERIFY(dirLister.isFinished());
+        QCOMPARE(m_items.count(), 1);
+        m_items.clear();
+    }
+
+    // Now try to create a second file in 'newsubdir' and verify that the
+    // dir lister notices it.
+    QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
+
+    createTestFile(path + "newFile-2");
+
+    int numTries = 0;
+    // Give time for KDirWatch to notify us
+    while (m_items.isEmpty()) {
+        QVERIFY(++numTries < 10);
+        QTest::qWait(200);
+    }
+    QCOMPARE(m_items.count(), 1);
+
+    newDir.remove();
+    QVERIFY(QTest::kWaitForSignal(&dirLister, SIGNAL(clear()), 1000));
+}
+
 void KDirListerTest::testRedirection()
 {
     m_items.clear();
@@ -955,7 +1018,7 @@ void KDirListerTest::slotRefreshItems2(const QList<QPair<KFileItem, KFileItem> >
 void KDirListerTest::testDeleteCurrentDir()
 {
     // ensure m_dirLister holds the items.
-    m_dirLister.openUrl(KUrl(path()), KDirLister::NoFlags);
+    m_dirLister.openUrl(QUrl::fromLocalFile(path()), KDirLister::NoFlags);
     connect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
     enterLoop();
     disconnect(&m_dirLister, SIGNAL(completed()), this, SLOT(exitLoop()));
@@ -968,8 +1031,14 @@ void KDirListerTest::testDeleteCurrentDir()
     enterLoop();
     QCOMPARE(m_dirLister.spyClear.count(), 1);
     QCOMPARE(m_dirLister.spyClearKUrl.count(), 0);
-    QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
-    QCOMPARE(m_dirLister.spyItemsDeleted[0][0].value<KFileItemList>().count(), 1);
+    QList<QUrl> deletedUrls;
+    for (int i = 0; i < m_dirLister.spyItemsDeleted.count(); ++i)
+        deletedUrls += m_dirLister.spyItemsDeleted[i][0].value<KFileItemList>().urlList();
+    //kDebug() << deletedUrls;
+    QUrl currentDirUrl = QUrl::fromLocalFile(path());
+    QUrlPathInfo::adjustPath(currentDirUrl, QUrlPathInfo::StripTrailingSlash);
+    // Sometimes I get ("current/subdir", "current") here, but that seems ok.
+    QVERIFY(deletedUrls.contains(currentDirUrl));
 }
 
 int KDirListerTest::fileCount() const
