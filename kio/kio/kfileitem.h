@@ -23,10 +23,10 @@
 #include <sys/stat.h>
 
 #include <kio/global.h>
+#include <kio/kacl.h>
 #include <kio/udsentry.h>
 #include <QUrl>
 
-#include <kacl.h>
 #include <qmimetype.h>
 #include <kfilemetainfo.h>
 #include <kdatetime.h>
