@@ -70,6 +70,7 @@ install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
   kacl.h
+  kauthorized.h
   http_slave_defaults.h
   global.h
   ioslave_defaults.h
