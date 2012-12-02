@@ -34,9 +34,6 @@
 #include <kwindowsystem.h>
 
 #include <config-kdeui.h>
-#if HAVE_X11
-#include <QX11Info>
-#endif
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
