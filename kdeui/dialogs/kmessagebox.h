@@ -27,6 +27,8 @@
 #include <kguiitem.h>
 #include <kstandardguiitem.h>
 
+#include <kdeui_export.h>
+
 class QWidget;
 class QStringList;
 class KConfig;
@@ -133,7 +135,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
 
- int questionYesNo(QWidget *parent,
+ KDEUI_EXPORT int questionYesNo(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -144,7 +146,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- int questionYesNoWId(WId parent_id,
+ KDEUI_EXPORT int questionYesNoWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -181,7 +183,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "Cancel".
   */
 
-  int questionYesNoCancel(QWidget *parent,
+  KDEUI_EXPORT int questionYesNoCancel(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -194,7 +196,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  int questionYesNoCancelWId(WId parent_id,
+  KDEUI_EXPORT int questionYesNoCancelWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -235,7 +237,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
 
- int questionYesNoList(QWidget *parent,
+ KDEUI_EXPORT int questionYesNoList(QWidget *parent,
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString(),
@@ -248,7 +250,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- int questionYesNoListWId(WId parent_id,
+ KDEUI_EXPORT int questionYesNoListWId(WId parent_id,
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString(),
@@ -285,7 +287,7 @@ namespace KMessageBox
   *
   * The default button is "No". Pressing "Esc" selects "No".
   */
- int warningYesNo(QWidget *parent,
+ KDEUI_EXPORT int warningYesNo(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -297,7 +299,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- int warningYesNoWId(WId parent_id,
+ KDEUI_EXPORT int warningYesNoWId(WId parent_id,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -337,7 +339,7 @@ namespace KMessageBox
   * The default button is "No". Pressing "Esc" selects "No".
   */
 
- int warningYesNoList(QWidget *parent,
+ KDEUI_EXPORT int warningYesNoList(QWidget *parent,
                             const QString &text,
                             const QStringList &strlist,
                             const QString &caption = QString(),
@@ -350,7 +352,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- int warningYesNoListWId(WId parent_id,
+ KDEUI_EXPORT int warningYesNoListWId(WId parent_id,
                             const QString &text,
                             const QStringList &strlist,
                             const QString &caption = QString(),
@@ -387,7 +389,7 @@ namespace KMessageBox
   *
   * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
   */
- int warningContinueCancel(QWidget *parent,
+ KDEUI_EXPORT int warningContinueCancel(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
@@ -399,7 +401,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- int warningContinueCancelWId(WId parent_id,
+ KDEUI_EXPORT int warningContinueCancelWId(WId parent_id,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
@@ -439,7 +441,7 @@ namespace KMessageBox
   *
   * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
   */
- int warningContinueCancelList(QWidget *parent,
+ KDEUI_EXPORT int warningContinueCancelList(QWidget *parent,
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString(),
@@ -452,7 +454,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
- int warningContinueCancelListWId(WId parent_id,
+ KDEUI_EXPORT int warningContinueCancelListWId(WId parent_id,
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString(),
@@ -495,7 +497,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   */
 
-  int warningYesNoCancel(QWidget *parent,
+  KDEUI_EXPORT int warningYesNoCancel(QWidget *parent,
                                 const QString &text,
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -508,7 +510,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  int warningYesNoCancelWId(WId parent_id,
+  KDEUI_EXPORT int warningYesNoCancelWId(WId parent_id,
                                 const QString &text,
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -554,7 +556,7 @@ namespace KMessageBox
   *
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   */
-  int warningYesNoCancelList(QWidget *parent,
+  KDEUI_EXPORT int warningYesNoCancelList(QWidget *parent,
                                 const QString &text,
                                 const QStringList &strlist,
                                 const QString &caption = QString(),
@@ -568,7 +570,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  int warningYesNoCancelListWId(WId parent_id,
+  KDEUI_EXPORT int warningYesNoCancelListWId(WId parent_id,
                                 const QString &text,
                                 const QStringList &strlist,
                                 const QString &caption = QString(),
@@ -599,7 +601,7 @@ namespace KMessageBox
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  void error(QWidget *parent,
+  KDEUI_EXPORT void error(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -608,7 +610,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  void errorWId(WId parent_id,
+  KDEUI_EXPORT void errorWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -637,7 +639,7 @@ namespace KMessageBox
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  void errorList(QWidget *parent,
+  KDEUI_EXPORT void errorList(QWidget *parent,
                     const QString &text,
                     const QStringList &strlist,
                     const QString &caption = QString(),
@@ -648,7 +650,7 @@ namespace KMessageBox
   * of QWidget*. It should be used only when necessary.
   */
 
-  void errorListWId(WId parent_id,
+  KDEUI_EXPORT void errorListWId(WId parent_id,
                     const QString &text,
                     const QStringList &strlist,
                     const QString &caption = QString(),
@@ -678,7 +680,7 @@ namespace KMessageBox
   *
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
-  void detailedError(QWidget *parent,
+  KDEUI_EXPORT void detailedError(QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -688,7 +690,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  void detailedErrorWId(WId parent_id,
+  KDEUI_EXPORT void detailedErrorWId(WId parent_id,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -704,7 +706,7 @@ namespace KMessageBox
    * Note that if the parent gets deleted, the messagebox will not be
    * shown.
    */
-  void queuedDetailedError( QWidget *parent,
+  KDEUI_EXPORT void queuedDetailedError( QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString());
@@ -713,7 +715,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  void queuedDetailedErrorWId( WId parent_id,
+  KDEUI_EXPORT void queuedDetailedErrorWId( WId parent_id,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString());
@@ -738,7 +740,7 @@ namespace KMessageBox
   * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
 
-  void sorry(QWidget *parent,
+  KDEUI_EXPORT void sorry(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -747,7 +749,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  void sorryWId(WId parent_id,
+  KDEUI_EXPORT void sorryWId(WId parent_id,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -778,7 +780,7 @@ namespace KMessageBox
   * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
 
-  void detailedSorry(QWidget *parent,
+  KDEUI_EXPORT void detailedSorry(QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -788,7 +790,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  void detailedSorryWId(WId parent_id,
+  KDEUI_EXPORT void detailedSorryWId(WId parent_id,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -818,7 +820,7 @@ namespace KMessageBox
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  void information(QWidget *parent,
+  KDEUI_EXPORT void information(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const QString &dontShowAgainName = QString(),
@@ -828,7 +830,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  void informationWId(WId parent_id,
+  KDEUI_EXPORT void informationWId(WId parent_id,
                           const QString &text,
                           const QString &caption = QString(),
                           const QString &dontShowAgainName = QString(),
@@ -861,7 +863,7 @@ namespace KMessageBox
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  void informationList(QWidget *parent,
+  KDEUI_EXPORT void informationList(QWidget *parent,
 			      const QString &text,
 			      const QStringList & strlist,
 			      const QString &caption = QString(),
@@ -872,7 +874,7 @@ namespace KMessageBox
   * This function accepts the window id of the parent window, instead
   * of QWidget*. It should be used only when necessary.
   */
-  void informationListWId(WId parent_id,
+  KDEUI_EXPORT void informationListWId(WId parent_id,
 			      const QString &text,
 			      const QStringList & strlist,
 			      const QString &caption = QString(),
@@ -883,7 +885,7 @@ namespace KMessageBox
    * Enable all messages which have been turned off with the
    * @p dontShowAgainName feature.
    */
-  void enableAllMessages();
+  KDEUI_EXPORT void enableAllMessages();
 
   /**
    * Re-enable a specific @p dontShowAgainName messages that had
@@ -891,7 +893,7 @@ namespace KMessageBox
    * @see saveDontShowAgainYesNo()
    * @see saveDontShowAgainContinue()
    */
-  void enableMessage(const QString &dontShowAgainName);
+  KDEUI_EXPORT void enableMessage(const QString &dontShowAgainName);
 
   /**
    * Display an "About" dialog.
@@ -910,7 +912,7 @@ namespace KMessageBox
    *
    *  NOTE: The ok button will always have the i18n'ed text '&OK'.
    */
-  void about(QWidget *parent,
+  KDEUI_EXPORT void about(QWidget *parent,
 		    const QString& text,
 		    const QString& caption = QString(),
                     Options options = Notify);
@@ -940,7 +942,7 @@ namespace KMessageBox
      * @return a button code, as defined in KMessageBox.
      */
 
-    int messageBox( QWidget *parent, DialogType type, const QString &text,
+    KDEUI_EXPORT int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
@@ -952,7 +954,7 @@ namespace KMessageBox
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      */
-    int messageBoxWId( WId parent_id, DialogType type, const QString &text,
+    KDEUI_EXPORT int messageBoxWId( WId parent_id, DialogType type, const QString &text,
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
@@ -972,7 +974,7 @@ namespace KMessageBox
      * Note that if the parent gets deleted, the messagebox will not be
      * shown.
      */
-    void queuedMessageBox( QWidget *parent,
+    KDEUI_EXPORT void queuedMessageBox( QWidget *parent,
                     DialogType type, const QString &text,
                     const QString &caption,
                     Options options );
@@ -981,7 +983,7 @@ namespace KMessageBox
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      */
-    void queuedMessageBoxWId( WId parent_id,
+    KDEUI_EXPORT void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
                     const QString &caption,
                     Options options );
@@ -992,7 +994,7 @@ namespace KMessageBox
      * This is an overloaded member function, provided for convenience.
      * It behaves essentially like the above function.
      */
-    void queuedMessageBox( QWidget *parent,
+    KDEUI_EXPORT void queuedMessageBox( QWidget *parent,
                     DialogType type, const QString &text,
                     const QString &caption = QString() );
 
@@ -1000,7 +1002,7 @@ namespace KMessageBox
      * This function accepts the window id of the parent window, instead
      * of QWidget*. It should be used only when necessary.
      */
-    void queuedMessageBoxWId( WId parent_id,
+    KDEUI_EXPORT void queuedMessageBoxWId( WId parent_id,
                     DialogType type, const QString &text,
                     const QString &caption = QString() );
 
@@ -1012,7 +1014,7 @@ namespace KMessageBox
      * time the message box was shown. Only meaningful, if the message box
      * should not be shown.
      */
-    bool shouldBeShownYesNo(const QString &dontShowAgainName,
+    KDEUI_EXPORT bool shouldBeShownYesNo(const QString &dontShowAgainName,
                                    ButtonCode &result);
     /**
      * @return true if the corresponding continue/cancel message box should be
@@ -1020,7 +1022,7 @@ namespace KMessageBox
      * @param dontShowAgainName the name that identify the message box. If
      * empty, true is always returned.
      */
-    bool shouldBeShownContinue(const QString &dontShowAgainName);
+    KDEUI_EXPORT bool shouldBeShownContinue(const QString &dontShowAgainName);
 
     /**
      * Save the fact that the yes/no message box should not be shown again.
@@ -1029,7 +1031,7 @@ namespace KMessageBox
      * @param result the value (Yes or No) that should be used as the result
      * for the message box.
      */
-    void saveDontShowAgainYesNo(const QString &dontShowAgainName,
+    KDEUI_EXPORT void saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                        ButtonCode result);
 
     /**
@@ -1038,13 +1040,13 @@ namespace KMessageBox
      * @param dontShowAgainName the name that identify the message box. If
      * empty, this method does nothing.
      */
-    void saveDontShowAgainContinue(const QString &dontShowAgainName);
+    KDEUI_EXPORT void saveDontShowAgainContinue(const QString &dontShowAgainName);
 
     /**
      * Use @p cfg for all settings related to the dontShowAgainName feature.
      * If @p cfg is 0 (default) KGlobal::config() will be used.
      */
-    void setDontShowAskAgainConfig(KConfig* cfg); // TODO rename to setDontShowAgainConfig
+    KDEUI_EXPORT void setDontShowAskAgainConfig(KConfig* cfg); // TODO rename to setDontShowAgainConfig
 
     /**
      * Create content and layout of a standard dialog
@@ -1070,7 +1072,7 @@ namespace KMessageBox
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon, //krazy:exclude=qclasses
+    KDEUI_EXPORT int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon, //krazy:exclude=qclasses
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString());
@@ -1102,7 +1104,7 @@ namespace KMessageBox
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    int createKMessageBox(KDialog *dialog, const QIcon &icon,
+    KDEUI_EXPORT int createKMessageBox(KDialog *dialog, const QIcon &icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
