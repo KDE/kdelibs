@@ -19,6 +19,7 @@
 */
 
 #include "udisksmanager.h"
+#include "udisksdevicebackend.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
@@ -77,6 +78,10 @@ Manager::Manager(QObject *parent)
 
 Manager::~Manager()
 {
+    while (!m_deviceCache.isEmpty()) {
+        QString udi = m_deviceCache.takeFirst();
+        DeviceBackend::destroyBackend(udi);
+    }
 }
 
 QObject* Manager::createDevice(const QString& udi)
@@ -128,7 +133,11 @@ QStringList Manager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInt
 
 QStringList Manager::allDevices()
 {
-    m_deviceCache.clear();
+    /* Clear the cache, destroy all backends */
+    while (!m_deviceCache.isEmpty()) {
+        QString udi= m_deviceCache.takeFirst();
+        DeviceBackend::destroyBackend(udi);
+    }
 
     introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
     introspect("/org/freedesktop/UDisks2/drives");
@@ -140,8 +149,7 @@ void Manager::introspect(const QString & path, bool checkOptical)
 {
     QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path,
                                                        DBUS_INTERFACE_INTROSPECT, "Introspect");
-    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
-    reply.waitForFinished();
+    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().call(call);
 
     if (reply.isValid()) {
         QDomDocument dom;
@@ -204,6 +212,7 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
     if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || device.interfaces().contains(UD2_DBUS_INTERFACE_FILESYSTEM))) {
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+        DeviceBackend::destroyBackend(udi);
     }
 }
 
@@ -226,6 +235,7 @@ void Manager::slotMediaChanged(const QDBusMessage & msg)
     if (m_deviceCache.contains(udi) && size == 0) {  // we know the optdisc, got removed
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+        DeviceBackend::destroyBackend(udi);
     }
 }
 

@@ -20,6 +20,7 @@
 */
 
 #include "udisksdevice.h"
+#include "udisksdevicebackend.h"
 #include "udisksblock.h"
 #include "udisksdeviceinterface.h"
 #include "udisksstoragevolume.h"
@@ -91,29 +92,72 @@ static QString formatByteSize(double size)
 
 Device::Device(const QString &udi)
     : Solid::Ifaces::Device()
-    , m_udi(udi)
-    , m_connection(QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2::Device::" + udi))
+    , m_backend(DeviceBackend::backendForUDI(udi))
 {
-    m_device = new QDBusInterface(UD2_DBUS_SERVICE, m_udi,
-                                  QString(), // no interface, we aggregate them
-                                  m_connection);
-
-    if (m_device->isValid()) {
-        m_connection.connect(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
-                                             SLOT(slotPropertiesChanged(QString,QVariantMap,QStringList)));
-
-        m_connection.connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesAdded",
-                                             this, SLOT(slotInterfacesAdded(QDBusObjectPath,QVariantMapMap)));
-        m_connection.connect(UD2_DBUS_SERVICE, UD2_DBUS_PATH, DBUS_INTERFACE_MANAGER, "InterfacesRemoved",
-                                             this, SLOT(slotInterfacesRemoved(QDBusObjectPath,QStringList)));
-
-        initInterfaces();
+    if (m_backend) {
+        connect(m_backend, SIGNAL(changed()), this, SIGNAL(changed()));
+        connect(m_backend, SIGNAL(propertyChanged(QMap<QString,int>)), this, SIGNAL(propertyChanged(QMap<QString,int>)));
+    } else {
+        qDebug() << "Created invalid Device for udi" << udi;
     }
 }
 
 Device::~Device()
 {
-    delete m_device;
+}
+
+QString Device::udi() const
+{
+    if (m_backend) {
+        return m_backend->udi();
+    }
+
+    return QString();
+}
+
+QVariant Device::prop(const QString &key) const
+{
+    if (m_backend) {
+        return m_backend->prop(key);
+    }
+
+    return QVariant();
+}
+
+bool Device::propertyExists(const QString &key) const
+{
+    if (m_backend) {
+        return m_backend->propertyExists(key);
+    }
+
+    return false;
+}
+
+QVariantMap Device::allProperties() const
+{
+    if (m_backend) {
+        return m_backend->allProperties();
+    }
+
+    return QVariantMap();
+}
+
+bool Device::hasInterface(const QString &name) const
+{
+    if (m_backend) {
+        return m_backend->interfaces().contains(name);
+    }
+
+    return false;
+}
+
+QStringList Device::interfaces() const
+{
+    if (m_backend) {
+        return m_backend->interfaces();
+    }
+
+    return QStringList();
 }
 
 QObject* Device::createDeviceInterface(const Solid::DeviceInterface::Type& type)
@@ -637,11 +681,6 @@ QString Device::vendor() const
     return prop("Vendor").toString();
 }
 
-QString Device::udi() const
-{
-    return m_udi;
-}
-
 QString Device::parentUdi() const
 {
     QString parent;
@@ -655,139 +694,6 @@ QString Device::parentUdi() const
     }
     return parent;
 }
-
-void Device::checkCache(const QString &key) const
-{
-    if (m_cache.isEmpty()) // recreate the cache
-        allProperties();
-
-    if (m_cache.contains(key))
-        return;
-
-    QVariant reply = m_device->property(key.toUtf8());
-
-    if (reply.isValid()) {
-        m_cache.insert(key, reply);
-    } else {
-        //qDebug() << "got invalid reply for cache:" << key;
-    }
-}
-
-QString Device::introspect() const
-{
-    QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi,
-                                                       DBUS_INTERFACE_INTROSPECT, "Introspect");
-    QDBusPendingReply<QString> reply = m_connection.asyncCall(call);
-    reply.waitForFinished();
-
-    if (reply.isValid())
-        return reply.value();
-    else {
-        return QString();
-    }
-}
-
-QVariant Device::prop(const QString &key) const
-{
-    checkCache(key);
-    return m_cache.value(key);
-}
-
-bool Device::propertyExists(const QString &key) const
-{
-    checkCache(key);
-    return m_cache.contains(key);
-}
-
-QVariantMap Device::allProperties() const
-{
-    QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, m_udi, DBUS_INTERFACE_PROPS, "GetAll");
-
-    Q_FOREACH (const QString & iface, m_interfaces) {
-        if (iface.startsWith("org.freedesktop.DBus"))
-            continue;
-        call.setArguments(QVariantList() << iface);
-        QDBusPendingReply<QVariantMap> reply = m_connection.asyncCall(call);
-        reply.waitForFinished();
-
-        if (reply.isValid())
-            m_cache.unite(reply.value());
-        else
-            qWarning() << "Error getting props:" << reply.error().name() << reply.error().message();
-        //qDebug() << "After iface" << iface << ", cache now contains" << m_cache.size() << "items";
-    }
-
-    return m_cache;
-}
-
-bool Device::hasInterface(const QString &name) const
-{
-    return m_interfaces.contains(name);
-}
-
-QStringList Device::interfaces() const
-{
-    return m_interfaces;
-}
-
-void Device::initInterfaces()
-{
-    m_interfaces.clear();
-    const QString xmlData = introspect();
-    QDomDocument dom;
-    dom.setContent(xmlData);
-    QDomNodeList ifaceNodeList = dom.elementsByTagName("interface");
-    for (int i = 0; i < ifaceNodeList.count(); i++) {
-        QDomElement ifaceElem = ifaceNodeList.item(i).toElement();
-        if (!ifaceElem.isNull())
-            m_interfaces.append(ifaceElem.attribute("name"));
-    }
-    //qDebug() << "Device" << m_udi << "has interfaces:" << m_interfaces;
-}
-
-void Device::slotPropertiesChanged(const QString &ifaceName, const QVariantMap &changedProps, const QStringList &invalidatedProps)
-{
-    //Q_UNUSED(ifaceName);
-
-    qDebug() << m_udi << "'s interface" << ifaceName << "changed props:";
-
-    QMap<QString, int> changeMap;
-
-    Q_FOREACH(const QString & key, invalidatedProps) {
-        m_cache.remove(key);
-        changeMap.insert(key, Solid::GenericInterface::PropertyRemoved);
-        qDebug() << "\t invalidated:" << key;
-    }
-
-    QMapIterator<QString, QVariant> i(changedProps);
-    while (i.hasNext()) {
-        i.next();
-        const QString key = i.key();
-        m_cache.insert(key, i.value());  // replace the value
-        changeMap.insert(key, Solid::GenericInterface::PropertyModified);
-        qDebug() << "\t modified:" << key << ":" << m_cache.value(key);
-    }
-
-    Q_EMIT propertyChanged(changeMap);
-    Q_EMIT changed();
-}
-
-void Device::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties)
-{
-    if (object_path.path() == m_udi) {
-        m_interfaces.append(interfaces_and_properties.keys());
-    }
-}
-
-void Device::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces)
-{
-    if (object_path.path() == m_udi) {
-        Q_FOREACH(const QString & iface, interfaces) {
-            m_interfaces.removeAll(iface);
-        }
-    }
-}
-
 
 QString Device::errorToString(const QString & error) const
 {
