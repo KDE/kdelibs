@@ -229,7 +229,7 @@ void DeviceBackend::slotInterfacesAdded(const QDBusObjectPath& object_path, cons
 
 void DeviceBackend::slotInterfacesRemoved(const QDBusObjectPath& object_path, const QStringList& interfaces)
 {
-    if (object_path.path() == m_udi) {
+    if (object_path.path() != m_udi) {
         return;
     }
 
