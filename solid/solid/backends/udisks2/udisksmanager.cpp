@@ -191,6 +191,11 @@ void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVar
 {
     const QString udi = object_path.path();
 
+    /* Ignore jobs */
+    if (udi.startsWith(UD2_DBUS_PATH_JOBS)) {
+        return;
+    }
+
     qDebug() << udi << "has new interfaces:" << interfaces_and_properties.keys();
 
     // new device, we don't know it yet
@@ -203,6 +208,11 @@ void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVar
 void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces)
 {
     const QString udi = object_path.path();
+
+    /* Ignore jobs */
+    if (udi.startsWith(UD2_DBUS_PATH_JOBS)) {
+        return;
+    }
 
     qDebug() << udi << "lost interfaces:" << interfaces;
 
