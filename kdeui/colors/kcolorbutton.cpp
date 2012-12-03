@@ -264,6 +264,7 @@ void KColorButton::KColorButtonPrivate::_k_chooseColor()
     dialog->setButtons(KDialog::Ok | KDialog::Cancel);
     connect(dialog, SIGNAL(applyClicked()), q, SLOT(_k_colorChosen()));
     connect(dialog, SIGNAL(okClicked()), q, SLOT(_k_colorChosen()));
+    connect(dialog, SIGNAL(colorSelected(QColor)), q, SLOT(_k_colorChosen()));
     dialogPtr = dialog;
     dialog->show();
 }
