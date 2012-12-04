@@ -27,7 +27,24 @@ endif()
 include_directories(${kdeqt5staging_INCLUDE_DIR})
 include_directories(${kwindowsystem_SOURCE_DIR}/src)
 include_directories(${kwindowsystem_BINARY_DIR}/src)
-include_directories(${kdeui_SOURCE_DIR}/kdialogs)
+include_directories(
+    ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
+    ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
+)
+include_directories(
+    ${kdeui_BINARY_DIR}
+    ${kdeui_SOURCE_DIR}/dialogs
+)
+include_directories(
+    ${CMAKE_BINARY_DIR}/staging/kwidgets/src
+    ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
+    ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
+    ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
+)
+include_directories(
+    ${CMAKE_BINARY_DIR}/staging/ki18n/src
+    ${CMAKE_SOURCE_DIR}/staging/ki18n/src
+)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kinterprocesswindowing_version.h)
 

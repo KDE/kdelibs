@@ -19,9 +19,56 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "kiw_kmessagebox.h"
+#include "kmessagebox_kiw.h"
+
+#include <kdialog.h>
+#include <kwindowsystem.h>
+#include <klocalizedstring.h>
+
+// Some i18n filters, that standard button texts are piped through
+// (the new KGuiItem object with filtered text is created from the old one).
+
+// i18n: Filter for the Yes-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_YES(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-yes", "%1", src.text() ) );
+
+// i18n: Filter for the No-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_NO(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-no", "%1", src.text() ) );
+
+// i18n: Filter for the Continue-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_CONTINUE(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-continue", "%1", src.text() ) );
+
+// i18n: Filter for the Cancel-button text in standard message dialogs,
+// after the message caption/text have been translated.
+#define I18N_FILTER_BUTTON_CANCEL(src, dst) \
+    KGuiItem dst(src); \
+    dst.setText( i18nc( "@action:button filter-cancel", "%1", src.text() ) );
+
+// i18n: Called after the button texts in standard message dialogs
+// have been filtered by the messages above. Not visible to user.
+#define I18N_POST_BUTTON_FILTER \
+    i18nc( "@action:button post-filter", "." );
 
 namespace KMessageBox {
+
+/** @note This function has a duplicate in kmessagebox.cpp 
+ *  FIXME What should be done about this?
+ **/
+static void applyOptions( KDialog* dialog, KMessageBox::Options options )
+{
+    if ( options & KMessageBox::WindowModal ) {
+        dialog->setWindowModality( Qt::WindowModal );
+    }
+    dialog->setModal( true );
+}
 
 int questionYesNoWId(WId parent_id, const QString &text,
                            const QString &caption,

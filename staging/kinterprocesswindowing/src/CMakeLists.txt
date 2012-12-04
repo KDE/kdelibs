@@ -8,6 +8,8 @@ endif ()
 
 configure_file(config-kinterprocesswindowing.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kinterprocesswindowing.h)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 set(libkinterprocesswindowing_SRCS
    kusertimestamp.cpp
    kmessagebox_kiw.cpp
@@ -19,6 +21,7 @@ generate_export_header(kinterprocesswindowing)
 
 target_link_libraries(kinterprocesswindowing
    LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${kwindowsystem_LIBRARY} ${X11_LIBRARIES} ${kdeqt5staging_LIBRARY}
+   kwidgets ki18n kconfigcore kdeui
 )
 
 set_target_properties(kinterprocesswindowing PROPERTIES VERSION   ${ECM_VERSION_STRING}
