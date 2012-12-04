@@ -183,7 +183,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
     if (!_untranslatedGenericName.isEmpty())
         entryMap.insert(QLatin1String("UntranslatedGenericName"), _untranslatedGenericName);
 
-    m_lstKeywords = desktopGroup.readEntry("Keywords", QStringList());
+    m_lstKeywords = desktopGroup.readXdgListEntry("Keywords", QStringList());
     entryMap.remove(QLatin1String("Keywords"));
     m_lstKeywords += desktopGroup.readEntry("X-KDE-Keywords", QStringList());
     entryMap.remove(QLatin1String("X-KDE-Keywords"));
