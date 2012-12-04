@@ -40,6 +40,9 @@
 class KDEUI_EXPORT KColorCells : public QTableWidget
 {
   Q_OBJECT
+  Q_PROPERTY(bool acceptDrags READ acceptDrags WRITE setAcceptDrags)
+  Q_PROPERTY(bool shading READ shading WRITE setShading)
+
 public:
   /** 
    * Constructs a new table of color cells, consisting of
@@ -60,7 +63,10 @@ public:
   int count() const;
 
   void setShading(bool shade);
+  bool shading() const;
+
   void setAcceptDrags(bool acceptDrags);
+  bool acceptDrags() const;
 
   /** Sets the currently selected cell to @p index */
   void setSelected(int index);
@@ -204,6 +210,9 @@ private:
 class KDEUI_EXPORT KColorDialog : public KDialog
 {
   Q_OBJECT
+  Q_PROPERTY(bool isAlphaChannelEnabled READ isAlphaChannelEnabled WRITE setAlphaChannelEnabled)
+  Q_PROPERTY(QColor defaultColor READ defaultColor WRITE setDefaultColor)
+  Q_PROPERTY(QColor color READ color WRITE setColor)
 
   public:
     /**
