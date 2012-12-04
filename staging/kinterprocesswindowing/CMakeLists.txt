@@ -27,6 +27,7 @@ endif()
 include_directories(${kdeqt5staging_INCLUDE_DIR})
 include_directories(${kwindowsystem_SOURCE_DIR}/src)
 include_directories(${kwindowsystem_BINARY_DIR}/src)
+include_directories(${kdeui_SOURCE_DIR}/kdialogs)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kinterprocesswindowing_version.h)
 

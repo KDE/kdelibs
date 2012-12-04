@@ -10,6 +10,7 @@ configure_file(config-kinterprocesswindowing.h.cmake ${CMAKE_CURRENT_BINARY_DIR}
 
 set(libkinterprocesswindowing_SRCS
    kusertimestamp.cpp
+   kmessagebox_kiw.cpp
 )
 
 
@@ -28,6 +29,7 @@ install(TARGETS kinterprocesswindowing EXPORT kdelibsLibraryTargets ${ECM_TARGET
 
 install(FILES
     kusertimestamp.h
+    kmessagebox_kiw.h
     ${CMAKE_CURRENT_BINARY_DIR}/kinterprocesswindowing_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
