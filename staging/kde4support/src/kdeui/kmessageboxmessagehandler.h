@@ -19,7 +19,7 @@
 #ifndef KDEUI_KMESSAGEBOXMESSAGEHANDLER_H
 #define KDEUI_KMESSAGEBOXMESSAGEHANDLER_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 #include <kmessage.h>
 
 #include <QtCore/QObject>
@@ -31,7 +31,7 @@ class KMessageBoxMessageHandlerPrivate;
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
 */
-class KDEUI_EXPORT KMessageBoxMessageHandler : public QObject, public KMessageHandler
+class KDE4SUPPORT_EXPORT KMessageBoxMessageHandler : public QObject, public KMessageHandler
 {
     Q_OBJECT
 public:
