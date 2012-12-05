@@ -39,6 +39,7 @@
 #include <kmessagebox.h>
 
 #include "kauthaction.h"
+#include "kauthobjectdecorator.h"
 
 #include "kcolorscheme.h"
 
@@ -133,25 +134,27 @@ void KCMultiDialogPrivate::_k_clientChanged()
 
         if (activeModule->realModule()->needsAuthorization()) {
             if (q->button(KDialog::Apply)) {
-                q->button(KDialog::Apply)->setAuthAction(activeModule->realModule()->authAction());
+                KAuth::ObjectDecorator *decorator = new KAuth::ObjectDecorator(q->button(KDialog::Apply));
+                decorator->setAuthAction(activeModule->realModule()->authAction());
                 activeModule->realModule()->authAction().setParentWidget(activeModule->realModule());
-                q->connect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action)), SLOT(slotApplyClicked()));
+                q->connect(decorator, SIGNAL(authorized(KAuth::Action)), SLOT(slotApplyClicked()));
             }
 
             if (q->button(KDialog::Ok)) {
-                q->button(KDialog::Ok)->setAuthAction(activeModule->realModule()->authAction());
+                KAuth::ObjectDecorator *decorator = new KAuth::ObjectDecorator(q->button(KDialog::Ok));
+                decorator->setAuthAction(activeModule->realModule()->authAction());
                 activeModule->realModule()->authAction().setParentWidget(activeModule->realModule());
-                q->connect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action)), SLOT(slotOkClicked()));
+                q->connect(decorator, SIGNAL(authorized(KAuth::Action)), SLOT(slotOkClicked()));
             }
         } else {
             if (q->button(KDialog::Apply)) {
                 q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
-                q->button(KDialog::Apply)->setAuthAction(0);
+                q->button(KDialog::Apply)->findChild<KAuth::ObjectDecorator*>()->deleteLater();
             }
 
             if (q->button(KDialog::Ok)) {
                 q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
-                q->button(KDialog::Ok)->setAuthAction(0);
+                q->button(KDialog::Ok)->findChild<KAuth::ObjectDecorator*>()->deleteLater();
             }
         }
     }
