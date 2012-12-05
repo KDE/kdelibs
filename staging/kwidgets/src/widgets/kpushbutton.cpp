@@ -44,7 +44,6 @@ public:
 
     KPushButton *parent;
 
-    KGuiItem item;
     KStandardGuiItem::StandardItem itemType;
     QPointer<QMenu> delayedMenu;
     QTimer * delayedMenuTimer;
@@ -156,21 +155,12 @@ KPushButton::~KPushButton()
 
 void KPushButton::initWidget( const KGuiItem &item )
 {
-    d->item = item;
     d->itemType = (KStandardGuiItem::StandardItem) 0;
     d->delayedMenuTimer=0;
 
     connect(this,SIGNAL(pressed()), this, SLOT(slotPressedInternal()));
     connect(this,SIGNAL(clicked()), this, SLOT(slotClickedInternal()));
-    // call QPushButton's implementation since we don't need to
-    // set the GUI items text or check the state of the icon set
-    QPushButton::setText( d->item.text() );
-
-    setIcon( d->item.icon() );
-
-    setToolTip( item.toolTip() );
-
-    setWhatsThis(item.whatsThis());
+    KGuiItem::assign(this, item);
 }
 
 bool KPushButton::isDragEnabled() const
@@ -180,15 +170,7 @@ bool KPushButton::isDragEnabled() const
 
 void KPushButton::setGuiItem( const KGuiItem& item )
 {
-    d->item = item;
-
-    // call QPushButton's implementation since we don't need to
-    // set the GUI items text or check the state of the icon set
-    QPushButton::setText( d->item.text() );
-    setIcon( d->item.icon() );
-    setToolTip( d->item.toolTip() );
-    setEnabled( d->item.isEnabled() );
-    setWhatsThis( d->item.whatsThis() );
+    KGuiItem::assign(this, item);
 }
 
 void KPushButton::setGuiItem( KStandardGuiItem::StandardItem item )
@@ -205,19 +187,10 @@ KStandardGuiItem::StandardItem KPushButton::guiItem() const
 void KPushButton::setText( const QString &text )
 {
     QPushButton::setText(text);
-
-    // we need to re-evaluate the icon set when the text
-    // is removed, or when it is supplied
-    if (text.isEmpty() != d->item.text().isEmpty())
-        setIcon(d->item.icon());
-
-    d->item.setText(text);
 }
 
 void KPushButton::setIcon( const QIcon &icon )
 {
-    d->item.setIcon(icon);
-
     const bool useIcons = style()->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, this);
     if (useIcons || text().isEmpty())
         QPushButton::setIcon( icon );
