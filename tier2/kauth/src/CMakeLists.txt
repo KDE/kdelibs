@@ -10,6 +10,7 @@ set(libkauth_SRCS
     kauthaction.cpp
     kauthactionreply.cpp
     kauthexecutejob.cpp
+    kauthobjectdecorator.cpp
     AuthBackend.cpp
     BackendsManager.cpp
     HelperProxy.cpp
@@ -21,7 +22,7 @@ set(libkauth_SRCS
 add_library(kauth ${libkauth_SRCS})
 generate_export_header(kauth)
 
-target_link_libraries(kauth ${QT_QTCORE_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons)
+target_link_libraries(kauth ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons)
 set_target_properties(kauth PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                        SOVERSION ${ECM_SOVERSION}
 )
@@ -78,6 +79,7 @@ install(FILES
     kauthactionreply.h
     kauthexecutejob.h
     kauthhelpersupport.h
+    kauthobjectdecorator.h
     kauth.h
     ${CMAKE_CURRENT_BINARY_DIR}/kauth_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
