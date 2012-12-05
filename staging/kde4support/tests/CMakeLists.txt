@@ -24,6 +24,7 @@ kde4support_examples(
   kmdcodectest
   kcmdlineargstest
   kdialogbuttonboxtest
+  kprogressdialogtest
   khboxtest
   kstatusbartest
   ksystemtraytest

@@ -164,7 +164,6 @@ set(kdeui_LIB_SRCS
  dialogs/knewpassworddialog.cpp
  dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
- dialogs/kprogressdialog.cpp
  dialogs/kshortcuteditwidget.cpp
  dialogs/kshortcutseditordelegate.cpp
  dialogs/kshortcutseditoritem.cpp
@@ -524,7 +523,6 @@ install( FILES
  dialogs/knewpassworddialog.h
  dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h
- dialogs/kprogressdialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
  dialogs/ktip.h

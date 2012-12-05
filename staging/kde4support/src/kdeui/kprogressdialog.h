@@ -23,7 +23,7 @@
 #include <QProgressBar>
 
 #include <kdialog.h>
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 /**
  * @short A dialog with a progress bar
@@ -45,7 +45,7 @@
  * @author Aaron J. Seigo
  * @author Urs Wolfer uwolfer @ kde.org
  */
-class KDEUI_EXPORT KProgressDialog : public KDialog
+class KDE4SUPPORT_EXPORT KProgressDialog : public KDialog
 {
     Q_OBJECT
 
