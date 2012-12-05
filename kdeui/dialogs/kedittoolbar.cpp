@@ -116,7 +116,7 @@ public:
     KActionCollection* actionCollection() const { return m_actionCollection; }
     void setDomDocument(const QDomDocument& domDoc)
     {
-        m_document = domDoc;
+        m_document = domDoc.cloneNode().toDocument();
         m_barList = findToolBars(m_document.documentElement());
     }
     // Return reference, for e.g. actionPropertiesElement() to modify the document
