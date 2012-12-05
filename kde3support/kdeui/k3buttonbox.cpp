@@ -52,7 +52,7 @@
 #include "moc_k3buttonbox.cpp"
 #include <kglobalsettings.h>
 #include <kguiitem.h>
-#include <kpushbutton.h>
+#include <QPushButton>
 #include <QList>
 #include <assert.h>
 
@@ -60,12 +60,12 @@
 
 class K3ButtonBox::Item {
 public:
-  KPushButton* const button;
+  QPushButton* const button;
   bool noexpand;
   unsigned short stretch;
   unsigned short actual_size;
 
-  Item(KPushButton* const _button) : button(_button) {}
+  Item(QPushButton* const _button) : button(_button) {}
 };
 
 template class QList<K3ButtonBox::Item *>;
@@ -98,7 +98,7 @@ K3ButtonBox::~K3ButtonBox() {
 }
 
 QPushButton *K3ButtonBox::addButton(const QString& text, bool noexpand) {
-  Item* const item = new Item(new KPushButton(text, this));
+  Item* const item = new Item(new QPushButton(text, this));
 
   item->noexpand  = noexpand;
   data->buttons.append(item);
@@ -110,7 +110,9 @@ QPushButton *K3ButtonBox::addButton(const QString& text, bool noexpand) {
 }
 
 QPushButton *K3ButtonBox::addButton(const KGuiItem& guiitem, bool noexpand) {
-  Item* const item = new Item(new KPushButton(guiitem, this));
+  QPushButton *button = new QPushButton(this);
+  KGuiItem::assign(button, guiitem);
+  Item* const item = new Item(button);
 
   item->noexpand  = noexpand;
   data->buttons.append(item);

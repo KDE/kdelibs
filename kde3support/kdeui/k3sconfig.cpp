@@ -24,6 +24,7 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QLayout>
+#include <QPushButton>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
 
@@ -34,7 +35,6 @@
 #include <kguiitem.h>
 #include <klineedit.h>
 #include <klocale.h>
-#include <kpushbutton.h>
 #include <kstandardguiitem.h>
 
 #include <config-kde3support.h>
@@ -178,7 +178,8 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
 
   if( addHelpButton )
   {
-    QPushButton *pushButton = new KPushButton( KStandardGuiItem::help(), this );
+    QPushButton *pushButton = new QPushButton( this );
+    KGuiItem::assign( pushButton, KStandardGuiItem::help() );
     connect( pushButton, SIGNAL(clicked()), this, SLOT(sHelp()) );
     glay->addWidget(pushButton, 6, 2);
   }
