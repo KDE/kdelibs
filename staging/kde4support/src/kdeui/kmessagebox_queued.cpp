@@ -19,6 +19,8 @@
 
 #include "kmessagebox_queued.h"
 
+#include <kmessagebox_kiw.h>
+
 namespace KMessageBox {
 
 static bool KMessageBox_queue = false;
