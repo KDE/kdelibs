@@ -219,7 +219,6 @@ private:
     Q_PRIVATE_SLOT(d, void slotPressedInternal())
     Q_PRIVATE_SLOT(d, void slotClickedInternal())
     Q_PRIVATE_SLOT(d, void slotDelayedMenuTimeout())
-    Q_PRIVATE_SLOT(d, void authStatusChanged(KAuth::Action::AuthStatus))
 };
 
 #endif // KPUSHBUTTON_H

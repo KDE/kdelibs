@@ -32,13 +32,12 @@
 #include <kguiitem.h>
 #include <kiconloader.h>
 
-#include "kauthaction.h"
-#include "kauthexecutejob.h"
+#include "kauthobjectdecorator.h"
 
 class KPushButton::KPushButtonPrivate
 {
 public:
-    KPushButtonPrivate(KPushButton *_parent) : parent(_parent), m_dragEnabled( false ), authAction(0)
+    KPushButtonPrivate(KPushButton *_parent) : parent(_parent), m_dragEnabled( false ), decorator(0)
     {
     }
 
@@ -49,9 +48,7 @@ public:
     QTimer * delayedMenuTimer;
     bool m_dragEnabled;
     QPoint startPos;
-    KAuth::Action authAction;
-    // TODO: Remove whenever QIcon overlays will get fixed
-    QIcon oldIcon;
+    KAuth::ObjectDecorator *decorator;
 
     void slotPressedInternal();
     void slotClickedInternal();
@@ -76,17 +73,6 @@ void KPushButton::KPushButtonPrivate::slotClickedInternal()
 {
     if (delayedMenuTimer)
         delayedMenuTimer->stop();
-
-    if (authAction.isValid()) {
-        KAuth::ExecuteJob *job = authAction.execute(KAuth::Action::AuthorizeOnlyMode);
-        parent->connect(job, SIGNAL(statusChanged(KAuth::Action::AuthStatus)),
-                        parent, SLOT(authStatusChanged(KAuth::Action::AuthStatus)));
-        if (job->exec()) {
-            emit parent->authorized(authAction);
-        } else {
-            parent->setEnabled(false);
-        }
-    }
 }
 
 void KPushButton::KPushButtonPrivate::slotDelayedMenuTimeout() {
@@ -95,30 +81,6 @@ void KPushButton::KPushButtonPrivate::slotDelayedMenuTimeout() {
         parent->setMenu(delayedMenu);
         parent->showMenu();
         parent->setMenu(0);
-    }
-}
-
-void KPushButton::KPushButtonPrivate::authStatusChanged(KAuth::Action::AuthStatus status)
-{
-    switch (status) {
-        case KAuth::Action::AuthorizedStatus:
-            parent->setEnabled(true);
-            if(!oldIcon.isNull()) {
-                parent->setIcon(oldIcon);
-                oldIcon = QIcon();
-            }
-            break;
-        case KAuth::Action::AuthRequiredStatus:
-            parent->setEnabled(true);
-            oldIcon = parent->icon();
-            parent->setIcon(KDE::icon("dialog-password"));
-            break;
-        default:
-            parent->setEnabled(false);
-            if(!oldIcon.isNull()) {
-                parent->setIcon(oldIcon);
-                oldIcon = QIcon();
-            }
     }
 }
 
@@ -155,6 +117,10 @@ KPushButton::~KPushButton()
 
 void KPushButton::initWidget( const KGuiItem &item )
 {
+    d->decorator = new KAuth::ObjectDecorator(this);
+    connect(d->decorator, SIGNAL(authorized(KAuth::Action)),
+            this, SIGNAL(authorized(KAuth::Action)));
+
     d->itemType = (KStandardGuiItem::StandardItem) 0;
     d->delayedMenuTimer=0;
 
@@ -251,39 +217,17 @@ QMenu* KPushButton::delayedMenu()
 
 KAuth::Action KPushButton::authAction() const
 {
-    return d->authAction;
+    return d->decorator->authAction();
 }
 
 void KPushButton::setAuthAction(const QString &actionName)
 {
-    if (actionName.isEmpty()) {
-        setAuthAction(0);
-    } else {
-        setAuthAction(KAuth::Action(actionName));
-    }
+    d->decorator->setAuthAction(actionName);
 }
 
 void KPushButton::setAuthAction(const KAuth::Action &action)
 {
-    if (d->authAction == action) {
-        return;
-    }
-
-    if (d->authAction.isValid()) {
-        if (!d->oldIcon.isNull()) {
-            setIcon(d->oldIcon);
-            d->oldIcon = QIcon();
-        }
-    }
-
-    if (action.isValid()) {
-        d->authAction = action;
-
-        // Set the parent widget
-        d->authAction.setParentWidget(this);
-
-        d->authStatusChanged(d->authAction.status());
-    }
+    d->decorator->setAuthAction(action);
 }
 
 QSize KPushButton::sizeHint() const
