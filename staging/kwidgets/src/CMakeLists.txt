@@ -10,7 +10,7 @@ set(kwidgets_LIB_SRCS
   dialogs/kdialog.cpp
   icons/kiconeffect.cpp
   icons/kiconengine.cpp
-  icons/kiconloader.cpp
+  icons/kiconloader.cpp # cannot move down to kguiaddons: depends on QtSvg, KSharedDataCache (kcoreaddons) and localizedFilePath (ki18n)
   icons/kicontheme.cpp
   utils/kglobalsettings.cpp
   utils/kguiitem.cpp
