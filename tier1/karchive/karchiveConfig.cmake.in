@@ -1,6 +1,6 @@
 @PACKAGE_INIT@
 
-# Any changes in this file will be overwritten by CMake.
+# Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
 set(karchive_VERSION_MAJOR "@KARCHIVE_VERSION_MAJOR@")
 set(karchive_VERSION_MINOR "@KARCHIVE_VERSION_MINOR@")
