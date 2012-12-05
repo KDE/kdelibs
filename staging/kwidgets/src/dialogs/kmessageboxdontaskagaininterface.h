@@ -21,7 +21,7 @@
 #ifndef KMESSAGEBOXDONTASKAGAININTERFACE_H
 #define KMESSAGEBOXDONTASKAGAININTERFACE_H
 
-#include <kmessagebox.h>
+#include "kmessagebox.h"
 #include <qmetatype.h>
 
 /**

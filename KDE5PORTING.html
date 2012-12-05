@@ -269,7 +269,13 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
 <li>KCodecAction: use enum KEncodingProber::ProberType instead of enum KEncodingDetector::AutoDetectScript</li>
 <li>KXMessages: the "obsolete = false" argument has been removed from all methods, and int screen has a default value of -1 now. Remove the "-1, false" in all calls. The sendMessage and sendMessageX methods were apparently unused, and have been commented out. Email kde-frameworks-devel at kde.org if you need them back.</li>
 <li>KGlobalSettings::contextMenuKey is gone, reimplement QWidget::contextMenuEvent() instead.</li>
-<li>KMessageBox is no longer a class, but a namespace, as it only had static methods. This move will allow splitting it accross several frameworks.</li>
+<li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in three frameworks:
+    <ul>
+    <li>WId methods are now in kmessagebox_kiw.h from kinterprocesswindowing framework</li>
+    <li>Queued methds are now in kmessagebox_queued.h from kde4support framework</li>
+    <li>The remainder of the methods are now in kmessagebox.h from kwidgets</li>
+    </ul>
+</li>
 <li>KMessageBoxMessageHandler moved to kde4support</li>
 </ul>
 

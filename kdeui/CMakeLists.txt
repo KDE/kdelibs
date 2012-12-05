@@ -150,7 +150,6 @@ set(kdeui_LIB_SRCS
  dialogs/kedittoolbar.cpp
  dialogs/kinputdialog.cpp
  dialogs/klinkdialog.cpp
- dialogs/kmessagebox.cpp
  dialogs/kaboutapplicationdialog.cpp
  dialogs/kaboutapplicationpersonmodel_p.cpp
  dialogs/kaboutapplicationpersonlistdelegate_p.cpp
@@ -508,7 +507,6 @@ install( FILES
  dialogs/kdeprintdialog.h
  dialogs/kedittoolbar.h
  dialogs/kinputdialog.h
- dialogs/kmessagebox.h
  dialogs/knewpassworddialog.h
  dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h

@@ -34,7 +34,7 @@
 #include <QPluginLoader>
 
 #include <qapplication.h>
-#include <kdialog.h>
+#include "kdialog.h"
 #include <kdialogqueue_p.h>
 #include <klocalizedstring.h>
 #include <knotification.h>
