@@ -1320,9 +1320,6 @@ void KEditToolBarWidgetPrivate::slotRemoveButton()
 {
   removeActive( m_activeList->currentItem() );
 
-  // we're modified, so let this change
-  emit m_widget->enableOk(true);
-
   slotToolBarSelected( m_toolbarCombo->currentIndex() );
 }
 
