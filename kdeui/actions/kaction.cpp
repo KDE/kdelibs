@@ -29,7 +29,7 @@
 #include "kglobalaccel_p.h"
 #include "klocalizedstring.h"
 #include "kmessagebox.h"
-#include "kauthexecutejob.h"
+#include "kauthobjectdecorator.h"
 
 #include <QApplication>
 #include <QHBoxLayout>
@@ -54,6 +54,10 @@ void KActionPrivate::init(KAction *q_ptr)
   QObject::connect(q, SIGNAL(triggered(bool)), q, SLOT(slotTriggered()));
 
   q->setProperty("isShortcutConfigurable", true);
+
+  decorator = new KAuth::ObjectDecorator(q);
+  QObject::connect(decorator, SIGNAL(authorized(KAuth::Action)),
+                   q, SIGNAL(authorized(KAuth::Action)));
 }
 
 void KActionPrivate::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
@@ -69,41 +73,6 @@ void KActionPrivate::slotTriggered()
   emit q->activated();
 #endif
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
-
-  if (authAction.isValid()) {
-      KAuth::ExecuteJob *job = authAction.execute(KAuth::Action::AuthorizeOnlyMode);
-      q->connect(job, SIGNAL(statusChanged(KAuth::Action::AuthStatus)),
-                 q, SLOT(authStatusChanged(KAuth::Action::AuthStatus)));
-      if (job->exec()) {
-          emit q->authorized(authAction);
-      } else {
-          q->setEnabled(false);
-      }
-  }
-}
-
-void KActionPrivate::authStatusChanged(KAuth::Action::AuthStatus status)
-{
-    switch (status) {
-        case KAuth::Action::AuthorizedStatus:
-            q->setEnabled(true);
-            if(!oldIcon.isNull()) {
-                q->setIcon(oldIcon);
-                oldIcon = QIcon();
-            }
-            break;
-        case KAuth::Action::AuthRequiredStatus:
-            q->setEnabled(true);
-            oldIcon = q->icon();
-            q->setIcon(KDE::icon("dialog-password"));
-            break;
-        default:
-            q->setEnabled(false);
-            if(!oldIcon.isNull()) {
-                q->setIcon(oldIcon);
-                oldIcon = QIcon();
-            }
-    }
 }
 
 bool KAction::event(QEvent *event)
@@ -378,39 +347,17 @@ void KAction::setHelpText(const QString& text)
 
 KAuth::Action KAction::authAction() const
 {
-    return d->authAction;
+    return d->decorator->authAction();
 }
 
 void KAction::setAuthAction(const QString &actionName)
 {
-    if (actionName.isEmpty()) {
-        setAuthAction(KAuth::Action());
-    } else {
-        setAuthAction(KAuth::Action(actionName));
-    }
+    d->decorator->setAuthAction(actionName);
 }
 
 void KAction::setAuthAction(const KAuth::Action &action)
 {
-    if (d->authAction == action) {
-        return;
-    }
-
-    if (d->authAction.isValid()) {
-        if (!d->oldIcon.isNull()) {
-            setIcon(d->oldIcon);
-            d->oldIcon = QIcon();
-        }
-    }
-
-    if (action.isValid()) {
-        d->authAction = action;
-
-        // Set the parent widget
-        d->authAction.setParentWidget(parentWidget());
-
-        d->authStatusChanged(d->authAction.status());
-    }
+    d->decorator->setAuthAction(action);
 }
 
 /* vim: et sw=2 ts=2

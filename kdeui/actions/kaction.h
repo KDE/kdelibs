@@ -542,7 +542,6 @@ private:
     friend class KActionCollectionPrivate; // Needs access to the component
     friend class KShortcutsEditorDelegate; // Needs access to the component
     Q_PRIVATE_SLOT(d, void slotTriggered())
-    Q_PRIVATE_SLOT(d, void authStatusChanged(KAuth::Action::AuthStatus))
     class KActionPrivate* const d;
     friend class KActionPrivate;
     friend class KGlobalShortcutTest;

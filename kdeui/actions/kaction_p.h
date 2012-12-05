@@ -26,14 +26,14 @@
 class KAction;
 
 namespace KAuth {
-    class Action;
+    class ObjectDecorator;
 }
 
 class KActionPrivate
 {
     public:
         KActionPrivate()
-            : componentData(KComponentData::mainComponent()), globalShortcutEnabled(false), q(0), authAction(0)
+            : componentData(KComponentData::mainComponent()), globalShortcutEnabled(false), q(0), decorator(0)
         {
         }
 
@@ -59,9 +59,7 @@ class KActionPrivate
         bool neverSetGlobalShortcut : 1;
         KAction *q;
 
-        KAuth::Action authAction;
-        // TODO: Remove whenever QIcon overlays will get fixed
-        QIcon oldIcon;
+        KAuth::ObjectDecorator *decorator;
 };
 
 #endif
