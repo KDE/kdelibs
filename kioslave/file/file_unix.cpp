@@ -59,18 +59,6 @@
 #include <sys/sendfile.h>
 #endif
 
-namespace KDEPrivate
-{
-
-struct CharArrayDeleter
-{
-    CharArrayDeleter(char *b) : buf(b) {}
-    ~CharArrayDeleter() { free(buf); }
-    char *buf;
-};
-
-}
-
 using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*32)
