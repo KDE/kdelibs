@@ -42,12 +42,12 @@
 class KXMLGUIClientPrivate
 {
 public:
-  KXMLGUIClientPrivate()
+  KXMLGUIClientPrivate() 
+    : m_componentData(KGlobal::mainComponent()),
+      m_actionCollection(0),
+      m_parent(0L),
+      m_builder(0L)
   {
-    m_componentData = KGlobal::mainComponent();
-    m_parent = 0L;
-    m_builder = 0L;
-    m_actionCollection = 0;
   }
   ~KXMLGUIClientPrivate()
   {

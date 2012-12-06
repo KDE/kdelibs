@@ -229,11 +229,11 @@ public:
 };
 
 KFontComboBoxPrivate::KFontComboBoxPrivate (KFontComboBox *parent)
+    : k(parent),
+      currentFont(KGlobalSettings::generalFont()),
+      onlyFixed(false),
+      signalsAllowed(true)
 {
-    k = parent;
-    currentFont = KGlobalSettings::generalFont();
-    onlyFixed = false;
-    signalsAllowed = true;
 }
 
 void KFontComboBoxPrivate::updateDatabase ()
