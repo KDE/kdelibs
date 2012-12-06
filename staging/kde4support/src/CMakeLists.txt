@@ -23,6 +23,7 @@ set(libkde4support_SRCS
     kdecore/k3socketbuffer.cpp
     kdecore/netsupp.cpp
     kdecore/kascii.cpp
+    kdecore/k4aboutdata.cpp
 
     kdeui/kapplication.cpp
     kdeui/kcolorchoosermode.cpp
@@ -118,6 +119,7 @@ install(FILES
     kdecore/kgenericfactory.tcc
     kdecore/ktypelist.h
     kdecore/kascii.h
+    kdecore/k4aboutdata.h
 
     kdeui/kapplication.h
     kdeui/kcolorchoosermode.h
