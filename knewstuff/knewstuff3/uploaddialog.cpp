@@ -31,6 +31,7 @@
 #include <kcomponentdata.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
+#include <kpushbutton.h>
 #include <kglobal.h>
 
 #include <kpixmapsequence.h>

@@ -26,6 +26,7 @@
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <krecentdocument.h>
+#include <kstandardguiitem.h>
 #include <kurlrequester.h>
 
 class KUrlRequesterDialogPrivate

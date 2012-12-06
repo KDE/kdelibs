@@ -20,7 +20,7 @@
 #define KURLREQUESTER_H
 
 #include <kfile.h>
-#include <kpushbutton.h>
+#include <QPushButton>
 #include <QUrl>
 
 #ifndef KDE_NO_DEPRECATED
@@ -34,6 +34,7 @@ class KFileDialog;
 class KLineEdit;
 class KUrlCompletion;
 
+class QPushButton;
 class QString;
 class QEvent;
 
@@ -172,7 +173,7 @@ public:
      * @returns a pointer to the pushbutton. It is provided so that you can
      * specify an own pixmap or a text, if you really need to.
      */
-    KPushButton * button() const;
+    QPushButton *button() const;
 
     /**
      * @returns the KUrlCompletion object used in the lineedit/combobox.

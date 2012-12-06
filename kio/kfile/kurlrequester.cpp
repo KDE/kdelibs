@@ -19,6 +19,7 @@
 #include "kurlrequester.h"
 
 #include <kcombobox.h>
+#include <kdragwidgetdecorator.h>
 #include <kfiledialog.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
@@ -34,13 +35,13 @@
 #include <QApplication>
 #include <QHBoxLayout>
 
-class KUrlDragPushButton : public KPushButton
+class KUrlDragPushButton : public QPushButton
 {
 public:
     KUrlDragPushButton( QWidget *parent)
-        : KPushButton( parent)
+        : QPushButton(parent)
     {
-        setDragEnabled( true );
+        new DragDecorator(this);
     }
     ~KUrlDragPushButton() {}
 
@@ -50,22 +51,31 @@ public:
         m_urls.append(url);
     }
 
-protected:
-    virtual QDrag *dragObject()
-    {
-        if (m_urls.isEmpty())
-            return 0;
-
-        QDrag *drag = new QDrag(this);
-        QMimeData *mimeData = new QMimeData;
-        mimeData->setUrls(m_urls);
-        drag->setMimeData(mimeData);
-        return drag;
-    }
-
 private:
-    QList<QUrl> m_urls;
+    class DragDecorator : public KDragWidgetDecoratorBase
+    {
+    public:
+        DragDecorator(KUrlDragPushButton *button)
+            : KDragWidgetDecoratorBase(button), m_button(button) {}
 
+    protected:
+        virtual QDrag *dragObject()
+        {
+            if (m_button->m_urls.isEmpty())
+                return 0;
+
+            QDrag *drag = new QDrag(m_button);
+            QMimeData *mimeData = new QMimeData;
+            mimeData->setUrls(m_button->m_urls);
+            drag->setMimeData(mimeData);
+            return drag;
+        }
+
+    private:
+        KUrlDragPushButton *m_button;
+    };
+
+    QList<QUrl> m_urls;
 };
 
 
@@ -474,7 +484,7 @@ bool KUrlRequester::eventFilter( QObject *obj, QEvent *ev )
     return QWidget::eventFilter( obj, ev );
 }
 
-KPushButton * KUrlRequester::button() const
+QPushButton *KUrlRequester::button() const
 {
     return d->myButton;
 }
