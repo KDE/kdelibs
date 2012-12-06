@@ -1,5 +1,6 @@
 /* This file is part of the KDE libraries
     Copyright (C) 2000 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2012 Kevin Ottens <ervin+bluesystems@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -25,7 +26,7 @@
 #include <kwidgets_export.h>
 
 class QDrag;
-class KDragWidgetDecoratorPrivate;
+class KDragWidgetDecoratorBasePrivate;
 
 
 /**
@@ -38,22 +39,21 @@ class KDragWidgetDecoratorPrivate;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KWIDGETS_EXPORT KDragWidgetDecorator : public QObject
+class KWIDGETS_EXPORT KDragWidgetDecoratorBase : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isDragEnabled READ isDragEnabled WRITE setDragEnabled)
 
 public:
-
     /**
      * Default constructor.
      */
-    explicit KDragWidgetDecorator(QWidget *parent = 0);
+    explicit KDragWidgetDecoratorBase(QWidget *parent = 0);
 
     /**
      * Destructs the decorator.
      */
-    ~KDragWidgetDecorator();
+    ~KDragWidgetDecoratorBase();
 
     /**
      * Enables/disables drag-support. Default is enabled.
@@ -90,7 +90,60 @@ protected:
     virtual void startDrag();
 
 private:
-    KDragWidgetDecoratorPrivate * const d;
+    KDragWidgetDecoratorBasePrivate * const d;
+};
+
+/**
+ * @brief A decorator which adds drag-support to widgets
+ *
+ * This is a decorator using an event filter to implement drag-support
+ * in widgets.
+ * You must set the dragObjectFactory to specify the QDrag to be used.
+ *
+ * @author Kevin Ottens <ervin@kde.org>
+ */
+template<class Widget>
+class KDragWidgetDecorator : public KDragWidgetDecoratorBase
+{
+public:
+    typedef QDrag *(*DragObjectFactory)(Widget*);
+
+    KDragWidgetDecorator(Widget *parent = 0)
+        : KDragWidgetDecoratorBase(parent), m_factory(0) {}
+
+    /**
+     * @return the QDrag factory used by this decorator
+     */
+    DragObjectFactory dragObjectFactory() const
+    {
+        return m_factory;
+    }
+
+    /**
+     * Set a factory to be used by this decorator
+     *
+     * @param factory the new QDrag factory to use
+     */
+    void setDragObjectFactory(DragObjectFactory factory)
+    {
+        m_factory = factory;
+    }
+
+private:
+    /**
+     * Reimplemented to use the QDrag factory
+     */
+    virtual QDrag *dragObject()
+    {
+        if (m_factory) {
+            Widget *w = static_cast<Widget*>(decoratedWidget());
+            return m_factory(w);
+        } else {
+            return KDragWidgetDecoratorBase::dragObject();
+        }
+    }
+
+    DragObjectFactory m_factory;
 };
 
 #endif // KDRAGWIDGETDECORATOR_H

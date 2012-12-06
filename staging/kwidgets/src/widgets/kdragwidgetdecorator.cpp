@@ -24,10 +24,10 @@
 #include <QMouseEvent>
 #include <QWidget>
 
-class KDragWidgetDecoratorPrivate
+class KDragWidgetDecoratorBasePrivate
 {
 public:
-    KDragWidgetDecoratorPrivate()
+    KDragWidgetDecoratorBasePrivate()
         : dragEnabled(true),
           decoratedWidget(0)
     {
@@ -38,30 +38,30 @@ public:
     QPoint startPos;
 };
 
-KDragWidgetDecorator::KDragWidgetDecorator(QWidget *parent)
+KDragWidgetDecoratorBase::KDragWidgetDecoratorBase(QWidget *parent)
     : QObject(parent),
-      d(new KDragWidgetDecoratorPrivate)
+      d(new KDragWidgetDecoratorBasePrivate)
 {
     parent->installEventFilter(this);
     d->decoratedWidget = parent;
 }
 
-KDragWidgetDecorator::~KDragWidgetDecorator()
+KDragWidgetDecoratorBase::~KDragWidgetDecoratorBase()
 {
     delete d;
 }
 
-bool KDragWidgetDecorator::isDragEnabled() const
+bool KDragWidgetDecoratorBase::isDragEnabled() const
 {
     return d->dragEnabled;
 }
 
-void KDragWidgetDecorator::setDragEnabled(bool enable)
+void KDragWidgetDecoratorBase::setDragEnabled(bool enable)
 {
     d->dragEnabled = enable;
 }
 
-bool KDragWidgetDecorator::eventFilter(QObject *watched, QEvent *event)
+bool KDragWidgetDecoratorBase::eventFilter(QObject *watched, QEvent *event)
 {
     Q_ASSERT(watched == d->decoratedWidget);
 
@@ -87,17 +87,17 @@ bool KDragWidgetDecorator::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
-QWidget *KDragWidgetDecorator::decoratedWidget() const
+QWidget *KDragWidgetDecoratorBase::decoratedWidget() const
 {
     return d->decoratedWidget;
 }
 
-QDrag *KDragWidgetDecorator::dragObject()
+QDrag *KDragWidgetDecoratorBase::dragObject()
 {
     return 0;
 }
 
-void KDragWidgetDecorator::startDrag()
+void KDragWidgetDecoratorBase::startDrag()
 {
     QDrag *drag = dragObject();
     if (drag) {
