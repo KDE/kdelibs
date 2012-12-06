@@ -47,6 +47,12 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utils
   ${CMAKE_CURRENT_SOURCE_DIR}/src/icons
   ${CMAKE_CURRENT_SOURCE_DIR}/src/widgets
+  ${CMAKE_BINARY_DIR}/kdeui # kdeui_export.h
+  ${CMAKE_SOURCE_DIR}/kdeui/notifications
+  ${CMAKE_BINARY_DIR}/kdeui/notifications
+  ${CMAKE_SOURCE_DIR}/kdeui/widgets # KSQueezedTextLabel
+  ${CMAKE_BINARY_DIR}/staging/kservice/src
+  ${CMAKE_SOURCE_DIR}/staging/kservice/src/plugin
 )
 
 # TODO: Remove these

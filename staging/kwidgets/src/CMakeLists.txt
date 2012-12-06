@@ -9,6 +9,7 @@ configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidge
 set(kwidgets_LIB_SRCS
   dialogs/kdialog.cpp
   dialogs/kmessagebox.cpp
+  dialogs/kdialogqueue.cpp
   icons/kiconeffect.cpp
   icons/kiconengine.cpp
   icons/kiconloader.cpp # cannot move down to kguiaddons: depends on QtSvg, KSharedDataCache (kcoreaddons) and localizedFilePath (ki18n)
@@ -40,6 +41,8 @@ target_link_libraries(kwidgets
   kwidgetsaddons
   kauth
   ${kwindowsystem_LIBRARY}
+  kdeui
+  kservice
 )
 
 set_target_properties(kwidgets PROPERTIES VERSION ${ECM_VERSION_STRING}

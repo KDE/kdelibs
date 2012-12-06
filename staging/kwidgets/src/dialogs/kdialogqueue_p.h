@@ -24,7 +24,6 @@
 #ifndef KDIALOGQUEUE_H
 #define KDIALOGQUEUE_H
 
-#include <kdeui_export.h>
 #include <QDialog>
 
 /**

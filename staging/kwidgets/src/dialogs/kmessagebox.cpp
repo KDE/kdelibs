@@ -32,14 +32,14 @@
 #include <QScrollBar>
 #include <QTextDocumentFragment>
 #include <QPluginLoader>
+#include <QTextBrowser>
 
 #include <qapplication.h>
 #include "kdialog.h"
-#include <kdialogqueue_p.h>
+#include "kdialogqueue_p.h"
 #include <klocalizedstring.h>
 #include <knotification.h>
 #include <kiconloader.h>
-#include <ktextedit.h>
 #include <ksqueezedtextlabel.h>
 #include <kwindowsystem.h>
 #include <kglobal.h>
@@ -288,7 +288,8 @@ int createKMessageBox(KDialog *dialog, const QIcon &icon,
             detailsLabel->setWordWrap(true);
             detailsLayout->addWidget(detailsLabel,50);
         } else {
-            KTextEdit *detailTextEdit = new KTextEdit(details); // TODO: QTextBrowser
+            QTextBrowser *detailTextEdit = new QTextBrower();
+            detailTextEdit->setText(details);
             detailTextEdit->setReadOnly(true);
             detailTextEdit->setMinimumHeight(detailTextEdit->fontMetrics().lineSpacing() * 11);
             detailsLayout->addWidget(detailTextEdit,50);
