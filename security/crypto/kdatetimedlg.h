@@ -25,7 +25,7 @@
 
 class KDatePicker;
 class KIntNumInput;
-class KPushButton;
+class QPushButton;
 class QDate;
 class QTime;
 class QDateTime;

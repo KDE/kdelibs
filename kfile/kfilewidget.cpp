@@ -40,7 +40,6 @@
 #include <kfilefiltercombo.h>
 #include <kimagefilepreview.h>
 #include <kmenu.h>
-#include <kpushbutton.h>
 #include <krecentdocument.h>
 #include <ktoolbar.h>
 #include <kurlcompletion.h>
@@ -66,6 +65,7 @@
 #include <QAbstractProxyModel>
 #include <QHelpEvent>
 #include <QApplication>
+#include <QPushButton>
 #include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 
@@ -225,7 +225,7 @@ public:
 
     QLabel *filterLabel;
     KUrlNavigator *urlNavigator;
-    KPushButton *okButton, *cancelButton;
+    QPushButton *okButton, *cancelButton;
     QDockWidget *placesDock;
     KFilePlacesView *placesView;
     QSplitter *placesViewSplitter;
@@ -323,10 +323,10 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     kDebug(kfile_area) << "startDir" << startDir;
     QString filename;
 
-    d->okButton = new KPushButton(this);
+    d->okButton = new QPushButton(this);
     KGuiItem::assign(d->okButton, KStandardGuiItem::ok());
     d->okButton->setDefault(true);
-    d->cancelButton = new KPushButton(this);
+    d->cancelButton = new QPushButton(this);
     KGuiItem::assign(d->cancelButton, KStandardGuiItem::cancel());
     // The dialog shows them
     d->okButton->hide();
@@ -1932,12 +1932,12 @@ void KFileWidgetPrivate::saveRecentFiles(KConfigGroup &cg)
     cg.writePathEntry(RecentFiles, locationEdit->urls());
 }
 
-KPushButton * KFileWidget::okButton() const
+QPushButton * KFileWidget::okButton() const
 {
     return d->okButton;
 }
 
-KPushButton * KFileWidget::cancelButton() const
+QPushButton * KFileWidget::cancelButton() const
 {
     return d->cancelButton;
 }

@@ -39,7 +39,7 @@ class QButtonGroup;
 class KComboBox;
 class KCryptoConfig;
 class KLineEdit;
-class KPushButton;
+class QPushButton;
 class KSslCertificateBox;
 class KSSLSigners;
 class KTabWidget;
@@ -301,7 +301,7 @@ private:
   QTreeWidget *yourSSLBox, *otherSSLBox, *caList;
   QCheckBox *mWarnSelfSigned, *mWarnExpired, *mWarnRevoked;
   QPushButton *macAdd, *macRemove;
-  KPushButton *macClear;
+  QPushButton *macClear;
   QTreeWidget *macBox;
   QPushButton *otherSSLExport, *otherSSLView, *otherSSLRemove, *otherSSLVerify;
   QPushButton *yourSSLImport, *yourSSLPass, *yourSSLRemove, *yourSSLExport,

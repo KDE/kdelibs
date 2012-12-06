@@ -28,13 +28,13 @@
 #include <QTimer>
 #include <QLabel>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QVBoxLayout>
 #include <QGridLayout>
 #include <QMenu>
 #include <QEvent>
 #include <qurlpathinfo.h>
 
-#include <kpushbutton.h>
 #include <ksqueezedtextlabel.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
@@ -42,6 +42,7 @@
 #include <klocale.h>
 #include <kwindowsystem.h>
 #include <kseparator.h>
+#include <kstandardguiitem.h>
 
 void KWidgetJobTracker::Private::_k_showProgressWidget()
 {
@@ -480,7 +481,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     QHBoxLayout *hBox = new QHBoxLayout();
     topLayout->addLayout(hBox);
 
-    arrowButton = new KPushButton(this);
+    arrowButton = new QPushButton(this);
     arrowButton->setMaximumSize(QSize(32,25));
     arrowButton->setIcon(KDE::icon("arrow-down"));
     arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
@@ -498,7 +499,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     resumeLabel = new QLabel(this);
     hBox->addWidget(resumeLabel);
 
-    pauseButton = new KPushButton(i18n("&Pause"), this);
+    pauseButton = new QPushButton(i18n("&Pause"), this);
     connect(pauseButton, SIGNAL(clicked()), this, SLOT(_k_pauseResumeClicked()));
     hBox->addWidget(pauseButton);
 
@@ -525,20 +526,20 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
     hBox = new QHBoxLayout();
     topLayout->addLayout(hBox);
 
-    openFile = new KPushButton(i18n("Open &File"), this);
+    openFile = new QPushButton(i18n("Open &File"), this);
     connect(openFile, SIGNAL(clicked()), this, SLOT(_k_openFile()));
     hBox->addWidget(openFile);
     openFile->setEnabled(false);
     openFile->hide();
 
-    openLocation = new KPushButton(i18n("Open &Destination"), this);
+    openLocation = new QPushButton(i18n("Open &Destination"), this);
     connect(openLocation, SIGNAL(clicked()), this, SLOT(_k_openLocation()));
     hBox->addWidget(openLocation);
     openLocation->hide();
 
     hBox->addStretch(1);
 
-    cancelClose = new KPushButton(this);
+    cancelClose = new QPushButton(this);
     KGuiItem::assign(cancelClose, KStandardGuiItem::cancel());
     connect(cancelClose, SIGNAL(clicked()), this, SLOT(_k_stop()));
     hBox->addWidget(cancelClose);

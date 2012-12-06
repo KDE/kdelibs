@@ -203,21 +203,21 @@ namespace Kross {
             KActionCollection* actionCollection() const;
 
             /**
-            * \return the KPushButton instance which has the actionname \p actionname
+            * \return the QPushButton instance which has the actionname \p actionname
             * or NULL if there is not such button.
             */
-            KPushButton* button(const QString& actionname) const;
+            QPushButton* button(const QString& actionname) const;
 
             /**
-            * Create and return a new KPushButton instance for the given actionname.
+            * Create and return a new QPushButton instance for the given actionname.
             * \param parentWidget The parent widget.
             * \param actionname The name of the action. Each button points to an action
             * from within the \a actionCollection() and triggers that action if the
             * button got clicked.
-            * \return The new KPushButton instance or NULL if e.g. there exist no
+            * \return The new QPushButton instance or NULL if e.g. there exist no
             * such action with \p actionname .
             */
-            KPushButton* createButton(QWidget* parentWidget, const QString& actionname);
+            QPushButton* createButton(QWidget* parentWidget, const QString& actionname);
 
         public Q_SLOTS:
 
@@ -259,7 +259,7 @@ namespace Kross {
             * \param actionname The name of the action that changed. You are able
             * to use \a actionCollection() to receive the to the name matching
             * \a KAction instance. You are able to use e.g. a QSignalMapper here to
-            * map such changes direct to your e.g. \a KPushButton instances used
+            * map such changes direct to your e.g. \a QPushButton instances used
             * to display some of the actions provided with \a actionCollection() .
             */
             void enabledChanged(const QString& actionname);

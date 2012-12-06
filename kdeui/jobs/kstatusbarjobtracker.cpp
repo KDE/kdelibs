@@ -23,13 +23,13 @@
 #include "kstatusbarjobtracker_p.h"
 
 #include <QWidget>
+#include <QPushButton>
 #include <QProgressBar>
 #include <QLabel>
 #include <QBoxLayout>
 #include <QStackedWidget>
 #include <QMouseEvent>
 
-#include <kpushbutton.h>
 #include <klocale.h>
 
 KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
@@ -156,7 +156,7 @@ void KStatusBarJobTracker::Private::ProgressWidget::init(KJob *job, QWidget *par
     box->addWidget(stack);
 
     if (q->d->showStopButton) {
-        button = new KPushButton(i18n("Stop"), widget);
+        button = new QPushButton(i18n("Stop"), widget);
         box->addWidget(button);
         connect(button, SIGNAL(clicked(bool)),
                 this, SLOT(killJob()));

@@ -38,7 +38,7 @@ class KFileWidget;
 class KActionCollection;
 class KUrlComboBox;
 class KFileFilterCombo;
-class KPushButton;
+class QPushButton;
 class KToolBar;
 class KPreviewWidgetBase;
 
@@ -699,13 +699,13 @@ public:
      * @returns a pointer to the OK-Button in the filedialog. You may use it
      * e.g. to set a custom text to it.
      */
-    KPushButton *okButton() const;
+    QPushButton *okButton() const;
 
     /**
      * @returns a pointer to the Cancel-Button in the filedialog. You may use
      * it e.g. to set a custom text to it.
      */
-    KPushButton *cancelButton() const;
+    QPushButton *cancelButton() const;
 
     /**
      * @returns the combobox used to type the filename or full location of the file.

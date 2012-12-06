@@ -322,14 +322,14 @@ public:
      * Note that the button is hidden and unconnected when using KFileWidget alone;
      * KFileDialog shows it and connects to it.
      */
-    KPushButton *okButton() const;
+    QPushButton *okButton() const;
 
     /**
      * @returns a pointer to the Cancel-Button in the filedialog.
      * Note that the button is hidden and unconnected when using KFileWidget alone;
      * KFileDialog shows it and connects to it.
      */
-    KPushButton *cancelButton() const;
+    QPushButton *cancelButton() const;
 
     /**
      * @returns the combobox used to type the filename or full location of the file.

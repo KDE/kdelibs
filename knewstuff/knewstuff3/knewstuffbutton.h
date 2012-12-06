@@ -19,7 +19,7 @@
 #ifndef KNEWSTUFF3BUTTON_H
 #define KNEWSTUFF3BUTTON_H
 
-#include <kpushbutton.h>
+#include <QPushButton>
 
 #include "knewstuff3_export.h"
 #include <knewstuff3/entry.h>
@@ -34,7 +34,7 @@ namespace KNS3
  *
  * @since 4.4
  */
-class KNEWSTUFF3_EXPORT Button : public KPushButton
+class KNEWSTUFF3_EXPORT Button : public QPushButton
 {
     Q_OBJECT
 

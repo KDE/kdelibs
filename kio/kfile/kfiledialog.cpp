@@ -31,11 +31,11 @@
 #include <QFileDialog>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QPushButton>
 #include <qmimedatabase.h>
 
 #include <kimageio.h>
 #include <klocalizedstring.h>
-#include <kpushbutton.h>
 #include <defaults-kfile.h>
 #include <krecentdocument.h>
 #include <kdebug.h>
@@ -869,12 +869,12 @@ KFile::Modes KFileDialog::mode() const
     return d->w->mode();
 }
 
-KPushButton * KFileDialog::okButton() const
+QPushButton * KFileDialog::okButton() const
 {
     return d->w->okButton();
 }
 
-KPushButton * KFileDialog::cancelButton() const
+QPushButton * KFileDialog::cancelButton() const
 {
     return d->w->cancelButton();
 }

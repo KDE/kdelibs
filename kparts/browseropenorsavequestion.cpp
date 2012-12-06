@@ -23,7 +23,6 @@
 #include <klocalizedstring.h>
 #include <kaction.h>
 #include <kfileitemactions.h>
-#include <kpushbutton.h>
 #include <kmenu.h>
 #include <ksqueezedtextlabel.h>
 #include <knotification.h>
@@ -33,6 +32,7 @@
 #include <kguiitem.h>
 #include <kmessagebox.h>
 #include <qmimedatabase.h>
+#include <QPushButton>
 #include <QStyle>
 #include <QStyleOption>
 #include <QVBoxLayout>
@@ -173,7 +173,7 @@ protected:
     {
         if (buttonId != OpenDefault)
             selectedService = 0;
-        KPushButton* button = KDialog::button(KDialog::ButtonCode(buttonId));
+        QPushButton* button = KDialog::button(KDialog::ButtonCode(buttonId));
         if (button && !button->menu()) {
             done(buttonId);
         }

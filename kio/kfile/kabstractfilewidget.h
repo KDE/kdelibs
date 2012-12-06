@@ -31,7 +31,7 @@ class KPreviewWidgetBase;
 #include <qmimetype.h>
 
 class QUrl;
-class KPushButton;
+class QPushButton;
 class KActionCollection;
 class KToolBar;
 class KFileWidgetPrivate;
@@ -315,14 +315,14 @@ public:
      * Note that the button is hidden and unconnected when using KFileWidget alone;
      * KFileDialog shows it and connects to it.
      */
-    virtual KPushButton *okButton() const = 0;
+    virtual QPushButton *okButton() const = 0;
 
     /**
      * @returns a pointer to the Cancel-Button in the filedialog.
      * Note that the button is hidden and unconnected when using KFileWidget alone;
      * KFileDialog shows it and connects to it.
      */
-    virtual KPushButton *cancelButton() const = 0;
+    virtual QPushButton *cancelButton() const = 0;
 
     /**
      * @returns the combobox used to type the filename or full location of the file.

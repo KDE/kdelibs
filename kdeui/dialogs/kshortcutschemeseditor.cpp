@@ -22,6 +22,7 @@
 #include <QLabel>
 #include <QMenu>
 #include <QFile>
+#include <QPushButton>
 #include <QTextStream>
 #include <QtXml/QDomDocument>
 #include <QFileDialog>
@@ -29,7 +30,6 @@
 #include <qinputdialog.h>
 
 #include <kcombobox.h>
-#include <kpushbutton.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
@@ -67,13 +67,13 @@ KShortcutSchemesEditor::KShortcutSchemesEditor(KShortcutsDialog *parent)
     schemesLabel->setBuddy(m_schemesList);
     l->addWidget(m_schemesList);
 
-    m_newScheme = new KPushButton(i18n("New..."));
+    m_newScheme = new QPushButton(i18n("New..."));
     l->addWidget(m_newScheme);
 
-    m_deleteScheme = new KPushButton(i18n("Delete"));
+    m_deleteScheme = new QPushButton(i18n("Delete"));
     l->addWidget(m_deleteScheme);
 
-    KPushButton *moreActions = new KPushButton(i18n("More Actions"));
+    QPushButton *moreActions = new QPushButton(i18n("More Actions"));
     l->addWidget(moreActions);
 
     QMenu *moreActionsMenu = new QMenu(this);

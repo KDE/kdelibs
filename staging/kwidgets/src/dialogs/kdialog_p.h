@@ -52,7 +52,6 @@ class KDialogPrivate
 
         void setupLayout();
         void appendButton( KDialog::ButtonCode code , const KGuiItem &item );
-        KPushButton *button( KDialog::ButtonCode code ) const;
 
 
         bool mDetailsVisible;

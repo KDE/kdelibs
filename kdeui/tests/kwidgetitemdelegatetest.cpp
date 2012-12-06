@@ -22,6 +22,7 @@
 #include <QApplication>
 #include <QAbstractItemView>
 #include <QListView>
+#include <QPushButton>
 #include <QStringListModel>
 #include <QMainWindow>
 #include <QPainter>
@@ -34,7 +35,6 @@
 #include <kaboutdata.h>
 #include <kmessagebox.h>
 
-#include <kpushbutton.h>
 #include <klineedit.h>
 #include <kiconloader.h>
 
@@ -167,7 +167,7 @@ public:
 
     QList<QWidget*> createItemWidgets() const
     {
-        KPushButton *button = new KPushButton();
+        QPushButton *button = new QPushButton();
         QToolButton *toolButton = new QToolButton();
 
         setBlockedEventTypes(button, QList<QEvent::Type>() << QEvent::MouseButtonPress

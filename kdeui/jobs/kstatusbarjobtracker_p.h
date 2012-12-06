@@ -27,7 +27,7 @@
 #include <QBoxLayout>
 #include <QStackedWidget>
 
-class KPushButton;
+class QPushButton;
 class QCheckBox;
 class KLineEdit;
 class QLabel;
@@ -82,7 +82,7 @@ public:
     QWidget *widget;
     QProgressBar *progressBar;
     QLabel *label;
-    KPushButton *button;
+    QPushButton *button;
     QBoxLayout *box;
     QStackedWidget *stack;
 

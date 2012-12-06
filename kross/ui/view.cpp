@@ -30,6 +30,7 @@
 #include <QtCore/QDir>
 #include <QBoxLayout>
 #include <QHeaderView>
+#include <QPushButton>
 #include <QTreeView>
 #include <QLabel>
 
@@ -37,7 +38,6 @@
 #include <kconfig.h>
 
 #include <kmessagebox.h>
-#include <kpushbutton.h>
 #include <kfiledialog.h>
 #include <kmenu.h>
 #include <kpagedialog.h>
@@ -274,7 +274,7 @@ namespace Kross {
         public:
             bool modified;
             KActionCollection* collection;
-            QMap< QString, KPushButton* > buttons;
+            QMap< QString, QPushButton* > buttons;
             explicit Private() : modified(false) {}
     };
 
@@ -370,7 +370,7 @@ KActionCollection* ActionCollectionView::actionCollection() const
     return d->collection;
 }
 
-KPushButton* ActionCollectionView::button(const QString& actionname) const
+QPushButton* ActionCollectionView::button(const QString& actionname) const
 {
     return d->buttons.contains(actionname) ? d->buttons[actionname] : 0;
 }
@@ -382,12 +382,12 @@ QItemSelection ActionCollectionView::itemSelection() const
     return proxymodel ? proxymodel->mapSelectionToSource(selection) : selection;
 }
 
-KPushButton* ActionCollectionView::createButton(QWidget* parentWidget, const QString& actionname)
+QPushButton* ActionCollectionView::createButton(QWidget* parentWidget, const QString& actionname)
 {
     QAction* action = d->collection->action(actionname);
     if( ! action ) return 0;
     //if( d->buttons.contains(actionname) ) delete d->buttons[];
-    KPushButton* btn = new KPushButton(parentWidget);
+    QPushButton* btn = new QPushButton(parentWidget);
     btn->setText( action->text() );
     btn->setToolTip( action->toolTip() );
     btn->setIcon(action->icon());

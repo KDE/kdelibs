@@ -26,6 +26,7 @@
 #include <QBoxLayout>
 #include <QApplication>
 #include <QCheckBox>
+#include <QPushButton>
 #include <QStyleOptionViewItemV4>
 
 #include <kdebug.h>
@@ -36,7 +37,6 @@
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
 #include <kmessagebox.h>
-#include <kpushbutton.h>
 #include <kiconloader.h>
 #include <kstandarddirs.h>
 #include <klocalizedstring.h>
@@ -570,7 +570,7 @@ bool KPluginSelector::Private::ProxyModel::subSortLessThan(const QModelIndex &le
 KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Private *pluginSelector_d, QObject *parent)
     : KWidgetItemDelegate(pluginSelector_d->listView, parent)
     , checkBox(new QCheckBox)
-    , pushButton(new KPushButton)
+    , pushButton(new QPushButton)
     , pluginSelector_d(pluginSelector_d)
 {
     pushButton->setIcon(KDE::icon("configure")); // only for getting size matters
@@ -672,11 +672,11 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(slotStateChanged(bool)));
     connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(emitChanged()));
 
-    KPushButton *aboutPushButton = new KPushButton;
+    QPushButton *aboutPushButton = new QPushButton;
     aboutPushButton->setIcon(KDE::icon("dialog-information"));
     connect(aboutPushButton, SIGNAL(clicked(bool)), this, SLOT(slotAboutClicked()));
 
-    KPushButton *configurePushButton = new KPushButton;
+    QPushButton *configurePushButton = new QPushButton;
     configurePushButton->setIcon(KDE::icon("configure"));
     connect(configurePushButton, SIGNAL(clicked(bool)), this, SLOT(slotConfigureClicked()));
 
@@ -705,12 +705,12 @@ void KPluginSelector::Private::PluginDelegate::updateItemWidgets(const QList<QWi
     checkBox->resize(checkBox->sizeHint());
     checkBox->move(pluginSelector_d->dependantLayoutValue(MARGIN, checkBox->sizeHint().width(), option.rect.width()), option.rect.height() / 2 - checkBox->sizeHint().height() / 2);
 
-    KPushButton *aboutPushButton = static_cast<KPushButton*>(widgets[2]);
+    QPushButton *aboutPushButton = static_cast<QPushButton*>(widgets[2]);
     QSize aboutPushButtonSizeHint = aboutPushButton->sizeHint();
     aboutPushButton->resize(aboutPushButtonSizeHint);
     aboutPushButton->move(pluginSelector_d->dependantLayoutValue(option.rect.width() - MARGIN - aboutPushButtonSizeHint.width(), aboutPushButtonSizeHint.width(), option.rect.width()), option.rect.height() / 2 - aboutPushButtonSizeHint.height() / 2);
 
-    KPushButton *configurePushButton = static_cast<KPushButton*>(widgets[1]);
+    QPushButton *configurePushButton = static_cast<QPushButton*>(widgets[1]);
     QSize configurePushButtonSizeHint = configurePushButton->sizeHint();
     configurePushButton->resize(configurePushButtonSizeHint);
     configurePushButton->move(pluginSelector_d->dependantLayoutValue(option.rect.width() - MARGIN * 2 - configurePushButtonSizeHint.width() - aboutPushButtonSizeHint.width(), configurePushButtonSizeHint.width(), option.rect.width()), option.rect.height() / 2 - configurePushButtonSizeHint.height() / 2);

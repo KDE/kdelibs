@@ -60,7 +60,6 @@
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
 #include <knewpassworddialog.h>
-#include <kpushbutton.h>
 #include <k3resolver.h>
 #include <kseparator.h>
 #include <ktabwidget.h>
@@ -820,7 +819,7 @@ QString whatstr;
   //connect(macRemove, SIGNAL(), SLOT());
   grid->addWidget(macRemove, 5, 3);
 
-  macClear = new KPushButton(KGuiItem::clear(), tabSSLCOpts);
+  macClear = new QPushButton(KGuiItem::clear(), tabSSLCOpts);
   //connect(macAdd, SIGNAL(), SLOT());
   grid->addWidget(macClear, 6, 3);
 

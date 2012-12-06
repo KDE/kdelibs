@@ -24,7 +24,7 @@
 #ifndef KDIALOG_H
 #define KDIALOG_H
 
-class KPushButton;
+class QPushButton;
 class QMenu;
 class KDialogPrivate;
 
@@ -318,7 +318,7 @@ class KWIDGETS_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      *
      * @param id The button identifier.
      * @param menu The menu.
-     * @param popupmode Choose if KPushButton setMenu or setDelayedMenu is used
+     * @param popupmode Choose if QPushButton setMenu or setDelayedMenu is used
      */
     void setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmode=InstantPopup);
 
@@ -404,7 +404,7 @@ class KWIDGETS_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      * @param id Identifier of the button.
      * @return The button or 0 if the button does not exist.
      */
-    KPushButton* button( ButtonCode id ) const;
+    QPushButton* button( ButtonCode id ) const;
 
     /**
      * Returns the number of pixels that should be used between a

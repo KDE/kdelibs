@@ -33,6 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QLabel>
 #include <QLayout>
 #include <QDesktopWidget>
+#include <QPushButton>
 #include <qstandardpaths.h>
 
 #include <kaboutdata.h>
@@ -40,10 +41,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <klocalizedstring.h>
-#include <kpushbutton.h>
 #include <krandom.h>
 #include <kseparator.h>
 #include <ktextbrowser.h>
+#include <kstandardguiitem.h>
 
 class KTipDatabase::Private
 {
@@ -302,17 +303,17 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   d->tipOnStart = new QCheckBox( i18n( "&Show tips on startup" ) );
   buttonLayout->addWidget( d->tipOnStart, 1 );
 
-  KPushButton *prev = new KPushButton;
+  QPushButton *prev = new QPushButton;
   KGuiItem::assign(prev, KStandardGuiItem::back( KStandardGuiItem::UseRTL ));
   prev->setText( i18n( "&Previous" ) );
   buttonLayout->addWidget( prev );
 
-  KPushButton *next = new KPushButton;
+  QPushButton *next = new QPushButton;
   KGuiItem::assign(next, KStandardGuiItem::forward( KStandardGuiItem::UseRTL ));
   next->setText( i18nc( "Opposite to Previous", "&Next" ) );
   buttonLayout->addWidget( next );
 
-  KPushButton *ok = new KPushButton;
+  QPushButton *ok = new QPushButton;
   KGuiItem::assign(ok, KStandardGuiItem::close());
   ok->setDefault( true );
   buttonLayout->addWidget( ok );

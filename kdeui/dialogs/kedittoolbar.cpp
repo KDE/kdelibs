@@ -33,6 +33,7 @@
 #include <QGridLayout>
 #include <QCheckBox>
 #include <QMimeData>
+#include <QPushButton>
 #include <qstandardpaths.h>
 
 #include <klistwidgetsearchline.h>
@@ -44,7 +45,6 @@
 #include <kseparator.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kpushbutton.h>
 #include <kprocess.h>
 #include <ktoolbar.h>
 #include <kdeversion.h>
@@ -477,8 +477,8 @@ public:
     QLabel     *m_comboLabel;
     KSeparator *m_comboSeparator;
     QLabel * m_helpArea;
-    KPushButton* m_changeIcon;
-    KPushButton* m_changeIconText;
+    QPushButton* m_changeIcon;
+    QPushButton* m_changeIconText;
     KProcess* m_kdialogProcess;
     bool m_isPart : 1;
     bool m_hasKDialog : 1;
@@ -948,7 +948,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
   activeListSearchLine->setPlaceholderText(i18n("Filter"));
 
   // "change icon" button
-  m_changeIcon = new KPushButton(i18n( "Change &Icon..." ), m_widget);
+  m_changeIcon = new QPushButton(i18n( "Change &Icon..." ), m_widget);
   m_changeIcon->setIcon(KDE::icon("preferences-desktop-icons"));
   QString kdialogExe = QStandardPaths::findExecutable(QLatin1String("kdialog"));
   m_hasKDialog = !kdialogExe.isEmpty();
@@ -958,7 +958,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
                     m_widget, SLOT(slotChangeIcon()) );
 
   // "change icon text" button
-  m_changeIconText = new KPushButton(i18n( "Change Te&xt..." ), m_widget);
+  m_changeIconText = new QPushButton(i18n( "Change Te&xt..." ), m_widget);
   m_changeIconText->setIcon(KDE::icon("edit-rename"));
   m_changeIconText->setEnabled(m_activeList->currentItem() != 0);
 

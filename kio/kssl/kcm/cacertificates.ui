@@ -60,7 +60,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="KPushButton" name="disableSelection">
+      <widget class="QPushButton" name="disableSelection">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -96,7 +96,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="KPushButton" name="removeSelection">
+      <widget class="QPushButton" name="removeSelection">
        <property name="enabled">
         <bool>false</bool>
        </property>
@@ -106,7 +106,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="add">
+      <widget class="QPushButton" name="add">
        <property name="text">
         <string>Add...</string>
        </property>
@@ -117,11 +117,6 @@
   </layout>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>KPushButton</class>
-   <extends>QPushButton</extends>
-   <header>kpushbutton.h</header>
-  </customwidget>
  </customwidgets>
  <resources/>
  <connections/>

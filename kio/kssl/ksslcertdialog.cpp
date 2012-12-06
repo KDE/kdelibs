@@ -28,10 +28,10 @@
 #include <QFrame>
 #include <QLabel>
 #include <QListWidget>
+#include <QPushButton>
 
 #include <klocalizedstring.h>
 #include <kglobalsettings.h>
-#include <kpushbutton.h>
 #include <kseparator.h>
 #include <kdebug.h>
 
@@ -72,11 +72,11 @@ KSSLCertDialog::KSSLCertDialog(QWidget *parent, const char *name, bool modal)
    h->insertStretch(0);
    grid->addLayout(h);
 
-   _ok = new KPushButton(i18n("Send certificate"), this);
+   _ok = new QPushButton(i18n("Send certificate"), this);
    h->addWidget(_ok);
    connect(_ok, SIGNAL(clicked()), SLOT(slotSend()));
 
-   d->p_pb_dontsend = new KPushButton(i18n("Do not send a certificate"), this);
+   d->p_pb_dontsend = new QPushButton(i18n("Do not send a certificate"), this);
    h->addWidget(d->p_pb_dontsend);
    connect(d->p_pb_dontsend, SIGNAL(clicked()), SLOT(slotDont()));
 

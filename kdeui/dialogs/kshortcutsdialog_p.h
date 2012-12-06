@@ -41,7 +41,7 @@ class QTreeWidgetItem;
 class QRadioButton;
 class KAction;
 class KActionCollection;
-class KPushButton;
+class QPushButton;
 class KComboBox;
 class KShortcutsDialog;
 
@@ -240,9 +240,9 @@ protected:
     void updateDeleteButton();
 
 private:
-    KPushButton *m_newScheme;
-    KPushButton *m_deleteScheme;
-    KPushButton *m_exportScheme;
+    QPushButton *m_newScheme;
+    QPushButton *m_deleteScheme;
+    QPushButton *m_exportScheme;
     KComboBox *m_schemesList;
 
     KShortcutsDialog *m_dialog;

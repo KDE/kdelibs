@@ -299,7 +299,7 @@ void KDialog::setDefaultButton( ButtonCode newDefaultButton )
     bool oldDefaultHadFocus = false;
 
     if (oldDefault != NoDefault) {
-        KPushButton *old = button(oldDefault);
+        QPushButton *old = button(oldDefault);
         if (old) {
             oldDefaultHadFocus = (focusWidget() == old);
             old->setDefault(false);
@@ -307,7 +307,7 @@ void KDialog::setDefaultButton( ButtonCode newDefaultButton )
     }
 
     if (newDefaultButton != NoDefault) {
-        KPushButton *b = button(newDefaultButton);
+        QPushButton *b = button(newDefaultButton);
         if (b) {
             b->setDefault(true);
             if (focusWidget() == 0 || oldDefaultHadFocus) {
@@ -389,7 +389,7 @@ void KDialog::keyPressEvent( QKeyEvent *event )
     Q_D(KDialog);
   if ( event->modifiers() == 0 ) {
     if ( event->key() == Qt::Key_F1 ) {
-      KPushButton *button = this->button( Help );
+      QPushButton *button = this->button( Help );
 
       if ( button ) {
         button->animateClick();
@@ -399,7 +399,7 @@ void KDialog::keyPressEvent( QKeyEvent *event )
     }
 
     if ( event->key() == Qt::Key_Escape ) {
-      KPushButton *button = this->button( d->mEscapeButton );
+      QPushButton *button = this->button( d->mEscapeButton );
 
       if ( button ) {
         button->animateClick();
@@ -415,7 +415,7 @@ void KDialog::keyPressEvent( QKeyEvent *event )
   } else if ( event->modifiers() == Qt::ControlModifier &&
             ( event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter ) ) {
     // accept the dialog when Ctrl-Return is pressed
-    KPushButton *button = this->button( Ok );
+    QPushButton *button = this->button( Ok );
 
     if ( button ) {
       button->animateClick();
@@ -656,7 +656,7 @@ void KDialog::incrementInitialSize( const QSize &size )
   adjustSize();
 }
 
-KPushButton *KDialog::button( ButtonCode id ) const
+QPushButton *KDialog::button( ButtonCode id ) const
 {
     Q_D(const KDialog);
   return d->mButtonList.value( id, 0 );
@@ -664,14 +664,14 @@ KPushButton *KDialog::button( ButtonCode id ) const
 
 void KDialog::enableButton( ButtonCode id, bool state )
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     button->setEnabled( state );
 }
 
 bool KDialog::isButtonEnabled( ButtonCode id ) const
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     return button->isEnabled();
 
@@ -695,14 +695,14 @@ void KDialog::enableButtonCancel( bool state )
 
 void KDialog::showButton( ButtonCode id, bool state )
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     state ? button->show() : button->hide();
 }
 
 void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( !button )
     return;
 
@@ -711,7 +711,7 @@ void KDialog::setButtonGuiItem( ButtonCode id, const KGuiItem &item )
 
 void KDialog::setButtonMenu( ButtonCode id, QMenu *menu, ButtonPopupMode popupmode)
 {
-  KPushButton *button = this->button( id );
+  KPushButton *button = static_cast<KPushButton*>(this->button( id ));
   if ( button ) {
     if (popupmode==InstantPopup)
       button->setMenu( menu );
@@ -729,14 +729,14 @@ void KDialog::setButtonText( ButtonCode id, const QString &text )
     return;
   }
 
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     button->setText( text );
 }
 
 QString KDialog::buttonText( ButtonCode id ) const
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     return button->text();
   else
@@ -745,14 +745,14 @@ QString KDialog::buttonText( ButtonCode id ) const
 
 void KDialog::setButtonIcon( ButtonCode id, const QIcon &icon )
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     button->setIcon( icon );
 }
 
 QIcon KDialog::buttonIcon( ButtonCode id ) const
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     return button->icon();
   else
@@ -761,7 +761,7 @@ QIcon KDialog::buttonIcon( ButtonCode id ) const
 
 void KDialog::setButtonToolTip( ButtonCode id, const QString &text )
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button ) {
     if ( text.isEmpty() )
       button->setToolTip( QString() );
@@ -772,7 +772,7 @@ void KDialog::setButtonToolTip( ButtonCode id, const QString &text )
 
 QString KDialog::buttonToolTip( ButtonCode id ) const
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     return button->toolTip();
   else
@@ -781,7 +781,7 @@ QString KDialog::buttonToolTip( ButtonCode id ) const
 
 void KDialog::setButtonWhatsThis( ButtonCode id, const QString &text )
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button ) {
     if ( text.isEmpty() )
       button->setWhatsThis( QString() );
@@ -792,7 +792,7 @@ void KDialog::setButtonWhatsThis( ButtonCode id, const QString &text )
 
 QString KDialog::buttonWhatsThis( ButtonCode id ) const
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button )
     return button->whatsThis();
   else
@@ -801,7 +801,7 @@ QString KDialog::buttonWhatsThis( ButtonCode id ) const
 
 void KDialog::setButtonFocus( ButtonCode id )
 {
-  KPushButton *button = this->button( id );
+  QPushButton *button = this->button( id );
   if ( button ) {
       button->setFocus();
   }
@@ -1005,7 +1005,7 @@ void KDialog::hideEvent( QHideEvent *event )
 void KDialog::closeEvent( QCloseEvent *event )
 {
     Q_D(KDialog);
-    KPushButton *button = this->button(d->mEscapeButton);
+    QPushButton *button = this->button(d->mEscapeButton);
     if (button && !isHidden()) {
         button->animateClick();
 

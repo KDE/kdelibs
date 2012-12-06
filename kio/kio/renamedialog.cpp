@@ -33,13 +33,13 @@
 #include <QScrollBar>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QPushButton>
 #include <QtCore/QDir>
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
 
 #include <klineedit.h>
 #include <kmessagebox.h>
-#include <kpushbutton.h>
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <kdialog.h>
@@ -94,7 +94,7 @@ public:
         }
     }
 
-    KPushButton *bCancel;
+    QPushButton *bCancel;
     QPushButton *bRename;
     QPushButton *bSkip;
     QPushButton *bOverwrite;
@@ -132,7 +132,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
 
     setWindowTitle(_caption);
 
-    d->bCancel = new KPushButton(this);
+    d->bCancel = new QPushButton(this);
     KGuiItem::assign(d->bCancel, KStandardGuiItem::cancel());
     connect(d->bCancel, SIGNAL(clicked()), this, SLOT(cancelPressed()));
 

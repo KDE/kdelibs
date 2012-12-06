@@ -21,7 +21,7 @@
 #include <QCheckBox>
 #include <QtTest/QtTest>
 #include <kdialog.h>
-#include <kpushbutton.h>
+#include <QPushButton>
 #include <QWeakPointer>
 
 Q_DECLARE_METATYPE(KDialog::ButtonCode)
@@ -83,7 +83,7 @@ private Q_SLOTS:
         KDialog::ButtonCode id = KDialog::Apply;
         dialog.setDefaultButton(id);
         QCOMPARE(dialog.defaultButton(), id);
-        QCOMPARE(dialog.button(id), static_cast<KPushButton *>(0));
+        QCOMPARE(dialog.button(id), static_cast<QPushButton *>(0));
 
         dialog.setButtons(KDialog::Ok | KDialog::Apply
             | KDialog::Cancel | KDialog::No | KDialog::Yes);

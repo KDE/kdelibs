@@ -232,14 +232,14 @@
           </spacer>
          </item>
          <item row="0" column="3">
-          <widget class="KPushButton" name="iconViewButton">
+          <widget class="QPushButton" name="iconViewButton">
            <property name="checkable">
             <bool>true</bool>
            </property>
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="KPushButton" name="listViewButton">
+          <widget class="QPushButton" name="listViewButton">
            <property name="checkable">
             <bool>true</bool>
            </property>
@@ -525,7 +525,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="KPushButton" name="backButton"/>
+      <widget class="QPushButton" name="backButton"/>
      </item>
      <item>
       <widget class="KNS3::ProgressIndicator" name="progressIndicator">
@@ -559,7 +559,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="updateButton">
+      <widget class="QPushButton" name="updateButton">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -569,7 +569,7 @@
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="uninstallButton">
+      <widget class="QPushButton" name="uninstallButton">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -579,21 +579,21 @@
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="becomeFanButton">
+      <widget class="QPushButton" name="becomeFanButton">
        <property name="text">
         <string>Become a Fan</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="installButton">
+      <widget class="QPushButton" name="installButton">
        <property name="text">
         <string>Install</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="KPushButton" name="closeButton"/>
+      <widget class="QPushButton" name="closeButton"/>
      </item>
     </layout>
    </item>
@@ -604,11 +604,6 @@
    <class>KTitleWidget</class>
    <extends>QWidget</extends>
    <header>ktitlewidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KPushButton</class>
-   <extends>QPushButton</extends>
-   <header>kpushbutton.h</header>
   </customwidget>
   <customwidget>
    <class>KLineEdit</class>

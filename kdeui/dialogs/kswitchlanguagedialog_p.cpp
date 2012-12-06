@@ -24,6 +24,7 @@
 #include <QApplication>
 #include <QLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <QtCore/QEvent>
 #include <QtCore/QMap>
 
@@ -33,7 +34,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
-#include <kpushbutton.h>
 #include <kglobal.h>
 
 namespace KDEPrivate {
@@ -48,12 +48,12 @@ struct LanguageRowData
     }
     QLabel *label;
     KLanguageButton *languageButton;
-    KPushButton *removeButton;
+    QPushButton *removeButton;
 
     void setRowWidgets(
         QLabel *label,
         KLanguageButton *languageButton,
-        KPushButton *removeButton
+        QPushButton *removeButton
         )
     {
         this->label = label;
@@ -85,7 +85,7 @@ public:
     */
     QStringList applicationLanguageList();
 
-    QMap<KPushButton*, LanguageRowData> languageRows;
+    QMap<QPushButton*, LanguageRowData> languageRows;
     QList<KLanguageButton*> languageButtons;
     QGridLayout *languagesLayout;
     QWidget *page;
@@ -135,7 +135,7 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     QHBoxLayout *addButtonHorizontalLayout = new QHBoxLayout();
     topLayout->addLayout(addButtonHorizontalLayout);
 
-    KPushButton *addLangButton = new KPushButton(i18n("Add Fallback Language"), d->page);
+    QPushButton *addLangButton = new QPushButton(i18n("Add Fallback Language"), d->page);
     addLangButton->setToolTip(i18n("Adds one more language which will be used if other translations do not contain a proper translation."));
     connect(addLangButton, SIGNAL(clicked()), this, SLOT(slotAddLanguageButton()));
     addButtonHorizontalLayout->addWidget(addLangButton);
@@ -164,17 +164,17 @@ void KSwitchLanguageDialog::removeButtonClicked()
         return;
     }
 
-    KPushButton *removeButton = const_cast<KPushButton*>(::qobject_cast<const KPushButton*>(signalSender));
+    QPushButton *removeButton = const_cast<QPushButton*>(::qobject_cast<const QPushButton*>(signalSender));
     if (!removeButton)
     {
-        kError() << "KSwitchLanguageDialog::removeButtonClicked() called from something else than KPushButton" << endl;
+        kError() << "KSwitchLanguageDialog::removeButtonClicked() called from something else than QPushButton" << endl;
         return;
     }
 
-    QMap<KPushButton *, LanguageRowData>::iterator it = d->languageRows.find(removeButton);
+    QMap<QPushButton *, LanguageRowData>::iterator it = d->languageRows.find(removeButton);
     if (it == d->languageRows.end())
     {
-        kError() << "KSwitchLanguageDialog::removeButtonClicked called from unknown KPushButton" << endl;
+        kError() << "KSwitchLanguageDialog::removeButtonClicked called from unknown QPushButton" << endl;
         return;
     }
 
@@ -336,11 +336,11 @@ void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCod
         );
 
     LanguageRowData languageRowData;
-    KPushButton *removeButton = 0;
+    QPushButton *removeButton = 0;
 
     if (!primaryLanguage)
     {
-        removeButton = new KPushButton(i18n("Remove"), page);
+        removeButton = new QPushButton(i18n("Remove"), page);
 
         QObject::connect(
             removeButton,

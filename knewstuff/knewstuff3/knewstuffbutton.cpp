@@ -32,7 +32,7 @@ namespace KNS3
 Button::Button(const QString& text,
                const QString& configFile,
                QWidget* parent)
-        : KPushButton(parent),
+        : QPushButton(parent),
         d(new Private)
 {
     setButtonText(text);
@@ -41,7 +41,7 @@ Button::Button(const QString& text,
 }
 
 Button::Button(QWidget* parent)
-        : KPushButton(parent),
+        : QPushButton(parent),
         d(new Private)
 {
     setButtonText(i18n("Download New Stuff..."));

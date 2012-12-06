@@ -34,7 +34,7 @@
 
 #include <kglobal.h>
 
-class KPushButton;
+class QPushButton;
 class KSqueezedTextLabel;
 class QLabel;
 class QProgressBar;
@@ -107,13 +107,13 @@ public:
     bool jobRegistered;
     QString caption;
 
-    KPushButton *cancelClose;
-    KPushButton *openFile;
-    KPushButton *openLocation;
+    QPushButton *cancelClose;
+    QPushButton *openFile;
+    QPushButton *openLocation;
     QCheckBox   *keepOpenCheck;
     QUrl        location;
     QTime       startTime;
-    KPushButton *pauseButton;
+    QPushButton *pauseButton;
     KSqueezedTextLabel *sourceEdit;
     KSqueezedTextLabel *destEdit;
     QLabel *progressLabel;
@@ -123,7 +123,7 @@ public:
     QLabel *sizeLabel;
     QLabel *resumeLabel;
     QProgressBar *progressBar;
-    KPushButton *arrowButton;
+    QPushButton *arrowButton;
     Qt::ArrowType arrowState;
 
     bool suspendedProperty;
