@@ -20,10 +20,10 @@
 #ifndef ICON_PROVIDER_H
 #define ICON_PROVIDER_H
 
-#include <QDeclarativeImageProvider>
+#include <QtQuick/QQuickImageProvider>
 
 
-class KIconProvider : public QDeclarativeImageProvider
+class KIconProvider : public QQuickImageProvider
 {
 
 public:
