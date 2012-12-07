@@ -28,7 +28,6 @@
 #include <kio/previewjob.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kcmdlineargs.h>
 
 #include <QtCore/QFileInfo>
 #include <QtCore/QEventLoop>

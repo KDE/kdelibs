@@ -5,7 +5,6 @@
 #include <stdio.h>
 
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <qapplication.h>
 
 class ExampleWidget : public QLabel

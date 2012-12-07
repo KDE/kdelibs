@@ -1,25 +1,16 @@
 #include <QApplication>
-#include <klocalizedstring.h>
-#include <kaboutdata.h>
+#include <QDebug>
 #include <kpropertiesdialog.h>
-#include <kcmdlineargs.h>
-
 
 int main ( int argc, char** argv )
 {
-    KCmdLineOptions options;
-    options.add("+url", qi18n("the path or url to the file/dir for which to show properties"));
+    QApplication app(argc, argv);
 
-    KAboutData aboutData(QByteArray("kpropertiesdialogtest"), QByteArray(), qi18n("KIO Properties Dialog Test"), QByteArray("1.0"));
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KCmdLineArgs::addCmdLineOptions( options );
-
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    if ( args->count() < 1 )
-        KCmdLineArgs::usage();
-    QUrl u = args->url( 0 );
+    if (argc <= 1) {
+        qWarning() << "Expected argument: [url], the path or url to the file/dir for which to show properties";
+        return 1;
+    }
+    QUrl u = QUrl::fromLocalFile(argv[1]);
 
     // This is the test for the KPropertiesDialog constructor that is now
     // documented to NOT work. Passing only a URL means a KIO::NetAccess::stat will happen,

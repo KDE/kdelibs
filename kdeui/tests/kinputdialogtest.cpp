@@ -12,8 +12,6 @@
 
 #include <QtCore/QString>
 #include <QValidator>
-#include <kcmdlineargs.h>
-
 
 int main( int argc, char *argv[] )
 {

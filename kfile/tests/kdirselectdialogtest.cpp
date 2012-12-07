@@ -1,24 +1,19 @@
 #include <QApplication>
 #include <kdirselectdialog.h>
 #include <kmessagebox.h>
-#include <kcmdlineargs.h>
 #include <kurl.h>
-
 
 int main( int argc, char **argv )
 {
-    KCmdLineArgs::init(argc, argv, "kdirselectdialogtest", 0, qi18n("kdirselectdialogtest"), "0", qi18n("test app"));
-
     KCmdLineOptions opt;
     opt.add("+[startDir]", qi18n("Directory to start in"), QByteArray());
 
-    KCmdLineArgs::addCmdLineOptions(opt);
-
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+    QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
 
-    QUrl startDir = KCmdLineArgs::parsedArgs()->count() >= 1 ?
-                    KCmdLineArgs::parsedArgs()->url(0) : QUrl();
+    QUrl startDir;
+    if (argc > 1)
+        startDir = QUrl::fromLocalFile(argv[1]);
     QUrl u = KDirSelectDialog::selectDirectory(startDir);
     if ( u.isValid() )
         KMessageBox::information(NULL,

@@ -17,43 +17,35 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
+//#include <kaboutdata.h>
 #include <QApplication>
 #include <kglobalsettings.h>
 #include <qdebug.h>
-#include <kcomponentdata.h>
 
 int main(int argc, char **argv)
 {
-    KAboutData about("kglobalsettingsclient", 0, qi18n("kglobalsettingsclient"), "version");
-    KCmdLineArgs::init(argc, argv, &about);
+    //KCmdLineOptions options;
+    //options.add("p", qi18n("emit paletteChanged()"));
+    //options.add("f", qi18n("emit fontChanged()"));
+    //options.add("ps", qi18n("emit settingsChanged(SETTINGS_PATH)"));
 
-    KCmdLineOptions options;
-    options.add("p", qi18n("emit paletteChanged()"));
-    options.add("f", qi18n("emit fontChanged()"));
-    options.add("ps", qi18n("emit settingsChanged(SETTINGS_PATH)"));
+    QApplication app(argc, argv, false);
 
-    KCmdLineArgs::addCmdLineOptions( options );
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-    KComponentData componentData(&about); // for KConfig
-    QApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false );
-
-    if (args->isSet("p")) {
+    QByteArray opt = argc > 1 ? argv[1] : "";
+    if (opt == "-p") {
         qDebug() << "emitChange(PaletteChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::PaletteChanged);
 	return 0;
-    } else if (args->isSet("f")) {
+    } else if (opt == "-f") {
         qDebug() << "emitChange(FontChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::FontChanged);
         return 0;
-    } else if (args->isSet("ps")) {
+    } else if (opt == "--ps") {
         qDebug() << "emitChange(SettingsChanged)";
         KGlobalSettings::self()->emitChange(KGlobalSettings::SettingsChanged, KGlobalSettings::SETTINGS_PATHS);
         return 0;
     }
 
-    KCmdLineArgs::usage("No action specified");
-    return 1; //notreached
+    qWarning() << "No action specified";
+    return 1;
 }

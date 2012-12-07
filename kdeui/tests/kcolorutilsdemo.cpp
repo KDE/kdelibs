@@ -18,7 +18,6 @@
 #include "kcolorutilsdemo.h"
 #include "../colors/kcolorspaces.h"
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <kcolorutils.h>
 #include <kcolorscheme.h>
 

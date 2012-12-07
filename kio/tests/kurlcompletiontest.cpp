@@ -23,7 +23,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <qtemporarydir.h>
-#include <kcmdlineargs.h>
 #include <unistd.h>
 
 class KUrlCompletionTest : public QObject

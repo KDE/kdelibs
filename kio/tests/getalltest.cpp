@@ -2,7 +2,6 @@
 #include <qmimedatabase.h>
 #include <kservicetype.h>
 
-#include <kcmdlineargs.h>
 #include <qapplication.h>
 #include <kdebug.h>
 
