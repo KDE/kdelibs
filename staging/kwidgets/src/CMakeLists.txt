@@ -41,7 +41,6 @@ target_link_libraries(kwidgets
   kwidgetsaddons
   kauth
   ${kwindowsystem_LIBRARY}
-  kdeui
   kservice
 )
 

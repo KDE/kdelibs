@@ -78,6 +78,11 @@
 
 namespace KMessageBox {
 
+/*
+ * this static is used by the createKMessageBox function to enqueue dialogs
+ * FIXME what should we do about this static?
+ */
+bool KWIDGETS_EXPORT KMessageBox_queue = false;
 
 static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
 {
@@ -137,10 +142,13 @@ static void sendNotification( QString message, //krazy:exclude=passbyvalue
         }
     }
 
+#if 0
+    // NOTE waiting for the notification framework plan
     if ( !message.isEmpty() ) {
         KNotification::event( messageType, message, QPixmap(), QWidget::find( parent_id ),
                               KNotification::DefaultEvent | KNotification::CloseOnTimeout );
     }
+#endif
 }
 
 static void applyOptions( KDialog* dialog, KMessageBox::Options options )
@@ -205,6 +213,7 @@ int createKMessageBox(KDialog *dialog, const QIcon &icon,
     if (messageLabel->sizeHint().width() > desktop.width() * 0.5) {
         // enable automatic wrapping of messages which are longer than 50% of screen width
         messageLabel->setWordWrap(true);
+#if 0
         // display a text widget with scrollbar if still too wide
         usingSqueezedTextLabel = messageLabel->sizeHint().width() > desktop.width() * 0.85;
         if (usingSqueezedTextLabel)
@@ -214,6 +223,7 @@ int createKMessageBox(KDialog *dialog, const QIcon &icon,
             messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);
             messageLabel->setTextInteractionFlags(flags);
         }
+#endif
     }
 
     QPalette messagePal(messageLabel->palette());
@@ -288,7 +298,7 @@ int createKMessageBox(KDialog *dialog, const QIcon &icon,
             detailsLabel->setWordWrap(true);
             detailsLayout->addWidget(detailsLabel,50);
         } else {
-            QTextBrowser *detailTextEdit = new QTextBrower();
+            QTextBrowser *detailTextEdit = new QTextBrowser();
             detailTextEdit->setText(details);
             detailTextEdit->setReadOnly(true);
             detailTextEdit->setMinimumHeight(detailTextEdit->fontMetrics().lineSpacing() * 11);

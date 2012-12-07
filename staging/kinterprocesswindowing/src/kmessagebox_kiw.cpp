@@ -59,6 +59,13 @@
 
 namespace KMessageBox {
 
+/*
+ * this static is used by the createKMessageBox function to enqueue dialogs
+ * it's exported by the kwidgets framework
+ * FIXME what should we do about this static?
+ */
+extern bool KMessageBox_queue;
+
 /** @note This function has a duplicate in kmessagebox.cpp 
  *  FIXME What should be done about this?
  **/

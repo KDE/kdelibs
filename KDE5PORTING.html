@@ -273,7 +273,12 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
     <ul>
     <li>WId methods are now in kmessagebox_kiw.h from kinterprocesswindowing framework</li>
     <li>Queued methds are now in kmessagebox_queued.h from kde4support framework</li>
-    <li>The remainder of the methods are now in kmessagebox.h from kwidgets</li>
+    <li>The remainder of the methods are now in kmessagebox.h from kwidgets
+        <ul>
+            <li>NOTE1: KMessageBox no longer uses notifications</li>
+            <li>NOTE2: Too long messages no longer trigger KSqueezedTextLabel usage. This is a temporary measure, though, to avoid dependencies on kdeui.</li>
+        </ul>
+    </li>
     </ul>
 </li>
 <li>KMessageBoxMessageHandler moved to kde4support</li>
