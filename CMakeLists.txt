@@ -429,11 +429,11 @@ add_subdirectory( includes )
 if(NOT QT5_BUILD)
   macro_optional_add_subdirectory( doc )
 endif()
-if (NOT QT5_BUILD OR Qt5Quick1_FOUND)
-    add_subdirectory( experimental )
-endif()
+
 if(NOT QT5_BUILD)
   add_subdirectory( kimgio )
+else (NOT QT5_BUILD)
+  add_subdirectory( experimental )
 endif()
 add_subdirectory( knewstuff )
 add_subdirectory( knotify )
@@ -441,9 +441,11 @@ add_subdirectory( knotify )
 if(NOT QT5_BUILD OR Qt5WebKit_FOUND)
   add_subdirectory( kdewidgets  )
   add_subdirectory( kdewebkit )
-  add_subdirectory( plasma )
 endif()
 
+if(QT5_BUILD)
+  add_subdirectory( plasma )
+endif()
 
 ################# write dependency file which will be installed #################
 

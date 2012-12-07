@@ -6,6 +6,9 @@ endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kdeclarative.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeclarative.h)
 
+find_package(Qt5Quick REQUIRED)
+find_package(Qt5Qml REQUIRED)
+
 include_directories(
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_BINARY_DIR}
@@ -21,19 +24,14 @@ endif()
 
 set(kdeclarative_LIB_SRCS
     kdeclarative.cpp
-    private/engineaccess.cpp
-    private/kiconprovider.cpp
-    bindings/qscriptnonguibookkeeping.cpp
-    bindings/i18n.cpp
-    bindings/icon.cpp
-    bindings/url.cpp)
+    private/kiconprovider.cpp)
 
 kde4_add_library(kdeclarative SHARED ${kdeclarative_LIB_SRCS})
 generate_export_header(kdeclarative)
 
 set_target_properties(kdeclarative PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
-target_link_libraries(kdeclarative ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} ${QT_QTSCRIPT_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} kcoreaddons ki18n)
+target_link_libraries(kdeclarative ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} kcoreaddons ki18n)
 
 
 ## test
@@ -42,7 +40,7 @@ set(kdeclarative_TEST_SRCS
 
 kde4_add_executable(kdeclarativetest ${kdeclarative_TEST_SRCS})
 
-target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${QT_QTSCRIPT_LIBRARY} ${QT_QTDECLARATIVE_LIBRARY} ki18n)
+target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${Qt5Quick_LIBRARIES} ${Qt5Qml_LIBRARIES} ki18n)
 
 ## install
 

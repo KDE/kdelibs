@@ -20,11 +20,13 @@
 #ifndef KDECLARATIVE_H
 #define KDECLARATIVE_H
 
+#include <QtQml/QQmlEngine>
+
 #include <kdeclarative_export.h>
 
 #include <QStringList>
 
-class QDeclarativeEngine;
+class QQmlEngine;
 class QScriptEngine;
 
 class KDeclarativePrivate;
@@ -38,14 +40,12 @@ public:
     void initialize();
     void setupBindings();
 
-    void setDeclarativeEngine(QDeclarativeEngine *engine);
-    QDeclarativeEngine *declarativeEngine() const;
-
-    QScriptEngine *scriptEngine() const;
+    void setDeclarativeEngine(QQmlEngine *engine);
+    QQmlEngine *declarativeEngine() const;
 
     /**
      * This method must be called very early at startup time to ensure the
-     * QDeclarativeDebugger is enabled. Ideally it should be called in main(),
+     * QQuickDebugger is enabled. Ideally it should be called in main(),
      * after command-line options are defined.
      */
     static void setupQmlJsDebugger();
@@ -74,7 +74,6 @@ public:
 
 private:
     KDeclarativePrivate *const d;
-    friend class EngineAccess;
 };
 
 #endif

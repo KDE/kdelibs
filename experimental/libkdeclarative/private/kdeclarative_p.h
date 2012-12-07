@@ -29,8 +29,7 @@ class KDeclarativePrivate
 public:
     KDeclarativePrivate();
 
-    QWeakPointer<QDeclarativeEngine> declarativeEngine;
-    QWeakPointer<QScriptEngine> scriptEngine;
+    QWeakPointer<QQmlEngine> declarativeEngine;
     bool initialized;
 };
 
