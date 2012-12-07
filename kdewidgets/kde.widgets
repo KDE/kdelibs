@@ -42,26 +42,9 @@ ToolTip=Color Chooser Button (KDE)
 WhatsThis=A button that allows selecting a color
 Group=Graphics (KDE)
 
-[KColorCells]
-IncludeFile=kcolordialog.h
-ToolTip=Color Table (KDE)
-Group=Input (KDE)
-ConstructorArgs=(parent, 3, 5)
-
 [KColorCombo]
 ToolTip=Color Combo Box (KDE)
 Group=Graphics (KDE)
-
-[KColorPatch]
-IncludeFile=kcolordialog.h
-ToolTip=The KColorPatch widget is a (usually small) widget showing a selected color.
-Group=Display (KDE)
-ConstructorArgs=(parent)
-
-[KColorValueSelector]
-IncludeFile=kcolorvalueselector.h
-ToolTip=Color Value Selector (KDE)
-Group=Input (KDE)
 
 [KComboBox]
 ToolTip=Combo Box (KDE)

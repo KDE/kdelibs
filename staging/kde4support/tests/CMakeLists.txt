@@ -26,6 +26,7 @@ macro(KDE4SUPPORT_EXAMPLES)
 endmacro()
 
 kde4support_examples(
+  kcolordlgtest
   kmdcodectest
   kcmdlineargstest
   kdialogbuttonboxtest

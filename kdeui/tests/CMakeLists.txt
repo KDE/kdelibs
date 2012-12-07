@@ -65,7 +65,6 @@ KDEUI_EXECUTABLE_TESTS(
   kcategorizedviewtest
   kcodecactiontest
   kcolorcollectiontest
-  kcolordlgtest
   kcolorcombotest
   kcomboboxtest
   kcompletionuitest

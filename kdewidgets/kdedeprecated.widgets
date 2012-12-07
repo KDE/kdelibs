@@ -20,3 +20,20 @@ IncludeFile=kdialogbuttonbox.h
 Group=Buttons (KDE)
 DomXML=<ui><widget class="KDialogButtonBox"><property name="standardButtons"><set>QDialogButtonBox::Ok|QDialogButtonBox::Cancel</set></property></widget></ui>
 
+[KColorCells]
+IncludeFile=kcolordialog.h
+ToolTip=Color Table (KDE)
+Group=Input (KDE)
+ConstructorArgs=(parent, 3, 5)
+
+[KColorPatch]
+IncludeFile=kcolordialog.h
+ToolTip=The KColorPatch widget is a (usually small) widget showing a selected color.
+Group=Display (KDE)
+ConstructorArgs=(parent)
+
+[KColorValueSelector]
+IncludeFile=kcolorvalueselector.h
+ToolTip=Color Value Selector (KDE)
+Group=Input (KDE)
+

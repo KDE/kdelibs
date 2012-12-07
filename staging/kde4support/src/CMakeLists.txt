@@ -25,6 +25,11 @@ set(libkde4support_SRCS
     kdecore/kascii.cpp
 
     kdeui/kapplication.cpp
+    kdeui/kcolorchoosermode.cpp
+    kdeui/kcolordialog.cpp
+    kdeui/kcolorhelpers.cpp
+    kdeui/kcolorvalueselector.cpp
+    kdeui/khuesaturationselect.cpp
     kdeui/ksessionmanager.cpp
     kdeui/kfadewidgeteffect.cpp
     kdeui/kicon.cpp
@@ -67,6 +72,8 @@ include_directories(
     ${kwidgets_SOURCE_DIR}/src/icons # kiconloader
     ${kwidgets_SOURCE_DIR}/src/utils # kglobalsettings
     ${kwidgets_SOURCE_DIR}/src/widgets # kpushbutton
+    ${kwidgetsaddons_BINARY_DIR}/src
+    ${kwidgetsaddons_SOURCE_DIR}/src
     ${kauth_BINARY_DIR}/src
     ${kauth_SOURCE_DIR}/src # kpushbutton -> kauthaction
     ${kinterprocesswindowing_BINARY_DIR}/src
@@ -83,7 +90,7 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 add_library(kde4support ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
-target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgets kauth kdeui ki18n ${X11_LIBRARIES} ${QtMimeTypes_LIBRARY})
+target_link_libraries(kde4support ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTDBUS_LIBRARY} kdecore kcoreaddons kwidgetsaddons kwidgets kauth kdeui ki18n ${X11_LIBRARIES} ${QtMimeTypes_LIBRARY})
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
@@ -113,6 +120,10 @@ install(FILES
     kdecore/kascii.h
 
     kdeui/kapplication.h
+    kdeui/kcolorchoosermode.h
+    kdeui/kcolordialog.h
+    kdeui/kcolorvalueselector.h
+    kdeui/khuesaturationselect.h
     kdeui/ksessionmanager.h
     kdeui/kfadewidgeteffect.h
     kdeui/kicon.h
@@ -131,6 +142,14 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+install( FILES kdeui/40.colors kdeui/Oxygen.colors kdeui/Web.colors kdeui/Royal.colors kdeui/Rainbow.colors
+         DESTINATION ${CONFIG_INSTALL_DIR}/colors)
+
+if (NOT X11_FOUND)
+    # install our copy of the rgb.txt named colors list on systems without X11
+    install(FILES kdeui/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
+endif (NOT X11_FOUND)
 
 # kparts/*.h
 install(FILES

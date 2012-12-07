@@ -20,12 +20,12 @@
 #ifndef KHUESATURATIONSELECT_H_
 #define KHUESATURATIONSELECT_H_
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 #include "kxyselector.h"
 
 #include "kcolorchoosermode.h"
 
-class KDEUI_EXPORT KHueSaturationSelector : public KXYSelector
+class KDE4SUPPORT_EXPORT KHueSaturationSelector : public KXYSelector
 {
     Q_OBJECT
 public:

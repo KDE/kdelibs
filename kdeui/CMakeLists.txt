@@ -139,13 +139,8 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
- colors/kcolorhelpers.cpp
  colors/kcolorbutton.cpp
  colors/kcolorcombo.cpp
- colors/kcolorchoosermode.cpp
- colors/kcolordialog.cpp
- colors/kcolorvalueselector.cpp
- colors/khuesaturationselect.cpp
  dialogs/kaboutkdedialog_p.cpp
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
@@ -505,11 +500,7 @@ install( FILES
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
  colors/kcolorbutton.h
- colors/kcolorchoosermode.h
  colors/kcolorcombo.h
- colors/kcolordialog.h
- colors/kcolorvalueselector.h
- colors/khuesaturationselect.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h
@@ -655,9 +646,6 @@ if (Q_OS_MAC)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
 endif (Q_OS_MAC)
 
-install( FILES colors/40.colors colors/Oxygen.colors colors/Web.colors colors/Royal.colors colors/Rainbow.colors
-         DESTINATION ${CONFIG_INSTALL_DIR}/colors)
-
 install( FILES
   jobs/org.kde.JobViewServer.xml
   jobs/org.kde.JobView.xml
@@ -668,11 +656,6 @@ install(FILES
     notifications/org.kde.StatusNotifierItem.xml
     notifications/org.kde.StatusNotifierWatcher.xml
     DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-if (NOT X11_FOUND)
-    # install our copy of the rgb.txt named colors list on systems without X11
-    install(FILES colors/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
-endif (NOT X11_FOUND)
 
 install( FILES
     KDEUIMacros.cmake
