@@ -96,6 +96,7 @@ static KCrash::CrashFlags s_flags = 0;
 static bool s_launchDrKonqi = false;
 
 // KDE5: Port to qAddPreRoutine when available
+#if 0
 extern "C" void Q_CORE_EXPORT qt_startup_hook()
 {
     const QStringList args = QCoreApplication::arguments();
@@ -113,6 +114,7 @@ extern "C" void Q_CORE_EXPORT qt_startup_hook()
         KCrash::setApplicationPath(QCoreApplication::applicationDirPath());
     }
 }
+#endif
 
 namespace KCrash
 {
