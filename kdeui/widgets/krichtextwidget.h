@@ -115,7 +115,7 @@ public:
          * Action to change the text color of the currently selected text. If no
          * text is selected, the text color of the word under the cursor is
          * changed.
-         * Opens a KColorDialog to select the color.
+         * Opens a QColorDialog to select the color.
          */
         SupportTextForegroundColor = 0x40,
 
@@ -123,7 +123,7 @@ public:
          * Action to change the background color of the currently selected text. If no
          * text is selected, the backgound color of the word under the cursor is
          * changed.
-         * Opens a KColorDialog to select the color.
+         * Opens a QColorDialog to select the color.
          */
         SupportTextBackgroundColor = 0x80,
 

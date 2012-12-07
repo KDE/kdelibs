@@ -22,7 +22,6 @@
 
 // KDE includes
 #include <kactioncollection.h>
-#include <kcolordialog.h>
 #include <kcolorscheme.h>
 #include <kfontaction.h>
 #include <kfontsizeaction.h>
@@ -31,6 +30,7 @@
 #include <kdebug.h>
 
 // Qt includes
+#include <QColorDialog>
 #include <QTextList>
 
 #include "klinkdialog.h"
@@ -636,31 +636,31 @@ void KRichTextWidget::Private::_k_updateMiscActions()
 
 void KRichTextWidget::Private::_k_setTextForegroundColor()
 {
-    QColor currentTextForegroundColor = q->textColor();
+    const QColor currentColor = q->textColor();
+    const QColor defaultColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color();
 
-    const int result = KColorDialog::getColor(currentTextForegroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
-    if (result != QDialog::Accepted)
-        return;
-    if (!currentTextForegroundColor.isValid())
-        currentTextForegroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
+    const QColor selectedColor = QColorDialog::getColor(currentColor.isValid() ? currentColor : defaultColor, q);
 
-    q->setTextForegroundColor(currentTextForegroundColor);
-
+    if (!selectedColor.isValid() && !currentColor.isValid()) {
+        q->setTextForegroundColor(defaultColor);
+    } else if (selectedColor.isValid()) {
+        q->setTextForegroundColor(selectedColor);
+    }
 }
 
 void KRichTextWidget::Private::_k_setTextBackgroundColor()
 {
     QTextCharFormat fmt = q->textCursor().charFormat();
-    QColor currentTextBackgroundColor = fmt.background().color();
+    const QColor currentColor = fmt.background().color();
+    const QColor defaultColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color();
 
-    const int result = KColorDialog::getColor(currentTextBackgroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
-    if (result != QDialog::Accepted)
-        return;
-    if (!currentTextBackgroundColor.isValid())
-        currentTextBackgroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
+    const QColor selectedColor = QColorDialog::getColor(currentColor.isValid() ? currentColor : defaultColor, q);
 
-    q->setTextBackgroundColor(currentTextBackgroundColor);
-
+    if (!selectedColor.isValid() && !currentColor.isValid()) {
+        q->setTextBackgroundColor(defaultColor);
+    } else if (selectedColor.isValid()) {
+        q->setTextBackgroundColor(selectedColor);
+    }
 }
 
 void KRichTextWidget::Private::_k_manageLink()

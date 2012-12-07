@@ -23,11 +23,11 @@
 
 #include <QAbstractItemDelegate>
 #include <QApplication>
+#include <QColorDialog>
 #include <QStylePainter>
 
 #include <klocalizedstring.h>
 
-#include "kcolordialog.h"
 
 class KColorComboDelegate : public QAbstractItemDelegate
 {
@@ -322,7 +322,9 @@ void KColorCombo::showEmptyList()
 void KColorComboPrivate::_k_slotActivated(int index)
 {
     if (index == 0) {
-        if (KColorDialog::getColor(customColor, q) == QDialog::Accepted) {
+        QColor c = QColorDialog::getColor(customColor, q);
+        if (c.isValid()) {
+            customColor = c;
             setCustomColor(customColor, false);
         }
     } else if (colorList.isEmpty()) {
