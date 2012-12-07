@@ -1216,24 +1216,7 @@ QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
             }
         }
     }
-    const QString prot = d->protocolForArchiveMimetypes.value(mimeType);
-    if (!prot.isEmpty())
-        return prot;
-
-    // Check parent mimetypes
-    QMimeDatabase db;
-    QMimeType mime = db.mimeTypeForName(mimeType);
-    if (mime.isValid()) {
-        const QStringList parentMimeTypes = mime.allAncestors();
-        Q_FOREACH(const QString& parentMimeType, parentMimeTypes) {
-            const QString res = d->protocolForArchiveMimetypes.value(parentMimeType);
-            if (!res.isEmpty()) {
-                return res;
-            }
-        }
-    }
-
-    return QString();
+    return d->protocolForArchiveMimetypes.value(mimeType);
 }
 
 QString KProtocolManager::charsetFor(const QUrl& url)

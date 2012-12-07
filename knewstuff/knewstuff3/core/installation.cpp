@@ -489,7 +489,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
 
             if (QFile::exists(installpath)) {
                 if (!update) {
-                    if (KMessageBox::warningContinueCancel(0, i18n("Overwrite existing file?") + "\n'" + installpath + '\'', i18n("Download File:")) == KMessageBox::Cancel) {
+                    if (KMessageBox::warningContinueCancel(0, i18n("Overwrite existing file?") + "\n'" + installpath + '\'', i18n("Download File")) == KMessageBox::Cancel) {
                         return QStringList();
                     }
                 }

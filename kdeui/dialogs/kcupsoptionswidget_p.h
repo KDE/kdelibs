@@ -67,7 +67,7 @@ public slots:
 protected:
 
     virtual void setupCupsOptions( QStringList &cupsOptions );
-    void setCupsOption( QStringList &cupsOptions, const QString option, const QString value );
+    void setCupsOption( QStringList &cupsOptions, const QString& option, const QString& value );
 
     QPrintDialog *m_dialog;
 

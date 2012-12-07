@@ -19,6 +19,7 @@
 */
 
 #include "udisksmanager.h"
+#include "udisksdevicebackend.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
@@ -32,10 +33,9 @@ using namespace Solid::Backends::Shared;
 
 Manager::Manager(QObject *parent)
     : Solid::Ifaces::DeviceManager(parent),
-      m_connection(QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2")),
       m_manager(UD2_DBUS_SERVICE,
                 UD2_DBUS_PATH,
-                m_connection)
+                QDBusConnection::systemBus())
 {
     m_supportedInterfaces
             << Solid::DeviceInterface::GenericInterface
@@ -60,9 +60,9 @@ Manager::Manager(QObject *parent)
                                                               "org.freedesktop.DBus",
                                                               "ListActivatableNames");
 
-        QDBusReply<QStringList> reply = m_connection.call(message);
+        QDBusReply<QStringList> reply = QDBusConnection::systemBus().call(message);
         if (reply.isValid() && reply.value().contains(UD2_DBUS_SERVICE)) {
-            m_connection.interface()->startService(UD2_DBUS_SERVICE);
+            QDBusConnection::systemBus().interface()->startService(UD2_DBUS_SERVICE);
             serviceFound = true;
         }
     }
@@ -77,6 +77,10 @@ Manager::Manager(QObject *parent)
 
 Manager::~Manager()
 {
+    while (!m_deviceCache.isEmpty()) {
+        QString udi = m_deviceCache.takeFirst();
+        DeviceBackend::destroyBackend(udi);
+    }
 }
 
 QObject* Manager::createDevice(const QString& udi)
@@ -128,7 +132,11 @@ QStringList Manager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInt
 
 QStringList Manager::allDevices()
 {
-    m_deviceCache.clear();
+    /* Clear the cache, destroy all backends */
+    while (!m_deviceCache.isEmpty()) {
+        QString udi= m_deviceCache.takeFirst();
+        DeviceBackend::destroyBackend(udi);
+    }
 
     introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
     introspect("/org/freedesktop/UDisks2/drives");
@@ -140,8 +148,7 @@ void Manager::introspect(const QString & path, bool checkOptical)
 {
     QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path,
                                                        DBUS_INTERFACE_INTROSPECT, "Introspect");
-    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
-    reply.waitForFinished();
+    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().call(call);
 
     if (reply.isValid()) {
         QDomDocument dom;
@@ -155,7 +162,7 @@ void Manager::introspect(const QString & path, bool checkOptical)
                 if (checkOptical) {
                     Device device(udi);
                     if (device.mightBeOpticalDisc()) {
-                        m_connection.connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                                              SLOT(slotMediaChanged(QDBusMessage)));
                         if (!device.isOpticalDisc())  // skip empty CD disc
                             continue;
@@ -184,6 +191,11 @@ void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVar
 {
     const QString udi = object_path.path();
 
+    /* Ignore jobs */
+    if (udi.startsWith(UD2_DBUS_PATH_JOBS)) {
+        return;
+    }
+
     qDebug() << udi << "has new interfaces:" << interfaces_and_properties.keys();
 
     // new device, we don't know it yet
@@ -197,6 +209,11 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 {
     const QString udi = object_path.path();
 
+    /* Ignore jobs */
+    if (udi.startsWith(UD2_DBUS_PATH_JOBS)) {
+        return;
+    }
+
     qDebug() << udi << "lost interfaces:" << interfaces;
 
     Device device(udi);
@@ -204,6 +221,7 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
     if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || device.interfaces().contains(UD2_DBUS_INTERFACE_FILESYSTEM))) {
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+        DeviceBackend::destroyBackend(udi);
     }
 }
 
@@ -226,6 +244,7 @@ void Manager::slotMediaChanged(const QDBusMessage & msg)
     if (m_deviceCache.contains(udi) && size == 0) {  // we know the optdisc, got removed
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+        DeviceBackend::destroyBackend(udi);
     }
 }
 

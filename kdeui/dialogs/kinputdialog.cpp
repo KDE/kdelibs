@@ -364,7 +364,7 @@ QString getMultiLineText( const QString &caption,
                           QWidget *parent )
 {
     KInputDialogHelper dlg(caption, label, value, parent);
-
+    dlg.textEdit()->setAcceptRichText(false);
     bool _ok = (dlg.exec() == KDialog::Accepted);
 
     if (ok)

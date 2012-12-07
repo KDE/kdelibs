@@ -49,15 +49,14 @@ class KActionCollectionPrivate
 {
 public:
   KActionCollectionPrivate()
+    : m_parentGUIClient(0L),
+      configGroup("Shortcuts"),
+      configIsGlobal(false),
+      connectTriggered(false),
+      connectHovered(false),
+      q(0)
+
   {
-    q = 0;
-    m_parentGUIClient = 0L;
-
-    configIsGlobal = false;
-
-    connectHovered = connectTriggered = false;
-
-    configGroup = "Shortcuts";
   }
 
   void setComponentForAction(KAction *kaction)

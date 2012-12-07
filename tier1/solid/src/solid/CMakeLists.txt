@@ -253,6 +253,7 @@ if(NOT WIN32 AND NOT APPLE)
            set(solid_LIB_SRCS ${solid_LIB_SRCS}
            backends/udisks2/udisksmanager.cpp
            backends/udisks2/udisksdevice.cpp
+           backends/udisks2/udisksdevicebackend.cpp
            backends/udisks2/udisksblock.cpp
            backends/udisks2/udisksstoragevolume.cpp
            backends/udisks2/udisksdeviceinterface.cpp

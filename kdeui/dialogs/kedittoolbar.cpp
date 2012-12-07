@@ -112,7 +112,7 @@ public:
     KActionCollection* actionCollection() const { return m_actionCollection; }
     void setDomDocument(const QDomDocument& domDoc)
     {
-        m_document = domDoc;
+        m_document = domDoc.cloneNode().toDocument();
         m_barList = findToolBars(m_document.documentElement());
     }
     // Return reference, for e.g. actionPropertiesElement() to modify the document
@@ -1312,9 +1312,6 @@ void KEditToolBarWidgetPrivate::selectActiveItem(const QString& internalName)
 void KEditToolBarWidgetPrivate::slotRemoveButton()
 {
   removeActive( m_activeList->currentItem() );
-
-  // we're modified, so let this change
-  emit m_widget->enableOk(true);
 
   slotToolBarSelected( m_toolbarCombo->currentIndex() );
 }

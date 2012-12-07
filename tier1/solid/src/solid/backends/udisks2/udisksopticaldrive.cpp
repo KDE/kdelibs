@@ -38,7 +38,11 @@
 using namespace Solid::Backends::UDisks2;
 
 OpticalDrive::OpticalDrive(Device *device)
-    : StorageDrive(device), m_ejectInProgress(false), m_readSpeed(0), m_writeSpeed(0), m_speedsInit(false)
+    : StorageDrive(device)
+    , m_ejectInProgress(false)
+    , m_readSpeed(0)
+    , m_writeSpeed(0)
+    , m_speedsInit(false)
 {
     m_device->registerAction("eject", this,
                              SLOT(slotEjectRequested()),
