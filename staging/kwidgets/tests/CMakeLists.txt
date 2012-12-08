@@ -15,4 +15,5 @@ kwidgets_executable_tests(
     kiconeffecttest
     kdialogtest
     kmessagetest
+    kmessageboxtest
 )
