@@ -144,6 +144,7 @@ install( FILES
   KDBusServiceStarter
   KDebug
   KDEDModule
+  KDEPrintDialog
   KDataTool
   KDataToolAction
   KDataToolInfo
@@ -159,6 +160,7 @@ install( FILES
   KDesktopFile
   KDialog
   KDialogButtonBox
+  KDialogJobUiDelegate
   KDirLister
   KDirModel
   KDirNotify
@@ -331,6 +333,7 @@ install( FILES
   KRecentDocument
   KRecentFilesAction
   KRecursiveFilterProxyModel
+  KRegExpEditorInterface
   KRemoteEncoding
   KReplace
   KReplaceDialog
