@@ -20,6 +20,8 @@
 
 #include <kmessagebox.h>
 
+#include "kmessagebox_queued.h"
+
 class KMessageBoxMessageHandlerPrivate
 {
     public:

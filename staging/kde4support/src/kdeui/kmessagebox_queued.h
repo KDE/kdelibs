@@ -17,6 +17,13 @@
     Boston, MA 02110-1301, USA.
 */
 
+class QWidget;
+
+#include <QString>
+#include <qwindowdefs.h>
+
+#include <kmessagebox.h>
+
 #include <kde4support_export.h>
 
 namespace KMessageBox {
