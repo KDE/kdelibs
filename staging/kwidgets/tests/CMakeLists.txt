@@ -5,7 +5,7 @@ include(ECMMarkAsTest)
 macro(kwidgets_executable_tests)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
-      target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTMAIN_LIBRARY} ${KDEWIN_LIBRARIES} kcoreaddons)
+      target_link_libraries(${_testname} ${KDE4_KDEUI_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTMAIN_LIBRARY} ${KDEWIN_LIBRARIES} kcoreaddons kde4support)
       ecm_mark_as_test(${_testname})
    endforeach()
 endmacro()
@@ -14,4 +14,5 @@ kwidgets_executable_tests(
     kiconloadertest
     kiconeffecttest
     kdialogtest
+    kmessagetest
 )

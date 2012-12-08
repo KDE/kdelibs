@@ -21,7 +21,6 @@
 
 #include "kdialogjobuidelegate.h"
 
-#include <kmessagebox.h>
 #include <kjob.h>
 #include <QPointer>
 #include <QWidget>
@@ -82,7 +81,8 @@ void KDialogJobUiDelegate::showErrorMessage()
 {
     if ( job()->error() != KJob::KilledJobError )
     {
-        KMessageBox::queuedMessageBox( d->errorParentWidget, KMessageBox::Error, job()->errorString() );
+#pragma message("KDE5 TODO: Implement queueing here when jobs will get splitted from kdeui")
+//         KMessageBox::queuedMessageBox( d->errorParentWidget, KMessageBox::Error, job()->errorString() );
     }
 }
 
@@ -90,7 +90,7 @@ void KDialogJobUiDelegate::slotWarning(KJob* /*job*/, const QString &plain, cons
 {
     if (isAutoWarningHandlingEnabled())
     {
-	KMessageBox::queuedMessageBox(d->errorParentWidget, KMessageBox::Information, plain);
+#pragma message("KDE5 TODO: Implement queueing here when jobs will get splitted from kdeui")
+// 	KMessageBox::queuedMessageBox(d->errorParentWidget, KMessageBox::Information, plain);
     }
 }
-

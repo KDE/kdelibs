@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     }
     else if(i == 1)
     {
-       KMessage::setMessageHandler( new KPassivePopupMessageHandler(mainWidget) );
+        KMessage::setMessageHandler( new KPassivePopupMessageHandler(mainWidget) );
     }
 
     mainWidget->show();
