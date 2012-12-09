@@ -28,7 +28,6 @@
 #include <ksharedconfig.h>
 #include <kmimetypetrader.h>
 
-#include "kcmdlineargs.h"
 #include "kconfig.h"
 #include "kdebug.h"
 #include "kshell.h"

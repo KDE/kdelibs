@@ -18,6 +18,7 @@
  */
 
 #include "kdeclarative.h"
+#include <QCoreApplication>
 #include "private/kdeclarative_p.h"
 #include "private/engineaccess_p.h"
 #include "private/kiconprovider_p.h"
@@ -29,7 +30,6 @@
 #include <QtQml/QQmlDebuggingEnabler>
 #include <QtCore/QWeakPointer>
 
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -103,7 +103,7 @@ void KDeclarative::setupBindings()
 
 void KDeclarative::setupQmlJsDebugger()
 {
-    if (KCmdLineArgs::parsedArgs("qt")->isSet("qmljsdebugger")) {
+    if (QCoreApplication::arguments().contains(QLatin1String("-qmljsdebugger"))) {
         QQmlDebuggingEnabler enabler;
     }
 }

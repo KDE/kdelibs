@@ -23,7 +23,6 @@
  */
 
 #include "kcrash.h"
-#include <kcmdlineargs.h>
 #include <config-kstandarddirs.h>
 #include <config-prefix.h>
 
@@ -175,8 +174,7 @@ KCrash::setFlags(KCrash::CrashFlags flags)
     if (s_flags & AutoRestart) {
         // We need at least the default crash handler for autorestart to work.
         if (!s_crashHandler) {
-            KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
-            if (!args->isSet("crashhandler")) // --nocrashhandler was passed, probably due to a crash, delay restart handler
+            if (!QCoreApplication::arguments().contains("--nocrashhandler")) // --nocrashhandler was passed, probably due to a crash, delay restart handler
                 new KCrashDelaySetHandler;
             else // probably because KDE_DEBUG=1. set restart handler immediately.
                 setCrashHandler(defaultCrashHandler);
@@ -198,7 +196,7 @@ KCrash::setApplicationPath(const QString& path)
         s_autoRestartCommand = qstrdup(cmd.constData());
     }
 
-    QStringList args = KCmdLineArgs::allArguments();
+    QStringList args = QCoreApplication::arguments();
     args[0] = s_autoRestartCommand; // replace argv[0] with full path above
     if (!args.contains("--nocrashhandler"))
          args.insert(1, "--nocrashhandler");

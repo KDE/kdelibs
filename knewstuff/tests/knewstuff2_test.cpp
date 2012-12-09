@@ -25,7 +25,6 @@
 
 #include <kstandarddirs.h>
 #include <QApplication>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 
 #include <QtCore/QFile>
@@ -254,12 +253,9 @@ void KNewStuff2Test::quitTest()
 
 int main(int argc, char **argv)
 {
-    KCmdLineOptions options;
-    options.add("testall", qi18n("Downloads all previews and payloads"));
+    //options.add("testall", qi18n("Downloads all previews and payloads"));
 
-    KCmdLineArgs::init(argc, argv, "knewstuff2_test", 0, qi18n("knewstuff2_test"), 0);
-    KCmdLineArgs::addCmdLineOptions(options);
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false);
+    QApplication app(argc, argv);
 
     // Take source directory into account
     kDebug() << "-- adding source directory " << KNSSRCDIR;
@@ -268,8 +264,7 @@ int main(int argc, char **argv)
     KGlobal::dirs()->addResourceDir("config", KNSBUILDDIR);
 
     KNewStuff2Test *test = new KNewStuff2Test();
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    if (args->isSet("testall")) {
+    if (app.arguments().contains("--testall")) {
         test->setTestAll(true);
         test->entryTest();
         test->providerTest();

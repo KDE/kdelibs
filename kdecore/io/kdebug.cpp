@@ -60,9 +60,8 @@
 #include <time.h>
 #endif
 
-#include "kglobal.h"
+#include <kglobal.h> // K_GLOBAL_STATIC
 #include "kdatetime.h"
-#include "kcmdlineargs.h"
 
 #include <kmessage.h>
 #include <klocalizedstring.h>

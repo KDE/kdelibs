@@ -51,7 +51,6 @@
 #define QT_NO_TRANSLATION
 #include <QtCore/QDebug>
 #include <QtCore/QTextCodec>
-#include "kcmdlineargs.h"
 #include <unistd.h> // umask
 
 // ~KConfig needs qrand(). qrand() depends on a Q_GLOBAL_STATIC. With this Q_CONSTRUCTOR_FUNCTION we
@@ -189,11 +188,14 @@ const QString &KGlobal::staticQString(const QString &str)
 
 QString KGlobal::caption()
 {
+#if 0 // Should move to Qt if wanted
     // Caption set from command line ?
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs("kde");
     if (args && args->isSet("caption")) {
         return args->getOption("caption");
-    } else {
+    } else
+#endif
+    {
         // We have some about data ?
         const KComponentData& cData = KComponentData::mainComponent();
         if (cData.isValid() && cData.aboutData()) {

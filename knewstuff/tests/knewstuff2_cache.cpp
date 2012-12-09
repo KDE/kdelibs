@@ -23,7 +23,6 @@
 
 #include <kstandarddirs.h>
 #include <qapplication.h>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 
 #include <QtCore/QFile>

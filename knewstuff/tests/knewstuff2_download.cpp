@@ -22,7 +22,6 @@
 #include <knewstuff2/core/author.h>
 
 #include <kstandarddirs.h>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 
 #include <QApplication>

@@ -24,7 +24,6 @@
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kfiledialog.h>
-#include <kcmdlineargs.h>
 #include <qmimedatabase.h>
 
 #include <QApplication>
@@ -88,20 +87,12 @@ void PartViewer::slotFileOpen()
 
 int main( int argc, char **argv )
 {
-    KCmdLineOptions options;
-    options.add("+file(s)", qi18n("Files to load"));
+    // This is a test window for showing any part
 
-    const char version[] = "v0.0.1 2000 (c) David Faure";
-    QLocalizedString description = qi18n("This is a test window for showing any part.");
-
-    KCmdLineArgs::init(argc, argv, "partviewer", 0, qi18n("partviewer"), version, description);
-    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    QApplication app(argc, argv);
     PartViewer *shell = new PartViewer;
-    if ( args->count() == 1 )
-    {
-        QUrl url = args->url(0);
+    if (argc > 1) {
+        QUrl url = QUrl::fromUserInput(argv[1]);
         shell->openUrl( url );
     }
     shell->show();
