@@ -5,8 +5,8 @@
 
 int main( int argc, char **argv )
 {
-    KCmdLineOptions opt;
-    opt.add("+[startDir]", qi18n("Directory to start in"), QByteArray());
+    //KCmdLineOptions opt;
+    //opt.add("+[startDir]", qi18n("Directory to start in"), QByteArray());
 
     QApplication app(argc, argv);
     app.setQuitOnLastWindowClosed(false);
