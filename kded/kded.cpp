@@ -37,15 +37,11 @@
 
 #include <kdbusservice.h>
 #include <qapplication.h>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
-#include <kstandarddirs.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
 #include <kde_file.h>
@@ -700,7 +696,7 @@ KUpdateD::KUpdateD()
     QObject::connect( m_pDirWatch, SIGNAL(dirty(QString)),
            this, SLOT(slotNewUpdateFile(QString)));
 
-    const QStringList dirs = KGlobal::dirs()->findDirs("data", "kconf_update");
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kconf_update", QStandardPaths::LocateDirectory);
     for( QStringList::ConstIterator it = dirs.begin();
          it != dirs.end();
          ++it )
@@ -793,30 +789,18 @@ void KBuildsycocaAdaptor::enableTestMode()
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 {
-     KAboutData aboutData( "kded5",
-        "kdelibs4", qi18n("KDE Daemon"),
-        "$Id$",
-        qi18n("KDE Daemon - triggers Sycoca database updates when needed"));
+    KLocalizedString::setApplicationCatalog("kdelibs4");
 
-     KCmdLineOptions options;
-     options.add("check", qi18n("Check Sycoca database only once"));
-
-     KCmdLineArgs::init(argc, argv, &aboutData);
-
-     KCmdLineArgs::addCmdLineOptions( options );
+    //options.add("check", qi18n("Check Sycoca database only once"));
 
      // WABA: Make sure not to enable session management.
      putenv(qstrdup("SESSION_MANAGER="));
 
-     // Parse command line before checking D-Bus
-     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-     KComponentData componentData(&aboutData);
-     KSharedConfig::Ptr config = componentData.config(); // Enable translations.
+    // Parse command line before checking D-Bus
+    KSharedConfig::Ptr config = KSharedConfig::openConfig("kdedrc");
 
      KConfigGroup cg(config, "General");
-     if (args->isSet("check"))
-     {
+     if (argc > 1 && QByteArray(argv[1]) == "--check") {
         // KDBusService not wanted here.
         QCoreApplication app(argc, argv);
         checkStamps = cg.readEntry("CheckFileStamps", true);
@@ -829,6 +813,9 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
      app.setQuitOnLastWindowClosed(false);
      app.setApplicationName("kded5");
      app.setOrganizationDomain("kde.org");
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+     app.setApplicationDisplayName("KDE Daemon");
+#endif
 
      KDBusService service(KDBusService::Unique);
 
