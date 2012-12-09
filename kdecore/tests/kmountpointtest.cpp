@@ -17,14 +17,15 @@
  */
 
 #include "kmountpointtest.h"
-#include <qtest_kde.h>
 
+#include <QtTest/QtTest>
 #include "kmountpoint.h"
+#include <kde_qt5_compat.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <sys/stat.h>
 
-QTEST_KDEMAIN_CORE( KMountPointTest )
+QTEST_MAIN( KMountPointTest )
 
 void KMountPointTest::initTestCase()
 {

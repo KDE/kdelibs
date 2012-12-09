@@ -24,11 +24,9 @@
 #include "ksharedptrtest.h"
 #include "ksharedptr.h"
 
+#include <QtTest>
 
-
-#include <qtest_kde.h>
-
-QTEST_KDEMAIN_CORE( KSharedPtrTest )
+QTEST_MAIN( KSharedPtrTest )
 
 class SharedString : public KShared
 {

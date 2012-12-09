@@ -17,13 +17,15 @@
  */
 
 #include <klocale.h>
+#include <kglobal.h>
 
 #include <QtCore/QObject>
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QtConcurrent>
 #endif
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
+#include <qtest_kde.h> // kWaitForSignal
 
 static QString testMethod()
 {
@@ -98,6 +100,6 @@ Q_SIGNALS:
     void sigFoo();
 };
 
-QTEST_KDEMAIN_CORE( KGlobalTest )
+QTEST_MAIN( KGlobalTest )
 
 #include "kglobaltest.moc"

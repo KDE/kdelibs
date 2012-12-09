@@ -20,7 +20,7 @@
 #include <kshell.h>
 #include <kuser.h>
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -212,6 +212,6 @@ KShellTest::abortOnMeta()
 #endif
 }
 
-QTEST_KDEMAIN_CORE(KShellTest)
+QTEST_MAIN(KShellTest)
 
 #include "kshelltest.moc"

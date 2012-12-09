@@ -18,13 +18,13 @@
 
 #include "kautostarttest.h"
 
-#include <kdebug.h>
-
-#include <qtest_kde.h>
+#include <kde_qt5_compat.h>
+#include <qstandardpaths.h>
+#include <QtTest/QtTest>
 
 #include <QtCore/QFile>
 
-QTEST_KDEMAIN_CORE( KAutostartTest )
+QTEST_MAIN( KAutostartTest ) // Qt5 TODO: QTEST_GUILESS_MAIN
 
 #include <kautostart.h>
 

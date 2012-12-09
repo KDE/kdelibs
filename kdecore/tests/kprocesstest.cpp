@@ -20,7 +20,7 @@
 */
 
 #include <kprocess.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -107,6 +107,6 @@ static void recursor(char **argv)
     gargv = argv;
 }
 
-QTEST_KDEMAIN_CORE( recursor(argv); KProcessTest )
+QTEST_MAIN( recursor(argv); KProcessTest )
 
 #include "kprocesstest.moc"
