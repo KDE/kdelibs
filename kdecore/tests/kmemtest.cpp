@@ -1,7 +1,4 @@
 #include <stdio.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kcomponentdata.h>
 #include <QtCore/QCoreApplication>
 #include <stdlib.h>
 #include <errno.h>
@@ -237,10 +234,6 @@ int main(int argc, char *argv[])
            (fifteenMem - fiveMem) /10240.0);
   }
 //  showMem("second");
-
-   KAboutData about("kmemtest", 0, qi18n("kmemtest"), "version");
-   //KCmdLineArgs::init(argc, argv, &about);
-   KComponentData cData(&about);
 
    QCoreApplication a(argc, argv);
 

@@ -18,22 +18,21 @@
  */
 #include <kdebug.h>
 #include <QApplication>
+#include <QUrl>
 #include <time.h>
 #include "speed.h"
 #include <kio/job.h>
-#include <kcmdlineargs.h>
 #include <QtCore/QDir>
 #include <kio/global.h>
 #include <kmountpoint.h>
 
 using namespace KIO;
 
-SpeedTest::SpeedTest( const KUrl & url )
+SpeedTest::SpeedTest( const QUrl & url )
     : QObject(0)
 {
     setObjectName( "speed" );
     Job *job = listRecursive( url );
-    //Job *job = del( KUrl("file:" + QDir::currentPath()) ); DANGEROUS !
     connect(job, SIGNAL(result(KJob*)),
 	    SLOT(finished(KJob*)));
     /*connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
@@ -57,27 +56,24 @@ void SpeedTest::finished(KJob*) {
 
 int main(int argc, char **argv) {
 
-    KCmdLineArgs::init( argc, argv, "speedapp", 0, qi18n("SpeedApp"), "0.0", qi18n("A KIO::listRecursive testing tool"));
+    // "A KIO::listRecursive testing tool"
 
-    KCmdLineOptions options;
-    options.add("+[URL]", qi18n("the URL to list"));
+    //KCmdLineOptions options;
+    //options.add("+[URL]", qi18n("the URL to list"));
 
-    KCmdLineArgs::addCmdLineOptions( options );
-
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+    QApplication app(argc, argv);
 // This is the real "speed test"
     // SpeedTest test( url );
     // app.exec();
 
 // This is a test for KMountPoint and KIO::probably_slow_mounted etc.
+    // TODO: SPLIT OUT!
 
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-    KUrl url;
-    if ( args->count() == 1 )
-      url = args->url(0);
+    QUrl url;
+    if (argc > 1)
+      url = QUrl::fromUserInput(argv[1]);
     else
-      url = QDir::currentPath();
+      url = QUrl::fromLocalFile(QDir::currentPath());
 
     const KMountPoint::List mountPoints = KMountPoint::currentMountPoints();
 

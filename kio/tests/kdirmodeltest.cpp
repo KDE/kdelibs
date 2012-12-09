@@ -557,6 +557,7 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 
     // check renaming happened
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().toString(), newUrl.toString());
+    kDebug() << newUrl << "indexForUrl=" << m_dirModel->indexForUrl(newUrl) << "m_dirIndex=" << m_dirIndex;
     QCOMPARE(m_dirModel->indexForUrl(newUrl), m_dirIndex);
     QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
     QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/testfile")).isValid());

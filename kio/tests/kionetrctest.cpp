@@ -1,7 +1,5 @@
 #include <QApplication>
 #include <kdebug.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
 
 #include "authinfo.h"
 
@@ -36,31 +34,20 @@ void output( const QUrl& u )
 
 int main(int argc, char **argv)
 {
-    const char *version = "0.5";
-    KCmdLineOptions options;
-    options.add("+command", qi18n("[url1,url2 ,...]"));
+    //KCmdLineOptions options;
+    //options.add("+command", qi18n("[url1,url2 ,...]"));
 
-    KCmdLineArgs::init( argc, argv, "kionetrctest", 0, qi18n("KIO-netrc-test"), version, qi18n("Unit test for .netrc and kionetrc parser."));
-    KCmdLineArgs::addCmdLineOptions( options );
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    int count = args->count();
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+    //KCmdLineArgs::init( argc, argv, "kionetrctest", 0, qi18n("KIO-netrc-test"), version, qi18n("Unit test for .netrc and kionetrc parser."));
+    QApplication app(argc, argv);
 
-    if ( !count )
-        args->usage();
-    else
-    {
-        QUrl u;
-        for( int i=0 ; i < count; i++ )
-        {
-            u = QUrl::fromUserInput(args->arg(i));
-            if (!u.isValid()) {
-              kDebug() << u << "is invalid! Ignoring...";
-              continue;
-            }
-            output( u );
+    int count = QCoreApplication::arguments().count() - 1;
+    for(int i = 0 ; i < count; i++) {
+        QUrl u = QUrl::fromUserInput(QCoreApplication::arguments().at(i + 1));
+        if (!u.isValid()) {
+          kDebug() << u << "is invalid! Ignoring...";
+          continue;
         }
+        output( u );
     }
-    args->clear();
     return 0;
 }

@@ -29,10 +29,8 @@
 
 #include <kfiledialog.h>
 #include <kmessagebox.h>
-#include <kconfig.h>
-#include <kcmdlineargs.h>
-#include <kurl.h>
 #if 0 // SPLIT-TODO
+#include <kconfig.h>
 #include <kurlbar.h>
 #include <kdiroperator.h>
 #endif
@@ -45,24 +43,22 @@
 
 int main(int argc, char **argv)
 {
-    KCmdLineOptions options;
-    options.add("+[cmd]");
-    options.add("+[url]");
+    //KCmdLineOptions options;
+    //options.add("+[cmd]");
+    //options.add("+[url]");
 
-    KCmdLineArgs::init(argc, argv, "kfstest", 0, qi18n("kfstest"), "0", qi18n("test app"));
-    KCmdLineArgs::addCmdLineOptions(options);
-    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+    QApplication a(argc, argv);
     a.setQuitOnLastWindowClosed(false);
 
     QString name1;
     QStringList names;
 
     QString argv1;
-    KUrl startDir;
+    QUrl startDir;
     if (argc > 1)
         argv1 = QLatin1String(argv[1]);
     if ( argc > 2 )
-        startDir = KUrl( argv[2] );
+        startDir = QUrl::fromUserInput(argv[2]);
 
 #if 0 // SPLIT-TODO
     if (argv1 == QLatin1String("diroperator")) {
@@ -79,23 +75,23 @@ int main(int argc, char **argv)
         qDebug("filename=%s",name.toLatin1().constData());
     }
     else if (argv1 == QLatin1String("oneurl")) {
-        KUrl url = KFileDialog::getOpenUrl(startDir);
+        QUrl url = KFileDialog::getOpenUrl(startDir);
         qDebug() << "url=" << url;
     }
 
     else if (argv1 == QLatin1String("existingDirectoryUrl")) {
-        KUrl url = KFileDialog::getExistingDirectoryUrl();
-        qDebug("URL=%s",url.url().toLatin1().constData());
-        name1 = url.url();
+        QUrl url = KFileDialog::getExistingDirectoryUrl();
+        qDebug("URL=%s",url.toString().toLatin1().constData());
+        name1 = url.toString();
     }
 
     else if (argv1 == QLatin1String("preview")) {
-        KUrl u =  KFileDialog::getImageOpenUrl();
-        qDebug("filename=%s", u.url().toLatin1().constData());
+        QUrl u =  KFileDialog::getImageOpenUrl();
+        qDebug("filename=%s", u.toString().toLatin1().constData());
     }
 
     else if (argv1 == QLatin1String("preselect")) {
-        names = KFileDialog::getOpenFileNames(KUrl("/etc/passwd"));
+        names = KFileDialog::getOpenFileNames(QUrl::fromLocalFile("/etc/passwd"));
         QStringList::Iterator it = names.begin();
         while ( it != names.end() ) {
             qDebug("selected file: %s", (*it).toLatin1().constData());
@@ -117,7 +113,7 @@ int main(int argc, char **argv)
         KUrlBar *urlBar = dlg->speedBar();
         if ( urlBar )
         {
-            urlBar->insertDynamicItem( KUrl("ftp://ftp.kde.org"),
+            urlBar->insertDynamicItem( QUrl("ftp://ftp.kde.org"),
                                        QLatin1String("KDE FTP Server") );
         }
 #endif
@@ -132,10 +128,10 @@ int main(int argc, char **argv)
     }
 
     else if (argv1 == QLatin1String("save")) {
-        KUrl u = KFileDialog::getSaveUrl(startDir);
+        QUrl u = KFileDialog::getSaveUrl(startDir);
 //        QString(QDir::homePath() + QLatin1String("/testfile")),
 //        QString(), 0L);
-        name1 = u.url();
+        name1 = u.toString();
     }
 
     else if (argv1 == QLatin1String("icon")) {
@@ -145,11 +141,10 @@ int main(int argc, char **argv)
     }
 
 //     else if ( argv1 == QLatin1String("dirselect") ) {
-//         KUrl url;
-//         url.setPath( "/" );
-//         KUrl selected = KDirSelectDialog::selectDirectory( url );
-//         name1 = selected.url();
-//         qDebug("*** selected: %s", selected.url().toLatin1().constData());
+//         QUrl url = QUrl::fromLocalFile("/");
+//         QUrl selected = KDirSelectDialog::selectDirectory( url );
+//         name1 = selected.toString();
+//         qDebug("*** selected: %s", selected.toString().toLatin1().constData());
 //     }
 
     else {

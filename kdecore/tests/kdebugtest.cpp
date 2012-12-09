@@ -25,7 +25,6 @@
 
 #include <QCoreApplication>
 #include <QStringList>
-#include <kcmdlineargs.h>
 #include <QtCore/QDebug>
 #undef QT_NO_DEBUG
 

@@ -17,10 +17,8 @@
  */
 
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
-#include <kurl.h>
 
 #include <QApplication>
 #include <QTreeView>
@@ -59,16 +57,9 @@ private:
 
 int main (int argc, char **argv)
 {
-  KCmdLineOptions options;
-  options.add("+[directory ...]", qi18n("Directory(ies) to model"));
+  //options.add("+[directory ...]", qi18n("Directory(ies) to model"));
 
-  KCmdLineArgs::init(argc, argv, "kdirmodeltest", 0, qi18n("KDirModelTest"),
-		     "1.0", qi18n("Test for KDirModel"));
-  KCmdLineArgs::addCmdLineOptions( options );
-  KCmdLineArgs::addStdCmdLineOptions();
-
-  QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+  QApplication a(argc, argv);
 
   KDirModel *dirmodel = new KDirModel(0);
   dirmodel->dirLister()->setDelayedMimeTypes(true);
@@ -108,18 +99,20 @@ int main (int argc, char **argv)
   iconView->setItemDelegate( new KFileItemDelegate(iconView) );
 #endif
 
-  if (args->count() == 0) {
-      dirmodel->dirLister()->openUrl(QUrl("/"));
+  if (argc <= 1) {
+      dirmodel->dirLister()->openUrl(QUrl::fromLocalFile("/"));
 
-      const KUrl url("/usr/share/applications/kde");
+      const QUrl url = QUrl::fromLocalFile("/usr/share/applications/kde");
       dirmodel->expandToUrl(url);
       new TreeController(treeView, dirmodel);
   }
 
-  for(int i = 0; i < args->count(); i++) {
-      kDebug() << "Adding: " << args->url(i);
-      dirmodel->dirLister()->openUrl( args->url(i), KDirLister::Keep );
-  }
+    const int count = QCoreApplication::arguments().count() - 1;
+    for(int i = 0 ; i < count; i++) {
+        QUrl u = QUrl::fromUserInput(QCoreApplication::arguments().at(i + 1));
+        kDebug() << "Adding: " << u;
+        dirmodel->dirLister()->openUrl(u, KDirLister::Keep);
+    }
 
   return a.exec();
 }

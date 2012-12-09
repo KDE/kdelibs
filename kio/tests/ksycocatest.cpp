@@ -17,7 +17,6 @@
  */
 
 #include <QApplication>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kprotocolinfo.h>
