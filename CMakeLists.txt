@@ -98,6 +98,7 @@ include_directories(${CMAKE_SOURCE_DIR}) # for kde_qt5_compat.h only -- TEMPORAR
 add_subdirectory( tier2 )
 
 set(kwindowsystem_LIBRARY kwindowsystem)
+set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
 
 set(CMAKE_AUTOMOC ON)
 
