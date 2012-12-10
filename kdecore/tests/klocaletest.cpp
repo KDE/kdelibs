@@ -18,7 +18,8 @@
 */
 
 #include "klocaletest.h"
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
+#include <kde_qt5_compat.h>
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -34,9 +35,22 @@
 
 #include "klocaletest.moc"
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+// Doesn't seem to be necessary with Qt 5
+int initializeLang()
+{
+    qputenv("LC_ALL", "C");
+    qputenv("LANG", "C");
+    return 0;
+}
+// Set LANG before QCoreApplication is created
+Q_CONSTRUCTOR_FUNCTION(initializeLang)
+#endif
+
 void
 KLocaleTest::initTestCase()
 {
+    qputenv("LC_ALL", "C");
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
 #else
@@ -1337,4 +1351,4 @@ KLocaleTest::formatByteSize2()
     QCOMPARE(locale.formatByteSize(1234034.0, 4, KLocale::JEDECBinaryDialect, KLocale::UnitByte), QString("1,234,034 B"));
 }
 
-QTEST_KDEMAIN_CORE(KLocaleTest)
+QTEST_MAIN(KLocaleTest)

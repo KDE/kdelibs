@@ -20,7 +20,9 @@
 #include "kdatetimetest.h"
 
 #include <cstdlib>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
+#include <kde_qt5_compat.h>
+#include <qtest_staging.h>
 #include <QtCore/QDir>
 #include <klocale.h>
 #include <kcalendarsystem.h>
@@ -33,7 +35,7 @@
 
 //TODO: test new methods
 
-QTEST_KDEMAIN_CORE(KDateTimeTest)
+QTEST_MAIN(KDateTimeTest)
 
 extern KDECORE_EXPORT int KDateTime_utcCacheHit;
 extern KDECORE_EXPORT int KDateTime_zoneCacheHit;

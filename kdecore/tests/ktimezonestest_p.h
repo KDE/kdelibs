@@ -20,11 +20,12 @@
 #ifndef KTIMEZONESTEST_P_H
 #define KTIMEZONESTEST_P_H
 
+#include <kconfig.h>
 #include <kconfiggroup.h>
 #include <qstandardpaths.h>
 #include <QDebug>
 #include <QtCore/QDir>
-#include "qtest_kde.h"
+#include <qtest.h>
 
 class TimeZoneTestData
 {

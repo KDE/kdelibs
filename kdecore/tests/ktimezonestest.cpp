@@ -21,7 +21,7 @@
 #include "ktimezonestest_p.h"
 
 #include <stdio.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <QtCore/QDir>
 #include <QtCore/QDate>
 #include <QtDBus/QtDBus>
@@ -29,7 +29,7 @@
 #include "ksystemtimezone.h"
 #include "ktzfiletimezone.h"
 
-QTEST_KDEMAIN_CORE(KTimeZonesTest)
+QTEST_MAIN(KTimeZonesTest)
 
 TimeZoneTestData s_testData;
 
