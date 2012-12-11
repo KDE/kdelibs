@@ -1456,7 +1456,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
   m_request.method = HTTP_DELETE;
   m_request.cacheTag.policy = CC_Reload;
 
-  if (m_protocol.startsWith("webdav")) {
+  if (m_protocol.startsWith("webdav")) { //krazy:exclude=strings due to QByteArray
     m_request.url.setQuery(QString());
     if (!proceedUntilResponseHeader()) {
       return;
@@ -3034,16 +3034,16 @@ try_again:
     // sites they had no intention of visiting.
     if (isPotentialSpoofingAttack(m_request, config())) {
         // kDebug(7113) << "**** POTENTIAL ADDRESS SPOOFING:" << m_request.url;
-        const int result = messageBox(WarningYesNo,
-                                      i18nc("@warning: Security check on url "
-                                            "being accessed", "You are about to "
-                                            "log in to the site \"%1\" with the "
-                                            "username \"%2\", but the website "
-                                            "does not require authentication. "
-                                            "This may be an attempt to trick you."
-                                            "<p>Is \"%1\" the site you want to visit?",
-                                            m_request.url.host(), m_request.url.user()),
-                                      i18nc("@title:window", "Confirm Website Access"));
+        const int result =
+            messageBox(WarningYesNo,
+                       i18nc("@info Security check on url being accessed",
+                             "<p>You are about to log in to the site \"%1\" "
+                             "with the username \"%2\", but the website "
+                             "does not require authentication. "
+                             "This may be an attempt to trick you.</p>"
+                             "<p>Is \"%1\" the site you want to visit?</p>",
+                             m_request.url.host(), m_request.url.user()),
+                       i18nc("@title:window", "Confirm Website Access"));
         if (result == KMessageBox::No) {
             error(ERR_USER_CANCELED, m_request.url.url());
             return false;
@@ -3094,7 +3094,7 @@ try_again:
         // However, because almost all client implementations treat a 301/302
         // response as a 303 response in violation of the spec, many servers
         // have simply adapted to this way of doing things! Thus, we are
-        // forced to do the same thing. Otherwise, we loose compatability and
+        // forced to do the same thing. Otherwise, we loose compatibility and
         // might not be able to correctly retrieve sites that redirect.
         if (m_request.method != HTTP_HEAD) {
             m_request.method = HTTP_GET; // Force a GET
