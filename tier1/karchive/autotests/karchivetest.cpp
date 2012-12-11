@@ -622,6 +622,24 @@ void KArchiveTest::testTarDirectoryForgotten()
     QVERIFY( tar.close() );
 }
 
+void KArchiveTest::testTarRootDir() // bug 309463
+{
+    KTar tar(QString::fromLatin1(KDESRCDIR) + QLatin1String("tar_rootdir.tar.bz2"));
+    QVERIFY(tar.open(QIODevice::ReadOnly));
+
+    const KArchiveDirectory* dir = tar.directory();
+    QVERIFY( dir != 0 );
+
+    const QStringList listing = recursiveListEntries(dir, "", WithUserGroup);
+    qDebug() << listing.join("\n");
+
+    QVERIFY(listing[0].contains("%{APPNAME}.cpp"));
+    QVERIFY(listing[1].contains("%{APPNAME}.h"));
+    QVERIFY(listing[5].contains("main.cpp"));
+
+    QCOMPARE(listing.count(), 10);
+}
+
 ///
 
 static const char s_zipFileName[] = "karchivetest.zip";
