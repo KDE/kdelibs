@@ -20,7 +20,7 @@
 */
 
 #include "kfindtest.h"
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 
 #include "kfind.h"
 #include <kdebug.h>
@@ -369,5 +369,5 @@ void TestKFind::testFindIncrementalDynamic()
     QCOMPARE(test.hits().join(""), output3);
 }
 
-QTEST_KDEMAIN(TestKFind, GUI)
+QTEST_MAIN(TestKFind)
 

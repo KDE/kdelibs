@@ -20,7 +20,7 @@
 
 #include <kglobalsettings.h>
 #include <QtTest/QtTest>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <ktoolbar.h>
 #include <kmainwindow.h>
 #include <kconfiggroup.h>
@@ -68,7 +68,7 @@ private:
     bool m_showWasCalled;
 };
 
-QTEST_KDEMAIN(tst_KToolBar, GUI)
+QTEST_MAIN(tst_KToolBar)
 
 // This will be called before the first test function is executed.
 // It is only called once.

@@ -1,7 +1,7 @@
 #ifndef KACTIONCATEGORYTEST_H
 #define KACTIONCATEGORYTEST_H
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 class tst_KActionCategory : public QObject
     {

@@ -21,8 +21,9 @@
 */
 
 #include "kglobalshortcuttest.h"
+#include <kde_qt5_compat.h>
 #include <qdbusinterface.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <kaction.h>
 #include <kaction_p.h>
 #include <kactioncollection.h>
@@ -47,7 +48,7 @@ const QKeySequence sequenceF = QKeySequence(Qt::META + Qt::Key_F27);
    applications' shortcuts. */
 
 //we need a KComponentData and a GUI so that the implementation can grab keys
-QTEST_KDEMAIN( KGlobalShortcutTest, GUI )
+QTEST_MAIN( KGlobalShortcutTest)
 
 void KGlobalShortcutTest::initTestCase()
 {

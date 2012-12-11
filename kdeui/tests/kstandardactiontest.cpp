@@ -59,4 +59,4 @@ void tst_KStandardAction::shortcutForActionId()
     delete cut;
 }
 
-QTEST_KDEMAIN(tst_KStandardAction, GUI)
+QTEST_MAIN(tst_KStandardAction)

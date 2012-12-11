@@ -23,14 +23,14 @@
 #include <kcolorscheme.h>
 
 #include <qtestevent.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qtextcursor.h>
 #include <QTextList>
 #include <qfont.h>
 
 #include <kdebug.h>
 
-QTEST_KDEMAIN(KRichTextEditTest, GUI)
+QTEST_MAIN(KRichTextEditTest)
 
 void KRichTextEditTest::testLinebreaks()
 {

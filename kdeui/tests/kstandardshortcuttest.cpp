@@ -17,10 +17,10 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include "kstandardshortcuttest.h"
 
-QTEST_KDEMAIN( KStandardShortcutTest, GUI ) // GUI needed by KAccel
+QTEST_MAIN( KStandardShortcutTest) // GUI needed by KAccel
 
 #include <kdebug.h>
 #include <kstandardshortcut.h>

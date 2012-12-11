@@ -22,7 +22,7 @@
 #define KMANAGERSELECTIONTESTTEST_H
 
 #include <QtCore/QObject>
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 
 class KManagerSelectionTest
     : public QObject

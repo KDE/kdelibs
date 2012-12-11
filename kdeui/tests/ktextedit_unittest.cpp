@@ -20,7 +20,7 @@
 */
 
 #include <QClipboard>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qtestevent.h>
 #include <ktextedit.h>
 
@@ -110,7 +110,7 @@ void KTextEdit_UnitTest::testPaste()
 // }
 
 
-QTEST_KDEMAIN(KTextEdit_UnitTest, GUI)
+QTEST_MAIN(KTextEdit_UnitTest)
 
 #include "ktextedit_unittest.moc"
 

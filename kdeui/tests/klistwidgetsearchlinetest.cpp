@@ -17,7 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA            *
  ***************************************************************************/
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 #include <klistwidgetsearchline.h>
 
@@ -75,6 +75,6 @@ void KListWidgetSearchLineTest::testAddItems()
     QVERIFY(!listWidget.item(3)->isHidden());
 }
 
-QTEST_KDEMAIN(KListWidgetSearchLineTest, GUI)
+QTEST_MAIN(KListWidgetSearchLineTest)
 
 #include "klistwidgetsearchlinetest.moc"

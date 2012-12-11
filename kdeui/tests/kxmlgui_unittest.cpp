@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kxmlgui_unittest.h"
 #include <QShowEvent>
 #include <QMenuBar>
@@ -32,7 +32,7 @@
 #include <kxmlguiversionhandler_p.h>
 #include <kxmlguiversionhandler.cpp> // it's not exported, so we need to include the code here
 
-QTEST_KDEMAIN(KXmlGui_UnitTest, GUI)
+QTEST_MAIN(KXmlGui_UnitTest)
 
 enum Flags {
     NoFlags = 0,
@@ -92,6 +92,16 @@ static void createXmlFile(QFile& file, int version, int flags, const QByteArray&
     file.write("</" + toplevelTag + ">\n");
 }
 
+void KXmlGui_UnitTest::initTestCase()
+{
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QStandardPaths::enableTestMode(true);
+#endif
+    // Leftover configuration breaks testAutoSaveSettings
+    const QString configFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, "kxmlgui_unittestrc");
+    if (!configFile.isEmpty())
+        QFile::remove(configFile);
+}
 
 void KXmlGui_UnitTest::testFindVersionNumber_data()
 {
@@ -729,7 +739,7 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         KToolBar* mainToolBar = mw.toolBarByName("mainToolBar");
         QCOMPARE(mw.toolBarArea(mainToolBar), Qt::TopToolBarArea);
         KToolBar* secondToolBar = mw.toolBarByName("secondToolBar");
-        QCOMPARE(mw.toolBarArea(secondToolBar), Qt::TopToolBarArea); // REFERENCE #1 (see below)
+        QCOMPARE((int)mw.toolBarArea(secondToolBar), (int)Qt::TopToolBarArea); // REFERENCE #1 (see below)
 
         // Move second toolbar to bottom
         const QPoint oldPos = secondToolBar->pos();
@@ -964,4 +974,3 @@ void KXmlGui_UnitTest::testClientDestruction() { // #170806
     checkActions(mainWindow.menuBar()->actions(), QStringList()
                  << "file" << "separator" << "help" );
 }
-

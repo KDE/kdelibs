@@ -1,7 +1,7 @@
 #ifndef KACTIONCOLLECTIONTEST_H
 #define KACTIONCOLLECTIONTEST_H
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kactioncollection.h"
 #include <kconfig.h>
 #include <kconfiggroup.h>

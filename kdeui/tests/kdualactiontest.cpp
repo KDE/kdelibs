@@ -19,7 +19,7 @@
  */
 #include <kdualaction.h>
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 
 #include "kiconloader.h"
 
@@ -126,6 +126,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_KDEMAIN(KDualActionTest, GUI)
+QTEST_MAIN(KDualActionTest)
 
 #include "kdualactiontest.moc"

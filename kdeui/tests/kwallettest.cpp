@@ -111,5 +111,5 @@ void KWalletTest::testWallet()
   QVERIFY( !Wallet::isOpen( "kdewallet" ) );
 }
 
-QTEST_KDEMAIN(KWalletTest, GUI)
+QTEST_MAIN(KWalletTest)
 

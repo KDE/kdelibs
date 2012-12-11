@@ -21,13 +21,13 @@
 
 #include <QtCore/QDate>
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kdebug.h"
 #include "kdatetimeedit.h"
 #include "kcalendarsystem.h"
 #include "ksystemtimezone.h"
 
-QTEST_KDEMAIN(KDateTimeEditTest, GUI)
+QTEST_MAIN(KDateTimeEditTest)
 
 
 void KDateTimeEditTest::testDefaults()

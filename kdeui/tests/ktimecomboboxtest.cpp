@@ -21,12 +21,12 @@
 
 #include <QtCore/QTime>
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kdebug.h"
 #include "klineedit.h"
 #include <ktimecombobox.h>
 
-QTEST_KDEMAIN(KTimeComboBoxTest, GUI)
+QTEST_MAIN(KTimeComboBoxTest)
 
 
 void KTimeComboBoxTest::testDefaults()

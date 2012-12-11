@@ -19,12 +19,12 @@
 
 #include "kselectaction_unittest.h"
 #include <QStandardItemModel>
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include <kselectaction.h>
 #include <kcombobox.h>
 #include <qtoolbar.h>
 
-QTEST_KDEMAIN( KSelectAction_UnitTest, GUI )
+QTEST_MAIN( KSelectAction_UnitTest)
 
 void KSelectAction_UnitTest::testSetToolTipBeforeRequestingComboBoxWidget()
 {

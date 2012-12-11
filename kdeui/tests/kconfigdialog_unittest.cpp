@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qtestevent.h>
 
 #include <kconfigdialog.h>
@@ -96,6 +96,17 @@ class KConfigDialog_UnitTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase()
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QStandardPaths::enableTestMode(true);
+#endif
+        // Leftover configuration breaks combosTest
+        const QString configFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, "kconfigdialog_unittestrc");
+        if (!configFile.isEmpty())
+            QFile::remove(configFile);
+    }
+
     void combosTest()
     {
         ComboSettings *skeleton = new ComboSettings();
@@ -127,6 +138,6 @@ private Q_SLOTS:
 
 };
 
-QTEST_KDEMAIN(KConfigDialog_UnitTest, GUI)
+QTEST_MAIN(KConfigDialog_UnitTest)
 
 #include "kconfigdialog_unittest.moc"

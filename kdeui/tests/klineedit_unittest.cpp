@@ -20,7 +20,7 @@
 
 #include <kdebug.h>
 #include <QClipboard>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qtestevent.h>
 #include <klineedit.h>
 #include <kcompletionbox.h>
@@ -257,6 +257,6 @@ private Q_SLOTS:
 
 };
 
-QTEST_KDEMAIN(KLineEdit_UnitTest, GUI)
+QTEST_MAIN(KLineEdit_UnitTest)
 
 #include "klineedit_unittest.moc"

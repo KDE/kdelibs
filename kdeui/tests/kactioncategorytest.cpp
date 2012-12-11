@@ -156,5 +156,5 @@ void tst_KActionCategory::tstActionCreation()
     }
 
 
-QTEST_KDEMAIN(tst_KActionCategory, GUI)
+QTEST_MAIN(tst_KActionCategory)
 

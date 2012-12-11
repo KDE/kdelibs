@@ -17,16 +17,17 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kmainwindow_unittest.h"
 #include <kmainwindow.h>
 #include <QStatusBar>
 #include <kglobal.h>
 #include <QResizeEvent>
 #include <ktoolbar.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
-QTEST_KDEMAIN( KMainWindow_UnitTest, GUI )
+QTEST_MAIN( KMainWindow_UnitTest)
 
 void KMainWindow_UnitTest::testDefaultName()
 {
@@ -79,12 +80,12 @@ void KMainWindow_UnitTest::testNameWithSpecialChars()
     mw.setObjectName( "a#@_test/" );
     mw.show();
     mw.ensurePolished();
-    QCOMPARE( mw.dbusName(), QString::fromLatin1( "/qttest/a___test_" ) );
+    QCOMPARE( mw.dbusName(), QString::fromLatin1( "/kmainwindow_unittest/a___test_" ) );
     KMainWindow mw2;
     mw2.setObjectName( "a#@_test/" );
     mw2.show();
     mw2.ensurePolished();
-    QCOMPARE( mw2.dbusName(), QString::fromLatin1( "/qttest/a___test_2" ) );
+    QCOMPARE( mw2.dbusName(), QString::fromLatin1( "/kmainwindow_unittest/a___test_2" ) );
 }
 
 static bool s_mainWindowDeleted;
@@ -145,7 +146,7 @@ void KMainWindow_UnitTest::testSaveWindowSize()
     tb->setObjectName("testtb");
     mw.reallyResize(800, 600);
 
-    QCOMPARE(KSharedConfig::openConfig()->name(), QString::fromLatin1("qttestrc"));
+    QCOMPARE(KSharedConfig::openConfig()->name(), QString::fromLatin1("kmainwindow_unittestrc"));
     KConfigGroup cfg(KSharedConfig::openConfig(), "TestWindowSize");
     mw.saveMainWindowSettings(cfg);
     mw.close();

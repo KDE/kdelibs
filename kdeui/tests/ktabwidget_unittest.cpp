@@ -19,7 +19,7 @@
 */
 
 #include <kdebug.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qtestevent.h>
 #include <ktabwidget.h>
 #include <klineedit.h>
@@ -213,6 +213,6 @@ void KTabWidget_UnitTest::testTabMoved()
     QCOMPARE(tabWidget.tabText(3), QString("Tab C"));
 }
 
-QTEST_KDEMAIN(KTabWidget_UnitTest, GUI)
+QTEST_MAIN(KTabWidget_UnitTest)
 
 #include "ktabwidget_unittest.moc"

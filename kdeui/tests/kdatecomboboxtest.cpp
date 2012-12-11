@@ -21,13 +21,13 @@
 
 #include <QtCore/QDate>
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kdebug.h"
 #include "kdatecombobox.h"
 #include "kcalendarsystem.h"
 #include "klineedit.h"
 
-QTEST_KDEMAIN(KDateComboBoxTest, GUI)
+QTEST_MAIN(KDateComboBoxTest)
 
 
 void KDateComboBoxTest::testDefaults()

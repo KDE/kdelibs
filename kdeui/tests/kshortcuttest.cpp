@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kshortcut.h"
 
 class tst_KShortcut : public QObject
@@ -128,6 +128,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_KDEMAIN(tst_KShortcut, NoGUI)
+QTEST_MAIN(tst_KShortcut)
 
 #include "kshortcuttest.moc"

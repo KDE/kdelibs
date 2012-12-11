@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qtestevent.h>
 #include <kcombobox.h>
 #include <khistorycombobox.h>
@@ -116,7 +116,7 @@ private Q_SLOTS:
         KTestComboBox *testCombo = new KTestComboBox( true, 0 ); // rw, with KLineEdit
         testCombo->setEditable(false); // destroys our KLineEdit, with deleteLater
         qApp->sendPostedEvents(NULL, QEvent::DeferredDelete);
-        assert( testCombo->KTestComboBox::delegate() == 0L );
+        QVERIFY( testCombo->KTestComboBox::delegate() == 0L );
         delete testCombo; // not needed anymore
     }
 
@@ -131,6 +131,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_KDEMAIN(KComboBox_UnitTest, GUI)
+QTEST_MAIN(KComboBox_UnitTest)
 
 #include "kcombobox_unittest.moc"

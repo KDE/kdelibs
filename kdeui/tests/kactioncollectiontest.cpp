@@ -236,7 +236,7 @@ void tst_KActionCollection::testSetShortcuts()
     QCOMPARE(shortcut2.toString(), QString("Alt++; Ctrl++"));
 }
 
-QTEST_KDEMAIN(tst_KActionCollection, GUI)
+QTEST_MAIN(tst_KActionCollection)
 
 
 /* vim: et sw=4 ts=4
