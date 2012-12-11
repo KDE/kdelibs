@@ -19,14 +19,14 @@
 
 #include "httpobjecttest.h"
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 #include <QtCore/QByteArray>
 #include <kdebug.h>
 
 #include "httpobjecttest.moc"
 
-QTEST_KDEMAIN(HeaderObjectTest, NoGUI)
+QTEST_MAIN(HeaderObjectTest)
 
 static void runTest()
 {

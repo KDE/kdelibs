@@ -24,8 +24,8 @@
 #include "krununittest.h"
 #include <config-prefix.h>
 
-#include <qtest.h>
-#include <qtest_kde.h> // kWaitForSignal
+#include <QtTest/QtTest>
+#include <kde_qt5_compat.h>
 
 QTEST_MAIN(KRunUnitTest)
 
@@ -37,6 +37,8 @@ QTEST_MAIN(KRunUnitTest)
 #include <kconfiggroup.h>
 #include <kprocess.h>
 #include "kiotesthelper.h" // createTestFile etc.
+
+Q_DECLARE_METATYPE(QList<QUrl>)
 
 void KRunUnitTest::initTestCase()
 {
@@ -232,7 +234,12 @@ void KRunUnitTest::testMimeTypeFile()
     const QString filePath = homeTmpDir() + "file";
     createTestFile(filePath, true);
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(filePath), true);
-    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QSignalSpy spyFinished(krun, SIGNAL(finished()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(spyFinished.wait(1000));
+#else
+    QTest::qWait(1000);
+#endif
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("text/plain"));
 }
 
@@ -241,7 +248,12 @@ void KRunUnitTest::testMimeTypeDirectory()
     const QString dir = homeTmpDir() + "dir";
     createTestDirectory(dir);
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir), true);
-    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QSignalSpy spyFinished(krun, SIGNAL(finished()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(spyFinished.wait(1000));
+#else
+    QTest::qWait(1000);
+#endif
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("inode/directory"));
 }
 
@@ -251,7 +263,12 @@ void KRunUnitTest::testMimeTypeBrokenLink()
     createTestDirectory(dir);
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir + "/testlink"), true);
     QSignalSpy spyError(krun, SIGNAL(error()));
-    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QSignalSpy spyFinished(krun, SIGNAL(finished()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(spyFinished.wait(1000));
+#else
+    QTest::qWait(1000);
+#endif
     QVERIFY(krun->mimeTypeFound().isEmpty());
     QCOMPARE(spyError.count(), 1);
     QTest::qWait(100); // let auto-deletion proceed.
@@ -261,7 +278,12 @@ void KRunUnitTest::testMimeTypeDoesNotExist()
 {
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile("/does/not/exist"));
     QSignalSpy spyError(krun, SIGNAL(error()));
-    QTest::kWaitForSignal(krun, SIGNAL(finished()), 1000);
+    QSignalSpy spyFinished(krun, SIGNAL(finished()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(spyFinished.wait(1000));
+#else
+    QTest::qWait(1000);
+#endif
     QVERIFY(krun->mimeTypeFound().isEmpty());
     QCOMPARE(spyError.count(), 1);
     QTest::qWait(100); // let auto-deletion proceed.

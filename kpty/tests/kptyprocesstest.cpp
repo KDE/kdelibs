@@ -22,7 +22,7 @@
 #include "kptyprocesstest.h"
 
 #include <kptydevice.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 void KPtyProcessTest::test_suspend_pty()
 {
@@ -160,6 +160,8 @@ void KPtyProcessTest::slotStep()
     }
 }
 
+Q_DECLARE_METATYPE(QProcess::ExitStatus);
+
 void KPtyProcessTest::test_pty_signals()
 {
     sp.setShellCommand("cat; sleep .1");
@@ -176,7 +178,13 @@ void KPtyProcessTest::test_pty_signals()
     sp.start();
     sp.pty()->closeSlave();
     phase = 0;
-    QTest::kWaitForSignal(&sp, SIGNAL(finished(int,QProcess::ExitStatus)), 1000);
+    qRegisterMetaType<QProcess::ExitStatus>();
+    QSignalSpy finishedSpy(&sp, SIGNAL(finished(int,QProcess::ExitStatus)));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(finishedSpy.wait(1000));
+#else
+    QTest::qWait(500);
+#endif
     QCOMPARE(QLatin1String(log), QLatin1String(want));
 }
 
@@ -195,5 +203,5 @@ void KPtyProcessTest::test_ctty()
 #endif
 }
 
-QTEST_KDEMAIN_CORE( KPtyProcessTest )
+QTEST_MAIN( KPtyProcessTest )
 

@@ -24,10 +24,11 @@
 #include <kprotocolinfo.h>
 #include <kdirmodel.h>
 #include <kdirlister.h>
+#include <kurl.h>
+#include <kde_qt5_compat.h>
 //TODO #include "../../kdeui/tests/proxymodeltestsuite/modelspy.h"
 
 #include <qtest.h>
-#include <qtest_kde.h> // kWaitForSignal
 
 #ifdef Q_OS_UNIX
 #include <utime.h>
@@ -743,12 +744,22 @@ void KDirModelTest::testExpandToUrl()
     if (flags & CacheSubdir) {
         // This way, the listDir for subdir will find items in cache, and will schedule a CachedItemsJob
         m_dirModel->dirLister()->openUrl(KUrl(path + "subdir"));
-        QTest::kWaitForSignal(m_dirModel->dirLister(), SIGNAL(completed()), 2000);
+        QSignalSpy completedSpy(m_dirModel->dirLister(), SIGNAL(completed()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QVERIFY(completedSpy.wait(2000));
+#else
+        QTest::qWait(1000);
+#endif
     }
     if (flags & ListFinalDir) {
         // This way, the last listDir will find items in cache, and will schedule a CachedItemsJob
         m_dirModel->dirLister()->openUrl(KUrl(path + "subdir/subsubdir"));
-        QTest::kWaitForSignal(m_dirModel->dirLister(), SIGNAL(completed()), 2000);
+        QSignalSpy completedSpy(m_dirModel->dirLister(), SIGNAL(completed()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QVERIFY(completedSpy.wait(2000));
+#else
+        QTest::qWait(1000);
+#endif
     }
 
     if (!m_dirModelForExpand || (flags & NewDir)) {
@@ -832,8 +843,12 @@ void KDirModelTest::testUpdateParentAfterExpand() // #193364
     kDebug() << "Creating" << file;
     QVERIFY(!QFile::exists(file));
     createTestFile(file);
-    //QSignalSpy spyRowsInserted(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)));
-    QTest::kWaitForSignal(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)));
+    QSignalSpy spyRowsInserted(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(spyRowsInserted.wait(1000));
+#else
+    QTest::qWait(1000);
+#endif
 }
 
 void KDirModelTest::testFilter()
@@ -1153,8 +1168,11 @@ void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet
 
     if (spyCompleted.isEmpty())
         enterLoop();
-    // TODO QTest::kWaitForSignalSpy(spyRowsRemoved)?
-    QTest::kWaitForSignal(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QVERIFY(spyRowsRemoved.wait(1000));
+#else
+    QTest::qWait(1000);
+#endif
 
     const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before

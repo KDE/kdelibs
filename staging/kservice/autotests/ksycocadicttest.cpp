@@ -30,6 +30,12 @@ class KSycocaDictTest : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
+    void initTestCase()
+    {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QStandardPaths::enableTestMode(true);
+#endif
+    }
     void testStandardDict();
     //void testExtensionDict();
 private:

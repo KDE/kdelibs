@@ -200,7 +200,7 @@ static void runKBuildSycoca()
     QVERIFY(kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
 #else
     QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
-    spy.wait(10000);
+    QVERIFY(spy.wait(10000));
 #endif
 
     qDebug() << "got signal";

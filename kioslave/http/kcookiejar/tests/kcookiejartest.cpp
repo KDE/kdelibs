@@ -23,7 +23,7 @@
 #include <QtCore/QDate>
 #include <QtCore/QString>
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <qstandardpaths.h>
 
 
@@ -244,6 +244,9 @@ class KCookieJarTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        QStandardPaths::enableTestMode(true);
+#endif
         jar = new KCookieJar;
         KDateTime dt = KDateTime::currentDateTime(KDateTime::Spec::LocalZone());
         lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
@@ -311,6 +314,6 @@ private Q_SLOTS:
     }
 };
 
-QTEST_KDEMAIN(KCookieJarTest, NoGUI)
+QTEST_MAIN(KCookieJarTest)
 
 #include "kcookiejartest.moc"
