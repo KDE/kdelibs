@@ -19,9 +19,10 @@
 */
 
 #include <kdebug.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <kdiroperator.h>
 #include <kconfiggroup.h>
+#include <kurl.h>
 #include <qtreeview.h>
 
 /**
@@ -70,27 +71,32 @@ private Q_SLOTS:
 
     /**
      * testBug187066 does the following:
-     * 
+     *
      * 1. Open a KDirOperator in kdelibs/kfile
      * 2. Set the current item to "file:///"
      * 3. Set the current item to "file:///.../kdelibs/kfile/tests/kdiroperatortest.cpp"
      *
      * This may result in a crash, see https://bugs.kde.org/show_bug.cgi?id=187066
      */
-    
+
     void testBug187066()
     {
-        const KUrl kFileDirUrl(KUrl(KDESRCDIR).upUrl());
+        const QUrl kFileDirUrl(KUrl(KDESRCDIR).upUrl());
 
         KDirOperator dirOp(kFileDirUrl);
+        QSignalSpy completedSpy(dirOp.dirLister(), SIGNAL(completed()));
         dirOp.setView(KFile::DetailTree);
-        QTest::kWaitForSignal(dirOp.dirLister(), SIGNAL(completed()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        completedSpy.wait(1000);
+#endif
         dirOp.setCurrentItem(QUrl("file:///"));
         dirOp.setCurrentItem(QUrl::fromLocalFile(KDESRCDIR "kdiroperatortest.cpp"));
-        QTest::kWaitForSignal(dirOp.dirLister(), SIGNAL(completed()));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        completedSpy.wait(1000);
+#endif
     }
 };
 
-QTEST_KDEMAIN( KDirOperatorTest, GUI )
+QTEST_MAIN( KDirOperatorTest)
 
 #include "kdiroperatortest.moc"

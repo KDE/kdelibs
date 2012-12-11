@@ -18,10 +18,10 @@
  ***************************************************************************/
 
 #include "kurlnavigatortest.h"
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <kurlnavigator.h>
 
-QTEST_KDEMAIN(KUrlNavigatorTest, GUI)
+QTEST_MAIN(KUrlNavigatorTest)
 
 void KUrlNavigatorTest::initTestCase()
 {

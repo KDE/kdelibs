@@ -18,8 +18,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
+#include <kde_qt5_compat.h>
 #include <QDialog>
 #include <QLineEdit>
 #include <QMenu>
@@ -99,7 +100,11 @@ private Q_SLOTS:
         }
         dialog->accept();
         QSignalSpy spy(&menu, SIGNAL(fileCreated(QUrl)));
-        QTest::kWaitForSignal(&menu, SIGNAL(fileCreated(QUrl)));
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+        spy.wait(1000);
+#else
+        //QTest::kWaitForSignal(&menu, SIGNAL(fileCreated(QUrl)));
+#endif
         const QUrl url = spy.at(0).at(0).value<QUrl>();
         const QString path = m_tmpDir.path() + '/' + expectedFilename;
         QCOMPARE(url.toLocalFile(), path);
@@ -111,6 +116,6 @@ private:
     bool m_first;
 };
 
-QTEST_KDEMAIN( KNewFileMenuTest, GUI )
+QTEST_MAIN(KNewFileMenuTest)
 
 #include "knewfilemenutest.moc"

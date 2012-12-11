@@ -28,7 +28,7 @@
 #include <kuser.h>
 #include <solid/device.h>
 
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 
 #include <stdlib.h>
 #include <qstandardpaths.h>
