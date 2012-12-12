@@ -25,8 +25,11 @@
 #include <klineedit.h>
 #include <kwindowconfig.h>
 
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QGridLayout>
+#include <QPushButton>
+#include <QVBoxLayout>
 
 /**
   Private class that helps to provide binary compatibility between releases.
@@ -40,21 +43,20 @@ public:
     KLineEdit *textLineEdit;
     QLabel *linkUrlLabel;
     KLineEdit *linkUrlLineEdit;
+    QDialogButtonBox *buttonBox;
 };
 //@endcond
 
 
 KLinkDialog::KLinkDialog(QWidget *parent)
-        : KDialog(parent), d(new KLinkDialogPrivate)
+        : QDialog(parent), d(new KLinkDialogPrivate)
 {
-    setCaption(i18n("Manage Link"));
-    setButtons(Ok | Cancel);
-    setDefaultButton(Ok);
+    setWindowTitle(i18n("Manage Link"));
     setModal(true);
 
-    QWidget *entries = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout;
 
-    QGridLayout *layout = new QGridLayout(entries);
+    QGridLayout *grid = new QGridLayout;
 
     d->textLabel = new QLabel(i18n("Link Text:"), this);
     d->textLineEdit = new KLineEdit(this);
@@ -63,18 +65,24 @@ KLinkDialog::KLinkDialog(QWidget *parent)
     d->linkUrlLineEdit = new KLineEdit(this);
     d->linkUrlLineEdit->setClearButtonShown(true);
 
-    layout->addWidget(d->textLabel, 0, 0);
-    layout->addWidget(d->textLineEdit, 0, 1);
-    layout->addWidget(d->linkUrlLabel, 1, 0);
-    layout->addWidget(d->linkUrlLineEdit, 1, 1);
+    grid->addWidget(d->textLabel, 0, 0);
+    grid->addWidget(d->textLineEdit, 0, 1);
+    grid->addWidget(d->linkUrlLabel, 1, 0);
+    grid->addWidget(d->linkUrlLineEdit, 1, 1);
 
-    setMainWidget(entries);
+    layout->addLayout(grid);
+
+    d->buttonBox = new QDialogButtonBox(this);
+    d->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(d->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(d->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(d->buttonBox);
 
     KConfigGroup group(KSharedConfig::openConfig(), "KLinkDialog");
     KWindowConfig::restoreWindowSize(this, group);
 
     d->textLineEdit->setFocus();
-    enableButtonOk( false );
+    d->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     connect(d->textLineEdit, SIGNAL(textChanged(QString)), this, SLOT(slotTextChanged(QString)));
 }
 
@@ -87,7 +95,7 @@ KLinkDialog::~KLinkDialog()
 
 void KLinkDialog::slotTextChanged(const QString &text)
 {
-    enableButtonOk( !text.isEmpty());
+    d->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!text.isEmpty());
 }
 
 void KLinkDialog::setLinkText(const QString &linkText)

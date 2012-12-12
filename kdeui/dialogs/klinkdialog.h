@@ -24,7 +24,7 @@
 
 //@cond PRIVATE
 
-#include <kdialog.h>
+#include <QDialog>
 
 class KLinkDialogPrivate;
 class QString;
@@ -41,7 +41,7 @@ class QString;
     The size of the dialog is automatically saved to and restored from the
     global KDE config file.
  */
-class KLinkDialog : public KDialog
+class KLinkDialog : public QDialog
 {
     Q_OBJECT
 public:
