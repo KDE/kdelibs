@@ -410,6 +410,7 @@ private:
     QHash<QString, KMessageBox::ButtonCode> m_saved;
 };
 
+// TODO should we use QSharedPointer here?
 static KMessageBoxDontAskAgainInterface* s_dontAskAgainInterface = 0;
 static KMessageBoxDontAskAgainInterface* dontAskAgainInterface() {
     if (!s_dontAskAgainInterface) {
@@ -430,6 +431,14 @@ static KMessageBoxDontAskAgainInterface* dontAskAgainInterface() {
     }
     return s_dontAskAgainInterface;
 }
+
+void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface)
+{
+    Q_ASSERT(dontAskAgainInterface != 0);
+    // FIXME should we delete s_dontAskAgainInterface before? Or perhaps use smart pointers to avoid problems?
+    s_dontAskAgainInterface = dontAskAgainInterface;
+}
+
 
 bool shouldBeShownYesNo(const QString &dontShowAgainName,
                                      ButtonCode &result)

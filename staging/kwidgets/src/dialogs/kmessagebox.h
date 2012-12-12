@@ -29,6 +29,7 @@
 
 #include <kwidgets_export.h>
 
+class KMessageBoxDontAskAgainInterface;
 class QWidget;
 class QStringList;
 class KConfig;
@@ -785,6 +786,11 @@ namespace KMessageBox
     KWIDGETS_EXPORT void setDontShowAgainConfig(KConfig* cfg);
 
     /**
+     * Use @p dontAskAgainInterface for all settings related to the donShowAgain feature
+     */
+    KWIDGETS_EXPORT void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface);
+
+    /**
      * Create content and layout of a standard dialog
      *
      * @param dialog  The parent dialog base
@@ -845,7 +851,6 @@ namespace KMessageBox
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information); //krazy:exclude=qclasses
-
 }
 
 #endif
