@@ -24,5 +24,6 @@ remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 add_subdirectory(src)
+add_subdirectory(autotests)
 add_subdirectory(tests)
 
