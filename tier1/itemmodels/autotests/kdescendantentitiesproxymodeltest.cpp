@@ -19,7 +19,6 @@
 
 #include <QtTest>
 #include <QtCore>
-#include <qtest_kde.h>
 #include <qtestevent.h>
 
 #include "dynamictreemodel.h"
@@ -27,8 +26,6 @@
 #include "proxymodeltest.h"
 
 #include <QTreeView>
-
-#include <kdebug.h>
 
 class DescendantsProxyModelTest : public ProxyModelTest
 {
