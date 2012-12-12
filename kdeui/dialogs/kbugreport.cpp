@@ -21,6 +21,7 @@
 
 #include <QtCore/QProcess>
 #include <QtCore/QCoreApplication>
+#include <QDialogButtonBox>
 #include <QPushButton>
 #include <QLayout>
 #include <QRadioButton>
@@ -32,6 +33,7 @@
 
 #include <kaboutdata.h>
 #include <kcombobox.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -91,11 +93,16 @@ public:
 };
 
 KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutData )
-  : KDialog( _parent ), d( new KBugReportPrivate(this) )
+  : QDialog( _parent ), d( new KBugReportPrivate(this) )
 {
-  setCaption( i18n("Submit Bug Report") );
-  setButtons( Ok | Cancel );
+  setWindowTitle( i18n("Submit Bug Report") );
   setModal(modal);
+
+  QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+  buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
 
   // Use supplied aboutdata, otherwise the one from the active componentData
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
@@ -103,18 +110,18 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
       : (KGlobal::activeComponent().isValid() ? KGlobal::activeComponent().aboutData()
                                   : KComponentData::mainComponent().aboutData());
   d->m_process = 0;
-  QWidget * parent = new QWidget(this);
   d->submitBugWeb = false;
 
   if ( d->m_aboutData->bugAddress() == QLatin1String("submit@bugs.kde.org") )
   {
     // This is a core KDE application -> redirect to the web form
     d->submitBugWeb = true;
-    setButtonGuiItem( Cancel, KStandardGuiItem::close() );
+    KGuiItem::assign(buttonBox->button(QDialogButtonBox::Cancel), KStandardGuiItem::close());
   }
 
   QLabel * tmpLabel;
-  QVBoxLayout * lay = new QVBoxLayout( parent);
+  QVBoxLayout * lay = new QVBoxLayout;
+  setLayout(lay);
 
   KTitleWidget *title = new KTitleWidget( this );
   title->setText(i18n( "Submit Bug Report" ) );
@@ -130,33 +137,34 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   {
     // From
     QString qwtstr = i18n( "Your email address. If incorrect, use the Configure Email button to change it" );
-    tmpLabel = new QLabel( i18nc("Email sender address", "From:"), parent );
+    tmpLabel = new QLabel( i18nc("Email sender address", "From:"), this );
     glay->addWidget( tmpLabel, row,0 );
     tmpLabel->setWhatsThis(qwtstr );
-    d->m_from = new QLabel( parent );
+    d->m_from = new QLabel(this);
     glay->addWidget( d->m_from, row, 1 );
     d->m_from->setWhatsThis(qwtstr );
 
 
     // Configure email button
     d->m_configureEmail = new QPushButton( i18n("Configure Email..."),
-                                        parent );
+                                           this );
     connect( d->m_configureEmail, SIGNAL(clicked()), this,
              SLOT(_k_slotConfigureEmail()) );
     glay->addWidget( d->m_configureEmail, 0, 2, 3, 1, Qt::AlignTop|Qt::AlignRight );
 
     // To
     qwtstr = i18n( "The email address this bug report is sent to." );
-    tmpLabel = new QLabel( i18nc("Email receiver address", "To:"), parent );
+    tmpLabel = new QLabel(i18nc("Email receiver address", "To:"), this);
     glay->addWidget( tmpLabel, ++row,0 );
     tmpLabel->setWhatsThis(qwtstr );
-    tmpLabel = new QLabel( d->m_aboutData->bugAddress(), parent );
+    tmpLabel = new QLabel(d->m_aboutData->bugAddress(), this);
     tmpLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     glay->addWidget( tmpLabel, row, 1 );
     tmpLabel->setWhatsThis(qwtstr );
 
-    setButtonGuiItem( Ok,  KGuiItem( i18n("&Send"), "mail-send", i18n( "Send bug report." ),
-                    i18n( "Send this bug report to %1." ,  d->m_aboutData->bugAddress() ) ) );
+    KGuiItem::assign(buttonBox->button(QDialogButtonBox::Ok),
+                     KGuiItem(i18n("&Send"), "mail-send", i18n("Send bug report."),
+                              i18n("Send this bug report to %1.", d->m_aboutData->bugAddress())));
     row++;
   }
   else
@@ -167,10 +175,10 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 
   // Program name
   QString qwtstr = i18n( "The application for which you wish to submit a bug report - if incorrect, please use the Report Bug menu item of the correct application" );
-  tmpLabel = new QLabel( i18n("Application: "), parent );
+  tmpLabel = new QLabel(i18n("Application: "), this);
   glay->addWidget( tmpLabel, row, 0 );
   tmpLabel->setWhatsThis(qwtstr );
-  d->appcombo = new KComboBox( false, parent );
+  d->appcombo = new KComboBox(false, this);
   d->appcombo->setWhatsThis(qwtstr );
   QStringList packageList;
   for (int c = 0; packages[c]; ++c)
@@ -196,7 +204,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 
   // Version
   qwtstr = i18n( "The version of this application - please make sure that no newer version is available before sending a bug report" );
-  tmpLabel = new QLabel( i18n("Version:"), parent );
+  tmpLabel = new QLabel(i18n("Version:"), this);
   glay->addWidget( tmpLabel, ++row, 0 );
   tmpLabel->setWhatsThis(qwtstr );
   if (d->m_aboutData)
@@ -207,13 +215,13 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   d->kde_version += ", " + QString::fromLatin1( KDE_DISTRIBUTION_TEXT );
   if ( !d->submitBugWeb )
       d->m_strVersion += ' ' + d->kde_version;
-  d->m_version = new QLabel( d->m_strVersion, parent );
+  d->m_version = new QLabel(d->m_strVersion, this);
   d->m_version->setTextInteractionFlags(Qt::TextBrowserInteraction);
   //glay->addWidget( d->m_version, row, 1 );
   glay->addWidget( d->m_version, row, 1, 1, 2 );
   d->m_version->setWhatsThis(qwtstr );
 
-  tmpLabel = new QLabel(i18n("OS:"), parent);
+  tmpLabel = new QLabel(i18n("OS:"), this);
   glay->addWidget( tmpLabel, ++row, 0 );
 
   struct utsname unameBuf;
@@ -222,20 +230,20 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
           " (" + QString::fromLatin1( unameBuf.machine ) + ") "
           "release " + QString::fromLatin1( unameBuf.release );
 
-  tmpLabel = new QLabel(d->os, parent);
+  tmpLabel = new QLabel(d->os, this);
   tmpLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
   glay->addWidget( tmpLabel, row, 1, 1, 2 );
 
-  tmpLabel = new QLabel(i18n("Compiler:"), parent);
+  tmpLabel = new QLabel(i18n("Compiler:"), this);
   glay->addWidget( tmpLabel, ++row, 0 );
-  tmpLabel = new QLabel(QString::fromLatin1(KDE_COMPILER_VERSION), parent);
+  tmpLabel = new QLabel(QString::fromLatin1(KDE_COMPILER_VERSION), this);
   tmpLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
   glay->addWidget( tmpLabel, row, 1, 1, 2 );
 
   if ( !d->submitBugWeb )
   {
     // Severity
-    d->m_bgSeverity = new QGroupBox( i18n("Se&verity"), parent );
+    d->m_bgSeverity = new QGroupBox(i18n("Se&verity"), this);
     static const char * const sevNames[5] = { "critical", "grave", "normal", "wishlist", "i18n" };
     const QString sevTexts[5] = { i18n("Critical"), i18n("Grave"), i18nc("normal severity","Normal"), i18n("Wishlist"), i18n("Translation") };
     QHBoxLayout *severityLayout=new QHBoxLayout(d->m_bgSeverity);
@@ -254,9 +262,9 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     // Subject
     QHBoxLayout * hlay = new QHBoxLayout();
     lay->addItem(hlay);
-    tmpLabel = new QLabel( i18n("S&ubject: "), parent );
+    tmpLabel = new QLabel(i18n("S&ubject: "), this);
     hlay->addWidget( tmpLabel );
-    d->m_subject = new KLineEdit( parent );
+    d->m_subject = new KLineEdit(this);
     d->m_subject->setClearButtonShown(true);
     d->m_subject->setFocus();
     tmpLabel->setBuddy( d->m_subject );
@@ -266,13 +274,13 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
                         "bug report.\n"
                         "If you press \"Send\", a mail message will be sent to the maintainer of "
                         "this program.\n");
-    QLabel * label = new QLabel( parent);
+    QLabel * label = new QLabel(this);
 
     label->setText( text );
     lay->addWidget( label );
 
     // The multiline-edit
-    d->m_lineedit = new KTextEdit( parent);
+    d->m_lineedit = new KTextEdit(this);
     d->m_lineedit->setMinimumHeight( 180 ); // make it big
     d->m_lineedit->setWordWrapMode(QTextOption::WrapAtWordBoundaryOrAnywhere);
     d->m_lineedit->setLineWrapMode(QTextEdit::WidgetWidth);
@@ -288,7 +296,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     QString text = i18n("<qt>To submit a bug report, click on the button below. This will open a web browser "
                         "window on <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> where you will find "
                         "a form to fill in. The information displayed above will be transferred to that server.</qt>");
-    QLabel * label = new QLabel( text, parent);
+    QLabel * label = new QLabel(text, this);
     label->setOpenExternalLinks( true );
     label->setTextInteractionFlags( Qt::LinksAccessibleByMouse | Qt::LinksAccessibleByKeyboard );
     label->setWordWrap( true );
@@ -299,11 +307,13 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 
     d->_k_updateUrl();
 
-    setButtonText(Ok, i18n("&Launch Bug Report Wizard"));
-    setButtonIcon(Ok, KDE::icon("tools-report-bug"));
+    QPushButton *okButton = buttonBox->button(QDialogButtonBox::Ok);
+    okButton->setText(i18n("&Launch Bug Report Wizard"));
+    okButton->setIcon(KDE::icon("tools-report-bug"));
   }
-  parent->setMinimumHeight( parent->sizeHint().height() + 20 ); // WORKAROUND: prevent "cropped" kcombobox
-  setMainWidget(parent);
+
+  lay->addWidget(buttonBox);
+  setMinimumHeight( sizeHint().height() + 20 ); // WORKAROUND: prevent "cropped" kcombobox
 }
 
 KBugReport::~KBugReport()
@@ -462,7 +472,7 @@ void KBugReport::accept()
 
     KMessageBox::information(this,
                              i18n("Bug report sent, thank you for your input."));
-    KDialog::accept();
+    QDialog::accept();
 }
 
 void KBugReport::closeEvent( QCloseEvent * e)
@@ -478,7 +488,7 @@ void KBugReport::closeEvent( QCloseEvent * e)
         return;
     }
   }
-  KDialog::closeEvent(e);
+  QDialog::closeEvent(e);
 }
 
 

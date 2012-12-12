@@ -19,7 +19,7 @@
 #ifndef KBUGREPORT_H
 #define KBUGREPORT_H
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kdeui_export.h>
 
 class KAboutData;
@@ -38,7 +38,7 @@ class KBugReportPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KDEUI_EXPORT KBugReport : public KDialog
+class KDEUI_EXPORT KBugReport : public QDialog
 {
   Q_OBJECT
   
