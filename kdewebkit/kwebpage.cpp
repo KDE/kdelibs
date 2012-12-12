@@ -55,7 +55,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QFileInfo>
 #include <QtCore/QCoreApplication>
-#include <QtWebKit/QWebFrame>
+#include <QWebFrame>
 #include <QtNetwork/QNetworkReply>
 #include <qtemporaryfile.h>
 

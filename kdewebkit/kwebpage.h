@@ -27,7 +27,7 @@
 
 #include <kdewebkit_export.h>
 
-#include <QtWebKit/QWebPage>
+#include <QWebPage>
 
 class KWebWallet;
 class KUrl;

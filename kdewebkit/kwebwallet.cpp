@@ -30,10 +30,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QWeakPointer>
 #include <QtCore/QScopedPointer>
-#include <QtWebKit/QWebPage>
-#include <QtWebKit/QWebFrame>
-#include <QtWebKit/QWebElement>
-#include <QtWebKit/QWebElementCollection>
+#include <QWebPage>
+#include <QWebFrame>
+#include <QWebElement>
+#include <QWebElementCollection>
 #include <qwindowdefs.h>
 
 #define QL1S(x)   QLatin1String(x)

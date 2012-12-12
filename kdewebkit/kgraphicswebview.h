@@ -28,7 +28,7 @@
 
 #include <kdewebkit_export.h>
 
-#include <QtWebKit/QGraphicsWebView>
+#include <QGraphicsWebView>
 
 class KUrl;
 template<class T> class KWebViewPrivate;

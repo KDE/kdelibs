@@ -30,8 +30,8 @@
 #include <QtCore/QEvent>
 #include <QClipboard>
 #include <QApplication>
-#include <QtWebKit/QWebFrame>
-#include <QtWebKit/QWebElement>
+#include <QWebFrame>
+#include <QWebElement>
 
 #include <kurl.h>
 #include <kurifilter.h>

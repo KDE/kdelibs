@@ -38,9 +38,9 @@
 #include <QtCore/QList>
 #include <qmimedatabase.h>
 
-#include <QtWebKit/QWebPluginFactory>
-#include <QtWebKit/QWebFrame>
-#include <QtWebKit/QWebView>
+#include <QWebPluginFactory>
+#include <QWebFrame>
+#include <QWebView>
 
 #define QL1S(x)  QLatin1String(x)
 #define QL1C(x)  QLatin1Char(x)
