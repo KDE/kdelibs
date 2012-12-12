@@ -20,7 +20,7 @@
 #ifndef KPIXMAPREGIONSELECTORDIALOG_H
 #define KPIXMAPREGIONSELECTORDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 
 #include <kdeui_export.h>
 
@@ -43,7 +43,7 @@ class QImage;
  *
  * @author Antonio Larrosa <larrosa@kde.org>
  */
-class KDEUI_EXPORT KPixmapRegionSelectorDialog : public KDialog
+class KDEUI_EXPORT KPixmapRegionSelectorDialog : public QDialog
 {
 Q_OBJECT
 public:

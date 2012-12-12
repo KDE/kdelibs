@@ -19,7 +19,7 @@
 
 #include "kpixmapregionselectordialog.h"
 
-#include <QDialog>
+#include <QDialogButtonBox>
 #include <QDesktopWidget>
 #include <QImage>
 #include <QLabel>
@@ -58,23 +58,24 @@ public:
 };
 
 KPixmapRegionSelectorDialog::KPixmapRegionSelectorDialog( QWidget *parent )
-  : KDialog( parent ),
+  : QDialog( parent ),
     d( new Private(this) )
 {
-  setCaption( i18n("Select Region of Image") );
-  setButtons( Help|Ok|Cancel );
+  setWindowTitle( i18n("Select Region of Image") );
 
-  QWidget *content = new QWidget(this);
-  QVBoxLayout * boxLayout = new QVBoxLayout(content);
-  boxLayout->setMargin(0);
+  QVBoxLayout *boxLayout = new QVBoxLayout(this);
 
-  QLabel *label = new QLabel(i18n("Please click and drag on the image to select the region of interest:"), content);
-  d->pixmapSelectorWidget = new KPixmapRegionSelectorWidget(content);
+  QLabel *label = new QLabel(i18n("Please click and drag on the image to select the region of interest:"), this);
+  d->pixmapSelectorWidget = new KPixmapRegionSelectorWidget(this);
+
+  QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+  buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+  connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
   boxLayout->addWidget(label);
   boxLayout->addWidget(d->pixmapSelectorWidget);
-
-  setMainWidget(content);
+  boxLayout->addWidget(buttonBox);
 
   d->init();
 }
