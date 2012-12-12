@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QProgressBar>
+#include <QPushButton>
 #include <QtCore/QRegExp>
 #include <QtCore/QSize>
 #include <QtCore/QString>
@@ -64,10 +65,7 @@ public:
 
 void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
 {
-    q->setButtons( Ok | Cancel );
-    q->setDefaultButton( Ok );
-
-    ui.setupUi( q->mainWidget() );
+    ui.setupUi( q );
 
     ui.labelIcon->setPixmap( KDE::icon("dialog-password").pixmap(96, 96) );
     ui.labelMatch->setHidden(true);
@@ -155,9 +153,9 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
     const int minPasswordLength = q->minimumPasswordLength();
 
     if ( ui.linePassword->text().length() < minPasswordLength) {
-        q->enableButtonOk(false);
+        ui.buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     } else {
-        q->enableButtonOk( match );
+        ui.buttonBox->button(QDialogButtonBox::Ok)->setEnabled(match);
     }
 
     if ( match && !q->allowEmptyPasswords() && ui.linePassword->text().isEmpty()) {
@@ -191,7 +189,7 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
  */
 
 KNewPasswordDialog::KNewPasswordDialog( QWidget *parent)
-    : KDialog(parent), d(new KNewPasswordDialogPrivate(this))
+    : QDialog(parent), d(new KNewPasswordDialogPrivate(this))
 {
     d->init();
 }
@@ -268,7 +266,7 @@ void KNewPasswordDialog::accept()
     }
     d->pass = pwd;
     emit newPassword( d->pass );
-    KDialog::accept();
+    QDialog::accept();
 }
 
 

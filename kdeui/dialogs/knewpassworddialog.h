@@ -24,8 +24,8 @@
 
 // ### KDE 5: remove
 #include <QLineEdit>
+#include <QDialog>
 
-#include <kdialog.h>
 #include <kdeui_export.h>
 
 class QWidget;
@@ -67,7 +67,7 @@ class QWidget;
  */
 
 class KDEUI_EXPORT KNewPasswordDialog
-    : public KDialog
+    : public QDialog
 {
     Q_OBJECT
 
