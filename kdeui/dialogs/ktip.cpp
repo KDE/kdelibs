@@ -38,8 +38,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kaboutdata.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>
+#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <krandom.h>
 #include <kseparator.h>
@@ -225,11 +227,10 @@ void KTipDialog::Private::_k_showOnStart( bool on )
 
 
 KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
-  : KDialog( parent ),
+  : QDialog( parent ),
     d( new Private( this ) )
 {
-  setButtons( KDialog::None );
-  setCaption( i18n( "Tip of the Day" ) );
+  setWindowTitle( i18n( "Tip of the Day" ) );
 
   /**
    * Parent is 0L when TipDialog is used as a mainWidget. This should
@@ -241,9 +242,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   setWindowIcon(KDE::icon("ktip"));
 
-  QWidget *widget = new QWidget( this );
-  setMainWidget( widget );
-  QVBoxLayout *mainLayout = new QVBoxLayout( widget );
+  QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( 0 );
 
   if ( isTipDialog ) {

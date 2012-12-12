@@ -26,9 +26,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #ifndef KTIP_H
 #define KTIP_H
 
+#include <QDialog>
 #include <QtCore/QStringList>
 
-#include <kdialog.h>
 #include <kdeui_export.h>
 
 /**
@@ -101,7 +101,7 @@ class KDEUI_EXPORT KTipDatabase
  *
  * @author Matthias Hoelzer-Kluepfel <mhk@caldera.de>
  */
-class KDEUI_EXPORT KTipDialog : public KDialog
+class KDEUI_EXPORT KTipDialog : public QDialog
 {
   Q_OBJECT
 
