@@ -22,7 +22,7 @@
 #include <QtTest/QtTest>
 #include <kdiroperator.h>
 #include <kconfiggroup.h>
-#include <kurl.h>
+#include <qurlpathinfo.h>
 #include <qtreeview.h>
 
 /**
@@ -81,22 +81,25 @@ private Q_SLOTS:
 
     void testBug187066()
     {
-        const QUrl kFileDirUrl(KUrl(KDESRCDIR).upUrl());
+        const QUrl kFileDirUrl(QUrlPathInfo(QUrl::fromLocalFile(KDESRCDIR)).directoryUrl());
 
         KDirOperator dirOp(kFileDirUrl);
         QSignalSpy completedSpy(dirOp.dirLister(), SIGNAL(completed()));
         dirOp.setView(KFile::DetailTree);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         completedSpy.wait(1000);
+#else
+        QTest::qWait(1000);
 #endif
         dirOp.setCurrentItem(QUrl("file:///"));
         dirOp.setCurrentItem(QUrl::fromLocalFile(KDESRCDIR "kdiroperatortest.cpp"));
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-        completedSpy.wait(1000);
+        //completedSpy.wait(1000);
+        QTest::qWait(1000);
 #endif
     }
 };
 
-QTEST_MAIN( KDirOperatorTest)
+QTEST_MAIN(KDirOperatorTest)
 
 #include "kdiroperatortest.moc"

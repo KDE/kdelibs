@@ -101,9 +101,9 @@ private Q_SLOTS:
         dialog->accept();
         QSignalSpy spy(&menu, SIGNAL(fileCreated(QUrl)));
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-        spy.wait(1000);
+        QVERIFY(spy.wait(1000));
 #else
-        //QTest::kWaitForSignal(&menu, SIGNAL(fileCreated(QUrl)));
+        QTest::qWait(1000);
 #endif
         const QUrl url = spy.at(0).at(0).value<QUrl>();
         const QString path = m_tmpDir.path() + '/' + expectedFilename;

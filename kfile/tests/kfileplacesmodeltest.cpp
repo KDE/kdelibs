@@ -699,7 +699,6 @@ void KFilePlacesModelTest::testDeviceSetupTeardown()
     QCOMPARE(args.at(1).value<QModelIndex>().row(), 8);
 }
 
-
-QTEST_KDEMAIN_CORE(KFilePlacesModelTest)
+QTEST_MAIN(KFilePlacesModelTest)
 
 #include "kfileplacesmodeltest.moc"
