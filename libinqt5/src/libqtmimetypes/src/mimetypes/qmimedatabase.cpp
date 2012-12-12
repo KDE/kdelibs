@@ -1,38 +1,38 @@
 /****************************************************************************
 **
-** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/
+** Copyright (C) 2012 Digia Plc and/or its subsidiary(-ies).
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL$
-** GNU Lesser General Public License Usage
-** This file may be used under the terms of the GNU Lesser General Public
-** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this
-** file. Please review the following information to ensure the GNU Lesser
-** General Public License version 2.1 requirements will be met:
-** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.  For licensing terms and
+** conditions see http://qt.digia.com/licensing.  For further information
+** use the contact form at http://qt.digia.com/contact-us.
 **
-** In addition, as a special exception, Nokia gives you certain additional
-** rights. These rights are described in the Nokia Qt LGPL Exception
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Digia gives you certain additional
+** rights.  These rights are described in the Digia Qt LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
 **
 ** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU General
-** Public License version 3.0 as published by the Free Software Foundation
-** and appearing in the file LICENSE.GPL included in the packaging of this
-** file. Please review the following information to ensure the GNU General
-** Public License version 3.0 requirements will be met:
-** http://www.gnu.org/copyleft/gpl.html.
-**
-** Other Usage
-** Alternatively, this file may be used in accordance with the terms and
-** conditions contained in a signed written agreement between you and Nokia.
-**
-**
-**
-**
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3.0 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU General Public License version 3.0 requirements will be
+** met: http://www.gnu.org/copyleft/gpl.html.
 **
 **
 ** $QT_END_LICENSE$
@@ -60,14 +60,6 @@
 #include <functional>
 
 QT_BEGIN_NAMESPACE
-
-bool qt_isQMimeDatabaseDebuggingActivated (false);
-
-#ifndef QT_NO_DEBUG_OUTPUT
-#define DBG() if (qt_isQMimeDatabaseDebuggingActivated) qDebug() << static_cast<const void *>(this) << Q_FUNC_INFO
-#else
-#define DBG() if (0) qDebug() << static_cast<const void *>(this) << Q_FUNC_INFO
-#endif
 
 Q_GLOBAL_STATIC(QMimeDatabasePrivate, staticQMimeDatabase)
 
@@ -246,6 +238,7 @@ bool QMimeDatabasePrivate::inherits(const QString &mime, const QString &parent)
 
 /*!
     \class QMimeDatabase
+    \inmodule QtCore
     \brief The QMimeDatabase class maintains a database of MIME types.
 
     \since 5.0
@@ -289,19 +282,23 @@ bool QMimeDatabasePrivate::inherits(const QString &mime, const QString &parent)
 
     \threadsafe
 
-    \snippet doc/src/snippets/code/src_corelib_mimetype_qmimedatabase.cpp 0
+    \snippet code/src_corelib_mimetype_qmimedatabase.cpp 0
 
     \sa QMimeType
  */
 
 /*!
     \fn QMimeDatabase::QMimeDatabase();
-    Constructs this QMimeDatabase object.
+    Constructs a QMimeDatabase object.
+
+    It is perfectly OK to create an instance of QMimeDatabase every time you need to
+    perform a lookup.
+    The parsing of mimetypes is done on demand (when shared-mime-info is installed)
+    or when the very first instance is constructed (when parsing XML files directly).
  */
 QMimeDatabase::QMimeDatabase() :
         d(staticQMimeDatabase())
 {
-    DBG();
 }
 
 /*!
@@ -310,8 +307,6 @@ QMimeDatabase::QMimeDatabase() :
  */
 QMimeDatabase::~QMimeDatabase()
 {
-    DBG();
-
     d = 0;
 }
 
@@ -350,14 +345,12 @@ QMimeType QMimeDatabase::mimeTypeForName(const QString &nameOrAlias) const
     file contents are used to determine the MIME type. This is equivalent to
     calling mimeTypeForData with a QFile as input device.
 
-    In all cases, the \a fileName can also include an absolute or relative path.
+    \a fileInfo may refer to an absolute or relative path.
 
-    \sa isDefault, mimeTypeForData
+    \sa QMimeType::isDefault(), mimeTypeForData()
 */
 QMimeType QMimeDatabase::mimeTypeForFile(const QFileInfo &fileInfo, MatchMode mode) const
 {
-    DBG() << "fileInfo" << fileInfo.absoluteFilePath();
-
     QMutexLocker locker(&d->mutex);
 
     if (fileInfo.isDir())
@@ -430,7 +423,6 @@ QMimeType QMimeDatabase::mimeTypeForFile(const QString &fileName, MatchMode mode
 }
 
 /*!
-    \fn QMimeType QMimeDatabase::findMimeTypesByFileName(const QString &fileName) const;
     Returns the MIME types for the file name \a fileName.
 
     If the file name doesn't match any known pattern, an empty list is returned.
@@ -440,7 +432,7 @@ QMimeType QMimeDatabase::mimeTypeForFile(const QString &fileName, MatchMode mode
     when determining the MIME type, use mimeTypeForFile() or
     mimeTypeForFileNameAndData() instead.
 
-    \sa mimeTypeForFile
+    \sa mimeTypeForFile()
 */
 QList<QMimeType> QMimeDatabase::mimeTypesForFileName(const QString &fileName) const
 {
@@ -554,8 +546,6 @@ QMimeType QMimeDatabase::mimeTypeForUrl(const QUrl &url) const
 */
 QMimeType QMimeDatabase::mimeTypeForFileNameAndData(const QString &fileName, QIODevice *device) const
 {
-    DBG() << "fileName" << fileName;
-
     int accuracy = 0;
     const bool openedByUs = !device->isOpen() && device->open(QIODevice::ReadOnly);
     const QMimeType result = d->mimeTypeForFileNameAndData(fileName, device, &accuracy);
@@ -582,8 +572,6 @@ QMimeType QMimeDatabase::mimeTypeForFileNameAndData(const QString &fileName, QIO
 */
 QMimeType QMimeDatabase::mimeTypeForFileNameAndData(const QString &fileName, const QByteArray &data) const
 {
-    DBG() << "fileName" << fileName;
-
     QBuffer buffer(const_cast<QByteArray *>(&data));
     buffer.open(QIODevice::ReadOnly);
     int accuracy = 0;
@@ -604,6 +592,30 @@ QList<QMimeType> QMimeDatabase::allMimeTypes() const
     return d->allMimeTypes();
 }
 
-#undef DBG
+/*!
+    \enum QMimeDatabase::MatchMode
+
+    This enum specifies how matching a file to a MIME type is performed.
+
+    \value MatchDefault Both the file name and content are used to look for a match
+
+    \value MatchExtension Only the file name is used to look for a match
+
+    \value MatchContent The file content is used to look for a match
+*/
+
+/*!
+    \fn QMimeType QMimeDatabase::mimeTypeForNameAndData(const QString &fileName, QIODevice *device) const
+    \obsolete
+
+    This function is replaced by \l mimeTypeForFileNameAndData()
+*/
+
+/*!
+    \fn QMimeType QMimeDatabase::mimeTypeForNameAndData(const QString &fileName, const QByteArray &data) const
+    \obsolete
+
+    This function is replaced by \l mimeTypeForFileNameAndData()
+*/
 
 QT_END_NAMESPACE
