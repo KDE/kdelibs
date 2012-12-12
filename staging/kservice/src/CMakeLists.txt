@@ -9,10 +9,6 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin
    ${QT_INCLUDES} )
-IF(NOT QT5_BUILD)
-    include_directories( ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes )
-    include_directories( ${QtMimeTypes_SOURCE_DIR}/src/mimetypes )
-endif()
 #include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
 include_directories(
    ${kconfig_SOURCE_DIR}/src/core

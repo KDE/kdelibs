@@ -64,8 +64,8 @@ if (NOT QT5_BUILD)
   set(inqt5_INCLUDE_DIR
       ${CMAKE_SOURCE_DIR}/libinqt5/src/
       ${CMAKE_BINARY_DIR}/libinqt5/src/
-      ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/src/mimetypes
-      ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/include/QtMimeTypes
+      ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/
+      ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/include/
   )
   set(QtMimeTypes_LIBRARY QtMimeTypes)
   include_directories(${inqt5_INCLUDE_DIR})

@@ -10,13 +10,6 @@ include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
 include_directories(${kdeqt5staging_INCLUDE_DIR})
 
-if (NOT QT5_BUILD)
-   include_directories(
-      ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes
-      ${QtMimeTypes_SOURCE_DIR}/src/mimetypes
-   )
-endif()
-
 add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 if(BZIP2_FOUND)
