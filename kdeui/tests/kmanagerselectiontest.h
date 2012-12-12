@@ -40,8 +40,8 @@ class KSelectionOwner;
 class KSelectionWatcher;
 
 // For checking whether several signal have or have not been emitted,
-// kWaitForSignal() is not powerful enough for that (it may be still
-// needed to do the event processing though).
+// QSignalSpy::wait() is not powerful enough for that (it is still
+// needed to do the event processing though). TODO: check if this is still true.
 class SigCheckOwner
     : public QObject
     {
