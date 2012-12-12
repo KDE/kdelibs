@@ -417,7 +417,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
     kDebug() << type << text << "caption=" << caption;
     int result = -1;
     KConfig *config = new KConfig("kioslaverc");
-    KMessageBox::setDontShowAskAgainConfig(config);
+    KMessageBox::setDontShowAgainConfig(config);
 
     // SMELL: the braindead way to support button icons
     KGuiItem buttonYesGui, buttonNoGui;
@@ -505,7 +505,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
         result = 0;
         break;
     }
-    KMessageBox::setDontShowAskAgainConfig(0);
+    KMessageBox::setDontShowAgainConfig(0);
     delete config;
     return result;
 }

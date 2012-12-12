@@ -782,7 +782,7 @@ namespace KMessageBox
      * Use @p cfg for all settings related to the dontShowAgainName feature.
      * If @p cfg is 0 (default) KGlobal::config() will be used.
      */
-    KWIDGETS_EXPORT void setDontShowAskAgainConfig(KConfig* cfg); // TODO rename to setDontShowAgainConfig
+    KWIDGETS_EXPORT void setDontShowAgainConfig(KConfig* cfg);
 
     /**
      * Create content and layout of a standard dialog
@@ -845,6 +845,7 @@ namespace KMessageBox
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
                              QMessageBox::Icon notifyType=QMessageBox::Information); //krazy:exclude=qclasses
+
 }
 
 #endif

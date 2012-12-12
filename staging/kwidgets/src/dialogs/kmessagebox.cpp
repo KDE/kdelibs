@@ -475,7 +475,7 @@ void enableMessage(const QString &dontShowAgainName)
     dontAskAgainInterface()->enableMessage(dontShowAgainName);
 }
 
-void setDontShowAskAgainConfig(KConfig* cfg)
+void setDontShowAgainConfig(KConfig* cfg)
 {
     dontAskAgainInterface()->setConfig(cfg);
 }
