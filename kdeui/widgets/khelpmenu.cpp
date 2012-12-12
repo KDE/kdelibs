@@ -26,6 +26,7 @@
 #include <QtCore/QTimer>
 #include <QApplication>
 #include <QLabel>
+#include <QStyle>
 #include <QWidget>
 #include <QWhatsThis>
 #include <QFile>
@@ -309,10 +310,13 @@ void KHelpMenu::aboutApplication()
       d->mAboutApp->setEscapeButton( KDialog::Yes );
       connect( d->mAboutApp, SIGNAL(finished()), this, SLOT(dialogFinished()) );
 
+      const int spacingHint = d->mAboutApp->style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+      const int marginHint = d->mAboutApp->style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+
       QWidget *content = new QWidget( d->mAboutApp );
       QHBoxLayout *hbox = new QHBoxLayout( d->mAboutApp );
-      hbox->setSpacing(KDialog::spacingHint()*3);
-      hbox->setMargin(KDialog::marginHint()*1);
+      hbox->setSpacing(spacingHint*3);
+      hbox->setMargin(marginHint*1);
 
       const int size = IconSize(KIconLoader::Dialog);
       QLabel *label1 = new QLabel( content );

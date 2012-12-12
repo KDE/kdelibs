@@ -30,6 +30,7 @@
 #include <QPainterPath>
 #include <QDesktopWidget>
 #include <QPolygonF>
+#include <QStyle>
 #include <QTimer>
 #include <QToolTip>
 #include <QSystemTrayIcon>
@@ -168,7 +169,8 @@ void KPassivePopup::setView( QWidget *child )
     delete d->topLayout;
     d->topLayout = new QVBoxLayout( this );
     if ( d->popupStyle == Balloon ) {
-        d->topLayout->setMargin( 2 * KDialog::marginHint() );
+        const int marginHint = style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+        d->topLayout->setMargin( 2 * marginHint );
     }
     d->topLayout->addWidget( d->msgView );
     d->topLayout->activate();

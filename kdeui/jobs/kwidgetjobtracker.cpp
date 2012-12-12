@@ -33,6 +33,7 @@
 #include <QGridLayout>
 #include <QMenu>
 #include <QEvent>
+#include <QStyle>
 #include <qurlpathinfo.h>
 
 #include <ksqueezedtextlabel.h>
@@ -450,7 +451,8 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     QGridLayout *grid = new QGridLayout();
     topLayout->addLayout(grid);
-    grid->addItem(new QSpacerItem(KDialog::spacingHint(),0),0,1);
+    const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+    grid->addItem(new QSpacerItem(spacingHint,0),0,1);
     // filenames or action name
     sourceInvite = new QLabel(i18nc("The source url of a job", "Source:"), this);
     grid->addWidget(sourceInvite, 0, 0);

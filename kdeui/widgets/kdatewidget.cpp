@@ -70,7 +70,8 @@ void KDateWidget::initWidget( const QDate &date )
 {
     QHBoxLayout *layout = new QHBoxLayout( this );
     layout->setMargin( 0 );
-    layout->setSpacing( KDialog::spacingHint() );
+    const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+    layout->setSpacing( spacingHint );
 
     d->m_day = new KDateWidgetSpinBox( 1, 31, this );
     d->m_month = new KComboBox( this );

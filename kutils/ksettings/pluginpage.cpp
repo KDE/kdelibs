@@ -46,8 +46,6 @@ PluginPage::PluginPage(const KComponentData &componentData, QWidget *parent, con
     d_ptr(new PluginPagePrivate)
 {
     Q_D(PluginPage);
-    //d->q_ptr = this;
-//    ( new QVBoxLayout( this, 0, KDialog::spacingHint() ) )->setAutoAdd( true );
     d->selwid = new KPluginSelector( this );
     connect( d->selwid, SIGNAL(changed(bool)), this, SIGNAL(changed(bool)) );
     connect(d->selwid, SIGNAL(configCommitted(QByteArray)), this,

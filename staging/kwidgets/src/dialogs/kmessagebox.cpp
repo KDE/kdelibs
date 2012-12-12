@@ -176,7 +176,8 @@ int createKMessageBox(KDialog *dialog, const QIcon &icon,
 {
     QWidget *mainWidget = new QWidget(dialog);
     QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget);
-    mainLayout->setSpacing(KDialog::spacingHint() * 2); // provide extra spacing
+    const int spacingHint = mainWidget->style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+    mainLayout->setSpacing(spacingHint * 2); // provide extra spacing
     mainLayout->setMargin(0);
 
     QHBoxLayout *hLayout = new QHBoxLayout();
@@ -198,7 +199,7 @@ int createKMessageBox(KDialog *dialog, const QIcon &icon,
     iconLayout->addStretch(5);
 
     hLayout->addLayout(iconLayout,0);
-    hLayout->addSpacing(KDialog::spacingHint());
+    hLayout->addSpacing(spacingHint);
 
     QLabel *messageLabel = new QLabel(text, mainWidget);
     messageLabel->setOpenExternalLinks(options & KMessageBox::AllowLink);

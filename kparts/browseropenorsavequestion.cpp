@@ -73,6 +73,8 @@ public:
         : KDialog(parent), url(url), mimeType(mimeType),
           features(0)
     {
+        const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+
         // Use askSave or askEmbedOrSave from filetypesrc
         dontAskConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
 
@@ -84,7 +86,7 @@ public:
         setDefaultButton(Save);
 
         QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget());
-        mainLayout->setSpacing(KDialog::spacingHint() * 2); // provide extra spacing
+        mainLayout->setSpacing(spacingHint * 2); // provide extra spacing
         mainLayout->setMargin(0);
 
         QHBoxLayout *hLayout = new QHBoxLayout();
@@ -99,7 +101,7 @@ public:
         iconLabel->setPixmap(icon.pixmap(style()->pixelMetric(QStyle::PM_MessageBoxIconSize, &option, this)));
 
         hLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
-        hLayout->addSpacing(KDialog::spacingHint());
+        hLayout->addSpacing(spacingHint);
 
         QVBoxLayout* textVLayout = new QVBoxLayout;
         questionLabel = new KSqueezedTextLabel(mainWidget());

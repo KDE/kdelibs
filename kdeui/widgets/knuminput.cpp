@@ -34,6 +34,7 @@
 #include <QLineEdit>
 #include <QResizeEvent>
 #include <QSlider>
+#include <QStyle>
 
 #include <kdebug.h>
 #include <kdialog.h>
@@ -561,7 +562,8 @@ QSize KIntNumInput::minimumSizeHint() const
         h = qMax(h, priv->labelSize.height() + 2);
     }
 
-    w = priv->slider ? priv->slider->sizeHint().width() + KDialog::spacingHint() : 0;
+    const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+    w = priv->slider ? priv->slider->sizeHint().width() + spacingHint : 0;
     w += priv->column1Width + priv->column2Width;
 
     if (priv->labelAlignment & (Qt::AlignTop | Qt::AlignBottom)) {
@@ -589,10 +591,11 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
 
     int w = priv->column1Width;
     int h = 0;
+    const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
 
     if (priv->label && (priv->labelAlignment & Qt::AlignTop)) {
         priv->label->setGeometry(0, 0, e->size().width(), priv->labelSize.height());
-        h += priv->labelSize.height() + KDialog::spacingHint();
+        h += priv->labelSize.height() + spacingHint;
     }
 
     if (priv->label && (priv->labelAlignment & Qt::AlignVCenter)) {
@@ -601,14 +604,14 @@ void KIntNumInput::resizeEvent(QResizeEvent* e)
 
     if (qApp->layoutDirection() == Qt::RightToLeft) {
         d->intSpinBox->setGeometry(w, h, priv->slider ? priv->column2Width : qMax(priv->column2Width, e->size().width() - w), d->intSpinBoxSize.height());
-        w += priv->column2Width + KDialog::spacingHint();
+        w += priv->column2Width + spacingHint;
 
         if (priv->slider) {
-            priv->slider->setGeometry(w, h, e->size().width() - w, d->intSpinBoxSize.height() + KDialog::spacingHint());
+            priv->slider->setGeometry(w, h, e->size().width() - w, d->intSpinBoxSize.height() + spacingHint);
         }
     } else if (priv->slider) {
-        priv->slider->setGeometry(w, h, e->size().width() - (w + priv->column2Width + KDialog::spacingHint()), d->intSpinBoxSize.height() + KDialog::spacingHint());
-        d->intSpinBox->setGeometry(w + priv->slider->size().width() + KDialog::spacingHint(), h, priv->column2Width, d->intSpinBoxSize.height());
+        priv->slider->setGeometry(w, h, e->size().width() - (w + priv->column2Width + spacingHint), d->intSpinBoxSize.height() + spacingHint);
+        d->intSpinBox->setGeometry(w + priv->slider->size().width() + spacingHint, h, priv->column2Width, d->intSpinBoxSize.height());
     } else {
         d->intSpinBox->setGeometry(w, h, qMax(priv->column2Width, e->size().width() - w), d->intSpinBoxSize.height());
     }
@@ -823,7 +826,8 @@ QSize KDoubleNumInput::minimumSizeHint() const
         h = qMax(h, priv->labelSize.height() + 2);
     }
 
-    w = priv->slider ? priv->slider->sizeHint().width() + KDialog::spacingHint() : 0;
+    const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+    w = priv->slider ? priv->slider->sizeHint().width() + spacingHint : 0;
     w += priv->column1Width + priv->column2Width;
 
     if (priv->labelAlignment & (Qt::AlignTop | Qt::AlignBottom)) {
@@ -839,6 +843,7 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
 
     int w = priv->column1Width;
     int h = 0;
+    const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
 
     if (priv->label && (priv->labelAlignment & Qt::AlignTop)) {
         priv->label->setGeometry(0, 0, e->size().width(), priv->labelSize.height());
@@ -852,15 +857,15 @@ void KDoubleNumInput::resizeEvent(QResizeEvent* e)
     if (qApp->layoutDirection() == Qt::RightToLeft) {
         d->spin->setGeometry(w, h, priv->slider ? priv->column2Width
                              : e->size().width() - w, d->editSize.height());
-        w += priv->column2Width + KDialog::spacingHint();
+        w += priv->column2Width + spacingHint;
 
         if (priv->slider)
-            priv->slider->setGeometry(w, h, e->size().width() - w, d->editSize.height() + KDialog::spacingHint());
+            priv->slider->setGeometry(w, h, e->size().width() - w, d->editSize.height() + spacingHint);
     } else if (priv->slider) {
         priv->slider->setGeometry(w, h, e->size().width() -
-                                    (priv->column1Width + priv->column2Width + KDialog::spacingHint()),
-                                    d->editSize.height() + KDialog::spacingHint());
-        d->spin->setGeometry(w + priv->slider->width() + KDialog::spacingHint(), h,
+                                    (priv->column1Width + priv->column2Width + spacingHint),
+                                    d->editSize.height() + spacingHint);
+        d->spin->setGeometry(w + priv->slider->width() + spacingHint, h,
                              priv->column2Width, d->editSize.height());
     } else {
         d->spin->setGeometry(w, h, e->size().width() - w, d->editSize.height());

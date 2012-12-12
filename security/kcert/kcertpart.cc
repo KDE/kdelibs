@@ -152,9 +152,12 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_frame = new QFrame(parentWidget);
 	setWidget(_frame);
 
+        const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+        const int marginHint = style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+
 	_baseGrid = new QGridLayout(_frame);
-	_baseGrid->setMargin(KDialog::marginHint());
-	_baseGrid->setSpacing(KDialog::spacingHint());
+	_baseGrid->setMargin(marginHint);
+	_baseGrid->setSpacing(spacingHint);
 
 	_sideList = new QTreeWidget(_frame);
 	_sideList->setRootIsDecorated(true);
@@ -180,8 +183,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_pkcsFrame = new QFrame(_frame);
 
 	grid = new QGridLayout(_pkcsFrame);
-	grid->setMargin(KDialog::marginHint());
-	grid->setSpacing(KDialog::spacingHint());
+	grid->setMargin(marginHint);
+	grid->setSpacing(spacingHint);
 	grid->addWidget(new QLabel(i18n("KDE Secure Certificate Import"), _pkcsFrame), 0, 0, 1, 6);
 	grid->addWidget(new QLabel(i18n("Chain:"), _pkcsFrame), 1, 0);
 	_p12_chain = new KComboBox(_pkcsFrame);
@@ -210,8 +213,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 
 	QFrame *tab = new QFrame(_pkcsFrame);
 	QGridLayout *tabGrid = new QGridLayout(tab);
-	tabGrid->setMargin(KDialog::marginHint());
-	tabGrid->setSpacing(KDialog::spacingHint());
+	tabGrid->setMargin(marginHint);
+	tabGrid->setSpacing(spacingHint);
 	tabGrid->addWidget(new QLabel(i18nc("State of the certification", "State:"), tab), 0, 0);
 	_p12_certState = new QLabel("", tab);
 	tabGrid->addWidget(_p12_certState, 0, 1, 1, 4);
@@ -235,8 +238,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 	tab = new QFrame(_pkcsFrame);
 	tabGrid = new QGridLayout(tab);
-	tabGrid->setMargin(KDialog::marginHint());
-	tabGrid->setSpacing(KDialog::spacingHint());
+	tabGrid->setMargin(marginHint);
+	tabGrid->setSpacing(spacingHint);
 	tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 	_p12_digest = new QLabel(tab);
 	tabGrid->addWidget(_p12_digest, 0, 1, 1, 4);
@@ -253,8 +256,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 	tab = new QFrame(_pkcsFrame);
 	tabGrid = new QGridLayout(tab);
-	tabGrid->setMargin(KDialog::marginHint());
-	tabGrid->setSpacing(KDialog::spacingHint());
+	tabGrid->setMargin(marginHint);
+	tabGrid->setSpacing(spacingHint);
 	tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
 	_p12_pubkey = new KTextEdit(tab);
 	tabGrid->addWidget(_p12_pubkey, 0, 1, 4, 4);
@@ -275,8 +278,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 	_x509Frame = new QFrame(_frame);
 
 	grid = new QGridLayout(_x509Frame);
-	grid->setMargin(KDialog::marginHint());
-	grid->setSpacing(KDialog::spacingHint());
+	grid->setMargin(marginHint);
+	grid->setSpacing(spacingHint);
 	grid->addWidget(new QLabel(i18n("KDE Secure Certificate Import"), _x509Frame), 0, 0, 1, 6);
 
 	grid->addWidget(new QLabel(i18n("Subject:"), _x509Frame), 1, 0);
@@ -301,8 +304,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 
 	tab = new QFrame(_x509Frame);
 	tabGrid = new QGridLayout(tab);
-	tabGrid->setMargin(KDialog::marginHint());
-	tabGrid->setSpacing(KDialog::spacingHint());
+	tabGrid->setMargin(marginHint);
+	tabGrid->setSpacing(spacingHint);
 	tabGrid->addWidget(new QLabel(i18nc("State of the certification", "State:"), tab), 0, 0);
 	_ca_certState = new QLabel("", tab);
 	tabGrid->addWidget(_ca_certState, 0, 1, 1, 4);
@@ -326,8 +329,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 	tab = new QFrame(_x509Frame);
 	tabGrid = new QGridLayout(tab);
-	tabGrid->setMargin(KDialog::marginHint());
-	tabGrid->setSpacing(KDialog::spacingHint());
+	tabGrid->setMargin(marginHint);
+	tabGrid->setSpacing(spacingHint);
 	tabGrid->addWidget(new QLabel(i18n("MD5 digest:"), tab), 0, 0);
 	_ca_digest = new QLabel(tab);
 	tabGrid->addWidget(_ca_digest, 0, 1, 1, 4);
@@ -344,8 +347,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 	tab = new QFrame(_x509Frame);
 	tabGrid = new QGridLayout(tab);
-	tabGrid->setMargin(KDialog::marginHint());
-	tabGrid->setSpacing(KDialog::spacingHint());
+	tabGrid->setMargin(marginHint);
+	tabGrid->setSpacing(spacingHint);
 	tabGrid->addWidget(new QLabel(i18n("Public key:"), tab), 0, 0);
 	_ca_pubkey = new KTextEdit(tab);
 	tabGrid->addWidget(_ca_pubkey, 0, 1, 4, 4);
@@ -364,8 +367,8 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //------------------------------------------------------------------------
 	_blankFrame = new QFrame(_frame);
 	grid = new QGridLayout(_blankFrame);
-	grid->setMargin(KDialog::marginHint());
-	grid->setSpacing(KDialog::spacingHint());
+	grid->setMargin(marginHint);
+	grid->setSpacing(spacingHint);
 	grid->addWidget(new QLabel(i18n("KDE Secure Certificate Import"), _blankFrame), 0, 0, 1, 1);
 	_blankFrame->show();
 

@@ -165,7 +165,8 @@ KFontChooser::KFontChooser( QWidget *parent,
     // attribute widgets and preview on the top, and XLFD data at the bottom.
     QVBoxLayout *topLayout = new QVBoxLayout( this );
     topLayout->setMargin( 0 );
-    int checkBoxGap = KDialog::spacingHint() / 2;
+    const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
+    int checkBoxGap = spacingHint / 2;
 
     // The splitter contains font attribute widgets in the top part,
     // and the font preview in the bottom part.
@@ -328,7 +329,7 @@ KFontChooser::KFontChooser( QWidget *parent,
                                                 page );
         d->sizeIsRelativeCheckBox->setTristate( flags & ShowDifferences );
         QGridLayout *sizeLayout2 = new QGridLayout();
-        sizeLayout2->setSpacing( KDialog::spacingHint()/2 );
+        sizeLayout2->setSpacing( spacingHint/2 );
         gridLayout->addLayout(sizeLayout2, row, 2);
         sizeLayout2->setColumnStretch( 1, 1 ); // to prevent text from eating the right border
         sizeLayout2->addWidget( d->sizeOfFont, 0, 0, 1, 2);
@@ -340,7 +341,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     else {
         d->sizeIsRelativeCheckBox = 0L;
         QGridLayout *sizeLayout2 = new QGridLayout();
-        sizeLayout2->setSpacing( KDialog::spacingHint()/2 );
+        sizeLayout2->setSpacing( spacingHint/2 );
         gridLayout->addLayout(sizeLayout2, row, 2);
         sizeLayout2->addWidget( d->sizeOfFont, 0, 0);
         sizeLayout2->addWidget(d->sizeListBox, 1,0);

@@ -861,7 +861,8 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
         QVBoxLayout *layout = new QVBoxLayout;
         showWidget->setLayout(layout);
         layout->addWidget(mainWidget);
-        layout->insertSpacing(-1, KDialog::marginHint());
+        const int marginHint = showWidget->style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+        layout->insertSpacing(-1, marginHint);
         configDialog.setMainWidget(showWidget);
 
         connect(&configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
