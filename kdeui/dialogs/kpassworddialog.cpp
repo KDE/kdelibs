@@ -22,6 +22,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QDesktopWidget>
+#include <QPushButton>
 #include <QTextDocument>
 #include <QTimer>
 
@@ -62,15 +63,12 @@ public:
     unsigned int commentRow;
 };
 
-KPasswordDialog::KPasswordDialog( QWidget* parent ,
-                                  const KPasswordDialogFlags& flags,
-                                  const KDialog::ButtonCodes otherButtons )
-   : KDialog( parent ), d(new KPasswordDialogPrivate(this))
+KPasswordDialog::KPasswordDialog(QWidget* parent ,
+                                 const KPasswordDialogFlags& flags)
+   : QDialog( parent ), d(new KPasswordDialogPrivate(this))
 {
-    setCaption( i18n("Password") );
+    setWindowTitle(i18n("Password"));
     setWindowIcon(KDE::icon("dialog-password"));
-    setButtons( Ok | Cancel | otherButtons );
-    setDefaultButton( Ok );
     d->m_flags = flags;
     d->init ();
 }
@@ -100,7 +98,8 @@ void KPasswordDialog::KPasswordDialogPrivate::updateFields()
 
 void KPasswordDialog::KPasswordDialogPrivate::init()
 {
-    ui.setupUi( q->mainWidget() );
+    ui.setupUi(q);
+    ui.buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     ui.errorMessage->setHidden(true);
 
     // Row 4: Username field
@@ -146,7 +145,7 @@ void KPasswordDialog::setPixmap(const QPixmap &pixmap)
 {
     if ( !d->pixmapLabel )
     {
-        d->pixmapLabel = new QLabel( mainWidget() );
+        d->pixmapLabel = new QLabel( this );
         d->pixmapLabel->setAlignment( Qt::AlignLeft | Qt::AlignTop );
         d->ui.hboxLayout->insertWidget( 0, d->pixmapLabel );
     }
@@ -231,7 +230,7 @@ void KPasswordDialog::addCommentLine( const QString& label,
         spacing = style()->combinedLayoutSpacing(QSizePolicy::Label, QSizePolicy::LineEdit, Qt::Horizontal, 0, this);
     }
 
-    QLabel* c = new QLabel(comment, mainWidget());
+    QLabel* c = new QLabel(comment, this);
     c->setWordWrap(true);
 
     d->ui.formLayout->insertRow(d->commentRow, label, c);
@@ -254,7 +253,8 @@ void KPasswordDialog::addCommentLine( const QString& label,
         if (li) {
             QLabel *l = qobject_cast<QLabel*>(li->widget());
             if (l && l->wordWrap()) {
-                int w = sizeHint().width() - firstColumnWidth - ( 2 * marginHint() ) - gridMarginLeft - gridMarginRight - spacing;
+                const int marginHint = style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+                int w = sizeHint().width() - firstColumnWidth - ( 2 * marginHint ) - gridMarginLeft - gridMarginRight - spacing;
                 l->setMinimumSize( w, l->heightForWidth(w) );
             }
         }
@@ -293,7 +293,7 @@ void KPasswordDialog::showErrorMessage( const QString& message, const ErrorType 
             d->ui.passwordLabel->setEnabled( false );
             d->ui.passEdit->setEnabled( false );
             d->ui.keepCheckBox->setEnabled( false );
-            enableButton( Ok, false );
+            d->ui.buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
             break;
         default:
             break;
@@ -305,7 +305,8 @@ void KPasswordDialog::setPrompt(const QString& prompt)
 {
     d->ui.prompt->setText( prompt );
     d->ui.prompt->setWordWrap( true );
-    d->ui.prompt->setMinimumHeight( d->ui.prompt->heightForWidth( width() -  ( 2 * marginHint() ) ) );
+    const int marginHint = style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+    d->ui.prompt->setMinimumHeight( d->ui.prompt->heightForWidth( width() -  ( 2 * marginHint ) ) );
 }
 
 QString KPasswordDialog::prompt() const
@@ -344,7 +345,7 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
     if ( !d->userEditCombo ) {
         d->ui.formLayout->removeWidget(d->ui.userEdit);
         delete d->ui.userEdit;
-        d->userEditCombo = new KComboBox( true, mainWidget() );
+        d->userEditCombo = new KComboBox( true, this );
         d->ui.userEdit = d->userEditCombo->lineEdit();
 //        QSize s = d->userEditCombo->sizeHint();
 //        d->ui.userEditCombo->setFixedHeight( s.height() );
@@ -401,7 +402,7 @@ void KPasswordDialog::KPasswordDialogPrivate::actuallyAccept()
         emit q->gotUsernameAndPassword( q->username(), q->password() , keep);
     }
 
-    q->KDialog::accept();
+    q->QDialog::accept();
 }
 
 bool KPasswordDialog::checkPassword()

@@ -18,6 +18,7 @@
 */
 
 #include <QApplication>
+#include <QMap>
 #include <kpassworddialog.h>
 #include <klocalizedstring.h>
 #include <iostream>

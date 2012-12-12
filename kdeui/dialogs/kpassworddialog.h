@@ -21,9 +21,11 @@
 #ifndef KPASSWORDDIALOG_H
 #define KPASSWORDDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFlags>
+
 #include <kdeui_export.h>
-#include <QtCore/QFlags>
 
 /**
  * A dialog for requesting a password and optionaly a login from the end user.
@@ -54,7 +56,7 @@
  *
  * @short dialog for requesting login and password from the end user
  */
-class KDEUI_EXPORT KPasswordDialog : public KDialog
+class KDEUI_EXPORT KPasswordDialog : public QDialog
 {
     Q_OBJECT
 
@@ -126,13 +128,9 @@ public:
      *
      * @param parent the parent widget (default:NULL).
      * @param flags a set of KPasswordDialogFlag flags
-     * @param otherButtons buttons to show in the dialog besides Ok and Cancel.
-     *                     Useful for adding application-specific buttons like
-     *                     "ignore" or "skip".
      */
-    explicit KPasswordDialog( QWidget *parent = 0L,
-                              const KPasswordDialogFlags& flags = 0,
-                              const KDialog::ButtonCodes otherButtons = 0);
+    explicit KPasswordDialog(QWidget *parent = 0L,
+                             const KPasswordDialogFlags& flags = 0);
 
     /**
      * Destructor

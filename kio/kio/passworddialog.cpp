@@ -52,9 +52,9 @@ int PasswordDialog::getNameAndPassword( QString& user, QString& pass, bool* keep
     dlg = new PasswordDialog( prompt, user, keep );
 
     if ( !caption.isEmpty() )
-        dlg->setCaption( caption );
+        dlg->setWindowTitle( caption );
     else
-        dlg->setCaption( i18n("Authorization Dialog") );
+        dlg->setWindowTitle( i18n("Authorization Dialog") );
 
     if ( !comment.isEmpty() )
         dlg->addCommentLine( label, comment );
