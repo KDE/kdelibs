@@ -65,5 +65,5 @@ void CategoryTest::testInvalid()
     QCOMPARE(cg->name(), QString("Invalid"));
 }
 
-QTEST_KDEMAIN(CategoryTest, NoGUI)
+QTEST_MAIN(CategoryTest)
 

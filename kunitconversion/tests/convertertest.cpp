@@ -57,5 +57,5 @@ void ConverterTest::testInvalid()
     QCOMPARE(c.category("does not exist")->name(), QString("Invalid"));
 }
 
-QTEST_KDEMAIN(ConverterTest, NoGUI)
+QTEST_MAIN(ConverterTest)
 

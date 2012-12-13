@@ -61,5 +61,5 @@ void ValueTest::testInvalid()
     QCOMPARE(v2.toSymbolString(), QString(""));
 }
 
-QTEST_KDEMAIN(ValueTest, NoGUI)
+QTEST_MAIN(ValueTest)
 

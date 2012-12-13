@@ -23,17 +23,20 @@
 
 #include <QtCore/QString>
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kdatetime.h"
 #include "kcalendarsystem.h"
 #include "kdatetimeformatter_p.h"
 #include "klocale.h"
 #include "kdebug.h"
+#include "kcomponentdata.h"
 #include "kconfiggroup.h"
 
 #include "kdatetimeformattertest.moc"
 
-QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(KDateTimeFormatterTest, "kdecalendarsystems" /*so that the .po exists*/)
+QTEST_MAIN(KDateTimeFormatterTest)
+
+KComponentData mainComponent("kdecalendarsystems" /*so that the .po exists*/);
 
 void KDateTimeFormatterTest::testFormatDateTimePosix()
 {
