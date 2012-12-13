@@ -25,6 +25,7 @@
 
 #include <QtCore/QTimer>
 #include <QApplication>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QStyle>
 #include <QWidget>
@@ -88,7 +89,7 @@ public:
     void createActions(KHelpMenu* q);
 
     KMenu *mMenu;
-    KDialog *mAboutApp;
+    QDialog *mAboutApp;
     KAboutKdeDialog *mAboutKDE;
     KBugReport *mBugReport;
     KSwitchLanguageDialog *mSwitchApplicationLanguage;
@@ -293,7 +294,7 @@ void KHelpMenu::aboutApplication()
     if( !d->mAboutApp )
     {
       d->mAboutApp = new KAboutApplicationDialog( d->mAboutData, d->mParent );
-      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT(dialogFinished()) );
+      connect( d->mAboutApp, SIGNAL(finished(int)), this, SLOT(dialogFinished()) );
     }
     d->mAboutApp->show();
   }
@@ -301,32 +302,37 @@ void KHelpMenu::aboutApplication()
   {
     if( !d->mAboutApp )
     {
-      d->mAboutApp = new KDialog( d->mParent, Qt::Dialog );
-      d->mAboutApp->setCaption( i18n("About %1", KGlobal::caption() ) );
-      d->mAboutApp->setButtons( KDialog::Yes );
+      d->mAboutApp = new QDialog( d->mParent, Qt::Dialog );
+      d->mAboutApp->setWindowTitle( i18n("About %1", KGlobal::caption() ) );
       d->mAboutApp->setObjectName( "about" );
-      d->mAboutApp->setButtonText( KDialog::Yes, KStandardGuiItem::ok().text() );
-      d->mAboutApp->setDefaultButton( KDialog::Yes );
-      d->mAboutApp->setEscapeButton( KDialog::Yes );
-      connect( d->mAboutApp, SIGNAL(finished()), this, SLOT(dialogFinished()) );
+      connect( d->mAboutApp, SIGNAL(finished(int)), this, SLOT(dialogFinished()) );
 
       const int spacingHint = d->mAboutApp->style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
       const int marginHint = d->mAboutApp->style()->pixelMetric(QStyle::PM_DefaultChildMargin);
 
-      QWidget *content = new QWidget( d->mAboutApp );
-      QHBoxLayout *hbox = new QHBoxLayout( d->mAboutApp );
+      QVBoxLayout *vbox = new QVBoxLayout;
+      d->mAboutApp->setLayout(vbox);
+
+      QHBoxLayout *hbox = new QHBoxLayout;
       hbox->setSpacing(spacingHint*3);
       hbox->setMargin(marginHint*1);
 
       const int size = IconSize(KIconLoader::Dialog);
-      QLabel *label1 = new QLabel( content );
+      QLabel *label1 = new QLabel(d->mAboutApp);
       label1->setPixmap( qApp->windowIcon().pixmap(size,size) );
-      QLabel *label2 = new QLabel( content );
+      QLabel *label2 = new QLabel(d->mAboutApp);
       label2->setText( d->mAboutAppText );
 
       hbox->addWidget( label1 );
       hbox->addWidget( label2 );
-      d->mAboutApp->setMainWidget( content );
+
+      vbox->addLayout(hbox);
+
+      QDialogButtonBox *buttonBox = new QDialogButtonBox(d->mAboutApp);
+      buttonBox->setStandardButtons(QDialogButtonBox::Close);
+      connect(buttonBox, SIGNAL(accepted()), d->mAboutApp, SLOT(accept()));
+      connect(buttonBox, SIGNAL(rejected()), d->mAboutApp, SLOT(reject()));
+      vbox->addWidget(buttonBox);
     }
     d->mAboutApp->show();
   }
