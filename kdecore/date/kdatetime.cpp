@@ -1379,7 +1379,7 @@ QString KDateTime::toString(const QString &format) const
     if (!isValid())
         return QString();
     enum { TZNone, UTCOffsetShort, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
-    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, KLocale::global()));
+    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::GregorianCalendar, KLocale::global()));
     QString result;
     QString s;
     int num, numLength, zone;
@@ -2392,7 +2392,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
     zoneAbbrev.clear();
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
-    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, KLocale::global()));
+    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::GregorianCalendar, KLocale::global()));
     int zone;
     int s = 0;
     int send = str.length();

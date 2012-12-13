@@ -42,8 +42,6 @@ KCalendarSystemGregorianPrivate::~KCalendarSystemGregorianPrivate()
 {
 }
 
-// Dummy version using Gregorian as an example
-// This method MUST be re-implemented in any new Calendar System
 void KCalendarSystemGregorianPrivate::loadDefaultEraList()
 {
     QString name, shortName, format;
@@ -81,19 +79,10 @@ int KCalendarSystemGregorianPrivate::monthsInYear(int year) const
 
 int KCalendarSystemGregorianPrivate::daysInMonth(int year, int month) const
 {
-    if (month == 2) {
-        if (isLeapYear(year)) {
-            return 29;
-        } else {
-            return 28;
-        }
+    if (hasYearZero() && year <= 0) {
+        --year;
     }
-
-    if (month == 4 || month == 6 || month == 9 || month == 11) {
-        return 30;
-    }
-
-    return 31;
+    return QDate(year, month, 1).daysInMonth();
 }
 
 int KCalendarSystemGregorianPrivate::daysInYear(int year) const
@@ -112,19 +101,10 @@ int KCalendarSystemGregorianPrivate::daysInWeek() const
 
 bool KCalendarSystemGregorianPrivate::isLeapYear(int year) const
 {
-    if (!hasYearZero() && year < 1) {
-        year = year + 1;
+    if (hasYearZero() && year <= 0) {
+        --year;
     }
-
-    if (year % 4 == 0) {
-        if (year % 100 != 0) {
-            return true;
-        } else if (year % 400 == 0) {
-            return true;
-        }
-    }
-
-    return false;
+    return QDate::isLeapYear(year);
 }
 
 bool KCalendarSystemGregorianPrivate::hasLeapMonths() const
@@ -149,7 +129,7 @@ int KCalendarSystemGregorianPrivate::maxMonthsInYear() const
 
 int KCalendarSystemGregorianPrivate::earliestValidYear() const
 {
-    return -4713;
+    return -9999;
 }
 
 int KCalendarSystemGregorianPrivate::latestValidYear() const
@@ -405,7 +385,7 @@ KCalendarSystemGregorian::~KCalendarSystemGregorian()
 
 QString KCalendarSystemGregorian::calendarType() const
 {
-    return QLatin1String("gregorian-proleptic");
+    return QLatin1String("gregorian");
 }
 
 KLocale::CalendarSystem KCalendarSystemGregorian::calendarSystem() const
@@ -420,16 +400,24 @@ QDate KCalendarSystemGregorian::epoch() const
 
 QDate KCalendarSystemGregorian::earliestValidDate() const
 {
-    // Gregorian 1 Jan 4713 BC, no year zero
-    return QDate::fromJulianDay(38);
+    Q_D(const KCalendarSystemGregorian);
+
+    // Set to first day of year 9999 until confirm date formats & widgets support > 9999
+    return QDate(d->hasYearZero() ? -10000 : -9999, 1, 1);
+    // return QDate(std::num_limits<int>::min(), 1, 1);
 }
 
 QDate KCalendarSystemGregorian::latestValidDate() const
 {
     // Set to last day of year 9999 until confirm date formats & widgets support > 9999
     // In Gregorian this is 9999-12-31, which is  is jd 5373484
-    // Can't call setDate( 9999, 12, 31 ) as it creates circular reference!
-    return QDate::fromJulianDay(5373484);
+    return QDate(9999, 12, 31);
+    // return QDate(std::num_limits<int>::max(), 12, 31);
+}
+
+int KCalendarSystemGregorian::dayOfWeek(const QDate &date) const
+{
+    return date.dayOfWeek();
 }
 
 QString KCalendarSystemGregorian::monthName(int month, int year, MonthNameFormat format) const
@@ -481,60 +469,27 @@ bool KCalendarSystemGregorian::julianDayToDate(qint64 jd, int &year, int &month,
 {
     Q_D(const KCalendarSystemGregorian);
 
-    // Formula from The Calendar FAQ by Claus Tondering
-    // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
-    // NOTE: Coded from scratch from mathematical formulas, not copied from
-    // the Boost licensed source code
+    QDate date = QDate::fromJulianDay(jd);
+    date.getDate(&year, &month, &day);
 
-    int a = jd + 32044;
-    int b = ((4 * a) + 3) / 146097;
-    int c = a - ((146097 * b) / 4);
-    int dd = ((4 * c) + 3) / 1461;
-    int e = c - ((1461 * dd) / 4);
-    int m = ((5 * e) + 2) / 153;
-    day = e - (((153 * m) + 2) / 5) + 1;
-    month = m + 3 - (12 * (m / 10));
-    year = (100 * b) + dd - 4800 + (m / 10);
-
-    // If year is -ve then is BC.  In Gregorian there is no year 0, but the maths
-    // is easier if we pretend there is, so internally year of 0 = 1BC = -1 outside
-    // Check for Year 0 support as some Gregorian based calendars do have it, e.g. Thai and ISO
-    if (!d->hasYearZero() && year < 1) {
-        year = year - 1;
+    if (d->hasYearZero() && year < 0) {
+        ++year;
     }
-    return true;
+
+    return date.isValid();
 }
 
 bool KCalendarSystemGregorian::dateToJulianDay(int year, int month, int day, qint64 &jd) const
 {
     Q_D(const KCalendarSystemGregorian);
 
-    // Formula from The Calendar FAQ by Claus Tondering
-    // http://www.tondering.dk/claus/cal/node3.html#SECTION003161000000000000000
-    // NOTE: Coded from scratch from mathematical formulas, not copied from
-    // the Boost licensed source code
-
-    // If year is -ve then is BC.  In Gregorian there is no year 0, but the maths
-    // is easier if we pretend there is, so internally year of -1 = 1BC = 0 internally
-    // Check for Year 0 support as some Gregorian based calendars do have it, e.g. Thai and ISO
-    int y;
-    if (!d->hasYearZero() && year < 1) {
-        y = year + 1;
-    } else {
-        y = year;
+    if (d->hasYearZero() && year <= 0) {
+        --year;
     }
 
-    int a = (14 - month) / 12;
-    y = y + 4800 - a;
-    int m = month + (12 * a) - 3;
+    QDate date;
+    date.setDate(year, month, day);
 
-    jd = day
-         + (((153 * m) + 2) / 5)
-         + (365 * y)
-         + (y / 4)
-         - (y / 100)
-         + (y / 400)
-         - 32045;
-
-    return true;
+    jd = date.toJulianDay();
+    return date.isValid();
 }

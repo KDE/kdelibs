@@ -34,6 +34,8 @@ public:
     virtual ~KCalendarSystemThaiPrivate();
 
     virtual void loadDefaultEraList();
+    virtual int daysInMonth(int year, int month) const;
+    virtual int daysInYear(int year) const;
     virtual bool isLeapYear(int year) const;
     virtual bool hasYearZero() const;
     virtual int earliestValidYear() const;
@@ -58,6 +60,16 @@ void KCalendarSystemThaiPrivate::loadDefaultEraList()
     shortName = i18nc("Calendar Era: Thai Buddhist Era, years > 0, ShortFormat", "BE");
     format = i18nc("(kdedt-format) Thai, BE, full era year format used for %EY, e.g. 2000 BE", "%Ey %EC");
     addEra('+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format);
+}
+
+int KCalendarSystemThaiPrivate::daysInMonth(int year, int month) const
+{
+    return KCalendarSystemGregorianPrivate::daysInMonth(year - 543, month);
+}
+
+int KCalendarSystemThaiPrivate::daysInYear(int year) const
+{
+    return KCalendarSystemGregorianPrivate::daysInYear(year - 543);
 }
 
 bool KCalendarSystemThaiPrivate::isLeapYear(int year) const

@@ -34,6 +34,8 @@ public:
     virtual ~KCalendarSystemMinguoPrivate();
 
     virtual void loadDefaultEraList();
+    virtual int daysInMonth(int year, int month) const;
+    virtual int daysInYear(int year) const;
     virtual bool isLeapYear(int year) const;
     virtual int earliestValidYear() const;
 };
@@ -57,6 +59,16 @@ void KCalendarSystemMinguoPrivate::loadDefaultEraList()
     shortName = i18nc("Calendar Era: Taiwan Republic of China Era, years > 0, ShortFormat", "ROC");
     format = i18nc("(kdedt-format) Taiwan, ROC, full era year format used for %EY, e.g. ROC 99", "%EC %Ey");
     addEra('+', 1, q->epoch(), 1, q->latestValidDate(), name, shortName, format);
+}
+
+int KCalendarSystemMinguoPrivate::daysInMonth(int year, int month) const
+{
+    return KCalendarSystemGregorianPrivate::daysInMonth(year + 1911, month);
+}
+
+int KCalendarSystemMinguoPrivate::daysInYear(int year) const
+{
+    return KCalendarSystemGregorianPrivate::daysInYear(year + 1911);
 }
 
 bool KCalendarSystemMinguoPrivate::isLeapYear(int year) const

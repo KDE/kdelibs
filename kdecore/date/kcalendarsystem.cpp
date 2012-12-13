@@ -42,7 +42,6 @@
 #include "kcalendarsystemjapanese_p.h"
 #include "kcalendarsystemjulian_p.h"
 #include "kcalendarsystemminguo_p.h"
-#include "kcalendarsystemqdate_p.h"
 #include "kcalendarsystemthai_p.h"
 
 KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem, const KLocale *locale)
@@ -55,14 +54,12 @@ KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem,
                                          const KLocale *locale)
 {
     switch (calendarSystem) {
-    case KLocale::QDateCalendar:
-        return new KCalendarSystemQDate(config, locale);
+    case KLocale::GregorianCalendar:
+        return new KCalendarSystemGregorian(config, locale);
     case KLocale::CopticCalendar:
         return new KCalendarSystemCoptic(config, locale);
     case KLocale::EthiopianCalendar:
         return new KCalendarSystemEthiopian(config, locale);
-    case KLocale::GregorianCalendar:
-        return new KCalendarSystemGregorian(config, locale);
     case KLocale::HebrewCalendar:
         return new KCalendarSystemHebrew(config, locale);
     case KLocale::IndianNationalCalendar:
@@ -80,7 +77,7 @@ KCalendarSystem *KCalendarSystem::create(KLocale::CalendarSystem calendarSystem,
     case KLocale::ThaiCalendar:
         return new KCalendarSystemThai(config, locale);
     default:
-        return new KCalendarSystemQDate(config, locale);
+        return new KCalendarSystemGregorian(config, locale);
     }
 }
 
@@ -88,10 +85,9 @@ QList<KLocale::CalendarSystem> KCalendarSystem::calendarSystemsList()
 {
     QList<KLocale::CalendarSystem> list;
 
-    list.append(KLocale::QDateCalendar);
+    list.append(KLocale::GregorianCalendar);
     list.append(KLocale::CopticCalendar);
     list.append(KLocale::EthiopianCalendar);
-    list.append(KLocale::GregorianCalendar);
     list.append(KLocale::HebrewCalendar);
     list.append(KLocale::IslamicCivilCalendar);
     list.append(KLocale::IndianNationalCalendar);
@@ -109,14 +105,12 @@ QString KCalendarSystem::calendarLabel(KLocale::CalendarSystem calendarSystem, c
     QStringList languages = locale->languageList();
 
     switch (calendarSystem) {
-    case KLocale::QDateCalendar:
+    case KLocale::GregorianCalendar:
         return ki18nc("@item Calendar system", "Gregorian").toString(languages);
     case KLocale::CopticCalendar:
         return ki18nc("@item Calendar system", "Coptic").toString(languages);
     case KLocale::EthiopianCalendar:
         return ki18nc("@item Calendar system", "Ethiopian").toString(languages);
-    case KLocale::GregorianCalendar:
-        return ki18nc("@item Calendar system", "Gregorian (Proleptic)").toString(languages);
     case KLocale::HebrewCalendar:
         return ki18nc("@item Calendar system", "Hebrew").toString(languages);
     case KLocale::IslamicCivilCalendar:

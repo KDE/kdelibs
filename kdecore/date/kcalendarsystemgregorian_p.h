@@ -28,9 +28,7 @@ class KCalendarSystemGregorianPrivate;
  * @internal
  * This is the pure Gregorian calendar implementation.
  *
- * Note: This is a proleptic version of the Gregorian calendar, it does not
- * copy the QDate method of using the Julian Calendar for dates before 15
- * October 1582.  This is the traditional proleptic Gregorian calendar
+ * Note: This is the traditional proleptic Gregorian calendar
  * that does not have a year 0, unlike the ISO version which does.
  *
  * @b license GNU-LGPL v.2 or later
@@ -51,6 +49,8 @@ public:
     virtual QDate epoch() const;
     virtual QDate earliestValidDate() const;
     virtual QDate latestValidDate() const;
+
+    virtual int dayOfWeek(const QDate &date) const;
 
     virtual QString monthName(int month, int year, MonthNameFormat format = LongName) const;
     virtual QString monthName(const QDate &date, MonthNameFormat format = LongName) const;

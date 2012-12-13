@@ -58,8 +58,6 @@ protected:
     void testMonthName(const KCalendarSystem *calendar, int month, int year, const QDate &date,
                        const QString &narrowName, const QString &shortName, const QString &longName,
                        const QString &shortNamePossessive, const QString &longNamePossessive);
-    void testQDateCompareQDate(const KCalendarSystem *calendar, int year, int month, int day);
-    void testQDateYMD(const KCalendarSystem *calendar, int y, int m, int d);
 
     void testStrings(KLocale::DigitSet testDigitSet);
     QDate setDayOfYearDate(const KCalendarSystem * calendar, int year, int dayOfYear);
@@ -89,14 +87,13 @@ private Q_SLOTS:
     void testDateDifference();
     void testFirstLast();
     void testEra();
-    void testQDateCalendar();
+    void testGregorianCalendar();
     void testHebrew();
     void testIndianNational();
     void testIslamicCivil();
-    void testQDateCalendarBasic();
-    void testQDateCalendarYmd();
-    void testQDateCalendarSpecialCases();
-    void testGregorianBasic();
+    void testGregorianCalendarBasic();
+    void testGregorianCalendarYmd();
+    void testGregorianCalendarSpecialCases();
     void testHebrewBasic();
     void testHebrewYmd();
     void testHebrewCompare();
@@ -110,15 +107,14 @@ private Q_SLOTS:
     void testJapaneseSpecialCases();
     void testMinguoBasic();
     void testThaiBasic();
-    void testQDateYearMonthDay();
-    void testQDateAddYears();
-    void testQDateAddMonths();
-    void testQDateAddDays();
-    void testQDateDaysInYear();
-    void testQDateDaysInMonth();
-    void testQDateDayOfYear();
-    void testQDateDayOfWeek();
-    void testQDateIsLeapYear();
+    void testGregorianAddYears();
+    void testGregorianAddMonths();
+    void testGregorianAddDays();
+    void testGregorianDaysInYear();
+    void testGregorianDaysInMonth();
+    void testGregorianDayOfYear();
+    void testGregorianDayOfWeek();
+    void testGregorianIsLeapYear();
     void testKLocalizedDate();
     void testWeekNumberSystem();
 };

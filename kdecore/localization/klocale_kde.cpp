@@ -2648,14 +2648,12 @@ KLocale::CalendarSystem KLocalePrivate::calendarTypeToCalendarSystem(const QStri
 QString KLocalePrivate::calendarSystemToCalendarType(KLocale::CalendarSystem calendarSystem) const
 {
     switch (calendarSystem) {
-    case KLocale::QDateCalendar:
+    case KLocale::GregorianCalendar:
         return QLatin1String("gregorian");
     case KLocale::CopticCalendar:
         return QLatin1String("coptic");
     case KLocale::EthiopianCalendar:
         return QLatin1String("ethiopian");
-    case KLocale::GregorianCalendar:
-        return QLatin1String("gregorian-proleptic");
     case KLocale::HebrewCalendar:
         return QLatin1String("hebrew");
     case KLocale::IslamicCivilCalendar:
