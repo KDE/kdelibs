@@ -22,7 +22,7 @@
 #ifndef KABOUT_APPLICATION_DIALOG_H
 #define KABOUT_APPLICATION_DIALOG_H
 
-#include "kdialog.h"
+#include <QDialog>
 
 #include <kdeui_export.h>
 
@@ -47,7 +47,7 @@ class KAboutData;
  * @author Urs Wolfer uwolfer @ kde.org
  */
 
-class KDEUI_EXPORT KAboutApplicationDialog : public KDialog
+class KDEUI_EXPORT KAboutApplicationDialog : public QDialog
 {
     Q_OBJECT
     Q_FLAGS( Options )

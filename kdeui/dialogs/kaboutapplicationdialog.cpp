@@ -37,10 +37,12 @@
 #include <klocalizedstring.h>
 
 #include <QApplication>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
 #include <QScrollBar>
+#include <QStyle>
 #include <QTabWidget>
 
 class KAboutApplicationDialog::Private
@@ -61,14 +63,14 @@ public:
 };
 
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
-  : KDialog(parent),
+  : QDialog(parent),
     d(new Private(this))
 {
     d->init( aboutData, NoOptions );
 }
 
 KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, Options opt, QWidget *parent)
-  : KDialog(parent),
+  : QDialog(parent),
     d(new Private(this))
 {
     d->init( aboutData, opt );
@@ -82,17 +84,24 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
     aboutData = ad;
 
     if (!aboutData) {
+        QVBoxLayout *layout = new QVBoxLayout;
+        q->setLayout(layout);
+
         QLabel *errorLabel = new QLabel(i18n("<qt>No information available.<br />"
                                              "The supplied KAboutData object does not exist.</qt>"), q);
-
         errorLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        q->setMainWidget(errorLabel);
+        layout->addWidget(errorLabel);
+
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(q);
+        buttonBox->setStandardButtons(QDialogButtonBox::Close);
+        connect(buttonBox, SIGNAL(accepted()), q, SLOT(accept()));
+        connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+        layout->addWidget(buttonBox);
+
         return;
     }
 
-    q->setPlainCaption(i18n("About %1", aboutData->programName()));
-    q->setButtons(KDialog::Close);
-    q->setDefaultButton(KDialog::Close);
+    q->setWindowTitle(i18n("About %1", aboutData->programName()));
     q->setModal(false);
 
     //Set up the title widget...
@@ -289,16 +298,17 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
         }
     }
 
+    QDialogButtonBox *buttonBox = new QDialogButtonBox;
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    connect(buttonBox, SIGNAL(accepted()), q, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+
     //And we jam everything together in a layout...
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(titleWidget);
     mainLayout->addWidget(tabWidget);
-    mainLayout->setMargin(0);
-
-    QWidget *mainWidget = new QWidget;
-    mainWidget->setLayout(mainLayout);
-
-    q->setMainWidget(mainWidget);
+    mainLayout->addWidget(buttonBox);
+    q->setLayout(mainLayout);
 }
 
 KAboutApplicationDialog::~KAboutApplicationDialog()
@@ -311,32 +321,39 @@ KAboutApplicationDialog::~KAboutApplicationDialog()
 
 void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
 {
-    KDialog *dialog = new KDialog(q);
+    QDialog *dialog = new QDialog(q);
+    QVBoxLayout *layout = new QVBoxLayout;
+    dialog->setLayout(layout);
 
-    dialog->setCaption(i18n("License Agreement"));
-    dialog->setButtons(KDialog::Close);
-    dialog->setDefaultButton(KDialog::Close);
+    dialog->setWindowTitle(i18n("License Agreement"));
 
     const QFont font = KGlobalSettings::fixedFont();
     QFontMetrics metrics(font);
 
     const QString licenseText = aboutData->licenses().at(number.toInt()).text();
-    KTextBrowser *licenseBrowser = new KTextBrowser;
+    KTextBrowser *licenseBrowser = new KTextBrowser(dialog);
     licenseBrowser->setFont(font);
     licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
     licenseBrowser->setText(licenseText);
+    layout->addWidget(licenseBrowser);
 
-    dialog->setMainWidget(licenseBrowser);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+    layout->addWidget(buttonBox);
 
     // try to set up the dialog such that the full width of the
     // document is visible without horizontal scroll-bars being required
-    const qreal idealWidth = licenseBrowser->document()->idealWidth() + (2 * dialog->marginHint())
+    const int marginHint = dialog->style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+    const qreal idealWidth = licenseBrowser->document()->idealWidth() + (2 * marginHint)
         + licenseBrowser->verticalScrollBar()->width() * 2;
 
     // try to allow enough height for a reasonable number of lines to be shown
     const int idealHeight = metrics.height() * 30;
 
-    dialog->setInitialSize(dialog->sizeHint().expandedTo(QSize((int)idealWidth,idealHeight)));
+    dialog->resize(dialog->sizeHint().expandedTo(QSize((int)idealWidth,idealHeight)));
+    dialog->adjustSize();
     dialog->show();
 }
 
