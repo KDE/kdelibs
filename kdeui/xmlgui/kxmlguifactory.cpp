@@ -36,8 +36,10 @@
 #include <QTextCodec>
 #include <qstandardpaths.h>
 
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>
+#include <kiconloader.h>
 #include <kshortcut.h>
 
 #include "kaction.h"
