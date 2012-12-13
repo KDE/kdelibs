@@ -95,7 +95,7 @@ void ServiceBrowser::startBrowse()
 	DNSServiceRef ref;
 	QString fullType=d->m_type;
 	if (!d->m_subtype.isEmpty()) fullType=d->m_subtype+"._sub."+d->m_type;
-	if (DNSServiceBrowse(&ref,0,0, fullType.toAscii().constData(),
+	if (DNSServiceBrowse(&ref,0,0, fullType.toLatin1().constData(),
 	    domainToDNS(d->m_domain),query_callback,reinterpret_cast<void*>(d))
 		   == kDNSServiceErr_NoError) d->setRef(ref);
 	if (!d->isRunning()) emit finished();

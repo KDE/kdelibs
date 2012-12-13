@@ -83,7 +83,7 @@ public:
     bool autoDelete;
 };
 
-KPassivePopup::KPassivePopup( QWidget *parent, Qt::WFlags f )
+KPassivePopup::KPassivePopup( QWidget *parent, Qt::WindowFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       d(new Private())
 {
@@ -98,7 +98,7 @@ KPassivePopup::KPassivePopup( WId win )
 }
 
 #if 0 // These break macos and win32 where the definition of WId makes them ambiguous
-KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WFlags f )
+KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WindowFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       d(new Private())
 {
@@ -106,7 +106,7 @@ KPassivePopup::KPassivePopup( int popupStyle, QWidget *parent, Qt::WFlags f )
     setPopupStyle( popupStyle );
 }
 
-KPassivePopup::KPassivePopup( int popupStyle, WId win, Qt::WFlags f )
+KPassivePopup::KPassivePopup( int popupStyle, WId win, Qt::WindowFlags f )
     : QFrame( 0, f ? f : POPUP_FLAGS ),
       d(new Private())
 {

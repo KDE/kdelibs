@@ -102,7 +102,7 @@ static const char* const not_close_xpm[]={
  *
  * @author Max Judin.
 */
-K3DockMainWindow::K3DockMainWindow( QWidget* parent, const char *name, Qt::WFlags f)
+K3DockMainWindow::K3DockMainWindow( QWidget* parent, const char *name, Qt::WindowFlags f)
     : KXmlGuiWindow( parent, f )
 {
     setObjectName( name );
@@ -531,7 +531,7 @@ public:
 
 
 /*************************************************************************/
-K3DockWidget::K3DockWidget( K3DockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, Qt::WFlags f)
+K3DockWidget::K3DockWidget( K3DockManager* dockManager, const char* name, const QPixmap &pixmap, QWidget* parent, const QString& strCaption, const QString& strTabPageLabel, Qt::WindowFlags f)
 #ifdef BORDERLESS_WINDOWS
 : QWidget( parent, name, f )//| WType_Dialog | WStyle_Customize | WStyle_NoBorder )
 #else

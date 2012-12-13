@@ -1638,7 +1638,7 @@ static QString readEnvPath(const char *env)
     if (!ok){
         return QString();
     } else {
-        c_path = retval.toAscii();
+        c_path = retval.toLatin1();
     }
 #endif
     return QDir::fromNativeSeparators(QFile::decodeName(c_path));
@@ -1687,7 +1687,7 @@ void KStandardDirs::addResourcesFrom_krcdirs()
             continue;
 
         if(path.makeAbsolute())
-            addResourceDir(key.toAscii(), path.path(), false);
+            addResourceDir(key.toLatin1(), path.path(), false);
     }
 }
 

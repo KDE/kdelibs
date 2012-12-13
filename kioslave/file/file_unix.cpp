@@ -572,7 +572,7 @@ void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& 
 
     // get uid from given owner
     {
-        struct passwd *p = ::getpwnam(owner.toAscii());
+        struct passwd *p = ::getpwnam(owner.toLatin1());
 
         if ( ! p ) {
             error( KIO::ERR_SLAVE_DEFINED,
@@ -585,7 +585,7 @@ void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& 
 
     // get gid from given group
     {
-        struct group *p = ::getgrnam(group.toAscii());
+        struct group *p = ::getgrnam(group.toLatin1());
 
         if ( ! p ) {
             error( KIO::ERR_SLAVE_DEFINED,

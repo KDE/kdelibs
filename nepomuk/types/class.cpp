@@ -161,7 +161,7 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
                                                                           "FILTER(!bound(?undefdom1) && !bound(?undefdom2)) . } "
                                                                           "}")
                                                                   .arg( Soprano::Vocabulary::RDFS::domain().toString() )
-                                                                  .arg( QString::fromAscii( uri.toEncoded() ) )
+                                                                  .arg( QString::fromLatin1( uri.toEncoded() ) )
                                                                   .arg( Soprano::Vocabulary::RDFS::subPropertyOf().toString() ),
                                                                   Soprano::Query::QueryLanguageSparql );
 
@@ -170,7 +170,7 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
         it = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
                                                                              "?p <%1> <%2> . }")
                                                                      .arg( Soprano::Vocabulary::RDFS::domain().toString() )
-                                                                     .arg( QString::fromAscii( uri.toEncoded() ) ),
+                                                                     .arg( QString::fromLatin1( uri.toEncoded() ) ),
                                                                      Soprano::Query::QueryLanguageSparql );
     }
 
@@ -183,7 +183,7 @@ bool Nepomuk::Types::ClassPrivate::loadProperties()
     it = ResourceManager::instance()->mainModel()->executeQuery( QString("select ?p where { "
                                                                           "?p <%1> <%2> . }")
                                                                   .arg( Soprano::Vocabulary::RDFS::range().toString() )
-                                                                 .arg( QString::fromAscii( uri.toEncoded() ) ),
+                                                                 .arg( QString::fromLatin1( uri.toEncoded() ) ),
                                                                   Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
         rangeOf.append( Property( it.binding( "p" ).uri() ) );

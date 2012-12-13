@@ -576,7 +576,7 @@ void KIMProxy::pollAll( const QString &uid )
 		QDictIterator<OrgKdeKIMInterface> it( m_im_client_stubs );
 		for ( ; it.current(); ++it )
 		{
-			presence->insert( it.currentKey().toAscii().constData(), it.current()->presenceStatus( uid ) ); // m_im_client_stubs has qstring keys...
+			presence->insert( it.currentKey().toLatin1().constData(), it.current()->presenceStatus( uid ) ); // m_im_client_stubs has qstring keys...
 		}
 		d->presence_map.insert( uid, presence );
 	}*/

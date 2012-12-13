@@ -33,7 +33,7 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
 
     foreach(const Action &action, actions) {
 
-        err = AuthorizationRightGet(action.name.toAscii(), NULL);
+        err = AuthorizationRightGet(action.name.toLatin1(), NULL);
 
         if (err == errAuthorizationDenied) {
 
@@ -48,10 +48,10 @@ void output(QList<Action> actions, QHash<QString, QString> domain)
             else if (action.policy == QLatin1String("auth_admin"))
                 rule = QString::fromLatin1(kAuthorizationRuleAuthenticateAsAdmin);
 
-            CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toAscii(), kCFStringEncodingASCII);
-            CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.descriptions.value(QLatin1String("en")).toAscii(), kCFStringEncodingASCII);
+            CFStringRef cfRule = CFStringCreateWithCString(NULL, rule.toLatin1(), kCFStringEncodingASCII);
+            CFStringRef cfPrompt = CFStringCreateWithCString(NULL, action.descriptions.value(QLatin1String("en")).toLatin1(), kCFStringEncodingASCII);
 
-            err = AuthorizationRightSet(auth, action.name.toAscii(), cfRule, cfPrompt, NULL, NULL);
+            err = AuthorizationRightSet(auth, action.name.toLatin1(), cfRule, cfPrompt, NULL, NULL);
             if (err != noErr) {
                 cerr << "You don't have the right to edit the security database (try to run cmake with sudo): " << err << endl;
                 exit(1);

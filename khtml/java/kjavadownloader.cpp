@@ -105,7 +105,7 @@ void KJavaDownloader::slotData( KIO::Job*, const QByteArray& qb )
         QString headers = d->job->queryMetaData("HTTP-Headers");
         if (!headers.isEmpty()) {
             d->file.resize( headers.length() );
-            memcpy( d->file.data(), headers.toAscii().constData(), headers.length() );
+            memcpy( d->file.data(), headers.toLatin1().constData(), headers.length() );
             server->sendURLData( d->loaderID, HEADERS, d->file );
             d->file.resize( 0 );
         }
@@ -139,7 +139,7 @@ void KJavaDownloader::slotResult( KJob* )
             code = 404;
         QString codestr = QString::number(code);
         d->file.resize(codestr.length());
-        memcpy( d->file.data(), codestr.toAscii().constData(), codestr.length() );
+        memcpy( d->file.data(), codestr.toLatin1().constData(), codestr.length() );
         kDebug(6100) << "slave had an error = " << code;
 
         server->sendURLData( d->loaderID, ERRORCODE, d->file );
@@ -268,7 +268,7 @@ void KJavaUploader::slotResult( KJob* )
         int code = d->job->error();
         QString codestr = QString::number(code);
         d->file.resize(codestr.length());
-        memcpy( d->file.data(), codestr.toAscii().constData(), codestr.length() );
+        memcpy( d->file.data(), codestr.toLatin1().constData(), codestr.length() );
         kDebug(6100) << "slave had an error " << code <<  ": " << d->job->errorString();
 
         server->sendURLData( d->loaderID, ERRORCODE, d->file );

@@ -41,13 +41,13 @@ int main(int argc, char *argv[])
 		QLatin1String("konsole"), QString(), &error, &dcopService, &pid );
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\", pid = %d\n",
-      result, error.toAscii().constData(), dcopService.data(), pid);
+      result, error.toLatin1().constData(), dcopService.data(), pid);
 
    result = KToolInvocation::startServiceByDesktopName(
 		QLatin1String("konqueror"), QString(),  &error, &dcopService, &pid );
 
    printf("Result = %d, error = \"%s\", dcopService = \"%s\", pid = %d\n",
-      result, error.toAscii().constData(), dcopService.data(), pid);
+      result, error.toLatin1().constData(), dcopService.data(), pid);
 #endif
 }
 

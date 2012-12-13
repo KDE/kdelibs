@@ -3988,7 +3988,7 @@ void KHTMLPart::slotSecurity()
   bool certChainOk = d->m_ssl_in_use;
   if (certChainOk) {
     foreach (const QString &s, sl) {
-      certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+      certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
       if (certChain.last().isNull()) {
         certChainOk = false;
         break;
@@ -4016,7 +4016,7 @@ void KHTMLPart::slotSecurity()
     QList<QSslCertificate> certChain;
     bool decodedOk = true;
     foreach (const QString &s, sl) {
-        certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+        certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
         if (certChain.last().isNull()) {
             decodedOk = false;
             break;

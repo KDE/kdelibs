@@ -462,7 +462,7 @@ KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLine
 
    // Strip path from argv[0]
    if (s->all_argc) {
-     char *p = strrchr(s->all_argv[0], QDir::separator().toAscii());
+     char *p = strrchr(s->all_argv[0], QDir::separator().toLatin1());
      if (p)
        s->appName = p+1;
      else

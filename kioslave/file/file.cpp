@@ -875,7 +875,7 @@ void FileProtocol::special( const QByteArray &data)
 	if (ok)
 	    finished();
 	else
-	    mount( ro, fstype.toAscii(), dev, point );
+	    mount( ro, fstype.toLatin1(), dev, point );
 
       }
       break;

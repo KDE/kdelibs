@@ -483,7 +483,7 @@ QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )
                                                        "UNION "
                                                        "{ graph <%1> { ?s4 ?4 ?o4 . } . } "
                                                        "}")
-                                   .arg( QString::fromAscii( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
+                                   .arg( QString::fromLatin1( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
             return uri;
         }
     }

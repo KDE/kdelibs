@@ -77,7 +77,7 @@ void ProxyModelTest::initRootModel(DynamicTreeModel *rootModel, const QString &c
   if (!hasMetaMethodStartingWith(m_modelCommander, "init_" + currentTest))
     return;
 
-  QMetaObject::invokeMethod(m_modelCommander, QString("init_" + currentTest).toAscii(), Q_ARG(QString, currentTag));
+  QMetaObject::invokeMethod(m_modelCommander, QString("init_" + currentTest).toLatin1(), Q_ARG(QString, currentTag));
 }
 
 void ProxyModelTest::verifyExecutedTests()
@@ -95,7 +95,7 @@ void ProxyModelTest::verifyExecutedTests()
     QString failString = QString("Some tests in %1 were not implemented: %2").arg(m_currentTest, unimplementedTestsString);
     m_dataTags.clear();
     m_currentTest = QTest::currentTestFunction();
-    QFAIL(failString.toAscii());
+    QFAIL(failString.toLatin1());
   }
 }
 
@@ -131,7 +131,7 @@ void ProxyModelTest::init()
     if (!hasMetaMethodStartingWith(m_modelCommander, metaMethod))
       return;
 
-    QMetaObject::invokeMethod(m_modelCommander, metaMethod.toAscii(), Q_RETURN_ARG(QStringList, m_modelCommanderTags), Q_ARG(QString, QString()));
+    QMetaObject::invokeMethod(m_modelCommander, metaMethod.toLatin1(), Q_RETURN_ARG(QStringList, m_modelCommanderTags), Q_ARG(QString, QString()));
     m_currentTest = currentTest;
   }
   m_dataTags.append(currentTag);
@@ -564,7 +564,7 @@ void ProxyModelTest::doTest()
 
   Q_ASSERT(m_modelSpy->isEmpty());
   m_modelSpy->startSpying();
-  QMetaObject::invokeMethod(m_modelCommander, QString("execute_" + testName).toAscii(), Q_ARG(QString, testDataTag));
+  QMetaObject::invokeMethod(m_modelCommander, QString("execute_" + testName).toLatin1(), Q_ARG(QString, testDataTag));
   m_modelSpy->stopSpying();
 
   if (modelSpy()->isEmpty())

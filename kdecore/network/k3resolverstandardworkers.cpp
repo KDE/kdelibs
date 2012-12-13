@@ -533,7 +533,7 @@ namespace
 		(p->ai_canonname != previous_canon &&
 		 strcmp(p->ai_canonname, previous_canon) != 0))
 	      {
-		canon = KResolver::domainToUnicode(QString::fromAscii(p->ai_canonname));
+		canon = KResolver::domainToUnicode(QString::fromLatin1(p->ai_canonname));
 		previous_canon = p->ai_canonname;
 	      }
 

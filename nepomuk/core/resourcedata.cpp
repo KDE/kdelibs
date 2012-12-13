@@ -457,7 +457,7 @@ bool Nepomuk::ResourceData::load()
                 // TODO: somehow handle pimo:referencingOccurrence and pimo:occurrence
                 QueryResultIterator pimoIt = MAINMODEL->executeQuery( QString( "select ?r where { ?r <%1> <%2> . }")
                                                                       .arg( Vocabulary::PIMO::groundingOccurrence().toString() )
-                                                                      .arg( QString::fromAscii( m_uri.toEncoded() ) ),
+                                                                      .arg( QString::fromLatin1( m_uri.toEncoded() ) ),
                                                                       Soprano::Query::QueryLanguageSparqlNoInference );
                 if( pimoIt.next() ) {
                     m_pimoThing = new Thing( pimoIt.binding("r").uri() );

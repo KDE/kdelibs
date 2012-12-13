@@ -166,7 +166,7 @@ public:
         {
             if (len) {
                 // Since we are in kdecore here, we cannot use KMsgBox
-                QString msg = QString::fromAscii(data, len);
+                QString msg = QString::fromLatin1(data, len);
                 KMessage::message(KMessage::Information, msg, m_caption);
             }
             return len;
@@ -470,7 +470,7 @@ struct KDebugPrivate
 
         header += areaName;
         header += ')';
-        messageboxwriter.localData()->setCaption(QString::fromAscii(header));
+        messageboxwriter.localData()->setCaption(QString::fromLatin1(header));
         return result;
     }
 

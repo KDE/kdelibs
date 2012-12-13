@@ -472,7 +472,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
         QList<QSslCertificate> certChain;
         bool decodedOk = true;
         foreach (const QString &s, sl) {
-            certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+            certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
             if (certChain.last().isNull()) {
                 decodedOk = false;
                 break;

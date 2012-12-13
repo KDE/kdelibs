@@ -277,7 +277,7 @@ protected:
     QTest::addColumn<SignalList>("signalList");
     QTest::addColumn<PersistentChangeList>("changeList");
 
-    QTest::newRow(name.toAscii()) << (SignalList() << (QVariantList() << "skip") ) << PersistentChangeList();
+    QTest::newRow(name.toLatin1()) << (SignalList() << (QVariantList() << "skip") ) << PersistentChangeList();
   }
 
   void processTestName(const QString &name)
@@ -299,7 +299,7 @@ protected:
   {
     processTestName(name);
 
-    QTest::newRow(name.toAscii()) << SignalList() << PersistentChangeList();
+    QTest::newRow(name.toLatin1()) << SignalList() << PersistentChangeList();
   }
 
   void noopLayoutChangeTest(const QString &name)
@@ -311,7 +311,7 @@ protected:
     signalList << ( QVariantList() << LayoutAboutToBeChanged );
     signalList << ( QVariantList() << LayoutChanged );
 
-    QTest::newRow(name.toAscii()) << signalList << PersistentChangeList();
+    QTest::newRow(name.toLatin1()) << signalList << PersistentChangeList();
   }
 
   void testForwardingInsertData(const IndexFinder &indexFinder)
@@ -398,7 +398,7 @@ protected:
     if (rowCount - 1 + ( end - start + 1 ) > end)
       persistentList << m_proxyModelTest->getChange( indexFinder, start, rowCount - 1, end - start + 1 );
 
-    QTest::newRow(name.toAscii()) << signalList << persistentList;
+    QTest::newRow(name.toLatin1()) << signalList << persistentList;
   }
 
   void newRemoveTest(const QString &name, const IndexFinder &indexFinder, int start, int end, int rowCount)
@@ -417,7 +417,7 @@ protected:
       persistentList << m_proxyModelTest->getChange( indexFinder, end + 1, rowCount - 1, -1 * (end - start + 1) );
     }
 
-    QTest::newRow(name.toAscii()) << signalList << persistentList;
+    QTest::newRow(name.toLatin1()) << signalList << persistentList;
   }
 
   void newMoveTest(const QString &name, const IndexFinder &srcFinder, int start, int end, int rowCount, const IndexFinder &destFinder, int destStart)
@@ -456,7 +456,7 @@ protected:
       }
     }
 
-    QTest::newRow(name.toAscii()) << signalList << persistentList;
+    QTest::newRow(name.toLatin1()) << signalList << persistentList;
   }
 
   void newModifyTest(const QString &name, const IndexFinder &parentFinder, int top, int bottom)
@@ -473,7 +473,7 @@ protected:
 
     signalList << m_proxyModelTest->getSignal(DataChanged, topLeftFinder, bottomRightFinder);
 
-    QTest::newRow(name.toAscii()) << signalList << PersistentChangeList();
+    QTest::newRow(name.toLatin1()) << signalList << PersistentChangeList();
   }
 
   void noop_testInsertWhenEmptyData()
@@ -609,7 +609,7 @@ PROXYMODELTESTSUITE_EXPORT uint qHash( const QVariant & var );
     proxyModelTestClass->setTestData(new TestData<TemplateArg>(proxyModelTestClass)); \
     proxyModelTestClass->setUseIntermediateProxy(IntermediateProxy); \
     proxyModelTestClass->setLazyPersistence(LazyPersistence); \
-    qDebug()  << "\n   Running" << proxyModelTestClass->objectName().toAscii() << testNum << ":\n" \
+    qDebug()  << "\n   Running" << proxyModelTestClass->objectName().toLatin1() << testNum << ":\n" \
               << "  Source Model:      " << #IntermediateProxy << "\n" \
               << "  Persistence:       " << #LazyPersistence << "\n" \
               Config; \
@@ -624,7 +624,7 @@ PROXYMODELTESTSUITE_EXPORT uint qHash( const QVariant & var );
     proxyModelTestClass->setTestData(TestData); \
     proxyModelTestClass->setUseIntermediateProxy(IntermediateProxy); \
     proxyModelTestClass->setLazyPersistence(LazyPersistence); \
-    qDebug()  << "\n   Running" << proxyModelTestClass->objectName().toAscii() << testNum << ":\n" \
+    qDebug()  << "\n   Running" << proxyModelTestClass->objectName().toLatin1() << testNum << ":\n" \
               << "  Source Model:      " << #IntermediateProxy << "\n" \
               << "  Persistence:       " << #LazyPersistence << "\n" \
               Config; \
