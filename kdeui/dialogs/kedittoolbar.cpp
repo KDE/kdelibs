@@ -22,6 +22,7 @@
 #include <QShowEvent>
 
 
+#include <QDialogButtonBox>
 #include <QtXml/QDomDocument>
 #include <QLayout>
 #include <QtCore/QDir>
@@ -276,31 +277,38 @@ ToolBarItem* ToolBarListWidget::currentItem() const
 
 
 IconTextEditDialog::IconTextEditDialog(QWidget *parent)
-    : KDialog(parent)
+    : QDialog(parent)
 {
-    setCaption(i18n("Change Text"));
-    setButtons(Ok | Cancel);
-    setDefaultButton(Ok);
+    setWindowTitle(i18n("Change Text"));
     setModal(true);
 
-    QWidget *mainWidget = new QWidget(this);
-    QGridLayout *layout = new QGridLayout(mainWidget);
-    layout->setMargin(0);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-    m_lineEdit = new KLineEdit(mainWidget);
+    QGridLayout *grid = new QGridLayout;
+    grid->setMargin(0);
+
+    m_lineEdit = new KLineEdit(this);
     m_lineEdit->setClearButtonShown(true);
     QLabel *label = new QLabel(i18n("Icon te&xt:"), this);
     label->setBuddy(m_lineEdit);
-    layout->addWidget(label, 0, 0);
-    layout->addWidget(m_lineEdit, 0, 1);
+    grid->addWidget(label, 0, 0);
+    grid->addWidget(m_lineEdit, 0, 1);
 
-    m_cbHidden = new QCheckBox(i18n("&Hide text when toolbar shows text alongside icons"), mainWidget);
-    layout->addWidget(m_cbHidden, 1, 1);
+    m_cbHidden = new QCheckBox(i18n("&Hide text when toolbar shows text alongside icons"), this);
+    grid->addWidget(m_cbHidden, 1, 1);
+
+    layout->addLayout(grid);
+
+    m_buttonBox = new QDialogButtonBox(this);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(m_buttonBox);
 
     connect(m_lineEdit, SIGNAL(textChanged(QString)), SLOT(slotTextChanged(QString)));
 
     m_lineEdit->setFocus();
-    setMainWidget(mainWidget);
     setFixedHeight(sizeHint().height());
 }
 
@@ -327,7 +335,7 @@ bool IconTextEditDialog::textAlongsideIconHidden() const
 void IconTextEditDialog::slotTextChanged(const QString &text)
 {
     // Do not allow empty icon text
-    enableButton(Ok, !text.trimmed().isEmpty());
+    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!text.trimmed().isEmpty());
 }
 
 
@@ -498,10 +506,12 @@ public:
 
     void init();
 
-    void _k_slotOk();
-    void _k_slotApply();
+    void _k_slotButtonClicked(QAbstractButton *button);
     void _k_acceptOK(bool);
-    void _k_slotDefault();
+    void _k_enableApply(bool);
+    void okClicked();
+    void applyClicked();
+    void defaultClicked();
 
     KEditToolBar *q;
     bool m_accept;
@@ -512,13 +522,15 @@ public:
     QString m_defaultToolBar;
     KXMLGUIFactory* m_factory;
     KEditToolBarWidget *m_widget;
+    QVBoxLayout *m_layout;
+    QDialogButtonBox *m_buttonBox;
 };
 
 Q_GLOBAL_STATIC(QString, s_defaultToolBarName)
 
 KEditToolBar::KEditToolBar( KActionCollection *collection,
                             QWidget* parent )
-  : KDialog(parent),
+  : QDialog(parent),
     d(new KEditToolBarPrivate(this))
 {
     d->m_widget = new KEditToolBarWidget( collection, this);
@@ -528,7 +540,7 @@ KEditToolBar::KEditToolBar( KActionCollection *collection,
 
 KEditToolBar::KEditToolBar( KXMLGUIFactory* factory,
                             QWidget* parent )
-    : KDialog(parent),
+    : QDialog(parent),
       d(new KEditToolBarPrivate(this))
 {
     d->m_widget = new KEditToolBarWidget( this);
@@ -543,21 +555,26 @@ void KEditToolBarPrivate::init()
 
     q->setDefaultToolBar( QString() );
 
-    q->setCaption(i18n("Configure Toolbars"));
-    q->setButtons(KDialog::Default|KDialog::Ok|KDialog::Apply|KDialog::Cancel);
-    q->setDefaultButton(KDialog::Ok);
-
+    q->setWindowTitle(i18n("Configure Toolbars"));
     q->setModal(false);
 
-    q->setMainWidget(m_widget);
+    m_layout = new QVBoxLayout;
+    q->setLayout(m_layout);
+
+    m_layout->addWidget(m_widget);
+
+    m_buttonBox = new QDialogButtonBox(q);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::RestoreDefaults
+                                | QDialogButtonBox::Ok
+                                | QDialogButtonBox::Apply
+                                | QDialogButtonBox::Cancel);
+    q->connect(m_buttonBox, SIGNAL(clicked(QAbstractButton*)), SLOT(_k_slotButtonClicked(QAbstractButton*)));
+    q->connect(m_buttonBox, SIGNAL(rejected()), SLOT(reject()));
+    m_layout->addWidget(m_buttonBox);
 
     q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(_k_acceptOK(bool)));
-    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
-    q->enableButtonApply(false);
-
-    q->connect(q, SIGNAL(okClicked()), SLOT(_k_slotOk()));
-    q->connect(q, SIGNAL(applyClicked()), SLOT(_k_slotApply()));
-    q->connect(q, SIGNAL(defaultClicked()), SLOT(_k_slotDefault()));
+    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(_k_enableApply(bool)));
+    _k_enableApply(false);
 
     q->setMinimumSize(q->sizeHint());
 }
@@ -586,11 +603,16 @@ void KEditToolBar::setDefaultToolBar( const QString& toolBarName )
 
 void KEditToolBarPrivate::_k_acceptOK(bool b)
 {
-    q->enableButtonOk(b);
+    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(b);
     m_accept = b;
 }
 
-void KEditToolBarPrivate::_k_slotDefault()
+void KEditToolBarPrivate::_k_enableApply(bool b)
+{
+    m_buttonBox->button(QDialogButtonBox::Apply)->setEnabled(b);
+}
+
+void KEditToolBarPrivate::defaultClicked()
 {
     if ( KMessageBox::warningContinueCancel(q, i18n("Do you really want to reset all toolbars of this application to their default? The changes will be applied immediately."), i18n("Reset Toolbars"),KGuiItem(i18n("Reset")))!=KMessageBox::Continue )
         return;
@@ -636,19 +658,38 @@ void KEditToolBarPrivate::_k_slotDefault()
 
     // Copy the geometry to minimize UI flicker
     m_widget->setGeometry( oldWidget->geometry() );
-    q->setMainWidget(m_widget);
     delete oldWidget;
+    m_layout->insertWidget(0, m_widget);
 
     q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(_k_acceptOK(bool)));
-    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(enableButtonApply(bool)));
+    q->connect(m_widget, SIGNAL(enableOk(bool)), SLOT(_k_enableApply(bool)));
 
-    q->enableButtonApply(false);
+    _k_enableApply(false);
 
     emit q->newToolBarConfig();
     emit q->newToolbarConfig(); // compat
 }
 
-void KEditToolBarPrivate::_k_slotOk()
+void KEditToolBarPrivate::_k_slotButtonClicked(QAbstractButton *button)
+{
+    QDialogButtonBox::StandardButton type = m_buttonBox->standardButton(button);
+
+    switch (type) {
+    case QDialogButtonBox::Ok:
+        okClicked();
+        break;
+    case QDialogButtonBox::Apply:
+        applyClicked();
+        break;
+    case QDialogButtonBox::RestoreDefaults:
+        defaultClicked();
+        break;
+    default:
+        break;
+    }
+}
+
+void KEditToolBarPrivate::okClicked()
 {
   if (!m_accept) {
       q->reject();
@@ -663,7 +704,7 @@ void KEditToolBarPrivate::_k_slotOk()
   {
     // Do not emit the "newToolBarConfig" signal again here if the "Apply"
     // button was already pressed and no further changes were made.
-    if (q->isButtonEnabled(KDialog::Apply)) {
+    if (m_buttonBox->button(QDialogButtonBox::Apply)->isEnabled()) {
         emit q->newToolBarConfig();
         emit q->newToolbarConfig(); // compat
     }
@@ -671,10 +712,10 @@ void KEditToolBarPrivate::_k_slotOk()
   }
 }
 
-void KEditToolBarPrivate::_k_slotApply()
+void KEditToolBarPrivate::applyClicked()
 {
     (void)m_widget->save();
-    q->enableButtonApply(false);
+    _k_enableApply(false);
     emit q->newToolBarConfig();
     emit q->newToolbarConfig(); // compat
 }
@@ -1548,7 +1589,7 @@ void KEditToolBarWidgetPrivate::slotChangeIconText()
     dialog.setIconText(iconText);
     dialog.setTextAlongsideIconHidden(hidden);
 
-    bool ok = dialog.exec() == KDialog::Accepted;
+    bool ok = dialog.exec() == QDialog::Accepted;
     iconText = dialog.iconText();
     hidden = dialog.textAlongsideIconHidden();
 
@@ -1668,7 +1709,7 @@ void KEditToolBar::showEvent( QShowEvent * event )
 
         KToolBar::setToolBarsEditable(true);
     }
-    KDialog::showEvent(event);
+    QDialog::showEvent(event);
 }
 
 void KEditToolBar::hideEvent(QHideEvent* event)
@@ -1676,7 +1717,7 @@ void KEditToolBar::hideEvent(QHideEvent* event)
   // The dialog has been hidden, disable toolbar editing
   KToolBar::setToolBarsEditable(false);
 
-  KDialog::hideEvent(event);
+  QDialog::hideEvent(event);
 }
 
 #include "moc_kedittoolbar.cpp"

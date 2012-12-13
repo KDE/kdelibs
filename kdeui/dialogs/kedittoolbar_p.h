@@ -20,9 +20,10 @@
 #define KEDITTOOLBARP_H
 
 #include <kxmlguiclient.h>
-#include <kdialog.h>
+#include <QDialog>
 #include <QListWidget>
 
+class QDialogButtonBox;
 class KLineEdit;
 class QCheckBox;
 
@@ -75,7 +76,7 @@ private:
     bool m_activeList;
 };
 
-class IconTextEditDialog : public KDialog
+class IconTextEditDialog : public QDialog
 {
     Q_OBJECT
 public:
@@ -94,6 +95,7 @@ private Q_SLOTS:
 private:
     KLineEdit *m_lineEdit;
     QCheckBox *m_cbHidden;
+    QDialogButtonBox *m_buttonBox;
 };
 
 /**

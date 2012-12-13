@@ -20,7 +20,7 @@
 #ifndef KEDITTOOLBAR_H
 #define KEDITTOOLBAR_H
 
-#include <kdialog.h>
+#include <QDialog>
 
 #include <kdeui_export.h>
 
@@ -67,7 +67,7 @@ class KXMLGUIFactory;
  * @author Kurt Granroth <granroth@kde.org>
  * @maintainer David Faure <faure@kde.org>
  */
-class KDEUI_EXPORT KEditToolBar : public KDialog
+class KDEUI_EXPORT KEditToolBar : public QDialog
 {
     Q_OBJECT
 public:
@@ -163,10 +163,9 @@ private:
   friend class KEditToolBarPrivate;
   KEditToolBarPrivate *const d;
 
-  Q_PRIVATE_SLOT( d, void _k_slotOk() )
-  Q_PRIVATE_SLOT( d, void _k_slotApply() )
+  Q_PRIVATE_SLOT( d, void _k_slotButtonClicked(QAbstractButton*) )
   Q_PRIVATE_SLOT( d, void _k_acceptOK(bool) )
-  Q_PRIVATE_SLOT( d, void _k_slotDefault() )
+  Q_PRIVATE_SLOT( d, void _k_enableApply(bool) )
 
   Q_DISABLE_COPY(KEditToolBar)
 };

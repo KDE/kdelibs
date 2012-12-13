@@ -20,10 +20,12 @@
 
 #include <QtTest/QtTest>
 #include "kxmlgui_unittest.h"
+#include <QDialogButtonBox>
 #include <QShowEvent>
 #include <QMenuBar>
 #include <kedittoolbar.h>
 #include <kaction.h>
+#include <kconfiggroup.h>
 #include <kpushbutton.h>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
@@ -90,6 +92,14 @@ static void createXmlFile(QFile& file, int version, int flags, const QByteArray&
             );
     }
     file.write("</" + toplevelTag + ">\n");
+}
+
+static void clickApply(KEditToolBar *dialog)
+{
+    QDialogButtonBox *box = dialog->findChild<QDialogButtonBox*>();
+    Q_ASSERT(box != 0);
+    box->button(QDialogButtonBox::Apply)->setEnabled(true);
+    box->button(QDialogButtonBox::Apply)->click();
 }
 
 void KXmlGui_UnitTest::initTestCase()
@@ -698,8 +708,7 @@ void KXmlGui_UnitTest::testHiddenToolBar()
     KEditToolBar editToolBar(factory);
     // KEditToolBar loads the stuff in showEvent...
     QShowEvent ev; qApp->sendEvent(&editToolBar, &ev);
-    editToolBar.button(KDialog::Apply)->setEnabled(true);
-    editToolBar.button(KDialog::Apply)->click();
+    clickApply(&editToolBar);
     QVERIFY(qobject_cast<KToolBar *>(factory->container("hiddenToolBar", &mainWindow))->isHidden());
 
     mainWindow.close();
@@ -814,8 +823,7 @@ void KXmlGui_UnitTest::testDeletedContainers() // deleted="true"
     KEditToolBar editToolBar(factory);
     // KEditToolBar loads the stuff in showEvent...
     QShowEvent ev; qApp->sendEvent(&editToolBar, &ev);
-    editToolBar.button(KDialog::Apply)->setEnabled(true);
-    editToolBar.button(KDialog::Apply)->click();
+    clickApply(&editToolBar);
     QVERIFY(!factory->container("mainToolBar", &mainWindow));
     QVERIFY(!factory->container("visibleToolBar", &mainWindow)->isHidden());
     QVERIFY(!factory->container("deletedToolBar", &mainWindow));
