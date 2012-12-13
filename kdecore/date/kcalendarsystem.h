@@ -628,7 +628,7 @@ public:
      * @param date the date to obtain day from
      * @return day of week number, -1 if input date not valid
      */
-    virtual int dayOfWeek(const QDate &date) const;
+    int dayOfWeek(const QDate &date) const;
 
     /**
      * @deprecated use week() instead

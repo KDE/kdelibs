@@ -405,11 +405,6 @@ QDate KCalendarSystemGregorian::latestValidDate() const
     // return QDate(std::num_limits<int>::max(), 12, 31);
 }
 
-int KCalendarSystemGregorian::dayOfWeek(const QDate &date) const
-{
-    return date.dayOfWeek();
-}
-
 QString KCalendarSystemGregorian::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(month, year, format);

@@ -910,16 +910,6 @@ QDate KCalendarSystemHebrew::latestValidDate() const
     return QDate::fromJulianDay(3313431);
 }
 
-int KCalendarSystemHebrew::dayOfWeek(const QDate &date) const
-{
-    class h_date * sd = toHebrew(date);
-    if (sd->hd_dw == 0) {
-        return 7;
-    } else {
-        return (sd->hd_dw);
-    }
-}
-
 QString KCalendarSystemHebrew::monthName(int month, int year, MonthNameFormat format) const
 {
     return KCalendarSystem::monthName(month, year, format);

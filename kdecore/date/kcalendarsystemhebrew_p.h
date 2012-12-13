@@ -51,8 +51,6 @@ public:
     virtual QDate earliestValidDate() const;
     virtual QDate latestValidDate() const;
 
-    virtual int dayOfWeek(const QDate &date) const;
-
     virtual QString monthName(int month, int year, MonthNameFormat format = LongName) const;
     virtual QString monthName(const QDate &date, MonthNameFormat format = LongName) const;
 

@@ -604,13 +604,14 @@ int KCalendarSystemPrivate::dayOfYear(const QDate &date) const
     return (date.toJulianDay() - jdFirstDayOfYear + 1);
 }
 
+// This assumes all calendar systems agree on the day of week for a given
+// julian day number. That is true of all current calendar systems. If we
+// ever want to support one for which it isn't this implementation can be
+// changed. Doing so will, however, likely break some code, so don't do that
+// without testing and fixing at least all of KDE SC.
 int KCalendarSystemPrivate::dayOfWeek(const QDate &date) const
 {
-    // Makes assumption that Julian Day 0 was day 1 of week
-    // This is true for Julian/Gregorian calendar with jd 0 being Monday
-    // We add 1 for ISO compliant numbering for 7 day week
-    // Assumes we've never skipped weekdays
-    return ((date.toJulianDay() % daysInWeek()) + 1);
+    return date.dayOfWeek();
 }
 
 QDate KCalendarSystemPrivate::firstDayOfYear(int year) const
