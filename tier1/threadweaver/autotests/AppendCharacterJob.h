@@ -35,7 +35,7 @@ public:
         m_stringref->append( m_c );
         using namespace ThreadWeaver;
         debug( 3, "AppendCharacterJob::run: %c appended, result is %s.\n",
-               m_c.toAscii(), qPrintable( *m_stringref ) );
+               m_c.toLatin1(), qPrintable( *m_stringref ) );
     }
 
 private:

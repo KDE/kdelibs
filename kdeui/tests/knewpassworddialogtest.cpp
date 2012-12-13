@@ -34,7 +34,7 @@ int main( int argc, char *argv[] )
 
     if( dlg.exec() )
     {
-        std::cout << "Entered password: " << (const char*)dlg.password().toAscii() << std::endl;
+        std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << std::endl;
         return 0;
     }
     else

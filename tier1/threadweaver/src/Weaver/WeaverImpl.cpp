@@ -123,7 +123,7 @@ void WeaverImpl::setState ( StateId id )
     {
         m_state = m_states[id];
         debug ( 2, "WeaverImpl::setState: state changed to \"%s\".\n",
-                m_state->stateName().toAscii().constData() );
+                m_state->stateName().toLatin1().constData() );
         if ( id == Suspended )
 	{
             Q_EMIT ( suspended() );

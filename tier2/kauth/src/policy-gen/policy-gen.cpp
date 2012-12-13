@@ -70,7 +70,7 @@ QList<Action> parse(QSettings &ini)
         }
 
         if (!actionExp.exactMatch(name)) {
-            qCritical("Wrong action syntax: %s\n", name.toAscii().data());
+            qCritical("Wrong action syntax: %s\n", name.toLatin1().data());
             exit(1);
         }
 
@@ -97,7 +97,7 @@ QList<Action> parse(QSettings &ini)
             } else if (key.toLower() == QLatin1String("policy")) {
                 QString policy = ini.value(key).toString();
                 if (!policyExp.exactMatch(policy)) {
-                    qCritical("Wrong policy: %s", policy.toAscii().data());
+                    qCritical("Wrong policy: %s", policy.toLatin1().data());
                     exit(1);
                 }
                 action.policy = policy;
@@ -105,7 +105,7 @@ QList<Action> parse(QSettings &ini)
             } else if (key.toLower() == QLatin1String("policyinactive")) {
                 QString policyInactive = ini.value(key).toString();
                 if (!policyExp.exactMatch(policyInactive)) {
-                    qCritical("Wrong policy: %s", policyInactive.toAscii().data());
+                    qCritical("Wrong policy: %s", policyInactive.toLatin1().data());
                     exit(1);
                 }
                 action.policyInactive = policyInactive;
@@ -113,7 +113,7 @@ QList<Action> parse(QSettings &ini)
             } else if (key.toLower() == QLatin1String("persistence")) {
                 QString persistence = ini.value(key).toString();
                 if (persistence != QLatin1String("session") && persistence != QLatin1String("always")) {
-                    qCritical("Wrong persistence: %s", persistence.toAscii().data());
+                    qCritical("Wrong persistence: %s", persistence.toLatin1().data());
                     exit(1);
                 }
                 action.persistence = persistence;
@@ -121,7 +121,7 @@ QList<Action> parse(QSettings &ini)
         }
 
         if (action.policy.isEmpty() || action.messages.isEmpty() || action.descriptions.isEmpty()) {
-            qCritical("Missing option in action: %s", name.toAscii().data());
+            qCritical("Missing option in action: %s", name.toLatin1().data());
             exit(1);
         }
         ini.endGroup();

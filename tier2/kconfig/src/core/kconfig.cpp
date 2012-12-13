@@ -216,7 +216,7 @@ QString KConfigPrivate::expandString(const QString& value)
                 else
 #endif
                 {
-                    QByteArray pEnv = qgetenv(aVarName.toAscii().constData());
+                    QByteArray pEnv = qgetenv(aVarName.toLatin1().constData());
                     if( !pEnv.isEmpty() )
                         env = QString::fromLocal8Bit(pEnv.constData());
                 }

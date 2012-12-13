@@ -47,7 +47,7 @@ QString domainToDNS(const QString &domain)
 QString DNSToDomain(const QString& domain)
 {
 	if (domainIsLocal(domain)) return domain;
-	else return QUrl::fromAce(domain.toAscii());
+	else return QUrl::fromAce(domain.toLatin1());
 }
 }
 

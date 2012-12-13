@@ -548,7 +548,7 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
 
         const QString charset = val.left(spos);
         const QString lang = val.mid(spos + 1, npos - spos - 1);
-        const QByteArray encodedVal = val.mid(npos + 1).toAscii();
+        const QByteArray encodedVal = val.mid(npos + 1).toLatin1();
 
         if ( ! isValidPercentEncoding(encodedVal) )
             continue;
@@ -563,9 +563,9 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
 
             if (!valid)
                 continue;
-            val = QString::fromAscii(rawval.constData());
+            val = QString::fromLatin1(rawval.constData());
         } else {
-            QTextCodec *codec = QTextCodec::codecForName(charset.toAscii());
+            QTextCodec *codec = QTextCodec::codecForName(charset.toLatin1());
             if (!codec)
                 continue;
             val = codec->toUnicode(rawval);

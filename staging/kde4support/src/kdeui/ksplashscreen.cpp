@@ -24,7 +24,7 @@
 
 #include <QPixmap>
 
-KSplashScreen::KSplashScreen(const QPixmap &pixmap, Qt::WFlags f)
+KSplashScreen::KSplashScreen(const QPixmap &pixmap, Qt::WindowFlags f)
     : QSplashScreen( pixmap, f ),
       d( 0 )
 {

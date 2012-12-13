@@ -438,7 +438,7 @@ public:
    */
   K3DockWidget( K3DockManager* dockManager, const char* name,
                const QPixmap &pixmap, QWidget* parent = 0L, const QString& strCaption = QString(),
-               const QString& strTabPageLabel = QLatin1String( " " ), Qt::WFlags f = 0);
+               const QString& strTabPageLabel = QLatin1String( " " ), Qt::WindowFlags f = 0);
 
   /**
    * Destructs a dockwidget.
@@ -1295,7 +1295,7 @@ public:
    * @param name internal object name
    * @param f Qt::WidgetFlags widget flags
    */
-  K3DockMainWindow( QWidget* parent = 0L, const char *name = 0L, Qt::WFlags f = Qt::Window);
+  K3DockMainWindow( QWidget* parent = 0L, const char *name = 0L, Qt::WindowFlags f = Qt::Window);
 
   /**
    * Destructs a dockmainwindow.

@@ -49,9 +49,9 @@ namespace KUnitTest
     void SlotTester::invokeMember(const QString &str)
     {
         QString slotname = QString::number(QSLOT_CODE) + str;
-        connect(this, SIGNAL(invoke()), this, slotname.toAscii().constData());
+        connect(this, SIGNAL(invoke()), this, slotname.toLatin1().constData());
         emit invoke();
-        disconnect(this, SIGNAL(invoke()), this, slotname.toAscii().constData());
+        disconnect(this, SIGNAL(invoke()), this, slotname.toLatin1().constData());
     }
 
     void SlotTester::allTests()

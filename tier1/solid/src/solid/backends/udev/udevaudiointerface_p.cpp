@@ -40,7 +40,7 @@ UdevAudioInterfacePrivate::UdevAudioInterfacePrivate(UDevDevice *device) : m_dev
     QString path = m_device->deviceName();
 
     int lastSlash = path.length() - path.lastIndexOf(QLatin1String("/")) -1;
-    QByteArray lastElement = path.right(lastSlash).toAscii();
+    QByteArray lastElement = path.right(lastSlash).toLatin1();
     
     const char *lastElementAscii = lastElement.constData();
 
@@ -288,7 +288,7 @@ QString UdevAudioInterfacePrivate::cardNumberToName()
     QString toFind;
     toFind.sprintf("%2d [", m_cardnum);
 
-    QByteArray line = grepHelper(QLatin1String("/proc/asound/cards"), toFind.toAscii());
+    QByteArray line = grepHelper(QLatin1String("/proc/asound/cards"), toFind.toLatin1());
 
     int cut =  line.length() - line.lastIndexOf(" - ") - 3;
     QString name = line.right(cut);

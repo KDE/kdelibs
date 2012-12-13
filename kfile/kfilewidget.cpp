@@ -304,7 +304,7 @@ static bool containsProtocolSection( const QString& string )
         int j=i-1;
         for (; j >= 0; j--) {
             const QChar& ch( string[j] );
-            if (ch.toAscii() == 0 || !ch.isLetter())
+            if (ch.toLatin1() == 0 || !ch.isLetter())
                 break;
             if (ch.isSpace() && (i-j-1) >= 2)
                 return true;

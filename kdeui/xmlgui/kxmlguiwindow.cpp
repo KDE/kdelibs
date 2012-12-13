@@ -73,7 +73,7 @@ public:
     KXMLGUIFactory *factory;
 };
 
-KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WFlags f )
+KXmlGuiWindow::KXmlGuiWindow( QWidget* parent, Qt::WindowFlags f )
     : KMainWindow(*new KXmlGuiWindowPrivate, parent, f), KXMLGUIBuilder( this )
 {
     K_D(KXmlGuiWindow);

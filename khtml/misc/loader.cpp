@@ -336,7 +336,7 @@ QString CachedCSSStyleSheet::checkCharset(const QByteArray& buffer ) const
         // the string until "; is the charset name
         const char *p = strchr(d+10, '"');
         if (p == 0) return m_charset;
-        QString charset = QString::fromAscii(d+10, p-(d+10));
+        QString charset = QString::fromLatin1(d+10, p-(d+10));
         return charset;
     }
     return m_charset;
@@ -1249,7 +1249,7 @@ void Loader::slotFinished( KJob* job )
 #ifdef LOADER_DEBUG
       kDebug(6060) << "Loader::slotFinished, with error. job->error()= " << j->error() << " job->isErrorPage()=" << j->isErrorPage();
 #endif
-      r->object->error( job->error(), job->errorText().toAscii().constData() );
+      r->object->error( job->error(), job->errorText().toLatin1().constData() );
       emit requestFailed( r->m_docLoader, r->object );
   }
   else

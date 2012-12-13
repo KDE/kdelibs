@@ -67,7 +67,7 @@ class KAssistantDialog::Private
         }
 };
 
-KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags)
+KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WindowFlags flags)
     : KPageDialog(parent, flags), d(new Private(this))
 {
     d->init();
@@ -77,7 +77,7 @@ KAssistantDialog::KAssistantDialog(QWidget * parent, Qt::WFlags flags)
     d->pageModel=static_cast<KPageWidgetModel*>(pagewidget->model());
 }
 
-KAssistantDialog::KAssistantDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags)
+KAssistantDialog::KAssistantDialog(KPageWidget *widget, QWidget *parent, Qt::WindowFlags flags)
     : KPageDialog(widget, parent, flags), d(new Private(this))
 {
     d->init();

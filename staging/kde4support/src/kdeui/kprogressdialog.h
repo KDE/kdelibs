@@ -59,7 +59,7 @@ class KDE4SUPPORT_EXPORT KProgressDialog : public KDialog
          * @param flags The widget flags
          */
         explicit KProgressDialog(QWidget* parent = 0, const QString& caption = QString(),
-                                 const QString& text = QString(), Qt::WFlags flags = 0);
+                                 const QString& text = QString(), Qt::WindowFlags flags = 0);
 
         /**
          * Destructor

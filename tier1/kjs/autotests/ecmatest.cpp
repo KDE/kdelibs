@@ -178,14 +178,14 @@ void ECMAscriptTest::initTestCase()
 
     testrunner = includes[ "sta.js" ] + includes[ "ed.js" ] + '\n';
 
-    const QString brokenFn = QString::fromAscii( qgetenv( "ECMATEST_BROKEN" ).constData() );
+    const QString brokenFn = QString::fromLatin1( qgetenv( "ECMATEST_BROKEN" ).constData() );
     if ( !brokenFn.isEmpty() ) {
         QFile brokenF( brokenFn );
         if ( !brokenF.open( QIODevice::ReadOnly ) ) {
             const QByteArray errmsg = QByteArray("cannot open ") + QFile::encodeName(brokenFn);
             QWARN( errmsg.constData() );
         } else {
-            expectedBroken = QString::fromAscii( brokenF.readAll().constData() ).split( QLatin1Char( '\n' ) )
+            expectedBroken = QString::fromLatin1( brokenF.readAll().constData() ).split( QLatin1Char( '\n' ) )
                                                .filter( QRegExp( "^[^#].*" ) );
         }
     }
@@ -279,9 +279,9 @@ void ECMAscriptTest::runAllTests()
 
     const QString scriptutf = QString::fromUtf8( testscript.constData() );
 
-    KJS::Completion completion = interp->evaluate(info.fileName().toAscii().constData(), 0, scriptutf);
+    KJS::Completion completion = interp->evaluate(info.fileName().toLatin1().constData(), 0, scriptutf);
 
-    const bool knownBroken = expectedBroken.contains( QString::fromAscii( QTest::currentDataTag() ) );
+    const bool knownBroken = expectedBroken.contains( QString::fromLatin1( QTest::currentDataTag() ) );
 
     if ( expectedError.isEmpty() ) {
         ECMATEST_VERIFY( completion.complType() != KJS::Throw );
@@ -314,10 +314,10 @@ void ECMAscriptTest::runAllTests_data()
 
     const QStringList js( QLatin1String( "*.js" ) );
     const QStringList all( QLatin1String( "*" ) );
-    const QString chapter = QString::fromAscii( qgetenv( "ECMATEST_CHAPTER" ).constData() );
+    const QString chapter = QString::fromLatin1( qgetenv( "ECMATEST_CHAPTER" ).constData() );
 
     if ( !chapter.isEmpty() )
-        QWARN( QByteArray("===> Testing chapter " + chapter.toAscii()).constData() );
+        QWARN( QByteArray("===> Testing chapter " + chapter.toLatin1()).constData() );
 
     // some tests fail when the suite is run as a whole
     if ( chapter.isEmpty() || chapter.startsWith("ch15") ) {
@@ -342,7 +342,7 @@ void ECMAscriptTest::runAllTests_data()
 
         filename.chop(3); // .js
 
-        QTest::newRow( filename.toAscii().constData() ) << info.absoluteFilePath();
+        QTest::newRow( filename.toLatin1().constData() ) << info.absoluteFilePath();
     }
 }
 

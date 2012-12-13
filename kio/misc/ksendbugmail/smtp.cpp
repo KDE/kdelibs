@@ -151,7 +151,7 @@ void SMTP::sendMessage(void)
         finished = false;
         state = In;
         writeString = QString::fromLatin1("helo %1\r\n").arg(domainName);
-        sock->write(writeString.toAscii().constData(), writeString.length());
+        sock->write(writeString.toLatin1().constData(), writeString.length());
     }
     if(connected){
         kDebug() << "enabling read on sock...\n";
@@ -270,7 +270,7 @@ void SMTP::processLine(QString *line)
         state = In;
         writeString = QString::fromLatin1("helo %1\r\n").arg(domainName);
         kDebug() << "out: " << writeString;
-        sock->write(writeString.toAscii().constData(), writeString.length());
+        sock->write(writeString.toLatin1().constData(), writeString.length());
         break;
     case Goodbye:   //221
         state = Quit;
@@ -281,19 +281,19 @@ void SMTP::processLine(QString *line)
             state = Ready;
             writeString = QString::fromLatin1("mail from: %1\r\n").arg(senderAddress);
             kDebug() << "out: " << writeString;
-            sock->write(writeString.toAscii().constData(), writeString.length());
+            sock->write(writeString.toLatin1().constData(), writeString.length());
             break;
         case Ready:
             state = SentFrom;
             writeString = QString::fromLatin1("rcpt to: %1\r\n").arg(recipientAddress);
              kDebug() << "out: " << writeString;
-            sock->write(writeString.toAscii().constData(), writeString.length());
+            sock->write(writeString.toLatin1().constData(), writeString.length());
             break;
         case SentFrom:
             state = SentTo;
             writeString = QLatin1String("data\r\n");
              kDebug() << "out: " << writeString;
-            sock->write(writeString.toAscii().constData(), writeString.length());
+            sock->write(writeString.toLatin1().constData(), writeString.length());
             break;
         case Data:
             state = Finished;
@@ -316,7 +316,7 @@ void SMTP::processLine(QString *line)
         writeString += messageBody;
         writeString += QLatin1String(".\r\n");
         kDebug() << "out: " << writeString;
-        sock->write(writeString.toAscii().constData(), writeString.length());
+        sock->write(writeString.toLatin1().constData(), writeString.length());
         break;
     case Error:     //501
         state = CError;

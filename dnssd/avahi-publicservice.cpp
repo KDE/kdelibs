@@ -168,8 +168,8 @@ bool PublicServicePrivate::fillEntryGroup()
     QList<QByteArray> txt;
     QMap<QString,QByteArray>::ConstIterator itEnd = m_textData.constEnd();
     for (QMap<QString,QByteArray>::ConstIterator it = m_textData.constBegin(); it!=itEnd ; ++it) 
-    	if (it.value().isNull()) txt.append(it.key().toAscii());
-	else txt.append(it.key().toAscii()+'='+it.value());
+    	if (it.value().isNull()) txt.append(it.key().toLatin1());
+	else txt.append(it.key().toLatin1()+'='+it.value());
 	
 	
     for (;;) {

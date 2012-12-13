@@ -152,13 +152,13 @@ bool KMWSessionManager::saveState(QSessionManager&)
 Q_GLOBAL_STATIC(KMWSessionManager, ksm)
 Q_GLOBAL_STATIC(QList<KMainWindow*>, sMemberList)
 
-KMainWindow::KMainWindow( QWidget* parent, Qt::WFlags f )
+KMainWindow::KMainWindow( QWidget* parent, Qt::WindowFlags f )
     : QMainWindow(parent, f), k_ptr(new KMainWindowPrivate)
 {
     k_ptr->init(this);
 }
 
-KMainWindow::KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f)
+KMainWindow::KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WindowFlags f)
     : QMainWindow(parent, f), k_ptr(&dd)
 {
     k_ptr->init(this);

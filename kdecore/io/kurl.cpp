@@ -316,7 +316,7 @@ KUrl::KUrl( const QString &str )
   if ( !str.isEmpty() ) {
 #ifdef Q_OS_WIN
 #ifdef DEBUG_KURL
-    qDebug() << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
+    qDebug() << "KUrl::KUrl ( const QString &str = " << str.toLatin1().data() << " )";
 #endif
     QString pathToSet;
     // when it starts with file:// it's a url and must be valid. we don't care if the
@@ -1653,7 +1653,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 void KUrl::setPath( const QString& _path )
 {
 #if defined(Q_OS_WIN) && defined(DEBUG_KURL)
-    qDebug() << "KUrl::setPath " << " " << _path.toAscii().data();
+    qDebug() << "KUrl::setPath " << " " << _path.toLatin1().data();
 #endif
     if ( scheme().isEmpty() )
         setScheme( QLatin1String( "file" ) );

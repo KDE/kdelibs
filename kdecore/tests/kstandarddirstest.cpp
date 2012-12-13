@@ -217,12 +217,12 @@ void KStandarddirsTest::testFindAllResources()
 #if 0
     list = t.findAllResources("html", "en/*/index.html", false);
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-        kDebug() << "docs " << (*it).toAscii().constData();
+        kDebug() << "docs " << (*it).toLatin1().constData();
     }
 
     list = t.findAllResources("html", "*/*/*.html", false);
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-        kDebug() << "docs " << (*it).toAscii().constData();
+        kDebug() << "docs " << (*it).toLatin1().constData();
     }
 #endif
 }

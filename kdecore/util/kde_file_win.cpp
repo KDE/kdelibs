@@ -87,7 +87,7 @@ namespace KDE
 
   FILE *fopen(const QString &pathname, const char *mode)
   {
-    return _wfopen( CONV(pathname), CONV(QString::fromAscii( mode )) );
+    return _wfopen( CONV(pathname), CONV(QString::fromLatin1( mode )) );
   }
 
   int lstat(const QString &path, KDE_struct_stat *buf)

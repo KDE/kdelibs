@@ -447,7 +447,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     }
 
     if (useMultipart)
-        enc_string = QString("--" + m_boundary + "--\r\n").toAscii().constData();
+        enc_string = QString("--" + m_boundary + "--\r\n").toLatin1().constData();
 
     const int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );
