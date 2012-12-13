@@ -38,11 +38,9 @@ public:
     virtual int monthsInYear(int year) const;
     virtual int daysInMonth(int year, int month) const;
     virtual int daysInYear(int year) const;
-    virtual int daysInWeek() const;
     virtual bool isLeapYear(int year) const;
     virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
-    virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
@@ -99,11 +97,6 @@ int KCalendarSystemIslamicCivilPrivate::daysInYear(int year) const
     }
 }
 
-int KCalendarSystemIslamicCivilPrivate::daysInWeek() const
-{
-    return 7;
-}
-
 bool KCalendarSystemIslamicCivilPrivate::isLeapYear(int year) const
 {
     // Years 2, 5, 7, 10, 13, 16, 18, 21, 24, 26, 29 of the 30 year cycle
@@ -144,11 +137,6 @@ bool KCalendarSystemIslamicCivilPrivate::hasLeapMonths() const
 bool KCalendarSystemIslamicCivilPrivate::hasYearZero() const
 {
     return false;
-}
-
-int KCalendarSystemIslamicCivilPrivate::maxDaysInWeek() const
-{
-    return 7;
 }
 
 int KCalendarSystemIslamicCivilPrivate::maxMonthsInYear() const

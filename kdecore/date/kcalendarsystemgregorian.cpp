@@ -94,11 +94,6 @@ int KCalendarSystemGregorianPrivate::daysInYear(int year) const
     }
 }
 
-int KCalendarSystemGregorianPrivate::daysInWeek() const
-{
-    return 7;
-}
-
 bool KCalendarSystemGregorianPrivate::isLeapYear(int year) const
 {
     if (hasYearZero() && year <= 0) {
@@ -115,11 +110,6 @@ bool KCalendarSystemGregorianPrivate::hasLeapMonths() const
 bool KCalendarSystemGregorianPrivate::hasYearZero() const
 {
     return false;
-}
-
-int KCalendarSystemGregorianPrivate::maxDaysInWeek() const
-{
-    return 7;
 }
 
 int KCalendarSystemGregorianPrivate::maxMonthsInYear() const

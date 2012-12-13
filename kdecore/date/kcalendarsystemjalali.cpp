@@ -46,11 +46,9 @@ public:
     virtual int monthsInYear(int year) const;
     virtual int daysInMonth(int year, int month) const;
     virtual int daysInYear(int year) const;
-    virtual int daysInWeek() const;
     virtual bool isLeapYear(int year) const;
     virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
-    virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
@@ -111,11 +109,6 @@ int KCalendarSystemJalaliPrivate::daysInYear(int year) const
     }
 }
 
-int KCalendarSystemJalaliPrivate::daysInWeek() const
-{
-    return 7;
-}
-
 bool KCalendarSystemJalaliPrivate::isLeapYear(int year) const
 {
     // From formilab Public Domain code http://www.fourmilab.ch/documents/calendar/
@@ -150,11 +143,6 @@ bool KCalendarSystemJalaliPrivate::hasLeapMonths() const
 bool KCalendarSystemJalaliPrivate::hasYearZero() const
 {
     return false;
-}
-
-int KCalendarSystemJalaliPrivate::maxDaysInWeek() const
-{
-    return 7;
 }
 
 int KCalendarSystemJalaliPrivate::maxMonthsInYear() const

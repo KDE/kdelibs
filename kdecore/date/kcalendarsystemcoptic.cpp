@@ -77,11 +77,6 @@ int KCalendarSystemCopticPrivate::daysInYear(int year) const
     }
 }
 
-int KCalendarSystemCopticPrivate::daysInWeek() const
-{
-    return 7;
-}
-
 bool KCalendarSystemCopticPrivate::isLeapYear(int year) const
 {
     //Uses same rule as Julian but offset by 1 year with year 3 being first leap year
@@ -105,11 +100,6 @@ bool KCalendarSystemCopticPrivate::hasLeapMonths() const
 bool KCalendarSystemCopticPrivate::hasYearZero() const
 {
     return false;
-}
-
-int KCalendarSystemCopticPrivate::maxDaysInWeek() const
-{
-    return 7;
 }
 
 int KCalendarSystemCopticPrivate::maxMonthsInYear() const

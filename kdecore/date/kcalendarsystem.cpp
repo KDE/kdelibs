@@ -586,6 +586,14 @@ QString KCalendarSystemPrivate::simpleDateString(const QString &str) const
     return newStr;
 }
 
+// If we ever want to support a calendar system with another week length,this
+// method can be changed to virtual. Doing so will, however, likely break some
+// code, so don't do that without testing and fixing at least all of KDE SC.
+int KCalendarSystemPrivate::daysInWeek() const
+{
+    return 7;
+}
+
 int KCalendarSystemPrivate::dayOfYear(const QDate &date) const
 {
     qint64 jdFirstDayOfYear;
@@ -1298,6 +1306,8 @@ int KCalendarSystem::daysInMonth(int year, int month) const
     return -1;
 }
 
+// If ever changed to depend on the date, a lot of code will break.
+// Don't do that without testing and fixing at least all of KDE SC.
 int KCalendarSystem::daysInWeek(const QDate &date) const
 {
     Q_UNUSED(date)

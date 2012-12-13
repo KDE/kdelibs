@@ -138,7 +138,7 @@ DateTimeComponents KDateTimeParser::parseDatePosix(const QString &inputString,
             case 'A':  // Weekday Name Long
                 error = true;
                 j = 1;
-                while (error && j <= calendar->d_ptr->maxDaysInWeek()) {
+                while (error && j <= calendar->d_ptr->daysInWeek()) {
                     shortName = calendar->weekDayName(j, KCalendarSystem::ShortDayName).toLower();
                     longName = calendar->weekDayName(j, KCalendarSystem::LongDayName).toLower();
                     if (str.mid(strpos, longName.length()) == longName) {

@@ -40,11 +40,9 @@ public:
     virtual int monthsInYear(int year) const = 0;
     virtual int daysInMonth(int year, int month) const = 0;
     virtual int daysInYear(int year) const = 0;
-    virtual int daysInWeek() const = 0;
     virtual bool isLeapYear(int year) const = 0;
     virtual bool hasLeapMonths() const = 0;
     virtual bool hasYearZero() const = 0;
-    virtual int maxDaysInWeek() const = 0;
     virtual int maxMonthsInYear() const = 0;
     virtual int earliestValidYear() const = 0;
     virtual int latestValidYear() const = 0;
@@ -78,6 +76,7 @@ public:
     int addYears(int startYear, int yearsToAdd) const;
     int differenceYearNumbers(int fromYear, int toYear) const;
     QString simpleDateString(const QString &str) const;
+    int daysInWeek() const;
     int dayOfYear(const QDate &date) const;
     int dayOfWeek(const QDate &date) const;
     QDate firstDayOfYear(int year) const;

@@ -600,10 +600,13 @@ public:
     /**
      * Returns the number of days in the given week.
      *
+     * @note Every calendar systems ever supported by @c KCalendarSystem
+     * returns, and has always returned, @c 7, but there is no guarantee that
+     * all future calendar systems will also do so.
      * @param date the date to obtain week from
      * @return number of days in week, -1 if input date invalid
      */
-    virtual int daysInWeek(const QDate &date) const;
+    int daysInWeek(const QDate &date) const;
 
     /**
      * Returns the day number of year for the given date

@@ -40,11 +40,9 @@ public:
     virtual int monthsInYear(int year) const;
     virtual int daysInMonth(int year, int month) const;
     virtual int daysInYear(int year) const;
-    virtual int daysInWeek() const;
     virtual bool isLeapYear(int year) const;
     virtual bool hasLeapMonths() const;
     virtual bool hasYearZero() const;
-    virtual int maxDaysInWeek() const;
     virtual int maxMonthsInYear() const;
     virtual int earliestValidYear() const;
     virtual int latestValidYear() const;
@@ -125,11 +123,6 @@ int KCalendarSystemJulianPrivate::daysInYear(int year) const
     }
 }
 
-int KCalendarSystemJulianPrivate::daysInWeek() const
-{
-    return 7;
-}
-
 bool KCalendarSystemJulianPrivate::isLeapYear(int year) const
 {
     if (year < 1) {
@@ -151,11 +144,6 @@ bool KCalendarSystemJulianPrivate::hasLeapMonths() const
 bool KCalendarSystemJulianPrivate::hasYearZero() const
 {
     return false;
-}
-
-int KCalendarSystemJulianPrivate::maxDaysInWeek() const
-{
-    return 7;
 }
 
 int KCalendarSystemJulianPrivate::maxMonthsInYear() const
