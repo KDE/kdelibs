@@ -21,6 +21,7 @@
 
 #include <kprocess.h>
 #include <QtTest/QtTest>
+#include <qstandardpaths.h>
 
 #include <stdio.h>
 #include <stdlib.h>
