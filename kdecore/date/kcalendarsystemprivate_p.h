@@ -50,16 +50,6 @@ public:
     virtual QString weekDayName(int weekDay, KLocale::DateTimeComponentFormat format) const = 0;
 
     // Virtual methods to re-implement if special maths needed
-    virtual int week(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum) const;
-    virtual int isoWeekNumber(const QDate &date, int *yearNum) const;
-    virtual int regularWeekNumber(const QDate &date, int weekStartDay, int firstWeekNumber, int *weekYear) const;
-    virtual int simpleWeekNumber(const QDate &date, int *yearNum) const;
-    virtual int weeksInYear(int year, KLocale::WeekNumberSystem weekNumberSystem) const;
-    virtual int isoWeeksInYear(int year) const;
-    virtual int regularWeeksInYear(int year, int weekStartDay, int firstWeekNumber) const;
-    virtual int simpleWeeksInYear(int year) const;
-
-    // Virtual methods to re-implement if special maths needed
     // Currently only Hebrew may need special conversion, rest should be OK
     virtual int yearsDifference(const QDate &fromDate, const QDate &toDate) const;
     virtual int monthsDifference(const QDate &fromDate, const QDate &toDate) const;
@@ -95,6 +85,14 @@ public:
     void loadShortYearWindowStartYear(const KConfigGroup & cg);
     KSharedConfig::Ptr config();
     void loadConfig(const QString & calendarType);
+
+    // Week utility functions
+    int isoWeekNumber(const QDate &date, int *yearNum) const;
+    int regularWeekNumber(const QDate &date, int weekStartDay, int firstWeekNumber, int *weekYear) const;
+    int simpleWeekNumber(const QDate &date, int *yearNum) const;
+    int isoWeeksInYear(int year) const;
+    int regularWeeksInYear(int year, int weekStartDay, int firstWeekNumber) const;
+    int simpleWeeksInYear(int year) const;
 
     // Global variables each calendar system must initialise
     const KCalendarSystem *q;

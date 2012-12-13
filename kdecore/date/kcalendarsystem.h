@@ -225,7 +225,6 @@ public:
      */
     bool isValid(const QString &eraName, int yearInEra, int month, int day) const;
 
-    //KDE5 make virtual?
     /**
      * @since 4.4
      *
@@ -291,7 +290,6 @@ public:
      */
     bool setDate(QDate &date, QString eraName, int yearInEra, int month, int day) const;
 
-    //KDE5 make virtual?
     /**
      * @since 4.4
      *
@@ -511,21 +509,9 @@ public:
     int monthsInYear(int year) const;
 
     /**
-     * Returns the number of localized weeks in the given year.
-     *
-     * @param date the date to obtain year from
-     * @return number of weeks in the year, -1 if input date invalid
-     */
-    virtual int weeksInYear(const QDate &date) const;
-
-    //KDE5 Merge with virtual weeksInYear with default
-    /**
      * @since 4.7
      *
-     * Returns the number of Weeks in a year using the required Week Number System.
-     *
-     * Unless you specifically want a particular Week Number System (e.g. ISO Weeks)
-     * you should use the localized number of weeks provided by weeksInYear().
+     * Returns the number of Weeks in a year using the specified Week Number System.
      *
      * @see week()
      * @see formatDate()
@@ -533,24 +519,15 @@ public:
      * @param weekNumberSystem the week number system to use
      * @return number of weeks in the year, -1 if  date invalid
      */
-    int weeksInYear(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem) const;
+    inline int weeksInYear(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem = KLocale::DefaultWeekNumber) const
+    {
+        return isValid(date) ? weeksInYear(year(date), weekNumberSystem) : -1;
+    }
 
-    /**
-     * Returns the number of localized weeks in the given year.
-     *
-     * @param year the year
-     * @return number of weeks in the year, -1 if input date invalid
-     */
-    virtual int weeksInYear(int year) const;
-
-    //KDE5 Merge with virtual weeksInYear with default
     /**
      * @since 4.7
      *
-     * Returns the number of Weeks in a year using the required Week Number System.
-     *
-     * Unless you specifically want a particular Week Number System (e.g. ISO Weeks)
-     * you should use the localized number of weeks provided by weeksInYear().
+     * Returns the number of Weeks in a year using the specified Week Number System.
      *
      * @see week()
      * @see formatDate()
@@ -558,7 +535,7 @@ public:
      * @param weekNumberSystem the week number system to use
      * @return number of weeks in the year, -1 if  date invalid
      */
-    int weeksInYear(int year, KLocale::WeekNumberSystem weekNumberSystem) const;
+    int weeksInYear(int year, KLocale::WeekNumberSystem weekNumberSystem = KLocale::DefaultWeekNumber) const;
 
     /**
      * Returns the number of days in the given year.
@@ -645,9 +622,11 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return ISO week number, -1 if input date invalid
      */
-    KDECORE_DEPRECATED virtual int weekNumber(const QDate &date, int *yearNum = 0) const;
+    KDECORE_DEPRECATED inline int weekNumber(const QDate &date, int *yearNum = 0) const
+    {
+        return week(date, KLocale::IsoWeekNumber, yearNum);
+    }
 
-    //KDE5 Make virtual?
     /**
      * Returns the localized Week Number for the date.
      *
@@ -665,9 +644,11 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return localized week number, -1 if input date invalid
      */
-    int week(const QDate &date, int *yearNum = 0) const;
+    inline int week(const QDate &date, int *yearNum) const
+    {
+        return week(date, KLocale::DefaultWeekNumber, yearNum);
+    }
 
-    //KDE5 Make virtual?
     /**
      * Returns the Week Number for the date in the required Week Number System.
      *
@@ -688,7 +669,7 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return week number, -1 if input date invalid
      */
-    int week(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum = 0) const;
+    int week(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem = KLocale::DefaultWeekNumber, int *yearNum = 0) const;
 
     /**
      * Returns whether a given year is a leap year.

@@ -146,28 +146,6 @@ KCalendarSystemPrivate::~KCalendarSystemPrivate()
     delete m_eraList;
 }
 
-// Reimplement if special maths handling required, e.g. Hebrew.
-int KCalendarSystemPrivate::week(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum) const
-{
-    int y, m, d;
-    q->julianDayToDate(date.toJulianDay(), y, m, d);
-
-    switch (weekNumberSystem) {
-    case KLocale::IsoWeekNumber:
-        return isoWeekNumber(date, yearNum);
-    case KLocale::FirstFullWeek:
-        return regularWeekNumber(date, locale()->weekStartDay(), 0, yearNum);
-    case KLocale::FirstPartialWeek:
-        return regularWeekNumber(date, locale()->weekStartDay(), 1, yearNum);
-    case KLocale::SimpleWeek:
-        return simpleWeekNumber(date, yearNum);
-    case KLocale::DefaultWeekNumber:
-    default:
-        return week(date, locale()->weekNumberSystem(), yearNum);
-    }
-}
-
-// Reimplement if special maths handling required, e.g. Hebrew.
 int KCalendarSystemPrivate::isoWeekNumber(const QDate &date, int *yearNum) const
 {
     int y, m, d;
@@ -222,7 +200,6 @@ int KCalendarSystemPrivate::isoWeekNumber(const QDate &date, int *yearNum) const
     return week;
 }
 
-// Reimplement if special maths handling required, e.g. Hebrew.
 int KCalendarSystemPrivate::regularWeekNumber(const QDate &date, int weekStartDay, int firstWeekNumber, int *weekYear) const
 {
     int y, m, d;
@@ -248,7 +225,6 @@ int KCalendarSystemPrivate::regularWeekNumber(const QDate &date, int weekStartDa
     return week;
 }
 
-// Reimplement if special maths handling required, e.g. Hebrew.
 int KCalendarSystemPrivate::simpleWeekNumber(const QDate &date, int *yearNum) const
 {
     int y, m, d;
@@ -259,25 +235,6 @@ int KCalendarSystemPrivate::simpleWeekNumber(const QDate &date, int *yearNum) co
     return ((date.toJulianDay() - firstDayOfYear(y).toJulianDay()) / daysInWeek()) + 1;
 }
 
-// Reimplement if special maths handling required, e.g. Hebrew.
-int KCalendarSystemPrivate::weeksInYear(int year, KLocale::WeekNumberSystem weekNumberSystem) const
-{
-    switch (weekNumberSystem) {
-    case KLocale::IsoWeekNumber:
-        return isoWeeksInYear(year);
-    case KLocale::FirstFullWeek:
-        return regularWeeksInYear(year, locale()->weekStartDay(), 0);
-    case KLocale::FirstPartialWeek:
-        return regularWeeksInYear(year, locale()->weekStartDay(), 1);
-    case KLocale::SimpleWeek:
-        return simpleWeeksInYear(year);
-    case KLocale::DefaultWeekNumber:
-    default:
-        return weeksInYear(year, locale()->weekNumberSystem());
-    }
-}
-
-// Reimplement if special maths handling required, e.g. Hebrew.
 int KCalendarSystemPrivate::isoWeeksInYear(int year) const
 {
     QDate lastDayOfThisYear = lastDayOfYear(year);
@@ -293,13 +250,11 @@ int KCalendarSystemPrivate::isoWeeksInYear(int year) const
     return lastWeekInThisYear;
 }
 
-// Reimplement if special maths handling required, e.g. Hebrew.
 int KCalendarSystemPrivate::regularWeeksInYear(int year, int weekStartDay, int firstWeekNumber) const
 {
     return regularWeekNumber(lastDayOfYear(year), weekStartDay, firstWeekNumber, 0);
 }
 
-// Reimplement if special maths handling required, e.g. Hebrew.
 int KCalendarSystemPrivate::simpleWeeksInYear(int year) const
 {
     return simpleWeekNumber(lastDayOfYear(year), 0);
@@ -1227,38 +1182,26 @@ int KCalendarSystem::monthsInYear(int year) const
     return -1;
 }
 
-int KCalendarSystem::weeksInYear(const QDate &date) const
-{
-    return weeksInYear(date, KLocale::DefaultWeekNumber);
-}
-
-int KCalendarSystem::weeksInYear(int year) const
-{
-    return weeksInYear(year, KLocale::DefaultWeekNumber);
-}
-
-// NOT VIRTUAL - Uses shared-d instead
-int KCalendarSystem::weeksInYear(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem) const
-{
-    Q_D(const KCalendarSystem);
-
-    if (isValid(date)) {
-        return d->weeksInYear(year(date), weekNumberSystem);
-    }
-
-    return -1;
-}
-
-// NOT VIRTUAL - Uses shared-d instead
 int KCalendarSystem::weeksInYear(int year, KLocale::WeekNumberSystem weekNumberSystem) const
 {
     Q_D(const KCalendarSystem);
 
-    if (isValid(year, 1, 1)) {
-        return d->weeksInYear(year, weekNumberSystem);
-    }
+    if (!isValid(year, 1, 1))
+        return -1;
 
-    return -1;
+    switch (weekNumberSystem) {
+    case KLocale::IsoWeekNumber:
+        return d->isoWeeksInYear(year);
+    case KLocale::FirstFullWeek:
+        return d->regularWeeksInYear(year, locale()->weekStartDay(), 0);
+    case KLocale::FirstPartialWeek:
+        return d->regularWeeksInYear(year, locale()->weekStartDay(), 1);
+    case KLocale::SimpleWeek:
+        return d->simpleWeeksInYear(year);
+    case KLocale::DefaultWeekNumber:
+    default:
+        return weeksInYear(year, locale()->weekNumberSystem());
+    }
 }
 
 int KCalendarSystem::daysInYear(const QDate &date) const
@@ -1338,27 +1281,26 @@ int KCalendarSystem::dayOfWeek(const QDate &date) const
     return -1;
 }
 
-int KCalendarSystem::weekNumber(const QDate &date, int *yearNum) const
-{
-    return week(date, KLocale::IsoWeekNumber, yearNum);
-}
-
-// NOT VIRTUAL - Uses shared-d instead
-int KCalendarSystem::week(const QDate &date, int *yearNum) const
-{
-    return week(date, KLocale::DefaultWeekNumber, yearNum);
-}
-
-// NOT VIRTUAL - Uses shared-d instead
 int KCalendarSystem::week(const QDate &date, KLocale::WeekNumberSystem weekNumberSystem, int *yearNum) const
 {
     Q_D(const KCalendarSystem);
 
-    if (isValid(date)) {
-        return d->week(date, weekNumberSystem, yearNum);
-    }
+    if (!isValid(date))
+        return -1;
 
-    return -1;
+    switch (weekNumberSystem) {
+    case KLocale::IsoWeekNumber:
+        return d->isoWeekNumber(date, yearNum);
+    case KLocale::FirstFullWeek:
+        return d->regularWeekNumber(date, locale()->weekStartDay(), 0, yearNum);
+    case KLocale::FirstPartialWeek:
+        return d->regularWeekNumber(date, locale()->weekStartDay(), 1, yearNum);
+    case KLocale::SimpleWeek:
+        return d->simpleWeekNumber(date, yearNum);
+    case KLocale::DefaultWeekNumber:
+    default:
+        return week(date, locale()->weekNumberSystem(), yearNum);
+    }
 }
 
 bool KCalendarSystem::isLeapYear(int year) const
