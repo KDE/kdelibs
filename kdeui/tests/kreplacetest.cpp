@@ -85,11 +85,11 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
     // otherwise we get an infinite loop (Match never returned,
     // so slotReplaceNext never returns)
     if ( m_replace->options() & KReplaceDialog::PromptOnReplace ) {
-        KDialog* dlg = m_replace->replaceNextDialog(false);
-        disconnect(dlg, SIGNAL(finished()), m_replace, 0); // hack to avoid _k_slotDialogClosed being called
+        QDialog* dlg = m_replace->replaceNextDialog(false);
+        disconnect(dlg, SIGNAL(finished(int)), m_replace, 0); // hack to avoid _k_slotDialogClosed being called
         dlg->hide();
 
-        QAbstractButton* button = dlg->button( (KDialog::ButtonCode)m_button );
+        QPushButton* button = dlg->findChild<QPushButton*>(m_buttonName);
         QMetaObject::invokeMethod(button, "click", Qt::QueuedConnection);
 
         m_needEventLoop = true;
@@ -151,10 +151,10 @@ void KReplaceTest::print()
 
 /* button is the button that we emulate pressing, when options includes PromptOnReplace.
    Valid possibilities are User1 (replace all) and User3 (replace) */
-static void testReplaceSimple( int options, int button = 0 )
+static void testReplaceSimple( int options, const QString &buttonName = QString() )
 {
     kDebug() << "testReplaceSimple: " << options;
-    KReplaceTest test( QStringList() << QString( "hellohello" ), button );
+    KReplaceTest test( QStringList() << QString( "hellohello" ), buttonName );
     test.replace( "hello", "HELLO", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -166,10 +166,10 @@ static void testReplaceSimple( int options, int button = 0 )
 
 // Replacing "a" with "".
 // input="aaaaaa", expected output=""
-static void testReplaceBlank( int options, int button = 0 )
+static void testReplaceBlank( int options, const QString &buttonName = QString() )
 {
     kDebug() << "testReplaceBlank: " << options;
-    KReplaceTest test( QStringList() << QString( "aaaaaa" ), button );
+    KReplaceTest test( QStringList() << QString( "aaaaaa" ), buttonName );
     test.replace( "a", "", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -181,10 +181,10 @@ static void testReplaceBlank( int options, int button = 0 )
 
 // Replacing "" with "foo"
 // input="bbbb", expected output="foobfoobfoobfoobfoo"
-static void testReplaceBlankSearch( int options, int button = 0 )
+static void testReplaceBlankSearch( int options, const QString &buttonName = QString() )
 {
     kDebug() << "testReplaceBlankSearch: " << options;
-    KReplaceTest test( QStringList() << QString( "bbbb" ), button );
+    KReplaceTest test( QStringList() << QString( "bbbb" ), buttonName );
     test.replace( "", "foo", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -194,11 +194,11 @@ static void testReplaceBlankSearch( int options, int button = 0 )
     }
 }
 
-static void testReplaceLonger( int options, int button = 0 )
+static void testReplaceLonger( int options, const QString &buttonName = QString() )
 {
     kDebug() << "testReplaceLonger: " << options;
     // Standard test of a replacement string longer than the matched string
-    KReplaceTest test( QStringList() << QString( "aaaa" ), button );
+    KReplaceTest test( QStringList() << QString( "aaaa" ), buttonName );
     test.replace( "a", "bb", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -208,11 +208,11 @@ static void testReplaceLonger( int options, int button = 0 )
     }
 }
 
-static void testReplaceLongerInclude( int options, int button = 0 )
+static void testReplaceLongerInclude( int options, const QString &buttonName = QString() )
 {
     kDebug() << "testReplaceLongerInclude: " << options;
     // Similar test, where the replacement string includes the search string
-    KReplaceTest test( QStringList() << QString( "a foo b" ), button );
+    KReplaceTest test( QStringList() << QString( "a foo b" ), buttonName );
     test.replace( "foo", "foobar", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -222,11 +222,11 @@ static void testReplaceLongerInclude( int options, int button = 0 )
     }
 }
 
-static void testReplaceLongerInclude2( int options, int button = 0 )
+static void testReplaceLongerInclude2( int options, const QString &buttonName = QString() )
 {
     kDebug() << "testReplaceLongerInclude2: " << options;
     // Similar test, but with more chances of matches inside the replacement string
-    KReplaceTest test( QStringList() << QString( "aaaa" ), button );
+    KReplaceTest test( QStringList() << QString( "aaaa" ), buttonName );
     test.replace( "a", "aa", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -237,9 +237,9 @@ static void testReplaceLongerInclude2( int options, int button = 0 )
 }
 
 // Test for the \0 backref
-static void testReplaceBackRef( int options, int button = 0 )
+static void testReplaceBackRef( int options, const QString &buttonName = QString() )
 {
-    KReplaceTest test( QStringList() << QString( "abc def" ), button );
+    KReplaceTest test( QStringList() << QString( "abc def" ), buttonName );
     test.replace( "abc", "(\\0)", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -251,9 +251,9 @@ static void testReplaceBackRef( int options, int button = 0 )
 }
 
 // Test for other backrefs
-static void testReplaceBackRef1( int options, int button = 0 )
+static void testReplaceBackRef1( int options, const QString &buttonName = QString() )
 {
-    KReplaceTest test( QStringList() << QString( "a1 b2 a3" ), button );
+    KReplaceTest test( QStringList() << QString( "a1 b2 a3" ), buttonName );
     test.replace( "([ab])([\\d])", "\\1 and \\2 in (\\0)", options );
     QStringList textLines = test.textLines();
     assert( textLines.count() == 1 );
@@ -295,62 +295,62 @@ int main( int argc, char **argv )
     testReplacementHistory(); // #130831
 
     testReplaceBlank( 0 );
-    testReplaceBlank( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBlank( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceBlank( KFind::FindBackwards, 0 );
-    testReplaceBlank( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBlank( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceBlank( KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBlank( KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceBlank( KFind::FindBackwards );
+    testReplaceBlank( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBlank( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
     testReplaceBlankSearch( 0 );
-    testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceBlankSearch( KFind::FindBackwards, 0 );
-    testReplaceBlankSearch( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBlankSearch( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBlankSearch( KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceBlankSearch( KFind::FindBackwards );
+    testReplaceBlankSearch( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBlankSearch( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
     testReplaceSimple( 0 );
-    testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceSimple( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceSimple( KFind::FindBackwards, 0 );
-    testReplaceSimple( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceSimple( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceSimple( KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceSimple( KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceSimple( KFind::FindBackwards );
+    testReplaceSimple( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceSimple( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
     testReplaceLonger( 0 );
-    testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceLonger( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceLonger( KFind::FindBackwards, 0 );
-    testReplaceLonger( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceLonger( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceLonger( KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceLonger( KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceLonger( KFind::FindBackwards );
+    testReplaceLonger( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceLonger( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
     testReplaceLongerInclude( 0 );
-    testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceLongerInclude( KFind::FindBackwards, 0 );
-    testReplaceLongerInclude( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceLongerInclude( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceLongerInclude( KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceLongerInclude( KFind::FindBackwards );
+    testReplaceLongerInclude( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceLongerInclude( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
     testReplaceLongerInclude2( 0 );
-    testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceLongerInclude2( KFind::FindBackwards, 0 );
-    testReplaceLongerInclude2( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceLongerInclude2( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceLongerInclude2( KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceLongerInclude2( KFind::FindBackwards );
+    testReplaceLongerInclude2( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceLongerInclude2( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
     testReplaceBackRef( 0 );
-    testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBackRef( KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceBackRef( KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBackRef( KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
-    testReplaceBackRef( KFind::FindBackwards, 0 );
-    testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
-    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards, 0 );
-    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User3 ); // replace
-    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, KDialog::User1 ); // replace all
+    testReplaceBackRef( KFind::FindBackwards );
+    testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBackRef( KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBackRef( KReplaceDialog::BackReference | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
+    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards );
+    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "replaceButton" ); // replace
+    testReplaceBackRef( KReplaceDialog::BackReference | KFind::FindBackwards | KReplaceDialog::PromptOnReplace, "allButton" ); // replace all
 
-    testReplaceBackRef1( KReplaceDialog::BackReference | KFind::RegularExpression, KDialog::User3 ); // replace
-    testReplaceBackRef1( KReplaceDialog::BackReference | KFind::RegularExpression, KDialog::User1 ); // replace all
+    testReplaceBackRef1( KReplaceDialog::BackReference | KFind::RegularExpression, "replaceButton" ); // replace
+    testReplaceBackRef1( KReplaceDialog::BackReference | KFind::RegularExpression, "allButton" ); // replace all
 
     QString text = "This file is part of the KDE project.\n"
                    "This library is free software; you can redistribute it and/or\n"

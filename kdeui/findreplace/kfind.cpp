@@ -27,32 +27,59 @@
 #include <kmessagebox.h>
 #include <kdebug.h>
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QLabel>
+#include <QPushButton>
 #include <QtCore/QRegExp>
 #include <QtCore/QHash>
 #include <QTextDocument>
+#include <QVBoxLayout>
 
 // #define DEBUG_FIND
 
 static const int INDEX_NOMATCH = -1;
 
-class KFindNextDialog : public KDialog
+class KFindNextDialog : public QDialog
 {
 public:
     KFindNextDialog(const QString &pattern, QWidget *parent);
+
+    QPushButton *findButton() const;
+
+private:
+    QPushButton *m_findButton;
 };
 
 // Create the dialog.
-KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent) :
-    KDialog(parent)
+KFindNextDialog::KFindNextDialog(const QString &pattern, QWidget *parent)
+    : QDialog(parent),
+      m_findButton(0)
 {
     setModal( false );
-    setCaption( i18n("Find Next") );
-    setButtons( User1 | Close );
-    setButtonGuiItem( User1, KStandardGuiItem::find() );
-    setDefaultButton( User1 );
+    setWindowTitle(i18n("Find Next"));
 
-    setMainWidget( new QLabel( i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>", pattern), this ) );
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
+
+    layout->addWidget(new QLabel(i18n("<qt>Find next occurrence of '<b>%1</b>'?</qt>", pattern), this));
+
+    m_findButton = new QPushButton;
+    KGuiItem::assign(m_findButton, KStandardGuiItem::find());
+    m_findButton->setDefault(true);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->addButton(m_findButton, QDialogButtonBox::ActionRole);
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    layout->addWidget(buttonBox);
+
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+}
+
+QPushButton *KFindNextDialog::findButton() const
+{
+    return m_findButton;
 }
 
 ////
@@ -150,13 +177,14 @@ void KFind::setData( int id, const QString& data, int startPos )
     }
 }
 
-KDialog* KFind::findNextDialog( bool create )
+QDialog* KFind::findNextDialog( bool create )
 {
     if ( !d->dialog && create )
     {
-        d->dialog = new KFindNextDialog( d->pattern, parentWidget() );
-        connect( d->dialog, SIGNAL(user1Clicked()), this, SLOT(_k_slotFindNext()) );
-        connect( d->dialog, SIGNAL(finished()), this, SLOT(_k_slotDialogClosed()) );
+        KFindNextDialog *dialog = new KFindNextDialog(d->pattern, parentWidget());
+        connect(dialog->findButton(), SIGNAL(clicked()), this, SLOT(_k_slotFindNext()));
+        connect(dialog, SIGNAL(finished(int)), this, SLOT(_k_slotDialogClosed()));
+        d->dialog = dialog;
     }
     return d->dialog;
 }

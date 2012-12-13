@@ -21,7 +21,10 @@
 #include "kreplace.h"
 #include "kfind_p.h"
 
+#include <QDialogButtonBox>
 #include <QLabel>
+#include <QPushButton>
+#include <QVBoxLayout>
 #include <kdebug.h>
 
 #include <klocalizedstring.h>
@@ -32,33 +35,72 @@
 //#define DEBUG_REPLACE
 #define INDEX_NOMATCH -1
 
-class KReplaceNextDialog : public KDialog
+class KReplaceNextDialog : public QDialog
 {
 public:
     explicit KReplaceNextDialog( QWidget *parent );
     void setLabel( const QString& pattern, const QString& replacement );
+
+    QPushButton *replaceAllButton() const;
+    QPushButton *skipButton() const;
+    QPushButton *replaceButton() const;
+
 private:
     QLabel* m_mainLabel;
+    QPushButton *m_allButton;
+    QPushButton *m_skipButton;
+    QPushButton *m_replaceButton;
 };
 
-KReplaceNextDialog::KReplaceNextDialog(QWidget *parent) :
-    KDialog(parent)
+KReplaceNextDialog::KReplaceNextDialog(QWidget *parent)
+    : QDialog(parent)
 {
     setModal( false );
-    setCaption( i18n("Replace") );
-    setButtons( User3 | User2 | User1 | Close );
-    setButtonGuiItem( User1, KGuiItem(i18nc("@action:button Replace all occurrences", "&All")) );
-    setButtonGuiItem( User2, KGuiItem(i18n("&Skip")) );
-    setButtonGuiItem( User3, KGuiItem(i18n("Replace")) );
-    setDefaultButton( User3 );
+    setWindowTitle( i18n("Replace") );
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
     m_mainLabel = new QLabel( this );
-    setMainWidget( m_mainLabel );
+    layout->addWidget(m_mainLabel);
+
+    m_allButton = new QPushButton(i18nc("@action:button Replace all occurrences", "&All"));
+    m_allButton->setObjectName("allButton");
+    m_skipButton = new QPushButton(i18n("&Skip"));
+    m_skipButton->setObjectName("skipButton");
+    m_replaceButton = new QPushButton(i18n("Replace"));
+    m_replaceButton->setObjectName("replaceButton");
+    m_replaceButton->setDefault(true);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->addButton(m_allButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(m_skipButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(m_replaceButton, QDialogButtonBox::ActionRole);
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    layout->addWidget(buttonBox);
+
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 void KReplaceNextDialog::setLabel( const QString& pattern, const QString& replacement )
 {
     m_mainLabel->setText( i18n("Replace '%1' with '%2'?", pattern, replacement) );
+}
+
+QPushButton *KReplaceNextDialog::replaceAllButton() const
+{
+    return m_allButton;
+}
+
+QPushButton *KReplaceNextDialog::skipButton() const
+{
+    return m_skipButton;
+}
+
+QPushButton *KReplaceNextDialog::replaceButton() const
+{
+    return m_replaceButton;
 }
 
 ////
@@ -109,7 +151,7 @@ int KReplace::numReplacements() const
     return d->m_replacements;
 }
 
-KDialog* KReplace::replaceNextDialog( bool create )
+QDialog* KReplace::replaceNextDialog( bool create )
 {
     if ( KFind::d->dialog || create )
         return d->dialog();
@@ -120,11 +162,12 @@ KReplaceNextDialog* KReplacePrivate::dialog()
 {
     if ( !q->KFind::d->dialog )
     {
-        q->KFind::d->dialog = new KReplaceNextDialog( q->parentWidget() );
-        q->connect( q->KFind::d->dialog, SIGNAL(user1Clicked()), q, SLOT(_k_slotReplaceAll()) );
-        q->connect( q->KFind::d->dialog, SIGNAL(user2Clicked()), q, SLOT(_k_slotSkip()) );
-        q->connect( q->KFind::d->dialog, SIGNAL(user3Clicked()), q, SLOT(_k_slotReplace()) );
-        q->connect( q->KFind::d->dialog, SIGNAL(finished()), q, SLOT(_k_slotDialogClosed()) );
+        KReplaceNextDialog *dialog = new KReplaceNextDialog(q->parentWidget());
+        q->connect(dialog->replaceAllButton(), SIGNAL(clicked()), q, SLOT(_k_slotReplaceAll()));
+        q->connect(dialog->skipButton(), SIGNAL(clicked()), q, SLOT(_k_slotSkip()));
+        q->connect(dialog->replaceButton(), SIGNAL(clicked()), q, SLOT(_k_slotReplace()));
+        q->connect(dialog, SIGNAL(finished(int)), q, SLOT(_k_slotDialogClosed()));
+        q->KFind::d->dialog = dialog;
     }
     return static_cast<KReplaceNextDialog *>(q->KFind::d->dialog);
 }

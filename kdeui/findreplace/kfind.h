@@ -21,9 +21,11 @@
 #ifndef KFIND_H
 #define KFIND_H
 
-#include <kdialog.h>
 #include <kdeui_export.h>
 #include <QtCore/QRect>
+#include <QObject>
+
+class QDialog;
 
 /**
  * @brief A generic implementation of the "find" function.
@@ -283,7 +285,7 @@ public:
      * menu item while a find operation is under way. In that case, the
      * program may want to call setActiveWindow() on that dialog.
      */
-    KDialog* findNextDialog( bool create = false );
+    QDialog* findNextDialog( bool create = false );
 
     /**
      * Close the "find next?" dialog. The application should do this when

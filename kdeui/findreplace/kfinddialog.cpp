@@ -143,8 +143,8 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
 
     buttonBox = new QDialogButtonBox(q);
     buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Close);
-    connect(buttonBox, SIGNAL(accepted()), q, SLOT(_k_slotOk()));
-    connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+    q->connect(buttonBox, SIGNAL(accepted()), q, SLOT(_k_slotOk()));
+    q->connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
     topLayout->addWidget(buttonBox);
 
     // We delay creation of these until needed.
@@ -245,7 +245,6 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     promptOnReplace->setWhatsThis(i18n(
             "Ask before replacing each match found.") );
 
-    q->connect(q, SIGNAL(okClicked()), q, SLOT(_k_slotOk()));
     _k_textSearchChanged(find->lineEdit()->text());
 }
 

@@ -24,13 +24,11 @@
 
 #include "kfind.h"
 
-#include <kdialog.h>
-
+#include <QDialog>
 #include <QtCore/QHash>
 #include <QtCore/QList>
 #include <QtCore/QPointer>
 #include <QtCore/QString>
-
 
 struct KFind::Private
 {
@@ -104,7 +102,7 @@ struct KFind::Private
 
     QString pattern;
     QRegExp *regExp;
-    KDialog* dialog;
+    QDialog* dialog;
     long options;
     unsigned matches;
 

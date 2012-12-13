@@ -29,8 +29,8 @@ class KReplaceTest : public QObject
 {
     Q_OBJECT
 public:
-    KReplaceTest( const QStringList& text, int button )
-        : QObject( 0L ), m_text( text ), m_replace( 0 ), m_button( button ) {}
+    KReplaceTest( const QStringList& text, const QString &buttonName )
+        : QObject( 0L ), m_text( text ), m_replace( 0 ), m_buttonName( buttonName ) {}
 
     void replace( const QString &pattern, const QString &replacement, long options );
     void print();
@@ -51,7 +51,7 @@ private:
     QStringList m_text;
     KReplace* m_replace;
     bool m_needEventLoop;
-    int m_button;
+    QString m_buttonName;
 };
 
 #endif

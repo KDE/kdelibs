@@ -144,7 +144,7 @@ public:
      * menu item while a find operation is under way. In that case, the
      * program may want to call setActiveWindow() on that dialog.
      */
-    KDialog* replaceNextDialog( bool create = false );
+    QDialog* replaceNextDialog( bool create = false );
 
     /**
      * Close the "replace next?" dialog. The application should do this when
