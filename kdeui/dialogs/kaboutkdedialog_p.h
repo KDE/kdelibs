@@ -22,7 +22,7 @@
 #ifndef KABOUT_KDE_DIALOG_H
 #define KABOUT_KDE_DIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 
 namespace KDEPrivate {
 
@@ -40,7 +40,7 @@ namespace KDEPrivate {
  * @internal
  */
 
-class KAboutKdeDialog : public KDialog
+class KAboutKdeDialog : public QDialog
 {
     Q_OBJECT
 

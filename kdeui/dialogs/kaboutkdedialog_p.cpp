@@ -21,6 +21,7 @@
 
 #include "kaboutkdedialog_p.h"
 
+#include <QDialogButtonBox>
 #include <QFrame>
 #include <QLabel>
 #include <QLayout>
@@ -36,11 +37,10 @@ namespace KDEPrivate {
 
 
 KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
-  : KDialog(parent),
+  : QDialog(parent),
     d( 0 )
 {
-    setPlainCaption(i18n("About KDE"));
-    setButtons(KDialog::Close);
+    setWindowTitle(i18n("About KDE"));
 
     KTitleWidget *titleWidget = new KTitleWidget(this);
     titleWidget->setText(i18n("<html><font size=\"5\">KDE - Be Free!</font><br /><b>Platform Version %1</b></html>",
@@ -143,15 +143,17 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     midLayout->addWidget(image);
     midLayout->addWidget(tabWidget);
 
+    QDialogButtonBox *buttonBox = new QDialogButtonBox;
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->addWidget(titleWidget);
     mainLayout->addLayout(midLayout);
-    mainLayout->setMargin(0);
+    mainLayout->addWidget(buttonBox);
 
-    QWidget *mainWidget = new QWidget;
-    mainWidget->setLayout(mainLayout);
-
-    setMainWidget(mainWidget);
+    setLayout(mainLayout);
 }
 
 }
