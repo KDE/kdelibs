@@ -30,7 +30,6 @@
 #endif
 
 #include "kdebug.h"
-#include "kdialog.h"
 #include "klocalizedstring.h"
 #include "kdeversion.h"
 
@@ -72,7 +71,7 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
     foreach( QWidget* w, customTabs ) // reparent to avoid leaks
         w->setParent( dialog );
 #endif
-    dialog->setWindowTitle( KDialog::makeStandardCaption( i18nc( "@title:window", "Print" ) ) );
+    dialog->setWindowTitle( i18nc( "@title:window", "Print" ) );
     return dialog;
 }
 
