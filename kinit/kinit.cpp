@@ -486,9 +486,12 @@ static pid_t launch(int argc, const char *_name, const char *args,
         libpath = klib.fileName();
         if( libpath.isEmpty()) {
             KLibrary klib(lib);
-            libpath = klib.fileName();
+            libpath = klib.fileName(); // this is really just a way to call findLibraryInternal
         }
         execpath = execpath_avoid_loops(exec, envc, envs, avoid_loops);
+        if (libpath.isEmpty() && execpath.isEmpty()) {
+            fprintf(stderr, "Didn't find \"%s\", neither as an executable nor as a plugin. Please check $PATH and $QT_PLUGIN_PATH.\n", name.constData());
+        }
     } else {
         name = _name;
         lib = QFile::decodeName(name);
@@ -514,7 +517,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
         }
     }
 #ifndef NDEBUG
-    fprintf(stderr,"kdeinit5: preparing to launch %s\n", libpath.isEmpty()
+    fprintf(stderr,"kdeinit5: preparing to launch '%s'\n", libpath.isEmpty()
         ? execpath.constData() : libpath.toUtf8().constData());
 #endif
     if (!args) {
