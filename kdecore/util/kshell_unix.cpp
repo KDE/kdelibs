@@ -216,14 +216,14 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                             break;
                           }
                         default:
-                            if (c.toLatin1() >= '0' && c.toAscii() <= '7') {
+                            if (c.toLatin1() >= '0' && c.toLatin1() <= '7') {
                                 char cAscii = c.toLatin1();
                                 int hv = cAscii - '0';
                                 for (int i = 0; i < 2; i++) {
                                     if (pos >= args.length())
                                         break;
                                     c = args.unicode()[pos];
-                                    if (c.toLatin1() < '0' || c.toAscii() > '7')
+                                    if (c.toLatin1() < '0' || c.toLatin1() > '7')
                                         break;
                                     hv = hv * 8 + (c.toLatin1() - '0');
                                     pos++;

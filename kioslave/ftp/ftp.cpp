@@ -1598,7 +1598,7 @@ void Ftp::listDir( const QUrl &url )
 
 void Ftp::slave_status()
 {
-  kDebug(7102) << "Got slave_status host = " << (!m_host.toLatin1().isEmpty() ? m_host.toAscii() : "[None]") << " [" << (m_bLoggedOn ? "Connected" : "Not connected") << "]";
+  kDebug(7102) << "Got slave_status host = " << (!m_host.toLatin1().isEmpty() ? m_host.toLatin1() : "[None]") << " [" << (m_bLoggedOn ? "Connected" : "Not connected") << "]";
   slaveStatus( m_host, m_bLoggedOn );
 }
 
