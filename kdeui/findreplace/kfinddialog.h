@@ -21,7 +21,7 @@
 #ifndef KFINDDIALOG_H
 #define KFINDDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kdeui_export.h>
 
 /**
@@ -76,8 +76,7 @@
  *
  * \image html kfinddialog.png "KDE Find Dialog"
  */
-class KDEUI_EXPORT KFindDialog:
-    public KDialog
+class KDEUI_EXPORT KFindDialog : public QDialog
 {
     Q_OBJECT
 

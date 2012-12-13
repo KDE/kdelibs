@@ -23,6 +23,7 @@
 
 #include <QCheckBox>
 #include <QCursor>
+#include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QLabel>
 #include <QLayout>
@@ -41,16 +42,13 @@
 #include <kservicetypetrader.h>
 
 KFindDialog::KFindDialog(QWidget *parent, long options, const QStringList &findStrings, bool hasSelection, bool replaceDialog)
-    : KDialog(parent),
+    : QDialog(parent),
       d(new KFindDialogPrivate(this))
 {
-    setCaption( i18n("Find Text") );
-    setButtons( Ok | Cancel );
-    setDefaultButton( Ok );
+    setWindowTitle( i18n("Find Text") );
 
     d->init(replaceDialog, findStrings, hasSelection);
     setOptions(options);
-    setButtonGuiItem( KDialog::Cancel, KStandardGuiItem::close() );
 }
 
 KFindDialog::~KFindDialog()
@@ -80,13 +78,10 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     QGridLayout *optionsLayout;
 
     // Create common parts of dialog.
-    QWidget *page = new QWidget(q);
-    q->setMainWidget(page);
+    topLayout = new QVBoxLayout;
+    q->setLayout(topLayout);
 
-    topLayout = new QVBoxLayout(page);
-    topLayout->setMargin( 0 );
-
-    findGrp = new QGroupBox(i18nc("@title:group", "Find"), page);
+    findGrp = new QGroupBox(i18nc("@title:group", "Find"), q);
     findLayout = new QGridLayout(findGrp);
 
     QLabel *findLabel = new QLabel(i18n("&Text to find:"), findGrp);
@@ -103,7 +98,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     findLayout->addWidget(regExpItem, 2, 1);
     topLayout->addWidget(findGrp);
 
-    replaceGrp = new QGroupBox( i18n("Replace With"), page);
+    replaceGrp = new QGroupBox( i18n("Replace With"), q);
     replaceLayout = new QGridLayout(replaceGrp);
 
     QLabel *replaceLabel = new QLabel(i18n("Replace&ment text:"), replaceGrp);
@@ -120,7 +115,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     replaceLayout->addWidget(backRefItem, 2, 1);
     topLayout->addWidget(replaceGrp);
 
-    QGroupBox *optionGrp = new QGroupBox(i18n("Options"), page);
+    QGroupBox *optionGrp = new QGroupBox(i18n("Options"), q);
     optionsLayout = new QGridLayout(optionGrp);
 
     caseSensitive = new QCheckBox(i18n("C&ase sensitive"), optionGrp);
@@ -144,6 +139,13 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     optionsLayout->addWidget(selectedText, 1, 1);
     optionsLayout->addWidget(promptOnReplace, 2, 1);
     topLayout->addWidget(optionGrp);
+
+
+    buttonBox = new QDialogButtonBox(q);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Close);
+    connect(buttonBox, SIGNAL(accepted()), q, SLOT(_k_slotOk()));
+    connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+    topLayout->addWidget(buttonBox);
 
     // We delay creation of these until needed.
     patterns = 0;
@@ -192,10 +194,11 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
 
     findStrings = _findStrings;
     find->setFocus();
-    q->enableButtonOk( !q->pattern().isEmpty() );
+    QPushButton *buttonOk = buttonBox->button(QDialogButtonBox::Ok);
+    buttonOk->setEnabled(!q->pattern().isEmpty());
     if (forReplace)
     {
-      q->setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Replace"), QString(),
+        KGuiItem::assign(buttonOk, KGuiItem( i18n("&Replace"), QString(),
                     i18n("Start replace"),
                     i18n("<qt>If you press the <b>Replace</b> button, the text you entered "
                          "above is searched for within the document and any occurrence is "
@@ -203,7 +206,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     }
     else
     {
-      q->setButtonGuiItem( KDialog::Ok, KGuiItem( i18n("&Find"), "edit-find",
+        KGuiItem::assign(buttonOk, KGuiItem( i18n("&Find"), "edit-find",
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the text you entered "
                          "above is searched for within the document.</qt>")));
@@ -248,7 +251,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
 
 void KFindDialog::KFindDialogPrivate::_k_textSearchChanged( const QString & text)
 {
-    q->enableButtonOk( !text.isEmpty() );
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!text.isEmpty());
 }
 
 void KFindDialog::showEvent( QShowEvent *e )
@@ -275,7 +278,7 @@ void KFindDialog::showEvent( QShowEvent *e )
             setTabOrder(prev, d->replace);
         }
     }
-    KDialog::showEvent(e);
+    QDialog::showEvent(e);
 }
 
 long KFindDialog::options() const

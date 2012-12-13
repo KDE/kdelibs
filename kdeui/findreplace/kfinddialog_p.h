@@ -29,6 +29,7 @@
 class KHistoryComboBox;
 
 class QCheckBox;
+class QDialogButtonBox;
 class QGridLayout;
 class QGroupBox;
 class QMenu;
@@ -43,7 +44,8 @@ public:
         regexpDialogQueryDone(false),
         initialShowDone(false),
         enabled(KFind::WholeWordsOnly | KFind::FromCursor |  KFind::SelectedText | KFind::CaseSensitive | KFind::FindBackwards | KFind::RegularExpression),
-        findExtension(0)
+        findExtension(0),
+        buttonBox(0)
         {}
 
     void init( bool forReplace, const QStringList &findStrings, bool hasSelection );
@@ -63,6 +65,7 @@ public:
     QStringList findStrings;
     QString pattern;
     QWidget *findExtension;
+    QDialogButtonBox *buttonBox;
 
     QGroupBox *findGrp;
     KHistoryComboBox *find;
