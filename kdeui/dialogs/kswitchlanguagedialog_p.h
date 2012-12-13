@@ -22,7 +22,7 @@
 #ifndef _KSWITCHLANGUAGEDIALOG_H_
 #define _KSWITCHLANGUAGEDIALOG_H_
 
-#include <kdialog.h>
+#include <QDialog>
 
 namespace KDEPrivate {
 
@@ -38,7 +38,7 @@ class KSwitchLanguageDialogPrivate;
  * @internal
  */
 
-class KSwitchLanguageDialog : public KDialog
+class KSwitchLanguageDialog : public QDialog
 {
   Q_OBJECT
 

@@ -22,6 +22,7 @@
 #include "moc_kswitchlanguagedialog_p.cpp"
 
 #include <QApplication>
+#include <QDialogButtonBox>
 #include <QLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -30,6 +31,7 @@
 
 #include <klanguagebutton.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -88,26 +90,20 @@ public:
     QMap<QPushButton*, LanguageRowData> languageRows;
     QList<KLanguageButton*> languageButtons;
     QGridLayout *languagesLayout;
-    QWidget *page;
 };
 
 /*************************** KSwitchLanguageDialog **************************/
 
 KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
-  : KDialog(parent),
+  : QDialog(parent),
     d(new KSwitchLanguageDialogPrivate(this))
 {
-    setCaption(i18n("Switch Application Language"));
-    setButtons(Ok | Cancel | Default);
-    setDefaultButton(Ok);
-    connect(this, SIGNAL(okClicked()), SLOT(slotOk()));
-    connect(this, SIGNAL(defaultClicked()), SLOT(slotDefault()));
+    setWindowTitle(i18n("Switch Application Language"));
 
-    d->page = new QWidget( this );
-    setMainWidget(d->page);
-    QVBoxLayout *topLayout = new QVBoxLayout( d->page );
-    topLayout->setMargin( 0 );
-    QLabel *label = new QLabel( i18n("Please choose the language which should be used for this application:"), d->page );
+    QVBoxLayout *topLayout = new QVBoxLayout;
+    setLayout(topLayout);
+
+    QLabel *label = new QLabel(i18n("Please choose the language which should be used for this application:"), this);
     topLayout->addWidget( label );
 
     QHBoxLayout *languageHorizontalLayout = new QHBoxLayout();
@@ -135,13 +131,25 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
     QHBoxLayout *addButtonHorizontalLayout = new QHBoxLayout();
     topLayout->addLayout(addButtonHorizontalLayout);
 
-    QPushButton *addLangButton = new QPushButton(i18n("Add Fallback Language"), d->page);
+    QPushButton *addLangButton = new QPushButton(i18n("Add Fallback Language"), this);
     addLangButton->setToolTip(i18n("Adds one more language which will be used if other translations do not contain a proper translation."));
     connect(addLangButton, SIGNAL(clicked()), this, SLOT(slotAddLanguageButton()));
     addButtonHorizontalLayout->addWidget(addLangButton);
     addButtonHorizontalLayout->addStretch();
 
     topLayout->addStretch(10);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok
+                                | QDialogButtonBox::Cancel
+                                | QDialogButtonBox::RestoreDefaults);
+    topLayout->addWidget(buttonBox);
+
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotOk()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    connect(buttonBox->button(QDialogButtonBox::RestoreDefaults), SIGNAL(clicked()),
+            this, SLOT(slotDefault()));
 }
 
 KSwitchLanguageDialog::~KSwitchLanguageDialog()
@@ -322,7 +330,7 @@ void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCod
 {
     QString labelText = primaryLanguage ? i18n("Primary language:") : i18n("Fallback language:");
 
-    KLanguageButton *languageButton = new KLanguageButton(page);
+    KLanguageButton *languageButton = new KLanguageButton(p);
 
     fillApplicationLanguages(languageButton);
 
@@ -340,7 +348,7 @@ void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCod
 
     if (!primaryLanguage)
     {
-        removeButton = new QPushButton(i18n("Remove"), page);
+        removeButton = new QPushButton(i18n("Remove"), p);
 
         QObject::connect(
             removeButton,
@@ -356,7 +364,7 @@ void KSwitchLanguageDialogPrivate::addLanguageButton(const QString & languageCod
 
     int numRows = languagesLayout->rowCount();
 
-    QLabel *languageLabel = new QLabel(labelText, page);
+    QLabel *languageLabel = new QLabel(labelText, p);
     languagesLayout->addWidget( languageLabel, numRows + 1, 1, Qt::AlignLeft );
     languagesLayout->addWidget( languageButton, numRows + 1, 2, Qt::AlignLeft );
 
