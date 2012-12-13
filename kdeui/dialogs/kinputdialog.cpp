@@ -20,9 +20,11 @@
 #include "kinputdialog.h"
 #include "kinputdialog_p.h"
 
+#include <QDialogButtonBox>
 #include <QDoubleValidator>
 #include <QLabel>
 #include <QLayout>
+#include <QPushButton>
 
 #include <kcombobox.h>
 #include <kcompletion.h>
@@ -36,24 +38,21 @@
 KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
                                         const QString &value, QWidget *parent,
                                         QValidator *validator, const QString &mask )
-    : KDialog(parent),
+    : QDialog(parent),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
 {
-    setCaption(caption);
-    setButtons(Ok | Cancel);
-    setDefaultButton(Ok);
+    setWindowTitle(caption);
     setModal(true);
 
-    QWidget *frame = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setMargin(0);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-    m_label = new QLabel(label, frame);
+    m_label = new QLabel(label, this);
     m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
-    m_lineEdit = new KLineEdit(value, frame);
+    m_lineEdit = new KLineEdit(value, this);
     m_lineEdit->setClearButtonShown(true);
     layout->addWidget(m_lineEdit);
 
@@ -61,6 +60,12 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     m_label->setBuddy(m_lineEdit);
 
     layout->addStretch();
+
+    m_buttonBox = new QDialogButtonBox(this);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(m_buttonBox);
 
     if (validator)
         m_lineEdit->setValidator(validator);
@@ -71,91 +76,96 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     connect(m_lineEdit, SIGNAL(textChanged(QString)),
             SLOT(slotEditTextChanged(QString)));
 
-    setMainWidget(frame);
     slotEditTextChanged(value);
     setMinimumWidth(350);
 }
 
 KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
                                         const QString &value, QWidget *parent )
-    : KDialog(parent),
+    : QDialog(parent),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
 {
-    setCaption(caption);
-    setButtons(Ok | Cancel | User1);
-    setButtonGuiItem(User1, KStandardGuiItem::clear());
-    setDefaultButton(Ok);
+    setWindowTitle(caption);
     setModal(true);
-    QWidget *frame = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(frame);
-    layout->setMargin(0);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-    m_label = new QLabel(label, frame);
+    m_label = new QLabel(label, this);
     m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
-    m_textEdit = new KTextEdit(frame);
+    m_textEdit = new KTextEdit(this);
     m_textEdit->insertPlainText(value);
     layout->addWidget(m_textEdit, 10);
 
     m_textEdit->setFocus();
     m_label->setBuddy(m_textEdit);
 
-    connect(this, SIGNAL(user1Clicked()), m_textEdit, SLOT(clear()));
-    connect(this, SIGNAL(user1Clicked()), m_textEdit, SLOT(setFocus()));
-    setMainWidget(frame);
+    m_buttonBox = new QDialogButtonBox(this);
+    QPushButton *clearButton = new QPushButton(m_buttonBox);
+    KGuiItem::assign(clearButton, KStandardGuiItem::clear());
+    m_buttonBox->addButton(clearButton, QDialogButtonBox::ActionRole);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(m_buttonBox);
+
+    connect(clearButton, SIGNAL(clicked()), m_textEdit, SLOT(clear()));
+    connect(clearButton, SIGNAL(clicked()), m_textEdit, SLOT(setFocus()));
     setMinimumWidth(400);
 }
 
 KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
                                         int value, int minValue, int maxValue, int step, int base,
                                         QWidget *parent )
-    : KDialog(parent),
+    : QDialog(parent),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
 {
-    setCaption(caption);
-    setButtons(Ok | Cancel);
+    setWindowTitle(caption);
     setModal(true);
 
-    QWidget *frame = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(frame);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-    m_label = new QLabel(label, frame);
+    m_label = new QLabel(label, this);
     m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
-    m_intSpinBox = new KIntSpinBox(minValue, maxValue, step, value, frame, base);
+    m_intSpinBox = new KIntSpinBox(minValue, maxValue, step, value, this, base);
     layout->addWidget(m_intSpinBox);
 
     layout->addStretch();
-    layout->setMargin(0);
+
+    m_buttonBox = new QDialogButtonBox(this);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(m_buttonBox);
 
     m_intSpinBox->setFocus();
-    setMainWidget(frame);
     setMinimumWidth(300);
 }
 
 KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
                                         double value, double minValue, double maxValue, double step, int decimals,
                                         QWidget *parent )
-    : KDialog( parent ),
+    : QDialog( parent ),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
 {
-    setCaption(caption);
-    setButtons(Ok | Cancel);
+    setWindowTitle(caption);
     setModal(true);
 
-    QWidget *frame = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(frame);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-    m_label = new QLabel(label, frame);
+    m_label = new QLabel(label, this);
     m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
-    m_doubleSpinBox = new QDoubleSpinBox(frame);
+    m_doubleSpinBox = new QDoubleSpinBox(this);
     m_doubleSpinBox->setRange(minValue, maxValue);
     m_doubleSpinBox->setSingleStep(step);
     m_doubleSpinBox->setValue(value);
@@ -164,34 +174,36 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     layout->addWidget(m_doubleSpinBox);
 
     layout->addStretch();
-    layout->setMargin(0);
+
+    m_buttonBox = new QDialogButtonBox(this);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(m_buttonBox);
 
     m_doubleSpinBox->setFocus();
-    setMainWidget(frame);
     setMinimumWidth(300);
 }
 
 KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
                                         const QStringList &list, int current, bool editable, QWidget *parent )
-    : KDialog(parent),
+    : QDialog(parent),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
 {
-    setCaption(caption);
-    setButtons(Ok | Cancel);
-    setDefaultButton(Ok);
+    setWindowTitle(caption);
     setModal(true);
 
-    QWidget *frame = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(frame);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-    m_label = new QLabel(label, frame);
+    m_label = new QLabel(label, this);
     m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
     if (editable) {
-        m_comboBox = new KComboBox(editable, frame);
-        m_lineEdit = new KLineEdit(frame);
+        m_comboBox = new KComboBox(editable, this);
+        m_lineEdit = new KLineEdit(this);
         m_lineEdit->setClearButtonShown(true);
         m_comboBox->setLineEdit(m_lineEdit);
         m_comboBox->insertItems(0, list);
@@ -200,10 +212,9 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
 
         connect(m_comboBox, SIGNAL(editTextChanged(QString)),
                 SLOT(slotUpdateButtons(QString)));
-        slotUpdateButtons(m_comboBox->currentText());
         m_comboBox->setFocus();
     } else {
-        m_listBox = new KListWidget(frame);
+        m_listBox = new KListWidget(this);
         m_listBox->addItems(list);
         m_listBox->setCurrentRow(current);
         layout->addWidget(m_listBox, 10);
@@ -213,30 +224,37 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     }
 
     layout->addStretch();
-    layout->setMargin(0);
-    setMainWidget(frame);
+
+    m_buttonBox = new QDialogButtonBox(this);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(m_buttonBox);
+
+    if (editable) {
+        slotUpdateButtons(m_comboBox->currentText());
+    }
     setMinimumWidth(320);
 }
 
 KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &label,
                                         const QStringList &list, const QStringList &select, bool multiple,
                                         QWidget *parent )
-    : KDialog( parent ),
+    : QDialog( parent ),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
 {
-    setCaption(caption);
-    setButtons(Ok | Cancel);
+    setWindowTitle(caption);
     setModal(true);
 
-    QWidget *frame = new QWidget(this);
-    QVBoxLayout *layout = new QVBoxLayout(frame);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
-    m_label = new QLabel(label, frame);
-    m_label->setWordWrap(true); 
-   layout->addWidget(m_label);
+    m_label = new QLabel(label, this);
+    m_label->setWordWrap(true);
+    layout->addWidget(m_label);
 
-    m_listBox = new KListWidget(frame);
+    m_listBox = new KListWidget(this);
     m_listBox->addItems(list);
     layout->addWidget(m_listBox);
 
@@ -263,8 +281,13 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     m_listBox->setFocus();
 
     layout->addStretch();
-    layout->setMargin(0);
-    setMainWidget(frame);
+
+    m_buttonBox = new QDialogButtonBox(this);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(m_buttonBox);
+
     setMinimumWidth(320);
 }
 
@@ -284,12 +307,12 @@ void KInputDialogHelper::slotEditTextChanged( const QString &text )
         on = !text.trimmed().isEmpty();
     }
 
-    enableButton(Ok, on);
+    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(on);
 }
 
 void KInputDialogHelper::slotUpdateButtons( const QString &text )
 {
-    enableButton(Ok, !text.isEmpty());
+    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!text.isEmpty());
 }
 
 KLineEdit *KInputDialogHelper::lineEdit() const
@@ -343,7 +366,7 @@ QString getText( const QString &caption,
             comp->addItem(*it);
     }
 
-    bool _ok = (dlg.exec() == KDialog::Accepted);
+    bool _ok = (dlg.exec() == QDialog::Accepted);
 
     if (ok)
         *ok = _ok;
@@ -365,7 +388,7 @@ QString getMultiLineText( const QString &caption,
 {
     KInputDialogHelper dlg(caption, label, value, parent);
     dlg.textEdit()->setAcceptRichText(false);
-    bool _ok = (dlg.exec() == KDialog::Accepted);
+    bool _ok = (dlg.exec() == QDialog::Accepted);
 
     if (ok)
         *ok = _ok;
@@ -383,7 +406,7 @@ int getInteger( const QString &caption, const QString &label,
 {
     KInputDialogHelper dlg(caption, label, value, minValue, maxValue, step, base, parent);
 
-    bool _ok = (dlg.exec() == KDialog::Accepted);
+    bool _ok = (dlg.exec() == QDialog::Accepted);
 
     if (ok)
         *ok = _ok;
@@ -408,7 +431,7 @@ double getDouble( const QString &caption, const QString &label,
 {
     KInputDialogHelper dlg(caption, label, value, minValue, maxValue, step, decimals, parent);
 
-    bool _ok = (dlg.exec() == KDialog::Accepted);
+    bool _ok = (dlg.exec() == QDialog::Accepted);
 
     if (ok)
         *ok = _ok;
@@ -436,7 +459,7 @@ QString getItem( const QString &caption, const QString &label,
     if (!editable)
         dlg.connect(dlg.listBox(), SIGNAL(executed(QListWidgetItem*)), &dlg, SLOT(accept()));
 
-    bool _ok = (dlg.exec() == KDialog::Accepted);
+    bool _ok = (dlg.exec() == QDialog::Accepted);
 
     if (ok)
         *ok = _ok;
@@ -458,7 +481,7 @@ QStringList getItemList( const QString &caption,
 {
     KInputDialogHelper dlg(caption, label, list, select, multiple, parent);
 
-    bool _ok = (dlg.exec() == KDialog::Accepted);
+    bool _ok = (dlg.exec() == QDialog::Accepted);
 
     if (ok)
         *ok = _ok;

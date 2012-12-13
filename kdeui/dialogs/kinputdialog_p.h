@@ -23,6 +23,7 @@
 class QLabel;
 class QValidator;
 
+class QDialogButtonBox;
 class KComboBox;
 class QDoubleSpinBox;
 class KIntSpinBox;
@@ -30,12 +31,12 @@ class KLineEdit;
 class KListWidget;
 class KTextEdit;
 
-#include <kdialog.h>
+#include <QDialog>
 
 /**
  * @author Nadeem Hasan <nhasan@kde.org>
  */
-class KInputDialogHelper : public KDialog
+class KInputDialogHelper : public QDialog
 {
   Q_OBJECT
 
@@ -78,6 +79,7 @@ class KInputDialogHelper : public KDialog
     KComboBox *m_comboBox;
     KListWidget *m_listBox;
     KTextEdit *m_textEdit;
+    QDialogButtonBox *m_buttonBox;
 };
 
 #endif // KINPUTDIALOG_P_H
