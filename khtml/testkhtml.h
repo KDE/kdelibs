@@ -5,6 +5,7 @@
 #include <khtml_part.h>
 #include <QList>
 #include <QMap>
+#include <QTime>
 
 /**
  * @internal
