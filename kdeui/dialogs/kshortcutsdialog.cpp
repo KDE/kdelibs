@@ -33,6 +33,7 @@
 #include "klocalizedstring.h"
 
 #include <QApplication>
+#include <QDialogButtonBox>
 #include <QDomDocument>
 
 #include <kmessagebox.h>
@@ -56,8 +57,13 @@ class KShortcutsDialog::KShortcutsDialogPrivate
 {
 public:
 
-    KShortcutsDialogPrivate(KShortcutsDialog *q): q(q), m_keyChooser(0), m_schemeEditor(0)
-        {}
+    KShortcutsDialogPrivate(KShortcutsDialog *q)
+        : q(q),
+          m_keyChooser(0),
+          m_schemeEditor(0),
+          m_detailsButton(0)
+    {
+    }
 
     QList<KActionCollection*> m_collections;
 
@@ -104,6 +110,14 @@ public:
         m_keyChooser->undoChanges();
     }
 
+    void toggleDetails()
+    {
+        const bool isVisible = m_schemeEditor->isVisible();
+
+        m_schemeEditor->setVisible(!isVisible);
+        m_detailsButton->setText(i18n("&Details") + (isVisible ? " >>" : " <<"));
+    }
+
     void save()
     {
         m_keyChooser->save();
@@ -113,29 +127,50 @@ public:
     KShortcutsDialog *q;
     KShortcutsEditor* m_keyChooser; // ### move
     KShortcutSchemesEditor* m_schemeEditor;
+    QPushButton *m_detailsButton;
 };
 
 
 KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortcutsEditor::LetterShortcuts allowLetterShortcuts, QWidget *parent )
-: KDialog( parent ), d(new KShortcutsDialogPrivate(this))
+    : QDialog(parent), d(new KShortcutsDialogPrivate(this))
 {
-    setCaption(i18n("Configure Shortcuts"));
-    setButtons(Details|Reset|Ok|Cancel|KDialog::User1);
-    setButtonText(KDialog::User1, i18n("Print"));
-    setButtonIcon(KDialog::User1, KDE::icon("document-print"));
+    setWindowTitle(i18n("Configure Shortcuts"));
     setModal(true);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
+
     d->m_keyChooser = new KShortcutsEditor( this, types, allowLetterShortcuts );
-    setMainWidget( d->m_keyChooser );
-    setButtonText(Reset,i18n("Reset to Defaults"));
+    layout->addWidget(d->m_keyChooser);
 
     d->m_schemeEditor = new KShortcutSchemesEditor(this);
     connect( d->m_schemeEditor, SIGNAL(shortcutsSchemeChanged(QString)),
              this, SLOT(changeShortcutScheme(QString)) );
-    setDetailsWidget(d->m_schemeEditor);
+    d->m_schemeEditor->hide();
+    layout->addWidget(d->m_schemeEditor);
 
-    connect( this, SIGNAL(resetClicked()), d->m_keyChooser, SLOT(allDefault()) );
-    connect( this, SIGNAL(user1Clicked()), d->m_keyChooser, SLOT(printShortcuts()) );
-    connect(this, SIGNAL(cancelClicked()), SLOT(undoChanges()));
+    d->m_detailsButton = new QPushButton;
+    d->m_detailsButton->setText(i18n("&Details") + " >>");
+
+    QPushButton *printButton = new QPushButton;
+    printButton->setText(i18n("Print"));
+    printButton->setIcon(KDE::icon("document-print"));
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->addButton(d->m_detailsButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(printButton, QDialogButtonBox::ActionRole);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Reset);
+    buttonBox->button(QDialogButtonBox::Reset)->setText(i18n("Reset to Defaults"));
+    layout->addWidget(buttonBox);
+
+    connect(buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()),
+            d->m_keyChooser, SLOT(allDefault()));
+    connect(d->m_detailsButton, SIGNAL(clicked()), this, SLOT(toggleDetails()));
+    connect(printButton, SIGNAL(clicked()), d->m_keyChooser, SLOT(printShortcuts()) );
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(undoChanges()));
+
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     KConfigGroup group( KSharedConfig::openConfig(), "KShortcutsDialog Settings" );
     resize( group.readEntry( "Dialog Size", sizeHint() ) );

@@ -26,7 +26,7 @@
 #ifndef KSHORTCUTSDIALOG_H
 #define KSHORTCUTSDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 
 #include "kshortcutseditor.h"
 
@@ -66,7 +66,7 @@
  * @author Hamish Rodda <rodda@kde.org> (KDE 4 porting)
  * @author Michael Jansen <kde@michael-jansen.biz>
  */
-class KDEUI_EXPORT KShortcutsDialog : public KDialog
+class KDEUI_EXPORT KShortcutsDialog : public QDialog
 {
 	Q_OBJECT
 
@@ -134,6 +134,7 @@ private:
 	Q_PRIVATE_SLOT(d, void changeShortcutScheme(const QString &))
 	Q_PRIVATE_SLOT(d, void save())
 	Q_PRIVATE_SLOT(d, void undoChanges())
+	Q_PRIVATE_SLOT(d, void toggleDetails())
 
 	class KShortcutsDialogPrivate;
 	friend class KShortcutsDialogPrivate;
