@@ -22,11 +22,11 @@
 #include <qstandardpaths.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <kdebug.h>
 #include <QtCore/QProcess>
 
-QTEST_KDEMAIN_CORE( KDebugTest )
+QTEST_MAIN(KDebugTest)
 
 void KDebugTest::initTestCase()
 {
@@ -40,7 +40,7 @@ void KDebugTest::initTestCase()
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
 #else
-   qputenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")));
+    qputenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")));
 #endif
 
     QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kdebugrc";
@@ -60,8 +60,8 @@ void KDebugTest::initTestCase()
     config.group("180").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("myarea").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.group("myarea").writeEntry("InfoFilename", "myarea.dbg");
-    config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
-    config.group("qttest").writeEntry("WarnOutput", 0 /*FileOutput*/);
+    config.group("kdebug_unittest").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    config.group("kdebug_unittest").writeEntry("WarnOutput", 0 /*FileOutput*/);
     config.sync();
 
     //QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 0, false), false);
@@ -154,7 +154,7 @@ void KDebugTest::testDebugToFile()
     kWarning() << "TEST WARNING 0";
     // The calls to kDebug(0) created a dynamic debug area named after the componentdata name
     KConfig config("kdebugrc");
-    QVERIFY(config.hasGroup("qttest"));
+    QVERIFY(config.hasGroup("kdebug_unittest"));
     kDebug(0) << "TEST DEBUG with newline" << endl << "newline";
     TestClass tc;
     kDebug(0) << "Re-entrance test" << tc << "[ok]";
@@ -185,7 +185,7 @@ void KDebugTest::testDisableArea()
     QFile::remove("kdebug.dbg");
     KConfig config("kdebugrc");
     config.group("180").writeEntry("InfoOutput", 4 /*NoOutput*/);
-    config.group("qttest").writeEntry("InfoOutput", 4 /*NoOutput*/);
+    config.group("kdebug_unittest").writeEntry("InfoOutput", 4 /*NoOutput*/);
     config.sync();
     kClearDebugConfig();
     kDebug(180) << "TEST DEBUG 180 - SHOULD NOT APPEAR";
@@ -198,7 +198,7 @@ void KDebugTest::testDisableArea()
 
     // Re-enable debug, for further tests
     config.group("180").writeEntry("InfoOutput", 0 /*FileOutput*/);
-    config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    config.group("kdebug_unittest").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.sync();
     kClearDebugConfig();
 }
@@ -267,7 +267,7 @@ void KDebugTest::testHasNullOutput()
 
     // And if we really have no config for area 0 (the app name)
     KConfig config("kdebugrc");
-    config.deleteGroup("qttest");
+    config.deleteGroup("kdebug_unittest");
     config.sync();
     kClearDebugConfig();
 
@@ -276,7 +276,7 @@ void KDebugTest::testHasNullOutput()
     QCOMPARE(KDebug::hasNullOutput(QtDebugMsg, true, 4242, false), true);
 
     // Restore to normal for future tests
-    config.group("qttest").writeEntry("InfoOutput", 0 /*FileOutput*/);
+    config.group("kdebug_unittest").writeEntry("InfoOutput", 0 /*FileOutput*/);
     config.sync();
     kClearDebugConfig();
 }
