@@ -55,14 +55,17 @@ void KMountPointTest::testCurrentMountPoints()
         }
     }
 
-    QVERIFY(mountWithDevice);
-
-    // Check findByDevice
-    KMountPoint::Ptr found = mountPoints.findByDevice(mountWithDevice->mountedFrom());
-    QVERIFY(found);
-    QCOMPARE(found->mountPoint(), mountWithDevice->mountPoint());
-    found = mountPoints.findByDevice("/I/Dont/Exist"); // krazy:exclude=spelling
-    QVERIFY(!found);
+    if (!mountWithDevice) {
+        // This happens on build.kde.org (LXC virtualization, mtab points to non-existing device paths)
+        kWarning() << "Couldn't find any mountpoint with a valid device?";
+    } else {
+        // Check findByDevice
+        KMountPoint::Ptr found = mountPoints.findByDevice(mountWithDevice->mountedFrom());
+        QVERIFY(found);
+        QCOMPARE(found->mountPoint(), mountWithDevice->mountPoint());
+        found = mountPoints.findByDevice("/I/Dont/Exist"); // krazy:exclude=spelling
+        QVERIFY(!found);
+    }
 
     // Check findByPath
 #ifdef Q_OS_UNIX
