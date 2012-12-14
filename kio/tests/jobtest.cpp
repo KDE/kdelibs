@@ -689,7 +689,7 @@ void JobTest::directorySize()
 #else
     QCOMPARE(job->totalFiles(), 8ULL); // see expected result in listRecursive() above
     QCOMPARE(job->totalSubdirs(), 4ULL); // see expected result in listRecursive() above
-    QVERIFY(job->totalSize() > 512);
+    QVERIFY(job->totalSize() >= 325);
 #endif
 
     qApp->sendPostedEvents(0, QEvent::DeferredDelete);
