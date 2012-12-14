@@ -253,6 +253,7 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     setActionIcon(action(Paste), KIcon("edit-paste"));
     setActionIcon(action(Undo), KIcon("edit-undo"));
     setActionIcon(action(Redo), KIcon("edit-redo"));
+    setActionIcon(action(SelectAll), KIcon("edit-select-all"));
     setActionIcon(action(InspectElement), KIcon("view-process-all"));
     setActionIcon(action(OpenLinkInNewWindow), KIcon("window-new"));
     setActionIcon(action(OpenFrameInNewWindow), KIcon("window-new"));
