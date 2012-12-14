@@ -24,6 +24,7 @@
 #include <qtest.h>
 
 #include "kiotesthelper.h"
+#include <config-kio.h>
 
 #include <QtCore/QThread>
 
@@ -69,10 +70,12 @@ void KFileMetaInfoTest::testMetaInfo()
     createTestFile(file);
 
     KFileMetaInfo fileMetaInfo(file);
+#if ! KIO_NO_STRIGI
     QVERIFY(fileMetaInfo.isValid());
 
     const KFileMetaInfoItem& item = fileMetaInfo.item("http://www.semanticdesktop.org/ontologies/2007/03/22/nfo#fileName");
     QCOMPARE(item.value().toString(), QString("testfilename"));
+#endif
 }
 
 void KFileMetaInfoTest::testReentrancy()
