@@ -98,9 +98,9 @@ add_subdirectory( kssl/kcm )
 add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( httpfilter/autotests )
-if(STRIGI_FOUND)
+if (NOT KIO_NO_STRIGI)
    add_subdirectory( kio/dummyanalyzers )
-endif(STRIGI_FOUND)
+endif()
 
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp
