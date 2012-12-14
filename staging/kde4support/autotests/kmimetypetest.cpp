@@ -519,7 +519,11 @@ void KMimeTypeTest::testAllMimeTypes()
 
         const KMimeType::Ptr lookedupMime = KMimeType::mimeType( name );
         QVERIFY( lookedupMime ); // not null
-        if (name != "application/vnd.ms-word" && name != "application/x-pkcs7-certificates" && name != "application/x-x509-ca-cert") {
+        if (name != "application/vnd.ms-word" && name != "application/x-pkcs7-certificates"
+                && name != "application/x-x509-ca-cert"
+                && name != "application/x-vnd.kde.kexi" // due to /usr/share/mime/packages/kde.xml from KDE4
+                && name != "application/x-kexiproject-sqlite" // due to /usr/share/mime/packages/kde.xml from KDE4
+                ) {
             QCOMPARE( lookedupMime->name(), name );
             // if this fails, you have an alias defined as a real mimetype too!
             //
