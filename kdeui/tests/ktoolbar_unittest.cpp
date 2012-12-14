@@ -30,6 +30,11 @@
 #include "testxmlguiwindow.h"
 #include "testguiclient.h"
 
+// We use the data types below in a QVariant, so Q_DECLARE_METATYPE is needed for them.
+Q_DECLARE_METATYPE(Qt::MouseButton)
+Q_DECLARE_METATYPE(Qt::MouseButtons)
+Q_DECLARE_METATYPE(Qt::KeyboardModifiers)
+
 class tst_KToolBar : public QObject
 {
     Q_OBJECT
@@ -577,11 +582,6 @@ void tst_KToolBar::testXmlGuiSwitching()
         QVERIFY(!m_showWasCalled);
     }
 }
-
-// We use the data types below in a QVariant, so Q_DECLARE_METATYPE is needed for them.
-Q_DECLARE_METATYPE(Qt::MouseButton)
-Q_DECLARE_METATYPE(Qt::MouseButtons)
-Q_DECLARE_METATYPE(Qt::KeyboardModifiers)
 
 void tst_KToolBar::testClickingToolButton_data() {
     QTest::addColumn<Qt::MouseButton>("button");

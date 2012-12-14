@@ -26,6 +26,10 @@
 
 #include "../src/backends/dbus/DBusHelperProxy.h"
 
+Q_DECLARE_METATYPE(KJob*)
+Q_DECLARE_METATYPE(KAuth::Action::AuthStatus)
+Q_DECLARE_METATYPE(QTimer*)
+
 class HelperHandler : public QObject
 {
     Q_OBJECT
@@ -205,8 +209,5 @@ void HelperTest::testActionData()
     QCOMPARE(job->data(), args);
 }
 
-Q_DECLARE_METATYPE(KJob*)
-Q_DECLARE_METATYPE(KAuth::Action::AuthStatus)
-Q_DECLARE_METATYPE(QTimer*)
 QTEST_MAIN(HelperTest)
 #include "HelperTest.moc"
