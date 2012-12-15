@@ -63,7 +63,7 @@ bool UDisksOpticalDrive::eject()
     QString path = m_device->udi();
 
     QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
-    msg << "unmount"; // unmount parameter
+    msg << (QStringList() << "unmount"); // unmount parameter
     return c.callWithCallback(msg, this, SLOT(slotDBusReply(QDBusMessage)), SLOT(slotDBusError(QDBusError)));
 }
 
