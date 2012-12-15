@@ -239,6 +239,7 @@ void KRunUnitTest::testMimeTypeFile()
     const QString filePath = homeTmpDir() + "file";
     createTestFile(filePath, true);
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(filePath), true);
+    krun->setAutoDelete(false);
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyFinished.wait(1000));
@@ -246,6 +247,7 @@ void KRunUnitTest::testMimeTypeFile()
     QTest::qWait(1000);
 #endif
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("text/plain"));
+    delete krun;
 }
 
 void KRunUnitTest::testMimeTypeDirectory()
