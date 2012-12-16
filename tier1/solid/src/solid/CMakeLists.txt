@@ -422,10 +422,10 @@ target_link_libraries(solid LINK_PUBLIC ${QT_QTCORE_LIBRARY}
                                          ${solid_OPTIONAL_LIBS}
                                          ${inqt5_LIBRARY} )
 
-set_target_properties(solid PROPERTIES  VERSION ${ECM_VERSION_STRING}
-                                        SOVERSION ${ECM_SOVERSION} )
+set_target_properties(solid PROPERTIES  VERSION ${SOLID_VERSION_STRING}
+                                        SOVERSION ${SOLID_SOVERSION} )
 
-install(TARGETS solid EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS solid EXPORT solidTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.Solid.Networking.Client.xml
               org.kde.Solid.PowerManagement.PolicyAgent.xml
