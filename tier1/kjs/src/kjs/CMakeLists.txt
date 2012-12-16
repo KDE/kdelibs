@@ -2,12 +2,7 @@ if(NOT WIN32)
     set(CMAKE_REQUIRED_LIBRARIES "-lm")
 endif()
 
-#Do not make PCRE optional here. PCRE is a hard requirement for modern systems
-#but we give old systems some slack... that's why we don't specify "REQUIRED".
-find_package(PCRE)
 set(HAVE_PCREPOSIX ${PCRE_FOUND})
-
-option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support")
 
 # Configuration checks
 include(ConfigureChecks.cmake)
@@ -20,12 +15,6 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../wtf
   ${KDEWIN_INCLUDES}
 )
-
-set_package_properties(PCRE PROPERTIES
-  URL "http://www.pcre.org"
-  DESCRIPTION "Perl-compatible regular expressions in KJS"
-  TYPE OPTIONAL
-  PURPOSE "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages.")
 
 # the check for pcre is in ../CMakeLists.txt
 if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
@@ -200,8 +189,8 @@ if(PCRE_FOUND)
    target_link_libraries(kjs ${PCRE_LIBRARIES})
 endif()
 
-set_target_properties(kjs PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION} )
-install(TARGETS kjs EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+set_target_properties(kjs PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
+install(TARGETS kjs EXPORT kjsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### kjs - basic shell ###############
 

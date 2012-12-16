@@ -11,8 +11,8 @@ generate_export_header(kjsapi)
 
 target_link_libraries(kjsapi kjs ${QT_QTCORE_LIBRARY})
 
-set_target_properties(kjsapi PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION} )
-install(TARGETS kjsapi EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+set_target_properties(kjsapi PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
+install(TARGETS kjsapi EXPORT kjsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/kjsapi_export.h

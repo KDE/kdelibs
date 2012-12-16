@@ -1,0 +1,19 @@
+@PACKAGE_INIT@
+
+# Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
+
+set(kjs_VERSION_MAJOR "@KJS_VERSION_MAJOR@")
+set(kjs_VERSION_MINOR "@KJS_VERSION_MINOR@")
+set(kjs_VERSION_PATCH "@KJS_VERSION_PATCH@")
+
+set(kjs_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(kjs_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+set_and_check(kjs_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
+
+set(kjs_HAVE_PCRE_REGEX "@PCRE_FOUND@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/kjsTargets.cmake")
+
+set(kjs_LIBRARY KDE4__kjs)
+
+set(kjsapi_LIBRARY KDE4__kjsapi)
