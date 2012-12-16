@@ -1,6 +1,6 @@
 if(NOT WIN32)
     set(CMAKE_REQUIRED_LIBRARIES "-lm")
-endif(NOT WIN32)
+endif()
 
 #Do not make PCRE optional here. PCRE is a hard requirement for modern systems
 #but we give old systems some slack... that's why we don't specify "REQUIRED".
@@ -46,7 +46,7 @@ if(PCRE_FOUND AND NOT KJS_FORCE_DISABLE_PCRE)
    # POSIX code just like that.
    if (NOT HAVE_PCRE_UTF8  OR NOT  HAVE_PCRE_STACK)
       message(FATAL_ERROR "Your libPCRE is too old. KJS requires at least PCRE4.5")
-   endif (NOT HAVE_PCRE_UTF8  OR NOT  HAVE_PCRE_STACK)
+   endif ()
 
 else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    # if we're here, either PCRE support is disabled, or it's not found...
@@ -57,12 +57,12 @@ else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    # if pcre is not installed or disabled, at least the posix regex.h has to be available
    if(APPLE)
       check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
-   else(APPLE)
+   else()
       check_include_files(regex.h HAVE_REGEX_H)
-   endif(APPLE)
+   endif()
    if (NOT HAVE_REGEX_H)
       message(FATAL_ERROR "Neither the PCRE regular expression library nor the POSIX regex.h header have been found. Consider installing PCRE.")
-   endif (NOT HAVE_REGEX_H)
+   endif ()
 endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
 
 # The crosscompiling parts are commented out on purpose. Alex
@@ -183,28 +183,28 @@ set(kjs_LIB_SRCS
 
 if (NOT DEFINED QT_ONLY)
    set(KJSLIBNAME kjs)
-else (NOT DEFINED QT_ONLY)
+else ()
    set(KJSLIBNAME qkjs)
-endif (NOT DEFINED QT_ONLY)
+endif ()
 
 
 add_library(${KJSLIBNAME} ${kjs_LIB_SRCS})
 
 if(WIN32)
    target_link_libraries(${KJSLIBNAME} ${KDEWIN_LIBRARIES})
-endif(WIN32)
+endif()
 
 if(CMAKE_THREAD_LIBS_INIT)
    target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
-endif(CMAKE_THREAD_LIBS_INIT)
+endif()
 
 if(UNIX)
    target_link_libraries(${KJSLIBNAME} m)
-endif(UNIX)
+endif()
 
 if(PCRE_FOUND)
    target_link_libraries(${KJSLIBNAME} ${PCRE_LIBRARIES})
-endif(PCRE_FOUND)
+endif()
 
 set_target_properties(${KJSLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS ${KJSLIBNAME} EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

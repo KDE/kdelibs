@@ -4,9 +4,9 @@ include(ECMMarkAsTest)
 
 if (NOT DEFINED QT_ONLY)
    set(KJSLIBNAME kjs)
-else (NOT DEFINED QT_ONLY)
+else ()
    set(KJSLIBNAME qkjs)
-endif (NOT DEFINED QT_ONLY)
+endif ()
 
 ########### testkjs_static ###############
 
