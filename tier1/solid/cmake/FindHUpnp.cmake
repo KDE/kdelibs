@@ -26,6 +26,8 @@ endif()
 
 include( FindPackageHandleStandardArgs )
 
-find_package_handle_standard_args( HUpnp DEFAULT_MSG HUPNP_INCLUDE_DIR HUPNP_LIBS )
+find_package_handle_standard_args( HUpnp  REQUIRED_VARS HUPNP_INCLUDE_DIR HUPNP_LIBS
+                                          VERSION_VAR HUPNP_VERSION_STRING
+                                 )
 
 mark_as_advanced( HUPNP_INCLUDE_DIR HUPNP_LIBS )

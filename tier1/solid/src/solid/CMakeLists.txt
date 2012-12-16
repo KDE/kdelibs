@@ -124,30 +124,18 @@ set(solid_LIB_SRCS
    backends/shared/cpufeatures.cpp
 )
 
-if(NOT APPLE)
-  find_package( HUpnp )
-
-  if ( HUPNP_FOUND AND ((HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9) OR (HUPNP_VERSION_MAJOR EQUAL 1)))
-    include_directories( ${HUPNP_INCLUDE_DIR} )
-    message(STATUS "Building Solid UPnP backend." )
-    set(solid_LIB_SRCS ${solid_LIB_SRCS}
-       backends/upnp/upnpdevice.cpp
-       backends/upnp/upnpdevicemanager.cpp
-       backends/upnp/upnpdeviceinterface.cpp
-       backends/upnp/upnpmediaserver.cpp
-       backends/upnp/upnpinternetgateway.cpp
-       backends/upnp/upnpcontrolpoint.cpp
-    )
-  else ()
-    set(HUPNP_FOUND false)
-  endif ()
-  set_package_properties(HUPnP PROPERTIES
-    URL "http://www.herqq.org"
-    DESCRIPTION "UPnP support for Solid"
-    TYPE OPTIONAL
-    PURPOSE "Allows Solid to provide information about UPnP devices on the network"
+if ( HUPNP_FOUND )
+  include_directories( ${HUPNP_INCLUDE_DIR} )
+  message(STATUS "Building Solid UPnP backend." )
+  set(solid_LIB_SRCS ${solid_LIB_SRCS}
+      backends/upnp/upnpdevice.cpp
+      backends/upnp/upnpdevicemanager.cpp
+      backends/upnp/upnpdeviceinterface.cpp
+      backends/upnp/upnpmediaserver.cpp
+      backends/upnp/upnpinternetgateway.cpp
+      backends/upnp/upnpcontrolpoint.cpp
   )
-endif(NOT APPLE)
+endif ()
 
 if(NOT WIN32 AND NOT APPLE)
 #   message(STATUS "Building Solid KUPnP backend." )
@@ -166,14 +154,6 @@ if(NOT WIN32 AND NOT APPLE)
 #   backends/kupnp/kupnpmanager.cpp
 
 #   )
-
-   find_package( UDev )
-   set_package_properties(UDev PROPERTIES
-      URL "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
-      DESCRIPTION "UDev support for Solid"
-      TYPE OPTIONAL
-      PURPOSE "Allows Solid to use UDev to provide information about devices on Linux"
-   )
 
    if ( UDEV_FOUND )
       message(STATUS "Building Solid UDev backend." )
@@ -337,17 +317,8 @@ if(APPLE)
 endif(APPLE)
 
 if(WIN32)
-   include(CheckIncludeFileCXX)
-   check_include_file_cxx(wbemidl.h HAVE_WBEM)
-   find_library(WBEM_LIBRARIES NAMES wbemuuid wbemuuidd)
-   if(HAVE_WBEM AND WBEM_LIBRARIES)
-      set(HAVE_WBEM True)
-      message(STATUS "Found wbemuuid library: ${WBEM_LIBRARIES}")
-   else()
-      set(HAVE_WBEM False)
-   endif()
 
-   if(HAVE_WBEM AND NOT WINCE)
+   if(WBEM_FOUND AND NOT WINCE)
        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_WBEM")
        message(STATUS "-- Building Solid WMI backend." )
 
@@ -392,8 +363,7 @@ qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS})
-   if(HAVE_WBEM)
+   if(WBEM_FOUND)
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${WBEM_LIBRARIES})
    endif()
 endif()
