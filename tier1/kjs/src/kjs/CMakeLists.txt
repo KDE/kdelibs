@@ -53,7 +53,7 @@ else (PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
    # it better be disabled.
    if (NOT KJS_FORCE_DISABLE_PCRE)
         message(FATAL_ERROR "The PCRE regular expression library has not been found. KJS requires PCRE >= 4.5 to function properly. If you for some reason can not install it, you can force a build with POSIX regex.h by passing -DKJS_FORCE_DISABLE_PCRE=true to cmake. However, be advised that it'll result in many websites breaking")
-   endif (NOT KJS_FORCE_DISABLE_PCRE)
+   endif ()
    # if pcre is not installed or disabled, at least the posix regex.h has to be available
    if(APPLE)
       check_include_files("sys/types.h;regex.h" HAVE_REGEX_H)
@@ -181,33 +181,27 @@ set(kjs_LIB_SRCS
    jsonstringify.cpp
    )
 
-if (NOT DEFINED QT_ONLY)
-   set(KJSLIBNAME kjs)
-else ()
-   set(KJSLIBNAME qkjs)
-endif ()
 
-
-add_library(${KJSLIBNAME} ${kjs_LIB_SRCS})
+add_library(kjs ${kjs_LIB_SRCS})
 
 if(WIN32)
-   target_link_libraries(${KJSLIBNAME} ${KDEWIN_LIBRARIES})
+   target_link_libraries(kjs ${KDEWIN_LIBRARIES})
 endif()
 
 if(CMAKE_THREAD_LIBS_INIT)
-   target_link_libraries(${KJSLIBNAME} ${CMAKE_THREAD_LIBS_INIT})
+   target_link_libraries(kjs ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 if(UNIX)
-   target_link_libraries(${KJSLIBNAME} m)
+   target_link_libraries(kjs m)
 endif()
 
 if(PCRE_FOUND)
-   target_link_libraries(${KJSLIBNAME} ${PCRE_LIBRARIES})
+   target_link_libraries(kjs ${PCRE_LIBRARIES})
 endif()
 
-set_target_properties(${KJSLIBNAME} PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION} )
-install(TARGETS ${KJSLIBNAME} EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+set_target_properties(kjs PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION} )
+install(TARGETS kjs EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### kjs - basic shell ###############
 
@@ -221,7 +215,7 @@ add_executable(kjs_bin ${kjs_SRCS})
 
 set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
 
-target_link_libraries(kjs_bin ${KJSLIBNAME})
+target_link_libraries(kjs_bin kjs)
 
 install(TARGETS kjs_bin ${INSTALL_TARGETS_DEFAULT_ARGS})
 

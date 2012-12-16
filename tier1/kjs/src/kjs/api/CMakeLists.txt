@@ -9,7 +9,7 @@ set(kjsapi_LIB_SRCS
 add_library(kjsapi ${kjsapi_LIB_SRCS})
 generate_export_header(kjsapi)
 
-target_link_libraries(kjsapi ${KJSLIBNAME} ${QT_QTCORE_LIBRARY})
+target_link_libraries(kjsapi kjs ${QT_QTCORE_LIBRARY})
 
 set_target_properties(kjsapi PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION} )
 install(TARGETS kjsapi EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
