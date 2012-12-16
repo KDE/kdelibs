@@ -15,4 +15,4 @@ set(karchive_HAVE_LZMA  "@LIBLZMA_FOUND@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/karchiveTargets.cmake")
 
-set(karchive_LIBRARY KDE4__karchive)
+set(karchive_LIBRARY KF5::karchive)

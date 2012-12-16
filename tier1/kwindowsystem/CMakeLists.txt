@@ -34,7 +34,7 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kwindowsystemTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwindowsystemTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT kwindowsystemTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwindowsystemTargets.cmake NAMESPACE KF5:: )
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h

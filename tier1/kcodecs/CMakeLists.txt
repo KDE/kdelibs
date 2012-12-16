@@ -35,7 +35,7 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kcodecsConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kcodecsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kcodecsTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT kcodecsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kcodecsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kcodecs_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

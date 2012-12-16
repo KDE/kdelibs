@@ -47,7 +47,7 @@ install(FILES
   COMPONENT Devel
 )
 
-install(EXPORT threadweaverTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE threadweaverTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT threadweaverTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE threadweaverTargets.cmake NAMESPACE KF5:: )
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

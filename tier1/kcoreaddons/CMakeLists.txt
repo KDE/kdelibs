@@ -63,7 +63,7 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddonsConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kcoreaddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kcoreaddonsTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT kcoreaddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kcoreaddonsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

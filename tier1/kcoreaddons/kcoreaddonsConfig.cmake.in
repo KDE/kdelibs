@@ -12,4 +12,4 @@ set_and_check(kcoreaddons_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/kcoreaddonsTargets.cmake")
 
-set(kcoreaddons_LIBRARY KDE4__kcoreaddons)
+set(kcoreaddons_LIBRARY KF5::kcoreaddons)

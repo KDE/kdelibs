@@ -34,7 +34,7 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kidletimeConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kidletimeTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kidletimeTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT kidletimeTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kidletimeTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kidletime_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

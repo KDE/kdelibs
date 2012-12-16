@@ -34,7 +34,7 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddonsConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kwidgetsaddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwidgetsaddonsTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT kwidgetsaddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwidgetsaddonsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_version.h

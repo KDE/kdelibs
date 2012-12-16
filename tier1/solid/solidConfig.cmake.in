@@ -20,4 +20,4 @@ set(solid_HAVE_UDev @UDEV_FOUND@ )
 
 set(solid_USE_UDisk2 @WITH_SOLID_UDISKS2@ )
 
-set(solid_LIBRARY KDE4__solid)
+set(solid_LIBRARY KF5::solid)

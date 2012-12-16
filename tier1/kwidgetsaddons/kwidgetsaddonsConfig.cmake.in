@@ -12,4 +12,4 @@ set_and_check(kwidgetsaddons_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/kwidgetsaddonsTargets.cmake")
 
-set(kwidgetsaddons_LIBRARY KDE4__kwidgetsaddons)
+set(kwidgetsaddons_LIBRARY KF5::kwidgetsaddons)

@@ -12,4 +12,4 @@ set_and_check(kcodecs_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/kcodecsTargets.cmake")
 
-set(kcodecs_LIBRARY KDE4__kcodecs)
+set(kcodecs_LIBRARY KF5::kcodecs)

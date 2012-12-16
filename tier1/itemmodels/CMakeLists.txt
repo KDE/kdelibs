@@ -46,7 +46,7 @@ install(FILES
   COMPONENT Devel
 )
 
-install(EXPORT itemmodelsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE itemmodelsTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT itemmodelsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE itemmodelsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h

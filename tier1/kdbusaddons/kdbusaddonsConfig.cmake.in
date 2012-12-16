@@ -12,4 +12,4 @@ set_and_check(kdbusaddons_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/kdbusaddonsTargets.cmake")
 
-set(kdbusaddons_LIBRARY KDE4__kdbusaddons)
+set(kdbusaddons_LIBRARY KF5::kdbusaddons)

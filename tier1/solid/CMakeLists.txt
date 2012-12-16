@@ -85,7 +85,7 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/solidConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT solidTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE solidTargets.cmake  NAMESPACE KDE4__ )
+install(EXPORT solidTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE solidTargets.cmake  NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_version.h  DESTINATION ${INCLUDE_INSTALL_DIR}  COMPONENT Devel )
 

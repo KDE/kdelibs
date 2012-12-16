@@ -12,4 +12,4 @@ set_and_check(itemmodels_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/itemmodelsTargets.cmake")
 
-set(itemmodels_LIBRARY KDE4__itemmodels)
+set(itemmodels_LIBRARY KF5::itemmodels)

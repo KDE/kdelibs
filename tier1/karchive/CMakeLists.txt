@@ -74,4 +74,4 @@ install(FILES
   COMPONENT Devel
 )
 
-install(EXPORT karchiveTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE karchiveTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT karchiveTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE karchiveTargets.cmake NAMESPACE KF5:: )

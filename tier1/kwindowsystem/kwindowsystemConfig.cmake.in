@@ -12,4 +12,4 @@ set_and_check(kwindowsystem_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/kwindowsystemTargets.cmake")
 
-set(kwindowsystem_LIBRARY KDE4__kwindowsystem)
+set(kwindowsystem_LIBRARY KF5::kwindowsystem)

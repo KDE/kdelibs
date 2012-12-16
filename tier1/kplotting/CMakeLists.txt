@@ -36,7 +36,7 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kplottingConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kplottingTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kplottingTargets.cmake NAMESPACE KDE4__ )
+install(EXPORT kplottingTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kplottingTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kplotting_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

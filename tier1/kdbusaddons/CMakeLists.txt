@@ -36,6 +36,6 @@ install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfig.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kdbusaddonsTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE kdbusaddonsTargets.cmake  NAMESPACE KDE4__ )
+install(EXPORT kdbusaddonsTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE kdbusaddonsTargets.cmake  NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kdbusaddons_version.h  DESTINATION ${INCLUDE_INSTALL_DIR}  COMPONENT Devel )
