@@ -1,4 +1,5 @@
 /* This file is part of the KDE project
+// vim: sw=4 sts=4 et tw=100
    Copyright (C) 2006  Olivier Goffart  <ogoffart@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -25,15 +26,17 @@
 #include "kmenu.h"
 #include "kaction.h"
 #include "kactioncollection.h"
-#include <kdialog.h>
 #include <kshortcutwidget.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
 
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QWidget>
 #include <QDomDocument>
 #include <QDomNode>
+#include <QVBoxLayout>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
 #include <kselectaction.h>
@@ -98,10 +101,19 @@ void KMenuMenuHandler::slotSetShortcut()
     if(!action)
         return;
 
-    KDialog dialog(m_builder->widget());
+    QDialog dialog(m_builder->widget());
+    dialog.setLayout(new QVBoxLayout);
+
     KShortcutWidget swidget(&dialog);
     swidget.setShortcut(action->shortcut());
-    dialog.setMainWidget(&swidget);
+    dialog.layout()->addWidget(&swidget);
+
+    QDialogButtonBox box(&dialog);
+    box.setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(&box, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    connect(&box, SIGNAL(rejected()), &dialog, SLOT(reject()));
+    dialog.layout()->addWidget(&box);
+
     KActionCollection* parentCollection = 0;
     if(dynamic_cast<KXMLGUIClient*>(m_builder))
     {
