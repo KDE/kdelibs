@@ -1,5 +1,8 @@
 #include <qapplication.h>
-#include <kdialog.h>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+
 #include <keditlistwidget.h>
 #include <kcombobox.h>
 #include <QDebug>
@@ -23,16 +26,24 @@ int main( int argc, char **argv )
 
     // code from kexi
     QStringList list; list << "one" << "two";
-    KDialog dialog;
+    QDialog dialog;
     dialog.setObjectName("stringlist_dialog");
     dialog.setModal(true);
     dialog.setWindowTitle("Edit List of Items");
-    dialog.setButtons(KDialog::Ok | KDialog::Cancel);
 
     KEditListWidget *edit = new KEditListWidget(&dialog);
     edit->setObjectName("editlist");
-    dialog.setMainWidget(edit);
     edit->insertStringList(list);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(&dialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(edit);
+    layout->addWidget(buttonBox);
+    dialog.setLayout(layout);
 
     if (dialog.exec() == QDialog::Accepted) {
         list = edit->items();
