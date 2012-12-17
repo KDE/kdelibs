@@ -47,7 +47,6 @@
 #include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kdialog.h>
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
 #include <ktoolbar.h>
@@ -433,19 +432,13 @@ bool KMainWindow::restore( int number, bool show )
 
 void KMainWindow::setCaption( const QString &caption )
 {
-    setPlainCaption( KDialog::makeStandardCaption( caption, this ) );
+    setPlainCaption( caption );
 }
 
 void KMainWindow::setCaption( const QString &caption, bool modified )
 {
-    KDialog::CaptionFlags flags = KDialog::HIGCompliantCaption;
-
-    if ( modified )
-    {
-        flags |= KDialog::ModifiedCaption;
-    }
-
-    setPlainCaption( KDialog::makeStandardCaption(caption, this, flags) );
+    setPlainCaption( caption );
+    setWindowModified( modified );
 }
 
 void KMainWindow::setPlainCaption( const QString &caption )
