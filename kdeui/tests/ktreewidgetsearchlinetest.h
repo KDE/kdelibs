@@ -1,9 +1,9 @@
 #ifndef ktreewidgetsearchlinetest_h
 #define ktreewidgetsearchlinetest_h
 
-#include <kdialog.h>
+#include <QDialog>
 
-class KTreeWidgetSearchLineTest : public KDialog
+class KTreeWidgetSearchLineTest : public QDialog
 {
     Q_OBJECT
 
