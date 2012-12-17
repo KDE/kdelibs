@@ -24,6 +24,7 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QDialogButtonBox>
 #include <QGroupBox>
 #include <QLayout>
 #include <QLabel>
@@ -238,24 +239,20 @@ void KIconCanvas::currentListItemChanged(QListWidgetItem *item)
  */
 
 KIconDialog::KIconDialog(QWidget *parent)
-    : KDialog(parent), d(new KIconDialogPrivate(this))
+    : QDialog(parent), d(new KIconDialogPrivate(this))
 {
     setModal( true );
-    setCaption( i18n("Select Icon") );
-    setButtons( Ok | Cancel );
-    setDefaultButton( Ok );
+    setWindowTitle( i18n("Select Icon") );
 
     d->mpLoader = KIconLoader::global();
     d->init();
 }
 
 KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent)
-    : KDialog(parent), d(new KIconDialogPrivate(this))
+    : QDialog(parent), d(new KIconDialogPrivate(this))
 {
     setModal( true );
-    setCaption( i18n("Select Icon") );
-    setButtons( Ok | Cancel );
-    setDefaultButton( Ok );
+    setWindowTitle( i18n("Select Icon") );
 
     d->mpLoader = loader;
     d->init();
@@ -266,13 +263,10 @@ void KIconDialog::KIconDialogPrivate::init()
     mGroupOrSize = KIconLoader::Desktop;
     mContext = KIconLoader::Any;
 
-    QWidget *main = new QWidget(q);
-    q->setMainWidget(main);
+    QVBoxLayout *top = new QVBoxLayout;
+    q->setLayout(top);
 
-    QVBoxLayout *top = new QVBoxLayout(main);
-    top->setMargin(0);
-
-    QGroupBox *bgroup = new QGroupBox(main);
+    QGroupBox *bgroup = new QGroupBox(q);
     bgroup->setTitle(i18n("Icon Source"));
 
     QVBoxLayout *vbox = new QVBoxLayout;
@@ -303,10 +297,10 @@ void KIconDialog::KIconDialogPrivate::init()
     searchLayout->setMargin(0);
     top->addLayout(searchLayout);
 
-    QLabel *searchLabel = new QLabel(i18n("&Search:"), main);
+    QLabel *searchLabel = new QLabel(i18n("&Search:"), q);
     searchLayout->addWidget(searchLabel);
 
-    searchLine = new KListWidgetSearchLine(main);
+    searchLine = new KListWidgetSearchLine(q);
     searchLayout->addWidget(searchLine);
     searchLabel->setBuddy(searchLine);
 
@@ -315,7 +309,7 @@ void KIconDialog::KIconDialogPrivate::init()
     searchLine->setWhatsThis(wtstr);
 
 
-    mpCanvas = new KIconCanvas(main);
+    mpCanvas = new KIconCanvas(q);
     connect(mpCanvas, SIGNAL(itemActivated(QListWidgetItem*)), q, SLOT(_k_slotAcceptIcons()));
     top->addWidget(mpCanvas);
     searchLine->setListWidget(mpCanvas);
@@ -331,7 +325,7 @@ void KIconDialog::KIconDialogPrivate::init()
     }
     mpCanvas->setMinimumSize(width, 125);
 
-    mpProgress = new QProgressBar(main);
+    mpProgress = new QProgressBar(q);
     top->addWidget(mpProgress);
     connect(mpCanvas, SIGNAL(startLoading(int)), q, SLOT(_k_slotStartLoading(int)));
     connect(mpCanvas, SIGNAL(progress(int)), q, SLOT(_k_slotProgress(int)));
@@ -385,9 +379,15 @@ void KIconDialog::KIconDialogPrivate::init()
 
     mpBrowseBut->setFixedWidth(mpCombo->width());
 
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(q);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), q, SLOT(slotOk()));
+    connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+    top->addWidget(buttonBox);
+
     // Make the dialog a little taller
-    q->incrementInitialSize(QSize(0,100));
-    connect(q, SIGNAL(okClicked()), q, SLOT(slotOk()));
+    q->resize(q->sizeHint() + QSize(0,100));
+    q->adjustSize();
 }
 
 
@@ -578,7 +578,7 @@ void KIconDialog::slotOk()
     }
 
     emit newIconName(name);
-    KDialog::accept();
+    QDialog::accept();
 }
 
 QString KIconDialog::getIcon(KIconLoader::Group group, KIconLoader::Context context,
@@ -588,7 +588,7 @@ QString KIconDialog::getIcon(KIconLoader::Group group, KIconLoader::Context cont
     KIconDialog dlg(parent);
     dlg.setup( group, context, strictIconSize, iconSize, user );
     if (!caption.isNull())
-        dlg.setCaption(caption);
+        dlg.setWindowTitle(caption);
 
     return dlg.openDialog();
 }

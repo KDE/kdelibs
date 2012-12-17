@@ -16,10 +16,10 @@
 
 #include <kdeui_export.h>
 
+#include <QDialog>
 #include <QtCore/QStringList>
 #include <QPushButton>
 
-#include <kdialog.h>
 #include <kiconloader.h>
 
 /**
@@ -28,7 +28,7 @@
  *
  * @short An icon selection dialog.
  */
-class KDEUI_EXPORT KIconDialog: public KDialog
+class KDEUI_EXPORT KIconDialog: public QDialog
 {
     Q_OBJECT
 
