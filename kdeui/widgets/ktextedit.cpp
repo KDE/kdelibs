@@ -1089,11 +1089,6 @@ bool KTextEdit::Private::overrideShortcut(const QKeyEvent* event)
       return true;
   } else if (event->matches(QKeySequence::SelectAll)) { // currently missing in QTextEdit
       return true;
-  } else if (event->modifiers() == Qt::ControlModifier &&
-            (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
-              qobject_cast<KDialog*>(parent->window()) ) {
-    // ignore Ctrl-Return so that KDialogs can close the dialog
-    return true;
   }
   return false;
 }
@@ -1102,10 +1097,6 @@ void KTextEdit::keyPressEvent( QKeyEvent *event )
 {
     if (d->handleShortcut(event)) {
         event->accept();
-    }else if (event->modifiers() == Qt::ControlModifier &&
-            (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) &&
-              qobject_cast<KDialog*>(window()) ) {
-        event->ignore();
     } else {
         QTextEdit::keyPressEvent(event);
     }
