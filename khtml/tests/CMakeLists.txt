@@ -32,7 +32,7 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/../css
 )
 kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
-target_link_libraries( khtmlparttest ${QT_QTTEST_LIBRARY} ${KDE4_KDECORE_LIBS} khtml )
+target_link_libraries( khtmlparttest ${QT_QTTEST_LIBRARY} ${KDE4_KDECORE_LIBS} khtml ${QT_QTGUI_LIBRARY})
 
 # msvc linker doesn't like "#define protected public"
 if(NOT MSVC)

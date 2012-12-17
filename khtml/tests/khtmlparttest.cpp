@@ -18,14 +18,18 @@
  * Boston, MA 02110-1301, USA.
  */
 
+#define QT_GUI_LIB 1
+#define QT_WIDGETS_LIB 1
+// TODO: include <QTestWidgets> with Qt 5 instead of the above defines
+
 #include <khtml_part.h>
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
 #include <khtmlview.h>
 #include "khtmlparttest.h"
 #include <csignal>
 #include <cstdlib>
 
-QTEST_KDEMAIN( KHTMLPartTest, GUI )
+QTEST_MAIN(KHTMLPartTest)
 
 void __abort(int) {
     std::signal(SIGABRT, SIG_DFL);
