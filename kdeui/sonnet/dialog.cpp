@@ -29,10 +29,12 @@
 
 #include <kconfig.h>
 #include <kguiitem.h>
+#include <khelpclient.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <qprogressdialog.h>
 
+#include <QDialogButtonBox>
 #include <QListView>
 #include <QStringListModel>
 #include <QPushButton>
@@ -60,6 +62,7 @@ public:
     Ui_SonnetUi ui;
     ReadOnlyStringListModel *suggestionsModel;
     QWidget *wdg;
+    QDialogButtonBox *buttonBox;
     QProgressDialog *progressDialog;
     QString   originalBuffer;
     BackgroundChecker *checker;
@@ -95,15 +98,12 @@ public:
 
 Dialog::Dialog(BackgroundChecker *checker,
                QWidget *parent)
-    : KDialog(parent),
+    : QDialog(parent),
       d(new Private)
 {
     setModal(true);
-    setCaption(i18nc("@title:window", "Check Spelling"));
-    setButtons(Help | Cancel | User1);
-    setButtonGuiItem(User1, KGuiItem(i18nc("@action:button", "&Finished")));
+    setWindowTitle(i18nc("@title:window", "Check Spelling"));
 
-    setDefaultButton(User1);
     d->checker = checker;
 
     d->canceled = false;
@@ -114,8 +114,6 @@ Dialog::Dialog(BackgroundChecker *checker,
 
     initGui();
     initConnections();
-    setMainWidget(d->wdg);
-    setHelp(QString(),"sonnet");
 }
 
 Dialog::~Dialog()
@@ -147,8 +145,9 @@ void Dialog::initConnections()
              SLOT(slotDone()) );
     connect( d->ui.m_suggestions, SIGNAL(doubleClicked(QModelIndex)),
              SLOT(slotReplaceWord()) );
-    connect( this, SIGNAL(user1Clicked()), this, SLOT(slotFinished()) );
-    connect( this, SIGNAL(cancelClicked()),this, SLOT(slotCancel()) );
+    connect( d->buttonBox, SIGNAL(accepted()), this, SLOT(slotFinished()) );
+    connect( d->buttonBox, SIGNAL(rejected()),this, SLOT(slotCancel()) );
+    connect( d->buttonBox, SIGNAL(helpRequested()),this, SLOT(slotHelp()) );
     connect( d->ui.m_replacement, SIGNAL(returnPressed()), this, SLOT(slotReplaceWord()) );
     connect( d->ui.m_autoCorrect, SIGNAL(clicked()),
              SLOT(slotAutocorrect()) );
@@ -159,9 +158,20 @@ void Dialog::initConnections()
 
 void Dialog::initGui()
 {
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
+
     d->wdg = new QWidget(this);
     d->ui.setupUi(d->wdg);
+    layout->addWidget(d->wdg);
     setGuiEnabled(false);
+
+    d->buttonBox = new QDialogButtonBox(this);
+    d->buttonBox->setStandardButtons(QDialogButtonBox::Help | QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    KGuiItem::assign(d->buttonBox->button(QDialogButtonBox::Ok),
+                     KGuiItem(i18nc("@action:button", "&Finished")));
+
+    layout->addWidget(d->wdg);
 
     //d->ui.m_suggestions->setSorting( NONSORTINGCOLUMN );
     fillDictionaryComboBox();
@@ -253,6 +263,11 @@ void Dialog::slotCancel()
     emit cancel();
     emit spellCheckStatus(i18n("Spell check canceled."));
     reject();
+}
+
+void Dialog::slotHelp()
+{
+    KHelpClient::invokeHelp(QString(), "sonnet");
 }
 
 QString Dialog::originalBuffer() const
@@ -416,7 +431,7 @@ void Dialog::slotMisspelling(const QString& word, int start)
     } else {
         updateDialog( word );
     }
-    KDialog::show();
+    QDialog::show();
 }
 
 void Dialog::slotDone()

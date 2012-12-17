@@ -23,7 +23,7 @@
 #ifndef SONNET_DIALOG_H
 #define SONNET_DIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kdeui_export.h>
 
 class QListWidgetItem;
@@ -48,7 +48,7 @@ namespace Sonnet
      * You can change buffer inside a slot connected to done() signal
      * and spellcheck will continue with new data automatically.
      */
-    class KDEUI_EXPORT Dialog : public KDialog
+    class KDEUI_EXPORT Dialog : public QDialog
     {
         Q_OBJECT
     public:
@@ -63,7 +63,7 @@ namespace Sonnet
         void activeAutoCorrect(bool _active);
 
         // Hide warning about done(), which is a slot in QDialog and a signal here.
-        using KDialog::done;
+        using QDialog::done;
 
         /**
          * Controls whether an (indefinite) progress dialog is shown when the spell
@@ -134,6 +134,7 @@ namespace Sonnet
 
         void slotFinished();
         void slotCancel();
+        void slotHelp();
 
         void slotAddWord();
         void slotReplaceWord();

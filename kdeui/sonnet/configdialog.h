@@ -21,14 +21,14 @@
 #ifndef SONNET_CONFIGDIALOG_H
 #define SONNET_CONFIGDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kdeui_export.h>
 #include <kconfig.h>
 
 namespace Sonnet
 {
     /// The sonnet ConfigDialog
-    class KDEUI_EXPORT ConfigDialog : public KDialog
+    class KDEUI_EXPORT ConfigDialog : public QDialog
     {
         Q_OBJECT
     public:
@@ -79,6 +79,7 @@ namespace Sonnet
         friend class Private;
         Private *const d;
         Q_DISABLE_COPY(ConfigDialog)
+        Q_PRIVATE_SLOT(d, void slotHelp())
         Q_PRIVATE_SLOT(d, void slotConfigChanged())
     };
 }

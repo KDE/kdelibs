@@ -21,6 +21,10 @@
 #include "configdialog.h"
 #include "configwidget.h"
 
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+
+#include <khelpclient.h>
 #include <klocalizedstring.h>
 
 using namespace Sonnet;
@@ -32,8 +36,14 @@ public:
        : q( parent ) {}
     ConfigWidget *ui;
     ConfigDialog *q;
+    void slotHelp();
     void slotConfigChanged();
 };
+
+void ConfigDialog::Private::slotHelp()
+{
+    KHelpClient::invokeHelp(QString(), "kcontrol/spellchecking");
+}
 
 void ConfigDialog::Private::slotConfigChanged()
 {
@@ -41,14 +51,12 @@ void ConfigDialog::Private::slotConfigChanged()
 }
 
 ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
-    : KDialog(parent),
+    : QDialog(parent),
       d(new Private(this))
 {
     setObjectName( "SonnetConfigDialog" );
     setModal( true );
-    setCaption( i18n( "Spell Checking Configuration" ) );
-    setButtons( Help | Ok /*| Apply*/ | Cancel );
-    setDefaultButton( Ok );
+    setWindowTitle( i18n( "Spell Checking Configuration" ) );
 
     init(config);
 }
@@ -60,13 +68,24 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::init(KConfig *config)
 {
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
+
     d->ui = new ConfigWidget(config, this);
-    setMainWidget(d->ui);
-    setHelp(QString(),"kcontrol/spellchecking");
-    connect(this, SIGNAL(okClicked()),
+    layout->addWidget(d->ui);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Help
+                                | QDialogButtonBox::Ok
+                                //| QDialogButtonBox::Apply
+                                | QDialogButtonBox::Cancel);
+
+    connect(buttonBox, SIGNAL(accepted()),
             this, SLOT(slotOk()));
+    connect(buttonBox, SIGNAL(rejected()),
+            this, SLOT(reject()));
     /*
-    connect(this, SIGNAL(applyClicked()),
+    connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()),
             this, SLOT(slotApply()));
 	    */
     connect(d->ui, SIGNAL(configChanged()),
