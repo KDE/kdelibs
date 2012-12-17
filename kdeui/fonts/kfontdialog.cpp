@@ -25,6 +25,9 @@ Boston, MA 02110-1301, USA.
 
 #include "kfontdialog.h"
 
+#include <QDialogButtonBox>
+#include <QVBoxLayout>
+
 #include <klocalizedstring.h>
 
 class KFontDialog::Private
@@ -42,19 +45,25 @@ KFontDialog::KFontDialog( QWidget *parent,
                           const KFontChooser::DisplayFlags& flags,
                           const QStringList &fontList,
                           Qt::CheckState *sizeIsRelativeState )
-    : KDialog( parent ),
+    : QDialog( parent ),
       d( new Private )
 {
-    setCaption( i18n("Select Font") );
-    setButtons( Ok | Cancel );
-    setDefaultButton(Ok);
+    setWindowTitle( i18n("Select Font") );
     d->chooser = new KFontChooser( this, flags, fontList, 8,
                                    sizeIsRelativeState );
     d->chooser->setObjectName( "fontChooser" );
 
     connect( d->chooser , SIGNAL(fontSelected(QFont)) , this , SIGNAL(fontSelected(QFont)) );
 
-    setMainWidget( d->chooser );
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(d->chooser);
+    layout->addWidget(buttonBox);
+    setLayout(layout);
 }
 
 KFontDialog::~KFontDialog()

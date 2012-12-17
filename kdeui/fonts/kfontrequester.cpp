@@ -187,7 +187,7 @@ void KFontRequester::KFontRequesterPrivate::_k_buttonClicked()
 
     int result = KFontDialog::getFont( m_selFont, flags, q->parentWidget() );
 
-    if ( result == KDialog::Accepted )
+    if ( result == QDialog::Accepted )
     {
         displaySampleText();
         emit q->fontSelected( m_selFont );
