@@ -24,14 +24,12 @@
 
 #include <QtCore/QString>
 
-#include "qtest_kde.h"
+#include <QtTest/QtTest>
 #include "kcalendarsystem.h"
 #include "klocalizeddate.h"
-#include "kdebug.h"
 #include "kconfiggroup.h"
 
-
-QTEST_KDEMAIN_CORE_WITH_COMPONENTNAME(KCalendarTest, "kdecalendarsystems" /*so that the .po exists*/)
+QTEST_MAIN(KCalendarTest)
 
 void KCalendarTest::testTypes()
 {
@@ -813,7 +811,7 @@ void KCalendarTest::testHebrewStrings()
             QCOMPARE(calendar->readDate(calendar->formatDate(testDate, KLocale::LongDate), KLocale::NormalFormat), testDate);
         }
     } else {
-        kDebug() << "Cannot set Hebrew language, please install and re-test!";
+        qDebug() << "Cannot set Hebrew language, please install and re-test!";
     }
     setlocale(LC_ALL, oldLocale.toLatin1());
 }
@@ -2006,9 +2004,9 @@ void KCalendarTest::testMonthName(const KCalendarSystem *calendar, int month, in
 
 void KCalendarTest::testRoundTrip(const KCalendarSystem *calendar, bool testFullRange)
 {
-    kDebug() << "Testing round trip of dates for Calendar System " << calendar->calendarLabel();
-    kDebug() << "This may take some time, or you may have created an infinite loop.";
-    kDebug() << "Uncomment the loop debug message to see each date comparison.";
+    qDebug() << "Testing round trip of dates for Calendar System " << calendar->calendarLabel();
+    qDebug() << "This may take some time, or you may have created an infinite loop.";
+    qDebug() << "Uncomment the loop debug message to see each date comparison.";
 
     int testYear, testMonth, testDay;
     QDate testDate;
@@ -2601,9 +2599,9 @@ void KCalendarTest::testKLocalizedDate()
     testKLocalizedDate.day();
 
     KLocalizedDate newOne = testKLocalizedDate.currentDate();
-    kDebug() << newOne;
+    qDebug() << newOne;
     newOne = KLocalizedDate::currentDate();
-    kDebug() << newOne;
+    qDebug() << newOne;
 
     KLocalizedDate calendarDate(testQDate, calendar);
     QCOMPARE(calendarDate.date(), testQDate);
