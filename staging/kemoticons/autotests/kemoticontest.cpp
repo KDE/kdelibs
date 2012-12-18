@@ -16,9 +16,13 @@
     *************************************************************************
 */
 
-// QTestLib for KDE
+#define QT_GUI_LIB 1
+#define QT_WIDGETS_LIB 1
+// TODO: include <QTestWidgets> with Qt 5 instead of the above defines
+
 #include "kemoticontest.h"
-#include <qtest_kde.h>
+#include <QtTest/QtTest>
+#include <kde_qt5_compat.h>
 
 #include <stdlib.h>
 
@@ -31,7 +35,7 @@
 #include <kdebug.h>
 #include <kemoticons.h>
 
-QTEST_KDEMAIN(KEmoticonTest, GUI)
+QTEST_MAIN(KEmoticonTest)
 
 /*
   There are three sets of tests, the Kopete 0.7 baseline with tests that were
