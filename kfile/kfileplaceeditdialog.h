@@ -23,11 +23,12 @@
 // Not exported anymore, only used internally.
 //#include <kfile_export.h>
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kiconloader.h>
 #include <kurl.h>
 
 class QCheckBox;
+class QDialogButtonBox;
 class KIconButton;
 class KLineEdit;
 class KUrlRequester;
@@ -39,7 +40,7 @@ class KUrlRequester;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KFilePlaceEditDialog : public KDialog
+class KFilePlaceEditDialog : public QDialog
 {
     Q_OBJECT
 
@@ -139,6 +140,8 @@ private:
      * The QCheckBox to modify the local/global setting
      */
     QCheckBox     * m_appLocal;
+
+    QDialogButtonBox *m_buttonBox;
 };
 
 

@@ -31,6 +31,7 @@
 #include <kprotocolinfo.h>
 #include <kurlrequester.h>
 
+#include <QDialogButtonBox>
 #include <QtCore/QMimeData>
 #include <QApplication>
 #include <QCheckBox>
@@ -80,18 +81,15 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
                                            bool isAddingNewPlace,
                                            bool appLocal, int iconSize,
                                            QWidget *parent)
-    : KDialog( parent )
+    : QDialog( parent )
 {
     if (isAddingNewPlace)
-        setCaption( i18n("Add Places Entry") );
+        setWindowTitle(i18n("Add Places Entry"));
     else
-        setCaption( i18n("Edit Places Entry") );
-    setButtons( Ok | Cancel );
+        setWindowTitle(i18n("Edit Places Entry"));
     setModal(true);
-    setDefaultButton(Ok);
 
-    QWidget *wdg = new QWidget( this );
-    QVBoxLayout *box = new QVBoxLayout( wdg );
+    QVBoxLayout *box = new QVBoxLayout( this );
 
     QFormLayout *layout = new QFormLayout();
     box->addLayout( layout );
@@ -101,7 +99,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
                                  "that will help you remember what this entry refers to. "
                                  "If you do not enter a label, it will be derived from "
                                  "the location's URL.</qt>");
-    m_labelEdit = new KLineEdit(wdg);
+    m_labelEdit = new KLineEdit(this);
     layout->addRow(i18n("L&abel:"), m_labelEdit);
     m_labelEdit->setText(label);
     m_labelEdit->setPlaceholderText(i18n("Enter descriptive label here"));
@@ -112,7 +110,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
                          "%1<br />http://www.kde.org<br />ftp://ftp.kde.org/pub/kde/stable<br /><br />"
                          "By clicking on the button next to the text edit box you can browse to an "
                          "appropriate URL.</qt>", QDir::homePath());
-    m_urlEdit = new KUrlRequester(url, wdg);
+    m_urlEdit = new KUrlRequester(url, this);
     m_urlEdit->setMode( KFile::Directory );
     layout->addRow( i18n("&Location:"), m_urlEdit );
     m_urlEdit->setWhatsThis( whatsThisText );
@@ -122,7 +120,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
 
     whatsThisText = i18n("<qt>This is the icon that will appear in the Places panel.<br /><br />"
                          "Click on the button to select a different icon.</qt>");
-    m_iconButton = new KIconButton( wdg );
+    m_iconButton = new KIconButton(this);
     layout->addRow( i18n("Choose an &icon:"), m_iconButton );
     m_iconButton->setObjectName( QLatin1String( "icon button" ) );
     m_iconButton->setIconSize( iconSize );
@@ -141,7 +139,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
 #endif
         if ( appName.isEmpty() )
             appName = QCoreApplication::applicationName();
-        m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)", appName ), wdg );
+        m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)", appName ), this);
         m_appLocal->setChecked( appLocal );
         m_appLocal->setWhatsThis(i18n("<qt>Select this setting if you want this "
                               "entry to show only when using the current application (%1).<br /><br />"
@@ -160,7 +158,15 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
         // new entry
         m_urlEdit->setFocus();
     }
-    setMainWidget( wdg );
+
+
+    m_buttonBox = new QDialogButtonBox(this);
+    m_buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(m_buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(m_buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    box->addWidget(m_buttonBox);
+
+    setLayout(box);
 }
 
 KFilePlaceEditDialog::~KFilePlaceEditDialog()
@@ -169,7 +175,7 @@ KFilePlaceEditDialog::~KFilePlaceEditDialog()
 
 void KFilePlaceEditDialog::urlChanged(const QString & text )
 {
-    enableButtonOk( !text.isEmpty() );
+    m_buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!text.isEmpty());
 }
 
 QUrl KFilePlaceEditDialog::url() const
