@@ -24,6 +24,7 @@ set(libkde4support_SRCS
     kdecore/netsupp.cpp
     kdecore/kascii.cpp
     kdecore/k4aboutdata.cpp
+    kdecore/qtest_kde.cpp
 
     kdeui/kapplication.cpp
     kdeui/kcolorchoosermode.cpp
@@ -122,6 +123,7 @@ install(FILES
     kdecore/ktypelist.h
     kdecore/kascii.h
     kdecore/k4aboutdata.h
+    kdecore/qtest_kde.h
 
     kdeui/kapplication.h
     kdeui/kcolorchoosermode.h

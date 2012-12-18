@@ -48,7 +48,6 @@ KDECORE_UNIT_TESTS(
  qcoreapptest
  kdebug_qcoreapptest
  kcalendartest
- kglobaltest
  kstandarddirstest
  kconfignokdehometest
 )

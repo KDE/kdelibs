@@ -196,7 +196,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    util/kdeversion.cpp
    util/klauncher_iface.cpp
    util/kshell.cpp
-   util/qtest_kde.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 
@@ -285,7 +284,6 @@ install(FILES
    util/kshell.h
    util/ksortablelist.h
    util/kuser.h
-   util/qtest_kde.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
