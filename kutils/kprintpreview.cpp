@@ -19,10 +19,12 @@
 
 #include "kprintpreview.h"
 
+#include <QDialogButtonBox>
 #include <QtCore/QFile>
 #include <QLabel>
 #include <QPrinter>
 #include <QShowEvent>
+#include <QVBoxLayout>
 #include <qtemporarydir.h>
 
 #include <klocalizedstring.h>
@@ -44,6 +46,8 @@ public:
         , previewPart(0)
         , failMessage(0)
     {
+        mainWidget->setLayout(new QVBoxLayout);
+
         if ( tempdir.isValid() ) {
             filename = tempdir.path() + '/' + "print_preview.pdf";
         } else {
@@ -56,6 +60,7 @@ public:
     void getPart();
     bool doPreview();
     void fail();
+    void setCentralWidget(QWidget *widget);
 
     KPrintPreview *q;
 
@@ -113,7 +118,7 @@ bool KPrintPreviewPrivate::doPreview()
         fail();
         return false;
     } else {
-        q->setMainWidget(previewPart->widget());
+        setCentralWidget(previewPart->widget());
         return previewPart->openUrl(QUrl::fromLocalFile(filename));
     }
 }
@@ -123,14 +128,18 @@ void KPrintPreviewPrivate::fail()
     if (!failMessage) {
         failMessage = new QLabel(i18n("Could not load print preview part"), q);
     }
-    q->setMainWidget(failMessage);
+    setCentralWidget(failMessage);
+}
+
+void KPrintPreviewPrivate::setCentralWidget(QWidget *widget)
+{
+    mainWidget->layout()->addWidget(widget);
 }
 
 
 
-
 KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
-    : KDialog(parent)
+    : QDialog(parent)
     , d(new KPrintPreviewPrivate(this, printer))
 {
     kDebug(500) << "kdeprint: creating preview dialog";
@@ -138,14 +147,26 @@ KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
     //There is no printing on wince
 #ifndef _WIN32_WCE
     // Set up the dialog
-    setCaption(i18n("Print Preview"));
-    setButtons(KDialog::Close);
+    setWindowTitle(i18n("Print Preview"));
 
     // Set up the printer
     kDebug(500) << "Will print to" << d->filename;
     printer->setOutputFileName(d->filename);
 
-    setInitialSize(QSize(600, 500));
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->setMargin(0);
+    setLayout(layout);
+
+    layout->addWidget(d->mainWidget, 1);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(buttonBox);
+
+    resize(QSize(600, 500));
+    adjustSize();
 #endif
 }
 
@@ -163,7 +184,7 @@ void KPrintPreview::showEvent(QShowEvent *event)
             return;
         }
     }
-    KDialog::showEvent(event);
+    QDialog::showEvent(event);
 }
 
 bool KPrintPreview::isAvailable()
