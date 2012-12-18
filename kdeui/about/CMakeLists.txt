@@ -1,5 +1,5 @@
 install(FILES
-    body-background.jpg
+    body-background.png
     bar-bottom-left.png
     bar-top-right.png
     bar-bottom-middle.png

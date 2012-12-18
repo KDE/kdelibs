@@ -290,6 +290,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
                 translationTeamLabel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
                 translationTeamLabel->setWordWrap( true );
                 translationTeamLabel->setText( aboutTranslationTeam );
+                translationTeamLabel->setOpenExternalLinks( true );
                 translatorLayout->addWidget( translationTeamLabel );
                 //TODO: this could be displayed as a view item to save space
             }

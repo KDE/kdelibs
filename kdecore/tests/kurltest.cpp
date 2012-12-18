@@ -954,15 +954,11 @@ void KUrlTest::testAdjustPath()
     }
 
     {
-    KUrl remote2("remote://");
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) // bug fixed in 5.0: empty hostname stays
+    KUrl remote2("remote://");
     QCOMPARE( remote2.url(), QString("remote://") );
     QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote://") );
     QCOMPARE( QUrl(remote2).toString(QUrl::StripTrailingSlash), QString("remote://") );
-#else
-    QCOMPARE( remote2.url(), QString("remote:") ); // QUrl bug, fixed in Qt5
-    QCOMPARE( remote2.prettyUrl(), QString("remote://") );
-    QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote:") ); // QUrl bug, fixed in Qt5
 #endif
     }
 }
@@ -1818,8 +1814,6 @@ void KUrlTest::testSmb()
   QVERIFY( smb.isValid() );
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE(smb.url(), QString::fromLatin1("smb:")); // QUrl bug, fixed in Qt5
-#else
-  QCOMPARE(smb.url(), QString::fromLatin1("smb://"));
 #endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://"));
   smb = "smb://host";
@@ -1830,8 +1824,6 @@ void KUrlTest::testSmb()
   QVERIFY( smb.isValid() );
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE(smb.url(), QString::fromLatin1("smb:/")); // QUrl bug, fixed in Qt5
-#else
-  QCOMPARE(smb.url(), QString::fromLatin1("smb:///"));
 #endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
 

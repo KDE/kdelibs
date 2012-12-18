@@ -2364,14 +2364,17 @@ SimpleJob *KIO::file_delete( const QUrl& src, JobFlags flags )
 class KIO::ListJobPrivate: public KIO::SimpleJobPrivate
 {
 public:
-    ListJobPrivate(const QUrl& url, bool _recursive, const QString &_prefix, bool _includeHidden)
+    ListJobPrivate(const QUrl& url, bool _recursive,
+                   const QString &prefix, const QString &displayPrefix,
+                   bool _includeHidden)
         : SimpleJobPrivate(url, CMD_LISTDIR, QByteArray()),
           recursive(_recursive), includeHidden(_includeHidden),
-          prefix(_prefix), m_processedEntries(0)
+          m_prefix(prefix), m_displayPrefix(displayPrefix), m_processedEntries(0)
     {}
     bool recursive;
     bool includeHidden;
-    QString prefix;
+    QString m_prefix;
+    QString m_displayPrefix;
     unsigned long m_processedEntries;
     QUrl m_redirectionURL;
 
@@ -2389,19 +2392,21 @@ public:
 
     Q_DECLARE_PUBLIC(ListJob)
 
-    static inline ListJob *newJob(const QUrl& u, bool _recursive, const QString &_prefix,
+    static inline ListJob *newJob(const QUrl& u, bool _recursive,
+                                  const QString &prefix, const QString &displayPrefix,
                                   bool _includeHidden, JobFlags flags = HideProgressInfo)
     {
-        ListJob *job = new ListJob(*new ListJobPrivate(u, _recursive, _prefix, _includeHidden));
+        ListJob *job = new ListJob(*new ListJobPrivate(u, _recursive, prefix, displayPrefix, _includeHidden));
         job->setUiDelegate(new JobUiDelegate);
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         return job;
     }
-    static inline ListJob *newJobNoUi(const QUrl& u, bool _recursive, const QString &_prefix,
+    static inline ListJob *newJobNoUi(const QUrl& u, bool _recursive,
+                                      const QString &prefix, const QString &displayPrefix,
                                       bool _includeHidden)
     {
-        return new ListJob(*new ListJobPrivate(u, _recursive, _prefix, _includeHidden));
+        return new ListJob(*new ListJobPrivate(u, _recursive, prefix, displayPrefix, _includeHidden));
     }
 };
 
@@ -2447,11 +2452,15 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
 
             if (entry.isDir() && !entry.isLink()) {
                 const QString filename = QUrlPathInfo(itemURL).fileName();
+                QString displayName = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+                if (displayName.isEmpty())
+                    displayName = filename;
                 // skip hidden dirs when listing if requested
                 if (filename != ".." && filename != "." && (includeHidden || filename[0] != '.')) {
                     ListJob *job = ListJobPrivate::newJobNoUi(itemURL,
                                                true /*recursive*/,
-                                               prefix + filename + '/',
+                                               m_prefix + filename + '/',
+                                               m_displayPrefix + displayName + '/',
                                                includeHidden);
                     Scheduler::setJobPriority(job, 1);
                     q->connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
@@ -2465,7 +2474,7 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
     // Not recursive, or top-level of recursive listing : return now (send . and .. as well)
     // exclusion of hidden files also requires the full sweep, but the case for full-listing
     // a single dir is probably common enough to justify the shortcut
-    if (prefix.isNull() && includeHidden) {
+    if (m_prefix.isNull() && includeHidden) {
         emit q->entries(q, list);
     } else {
         // cull the unwanted hidden dirs and/or parent dir references from the listing, then emit that
@@ -2478,13 +2487,17 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
             // Modify the name in the UDSEntry
             UDSEntry newone = *it;
             const QString filename = newone.stringValue( KIO::UDSEntry::UDS_NAME );
+            QString displayName = newone.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
+            if (displayName.isEmpty())
+                displayName = filename;
             // Avoid returning entries like subdir/. and subdir/.., but include . and .. for
             // the toplevel dir, and skip hidden files/dirs if that was requested
-            if (  (prefix.isNull() || (filename != ".." && filename != ".") )
+            if (  (m_prefix.isNull() || (filename != ".." && filename != ".") )
                   && (includeHidden || (filename[0] != '.') )  )
             {
                 // ## Didn't find a way to use the iterator instead of re-doing a key lookup
-                newone.insert( KIO::UDSEntry::UDS_NAME, prefix + filename );
+                newone.insert( KIO::UDSEntry::UDS_NAME, m_prefix + filename );
+                newone.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, m_displayPrefix + displayName);
                 newlist.append(newone);
             }
         }
@@ -2576,12 +2589,12 @@ void ListJob::slotMetaData( const KIO::MetaData &_metaData)
 
 ListJob *KIO::listDir( const QUrl& url, JobFlags flags, bool includeHidden )
 {
-    return ListJobPrivate::newJob(url, false, QString(), includeHidden, flags);
+    return ListJobPrivate::newJob(url, false, QString(), QString(), includeHidden, flags);
 }
 
 ListJob *KIO::listRecursive( const QUrl& url, JobFlags flags, bool includeHidden )
 {
-    return ListJobPrivate::newJob(url, true, QString(), includeHidden, flags);
+    return ListJobPrivate::newJob(url, true, QString(), QString(), includeHidden, flags);
 }
 
 void ListJob::setUnrestricted(bool unrestricted)
