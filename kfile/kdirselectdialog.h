@@ -23,7 +23,7 @@
 
 #include <kfile_export.h>
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kurl.h>
 
 class QAbstractItemView;
@@ -33,7 +33,7 @@ class QAbstractItemView;
  * @author Michael Jarrett <michaelj@corel.com>
  * @see KFileDialog
  */
-class KFILE_EXPORT KDirSelectDialog : public KDialog
+class KFILE_EXPORT KDirSelectDialog : public QDialog
 {
     Q_OBJECT
 

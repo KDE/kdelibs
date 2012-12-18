@@ -20,6 +20,7 @@
 
 #include "kdirselectdialog.h"
 
+#include <QDialogButtonBox>
 #include <QtCore/QDir>
 #include <QtCore/QStringList>
 #include <QLayout>
@@ -274,20 +275,32 @@ void KDirSelectDialog::Private::slotProperties()
 KDirSelectDialog::KDirSelectDialog(const QUrl &startDir, bool localOnly,
                                    QWidget *parent)
 #ifdef Q_OS_WIN
-    : KDialog( parent , Qt::WindowMinMaxButtonsHint),
+    : QDialog( parent , Qt::WindowMinMaxButtonsHint),
 #else
-    : KDialog( parent ),
+    : QDialog( parent ),
 #endif
       d( new Private( localOnly, this ) )
 {
-    setCaption( i18nc("@title:window","Select Folder") );
-    setButtons( Ok | Cancel | User1 );
-    setButtonGuiItem( User1, KGuiItem( i18nc("@action:button","New Folder..."), "folder-new" ) );
-    setDefaultButton(Ok);
-    button(Ok)->setFocus();
+    setWindowTitle( i18nc("@title:window","Select Folder") );
+
+    QVBoxLayout *topLayout = new QVBoxLayout;
+    setLayout(topLayout);
 
     QFrame *page = new QFrame(this);
-    setMainWidget(page);
+    topLayout->addWidget(page);
+
+    QPushButton *folderButton = new QPushButton;
+    KGuiItem::assign(folderButton, KGuiItem(i18nc("@action:button","New Folder..."), "folder-new"));
+    connect(folderButton, SIGNAL(clicked()), this, SLOT(slotNewFolder()));
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->addButton(folderButton, QDialogButtonBox::ActionRole);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    topLayout->addWidget(buttonBox);
+
+
     QHBoxLayout *hlay = new QHBoxLayout( page);
     hlay->setMargin(0);
     QVBoxLayout *mainLayout = new QVBoxLayout();
@@ -393,8 +406,6 @@ KDirSelectDialog::KDirSelectDialog(const QUrl &startDir, bool localOnly,
     connect( d->m_urlCombo, SIGNAL(returnPressed(QString)),
              SLOT(slotUrlActivated(QString)));
 
-    connect(this, SIGNAL(user1Clicked()), this, SLOT(slotNewFolder()));
-
     setCurrentUrl(d->m_startURL);
 }
 
@@ -479,14 +490,14 @@ void KDirSelectDialog::accept()
 #endif
     KFileDialog::setStartDir( url() );
 
-    KDialog::accept();
+    QDialog::accept();
 }
 
 void KDirSelectDialog::hideEvent( QHideEvent *event )
 {
     d->saveConfig( KSharedConfig::openConfig(), "DirSelect Dialog" );
 
-    KDialog::hideEvent(event);
+    QDialog::hideEvent(event);
 }
 
 // static
@@ -498,7 +509,7 @@ QUrl KDirSelectDialog::selectDirectory( const QUrl& startDir,
     KDirSelectDialog myDialog( startDir, localOnly, parent);
 
     if ( !caption.isNull() )
-        myDialog.setCaption( caption );
+        myDialog.setWindowTitle( caption );
 
     if ( myDialog.exec() == QDialog::Accepted )
         return KIO::NetAccess::mostLocalUrl(myDialog.url(),parent);
