@@ -922,15 +922,18 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
 
       bool async = true;
       if (args.size() >= 3) {
-	async = args[2]->toBoolean(exec);
+          async = args[2]->toBoolean(exec);
       }
 
-      if (args.size() >= 4) {
-	url.setUser(args[3]->toString(exec).qstring());
-      }
-
-      if (args.size() >= 5) {
-	url.setPass(args[4]->toString(exec).qstring());
+      // Set url userinfo
+      if (args.size() >= 4 && !args[3]->isUndefinedOrNull()) {
+          QString user = args[3]->toString(exec).qstring();
+          if (!user.isEmpty()) {
+              url.setUser(user);
+              if (args.size() >= 5 && !args[4]->isUndefinedOrNull()) {
+                  url.setPass(args[4]->toString(exec).qstring());
+              }
+          }
       }
 
       request->open(method, url, async, ec);
