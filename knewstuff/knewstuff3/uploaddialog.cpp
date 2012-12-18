@@ -21,6 +21,7 @@
 #include "uploaddialog.h"
 #include "uploaddialog_p.h"
 
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
 #include <QDoubleSpinBox>
@@ -44,9 +45,31 @@ using namespace KNS3;
 
 void UploadDialog::Private::init()
 {
+    QVBoxLayout *layout = new QVBoxLayout;
+    q->setLayout(layout);
+
     QWidget* _mainWidget = new QWidget(q);
-    q->setMainWidget(_mainWidget);
     ui.setupUi(_mainWidget);
+    layout->addWidget(_mainWidget);
+
+    backButton = new QPushButton;
+    KGuiItem::assign(backButton, KStandardGuiItem::back(KStandardGuiItem::UseRTL));
+
+    nextButton = new QPushButton;
+    nextButton->setText(i18nc("Opposite to Back", "Next"));
+    nextButton->setIcon(KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon());
+    nextButton->setDefault(true);
+
+    finishButton = new QPushButton;
+    finishButton->setText(i18n("Finish"));
+    finishButton->setIcon(KDE::icon("dialog-ok-apply"));
+
+    buttonBox = new QDialogButtonBox(q);
+    buttonBox->addButton(backButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(nextButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(finishButton, QDialogButtonBox::AcceptRole);
+    buttonBox->setStandardButtons(QDialogButtonBox::Cancel);
+    layout->addWidget(buttonBox);
 
     atticaHelper = new AtticaHelper(q);
     q->connect(atticaHelper, SIGNAL(providersLoaded(QStringList)), q, SLOT(_k_providersLoaded(QStringList)));
@@ -142,7 +165,7 @@ void UploadDialog::Private::_k_showPage(int page)
 void UploadDialog::Private::_k_updatePage()
 {
     bool firstPage = ui.stackedWidget->currentIndex() == 0;
-    q->enableButton(BackButton, !firstPage && !finished);
+    backButton->setEnabled(!firstPage && !finished);
 
     bool nextEnabled = false;
     switch (ui.stackedWidget->currentIndex()) {
@@ -175,13 +198,14 @@ void UploadDialog::Private::_k_updatePage()
         break;
     }
 
-    q->enableButton(NextButton, nextEnabled);
-    q->enableButton(FinishButton, finished);
+    nextButton->setEnabled(nextEnabled);
+    finishButton->setEnabled(finished);
 
-    q->setDefaultButton(nextEnabled ? NextButton : FinishButton);
+    nextButton->setDefault(nextEnabled);
+    finishButton->setDefault(!nextEnabled);
 
-    if (nextEnabled && q->button(KDialog::Cancel)->hasFocus()) {
-        q->button(NextButton)->setFocus();
+    if (nextEnabled && buttonBox->button(QDialogButtonBox::Cancel)->hasFocus()) {
+        nextButton->setFocus();
     }
 }
 
@@ -231,7 +255,7 @@ void UploadDialog::Private::_k_nextPage()
     // TODO: validate credentials after user name/password have been entered
     if (ui.stackedWidget->currentIndex() == UserPasswordPage) {
         setBusy(i18n("Checking login..."));
-        q->button(NextButton)->setEnabled(false);
+        nextButton->setEnabled(false);
         ui.providerComboBox->setEnabled(false);
         ui.username->setEnabled(false);
         ui.password->setEnabled(false);
@@ -340,7 +364,7 @@ void UploadDialog::Private::_k_updateContentsToggled(bool update)
 }
 
 UploadDialog::UploadDialog(QWidget *parent)
-    : KDialog(parent), d(new Private(this))
+    : QDialog(parent), d(new Private(this))
 {
     KComponentData component = KGlobal::activeComponent();
     QString name = component.componentName();
@@ -348,7 +372,7 @@ UploadDialog::UploadDialog(QWidget *parent)
 }
 
 UploadDialog::UploadDialog(const QString& configFile, QWidget *parent)
-    : KDialog(parent), d(new Private(this))
+    : QDialog(parent), d(new Private(this))
 {
     init(configFile);
 }
@@ -362,16 +386,8 @@ bool UploadDialog::init(const QString &configfile)
 {
     d->init();
 
-    setCaption(i18n("Share Hot New Stuff"));
+    setWindowTitle(i18n("Share Hot New Stuff"));
 
-    setButtons(KDialog::Cancel | KDialog::User1 | KDialog::User2 | KDialog::User3 | KDialog::Help);
-    setButtonGuiItem( BackButton, KStandardGuiItem::back(KStandardGuiItem::UseRTL) );
-
-    setButtonText( NextButton, i18nc("Opposite to Back", "Next") );
-    setButtonIcon( NextButton, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
-    setButtonText(FinishButton, i18n("Finish"));
-    setButtonIcon( FinishButton, KDE::icon("dialog-ok-apply") );
-    setDefaultButton(NextButton);
     d->_k_updatePage();
 
     connect(d->ui.username, SIGNAL(textChanged(QString)), this, SLOT(_k_updatePage()));
@@ -383,9 +399,10 @@ bool UploadDialog::init(const QString &configfile)
 
     connect(d->ui.uploadButton, SIGNAL(clicked()), this, SLOT(_k_startUpload()));
 
-    connect(this, SIGNAL(user3Clicked()), this, SLOT(_k_backPage()));
-    connect(this, SIGNAL(user2Clicked()), this, SLOT(_k_nextPage()));
-    connect(this, SIGNAL(user1Clicked()), this, SLOT(accept()));
+    connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_backPage()));
+    connect(d->nextButton, SIGNAL(clicked()), this, SLOT(_k_nextPage()));
+    connect(d->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(d->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     d->ui.mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
                                  "%1 Add-On Uploader",
@@ -540,7 +557,7 @@ void UploadDialog::Private::_k_categoriesLoaded(const Attica::Category::List& lo
 
 void UploadDialog::accept()
 {
-    KDialog::accept();
+    QDialog::accept();
 }
 
 void UploadDialog::Private::_k_startUpload()
@@ -548,8 +565,8 @@ void UploadDialog::Private::_k_startUpload()
     // FIXME: this only works if categories are set in the .knsrc file
     // TODO: ask for confirmation when closing the dialog
 
-    q->button(BackButton)->setEnabled(false);
-    q->button(KDialog::Cancel)->setEnabled(false);
+    backButton->setEnabled(false);
+    buttonBox->button(QDialogButtonBox::Cancel)->setEnabled(false);
 
     ui.uploadButton->setEnabled(false);
 

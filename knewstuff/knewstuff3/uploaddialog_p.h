@@ -31,10 +31,8 @@
 
 #include <kurl.h>
 
-#define FinishButton KDialog::User1
-#define NextButton KDialog::User2
-#define BackButton KDialog::User3
-
+class QDialogButtonBox;
+class QPushButton;
 class KPixmapSequenceWidget;
 
 namespace KNS3 {
@@ -68,6 +66,10 @@ namespace KNS3 {
         }
 
         Ui::UploadDialog ui;
+        QDialogButtonBox *buttonBox;
+        QPushButton *finishButton;
+        QPushButton *nextButton;
+        QPushButton *backButton;
         KPixmapSequenceWidget* busyWidget;
 
         AtticaHelper* atticaHelper;

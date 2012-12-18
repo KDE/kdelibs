@@ -21,7 +21,7 @@
 #ifndef KNEWSTUFF3_UI_UPLOADDIALOG_H
 #define KNEWSTUFF3_UI_UPLOADDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 #include <QtCore/QUrl>
 
 #include "knewstuff3_export.h"
@@ -45,7 +45,7 @@ namespace KNS3
  *
  * @since 4.4
  */
-class KNEWSTUFF3_EXPORT UploadDialog : public KDialog
+class KNEWSTUFF3_EXPORT UploadDialog : public QDialog
 {
     Q_OBJECT
 public:

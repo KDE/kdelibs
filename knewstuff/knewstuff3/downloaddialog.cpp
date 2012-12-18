@@ -57,7 +57,7 @@ const char * ConfigGroup = "DownloadDialog Settings";
 
 
 DownloadDialog::DownloadDialog(QWidget* parent)
-    : KDialog(parent)
+    : QDialog(parent)
     , d(new DownloadDialogPrivate)
 {
     KComponentData component = KGlobal::activeComponent();
@@ -66,7 +66,7 @@ DownloadDialog::DownloadDialog(QWidget* parent)
 }
 
 DownloadDialog::DownloadDialog(const QString& configFile, QWidget * parent)
-        : KDialog(parent)
+        : QDialog(parent)
         , d(new DownloadDialogPrivate)
 {
     init(configFile);
@@ -79,11 +79,12 @@ void DownloadDialog::init(const QString& configFile)
     KWindowConfig::restoreWindowSize(this, group);
     setMinimumSize(700, 400);
 
-    setCaption(i18n("Get Hot New Stuff"));
-    setButtons(KDialog::None);
+    setWindowTitle(i18n("Get Hot New Stuff"));
 
+    QVBoxLayout *layout = new QVBoxLayout;
     d->downloadWidget = new DownloadWidget(configFile ,this);
-    setMainWidget(d->downloadWidget);
+    layout->addWidget(d->downloadWidget);
+    setLayout(layout);
 
     d->downloadWidget->d->ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
         "%1 Add-On Installer",

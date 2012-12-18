@@ -23,7 +23,7 @@
 #ifndef KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 #define KNEWSTUFF3_UI_DOWNLOADDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 
 #include "knewstuff3_export.h"
 #include "entry.h"
@@ -69,7 +69,7 @@ class DownloadDialogPrivate;
  *
  * @since 4.4
  */
-class KNEWSTUFF3_EXPORT DownloadDialog :public KDialog
+class KNEWSTUFF3_EXPORT DownloadDialog : public QDialog
 {
     Q_OBJECT
 
