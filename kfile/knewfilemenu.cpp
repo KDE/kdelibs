@@ -328,7 +328,7 @@ public:
 
 
     KActionCollection * m_actionCollection;
-    KDialog* m_fileDialog;
+    QDialog* m_fileDialog;
 
     KActionMenu *m_menuDev;
     int m_menuItemsVersion;
@@ -498,7 +498,7 @@ void KNewFileMenuPrivate::executeSymLink(const KNewFileMenuSingleton::Entry& ent
     KNameAndUrlInputDialog* dlg = new KNameAndUrlInputDialog(i18n("File name:"), entry.comment, m_popupFiles.first(), m_parentWidget);
     dlg->setModal(q->isModal());
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setCaption(i18n("Create Symlink"));
+    dlg->setWindowTitle(i18n("Create Symlink"));
     m_fileDialog = dlg;
     QObject::connect(dlg, SIGNAL(accepted()), q, SLOT(_k_slotSymLink()));
     dlg->show();
@@ -570,7 +570,7 @@ void KNewFileMenuPrivate::executeUrlDesktopFile(const KNewFileMenuSingleton::Ent
     m_copyData.m_templatePath = entry.templatePath;
     dlg->setModal(q->isModal());
     dlg->setAttribute(Qt::WA_DeleteOnClose);
-    dlg->setCaption(i18n("Create link to URL"));
+    dlg->setWindowTitle(i18n("Create link to URL"));
     m_fileDialog = dlg;
     QObject::connect(dlg, SIGNAL(accepted()), q, SLOT(_k_slotUrlDesktopFile()));
     dlg->show();

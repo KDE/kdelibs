@@ -22,7 +22,7 @@
 #define KNAMEANDURLINPUTDIALOG_H
 
 #include <kfile_export.h>
-#include <kdialog.h>
+#include <QDialog>
 class KLineEdit;
 class KUrlRequester;
 class KNameAndUrlInputDialogPrivate;
@@ -34,7 +34,7 @@ class QUrl;
  * @since 4.5
  * @author David Faure <faure@kde.org>
  */
-class KFILE_EXPORT KNameAndUrlInputDialog : public KDialog
+class KFILE_EXPORT KNameAndUrlInputDialog : public QDialog
 {
     Q_OBJECT
 public:
