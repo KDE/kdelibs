@@ -19,8 +19,10 @@
 
 #include "componentsdialog_p.h"
 #include <klocalizedstring.h>
+#include <QDialogButtonBox>
 #include <QLayout>
 #include <QLabel>
+#include <QPushButton>
 #include <kplugininfo.h>
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -46,14 +48,26 @@ class ComponentsDialog::ComponentsDialogPrivate
 };
 
 ComponentsDialog::ComponentsDialog( QWidget * parent, const char * name )
-    : KDialog( parent ), d( new ComponentsDialogPrivate )
+    : QDialog( parent ), d( new ComponentsDialogPrivate )
 {
     setObjectName( name );
     setModal( false );
-    setCaption( i18n( "Select Components" ) );
+    setWindowTitle( i18n( "Select Components" ) );
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
 
     QWidget * page = new QWidget( this );
-    setMainWidget( page );
+    layout->addWidget(page);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Apply | QDialogButtonBox::Cancel);
+    connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), this, SLOT(savePluginInfos()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(savePluginInfos()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(buttonBox);
+
     QHBoxLayout *hbox = new QHBoxLayout( page );
     hbox->setMargin( 0 );
 
@@ -127,7 +141,7 @@ void ComponentsDialog::show()
         item->setCheckState( 0, ( *it )->isPluginEnabled() ? Qt::Checked : Qt::Unchecked );
         d->plugininfomap[ item ] = ( *it );
     }
-    KDialog::show();
+    QDialog::show();
 }
 
 void ComponentsDialog::executed( QTreeWidgetItem * item, int )
@@ -160,18 +174,6 @@ void ComponentsDialog::savePluginInfos()
             (*it)->config().sync();
         }
     }
-}
-
-void ComponentsDialog::slotOk()
-{
-    savePluginInfos();
-    KDialog::slotButtonClicked( Ok );
-}
-
-void ComponentsDialog::slotApply()
-{
-    savePluginInfos();
-    KDialog::slotButtonClicked( Apply );
 }
 
 } //namespace

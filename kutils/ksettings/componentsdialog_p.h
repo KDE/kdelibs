@@ -21,7 +21,7 @@
 #define COMPONENTSDIALOG_P_H
 
 #include <kcmutils_export.h>
-#include <kdialog.h>
+#include <QDialog>
 
 #include <QtCore/QList>
 
@@ -39,7 +39,7 @@ namespace KSettings
   to the okClicked() and applyClicked() signals to be notified about
   configuration changes.
 */
-class KCMUTILS_EXPORT ComponentsDialog : public KDialog
+class KCMUTILS_EXPORT ComponentsDialog : public QDialog
 {
     Q_OBJECT
     public:
@@ -70,16 +70,11 @@ class KCMUTILS_EXPORT ComponentsDialog : public KDialog
          */
         void show();
 
-    protected Q_SLOTS:
-        void slotOk();
-        void slotApply();
-
     private Q_SLOTS:
         void executed( QTreeWidgetItem *, int );
-
-    private:
         void savePluginInfos();
 
+    private:
         class ComponentsDialogPrivate;
         ComponentsDialogPrivate* const d;
 };
