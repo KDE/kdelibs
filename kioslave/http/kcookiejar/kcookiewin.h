@@ -28,7 +28,7 @@
 
 #include <QGroupBox>
 #include <QRadioButton>
-#include <kdialog.h>
+#include <QDialog>
 #include "kcookiejar.h"
 
 class KLineEdit;
@@ -60,7 +60,7 @@ private:
     int m_cookieNumber;
 };
 
-class KCookieWin : public KDialog
+class KCookieWin : public QDialog
 {
     Q_OBJECT
 
@@ -71,11 +71,12 @@ public :
 
     KCookieAdvice advice( KCookieJar *cookiejar, const KHttpCookie& cookie );
 
-protected:
-  virtual void slotButtonClicked(int button);
+private Q_SLOTS:
+    void slotSessionOnlyClicked();
+    void slotToggleDetails();
 
 private :
-    QPushButton*   m_button;
+    QPushButton *m_detailsButton;
     QRadioButton* m_onlyCookies, *m_allCookies, *m_allCookiesDomain;
     KCookieDetail* m_detailView;
 };

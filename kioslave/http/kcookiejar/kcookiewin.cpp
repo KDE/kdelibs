@@ -37,6 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiewin.h"
 #include "kcookiejar.h"
 
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
 #include <QGroupBox>
@@ -54,14 +55,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kdatetime.h>
 #include <kusertimestamp.h>
 
+enum {
+    AcceptedForSession = QDialog::Accepted + 1
+};
+
 KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
                         int defaultButton, bool showDetails )
-           :KDialog( parent )
+    : QDialog( parent )
 {
     setModal(true);
     setObjectName("cookiealert");
-    setButtons(Yes|User1|No|Details);
-    setCaption( i18n("Cookie Alert") );
+    setWindowTitle( i18n("Cookie Alert") );
     setWindowIcon( KDE::icon("preferences-web-browser-cookies") );
     // all cookies in the list should have the same window at this time, so let's take the first
     if( cookieList.first().windowIds().count() > 0 )
@@ -106,12 +110,34 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     txt += QLatin1String("</body></html>");
 
 
+    QVBoxLayout *topLayout = new QVBoxLayout;
+    setLayout(topLayout);
+
     QFrame* vBox1 = new QFrame( this );
+    topLayout->addWidget(vBox1);
+
+    m_detailsButton = new QPushButton;
+    m_detailsButton->setText(i18n("See or modify the cookie information") + " >>");
+    connect(m_detailsButton, SIGNAL(clicked()), this, SLOT(slotToggleDetails()));
+
+    QPushButton *sessionOnlyButton = new QPushButton;
+    sessionOnlyButton->setText(i18n("Accept for this &session"));
+    sessionOnlyButton->setIcon(KDE::icon("chronometer"));
+    sessionOnlyButton->setToolTip(i18n("Accept cookie(s) until the end of the current session"));
+    connect(sessionOnlyButton, SIGNAL(clicked()), this, SLOT(slotSessionOnlyClicked()));
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->addButton(m_detailsButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(sessionOnlyButton, QDialogButtonBox::ActionRole);
+    buttonBox->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
+    buttonBox->button(QDialogButtonBox::Yes)->setText(i18n("&Accept"));
+    buttonBox->button(QDialogButtonBox::Yes)->setText(i18n("&Reject"));
+    topLayout->addWidget(buttonBox);
+
     QVBoxLayout* vBox1Layout = new QVBoxLayout( vBox1 );
     vBox1Layout->setSpacing( -1 );
     vBox1Layout->setMargin( 0 );
 
-    setMainWidget(vBox1);
     // Cookie image and message to user
     QFrame* hBox = new QFrame( vBox1 );
     vBox1Layout->addWidget( hBox );
@@ -136,7 +162,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     // Cookie Details dialog...
     m_detailView = new KCookieDetail( cookieList, count, vBox1 );
     vBox1Layout->addWidget(m_detailView);
-    setDetailsWidget(m_detailView);
+    m_detailView->hide();
 
     // Cookie policy choice...
     QGroupBox *m_btnGrp = new QGroupBox(i18n("Apply Choice To"),vBox1);
@@ -182,16 +208,9 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
         break;
     }
 
-    setButtonText(KDialog::Yes, i18n("&Accept"));
-    setButtonText(KDialog::User1, i18n("Accept for this &session"));
-    setButtonIcon(KDialog::User1, KDE::icon("chronometer"));
-    setButtonToolTip(KDialog::User1, i18n("Accept cookie(s) until the end of the current session"));
-    setButtonText(KDialog::No, i18n("&Reject"));
-
-    setButtonToolTip(Details, i18n("See or modify the cookie information") );
-    setDefaultButton(Yes);
-
-    setDetailsWidgetVisible(showDetails);
+    if (showDetails) {
+        slotToggleDetails();
+    }
 }
 
 KCookieWin::~KCookieWin()
@@ -202,15 +221,15 @@ KCookieAdvice KCookieWin::advice( KCookieJar *cookiejar, const KHttpCookie& cook
 {
     const int result = exec();
 
-    cookiejar->setShowCookieDetails (isDetailsWidgetVisible());
+    cookiejar->setShowCookieDetails (m_detailView->isVisible());
 
     KCookieAdvice advice;
 
     switch (result) {
-    case KDialog::Yes:
+    case QDialog::Accepted:
         advice = KCookieAccept;
         break;
-    case KDialog::User1:
+    case AcceptedForSession:
         advice = KCookieAcceptForSession;
         break;
     default:
@@ -345,13 +364,20 @@ void KCookieDetail::displayCookieDetails()
     m_secure->setText(sec);
 }
 
-void KCookieWin::slotButtonClicked(int button)
+void KCookieWin::slotSessionOnlyClicked()
 {
-    if (button == KDialog::User1) {
-        done (KDialog::User1);
-        return;
-    }
-
-    KDialog::slotButtonClicked(button);
+    done(AcceptedForSession);
 }
 
+void KCookieWin::slotToggleDetails()
+{
+    const QString baseText = i18n("See or modify the cookie information");
+
+    if (m_detailView->isVisible()) {
+        m_detailsButton->setText(baseText + " >>");
+        m_detailView->hide();
+    } else {
+        m_detailsButton->setText(baseText + " <<");
+        m_detailView->show();
+    }
+}
