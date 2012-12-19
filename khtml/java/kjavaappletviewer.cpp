@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 
+#include <QDialogButtonBox>
 #include <QtCore/QDir>
 #include <QtCore/QPair>
 #include <QtCore/QTimer>
@@ -32,6 +33,7 @@
 #include <QLabel>
 #include <QStatusBar>
 #include <QTableWidget>
+#include <QVBoxLayout>
 #include <QtDBus/QtDBus>
 
 #include <kapplication.h>
@@ -121,12 +123,10 @@ inline void KJavaServerMaintainer::setServer (KJavaAppletServer * s) {
 //-----------------------------------------------------------------------------
 
 AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
-    : KDialog(parent), m_appletWidget (parent)
+    : QDialog(parent), m_appletWidget (parent)
 {
     setObjectName( "paramdialog" );
-    setCaption( i18n ("Applet Parameters") );
-    setButtons( KDialog::Close );
-    setDefaultButton( KDialog::Close );
+    setWindowTitle( i18n ("Applet Parameters") );
     setModal( true );
 
     KJavaApplet* const applet = parent->applet ();
@@ -166,8 +166,18 @@ AppletParameterDialog::AppletParameterDialog (KJavaAppletWidget * parent)
         tit->setFlags( tit->flags()|Qt::ItemIsEditable );
         table->setItem (count, 1, tit);
     }
-    setMainWidget (table);
-    connect(this,SIGNAL(closeClicked()),this,SLOT(slotClose()));
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotClose()));
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(slotClose()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(table);
+    layout->addWidget(buttonBox);
+    setLayout(layout);
 }
 
 void AppletParameterDialog::slotClose () {

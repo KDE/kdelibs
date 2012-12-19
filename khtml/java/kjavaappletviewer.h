@@ -27,8 +27,8 @@
 #include <kparts/browserextension.h>
 #include <kparts/statusbarextension.h>
 #include <kpluginfactory.h>
-#include <kdialog.h>
 #include <kurl.h>
+#include <QDialog>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QPointer>
@@ -130,7 +130,7 @@ private:
     static KIconLoader * s_iconLoader;
 };
 
-class AppletParameterDialog : public KDialog {
+class AppletParameterDialog : public QDialog {
     Q_OBJECT
 public:
     AppletParameterDialog (KJavaAppletWidget * parent);
