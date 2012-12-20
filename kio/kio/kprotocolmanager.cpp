@@ -26,8 +26,6 @@
 
 #include <config-kio.h>
 
-#include <kglobal.h> // K_GLOBAL_STATIC
-
 #include <string.h>
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -145,14 +143,14 @@ public:
    QMap<QString /*mimetype*/, QString /*protocol*/> protocolForArchiveMimetypes;
 };
 
-// TODO port to Q_GLOBAL_STATIC
-K_GLOBAL_STATIC(KProtocolManagerPrivate, kProtocolManagerPrivate)
+Q_GLOBAL_STATIC(KProtocolManagerPrivate, kProtocolManagerPrivate)
 
 static void syncOnExit()
 {
-    if (kProtocolManagerPrivate.exists()) {
-        kProtocolManagerPrivate->sync();
-    }
+#if QT_VERSION >= 0x050100
+    if (kProtocolManagerPrivate.exists())
+#endif
+        kProtocolManagerPrivate()->sync();
 }
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
@@ -164,7 +162,6 @@ KProtocolManagerPrivate::KProtocolManagerPrivate()
 
 KProtocolManagerPrivate::~KProtocolManagerPrivate()
 {
-    qRemovePostRoutine(kProtocolManagerPrivate.destroy);
 }
 
 /*
@@ -253,7 +250,7 @@ void KProtocolManagerPrivate::sync()
 }
 
 #define PRIVATE_DATA \
-KProtocolManagerPrivate *d = kProtocolManagerPrivate
+KProtocolManagerPrivate *d = kProtocolManagerPrivate()
 
 void KProtocolManager::reparseConfiguration()
 {
