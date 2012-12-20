@@ -20,10 +20,11 @@
 
 #include "kcommentwidget_p.h"
 
-#include <kdialog.h>
 #include <klocalizedstring.h>
 #include <kwindowconfig.h>
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QEvent>
 #include <QLabel>
 #include <QPointer>
@@ -114,19 +115,24 @@ bool KCommentWidget::event(QEvent* event)
 
 void KCommentWidget::slotLinkActivated(const QString& link)
 {
-    QPointer<KDialog> dialog = new KDialog(this);
+    QPointer<QDialog> dialog = new QDialog(this);
+    QVBoxLayout *layout = new QVBoxLayout;
+    dialog->setLayout(layout);
 
     QTextEdit* editor = new QTextEdit(dialog);
     editor->setText(m_comment);
-
-    dialog->setMainWidget(editor);
+    layout->addWidget(editor);
 
     const QString caption = (link == "changeComment") ?
                             i18nc("@title:window", "Change Comment") :
                             i18nc("@title:window", "Add Comment");
-    dialog->setCaption(caption);
-    dialog->setButtons(KDialog::Ok | KDialog::Cancel);
-    dialog->setDefaultButton(KDialog::Ok);
+    dialog->setWindowTitle(caption);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+    layout->addWidget(buttonBox);
 
     KConfigGroup dialogConfig(KSharedConfig::openConfig(), "Nepomuk KEditCommentDialog");
     KWindowConfig::restoreWindowSize(dialog, dialogConfig);
