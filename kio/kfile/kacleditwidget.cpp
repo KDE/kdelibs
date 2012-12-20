@@ -24,6 +24,7 @@
 #include <config-kio.h>
 #if HAVE_POSIX_ACL
 
+#include <QDialogButtonBox>
 #include <qpainter.h>
 #include <qpushbutton.h>
 #include <QButtonGroup>
@@ -418,7 +419,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
                                         const QStringList &defaultGroups,
                                         int allowedTypes, int allowedDefaultTypes,
                                         bool allowDefaults )
-      : KDialog( listView ),
+      : QDialog( listView ),
         m_listView( listView ), m_item( item ), m_users( users ), m_groups( groups ),
         m_defaultUsers( defaultUsers ), m_defaultGroups( defaultGroups ),
         m_allowedTypes( allowedTypes ), m_allowedDefaultTypes( allowedDefaultTypes ),
@@ -426,21 +427,17 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
 {
     setObjectName( "edit_entry_dialog" );
     setModal( true );
-    setCaption( i18n( "Edit ACL Entry" ) );
-    setButtons( KDialog::Ok | KDialog::Cancel );
-    setDefaultButton( KDialog::Ok );
+    setWindowTitle( i18n( "Edit ACL Entry" ) );
 
-    QWidget *page = new QWidget(  this );
-    setMainWidget( page );
-    QVBoxLayout *mainLayout = new QVBoxLayout( page );
-    mainLayout->setMargin( 0 );
-    QGroupBox *gb = new QGroupBox( i18n("Entry Type"), page );
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    setLayout(mainLayout);
+    QGroupBox *gb = new QGroupBox(i18n("Entry Type"), this);
     QVBoxLayout *gbLayout = new QVBoxLayout( gb );
 
-    m_buttonGroup = new QButtonGroup( page );
+    m_buttonGroup = new QButtonGroup(this);
 
     if ( allowDefaults ) {
-        m_defaultCB = new QCheckBox( i18n("Default for new files in this folder"), page );
+        m_defaultCB = new QCheckBox(i18n("Default for new files in this folder"), this);
         m_defaultCB->setObjectName( QLatin1String( "defaultCB" ) );
         mainLayout->addWidget( m_defaultCB );
         connect( m_defaultCB, SIGNAL(toggled(bool)),
@@ -485,7 +482,7 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
     connect( m_buttonGroup, SIGNAL(buttonClicked(QAbstractButton*)),
              this, SLOT(slotSelectionChanged(QAbstractButton*)) );
 
-    m_widgetStack = new QStackedWidget( page );
+    m_widgetStack = new QStackedWidget(this);
     mainLayout->addWidget( m_widgetStack );
 
     // users box
@@ -537,8 +534,14 @@ EditACLEntryDialog::EditACLEntryDialog( KACLListView *listView, KACLListViewItem
         slotSelectionChanged( m_buttonIds.key( KACLListView::NamedUser ) );
         slotUpdateAllowedUsersAndGroups();
     }
-    incrementInitialSize(  QSize( 100, 0 ) );
-    connect(this,SIGNAL(okClicked()), this, SLOT(slotOk()));
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(slotOk()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    mainLayout->addWidget(buttonBox);
+
+    adjustSize();
 }
 
 void EditACLEntryDialog::slotUpdateAllowedTypes()
@@ -599,7 +602,7 @@ void EditACLEntryDialog::slotOk()
         m_item->isDefault = m_defaultCB->isChecked();
     m_item->repaint();
 
-    KDialog::accept();
+    QDialog::accept();
 }
 
 void EditACLEntryDialog::slotSelectionChanged( QAbstractButton *button )

@@ -26,12 +26,12 @@
 #include <sys/acl.h>
 #include <kacl.h>
 
+#include <QDialog>
 #include <QPixmap>
 #include <QTreeWidget>
 #include <QtCore/QHash>
 
 #include <kcombobox.h>
-#include <kdialog.h>
 #include <kfileitem.h>
 
 class KACLListViewItem;
@@ -128,7 +128,7 @@ private:
     QPixmap* m_yesPartialPixmap;
 };
 
-class EditACLEntryDialog : public KDialog
+class EditACLEntryDialog : public QDialog
 {
     Q_OBJECT
 public:
