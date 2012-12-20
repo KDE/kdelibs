@@ -33,6 +33,8 @@
 #include <kguiitem.h>
 #include <kmessagebox.h>
 #include <qmimedatabase.h>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QPushButton>
 #include <QStyle>
 #include <QStyleOption>
@@ -60,18 +62,19 @@ static QMimeType fixupMimeType (const QString& mimeType, const QString& fileName
     return mime;
 }
 
-class KParts::BrowserOpenOrSaveQuestionPrivate : public KDialog
+class KParts::BrowserOpenOrSaveQuestionPrivate : public QDialog
 {
     Q_OBJECT
 public:
-    // Mapping to KDialog button codes
-    static const KDialog::ButtonCode Save = KDialog::Yes;
-    static const KDialog::ButtonCode OpenDefault = KDialog::User2;
-    static const KDialog::ButtonCode OpenWith = KDialog::User1;
-    static const KDialog::ButtonCode Cancel = KDialog::Cancel;
+    enum {
+        Save = QDialog::Accepted,
+        OpenDefault = Save + 1,
+        OpenWith = OpenDefault + 1,
+        Cancel = QDialog::Rejected
+    };
 
     BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const QUrl& url, const QString& mimeType)
-        : KDialog(parent), url(url), mimeType(mimeType),
+        : QDialog(parent), url(url), mimeType(mimeType),
           features(0)
     {
         const int spacingHint = style()->pixelMetric(QStyle::PM_DefaultLayoutSpacing);
@@ -79,14 +82,10 @@ public:
         // Use askSave or askEmbedOrSave from filetypesrc
         dontAskConfig = KSharedConfig::openConfig("filetypesrc", KConfig::NoGlobals);
 
-        setCaption(url.host());
-        setButtons(Save | OpenDefault | OpenWith | Cancel);
+        setWindowTitle(url.host());
         setObjectName("questionYesNoCancel");
-        setButtonGuiItem(Save, KStandardGuiItem::saveAs());
-        setButtonGuiItem(Cancel, KStandardGuiItem::cancel());
-        setDefaultButton(Save);
 
-        QVBoxLayout *mainLayout = new QVBoxLayout(mainWidget());
+        QVBoxLayout *mainLayout = new QVBoxLayout(this);
         mainLayout->setSpacing(spacingHint * 2); // provide extra spacing
         mainLayout->setMargin(0);
 
@@ -95,7 +94,7 @@ public:
         hLayout->setSpacing(-1); // use default spacing
         mainLayout->addLayout(hLayout, 5);
 
-        QLabel *iconLabel = new QLabel(mainWidget());
+        QLabel *iconLabel = new QLabel(this);
         QStyleOption option;
         option.initFrom(this);
         QIcon icon = KDE::icon("dialog-information");
@@ -105,10 +104,10 @@ public:
         hLayout->addSpacing(spacingHint);
 
         QVBoxLayout* textVLayout = new QVBoxLayout;
-        questionLabel = new KSqueezedTextLabel(mainWidget());
+        questionLabel = new KSqueezedTextLabel(this);
         textVLayout->addWidget(questionLabel);
 
-        fileNameLabel = new QLabel(mainWidget());
+        fileNameLabel = new QLabel(this);
         fileNameLabel->hide();
         textVLayout->addWidget(fileNameLabel);
 
@@ -118,7 +117,7 @@ public:
             // Always prefer the mime-type comment over the raw type for display
             mimeDescription = (mime.comment().isEmpty() ? mime.name() : mime.comment());
         }
-        mimeTypeLabel = new QLabel(mainWidget());
+        mimeTypeLabel = new QLabel(this);
         mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
         mimeTypeLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
         textVLayout->addWidget(mimeTypeLabel);
@@ -126,9 +125,34 @@ public:
         hLayout->addLayout(textVLayout,5);
 
         mainLayout->addStretch(15);
-        dontAskAgainCheckBox = new QCheckBox(mainWidget());
+        dontAskAgainCheckBox = new QCheckBox(this);
         dontAskAgainCheckBox->setText(i18nc("@label:checkbox", "Remember action for files of this type"));
         mainLayout->addWidget(dontAskAgainCheckBox);
+
+        buttonBox = new QDialogButtonBox(this);
+
+        saveButton = buttonBox->addButton(QDialogButtonBox::Yes);
+        saveButton->setObjectName("saveButton");
+        KGuiItem::assign(saveButton, KStandardGuiItem::saveAs());
+        saveButton->setDefault(true);
+
+        openDefaultButton = new QPushButton;
+        openDefaultButton->setObjectName("openDefaultButton");
+        buttonBox->addButton(openDefaultButton, QDialogButtonBox::ActionRole);
+
+        openWithButton = new QPushButton;
+        openWithButton->setObjectName("openWithButton");
+        buttonBox->addButton(openWithButton, QDialogButtonBox::ActionRole);
+
+        QPushButton *cancelButton = buttonBox->addButton(QDialogButtonBox::Cancel);
+        cancelButton->setObjectName("cancelButton");
+
+        connect(saveButton, SIGNAL(clicked()), this, SLOT(slotYesClicked()));
+        connect(openDefaultButton, SIGNAL(clicked()), this, SLOT(slotOpenDefaultClicked()));
+        connect(openWithButton, SIGNAL(clicked()), this, SLOT(slotOpenWithClicked()));
+        connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+        mainLayout->addWidget(buttonBox);
     }
 
     bool autoEmbedMimeType(int flags);
@@ -150,7 +174,7 @@ public:
         const int result = exec();
 
         if (dontAskAgainCheckBox->isChecked()) {
-            cg.writeEntry(dontShowAgainName, result == Save);
+            cg.writeEntry(dontShowAgainName, result == BrowserOpenOrSaveQuestion::Save);
             cg.sync();
         }
         return result;
@@ -159,7 +183,7 @@ public:
     void showService(KService::Ptr selectedService)
     {
         KGuiItem openItem(i18nc("@label:button", "&Open with %1", selectedService->name()), selectedService->icon());
-        setButtonGuiItem(OpenWith, openItem);
+        KGuiItem::assign(openWithButton, openItem);
     }
 
     QUrl url;
@@ -170,22 +194,41 @@ public:
     BrowserOpenOrSaveQuestion::Features features;
     QLabel* fileNameLabel;
     QLabel* mimeTypeLabel;
+    QDialogButtonBox *buttonBox;
+    QPushButton *saveButton;
+    QPushButton *openDefaultButton;
+    QPushButton *openWithButton;
 
-protected:
-    virtual void slotButtonClicked(int buttonId)
-    {
-        if (buttonId != OpenDefault)
-            selectedService = 0;
-        QPushButton* button = KDialog::button(KDialog::ButtonCode(buttonId));
-        if (button && !button->menu()) {
-            done(buttonId);
-        }
-    }
 private:
     QCheckBox* dontAskAgainCheckBox;
     KSharedConfig::Ptr dontAskConfig;
 
 public Q_SLOTS:
+    virtual void reject()
+    {
+        selectedService = 0;
+        QDialog::reject();
+    }
+
+    void slotYesClicked()
+    {
+        selectedService = 0;
+        done(Save);
+    }
+
+    void slotOpenDefaultClicked()
+    {
+        done(OpenDefault);
+    }
+
+    void slotOpenWithClicked()
+    {
+        if (!openWithButton->menu()) {
+            selectedService = 0;
+            done(OpenWith);
+        }
+    }
+
     void slotAppSelected(QAction* action)
     {
         selectedService = action->data().value<KService::Ptr>();
@@ -221,7 +264,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
 {
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
     d->questionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
-    d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
+    d->openWithButton->hide();
 
     KGuiItem openWithDialogItem(i18nc("@label:button", "&Open with..."), "document-open");
 
@@ -231,21 +274,21 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
     const KService::List apps = KFileItemActions::associatedApplications(QStringList() << d->mimeType,
                                                                          QString() /* TODO trader constraint */);
     if (apps.isEmpty()) {
-        d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openWithDialogItem);
+        KGuiItem::assign(d->openDefaultButton, openWithDialogItem);
     } else {
         KService::Ptr offer = apps.first();
         KGuiItem openItem(i18nc("@label:button", "&Open with %1", offer->name()), offer->icon());
-        d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, openItem);
+        KGuiItem::assign(d->openDefaultButton, openItem);
         if (d->features & ServiceSelection) {
             // OpenDefault shall use this service
             d->selectedService = apps.first();
-            d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, true);
+            d->openWithButton->show();
             KMenu* menu = new KMenu(d);
             if (apps.count() > 1) {
                 // Provide an additional button with a menu of associated apps
                 KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "document-open");
-                d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithItem);
-                d->setButtonMenu(BrowserOpenOrSaveQuestionPrivate::OpenWith, menu, KDialog::InstantPopup);
+                KGuiItem::assign(d->openWithButton, openWithItem);
+                d->openWithButton->setMenu(menu);
                 QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
                 for (KService::List::const_iterator it = apps.begin(); it != apps.end(); ++it) {
                     KAction* act = createAppAction(*it, d);
@@ -257,7 +300,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
                 menu->addAction(openWithDialogAction);
             } else {
                 // Only one associated app, already offered by the other menu -> add "Open With..." button
-                d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenWith, openWithDialogItem);
+                KGuiItem::assign(d->openWithButton, openWithDialogItem);
             }
         } else {
             kDebug() << "Not using new feature ServiceSelection; port the caller to BrowserOpenOrSaveQuestion::setFeature(ServiceSelection)";
@@ -310,8 +353,8 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(int 
         return Embed;
 
     // don't use KStandardGuiItem::open() here which has trailing ellipsis!
-    d->setButtonGuiItem(BrowserOpenOrSaveQuestionPrivate::OpenDefault, KGuiItem(i18nc("@label:button", "&Open"), "document-open"));
-    d->showButton(BrowserOpenOrSaveQuestionPrivate::OpenWith, false);
+    KGuiItem::assign(d->openDefaultButton, KGuiItem(i18nc("@label:button", "&Open"), "document-open"));
+    d->openWithButton->hide();
 
     d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
     d->questionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
