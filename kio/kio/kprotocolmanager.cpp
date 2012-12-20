@@ -131,7 +131,8 @@ class KProtocolManagerPrivate
 public:
    KProtocolManagerPrivate();
    ~KProtocolManagerPrivate();
-    bool shouldIgnoreProxyFor(const QUrl& url);
+   bool shouldIgnoreProxyFor(const QUrl& url);
+   void sync();
 
    KSharedConfig::Ptr config;
    KSharedConfig::Ptr http_config;
@@ -144,13 +145,20 @@ public:
    QMap<QString /*mimetype*/, QString /*protocol*/> protocolForArchiveMimetypes;
 };
 
-// TODO Qt 5.1 uses .destroy
+// TODO port to Q_GLOBAL_STATIC
 K_GLOBAL_STATIC(KProtocolManagerPrivate, kProtocolManagerPrivate)
+
+static void syncOnExit()
+{
+    if (kProtocolManagerPrivate.exists()) {
+        kProtocolManagerPrivate->sync();
+    }
+}
 
 KProtocolManagerPrivate::KProtocolManagerPrivate()
 {
     // post routine since KConfig::sync() breaks if called too late
-    qAddPostRoutine(kProtocolManagerPrivate.destroy);
+    qAddPostRoutine(syncOnExit);
     cachedProxyData.setMaxCost(200); // double the max cost.
 }
 
@@ -234,6 +242,15 @@ bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const QUrl& url)
   return (useRevProxy != isMatch);
 }
 
+void KProtocolManagerPrivate::sync()
+{
+    if (http_config) {
+        http_config->sync();
+    }
+    if (config) {
+        config->sync();
+    }
+}
 
 #define PRIVATE_DATA \
 KProtocolManagerPrivate *d = kProtocolManagerPrivate
