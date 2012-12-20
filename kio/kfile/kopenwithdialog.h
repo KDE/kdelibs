@@ -22,7 +22,7 @@
 
 #include <kio/kio_export.h>
 
-#include <kdialog.h>
+#include <QDialog>
 #include <QUrl>
 #include <kservice.h>
 
@@ -36,7 +36,7 @@ class KOpenWithDialogPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KOpenWithDialog : public KDialog
+class KIO_EXPORT KOpenWithDialog : public QDialog
 {
     Q_OBJECT
 public:

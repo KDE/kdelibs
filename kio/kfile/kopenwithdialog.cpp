@@ -24,6 +24,7 @@
 #include "kopenwithdialog.h"
 #include "kopenwithdialog_p.h"
 
+#include <QDialogButtonBox>
 #include <QtCore/QtAlgorithms>
 #include <QtCore/QList>
 #include <QLabel>
@@ -38,6 +39,7 @@
 #include <kcoreauthorized.h>
 #include <khistorycombobox.h>
 #include <kdesktopfile.h>
+#include <kiconloader.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -475,14 +477,15 @@ public:
     QCheckBox *remember;
     QCheckBox *nocloseonexit;
     KService::Ptr m_pService;
+    QDialogButtonBox *buttonBox;
 };
 
 KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, QWidget* parent )
-    : KDialog(parent), d(new KOpenWithDialogPrivate(this))
+    : QDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
     setObjectName( QLatin1String( "openwith" ) );
     setModal( true );
-    setCaption( i18n( "Open With" ) );
+    setWindowTitle( i18n( "Open With" ) );
 
     QString text;
     if( _urls.count() == 1 )
@@ -500,7 +503,7 @@ KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, QWidget* parent )
 
 KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, const QString&_text,
                             const QString& _value, QWidget *parent)
-    : KDialog(parent), d(new KOpenWithDialogPrivate(this))
+    : QDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
@@ -513,18 +516,18 @@ KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, const QString&_text,
 #endif
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
-  setCaption(caption);
+  setWindowTitle(caption);
     d->setMimeType(_urls);
     d->init(_text, _value);
 }
 
 KOpenWithDialog::KOpenWithDialog( const QString &mimeType, const QString& value,
                             QWidget *parent)
-    : KDialog(parent), d(new KOpenWithDialogPrivate(this))
+    : QDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
-  setCaption(i18n("Choose Application for %1", mimeType));
+  setWindowTitle(i18n("Choose Application for %1", mimeType));
   QString text = i18n("<qt>Select the program for the file type: <b>%1</b>. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>", mimeType);
@@ -536,11 +539,11 @@ KOpenWithDialog::KOpenWithDialog( const QString &mimeType, const QString& value,
 }
 
 KOpenWithDialog::KOpenWithDialog( QWidget *parent)
-    : KDialog(parent), d(new KOpenWithDialogPrivate(this))
+    : QDialog(parent), d(new KOpenWithDialogPrivate(this))
 {
   setObjectName( QLatin1String( "openwith" ) );
   setModal( true );
-  setCaption(i18n("Choose Application"));
+  setWindowTitle(i18n("Choose Application"));
   QString text = i18n("<qt>Select a program. "
                       "If the program is not listed, enter the name or click "
                       "the browse button.</qt>");
@@ -569,12 +572,8 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     m_pService = 0;
     curService = 0;
 
-    q->setButtons(KDialog::Ok | KDialog::Cancel);
-
-    QWidget *mainWidget = q->mainWidget();
-
-  QBoxLayout *topLayout = new QVBoxLayout( mainWidget );
-  topLayout->setMargin(0);
+  QBoxLayout *topLayout = new QVBoxLayout;
+  q->setLayout(topLayout);
     label = new QLabel(_text, q);
   label->setWordWrap(true);
   topLayout->addWidget(label);
@@ -595,11 +594,11 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     combo->setCompletionMode((KGlobalSettings::Completion)mode);
     const QStringList list = cg.readEntry( "History", QStringList() );
     combo->setHistoryItems( list, true );
-    edit = new KUrlRequester( combo, mainWidget );
+    edit = new KUrlRequester(combo, q);
   }
   else
   {
-    edit = new KUrlRequester( mainWidget );
+    edit = new KUrlRequester(q);
     edit->lineEdit()->setReadOnly(true);
     edit->button()->hide();
   }
@@ -629,7 +628,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     QObject::connect(edit, SIGNAL(textChanged(QString)), q, SLOT(slotTextChanged()));
     QObject::connect(edit, SIGNAL(urlSelected(QUrl)), q, SLOT(_k_slotFileSelected()));
 
-    view = new KApplicationView(mainWidget);
+    view = new KApplicationView(q);
     view->setModel(new KApplicationModel(view));
     topLayout->addWidget(view);
     topLayout->setStretchFactor(view, 1);
@@ -641,7 +640,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     QObject::connect(view, SIGNAL(doubleClicked(QModelIndex)),
                      q, SLOT(_k_slotDbClick()));
 
-  terminal = new QCheckBox( i18n("Run in &terminal"), mainWidget );
+  terminal = new QCheckBox(i18n("Run in &terminal"), q);
   if (bReadOnly)
      terminal->hide();
     QObject::connect(terminal, SIGNAL(toggled(bool)), q, SLOT(slotTerminalToggled(bool)));
@@ -658,7 +657,7 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
   QSpacerItem* spacer = new QSpacerItem( checkBoxIndentation, 0, QSizePolicy::Fixed, QSizePolicy::Minimum );
   nocloseonexitLayout->addItem( spacer );
 
-  nocloseonexit = new QCheckBox( i18n("&Do not close when command exits"), mainWidget );
+  nocloseonexit = new QCheckBox(i18n("&Do not close when command exits"), q);
   nocloseonexit->setChecked( false );
   nocloseonexit->setDisabled( true );
 
@@ -675,12 +674,18 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
 
   if (!qMimeType.isNull())
   {
-    remember = new QCheckBox(i18n("&Remember application association for this type of file"), mainWidget);
+    remember = new QCheckBox(i18n("&Remember application association for this type of file"), q);
     //    remember->setChecked(true);
     topLayout->addWidget(remember);
   }
   else
     remember = 0L;
+
+  buttonBox = new QDialogButtonBox(q);
+  buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+  q->connect(buttonBox, SIGNAL(accepted()), q, SLOT(accept()));
+  q->connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+  topLayout->addWidget(buttonBox);
 
   q->setMinimumSize(q->minimumSizeHint());
   //edit->setText( _value );
@@ -731,7 +736,7 @@ void KOpenWithDialog::slotTextChanged()
 {
     // Forget about the service
     d->curService = 0L;
-    enableButton(Ok, !d->edit->text().isEmpty());
+    d->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(!d->edit->text().isEmpty());
 }
 
 // ----------------------------------------------------------------------
@@ -941,7 +946,7 @@ bool KOpenWithDialogPrivate::checkAccept()
 void KOpenWithDialog::accept()
 {
     if (d->checkAccept())
-        KDialog::accept();
+        QDialog::accept();
 }
 
 QString KOpenWithDialog::text() const
