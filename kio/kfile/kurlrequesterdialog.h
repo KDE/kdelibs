@@ -22,7 +22,7 @@
 #define KURLREQUESTERDIALOG_H
 
 #include <kio/kio_export.h>
-#include <kdialog.h>
+#include <QDialog>
 #include <QUrl>
 
 class KUrlRequester;
@@ -36,7 +36,7 @@ class KUrlRequesterDialogPrivate;
  * @short Simple dialog to enter a filename/url.
  * @author Wilco Greven <greven@kde.org>
  */
-class KIO_EXPORT KUrlRequesterDialog : public KDialog
+class KIO_EXPORT KUrlRequesterDialog : public QDialog
 {
     Q_OBJECT
 

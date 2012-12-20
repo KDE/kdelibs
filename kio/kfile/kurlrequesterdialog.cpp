@@ -19,6 +19,7 @@
 
 #include "kurlrequesterdialog.h"
 
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
 
@@ -46,24 +47,20 @@ public:
     void _k_slotTextChanged(const QString &);
 
     KUrlRequester *urlRequester;
+    QDialogButtonBox *buttonBox;
+    QPushButton *clearButton;
 };
 
 
 KUrlRequesterDialog::KUrlRequesterDialog( const QUrl& urlName, QWidget *parent)
-    : KDialog(parent), d(new KUrlRequesterDialogPrivate(this))
+    : QDialog(parent), d(new KUrlRequesterDialogPrivate(this))
 {
-  setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStandardGuiItem::clear() );
-
     d->initDialog(i18n("Location:"), urlName);
 }
 
 KUrlRequesterDialog::KUrlRequesterDialog( const QUrl& urlName, const QString& _text, QWidget *parent)
-    : KDialog(parent), d(new KUrlRequesterDialogPrivate(this))
+    : QDialog(parent), d(new KUrlRequesterDialogPrivate(this))
 {
-  setButtons( Ok | Cancel | User1 );
-  setButtonGuiItem( User1, KStandardGuiItem::clear() );
-
     d->initDialog(_text, urlName);
 }
 
@@ -74,36 +71,43 @@ KUrlRequesterDialog::~KUrlRequesterDialog()
 
 void KUrlRequesterDialogPrivate::initDialog(const QString &text,const QUrl &urlName)
 {
-    q->setDefaultButton(KDialog::Ok);
-    QWidget *plainPage = q->mainWidget();
-    QVBoxLayout * topLayout = new QVBoxLayout( plainPage );
-    topLayout->setMargin( 0 );
+    QVBoxLayout *topLayout = new QVBoxLayout;
+    q->setLayout(topLayout);
 
-    QLabel * label = new QLabel( text , plainPage );
+    QLabel *label = new QLabel(text, q);
     topLayout->addWidget( label );
 
-    urlRequester = new KUrlRequester(urlName, plainPage);
+    urlRequester = new KUrlRequester(urlName, q);
     urlRequester->setMinimumWidth(urlRequester->sizeHint().width() * 3);
     topLayout->addWidget(urlRequester);
     urlRequester->setFocus();
     QObject::connect(urlRequester->lineEdit(), SIGNAL(textChanged(QString)),
                      q, SLOT(_k_slotTextChanged(QString)));
-    bool state = !urlName.isEmpty();
-    q->enableButtonOk(state);
-    q->enableButton(KDialog::User1, state);
     /*
     KFile::Mode mode = static_cast<KFile::Mode>( KFile::File |
             KFile::ExistingOnly );
 	urlRequester_->setMode( mode );
     */
-    QObject::connect(q, SIGNAL(user1Clicked()), q, SLOT(_k_slotClear()));
+
+    clearButton = new QPushButton;
+    KGuiItem::assign(clearButton, KStandardGuiItem::clear());
+    QObject::connect(clearButton, SIGNAL(clicked()), q, SLOT(_k_slotClear()));
+
+    buttonBox = new QDialogButtonBox(q);
+    buttonBox->addButton(clearButton, QDialogButtonBox::ActionRole);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(buttonBox, SIGNAL(accepted()), q, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+    topLayout->addWidget(buttonBox);
+
+    _k_slotTextChanged(urlName.toString());
 }
 
 void KUrlRequesterDialogPrivate::_k_slotTextChanged(const QString & text)
 {
     bool state = !text.trimmed().isEmpty();
-    q->enableButtonOk(state);
-    q->enableButton(KDialog::User1, state);
+    buttonBox->button(QDialogButtonBox::Ok)->setEnabled(state);
+    clearButton->setEnabled(state);
 }
 
 void KUrlRequesterDialogPrivate::_k_slotClear()
@@ -125,7 +129,7 @@ QUrl KUrlRequesterDialog::getUrl(const QUrl& dir, QWidget *parent,
 {
     KUrlRequesterDialog dlg(dir, parent);
 
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Open") : caption);
 
     dlg.exec();
 

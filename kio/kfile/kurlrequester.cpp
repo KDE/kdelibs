@@ -21,6 +21,7 @@
 #include <kcombobox.h>
 #include <kdragwidgetdecorator.h>
 #include <kfiledialog.h>
+#include <kiconloader.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kurlcompletion.h>
