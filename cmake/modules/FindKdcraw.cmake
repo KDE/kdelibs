@@ -77,36 +77,37 @@ else (KDCRAW_INCLUDE_DIR AND KDCRAW_LIBRARIES AND KDCRAW_DEFINITIONS AND KDCRAW_
       # in the find_path() and find_library() calls
       include(FindPkgConfig)
 
-      pkg_search_module(KDCRAW libkdcraw)
+      pkg_check_modules(PC_KDCRAW libkdcraw)
 
-      if (KDCRAW_FOUND)
+      if (PC_KDCRAW_FOUND)
         # make sure the version is >= 0.2.0
         # TODO: WHY?
-        if (KDCRAW_VERSION VERSION_LESS 0.2.0)
+        if (PC_KDCRAW_VERSION VERSION_LESS 0.2.0)
           message(STATUS "Found libkdcraw release < 0.2.0, too old")
           set(KDCRAW_VERSION_GOOD_FOUND FALSE)
           set(KDCRAW_FOUND FALSE)
-        else (KDCRAW_VERSION VERSION_LESS 0.2.0)
+        else (PC_KDCRAW_VERSION VERSION_LESS 0.2.0)
+          set(KDCRAW_VERSION "${PC_KDCRAW_VERSION}")
           if (NOT Kdcraw_FIND_QUIETLY)
             message(STATUS "Found libkdcraw release ${KDCRAW_VERSION}")
           endif (NOT Kdcraw_FIND_QUIETLY)
           set(KDCRAW_VERSION_GOOD_FOUND TRUE)
-        endif (KDCRAW_VERSION VERSION_LESS 0.2.0)
-      else (KDCRAW_FOUND)
+        endif (PC_KDCRAW_VERSION VERSION_LESS 0.2.0)
+      else (PC_KDCRAW_FOUND)
         set(KDCRAW_VERSION_GOOD_FOUND FALSE)
-      endif (KDCRAW_FOUND)
+      endif (PC_KDCRAW_FOUND)
     else (NOT WIN32)
       # TODO: Why do we just assume the version is good?
       set(KDCRAW_VERSION_GOOD_FOUND TRUE)
     endif (NOT WIN32)
 
     if (KDCRAW_VERSION_GOOD_FOUND)
-      set(KDCRAW_DEFINITIONS "${KDCRAW_CFLAGS}")
+      set(KDCRAW_DEFINITIONS "${PC_KDCRAW_CFLAGS_OTHER}")
 
-      find_path(KDCRAW_INCLUDE_DIR libkdcraw/version.h ${KDCRAW_INCLUDEDIR})
+      find_path(KDCRAW_INCLUDE_DIR libkdcraw/version.h ${PC_KDCRAW_INCLUDE_DIRS})
       set(kdcraw_version_h_filename "${KDCRAW_INCLUDE_DIR}/libkdcraw/version.h")
 
-      find_library(KDCRAW_LIBRARIES NAMES kdcraw PATHS ${KDCRAW_LIBDIR})
+      find_library(KDCRAW_LIBRARIES NAMES kdcraw HINTS ${PC_KDCRAW_LIBRARY_DIRS})
 
       if (KDCRAW_INCLUDE_DIR AND KDCRAW_LIBRARIES)
         set(KDCRAW_FOUND TRUE)
