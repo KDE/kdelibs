@@ -27,7 +27,7 @@
 #ifndef KFILEDIALOG_H
 #define KFILEDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kfile.h>
 #include <kurl.h>
 #include <qmimetype.h>
@@ -65,7 +65,7 @@ class KFileDialogPrivate;
  *
  * @author Richard J. Moore <rich@kde.org>, Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KFileDialog : public KDialog
+class KIO_EXPORT KFileDialog : public QDialog
 {
     Q_OBJECT
 
@@ -758,7 +758,7 @@ Q_SIGNALS:
     /**
       * Emitted when the user selects a file. It is only emitted in single-
       * selection mode. The best way to get notified about selected file(s)
-      * is to connect to the okClicked() signal inherited from KDialog
+      * is to connect to the accepted() signal inherited from QDialog
       * and call selectedFile(), selectedFiles(),
       * selectedUrl() or selectedUrls().
       *

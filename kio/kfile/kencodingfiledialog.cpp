@@ -40,7 +40,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QUrl& startDir, const QString& en
                                          const QString& caption, KFileDialog::OperationMode type, QWidget *parent)
    : KFileDialog(startDir,filter,parent), d(new KEncodingFileDialogPrivate)
 {
-  setCaption(caption);
+  setWindowTitle(caption);
   //ops->clearHistory();
 
   setOperationMode( type );

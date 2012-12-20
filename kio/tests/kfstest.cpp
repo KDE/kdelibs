@@ -117,7 +117,7 @@ int main(int argc, char **argv)
                                        QLatin1String("KDE FTP Server") );
         }
 #endif
-        if ( dlg->exec() == KDialog::Accepted )
+        if ( dlg->exec() == QDialog::Accepted )
             name1 = dlg->selectedUrl().toString();
     }
 

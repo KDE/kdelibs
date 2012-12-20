@@ -43,7 +43,7 @@ int main (int argc, char **argv)
     //     - Should have no entered file name.
     KFileDialog keywordDlg(KUrl("kfiledialog:///testKeyword"), QString("*.*|"), 0);
     keywordDlg.setMode(KFile::Files);
-    keywordDlg.setCaption(QString("Test for keyword with no file name"));
+    keywordDlg.setWindowTitle(QString("Test for keyword with no file name"));
     keywordDlg.exec();
 
     // Test for: saved location keyword with file name.
@@ -51,13 +51,13 @@ int main (int argc, char **argv)
     //     - Should enter the file name 'new.file'.
     KFileDialog keywordDlg2(KUrl("kfiledialog:///testKeyword/new.file"), QString("*.*|"), 0);
     keywordDlg2.setMode(KFile::Files);
-    keywordDlg2.setCaption(QString("Test for keyword and file name"));
+    keywordDlg2.setWindowTitle(QString("Test for keyword and file name"));
     keywordDlg2.exec();
 
     // bug 173137
     KFileDialog dlg(KUrl(QString()), QString("*.*|"), 0);
     dlg.setMode(KFile::Files | KFile::Directory);
-    dlg.setCaption(QString("Test for bug 173137"));
+    dlg.setWindowTitle(QString("Test for bug 173137"));
     dlg.exec();
     QList<QUrl> selectedUrls = dlg.selectedUrls();
     if (selectedUrls.count()) {

@@ -32,6 +32,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QPushButton>
+#include <QVBoxLayout>
 #include <qmimedatabase.h>
 
 #include <kimageio.h>
@@ -255,9 +256,9 @@ bool KFileDialogPrivate::Native::s_allowNative = true;
 KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
                          QWidget *parent, QWidget* customWidget)
 #ifdef Q_OS_WIN
-    : KDialog( parent , Qt::WindowMinMaxButtonsHint),
+    : QDialog( parent , Qt::WindowMinMaxButtonsHint),
 #else
-    : KDialog( parent ),
+    : QDialog( parent ),
 #endif
       d( new KFileDialogPrivate )
 
@@ -279,12 +280,13 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
         return;
     }
 
-    setButtons( KDialog::None );
     KWindowConfig::restoreWindowSize(this, d->cfgGroup); // call this before the fileQWidget is set as the main widget.
                                                            // otherwise the sizes for the components are not obeyed (ereslibre)
 
     d->w->setFilter(filter);
-    setMainWidget(fileQWidget);
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(fileQWidget);
+    setLayout(layout);
 
     d->w->okButton()->show();
     connect(d->w->okButton(), SIGNAL(clicked()), SLOT(slotOk()));
@@ -428,8 +430,7 @@ void KFileDialog::accept()
     setResult( QDialog::Accepted ); // keep old behavior; probably not needed though
     d->w->accept();
     KConfigGroup cfgGroup(KSharedConfig::openConfig(), ConfigGroup);
-    KDialog::accept();
-    emit okClicked();
+    QDialog::accept();
 }
 
 // This slot still exists mostly for compat purposes; for subclasses which reimplement slotCancel
@@ -487,7 +488,7 @@ QString KFileDialogPrivate::getOpenFileName(const QUrl& startDir,
 
     dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::File | KFile::LocalOnly | KFile::ExistingOnly );
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Open") : caption);
 
     dlg.exec();
     if(selectedFilter) *selectedFilter = dlg.currentMimeFilter();
@@ -508,7 +509,7 @@ QString KFileDialog::getOpenFileNameWId(const QUrl& startDir,
 
     dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::File | KFile::LocalOnly | KFile::ExistingOnly );
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Open") : caption);
 
     dlg.exec();
 
@@ -542,7 +543,7 @@ QStringList KFileDialogPrivate::getOpenFileNames(const QUrl& startDir,
 
     dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode(KFile::Files | KFile::LocalOnly | KFile::ExistingOnly);
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Open") : caption);
 
     dlg.exec();
     if(selectedFilter) *selectedFilter = dlg.currentMimeFilter();
@@ -568,7 +569,7 @@ QUrl KFileDialogPrivate::getOpenUrl(const QUrl& startDir, const QString& filter,
 
     dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::File | KFile::ExistingOnly );
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Open") : caption);
 
     dlg.exec();
     if(selectedFilter) *selectedFilter = dlg.currentMimeFilter();
@@ -603,7 +604,7 @@ QList<QUrl> KFileDialogPrivate::getOpenUrls(const QUrl& startDir,
 
     dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::Files | KFile::ExistingOnly );
-    dlg.setCaption(caption.isEmpty() ? i18n("Open") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Open") : caption);
 
     dlg.exec();
     if(selectedFilter) *selectedFilter = dlg.currentMimeFilter();
@@ -658,7 +659,7 @@ QUrl KFileDialog::getImageOpenUrl(const QUrl& startDir, QWidget *parent,
 
     dlg.setOperationMode( KFileDialog::Opening );
     dlg.setMode( KFile::File | KFile::ExistingOnly );
-    dlg.setCaption( caption.isEmpty() ? i18n("Open") : caption );
+    dlg.setWindowTitle( caption.isEmpty() ? i18n("Open") : caption );
     dlg.setInlinePreviewShown( true );
 
     dlg.exec();
@@ -763,7 +764,7 @@ QString KFileDialogPrivate::getSaveFileName(const QUrl& dir, const QString& filt
     dlg.setMode( KFile::File | KFile::LocalOnly );
     dlg.setConfirmOverwrite(options & KFileDialog::ConfirmOverwrite);
     dlg.setInlinePreviewShown(options & KFileDialog::ShowInlinePreview);
-    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
 
@@ -800,7 +801,7 @@ QString KFileDialog::getSaveFileNameWId(const QUrl& dir, const QString& filter,
     dlg.setMode( KFile::File | KFile::LocalOnly );
     dlg.setConfirmOverwrite(options & ConfirmOverwrite);
     dlg.setInlinePreviewShown(options & ShowInlinePreview);
-    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
 
@@ -843,7 +844,7 @@ QUrl KFileDialogPrivate::getSaveUrl(const QUrl& dir, const QString& filter,
     dlg.setMode( KFile::File );
     dlg.setConfirmOverwrite(options & KFileDialog::ConfirmOverwrite);
     dlg.setInlinePreviewShown(options & KFileDialog::ShowInlinePreview);
-    dlg.setCaption(caption.isEmpty() ? i18n("Save As") : caption);
+    dlg.setWindowTitle(caption.isEmpty() ? i18n("Save As") : caption);
 
     dlg.exec();
     if(selectedFilter) *selectedFilter = dlg.currentMimeFilter();
@@ -934,7 +935,7 @@ void KFileDialog::keyPressEvent( QKeyEvent *e )
         d->w->cancelButton()->animateClick();
     }
     else
-        KDialog::keyPressEvent( e );
+        QDialog::keyPressEvent( e );
 }
 
 void KFileDialog::hideEvent( QHideEvent *e )
@@ -944,7 +945,7 @@ void KFileDialog::hideEvent( QHideEvent *e )
 
     KWindowConfig::saveWindowSize(this, d->cfgGroup, KConfigBase::Persistent);
 
-    KDialog::hideEvent( e );
+    QDialog::hideEvent( e );
 }
 
 // static
@@ -976,7 +977,7 @@ int KFileDialog::exec()
 {
     if (!d->native || !KFileDialogPrivate::Native::s_allowNative) {
         KFileDialogPrivate::Native::s_allowNative = true;
-        return KDialog::exec();
+        return QDialog::exec();
     }
 
 // not clear here to let KFileDialogPrivate::Native::startDir() return a useful value
@@ -1210,7 +1211,7 @@ public:
 
         dlg.setOperationMode(KFileDialog::Opening);
         dlg.setMode(KFile::File|KFile::LocalOnly);
-        dlg.setCaption(caption);
+        dlg.setWindowTitle(caption);
         dlg.exec();
 
         QString rv(dlg.selectedFile());
@@ -1236,7 +1237,7 @@ public:
 
         dlg.setOperationMode(KFileDialog::Opening);
         dlg.setMode(KFile::Files|KFile::LocalOnly);
-        dlg.setCaption(caption);
+        dlg.setWindowTitle(caption);
         dlg.exec();
 
         QStringList rv(dlg.selectedFiles());
@@ -1262,7 +1263,7 @@ public:
 
         dlg.setOperationMode(KFileDialog::Saving);
         dlg.setMode(KFile::File|KFile::LocalOnly);
-        dlg.setCaption(caption);
+        dlg.setWindowTitle(caption);
         dlg.setConfirmOverwrite(!(options & QFileDialog::DontConfirmOverwrite));
         dlg.exec();
 

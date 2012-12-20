@@ -22,7 +22,7 @@ void KFDTest::doit()
     filter << "all/allfiles" << "text/plain";
     dlg->setMimeFilter( filter, "all/allfiles" );
 
-    if ( dlg->exec() == KDialog::Accepted )
+    if ( dlg->exec() == QDialog::Accepted )
     {
         KMessageBox::information(0, QString::fromLatin1("You selected the file: %1").arg(dlg->selectedUrl().toString()));
     }

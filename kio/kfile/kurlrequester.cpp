@@ -308,7 +308,7 @@ void KUrlRequester::changeEvent(QEvent *e)
 {
    if (e->type()==QEvent::WindowTitleChange) {
      if (d->myFileDialog) {
-        d->myFileDialog->setCaption(windowTitle());
+        d->myFileDialog->setWindowTitle(windowTitle());
      }
    }
    QWidget::changeEvent(e);
@@ -443,7 +443,7 @@ KFileDialog * KUrlRequester::fileDialog() const
         QWidget *p = parentWidget();
         d->myFileDialog = new KFileDialog(QUrl(), d->fileDialogFilter, p);
         d->myFileDialog->setMode(d->fileDialogMode);
-        d->myFileDialog->setCaption(windowTitle());
+        d->myFileDialog->setWindowTitle(windowTitle());
         d->myFileDialog->setWindowModality(d->fileDialogModality);
         connect(d->myFileDialog, SIGNAL(finished()), SLOT(_k_slotFileDialogFinished()));
     }
