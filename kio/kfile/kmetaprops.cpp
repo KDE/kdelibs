@@ -19,7 +19,6 @@
 #include "kmetaprops.h"
 #include "kpropertiesdialog_p.h"
 
-#include <kdialog.h>
 #include <kfileitem.h>
 #include <kfilemetadatawidget.h>
 #include <kfilemetadataconfigurationwidget.h>
@@ -27,6 +26,8 @@
 #include <ksharedconfig.h>
 #include <kwindowconfig.h>
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QtCore/QPointer>
 #include <QLabel>
 #include <QScrollArea>
@@ -55,10 +56,8 @@ KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::~KFileMetaPropsPluginPrivate(
 
 void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
 {
-    QPointer<KDialog> dialog = new KDialog();
-    dialog->setCaption(i18nc("@title:window", "Configure Shown Data"));
-    dialog->setButtons(KDialog::Ok | KDialog::Cancel);
-    dialog->setDefaultButton(KDialog::Ok);
+    QPointer<QDialog> dialog = new QDialog();
+    dialog->setWindowTitle(i18nc("@title:window", "Configure Shown Data"));
 
     QLabel* descriptionLabel  = new QLabel(i18nc("@label::textbox",
                                                  "Select which data should "
@@ -69,11 +68,16 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
     const KFileItemList items = m_fileMetaDataWidget->items();
     configWidget->setItems(items);
 
-    QWidget* mainWidget = new QWidget(dialog);
-    QVBoxLayout* topLayout = new QVBoxLayout(mainWidget);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox();
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+
+    QVBoxLayout* topLayout = new QVBoxLayout;
     topLayout->addWidget(descriptionLabel);
     topLayout->addWidget(configWidget);
-    dialog->setMainWidget(mainWidget);
+    topLayout->addWidget(buttonBox);
+    dialog->setLayout(topLayout);
 
     KConfigGroup dialogConfig(KSharedConfig::openConfig(), "KFileMetaPropsPlugin");
     KWindowConfig::restoreWindowSize(dialog, dialogConfig);
