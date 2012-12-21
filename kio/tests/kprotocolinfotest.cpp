@@ -48,6 +48,9 @@ void KProtocolInfoTest::testBasic()
     QVERIFY( KProtocolInfo::isKnownProtocol(QUrl("http:/")) );
     QVERIFY( KProtocolInfo::isKnownProtocol(QUrl("file:/")) );
     QCOMPARE(KProtocolInfo::exec("file"), QString::fromLatin1("kio_file"));
+    QCOMPARE(KProtocolInfo::protocolClass("file"), QString::fromLatin1(":local"));
+
+    QCOMPARE(KProtocolInfo::protocolClass("http"), QString::fromLatin1(":internet"));
 
     QVERIFY( KProtocolManager::supportsListing( QUrl( "ftp://10.1.1.10") ) );
 
