@@ -2724,8 +2724,11 @@ void KDirLister::setDelayedMimeTypes( bool delayedMimeTypes )
 void KDirLister::Private::redirect(const QUrl& oldUrl, const QUrl& newUrl, bool keepItems)
 {
     if (QUrlPathInfo(url).equals(oldUrl, QUrlPathInfo::CompareWithoutTrailingSlash)) {
-        if (!keepItems)
+        if (!keepItems) {
             rootFileItem = KFileItem();
+        } else {
+            rootFileItem.setUrl(newUrl);
+        }
         url = newUrl;
     }
 

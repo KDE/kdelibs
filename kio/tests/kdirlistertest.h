@@ -106,6 +106,7 @@ private Q_SLOTS:
     void testOpenUrlTwiceWithKeep();
     void testOpenAndStop();
     void testBug211472();
+    void testRenameCurrentDir();
     void testRedirection();
     void testDeleteCurrentDir(); // must be last!
 
