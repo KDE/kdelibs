@@ -153,7 +153,7 @@ namespace KIO
         }
 
     private:
-        Q_DISABLE_COPY(NameLookupThreadRequest);
+        Q_DISABLE_COPY(NameLookupThreadRequest)
         QString m_hostName;
         QSemaphore m_semaphore;
         QHostInfo m_hostInfo;
