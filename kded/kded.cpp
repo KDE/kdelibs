@@ -82,6 +82,11 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    Q_ASSERT(!exe.isEmpty());
    QStringList args;
    args.append("--incremental");
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    if (QStandardPaths::isTestModeEnabled()) {
+        args.append("--testmode");
+    }
+#endif
    if(checkStamps)
       args.append("--checkstamps");
    if(delayedCheck)
