@@ -83,7 +83,7 @@ case 1:
   i = KMessageBox::warningContinueCancel(w, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", false);
+                "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", 0);
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
@@ -133,7 +133,7 @@ case 7:
   i = KMessageBox::warningContinueCancel(0, 
                 "You are about to <Print>.\n"
 		"Are you sure?",
-                "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", false);
+                "Print", KGuiItem( QLatin1String("&Print") ), KStandardGuiItem::cancel(), "dontask", 0);
   break;
 
 case 8:

@@ -63,7 +63,7 @@ void DeviceBackend::destroyBackend(const QString& udi)
 DeviceBackend::DeviceBackend(const QString& udi)
     : m_udi(udi)
 {
-    qDebug() << "Creating backend for device" << m_udi;
+    //qDebug() << "Creating backend for device" << m_udi;
     m_device = new QDBusInterface(UD2_DBUS_SERVICE, m_udi,
                                   QString(), // no interface, we aggregate them
                                   QDBusConnection::systemBus(), this);
@@ -82,7 +82,7 @@ DeviceBackend::DeviceBackend(const QString& udi)
 
 DeviceBackend::~DeviceBackend()
 {
-    qDebug() << "Destroying backend for device" << m_udi;
+    //qDebug() << "Destroying backend for device" << m_udi;
 }
 
 void DeviceBackend::initInterfaces()
@@ -108,7 +108,7 @@ void DeviceBackend::initInterfaces()
         }
     }
 
-    qDebug() << m_udi << "has interfaces:" << m_interfaces;
+    //qDebug() << m_udi << "has interfaces:" << m_interfaces;
 }
 
 QStringList DeviceBackend::interfaces() const
@@ -190,14 +190,14 @@ void DeviceBackend::checkCache(const QString& key) const
 
 void DeviceBackend::slotPropertiesChanged(const QString& ifaceName, const QVariantMap& changedProps, const QStringList& invalidatedProps)
 {
-    qDebug() << m_udi << "'s interface" << ifaceName << "changed props:";
+    //qDebug() << m_udi << "'s interface" << ifaceName << "changed props:";
 
     QMap<QString, int> changeMap;
 
     Q_FOREACH(const QString & key, invalidatedProps) {
         m_propertyCache.remove(key);
         changeMap.insert(key, Solid::GenericInterface::PropertyRemoved);
-        qDebug() << "\t invalidated:" << key;
+        //qDebug() << "\t invalidated:" << key;
     }
 
     QMapIterator<QString, QVariant> i(changedProps);
@@ -206,7 +206,7 @@ void DeviceBackend::slotPropertiesChanged(const QString& ifaceName, const QVaria
         const QString key = i.key();
         m_propertyCache.insert(key, i.value());  // replace the value
         changeMap.insert(key, Solid::GenericInterface::PropertyModified);
-        qDebug() << "\t modified:" << key << ":" << m_propertyCache.value(key);
+        //qDebug() << "\t modified:" << key << ":" << m_propertyCache.value(key);
     }
 
     Q_EMIT propertyChanged(changeMap);
