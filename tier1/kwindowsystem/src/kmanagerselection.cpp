@@ -28,7 +28,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QtCore/QObject>
 #include <QtCore/QBasicTimer>
+#include <QtCore/QCoreApplication>
 #include <QTimerEvent>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QAbstractNativeEventFilter>
+#endif
 
 #include <qx11info_x11.h>
 #include <qwidget.h>
@@ -60,7 +64,7 @@ static xcb_atom_t intern_atom(xcb_connection_t *c, const char *name)
 }
 
 class KSelectionOwner::Private
-#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     : public QAbstractNativeEventFilter
 #endif
 {
@@ -79,7 +83,7 @@ public:
           force_kill(false),
           owner(owner_P)
     {
-#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QCoreApplication::instance()->installNativeEventFilter(this);
 #endif
     }
@@ -530,7 +534,7 @@ xcb_atom_t KSelectionOwner::Private::xa_timestamp = XCB_NONE;
 
 
 class KSelectionWatcher::Private
-#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     : public QAbstractNativeEventFilter
 #endif
 {
@@ -541,7 +545,7 @@ public:
           selection_owner(XCB_NONE),
           watcher(watcher_P)
     {
-#if QT_VERSION > QT_VERSION_CHECK(5, 0, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QCoreApplication::instance()->installNativeEventFilter(this);
 #endif
     }
