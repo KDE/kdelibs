@@ -165,7 +165,6 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     if (kmailservice.isEmpty()) kmailservice = "kmailservice";
     if (!kdeinit.isEmpty()) {
         QVERIFY(!kmailservice.isEmpty());
-        QVERIFY(kmailservice.contains("kde4/libexec"));
     }
 
     QTest::newRow("%U l0") << "kdeinit4 %U" << l0 << false << kdeinit;
