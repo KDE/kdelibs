@@ -25,8 +25,7 @@
 #include "spellerplugin_p.h"
 
 #include <kconfig.h>
-#include <klocale.h>
-#include <QLocale>
+#include <QtCore/QLocale>
 #include <QSet>
 #include <QDebug>
 
@@ -274,23 +273,15 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
 
     foreach(QString tag, lst) { // krazy:exclude=foreach (no const& because tag is modified below)
         tag = tag.mid(0, tag.indexOf(QLatin1Char('-')));
-        int underscorePos = tag.indexOf(QLatin1Char('_'));
-        QString cIsoName, lIsoName;
-	if (underscorePos != -1 && underscorePos <= 3) {
-            cIsoName = tag.mid(underscorePos + 1, 2);
-            lIsoName = tag.left(underscorePos);
-	}  else {
-            lIsoName = tag;
-        }
         QLocale loc(tag);
         QString description;
 
-        if (!cIsoName.isEmpty())
+        if (!loc.nativeCountryName().isEmpty())
             description= QString::fromLatin1("%1 (%2)")
-                         .arg(KLocale::global()->languageCodeToName(lIsoName))
-                         .arg(KLocale::global()->countryCodeToName(cIsoName));
+                         .arg(loc.nativeLanguageName())
+                         .arg(loc.nativeCountryName());
         else
-            description= KLocale::global()->languageCodeToName(lIsoName);
+            description= loc.nativeLanguageName();
         //qDebug()<<"Dict is "<<tag<<" ( "<<loc.name()<<")"<<", descr = "<<description;
         langs.insert(description, tag);
     }

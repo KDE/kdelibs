@@ -25,10 +25,10 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
 
 #include <QtCore/QMap>
 #include <QtCore/QMutableStringListIterator>
+#include <QtCore/QLocale>
 
 namespace Sonnet
 {
@@ -227,7 +227,7 @@ void Settings::restore(KConfig *config)
     d->defaultClient = conf.readEntry("defaultClient",
                                       QString());
     d->defaultLanguage = conf.readEntry(
-        "defaultLanguage", KLocale::global()->language());
+        "defaultLanguage", QLocale::system().bcp47Name());
 
     //same defaults are in the default filter (filter.cpp)
     d->checkUppercase = conf.readEntry(

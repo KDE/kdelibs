@@ -2,6 +2,7 @@
 /**
  *
  * Copyright (C)  2003  Zack Rusin <zack@kde.org>
+ * Copyright (C)  2012  Martin Sandsmark <martin.sandsmark@kde.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +24,6 @@
 #include "client_p.h"
 #include "spellerplugin_p.h"
 
-#include <klocale.h>
 #include <kservicetypetrader.h>
 #include <kpluginloader.h>
 
@@ -31,6 +31,8 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QMap>
+#include <QtCore/QLocale>
+#include <QtCore/QCoreApplication>
 #include <QDebug>
 
 #define DEFAULT_CONFIG_FILE   "sonnetrc"
@@ -131,15 +133,14 @@ QStringList Loader::languages() const
 QString Loader::languageNameForCode(const QString &langCode) const
 {
     QString currentDictionary = langCode,   // e.g. en_GB-ize-wo_accents
-        lISOName,            // language ISO name
-        cISOName,            // country ISO name
+        isoCode,            // locale ISO name
         variantName,         // dictionary variant name e.g. w_accents
         localizedLang,       // localized language
-        localizedCountry;    // localized country
+        localizedCountry,    // localized country
+        localizedVariant;
     QByteArray variantEnglish; // dictionary variant in English
 
-    int underscorePos,     // position of "_" char
-        minusPos,          // position of "-" char
+    int minusPos,          // position of "-" char
         variantCount = 0;  // used to iterate over variantList
 
     struct variantListType
@@ -147,59 +148,44 @@ QString Loader::languageNameForCode(const QString &langCode) const
         const char* variantShortName;
         const char* variantEnglishName;
     };
+    
+/*
+ * This redefines the QT_TRANSLATE_NOOP3 macro provided by Qt to indicate that
+ * statically initialised text should be translated so that it expands to just
+ * the string that should be translated, making it possible to use it in the
+ * single string construct below.
+ */
+#undef QT_TRANSLATE_NOOP3
+#define QT_TRANSLATE_NOOP3(a, b, c) b
 
     const variantListType variantList[] = {
-        { "40", I18N_NOOP2("dictionary variant", "40") }, // what does 40 mean?
-        { "60", I18N_NOOP2("dictionary variant", "60") }, // what does 60 mean?
-        { "80", I18N_NOOP2("dictionary variant", "80") }, // what does 80 mean?
-        { "ise", I18N_NOOP2("dictionary variant", "-ise suffixes") },
-        { "ize", I18N_NOOP2("dictionary variant", "-ize suffixes") },
-        { "ise-w_accents", I18N_NOOP2("dictionary variant", "-ise suffixes and with accents") },
-        { "ise-wo_accents", I18N_NOOP2("dictionary variant", "-ise suffixes and without accents") },
-        { "ize-w_accents", I18N_NOOP2("dictionary variant", "-ize suffixes and with accents") },
-        { "ize-wo_accents", I18N_NOOP2("dictionary variant", "-ize suffixes and without accents") },
-        { "lrg", I18N_NOOP2("dictionary variant", "large") },
-        { "med", I18N_NOOP2("dictionary variant", "medium") },
-        { "sml", I18N_NOOP2("dictionary variant", "small") },
-        { "variant_0", I18N_NOOP2("dictionary variant", "variant 0") },
-        { "variant_1", I18N_NOOP2("dictionary variant", "variant 1") },
-        { "variant_2", I18N_NOOP2("dictionary variant", "variant 2") },
-        { "wo_accents", I18N_NOOP2("dictionary variant", "without accents") },
-        { "w_accents", I18N_NOOP2("dictionary variant", "with accents") },
-        { "ye", I18N_NOOP2("dictionary variant", "with ye") },
-        { "yeyo", I18N_NOOP2("dictionary variant", "with yeyo") },
-        { "yo", I18N_NOOP2("dictionary variant", "with yo") },
-        { "extended", I18N_NOOP2("dictionary variant", "extended") },
+        { "40",             QT_TRANSLATE_NOOP3("Sonnet::Loader", "40", "dictionary variant") }, // what does 40 mean?
+        { "60",             QT_TRANSLATE_NOOP3("Sonnet::Loader", "60", "dictionary variant") }, // what does 60 mean?
+        { "80",             QT_TRANSLATE_NOOP3("Sonnet::Loader", "80", "dictionary variant") }, // what does 80 mean?
+        { "ise",            QT_TRANSLATE_NOOP3("Sonnet::Loader", "-ise suffixes", "dictionary variant") },
+        { "ize",            QT_TRANSLATE_NOOP3("Sonnet::Loader", "-ize suffixes", "dictionary variant") },
+        { "ise-w_accents",  QT_TRANSLATE_NOOP3("Sonnet::Loader", "-ise suffixes and with accents", "dictionary variant") },
+        { "ise-wo_accents", QT_TRANSLATE_NOOP3("Sonnet::Loader", "-ise suffixes and without accents", "dictionary variant") },
+        { "ize-w_accents",  QT_TRANSLATE_NOOP3("Sonnet::Loader", "-ize suffixes and with accents", "dictionary variant") },
+        { "ize-wo_accents", QT_TRANSLATE_NOOP3("Sonnet::Loader", "-ize suffixes and without accents", "dictionary variant") },
+        { "lrg",            QT_TRANSLATE_NOOP3("Sonnet::Loader", "large", "dictionary variant") },
+        { "med",            QT_TRANSLATE_NOOP3("Sonnet::Loader", "medium", "dictionary variant") },
+        { "sml",            QT_TRANSLATE_NOOP3("Sonnet::Loader", "small", "dictionary variant") },
+        { "variant_0",      QT_TRANSLATE_NOOP3("Sonnet::Loader", "variant 0", "dictionary variant") },
+        { "variant_1",      QT_TRANSLATE_NOOP3("Sonnet::Loader", "variant 1", "dictionary variant") },
+        { "variant_2",      QT_TRANSLATE_NOOP3("Sonnet::Loader", "variant 2", "dictionary variant") },
+        { "wo_accents",     QT_TRANSLATE_NOOP3("Sonnet::Loader", "without accents", "dictionary variant") },
+        { "w_accents",      QT_TRANSLATE_NOOP3("Sonnet::Loader", "with accents", "dictionary variant") },
+        { "ye",             QT_TRANSLATE_NOOP3("Sonnet::Loader", "with ye", "dictionary variant") },
+        { "yeyo",           QT_TRANSLATE_NOOP3("Sonnet::Loader", "with yeyo", "dictionary variant") },
+        { "yo",             QT_TRANSLATE_NOOP3("Sonnet::Loader", "with yo", "dictionary variant") },
+        { "extended",       QT_TRANSLATE_NOOP3("Sonnet::Loader", "extended", "dictionary variant") },
         { 0, 0 }
     };
 
     minusPos = currentDictionary.indexOf(QLatin1Char('-'));
-    underscorePos = currentDictionary.indexOf(QLatin1Char('_'));
-    if (underscorePos != -1 && underscorePos <= 3) {
-        cISOName = currentDictionary.mid(underscorePos + 1, 2);
-        lISOName = currentDictionary.left(underscorePos);
-        if ( minusPos != -1 )
-            variantName = currentDictionary.right(
-                                     currentDictionary.length() - minusPos - 1);
-    }  else {
-        if ( minusPos != -1 ) {
-            variantName = currentDictionary.right(
-                                     currentDictionary.length() - minusPos - 1);
-            lISOName = currentDictionary.left(minusPos);
-        }
-        else
-            lISOName = currentDictionary;
-    }
-    localizedLang = KLocale::global()->languageCodeToName(lISOName);
-    if (localizedLang.isEmpty())
-        localizedLang = lISOName;
-    if (!cISOName.isEmpty()) {
-        if (!KLocale::global()->countryCodeToName(cISOName).isEmpty())
-            localizedCountry = KLocale::global()->countryCodeToName(cISOName);
-        else
-            localizedCountry = cISOName;
-    }
-    if (!variantName.isEmpty()) {
+    if (minusPos != -1) {
+        variantName = currentDictionary.right(currentDictionary.length() - minusPos - 1);
         while (variantList[variantCount].variantShortName != 0)
             if (QLatin1String(variantList[variantCount].variantShortName) == variantName)
                 break;
@@ -209,23 +195,29 @@ QString Loader::languageNameForCode(const QString &langCode) const
             variantEnglish = variantList[variantCount].variantEnglishName;
         else
             variantEnglish = variantName.toLatin1();
+
+        localizedVariant = tr(variantEnglish, "dictionary variant");
+        isoCode = currentDictionary.left(minusPos);
+    } else {
+        isoCode = currentDictionary;
     }
-    if (!cISOName.isEmpty() && !variantName.isEmpty())
-        return i18nc(
-                    "dictionary name. %1-language, %2-country and %3 variant name",
-                    "%1 (%2) [%3]", localizedLang, localizedCountry,
-                    i18nc( "dictionary variant", variantEnglish));
-    else if (!cISOName.isEmpty())
-        return i18nc(
-                        "dictionary name. %1-language and %2-country name",
-                        "%1 (%2)", localizedLang, localizedCountry);
-    else if (!variantName.isEmpty())
-        return i18nc(
-                            "dictionary name. %1-language and %2-variant name",
-                            "%1 [%2]", localizedLang,
-                            i18nc("dictionary variant", variantEnglish));
-    else
+
+    QLocale locale(isoCode);
+    localizedCountry = locale.nativeCountryName();
+    localizedLang = locale.nativeLanguageName();
+
+    if (localizedLang.isEmpty() && localizedCountry.isEmpty())
+        return isoCode; // We have nothing
+
+    if (!localizedCountry.isEmpty() && !localizedVariant.isEmpty()) { // We have both a country name and a variant
+        return tr("%1 (%2) [%3]", "dictionary name; %1 = language name, %2 = country name and %3 = language variant name"
+            ).arg(localizedLang, localizedCountry, localizedVariant);
+    } else if (!localizedCountry.isEmpty()) { // We have a country name
+        return tr("%1 (%2)", "dictionary name; %1 = language name, %2 = country name"
+            ).arg(localizedLang, localizedCountry);
+    } else { // We only have a language name
         return localizedLang;
+    }
 }
 
 QStringList Loader::languageNames() const
