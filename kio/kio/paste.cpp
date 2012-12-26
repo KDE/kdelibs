@@ -119,83 +119,83 @@ static QUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
                           u,
                           myurl,
                           (KIO::RenameDialog_Mode) (KIO::M_OVERWRITE | KIO::M_SINGLE) );
-      res = static_cast<KIO::RenameDialog_Result>(dlg.exec());
+          res = static_cast<KIO::RenameDialog_Result>(dlg.exec());
 
-      if ( res == KIO::R_RENAME )
-      {
-          myurl = dlg.newDestUrl();
-      }
-      else if ( res == KIO::R_CANCEL )
-      {
-          return QUrl();
-      } else if (res == KIO::R_OVERWRITE)
-      {
-          // Old hack. With the put job we just pass Overwrite.
-          if (delIfOverwrite) {
-              // Ideally we would just pass KIO::Overwrite to the job in pasteDataAsyncTo.
-              // But 1) CopyJob doesn't support that (it wouldn't really apply to multiple files) [not true anymore]
-              // 2) we can't use file_move because CopyJob* is everywhere in the API (see TODO)
-              // But well the simpler is really to delete the dest:
-              KIO::Job* delJob = KIO::del(myurl);
-              delJob->exec();
+          if ( res == KIO::R_RENAME )
+          {
+              myurl = dlg.newDestUrl();
+          }
+          else if ( res == KIO::R_CANCEL )
+          {
+              return QUrl();
+          } else if (res == KIO::R_OVERWRITE)
+          {
+              // Old hack. With the put job we just pass Overwrite.
+              if (delIfOverwrite) {
+                  // Ideally we would just pass KIO::Overwrite to the job in pasteDataAsyncTo.
+                  // But 1) CopyJob doesn't support that (it wouldn't really apply to multiple files) [not true anymore]
+                  // 2) we can't use file_move because CopyJob* is everywhere in the API (see TODO)
+                  // But well the simpler is really to delete the dest:
+                  KIO::Job* delJob = KIO::del(myurl);
+                  delJob->exec();
+              }
           }
       }
-  }
 
-  return myurl;
-}
-
-// Old solution
-// The final step: write _data to tempfile and move it to newUrl
-static KIO::CopyJob* pasteDataAsyncTo( const QUrl& newUrl, const QByteArray& _data )
-{
-    // ### Bug: because we move from a tempfile to the destination,
-    // if the user does "Undo" then we won't ask for confirmation, and we'll
-    // move back to a tempfile, instead of just deleting.
-    // A KIO::storedPut would be better but FileUndoManager would need to support it first.
-    QTemporaryFile tempFile;
-    tempFile.setAutoRemove(false);
-    tempFile.open();
-    tempFile.write(_data.data(), _data.size());
-    tempFile.flush();
-    QUrl origUrl = QUrl::fromLocalFile(tempFile.fileName());
-    return KIO::move(origUrl, newUrl);
-}
-
-// New solution
-static KIO::Job* putDataAsyncTo(const QUrl& url, const QByteArray& data, QWidget* widget, KIO::JobFlags flags)
-{
-    KIO::Job* job = KIO::storedPut(data, url, -1, flags);
-    job->ui()->setWindow(widget);
-    return job;
-}
-
-static QByteArray chooseFormatAndUrl(const QUrl& u, const QMimeData* mimeData,
-                                     const QStringList& formats,
-                                     const QString& text,
-                                     const QString& suggestedFileName,
-                                     QWidget* widget,
-                                     bool clipboard,
-                                     QUrl* newUrl)
-{
-    QMimeDatabase db;
-    QStringList formatLabels;
-    for ( int i = 0; i < formats.size(); ++i ) {
-        const QString& fmt = formats[i];
-        QMimeType mime = db.mimeTypeForName(fmt);
-        if (mime.isValid())
-            formatLabels.append(i18n("%1 (%2)", mime.comment(), fmt));
-        else
-            formatLabels.append(fmt);
+      return myurl;
     }
 
-    QString dialogText( text );
-    if ( dialogText.isEmpty() )
-        dialogText = i18n( "Filename for clipboard content:" );
-    //using QString() instead of QString::null didn't compile (with gcc 3.2.3), because the ctor was mistaken as a function declaration, Alex //krazy:exclude=nullstrassign
-    KIO::PasteDialog dlg( QString::null, dialogText, suggestedFileName, formatLabels, widget, clipboard ); //krazy:exclude=nullstrassign
+    // Old solution
+    // The final step: write _data to tempfile and move it to newUrl
+    static KIO::CopyJob* pasteDataAsyncTo( const QUrl& newUrl, const QByteArray& _data )
+    {
+        // ### Bug: because we move from a tempfile to the destination,
+        // if the user does "Undo" then we won't ask for confirmation, and we'll
+        // move back to a tempfile, instead of just deleting.
+        // A KIO::storedPut would be better but FileUndoManager would need to support it first.
+        QTemporaryFile tempFile;
+        tempFile.setAutoRemove(false);
+        tempFile.open();
+        tempFile.write(_data.data(), _data.size());
+        tempFile.flush();
+        QUrl origUrl = QUrl::fromLocalFile(tempFile.fileName());
+        return KIO::move(origUrl, newUrl);
+    }
 
-    if ( dlg.exec() != KDialog::Accepted )
+    // New solution
+    static KIO::Job* putDataAsyncTo(const QUrl& url, const QByteArray& data, QWidget* widget, KIO::JobFlags flags)
+    {
+        KIO::Job* job = KIO::storedPut(data, url, -1, flags);
+        job->ui()->setWindow(widget);
+        return job;
+    }
+
+    static QByteArray chooseFormatAndUrl(const QUrl& u, const QMimeData* mimeData,
+                                         const QStringList& formats,
+                                         const QString& text,
+                                         const QString& suggestedFileName,
+                                         QWidget* widget,
+                                         bool clipboard,
+                                         QUrl* newUrl)
+    {
+        QMimeDatabase db;
+        QStringList formatLabels;
+        for ( int i = 0; i < formats.size(); ++i ) {
+            const QString& fmt = formats[i];
+            QMimeType mime = db.mimeTypeForName(fmt);
+            if (mime.isValid())
+                formatLabels.append(i18n("%1 (%2)", mime.comment(), fmt));
+            else
+                formatLabels.append(fmt);
+        }
+
+        QString dialogText( text );
+        if ( dialogText.isEmpty() )
+            dialogText = i18n( "Filename for clipboard content:" );
+        //using QString() instead of QString::null didn't compile (with gcc 3.2.3), because the ctor was mistaken as a function declaration, Alex //krazy:exclude=nullstrassign
+        KIO::PasteDialog dlg( QString::null, dialogText, suggestedFileName, formatLabels, widget, clipboard ); //krazy:exclude=nullstrassign
+
+    if ( dlg.exec() != QDialog::Accepted )
         return QByteArray();
 
     if ( clipboard && dlg.clipboardChanged() ) {

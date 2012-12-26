@@ -23,6 +23,7 @@
 #include <klocalizedstring.h>
 
 #include <QApplication>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
 #include <QClipboard>
@@ -31,15 +32,16 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
                                const QString &value, const QStringList& items,
                                QWidget *parent,
                                bool clipboard )
-    : KDialog( parent )
+    : QDialog( parent )
 {
-    setCaption( caption );
-    setButtons( Ok | Cancel );
+    setWindowTitle( caption );
     setModal( true );
-    setDefaultButton( Ok );
 
-    QFrame *frame = new QFrame;
-    setMainWidget( frame );
+    QVBoxLayout *topLayout = new QVBoxLayout;
+    setLayout(topLayout);
+
+    QFrame *frame = new QFrame(this);
+    topLayout->addWidget(frame);
 
     QVBoxLayout *layout = new QVBoxLayout( frame );
 
@@ -58,6 +60,12 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
     layout->addWidget( m_comboBox );
 
     layout->addStretch();
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    topLayout->addWidget(buttonBox);
 
     //connect( m_lineEdit, SIGNAL(textChanged(QString)),
     //    SLOT(slotEditTextChanged(QString)) );
