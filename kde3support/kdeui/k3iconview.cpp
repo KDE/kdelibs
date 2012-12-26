@@ -26,7 +26,6 @@
 #include "kwordwrap.h"
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kiconeffect.h>
 #include <kglobalsettings.h>
 
 #include <kcursor.h>
