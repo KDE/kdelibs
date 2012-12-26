@@ -31,7 +31,6 @@
 #include "kwebpluginfactory.h"
 
 // KDE
-#include <kaction.h>
 #include <kfiledialog.h>
 #include <kiconloader.h>
 #include <kprotocolmanager.h>
@@ -56,6 +55,7 @@
 #include <QtCore/QPointer>
 #include <QtCore/QFileInfo>
 #include <QtCore/QCoreApplication>
+#include <QAction>
 #include <QWebFrame>
 #include <QtNetwork/QNetworkReply>
 #include <qtemporaryfile.h>

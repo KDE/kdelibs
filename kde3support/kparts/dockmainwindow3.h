@@ -22,7 +22,6 @@
 #define __DOCKMAINWINDOW_H
 
 #include <Qt3Support/Q3PtrList>
-#include <kaction.h>
 
 #include <k3dockwidget.h>
 

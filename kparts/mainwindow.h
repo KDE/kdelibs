@@ -20,8 +20,6 @@
 #ifndef __MAINWINDOW_H
 #define __MAINWINDOW_H
 
-#include <kaction.h>
-
 #include <kxmlguiwindow.h>
 
 #include <kparts/part.h>

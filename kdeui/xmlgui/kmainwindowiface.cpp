@@ -23,7 +23,7 @@
 #include <kactioncollection.h>
 #include <qapplication.h>
 #include <kxmlguiwindow.h>
-#include <kaction.h>
+#include <QAction>
 #include <QClipboard>
 
 

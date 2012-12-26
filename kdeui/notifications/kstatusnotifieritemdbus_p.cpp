@@ -32,7 +32,6 @@
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include <kmenu.h>
-#include <kaction.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>
 #include <kmessagebox.h>

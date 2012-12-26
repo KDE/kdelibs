@@ -26,6 +26,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QArgument>
 #include <QtCore/QMetaEnum>
+#include <QAction>
 #include <QKeyEvent>
 #include <QDialog>
 #include <QBoxLayout>
@@ -46,7 +47,6 @@
 #include <kpushbutton.h>
 //#include <kurlcombobox.h>
 //#include <kdiroperator.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kpluginloader.h>

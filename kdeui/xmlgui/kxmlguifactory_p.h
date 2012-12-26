@@ -23,8 +23,7 @@
 #include <QtCore/QMap>
 #include <QtXml/QDomElement>
 #include <QStack>
-
-#include <kaction.h>
+#include <QAction>
 
 class QWidget;
 class KXMLGUIClient;

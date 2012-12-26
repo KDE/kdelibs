@@ -44,7 +44,6 @@
 #include <QStyle>
 #include <QWidget>
 
-#include <kaction.h>
 #include <kcomponentdata.h>
 #include <kconfig.h>
 #include <kdebug.h>

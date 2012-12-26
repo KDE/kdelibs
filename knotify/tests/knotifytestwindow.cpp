@@ -9,7 +9,6 @@
 #include <kmessagebox.h>
 #include <klocalizedstring.h>
 #include <kstandardaction.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kxmlguifactory.h>
 #include <kdialog.h>

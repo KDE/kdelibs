@@ -22,7 +22,6 @@
 
 #include <QtXml/QDomElement>
 #include <QtCore/QObject>
-#include <kaction.h>
 #include <kxmlguiclient.h>
 
 #include <kparts/kparts_export.h>
