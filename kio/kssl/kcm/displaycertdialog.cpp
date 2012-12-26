@@ -18,22 +18,39 @@
 */
 
 #include "displaycertdialog_p.h"
+#include <QDialogButtonBox>
+#include <QPushButton>
 #include <kstandardguiitem.h>
 #include <klocale.h>
-#include <QPushButton>
 
 
 DisplayCertDialog::DisplayCertDialog(QWidget *parent)
- : KDialog(parent),
+ : QDialog(parent),
    m_index(0)
 {
-    m_ui.setupUi(mainWidget());
-    setButtons(KDialog::Ok | KDialog::User1 | KDialog::User2);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
+
+    QWidget *mainWidget = new QWidget(this);
+    m_ui.setupUi(mainWidget);
+    layout->addWidget(mainWidget);
+
     QPair<KGuiItem, KGuiItem> bAndF = KStandardGuiItem::backAndForward();
-    setButtonGuiItem(KDialog::User2, bAndF.first);
-    setButtonGuiItem(KDialog::User1, bAndF.second);
-    connect(button(KDialog::User2), SIGNAL(clicked()), SLOT(previousClicked()));
-    connect(button(KDialog::User1), SIGNAL(clicked()), SLOT(nextClicked()));
+
+    m_previousButton = new QPushButton;
+    KGuiItem::assign(m_previousButton, bAndF.first);
+    connect(m_previousButton, SIGNAL(clicked()), SLOT(previousClicked()));
+
+    m_nextButton = new QPushButton;
+    KGuiItem::assign(m_nextButton, bAndF.second);
+    connect(m_nextButton, SIGNAL(clicked()), SLOT(nextClicked()));
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->addButton(m_previousButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(m_nextButton, QDialogButtonBox::ActionRole);
+    buttonBox->addButton(QDialogButtonBox::Ok);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 }
 
 void DisplayCertDialog::setCertificates(const QList<QSslCertificate> &certs)
@@ -42,8 +59,8 @@ void DisplayCertDialog::setCertificates(const QList<QSslCertificate> &certs)
     m_certs = certs;
     m_index = 0;
     showCertificate(0);
-    button(KDialog::User2)->setEnabled(certs.size() > 1);
-    button(KDialog::User1)->setEnabled(certs.size() > 1);
+    m_previousButton->setEnabled(certs.size() > 1);
+    m_nextButton->setEnabled(certs.size() > 1);
 }
 
 void DisplayCertDialog::showCertificate(int index)

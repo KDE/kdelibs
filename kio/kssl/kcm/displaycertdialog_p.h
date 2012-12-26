@@ -23,7 +23,7 @@
 #include "ui_displaycert.h"
 #include <QtNetwork/QSslCertificate>
 
-class DisplayCertDialog : public KDialog
+class DisplayCertDialog : public QDialog
 {
     Q_OBJECT
 public:
@@ -34,10 +34,12 @@ private:
 private Q_SLOTS:
     void nextClicked();
     void previousClicked();
-    
+
 private:
     Ui::DisplayCert m_ui;
     QList<QSslCertificate> m_certs;
     int m_index;
+    QPushButton *m_previousButton;
+    QPushButton *m_nextButton;
 };
 #endif // DISPLAYCERTDIALOG_P_H
