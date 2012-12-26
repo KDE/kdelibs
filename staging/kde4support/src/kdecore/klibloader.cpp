@@ -26,7 +26,6 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QObjectCleanupHandler>
 
-#include "kstandarddirs.h"
 #include "kcomponentdata.h"
 #include "kdebug.h"
 #include "klocalizedstring.h"

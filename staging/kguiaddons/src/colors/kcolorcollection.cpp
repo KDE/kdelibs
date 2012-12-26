@@ -27,8 +27,6 @@
 #include <qsavefile.h>
 #include <qstandardpaths.h>
 
-#include <kstandarddirs.h>
-
 //BEGIN KColorCollectionPrivate
 class KColorCollectionPrivate
 {
