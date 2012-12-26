@@ -21,7 +21,6 @@
 #define KUNIQUEAPPLICATION_P_H
 
 #include <QtDBus/QtDBus>
-#include <kcmdlineargs.h>
 
 class KUniqueApplication::Private
 {

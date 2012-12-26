@@ -13,7 +13,6 @@
 #include "k3aboutdialog.h"
 
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 #include <k3aboutapplication.h>
 #include <qapplication.h>
 #include <klocalizedstring.h>

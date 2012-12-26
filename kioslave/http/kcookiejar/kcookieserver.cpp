@@ -34,7 +34,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kcmdlineargs.h>
 
 #include <kpluginfactory.h>
 #include <kpluginloader.h>

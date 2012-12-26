@@ -8,7 +8,6 @@
 
 #include <assert.h>
 #include <kaboutdata.h>
-#include <kcmdlineargs.h>
 
 void tst_KActionCollection::init()
 {
