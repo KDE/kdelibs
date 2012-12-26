@@ -25,7 +25,7 @@
 #include <QTimer>
 
 #include <kguiitem.h>
-#include <kpushbutton.h>
+#include <kstandardguiitem.h>
 
 class KProgressDialog::KProgressDialogPrivate
 {

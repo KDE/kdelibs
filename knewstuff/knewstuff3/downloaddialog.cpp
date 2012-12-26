@@ -30,7 +30,6 @@
 #include <kmessagebox.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
-#include <kpushbutton.h>
 #include <ktitlewidget.h>
 #include <kdebug.h>
 #include <kwindowconfig.h>

@@ -24,6 +24,7 @@
 #include <QtCore/QStringList>
 #include <QLayout>
 #include <qinputdialog.h>
+#include <qpushbutton.h>
 #include <qurlpathinfo.h>
 
 #include <kactioncollection.h>
@@ -49,7 +50,6 @@
 #include <kurlpixmapprovider.h>
 #include <kdebug.h>
 #include <kpropertiesdialog.h>
-#include <kpushbutton.h>
 #include <kmenu.h>
 
 #include "kfileplacesview.h"

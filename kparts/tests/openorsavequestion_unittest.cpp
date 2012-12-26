@@ -27,9 +27,9 @@
 #endif
 
 #include <kdialog.h>
-#include <kpushbutton.h>
 #include <kdebug.h>
 #include <QMenu>
+#include <QPushButton>
 #include <QWidget>
 
 using namespace KParts;

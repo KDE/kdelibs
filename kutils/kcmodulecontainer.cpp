@@ -28,7 +28,6 @@
 #include <kcmoduleproxy.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <kpushbutton.h>
 #include <kservice.h>
 #include <ktabwidget.h>
 

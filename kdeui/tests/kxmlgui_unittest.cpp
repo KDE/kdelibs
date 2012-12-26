@@ -23,10 +23,10 @@
 #include <QDialogButtonBox>
 #include <QShowEvent>
 #include <QMenuBar>
+#include <QPushButton>
 #include <kedittoolbar.h>
 #include <kaction.h>
 #include <kconfiggroup.h>
-#include <kpushbutton.h>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
 #include "testxmlguiwindow.h"

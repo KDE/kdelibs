@@ -20,7 +20,6 @@
 #include <ktoggleaction.h>
 #include <kcombobox.h>
 #include <kiconloader.h>
-#include <kpushbutton.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 

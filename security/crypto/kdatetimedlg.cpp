@@ -26,7 +26,6 @@
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kdatepicker.h>
-#include <kpushbutton.h>
 #include <knuminput.h>
 
 KDateTimeDlg::KDateTimeDlg(QWidget *parent)

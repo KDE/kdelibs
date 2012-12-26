@@ -21,7 +21,7 @@
 
 #include <QApplication>
 #include <QtCore/QEventLoop>
-#include <kpushbutton.h>
+#include <QPushButton>
 #include "kreplace.h"
 #include "kreplacedialog.h"
 

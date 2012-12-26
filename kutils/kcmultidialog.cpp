@@ -29,13 +29,13 @@
 #include <QtCore/QProcess>
 #include <QtCore/QUrl>
 #include <QDesktopServices>
+#include <QPushButton>
 
 #include <kcoreauthorized.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
-#include <kpushbutton.h>
 #include <kdebug.h>
 #include <kmessagebox.h>
 
