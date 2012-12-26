@@ -47,7 +47,6 @@
 #include <kpushbutton.h>
 //#include <kurlcombobox.h>
 //#include <kdiroperator.h>
-#include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kpluginloader.h>
 #include <kpluginfactory.h>
