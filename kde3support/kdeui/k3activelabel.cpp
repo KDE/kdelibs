@@ -22,8 +22,6 @@
 #include <Q3SimpleRichText>
 #include <QFocusEvent>
 
-#include <ktoolinvocation.h>
-
 class K3ActiveLabelPrivate
 {
 public:
