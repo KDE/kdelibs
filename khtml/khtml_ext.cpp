@@ -53,7 +53,6 @@
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kshell.h>
-#include <ktoolbar.h>
 #include <qsavefile.h>
 #include <kstringhandler.h>
 #include <ktoolinvocation.h>

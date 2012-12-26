@@ -38,7 +38,6 @@
 #ifndef NO_KDE2
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
-#include <ktoolbar.h>
 #include <k3popupmenu.h>
 #include <kwindowsystem.h>
 #include <kdebug.h>
