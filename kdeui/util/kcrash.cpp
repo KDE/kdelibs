@@ -23,7 +23,6 @@
  */
 
 #include "kcrash.h"
-#include <config-kstandarddirs.h>
 #include <config-prefix.h>
 
 #include <config-kdeui.h>
