@@ -45,7 +45,6 @@
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kstandardaction.h>
-#include <kstandardguiitem.h>
 #include <kswitchlanguagedialog_p.h>
 #include <khelpclient.h>
 #include <kglobal.h>
