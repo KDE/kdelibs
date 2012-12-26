@@ -24,6 +24,7 @@
 #include <kaction.h>
 
 class KDualActionPrivate;
+class KGuiItem;
 
 /**
  * @short An action which can alternate between two texts/icons when triggered.

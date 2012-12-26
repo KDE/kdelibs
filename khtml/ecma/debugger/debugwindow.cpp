@@ -31,7 +31,6 @@
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
-#include <kguiitem.h>
 #include <kmenu.h>
 #include <kaction.h>
 #include <kactioncollection.h>

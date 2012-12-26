@@ -22,6 +22,7 @@
 #include <QtTest/QtTest>
 
 #include "kiconloader.h"
+#include "kguiitem.h"
 
 
 Q_DECLARE_METATYPE(KAction*)

@@ -20,6 +20,7 @@
 #ifndef KDUALACTION_P_H
 #define KDUALACTION_P_H
 
+#include "kguiitem.h"
 
 class KDualActionPrivate
 {

@@ -30,7 +30,6 @@
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kglobal.h>
-#include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>

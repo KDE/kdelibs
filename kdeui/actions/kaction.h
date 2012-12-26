@@ -27,7 +27,6 @@
 #define KACTION_H
 
 #include <kdeui_export.h>
-#include <kguiitem.h>
 #include <kshortcut.h>
 #include <kauthaction.h>
 

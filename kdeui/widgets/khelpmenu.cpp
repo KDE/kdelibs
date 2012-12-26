@@ -42,7 +42,6 @@
 #include <kcoreauthorized.h>
 #include <kbugreport.h>
 #include <kdialog.h>
-#include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>

@@ -24,7 +24,6 @@
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 #include <kcoreauthorized.h>
-#include <kguiitem.h>
 #include <klocalizedstring.h>
 #include <kxmlguiwindow.h>
 #include <kmenu.h>
