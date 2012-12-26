@@ -34,7 +34,6 @@
 #include <QLineEdit>
 
 #include <kdebug.h>
-#include <kmessagebox.h>
 #include <kaction.h>
 #include <klocalizedstring.h>
 

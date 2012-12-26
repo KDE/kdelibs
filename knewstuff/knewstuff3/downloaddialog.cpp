@@ -27,13 +27,13 @@
 #include <QScrollBar>
 #include <QKeyEvent>
 
-#include <kmessagebox.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <ktitlewidget.h>
 #include <kdebug.h>
 #include <kwindowconfig.h>
 #include <kglobal.h>
+#include <kstandardguiitem.h>
 
 #include "downloadwidget.h"
 #include "downloadwidget_p.h"

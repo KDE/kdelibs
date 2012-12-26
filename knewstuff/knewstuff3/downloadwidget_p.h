@@ -28,7 +28,6 @@
 #include <QtCore/QTimer>
 #include <QScrollBar>
 #include <QListView>
-#include <kmessagebox.h>
 #include <kcomponentdata.h>
 #include <kaboutdata.h>
 

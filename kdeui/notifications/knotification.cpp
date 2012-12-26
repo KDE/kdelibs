@@ -28,7 +28,6 @@
 #include "knotification.h"
 #include "knotificationmanager_p.h"
 
-#include <kmessagebox.h>
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kpassivepopup.h>

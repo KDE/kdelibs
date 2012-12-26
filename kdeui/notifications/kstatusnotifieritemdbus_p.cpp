@@ -34,7 +34,6 @@
 #include <kmenu.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>
-#include <kmessagebox.h>
 
 #include "statusnotifierwatcher_interface.h"
 
