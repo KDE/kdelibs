@@ -21,7 +21,9 @@
 
 #include "jobuidelegate.h"
 
+#include <kconfiggroup.h>
 #include <kdebug.h>
+#include <kiconloader.h>
 #include <kjob.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>

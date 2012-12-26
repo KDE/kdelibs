@@ -44,6 +44,7 @@
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
 
+#include <kiconloader.h>
 #include <kmimetypetrader.h>
 #include "kio/jobclasses.h" // for KIO::JobFlags
 #include "kio/job.h"

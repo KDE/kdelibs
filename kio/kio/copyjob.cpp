@@ -26,6 +26,7 @@
 #include "mkdirjob.h"
 #include "deletejob.h"
 
+#include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kdesktopfile.h>
 #include <kdebug.h>

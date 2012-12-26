@@ -21,6 +21,7 @@
 #include "kdirlister.h"
 #include "kfileitem.h"
 #include <kdatetime.h>
+#include <kiconloader.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <kio/copyjob.h>

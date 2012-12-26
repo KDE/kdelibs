@@ -32,6 +32,7 @@
 #include <kauthorized.h>
 #include <klocalizedstring.h>
 #include <kconfig.h>
+#include <kconfiggroup.h>
 #include <kde_file.h>
 
 #include <errno.h>
