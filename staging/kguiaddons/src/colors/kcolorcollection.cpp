@@ -28,7 +28,6 @@
 #include <qstandardpaths.h>
 
 #include <kstandarddirs.h>
-#include <kglobal.h>
 
 //BEGIN KColorCollectionPrivate
 class KColorCollectionPrivate

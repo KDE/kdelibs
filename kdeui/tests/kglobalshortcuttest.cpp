@@ -27,7 +27,6 @@
 #include <kaction.h>
 #include <kaction_p.h>
 #include <kactioncollection.h>
-#include <kglobal.h>
 #include <kglobalaccel.h>
 #include <kdebug.h>
 #include <kservice.h>
