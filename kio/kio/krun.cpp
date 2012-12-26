@@ -31,11 +31,14 @@
 #include <typeinfo>
 #include <sys/stat.h>
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QWidget>
 #include <QLabel>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPlainTextEdit>
+#include <QPushButton>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <qmimedatabase.h>
@@ -74,7 +77,6 @@
 #include <QTextDocument>
 #include <kde_file.h>
 #include <kconfiggroup.h>
-#include <kdialog.h>
 #include <kstandardguiitem.h>
 #include <kguiitem.h>
 #include <qsavefile.h>
@@ -793,12 +795,12 @@ static QList<QUrl> resolveURLs(const QList<QUrl>& _urls, const KService& _servic
     return urls;
 }
 
-// Simple KDialog that resizes the given text edit after being shown to more
+// Simple QDialog that resizes the given text edit after being shown to more
 // or less fit the enclosed text.
-class SecureMessageDialog : public KDialog
+class SecureMessageDialog : public QDialog
 {
     public:
-    SecureMessageDialog(QWidget *parent) : KDialog(parent), m_textEdit(0)
+    SecureMessageDialog(QWidget *parent) : QDialog(parent), m_textEdit(0)
     {
     }
 
@@ -812,7 +814,7 @@ class SecureMessageDialog : public KDialog
     {
         // Now that we're shown, use our width to calculate a good
         // bounding box for the text, and resize m_textEdit appropriately.
-        KDialog::showEvent(e);
+        QDialog::showEvent(e);
 
         if(!m_textEdit)
             return;
@@ -930,15 +932,11 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
         return false; // Don't circumvent the Kiosk
     }
 
-    KGuiItem continueItem = KStandardGuiItem::cont();
-
     SecureMessageDialog *baseDialog = new SecureMessageDialog(window);
+    baseDialog->setWindowTitle(i18nc("Warning about executing unknown .desktop file", "Warning"));
 
-    baseDialog->setButtons(KDialog::Ok | KDialog::Cancel);
-    baseDialog->setButtonGuiItem(KDialog::Ok, continueItem);
-    baseDialog->setDefaultButton(KDialog::Cancel);
-    baseDialog->setButtonFocus(KDialog::Cancel);
-    baseDialog->setCaption(i18nc("Warning about executing unknown .desktop file", "Warning"));
+    QVBoxLayout *topLayout = new QVBoxLayout;
+    baseDialog->setLayout(topLayout);
 
     // Dialog will have explanatory text with a disabled lineedit with the
     // Exec= to make it visually distinct.
@@ -974,8 +972,17 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
 
     mainLayout->addLayout(contentLayout);
 
-    baseDialog->setMainWidget(baseWidget);
+    topLayout->addWidget(baseWidget);
     baseDialog->setTextEdit(textEdit);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(baseDialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    KGuiItem::assign(buttonBox->button(QDialogButtonBox::Ok), KStandardGuiItem::cont());
+    buttonBox->button(QDialogButtonBox::Cancel)->setDefault(true);
+    buttonBox->button(QDialogButtonBox::Cancel)->setFocus();
+    QObject::connect(buttonBox, SIGNAL(accepted()), baseDialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), baseDialog, SLOT(reject()));
+    topLayout->addWidget(buttonBox);
 
     // Constrain maximum size.  Minimum size set in
     // the dialog's show event.
@@ -985,7 +992,7 @@ static bool makeServiceExecutable(const KService& service, QWidget* window)
     baseDialog->setMaximumWidth(screenSize.width() / 10 * 8);
 
     int result = baseDialog->exec();
-    if (result != KDialog::Accepted) {
+    if (result != QDialog::Accepted) {
         return false;
     }
 
