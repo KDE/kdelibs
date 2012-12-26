@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include <QDialogButtonBox>
+#include <QPushButton>
 #include <QWidget>
 #include <QLayout>
 #include <QLabel>
@@ -30,25 +32,30 @@
 using namespace KIO;
 
 SkipDialog::SkipDialog(QWidget *parent, bool _multi, const QString& _error_text )
-  : KDialog ( parent ), d( 0 )
+  : QDialog(parent), d(0)
 {
-  setCaption( i18n( "Information" ) );
+  setWindowTitle(i18n("Information"));
 
-  if ( !_multi ) {
-    setButtons( Cancel );
-  } else {
-    setButtons( Cancel | User1 | User2 );
+  QVBoxLayout *layout = new QVBoxLayout;
+  setLayout(layout);
 
-    setButtonText( User1, i18n( "Skip" ) );
-    connect( this, SIGNAL(user1Clicked()), SLOT(skipPressed()) );
+  layout->addWidget(new QLabel(_error_text, this));
 
-    setButtonText( User2, i18n( "AutoSkip" ) );
-    connect( this, SIGNAL(user2Clicked()), SLOT(autoSkipPressed()) );
+  QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+  layout->addWidget(buttonBox);
+
+  if (_multi) {
+    QPushButton *skipButton = new QPushButton(i18n("Skip"));
+    connect(skipButton, SIGNAL(clicked()), SLOT(skipPressed()));
+    buttonBox->addButton(skipButton, QDialogButtonBox::ActionRole);
+
+    QPushButton *autoSkipButton = new QPushButton(i18n("AutoSkip"));
+    connect(autoSkipButton, SIGNAL(clicked()), SLOT(autoSkipPressed()));
+    buttonBox->addButton(autoSkipButton, QDialogButtonBox::ActionRole);
   }
 
-  connect( this, SIGNAL(cancelClicked()), SLOT(cancelPressed()) );
-
-  setMainWidget( new QLabel( _error_text, this ) );
+  buttonBox->addButton(QDialogButtonBox::Cancel);
+  connect(buttonBox, SIGNAL(rejected()), SLOT(cancelPressed()) );
 
   resize( sizeHint() );
 }
