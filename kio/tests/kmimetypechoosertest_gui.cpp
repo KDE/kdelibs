@@ -32,7 +32,7 @@ int main( int argc, char** argv ) {
     KMimeTypeChooserDialog dlg( i18n("Select Mime Types"), text, list, "text", QStringList(),
                                 KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
                                 (QWidget*)0 );
-    if ( dlg.exec() == KDialog::Accepted ) {
+    if ( dlg.exec() == QDialog::Accepted ) {
         kDebug() << dlg.chooser()->patterns();
         kDebug() << dlg.chooser()->mimeTypes().join(";");
     }

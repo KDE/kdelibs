@@ -20,7 +20,7 @@
 #define KMIMETYPE_CHOOSER_H
 
 #include <kio/kio_export.h>
-#include <kdialog.h>
+#include <QDialog>
 #include <QWidget>
 
 class QTreeWidgetItem;
@@ -108,7 +108,7 @@ class KIO_EXPORT KMimeTypeChooser : public QWidget
   *
   * @author Anders Lund (anders at alweb dk) dec 19, 2001
   */
-class KIO_EXPORT KMimeTypeChooserDialog : public KDialog
+class KIO_EXPORT KMimeTypeChooserDialog : public QDialog
 {
   public:
     /**

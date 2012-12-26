@@ -24,6 +24,7 @@
 #include <ksharedconfig.h>
 #include <krun.h>
 
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
@@ -311,15 +312,14 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &groupsToShow,
                          int visuals,
                          QWidget *parent )
-    : KDialog( parent ), d(new Private(this))
+    : QDialog( parent ), d(new Private(this))
 {
-  setCaption( caption );
-  d->init();
+  setWindowTitle( caption );
 
   d->m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                        defaultGroup, groupsToShow, visuals,
                                        this );
-  setMainWidget(d->m_chooser);
+  d->init();
 }
 
 KMimeTypeChooserDialog::KMimeTypeChooserDialog(
@@ -328,16 +328,15 @@ KMimeTypeChooserDialog::KMimeTypeChooserDialog(
                          const QStringList &selMimeTypes,
                          const QString &defaultGroup,
                          QWidget *parent )
-    : KDialog( parent ), d(new Private(this))
+    : QDialog( parent ), d(new Private(this))
 {
-  setCaption( caption );
-  d->init();
+  setWindowTitle( caption );
 
   d->m_chooser = new KMimeTypeChooser( text, selMimeTypes,
                                        defaultGroup, QStringList(),
                                        KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
                                        this );
-  setMainWidget(d->m_chooser);
+  d->init();
 }
 
 KMimeTypeChooser* KMimeTypeChooserDialog::chooser()
@@ -347,9 +346,16 @@ KMimeTypeChooser* KMimeTypeChooserDialog::chooser()
 
 void KMimeTypeChooserDialog::Private::init()
 {
-  q->setButtons( Cancel | Ok );
-  q->setModal( true );
-  q->setDefaultButton( Ok );
+    QVBoxLayout *layout = new QVBoxLayout;
+    q->setLayout(layout);
+
+    layout->addWidget(m_chooser);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(q);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(buttonBox, SIGNAL(accepted()), q, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
+    layout->addWidget(buttonBox);
 
   KConfigGroup group( KSharedConfig::openConfig(), "KMimeTypeChooserDialog");
   q->resize(group.readEntry("size", QSize(600,500)));
