@@ -30,7 +30,6 @@
 #include <QApplication>
 
 #include <kguiitem.h>
-#include <kiconloader.h>
 
 #include "kauthobjectdecorator.h"
 

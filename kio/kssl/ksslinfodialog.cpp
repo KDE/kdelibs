@@ -34,6 +34,7 @@
 #include <QtNetwork/QSslCertificate>
 
 #include <klocale.h>
+#include <kiconloader.h>
 
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"

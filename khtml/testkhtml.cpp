@@ -30,6 +30,7 @@
 #include <kactioncollection.h>
 #include "kxmlguifactory.h"
 #include <kfiledialog.h>
+#include <kiconloader.h>
 
 int main(int argc, char *argv[])
 {

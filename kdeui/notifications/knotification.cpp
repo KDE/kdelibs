@@ -30,7 +30,6 @@
 
 #include <kmessagebox.h>
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <kconfig.h>
 #include <kpassivepopup.h>
 #include <kdialog.h>

@@ -39,6 +39,7 @@
 #include <qurlpathinfo.h>
 
 #include <klineedit.h>
+#include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kio/global.h>
 #include <kio/udsentry.h>

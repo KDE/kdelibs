@@ -18,7 +18,6 @@
 */
 
 #include "kshortcutwidget.h"
-#include "kiconloader.h"
 #include "ui_kshortcutwidget.h"
 
 class KShortcutWidgetPrivate

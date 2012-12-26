@@ -21,7 +21,6 @@
 #define __MAINWINDOW_H
 
 #include <kaction.h>
-#include <kiconloader.h>
 
 #include <kxmlguiwindow.h>
 

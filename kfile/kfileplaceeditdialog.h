@@ -24,6 +24,7 @@
 //#include <kfile_export.h>
 
 #include <kdialog.h>
+#include <kiconloader.h>
 #include <kurl.h>
 
 class QCheckBox;

@@ -37,7 +37,6 @@
 #include <QToolBar>
 
 #include <kdebug.h>
-#include <kiconloader.h>
 
 #include "kguiitem.h"
 

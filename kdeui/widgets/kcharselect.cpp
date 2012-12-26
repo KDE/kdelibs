@@ -40,6 +40,7 @@
 #include <kfontcombobox.h>
 #include <kactioncollection.h>
 #include <kstandardaction.h>
+#include <kiconloader.h>
 
 Q_GLOBAL_STATIC(KCharSelectData, s_data)
 

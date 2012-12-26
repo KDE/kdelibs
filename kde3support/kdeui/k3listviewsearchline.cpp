@@ -20,7 +20,6 @@
 #include "k3listviewsearchline.h"
 
 #include <k3listview.h>
-#include <kiconloader.h>
 #include <ktoolbar.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>

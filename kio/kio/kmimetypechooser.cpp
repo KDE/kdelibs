@@ -29,6 +29,7 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <kconfiggroup.h>
+#include <kiconloader.h>
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate

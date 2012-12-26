@@ -31,7 +31,6 @@ class KDialogPrivate;
 #include <kwidgets_export.h>
 #include <kconfiggroup.h>
 #include <kguiitem.h>
-#include <kiconloader.h>
 
 #include <QDialog>
 

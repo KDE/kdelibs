@@ -40,6 +40,7 @@
 #include <kxmlguiclient.h>
 #include <kxmlguifactory.h>
 #include <kactioncollection.h>
+#include <kiconloader.h>
 
 /************************************************************************/
 /* KShortcutsDialog                                                     */

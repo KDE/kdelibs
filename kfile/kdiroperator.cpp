@@ -20,6 +20,7 @@
 
 #include "kdiroperator.h"
 #include <kprotocolmanager.h>
+#include <kiconloader.h>
 #include "kdirmodel.h"
 #include "kdiroperatordetailview_p.h"
 #include "kdirsortfilterproxymodel.h"

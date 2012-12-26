@@ -61,6 +61,7 @@
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 #include <kprocess.h>
+#include <kiconloader.h>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextStream>

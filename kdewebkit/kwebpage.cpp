@@ -33,6 +33,7 @@
 // KDE
 #include <kaction.h>
 #include <kfiledialog.h>
+#include <kiconloader.h>
 #include <kprotocolmanager.h>
 #include <kjobuidelegate.h>
 #include <krun.h>

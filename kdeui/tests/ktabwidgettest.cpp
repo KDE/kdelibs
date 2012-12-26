@@ -8,6 +8,7 @@
 #include <QApplication>
 
 #include <kdebug.h>
+#include <kiconloader.h>
 
 #include "ktabwidgettest.h"
 

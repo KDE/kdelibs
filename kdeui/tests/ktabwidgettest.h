@@ -1,7 +1,6 @@
 #ifndef KTABWIDGETTEST_H
 #define KTABWIDGETTEST_H
 
-#include <kiconloader.h>
 #include <QWidget>
 #include <ktabwidget.h>
 #include <QLabel>

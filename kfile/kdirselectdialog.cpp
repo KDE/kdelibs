@@ -34,6 +34,7 @@
 #include <kfiledialog.h>
 #include <kfiletreeview.h>
 #include <kfileitemdelegate.h>
+#include <kiconloader.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>

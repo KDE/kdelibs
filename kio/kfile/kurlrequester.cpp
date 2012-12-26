@@ -26,6 +26,7 @@
 #include <kurlcompletion.h>
 #include <kprotocolmanager.h>
 #include <kstandardshortcut.h>
+#include <kiconloader.h>
 #include <kdebug.h>
 
 #include <QEvent>

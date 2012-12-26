@@ -20,8 +20,7 @@
 #include <QPushButton>
 
 #include <kdialog.h>
-
-class KIconLoader;
+#include <kiconloader.h>
 
 /**
  * Dialog for interactive selection of icons. Use the function

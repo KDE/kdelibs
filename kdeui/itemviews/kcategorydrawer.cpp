@@ -24,7 +24,6 @@
 #include <QStyleOption>
 #include <QApplication>
 
-#include <kiconloader.h>
 #include <kcategorizedview.h>
 #include <kcategorizedsortfilterproxymodel.h>
 

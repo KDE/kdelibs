@@ -23,6 +23,7 @@
 #include <klocalizedstring.h>
 #include <kaction.h>
 #include <kfileitemactions.h>
+#include <kiconloader.h>
 #include <kmenu.h>
 #include <ksqueezedtextlabel.h>
 #include <knotification.h>

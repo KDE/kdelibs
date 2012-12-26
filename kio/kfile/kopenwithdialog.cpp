@@ -48,6 +48,7 @@
 #include <kurlrequester.h>
 #include <kservicegroup.h>
 #include <kserviceoffer.h>
+#include <kiconloader.h>
 #include <kdebug.h>
 
 #include <assert.h>

@@ -28,7 +28,6 @@
 #include "kjob.h"
 #include "kdebug.h"
 
-#include <kiconloader.h>
 #include <kpixmapsequencewidget.h>
 
 using namespace KNS3;

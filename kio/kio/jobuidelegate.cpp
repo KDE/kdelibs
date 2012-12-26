@@ -26,6 +26,7 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
+#include <kiconloader.h>
 #include <QDBusInterface>
 
 #include <QPointer>

@@ -41,6 +41,7 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
+#include <kiconloader.h>
 #include <kurl.h>
 #include <kpushbutton.h>
 //#include <kurlcombobox.h>
