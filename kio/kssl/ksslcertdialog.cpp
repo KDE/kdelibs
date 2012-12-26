@@ -22,6 +22,7 @@
 
 #include <kssl.h>
 
+#include <QDialogButtonBox>
 #include <QLayout>
 #include <QRadioButton>
 #include <QCheckBox>
@@ -45,7 +46,7 @@ private:
 };
 
 KSSLCertDialog::KSSLCertDialog(QWidget *parent, const char *name, bool modal)
- : KDialog(parent), d(new KSSLCertDialogPrivate) {
+ : QDialog(parent), d(new KSSLCertDialogPrivate) {
    setObjectName(name);
    setModal(modal);
 
@@ -80,8 +81,14 @@ KSSLCertDialog::KSSLCertDialog(QWidget *parent, const char *name, bool modal)
    h->addWidget(d->p_pb_dontsend);
    connect(d->p_pb_dontsend, SIGNAL(clicked()), SLOT(slotDont()));
 
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    grid->addWidget(buttonBox);
+
 #ifndef QT_NO_WIDGET_TOPEXTRA
-   setCaption(i18n("KDE SSL Certificate Dialog"));
+   setWindowTitle(i18n("KDE SSL Certificate Dialog"));
 #endif
 }
 

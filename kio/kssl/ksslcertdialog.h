@@ -24,7 +24,7 @@
 #include <kio/kio_export.h>
 
 #include <QtCore/QStringList>
-#include <kdialog.h>
+#include <QDialog>
 
 class QWidget;
 class QCheckBox;
@@ -42,7 +42,7 @@ class QPushButton;
  * @see KSSL
  * @short KDE X.509 Certificate Dialog
  */
-class KIO_EXPORT KSSLCertDialog : public KDialog {
+class KIO_EXPORT KSSLCertDialog : public QDialog {
 	Q_OBJECT
 public:
 	/**

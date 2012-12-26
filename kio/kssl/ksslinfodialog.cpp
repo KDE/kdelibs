@@ -25,6 +25,7 @@
 
 #include <kssl.h>
 
+#include <QDialogButtonBox>
 #include <QFrame>
 #include <QtCore/QDate>
 #include <QtCore/QFile>
@@ -60,14 +61,18 @@ public:
 
 
 KSslInfoDialog::KSslInfoDialog(QWidget *parent)
- : KDialog(parent),
+ : QDialog(parent),
    d(new KSslInfoDialogPrivate)
 {
-    setCaption(i18n("KDE SSL Information"));
+    setWindowTitle(i18n("KDE SSL Information"));
     setAttribute(Qt::WA_DeleteOnClose);
 
-    d->ui.setupUi(mainWidget());
-    setButtons(KDialog::Close);
+    QVBoxLayout *layout = new QVBoxLayout;
+    setLayout(layout);
+
+    QWidget *mainWidget = new QWidget(this);
+    d->ui.setupUi(mainWidget);
+    layout->addWidget(mainWidget);
 
     d->subject = new KSslCertificateBox(d->ui.certParties);
     d->issuer = new KSslCertificateBox(d->ui.certParties);
@@ -77,6 +82,12 @@ KSslInfoDialog::KSslInfoDialog(QWidget *parent)
     d->isMainPartEncrypted = true;
     d->auxPartsEncrypted = true;
     updateWhichPartsEncrypted();
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
+    buttonBox->setStandardButtons(QDialogButtonBox::Close);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+    layout->addWidget(buttonBox);
 
 #if 0
     if (KSSL::doesSSLWork()) {
