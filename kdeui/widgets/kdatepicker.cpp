@@ -37,7 +37,6 @@
 #include <klocalizeddate.h>
 #include <kcombobox.h>
 #include <kdebug.h>
-#include <kdialog.h>
 #include <kiconloader.h>
 #include <klineedit.h>
 #include <knotification.h>

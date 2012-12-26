@@ -27,7 +27,6 @@
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
 #include <kdebug.h>
-#include <kdialog.h>
 #include <kiconloader.h>
 #include <kpushbutton.h>
 #include <kservice.h>

@@ -28,7 +28,6 @@
 #include <QTextLayout>
 #include <QVBoxLayout>
 
-#include <kdialog.h>
 #include <kiconloader.h>
 #include <kglobalsettings.h>
 

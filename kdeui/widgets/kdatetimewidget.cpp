@@ -25,7 +25,6 @@
 #include <kdebug.h>
 
 #include "kdatewidget.h"
-#include "kdialog.h"
 
 class KDateTimeWidget::KDateTimeWidgetPrivate
 {

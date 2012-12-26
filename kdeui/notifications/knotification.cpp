@@ -32,7 +32,6 @@
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kpassivepopup.h>
-#include <kdialog.h>
 #include <kwindowsystem.h>
 #include <kdebug.h>
 

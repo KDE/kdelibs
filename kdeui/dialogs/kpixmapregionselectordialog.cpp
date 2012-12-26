@@ -26,7 +26,6 @@
 #include <QVBoxLayout>
 
 #include <klocalizedstring.h>
-#include <kdialog.h>
 #include <kpixmapregionselectorwidget.h>
 
 class KPixmapRegionSelectorDialog::Private

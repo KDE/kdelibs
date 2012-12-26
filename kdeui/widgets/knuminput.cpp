@@ -37,7 +37,6 @@
 #include <QStyle>
 
 #include <kdebug.h>
-#include <kdialog.h>
 #include <klocalizedstring.h>
 
 static inline int calcDiffByTen(int x, int y)

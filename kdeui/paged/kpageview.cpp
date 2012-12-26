@@ -25,7 +25,6 @@
 
 #include "kpagemodel.h"
 
-#include <kdialog.h>
 #include <ktitlewidget.h>
 
 #include <QAbstractItemView>

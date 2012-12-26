@@ -36,7 +36,6 @@
 #include <QSystemTrayIcon>
 
 #include <kdebug.h>
-#include <kdialog.h>
 
 #include <kconfig.h>
 

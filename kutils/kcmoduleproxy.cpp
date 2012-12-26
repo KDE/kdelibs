@@ -39,7 +39,6 @@
 #include <kcmoduleinfo.h>
 
 #include <kdebug.h>
-#include <kdialog.h>
 #include <klocalizedstring.h>
 #include <kservice.h>
 

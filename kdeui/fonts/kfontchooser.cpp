@@ -32,7 +32,6 @@ Boston, MA 02110-1301, USA.
 #include <QGroupBox>
 #include <kcharsets.h>
 #include <kconfig.h>
-#include <kdialog.h>
 #include <kglobalsettings.h>
 #include <klineedit.h>
 #include <klistwidget.h>

@@ -39,7 +39,6 @@
 #include <ksqueezedtextlabel.h>
 #include <kguiitem.h>
 #include <kiconloader.h>
-#include <kdialog.h>
 #include <klocale.h>
 #include <kwindowsystem.h>
 #include <kseparator.h>

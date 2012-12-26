@@ -4,7 +4,6 @@
 
 #include <kdebug.h>
 #include <kconfiggroup.h>
-#include <kdialog.h>
 #include <kiconloader.h>
 #include <kconfig.h>
 

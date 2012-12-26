@@ -24,7 +24,6 @@
 #include <assert.h>
 
 #include <kdebug.h>
-#include <kdialog.h>
 #include <kconfig.h>
 
 #include <QApplication>

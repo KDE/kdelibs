@@ -41,7 +41,6 @@
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
 #include <kbugreport.h>
-#include <kdialog.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>

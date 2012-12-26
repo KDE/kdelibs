@@ -55,7 +55,6 @@
 #include <kaction.h>
 #include <qapplication.h>
 #include <kdebug.h>
-#include <kdialog.h>
 #include <kdirlister.h>
 #include <kfileitemdelegate.h>
 #include <klocalizedstring.h>

@@ -43,7 +43,6 @@
 #include <kmessagebox.h>
 #include <kio/global.h>
 #include <kio/udsentry.h>
-#include <kdialog.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kfileitem.h>

@@ -30,7 +30,6 @@
 
 #include <kcombobox.h>
 #include <kdebug.h>
-#include <kdialog.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <knotification.h>
