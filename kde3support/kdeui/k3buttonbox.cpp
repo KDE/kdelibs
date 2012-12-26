@@ -50,7 +50,6 @@
  */
 
 #include "moc_k3buttonbox.cpp"
-#include <kglobalsettings.h>
 #include <kguiitem.h>
 #include <QPushButton>
 #include <QList>

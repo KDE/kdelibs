@@ -32,7 +32,6 @@
 #include <QApplication>
 
 #include <kdebug.h>
-#include <kglobalsettings.h>
 
 #include "css/csshelper.h"
 #include "misc/helper.h"

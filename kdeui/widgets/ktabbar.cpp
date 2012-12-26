@@ -26,8 +26,6 @@
 #include <QCursor>
 #include <QMouseEvent>
 
-#include <kglobalsettings.h>
-
 class KTabBar::Private
 {
   public:

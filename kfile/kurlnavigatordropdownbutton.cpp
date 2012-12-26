@@ -20,8 +20,6 @@
 #include "kurlnavigatordropdownbutton_p.h"
 #include "kurlnavigator.h"
 
-#include <kglobalsettings.h>
-
 #include <QKeyEvent>
 #include <QPainter>
 #include <QStyleOption>

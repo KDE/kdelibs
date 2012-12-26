@@ -24,7 +24,6 @@
 #include <QLayout>
 
 #include <kfilemetapreview.h>
-#include <kglobalsettings.h>
 #include <klocalizedstring.h>
 
 class KPreviewPropsPlugin::KPreviewPropsPluginPrivate

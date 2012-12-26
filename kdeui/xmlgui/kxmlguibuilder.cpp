@@ -27,7 +27,6 @@
 #include "kmainwindow.h"
 #include "kxmlguiwindow.h"
 #include "kaction.h"
-#include "kglobalsettings.h"
 #include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kdebug.h>

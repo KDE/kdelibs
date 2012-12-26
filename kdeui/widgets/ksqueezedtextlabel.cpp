@@ -27,7 +27,6 @@
 #include <QApplication>
 #include <QMimeData>
 #include <QTextDocument>
-#include <kglobalsettings.h>
 
 class KSqueezedTextLabelPrivate
 {

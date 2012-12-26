@@ -34,7 +34,6 @@
 
 #include <kdebug.h>
 #include <kconfig.h>
-#include <kglobalsettings.h>
 
 class KCompletionBox::KCompletionBoxPrivate
 {

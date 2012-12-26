@@ -35,7 +35,6 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
-#include <kglobalsettings.h>
 #include <kshortcut.h>
 #include <kconfig.h>
 #include <kstringhandler.h>

@@ -21,7 +21,6 @@
 #include "kurlnavigatorplacesselector_p.h"
 
 #include <kiconloader.h>
-#include <kglobalsettings.h>
 #include <kfileplacesmodel.h>
 #include <kmenu.h>
 #include <kdebug.h>

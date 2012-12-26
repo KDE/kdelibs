@@ -26,7 +26,6 @@
 #include <QtCore/QDir>
 #include <QApplication>
 #include <kdebug.h>
-#include <kglobalsettings.h>
 #include <kfileitem.h>
 #include <kmimetype.h>
 

@@ -37,7 +37,6 @@
 
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kglobalsettings.h>
 
 #include <kconfig.h>
 

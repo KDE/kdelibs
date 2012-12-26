@@ -18,7 +18,6 @@
 
 #include <unistd.h>
 #include "kuniqueapplication.h"
-#include "kglobalsettings.h"
 
 #include <stdio.h>
 #include <kcmdlineargs.h>

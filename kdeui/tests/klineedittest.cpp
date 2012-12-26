@@ -9,7 +9,6 @@
 #include <kdialog.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
-#include <kglobalsettings.h>
 #include <kcompletionbox.h>
 
 #include "klineedittest.h"

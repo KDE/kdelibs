@@ -26,9 +26,9 @@
 #include <QLabel>
 #include <QLayout>
 #include <QTabWidget>
+#include <qstandardpaths.h>
 
 #include <kdeversion.h>
-#include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <ktitlewidget.h>
 #include <kiconloader.h>

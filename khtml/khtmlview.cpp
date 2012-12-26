@@ -65,7 +65,6 @@
 
 #include <kcursor.h>
 #include <kdebug.h>
-#include <kglobalsettings.h>
 #include <kdialog.h>
 #include <kiconloader.h>
 #include <klocale.h>

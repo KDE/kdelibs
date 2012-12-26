@@ -30,7 +30,6 @@
 
 #include <kfileitem.h>
 #include <kfileplacesmodel.h>
-#include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h> // KDE::icon
 #include <kmenu.h>

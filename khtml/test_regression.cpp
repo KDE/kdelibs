@@ -223,7 +223,6 @@ const char* imageMissingIcon =
 #include <kio/job.h>
 #include <kmainwindow.h>
 #include <kconfig.h>
-#include <kglobalsettings.h>
 
 #include <QColor>
 #include <QCursor>
