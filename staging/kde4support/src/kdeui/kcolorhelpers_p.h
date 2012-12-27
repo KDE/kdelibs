@@ -18,8 +18,8 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifndef KGUIADDONS_KCOLORHELPERS_P_H
-#define KGUIADDONS_KCOLORHELPERS_P_H
+#ifndef KDE4SUPPORT_KCOLORHELPERS_P_H
+#define KDE4SUPPORT_KCOLORHELPERS_P_H
 
 class QPainter;
 class QRect;
@@ -32,4 +32,4 @@ void fillOpaqueRect(QPainter *painter, const QRect &rect, const QBrush &brush);
 
 } // namespace KDEPrivate
 
-#endif // KDEUI_COLORS_KCOLORHELPERS_P_H
+#endif
