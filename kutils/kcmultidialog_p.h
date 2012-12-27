@@ -32,8 +32,9 @@ class KCMultiDialogPrivate : public KPageDialogPrivate
 {
     Q_DECLARE_PUBLIC(KCMultiDialog)
     protected:
-        KCMultiDialogPrivate()
-            : currentModule(0)
+        KCMultiDialogPrivate(KCMultiDialog *parent)
+            : KPageDialogPrivate(parent),
+              currentModule(0)
         {
         }
 

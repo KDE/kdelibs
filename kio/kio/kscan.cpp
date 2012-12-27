@@ -21,6 +21,7 @@
 #include "kscan.h"
 
 #include <QtCore/QFile>
+#include <QPushButton>
 
 #include <klocalizedstring.h>
 #include <kservicetypetrader.h>
@@ -47,9 +48,9 @@ KScanDialog::KScanDialog( int dialogFace, int buttonMask,
       d( new KScanDialogPrivate )
 {
   setFaceType( (KPageDialog::FaceType)dialogFace );
-  setCaption( i18n("Acquire Image") );
-  setButtons( (KDialog::ButtonCodes)buttonMask );
-  setDefaultButton( Close );
+  setWindowTitle( i18n("Acquire Image") );
+  buttonBox()->setStandardButtons((QDialogButtonBox::StandardButtons)buttonMask);
+  buttonBox()->button(QDialogButtonBox::Close)->setDefault(true);
 }
 
 KScanDialog::~KScanDialog()
@@ -96,9 +97,9 @@ KOCRDialog::KOCRDialog( int dialogFace, int buttonMask,
       d( new KOCRDialogPrivate )
 {
   setFaceType( (KPageDialog::FaceType)dialogFace );
-  setCaption( i18n("OCR Image") );
-  setButtons( (KDialog::ButtonCodes)buttonMask );
-  setDefaultButton( Close );
+  setWindowTitle( i18n("OCR Image") );
+  buttonBox()->setStandardButtons((QDialogButtonBox::StandardButtons)buttonMask);
+  buttonBox()->button(QDialogButtonBox::Close)->setDefault(true);
   setModal( modal );
 }
 

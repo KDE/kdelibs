@@ -500,13 +500,11 @@ void ActionCollectionView::slotEdit()
     }
     if( (! action) && (! collection) ) return;
     KPageDialog* dialog = new KPageDialog( this );
-    dialog->setCaption( i18n("Edit") );
-    dialog->setButtons( KDialog::Ok | KDialog::Cancel );
-    //dialog->enableButtonOk( false );
+    dialog->setWindowTitle( i18n("Edit") );
     dialog->setFaceType( KPageDialog::Plain ); //Auto Plain List Tree Tabbed
     ActionCollectionEditor* editor =
-        action ? new ActionCollectionEditor(action, dialog->mainWidget())
-               : new ActionCollectionEditor(collection, dialog->mainWidget());
+        action ? new ActionCollectionEditor(action, dialog)
+               : new ActionCollectionEditor(collection, dialog);
     dialog->addPage(editor, i18nc("@title:group Script properties", "General"));
     //dialog->addPage(new QWidget(this), i18n("Security"));
     dialog->resize( QSize(580, 200).expandedTo( dialog->minimumSizeHint() ) );
@@ -514,7 +512,7 @@ void ActionCollectionView::slotEdit()
     if( result == QDialog::Accepted /*&& dialog->result() == KDialog::Ok*/ ) {
         editor->commit();
     }
-    dialog->delayedDestruct();
+    dialog->deleteLater();
 }
 
 void ActionCollectionView::slotAdd()

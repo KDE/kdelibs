@@ -290,6 +290,8 @@ public:
     */
   void setFileNameReadOnly( bool ro );
 
+  using KPageDialog::buttonBox;
+
 public Q_SLOTS:
   /**
    * Called when the user presses 'Ok'.

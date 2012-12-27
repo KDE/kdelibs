@@ -25,12 +25,15 @@
 #include <kconfigdialogmanager.h>
 #include <kcoreconfigskeleton.h>
 #include <kdebug.h>
+#include <khelpclient.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 
+#include <QDialogButtonBox>
 #include <QIcon>
 #include <QLayout>
+#include <QPushButton>
 #include <QtCore/QMap>
 #include <QCoreApplication>
 
@@ -40,12 +43,9 @@ public:
   KConfigDialogPrivate(KConfigDialog *q, const QString& name, KCoreConfigSkeleton *config)
     : q(q), shown(false), manager(0)
   {
-    q->setCaption( i18n("Configure") );
-    q->setFaceType( List );
-    q->setButtons( Default|Ok|Apply|Cancel|Help );
-    q->setHelp( QString(), QCoreApplication::instance()->applicationName() );
-    q->setDefaultButton( Ok );
     q->setObjectName( name );
+    q->setWindowTitle( i18n("Configure") );
+    q->setFaceType( List );
 
     if ( !name.isEmpty() ) {
       openDialogs.insert(name, q);
@@ -56,18 +56,26 @@ public:
       q->setObjectName(genericName);
     }
 
-    connect(q, SIGNAL(okClicked()), q, SLOT(updateSettings()));
-    connect(q, SIGNAL(applyClicked()), q, SLOT(updateSettings()));
-    connect(q, SIGNAL(applyClicked()), q, SLOT(_k_updateButtons()));
-    connect(q, SIGNAL(cancelClicked()), q, SLOT(updateWidgets()));
-    connect(q, SIGNAL(defaultClicked()), q, SLOT(updateWidgetsDefault()));
-    connect(q, SIGNAL(defaultClicked()), q, SLOT(_k_updateButtons()));
+    QDialogButtonBox *buttonBox = q->buttonBox();
+    buttonBox->setStandardButtons(QDialogButtonBox::RestoreDefaults
+                                | QDialogButtonBox::Ok
+                                | QDialogButtonBox::Apply
+                                | QDialogButtonBox::Cancel
+                                | QDialogButtonBox::Help);
+    connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), q, SLOT(updateSettings()));
+    connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), q, SLOT(updateSettings()));
+    connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), q, SLOT(_k_updateButtons()));
+    connect(buttonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), q, SLOT(updateWidgets()));
+    connect(buttonBox->button(QDialogButtonBox::RestoreDefaults), SIGNAL(clicked()), q, SLOT(updateWidgetsDefault()));
+    connect(buttonBox->button(QDialogButtonBox::RestoreDefaults), SIGNAL(clicked()), q, SLOT(_k_updateButtons()));
+    connect(buttonBox->button(QDialogButtonBox::Help), SIGNAL(clicked()), q, SLOT(showHelp()));
+
     connect(q, SIGNAL(pageRemoved(KPageWidgetItem*)), q, SLOT(onPageRemoved(KPageWidgetItem*)));
 
     manager = new KConfigDialogManager(q, config);
     setupManagerConnections(manager);
 
-    q->enableButton(Apply, false);
+    buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
   }
 
   KPageWidgetItem* addPageInternal(QWidget *page, const QString &itemName,
@@ -122,8 +130,9 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
 
   if (d->shown && manage) {
     // update the default button if the dialog is shown
-    bool is_default = isButtonEnabled(Default) && d->manager->isDefault();
-    enableButton(Default,!is_default);
+    QPushButton *defaultButton = buttonBox()->button(QDialogButtonBox::RestoreDefaults);
+    bool is_default = defaultButton->isEnabled() && d->manager->isDefault();
+    defaultButton->setEnabled(!is_default);
   }
   return item;
 }
@@ -146,8 +155,9 @@ KPageWidgetItem* KConfigDialog::addPage(QWidget *page,
   if (d->shown)
   {
     // update the default button if the dialog is shown
-    bool is_default = isButtonEnabled(Default) && d->managerForPage[page]->isDefault();
-    enableButton(Default,!is_default);
+    QPushButton *defaultButton = buttonBox()->button(QDialogButtonBox::RestoreDefaults);
+    bool is_default = defaultButton->isEnabled() && d->managerForPage[page]->isDefault();
+    defaultButton->setEnabled(!is_default);
   }
   return item;
 }
@@ -176,10 +186,11 @@ void KConfigDialog::KConfigDialogPrivate::setupManagerConnections(KConfigDialogM
     q->connect(manager, SIGNAL(settingsChanged()), q, SLOT(_k_settingsChangedSlot()));
     q->connect(manager, SIGNAL(widgetModified()), q, SLOT(_k_updateButtons()));
 
-    q->connect(q, SIGNAL(okClicked()), manager, SLOT(updateSettings()));
-    q->connect(q, SIGNAL(applyClicked()), manager, SLOT(updateSettings()));
-    q->connect(q, SIGNAL(cancelClicked()), manager, SLOT(updateWidgets()));
-    q->connect(q, SIGNAL(defaultClicked()), manager, SLOT(updateWidgetsDefault()));
+    QDialogButtonBox *buttonBox = q->buttonBox();
+    q->connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), manager, SLOT(updateSettings()));
+    q->connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), manager, SLOT(updateSettings()));
+    q->connect(buttonBox->button(QDialogButtonBox::Cancel), SIGNAL(clicked()), manager, SLOT(updateWidgets()));
+    q->connect(buttonBox->button(QDialogButtonBox::RestoreDefaults), SIGNAL(clicked()), manager, SLOT(updateWidgetsDefault()));
 }
 
 void KConfigDialog::onPageRemoved( KPageWidgetItem *item )
@@ -232,7 +243,7 @@ void KConfigDialog::KConfigDialogPrivate::_k_updateButtons()
     has_changed |= (*it)->hasChanged();
   }
 
-  q->enableButton(KDialog::Apply, has_changed);
+  q->buttonBox()->button(QDialogButtonBox::Apply)->setEnabled(has_changed);
 
   bool is_default = manager->isDefault() && q->isDefault();
   for (it = managerForPage.begin();
@@ -242,7 +253,7 @@ void KConfigDialog::KConfigDialogPrivate::_k_updateButtons()
     is_default &= (*it)->isDefault();
   }
 
-  q->enableButton(KDialog::Default, !is_default);
+  q->buttonBox()->button(QDialogButtonBox::RestoreDefaults)->setEnabled(!is_default);
 
   emit q->widgetModified();
   only_once = false;
@@ -274,7 +285,7 @@ void KConfigDialog::showEvent(QShowEvent *e)
       has_changed |= (*it)->hasChanged();
     }
 
-    enableButton(Apply, has_changed);
+    buttonBox()->button(QDialogButtonBox::Apply)->setEnabled(has_changed);
 
     bool is_default = d->manager->isDefault() && isDefault();
     for (it = d->managerForPage.begin();
@@ -284,7 +295,7 @@ void KConfigDialog::showEvent(QShowEvent *e)
       is_default &= (*it)->isDefault();
     }
 
-    enableButton(Default, !is_default);
+    buttonBox()->button(QDialogButtonBox::RestoreDefaults)->setEnabled(!is_default);
     d->shown = true;
   }
   KPageDialog::showEvent(e);
@@ -320,6 +331,11 @@ void KConfigDialog::updateButtons()
 void KConfigDialog::settingsChangedSlot()
 {
     d->_k_settingsChangedSlot();
+}
+
+void KConfigDialog::showHelp()
+{
+    KHelpClient::invokeHelp(QString(), QCoreApplication::instance()->applicationName());
 }
 
 #include "moc_kconfigdialog.cpp"

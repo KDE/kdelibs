@@ -61,6 +61,7 @@ extern "C" {
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QCheckBox>
@@ -213,7 +214,7 @@ KPropertiesDialog::KPropertiesDialog (const KFileItem& item,
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-    setCaption(i18n("Properties for %1" , KIO::decodeFileName(item.name())));
+    setWindowTitle(i18n("Properties for %1" , KIO::decodeFileName(item.name())));
 
     Q_ASSERT( !item.isNull() );
     d->m_items.append(item);
@@ -228,7 +229,7 @@ KPropertiesDialog::KPropertiesDialog (const QString& title,
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-    setCaption( i18n( "Properties for %1", title ) );
+    setWindowTitle(i18n("Properties for %1", title));
 
     d->init();
 }
@@ -238,9 +239,9 @@ KPropertiesDialog::KPropertiesDialog(const KFileItemList& _items,
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
     if ( _items.count() > 1 )
-        setCaption( i18np( "Properties for 1 item", "Properties for %1 Selected Items", _items.count() ) );
+        setWindowTitle(i18np("Properties for 1 item", "Properties for %1 Selected Items", _items.count()));
     else
-        setCaption(i18n("Properties for %1", KIO::decodeFileName(_items.first().name())));
+        setWindowTitle(i18n("Properties for %1", KIO::decodeFileName(_items.first().name())));
 
     Q_ASSERT( !_items.isEmpty() );
     d->m_singleUrl = _items.first().url();
@@ -255,7 +256,7 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _url,
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-    setCaption( i18n( "Properties for %1" , KIO::decodeFileName(QUrlPathInfo(_url).fileName()))  );
+    setWindowTitle(i18n("Properties for %1", KIO::decodeFileName(QUrlPathInfo(_url).fileName())));
 
     d->m_singleUrl = _url;
 
@@ -271,7 +272,7 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _tempUrl, const QUrl& _current
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-    setCaption( i18n( "Properties for %1" , KIO::decodeFileName(QUrlPathInfo(_tempUrl).fileName()))  );
+    setWindowTitle(i18n("Properties for %1", KIO::decodeFileName(QUrlPathInfo(_tempUrl).fileName())));
 
     d->m_singleUrl = _tempUrl;
     d->m_defaultName = _defaultName;
@@ -343,11 +344,12 @@ bool KPropertiesDialog::showDialog(const KFileItemList& _items, QWidget* parent,
 void KPropertiesDialog::KPropertiesDialogPrivate::init()
 {
     q->setFaceType(KPageDialog::Tabbed);
-    q->setButtons(KDialog::Ok | KDialog::Cancel);
-    q->setDefaultButton(KDialog::Ok);
 
-    connect(q, SIGNAL(okClicked()), q, SLOT(slotOk()));
-    connect(q, SIGNAL(cancelClicked()), q, SLOT(slotCancel()));
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(q);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    q->connect(buttonBox, SIGNAL(accepted()), q, SLOT(slotOk()));
+    q->connect(buttonBox, SIGNAL(rejected()), q, SLOT(slotCancel()));
+    q->setButtonBox(buttonBox);
 
     insertPages();
 
@@ -1149,7 +1151,7 @@ void KFilePropsPlugin::setFileNameReadOnly( bool ro )
         if (ro)
         {
             // Don't put the initial focus on the line edit when it is ro
-            properties->setButtonFocus(KDialog::Ok);
+            properties->buttonBox()->button(QDialogButtonBox::Ok)->setFocus();
         }
     }
 }
@@ -1183,7 +1185,7 @@ void KFilePropsPlugin::slotIconChanged()
 
 void KFilePropsPlugin::nameFileChanged(const QString &text )
 {
-    properties->enableButtonOk(!text.isEmpty());
+    properties->buttonBox()->button(QDialogButtonBox::Ok)->setEnabled(!text.isEmpty());
     emit changed();
 }
 

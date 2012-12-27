@@ -25,10 +25,11 @@
 #ifndef KPAGEDIALOG_H
 #define KPAGEDIALOG_H
 
-#include <kdialog.h>
+#include <QDialog>
 #include <kpagewidget.h>
 
 class KPageDialogPrivate;
+class QDialogButtonBox;
 
 /**
  * @short A dialog base class which can handle multiple pages.
@@ -62,7 +63,7 @@ class KPageDialogPrivate;
  *
  * @author Tobias Koenig (tokoe@kde.org)
  */
-class KDEUI_EXPORT KPageDialog : public KDialog
+class KDEUI_EXPORT KPageDialog : public QDialog
 {
   Q_OBJECT
     Q_DECLARE_PRIVATE(KPageDialog)
@@ -230,6 +231,28 @@ class KDEUI_EXPORT KPageDialog : public KDialog
      */
     void setPageWidget(KPageWidget *widget);
 
+    /**
+     * Returns the button box of the dialog or 0 if no button box is set.
+     */
+    QDialogButtonBox *buttonBox();
+
+    /**
+     * Returns the button box of the dialog or 0 if no button box is set.
+     */
+    const QDialogButtonBox *buttonBox() const;
+
+    /**
+     * Set the button box of the dia.log
+     *
+     * @note the previous buttonBox will be deleted.
+     *
+     * @param box The QDialogButtonBox object will be reparented to this objectm so you can create
+     * it without parent and you are not allowed to delete it.
+     */
+    void setButtonBox(QDialogButtonBox *box);
+
+  protected:
+    KPageDialogPrivate * const d_ptr;
 };
 
 #endif

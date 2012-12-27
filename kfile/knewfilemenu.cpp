@@ -439,7 +439,7 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
 
         const KUrl templateUrl(entry.templatePath);
 
-	KDialog* dlg = new KPropertiesDialog(templateUrl, *it, text, m_parentWidget);
+	QDialog* dlg = new KPropertiesDialog(templateUrl, *it, text, m_parentWidget);
 	dlg->setModal(q->isModal());
 	dlg->setAttribute(Qt::WA_DeleteOnClose);
         QObject::connect(dlg, SIGNAL(applied()), q, SLOT(_k_slotOtherDesktopFile()));

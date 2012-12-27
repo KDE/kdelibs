@@ -34,6 +34,8 @@
 #include <kiconloader.h>
 #include <QtCore/QFile>
 #include <QCheckBox>
+#include <QDialogButtonBox>
+#include <QPushButton>
 #include <QtCore/QStack>
 #include <QCoreApplication>
 
@@ -46,12 +48,12 @@ namespace KSettings
 {
 
 Dialog::Dialog(QWidget *parent)
-    : KCMultiDialog(*new DialogPrivate, new KPageWidget, parent)
+    : KCMultiDialog(*new DialogPrivate(this), new KPageWidget, parent)
 {
 }
 
 Dialog::Dialog(const QStringList &components, QWidget *parent)
-    : KCMultiDialog(*new DialogPrivate, new KPageWidget, parent)
+    : KCMultiDialog(*new DialogPrivate(this), new KPageWidget, parent)
 {
     Q_D(Dialog);
     d->components = components;
@@ -133,8 +135,8 @@ void Dialog::showEvent(QShowEvent *)
     Dispatcher::syncConfiguration();
 }
 
-DialogPrivate::DialogPrivate()
-    : staticlistview(true), firstshow(true), pluginStateDirty(0)
+DialogPrivate::DialogPrivate(Dialog *parent)
+    : KCMultiDialogPrivate(parent), staticlistview(true), firstshow(true), pluginStateDirty(0)
 {
 }
 
@@ -492,7 +494,7 @@ void DialogPrivate::_k_clientChanged()
 {
     if (pluginStateDirty > 0) {
         Q_Q(Dialog);
-        q->enableButton(KDialog::Apply, true);
+        q->buttonBox()->button(QDialogButtonBox::Apply)->setEnabled(true);
     } else {
         KCMultiDialogPrivate::_k_clientChanged();
     }

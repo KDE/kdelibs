@@ -120,55 +120,66 @@ void KCMultiDialogPrivate::_k_clientChanged()
     if (activeModule) {
         change = activeModule->changed();
 
-        if (q->button(KDialog::Apply)) {
-            q->disconnect(q, SIGNAL(applyClicked()), q, SLOT(slotApplyClicked()));
-            q->disconnect(q->button(KDialog::Apply), SIGNAL(authorized(KAuth::Action)), q, SLOT(slotApplyClicked()));
-            q->button(KDialog::Apply)->setEnabled(change);
+        QPushButton *applyButton = q->buttonBox()->button(QDialogButtonBox::Apply);
+        if (applyButton) {
+            q->disconnect(applyButton, SIGNAL(clicked()), q, SLOT(slotApplyClicked()));
+            delete applyButton->findChild<KAuth::ObjectDecorator*>();
+            applyButton->setEnabled(change);
         }
 
-        if (q->button(KDialog::Ok)) {
-            q->disconnect(q, SIGNAL(okClicked()), q, SLOT(slotOkClicked()));
-            q->disconnect(q->button(KDialog::Ok), SIGNAL(authorized(KAuth::Action)), q, SLOT(slotOkClicked()));
+        QPushButton *okButton = q->buttonBox()->button(QDialogButtonBox::Ok);
+        if (okButton) {
+            q->disconnect(okButton, SIGNAL(clicked()), q, SLOT(slotOkClicked()));
+            delete okButton->findChild<KAuth::ObjectDecorator*>();
         }
 
         if (activeModule->realModule()->needsAuthorization()) {
-            if (q->button(KDialog::Apply)) {
-                KAuth::ObjectDecorator *decorator = new KAuth::ObjectDecorator(q->button(KDialog::Apply));
+            if (applyButton) {
+                KAuth::ObjectDecorator *decorator = new KAuth::ObjectDecorator(applyButton);
                 decorator->setAuthAction(activeModule->realModule()->authAction());
                 activeModule->realModule()->authAction().setParentWidget(activeModule->realModule());
                 q->connect(decorator, SIGNAL(authorized(KAuth::Action)), SLOT(slotApplyClicked()));
             }
 
-            if (q->button(KDialog::Ok)) {
-                KAuth::ObjectDecorator *decorator = new KAuth::ObjectDecorator(q->button(KDialog::Ok));
+            if (okButton) {
+                KAuth::ObjectDecorator *decorator = new KAuth::ObjectDecorator(okButton);
                 decorator->setAuthAction(activeModule->realModule()->authAction());
                 activeModule->realModule()->authAction().setParentWidget(activeModule->realModule());
                 q->connect(decorator, SIGNAL(authorized(KAuth::Action)), SLOT(slotOkClicked()));
             }
         } else {
-            if (q->button(KDialog::Apply)) {
-                q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
-                q->button(KDialog::Apply)->findChild<KAuth::ObjectDecorator*>()->deleteLater();
+            if (applyButton) {
+                q->connect(applyButton, SIGNAL(clicked()), SLOT(slotApplyClicked()));
+                delete applyButton->findChild<KAuth::ObjectDecorator*>();
             }
 
-            if (q->button(KDialog::Ok)) {
-                q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
-                q->button(KDialog::Ok)->findChild<KAuth::ObjectDecorator*>()->deleteLater();
+            if (okButton) {
+                q->connect(okButton, SIGNAL(clicked()), SLOT(slotOkClicked()));
+                delete okButton->findChild<KAuth::ObjectDecorator*>();
             }
         }
     }
 
-    if (q->button(KDialog::Reset)) {
-        q->button(KDialog::Reset)->setEnabled(change);
+    QPushButton *resetButton = q->buttonBox()->button(QDialogButtonBox::Reset);
+    if (resetButton) {
+        resetButton->setEnabled(change);
     }
 
-    if (q->button(KDialog::Apply)) {
-        q->button(KDialog::Apply)->setEnabled(change);
+    QPushButton *applyButton = q->buttonBox()->button(QDialogButtonBox::Apply);
+    if (applyButton) {
+        applyButton->setEnabled(change);
     }
 
     if (activeModule) {
-        q->enableButton(KDialog::Help,    activeModule->buttons() & KCModule::Help);
-        q->enableButton(KDialog::Default, activeModule->buttons() & KCModule::Default);
+        QPushButton *helpButton = q->buttonBox()->button(QDialogButtonBox::Help);
+        if (helpButton) {
+            helpButton->setEnabled(activeModule->buttons() & KCModule::Help);
+        }
+
+        QPushButton *defaultButton = q->buttonBox()->button(QDialogButtonBox::RestoreDefaults);
+        if (defaultButton) {
+            defaultButton->setEnabled(activeModule->buttons() & KCModule::Default);
+        }
     }
 }
 
@@ -205,33 +216,43 @@ void KCMultiDialogPrivate::init()
 {
     Q_Q(KCMultiDialog);
     q->setFaceType(KPageDialog::Auto);
-    q->setCaption(i18n("Configure"));
-    q->setButtons(KDialog::Help | KDialog::Default |KDialog::Cancel | KDialog::Apply | KDialog::Ok | KDialog::Reset);
-
+    q->setWindowTitle(i18n("Configure"));
     q->setModal(false);
 
-    q->connect(q, SIGNAL(finished()), SLOT(_k_dialogClosed()));
-    q->connect(q, SIGNAL(applyClicked()), SLOT(slotApplyClicked()));
-    q->connect(q, SIGNAL(okClicked()), SLOT(slotOkClicked()));
-    q->connect(q, SIGNAL(defaultClicked()), SLOT(slotDefaultClicked()));
-    q->connect(q, SIGNAL(helpClicked()), SLOT(slotHelpClicked()));
-    q->connect(q, SIGNAL(user1Clicked()), SLOT(slotUser1Clicked()));
-    q->connect(q, SIGNAL(resetClicked()), SLOT(slotUser1Clicked()));
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(q);
+    buttonBox->setStandardButtons(QDialogButtonBox::Help
+                                | QDialogButtonBox::RestoreDefaults
+                                | QDialogButtonBox::Cancel
+                                | QDialogButtonBox::Apply
+                                | QDialogButtonBox::Ok
+                                | QDialogButtonBox::Reset);
+    buttonBox->button(QDialogButtonBox::Reset)->setEnabled(false);
+    buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
 
+    q->connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), SLOT(slotApplyClicked()));
+    q->connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), SLOT(slotOkClicked()));
+    q->connect(buttonBox->button(QDialogButtonBox::RestoreDefaults), SIGNAL(clicked()), SLOT(slotDefaultClicked()));
+    q->connect(buttonBox->button(QDialogButtonBox::Help), SIGNAL(clicked()), SLOT(slotHelpClicked()));
+    q->connect(buttonBox->button(QDialogButtonBox::Reset), SIGNAL(clicked()), SLOT(slotUser1Clicked()));
+
+    q->setButtonBox(buttonBox);
+
+    q->connect(q, SIGNAL(finished()), SLOT(_k_dialogClosed()));
     q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
             SLOT(_k_slotCurrentPageChanged(KPageWidgetItem*,KPageWidgetItem*)));
 
-    q->setInitialSize(QSize(800, 550));
+    q->resize(QSize(800, 550));
+    q->adjustSize();
 }
 
 KCMultiDialog::KCMultiDialog( QWidget *parent )
-    : KPageDialog(*new KCMultiDialogPrivate, NULL, parent)
+    : KPageDialog(*new KCMultiDialogPrivate(this), NULL, parent)
 {
     d_func()->init();
 }
 
 KCMultiDialog::KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags)
-    : KPageDialog(*new KCMultiDialogPrivate, pageWidget, parent, flags)
+    : KPageDialog(*new KCMultiDialogPrivate(this), pageWidget, parent, flags)
 {
     d_func()->init();
 }
@@ -321,7 +342,8 @@ void KCMultiDialogPrivate::apply()
 
 void KCMultiDialog::slotApplyClicked()
 {
-  setButtonFocus( Apply );
+    QPushButton *applyButton = buttonBox()->button(QDialogButtonBox::Apply);
+    applyButton->setFocus();
 
     d_func()->apply();
 }
@@ -329,7 +351,8 @@ void KCMultiDialog::slotApplyClicked()
 
 void KCMultiDialog::slotOkClicked()
 {
-  setButtonFocus( Ok );
+    QPushButton *okButton = buttonBox()->button(QDialogButtonBox::Apply);
+    okButton->setFocus();
 
     d_func()->apply();
   accept();
@@ -471,36 +494,5 @@ void KCMultiDialog::clear()
 
     d->_k_clientChanged();
 }
-
-void KCMultiDialog::setButtons(ButtonCodes buttonMask)
-{
-    KPageDialog::setButtons(buttonMask);
-
-    // Set Auto-Default mode ( KDE Bug #211187 )
-    if (buttonMask & KDialog::Ok) {
-        button(KDialog::Ok)->setAutoDefault(true);
-    }
-    if (buttonMask & KDialog::Apply) {
-        button(KDialog::Apply)->setAutoDefault(true);
-    }
-    if (buttonMask & KDialog::Default) {
-        button(KDialog::Default)->setAutoDefault(true);
-    }
-    if (buttonMask & KDialog::Reset) {
-        button(KDialog::Reset)->setAutoDefault(true);
-    }
-    if (buttonMask & KDialog::Cancel) {
-        button(KDialog::Cancel)->setAutoDefault(true);
-    }
-    if (buttonMask & KDialog::Help) {
-        button(KDialog::Help)->setAutoDefault(true);
-    }
-
-    // Old Reset Button
-    enableButton(KDialog::User1, false);
-    enableButton(KDialog::Reset, false);
-    enableButton(KDialog::Apply, false);
-}
-
 
 #include "moc_kcmultidialog.cpp"

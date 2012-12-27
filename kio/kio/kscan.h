@@ -22,6 +22,7 @@
 
 #include <kio/kio_export.h>
 #include <kpagedialog.h>
+#include <QDialogButtonBox>
 #include <kcomponentdata.h> // KDE5: remove include
 #include <kpluginfactory.h> // KDE5: remove include
 
@@ -95,12 +96,12 @@ protected:
      *
      * @param dialogFace The KPageDialog::FaceType
      * @param buttonMask An ORed mask of all buttons (see
-     * KDialog::ButtonCode)
+     * QDialogButtonBox::StandardButton)
      * @param parent The QWidget's parent, or 0
      * @see KPageDialog
      */
     explicit KScanDialog( int dialogFace = Tabbed,
-                          int buttonMask = Close|Help,
+                          int buttonMask = QDialogButtonBox::Close|QDialogButtonBox::Help,
                           QWidget *parent = 0 );
 
     /**
@@ -194,7 +195,7 @@ protected:
      * @param parent the QWidget's parent, or 0
      * @param modal if true the dialog is model
      */
-    explicit KOCRDialog( int dialogFace=Tabbed, int buttonMask = Close|Help,
+    explicit KOCRDialog( int dialogFace=Tabbed, int buttonMask = QDialogButtonBox::Close|QDialogButtonBox::Help,
                          QWidget *parent=0L, bool modal=false );
 
     /**

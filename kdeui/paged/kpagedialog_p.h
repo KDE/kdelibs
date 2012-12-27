@@ -21,30 +21,51 @@
 #define PAGED_KPAGEDIALOG_P_H
 
 #include "paged/kpagedialog.h"
-#include "../dialogs/kdialog_p.h"
+#include <QDialogButtonBox>
 #include <QLayout>
 
-class KDEUI_EXPORT KPageDialogPrivate : public KDialogPrivate
+class KDEUI_EXPORT KPageDialogPrivate
 {
     Q_DECLARE_PUBLIC(KPageDialog)
     protected:
-        KPageDialogPrivate()
-            : mPageWidget(0)
+        KPageDialogPrivate(KPageDialog *parent)
+            : q_ptr(parent),
+              mPageWidget(0),
+              mButtonBox(0)
         {
         }
 
+        virtual ~KPageDialogPrivate()
+        {
+        }
+
+        KPageDialog * const q_ptr;
         KPageWidget *mPageWidget;
+        QDialogButtonBox *mButtonBox;
 
         void init()
         {
             Q_Q(KPageDialog);
+            delete q->layout();
+
+            QVBoxLayout *layout = new QVBoxLayout;
+            q->setLayout(layout);
+
             if (mPageWidget) {
                 q->connect(mPageWidget, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)),
                         q, SIGNAL(currentPageChanged(KPageWidgetItem *, KPageWidgetItem *)));
                 q->connect(mPageWidget, SIGNAL(pageRemoved(KPageWidgetItem *)), 
                         q, SIGNAL(pageRemoved(KPageWidgetItem *)));
+                layout->addWidget(mPageWidget);
+            } else {
+                layout->addStretch();
             }
-            q->setMainWidget(mPageWidget);
+
+            if (mButtonBox) {
+                q->connect(mButtonBox, SIGNAL(accepted()), q, SLOT(accept()));
+                q->connect(mButtonBox, SIGNAL(rejected()), q, SLOT(reject()));
+                layout->addWidget(mButtonBox);
+            }
         }
 };
 

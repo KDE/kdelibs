@@ -211,6 +211,12 @@ protected Q_SLOTS:
    */
   void settingsChangedSlot();
 
+  /**
+   * Displays help for this config dialog.
+   * @since 5.0
+   */
+  virtual void showHelp();
+
 protected:
 
   /**

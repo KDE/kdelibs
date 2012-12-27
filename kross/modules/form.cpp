@@ -27,6 +27,7 @@
 #include <QtCore/QArgument>
 #include <QtCore/QMetaEnum>
 #include <QAction>
+#include <QDialogButtonBox>
 #include <QKeyEvent>
 #include <QDialog>
 #include <QBoxLayout>
@@ -35,10 +36,12 @@
 #include <QApplication>
 #include <QProgressBar>
 //#include <QProgressDialog>
+#include <QPushButton>
 #include <QTextBrowser>
 #include <QUiLoader>
 #include <QTextCursor>
 #include <QTextBlock>
+#include <QTime>
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -46,6 +49,7 @@
 #include <kurl.h>
 //#include <kurlcombobox.h>
 //#include <kdiroperator.h>
+#include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kpluginloader.h>
 #include <kpluginfactory.h>
@@ -222,16 +226,15 @@ FormProgressDialog::FormProgressDialog(const QString& caption, const QString& la
     d->gotCanceled = false;
     d->time.start();
 
-    setCaption(caption);
-    KDialog::setButtons(KDialog::Ok|KDialog::Cancel);
+    setWindowTitle(caption);
     setFaceType(KPageDialog::Plain);
-    enableButton(KDialog::Ok, false);
+    buttonBox()->button(QDialogButtonBox::Ok)->setEnabled(false);
     //setWindowModality(Qt::WindowModal);
     setModal(false); //true);
     setMinimumWidth(540);
     setMinimumHeight(400);
 
-    QWidget* widget = new QWidget( mainWidget() );
+    QWidget* widget = new QWidget( this );
     KPageWidgetItem* item = KPageDialog::addPage(widget, QString());
     item->setHeader(labelText);
     //item->setIcon( KDE::icon(iconname) );
@@ -302,7 +305,7 @@ void FormProgressDialog::done(int r)
     if( r == Rejected && ! d->gotCanceled ) {
         if( KMessageBox::messageBox(this, KMessageBox::WarningContinueCancel, i18n("Cancel?")) == KMessageBox::Continue ) {
             d->gotCanceled = true;
-            enableButton(KDialog::Cancel, false);
+            buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(false);
             emit canceled();
         }
         return;
@@ -312,11 +315,11 @@ void FormProgressDialog::done(int r)
 
 int FormProgressDialog::exec()
 {
-    enableButton(KDialog::Ok, true);
-    enableButton(KDialog::Cancel, false);
+    buttonBox()->button(QDialogButtonBox::Ok)->setEnabled(true);
+    buttonBox()->button(QDialogButtonBox::Cancel)->setEnabled(false);
     if( d->bar->isVisible() )
         d->bar->setValue( d->bar->maximum() );
-    return KDialog::exec();
+    return QDialog::exec();
 }
 
 bool FormProgressDialog::isCanceled()
@@ -334,7 +337,7 @@ namespace Kross {
     class FormDialog::Private
     {
         public:
-            KDialog::ButtonCode buttoncode;
+            QDialogButtonBox::StandardButton buttoncode;
             QHash<QString, KPageWidgetItem*> items;
     };
 
@@ -344,10 +347,11 @@ FormDialog::FormDialog(const QString& caption)
     : KPageDialog( /*0, Qt::WShowModal | Qt::WDestructiveClose*/ )
     , d( new Private() )
 {
-    setCaption(caption);
-    KDialog::setButtons(KDialog::Ok);
+    setWindowTitle(caption);
+    buttonBox()->setStandardButtons(QDialogButtonBox::Ok);
     setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding) );
 
+    connect(buttonBox(), SIGNAL(clicked(QAbstractButton*)), this, SLOT(slotButtonClicked(QAbstractButton*)));
     connect(this, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
             this, SLOT(slotCurrentPageChanged(KPageWidgetItem*)));
 }
@@ -360,25 +364,28 @@ FormDialog::~FormDialog()
 
 bool FormDialog::setButtons(const QString& buttons)
 {
-    int i = metaObject()->indexOfEnumerator("ButtonCode");
+    int i = buttonBox()->metaObject()->indexOfEnumerator("StandardButton");
     Q_ASSERT( i >= 0 );
-    QMetaEnum e = metaObject()->enumerator(i);
+    QMetaEnum e = buttonBox()->metaObject()->enumerator(i);
     int v = e.keysToValue( buttons.toUtf8() );
     if( v < 0 )
         return false;
-    KDialog::setButtons( (KDialog::ButtonCode) v );
+    buttonBox()->setStandardButtons((QDialogButtonBox::StandardButton) v);
     return true;
 }
 
 bool FormDialog::setButtonText(const QString& button, const QString& text)
 {
-    int i = metaObject()->indexOfEnumerator("ButtonCode");
+    int i = buttonBox()->metaObject()->indexOfEnumerator("StandardButton");
     Q_ASSERT( i >= 0 );
-    QMetaEnum e = metaObject()->enumerator(i);
+    QMetaEnum e = buttonBox()->metaObject()->enumerator(i);
     int v = e.keysToValue( button.toUtf8() );
     if( v < 0 )
         return false;
-    KDialog::setButtonText( (KDialog::ButtonCode) v, text);
+    QPushButton *pushButton = buttonBox()->button((QDialogButtonBox::StandardButton) v);
+    if (!pushButton)
+        return false;
+    pushButton->setText(text);
     return true;
 }
 
@@ -416,7 +423,7 @@ QWidget* FormDialog::page(const QString& name) const
 //shared by FormDialog and FormAssistant
 static KPageWidgetItem* formAddPage(KPageDialog* dialog, const QString& name, const QString& header, const QString& iconname)
 {
-    QWidget* widget = new QWidget( dialog->mainWidget() );
+    QWidget* widget = new QWidget( dialog );
     QVBoxLayout* boxlayout = new QVBoxLayout(widget);
     boxlayout->setSpacing(0);
     boxlayout->setMargin(0);
@@ -436,26 +443,20 @@ QWidget* FormDialog::addPage(const QString& name, const QString& header, const Q
     return d->items.insert(name, formAddPage((KPageDialog*)this,name,header,iconname)).value()->widget();
 }
 
-void FormDialog::setMainWidget(QWidget *newMainWidget)
-{
-    KDialog::setMainWidget(newMainWidget);
-}
-
 QString FormDialog::result()
 {
-    int i = metaObject()->indexOfEnumerator("ButtonCode");
+    int i = buttonBox()->metaObject()->indexOfEnumerator("StandardButton");
     if( i < 0 ) {
-        kWarning() << "Kross::FormDialog::setButtons No such enumerator \"ButtonCode\"";
+        kWarning() << "Kross::FormDialog::setButtons No such enumerator \"StandardButton\"";
         return QString();
     }
-    QMetaEnum e = metaObject()->enumerator(i);
+    QMetaEnum e = buttonBox()->metaObject()->enumerator(i);
     return e.valueToKey(d->buttoncode);
 }
 
-void FormDialog::slotButtonClicked(int button)
+void FormDialog::slotButtonClicked(QAbstractButton *button)
 {
-    d->buttoncode = (KDialog::ButtonCode) button;
-    KDialog::slotButtonClicked(button);
+    d->buttoncode = buttonBox()->standardButton(button);
 }
 
 void FormDialog::slotCurrentPageChanged(KPageWidgetItem* current)
@@ -471,7 +472,7 @@ namespace Kross {
     class FormAssistant::Private
     {
         public:
-            KDialog::ButtonCode buttoncode;
+            QDialogButtonBox::StandardButton buttoncode;
             QHash<QString, KPageWidgetItem*> items;
     };
 }
@@ -479,9 +480,10 @@ FormAssistant::FormAssistant(const QString& caption)
     : KAssistantDialog( /*0, Qt::WShowModal | Qt::WDestructiveClose*/ )
     , d( new Private() )
 {
-    setCaption(caption);
+    setWindowTitle(caption);
     setSizePolicy( QSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding) );
 
+    connect(buttonBox(), SIGNAL(clicked(QAbstractButton*)), this, SLOT(slotButtonClicked(QAbstractButton*)));
     connect(this, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)),
             this, SLOT(slotCurrentPageChanged(KPageWidgetItem*)));
     /* unlike boost qt does not support defining of slot call order!
@@ -497,7 +499,10 @@ FormAssistant::~FormAssistant()
 
 void FormAssistant::showHelpButton(bool show)
 {
-    showButton(KDialog::Help, show);
+    QPushButton *helpButton = buttonBox()->button(QDialogButtonBox::Help);
+    if (helpButton) {
+        helpButton->setVisible(show);
+    }
 }
 
 void FormAssistant::back()
@@ -569,10 +574,9 @@ QString FormAssistant::result()
     return e.valueToKey(FormAssistant::AssistantButtonCode(int(d->buttoncode)));
 }
 
-void FormAssistant::slotButtonClicked(int button)
+void FormAssistant::slotButtonClicked(QAbstractButton *button)
 {
-    d->buttoncode = (KDialog::ButtonCode) button;
-    KDialog::slotButtonClicked(button);
+    d->buttoncode = buttonBox()->standardButton(button);
 }
 
 void FormAssistant::slotCurrentPageChanged(KPageWidgetItem* current)

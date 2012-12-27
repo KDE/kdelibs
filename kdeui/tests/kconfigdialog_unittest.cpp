@@ -21,6 +21,9 @@
 #include <QtTest/QtTest>
 #include <qtestevent.h>
 
+#include <QDialogButtonBox>
+#include <QPushButton>
+
 #include <kconfigdialog.h>
 #include <kconfigskeleton.h>
 #include <kcombobox.h>
@@ -127,7 +130,9 @@ private Q_SLOTS:
         page->enumCombo->setCurrentIndex(2);
         page->textCombo->setCurrentIndex(2);
 
-        QMetaObject::invokeMethod(dialog, "applyClicked");
+        QDialogButtonBox *buttonBox = dialog->findChild<QDialogButtonBox*>();
+        QVERIFY(buttonBox!=0);
+        buttonBox->button(QDialogButtonBox::Apply)->click();
         QCOMPARE(skeleton->colorItem->property().value<QColor>(), QColor(Qt::blue));
         QCOMPARE(skeleton->enumItem->property().toInt(), 2);
         QCOMPARE(skeleton->stringItem->property().toString(), QLatin1String("C"));

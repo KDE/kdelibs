@@ -21,7 +21,9 @@
 #include <kstandardguiitem.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
+#include <QDialogButtonBox>
 #include <QIcon>
+#include <QPushButton>
 #include <kiconloader.h>
 
 #include <QHash>
@@ -38,6 +40,9 @@ class KAssistantDialog::Private
         QHash<KPageWidgetItem*, bool> valid;
         QHash<KPageWidgetItem*, bool> appropriate;
         KPageWidgetModel *pageModel;
+        QPushButton *backButton;
+        QPushButton *nextButton;
+        QPushButton *finishButton;
 
         void init();
         void _k_slotUpdateButtons();
@@ -91,18 +96,28 @@ KAssistantDialog::~KAssistantDialog()
 
 void KAssistantDialog::Private::init()
 {
-    q->setButtons(KDialog::Cancel | KDialog::User1 | KDialog::User2 | KDialog::User3 | KDialog::Help);
-    q->setButtonGuiItem( KDialog::User3, KStandardGuiItem::back(KStandardGuiItem::UseRTL) );
-    q->setButtonText( KDialog::User2, i18nc("Opposite to Back", "Next") );
-    q->setButtonText(KDialog::User1, i18n("Finish"));
-    q->setButtonIcon( KDialog::User2, KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon() );
-    q->setButtonIcon( KDialog::User1, KDE::icon("dialog-ok-apply") );
-    q->setDefaultButton(KDialog::User2);
-    q->setFaceType(KPageDialog::Plain);
+    QDialogButtonBox *buttonBox = q->buttonBox();
 
-    q->connect(q, SIGNAL(user3Clicked()), q, SLOT(back()));
-    q->connect(q, SIGNAL(user2Clicked()), q, SLOT(next()));
-    q->connect(q, SIGNAL(user1Clicked()), q, SLOT(accept()));
+    backButton = new QPushButton;
+    KGuiItem::assign(backButton, KStandardGuiItem::back(KStandardGuiItem::UseRTL));
+    q->connect(backButton, SIGNAL(clicked()), q, SLOT(back()));
+    buttonBox->addButton(backButton, QDialogButtonBox::ActionRole);
+
+    nextButton = new QPushButton;
+    nextButton->setText(i18nc("Opposite to Back", "Next"));
+    nextButton->setIcon(KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon());
+    nextButton->setDefault(true);
+    q->connect(nextButton, SIGNAL(clicked()), q, SLOT(next()));
+    buttonBox->addButton(nextButton, QDialogButtonBox::ActionRole);
+
+    finishButton = new QPushButton;
+    finishButton->setText(i18n("Finish"));
+    finishButton->setIcon(KDE::icon("dialog-ok-apply"));
+    buttonBox->addButton(finishButton, QDialogButtonBox::AcceptRole);
+
+    buttonBox->addButton(QDialogButtonBox::Cancel);
+
+    q->setFaceType(KPageDialog::Plain);
 
     q->connect(q, SIGNAL(currentPageChanged(KPageWidgetItem*,KPageWidgetItem*)), q, SLOT(_k_slotUpdateButtons()));
 }
@@ -141,12 +156,13 @@ void KAssistantDialog::Private::_k_slotUpdateButtons()
     QModelIndex currentIndex=pageModel->index(q->currentPage());
     //change the caption of the next/finish button
     QModelIndex nextIndex=getNext(currentIndex);
-    q->enableButton(KDialog::User1, !nextIndex.isValid() && q->isValid(q->currentPage()));
-    q->enableButton(KDialog::User2, nextIndex.isValid() && q->isValid(q->currentPage()));
-    q->setDefaultButton(nextIndex.isValid() ? KDialog::User2 : KDialog::User1);
+    finishButton->setEnabled(!nextIndex.isValid() && q->isValid(q->currentPage()));
+    nextButton->setEnabled(nextIndex.isValid() && q->isValid(q->currentPage()));
+    finishButton->setDefault(!nextIndex.isValid());
+    nextButton->setDefault(nextIndex.isValid());
     //enable or disable the back button;
     nextIndex=getPrevious(currentIndex);
-    q->enableButton(KDialog::User3, nextIndex.isValid());
+    backButton->setEnabled(nextIndex.isValid());
 }
 
 void KAssistantDialog::showEvent(QShowEvent * event)

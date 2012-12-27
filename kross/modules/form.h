@@ -28,6 +28,8 @@
 #include <kassistantdialog.h>
 //#include <kfilewidget.h>
 
+class QAbstractButton;
+
 namespace Kross {
 
     /**
@@ -209,7 +211,7 @@ namespace Kross {
     };
 
     /**
-     * The FormDialog class provides access to KDialog objects as
+     * The FormDialog class provides access to KPageDialog objects as
      * top-level containers.
      *
      * Example (in Python) :
@@ -310,12 +312,6 @@ namespace Kross {
             QWidget* addPage(const QString& name, const QString& header = QString(), const QString& iconname = QString());
 
             /**
-             * Set the \p newMainWidget QWidget as main widget. This is only needed if
-             * you like to replace the KPageDialog page-widget with your own widget.
-             */
-            void setMainWidget(QWidget *newMainWidget);
-
-            /**
              * Shows the dialog as a modal dialog, blocking until the user
              * closes it and returns the execution result.
              *
@@ -323,7 +319,7 @@ namespace Kross {
              * the user rejected the dialog (e.g. by pressing "Cancel" or just
              * closing the dialog by pressing the escape-key).
              */
-            int exec() { return KDialog::exec(); }
+            int exec() { return QDialog::exec(); }
 
             /**
              * Same as the \a exec() method above provided for Python-lovers (python
@@ -338,7 +334,7 @@ namespace Kross {
             QString result();
 
         private Q_SLOTS:
-            virtual void slotButtonClicked(int button);
+            virtual void slotButtonClicked(QAbstractButton *button);
             void slotCurrentPageChanged(KPageWidgetItem* current);
 
         private:
@@ -465,7 +461,7 @@ namespace Kross {
              * the user rejected the dialog (e.g. by pressing "Cancel" or just
              * closing the dialog by pressing the escape-key).
              */
-            int exec() { return KDialog::exec(); }
+            int exec() { return QDialog::exec(); }
 
             /**
              * Same as the \a exec() method above provided for Python-lovers (python
@@ -489,7 +485,7 @@ namespace Kross {
             void next();
 
         private Q_SLOTS:
-            virtual void slotButtonClicked(int button);
+            virtual void slotButtonClicked(QAbstractButton *button);
             void slotCurrentPageChanged(KPageWidgetItem* current);
 
         signals:

@@ -92,11 +92,6 @@ class KCMUTILS_EXPORT KCMultiDialog : public KPageDialog
      */
     void clear();
 
-    /**
-     * Reimplemented for internal reasons.
-     */
-    void setButtons(ButtonCodes buttonMask);
-
   Q_SIGNALS:
     /**
      * Emitted after all KCModules have been told to save their configuration.

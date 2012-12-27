@@ -45,7 +45,7 @@ class DialogPrivate : public KCMultiDialogPrivate
     friend class PageNode;
     Q_DECLARE_PUBLIC(Dialog)
     protected:
-        DialogPrivate();
+        DialogPrivate(Dialog *parent);
 
         QHash<QString, KPageWidgetItem *> pageItemForGroupId;
         QHash<KPageWidgetItem *, KPluginInfo> pluginForItem;

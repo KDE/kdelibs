@@ -25,31 +25,39 @@
 #include "kpagedialog.h"
 #include "kpagedialog_p.h"
 
+#include <QDialogButtonBox>
 #include <QTimer>
 #include <QLayout>
 
 KPageDialog::KPageDialog( QWidget *parent, Qt::WindowFlags flags )
-    : KDialog(*new KPageDialogPrivate, parent, flags)
+    : QDialog(parent, flags),
+      d_ptr(new KPageDialogPrivate(this))
 {
     Q_D(KPageDialog);
   d->mPageWidget = new KPageWidget( this );
+  d->mButtonBox = new QDialogButtonBox(this);
+  d->mButtonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
   d->init();
 }
 
 KPageDialog::KPageDialog( KPageWidget *widget, QWidget *parent, Qt::WindowFlags flags )
-    : KDialog(*new KPageDialogPrivate, parent, flags)
+    : QDialog(parent, flags),
+      d_ptr(new KPageDialogPrivate(this))
 {
     Q_D(KPageDialog);
     Q_ASSERT(widget);
     widget->setParent(this);
   d->mPageWidget = widget;
+  d->mButtonBox = new QDialogButtonBox(this);
+  d->mButtonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
   d->init();
 }
 
 KPageDialog::KPageDialog(KPageDialogPrivate &dd, KPageWidget *widget, QWidget *parent, Qt::WindowFlags flags)
-    : KDialog(dd, parent, flags)
+    : QDialog(parent, flags),
+      d_ptr(&dd)
 {
     Q_D(KPageDialog);
     if (widget) {
@@ -58,6 +66,8 @@ KPageDialog::KPageDialog(KPageDialogPrivate &dd, KPageWidget *widget, QWidget *p
     } else {
         d->mPageWidget = new KPageWidget(this);
     }
+    d->mButtonBox = new QDialogButtonBox(this);
+    d->mButtonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     d->init();
 }
 
@@ -130,5 +140,22 @@ void KPageDialog::setPageWidget(KPageWidget *widget)
 const KPageWidget* KPageDialog::pageWidget() const
 {
     return d_func()->mPageWidget;
+}
+
+QDialogButtonBox *KPageDialog::buttonBox()
+{
+    return d_func()->mButtonBox;
+}
+
+const QDialogButtonBox *KPageDialog::buttonBox() const
+{
+    return d_func()->mButtonBox;
+}
+
+void KPageDialog::setButtonBox(QDialogButtonBox *box)
+{
+    delete d_func()->mButtonBox;
+    d_func()->mButtonBox = box;
+    d_func()->init();
 }
 
