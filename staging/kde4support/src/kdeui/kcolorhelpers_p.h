@@ -21,15 +21,6 @@
 #ifndef KGUIADDONS_KCOLORHELPERS_P_H
 #define KGUIADDONS_KCOLORHELPERS_P_H
 
-#include <QColor>
-
-// normalize: like qBound(a, 0.0, 1.0) but without needing the args and with
-// "safer" behavior on NaN (isnan(a) -> return 0.0)
-static inline qreal normalize(qreal a)
-{
-    return (a < 1.0 ? (a > 0.0 ? a : 0.0) : 1.0);
-}
-
 class QPainter;
 class QRect;
 class QBrush;
