@@ -26,6 +26,7 @@
 #include "kshortcutsdialog_p.h"
 
 #include <kaction.h>
+#include <kgesturemap.h>
 #include <kdebug.h>
 #include <kstringhandler.h>
 
@@ -80,9 +81,9 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
         case GlobalAlternate:
             return keySequence(column);
         case ShapeGesture:
-            return m_action->shapeGesture().shapeName();
+            return KGestureMap::self()->shapeGesture(m_action).shapeName();
         case RockerGesture:
-            return m_action->rockerGesture().rockerName();
+            return KGestureMap::self()->rockerGesture(m_action).rockerName();
         default:
             break;
         }
@@ -135,11 +136,11 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             return keySequence(column);
         case ShapeGesture: { //scoping for "ret"
             QVariant ret;
-            ret.setValue(m_action->shapeGesture());
+            ret.setValue(KGestureMap::self()->shapeGesture(m_action));
             return ret; }
         case RockerGesture: {
             QVariant ret;
-            ret.setValue(m_action->rockerGesture());
+            ret.setValue(KGestureMap::self()->rockerGesture(m_action));
             return ret; }
         default:
             // Column not valid for this role
@@ -159,11 +160,11 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             return m_action->globalShortcut(KAction::DefaultShortcut).alternate();
         case ShapeGesture: {
             QVariant ret;
-            ret.setValue(m_action->shapeGesture(KAction::DefaultShortcut));
+            ret.setValue(KGestureMap::self()->defaultShapeGesture(m_action));
             return ret; }
         case RockerGesture: {
             QVariant ret;
-            ret.setValue(m_action->rockerGesture(KAction::DefaultShortcut));
+            ret.setValue(KGestureMap::self()->defaultRockerGesture(m_action));
             return ret; }
         default:
             // Column not valid for this role
@@ -239,7 +240,8 @@ void KShortcutsEditorItem::setShapeGesture(const KShapeGesture &gst)
     if (!m_oldShapeGesture) {
         m_oldShapeGesture = new KShapeGesture(gst);
     }
-    m_action->setShapeGesture(gst);
+    KGestureMap::self()->setShapeGesture(m_action, gst);
+    KGestureMap::self()->setDefaultShapeGesture(m_action, gst);
     updateModified();
 }
 
@@ -249,7 +251,8 @@ void KShortcutsEditorItem::setRockerGesture(const KRockerGesture &gst)
     if (!m_oldRockerGesture) {
         m_oldRockerGesture = new KRockerGesture(gst);
     }
-    m_action->setRockerGesture(gst);
+    KGestureMap::self()->setRockerGesture(m_action, gst);
+    KGestureMap::self()->setDefaultRockerGesture(m_action, gst);
     updateModified();
 }
 
@@ -265,11 +268,11 @@ void KShortcutsEditorItem::updateModified()
         delete m_oldGlobalShortcut;
         m_oldGlobalShortcut = 0;
     }
-    if (m_oldShapeGesture && *m_oldShapeGesture == m_action->shapeGesture()) {
+    if (m_oldShapeGesture && *m_oldShapeGesture == KGestureMap::self()->shapeGesture(m_action)) {
         delete m_oldShapeGesture;
         m_oldShapeGesture = 0;
     }
-    if (m_oldRockerGesture && *m_oldRockerGesture == m_action->rockerGesture()) {
+    if (m_oldRockerGesture && *m_oldRockerGesture == KGestureMap::self()->rockerGesture(m_action)) {
         delete m_oldRockerGesture;
         m_oldRockerGesture = 0;
     }
@@ -326,11 +329,13 @@ void KShortcutsEditorItem::undo()
     }
 
     if (m_oldShapeGesture) {
-        m_action->setShapeGesture(*m_oldShapeGesture);
+        KGestureMap::self()->setShapeGesture(m_action, *m_oldShapeGesture);
+        KGestureMap::self()->setDefaultShapeGesture(m_action, *m_oldShapeGesture);
     }
 
     if (m_oldRockerGesture) {
-        m_action->setRockerGesture(*m_oldRockerGesture);
+        KGestureMap::self()->setRockerGesture(m_action, *m_oldRockerGesture);
+        KGestureMap::self()->setDefaultRockerGesture(m_action, *m_oldRockerGesture);
     }
 
     updateModified();

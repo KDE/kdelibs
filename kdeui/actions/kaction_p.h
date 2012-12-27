@@ -53,8 +53,6 @@ class KActionPrivate
 
         KComponentData componentData;   //this is **way** more lightweight than it looks
         KShortcut globalShortcut, defaultGlobalShortcut;
-        KShapeGesture shapeGesture, defaultShapeGesture;
-        KRockerGesture rockerGesture, defaultRockerGesture;
 
         bool globalShortcutEnabled : 1;
         bool neverSetGlobalShortcut : 1;

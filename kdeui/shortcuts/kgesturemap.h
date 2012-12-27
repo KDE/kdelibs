@@ -38,12 +38,20 @@ public:
     static KGestureMap *self();
 
     virtual bool eventFilter(QObject *obj, QEvent *e);
-    void addGesture(const KShapeGesture &gesture, KAction *kact);
-    void addGesture(const KRockerGesture &gesture, KAction *kact);
-    void removeGesture(const KShapeGesture &gesture, KAction *kact);
-    void removeGesture(const KRockerGesture &gesture, KAction *kact);
+    void setShapeGesture(KAction *kact, const KShapeGesture &gesture);
+    void setRockerGesture(KAction *kact, const KRockerGesture &gesture);
+    void setDefaultShapeGesture(KAction *kact, const KShapeGesture &gesture);
+    void setDefaultRockerGesture(KAction *kact, const KRockerGesture &gesture);
+    /**
+     * This method will remove all gestures defined for a given action
+     */
+    void removeAllGestures(KAction *kact);
     KAction *findAction(const KShapeGesture &gesture) const;
     KAction *findAction(const KRockerGesture &gesture) const;
+    KShapeGesture shapeGesture(const KAction *kact ) const;
+    KShapeGesture defaultShapeGesture(const KAction *kact) const;
+    KRockerGesture rockerGesture(const KAction *kact) const;
+    KRockerGesture defaultRockerGesture(const KAction *kact) const;
 
 private Q_SLOTS:
     void stopAcquisition();
@@ -62,8 +70,12 @@ private:
     void matchShapeGesture();
 
     //this is an internal class so don't bother with a d-pointer
-    QHash<KShapeGesture, KAction *> m_shapeGestures;
-    QHash<KRockerGesture, KAction *> m_rockerGestures;
+    typedef QHash< KShapeGesture, KAction* > ShapeGestureHash;
+    typedef QHash< KRockerGesture, KAction* > RockerGestureHash;
+    ShapeGestureHash m_shapeGestures;
+    ShapeGestureHash m_defaultShapeGestures;
+    RockerGestureHash m_rockerGestures;
+    RockerGestureHash m_defaultRockerGestures;
     QPolygon m_points;
     QTimer m_gestureTimeout;
     bool m_acquiring;

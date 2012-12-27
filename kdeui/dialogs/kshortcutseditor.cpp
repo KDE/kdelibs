@@ -48,6 +48,7 @@
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
+#include <kgesturemap.h>
 #include "kaboutdata.h"
 
 //---------------------------------------------------------------------
@@ -375,11 +376,15 @@ void KShortcutsEditorPrivate::allDefault()
             changeKeyShortcut(item, GlobalAlternate, act->globalShortcut(KAction::DefaultShortcut).alternate());
         }
 
-        if (act->shapeGesture() != act->shapeGesture(KAction::DefaultShortcut))
-            changeShapeGesture(item, act->shapeGesture(KAction::DefaultShortcut));
+        KShapeGesture actShapeGesture = KGestureMap::self()->shapeGesture(act);
+        KShapeGesture actDefaultShapeGesture = KGestureMap::self()->defaultShapeGesture(act);
+        if (actShapeGesture != actDefaultShapeGesture)
+            changeShapeGesture(item, actDefaultShapeGesture);
 
-        if (act->rockerGesture() != act->rockerGesture(KAction::DefaultShortcut))
-            changeRockerGesture(item, act->rockerGesture(KAction::DefaultShortcut));
+        KRockerGesture actRockerGesture = KGestureMap::self()->rockerGesture(act);
+        KRockerGesture actDefaultRockerGesture = KGestureMap::self()->defaultRockerGesture(act);
+        if (actRockerGesture != actDefaultRockerGesture)
+            changeRockerGesture(item, actDefaultRockerGesture);
     }
 }
 
@@ -445,7 +450,7 @@ void KShortcutsEditorPrivate::changeKeyShortcut(KShortcutsEditorItem *item, uint
 
 void KShortcutsEditorPrivate::changeShapeGesture(KShortcutsEditorItem *item, const KShapeGesture &capture)
 {
-    if (capture == item->m_action->shapeGesture())
+    if (capture == KGestureMap::self()->shapeGesture(item->m_action))
         return;
 
     if (capture.isValid()) {
@@ -460,10 +465,11 @@ void KShortcutsEditorPrivate::changeShapeGesture(KShortcutsEditorItem *item, con
             otherItem = static_cast<KShortcutsEditorItem *>(*it);
 
             //comparisons are possibly expensive
-            if (!otherItem->m_action->shapeGesture().isValid())
+            KShapeGesture otherGesture = KGestureMap::self()->shapeGesture(otherItem->m_action);
+            if (!otherGesture.isValid())
                 continue;
 
-            if (capture == otherItem->m_action->shapeGesture()) {
+            if (capture == otherGesture) {
                 conflict = true;
                 break;
             }
@@ -479,7 +485,7 @@ void KShortcutsEditorPrivate::changeShapeGesture(KShortcutsEditorItem *item, con
 
 void KShortcutsEditorPrivate::changeRockerGesture(KShortcutsEditorItem *item, const KRockerGesture &capture)
 {
-    if (capture == item->m_action->rockerGesture())
+    if (capture == KGestureMap::self()->rockerGesture(item->m_action))
         return;
 
     if (capture.isValid()) {
@@ -492,7 +498,8 @@ void KShortcutsEditorPrivate::changeRockerGesture(KShortcutsEditorItem *item, co
 
             otherItem = static_cast<KShortcutsEditorItem *>(*it);
 
-            if (capture == otherItem->m_action->rockerGesture()) {
+            KRockerGesture otherGesture = KGestureMap::self()->rockerGesture(otherItem->m_action);
+            if (capture == otherGesture) {
                 conflict = true;
                 break;
             }

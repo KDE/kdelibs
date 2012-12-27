@@ -285,6 +285,19 @@ A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port som
     </ul>
 </li>
 <li>KMessageBoxMessageHandler moved to kde4support</li>
+<li>KAction changes
+    <ul>
+        <li>Shape and rocker gestures are now handled by KGestureMap. The existing KAction methods related to gesture handling delegate to KGestureMap.</li>
+    </ul>
+</li>
+<li>KGestureMap changes:
+    <ul>
+        <li><b>addGesture</b> renamed to <b>setShapeGesture</b> and <b>setRockerGesture</b> and now allow replacing existing gestures. When this occurs, a warning is traced with qDebug.</li>
+        <li>new <b>setDefault[Shape|Rocker]Gesture</b> methods allow defining default gestures for an action, providing the functionality removed from KAction.</li>
+        <li>new <b>shapeGesture</b> and <b>defaultShapeGesture</b> methods retrieves already defined shape gestures for a given action</li>
+        <li>new <b>rockerGesture</b> and <b>defaultRockerGesture</b> methods retrieves already defined rocker gestures for a given action</li>
+    </ul>
+</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

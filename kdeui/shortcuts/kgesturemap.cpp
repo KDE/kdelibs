@@ -64,51 +64,91 @@ KGestureMap::KGestureMap()
 }
 
 
-void KGestureMap::addGesture(const KShapeGesture &gesture, KAction *act)
+void KGestureMap::setShapeGesture(KAction *act, const KShapeGesture &gesture)
 {
     if (!gesture.isValid() || !act)
         return;
     qDebug() << "KGestureMap::addGesture(KShapeGesture ...)";
-    if (!m_shapeGestures.contains(gesture))
-        m_shapeGestures.insert(gesture, act);
-    else
-        qDebug() << "Tried to register an action for a gesture already taken";
+    if (m_shapeGestures.contains(gesture)) {
+        qWarning() << "Replacing an action for a gesture already taken";
+    }
+    m_shapeGestures.insert(gesture, act);
 }
 
 
-void KGestureMap::addGesture(const KRockerGesture &gesture, KAction *act)
+void KGestureMap::setRockerGesture(KAction *act, const KRockerGesture &gesture)
 {
     if (!gesture.isValid() || !act)
         return;
     qDebug() << "KGestureMap::addGesture(KRockerGesture ...)";
-    if (!m_rockerGestures.contains(gesture))
-        m_rockerGestures.insert(gesture, act);
-    else
-        qDebug() << "Tried to register an action for a gesture already taken";
+    if (m_rockerGestures.contains(gesture)) {
+        qWarning() << "Replacing an action for a gesture already taken";
+    }
+    m_rockerGestures.insert(gesture, act);
 }
 
-
-void KGestureMap::removeGesture(const KShapeGesture &gesture, KAction *act)
+void KGestureMap::setDefaultShapeGesture(KAction *act, const KShapeGesture &gesture)
 {
-    if (!gesture.isValid())
+    if (!gesture.isValid() || !act)
         return;
-    qDebug() << "KGestureMap::removeGesture(KShapeGesture ...)";
-    KAction *oldAct = m_shapeGestures.value(gesture);
-    if (oldAct == act || !act /*wildcard*/)
-        m_shapeGestures.remove(gesture);
+    qDebug() << "KGestureMap::addGesture(KShapeGesture ...)";
+    if (m_defaultShapeGestures.contains(gesture)) {
+        qWarning() << "Replacing an action for a gesture already taken";
+    }
+    m_defaultShapeGestures.insert(gesture, act);
 }
 
 
-void KGestureMap::removeGesture(const KRockerGesture &gesture, KAction *act)
+void KGestureMap::setDefaultRockerGesture(KAction *act, const KRockerGesture &gesture)
 {
-    if (!gesture.isValid())
+    if (!gesture.isValid() || !act)
         return;
-    qDebug() << "KGestureMap::removeGesture(KRockerGesture ...)";
-    KAction *oldAct = m_rockerGestures.value(gesture);
-    if (oldAct == act || !act /*wildcard*/)
-        m_rockerGestures.remove(gesture);
+    qDebug() << "KGestureMap::addGesture(KRockerGesture ...)";
+    if (m_defaultRockerGestures.contains(gesture)) {
+        qWarning() << "Replacing an action for a gesture already taken";
+    }
+    m_defaultRockerGestures.insert(gesture, act);
 }
 
+void KGestureMap::removeAllGestures(KAction* kact)
+{
+    KShapeGesture activeGesture;
+    ShapeGestureHash::iterator si = m_shapeGestures.begin();
+    ShapeGestureHash::iterator send = m_shapeGestures.end();
+    for ( ; si != send; ++si) {
+        if (si.value() == kact) {
+            m_shapeGestures.remove(si.key());
+            break;
+        }
+    }
+
+    si = m_defaultShapeGestures.begin();
+    send = m_defaultShapeGestures.end();
+    for ( ; si != send; ++si) {
+        if (si.value() == kact) {
+            m_defaultShapeGestures.remove(si.key());
+            break;
+        }
+    }
+
+    RockerGestureHash::iterator ri = m_rockerGestures.begin();
+    RockerGestureHash::iterator rend = m_rockerGestures.end();
+    for ( ; ri != rend; ++ri) {
+        if (ri.value() == kact) {
+            m_rockerGestures.remove(ri.key());
+            break;
+        }
+    }
+
+    ri = m_defaultRockerGestures.begin();
+    rend = m_defaultRockerGestures.end();
+    for ( ; ri != rend; ++ri) {
+        if (ri.value() == kact) {
+            m_defaultRockerGestures.remove(ri.key());
+            break;
+        }
+    }
+}
 
 KAction *KGestureMap::findAction(const KShapeGesture &gesture) const
 {
@@ -125,6 +165,62 @@ KAction *KGestureMap::findAction(const KRockerGesture &gesture) const
 void KGestureMap::installEventFilterOnMe(QApplication *app)
 {
     app->installEventFilter(this);
+}
+
+KShapeGesture KGestureMap::shapeGesture(const KAction* kact) const
+{
+    KShapeGesture activeGesture;
+    ShapeGestureHash::const_iterator it = m_shapeGestures.constBegin();
+    ShapeGestureHash::const_iterator end = m_shapeGestures.constEnd();
+    for ( ; it != end; ++it) {
+        if (it.value() == kact) {
+            activeGesture = it.key();
+            break;
+        }
+    }
+    return activeGesture;
+}
+
+KShapeGesture KGestureMap::defaultShapeGesture(const KAction* kact) const
+{
+    KShapeGesture defaultGesture;
+    ShapeGestureHash::const_iterator it = m_defaultShapeGestures.constBegin();
+    ShapeGestureHash::const_iterator end = m_defaultShapeGestures.constEnd();
+    for ( ; it != end; ++it) {
+        if (it.value() == kact) {
+            defaultGesture = it.key();
+            break;
+        }
+    }
+    return defaultGesture;
+}
+
+KRockerGesture KGestureMap::rockerGesture(const KAction* kact) const
+{
+    KRockerGesture activeGesture;
+    RockerGestureHash::const_iterator it = m_rockerGestures.constBegin();
+    RockerGestureHash::const_iterator end = m_rockerGestures.constEnd();
+    for ( ; it != end; ++it) {
+        if (it.value() == kact) {
+            activeGesture = it.key();
+            break;
+        }
+    }
+    return activeGesture;
+}
+
+KRockerGesture KGestureMap::defaultRockerGesture(const KAction* kact) const
+{
+    KRockerGesture defaultGesture;
+    RockerGestureHash::const_iterator it = m_defaultRockerGestures.constBegin();
+    RockerGestureHash::const_iterator end = m_defaultRockerGestures.constEnd();
+    for ( ; it != end; ++it) {
+        if (it.value() == kact) {
+            defaultGesture = it.key();
+            break;
+        }
+    }
+    return defaultGesture;
 }
 
 

@@ -125,8 +125,7 @@ KAction::~KAction()
         KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
     }
 
-    KGestureMap::self()->removeGesture(d->shapeGesture, this);
-    KGestureMap::self()->removeGesture(d->rockerGesture, this);
+    KGestureMap::self()->removeAllGestures(this);
     delete d;
 }
 
@@ -282,37 +281,38 @@ void KAction::forgetGlobalShortcut()
 
 KShapeGesture KAction::shapeGesture( ShortcutTypes type ) const
 {
-  Q_ASSERT(type);
-  if ( type & DefaultShortcut )
-    return d->defaultShapeGesture;
-
-  return d->shapeGesture;
+    Q_ASSERT(type);
+    if ( type & DefaultShortcut ) {
+        return KGestureMap::self()->defaultShapeGesture(this);
+    } else {
+        return KGestureMap::self()->shapeGesture(this);
+    }
 }
 
 KRockerGesture KAction::rockerGesture( ShortcutTypes type ) const
 {
-  Q_ASSERT(type);
-  if ( type & DefaultShortcut )
-    return d->defaultRockerGesture;
-
-  return d->rockerGesture;
+    Q_ASSERT(type);
+    if (type & DefaultShortcut) {
+        return KGestureMap::self()->defaultRockerGesture(this);
+    } else {
+        return KGestureMap::self()->rockerGesture(this);
+    }
 }
 
 void KAction::setShapeGesture( const KShapeGesture& gest,  ShortcutTypes type )
 {
   Q_ASSERT(type);
 
-  if( type & DefaultShortcut )
-    d->defaultShapeGesture = gest;
+  if (type & DefaultShortcut) {
+    KGestureMap::self()->setDefaultShapeGesture(this, gest);
+  }
 
-  if ( type & ActiveShortcut ) {
+  if (type & ActiveShortcut) {
     if ( KGestureMap::self()->findAction( gest ) ) {
-      qDebug() << "New mouse gesture already in use, won't change gesture.";
+      kDebug(283) << "New mouse gesture already in use, won't change gesture.";
       return;
     }
-    KGestureMap::self()->removeGesture( d->shapeGesture, this );
-    KGestureMap::self()->addGesture( gest, this );
-    d->shapeGesture = gest;
+    KGestureMap::self()->setShapeGesture(this, gest);
   }
 }
 
@@ -320,17 +320,16 @@ void KAction::setRockerGesture( const KRockerGesture& gest,  ShortcutTypes type 
 {
   Q_ASSERT(type);
 
-  if( type & DefaultShortcut )
-    d->defaultRockerGesture = gest;
+  if( type & DefaultShortcut ) {
+    KGestureMap::self()->setDefaultRockerGesture(this, gest);
+  }
 
   if ( type & ActiveShortcut ) {
     if ( KGestureMap::self()->findAction( gest ) ) {
-      qDebug() << "New mouse gesture already in use, won't change gesture.";
+      kDebug(283) << "New mouse gesture already in use, won't change gesture.";
       return;
     }
-    KGestureMap::self()->removeGesture( d->rockerGesture, this );
-    KGestureMap::self()->addGesture( gest, this );
-    d->rockerGesture = gest;
+    KGestureMap::self()->setRockerGesture(this, gest);
   }
 }
 
