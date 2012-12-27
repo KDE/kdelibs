@@ -35,6 +35,7 @@
 #include <config-kfile.h>
 
 #include <kactioncollection.h>
+#include <kconfiggroup.h>
 #include <kdiroperator.h>
 #include <kdirselectdialog.h>
 #include <kfilefiltercombo.h>

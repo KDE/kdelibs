@@ -32,6 +32,7 @@
 #include <kdebug.h>
 
 #include <kmenu.h>
+#include <kconfiggroup.h>
 #include <kcomponentdata.h>
 #include <kdirnotify.h>
 #include <kiconloader.h>

@@ -19,6 +19,7 @@
 #include "browserrun.h"
 #include "browserrun_p.h"
 
+#include <kconfiggroup.h>
 #include <kmessagebox.h>
 #include <kfiledialog.h>
 #include <kio/job.h>
