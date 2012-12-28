@@ -21,17 +21,19 @@
 #include "knewfilemenu.h"
 #include "knameandurlinputdialog.h"
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QDir>
 #include <QVBoxLayout>
 #include <QList>
 #include <QLabel>
 #include <qtemporaryfile.h>
 #include <kactioncollection.h>
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
 #include <kcomponentdata.h>
-#include <kdialog.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <klocalizedstring.h>
@@ -362,16 +364,16 @@ bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
     if (!QFile::exists(src)) {
         kWarning(1203) << src << "doesn't exist" ;
 
-	KDialog* dialog = new KDialog(m_parentWidget);
-	dialog->setCaption( i18n("Sorry") );
-	dialog->setButtons( KDialog::Ok );
+        QDialog* dialog = new QDialog(m_parentWidget);
+        dialog->setWindowTitle(i18n("Sorry"));
 	dialog->setObjectName( "sorry" );
 	dialog->setModal(q->isModal());
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
-	dialog->setDefaultButton( KDialog::Ok );
-	dialog->setEscapeButton( KDialog::Ok );
 
-	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning,
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
+        buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+
+        KMessageBox::createKMessageBox(dialog, buttonBox, QMessageBox::Warning,
 	  i18n("<qt>The template file <b>%1</b> does not exist.</qt>", src),
 	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
@@ -395,19 +397,23 @@ void KNewFileMenuPrivate::confirmCreatingHiddenDir(const QString& name)
     KGuiItem cancelGuiItem(KStandardGuiItem::cancel());
     cancelGuiItem.setText(i18nc("@action:button", "Enter a different name"));
 
-    KDialog* confirmDialog = new KDialog(m_parentWidget);
-    confirmDialog->setCaption(i18n("Create hidden directory?"));
+    QDialog* confirmDialog = new QDialog(m_parentWidget);
+    confirmDialog->setWindowTitle(i18n("Create hidden directory?"));
     confirmDialog->setModal(m_modal);
     confirmDialog->setAttribute(Qt::WA_DeleteOnClose);
-    KMessageBox::createKMessageBox(confirmDialog, QMessageBox::Warning,
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(confirmDialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    KGuiItem::assign(buttonBox->button(QDialogButtonBox::Ok), continueGuiItem);
+    KGuiItem::assign(buttonBox->button(QDialogButtonBox::Cancel), cancelGuiItem);
+
+    KMessageBox::createKMessageBox(confirmDialog, buttonBox, QMessageBox::Warning,
 	  i18n("The name \"%1\" starts with a dot, so the directory will be hidden by default.", name),
 	  QStringList(),
 	  i18n("Do not ask again"),
 	  0,
 	  KMessageBox::NoExec,
 	  QString());
-    confirmDialog->setButtonGuiItem(KDialog::Ok, continueGuiItem);
-    confirmDialog->setButtonGuiItem(KDialog::Cancel, cancelGuiItem);
 
     QObject::connect(confirmDialog, SIGNAL(accepted()), q, SLOT(_k_slotCreateHiddenDirectory()));
     QObject::connect(confirmDialog, SIGNAL(rejected()), q, SLOT(createDirectory()));
@@ -462,29 +468,33 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
         text = KIO::RenameDialog::suggestName(m_popupFiles.first(), text);
 
-    KDialog* fileDialog = new KDialog(m_parentWidget);
+    QDialog* fileDialog = new QDialog(m_parentWidget);
     fileDialog->setAttribute(Qt::WA_DeleteOnClose);
     fileDialog->setModal(q->isModal());
-    fileDialog->setButtons(KDialog::Ok | KDialog::Cancel);
 
-    QWidget* mainWidget = new QWidget(fileDialog);
-    QVBoxLayout *layout = new QVBoxLayout(mainWidget);
-    QLabel *label = new QLabel(entry.comment);
+    QVBoxLayout *layout = new QVBoxLayout;
+    QLabel *label = new QLabel(entry.comment, fileDialog);
 
     // We don't set the text of lineEdit in its constructor because the clear button would not be shown then.
     // It seems that setClearButtonShown(true) must be called *before* the text is set to make it work.
     // TODO: should probably be investigated and fixed in KLineEdit.
-    KLineEdit *lineEdit = new KLineEdit;
+    KLineEdit *lineEdit = new KLineEdit(fileDialog);
     lineEdit->setClearButtonShown(true);
     lineEdit->setText(text);
 
     _k_slotTextChanged(text);
     QObject::connect(lineEdit, SIGNAL(textChanged(QString)), q, SLOT(_k_slotTextChanged(QString)));
 
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(fileDialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(buttonBox, SIGNAL(accepted()), fileDialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), fileDialog, SLOT(reject()));
+
     layout->addWidget(label);
     layout->addWidget(lineEdit);
+    layout->addWidget(buttonBox);
 
-    fileDialog->setMainWidget(mainWidget);
+    fileDialog->setLayout(layout);
     QObject::connect(fileDialog, SIGNAL(accepted()), q, SLOT(_k_slotRealFileOrDir()));
     QObject::connect(fileDialog, SIGNAL(rejected()), q, SLOT(_k_slotAbortDialog()));
 
@@ -876,17 +886,18 @@ void KNewFileMenuPrivate::_k_slotSymLink()
     else if (linkUrl.isLocalFile())
         m_copyData.m_src = linkUrl.toLocalFile();
     else {
-	KDialog* dialog = new KDialog(m_parentWidget);
-	dialog->setCaption( i18n("Sorry") );
-	dialog->setButtons( KDialog::Ok );
+        QDialog* dialog = new QDialog(m_parentWidget);
+        dialog->setWindowTitle(i18n("Sorry"));
 	dialog->setObjectName( "sorry" );
 	dialog->setModal(m_modal);
 	dialog->setAttribute(Qt::WA_DeleteOnClose);
-	dialog->setDefaultButton( KDialog::Ok );
-	dialog->setEscapeButton( KDialog::Ok );
+
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
+        buttonBox->setStandardButtons(QDialogButtonBox::Ok);
+
 	m_fileDialog = dialog;
 
-	KMessageBox::createKMessageBox(dialog, QMessageBox::Warning,
+        KMessageBox::createKMessageBox(dialog, buttonBox, QMessageBox::Warning,
 	  i18n("Basic links can only point to local files or directories.\nPlease use \"Link to Location\" for remote URLs."),
 	  QStringList(), QString(), 0, KMessageBox::NoExec,
 	  QString());
@@ -1027,29 +1038,34 @@ void KNewFileMenu::createDirectory()
     if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile(KUrl::AddTrailingSlash) + name).exists())
 	name = KIO::RenameDialog::suggestName(baseUrl, name);
 
-    KDialog* fileDialog = new KDialog(d->m_parentWidget);
+    QDialog* fileDialog = new QDialog(d->m_parentWidget);
     fileDialog->setModal(isModal());
     fileDialog->setAttribute(Qt::WA_DeleteOnClose);
-    fileDialog->setButtons(KDialog::Ok | KDialog::Cancel);
-    fileDialog->setCaption(i18nc("@title:window", "New Folder"));
+    fileDialog->setWindowTitle(i18nc("@title:window", "New Folder"));
 
-    QWidget* mainWidget = new QWidget(fileDialog);
-    QVBoxLayout *layout = new QVBoxLayout(mainWidget);
-    QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()));
+    QVBoxLayout *layout = new QVBoxLayout;
+    QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()), fileDialog);
 
     // We don't set the text of lineEdit in its constructor because the clear button would not be shown then.
     // It seems that setClearButtonShown(true) must be called *before* the text is set to make it work.
     // TODO: should probably be investigated and fixed in KLineEdit.
-    KLineEdit *lineEdit = new KLineEdit;
+    KLineEdit *lineEdit = new KLineEdit(fileDialog);
     lineEdit->setClearButtonShown(true);
     lineEdit->setText(name);
 
     d->_k_slotTextChanged(name); // have to save string in d->m_text in case user does not touch dialog
     connect(lineEdit, SIGNAL(textChanged(QString)), this, SLOT(_k_slotTextChanged(QString)));
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(fileDialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(buttonBox, SIGNAL(accepted()), fileDialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), fileDialog, SLOT(reject()));
+
     layout->addWidget(label);
     layout->addWidget(lineEdit);
+    layout->addWidget(buttonBox);
 
-    fileDialog->setMainWidget(mainWidget);
+    fileDialog->setLayout(layout);
     connect(fileDialog, SIGNAL(accepted()), this, SLOT(_k_slotCreateDirectory()));
     connect(fileDialog, SIGNAL(rejected()), this, SLOT(_k_slotAbortDialog()));
 

@@ -30,10 +30,11 @@
 #include <kwidgets_export.h>
 
 class KMessageBoxDontAskAgainInterface;
+class QDialog;
+class QDialogButtonBox;
 class QWidget;
 class QStringList;
 class KConfig;
-class KDialog;
 
  /**
   * Easy message dialog box.
@@ -814,7 +815,8 @@ namespace KMessageBox
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    KWIDGETS_EXPORT int createKMessageBox(KDialog *dialog, QMessageBox::Icon icon, //krazy:exclude=qclasses
+    KWIDGETS_EXPORT int createKMessageBox(QDialog *dialog, QDialogButtonBox *buttons,
+                             QMessageBox::Icon icon, //krazy:exclude=qclasses
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString());
@@ -846,7 +848,8 @@ namespace KMessageBox
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    KWIDGETS_EXPORT int createKMessageBox(KDialog *dialog, const QIcon &icon,
+    KWIDGETS_EXPORT int createKMessageBox(QDialog *dialog, QDialogButtonBox *buttons,
+                             const QIcon &icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
                              Options options, const QString &details=QString(),
