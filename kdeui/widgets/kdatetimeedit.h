@@ -26,6 +26,7 @@
 
 #include "klocale.h"
 #include "kdatetime.h"
+#include "ktimezone.h"
 
 class KDateTimeEditPrivate;
 class KCalendarSystem;

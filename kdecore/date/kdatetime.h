@@ -27,7 +27,6 @@
 #define _KDATETIME_H_
 
 #include <kdecore_export.h>
-#include <ktimezone.h>
 
 #include <QtCore/QMetaType>
 #include <QtCore/QSharedDataPointer>
@@ -35,6 +34,8 @@
 class QDataStream;
 class KDateTimePrivate;
 class KDateTimeSpecPrivate;
+class KTimeZone;
+class KTimeZones;
 
 /**
  * @short A class representing a date and time with an associated time zone
