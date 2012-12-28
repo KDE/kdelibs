@@ -26,7 +26,6 @@
 
 #include "kcombobox.h"
 #include "klocale.h"
-#include "kdatetime.h"
 
 class KDateComboBoxPrivate;
 class KCalendarSystem;
