@@ -21,7 +21,8 @@
 #include "knotifyeventlist.h"
 #include "knotifyconfigelement.h"
 
-#include <kdialog.h>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QVBoxLayout>
 #include <QDBusInterface>
 #include <QDBusConnectionInterface>
@@ -102,18 +103,30 @@ void KNotifyConfigWidget::save( )
 
 KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QString & appname )
 {
-	KDialog *dialog=new KDialog(parent);
-	dialog->setCaption(i18n("Configure Notifications"));
-	KNotifyConfigWidget *w=new KNotifyConfigWidget(dialog);
-	dialog->setMainWidget(w);
-	
-	connect(dialog,SIGNAL(applyClicked()),w,SLOT(save()));
-	connect(dialog,SIGNAL(okClicked()),w,SLOT(save()));
-	connect(w,SIGNAL(changed(bool)) , dialog , SLOT(enableButtonApply(bool)));
+    QDialog *dialog = new QDialog(parent);
+    dialog->setWindowTitle(i18n("Configure Notifications"));
 
-	w->setApplication(appname);
-	dialog->show();
-	return w;
+    KNotifyConfigWidget *w = new KNotifyConfigWidget(dialog);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Apply | QDialogButtonBox::Cancel);
+    buttonBox->button(QDialogButtonBox::Apply)->setEnabled(false);
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(w);
+    layout->addWidget(buttonBox);
+    dialog->setLayout(layout);
+
+    connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()), w, SLOT(save()));
+    connect(buttonBox->button(QDialogButtonBox::Ok), SIGNAL(clicked()), w, SLOT(save()));
+    connect(w, SIGNAL(changed(bool)), buttonBox->button(QDialogButtonBox::Apply), SLOT(setEnabled(bool)));
+
+    connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+
+    w->setApplication(appname);
+    dialog->show();
+    return w;
 }
 
 void KNotifyConfigWidget::slotActionChanged()
