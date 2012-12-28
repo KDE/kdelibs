@@ -19,7 +19,6 @@
 
 #include "kurlnavigatortogglebutton_p.h"
 
-#include <kcolorscheme.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 

@@ -42,8 +42,6 @@
 #include "kauthaction.h"
 #include "kauthobjectdecorator.h"
 
-#include "kcolorscheme.h"
-
 #include "kcmoduleproxy.h"
 
 bool KCMultiDialogPrivate::resolveChanges(KCModuleProxy *currentProxy)
