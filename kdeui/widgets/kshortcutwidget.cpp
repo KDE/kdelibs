@@ -20,6 +20,8 @@
 #include "kshortcutwidget.h"
 #include "ui_kshortcutwidget.h"
 
+#include <kshortcut.h>
+
 class KShortcutWidgetPrivate
 {
 public:

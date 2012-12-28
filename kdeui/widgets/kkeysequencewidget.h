@@ -22,11 +22,10 @@
 #ifndef KKEYSEQUENCEWIDGET_H
 #define KKEYSEQUENCEWIDGET_H
 
+#include <kdeui_export.h>
+
 #include <QtCore/QList>
 #include <QPushButton>
-
-#include <kshortcut.h>
-
 
 class KKeySequenceWidgetPrivate;
 class QAction;
