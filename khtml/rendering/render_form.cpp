@@ -50,13 +50,14 @@
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 #include <kstandarddirs.h>
-#include <kdialog.h>
 #include <kbuildsycocaprogressdialog.h>
 #include <kservicetypetrader.h>
 #include <kservice.h>
 
 #include <QAbstractItemView>
 #include <QAbstractTextDocumentLayout>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QStyle>
 #include <QStyleOptionButton>
 #include <QLabel>
@@ -903,27 +904,32 @@ void WebShortcutCreator::createFile(QString query, QString name, QString keys)
 
 bool WebShortcutCreator::askData(QString &name, QString &keys)
 {
-    KDialog *dialog = new KDialog();
-    QWidget *widget = new QWidget();
-    dialog->setButtons( KDialog::Ok | KDialog::Cancel );
-    dialog->setCaption( name );
+    QDialog *dialog = new QDialog();
+    dialog->setWindowTitle(name);
     QVBoxLayout *mainLayout = new QVBoxLayout();
-    widget->setLayout( mainLayout );
-    dialog->setMainWidget( widget );
+    dialog->setLayout(mainLayout);
+
     QHBoxLayout *layout = new QHBoxLayout();
     mainLayout->addLayout( layout );
-    QLabel *label = new QLabel( i18n( "Search &provider name:" ) );
+    QLabel *label = new QLabel(i18n("Search &provider name:"), dialog);
     layout->addWidget( label );
-    QLineEdit *nameEdit = new QLineEdit( i18n( "New search provider" ) );
+    QLineEdit *nameEdit = new QLineEdit(i18n("New search provider"), dialog);
     label->setBuddy( nameEdit );
     layout->addWidget( nameEdit );
     layout = new QHBoxLayout();
     mainLayout->addLayout( layout );
-    label = new QLabel( i18n( "UR&I shortcuts:" ) );
+    label = new QLabel(i18n("UR&I shortcuts:"), dialog);
     layout->addWidget( label );
-    QLineEdit *keysEdit = new QLineEdit();
+    QLineEdit *keysEdit = new QLineEdit(dialog);
     label->setBuddy( keysEdit );
     layout->addWidget( keysEdit );
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    QObject::connect(buttonBox, SIGNAL(accepted()), dialog, SLOT(accept()));
+    QObject::connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
+    mainLayout->addWidget(buttonBox);
+
     bool res = dialog->exec();
     if (res) {
         name = nameEdit->text();
