@@ -41,7 +41,6 @@ KDEUI_UNIT_TESTS(
   kshortcuttest
   kstandardactiontest
   kstandardshortcuttest
-  kcolorutilstest
   kxmlgui_unittest
   ktimezonewidget_unittest
   ktabwidget_unittest

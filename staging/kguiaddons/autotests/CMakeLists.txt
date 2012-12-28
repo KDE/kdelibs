@@ -20,4 +20,5 @@ endmacro()
 
 kguiaddons_unit_tests(
   kwordwraptest
+  kcolorutilstest
 )
