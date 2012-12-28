@@ -19,6 +19,7 @@
 
 #include "klocalizeddate.h"
 
+#include "kcalendarsystem.h"
 #include "kdebug.h"
 
 /*****************************************************************************

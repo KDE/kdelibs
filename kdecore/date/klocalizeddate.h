@@ -24,7 +24,6 @@
 #include <QtCore/QDate>
 
 #include <kdecore_export.h>
-#include "kcalendarsystem.h"
 #include "klocale.h"
 
 class KLocalizedDatePrivate;
