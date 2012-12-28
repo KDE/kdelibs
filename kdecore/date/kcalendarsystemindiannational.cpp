@@ -22,6 +22,7 @@
 
 #include "kdebug.h"
 #include "klocale.h"
+#include "klocalizedstring.h"
 
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>

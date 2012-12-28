@@ -22,6 +22,7 @@
 #include "kfileitem.h"
 #include <kdatetime.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kio/copyjob.h>
 #include <kio/fileundomanager.h>
 #include <kio/jobuidelegate.h>

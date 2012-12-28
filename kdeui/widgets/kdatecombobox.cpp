@@ -30,6 +30,7 @@
 
 #include "kdebug.h"
 #include "klocale.h"
+#include "klocalizedstring.h"
 #include "klocalizeddate.h"
 #include "kcombobox.h"
 #include "kdatepicker.h"

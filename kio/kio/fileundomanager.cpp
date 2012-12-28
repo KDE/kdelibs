@@ -30,6 +30,7 @@
 #include <kio/mkdirjob.h>
 #include <kio/jobuidelegate.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kjobtrackerinterface.h>
 #include <qurlpathinfo.h>

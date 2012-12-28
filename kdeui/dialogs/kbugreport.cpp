@@ -37,6 +37,7 @@
 #include <kdebug.h>
 #include <klineedit.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <qstandardpaths.h>

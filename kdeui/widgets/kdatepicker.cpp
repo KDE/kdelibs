@@ -35,6 +35,7 @@
 
 #include <kcalendarsystem.h>
 #include <klocalizeddate.h>
+#include <klocalizedstring.h>
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <kiconloader.h>

@@ -32,6 +32,8 @@
 
 #include <QtCore/QDate>
 
+#include <klocalizedstring.h>
+
 class KCalendarSystemJalaliPrivate : public KCalendarSystemPrivate
 {
 public:

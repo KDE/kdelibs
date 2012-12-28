@@ -27,6 +27,7 @@
 #include "kextendableitemdelegate.h"
 #include "kshortcutseditor.h"
 #include "kkeysequencewidget.h"
+#include "klocalizedstring.h"
 
 #include <QKeySequence>
 #include <QMetaType>

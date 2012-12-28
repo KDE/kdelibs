@@ -44,6 +44,7 @@
 #include "kdebug.h"
 #include "kglobal.h"
 #include "klocale.h"
+#include "klocalizedstring.h"
 #include "ksessionmanager.h"
 #include "ktoolinvocation.h"
 #include "kgesturemap.h"

@@ -25,7 +25,7 @@
 #define K4ABOUTDATA_H
 
 #include <kde4support_export.h>
-#include <klocale.h>
+#include <klocalizedstring.h>
 // Qt
 #include <QtCore/QString>
 #include <QtCore/QSharedDataPointer>

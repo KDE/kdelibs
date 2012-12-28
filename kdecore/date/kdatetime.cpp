@@ -40,6 +40,7 @@
 #include <QtCore/QSharedData>
 
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include "kcalendarsystem.h"
 #include <ksystemtimezone.h>
 #include <kdebug.h>

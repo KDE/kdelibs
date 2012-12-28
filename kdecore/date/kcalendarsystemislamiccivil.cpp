@@ -24,6 +24,8 @@
 
 #include <QtCore/QDate>
 
+#include <klocalizedstring.h>
+
 class KCalendarSystemIslamicCivilPrivate : public KCalendarSystemPrivate
 {
 public:

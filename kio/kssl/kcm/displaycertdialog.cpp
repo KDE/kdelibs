@@ -19,6 +19,7 @@
 
 #include "displaycertdialog_p.h"
 #include <kstandardguiitem.h>
+#include <klocale.h>
 #include <QPushButton>
 
 

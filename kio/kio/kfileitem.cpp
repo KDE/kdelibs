@@ -46,6 +46,7 @@
 #include <kfilemetainfo.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <krun.h>
 #include <kde_file.h>
 #include <kdesktopfile.h>

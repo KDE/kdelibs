@@ -35,6 +35,7 @@
 #include <kguiitem.h>
 #include <klineedit.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kstandardguiitem.h>
 
 #include <config-kde3support.h>

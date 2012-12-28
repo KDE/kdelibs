@@ -22,7 +22,6 @@
 #define KLOCALE_H
 
 #include <kdecore_export.h>
-#include <klocalizedstring.h>
 #include <ksharedconfig.h>
 
 #include <QtCore/QString>

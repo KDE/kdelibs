@@ -19,6 +19,7 @@
 #include "job.h"
 #include <kprotocolmanager.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <qurlpathinfo.h>
 #include <QTextDocument> // Qt::escape
 #include <QUrl>

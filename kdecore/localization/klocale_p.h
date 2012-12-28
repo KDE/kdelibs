@@ -22,6 +22,7 @@
 #define KLOCALE_P_H
 
 #include "klocale.h"
+#include "klocalizedstring.h"
 
 class QMutex;
 

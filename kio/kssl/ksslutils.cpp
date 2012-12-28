@@ -23,6 +23,7 @@
 
 #include <QtCore/QString>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <QtCore/QDate>
 
 #include "kopenssl.h"

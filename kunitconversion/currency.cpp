@@ -29,6 +29,7 @@
 #include <QtXml/QDomDocument>
 #include <kdebug.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 
 
 #if !KUNITCONVERSION_NO_SOLID

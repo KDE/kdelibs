@@ -21,6 +21,7 @@
 #include <kprotocolinfo.h>
 #include <kconfiggroup.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <qmimedatabase.h>
 #include <QtDBus/QtDBus>
 #include <QHash>

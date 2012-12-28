@@ -27,6 +27,7 @@
 
 #include <QtCore/QDateTime>
 
+#include "klocalizedstring.h"
 #include "kdatetime.h"
 #include "kdatetimeformatter_p.h"
 #include "kdatetimeparser_p.h"

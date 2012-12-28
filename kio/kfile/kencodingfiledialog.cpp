@@ -26,6 +26,7 @@
 #include <kabstractfilewidget.h>
 #include <kcombobox.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kcharsets.h>
 #include <QtCore/QTextCodec>
 #include <krecentdocument.h>

@@ -31,6 +31,7 @@
 #include <QMouseEvent>
 
 #include <klocale.h>
+#include <klocalizedstring.h>
 
 KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
     : KAbstractWidgetJobTracker(parent), d(new Private(parent, button))

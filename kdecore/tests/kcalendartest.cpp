@@ -27,6 +27,7 @@
 #include <QtTest/QtTest>
 #include "kcalendarsystem.h"
 #include "klocalizeddate.h"
+#include "klocalizedstring.h"
 #include "kconfiggroup.h"
 
 QTEST_MAIN(KCalendarTest)

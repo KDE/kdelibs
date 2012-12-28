@@ -91,6 +91,7 @@ extern "C" {
 #include <kurl.h>
 #include <kurlrequester.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kstandarddirs.h>

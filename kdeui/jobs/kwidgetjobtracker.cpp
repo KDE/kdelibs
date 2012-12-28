@@ -40,6 +40,7 @@
 #include <kguiitem.h>
 #include <kiconloader.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kwindowsystem.h>
 #include <kseparator.h>
 #include <kstandardguiitem.h>

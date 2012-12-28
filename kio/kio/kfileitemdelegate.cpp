@@ -39,6 +39,7 @@
 #include <qmimedatabase.h>
 
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
 #include <kdirmodel.h>

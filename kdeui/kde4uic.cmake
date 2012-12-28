@@ -51,6 +51,6 @@ IF (_uic_CONTENTS)
   STRING(REGEX REPLACE "#ifndef " "#ifndef UI_" _uic_CONTENTS "${_uic_CONTENTS}")
   STRING(REGEX REPLACE "#define " "#define UI_" _uic_CONTENTS "${_uic_CONTENTS}")
 
-  FILE(WRITE ${KDE_UIC_CPP_FILE} "#include <kdialog.h>\n#include <klocale.h>\n\n${_uic_CONTENTS}\n")
+  FILE(WRITE ${KDE_UIC_CPP_FILE} "#include <kdialog.h>\n#include <klocalizedstring.h>\n\n${_uic_CONTENTS}\n")
 ENDIF()
 

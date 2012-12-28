@@ -47,6 +47,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kwindowsystem.h>
 #include <klocale.h>
+#include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kiconloader.h>
 #include <kapplication.h>
