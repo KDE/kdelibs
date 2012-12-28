@@ -19,10 +19,12 @@
 #ifndef KSHORTCUTWIDGET_H
 #define KSHORTCUTWIDGET_H
 
+#include <kdeui_export.h>
+
 #include <QWidget>
-#include "kshortcut.h"
 
 class KActionCollection;
+class KShortcut;
 class KShortcutWidgetPrivate;
 
 /**
