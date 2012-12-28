@@ -27,7 +27,6 @@
 #define KACTION_H
 
 #include <kdeui_export.h>
-#include <kshortcut.h>
 #include <kauthaction.h>
 
 #include <QWidgetAction>
@@ -35,6 +34,7 @@
 
 class KShapeGesture;
 class KRockerGesture;
+class KShortcut;
 
 //TODO Reduce the word count. This is not very focused and takes too long to read.
 //Keep in mind that QAction also has documentation that we don't need to repeat here.
