@@ -159,7 +159,7 @@ bool testMessageBox(int test)
 
     case 12:
         i = KMessageBox::Ok;
-        KMessageBox::error(0, "Oops, Your harddisk is unreadable." , "Uh ooh");
+        KMessageBox::detailedError(0, "Oops, Your harddisk is unreadable." , "We don't know more yet.", "Uh ooh");
         break;
 
     case 13:
@@ -169,7 +169,7 @@ bool testMessageBox(int test)
 
     case 14:
         i = KMessageBox::Ok;
-        KMessageBox::sorry(0, "Sorry, Your harddisk appears to be empty.", "Oops");
+        KMessageBox::detailedSorry(0, "Sorry, Your harddisk appears to be empty.", "We don't know more yet.", "Oops");
         break;
 
     case 15:
