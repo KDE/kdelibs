@@ -24,6 +24,7 @@
 #include "ui_keygenwizard.h"
 
 #include <kdebug.h>
+#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kopenssl.h>

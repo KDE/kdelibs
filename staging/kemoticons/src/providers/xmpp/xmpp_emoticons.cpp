@@ -24,6 +24,7 @@
 
 #include <kpluginfactory.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <qmimedatabase.h>
 

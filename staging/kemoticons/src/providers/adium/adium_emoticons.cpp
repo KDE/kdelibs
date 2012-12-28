@@ -24,6 +24,7 @@
 
 #include <kpluginfactory.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 
 K_PLUGIN_FACTORY(AdiumEmoticonsFactory, registerPlugin<AdiumEmoticons>();)

@@ -32,6 +32,7 @@
 #include "ksslcertchain.h"
 #include "ksslutils.h"
 
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kde_file.h>
 #include <klocalizedstring.h>

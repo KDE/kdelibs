@@ -22,6 +22,7 @@
 #include <QDir>
 #include <QFile>
 
+#include "kglobal.h"
 #include "kstandarddirs.h"
 #include "qmimedatabase.h"
 #include "karchive.h"

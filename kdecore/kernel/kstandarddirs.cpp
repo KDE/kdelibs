@@ -28,6 +28,7 @@
 #include "kconfig.h"
 #include "kconfiggroup.h"
 #include "kdebug.h"
+#include "kglobal.h"
 #include "kshell.h"
 #include "kuser.h"
 #include "kde_file.h"

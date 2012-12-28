@@ -13,6 +13,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <kcomponentdata.h>
+#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <assert.h>
 #include <kfilterbase.h>

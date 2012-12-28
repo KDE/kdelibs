@@ -18,6 +18,7 @@
 #include "knotifyconfigactionswidget.h"
 #include "knotifyconfigelement.h"
 
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kiconloader.h>
 

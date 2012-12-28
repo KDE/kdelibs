@@ -28,6 +28,7 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <kglobal.h>
 
 class KConfigNoKdeHomeTest : public QObject
 {

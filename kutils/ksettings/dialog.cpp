@@ -28,6 +28,7 @@
 #include <kdebug.h>
 #include <kservicetypetrader.h>
 #include <kconfig.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
 #include <kiconloader.h>

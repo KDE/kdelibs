@@ -12,6 +12,7 @@
 #include <kactioncollection.h>
 #include <kxmlguifactory.h>
 #include <kdialog.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 
 #include <QStatusBar>

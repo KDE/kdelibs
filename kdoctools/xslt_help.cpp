@@ -9,6 +9,7 @@
 #include <libxml/parserInternals.h>
 #include <libxml/catalog.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <QtCore/QDate>
 #include <QtCore/QDir>

@@ -26,6 +26,7 @@
 #include <kparts/plugin.h>
 #include <kcomponentdata.h>
 #include <khelpmenu.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <QApplication>
 #include <QStatusBar>

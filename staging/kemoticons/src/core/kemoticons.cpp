@@ -31,6 +31,7 @@
 #include <kzip.h>
 #include <qmimedatabase.h>
 #include <kdirwatch.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 
 class KEmoticonsPrivate

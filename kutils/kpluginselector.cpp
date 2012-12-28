@@ -38,6 +38,7 @@
 #include <kcmoduleproxy.h>
 #include <kmessagebox.h>
 #include <kiconloader.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <klocalizedstring.h>
 #include <kcategorydrawer.h>

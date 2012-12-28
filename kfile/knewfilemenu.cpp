@@ -33,6 +33,7 @@
 #include <kcomponentdata.h>
 #include <kdialog.h>
 #include <kiconloader.h>
+#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kmessagebox.h>

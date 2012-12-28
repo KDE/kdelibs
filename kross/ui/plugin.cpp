@@ -21,6 +21,7 @@
 
 #include <kaction.h>
 #include <kdebug.h>
+#include <kglobal.h>
 #include <kstandarddirs.h>
 #include <krun.h>
 #include <kxmlguifactory.h>
