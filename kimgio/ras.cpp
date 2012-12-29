@@ -13,8 +13,7 @@
 
 #include <QImage>
 #include <QtCore/QDataStream>
-
-#include <kdebug.h>
+// #include <QDebug>
 
 namespace { // Private.
 	// format info from http://www.fileformat.info/format/sunraster/egff.htm
@@ -256,13 +255,13 @@ bool RASHandler::read(QImage *outImage)
     
     // Check image file format. Type 2 is RLE, which causing seeking to be silly.
     if( !s.atEnd() && ras.Type != 2) {
-        kDebug(399) << "This RAS file is not valid, or an older version of the format.";
+//         qDebug() << "This RAS file is not valid, or an older version of the format.";
         return false;
     }
 
     // Check supported file types.
     if( !IsSupported(ras) ) {
-        kDebug(399) << "This RAS file is not supported.";
+//         qDebug() << "This RAS file is not supported.";
         return false;
     }
 
@@ -270,7 +269,7 @@ bool RASHandler::read(QImage *outImage)
     bool result = LoadRAS(s, ras, img);
 
     if( result == false ) {
-        kDebug(399) << "Error loading RAS file.";
+//         qDebug() << "Error loading RAS file.";
         return false;
     }
 

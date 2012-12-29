@@ -25,7 +25,7 @@
 
 #include "rgb.h"
 #include <QImage>
-#include <kdebug.h>
+// #include <QDebug>
 
 
 SGIImage::SGIImage(QIODevice *io) :
@@ -152,7 +152,7 @@ bool SGIImage::readImage(QImage& img)
     qint16 u16;
     qint32 u32;
 
-    kDebug(399) << "reading rgb ";
+//     qDebug() << "reading rgb ";
 
     // magic
     _stream >> u16;
@@ -161,37 +161,37 @@ bool SGIImage::readImage(QImage& img)
 
     // verbatim/rle
     _stream >> _rle;
-    kDebug(399) << (_rle ? "RLE" : "verbatim");
+//     qDebug() << (_rle ? "RLE" : "verbatim");
     if (_rle > 1)
         return false;
 
     // bytes per channel
     _stream >> _bpc;
-    kDebug(399) << "bytes per channel: " << int(_bpc);
+//     qDebug() << "bytes per channel: " << int(_bpc);
     if (_bpc == 1)
         ;
-    else if (_bpc == 2)
-        kDebug(399) << "dropping least significant byte";
-    else
+    else if (_bpc == 2) {
+//         qDebug() << "dropping least significant byte";
+    } else
         return false;
 
     // number of dimensions
     _stream >> _dim;
-    kDebug(399) << "dimensions: " << _dim;
+//     qDebug() << "dimensions: " << _dim;
     if (_dim < 1 || _dim > 3)
         return false;
 
     _stream >> _xsize >> _ysize >> _zsize >> _pixmin >> _pixmax >> u32;
-    kDebug(399) << "x: " << _xsize;
-    kDebug(399) << "y: " << _ysize;
-    kDebug(399) << "z: " << _zsize;
+//     qDebug() << "x: " << _xsize;
+//     qDebug() << "y: " << _ysize;
+//     qDebug() << "z: " << _zsize;
 
     // name
     _stream.readRawData(_imagename, 80);
     _imagename[79] = '\0';
 
     _stream >> _colormap;
-    kDebug(399) << "colormap: " << _colormap;
+//     qDebug() << "colormap: " << _colormap;
     if (_colormap != NORMAL)
         return false;        // only NORMAL supported
 
@@ -199,7 +199,7 @@ bool SGIImage::readImage(QImage& img)
         _stream >> u8;
 
     if (_dim == 1) {
-        kDebug(399) << "1-dimensional images aren't supported yet";
+//         qDebug() << "1-dimensional images aren't supported yet";
         return false;
     }
 
@@ -212,8 +212,9 @@ bool SGIImage::readImage(QImage& img)
 
     if (_zsize == 2 || _zsize == 4)
         img = img.convertToFormat(QImage::Format_ARGB32);
-    else if (_zsize > 4)
-        kDebug(399) << "using first 4 of " << _zsize << " channels";
+    else if (_zsize > 4) {
+//         qDebug() << "using first 4 of " << _zsize << " channels";
+    }
 
     if (_rle) {
         uint l;
@@ -235,12 +236,12 @@ bool SGIImage::readImage(QImage& img)
         for (uint o = 0; o < _numrows; o++)
             // don't change to greater-or-equal!
             if (_starttab[o] + _lengthtab[o] > (uint)_data.size()) {
-                kDebug(399) << "image corrupt (sanity check failed)";
+//                 qDebug() << "image corrupt (sanity check failed)";
                 return false;
             }
 
     if (!readData(img)) {
-        kDebug(399) << "image corrupt (incomplete scanline)";
+//         qDebug() << "image corrupt (incomplete scanline)";
         return false;
     }
 
@@ -414,7 +415,7 @@ void SGIImage::writeHeader()
 void SGIImage::writeRle()
 {
     _rle = 1;
-    kDebug(399) << "writing RLE data";
+//     qDebug() << "writing RLE data";
     writeHeader();
     uint i;
 
@@ -435,7 +436,7 @@ void SGIImage::writeRle()
 void SGIImage::writeVerbatim(const QImage& img)
 {
     _rle = 0;
-    kDebug(399) << "writing verbatim data";
+//     qDebug() << "writing verbatim data";
     writeHeader();
 
     const QRgb *c;
@@ -477,7 +478,7 @@ void SGIImage::writeVerbatim(const QImage& img)
 
 bool SGIImage::writeImage(const QImage& image)
 {
-    kDebug(399) << "writing "; // TODO add filename
+//     qDebug() << "writing "; // TODO add filename
     QImage img = image;
     if (img.allGray())
         _dim = 2, _zsize = 1;
@@ -489,7 +490,7 @@ bool SGIImage::writeImage(const QImage& image)
 
     img = img.convertToFormat(QImage::Format_RGB32);
     if (img.isNull()) {
-        kDebug(399) << "can't convert image to depth 32";
+//         qDebug() << "can't convert image to depth 32";
         return false;
     }
 
@@ -504,7 +505,7 @@ bool SGIImage::writeImage(const QImage& image)
     _rlemap.setBaseOffset(512 + _numrows * 2 * sizeof(quint32));
 
     if (!scanData(img)) {
-        kDebug(399) << "this can't happen";
+//         qDebug() << "this can't happen";
         return false;
     }
 
@@ -515,11 +516,11 @@ bool SGIImage::writeImage(const QImage& image)
     for (int i = 0; i < _rlevector.size(); i++)
         rle_size += _rlevector[i]->size();
 
-    kDebug(399) << "minimum intensity: " << _pixmin;
-    kDebug(399) << "maximum intensity: " << _pixmax;
-    kDebug(399) << "saved scanlines: " << _numrows - _rlemap.size();
-    kDebug(399) << "total savings: " << (verbatim_size - rle_size) << " bytes";
-    kDebug(399) << "compression: " << (rle_size * 100.0 / verbatim_size) << '%';
+//     qDebug() << "minimum intensity: " << _pixmin;
+//     qDebug() << "maximum intensity: " << _pixmax;
+//     qDebug() << "saved scanlines: " << _numrows - _rlemap.size();
+//     qDebug() << "total savings: " << (verbatim_size - rle_size) << " bytes";
+//     qDebug() << "compression: " << (rle_size * 100.0 / verbatim_size) << '%';
 
     if (verbatim_size <= rle_size)
         writeVerbatim(img);

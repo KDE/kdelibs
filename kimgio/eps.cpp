@@ -14,7 +14,7 @@
 #include <QPrinter>
 #include <QtCore/QTextStream>
 #include <QtCore/QTemporaryFile>
-#include <kdebug.h>
+// #include <QDebug>
 
 #define BUFLEN 200
 
@@ -29,26 +29,26 @@ static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_s
 
     if ( io->read(buf, 2)!=2 ) // Read first two bytes
     {
-        kError(399) << "kimgio EPS: EPS file has less than 2 bytes." << endl;
+//         qDebug() << "kimgio EPS: EPS file has less than 2 bytes." << endl;
         return false;
     }
 
     if ( buf[0]=='%' && buf[1]=='!' ) // Check %! magic
     {
-        kDebug(399) << "kimgio EPS: normal EPS file";
+//         qDebug() << "kimgio EPS: normal EPS file";
     }
     else if ( buf[0]==char(0xc5) && buf[1]==char(0xd0) ) // Check start of MS-DOS EPS magic
     {   // May be a MS-DOS EPS file
         if ( io->read(buf+2, 2)!=2 ) // Read further bytes of MS-DOS EPS magic
         {
-            kError(399) << "kimgio EPS: potential MS-DOS EPS file has less than 4 bytes." << endl;
+//             qDebug() << "kimgio EPS: potential MS-DOS EPS file has less than 4 bytes." << endl;
             return false;
         }
         if ( buf[2]==char(0xd3) && buf[3]==char(0xc6) ) // Check last bytes of MS-DOS EPS magic
         {
             if (io->read(buf, 4)!=4) // Get offset of PostScript code in the MS-DOS EPS file.
             {
-                kError(399) << "kimgio EPS: cannot read offset of MS-DOS EPS file" << endl;
+//                 qDebug() << "kimgio EPS: cannot read offset of MS-DOS EPS file" << endl;
                 return false;
             }
             ps_offset // Offset is in little endian
@@ -58,7 +58,7 @@ static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_s
                 + ((unsigned char) buf[3] << 24);
             if (io->read(buf, 4)!=4) // Get size of PostScript code in the MS-DOS EPS file.
             {
-                kError(399) << "kimgio EPS: cannot read size of MS-DOS EPS file" << endl;
+//                 qDebug() << "kimgio EPS: cannot read size of MS-DOS EPS file" << endl;
                 return false;
             }
             ps_size // Size is in little endian
@@ -66,36 +66,36 @@ static bool seekToCodeStart( QIODevice * io, quint32 & ps_offset, quint32 & ps_s
                 + ((unsigned char) buf[1] << 8)
                 + ((unsigned char) buf[2] << 16)
                 + ((unsigned char) buf[3] << 24);
-            kDebug(399) << "kimgio EPS: Offset: " << ps_offset <<" Size: " << ps_size;
+//             qDebug() << "kimgio EPS: Offset: " << ps_offset <<" Size: " << ps_size;
             if ( !io->seek(ps_offset) ) // Get offset of PostScript code in the MS-DOS EPS file.
             {
-                kError(399) << "kimgio EPS: cannot seek in MS-DOS EPS file" << endl;
+//                 qDebug() << "kimgio EPS: cannot seek in MS-DOS EPS file" << endl;
                 return false;
             }
             if ( io->read(buf, 2)!=2 ) // Read first two bytes of what should be the Postscript code
             {
-                kError(399) << "kimgio EPS: PostScript code has less than 2 bytes." << endl;
+//                 qDebug() << "kimgio EPS: PostScript code has less than 2 bytes." << endl;
                 return false;
             }
             if ( buf[0]=='%' && buf[1]=='!' ) // Check %! magic
             {
-                kDebug(399) << "kimgio EPS: MS-DOS EPS file";
+//                 qDebug() << "kimgio EPS: MS-DOS EPS file";
             }
             else
             {
-                kError(399) << "kimgio EPS: supposed Postscript code of a MS-DOS EPS file doe not start with %!." << endl;
+//                 qDebug() << "kimgio EPS: supposed Postscript code of a MS-DOS EPS file doe not start with %!." << endl;
                 return false;
             }
         }
         else
         {
-            kError(399) << "kimgio EPS: wrong magic for potential MS-DOS EPS file!" << endl;
+//             qDebug() << "kimgio EPS: wrong magic for potential MS-DOS EPS file!" << endl;
             return false;
         }
     }
     else
     {
-        kError(399) << "kimgio EPS: not an EPS file!" << endl;
+//         qDebug() << "kimgio EPS: not an EPS file!" << endl;
         return false;
     }
     return true;
@@ -116,7 +116,7 @@ static bool bbox ( QIODevice *io, int *x1, int *y1, int *x2, int *y2)
                         float _x1, _y1, _x2, _y2;
                         if ( sscanf (buf, "%*s %f %f %f %f",
                                 &_x1, &_y1, &_x2, &_y2) == 4) {
-                                kDebug(399) << "kimgio EPS BBOX: " << _x1 << " " << _y1 << " " << _x2 << " " << _y2;
+//                                 qDebug() << "kimgio EPS BBOX: " << _x1 << " " << _y1 << " " << _x2 << " " << _y2;
                                 *x1=(int)_x1; *y1=(int)_y1; *x2=(int)_x2; *y2=(int)_y2;
                                 ret = true;
                                 break;
@@ -142,7 +142,7 @@ bool EPSHandler::canRead() const
 
 bool EPSHandler::read(QImage *image)
 {
-    kDebug(399) << "kimgio EPS: starting...";
+//     qDebug() << "kimgio EPS: starting...";
 
     FILE * ghostfd;
     int x1, y1, x2, y2;
@@ -161,13 +161,13 @@ bool EPSHandler::read(QImage *image)
 
     // find bounding box
     if ( !bbox (io, &x1, &y1, &x2, &y2)) {
-        kError(399) << "kimgio EPS: no bounding box found!" << endl;
+//         qDebug() << "kimgio EPS: no bounding box found!" << endl;
         return false;
     }
 
     QTemporaryFile tmpFile;
     if( !tmpFile.open() ) {
-        kError(399) << "kimgio EPS: no temp file!" << endl;
+//         qDebug() << "kimgio EPS: no temp file!" << endl;
         return false;
     }
 
@@ -176,7 +176,7 @@ bool EPSHandler::read(QImage *image)
 
     x2 -= x1;
     y2 -= y1;
-    //kDebug(399) << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2;
+    //qDebug() << "origin point: " << x1 << "," << y1 << "  size:" << x2 << "," << y2;
     double xScale = 1.0;
     double yScale = 1.0;
     int wantedWidth = x2;
@@ -205,7 +205,7 @@ bool EPSHandler::read(QImage *image)
     ghostfd = popen (QFile::encodeName(cmdBuf), "w");
 
     if ( ghostfd == 0 ) {
-        kError(399) << "kimgio EPS: no GhostScript?" << endl;
+//         qDebug() << "kimgio EPS: no GhostScript?" << endl;
         return false;
     }
 
@@ -229,12 +229,12 @@ bool EPSHandler::read(QImage *image)
 
     // load image
     if( image->load (tmpFile.fileName()) ) {
-        kDebug(399) << "kimgio EPS: success!";
-        //kDebug(399) << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds";
+//         qDebug() << "kimgio EPS: success!";
+        //qDebug() << "Loading EPS took " << (float)(dt.elapsed()) / 1000 << " seconds";
         return true;
     }
 
-    kError(399) << "kimgio EPS: no image!" << endl;
+//     qDebug() << "kimgio EPS: no image!" << endl;
     return false;
 }
 

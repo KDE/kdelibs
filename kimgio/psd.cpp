@@ -21,8 +21,7 @@
 
 #include <QImage>
 #include <QtCore/QDataStream>
-
-#include <kdebug.h>
+// #include <QDebug>
 
 typedef quint32 uint;
 typedef quint16 ushort;
@@ -259,19 +258,19 @@ bool PSDHandler::read(QImage *image)
 
     // Check image file format.
     if( s.atEnd() || !IsValid( header ) ) {
-        kDebug(399) << "This PSD file is not valid.";
+//         qDebug() << "This PSD file is not valid.";
         return false;
     }
 
     // Check if it's a supported format.
     if( !IsSupported( header ) ) {
-        kDebug(399) << "This PSD file is not supported.";
+//         qDebug() << "This PSD file is not supported.";
         return false;
     }
 
     QImage img;
     if( !LoadPSD(s, header, img) ) {
-        kDebug(399) << "Error loading PSD file.";
+//         qDebug() << "Error loading PSD file.";
         return false;
     }
 

@@ -29,11 +29,9 @@
 
 #include <iostream>
 
-#include <kdebug.h>
-
-
 #include <QImage>
 #include <QDataStream>
+// #include <QDebug>
 #include <QImageIOPlugin>
 
 class K_IStream: public Imf::IStream
@@ -200,7 +198,7 @@ bool EXRHandler::read( QImage *outImage )
     }
     catch (const std::exception &exc)
     {
-		kDebug() << exc.what();
+// 		qDebug() << exc.what();
         return false;
     }
 }
