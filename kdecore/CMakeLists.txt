@@ -417,9 +417,17 @@ endif(WINCE)
 
 set(SYS_INOTIFY_H_FOUND 0)
 if(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
+   set_package_properties(FAM PROPERTIES DESCRIPTION "File alteration notification support via a separate service"
+                          URL "http://oss.sgi.com/projects/fam"
+                          TYPE OPTIONAL
+                          PURPOSE "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS."
+                         )
 else(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
+   set_package_properties(FAM PROPERTIES DESCRIPTION "File alteration notification support via a separate service"
+                          URL "http://oss.sgi.com/projects/fam"
+                          TYPE OPTIONAL
+                          PURPOSE "Provides file alteration notification facilities using a separate service."
+                         )
 endif(SYS_INOTIFY_H_FOUND)
 
 if(FAM_FOUND)

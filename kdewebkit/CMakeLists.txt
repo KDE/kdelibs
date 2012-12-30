@@ -1,6 +1,10 @@
 project(kdewebkit)
 
-macro_log_feature(QT_QTWEBKIT_FOUND "QtWebKit" "Needed for building kdelibs" "http://trac.webkit.org/wiki/QtWebKit" TRUE "" "")
+add_feature_info(QtWebkit QT_QTWEBKIT_FOUND "Needed for building kdelibs" "http://trac.webkit.org/wiki/QtWebKit")
+
+if(NOT QT_QTWEBKIT_FOUND)
+  message(FATAL_ERROR "The QtWebkit module is required.")
+endif()
 
 include_directories(
  ${KDE4_KDECORE_INCLUDES}

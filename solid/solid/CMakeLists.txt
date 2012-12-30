@@ -151,7 +151,11 @@ if(NOT APPLE)
   else ()
     set(HUPNP_FOUND false)
   endif ()
-  macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
+  set_package_properties(HUpnp PROPERTIES DESCRIPTION "UPnP support for Solid"
+                         URL "http://www.herqq.org"
+                         TYPE OPTIONAL
+                         PURPOSE "Allows Solid to provide information about UPnP devices on the network"
+                        )
 endif(NOT APPLE)
 
 if(NOT WIN32 AND NOT APPLE)
@@ -173,7 +177,11 @@ if(NOT WIN32 AND NOT APPLE)
 #   )
 
    macro_optional_find_package( UDev )
-   macro_log_feature( UDEV_FOUND "UDev" "UDev support for Solid" "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "Allows Solid to use UDev to provide information about devices on Linux" )
+   set_package_properties(UDev PROPERTIES DESCRIPTION "UDev support for Solid"
+                          URL "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
+                          TYPE OPTIONAL
+                          PURPOSE "Allows Solid to use UDev to provide information about devices on Linux"
+                         )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
 
 
@@ -215,14 +223,11 @@ if(NOT WIN32 AND NOT APPLE)
          )
       endif(XDG_DATA_DIRS_ENV)
 
-      macro_log_feature(MEDIAPLAYERINFO_PATH
-         "media-player-info"
-         "Enables identification and querying of portable media players"
-         "http://www.freedesktop.org/wiki/Software/media-player-info"
-         FALSE
-         ""
-         "Runtime-only dependency of the udev solid backend. Support for m-p-i is included even if not found during build"
-      )
+      add_feature_info("media-player-info" MEDIAPLAYERINFO_PATH
+                       "Enables identification and querying of portable media players.
+                       Runtime-only dependency of the udev solid backend.
+                       Support for m-p-i is included even if not found during build"
+                      )
    endif( UDEV_FOUND )
 
 
@@ -448,23 +453,18 @@ set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
 find_package(Flex)
-macro_log_feature(FLEX_FOUND
-   "Flex"
-   "Allows the Solid predicate parser to be updated"
-   "http://flex.sourceforge.net"
-   FALSE
-   ""
-   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
+set_package_properties(Flex PROPERTIES DESCRIPTION "Allows the Solid predicate parser to be updated"
+                       URL "http://flex.sourceforge.net"
+                       TYPE OPTIONAL
+                       PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
+                      )
 
-find_program(BISON_EXECUTABLE bison)
-macro_log_feature(BISON_EXECUTABLE
-   "Bison"
-   "Allows the Solid predicate parser to be updated"
-   "http://www.gnu.org/software/bison"
-   FALSE
-   ""
-   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
-mark_as_advanced(BISON_EXECUTABLE)      # don't show it in the simple view in cmake-gui/ccmake
+find_package(BISON)
+set_package_properties(BISON PROPERTIES DESCRIPTION "Allows the Solid predicate parser to be updated"
+                       URL "http://www.gnu.org/software/bison"
+                       TYPE OPTIONAL
+                       PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
+                      )
 
 if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
 
