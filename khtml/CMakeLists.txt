@@ -18,13 +18,25 @@ add_subdirectory( tests )
 find_package(Phonon 4.3.80 REQUIRED)
 
 find_package(JPEG)
-macro_log_feature(JPEG_FOUND "libjpeg" "JPEG image format support" "http://www.ijg.org" TRUE "" "Required by khtml.")
+set_package_properties(JPEG PROPERTIES DESCRIPTION "JPEG image format support"
+                       URL "http://www.ijg.org"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
 
 find_package(GIF)
-macro_log_feature(GIF_FOUND "giflib" "GIF image format support" "http://sourceforge.net/projects/giflib" TRUE "" "Required by khtml.")
+set_package_properties(GIF PROPERTIES DESCRIPTION "GIF image format support"
+                       URL "http://sourceforge.net/projects/giflib"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
 
 find_package(PNG)
-macro_log_feature(PNG_FOUND "libpng" "PNG image format support" "http://www.libpng.org/pub/png" TRUE "" "Required by khtml.")
+set_package_properties(PNG PROPERTIES DESCRIPTION "PNG image format support"
+                       URL "http://www.libpng.org/pub/png"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
 
 find_package(X11)
 if(X11_FOUND)

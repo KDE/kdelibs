@@ -49,5 +49,8 @@ else (POPPLER_QT4_FOUND)
     message(FATAL_ERROR "Could NOT find poppler-qt4")
   endif (PopplerQt4_FIND_REQUIRED)
 endif (POPPLER_QT4_FOUND)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(PopplerQt4 REQUIRED_VARS POPPLER_QT4_INCLUDE_DIR POPPLER_QT4_LIBRARIES)
   
 mark_as_advanced(POPPLER_QT4_INCLUDE_DIR POPPLER_QT4_LIBRARIES)

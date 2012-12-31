@@ -1,5 +1,4 @@
 project(dnssd)
-
 include(ConfigureChecks.cmake)
 configure_file(config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
@@ -9,7 +8,11 @@ include_directories( ${ki18n_BINARY_DIR}/src )
 
 find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
-macro_log_feature(AVAHI_FOUND "Avahi" "Facilities for service discovery on a local network (DNSSD)" "http://avahi.org" FALSE "" "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery")
+set_package_properties(Avahi PROPERTIES DESCRIPTION "Facilities for service discovery on a local network (DNSSD)"
+                       URL "http://avahi.org"
+                       TYPE OPTIONAL
+                       PURPOSE "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery"
+                      )
 
 set(kdnssd_LIB_SRCS  servicebase.cpp servicemodel.cpp domainmodel.cpp)
 kconfig_add_kcfg_files(kdnssd_LIB_SRCS settings.kcfgc)
@@ -33,7 +36,11 @@ else (HAVE_AVAHI)
 
    find_package(DNSSD)
    macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
-   macro_log_feature(DNSSD_FOUND "DNSSD" "Facilities for service discovery on a local network" "http://avahi.org" FALSE "" "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery")
+   set_package_properties(DNSSD PROPERTIES DESCRIPTION "Facilities for service discovery on a local network"
+                          URL "http://avahi.org"
+                          TYPE OPTIONAL
+                          PURPOSE "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery"
+                         )
 
    if (HAVE_DNSSD)
       include_directories( ${DNSSD_INCLUDE_DIR} )

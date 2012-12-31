@@ -216,12 +216,6 @@ static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, 
         return false;
     }
 
-    // NOTE: Workaround for brain dead clients that include "undefined" as
-    // username and password in the request URL (BR# 275033).
-    if (request.url.userName() == QLatin1String("undefined") && request.url.password() == QLatin1String("undefined")) {
-        return false;
-    }
-
     // We already have cached authentication.
     if (config->readEntry(QLatin1String("cached-www-auth"), false)) {
         return false;

@@ -139,36 +139,45 @@ endif (APPLE)
 #required features:
 # Perl is used e.g. in khtml, kjs, kjsembed and others
 find_package(Perl)
-macro_log_feature(PERL_FOUND "Perl" "Needed for building kdelibs" "http://www.perl.org" TRUE "" "")
+set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
 
 find_package(ZLIB)
-macro_log_feature(ZLIB_FOUND "ZLib" "Support for gzip compressed files and data streams" "http://www.zlib.net" TRUE "" "Required by the core KDE libraries and some critical kioslaves")
+set_package_properties(ZLIB PROPERTIES DESCRIPTION "Support for gzip compressed files and data streams"
+                       URL "http://www.zlib.net"
+                       TYPE REQUIRED
+                       PURPOSE "Required by the core KDE libraries and some critical kioslaves"
+                      )
 
-set(STRIGI_MIN_VERSION 0.6.3)
-find_package(Strigi)
+find_package(Strigi 0.6.3)
 if (WIN32)
-    set (STRIGI_REQUIRED FALSE)
+    set (STRIGI_TYPE "OPTIONAL")
     set (STRIGI_EXTRA_TEXT "")
 else (WIN32)
-    set (STRIGI_REQUIRED TRUE)
+    set (STRIGI_TYPE "REQUIRED")
     set (STRIGI_EXTRA_TEXT "Required by some critical kioslaves")
 endif (WIN32)
-macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" ${STRIGI_REQUIRED} "${STRIGI_MIN_VERSION}" "${STRIGI_EXTRA_TEXT}")
+set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
+                       URL "http://strigi.sourceforge.net"
+                       TYPE ${STRIGI_TYPE}
+                       PURPOSE ${STRIGI_EXTRA_TEXT}
+                      )
 
-set(LIBATTICA_MIN_VERSION "0.1.90")
-find_package(LibAttica)
-macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "git://anongit.kde.org/attica" TRUE "${LIBATTICA_MIN_VERSION}" "")
+find_package(LibAttica 0.1.90)
+set_package_properties(LibAttica PROPERTIES DESCRIPTION "Support for Get Hot New Stuff"
+                       URL "https://projects.kde.org/attica"
+                       TYPE REQUIRED
+                      )
 
 #optional features
 find_package(X11)
 if(X11_FOUND)
   macro_bool_to_01(X11_FOUND HAVE_X11)
   #X11_Xrender discovery is done by FindX11
-  macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
+  add_feature_info("X Rendering Extension (libXrender)" X11_Xrender_FOUND "Support for compositing, rendering operations, and alpha-blending. STRONGLY RECOMMENDED")
   macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
   macro_bool_to_01(X11_XSync_FOUND HAVE_XSYNC)
-  macro_log_feature(HAVE_XSCREENSAVER "X Screensaver Extension (libXss)" "Support for KIdleTime (fallback mode)" "http://www.x.org/" FALSE "" "")
-  macro_log_feature(HAVE_XSYNC "X Sync Extension (libXext)" "Efficient operation of KIdleTime" "http://www.x.org/" FALSE "" "STRONGLY RECOMMENDED")
+  add_feature_info("X Screensaver Extension (libXss)" HAVE_XSCREENSAVER "Support for KIdleTime (fallback mode)")
+  add_feature_info("X Sync Extension (libXext)" HAVE_XSYNC "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
 
   if(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
     message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
@@ -181,18 +190,31 @@ if(X11_FOUND)
   endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
 
-
 find_package(OpenSSL)
-macro_log_feature(OPENSSL_FOUND "OpenSSL" "Support for secure network communications (SSL and TLS)" "http://openssl.org" FALSE "" "STRONGLY RECOMMENDED: KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS")
+set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
+                       URL "http://openssl.org"
+                       TYPE RECOMMENDED
+                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
+                      )
 
 find_package(Libintl)
-macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
+set_package_properties(Libintl PROPERTIES DESCRIPTION "Support for multiple languages"
+                       URL "http://www.gnu.org/software/gettext"
+                       TYPE RECOMMENDED
+                       PURPOSE "Enables KDE to be available in many different languages"
+                      )
 
-find_package(QCA2)
-macro_log_feature(QCA2_FOUND "QCA2" "Support for remote plasma widgets" "http://delta.affinix.com/qca" FALSE "2.0.0" "")
+find_package(QCA2 2.0.0)
+set_package_properties(QCA2 PROPERTIES DESCRIPTION "Support for remote plasma widgets"
+                       URL "http://delta.affinix.com/qca"
+                       TYPE OPTIONAL
+                      )
 
 find_package(DBusMenuQt)
-macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "https://launchpad.net/libdbusmenu-qt" TRUE "" "")
+set_package_properties(DBusMenuQt PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
+                       URL "https://launchpad.net/libdbusmenu-qt"
+                       TYPE REQUIRED
+                      )
 
 ################# Disallow in-source build #################
 
@@ -475,5 +497,3 @@ install( EXPORT kdelibsLibraryTargets DESTINATION ${DATA_INSTALL_DIR}/cmake/modu
 install( EXPORT kdelibsToolsTargets   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4ToolsTargets.cmake )
 
 feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
-
-macro_display_feature_log()
