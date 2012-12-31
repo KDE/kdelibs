@@ -47,7 +47,7 @@
 #include <QtNetwork/QNetworkProxyQuery>
 #endif
 
-#include <kdeversion.h>
+#include <kio_version.h>
 #include <klocale.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
@@ -775,15 +775,15 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     d->useragent = QL1S("Mozilla/5.0 (");
     d->useragent += supp;
     d->useragent += QL1S(") KHTML/");
-    d->useragent += QString::number(KDE::versionMajor());
+    d->useragent += QString::number(KIO_VERSION_MAJOR);
     d->useragent += QL1C('.');
-    d->useragent += QString::number(KDE::versionMinor());
+    d->useragent += QString::number(KIO_VERSION_MINOR);
     d->useragent += QL1C('.');
-    d->useragent += QString::number(KDE::versionRelease());
+    d->useragent += QString::number(KIO_VERSION_PATCH);
     d->useragent += QL1S(" (like Gecko) Konqueror/");
-    d->useragent += QString::number(KDE::versionMajor());
+    d->useragent += QString::number(KIO_VERSION_MAJOR);
     d->useragent += QL1C('.');
-    d->useragent += QString::number(KDE::versionMinor());
+    d->useragent += QString::number(KIO_VERSION_MINOR);
   }
   else
   {
@@ -793,11 +793,11 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 
     QString appVersion = QCoreApplication::applicationVersion();
     if (appVersion.isEmpty()) {
-      appVersion += QString::number(KDE::versionMajor());
+      appVersion += QString::number(KIO_VERSION_MAJOR);
       appVersion += QL1C('.');
-      appVersion += QString::number(KDE::versionMinor());
+      appVersion += QString::number(KIO_VERSION_MINOR);
       appVersion += QL1C('.');
-      appVersion += QString::number(KDE::versionRelease());
+      appVersion += QString::number(KIO_VERSION_PATCH);
     }
 
     appName += QL1C('/');
@@ -881,11 +881,11 @@ QString KProtocolManager::userAgentForApplication( const QString &appName, const
   }
 
   info += QL1S("KDE/");
-  info += QString::number(KDE::versionMajor());
+  info += QString::number(KIO_VERSION_MAJOR);
   info += QL1C('.');
-  info += QString::number(KDE::versionMinor());
+  info += QString::number(KIO_VERSION_MINOR);
   info += QL1C('.');
-  info += QString::number(KDE::versionRelease());
+  info += QString::number(KIO_VERSION_PATCH);
 
   if (!machine.isEmpty())
   {
