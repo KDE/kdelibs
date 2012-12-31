@@ -39,6 +39,8 @@
 #include <QtNetwork/QHostInfo>
 #include <QtDBus/QtDBus>
 #include <QtCore/QCache>
+#include <qstandardpaths.h>
+#include <qmimedatabase.h>
 
 #if !defined(QT_NO_NETWORKPROXY) && (defined (Q_OS_WIN32) || defined(Q_OS_MAC))
 #include <QtNetwork/QNetworkProxyFactory>
@@ -46,7 +48,6 @@
 #endif
 
 #include <kdeversion.h>
-#include <kdebug.h>
 #include <klocale.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
@@ -57,8 +58,6 @@
 #include <kio/slaveconfig.h>
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
-#include <qstandardpaths.h>
-#include <qmimedatabase.h>
 
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
@@ -219,7 +218,7 @@ bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const QUrl& url)
     // If request url is not IP address, do a DNS lookup of the hostname.
     // TODO: Perhaps we should make configurable ?
     if (address.isNull()) {
-      kDebug() << "Performing DNS lookup for" << host;
+      //kDebug() << "Performing DNS lookup for" << host;
       QHostInfo info = KIO::HostInfo::lookupHost(host, 2000);
       const QList<QHostAddress> addresses = info.addresses();
       if (!addresses.isEmpty())
