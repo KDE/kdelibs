@@ -123,7 +123,6 @@ KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
  fixx11h_test2
  kxerrorhandlertest
- kmanagerselectiontest
 )
 # TODO! PORT TO NEW KManagerSelection API!
 #KDEUI_UNIT_TESTS(
