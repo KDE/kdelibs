@@ -39,7 +39,7 @@ else (HAVE_AVAHI)
 
    macro_optional_find_package(DNSSD)
    macro_bool_to_01(DNSSD_FOUND HAVE_DNSSD)
-   set_package_properties(DNSSD PROPERTIES DESCRIPTION"Facilities for service discovery on a local network"
+   set_package_properties(DNSSD PROPERTIES DESCRIPTION "Facilities for service discovery on a local network"
                           URL "http://avahi.org"
                           TYPE OPTIONAL
                           PURPOSE "Either Avahi or DNSSD is required for KDE applications to make use of multicast DNS/DNS-SD service discovery"
