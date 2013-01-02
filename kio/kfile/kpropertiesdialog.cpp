@@ -61,6 +61,7 @@ extern "C" {
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
@@ -83,7 +84,6 @@ extern "C" {
 #endif
 
 #include <kcoreauthorized.h>
-#include <kdialog.h>
 #include <kdirnotify.h>
 #include <kdiskfreespaceinfo.h>
 #include <kdebug.h>
@@ -1924,19 +1924,18 @@ static bool fileSystemSupportsACL( const QByteArray& path )
 void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
 
     bool isDir = (d->pmode == PermissionsOnlyDirs) || (d->pmode == PermissionsMixed);
-    KDialog dlg( properties );
+    QDialog dlg(properties);
     dlg.setModal( true );
-    dlg.setCaption( i18n("Advanced Permissions") );
-    dlg.setButtons( KDialog::Ok | KDialog::Cancel );
+    dlg.setWindowTitle(i18n("Advanced Permissions"));
 
     QLabel *l, *cl[3];
     QGroupBox *gb;
     QGridLayout *gl;
 
-    QWidget *mainw = new QWidget( &dlg );
-    QVBoxLayout *vbox = new QVBoxLayout(mainw);
+    QVBoxLayout *vbox = new QVBoxLayout;
+    dlg.setLayout(vbox);
     // Group: Access Permissions
-    gb = new QGroupBox ( i18n("Access Permissions"), mainw );
+    gb = new QGroupBox(i18n("Access Permissions"), &dlg);
     vbox->addWidget(gb);
 
     gl = new QGridLayout (gb);
@@ -2134,7 +2133,7 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
     }
     if ( d->fileSystemSupportsACLs  ) {
         std::for_each( theNotSpecials.begin(), theNotSpecials.end(), std::mem_fun( &QWidget::hide ) );
-        extendedACLs = new KACLEditWidget( mainw );
+        extendedACLs = new KACLEditWidget(&dlg);
         vbox->addWidget(extendedACLs);
         if ( d->extendedACL.isValid() && d->extendedACL.isExtended() )
             extendedACLs->setACL( d->extendedACL );
@@ -2148,8 +2147,14 @@ void KFilePermissionsPropsPlugin::slotShowAdvancedPermissions() {
             extendedACLs->setAllowDefaults( true );
     }
 #endif
-    dlg.setMainWidget( mainw );
-    if (dlg.exec() != KDialog::Accepted)
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(&dlg);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), &dlg, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), &dlg, SLOT(reject()));
+    vbox->addWidget(buttonBox);
+
+    if (dlg.exec() != QDialog::Accepted)
         return;
 
     mode_t andPermissions = mode_t(~0);
@@ -3157,7 +3162,7 @@ void KDesktopPropsPlugin::slotAddFiletype()
                                KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns,
                                d->m_frame);
 
-    if (dlg.exec() == KDialog::Accepted)
+    if (dlg.exec() == QDialog::Accepted)
     {
         foreach(const QString &mimetype, dlg.chooser()->mimeTypes())
         {
@@ -3297,15 +3302,25 @@ void KDesktopPropsPlugin::slotBrowseExec()
 
 void KDesktopPropsPlugin::slotAdvanced()
 {
-    KDialog dlg( d->m_frame );
+    QDialog dlg(d->m_frame);
     dlg.setObjectName( "KPropertiesDesktopAdv" );
     dlg.setModal( true );
     const QUrlPathInfo pathInfo(properties->url());
-    dlg.setCaption( i18n("Advanced Options for %1", pathInfo.fileName()) );
-    dlg.setButtons( KDialog::Ok | KDialog::Cancel );
-    dlg.setDefaultButton( KDialog::Ok );
+    dlg.setWindowTitle(i18n("Advanced Options for %1", pathInfo.fileName()));
+
     Ui_KPropertiesDesktopAdvBase w;
-    w.setupUi(dlg.mainWidget());
+    QWidget *mainWidget = new QWidget(&dlg);
+    w.setupUi(mainWidget);
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(&dlg);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), &dlg, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), &dlg, SLOT(reject()));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(mainWidget);
+    layout->addWidget(buttonBox);
+    dlg.setLayout(layout);
 
     // If the command is changed we reset certain settings that are strongly
     // coupled to the command.
