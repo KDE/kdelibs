@@ -22,6 +22,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  hostinfo.cpp
   kdirnotify.cpp
   kauthorized.cpp
   kacl.cpp
@@ -74,6 +75,7 @@ install( FILES
   http_slave_defaults.h
   global.h
   ioslave_defaults.h
+  hostinfo.h
   jobtracker.h
   klocalsocket.h
   kprotocolinfo.h

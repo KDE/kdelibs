@@ -37,7 +37,7 @@
 
 #include <kurl.h>
 #include <klocalizedstring.h>
-#include <kio/hostinfo_p.h>
+#include <kio/hostinfo.h>
 
 #define QL1S(x)    QLatin1String(x)
 

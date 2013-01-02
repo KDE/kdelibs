@@ -83,7 +83,7 @@ using namespace DOM;
 #include <kio/global.h>
 #include <kio/pixmaploader.h>
 #include <kio/netaccess.h>
-#include <kio/hostinfo_p.h>
+#include <kio/hostinfo.h>
 #include <kprotocolmanager.h>
 #include <kdebug.h>
 #include <kiconloader.h>

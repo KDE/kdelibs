@@ -173,7 +173,6 @@ set(kiocore_STAT_SRCS
   kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
   kio/thumbsequencecreator.cpp
-  kio/hostinfo.cpp
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
 )

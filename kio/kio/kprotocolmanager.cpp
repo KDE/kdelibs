@@ -22,7 +22,7 @@
 #include "kprotocolmanager.h"
 #include "kprotocolinfo_p.h"
 
-#include "hostinfo_p.h"
+#include "hostinfo.h"
 
 #include <config-kio.h>
 

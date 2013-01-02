@@ -23,23 +23,34 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <QtCore/QString>
 #include <QtCore/QObject>
-#include "kio_export.h"
+#include "kiocore_export.h"
 
 class QHostInfo;
 
 namespace KIO
 {
+    /**
+     * WARNING: this could disappear at some point in time.
+     * DO NOT USE outside KDE Frameworks
+     */
     namespace HostInfo
     {
-        KIO_EXPORT void lookupHost(const QString& hostName, QObject* receiver, const char* member);
-        KIO_EXPORT QHostInfo lookupHost(const QString& hostName, unsigned long timeout);
-        KIO_EXPORT QHostInfo lookupCachedHostInfoFor(const QString& hostName);
-        KIO_EXPORT void cacheLookup(const QHostInfo& info);
+        /// @internal
+        KIOCORE_EXPORT void lookupHost(const QString& hostName, QObject* receiver, const char* member);
+        /// @internal
+        KIOCORE_EXPORT QHostInfo lookupHost(const QString& hostName, unsigned long timeout);
+        /// @internal
+        KIOCORE_EXPORT QHostInfo lookupCachedHostInfoFor(const QString& hostName);
+        /// @internal
+        KIOCORE_EXPORT void cacheLookup(const QHostInfo& info);
 
         // used by khtml's DNS prefetching feature
-        KIO_EXPORT void prefetchHost(const QString& hostName);
-        KIO_EXPORT void setCacheSize( int s );
-        KIO_EXPORT void setTTL( int ttl );
+        /// @internal
+        KIOCORE_EXPORT void prefetchHost(const QString& hostName);
+        /// @internal
+        KIOCORE_EXPORT void setCacheSize( int s );
+        /// @internal
+        KIOCORE_EXPORT void setTTL( int ttl );
     }
 }
 

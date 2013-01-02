@@ -20,7 +20,7 @@
 
 #include "kurifilter.h"
 
-#include "hostinfo_p.h"
+#include "hostinfo.h"
 
 #include <kdebug.h>
 #include <kiconloader.h>
