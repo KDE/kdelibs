@@ -420,8 +420,9 @@ namespace KGlobal
     /**
      * Returns the general config object.
      * @return the global configuration object.
+     * @deprecated since 5.0, use KSharedConfig::openConfig()
      */
-    KDECORE_EXPORT KSharedConfigPtr config();
+    KDECORE_DEPRECATED_EXPORT KSharedConfigPtr config();
 
     /**
      * Inserts the catalog in the main locale object if it exists.
@@ -575,8 +576,10 @@ namespace KGlobal
      * "-caption", otherwise it will be equivalent to the name of the
      * executable.
      * @return the text for the window caption
+     * @deprecated since 5.0. Don't use in window titles anymore, Qt takes care of it.
+     * If you really need this, use QApplication::applicationDisplayName().
      */
-    KDECORE_EXPORT QString caption();
+    KDECORE_DEPRECATED_EXPORT QString caption();
 
     /// @internal
     KDECORE_EXPORT QObject* findDirectChild_helper(const QObject* parent, const QMetaObject& mo);
