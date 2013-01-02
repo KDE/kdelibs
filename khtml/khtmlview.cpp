@@ -65,7 +65,6 @@
 
 #include <kcursor.h>
 #include <kdebug.h>
-#include <kdialog.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <knotification.h>
@@ -77,6 +76,8 @@
 #include <kconfiggroup.h>
 
 #include <QBitmap>
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QtCore/QObject>
 #include <QPainter>
@@ -1035,19 +1036,11 @@ void KHTMLView::closeChildDialogs()
     QList<QDialog *> dlgs = findChildren<QDialog *>();
     foreach (QDialog *dlg, dlgs)
     {
-        KDialog* dlgbase = dynamic_cast<KDialog*>( dlg );
-        if ( dlgbase ) {
-            if ( dlgbase->testAttribute( Qt::WA_ShowModal ) ) {
-                kDebug(6000) << "closeChildDialogs: closing dialog " << dlgbase;
-                // close() ends up calling QButton::animateClick, which isn't immediate
-                // we need something the exits the event loop immediately (#49068)
-                dlgbase->reject();
-            }
-        }
-        else
-        {
-            kWarning() << "closeChildDialogs: not a KDialog! Don't use QDialogs in KDE! " << static_cast<QWidget*>(dlg);
-            static_cast<QWidget*>(dlg)->hide();
+        if ( dlg->testAttribute( Qt::WA_ShowModal ) ) {
+            kDebug(6000) << "closeChildDialogs: closing dialog " << dlg;
+            // close() ends up calling QButton::animateClick, which isn't immediate
+            // we need something the exits the event loop immediately (#49068)
+            dlg->reject();
         }
     }
     d->m_dialogsAllowed = false;
