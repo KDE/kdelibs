@@ -92,7 +92,6 @@
   <tabstop>_clear</tabstop>
  </tabstops>
  <includes>
-  <include location="global" >kdialog.h</include>
  </includes>
  <resources/>
  <connections/>

@@ -19,6 +19,7 @@
 */
 
 #include "browseropenorsavequestion.h"
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kaction.h>
@@ -27,7 +28,6 @@
 #include <kmenu.h>
 #include <ksqueezedtextlabel.h>
 #include <knotification.h>
-#include <kdialog.h>
 #include <kmimetypetrader.h>
 #include <kstandardguiitem.h>
 #include <kguiitem.h>

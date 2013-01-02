@@ -24,6 +24,7 @@
 #include <config-kio.h>
 #if HAVE_POSIX_ACL
 
+#include <QDialog>
 #include <QDialogButtonBox>
 #include <qpainter.h>
 #include <qpushbutton.h>
@@ -41,7 +42,6 @@
 #include <klocalizedstring.h>
 #include <kfileitem.h>
 #include <kdebug.h>
-#include <kdialog.h>
 
 #if HAVE_ACL_LIBACL_H
 # include <acl/libacl.h>

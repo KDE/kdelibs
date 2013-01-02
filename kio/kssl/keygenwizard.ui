@@ -51,7 +51,6 @@
   </layout>
  </widget>
  <includes>
-  <include location="global" >kdialog.h</include>
  </includes>
  <resources/>
  <connections/>

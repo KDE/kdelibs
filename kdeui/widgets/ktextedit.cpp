@@ -37,6 +37,7 @@
 #include <dialog.h>
 #include "backgroundchecker.h"
 #include <kaction.h>
+#include <kconfiggroup.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>
 #include <kstandardaction.h>
@@ -44,7 +45,6 @@
 #include <kstandardshortcut.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
-#include <kdialog.h>
 #include <kreplacedialog.h>
 #include <kfinddialog.h>
 #include <kfind.h>

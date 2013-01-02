@@ -29,10 +29,9 @@
 #include <QItemSelection>
 #include <QTreeView>
 
-#include <kdialog.h>
-
 class KLineEdit;
 class QComboBox;
+class QPushButton;
 class QItemSelection;
 class KActionCollection;
 class KUrlRequester;
