@@ -52,6 +52,7 @@ include_directories(
    ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
    ${kiocore_SOURCE_DIR}/
    ${kiocore_BINARY_DIR}/
+   ${kiocore_BINARY_DIR}/..   # kio_version.h
    ${CMAKE_BINARY_DIR}/staging/kio/src/include
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
