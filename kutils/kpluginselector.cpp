@@ -21,6 +21,8 @@
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QPainter>
 #include <QBoxLayout>
@@ -31,7 +33,6 @@
 
 #include <kdebug.h>
 #include <klineedit.h>
-#include <kdialog.h>
 #include <kurllabel.h>
 #include <ktabwidget.h>
 #include <kcmoduleinfo.h>
@@ -807,7 +808,7 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
     PluginEntry *pluginEntry = model->data(index, PluginEntryRole).value<PluginEntry*>();
     KPluginInfo pluginInfo = pluginEntry->pluginInfo;
 
-    KDialog configDialog(itemView());
+    QDialog configDialog(itemView());
     configDialog.setWindowTitle(model->data(index, NameRole).toString());
     // The number of KCModuleProxies in use determines whether to use a tabwidget
     KTabWidget *newTabWidget = 0;
@@ -856,17 +857,19 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
 
     // it could happen that we had services to show, but none of them were real modules.
     if (moduleProxyList.count()) {
-        configDialog.setButtons(KDialog::Ok | KDialog::Cancel | KDialog::Default);
-
-        QWidget *showWidget = new QWidget(&configDialog);
         QVBoxLayout *layout = new QVBoxLayout;
-        showWidget->setLayout(layout);
         layout->addWidget(mainWidget);
-        const int marginHint = showWidget->style()->pixelMetric(QStyle::PM_DefaultChildMargin);
+        const int marginHint = configDialog.style()->pixelMetric(QStyle::PM_DefaultChildMargin);
         layout->insertSpacing(-1, marginHint);
-        configDialog.setMainWidget(showWidget);
 
-        connect(&configDialog, SIGNAL(defaultClicked()), this, SLOT(slotDefaultClicked()));
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(&configDialog);
+        buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel | QDialogButtonBox::Cancel);
+        connect(buttonBox, SIGNAL(accepted()), &configDialog, SLOT(accept()));
+        connect(buttonBox, SIGNAL(rejected()), &configDialog, SLOT(reject()));
+        connect(buttonBox->button(QDialogButtonBox::RestoreDefaults), SIGNAL(clicked()), this, SLOT(slotDefaultClicked()));
+        layout->addWidget(buttonBox);
+
+        configDialog.setLayout(layout);
 
         if (configDialog.exec() == QDialog::Accepted) {
             foreach (KCModuleProxy *moduleProxy, moduleProxyList) {
