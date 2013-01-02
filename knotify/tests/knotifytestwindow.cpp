@@ -11,11 +11,13 @@
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kxmlguifactory.h>
-#include <kdialog.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
 
+#include <QDialog>
+#include <QDialogButtonBox>
 #include <QStatusBar>
+#include <QVBoxLayout>
 
 // ------------------------------------------------------------------------
 
@@ -93,14 +95,24 @@ void KNotifyTestWindow::slotConfigureG( )
 
 void KNotifyTestWindow::slotConfigureC( )
 {
-	KDialog dialog(this);
-	KNotifyConfigWidget *w=new KNotifyConfigWidget(&dialog);
-	w->setApplication(QString() , "group", view.c_group->currentText());
-	dialog.setMainWidget(w);
-	if(dialog.exec())
-	{
-		w->save();
-	}
+    QDialog dialog(this);
+
+    KNotifyConfigWidget *w = new KNotifyConfigWidget(&dialog);
+    w->setApplication(QString() , "group", view.c_group->currentText());
+
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(&dialog);
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    connect(buttonBox, SIGNAL(accepted()), &dialog, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), &dialog, SLOT(reject()));
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(w);
+    layout->addWidget(buttonBox);
+    dialog.setLayout(layout);
+
+    if(dialog.exec()) {
+        w->save();
+    }
 }
 
 
