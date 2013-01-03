@@ -25,7 +25,6 @@
 #include "kpagedialog.h"
 #include "kpagedialog_p.h"
 
-#include <QDialogButtonBox>
 #include <QTimer>
 #include <QLayout>
 
@@ -123,6 +122,16 @@ void KPageDialog::setCurrentPage( KPageWidgetItem *item )
 KPageWidgetItem* KPageDialog::currentPage() const
 {
     return d_func()->mPageWidget->currentPage();
+}
+
+void KPageDialog::setStandardButtons(QDialogButtonBox::StandardButtons buttons)
+{
+    d_func()->mButtonBox->setStandardButtons(buttons);
+}
+
+QPushButton *KPageDialog::button(QDialogButtonBox::StandardButton which) const
+{
+    return d_func()->mButtonBox->button(which);
 }
 
 KPageWidget* KPageDialog::pageWidget()

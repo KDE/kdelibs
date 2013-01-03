@@ -26,10 +26,10 @@
 #define KPAGEDIALOG_H
 
 #include <QDialog>
+#include <QDialogButtonBox>
 #include <kpagewidget.h>
 
 class KPageDialogPrivate;
-class QDialogButtonBox;
 
 /**
  * @short A dialog base class which can handle multiple pages.
@@ -185,6 +185,17 @@ class KDEUI_EXPORT KPageDialog : public QDialog
      * current page.
      */
     KPageWidgetItem* currentPage() const;
+
+    /**
+     * Sets the collection of standard buttons displayed by this dialog.
+     */
+    void setStandardButtons(QDialogButtonBox::StandardButtons buttons);
+
+    /**
+     * Returns the QPushButton corresponding to the standard button which, or 0 if the standard
+     * button doesn't exist in this dialog.
+     */
+    QPushButton *button(QDialogButtonBox::StandardButton which) const;
 
   Q_SIGNALS:
     /**
