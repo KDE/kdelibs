@@ -23,7 +23,7 @@
 
 namespace KMessageBox {
 
-static bool KMessageBox_queue = false;
+extern bool KMessageBox_queue;
 
 void queuedDetailedError(QWidget *parent,  const QString &text,
                    const QString &details,
