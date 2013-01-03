@@ -21,9 +21,10 @@
 #define __kbookmarkdialog_h
 
 #include "kbookmark.h"
-#include <kdialog.h>
+#include <QDialog>
 
 class KBookmarkManager;
+class QDialogButtonBox;
 class QWidget;
 class QLabel;
 class QTreeWidget;
@@ -40,7 +41,7 @@ class QGridLayout;
  * return a KBookmarkDialog subclass and reimplement initLayout(), aboutToShow() and save().
 **/
 
-class KIO_EXPORT KBookmarkDialog : public KDialog
+class KIO_EXPORT KBookmarkDialog : public QDialog
 {
   Q_OBJECT
 
@@ -106,12 +107,12 @@ protected:
   KBookmarkGroup parentBookmark();
 
 
-  void slotButtonClicked(int);
+  void accept();
 
   // TODO KDE5: move all these variables to a d pointer; make as many methods private as possible.
   BookmarkDialogMode m_mode;
   void fillGroup( QTreeWidgetItem * parentItem, const KBookmarkGroup &group);
-  QWidget * m_main;
+  QDialogButtonBox *m_buttonBox;
   QLineEdit * m_url;
   QLineEdit * m_title;
   QLineEdit * m_comment;
