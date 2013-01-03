@@ -1,7 +1,7 @@
 #ifndef KCOLORUTILSTEST_H
 #define KCOLORUTILSTEST_H
 
-#include <QtTest/QtTest>
+#include <QObject>
 
 class tst_KColorUtils : public QObject
 {

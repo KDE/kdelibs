@@ -1,5 +1,11 @@
 #include "kcolorutilstest.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define QT_GUI_LIB 1
+#else
+#include <QtTest/QtTestGui>
+#endif
+
 #include <kcolorutils.h>
 #include "../colors/kcolorspaces.h" // private header
 #include "../colors/kcolorspaces.cpp" // private implementation
