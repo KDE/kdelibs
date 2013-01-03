@@ -29,9 +29,14 @@ KFILE_EXECUTABLE_TESTS(
 )
 
 KFILE_UNIT_TESTS(
-  kfileplacesmodeltest
   kurlnavigatortest
   kdiroperatortest
   knewfilemenutest
 )
+
+if (QT5_BUILD)
+KFILE_UNIT_TESTS(
+  kfileplacesmodeltest
+)
+endif()
 
