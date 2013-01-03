@@ -54,9 +54,9 @@ public:
     {
     }
 
-    KAction *newBookmarkFolder;
-    KAction *addAddBookmark;
-    KAction *bookmarksToFolder;
+    QAction *newBookmarkFolder;
+    QAction *addAddBookmark;
+    QAction *bookmarksToFolder;
 };
 
 
@@ -454,9 +454,10 @@ void KBookmarkMenu::addOpenInTabs()
 
     QString title = tr( "Open Folder in Tabs" );
 
-    KAction * paOpenFolderInTabs = new KAction( title, this );
+    QAction * paOpenFolderInTabs = new QAction( title, this );
     paOpenFolderInTabs->setIcon( KDE::icon("tab-new") );
-    paOpenFolderInTabs->setHelpText( tr( "Open all bookmarks in this folder as a new tab." ) );
+    paOpenFolderInTabs->setToolTip( tr( "Open all bookmarks in this folder as a new tab." ) );
+    paOpenFolderInTabs->setStatusTip(paOpenFolderInTabs->toolTip());
     connect( paOpenFolderInTabs, SIGNAL( triggered( bool ) ), this, SLOT( slotOpenFolderInTabs() ) );
 
     m_parentMenu->addAction(paOpenFolderInTabs);
@@ -470,10 +471,11 @@ void KBookmarkMenu::addAddBookmarksList()
 
     if (d->bookmarksToFolder == 0) {
         QString title = tr( "Bookmark Tabs as Folder..." );
-        d->bookmarksToFolder = new KAction( title, this );
+        d->bookmarksToFolder = new QAction( title, this );
         m_actionCollection->addAction( m_bIsRoot ? "add_bookmarks_list" : 0, d->bookmarksToFolder);
         d->bookmarksToFolder->setIcon( KDE::icon( "bookmark-new-list" ) );
-        d->bookmarksToFolder->setHelpText( tr( "Add a folder of bookmarks for all open tabs." ) );
+        d->bookmarksToFolder->setToolTip( tr( "Add a folder of bookmarks for all open tabs." ) );
+        d->bookmarksToFolder->setStatusTip(d->bookmarksToFolder->toolTip());
         connect( d->bookmarksToFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
     }
 
@@ -503,10 +505,11 @@ void KBookmarkMenu::addEditBookmarks()
   if( ( m_pOwner && !m_pOwner->enableOption(KBookmarkOwner::ShowEditBookmark) ) || !KAuthorized::authorizeKAction("bookmarks") )
     return;
 
-  KAction * m_paEditBookmarks = m_actionCollection->addAction(KStandardAction::EditBookmarks, "edit_bookmarks",
+  QAction * m_paEditBookmarks = m_actionCollection->addAction(KStandardAction::EditBookmarks, "edit_bookmarks",
                                                               m_pManager, SLOT(slotEditBookmarks()));
   m_parentMenu->addAction(m_paEditBookmarks);
-  m_paEditBookmarks->setHelpText( tr( "Edit your bookmark collection in a separate window" ) );
+  m_paEditBookmarks->setToolTip( tr( "Edit your bookmark collection in a separate window" ) );
+  m_paEditBookmarks->setStatusTip(m_paEditBookmarks->toolTip());
 }
 
 void KBookmarkMenu::addNewFolder()
@@ -515,9 +518,10 @@ void KBookmarkMenu::addNewFolder()
         return;
 
     if (d->newBookmarkFolder == 0) {
-        d->newBookmarkFolder = new KAction( tr( "New Bookmark Folder..." ), this );
+        d->newBookmarkFolder = new QAction( tr( "New Bookmark Folder..." ), this );
         d->newBookmarkFolder->setIcon( KDE::icon( "folder-new" ) );
-        d->newBookmarkFolder->setHelpText( tr( "Create a new bookmark folder in this menu" ) );
+        d->newBookmarkFolder->setToolTip( tr( "Create a new bookmark folder in this menu" ) );
+        d->newBookmarkFolder->setStatusTip(d->newBookmarkFolder->toolTip());
         connect( d->newBookmarkFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
     }
 
@@ -562,7 +566,7 @@ QAction* KBookmarkMenu::actionForBookmark(const KBookmark &bm)
   else
   {
     //qDebug() << "Creating bookmark menu item for " << bm.text();
-    KAction * action = new KBookmarkAction( bm, m_pOwner, this );
+    QAction * action = new KBookmarkAction( bm, m_pOwner, this );
     m_actions.append( action );
     return action;
   }
@@ -688,7 +692,7 @@ void KBookmarkMenuImporter::connectToImporter(const QObject &importer)
 void KBookmarkMenuImporter::newBookmark( const QString & text, const QString & url, const QString & )
 {
   KBookmark bm = KBookmark::standaloneBookmark(text, QUrl(url), QString("html"));
-  KAction * action = new KBookmarkAction(bm, mstack.top()->owner(), this);
+  QAction * action = new KBookmarkAction(bm, mstack.top()->owner(), this);
   mstack.top()->parentMenu()->addAction(action);
   mstack.top()->m_actions.append( action );
 }

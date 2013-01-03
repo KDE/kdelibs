@@ -527,7 +527,7 @@ QMenu *KTextEdit::mousePopupMenu()
           separatorAction = actionList.at( idx );
       if ( separatorAction )
       {
-          KAction *clearAllAction = KStandardAction::clear(this, SLOT(undoableClear()), popup);
+          QAction *clearAllAction = KStandardAction::clear(this, SLOT(undoableClear()), popup);
           if ( emptyDocument )
               clearAllAction->setEnabled( false );
           popup->insertAction( separatorAction, clearAllAction );
@@ -556,8 +556,8 @@ QMenu *KTextEdit::mousePopupMenu()
   }
 
   if (d->findReplaceEnabled) {
-      KAction *findAction = KStandardAction::find(this, SLOT(slotFind()), popup);
-      KAction *findNextAction = KStandardAction::findNext(this, SLOT(slotFindNext()), popup);
+      QAction *findAction = KStandardAction::find(this, SLOT(slotFind()), popup);
+      QAction *findNextAction = KStandardAction::findNext(this, SLOT(slotFindNext()), popup);
       if (emptyDocument) {
           findAction->setEnabled(false);
           findNextAction->setEnabled(false);
@@ -569,7 +569,7 @@ QMenu *KTextEdit::mousePopupMenu()
       popup->addAction(findNextAction);
 
       if (!isReadOnly()) {
-          KAction *replaceAction = KStandardAction::replace(this, SLOT(slotReplace()), popup);
+          QAction *replaceAction = KStandardAction::replace(this, SLOT(slotReplace()), popup);
           if (emptyDocument) {
               replaceAction->setEnabled(false);
           }

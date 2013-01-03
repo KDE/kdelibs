@@ -123,12 +123,12 @@ public:
 
     KAction * addAction(const QString &name, KAction *action);
 
-    KAction * addAction(
+    QAction * addAction(
             KStandardAction::StandardAction actionType,
             const QObject *receiver = NULL,
             const char *member = NULL);
 
-    KAction * addAction(
+    QAction * addAction(
             KStandardAction::StandardAction actionType,
             const QString &name,
             const QObject *receiver = NULL,

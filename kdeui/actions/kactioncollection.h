@@ -33,6 +33,7 @@
 #include <QtCore/QObject>
 
 class QAction;
+class KAction;
 class KXMLGUIClient;
 
 class QActionGroup;
@@ -350,7 +351,7 @@ public:
    *               connection is desired.
    * @return new action of the given type ActionType.
    */
-  KAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
+  QAction *addAction(KStandardAction::StandardAction actionType, const QObject *receiver = 0, const char *member = 0);
 
   /**
    * Creates a new standard action, adds to the collection under the given name
@@ -370,7 +371,7 @@ public:
    *               connection is desired.
    * @return new action of the given type ActionType.
    */
-  KAction *addAction(KStandardAction::StandardAction actionType, const QString &name,
+  QAction *addAction(KStandardAction::StandardAction actionType, const QString &name,
                      const QObject *receiver = 0, const char *member = 0);
 
   /**

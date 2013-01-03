@@ -144,7 +144,7 @@ static inline QStringList internal_stdNames()
   return result;
 }
 
-class AutomaticAction : public KAction
+class AutomaticAction : public QAction
 {
   Q_OBJECT
 

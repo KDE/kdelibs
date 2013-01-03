@@ -76,24 +76,24 @@ KAction * KActionCategory::addAction(const QString &name, KAction *action)
     }
 
 
-KAction * KActionCategory::addAction(
+QAction * KActionCategory::addAction(
         KStandardAction::StandardAction actionType,
         const QObject *receiver,
         const char *member)
     {
-    KAction *action = collection()->addAction(actionType, receiver, member);
+    QAction *action = collection()->addAction(actionType, receiver, member);
     addAction(action);
     return action;
     }
 
 
-KAction * KActionCategory::addAction(
+QAction * KActionCategory::addAction(
         KStandardAction::StandardAction actionType,
         const QString &name,
         const QObject *receiver,
         const char *member)
     {
-    KAction *action = collection()->addAction(actionType, name, receiver, member);
+    QAction *action = collection()->addAction(actionType, name, receiver, member);
     addAction(action);
     return action;
     }

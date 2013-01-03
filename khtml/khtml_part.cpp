@@ -411,7 +411,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), this );
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
   d->m_paFindAheadText->setShortcuts( KShortcut( '/' ) );
-  d->m_paFindAheadText->setHelpText(i18n("This shortcut shows the find bar, for finding text in the displayed page. It cancels the effect of \"Find Links as You Type\", which sets the \"Find links only\" option."));
+  d->m_paFindAheadText->setToolTip(i18n("This shortcut shows the find bar, for finding text in the displayed page. It cancels the effect of \"Find Links as You Type\", which sets the \"Find links only\" option."));
+  d->m_paFindAheadText->setStatusTip(d->m_paFindAheadText->toolTip());
   connect( d->m_paFindAheadText, SIGNAL(triggered(bool)), this, SLOT(slotFindAheadText()) );
 
   d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), this );
@@ -420,7 +421,8 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // if you trigger this shortcut once by mistake, Esc and Ctrl+F will still have the option set.
   // Better let advanced users configure a shortcut for this advanced option
   //d->m_paFindAheadLinks->setShortcuts( KShortcut( '\'' ) );
-  d->m_paFindAheadLinks->setHelpText(i18n("This shortcut shows the find bar, and sets the option \"Find links only\"."));
+  d->m_paFindAheadLinks->setToolTip(i18n("This shortcut shows the find bar, and sets the option \"Find links only\"."));
+  d->m_paFindAheadLinks->setStatusTip(d->m_paFindAheadLinks->toolTip());
   connect( d->m_paFindAheadLinks, SIGNAL(triggered(bool)), this, SLOT(slotFindAheadLink()) );
 
   if ( parentPart() )

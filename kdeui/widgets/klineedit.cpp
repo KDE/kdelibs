@@ -1191,7 +1191,7 @@ QMenu* KLineEdit::createStandardContextMenu()
             separatorAction = actionList.at( idx );
         if ( separatorAction )
         {
-            KAction *clearAllAction = KStandardAction::clear( this, SLOT(clear()), popup) ;
+            QAction *clearAllAction = KStandardAction::clear( this, SLOT(clear()), popup) ;
             if ( text().isEmpty() )
                 clearAllAction->setEnabled( false );
             popup->insertAction( separatorAction, clearAllAction );

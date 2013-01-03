@@ -334,19 +334,19 @@ QAction* KActionCollection::takeAction(QAction *action)
   return action;
 }
 
-KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QObject *receiver, const char *member)
+QAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QObject *receiver, const char *member)
 {
-  KAction *action = KStandardAction::create(actionType, receiver, member, this);
+  QAction *action = KStandardAction::create(actionType, receiver, member, this);
   return action;
 }
 
-KAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QString &name,
+QAction *KActionCollection::addAction(KStandardAction::StandardAction actionType, const QString &name,
                                       const QObject *receiver, const char *member)
 {
   // pass 0 as parent, because if the parent is a KActionCollection KStandardAction::create automatically
   // adds the action to it under the default name. We would trigger the
   // warning about renaming the action then.
-  KAction *action = KStandardAction::create(actionType, receiver, member, 0);
+  QAction *action = KStandardAction::create(actionType, receiver, member, 0);
   // Give it a parent for gc.
   action->setParent(this);
   // Remove the name to get rid of the "rename action" warning above

@@ -88,7 +88,7 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
     textLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     QObject::connect(textLabel, SIGNAL(linkActivated(const QString&)), q, SIGNAL(linkActivated(const QString&)));
 
-    KAction* closeAction = KStandardAction::close(q, SLOT(animatedHide()), q);
+    QAction* closeAction = KStandardAction::close(q, SLOT(animatedHide()), q);
 
     closeButton = new QToolButton(content);
     closeButton->setAutoRaise(true);

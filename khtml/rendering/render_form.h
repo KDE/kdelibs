@@ -43,7 +43,7 @@ class QWidget;
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
-class KAction;
+class QAction;
 class KUrlRequester;
 class KdeUiProxyStyle;
 
@@ -323,7 +323,7 @@ private:
     };
     DOM::HTMLInputElementImpl* m_input;
     KHTMLView* m_view;
-    KAction *m_spellAction;
+    QAction *m_spellAction;
 };
 
 // -------------------------------------------------------------------------

@@ -1864,7 +1864,7 @@ void KDirOperator::setupActions()
     QAction* homeAction = d->actionCollection->addAction(KStandardAction::Home, "home", this, SLOT(home()));
     homeAction->setText(i18n("Home Folder"));
 
-    KAction* reloadAction = d->actionCollection->addAction(KStandardAction::Redisplay, "reload", this, SLOT(rereadDir()));
+    QAction* reloadAction = d->actionCollection->addAction(KStandardAction::Redisplay, "reload", this, SLOT(rereadDir()));
     reloadAction->setText(i18n("Reload"));
     reloadAction->setShortcuts(KStandardShortcut::shortcut(KStandardShortcut::Reload));
 

@@ -26,7 +26,7 @@
 void tst_KStandardAction::implicitInsertionUsingCreate()
 {
     KActionCollection collection(static_cast<QObject *>(0));
-    KAction *a = KStandardAction::create(KStandardAction::Undo, qApp, SLOT(quit()), &collection);
+    QAction *a = KStandardAction::create(KStandardAction::Undo, qApp, SLOT(quit()), &collection);
     QVERIFY(a);
 
     QVERIFY(a->parent() == &collection);
@@ -36,7 +36,7 @@ void tst_KStandardAction::implicitInsertionUsingCreate()
 void tst_KStandardAction::implicitInsertionUsingCut()
 {
     KActionCollection collection(static_cast<QObject *>(0));
-    KAction* cut = KStandardAction::cut(&collection);
+    QAction* cut = KStandardAction::cut(&collection);
     QAction* a = collection.action(KStandardAction::name(KStandardAction::Cut));
     QVERIFY(a);
     QVERIFY(a == cut);
@@ -46,16 +46,14 @@ void tst_KStandardAction::shortcutForActionId()
 {
     KShortcut stdShortcut = KStandardShortcut::shortcut(KStandardShortcut::Cut);
 
-    KAction *cut = KStandardAction::cut(NULL);
-    KShortcut actShortcut = cut->shortcut();
-    QVERIFY(stdShortcut.primary() == actShortcut.primary());
-    QVERIFY(actShortcut.alternate() == actShortcut.alternate());
+    QAction *cut = KStandardAction::cut(NULL);
+    QList<QKeySequence> actShortcut = cut->shortcuts();
+    QVERIFY(stdShortcut.toList() == actShortcut);
     delete cut;
 
     cut = KStandardAction::create(KStandardAction::Cut, NULL, NULL, NULL);
-    actShortcut = cut->shortcut();
-    QVERIFY(stdShortcut.primary() == actShortcut.primary());
-    QVERIFY(actShortcut.alternate() == actShortcut.alternate());
+    actShortcut = cut->shortcuts();
+    QVERIFY(stdShortcut.toList() == actShortcut);
     delete cut;
 }
 

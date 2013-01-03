@@ -43,7 +43,7 @@ void tst_KActionCategory::tstSynchronization()
     Q_ASSERT( collection.count() == 0 );
 
     // Now add a action to category1
-    KAction *action1 = category1.addAction("action1");
+    QAction *action1 = category1.addAction("action1");
     // Check it was added to the category.
     Q_ASSERT( category1.actions().count() == 1 );
     Q_ASSERT( category1.actions().count(action1) == 1 );
@@ -59,7 +59,7 @@ void tst_KActionCategory::tstSynchronization()
     Q_ASSERT( collection.actions().count(action1) == 1 );
 
     // Now add a action to category2
-    KAction *action2 = category2.addAction("action2");
+    QAction *action2 = category2.addAction("action2");
     // Check it was added to the category.
     Q_ASSERT( category2.actions().count() == 1 );
     Q_ASSERT( category2.actions().count(action2) == 1 );
@@ -88,7 +88,7 @@ void tst_KActionCategory::tstSynchronization()
     // Create another category, add a action, delete the category and check
     // if the action is still part of the collection.
     KActionCategory *category3 = new KActionCategory("category3", &collection);
-    KAction *action3 = category3->addAction( "action3" );
+    QAction *action3 = category3->addAction( "action3" );
     // Check it was added to the collection
     Q_ASSERT( collection.actions().count(action3) == 1 );
     // delete the category
@@ -115,20 +115,20 @@ void tst_KActionCategory::tstActionCreation()
     Q_ASSERT( category.actions().count(action2) == 1 );
     Q_ASSERT( collection.actions().count(action2) == 1 );
 
-    // KAction * addAction(
+    // QAction * addAction(
     //         KStandardAction::StandardAction actionType,
     //         const QObject *receiver = NULL,
     //         const char *member = NULL);
-    KAction *action3 = category.addAction(KStandardAction::Revert);
+    QAction *action3 = category.addAction(KStandardAction::Revert);
     Q_ASSERT( category.actions().count(action3) == 1 );
     Q_ASSERT( collection.actions().count(action3) == 1 );
 
-    // KAction * addAction(
+    // QAction * addAction(
     //         KStandardAction::StandardAction actionType,
     //         const QString &name,
     //         const QObject *receiver = NULL,
     //         const char *member = NULL);
-    KAction *action4 = category.addAction(KStandardAction::Quit, "myownname");
+    QAction *action4 = category.addAction(KStandardAction::Quit, "myownname");
     Q_ASSERT( action4->objectName() == "myownname" );
     Q_ASSERT( category.actions().count(action4) == 1 );
     Q_ASSERT( collection.actions().count(action4) == 1 );

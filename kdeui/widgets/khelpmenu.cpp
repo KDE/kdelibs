@@ -98,7 +98,7 @@ public:
     bool mShowWhatsThis;
     bool mActionsCreated;
 
-    KAction *mHandBookAction, *mWhatsThisAction;
+    QAction *mHandBookAction, *mWhatsThisAction;
     QAction *mReportBugAction, *mSwitchApplicationLanguageAction, *mAboutAppAction, *mAboutKDEAction;
 
     const KAboutData *mAboutData;
