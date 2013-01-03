@@ -54,8 +54,8 @@ private Q_SLOTS:
     // (e.g. due to a breakpoint in gdb).
     void testWaitForSignal()
     {
-        QTimer::singleShot(0, this, SLOT(emitSigFoo()));
-        QVERIFY(QTest::kWaitForSignal(this, SIGNAL(sigFoo()), 1));
+        QTimer::singleShot(5, this, SLOT(emitSigFoo()));
+        QVERIFY(QTest::kWaitForSignal(this, SIGNAL(sigFoo()), 20));
     }
 
     void testWaitForSignalTimeout()
