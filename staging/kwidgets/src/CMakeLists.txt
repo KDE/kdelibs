@@ -18,7 +18,6 @@ set(kwidgets_LIB_SRCS
   utils/khelpclient.cpp
   utils/kstandardguiitem.cpp
   widgets/kdragwidgetdecorator.cpp
-  widgets/kpushbutton.cpp
   widgets/kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
 )
 
@@ -59,7 +58,6 @@ install(FILES
   utils/khelpclient.h
   utils/kstandardguiitem.h
   widgets/kdragwidgetdecorator.h
-  widgets/kpushbutton.h
   widgets/kurllabel.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

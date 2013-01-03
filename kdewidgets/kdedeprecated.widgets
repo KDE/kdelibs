@@ -44,3 +44,8 @@ IncludeFile=kcolorvalueselector.h
 ToolTip=Color Value Selector (KDE)
 Group=Input (KDE)
 
+[KPushButton]
+ToolTip=Improved QPushButton (KDE)
+WhatsThis=An improved QPushButton to follow KDE settings
+Group=Buttons (KDE)
+

@@ -219,11 +219,6 @@ ToolTip=A plot widget
 WhatsThis=A widget for easily making 2-dimensional plots
 Group=Plot (KDE)
 
-[KPushButton]
-ToolTip=Improved QPushButton (KDE)
-WhatsThis=An improved QPushButton to follow KDE settings
-Group=Buttons (KDE)
-
 [KRatingWidget]
 IncludeFile=kratingwidget.h
 ToolTip=Rating value display (KDE)

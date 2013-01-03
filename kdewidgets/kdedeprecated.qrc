@@ -2,5 +2,6 @@
 <qresource>
 <file>pics/keditlistbox.png</file>
 <file>pics/kdialog.png</file>
+<file>pics/kpushbutton.png</file>
 </qresource>
 </RCC>
