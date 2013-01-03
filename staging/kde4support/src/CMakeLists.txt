@@ -32,6 +32,7 @@ set(libkde4support_SRCS
     kdeui/kcolorhelpers.cpp
     kdeui/kcolorvalueselector.cpp
     kdeui/kdialog.cpp
+    kdeui/kdialogqueue.cpp
     kdeui/khuesaturationselect.cpp
     kdeui/ksessionmanager.cpp
     kdeui/kfadewidgeteffect.cpp

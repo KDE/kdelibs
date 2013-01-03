@@ -38,7 +38,6 @@
 #include <QTextBrowser>
 
 #include <qapplication.h>
-#include "kdialogqueue_p.h"
 #include <klocalizedstring.h>
 #include <knotification.h>
 #include <kiconloader.h>
@@ -84,7 +83,7 @@ namespace KMessageBox {
  * this static is used by the createKMessageBox function to enqueue dialogs
  * FIXME what should we do about this static?
  */
-bool KWIDGETS_EXPORT KMessageBox_queue = false;
+int KWIDGETS_EXPORT (*KMessageBox_exec_hook)(QDialog*) = 0;
 
 static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
 {
@@ -391,9 +390,8 @@ int createKMessageBox(QDialog *dialog, QDialogButtonBox *buttons, const QIcon &i
     }
 #endif
 
-    if (KMessageBox_queue) {
-        KDialogQueue::queueDialog(dialog);
-        return KMessageBox::Cancel; // We have to return something.
+    if (KMessageBox_exec_hook) {
+        return KMessageBox_exec_hook(dialog);
     }
 
     if ((options & KMessageBox::NoExec)) {

@@ -20,10 +20,17 @@
 #include "kmessagebox_queued.h"
 
 #include <kmessagebox_kiw.h>
+#include "kdialogqueue_p.h"
 
 namespace KMessageBox {
 
-extern bool KMessageBox_queue;
+extern int KWIDGETS_EXPORT (*KMessageBox_exec_hook)(QDialog*);
+
+int queued_dialog_exec(QDialog *dialog)
+{
+    KDialogQueue::queueDialog(dialog);
+    return KMessageBox::Cancel; // We have to return something.
+}
 
 void queuedDetailedError(QWidget *parent,  const QString &text,
                    const QString &details,
@@ -36,9 +43,9 @@ void queuedDetailedErrorWId(WId parent_id,  const QString &text,
                    const QString &details,
                    const QString &caption)
 {
-   KMessageBox_queue = true;
+   KMessageBox_exec_hook = &queued_dialog_exec;
    (void) detailedErrorWId(parent_id, text, details, caption);
-   KMessageBox_queue = false;
+   KMessageBox_exec_hook = 0;
 }
 
 void queuedMessageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption, Options options )
@@ -48,10 +55,10 @@ void queuedMessageBox( QWidget *parent, DialogType type, const QString &text, co
 
 void queuedMessageBoxWId( WId parent_id, DialogType type, const QString &text, const QString &caption, Options options )
 {
-    KMessageBox_queue = true;
+    KMessageBox_exec_hook = &queued_dialog_exec;
     (void) messageBoxWId(parent_id, type, text, caption, KStandardGuiItem::yes(),
                      KStandardGuiItem::no(), KStandardGuiItem::cancel(), QString(), options);
-    KMessageBox_queue = false;
+    KMessageBox_exec_hook = 0;
 }
 
 void queuedMessageBox( QWidget *parent, DialogType type, const QString &text, const QString &caption )
@@ -61,9 +68,9 @@ void queuedMessageBox( QWidget *parent, DialogType type, const QString &text, co
 
 void queuedMessageBoxWId( WId parent_id, DialogType type, const QString &text, const QString &caption )
 {
-    KMessageBox_queue = true;
+    KMessageBox_exec_hook = &queued_dialog_exec;
     (void) messageBoxWId(parent_id, type, text, caption);
-    KMessageBox_queue = false;
+    KMessageBox_exec_hook = 0;
 }
 
 
