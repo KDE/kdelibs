@@ -18,8 +18,14 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QApplication>
 #include <QCheckBox>
-#include <QtTest/QtTest>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QtTest/QtTestWidgets>
+#else
+#include <QtTest/QtTestGui>
+#endif
+#include <QtTest/QSignalSpy>
 #include <kdialog.h>
 #include <QPushButton>
 #include <QWeakPointer>

@@ -7,7 +7,6 @@ endif(X11_FOUND)
 configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidgets.h )
 
 set(kwidgets_LIB_SRCS
-  dialogs/kdialog.cpp
   dialogs/kmessagebox.cpp
   dialogs/kdialogqueue.cpp
   icons/kiconeffect.cpp
@@ -51,7 +50,6 @@ set_target_properties(kwidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
-  dialogs/kdialog.h
   dialogs/kmessagebox.h
   icons/kiconeffect.h
   icons/kiconloader.h

@@ -83,12 +83,6 @@ Group=Date/Time (KDE)
 ToolTip=Date preview (KDE)
 Group=Date/Time (KDE)
 
-[KDialog]
-IsContainer=true
-ImplClass=KDialogPreview
-ToolTip=Class for simple Dialogs (KDE)
-Group=Container (KDE)
-
 [KDoubleNumInput]
 ToolTip=Floating Point Number Input Widget (KDE)
 WhatsThis=An input widget for floating point numbers, consisting of a spinbox and a slider.

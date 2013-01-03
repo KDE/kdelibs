@@ -23,6 +23,7 @@ macro(KDE4SUPPORT_UNIT_TESTS)
 endmacro(KDE4SUPPORT_UNIT_TESTS)
 
 kde4support_unit_tests(
+  kdialog_unittest
   kfadewidgeteffecttest
   kmd5benchmark
   ktempdirtest

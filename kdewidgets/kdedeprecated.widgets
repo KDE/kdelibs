@@ -13,6 +13,13 @@ ConstructorArgs=(parent,Qt::UpArrow)
 ToolTip=Fullfeatured edit box with buttons (KDE)
 Group=Views (KDE)
 
+[KDialog]
+IsContainer=true
+ImplClass=KDialogPreview
+ToolTip=Class for simple Dialogs (KDE)
+IncludeFile=kdialog.h
+Group=Container (KDE)
+
 [KDialogButtonBox]
 ToolTip=Button Box (KDE)
 WhatsThis=KDE's button box.

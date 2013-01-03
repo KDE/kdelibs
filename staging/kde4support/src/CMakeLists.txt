@@ -31,6 +31,7 @@ set(libkde4support_SRCS
     kdeui/kcolordialog.cpp
     kdeui/kcolorhelpers.cpp
     kdeui/kcolorvalueselector.cpp
+    kdeui/kdialog.cpp
     kdeui/khuesaturationselect.cpp
     kdeui/ksessionmanager.cpp
     kdeui/kfadewidgeteffect.cpp
@@ -129,6 +130,7 @@ install(FILES
     kdeui/kcolorchoosermode.h
     kdeui/kcolordialog.h
     kdeui/kcolorvalueselector.h
+    kdeui/kdialog.h
     kdeui/khuesaturationselect.h
     kdeui/ksessionmanager.h
     kdeui/kfadewidgeteffect.h

@@ -13,7 +13,6 @@ endmacro()
 kwidgets_executable_tests(
     kiconloadertest
     kiconeffecttest
-    kdialogtest
     kmessagetest
     kmessageboxtest
 )

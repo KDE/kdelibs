@@ -30,9 +30,9 @@
 #ifndef CLASSPREVIEWS_H
 #define CLASSPREVIEWS_H
 
-#include <kdialog.h>
+#include <QDialog>
 
-class KDialogPreview : public KDialog
+class KDialogPreview : public QDialog
 {
 public:
 	KDialogPreview(QWidget * parent = 0);

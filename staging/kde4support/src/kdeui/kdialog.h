@@ -28,7 +28,7 @@ class QPushButton;
 class QMenu;
 class KDialogPrivate;
 
-#include <kwidgets_export.h>
+#include <kde4support_export.h>
 #include <kconfiggroup.h>
 #include <kguiitem.h>
 
@@ -125,7 +125,7 @@ class KDialogPrivate;
  * @author Olivier Goffart <ogoffart at kde.org>
  * @author Tobias Koenig <tokoe@kde.org>
  */
-class KWIDGETS_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
+class KDE4SUPPORT_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
 {
   Q_OBJECT
   Q_ENUMS(ButtonCode)
