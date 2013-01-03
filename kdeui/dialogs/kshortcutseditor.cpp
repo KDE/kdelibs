@@ -42,6 +42,7 @@
 #include "kaction.h"
 #include "kactioncollection.h"
 #include "kactioncategory.h"
+#include "kconfiggroup.h"
 #include "kdebug.h"
 #include "kdeprintdialog.h"
 #include "kglobalaccel.h"

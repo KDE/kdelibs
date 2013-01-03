@@ -47,6 +47,7 @@
 #include <qinputdialog.h>
 #include <assert.h>
 
+#include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kfiledialog.h>

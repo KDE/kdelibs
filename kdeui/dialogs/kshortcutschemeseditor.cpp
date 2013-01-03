@@ -30,6 +30,7 @@
 #include <qinputdialog.h>
 
 #include <kcombobox.h>
+#include <kconfiggroup.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>

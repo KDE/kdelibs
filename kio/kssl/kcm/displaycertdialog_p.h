@@ -21,6 +21,7 @@
 #define DISPLAYCERTDIALOG_P_H
 
 #include "ui_displaycert.h"
+#include <QDialog>
 #include <QtNetwork/QSslCertificate>
 
 class DisplayCertDialog : public QDialog

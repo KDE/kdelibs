@@ -36,6 +36,7 @@
 #include <QDialogButtonBox>
 #include <QDomDocument>
 
+#include <kconfiggroup.h>
 #include <kmessagebox.h>
 #include <kxmlguiclient.h>
 #include <kxmlguifactory.h>
