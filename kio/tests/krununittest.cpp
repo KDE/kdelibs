@@ -130,8 +130,13 @@ void KRunUnitTest::testProcessDesktopExec()
             for (int ex = 0; ex < 2; ex++) {
                 int pt = ex+te*2+su*4;
                 QString exe;
-                if (pt == 4 || pt == 5)
+                if (pt == 4 || pt == 5) {
                     exe = KStandardDirs::findExe("kdesu");
+                    if (exe.isEmpty()) {
+                        qWarning() << "kdesu not found, skipping test";
+                        continue;
+                    }
+                }
                 const QString result = QString::fromLatin1(rslts[pt])
                     .replace("/bin/sh", shellPath)
                     .replace("/bin/date", datePath);
