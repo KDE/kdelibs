@@ -17,8 +17,7 @@ include(ECMSetupVersion)
 
 if(NOT APPLE)
   find_package(HUpnp 0.9)
-
-  set_package_properties(HUPnP PROPERTIES  URL "http://www.herqq.org"
+  set_package_properties(HUpnp PROPERTIES  URL "http://www.herqq.org"
                                            DESCRIPTION "UPnP support for Solid"
                                            TYPE OPTIONAL
                                            PURPOSE "Allows Solid to provide information about UPnP devices on the network"
