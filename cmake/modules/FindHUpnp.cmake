@@ -11,6 +11,11 @@
 #
 # Copyright (c) 2010, Paulo Romulo Alves Barros <paulo.romulo@kdemail.net>
 
+# The minimum HUpnp version we require
+if(NOT HUpnp_FIND_VERSION)
+    set(HUpnp_FIND_VERSION "0.9.1")
+endif()
+
 find_path( HUPNP_INCLUDE_DIR HUpnpCore/HUpnp )
 
 find_library( HUPNP_LIBS NAMES HUpnp HUpnp1 )
@@ -25,7 +30,7 @@ if( HUPNP_INCLUDE_DIR AND EXISTS "${HUPNP_INCLUDE_DIR}/HUpnpCore/public/hupnpinf
 endif()
 
 include( FindPackageHandleStandardArgs )
-
-find_package_handle_standard_args( HUpnp DEFAULT_MSG HUPNP_INCLUDE_DIR HUPNP_LIBS )
+find_package_handle_standard_args( HUpnp REQUIRED_VARS HUPNP_INCLUDE_DIR HUPNP_LIBS
+                                         VERSION_VAR HUPNP_VERSION_STRING )
 
 mark_as_advanced( HUPNP_INCLUDE_DIR HUPNP_LIBS )
