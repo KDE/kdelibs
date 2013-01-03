@@ -140,6 +140,12 @@ private Q_SLOTS:
             writeAppDesktopFile(fakeArkApplication, QStringList() << "application/zip");
         }
 
+        fakeHtmlApplication = m_localApps + "fakehtmlapplication.desktop";
+        if (!QFile::exists(fakeHtmlApplication)) {
+            mustUpdateKSycoca = true;
+            writeAppDesktopFile(fakeHtmlApplication, QStringList() << "text/html");
+        }
+
 
         if ( mustUpdateKSycoca ) {
             // Update ksycoca in ~/.kde-unit-test after creating the above
@@ -160,7 +166,7 @@ private Q_SLOTS:
 
         m_mimeAppsFileContents = "[Added Associations]\n"
                                "image/jpeg=fakejpegapplication.desktop;\n"
-                               "text/html=kde4-kfmclient_html.desktop;\n"
+                               "text/html=fakehtmlapplication.desktop;\n"
                                // konsole.desktop is without kde4- to test fallback lookup
                                "text/plain=kde4-kate.desktop;kde4-kwrite.desktop;konsole.desktop;idontexist.desktop;\n"
                                // test alias resolution
@@ -174,7 +180,7 @@ private Q_SLOTS:
         preferredApps["image/jpeg"] << "fakejpegapplication.desktop";
         preferredApps["application/pdf"] << "fakejpegapplication.desktop";
         preferredApps["text/plain"] << "kde4-kate.desktop" << "kde4-kwrite.desktop";
-        preferredApps["text/html"] << "kde4-kfmclient_html.desktop";
+        preferredApps["text/html"] << "fakehtmlapplication.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
         removedApps["text/html"] << "kde4-dolphin.desktop" << "kde4-kwrite.desktop";
 
@@ -456,6 +462,7 @@ private:
     QByteArray m_mimeAppsFileContents;
     QString fakeTextApplication;
     QString fakeJpegApplication;
+    QString fakeHtmlApplication;
     QString fakeArkApplication;
 
     ExpectedResultsMap preferredApps;
