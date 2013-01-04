@@ -134,12 +134,9 @@ public:
                                      const QString &language);
 
 private:
+    Q_DISABLE_COPY(KCatalog);
 
     KCatalogPrivate* const d;
-
-    KCatalog (const KCatalog &);
-    KCatalog &operator= (const KCatalog &);
-
 };
 
 QDebug operator<<(QDebug debug, const KCatalog &c);
