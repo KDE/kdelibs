@@ -77,7 +77,7 @@ static QDateTime fromStr(const QString& string, const QString& format, int& utcO
 static int matchDay(const QString &string, int &offset, const KCalendarSystem*);
 static int matchMonth(const QString &string, int &offset, const KCalendarSystem*);
 static bool getUTCOffset(const QString &string, int &offset, bool colon, int &result);
-static int getAmPm(const QString &string, int &offset, KLocale*);
+static int getAmPm(const QString &string, int &offset, bool localized);
 static bool getNumber(const QString &string, int &offset, int mindigits, int maxdigits, int minval, int maxval, int &result);
 static int findString_internal(const QString &string, const char *ptr, int count, int &offset, int disp);
 template<int disp> static inline
@@ -1379,8 +1379,7 @@ QString KDateTime::toString(const QString &format) const
     if (!isValid())
         return QString();
     enum { TZNone, UTCOffsetShort, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
-    KLocale *locale = KLocale::global();
-    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, locale));
+    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, KLocale::global()));
     QString result;
     QString s;
     int num, numLength, zone;
@@ -1694,9 +1693,8 @@ QString KDateTime::toString(TimeFormat format) const
                 if (d->dt().time().msec())
                 {
                     // Comma is preferred by ISO8601 as the decimal point symbol,
-                    // so use it unless '.' is the symbol used in this locale or we don't have a locale.
-                    KLocale *locale = KLocale::global();
-                    result += (locale && locale->decimalSymbol() == QLatin1String(".")) ? QLatin1Char('.') : QLatin1Char(',');
+                    // so use it unless '.' is the symbol used in this locale.
+                    result += (KLocale::global()->decimalSymbol() == QLatin1String(".")) ? QLatin1Char('.') : QLatin1Char(',');
                     result += s.sprintf("%03d", d->dt().time().msec());
                 }
             }
@@ -2394,8 +2392,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
     zoneAbbrev.clear();
 
     enum { TZNone, UTCOffset, UTCOffsetColon, TZAbbrev, TZName };
-    KLocale *locale = KLocale::global();
-    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, locale));
+    QSharedPointer<const KCalendarSystem> calendar(KCalendarSystem::create(KLocale::QDateCalendar, KLocale::global()));
     int zone;
     int s = 0;
     int send = str.length();
@@ -2501,7 +2498,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'P':
                 case 'p':     // am/pm
                 {
-                    int ap = getAmPm(str, s, locale);
+                    int ap = getAmPm(str, s, true);
                     if (!ap  ||  (ampm != NO_NUMBER && ampm != ap))
                         return QDateTime();
                     ampm = ap;
@@ -2559,7 +2556,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                 case 'P':
                 case 'p':     // am/pm in English
                 {
-                    int ap = getAmPm(str, s, 0);
+                    int ap = getAmPm(str, s, false);
                     if (!ap  ||  (ampm != NO_NUMBER && ampm != ap))
                         return QDateTime();
                     ampm = ap;
@@ -2584,7 +2581,7 @@ QDateTime fromStr(const QString& string, const QString& format, int& utcOffset,
                     if (str[s] != QLatin1Char('.'))
                     {
                         // If no locale, try comma, it is preferred by ISO8601 as the decimal point symbol
-                        QString dpt = locale == 0 ? QString::fromLatin1(",") : locale->decimalSymbol();
+                        QString dpt = KLocale::global()->decimalSymbol();
                         if (!str.mid(s).startsWith(dpt))
                             return QDateTime();
                         s += dpt.length() - 1;
@@ -2873,14 +2870,14 @@ bool getUTCOffset(const QString &string, int &offset, bool colon, int &result)
  * 'offset' is incremented by the length of the match.
  * Reply = 1 (am), 2 (pm), or 0 if no match.
  */
-int getAmPm(const QString &string, int &offset, KLocale *locale)
+int getAmPm(const QString &string, int &offset, bool localized)
 {
     QString part = string.mid(offset);
     int ap = 0;
     int n = 2;
-    if (locale)
+    if (localized)
     {
-        // Check localised form first
+        // Check localized form first
         QString aps = i18n("am");
         if (part.startsWith(aps, Qt::CaseInsensitive))
         {
