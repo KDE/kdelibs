@@ -637,6 +637,22 @@ void tst_KToolBar::testClickingToolButton() {
         // using QApplication::mouseButtons() _after_ the button has been released.
         QCOMPARE(arguments.at(0).value<Qt::MouseButtons>(), pressedButtons);
     }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QEXPECT_FAIL("Shift+LMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Ctrl+LMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Alt+LMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Shift+Control+LMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Shift+Alt+LMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Control+Alt+LMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Shift+Control+Alt+LMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Shift+MMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Ctrl+MMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Alt+MMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Shift+Control+MMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Shift+Alt+MMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Control+Alt+MMB", "Needs MR 43915 in Qt dev branch", Continue);
+    QEXPECT_FAIL("Shift+Control+Alt+MMB", "Needs MR 43915 in Qt dev branch", Continue);
+#endif
     QCOMPARE(arguments.at(1).value<Qt::KeyboardModifiers>(), modifiers);
 
     if(button == Qt::LeftButton) {
