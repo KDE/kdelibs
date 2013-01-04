@@ -1675,7 +1675,6 @@ void KDirOperator::setDirLister(KDirLister *lister)
     d->proxyModel = new KDirSortFilterProxyModel(this);
     d->proxyModel->setSourceModel(d->dirModel);
 
-    d->dirLister->setAutoUpdate(true);
     d->dirLister->setDelayedMimeTypes(true);
 
     QWidget* mainWidget = topLevelWidget();
