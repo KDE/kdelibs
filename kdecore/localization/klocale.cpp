@@ -313,17 +313,15 @@ public:
     {
         QMutexLocker lock(&mutex);
         // If there's no QApp, postpone initialization
-        if (inited || !QCoreApplication::instance())
+        QCoreApplication* coreApp = QCoreApplication::instance();
+        if (inited || !coreApp)
             return;
         inited = true;
         QTextCodec::setCodecForLocale(locale.codecForEncoding());
-        QCoreApplication* coreApp = QCoreApplication::instance();
-        if (coreApp) { // testcase: kwrite --help: no qcore app
-            if (coreApp->thread() != QThread::currentThread()) {
-                qFatal("KLocale::global() must be called from the main thread before using i18n() in threads. KApplication takes care of this. If not using KApplication, call KGlobal::locale() during initialization.");
-            } else {
-                QCoreApplication::installTranslator(new KDETranslator(coreApp));
-            }
+        if (coreApp->thread() != QThread::currentThread()) {
+            qFatal("KLocale::global() must be called from the main thread before using i18n() in threads. KApplication takes care of this. If not using KApplication, call KLocale::global() during initialization.");
+        } else {
+            QCoreApplication::installTranslator(new KDETranslator(coreApp));
         }
     }
     KLocale locale;
@@ -336,8 +334,6 @@ Q_GLOBAL_STATIC(KGlobalLocaleStatic, s_globalLocale)
 KLocale * KLocale::global()
 {
     KGlobalLocaleStatic* glob = s_globalLocale();
-    if (!glob)
-        return 0;
     glob->init();
     return &glob->locale;
 }
