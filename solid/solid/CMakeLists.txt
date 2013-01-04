@@ -452,8 +452,8 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
 set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
-find_package(Flex)
-set_package_properties(Flex PROPERTIES DESCRIPTION "Allows the Solid predicate parser to be updated"
+find_package(FLEX)
+set_package_properties(FLEX PROPERTIES DESCRIPTION "Allows the Solid predicate parser to be updated"
                        URL "http://flex.sourceforge.net"
                        TYPE OPTIONAL
                        PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
@@ -466,7 +466,7 @@ set_package_properties(BISON PROPERTIES DESCRIPTION "Allows the Solid predicate 
                        PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
                       )
 
-if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+if (FLEX_FOUND AND BISON_FOUND)
 
    add_custom_target(UpdateSolidPredicateParser
                      COMMAND ${FLEX_EXECUTABLE} -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l
@@ -476,8 +476,8 @@ if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
                      COMMAND ${CMAKE_COMMAND} -E remove ${parser_FILE}.tab.c ${parser_FILE}.tab.h
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-else (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+else ()
    add_custom_target(UpdateSolidPredicateParser
                      COMMAND echo "flex and/or bison not found, so target UpdateSolidPredicateParser inactive")
-endif (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+endif ()
 
