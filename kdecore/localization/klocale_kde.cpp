@@ -607,7 +607,7 @@ bool KLocalePrivate::setLanguage(const QStringList &languages)
     //    language in order to preserve the order of precenence of the user
     QStringList list;
     foreach(const QString &language, languages) {
-        if (!language.isEmpty() && !list.contains(language)) {
+        if (!language.isEmpty() && !list.contains(language) && KLocalizedString::isApplicationTranslatedInto(language)) {
             list.append(language);
         }
     }
