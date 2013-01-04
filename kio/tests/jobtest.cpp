@@ -868,8 +868,8 @@ void JobTest::newApiPerformance()
 
 
         for (int i = 0; i < lookupIterations; ++i) {
-            OldUDSEntry::ConstIterator it2 = entry.begin();
-            for( ; it2 != entry.end(); it2++ ) {
+            OldUDSEntry::ConstIterator it2 = entry.constBegin();
+            for( ; it2 != entry.constEnd(); it2++ ) {
                 switch ((*it2).m_uds) {
                 case KIO::UDSEntry::UDS_NAME:
                     displayName = (*it2).m_str;
@@ -933,12 +933,12 @@ void JobTest::newApiPerformance()
             displayName = entry.value( KIO::UDSEntry::UDS_NAME ).toString();
 
             // For a field that might not be there
-            UDSEntryHV::const_iterator it = entry.find( KIO::UDSEntry::UDS_URL );
-            const UDSEntryHV::const_iterator end = entry.end();
+            UDSEntryHV::const_iterator it = entry.constFind( KIO::UDSEntry::UDS_URL );
+            const UDSEntryHV::const_iterator end = entry.constEnd();
             if ( it != end )
                  url = it.value().toString();
 
-            it = entry.find( KIO::UDSEntry::UDS_SIZE );
+            it = entry.constFind( KIO::UDSEntry::UDS_SIZE );
             if ( it != end )
                 size = it.value().toULongLong();
         }
@@ -981,12 +981,12 @@ void JobTest::newApiPerformance()
             displayName = entry.value( KIO::UDSEntry::UDS_NAME ).m_str;
 
             // For a field that might not be there
-            UDSEntryHS::const_iterator it = entry.find( KIO::UDSEntry::UDS_URL );
-            const UDSEntryHS::const_iterator end = entry.end();
+            UDSEntryHS::const_iterator it = entry.constFind( KIO::UDSEntry::UDS_URL );
+            const UDSEntryHS::const_iterator end = entry.constEnd();
             if ( it != end )
                  url = it.value().m_str;
 
-            it = entry.find( KIO::UDSEntry::UDS_SIZE );
+            it = entry.constFind( KIO::UDSEntry::UDS_SIZE );
             if ( it != end )
                 size = it.value().m_long;
         }
@@ -1028,12 +1028,12 @@ void JobTest::newApiPerformance()
             displayName = entry.value( KIO::UDSEntry::UDS_NAME ).m_str;
 
             // For a field that might not be there
-            UDSEntryMS::const_iterator it = entry.find( KIO::UDSEntry::UDS_URL );
-            const UDSEntryMS::const_iterator end = entry.end();
+            UDSEntryMS::const_iterator it = entry.constFind( KIO::UDSEntry::UDS_URL );
+            const UDSEntryMS::const_iterator end = entry.constEnd();
             if ( it != end )
                  url = it.value().m_str;
 
-            it = entry.find( KIO::UDSEntry::UDS_SIZE );
+            it = entry.constFind( KIO::UDSEntry::UDS_SIZE );
             if ( it != end )
                 size = it.value().m_long;
         }

@@ -149,9 +149,10 @@ void KMimeTypeTest::initTestCase()
         QProcess::execute(QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME));
     }
 
-    KService::Ptr fakeApp = KService::serviceByStorageId("fake_nonkde_application.desktop");
-    QVERIFY(fakeApp); // it should be found.
+    QVERIFY(KService::serviceByStorageId("fake_nonkde_application.desktop"));
     QVERIFY(KService::serviceByDesktopPath(m_nonKdeApp)); // the desktoppath is the full path nowadays
+    QVERIFY(KService::serviceByStorageId("fake_textplain_application.desktop"));
+    QVERIFY(KService::serviceByDesktopPath(m_textPlainApp));
 }
 
 void KMimeTypeTest::cleanupTestCase()
@@ -164,6 +165,8 @@ void KMimeTypeTest::cleanupTestCase()
     QFile::remove(fakePart);
     const QString fakePlugin = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1String("/kde5/services/") + "faketextplugin.desktop";
     QFile::remove(fakePlugin);
+    QFile::remove(m_textPlainApp);
+    QFile::remove(m_nonKdeApp);
     QProcess proc;
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME));
@@ -719,6 +722,8 @@ void KMimeTypeTest::testPreferredService()
 {
     // The "NotShowIn=KDE" service should not be the preferred one!
     KService::Ptr serv = KMimeTypeTrader::self()->preferredService("text/plain");
+    QVERIFY( serv );
+    qDebug() << serv->entryPath();
     QVERIFY( serv->entryPath() != m_nonKdeApp );
     QCOMPARE(serv->entryPath(), m_textPlainApp);
 }

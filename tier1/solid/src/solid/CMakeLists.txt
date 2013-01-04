@@ -427,12 +427,11 @@ set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
 find_package(FLEX)
-set_package_properties(FLEX PROPERTIES
-    URL "http://flex.sourceforge.net"
-    DESCRIPTION "Allows the Solid predicate parser to be updated"
-    TYPE OPTIONAL
-    PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
-  )
+set_package_properties(FLEX PROPERTIES DESCRIPTION "Allows the Solid predicate parser to be updated"
+                       URL "http://flex.sourceforge.net"
+                       TYPE OPTIONAL
+                       PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
+                      )
 
 find_package(BISON)
 set_package_properties(BISON PROPERTIES
@@ -442,7 +441,7 @@ set_package_properties(BISON PROPERTIES
     PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
   )
 
-if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+if (FLEX_FOUND AND BISON_FOUND)
 
    add_custom_target(UpdateSolidPredicateParser
                      COMMAND ${FLEX_EXECUTABLE} -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l

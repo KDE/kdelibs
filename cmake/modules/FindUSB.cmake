@@ -27,4 +27,8 @@ find_library(LIBUSB_LIBRARIES NAMES usb
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LIBUSB  DEFAULT_MSG  LIBUSB_LIBRARIES LIBUSB_INCLUDE_DIR)
 
+# Compat. feature_summary expects the _FOUND variable to match the module name
+# TODO: KDE5 should probably be renamed FindLibUSB.cmake
+set(USB_FOUND ${LIBUSB_FOUND})
+
 mark_as_advanced(LIBUSB_INCLUDE_DIR LIBUSB_LIBRARIES)
