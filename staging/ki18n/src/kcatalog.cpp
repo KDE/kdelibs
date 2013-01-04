@@ -204,8 +204,7 @@ QString KCatalog::translate (const QByteArray &msgid) const
 {
     QMutexLocker locker(&catalogStaticData()->mutex);
     d->setupGettextEnv();
-    const char *msgid1 = msgid.constData();
-    const char *msgstr = dgettext(d->name, msgid1);
+    const char *msgstr = dgettext(d->name.constData(), msgid.constData());
     d->resetSystemLanguage();
     return   msgstr != msgid
            ? QString::fromUtf8(msgstr)
@@ -217,8 +216,7 @@ QString KCatalog::translate (const QByteArray &msgctxt,
 {
     QMutexLocker locker(&catalogStaticData()->mutex);
     d->setupGettextEnv();
-    const char *msgid1 = msgid.constData();
-    const char *msgstr = dpgettext_expr(d->name, msgctxt, msgid1);
+    const char *msgstr = dpgettext_expr(d->name.constData(), msgctxt.constData(), msgid.constData());
     d->resetSystemLanguage();
     return   msgstr != msgid
            ? QString::fromUtf8(msgstr)
@@ -231,11 +229,9 @@ QString KCatalog::translate (const QByteArray &msgid,
 {
     QMutexLocker locker(&catalogStaticData()->mutex);
     d->setupGettextEnv();
-    const char *msgid1 = msgid.constData();
-    const char *msgid_plural1 = msgid_plural.constData();
-    const char *msgstr = dngettext(d->name, msgid1, msgid_plural1, n);
+    const char *msgstr = dngettext(d->name.constData(), msgid.constData(), msgid_plural.constData(), n);
     d->resetSystemLanguage();
-    return   msgstr != msgid && msgstr != msgid_plural1
+    return   msgstr != msgid && msgstr != msgid_plural
            ? QString::fromUtf8(msgstr)
            : QString();
 }
@@ -247,11 +243,9 @@ QString KCatalog::translate (const QByteArray &msgctxt,
 {
     QMutexLocker locker(&catalogStaticData()->mutex);
     d->setupGettextEnv();
-    const char *msgid1 = msgid.constData();
-    const char *msgid_plural1 = msgid_plural.constData();
-    const char *msgstr = dnpgettext_expr(d->name, msgctxt, msgid1, msgid_plural1, n);
+    const char *msgstr = dnpgettext_expr(d->name.constData(), msgctxt.constData(), msgid.constData(), msgid_plural.constData(), n);
     d->resetSystemLanguage();
-    return   msgstr != msgid && msgstr != msgid_plural1
+    return   msgstr != msgid && msgstr != msgid_plural
            ? QString::fromUtf8(msgstr)
            : QString();
 }
