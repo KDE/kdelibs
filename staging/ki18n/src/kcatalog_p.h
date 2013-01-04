@@ -139,6 +139,4 @@ private:
     KCatalogPrivate* const d;
 };
 
-QDebug operator<<(QDebug debug, const KCatalog &c);
-
 #endif
