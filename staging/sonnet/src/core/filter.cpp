@@ -116,11 +116,6 @@ isValidWord(const QString &str)
     return false;
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#define StartWord StartOfItem
-#define EndWord EndOfItem
-#endif
-
 static bool
 finderNextWord(QTextBoundaryFinder &finder, QString &word, int &bufferStart)
 {
