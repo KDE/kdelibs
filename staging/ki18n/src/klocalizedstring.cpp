@@ -1225,7 +1225,7 @@ bool KLocalizedString::isApplicationTranslatedInto (const QString &language)
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP();
 
-    return !KCatalog::catalogLocaleDir(s->appCatalogName, language).isEmpty();
+    return language == s->codeLanguage || !KCatalog::catalogLocaleDir(s->appCatalogName, language).isEmpty();
 }
 
 const KCatalog &KLocalizedStringPrivate::getCatalog (const QString &catalogName,
