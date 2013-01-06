@@ -45,7 +45,6 @@ class KLocalePrivate;
  */
 
 /**
-  *
   * KLocale provides support for language and country specific stuff.
   *
   * KLocale supports specifying the format
@@ -104,7 +103,7 @@ public:
      * @param country  the ISO Country Code for the locale, e.g. "US" for USA
      * @param config   a configuration file with a Locale group detailing
      *                 locale-related preferences (such as language, country,
-     *                  and formatting options).
+     *                 and formatting options).
      */
     KLocale(const QString &language, const QString &country = QString(),
             KConfig *config = 0);
