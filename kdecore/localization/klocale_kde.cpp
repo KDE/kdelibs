@@ -604,6 +604,12 @@ bool KLocalePrivate::setLanguage(const QStringList &languages)
     // 1) some empty strings that we have to eliminate
     // 2) duplicate entries like in de:fr:de, where we have to keep the first occurrence of a
     //    language in order to preserve the order of precenence of the user
+    // 3) languages into which the application is not translated. For those languages we should not
+    //    even load kdelibs.mo or kio.po. these languages have to be dropped. Otherwise we get
+    //    strange side effects, e.g. with Hebrew: the right/left switch for languages that write
+    //    from right to left (like Hebrew or Arabic) is set in kdelibs.mo. If you only have
+    //    kdelibs.mo but nothing from appname.mo, you get a mostly English app with layout from
+    //    right to left. That was considered to be a bug by the Hebrew translators.
     QStringList list;
     foreach(const QString &language, languages) {
         if (!language.isEmpty() && !list.contains(language) && KLocalizedString::isApplicationTranslatedInto(language)) {
