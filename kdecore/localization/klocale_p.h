@@ -24,8 +24,6 @@
 #include "klocale.h"
 #include "klocalizedstring.h"
 
-class QMutex;
-
 class KCatalog;
 class KDayPeriod;
 
@@ -240,8 +238,6 @@ public:
      * The worker of the same-name KLocale API function.
      */
     virtual bool nounDeclension() const;
-
-public:
 
     /***************************
      **   Calendar settings   **

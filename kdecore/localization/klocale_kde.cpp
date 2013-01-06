@@ -42,7 +42,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 #include <QPrinter>
-#include <QtCore/QFileInfo>
 #include <QtCore/QRegExp>
 #include <QtCore/QLocale>
 #include <QtCore/QHash>
