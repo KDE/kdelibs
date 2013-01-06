@@ -402,8 +402,7 @@ void KLocalizedStringPrivate::translateRaw (const QStringList &catalogNames,
             break;
         }
         // Skip this language if there is no application catalog for it.
-        const KCatalog &appCatalog = getCatalog(s->appCatalogName, testLanguage);
-        if (appCatalog.localeDir().isEmpty()) {
+        if (!KLocalizedString::isApplicationTranslatedInto(testLanguage)) {
             continue;
         }
         foreach (const QString &catalogName, catalogNames) {
