@@ -532,15 +532,12 @@ QString KLocalizedStringPrivate::toString (const QStringList &catalogNames,
     // Post-format ordinary translation.
     ftrans = postFormat(ftrans, lang, QString::fromLatin1(ctxt));
 
-    QString ctry;
+    QString ctry = extractCountry(languages);
 
     // If there is also a scripted translation.
     if (!strans.isEmpty()) {
         // Evaluate scripted translation.
         bool fallback;
-        if (ctry.isEmpty()) {
-            ctry = extractCountry(languages);
-        }
         QString sfinal = substituteTranscript(strans, lang, ctry, ftrans, fallback);
 
         // If any translation produced and no fallback requested.
@@ -554,9 +551,6 @@ QString KLocalizedStringPrivate::toString (const QStringList &catalogNames,
     if (s->ktrs != NULL)
     {
         QStringList pcalls = s->ktrs->postCalls(lang);
-        if (!pcalls.isEmpty() && ctry.isEmpty()) {
-            ctry = extractCountry(languages);
-        }
         foreach(const QString &pcall, pcalls) {
             postTranscript(pcall, lang, ctry, ftrans);
         }
