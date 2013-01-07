@@ -24,7 +24,6 @@
 #include <strigi/streamthroughanalyzer.h>
 #include <strigi/streamlineanalyzer.h>
 #include <strigi/streameventanalyzer.h>
-#include <config-strigi.h>
 
 using namespace Strigi;
 using namespace std;
@@ -41,7 +40,7 @@ public:
     bool checkHeader(const char*, int32_t) const {
         return false;
     }
-    STRIGI_ENDANALYZER_RETVAL analyze(Strigi::AnalysisResult&, InputStream*) {
+    signed char analyze(Strigi::AnalysisResult&, InputStream*) {
         return -1;
     }
     const char* name() const { return "DummyEndAnalyzer"; }
