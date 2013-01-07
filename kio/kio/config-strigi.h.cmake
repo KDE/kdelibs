@@ -1,6 +1,0 @@
-#cmakedefine01 STRIGI_NEEDS_SIGNED_CHAR
-#ifdef STRIGI_NEEDS_SIGNED_CHAR
-#define STRIGI_ENDANALYZER_RETVAL signed char
-#else
-#define STRIGI_ENDANALYZER_RETVAL char
-#endif
