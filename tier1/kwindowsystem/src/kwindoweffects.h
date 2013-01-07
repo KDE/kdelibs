@@ -35,7 +35,6 @@ namespace KWindowEffects
         PresentWindows = 3,
         PresentWindowsGroup = 4,
         HighlightWindows = 5,
-        OverrideShadow = 6,
         BlurBehind = 7,
         Dashboard = 8
     };

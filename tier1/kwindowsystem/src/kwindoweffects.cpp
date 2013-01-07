@@ -61,9 +61,6 @@ bool isEffectAvailable(Effect effect)
     case HighlightWindows:
         effectName = QLatin1String("_KDE_WINDOW_HIGHLIGHT");
         break;
-    case OverrideShadow:
-        effectName = QLatin1String("_KDE_SHADOW_OVERRIDE");
-        break;
     case BlurBehind:
         effectName = QLatin1String("_KDE_NET_WM_BLUR_BEHIND_REGION");
         break;
