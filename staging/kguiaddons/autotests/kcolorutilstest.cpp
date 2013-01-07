@@ -2,6 +2,7 @@
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #define QT_GUI_LIB 1
+#include <QtTest/QtTest>
 #else
 #include <QtTest/QtTestGui>
 #endif

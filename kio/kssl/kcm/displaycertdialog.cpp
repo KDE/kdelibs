@@ -18,6 +18,7 @@
 */
 
 #include "displaycertdialog_p.h"
+#include <QDateTime>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <kstandardguiitem.h>
