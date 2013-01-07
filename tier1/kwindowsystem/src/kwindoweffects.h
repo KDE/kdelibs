@@ -121,13 +121,6 @@ namespace KWindowEffects
     KWINDOWSYSTEM_EXPORT void highlightWindows(WId controller, const QList<WId> &ids);
 
     /**
-     * Forbid te windowmanager to automatically generate a shadow for this window
-     * @param window the window that won't have shadow
-     * @param override true if it won't have shadow, false enables it again
-     */
-    KWINDOWSYSTEM_EXPORT void overrideShadow(WId window, bool override);
-
-    /**
      * Instructs the window manager to blur the background in the specified region
      * behind the given window. Passing a null region will enable the blur effect
      * for the whole window. The region is relative to the top-left corner of the

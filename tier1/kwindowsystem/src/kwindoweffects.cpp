@@ -287,22 +287,6 @@ void highlightWindows(WId controller, const QList<WId> &ids)
 #endif
 }
 
-void overrideShadow(WId window, bool override)
-{
-#if HAVE_X11
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom( dpy, "_KDE_SHADOW_OVERRIDE", False );
-    if (!override) {
-        XDeleteProperty(dpy, window, atom);
-    } else {
-        QVarLengthArray<long, 1> data(1);
-        data[0] = 1;
-        XChangeProperty(dpy, window, atom, atom, 32, PropModeReplace,
-                        reinterpret_cast<unsigned char *>(data.data()), data.size());
-    }
-#endif
-}
-
 void enableBlurBehind(WId window, bool enable, const QRegion &region)
 {
 #if HAVE_X11
