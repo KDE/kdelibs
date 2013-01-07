@@ -59,7 +59,7 @@ static void scaleLoop32bit(QImage* dst, const QImage& src, int tileX, int tileY,
         const quint32 *srcAbove = reinterpret_cast<const quint32*>(src.scanLine((ySource+yStep/2)>>8));
         quint32 *destination = reinterpret_cast<quint32*>(dst->scanLine(yTarget));
             
-        versions[yTarget] = parentVersions[(ySource+yStep)>>8];
+        versions[yTarget] = parentVersions[ySource>>8];
         for (int xTarget=0, xSource=tileX * Tile::TileSize * xStep; xTarget<dst->width(); xTarget++, xSource+=xStep) {
             quint32 average1 = AVG(srcBelow[xSource>>8], srcAbove[(xSource+xStep/2)>>8]);
             quint32 average2 = AVG(srcBelow[(xSource+xStep/2)>>8], srcAbove[xSource>>8]);
