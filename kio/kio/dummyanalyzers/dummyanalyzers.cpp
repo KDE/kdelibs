@@ -24,7 +24,6 @@
 #include <strigi/streamthroughanalyzer.h>
 #include <strigi/streamlineanalyzer.h>
 #include <strigi/streameventanalyzer.h>
-#include <config-strigi.h>
 
 using namespace Strigi;
 using namespace std;

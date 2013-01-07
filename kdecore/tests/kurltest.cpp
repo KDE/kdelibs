@@ -920,6 +920,15 @@ void KUrlTest::testAdjustPath()
     ftpurl1.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE(  ftpurl1.path(), QString("/" ) );
 
+    KUrl ftpurlNoPath("ftp://ftp.kde.org"); // #312060
+    QCOMPARE(ftpurlNoPath.path(), QString());
+    ftpurlNoPath.adjustPath(KUrl::LeaveTrailingSlash);
+    QCOMPARE(ftpurlNoPath.path(), QString());
+    ftpurlNoPath.adjustPath(KUrl::AddTrailingSlash);
+    QCOMPARE(ftpurlNoPath.path(), QString());
+    ftpurlNoPath.adjustPath(KUrl::RemoveTrailingSlash);
+    QCOMPARE(ftpurlNoPath.path(), QString());
+
     KUrl ftpurl2("ftp://ftp.kde.org///");
     ftpurl2.adjustPath(KUrl::LeaveTrailingSlash);
     QCOMPARE(  ftpurl2.path(), QString("///" ) );

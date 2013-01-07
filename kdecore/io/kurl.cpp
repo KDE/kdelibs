@@ -682,7 +682,7 @@ static QString trailingSlash( KUrl::AdjustPathOption trailing, const QString &pa
   if ( trailing == KUrl::AddTrailingSlash )
   {
     int len = result.length();
-    if ( (len == 0) || (result[ len - 1 ] != QLatin1Char('/')) )
+    if ((len > 0) && (result[ len - 1 ] != QLatin1Char('/')))
       result += QLatin1Char('/');
     return result;
   }
