@@ -797,7 +797,7 @@ void KCalendarTest::testHebrewStrings()
         calendar->setDate(testDate, 5765, 1, 1);
         // Have to use unicode values, for some reason directly using the chars doesn't work?
         yearString.append(QChar(0x05EA)).append(QChar(0x05E9)).append(QChar(0x05E1)).append(QChar('\"')).append(QChar(0x05D4));
-        monthString = "תשרי";
+        monthString = QString::fromUtf8("תשרי");
         dayString.append(QChar(0x05D0)).append(QChar('\''));
         testString = yearString + ' ' + monthString + ' ' + dayString;
         QCOMPARE(calendar->readDate(calendar->formatDate(testDate, KLocale::LongDate), KLocale::NormalFormat), testDate);
@@ -1082,13 +1082,13 @@ void KCalendarTest::testEra()
     QCOMPARE(setEraDate(calendar, "AD", 2005, 12, 31), QDate(2005, 12, 31));
 
     delete calendar;
-    cg.writeEntry("Era1", "-:1:-0001-01-01::Test Era 1:TE1:£%Ey£%EC£");
-    cg.writeEntry("Era2", "+:1:0001-01-01::Test Era 2:TE2:^%Ey^%EC^");
+    cg.writeEntry("Era1", QString::fromUtf8("-:1:-0001-01-01::Test Era 1:TE1:£%Ey£%EC£"));
+    cg.writeEntry("Era2", QString::fromUtf8("+:1:0001-01-01::Test Era 2:TE2:^%Ey^%EC^"));
     calendar = KCalendarSystem::create(KLocale::QDateCalendar);
     testEraDate(calendar, QDate(2010,  1,  1), 2010, "2010", "2010", "TE2", "Test Era 2");
     testEraDate(calendar, QDate(-5,  1,  1),    5, "5",    "0005", "TE1", "Test Era 1");
-    QCOMPARE(calendar->formatDate(QDate(2010, 1, 1), "%EY"), QString("^2010^TE2^"));
-    QCOMPARE(calendar->formatDate(QDate(-5, 1, 1), "%EY"), QString("£5£TE1£"));
+    QCOMPARE(calendar->formatDate(QDate(2010, 1, 1), "%EY"), QString::fromUtf8("^2010^TE2^"));
+    QCOMPARE(calendar->formatDate(QDate(-5, 1, 1), "%EY"), QString::fromUtf8("£5£TE1£"));
 
     cg.deleteGroup();
     cg.markAsClean();
