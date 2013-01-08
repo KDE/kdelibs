@@ -773,16 +773,16 @@ void KCalendarTest::testHebrewStrings()
 
         Value     1       2       3        4        5       6         7        8      9
 
-        x 1    Alef א  Bet  ב  Gimel ג  Dalet ד  He   ה  Vav  ו    Zayen ז  Het  ח  Tet  ט
+        x 1    Alef 讗  Bet  讘  Gimel 讙  Dalet 讚  He   讛  Vav  讜    Zayen 讝  Het  讞  Tet  讟
                0x05D0  0x05D1  0x05D2   0x05D3   0x05D4  0x05D5    0x05D6   0x05D7  0x05D8
 
-        x 10   Yod  י  Kaf  כ  Lamed ל  Mem  מ   Nun  נ  Samekh ס  Ayin ע   Pe   פ  Tzadi צ
+        x 10   Yod  讬  Kaf  讻  Lamed 诇  Mem  诪   Nun  谞  Samekh 住  Ayin 注   Pe   驻  Tzadi 爪
                0x05D9  0x05DB  0x05DC   0x05DE   0x05E0  0x05E1    0x05E2   0x05E4  0x05E6
 
-        x 100  Qof  ק  Resh ר  Shin ש   Tav  ת
+        x 100  Qof  拽  Resh 专  Shin 砖   Tav  转
                0x05E7  0x05E8  0x05E9   0x05EA
 
-        Note special cases 15 = 9 + 6 טו and 16 = 9 + 7 טז
+        Note special cases 15 = 9 + 6 讟讜 and 16 = 9 + 7 讟讝
     */
 
     QString oldLocale = setlocale(LC_ALL, "he.utf8");
@@ -797,7 +797,7 @@ void KCalendarTest::testHebrewStrings()
         calendar->setDate(testDate, 5765, 1, 1);
         // Have to use unicode values, for some reason directly using the chars doesn't work?
         yearString.append(QChar(0x05EA)).append(QChar(0x05E9)).append(QChar(0x05E1)).append(QChar('\"')).append(QChar(0x05D4));
-        monthString = "תשרי";
+        monthString = "转砖专讬";
         dayString.append(QChar(0x05D0)).append(QChar('\''));
         testString = yearString + ' ' + monthString + ' ' + dayString;
         QCOMPARE(calendar->readDate(calendar->formatDate(testDate, KLocale::LongDate), KLocale::NormalFormat), testDate);
@@ -1082,13 +1082,13 @@ void KCalendarTest::testEra()
     QCOMPARE(setEraDate(calendar, "AD", 2005, 12, 31), QDate(2005, 12, 31));
 
     delete calendar;
-    cg.writeEntry("Era1", "-:1:-0001-01-01::Test Era 1:TE1:£%Ey£%EC£");
+    cg.writeEntry("Era1", "-:1:-0001-01-01::Test Era 1:TE1:拢%Ey拢%EC拢");
     cg.writeEntry("Era2", "+:1:0001-01-01::Test Era 2:TE2:^%Ey^%EC^");
     calendar = KCalendarSystem::create(KLocale::QDateCalendar);
     testEraDate(calendar, QDate(2010,  1,  1), 2010, "2010", "2010", "TE2", "Test Era 2");
     testEraDate(calendar, QDate(-5,  1,  1),    5, "5",    "0005", "TE1", "Test Era 1");
     QCOMPARE(calendar->formatDate(QDate(2010, 1, 1), "%EY"), QString("^2010^TE2^"));
-    QCOMPARE(calendar->formatDate(QDate(-5, 1, 1), "%EY"), QString("£5£TE1£"));
+    QCOMPARE(calendar->formatDate(QDate(-5, 1, 1), "%EY"), QString("拢5拢TE1拢"));
 
     cg.deleteGroup();
     cg.markAsClean();
@@ -1692,22 +1692,22 @@ void KCalendarTest::testJapaneseSpecialCases()
     // Test Japanese Eras
     // Heisei > 1        1990-01-01 onwards
     // Heisei 1 (Gannen) 1989-01-08 to 1989-12-31
-    // Shōwa > 1         1927-01-01 to 1989-01-07
-    // Shōwa 1 (Gannen)  1926-12-25 to 1926-12-31
-    // Taishō > 1        1913-01-01 to 1926-12-24
-    // Taishō 1 (Gannen) 1912-07-30 to 1912-12-31
+    // Sh艒wa > 1         1927-01-01 to 1989-01-07
+    // Sh艒wa 1 (Gannen)  1926-12-25 to 1926-12-31
+    // Taish艒 > 1        1913-01-01 to 1926-12-24
+    // Taish艒 1 (Gannen) 1912-07-30 to 1912-12-31
     // Meiji > 1         1869-01-01 to 1912-07-29
     // Meiji 1 (Gannen)  1868-09-08 to 1868-12-31
     // Gregorian         0001-01-01 to 1868-09-07
 
     testEraDate(calendar, QDate(1990,  1,  1),    2,    "2", "0002", "Heisei", "Heisei");
     testEraDate(calendar, QDate(1989,  1,  8),    1,    "1", "0001", "Heisei", "Heisei");
-    //testEraDate( calendar, QDate( 1989,  1,  7 ),   64,   "64", "0064", "Shōwa",  "Shōwa" );
-    //testEraDate( calendar, QDate( 1927,  1,  1 ),    2,    "2", "0002", "Shōwa",  "Shōwa" );
-    //testEraDate( calendar, QDate( 1926, 12, 25 ),    1,    "1", "0001", "Shōwa",  "Shōwa" );
-    //testEraDate( calendar, QDate( 1926, 12, 24 ),   15,   "15", "0015", "Taishō", "Taishō" );
-    //testEraDate( calendar, QDate( 1913,  1,  1 ),    2,    "2", "0002", "Taishō", "Taishō" );
-    //testEraDate( calendar, QDate( 1912,  7, 30 ),    1,    "1", "0001", "Taishō", "Taishō" );
+    //testEraDate( calendar, QDate( 1989,  1,  7 ),   64,   "64", "0064", "Sh艒wa",  "Sh艒wa" );
+    //testEraDate( calendar, QDate( 1927,  1,  1 ),    2,    "2", "0002", "Sh艒wa",  "Sh艒wa" );
+    //testEraDate( calendar, QDate( 1926, 12, 25 ),    1,    "1", "0001", "Sh艒wa",  "Sh艒wa" );
+    //testEraDate( calendar, QDate( 1926, 12, 24 ),   15,   "15", "0015", "Taish艒", "Taish艒" );
+    //testEraDate( calendar, QDate( 1913,  1,  1 ),    2,    "2", "0002", "Taish艒", "Taish艒" );
+    //testEraDate( calendar, QDate( 1912,  7, 30 ),    1,    "1", "0001", "Taish艒", "Taish艒" );
     testEraDate(calendar, QDate(1912,  7, 29),   45,   "45", "0045", "Meiji",  "Meiji");
     testEraDate(calendar, QDate(1869,  1,  1),    2,    "2", "0002", "Meiji",  "Meiji");
     testEraDate(calendar, QDate(1868,  9,  8),    1,    "1", "0001", "Meiji",  "Meiji");
