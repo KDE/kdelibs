@@ -198,7 +198,7 @@ QString QUrlPathInfo::path(PathFormattingOptions options) const
 #endif
     while ((options & StripTrailingSlash) && path.endsWith(QLatin1Char('/')) && path.length() > 1)
         path.chop(1);
-    if ((options & AppendTrailingSlash) && !path.endsWith(QLatin1Char('/')))
+    if ((options & AppendTrailingSlash) && !path.endsWith(QLatin1Char('/')) && !path.isEmpty())
         path += QLatin1Char('/');
     return path;
 }
