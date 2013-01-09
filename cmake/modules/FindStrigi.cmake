@@ -32,16 +32,20 @@ set(_Strigi_FIND_QUIETLY ${Strigi_FIND_QUIETLY})
 find_package(Strigi QUIET NO_MODULE PATHS "${strigi_home}/lib/strigi" "${strigi_home}/lib64/strigi")
 set(Strigi_FIND_QUIETLY ${_Strigi_FIND_QUIETLY})
 
+# STRIGI_VERSION is set to ensure compatibility with older strigi versions
+set(STRIGI_VERSION "${Strigi_VERSION}")
+
 # If StrigiConfig.cmake (installed by libstreams) has been found
 # and it contains all necessary information (since November 16th, 2008), use the information
 # included there, otherwise search it in the same way as any non-cmake project.
 # This variable is set by StrigiConfig.cmake.  Alex
 if (STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
-   set (_strigiErrorMessage "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_PREFIX_PATH) to the strigi install dir.")
-   set(STRIGI_VERSION_OK TRUE)
-   if(STRIGI_VERSION VERSION_LESS ${Strigi_FIND_VERSION})
-      set(_strigiErrorMessage "Strigi version ${STRIGI_VERSION} found, but at least version ${Strigi_FIND_VERSION} is required")
-      set(STRIGI_VERSION_OK FALSE)
+
+   if(NOT STRIGI_VERSION VERSION_LESS ${Strigi_FIND_VERSION})
+     set(STRIGI_VERSION_OK TRUE)
+     set (_strigiErrorMessage "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_PREFIX_PATH) to the strigi install dir.")
+   else()
+     set(_strigiErrorMessage "Strigi version ${STRIGI_VERSION} found, but at least version ${Strigi_FIND_VERSION} is required")
    endif()
 
    include(FindPackageHandleStandardArgs)
