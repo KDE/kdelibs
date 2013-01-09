@@ -218,7 +218,7 @@ bool KProtocolManagerPrivate::shouldIgnoreProxyFor(const QUrl& url)
     // If request url is not IP address, do a DNS lookup of the hostname.
     // TODO: Perhaps we should make configurable ?
     if (address.isNull()) {
-      //kDebug() << "Performing DNS lookup for" << host;
+      //qDebug() << "Performing DNS lookup for" << host;
       QHostInfo info = KIO::HostInfo::lookupHost(host, 2000);
       const QList<QHostAddress> addresses = info.addresses();
       if (!addresses.isEmpty())
@@ -863,7 +863,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
     d->useragent = agentStr.simplified();
   }
 
-  //kDebug() << "USERAGENT STRING:" << d->useragent;
+  //qDebug() << "USERAGENT STRING:" << d->useragent;
   return d->useragent;
 }
 

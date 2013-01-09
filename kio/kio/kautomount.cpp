@@ -85,7 +85,7 @@ void KAutoMountPrivate::slotResult( KJob * job )
                            << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab and /etc/mtab lines for this device";
         } else {
             const QUrl url = QUrl::fromLocalFile(mp->mountPoint());
-            //kDebug(7015) << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint;
+            //qDebug() << "KAutoMount: m_strDevice=" << m_strDevice << " -> mountpoint=" << mountpoint;
             if ( m_bShowFilemanagerWindow ) {
                 KRun::runUrl( url, "inode/directory", 0 /*TODO - window*/ );
             }
@@ -94,7 +94,7 @@ void KAutoMountPrivate::slotResult( KJob * job )
         }
 
         // Update the desktop file which is used for mount/unmount (icon change)
-        kDebug(7015) << " mount finished : updating " << m_desktopFile;
+        //qDebug() << " mount finished : updating " << m_desktopFile;
         org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(m_desktopFile));
         //KDirWatch::self()->setFileDirty( m_desktopFile );
 
@@ -132,7 +132,7 @@ void KAutoUnmountPrivate::slotResult( KJob * job )
     else
     {
         // Update the desktop file which is used for mount/unmount (icon change)
-        kDebug(7015) << "unmount finished : updating " << m_desktopFile;
+        //qDebug() << "unmount finished : updating " << m_desktopFile;
         org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(m_desktopFile));
         //KDirWatch::self()->setFileDirty( m_desktopFile );
 

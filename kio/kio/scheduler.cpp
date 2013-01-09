@@ -143,7 +143,7 @@ void SlaveKeeper::grimReaper()
         if (slave->idleTime() >= s_idleSlaveLifetime) {
             it = m_idleSlaves.erase(it);
             if (slave->job()) {
-                kDebug (7006) << "Idle slave" << slave << "still has job" << slave->job();
+                //qDebug() << "Idle slave" << slave << "still has job" << slave->job();
             }
             slave->kill();
             // avoid invoking slotSlaveDied() because its cleanup services are not needed
@@ -394,8 +394,8 @@ ProtoQueue::ProtoQueue(SchedulerPrivate *sp, int maxSlaves, int maxSlavesPerHost
    m_runningJobsCount(0)
 
 {
-    kDebug(7006) << "m_maxConnectionsTotal:" << m_maxConnectionsTotal
-                 << "m_maxConnectionsPerHost:" << m_maxConnectionsPerHost;
+    /*qDebug() << "m_maxConnectionsTotal:" << m_maxConnectionsTotal
+                 << "m_maxConnectionsPerHost:" << m_maxConnectionsPerHost;*/
     Q_ASSERT(m_maxConnectionsPerHost >= 1);
     Q_ASSERT(maxSlaves >= maxSlavesPerHost);
     m_startJobTimer.setSingleShot(true);
@@ -574,16 +574,16 @@ void ProtoQueue::startAJob()
     verifyRunningJobsCount(&m_queuesByHostname, m_runningJobsCount);
 
 #ifdef SCHEDULER_DEBUG
-    kDebug(7006) << "m_runningJobsCount:" << m_runningJobsCount;
+    //qDebug() << "m_runningJobsCount:" << m_runningJobsCount;
     Q_FOREACH (const HostQueue &hq, m_queuesByHostname) {
         Q_FOREACH (SimpleJob *job, hq.runningJobs()) {
-            kDebug(7006) << SimpleJobPrivate::get(job)->m_url;
+            //qDebug() << SimpleJobPrivate::get(job)->m_url;
         }
     }
 #endif
     if (m_runningJobsCount >= m_maxConnectionsTotal) {
 #ifdef SCHEDULER_DEBUG
-        kDebug(7006) << "not starting any jobs because maxConnectionsTotal has been reached.";
+        //qDebug() << "not starting any jobs because maxConnectionsTotal has been reached.";
 #endif
         return;
     }
@@ -640,7 +640,7 @@ void ProtoQueue::startAJob()
         }
     } else {
 #ifdef SCHEDULER_DEBUG
-        kDebug(7006) << "not starting any jobs because there is no queued job.";
+        //qDebug() << "not starting any jobs because there is no queued job.";
 #endif
     }
 
@@ -718,7 +718,7 @@ public:
     {
         ProtoQueue *pq = m_protocols.value(protocol, 0);
         if (!pq) {
-            kDebug(7006) << "creating ProtoQueue instance for" << protocol;
+            //qDebug() << "creating ProtoQueue instance for" << protocol;
 
             const int maxSlaves = KProtocolInfo::maxSlaves(protocol);
             int maxSlavesPerHost = -1;
@@ -897,12 +897,12 @@ void Scheduler::emitReparseSlaveConfiguration()
 void SchedulerPrivate::slotReparseSlaveConfiguration(const QString &proto, const QDBusMessage&)
 {
     if (m_ignoreConfigReparse) {
-        kDebug(7006) << "Ignoring signal sent by myself";
+        //qDebug() << "Ignoring signal sent by myself";
         m_ignoreConfigReparse = false;
         return;
     }
 
-    kDebug(7006) << "proto=" << proto;
+    //qDebug() << "proto=" << proto;
     KProtocolManager::reparseConfiguration();
     SlaveConfig::self()->reset();
     sessionData.reset();
@@ -945,7 +945,7 @@ static bool mayReturnContent(int cmd, const QString& protocol)
 
 void SchedulerPrivate::doJob(SimpleJob *job)
 {
-    kDebug(7006) << job;
+    //qDebug() << job;
     if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
         kWarning(7006) << "KIO is not thread-safe.";
     }
@@ -966,14 +966,14 @@ void SchedulerPrivate::doJob(SimpleJob *job)
 #ifndef KDE_NO_DEPRECATED
 void SchedulerPrivate::scheduleJob(SimpleJob *job)
 {
-    kDebug(7006) << job;
+    //qDebug() << job;
     setJobPriority(job, 1);
 }
 #endif
 
 void SchedulerPrivate::setJobPriority(SimpleJob *job, int priority)
 {
-    kDebug(7006) << job << priority;
+    //qDebug() << job << priority;
     ProtoQueue *proto = protoQ(SimpleJobPrivate::get(job)->m_protocol, job->url().host());
     proto->changeJobPriority(job, priority);
 }
@@ -983,13 +983,13 @@ void SchedulerPrivate::cancelJob(SimpleJob *job)
     // this method is called all over the place in job.cpp, so just do this check here to avoid
     // much boilerplate in job code.
     if (SimpleJobPrivate::get(job)->m_schedSerial == 0) {
-        //kDebug(7006) << "Doing nothing because I don't know job" << job;
+        //qDebug() << "Doing nothing because I don't know job" << job;
         return;
     }
     Slave *slave = jobSlave(job);
-    kDebug(7006) << job << slave;
+    //qDebug() << job << slave;
     if (slave) {
-        kDebug(7006) << "Scheduler: killing slave " << slave->slave_pid();
+        //qDebug() << "Scheduler: killing slave " << slave->slave_pid();
         slave->kill();
     }
     jobFinished(job, slave);
@@ -997,7 +997,7 @@ void SchedulerPrivate::cancelJob(SimpleJob *job)
 
 void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 {
-    kDebug(7006) << job << slave;
+    //qDebug() << job << slave;
     if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
         kWarning(7006) << "KIO is not thread-safe.";
     }
@@ -1016,7 +1016,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
         // If we have internal meta-data, tell existing ioslaves to reload
         // their configuration.
         if (jobPriv->m_internalMetaData.count()) {
-            kDebug(7006) << "Updating ioslaves with new internal metadata information";
+            //qDebug() << "Updating ioslaves with new internal metadata information";
             ProtoQueue * queue = m_protocols.value(slave->protocol());
             if (queue) {
                 QListIterator<Slave*> it (queue->allSlaves());
@@ -1024,8 +1024,8 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
                     Slave* runningSlave = it.next();
                     if (slave->host() == runningSlave->host()) {
                         slave->setConfig(metaDataFor(slave->protocol(), jobPriv->m_proxyList, job->url()));
-                        kDebug(7006) << "Updated configuration of" << slave->protocol()
-                                     << "ioslave, pid=" << slave->slave_pid();
+                        /*qDebug() << "Updated configuration of" << slave->protocol()
+                                     << "ioslave, pid=" << slave->slave_pid();*/
                     }
                 }
             }
@@ -1115,7 +1115,7 @@ void SchedulerPrivate::slotSlaveStatus(pid_t, const QByteArray&, const QString &
 
 void SchedulerPrivate::slotSlaveDied(KIO::Slave *slave)
 {
-    kDebug(7006) << slave;
+    //qDebug() << slave;
     Q_ASSERT(slave);
     Q_ASSERT(!slave->isAlive());
     ProtoQueue *pq = m_protocols.value(slave->protocol());
@@ -1136,7 +1136,7 @@ void SchedulerPrivate::slotSlaveDied(KIO::Slave *slave)
 void SchedulerPrivate::putSlaveOnHold(KIO::SimpleJob *job, const QUrl &url)
 {
     Slave *slave = jobSlave(job);
-    kDebug(7006) << job << url << slave;
+    //qDebug() << job << url << slave;
     slave->disconnect(job);
     // prevent the fake death of the slave from trying to kill the job again;
     // cf. Slave::hold(const QUrl &url) called in SchedulerPrivate::publishSlaveOnHold().
@@ -1153,7 +1153,7 @@ void SchedulerPrivate::putSlaveOnHold(KIO::SimpleJob *job, const QUrl &url)
 
 void SchedulerPrivate::publishSlaveOnHold()
 {
-    kDebug(7006) << m_slaveOnHold;
+    //qDebug() << m_slaveOnHold;
     if (!m_slaveOnHold)
        return;
 
@@ -1188,24 +1188,24 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
             if (canJobReuse) {
                 KIO::MetaData outgoing = tJob->outgoingMetaData();
                 const QString resume = outgoing.value("resume");
-                kDebug(7006) << "Resume metadata is" << resume;
+                //qDebug() << "Resume metadata is" << resume;
                 canJobReuse = (resume.isEmpty() || resume == "0");
             }
         }
 
         if (job->url() == m_urlOnHold) {
             if (canJobReuse) {
-                kDebug(7006) << "HOLD: Reusing held slave (" << m_slaveOnHold << ")";
+                //qDebug() << "HOLD: Reusing held slave (" << m_slaveOnHold << ")";
                 slave = m_slaveOnHold;
             } else {
-                kDebug(7006) << "HOLD: Discarding held slave (" << m_slaveOnHold << ")";
+                //qDebug() << "HOLD: Discarding held slave (" << m_slaveOnHold << ")";
                 m_slaveOnHold->kill();
             }
             m_slaveOnHold = 0;
             m_urlOnHold.clear();
         }
     } else if (slave) {
-        kDebug(7006) << "HOLD: Reusing klauncher held slave (" << slave << ")";
+        //qDebug() << "HOLD: Reusing klauncher held slave (" << slave << ")";
     }
 
     // Reset the parent widget the ioslave should use when displaying message
@@ -1219,7 +1219,7 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
 
 void SchedulerPrivate::removeSlaveOnHold()
 {
-    kDebug(7006) << m_slaveOnHold;
+    //qDebug() << m_slaveOnHold;
     if (m_slaveOnHold) {
         m_slaveOnHold->kill();
     }
@@ -1244,14 +1244,14 @@ Slave *SchedulerPrivate::getConnectedSlave(const QUrl &url, const KIO::MetaData 
         q->connect(slave, SIGNAL(error(int,QString)),
                    SLOT(slotSlaveError(int,QString)));
     }
-    kDebug(7006) << url << slave;
+    //qDebug() << url << slave;
     return slave;
 }
 
 
 void SchedulerPrivate::slotSlaveConnected()
 {
-    kDebug(7006);
+    //qDebug();
     Slave *slave = static_cast<Slave *>(q->sender());
     slave->setConnected(true);
     q->disconnect(slave, SIGNAL(connected()), q, SLOT(slotSlaveConnected()));
@@ -1261,7 +1261,7 @@ void SchedulerPrivate::slotSlaveConnected()
 void SchedulerPrivate::slotSlaveError(int errorNr, const QString &errorMsg)
 {
     Slave *slave = static_cast<Slave *>(q->sender());
-    kDebug(7006) << slave << errorNr << errorMsg;
+    //qDebug() << slave << errorNr << errorMsg;
     ProtoQueue *pq = protoQ(slave->protocol(), slave->host());
     if (!slave->isConnected() || pq->m_connectedSlaveQueue.isIdle(slave)) {
         // Only forward to application if slave is idle or still connecting.
@@ -1272,7 +1272,7 @@ void SchedulerPrivate::slotSlaveError(int errorNr, const QString &errorMsg)
 
 bool SchedulerPrivate::assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 {
-    kDebug(7006) << slave << job;
+    //qDebug() << slave << job;
     // KDE5: queueing of jobs can probably be removed, it provides very little benefit
     ProtoQueue *pq = m_protocols.value(slave->protocol());
     if (pq) {
@@ -1284,14 +1284,14 @@ bool SchedulerPrivate::assignJobToSlave(KIO::Slave *slave, SimpleJob *job)
 
 bool SchedulerPrivate::disconnectSlave(KIO::Slave *slave)
 {
-    kDebug(7006) << slave;
+    //qDebug() << slave;
     ProtoQueue *pq = m_protocols.value(slave->protocol());
     return (pq ? pq->m_connectedSlaveQueue.removeSlave(slave) : false);
 }
 
 void SchedulerPrivate::checkSlaveOnHold(bool b)
 {
-    kDebug(7006) << b;
+    //qDebug() << b;
     m_checkOnHold = b;
 }
 
@@ -1301,7 +1301,7 @@ void SchedulerPrivate::updateInternalMetaData(SimpleJob* job)
     // Preserve all internal meta-data so they can be sent back to the
     // ioslaves as needed...
     const QUrl jobUrl = job->url();
-    kDebug(7006) << job << jobPriv->m_internalMetaData;
+    //qDebug() << job << jobPriv->m_internalMetaData;
     QMapIterator<QString, QString> it (jobPriv->m_internalMetaData);
     while (it.hasNext()) {
         it.next();

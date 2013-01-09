@@ -52,12 +52,12 @@ MetaInfoJob::MetaInfoJob(const KFileItemList& items, KFileMetaInfo::WhatFlags,
 
     if (d->items.isEmpty())
     {
-        kDebug(7007) << "nothing to do for the MetaInfoJob";
+        //qDebug() << "nothing to do for the MetaInfoJob";
         emitResult();
         return;
     }
 
-    kDebug(7007) << "starting MetaInfoJob";
+    //qDebug() << "starting MetaInfoJob";
 
     // Return to event loop first, determineNextFile() might delete this;
     // (no idea what that means, it comes from previewjob)
@@ -92,7 +92,7 @@ void MetaInfoJob::determineNextFile()
     Q_D(MetaInfoJob);
     if (d->currentItem >= d->items.count() - 1)
     {
-        kDebug(7007) << "finished MetaInfoJob";
+        //qDebug() << "finished MetaInfoJob";
         emitResult();
         return;
     }
@@ -104,7 +104,7 @@ void MetaInfoJob::determineNextFile()
     KFileItem item = d->items.at( d->currentItem );
     if (item.metaInfo(false).isValid())
     {
-//        kDebug(7007) << "Is already valid *************************";
+//qDebug() << "Is already valid *************************";
         emit gotMetaInfo(item);
         determineNextFile();
         return;

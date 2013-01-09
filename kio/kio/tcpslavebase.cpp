@@ -218,8 +218,8 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
 {
     ssize_t written = d->socket.write(data, len);
     if (written == -1) {
-        kDebug(7027) << "d->socket.write() returned -1! Socket error is"
-                     << d->socket.error() << ", Socket state is" << d->socket.state();
+        /*qDebug() << "d->socket.write() returned -1! Socket error is"
+                     << d->socket.error() << ", Socket state is" << d->socket.state();*/
     }
 
     bool success = false;
@@ -236,9 +236,9 @@ ssize_t TCPSlaveBase::write(const char *data, ssize_t len)
     d->socket.flush();  //this is supposed to get the data on the wire faster
 
     if (d->socket.state() != KTcpSocket::ConnectedState || !success) {
-        kDebug(7027) << "Write failed, will return -1! Socket error is"
+        /*qDebug() << "Write failed, will return -1! Socket error is"
                      << d->socket.error() << ", Socket state is" << d->socket.state()
-                     << "Return value of waitForBytesWritten() is" << success;
+                     << "Return value of waitForBytesWritten() is" << success;*/
         return -1;
     }
 
@@ -250,7 +250,7 @@ ssize_t TCPSlaveBase::read(char* data, ssize_t len)
 {
     if (d->usingSSL && (d->socket.encryptionMode() != KTcpSocket::SslClientMode)) {
         d->clearSslMetaData();
-        kDebug(7029) << "lost SSL connection.";
+        //qDebug() << "lost SSL connection.";
         return -1;
     }
 
@@ -276,7 +276,7 @@ ssize_t TCPSlaveBase::readLine(char *data, ssize_t len)
 {
     if (d->usingSSL && (d->socket.encryptionMode() != KTcpSocket::SslClientMode)) {
         d->clearSslMetaData();
-        kDebug(7029) << "lost SSL connection.";
+        //qDebug() << "lost SSL connection.";
         return -1;
     }
 
@@ -380,9 +380,9 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
         d->socket.connectToHost(host, port);
         const bool connectOk = d->socket.waitForConnected(timeout > -1 ? timeout : -1);
 
-        kDebug(7027) << "Socket: state=" << d->socket.state()
+        /*qDebug() << "Socket: state=" << d->socket.state()
                      << ", error=" << d->socket.error()
-                     << ", connected?" << connectOk;
+                     << ", connected?" << connectOk;*/
 
         if (d->socket.state() != KTcpSocket::ConnectedState) {
             if (errorString)
@@ -476,7 +476,7 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
 
 void TCPSlaveBase::disconnectFromHost()
 {
-    kDebug(7027);
+    //qDebug();
     d->host.clear();
     d->ip.clear();
     d->usingSSL = false;
@@ -534,8 +534,8 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
     //### we don't support session reuse for now...
     usingSSL = true;
 #if QT_VERSION >= 0x040800
-    kDebug(7027) << "Trying SSL handshake with protocol:" << version
-                 << ", SSL compression ON:" << sslConfig.testSslOption(QSsl::SslOptionDisableCompression);
+    /*qDebug() << "Trying SSL handshake with protocol:" << version
+                 << ", SSL compression ON:" << sslConfig.testSslOption(QSsl::SslOptionDisableCompression);*/
 #endif
     // Set the SSL version to use...
     socket.setAdvertisedSslVersion(version);
@@ -559,20 +559,20 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
         || cipher.isNull() || cipher.usedBits() == 0 || socket.peerCertificateChain().isEmpty()) {
         usingSSL = false;
         clearSslMetaData();
-        kDebug(7029) << "Initial SSL handshake failed. encryptionStarted is"
+        /*qDebug() << "Initial SSL handshake failed. encryptionStarted is"
                      << encryptionStarted << ", cipher.isNull() is" << cipher.isNull()
                      << ", cipher.usedBits() is" << cipher.usedBits()
                      << ", length of certificate chain is" << socket.peerCertificateChain().count()
                      << ", the socket says:" << socket.errorString()
                      << "and the list of SSL errors contains"
-                     << socket.sslErrors().count() << "items.";
+                     << socket.sslErrors().count() << "items.";*/
         Q_FOREACH(const KSslError& sslError, socket.sslErrors()) {
-            kDebug(7029) << "SSL ERROR: (" << sslError.error() << ")" << sslError.errorString();
+            //qDebug() << "SSL ERROR: (" << sslError.error() << ")" << sslError.errorString();
         }
         return ResultFailed | ResultFailedEarly;
     }
 
-    kDebug(7029) << "Cipher info - "
+    /*qDebug() << "Cipher info - "
                  << " advertised SSL protocol version" << socket.advertisedSslVersion()
                  << " negotiated SSL protocol version" << socket.negotiatedSslVersion()
                  << " authenticationMethod:" << cipher.authenticationMethod()
@@ -580,7 +580,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
                  << " keyExchangeMethod:" << cipher.keyExchangeMethod()
                  << " name:" << cipher.name()
                  << " supportedBits:" << cipher.supportedBits()
-                 << " usedBits:" << cipher.usedBits();
+                 << " usedBits:" << cipher.usedBits();*/
 
     sslErrors = socket.sslErrors();
 
@@ -600,11 +600,11 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
     if (rc & ResultFailed) {
         usingSSL = false;
         clearSslMetaData();
-        kDebug(7029) << "server certificate verification failed.";
+        //qDebug() << "server certificate verification failed.";
         socket.disconnectFromHost();     //Make the connection fail (cf. ignoreSslErrors())
         return ResultFailed;
     } else if (rc & ResultOverridden) {
-        kDebug(7029) << "server certificate verification failed but continuing at user's request.";
+        //qDebug() << "server certificate verification failed but continuing at user's request.";
     }
 
     //"warn" when starting SSL/TLS
@@ -789,7 +789,7 @@ void TCPSlaveBase::selectClientCertificate()
             delete pkcs;  // we don't need this anymore
             pkcs = 0L;
         } else {
-            kDebug(7029) << "Client SSL certificate is being used.";
+            //qDebug() << "Client SSL certificate is being used.";
             setMetaData("ssl_using_client_cert", "TRUE");
             if (save) {
                 KSSLCertificateHome::setDefaultCertificate(certname, d->host,
@@ -823,7 +823,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
     // remove previously seen and acknowledged errors
     QList<KSslError> remainingErrors = rule.filterErrors(d->sslErrors);
     if (remainingErrors.isEmpty()) {
-        kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
+        //qDebug() << "Error list empty after removing errors to be ignored. Continuing.";
         return ResultOk | ResultOverridden;
     }
 
@@ -877,7 +877,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
 
     return ResultOk | ResultOverridden;
 #if 0 //### need to to do something like the old code about the main and subframe stuff
-    kDebug(7029) << "SSL HTTP frame the parent? " << metaData("main_frame_request");
+    //qDebug() << "SSL HTTP frame the parent? " << metaData("main_frame_request");
     if (!hasMetaData("main_frame_request") || metaData("main_frame_request") == "TRUE") {
         // Since we're the parent, we need to teach the child.
         setMetaData("ssl_parent_ip", d->ip);

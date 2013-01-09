@@ -110,7 +110,7 @@ bool ForwardingSlaveBasePrivate::internalRewriteUrl(const QUrl &url, QUrl &newUR
 void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
                                           bool listing) const
 {
-    //kDebug() << "listing==" << listing;
+    //qDebug() << "listing==" << listing;
 
     const QString name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
     QString mimetype = entry.stringValue( KIO::UDSEntry::UDS_MIME_TYPE );
@@ -125,8 +125,8 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
             new_url.addPath(QUrlPathInfo(url).fileName());
         // ## Didn't find a way to use an iterator instead of re-doing a key lookup
         entry.insert(KIO::UDSEntry::UDS_URL, new_url.url().toString());
-        kDebug() << "URL =" << url;
-        kDebug() << "New URL =" << new_url.url();
+        //qDebug() << "URL =" << url;
+        //qDebug() << "New URL =" << new_url.url();
     }
 
     if (mimetype.isEmpty())
@@ -143,7 +143,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
         entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, mimetype );
 
-        kDebug() << "New Mimetype = " << mimetype;
+        //qDebug() << "New Mimetype = " << mimetype;
     }
 
     if ( d->m_processedURL.isLocalFile() )
@@ -169,7 +169,7 @@ QUrl ForwardingSlaveBase::requestedUrl() const
 
 void ForwardingSlaveBase::get(const QUrl &url)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -188,7 +188,7 @@ void ForwardingSlaveBase::get(const QUrl &url)
 void ForwardingSlaveBase::put(const QUrl &url, int permissions,
                               JobFlags flags)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -207,7 +207,7 @@ void ForwardingSlaveBase::put(const QUrl &url, int permissions,
 
 void ForwardingSlaveBase::stat(const QUrl &url)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -225,7 +225,7 @@ void ForwardingSlaveBase::stat(const QUrl &url)
 
 void ForwardingSlaveBase::mimetype(const QUrl &url)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -243,7 +243,7 @@ void ForwardingSlaveBase::mimetype(const QUrl &url)
 
 void ForwardingSlaveBase::listDir(const QUrl &url)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -261,7 +261,7 @@ void ForwardingSlaveBase::listDir(const QUrl &url)
 
 void ForwardingSlaveBase::mkdir(const QUrl &url, int permissions)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -280,7 +280,7 @@ void ForwardingSlaveBase::mkdir(const QUrl &url, int permissions)
 void ForwardingSlaveBase::rename(const QUrl &src, const QUrl &dest,
                                  JobFlags flags)
 {
-    kDebug() << src << "," << dest;
+    //qDebug() << src << "," << dest;
 
     QUrl new_src, new_dest;
     if( !d->internalRewriteUrl(src, new_src) )
@@ -303,7 +303,7 @@ void ForwardingSlaveBase::rename(const QUrl &src, const QUrl &dest,
 void ForwardingSlaveBase::symlink(const QString &target, const QUrl &dest,
                                   JobFlags flags)
 {
-    kDebug() << target << ", " << dest;
+    //qDebug() << target << ", " << dest;
 
     QUrl new_dest;
     if ( d->internalRewriteUrl(dest, new_dest) )
@@ -321,7 +321,7 @@ void ForwardingSlaveBase::symlink(const QString &target, const QUrl &dest,
 
 void ForwardingSlaveBase::chmod(const QUrl &url, int permissions)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -339,7 +339,7 @@ void ForwardingSlaveBase::chmod(const QUrl &url, int permissions)
 
 void ForwardingSlaveBase::setModificationTime(const QUrl& url, const QDateTime& mtime)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -358,7 +358,7 @@ void ForwardingSlaveBase::setModificationTime(const QUrl& url, const QDateTime& 
 void ForwardingSlaveBase::copy(const QUrl &src, const QUrl &dest,
                                int permissions, JobFlags flags)
 {
-    kDebug() << src << "," << dest;
+    //qDebug() << src << "," << dest;
 
     QUrl new_src, new_dest;
     if ( !d->internalRewriteUrl(src, new_src) )
@@ -382,7 +382,7 @@ void ForwardingSlaveBase::copy(const QUrl &src, const QUrl &dest,
 
 void ForwardingSlaveBase::del(const QUrl &url, bool isfile)
 {
-    kDebug() << url;
+    //qDebug() << url;
 
     QUrl new_url;
     if ( d->internalRewriteUrl(url, new_url) )
@@ -418,10 +418,10 @@ void ForwardingSlaveBasePrivate::connectJob(KIO::Job *job)
     // Forward metadata (e.g. modification time for put())
     job->setMetaData( q->allMetaData() );
 #if 0 // debug code
-    kDebug() << "transferring metadata:";
+    //qDebug() << "transferring metadata:";
     const MetaData md = allMetaData();
     for ( MetaData::const_iterator it = md.begin(); it != md.end(); ++it )
-        kDebug() << it.key() << " = " << it.data();
+        //qDebug() << it.key() << " = " << it.data();
 #endif
 
     q->connect( job, SIGNAL(result(KJob*)),

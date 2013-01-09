@@ -247,7 +247,7 @@ void KFileItemPrivate::init()
                 if ( m_permissions == KFileItem::Unknown )
                     m_permissions = mode & 07777; // extract permissions
             } else {
-                kDebug() << path << "does not exist anymore";
+                //qDebug() << path << "does not exist anymore";
             }
         }
     }
@@ -358,21 +358,21 @@ inline //because it is used only in one place
 bool KFileItemPrivate::cmp( const KFileItemPrivate & item ) const
 {
 #if 0
-    kDebug() << "Comparing" << m_url << "and" << item.m_url;
-    kDebug() << " name" << (m_strName == item.m_strName);
-    kDebug() << " local" << (m_bIsLocalUrl == item.m_bIsLocalUrl);
-    kDebug() << " mode" << (m_fileMode == item.m_fileMode);
-    kDebug() << " perm" << (m_permissions == item.m_permissions);
-    kDebug() << " UDS_USER" << (user() == item.user());
-    kDebug() << " UDS_GROUP" << (group() == item.group());
-    kDebug() << " UDS_EXTENDED_ACL" << (m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ));
-    kDebug() << " UDS_ACL_STRING" << (m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ));
-    kDebug() << " UDS_DEFAULT_ACL_STRING" << (m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ));
-    kDebug() << " m_bLink" << (m_bLink == item.m_bLink);
-    kDebug() << " m_hidden" << (m_hidden == item.m_hidden);
-    kDebug() << " size" << (size() == item.size());
-    kDebug() << " ModificationTime" << (time(KFileItem::ModificationTime) == item.time(KFileItem::ModificationTime));
-    kDebug() << " UDS_ICON_NAME" << (m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ));
+    //qDebug() << "Comparing" << m_url << "and" << item.m_url;
+    //qDebug() << " name" << (m_strName == item.m_strName);
+    //qDebug() << " local" << (m_bIsLocalUrl == item.m_bIsLocalUrl);
+    //qDebug() << " mode" << (m_fileMode == item.m_fileMode);
+    //qDebug() << " perm" << (m_permissions == item.m_permissions);
+    //qDebug() << " UDS_USER" << (user() == item.user());
+    //qDebug() << " UDS_GROUP" << (group() == item.group());
+    //qDebug() << " UDS_EXTENDED_ACL" << (m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_EXTENDED_ACL ));
+    //qDebug() << " UDS_ACL_STRING" << (m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ACL_STRING ));
+    //qDebug() << " UDS_DEFAULT_ACL_STRING" << (m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING ));
+    //qDebug() << " m_bLink" << (m_bLink == item.m_bLink);
+    //qDebug() << " m_hidden" << (m_hidden == item.m_hidden);
+    //qDebug() << " size" << (size() == item.size());
+    //qDebug() << " ModificationTime" << (time(KFileItem::ModificationTime) == item.time(KFileItem::ModificationTime));
+    //qDebug() << " UDS_ICON_NAME" << (m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ) == item.m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME ));
 #endif
     return ( m_strName == item.m_strName
              && m_bIsLocalUrl == item.m_bIsLocalUrl
@@ -833,7 +833,7 @@ QString KFileItem::mimeComment() const
     }
 
     const QString comment = mime.comment();
-    //kDebug() << "finding comment for " << url.url() << " : " << d->m_mimeType->name();
+    //qDebug() << "finding comment for " << url.url() << " : " << d->m_mimeType->name();
     if (!comment.isEmpty())
         return comment;
     else
@@ -1020,7 +1020,7 @@ QStringList KFileItem::overlays() const
         if (KSambaShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ) ||
             KNFSShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ))
         {
-            //kDebug() << d->m_url.path();
+            //qDebug() << d->m_url.path();
             names.append("network-workgroup");
         }
     }
@@ -1086,13 +1086,13 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     if (mime.name() == "application/x-gzip" && d->m_url.path().endsWith(QLatin1String(".gz"))) {
         QUrl sf(d->m_url);
         sf.setPath(sf.path().left(sf.path().length() - 3));
-        //kDebug() << "subFileName=" << subFileName;
+        //qDebug() << "subFileName=" << subFileName;
         mime = db.mimeTypeForUrl(sf);
         icon = mime.iconName();
     }
 
     QPixmap p = KIconLoader::global()->loadMimeTypeIcon(icon, KIconLoader::Desktop, _size, _state);
-    //kDebug() << "finding pixmap for" << url << "mime=" << mime.name() << "icon=" << icon;
+    //qDebug() << "finding pixmap for" << url << "mime=" << mime.name() << "icon=" << icon;
     if (p.isNull())
         kWarning() << "Pixmap not found for mimetype" << mime.name() << "icon" << icon;
 
@@ -1178,7 +1178,7 @@ bool KFileItem::isDir() const
 
     if (d->m_fileMode == KFileItem::Unknown) {
         // Probably the file was deleted already, and KDirLister hasn't told the world yet.
-        //kDebug() << d << url() << "can't say -> false";
+        //qDebug() << d << url() << "can't say -> false";
         return false; // can't say for sure, so no
     }
     return (S_ISDIR(d->m_fileMode));
@@ -1324,8 +1324,8 @@ QString KFileItem::getToolTipText(int maxcount) const
     }
     tip += "</table>";
 
-    //kDebug() << "making this the tool tip rich text:\n";
-    //kDebug() << tip;
+    //qDebug() << "making this the tool tip rich text:\n";
+    //qDebug() << tip;
 
     return tip;
 }

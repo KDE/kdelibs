@@ -113,8 +113,8 @@ void KRemoteEncoding::setEncoding(const char *name)
 
   Q_ASSERT(d->m_codec);
 
-  kDebug() << "setting encoding" << d->m_codec->name()
-	    << "for name=" << name;
+  /*qDebug() << "setting encoding" << d->m_codec->name()
+	    << "for name=" << name;*/
 }
 
 void KRemoteEncoding::virtual_hook(int, void*)

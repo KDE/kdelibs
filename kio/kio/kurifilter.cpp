@@ -496,7 +496,7 @@ void KUriFilterPlugin::setFilteredUri( KUriFilterData& data, const QUrl& uri ) c
 {
     data.d->url = uri;
     data.d->wasModified = true;
-    kDebug(7022) << "Got filtered to:" << uri;
+    //qDebug() << "Got filtered to:" << uri;
 }
 
 void KUriFilterPlugin::setErrorMsg ( KUriFilterData& data,

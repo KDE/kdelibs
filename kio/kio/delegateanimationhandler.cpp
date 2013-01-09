@@ -219,7 +219,7 @@ void DelegateAnimationHandler::sequenceTimerTimeout()
     KDirModel* dirModel = dynamic_cast<KDirModel*>(model);
     if (dirModel)
     {
-        kDebug(animationDebugArea()) << "requesting" << currentSequenceIndex;
+        //qDebug()(animationDebugArea()) << "requesting" << currentSequenceIndex;
         dirModel->requestSequenceIcon(index, currentSequenceIndex);
         iconSequenceTimer.start(); // Some upper-bound interval is needed, in case items are not generated
     }
@@ -229,7 +229,7 @@ void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index)
 {
     Q_UNUSED(index);
 
-    kDebug(animationDebugArea()) << currentSequenceIndex;
+    //qDebug()(animationDebugArea()) << currentSequenceIndex;
     if (sequenceModelIndex.isValid() && currentSequenceIndex)
         iconSequenceTimer.start();
 //   if(index ==sequenceModelIndex) //Leads to problems
@@ -238,7 +238,7 @@ void DelegateAnimationHandler::gotNewIcon(const QModelIndex& index)
 
 void DelegateAnimationHandler::setSequenceIndex(int sequenceIndex)
 {
-    kDebug(animationDebugArea()) << sequenceIndex;
+    //qDebug()(animationDebugArea()) << sequenceIndex;
 
     if (sequenceIndex > 0)
     {

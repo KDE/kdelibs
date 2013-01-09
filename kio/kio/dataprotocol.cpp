@@ -44,17 +44,17 @@ extern "C" {
   int kdemain( int argc, char **argv ) {
     KComponentData componentData( "kio_data" );
 
-    kDebug(7101) << "*** Starting kio_data ";
+    //qDebug() << "*** Starting kio_data ";
 
     if (argc != 4) {
-      kDebug(7101) << "Usage: kio_data  protocol domain-socket1 domain-socket2";
+      //qDebug() << "Usage: kio_data  protocol domain-socket1 domain-socket2";
       exit(-1);
     }
 
     DataProtocol slave(argv[2], argv[3]);
     slave.dispatchLoop();
 
-    kDebug(7101) << "*** kio_data Done";
+    //qDebug() << "*** kio_data Done";
     return 0;
   }
 }
@@ -239,20 +239,20 @@ DataProtocol::DataProtocol(const QByteArray &pool_socket, const QByteArray &app_
 #else
 DataProtocol::DataProtocol() {
 #endif
-  kDebug();
+  //qDebug();
 }
 
 /* --------------------------------------------------------------------- */
 
 DataProtocol::~DataProtocol() {
-  kDebug();
+  //qDebug();
 }
 
 /* --------------------------------------------------------------------- */
 
 void DataProtocol::get(const QUrl& url) {
   ref();
-  kDebug() << this;
+  //qDebug() << this;
 
   const DataHeader hdr = parseDataHeader(url, false);
 
@@ -275,12 +275,12 @@ void DataProtocol::get(const QUrl& url) {
     }/*end if*/
   }/*end if*/
 
-  //kDebug() << "emit mimeType@"<<this;
+  //qDebug() << "emit mimeType@"<<this;
   mimeType(hdr.mime_type);
-  //kDebug() << "emit totalSize@"<<this;
+  //qDebug() << "emit totalSize@"<<this;
   totalSize(outData.size());
 
-  //kDebug() << "emit setMetaData@"<<this;
+  //qDebug() << "emit setMetaData@"<<this;
 #if defined(DATAKIOSLAVE)
   MetaData::ConstIterator it;
   for (it = hdr.attributes.constBegin(); it != hdr.attributes.constEnd(); ++it) {
@@ -290,16 +290,16 @@ void DataProtocol::get(const QUrl& url) {
   setAllMetaData(hdr.attributes);
 #endif
 
-  //kDebug() << "emit sendMetaData@"<<this;
+  //qDebug() << "emit sendMetaData@"<<this;
   sendMetaData();
-//   kDebug() << "(1) queue size " << dispatchQueue.size();
+//qDebug() << "(1) queue size " << dispatchQueue.size();
   // empiric studies have shown that this shouldn't be queued & dispatched
   data(outData);
-//   kDebug() << "(2) queue size " << dispatchQueue.size();
+//qDebug() << "(2) queue size " << dispatchQueue.size();
   DISPATCH(data(QByteArray()));
-//   kDebug() << "(3) queue size " << dispatchQueue.size();
+//qDebug() << "(3) queue size " << dispatchQueue.size();
   DISPATCH(finished());
-//   kDebug() << "(4) queue size " << dispatchQueue.size();
+//qDebug() << "(4) queue size " << dispatchQueue.size();
   deref();
 }
 

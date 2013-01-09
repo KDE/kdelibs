@@ -124,7 +124,7 @@ AccessManagerReply::~AccessManagerReply()
 void AccessManagerReply::abort()
 {
     if (!m_kioJob)
-        kDebug(7044) << this;
+        //qDebug() << this;
     m_kioJob.clear();
     m_data.clear();
     m_metaDataRead = false;
@@ -188,7 +188,7 @@ void AccessManagerReply::setHeaderFromMetaData (const KIO::MetaData& _metaData)
           QString mimeType = header(QNetworkRequest::ContentTypeHeader).toString();
           mimeType += QL1S(" ; charset=");
           mimeType += metaData.value(QL1S("charset"));
-          // kDebug(7044) << "changed content-type to" << mimeType;
+          //qDebug() << "changed content-type to" << mimeType;
           setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
         }
     } else {
@@ -253,7 +253,7 @@ void AccessManagerReply::setHeaderFromMetaData (const KIO::MetaData& _metaData)
                     } else {
                         headerValue.replace(0, index, mimeType);
                     }
-                    //kDebug(7044) << "Changed mime-type from" << mimeType << "to" << headerValue;
+                    //qDebug() << "Changed mime-type from" << mimeType << "to" << headerValue;
                 }
             }
             setRawHeader(headerName.trimmed().toUtf8(), headerValue.trimmed().toUtf8());
@@ -267,7 +267,7 @@ void AccessManagerReply::setHeaderFromMetaData (const KIO::MetaData& _metaData)
 
 void AccessManagerReply::setIgnoreContentDisposition(bool on)
 {
-    // kDebug(7044) << on;
+    //qDebug() << on;
     m_ignoreContentDisposition = on;
 }
 
@@ -276,7 +276,7 @@ void AccessManagerReply::putOnHold()
     if (!m_kioJob || isFinished())
         return;
 
-    // kDebug(7044) << m_kioJob << m_data;
+    //qDebug() << m_kioJob << m_data;
     m_kioJob.data()->disconnect(this);
     m_kioJob.data()->putOnHold();
     m_kioJob.clear();
@@ -321,7 +321,7 @@ int AccessManagerReply::jobError(KJob* kJob)
         case KIO::ERR_SLAVE_DEFINED:
         case KIO::ERR_NO_CONTENT: // Sent by a 204 response is not an error condition.
             setError(QNetworkReply::NoError, kJob->errorText());
-            //kDebug(7044) << "0 -> QNetworkReply::NoError";
+            //qDebug() << "0 -> QNetworkReply::NoError";
             break;
         case KIO::ERR_IS_DIRECTORY:
             // This error condition can happen if you click on an ftp link that points
@@ -331,57 +331,57 @@ int AccessManagerReply::jobError(KJob* kJob)
             break;
         case KIO::ERR_COULD_NOT_CONNECT:
             setError(QNetworkReply::ConnectionRefusedError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_COULD_NOT_CONNECT -> QNetworkReply::ConnectionRefusedError";
+            //qDebug() << "KIO::ERR_COULD_NOT_CONNECT -> QNetworkReply::ConnectionRefusedError";
             break;
         case KIO::ERR_UNKNOWN_HOST:
             setError(QNetworkReply::HostNotFoundError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_UNKNOWN_HOST -> QNetworkReply::HostNotFoundError";
+            //qDebug() << "KIO::ERR_UNKNOWN_HOST -> QNetworkReply::HostNotFoundError";
             break;
         case KIO::ERR_SERVER_TIMEOUT:
             setError(QNetworkReply::TimeoutError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_SERVER_TIMEOUT -> QNetworkReply::TimeoutError";
+            //qDebug() << "KIO::ERR_SERVER_TIMEOUT -> QNetworkReply::TimeoutError";
             break;
         case KIO::ERR_USER_CANCELED:
         case KIO::ERR_ABORTED:
             setError(QNetworkReply::OperationCanceledError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
+            //qDebug() << "KIO::ERR_ABORTED -> QNetworkReply::OperationCanceledError";
             break;
         case KIO::ERR_UNKNOWN_PROXY_HOST:
             setError(QNetworkReply::ProxyNotFoundError, kJob->errorText());
-            kDebug(7044) << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
+            //qDebug() << "KIO::UNKNOWN_PROXY_HOST -> QNetworkReply::ProxyNotFoundError";
             break;
         case KIO::ERR_ACCESS_DENIED:
             setError(QNetworkReply::ContentAccessDenied, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_ACCESS_DENIED -> QNetworkReply::ContentAccessDenied";
+            //qDebug() << "KIO::ERR_ACCESS_DENIED -> QNetworkReply::ContentAccessDenied";
             break;
         case KIO::ERR_WRITE_ACCESS_DENIED:
             setError(QNetworkReply::ContentOperationNotPermittedError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_WRITE_ACCESS_DENIED -> QNetworkReply::ContentOperationNotPermittedError";
+            //qDebug() << "KIO::ERR_WRITE_ACCESS_DENIED -> QNetworkReply::ContentOperationNotPermittedError";
             break;
         case KIO::ERR_DOES_NOT_EXIST:
             setError(QNetworkReply::ContentNotFoundError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_DOES_NOT_EXIST -> QNetworkReply::ContentNotFoundError";
+            //qDebug() << "KIO::ERR_DOES_NOT_EXIST -> QNetworkReply::ContentNotFoundError";
             break;
         case KIO::ERR_COULD_NOT_AUTHENTICATE:
             setError(QNetworkReply::AuthenticationRequiredError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_COULD_NOT_AUTHENTICATE -> QNetworkReply::AuthenticationRequiredError";
+            //qDebug() << "KIO::ERR_COULD_NOT_AUTHENTICATE -> QNetworkReply::AuthenticationRequiredError";
             break;
         case KIO::ERR_UNSUPPORTED_PROTOCOL:
         case KIO::ERR_NO_SOURCE_PROTOCOL:
             setError(QNetworkReply::ProtocolUnknownError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_UNSUPPORTED_PROTOCOL -> QNetworkReply::ProtocolUnknownError";
+            //qDebug() << "KIO::ERR_UNSUPPORTED_PROTOCOL -> QNetworkReply::ProtocolUnknownError";
             break;
         case KIO::ERR_CONNECTION_BROKEN:
             setError(QNetworkReply::RemoteHostClosedError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_CONNECTION_BROKEN -> QNetworkReply::RemoteHostClosedError";
+            //qDebug() << "KIO::ERR_CONNECTION_BROKEN -> QNetworkReply::RemoteHostClosedError";
             break;
         case KIO::ERR_UNSUPPORTED_ACTION:
             setError(QNetworkReply::ProtocolInvalidOperationError, kJob->errorText());
-            kDebug(7044) << "KIO::ERR_UNSUPPORTED_ACTION -> QNetworkReply::ProtocolInvalidOperationError";
+            //qDebug() << "KIO::ERR_UNSUPPORTED_ACTION -> QNetworkReply::ProtocolInvalidOperationError";
             break;
         default:
             setError(QNetworkReply::UnknownNetworkError, kJob->errorText());
-            kDebug(7044) << KIO::rawErrorDetail(errCode, QString()) << "-> QNetworkReply::UnknownNetworkError";
+            //qDebug() << KIO::rawErrorDetail(errCode, QString()) << "-> QNetworkReply::UnknownNetworkError";
     }
 
     return errCode;
@@ -398,7 +398,7 @@ void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
 
 void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
 {
-    //kDebug(7044) << kioJob << mimeType;
+    //qDebug() << kioJob << mimeType;
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
     readHttpResponseHeaders(kioJob);
     if (m_emitReadyReadOnMetaDataChange) {

@@ -76,7 +76,7 @@ void MkdirJobPrivate::start(Slave *slave)
 void MkdirJobPrivate::slotRedirection(const QUrl &url)
 {
      Q_Q(MkdirJob);
-     kDebug(7007) << url;
+     //qDebug() << url;
      if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
          kWarning(7007) << "Redirection from" << m_url << "to" << url << "REJECTED!";
@@ -99,7 +99,7 @@ void MkdirJob::slotFinished()
 
     if ( !d->m_redirectionURL.isEmpty() && d->m_redirectionURL.isValid() )
     {
-        //kDebug(7007) << "MkdirJob: Redirection to " << m_redirectionURL;
+        //qDebug() << "MkdirJob: Redirection to " << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
             emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
 
@@ -125,7 +125,7 @@ void MkdirJob::slotFinished()
 
 KIO::MkdirJob *KIO::mkdir(const QUrl& url, int permissions)
 {
-    //kDebug(7007) << "mkdir " << url;
+    //qDebug() << "mkdir " << url;
     KIO_ARGS << url << permissions;
     return MkdirJobPrivate::newJob(url, CMD_MKDIR, packedArgs);
 }

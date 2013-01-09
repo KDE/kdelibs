@@ -128,25 +128,25 @@ void Slave::timeout()
    if (d->connection->isConnected())
       return;
 
-   kDebug(7002) << "slave failed to connect to application pid=" << d->m_pid
-                << " protocol=" << d->m_protocol;
+   /*qDebug() << "slave failed to connect to application pid=" << d->m_pid
+                << " protocol=" << d->m_protocol;*/
    if (d->m_pid && (::kill(d->m_pid, 0) == 0))
    {
       int delta_t = (int) difftime(time(0), d->contact_started);
-      kDebug(7002) << "slave is slow... pid=" << d->m_pid << " t=" << delta_t;
+      //qDebug() << "slave is slow... pid=" << d->m_pid << " t=" << delta_t;
       if (delta_t < SLAVE_CONNECTION_TIMEOUT_MAX)
       {
          QTimer::singleShot(1000*SLAVE_CONNECTION_TIMEOUT_MIN, this, SLOT(timeout()));
          return;
       }
    }
-   kDebug(7002) << "Houston, we lost our slave, pid=" << d->m_pid;
+   //qDebug() << "Houston, we lost our slave, pid=" << d->m_pid;
    d->connection->close();
    d->dead = true;
    QString arg = d->m_protocol;
    if (!d->m_host.isEmpty())
       arg += "://"+d->m_host;
-   kDebug(7002) << "slave died pid = " << d->m_pid;
+   //qDebug() << "slave died pid = " << d->m_pid;
 
    ref();
    // Tell the job about the problem.
@@ -168,7 +168,7 @@ Slave::Slave(const QString &protocol, QObject *parent)
 
 Slave::~Slave()
 {
-    // kDebug(7002) << "destructing slave object pid = " << d->m_pid;
+    //qDebug() << "destructing slave object pid = " << d->m_pid;
     //delete d;
 }
 
@@ -348,7 +348,7 @@ void Slave::gotInput()
         QString arg = d->m_protocol;
         if (!d->m_host.isEmpty())
             arg += "://"+d->m_host;
-        kDebug(7002) << "slave died pid = " << d->m_pid;
+        //qDebug() << "slave died pid = " << d->m_pid;
         // Tell the job about the problem.
         emit error(ERR_SLAVE_DIED, arg);
         // Tell the scheduler about the problem.
@@ -362,8 +362,8 @@ void Slave::kill()
 {
     Q_D(Slave);
     d->dead = true; // OO can be such simple.
-    kDebug(7002) << "killing slave pid" << d->m_pid
-                 << "(" << QString(d->m_protocol) + "://" + d->m_host << ")";
+    /*qDebug() << "killing slave pid" << d->m_pid
+                 << "(" << QString(d->m_protocol) + "://" + d->m_host << ")";*/
     if (d->m_pid)
     {
 #ifndef _WIN32_WCE
@@ -409,7 +409,7 @@ void Slave::setConfig(const MetaData &config)
 
 Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error, QString& error_text )
 {
-    kDebug(7002) << "createSlave" << protocol << "for" << url;
+    //qDebug() << "createSlave" << protocol << "for" << url;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return new DataProtocol();
@@ -451,7 +451,7 @@ Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error,
        }
 
        const QStringList args = QStringList() << lib_path << protocol << "" << slaveAddress.toString();
-       kDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << slaveAddress;
+       //qDebug() << "kioslave" << ", " << lib_path << ", " << protocol << ", " << QString() << ", " << slaveAddress;
 
        const QString kioslave = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioslave";
        if (kioslave.isEmpty()) {
@@ -491,7 +491,7 @@ Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error,
 
 Slave* Slave::holdSlave(const QString &protocol, const QUrl& url)
 {
-    //kDebug(7002) << "holdSlave" << protocol << "for" << url;
+    //qDebug() << "holdSlave" << protocol << "for" << url;
     // Firstly take into account all special slaves
     if (protocol == "data")
         return 0;

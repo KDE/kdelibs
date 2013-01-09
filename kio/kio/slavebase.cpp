@@ -163,7 +163,7 @@ static void genericsig_handler(int sigNumber)
    KDE_signal(sigNumber,SIG_IGN);
    //WABA: Don't do anything that requires malloc, we can deadlock on it since
    //a SIGTERM signal can come in while we are in malloc/free.
-   //kDebug()<<"kioslave : exiting due to signal "<<sigNumber;
+   //qDebug()<<"kioslave : exiting due to signal "<<sigNumber;
    //set the flag which will be checked in dispatchLoop() and which *should* be checked
    //in lengthy operations in the various slaves
    if (globalSlave!=0)
@@ -306,7 +306,7 @@ void SlaveBase::dispatchLoop()
 
         //I think we get here when we were killed in dispatch() and not in select()
         if (wasKilled()) {
-            kDebug(7019) << "slave was killed, returning";
+            //qDebug() << "slave was killed, returning";
             break;
         }
 
@@ -324,8 +324,8 @@ void SlaveBase::connectSlave(const QString &address)
 
     if (!d->appConnection.inited())
     {
-        kDebug(7019) << "failed to connect to" << address << endl
-		      << "Reason:" << d->appConnection.errorString();
+        /*qDebug() << "failed to connect to" << address << endl
+                      << "Reason:" << d->appConnection.errorString();*/
         exit();
         return;
     }
@@ -552,7 +552,7 @@ void SlaveBase::position( KIO::filesize_t _pos )
 
 void SlaveBase::processedPercent( float /* percent */ )
 {
-  kDebug(7019) << "STUB";
+  //qDebug() << "STUB";
 }
 
 
@@ -587,14 +587,14 @@ static bool isSubCommand(int cmd)
 
 void SlaveBase::mimeType( const QString &_type)
 {
-  kDebug(7019) << _type;
+  //qDebug() << _type;
   int cmd;
   do
   {
     // Send the meta-data each time we send the mime-type.
     if (!mOutgoingMetaData.isEmpty())
     {
-      // kDebug(7019) << "emitting meta data";
+      //qDebug() << "emitting meta data";
       KIO_DATA << mOutgoingMetaData;
       send( INF_META_DATA, data );
     }
@@ -608,11 +608,11 @@ void SlaveBase::mimeType( const QString &_type)
            ret = d->appConnection.read( &cmd, data );
        }
        if (ret == -1) {
-           kDebug(7019) << "read error";
+           //qDebug() << "read error";
            exit();
            return;
        }
-       // kDebug(7019) << "got" << cmd;
+       //qDebug() << "got" << cmd;
        if ( cmd == CMD_HOST) // Ignore.
           continue;
        if (!isSubCommand(cmd))
@@ -901,7 +901,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
                            const QString &buttonYes, const QString &buttonNo,
                            const QString &dontAskAgainName )
 {
-    kDebug(7019) << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo;
+    //qDebug() << "messageBox " << type << " " << text << " - " << caption << buttonYes << buttonNo;
     KIO_DATA << (qint32)type << text << caption << buttonYes << buttonNo << dontAskAgainName;
     send( INF_MESSAGEBOX, data );
     if ( waitForAnswer( CMD_MESSAGEBOXANSWER, 0, data ) != -1 )
@@ -909,7 +909,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
         QDataStream stream( data );
         int answer;
         stream >> answer;
-        kDebug(7019) << "got messagebox answer" << answer;
+        //qDebug() << "got messagebox answer" << answer;
         return answer;
     } else
         return 0; // communication failure
@@ -917,7 +917,7 @@ int SlaveBase::messageBox( const QString &text, MessageBoxType type, const QStri
 
 bool SlaveBase::canResume( KIO::filesize_t offset )
 {
-    kDebug(7019) << "offset=" << KIO::number(offset);
+    //qDebug() << "offset=" << KIO::number(offset);
     d->needSendCanResume = false;
     KIO_DATA << KIO_FILESIZE_T(offset);
     send( MSG_RESUME, data );
@@ -926,7 +926,7 @@ bool SlaveBase::canResume( KIO::filesize_t offset )
         int cmd;
         if ( waitForAnswer( CMD_RESUMEANSWER, CMD_NONE, data, &cmd ) != -1 )
         {
-            kDebug(7019) << "returning" << (cmd == CMD_RESUMEANSWER);
+            //qDebug() << "returning" << (cmd == CMD_RESUMEANSWER);
             return cmd == CMD_RESUMEANSWER;
         } else
             return false;
@@ -946,7 +946,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
             result = d->appConnection.read( &cmd, data );
         }
         if (result == -1) {
-            kDebug(7019) << "read error.";
+            //qDebug() << "read error.";
             return -1;
         }
 
@@ -970,7 +970,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
 int SlaveBase::readData( QByteArray &buffer)
 {
    int result = waitForAnswer( MSG_DATA, 0, buffer );
-   //kDebug(7019) << "readData: length = " << result << " ";
+   //qDebug() << "readData: length = " << result << " ";
    return result;
 }
 
@@ -1188,7 +1188,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         d->m_state = d->Idle;
     } break;
     case CMD_META_DATA: {
-        //kDebug(7019) << "(" << getpid() << ") Incoming meta-data...";
+        //qDebug() << "(" << getpid() << ") Incoming meta-data...";
         stream >> mIncomingMetaData;
         d->rebuildConfig();
     } break;

@@ -115,7 +115,7 @@ void DirectorySizeJobPrivate::processNextItem()
 	{
             if ( item.isDir() )
             {
-                //kDebug(7007) << "dir -> listing";
+                //qDebug() << "dir -> listing";
                 startNextJob(item.url());
                 return; // we'll come back later, when this one's finished
             }
@@ -123,20 +123,20 @@ void DirectorySizeJobPrivate::processNextItem()
             {
                 m_totalSize += item.size();
                 m_totalFiles++;
-                //kDebug(7007) << "file -> " << m_totalSize;
+                //qDebug() << "file -> " << m_totalSize;
             }
         } else {
             m_totalFiles++;
         }
     }
-    //kDebug(7007) << "finished";
+    //qDebug() << "finished";
     q->emitResult();
 }
 
 void DirectorySizeJobPrivate::startNextJob(const QUrl & url)
 {
     Q_Q(DirectorySizeJob);
-    //kDebug(7007) << url;
+    //qDebug() << url;
     KIO::ListJob * listJob = KIO::listRecursive( url, KIO::HideProgressInfo );
     listJob->addMetaData("details", "3");
     q->connect( listJob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
@@ -165,7 +165,7 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
         const QString name = entry.stringValue( KIO::UDSEntry::UDS_NAME );
         if (name == ".") {
             m_totalSize += size;
-            //kDebug(7007) << "'.': added" << size << "->" << m_totalSize;
+            //qDebug() << "'.': added" << size << "->" << m_totalSize;
         } else if (name != "..") {
             if (!entry.isLink())
               m_totalSize += size;
@@ -173,7 +173,7 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
               m_totalFiles++;
             else
               m_totalSubdirs++;
-            //kDebug(7007) << name << ":" << size << "->" << m_totalSize;
+            //qDebug() << name << ":" << size << "->" << m_totalSize;
         }
     }
 }
@@ -181,7 +181,7 @@ void DirectorySizeJobPrivate::slotEntries( KIO::Job*, const KIO::UDSEntryList & 
 void DirectorySizeJob::slotResult( KJob * job )
 {
     Q_D(DirectorySizeJob);
-    //kDebug(7007) << d->m_totalSize;
+    //qDebug() << d->m_totalSize;
     removeSubjob(job);
     if (d->m_currentItem < d->m_lstItems.count())
     {

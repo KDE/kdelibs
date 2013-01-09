@@ -67,7 +67,7 @@ bool KDesktopFileActions::run( const QUrl& u, bool _is_local )
         return false;
     }
 
-    //kDebug(7000) << "TYPE = " << type.data();
+    //qDebug() << "TYPE = " << type.data();
 
     if ( cfg.hasDeviceType() )
         return runFSDevice( u, cfg );
@@ -185,7 +185,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const QUrl& _url )
         Solid::Predicate predicate(Solid::DeviceInterface::Block, "device", _url.toLocalFile());
         const QList<Solid::Device> devList = Solid::Device::listFromQuery(predicate, QString());
         if (devList.empty()) {
-            kDebug(7000) << "Device" << _url.toLocalFile() << "not found";
+            //qDebug() << "Device" << _url.toLocalFile() << "not found";
             return result;
         }
         Solid::Device device = devList[0];
@@ -287,13 +287,13 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& 
 
 void KDesktopFileActions::executeService( const QList<QUrl>& urls, const KServiceAction& action )
 {
-    //kDebug(7000) << "EXECUTING Service " << action.name();
+    //qDebug() << "EXECUTING Service " << action.name();
 
     int actionData = action.data().toInt();
     if ( actionData == ST_MOUNT || actionData == ST_UNMOUNT ) {
         Q_ASSERT( urls.count() == 1 );
         const QString path = urls.first().toLocalFile();
-        //kDebug(7000) << "MOUNT&UNMOUNT";
+        //qDebug() << "MOUNT&UNMOUNT";
 
         KDesktopFile cfg( path );
         if (cfg.hasDeviceType()) { // path to desktop file
@@ -308,7 +308,7 @@ void KDesktopFileActions::executeService( const QList<QUrl>& urls, const KServic
             if ( actionData == ST_MOUNT ) {
                 // Already mounted? Strange, but who knows ...
                 if ( mp ) {
-                    kDebug(7000) << "ALREADY Mounted";
+                    //qDebug() << "ALREADY Mounted";
                     return;
                 }
 
@@ -359,12 +359,12 @@ void KDesktopFileActions::executeService( const QList<QUrl>& urls, const KServic
                 }
             }
             else {
-                kDebug(7000) << "Device" << path << "not found";
+                //qDebug() << "Device" << path << "not found";
             }
         }
 #endif
     } else {
-        kDebug() << action.name() << "first url's path=" << urls.first().toLocalFile() << "exec=" << action.exec();
+        //qDebug() << action.name() << "first url's path=" << urls.first().toLocalFile() << "exec=" << action.exec();
         KRun::run( action.exec(), urls, 0, action.text(), action.icon());
         // The action may update the desktop file. Example: eject unmounts (#5129).
         org::kde::KDirNotify::emitFilesChanged(urls);

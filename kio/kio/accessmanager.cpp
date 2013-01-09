@@ -218,7 +218,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     if (!d->externalContentAllowed &&
         !KDEPrivate::AccessManagerReply::isLocalRequest(reqUrl) &&
         reqUrl.scheme() != QL1S("data")) {
-        kDebug( 7044 ) << "Blocked: " << reqUrl;
+        //qDebug() << "Blocked: " << reqUrl;
         return new KDEPrivate::AccessManagerReply(op, req, QNetworkReply::ContentAccessDenied, i18n("Blocked request."), this);
     }
 
@@ -233,12 +233,12 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
     switch (op) {
         case HeadOperation: {
-            //kDebug( 7044 ) << "HeadOperation:" << reqUrl;
+            //qDebug() << "HeadOperation:" << reqUrl;
             kioJob = KIO::mimetype(reqUrl, KIO::HideProgressInfo);
             break;
         }
         case GetOperation: {
-            //kDebug( 7044 ) << "GetOperation:" << reqUrl;
+            //qDebug() << "GetOperation:" << reqUrl;
             if (!reqUrl.path().isEmpty() || reqUrl.host().isEmpty())
                 kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
             else
@@ -250,7 +250,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         case PutOperation: {
-            //kDebug( 7044 ) << "PutOperation:" << reqUrl;
+            //qDebug() << "PutOperation:" << reqUrl;
             if (outgoingData)
                 kioJob = KIO::storedPut(outgoingData->readAll(), reqUrl, -1, KIO::HideProgressInfo);
             else
@@ -272,13 +272,13 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         case DeleteOperation: {
-            //kDebug(7044) << "DeleteOperation:" << reqUrl;
+            //qDebug() << "DeleteOperation:" << reqUrl;
             kioJob = KIO::http_delete(reqUrl, KIO::HideProgressInfo);
             break;
         }
         case CustomOperation: {
             const QByteArray& method = req.attribute(QNetworkRequest::CustomVerbAttribute).toByteArray();
-            //kDebug(7044) << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
+            //qDebug() << "CustomOperation:" << reqUrl << "method:" << method << "outgoing data:" << outgoingData;
 
             if (method.isEmpty()) {
                 return new KDEPrivate::AccessManagerReply(op, req, QNetworkReply::ProtocolUnknownError, i18n("Unknown HTTP verb."), this);
@@ -330,7 +330,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
         if (KIO::NetAccess::synchronousRun(kioJob, d->window, &data, &finalURL, &metaData)) {
             reply = new KDEPrivate::AccessManagerReply(op, req, data, finalURL, metaData, this);
-            kDebug(7044) << "Synchronous XHR:" << reply << reqUrl;
+            //qDebug() << "Synchronous XHR:" << reply << reqUrl;
         } else {
             kWarning(7044) << "Failed to create a synchronous XHR for" << reqUrl;
             reply = new KDEPrivate::AccessManagerReply(op, req, QNetworkReply::UnknownNetworkError, kioJob->errorText(), this);
@@ -361,11 +361,11 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
 
         // Create the reply...
         reply = new KDEPrivate::AccessManagerReply(op, req, kioJob, d->emitReadyReadOnMetaDataChange, this);
-        //kDebug(7044) << reply << reqUrl;
+        //qDebug() << reply << reqUrl;
     }
 
     if (ignoreContentDisposition && reply) {
-        //kDebug(7044) << "Content-Disposition WILL BE IGNORED!";
+        //qDebug() << "Content-Disposition WILL BE IGNORED!";
         reply->setIgnoreContentDisposition(ignoreContentDisposition);
     }
 
@@ -529,7 +529,7 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const
         const QString name = cookie.left(index);
         const QString value = cookie.right((cookie.length() - index - 1));
         cookieList << QNetworkCookie(name.toUtf8(), value.toUtf8());
-        //kDebug(7044) << "cookie: name=" << name << ", value=" << value;
+        //qDebug() << "cookie: name=" << name << ", value=" << value;
     }
 
     return cookieList;
@@ -552,7 +552,7 @@ bool CookieJar::setCookiesFromUrl(const QList<QNetworkCookie> &cookieList, const
             cookieHeader += cookie.toRawForm();
         }
         kcookiejar.call("addCookies", url.toString(QUrl::RemoveUserInfo), cookieHeader, (qlonglong)d->windowId);
-        //kDebug(7044) << "[" << d->windowId << "]" << cookieHeader << " from " << url;
+        //qDebug() << "[" << d->windowId << "]" << cookieHeader << " from " << url;
     }
 
     return !kcookiejar.lastError().isValid();

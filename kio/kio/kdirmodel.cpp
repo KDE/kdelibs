@@ -223,7 +223,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
 {
     QUrl url = cleanupUrl(_url);
 
-    //kDebug(7008) << url;
+    //qDebug() << url;
     QUrl nodeUrl = urlForNode(m_rootNode);
     if (url == nodeUrl)
         return m_rootNode;
@@ -256,19 +256,19 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
         nodeUrl = pathInfo.url();
         KDirModelNode* node = nodeForUrl(nodeUrl);
         if (!node) {
-            //kDebug(7008) << "child equal or starting with" << url << "not found";
+            //qDebug() << "child equal or starting with" << url << "not found";
             // return last parent found:
             return dirNode;
         }
 
         emit q->expand(indexForNode(node));
 
-        //kDebug(7008) << " nodeUrl=" << nodeUrl;
+        //qDebug() << " nodeUrl=" << nodeUrl;
         if (nodeUrl == url) {
-            //kDebug(7008) << "Found node" << node << "for" << url;
+            //qDebug() << "Found node" << node << "for" << url;
             return node;
         }
-        //kDebug(7008) << "going into" << node->item().url();
+        //qDebug() << "going into" << node->item().url();
         Q_ASSERT(isDir(node));
         dirNode = static_cast<KDirModelDirNode *>(node);
     }
@@ -279,11 +279,11 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
 #ifndef NDEBUG
 void KDirModelPrivate::dump()
 {
-    kDebug() << "Dumping contents of KDirModel" << q << "dirLister url:" << m_dirLister->url();
+    //qDebug() << "Dumping contents of KDirModel" << q << "dirLister url:" << m_dirLister->url();
     QHashIterator<QUrl, KDirModelNode *> it(m_nodeHash);
     while (it.hasNext()) {
         it.next();
-        kDebug() << it.key() << it.value();
+        //qDebug() << it.key() << it.value();
     }
 }
 #endif
@@ -371,7 +371,7 @@ KDirLister* KDirModel::dirLister() const
 
 void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItemList& items)
 {
-    //kDebug(7008) << "directoryUrl=" << directoryUrl;
+    //qDebug() << "directoryUrl=" << directoryUrl;
 
     KDirModelNode* result = nodeForUrl(directoryUrl); // O(depth)
     // If the directory containing the items wasn't found, then we have a big problem.
@@ -381,7 +381,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
                      << "but that directory isn't in KDirModel!"
                      << "Root directory:" << urlForNode(m_rootNode);
         Q_FOREACH(const KFileItem& item, items) {
-            kDebug() << "Item:" << item.url();
+            //qDebug() << "Item:" << item.url();
         }
 #ifndef NDEBUG
         dump();
@@ -396,7 +396,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
     const int newRowCount = dirNode->m_childNodes.count() + newItemsCount;
 #if 0
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug(7008) << items.count() << "in" << directoryUrl
+    //qDebug() << items.count() << "in" << directoryUrl
              << "index=" << debugIndex(index) << "newRowCount=" << newRowCount;
 #endif
 #endif
@@ -404,7 +404,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
     q->beginInsertRows( index, newRowCount - newItemsCount, newRowCount - 1 ); // parent, first, last
 
     const QList<QUrl> urlsBeingFetched = m_urlsBeingFetched.value(dirNode);
-    //kDebug(7008) << "urlsBeingFetched for dir" << dirNode << directoryUrl << ":" << urlsBeingFetched;
+    //qDebug() << "urlsBeingFetched for dir" << dirNode << directoryUrl << ":" << urlsBeingFetched;
 
     QList<QModelIndex> emitExpandFor;
 
@@ -426,13 +426,13 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
         dirNode->m_childNodes.append(node);
         const QUrl url = it->url();
         m_nodeHash.insert(cleanupUrl(url), node);
-        //kDebug(7008) << url;
+        //qDebug() << url;
 
         if (!urlsBeingFetched.isEmpty()) {
             const QUrlPathInfo dirUrl(url);
             foreach(const QUrl& urlFetched, urlsBeingFetched) {
                 if (dirUrl.isParentOfOrEqual(urlFetched)) {
-                    kDebug(7008) << "Listing found" << dirUrl.url() << "which is a parent of fetched url" << urlFetched;
+                    //qDebug() << "Listing found" << dirUrl.url() << "which is a parent of fetched url" << urlFetched;
                     const QModelIndex parentIndex = indexForNode(node, dirNode->m_childNodes.count()-1);
                     Q_ASSERT(parentIndex.isValid());
                     emitExpandFor.append(parentIndex);
@@ -458,7 +458,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
 
 void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
 {
-    //kDebug(7008) << items.count();
+    //qDebug() << items.count();
 
     // I assume all items are from the same directory.
     // From KDirLister's code, this should be the case, except maybe emitChanges?
@@ -518,14 +518,14 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
         const bool val = rowNumbers.testBit(i);
         if (!lastVal && val) {
             end = i;
-            //kDebug(7008) << "end=" << end;
+            //qDebug() << "end=" << end;
         }
         if ((lastVal && !val) || (i == 0 && val)) {
             start = val ? i : i + 1;
-            //kDebug(7008) << "beginRemoveRows" << start << end;
+            //qDebug() << "beginRemoveRows" << start << end;
             q->beginRemoveRows(parentIndex, start, end);
             for (int r = end; r >= start; --r) { // reverse because takeAt changes indexes ;)
-                //kDebug(7008) << "Removing from m_childNodes at" << r;
+                //qDebug() << "Removing from m_childNodes at" << r;
                 delete dirNode->m_childNodes.takeAt(r);
             }
             q->endRemoveRows();
@@ -546,14 +546,14 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
         const QUrl oldUrl = fit->first.url();
         const QUrl newUrl = fit->second.url();
         KDirModelNode* node = nodeForUrl(oldUrl); // O(n); maybe we could look up to the parent only once
-        //kDebug(7008) << "in model for" << m_dirLister->url() << ":" << oldUrl << "->" << newUrl << "node=" << node;
+        //qDebug() << "in model for" << m_dirLister->url() << ":" << oldUrl << "->" << newUrl << "node=" << node;
         if (!node) // not found [can happen when renaming a dir, redirection was emitted already]
             continue;
         if (node != m_rootNode) { // we never set an item in the rootnode, we use m_dirLister->rootItem instead.
             bool hasNewNode = false;
             // A file became directory (well, it was overwritten)
             if (fit->first.isDir() != fit->second.isDir()) {
-                //kDebug(7008) << "DIR/FILE STATUS CHANGE";
+                //qDebug() << "DIR/FILE STATUS CHANGE";
                 const int r = node->rowNumber();
                 removeFromNodeHash(node, oldUrl);
                 KDirModelDirNode* dirNode = node->parent();
@@ -568,7 +568,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
 
             if (oldUrl != newUrl || hasNewNode) {
                 // What if a renamed dir had children? -> kdirlister takes care of emitting for each item
-                //kDebug(7008) << "Renaming" << oldUrl << "to" << newUrl << "in node hash";
+                //qDebug() << "Renaming" << oldUrl << "to" << newUrl << "in node hash";
                 m_nodeHash.remove(cleanupUrl(oldUrl));
                 m_nodeHash.insert(cleanupUrl(newUrl), node);
             }
@@ -587,7 +587,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
         }
     }
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    kDebug(7008) << "dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
+    //qDebug() << "dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
 #endif
     bottomRight = bottomRight.sibling(bottomRight.row(), q->columnCount(QModelIndex())-1);
     emit q->dataChanged(topLeft, bottomRight);
@@ -645,7 +645,7 @@ void KDirModel::itemChanged( const QModelIndex& index )
         node->setPreview(QIcon());
 
 #ifndef NDEBUG // debugIndex only defined in debug mode
-    //kDebug(7008) << "dataChanged(" << debugIndex(index);
+    //qDebug() << "dataChanged(" << debugIndex(index);
 #endif
     emit dataChanged(index, index);
 }
@@ -693,11 +693,11 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
         case Qt::DecorationRole:
             if (index.column() == Name) {
                 if (!node->preview().isNull()) {
-                    //kDebug(7008) << item->url() << " preview found";
+                    //qDebug() << item->url() << " preview found";
                     return node->preview();
                 }
                 Q_ASSERT(!item.isNull());
-                //kDebug(7008) << item->url() << " overlays=" << item->overlays();
+                //qDebug() << item->url() << " overlays=" << item->overlays();
                 return KDE::icon(item.iconName(), item.overlays());
             }
             break;
@@ -758,7 +758,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                             ::closedir(dir);
                         }
 #endif
-                        //kDebug(7008) << "child count for " << path << ":" << count;
+                        //qDebug() << "child count for " << path << ":" << count;
                         dirNode->setChildCount(count);
                     }
                 }
@@ -807,7 +807,7 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             Q_ASSERT(index.isValid());
             // Set new pixmap - e.g. preview
             KDirModelNode* node = static_cast<KDirModelNode*>(index.internalPointer());
-            //kDebug(7008) << "setting icon for " << node->item()->url();
+            //qDebug() << "setting icon for " << node->item()->url();
             Q_ASSERT(node);
             if (value.type() == QVariant::Icon) {
                 const QIcon icon(qvariant_cast<QIcon>(value));
@@ -839,7 +839,7 @@ int KDirModel::rowCount( const QModelIndex & parent ) const
     for (int i = 0; i < count; ++i) {
         filenames << d->urlForNode(parentNode->m_childNodes.at(i)).fileName();
     }
-    kDebug(7008) << "rowCount for " << d->urlForNode(parentNode) << ": " << count << filenames;
+    //qDebug() << "rowCount for " << d->urlForNode(parentNode) << ": " << count << filenames;
 #endif
     return count;
 }
@@ -979,7 +979,7 @@ QModelIndex KDirModel::indexForUrl(const QUrl& url) const
 {
     KDirModelNode* node = d->nodeForUrl(url); // O(depth)
     if (!node) {
-        kDebug(7007) << url << "not found";
+        //qDebug() << url << "not found";
         return QModelIndex();
     }
     return d->indexForNode(node); // O(n)
@@ -1130,25 +1130,25 @@ void KDirModel::expandToUrl(const QUrl& url)
 {
     // emit expand for each parent and return last parent
     KDirModelNode* result = d->expandAllParentsUntil(url); // O(depth)
-    //kDebug(7008) << url << result;
+    //qDebug() << url << result;
 
     if (!result) // doesn't seem related to our base url?
         return;
     if (!(result->item().isNull()) && result->item().url() == url) {
         // We have it already, nothing to do
-        kDebug(7008) << "have it already item=" <<url /*result->item()*/;
+        //qDebug() << "have it already item=" <<url /*result->item()*/;
         return;
     }
 
     d->m_urlsBeingFetched[result].append(url);
 
     if (result == d->m_rootNode) {
-        kDebug(7008) << "Remembering to emit expand after listing the root url";
+        //qDebug() << "Remembering to emit expand after listing the root url";
         // the root is fetched by default, so it must be currently being fetched
         return;
     }
 
-    kDebug(7008) << "Remembering to emit expand after listing" << result->item().url();
+    //qDebug() << "Remembering to emit expand after listing" << result->item().url();
 
     // start a new fetch to look for the next level down the URL
     const QModelIndex parentIndex = d->indexForNode(result); // O(n)

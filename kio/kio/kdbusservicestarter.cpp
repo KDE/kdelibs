@@ -84,11 +84,11 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
         QString error;
         if ( startServiceFor( serviceType, constraint, &error, &dbusService, flags ) != 0 )
         {
-            kDebug() << "Couldn't start service:" << error;
+            //qDebug() << "Couldn't start service:" << error;
             return -2;
         }
     }
-    kDebug() << "DBus service is available now, as" << dbusService;
+    //qDebug() << "DBus service is available now, as" << dbusService;
     if ( pDBusService )
         *pDBusService = dbusService;
     return 0;
@@ -102,6 +102,6 @@ int KDBusServiceStarter::startServiceFor( const QString& serviceType,
     if ( offers.isEmpty() )
         return -1;
     KService::Ptr ptr = offers.first();
-    kDebug() << "starting" << ptr->entryPath();
+    //qDebug() << "starting" << ptr->entryPath();
     return KToolInvocation::startServiceByDesktopPath( ptr->entryPath(), QStringList(), error, dbusService );
 }

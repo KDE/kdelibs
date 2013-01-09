@@ -111,7 +111,7 @@ static QUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
   // And now we're using a put job anyway, no destination checking included.
   if (KIO::NetAccess::exists(myurl, KIO::NetAccess::DestinationSide, widget))
   {
-      kDebug(7007) << "Paste will overwrite file.  Prompting...";
+      //qDebug() << "Paste will overwrite file.  Prompting...";
       KIO::RenameDialog_Result res = KIO::R_OVERWRITE;
 
       KIO::RenameDialog dlg( widget,
@@ -209,7 +209,7 @@ static QUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
     const QString result = dlg.lineEditText();
     const QString chosenFormat = formats[ dlg.comboItem() ];
 
-    kDebug() << " result=" << result << " chosenFormat=" << chosenFormat;
+    //qDebug() << " result=" << result << " chosenFormat=" << chosenFormat;
     QUrlPathInfo urlInfo(u);
     urlInfo.addPath(result);
     *newUrl = urlInfo.url();

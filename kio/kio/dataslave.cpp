@@ -59,14 +59,14 @@ using namespace KIO;
 DataSlave::DataSlave() :
 	Slave("data")
 {
-  //kDebug() << this;
+  //qDebug() << this;
   _suspended = false;
   timer = new QTimer(this);
   connect(timer, SIGNAL(timeout()), SLOT(dispatchNext()));
 }
 
 DataSlave::~DataSlave() {
-  //kDebug() << this;
+  //qDebug() << this;
 }
 
 void DataSlave::hold(const QUrl &/*url*/) {
@@ -75,13 +75,13 @@ void DataSlave::hold(const QUrl &/*url*/) {
 
 void DataSlave::suspend() {
   _suspended = true;
-  //kDebug() << this;
+  //qDebug() << this;
   timer->stop();
 }
 
 void DataSlave::resume() {
   _suspended = false;
-  //kDebug() << this;
+  //qDebug() << this;
   // aarrrgh! This makes the once hyper fast and efficient data protocol
   // implementation slow as molasses. But it wouldn't work otherwise,
   // and I don't want to start messing around with threads
@@ -104,7 +104,7 @@ void DataSlave::dispatchNext() {
   }
 
   const QueueStruct &q = dispatchQueue.front();
-  //kDebug() << this << "dispatching" << q.type << dispatchQueue.size() << "left";
+  //qDebug() << this << "dispatching" << q.type << dispatchQueue.size() << "left";
   switch (q.type) {
     case Queue_mimeType:	mimeType(q.s); break;
     case Queue_totalSize:	totalSize(q.size); break;

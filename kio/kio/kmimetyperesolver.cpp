@@ -74,7 +74,7 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
         return QModelIndex();
 
     if (m_pendingIndexes.count() < 20) { // for few items, it's faster to not bother
-        //kDebug() << "Few items, returning first one";
+        //qDebug() << "Few items, returning first one";
         return QModelIndex(m_pendingIndexes.first());
     }
 
@@ -88,13 +88,13 @@ QModelIndex KMimeTypeResolverPrivate::findVisibleIcon()
         if (rect.isNull())
             layoutDone = false;
         else if (rect.intersects(visibleArea)) {
-            //kDebug() << "found item at " << rect << " in visibleArea " << visibleArea;
+            //qDebug() << "found item at " << rect << " in visibleArea " << visibleArea;
             return QModelIndex(*it);
         }
     }
 
     if (layoutDone) {
-        //kDebug() << "no more visible icon found";
+        //qDebug() << "no more visible icon found";
         m_noVisibleIcon = true;
         return QModelIndex();
     } else {

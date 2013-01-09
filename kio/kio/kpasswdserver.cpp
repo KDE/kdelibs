@@ -47,7 +47,7 @@ KPasswdServer::~KPasswdServer()
 bool KPasswdServer::checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
                                   qlonglong usertime)
 {
-    kDebug(7019) << "window-id=" << windowId << "url=" << info.url;
+    //qDebug() << "window-id=" << windowId << "url=" << info.url;
 
     // special handling for kioslaves which aren't QCoreApplications
     if (!QCoreApplication::instance()) {
@@ -70,7 +70,7 @@ bool KPasswdServer::checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
         }
 
         kWarning(7019) << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!";
-        kDebug(7019) << reply.error().name() << reply.error().message();
+        //qDebug() << reply.error().name() << reply.error().message();
         return false;
     }
 
@@ -80,7 +80,7 @@ bool KPasswdServer::checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
     }
 
     if (loop.authInfo().isModified()) {
-        kDebug(7019) << "username=" << info.username << "password=[hidden]";
+        //qDebug() << "username=" << info.username << "password=[hidden]";
         info = loop.authInfo();
         return true;
     }
@@ -114,7 +114,7 @@ qlonglong KPasswdServer::queryAuthInfo(KIO::AuthInfo &info, const QString &error
                                        qlonglong windowId, qlonglong seqNr,
                                        qlonglong usertime)
 {
-    kDebug(7019) << "window-id=" << windowId;
+    //qDebug() << "window-id=" << windowId;
 
     // special handling for kioslaves which aren't QCoreApplications
     if (!QCoreApplication::instance()) {
@@ -141,7 +141,7 @@ qlonglong KPasswdServer::queryAuthInfo(KIO::AuthInfo &info, const QString &error
         }
 
         kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!";
-        kDebug(7019) << reply.error().name() << reply.error().message();
+        //qDebug() << reply.error().name() << reply.error().message();
         return -1;
     }
 
@@ -152,7 +152,7 @@ qlonglong KPasswdServer::queryAuthInfo(KIO::AuthInfo &info, const QString &error
 
     info = loop.authInfo();
 
-    kDebug(7019) << "username=" << info.username << "password=[hidden]";
+    //qDebug() << "username=" << info.username << "password=[hidden]";
 
     return loop.seqNr();
 }

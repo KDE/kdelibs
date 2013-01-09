@@ -250,7 +250,7 @@ void KFileMetaInfoPrivate::init ( QIODevice& stream, const QUrl& url, time_t mti
     KFileMetaInfoAnalysisConfiguration c( w );
     Strigi::StreamAnalyzer indexer ( c );
     KMetaInfoWriter writer;
-    kDebug ( 7033 ) << url;
+    //qDebug() << url;
     Strigi::AnalysisResult idx ( url.toLocalFile().toUtf8().constData(), mtime, writer, indexer );
     idx.setWriterData ( &items );
 

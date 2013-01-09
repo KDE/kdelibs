@@ -333,7 +333,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
             QStringList types = cfg.readEntry("ServiceTypes", QStringList());
             types += cfg.readEntry("X-KDE-ServiceTypes", QStringList());
             types += cfg.readXdgListEntry("MimeType");
-            //kDebug() << file << types;
+            //qDebug() << file << types;
 
             if (types.isEmpty()) {
                 continue;
@@ -521,7 +521,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
 
 
         const QStringList serviceIdList = d->listPreferredServiceIds(d->m_mimeTypeList, traderConstraint);
-        //kDebug(7010) << "serviceIdList=" << serviceIdList;
+        //qDebug() << "serviceIdList=" << serviceIdList;
 
         // When selecting files with multiple mimetypes, offer either "open with <app for all>"
         // or a generic <open> (if there are any apps associated).
@@ -563,7 +563,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
                 menu->menuAction()->setObjectName("openWith_submenu"); // for the unittest
                 topMenu->addMenu(menu);
             }
-            //kDebug() << offers.count() << "offers" << topMenu << menu;
+            //qDebug() << offers.count() << "offers" << topMenu << menu;
 
             KService::List::ConstIterator it = offers.constBegin();
             for(; it != offers.constEnd(); it++) {

@@ -190,7 +190,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 url = QUrlPathInfo::addPathToUrl(url, displayName);
             }
 
-            //kDebug(7007) << displayName << "(" << url << ")";
+            //qDebug() << displayName << "(" << url << ")";
             if ( entry.isLink() )
                 symlinks.append( url );
             else if ( entry.isDir() )
@@ -205,7 +205,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 void DeleteJobPrivate::statNextSrc()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007);
+    //qDebug();
     if (m_currentStat != m_srcList.end()) {
         m_currentURL = (*m_currentStat);
 
@@ -227,7 +227,7 @@ void DeleteJobPrivate::statNextSrc()
             const KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentURL);
             if (cachedItem.isNull())
                 break;
-            //kDebug(7007) << "Found cached info about" << m_currentURL << "isDir=" << cachedItem.isDir() << "isLink=" << cachedItem.isLink();
+            //qDebug() << "Found cached info about" << m_currentURL << "isDir=" << cachedItem.isDir() << "isLink=" << cachedItem.isLink();
             currentSourceStated(cachedItem.isDir(), cachedItem.isLink());
             ++m_currentStat;
         }
@@ -250,7 +250,7 @@ void DeleteJobPrivate::statNextSrc()
         } else {
             KIO::SimpleJob * job = KIO::stat( m_currentURL, StatJob::SourceSide, 0, KIO::HideProgressInfo );
             Scheduler::setJobPriority(job, 1);
-            //kDebug(7007) << "stat'ing" << m_currentURL;
+            //qDebug() << "stat'ing" << m_currentURL;
             q->addSubjob(job);
         }
     } else {
@@ -277,7 +277,7 @@ void DeleteJobPrivate::finishedStatPhase()
 void DeleteJobPrivate::deleteNextFile()
 {
     Q_Q(DeleteJob);
-    //kDebug(7007);
+    //qDebug();
     if ( !files.isEmpty() || !symlinks.isEmpty() )
     {
         SimpleJob *job;
@@ -306,7 +306,7 @@ void DeleteJobPrivate::deleteNextFile()
                 }
             } else
             { // if remote - or if unlink() failed (we'll use the job's error handling in that case)
-                //kDebug(7007) << "calling file_delete on" << *it;
+                //qDebug() << "calling file_delete on" << *it;
                 if (isHttpProtocol(it->scheme()))
                   job = KIO::http_delete( *it, KIO::HideProgressInfo );
                 else
@@ -371,7 +371,7 @@ void DeleteJobPrivate::deleteNextDir()
     // Finished - tell the world
     if ( !m_srcList.isEmpty() )
     {
-        //kDebug(7007) << "KDirNotify'ing FilesRemoved" << m_srcList;
+        //qDebug() << "KDirNotify'ing FilesRemoved" << m_srcList;
         org::kde::KDirNotify::emitFilesRemoved(m_srcList);
     }
     if (m_reportTimer!=0)
@@ -393,7 +393,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             KDirWatch::self()->stopDirScan(QUrlPathInfo(url).localPath(QUrlPathInfo::StripTrailingSlash));
         }
         if (!KProtocolManager::canDeleteRecursive(url)) {
-            //kDebug(7007) << url << "is a directory, let's list it";
+            //qDebug() << url << "is a directory, let's list it";
             ListJob *newjob = KIO::listRecursive(url, KIO::HideProgressInfo);
             newjob->addMetaData("details", "0");
             newjob->setUnrestricted(true); // No KIOSK restrictions
@@ -405,10 +405,10 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
         }
     } else {
         if (isLink) {
-            //kDebug(7007) << "Target is a symlink";
+            //qDebug() << "Target is a symlink";
             symlinks.append(url);
         } else {
-            //kDebug(7007) << "Target is a file";
+            //qDebug() << "Target is a file";
             files.append(url);
         }
     }

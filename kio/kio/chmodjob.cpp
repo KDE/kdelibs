@@ -121,18 +121,18 @@ void ChmodJobPrivate::_k_processList()
             // This is a toplevel file, we apply changes directly (no +X emulation here)
             const mode_t permissions = item.permissions() & 0777; // get rid of "set gid" and other special flags
             info.permissions = ( m_permissions & m_mask ) | ( permissions & ~m_mask );
-            /*kDebug(7007) << "toplevel url:" << info.url << "\n current permissions=" << QString::number(permissions,8)
+            /*//qDebug() << "toplevel url:" << info.url << "\n current permissions=" << QString::number(permissions,8)
                           << "\n wanted permission=" << QString::number(m_permissions,8)
                           << "\n with mask=" << QString::number(m_mask,8)
                           << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~m_mask,8)
                           << "\n bits we keep =" << QString::number(permissions & ~m_mask,8)
                           << "\n new permissions = " << QString::number(info.permissions,8);*/
             m_infos.prepend( info );
-            //kDebug(7007) << "processList : Adding info for " << info.url;
+            //qDebug() << "processList : Adding info for " << info.url;
             // Directory and recursive -> list
             if ( item.isDir() && m_recursive )
             {
-                //kDebug(7007) << "ChmodJob::processList dir -> listing";
+                //qDebug() << "ChmodJob::processList dir -> listing";
                 KIO::ListJob * listJob = KIO::listRecursive( item.url(), KIO::HideProgressInfo );
                 q->connect( listJob, SIGNAL(entries( KIO::Job *,
                                                      const KIO::UDSEntryList& )),
@@ -143,7 +143,7 @@ void ChmodJobPrivate::_k_processList()
         }
         m_lstItems.removeFirst();
     }
-    kDebug(7007) << "ChmodJob::processList -> going to STATE_CHMODING";
+    //qDebug() << "ChmodJob::processList -> going to STATE_CHMODING";
     // We have finished, move on
     state = CHMODJOB_STATE_CHMODING;
     chmodNextFile();
@@ -182,7 +182,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
                 }
             }
             info.permissions = ( m_permissions & mask ) | ( permissions & ~mask );
-            /*kDebug(7007) << info.url << "\n current permissions=" << QString::number(permissions,8)
+            /*//qDebug() << info.url << "\n current permissions=" << QString::number(permissions,8)
                           << "\n wanted permission=" << QString::number(m_permissions,8)
                           << "\n with mask=" << QString::number(mask,8)
                           << "\n with ~mask (mask bits we keep) =" << QString::number((uint)~mask,8)
@@ -218,8 +218,8 @@ void ChmodJobPrivate::chmodNextFile()
             }
         }
 
-        kDebug(7007) << "chmod'ing" << info.url
-                      << "to" << QString::number(info.permissions,8);
+        /*qDebug() << "chmod'ing" << info.url
+                      << "to" << QString::number(info.permissions,8);*/
         KIO::SimpleJob * job = KIO::chmod( info.url, info.permissions );
         // copy the metadata for acl and default acl
         const QString aclString = q->queryMetaData( QLatin1String("ACL_STRING") );
@@ -246,16 +246,16 @@ void ChmodJob::slotResult( KJob * job )
         emitResult();
         return;
     }
-    //kDebug(7007) << "d->m_lstItems:" << d->m_lstItems.count();
+    //qDebug() << "d->m_lstItems:" << d->m_lstItems.count();
     switch ( d->state )
     {
         case CHMODJOB_STATE_LISTING:
             d->m_lstItems.removeFirst();
-            kDebug(7007) << "-> processList";
+            //qDebug() << "-> processList";
             d->_k_processList();
             return;
         case CHMODJOB_STATE_CHMODING:
-            kDebug(7007) << "-> chmodNextFile";
+            //qDebug() << "-> chmodNextFile";
             d->chmodNextFile();
             return;
         default:

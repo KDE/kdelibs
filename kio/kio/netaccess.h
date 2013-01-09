@@ -377,7 +377,7 @@ public:
      * metaData.insert( "PropagateHttpHeader", "true" );
      * if ( NetAccess::synchronousRun( job, 0, &data, &url, &metaData ) ) {
      *   QString responseHeaders = metaData[ "HTTP-Headers" ];
-     *   kDebug()<<"Response header = "<< responseHeaders;
+     *   qDebug()<<"Response header = "<< responseHeaders;
      * }
      * @endcode
      *

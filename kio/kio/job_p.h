@@ -95,8 +95,8 @@ namespace KIO {
                 QList<QUrl> list = KUrl::split(m_url);
                 list.removeLast();
                 m_subUrl = KUrl::join(list);
-                //kDebug(7007) << "New URL = "  << m_url.url();
-                //kDebug(7007) << "Sub URL = "  << m_subUrl.url();
+                //qDebug() << "New URL = "  << m_url.url();
+                //qDebug() << "Sub URL = "  << m_subUrl.url();
             }
 #endif
         }

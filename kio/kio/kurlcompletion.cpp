@@ -316,13 +316,13 @@ void DirectoryListThread::run()
     // Also see (for POSIX functions):
     // http://www.opengroup.org/onlinepubs/009695399/functions/xsh_chap02_09.html
 
-    // kDebug() << "Entered DirectoryListThread::run(), m_filter=" << m_filter << ", m_onlyExe=" << m_onlyExe << ", m_onlyDir=" << m_onlyDir << ", m_appendSlashToDir=" << m_appendSlashToDir << ", m_dirList.size()=" << m_dirList.size();
+    //qDebug() << "Entered DirectoryListThread::run(), m_filter=" << m_filter << ", m_onlyExe=" << m_onlyExe << ", m_onlyDir=" << m_onlyDir << ", m_appendSlashToDir=" << m_appendSlashToDir << ", m_dirList.size()=" << m_dirList.size();
 
     QStringList::ConstIterator end = m_dirList.constEnd();
     for (QStringList::ConstIterator it = m_dirList.constBegin();
             it != end && !terminationRequested();
             ++it) {
-        // kDebug() << "Scanning directory" << *it;
+        //qDebug() << "Scanning directory" << *it;
 
         // A trick from KIO that helps performance by a little bit:
         // chdir to the directory so we won't have to deal with full paths
@@ -348,7 +348,7 @@ void DirectoryListThread::run()
             QFileInfo file_info = current_dir_iterator.fileInfo();
             const QString file_name = file_info.fileName();
 
-            //kDebug() << "Found" << file_name;
+            //qDebug() << "Found" << file_name;
 
             if (m_filter.isEmpty() || file_name.startsWith(m_filter)) {
 
@@ -591,7 +591,7 @@ void KUrlCompletion::setReplaceHome(bool replace)
  */
 QString KUrlCompletion::makeCompletion(const QString& text)
 {
-    //kDebug() << text << "d->cwd=" << d->cwd;
+    //qDebug() << text << "d->cwd=" << d->cwd;
 
     KUrlCompletionPrivate::MyURL url(text, d->cwd);
 
@@ -620,7 +620,7 @@ QString KUrlCompletion::makeCompletion(const QString& text)
     // Replace user directories and variables
     url.filter(d->replace_home, d->replace_env);
 
-    //kDebug() << "Filtered: proto=" << url.scheme()
+    //qDebug() << "Filtered: proto=" << url.scheme()
     //          << ", dir=" << url.dir()
     //          << ", file=" << url.file()
     //          << ", kurl url=" << *url.kurl();
@@ -902,7 +902,7 @@ bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL& u
         }
     }
 
-    //kDebug() << "fileCompletion" << url << "dir=" << dir;
+    //qDebug() << "fileCompletion" << url << "dir=" << dir;
 
     // Find directories to search for completions, either
     //
@@ -967,7 +967,7 @@ static bool isLocalProtocol(const QString& protocol)
 
 bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& url, QString* pMatch)
 {
-    //kDebug() << *url.kurl();
+    //qDebug() << *url.kurl();
     if (onlyLocalProto && isLocalProtocol(url.scheme()))
         return false;
 
@@ -1069,7 +1069,7 @@ QString KUrlCompletionPrivate::listDirectories(
 
     if (qgetenv("KURLCOMPLETION_LOCAL_KIO").isEmpty()) {
 
-        //kDebug() << "Listing (listDirectories):" << dirList << "filter=" << filter << "without KIO";
+        //qDebug() << "Listing (listDirectories):" << dirList << "filter=" << filter << "without KIO";
 
         // Don't use KIO
 
@@ -1097,7 +1097,7 @@ QString KUrlCompletionPrivate::listDirectories(
     }
 
     // Use KIO
-    //kDebug() << "Listing (listDirectories):" << dirList << "with KIO";
+    //qDebug() << "Listing (listDirectories):" << dirList << "with KIO";
 
     QList<QUrl> url_list;
 
@@ -1136,7 +1136,7 @@ void KUrlCompletionPrivate::listUrls(
     list_urls_only_exe = only_exe;
     list_urls_no_hidden = no_hidden;
 
-    //kDebug() << "Listing URLs:" << *urls[0] << ",...";
+    //qDebug() << "Listing URLs:" << *urls[0] << ",...";
 
     // Start it off by calling _k_slotIOFinished
     //
@@ -1170,13 +1170,13 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
 
         QString entry_name;
         if (!url.isEmpty()) {
-            // kDebug() << "url:" << url;
+            //qDebug() << "url:" << url;
             entry_name = QUrlPathInfo(QUrl(url)).fileName();
         } else {
             entry_name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
         }
 
-        // kDebug() << "name:" << name;
+        //qDebug() << "name:" << name;
 
         if ((!entry_name.isEmpty() && entry_name.at(0) == QLatin1Char('.')) &&
                 (list_urls_no_hidden ||
@@ -1237,7 +1237,7 @@ void KUrlCompletionPrivate::_k_slotIOFinished(KJob* job)
 
 //      list_urls.removeAll( kurl );
 
-//      kDebug() << "Start KIO::listDir" << kurl;
+//qDebug() << "Start KIO::listDir" << kurl;
 
         list_job = KIO::listDir(kurl, KIO::HideProgressInfo);
         list_job->addMetaData("no-auth-prompt", "true");
@@ -1267,7 +1267,7 @@ void KUrlCompletionPrivate::_k_slotIOFinished(KJob* job)
  */
 void KUrlCompletion::postProcessMatch(QString* pMatch) const
 {
-//  kDebug() << *pMatch;
+//qDebug() << *pMatch;
 
     if (!pMatch->isEmpty() && pMatch->startsWith(QLatin1String("file:"))) {
 
@@ -1281,7 +1281,7 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
 #ifdef Q_OS_WIN
             DWORD dwAttr = GetFileAttributesW((LPCWSTR) copy.utf16());
             if (dwAttr == INVALID_FILE_ATTRIBUTES) {
-                kDebug() << "Could not get file attribs ( "
+                //qDebug() << "Could not get file attribs ( "
                          << GetLastError()
                          << " ) for "
                          << copy;
@@ -1291,7 +1291,7 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
             if (QDir::isRelativePath(copy))
                 copy.prepend(d->cwd.toLocalFile() + QLatin1Char('/'));
 
-//          kDebug() << "stat'ing" << copy;
+            //qDebug() << "stat'ing" << copy;
 
             KDE_struct_stat sbuff;
 
@@ -1301,7 +1301,7 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
                 if (S_ISDIR(sbuff.st_mode))
                     pMatch->append(QLatin1Char('/'));
             } else {
-                kDebug() << "Could not stat file" << copy;
+                //qDebug() << "Could not stat file" << copy;
             }
 #endif
         }

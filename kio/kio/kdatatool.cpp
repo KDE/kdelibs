@@ -59,8 +59,8 @@ KDataToolInfo::KDataToolInfo(const KService::Ptr& service, const KComponentData 
 
     if ( !d->service && !d->service->serviceTypes().contains( "KDataTool" ) )
     {
-        kDebug(30003) << "The service" << d->service->name()
-                       << "does not feature the service type KDataTool";
+        /*qDebug() << "The service" << d->service->name()
+                       << "does not feature the service type KDataTool";*/
         d->service = 0;
     }
 }
@@ -181,7 +181,7 @@ QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString
     } */
 
     // Query the trader
-    //kDebug() << constr;
+    //qDebug() << constr;
     const KService::List offers = KServiceTypeTrader::self()->query( "KDataTool", constr );
 
     KService::List::ConstIterator it = offers.begin();
@@ -192,7 +192,7 @@ QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString
              .contains(componentData.componentName())) {
             lst.append(KDataToolInfo(*it, componentData));
         } else {
-            kDebug() << (*it)->entryPath() << " excluded.";
+            //qDebug() << (*it)->entryPath() << " excluded.";
         }
     }
 
@@ -261,7 +261,7 @@ QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
         QStringList::ConstIterator cit = commands.begin();
         for (; uit != userCommands.end() && cit != commands.end(); ++uit, ++cit )
         {
-            //kDebug() << "creating action " << *uit << " " << *cit;
+            //qDebug() << "creating action " << *uit << " " << *cit;
             const QString name = (*entry).service()->entryPath(); // something unique
             KDataToolAction * action = new KDataToolAction( *uit, *entry, *cit, parent );
             parent->addAction( name, action );

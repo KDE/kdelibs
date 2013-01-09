@@ -405,7 +405,7 @@ void FileUndoManager::undo()
         d->m_fileCleanupStack.append(d->m_current.m_dst);
     }
 
-    kDebug(1203) << "starting with" << undoStateToString(d->m_undoState);
+    //qDebug() << "starting with" << undoStateToString(d->m_undoState);
     d->m_undoJob = new UndoJob(d->m_uiInterface->showProgressInfo());
     d->undoStep();
 }
@@ -439,11 +439,11 @@ void FileUndoManagerPrivate::slotResult(KJob *job)
     else if (m_undoState == STATINGFILE)
     {
         BasicOperation op = m_current.m_opStack.last();
-        //kDebug(1203) << "stat result for " << op.m_dst;
+        //qDebug() << "stat result for " << op.m_dst;
         KIO::StatJob* statJob = static_cast<KIO::StatJob*>(job);
         time_t mtime = statJob->statResult().numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1);
         if (mtime != op.m_mtime) {
-            kDebug(1203) << op.m_dst << " was modified after being copied!";
+            //qDebug() << op.m_dst << " was modified after being copied!";
             KDateTime srcTime; srcTime.setTime_t(op.m_mtime); srcTime = srcTime.toLocalZone();
             KDateTime destTime; destTime.setTime_t(mtime); destTime = destTime.toLocalZone();
             if (!m_uiInterface->copiedFileWasModified(op.m_src, op.m_dst, srcTime, destTime)) {
@@ -490,7 +490,7 @@ void FileUndoManagerPrivate::stepMakingDirectories()
 {
     if (!m_dirStack.isEmpty()) {
         QUrl dir = m_dirStack.pop();
-        kDebug(1203) << "creatingDir" << dir;
+        //qDebug() << "creatingDir" << dir;
         m_currentJob = KIO::mkdir(dir);
         m_undoJob->emitCreatingDir(dir);
     }
@@ -513,7 +513,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
         {
             if (op.m_renamed)
             {
-                kDebug(1203) << "rename" << op.m_dst << op.m_src;
+                //qDebug() << "rename" << op.m_dst << op.m_src;
                 m_currentJob = KIO::rename(op.m_dst, op.m_src, KIO::HideProgressInfo);
                 m_undoJob->emitMoving(op.m_dst, op.m_src);
             }
@@ -522,7 +522,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
         }
         else if (type == BasicOperation::Link)
         {
-            kDebug(1203) << "symlink" << op.m_target << op.m_src;
+            //qDebug() << "symlink" << op.m_target << op.m_src;
             m_currentJob = KIO::symlink(op.m_target, op.m_src, KIO::Overwrite | KIO::HideProgressInfo);
         }
         else if (m_current.m_type == FileUndoManager::Copy)
@@ -530,7 +530,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
             if (m_undoState == MOVINGFILES) // dest not stat'ed yet
             {
                 // Before we delete op.m_dst, let's check if it was modified (#20532)
-                kDebug(1203) << "stat" << op.m_dst;
+                //qDebug() << "stat" << op.m_dst;
                 m_currentJob = KIO::stat(op.m_dst, KIO::HideProgressInfo);
                 m_undoState = STATINGFILE; // temporarily
                 return; // no pop() yet, we'll finish the work in slotResult
@@ -545,7 +545,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
         else if (m_current.isMoveCommand()
                   || m_current.m_type == FileUndoManager::Trash)
         {
-            kDebug(1203) << "file_move" << op.m_dst << op.m_src;
+            //qDebug() << "file_move" << op.m_dst << op.m_src;
             m_currentJob = KIO::file_move(op.m_dst, op.m_src, -1, KIO::Overwrite | KIO::HideProgressInfo);
             m_undoJob->emitMoving(op.m_dst, op.m_src);
         }
@@ -565,11 +565,11 @@ void FileUndoManagerPrivate::stepMovingFiles()
 
 void FileUndoManagerPrivate::stepRemovingLinks()
 {
-    kDebug(1203) << "REMOVINGLINKS";
+    //qDebug() << "REMOVINGLINKS";
     if (!m_fileCleanupStack.isEmpty())
     {
         QUrl file = m_fileCleanupStack.pop();
-        kDebug(1203) << "file_delete" << file;
+        //qDebug() << "file_delete" << file;
         m_currentJob = KIO::file_delete(file, KIO::HideProgressInfo);
         m_undoJob->emitDeleting(file);
 
@@ -590,7 +590,7 @@ void FileUndoManagerPrivate::stepRemovingDirectories()
     if (!m_dirCleanupStack.isEmpty())
     {
         QUrl dir = m_dirCleanupStack.pop();
-        kDebug(1203) << "rmdir" << dir;
+        //qDebug() << "rmdir" << dir;
         m_currentJob = KIO::rmdir(dir);
         m_undoJob->emitDeleting(dir);
         addDirToUpdate(dir);
@@ -601,13 +601,13 @@ void FileUndoManagerPrivate::stepRemovingDirectories()
         m_currentJob = 0;
         if (m_undoJob)
         {
-            kDebug(1203) << "deleting undojob";
+            //qDebug() << "deleting undojob";
             m_undoJob->emitResult();
             m_undoJob = 0;
         }
         QList<QUrl>::ConstIterator it = m_dirsToUpdate.constBegin();
         for(; it != m_dirsToUpdate.constEnd(); ++it) {
-            kDebug() << "Notifying FilesAdded for " << *it;
+            //qDebug() << "Notifying FilesAdded for " << *it;
             org::kde::KDirNotify::emitFilesAdded((*it));
         }
         emit q->undoJobFinished();

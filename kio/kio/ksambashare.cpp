@@ -73,7 +73,7 @@ bool KSambaSharePrivate::isSambaInstalled()
         return true;
     }
 
-    kDebug() << "Samba is not installed!";
+    //qDebug() << "Samba is not installed!";
 
     return false;
 }
@@ -143,7 +143,7 @@ QString KSambaSharePrivate::testparmParamValue(const QString &parameterName)
         if ((err.count() == 2)
                 && err.at(0).startsWith("Load smb config files from")
                 && err.at(1).startsWith("Loaded services file OK.")) {
-            kDebug() << "Running testparm" << args;
+            //qDebug() << "Running testparm" << args;
         } else {
             kWarning() << "We got some errors while running testparm" << stdErr;
         }
@@ -425,7 +425,7 @@ bool KSambaSharePrivate::sync()
 void KSambaSharePrivate::_k_slotFileChange(const QString &path)
 {
     sync();
-    kDebug() << "path changed:" << path;
+    //qDebug() << "path changed:" << path;
     Q_Q(KSambaShare);
     emit q->changed();
 }

@@ -49,7 +49,7 @@ SlaveInterface::SlaveInterface(SlaveInterfacePrivate &dd, QObject *parent)
 
 SlaveInterface::~SlaveInterface()
 {
-    // Note: no kDebug() here (scheduler is deleted very late)
+    // Note: no Debug() here (scheduler is deleted very late)
 
     delete d_ptr;
 }
@@ -117,7 +117,7 @@ void SlaveInterface::calcSpeed()
 
         KIO::filesize_t lspeed = 1000 * (d->sizes[d->nums-1] - d->sizes[0]) / (d->times[d->nums-1] - d->times[0]);
 
-//      kDebug() << (long)d->filesize << diff
+//qDebug() << (long)d->filesize << diff
 //          << long(d->sizes[d->nums-1] - d->sizes[0])
 //          << d->times[d->nums-1] - d->times[0]
 //          << long(lspeed) << double(d->filesize) / diff
@@ -144,7 +144,7 @@ template<> struct PIDType<4> { typedef qint32 PID_t; } ;
 bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
 {
     Q_D(SlaveInterface);
-    //kDebug(7007) << "dispatch " << _cmd;
+    //qDebug() << "dispatch " << _cmd;
 
     QDataStream stream(rawdata);
 
@@ -164,7 +164,7 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         emit open();
         break;
     case MSG_FINISHED:
-        //kDebug(7007) << "Finished [this = " << this << "]";
+        //qDebug() << "Finished [this = " << this << "]";
         d->offset = 0;
         d->speed_timer.stop();
         emit finished();
@@ -199,7 +199,7 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         break;
     case MSG_ERROR:
         stream >> i >> str1;
-        kDebug(7007) << "error " << i << " " << str1;
+        //qDebug() << "error " << i << " " << str1;
         emit error(i, str1);
         break;
     case MSG_SLAVE_STATUS: {
@@ -271,7 +271,7 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         emit warning(str1);
         break;
     case INF_MESSAGEBOX: {
-        kDebug(7007) << "needs a msg box";
+        //qDebug() << "needs a msg box";
         QString text, caption, buttonYes, buttonNo, dontAskAgainName;
         int type;
         stream >> type >> text >> caption >> buttonYes >> buttonNo;
@@ -353,7 +353,7 @@ KIO::filesize_t SlaveInterface::offset() const
 void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 {
     Q_D(SlaveInterface);
-    kDebug(7007) << "requestNetwork " << host << slaveid;
+    //qDebug() << "requestNetwork " << host << slaveid;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
     stream << true;
@@ -362,13 +362,13 @@ void SlaveInterface::requestNetwork(const QString &host, const QString &slaveid)
 
 void SlaveInterface::dropNetwork(const QString &host, const QString &slaveid)
 {
-    kDebug(7007) << "dropNetwork " << host << slaveid;
+    //qDebug() << "dropNetwork " << host << slaveid;
 }
 
 void SlaveInterface::sendResumeAnswer( bool resume )
 {
     Q_D(SlaveInterface);
-    kDebug(7007) << "ok for resuming:" << resume;
+    //qDebug() << "ok for resuming:" << resume;
     d->connection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
@@ -382,7 +382,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &c
                                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
     Q_D(SlaveInterface);
-    kDebug(7007) << "messageBox " << type << " " << text << " - " << caption << " " << dontAskAgainName;
+    //qDebug() << "messageBox " << type << " " << text << " - " << caption << " " << dontAskAgainName;
     QByteArray packedArgs;
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
 
@@ -392,7 +392,7 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &c
     if ( me && d->connection ) // Don't do anything if deleted meanwhile
     {
         d->connection->resume();
-        kDebug(7007) << this << " SlaveInterface result=" << result;
+        //qDebug() << this << " SlaveInterface result=" << result;
         stream << result;
         d->connection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
     }
@@ -414,7 +414,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                                       const QString &caption, const QString &buttonYes,
                                       const QString &buttonNo, const QString &dontAskAgainName)
 {
-    kDebug() << type << text << "caption=" << caption;
+    //qDebug() << type << text << "caption=" << caption;
     int result = -1;
     KConfig *config = new KConfig("kioslaverc");
     KMessageBox::setDontShowAgainConfig(config);
@@ -487,9 +487,9 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
                             meta["ssl_cipher_bits"].toInt(),
                             KSslInfoDialog::errorsFromString(meta["ssl_cert_errors"]));
 
-            kDebug(7024) << "Showing SSL Info dialog";
+            //qDebug() << "Showing SSL Info dialog";
             kid->exec();
-            kDebug(7024) << "SSL Info dialog closed";
+            //qDebug() << "SSL Info dialog closed";
         } else {
             KMessageBox::information(0, i18n("The peer SSL certificate chain "
                                              "appears to be corrupt."),
