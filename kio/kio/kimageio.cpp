@@ -30,7 +30,7 @@ KImageIO::pattern(Mode mode)
             if ( mimeType.isEmpty() ) continue;
             QMimeType mime = db.mimeTypeForName(mimeType);
             if (!mime.isValid()) {
-                kWarning() << service->entryPath() << " specifies unknown mimetype " << mimeType;
+                qWarning() << service->entryPath() << " specifies unknown mimetype " << mimeType;
             } else {
                 QString pattern = mime.globPatterns().join(" ");
                 patterns.append( pattern + separator + mime.comment() );

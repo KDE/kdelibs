@@ -584,7 +584,7 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
 void CopyJobPrivate::slotSubError(ListJob* job, ListJob* subJob)
 {
 	const QUrl url = subJob->url();
-	kWarning() << url << subJob->errorString();
+	qWarning() << url << subJob->errorString();
 
 	Q_Q(CopyJob);
 
@@ -649,7 +649,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const QUrl& 
                 for (int n = 0; n < numberOfSlashes + 1; ++n) {
                     pos = path.lastIndexOf('/', pos - 1);
                     if (pos == -1) { // error
-                        kWarning(7007) << "kioslave bug: not enough slashes in UDS_URL" << path << "- looking for" << numberOfSlashes << "slashes";
+                        qWarning() << "kioslave bug: not enough slashes in UDS_URL" << path << "- looking for" << numberOfSlashes << "slashes";
                         break;
                     }
                 }
@@ -1856,7 +1856,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             QTemporaryFile tmpFile(srcDir + "kio_XXXXXX");
             const bool openOk = tmpFile.open();
             if (!openOk) {
-                kWarning(7007) << "Couldn't open temp file in" << srcDir;
+                qWarning() << "Couldn't open temp file in" << srcDir;
             } else {
                 const QString _tmp( tmpFile.fileName() );
                 tmpFile.close();

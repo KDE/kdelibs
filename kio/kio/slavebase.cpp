@@ -126,14 +126,14 @@ public:
     void verifyState(const char* cmdName)
     {
         if ((m_state != FinishedCalled) && (m_state != ErrorCalled)){
-            kWarning(7019) << cmdName << "did not call finished() or error()! Please fix the KIO slave.";
+            qWarning() << cmdName << "did not call finished() or error()! Please fix the KIO slave.";
         }
     }
 
     void verifyErrorFinishedNotCalled(const char* cmdName)
     {
         if (m_state == FinishedCalled || m_state == ErrorCalled) {
-            kWarning(7019) << cmdName << "called finished() or error(), but it's not supposed to! Please fix the KIO slave.";
+            qWarning() << cmdName << "called finished() or error(), but it's not supposed to! Please fix the KIO slave.";
         }
     }
 
@@ -419,10 +419,10 @@ void SlaveBase::opened()
 void SlaveBase::error( int _errid, const QString &_text )
 {
     if (d->m_state == d->ErrorCalled) {
-        kWarning(7019) << "error() called twice! Please fix the KIO slave.";
+        qWarning() << "error() called twice! Please fix the KIO slave.";
         return;
     } else if (d->m_state == d->FinishedCalled) {
-        kWarning(7019) << "error() called after finished()! Please fix the KIO slave.";
+        qWarning() << "error() called after finished()! Please fix the KIO slave.";
         return;
     }
 
@@ -447,10 +447,10 @@ void SlaveBase::connected()
 void SlaveBase::finished()
 {
     if (d->m_state == d->FinishedCalled) {
-        kWarning(7019) << "finished() called twice! Please fix the KIO slave.";
+        qWarning() << "finished() called twice! Please fix the KIO slave.";
         return;
     } else if (d->m_state == d->ErrorCalled) {
-        kWarning(7019) << "finished() called after error()! Please fix the KIO slave.";
+        qWarning() << "finished() called after error()! Please fix the KIO slave.";
         return;
     }
 
@@ -1200,7 +1200,7 @@ void SlaveBase::dispatch( int command, const QByteArray &data )
         d->m_state = d->Idle;
     } break;
     case CMD_NONE: {
-        kWarning(7019) << "Got unexpected CMD_NONE!";
+        qWarning() << "Got unexpected CMD_NONE!";
     } break;
     case CMD_MULTI_GET: {
         d->m_state = d->InsideMethod;

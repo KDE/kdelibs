@@ -73,7 +73,7 @@ int KDBusServiceStarter::findServiceFor( const QString& serviceType,
     if ( offers.isEmpty() ) {
         if ( error )
             *error = i18n("No service implementing %1",  serviceType );
-        kWarning() << "KDBusServiceStarter: No service implementing " << serviceType;
+        qWarning() << "KDBusServiceStarter: No service implementing " << serviceType;
         return -1;
     }
     KService::Ptr ptr = offers.first();

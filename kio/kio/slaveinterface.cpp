@@ -332,7 +332,7 @@ bool SlaveInterface::dispatch(int _cmd, const QByteArray &rawdata)
         break;
     }
     default:
-        kWarning(7007) << "Slave sends unknown command (" << _cmd << "), dropping slave";
+        qWarning() << "Slave sends unknown command (" << _cmd << "), dropping slave";
         return false;
     }
     return true;
@@ -501,7 +501,7 @@ int SlaveInterfacePrivate::messageBox(int type, const QString &text,
         break;
     }
     default:
-        kWarning(7024) << "Unknown type" << type;
+        qWarning() << "Unknown type" << type;
         result = 0;
         break;
     }

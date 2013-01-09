@@ -79,7 +79,7 @@ void MkdirJobPrivate::slotRedirection(const QUrl &url)
      //qDebug() << url;
      if (!KAuthorized::authorizeUrlAction("redirect", m_url, url))
      {
-         kWarning(7007) << "Redirection from" << m_url << "to" << url << "REJECTED!";
+         qWarning() << "Redirection from" << m_url << "to" << url << "REJECTED!";
          q->setError( ERR_ACCESS_DENIED );
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
          q->setErrorText(url.toString());

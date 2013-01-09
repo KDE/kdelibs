@@ -81,7 +81,7 @@ void KAutoMountPrivate::slotResult( KJob * job )
         }
 
         if (!mp) {
-            kWarning(7015) << m_strDevice << "was correctly mounted, but findByDevice() didn't find it."
+            qWarning() << m_strDevice << "was correctly mounted, but findByDevice() didn't find it."
                            << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab and /etc/mtab lines for this device";
         } else {
             const QUrl url = QUrl::fromLocalFile(mp->mountPoint());

@@ -514,7 +514,7 @@ KFileItem::~KFileItem()
 void KFileItem::refresh()
 {
     if (!d) {
-        kWarning() << "null item";
+        qWarning() << "null item";
         return;
     }
 
@@ -545,7 +545,7 @@ void KFileItem::refreshMimeType()
 void KFileItem::setUrl( const QUrl &url )
 {
     if (!d) {
-        kWarning() << "null item";
+        qWarning() << "null item";
         return;
     }
 
@@ -556,7 +556,7 @@ void KFileItem::setUrl( const QUrl &url )
 void KFileItem::setName( const QString& name )
 {
     if (!d) {
-        kWarning() << "null item";
+        qWarning() << "null item";
         return;
     }
 
@@ -1063,7 +1063,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
                 if (mimeType.isValid())
                     defaultFolderIcon = mimeType.iconName();
                 else {
-                    kWarning(7000) << "No mimetype for inode/directory could be found. Check your installation.";
+                    qWarning() << "No mimetype for inode/directory could be found. Check your installation.";
                     defaultFolderIcon = "unknown";
                 }
             }
@@ -1094,7 +1094,7 @@ QPixmap KFileItem::pixmap( int _size, int _state ) const
     QPixmap p = KIconLoader::global()->loadMimeTypeIcon(icon, KIconLoader::Desktop, _size, _state);
     //qDebug() << "finding pixmap for" << url << "mime=" << mime.name() << "icon=" << icon;
     if (p.isNull())
-        kWarning() << "Pixmap not found for mimetype" << mime.name() << "icon" << icon;
+        qWarning() << "Pixmap not found for mimetype" << mime.name() << "icon" << icon;
 
     return p;
 }
@@ -1334,7 +1334,7 @@ QString KFileItem::getToolTipText(int maxcount) const
 void KFileItem::run( QWidget* parentWidget ) const
 {
     if (!d) {
-        kWarning() << "null item";
+        qWarning() << "null item";
         return;
     }
 
@@ -1523,7 +1523,7 @@ QDataStream & operator>> ( QDataStream & s, KFileItem & a )
     s >> strText;
 
     if (!a.d) {
-        kWarning() << "null item";
+        qWarning() << "null item";
         return s;
     }
 
@@ -1696,7 +1696,7 @@ bool KFileItem::isMarked() const
 void KFileItem::mark()
 {
     if (!d) {
-        kWarning() << "null item";
+        qWarning() << "null item";
         return;
     }
 
@@ -1706,7 +1706,7 @@ void KFileItem::mark()
 void KFileItem::unmark()
 {
     if (!d) {
-        kWarning() << "null item";
+        qWarning() << "null item";
         return;
     }
 

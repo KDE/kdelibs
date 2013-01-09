@@ -265,7 +265,7 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& 
             if (keys.isEmpty())
                 return result;
         } else {
-            kWarning(7000) << "The desktop file" << service.entryPath()
+            qWarning() << "The desktop file" << service.entryPath()
                            << "has an invalid X-KDE-GetActionMenu entry."
                            << "Syntax is: app object interface function";
         }

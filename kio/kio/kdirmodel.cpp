@@ -467,7 +467,7 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
     QUrl url = item.url();
     KDirModelNode* node = nodeForUrl(url); // O(depth)
     if (!node) {
-        kWarning(7008) << "No node found for item that was just removed:" << url;
+        qWarning() << "No node found for item that was just removed:" << url;
         return;
     }
 
@@ -496,7 +496,7 @@ void KDirModelPrivate::_k_slotDeleteItems(const KFileItemList& items)
             url = item.url();
             node = nodeForUrl(url);
             if (!node) {
-                kWarning(7008) << "No node found for item that was just removed:" << url;
+                qWarning() << "No node found for item that was just removed:" << url;
                 continue;
             }
             if (!node->parent()) {
@@ -1049,7 +1049,7 @@ Qt::ItemFlags KDirModel::flags( const QModelIndex & index ) const
         } else {
             KFileItem item = itemForIndex(index);
             if (item.isNull()) {
-                kWarning(7007) << "Invalid item returned for index";
+                qWarning() << "Invalid item returned for index";
             } else if (item.isDir()) {
                 if (d->m_dropsAllowed & DropOnDirectory) {
                     f |= Qt::ItemIsDropEnabled;

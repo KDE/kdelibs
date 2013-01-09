@@ -296,7 +296,7 @@ KRunMX1::expandEscapedMacro(const QString &str, int pos, QStringList &ret)
         break;
     case 'm':
 //       ret << "-miniicon" << service.icon().replace( '%', "%%" );
-        kWarning() << "-miniicon isn't supported anymore (service"
+        qWarning() << "-miniicon isn't supported anymore (service"
         << service.name() << ')';
         break;
     case 'u':
@@ -377,7 +377,7 @@ KRunMX2::expandEscapedMacro(const QString &str, int pos, QStringList &ret)
             }
         }
         else if (urls.count() > 1) {
-            kWarning() << urls.count() << "URLs supplied to single-URL service" << str;
+            qWarning() << urls.count() << "URLs supplied to single-URL service" << str;
         }
         else {
             subst(option, urls.first(), ret);
@@ -441,7 +441,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
 {
     QString exec = _service.exec();
     if (exec.isEmpty()) {
-        kWarning() << "KRun: no Exec field in `" << _service.entryPath() << "' !";
+        qWarning() << "KRun: no Exec field in `" << _service.entryPath() << "' !";
         return QStringList();
     }
 
@@ -452,7 +452,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
     KRunMX2 mx2(_urls);
 
     if (!mx1.expandMacrosShellQuote(exec)) {    // Error in shell syntax
-        kWarning() << "KRun: syntax error in command" << _service.exec() << ", service" << _service.name();
+        qWarning() << "KRun: syntax error in command" << _service.exec() << ", service" << _service.name();
         return QStringList();
     }
 
@@ -550,7 +550,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
         terminal += ' ';
         terminal += _service.terminalOptions();
         if (!mx1.expandMacrosShellQuote(terminal)) {
-            kWarning() << "KRun: syntax error in command" << terminal << ", service" << _service.name();
+            qWarning() << "KRun: syntax error in command" << terminal << ", service" << _service.name();
             return QStringList();
         }
         mx2.expandMacrosShellQuote(terminal);
@@ -623,7 +623,7 @@ static bool runCommandInternal(KProcess* proc, const KService* service, const QS
     if (service && !service->entryPath().isEmpty()
             && !KDesktopFile::isAuthorizedDesktopFile(service->entryPath()))
     {
-        kWarning() << "No authorization to execute " << service->entryPath();
+        qWarning() << "No authorization to execute " << service->entryPath();
         KMessageBox::sorry(window, i18n("You are not authorized to execute this file."));
         delete proc;
         return false;
@@ -928,7 +928,7 @@ static bool makeFileExecutable(const QString &fileName)
 static bool makeServiceExecutable(const KService& service, QWidget* window)
 {
     if (!KAuthorized::authorize("run_desktop_files")) {
-        kWarning() << "No authorization to execute " << service.entryPath();
+        qWarning() << "No authorization to execute " << service.entryPath();
         KMessageBox::sorry(window, i18n("You are not authorized to execute this service."));
         return false; // Don't circumvent the Kiosk
     }
@@ -1099,13 +1099,13 @@ bool KRun::runCommand(const QString &cmd, QWidget* window)
 bool KRun::runCommand(const QString& cmd, QWidget* window, const QString& workingDirectory)
 {
     if (cmd.isEmpty()) {
-        kWarning() << "Command was empty, nothing to run";
+        qWarning() << "Command was empty, nothing to run";
         return false;
     }
 
     const QStringList args = KShell::splitArgs(cmd);
     if (args.isEmpty()) {
-        kWarning() << "Command could not be parsed.";
+        qWarning() << "Command could not be parsed.";
         return false;
     }
 
@@ -1462,7 +1462,7 @@ void KRun::slotStatResult(KJob * job)
 void KRun::slotScanMimeType(KIO::Job *, const QString &mimetype)
 {
     if (mimetype.isEmpty()) {
-        kWarning(7010) << "get() didn't emit a mimetype! Probably a kioslave bug, please check the implementation of" << url().scheme();
+        qWarning() << "get() didn't emit a mimetype! Probably a kioslave bug, please check the implementation of" << url().scheme();
     }
     mimeTypeDetermined(mimetype);
     d->m_job = 0;
@@ -1545,7 +1545,7 @@ void KRun::foundMimeType(const QString& type)
     // Resolve .desktop files from media:/, remote:/, applications:/ etc.
     QMimeType mime = db.mimeTypeForName(type);
     if (!mime.isValid()) {
-        kWarning(7010) << "Unknown mimetype " << type;
+        qWarning() << "Unknown mimetype " << type;
     } else if (mime.inherits("application/x-desktop") && !d->m_localPath.isEmpty()) {
         d->m_strURL = QUrl::fromLocalFile(d->m_localPath);
     }

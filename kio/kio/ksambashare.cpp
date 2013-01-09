@@ -90,7 +90,7 @@ bool KSambaSharePrivate::findSmbConf()
         }
     }
 
-    kWarning() << "KSambaShare: Could not find smb.conf!";
+    qWarning() << "KSambaShare: Could not find smb.conf!";
 
     return false;
 }
@@ -145,7 +145,7 @@ QString KSambaSharePrivate::testparmParamValue(const QString &parameterName)
                 && err.at(1).startsWith("Loaded services file OK.")) {
             //qDebug() << "Running testparm" << args;
         } else {
-            kWarning() << "We got some errors while running testparm" << stdErr;
+            qWarning() << "We got some errors while running testparm" << stdErr;
         }
     }
 
@@ -179,8 +179,8 @@ QByteArray KSambaSharePrivate::getNetUserShareInfo()
             //TODO: parse and process other error messages.
             // create a parser for the error output and
             // send error message somewhere
-            kWarning() << "We got some errors while running 'net usershare info'";
-            kWarning() << stdErr;
+            qWarning() << "We got some errors while running 'net usershare info'";
+            qWarning() << stdErr;
         }
     }
 
@@ -336,8 +336,8 @@ KSambaShareData::UserShareError KSambaSharePrivate::add(const KSambaShareData &s
     if (!stdErr.isEmpty()) {
         // create a parser for the error output and
         // send error message somewhere
-        kWarning() << "We got some errors while running 'net usershare add'" << args;
-        kWarning() << stdErr;
+        qWarning() << "We got some errors while running 'net usershare add'" << args;
+        qWarning() << stdErr;
     }
 
     return (ret == 0) ? KSambaShareData::UserShareOk : KSambaShareData::UserShareSystemError;
@@ -401,7 +401,7 @@ bool KSambaSharePrivate::sync()
             } else if (key == QLatin1String("guest_ok")) {
                 shareData.dd->guestPermission = value;
             } else {
-                kWarning() << "Something nasty happen while parsing 'net usershare info'"
+                qWarning() << "Something nasty happen while parsing 'net usershare info'"
                            << "share:" << currentShare << "key:" << key;
             }
         } else if (line.trimmed().isEmpty()) {

@@ -947,7 +947,7 @@ void SchedulerPrivate::doJob(SimpleJob *job)
 {
     //qDebug() << job;
     if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
-        kWarning(7006) << "KIO is not thread-safe.";
+        qWarning() << "KIO is not thread-safe.";
     }
 
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);
@@ -999,7 +999,7 @@ void SchedulerPrivate::jobFinished(SimpleJob *job, Slave *slave)
 {
     //qDebug() << job << slave;
     if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
-        kWarning(7006) << "KIO is not thread-safe.";
+        qWarning() << "KIO is not thread-safe.";
     }
 
     KIO::SimpleJobPrivate *const jobPriv = SimpleJobPrivate::get(job);

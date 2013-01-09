@@ -254,7 +254,7 @@ QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> 
         const QStringList commands = (*entry).commands();
         Q_ASSERT(!commands.isEmpty());
         if ( commands.count() != userCommands.count() )
-            kWarning() << "KDataTool desktop file error (" << (*entry).service()->entryPath()
+            qWarning() << "KDataTool desktop file error (" << (*entry).service()->entryPath()
                         << ")." << commands.count() << "commands and"
                         << userCommands.count() << " descriptions.";
         QStringList::ConstIterator uit = userCommands.begin();

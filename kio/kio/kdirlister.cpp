@@ -297,7 +297,7 @@ KDirLister::Private::CachedItemsJob::CachedItemsJob(KDirLister* lister, const QU
 {
     //qDebug() << "Creating CachedItemsJob" << this << "for lister" << lister << url;
     if (lister->d->cachedItemsJobForUrl(url)) {
-      kWarning(7004) << "Lister" << lister << "has a cached items job already for" << url;
+      qWarning() << "Lister" << lister << "has a cached items job already for" << url;
     }
     lister->d->m_cachedItemsJobs.append(this);
     setAutoDelete(true);
@@ -333,7 +333,7 @@ void KDirListerCache::emitItemsFromCache(KDirLister::Private::CachedItemsJob* ca
 
     DirItem *itemU = kDirListerCache->itemsInUse.value(urlStr);
     if (!itemU) {
-        kWarning(7004) << "Can't find item for directory" << urlStr << "anymore";
+        qWarning() << "Can't find item for directory" << urlStr << "anymore";
     } else {
         const KFileItemList items = itemU->lstItems;
         const KFileItem rootItem = itemU->rootItem;
@@ -704,9 +704,9 @@ void KDirListerCache::updateDirectory( const QUrl& _dir )
     // the listing is continuing.
 
     if (!(listers.isEmpty() || killed)) {
-        kWarning() << "The unexpected happened.";
-        kWarning() << "listers for" << _dir << "=" << listers;
-        kWarning() << "job=" << job;
+        qWarning() << "The unexpected happened.";
+        qWarning() << "listers for" << _dir << "=" << listers;
+        qWarning() << "job=" << job;
         Q_FOREACH(KDirLister *kdl, listers) {
             //qDebug() << "lister" << kdl << "m_cachedItemsJobs=" << kdl->d->m_cachedItemsJobs;
         }
@@ -2734,7 +2734,7 @@ void KDirLister::Private::redirect(const QUrl& oldUrl, const QUrl& newUrl, bool 
 
     const int idx = lstDirs.indexOf( oldUrl );
     if (idx == -1) {
-        kWarning(7004) << "Unexpected redirection from" << oldUrl << "to" << newUrl
+        qWarning() << "Unexpected redirection from" << oldUrl << "to" << newUrl
                        << "but this dirlister is currently listing/holding" << lstDirs;
     } else {
         lstDirs[ idx ] = newUrl;

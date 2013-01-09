@@ -37,7 +37,7 @@ public:
 	if (qApp && qobject_cast<QApplication *>(qApp)) {
             KMessageBox::error( parent, text, caption );
 	} else {
-            kWarning() << text;
+            qWarning() << text;
         }
     }
 
@@ -48,7 +48,7 @@ public:
 	if (qApp && qobject_cast<QApplication *>(qApp)) {
             KMessageBox::sorry( parent, text, caption );
 	} else {
-            kWarning() << text;
+            qWarning() << text;
         }
     }
 

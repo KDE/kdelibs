@@ -86,7 +86,7 @@ namespace KIO {
         {
             slaveconnserver->listenForRemote();
             if ( !slaveconnserver->isListening() )
-                kWarning() << "Connection server not listening, could not connect";
+                qWarning() << "Connection server not listening, could not connect";
         }
         ~SlavePrivate()
         {

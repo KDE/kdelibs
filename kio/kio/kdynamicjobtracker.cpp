@@ -98,7 +98,7 @@ void KDynamicJobTracker::unregisterJob(KJob *job)
     KWidgetJobTracker *widgetTracker = d->trackers[job].widgetTracker;
 
     if (!(widgetTracker || kuiserverTracker)) {
-        kWarning() << "Tried to unregister a kio job that hasn't been registered.";
+        qWarning() << "Tried to unregister a kio job that hasn't been registered.";
         return;
     }
 

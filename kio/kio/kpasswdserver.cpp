@@ -51,7 +51,7 @@ bool KPasswdServer::checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
 
     // special handling for kioslaves which aren't QCoreApplications
     if (!QCoreApplication::instance()) {
-        kWarning(7019) << "kioslave is not a QCoreApplication!";
+        qWarning() << "kioslave is not a QCoreApplication!";
         return legacyCheckAuthInfo(info, windowId, usertime);
     }
     
@@ -69,13 +69,13 @@ bool KPasswdServer::checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
             }
         }
 
-        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!";
+        qWarning() << "Can't communicate with kded_kpasswdserver (for checkAuthInfo)!";
         //qDebug() << reply.error().name() << reply.error().message();
         return false;
     }
 
     if (!loop.waitForResult(reply.value())) {
-        kWarning(7019) << "kded_kpasswdserver died while waiting for reply!";
+        qWarning() << "kded_kpasswdserver died while waiting for reply!";
         return false;
     }
 
@@ -91,7 +91,7 @@ bool KPasswdServer::checkAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
 bool KPasswdServer::legacyCheckAuthInfo(KIO::AuthInfo &info, qlonglong windowId,
                                              qlonglong usertime)
 {
-    kWarning(7019) << "Querying old kded_kpasswdserver.";
+    qWarning() << "Querying old kded_kpasswdserver.";
     
     QByteArray params;
     QDataStream stream(&params, QIODevice::WriteOnly);
@@ -118,7 +118,7 @@ qlonglong KPasswdServer::queryAuthInfo(KIO::AuthInfo &info, const QString &error
 
     // special handling for kioslaves which aren't QCoreApplications
     if (!QCoreApplication::instance()) {
-        kWarning(7019) << "kioslave is not a QCoreApplication!";
+        qWarning() << "kioslave is not a QCoreApplication!";
         return legacyQueryAuthInfo(info, errorMsg, windowId, seqNr, usertime);
     }
     
@@ -140,13 +140,13 @@ qlonglong KPasswdServer::queryAuthInfo(KIO::AuthInfo &info, const QString &error
             }
         }
 
-        kWarning(7019) << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!";
+        qWarning() << "Can't communicate with kded_kpasswdserver (for queryAuthInfo)!";
         //qDebug() << reply.error().name() << reply.error().message();
         return -1;
     }
 
     if (!loop.waitForResult(reply.value())) {
-        kWarning(7019) << "kded_kpasswdserver died while waiting for reply!";
+        qWarning() << "kded_kpasswdserver died while waiting for reply!";
         return -1;
     }
 
@@ -161,7 +161,7 @@ qlonglong KPasswdServer::legacyQueryAuthInfo(KIO::AuthInfo &info, const QString 
                                              qlonglong windowId, qlonglong seqNr,
                                              qlonglong usertime)
 {
-    kWarning(7019) << "Querying old kded_kpasswdserver.";
+    qWarning() << "Querying old kded_kpasswdserver.";
     
     QByteArray params;
     QDataStream stream(&params, QIODevice::WriteOnly);
@@ -192,7 +192,7 @@ void KPasswdServer::addAuthInfo(const KIO::AuthInfo &info, qlonglong windowId)
 
 void KPasswdServer::legacyAddAuthInfo(const KIO::AuthInfo &info, qlonglong windowId)
 {
-    kWarning(7019) << "Querying old kded_kpasswdserver.";
+    qWarning() << "Querying old kded_kpasswdserver.";
     
     QByteArray params;
     QDataStream stream(&params, QIODevice::WriteOnly);

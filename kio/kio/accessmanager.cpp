@@ -293,7 +293,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         default: {
-            kWarning(7044) << "Unsupported KIO operation requested! Defering to QNetworkAccessManager...";
+            qWarning() << "Unsupported KIO operation requested! Defering to QNetworkAccessManager...";
             return QNetworkAccessManager::createRequest(op, req, outgoingData);
         }
     }
@@ -332,7 +332,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             reply = new KDEPrivate::AccessManagerReply(op, req, data, finalURL, metaData, this);
             //qDebug() << "Synchronous XHR:" << reply << reqUrl;
         } else {
-            kWarning(7044) << "Failed to create a synchronous XHR for" << reqUrl;
+            qWarning() << "Failed to create a synchronous XHR for" << reqUrl;
             reply = new KDEPrivate::AccessManagerReply(op, req, QNetworkReply::UnknownNetworkError, kioJob->errorText(), this);
         }
     } else {
@@ -518,7 +518,7 @@ QList<QNetworkCookie> CookieJar::cookiesForUrl(const QUrl &url) const
     QDBusReply<QString> reply = kcookiejar.call("findDOMCookies", url.toString(QUrl::RemoveUserInfo), (qlonglong)d->windowId);
 
     if (!reply.isValid()) {
-        kWarning(7044) << "Unable to communicate with the cookiejar!";
+        qWarning() << "Unable to communicate with the cookiejar!";
         return cookieList;
     }
 
