@@ -32,9 +32,6 @@ set(_Strigi_FIND_QUIETLY ${Strigi_FIND_QUIETLY})
 find_package(Strigi QUIET NO_MODULE PATHS "${strigi_home}/lib/strigi" "${strigi_home}/lib64/strigi")
 set(Strigi_FIND_QUIETLY ${_Strigi_FIND_QUIETLY})
 
-# STRIGI_VERSION is set to ensure compatibility with older strigi versions
-set(STRIGI_VERSION "${Strigi_VERSION}")
-
 # If StrigiConfig.cmake (installed by libstreams) has been found
 # and it contains all necessary information (since November 16th, 2008), use the information
 # included there, otherwise search it in the same way as any non-cmake project.
