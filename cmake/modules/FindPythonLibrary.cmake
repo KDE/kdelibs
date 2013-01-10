@@ -49,13 +49,13 @@ if (PYTHONINTERP_FOUND)
     # Auto detect Python site-packages directory
     execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(True))" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 
+    message (STATUS "Python system site-packages directory: ${PYTHON_SITE_PACKAGES_DIR}")
     # Set the destination install directory to be the same as the site-packages dir if not supplied
     if(NOT DEFINED PYTHON_SITE_PACKAGES_INSTALL_DIR)
-        set(PYTHON_SITE_PACKAGES_INSTALL_DIR "${PYTHON_SITE_PACKAGES_DIR}")
-    endif(NOT DEFINED PYTHON_SITE_PACKAGES_INSTALL_DIR)
-
-    message (STATUS "Python system site-packages directory: ${PYTHON_SITE_PACKAGES_DIR}")
-    message(STATUS "Installing Python modules to: ${PYTHON_SITE_PACKAGES_INSTALL_DIR}")
+        set(PYTHON_SITE_PACKAGES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/python${PYTHON_SHORT_VERSION}/site-packages CACHE PATH "The directory where Python modules will be installed to.")
+    else()
+        message(STATUS "Python files will be installed to ${PYTHON_SITE_PACKAGES_INSTALL_DIR}. Make sure to add them to the Python search path (e.g. by setting PYTHONPATH)")
+    endif()
 
 endif(PYTHONINTERP_FOUND)
 
