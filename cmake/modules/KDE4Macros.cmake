@@ -675,8 +675,7 @@ macro (KDE4_ADD_PLUGIN _target_NAME )
    set(_SRCS ${_args})
 
 
-   get_target_property(_tgt_AUTOMOC ${_target_NAME} AUTOMOC)
-   if (NOT _tgt_AUTOMOC)
+   if (NOT CMAKE_AUTOMOC)
       _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
    endif()
 
@@ -691,7 +690,7 @@ macro (KDE4_ADD_PLUGIN _target_NAME )
       add_library(${_target_NAME} ${_add_lib_param}  ${_SRCS})
    endif (KDE4_ENABLE_FINAL)
 
-   if (NOT _tgt_AUTOMOC)
+   if (NOT CMAKE_AUTOMOC)
       _automoc4_kde4_post_target_handling(${_target_NAME})
    endif()
 
@@ -810,8 +809,7 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
 
       target_link_libraries(${_target_NAME} ${QT_QTMAIN_LIBRARY} kdeinit_${_target_NAME})
    else(WIN32)
-      get_target_property(_tgt_AUTOMOC ${_target_NAME} AUTOMOC)
-      if (NOT _tgt_AUTOMOC)
+      if (NOT CMAKE_AUTOMOC)
         _automoc4_kde4_pre_target_handling(kdeinit_${_target_NAME} _SRCS)
       endif()
 
@@ -823,7 +821,7 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
          add_library(kdeinit_${_target_NAME} SHARED ${_SRCS})
       endif (KDE4_ENABLE_FINAL)
 
-      if (NOT _tgt_AUTOMOC)
+      if (NOT CMAKE_AUTOMOC)
         _automoc4_kde4_post_target_handling(kdeinit_${_target_NAME})
       endif()
 
@@ -1001,8 +999,7 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
       set(_add_executable_param ${_add_executable_param} EXCLUDE_FROM_ALL)
    endif (_test AND NOT KDE4_BUILD_TESTS)
 
-   get_target_property(_tgt_AUTOMOC ${_target_NAME} AUTOMOC)
-   if (NOT _tgt_AUTOMOC)
+   if (NOT CMAKE_AUTOMOC)
       _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
    endif()
 
@@ -1017,7 +1014,7 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
        _kde4_add_manifest(${_target_NAME})
    ENDIF(KDE4_ENABLE_UAC_MANIFEST)
 
-   if (NOT _tgt_AUTOMOC)
+   if (NOT CMAKE_AUTOMOC)
       _automoc4_kde4_post_target_handling(${_target_NAME})
    endif()
 
@@ -1054,8 +1051,7 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 
    set(_SRCS ${_first_SRC} ${ARGN})
 
-   get_target_property(_tgt_AUTOMOC ${_target_NAME} AUTOMOC)
-   if (NOT _tgt_AUTOMOC)
+   if (NOT CMAKE_AUTOMOC)
       _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
    endif()
 
@@ -1066,7 +1062,7 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
       add_library(${_target_NAME} ${_add_lib_param} ${_SRCS})
    endif (KDE4_ENABLE_FINAL)
 
-   if (NOT _tgt_AUTOMOC)
+   if (NOT CMAKE_AUTOMOC)
       _automoc4_kde4_post_target_handling(${_target_NAME})
    endif()
 
