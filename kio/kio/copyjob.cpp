@@ -1871,7 +1871,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                         //qDebug() << "Didn't manage to rename" << _tmp << "to" << _dest << ", reverting";
                         // Revert back to original name!
                         if (KDE::rename( _tmp, _src ) != 0) {
-                            kError(7007) << "Couldn't rename" << _tmp << "back to" << _src << '!';
+                            qWarning() << "Couldn't rename" << _tmp << "back to" << _src << '!';
                             // Severe error, abort
                             q->Job::slotResult(job); // will set the error and emit result(this)
                             return;

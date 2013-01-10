@@ -243,7 +243,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
         QUrlPathInfo pathInfo(nodeUrl);
         const QString nodePath = pathInfo.path(QUrlPathInfo::AppendTrailingSlash);
         if(!pathStr.startsWith(nodePath)) {
-            kError(7008) << "The kioslave for" << url.scheme() << "violates the hierarchy structure:"
+            qWarning() << "The kioslave for" << url.scheme() << "violates the hierarchy structure:"
                          << "I arrived at node" << nodePath << ", but" << pathStr << "does not start with that path.";
             return 0;
         }
@@ -377,7 +377,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
     // If the directory containing the items wasn't found, then we have a big problem.
     // Are you calling KDirLister::openUrl(url,true,false)? Please use expandToUrl() instead.
     if (!result) {
-        kError(7008) << "Items emitted in directory" << directoryUrl
+        qWarning() << "Items emitted in directory" << directoryUrl
                      << "but that directory isn't in KDirModel!"
                      << "Root directory:" << urlForNode(m_rootNode);
         Q_FOREACH(const KFileItem& item, items) {
@@ -419,9 +419,11 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
         // Test code for possible duplication of items in the childnodes list,
         // not sure if/how it ever happened.
         //if (dirNode->m_childNodes.count() &&
-        //    dirNode->m_childNodes.last()->item().name() == (*it).name())
-        //    kFatal() << "Already having" << (*it).name() << "in" << directoryUrl
+        //    dirNode->m_childNodes.last()->item().name() == (*it).name()) {
+        //    qWarning() << "Already having" << (*it).name() << "in" << directoryUrl
         //             << "url=" << dirNode->m_childNodes.last()->item().url();
+        //    abort();
+        //}
 #endif
         dirNode->m_childNodes.append(node);
         const QUrl url = it->url();

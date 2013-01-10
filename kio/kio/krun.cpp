@@ -859,13 +859,13 @@ static bool makeFileExecutable(const QString &fileName)
     // over.
     QFile desktopFile(fileName);
     if (!desktopFile.open(QFile::ReadOnly)) {
-        kError(7010) << "Error opening service" << fileName << desktopFile.errorString();
+        qWarning() << "Error opening service" << fileName << desktopFile.errorString();
         return false;
     }
 
     QByteArray header = desktopFile.peek(2);   // First two chars of file
     if (header.size() == 0) {
-        kError(7010) << "Error inspecting service" << fileName << desktopFile.errorString();
+        qWarning() << "Error inspecting service" << fileName << desktopFile.errorString();
         return false; // Some kind of error
     }
 
@@ -874,13 +874,13 @@ static bool makeFileExecutable(const QString &fileName)
         QSaveFile saveFile;
         saveFile.setFileName(fileName);
         if (!saveFile.open(QIODevice::WriteOnly)) {
-            kError(7010) << "Unable to open replacement file for" << fileName << saveFile.errorString();
+            qWarning() << "Unable to open replacement file for" << fileName << saveFile.errorString();
             return false;
         }
 
         QByteArray shebang("#!/usr/bin/env xdg-open\n");
         if (saveFile.write(shebang) != shebang.size()) {
-            kError(7010) << "Error occurred adding header for" << fileName << saveFile.errorString();
+            qWarning() << "Error occurred adding header for" << fileName << saveFile.errorString();
             saveFile.cancelWriting();
             return false;
         }
@@ -888,25 +888,25 @@ static bool makeFileExecutable(const QString &fileName)
         // Now copy the one into the other and then close and reopen desktopFile
         QByteArray desktopData(desktopFile.readAll());
         if (desktopData.isEmpty()) {
-            kError(7010) << "Unable to read service" << fileName << desktopFile.errorString();
+            qWarning() << "Unable to read service" << fileName << desktopFile.errorString();
             saveFile.cancelWriting();
             return false;
         }
 
         if (saveFile.write(desktopData) != desktopData.size()) {
-            kError(7010) << "Error copying service" << fileName << saveFile.errorString();
+            qWarning() << "Error copying service" << fileName << saveFile.errorString();
             saveFile.cancelWriting();
             return false;
         }
 
         desktopFile.close();
         if (!saveFile.commit()) { // Figures....
-            kError(7010) << "Error committing changes to service" << fileName << saveFile.errorString();
+            qWarning() << "Error committing changes to service" << fileName << saveFile.errorString();
             return false;
         }
 
         if (!desktopFile.open(QFile::ReadOnly)) {
-            kError(7010) << "Error re-opening service" << fileName << desktopFile.errorString();
+            qWarning() << "Error re-opening service" << fileName << desktopFile.errorString();
             return false;
         }
     } // Add header
@@ -914,7 +914,7 @@ static bool makeFileExecutable(const QString &fileName)
     // corresponds to owner on unix, which will have to do since if the user
     // isn't the owner we can't change perms anyways.
     if (!desktopFile.setPermissions(QFile::ExeUser | desktopFile.permissions())) {
-        kError(7010) << "Unable to change permissions for" << fileName << desktopFile.errorString();
+        qWarning() << "Unable to change permissions for" << fileName << desktopFile.errorString();
         return false;
     }
 
@@ -1343,7 +1343,7 @@ void KRun::scanFile()
     // getting some data out of the file, to know what mimetype it is.
 
     if (!KProtocolManager::supportsReading(d->m_strURL)) {
-        kError(7010) << "#### NO SUPPORT FOR READING!";
+        qWarning() << "#### NO SUPPORT FOR READING!";
         d->m_bFault = true;
         d->m_bFinished = true;
         d->startTimer();
@@ -1407,7 +1407,7 @@ void KRun::slotStatResult(KJob * job)
         // actions needs to be taken.
         if (errCode != KIO::ERR_NO_CONTENT) {
             d->m_showingDialog = true;
-            kError(7010) << this << "ERROR" << job->error() << job->errorString();
+            qWarning() << this << "ERROR" << job->error() << job->errorString();
             job->uiDelegate()->showErrorMessage();
             //qDebug() << this << " KRun returning from showErrorDialog, starting timer to delete us";
             d->m_showingDialog = false;
@@ -1424,7 +1424,7 @@ void KRun::slotStatResult(KJob * job)
 
         KIO::StatJob* statJob = qobject_cast<KIO::StatJob*>(job);
         if (!statJob) {
-            kFatal() << "job is a " << typeid(*job).name() << " should be a StatJob";
+            qFatal("Fatal Error: job is a %s, should be a StatJob", typeid(*job).name());
         }
 
         // Update our URL in case of a redirection
@@ -1477,7 +1477,7 @@ void KRun::slotScanFinished(KJob *job)
         // actions needs to be taken.
         if (errCode != KIO::ERR_NO_CONTENT) {
             d->m_showingDialog = true;
-            kError(7010) << this << "ERROR (stat):" << job->error() << ' ' << job->errorString();
+            qWarning() << this << "ERROR (stat):" << job->error() << ' ' << job->errorString();
             job->uiDelegate()->showErrorMessage();
             //qDebug() << this << " KRun returning from showErrorDialog, starting timer to delete us";
             d->m_showingDialog = false;

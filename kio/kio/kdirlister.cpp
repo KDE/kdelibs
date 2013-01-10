@@ -1173,20 +1173,20 @@ void KDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entri
 
     DirItem *dir = itemsInUse.value(urlStr);
     if (!dir) {
-        kError(7004) << "Internal error: job is listing" << url << "but itemsInUse only knows about" << itemsInUse.keys();
+        qWarning() << "Internal error: job is listing" << url << "but itemsInUse only knows about" << itemsInUse.keys();
         Q_ASSERT( dir );
         return;
     }
 
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
     if (dit == directoryData.end()) {
-        kError(7004) << "Internal error: job is listing" << url << "but directoryData doesn't know about that url, only about:" << directoryData.keys();
+        qWarning() << "Internal error: job is listing" << url << "but directoryData doesn't know about that url, only about:" << directoryData.keys();
         Q_ASSERT(dit != directoryData.end());
         return;
     }
     KDirListerCacheDirectoryData& dirData = *dit;
     if (dirData.listersCurrentlyListing.isEmpty()) {
-        kError(7004) << "Internal error: job is listing" << url << "but directoryData says no listers are currently listing " << urlStr;
+        qWarning() << "Internal error: job is listing" << url << "but directoryData says no listers are currently listing " << urlStr;
 #ifndef NDEBUG
         printDebug();
 #endif
@@ -1261,7 +1261,7 @@ void KDirListerCache::slotResult( KJob *j )
 
   DirectoryDataHash::iterator dit = directoryData.find(jobUrlStr);
   if (dit == directoryData.end()) {
-    kError() << "Nothing found in directoryData for URL" << jobUrlStr;
+    qWarning() << "Nothing found in directoryData for URL" << jobUrlStr;
 #ifndef NDEBUG
     printDebug();
 #endif
@@ -1270,7 +1270,7 @@ void KDirListerCache::slotResult( KJob *j )
   }
   KDirListerCacheDirectoryData& dirData = *dit;
   if ( dirData.listersCurrentlyListing.isEmpty() ) {
-    kError() << "OOOOPS, nothing in directoryData.listersCurrentlyListing for" << jobUrlStr;
+    qWarning() << "OOOOPS, nothing in directoryData.listersCurrentlyListing for" << jobUrlStr;
     // We're about to assert; dump the current state...
 #ifndef NDEBUG
     printDebug();
@@ -1712,7 +1712,7 @@ void KDirListerCache::slotUpdateResult( KJob * j )
 
     DirItem *dir = itemsInUse.value(jobUrlStr, 0);
     if (!dir) {
-        kError(7004) << "Internal error: itemsInUse did not contain" << jobUrlStr;
+        qWarning() << "Internal error: itemsInUse did not contain" << jobUrlStr;
 #ifndef NDEBUG
         printDebug();
 #endif
@@ -2042,7 +2042,8 @@ void KDirListerCache::printDebug()
 
     // Abort on listers without jobs -after- showing the full dump. Easier debugging.
     Q_FOREACH(KDirLister* listit, listersWithoutJob) {
-        kFatal() << "HUH? Lister" << listit << "is supposed to be listing, but has no job!";
+        qWarning() << "Fatal Error: HUH? Lister" << listit << "is supposed to be listing, but has no job!";
+        abort();
     }
 }
 #endif

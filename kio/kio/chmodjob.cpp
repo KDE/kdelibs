@@ -273,7 +273,7 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
     {
         struct passwd* pw = getpwnam(QFile::encodeName(owner));
         if ( pw == 0L )
-            kError(250) << " ERROR: No user" << owner;
+            qWarning() << " ERROR: No user" << owner;
         else
             newOwnerID = pw->pw_uid;
     }
@@ -282,7 +282,7 @@ ChmodJob *KIO::chmod( const KFileItemList& lstItems, int permissions, int mask,
     {
         struct group* g = getgrnam(QFile::encodeName(group));
         if ( g == 0L )
-            kError(250) << " ERROR: No group" << group;
+            qWarning() << " ERROR: No group" << group;
         else
             newGroupID = g->gr_gid;
     }

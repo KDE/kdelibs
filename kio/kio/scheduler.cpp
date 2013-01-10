@@ -541,7 +541,7 @@ Slave *ProtoQueue::createSlave(const QString &protocol, SimpleJob *job, const QU
         scheduler()->connect(slave, SIGNAL(slaveStatus(pid_t,QByteArray,QString,bool)),
                              SLOT(slotSlaveStatus(pid_t,QByteArray,QString,bool)));
     } else {
-        kError() << "couldn't create slave:" << errortext;
+        qWarning() << "couldn't create slave:" << errortext;
         if (job) {
             job->slotError(error, errortext);
         }

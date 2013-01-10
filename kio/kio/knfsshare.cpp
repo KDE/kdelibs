@@ -87,7 +87,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
   //qDebug() << exportsFile;
 
   if (!f.open(QIODevice::ReadOnly)) {
-    kError() << "KNFSShare: Could not open" << exportsFile;
+    qWarning() << "KNFSShare: Could not open" << exportsFile;
     return false;
   }
 
@@ -130,7 +130,7 @@ bool KNFSShare::KNFSSharePrivate::readExportsFile()
     if ( completeLine[0] == QLatin1Char('\"') ) {
       int i = completeLine.indexOf(QLatin1Char('"'), 1);
       if (i == -1) {
-        kError() << "KNFSShare: Parse error: Missing quotation mark:" << completeLine;
+        qWarning() << "KNFSShare: Parse error: Missing quotation mark:" << completeLine;
         continue;
       }
       path = completeLine.mid(1,i-1);

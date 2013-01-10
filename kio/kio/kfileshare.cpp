@@ -52,7 +52,7 @@ static QString findExe( const char* exeName )
    if (exe.isEmpty())
        exe = QStandardPaths::findExecutable(exeName, QStringList() << "/usr/sbin");
    if (exe.isEmpty())
-       kError() << exeName << "not found in PATH nor in /usr/sbin";
+       qWarning() << exeName << "not found in PATH nor in /usr/sbin";
    return exe;
 }
 
@@ -192,7 +192,7 @@ void KFileShare::readShareList()
     QProcess proc;
     proc.start( exe, QStringList() );
     if ( !proc.waitForFinished() ) {
-        kError() << "Can't run" << exe;
+        qWarning() << "Can't run" << exe;
         s_authorization = ErrorNotFound;
         return;
     }

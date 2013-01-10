@@ -961,7 +961,7 @@ int SlaveBase::waitForAnswer( int expected1, int expected2, QByteArray & data, i
         }
         else
         {
-            kFatal(7019) << "Got cmd " << cmd << " while waiting for an answer!";
+            qFatal("Fatal Error: Got cmd %d, while waiting for an answer!", cmd);
         }
     }
 }
