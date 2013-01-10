@@ -34,8 +34,6 @@
 #include <strigi/fieldtypes.h>
 #endif
 
-#include <kdebug.h>
-
 #include <QFileInfo>
 #include <QDateTime>
 #include <QStringList>

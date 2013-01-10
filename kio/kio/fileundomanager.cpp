@@ -23,7 +23,6 @@
 #include "fileundomanager_adaptor.h"
 
 #include <kdatetime.h>
-#include <kdebug.h>
 #include <kdirnotify.h>
 #include <kio/copyjob.h>
 #include <kio/job.h>

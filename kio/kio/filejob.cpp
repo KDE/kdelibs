@@ -25,7 +25,6 @@
 #include "slave.h"
 
 #include <QTimer>
-#include <kdebug.h>
 
 #include "job_p.h"
 

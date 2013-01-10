@@ -22,9 +22,9 @@
 #include <QtCore/QFile>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QTextStream>
+#include <QDebug>
 
 #include <kdirwatch.h>
-#include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 

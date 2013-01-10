@@ -25,7 +25,6 @@
 
 #include <QtCore/QRegExp>
 
-#include <kdebug.h>
 #include <kde_file.h>
 #include <klocalizedstring.h>
 #include <kio/job.h>

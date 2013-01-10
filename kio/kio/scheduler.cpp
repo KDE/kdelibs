@@ -27,7 +27,6 @@
 #include "connection_p.h"
 #include "job_p.h"
 
-#include <kdebug.h>
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
 #include <assert.h>

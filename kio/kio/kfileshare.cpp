@@ -22,9 +22,9 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QProcess>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <qstandardpaths.h>
-#include <kdebug.h>
 #include <kdirwatch.h>
 #include <stdio.h>
 #include <stdlib.h>

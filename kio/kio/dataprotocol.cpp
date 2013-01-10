@@ -18,7 +18,6 @@
 
 #include "dataprotocol.h"
 
-#include <kdebug.h>
 #include "global.h"
 
 #include <QtCore/QByteArray>

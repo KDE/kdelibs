@@ -29,7 +29,6 @@
 #include <kdirnotify.h>
 
 #include <klocalizedstring.h>
-#include <kdebug.h>
 #include <kde_file.h>
 
 #include <QtCore/QTimer>

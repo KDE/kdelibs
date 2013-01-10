@@ -33,7 +33,6 @@
 #include <QtDBus/QtDBus>
 #include <QtCore/QProcess>
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 
 #include <ktoolinvocation.h>

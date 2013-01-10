@@ -23,7 +23,6 @@
 #include "mkdirjob.h"
 #include "job.h"
 
-#include <kdebug.h>
 #include <qmimedatabase.h>
 
 #include <QtCore/QEventLoop>

@@ -30,7 +30,6 @@
 #include <QWidget>
 #include <QUrl>
 
-#include <kdebug.h>
 #include <kio/global.h>
 #include <kdirwatch.h>
 

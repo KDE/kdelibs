@@ -22,7 +22,6 @@
 
 #include "hostinfo.h"
 
-#include <kdebug.h>
 #include <kiconloader.h>
 #include <kservicetypetrader.h>
 #include <kio/global.h>

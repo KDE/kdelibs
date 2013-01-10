@@ -30,7 +30,6 @@
 #include "jobuidelegate.h"
 #include "netaccess.h"
 
-#include <kdebug.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 #include <kprotocolinfo.h>

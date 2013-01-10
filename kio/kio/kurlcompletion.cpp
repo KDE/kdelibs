@@ -41,7 +41,6 @@
 #include <qurlpathinfo.h>
 
 #include <kauthorized.h>
-#include <kdebug.h>
 #include <kio/job.h>
 #include <kprotocolmanager.h>
 #include <kconfig.h>

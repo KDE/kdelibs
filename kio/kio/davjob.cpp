@@ -22,7 +22,6 @@
 
 #include <QtXml/QDomDocument>
 
-#include <kdebug.h>
 #include <kio/http.h>
 
 #include "jobclasses.h"

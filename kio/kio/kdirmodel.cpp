@@ -29,7 +29,6 @@
 #include <kio/jobuidelegate.h>
 #include <kio/joburlcache_p.h>
 #include <kurlmimedata.h>
-#include <kdebug.h>
 #include <kiconloader.h>
 #include <QMimeData>
 #include <QFile>

@@ -8,9 +8,9 @@
 #include "kimageio.h"
 
 #include "qmimedatabase.h"
+#include <QDebug>
 #include <kservicetypetrader.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
 
 QString
 KImageIO::pattern(Mode mode)

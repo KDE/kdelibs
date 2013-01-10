@@ -22,7 +22,6 @@
 #include "job.h"
 #include "job_p.h"
 #include <slave.h>
-#include <kdebug.h>
 #include <kauthorized.h>
 
 using namespace KIO;

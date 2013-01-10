@@ -44,7 +44,6 @@
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
 #include <kfileitem.h>
 #include <kseparator.h>
 #include <kstringhandler.h>

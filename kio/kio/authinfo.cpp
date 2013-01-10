@@ -33,7 +33,6 @@
 #include <QtDBus/QDBusMetaType>
 #include <kde_file.h>
 
-#include <kdebug.h>
 #include <qstandardpaths.h>
 
 #define NETRC_READ_BUF_SIZE 4096

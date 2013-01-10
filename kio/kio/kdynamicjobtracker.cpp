@@ -23,13 +23,13 @@
 #include <kuiserverjobtracker.h>
 #include <kwidgetjobtracker.h>
 #include <kjobtrackerinterface.h>
-#include <kdebug.h>
 #include <kio/jobtracker.h>
 
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QDBusInterface>
 #include <QMap>
+#include <QDebug>
 
 struct AllTrackers
 {

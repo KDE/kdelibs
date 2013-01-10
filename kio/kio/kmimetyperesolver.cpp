@@ -19,7 +19,6 @@
 */
 
 #include "kmimetyperesolver.h"
-#include <kdebug.h>
 #include "defaultviewadapter_p.h"
 #include <kdirmodel.h>
 #include <kfileitem.h>

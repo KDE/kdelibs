@@ -18,7 +18,7 @@
 */
 
 #include "directorysizejob.h"
-#include <kdebug.h>
+#include <qdebug.h>
 #include <QtCore/QTimer>
 
 #include "jobuidelegate.h"

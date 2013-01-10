@@ -22,7 +22,6 @@
 */
 
 #include "previewjob.h"
-#include <kdebug.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>

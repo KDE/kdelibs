@@ -61,7 +61,6 @@
 #include <kmessageboxwrapper.h>
 #include <kglobal.h>
 #include <ktoolinvocation.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 #include <kprocess.h>

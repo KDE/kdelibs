@@ -24,7 +24,6 @@
 #include <kio/authinfo.h>
 #include <QtCore/QByteArray>
 #include <QtCore/QEventLoop>
-#include <kdebug.h>
 
 #include "kpasswdserverloop_p.h"
 #include "kpasswdserver_interface.h"

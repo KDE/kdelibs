@@ -20,7 +20,6 @@
 
 #include "kdatatool.h"
 
-#include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kactioncollection.h>
 #include <kiconloader.h>
@@ -29,6 +28,7 @@
 
 #include <QPixmap>
 #include <QtCore/QFile>
+#include <QDebug>
 
 /*************************************************
  *

@@ -29,7 +29,6 @@
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kdesktopfile.h>
-#include <kdebug.h>
 #include <kde_file.h>
 
 #include "slave.h"

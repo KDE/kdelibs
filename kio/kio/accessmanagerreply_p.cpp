@@ -27,7 +27,6 @@
 #include "job.h"
 #include "scheduler.h"
 
-#include <kdebug.h>
 #include <kauthorized.h>
 #include <kprotocolinfo.h>
 #include <qmimedatabase.h>

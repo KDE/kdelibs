@@ -24,6 +24,7 @@
 #include <kio/kio_export.h>
 #include <QtCore/QList>
 #include <QtCore/QUrl>
+#include <QDebug>
 class KDesktopFile;
 class KService;
 

@@ -30,9 +30,9 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QStringList>
 #include <QtCore/QProcess>
+#include <QDebug>
 
 #include <kdirwatch.h>
-#include <kdebug.h>
 #include <kuser.h>
 
 // Default smb.conf locations

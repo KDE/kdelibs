@@ -20,7 +20,6 @@
 #include "kshellcompletion.h"
 
 #include <stdlib.h>
-#include <kdebug.h>
 #include <QtCore/QCharRef>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QRegExp>

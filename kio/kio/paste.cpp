@@ -28,7 +28,6 @@
 #include "kio/kprotocolmanager.h"
 #include "jobuidelegate.h"
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kurlmimedata.h>

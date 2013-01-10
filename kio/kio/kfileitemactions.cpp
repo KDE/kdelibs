@@ -23,7 +23,6 @@
 #include <kaction.h>
 #include <krun.h>
 #include <kmimetypetrader.h>
-#include <kdebug.h>
 #include <kdesktopfileactions.h>
 #include <kmenu.h>
 #include <klocalizedstring.h>

@@ -25,9 +25,9 @@
 #include "jobuidelegate.h"
 
 #include <klocalizedstring.h>
-#include <kdebug.h>
 #include <kmessagebox.h>
 #include <QtCore/QFile>
+#include <QDebug>
 #include <qurlpathinfo.h>
 
 #include <pwd.h>

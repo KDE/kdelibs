@@ -23,7 +23,6 @@
 #include <QtCore/QList>
 #include <QtCore/QTextCodec>
 
-#include <kdebug.h>
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>

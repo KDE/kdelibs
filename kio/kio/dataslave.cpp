@@ -23,7 +23,6 @@
 #include "slavebase.h"
 
 #include <klocalizedstring.h>
-#include <kdebug.h>
 
 #include <QtCore/QTimer>
 

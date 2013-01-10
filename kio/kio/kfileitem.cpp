@@ -41,8 +41,8 @@
 #include <QTextDocument>
 #include <QMimeDatabase>
 #include <qurlpathinfo.h>
+#include <QDebug>
 
-#include <kdebug.h>
 #include <kfilemetainfo.h>
 #include <kiconloader.h>
 #include <klocale.h>

@@ -19,7 +19,6 @@
 #include "kdbusservicestarter.h"
 #include "kservicetypetrader.h"
 #include "kservice.h"
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <ktoolinvocation.h>
 #include "QtDBus/QtDBus"

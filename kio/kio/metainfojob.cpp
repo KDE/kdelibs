@@ -21,7 +21,6 @@
 #include "metainfojob.h"
 
 #include <kfileitem.h>
-#include <kdebug.h>
 #include <kfilemetainfo.h>
 
 #include <QtCore/QTimer>

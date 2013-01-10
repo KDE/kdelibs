@@ -20,7 +20,7 @@
 #define KMESSAGEBOXWRAPPER_H
 #include <kmessagebox.h>
 #include <QApplication>
-#include <kdebug.h>
+#include <QDebug>
 
 /**
  * @internal

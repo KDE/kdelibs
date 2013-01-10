@@ -24,7 +24,6 @@
 #include "hostinfo.h"
 #include <errno.h>
 #include <assert.h>
-#include <kdebug.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
