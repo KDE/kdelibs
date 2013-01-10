@@ -624,7 +624,7 @@ void KDirListerCache::forgetDirs( KDirLister *lister, const QUrl& _url, bool not
             if ( isManuallyMounted || containsManuallyMounted ) // [**]
             {
                 //qDebug() << "Not adding a watch on " << item->url << " because it " <<
-                    ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" );
+                //    ( isManuallyMounted ? "is manually mounted" : "contains a manually mounted subdir" );
                 item->complete = false; // set to "dirty"
             } else {
                 item->incAutoUpdate(); // keep watch
@@ -1989,11 +1989,11 @@ void KDirListerCache::processPendingUpdates()
 #ifndef NDEBUG
 void KDirListerCache::printDebug()
 {
-    //qDebug() << "Items in use:";
+    qDebug() << "Items in use:";
     QHash<QString, DirItem *>::const_iterator itu = itemsInUse.constBegin();
     const QHash<QString, DirItem *>::const_iterator ituend = itemsInUse.constEnd();
     for ( ; itu != ituend ; ++itu ) {
-        //qDebug() << "   " << itu.key() << "URL:" << itu.value()->url
+        qDebug() << "   " << itu.key() << "URL:" << itu.value()->url
                      << "rootItem:" << ( !itu.value()->rootItem.isNull() ? itu.value()->rootItem.url() : QUrl() )
                      << "autoUpdates refcount:" << itu.value()->autoUpdates
                      << "complete:" << itu.value()->complete
@@ -2001,19 +2001,19 @@ void KDirListerCache::printDebug()
     }
 
     QList<KDirLister*> listersWithoutJob;
-    //qDebug() << "Directory data:";
+    qDebug() << "Directory data:";
     DirectoryDataHash::const_iterator dit = directoryData.constBegin();
     for ( ; dit != directoryData.constEnd(); ++dit )
     {
         QString list;
         foreach ( KDirLister* listit, (*dit).listersCurrentlyListing )
             list += " 0x" + QString::number( (qlonglong)listit, 16 );
-        //qDebug() << "  " << dit.key() << (*dit).listersCurrentlyListing.count() << "listers:" << list;
+        qDebug() << "  " << dit.key() << (*dit).listersCurrentlyListing.count() << "listers:" << list;
         foreach ( KDirLister* listit, (*dit).listersCurrentlyListing ) {
             if (!listit->d->m_cachedItemsJobs.isEmpty()) {
-                //qDebug() << "  Lister" << listit << "has CachedItemsJobs" << listit->d->m_cachedItemsJobs;
+                qDebug() << "  Lister" << listit << "has CachedItemsJobs" << listit->d->m_cachedItemsJobs;
             } else if (KIO::ListJob* listJob = jobForUrl(dit.key())) {
-                //qDebug() << "  Lister" << listit << "has ListJob" << listJob;
+                qDebug() << "  Lister" << listit << "has ListJob" << listJob;
             } else {
                 listersWithoutJob.append(listit);
             }
@@ -2022,19 +2022,19 @@ void KDirListerCache::printDebug()
         list.clear();
         foreach ( KDirLister* listit, (*dit).listersCurrentlyHolding )
             list += " 0x" + QString::number( (qlonglong)listit, 16 );
-        //qDebug() << "  " << dit.key() << (*dit).listersCurrentlyHolding.count() << "holders:" << list;
+        qDebug() << "  " << dit.key() << (*dit).listersCurrentlyHolding.count() << "holders:" << list;
     }
 
     QMap< KIO::ListJob *, KIO::UDSEntryList >::Iterator jit = runningListJobs.begin();
-    //qDebug() << "Jobs:";
+    qDebug() << "Jobs:";
     for ( ; jit != runningListJobs.end() ; ++jit )
-        //qDebug() << "   " << jit.key() << "listing" << joburl( jit.key() ) << ":" << (*jit).count() << "entries.";
+        qDebug() << "   " << jit.key() << "listing" << joburl( jit.key() ) << ":" << (*jit).count() << "entries.";
 
-    //qDebug() << "Items in cache:";
+    qDebug() << "Items in cache:";
     const QList<QString> cachedDirs = itemsCached.keys();
     foreach(const QString& cachedDir, cachedDirs) {
         DirItem* dirItem = itemsCached.object(cachedDir);
-        //qDebug() << "   " << cachedDir << "rootItem:"
+        qDebug() << "   " << cachedDir << "rootItem:"
                      << (!dirItem->rootItem.isNull() ? dirItem->rootItem.url().toString() : QString("NULL") )
                      << "with" << dirItem->lstItems.count() << "items.";
     }
