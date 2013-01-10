@@ -297,11 +297,13 @@ private Q_SLOTS:
         // for each mimetype, check that the preferred apps are as specified
         for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(), end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
+            kDebug() << "offers for" << mime << ":";
             const KService::List offers = KMimeTypeTrader::self()->query(mime);
             for (int i = 0; i < offers.count(); ++i) {
-                kDebug() << "offers for" << mime << ":" << i << offers[i]->storageId();
+                kDebug() << "   " << i << ":" << offers[i]->storageId();
             }
-            QStringList offerIds = assembleServices(offers, it.value().count());
+            const QStringList offerIds = assembleServices(offers, it.value().count());
+            kDebug() << " Expected:" << offerIds;
             QCOMPARE(offerIds, it.value());
             //const QStringList expectedPreferredServices = it.value();
             //for (int i = 0; i < expectedPreferredServices.count(); ++i) {
