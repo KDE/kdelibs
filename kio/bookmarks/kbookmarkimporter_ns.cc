@@ -28,7 +28,6 @@
 #include <kstringhandler.h>
 #include <klocale.h>
 #include <kdebug.h>
-#include <kde_file.h>
 #include <kcharsets.h>
 #include <kmessagebox.h>
 
@@ -140,9 +139,7 @@ void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent)
       return;
    }
    if (QFile::exists(m_fileName)) {
-      KDE_rename(
-         QFile::encodeName(m_fileName),
-         QFile::encodeName(m_fileName + ".beforekde"));
+       (void)QFile::rename(m_fileName, m_fileName + ".beforekde");
    }
 
    QFile file(m_fileName);
