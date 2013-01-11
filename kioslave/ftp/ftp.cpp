@@ -991,7 +991,7 @@ int Ftp::ftpOpenDataConnection()
     // if we sent EPSV ALL already and it was accepted, then we can't
     // use active connections any more
     if (m_extControl & epsvAllSent)
-      return iErrCodePASV ? iErrCodePASV : iErrCode;
+      return iErrCodePASV;
   }
 
   // fall back to port mode
