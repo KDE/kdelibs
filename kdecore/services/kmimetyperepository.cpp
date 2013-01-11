@@ -765,15 +765,17 @@ static int mimeDataBaseVersion()
 
     QProcess smi;
     smi.start(umd, QStringList() << QString::fromLatin1("-v"));
-    smi.waitForStarted();
-    smi.waitForFinished();
-    const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
-    QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
-    if (versionRe.indexIn(out) > -1) {
-        return KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+    if (smi.waitForStarted() && smi.waitForFinished()) {
+        const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
+        QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
+        if (versionRe.indexIn(out) > -1) {
+            return KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+        }
+        kWarning(servicesDebugArea()) << "Unexpected version scheme from update-mime-database -v: got" << out;
+    } else {
+        kWarning(servicesDebugArea()) << "Error running update-mime-database -v";
     }
 
-    kWarning(servicesDebugArea()) << "Unexpected version scheme from update-mime-database -v: got" << out;
     return -1;
 }
 
