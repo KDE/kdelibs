@@ -704,8 +704,21 @@ static void addPlatformSpecificPkgConfigPath(QStringList& paths)
 
 static int mimeDataBaseVersion()
 {
-    // TODO: Remove the #idef'ed code below once the issue is fixed either
-    // in QProcess or the shared-mime-info utility provides its version number.
+    // shared-mime-info installs a "version" file since 0.91
+    const QStringList versionFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("version"));
+    if (!versionFiles.isEmpty()) {
+        QFile file(versionFiles.first()); // Look at the global file, not at a possibly old local one
+        if (file.open(QIODevice::ReadOnly)) {
+            const QByteArray line = file.readLine().simplified();
+            QRegExp versionRe(QString::fromLatin1("(\\d+)\\.(\\d+)(\\.(\\d+))?"));
+            if (versionRe.indexIn(QString::fromLocal8Bit(line)) > -1) {
+                return KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+            }
+        }
+    }
+
+    // TODO: Remove the #idef'ed code below once the issue is fixed
+    // in QProcess or when we require s-m-i >= 0.91
 #ifdef Q_OS_UNIX
     // Try to read the version number from the shared-mime-info.pc file
     QStringList paths;
