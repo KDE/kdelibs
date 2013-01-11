@@ -271,8 +271,7 @@ enum CacheCleanerCommand {
 static bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mode)
 {
     QFile file(filePath(baseName));
-    file.open(QIODevice::ReadOnly);
-    if (file.openMode() != QIODevice::ReadOnly) {
+    if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
     fi->baseName = baseName;
@@ -438,7 +437,9 @@ public:
     {
         // write out the scoreboard
         QFile sboard(filePath(QLatin1String("scoreboard")));
-        sboard.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        if (!sboard.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return;
+        }
         QDataStream stream(&sboard);
 
         QHash<CacheIndex, MiniCacheFileInfo>::ConstIterator it = m_scoreboard.constBegin();
@@ -578,7 +579,9 @@ private:
             // note that avoiding to open the file is the whole purpose of the scoreboard - we only
             // open the file if we really have to.
             QFile entryFile(fileInfo.absoluteFilePath());
-            entryFile.open(QIODevice::ReadOnly);
+            if (!entryFile.open(QIODevice::ReadOnly)) {
+                return false;
+            }
             if (entryFile.size() < SerializedCacheFileInfo::size) {
                 return false;
             }

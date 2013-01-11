@@ -145,11 +145,11 @@ public:
         {
             if (len) {
                 QFile aOutputFile(m_fileName);
-                aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered);
-                QByteArray buf = QByteArray::fromRawData(data, len);
-                aOutputFile.write(buf.trimmed());
-                aOutputFile.putChar('\n');
-                aOutputFile.close();
+                if (aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered)) {
+                    QByteArray buf = QByteArray::fromRawData(data, len);
+                    aOutputFile.write(buf.trimmed());
+                    aOutputFile.putChar('\n');
+                }
             }
             return len;
         }

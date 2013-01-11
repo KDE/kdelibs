@@ -220,10 +220,10 @@ void KJavaApplet::stateChange( const int newStateInt ) {
             ok = (d->state == UNKNOWN);
             break;
         case INSTANCIATED:
+            ok = (d->state == CLASS_LOADED);
             if (ok) {
                 showStatus(i18n("Initializing Applet \"%1\"...", appletName()));
             }
-            ok = (d->state == CLASS_LOADED);
             break;
         case INITIALIZED:
             ok = (d->state == INSTANCIATED);

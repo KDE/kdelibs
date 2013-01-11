@@ -182,10 +182,11 @@ void IEExporter::visit( const KBookmark &bk ) {
     QString fname = m_currentDir.path() + '/' + ieStyleQuote( bk.fullText() ) + ".url";
     // kDebug() << "visit(" << bk.text() << "), fname == " << fname;
     QFile file( fname );
-    file.open( QIODevice::WriteOnly );
-    QTextStream ts( &file );
-    ts << "[InternetShortcut]\r\n";
-    ts << "URL=" << bk.url().url().toUtf8() << "\r\n";
+    if (file.open(QIODevice::WriteOnly)) {
+        QTextStream ts( &file );
+        ts << "[InternetShortcut]\r\n";
+        ts << "URL=" << bk.url().url().toUtf8() << "\r\n";
+    }
 }
 
 void IEExporter::visitEnter( const KBookmarkGroup &grp ) {
