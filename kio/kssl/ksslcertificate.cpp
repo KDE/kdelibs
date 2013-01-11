@@ -1226,13 +1226,9 @@ QByteArray KSSLCertificate::toNetscape() {
     fclose(ktf_fs);
 
     QFile qf(ktf.fileName());
-    qf.open(QIODevice::ReadOnly);
-    char *buf = new char[qf.size()];
-    qf.read(buf, qf.size());
-    qba = QByteArray(buf, qf.size());
-    qf.close();
-    delete[] buf;
-
+    if (qf.open(QIODevice::ReadOnly)) {
+        qba = qf.readAll();
+    }
 #endif
 return qba;
 }
