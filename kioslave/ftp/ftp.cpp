@@ -744,7 +744,7 @@ void Ftp::ftpAutoLoginMacro ()
         // TODO: Add support for arbitrary commands
         // besides simply changing directory!!
         if ( (*it).startsWith( QLatin1String("cwd") ) )
-          ftpFolder( (*it).mid(4), false );
+          (void)ftpFolder( (*it).mid(4), false );
       }
 
       break;
