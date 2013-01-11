@@ -303,7 +303,7 @@ private Q_SLOTS:
                 kDebug() << "   " << i << ":" << offers[i]->storageId();
             }
             const QStringList offerIds = assembleServices(offers, it.value().count());
-            kDebug() << " Expected:" << offerIds;
+            kDebug() << " Expected:" << it.value();
             QCOMPARE(offerIds, it.value());
             //const QStringList expectedPreferredServices = it.value();
             //for (int i = 0; i < expectedPreferredServices.count(); ++i) {
