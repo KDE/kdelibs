@@ -230,7 +230,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   kDebug(7001) << "INotify available: " << supports_inotify;
   if ( supports_inotify ) {
     availableMethods << "INotify";
-    fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
+    (void)fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
 
     mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
     connect( mSn, SIGNAL(activated(int)),
