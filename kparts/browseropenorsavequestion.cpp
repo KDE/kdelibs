@@ -102,7 +102,7 @@ public:
         textVLayout->addWidget(fileNameLabel);
 
         QMimeDatabase db;
-        QMimeType mime = db.mimeTypeForName(mimeType);
+        mime = db.mimeTypeForName(mimeType);
         QString mimeDescription (mimeType);
         if (mime.isValid()) {
             // Always prefer the mime-type comment over the raw type for display
