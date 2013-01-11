@@ -808,12 +808,13 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir) {
-      KDE::lstat(path, &stat_buf);
-      if (S_ISLNK(stat_buf.st_mode))
-        // if it's a symlink, don't follow it
-        e->isDir = false;
-      else
-        qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
+      if (KDE::lstat(path, &stat_buf) == 0) {
+        if (S_ISLNK(stat_buf.st_mode))
+          // if it's a symlink, don't follow it
+          e->isDir = false;
+        else
+          qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
+      }
     } else if (!e->isDir && isDir)
       qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
 
