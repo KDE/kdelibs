@@ -377,11 +377,12 @@ bool KonfUpdate::updateFile(const QString &filename)
     gotId(QString());
 
     KDE_struct_stat buff;
-    KDE::stat(filename, &buff);
-    KConfigGroup cg(m_config, m_currentFilename);
-    cg.writeEntry("ctime", int(buff.st_ctime));
-    cg.writeEntry("mtime", int(buff.st_mtime));
-    cg.sync();
+    if (KDE::stat(filename, &buff) == 0) {
+        KConfigGroup cg(m_config, m_currentFilename);
+        cg.writeEntry("ctime", int(buff.st_ctime));
+        cg.writeEntry("mtime", int(buff.st_mtime));
+        cg.sync();
+    }
     return true;
 }
 

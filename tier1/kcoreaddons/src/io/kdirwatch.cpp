@@ -233,7 +233,7 @@ KDirWatchPrivate::KDirWatchPrivate()
   //qDebug() << "INotify available: " << supports_inotify;
   if ( supports_inotify ) {
     availableMethods << "INotify";
-    fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
+    (void)fcntl(m_inotify_fd, F_SETFD, FD_CLOEXEC);
 
     mSn = new QSocketNotifier( m_inotify_fd, QSocketNotifier::Read, this );
     connect( mSn, SIGNAL(activated(int)),
@@ -811,12 +811,13 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
     e->isDir = S_ISDIR(stat_buf.st_mode);
 
     if (e->isDir && !isDir) {
-      QT_LSTAT(QFile::encodeName(path).constData(), &stat_buf);
-      if (S_ISLNK(stat_buf.st_mode))
-        // if it's a symlink, don't follow it
-        e->isDir = false;
-      else
-        qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
+      if (QT_LSTAT(QFile::encodeName(path).constData(), &stat_buf) == 0) {
+        if (S_ISLNK(stat_buf.st_mode))
+          // if it's a symlink, don't follow it
+          e->isDir = false;
+        else
+          qWarning() << "KDirWatch:" << path << "is a directory. Use addDir!";
+      }
     } else if (!e->isDir && isDir)
       qWarning("KDirWatch: %s is a file. Use addFile!", qPrintable(path));
 

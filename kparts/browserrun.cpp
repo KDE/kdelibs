@@ -206,6 +206,16 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
   }
 }
 
+static QMimeType fixupMimeType (const QString& mimeType, const QString& fileName)
+{
+    QMimeDatabase db;
+    QMimeType mime = db.mimeTypeForName(mimeType);
+    if ((!mime.isValid() || mime.isDefault()) && !fileName.isEmpty()) {
+        mime = db.mimeTypeForFile(fileName, QMimeDatabase::MatchExtension);
+    }
+    return mime;
+}
+
 void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 {
     Q_ASSERT( _job == KRun::job() ); Q_UNUSED(_job)
@@ -245,6 +255,13 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
         QString _type = type;
         job->putOnHold();
         setJob( 0 );
+
+        // If the current mime-type is the default mime-type, then attempt to
+        // determine the "real" mimetype from the file name.
+        QMimeType mime = fixupMimeType(_type, suggestedFileName.isEmpty() ? QUrlPathInfo(url()).fileName() : suggestedFileName);
+        if (mime.isValid() && mime.name() != _type) {
+            _type = mime.name();
+        }
 
         mimeTypeDetermined( _type );
     }

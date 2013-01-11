@@ -277,7 +277,14 @@ KLockFile::LockResult KLockFile::Private::lockFileOExcl(QT_STATBUF &st_buf)
     if (fd < 0) {
         if (errno == EEXIST) {
             // File already exists
-            QT_LSTAT(lockFileName.constData(), &st_buf); // caller wants stat buf details
+            if (QT_LSTAT(lockFileName.constData(), &st_buf) != 0) { // caller wants stat buf details
+                // File got deleted meanwhile! Clear struct rather than leaving it unset.
+                st_buf.st_dev = 0;
+                st_buf.st_ino = 0;
+                st_buf.st_uid = 0;
+                st_buf.st_gid = 0;
+                st_buf.st_nlink = 0;
+            }
             return LockFail;
         } else {
             return LockError;

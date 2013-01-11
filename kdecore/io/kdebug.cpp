@@ -161,20 +161,20 @@ public:
         {
             if (len) {
                 QFile aOutputFile(m_fileName);
-                aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered);
-                QByteArray buf = QByteArray::fromRawData(data, len);
+                if (aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered)) {
+                    QByteArray buf = QByteArray::fromRawData(data, len);
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-                // Apply QT_MESSAGE_PATTERN
-                extern Q_CORE_EXPORT QString qMessageFormatString(QtMsgType type, const QMessageLogContext &context,
+                    // Apply QT_MESSAGE_PATTERN
+                    extern Q_CORE_EXPORT QString qMessageFormatString(QtMsgType type, const QMessageLogContext &context,
                                                                   const QString &str);
-                const QString formatted = qMessageFormatString(QtDebugMsg /*hack*/, context, QString::fromUtf8(buf));
-                buf = formatted.toUtf8();
+                    const QString formatted = qMessageFormatString(QtDebugMsg /*hack*/, context, QString::fromUtf8(buf));
+                    buf = formatted.toUtf8();
 #endif
 
-                aOutputFile.write(buf.trimmed());
-                aOutputFile.putChar('\n');
-                aOutputFile.close();
+                    aOutputFile.write(buf.trimmed());
+                    aOutputFile.putChar('\n');
+                }
             }
             return len;
         }

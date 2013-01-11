@@ -2718,17 +2718,17 @@ bool HTTPProtocol::parseHeaderFromCache()
 
     Q_FOREACH (const QString &str, m_responseHeaders) {
         const QString header = str.trimmed();
-        if (header.startsWith(QLatin1String("content-type:")), Qt::CaseInsensitive) {
+        if (header.startsWith(QLatin1String("content-type:"), Qt::CaseInsensitive)) {
             int pos = header.indexOf(QLatin1String("charset="), Qt::CaseInsensitive);
             if (pos != -1) {
                 const QString charset = header.mid(pos + 8).toLower();
                 m_request.cacheTag.charset = charset;
                 setMetaData(QLatin1String("charset"), charset);
             }
-        } else if (header.startsWith(QLatin1String("content-language:")), Qt::CaseInsensitive) {
+        } else if (header.startsWith(QLatin1String("content-language:"), Qt::CaseInsensitive)) {
             const QString language = header.mid(17).trimmed().toLower();
             setMetaData(QLatin1String("content-language"), language);
-        } else if (header.startsWith(QLatin1String("content-disposition:")), Qt::CaseInsensitive) {
+        } else if (header.startsWith(QLatin1String("content-disposition:"), Qt::CaseInsensitive)) {
             parseContentDisposition(header.mid(20).toLower());
         }
     }

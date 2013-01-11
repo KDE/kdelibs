@@ -34,6 +34,8 @@ find_package(PythonInterp)
 
 if (PYTHONINTERP_FOUND)
 
+    option(INSTALL_PYTHON_FILES_IN_PYTHON_PREFIX "Install the Python files in the Python packages dir" FALSE)
+
     # Set the Python libraries to what we actually found for interpreters
     set(Python_ADDITIONAL_VERSIONS "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
     # These are kept for compatibility
@@ -47,15 +49,19 @@ if (PYTHONINTERP_FOUND)
     endif(PYTHONLIBS_FOUND)
 
     # Auto detect Python site-packages directory
-    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(True))" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(True))"
+                    OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_DIR
+                    OUTPUT_STRIP_TRAILING_WHITESPACE
+                   )
 
-    # Set the destination install directory to be the same as the site-packages dir if not supplied
-    if(NOT DEFINED PYTHON_SITE_PACKAGES_INSTALL_DIR)
-        set(PYTHON_SITE_PACKAGES_INSTALL_DIR "${PYTHON_SITE_PACKAGES_DIR}")
-    endif(NOT DEFINED PYTHON_SITE_PACKAGES_INSTALL_DIR)
-
-    message (STATUS "Python system site-packages directory: ${PYTHON_SITE_PACKAGES_DIR}")
-    message(STATUS "Installing Python modules to: ${PYTHON_SITE_PACKAGES_INSTALL_DIR}")
+    message(STATUS "Python system site-packages directory: ${PYTHON_SITE_PACKAGES_DIR}")
+    if(INSTALL_PYTHON_FILES_IN_PYTHON_PREFIX)
+        set(PYTHON_SITE_PACKAGES_INSTALL_DIR ${PYTHON_SITE_PACKAGES_DIR})
+    else()
+        set(PYTHON_SITE_PACKAGES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/python${PYTHON_SHORT_VERSION}/site-packages
+            CACHE PATH "The directory where Python modules will be installed to.")
+        message(STATUS "The Python files will be installed to ${PYTHON_SITE_PACKAGES_INSTALL_DIR}. Make sure to add them to the Python search path (e.g. by setting PYTHONPATH)")
+    endif()
 
 endif(PYTHONINTERP_FOUND)
 

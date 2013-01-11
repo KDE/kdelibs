@@ -1819,7 +1819,7 @@ int main(int argc, char **argv, char **envp)
             if (!extra.isEmpty()) {
                 QLibrary l(extra);
                 l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
-                l.load();
+                (void)l.load();
             }
 #ifndef NDEBUG
             else {

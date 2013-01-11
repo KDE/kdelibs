@@ -138,7 +138,7 @@ void KNSBookmarkExporterImpl::write(const KBookmarkGroup &parent)
       return;
    }
    if (QFile::exists(m_fileName)) {
-       QFile::rename(m_fileName, m_fileName + ".beforekde");
+       (void)QFile::rename(m_fileName, m_fileName + ".beforekde");
    }
 
    QFile file(m_fileName);

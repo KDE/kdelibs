@@ -1533,10 +1533,6 @@ QString KCalendarSystem::weekDayName(int weekDay, KCalendarSystem::WeekDayNameFo
         return d->weekDayName(weekDay, KLocale::ShortName);
     }
 
-    if (format == KCalendarSystem::ShortDayName) {
-        return d->weekDayName(weekDay, KLocale::ShortName);
-    }
-
     return d->weekDayName(weekDay, KLocale::LongName);
 }
 

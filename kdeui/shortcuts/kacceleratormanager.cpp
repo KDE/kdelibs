@@ -654,7 +654,7 @@ int KAccelString::stripAccelerator(QString &text)
     p = text.indexOf('&', p)+1;
 
     if (p <= 0 || p >= (int)text.length())
-      return -1;
+      break;
 
     if (text[p] != '&')
     {

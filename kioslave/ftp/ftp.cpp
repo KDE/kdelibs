@@ -743,7 +743,7 @@ void Ftp::ftpAutoLoginMacro ()
         // TODO: Add support for arbitrary commands
         // besides simply changing directory!!
         if ( (*it).startsWith( QLatin1String("cwd") ) )
-          ftpFolder( (*it).mid(4), false );
+          (void)ftpFolder( (*it).mid(4), false );
       }
 
       break;
@@ -990,7 +990,7 @@ int Ftp::ftpOpenDataConnection()
     // if we sent EPSV ALL already and it was accepted, then we can't
     // use active connections any more
     if (m_extControl & epsvAllSent)
-      return iErrCodePASV ? iErrCodePASV : iErrCode;
+      return iErrCodePASV;
   }
 
   // fall back to port mode
