@@ -100,6 +100,7 @@ if(QT_QTDESIGNER_FOUND)
     install(TARGETS kdedeprecated  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
   endif(NOT KDE_NO_DEPRECATED)
 
+  if(NOT QT5_BUILD OR Qt5WebKit_FOUND)
 
   # kdewebkit widgets
   include_directories(
@@ -135,6 +136,7 @@ if(QT_QTDESIGNER_FOUND)
 
   install(TARGETS kdewebkitwidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
 
+  endif() # webkit
 
   if (QT_QT3SUPPORT_FOUND)
 

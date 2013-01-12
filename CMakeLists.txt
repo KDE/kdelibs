@@ -459,9 +459,9 @@ add_subdirectory( knewstuff )
 add_subdirectory( knotify )
 
 if(NOT QT5_BUILD OR Qt5WebKit_FOUND)
-  add_subdirectory( kdewidgets  )
   add_subdirectory( kdewebkit )
 endif()
+add_subdirectory( kdewidgets )
 
 if(QT5_BUILD)
   add_subdirectory( plasma )
