@@ -1259,7 +1259,10 @@ QPixmap KIconLoader::loadIcon(const QString& _name, KIconLoader::Group group, in
         iconWasUnknown = true;
     }
 
-    QImage img = d->createIconImage(icon.path, size);
+    QImage img;
+    if (!icon.path.isEmpty()) {
+        img = d->createIconImage(icon.path, size);
+    }
 
     if (group >= 0)
     {
