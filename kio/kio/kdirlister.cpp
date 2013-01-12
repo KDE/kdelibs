@@ -530,8 +530,11 @@ void KDirListerCache::forgetDirs( KDirLister *lister )
 static bool manually_mounted(const QString& path, const KMountPoint::List& possibleMountPoints)
 {
     KMountPoint::Ptr mp = possibleMountPoints.findByPath(path);
-    if (!mp) // not listed in fstab -> yes, manually mounted
+    if (!mp) { // not listed in fstab -> yes, manually mounted
+        if (possibleMountPoints.isEmpty()) // no fstab at all -> don't assume anything
+            return false;
         return true;
+    }
     const bool supermount = mp->mountType() == "supermount";
     if (supermount) {
         return true;
