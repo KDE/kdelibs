@@ -24,6 +24,7 @@
 #include <ksharedconfig.h>
 #include <krun.h>
 
+#include <QApplication>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
@@ -221,7 +222,9 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
 #ifndef Q_OS_WIN
                       + " --parent " + QString::number( (ulong)q->topLevelWidget()->winId())
 #endif
-                      + " --caption " + KShell::quoteArg(KGlobal::caption())
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+                      + " --caption " + KShell::quoteArg(QGuiApplication::applicationDisplayName())
+#endif
                       + ' ' + KShell::quoteArg(mt),
                       keditfiletype, keditfiletype /*unused*/, q->topLevelWidget());
 }
