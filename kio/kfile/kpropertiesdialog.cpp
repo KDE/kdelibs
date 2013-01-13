@@ -1154,6 +1154,7 @@ void KFilePropsPlugin::slotEditFileType()
 #ifdef Q_WS_X11
                       + " --parent " + QString::number( (ulong)properties->window()->winId())
 #endif
+                      + " --caption " + KShell::quoteArg(KGlobal::caption())
                       + ' ' + KShell::quoteArg(mime),
                       keditfiletype, keditfiletype /*unused*/, properties->window());
 }
