@@ -73,7 +73,12 @@ void KPtyProcessTest::test_shared_pty()
     p2.start();
 
     // read the second processes greeting from the first process' pty
-    QVERIFY(p.pty()->waitForReadyRead(1000));
+    QVERIFY(p.pty()->waitForReadyRead(1500));
+    for (int i = 0; i < 5; ++i) {
+        if (p.pty()->canReadLine())
+            break;
+        QThread::msleep(500);
+    }
     QCOMPARE(p.pty()->readAll(), QByteArray("hello from me\r\n"));
 
     // write to the second process' pty
@@ -81,7 +86,12 @@ void KPtyProcessTest::test_shared_pty()
     QVERIFY(p2.pty()->waitForBytesWritten(1000));
 
     // read the result back from the first process' pty
-    QVERIFY(p.pty()->waitForReadyRead(1000));
+    QVERIFY(p.pty()->waitForReadyRead(1500));
+    for (int i = 0; i < 5; ++i) {
+        if (p.pty()->canReadLine())
+            break;
+        QThread::msleep(500);
+    }
     QCOMPARE(p.pty()->readAll(), QByteArray("hello from process 2\r\n"));
 
     // write to the first process' pty
@@ -89,7 +99,12 @@ void KPtyProcessTest::test_shared_pty()
     QVERIFY(p.pty()->waitForBytesWritten(1000));
 
     // read the result back from the second process' pty
-    QVERIFY(p2.pty()->waitForReadyRead(1000));
+    QVERIFY(p2.pty()->waitForReadyRead(1500));
+    for (int i = 0; i < 5; ++i) {
+        if (p.pty()->canReadLine())
+            break;
+        QThread::msleep(500);
+    }
     QCOMPARE(p2.pty()->readAll(), QByteArray("hi from process 1\r\n"));
 
     // cleanup
