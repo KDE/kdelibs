@@ -64,7 +64,10 @@ public:
             properties[KUser::RoomNumber] = QVariant(gecosList[1]);
             properties[KUser::WorkPhone] = QVariant(gecosList[2]);
             properties[KUser::HomePhone] = QVariant(gecosList[3]);
-            homeDir = QString::fromLocal8Bit(p->pw_dir);
+            if (uid == ::getuid() && uid == ::geteuid())
+                homeDir = QString::fromLocal8Bit(qgetenv("HOME"));
+            if (homeDir.isEmpty())
+                homeDir = QString::fromLocal8Bit(p->pw_dir);
             shell = QString::fromLocal8Bit(p->pw_shell);
         }
     }
