@@ -2254,3 +2254,16 @@ void KUrlTest::testToStringList()
               << QLatin1String("ftp://ftp.kde.org/")
               << QLatin1String("ftp://ftp.kde.org///") );
 }
+
+void KUrlTest::testHashing()
+{
+    QHash<KUrl, QUrl> hash;
+    hash.insert(KUrl("http://www.kde.org/foo%23bar"), QUrl("http://www.kde.org/foo%23bar"));
+    hash.insert(KUrl("http://www.kde.org/foo#ref?query"), QUrl("http://www.kde.org/foo#ref?query"));
+
+    QHashIterator<KUrl, QUrl> it(hash);
+    while (it.hasNext()) {
+        it.next();
+        QCOMPARE(it.key().url(), it.value().toString());
+    }
+}

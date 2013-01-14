@@ -75,6 +75,7 @@ private Q_SLOTS:
     void testUrl_data();
     void testUrl();
     void testToStringList();
+    void testHashing();
 };
 
 #endif
