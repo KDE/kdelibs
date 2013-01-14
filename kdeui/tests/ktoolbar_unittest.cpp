@@ -630,6 +630,9 @@ void tst_KToolBar::testClickingToolButton() {
     QTest::mouseClick(testToolButton, button, modifiers);
     QCOMPARE(spyButtonsModifiers.count(), 1);
     QList<QVariant> arguments = spyButtonsModifiers.takeFirst();
+    // This needs Qt5 MR 43915, i.e. Qt >= 5.0.1.
+    // But let's only enable it when 5.1 comes around; the currently outdated Qt dev branch breaks otherwise.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 0)
     if(button != Qt::LeftButton) {
         // Only check the "buttons" argument of KAction's triggered(Qt::MouseButtons, Qt::KeyboardModifiers)
         // signal if the middle mouse button is pressed. If the left button is pressed, "buttons" is
@@ -638,6 +641,7 @@ void tst_KToolBar::testClickingToolButton() {
         QCOMPARE(arguments.at(0).value<Qt::MouseButtons>(), pressedButtons);
     }
     QCOMPARE(arguments.at(1).value<Qt::KeyboardModifiers>(), modifiers);
+#endif
 
     if(button == Qt::LeftButton) {
         // Also the action's triggered() signal without arguments should have been emitted in this case
