@@ -33,12 +33,6 @@ class QMimeData;
 
 class KUrlPrivate;
 
-// maybe we should encapsulate QUrl instead of inheriting from it.
-// this would even allow us to inherit from KUri instead.
-// and this way hacks like setPath() would be less ugly, and we could avoid
-// half KDE code using setScheme() and the other half using setProtocol(), etc.
-// (DF)
-
 /**
  * \class KUrl kurl.h <KUrl>
  *
@@ -535,15 +529,6 @@ public:
    * @param _txt the new path and query.
    */
   void setEncodedPathAndQuery( const QString& _txt );
-
-#if 0
-  /**
-   * Sets the (already encoded) path
-   * @param _txt the new path
-   * @see QTextCodec::mibEnum()
-   */
-  void setEncodedPath(const QString& _txt );
-#endif
 
   /**
    * Option to be used in encodedPathAndQuery

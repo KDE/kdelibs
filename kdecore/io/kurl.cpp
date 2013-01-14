@@ -667,8 +667,6 @@ void KUrl::cleanPath( const CleanPathOption& options )
   const QString newPath = cleanpath(path(), !(options & KeepDirSeparators), false);
   if ( path() != newPath )
       setPath( newPath );
-  // WABA: Is this safe when "/../" is encoded with %?
-  //m_strPath_encoded = cleanpath(m_strPath_encoded, cleanDirSeparator, true);
 }
 
 static QString trailingSlash( KUrl::AdjustPathOption trailing, const QString &path )
@@ -706,12 +704,6 @@ static QString trailingSlash( KUrl::AdjustPathOption trailing, const QString &pa
 
 void KUrl::adjustPath( AdjustPathOption trailing )
 {
-#if 0
-  if (!m_strPath_encoded.isEmpty())
-  {
-     m_strPath_encoded = trailingSlash( _trailing, m_strPath_encoded );
-  }
-#endif
   const QString newPath = trailingSlash( trailing, path() );
   if ( path() != newPath )
       setPath( newPath );
@@ -1043,20 +1035,6 @@ QString KUrl::prettyUrl( AdjustPathOption trailing ) const
   return result;
 }
 
-#if 0
-QString KUrl::prettyUrl( int _trailing, AdjustementFlags _flags) const
-{
-  QString u = prettyUrl(_trailing);
-  if (_flags & StripFileProtocol && u.startsWith("file://")) {
-    u.remove(0, 7);
-#ifdef Q_OS_WIN
-    return QDir::convertSeparators(u);
-#endif
-  }
-  return u;
-}
-#endif
-
 QString KUrl::pathOrUrl(AdjustPathOption trailing) const
 {
   if ( isLocalFile() && fragment().isNull() && encodedQuery().isNull() ) {
@@ -1190,17 +1168,6 @@ QString KUrl::fileName( const DirectoryOptions& options ) const
 
   // Skip last n slashes
   int n = 1;
-#if 0
-  if (!m_strPath_encoded.isEmpty())
-  {
-     // This is hairy, we need the last unencoded slash.
-     // Count in the encoded string how many encoded slashes follow the last
-     // unencoded one.
-     int i = m_strPath_encoded.lastIndexOf( QLatin1Char('/'), len - 1 );
-     QString fileName_encoded = m_strPath_encoded.mid(i+1);
-     n += fileName_encoded.count("%2f", Qt::CaseInsensitive);
-  }
-#endif
   int i = len;
   do {
     i = path.lastIndexOf( QLatin1Char('/'), i - 1 );
@@ -1234,8 +1201,6 @@ void KUrl::addPath( const QString& _txt )
      return;
   }
 
-  //m_strPath_encoded.clear();
-
   if ( _txt.isEmpty() )
     return;
 
@@ -1262,7 +1227,7 @@ void KUrl::addPath( const QString& _txt )
 QString KUrl::directory( const DirectoryOptions& options ) const
 {
   Q_ASSERT( options != 0 ); //Disallow options == false
-  QString result = path(); //m_strPath_encoded.isEmpty() ? m_strPath : m_strPath_encoded;
+  QString result = path();
   if ( !(options & ObeyTrailingSlash) )
     result = trailingSlash( RemoveTrailingSlash, result );
 
@@ -1292,9 +1257,6 @@ QString KUrl::directory( const DirectoryOptions& options ) const
   else
     result = result.left( i );
 
-  //if (!m_strPath_encoded.isEmpty())
-  //  result = decode(result);
-
   return result;
 }
 
@@ -1320,7 +1282,6 @@ bool KUrl::cd( const QString& _dir )
   if ( _dir[0] == QLatin1Char('/') )
 #endif
   {
-    //m_strPath_encoded.clear();
     setPath( _dir );
     setHTMLRef( QString() );
     setEncodedQuery( QByteArray() );
@@ -1330,7 +1291,6 @@ bool KUrl::cd( const QString& _dir )
   // Users home directory on the local disk ?
   if (_dir[0] == QLatin1Char('~') && scheme() == QLatin1String ("file"))
   {
-    //m_strPath_encoded.clear();
     QString strPath = QDir::homePath();
     strPath += QLatin1Char('/');
     strPath += _dir.right( strPath.length() - 1 );
