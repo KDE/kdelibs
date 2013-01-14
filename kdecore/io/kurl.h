@@ -1125,8 +1125,6 @@ private:
   void _setQuery( const QString& query );
   void _setEncodedUrl(const QByteArray& url);
   operator QString() const; // forbidden, use url(), prettyUrl(), or pathOrUrl() instead.
-private:
-  KUrlPrivate* const d; // Don't ever use this, it would break clear() (which is in QUrl)
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KUrl::EncodedPathAndQueryOptions)

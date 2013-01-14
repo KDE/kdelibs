@@ -301,7 +301,7 @@ KUrl::List::operator QList<QUrl>() const
 ///
 
 KUrl::KUrl()
-    : QUrl(), d(0)
+    : QUrl()
 {
 }
 
@@ -311,7 +311,7 @@ KUrl::~KUrl()
 
 
 KUrl::KUrl( const QString &str )
-  : QUrl(), d(0)
+  : QUrl()
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_OS_WIN
@@ -345,7 +345,7 @@ KUrl::KUrl( const QString &str )
 }
 
 KUrl::KUrl( const char * str )
-  : QUrl(), d(0)
+  : QUrl()
 {
 #ifdef Q_OS_WIN
   // true if @a c is letter
@@ -379,7 +379,7 @@ KUrl::KUrl( const char * str )
 }
 
 KUrl::KUrl( const QByteArray& str )
-   : QUrl(), d(0)
+   : QUrl()
 {
   if ( !str.isEmpty() ) {
 #ifdef Q_OS_WIN
@@ -400,7 +400,7 @@ KUrl::KUrl( const QByteArray& str )
 }
 
 KUrl::KUrl( const KUrl& _u )
-    : QUrl( _u ), d(0)
+    : QUrl( _u )
 {
 #if defined(Q_OS_WIN) && defined(DEBUG_KURL)
     qDebug() << "KUrl::KUrl(KUrl) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
@@ -408,7 +408,7 @@ KUrl::KUrl( const KUrl& _u )
 }
 
 KUrl::KUrl( const QUrl &u )
-    : QUrl( u ), d(0)
+    : QUrl( u )
 {
 #if defined(Q_OS_WIN) && defined(DEBUG_KURL)
     qDebug() << "KUrl::KUrl(Qurl) " << " path " << u.path() << " toLocalFile " << u.toLocalFile();
@@ -416,7 +416,7 @@ KUrl::KUrl( const QUrl &u )
 }
 
 KUrl::KUrl( const KUrl& _u, const QString& _rel_url )
-   : QUrl(), d(0)
+   : QUrl()
 {
 #if defined(Q_OS_WIN) && defined(DEBUG_KURL)
     qDebug() << "KUrl::KUrl(KUrl,QString rel_url) " << " path " << _u.path() << " toLocalFile " << _u.toLocalFile();
