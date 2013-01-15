@@ -2065,6 +2065,7 @@ void Containment::showConfigurationInterface()
 
 void Containment::configChanged()
 {
+    Applet::configChanged();
 }
 
 void ContainmentPrivate::configChanged()
