@@ -94,7 +94,8 @@ protected:
   virtual void focusOutEvent(QFocusEvent *e);
   virtual void leaveEvent(QEvent *e);
   virtual void mousePressEvent(QMouseEvent *e);
-  virtual void mouseDoubleClickEvent (QMouseEvent *e);
+  virtual void mouseDoubleClickEvent(QMouseEvent *e);
+  virtual void mouseReleaseEvent(QMouseEvent *e);
 
 private:
   class KListWidgetPrivate;
@@ -104,6 +105,7 @@ private:
   Q_PRIVATE_SLOT(d, void _k_slotOnViewport())
   Q_PRIVATE_SLOT(d, void _k_slotSettingsChanged(int))
   Q_PRIVATE_SLOT(d, void _k_slotAutoSelect())
+  Q_PRIVATE_SLOT(d, void _k_slotEmitExecute(QListWidgetItem*))
 };
 
 #endif // KLISTWIDGET_H
