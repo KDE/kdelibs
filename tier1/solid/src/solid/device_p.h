@@ -25,7 +25,7 @@
 #include <QtCore/QSharedData>
 #include <QtCore/QWeakPointer>
 
-#if defined(Q_CC_MSVC)
+#if defined(Q_OS_WIN32)
 #undef interface
 #endif
 
