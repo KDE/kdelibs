@@ -431,7 +431,7 @@ bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
         }
 
 #ifdef Q_OS_WIN
-        const bool bLocal1 = isLocalFile();
+        const bool bLocal1 = d->url.isLocalFile();
         const bool bLocal2 = u.isLocalFile();
         if (!bLocal1 && bLocal2 || bLocal1 && !bLocal2)
             return false;
