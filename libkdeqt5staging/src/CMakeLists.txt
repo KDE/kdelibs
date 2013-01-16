@@ -2,7 +2,7 @@ set(libkdeqt5staging_SRCS
     qurlpathinfo.cpp
     qsavefile.cpp
 )
-if (QT5_BUILD)
+if (QT5_BUILD AND NOT WIN32)
 set(libkdeqt5staging_SRCS ${libkdeqt5staging_SRCS} qt5only/qx11info.cpp)
 include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 endif()
