@@ -24,6 +24,7 @@
 #include <solid/ifaces/deviceinterface.h>
 #include "wmidevice.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 

@@ -21,6 +21,8 @@
 
 #include "wmibattery.h"
 
+#include <QtCore/QCoreApplication>
+
 using namespace Solid::Backends::Wmi;
 
 Battery::Battery(WmiDevice *device)
