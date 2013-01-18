@@ -27,7 +27,7 @@
 /**
  * A dialog for requesting a password and optionaly a login from the end user.
  *
- * \section usage Usage Exemple
+ * \section usage Usage Example
  * 
  * Requesting a simple password, assynchronous
  * 
