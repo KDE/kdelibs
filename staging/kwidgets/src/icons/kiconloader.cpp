@@ -45,9 +45,6 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QPixmapCache>
-#ifndef _WIN32_WCE
-#include <QtSvg/QSvgRenderer>
-#endif
 
 // kdecore
 #include <kconfig.h>
@@ -760,35 +757,17 @@ QString KIconLoaderPrivate::makeCacheKey(const QString &name, KIconLoader::Group
 
 QImage KIconLoaderPrivate::createIconImage(const QString &path, int size)
 {
-    // Use the extension as the format. Works for XPM and PNG, but not for SVG. The
-    // "VGZ" is the last 3 characters of "SVGZ"
-    QString ext = path.right(3).toUpper();
-    QImage img;
+    QImageReader reader(path);
 
-    if (ext != "SVG" && ext != "VGZ")
-    {
-        // Not a SVG or SVGZ
-        img = QImage(path, ext.toLatin1());
-
-        if (size != 0 && !img.isNull()) {
-            img = img.scaled(size, size, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-        }
-    }
-    else
-    {
-#ifndef _WIN32_WCE
-        QSvgRenderer renderer(path, q);
-
-        if (renderer.isValid()) {
-            img = QImage(size, size, QImage::Format_ARGB32_Premultiplied);
-            img.fill(0);
-            QPainter p(&img);
-            renderer.render(&p);
-        }
-#endif
+    if (!reader.canRead()) {
+        return QImage();
     }
 
-    return img;
+    if (size != 0) {
+        reader.setScaledSize(QSize(size, size));
+    }
+
+    return reader.read();
 }
 
 void KIconLoaderPrivate::insertCachedPixmapWithPath(
