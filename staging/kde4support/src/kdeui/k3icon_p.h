@@ -24,7 +24,7 @@
 
 #include <QtCore/QString>
 
-#include <kwidgets_export.h>
+#include <kde4support_export.h>
 #include <kiconloader.h>
 
 /**
@@ -34,7 +34,7 @@
  * @warning You should not use this class externally. This class is exported because
  *          the KCM needs it.
  */
-class KWIDGETS_EXPORT K3Icon
+class KDE4SUPPORT_EXPORT K3Icon
 {
 public:
     K3Icon();
