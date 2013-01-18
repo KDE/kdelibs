@@ -22,7 +22,6 @@
  */
 
 #include "kicontheme.h"
-#include "k3icon_p.h"
 
 #include <sys/stat.h>
 #include <unistd.h>
@@ -100,25 +99,6 @@ private:
     QString mBaseDirThemeDir;
 };
 
-
-/*** K3Icon ***/
-
-K3Icon::K3Icon()
-{
-    size = 0;
-}
-
-K3Icon::~K3Icon()
-{
-}
-
-bool K3Icon::isValid() const
-{
-    return size != 0;
-}
-
-
-/*** KIconTheme ***/
 
 KIconTheme::KIconTheme(const QString& name, const QString& appName)
     :d(new KIconThemePrivate)

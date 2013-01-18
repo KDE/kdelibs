@@ -8,6 +8,7 @@ configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidge
 
 set(kwidgets_LIB_SRCS
   dialogs/kmessagebox.cpp
+  icons/k3icon.cpp
   icons/kiconeffect.cpp
   icons/kiconengine.cpp
   icons/kiconloader.cpp # cannot move down to kguiaddons: depends on QtSvg, KSharedDataCache (kcoreaddons) and localizedFilePath (ki18n)
