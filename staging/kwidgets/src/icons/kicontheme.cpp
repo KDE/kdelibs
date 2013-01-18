@@ -416,9 +416,8 @@ bool KIconTheme::hasContext(KIconLoader::Context context) const
     return false;
 }
 
-K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchType match) const
+QString KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchType match) const
 {
-    K3Icon icon;
     QString path;
     int delta = -INT_MAX;  // current icon size delta of 'icon'
     int dw = INT_MAX;      // icon size delta of current directory
@@ -484,29 +483,17 @@ K3Icon KIconTheme::iconPath(const QString& name, int size, KIconLoader::MatchTyp
         if (path.isEmpty()) {
             continue;
         }
-        icon.path = path;
-// The following code has been commented out because the Qt SVG renderer needs
-// to be improved. If you are going to change/remove some code from this part,
-// please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
-#ifdef KDE_QT_SVG_RENDERER_FIXED
-        icon.size = size;
-#else
-        icon.size = dir->size();
-#endif
-        icon.type = dir->type();
-        icon.threshold = dir->threshold();
-        icon.context = dir->context();
 
         // if we got in MatchExact that far, we find no better
         if (match == KIconLoader::MatchExact) {
-            return icon;
+            return path;
         }
         delta = dw;
         if (delta == 0) {
-            return icon; // We won't find a better match anyway
+            return path; // We won't find a better match anyway
         }
     }
-    return icon;
+    return path;
 }
 
 // static
