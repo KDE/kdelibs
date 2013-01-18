@@ -20,6 +20,7 @@
 */
 
 #include <kprocess.h>
+#include <kstandarddirs.h>
 #include <qtest_kde.h>
 
 #include <stdio.h>
@@ -83,7 +84,9 @@ void KProcessTest::test_setShellCommand()
     KProcess p;
 
     p.setShellCommand("cat");
-    QCOMPARE(p.program(), QStringList() << "/bin/cat");
+    QCOMPARE(p.program().count(), 1);
+    QCOMPARE(p.program().at(0), KStandardDirs::findExe("cat"));
+    QVERIFY(p.program().at(0).endsWith("/bin/cat"));
     p.setShellCommand("true || false");
     QCOMPARE(p.program(), QStringList() << "/bin/sh" << "-c" << "true || false");
 #endif

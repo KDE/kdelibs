@@ -379,8 +379,10 @@ void KPasswordDialog::accept()
     if (!d->ui.errorMessage->isHidden()) d->ui.errorMessage->setText( QString() );
 
     // reset the font in case we had an error previously
-    if (!d->ui.passwordLabel->isHidden()) d->ui.passwordLabel->setFont( font() );
-    if (!d->ui.passwordLabel->isHidden()) d->ui.userNameLabel->setFont( font() );
+    if (!d->ui.passwordLabel->isHidden()) {
+        d->ui.passwordLabel->setFont( font() );
+        d->ui.userNameLabel->setFont( font() );
+    }
 
     // we do this to allow the error message, if any, to go away
     // checkPassword() may block for a period of time

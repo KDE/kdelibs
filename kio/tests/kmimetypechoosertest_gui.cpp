@@ -30,7 +30,7 @@ int main( int argc, char** argv ) {
     QString text = i18n("Select the MimeTypes you want for this file type.");
     QStringList list; list << "inode/directory"; list << "text/plain";
     KMimeTypeChooserDialog dlg( i18n("Select Mime Types"), text, list, "text", QStringList(),
-                                KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns,
+                                KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
                                 (QWidget*)0 );
     if ( dlg.exec() == KDialog::Accepted ) {
         kDebug() << dlg.chooser()->patterns();

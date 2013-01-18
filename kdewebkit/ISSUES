@@ -4,11 +4,6 @@ Known Issues [PENDING]:
   as QLineEdit is missing due to lack of access to form elements.
   See http://webkit.org/b/36668.
 
-* [????] HTML access key support has not yet been implemented in QtWebKit.
-  There is already support for access keys in Webkit. However, the API necessary to draw
-  shortcuts does not exist in QtWebKit. Not sure if it is worth implementing such support
-  in QtWebKit. It it probably better to implement this in kdewebkit or the browser itself.
-
 Known Issues [PARTIALLY FIXED]:
 ===============================
 * [QtWebKit] Spell checking support. See https://webkit.org/b/44114 [ QtWebKit > 2.2 ]

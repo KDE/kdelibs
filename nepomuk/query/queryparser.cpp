@@ -92,7 +92,7 @@ namespace {
 
     QUrl tryToBeIntelligentAboutParsingUrl( const QString& s ) {
         if ( s.contains( '%' ) && !s.contains( '/' ) ) {
-            return QUrl::fromEncoded( s.toAscii() );
+            return QUrl::fromEncoded( s.toLatin1() );
         }
         else {
             return QUrl( s );

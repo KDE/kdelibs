@@ -93,7 +93,7 @@ public:
   {
       QTextCodec* originalCodec = QTextCodec::codecForCStrings();
       QTextCodec::setCodecForCStrings( m_codec );
-      QByteArray b = s.toAscii();
+      QByteArray b = s.toLatin1();
       QTextCodec::setCodecForCStrings( originalCodec );
       return b;
   }
@@ -1313,7 +1313,7 @@ K3Spell::slotStopCancel (int result)
     if (!dialog3slot.isEmpty())
     {
       dlgresult=result;
-      connect (this, SIGNAL (dialog3()), this, dialog3slot.toAscii().constData());
+      connect (this, SIGNAL (dialog3()), this, dialog3slot.toLatin1().constData());
       emit dialog3();
     }
 }
@@ -1396,7 +1396,7 @@ void K3Spell::dialog2( int result )
     break;
   }
 
-  connect( this, SIGNAL(dialog3()), this, dialog3slot.toAscii().constData() );
+  connect( this, SIGNAL(dialog3()), this, dialog3slot.toLatin1().constData() );
   emit dialog3();
 }
 

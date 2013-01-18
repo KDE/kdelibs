@@ -160,7 +160,7 @@ int main(int argc, char **argv)
             f.open(QIODevice::WriteOnly);
             // search all pathes one level above for a directory share/apps 
             // write entries into a cache 
-            f.write(kdedirs.join(";").toAscii());
+            f.write(kdedirs.join(";").toLatin1());
             f.close();
 */
         }            

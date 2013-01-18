@@ -299,6 +299,11 @@ blockquote {
         padding: 0 12px 0 16px;
 }
 
+.line {
+	white-space: pre-wrap;
+	font-family: monospace;
+}
+
 /* @end */
 
 /*
@@ -978,7 +983,6 @@ div.toc li.level3 {
 div.toc li.level4 {
         margin-left: 45px;
 }
-
 
 @media print
 {

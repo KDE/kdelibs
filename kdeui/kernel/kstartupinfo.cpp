@@ -1140,6 +1140,7 @@ bool KStartupInfoId::operator<( const KStartupInfoId& id_P ) const
     return id() < id_P.id();
     }
 
+// KDE5 TODO: rename to isNull ?
 bool KStartupInfoId::none() const
     {
     return d->id.isEmpty() || d->id == "0";

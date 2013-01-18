@@ -116,6 +116,7 @@ KDEUI_EXECUTABLE_TESTS(
   kmainwindowrestoretest
   kmessageboxtest
   kmessagetest
+  kmessagewidgettest
   kmodifierkeyinfotest
   knewpassworddialogtest
   kstatusnotifieritemtest
@@ -161,8 +162,8 @@ if (Q_WS_X11)
 KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
  fixx11h_test2
- kmanagerselectiontest
  kxerrorhandlertest
+ kmanagerselectiontest
 )
 target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
 target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})

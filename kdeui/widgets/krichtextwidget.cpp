@@ -411,7 +411,10 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         << i18nc("@item:inmenu square list style", "Square")
         << i18nc("@item:inmenu numbered lists", "123")
         << i18nc("@item:inmenu lowercase abc lists", "abc")
-        << i18nc("@item:inmenu uppercase abc lists", "ABC");
+        << i18nc("@item:inmenu uppercase abc lists", "ABC")
+        << i18nc("@item:inmenu lower case roman numerals", "i ii iii")
+        << i18nc("@item:inmenu upper case roman numerals", "I II III");
+	
         d->action_list_style->setItems(listStyles);
         d->action_list_style->setCurrentItem(0);
         d->richTextActionList.append((d->action_list_style));
@@ -635,11 +638,11 @@ void KRichTextWidget::Private::_k_setTextForegroundColor()
 {
     QColor currentTextForegroundColor = q->textColor();
 
-    int result = KColorDialog::getColor(currentTextForegroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
-    if (!currentTextForegroundColor.isValid())
-        currentTextForegroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
+    const int result = KColorDialog::getColor(currentTextForegroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
     if (result != QDialog::Accepted)
         return;
+    if (!currentTextForegroundColor.isValid())
+        currentTextForegroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
 
     q->setTextForegroundColor(currentTextForegroundColor);
 
@@ -650,11 +653,11 @@ void KRichTextWidget::Private::_k_setTextBackgroundColor()
     QTextCharFormat fmt = q->textCursor().charFormat();
     QColor currentTextBackgroundColor = fmt.background().color();
 
-    int result = KColorDialog::getColor(currentTextBackgroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
-    if (!currentTextBackgroundColor.isValid())
-        currentTextBackgroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
+    const int result = KColorDialog::getColor(currentTextBackgroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
     if (result != QDialog::Accepted)
         return;
+    if (!currentTextBackgroundColor.isValid())
+        currentTextBackgroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
 
     q->setTextBackgroundColor(currentTextBackgroundColor);
 

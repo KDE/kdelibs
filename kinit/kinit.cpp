@@ -57,7 +57,6 @@
 #include <klibrary.h>
 #include <kdemacros.h>
 #include <kstandarddirs.h>
-#include <kglobalsettings.h>
 #include <kglobal.h>
 #include <kconfig.h>
 #include <kapplication.h>
@@ -536,9 +535,8 @@ static pid_t launch(int argc, const char *_name, const char *args,
   if( !startup_id.none())
       init_startup_info( startup_id, name, envc, envs );
 #endif
-  // find out these paths before forking, doing it afterwards
+  // find out this path before forking, doing it afterwards
   // crashes on some platforms, notably OSX
-  const QByteArray docPath = QFile::encodeName(KGlobalSettings::documentPath());
 #ifdef Q_WS_MAC
   const QString bundlepath = s_instance->dirs()->findExe(QFile::decodeName(execpath));
 #endif
@@ -567,12 +565,6 @@ static pid_t launch(int argc, const char *_name, const char *args,
      // we still want to execute `foo` even if the chdir() failed.
      if (cwd && *cwd) {
          (void)chdir(cwd);
-     } else {
-         // on Maemo5, documentPath() is on the SD card, setting it as working directory would block
-         // USB mass storage access
-#ifndef Q_WS_MAEMO_5
-         (void)chdir(docPath.constData());
-#endif
      }
 
      if( reset_env ) // KWRAPPER/SHELL
@@ -1810,7 +1802,7 @@ int main(int argc, char **argv, char **envp)
             if (!extra.isEmpty()) {
                 QLibrary l(extra);
                 l.setLoadHints(QLibrary::ExportExternalSymbolsHint);
-                l.load();
+                (void)l.load();
             }
 #ifndef NDEBUG
             else {

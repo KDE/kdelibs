@@ -47,6 +47,7 @@ public:
         m_bIgnoreScrollBars = false;
         m_activationButtonMask = Qt::LeftButton | Qt::MidButton | Qt::RightButton;
         m_reason = PartManager::NoReason;
+        m_bIgnoreExplicitFocusRequest = false;
     }
     ~PartManagerPrivate()
     {
@@ -72,6 +73,15 @@ public:
         }
     }
 
+    bool allowExplicitFocusEvent(QEvent* ev) const
+    {
+        if (ev->type() == QEvent::FocusIn) {
+            QFocusEvent* fev = static_cast<QFocusEvent*>(ev);
+            return (!m_bIgnoreExplicitFocusRequest || fev->reason() != Qt::OtherFocusReason);
+        }
+        return true;
+    }
+
     Part * m_activePart;
     QWidget *m_activeWidget;
 
@@ -87,6 +97,7 @@ public:
     bool m_bIgnoreScrollBars;
     bool m_bAllowNestedParts;
     int m_reason;
+    bool m_bIgnoreExplicitFocusRequest;
 };
 
 }
@@ -273,7 +284,7 @@ bool PartManager::eventFilter( QObject *obj, QEvent *ev )
 
                 return false;
             }
-            else if ( part != d->m_activePart )
+            else if ( part != d->m_activePart && d->allowExplicitFocusEvent(ev) )
             {
 #ifdef DEBUG_PARTMANAGER
                 kDebug(1000) << "Part " << part << " made active because " << w->metaObject()->className() << " got event" << " " << evType;
@@ -585,6 +596,11 @@ void PartManager::slotManagedTopLevelWidgetDestroyed()
 int PartManager::reason() const
 {
     return d->m_reason;
+}
+
+void PartManager::setIgnoreExplictFocusRequests(bool ignore)
+{
+    d->m_bIgnoreExplicitFocusRequest = ignore;
 }
 
 #include "partmanager.moc"

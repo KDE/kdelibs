@@ -61,7 +61,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @param parent The parent widgets.
      * @param flags The Qt window flags @see QWidget.
      */
-    explicit KTabWidget( QWidget *parent = 0, Qt::WFlags flags = 0 );
+    explicit KTabWidget( QWidget *parent = 0, Qt::WindowFlags flags = 0 );
 
     /**
      * Destroys the tab widget.

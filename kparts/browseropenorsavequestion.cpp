@@ -41,15 +41,6 @@
 using namespace KParts;
 Q_DECLARE_METATYPE(KService::Ptr)
 
-static KMimeType::Ptr fixupMimeType (const QString& mimeType, const QString& fileName)
-{
-    KMimeType::Ptr mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
-    if ((!mime || mime->isDefault()) && !fileName.isEmpty()) {
-        mime = KMimeType::findByUrl(fileName, 0, false, true);
-    }
-    return mime;
-}
-
 class KParts::BrowserOpenOrSaveQuestionPrivate : public KDialog
 {
     Q_OBJECT
@@ -59,7 +50,7 @@ public:
     static const KDialog::ButtonCode OpenDefault = KDialog::User2;
     static const KDialog::ButtonCode OpenWith = KDialog::User1;
     static const KDialog::ButtonCode Cancel = KDialog::Cancel;
-        
+
     BrowserOpenOrSaveQuestionPrivate(QWidget* parent, const KUrl& url, const QString& mimeType)
         : KDialog(parent), url(url), mimeType(mimeType),
           features(0)
@@ -100,13 +91,13 @@ public:
         fileNameLabel->hide();
         textVLayout->addWidget(fileNameLabel);
 
-        mime = fixupMimeType(mimeType, url.fileName());
+        mime = KMimeType::mimeType(mimeType, KMimeType::ResolveAliases);
         QString mimeDescription (mimeType);
         if (mime) {
             // Always prefer the mime-type comment over the raw type for display
             mimeDescription = (mime->comment().isEmpty() ? mime->name() : mime->comment());
         }
-        mimeTypeLabel = new QLabel(mainWidget());
+        QLabel* mimeTypeLabel = new QLabel(mainWidget());
         mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
         mimeTypeLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
         textVLayout->addWidget(mimeTypeLabel);
@@ -157,7 +148,6 @@ public:
     KSqueezedTextLabel* questionLabel;
     BrowserOpenOrSaveQuestion::Features features;
     QLabel* fileNameLabel;
-    QLabel* mimeTypeLabel;
 
 protected:
     virtual void slotButtonClicked(int buttonId)
@@ -327,17 +317,6 @@ void BrowserOpenOrSaveQuestion::setSuggestedFileName(const QString& suggestedFil
     d->fileNameLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     d->fileNameLabel->setWhatsThis(i18nc("@info:whatsthis", "This is the file name suggested by the server"));
     d->fileNameLabel->show();
-
-    // If the current mime-type is the default mime-type, then attempt to
-    // determine the "real" mimetype from the file name.
-    KMimeType::Ptr mimePtr = fixupMimeType(d->mimeType, suggestedFileName);
-    if (mimePtr && mimePtr->name() != d->mimeType) {
-        d->mime = mimePtr;
-        d->mimeType = mimePtr->name();
-        // Always prefer the mime-type comment over the raw type for display
-        const QString mimeDescription (mimePtr->comment().isEmpty() ? mimePtr->name() : mimePtr->comment());
-        d->mimeTypeLabel->setText(i18nc("@label Type of file", "Type: %1", mimeDescription));
-    }
 }
 
 #include "browseropenorsavequestion.moc"

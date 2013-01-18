@@ -50,6 +50,7 @@ private Q_SLOTS:
     void testTarGlobalHeader();
     void testTarPrefix();
     void testTarDirectoryForgotten();
+    void testTarRootDir();
 
     void testCreateZip();
     void testCreateZipError();

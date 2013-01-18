@@ -202,6 +202,15 @@ void BrowserRun::slotBrowserScanFinished(KJob *job)
   }
 }
 
+static KMimeType::Ptr fixupMimeType (const QString& mimeType, const QString& fileName)
+{
+    KMimeType::Ptr mime = KMimeType::mimeType(mimeType);
+    if ((!mime || mime->isDefault()) && !fileName.isEmpty()) {
+        mime = KMimeType::findByUrl(fileName, 0, false, true);
+    }
+    return mime;
+}
+
 void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 {
     Q_ASSERT( _job == KRun::job() ); Q_UNUSED(_job)
@@ -242,14 +251,20 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
         job->putOnHold();
         setJob( 0 );
 
+        // If the current mime-type is the default mime-type, then attempt to
+        // determine the "real" mimetype from the file name.
+        KMimeType::Ptr mimePtr = fixupMimeType(_type, suggestedFileName.isEmpty() ? url().fileName() : suggestedFileName);
+        if (mimePtr && mimePtr->name() != _type) {
+            _type = mimePtr->name();
+        }
+
         mimeTypeDetermined( _type );
     }
 }
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& mimeType)
 {
-    KService::Ptr dummy;
-    return handleNonEmbeddable(mimeType, &dummy);
+    return handleNonEmbeddable(mimeType, NULL);
 }
 
 BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _mimeType, KService::Ptr* selectedService)
@@ -305,8 +320,11 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                          this, SLOT(slotCopyToTempFileResult(KJob*)) );
                 return Delayed; // We'll continue after the job has finished
             }
-            if (selectedService)
+            if (selectedService && question.selectedService()) {
                 *selectedService = question.selectedService();
+                // KRun will use this when starting an app
+                KRun::setPreferredService(question.selectedService()->desktopEntryName());
+            }
         }
     }
 

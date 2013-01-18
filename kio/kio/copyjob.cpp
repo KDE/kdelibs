@@ -221,6 +221,7 @@ public:
 
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
+    void slotSubError(KIO::ListJob* job, KIO::ListJob *subJob);
     void addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest);
     /**
      * Forward signal from subjob
@@ -564,6 +565,18 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
     }
 }
 
+void CopyJobPrivate::slotSubError(ListJob* job, ListJob* subJob)
+{
+	const KUrl url = subJob->url();
+	kWarning() << url << subJob->errorString();
+
+	Q_Q(CopyJob);
+
+	emit q->warning(job, subJob->errorString(), QString());
+	skip(url, true);
+}
+
+
 void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest)
 {
     struct CopyInfo info;
@@ -855,6 +868,8 @@ void CopyJobPrivate::startListing( const KUrl & src )
     newjob->setUnrestricted(true);
     q->connect(newjob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
                SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
+    q->connect(newjob, SIGNAL(subError(KIO::ListJob*,KIO::ListJob*)),
+	       SLOT(slotSubError(KIO::ListJob*,KIO::ListJob*)));
     q->addSubjob( newjob );
 }
 

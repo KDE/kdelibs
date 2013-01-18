@@ -153,8 +153,6 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
         {
             m_setupInProgress = false;
             m_device->broadcastActionDone("setup");
-
-            slotChanged();
         }
     }
     else if (m_teardownInProgress)
@@ -169,9 +167,6 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
         }
         else
         {
-            m_teardownInProgress = false;
-            m_device->broadcastActionDone("teardown");
-
             if (m_device->prop("DriveIsMediaEjectable").toBool() &&
                     m_device->prop("DeviceIsMediaAvailable").toBool() &&
                     !m_device->prop("DeviceIsOpticalDisc").toBool()) // optical drives have their Eject method
@@ -204,9 +199,18 @@ void UDisksStorageAccess::slotDBusReply( const QDBusMessage & reply )
                 QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, drivePath, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
                 msg << QStringList();   // options, unused now
                 c.call(msg, QDBus::NoBlock);
+
+                // power down removable USB hard drives, rhbz#852196
+                UDisksDevice drive(drivePath);
+                if (drive.prop("DriveCanDetach").toBool()) {
+                    QDBusMessage msg2 = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, drivePath, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveDetach");
+                    msg2 << QStringList();   // options, unused now
+                    c.call(msg2, QDBus::NoBlock);
+                }
             }
 
-            slotChanged();
+            m_teardownInProgress = false;
+            m_device->broadcastActionDone("teardown");
         }
     }
 }
@@ -219,14 +223,12 @@ void UDisksStorageAccess::slotDBusError( const QDBusError & error )
         m_device->broadcastActionDone("setup", m_device->errorToSolidError(error.name()),
                                       m_device->errorToString(error.name()) + ": " +error.message());
 
-        slotChanged();
     }
     else if (m_teardownInProgress)
     {
         m_teardownInProgress = false;
         m_device->broadcastActionDone("teardown", m_device->errorToSolidError(error.name()),
                                       m_device->errorToString(error.name()) + ": " + error.message());
-        slotChanged();
     }
 }
 
@@ -240,6 +242,7 @@ void UDisksStorageAccess::slotSetupDone(int error, const QString &errorString)
 {
     m_setupInProgress = false;
     emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    slotChanged();
 }
 
 void UDisksStorageAccess::slotTeardownRequested()
@@ -252,6 +255,7 @@ void UDisksStorageAccess::slotTeardownDone(int error, const QString &errorString
 {
     m_teardownInProgress = false;
     emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    slotChanged();
 }
 
 bool UDisksStorageAccess::mount()

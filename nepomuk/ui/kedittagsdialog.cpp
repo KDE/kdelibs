@@ -34,7 +34,7 @@
 
 KEditTagsDialog::KEditTagsDialog(const QList<Nepomuk::Tag>& tags,
                                  QWidget* parent,
-                                 Qt::WFlags flags) :
+                                 Qt::WindowFlags flags) :
     KDialog(parent, flags),
     m_tags(tags),
     m_tagsList(0),

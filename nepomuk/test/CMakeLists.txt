@@ -9,23 +9,25 @@ include_directories(
 add_definitions(-DDISABLE_NEPOMUK_LEGACY=1)
 add_definitions(-DBUILDING_NEPOMUK_TESTS)
 
+# DISABLED IN THIS BRANCH
+
 # Query tests
 # --------------------------------------------
-set(queryparsertest_SRC queryparsertest.cpp)
-kde4_add_unit_test(queryparsertest TESTNAME nepomuk-queryparsertest NOGUI ${queryparsertest_SRC})
-target_link_libraries(queryparsertest nepomuk nepomukquery
-  ${QT_QTTEST_LIBRARY}
-  ${SOPRANO_LIBRARIES}
-  ${KDE4_KDECORE_LIBS}
-)
+#set(queryparsertest_SRC queryparsertest.cpp)
+#kde4_add_unit_test(queryparsertest TESTNAME nepomuk-queryparsertest NOGUI ${queryparsertest_SRC})
+#target_link_libraries(queryparsertest nepomuk nepomukquery
+#${QT_QTTEST_LIBRARY}
+#${SOPRANO_LIBRARIES}
+#${KDE4_KDECORE_LIBS}
+#)
 
-set(querytest_SRC querytest.cpp)
-kde4_add_unit_test(querytest TESTNAME nepomuk-querytest NOGUI ${querytest_SRC})
-target_link_libraries(querytest nepomuk nepomukquery
-  ${QT_QTTEST_LIBRARY}
-  ${SOPRANO_LIBRARIES}
-  ${KDE4_KDECORE_LIBS}
-)
+#set(querytest_SRC querytest.cpp)
+#kde4_add_unit_test(querytest TESTNAME nepomuk-querytest NOGUI ${querytest_SRC})
+#target_link_libraries(querytest nepomuk nepomukquery
+#${QT_QTTEST_LIBRARY}
+#${SOPRANO_LIBRARIES}
+#${KDE4_KDECORE_LIBS}
+#)
 
 set(queryserializertest_SRC queryserializertest.cpp)
 kde4_add_unit_test(queryserializertest TESTNAME nepomuk-queryserializertest NOGUI ${queryserializertest_SRC})
@@ -34,26 +36,6 @@ target_link_libraries(queryserializertest nepomuk nepomukquery
   ${SOPRANO_LIBRARIES}
   ${KDE4_KDECORE_LIBS}
 )
-
-
-
-# Resource tests
-# --------------------------------------------
-
-# The basis of all the tests handling statements
-kde4_add_library(nepomuk_testbase STATIC testbase.cpp)
-target_link_libraries(nepomuk_testbase nepomuk ${QT_QTCORE_LIBRARY} ${QT_QTTEST_LIBRARY})
-
-set(resourcetest_SRCS resourcetest.cpp)
-kde4_add_unit_test(resourcetest TESTNAME nepomuk-resourcetest ${resourcetest_SRCS})
-target_link_libraries(resourcetest
-  nepomuk_testbase
-  ${QT_QTDBUS_LIBRARY}
-  ${QT_QTTEST_LIBRARY}
-  ${KDE4_KDECORE_LIBS}
-  ${SOPRANO_LIBRARIES}
-  kdecore)
-
 
 
 # Ui tests
@@ -83,15 +65,16 @@ target_link_libraries(simplefacettest
   nepomukutils
 )
 
-kde4_add_unit_test(dynamicresourcefacettest TESTNAME nepomuk-dynamicresourcefacettest dynamicresourcefacettest.cpp)
-target_link_libraries(dynamicresourcefacettest
-  ${QT_QTTEST_LIBRARY}
-  ${SOPRANO_LIBRARIES}
-  ${KDE4_KDECORE_LIBS}
-  nepomuk
-  nepomukquery
-  nepomukutils
-)
+# DISABLED IN THIS BRANCH
+#kde4_add_unit_test(dynamicresourcefacettest TESTNAME nepomuk-dynamicresourcefacettest dynamicresourcefacettest.cpp)
+#target_link_libraries(dynamicresourcefacettest
+#${QT_QTTEST_LIBRARY}
+#${SOPRANO_LIBRARIES}
+#${KDE4_KDECORE_LIBS}
+#nepomuk
+#nepomukquery
+#nepomukutils
+#)
 
 kde4_add_unit_test(proxyfacettest TESTNAME nepomuk-proxyfacettest proxyfacettest.cpp)
 target_link_libraries(proxyfacettest

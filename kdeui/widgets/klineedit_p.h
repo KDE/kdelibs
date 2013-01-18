@@ -56,7 +56,7 @@ public:
     void animateVisible(bool visible)
     {
         if (visible) {
-            if (m_animation->direction() == QPropertyAnimation::Forward) {
+            if (m_animation->direction() == QPropertyAnimation::Forward && m_opacity == 255) {
                 return;
             }
 
@@ -64,7 +64,7 @@ public:
             m_animation->setDuration(150);
             show();
         } else {
-            if (m_animation->direction() == QPropertyAnimation::Backward) {
+            if (m_animation->direction() == QPropertyAnimation::Backward && m_opacity == 0) {
                 return;
             }
 

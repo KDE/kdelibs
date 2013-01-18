@@ -70,6 +70,16 @@ public:
     void setOnlyFixed (bool onlyFixed);
 
     /**
+     * Set selectable fonts to be only those present in the list.
+     *
+     * @param fontList a list of fonts as returned by QFontDatabase::families() or
+     *                  QFontChooser::getFontList(). If this is empty (default), then the list
+     *                  of fonts is constructed according to the @p onlyFixed setting.
+     * @since 4.9.2
+     */
+    void setFontList (const QStringList &fontList);
+
+    /**
      * Destructor.
      */
     virtual ~KFontComboBox ();

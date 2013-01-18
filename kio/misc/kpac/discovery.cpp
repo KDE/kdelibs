@@ -19,7 +19,7 @@
 
 
 #include <config.h>
-
+#include <config-kpac.h>
 #include <netdb.h>
 #include <unistd.h>
 

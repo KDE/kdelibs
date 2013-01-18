@@ -44,6 +44,11 @@ configure_file(auth/BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsC
 # Configure checks for localization
 configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-localization.h)
 
+# Configure checks for util
+include(util/ConfigureChecks.cmake)
+configure_file(util/config-util.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-util.h)
+
+
 include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
@@ -391,7 +396,7 @@ if(NOT WIN32)
         set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
     else()
         set_source_files_properties(util/kshareddatacache.cpp
-            PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
+            PROPERTIES COMPILE_FLAGS "${KDE4_ENABLE_EXCEPTIONS}")
     endif()
 else(NOT WIN32)
     set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS} util/kshareddatacache_win.cpp)
@@ -412,9 +417,17 @@ endif(WINCE)
 
 set(SYS_INOTIFY_H_FOUND 0)
 if(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
+   set_package_properties(FAM PROPERTIES DESCRIPTION "File alteration notification support via a separate service"
+                          URL "http://oss.sgi.com/projects/fam"
+                          TYPE OPTIONAL
+                          PURPOSE "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS."
+                         )
 else(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
+   set_package_properties(FAM PROPERTIES DESCRIPTION "File alteration notification support via a separate service"
+                          URL "http://oss.sgi.com/projects/fam"
+                          TYPE OPTIONAL
+                          PURPOSE "Provides file alteration notification facilities using a separate service."
+                         )
 endif(SYS_INOTIFY_H_FOUND)
 
 if(FAM_FOUND)

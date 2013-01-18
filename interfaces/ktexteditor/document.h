@@ -219,6 +219,12 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     void modifiedChanged ( KTextEditor::Document *document );
 
+    /**
+     * This signal is emitted whenever the readWrite state of a document changes
+     */
+//warning ADD IN KDE5
+//    void readWriteChanged (KTextEditor::Document *document);
+
   /*
    * VERY IMPORTANT: Methods to set and query the current encoding of the
    * document

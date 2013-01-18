@@ -89,6 +89,16 @@ namespace Nepomuk {
          */
         bool init();
 
+        /**
+         * This function explicitly marks the connection to soprano as disconnected.
+         *
+         * This is necessary because the soprano method isConnected()
+         * does not check if the socket is actually connected,
+         * merely if it were successfully connected at some point in the past.
+         * If the socket has been remote disconnected, we need to mark it as so.
+         */
+        void disconnect();
+
         Soprano::StatementIterator listStatements( const Soprano::Statement &partial ) const;
         Soprano::NodeIterator listContexts() const;
         Soprano::QueryResultIterator executeQuery( const QString& query,

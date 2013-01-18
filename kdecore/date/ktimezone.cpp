@@ -501,7 +501,7 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
             if (secondOffset)
                 *secondOffset = offset;
 #ifdef COMPILING_TESTS
-            qDebug("-> Using cache");   // test output requires qDebug instead of kDebug
+            kDebug(161) << "-> Using cache";   // enable the debug area to see this in the tests
 #endif
             return offset;
         }
@@ -509,7 +509,7 @@ int KTimeZoneBackend::offsetAtZoneTime(const KTimeZone* caller, const QDateTime 
 
     // The time doesn't fall within the cached transition, or there isn't a cached transition
 #ifdef COMPILING_TESTS
-    qDebug("-> No cache");   // test output requires qDebug instead of kDebug
+    kDebug(161) << "-> No cache";   // enable the debug area to see this in the tests
 #endif
     bool validTime;
     int secondIndex = -1;
@@ -542,7 +542,7 @@ int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcD
         {
             // The time falls within the cached transition, so return its UTC offset
 #ifdef COMPILING_TESTS
-            qDebug("Using cache");   // test output requires qDebug instead of kDebug
+            kDebug(161) << "Using cache";   // enable the debug area to see this in the tests
 #endif
             return transitions[index].phase().utcOffset();
         }
@@ -550,7 +550,7 @@ int KTimeZoneBackend::offsetAtUtc(const KTimeZone* caller, const QDateTime &utcD
 
     // The time doesn't fall within the cached transition, or there isn't a cached transition
 #ifdef COMPILING_TESTS
-    qDebug("No cache");   // test output requires qDebug instead of kDebug
+    kDebug(161) << "No cache";   // enable the debug area to see this in the tests
 #endif
     index = caller->transitionIndex(utcDateTime);
     d->cachedTransitionIndex = index;   // cache transition data
@@ -714,15 +714,21 @@ QList<KTimeZone::Transition> KTimeZone::transitions(const QDateTime &start, cons
 const KTimeZone::Transition *KTimeZone::transition(const QDateTime &dt, const Transition **secondTransition,
                                                    bool *validTime) const
 {
-    if (!data(true))
+    if (!data(true)) {
+        if (validTime)
+            *validTime = false;
         return 0;
+    }
     return d->d->data->transition(dt, secondTransition, validTime);
 }
 
 int KTimeZone::transitionIndex(const QDateTime &dt, int *secondIndex, bool *validTime) const
 {
-    if (!data(true))
+    if (!data(true)) {
+        if (validTime)
+            *validTime = false;
         return -1;
+    }
     return d->d->data->transitionIndex(dt, secondIndex, validTime);
 }
 

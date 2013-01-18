@@ -458,7 +458,18 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                 installfile += '-' + entry.version();
                 if (!ext.isEmpty()) installfile += '.' + ext;
             } else {
-                installfile = source.fileName();
+                // TODO HACK This is a hack, the correct way of fixing it would be doing the KIO::get
+                // and using the http headers if they exist to get the file name, but as discussed in
+                // Randa this is not going to happen anytime soon (if ever) so go with the hack
+                if (source.url().startsWith("http://newstuff.kde.org/cgi-bin/hotstuff-access?file=")) {
+                    installfile = source.queryItemValue("file");
+                    int lastSlash = installfile.lastIndexOf('/');
+                    if (lastSlash >= 0)
+                        installfile = installfile.mid(lastSlash);
+                }
+                if (installfile.isEmpty()) {
+                    installfile = source.fileName();
+                }
             }
             installpath = installdir + '/' + installfile;
 
@@ -474,7 +485,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
 
             if (QFile::exists(installpath)) {
                 if (!update) {
-                    if (KMessageBox::warningContinueCancel(0, i18n("Overwrite existing file?") + "\n'" + installpath + '\'', i18n("Download File:")) == KMessageBox::Cancel) {
+                    if (KMessageBox::warningContinueCancel(0, i18n("Overwrite existing file?") + "\n'" + installpath + '\'', i18n("Download File")) == KMessageBox::Cancel) {
                         return QStringList();
                     }
                 }

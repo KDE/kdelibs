@@ -65,6 +65,7 @@ private Q_SLOTS:
 private:
     QList<KMimeMagicRule> m_rules;
     QString m_nonKdeApp;
+    QString m_kdeApp;
 };
 
 

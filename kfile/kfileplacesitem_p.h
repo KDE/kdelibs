@@ -24,6 +24,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtCore/QModelIndex>
+#include <QtCore/QStringList>
 #include <kbookmark.h>
 #include <solid/device.h>
 
@@ -33,6 +34,7 @@ namespace Solid
 class StorageAccess;
 class StorageVolume;
 class OpticalDisc;
+class PortableMediaPlayer;
 }
 
 class KFilePlacesItem : public QObject
@@ -69,7 +71,7 @@ Q_SIGNALS:
     void itemChanged(const QString &id);
 
 private Q_SLOTS:
-    void onAccessibilityChanged();
+    void onAccessibilityChanged(bool);
     void onListerCompleted();
 
 private:
@@ -85,11 +87,16 @@ private:
     KBookmark m_bookmark;
     KDirLister *m_lister;
     bool m_folderIsEmpty;
+    bool m_isCdrom;
+    bool m_isAccessible;
     QString m_text;
     mutable Solid::Device m_device;
     mutable QPointer<Solid::StorageAccess> m_access;
     mutable QPointer<Solid::StorageVolume> m_volume;
     mutable QPointer<Solid::OpticalDisc> m_disc;
+    mutable QPointer<Solid::PortableMediaPlayer> m_mtp;
+    QString m_iconPath;
+    QStringList m_emblems;
 };
 
 #endif

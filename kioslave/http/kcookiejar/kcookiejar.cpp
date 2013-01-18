@@ -69,41 +69,71 @@
 #define QL1C(x)   QLatin1Char(x)
 
 
-static KDateTime parseDate(const QString& value)
+static QString removeWeekday(const QString& value)
 {
-    KTimeZones *zones = KSystemTimeZones::timeZones();
-    // Check for the most common cookie expire date format: Thu, 01-Jan-1970 00:00:00 GMT
-    KDateTime dt = KDateTime::fromString(value, QL1S("%:A,%t%d-%:B-%Y%t%H:%M:%S%t%Z"), zones);
-    if (dt.isValid())
-        return dt;
+    const int index = value.indexOf(QL1C(' '));
+    if (index > -1) {
+        int pos = 0;
+        const QString weekday = value.left(index);
+        for (int i = 1; i < 8; ++i) {
+            if (weekday.startsWith(QDate::shortDayName(i), Qt::CaseInsensitive) ||
+                weekday.startsWith(QDate::longDayName(i), Qt::CaseInsensitive)) {
+                pos = index + 1;
+                break;
+            }
+        }
+        if (pos > 0) {
+            return value.mid(pos);
+        }
+    }
+    return value;
+}
 
-    // Check for incorrect formats (amazon.com): Thu Jan 01 1970 00:00:00 GMT
-    dt = KDateTime::fromString(value, QL1S("%:A%t%:B%t%d%t%Y%t%H:%M:%S%t%Z"), zones);
-    if (dt.isValid())
-        return dt;
+static QDateTime parseDate(const QString& _value)
+{
+    // Handle sites sending invalid weekday as part of the date. #298660
+    const QString value (removeWeekday(_value));
 
-    // Check for a variation of the above format: Thu Jan 01 00:00:00 1970 GMT (BR# 145244)
-    dt = KDateTime::fromString(value, QL1S("%:A%t%:B%t%d%t%H:%M:%S%t%Y%t%Z"), zones);
-    if (dt.isValid())
-        return dt;
+    // Check if expiration date matches RFC dates as specified under
+    // RFC 2616 sec 3.3.1 & RFC 6265 sec 4.1.1
+    KDateTime dt = KDateTime::fromString(value, KDateTime::RFCDate);
 
-    // Finally we try the RFC date formats as last resort
-    return KDateTime::fromString(value, KDateTime::RFCDate);
+    // In addition to the RFC date formats we support the ANSI C asctime format
+    // per RFC 2616 sec 3.3.1 and a variation of that detected @ amazon.com
+    if (!dt.isValid()) {
+        static const char* date_formats[] = {
+            "%:B%t%d%t%H:%M:%S%t%Y%t%Z", /* ANSI C's asctime() format (#145244): Jan 01 00:00:00 1970 GMT */
+            "%:B%t%d%t%Y%t%H:%M:%S%t%Z", /* A variation on the above format seen @ amazon.com: Jan 01 1970 00:00:00 GMT */
+            0
+        };
+
+        for (int i = 0; date_formats[i]; ++i) {
+            dt = KDateTime::fromString(value, QL1S(date_formats[i]));
+            if (dt.isValid()) {
+                break;
+            }
+        }
+    }
+
+    return dt.toUtc().dateTime();  // Per RFC 2616 sec 3.3.1 always convert to UTC.
+}
+
+static qint64 toEpochSecs(const QDateTime& dt)
+{
+    return (dt.toMSecsSinceEpoch()/1000); // convert to seconds...
 }
 
 static qint64 epoch()
 {
-    KDateTime epoch;
-    epoch.setTime_t(0);
-    return epoch.secsTo_long(KDateTime::currentUtcDateTime());
+    return toEpochSecs(QDateTime::currentDateTimeUtc());
 }
-
 
 QString KCookieJar::adviceToStr(KCookieAdvice _advice)
 {
     switch( _advice )
     {
     case KCookieAccept: return QL1S("Accept");
+    case KCookieAcceptForSession: return QL1S("AcceptForSession");
     case KCookieReject: return QL1S("Reject");
     case KCookieAsk: return QL1S("Ask");
     default: return QL1S("Dunno");
@@ -119,6 +149,8 @@ KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
 
     if (advice == QL1S("accept"))
         return KCookieAccept;
+    else if (advice == QL1S("acceptforsession"))
+        return KCookieAcceptForSession;
     else if (advice == QL1S("reject"))
         return KCookieReject;
     else if (advice == QL1S("ask"))
@@ -152,7 +184,8 @@ KHttpCookie::KHttpCookie(const QString &_host,
        mProtocolVersion(_protocolVersion),
        mSecure(_secure),
        mHttpOnly(_httpOnly),
-       mExplicitPath(_explicitPath)
+       mExplicitPath(_explicitPath),
+       mUserSelectedAdvice(KCookieDunno)
 {
 }
 
@@ -318,7 +351,6 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     QString cookieStr, fqdn, path;
     QStringList domains;
     int port = -1;
-    KCookieAdvice advice = m_globalAdvice;
 
     if (!parseUrl(_url, fqdn, path, &port))
         return cookieStr;
@@ -352,20 +384,12 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
              continue; // No cookies for this domain
        }
 
-       if (cookieList->getAdvice() != KCookieDunno)
-          advice = cookieList->getAdvice();
-
        QMutableListIterator<KHttpCookie> cookieIt (*cookieList);
        while (cookieIt.hasNext()) 
        {
           KHttpCookie& cookie = cookieIt.next();
-          // If the we are setup to automatically accept all session cookies and to
-          // treat all cookies as session cookies or the current cookie is a session
-          // cookie, then send the cookie back regardless of domain policy.
-          if (advice == KCookieReject &&
-              !(m_autoAcceptSessionCookies &&
-                (m_ignoreCookieExpirationDate || cookie.expireDate() == 0)))
-              continue;
+          if (cookieAdvice(cookie) == KCookieReject)
+             continue;
 
           if (!cookie.match(fqdn, domains, path, port))
              continue;
@@ -519,7 +543,7 @@ static const char * parseNameValue(const char *header,
 
 }
 
-void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
+void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain) const
 {
    QStringList domains;
    extractDomains(_fqdn, domains);
@@ -531,7 +555,7 @@ void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
       _domain = QL1S("");
 }
 
-QString KCookieJar::stripDomain(const KHttpCookie& cookie)
+QString KCookieJar::stripDomain(const KHttpCookie& cookie) const
 {
     QString domain; // We file the cookie under this domain.
     if (cookie.domain().isEmpty())
@@ -541,10 +565,7 @@ QString KCookieJar::stripDomain(const KHttpCookie& cookie)
     return domain;
 }
 
-bool KCookieJar::parseUrl(const QString &_url,
-                          QString &_fqdn,
-                          QString &_path,
-                          int *port)
+bool KCookieJar::parseUrl(const QString &_url, QString &_fqdn, QString &_path, int *port)
 {
     KUrl kurl(_url);
     if (!kurl.isValid() || kurl.protocol().isEmpty())
@@ -661,9 +682,6 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
     if (index > 0)
        defaultPath = path.left(index);
 
-    KDateTime epoch;
-    epoch.setTime_t(0);
-
     // Check for cross-domain flag from kio_http
     if (qstrncmp(cookieStr, "Cross-Domain\n", 13) == 0)
     {
@@ -753,14 +771,14 @@ KHttpCookieList KCookieJar::makeCookies(const QString &_url,
                 if (max_age == 0)
                     lastCookie.mExpireDate = 1;
                 else
-                    lastCookie.mExpireDate = epoch.secsTo_long(KDateTime::currentUtcDateTime().addSecs(max_age));
+                    lastCookie.mExpireDate = toEpochSecs(QDateTime::currentDateTimeUtc().addSecs(max_age));
             }
             else if (Name.compare(QL1S("expires"), Qt::CaseInsensitive) == 0)
             {
-                const KDateTime dt = parseDate(Value);
+                const QDateTime dt = parseDate(Value);
 
                 if (dt.isValid()) {
-                    lastCookie.mExpireDate = epoch.secsTo_long(dt);
+                    lastCookie.mExpireDate = toEpochSecs(dt);
                     if (lastCookie.mExpireDate == 0)
                         lastCookie.mExpireDate = 1;
                 }
@@ -920,6 +938,15 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
     // are properly removed and/or updated as necessary!
     extractDomains( cookie.host(), domains );
 
+    // If the cookie specifies a domain, check whether it is valid. Otherwise,
+    // accept the cookie anyways but removes the domain="" value to prevent
+    // cross-site cookie injection.
+    if (!cookie.domain().isEmpty()) {
+      if (!domains.contains(cookie.domain()) &&
+          !cookie.domain().endsWith(QL1C('.') + cookie.host()))
+         cookie.fixDomain(QString());
+    }
+
     QStringListIterator it (domains);
     while (it.hasNext())
     {
@@ -979,26 +1006,19 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
 // This function advices whether a single KHttpCookie object should
 // be added to the cookie jar.
 //
-KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
+KCookieAdvice KCookieJar::cookieAdvice(const KHttpCookie& cookie) const
 {
     if (m_rejectCrossDomainCookies && cookie.isCrossDomain())
        return KCookieReject;
 
+    if (cookie.getUserSelectedAdvice() != KCookieDunno)
+       return cookie.getUserSelectedAdvice();
+
+    if (m_autoAcceptSessionCookies && cookie.expireDate() == 0)
+       return KCookieAccept;
+
     QStringList domains;
     extractDomains(cookie.host(), domains);
-
-    // If the cookie specifies a domain, check whether it is valid. Otherwise,
-    // accept the cookie anyways but removes the domain="" value to prevent
-    // cross-site cookie injection.
-    if (!cookie.domain().isEmpty()) {
-      if (!domains.contains(cookie.domain()) &&
-          !cookie.domain().endsWith(QL1C('.') + cookie.host()))
-         cookie.fixDomain(QString());
-    }
-
-    if (m_autoAcceptSessionCookies && (cookie.expireDate() == 0 ||
-        m_ignoreCookieExpirationDate))
-       return KCookieAccept;
 
     KCookieAdvice advice = KCookieDunno;
     QStringListIterator it (domains);
@@ -1018,10 +1038,28 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
 }
 
 //
+// This function tells whether a single KHttpCookie object should
+// be considered persistent. Persistent cookies do not get deleted
+// at the end of the session and are saved on disk.
+//
+bool KCookieJar::cookieIsPersistent(const KHttpCookie& cookie) const
+{
+    if (cookie.expireDate() == 0)
+       return false;
+
+    KCookieAdvice advice = cookieAdvice(cookie);
+
+    if (advice == KCookieReject || advice == KCookieAcceptForSession)
+       return false;
+
+    return true;
+}
+
+//
 // This function gets the advice for all cookies originating from
 // _domain.
 //
-KCookieAdvice KCookieJar::getDomainAdvice(const QString &_domain)
+KCookieAdvice KCookieJar::getDomainAdvice(const QString &_domain) const
 {
     KHttpCookieList *cookieList = m_cookieDomains.value(_domain);
     KCookieAdvice advice;
@@ -1185,9 +1223,9 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             KHttpCookie& cookie = cookieIterator.next();
-            if ((cookie.expireDate() != 0) && !m_ignoreCookieExpirationDate) {
+
+            if (cookieIsPersistent(cookie))
                continue;
-            }
 
             QList<long> &ids = cookie.windowIds();
 
@@ -1256,12 +1294,13 @@ bool KCookieJar::saveCookies(const QString &_filename)
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             const KHttpCookie& cookie = cookieIterator.next();
+
             if (cookie.isExpired()) {
                 // Delete expired cookies
                 cookieIterator.remove();
                 continue;
             }
-            if (cookie.expireDate() != 0 && !m_ignoreCookieExpirationDate) {
+            if (cookieIsPersistent(cookie)) {
                 // Only save cookies that are not "session-only cookies"
                 if (!domainPrinted) {
                     domainPrinted = true;
@@ -1498,7 +1537,6 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     // Warning: those default values are duplicated in the kcm (kio/kcookiespolicies.cpp)
     m_rejectCrossDomainCookies = policyGroup.readEntry("RejectCrossDomainCookies", true);
     m_autoAcceptSessionCookies = policyGroup.readEntry("AcceptSessionCookies", true);
-    m_ignoreCookieExpirationDate = policyGroup.readEntry("IgnoreExpirationDate", false);
     m_globalAdvice = strToAdvice(policyGroup.readEntry("CookieGlobalAdvice", QString(QL1S("Accept"))));
 
     // Reset current domain settings first.

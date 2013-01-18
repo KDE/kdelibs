@@ -154,7 +154,7 @@ void KUrlNavigatorPlacesSelector::paintEvent(QPaintEvent* event)
     drawHoverBackground(&painter);
 
     // draw icon
-    const QPixmap pixmap = icon().pixmap(QSize(22, 22), QIcon::Normal);
+    const QPixmap pixmap = icon().pixmap(QSize(22, 22).expandedTo(iconSize()), QIcon::Normal);
     const int x = (width() -  pixmap.width()) / 2;
     const int y = (height() - pixmap.height()) / 2;
     painter.drawPixmap(x, y, pixmap);

@@ -1,5 +1,11 @@
 project(kdewebkit)
 
+add_feature_info(QtWebkit QT_QTWEBKIT_FOUND "Needed for building kdelibs" "http://trac.webkit.org/wiki/QtWebKit")
+
+if(NOT QT_QTWEBKIT_FOUND)
+  message(FATAL_ERROR "The QtWebkit module is required.")
+endif()
+
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${KDE4_KDEUI_INCLUDES}

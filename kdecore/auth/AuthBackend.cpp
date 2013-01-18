@@ -41,6 +41,7 @@ AuthBackend::AuthBackend()
 
 AuthBackend::~AuthBackend()
 {
+    delete d;
 }
 
 AuthBackend::Capabilities AuthBackend::capabilities() const

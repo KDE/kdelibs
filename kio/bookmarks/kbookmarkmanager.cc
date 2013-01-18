@@ -502,9 +502,14 @@ KBookmarkGroup KBookmarkManager::toolbar()
     // is already loaded
     QDomElement elem = root().findToolbar();
     if (elem.isNull())
-        return root(); // Root is the bookmark toolbar if none has been set.
+    {
+        // Root is the bookmark toolbar if none has been set.
+        // Make it explicit to speed up invocations of findToolbar()
+        root().internalElement().setAttribute("toolbar", "yes");
+        return root();
+    }
     else
-        return KBookmarkGroup(root().findToolbar());
+        return KBookmarkGroup(elem);
 }
 
 KBookmark KBookmarkManager::findByAddress( const QString & address )

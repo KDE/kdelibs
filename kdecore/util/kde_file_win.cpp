@@ -111,7 +111,7 @@ QString mkdtemp_QString (const QString &_template)
          with (module 2^32).  */
       value += 7777;
 
-      const QString tmp = tmpl + QString::fromAscii( XXXXXX );
+      const QString tmp = tmpl + QString::fromLatin1( XXXXXX );
       if (!KDE::mkdir(tmp,0700))
           return tmp;
   }
@@ -142,7 +142,7 @@ namespace KDE
 
   FILE *fopen(const QString &pathname, const char *mode)
   {
-    return _wfopen( CONV(pathname), CONV(QString::fromAscii( mode )) );
+    return _wfopen( CONV(pathname), CONV(QString::fromLatin1( mode )) );
   }
 
   int lstat(const QString &path, KDE_struct_stat *buf)

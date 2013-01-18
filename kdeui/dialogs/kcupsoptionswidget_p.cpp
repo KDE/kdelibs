@@ -74,7 +74,7 @@ void KCupsOptionsWidget::setupCupsOptions( QStringList &cupsOptions )
     Q_UNUSED(cupsOptions);
 }
 
-void KCupsOptionsWidget::setCupsOption( QStringList &cupsOptions, const QString option, const QString value )
+void KCupsOptionsWidget::setCupsOption( QStringList &cupsOptions, const QString& option, const QString& value )
 {
     if ( cupsOptions.contains( option ) ) {
         cupsOptions.replace( cupsOptions.indexOf( option ) + 1, value );

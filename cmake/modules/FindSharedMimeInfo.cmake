@@ -8,7 +8,7 @@
 # The minimum required version of SharedMimeInfo can be specified using the
 # standard syntax, e.g. find_package(SharedMimeInfo 0.20)
 #
-# For backward compatiblity, the following two variables are also supported:
+# For backward compatibility, the following two variables are also supported:
 #  SHARED_MIME_INFO_FOUND - same as SHAREDMIMEINFO_FOUND
 #  SHARED_MIME_INFO_MINIMUM_VERSION - set to the minimum version you need, default is 0.18.
 #    When both are used, i.e. the version is set in the find_package() call and
@@ -49,7 +49,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(SharedMimeInfo REQUIRED_VARS UPDATE_MIME_DATABASE_EXECUTABLE
                                                  VERSION_VAR SHAREDMIMEINFO_VERSION )
 
-# For backward compatiblity:
+# For backward compatibility:
 set(SHARED_MIME_INFO_FOUND ${SHAREDMIMEINFO_FOUND} )
 
 # This should go into MacroLogFeature/FeatureSummary:

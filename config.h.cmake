@@ -50,12 +50,8 @@
 #cmakedefine HAVE_FSTAB_H 1
 #cmakedefine HAVE_LIMITS_H 1
 #cmakedefine HAVE_MNTENT_H 1
-#cmakedefine HAVE_NETINET_IN_H 1
 #cmakedefine HAVE_PATHS_H 1
-#cmakedefine HAVE_SYS_MMAN_H 1
 #cmakedefine HAVE_UNISTD_H 1
-#cmakedefine HAVE_ARPA_NAMESER_COMPAT_H
-#cmakedefine HAVE_ARPA_NAMESER8_COMPAT_H
 
 #cmakedefine HAVE_XTEST 1
 
@@ -79,7 +75,6 @@
 #cmakedefine   HAVE_MKSTEMP 1
 #cmakedefine   HAVE_MKDTEMP 1
 #cmakedefine   HAVE_RANDOM 1
-#cmakedefine   HAVE_READDIR_R 1
 #cmakedefine   HAVE_SENDFILE 1
 #cmakedefine   HAVE_SETENV 1
 #cmakedefine   HAVE_SETEUID 1

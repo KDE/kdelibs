@@ -686,7 +686,7 @@ protected Q_SLOTS:
     void saveAutoSaveSettings();
 
 protected:
-    KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WFlags f);
+    KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WindowFlags f);
 
     KMainWindowPrivate * const k_ptr;
 private:

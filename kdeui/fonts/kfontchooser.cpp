@@ -103,6 +103,7 @@ public:
     qreal setupSizeListBox(const QString& family, const QString& style);
 
     void setupDisplay();
+    QString styleIdentifier (const QFont &font);
 
     void _k_toggled_checkbox();
     void _k_family_chosen_slot(const QString&);
@@ -146,6 +147,8 @@ public:
     // Mappings of translated to Qt originated family and style strings.
     QHash<QString, QString> qtFamilies;
     QHash<QString, QString> qtStyles;
+    // Mapping of translated style strings to internal style identifiers.
+    QHash<QString, QString> styleIDs;
 
 };
 
@@ -292,7 +295,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     }
     // Populate usual styles, to determine minimum list width;
     // will be replaced later with correct styles.
-    d->styleListBox->addItem(i18nc("@item font","Regular"));
+    d->styleListBox->addItem(I18NC_NOX("QFontDatabase", "Normal"));
     d->styleListBox->addItem(i18nc("@item font","Italic"));
     d->styleListBox->addItem(i18nc("@item font","Oblique"));
     d->styleListBox->addItem(i18nc("@item font","Bold"));
@@ -608,36 +611,34 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     splitFontString(family, &pureFamily);
     QStringList filteredStyles;
     qtStyles.clear();
+    styleIDs.clear();
     foreach (const QString &style, styles) {
         // Sometimes the font database will report an invalid style,
         // that falls back back to another when set.
         // Remove such styles, by checking set/get round-trip.
-        if (dbase.styleString(dbase.font(currentFamily, style, 10)) != style) {
+        QFont testFont = dbase.font(currentFamily, style, 10);
+        if (dbase.styleString(testFont) != style) {
             styles.removeAll(style);
             continue;
         }
-
-        // We don't like Qt's name for some styles.
-        QString styleMod = style;
-        if (style == I18NC_NOX("QFontDatabase", "Normal"))
-            styleMod = i18nc("@item font", "Regular");
 
         // i18n: Filtering message, so that translators can script the
         // style string according to the font family name (e.g. may need
         // noun-adjective congruence wrt. gender of the family name).
         // The message provides the dynamic context 'family', which is
         // the family name to which the style string corresponds.
-        QString fstyle = ki18nc("@item Font style", "%1").subs(styleMod).inContext("family", pureFamily).toString();
+        QString fstyle = ki18nc("@item Font style", "%1").subs(style).inContext("family", pureFamily).toString();
         if (!filteredStyles.contains(fstyle)) {
             filteredStyles.append(fstyle);
             qtStyles.insert(fstyle, style);
+            styleIDs.insert(fstyle, styleIdentifier(testFont));
         }
     }
     styleListBox->clear();
     styleListBox->addItems(filteredStyles);
 
     // Try to set the current style in the listbox to that previous.
-    int listPos = filteredStyles.indexOf(selectedStyle.isEmpty() ?  i18nc("@item font", "Regular") : selectedStyle);
+    int listPos = filteredStyles.indexOf(selectedStyle.isEmpty() ?  I18NC_NOX("QFontDatabase", "Normal") : selectedStyle);
     if (listPos < 0) {
         // Make extra effort to have Italic selected when Oblique was chosen,
         // and vice versa, as that is what the user would probably want.
@@ -907,7 +908,7 @@ void KFontChooser::Private::setupDisplay()
 {
     QFontDatabase dbase;
     QString family = selFont.family().toLower();
-    QString style = dbase.styleString(selFont).toLower();
+    QString styleID = styleIdentifier(selFont);
     qreal size = selFont.pointSizeF();
     if (size == -1)
         size = QFontInfo( selFont ).pointSizeF();
@@ -973,7 +974,7 @@ void KFontChooser::Private::setupDisplay()
     // Set current style in the listbox.
     numEntries = styleListBox->count();
     for (i = 0; i < numEntries; i++) {
-        if (style == qtStyles[styleListBox->item(i)->text()].toLower()) {
+        if (styleID == styleIDs[styleListBox->item(i)->text()]) {
             styleListBox->setCurrentRow(i);
             break;
         }
@@ -987,7 +988,7 @@ void KFontChooser::Private::setupDisplay()
     // If smoothly scalable, allow customizing one of the standard size slots,
     // otherwise just select the nearest available size.
     QString currentFamily = qtFamilies[familyListBox->currentItem()->text()];
-    QString currentStyle = qtFamilies[styleListBox->currentItem()->text()];
+    QString currentStyle = qtStyles[styleListBox->currentItem()->text()];
     bool canCustomize = dbase.isSmoothlyScalable(currentFamily, currentStyle);
     sizeListBox->setCurrentRow(nearestSizeRow(size, canCustomize));
 
@@ -1057,6 +1058,20 @@ void KFontChooser::Private::_k_showXLFDArea(bool show)
     {
         xlfdEdit->parentWidget()->hide();
     }
+}
+
+// Human-readable style identifiers returned by QFontDatabase::styleString()
+// do not always survive round trip of QFont serialization/deserialization,
+// causing wrong style in the style box to be highlighted when
+// the chooser dialog is opened. This will cause the style to be changed
+// when the dialog is closed and the user did not touch the style box.
+// Hence, construct custom style identifiers sufficient for the purpose.
+QString KFontChooser::Private::styleIdentifier(const QFont &font)
+{
+    const QChar comma(QLatin1Char(','));
+    return   QString::number(font.weight()) + comma
+           + QString::number((int)font.style()) + comma
+           + QString::number(font.stretch());
 }
 
 #include "kfontchooser.moc"

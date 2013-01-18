@@ -18,21 +18,32 @@ if(NOT KAUTH_BACKEND)
 
         if (POLKITQT-1_FOUND)
             set (KAUTH_BACKEND "PolkitQt-1")
-            macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Support for executing priviledged actions in a controlled way (KAuth)" "http://techbase.kde.org/Polkit-Qt-1"
-                              FALSE "" "STRONGLY RECOMMENDED")
+            set_package_properties(PolkitQt-1 PROPERTIES DESCRIPTION "Support for executing privileged actions in a controlled way (KAuth)"
+                                   URL "http://techbase.kde.org/Polkit-Qt-1"
+                                   TYPE RECOMMENDED
+                                  )
         else (POLKITQT-1_FOUND)
             macro_optional_find_package(PolkitQt)
 
             if (POLKITQT_FOUND)
                 set (KAUTH_BACKEND "PolkitQt")
-                macro_log_feature(POLKITQT_FOUND "PolkitQt" "Support for executing priviledged actions in a controlled way (KAuth)" "http://api.kde.org/polkit-qt"
-                                  FALSE "" "STRONGLY RECOMMENDED")
+            set_package_properties(PolkitQt PROPERTIES DESCRIPTION "Support for executing privileged actions in a controlled way (KAuth)"
+                                   URL "http://api.kde.org/polkit-qt"
+                                   TYPE RECOMMENDED
+                                  )
+
             else (POLKITQT_FOUND)
                 # Nothing was found: notify and log the missing features
-                macro_log_feature(POLKITQT-1_FOUND "PolkitQt-1" "Support for executing priviledged actions in a controlled way (KAuth)" "http://techbase.kde.org/Polkit-Qt-1"
-                                  FALSE "" "STRONGLY RECOMMENDED: Either this or PolkitQt is required to make KAuth work, and hence enable certain workspace functionalities")
-                macro_log_feature(POLKITQT_FOUND "PolkitQt" "Support for executing priviledged actions in a controlled way (KAuth)" "http://api.kde.org/polkit-qt"
-                                  FALSE "" "STRONGLY RECOMMENDED: Either this or PolkitQt-1 is required to make KAuth work, and hence enable certain workspace functionalities")
+                set_package_properties(PolkitQt-1 PROPERTIES DESCRIPTION "Support for executing privileged actions in a controlled way (KAuth)"
+                                       URL "http://techbase.kde.org/Polkit-Qt-1"
+                                       TYPE RECOMMENDED
+                                       PURPOSE "Either this or PolkitQt is required to make KAuth work, and hence enable certain workspace functionalities"
+                                      )
+                set_package_properties(PolkitQt PROPERTIES DESCRIPTION "Support for executing privileged actions in a controlled way (KAuth)"
+                                      URL "http://api.kde.org/polkit-qt"
+                                      TYPE RECOMMENDED
+                                      PURPOSE "Either this or PolkitQt-1 is required to make KAuth work, and hence enable certain workspace functionalities"
+                                     )
                 set (KAUTH_BACKEND "Fake")
             endif (POLKITQT_FOUND)
         endif (POLKITQT-1_FOUND)

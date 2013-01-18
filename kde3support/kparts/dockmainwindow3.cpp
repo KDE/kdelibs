@@ -57,7 +57,7 @@ public:
 };
 }
 
-DockMainWindow3::DockMainWindow3( QWidget* parent, const char *name, Qt::WFlags f )
+DockMainWindow3::DockMainWindow3( QWidget* parent, const char *name, Qt::WindowFlags f )
     : K3DockMainWindow( parent, name, f )
 {
     d = new DockMainWindow3Private();

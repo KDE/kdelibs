@@ -241,7 +241,8 @@ JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const 
   JSObject* objCons = exec->lexicalInterpreter()->builtinObject();
   JSObject* prototype = objCons->construct(exec,List::empty());
   prototype->put(exec, exec->propertyNames().constructor, fimp, DontEnum|DontDelete|ReadOnly);
-  fimp->put(exec, exec->propertyNames().prototype, prototype, Internal|DontDelete);
+  // ECMA Edition 5.1r6 - 15.3.5.2 - [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: false
+  fimp->put(exec, exec->propertyNames().prototype, prototype, Internal|DontDelete|DontEnum);
   return fimp;
 }
 

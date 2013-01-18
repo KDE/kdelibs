@@ -46,6 +46,7 @@ public:
     DeclarativeWidgetPrivate(DeclarativeWidget *parent)
         : q(parent),
           engine(0),
+          scriptEngine(0),
           component(0),
           root(0),
           delay(false)
@@ -62,6 +63,10 @@ public:
     void scheduleExecutionEnd();
     void minimumWidthChanged();
     void minimumHeightChanged();
+    void maximumWidthChanged();
+    void maximumHeightChanged();
+    void preferredWidthChanged();
+    void preferredHeightChanged();
 
 
     DeclarativeWidget *q;
@@ -140,9 +145,6 @@ void DeclarativeWidgetPrivate::finishExecute()
 
     if (object) {
         static_cast<QGraphicsItem *>(object)->setParentItem(q);
-        if (q->scene()) {
-            q->scene()->addItem(object);
-        }
     }
 
     if (widget) {
@@ -157,19 +159,58 @@ void DeclarativeWidgetPrivate::finishExecute()
         q->setLayout(0);
         qreal minimumWidth = 0;
         qreal minimumHeight = 0;
+        qreal maximumWidth = 0;
+        qreal maximumHeight = 0;
+        qreal preferredWidth = 0;
+        qreal preferredHeight = 0;
         if (object) {
-            minimumWidth = object->property("minimumWidth").toReal();
-            minimumHeight = object->property("minimumHeight").toReal();
             object->setProperty("width", q->size().width());
             object->setProperty("height", q->size().height());
-            QObject::connect(object, SIGNAL(minimumWidthChanged()), q, SLOT(minimumWidthChanged()));
-            QObject::connect(object, SIGNAL(minimumHeightChanged()), q, SLOT(minimumHeightChanged()));
+
+            if (object->metaObject()->indexOfProperty("minimumWidth")>=0) {
+                minimumWidth = object->property("minimumWidth").toReal();
+                QObject::connect(object, SIGNAL(minimumWidthChanged()), q, SLOT(minimumWidthChanged()));
+            }
+            if (object->metaObject()->indexOfProperty("minimumHeight")>=0) {
+                minimumHeight = object->property("minimumHeight").toReal();
+                QObject::connect(object, SIGNAL(minimumHeightChanged()), q, SLOT(minimumHeightChanged()));
+            }
+
+            if (object->metaObject()->indexOfProperty("maximumWidth")>=0) {
+                maximumWidth = object->property("maximumWidth").toReal();
+                QObject::connect(object, SIGNAL(maximumWidthChanged()), q, SLOT(maximumWidthChanged()));
+            }
+            if (object->metaObject()->indexOfProperty("maximumHeight")>=0) {
+                maximumHeight = object->property("maximumHeight").toReal();
+                QObject::connect(object, SIGNAL(maximumHeightChanged()), q, SLOT(maximumHeightChanged()));
+            }
+
+            if (object->metaObject()->indexOfProperty("preferredWidth")>=0) {
+                preferredWidth = object->property("preferredWidth").toReal();
+                QObject::connect(object, SIGNAL(preferredWidthChanged()), q, SLOT(preferredWidthChanged()));
+            }
+            if (object->metaObject()->indexOfProperty("preferredHeight")>=0) {
+                preferredHeight = object->property("preferredHeight").toReal();
+                QObject::connect(object, SIGNAL(preferredHeightChanged()), q, SLOT(preferredHeightChanged()));
+            }
         }
 
         if (minimumWidth > 0 && minimumHeight > 0) {
             q->setMinimumSize(minimumWidth, minimumHeight);
         } else {
             q->setMinimumSize(-1, -1);
+        }
+
+        if (maximumWidth > 0 && maximumHeight > 0) {
+            q->setMaximumSize(maximumWidth, maximumHeight);
+        } else {
+            q->setMaximumSize(-1, -1);
+        }
+
+        if (preferredWidth > 0 && preferredHeight > 0) {
+            q->setPreferredSize(preferredWidth, preferredHeight);
+        } else {
+            q->setPreferredSize(-1, -1);
         }
     }
     emit q->finished();
@@ -185,6 +226,30 @@ void DeclarativeWidgetPrivate::minimumHeightChanged()
 {
     qreal minimumHeight = root->property("minimumHeight").toReal();
     q->setMinimumHeight(minimumHeight);
+}
+
+void DeclarativeWidgetPrivate::maximumWidthChanged()
+{
+    qreal maximumWidth = root->property("maximumWidth").toReal();
+    q->setMaximumWidth(maximumWidth);
+}
+
+void DeclarativeWidgetPrivate::maximumHeightChanged()
+{
+    qreal maximumHeight = root->property("maximumHeight").toReal();
+    q->setMaximumHeight(maximumHeight);
+}
+
+void DeclarativeWidgetPrivate::preferredWidthChanged()
+{
+    qreal preferredWidth = root->property("preferredWidth").toReal();
+    q->setPreferredWidth(preferredWidth);
+}
+
+void DeclarativeWidgetPrivate::preferredHeightChanged()
+{
+    qreal preferredHeight = root->property("preferredHeight").toReal();
+    q->setPreferredHeight(preferredHeight);
 }
 
 DeclarativeWidget::DeclarativeWidget(QGraphicsWidget *parent)

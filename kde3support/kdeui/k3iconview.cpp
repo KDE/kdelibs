@@ -55,7 +55,7 @@ public:
     QTimer doubleClickIgnoreTimer;
 };
 
-K3IconView::K3IconView( QWidget *parent, const char *name, Qt::WFlags f )
+K3IconView::K3IconView( QWidget *parent, const char *name, Qt::WindowFlags f )
     : Q3IconView( parent, name, f )
 {
     d = new K3IconViewPrivate;

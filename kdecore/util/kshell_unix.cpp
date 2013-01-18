@@ -29,7 +29,7 @@
 
 static int fromHex( QChar cUnicode )
 {
-    char c = cUnicode.toAscii ();
+    char c = cUnicode.toLatin1 ();
 
     if (c >= '0' && c <= '9')
         return c - '0';
@@ -50,7 +50,7 @@ inline static bool isQuoteMeta( QChar cUnicode )
 
     return (c < sizeof(iqm) * 8) && (iqm[c / 8] & (1 << (c & 7)));
 #else
-    char c = cUnicode.toAscii();
+    char c = cUnicode.toLatin1();
     return c == '\\' || c == '\'' || c == '"' || c == '$';
 #endif
 }
@@ -183,7 +183,7 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                         if (pos >= args.length())
                             goto quoteerr;
                         c = args.unicode()[pos++];
-                        switch (c.toAscii()) {
+                        switch (c.toLatin1()) {
                         case 'a': cret += QLatin1Char('\a'); break;
                         case 'b': cret += QLatin1Char('\b'); break;
                         case 'e': cret += QLatin1Char('\033'); break;
@@ -196,7 +196,7 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                         case 'c':
                             if (pos >= args.length())
                                 goto quoteerr;
-                            cret += args.unicode()[pos++].toAscii() & 31;
+                            cret += args.unicode()[pos++].toLatin1() & 31;
                             break;
                         case 'x':
                           {
@@ -216,16 +216,16 @@ QStringList KShell::splitArgs( const QString &args, Options flags, Errors *err)
                             break;
                           }
                         default:
-                            if (c.toAscii() >= '0' && c.toAscii() <= '7') {
-                                char cAscii = c.toAscii();
+                            if (c.toLatin1() >= '0' && c.toAscii() <= '7') {
+                                char cAscii = c.toLatin1();
                                 int hv = cAscii - '0';
                                 for (int i = 0; i < 2; i++) {
                                     if (pos >= args.length())
                                         break;
                                     c = args.unicode()[pos];
-                                    if (c.toAscii() < '0' || c.toAscii() > '7')
+                                    if (c.toLatin1() < '0' || c.toAscii() > '7')
                                         break;
-                                    hv = hv * 8 + (c.toAscii() - '0');
+                                    hv = hv * 8 + (c.toLatin1() - '0');
                                     pos++;
                                 }
                                 cret += QChar( hv );

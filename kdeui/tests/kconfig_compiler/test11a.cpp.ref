@@ -107,7 +107,7 @@ Test11a::Test11a(  )
     valuesEmailClient.append( choice );
   }
   mEmailClientItem = new MyPrefs::ItemEnum( currentGroup(), QLatin1String( "EmailClient" ), mEmailClient, valuesEmailClient, kmail );
-  mEmailClientItem->setLabel( i18nc("@info:whatsthis", "Email client") );
+  mEmailClientItem->setLabel( i18nc("@label", "Email client") );
   mEmailClientItem->setWhatsThis( i18nc("@info:whatsthis", "<para>How to send email when an email alarm is triggered.<list><item>KMail: The email is sent automatically via <application>KMail</application>. <application>KMail</application> is started first if necessary.</item><item>Sendmail: The email is sent automatically. This option will only work if your system is configured to use <application>sendmail</application> or a sendmail compatible mail transport agent.</item></list></para>") );
   addItem( mEmailClientItem, QLatin1String( "EmailClient" ) );
   QList<MyPrefs::ItemEnum::Choice2> valuesDefaultReminderUnits;
@@ -123,7 +123,7 @@ Test11a::Test11a(  )
     valuesDefaultReminderUnits.append( choice );
   }
   mDefaultReminderUnitsItem = new MyPrefs::ItemEnum( currentGroup(), QLatin1String( "RemindUnits" ), mDefaultReminderUnits, valuesDefaultReminderUnits, TimePeriod::HoursMinutes );
-  mDefaultReminderUnitsItem->setLabel( i18nc("@info:whatsthis", "Reminder units") );
+  mDefaultReminderUnitsItem->setLabel( i18nc("@label", "Reminder units") );
   mDefaultReminderUnitsItem->setWhatsThis( i18nc("@info:whatsthis", "Default reminder time units in the alarm edit dialog.") );
   addItem( mDefaultReminderUnitsItem, QLatin1String( "DefaultReminderUnits" ) );
 

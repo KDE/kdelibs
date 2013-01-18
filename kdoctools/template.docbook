@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.2-Based Variant V1.1//EN" "dtd/kdex.dtd" [
   <!-- Define an entity for your application if it is not part of KDE
-       CVS -->
+       Git -->
   <!ENTITY kmyapplication "<application>KMyApp</application>">
   <!ENTITY kappname "&kmyapplication;"><!-- replace kmyapplication here
                                             do *not* replace kappname-->
@@ -16,7 +16,13 @@
   <!-- Do not define any other entities; instead, use the entities
        from entities/general.entities and en/user.entities. -->
 ]>
-<!-- kdoctemplate v0.9.1 2010-10-27 lueck
+<!-- kdoctemplate v0.9.2 2012-10-15 pino
+     update versions to 4.9
+     update years to 2012
+     switch from CVS to Git
+     add id attribute to <book>
+     
+     kdoctemplate v0.9.1 2010-10-27 lueck
      changed releaseinfo format
      removed screenshot format="EPS
      added comment when to write a command reference
@@ -53,7 +59,8 @@ thanks ;-).
 <!-- The language must NOT be changed here. -->
 <!-- If you are writing original documentation in a language other -->
 <!-- than English, change the language above ONLY, not here -->
-<book lang="&language;">
+<!-- Change the value of id to the name of your application -->
+<book id="kmyapplication" lang="&language;">
 
 <!-- This header contains all of the meta-information for the document such
 as Authors, publish date, the abstract, and Keywords -->
@@ -80,7 +87,7 @@ and use `&George.N.Ugnacious; &George.N.Ugnacious.mail;' in the author element.
 </authorgroup>
 
 <copyright>
-<year>2010</year>
+<year>2012</year>
 <holder>George N. Ugnacious</holder>
 </copyright>
 <legalnotice>&FDLNotice;</legalnotice>
@@ -89,12 +96,12 @@ and use `&George.N.Ugnacious; &George.N.Ugnacious.mail;' in the author element.
 Don't forget to include this last date.
 Please respect the format of the date (YYYY-MM-DD),it is used by scripts.
 -->
-<date>2010-01-10</date>
+<date>2012-01-10</date>
 
 <!--version information of the application and kde this documentation is valid for.
 either 'xx.yy.zz (&kde; x.y)' or '&kde; x.y' 
 -->
-<releaseinfo>1.01.00 (&kde; 4,5)</releaseinfo>
+<releaseinfo>1.01.00 (&kde; 4.9)</releaseinfo>
 
 <!-- Abstract about this handbook -->
 
@@ -342,7 +349,7 @@ distribution. -->
 &kmyapplication;
 </para>
 <para>
-Program copyright 1997 John Q. Hacker <email>jqh@kde.org</email>
+Program copyright 2010-2012 John Q. Hacker <email>jqh@kde.org</email>
 </para>
 <para>
 Contributors:
@@ -355,7 +362,7 @@ Contributors:
 </para>
 
 <para>
-Documentation Copyright &copy; 1999 George N. Ugnacious <email>gnu@kde.org</email>
+Documentation Copyright &copy; 2012 George N. Ugnacious <email>gnu@kde.org</email>
 </para>
 
 <!-- TRANS:CREDIT_FOR_TRANSLATORS -->
@@ -382,7 +389,7 @@ Documentation Copyright &copy; 1999 George N. Ugnacious <email>gnu@kde.org</emai
 <title>How to obtain &kmyapplication;</title>
 
 <!-- This first entity contains boiler plate for applications that are
-part of KDE archiv.  You should remove it if you are releasing your
+part of KDE archive.  You should remove it if you are releasing your
 application -->
 
 &install.intro.documentation;
@@ -404,7 +411,7 @@ information here.
 -->
 
 <para>
-In order to successfully use &kmyapplication;, you need &kde; 4.5. Foobar.lib is
+In order to successfully use &kmyapplication;, you need &kde; 4.9. Foobar.lib is
 required in order to support the advanced &kmyapplication; features. &kmyapplication; uses
 about 5 megs of memory to run, but this may vary depending on your
 platform and configuration.
@@ -438,7 +445,7 @@ url="http://apps.kde.org/kapp">http://apps.kde.org/kapp</ulink>.
 <title>Configuration</title>
 
 <para>Don't forget to tell your system to start the <filename>dtd</filename>
-dicer-toaster daemon first, or &kmyapplication; won't work !</para>
+dicer-toaster daemon first, or &kmyapplication; won't work!</para>
 
 </sect1>
 

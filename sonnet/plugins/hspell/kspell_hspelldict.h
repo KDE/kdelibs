@@ -42,6 +42,7 @@ public:
 
     virtual bool addToPersonal( const QString& word );
     virtual bool addToSession( const QString& word );
+    inline bool isInitialized() const { return initialized; }
 private:
     struct dict_radix *m_speller;
     QTextCodec *codec;

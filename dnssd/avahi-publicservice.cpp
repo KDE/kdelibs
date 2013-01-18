@@ -147,6 +147,7 @@ void PublicService::stop()
 {
 	K_D;
         if (d->m_group) d->m_group->Reset();
+        d->m_running = false;
 	d->m_published = false;
 }
 bool PublicServicePrivate::fillEntryGroup()
@@ -167,8 +168,8 @@ bool PublicServicePrivate::fillEntryGroup()
     QList<QByteArray> txt;
     QMap<QString,QByteArray>::ConstIterator itEnd = m_textData.constEnd();
     for (QMap<QString,QByteArray>::ConstIterator it = m_textData.constBegin(); it!=itEnd ; ++it) 
-    	if (it.value().isNull()) txt.append(it.key().toAscii());
-	else txt.append(it.key().toAscii()+'='+it.value());
+    	if (it.value().isNull()) txt.append(it.key().toLatin1());
+	else txt.append(it.key().toLatin1()+'='+it.value());
 	
 	
     for (;;) {
@@ -200,7 +201,7 @@ void PublicServicePrivate::serverStateChanged(int s,const QString&)
 	    break;
 	case AVAHI_SERVER_REGISTERING:
 	case AVAHI_SERVER_COLLISION:
-	    m_group->Reset();
+	    if (m_group) m_group->Reset();
 	    m_collision=true;
 	    break;
 	case AVAHI_SERVER_RUNNING:

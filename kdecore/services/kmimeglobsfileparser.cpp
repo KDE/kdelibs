@@ -160,7 +160,6 @@ void KMimeGlobsFileParser::AllGlobs::addGlob(const Glob& glob)
     // Note that in each case, we check for duplicates to avoid inserting duplicated patterns.
     // This can happen when installing kde.xml and freedesktop.org.xml
     // in the same prefix, and they both have text/plain:*.txt
-    // TODO: skipping for now; evaluate if performance problem
 
     const QString &pattern = glob.pattern;
     Q_ASSERT(!pattern.isEmpty());
@@ -175,17 +174,17 @@ void KMimeGlobsFileParser::AllGlobs::addGlob(const Glob& glob)
         // The bulk of the patterns is *.foo with weight 50 --> those go into the fast patterns hash.
         const QString extension = pattern.mid(2).toLower();
         QStringList& patterns = m_fastPatterns[extension]; // find or create
-        //if (!patterns.contains(glob.mimeType))
+        if (!patterns.contains(glob.mimeType))
             patterns.append(glob.mimeType);
     } else {
         Glob adjustedGlob(glob);
         if ((adjustedGlob.flags & KMimeTypeRepository::CaseSensitive) == 0)
             adjustedGlob.pattern = adjustedGlob.pattern.toLower();
         if (adjustedGlob.weight > 50) {
-            //if (!m_highWeightGlobs.hasPattern(adjustedGlob.mimeType, adjustedGlob.pattern))
+            if (!m_highWeightGlobs.hasPattern(adjustedGlob.mimeType, adjustedGlob.pattern))
                 m_highWeightGlobs.append(adjustedGlob);
         } else {
-            //if (!m_lowWeightGlobs.hasPattern(adjustedGlob.mimeType, adjustedGlob.pattern))
+            if (!m_lowWeightGlobs.hasPattern(adjustedGlob.mimeType, adjustedGlob.pattern))
                 m_lowWeightGlobs.append(adjustedGlob);
         }
     }

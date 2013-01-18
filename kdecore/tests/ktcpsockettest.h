@@ -38,7 +38,9 @@ private Q_SLOTS:
     void connectDisconnect();
     void read();
     void write();
-    void states();
+    void statesIana();
+    void statesLocalHost();
+    void statesManyHosts();
     void errors();
 public Q_SLOTS: //auxiliary slots to check signal emission from the socket
     void states_hostFound();

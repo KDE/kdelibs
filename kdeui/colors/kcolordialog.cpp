@@ -233,9 +233,19 @@ void KColorCells::setShading(bool _shade)
     d->shade = _shade;
 }
 
+bool KColorCells::shading() const
+{
+    return d->shade;
+}
+
 void KColorCells::setAcceptDrags(bool _acceptDrags)
 {
     this->setDragEnabled(_acceptDrags);
+}
+
+bool KColorCells::acceptDrags() const
+{
+    return this->dragEnabled();
 }
 
 void KColorCells::setSelected(int index)

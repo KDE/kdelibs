@@ -122,14 +122,24 @@ void KRunUnitTest::testProcessDesktopExec()
     process.setShellCommand("");
     const QString shellPath = process.program().at(0);
 
+    // Arch moved /bin/date to /usr/bin/date...
+    const QString datePath = KStandardDirs::findExe("date");
+
     for (int su = 0; su < 2; su++)
         for (int te = 0; te < 2; te++)
             for (int ex = 0; ex < 2; ex++) {
                 int pt = ex+te*2+su*4;
                 QString exe;
-                if (pt == 4 || pt == 5)
+                if (pt == 4 || pt == 5) {
                     exe = KStandardDirs::findExe("kdesu");
-                const QString result = QString::fromLatin1(rslts[pt]).replace("/bin/sh", shellPath);
+                    if (exe.isEmpty()) {
+                        qWarning() << "kdesu not found, skipping test";
+                        continue;
+                    }
+                }
+                const QString result = QString::fromLatin1(rslts[pt])
+                    .replace("/bin/sh", shellPath)
+                    .replace("/bin/date", datePath);
                 checkPDE( execs[ex], terms[te], sus[su], l0, false, exe + result);
             }
 }
@@ -160,7 +170,6 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
     if (kmailservice.isEmpty()) kmailservice = "kmailservice";
     if (!kdeinit.isEmpty()) {
         QVERIFY(!kmailservice.isEmpty());
-        QVERIFY(kmailservice.contains("kde4/libexec"));
     }
 
     QTest::newRow("%U l0") << "kdeinit4 %U" << l0 << false << kdeinit;

@@ -389,7 +389,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             const KMimeType::Ptr ptr = KMimeType::findByUrl(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
-                                hstr += ptr->name().toAscii().constData();
+                                hstr += ptr->name().toLatin1().constData();
                             }
                         } else if (!val.isEmpty()) {
                             fileNotUploads << path.pathOrUrl();
@@ -448,7 +448,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     }
 
     if (useMultipart)
-        enc_string = QString("--" + m_boundary + "--\r\n").toAscii().constData();
+        enc_string = QString("--" + m_boundary + "--\r\n").toLatin1().constData();
 
     const int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );

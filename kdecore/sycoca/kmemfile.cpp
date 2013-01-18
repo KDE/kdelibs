@@ -64,7 +64,7 @@ QString KMemFile::Private::getShmKey ( int iCounter )
 QString KMemFile::Private::getShmKey ( const QString &filename, int iCounter )
 {
   QByteArray tmp = QString ( QDir ( filename ).canonicalPath() + QString::number ( iCounter ) ).toUtf8();
-  return QString::fromAscii ( QCryptographicHash::hash ( tmp, QCryptographicHash::Sha1 ) );
+  return QString::fromLatin1 ( QCryptographicHash::hash ( tmp, QCryptographicHash::Sha1 ) );
 }
 
 bool KMemFile::Private::loadContentsFromFile()

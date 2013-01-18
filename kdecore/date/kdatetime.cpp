@@ -2963,7 +2963,7 @@ bool getUTCOffset(const QString &string, int &offset, bool colon, int &result)
     tzmin += tzhour * 60;
     if (result != NO_NUMBER  &&  result != tzmin)
         return false;
-    result = tzmin;
+    result = sign * tzmin;
     return true;
 }
 

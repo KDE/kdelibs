@@ -79,8 +79,7 @@ public:
     ~SlaveBasePrivate() { delete m_passwdServer; }
 
     UDSEntryList pendingListEntries;
-    int listEntryCurrentSize;
-    long listEntry_sec, listEntry_usec;
+    QTime m_timeSinceLastBatch;
     Connection appConnection;
     QString poolSocket;
     bool isConnectedToApp;
@@ -226,11 +225,6 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
 
     globalSlave=this;
 
-    d->listEntryCurrentSize = 100;
-    struct timeval tp;
-    gettimeofday(&tp, 0);
-    d->listEntry_sec = tp.tv_sec;
-    d->listEntry_usec = tp.tv_usec;
     d->isConnectedToApp = true;
 
     // by kahl for netmgr (need a way to identify slaves)
@@ -440,7 +434,6 @@ void SlaveBase::error( int _errid, const QString &_text )
 
     send( MSG_ERROR, data );
     //reset
-    d->listEntryCurrentSize = 100;
     d->sentListEntries=0;
     d->totalSize=0;
     d->inOpenLoop=false;
@@ -468,7 +461,6 @@ void SlaveBase::finished()
     send( MSG_FINISHED );
 
     // reset
-    d->listEntryCurrentSize = 100;
     d->sentListEntries=0;
     d->totalSize=0;
     d->inOpenLoop=false;
@@ -508,10 +500,6 @@ void SlaveBase::totalSize( KIO::filesize_t _bytes )
     send( INF_TOTAL_SIZE, data );
 
     //this one is usually called before the first item is listed in listDir()
-    struct timeval tp;
-    gettimeofday(&tp, 0);
-    d->listEntry_sec = tp.tv_sec;
-    d->listEntry_usec = tp.tv_usec;
     d->totalSize=_bytes;
     d->sentListEntries=0;
 }
@@ -688,44 +676,29 @@ void SlaveBase::statEntry( const UDSEntry& entry )
 
 void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
 {
-   static struct timeval tp;
-   static const int maximum_updatetime = 300;
-   static const int minimum_updatetime = 100;
+    static const int maximum_updatetime = 300;
 
-   if (!_ready) {
-      d->pendingListEntries.append(entry);
+    // We start measuring the time from the point we start filling the list
+    if (d->pendingListEntries.isEmpty()) {
+        d->m_timeSinceLastBatch.restart();
+    }
 
-      if (d->pendingListEntries.count() > d->listEntryCurrentSize) {
-         gettimeofday(&tp, 0);
+    if (!_ready) {
+        d->pendingListEntries.append(entry);
 
-         long diff = ((tp.tv_sec - d->listEntry_sec) * 1000000 +
-                      tp.tv_usec - d->listEntry_usec) / 1000;
-         if (diff==0) diff=1;
-
-         if (diff > maximum_updatetime) {
-            d->listEntryCurrentSize = d->listEntryCurrentSize * 3 / 4;
+        // If more then maximum_updatetime time is passed, emit the current batch
+        if (d->m_timeSinceLastBatch.elapsed() > maximum_updatetime) {
             _ready = true;
-         }
-//if we can send all list entries of this dir which have not yet been sent
-//within maximum_updatetime, then make d->listEntryCurrentSize big enough for all of them
-         else if (((d->pendingListEntries.count()*maximum_updatetime)/diff) > static_cast<long>(d->totalSize-d->sentListEntries))
-            d->listEntryCurrentSize=d->totalSize-d->sentListEntries+1;
-//if we are below minimum_updatetime, estimate how much we will get within
-//maximum_updatetime
-         else if (diff < minimum_updatetime)
-            d->listEntryCurrentSize = (d->pendingListEntries.count() * maximum_updatetime) / diff;
-         else
-            _ready=true;
-      }
-   }
-   if (_ready) { // may happen when we started with !ready
-      listEntries( d->pendingListEntries );
-      d->pendingListEntries.clear();
+        }
+    }
 
-      gettimeofday(&tp, 0);
-      d->listEntry_sec = tp.tv_sec;
-      d->listEntry_usec = tp.tv_usec;
-   }
+    if (_ready) { // may happen when we started with !ready
+        listEntries( d->pendingListEntries );
+        d->pendingListEntries.clear();
+
+        // Restart time
+        d->m_timeSinceLastBatch.restart();
+    }
 }
 
 void SlaveBase::listEntries( const UDSEntryList& list )

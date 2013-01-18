@@ -55,7 +55,6 @@
 #include <kmessageboxwrapper.h>
 #include <kurl.h>
 #include <kglobal.h>
-#include <kglobalsettings.h>
 #include <ktoolinvocation.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -1073,11 +1072,7 @@ bool KRun::runCommand(const QString& cmd, const QString &execName, const QString
     kDebug(7010) << "runCommand " << cmd << "," << execName;
     KProcess * proc = new KProcess;
     proc->setShellCommand(cmd);
-    if (workingDirectory.isEmpty()) {
-        // see bug 108510, and we need "alt+f2 editor" (which starts a desktop file via klauncher)
-        // and "alt+f2 editor -someoption" (which calls runCommand) to be consistent.
-        proc->setWorkingDirectory(KGlobalSettings::documentPath());
-    } else {
+    if (!workingDirectory.isEmpty()) {
         proc->setWorkingDirectory(workingDirectory);
     }
     QString bin = binaryName(execName, true);
@@ -1537,6 +1532,11 @@ void KRun::abort()
 
     // will emit the error and autodelete this
     d->startTimer();
+}
+
+QWidget* KRun::window() const
+{
+    return d->m_window;
 }
 
 bool KRun::hasError() const
