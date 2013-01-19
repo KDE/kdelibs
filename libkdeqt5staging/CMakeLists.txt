@@ -12,7 +12,6 @@ include(ECMVersion)
 ecm_version(5 0 0)
 # --
 
-# searching for KF5 in inqt5 would be strange, so simply include the files which contain the cmake settings etc.:
 include("${ECM_KDE_MODULE_DIR}/KDEInstallDirs.cmake")
 include("${ECM_KDE_MODULE_DIR}/KDECMakeSettings.cmake")
 include("${ECM_KDE_MODULE_DIR}/KDECompilerSettings.cmake")

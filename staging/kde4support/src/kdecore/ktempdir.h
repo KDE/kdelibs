@@ -151,8 +151,7 @@ public:
     * @return true if successful, otherwise false
     * (Use errno for more details about the error.)
     *
-    * @deprecated use QTemporaryDir::removeRecursively(path) for now (libinqt5),
-    *         use QDir(path)::removeRecursively in Qt 5.
+    * @deprecated use QDir(path)::removeRecursively in Qt 5.
     */
     static bool removeDir( const QString& path );
 

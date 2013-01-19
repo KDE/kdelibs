@@ -59,16 +59,6 @@ if (Qt5_POSITION_INDEPENDENT_CODE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
-if (NOT QT5_BUILD)
-  add_subdirectory( libinqt5 )
-  set(inqt5_INCLUDE_DIR
-      ${CMAKE_SOURCE_DIR}/libinqt5/src/
-      ${CMAKE_BINARY_DIR}/libinqt5/src/
-      ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/
-      ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/include/
-  )
-endif()
-
 add_subdirectory( libkdeqt5staging )
 set(kdeqt5staging_LIBRARY kdeqt5staging)
 set(kdeqt5staging_INCLUDE_DIR

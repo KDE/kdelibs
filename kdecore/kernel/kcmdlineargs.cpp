@@ -648,7 +648,7 @@ void KCmdLineArgsStatic::removeArgs(const QByteArray &id)
    }
 }
 
-#pragma message("KDE5 TODO: Remove this method once it is in Qt5 and import it to libinqt5")
+#pragma message("KDE5 TODO: Remove this method once it is in Qt5")
 QString KCmdLineArgsStatic::escape(const QString &text)
 {
     int tlen = text.length();

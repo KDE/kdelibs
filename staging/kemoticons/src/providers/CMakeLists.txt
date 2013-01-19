@@ -1,6 +1,5 @@
 
-include_directories( 
-    ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/src/mimetypes
+include_directories(
     ${CMAKE_BINARY_DIR}/staging/kservice/src # kservice_export.h
     ${CMAKE_SOURCE_DIR}/staging/kservice/src/services # kservicetrader.h
     ${CMAKE_SOURCE_DIR}/staging/kservice/src/plugin # kpluginfactory.h
