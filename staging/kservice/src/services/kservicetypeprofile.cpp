@@ -40,12 +40,12 @@ class KServiceTypeProfiles : public QHash<QString, KServiceTypeProfileEntry *>
 {
 public:
     KServiceTypeProfiles() {
-#if QT_VERSION < QT_VERSION_CHECK(5, 1, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 1, 1)
         s_serviceTypeProfilesExists = true;
 #endif
         m_parsed = false; ensureParsed(); }
     ~KServiceTypeProfiles() {
-#if QT_VERSION < QT_VERSION_CHECK(5, 1, 0)
+#if QT_VERSION < QT_VERSION_CHECK(5, 1, 1)
         s_serviceTypeProfilesExists = false;
 #endif
         clear(); }
@@ -112,7 +112,7 @@ void KServiceTypeProfiles::ensureParsed()
 //static
 void KServiceTypeProfile::clearCache()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5,1,1)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 1, 1)
     if (s_serviceTypeProfiles.exists())
 #else
     if (s_serviceTypeProfilesExists)
