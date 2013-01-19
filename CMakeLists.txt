@@ -51,6 +51,7 @@ find_package(ECM 0.0.5 REQUIRED NO_MODULE)
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 
+find_package(Qt5Core REQUIRED NO_MODULE)
 
 find_package(Qt5Transitional MODULE)
 
