@@ -214,7 +214,7 @@ void KFileShare::readShareList()
 
 bool KFileShare::isDirectoryShared( const QString& _path )
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5,1,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,1,1)
     if ( ! s_shareList.exists() )
 #else
     if ( s_shareList()->isEmpty() )
