@@ -452,7 +452,7 @@ endif()
 
 if(NOT QT5_BUILD)
   add_subdirectory( kimgio )
-else ()
+elseif(Qt5Quick_FOUND)
   add_subdirectory( experimental )
 endif()
 add_subdirectory( knewstuff )
@@ -463,7 +463,7 @@ if(NOT QT5_BUILD OR Qt5WebKit_FOUND)
 endif()
 add_subdirectory( kdewidgets )
 
-if(QT5_BUILD)
+if(Qt5Quick_FOUND)
   add_subdirectory( plasma )
 endif()
 
