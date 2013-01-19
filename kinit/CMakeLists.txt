@@ -63,7 +63,7 @@ endif (WIN32)
 
 kde4_add_executable(kwrapper4 NOGUI ${kwrapper_SRCS})
 
-target_link_libraries(kwrapper4 ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+target_link_libraries(kwrapper4 ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY})
 if (WIN32)
    target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS})
 endif (WIN32)
@@ -75,7 +75,7 @@ if (NOT WIN32)
 
   kde4_add_executable(kdeinit5_wrapper NOGUI wrapper.cpp)
 
-  target_link_libraries(kdeinit5_wrapper  ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+  target_link_libraries(kdeinit5_wrapper  ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY})
 
   if (NOT X11_FOUND)
     add_definitions(-DNO_DISPLAY)
@@ -87,7 +87,7 @@ if (NOT WIN32)
 
   kde4_add_executable(kshell4 NOGUI shell.cpp)
 
-  target_link_libraries(kshell4 ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+  target_link_libraries(kshell4 ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY})
 
   install(TARGETS kshell4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
@@ -95,7 +95,7 @@ if (NOT WIN32)
 
   kde4_add_executable(kdeinit5_shutdown NOGUI wrapper.cpp)
 
-  target_link_libraries(kdeinit5_shutdown  ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+  target_link_libraries(kdeinit5_shutdown  ${KINIT_SOCKET_LIBRARY} ${QT_QTCORE_LIBRARY})
 
   install(TARGETS kdeinit5_shutdown ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
@@ -109,7 +109,7 @@ set(kioslave_SRCS kioslave.cpp)
 
 kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
-target_link_libraries(kioslave  ${KDE4_KIO_LIBS}  ${QT_QTCORE_LIBRARY} ${inqt5_LIBRARY})
+target_link_libraries(kioslave  ${KDE4_KIO_LIBS}  ${QT_QTCORE_LIBRARY})
 
 install(TARGETS kioslave DESTINATION ${LIBEXEC_INSTALL_DIR} )
 

@@ -29,17 +29,13 @@ set(kwindowsystem_SRCS
     kxutils.cpp
     )
 
-if (QT5_BUILD)
+set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
+  ksystemeventfilter.cpp
+)
+if (HAVE_X11)
   set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
-    ksystemeventfilter.cpp
+    kmanagerselection.cpp
   )
-  if (HAVE_X11)
-    set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
-      kmanagerselection.cpp
-    )
-  endif()
-else()
-  set(qt5CompatLib ${inqt5_LIBRARY})
 endif()
 
 set(platformLinkLibraries)

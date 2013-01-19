@@ -44,7 +44,7 @@ if (WIN32)
       klocalsocket_win.cpp
    )
 endif()
- 
+
 add_library(kiocore ${kiocore_SRCS})
 generate_export_header(kiocore)
 
@@ -56,7 +56,6 @@ target_link_libraries(kiocore
  ${QT_QTCORE_LIBRARY}
  ${QT_QTNETWORK_LIBRARY}
  ${QT_QTDBUS_LIBRARY}
- ${QtMimeTypes_LIBRARY}
 )
 
 if(ACL_FOUND)

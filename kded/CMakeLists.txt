@@ -80,7 +80,7 @@ endif(KBUILDSYCOCA_NO_KCRASH)
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
 kde4_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} kcoreaddons ki18n ${QT_QTXML_LIBRARY} ${QtMimeTypes_LIBRARY})
+target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} kcoreaddons ki18n ${QT_QTXML_LIBRARY})
 
 install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 

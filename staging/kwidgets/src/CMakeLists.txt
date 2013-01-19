@@ -30,7 +30,7 @@ target_link_libraries(kwidgets
   ${QT_QTSVG_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBS} # KGlobal, KLocale, KLocalizedString
-  ${inqt5_LIBRARY}
+
   kconfigcore
   kconfiggui
   kcoreaddons

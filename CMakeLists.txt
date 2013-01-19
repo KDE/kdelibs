@@ -61,15 +61,12 @@ endif()
 
 if (NOT QT5_BUILD)
   add_subdirectory( libinqt5 )
-  set(inqt5_LIBRARY inqt5)
   set(inqt5_INCLUDE_DIR
       ${CMAKE_SOURCE_DIR}/libinqt5/src/
       ${CMAKE_BINARY_DIR}/libinqt5/src/
       ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/
       ${CMAKE_SOURCE_DIR}/libinqt5/src/libqtmimetypes/include/
   )
-  set(QtMimeTypes_LIBRARY QtMimeTypes)
-  include_directories(${inqt5_INCLUDE_DIR})
 endif()
 
 add_subdirectory( libkdeqt5staging )
@@ -78,18 +75,14 @@ set(kdeqt5staging_INCLUDE_DIR
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
    )
-if (QT5_BUILD)
+
 set(kdeqt5staging_INCLUDE_DIR ${kdeqt5staging_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/qt5only)
-endif()
+
 
 include_directories(${kdeqt5staging_INCLUDE_DIR})
 
 # TODO: Move to where it's really needed/remove.
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
-
-if (NOT QT5_BUILD)
-add_definitions(-DQ_DECL_OVERRIDE=)
-endif()
 
 add_subdirectory( tier1 )
 
@@ -296,13 +289,6 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${QT_INCLUDES}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
-if (NOT QT5_BUILD)
-  list(APPEND KDE4_KDECORE_INCLUDES
-                          ${QtMimeTypes_SOURCE_DIR}/src/mimetypes
-                          ${QtMimeTypes_SOURCE_DIR}/include/QtMimeTypes
-  )
-endif()
-
 include_directories(${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel) # For QLocalizedString
 
 # kdeui depends on kdecore
@@ -458,7 +444,7 @@ endif()
 add_subdirectory( knewstuff )
 add_subdirectory( knotify )
 
-if(NOT QT5_BUILD OR Qt5WebKit_FOUND)
+if(Qt5WebKit_FOUND)
   add_subdirectory( kdewebkit )
 endif()
 add_subdirectory( kdewidgets )

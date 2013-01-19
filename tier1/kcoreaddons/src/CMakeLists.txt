@@ -18,9 +18,6 @@ if(NOT WIN32)
     set_source_files_properties(caching/kshareddatacache.cpp
         PROPERTIES COMPILE_FLAGS -fexceptions)
 
-    # QT5_BUILD Qt 5 Porting: Find out what to do about this:
-#     set_source_files_properties(util/kshareddatacache.cpp
-#         PROPERTIES COMPILE_FLAGS ${KDE4_ENABLE_EXCEPTIONS})
 else(NOT WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
         caching/kshareddatacache_win.cpp
@@ -77,7 +74,7 @@ add_library(kcoreaddons ${libkcoreaddons_SRCS})
 generate_export_header(kcoreaddons)
 
 target_link_libraries(kcoreaddons
-  LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} ${inqt5_LIBRARY} ${kdeqt5staging_LIBRARY}
+  LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS} ${kdeqt5staging_LIBRARY}
 )
 if(NOT WIN32)
     target_link_libraries(kcoreaddons LINK_PRIVATE pthread)

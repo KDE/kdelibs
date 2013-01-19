@@ -18,7 +18,7 @@ add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 
 generate_export_header(kguiaddons)
 
-target_link_libraries(kguiaddons kconfigcore ${kdeqt5staging_LIBRARY} ${inqt5_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
+target_link_libraries(kguiaddons kconfigcore ${kdeqt5staging_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 
 install(TARGETS kguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 

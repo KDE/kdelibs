@@ -60,7 +60,6 @@ target_link_libraries(knewstuff3
     ${LIBATTICA_LIBRARIES}
     karchive
     ki18n
-    ${QtMimeTypes_LIBRARY}
 )
 
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})

@@ -41,7 +41,7 @@ set(karchive_SRCS
 add_library(karchive ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 generate_export_header(karchive)
 
-target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} ${QtMimeTypes_LIBRARY} kdeqt5staging)
+target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kdeqt5staging)
 
 set_target_properties(karchive PROPERTIES VERSION   ${KARCHIVE_VERSION_STRING}
                                           SOVERSION ${KARCHIVE_SOVERSION}

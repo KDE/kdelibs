@@ -28,7 +28,7 @@ kde4_add_library(kdewebkit ${LIBRARY_TYPE}
 )
 generate_export_header(kdewebkit)
 
-target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY} kcoreaddons ki18n ${QtMimeTypes_LIBRARY})
+target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY} kcoreaddons ki18n)
 target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES kparts kio kdecore ${QT_QTWEBKIT_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY})
 
 set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})

@@ -37,7 +37,7 @@ partviewer.cpp
 )
 
 kde4_add_executable(partviewer TEST ${partviewer_SRCS})
-target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} kcoreaddons ${QtMimeTypes_LIBRARY})
+target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} kcoreaddons)
 
 ########### test prog for "open or save question" ###############
 

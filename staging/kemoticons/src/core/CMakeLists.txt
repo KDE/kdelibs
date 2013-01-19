@@ -26,7 +26,7 @@ set(kemoticons_LIB_SRCS
 
 kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
 generate_export_header(kemoticons)
-target_link_libraries(kemoticons ${QtMimeTypes_LIBRARY} kdecore kio kcoreaddons karchive kconfigcore kservice kwidgets)
+target_link_libraries(kemoticons kdecore kio kcoreaddons karchive kconfigcore kservice kwidgets)
 target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES ${QT_QTGUI_LIBRARY})
 set_target_properties(kemoticons PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

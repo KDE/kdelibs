@@ -209,7 +209,7 @@ target_link_libraries(kdecore
   LINK_PUBLIC
     ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs kservice ki18n
   LINK_PRIVATE
-    ${QtMimeTypes_LIBRARY} ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
+    ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
 
 if(WINCE)

@@ -27,8 +27,6 @@ macro(KSERVICE_UNIT_TESTS)
        ${QT_QTCORE_LIBRARY}
        ${QT_QTMAIN_LIBRARY}
        kconfigcore
-       ${inqt5_LIBRARY}
-       ${QtMimeTypes_LIBRARY}
     )
     #target_link_libraries(${_testname} kservice ${QT_QTCONCURRENT_LIBRARY})
     ecm_mark_as_test(${_testname})

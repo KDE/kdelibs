@@ -51,8 +51,6 @@ generate_export_header(kservice)
 target_link_libraries(kservice
    ${QT_QTCORE_LIBRARY}
    ${QT_QTDBUS_LIBRARY}
-   ${inqt5_LIBRARY}
-   ${QtMimeTypes_LIBRARY}
    kconfigcore
 )
 

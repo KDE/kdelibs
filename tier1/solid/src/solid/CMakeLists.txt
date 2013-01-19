@@ -390,7 +390,7 @@ target_link_libraries(solid LINK_PUBLIC ${QT_QTCORE_LIBRARY}
                                          ${QT_QTXML_LIBRARY}
                                          ${QT_QTGUI_LIBRARY}
                                          ${solid_OPTIONAL_LIBS}
-                                         ${inqt5_LIBRARY} )
+ )
 
 set_target_properties(solid PROPERTIES  VERSION ${SOLID_VERSION_STRING}
                                         SOVERSION ${SOLID_SOVERSION} )

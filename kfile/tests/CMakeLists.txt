@@ -34,9 +34,7 @@ KFILE_UNIT_TESTS(
   knewfilemenutest
 )
 
-if (QT5_BUILD)
 KFILE_UNIT_TESTS(
   kfileplacesmodeltest
 )
-endif()
 

@@ -18,7 +18,7 @@ set(libkconfigcore_SRCS
 add_library(kconfigcore ${libkconfigcore_SRCS})
 generate_export_header(kconfigcore)
 
-target_link_libraries(kconfigcore ${QT_QTCORE_LIBRARY} kcoreaddons ${inqt5_LIBRARY})
+target_link_libraries(kconfigcore ${QT_QTCORE_LIBRARY} kcoreaddons)
 if(WIN32)
     target_link_libraries(kconfigcore ${KDEWIN_LIBRARIES})
 endif(WIN32)

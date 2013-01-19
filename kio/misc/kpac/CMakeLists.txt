@@ -18,7 +18,7 @@ configure_file(config-kpac.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kpac.h)
 
 ########### next target ###############
 
-if (Qt5Script_FOUND OR NOT QT5_BUILD)
+if (Qt5Script_FOUND)
     set(kded_proxyscout_PART_SRCS
       proxyscout.cpp
       script.cpp
