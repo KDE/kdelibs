@@ -199,66 +199,38 @@ bool KComboBox::trapReturnKey() const
 
 void KComboBox::setEditUrl(const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QComboBox::setEditText(url.toString());
-#else
     QComboBox::setEditText(url.toDisplayString());
-#endif
 }
 
 void KComboBox::addUrl(const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QComboBox::addItem(url.toString());
-#else
     QComboBox::addItem(url.toDisplayString());
-#endif
 }
 
 void KComboBox::addUrl(const QIcon& icon, const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QComboBox::addItem(icon, url.toString());
-#else
     QComboBox::addItem(icon, url.toDisplayString());
-#endif
 }
 
 void KComboBox::insertUrl(int index, const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QComboBox::insertItem(index, url.toString());
-#else
     QComboBox::insertItem(index, url.toDisplayString());
-#endif
 }
 
 void KComboBox::insertUrl(int index, const QIcon& icon, const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QComboBox::insertItem(index, icon, url.toString());
-#else
     QComboBox::insertItem(index, icon, url.toDisplayString());
-#endif
 }
 
 void KComboBox::changeUrl(int index, const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QComboBox::setItemText(index, url.toString());
-#else
     QComboBox::setItemText(index, url.toDisplayString());
-#endif
 }
 
 void KComboBox::changeUrl(int index, const QIcon& icon, const QUrl& url)
 {
     QComboBox::setItemIcon(index, icon);
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QComboBox::setItemText(index, url.toString());
-#else
     QComboBox::setItemText(index, url.toDisplayString());
-#endif
 }
 
 void KComboBox::setCompletedItems( const QStringList& items, bool autosubject )

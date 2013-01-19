@@ -301,11 +301,7 @@ private:
     ScriptableExtensionPrivate* const d;
 };
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::Object& o);
-#else
 KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::Object& o, uint seed = 0);
-#endif
 
 KPARTS_EXPORT unsigned int qHash(const KParts::ScriptableExtension::FunctionRef& f);
 

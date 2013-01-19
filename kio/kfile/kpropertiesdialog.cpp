@@ -786,18 +786,10 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         if ( !d->m_bFromTemplate ) {
             isTrash = (properties->url().scheme() == "trash");
             // Extract the full name, but without file: for local files
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            path = properties->url().toString();
-#else
             path = properties->url().toDisplayString(QUrl::PreferLocalFile);
-#endif
         } else {
             path = QUrlPathInfo(properties->currentDir()).path(QUrlPathInfo::AppendTrailingSlash) + properties->defaultName();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-            directory = properties->currentDir().toString();
-#else
             directory = properties->currentDir().toDisplayString(QUrl::PreferLocalFile);
-#endif
         }
 
         if (d->bDesktopFile) {
@@ -1171,9 +1163,7 @@ void KFilePropsPlugin::slotEditFileType()
 #if HAVE_X11
                       + " --parent " + QString::number( (ulong)properties->window()->winId())
 #endif
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                       + " --caption " + KShell::quoteArg(QGuiApplication::applicationDisplayName())
-#endif
                       + ' ' + KShell::quoteArg(mime),
                       keditfiletype, keditfiletype /*unused*/, properties->window());
 }

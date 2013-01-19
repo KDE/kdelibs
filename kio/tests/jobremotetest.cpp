@@ -89,9 +89,7 @@ static bool myMkdir(const QUrl& url) {
 
 void JobRemoteTest::initTestCase()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#endif
 
     s_referenceTimeStamp = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
 

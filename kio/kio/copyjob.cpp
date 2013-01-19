@@ -56,16 +56,6 @@
 #include <kdiskfreespaceinfo.h>
 #include <kfilesystemtype_p.h>
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString toString
-#define FullyDecoded
-#define CommaDecodedMode
-#else
-#define FullyDecoded QUrl::FullyDecoded
-#define CommaDecodedMode , QUrl::DecodedMode
-#endif
-
 using namespace KIO;
 
 //this will update the report dialog with 5 Hz, I think this is fast enough, aleXXX
@@ -667,11 +657,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const QUrl& 
             // Otherwise, we end up with e.g. dest=..../Desktop/ itself.
             // (This can happen when dropping a link to a webpage with no path)
             if (destFileName.isEmpty()) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-                destFileName = KIO::encodeFileName(info.uSource.toString());
-#else
                 destFileName = KIO::encodeFileName(info.uSource.toDisplayString());
-#endif
             }
 
             //qDebug() << " adding destFileName=" << destFileName;
@@ -939,34 +925,34 @@ void CopyJobPrivate::renameDirectory(QList<CopyInfo>::iterator it, const QUrl& n
 
     const QUrlPathInfo newUrlInfo(newUrl);
     // Change the current one and strip the trailing '/'
-    (*it).uDest.setPath(newUrlInfo.path(QUrlPathInfo::StripTrailingSlash) CommaDecodedMode);
+    (*it).uDest.setPath(newUrlInfo.path(QUrlPathInfo::StripTrailingSlash), QUrl::DecodedMode);
 
     const QString newPath = newUrlInfo.path(QUrlPathInfo::AppendTrailingSlash); // With trailing slash
     QList<CopyInfo>::Iterator renamedirit = it;
     ++renamedirit;
     // Change the name of subdirectories inside the directory
     for(; renamedirit != dirs.end() ; ++renamedirit) {
-        QString path = (*renamedirit).uDest.path(FullyDecoded);
+        QString path = (*renamedirit).uDest.path(QUrl::FullyDecoded);
         if (path.startsWith(oldPath)) {
             QString n = path;
             n.replace(0, oldPath.length(), newPath);
             /*qDebug() << "dirs list:" << (*renamedirit).uSource.path()
                          << "was going to be" << path
                          << ", changed into" << n;*/
-            (*renamedirit).uDest.setPath(n CommaDecodedMode);
+            (*renamedirit).uDest.setPath(n, QUrl::DecodedMode);
         }
     }
     // Change filenames inside the directory
     QList<CopyInfo>::Iterator renamefileit = files.begin();
     for(; renamefileit != files.end() ; ++renamefileit) {
-        QString path = (*renamefileit).uDest.path(FullyDecoded);
+        QString path = (*renamefileit).uDest.path(QUrl::FullyDecoded);
         if (path.startsWith(oldPath)) {
             QString n = path;
             n.replace(0, oldPath.length(), newPath);
             /*qDebug() << "files list:" << (*renamefileit).uSource.path()
                          << "was going to be" << path
                          << ", changed into" << n;*/
-            (*renamefileit).uDest.setPath(n CommaDecodedMode);
+            (*renamefileit).uDest.setPath(n, QUrl::DecodedMode);
         }
     }
     if (!dirs.isEmpty()) {
@@ -1117,7 +1103,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
         case R_RENAME:
         {
             QUrl newUrl( (*it).uDest );
-            newUrl.setPath(newPath CommaDecodedMode);
+            newUrl.setPath(newPath, QUrl::DecodedMode);
 
             renameDirectory(it, newUrl);
         }

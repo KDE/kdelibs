@@ -99,14 +99,6 @@ static QDataStream &operator>>(QDataStream &stream, UndoCommand &cmd)
  *
  */
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define pathOrUrl() toString()
-#define toDisplayString toString
-#else
-#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
-#endif
-
 class KIO::UndoJob : public KIO::Job
 {
 public:
@@ -776,7 +768,7 @@ bool FileUndoManager::UiInterface::copiedFileWasModified(const QUrl& src, const 
         d->m_parentWidget,
         i18n("The file %1 was copied from %2, but since then it has apparently been modified at %3.\n"
               "Undoing the copy will delete the file, and all modifications will be lost.\n"
-              "Are you sure you want to delete %4?", dest.pathOrUrl(), src.pathOrUrl(), timeStr, dest.pathOrUrl()),
+              "Are you sure you want to delete %4?", dest.toDisplayString(QUrl::PreferLocalFile), src.toDisplayString(QUrl::PreferLocalFile), timeStr, dest.toDisplayString(QUrl::PreferLocalFile)),
         i18n("Undo File Copy Confirmation"),
         KStandardGuiItem::cont(),
         KStandardGuiItem::cancel(),

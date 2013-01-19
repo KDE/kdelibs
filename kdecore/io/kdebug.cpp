@@ -120,19 +120,15 @@ public:
 
     void setContext(const char *debugFile, int line,
                     const char *funcinfo, const QByteArray& areaName) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
         context.file = debugFile;
         context.line = line;
         context.function = funcinfo;
         category = areaName; // for storage
         context.category = category.constData();
-#endif
     }
 protected:
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     QMessageLogContext context;
     QByteArray category;
-#endif
 };
 
 class KSyslogDebugStream: public KNoDebugStream
@@ -164,13 +160,11 @@ public:
                 if (aOutputFile.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Unbuffered)) {
                     QByteArray buf = QByteArray::fromRawData(data, len);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                     // Apply QT_MESSAGE_PATTERN
                     extern Q_CORE_EXPORT QString qMessageFormatString(QtMsgType type, const QMessageLogContext &context,
                                                                   const QString &str);
                     const QString formatted = qMessageFormatString(QtDebugMsg /*hack*/, context, QString::fromUtf8(buf));
                     buf = formatted.toUtf8();
-#endif
 
                     aOutputFile.write(buf.trimmed());
                     aOutputFile.putChar('\n');
@@ -208,14 +202,9 @@ public:
     qint64 writeData(const char *data, qint64 len)
         {
             QByteArray buf = QByteArray::fromRawData(data, len);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
             qt_message_output(QtDebugMsg,
                               context,
                               QString::fromLocal8Bit(buf.trimmed()));
-#else
-            qt_message_output(QtDebugMsg,
-                              buf.trimmed().constData());
-#endif
             return len;
         }
 };
@@ -290,18 +279,7 @@ struct KDebugPrivate
         Area &areaData = cache[0];
         areaData.clear();
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         areaData.name = qApp ? QCoreApplication::applicationName().toUtf8() : QByteArray("unnamed app");
-#else
-        if (qApp) {
-            areaData.name = QCoreApplication::applicationName().toUtf8();
-            if (areaData.name.isEmpty()) {
-                areaData.name = qAppName().toUtf8();
-            }
-        } else {
-            areaData.name = QByteArray("unnamed app");
-        }
-#endif
         //qDebug() << "loadAreaNames: area 0 has name" << areaData.name;
 
         for (int i = 0; i < 8; i++) {
@@ -568,17 +546,9 @@ struct KDebugPrivate
         }
 
         if (m_indentString.hasLocalData()) {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
             s.setAutoInsertSpaces(false);
-#else
-            s.nospace();
-#endif
             s << m_indentString.localData()->toLatin1().constData();
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
             s.setAutoInsertSpaces(true);
-#else
-            s.space();
-#endif
         }
 
 #if 0 // This is in Qt now, see %{function} in QT_MESSAGE_PATTERN (qlogging.cpp). Only the coloring is missing (TODO Qt-5.1)

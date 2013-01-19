@@ -754,11 +754,7 @@ void KUrl::setEncodedPathAndQuery( const QString& _txt )
 
 QString KUrl::path( AdjustPathOption trailing ) const
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   const QString decodedPath = QUrl::path(QUrl::FullyDecoded);
-#else
-  const QString decodedPath = QUrl::path();
-#endif
 
 #ifdef Q_OS_WIN
 #ifdef DEBUG_KURL
@@ -778,13 +774,6 @@ QString KUrl::toLocalFile( AdjustPathOption trailing ) const
         return trailingSlash(trailing, urlWithoutHost.toLocalFile());
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0) // QTBUG-20322 is fixed in Qt5, skip the workaround
-#ifndef Q_OS_WIN
-    if (isLocalFile()) {
-        return trailingSlash(trailing, QUrl::path());
-    }
-#endif
-#endif
     return trailingSlash(trailing, QUrl::toLocalFile());
 }
 
@@ -1634,11 +1623,7 @@ void KUrl::setPath( const QString& _path )
     if( len > 0 && path[0] != QLatin1Char('/') && scheme() == QLatin1String( "file" ) )
         path = QLatin1Char('/') + path;
 #endif
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QUrl::setPath( path );
-#else
     QUrl::setPath(path, QUrl::DecodedMode);
-#endif
 }
 
 #if 0 // this would be if we didn't decode '+' into ' '

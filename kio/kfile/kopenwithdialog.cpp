@@ -509,11 +509,7 @@ KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, const QString&_text,
   setModal( true );
   QString caption;
     if (!_urls.isEmpty() && !_urls.first().isEmpty())
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        caption = KStringHandler::csqueeze(_urls.first().toString());
-#else
         caption = KStringHandler::csqueeze(_urls.first().toDisplayString());
-#endif
   if (_urls.count() > 1)
       caption += QString::fromLatin1("...");
   setWindowTitle(caption);

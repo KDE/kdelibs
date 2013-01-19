@@ -204,19 +204,11 @@ bool KWidgetItemDelegateEventListener::eventFilter(QObject *watched, QEvent *eve
             case QEvent::TabletEnterProximity:
             case QEvent::TabletLeaveProximity: {
                     QTabletEvent *tabletEvent = static_cast<QTabletEvent*>(event);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-                    QTabletEvent evt(event->type(), viewport->mapFromGlobal(tabletEvent->globalPos()),
-                                     tabletEvent->globalPos(), tabletEvent->hiResGlobalPos(), tabletEvent->device(),
-                                     tabletEvent->pointerType(), tabletEvent->pressure(), tabletEvent->xTilt(),
-                                     tabletEvent->yTilt(), tabletEvent->tangentialPressure(), tabletEvent->rotation(),
-                                     tabletEvent->z(), tabletEvent->modifiers(), tabletEvent->uniqueId());
-#else
                     QTabletEvent evt(event->type(), QPointF(viewport->mapFromGlobal(tabletEvent->globalPos())),
                                      tabletEvent->globalPosF(), tabletEvent->device(),
                                      tabletEvent->pointerType(), tabletEvent->pressure(), tabletEvent->xTilt(),
                                      tabletEvent->yTilt(), tabletEvent->tangentialPressure(), tabletEvent->rotation(),
                                      tabletEvent->z(), tabletEvent->modifiers(), tabletEvent->uniqueId());
-#endif
                     QApplication::sendEvent(viewport, &evt);
                 }
                 break;

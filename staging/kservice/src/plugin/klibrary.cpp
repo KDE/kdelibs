@@ -165,28 +165,7 @@ KPluginFactory* KLibrary::factory(const char* factoryname)
     return factory;
 }
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-void *KLibrary::resolveSymbol( const char* symname )
-{
-    return resolve( symname );
-}
-#endif
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-KLibrary::void_function_ptr KLibrary::resolveFunction( const char* symname )
-{
-    void *psym = resolve( symname );
-    if (!psym)
-        return 0;
-
-    // Cast the void* to non-pointer type first - it's not legal to
-    // cast a pointer-to-object directly to a pointer-to-function.
-    ptrdiff_t tmp = reinterpret_cast<ptrdiff_t>(psym);
-    void_function_ptr sym = reinterpret_cast<void_function_ptr>(tmp);
-
-    return sym;
-}
-#endif
 
 void KLibrary::setFileName(const QString &name)
 {

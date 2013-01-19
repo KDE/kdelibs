@@ -53,14 +53,6 @@
 #include <kfilemetadatawidget.h>
 #include <previewjob.h>
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define pathOrUrl() toString()
-#define toDisplayString toString
-#else
-#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
-#endif
-
 using namespace KIO;
 
 /** @internal */
@@ -176,7 +168,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     if (_mode & M_OVERWRITE_ITSELF) {
         QLabel *lb = new QLabel(i18n("This action would overwrite '%1' with itself.\n"
                                      "Please enter a new file name:",
-                                     KStringHandler::csqueeze(d->src.pathOrUrl(), 100)), this);
+                                     KStringHandler::csqueeze(d->src.toDisplayString(QUrl::PreferLocalFile), 100)), this);
 
         d->bRename->setText(i18n("C&ontinue"));
         pLayout->addWidget(lb);
@@ -237,8 +229,8 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         QLabel* srcTitle = createLabel(parent, i18n("Source"), true);
         QLabel* destTitle = createLabel(parent, i18n("Destination"), true);
 
-        QLabel* srcInfo = createSqueezedLabel(parent, d->src.pathOrUrl());
-        QLabel* destInfo = createSqueezedLabel(parent, d->dest.pathOrUrl());
+        QLabel* srcInfo = createSqueezedLabel(parent, d->src.toDisplayString(QUrl::PreferLocalFile));
+        QLabel* destInfo = createSqueezedLabel(parent, d->dest.toDisplayString(QUrl::PreferLocalFile));
 
         if (mtimeDest > mtimeSrc) {
             QLabel* warningLabel = new QLabel(i18n("Warning, the destination is more recent."), this);
@@ -272,11 +264,11 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         QString sentence1;
 
         if (mtimeDest < mtimeSrc)
-            sentence1 = i18n("An older item named '%1' already exists.", d->dest.pathOrUrl());
+            sentence1 = i18n("An older item named '%1' already exists.", d->dest.toDisplayString(QUrl::PreferLocalFile));
         else if (mtimeDest == mtimeSrc)
-            sentence1 = i18n("A similar file named '%1' already exists.", d->dest.pathOrUrl());
+            sentence1 = i18n("A similar file named '%1' already exists.", d->dest.toDisplayString(QUrl::PreferLocalFile));
         else
-            sentence1 = i18n("A more recent item named '%1' already exists.", d->dest.pathOrUrl());
+            sentence1 = i18n("A more recent item named '%1' already exists.", d->dest.toDisplayString(QUrl::PreferLocalFile));
 
         QLabel *lb = new KSqueezedTextLabel(sentence1, this);
         pLayout->addWidget(lb);

@@ -458,11 +458,7 @@ static QSsl::SslProtocol qSslProtocolFromString(const QString& str)
     }
 
     if (str.compare(QLatin1String("TLSv1"), Qt::CaseInsensitive) == 0) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        return QSsl::TlsV1;
-#else
         return QSsl::TlsV1_0;
-#endif
     }
 
     return QSsl::AnyProtocol;

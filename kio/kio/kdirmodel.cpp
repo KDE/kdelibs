@@ -50,9 +50,7 @@ static QUrl cleanupUrl(const QUrl& url) {
     QUrl u = url;
     u.setPath(QDir::cleanPath(u.path())); // remove double slashes in the path, simplify "foo/." to "foo/", etc.
     QUrlPathInfo::adjustPath(u, QUrlPathInfo::StripTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     u.setQuery(QString());
-#endif
     u.setFragment(QString());
     return u;
 }
@@ -174,9 +172,7 @@ public:
          */
         QUrl url(node == m_rootNode ? m_dirLister->url() : node->item().url());
         if (url.hasQuery() || url.hasFragment()) { // avoid detach if not necessary.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
             url.setQuery(QString());
-#endif
             url.setFragment(QString()); // kill ref (#171117)
         }
         return url;

@@ -164,10 +164,8 @@ void FileUndoManagerTest::initTestCase()
 {
     qDebug( "initTestCase" );
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     // TODO: needs QStandardPaths::isTestModeEnabled() in ksycoca.cpp when launching kbuildsycoca
     //QStandardPaths::enableTestMode(true);
-#endif
 
     // Get kio_trash to share our environment so that it writes trashrc to the right kdehome
     qputenv( "KDE_FORK_SLAVES", "yes");

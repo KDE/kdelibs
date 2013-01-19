@@ -56,9 +56,7 @@ static void eraseProfiles()
 
 void KServiceTest::initTestCase()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#endif
 
     // A non-C locale is necessary for some tests.
     // This locale must have the following properties:
@@ -187,12 +185,8 @@ void KServiceTest::runKBuildSycoca(bool noincremental)
     proc.start(kbuildsycoca, args);
     proc.waitForFinished();
     qDebug() << "waiting for signal";
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QVERIFY(kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
-#else
     QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
     QVERIFY(spy.wait(10000));
-#endif
     qDebug() << "got signal";
 }
 
@@ -664,11 +658,7 @@ void KServiceTest::testThreads()
     sync.addFuture(QtConcurrent::run(this, &KServiceTest::testHasServiceType1));
     sync.addFuture(QtConcurrent::run(this, &KServiceTest::testKSycocaUpdate));
     sync.addFuture(QtConcurrent::run(this, &KServiceTest::testTraderConstraints));
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    while (m_sycocaUpdateDone == 0) // not using a bool, just to silence helgrind
-#else
     while (m_sycocaUpdateDone.load() == 0) // not using a bool, just to silence helgrind
-#endif
         QTest::qWait(100); // process D-Bus events!
     qDebug() << "Joining all threads";
     sync.waitForFinished();

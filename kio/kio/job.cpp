@@ -105,50 +105,42 @@ bool Job::removeSubjob( KJob *jobBase )
     return KCompositeJob::removeSubjob( jobBase );
 }
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define pathOrUrl() toString()
-#define toDisplayString toString
-#else
-#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
-#endif
-
 void JobPrivate::emitMoving(KIO::Job * job, const QUrl &src, const QUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Moving"),
-                          qMakePair(i18nc("The source of a file operation", "Source"), src.pathOrUrl()),
-                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.pathOrUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), src.toDisplayString(QUrl::PreferLocalFile)),
+                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitCopying(KIO::Job * job, const QUrl &src, const QUrl &dest)
 {
     emit job->description(job, i18nc("@title job","Copying"),
-                          qMakePair(i18nc("The source of a file operation", "Source"), src.pathOrUrl()),
-                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.pathOrUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), src.toDisplayString(QUrl::PreferLocalFile)),
+                          qMakePair(i18nc("The destination of a file operation", "Destination"), dest.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitCreatingDir(KIO::Job * job, const QUrl &dir)
 {
     emit job->description(job, i18nc("@title job","Creating directory"),
-                          qMakePair(i18n("Directory"), dir.pathOrUrl()));
+                          qMakePair(i18n("Directory"), dir.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitDeleting(KIO::Job *job, const QUrl &url)
 {
     emit job->description(job, i18nc("@title job","Deleting"),
-                          qMakePair(i18n("File"), url.pathOrUrl()));
+                          qMakePair(i18n("File"), url.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitStating(KIO::Job *job, const QUrl &url)
 {
     emit job->description(job, i18nc("@title job","Examining"),
-                          qMakePair(i18n("File"), url.pathOrUrl()));
+                          qMakePair(i18n("File"), url.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitTransferring(KIO::Job *job, const QUrl &url)
 {
     emit job->description(job, i18nc("@title job","Transferring"),
-                          qMakePair(i18nc("The source of a file operation", "Source"), url.pathOrUrl()));
+                          qMakePair(i18nc("The source of a file operation", "Source"), url.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitMounting(KIO::Job * job, const QString &dev, const QString &point)
@@ -756,11 +748,7 @@ void StatJobPrivate::slotRedirection(const QUrl &url)
      {
        qWarning() << "Redirection from" << m_url << "to" << url << "REJECTED!";
        q->setError( ERR_ACCESS_DENIED );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-       q->setErrorText(url.toString());
-#else
        q->setErrorText(url.toDisplayString());
-#endif
        return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes

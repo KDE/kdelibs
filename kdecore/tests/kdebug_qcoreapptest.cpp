@@ -40,11 +40,7 @@ int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#else
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")));
-#endif
     {
         KConfig config("kdebugrc");
         config.group(QString()).writeEntry("DisableAll", false); // in case of a global kdebugrc with DisableAll=true

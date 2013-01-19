@@ -30,13 +30,7 @@
 #include <QtCore/QStringList>
 #include <qstandardpaths.h>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
 #include <QCryptographicHash>
-typedef QCryptographicHash Q5CryptographicHash;
-#else
-//currently inqt5
-#include <q5cryptographichash.h>
-#endif
 
 //kde includes
 #include <kdebug.h>
@@ -253,7 +247,7 @@ void Security::slotCheckValidity()
     QFileInfo f(m_fileName);
     //check the MD5 sum
     QString md5sum;
-    Q5CryptographicHash context(Q5CryptographicHash::Md5);
+    QCryptographicHash context(QCryptographicHash::Md5);
     QFile file(m_fileName);
     if (file.open(QIODevice::ReadOnly)) {
         context.reset();
@@ -328,7 +322,7 @@ void Security::slotSignFile()
 
     //create the MD5 sum
     QString md5sum;
-    Q5CryptographicHash context(Q5CryptographicHash::Md5);
+    QCryptographicHash context(QCryptographicHash::Md5);
     QFile file(m_fileName);
     if (file.open(QIODevice::ReadOnly)) {
         context.reset();

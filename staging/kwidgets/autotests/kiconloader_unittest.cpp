@@ -34,9 +34,7 @@ class KIconLoader_UnitTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QStandardPaths::enableTestMode(true);
-#endif
         // Remove icon cache
         const QString cacheFile = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + "/icon-cache.kcache";
         QFile::remove(cacheFile);

@@ -1836,13 +1836,6 @@ KIO::ListJob *KDirListerCache::jobForUrl( const QString& url, KIO::ListJob *not_
     KIO::ListJob *job = it.key();
     QString jobUrlStr = joburl(job).toString(QUrl::StripTrailingSlash);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    // QUrl::toString(QUrl::StripTrailingSlash) is broken in Qt-4.x, it turns file:/// into file:.
-    // This breaks KDirListerTest::testOpenAndStop(), so use KUrl for now.
-    if (jobUrlStr == QLatin1String("file:"))
-        jobUrlStr = QLatin1String("file:///");
-
-#endif
     if (jobUrlStr == url && job != not_job)
        return job;
     ++it;

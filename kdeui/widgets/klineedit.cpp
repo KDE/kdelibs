@@ -1418,11 +1418,7 @@ bool KLineEdit::trapReturnKey() const
 
 void KLineEdit::setUrl(const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    setText(url.toString());
-#else
     setText(url.toDisplayString());
-#endif
 }
 
 void KLineEdit::setCompletionBox( KCompletionBox *box )

@@ -24,9 +24,6 @@
 #include "AuthBackend.h"
 #include <QHash>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define Q_PLUGIN_METADATA(x)
-#endif
 
 class QByteArray;
 

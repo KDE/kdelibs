@@ -56,12 +56,7 @@ void KUrlCompletionTest::setup()
     m_completion = new KUrlCompletion;
     m_tempDir = new QTemporaryDir;
     m_dir = m_tempDir->path();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    // The port to QUrl breaks handling of '#' with Qt4. That's ok, it works with Qt5.
-    m_dir += "/Dir With Spaces/";
-#else
     m_dir += "/Dir With#Spaces/";
-#endif
     QDir().mkdir(m_dir);
     kDebug() << "m_dir=" << m_dir;
     m_completion->setDir(QUrl::fromLocalFile(m_dir));
@@ -115,7 +110,6 @@ void KUrlCompletionTest::testLocalRelativePath()
     QString comp1 = m_completion->replacedPath("file1"); // like KUrlRequester does
     QCOMPARE(comp1, QString("file1"));
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     // Completion from relative path
     kDebug() << endl << "now completing on 'file#'";
     m_completion->makeCompletion("file#");
@@ -126,7 +120,6 @@ void KUrlCompletionTest::testLocalRelativePath()
     QCOMPARE(compall.first(), QString("file#a"));
     QString comp2 = m_completion->replacedPath(compall.first()); // like KUrlRequester does
     QCOMPARE(comp2, QString("file#a"));
-#endif
 
     // Completion with empty string
     kDebug () << endl << "now completing on ''";
@@ -138,7 +131,6 @@ void KUrlCompletionTest::testLocalRelativePath()
 
 void KUrlCompletionTest::testLocalAbsolutePath()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     // Completion from absolute path
     kDebug() << m_dir+"file#";
     m_completion->makeCompletion(m_dir + "file#");
@@ -150,7 +142,6 @@ void KUrlCompletionTest::testLocalAbsolutePath()
     QCOMPARE(comp, QString(m_dir + "file#a"));
     comp = m_completion->replacedPath(comp); // like KUrlRequester does
     QCOMPARE(comp, QString(m_dir + "file#a"));
-#endif
 }
 
 void KUrlCompletionTest::testLocalURL()
@@ -168,12 +159,10 @@ void KUrlCompletionTest::testLocalURL()
     QVERIFY(comp1all.contains(m_dirURL.toString() + "file_subdir/"));
     QString filehash = m_dirURL.toString() + "file%23a";
     kDebug() << "Looking for" << filehash;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(comp1all.contains(filehash));
     QString filehashPath = m_completion->replacedPath(filehash); // note that it returns a path!!
     kDebug() << filehashPath;
     QCOMPARE(filehashPath, QString(m_dirURL.toLocalFile() + "file#a"));
-#endif
 
     // Completion from URL with no match
     url = QUrl::fromLocalFile(m_dirURL.toLocalFile() + "foobar");

@@ -41,9 +41,7 @@ Q_DECLARE_METATYPE(QList<QUrl>)
 
 void KRunUnitTest::initTestCase()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#endif
     // testProcessDesktopExec works only if your terminal application is set to "x-term"
     KConfigGroup cg(KSharedConfig::openConfig(), "General");
     cg.writeEntry("TerminalApplication", "x-term");
@@ -240,11 +238,7 @@ void KRunUnitTest::testMimeTypeFile()
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(filePath), true);
     krun->setAutoDelete(false);
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyFinished.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("text/plain"));
     delete krun;
 }
@@ -255,11 +249,7 @@ void KRunUnitTest::testMimeTypeDirectory()
     createTestDirectory(dir);
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir), true);
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyFinished.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("inode/directory"));
 }
 
@@ -270,11 +260,7 @@ void KRunUnitTest::testMimeTypeBrokenLink()
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir + "/testlink"), true);
     QSignalSpy spyError(krun, SIGNAL(error()));
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyFinished.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
     QVERIFY(krun->mimeTypeFound().isEmpty());
     QCOMPARE(spyError.count(), 1);
     QTest::qWait(100); // let auto-deletion proceed.
@@ -285,11 +271,7 @@ void KRunUnitTest::testMimeTypeDoesNotExist()
     KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile("/does/not/exist"));
     QSignalSpy spyError(krun, SIGNAL(error()));
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyFinished.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
     QVERIFY(krun->mimeTypeFound().isEmpty());
     QCOMPARE(spyError.count(), 1);
     QTest::qWait(100); // let auto-deletion proceed.

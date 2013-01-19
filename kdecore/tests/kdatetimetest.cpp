@@ -3818,11 +3818,9 @@ void KDateTimeTest::strings_format()
     s = dt.toString(QLatin1String("%Y"));
     QCOMPARE(s, QString::fromLatin1("123456"));
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     dt = KDateTime::fromString(QLatin1String("-471411231430:01.3+0500"), QLatin1String("%Y%m%d%H%M%:S%:s%z"));
     QVERIFY(dt.isValid());
     QVERIFY(dt.date().toJulianDay() == -1);
-#endif
 
     // Restore the original local time zone
     if (originalZone.isEmpty())

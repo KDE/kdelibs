@@ -224,6 +224,3 @@ bool Polkit1Backend::actionExists(const QString& action)
 
 } // namespace Auth
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-Q_EXPORT_PLUGIN2(kauth_backend, KAuth::Polkit1Backend)
-#endif

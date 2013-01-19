@@ -1893,11 +1893,6 @@ void KStandardDirs::addKDEDefaults()
     addResourceType("autostart", NULL, "share/autostart"); // KDE ones are higher priority - KDE 5: deprecated, use xdgconf-autostart
 
     QString appName = QCoreApplication::applicationName();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    if (appName.isEmpty()) {
-        appName = qAppName();
-    }
-#endif
     addResourceType("appdata", "data", appName + QLatin1Char('/'), true);
 }
 

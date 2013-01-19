@@ -82,11 +82,9 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    Q_ASSERT(!exe.isEmpty());
    QStringList args;
    args.append("--incremental");
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     if (QStandardPaths::isTestModeEnabled()) {
         args.append("--testmode");
     }
-#endif
    if(checkStamps)
       args.append("--checkstamps");
    if(delayedCheck)
@@ -778,18 +776,12 @@ void KBuildsycocaAdaptor::recreate(const QDBusMessage &msg)
 
 bool KBuildsycocaAdaptor::isTestModeEnabled()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     return QStandardPaths::isTestModeEnabled();
-#else
-    return false;
-#endif
 }
 
 void KBuildsycocaAdaptor::enableTestMode()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#endif
 }
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
@@ -818,9 +810,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
      app.setQuitOnLastWindowClosed(false);
      app.setApplicationName("kded5");
      app.setOrganizationDomain("kde.org");
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
      app.setApplicationDisplayName("KDE Daemon");
-#endif
 
      KDBusService service(KDBusService::Unique);
 

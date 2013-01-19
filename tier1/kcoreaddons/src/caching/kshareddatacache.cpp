@@ -400,11 +400,7 @@ struct SharedMemory
     // Returns pageSize in unsigned format.
     unsigned cachePageSize() const
     {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-        unsigned _pageSize = static_cast<unsigned>(pageSize);
-#else
         unsigned _pageSize = static_cast<unsigned>(pageSize.load());
-#endif
         // bits 9-18 may be set.
         static const unsigned validSizeMask = 0x7FE00u;
 
@@ -870,11 +866,7 @@ struct SharedMemory
         // Declare the comparison function that we'll use to pass to qSort,
         // based on our cache eviction policy.
         bool (*compareFunction)(const IndexTableEntry &, const IndexTableEntry &);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-        switch((int) evictionPolicy) {
-#else
         switch((int) evictionPolicy.load()) {
-#endif
         case (int) KSharedDataCache::EvictLeastOftenUsed:
         case (int) KSharedDataCache::NoEvictionPreference:
         default:
@@ -1152,11 +1144,7 @@ class KSharedDataCache::Private
         //         1 means "in progress of initing"
         //         2 means "ready"
         uint usecSleepTime = 8; // Start by sleeping for 8 microseconds
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-        while (shm->ready != 2) {
-#else
         while (shm->ready.load() != 2) {
-#endif
             if (Q_UNLIKELY(usecSleepTime >= (1 << 21))) {
                 // Didn't acquire within ~8 seconds?  Assume an issue exists
                 qCritical() << "Unable to acquire shared lock, is the cache corrupt?";

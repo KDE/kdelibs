@@ -501,12 +501,8 @@ void KStandarddirsTest::testSymlinkResolution()
     QString baseDir = m_dataHome;
     const QString symlink = baseDir + "/symlink";
     const QString expected = baseDir + "/real/test/";
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    QVERIFY(QTemporaryDir::removeRecursively(baseDir + "/real"));
-#else
     QDir d_(baseDir + "/real");
     QVERIFY(d_.removeRecursively());
-#endif
     QVERIFY(QDir(baseDir).mkdir("real"));
     QFile::remove(symlink);
     QVERIFY(!QFile::exists(symlink));

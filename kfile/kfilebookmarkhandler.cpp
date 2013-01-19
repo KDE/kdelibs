@@ -66,11 +66,7 @@ QString KFileBookmarkHandler::currentUrl() const
 
 QString KFileBookmarkHandler::currentTitle() const
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    return m_widget->baseUrl().toString();
-#else
     return m_widget->baseUrl().toDisplayString();
-#endif
 }
 
 #include "moc_kfilebookmarkhandler_p.cpp"

@@ -55,8 +55,5 @@ private:
     QTimer m_timer;
 };
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-bool kWaitForSignal(QObject *obj, const char *signal, int timeout);
-#endif
 
 #endif

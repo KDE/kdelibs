@@ -38,11 +38,7 @@ static KTcpSocket::SslVersion kSslVersionFromQ(QSsl::SslProtocol protocol)
         return KTcpSocket::SslV2;
     case QSsl::SslV3:
         return KTcpSocket::SslV3;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    case QSsl::TlsV1:
-#else
     case QSsl::TlsV1_0:
-#endif
         return KTcpSocket::TlsV1;
     case QSsl::AnyProtocol:
         return KTcpSocket::AnySslVersion;
@@ -80,11 +76,7 @@ static QSsl::SslProtocol qSslProtocolFromK(KTcpSocket::SslVersion sslVersion)
     case KTcpSocket::SslV3:
         return QSsl::SslV3;
     case KTcpSocket::TlsV1:
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        return QSsl::TlsV1;
-#else
         return QSsl::TlsV1_0;
-#endif
 #if QT_VERSION >= 0x040800
     case KTcpSocket::TlsV1SslV3:
         return QSsl::TlsV1SslV3;

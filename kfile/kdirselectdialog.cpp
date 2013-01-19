@@ -124,18 +124,10 @@ void KDirSelectDialog::Private::saveConfig(KSharedConfig::Ptr config, const QStr
     config->sync();
 }
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define pathOrUrl() toString()
-#define toDisplayString toString
-#else
-#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
-#endif
-
 void KDirSelectDialog::Private::slotMkdir()
 {
     bool ok;
-    QString where = m_parent->url().pathOrUrl();
+    QString where = m_parent->url().toDisplayString(QUrl::PreferLocalFile);
     QString name = i18nc("folder name", "New Folder" );
     if (m_parent->url().isLocalFile() && QFileInfo(m_parent->url().toLocalFile() + '/' + name).exists())
         name = KIO::RenameDialog::suggestName( m_parent->url(), name );
@@ -163,7 +155,7 @@ void KDirSelectDialog::Private::slotMkdir()
 
     if ( exists ) // url was already existent
     {
-        QString which = folderurl.pathOrUrl();
+        QString which = folderurl.toDisplayString(QUrl::PreferLocalFile);
         KMessageBox::sorry(m_parent, i18n("A file or folder named %1 already exists.", which));
         selectDirectory = false;
     }
@@ -183,7 +175,7 @@ void KDirSelectDialog::Private::slotCurrentChanged()
     const QUrl u = m_treeView->currentUrl();
 
     if ( u.isValid() ) {
-        m_urlCombo->setEditText( u.pathOrUrl() );
+        m_urlCombo->setEditText( u.toDisplayString(QUrl::PreferLocalFile) );
     }
     else
         m_urlCombo->setEditText( QString() );
@@ -483,11 +475,7 @@ void KDirSelectDialog::accept()
         KRecentDirs::add(d->m_recentDirClass, selectedUrl.toString());
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    d->m_urlCombo->addToHistory(selectedUrl.toString());
-#else
     d->m_urlCombo->addToHistory(selectedUrl.toDisplayString());
-#endif
     KFileDialog::setStartDir( url() );
 
     QDialog::accept();

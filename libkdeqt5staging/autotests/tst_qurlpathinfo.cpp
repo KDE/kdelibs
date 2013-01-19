@@ -88,11 +88,7 @@ void tst_QUrlPathInfo::directoryAndFileName()
     QFETCH(QString, expectedFileName);
     QFETCH(QString, expectedDirectoryUrl);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QUrl url(urlStr);
-#else
-    const QUrl url = QUrl::fromEncoded(urlStr.toUtf8());
-#endif
     QVERIFY(url.isValid());
     const QUrlPathInfo info(url);
     QCOMPARE(info.directory(), expectedDirectory);
@@ -148,11 +144,7 @@ void tst_QUrlPathInfo::path()
     QFETCH(QString, expectedPathNoSlash);
     QFETCH(QString, expectedPathWithSlash);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QUrl url(urlStr);
-#else
-    const QUrl url = QUrl::fromEncoded(urlStr.toUtf8());
-#endif
     const QUrlPathInfo info(url);
     QCOMPARE(info.path(), expectedPath);
     QCOMPARE(info.path(QUrlPathInfo::StripTrailingSlash), expectedPathNoSlash);
@@ -182,11 +174,7 @@ void tst_QUrlPathInfo::addPath()
     QFETCH(QString, toAdd);
     QFETCH(QString, expectedUrl);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QUrl url(initialUrl);
-#else
-    const QUrl url = QUrl::fromEncoded(initialUrl.toUtf8());
-#endif
     QUrlPathInfo info(url);
     info.addPath(toAdd);
     QCOMPARE(info.url().toString(), expectedUrl);
@@ -204,11 +192,7 @@ void tst_QUrlPathInfo::adjustPath()
     QFETCH(QString, expectedPathNoSlash);
     QFETCH(QString, expectedPathWithSlash);
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QUrl url(urlStr);
-#else
-    const QUrl url = QUrl::fromEncoded(urlStr.toUtf8());
-#endif
     QUrlPathInfo info(url);
 
     // Go via QUrlPathInfo::path in order to get decoded paths

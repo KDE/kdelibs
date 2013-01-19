@@ -54,15 +54,6 @@
 
 #include <fixx11h.h>
 
-
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define pathOrUrl() toString()
-#define toDisplayString toString
-#else
-#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
-#endif
-
 using namespace KDEPrivate;
 
 struct LocationData
@@ -363,7 +354,7 @@ void KUrlNavigator::Private::openPathSelectorMenu()
     int idx = placePath.count(QLatin1Char('/')); // idx points to the first directory
                                                  // after the place path
 
-    const QString path = m_history[m_historyIndex].url.pathOrUrl();
+    const QString path = m_history[m_historyIndex].url.toDisplayString(QUrl::PreferLocalFile);
     QString dirName = path.section(QLatin1Char('/'), idx, idx);
     if (dirName.isEmpty()) {
         dirName = QLatin1Char('/');
@@ -468,7 +459,7 @@ void KUrlNavigator::Private::openContextMenu()
     QAction* activatedAction = popup.exec(QCursor::pos());
     if (activatedAction == copyAction) {
         QMimeData* mimeData = new QMimeData();
-        mimeData->setText(q->locationUrl().pathOrUrl());
+        mimeData->setText(q->locationUrl().toDisplayString(QUrl::PreferLocalFile));
         clipboard->setMimeData(mimeData);
     } else if (activatedAction == pasteAction) {
         q->setLocationUrl(QUrl::fromUserInput(clipboard->text()));
@@ -524,7 +515,7 @@ void KUrlNavigator::Private::updateContent()
             placeUrl = m_placesSelector->selectedPlaceUrl();
         }
 
-        QString placePath = placeUrl.isValid() ? placeUrl.pathOrUrl() : retrievePlacePath();
+        QString placePath = placeUrl.isValid() ? placeUrl.toDisplayString(QUrl::PreferLocalFile) : retrievePlacePath();
         removeTrailingSlash(placePath);
 
         const int startIndex = placePath.count('/');
@@ -536,7 +527,7 @@ void KUrlNavigator::Private::updateButtons(int startIndex)
 {
     QUrl currentUrl = q->locationUrl();
 
-    const QString path = currentUrl.pathOrUrl();
+    const QString path = currentUrl.toDisplayString(QUrl::PreferLocalFile);
 
     bool createButton = false;
     const int oldButtonCount = m_navButtons.count();
@@ -758,7 +749,7 @@ void KUrlNavigator::Private::deleteButtons()
 QString KUrlNavigator::Private::retrievePlacePath() const
 {
     const QUrl currentUrl = q->locationUrl();
-    const QString path = currentUrl.pathOrUrl();
+    const QString path = currentUrl.toDisplayString(QUrl::PreferLocalFile);
     int idx = path.indexOf(QLatin1String("///"));
     if (idx >= 0) {
         idx += 3;

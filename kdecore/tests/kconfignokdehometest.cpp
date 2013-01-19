@@ -20,9 +20,6 @@
 #include <QObject>
 
 #include <QtTest/QtTest>
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#include <qtemporarydir.h>
-#endif
 #include <kstandarddirs.h>
 #include <ksharedconfig.h>
 
@@ -47,11 +44,7 @@ void KConfigNoKdeHomeTest::testNoKdeHome()
     const QString xdgConfigHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
     QDir xdgConfigHomeDir(xdgConfigHome);
     qputenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome));
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTemporaryDir::removeRecursively(xdgConfigHome);
-#else
     xdgConfigHomeDir.removeRecursively();
-#endif
     QVERIFY(!QFile::exists(xdgConfigHome));
 
     // Do what kde5-config does, and ensure kdehome doesn't get created (#233892)
@@ -69,11 +62,7 @@ void KConfigNoKdeHomeTest::testNoKdeHome()
     QVERIFY(QFile::exists(xdgConfigHome + "/kconfignokdehometestrc"));
 
     // Cleanup
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTemporaryDir::removeRecursively(xdgConfigHome);
-#else
     xdgConfigHomeDir.removeRecursively();
-#endif
 
     // Restore XDG_CONFIG_HOME -- only when there were more tests...
     //qputenv("XDG_CONFIG_HOME", QFile::encodeName(m_xdgConfigHome));

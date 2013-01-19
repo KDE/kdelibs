@@ -84,9 +84,6 @@
 //string parsing helpers and HeaderTokenizer implementation
 #include "parsinghelpers.cpp"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString toString
-#endif
 
 // KDE5 TODO (QT5) : use QString::htmlEscape or whatever https://qt.gitorious.org/qt/qtbase/merge_requests/56
 // ends up with.

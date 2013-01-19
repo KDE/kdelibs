@@ -639,11 +639,9 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    bGlobalDatabase = args->isSet("global");
    bMenuTest = args->isSet("menutest");
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
    if (args->isSet("testmode")) {
        QStandardPaths::enableTestMode(true);
    }
-#endif
 
    if (bGlobalDatabase)
    {

@@ -129,9 +129,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             QUrl red;
             red.setScheme("help");
             red.setPath( path + "/index.html" );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
             red.setQuery( query );
-#endif
             redirection(red);
             kDebug( 7119 ) << "redirect to " << red;
             redirect = true;
@@ -144,9 +142,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
                 QUrl red;
                 red.setScheme("help");
                 red.setPath(documentationNotFound);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                 red.setQuery(query);
-#endif
                 redirection(red);
                 redirect = true;
             }
@@ -207,12 +203,7 @@ void HelpProtocol::get( const QUrl& url )
     infoMessage(i18n("Looking up correct file"));
 
     if ( !mGhelp ) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
       doc = lookupFile(doc, url.query(), redirect);
-#else
-      // wrong
-      doc = lookupFile(doc, url.encodedQuery(), redirect);
-#endif
 
       if (redirect)
       {
@@ -314,11 +305,7 @@ void HelpProtocol::get( const QUrl& url )
             unicodeError( i18n( "The requested help file could not be parsed:<br />%1" ,  file ) );
         } else {
             QString anchor;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
             QString query = url.query();
-#else
-            QString query; // HACK
-#endif
 
             // if we have a query, look if it contains an anchor
             if (!query.isEmpty())
@@ -326,10 +313,8 @@ void HelpProtocol::get( const QUrl& url )
                     anchor = query.mid(8).toLower();
 
 			    QUrl redirURL(url);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 			    redirURL.setQuery(QString());
 			    redirURL.setFragment(anchor);
-#endif
 			    redirection(redirURL);
 			    finished();
 			    return;

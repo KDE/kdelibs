@@ -212,11 +212,7 @@ void KConfigTest::cleanupTestCase()
 {
     QDir localConfig(m_xdgConfigHome);
     //qDebug() << "Erasing" << localConfig;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QTemporaryDir::removeRecursively(localConfig.path());
-#else
     localConfig.removeRecursively();
-#endif
     QVERIFY(!localConfig.exists());
 }
 

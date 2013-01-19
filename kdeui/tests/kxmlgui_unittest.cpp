@@ -104,9 +104,7 @@ static void clickApply(KEditToolBar *dialog)
 
 void KXmlGui_UnitTest::initTestCase()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#endif
     // Leftover configuration breaks testAutoSaveSettings
     const QString configFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, "kxmlgui_unittestrc");
     if (!configFile.isEmpty())

@@ -170,12 +170,7 @@ static DataHeader parseDataHeader(const QUrl &url, const bool mimeOnly)
   header_info.is_base64 = false;
 
   // decode url and save it
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  // QUrl is broken in Qt4...
-  const QByteArray &raw_url = header_info.url = QByteArray::fromPercentEncoding( url.path().toLatin1() );
-#else
   const QByteArray &raw_url = header_info.url = QByteArray::fromPercentEncoding( url.encodedPath() );
-#endif
   const int raw_url_len = raw_url.length();
 
   header_info.data_offset = 0;

@@ -668,33 +668,20 @@ void KActionCollectionPrivate::_k_actionDestroyed( QObject *obj )
   emit q->removed(action); //deprecated. remove in KDE5
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-void KActionCollection::connectNotify ( const char * signal )
-#else
 void KActionCollection::connectNotify(const QMetaMethod& signal)
-#endif
 {
   if (d->connectHovered && d->connectTriggered)
     return;
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  if (QMetaObject::normalizedSignature(SIGNAL(actionHighlighted(QAction*))) == signal ||
-      QMetaObject::normalizedSignature(SIGNAL(actionHovered(QAction*))) == signal) {
-#else
   if (signal.methodSignature() == "actionHighlighted(QAction*)" ||
       signal.methodSignature() == "actionHovered(QAction*)") {
-#endif
     if (!d->connectHovered) {
       d->connectHovered = true;
       foreach (QAction* action, actions())
         connect(action, SIGNAL(hovered()), SLOT(slotActionHovered()));
     }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  } else if (QMetaObject::normalizedSignature(SIGNAL(actionTriggered(QAction*))) == signal) {
-#else
   } else if (signal.methodSignature() == "actionTriggered(QAction*)") {
-#endif
     if (!d->connectTriggered) {
       d->connectTriggered = true;
       foreach (QAction* action, actions())

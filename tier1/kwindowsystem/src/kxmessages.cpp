@@ -30,18 +30,14 @@ DEALINGS IN THE SOFTWARE.
 #include <qcoreapplication.h>
 #include <QDebug>
 #include <QWidget> // WId
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QAbstractNativeEventFilter>
-#endif
 
 #include <xcb/xcb.h>
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>
 
 class KXMessagesPrivate
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     : public QAbstractNativeEventFilter
-#endif
 {
 public:
     QWidget* handle;
@@ -100,9 +96,7 @@ KXMessages::KXMessages( const char* accept_broadcast_P, QObject* parent_P )
 {
     d->q = this;
     if( accept_broadcast_P != NULL ) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QCoreApplication::instance()->installNativeEventFilter(d);
-#endif
         d->accept_atom1 = XInternAtom(QX11Info::display(), QByteArray(QByteArray( accept_broadcast_P ) + "_BEGIN").constData(), false);
         d->accept_atom2 = XInternAtom(QX11Info::display(), accept_broadcast_P, false);
     } else {

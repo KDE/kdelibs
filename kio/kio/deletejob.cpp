@@ -38,11 +38,6 @@
 
 #include "job_p.h"
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString toString
-#endif
-
 extern bool kio_resolve_local_urls; // from copyjob.cpp, abused here to save a symbol.
 
 static bool isHttpProtocol(const QString& protocol)

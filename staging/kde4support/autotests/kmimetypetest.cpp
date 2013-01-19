@@ -39,9 +39,7 @@
 #include <qtemporaryfile.h>
 #include <kdesktopfile.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtConcurrent>
-#endif
 
 int initializeLang()
 {
@@ -58,12 +56,8 @@ void KMimeTypeTest::initTestCase()
     // Clean up local xdg dir in case of leftover mimetype definitions
     const QString xdgDir = QString::fromLocal8Bit(getenv("XDG_DATA_HOME"));
     if (!xdgDir.isEmpty()) {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-        QTemporaryDir::removeRecursively(xdgDir);
-#else
         QDir d_(xdgDir);
         d_.removeRecursively();
-#endif
         // No need to run update-mime-database here, the dir is entirely gone.
     }
 

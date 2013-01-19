@@ -1233,11 +1233,7 @@ QString KFileItem::getStatusBarInfo() const
     }
     else if ( targetUrl() != url() )
     {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        text += i18n(" (Points to %1)", targetUrl().toString());
-#else
         text += i18n(" (Points to %1)", targetUrl().toDisplayString());
-#endif
     }
     else if ( S_ISREG( d->m_fileMode ) )
     {

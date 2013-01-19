@@ -304,11 +304,7 @@ QString KFileItemDelegate::Private::information(const QStyleOptionViewItemV4 &op
                 if(!item.localPath().isEmpty())
                     string += item.localPath();
                 else
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                     string += item.url().toDisplayString();
-#else
-                    string += item.url().toString();
-#endif
                 break;
 
             case KFileItemDelegate::Comment:

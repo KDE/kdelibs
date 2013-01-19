@@ -89,11 +89,7 @@ QString KUrlComboBoxPrivate::textForItem(const KUrlComboItem* item) const
         urlInfo.setPath(urlInfo.path(myMode == KUrlComboBox::Directories
                                      ? QUrlPathInfo::AppendTrailingSlash
                                      : QUrlPathInfo::StripTrailingSlash));
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        return urlInfo.url().toString();
-#else
         return urlInfo.url().toDisplayString();
-#endif
     }
 }
 

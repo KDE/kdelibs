@@ -256,29 +256,10 @@ KJS::List SlotProxy::convertArguments(KJS::ExecState *exec, void **_a )
 #endif
                 KJS::JSObject* returnValue = 0;
                 const int metaTypeId = QMetaType::type( param.constData() );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-                switch( metaTypeId )
-                {
-                    case QMetaType::QObjectStar: {
-                        QObject* obj = (*reinterpret_cast< QObject*(*)>( _a[idx] ));
-                        returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned);
-                    } break;
-                    case QMetaType::QWidgetStar: {
-                        QWidget* obj = (*reinterpret_cast< QWidget*(*)>( _a[idx] ));
-                        returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned);
-                    } break;
-                    default: {
-#ifdef DEBUG_SLOTPROXY
-                        qDebug("\t\tInvalid type !");
-#endif
-                    } break;
-                }
-#else
                 if( QMetaType::typeFlags(metaTypeId) & QMetaType::PointerToQObject ) {
                     QObject *obj = (*reinterpret_cast< QObject*(*)>( _a[idx] ));
                     returnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::QObjOwned);
                 }
-#endif
                 if( returnValue ) {
                     args.append(returnValue);
                     break;

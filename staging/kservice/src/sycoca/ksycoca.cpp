@@ -439,7 +439,6 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
         }
 
         QDBusInterface sycoca(QLatin1String("org.kde.kded5"), QLatin1String("/kbuildsycoca"));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         if (QStandardPaths::isTestModeEnabled()) {
             if (!justStarted) {
                 const QDBusReply<bool> testMode = sycoca.call(QLatin1String("isTestModeEnabled"));
@@ -456,9 +455,6 @@ bool KSycocaPrivate::checkDatabase(BehaviorsIfNotFound ifNotFound)
             sycoca.call(QLatin1String("enableTestMode"));
             Q_ASSERT(QDBusReply<bool>(sycoca.call(QLatin1String("isTestModeEnabled"))).value());
         }
-#else
-        Q_UNUSED(justStarted);
-#endif
 
         //qDebug() << "We have no database.... asking kded to create it";
         sycoca.call(QLatin1String("recreate"));

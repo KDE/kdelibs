@@ -758,12 +758,7 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
 #if 0 // none of this exists in Qt5 anymore
     if (qApp && qApp->type() != QApplication::Tty) {
         //notify non-kde qt applications of the change
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         //x11_apply_settings_in_all_apps();
-#else
-        extern void qt_x11_apply_settings_in_all_apps();
-        qt_x11_apply_settings_in_all_apps();
-#endif
     }
 #endif
 }

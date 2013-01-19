@@ -51,9 +51,7 @@ QTEST_MAIN( KGlobalShortcutTest)
 
 void KGlobalShortcutTest::initTestCase()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#endif
     m_daemonInstalled = !KService::serviceByDesktopName("kglobalaccel").isNull();
 }
 

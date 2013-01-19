@@ -37,11 +37,6 @@
 
 #include "kio/scheduler.h"
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString toString
-#endif
-
 class KIO::JobUiDelegate::Private
 {
 public:

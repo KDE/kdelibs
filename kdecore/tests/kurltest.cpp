@@ -164,37 +164,20 @@ void KUrlTest::testSetHTMLRef()
 void KUrlTest::testQUrl()
 {
   QUrl url1( "file:///home/dfaure/my#%2f" );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#/" ) );
-#else
-  QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#%2f" ) );
-#endif
 
 #ifdef Q_OS_WIN
   QUrl url2( "file:///c:/home/dfaure/my#%2f" );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#/" ) );
-#else
-  QCOMPARE( url2.toString(), QString( "file:///c:/home/dfaure/my#%2f" ) );
-#endif
 #endif
 
   // Show how toString() was confusing in Qt4, and fixed in Qt5
   QUrl url3 = QUrl::fromLocalFile( "/home/dfaure/hash#file" );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( url3.toString(), QString( "file:///home/dfaure/hash%23file" ) );
-#else
-  QCOMPARE( url3.toString(), QString( "file:///home/dfaure/hash#file" ) ); // ouch
-#endif
   QString url3Str = url3.toString();
   QUrl url4(url3Str);
   QCOMPARE( url4.toString(), url3Str );
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QVERIFY( url3 == url4 );
-#else
-  QVERIFY( url3 != url4 ); // unexpected, huh?
-  //QCOMPARE( QString::fromLatin1(url4.toEncoded()), QString::fromLatin1(url3.toEncoded()) ); // fails
-#endif
 }
 
 
@@ -283,11 +266,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   u1 = "file:///home/dfaure/my#%2f";
   url1 = u1;
   // KDE3: was %2f, Qt-4.0 to 4.4: #/. 4.5: %2f again. 5.0: #/.
-#if QT_VERSION < 0x040500 || QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my#/") );
-#else
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%2f") );
-#endif
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
@@ -297,11 +276,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
   u1 = "file:///home/dfaure/my#%23";
   url1 = u1;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my##") ); // correct too, and 'nicer'
-#else
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%23") );
-#endif
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
@@ -673,14 +648,10 @@ void KUrlTest::testSetFileName() // and addPath
   QCOMPARE( u2.url(), QString("http://www.kde.org/subdir") ); // unchanged
 
   QUrl qurl2 = QUrl::fromEncoded( "print:/specials/Print%20To%20File%20(PDF%252FAcrobat)", QUrl::TolerantMode );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  QCOMPARE( qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)") );
-#else
   // Note the behavior change: Qt4's path() is now path(QUrl::FullyDecoded)
   QCOMPARE(qurl2.path(), QString::fromLatin1("/specials/Print To File (PDF%252FAcrobat)"));
   QCOMPARE(qurl2.path(QUrl::FullyDecoded), QString::fromLatin1("/specials/Print To File (PDF%2FAcrobat)"));
   QCOMPARE(qurl2.toString(), QString::fromLatin1("print:/specials/Print To File (PDF%252FAcrobat)"));
-#endif
   QCOMPARE( qurl2.toEncoded(), QByteArray("print:/specials/Print%20To%20File%20(PDF%252FAcrobat)") );
 
   // even more tricky
@@ -963,12 +934,10 @@ void KUrlTest::testAdjustPath()
     }
 
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) // bug fixed in 5.0: empty hostname stays
     KUrl remote2("remote://");
     QCOMPARE( remote2.url(), QString("remote://") );
     QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote://") );
     QCOMPARE( QUrl(remote2).toString(QUrl::StripTrailingSlash), QString("remote://") );
-#endif
     }
 }
 
@@ -1043,11 +1012,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   qurl.setHost( QString() );
   qurl.setPath( QString() );
   QCOMPARE(qurl.port(), 80);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE( QString(qurl.toEncoded()), QString("http:") ); // a port without a host isn't really useful
-#else
-  QCOMPARE( QString(qurl.toEncoded()), QString("http://:80") );
-#endif
   qurl.setPort( -1 );
   QCOMPARE( QString(qurl.toEncoded()), QString("http:") ); // hmm we have no '//' anymore
 
@@ -1130,11 +1095,7 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
   }
   {
       KUrl waba2( waba1, "#%72%22method"); // #243217
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
      QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#r%22method") );
-#else
-     QCOMPARE( waba2.url(), QString("http://www.website.com/directory/?hello#%72%22method") );
-#endif
   }
   {
      KUrl base( "http://faure@www.kde.org" ); // no path
@@ -1216,13 +1177,8 @@ void KUrlTest::testBaseURL() // those are tests for the KUrl(base,relative) cons
 
   KUrl dxOffEagle( KUrl("http://something/other.html"), "newpage.html?[{\"foo: bar\"}]" );
   QVERIFY(dxOffEagle.isValid());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?[%7B%22foo:%20bar%22%7D]"));
   QCOMPARE(dxOffEagle.prettyUrl(), QString("http://something/newpage.html?[%7B%22foo:%20bar%22%7D]") );
-#else
-  QCOMPARE(dxOffEagle.url(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
-  QCOMPARE(dxOffEagle.prettyUrl(), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D") );
-#endif
 
   // QtSw issue 243557
   QByteArray tsdgeos("http://google.com/c?c=Translation+%C2%BB+trunk|");
@@ -1386,9 +1342,6 @@ void KUrlTest::testSetUser()
   KUrl emptyUserTest2( "http://www.foobar.com/");
   emptyUserTest2.setUser( "" );
   //QVERIFY( emptyUserTest2.user().isNull() );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  QVERIFY(emptyUserTest1 == emptyUserTest2);
-#else
   // Qt 5 allows a "set but empty" username, as per the RFC.
   QCOMPARE(emptyUserTest2.url(), QString("http://@www.foobar.com/"));
   QVERIFY(emptyUserTest1 != emptyUserTest2);
@@ -1398,7 +1351,6 @@ void KUrlTest::testSetUser()
   QVERIFY(u.userName().isEmpty());
   QVERIFY(!u.userName().isNull());
   QVERIFY(u.password().isNull());
-#endif
   emptyUserTest2.setUser("foo");
   QCOMPARE(emptyUserTest2.user(), QString::fromLatin1("foo"));
   emptyUserTest2.setUser(QString());
@@ -1406,13 +1358,9 @@ void KUrlTest::testSetUser()
 
   KUrl emptyUserTest3( "http://www.foobar.com/");
   emptyUserTest3.setPass( "" );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  QVERIFY(emptyUserTest1 == emptyUserTest3);
-#else
   // empty password means empty user, fixed in Qt5
   QCOMPARE(emptyUserTest3.url(), QString("http://:@www.foobar.com/"));
   QVERIFY(emptyUserTest1 != emptyUserTest3);
-#endif
 
   KUrl uga("ftp://ftp.kde.org");
   uga.setUser("foo@bar");
@@ -1611,11 +1559,7 @@ void KUrlTest::testMoreBrokenStuff()
 #if 0 // BROKEN?
      QCOMPARE( unc3.path(), QString("//remotehost/home/root") );
 #endif
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
      QCOMPARE( unc3.url(), QString("file://remotehost/home/root") ); // kde3, qt5: lowercase. kde4/qt4: uppercase.
-#else
-     QCOMPARE( unc3.url(), QString("FILE://remotehost/home/root") ); // KDE3: file:// (lowercase)
-#endif
      KUrl url2("file://atlas/dfaure");
      QCOMPARE( url2.host(), QString("atlas") );
      QCOMPARE( url2.path(), QString("/dfaure") );
@@ -1671,34 +1615,18 @@ void KUrlTest::testMoreBrokenStuff()
   QCOMPARE( weird.queryItem("cmd"), QString("'echo $HOSTNAME'") );
 
   weird = ":pictures"; // for KFileDialog's startDir, long ago. Nowadays it uses a proper URL, kfiledialog:///pictures
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QVERIFY( !weird.isValid() );
   QVERIFY( weird.protocol().isEmpty() );
   QVERIFY( weird.host().isEmpty() );
   QCOMPARE( weird.path(), QString( ":pictures" ) );
   QCOMPARE( weird.url(), QString() );
-#else
-  QVERIFY( weird.isValid() );
-  QVERIFY( weird.protocol().isEmpty() );
-  QVERIFY( weird.host().isEmpty() );
-  QCOMPARE( weird.path(), QString( "pictures" ) );
-  QCOMPARE( weird.url(), QString( "pictures" ) ); // # BUG: the : is missing
-#endif
 
   weird = "::keyword"; // for KFileDialog's startDir, long ago.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QVERIFY( !weird.isValid() );
   QVERIFY( weird.protocol().isEmpty() );
   QVERIFY( weird.host().isEmpty() );
   QCOMPARE( weird.path(), QString( "::keyword" ) );
   QCOMPARE( weird.url(), QString() );
-#else
-  QVERIFY( weird.isValid() );
-  QVERIFY( weird.protocol().isEmpty() );
-  QVERIFY( weird.host().isEmpty() );
-  QCOMPARE( weird.path(), QString( ":keyword" ) );
-  QCOMPARE( weird.url(), QString( ":keyword" ) ); // # BUG: the : is missing
-#endif
 
   KUrl broken;
   broken = "ptal://mlc:usb:PC_970";
@@ -1710,11 +1638,7 @@ void KUrlTest::testMoreBrokenStuff()
 
   QUrl dxOffEagle( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
   QVERIFY(dxOffEagle.isValid());
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
   QCOMPARE(QString(dxOffEagle.toEncoded()), QString("http://something/newpage.html?[%7B%22foo:%20bar%22%7D]"));
-#else
-  QCOMPARE(QString(dxOffEagle.toEncoded()), QString("http://something/newpage.html?%5B%7B%22foo:%20bar%22%7D%5D"));
-#endif
   QUrl dxOffEagle2;
   dxOffEagle2.setUrl( "http://something/newpage.html?[{\"foo: bar\"}]", QUrl::TolerantMode);
   QVERIFY(dxOffEagle2.isValid());
@@ -1778,14 +1702,9 @@ void KUrlTest::testMailto()
       QUrl mailtoUrl;
       mailtoUrl.setScheme("mailto");
       mailtoUrl.setPath("a%b");
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-      QCOMPARE(mailtoUrl.path(), QString("a%b"));
-      QCOMPARE(mailtoUrl.toString(), QString("mailto:a%b"));
-#else
       QCOMPARE(mailtoUrl.path(), QString("a%25b")); // The path is encoded in Qt5...
       QCOMPARE(mailtoUrl.path(QUrl::FullyDecoded), QString("a%b"));
       QCOMPARE(mailtoUrl.toString(), QString("mailto:a%25b"));
-#endif
       QCOMPARE(QString::fromLatin1(mailtoUrl.toEncoded()), QString::fromLatin1("mailto:a%25b"));
   }
   {
@@ -1821,9 +1740,6 @@ void KUrlTest::testSmb()
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
   smb = "smb://"; // KDE3: kurl.cpp rev 1.106 made it invalid. Valid again with QUrl.
   QVERIFY( smb.isValid() );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  QCOMPARE(smb.url(), QString::fromLatin1("smb:")); // QUrl bug, fixed in Qt5
-#endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://"));
   smb = "smb://host";
   QVERIFY( smb.isValid() );
@@ -1831,9 +1747,6 @@ void KUrlTest::testSmb()
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://host"));
   smb = "smb:///";
   QVERIFY( smb.isValid() );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  QCOMPARE(smb.url(), QString::fromLatin1("smb:/")); // QUrl bug, fixed in Qt5
-#endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
 
   KUrl implicitSmb("file://host/path");
@@ -2183,11 +2096,7 @@ void KUrlTest::testUrl_data()
     QTest::newRow("local file 3")
         << KUrl("file:///home/kde//")
         << QString::fromLatin1("file:///home/kde//")
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        << QString::fromLatin1("file:///home/kde")
-#else
         << QString::fromLatin1("file:///home/kde/") // RemoveTrailingSlash removes only one slash now
-#endif
         << QString::fromLatin1("file:///home/kde//");
 
     QTest::newRow("ftp url")
@@ -2237,11 +2146,7 @@ void KUrlTest::testToStringList()
               QStringList()
               << QLatin1String("file:///")
               << QLatin1String("file:///home/kde")
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-              << QLatin1String("file:///home/kde")
-#else
               << QLatin1String("file:///home/kde/") // RemoveTrailingSlash removes only one slash now
-#endif
               << QLatin1String("ftp://ftp.kde.org/")
               << QLatin1String("ftp://ftp.kde.org/") );
 

@@ -140,24 +140,6 @@ bool Highlighter::spellCheckerFound() const
     return d->spellCheckerFound;
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-// Since figuring out spell correction suggestions is extremely costly,
-// we keep track of whether the user actually wants some, and only offer them
-// in that case
-void Highlighter::connectNotify(const char* signal)
-{
-    if (QLatin1String(signal) == SIGNAL(newSuggestions(QString,QStringList)))
-        ++d->suggestionListeners;
-    QSyntaxHighlighter::connectNotify(signal);
-}
-
-void Highlighter::disconnectNotify(const char* signal)
-{
-    if (QLatin1String(signal) == SIGNAL(newSuggestions(QString,QStringList)))
-        --d->suggestionListeners;
-    QSyntaxHighlighter::disconnectNotify(signal);
-}
-#else
 // Since figuring out spell correction suggestions is extremely costly,
 // we keep track of whether the user actually wants some, and only offer them
 // in that case
@@ -175,7 +157,6 @@ void Highlighter::disconnectNotify(const QMetaMethod& signal)
         --d->suggestionListeners;
     QSyntaxHighlighter::disconnectNotify(signal);
 }
-#endif
 
 void Highlighter::slotRehighlight()
 {

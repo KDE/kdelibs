@@ -34,27 +34,12 @@
 
 #include "klocaletest.moc"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-// Doesn't seem to be necessary with Qt 5
-int initializeLang()
-{
-    qputenv("LC_ALL", "C");
-    qputenv("LANG", "C");
-    return 0;
-}
-// Set LANG before QCoreApplication is created
-Q_CONSTRUCTOR_FUNCTION(initializeLang)
-#endif
 
 void
 KLocaleTest::initTestCase()
 {
     qputenv("LC_ALL", "C");
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#else
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")));
-#endif
 
     KLocale::global()->setThousandsSeparator(QLatin1String(","));
 }

@@ -67,13 +67,6 @@ Q_EXTERN_C KSERVICE_EXPORT const quint32 kde_plugin_version = version;
  * or derived class, but any QObject derived class can be used.
  * Take a look at the documentation of Q_EXPORT_PLUGIN2 for some details.
  */
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-
-#define K_EXPORT_PLUGIN(factory) \
-Q_EXPORT_PLUGIN(factory) \
-K_PLUGIN_VERIFICATION_DATA
-
-#else
 
 #pragma message("K_EXPORT_PLUGIN is defined as a hack here, for compat. Port to new plugin system (QT_PLUGIN_METADATA) instead.")
 
@@ -81,7 +74,6 @@ K_PLUGIN_VERIFICATION_DATA
 #define Q_STANDARD_CALL __stdcall
 #else
 #define Q_STANDARD_CALL
-#endif
 
 #define K_EXPORT_PLUGIN(factory) \
             Q_EXTERN_C Q_DECL_EXPORT QT_PREPEND_NAMESPACE(QObject) * Q_STANDARD_CALL qt_plugin_instance() \

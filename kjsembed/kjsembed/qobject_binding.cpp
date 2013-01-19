@@ -167,11 +167,7 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
 
 QByteArray extractMemberName( const QMetaMethod &member )
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QString sig = member.signature();
-#else
     QString sig = member.methodSignature();
-#endif
     return sig.left( sig.indexOf('(') ).toLatin1();
 }
 
@@ -690,31 +686,12 @@ KJS::JSValue *SlotBinding::callAsFunction( KJS::ExecState *exec, KJS::JSObject *
         switch( returnTypeId ) {
             case QVariant::Invalid: // fall through
             case QVariant::UserType: {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-                switch( tp ) {
-                    case QMetaType::QWidgetStar: {
-                        QVariant v(tp, param[0]);
-                        QWidget* widget = v.value< QWidget* >();
-                        if( widget )
-                            jsReturnValue = KJSEmbed::createQObject(exec, widget, KJSEmbed::ObjectBinding::CPPOwned);
-                    } break;
-                    case QMetaType::QObjectStar: {
-                        QVariant v(tp,param[0]);
-                        QObject* obj = v.value< QObject* >();
-                        if( obj )
-                            jsReturnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
-                    } break;
-                    default:
-                        break;
-                }
-#else
                 if( QMetaType::typeFlags(tp) & QMetaType::PointerToQObject ) {
                     const QVariant v(tp, param[0]);
                     QObject *obj = v.value< QObject* >();
                     if( obj )
                         jsReturnValue = KJSEmbed::createQObject(exec, obj, KJSEmbed::ObjectBinding::CPPOwned);
                 }
-#endif
             } break;
             default:
                 if( returnIsMetaType )

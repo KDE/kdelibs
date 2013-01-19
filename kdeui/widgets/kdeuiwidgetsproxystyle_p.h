@@ -46,10 +46,8 @@ public:
     QRect itemPixmapRect(const QRect &rectangle, int alignment, const QPixmap &pixmap) const;
     QRect itemTextRect(const QFontMetrics &metrics, const QRect &rectangle, int alignment,
                        bool enabled, const QString &text) const;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     int layoutSpacing(QSizePolicy::ControlType control1, QSizePolicy::ControlType control2, Qt::Orientation orientation,
                       const QStyleOption *option = 0, const QWidget *widget = 0) const Q_DECL_OVERRIDE;
-#endif
     int pixelMetric(PixelMetric metric, const QStyleOption *option, const QWidget *widget) const;
     void polish(QWidget *widget);
     void polish(QApplication *application);

@@ -731,11 +731,7 @@ KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QOb
 {
   setIcon(KDE::icon(bookmark().icon()));
   setIconText(text());
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-  setHelpText(bookmark().url().toString());
-#else
   setHelpText(bookmark().url().toDisplayString(QUrl::PreferLocalFile));
-#endif
   const QString description = bk.description();
   if (!description.isEmpty())
     setToolTip( description );

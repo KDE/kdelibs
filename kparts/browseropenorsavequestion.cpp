@@ -43,12 +43,6 @@
 #include <QLabel>
 #include <qurlpathinfo.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#define pathOrUrl() toDisplayString(QUrl::PreferLocalFile)
-#else
-#define pathOrUrl() toString()
-#endif
-
 using namespace KParts;
 Q_DECLARE_METATYPE(KService::Ptr)
 
@@ -252,7 +246,7 @@ static KAction* createAppAction(const KService::Ptr& service, QObject* parent)
 
 BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
 {
-    d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
+    d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.toDisplayString(QUrl::PreferLocalFile)));
     d->questionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
     d->openWithButton->hide();
 
@@ -346,7 +340,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askEmbedOrSave(int 
     KGuiItem::assign(d->openDefaultButton, KGuiItem(i18nc("@label:button", "&Open"), "document-open"));
     d->openWithButton->hide();
 
-    d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.pathOrUrl()));
+    d->questionLabel->setText(i18nc("@info", "Open '%1'?", d->url.toDisplayString(QUrl::PreferLocalFile)));
     d->questionLabel->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
     const QString dontAskAgain = QLatin1String("askEmbedOrSave")+ d->mimeType; // KEEP IN SYNC!!!

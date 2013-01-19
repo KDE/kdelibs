@@ -1134,15 +1134,11 @@ public:
     virtual QString translate(const char* context,
                               const char *sourceText,
                               const char* comment
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                               , int n
-#endif
                               ) const
     {
         return KLocalizedString::translateQt(context, sourceText, comment
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
                                              , n
-#endif
             );
     }
 

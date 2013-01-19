@@ -48,9 +48,6 @@ License along with this library.  If not, see <http://www.gnu.org/licenses/>.
 
 #define TTL 300
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-Q_DECLARE_METATYPE(QHostInfo)
-#endif
 
 namespace KIO
 {

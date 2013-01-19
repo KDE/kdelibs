@@ -39,9 +39,6 @@
 #include <qstandardpaths.h>
 #include <qurlpathinfo.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString toString
-#endif
 
 using namespace KParts;
 

@@ -532,10 +532,6 @@ QString KConfig::mainConfigName()
         return globalName;
 
     QString appName = QCoreApplication::applicationName();
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    if (appName.isEmpty())
-        appName = qAppName();
-#endif
     return appName + QLatin1String("rc");
 }
 

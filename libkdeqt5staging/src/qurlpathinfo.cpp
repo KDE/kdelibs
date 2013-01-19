@@ -161,11 +161,7 @@ QUrl QUrlPathInfo::url(PathFormattingOption options) const
         return d->url;
     } else {
         QUrl url(d->url);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         url.setPath(path(options), QUrl::DecodedMode);
-#else
-        url.setPath(path(options));
-#endif
         return url;
     }
 }
@@ -192,11 +188,7 @@ void QUrlPathInfo::setUrl(const QUrl &u)
 */
 QString QUrlPathInfo::path(PathFormattingOptions options) const
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QString path = d->url.path(QUrl::FullyDecoded);
-#else
-    QString path = d->url.path();
-#endif
     while ((options & StripTrailingSlash) && path.endsWith(QLatin1Char('/')) && path.length() > 1)
         path.chop(1);
     if ((options & AppendTrailingSlash) && !path.endsWith(QLatin1Char('/')) && !path.isEmpty())
@@ -215,11 +207,7 @@ QString QUrlPathInfo::path(PathFormattingOptions options) const
 */
 void QUrlPathInfo::setPath(const QString &path)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     d->url.setPath(path, QUrl::DecodedMode);
-#else
-    d->url.setPath(path);
-#endif
 }
 
 /*!
@@ -331,11 +319,7 @@ QString QUrlPathInfo::directory(QUrlPathInfo::PathFormattingOptions options) con
 QUrl QUrlPathInfo::directoryUrl() const
 {
     QUrl url = d->url;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     url.setPath(directory(), QUrl::DecodedMode);
-#else
-    url.setPath(directory());
-#endif
     return url;
 }
 
@@ -450,11 +434,7 @@ bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
 
         if (d->url.scheme() == u.scheme() &&
             d->url.authority() == u.authority() && // user+pass+host+port
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
             d->url.query() == u.query() &&
-#else
-            d->url.encodedQuery() == u.encodedQuery() &&
-#endif
             (d->url.fragment() == u.fragment() || options & CompareWithoutFragment)   )
             return true;
 
@@ -473,9 +453,5 @@ bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
 */
 void QUrlPathInfo::adjustPath(QUrl& url, PathFormattingOptions options)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     url.setPath(QUrlPathInfo(url).path(options), QUrl::DecodedMode);
-#else
-    url.setPath(QUrlPathInfo(url).path(options));
-#endif
 }

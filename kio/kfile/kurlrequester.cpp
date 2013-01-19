@@ -279,11 +279,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
 
 void KUrlRequester::setUrl(const QUrl& url)
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    d->setText(url.toString());
-#else
     d->setText(url.toDisplayString(QUrl::PreferLocalFile));
-#endif
 }
 
 #ifndef KDE_NO_DEPRECATED

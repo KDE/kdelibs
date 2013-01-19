@@ -101,9 +101,7 @@ class KConfigDialog_UnitTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QStandardPaths::enableTestMode(true);
-#endif
         // Leftover configuration breaks combosTest
         const QString configFile = QStandardPaths::locate(QStandardPaths::ConfigLocation, "kconfigdialog_unittestrc");
         if (!configFile.isEmpty())

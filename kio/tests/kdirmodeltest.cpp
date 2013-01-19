@@ -744,21 +744,13 @@ void KDirModelTest::testExpandToUrl()
         // This way, the listDir for subdir will find items in cache, and will schedule a CachedItemsJob
         m_dirModel->dirLister()->openUrl(KUrl(path + "subdir"));
         QSignalSpy completedSpy(m_dirModel->dirLister(), SIGNAL(completed()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QVERIFY(completedSpy.wait(2000));
-#else
-        QTest::qWait(1000);
-#endif
     }
     if (flags & ListFinalDir) {
         // This way, the last listDir will find items in cache, and will schedule a CachedItemsJob
         m_dirModel->dirLister()->openUrl(KUrl(path + "subdir/subsubdir"));
         QSignalSpy completedSpy(m_dirModel->dirLister(), SIGNAL(completed()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QVERIFY(completedSpy.wait(2000));
-#else
-        QTest::qWait(1000);
-#endif
     }
 
     if (!m_dirModelForExpand || (flags & NewDir)) {
@@ -843,11 +835,7 @@ void KDirModelTest::testUpdateParentAfterExpand() // #193364
     QVERIFY(!QFile::exists(file));
     createTestFile(file);
     QSignalSpy spyRowsInserted(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyRowsInserted.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
 }
 
 void KDirModelTest::testFilter()
@@ -1167,11 +1155,7 @@ void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet
 
     if (spyCompleted.isEmpty())
         enterLoop();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyRowsRemoved.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
 
     const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before

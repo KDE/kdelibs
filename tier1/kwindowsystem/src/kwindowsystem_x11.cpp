@@ -125,9 +125,7 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
       haveXfixes( false ),
       what( _what )
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     KSystemEventFilter::installEventFilter(this);
-#endif
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
 
 #if HAVE_XFIXES
@@ -374,17 +372,9 @@ KWindowSystemPrivate* KWindowSystem::s_d_func()
 
 
 // optimalization - create KWindowSystemPrivate only when needed and only for what is needed
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-void KWindowSystem::connectNotify( const char* signal )
-#else
 void KWindowSystem::connectNotify(const QMetaMethod& signal)
-#endif
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QByteArray methodSig = signal;
-#else
     QByteArray methodSig = signal.methodSignature();
-#endif
     int what = INFO_BASIC;
     if( methodSig == SIGNAL(workAreaChanged()))
         what = INFO_WINDOWS;

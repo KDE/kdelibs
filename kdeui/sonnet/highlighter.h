@@ -161,13 +161,8 @@ namespace Sonnet
         void slotAutoDetection();
         void slotRehighlight();
     private:
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-        virtual void connectNotify(const char* signal);
-        virtual void disconnectNotify(const char* signal);
-#else
         virtual void connectNotify(const QMetaMethod& signal);
         virtual void disconnectNotify(const QMetaMethod& signal);
-#endif
         class Private;
         Private *const d;
         Q_DISABLE_COPY( Highlighter )

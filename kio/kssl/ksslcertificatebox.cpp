@@ -51,25 +51,6 @@ KSslCertificateBox::~KSslCertificateBox()
 
 void KSslCertificateBox::setCertificate(const QSslCertificate &cert, CertificateParty party)
 {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    if (party == Subject)  {
-        d->ui.commonName->setText(cert.subjectInfo(QSslCertificate::CommonName));
-        d->ui.organization->setText(cert.subjectInfo(QSslCertificate::Organization));
-        d->ui.organizationalUnit
-            ->setText(cert.subjectInfo(QSslCertificate::OrganizationalUnitName));
-        d->ui.country->setText(cert.subjectInfo(QSslCertificate::CountryName));
-        d->ui.state->setText(cert.subjectInfo(QSslCertificate::StateOrProvinceName));
-        d->ui.city->setText(cert.subjectInfo(QSslCertificate::LocalityName));
-    } else if (party == Issuer) {
-        d->ui.commonName->setText(cert.issuerInfo(QSslCertificate::CommonName));
-        d->ui.organization->setText(cert.issuerInfo(QSslCertificate::Organization));
-        d->ui.organizationalUnit
-            ->setText(cert.issuerInfo(QSslCertificate::OrganizationalUnitName));
-        d->ui.country->setText(cert.issuerInfo(QSslCertificate::CountryName));
-        d->ui.state->setText(cert.issuerInfo(QSslCertificate::StateOrProvinceName));
-        d->ui.city->setText(cert.issuerInfo(QSslCertificate::LocalityName));
-    }
-#else
 #warning QT5 PORT TO NEW API
     if (party == Subject)  {
         d->ui.commonName->setText(cert.subjectInfo(QSslCertificate::CommonName).first());
@@ -88,7 +69,6 @@ void KSslCertificateBox::setCertificate(const QSslCertificate &cert, Certificate
         d->ui.state->setText(cert.issuerInfo(QSslCertificate::StateOrProvinceName).first());
         d->ui.city->setText(cert.issuerInfo(QSslCertificate::LocalityName).first());
     }
-#endif
 }
 
 

@@ -60,11 +60,6 @@
 #include <kkernel_win.h>
 #endif
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString toString
-#endif
-
 static bool expandTilde(QString&);
 static bool expandEnv(QString&);
 

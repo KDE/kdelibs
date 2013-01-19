@@ -105,17 +105,8 @@ class KMimeAssociationsTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QStandardPaths::enableTestMode(true);
         m_localApps = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + QLatin1Char('/');
-#else
-        QString kdehome = QDir::home().canonicalPath() + "/.kde-unit-test";
-        qputenv("XDG_DATA_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local") ));
-        qputenv("XDG_CACHE_HOME", QFile::encodeName( QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache") ));
-
-        m_localApps = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + QLatin1Char('/');
-        QVERIFY(m_localApps.startsWith(kdehome));
-#endif
 
         // Create factory on the heap and don't delete it.
         // It registers to KSycoca, which deletes it at end of program execution.

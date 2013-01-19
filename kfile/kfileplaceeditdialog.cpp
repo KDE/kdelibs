@@ -134,9 +134,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
 
     if ( allowGlobal ) {
         QString appName;
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         appName = QGuiApplication::applicationDisplayName();
-#endif
         if ( appName.isEmpty() )
             appName = QCoreApplication::applicationName();
         m_appLocal = new QCheckBox( i18n("&Only show when using this application (%1)", appName ), this);

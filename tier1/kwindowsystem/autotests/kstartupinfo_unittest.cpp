@@ -21,11 +21,7 @@
 
 #include <kstartupinfo.h>
 #include <QSignalSpy>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <qtest_widgets.h>
-#else
-#include <qtest_gui.h>
-#endif
 
 class KStartupInfo_UnitTest : public QObject
 {
@@ -82,9 +78,6 @@ void KStartupInfo_UnitTest::testStart()
     KStartupInfo::sendStartup(id, data);
     KStartupInfo::sendFinish(id, data);
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QSKIP("KXMessages needs Qt5 native event filtering", SkipAll);
-#else
     QSignalSpy spy(this, SIGNAL(ready()));
     spy.wait(5000);
 
@@ -96,7 +89,6 @@ void KStartupInfo_UnitTest::testStart()
     QCOMPARE(m_receivedData.icon(), iconPath);
     QCOMPARE(m_receivedData.bin(), bin);
     //qDebug() << m_receivedData.bin() << m_receivedData.name() << m_receivedData.description() << m_receivedData.icon() << m_receivedData.pids() << m_receivedData.hostname() << m_receivedData.applicationId();
-#endif
 }
 
 QTEST_MAIN(KStartupInfo_UnitTest)

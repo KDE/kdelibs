@@ -196,12 +196,8 @@ static void runKBuildSycoca()
     proc.setProcessChannelMode(QProcess::MergedChannels); // silence kbuildsycoca output
     proc.start(kbuildsycoca, args);
     qDebug() << "waiting for signal";
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QVERIFY(kWaitForSignal(KSycoca::self(), SIGNAL(databaseChanged(QStringList)), 10000));
-#else
     QSignalSpy spy(KSycoca::self(), SIGNAL(databaseChanged(QStringList)));
     QVERIFY(spy.wait(10000));
-#endif
 
     qDebug() << "got signal";
     proc.waitForFinished();
@@ -299,13 +295,7 @@ void KSycocaThreadTest::createFakeService()
 
 int main(int argc, char** argv)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#else
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")));
-    qputenv("XDG_DATA_HOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/local")));
-    qputenv("XDG_CACHE_HOME", QFile::encodeName(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/cache")));
-#endif
     QCoreApplication app(argc, argv);
     KSycocaThreadTest mainObj;
     mainObj.launch();

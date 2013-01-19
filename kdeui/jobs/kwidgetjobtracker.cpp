@@ -617,9 +617,7 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpe
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QProcess::startDetached("kde-open", QStringList() << location.toDisplayString());
-#endif
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()

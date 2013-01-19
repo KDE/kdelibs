@@ -310,11 +310,7 @@ void KjsScript::execute()
         for(int i = 0; i < count; ++i) {
             QMetaMethod metamethod = metaobject->method(i);
             if( metamethod.methodType() == QMetaMethod::Signal ) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-                const QString signature = metamethod.signature();
-#else
                 const QString signature = metamethod.methodSignature();
-#endif
                 const QByteArray name = signature.left(signature.indexOf('(')).toLatin1();
                 krossdebug( QString("KjsScript::execute function=%1").arg(name.data()) );
 

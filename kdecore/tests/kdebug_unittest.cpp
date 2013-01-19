@@ -37,11 +37,7 @@ void KDebugTest::initTestCase()
     // The source files (kdebugrc and kdebug.areas) are in the "global" config dir:
     qputenv("XDG_CONFIG_DIRS", QByteArray(KDESRCDIR) + "/..");
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QStandardPaths::enableTestMode(true);
-#else
-    qputenv("XDG_CONFIG_HOME", QFile::encodeName(QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/config")));
-#endif
 
     QString kdebugrc = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + "kdebugrc";
     if (!kdebugrc.isEmpty())
@@ -146,9 +142,6 @@ QDebug operator<<(QDebug s, const TestClass& me)
 
 void KDebugTest::testDebugToFile()
 {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QSKIP("this test requires QT_MESSAGE_PATTERN support, equivalent code in kdebug is gone", SkipAll);
-#endif
     kDebug(180) << "TEST DEBUG 180";
     kDebug(0) << "TEST DEBUG 0";
     kWarning() << "TEST WARNING 0";
@@ -213,9 +206,6 @@ void KDebugTest::testDynamicArea()
     kDebug(myArea) << "TEST DEBUG using myArea" << myArea;
     QList<QByteArray> expected;
     expected << "/myarea KDebugTest::testDynamicArea: TEST DEBUG using myArea 3\n";
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QSKIP("this test requires QT_MESSAGE_PATTERN support, equivalent code in kdebug is gone", SkipAll);
-#endif
     compareLines(expected, "myarea.dbg");
 }
 
@@ -313,9 +303,6 @@ void KDebugTest::testNoMainComponentData()
     expectedLines << "kdebug_qcoreapptest main: This should appear, under the kdebug_qcoreapptest area";
     expectedLines << "kdebug_qcoreapptest main: Debug in area 100";
     expectedLines << ""; // artefact of split, I guess?
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QSKIP("this test requires QT_MESSAGE_PATTERN support, equivalent code in kdebug is gone", SkipAll);
-#endif
     for (int i = 0; i < qMin(expectedLines.count(), receivedLines.count()); ++i)
         QCOMPARE(QString::fromLatin1(receivedLines[i]), QString::fromLatin1(expectedLines[i]));
     QCOMPARE(receivedLines.count(), expectedLines.count());

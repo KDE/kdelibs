@@ -96,11 +96,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     if (url.isLocalFile() && url.toLocalFile().startsWith(QDir::tempPath()))
       return; // inside tmp resource, do not save
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    QString openStr = url.toString();
-#else
     QString openStr = url.toDisplayString();
-#endif
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
     kDebug(250) << "KRecentDocument::add for " << openStr;

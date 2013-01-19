@@ -141,9 +141,6 @@ using namespace DOM;
 #include <svg/SVGDocument.h>
 #include <qstandardpaths.h>
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString() toString()
-#endif
 
 bool KHTMLPartPrivate::s_dnsInitialised = false;
 

@@ -80,11 +80,7 @@ void MkdirJobPrivate::slotRedirection(const QUrl &url)
      {
          qWarning() << "Redirection from" << m_url << "to" << url << "REJECTED!";
          q->setError( ERR_ACCESS_DENIED );
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-         q->setErrorText(url.toString());
-#else
          q->setErrorText(url.toDisplayString());
-#endif
          return;
      }
      m_redirectionURL = url; // We'll remember that when the job finishes

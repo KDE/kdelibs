@@ -256,11 +256,7 @@ QStringList KIO::Job::detailedErrorStrings(const QUrl *reqUrl /*= 0*/,
   QString url, protocol, datetime;
   if ( reqUrl ) {
     QString prettyUrl;
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    prettyUrl = reqUrl->toString();
-#else
     prettyUrl = reqUrl->toDisplayString();
-#endif
     url = Qt::escape(prettyUrl);
     protocol = reqUrl->scheme();
   } else {
@@ -308,11 +304,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
   QString url, host, protocol, datetime, domain, path, filename;
   bool isSlaveNetwork = false;
   if ( reqUrl ) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    url = reqUrl->toString();
-#else
     url = reqUrl->toDisplayString();
-#endif
     host = reqUrl->host();
     protocol = reqUrl->scheme();
 

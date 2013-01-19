@@ -22,9 +22,6 @@
 
 #include "AuthBackend.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define Q_PLUGIN_METADATA(x)
-#endif
 
 namespace KAuth
 {

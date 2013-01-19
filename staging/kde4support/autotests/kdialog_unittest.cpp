@@ -20,11 +20,7 @@
 
 #include <QApplication>
 #include <QCheckBox>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtTest/QtTestWidgets>
-#else
-#include <QtTest/QtTestGui>
-#endif
 #include <QtTest/QSignalSpy>
 #include <kdialog.h>
 #include <QPushButton>
@@ -243,7 +239,6 @@ private Q_SLOTS:
         QSignalSpy qRejectedSpy(dialog, SIGNAL(rejected()));
         dialog->show(); // KDialog::closeEvent tests for isHidden
         dialog->close();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0) // for QSignalSpy::wait
         if (qRejectedSpy.isEmpty() && emitRejected)
             QVERIFY(qRejectedSpy.wait(5000));
         if (qCancelOrCloseClickedSpy.isEmpty())
@@ -252,7 +247,6 @@ private Q_SLOTS:
         QCOMPARE(qCancelOrCloseClickedSpy.count(), 1); // KDialog emulated cancel or close being clicked
         qApp->sendPostedEvents(); // DeferredDelete
         QVERIFY(dialogPointer.isNull()); // deletion happened
-#endif
     }
 };
 

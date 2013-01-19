@@ -86,11 +86,6 @@
 #endif
 #include <qstandardpaths.h>
 
-// Porting helpers. Qt 5: remove
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-#define toDisplayString toString
-#endif
-
 KRun::KRunPrivate::KRunPrivate(KRun *parent)
         : q(parent),
         m_showingDialog(false)

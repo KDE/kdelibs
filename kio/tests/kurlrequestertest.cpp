@@ -20,11 +20,7 @@
 
 #include <kurlrequester.h>
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QtTest/QtTestWidgets>
-#else
-#include <QtTest/QtTestGui>
-#endif
 
 #include <QDebug>
 

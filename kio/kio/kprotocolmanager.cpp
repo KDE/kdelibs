@@ -31,9 +31,7 @@
 #include <sys/utsname.h>
 
 #include <QtCore/QCoreApplication>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QGuiApplication>
-#endif
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QHostInfo>
@@ -677,7 +675,6 @@ static QString defaultUserAgentFromPreferredService()
 // then we'll have to revert to Q_OS_*, which is actually incorrect.
 static QString platform()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     const QString platform = QGuiApplication::platformName();
     if (platform == "xcb")
         return QL1S("X11");
@@ -687,19 +684,6 @@ static QString platform()
         return QL1S("Windows");
     else
         return platform; // directfb, qnx, etc.
-#else
-#if HAVE_X11
-    return QL1S("X11");
-#elif defined(Q_OS_MAC)
-    return QL1S("Macintosh");
-#elif defined(Q_OS_WIN)
-     return QL1S("Windows");
-#elif defined(Q_OS_SYMBIAN)
-     return QL1S("Symbian");
-#else
-     return QL1S("Unknown");
-#endif
-#endif
 }
 
 QString KProtocolManager::defaultUserAgent( const QString &_modifiers )

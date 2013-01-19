@@ -887,11 +887,7 @@ void KDirListerTest::testBug211472()
 
     dirLister.openUrl(QUrl::fromLocalFile(path));
     QSignalSpy spyCompleted(&dirLister, SIGNAL(completed()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyCompleted.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
     QVERIFY(dirLister.isFinished());
     QVERIFY(m_items.isEmpty());
 
@@ -900,11 +896,7 @@ void KDirListerTest::testBug211472()
 
         // Go 'up' to the parent of 'newsubdir'.
         dirLister.openUrl(QUrl::fromLocalFile(newDir.path()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QVERIFY(spyCompleted.wait(1000));
-#else
-        QTest::qWait(1000);
-#endif
         QVERIFY(dirLister.isFinished());
         QVERIFY(!m_items.isEmpty());
         m_items.clear();
@@ -919,12 +911,8 @@ void KDirListerTest::testBug211472()
 
         // Return to 'newsubdir'. It will be emitted from the cache, then an update will happen.
         dirLister.openUrl(QUrl::fromLocalFile(path));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         QVERIFY(spyCompleted.wait(1000));
         QVERIFY(spyCompleted.wait(1000));
-#else
-        QTest::qWait(1000);
-#endif
         QVERIFY(dirLister.isFinished());
         QCOMPARE(m_items.count(), 1);
         m_items.clear();
@@ -946,11 +934,7 @@ void KDirListerTest::testBug211472()
 
     newDir.remove();
     QSignalSpy spyClear(&dirLister, SIGNAL(clear()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyClear.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
 }
 
 void KDirListerTest::testRenameCurrentDir() // #294445
@@ -964,11 +948,7 @@ void KDirListerTest::testRenameCurrentDir() // #294445
 
     secondDirLister.openUrl(QUrl::fromLocalFile(path));
     QSignalSpy spyCompleted(&secondDirLister, SIGNAL(completed()));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyCompleted.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
     QVERIFY(secondDirLister.isFinished());
     QVERIFY(m_items.empty());
     QCOMPARE(secondDirLister.rootItem().url().toLocalFile(), path);
@@ -977,11 +957,7 @@ void KDirListerTest::testRenameCurrentDir() // #294445
     QVERIFY(QDir().rename(path, newPath));
     org::kde::KDirNotify::emitFileRenamed(QUrl::fromLocalFile(path), QUrl::fromLocalFile(newPath));
     QSignalSpy spyRedirection(&secondDirLister, SIGNAL(redirection(QUrl,QUrl)));
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QVERIFY(spyRedirection.wait(1000));
-#else
-    QTest::qWait(1000);
-#endif
 
     // Check that the URL of the root item got updated
     QCOMPARE(secondDirLister.rootItem().url().toLocalFile(), newPath);
