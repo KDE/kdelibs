@@ -1,6 +1,8 @@
 
 project(kimgio)
 
+find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
+
 find_package(Jasper)
 set_package_properties(Jasper PROPERTIES DESCRIPTION "Support for JPEG-2000 images"
                        URL "http://www.ece.uvic.ca/~mdadams/jasper"
@@ -35,7 +37,7 @@ endif(JASPER_FOUND)
 
 set(kimg_eps_LIB_SRCS eps.cpp)
 kde4_add_plugin(kimg_eps ${kimg_eps_LIB_SRCS})
-target_link_libraries(kimg_eps  Qt5::Widgets)
+target_link_libraries(kimg_eps  Qt5::Widgets Qt5::PrintSupport)
 
 install(TARGETS kimg_eps  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
 
@@ -120,7 +122,7 @@ endif(OPENEXR_FOUND)
 
 ##################################
 
-set(kimg_pic_LIB_SRCS pic_read.cpp pic_write.cpp pic_io_plugin.cpp pic_io_handler.cpp)
+set(kimg_pic_LIB_SRCS pic_read.cpp pic_write.cpp pic.cpp)
 kde4_add_plugin(kimg_pic ${kimg_pic_LIB_SRCS})
 target_link_libraries(kimg_pic Qt5::Widgets)
 

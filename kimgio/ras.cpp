@@ -199,11 +199,6 @@ RASHandler::RASHandler()
 {
 }
 
-QByteArray RASHandler::name() const
-{
-    return "ras";
-}
-
 bool RASHandler::canRead() const
 {
     if (canRead(device())) {
@@ -276,30 +271,12 @@ bool RASHandler::read(QImage *outImage)
     *outImage = img;
     return true;
 }
-/*
-bool RASHandler::write(const QImage &image){
-  return false;
-}*/
-
-class RASPlugin : public QImageIOPlugin
-{
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-
-QStringList RASPlugin::keys() const
-{
-    return QStringList() << "ras" << "RAS";
-}
 
 QImageIOPlugin::Capabilities RASPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
   
     if (format == "ras" || format == "RAS")
         return Capabilities(CanRead);
-//         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;
     if (!device->isOpen())
@@ -308,8 +285,6 @@ QImageIOPlugin::Capabilities RASPlugin::capabilities(QIODevice *device, const QB
     Capabilities cap;	
     if (device->isReadable() && RASHandler::canRead(device))
         cap |= CanRead;
-    if (device->isWritable())
-        cap |= CanWrite;
     return cap;
 }
 
@@ -320,7 +295,3 @@ QImageIOHandler *RASPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-
-
-Q_EXPORT_STATIC_PLUGIN(RASPlugin)
-Q_EXPORT_PLUGIN2(ras, RASPlugin)

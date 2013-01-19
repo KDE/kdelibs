@@ -155,12 +155,6 @@ bool EXRHandler::canRead() const
 	return false;
 }
 
-QByteArray EXRHandler::name() const
-{
-	// TODO
-	return QByteArray("exr");
-}
-
 bool EXRHandler::read( QImage *outImage )
 {
     try
@@ -224,15 +218,6 @@ bool EXRHandler::canRead(QIODevice *device)
     return Imf::isImfMagic( head.data() );
 }
 
-
-/* --- Plugin --- */
-
-QStringList EXRPlugin::keys() const
-{
-	return QStringList() << "exr" << "EXR";
-}
-
-
 QImageIOPlugin::Capabilities EXRPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
     if ( format == "exr" || format == "EXR" )
@@ -255,6 +240,3 @@ QImageIOHandler *EXRPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-
-Q_EXPORT_STATIC_PLUGIN( EXRPlugin )
-Q_EXPORT_PLUGIN2( exr, EXRPlugin )

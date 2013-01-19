@@ -396,11 +396,6 @@ bool TGAHandler::write(const QImage &image)
     return true;
 }
 
-QByteArray TGAHandler::name() const
-{
-    return "tga";
-}
-
 bool TGAHandler::canRead(QIODevice *device)
 {
     if (!device) {
@@ -431,20 +426,6 @@ bool TGAHandler::canRead(QIODevice *device)
     return IsSupported(tga);
 }
 
-
-class TGAPlugin : public QImageIOPlugin
-{
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-
-QStringList TGAPlugin::keys() const
-{
-    return QStringList() << "tga" << "TGA";
-}
-
 QImageIOPlugin::Capabilities TGAPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
     if (format == "tga" || format == "TGA")
@@ -469,6 +450,3 @@ QImageIOHandler *TGAPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-
-Q_EXPORT_STATIC_PLUGIN(TGAPlugin)
-Q_EXPORT_PLUGIN2(tga, TGAPlugin)

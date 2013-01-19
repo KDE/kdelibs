@@ -14,20 +14,29 @@ class JP2Handler : public QImageIOHandler
 public:
     JP2Handler();
     virtual ~JP2Handler();
-    
-    bool canRead() const;
-    bool read(QImage *image);
-    bool write(const QImage &image);
-                
-    QByteArray name() const;
-    bool supportsOption(ImageOption option) const;
-    QVariant option(ImageOption option) const;
-    void setOption(ImageOption option, const QVariant &value);
-                    
+
+    virtual bool canRead() const;
+    virtual bool read(QImage *image);
+    virtual bool write(const QImage &image);
+
+    virtual bool supportsOption(ImageOption option) const;
+    virtual QVariant option(ImageOption option) const;
+    virtual void setOption(ImageOption option, const QVariant &value);
+
     static bool canRead(QIODevice *device);
+
 private:
     int quality;
 };
                         
+class JP2Plugin : public QImageIOPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "jp2.json")
 
-#endif
+public:
+    virtual Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    virtual QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+#endif // KIMG_JP2_H

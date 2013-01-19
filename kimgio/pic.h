@@ -18,16 +18,30 @@
  * ----------------------------------------------------------------------------
  */
 
-#ifndef __PIC_IO_PLUGIN_H__
-#define __PIC_IO_PLUGIN_H__
+#ifndef KIMG_PIC_H
+#define KIMG_PIC_H
 
 #include <QImageIOPlugin>
 
+class SoftimagePICHandler : public QImageIOHandler {
+public:
+    virtual bool canRead() const;
+    virtual bool read(QImage * image);
+    virtual bool write(const QImage &);
+
+    virtual QVariant option(ImageOption option) const;
+    virtual bool supportsOption(ImageOption option) const;
+
+    static bool canRead(QIODevice *device);
+};
+
 class SoftimagePICPlugin : public QImageIOPlugin {
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "pic.json")
+
 public:
     virtual Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    virtual QStringList keys() const;
     virtual QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
 };
 
-#endif//__PIC_IO_PLUGIN_H__
+#endif // KIMG_PIC_H

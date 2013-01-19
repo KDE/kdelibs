@@ -993,17 +993,6 @@ bool DDSHandler::read(QImage *image)
     return result;
 }
 
-bool DDSHandler::write(const QImage &)
-{
-    // TODO Stub!
-    return false;
-}
-
-QByteArray DDSHandler::name() const
-{
-    return "dds";
-}
-
 bool DDSHandler::canRead(QIODevice *device)
 {
     if (!device) {
@@ -1035,22 +1024,9 @@ bool DDSHandler::canRead(QIODevice *device)
     return qstrncmp(head, "DDS", 3) == 0;
 }
 
-class DDSPlugin : public QImageIOPlugin
-{
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-
-QStringList DDSPlugin::keys() const
-{
-    return QStringList() << "dds";
-}
-
 QImageIOPlugin::Capabilities DDSPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "dds")
+    if (format == "dds" || format == "DDS")
         return Capabilities(CanRead);
     if (!format.isEmpty())
         return 0;
@@ -1070,6 +1046,3 @@ QImageIOHandler *DDSPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-
-Q_EXPORT_STATIC_PLUGIN(DDSPlugin)
-Q_EXPORT_PLUGIN2(dds, DDSPlugin)

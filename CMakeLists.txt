@@ -272,6 +272,7 @@ if(FALSE) # Needs porting
   add_subdirectory( kimgio )
 endif()
 
+add_subdirectory( kimgio )
 find_package(Qt5Quick)
 if(Qt5Quick_FOUND)
   add_subdirectory( experimental )

@@ -278,17 +278,6 @@ bool PSDHandler::read(QImage *image)
     return true;
 }
 
-bool PSDHandler::write(const QImage &)
-{
-    // TODO Stub!
-    return false;
-}
-
-QByteArray PSDHandler::name() const
-{
-    return "psd";
-}
-
 bool PSDHandler::canRead(QIODevice *device)
 {
        if (!device) {
@@ -320,20 +309,6 @@ bool PSDHandler::canRead(QIODevice *device)
     return qstrncmp(head, "8BPS", 4) == 0;
 }
 
-
-class PSDPlugin : public QImageIOPlugin
-{
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-
-QStringList PSDPlugin::keys() const
-{
-    return QStringList() << "psd" << "PSD";
-}
-
 QImageIOPlugin::Capabilities PSDPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
     if (format == "psd" || format == "PSD")
@@ -356,6 +331,3 @@ QImageIOHandler *PSDPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-
-Q_EXPORT_STATIC_PLUGIN(PSDPlugin)
-Q_EXPORT_PLUGIN2(psd, PSDPlugin)

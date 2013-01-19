@@ -463,27 +463,9 @@ void JP2Handler::setOption(ImageOption option, const QVariant &value)
         quality = qBound(-1, value.toInt(), 100);
 }
 
-QByteArray JP2Handler::name() const
-{
-    return "jp2";
-}
-
-class JP2Plugin : public QImageIOPlugin
-{
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-
-QStringList JP2Plugin::keys() const
-{
-    return QStringList() << "jp2";
-}
-
 QImageIOPlugin::Capabilities JP2Plugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "jp2")
+    if (format == "jp2" || format == "JP2")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;
@@ -505,8 +487,3 @@ QImageIOHandler *JP2Plugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-
-Q_EXPORT_STATIC_PLUGIN(JP2Plugin)
-Q_EXPORT_PLUGIN2(jp2, JP2Plugin)
-
-

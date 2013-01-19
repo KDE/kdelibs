@@ -5,7 +5,6 @@
 * This library is distributed under the conditions of the GNU LGPL.
 */
 #include "eps.h"
-#include <kdeversion.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <QImage>
@@ -246,7 +245,7 @@ bool EPSHandler::write(const QImage &image)
     QPainter p;
 
     // making some definitions (papersize, output to file, filename):
-    psOut.setCreator( "KDE " KDE_VERSION_STRING  );
+    psOut.setCreator( "KDE"  );
     if ( psOut.outputFileName().isEmpty() )
       psOut.setOutputFileName( "untitled_printer_document" );
 
@@ -288,11 +287,6 @@ bool EPSHandler::write(const QImage &image)
     return true;
 }
 
-QByteArray EPSHandler::name() const
-{
-    return "eps";
-}
-
 bool EPSHandler::canRead(QIODevice *device)
 {
     if (!device) {
@@ -314,22 +308,10 @@ bool EPSHandler::canRead(QIODevice *device)
     return head.contains("%!PS-Adobe");
 }
 
-class EPSPlugin : public QImageIOPlugin
-{
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-
-QStringList EPSPlugin::keys() const
-{
-    return QStringList() << "eps" << "EPS" << "epsi" << "EPSI" << "epsf" << "EPSF";
-}
-
 QImageIOPlugin::Capabilities EPSPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "eps" || format == "epsi" || format == "EPS" || format == "EPSI" ||
+    if (format == "eps" || format == "EPS" ||
+        format == "epsi" || format == "EPSI" ||
         format == "epsf" || format == "EPSF")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
@@ -352,6 +334,3 @@ QImageIOHandler *EPSPlugin::create(QIODevice *device, const QByteArray &format) 
     handler->setFormat(format);
     return handler;
 }
-
-Q_EXPORT_STATIC_PLUGIN(EPSPlugin)
-Q_EXPORT_PLUGIN2(eps, EPSPlugin)

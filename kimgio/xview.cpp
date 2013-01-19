@@ -89,7 +89,7 @@ bool XVHandler::read(QImage *retImage)
     int numColors;
     numColors = qMin( maxval + 1, 0 );
     numColors = qMax( 0, maxval + 1 );
-    image.setNumColors( numColors );
+    image.setColorCount( numColors );
 
     // how do the color handling? they are absolute 24bpp
     // or at least can be calculated as such.
@@ -180,11 +180,6 @@ bool XVHandler::write(const QImage &image)
     return true;
 }
 
-QByteArray XVHandler::name() const
-{
-    return "xv";
-}
-
 bool XVHandler::canRead(QIODevice *device)
 {
      if (!device) {
@@ -216,23 +211,9 @@ bool XVHandler::canRead(QIODevice *device)
     return qstrncmp(head, "P7 332", 6) == 0;
 }
 
-
-class XVPlugin : public QImageIOPlugin
-{
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-
-QStringList XVPlugin::keys() const
-{
-    return QStringList() << "xv";
-}
-
 QImageIOPlugin::Capabilities XVPlugin::capabilities(QIODevice *device, const QByteArray &format) const
 {
-    if (format == "xv")
+    if (format == "xv" || format == "XV")
         return Capabilities(CanRead | CanWrite);
     if (!format.isEmpty())
         return 0;
@@ -254,6 +235,3 @@ QImageIOHandler *XVPlugin::create(QIODevice *device, const QByteArray &format) c
     handler->setFormat(format);
     return handler;
 }
-
-Q_EXPORT_STATIC_PLUGIN(XVPlugin)
-Q_EXPORT_PLUGIN2(xv, XVPlugin)

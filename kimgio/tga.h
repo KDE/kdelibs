@@ -17,14 +17,21 @@ class TGAHandler : public QImageIOHandler
 public:
     TGAHandler();
 
-    bool canRead() const;
-    bool read(QImage *image);
-    bool write(const QImage &image);
-
-    QByteArray name() const;
+    virtual bool canRead() const;
+    virtual bool read(QImage *image);
+    virtual bool write(const QImage &image);
 
     static bool canRead(QIODevice *device);
 };
 
-#endif
+class TGAPlugin : public QImageIOPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "tga.json")
 
+public:
+    virtual Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    virtual QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+#endif // KIMG_TGA_H

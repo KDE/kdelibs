@@ -18,51 +18,21 @@ class EXRHandler : public QImageIOHandler
 public:
     EXRHandler();
 
-    /**
-       Test if the file / stream can potentially read more data
-    */
-    bool canRead() const;
+    virtual bool canRead() const;
+    virtual bool read( QImage *outImage );
+    virtual bool write( const QImage &image );
 
-    /**
-       Read contents from the file / stream into an image
-
-       \param outImage pointer to the QImage that the file / stream will
-       be read into
-
-       \return true on a successful read, false on failure
-    */
-    bool read( QImage *outImage );
-
-    /**
-       Write the contents of an image into the file / stream
-
-       \param image the image to write out
-
-       \return true on a successful write, false on failure
-    */
-    bool write( const QImage &image );
-
-    /**
-       The name of this plugin
-
-       \return always returns "exr" for this plugin
-    */
-    QByteArray name() const;
-
-    /**
-       Convenience routine. You should use canRead() instead.
-    */
     static bool canRead( QIODevice *device );
 };
 
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 class EXRPlugin : public QImageIOPlugin
 {
-public:
-    QStringList keys() const;
-    Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
-    QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
-};
-#endif
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "exr.json")
 
-#endif
+public:
+    virtual Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    virtual QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+#endif // KIMG_EXR_H

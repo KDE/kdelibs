@@ -17,14 +17,21 @@ class PSDHandler : public QImageIOHandler
 public:
     PSDHandler();
 
-    bool canRead() const;
-    bool read(QImage *image);
-    bool write(const QImage &image);
-
-    QByteArray name() const;
+    virtual bool canRead() const;
+    virtual bool read(QImage *image);
 
     static bool canRead(QIODevice *device);
 };
 
-#endif
+class PSDPlugin : public QImageIOPlugin
+{
+    Q_OBJECT
+    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QImageIOHandlerFactoryInterface" FILE "psd.json")
+
+public:
+    virtual Capabilities capabilities(QIODevice *device, const QByteArray &format) const;
+    virtual QImageIOHandler *create(QIODevice *device, const QByteArray &format = QByteArray()) const;
+};
+
+#endif // KIMG_PSD_H
 
