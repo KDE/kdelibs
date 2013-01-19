@@ -1,38 +1,38 @@
 /****************************************************************************
 **
-** Copyright (C) 2012 Nokia Corporation and/or its subsidiary(-ies).
-** Contact: http://www.qt-project.org/
+** Copyright (C) 2013 David Faure <faure@kde.org>
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL$
-** GNU Lesser General Public License Usage
-** This file may be used under the terms of the GNU Lesser General Public
-** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this
-** file. Please review the following information to ensure the GNU Lesser
-** General Public License version 2.1 requirements will be met:
-** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.  For licensing terms and
+** conditions see http://qt.digia.com/licensing.  For further information
+** use the contact form at http://qt.digia.com/contact-us.
 **
-** In addition, as a special exception, Nokia gives you certain additional
-** rights. These rights are described in the Nokia Qt LGPL Exception
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Digia gives you certain additional
+** rights.  These rights are described in the Digia Qt LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
 **
 ** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU General
-** Public License version 3.0 as published by the Free Software Foundation
-** and appearing in the file LICENSE.GPL included in the packaging of this
-** file. Please review the following information to ensure the GNU General
-** Public License version 3.0 requirements will be met:
-** http://www.gnu.org/copyleft/gpl.html.
-**
-** Other Usage
-** Alternatively, this file may be used in accordance with the terms and
-** conditions contained in a signed written agreement between you and Nokia.
-**
-**
-**
-**
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3.0 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU General Public License version 3.0 requirements will be
+** met: http://www.gnu.org/copyleft/gpl.html.
 **
 **
 ** $QT_END_LICENSE$
@@ -43,8 +43,8 @@
 
 /*!
     \class QUrlPathInfo
-
-    \since 5.0
+    \inmodule QtCore
+    \since 5.1
 
     \brief The QUrlPathInfo class provides a convenient interface for working
     with URL paths.
@@ -53,7 +53,6 @@
     \ingroup io
     \ingroup network
     \ingroup shared
-
 
     QUrlPathInfo allows to manipulate URLs which represent a file or a
     directory in a local or remote filesystem. It offers similar
@@ -80,7 +79,8 @@
     \value StripTrailingSlash  The trailing slash is removed if one is present.
     \value AppendTrailingSlash  A trailing slash is added at the end of the path, if necessary.
 
-    Note that a path of "/" will always remain unchanged.
+    Note that a path of "/" will always remain unchanged, since an empty path
+    has a different meaning.
 */
 
 /*!
@@ -102,7 +102,8 @@
     \value AllowEmptyPath Treat a URL with no path as equal to a URL with a path of "/",
     when CompareWithoutTrailingSlash is set.
     Example:
-    QUrlPathInfo("http://www.kde.org").equals("http://www.kde.org/", QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::AllowEmptyPath)
+    QUrlPathInfo urlInfo("http://www.qt-project.org");
+    urlInfo.equals("http://www.qt-project.org/", QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::AllowEmptyPath)
     returns true.
     This option is ignored if CompareWithoutTrailingSlash isn't set.
 */
@@ -264,9 +265,9 @@ void QUrlPathInfo::clear()
 /*!
    Returns the name of the file, excluding the directory.
 
-   Note that, if this QUrl object is given a path ending in a slash, the name of the file is considered empty.
+   Note that, if the URL's path ends in a slash, the name of the file is considered empty.
 
-   If the path doesn't contain any slash, it is fully returned as part of fileName, and directory() will be empty.
+   If the path doesn't contain any slash, it is fully returned as part of fileName(), and directory() will be empty.
 
    \sa path(), setPath()
 */
@@ -307,7 +308,7 @@ void QUrlPathInfo::setFileName(const QString &fileName)
    without a trailing slash. Otherwise, if \a options if AppendTrailingSlash, a slash
    is appended. The root directory ("/") is always returned as "/".
 
-   If the path doesn't contain any slash, it is fully returned as part of fileName, and directoryPath will be empty.
+   If the path doesn't contain any slash, it is fully returned as part of fileName(), and directory() will be empty.
 
    \sa path(), fileName(), setFileName(), directoryUrl()
 */
@@ -345,7 +346,7 @@ QUrl QUrlPathInfo::directoryUrl() const
    \a relativePath is appended to the current path.
    This method adds '/' if needed while concatenating.
    This means it does not matter whether the current path has a trailing
-   '/' or not. If there is none, it becomes appended. If \a relativePath
+   '/' or not. If there is none, one will be appended. If \a relativePath
    has a leading '/' then this one is stripped.
 
    \param relativePath The relative path to add to the current directory path.
