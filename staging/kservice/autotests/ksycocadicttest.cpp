@@ -23,7 +23,6 @@
 #include <QDebug>
 #include <kservicetype.h>
 #include <ksycocadict_p.h>
-#include <kde_qt5_compat.h>
 
 class KSycocaDictTest : public QObject
 {
@@ -54,7 +53,7 @@ QTEST_MAIN(KSycocaDictTest)
 void KSycocaDictTest::testStandardDict()
 {
     if (!KServiceType::serviceType("KCModule"))
-        QSKIP_PORTING( "Missing servicetypes", SkipAll );
+        QSKIP( "Missing servicetypes" );
 
     QStringList serviceTypes;
     serviceTypes << "KUriFilter/Plugin"

@@ -21,7 +21,6 @@
 #include <QtTest/QtTest>
 #include <qstandardpaths.h>
 #include "kconfigcompiler_test.h"
-#include "kde_qt5_compat.h"
 
 // QT5 TODO QTEST_GUILESS_MAIN(KConfigCompiler_Test)
 QTEST_MAIN(KConfigCompiler_Test)
@@ -153,7 +152,7 @@ void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
 	}
 	else
 	{
-		QSKIP_PORTING("Can't open file for comparison", SkipSingle);
+		QSKIP("Can't open file for comparison");
 	}
 }
 

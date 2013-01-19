@@ -22,7 +22,6 @@
 
 #include "kemoticontest.h"
 #include <QtTest/QtTest>
-#include <kde_qt5_compat.h>
 
 #include <stdlib.h>
 
@@ -64,7 +63,7 @@ void KEmoticonTest::testEmoticonParser()
         // check if the expected output file exists
         // if it doesn't, skip the testcase
         if (! expectedFile.exists()) {
-            QSKIP_PORTING("Warning! expected output for testcase not found. Skiping testcase", SkipSingle);
+            QSKIP("Warning! expected output for testcase not found. Skiping testcase");
             continue;
         }
         if (inputFile.open(QIODevice::ReadOnly) && expectedFile.open(QIODevice::ReadOnly)) {
@@ -76,7 +75,7 @@ void KEmoticonTest::testEmoticonParser()
 
             const QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").remove("smile.png");
             if (path.isEmpty())
-                QSKIP_PORTING("Emoticons not installed, skipping. kdebase-runtime needed.", SkipAll);
+                QSKIP("Emoticons not installed, skipping. kdebase-runtime needed.");
 
             QString result = emo.parseEmoticons(inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML).replace(path, QString());
 
@@ -98,7 +97,7 @@ void KEmoticonTest::testEmoticonParser()
                 QCOMPARE(result, expectedData);
             }
         } else {
-            QSKIP_PORTING("Warning! can't open testcase files. Skiping testcase", SkipSingle);
+            QSKIP("Warning! can't open testcase files. Skiping testcase");
             continue;
         }
     }

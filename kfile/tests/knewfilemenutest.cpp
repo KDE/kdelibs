@@ -20,7 +20,6 @@
 
 #include <QtTest/QtTest>
 
-#include <kde_qt5_compat.h>
 #include <QDialog>
 #include <QLineEdit>
 #include <QMenu>
@@ -84,7 +83,7 @@ private Q_SLOTS:
         }
         if (!textAct && m_first) {
             const QString err = "action with text \"" + actionText + "\" not found. kde-baseapps not installed?";
-            QSKIP_PORTING(qPrintable(err), SkipAll);
+            QSKIP(qPrintable(err));
         }
         textAct->trigger();
         QDialog* dialog = parentWidget.findChild<QDialog *>();

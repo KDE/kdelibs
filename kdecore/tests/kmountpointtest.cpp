@@ -20,7 +20,6 @@
 
 #include <QtTest/QtTest>
 #include "kmountpoint.h"
-#include <kde_qt5_compat.h>
 #include <kdebug.h>
 #include <kde_file.h>
 #include <sys/stat.h>
@@ -96,7 +95,7 @@ void KMountPointTest::testPossibleMountPoints()
 {
     const KMountPoint::List mountPoints = KMountPoint::possibleMountPoints(KMountPoint::NeedRealDeviceName|KMountPoint::NeedMountOptions);
     if (mountPoints.isEmpty()) { // can happen in chroot jails
-        QSKIP_PORTING("fstab is empty", SkipAll);
+        QSKIP("fstab is empty");
         return;
     }
     KMountPoint::Ptr mountWithDevice;

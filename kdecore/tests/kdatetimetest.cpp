@@ -21,7 +21,6 @@
 
 #include <cstdlib>
 #include <QtTest/QtTest>
-#include <kde_qt5_compat.h>
 #include <qtest_staging.h>
 #include <QtCore/QDir>
 #include <klocale.h>
@@ -1351,7 +1350,7 @@ void KDateTimeTest::toZone()
 
     // This test relies on kded running, and on kdebase/runtime being installed
     if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
-        QSKIP_PORTING("kded not running", SkipSingle);
+        QSKIP("kded not running");
     }
     QDBusInterface ktimezoned("org.kde.kded5", "/modules/ktimezoned", "org.kde.kded5.KTimeZoned");
     if (!ktimezoned.isValid())
@@ -1360,7 +1359,7 @@ void KDateTimeTest::toZone()
         QDBusInterface kded("org.kde.kded5", "/kded", "org.kde.kded5");
         QDBusReply<bool> reply = kded.call("loadModule", "ktimezoned");
         if (!reply.isValid() || !reply)
-            QSKIP_PORTING("Could not load ktimezoned kded module", SkipSingle);
+            QSKIP("Could not load ktimezoned kded module");
     }
 
     KTimeZone london = KSystemTimeZones::zone("Europe/London");

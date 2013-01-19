@@ -25,7 +25,6 @@
 #include <config-prefix.h>
 
 #include <QtTest/QtTest>
-#include <kde_qt5_compat.h>
 
 QTEST_MAIN(KRunUnitTest)
 
@@ -173,7 +172,7 @@ void KRunUnitTest::testProcessDesktopExecNoFile_data()
 
     QString kioexec = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kioexec";
     if (!QFile::exists(kioexec))
-        QSKIP_PORTING("kioexec not found, kdebase needed", SkipAll);
+        QSKIP("kioexec not found, kdebase needed");
 
     QString kmailservice = CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kmailservice";
     if (!QFile::exists(kmailservice))

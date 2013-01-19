@@ -18,7 +18,6 @@
 
 #include "kautostarttest.h"
 
-#include <kde_qt5_compat.h>
 #include <qstandardpaths.h>
 #include <QtTest/QtTest>
 
@@ -64,7 +63,7 @@ void KAutostartTest::testStartInEnvDetection()
     KAutostart autostart("plasma-desktop");
     // Let's see if plasma.desktop actually exists
     if ( QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("autostart/") + "plasma-desktop.desktop").isEmpty() )
-        QSKIP_PORTING( "plasma-desktop.desktop not found, kdebase not installed", SkipSingle );
+        QSKIP( "plasma-desktop.desktop not found, kdebase not installed" );
     else
         QCOMPARE(autostart.autostarts(env), doesAutostart);
 }
@@ -95,7 +94,7 @@ void KAutostartTest::testStartphase()
 void KAutostartTest::testStartName()
 {
     if ( !KAutostart::isServiceRegistered("plasma-desktop") )
-        QSKIP_PORTING( "plasma-desktop.desktop not found, kdebase not installed", SkipSingle );
+        QSKIP( "plasma-desktop.desktop not found, kdebase not installed" );
     KAutostart autostart("plasma-desktop");
     QCOMPARE(autostart.visibleName(), QString("Plasma Desktop Workspace"));
 }
@@ -106,7 +105,7 @@ void KAutostartTest::testServiceRegistered()
     QCOMPARE(KAutostart::isServiceRegistered("doesnotexist"), false);
 
     if ( QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("autostart/") + "plasma-desktop.desktop").isEmpty() )
-        QSKIP_PORTING( "plasma-desktop.desktop not found, kdebase not installed", SkipSingle );
+        QSKIP( "plasma-desktop.desktop not found, kdebase not installed" );
     QCOMPARE(KAutostart::isServiceRegistered("plasma-desktop"), true);
 }
 

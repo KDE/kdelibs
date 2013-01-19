@@ -207,7 +207,7 @@ void KPtyProcessTest::test_pty_signals()
 void KPtyProcessTest::test_ctty()
 {
 #ifdef Q_OS_MAC
-    QSKIP_PORTING("This test currently hangs on OSX", SkipSingle);
+    QSKIP("This test currently hangs on OSX");
 #else
     KPtyProcess p;
     p.setShellCommand("echo this is a test > /dev/tty");

@@ -94,7 +94,6 @@ endif()
 add_subdirectory( tier1 )
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.
-include_directories(${CMAKE_SOURCE_DIR}) # for kde_qt5_compat.h only -- TEMPORARY HACK
 
 add_subdirectory( tier2 )
 
@@ -478,12 +477,6 @@ include(CreateKDELibsDependenciesFile.cmake)
 
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake  DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
-
-## TEMPORARY
-install(FILES
-  kde_qt5_compat.h
-DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-
 
 # run a script before installing the exports files which deletes previously installed
 # configuration specific export files KDELibs4(Library|Tools)Targets-<config>.cmake

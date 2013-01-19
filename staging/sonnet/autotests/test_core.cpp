@@ -24,7 +24,6 @@
 #include "globals.h"
 
 #include <qtest.h>
-#include <kde_qt5_compat.h>
 #include <QDebug>
 
 // QT5 TODO QTEST_GUILESS_MAIN(SonnetCoreTest)
@@ -106,7 +105,7 @@ void SonnetCoreTest::testCore2()
 {
     Speller dict("de_DE");
     if (!dict.availableDictionaries().contains("German")) {
-        QSKIP_PORTING("This test requires a german spelling dictionary", SkipSingle);
+        QSKIP("This test requires a german spelling dictionary");
         return;
     }
     qDebug()<< "Clients are "   << dict.availableBackends();

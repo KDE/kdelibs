@@ -29,7 +29,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/io
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/caching
     ${CMAKE_CURRENT_BINARY_DIR}/../src
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../.. # kde_qt5_compat.h
 )
 
 kcoreaddons_unit_tests(

@@ -23,7 +23,6 @@
 #include <kglobalsettings.h>
 #include <kdebug.h>
 #include <QtTest>
-#include <kde_qt5_compat.h>
 #include <qstandardpaths.h>
 #include <kservice.h>
 
@@ -93,7 +92,7 @@ void KProtocolInfoTest::testCapabilities()
 void KProtocolInfoTest::testProtocolForArchiveMimetype()
 {
     if (!QFile::exists(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("kde5/services/") + "zip.protocol"))) {
-        QSKIP_PORTING("kdebase not installed", SkipAll);
+        QSKIP("kdebase not installed");
     } else {
         const QString zip = KProtocolManager::protocolForArchiveMimetype("application/zip");
         QCOMPARE(zip, QString("zip"));

@@ -299,7 +299,7 @@ void KSaveFileTest::test_rcsBackupFile()
 {
     QString cipath = QStandardPaths::findExecutable("ci");
     if (cipath.isEmpty())
-        QSKIP_PORTING("ci not available", SkipAll);
+        QSKIP("ci not available");
 
     {
         QTemporaryFile f;

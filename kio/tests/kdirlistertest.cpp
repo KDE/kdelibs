@@ -21,7 +21,6 @@
 #include <qtemporaryfile.h>
 #include <kdirlister.h>
 #include <qtest.h>
-#include <kde_qt5_compat.h>
 
 QTEST_MAIN(KDirListerTest)
 
@@ -997,7 +996,7 @@ void KDirListerTest::testRedirection()
     const QUrl url("file://somemachine/");
 
     if (!KProtocolInfo::isKnownProtocol("smb"))
-        QSKIP_PORTING("smb not installed", SkipAll);
+        QSKIP("smb not installed");
 
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     // The call to openUrl itself, emits started

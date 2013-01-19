@@ -20,7 +20,6 @@
 
 #include "klocalizedstringtest.h"
 
-#include <kde_qt5_compat.h> // QSKIP_PORTING
 
 #include <locale.h>
 
@@ -274,9 +273,9 @@ void KLocalizedStringTest::miscMethods ()
 void KLocalizedStringTest::translateToFrenchLowlevel()
 {
     if (!m_hasFrench) {
-        QSKIP_PORTING("l10n/fr not installed", SkipAll);
+        QSKIP("l10n/fr not installed");
     }
-    QSKIP_PORTING("skipped by default to avoid changing global state", SkipAll);
+    QSKIP("skipped by default to avoid changing global state");
     // fr_FR locale was set by initTestCase already.
     if (QFile::exists("/usr/share/locale/fr/LC_MESSAGES/kdelibs4.mo")) {
         bindtextdomain("kdelibs4", "/usr/share/locale");
@@ -287,7 +286,7 @@ void KLocalizedStringTest::translateToFrenchLowlevel()
 void KLocalizedStringTest::translateToFrench()
 {
     if (!m_hasFrench) {
-        QSKIP_PORTING("l10n/fr not installed", SkipAll);
+        QSKIP("l10n/fr not installed");
     }
     QCOMPARE(i18n("Loadable modules"), QString::fromUtf8("Modules chargeables"));
     QCOMPARE(i18n("Job"), QString::fromUtf8("Tâche"));

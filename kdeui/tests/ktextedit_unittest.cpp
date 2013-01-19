@@ -87,7 +87,7 @@ void KTextEdit_UnitTest::testPaste()
 //
 // void KTextEdit_UnitTest::testBrInsideParagraphThroughTextEdit()
 // {
-//     QSKIP_PORTING("This is worked around during export", SkipSingle);
+//     QSKIP("This is worked around during export");
 //     QTextEdit *te = new QTextEdit();
 //
 //     te->setHtml("<p>Foo<br />Bar</p>");

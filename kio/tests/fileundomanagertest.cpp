@@ -18,7 +18,6 @@
 */
 
 #include <qtest.h>
-#include <kde_qt5_compat.h> // QSKIP_PORTING
 
 #include "fileundomanagertest.h"
 #include <QSignalSpy>
@@ -436,7 +435,7 @@ void FileUndoManagerTest::testCreateDir()
 void FileUndoManagerTest::testTrashFiles()
 {
     if ( !KProtocolInfo::isKnownProtocol( "trash" ) )
-        QSKIP_PORTING( "kio_trash not installed", SkipAll );
+        QSKIP( "kio_trash not installed" );
 
     // Trash it all at once: the file, the symlink, the subdir.
     QList<QUrl> lst = sourceList();

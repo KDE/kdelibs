@@ -1268,7 +1268,7 @@ void KUrlTest::testSetEncodedFragment()
 {
     // Bug fixed in 4.5.1 by Thiago
 #if QT_VERSION < 0x040501
-    QSKIP_PORTING("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
+    QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment");
 #endif
 
     QFETCH(QByteArray, base);
@@ -1306,7 +1306,7 @@ void KUrlTest::testSubURL()
   QCOMPARE( splitList[2].url(), QString("tar:/#myref") );
 
 #if QT_VERSION < 0x040500
-  QSKIP_PORTING( "Multiple sub urls not supported with Qt < 4.5", SkipSingle );
+  QSKIP( "Multiple sub urls not supported with Qt < 4.5" );
 #endif
   KUrl rejoined = KUrl::join(splitList);
   QCOMPARE(rejoined.url(), url1.url());
@@ -1365,7 +1365,7 @@ void KUrlTest::testSubURL()
   const KUrl url1Rejoined = KUrl::join(url1Splitted);
   // Bug fixed in 4.5.1 by Thiago
 #if QT_VERSION < 0x040501
-  QSKIP_PORTING("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment", SkipAll);
+  QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment");
 #endif
   QCOMPARE(url1Rejoined.url(), url1.url());
   QCOMPARE(url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/"));

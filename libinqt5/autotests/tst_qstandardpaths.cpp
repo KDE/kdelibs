@@ -44,7 +44,6 @@
 #include <qdebug.h>
 #include <qstandardpaths.h>
 #include <qtemporarydir.h>
-#include <../../kde_qt5_compat.h> // QSKIP_PORTING
 
 #ifdef Q_OS_UNIX
 #include <unistd.h>
@@ -279,7 +278,7 @@ void tst_qstandardpaths::testCustomRuntimeDirectory()
 {
 #if defined(Q_OS_UNIX)
     if (::getuid() == 0)
-        QSKIP_PORTING("Running this test as root doesn't make sense", SkipAll);
+        QSKIP("Running this test as root doesn't make sense");
 #endif
 
 #ifdef Q_XDG_PLATFORM

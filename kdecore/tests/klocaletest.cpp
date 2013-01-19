@@ -19,7 +19,6 @@
 
 #include "klocaletest.h"
 #include <QtTest/QtTest>
-#include <kde_qt5_compat.h>
 
 #include "kdebug.h"
 #include "klocale.h"
@@ -836,7 +835,7 @@ KLocaleTest::formatDateTime()
 
 	// The use of KSystemTimeZones requires kded to be running
 	if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
-	    QSKIP_PORTING( "kded not running", SkipAll );
+	    QSKIP( "kded not running" );
 	}
 
 	small = "%Y-%m-%d %H:%M";
@@ -846,7 +845,7 @@ KLocaleTest::formatDateTime()
 	KDateTime kdt;
 	const KTimeZone tz = KSystemTimeZones::zone("Pacific/Fiji");
         if (!tz.isValid())
-            QSKIP_PORTING( "Pacific/Fiji timezone not available", SkipAll );
+            QSKIP( "Pacific/Fiji timezone not available" );
 	kdt = KDateTime::currentDateTime(tz);
 	today = kdt.date();
 	nowt = kdt.time();

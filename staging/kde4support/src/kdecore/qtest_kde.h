@@ -33,7 +33,6 @@
 #include <QtCore/QEventLoop>
 #include <QtTest/QSignalSpy>
 
-#include "kde_qt5_compat.h"
 
 namespace QTest
 {

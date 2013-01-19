@@ -25,7 +25,6 @@
 #include <kdirmodel.h>
 #include <kdirlister.h>
 #include <kurl.h>
-#include <kde_qt5_compat.h>
 //TODO #include "../../kdeui/tests/proxymodeltestsuite/modelspy.h"
 
 #include <qtest.h>
@@ -1009,7 +1008,7 @@ void KDirModelTest::testUrlWithRef() // #171117
 void KDirModelTest::testFontUrlWithHost() // #160057
 {
     if (!KProtocolInfo::isKnownProtocol("fonts")) {
-        QSKIP_PORTING("kio_fonts not installed", SkipAll);
+        QSKIP("kio_fonts not installed");
     }
     KUrl url("fonts://foo/System");
     KDirLister* dirLister = m_dirModel->dirLister();
@@ -1023,7 +1022,7 @@ void KDirModelTest::testFontUrlWithHost() // #160057
 void KDirModelTest::testRemoteUrlWithHost() // #178416
 {
     if (!KProtocolInfo::isKnownProtocol("remote")) {
-        QSKIP_PORTING("kio_remote not installed", SkipAll);
+        QSKIP("kio_remote not installed");
     }
     KUrl url("remote://foo");
     KDirLister* dirLister = m_dirModel->dirLister();
@@ -1062,7 +1061,7 @@ void KDirModelTest::testSmb()
     // This requires that KDirModel does not ask the KDirLister for its rootItem anymore,
     // but that KDirLister emits the root item whenever it changes.
     if (!KProtocolInfo::isKnownProtocol("smb")) {
-        QSKIP_PORTING("kio_smb not installed", SkipAll);
+        QSKIP("kio_smb not installed");
     }
     KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(smbUrl, KDirLister::NoFlags);
@@ -1072,7 +1071,7 @@ void KDirModelTest::testSmb()
     enterLoop(); // wait for completed signal
 
     if (spyCanceled.count() > 0) {
-        QSKIP_PORTING("smb:/ returns an error, probably no network available", SkipAll);
+        QSKIP("smb:/ returns an error, probably no network available");
     }
 
     QModelIndex index = m_dirModel->index(0, 0);
@@ -1161,7 +1160,7 @@ void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     dirLister->openUrl(KUrl(path), KDirLister::NoFlags);
     if (!spyCompleted.isEmpty())
-        QSKIP_PORTING("listing completed too early", SkipAll);
+        QSKIP("listing completed too early");
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     KIO::DeleteJob* job = KIO::del(url, KIO::HideProgressInfo);
     QVERIFY(job->exec());
