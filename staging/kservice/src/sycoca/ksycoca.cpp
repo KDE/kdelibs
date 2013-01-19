@@ -615,7 +615,7 @@ QDataStream*& KSycoca::stream()
 
 void KSycoca::clearCaches()
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5,1,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,1,1) // remove when the new Q_GLOBAL_STATIC is in
     if (ksycocaInstance.exists() && ksycocaInstance()->hasSycoca())
 #else
     if (ksycocaInstance() && ksycocaInstance()->hasSycoca())
