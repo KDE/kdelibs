@@ -453,7 +453,7 @@ endif()
 
 if(NOT QT5_BUILD)
   add_subdirectory( kimgio )
-else (NOT QT5_BUILD)
+else ()
   add_subdirectory( experimental )
 endif()
 add_subdirectory( knewstuff )
