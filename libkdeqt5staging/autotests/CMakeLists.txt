@@ -19,5 +19,4 @@ endmacro()
 
 qt5_staging_unit_tests(
   tst_qurlpathinfo
-  tst_qsavefile
 )

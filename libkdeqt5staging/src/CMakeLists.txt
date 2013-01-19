@@ -1,6 +1,5 @@
 set(libkdeqt5staging_SRCS
     qurlpathinfo.cpp
-    qsavefile.cpp
 )
 if (QT5_BUILD AND NOT WIN32)
 set(libkdeqt5staging_SRCS ${libkdeqt5staging_SRCS} qt5only/qx11info.cpp)
@@ -21,7 +20,6 @@ set_target_properties(kdeqt5staging PROPERTIES VERSION   ${ECM_VERSION_STRING}
 # Install into a kdeqt5staging subdir to prevent clashes with real Qt header files
 install(FILES
     qurlpathinfo.h
-    qsavefile.h
     qtest_staging.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdeqt5staging_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kdeqt5staging COMPONENT Devel
