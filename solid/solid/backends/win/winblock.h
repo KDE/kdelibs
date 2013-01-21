@@ -44,6 +44,10 @@ public:
    virtual int deviceMinor() const;
 
    virtual QString device() const;
+
+private:
+    int m_major;
+    int m_minor;
 };
 
 }

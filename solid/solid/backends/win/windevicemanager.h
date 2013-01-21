@@ -25,7 +25,7 @@
 
 
 #include <QSet>
-
+#include <QDebug>
 
 #include <windows.h>
 #include <winioctl.h>
@@ -50,16 +50,17 @@ public:
     virtual QStringList allDevices();
 
     virtual QStringList devicesFromQuery(const QString &parentUdi,
-                                          Solid::DeviceInterface::Type type = Solid::DeviceInterface::Unknown);
+                                         Solid::DeviceInterface::Type type = Solid::DeviceInterface::Unknown);
 
     virtual QObject *createDevice(const QString &udi);
 
 
     template <class  INFO,class QUERY>
-    static INFO getDeviceInfo(QString devName,int code, QUERY *query)
+    static INFO getDeviceInfo(const QString &devName,int code, QUERY *query)
     {
         wchar_t buff[MAX_PATH];
         QString dev = QString("\\\\.\\%1").arg(devName);
+//        qDebug()<<"querying "<<dev;
         buff[dev.toWCharArray(buff)] = 0;
         HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
 
@@ -68,13 +69,14 @@ public:
 
         DWORD bytesReturned =  0;
 
-        ::DeviceIoControl(h, code, query, sizeof(*query), &info, sizeof(info), &bytesReturned, NULL);
+        if(FAILED(::DeviceIoControl(h, code, query, sizeof(*query), &info, sizeof(info), &bytesReturned, NULL)))
+        {
+            qWarning()<<"Failed to query"<<dev;
+        }
+
         ::CloseHandle(h);
         return info;
     }
-
-//    template <typename  INFO>
-//    static INFO getDeviceInfo(QString devName,int code);
 
 
 private:

@@ -79,6 +79,10 @@ QStringList WinDeviceManager::allDevices()
             {
                 udi = QString("/org/kde/solid/win/storage.cdrom/disk #%1").arg(info.DeviceNumber);
             }
+            else
+            {
+                qDebug()<<"unknown device"<<drive<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
+            }
 
 
             if(!udi.isNull())
@@ -132,25 +136,6 @@ QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi
 }
 
 
-
-//template <typename  INFO>
-//INFO WinDeviceManager::getDeviceInfo(QString devName, int code)
-//{
-//    wchar_t buff[MAX_PATH];
-//    QString dev = QString("\\\\.\\%1").arg(devName);
-//    buff[dev.toWCharArray(buff)] = 0;
-//    HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
-
-//    INFO info;
-//    ZeroMemory(&info,sizeof(info));
-
-//    DWORD bytesReturned =  0;
-
-
-//    ::DeviceIoControl(h, code, NULL, 0, &info, sizeof(info), &bytesReturned, NULL);
-//    ::CloseHandle(h);
-//    return info;
-//}
 
 
 #include <windevicemanager.moc>

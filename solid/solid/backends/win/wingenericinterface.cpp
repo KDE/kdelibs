@@ -49,17 +49,4 @@ bool WinGenericInterface::propertyExists(const QString &key) const
     return true;
 }
 
-void WinGenericInterface::propertyChanged(const QMap<QString, int> &changes)
-{
-    Q_UNUSED(changes)
-}
-
-void WinGenericInterface::conditionRaised(const QString &condition, const QString &reason)
-{
-    Q_UNUSED(condition)
-    Q_UNUSED(reason)
-}
-
-
-
 #include "wingenericinterface.moc"
