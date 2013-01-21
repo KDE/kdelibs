@@ -51,17 +51,16 @@ public:
 
     virtual bool teardown();
 
-protected:
-    virtual void accessibilityChanged(bool accessible, const QString &udi);
+signals:
+    void accessibilityChanged(bool accessible, const QString &udi);
 
+    void setupDone(Solid::ErrorType error, QVariant resultData, const QString &udi);
 
-    virtual void setupDone(Solid::ErrorType error, QVariant resultData, const QString &udi);
+    void teardownDone(Solid::ErrorType error, QVariant resultData, const QString &udi);
 
-    virtual void teardownDone(Solid::ErrorType error, QVariant resultData, const QString &udi);
+    void setupRequested(const QString &udi);
 
-    virtual void setupRequested(const QString &udi);
-
-    virtual void teardownRequested(const QString &udi);
+    void teardownRequested(const QString &udi);
 };
 }
 }

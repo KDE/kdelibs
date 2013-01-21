@@ -22,8 +22,7 @@
 #include "windevicemanager.h"
 #include "windevice.h"
 
-#include <windows.h>
-#include <winioctl.h>
+
 
 
 #include <QDebug>
@@ -34,7 +33,7 @@ WinDeviceManager::WinDeviceManager(QObject *parent)
     :DeviceManager(parent)
 {
     m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
-//                          << Solid::DeviceInterface::Block
+                             //                          << Solid::DeviceInterface::Block
                           << Solid::DeviceInterface::StorageAccess
                           << Solid::DeviceInterface::StorageDrive
                           << Solid::DeviceInterface::OpticalDrive
@@ -56,87 +55,69 @@ QSet<Solid::DeviceInterface::Type> Solid::Backends::Win::WinDeviceManager::suppo
 
 QStringList WinDeviceManager::allDevices()
 {
-    QStringList list;
-    foreach(const Solid::DeviceInterface::Type &type,m_supportedInterfaces){
-        list<<devicesFromQuery("",type);
+    QSet<QString> list;
+    DWORD word = GetLogicalDrives();
+    char c = 'A';
+    int i = 0;
+    while(word != 0)
+    {
+        if(word & 1 ){
+
+            QString drive = QString("%1:").arg((char)(c+i));
+
+            STORAGE_DEVICE_NUMBER info = getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER,NULL);
+
+            QString udi;
+
+            if(info.DeviceType == FILE_DEVICE_DISK)
+            {
+                udi = QString("/org/kde/solid/win/volume/disk #%1, partition #%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+                list<<QString("/org/kde/solid/win/storage/disk #%1").arg(info.DeviceNumber);
+            }//TODO: handle subst
+
+            else if(info.DeviceType == FILE_DEVICE_CD_ROM)
+            {
+                udi = QString("/org/kde/solid/win/storage.cdrom/disk #%1").arg(info.DeviceNumber);
+            }
+
+
+            if(!udi.isNull())
+            {
+                list<<udi;
+                WinDevice::m_driveLetters[udi] = drive;
+            }
+        }
+        word = (word >> 1);
+        ++i;
     }
-    return list;
+    return list.toList();
 }
+
 
 QStringList WinDeviceManager::devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type)
 {
+
     QStringList list;
-    if(type & (Solid::DeviceInterface::StorageVolume | Solid::DeviceInterface::StorageAccess | Solid::DeviceInterface::StorageDrive |
-               Solid::DeviceInterface::OpticalDrive | Solid::DeviceInterface::OpticalDisc)){
-        QSet<int> storageDrives;
-        DWORD word = GetLogicalDrives();
-        wchar_t buff[MAX_PATH];
-        char c = 'A';
-        int i = 0;
-        while(word != 0)
-        {
-            if(word & 1 ){
-
-                QString drive = QString("%1:").arg((char)(c+i));
-                QString dev = QString("\\\\.\\%1").arg(drive);
-                buff[dev.toWCharArray(buff)] = 0;
-                HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
-
-                STORAGE_DEVICE_NUMBER info;
-                ZeroMemory(&info,sizeof(STORAGE_DEVICE_NUMBER));
-
-                DWORD bytesReturned =  0;
-
-                ::DeviceIoControl(h, IOCTL_STORAGE_GET_DEVICE_NUMBER, NULL, 0, &info, sizeof(info), &bytesReturned, NULL);
-                ::CloseHandle(h);
-
-                QString udi;
-                switch(type)
-                {
-                case Solid::DeviceInterface::StorageVolume:
-                case Solid::DeviceInterface::StorageAccess:
-                case Solid::DeviceInterface::StorageDrive:
-                {
-                    if(info.DeviceType == FILE_DEVICE_DISK)
-                    {
-                        udi = QString("/org/kde/solid/win/volume/disk #%1, partition #%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
-                    }//TODO: handle subst
-                }
-                    break;
-                case Solid::DeviceInterface::OpticalDrive:
-                case Solid::DeviceInterface::OpticalDisc:
-                {
-                    if(info.DeviceType == FILE_DEVICE_CD_ROM)
-                    {
-                         udi = QString("/org/kde/solid/win/storage.cdrom/disk #%1").arg(info.DeviceNumber);
-                    }
-                }
-                    break;
-                default:
-                    qDebug()<<"DRIVE"<<dev<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
-                    break;
-                }
-
-                if(!udi.isNull())
-                {
-                    list<<udi;
-                    storageDrives.insert(info.DeviceNumber);
-                    WinDevice::m_driveLetters[udi] = drive;
-                }
-
-
+    if (!parentUdi.isEmpty())
+    {
+        foreach(const QString &udi,allDevices()){
+            WinDevice device(udi);
+            if(device.type() == type && device.parentUdi() == parentUdi ){
+                list<<udi;
             }
-            word = (word >> 1);
-            ++i;
         }
-        foreach(int i,storageDrives){
-            list<<QString("/org/kde/solid/win/storage/disk #%1").arg(i);
+    } else if (type!=Solid::DeviceInterface::Unknown) {
+        foreach(const QString &udi,allDevices()){
+            WinDevice device(udi);
+            if(device.type() == type){
+                list<<udi;
+            }
         }
-
+    } else {
+        list<<allDevices();
     }
-
-
     return list;
+
 }
 
 
@@ -150,6 +131,26 @@ QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi
     //    }
 }
 
+
+
+//template <typename  INFO>
+//INFO WinDeviceManager::getDeviceInfo(QString devName, int code)
+//{
+//    wchar_t buff[MAX_PATH];
+//    QString dev = QString("\\\\.\\%1").arg(devName);
+//    buff[dev.toWCharArray(buff)] = 0;
+//    HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+//    INFO info;
+//    ZeroMemory(&info,sizeof(info));
+
+//    DWORD bytesReturned =  0;
+
+
+//    ::DeviceIoControl(h, code, NULL, 0, &info, sizeof(info), &bytesReturned, NULL);
+//    ::CloseHandle(h);
+//    return info;
+//}
 
 
 #include <windevicemanager.moc>

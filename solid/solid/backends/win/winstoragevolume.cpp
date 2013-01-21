@@ -95,7 +95,7 @@ qulonglong WinStorageVolume::size() const
 
 QString WinStorageVolume::encryptedContainerUdi() const
 {
-    QString();
+    return QString();
 }
 
 #include "winstoragevolume.moc"

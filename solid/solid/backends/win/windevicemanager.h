@@ -26,13 +26,17 @@
 
 #include <QSet>
 
+
+#include <windows.h>
+#include <winioctl.h>
+
+
 namespace Solid
 {
 namespace Backends
 {
 namespace Win
 {
-
 
 class WinDeviceManager : public Solid::Ifaces::DeviceManager
 {
@@ -51,8 +55,30 @@ public:
     virtual QObject *createDevice(const QString &udi);
 
 
+    template <class  INFO,class QUERY>
+    static INFO getDeviceInfo(QString devName,int code, QUERY *query)
+    {
+        wchar_t buff[MAX_PATH];
+        QString dev = QString("\\\\.\\%1").arg(devName);
+        buff[dev.toWCharArray(buff)] = 0;
+        HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+        INFO info;
+        ZeroMemory(&info,sizeof(info));
+
+        DWORD bytesReturned =  0;
+
+        ::DeviceIoControl(h, code, query, sizeof(*query), &info, sizeof(info), &bytesReturned, NULL);
+        ::CloseHandle(h);
+        return info;
+    }
+
+//    template <typename  INFO>
+//    static INFO getDeviceInfo(QString devName,int code);
+
+
 private:
-    QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;    
+    QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 
 };
 

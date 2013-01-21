@@ -52,6 +52,12 @@ public:
     virtual bool isHotpluggable() const;
 
     virtual qulonglong size() const;
+
+private:
+    void updateCache();
+
+    Solid::StorageDrive::Bus m_bus;
+    qulonglong m_size;
 };
 }
 }
