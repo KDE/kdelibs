@@ -26,7 +26,7 @@
 #include <winioctl.h>
 
 
-
+#include <QDebug>
 
 using namespace Solid::Backends::Win;
 
@@ -34,7 +34,7 @@ WinDeviceManager::WinDeviceManager(QObject *parent)
     :DeviceManager(parent)
 {
     m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
-                          << Solid::DeviceInterface::Block
+//                          << Solid::DeviceInterface::Block
                           << Solid::DeviceInterface::StorageAccess
                           << Solid::DeviceInterface::StorageDrive
                           << Solid::DeviceInterface::OpticalDrive
@@ -66,7 +66,8 @@ QStringList WinDeviceManager::allDevices()
 QStringList WinDeviceManager::devicesFromQuery(const QString &parentUdi, Solid::DeviceInterface::Type type)
 {
     QStringList list;
-    if(type & (Solid::DeviceInterface::StorageVolume | Solid::DeviceInterface::StorageAccess | Solid::DeviceInterface::StorageDrive)){
+    if(type & (Solid::DeviceInterface::StorageVolume | Solid::DeviceInterface::StorageAccess | Solid::DeviceInterface::StorageDrive |
+               Solid::DeviceInterface::OpticalDrive | Solid::DeviceInterface::OpticalDisc)){
         QSet<int> storageDrives;
         DWORD word = GetLogicalDrives();
         wchar_t buff[MAX_PATH];
@@ -78,21 +79,52 @@ QStringList WinDeviceManager::devicesFromQuery(const QString &parentUdi, Solid::
 
                 QString drive = QString("%1:").arg((char)(c+i));
                 QString dev = QString("\\\\.\\%1").arg(drive);
-                dev.toWCharArray(buff);
+                buff[dev.toWCharArray(buff)] = 0;
                 HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
 
-                STORAGE_DEVICE_NUMBER info = {};
+                STORAGE_DEVICE_NUMBER info;
+                ZeroMemory(&info,sizeof(STORAGE_DEVICE_NUMBER));
+
                 DWORD bytesReturned =  0;
 
                 ::DeviceIoControl(h, IOCTL_STORAGE_GET_DEVICE_NUMBER, NULL, 0, &info, sizeof(info), &bytesReturned, NULL);
                 ::CloseHandle(h);
-                if(info.DeviceType == FILE_DEVICE_DISK)
+
+                QString udi;
+                switch(type)
                 {
-                    QString udi = QString("/org/kde/solid/win/volume/disk #%1, partition #%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+                case Solid::DeviceInterface::StorageVolume:
+                case Solid::DeviceInterface::StorageAccess:
+                case Solid::DeviceInterface::StorageDrive:
+                {
+                    if(info.DeviceType == FILE_DEVICE_DISK)
+                    {
+                        udi = QString("/org/kde/solid/win/volume/disk #%1, partition #%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+                    }//TODO: handle subst
+                }
+                    break;
+                case Solid::DeviceInterface::OpticalDrive:
+                case Solid::DeviceInterface::OpticalDisc:
+                {
+                    if(info.DeviceType == FILE_DEVICE_CD_ROM)
+                    {
+                         udi = QString("/org/kde/solid/win/storage.cdrom/disk #%1").arg(info.DeviceNumber);
+                    }
+                }
+                    break;
+                default:
+                    qDebug()<<"DRIVE"<<dev<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
+                    break;
+                }
+
+                if(!udi.isNull())
+                {
                     list<<udi;
                     storageDrives.insert(info.DeviceNumber);
                     WinDevice::m_driveLetters[udi] = drive;
-                }//TODO: handle subst
+                }
+
+
             }
             word = (word >> 1);
             ++i;

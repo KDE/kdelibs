@@ -24,24 +24,44 @@
 #include "wingenericinterface.h"
 #include "winstoragevolume.h"
 #include "winblock.h"
+#include "winstorageaccess.h"
+#include "winstoragedrive.h"
 
 using namespace Solid::Backends::Win;
 
 QMap<QString,QString> WinDevice::m_driveLetters = QMap<QString,QString>();
 
-WinDevice::WinDevice(const QString &udi)
-    :Device()
-    ,m_udi(udi)
+WinDevice::WinDevice(const QString &udi) :
+    Device(),
+    m_udi(udi),
+    m_type(Solid::DeviceInterface::Unknown)
 {
-    // /org/kde/solid/win/volume/disk #%1, partition #%2
+    /*
+     /org/kde/solid/win/volume/disk #%1, partition #%2
+     /org/kde/solid/win/storage.cdrom/disk #%0
+    */
     QStringList data = udi.split("/");
-    m_parentUdi = data[6].split(",")[0].trimmed();
+    QString parentName = data[6].split(",")[0].trimmed();
     QString type = data[5];
 
     if(type == "storage")
         m_type = Solid::DeviceInterface::StorageDrive;
     else if(type == "volume")
         m_type = Solid::DeviceInterface::StorageVolume;
+    else if (type == "storage.cdrom")
+        m_type = Solid::DeviceInterface::OpticalDrive;
+
+
+    switch(m_type)
+    {
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        m_parentUdi = QString("/org/kde/solid/win/storage/").append(parentName);
+    }
+        break;
+    default:
+        m_parentUdi = QString("/org/kde/solid/win/").append(type);
+    }
 
 }
 
@@ -52,21 +72,13 @@ QString WinDevice::udi() const
 
 QString WinDevice::parentUdi() const
 {
-    switch(m_type)
-    {
-    case Solid::DeviceInterface::StorageVolume:
-    {
-        return QString("/org/kde/solid/win/storage/").append(m_parentUdi);
-    }
-    default:
-        return QString();
-    }
+    return m_parentUdi;
 }
 
 QString WinDevice::vendor() const
 {
     //TODO:implement
-    return QString();
+    return QString("Not implemented");
 }
 
 QString WinDevice::product() const
@@ -80,20 +92,20 @@ QString WinDevice::product() const
         return dev.label();
     }
     default:
-        return QString();
+        return QString("Not implemented");
     }
 }
 
 QString WinDevice::icon() const
 {
     //TODO:implement
-    return QString();
+    return QString("Not implemented");
 }
 
 QStringList WinDevice::emblems() const
 {
     //TODO:implement
-    return QStringList();
+    return QStringList("Not implemented");
 }
 
 QString WinDevice::description() const
@@ -159,12 +171,12 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::Block:
         iface = new WinBlock(this);
         break;
-        //      case Solid::DeviceInterface::StorageAccess:
-        //          iface = new WinStorageAccess(this);
-        //          break;
-        //      case Solid::DeviceInterface::StorageDrive:
-        //          iface = new WinStorage(this);
-        //          break;
+    case Solid::DeviceInterface::StorageAccess:
+        iface = new WinStorageAccess(this);
+        break;
+    case Solid::DeviceInterface::StorageDrive:
+        iface = new WinStorageDrive(this);
+        break;
         //      case Solid::DeviceInterface::OpticalDrive:
         //          iface = new Cdrom(this);
         //          break;
@@ -179,6 +191,8 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         //          break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:
+        break;
+    default:
         break;
     }
 
