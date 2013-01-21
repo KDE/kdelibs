@@ -1816,6 +1816,15 @@ bool Applet::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
                 }
             break;
 
+            case QEvent::GraphicsSceneMousePress: {
+                QGraphicsSceneMouseEvent *me = static_cast<QGraphicsSceneMouseEvent *>(event);
+                if (!contentsRect().contains(me->pos())) {
+                    event->setAccepted(false);
+                    return true;
+                }
+            break;
+            }
+
         default:
             break;
         }
