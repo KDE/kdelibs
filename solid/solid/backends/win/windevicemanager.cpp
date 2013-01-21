@@ -73,11 +73,14 @@ QStringList WinDeviceManager::allDevices()
             {
                 udi = QString("/org/kde/solid/win/volume/disk #%1, partition #%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
                 list<<QString("/org/kde/solid/win/storage/disk #%1").arg(info.DeviceNumber);
-            }//TODO: handle subst
-
+            }
             else if(info.DeviceType == FILE_DEVICE_CD_ROM)
             {
                 udi = QString("/org/kde/solid/win/storage.cdrom/disk #%1").arg(info.DeviceNumber);
+            }
+            else if(info.DeviceType == 0)
+            {
+                //subst drive
             }
             else
             {

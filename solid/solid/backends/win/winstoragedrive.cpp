@@ -41,6 +41,8 @@ Solid::StorageDrive::Bus WinStorageDrive::bus() const
 
 Solid::StorageDrive::DriveType WinStorageDrive::driveType() const
 {
+    if(m_device->type() == Solid::DeviceInterface::OpticalDrive)
+        return Solid::StorageDrive::CdromDrive;
     if(bus() == Solid::StorageDrive::Usb)
         return Solid::StorageDrive::MemoryStick;
     return Solid::StorageDrive::HardDisk;
@@ -48,12 +50,12 @@ Solid::StorageDrive::DriveType WinStorageDrive::driveType() const
 
 bool WinStorageDrive::isRemovable() const
 {
-    return bus() == Solid::StorageDrive::Usb;
+    return m_isRemovable;
 }
 
 bool WinStorageDrive::isHotpluggable() const
 {
-    return bus() == Solid::StorageDrive::Usb;
+    return m_isHotplugges;
 }
 
 qulonglong WinStorageDrive::size() const
@@ -89,6 +91,12 @@ void WinStorageDrive::updateCache()
 
     GET_LENGTH_INFORMATION sizeInfo =  WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION,void*>(dev,IOCTL_DISK_GET_LENGTH_INFO,NULL);
     m_size = sizeInfo.Length.QuadPart;//TODO: why do I only get a size of 0
+
+
+    STORAGE_HOTPLUG_INFO plugInfo =  WinDeviceManager::getDeviceInfo<STORAGE_HOTPLUG_INFO,void*>(dev,IOCTL_STORAGE_GET_HOTPLUG_INFO,NULL);
+    m_isHotplugges = plugInfo.DeviceHotplug != 0;
+    m_isRemovable = plugInfo.MediaRemovable != 0;
+
 }
 
 #include "winstoragedrive.moc"
