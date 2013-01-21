@@ -29,8 +29,9 @@ WinGenericInterface::WinGenericInterface(WinDevice *device)
 
 QVariant WinGenericInterface::property(const QString &key) const
 {
+    Q_UNUSED(key)
     qFatal("Not implemented");
-    QVariant();
+    return QVariant();
 }
 
 
@@ -43,16 +44,20 @@ QMap<QString, QVariant> Solid::Backends::Win::WinGenericInterface::allProperties
 
 bool WinGenericInterface::propertyExists(const QString &key) const
 {
+    Q_UNUSED(key)
     qFatal("Not implemented");
     return true;
 }
 
 void WinGenericInterface::propertyChanged(const QMap<QString, int> &changes)
 {
+    Q_UNUSED(changes)
 }
 
 void WinGenericInterface::conditionRaised(const QString &condition, const QString &reason)
 {
+    Q_UNUSED(condition)
+    Q_UNUSED(reason)
 }
 
 

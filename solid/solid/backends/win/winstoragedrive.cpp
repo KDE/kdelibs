@@ -19,12 +19,15 @@
 */
 #include "winstoragedrive.h"
 
+#include <windows.h>
+#include <winioctl.h>
 
 using namespace Solid::Backends::Win;
 
 WinStorageDrive::WinStorageDrive(WinDevice *device):
     WinBlock(device)
 {
+    updateCache();
 }
 
 WinStorageDrive::~WinStorageDrive()
@@ -33,27 +36,57 @@ WinStorageDrive::~WinStorageDrive()
 
 Solid::StorageDrive::Bus WinStorageDrive::bus() const
 {
-    return Solid::StorageDrive::Ide;
+    return m_bus;
 }
 
 Solid::StorageDrive::DriveType WinStorageDrive::driveType() const
 {
+    if(bus() == Solid::StorageDrive::Usb)
+        return Solid::StorageDrive::MemoryStick;
     return Solid::StorageDrive::HardDisk;
 }
 
 bool WinStorageDrive::isRemovable() const
 {
-    return false;
+    return bus() == Solid::StorageDrive::Usb;
 }
 
 bool WinStorageDrive::isHotpluggable() const
 {
-    return false;
+    return bus() == Solid::StorageDrive::Usb;
 }
 
 qulonglong WinStorageDrive::size() const
 {
-    return 0;
+    return m_size;
+}
+
+void WinStorageDrive::updateCache()
+{
+    STORAGE_PROPERTY_QUERY storageProperty;
+    storageProperty.PropertyId = StorageAdapterProperty;
+    storageProperty.QueryType = PropertyStandardQuery;
+
+    STORAGE_ADAPTER_DESCRIPTOR  info = WinDeviceManager::getDeviceInfo<STORAGE_ADAPTER_DESCRIPTOR>(m_device->driveLetter(),IOCTL_STORAGE_QUERY_PROPERTY,&storageProperty);
+
+    switch(info.BusType)
+    {
+    case BusTypeUsb:
+        m_bus = Solid::StorageDrive::Usb;
+        break;
+    case BusType1394:
+        m_bus = Solid::StorageDrive::Ieee1394;
+        break;
+    case BusTypeScsi:
+        m_bus = Solid::StorageDrive::Scsi;
+        break;
+    case BusTypeAta:
+    default:
+        m_bus = Solid::StorageDrive::Ide;
+    }
+
+    GET_LENGTH_INFORMATION info2 =  WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION,void*>(m_device->driveLetter(),IOCTL_DISK_GET_LENGTH_INFO,NULL);
+    m_size = info2.Length.QuadPart;
 }
 
 #include "winstoragedrive.moc"

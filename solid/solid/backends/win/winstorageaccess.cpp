@@ -34,17 +34,17 @@ WinStorageAccess::~WinStorageAccess()
 
 bool WinStorageAccess::isAccessible() const
 {
-    return true;
+    return !m_device->driveLetter().isNull();
 }
 
 QString WinStorageAccess::filePath() const
 {
-    return QString("Not implemented");
+    return m_device->driveLetter();
 }
 
 bool WinStorageAccess::isIgnored() const
 {
-    return false;
+    return m_device->driveLetter().isNull();
 }
 
 bool WinStorageAccess::setup()
@@ -57,24 +57,5 @@ bool WinStorageAccess::teardown()
     return true;
 }
 
-void WinStorageAccess::accessibilityChanged(bool accessible, const QString &udi)
-{
-}
-
-void WinStorageAccess::setupDone(Solid::ErrorType error, QVariant resultData, const QString &udi)
-{
-}
-
-void WinStorageAccess::teardownDone(Solid::ErrorType error, QVariant resultData, const QString &udi)
-{
-}
-
-void WinStorageAccess::setupRequested(const QString &udi)
-{
-}
-
-void WinStorageAccess::teardownRequested(const QString &udi)
-{
-}
 
 #include "winstorageaccess.moc"

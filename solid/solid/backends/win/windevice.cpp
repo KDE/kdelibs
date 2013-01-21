@@ -199,6 +199,11 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     return iface;
 }
 
+Solid::DeviceInterface::Type WinDevice::type() const
+{
+    return m_type;
+}
+
 QString WinDevice::driveLetter() const
 {
     return m_driveLetters[udi()];

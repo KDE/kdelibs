@@ -53,7 +53,10 @@ public:
    virtual bool queryDeviceInterface(const Solid::DeviceInterface::Type &type) const;
    virtual QObject *createDeviceInterface(const Solid::DeviceInterface::Type &type);
 
+    Solid::DeviceInterface::Type type() const;
+
     QString driveLetter() const;
+
 private:
     QString m_udi;
     QString m_parentUdi;
