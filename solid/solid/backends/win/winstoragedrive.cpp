@@ -67,9 +67,11 @@ void WinStorageDrive::updateCache()
     storageProperty.PropertyId = StorageAdapterProperty;
     storageProperty.QueryType = PropertyStandardQuery;
 
-    STORAGE_ADAPTER_DESCRIPTOR  info = WinDeviceManager::getDeviceInfo<STORAGE_ADAPTER_DESCRIPTOR>(m_device->driveLetter(),IOCTL_STORAGE_QUERY_PROPERTY,&storageProperty);
+    QString dev = QString("PhysicalDrive%1").arg(deviceMajor());
 
-    switch(info.BusType)
+    STORAGE_ADAPTER_DESCRIPTOR  busInfo = WinDeviceManager::getDeviceInfo<STORAGE_ADAPTER_DESCRIPTOR>(dev,IOCTL_STORAGE_QUERY_PROPERTY,&storageProperty);
+
+    switch(busInfo.BusType)
     {
     case BusTypeUsb:
         m_bus = Solid::StorageDrive::Usb;
@@ -85,8 +87,8 @@ void WinStorageDrive::updateCache()
         m_bus = Solid::StorageDrive::Ide;
     }
 
-    GET_LENGTH_INFORMATION info2 =  WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION,void*>(m_device->driveLetter(),IOCTL_DISK_GET_LENGTH_INFO,NULL);
-    m_size = info2.Length.QuadPart;
+    GET_LENGTH_INFORMATION sizeInfo =  WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION,void*>(dev,IOCTL_DISK_GET_LENGTH_INFO,NULL);
+    m_size = sizeInfo.Length.QuadPart;//TODO: why do I only get a size of 0
 }
 
 #include "winstoragedrive.moc"

@@ -20,11 +20,31 @@
 
 #include "winblock.h"
 
+#include <QDebug>
+
 using namespace Solid::Backends::Win;
 
-WinBlock::WinBlock(WinDevice *device)
-    :WinInterface(device)
+WinBlock::WinBlock(WinDevice *device):
+    WinInterface(device),
+    m_major(-1),
+    m_minor(-1)
 {
+    if(m_device->type() == Solid::DeviceInterface::StorageVolume)
+    {
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(m_device->driveLetter(),IOCTL_STORAGE_GET_DEVICE_NUMBER,NULL);
+        m_major = info.DeviceNumber;
+        m_minor = info.PartitionNumber;
+    }
+    else if(m_device->type() == Solid::DeviceInterface::StorageDrive ||
+            m_device->type() == Solid::DeviceInterface::OpticalDrive)
+    {
+        m_major = m_device->udi().mid(m_device->udi().length()-1).toInt();
+    }
+    else
+    {
+        qFatal("Not implemented device type %i",m_device->type());
+    }
+
 }
 
 WinBlock::~WinBlock()
@@ -33,12 +53,13 @@ WinBlock::~WinBlock()
 
 int WinBlock::deviceMajor() const
 {
-    return 0;
+    Q_ASSERT(m_major == -1);
+    return m_major;
 }
 
 int WinBlock::deviceMinor() const
 {
-    return 0;
+    return m_minor;
 }
 
 QString WinBlock::device() const

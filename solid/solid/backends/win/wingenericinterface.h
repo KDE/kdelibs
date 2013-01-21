@@ -44,9 +44,9 @@ public:
 
     virtual bool propertyExists(const QString &key) const;
 
-protected:
-    virtual void propertyChanged(const QMap<QString,int> &changes);
-    virtual void conditionRaised(const QString &condition, const QString &reason);
+signals:
+    void propertyChanged(const QMap<QString,int> &changes);
+    void conditionRaised(const QString &condition, const QString &reason);
 };
 }
 }
