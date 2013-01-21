@@ -45,9 +45,7 @@ public:
 
     virtual Solid::StorageDrive::DriveType driveType() const;
 
-
     virtual bool isRemovable() const;
-
 
     virtual bool isHotpluggable() const;
 
@@ -58,6 +56,8 @@ private:
 
     Solid::StorageDrive::Bus m_bus;
     qulonglong m_size;
+    bool m_isHotplugges;
+    bool m_isRemovable;
 };
 }
 }
