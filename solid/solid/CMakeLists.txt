@@ -387,7 +387,8 @@ if(WIN32)
        backends/win/windevicemanager.cpp
        #backends/win/wmiopticaldisc.cpp
        #backends/win/wmiportablemediaplayer.cpp
-       #backends/win/wmistorageaccess.cpp
+       backends/win/winstorageaccess.cpp
+       backends/win/winstoragedrive.cpp
        backends/win/winstoragevolume.cpp
 
        )

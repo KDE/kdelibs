@@ -1,6 +1,6 @@
 /*
-    Copyright 2012 Patrick von Reth <vonreth@kde.org>
-    
+    Copyright 2013 Patrick von Reth <vonreth@kde.org>
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -8,53 +8,53 @@
     later version accepted by the membership of KDE e.V. (or its
     successor approved by the membership of KDE e.V.), which shall
     act as a proxy defined in Section 6 of version 3 of the license.
-    
+
     This library is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     Lesser General Public License for more details.
-    
+
     You should have received a copy of the GNU Lesser General Public
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
+#ifndef WINSTORAGEDRIVE_H
+#define WINSTORAGEDRIVE_H
 
-#include "wingenericinterface.h"
+#include <solid/ifaces/storagedrive.h>
 
-using namespace Solid::Backends::Win;
 
-WinGenericInterface::WinGenericInterface(WinDevice *device)
-    :WinInterface(device)
+#include "windevice.h"
+#include "winblock.h"
+
+namespace Solid
 {
+namespace Backends
+{
+namespace Win
+{
+
+class WinStorageDrive : public WinBlock ,  public virtual Solid::Ifaces::StorageDrive
+{
+    Q_OBJECT
+    Q_INTERFACES(Solid::Ifaces::StorageDrive)
+public:
+    WinStorageDrive(WinDevice *device);
+    ~WinStorageDrive();
+
+    virtual Solid::StorageDrive::Bus bus() const;
+
+    virtual Solid::StorageDrive::DriveType driveType() const;
+
+
+    virtual bool isRemovable() const;
+
+
+    virtual bool isHotpluggable() const;
+
+    virtual qulonglong size() const;
+};
+}
+}
 }
 
-QVariant WinGenericInterface::property(const QString &key) const
-{
-    qFatal("Not implemented");
-    QVariant();
-}
-
-
-
-QMap<QString, QVariant> Solid::Backends::Win::WinGenericInterface::allProperties() const
-{
-    qFatal("Not implemented");
-    return QMap<QString, QVariant>();
-}
-
-bool WinGenericInterface::propertyExists(const QString &key) const
-{
-    qFatal("Not implemented");
-    return true;
-}
-
-void WinGenericInterface::propertyChanged(const QMap<QString, int> &changes)
-{
-}
-
-void WinGenericInterface::conditionRaised(const QString &condition, const QString &reason)
-{
-}
-
-
-
-#include "wingenericinterface.moc"
+#endif // WINSTORAGEDRIVE_H
