@@ -27,7 +27,7 @@ if(NOT KIO_NO_NEPOMUK)
        ${SOPRANO_INCLUDE_DIR}
        ${CMAKE_SOURCE_DIR}/nepomuk/
        ${CMAKE_SOURCE_DIR}/nepomuk/core/
-       ${CMAKE_SOURCE_DIR}/nepomuk/types/    
+       ${CMAKE_SOURCE_DIR}/nepomuk/types/
        ${CMAKE_SOURCE_DIR}/nepomuk/ui/
        ${CMAKE_SOURCE_DIR}/nepomuk/query/
     )
@@ -228,6 +228,7 @@ set(kfile_STAT_SRCS
   kfile/kfilemetainfowidget.cpp
   kfile/kfilemetapreview.cpp
   kfile/kicondialog.cpp
+  kfile/zoomlevelinfo.cpp
   kfile/kimagefilepreview.cpp
   kfile/kmetaprops.cpp
   kfile/knfotranslator.cpp
@@ -461,6 +462,7 @@ install( FILES
   kfile/kfile.h
   kfile/kfiledialog.h
   kfile/kicondialog.h
+  kfile/zoomlevelinfo.h
   kfile/kimagefilepreview.h
   kfile/kfilemetadataconfigurationwidget.h
   kfile/kfilemetadatawidget.h

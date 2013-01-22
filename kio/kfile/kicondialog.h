@@ -44,6 +44,8 @@ public:
      */
     ~KIconCanvas();
 
+    QSize sizeHint() const;
+
     /**
      * Load icons into the canvas.
      */
@@ -86,6 +88,9 @@ Q_SIGNALS:
      * has been finished.
      */
     void finished();
+
+protected:
+    virtual void wheelEvent(QWheelEvent *);
 
 private:
     class KIconCanvasPrivate;
@@ -227,8 +232,6 @@ private:
     Q_PRIVATE_SLOT(d, void _k_slotFinished())
     Q_PRIVATE_SLOT(d, void _k_slotAcceptIcons())
     Q_PRIVATE_SLOT(d, void _k_slotBrowse())
-    Q_PRIVATE_SLOT(d, void _k_slotOtherIconClicked())
-    Q_PRIVATE_SLOT(d, void _k_slotSystemIconClicked())
 };
 
 
@@ -327,7 +330,7 @@ public:
      * @since 4.1
      */
     int buttonIconSize() const;
-     
+
 
 Q_SIGNALS:
     /**
