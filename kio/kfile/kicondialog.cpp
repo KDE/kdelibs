@@ -13,7 +13,7 @@
  */
 
 #include "kicondialog.h"
-#include "zoomlevelinfo.h"
+//#include "zoomlevelinfo.h"
 
 #include <kio/kio_export.h>
 
@@ -429,7 +429,7 @@ void KIconDialog::KIconDialogPrivate::init()
     m_sizeSlider->setAccessibleName(i18n("Icon Size"));
     m_sizeSlider->setAccessibleDescription(i18nc("Description for icon size slider (accessibility)", "Sets the size in which the icons are displayed."));
     m_sizeSlider->setPageStep(1);
-    m_sizeSlider->setRange(ZoomLevelInfo::minimumLevel(), ZoomLevelInfo::maximumLevel());
+    //m_sizeSlider->setRange(ZoomLevelInfo::minimumLevel(), ZoomLevelInfo::maximumLevel());
     //connect(m_zoomSlider, SIGNAL(valueChanged(int)), this, SIGNAL(zoomLevelChanged(int)));
     //connect(m_zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(showZoomSliderToolTip(int)));
     buttonLayout->addWidget(m_sizeSlider);
