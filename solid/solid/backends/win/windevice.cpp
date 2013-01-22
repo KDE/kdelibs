@@ -82,7 +82,6 @@ WinDevice::WinDevice(const QString &udi) :
     WinDeviceManager::getDeviceInfo(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
     STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
     m_vendor = QString((char*)buff+ info->ProductIdOffset).trimmed();
-    m_product = QString((char*)buff+ info->ProductRevisionOffset).trimmed();
 
 
 }
@@ -104,7 +103,17 @@ QString WinDevice::vendor() const
 
 QString WinDevice::product() const
 {
-    return m_product;
+    switch(m_type)
+    {
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        WinDevice wDev(udi());
+        WinStorageVolume dev(&wDev);
+        return dev.label();
+    }
+    default:
+        return QString("Not implemented");
+    }
 }
 
 QString WinDevice::icon() const
@@ -121,17 +130,7 @@ QStringList WinDevice::emblems() const
 
 QString WinDevice::description() const
 {
-    switch(m_type)
-    {
-    case Solid::DeviceInterface::StorageVolume:
-    {
-        WinDevice wDev(udi());
-        WinStorageVolume dev(&wDev);
-        return dev.label();
-    }
-    default:
-        return QString("Not implemented");
-    }
+    return product();
 }
 
 
