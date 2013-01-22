@@ -55,28 +55,28 @@ public:
     virtual QObject *createDevice(const QString &udi);
 
 
-    template <class  INFO,class QUERY>
-    static INFO getDeviceInfo(const QString &devName,int code, QUERY *query)
+    template< class INFO>
+    static INFO getDeviceInfo(const QString &devName, int code, STORAGE_PROPERTY_QUERY *query = NULL)
     {
         wchar_t buff[MAX_PATH];
         QString dev = QString("\\\\.\\%1").arg(devName);
-//        qDebug()<<"querying "<<dev;
+    //    qDebug()<<"querying "<<dev;
         buff[dev.toWCharArray(buff)] = 0;
         HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
 
         INFO info;
-        ZeroMemory(&info,sizeof(info));
-
+        ZeroMemory(&info,sizeof(INFO));
         DWORD bytesReturned =  0;
 
-        if(FAILED(::DeviceIoControl(h, code, query, sizeof(*query), &info, sizeof(info), &bytesReturned, NULL)))
+        if(FAILED(::DeviceIoControl(h, code, query, sizeof(STORAGE_PROPERTY_QUERY), &info, sizeof(INFO), &bytesReturned, NULL)))
         {
-            qWarning()<<"Failed to query"<<dev;
+            qFatal("Failed to query %s",qPrintable(dev));
         }
-
         ::CloseHandle(h);
         return info;
     }
+
+        static void getDeviceInfo(const QString &devName, int code, char *out, size_t outSize, STORAGE_PROPERTY_QUERY *query = NULL);
 
 
 private:

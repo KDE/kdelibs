@@ -23,8 +23,6 @@
 #include "windevice.h"
 
 
-
-
 #include <QDebug>
 
 using namespace Solid::Backends::Win;
@@ -65,7 +63,7 @@ QStringList WinDeviceManager::allDevices()
 
             QString drive = QString("%1:").arg((char)(c+i));
 
-            STORAGE_DEVICE_NUMBER info = getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER,NULL);
+            STORAGE_DEVICE_NUMBER info = getDeviceInfo<STORAGE_DEVICE_NUMBER>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
 
             QString udi;
 
@@ -136,6 +134,24 @@ QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi
     //    } else {
     //        return 0;
     //    }
+}
+
+void WinDeviceManager::getDeviceInfo(const QString &devName, int code, char *out, size_t outSize, STORAGE_PROPERTY_QUERY *query)
+{
+    wchar_t buff[MAX_PATH];
+    QString dev = QString("\\\\.\\%1").arg(devName);
+//    qDebug()<<"querying "<<dev;
+    buff[dev.toWCharArray(buff)] = 0;
+    HANDLE h = ::CreateFile(buff, 0, 0, NULL, OPEN_EXISTING, 0, NULL);
+
+    ZeroMemory(out,outSize);
+    DWORD bytesReturned =  0;
+
+    if(FAILED(::DeviceIoControl(h, code, query, sizeof(STORAGE_PROPERTY_QUERY), out, outSize, &bytesReturned, NULL)))
+    {
+        qFatal("Failed to query %s",qPrintable(dev));
+    }
+    ::CloseHandle(h);
 }
 
 

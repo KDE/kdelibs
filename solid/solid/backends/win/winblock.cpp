@@ -31,7 +31,7 @@ WinBlock::WinBlock(WinDevice *device):
 {
     if(m_device->type() == Solid::DeviceInterface::StorageVolume)
     {
-        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(m_device->driveLetter(),IOCTL_STORAGE_GET_DEVICE_NUMBER,NULL);
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER>(m_device->driveLetter(),IOCTL_STORAGE_GET_DEVICE_NUMBER);
         m_major = info.DeviceNumber;
         m_minor = info.PartitionNumber;
     }
