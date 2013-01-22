@@ -67,13 +67,15 @@ void PaletteHelper::generatePalettes()
     palette.setColor(QPalette::Normal, QPalette::ButtonText, buttonColor);
     palette.setColor(QPalette::Inactive, QPalette::ButtonText, buttonColor);
 
-    //FIXME: hardcoded colors .. looks incorrect
-    palette.setColor(QPalette::Normal, QPalette::Base, QColor(0,0,0,0));
-    palette.setColor(QPalette::Inactive, QPalette::Base, QColor(0,0,0,0));
+    const QColor backgroundColor = Theme::defaultTheme()->color(Theme::ButtonBackgroundColor);
+    palette.setColor(QPalette::Normal, QPalette::Button, backgroundColor);
+    palette.setColor(QPalette::Inactive, QPalette::Button, backgroundColor);
 
     buttonPalette = palette;
     buttonPalette.setColor(QPalette::Normal, QPalette::Text, buttonColor);
     buttonPalette.setColor(QPalette::Inactive, QPalette::Text, buttonColor);
+    buttonPalette.setColor(QPalette::Normal, QPalette::Base, backgroundColor);
+    buttonPalette.setColor(QPalette::Inactive, QPalette::Base, backgroundColor);
 
     emit palettesUpdated();
 }
