@@ -118,8 +118,34 @@ QString WinDevice::product() const
 
 QString WinDevice::icon() const
 {
-    //TODO:implement
-    return QString("Not implemented");
+    QString icon;
+    switch(type()){
+
+//    case Solid::DeviceInterface::OpticalDisc:
+//    {
+////        WmiDevice dev(udi());
+////        OpticalDisc disk(&dev);
+////        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
+////            propertyName = "media-optical-audio";
+////        else
+////            propertyName = "drive-optical";
+
+////        break;
+//    }
+    case Solid::DeviceInterface::StorageAccess:
+    case Solid::DeviceInterface::StorageVolume:
+    {
+        WinStorageDrive storage(const_cast<WinDevice*>(this));
+        if(storage.bus() == Solid::StorageDrive::Usb)
+            icon = "drive-removable-media-usb-pendrive";
+        else
+            icon = "drive-harddisk";
+    }
+        break;
+    default:
+        break;
+    }
+    return icon;
 }
 
 QStringList WinDevice::emblems() const
