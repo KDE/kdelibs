@@ -60,8 +60,12 @@ public:
 private:
     QString m_udi;
     QString m_parentUdi;
+    QString m_vendor;
+    QString m_product;
     Solid::DeviceInterface::Type m_type;
+
     static QMap<QString,QString> m_driveLetters;
+
 
 
 };

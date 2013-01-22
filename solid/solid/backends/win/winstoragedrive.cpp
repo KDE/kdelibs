@@ -89,11 +89,11 @@ void WinStorageDrive::updateCache()
         m_bus = Solid::StorageDrive::Ide;
     }
 
-    GET_LENGTH_INFORMATION sizeInfo =  WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION,void*>(dev,IOCTL_DISK_GET_LENGTH_INFO,NULL);
+    GET_LENGTH_INFORMATION sizeInfo = WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION>(dev,IOCTL_DISK_GET_LENGTH_INFO);
     m_size = sizeInfo.Length.QuadPart;//TODO: why do I only get a size of 0
 
 
-    STORAGE_HOTPLUG_INFO plugInfo =  WinDeviceManager::getDeviceInfo<STORAGE_HOTPLUG_INFO,void*>(dev,IOCTL_STORAGE_GET_HOTPLUG_INFO,NULL);
+    STORAGE_HOTPLUG_INFO plugInfo = WinDeviceManager::getDeviceInfo<STORAGE_HOTPLUG_INFO>(dev,IOCTL_STORAGE_GET_HOTPLUG_INFO);
     m_isHotplugges = plugInfo.DeviceHotplug != 0;
     m_isRemovable = plugInfo.MediaRemovable != 0;
 
