@@ -228,7 +228,6 @@ set(kfile_STAT_SRCS
   kfile/kfilemetainfowidget.cpp
   kfile/kfilemetapreview.cpp
   kfile/kicondialog.cpp
-  kfile/zoomlevelinfo.cpp
   kfile/kimagefilepreview.cpp
   kfile/kmetaprops.cpp
   kfile/knfotranslator.cpp
