@@ -346,7 +346,7 @@ class KIconDialog::KIconDialogPrivate
     KIconLoader *mpLoader;
     KIconCanvas *mpCanvas;
     int m_contextCount;
-    KIconLoader::Context m_contextMap[ 11 ]; // must match KIcon::Context size, code has assert
+    KIconLoader::Context m_contextMap[ 12 ]; // must match KIcon::Context size, code has assert
 
     bool m_strictIconSize;
     bool m_lockUser;
@@ -468,6 +468,7 @@ void KIconDialog::KIconDialogPrivate::init()
     connect(q, SIGNAL(hidden()), mpCanvas, SLOT(stopLoading()));
 
     static const char* const context_text[] = {
+        I18N_NOOP( "All Icons" ),
         I18N_NOOP( "Actions" ),
         I18N_NOOP( "Animations" ),
         I18N_NOOP( "Applications" ),
@@ -481,6 +482,7 @@ void KIconDialog::KIconDialogPrivate::init()
         I18N_NOOP( "Status" )
     };
     static const KIconLoader::Context context_id[] = {
+        KIconLoader::Any,
         KIconLoader::Action,
         KIconLoader::Animation,
         KIconLoader::Application,
@@ -498,8 +500,8 @@ void KIconDialog::KIconDialogPrivate::init()
     // check all 3 arrays have same sizes
     Q_ASSERT( cnt == sizeof( context_id ) / sizeof( context_id[ 0 ] )
             && cnt == sizeof( m_contextMap ) / sizeof( m_contextMap[ 0 ] ));
-    m_contextCombo->addItem(i18n("All Icons"));
-    m_contextCount++;
+    //m_contextCombo->addItem(i18n("All Icons"));
+    //m_contextCount++;
     for( int i = 0; i < cnt; ++i ) {
         if (mpLoader->hasContext( context_id[ i ] )) {
             m_contextCombo->addItem(i18n(context_text[i]));
@@ -510,7 +512,7 @@ void KIconDialog::KIconDialogPrivate::init()
       m_contextCombo->addItem(i18n("Other Icons"));
 
       if (m_showOtherIcons) {
-        m_contextCombo->setCurrentIndex(m_contextCount);
+          m_contextCombo->setCurrentIndex(m_contextCount);
       }
     }
 
@@ -747,12 +749,13 @@ void KIconDialog::KIconDialogPrivate::_k_slotBrowse()
 
 void KIconDialog::KIconDialogPrivate::_k_slotContext(int id)
 {
-    if (id == m_contextCount) {
-      m_showOtherIcons = true;
+    if (id == m_contextCount) {   // "Other Icons"
+        m_showOtherIcons = true;
     } else {
-      m_showOtherIcons = false;
-      m_context = static_cast<KIconLoader::Context>( m_contextMap[ id ] );
+        m_showOtherIcons = false;
+        m_context = static_cast<KIconLoader::Context>( m_contextMap[ id ] );
     }
+
     showIcons();
 }
 
