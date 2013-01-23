@@ -23,6 +23,7 @@
 #include <kiconloader.h>
 #include <kfiledialog.h>
 #include <kimagefilepreview.h>
+#include <kpushbutton.h>
 #ifndef _WIN32_WCE
 #include <ksvgrenderer.h>
 #endif
@@ -337,7 +338,6 @@ class KIconDialog::KIconDialogPrivate
     bool m_showOtherIcons;
 
     QComboBox *m_contextCombo;
-    QSlider *m_sizeSlider;
     KListWidgetSearchLine *m_searchLine;
 
     QStringList m_fileList;
@@ -419,14 +419,13 @@ void KIconDialog::KIconDialogPrivate::init()
     QSpacerItem* horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     buttonLayout->addItem(horizontalSpacer);
 
-    m_sizeSlider = new QSlider(Qt::Horizontal, main);
-    m_sizeSlider->setAccessibleName(i18n("Icon Size"));
-    m_sizeSlider->setAccessibleDescription(i18nc("Description for icon size slider (accessibility)", "Sets the size in which the icons are displayed."));
-    m_sizeSlider->setPageStep(1);
-    //m_sizeSlider->setRange(ZoomLevelInfo::minimumLevel(), ZoomLevelInfo::maximumLevel());
-    //connect(m_zoomSlider, SIGNAL(valueChanged(int)), this, SIGNAL(zoomLevelChanged(int)));
-    //connect(m_zoomSlider, SIGNAL(sliderMoved(int)), this, SLOT(showZoomSliderToolTip(int)));
-    buttonLayout->addWidget(m_sizeSlider);
+    q->button(KDialog::User1)->setCheckable(true);
+    q->button(KDialog::User1)->setIcon(KIcon("page-zoom"));
+    q->button(KDialog::User1)->setText(QString());
+    q->button(KDialog::User1)->setToolTip(i18n("Zoom icons"));
+    q->button(KDialog::User1)->setAccessibleName(i18n("Zoom Icons"));
+    q->button(KDialog::User1)->setAccessibleDescription(i18nc("Description for the zoom icons button (accessibility)", "Shows all icons in largest available size."));
+    
 
     horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
     buttonLayout->addItem(horizontalSpacer);
@@ -642,7 +641,7 @@ void KIconDialog::setup(KIconLoader::Group group, KIconLoader::Context context,
 
     // We need to remove the Browse button afterwards if custom dir is locked
     if (lockCustomDir) {
-        setButtons( Ok | Cancel);
+        setButtons( User1 | Ok | Cancel);
     }
 
 }
