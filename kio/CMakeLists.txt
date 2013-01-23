@@ -461,7 +461,6 @@ install( FILES
   kfile/kfile.h
   kfile/kfiledialog.h
   kfile/kicondialog.h
-  kfile/zoomlevelinfo.h
   kfile/kimagefilepreview.h
   kfile/kfilemetadataconfigurationwidget.h
   kfile/kfilemetadatawidget.h
