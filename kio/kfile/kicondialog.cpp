@@ -365,11 +365,7 @@ KIconDialog::KIconDialog(QWidget *parent)
 {
     setModal( true );
     setCaption( i18n("Select Icon") );
-    setButtons( Ok | Cancel | Reset );
-
-    // We'll abuse the Reset button as our Browse button
-    setButtonText(Reset, i18n("Browse..."));
-    setButtonIcon(Reset, KIcon("folder-open"));
+    setButtons( User1 | Ok | Cancel | Reset );
 
     setDefaultButton( Ok );
 
@@ -382,11 +378,7 @@ KIconDialog::KIconDialog(KIconLoader *loader, QWidget *parent)
 {
     setModal( true );
     setCaption( i18n("Select Icon") );
-    setButtons( Ok | Cancel | Reset );
-
-    // We'll abuse the Reset button as our Browse button
-    setButtonText(Reset, i18n("Browse..."));
-    setButtonIcon(Reset, KIcon("folder-open"));
+    setButtons( User1 | Ok | Cancel | Reset );
 
     setDefaultButton( Ok );
 
@@ -420,6 +412,8 @@ void KIconDialog::KIconDialogPrivate::init()
     buttonLayout->addWidget(m_contextCombo);
 
     // We'll abuse the Reset button as our Browse button
+    q->setButtonText(Reset, i18n("Browse..."));
+    q->setButtonIcon(Reset, KIcon("folder-open"));
     connect(q, SIGNAL(resetClicked()), q, SLOT(_k_slotBrowse()));
 
     QSpacerItem* horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
