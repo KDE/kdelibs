@@ -17,7 +17,6 @@
 
 #include <kio/kio_export.h>
 
-#include <kcombobox.h>
 #include <klistwidgetsearchline.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
@@ -29,6 +28,7 @@
 #endif
 
 #include <QtGui/QApplication>
+#include <QtGui/QComboBox>
 #include <QtGui/QGroupBox>
 #include <QtGui/QLayout>
 #include <QtGui/QLabel>
