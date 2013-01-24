@@ -69,20 +69,24 @@ WinDevice::WinDevice(const QString &udi) :
     if(m_type == Solid::DeviceInterface::StorageDrive)
     {
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
+        qDebug()<<"StorageDrive"<<dev;
     }
     else
     {
         dev = driveLetter();
+        qDebug()<<udi<<dev;
     }
+    if(!dev.isNull())
+    {
+        STORAGE_PROPERTY_QUERY query;
+        query.PropertyId = StorageDeviceProperty;
+        query.QueryType =  PropertyStandardQuery;
 
-    STORAGE_PROPERTY_QUERY query;
-    query.PropertyId = StorageDeviceProperty;
-    query.QueryType =  PropertyStandardQuery;
-
-    char buff[1024];
-    WinDeviceManager::getDeviceInfo<STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
-    STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
-    m_vendor = QString((char*)buff+ info->ProductIdOffset).trimmed();
+        char buff[1024];
+        WinDeviceManager::getDeviceInfo<STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
+        STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
+        m_vendor = QString((char*)buff+ info->ProductIdOffset).trimmed();
+    }
 
 
 }
@@ -161,16 +165,16 @@ QString WinDevice::description() const
 }
 
 
-bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const
+bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryType) const
 {
-    if (type==Solid::DeviceInterface::GenericInterface) {
+    if (queryType == Solid::DeviceInterface::GenericInterface) {
         return true;
     }
 
     QList<Solid::DeviceInterface::Type> interfaceList;
-    interfaceList<<type;
+    interfaceList<<type();
 
-    switch (type)
+    switch (type())
     {
     case Solid::DeviceInterface::GenericInterface:
         break;
@@ -198,8 +202,8 @@ bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) c
     }
 
     if (interfaceList.size() == 0)
-        qWarning() << "no interface found for type" << type;
-    return interfaceList.contains(type);
+        qWarning() << "no interface found for type" << type();
+    return interfaceList.contains(queryType);
 }
 
 QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &type)
@@ -208,7 +212,6 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         return 0;
     }
     WinInterface *iface = 0;
-
 
     switch (type)
     {
@@ -253,6 +256,9 @@ Solid::DeviceInterface::Type WinDevice::type() const
 
 QString WinDevice::driveLetter() const
 {
+    if(!m_driveLetters.contains(udi()))
+        qWarning()<<udi()<<"is not connected to a drive";
+    qDebug()<<udi()<<m_driveLetters[udi()]<<type();
     return m_driveLetters[udi()];
 }
 
