@@ -380,7 +380,7 @@ if(WIN32)
 
        set(solid_LIB_SRCS ${solid_LIB_SRCS}
        backends/win/winblock.cpp
-       #backends/win/wmicdrom.cpp
+       backends/win/winopticaldrive.cpp
        backends/win/wininterface.cpp
        backends/win/wingenericinterface.cpp
        backends/win/windevice.cpp
