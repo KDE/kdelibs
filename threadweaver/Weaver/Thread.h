@@ -40,7 +40,6 @@ namespace ThreadWeaver {
 
     class Job;
     class WeaverImpl;
-    class ThreadRunHelper;
 
     /** The class Thread is used to represent the worker threads in
         the weaver's inventory. It is not meant to be overloaded. */
