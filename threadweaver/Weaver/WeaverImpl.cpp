@@ -328,7 +328,7 @@ int WeaverImpl::activeThreadCount()
 
 Job* WeaverImpl::takeFirstAvailableJob()
 {
-    QMutexLocker l (m_mutex);
+    QMutexLocker l (m_mutex); Q_UNUSED(l);
     Job *next = 0;
     for (int index = 0; index < m_assignments.size(); ++index)
     {

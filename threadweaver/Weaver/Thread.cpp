@@ -126,8 +126,6 @@ unsigned int Thread::id()
 
 void Thread::run()
 {
-// disabled while testing movetothread...
-//    Q_ASSERT ( thread() != this ); // this is created and owned by the main thread
     debug ( 3, "Thread::run [%u]: running.\n", id() );
 
     ThreadRunHelper helper;

@@ -131,7 +131,6 @@ namespace ThreadWeaver {
             Also, this method is supposed to return immediately, not after the
             abort has completed. It requests the abort, the Job has to act on
             the request. */
-        // FIXME (Mirko) this should be private, I guess?
         virtual void requestAbort () {}
 
         /** The job is about to be added to the weaver's job queue.

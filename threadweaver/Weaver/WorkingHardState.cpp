@@ -70,7 +70,7 @@ Job* WorkingHardState::applyForWork ( Thread *th,  Job* )
                 "blocking it.\n", th->id() );
         weaver()->waitForAvailableJob( th );
         // this is no infinite recursion: the state may have changed
-        // meanwhile, or jobs may have come available:
+        // meanwhile, or jobs may have become available:
         return weaver()->applyForWork( th,  0 );
     }
 }

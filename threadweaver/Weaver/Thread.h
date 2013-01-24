@@ -68,7 +68,6 @@ namespace ThreadWeaver {
 	*/
         void run();
 
-        // FIXME (0.7) provide usleep and sleep, too
 	/** Provide the msleep() method (protected in QThread) to be
 	    available  for executed jobs.
 	    @param msec amount of milliseconds
