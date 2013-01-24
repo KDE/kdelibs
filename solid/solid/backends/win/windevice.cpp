@@ -69,16 +69,15 @@ WinDevice::WinDevice(const QString &udi) :
     if(m_type == Solid::DeviceInterface::StorageDrive)
     {
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
-        qDebug()<<"StorageDrive"<<dev;
     }
     else
     {
         dev = driveLetter();
-        qDebug()<<udi<<dev;
     }
     if(!dev.isNull())
     {
         STORAGE_PROPERTY_QUERY query;
+        ZeroMemory(&query,sizeof(STORAGE_PROPERTY_QUERY));
         query.PropertyId = StorageDeviceProperty;
         query.QueryType =  PropertyStandardQuery;
 
@@ -258,7 +257,6 @@ QString WinDevice::driveLetter() const
 {
     if(!m_driveLetters.contains(udi()))
         qWarning()<<udi()<<"is not connected to a drive";
-    qDebug()<<udi()<<m_driveLetters[udi()]<<type();
     return m_driveLetters[udi()];
 }
 

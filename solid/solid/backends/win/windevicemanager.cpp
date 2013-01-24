@@ -53,6 +53,8 @@ QSet<Solid::DeviceInterface::Type> Solid::Backends::Win::WinDeviceManager::suppo
 
 QStringList WinDeviceManager::allDevices()
 {
+    if(!m_devices.isEmpty())
+        return m_devices;
     QSet<QString> list;
     DWORD word = GetLogicalDrives();
     char c = 'A';
@@ -69,12 +71,12 @@ QStringList WinDeviceManager::allDevices()
 
             if(info.DeviceType == FILE_DEVICE_DISK)
             {
-                udi = QString("/org/kde/solid/win/volume/disk #%1, partition #%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
-                list<<QString("/org/kde/solid/win/storage/disk #%1").arg(info.DeviceNumber);
+                udi = QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+                list<<QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
             }
-            else if(info.DeviceType == FILE_DEVICE_CD_ROM)
+            else if(info.DeviceType == FILE_DEVICE_CD_ROM || info.DeviceType == FILE_DEVICE_DVD)
             {
-                udi = QString("/org/kde/solid/win/storage.cdrom/disk #%1").arg(info.DeviceNumber);
+                udi = QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
             }
             else if(info.DeviceType == 0)
             {
@@ -95,7 +97,8 @@ QStringList WinDeviceManager::allDevices()
         word = (word >> 1);
         ++i;
     }
-    return list.toList();
+    m_devices = list.toList();
+    return m_devices;
 }
 
 
@@ -129,11 +132,11 @@ QStringList WinDeviceManager::devicesFromQuery(const QString &parentUdi, Solid::
 QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi)
 {
     //TODO:: implement
-    //    if (deviceExists(udi)) {
-    return new WinDevice(udi);
-    //    } else {
-    //        return 0;
-    //    }
+    if (allDevices().contains(udi)) {
+        return new WinDevice(udi);
+    } else {
+        return 0;
+    }
 }
 
 

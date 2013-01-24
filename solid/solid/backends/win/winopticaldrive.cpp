@@ -23,7 +23,35 @@
 #include <ntddcdrm.h>
 #include <ntddmmc.h>
 
+
+
 using namespace Solid::Backends::Win;
+
+QMap<ulong,Solid::OpticalDrive::MediumTypes> WinOpticalDrive::MediaProfiles::profileMap = QMap<ulong,Solid::OpticalDrive::MediumTypes>();
+
+
+WinOpticalDrive::MediaProfiles Profiles[] =
+{
+    WinOpticalDrive::MediaProfiles(ProfileCdRecordable,Solid::OpticalDrive::Cdr),
+    WinOpticalDrive::MediaProfiles(ProfileCdRewritable,Solid::OpticalDrive::Cdrw),
+    WinOpticalDrive::MediaProfiles(ProfileDvdRom,Solid::OpticalDrive::Dvd),
+    WinOpticalDrive::MediaProfiles(ProfileDvdRecordable,Solid::OpticalDrive::Dvdr),
+    WinOpticalDrive::MediaProfiles(ProfileDvdRewritable,Solid::OpticalDrive::Dvdrw),
+    WinOpticalDrive::MediaProfiles(ProfileDvdRam,Solid::OpticalDrive::Dvdram),
+    WinOpticalDrive::MediaProfiles(ProfileDvdPlusR,Solid::OpticalDrive::Dvdplusr),
+    WinOpticalDrive::MediaProfiles(ProfileDvdPlusRW,Solid::OpticalDrive::Dvdplusrw),
+    WinOpticalDrive::MediaProfiles(ProfileDvdPlusRDualLayer,Solid::OpticalDrive::Dvdplusdl),
+    WinOpticalDrive::MediaProfiles(ProfileDvdPlusRWDualLayer,Solid::OpticalDrive::Dvdplusdlrw),
+    WinOpticalDrive::MediaProfiles(ProfileBDRom,Solid::OpticalDrive::Bd),
+    WinOpticalDrive::MediaProfiles(ProfileBDRRandomWritable,Solid::OpticalDrive::Bdr),
+    WinOpticalDrive::MediaProfiles(ProfileBDRSequentialWritable,Solid::OpticalDrive::Bdr),
+    WinOpticalDrive::MediaProfiles(ProfileBDRewritable,Solid::OpticalDrive::Bdre),
+    WinOpticalDrive::MediaProfiles(ProfileHDDVDRom,Solid::OpticalDrive::HdDvd),
+    WinOpticalDrive::MediaProfiles(ProfileHDDVDRecordable,Solid::OpticalDrive::HdDvdr),
+    WinOpticalDrive::MediaProfiles(ProfileHDDVDRewritable,Solid::OpticalDrive::HdDvdrw),
+
+};
+
 
 WinOpticalDrive::WinOpticalDrive(WinDevice *device) :
     WinStorageDrive(device)
@@ -62,65 +90,27 @@ WinOpticalDrive::WinOpticalDrive(WinDevice *device) :
     //    }
 
     //thx to http://www.adras.com/Determine-optical-drive-type-and-capabilities.t6826-144-1.html
-    typedef struct _sPROFILES
-    {
-        DWORD dwProfileType;
-        QString pProfileText;
-    } sPROFILES;
 
-#define STR(s) {(DWORD)s, QString(#s)}
 
-    sPROFILES Profiles[] =
-    {
-        STR(ProfileInvalid),
-        STR(ProfileNonRemovableDisk),
-        STR(ProfileRemovableDisk),
-        STR(ProfileMOErasable),
-        STR(ProfileMOWriteOnce),
-        STR(ProfileAS_MO),
-        STR(ProfileCdrom),
-        STR(ProfileCdRecordable),
-        STR(ProfileCdRewritable),
-        STR(ProfileDvdRom),
-        STR(ProfileDvdRecordable),
-        STR(ProfileDvdRam),
-        STR(ProfileDvdRewritable),
-        STR(ProfileDvdRWSequential),
-        STR(ProfileDvdPlusRW),
-        STR(ProfileDDCdrom),
-        STR(ProfileDDCdRecordable),
-        STR(ProfileDDCdRewritable),
-    };
-
-    size_t buffSize = 10024;
+    size_t buffSize = 1024;
     char buffer[buffSize];
     GET_CONFIGURATION_IOCTL_INPUT input;
+    ZeroMemory(&input,sizeof(GET_CONFIGURATION_IOCTL_INPUT));
     input.Feature = FeatureProfileList;
     input.RequestType = SCSI_GET_CONFIGURATION_REQUEST_TYPE_ALL;
 
     WinDeviceManager::getDeviceInfo<GET_CONFIGURATION_IOCTL_INPUT>(m_device->driveLetter(),IOCTL_CDROM_GET_CONFIGURATION,buffer,buffSize,&input);
 
     GET_CONFIGURATION_HEADER *info = (GET_CONFIGURATION_HEADER*)buffer;
-
-    qDebug()<<info->DataLength;
     FEATURE_DATA_PROFILE_LIST* profile = (FEATURE_DATA_PROFILE_LIST*)info->Data;
     FEATURE_DATA_PROFILE_LIST_EX* feature = profile->Profiles;
-    qDebug()<<"Got "<<profile->Header.AdditionalLength/4<<"supported typesw";
     for(int i = 0;i<profile->Header.AdditionalLength/4;++feature,++i)
     {
-        for (DWORD dw = 0; dw < ARRAYSIZE(Profiles); dw++)
+        ulong val =  (feature->ProfileNumber[0] << 8 | feature->ProfileNumber[1] << 0);
+        if(MediaProfiles::profileMap.contains(val))
         {
-            qDebug()<<"FOOO";
-            if ( (FEATURE_PROFILE_TYPE)(Profiles[dw].dwProfileType) ==
-                 (feature->ProfileNumber[0] << 8 |
-                  feature->ProfileNumber[1] << 0))
-            {
-                qDebug()<<"Profile"<<Profiles[dw].pProfileText<< Profiles[dw].dwProfileType
-                       <<(feature->Current?"Yes":"No");
-            }
+            m_supportedTypes |= MediaProfiles::profileMap[val];
         }
-
-
     }
 }
 

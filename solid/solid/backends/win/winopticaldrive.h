@@ -49,6 +49,21 @@ public:
 
     virtual bool eject();
 
+
+    class MediaProfiles//TODO: cleanup
+    {
+    public:
+        MediaProfiles(long profile,Solid::OpticalDrive::MediumTypes type) :
+            profile(profile),
+            type(type)
+        {
+            profileMap.insert(profile,type);
+        }
+        ulong profile;
+        Solid::OpticalDrive::MediumTypes type;
+        static QMap<ulong,Solid::OpticalDrive::MediumTypes> profileMap;
+    } ;
+
 signals:
     void ejectPressed(const QString &udi);
 
@@ -56,6 +71,9 @@ signals:
 
 private:
     Solid::OpticalDrive::MediumTypes m_supportedTypes;
+
+
+
 };
 }
 }
