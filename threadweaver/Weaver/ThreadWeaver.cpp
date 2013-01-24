@@ -39,7 +39,7 @@ class Weaver::Private
 {
 public:
     Private ()
-        : weaverinterface ( 0)
+        : weaverinterface(0)
     {}
 
     WeaverInterface* weaverinterface;
@@ -85,14 +85,11 @@ Weaver* Weaver::instance()
     in the lifetime of the application. */
     static Weaver* s_instance;
 
+    static QMutex mutex;
+    QMutexLocker l(&mutex);
     if ( s_instance == 0 )
-    {   // we try to avoid the expensive mutex-lock operation if possible:
-        static QMutex mutex;
-        QMutexLocker l(&mutex);
-        if ( s_instance == 0 )
-        {
-            s_instance = new Weaver();
-        }
+    {
+        s_instance = new Weaver();
     }
     return s_instance;
 }
