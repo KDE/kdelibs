@@ -185,8 +185,6 @@ target_link_libraries(test_signal ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${QT_
 ########### next target ###############
 
 set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
-
-add_definitions(-DTESTSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}\\"")
 add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 add_test(kconfig-kconfigcompiler kconfigcompiler_test)
 

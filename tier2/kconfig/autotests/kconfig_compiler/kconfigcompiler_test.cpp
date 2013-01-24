@@ -100,7 +100,27 @@ void KConfigCompiler_Test::testBaselineComparison()
 {
     QFETCH(QString, testName);
 
-    performCompare(testName);
+    QFile file(QFINDTESTDATA(testName));
+    QFile fileRef(QFINDTESTDATA(testName + QLatin1String(".ref")));
+
+    if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open" << file.fileName();
+        QFAIL("Can't open file for comparison");
+    }
+    if (!fileRef.open(QIODevice::ReadOnly)) {
+        qWarning() << "Failed to open" << fileRef.fileName();
+        QFAIL("Can't open file for comparison");
+    }
+    QString content = file.readAll();
+    QString contentRef = fileRef.readAll();
+
+    if (content != contentRef)  {
+        appendFileDiff(fileRef.fileName(), file.fileName());
+    }
+    // use split('\n') to avoid
+    // the whole output shown inline
+    QCOMPARE(content.split('\n'), contentRef.split('\n'));
+    QVERIFY(content == contentRef);
 }
 
 void KConfigCompiler_Test::testRunning_data()
@@ -116,8 +136,10 @@ void KConfigCompiler_Test::testRunning()
 {
     QFETCH(QString, testName);
 
+    QString program = QFINDTESTDATA(testName);
+    QVERIFY2(QFile::exists(program), qPrintable(program + QLatin1String(" must exist!")));
     QProcess process;
-    process.start(QDir::currentPath() + QLatin1String("/") + testName, QIODevice::ReadOnly);
+    process.start(program, QIODevice::ReadOnly);
     if (process.waitForStarted()) {
         QVERIFY(process.waitForFinished());
     }
@@ -125,36 +147,6 @@ void KConfigCompiler_Test::testRunning()
     QCOMPARE(process.exitCode(), 0);
 }
 
-void KConfigCompiler_Test::performCompare(const QString &fileName, bool fail)
-{
-	QFile file(fileName);
-	QFile fileRef(QString::fromLatin1(TESTSRCDIR) + fileName + QString::fromLatin1(".ref"));
-
-	if ( file.open(QIODevice::ReadOnly) && fileRef.open(QIODevice::ReadOnly) )
-	{
-		QString content = file.readAll();
-		QString contentRef = fileRef.readAll();
-
-		if (!fail)
-		{
-			if ( content != contentRef )
-			{
-				appendFileDiff( fileRef.fileName(), file.fileName() );
-			}
-			// use split('\n') to avoid
-			// the whole output shown inline
-			QCOMPARE(content.split('\n'), contentRef.split('\n'));
-			QVERIFY( content == contentRef );
-		}
-		else
-                    QFAIL( "not implemented" ); // missing in qttestlib?
-                // wrong? QEXPECT_FAIL( "", content, contentRef );
-	}
-	else
-	{
-		QSKIP("Can't open file for comparison");
-	}
-}
 
 void KConfigCompiler_Test::appendFileDiff(const QString &oldFile, const QString &newFile)
 {

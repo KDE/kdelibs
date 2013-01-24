@@ -32,7 +32,6 @@ private Q_SLOTS:
     void testRunning_data();
     void testRunning();
 private:
-	void performCompare(const QString &fileName, bool fail=false);
     void appendFileDiff(const QString &oldFile, const QString &newFile);
 
     QString m_diffExe;
