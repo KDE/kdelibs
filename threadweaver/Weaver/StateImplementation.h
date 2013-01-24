@@ -39,6 +39,7 @@ namespace ThreadWeaver {
 
     class WeaverImpl;
 
+    /** @brief Base class for all ThreadWeaver states. */
     class StateImplementation : public State
     {
     public:
