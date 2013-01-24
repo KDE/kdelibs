@@ -1,5 +1,5 @@
 /*
-    Copyright 2012 Patrick von Reth <vonreth@kde.org>
+    Copyright 2012-2013 Patrick von Reth <vonreth@kde.org>
     
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -31,7 +31,7 @@ WinBlock::WinBlock(WinDevice *device):
 {
     if(m_device->type() == Solid::DeviceInterface::StorageVolume)
     {
-        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER>(m_device->driveLetter(),IOCTL_STORAGE_GET_DEVICE_NUMBER);
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(m_device->driveLetter(),IOCTL_STORAGE_GET_DEVICE_NUMBER);
         m_major = info.DeviceNumber;
         m_minor = info.PartitionNumber;
     }

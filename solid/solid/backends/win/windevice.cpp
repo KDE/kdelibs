@@ -1,5 +1,5 @@
 /*
-    Copyright 2012 Patrick von Reth <vonreth@kde.org>
+    Copyright 2012-2013 Patrick von Reth <vonreth@kde.org>
     
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -26,6 +26,7 @@
 #include "winblock.h"
 #include "winstorageaccess.h"
 #include "winstoragedrive.h"
+#include "winopticaldrive.h"
 
 using namespace Solid::Backends::Win;
 
@@ -67,7 +68,7 @@ WinDevice::WinDevice(const QString &udi) :
     QString dev;
     if(m_type == Solid::DeviceInterface::StorageDrive)
     {
-          dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
+        dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
     }
     else
     {
@@ -79,7 +80,7 @@ WinDevice::WinDevice(const QString &udi) :
     query.QueryType =  PropertyStandardQuery;
 
     char buff[1024];
-    WinDeviceManager::getDeviceInfo(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
+    WinDeviceManager::getDeviceInfo<STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
     STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
     m_vendor = QString((char*)buff+ info->ProductIdOffset).trimmed();
 
@@ -121,17 +122,17 @@ QString WinDevice::icon() const
     QString icon;
     switch(type()){
 
-//    case Solid::DeviceInterface::OpticalDisc:
-//    {
-////        WmiDevice dev(udi());
-////        OpticalDisc disk(&dev);
-////        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
-////            propertyName = "media-optical-audio";
-////        else
-////            propertyName = "drive-optical";
+    //    case Solid::DeviceInterface::OpticalDisc:
+    //    {
+    ////        WmiDevice dev(udi());
+    ////        OpticalDisc disk(&dev);
+    ////        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
+    ////            propertyName = "media-optical-audio";
+    ////        else
+    ////            propertyName = "drive-optical";
 
-////        break;
-//    }
+    ////        break;
+    //    }
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
     {
@@ -223,9 +224,9 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::StorageDrive:
         iface = new WinStorageDrive(this);
         break;
-        //      case Solid::DeviceInterface::OpticalDrive:
-        //          iface = new Cdrom(this);
-        //          break;
+    case Solid::DeviceInterface::OpticalDrive:
+        iface = new WinOpticalDrive(this);
+        break;
     case Solid::DeviceInterface::StorageVolume:
         iface = new WinStorageVolume(this);
         break;
