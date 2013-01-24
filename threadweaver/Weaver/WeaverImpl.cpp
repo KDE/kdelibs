@@ -52,7 +52,7 @@ using namespace ThreadWeaver;
 WeaverImpl::WeaverImpl( QObject* parent )
     : WeaverInterface(parent)
     , m_active(0)
-    , m_inventoryMax( 4 )
+    , m_inventoryMax( qMax(4, 2 * QThread::idealThreadCount() ) )
     , m_mutex ( new QMutex( QMutex::Recursive ) )
     , m_finishMutex( new QMutex )
     , m_jobAvailableMutex ( new QMutex )
@@ -333,7 +333,7 @@ Job* WeaverImpl::takeFirstAvailableJob()
     for (int index = 0; index < m_assignments.size(); ++index)
     {
         if ( m_assignments.at(index)->canBeExecuted() )
-	{
+        {
             next = m_assignments.at(index);
             m_assignments.removeAt (index);
             break;
