@@ -31,22 +31,18 @@
 #include <windows.h>
 #include <winioctl.h>
 
-
-
-inline QString qGetLastError()
+inline QString qGetLastError(ulong errorNummber = GetLastError())
 {
     LPVOID error = NULL;
-
     size_t len = FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
                                FORMAT_MESSAGE_FROM_SYSTEM |
                                FORMAT_MESSAGE_IGNORE_INSERTS,
                                NULL,
-                               GetLastError(),
+                               errorNummber,
                                MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                                (LPWSTR) &error ,
                                0, NULL );
-
-    QString out = QString::fromWCharArray((wchar_t*)error,len).trimmed();
+    QString out = QString::fromWCharArray((wchar_t*)error,len).trimmed().append(" %1").arg(errorNummber);
     LocalFree(error);
     return out;
 }
@@ -96,24 +92,72 @@ public:
 
 
 private:
+    QStringList m_devices;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 
     template< class INFO, class QUERY>
     static void getDeviceInfoPrivate(const QString &devName, int code,INFO *info,size_t size, QUERY *query = NULL)
     {
-        wchar_t buff[MAX_PATH];
+        static QMutex mutex;
+        QMutexLocker lock(&mutex);
+        Q_ASSERT(!devName.isNull());
+        wchar_t deviceNameBuffer[MAX_PATH];
         QString dev = QString("\\\\.\\%1").arg(devName);
-        buff[dev.toWCharArray(buff)] = 0;
+        deviceNameBuffer[dev.toWCharArray(deviceNameBuffer)] = 0;
         //    qDebug()<<"querying "<<dev;
-        HANDLE h = ::CreateFile(buff, 0, FILE_SHARE_WRITE|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+        HANDLE handle = ::CreateFile(deviceNameBuffer, 0, FILE_SHARE_WRITE|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+        if(handle == INVALID_HANDLE_VALUE)
+        {
+            qWarning()<<"Invalid Handle"<<devName<<"reason:"<<qGetLastError()<<" is probaply a subst path or more seriously there is  bug!";
+            return;
+        }
+
         DWORD bytesReturned =  0;
 
-        if(::DeviceIoControl(h, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) != TRUE)
+        if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) != TRUE)
         {
-            //            qFatal("Failed to query %s reason: %s",qPrintable(dev),qPrintable(qGetLastError()));
-            qWarning()<<"Failed to query"<<dev<<"reason:"<<qGetLastError();
+            //TODO:cleanup
+            ulong err = GetLastError();
+            if(err == ERROR_ACCESS_DENIED)//we are probably a cd drive and have to get read acces
+            {
+                ::CloseHandle(handle);
+                handle = ::CreateFile(deviceNameBuffer, GENERIC_READ, FILE_SHARE_WRITE|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+                if(handle == INVALID_HANDLE_VALUE)
+                {
+
+                    err = GetLastError();
+                    if(err == ERROR_ACCESS_DENIED)
+                    {
+                        //we would need admin rights
+//                        DebugBreak();
+                    }
+                    else
+                    {
+                        qWarning()<<"Invalid Handle"<<devName<<"reason:"<<qGetLastError()<<" this should not happen.";
+                    }
+                    return;
+                }
+                if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) == TRUE)
+                {
+                    ::CloseHandle(handle);
+                    return;
+                }
+                err = GetLastError();
+                if(err == ERROR_NOT_READY)
+                {
+                    //the drive is a cd drive with no disk
+                    ::CloseHandle(handle);
+                    return;
+                }
+            }
+#if 0
+            ::CloseHandle(handle);
+            qFatal("Failed to query %s reason: %s",qPrintable(dev),qPrintable(qGetLastError(err)));
+#else
+            qWarning()<<"Failed to query"<<dev<<"reason:"<<qGetLastError(err);
+#endif
         }
-        ::CloseHandle(h);
+        ::CloseHandle(handle);
     }
 
 };

@@ -53,7 +53,7 @@ WinBlock::~WinBlock()
 
 int WinBlock::deviceMajor() const
 {
-    Q_ASSERT(m_major == -1);
+    Q_ASSERT(m_major != -1);
     return m_major;
 }
 

@@ -69,8 +69,15 @@ void WinStorageDrive::updateCache()
     storageProperty.PropertyId = StorageAdapterProperty;
     storageProperty.QueryType = PropertyStandardQuery;
 
-    QString dev = QString("PhysicalDrive%1").arg(deviceMajor());
-
+    QString dev;
+    if(m_device->type() == Solid::DeviceInterface::OpticalDrive)
+    {
+        dev =  m_device->driveLetter();
+    }
+    else
+    {
+        dev = QString("PhysicalDrive%1").arg(deviceMajor());
+    }
     STORAGE_ADAPTER_DESCRIPTOR  busInfo = WinDeviceManager::getDeviceInfo<STORAGE_ADAPTER_DESCRIPTOR>(dev,IOCTL_STORAGE_QUERY_PROPERTY,&storageProperty);
 
     switch(busInfo.BusType)
@@ -89,8 +96,9 @@ void WinStorageDrive::updateCache()
         m_bus = Solid::StorageDrive::Ide;
     }
 
+    //TODO: this needs admin rights for a PhysicalDrive
     GET_LENGTH_INFORMATION sizeInfo = WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION,void*>(dev,IOCTL_DISK_GET_LENGTH_INFO);
-    m_size = sizeInfo.Length.QuadPart;//TODO: why do I only get a size of 0
+    m_size = sizeInfo.Length.QuadPart;
 
 
     STORAGE_HOTPLUG_INFO plugInfo = WinDeviceManager::getDeviceInfo<STORAGE_HOTPLUG_INFO,void*>(dev,IOCTL_STORAGE_GET_HOTPLUG_INFO);
