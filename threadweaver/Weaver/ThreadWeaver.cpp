@@ -39,26 +39,26 @@ class Weaver::Private
 {
 public:
     Private ()
-        : weaverinterface(0)
+        : implementation(0)
     {}
 
-    WeaverInterface* weaverinterface;
+    WeaverInterface* implementation;
 };
 
 Weaver::Weaver ( QObject* parent )
     : WeaverInterface( parent )
     , d (new Private)
 {
-    d->weaverinterface = makeWeaverImpl();
-    connect ( d->weaverinterface, SIGNAL (finished()), SIGNAL (finished()) );
-    connect ( d->weaverinterface, SIGNAL (suspended()), SIGNAL (suspended()) );
-    connect ( d->weaverinterface, SIGNAL (jobDone(ThreadWeaver::Job*)),
+    d->implementation = makeWeaverImpl();
+    connect ( d->implementation, SIGNAL (finished()), SIGNAL (finished()) );
+    connect ( d->implementation, SIGNAL (suspended()), SIGNAL (suspended()) );
+    connect ( d->implementation, SIGNAL (jobDone(ThreadWeaver::Job*)),
               SIGNAL (jobDone(ThreadWeaver::Job*)) );
 }
 
 Weaver::~Weaver()
 {
-    delete d->weaverinterface;
+    delete d->implementation;
     delete d;
 }
 
@@ -69,12 +69,12 @@ WeaverInterface* Weaver::makeWeaverImpl()
 
 const State& Weaver::state() const
 {
-    return d->weaverinterface->state();
+    return d->implementation->state();
 }
 
 void Weaver::registerObserver ( WeaverObserver *ext )
 {
-    d->weaverinterface->registerObserver ( ext );
+    d->implementation->registerObserver ( ext );
 }
 
 Weaver* Weaver::instance()
@@ -96,67 +96,67 @@ Weaver* Weaver::instance()
 
 void Weaver::enqueue (Job* j)
 {
-    d->weaverinterface->enqueue ( j );
+    d->implementation->enqueue ( j );
 }
 
 bool Weaver::dequeue (Job* j)
 {
-    return d->weaverinterface->dequeue ( j );
+    return d->implementation->dequeue ( j );
 }
 
 void Weaver::dequeue ()
 {
-    return d->weaverinterface->dequeue();
+    return d->implementation->dequeue();
 }
 
 void Weaver::finish ()
 {
-    return d->weaverinterface->finish ();
+    return d->implementation->finish ();
 }
 
 void Weaver::suspend ()
 {
-    return d->weaverinterface->suspend();
+    return d->implementation->suspend();
 }
 
 void Weaver::resume ()
 {
-    return d->weaverinterface->resume();
+    return d->implementation->resume();
 }
 
 bool Weaver::isEmpty() const
 {
-    return d->weaverinterface->isEmpty();
+    return d->implementation->isEmpty();
 }
 
 bool Weaver::isIdle() const
 {
-    return d->weaverinterface->isIdle();
+    return d->implementation->isIdle();
 }
 
 int Weaver::queueLength() const
 {
-    return d->weaverinterface->queueLength();
+    return d->implementation->queueLength();
 }
 
 void Weaver::setMaximumNumberOfThreads( int cap )
 {
-    d->weaverinterface->setMaximumNumberOfThreads( cap );
+    d->implementation->setMaximumNumberOfThreads( cap );
 }
 
 int Weaver::currentNumberOfThreads() const
 {
-    return d->weaverinterface->currentNumberOfThreads();
+    return d->implementation->currentNumberOfThreads();
 }
 
 int Weaver::maximumNumberOfThreads() const
 {
-    return d->weaverinterface->maximumNumberOfThreads();
+    return d->implementation->maximumNumberOfThreads();
 }
 
 void Weaver::requestAbort()
 {
-    d->weaverinterface->requestAbort();
+    d->implementation->requestAbort();
 }
 
 #include "ThreadWeaver.moc"
