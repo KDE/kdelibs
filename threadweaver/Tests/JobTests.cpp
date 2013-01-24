@@ -235,7 +235,7 @@ void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
 //     the execution time. Anyway, it will fail if the jobs are not executed
 //     in the right order, and the order is randomized.
 void JobTests::MassiveJobSequenceTest() {
-    const int NoOfChars = 1024*1024;
+    const int NoOfChars = 1024;
     const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const int SizeOfAlphabet = strlen( Alphabet );
     AppendCharacterAndVerifyJob jobs[NoOfChars];
