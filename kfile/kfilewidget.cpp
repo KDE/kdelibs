@@ -2593,12 +2593,16 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
         }
         else						// not special "kfiledialog" URL
         {
-            // We can use startDir as the starting directory if either:
-            // (a) it has a directory part, or
-            // (b) there is a scheme (protocol), and it is not just "file".
+            // "foo.png" only gives us a file name, the default start dir will be used.
+            // "file:foo.png" (from KHTML/webkit, due to fromPath()) means the same
+            //   (and is the reason why we don't just use QUrl::isRelative()).
+
+            // In all other cases (startDir contains a directory path, or has no
+            // fileName for us anyway, such as smb://), startDir is indeed a dir url.
+
             if (!startDir.directory().isEmpty() ||
-                (!startDir.scheme().isEmpty() && !startDir.isLocalFile()))
-            {						// can use start directory
+                startDir.fileName().isEmpty()) {
+                // can use start directory
                 ret = startDir;				// will be checked by stat later
                 // If we won't be able to list it (e.g. http), then use default
                 if ( !KProtocolManager::supportsListing( ret ) ) {
