@@ -79,7 +79,7 @@ add_library(proxymodeltestsuite SHARED
 generate_export_header(proxymodeltestsuite)
 
 target_link_libraries(proxymodeltestsuite
-   ${QT_QTGUI_LIBRARY}
+   Qt5::Widgets
    ${QT_QTTEST_LIBRARY}
    ${Grantlee_CORE_LIBRARIES}
 )

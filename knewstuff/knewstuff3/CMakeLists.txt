@@ -62,7 +62,7 @@ target_link_libraries(knewstuff3
     ki18n
 )
 
-target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore ${QT_QTGUI_LIBRARY})
+target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore Qt5::Widgets)
 
 generate_export_header(knewstuff3)
 

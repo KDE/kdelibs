@@ -25,7 +25,7 @@ generate_export_header(kwidgets)
 
 target_link_libraries(kwidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}
-  ${QT_QTGUI_LIBRARY}
+  Qt5::Widgets
   ${QT_QTSVG_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${KDE4_KDECORE_LIBS} # KGlobal, KLocale, KLocalizedString

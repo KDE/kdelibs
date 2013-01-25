@@ -51,7 +51,7 @@ endif (X11_FOUND)
 
 add_library(kidletime ${kidletime_LIB_SRCS})
 generate_export_header(kidletime)
-target_link_libraries(kidletime LINK_PUBLIC ${QT_QTGUI_LIBRARY} ${kidletime_LIBS} )
+target_link_libraries(kidletime LINK_PUBLIC Qt5::Widgets ${kidletime_LIBS} )
 
 set_target_properties(kidletime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
                                             SOVERSION ${KIDLETIME_SOVERSION})

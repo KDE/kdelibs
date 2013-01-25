@@ -13,7 +13,7 @@ set(libkconfiggui_SRCS
 add_library(kconfiggui ${libkconfiggui_SRCS})
 generate_export_header(kconfiggui)
 
-target_link_libraries(kconfiggui ${QT_QTGUI_LIBRARY} kconfigcore)
+target_link_libraries(kconfiggui Qt5::Widgets kconfigcore)
 set_target_properties(kconfiggui PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                             SOVERSION ${ECM_SOVERSION}
 )

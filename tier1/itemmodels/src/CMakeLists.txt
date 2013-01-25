@@ -14,7 +14,7 @@ set(itemmodels_SRCS
 add_library(itemmodels ${itemmodels_SRCS})
 generate_export_header(itemmodels)
 
-target_link_libraries(itemmodels ${QT_QTGUI_LIBRARY})
+target_link_libraries(itemmodels Qt5::Widgets)
 
 set_target_properties(itemmodels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
                                             SOVERSION ${ITEMMODELS_SOVERSION}

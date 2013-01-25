@@ -14,7 +14,7 @@ add_executable( parseucd ${SOURCE_FILES} )
 
 target_link_libraries( parseucd
                        ${QT_QTCORE_LIBRARIES}
-                       ${QT_QTGUI_LIBRARIES}
+                       Qt5::Widgets
                        ${QT_QTMAIN_LIBRARY}
                        ${X11_LIBRARIES}
                      )

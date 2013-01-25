@@ -26,5 +26,5 @@ kcoreaddons_examples(
 ########### kdirwatchtest_gui ###############
 
 add_executable(kdirwatchtest_gui kdirwatchtest_gui.cpp)
-target_link_libraries(kdirwatchtest_gui ${QT_QTGUI_LIBRARY} ${QT_QTMAIN_LIBRARY} kcoreaddons)
+target_link_libraries(kdirwatchtest_gui Qt5::Widgets ${QT_QTMAIN_LIBRARY} kcoreaddons)
 

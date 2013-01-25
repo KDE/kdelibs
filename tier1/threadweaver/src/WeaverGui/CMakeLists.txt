@@ -11,7 +11,7 @@ include_directories(${QT_INCLUDES}
 add_library(ThreadWeaverGui ${ThreadWeaverGui_LIB_SRCS})
 generate_export_header(ThreadWeaverGui)
 
-target_link_libraries(ThreadWeaverGui threadweaver ${QT_QTGUI_LIBRARY})
+target_link_libraries(ThreadWeaverGui threadweaver Qt5::Widgets)
 set_target_properties(ThreadWeaverGui PROPERTIES VERSION   ${THREADWEAVER_VERSION_STRING}
                                                  SOVERSION ${THREADWEAVER_SOVERSION})
 

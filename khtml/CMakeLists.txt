@@ -584,7 +584,7 @@ target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${KDE4_PHONON_LIBS} kjs karchive
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()
-target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecore ${QT_QTGUI_LIBRARY})
+target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecore Qt5::Widgets)
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}

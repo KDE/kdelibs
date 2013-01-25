@@ -148,12 +148,12 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
         backends/polkit-1/Polkit1Backend.cpp
     )
 
-    set(KAUTH_BACKEND_LIBS ${POLKITQT-1_CORE_LIBRARY} ${QT_QTDBUS_LIBRARY} ${QT_QTGUI_LIBRARY})
+    set(KAUTH_BACKEND_LIBS ${POLKITQT-1_CORE_LIBRARY} ${QT_QTDBUS_LIBRARY} Qt5::Widgets)
 
     find_package(X11)
     if (X11_FOUND)
         # QtGui as well
-        set(KAUTH_BACKEND_LIBS ${KAUTH_BACKEND_LIBS} ${QT_QTGUI_LIBRARY})
+        set(KAUTH_BACKEND_LIBS ${KAUTH_BACKEND_LIBS} Qt5::Widgets)
      endif (X11_FOUND)
 
     # POLKITQT-1_POLICY_FILES_INSTALL_DIR has an absolute pathname, fix that.

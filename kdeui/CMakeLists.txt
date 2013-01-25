@@ -403,7 +403,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore kauth kguiaddons kwidgets kwidgetsaddons ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} ${QT_QTGUI_LIBRARY}
+target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore kauth kguiaddons kwidgets kwidgetsaddons ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY} ${kdeqt5staging_LIBRARY} kconfiggui)
 
 if(NOT WINCE)
@@ -441,7 +441,7 @@ if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore kconfiggui ${QT_QTGUI_LIBRARY})
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore kconfiggui Qt5::Widgets)
 
 if(NOT WINCE)
 target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${QT_QTSVG_LIBRARY})
