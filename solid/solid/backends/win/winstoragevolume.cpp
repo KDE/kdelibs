@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2013 Patrick von Reth <vonreth@kde.org>
+    Copyright 2013 Patrick von Reth <vonreth@kde.org>
     
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -29,7 +29,8 @@
 using namespace Solid::Backends::Win;
 
 WinStorageVolume::WinStorageVolume(WinDevice *device)
-    : WinBlock(device)
+    : WinBlock(device),
+      m_size(0)
 {
     updateCache();
 }
@@ -61,15 +62,18 @@ void WinStorageVolume::updateCache()
     dLetter[dLetterSize] = (wchar_t)'\\';
     dLetter[dLetterSize+1] = 0;
 
-    GetVolumeInformation(dLetter,label,MAX_PATH,&serial,NULL,&flags,fs,MAX_PATH);
-    m_label = QString::fromWCharArray(label);
-    m_fs = QString::fromWCharArray(fs);
-    m_uuid = QString::number(serial);
-
+    if(GetVolumeInformation(dLetter,label,MAX_PATH,&serial,NULL,&flags,fs,MAX_PATH) == TRUE)
+    {
+        m_label = QString::fromWCharArray(label);
+        m_fs = QString::fromWCharArray(fs);
+        m_uuid = QString::number(serial);
+    }
 
     ULARGE_INTEGER size;
-    GetDiskFreeSpaceEx(dLetter,NULL,&size,NULL);
-    m_size = size.QuadPart;
+    if(GetDiskFreeSpaceEx(dLetter,NULL,&size,NULL) == TRUE)
+    {
+        m_size = size.QuadPart;
+    }
 }
 
 

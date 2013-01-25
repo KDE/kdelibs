@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2013 Patrick von Reth <vonreth@kde.org>
+    Copyright 2013 Patrick von Reth <vonreth@kde.org>
     
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -67,16 +67,24 @@ QStringList WinDeviceManager::allDevices()
 
             STORAGE_DEVICE_NUMBER info = getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
 
-            QString udi;
+
 
             if(info.DeviceType == FILE_DEVICE_DISK)
             {
-                udi = QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+                QString udi = QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+                list<<udi;
+                WinDevice::m_driveLetters[udi] = drive;
                 list<<QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
             }
             else if(info.DeviceType == FILE_DEVICE_CD_ROM || info.DeviceType == FILE_DEVICE_DVD)
             {
-                udi = QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
+                QString udi = QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
+                list<<udi;
+                WinDevice::m_driveLetters[udi] = drive;
+
+                udi = QString("/org/kde/solid/win/volume.disc/disk#%1").arg(info.DeviceNumber);
+                list<<udi;
+                WinDevice::m_driveLetters[udi] = drive;
             }
             else if(info.DeviceType == 0)
             {
@@ -87,12 +95,6 @@ QStringList WinDeviceManager::allDevices()
                 qDebug()<<"unknown device"<<drive<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
             }
 
-
-            if(!udi.isNull())
-            {
-                list<<udi;
-                WinDevice::m_driveLetters[udi] = drive;
-            }
         }
         word = (word >> 1);
         ++i;

@@ -24,6 +24,9 @@
 
 #include "winstoragedrive.h"
 
+#include <ntddcdrm.h>
+#include <ntddmmc.h>
+
 
 namespace Solid
 {
@@ -49,21 +52,6 @@ public:
 
     virtual bool eject();
 
-
-    class MediaProfiles//TODO: cleanup
-    {
-    public:
-        MediaProfiles(long profile,Solid::OpticalDrive::MediumTypes type) :
-            profile(profile),
-            type(type)
-        {
-            profileMap.insert(profile,type);
-        }
-        ulong profile;
-        Solid::OpticalDrive::MediumTypes type;
-        static QMap<ulong,Solid::OpticalDrive::MediumTypes> profileMap;
-    } ;
-
 signals:
     void ejectPressed(const QString &udi);
 
@@ -72,9 +60,28 @@ signals:
 private:
     Solid::OpticalDrive::MediumTypes m_supportedTypes;
 
-
-
 };
+
+class MediaProfiles//TODO: cleanup
+{
+public:
+    MediaProfiles();
+    ulong profile;
+    Solid::OpticalDrive::MediumTypes type;
+    QString name;
+    bool active;
+
+    static QMap<ulong, MediaProfiles> profiles(const QString &drive);
+
+private:
+
+    MediaProfiles(ulong profile,Solid::OpticalDrive::MediumTypes type,QString name = "");
+
+    MediaProfiles(FEATURE_DATA_PROFILE_LIST_EX* feature);
+    bool isNull();
+
+    static const MediaProfiles getProfile(ulong id);
+} ;
 }
 }
 }
