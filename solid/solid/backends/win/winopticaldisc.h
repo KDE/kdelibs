@@ -44,42 +44,14 @@ public:
 
     virtual Solid::OpticalDisc::ContentTypes availableContent() const;
 
-    /**
-     * Retrieves the disc type (cdr, cdrw...).
-     *
-     * @return the disc type
-     */
     virtual Solid::OpticalDisc::DiscType discType() const;
 
-    /**
-     * Indicates if it's possible to write additional data to the disc.
-     *
-     * @return true if the disc is appendable, false otherwise
-     */
     virtual bool isAppendable() const;
 
-    /**
-     * Indicates if the disc is blank.
-     *
-     * @return true if the disc is blank, false otherwise
-     */
     virtual bool isBlank() const;
 
-    /**
-     * Indicates if the disc is rewritable.
-     *
-     * A disc is rewritable if you can write on it several times.
-     *
-     * @return true if the disc is rewritable, false otherwise
-     */
     virtual bool isRewritable() const;
 
-    /**
-     * Retrieves the disc capacity (that is the maximum size of a
-     * volume could have on this disc).
-     *
-     * @return the capacity of the disc in bytes
-     */
     virtual qulonglong capacity() const;
 
 private:

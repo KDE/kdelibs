@@ -82,7 +82,7 @@ QStringList WinDeviceManager::allDevices()
                 list<<udi;
                 WinDevice::m_driveLetters[udi] = drive;
 
-                udi = QString("/org/kde/solid/win/volume.disc/disk#%1").arg(info.DeviceNumber);
+                udi = QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
                 list<<udi;
                 WinDevice::m_driveLetters[udi] = drive;
             }
