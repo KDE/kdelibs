@@ -1,17 +1,5 @@
 project(sonnetcore)
 
-include_directories(
-  ${QT_INCLUDES}
-  ${CMAKE_SOURCE_DIR}/kdecore/localization # TODO port to i18n framework
-  ${CMAKE_BINARY_DIR}/kdecore
-
-  ${KCoreAddons_INCLUDE_DIRS}
-  ${KConfig_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_BINARY_DIR}
-)
-
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
-
 set(sonnetcore_SRCS
    loader.cpp
    client.cpp

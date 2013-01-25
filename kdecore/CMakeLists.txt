@@ -18,42 +18,23 @@ configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/network )
 
 # Configure checks for date/
 include(date/ConfigureChecks.cmake)
 configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/date )
 
 # Configure checks for io/
 include(io/ConfigureChecks.cmake)
 configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
 configure_file(io/config-kmountpoint.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kmountpoint.h)
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/io )
 
 # Configure checks for kernel/
 include(kernel/ConfigureChecks.cmake)
 configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/kernel )
 
 # Configure checks for localization
 include(localization/ConfigureChecks.cmake)
 configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/localization/config-localization.h)
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/localization )
-
-include_directories( ${KDE4_KDECORE_INCLUDES} )
-include_directories( ${ZLIB_INCLUDE_DIR} )
-include_directories( ${QT_INCLUDES} )
-include_directories( ${KCodecs_INCLUDE_DIRS} )
-include_directories( ${KCoreAddons_INCLUDE_DIRS} )
-include_directories( ${CMAKE_BINARY_DIR}/staging/kservice/src
-                     ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
-                     ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
-)
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-include_directories( ${CMAKE_SOURCE_DIR}/staging/ki18n/src )
-include_directories( ${CMAKE_BINARY_DIR}/staging/ki18n/src )
 
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
@@ -75,7 +56,6 @@ if(KDE4_BUILD_TESTS)
 endif(KDE4_BUILD_TESTS)
 
 # compile Gettext support if available
-include_directories(${LIBINTL_INCLUDE_DIR})
 set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${LIBINTL_LIBRARIES})
 
 if (HAVE_RESOLV_LIBRARY)
@@ -198,6 +178,34 @@ endif()
 
 kde4_add_library(kdecore ${LIBRARY_TYPE} ${kdecore_LIB_SRCS})
 generate_export_header(kdecore)
+
+target_include_directories(kdecore PRIVATE
+  ${ZLIB_INCLUDE_DIR}
+  ${CMAKE_CURRENT_BINARY_DIR}/network
+  ${CMAKE_CURRENT_BINARY_DIR}/date
+  ${CMAKE_CURRENT_BINARY_DIR}/io
+  ${CMAKE_CURRENT_BINARY_DIR}/kernel
+  ${CMAKE_CURRENT_BINARY_DIR}/localization
+  $<TARGET_PROPERTY:Qt5::PrintSupport,INTERFACE_INCLUDE_DIRECTORIES>
+  ${LIBINTL_INCLUDE_DIR})
+
+set(kdecore_INCLUDES
+                          ${CMAKE_CURRENT_BINARY_DIR}/..
+                          ${CMAKE_CURRENT_BINARY_DIR}
+                          ${CMAKE_CURRENT_SOURCE_DIR}/compression
+                          ${CMAKE_CURRENT_SOURCE_DIR}/config
+                          ${CMAKE_CURRENT_SOURCE_DIR}/date
+                          ${CMAKE_CURRENT_SOURCE_DIR}/io
+                          ${CMAKE_CURRENT_SOURCE_DIR}/kernel
+                          ${CMAKE_CURRENT_SOURCE_DIR}/network
+                          ${CMAKE_CURRENT_SOURCE_DIR}/services
+                          ${CMAKE_CURRENT_SOURCE_DIR}/localization
+                          ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
+                          ${CMAKE_CURRENT_SOURCE_DIR}/text
+                          ${CMAKE_CURRENT_SOURCE_DIR}/util
+                          ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
+)
+target_include_directories(kdecore PUBLIC "$<BUILD_INTERFACE:${kdecore_INCLUDES}>")
 
 target_link_libraries(kdecore
   LINK_PUBLIC

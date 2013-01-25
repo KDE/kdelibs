@@ -1,15 +1,6 @@
 
 project(kconf_update)
 
-include_directories(
- ${KDE4_KDECORE_INCLUDES}
- ${KDE4_KCONFIG_INCLUDES}
- ${KCoreAddons_INCLUDE_DIRS}
- ${ki18n_SOURCE_DIR}/src
- ${ki18n_BINARY_DIR}/src
-)
-
-
 ########### next target ###############
 
 set(kconf_update_KDEINIT_SRCS

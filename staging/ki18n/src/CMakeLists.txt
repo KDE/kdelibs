@@ -9,7 +9,7 @@ set(libki18n_SRCS
 add_library(ki18n ${libki18n_SRCS})
 generate_export_header(ki18n)
 
-target_link_libraries(ki18n LINK_PUBLIC  ${QT_QTCORE_LIBRARY}
+target_link_libraries(ki18n LINK_PUBLIC  ${QT_QTCORE_LIBRARY} KCoreAddons
                             LINK_PRIVATE ${QT_QTXML_LIBRARY})
 
 set_target_properties(ki18n PROPERTIES VERSION   ${KI18N_VERSION_STRING}
@@ -39,7 +39,6 @@ add_custom_command(
 )
 macro_add_file_dependencies(${CMAKE_CURRENT_SOURCE_DIR}/ktranscript.cpp ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h)
 
-include_directories(${kjs_SOURCE_DIR}/src ${kjs_SOURCE_DIR}/src/kjs ${kjs_BINARY_DIR}/src ${kjs_BINARY_DIR}/src/kjs)
 set(ktranscript_LIB_SRCS
     ktranscript.cpp
     common_helpers.cpp

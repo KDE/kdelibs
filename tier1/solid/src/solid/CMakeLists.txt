@@ -387,9 +387,8 @@ if ( UDEV_FOUND )
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${UDEV_LIBS})
 endif ()
 
-include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-
 add_library(Solid  ${solid_LIB_SRCS})
+target_include_directories(Solid PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 generate_export_header(Solid)
 
 target_link_libraries(Solid LINK_PUBLIC ${QT_QTCORE_LIBRARY}
@@ -415,7 +414,9 @@ install(FILES org.kde.Solid.Networking.Client.xml
 add_library(Solid_static STATIC ${solid_LIB_SRCS})
 set_target_properties(Solid_static PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1)
 
+target_link_libraries(Solid_static LINK_PUBLIC ${QT_QTCORE_LIBRARY})
 target_link_libraries(Solid_static ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} Qt5::Widgets ${solid_OPTIONAL_LIBS})
+target_include_directories(Solid_static PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 
 ########### install files ###############
 

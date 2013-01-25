@@ -2,10 +2,6 @@ project(dnssd)
 include(ConfigureChecks.cmake)
 configure_file(config-dnssd.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-dnssd.h )
 
-include_directories( ${KDE4_KDECORE_INCLUDES} )
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-
 find_package(Avahi)
 macro_bool_to_01(AVAHI_FOUND HAVE_AVAHI)
 set_package_properties(Avahi PROPERTIES DESCRIPTION "Facilities for service discovery on a local network (DNSSD)"
@@ -80,6 +76,7 @@ if (HAVE_DNSSD)
 endif (HAVE_DNSSD)
 
 target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore )
+target_include_directories(kdnssd PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
 set_target_properties(kdnssd PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

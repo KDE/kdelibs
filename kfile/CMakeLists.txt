@@ -6,22 +6,9 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 configure_file(config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kfile.h )
 macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 
-include_directories(
-  ${KDE4_KIO_INCLUDES}
-  ${Solid_INCLUDE_DIRS}
-  ${KAuth_INCLUDE_DIRS}
-  ${KWidgetsAddons_INCLUDE_DIRS}
-  ${ki18n_SOURCE_DIR}/src
-  ${ki18n_BINARY_DIR}/src
-  ${KWindowSystem_INCLUDE_DIRS}
-)
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})
 endif(Soprano_FOUND)
-
-include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}
-)
 
 add_subdirectory(tests)
 

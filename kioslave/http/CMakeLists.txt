@@ -28,17 +28,8 @@ endif(GSSAPI_FOUND)
 
 configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h )
 
-
-include_directories( ${KDE4_KIO_INCLUDES}
-                     ${ZLIB_INCLUDE_DIR}
-                     ${Solid_INCLUDE_DIRS}
-                     ${KArchive_INCLUDE_DIRS}
-                     ${KWidgetsAddons_INCLUDE_DIRS}
-                     ${KCoreAddons_INCLUDE_DIRS}
-                     ${ki18n_SOURCE_DIR}/src
-                     ${ki18n_BINARY_DIR}/src
-)
-include_directories( ${CMAKE_SOURCE_DIR}/interfaces ${CMAKE_SOURCE_DIR}/kio/httpfilter )
+include_directories(${ZLIB_INCLUDE_DIR})
+include_directories(${CMAKE_SOURCE_DIR}/interfaces)
 
 add_subdirectory( kcookiejar )
 add_subdirectory( tests )
@@ -57,6 +48,7 @@ target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIB
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 target_link_libraries( kio_http_cache_cleaner kdeinit_kio_http_cache_cleaner )
+target_include_directories(kio_http_cache_cleaner PUBLIC $<TARGET_PROPERTY:kio,INTERFACE_INCLUDE_DIRECTORIES>)
 install(TARGETS kio_http_cache_cleaner DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### next target ###############

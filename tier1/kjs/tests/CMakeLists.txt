@@ -1,4 +1,3 @@
-include_directories( ${kjs_SOURCE_DIR} ${kjs_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} ${CMAKE_CURRENT_BINARY_DIR}/.. )
 
 include(ECMMarkAsTest)
 

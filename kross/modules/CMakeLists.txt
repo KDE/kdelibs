@@ -1,13 +1,3 @@
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${KDE4_KDECORE_INCLUDES}
-    ${KDE4_KDEUI_INCLUDES}
-    ${KDE4_KIO_INCLUDES}
-    ${CMAKE_SOURCE_DIR}/kfile
-    ${CMAKE_BINARY_DIR}/kfile
-    ${ki18n_SOURCE_DIR}/src
-    ${ki18n_BINARY_DIR}/src
-)
 
 if( QT_QTDESIGNER_FOUND )
 	############################################

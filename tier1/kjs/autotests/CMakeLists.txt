@@ -2,8 +2,6 @@ include(ECMMarkAsTest)
 
 ########### ecmatest ##############
 
-include_directories(${QT_QTCORE_INCLUDE_DIR})
-
 add_executable(ecmatest
   ecmatest.cpp
 )
@@ -45,11 +43,6 @@ if (KDE4_BUILD_TESTS)
 endif ()
 
 ##################### kjsapitest ################
-
-include_directories(
-   ${kjs_SOURCE_DIR}/src/kjs/api
-   ${kjs_BINARY_DIR}/src/kjs/api
-)
 
 add_executable(kjsapitest kjsapitest.cpp)
 add_test(kjsapitest kjsapitest)

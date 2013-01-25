@@ -1,13 +1,7 @@
 project(kparts)
 
-include_directories(${ki18n_BINARY_DIR}/src ${ki18n_SOURCE_DIR}/src)
-include_directories(${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR} ${KAuth_INCLUDE_DIRS})
-
 add_subdirectory( tests )
 
-if(HAVE_NEPOMUK)
-    include_directories(${nepomuk_SOURCE_DIR} ${nepomuk_SOURCE_DIR}/core ${nepomuk_SOURCE_DIR}/types)
-endif(HAVE_NEPOMUK)
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})
 endif(Soprano_FOUND)
@@ -38,6 +32,7 @@ kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 generate_export_header(kparts)
 
 target_link_libraries(kparts  kdeui kio ${KCoreAddons_LIBRARIES} kwidgets ki18n)
+target_include_directories(kparts PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui Qt5::Widgets kwidgets)
 if(HAVE_NEPOMUK)
   target_link_libraries(kparts  nepomuk nepomukutils)
@@ -47,7 +42,6 @@ endif(HAVE_NEPOMUK)
 set_target_properties(kparts PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                         SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
-
 
 install(TARGETS kparts EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 

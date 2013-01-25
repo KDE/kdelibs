@@ -1,7 +1,3 @@
-include_directories(
-  ${KCoreAddons_INCLUDE_DIRS}
-  ${CMAKE_CURRENT_BINARY_DIR}
-)
 
 set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 

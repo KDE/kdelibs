@@ -1,10 +1,5 @@
 project(kpty)
 
-include_directories( ${KDE4_KDECORE_INCLUDES} )
-include_directories( ${QT_INCLUDES} )
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
-include_directories( ${ki18n_SOURCE_DIR}/src ${ki18n_BINARY_DIR}/src )
-
 set(kpty_LIB_SRCS
    kpty.cpp
    kptydevice.cpp

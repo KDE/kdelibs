@@ -3,17 +3,6 @@ project(kdeclarative)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Qml REQUIRED)
 
-include_directories(
-   ${CMAKE_SOURCE_DIR}
-   ${CMAKE_BINARY_DIR}
-   ${ki18n_SOURCE_DIR}/src
-   ${ki18n_BINARY_DIR}/src
-   )
-
-if(BUILDING_EXPERIMENTAL_SEPARATELY)
-   include_directories(${KDE4_INCLUDES})
-endif()
-
 set(kdeclarative_LIB_SRCS
     kdeclarative.cpp
     private/kiconprovider.cpp)
@@ -32,7 +21,7 @@ set(kdeclarative_TEST_SRCS
 
 kde4_add_executable(kdeclarativetest ${kdeclarative_TEST_SRCS})
 
-target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} Qt5::Widgets ${Qt5Quick_LIBRARIES} ${Qt5Qml_LIBRARIES} ki18n)
+target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} Qt5::Widgets ${Qt5Quick_LIBRARIES} ${Qt5Qml_LIBRARIES} Qt5::Script ki18n)
 
 ## install
 

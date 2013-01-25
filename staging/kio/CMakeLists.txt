@@ -34,12 +34,6 @@ ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/src/kio_version.h)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/src/kio_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
-include_directories(
-  ${QT_INCLUDES}
-  ${CMAKE_BINARY_DIR}/kdecore
-  ${CMAKE_SOURCE_DIR}/kdecore/localization # i18n
-)
-
 add_subdirectory(src)
 #add_subdirectory(autotests)
 #add_subdirectory(tests)

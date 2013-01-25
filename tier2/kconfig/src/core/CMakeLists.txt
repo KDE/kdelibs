@@ -1,4 +1,3 @@
-include_directories(${KCoreAddons_INCLUDE_DIRS}  ${kdeqt5staging_INCLUDE_DIRS})
 
 set(libkconfigcore_SRCS
    kconfig.cpp

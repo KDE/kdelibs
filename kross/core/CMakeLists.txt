@@ -1,8 +1,3 @@
-include_directories(
-   ${ki18n_SOURCE_DIR}/src
-   ${ki18n_BINARY_DIR}/src
-   ${KConfig_INCLUDE_DIRS}
-)
 
 set(krosscore_LIB_SRCS
    krossconfig.cpp
@@ -18,7 +13,9 @@ kde4_add_library(krosscore ${LIBRARY_TYPE} ${krosscore_LIB_SRCS})
 target_link_libraries(krosscore ki18n ${QT_QTSCRIPT_LIBRARY} Qt5::Xml Qt5::Widgets)
 target_link_libraries(krosscore LINK_INTERFACE_LIBRARIES ${QT_QTSCRIPT_LIBRARY} Qt5::Xml)
 
-set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
+target_include_directories(krosscore PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../..;${CMAKE_CURRENT_SOURCE_DIR}/../..>")
+
+set_target_properties(krosscore PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                 SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 

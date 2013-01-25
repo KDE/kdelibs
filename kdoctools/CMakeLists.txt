@@ -18,13 +18,6 @@ if(NOT LIBXML2_XMLLINT_EXECUTABLE)
   message(FATAL_ERROR "xmllint is required by the KDE help system to process DocBook XML")
 endif()
 
-include_directories( ${KDE4_KIO_INCLUDES}
-                     ${KArchive_INCLUDE_DIRS}
-                     ${ki18n_SOURCE_DIR}/src
-                     ${ki18n_BINARY_DIR}/src
-)
-#include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
-
 include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} )
 
 configure_file(checkXML.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/checkXML )

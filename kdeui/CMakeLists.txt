@@ -11,47 +11,7 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 set(KDEUI_NO_ATTICA TRUE)
 
 include_directories(
- ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
- ${CMAKE_BINARY_DIR}/staging/sonnet/src/core
- ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core
- ${ItemModels_INCLUDE_DIRS}
- ${KWindowSystem_INCLUDE_DIRS}
- ${CMAKE_BINARY_DIR}/staging/kguiaddons/src
- ${CMAKE_SOURCE_DIR}/staging/kguiaddons/src/colors
- ${KWidgetsAddons_INCLUDE_DIRS}
- ${CMAKE_BINARY_DIR}/staging/kwidgets/src
- ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
- ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
- ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/widgets
- ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
- ${CMAKE_SOURCE_DIR}/staging/kinterprocesswindowing/src
- ${CMAKE_BINARY_DIR}/staging/kinterprocesswindowing/src
- ${KCoreAddons_INCLUDE_DIRS}
- ${ki18n_BINARY_DIR}/src
- ${ki18n_SOURCE_DIR}/src
- ${KAuth_INCLUDE_DIRS}
- ${KConfig_INCLUDE_DIRS}
- ${CMAKE_SOURCE_DIR}/kdeui
- ${CMAKE_BINARY_DIR}/kdeui
- ${KDE4_KDECORE_INCLUDES}
- ${CMAKE_CURRENT_SOURCE_DIR}/actions
- ${CMAKE_CURRENT_SOURCE_DIR}/colors
- ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
- ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
- ${CMAKE_CURRENT_SOURCE_DIR}/fonts
- ${CMAKE_CURRENT_SOURCE_DIR}/icons
- ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
- ${CMAKE_CURRENT_SOURCE_DIR}/jobs
- ${CMAKE_CURRENT_SOURCE_DIR}/kernel
- ${CMAKE_CURRENT_SOURCE_DIR}/notifications
- ${CMAKE_CURRENT_SOURCE_DIR}/paged
- ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
- ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
- ${CMAKE_CURRENT_SOURCE_DIR}/util
- ${CMAKE_CURRENT_SOURCE_DIR}/widgets
- ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
- ${CMAKE_CURRENT_BINARY_DIR}/util
  ${DBUSMENUQT_INCLUDE_DIR}
 )
 
@@ -393,13 +353,33 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
+set(kdeui_INCLUDES
+ ${CMAKE_CURRENT_SOURCE_DIR}/actions
+ ${CMAKE_CURRENT_SOURCE_DIR}/colors
+ ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
+ ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
+ ${CMAKE_CURRENT_SOURCE_DIR}/fonts
+ ${CMAKE_CURRENT_SOURCE_DIR}/icons
+ ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
+ ${CMAKE_CURRENT_SOURCE_DIR}/jobs
+ ${CMAKE_CURRENT_SOURCE_DIR}/kernel
+ ${CMAKE_CURRENT_SOURCE_DIR}/notifications
+ ${CMAKE_CURRENT_SOURCE_DIR}/paged
+ ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
+ ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
+ ${CMAKE_CURRENT_SOURCE_DIR}/util
+ ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+ ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
+ ${CMAKE_CURRENT_BINARY_DIR}/util
+ )
+target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
+
 target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} )
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY})
 
 if(X11_FOUND)
   find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
   target_link_libraries(kdeui LINK_PUBLIC Qt5::X11Extras)
-  include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 endif()
 
 if(NOT WINCE)

@@ -1,7 +1,4 @@
 include_directories( ${OPENSSL_INCLUDE_DIR} )
-include_directories( ${KDE4_KPARTS_INCLUDES} )
-include_directories( ${CMAKE_BINARY_DIR}/kio/kssl )
-include_directories( ${CMAKE_SOURCE_DIR}/kio/kssl )
 
 set(kcm_crypto_PART_SRCS crypto.cpp certexport.cpp kdatetimedlg.cpp )
 

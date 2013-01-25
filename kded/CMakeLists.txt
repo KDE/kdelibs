@@ -1,16 +1,6 @@
 project(kded)
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
-include_directories(${Qt5X11Extras_INCLUDE_DIRS})
-
-include_directories(
-  ${KDE4_KIO_INCLUDES}
-  ${KDE4_KCONFIG_INCLUDES}
-  ${KDBusAddons_INCLUDE_DIRS}
-  ${ki18n_SOURCE_DIR}/src
-  ${ki18n_BINARY_DIR}/src
-  ${KWindowSystem_INCLUDE_DIRS}
-)
 
 add_subdirectory( tests )
 

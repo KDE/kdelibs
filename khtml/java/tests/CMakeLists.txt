@@ -19,7 +19,9 @@ ecm_mark_as_test(testserver)
 target_link_libraries(testserver  ${KDE4_KDECORE_LIBS}
     ${KDE4_KPARTS_LIBS}
     ${KDE4_KDEUI_LIBS}
-    ${kinterprocesswindowing_LIBRARY})
+    ${kinterprocesswindowing_LIBRARY}
+    kde4support
+)
 
 
 

@@ -1,8 +1,4 @@
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                    ${CMAKE_CURRENT_SOURCE_DIR}/../src
-                    ${CMAKE_CURRENT_BINARY_DIR}/../src)
-
 qt4_add_dbus_adaptor(kauth_dbus_adaptor_tests_SRCS
                      ../src/backends/dbus/org.kde.auth.xml
                      ../src/backends/dbus/DBusHelperProxy.h
@@ -24,7 +20,13 @@ set(libkauth_tests_static_SRCS
 
 add_library(kauth_tests_static STATIC ${libkauth_tests_static_SRCS})
 
-target_link_libraries(kauth_tests_static ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES})
+target_include_directories(kauth_tests_static
+  PUBLIC
+    $<TARGET_PROPERTY:KAuth,INTERFACE_INCLUDE_DIRECTORIES>
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src
+)
+
+target_link_libraries(kauth_tests_static LINK_PUBLIC ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES})
 
 include(ECMMarkAsTest)
 

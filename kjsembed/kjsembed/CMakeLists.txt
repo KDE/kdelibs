@@ -3,28 +3,6 @@ project(kjsembed-kjsembed)
 find_package(Qt5UiTools REQUIRED)
 find_package(Qt5Svg REQUIRED)
 
-if (NOT QTONLY_WEBKIT)
-   include_directories(
-       ${CMAKE_SOURCE_DIR}
-       ${CMAKE_SOURCE_DIR}/kjsembed 
-       ${KDE4_KJS_INCLUDES}
-       ${KDE4_KDECORE_INCLUDES}
-   )
-else (NOT QTONLY_WEBKIT)
-   include_directories(
-       $(QTONLY_WEBKIT_DIR)/JavaScriptCore/kjs
-       $(QTONLY_WEBKIT_DIR)/JavaScriptCore
-       ${CMAKE_SOURCE_DIR}
-       ${CMAKE_SOURCE_DIR}/kjsembed 
-       ${KDE4_KDECORE_INCLUDES}
-   )
-endif (NOT QTONLY_WEBKIT)
-
-include_directories(
-    ${ki18n_SOURCE_DIR}/src
-    ${ki18n_BINARY_DIR}/src
-)
-
 ########### next target ###############
 
 set(kjsembed_LIB_SRCS
@@ -72,6 +50,7 @@ else (NOT DEFINED QT_ONLY)
 endif (NOT DEFINED QT_ONLY)
 
 kde4_add_library(${KJSEMBEDLIBNAME} ${LIBRARY_TYPE} ${kjsembed_LIB_SRCS})
+target_include_directories(${KJSEMBEDLIBNAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 
 generate_export_header(${KJSEMBEDLIBNAME})
 

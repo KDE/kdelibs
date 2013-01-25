@@ -1,6 +1,4 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-# for <kio/global.h>
-include_directories( ${KDE4_KIO_INCLUDES} )
 
 include(ECMMarkAsTest)
 

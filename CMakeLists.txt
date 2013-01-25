@@ -68,58 +68,28 @@ find_package(Qt5Transitional MODULE)
 add_subdirectory( libkdeqt5staging )
 
 set(kdeqt5staging_LIBRARIES kdeqt5staging)
-set(kdeqt5staging_INCLUDE_DIRS
-    ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
-    ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/)
 
 
 add_subdirectory( tier1 )
 
-set(ItemModels_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
-                            ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src )
 set(ItemModels_LIBRARIES ItemModels)
 
-set(KArchive_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/tier1/karchive/src
-                          ${CMAKE_BINARY_DIR}/tier1/karchive/src )
 set(KArchive_LIBRARIES KArchive)
 
-set(KCoreAddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
-                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/caching
-                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
-                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel
-                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
-                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness
-                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src
-                              ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
-                              )
 set(KCoreAddons_LIBRARIES KCoreAddons)
 
-set(KCodecs_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kcodecs/src
-                         ${CMAKE_SOURCE_DIR}/tier1/kcodecs/src )
 set(KCodecs_LIBRARIES KCodecs)
 
-set(KDBusAddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kdbusaddons/src
-                              ${CMAKE_BINARY_DIR}/tier1/kdbusaddons/src )
 set(KDBusAddons_LIBRARIES KDBusAddons)
 
-set(KIdleTime_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kidletime/src
-                           ${CMAKE_SOURCE_DIR}/tier1/kidletime/src )
 set(KIdleTime_LIBRARIES KIdleTime)
 
-set(KWindowSystem_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
-                               ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src )
 set(KWindowSystem_LIBRARIES KWindowSystem)
 
-set(KWidgetsAddons_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
-                                ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src )
 set(KWidgetsAddons_LIBRARIES KWidgetsAddons )
 
-set(KPlotting_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier1/kplotting/src/
-                             ${CMAKE_BINARY_DIR}/tier1/kplotting/src/ )
 set(KPlotting_LIBRARIES KPlotting)
 
-set(Solid_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/solid/src
-                        ${CMAKE_BINARY_DIR}/tier1/solid/src )
 set(Solid_LIBRARIES Solid)
 
 
@@ -278,123 +248,11 @@ add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
 ################# setup the include directories #################
 
-# for including config.h and for includes like <kparts/foo.h>
-include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/interfaces)
-
 if(QCA2_FOUND)
     include_directories(
         ${QCA2_INCLUDE_DIR}
     )
 endif(QCA2_FOUND)
-
-
-# Those variables for  are only valid inside of kdelibs, of course.
-# Use the one variable for the lib you depend upon.
-# E.g. kdeui uses ${KDE4_KDECORE_INCLUDES}. Something that depends on kparts uses ${KDE4_KPARTS_INCLUDES}.
-
-set(KDE4_KJS_INCLUDES ${CMAKE_SOURCE_DIR}/tier1/kjs/src/kjs
-                      ${CMAKE_BINARY_DIR}/tier1/kjs/src/kjs
-                      ${CMAKE_SOURCE_DIR}/tier1/kjs/src
-                      ${CMAKE_BINARY_DIR}/tier1/kjs/src
-                      )
-
-if(NOT WINCE)
-    set(KDE4_KDECORE_INCLUDES ${KDE4_KJS_INCLUDES} )
-endif(NOT WINCE)
-
-set(KDE4_KCONFIG_INCLUDES ${CMAKE_SOURCE_DIR}/kdecore/config
-                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io # for kurl.h
-                          ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
-   )
-# kdecore depends on Qt and kcoreaddons (need only headers from kjs)
-set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
-                          ${CMAKE_SOURCE_DIR}/kdecore
-                          ${CMAKE_BINARY_DIR}/kdecore
-                          ${CMAKE_SOURCE_DIR}/kdecore/compression
-                          ${CMAKE_SOURCE_DIR}/kdecore/config
-                          ${CMAKE_SOURCE_DIR}/kdecore/date
-                          ${CMAKE_SOURCE_DIR}/kdecore/io
-                          ${CMAKE_SOURCE_DIR}/kdecore/kernel
-                          ${CMAKE_SOURCE_DIR}/kdecore/network
-                          ${CMAKE_SOURCE_DIR}/kdecore/services
-                          ${CMAKE_SOURCE_DIR}/kdecore/localization
-                          ${CMAKE_SOURCE_DIR}/kdecore/sycoca
-                          ${CMAKE_SOURCE_DIR}/kdecore/text
-                          ${CMAKE_SOURCE_DIR}/kdecore/util
-                          ${CMAKE_SOURCE_DIR}/kdecore/sonnet
-                          ${KCodecs_INCLUDE_DIRS}
-                          ${KCoreAddons_INCLUDE_DIRS}
-                          ${KConfig_INCLUDE_DIRS}
-                          ${CMAKE_BINARY_DIR}/staging/kservice/src/
-                          ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
-                          ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
-                          ${CMAKE_SOURCE_DIR}/staging/kservice/src/plugin
-                          ${QT_INCLUDES}
-                          ${kdeqt5staging_INCLUDE_DIRS}
-                          ${_KDE4_PLATFORM_INCLUDE_DIRS})
-
-include_directories(${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel) # For QLocalizedString
-
-# kdeui depends on kdecore
-set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
-                        ${CMAKE_BINARY_DIR}/kdeui
-                        ${CMAKE_SOURCE_DIR}/kdeui/actions
-                        ${CMAKE_SOURCE_DIR}/kdeui/colors
-                        ${CMAKE_SOURCE_DIR}/kdeui/config
-                        ${CMAKE_SOURCE_DIR}/kdeui/dialogs
-                        ${CMAKE_SOURCE_DIR}/kdeui/findreplace
-                        ${CMAKE_SOURCE_DIR}/kdeui/fonts
-                        ${CMAKE_SOURCE_DIR}/kdeui/icons
-                        ${CMAKE_SOURCE_DIR}/kdeui/itemviews
-                        ${CMAKE_SOURCE_DIR}/kdeui/jobs
-                        ${CMAKE_SOURCE_DIR}/kdeui/kernel
-                        ${CMAKE_SOURCE_DIR}/kdeui/notifications
-                        ${CMAKE_SOURCE_DIR}/kdeui/paged
-                        ${CMAKE_SOURCE_DIR}/kdeui/plotting
-                        ${CMAKE_SOURCE_DIR}/kdeui/shortcuts
-                        ${CMAKE_SOURCE_DIR}/kdeui/sonnet
-                        ${CMAKE_SOURCE_DIR}/kdeui/util
-                        ${CMAKE_SOURCE_DIR}/kdeui/widgets
-                        ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
-                        ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
-                        ${KWindowSystem_INCLUDE_DIRS}
-                        ${KConfig_INCLUDE_DIRS}
-                        ${CMAKE_BINARY_DIR}/staging/kguiaddons/src/
-                        ${CMAKE_SOURCE_DIR}/staging/kguiaddons/src/colors
-                        ${CMAKE_BINARY_DIR}/staging/kwidgets/src
-                        ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
-                        ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
-                        ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/widgets
-                        ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
-                        ${CMAKE_BINARY_DIR}/staging/kde4support/src/
-                        ${CMAKE_SOURCE_DIR}/staging/kde4support/src/kdeui
-                        ${KDE4_KDECORE_INCLUDES})
-
-# kio depends on kdeui
-set(KDE4_KIO_INCLUDES ${CMAKE_SOURCE_DIR}/kio
-                      ${CMAKE_BINARY_DIR}/kio
-                      ${CMAKE_BINARY_DIR}/kio/misc/kntlm
-                      ${CMAKE_SOURCE_DIR}/kio/bookmarks
-                      ${CMAKE_SOURCE_DIR}/kio/kio
-                      ${CMAKE_SOURCE_DIR}/kio/kfile
-                      ${CMAKE_BINARY_DIR}/staging/kio/src/include
-                      ${CMAKE_SOURCE_DIR}/staging/kio/src/core
-                      ${CMAKE_BINARY_DIR}/staging/kio/src/core
-                      ${CMAKE_SOURCE_DIR}/staging/kio/src/widgets
-                      ${CMAKE_BINARY_DIR}/staging/kio/src/widgets
-                      ${KDE4_KDEUI_INCLUDES})
-
-# kpty
-set(KDE4_KPTY_INCLUDES ${CMAKE_SOURCE_DIR}/kpty ${CMAKE_BINARY_DIR}/kpty ${KDE4_KIO_INCLUDES} )
-
-# kparts depends on kio
-set(KDE4_KPARTS_INCLUDES ${CMAKE_SOURCE_DIR}/kparts
-                         ${CMAKE_BINARY_DIR}/kparts
-                         ${KDE4_KIO_INCLUDES})
-
-if(NOT WINCE)
- set(KDE4_KHTML_INCLUDES ${CMAKE_SOURCE_DIR}/khtml)
-endif(NOT WINCE)
 
 
 ################# configure checks and create the configured files #################

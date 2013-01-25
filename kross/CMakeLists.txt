@@ -1,7 +1,3 @@
-include_directories(
-    ${ki18n_SOURCE_DIR}/src
-    ${ki18n_BINARY_DIR}/src
-)
 
 # the core library
 add_subdirectory( core )

@@ -9,11 +9,6 @@ macro(kwidgetsaddons_executable_tests)
   endforeach(_testname)
 endmacro()
 
-include_directories(
-  "${CMAKE_CURRENT_SOURCE_DIR}/../src"
-  "${CMAKE_CURRENT_BINARY_DIR}/../src"
-)
-
 kwidgetsaddons_executable_tests(
   kledtest
   kseparatortest

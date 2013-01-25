@@ -1,10 +1,5 @@
 project(kdeinit)
 
-include_directories( ${KDE4_KPARTS_INCLUDES} )
-include_directories( ${CMAKE_BINARY_DIR}/staging/kio/src/core )
-include_directories( ${ki18n_SOURCE_DIR}/src ${ki18n_BINARY_DIR}/src )
-include_directories( ${KWindowSystem_INCLUDE_DIRS} )
-
 ########### Configuring (mainly for proctitle) ###########
 
 include(ConfigureChecks.cmake)
@@ -48,7 +43,7 @@ else (APPLE)
   kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
 endif (APPLE)
 
-target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n )
+target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n kde4support)
 if (X11_FOUND)
   target_link_libraries(kdeinit5 ${X11_X11_LIB})
 endif()
@@ -143,9 +138,11 @@ install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 if (NOT WIN32)
   set(start_kdeinit_SRCS start_kdeinit.c)
   kde4_add_executable(start_kdeinit ${start_kdeinit_SRCS})
+  target_include_directories(start_kdeinit PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/..")
 
   set(start_kdeinit_wrapper_SRCS start_kdeinit_wrapper.c)
   kde4_add_executable(start_kdeinit_wrapper ${start_kdeinit_wrapper_SRCS})
+  target_include_directories(start_kdeinit_wrapper PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/..")
 
   install(TARGETS start_kdeinit DESTINATION ${LIBEXEC_INSTALL_DIR})
   install(TARGETS start_kdeinit_wrapper DESTINATION ${LIBEXEC_INSTALL_DIR})

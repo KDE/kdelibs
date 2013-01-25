@@ -19,8 +19,6 @@ if(NOT kdelibs_SOURCE_DIR)
   set_package_properties(kdeqt5staging PROPERTIES PURPOSE "Stuff which will go into Qt5.")
 endif()
 
-include_directories(${kdeqt5staging_INCLUDE_DIRS})
-
 # Configure checks for kdirwatch
 find_package(FAM)
 

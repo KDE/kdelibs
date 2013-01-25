@@ -60,7 +60,6 @@ endif ()
 
 add_library(KWindowSystem ${kwindowsystem_SRCS})
 generate_export_header(KWindowSystem)
-include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 
 target_link_libraries(KWindowSystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
 

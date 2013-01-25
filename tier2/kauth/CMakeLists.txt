@@ -26,9 +26,6 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KAUTH
 # qInstallMsgHandler
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
-
-include_directories(${KCoreAddons_INCLUDE_DIRS})  #for kjob
-
 add_subdirectory(src)
 add_subdirectory(autotests)
 

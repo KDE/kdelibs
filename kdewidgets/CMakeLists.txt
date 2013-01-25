@@ -4,18 +4,6 @@ project(kdewidgets)
 add_subdirectory( pics )
 add_subdirectory( tests )
 
-include_directories(
-  ${KPlotting_INCLUDE_DIRS}
-  ${KAuth_INCLUDE_DIRS}
-  ${KCoreAddons_INCLUDE_DIRS}
-  ${KWidgetsAddons_INCLUDE_DIRS}
-  ${ki18n_SOURCE_DIR}/src
-  ${ki18n_BINARY_DIR}/src
-  ${CMAKE_BINARY_DIR}/kdewebkit
-  ${KDE4_KIO_INCLUDES}
- )
-
-
 ########### next target ###############
 
 set(makekdewidgets_SRCS makekdewidgets.cpp )
@@ -98,11 +86,6 @@ if(QT_QTDESIGNER_FOUND)
   endif(NOT KDE_NO_DEPRECATED)
 
   if(Qt5WebKit_FOUND)
-
-  # kdewebkit widgets
-  include_directories(
-    ${CMAKE_SOURCE_DIR}/kdewebkit
-  )
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp
     COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdewebkit.widgets

@@ -1,9 +1,4 @@
 
-include_directories(
- ${KDE4_KDEUI_INCLUDES} # kmessagebox.h
- ${KConfig_INCLUDE_DIRS}
-)
-
 set(plugin_SRCS frameworkintegrationplugin.cpp)
 
 add_library(frameworkintegrationplugin MODULE ${plugin_SRCS})

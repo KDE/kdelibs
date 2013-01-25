@@ -2,7 +2,6 @@
 find_package(X11)
 if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
-    include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 endif(X11_FOUND)
 
 
@@ -28,6 +27,15 @@ set(kwidgets_LIB_SRCS
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
 generate_export_header(kwidgets)
+
+set(kwidgets_INCLUDES
+  ${CMAKE_CURRENT_SOURCE_DIR}/utils
+  ${CMAKE_CURRENT_SOURCE_DIR}/icons
+  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
+  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+)
+target_include_directories(kwidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDES}>" "$<TARGET_PROPERTY:kdeui,INTERFACE_INCLUDE_DIRECTORIES>"
+)
 
 target_link_libraries(kwidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}

@@ -1,5 +1,3 @@
-include_directories( ../src )
-include_directories( ${CMAKE_CURRENT_BINARY_DIR}/../src )
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 

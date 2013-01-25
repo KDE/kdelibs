@@ -16,7 +16,6 @@ ecm_version(5 0 0)
 
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
-include_directories( ${KDE4_KDECORE_INCLUDES} )
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core X11Extras)
 
@@ -27,12 +26,6 @@ remove_definitions(-DQT_NO_KEYWORDS)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h)
 
-include_directories(
-       ${ki18n_SOURCE_DIR}/src
-       ${ki18n_BINARY_DIR}/src
-       ${kde4support_SOURCE_DIR}/src/kdecore
-       ${kde4support_BINARY_DIR}/src
-)
 kde4_add_executable(kf5-config NOGUI kde-config.cpp )
 
 target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} kde4support)

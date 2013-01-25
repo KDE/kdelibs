@@ -60,17 +60,20 @@ set(libkcoreaddons_SRCS
 )
 
 
-include_directories(
+set(kcoreaddons_INCLUDE_DIRS
     ${CMAKE_CURRENT_BINARY_DIR}/io/
     ${CMAKE_CURRENT_SOURCE_DIR}/io/
     ${CMAKE_CURRENT_SOURCE_DIR}/jobs/
     ${CMAKE_CURRENT_SOURCE_DIR}/randomness/
     ${CMAKE_CURRENT_SOURCE_DIR}/kernel/
     ${CMAKE_CURRENT_SOURCE_DIR}/text/
+    ${CMAKE_CURRENT_SOURCE_DIR}/caching/
 )
 
 add_library(KCoreAddons ${libkcoreaddons_SRCS})
 generate_export_header(KCoreAddons)
+
+target_include_directories(KCoreAddons PUBLIC "$<BUILD_INTERFACE:${kcoreaddons_INCLUDE_DIRS}>")
 
 target_link_libraries(KCoreAddons
   LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS}

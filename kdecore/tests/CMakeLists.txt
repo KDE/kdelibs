@@ -1,5 +1,4 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
-include_directories( ${KDE4_KDECORE_INCLUDES} )
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
@@ -7,7 +6,7 @@ include(ECMMarkAsTest)
 MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME "kdecore-${_testname}" NOGUI ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} )
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES}  kdeqt5staging)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -45,6 +44,7 @@ KDECORE_UNIT_TESTS(
  kconfignokdehometest
 )
 
+target_include_directories(ktimezonestest PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../date")
 
 KDECORE_EXECUTABLE_TESTS(
  kmemtest

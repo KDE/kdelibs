@@ -4,23 +4,6 @@ include (ConfigureChecks.cmake)
 
 configure_file(config-kiocore.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiocore.h )
 
-
-include_directories(
-  ${QT_INCLUDES}
-  ${KCoreAddons_INCLUDE_DIRS}
-  ${KConfig_INCLUDE_DIRS}
-  ${ki18n_SOURCE_DIR}/src
-  ${ki18n_BINARY_DIR}/src
-  ${kiocore_BINARY_DIR}/..           #kio_version.h
-  ${kservice_SOURCE_DIR}/src/plugin  #kpluginfactory.h
-  ${kservice_SOURCE_DIR}/src/services
-  ${kservice_SOURCE_DIR}/src/sycoca  #ksycocaentry.h
-  ${kservice_BINARY_DIR}/src
-  ${CMAKE_CURRENT_BINARY_DIR}
-)
-
-include_directories( ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
-
 set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
@@ -52,6 +35,11 @@ endif()
 
 add_library(kiocore ${kiocore_SRCS})
 generate_export_header(kiocore)
+
+target_include_directories(kiocore PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
+)
 
 target_link_libraries(kiocore
  ${KDE4_KDECORE_LIBS} # TODO remove once klocale is in a framework

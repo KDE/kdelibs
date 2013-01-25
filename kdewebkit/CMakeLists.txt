@@ -6,15 +6,6 @@ if(NOT QT_QTWEBKIT_FOUND)
   message(FATAL_ERROR "The QtWebkit module is required.")
 endif()
 
-include_directories(
- ${KDE4_KDECORE_INCLUDES}
- ${KDE4_KDEUI_INCLUDES}
- ${KDE4_KIO_INCLUDES}
- ${KDE4_KPARTS_INCLUDES}
- ${ki18n_SOURCE_DIR}/src
- ${ki18n_BINARY_DIR}/src
-)
-
 set(kdewebkit_LIB_SRCS
     kwebwallet.cpp
     kgraphicswebview.cpp

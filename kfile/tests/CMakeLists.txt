@@ -6,7 +6,7 @@ MACRO(KFILE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kfile-${_testname} ${_testname}.cpp)
                set_property(TARGET ${_testname} APPEND_STRING PROPERTY COMPILE_FLAGS " -DTEST_DATA=\"\\\"${CMAKE_SOURCE_DIR}/kfile/tests/fakecomputer.xml\\\"\"")
-               target_link_libraries(${_testname} ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY})
+               target_link_libraries(${_testname} ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTXML_LIBRARY} Solid)
        ENDFOREACH(_testname)
 ENDMACRO(KFILE_UNIT_TESTS)
 MACRO(KFILE_EXECUTABLE_TESTS)
@@ -16,8 +16,6 @@ MACRO(KFILE_EXECUTABLE_TESTS)
                target_link_libraries(${_testname} ${KDE4_KFILE_LIBS} ${QT_QTTEST_LIBRARY})
        ENDFOREACH(_testname)
 ENDMACRO(KFILE_EXECUTABLE_TESTS)
-
-include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/.. )
 
 KFILE_EXECUTABLE_TESTS(
   kdirselectdialogtest

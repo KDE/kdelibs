@@ -1,11 +1,6 @@
 
 project(kioslave-metainfo)
 
-include_directories( ${KDE4_KIO_INCLUDES} )
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-
-
 ########### next target ###############
 
 set(kio_metainfo_PART_SRCS metainfo.cpp )

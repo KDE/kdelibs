@@ -1,6 +1,3 @@
-include_directories(${CMAKE_SOURCE_DIR} ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES})
-include_directories(${ki18n_SOURCE_DIR}/src)
-include_directories(${ki18n_BINARY_DIR}/src)
 
 include(ECMMarkAsTest)
 
@@ -17,11 +14,10 @@ install(TARGETS krossqtsplugin DESTINATION ${QT_PLUGIN_INSTALL_DIR}/script)
 ########### next target ###############
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/kross ${KDE4_KDECORE_INCLUDES} ${KCoreAddons_LIBRARIES} ${KDE4_KDEUI_INCLUDES} ${KDE4_KIO_INCLUDES})
 set(krossqtstest_SRCS main.cpp)
 add_executable(krossqtstest ${krossqtstest_SRCS})
 ecm_mark_as_test(krossqtstest)
-target_link_libraries(krossqtstest ${KDE4_KDEUI_LIBS} krossqtsplugin ${QT_QTSCRIPT_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n)
+target_link_libraries(krossqtstest ${KDE4_KDEUI_LIBS} krossqtsplugin krosscore ${QT_QTSCRIPT_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n)
 # set(krossqtsplugintest_SRCS main.cpp)
 # target_link_libraries(krossqtsplugintest ${KDE4_KDECORE_LIBS} )
 # kde4_add_executable(krossqtsplugintest ${krossqtsplugintest_SRCS})
@@ -29,7 +25,6 @@ target_link_libraries(krossqtstest ${KDE4_KDEUI_LIBS} krossqtsplugin ${QT_QTSCRI
 
 ########### next target ###############
 
-#include_directories(${CMAKE_SOURCE_DIR}/kross ${KDE4_KJS_INCLUDES} ${CMAKE_SOURCE_DIR}/kjsembed ${KDE4_KDECORE_INCLUDES} ${KDE4_KDEUI_INCLUDES} ${KDE4_KIO_INCLUDES})
 set(krossqts_PART_SRCS interpreter.cpp script.cpp)
 kde4_add_plugin(krossqts ${krossqts_PART_SRCS})
 target_link_libraries(krossqts ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} ki18n krosscore ${QT_QTSCRIPT_LIBRARY})

@@ -1,10 +1,6 @@
 
 project(kdesu)
 
-include_directories( ${KDE4_KPTY_INCLUDES} )
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-
 include(CheckTypeSize)
 
 check_function_exists(setpriority HAVE_SETPRIORITY)

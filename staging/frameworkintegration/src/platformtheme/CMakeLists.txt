@@ -1,20 +1,12 @@
 
-include_directories(
-   ${Qt5Gui_INCLUDE_DIRS}
-   ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
-   ${kguiaddons_BINARY_DIR}/src
-   ${kguiaddons_BINARY_DIR}/src/colors
-   ${kguiaddons_SOURCE_DIR}/src/colors
-   ${KConfig_INCLUDE_DIRS}
-   ${kwidgets_BINARY_DIR}/src
-   ${kwidgets_SOURCE_DIR}/src/icons
-)
-
 set(platformtheme_SRCS
    kdeplatformtheme.cpp
    main.cpp
 )
 
+include_directories(
+   ${Qt5Gui_PRIVATE_INCLUDE_DIRS}
+)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
 

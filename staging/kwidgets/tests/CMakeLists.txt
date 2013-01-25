@@ -1,4 +1,3 @@
-include_directories( ${KDE4_KDEUI_INCLUDES} )
 
 include(ECMMarkAsTest)
 

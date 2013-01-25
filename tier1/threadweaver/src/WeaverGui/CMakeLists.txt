@@ -4,10 +4,6 @@ set(ThreadWeaverGui_LIB_SRCS  WeaverThreadGrid.cpp )
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets)
 
-include_directories(${QT_INCLUDES}
-                    ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
-                    ../Weaver ${CMAKE_CURRENT_BINARY_DIR}/../Weaver)
-
 add_library(ThreadWeaverGui ${ThreadWeaverGui_LIB_SRCS})
 generate_export_header(ThreadWeaverGui)
 

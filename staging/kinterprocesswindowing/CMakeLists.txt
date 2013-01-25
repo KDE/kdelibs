@@ -18,24 +18,6 @@ include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED Test X11Extras)
-include_directories(${Qt5X11Extras_INCLUDE_DIRS})
-
-include_directories(${KWindowSystem_INCLUDE_DIRS})
-include_directories(${KConfig_INCLUDE_DIRS})
-include_directories(
-    ${kdeui_BINARY_DIR}
-    ${kdeui_SOURCE_DIR}/dialogs
-)
-include_directories(
-    ${CMAKE_BINARY_DIR}/staging/kwidgets/src
-    ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
-    ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/icons
-    ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/utils
-)
-include_directories(
-    ${CMAKE_BINARY_DIR}/staging/ki18n/src
-    ${CMAKE_SOURCE_DIR}/staging/ki18n/src
-)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kinterprocesswindowing_version.h)
 

@@ -11,9 +11,6 @@ check_cxx_compiler_flag(-fvisibility=hidden __KDE_HAVE_GCC_VISIBILITY)
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}/../wtf
   ${KDEWIN_INCLUDES}
 )
 
@@ -72,6 +69,7 @@ endif(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
        bytecode/generator/parser.cpp
       )
    add_executable(icemaker ${icemaker_SRCS})
+   target_include_directories(icemaker PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
 
    # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
    #get_target_property(ICEMAKER_EXECUTABLE icemaker WRAPPER_SCRIPT)
@@ -173,6 +171,16 @@ set(kjs_LIB_SRCS
 
 
 add_library(kjs ${kjs_LIB_SRCS})
+
+set(kjs_INCLUDES
+  ${CMAKE_CURRENT_BINARY_DIR}/..
+  ${CMAKE_CURRENT_SOURCE_DIR}/..
+  ${CMAKE_CURRENT_BINARY_DIR}/../..
+  ${CMAKE_CURRENT_BINARY_DIR}/../wtf
+  ${CMAKE_CURRENT_SOURCE_DIR}/../wtf
+)
+
+target_include_directories(kjs PUBLIC "$<BUILD_INTERFACE:${kjs_INCLUDES}>")
 
 if(WIN32)
    target_link_libraries(kjs ${KDEWIN_LIBRARIES})

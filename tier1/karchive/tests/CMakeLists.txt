@@ -1,17 +1,11 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src
-   ${CMAKE_CURRENT_BINARY_DIR}/../src
-   ${CMAKE_SOURCE_DIR}/kio/httpfilter
-)
-
 include(ECMMarkAsTest)
 
 macro(KARCHIVE_EXECUTABLE_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-      target_link_libraries(${_testname} KArchive ${QT_QTTEST_LIBRARY})
+      target_link_libraries(${_testname} KArchive)
       ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KARCHIVE_EXECUTABLE_TESTS)

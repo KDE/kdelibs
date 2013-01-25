@@ -2,13 +2,6 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
 
-include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src/core
-   ${CMAKE_CURRENT_BINARY_DIR}/../src/core
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src/gui
-   ${CMAKE_CURRENT_BINARY_DIR}/../src/gui
-)
-
 include(ECMMarkAsTest)
 
 find_package(Qt5Transitional REQUIRED Concurrent)
@@ -21,6 +14,8 @@ macro(KCONFIGCORE_UNIT_TESTS)
       ecm_mark_as_test(${_testname})
    endforeach()
 endmacro()
+
+find_package(Qt5Transitional REQUIRED Concurrent)
 
 macro(KCONFIGGUI_UNIT_TESTS)
    foreach(_testname ${ARGN})

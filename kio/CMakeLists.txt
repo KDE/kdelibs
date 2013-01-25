@@ -30,39 +30,11 @@ endif(OPENSSL_FOUND)
 if(NOT KIO_NO_NEPOMUK)
     include_directories(
        ${SOPRANO_INCLUDE_DIR}
-       ${CMAKE_SOURCE_DIR}/nepomuk/
-       ${CMAKE_SOURCE_DIR}/nepomuk/core/
-       ${CMAKE_SOURCE_DIR}/nepomuk/types/
-       ${CMAKE_SOURCE_DIR}/nepomuk/ui/
-       ${CMAKE_SOURCE_DIR}/nepomuk/query/
     )
 endif(NOT KIO_NO_NEPOMUK)
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
 
-# This applies to all subdirs; let's put kio's dependencies (and own dirs) here, once and for all
-include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
-   ${CMAKE_CURRENT_SOURCE_DIR}/kio
-   ${CMAKE_CURRENT_SOURCE_DIR}/kfile
-   ${CMAKE_CURRENT_SOURCE_DIR}/kssl
-   ${CMAKE_CURRENT_SOURCE_DIR}      # for including kio/kio_export.h
-   ${CMAKE_CURRENT_BINARY_DIR}/kio
-   ${CMAKE_CURRENT_BINARY_DIR}/kssl
-   ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
-   ${KDE4_KDEUI_INCLUDES}
-   ${KDE4_KDECORE_INCLUDES}
-   ${ZLIB_INCLUDE_DIR}
-   ${KWidgetsAddons_INCLUDE_DIRS}
-   ${KAuth_INCLUDE_DIRS}
-   ${kiocore_SOURCE_DIR}/
-   ${kiocore_BINARY_DIR}/
-   ${kiocore_BINARY_DIR}/..   # kio_version.h
-   ${CMAKE_BINARY_DIR}/staging/kio/src/include
-   ${ki18n_SOURCE_DIR}/src
-   ${ki18n_BINARY_DIR}/src
-   ${Qt5X11Extras_INCLUDE_DIRS}
-)
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})
    set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY})
@@ -73,8 +45,7 @@ if (NOT KIO_NO_SOPRANO)
 endif (NOT KIO_NO_SOPRANO)
 
 if(NOT KIO_NO_SOLID)
-   include_directories(${Solid_INCLUDE_DIRS})
-   set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${Solid_LIBRARIES})
+   set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${KDE4_SOLID_LIBS})
 endif(NOT KIO_NO_SOLID)
 
 find_package(X11)
@@ -94,15 +65,6 @@ configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
-
-add_subdirectory( kssl/kssl )
-add_subdirectory( kssl/kcm )
-add_subdirectory( misc )
-add_subdirectory( tests )
-add_subdirectory( httpfilter/autotests )
-if (NOT KIO_NO_STRIGI)
-   add_subdirectory( kio/dummyanalyzers )
-endif()
 
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp
@@ -321,6 +283,26 @@ kde4_add_ui_files(kio_LIB_SRCS
 kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
 generate_export_header(kio)
 
+set(kio_INCLUDES
+   ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
+   ${CMAKE_CURRENT_SOURCE_DIR}/kio
+   ${CMAKE_CURRENT_SOURCE_DIR}/kfile
+   ${CMAKE_CURRENT_SOURCE_DIR}/kssl
+   ${CMAKE_CURRENT_SOURCE_DIR}/httpfilter
+   ${CMAKE_CURRENT_SOURCE_DIR}      # for including kio/kio_export.h
+
+   ${CMAKE_CURRENT_BINARY_DIR}/kio
+   ${CMAKE_CURRENT_BINARY_DIR}/kssl
+   ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
+   ${CMAKE_SOURCE_DIR}/interfaces
+)
+target_include_directories(kio PUBLIC "$<BUILD_INTERFACE:${kio_INCLUDES}>" )
+
+target_include_directories(kio PRIVATE
+   ${ZLIB_INCLUDE_DIR}
+   ${kiocore_BINARY_DIR}/..   # kio_version.h
+)
+
 if(NOT KIO_NO_NEPOMUK)
   kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
   target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} ki18n kde4support)
@@ -342,6 +324,14 @@ set_target_properties(kio PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                      SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
                      )
 
+add_subdirectory( kssl/kssl )
+add_subdirectory( kssl/kcm )
+add_subdirectory( misc )
+add_subdirectory( tests )
+add_subdirectory( httpfilter/autotests )
+if (NOT KIO_NO_STRIGI)
+   add_subdirectory( kio/dummyanalyzers )
+endif()
 
 ########### install files ###############
 install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

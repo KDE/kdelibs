@@ -4,18 +4,6 @@ check_function_exists(mmap HAVE_MMAP)
 check_symbol_exists(posix_madvise "sys/mman.h" HAVE_MADVISE)
 configure_file(config-ksycoca.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-ksycoca.h )
 
-include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/services
-   ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
-   ${CMAKE_CURRENT_SOURCE_DIR}/plugin
-   ${QT_INCLUDES} )
-include_directories(
-   ${KCoreAddons_INCLUDE_DIRS} # for KAboutData
-   ${KConfig_INCLUDE_DIRS}
-   ${ki18n_SOURCE_DIR}/src
-   ${ki18n_BINARY_DIR}/src
-)
-
 set(kservice_SRCS
    services/kmimetypefactory.cpp
    services/kmimetypetrader.cpp
@@ -46,11 +34,19 @@ set(kservice_SRCS
 
 add_library(kservice ${kservice_SRCS})
 generate_export_header(kservice)
+set(kservice_includes
+   ${CMAKE_CURRENT_SOURCE_DIR}/services
+   ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
+   ${CMAKE_CURRENT_SOURCE_DIR}/plugin)
+target_include_directories(kservice PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
 
 target_link_libraries(kservice
-   ${QT_QTDBUS_LIBRARY}
-   ${KCoreAddons_LIBRARIES}
-   ${KConfig_CORE_LIBRARY}
+   ${QT_QTDBUS_LIBRARY})
+target_link_libraries(kservice
+  LINK_PUBLIC
+    KConfigCore
+    KCoreAddons
+  LINK_PRIVATE
    ki18n
 )
 

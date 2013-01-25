@@ -11,9 +11,6 @@ if(BUILDING_EXPERIMENTAL_SEPARATELY)
    find_package(KDE4 4.2.85 REQUIRED)
    include(MacroLibrary)
    include(KDE4Defaults)
-else(BUILDING_EXPERIMENTAL_SEPARATELY)
-   include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-                       ${KDE4_KDEUI_INCLUDES})
 endif(BUILDING_EXPERIMENTAL_SEPARATELY)
 
 

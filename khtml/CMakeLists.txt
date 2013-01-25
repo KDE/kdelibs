@@ -44,7 +44,6 @@ if(X11_FOUND)
 endif(X11_FOUND)
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
-include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
@@ -472,22 +471,8 @@ add_subdirectory( pics )
 
 include_directories(
    ${PHONON_INCLUDE_DIR}
-   ${KDE4_KPARTS_INCLUDES}
    ${CMAKE_BINARY_DIR}/kio/kssl
-   ${KDE4_KJS_INCLUDES}
-   ${CMAKE_SOURCE_DIR}/kimgio
    ${CMAKE_SOURCE_DIR}/kio/kssl
-   ${CMAKE_SOURCE_DIR}/interfaces
-   ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
-   ${CMAKE_SOURCE_DIR}/staging/sonnet
-   ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core
-   ${CMAKE_BINARY_DIR}/staging/sonnet/src/core
-   ${KArchive_INCLUDE_DIRS}
-   ${KAuth_INCLUDE_DIRS}
-   ${KCoreAddons_INCLUDE_DIRS}
-   ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core/
-   ${ki18n_SOURCE_DIR}/src
-   ${ki18n_BINARY_DIR}/src
    ${KWindowSystem_INCLUDE_DIRS}
 )
 

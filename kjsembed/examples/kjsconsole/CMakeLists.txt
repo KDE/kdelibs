@@ -1,10 +1,6 @@
 
 project(kjsembed-console)
 
-include_directories( ${KDE4_KDEUI_INCLUDES} )
-include_directories( ${CMAKE_SOURCE_DIR}/kjsembed ${CMAKE_SOURCE_DIR}/kjsembed/kjsembed )
-
-
 ########### next target ###############
 
 set(console_SRCS

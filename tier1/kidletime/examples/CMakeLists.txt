@@ -1,5 +1,3 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src
-                    ${CMAKE_CURRENT_BINARY_DIR}/../src)
 
 remove_definitions(-DQT_NO_KEYWORDS)
 

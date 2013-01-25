@@ -35,14 +35,6 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KJS
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}        # kjs_version.h
-  ${CMAKE_CURRENT_BINARY_DIR}/src    # kjs/global.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/src    # kjs/* and wtf/*
-  ${CMAKE_CURRENT_BINARY_DIR}/src/kjs
-  ${CMAKE_CURRENT_SOURCE_DIR}/src/kjs
-)
-
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)

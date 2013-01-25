@@ -1,8 +1,5 @@
 
-include_directories(${PHONON_INCLUDE_DIR} ${KDE4_KIO_INCLUDES})
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-
+include_directories(${PHONON_INCLUDE_DIR})
 
 ########### next target ###############
 

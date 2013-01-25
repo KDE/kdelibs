@@ -1,13 +1,4 @@
 project(kutils)
-include_directories( ${KDE4_KDEUI_INCLUDES}
-                     ${KDE4_KPARTS_INCLUDES}
-                     ${CMAKE_CURRENT_SOURCE_DIR}
-                     ${CMAKE_CURRENT_BINARY_DIR}
-                     ${KWidgetsAddons_INCLUDE_DIRS}
-                     ${KAuth_INCLUDE_DIRS}
-                     ${ki18n_SOURCE_DIR}/src
-                     ${ki18n_BINARY_DIR}/src
-)
 
 # kcmoduleproxy.cpp:219:8: error: ‘class QApplication’ has no member named ‘syncX’
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)

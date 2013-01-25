@@ -1,13 +1,6 @@
 
 add_subdirectory( tests )
 
-# all done by parent dir
-# include_directories( ${KDE4_KIO_INCLUDES} )
-include_directories( ${kinterprocesswindowing_SOURCE_DIR}/src )
-include_directories( ${kinterprocesswindowing_BINARY_DIR}/src )
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-
 ####### kcookiejar4: command line tool for talking to the kded kcookiejar module #######
 
 set(kcookiejar_SRCS

@@ -83,13 +83,7 @@ find_package(BZip2)
 find_package(OpenSSL)
 find_package(Libintl)
 
-
-add_definitions(${QT_DEFINITIONS})
-
 link_directories(${QJS_LIB_DIR})
-
-# for including config.h and for includes like <kparts/foo.h>
-include_directories( ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR})
 
 # Those variables for  are only valid inside of kdelibs, of course.
 # Use the one variable for the lib you depend upon.
@@ -111,12 +105,6 @@ configure_file(${CMAKE_SOURCE_DIR}/../../config-prefix.h.cmake ${CMAKE_CURRENT_B
 configure_file(${CMAKE_SOURCE_DIR}/../../config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
 
 include(KDE4Macros)
-
-if (NOT QTONLY_WEBKIT)
-   include_directories( ${CMAKE_SOURCE_DIR}/../.. ${CMAKE_SOURCE_DIR}/../../wtf ${CMAKE_SOURCE_DIR}/../../kjsembed ${KDE4_KJS_INCLUDES} ${QT_INCLUDES} ${KDEWIN_INCLUDES} )
-else (NOT QTONLY_WEBKIT)
-   include_directories(  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/kjs/  ${QTONLY_WEBKIT_DIR}/JavaScriptCore/ ${CMAKE_SOURCE_DIR}/../../kjsembed ${QT_INCLUDES} ${KDEWIN_INCLUDES} )
-endif (NOT QTONLY_WEBKIT)
 
 # list the subdirectories
 if (NOT QTONLY_WEBKIT)

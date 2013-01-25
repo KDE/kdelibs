@@ -13,13 +13,11 @@ set_package_properties(OpenEXR PROPERTIES DESCRIPTION "Support for OpenEXR image
                        TYPE OPTIONAL
                       )
 
-include_directories( ${KDE4_KDEUI_INCLUDES} )
-
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")
 
 configure_file(config-kimgio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kimgio.h )
 check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
-check_include_files(stdint.h      HAVE_STDINT_H) 
+check_include_files(stdint.h      HAVE_STDINT_H)
 
 if(JASPER_FOUND)
 
@@ -100,7 +98,7 @@ target_link_libraries(kimg_psd Qt5::Widgets)
 install(TARGETS kimg_psd  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
 
 ##################################
-                                              
+
 set(kimg_xview_LIB_SRCS xview.cpp)
 kde4_add_plugin(kimg_xview ${kimg_xview_LIB_SRCS})
 target_link_libraries(kimg_xview Qt5::Widgets)
@@ -110,7 +108,7 @@ install(TARGETS kimg_xview  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
 ##################################
 
 if(OPENEXR_FOUND)
-    include_directories( ${CMAKE_SOURCE_DIR}/kio ${OPENEXR_INCLUDE_DIR} )
+    include_directories( ${OPENEXR_INCLUDE_DIR} )
     add_definitions(${OPENEXR_DEFINITIONS})
     set(kimg_exr_LIB_SRCS exr.cpp)
     kde4_add_plugin(kimg_exr ${kimg_exr_LIB_SRCS})

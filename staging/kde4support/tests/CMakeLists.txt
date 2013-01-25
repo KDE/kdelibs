@@ -1,16 +1,3 @@
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/../src/kdecore
-  ${CMAKE_CURRENT_SOURCE_DIR}/../src/kdeui
-  ${CMAKE_CURRENT_BINARY_DIR}/../src
-  ${KDE4_KDECORE_INCLUDES}
-  ${KDE4_KDEUI_INCLUDES}
-  ${ki18n_SOURCE_DIR}/src
-  ${ki18n_BINARY_DIR}/src
-  ${kwidgets_SOURCE_DIR}/src/dialogs
-  ${kwidgets_SOURCE_DIR}/src/icons
-  ${kwidgets_SOURCE_DIR}/src/utils
-  ${kwidgets_BINARY_DIR}/src
-)
 
 include(ECMMarkAsTest)
 

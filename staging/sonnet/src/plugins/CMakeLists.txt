@@ -1,10 +1,4 @@
 
-include_directories(
- ${CMAKE_CURRENT_SOURCE_DIR}/../core
- ${CMAKE_CURRENT_BINARY_DIR}/../core
- ${KDE4_KDECORE_INCLUDES}
- )
-
 # you can find find_package() in kdelibs/cmake/modules/OptionalFindPackage.cmake
 # it is the same as FIND_PACKAGE(<name>) but additionally creates an OPTION(WITH_<name>)
 # so the checking for the software can be disabled via ccmake or -DWITH_<name>=OFF

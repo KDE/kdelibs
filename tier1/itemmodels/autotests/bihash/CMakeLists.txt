@@ -6,13 +6,6 @@ find_package(Qt4)
 
 include(${QT_USE_FILE})
 
-include_directories(
-  ${QT_INCLUDES}
-  ${CMAKE_CURRENT_BINARY_DIR}
-  ${PROJECT_SOURCE_DIR}/../../itemviews
-  ${PROJECT_BINARY_DIR}
-)
-
 set(functionalitytest_srcs
   functionalitytest.cpp
 )

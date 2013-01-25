@@ -20,9 +20,9 @@
 
 #include <kurlrequester.h>
 
-#include <QtTest/QtTestWidgets>
 
 #include <QDebug>
+#include <QtTest/QtTest>
 
 class KUrlRequesterTest : public QObject
 {

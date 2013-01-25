@@ -3,11 +3,6 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
-include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src
-   ${CMAKE_CURRENT_BINARY_DIR}/../src
-)
-
 include(ECMMarkAsTest)
 
 macro(KWINDOWSYSTEM_UNIT_TESTS)

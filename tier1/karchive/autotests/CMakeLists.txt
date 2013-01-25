@@ -1,11 +1,8 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src
-   ${CMAKE_CURRENT_BINARY_DIR}/../src
-)
-
 include(ECMMarkAsTest)
+
+find_package(Qt5Test REQUIRED)
 
 macro(KARCHIVE_UNIT_TESTS)
    foreach(_testname ${ARGN})
@@ -25,6 +22,7 @@ karchive_unit_tests(
 add_executable(klimitediodevicetest klimitediodevicetest.cpp ../src/klimitediodevice.cpp)
 add_test(karchive-klimitediodevicetest klimitediodevicetest)
 target_link_libraries(klimitediodevicetest ${QT_QTTEST_LIBRARY} )
+target_include_directories(klimitediodevicetest PRIVATE $<TARGET_PROPERTY:KArchive,INTERFACE_INCLUDE_DIRECTORIES>)
 
 ########### kfiltertest ###############
 

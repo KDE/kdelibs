@@ -1,5 +1,3 @@
-include_directories( ${KDE4_KDEUI_INCLUDES} )
-
 include(ECMMarkAsTest)
 
 macro(kwidgets_unit_tests)

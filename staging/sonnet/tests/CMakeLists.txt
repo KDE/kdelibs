@@ -2,11 +2,6 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
 
-include_directories(
-  ${CMAKE_CURRENT_SOURCE_DIR}/../src/core
-  ${CMAKE_CURRENT_BINARY_DIR}/../src/core
-  ${KDE4_KDEUI_INCLUDES}  # for sonnet/dialog.h (TODO)
-)
 ########### test_suggest ###############
 
 # TODO automate and merge with test_filter?

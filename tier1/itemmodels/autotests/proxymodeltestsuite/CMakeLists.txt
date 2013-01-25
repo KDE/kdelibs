@@ -11,7 +11,6 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
 include_directories(
-  ${proxymodeltestsuite_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/../../src
   ${CMAKE_CURRENT_BINARY_DIR}/../../src
 )

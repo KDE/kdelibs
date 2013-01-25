@@ -1,18 +1,6 @@
 
 project(kjsembed-kjscmd)
 
-include_directories(
-    ${KDE4_KJS_INCLUDES}
-    ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${CMAKE_CURRENT_BINARY_DIR}/../kjsembed
-    ${KDE4_KDECORE_INCLUDES}
-    ${KDE4_KDEUI_INCLUDES}
-    ${ki18n_SOURCE_DIR}/src
-    ${ki18n_BINARY_DIR}/src
-    ${kde4support_SOURCE_DIR}/src/kdeui
-    ${kde4support_BINARY_DIR}/src
-)
-
 
 ########### next target ###############
 

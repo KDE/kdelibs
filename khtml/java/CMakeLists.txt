@@ -24,7 +24,7 @@ set(kjavaappletviewer_PART_SRCS
 
 kde4_add_plugin(kjavaappletviewer ${kjavaappletviewer_PART_SRCS})
 
-target_link_libraries(kjavaappletviewer ${KDE4_KPARTS_LIBS} ${KWindowSystem_LIBRARIES} ${kinterprocesswindowing_LIBRARY})
+target_link_libraries(kjavaappletviewer ${KDE4_KPARTS_LIBS} ${KWindowSystem_LIBRARIES} ${kinterprocesswindowing_LIBRARY} kde4support)
 
 install(TARGETS kjavaappletviewer  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

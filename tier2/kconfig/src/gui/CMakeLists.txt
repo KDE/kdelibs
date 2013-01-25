@@ -1,7 +1,3 @@
-include_directories(
-   ${CMAKE_CURRENT_SOURCE_DIR}/../core
-   ${CMAKE_CURRENT_BINARY_DIR}/../core
-)
 
 set(libkconfiggui_SRCS
    kconfiggui.cpp

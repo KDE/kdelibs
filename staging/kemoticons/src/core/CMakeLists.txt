@@ -1,14 +1,4 @@
 ############# kemoticons library ###################
-include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${KDE4_KIO_INCLUDES}
-    ${KCoreAddons_INCLUDE_DIRS}
-    ${KArchive_INCLUDE_DIRS}
-    ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core # kconfigcore_export.h
-    ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core # ksharedconfig.h
-    ${CMAKE_BINARY_DIR}/staging/kwidgets/src
-)
 
 set(kemoticons_LIB_SRCS
     kemoticons.cpp

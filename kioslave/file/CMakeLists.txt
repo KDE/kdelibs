@@ -1,10 +1,6 @@
 
 project(kioslave-file)
 
-include_directories( ${KDE4_KIO_INCLUDES} )
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-
 include(ConfigureChecks.cmake)
 configure_file(config-kioslave-file.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kioslave-file.h )
 

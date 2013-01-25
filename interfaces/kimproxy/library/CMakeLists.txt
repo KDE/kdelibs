@@ -1,8 +1,5 @@
 add_subdirectory( icons )
 
-
-include_directories( ${KDE4_KIO_INCLUDES} )
-
 ########### next target ###############
 
 set(kimproxy_LIB_SRCS

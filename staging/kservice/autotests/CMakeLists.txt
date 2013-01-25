@@ -1,21 +1,10 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-include_directories(
-   ${CMAKE_CURRENT_BINARY_DIR}/../src
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src/sycoca
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src/services
-   ${CMAKE_CURRENT_SOURCE_DIR}/../src/plugin
-)
-
-include_directories(
-  ${KConfig_INCLUDE_DIRS}
-  ${ki18n_SOURCE_DIR}/src
-  ${ki18n_BINARY_DIR}/src
-)
-
 include(ECMMarkAsTest)
 
 ########### unittests ###############
+
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Concurrent)
 
 macro(KSERVICE_UNIT_TESTS)
   foreach(_testname ${ARGN})
@@ -27,8 +16,8 @@ macro(KSERVICE_UNIT_TESTS)
        ${QT_QTXML_LIBRARY}
        ${KConfig_CORE_LIBRARY}
        ki18n
+       Qt5::Concurrent
     )
-    #target_link_libraries(${_testname} kservice ${QT_QTCONCURRENT_LIBRARY})
     ecm_mark_as_test(${_testname})
   endforeach()
 endmacro(KSERVICE_UNIT_TESTS)

@@ -22,8 +22,6 @@ else ()
    set (HAVE_XSYNC 0)
 endif ()
 
-include_directories(${Qt5X11Extras_INCLUDE_DIRS})
-
 configure_file(config-kidletime.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kidletime.h )
 
 set(kidletime_LIB_SRCS

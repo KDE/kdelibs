@@ -6,14 +6,7 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
 include_directories(
-   ${KDE4_KIO_INCLUDES}
-   ${CMAKE_CURRENT_SOURCE_DIR}/..
    ${LIBATTICA_INCLUDE_DIR}
-   ${KArchive_INCLUDE_DIRS}
-   ${KAuth_INCLUDE_DIRS}
-   ${KCoreAddons_INCLUDE_DIRS}
-   ${ki18n_SOURCE_DIR}/src
-   ${ki18n_BINARY_DIR}/src
 )
 
 set(knewstuff3_SRCS
@@ -54,6 +47,7 @@ kde4_add_ui_files(knewstuff3_SRCS
 
 kde4_add_library(knewstuff3 ${LIBRARY_TYPE} ${knewstuff3_SRCS} )
 
+target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}

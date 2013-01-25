@@ -2,10 +2,6 @@ add_subdirectory( kfileaudiopreview )
 
 find_package(Phonon4Qt5 4.6.60 REQUIRED NO_MODULE)
 
-include_directories( ${KDE4_KPARTS_INCLUDES} )
-include_directories( ${ki18n_SOURCE_DIR}/src )
-include_directories( ${ki18n_BINARY_DIR}/src )
-
 ########### next target ###############
 
 set(kmediaplayer_LIB_SRCS

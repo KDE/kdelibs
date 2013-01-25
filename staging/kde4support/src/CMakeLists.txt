@@ -67,31 +67,6 @@ if (Q_OS_WIN)
     set(libkde4support_SRCS ${libkde4support_SRCS} kernel/kapplication_win.cpp)
 endif (Q_OS_WIN)
 
-include_directories(
-    ${CMAKE_SOURCE_DIR}/kdecore/kernel/ # for KComponentData
-    ${CMAKE_BINARY_DIR}/kdecore/
-    ${CMAKE_SOURCE_DIR}/kdecore/config/
-    ${CMAKE_SOURCE_DIR}/kdecore/io/
-    ${CMAKE_SOURCE_DIR}/kdecore/util/
-    ${CMAKE_SOURCE_DIR}/kdecore/localization/
-    ${KDE4_KDEUI_INCLUDES}
-    ${KCoreAddons_INCLUDE_DIRS}
-    ${KConfig_INCLUDE_DIRS}
-    ${kservice_BINARY_DIR}/src
-    ${kservice_SOURCE_DIR}/src/sycoca
-    ${kservice_SOURCE_DIR}/src/services
-    ${kwidgets_BINARY_DIR}/src
-    ${kwidgets_SOURCE_DIR}/src/icons # kiconloader
-    ${kwidgets_SOURCE_DIR}/src/utils # kglobalsettings
-    ${kwidgets_SOURCE_DIR}/src/widgets # kpushbutton
-    ${KWidgetsAddons_INCLUDE_DIRS}
-    ${KWindowSystem_INCLUDE_DIRS}
-    ${KAuth_INCLUDE_DIRS}
-    ${kinterprocesswindowing_BINARY_DIR}/src
-    ${kinterprocesswindowing_SOURCE_DIR}/src
-    ${Qt5X11Extras_INCLUDE_DIRS}
-)
-
 # Configure checks for network/ but also for netsupp.*
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
@@ -101,6 +76,14 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
 add_library(kde4support ${libkde4support_SRCS})
 generate_export_header(kde4support)
+
+set(kde4support_INCLUDES
+  "${CMAKE_CURRENT_SOURCE_DIR}/kdecore"
+  "${CMAKE_CURRENT_SOURCE_DIR}/kdeui"
+  "${CMAKE_SOURCE_DIR}"
+  "${CMAKE_CURRENT_SOURCE_DIR}/kparts"
+)
+target_include_directories(kde4support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
 target_link_libraries(kde4support Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY} kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets ${KAuth_LIBRARIESss} kdeui ki18n kinterprocesswindowing ${X11_LIBRARIES})
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
