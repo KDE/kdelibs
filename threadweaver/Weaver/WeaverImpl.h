@@ -104,7 +104,7 @@ namespace ThreadWeaver {
             Only jobs that have no unresolved dependencies are considered
 	    available. If only jobs that depened on other, unfinished jobs are
 	    in the queue, this method returns a nil pointer. */
-        Job* takeFirstAvailableJob();
+        Job* takeFirstAvailableJob(Job* previous);
         /** Schedule enqueued jobs to be executed by idle threads.
             This will try to distribute as many jobs as possible
             to all idle threads. */
@@ -174,19 +174,19 @@ namespace ThreadWeaver {
 	/** Mutex to serialize operations. */
 	QMutex *m_mutex;
 
-        /** Non-recursive mutex to serialize calls to finish(). */
-        QMutex* m_finishMutex;
+    /** Non-recursive mutex to serialize calls to finish(). */
+    QMutex* m_finishMutex;
 
-        /** Mutex used by m_jobAvailable wait condition. */
-        QMutex* m_jobAvailableMutex;
+    /** Mutex used by m_jobAvailable wait condition. */
+    QMutex* m_jobAvailableMutex;
 
-        // @TODO: make state objects static
-	/** The state of the art.
-         * @see StateId
-         */
-	State*  m_state;
-        /** The state objects. */
-        State *m_states[NoOfStates];
+    // @TODO: make state objects static
+    /** The state of the art.
+    * @see StateId
+    */
+    State*  m_state;
+    /** The state objects. */
+    State *m_states[NoOfStates];
     };
 
 } // namespace ThreadWeaver

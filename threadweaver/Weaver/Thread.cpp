@@ -117,7 +117,6 @@ void Thread::msleep(unsigned long msec)
     QThread::msleep(msec);
 }
 
-
 void Thread::requestAbort ()
 {
     QMutexLocker l(&d->mutex); Q_UNUSED(l);
