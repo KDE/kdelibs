@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2013 Patrick von Reth <vonreth@kde.org>
+    Copyright 2013 Patrick von Reth <vonreth@kde.org>
     
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -27,6 +27,7 @@
 #include "winstorageaccess.h"
 #include "winstoragedrive.h"
 #include "winopticaldrive.h"
+#include "winopticaldisc.h"
 
 using namespace Solid::Backends::Win;
 
@@ -51,6 +52,8 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::StorageVolume;
     else if (type == "storage.cdrom")
         m_type = Solid::DeviceInterface::OpticalDrive;
+    else if (type == "volume.disc")
+        m_type = Solid::DeviceInterface::OpticalDisc;
 
 
 
@@ -59,6 +62,11 @@ WinDevice::WinDevice(const QString &udi) :
     case Solid::DeviceInterface::StorageVolume:
     {
         m_parentUdi = QString("/org/kde/solid/win/storage/").append(parentName);
+    }
+        break;
+    case Solid::DeviceInterface::OpticalDisc:
+    {
+        m_parentUdi = QString("/org/kde/solid/win/storage.cdrom/").append(parentName);
     }
         break;
     default:
@@ -125,17 +133,15 @@ QString WinDevice::icon() const
     QString icon;
     switch(type()){
 
-    //    case Solid::DeviceInterface::OpticalDisc:
-    //    {
-    ////        WmiDevice dev(udi());
-    ////        OpticalDisc disk(&dev);
-    ////        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
-    ////            propertyName = "media-optical-audio";
-    ////        else
-    ////            propertyName = "drive-optical";
-
-    ////        break;
-    //    }
+    case Solid::DeviceInterface::OpticalDisc:
+    {
+        WinOpticalDisc disk(const_cast<WinDevice*>(this));
+        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
+            icon = "media-optical-audio";
+        else
+            icon = "drive-optical";
+        break;
+    }
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
     {
@@ -232,9 +238,9 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::StorageVolume:
         iface = new WinStorageVolume(this);
         break;
-        //      case Solid::DeviceInterface::OpticalDisc:
-        //          iface = new OpticalDisc(this);
-        //          break;
+    case Solid::DeviceInterface::OpticalDisc:
+        iface = new WinOpticalDisc(this);
+        break;
         //      case Solid::DeviceInterface::PortableMediaPlayer:
         //          iface = new PortableMediaPlayer(this);
         //          break;

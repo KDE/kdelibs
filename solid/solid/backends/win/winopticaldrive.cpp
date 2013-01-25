@@ -20,97 +20,18 @@
 
 #include "winopticaldrive.h"
 
-#include <ntddcdrm.h>
-#include <ntddmmc.h>
 
 
 
 using namespace Solid::Backends::Win;
 
-QMap<ulong,Solid::OpticalDrive::MediumTypes> WinOpticalDrive::MediaProfiles::profileMap = QMap<ulong,Solid::OpticalDrive::MediumTypes>();
-
-
-WinOpticalDrive::MediaProfiles Profiles[] =
-{
-    WinOpticalDrive::MediaProfiles(ProfileCdRecordable,Solid::OpticalDrive::Cdr),
-    WinOpticalDrive::MediaProfiles(ProfileCdRewritable,Solid::OpticalDrive::Cdrw),
-    WinOpticalDrive::MediaProfiles(ProfileDvdRom,Solid::OpticalDrive::Dvd),
-    WinOpticalDrive::MediaProfiles(ProfileDvdRecordable,Solid::OpticalDrive::Dvdr),
-    WinOpticalDrive::MediaProfiles(ProfileDvdRewritable,Solid::OpticalDrive::Dvdrw),
-    WinOpticalDrive::MediaProfiles(ProfileDvdRam,Solid::OpticalDrive::Dvdram),
-    WinOpticalDrive::MediaProfiles(ProfileDvdPlusR,Solid::OpticalDrive::Dvdplusr),
-    WinOpticalDrive::MediaProfiles(ProfileDvdPlusRW,Solid::OpticalDrive::Dvdplusrw),
-    WinOpticalDrive::MediaProfiles(ProfileDvdPlusRDualLayer,Solid::OpticalDrive::Dvdplusdl),
-    WinOpticalDrive::MediaProfiles(ProfileDvdPlusRWDualLayer,Solid::OpticalDrive::Dvdplusdlrw),
-    WinOpticalDrive::MediaProfiles(ProfileBDRom,Solid::OpticalDrive::Bd),
-    WinOpticalDrive::MediaProfiles(ProfileBDRRandomWritable,Solid::OpticalDrive::Bdr),
-    WinOpticalDrive::MediaProfiles(ProfileBDRSequentialWritable,Solid::OpticalDrive::Bdr),
-    WinOpticalDrive::MediaProfiles(ProfileBDRewritable,Solid::OpticalDrive::Bdre),
-    WinOpticalDrive::MediaProfiles(ProfileHDDVDRom,Solid::OpticalDrive::HdDvd),
-    WinOpticalDrive::MediaProfiles(ProfileHDDVDRecordable,Solid::OpticalDrive::HdDvdr),
-    WinOpticalDrive::MediaProfiles(ProfileHDDVDRewritable,Solid::OpticalDrive::HdDvdrw),
-
-};
-
-
 WinOpticalDrive::WinOpticalDrive(WinDevice *device) :
     WinStorageDrive(device)
 {
-    //for opticaldisc
-    //    char buffer[1024];
-    //    WinDeviceManager::getDeviceInfo(m_device->driveLetter(),IOCTL_STORAGE_GET_MEDIA_TYPES_EX,buffer,1024);
-
-    //    GET_MEDIA_TYPES *info = (GET_MEDIA_TYPES*)buffer;
-    //    qDebug()<<"cd"<<info->DeviceType;
-    //    ulong characteristics = info->MediaInfo[0].DeviceSpecific.DiskInfo.MediaCharacteristics;
-    //    switch(info->DeviceType)
-    //    {
-    //    case FILE_DEVICE_CD_ROM:
-    //        if(characteristics == MEDIA_WRITE_ONCE)
-    //        {
-    //            m_supportedTypes = Solid::OpticalDrive::Cdr;
-    //        }
-    //        else if(characteristics == MEDIA_READ_WRITE)
-    //        {
-    //            m_supportedTypes = Solid::OpticalDrive::Cdrw;
-    //        }
-    //        break;
-    //    case FILE_DEVICE_DVD:
-    //        if(characteristics == MEDIA_WRITE_ONCE)
-    //        {
-    //            m_supportedTypes = Solid::OpticalDrive::Dvdr;
-    //        }
-    //        else if(characteristics == MEDIA_READ_WRITE)
-    //        {
-    //            m_supportedTypes = Solid::OpticalDrive::Dvdrw;
-    //        }
-    //        break;
-    //    default:
-    //        m_supportedTypes = 0;
-    //    }
-
-    //thx to http://www.adras.com/Determine-optical-drive-type-and-capabilities.t6826-144-1.html
-
-
-    size_t buffSize = 1024;
-    char buffer[buffSize];
-    GET_CONFIGURATION_IOCTL_INPUT input;
-    ZeroMemory(&input,sizeof(GET_CONFIGURATION_IOCTL_INPUT));
-    input.Feature = FeatureProfileList;
-    input.RequestType = SCSI_GET_CONFIGURATION_REQUEST_TYPE_ALL;
-
-    WinDeviceManager::getDeviceInfo<GET_CONFIGURATION_IOCTL_INPUT>(m_device->driveLetter(),IOCTL_CDROM_GET_CONFIGURATION,buffer,buffSize,&input);
-
-    GET_CONFIGURATION_HEADER *info = (GET_CONFIGURATION_HEADER*)buffer;
-    FEATURE_DATA_PROFILE_LIST* profile = (FEATURE_DATA_PROFILE_LIST*)info->Data;
-    FEATURE_DATA_PROFILE_LIST_EX* feature = profile->Profiles;
-    for(int i = 0;i<profile->Header.AdditionalLength/4;++feature,++i)
+    QMap<ulong,MediaProfiles> profiles = MediaProfiles::profiles(m_device->driveLetter());
+    foreach(const MediaProfiles p,profiles.values())
     {
-        ulong val =  (feature->ProfileNumber[0] << 8 | feature->ProfileNumber[1] << 0);
-        if(MediaProfiles::profileMap.contains(val))
-        {
-            m_supportedTypes |= MediaProfiles::profileMap[val];
-        }
+        m_supportedTypes |= p.type;
     }
 }
 
@@ -145,6 +66,101 @@ int WinOpticalDrive::writeSpeed() const
 int WinOpticalDrive::readSpeed() const
 {
     return 0;
+}
+
+
+MediaProfiles::MediaProfiles() :
+    profile(0),
+    type(0),
+    active(false)
+{
+}
+
+MediaProfiles::MediaProfiles(ulong profile, Solid::OpticalDrive::MediumTypes type, QString name):
+    profile(profile),
+    type(type),
+    name(name),
+    active(false)
+{
+}
+
+MediaProfiles::MediaProfiles(FEATURE_DATA_PROFILE_LIST_EX *feature) :
+    profile(0),
+    type(0),
+    active(false)
+{
+    ulong val =  (feature->ProfileNumber[0] << 8 | feature->ProfileNumber[1] << 0);
+    MediaProfiles p =  MediaProfiles::getProfile(val);
+    if(!p.isNull())
+    {
+        profile = p.profile;
+        type = p.type;
+        name = p.name;
+        active =  feature->Current;
+    }
+}
+
+bool MediaProfiles::isNull()
+{
+    return name.isNull();
+}
+
+QMap<ulong,MediaProfiles> MediaProfiles::profiles(const QString &drive)
+{
+
+    //thx to http://www.adras.com/Determine-optical-drive-type-and-capabilities.t6826-144-1.html
+
+    QMap<ulong,MediaProfiles> out;
+    size_t buffSize = 1024;
+    char buffer[buffSize];
+    GET_CONFIGURATION_IOCTL_INPUT input;
+    ZeroMemory(&input,sizeof(GET_CONFIGURATION_IOCTL_INPUT));
+    input.Feature = FeatureProfileList;
+    input.RequestType = SCSI_GET_CONFIGURATION_REQUEST_TYPE_ALL;
+
+    WinDeviceManager::getDeviceInfo<GET_CONFIGURATION_IOCTL_INPUT>(drive,IOCTL_CDROM_GET_CONFIGURATION,buffer,buffSize,&input);
+
+    GET_CONFIGURATION_HEADER *info = (GET_CONFIGURATION_HEADER*)buffer;
+    FEATURE_DATA_PROFILE_LIST* profile = (FEATURE_DATA_PROFILE_LIST*)info->Data;
+    FEATURE_DATA_PROFILE_LIST_EX* feature = profile->Profiles;
+    for(int i = 0;i<profile->Header.AdditionalLength/4;++feature,++i)
+    {
+        MediaProfiles p = MediaProfiles(feature);
+        if(!p.isNull())
+        {
+            out.insert(p.profile,p);
+        }
+    }
+
+    return out;
+}
+
+const MediaProfiles MediaProfiles::getProfile(ulong val)
+{
+#define AddProfile(profile,type) profiles.insert(profile,MediaProfiles(profile,type,#profile))
+    static QMap<ulong,MediaProfiles> profiles;
+    if(profiles.isEmpty())
+    {
+        AddProfile(ProfileCdrom,0);
+        AddProfile(ProfileCdRecordable,Solid::OpticalDrive::Cdr);
+        AddProfile(ProfileCdRewritable,Solid::OpticalDrive::Cdrw);
+        AddProfile(ProfileDvdRom,Solid::OpticalDrive::Dvd);
+        AddProfile(ProfileDvdRecordable,Solid::OpticalDrive::Dvdr);
+        AddProfile(ProfileDvdRewritable,Solid::OpticalDrive::Dvdrw);
+        AddProfile(ProfileDvdRam,Solid::OpticalDrive::Dvdram);
+        AddProfile(ProfileDvdPlusR,Solid::OpticalDrive::Dvdplusr);
+        AddProfile(ProfileDvdPlusRW,Solid::OpticalDrive::Dvdplusrw);
+        AddProfile(ProfileDvdPlusRDualLayer,Solid::OpticalDrive::Dvdplusdl);
+        AddProfile(ProfileDvdPlusRWDualLayer,Solid::OpticalDrive::Dvdplusdlrw);
+        AddProfile(ProfileBDRom,Solid::OpticalDrive::Bd);
+        AddProfile(ProfileBDRRandomWritable,Solid::OpticalDrive::Bdr);
+        AddProfile(ProfileBDRSequentialWritable,Solid::OpticalDrive::Bdr);
+        AddProfile(ProfileBDRewritable,Solid::OpticalDrive::Bdre);
+        AddProfile(ProfileHDDVDRom,Solid::OpticalDrive::HdDvd);
+        AddProfile(ProfileHDDVDRecordable,Solid::OpticalDrive::HdDvdr);
+        AddProfile(ProfileHDDVDRewritable,Solid::OpticalDrive::HdDvdrw);
+    }
+    return profiles[val];
 }
 
 #include "winopticaldrive.moc"

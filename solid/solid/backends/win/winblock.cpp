@@ -1,5 +1,5 @@
 /*
-    Copyright 2012-2013 Patrick von Reth <vonreth@kde.org>
+    Copyright 2013 Patrick von Reth <vonreth@kde.org>
     
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -36,7 +36,8 @@ WinBlock::WinBlock(WinDevice *device):
         m_minor = info.PartitionNumber;
     }
     else if(m_device->type() == Solid::DeviceInterface::StorageDrive ||
-            m_device->type() == Solid::DeviceInterface::OpticalDrive)
+            m_device->type() == Solid::DeviceInterface::OpticalDrive ||
+            m_device->type() == Solid::DeviceInterface::OpticalDisc)
     {
         m_major = m_device->udi().mid(m_device->udi().length()-1).toInt();
     }
