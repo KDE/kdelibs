@@ -17,7 +17,7 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5Transitional REQUIRED Core Test)
+find_package(Qt5Transitional REQUIRED Test)
 
 if(NOT kdelibs_SOURCE_DIR)
   find_package(kdeqt5staging REQUIRED NO_MODULE)
