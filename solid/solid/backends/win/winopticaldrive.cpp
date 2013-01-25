@@ -47,6 +47,7 @@ Solid::OpticalDrive::MediumTypes WinOpticalDrive::supportedMedia() const
 
 bool WinOpticalDrive::eject()
 {
+    WinDeviceManager::getDeviceInfo<void*>(m_device->driveLetter(),IOCTL_STORAGE_EJECT_MEDIA ,NULL,0,NULL);
     return true;
 }
 
