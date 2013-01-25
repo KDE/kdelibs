@@ -52,7 +52,7 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::StorageVolume;
     else if (type == "storage.cdrom")
         m_type = Solid::DeviceInterface::OpticalDrive;
-    else if (type == "volume.disc")
+    else if (type == "volume.cdrom")
         m_type = Solid::DeviceInterface::OpticalDisc;
 
 
@@ -118,6 +118,8 @@ QString WinDevice::product() const
     switch(m_type)
     {
     case Solid::DeviceInterface::StorageVolume:
+    case Solid::DeviceInterface::OpticalDisc:
+    case Solid::DeviceInterface::OpticalDrive:
     {
         WinDevice wDev(udi());
         WinStorageVolume dev(&wDev);
