@@ -24,7 +24,6 @@ macro(KSERVICE_UNIT_TESTS)
        kservice
        ${QT_QTTEST_LIBRARY}
        ${QT_QTXML_LIBRARY}
-       ${QT_QTCORE_LIBRARY}
        ${QT_QTMAIN_LIBRARY}
        kconfigcore
     )

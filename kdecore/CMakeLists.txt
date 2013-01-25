@@ -207,7 +207,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs kservice ki18n
+    ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore kcodecs kservice ki18n
   LINK_PRIVATE
     ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
@@ -217,12 +217,12 @@ if(WINCE)
 endif(WINCE)
 
 if(WIN32)
-  set(kdecore_LINK_INTERFACE_LIBRARIES  ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDEWIN_LIBRARIES})
+  set(kdecore_LINK_INTERFACE_LIBRARIES  ${QT_QTDBUS_LIBRARY} ${KDEWIN_LIBRARIES})
 else(WIN32)
   if(APPLE)
-    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} ${CARBON_LIBRARY})
+    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} ${CARBON_LIBRARY})
   else(APPLE)
-    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} ${QT_QTCORE_LIBRARY} )
+    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} )
   endif(APPLE)
 endif(WIN32)
 

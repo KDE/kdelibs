@@ -25,7 +25,6 @@ generate_export_header(kwidgets)
 
 target_link_libraries(kwidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}
-  ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}
   ${QT_QTSVG_LIBRARY}
   ${QT_QTDBUS_LIBRARY}

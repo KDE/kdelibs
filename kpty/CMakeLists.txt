@@ -18,7 +18,7 @@ include(ConfigureChecks.cmake)
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
 
 target_link_libraries(kpty ${KDE4_KDECORE_LIBS} ${UTIL_LIBRARY} ${UTEMPTER_LIBRARY})
-target_link_libraries(kpty LINK_INTERFACE_LIBRARIES kdecore ki18n ${QT_QTCORE_LIBRARY} )
+target_link_libraries(kpty LINK_INTERFACE_LIBRARIES kdecore ki18n )
 
 set_target_properties(kpty PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

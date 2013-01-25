@@ -25,7 +25,7 @@ set(ThreadWeaver_LIB_SRCS
 
 add_library(threadweaver ${ThreadWeaver_LIB_SRCS})
 generate_export_header(threadweaver)
-target_link_libraries(threadweaver ${QT_QTCORE_LIBRARY})
+target_link_libraries(threadweaver LINK_PUBLIC ${QT_QTCORE_LIBRARY})
 
 set_target_properties(threadweaver PROPERTIES
     VERSION ${THREADWEAVER_VERSION_STRING}

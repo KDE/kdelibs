@@ -11,7 +11,7 @@ set(kwidgetsaddons_SRCS
 add_library(kwidgetsaddons ${kwidgetsaddons_SRCS})
 generate_export_header(kwidgetsaddons)
 
-target_link_libraries(kwidgetsaddons ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+target_link_libraries(kwidgetsaddons ${QT_QTGUI_LIBRARY})
 
 set_target_properties(kwidgetsaddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSION_STRING}
                                                 SOVERSION ${KWIDGETSADDONS_SOVERSION}

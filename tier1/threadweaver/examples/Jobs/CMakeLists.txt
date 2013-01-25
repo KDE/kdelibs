@@ -16,6 +16,6 @@ qt4_wrap_ui(Jobs_SRCS ${Jobs_SRCS_UI} )
 
 add_executable(Jobs ${Jobs_SRCS})
 
-target_link_libraries(Jobs ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDE4_KDECORE_LIBS} threadweaver ThreadWeaverGui)
+target_link_libraries(Jobs ${QT_QTGUI_LIBRARY} ${KDE4_KDECORE_LIBS} threadweaver ThreadWeaverGui)
 
 install(TARGETS Jobs DESTINATION ${BIN_INSTALL_DIR} )

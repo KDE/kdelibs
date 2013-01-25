@@ -49,7 +49,6 @@ add_library(kservice ${kservice_SRCS})
 generate_export_header(kservice)
 
 target_link_libraries(kservice
-   ${QT_QTCORE_LIBRARY}
    ${QT_QTDBUS_LIBRARY}
    kconfigcore
 )

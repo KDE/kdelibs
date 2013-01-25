@@ -9,6 +9,6 @@ set(Construction_SRCS
 
 add_executable(Construction ${Construction_SRCS})
 
-target_link_libraries(Construction ${QT_QTCORE_LIBRARY} threadweaver)
+target_link_libraries(Construction threadweaver)
 
 install(TARGETS Construction DESTINATION ${BIN_INSTALL_DIR} )

@@ -11,7 +11,7 @@ find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Gui)
 macro(KCOREADDONS_EXAMPLES)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-        target_link_libraries(${_testname} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} ${QT_QTMAIN_LIBRARY} kcoreaddons)
+        target_link_libraries(${_testname} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY} kcoreaddons)
         if(WINCE)
             target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
         endif()

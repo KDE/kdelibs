@@ -53,7 +53,6 @@ target_link_libraries(kiocore
  kconfigcore
  kcoreaddons
  ki18n
- ${QT_QTCORE_LIBRARY}
  ${QT_QTNETWORK_LIBRARY}
  ${QT_QTDBUS_LIBRARY}
 )

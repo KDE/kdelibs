@@ -65,7 +65,7 @@ _set_fancy(PLUGIN_INSTALL_DIR       "${LIB_INSTALL_DIR}/qjs"              "The s
 _set_fancy(INCLUDE_INSTALL_DIR      "${CMAKE_INSTALL_PREFIX}/include"      "The subdirectory to the header prefix")
 _set_fancy(DATA_INSTALL_DIR         "${SHARE_INSTALL_PREFIX}/apps"         "The parent directory where applications can install their data")
 
-set(KDE4_KDECORE_LIBS ${QT_QTCORE_LIBRARY})
+set(KDE4_KDECORE_LIBS)
 set(KDE4_KDEUI_LIBS ${KDE4_KDECORE_LIBS})
 
 

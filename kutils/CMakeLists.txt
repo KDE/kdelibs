@@ -88,7 +88,7 @@ set(kutils_LIB_SRCS
 
 kde4_add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
 
-target_link_libraries(kutils kidletime kcmutils kprintutils ${QT_QTCORE_LIBRARY})
+target_link_libraries(kutils kidletime kcmutils kprintutils)
 target_link_libraries(kutils LINK_INTERFACE_LIBRARIES kdecore kdeui ${QT_QTGUI_LIBRARY} kidletime kcmutils kprintutils)
 set_target_properties(kutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
