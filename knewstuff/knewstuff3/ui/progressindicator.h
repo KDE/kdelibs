@@ -51,7 +51,6 @@ public Q_SLOTS:
     void idle(const QString& message);
 
 private:
-    QVBoxLayout *m_detailsvbox;
     QLabel* m_statusLabel;
     KPixmapSequenceWidget* busyWidget;
 
