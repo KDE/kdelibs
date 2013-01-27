@@ -186,6 +186,8 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT")
 elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
   set(KAUTH_POLICY_GEN_SRCS ${KAUTH_POLICY_GEN_SRCS}
       backends/polkit-1/kauth-policy-gen-polkit1.cpp )
+  set(KAUTH_POLICY_GEN_LIBRARIES ${KAUTH_POLICY_GEN_LIBRARIES}
+      Qt5::Core)
 endif()
 
 ########################
