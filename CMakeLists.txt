@@ -412,6 +412,8 @@ endif(NOT WINCE)
 add_subdirectory( kioslave   )
 add_subdirectory( kparts     )
 add_subdirectory( kunitconversion )
+
+find_package(Phonon4Qt5 4.6.60)
 if (PHONON_FOUND)
     add_subdirectory( khtml  )
 endif(PHONON_FOUND)

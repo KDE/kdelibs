@@ -1,6 +1,7 @@
 configure_file(knotify-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/knotify-config.h )
 
-find_package(Phonon 4.3.80)
+find_package(Phonon4Qt5 4.6.60)
+
 macro_bool_to_01(PHONON_FOUND HAVE_PHONON)
 
 include_directories(BEFORE ${PHONON_INCLUDES})

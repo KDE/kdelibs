@@ -1,6 +1,6 @@
 add_subdirectory( kfileaudiopreview )
 
-find_package(Phonon 4.3.80 REQUIRED)
+find_package(Phonon4Qt5 4.6.60 REQUIRED)
 
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${ki18n_SOURCE_DIR}/src )
