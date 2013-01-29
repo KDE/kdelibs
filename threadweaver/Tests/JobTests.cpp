@@ -17,7 +17,7 @@ QMutex s_GlobalMutex;
 
 void JobTests::initTestCase ()
 {
-    ThreadWeaver::setDebugLevel ( true,  1 );
+    ThreadWeaver::setDebugLevel ( true, 1 );
 }
 
 // call finish() before leave a test to make sure the queue is empty
@@ -257,9 +257,11 @@ void JobTests::MassiveJobSequenceTest() {
         jobs[i].setValues( in.at(i), &sequence, in );
         jobSequence.addJob ( & ( jobs[i] ) );
     }
+
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
-    // ThreadWeaver::Job::DumpJobDependencies();
     ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     QCOMPARE ( sequence, in );
 }
 
