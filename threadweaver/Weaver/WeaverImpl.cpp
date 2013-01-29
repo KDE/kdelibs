@@ -386,15 +386,15 @@ bool WeaverImpl::isIdle () const
 void WeaverImpl::finish()
 {
 #ifdef QT_NO_DEBUG
-    const int MaxWaitMilliSeconds = 200;
+    const int MaxWaitMilliSeconds = 50;
 #else
-    const int MaxWaitMilliSeconds = 2000;
+    const int MaxWaitMilliSeconds = 500;
 #endif
-
     while ( !isIdle() ) {
+        Q_ASSERT(state().stateId() == WorkingHard);
         debug (2, "WeaverImpl::finish: not done, waiting.\n" );
         QMutexLocker l( m_finishMutex );
-        if ( m_jobFinished.wait( m_finishMutex, MaxWaitMilliSeconds ) == false ) {
+        if ( m_jobFinished.wait( l.mutex(), MaxWaitMilliSeconds ) == false ) {
             debug ( 2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n",
                     queueLength() );
             m_jobAvailable.wakeAll();
@@ -416,9 +416,10 @@ void WeaverImpl::dumpJobs()
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     debug( 0, "WeaverImpl::dumpJobs: current jobs:\n" );
     for ( int index = 0; index < m_assignments.size(); ++index ) {
-        debug( 0, "--> %4i: %p %s (priority %i)\n", index, (void*)m_assignments.at( index ),
+        debug( 0, "--> %4i: %p %s (priority %i, can be executed: %s)\n", index, (void*)m_assignments.at( index ),
                m_assignments.at( index )->metaObject()->className(),
-               m_assignments.at(index)->priority() );
+               m_assignments.at(index)->priority(),
+               m_assignments.at(index)->canBeExecuted() ? "yes" : "no");
     }
 }
 
