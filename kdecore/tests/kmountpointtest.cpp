@@ -122,7 +122,7 @@ void KMountPointTest::testPossibleMountPoints()
     const KMountPoint::Ptr rootMountPoint = mountPoints.findByPath("/");
     QVERIFY(rootMountPoint);
     QCOMPARE(rootMountPoint->mountPoint(), QString("/"));
-    QVERIFY(rootMountPoint->realDeviceName().startsWith(QLatin1String("/dev"))); // portable?
+    QVERIFY(rootMountPoint->realDeviceName().startsWith(QLatin1String("/"))); // Usually /dev, but can be /host/ubuntu/disks/root.disk...
     QVERIFY(!rootMountPoint->mountOptions().contains("noauto")); // how would this work?
     QVERIFY(!rootMountPoint->probablySlow());
 #endif
