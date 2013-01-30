@@ -147,23 +147,28 @@ Package &Package::operator=(const Package &rhs)
 
 bool Package::isValid() const
 {
-    if (!d->valid) {
+    return d->isValid();
+}
+
+bool PackagePrivate::isValid()
+{
+    if (!valid || !structure) {
         return false;
     }
 
     //search for the file in all prefixes and in all possible paths for each prefix
     //even if it's a big nested loop, usually there is one prefix and one location
     //so shouldn't cause too much disk access
-    QStringList prefixes = d->structure->contentsPrefixPaths();
+    QStringList prefixes = structure->contentsPrefixPaths();
     if (prefixes.isEmpty()) {
         prefixes << QString();
     }
 
-    foreach (const char *dir, d->structure->requiredDirectories()) {
+    foreach (const char *dir, structure->requiredDirectories()) {
         bool failed = true;
-        foreach (const QString &path, d->structure->searchPath(dir)) {
+        foreach (const QString &path, structure->searchPath(dir)) {
             foreach (const QString &prefix, prefixes) {
-                if (QFile::exists(d->structure->path() + prefix + path)) {
+                if (QFile::exists(structure->path() + prefix + path)) {
                     failed = false;
                     break;
                 }
@@ -175,16 +180,16 @@ bool Package::isValid() const
 
         if (failed) {
             kWarning() << "Could not find required directory" << dir;
-            d->valid = false;
+            valid = false;
             return false;
         }
     }
 
-    foreach (const char *file, d->structure->requiredFiles()) {
+    foreach (const char *file, structure->requiredFiles()) {
         bool failed = true;
-        foreach (const QString &path, d->structure->searchPath(file)) {
+        foreach (const QString &path, structure->searchPath(file)) {
             foreach (const QString &prefix, prefixes) {
-                if (QFile::exists(d->structure->path() + prefix + path)) {
+                if (QFile::exists(structure->path() + prefix + path)) {
                     failed = false;
                     break;
                 }
@@ -196,11 +201,12 @@ bool Package::isValid() const
 
         if (failed) {
             kWarning() << "Could not find required file" << file;
-            d->valid = false;
+            valid = false;
             return false;
         }
     }
 
+    valid = true;
     return true;
 }
 
@@ -292,10 +298,7 @@ PackageMetadata Package::metadata() const
 
 void Package::setPath(const QString &path)
 {
-    if (d->structure) {
-        d->structure->setPath(path);
-        d->valid = !d->structure->path().isEmpty();
-    }
+    d->setPathFromStructure(path);
 }
 
 const QString Package::path() const
@@ -722,30 +725,14 @@ PackagePrivate::PackagePrivate(const PackageStructure::Ptr st, const QString &p)
         : structure(st),
           service(0)
 {
-    if (structure) {
-        if (p.isEmpty()) {
-            structure->setPath(structure->defaultPackageRoot());
-        } else {
-            structure->setPath(p);
-        }
-    }
-
-    valid = structure && !structure->path().isEmpty();
+    setPathFromStructure(p);
 }
 
 PackagePrivate::PackagePrivate(const PackageStructure::Ptr st, const QString &packageRoot, const QString &path)
         : structure(st),
           service(0)
 {
-    if (structure) {
-        if (packageRoot.isEmpty()) {
-            structure->setPath(structure->defaultPackageRoot()%"/"%path);
-        } else {
-            structure->setPath(packageRoot%"/"%path);
-        }
-    }
-
-    valid = structure && !structure->path().isEmpty();
+    setPathFromStructure(packageRoot.isEmpty() ? path : packageRoot % "/" % path);
 }
 
 PackagePrivate::PackagePrivate(const PackagePrivate &other)
@@ -765,6 +752,41 @@ PackagePrivate &PackagePrivate::operator=(const PackagePrivate &rhs)
     service = rhs.service;
     valid = rhs.valid;
     return *this;
+}
+
+void PackagePrivate::setPathFromStructure(const QString &path)
+{
+    if (!structure) {
+        valid = false;
+        return;
+    }
+
+    QStringList paths;
+    if (path.isEmpty()) {
+        paths << structure->defaultPackageRoot();
+    } else if (QDir::isRelativePath(path)) {
+        QString p = structure->defaultPackageRoot() % "/" % path % "/";
+
+        if (QDir::isRelativePath(p)) {
+            paths = KGlobal::dirs()->findDirs("data", p);
+        } else {
+            paths << p;
+        }
+    } else {
+        paths << path;
+    }
+
+    foreach (const QString &p, paths) {
+        structure->setPath(p);
+        // reset valid, otherwise isValid() short-circuits
+        valid = true;
+        if (isValid()) {
+            return;
+        }
+    }
+
+    valid = false;
+    structure->setPath(QString());
 }
 
 void PackagePrivate::publish(AnnouncementMethods methods)
