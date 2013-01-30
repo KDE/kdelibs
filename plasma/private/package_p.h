@@ -38,9 +38,11 @@ public:
 
     PackagePrivate &operator=(const PackagePrivate &rhs);
 
+    void setPathFromStructure(const QString &p);
     void publish(AnnouncementMethods methods);
     void unpublish();
     bool isPublished() const;
+    bool isValid();
 
 #ifdef QCA2_FOUND
     void updateHash(const QString &basePath, const QString &subPath, const QDir &dir, QCA::Hash &hash);
