@@ -262,8 +262,8 @@ void KMimeTypeTest::testFindByPathUsingFileName_data()
         QTest::newRow("png image") << fh << "image/png";
     }
 
-    const QString exePath = QStandardPaths::findExecutable("update-mime-database");
-    QVERIFY2(!exePath.isEmpty(), "update-mime-database not found. Isn't shared-mime-info installed, and in your $PATH?");
+    const QString exePath = QStandardPaths::findExecutable("cmake");
+    QVERIFY2(!exePath.isEmpty(), "cmake not found. Isn't it in your $PATH?");
 #ifdef Q_OS_WIN
     const QString executableType = QString::fromLatin1("application/x-ms-dos-executable");
 #else
