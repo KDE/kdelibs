@@ -1,1 +1,2 @@
 add_subdirectory(integrationplugin)
+add_subdirectory(platformtheme)
