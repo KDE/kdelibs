@@ -463,116 +463,116 @@ QIcon KStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption *opti
 {
     switch (standardIcon) {
         case QStyle::SP_DesktopIcon:
-            return KDE::icon("user-desktop");
+            return QIcon::fromTheme("user-desktop");
         case QStyle::SP_TrashIcon:
-            return KDE::icon("user-trash");
+            return QIcon::fromTheme("user-trash");
         case QStyle::SP_ComputerIcon:
-            return KDE::icon("computer");
+            return QIcon::fromTheme("computer");
         case QStyle::SP_DriveFDIcon:
-            return KDE::icon("media-floppy");
+            return QIcon::fromTheme("media-floppy");
         case QStyle::SP_DriveHDIcon:
-            return KDE::icon("drive-harddisk");
+            return QIcon::fromTheme("drive-harddisk");
         case QStyle::SP_DriveCDIcon:
         case QStyle::SP_DriveDVDIcon:
-            return KDE::icon("drive-optical");
+            return QIcon::fromTheme("drive-optical");
         case QStyle::SP_DriveNetIcon:
-            return KDE::icon("folder-remote");
+            return QIcon::fromTheme("folder-remote");
         case QStyle::SP_DirHomeIcon:
-            return KDE::icon("user-home");
+            return QIcon::fromTheme("user-home");
         case QStyle::SP_DirOpenIcon:
-            return KDE::icon("document-open-folder");
+            return QIcon::fromTheme("document-open-folder");
         case QStyle::SP_DirClosedIcon:
-            return KDE::icon("folder");
+            return QIcon::fromTheme("folder");
         case QStyle::SP_DirIcon:
-            return KDE::icon("folder");
+            return QIcon::fromTheme("folder");
         case QStyle::SP_DirLinkIcon:
-            return KDE::icon("folder"); //TODO: generate (!?) folder with link emblem
+            return QIcon::fromTheme("folder"); //TODO: generate (!?) folder with link emblem
         case QStyle::SP_FileIcon:
-            return KDE::icon("text-plain"); //TODO: look for a better icon
+            return QIcon::fromTheme("text-plain"); //TODO: look for a better icon
         case QStyle::SP_FileLinkIcon:
-            return KDE::icon("text-plain"); //TODO: generate (!?) file with link emblem
+            return QIcon::fromTheme("text-plain"); //TODO: generate (!?) file with link emblem
         case QStyle::SP_FileDialogStart:
-            return KDE::icon("media-playback-start"); //TODO: find correct icon
+            return QIcon::fromTheme("media-playback-start"); //TODO: find correct icon
         case QStyle::SP_FileDialogEnd:
-            return KDE::icon("media-playback-stop"); //TODO: find correct icon
+            return QIcon::fromTheme("media-playback-stop"); //TODO: find correct icon
         case QStyle::SP_FileDialogToParent:
-            return KDE::icon("go-up");
+            return QIcon::fromTheme("go-up");
         case QStyle::SP_FileDialogNewFolder:
-            return KDE::icon("folder-new");
+            return QIcon::fromTheme("folder-new");
         case QStyle::SP_FileDialogDetailedView:
-            return KDE::icon("view-list-details");
+            return QIcon::fromTheme("view-list-details");
         case QStyle::SP_FileDialogInfoView:
-            return KDE::icon("document-properties");
+            return QIcon::fromTheme("document-properties");
         case QStyle::SP_FileDialogContentsView:
-            return KDE::icon("view-list-icons");
+            return QIcon::fromTheme("view-list-icons");
         case QStyle::SP_FileDialogListView:
-            return KDE::icon("view-list-text");
+            return QIcon::fromTheme("view-list-text");
         case QStyle::SP_FileDialogBack:
-            return KDE::icon("go-previous");
+            return QIcon::fromTheme("go-previous");
         case QStyle::SP_MessageBoxInformation:
-            return KDE::icon("dialog-information");
+            return QIcon::fromTheme("dialog-information");
         case QStyle::SP_MessageBoxWarning:
-            return KDE::icon("dialog-warning");
+            return QIcon::fromTheme("dialog-warning");
         case QStyle::SP_MessageBoxCritical:
-            return KDE::icon("dialog-error");
+            return QIcon::fromTheme("dialog-error");
         case QStyle::SP_MessageBoxQuestion:
-            return KDE::icon("dialog-information");
+            return QIcon::fromTheme("dialog-information");
         case QStyle::SP_DialogOkButton:
-            return KDE::icon("dialog-ok");
+            return QIcon::fromTheme("dialog-ok");
         case QStyle::SP_DialogCancelButton:
-            return KDE::icon("dialog-cancel");
+            return QIcon::fromTheme("dialog-cancel");
         case QStyle::SP_DialogHelpButton:
-            return KDE::icon("help-contents");
+            return QIcon::fromTheme("help-contents");
         case QStyle::SP_DialogOpenButton:
-            return KDE::icon("document-open");
+            return QIcon::fromTheme("document-open");
         case QStyle::SP_DialogSaveButton:
-            return KDE::icon("document-save");
+            return QIcon::fromTheme("document-save");
         case QStyle::SP_DialogCloseButton:
-            return KDE::icon("dialog-close");
+            return QIcon::fromTheme("dialog-close");
         case QStyle::SP_DialogApplyButton:
-            return KDE::icon("dialog-ok-apply");
+            return QIcon::fromTheme("dialog-ok-apply");
         case QStyle::SP_DialogResetButton:
-            return KDE::icon("document-revert");
+            return QIcon::fromTheme("document-revert");
         case QStyle::SP_DialogDiscardButton:
-            return KDE::icon("dialog-cancel");
+            return QIcon::fromTheme("dialog-cancel");
         case QStyle::SP_DialogYesButton:
-            return KDE::icon("dialog-ok-apply");
+            return QIcon::fromTheme("dialog-ok-apply");
         case QStyle::SP_DialogNoButton:
-            return KDE::icon("dialog-cancel");
+            return QIcon::fromTheme("dialog-cancel");
         case QStyle::SP_ArrowUp:
-            return KDE::icon("go-up");
+            return QIcon::fromTheme("go-up");
         case QStyle::SP_ArrowDown:
-            return KDE::icon("go-down");
+            return QIcon::fromTheme("go-down");
         case QStyle::SP_ArrowLeft:
-            return KDE::icon("go-previous-view");
+            return QIcon::fromTheme("go-previous-view");
         case QStyle::SP_ArrowRight:
-            return KDE::icon("go-next-view");
+            return QIcon::fromTheme("go-next-view");
         case QStyle::SP_ArrowBack:
-            return KDE::icon("go-previous");
+            return QIcon::fromTheme("go-previous");
         case QStyle::SP_ArrowForward:
-            return KDE::icon("go-next");
+            return QIcon::fromTheme("go-next");
         case QStyle::SP_BrowserReload:
-            return KDE::icon("view-refresh");
+            return QIcon::fromTheme("view-refresh");
         case QStyle::SP_BrowserStop:
-            return KDE::icon("process-stop");
+            return QIcon::fromTheme("process-stop");
         case QStyle::SP_MediaPlay:
-            return KDE::icon("media-playback-start");
+            return QIcon::fromTheme("media-playback-start");
         case QStyle::SP_MediaStop:
-            return KDE::icon("media-playback-stop");
+            return QIcon::fromTheme("media-playback-stop");
         case QStyle::SP_MediaPause:
-            return KDE::icon("media-playback-pause");
+            return QIcon::fromTheme("media-playback-pause");
         case QStyle::SP_MediaSkipForward:
-            return KDE::icon("media-skip-forward");
+            return QIcon::fromTheme("media-skip-forward");
         case QStyle::SP_MediaSkipBackward:
-            return KDE::icon("media-skip-backward");
+            return QIcon::fromTheme("media-skip-backward");
         case QStyle::SP_MediaSeekForward:
-            return KDE::icon("media-seek-forward");
+            return QIcon::fromTheme("media-seek-forward");
         case QStyle::SP_MediaSeekBackward:
-            return KDE::icon("media-seek-backward");
+            return QIcon::fromTheme("media-seek-backward");
         case QStyle::SP_MediaVolume:
-            return KDE::icon("audio-volume-medium");
+            return QIcon::fromTheme("audio-volume-medium");
         case QStyle::SP_MediaVolumeMuted:
-            return KDE::icon("audio-volume-muted");
+            return QIcon::fromTheme("audio-volume-muted");
 
         default:
             return QIcon();

@@ -51,7 +51,6 @@
 #include "kurl.h"
 #include "kmessage.h"
 #include "kmessageboxmessagehandler.h"
-#include <kiconloader.h>
 #include <kconfiggui.h>
 #include <kusertimestamp.h>
 
@@ -754,9 +753,9 @@ void KApplicationPrivate::parseCommandLine( )
     }
 
     if (args && args->isSet("icon")) {
-        q->setWindowIcon(KDE::icon(args->getOption("icon")));
+        q->setWindowIcon(QIcon::fromTheme(args->getOption("icon")));
     } else {
-        q->setWindowIcon(KDE::icon(componentData.aboutData()->programIconName()));
+        q->setWindowIcon(QIcon::fromTheme(componentData.aboutData()->programIconName()));
     }
 
     if (!args)

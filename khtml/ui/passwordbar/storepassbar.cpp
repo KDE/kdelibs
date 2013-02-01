@@ -25,7 +25,6 @@
 #include "khtmlview.h"
 #include <kcolorscheme.h>
 #include <kconfiggroup.h>
-#include <kiconloader.h>
 #include <QPalette>
 
 StorePassBar::StorePassBar( QWidget *parent ) :
@@ -33,10 +32,10 @@ StorePassBar::StorePassBar( QWidget *parent ) :
 {
   setupUi( centralWidget() );
 
-  m_store->setIcon( KDE::icon( "document-save" ) );
+  m_store->setIcon( QIcon::fromTheme( "document-save" ) );
   // Same as KStandardGuiItem::no()
-  m_neverForThisSite->setIcon( KDE::icon( "process-stop" ) );
-  m_doNotStore->setIcon( KDE::icon( "dialog-cancel" ) );
+  m_neverForThisSite->setIcon( QIcon::fromTheme( "process-stop" ) );
+  m_doNotStore->setIcon( QIcon::fromTheme( "dialog-cancel" ) );
   centralWidget()->setFocusProxy( m_store );
 
   QPalette pal = palette();

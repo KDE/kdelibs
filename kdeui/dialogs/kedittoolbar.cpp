@@ -39,7 +39,6 @@
 
 #include <klistwidgetsearchline.h>
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <kcomponentdata.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
@@ -989,7 +988,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
 
   // "change icon" button
   m_changeIcon = new QPushButton(i18n( "Change &Icon..." ), m_widget);
-  m_changeIcon->setIcon(KDE::icon("preferences-desktop-icons"));
+  m_changeIcon->setIcon(QIcon::fromTheme("preferences-desktop-icons"));
   QString kdialogExe = QStandardPaths::findExecutable(QLatin1String("kdialog"));
   m_hasKDialog = !kdialogExe.isEmpty();
   m_changeIcon->setEnabled(m_hasKDialog && m_activeList->currentItem());
@@ -999,7 +998,7 @@ void KEditToolBarWidgetPrivate::setupLayout()
 
   // "change icon text" button
   m_changeIconText = new QPushButton(i18n( "Change Te&xt..." ), m_widget);
-  m_changeIconText->setIcon(KDE::icon("edit-rename"));
+  m_changeIconText->setIcon(QIcon::fromTheme("edit-rename"));
   m_changeIconText->setEnabled(m_activeList->currentItem() != 0);
 
   QObject::connect( m_changeIconText, SIGNAL(clicked()),
@@ -1008,23 +1007,23 @@ void KEditToolBarWidgetPrivate::setupLayout()
   // The buttons in the middle
 
   m_upAction     = new QToolButton(m_widget);
-  m_upAction->setIcon( KDE::icon("go-up") );
+  m_upAction->setIcon( QIcon::fromTheme("go-up") );
   m_upAction->setEnabled(false);
   m_upAction->setAutoRepeat(true);
   QObject::connect(m_upAction, SIGNAL(clicked()), m_widget, SLOT(slotUpButton()));
 
   m_insertAction = new QToolButton(m_widget);
-  m_insertAction->setIcon( KDE::icon(QApplication::isRightToLeft() ? "go-previous" : "go-next") );
+  m_insertAction->setIcon( QIcon::fromTheme(QApplication::isRightToLeft() ? "go-previous" : "go-next") );
   m_insertAction->setEnabled(false);
   QObject::connect(m_insertAction, SIGNAL(clicked()), m_widget, SLOT(slotInsertButton()));
 
   m_removeAction = new QToolButton(m_widget);
-  m_removeAction->setIcon( KDE::icon(QApplication::isRightToLeft() ? "go-next" : "go-previous") );
+  m_removeAction->setIcon( QIcon::fromTheme(QApplication::isRightToLeft() ? "go-next" : "go-previous") );
   m_removeAction->setEnabled(false);
   QObject::connect(m_removeAction, SIGNAL(clicked()), m_widget, SLOT(slotRemoveButton()));
 
   m_downAction   = new QToolButton(m_widget);
-  m_downAction->setIcon( KDE::icon("go-down") );
+  m_downAction->setIcon( QIcon::fromTheme("go-down") );
   m_downAction->setEnabled(false);
   m_downAction->setAutoRepeat(true);
   QObject::connect(m_downAction, SIGNAL(clicked()), m_widget, SLOT(slotDownButton()));
@@ -1645,7 +1644,7 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
   ToolBarItem *item = m_activeList->currentItem();
   kDebug() << item;
   if(item){
-    item->setIcon(KDE::icon(icon));
+    item->setIcon(QIcon::fromTheme(icon));
 
     Q_ASSERT( m_currentXmlData->type() != XmlData::Merged );
 

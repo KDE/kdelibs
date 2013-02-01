@@ -21,7 +21,6 @@
 
 #include <QtTest/QtTest>
 
-#include "kiconloader.h"
 #include "kguiitem.h"
 
 
@@ -52,7 +51,7 @@ private Q_SLOTS:
 
     void testSetIconForStates()
     {
-        QIcon icon = KDE::icon("kde");
+        QIcon icon = QIcon::fromTheme("kde");
         KDualAction action(0);
         QVERIFY(action.inactiveIcon().isNull());
         QVERIFY(action.activeIcon().isNull());

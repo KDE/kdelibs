@@ -38,7 +38,6 @@
 #include <klineedit.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <kmessagebox.h>
 #include <qstandardpaths.h>
 #include <kcomponentdata.h>
@@ -126,7 +125,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 
   KTitleWidget *title = new KTitleWidget( this );
   title->setText(i18n( "Submit Bug Report" ) );
-  title->setPixmap( KDE::icon( "tools-report-bug" ).pixmap( 32 ) );
+  title->setPixmap( QIcon::fromTheme( "tools-report-bug" ).pixmap( 32 ) );
   lay->addWidget( title );
 
   QGridLayout *glay = new QGridLayout();
@@ -310,7 +309,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
 
     QPushButton *okButton = buttonBox->button(QDialogButtonBox::Ok);
     okButton->setText(i18n("&Launch Bug Report Wizard"));
-    okButton->setIcon(KDE::icon("tools-report-bug"));
+    okButton->setIcon(QIcon::fromTheme("tools-report-bug"));
   }
 
   lay->addWidget(buttonBox);

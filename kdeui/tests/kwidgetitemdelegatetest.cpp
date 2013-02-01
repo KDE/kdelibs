@@ -36,7 +36,6 @@
 #include <kmessagebox.h>
 
 #include <klineedit.h>
-#include <kiconloader.h>
 
 #include <kwidgetitemdelegate.h>
 
@@ -193,7 +192,7 @@ public:
     {
         QPushButton *button = static_cast<QPushButton*>(widgets[0]);
         button->setText("Test me");
-        button->setIcon(KDE::icon("kde"));
+        button->setIcon(QIcon::fromTheme("kde"));
         button->resize(button->sizeHint());
         button->move(HARDCODED_BORDER, sizeHint().height() / 2 - button->height() / 2);
 

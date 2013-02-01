@@ -28,7 +28,6 @@
 
 #include <kcombobox.h>
 #include <kconfig.h>
-#include <kiconloader.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
@@ -68,7 +67,7 @@ KPasswordDialog::KPasswordDialog(QWidget* parent ,
    : QDialog( parent ), d(new KPasswordDialogPrivate(this))
 {
     setWindowTitle(i18n("Password"));
-    setWindowIcon(KDE::icon("dialog-password"));
+    setWindowIcon(QIcon::fromTheme("dialog-password"));
     d->m_flags = flags;
     d->init ();
 }
@@ -138,7 +137,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
 
     QRect desktop = QApplication::desktop()->screenGeometry(q->topLevelWidget());
     q->setMinimumWidth(qMin(1000, qMax(q->sizeHint().width(), desktop.width() / 4)));
-    q->setPixmap(KDE::icon("dialog-password").pixmap(KIconLoader::SizeHuge));
+    q->setPixmap(QIcon::fromTheme("dialog-password").pixmap(128));
 }
 
 void KPasswordDialog::setPixmap(const QPixmap &pixmap)

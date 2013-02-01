@@ -20,7 +20,6 @@
 
 #include <kaction.h>
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <kactioncollection.h>
 
 using namespace KNS3;
@@ -32,7 +31,7 @@ KAction *KNS3::standardAction(const QString &what,
 {
     KAction *action = new KAction(what, parent);
     parent->addAction(QString(name), action);
-    action->setIcon(KDE::icon("get-hot-new-stuff"));
+    action->setIcon(QIcon::fromTheme("get-hot-new-stuff"));
     QObject::connect(action, SIGNAL(triggered(bool)), receiver, slot);
 
     return action;
@@ -46,7 +45,7 @@ KAction *KNS3::standardActionUpload(const QString &what,
     KAction *action = new KAction(what, parent);
     parent->addAction(QString(name), action);
     // FIXME: Get a specific upload icon!
-    action->setIcon(KDE::icon("get-hot-new-stuff"));
+    action->setIcon(QIcon::fromTheme("get-hot-new-stuff"));
     QObject::connect(action, SIGNAL(triggered(bool)), receiver, slot);
 
     return action;

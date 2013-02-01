@@ -28,7 +28,6 @@
 #include "kxmlguiwindow.h"
 #include "kaction.h"
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <kdebug.h>
 #include <QtXml/QDomElement>
 #include <QtCore/QObject>
@@ -184,7 +183,7 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     const QString icon = element.attribute( d->attrIcon );
     QIcon pix;
     if (!icon.isEmpty()) {
-        pix = KDE::icon( icon );
+        pix = QIcon::fromTheme( icon );
     }
 
     if ( parent ) {
@@ -351,7 +350,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
 
       if ( !icon.isEmpty() )
       {
-        pix = KDE::icon( icon );
+        pix = QIcon::fromTheme( icon );
       }
 
       if ( !icon.isEmpty() ) {

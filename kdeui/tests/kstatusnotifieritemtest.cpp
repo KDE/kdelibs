@@ -92,7 +92,7 @@ int main(int argc, char **argv)
 
         tray->setTitle("DBus System tray test");
         tray->setIconByName(args->getOption("active-icon"));
-        //tray->setImage(KDE::icon("konqueror"));
+        //tray->setImage(QIcon::fromTheme("konqueror"));
         //tray->setAttentionIconByName("kmail");
         tray->setOverlayIconByName("emblem-important");
         tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));

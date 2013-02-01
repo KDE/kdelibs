@@ -20,7 +20,6 @@
 
 #include "kurlnavigatorplacesselector_p.h"
 
-#include <kiconloader.h>
 #include <kfileplacesmodel.h>
 #include <kmenu.h>
 #include <kdebug.h>
@@ -125,7 +124,7 @@ void KUrlNavigatorPlacesSelector::updateSelection(const QUrl& url)
         m_selectedItem = -1;
         // No bookmark has been found which matches to the given Url. Show
         // a generic folder icon as pixmap for indication:
-        setIcon(KDE::icon("folder"));
+        setIcon(QIcon::fromTheme("folder"));
     }
     updateTeardownAction();
 }

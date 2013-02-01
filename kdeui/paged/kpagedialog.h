@@ -55,7 +55,7 @@ class KPageDialogPrivate;
  *   label = new QLabel( "Second Test Page" );
  *   KPageWidgetItem *page = new KPageWidgetItem( label, i18n( "My Second Test Page" ) );
  *   page->setHeader( i18n( "My header string" ) );
- *   page->setIcon( KDE::icon( "file" ) );
+ *   page->setIcon( QIcon::fromTheme( "file" ) );
  *
  *   addPage( page );
  * }

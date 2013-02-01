@@ -39,7 +39,7 @@ class QWidget;
  *
  *  KPageWidgetItem *item = new KPageWidgetItem( page, i18n( "Colors" ) );
  *  item->setHeader( i18n( "Colors of Main Window" ) );
- *  item->setIcon( KDE::icon( "colors" ) );
+ *  item->setIcon( QIcon::fromTheme( "colors" ) );
  *
  *  KPageWidget *pageWidget = new KPageWidget( this );
  *  pageWidget->addPage( item );

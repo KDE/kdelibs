@@ -673,7 +673,7 @@ void KDirOperator::Private::_k_toggleInlinePreviews(bool show)
         for (int i = 0; i < model->rowCount(); ++i) {
             QModelIndex index = model->index(i, 0);
             const KFileItem item = dirModel->itemForIndex(index);
-            const_cast<QAbstractItemModel*>(index.model())->setData(index, KDE::icon(item.iconName()), Qt::DecorationRole);
+            const_cast<QAbstractItemModel*>(index.model())->setData(index, QIcon::fromTheme(item.iconName()), Qt::DecorationRole);
         }
     }
 }
@@ -1867,18 +1867,18 @@ void KDirOperator::setupActions()
 
     KAction* mkdirAction = new KAction(i18n("New Folder..."), this);
     d->actionCollection->addAction("mkdir", mkdirAction);
-    mkdirAction->setIcon(KDE::icon(QLatin1String("folder-new")));
+    mkdirAction->setIcon(QIcon::fromTheme(QLatin1String("folder-new")));
     connect(mkdirAction, SIGNAL(triggered(bool)), this, SLOT(mkdir()));
 
     KAction* trash = new KAction(i18n("Move to Trash"), this);
     d->actionCollection->addAction("trash", trash);
-    trash->setIcon(KDE::icon("user-trash"));
+    trash->setIcon(QIcon::fromTheme("user-trash"));
     trash->setShortcuts(KShortcut(Qt::Key_Delete));
     connect(trash, SIGNAL(triggered(bool)), SLOT(trashSelected()));
 
     KAction* action = new KAction(i18n("Delete"), this);
     d->actionCollection->addAction("delete", action);
-    action->setIcon(KDE::icon("edit-delete"));
+    action->setIcon(QIcon::fromTheme("edit-delete"));
     action->setShortcuts(KShortcut(Qt::SHIFT + Qt::Key_Delete));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(deleteSelected()));
 
@@ -1936,22 +1936,22 @@ void KDirOperator::setupActions()
 
     KToggleAction *shortAction = new KToggleAction(i18n("Short View"), this);
     d->actionCollection->addAction("short view",  shortAction);
-    shortAction->setIcon(KDE::icon(QLatin1String("view-list-icons")));
+    shortAction->setIcon(QIcon::fromTheme(QLatin1String("view-list-icons")));
     connect(shortAction, SIGNAL(triggered()), SLOT(_k_slotSimpleView()));
 
     KToggleAction *detailedAction = new KToggleAction(i18n("Detailed View"), this);
     d->actionCollection->addAction("detailed view", detailedAction);
-    detailedAction->setIcon(KDE::icon(QLatin1String("view-list-details")));
+    detailedAction->setIcon(QIcon::fromTheme(QLatin1String("view-list-details")));
     connect(detailedAction, SIGNAL(triggered()), SLOT(_k_slotDetailedView()));
 
     KToggleAction *treeAction = new KToggleAction(i18n("Tree View"), this);
     d->actionCollection->addAction("tree view", treeAction);
-    treeAction->setIcon(KDE::icon(QLatin1String("view-list-tree")));
+    treeAction->setIcon(QIcon::fromTheme(QLatin1String("view-list-tree")));
     connect(treeAction, SIGNAL(triggered()), SLOT(_k_slotTreeView()));
 
     KToggleAction *detailedTreeAction = new KToggleAction(i18n("Detailed Tree View"), this);
     d->actionCollection->addAction("detailed tree view", detailedTreeAction);
-    detailedTreeAction->setIcon(KDE::icon(QLatin1String("view-list-tree")));
+    detailedTreeAction->setIcon(QIcon::fromTheme(QLatin1String("view-list-tree")));
     connect(detailedTreeAction, SIGNAL(triggered()), SLOT(_k_slotDetailedTreeView()));
 
     QActionGroup* viewGroup = new QActionGroup(this);
@@ -1969,19 +1969,19 @@ void KDirOperator::setupActions()
     connect(previewAction, SIGNAL(toggled(bool)),
             SLOT(_k_togglePreview(bool)));
 
-    KToggleAction *inlinePreview = new KToggleAction(KDE::icon("view-preview"),
+    KToggleAction *inlinePreview = new KToggleAction(QIcon::fromTheme("view-preview"),
                                                      i18n("Show Preview"), this);
     d->actionCollection->addAction("inline preview", inlinePreview);
     connect(inlinePreview, SIGNAL(toggled(bool)), SLOT(_k_toggleInlinePreviews(bool)));
 
     KAction *fileManager = new KAction(i18n("Open File Manager"), this);
     d->actionCollection->addAction("file manager", fileManager);
-    fileManager->setIcon(KDE::icon(QLatin1String("system-file-manager")));
+    fileManager->setIcon(QIcon::fromTheme(QLatin1String("system-file-manager")));
     connect(fileManager, SIGNAL(triggered()), SLOT(_k_slotOpenFileManager()));
 
     action = new KAction(i18n("Properties"), this);
     d->actionCollection->addAction("properties", action);
-    action->setIcon(KDE::icon("document-properties"));
+    action->setIcon(QIcon::fromTheme("document-properties"));
     action->setShortcut(KShortcut(Qt::ALT + Qt::Key_Return));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(_k_slotProperties()));
 

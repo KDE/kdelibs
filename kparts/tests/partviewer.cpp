@@ -19,7 +19,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kiconloader.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
@@ -39,11 +38,11 @@ PartViewer::PartViewer()
 {
     setXMLFile(QFINDTESTDATA("partviewer_shell.rc"));
 
-    KAction * paOpen = new KAction( KDE::icon("document-open"), "&Open file", this );
+    KAction * paOpen = new KAction( QIcon::fromTheme("document-open"), "&Open file", this );
     actionCollection()->addAction( "file_open", paOpen );
     connect( paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()) );
 
-    KAction * paQuit = new KAction( KDE::icon("application-exit"), "&Quit", this );
+    KAction * paQuit = new KAction( QIcon::fromTheme("application-exit"), "&Quit", this );
     actionCollection()->addAction( "file_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
 

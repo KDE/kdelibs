@@ -31,7 +31,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 
 class KToggleFullScreenAction::Private
 {
@@ -48,12 +47,12 @@ public:
             q->setText( i18nc( "@action:inmenu", "Exit F&ull Screen Mode" ) );
             q->setIconText( i18nc( "@action:intoolbar", "Exit Full Screen" ) );
             q->setToolTip( i18nc( "@info:tooltip", "Exit full screen mode" ) );
-            q->setIcon( KDE::icon( "view-restore" ) );
+            q->setIcon( QIcon::fromTheme( "view-restore" ) );
         } else {
             q->setText( i18nc( "@action:inmenu", "F&ull Screen Mode" ) );
             q->setIconText( i18nc( "@action:intoolbar", "Full Screen" ) );
             q->setToolTip( i18nc( "@info:tooltip", "Display the window in full screen" ) );
-            q->setIcon( KDE::icon( "view-fullscreen" ) );
+            q->setIcon( QIcon::fromTheme( "view-fullscreen" ) );
         }
     }
 

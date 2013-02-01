@@ -297,35 +297,35 @@ ActionCollectionView::ActionCollectionView(QWidget* parent)
 
     d->collection = new KActionCollection(this);
 
-    KAction* runaction = new KAction(KDE::icon("system-run"), i18n("Run"), this);
+    KAction* runaction = new KAction(QIcon::fromTheme("system-run"), i18n("Run"), this);
     runaction->setObjectName("run");
     runaction->setToolTip( i18n("Execute the selected script.") );
     runaction->setEnabled(false);
     d->collection->addAction("run", runaction);
     connect(runaction, SIGNAL(triggered()), this, SLOT(slotRun()));
 
-    KAction* stopaction = new KAction(KDE::icon("process-stop"), i18n("Stop"), this);
+    KAction* stopaction = new KAction(QIcon::fromTheme("process-stop"), i18n("Stop"), this);
     stopaction->setObjectName("stop");
     stopaction->setToolTip( i18n("Stop execution of the selected script.") );
     stopaction->setEnabled(false);
     d->collection->addAction("stop", stopaction);
     connect(stopaction, SIGNAL(triggered()), this, SLOT(slotStop()));
 
-    KAction* editaction = new KAction(KDE::icon("document-properties"), i18n("Edit..."), this);
+    KAction* editaction = new KAction(QIcon::fromTheme("document-properties"), i18n("Edit..."), this);
     editaction->setObjectName("edit");
     editaction->setToolTip( i18n("Edit selected script.") );
     editaction->setEnabled(false);
     d->collection->addAction("edit", editaction);
     connect(editaction, SIGNAL(triggered()), this, SLOT(slotEdit()));
 
-    KAction* addaction = new KAction(KDE::icon("list-add"), i18n("Add..."), this);
+    KAction* addaction = new KAction(QIcon::fromTheme("list-add"), i18n("Add..."), this);
     addaction->setObjectName("add");
     addaction->setToolTip( i18n("Add a new script.") );
     //addaction->setEnabled(false);
     d->collection->addAction("add", addaction);
     connect(addaction, SIGNAL(triggered()), this, SLOT(slotAdd()) );
 
-    KAction* removeaction = new KAction(KDE::icon("list-remove"), i18n("Remove"), this);
+    KAction* removeaction = new KAction(QIcon::fromTheme("list-remove"), i18n("Remove"), this);
     removeaction->setObjectName("remove");
     removeaction->setToolTip( i18n("Remove selected script.") );
     removeaction->setEnabled(false);

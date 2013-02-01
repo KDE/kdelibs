@@ -195,7 +195,7 @@ void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
         item->setIcon( KDE::icon( kcm->moduleInfo().icon(), QStringList() << "dialog-warning" ) );
     } else {
         item->setHeader( kcm->moduleInfo().comment() );
-        item->setIcon( KDE::icon( kcm->moduleInfo().icon() ) );
+        item->setIcon( QIcon::fromTheme( kcm->moduleInfo().icon() ) );
     }
 }
 
@@ -415,7 +415,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
         item->setIcon( KDE::icon( moduleInfo.icon(), QStringList() << "dialog-warning" ) );
     } else {
         item->setHeader( moduleInfo.comment() );
-        item->setIcon( KDE::icon( moduleInfo.icon() ) );
+        item->setIcon( QIcon::fromTheme( moduleInfo.icon() ) );
     }
     item->setProperty("_k_weight", moduleInfo.weight());
 

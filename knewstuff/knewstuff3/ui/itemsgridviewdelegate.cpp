@@ -33,7 +33,6 @@
 #include <kmenu.h>
 #include <kratingwidget.h>
 #include <ksqueezedtextlabel.h>
-#include <kiconloader.h>
 
 #include "itemsmodel.h"
 
@@ -274,7 +273,7 @@ void ItemsGridViewDelegate::createOperationBar()
     m_detailsButton->setToolButtonStyle(Qt::ToolButtonFollowStyle);
     m_detailsButton->setPopupMode(QToolButton::InstantPopup);
     m_detailsButton->setToolTip(i18n("Details"));
-    m_detailsButton->setIcon(KDE::icon("documentinfo"));
+    m_detailsButton->setIcon(QIcon::fromTheme("documentinfo"));
     setBlockedEventTypes(m_detailsButton, QList<QEvent::Type>() << QEvent::MouseButtonPress
                          << QEvent::MouseButtonRelease << QEvent::MouseButtonDblClick);
     connect(m_detailsButton, SIGNAL(clicked()), this, SLOT(slotDetailsClicked()));

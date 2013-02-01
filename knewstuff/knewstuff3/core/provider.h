@@ -112,7 +112,7 @@ namespace KNS3
          *
          * @return icon URL
          */
-        virtual KUrl icon() const; // FIXME use KDE::icon or pixmap?
+        virtual KUrl icon() const; // FIXME use QIcon::fromTheme or pixmap?
 
         /**
          * load the given search and return given page

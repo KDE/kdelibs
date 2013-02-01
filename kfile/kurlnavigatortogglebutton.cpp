@@ -19,7 +19,6 @@
 
 #include "kurlnavigatortogglebutton_p.h"
 
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 
 #include <QPainter>
@@ -37,7 +36,7 @@ KUrlNavigatorToggleButton::KUrlNavigatorToggleButton(QWidget* parent) :
             this, SLOT(updateToolTip()));
     connect(this, SIGNAL(clicked(bool)),
             this, SLOT(updateCursor()));
-    m_pixmap = KDE::icon("dialog-ok").pixmap(QSize(22, 22).expandedTo(iconSize()));
+    m_pixmap = QIcon::fromTheme("dialog-ok").pixmap(QSize(22, 22).expandedTo(iconSize()));
 
 #ifndef QT_NO_ACCESSIBILITY
     setAccessibleName(i18n("Edit mode"));

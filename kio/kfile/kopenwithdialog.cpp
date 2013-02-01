@@ -50,7 +50,6 @@
 #include <kurlrequester.h>
 #include <kservicegroup.h>
 #include <kserviceoffer.h>
-#include <kiconloader.h>
 #include <kdebug.h>
 
 #include <assert.h>
@@ -230,7 +229,7 @@ QVariant KApplicationModel::data(const QModelIndex &index, int role) const
         break;
     case Qt::DecorationRole:
         if (!node->icon.isEmpty()) {
-            return KDE::icon(node->icon);
+            return QIcon::fromTheme(node->icon);
         }
         break;
     default:

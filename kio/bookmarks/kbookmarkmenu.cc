@@ -24,7 +24,6 @@
 #include "kbookmarkdialog.h"
 
 #include <kcoreauthorized.h>
-#include <kiconloader.h>
 #include <kmenu.h>
 #include <kstandardaction.h>
 #include <kstringhandler.h>
@@ -264,7 +263,7 @@ KBookmarkContextMenu::~KBookmarkContextMenu()
 void KBookmarkContextMenu::addBookmark()
 {
   if( m_pOwner && m_pOwner->enableOption(KBookmarkOwner::ShowAddBookmark)  )
-      addAction( KDE::icon("bookmark-new"), tr("Add Bookmark Here"), this, SLOT(slotInsert()) );
+      addAction( QIcon::fromTheme("bookmark-new"), tr("Add Bookmark Here"), this, SLOT(slotInsert()) );
 }
 
 void KBookmarkContextMenu::addFolderActions()
@@ -272,7 +271,7 @@ void KBookmarkContextMenu::addFolderActions()
   addAction( tr("Open Folder in Bookmark Editor" ), this, SLOT(slotEditAt()) );
   addProperties();
   addSeparator();
-  addAction( KDE::icon("edit-delete"), tr( "Delete Folder" ), this, SLOT(slotRemove()) );
+  addAction( QIcon::fromTheme("edit-delete"), tr( "Delete Folder" ), this, SLOT(slotRemove()) );
 }
 
 
@@ -286,13 +285,13 @@ void KBookmarkContextMenu::addBookmarkActions()
   addAction( tr( "Copy Link Address" ), this, SLOT(slotCopyLocation()) );
   addProperties();
   addSeparator();
-  addAction( KDE::icon("edit-delete"), tr( "Delete Bookmark" ), this, SLOT(slotRemove()) );
+  addAction( QIcon::fromTheme("edit-delete"), tr( "Delete Bookmark" ), this, SLOT(slotRemove()) );
 }
 
 void KBookmarkContextMenu::addOpenFolderInTabs()
 {
    if(m_pOwner->supportsTabs())
-      addAction(KDE::icon("tab-new"), tr( "Open Folder in Tabs" ), this, SLOT( slotOpenFolderInTabs() ) );
+      addAction(QIcon::fromTheme("tab-new"), tr( "Open Folder in Tabs" ), this, SLOT( slotOpenFolderInTabs() ) );
 }
 
 void KBookmarkContextMenu::slotEditAt()
@@ -455,7 +454,7 @@ void KBookmarkMenu::addOpenInTabs()
     QString title = tr( "Open Folder in Tabs" );
 
     QAction * paOpenFolderInTabs = new QAction( title, this );
-    paOpenFolderInTabs->setIcon( KDE::icon("tab-new") );
+    paOpenFolderInTabs->setIcon( QIcon::fromTheme("tab-new") );
     paOpenFolderInTabs->setToolTip( tr( "Open all bookmarks in this folder as a new tab." ) );
     paOpenFolderInTabs->setStatusTip(paOpenFolderInTabs->toolTip());
     connect( paOpenFolderInTabs, SIGNAL( triggered( bool ) ), this, SLOT( slotOpenFolderInTabs() ) );
@@ -473,7 +472,7 @@ void KBookmarkMenu::addAddBookmarksList()
         QString title = tr( "Bookmark Tabs as Folder..." );
         d->bookmarksToFolder = new QAction( title, this );
         m_actionCollection->addAction( m_bIsRoot ? "add_bookmarks_list" : 0, d->bookmarksToFolder);
-        d->bookmarksToFolder->setIcon( KDE::icon( "bookmark-new-list" ) );
+        d->bookmarksToFolder->setIcon( QIcon::fromTheme( "bookmark-new-list" ) );
         d->bookmarksToFolder->setToolTip( tr( "Add a folder of bookmarks for all open tabs." ) );
         d->bookmarksToFolder->setStatusTip(d->bookmarksToFolder->toolTip());
         connect( d->bookmarksToFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotAddBookmarksList() ) );
@@ -519,7 +518,7 @@ void KBookmarkMenu::addNewFolder()
 
     if (d->newBookmarkFolder == 0) {
         d->newBookmarkFolder = new QAction( tr( "New Bookmark Folder..." ), this );
-        d->newBookmarkFolder->setIcon( KDE::icon( "folder-new" ) );
+        d->newBookmarkFolder->setIcon( QIcon::fromTheme( "folder-new" ) );
         d->newBookmarkFolder->setToolTip( tr( "Create a new bookmark folder in this menu" ) );
         d->newBookmarkFolder->setStatusTip(d->newBookmarkFolder->toolTip());
         connect( d->newBookmarkFolder, SIGNAL( triggered( bool ) ), this, SLOT( slotNewFolder() ) );
@@ -700,7 +699,7 @@ void KBookmarkMenuImporter::newBookmark( const QString & text, const QString & u
 void KBookmarkMenuImporter::newFolder( const QString & text, bool, const QString & )
 {
   QString _text = KStringHandler::csqueeze(text).replace( '&', "&&" );
-  KActionMenu * actionMenu = new KImportedBookmarkActionMenu( KDE::icon("folder"), _text, this );
+  KActionMenu * actionMenu = new KImportedBookmarkActionMenu( QIcon::fromTheme("folder"), _text, this );
   mstack.top()->parentMenu()->addAction(actionMenu);
   mstack.top()->m_actions.append( actionMenu );
   KImportedBookmarkMenu *subMenu = new KImportedBookmarkMenu( m_pManager, m_menu->owner(), actionMenu->menu());
@@ -729,7 +728,7 @@ KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QOb
     KBookmarkActionInterface(bk),
     m_pOwner(owner)
 {
-  setIcon(KDE::icon(bookmark().icon()));
+  setIcon(QIcon::fromTheme(bookmark().icon()));
   setIconText(text());
   setHelpText(bookmark().url().toDisplayString(QUrl::PreferLocalFile));
   const QString description = bk.description();
@@ -752,7 +751,7 @@ void KBookmarkAction::slotSelected(Qt::MouseButtons mb, Qt::KeyboardModifiers km
 }
 
 KBookmarkActionMenu::KBookmarkActionMenu(const KBookmark &bm, QObject *parent)
-  : KActionMenu(KDE::icon(bm.icon()), bm.text().replace('&', "&&"), parent),
+  : KActionMenu(QIcon::fromTheme(bm.icon()), bm.text().replace('&', "&&"), parent),
     KBookmarkActionInterface(bm)
 {
   setToolTip( bm.description() );

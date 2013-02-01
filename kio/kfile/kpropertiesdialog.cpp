@@ -107,7 +107,6 @@ extern "C" {
 #include <kio/jobuidelegate.h>
 #include <kfiledialog.h>
 #include <kmountpoint.h>
-#include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kservice.h>
 #include <kcombobox.h>
@@ -956,7 +955,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
         QPushButton *button = new QPushButton(box);
         button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);  // Minimum still makes the button grow to the entire layout width
-        button->setIcon( KDE::icon(QString::fromLatin1("configure")) );
+        button->setIcon( QIcon::fromTheme(QString::fromLatin1("configure")) );
 
         boxLayout->addWidget(l);
         boxLayout->addWidget(button);

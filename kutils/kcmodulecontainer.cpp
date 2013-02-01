@@ -27,7 +27,6 @@
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
 #include <kdebug.h>
-#include <kiconloader.h>
 #include <kservice.h>
 #include <ktabwidget.h>
 
@@ -110,7 +109,7 @@ void KCModuleContainer::addModule( const QString& module )
 
 	proxy->setObjectName( module.toLatin1() );
 
-	d->tabWidget->addTab( proxy, KDE::icon( proxy->moduleInfo().icon() ),
+	d->tabWidget->addTab( proxy, QIcon::fromTheme( proxy->moduleInfo().icon() ),
 			/* Qt eats ampersands for dinner. But not this time. */
 			proxy->moduleInfo().moduleName().replace( '&', "&&" ));
 

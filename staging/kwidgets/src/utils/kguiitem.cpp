@@ -23,7 +23,6 @@
 #include <QPushButton>
 
 #include "kstandardguiitem.h"
-#include "kiconloader.h"
 
 class KGuiItem::KGuiItemPrivate
 {
@@ -150,7 +149,7 @@ QIcon KGuiItem::icon( ) const
 {
     if (d->m_hasIcon) {
         if (!d->m_iconName.isEmpty()) {
-            return KDE::icon(d->m_iconName);
+            return QIcon::fromTheme(d->m_iconName);
         } else {
             return d->m_icon;
         }

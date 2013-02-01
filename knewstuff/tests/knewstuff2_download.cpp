@@ -121,15 +121,15 @@ KNewStuff2Download::KNewStuff2Download()
     frame->setMidLineWidth(0);
 
     recentButton = new KNSButton(frame);
-    recentButton->setIcon(KDE::icon("alarmclock"));
+    recentButton->setIcon(QIcon::fromTheme("alarmclock"));
     recentButton->setText("Most recent");
 
     estimatedButton = new KNSButton(frame);
-    estimatedButton->setIcon(KDE::icon("favorites"));
+    estimatedButton->setIcon(QIcon::fromTheme("favorites"));
     estimatedButton->setText("Most estimated");
 
     wantedButton = new KNSButton(frame);
-    wantedButton->setIcon(KDE::icon("kget"));
+    wantedButton->setIcon(QIcon::fromTheme("kget"));
     wantedButton->setText("Most wanted");
 
     connect(recentButton, SIGNAL(toggled(bool)), this, SLOT(buttonToggled(bool)));

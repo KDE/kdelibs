@@ -27,7 +27,6 @@
 #include <QCheckBox>
 #include <QtCore/QDir>
 #include <QCoreApplication>
-#include <kiconloader.h>
 #include <QApplication>
 #include <kxmlguifactory.h>
 #include <kmessagebox.h>
@@ -76,7 +75,7 @@ TestMainWindow::TestMainWindow()
     KAction * paQuit = new KAction( "&Quit", this );
     coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
-    paQuit->setIcon(KDE::icon("application-exit"));
+    paQuit->setIcon(QIcon::fromTheme("application-exit"));
 
 //  (void)new KAction( "Yet another menu item", coll, "shell_yami" );
 //  (void)new KAction( "Yet another submenu item", coll, "shell_yasmi" );

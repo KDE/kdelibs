@@ -23,7 +23,6 @@
 #include <kcolorscheme.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
-#include <kiconloader.h>
 #include <kstandardaction.h>
 
 #include <QEvent>
@@ -253,22 +252,22 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
     QColor bg0, bg1, bg2, border, fg;
     switch (type) {
     case Positive:
-        icon = KDE::icon("dialog-ok");
+        icon = QIcon::fromTheme("dialog-ok");
         getColorsFromColorScheme(KColorScheme::PositiveBackground, &bg1, &fg);
         break;
     case Information:
-        icon = KDE::icon("dialog-information");
+        icon = QIcon::fromTheme("dialog-information");
         // There is no "information" background role in KColorScheme, use the
         // colors of highlighted items instead
         bg1 = palette().highlight().color();
         fg = palette().highlightedText().color();
         break;
     case Warning:
-        icon = KDE::icon("dialog-warning");
+        icon = QIcon::fromTheme("dialog-warning");
         getColorsFromColorScheme(KColorScheme::NeutralBackground, &bg1, &fg);
         break;
     case Error:
-        icon = KDE::icon("dialog-error");
+        icon = QIcon::fromTheme("dialog-error");
         getColorsFromColorScheme(KColorScheme::NegativeBackground, &bg1, &fg);
         break;
     }
@@ -300,7 +299,7 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
         );
 
     // Icon
-    const int size = KIconLoader::global()->currentSize(KIconLoader::MainToolbar);
+    const int size = style()->pixelMetric(QStyle::PM_TabBarIconSize);
     d->iconLabel->setPixmap(icon.pixmap(size));
 }
 

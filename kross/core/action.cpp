@@ -28,7 +28,6 @@
 #include <QtCore/QFileInfo>
 
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <qmimedatabase.h>
 
 using namespace Kross;
@@ -300,7 +299,7 @@ QString Action::iconName() const
 
 void Action::setIconName(const QString& iconname)
 {
-    setIcon( KDE::icon(iconname) );
+    setIcon( QIcon::fromTheme(iconname) );
     d->iconname = iconname;
     emit dataChanged(this);
     emit updated();

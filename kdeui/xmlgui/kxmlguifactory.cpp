@@ -39,7 +39,6 @@
 
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kiconloader.h>
 #include <kshortcut.h>
 
 #include "kaction.h"
@@ -633,7 +632,7 @@ void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomAttr &at
         return;
 
     if ( equals(attrName, "icon") ) {
-        action->setIcon( KDE::icon( attribute.value() ) );
+        action->setIcon( QIcon::fromTheme( attribute.value() ) );
         return;
     }
 

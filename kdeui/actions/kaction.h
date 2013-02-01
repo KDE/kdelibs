@@ -150,7 +150,7 @@ class KShortcut;
  * \code
  * KAction *newAct = actionCollection()->addAction("quick-connect");
  * newAct->setText(i18n("Quick Connect"))
- * newAct->setIcon(KDE::icon("quick-connect"));
+ * newAct->setIcon(QIcon::fromTheme("quick-connect"));
  * newAct->setShortcut(Qt::Key_F6);
  * connect(newAct, SIGNAL(triggered()), this, SLOT(quickConnect()));
  * \endcode

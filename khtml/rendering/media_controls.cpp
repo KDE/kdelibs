@@ -33,7 +33,6 @@
 #include <phonon/videowidget.h>
 #include <ktogglefullscreenaction.h>
 #include <kshortcut.h>
-#include <kiconloader.h> // KDE::icon
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
@@ -44,10 +43,10 @@ MediaControls::MediaControls(MediaPlayer* mediaPlayer, QWidget* parent) : QWidge
     m_mediaPlayer = mediaPlayer;
     Phonon::MediaObject* mediaObject = m_mediaPlayer->mediaObject();
     setLayout(new QHBoxLayout(this));
-    m_play = new QPushButton(KDE::icon("media-playback-start"), i18n("Play"), this);
+    m_play = new QPushButton(QIcon::fromTheme("media-playback-start"), i18n("Play"), this);
     connect(m_play, SIGNAL(clicked()), mediaObject, SLOT(play()));
     layout()->addWidget(m_play);
-    m_pause = new QPushButton(KDE::icon("media-playback-pause"), i18n("Pause"), this);
+    m_pause = new QPushButton(QIcon::fromTheme("media-playback-pause"), i18n("Pause"), this);
     connect(m_pause, SIGNAL(clicked()), mediaObject, SLOT(pause()));
     layout()->addWidget(m_pause);
     layout()->addWidget(new Phonon::SeekSlider(mediaObject, this));

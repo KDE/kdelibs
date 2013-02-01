@@ -7,7 +7,6 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kdebug.h>
-#include <kiconloader.h>
 #include <QLineEdit>
 #include <QtCore/QDir>
 #include <QtTest/QtTest>
@@ -37,7 +36,7 @@ int main( int argc, char **argv )
     Client *shell = new Client;
     shell->setComponentName("konqueror", "Konqueror");
 
-    a = new KAction( KDE::icon( "view-split-left-right" ), "Split", shell );
+    a = new KAction( QIcon::fromTheme( "view-split-left-right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );
 
     shell->setXMLFile( QFINDTESTDATA("kxmlguitest_shell.rc") );
@@ -46,9 +45,9 @@ int main( int argc, char **argv )
 
     Client *part = new Client;
 
-    a = new KAction( KDE::icon( "zoom-out" ), "decfont", part );
+    a = new KAction( QIcon::fromTheme( "zoom-out" ), "decfont", part );
     part->actionCollection()->addAction( "decFontSizes", a );
-    a = new KAction( KDE::icon( "security-low" ), "sec", part );
+    a = new KAction( QIcon::fromTheme( "security-low" ), "sec", part );
     part->actionCollection()->addAction( "security", a );
     a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT(slotSec()) );

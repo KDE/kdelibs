@@ -31,7 +31,6 @@
 #include <QPushButton>
 #include <QTreeWidget>
 #include <kconfiggroup.h>
-#include <kiconloader.h>
 
 //BEGIN KMimeTypeChooserPrivate
 class KMimeTypeChooserPrivate
@@ -169,7 +168,7 @@ void KMimeTypeChooserPrivate::loadMimeTypes( const QStringList &_selectedMimeTyp
 
     const QString min = mimetype.mid(index+1);
     QTreeWidgetItem *item = new QTreeWidgetItem( groupItem, QStringList(min) );
-    item->setIcon(0, KDE::icon(mt.iconName()));
+    item->setIcon(0, QIcon::fromTheme(mt.iconName()));
 
     int cl = 1;
 

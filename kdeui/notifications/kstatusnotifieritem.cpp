@@ -182,7 +182,7 @@ void KStatusNotifierItem::setIconByName(const QString &name)
     d->iconName = name;
     emit d->statusNotifierItemDBus->NewIcon();
     if (d->systemTrayIcon) {
-        d->systemTrayIcon->setIcon(KDE::icon(name));
+        d->systemTrayIcon->setIcon(QIcon::fromTheme(name));
     }
 }
 
@@ -221,9 +221,9 @@ void KStatusNotifierItem::setOverlayIconByName(const QString &name)
     d->overlayIconName = name;
     emit d->statusNotifierItemDBus->NewOverlayIcon();
     if (d->systemTrayIcon) {
-        QPixmap iconPixmap = KDE::icon(d->iconName).pixmap(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium);
+        QPixmap iconPixmap = QIcon::fromTheme(d->iconName).pixmap(KIconLoader::SizeSmallMedium, KIconLoader::SizeSmallMedium);
         if (!name.isEmpty()) {
-            QPixmap overlayPixmap = KDE::icon(d->overlayIconName).pixmap(KIconLoader::SizeSmallMedium/2, KIconLoader::SizeSmallMedium/2);
+            QPixmap overlayPixmap = QIcon::fromTheme(d->overlayIconName).pixmap(KIconLoader::SizeSmallMedium/2, KIconLoader::SizeSmallMedium/2);
             QPainter p(&iconPixmap);
             p.drawPixmap(iconPixmap.width()-overlayPixmap.width(), iconPixmap.height()-overlayPixmap.height(), overlayPixmap);
             p.end();
@@ -886,13 +886,13 @@ void KStatusNotifierItemPrivate::syncLegacySystemTrayIcon()
             }
             systemTrayIcon->setMovie(movie);
         } else if (!attentionIconName.isNull()) {
-            systemTrayIcon->setIcon(KDE::icon(attentionIconName));
+            systemTrayIcon->setIcon(QIcon::fromTheme(attentionIconName));
         } else {
             systemTrayIcon->setIcon(attentionIcon);
         }
     } else {
         if (!iconName.isNull()) {
-            systemTrayIcon->setIcon(KDE::icon(iconName));
+            systemTrayIcon->setIcon(QIcon::fromTheme(iconName));
         } else {
             systemTrayIcon->setIcon(icon);
         }

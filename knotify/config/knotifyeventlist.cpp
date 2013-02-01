@@ -19,7 +19,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kglobal.h>
@@ -63,13 +62,13 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	QStringList optionsList = prstring.split ('|');
 	QList<QIcon> iconList;
-	iconList << ( optionsList.contains("Sound")   ? KDE::icon("media-playback-start") : QIcon() );
-	iconList << ( optionsList.contains("Popup")   ? KDE::icon("dialog-information")   : QIcon() );
-	iconList << ( optionsList.contains("Logfile") ? KDE::icon("text-x-generic")       : QIcon() );
-	iconList << ( optionsList.contains("Taskbar") ? KDE::icon("services")             : QIcon() );
-	iconList << ( optionsList.contains("Execute") ? KDE::icon("system-run")           : QIcon() );
+	iconList << ( optionsList.contains("Sound")   ? QIcon::fromTheme("media-playback-start") : QIcon() );
+	iconList << ( optionsList.contains("Popup")   ? QIcon::fromTheme("dialog-information")   : QIcon() );
+	iconList << ( optionsList.contains("Logfile") ? QIcon::fromTheme("text-x-generic")       : QIcon() );
+	iconList << ( optionsList.contains("Taskbar") ? QIcon::fromTheme("services")             : QIcon() );
+	iconList << ( optionsList.contains("Execute") ? QIcon::fromTheme("system-run")           : QIcon() );
 	if( KNotifyConfigElement::have_kttsd() )
-		iconList << ( optionsList.contains("KTTS") ? KDE::icon("text-speak") : QIcon() );
+		iconList << ( optionsList.contains("KTTS") ? QIcon::fromTheme("text-speak") : QIcon() );
 
 	int mc_x=0;
 	

@@ -37,7 +37,7 @@ class QStringList;
  *
  * \author Hamish Rodda <rodda@kde.org>
  *
- * @deprecated use KDE::icon from kiconloader.h
+ * @deprecated use QIcon::fromTheme
  */
 class KDE4SUPPORT_DEPRECATED_EXPORT KIcon : public QIcon
 {

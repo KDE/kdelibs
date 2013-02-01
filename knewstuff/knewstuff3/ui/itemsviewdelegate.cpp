@@ -167,7 +167,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     QToolButton* detailsButton = qobject_cast<QToolButton*>(widgets.at(DelegateDetailsButton));
     if (detailsButton) {
         detailsButton->setText(i18n("Details"));
-        detailsButton->setIcon(KDE::icon("documentinfo"));
+        detailsButton->setIcon(QIcon::fromTheme("documentinfo"));
     }
 
     if (installButton && detailsButton) {

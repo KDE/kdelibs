@@ -32,7 +32,6 @@
 
 // KDE
 #include <kfiledialog.h>
-#include <kiconloader.h>
 #include <kprotocolmanager.h>
 #include <kjobuidelegate.h>
 #include <krun.h>
@@ -245,31 +244,31 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
         setWallet(new KWebWallet(0, (d->window ? d->window->winId() : 0) ));
     }
 
-    setActionIcon(action(Back), KDE::icon("go-previous"));
-    setActionIcon(action(Forward), KDE::icon("go-next"));
-    setActionIcon(action(Reload), KDE::icon("view-refresh"));
-    setActionIcon(action(Stop), KDE::icon("process-stop"));
-    setActionIcon(action(Cut), KDE::icon("edit-cut"));
-    setActionIcon(action(Copy), KDE::icon("edit-copy"));
-    setActionIcon(action(Paste), KDE::icon("edit-paste"));
-    setActionIcon(action(Undo), KDE::icon("edit-undo"));
-    setActionIcon(action(Redo), KDE::icon("edit-redo"));
-    setActionIcon(action(SelectAll), KDE::icon("edit-select-all"));
-    setActionIcon(action(InspectElement), KDE::icon("view-process-all"));
-    setActionIcon(action(OpenLinkInNewWindow), KDE::icon("window-new"));
-    setActionIcon(action(OpenFrameInNewWindow), KDE::icon("window-new"));
-    setActionIcon(action(OpenImageInNewWindow), KDE::icon("window-new"));
-    setActionIcon(action(CopyLinkToClipboard), KDE::icon("edit-copy"));
-    setActionIcon(action(CopyImageToClipboard), KDE::icon("edit-copy"));
-    setActionIcon(action(ToggleBold), KDE::icon("format-text-bold"));
-    setActionIcon(action(ToggleItalic), KDE::icon("format-text-italic"));
-    setActionIcon(action(ToggleUnderline), KDE::icon("format-text-underline"));
-    setActionIcon(action(DownloadLinkToDisk), KDE::icon("document-save"));
-    setActionIcon(action(DownloadImageToDisk), KDE::icon("document-save"));
+    setActionIcon(action(Back), QIcon::fromTheme("go-previous"));
+    setActionIcon(action(Forward), QIcon::fromTheme("go-next"));
+    setActionIcon(action(Reload), QIcon::fromTheme("view-refresh"));
+    setActionIcon(action(Stop), QIcon::fromTheme("process-stop"));
+    setActionIcon(action(Cut), QIcon::fromTheme("edit-cut"));
+    setActionIcon(action(Copy), QIcon::fromTheme("edit-copy"));
+    setActionIcon(action(Paste), QIcon::fromTheme("edit-paste"));
+    setActionIcon(action(Undo), QIcon::fromTheme("edit-undo"));
+    setActionIcon(action(Redo), QIcon::fromTheme("edit-redo"));
+    setActionIcon(action(SelectAll), QIcon::fromTheme("edit-select-all"));
+    setActionIcon(action(InspectElement), QIcon::fromTheme("view-process-all"));
+    setActionIcon(action(OpenLinkInNewWindow), QIcon::fromTheme("window-new"));
+    setActionIcon(action(OpenFrameInNewWindow), QIcon::fromTheme("window-new"));
+    setActionIcon(action(OpenImageInNewWindow), QIcon::fromTheme("window-new"));
+    setActionIcon(action(CopyLinkToClipboard), QIcon::fromTheme("edit-copy"));
+    setActionIcon(action(CopyImageToClipboard), QIcon::fromTheme("edit-copy"));
+    setActionIcon(action(ToggleBold), QIcon::fromTheme("format-text-bold"));
+    setActionIcon(action(ToggleItalic), QIcon::fromTheme("format-text-italic"));
+    setActionIcon(action(ToggleUnderline), QIcon::fromTheme("format-text-underline"));
+    setActionIcon(action(DownloadLinkToDisk), QIcon::fromTheme("document-save"));
+    setActionIcon(action(DownloadImageToDisk), QIcon::fromTheme("document-save"));
 
-    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, KDE::icon("preferences-plugin").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, KDE::icon("image-missing").pixmap(32, 32));
-    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, KDE::icon("applications-internet").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingPluginGraphic, QIcon::fromTheme("preferences-plugin").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::MissingImageGraphic, QIcon::fromTheme("image-missing").pixmap(32, 32));
+    settings()->setWebGraphic(QWebSettings::DefaultFrameIconGraphic, QIcon::fromTheme("applications-internet").pixmap(32, 32));
 
     setActionShortcut(action(Back), KStandardShortcut::back());
     setActionShortcut(action(Forward), KStandardShortcut::forward());

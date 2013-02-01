@@ -21,7 +21,6 @@
 #include <QtScript/QScriptContext>
 
 #include <kicon.h>
-#include <kiconloader.h>
 #include "backportglobal.h"
 
 Q_DECLARE_METATYPE(QIcon)
@@ -34,7 +33,7 @@ static QScriptValue iconCtor(QScriptContext *ctx, QScriptEngine *eng)
     if (ctx->argumentCount() > 0) {
         QScriptValue v = ctx->argument(0);
         if (v.isString()) {
-            QIcon icon = KDE::icon(v.toString());
+            QIcon icon = QIcon::fromTheme(v.toString());
             return qScriptValueFromValue(eng, icon);
         } else if (v.isVariant()) {
             QVariant variant = v.toVariant();

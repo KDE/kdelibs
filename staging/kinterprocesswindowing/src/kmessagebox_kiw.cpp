@@ -24,7 +24,6 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QPushButton>
-#include <kiconloader.h>
 #include <kwindowsystem.h>
 #include <klocalizedstring.h>
 
@@ -404,7 +403,7 @@ void detailedErrorWId(WId parent_id,  const QString &text,
     QPushButton *detailsButton = new QPushButton;
     detailsButton->setObjectName("detailsButton");
     detailsButton->setText(i18n("&Details") + " >>");
-    detailsButton->setIcon(KDE::icon("help-about"));
+    detailsButton->setIcon(QIcon::fromTheme("help-about"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->addButton(detailsButton, QDialogButtonBox::HelpRole);
@@ -450,7 +449,7 @@ void detailedSorryWId(WId parent_id, const QString &text,
     QPushButton *detailsButton = new QPushButton;
     detailsButton->setObjectName("detailsButton");
     detailsButton->setText(i18n("&Details") + " >>");
-    detailsButton->setIcon(KDE::icon("help-about"));
+    detailsButton->setIcon(QIcon::fromTheme("help-about"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->addButton(detailsButton, QDialogButtonBox::HelpRole);

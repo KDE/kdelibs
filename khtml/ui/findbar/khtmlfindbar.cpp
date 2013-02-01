@@ -25,7 +25,6 @@
 
 #include <kfind.h>
 #include <kcolorscheme.h>
-#include <kiconloader.h>
 
 #include <QMenu>
 #include <QLineEdit>
@@ -38,8 +37,8 @@ KHTMLFindBar::KHTMLFindBar( QWidget *parent ) :
 {
     setupUi( centralWidget() );
 
-    m_next->setIcon( KDE::icon( "go-down-search" ) );
-    m_previous->setIcon( KDE::icon( "go-up-search" ) );
+    m_next->setIcon( QIcon::fromTheme( "go-down-search" ) );
+    m_previous->setIcon( QIcon::fromTheme( "go-up-search" ) );
     m_next->setDisabled( true );
     m_previous->setDisabled( true );
 

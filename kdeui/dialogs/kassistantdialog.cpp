@@ -24,7 +24,6 @@
 #include <QDialogButtonBox>
 #include <QIcon>
 #include <QPushButton>
-#include <kiconloader.h>
 
 #include <QHash>
 
@@ -112,7 +111,7 @@ void KAssistantDialog::Private::init()
 
     finishButton = new QPushButton;
     finishButton->setText(i18n("Finish"));
-    finishButton->setIcon(KDE::icon("dialog-ok-apply"));
+    finishButton->setIcon(QIcon::fromTheme("dialog-ok-apply"));
     buttonBox->addButton(finishButton, QDialogButtonBox::AcceptRole);
 
     buttonBox->addButton(QDialogButtonBox::Cancel);

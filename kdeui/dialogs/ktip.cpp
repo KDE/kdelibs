@@ -41,7 +41,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kcomponentdata.h>
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <krandom.h>
 #include <kseparator.h>
@@ -240,7 +239,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   d->database = database;
 
-  setWindowIcon(KDE::icon("ktip"));
+  setWindowIcon(QIcon::fromTheme("ktip"));
 
   QVBoxLayout *mainLayout = new QVBoxLayout( this );
   mainLayout->setMargin( 0 );

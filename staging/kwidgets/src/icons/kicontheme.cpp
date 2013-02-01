@@ -561,14 +561,14 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
                 return;
             }
 
-            actions[UndoAct]->setIcon( KDE::icon("edit-undo") );
-            actions[RedoAct]->setIcon( KDE::icon("edit-redo") );
-            actions[CutAct]->setIcon( KDE::icon("edit-cut") );
-            actions[CopyAct]->setIcon( KDE::icon("edit-copy") );
-            actions[PasteAct]->setIcon( KDE::icon("edit-paste") );
-            actions[ClearAct]->setIcon( KDE::icon("edit-clear") );
-            actions[DeleteAct]->setIcon( KDE::icon("edit-delete") );
-            actions[SelectAllAct]->setIcon( KDE::icon("edit-select-all") );
+            actions[UndoAct]->setIcon( QIcon::fromTheme("edit-undo") );
+            actions[RedoAct]->setIcon( QIcon::fromTheme("edit-redo") );
+            actions[CutAct]->setIcon( QIcon::fromTheme("edit-cut") );
+            actions[CopyAct]->setIcon( QIcon::fromTheme("edit-copy") );
+            actions[PasteAct]->setIcon( QIcon::fromTheme("edit-paste") );
+            actions[ClearAct]->setIcon( QIcon::fromTheme("edit-clear") );
+            actions[DeleteAct]->setIcon( QIcon::fromTheme("edit-delete") );
+            actions[SelectAllAct]->setIcon( QIcon::fromTheme("edit-select-all") );
             break;
 
         case ReadOnlyText:
@@ -576,7 +576,7 @@ void KIconTheme::assignIconsToContextMenu( ContextMenus type,
                 return;
             }
 
-            actions[0]->setIcon( KDE::icon("edit-copy") );
+            actions[0]->setIcon( QIcon::fromTheme("edit-copy") );
             break;
     }
 }

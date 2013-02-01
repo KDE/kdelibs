@@ -21,7 +21,6 @@
 #include "kaboutapplicationpersonlistview_p.h"
 #include "ktoolbar.h"
 #include "kaction.h"
-#include "kiconloader.h"
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -57,17 +56,17 @@ QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets() const
 
     KToolBar *mainLinks = new KToolBar( itemView(), false, false );
 
-    KAction *emailAction = new KAction( KDE::icon( "internet-mail" ),
+    KAction *emailAction = new KAction( QIcon::fromTheme( "internet-mail" ),
                                         i18nc( "Action to send an email to a contributor", "Email contributor" ),
                                         mainLinks );
     emailAction->setVisible( false );
     mainLinks->addAction( emailAction );
-    KAction *homepageAction = new KAction( KDE::icon( "applications-internet" ),
+    KAction *homepageAction = new KAction( QIcon::fromTheme( "applications-internet" ),
                                            i18n( "Visit contributor's homepage" ),
                                            mainLinks );
     homepageAction->setVisible( false );
     mainLinks->addAction( homepageAction );
-    KAction *visitProfileAction = new KAction( KDE::icon( "get-hot-new-stuff" ), "", mainLinks );
+    KAction *visitProfileAction = new KAction( QIcon::fromTheme( "get-hot-new-stuff" ), "", mainLinks );
     visitProfileAction->setVisible( false );
     mainLinks->addAction( visitProfileAction );
 
@@ -76,7 +75,7 @@ QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets() const
 
     KToolBar *socialLinks = new KToolBar( itemView(), false, false );
     for( int i = 0; i < MAX_SOCIAL_LINKS; ++i ) {
-        KAction *action = new KAction( KDE::icon( "applications-internet" ), "", socialLinks );
+        KAction *action = new KAction( QIcon::fromTheme( "applications-internet" ), "", socialLinks );
         action->setVisible( false );
         socialLinks->addAction( action );
     }

@@ -40,7 +40,6 @@
 #include <qapplication.h>
 #include <klocalizedstring.h>
 #include <knotification.h>
-#include <kiconloader.h>
 #include <ksqueezedtextlabel.h>
 #include <kwindowsystem.h>
 #include <kglobal.h>
@@ -106,7 +105,7 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         break;
     }
 
-   QIcon ret = KIconLoader::global()->loadIcon(icon_name, KIconLoader::NoGroup, KIconLoader::SizeHuge, KIconLoader::DefaultState, QStringList(), 0, true);
+   QIcon ret = QIcon::fromTheme(icon_name);
 
    if (ret.isNull()) {
        return QMessageBox::standardIcon(icon);
@@ -827,7 +826,7 @@ detailedError(QWidget *parent,  const QString &text,
     QPushButton *detailsButton = new QPushButton;
     detailsButton->setObjectName("detailsButton");
     detailsButton->setText(i18n("&Details") + " >>");
-    detailsButton->setIcon(KDE::icon("help-about"));
+    detailsButton->setIcon(QIcon::fromTheme("help-about"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->addButton(detailsButton, QDialogButtonBox::HelpRole);
@@ -865,7 +864,7 @@ void detailedSorry(QWidget *parent, const QString &text,
     QPushButton *detailsButton = new QPushButton;
     detailsButton->setObjectName("detailsButton");
     detailsButton->setText(i18n("&Details") + " >>");
-    detailsButton->setIcon(KDE::icon("help-about"));
+    detailsButton->setIcon(QIcon::fromTheme("help-about"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->addButton(detailsButton, QDialogButtonBox::HelpRole);

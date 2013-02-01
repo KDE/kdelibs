@@ -41,7 +41,6 @@
 #include <kxmlguiclient.h>
 #include <kxmlguifactory.h>
 #include <kactioncollection.h>
-#include <kiconloader.h>
 
 /************************************************************************/
 /* KShortcutsDialog                                                     */
@@ -156,7 +155,7 @@ KShortcutsDialog::KShortcutsDialog( KShortcutsEditor::ActionTypes types, KShortc
 
     QPushButton *printButton = new QPushButton;
     printButton->setText(i18n("Print"));
-    printButton->setIcon(KDE::icon("document-print"));
+    printButton->setIcon(QIcon::fromTheme("document-print"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
     buttonBox->addButton(d->m_detailsButton, QDialogButtonBox::ActionRole);

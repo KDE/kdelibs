@@ -27,7 +27,6 @@
 #include <kurlcompletion.h>
 #include <kprotocolmanager.h>
 #include <kstandardshortcut.h>
-#include <kiconloader.h>
 #include <kdebug.h>
 
 #include <QEvent>
@@ -254,7 +253,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     topLayout->addWidget(widget);
 
     myButton = new KUrlDragPushButton(m_parent);
-    myButton->setIcon(KDE::icon("document-open"));
+    myButton->setIcon(QIcon::fromTheme("document-open"));
     int buttonSize = myButton->sizeHint().expandedTo(widget->sizeHint()).height();
     myButton->setFixedSize(buttonSize, buttonSize);
     myButton->setToolTip(i18n("Open file dialog"));

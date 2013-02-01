@@ -23,7 +23,6 @@
 #include <QIcon>
 
 #include <kpassivepopup.h>
-#include <kiconloader.h>
 
 KPassivePopupMessageHandler::KPassivePopupMessageHandler(QWidget *parent)
  : QObject(parent), KMessageHandler()
@@ -55,7 +54,7 @@ void KPassivePopupMessageHandler::showPassivePopup(KMessage::MessageType message
             break;
     }
 
-    resultIcon = KDE::icon(iconName).pixmap(32);
+    resultIcon = QIcon::fromTheme(iconName).pixmap(32);
 
     KPassivePopup::message(caption, text, resultIcon, parentWidget());
 }

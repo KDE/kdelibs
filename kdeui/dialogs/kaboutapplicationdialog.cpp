@@ -27,7 +27,6 @@
 #include "kaboutapplicationpersonlistview_p.h"
 #include "kaboutapplicationpersonlistdelegate_p.h"
 #include "kdeversion.h"
-#include "kiconloader.h"
 #include "kglobalsettings.h"
 #include "ktextbrowser.h"
 #include "ktitlewidget.h"
@@ -109,7 +108,7 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 
     QIcon windowIcon;
     if (!aboutData->programIconName().isEmpty()) {
-        windowIcon = KDE::icon(aboutData->programIconName());
+        windowIcon = QIcon::fromTheme(aboutData->programIconName());
     } else {
         windowIcon = qApp->windowIcon();
     }

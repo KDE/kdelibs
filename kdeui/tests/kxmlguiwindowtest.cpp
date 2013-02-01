@@ -29,7 +29,6 @@
 #include <kaction.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
-#include <kiconloader.h>
 
 // BUG: if this symbol is defined the problem consists on:
 //      - main window is created.
@@ -78,7 +77,7 @@ void MainWindow::setupActions()
 {
     KAction *testAction = new KAction(this);
     testAction->setText("Test");
-    testAction->setIcon(KDE::icon("kde"));
+    testAction->setIcon(QIcon::fromTheme("kde"));
     actionCollection()->addAction("test", testAction);
     connect(testAction, SIGNAL(triggered(bool)), this, SLOT(slotTest()));
 

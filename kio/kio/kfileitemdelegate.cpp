@@ -1107,7 +1107,7 @@ QRect KFileItemDelegate::iconRect(const QStyleOptionViewItem &option, const QMod
 
 void KFileItemDelegate::setJobTransfersVisible(bool jobTransfersVisible)
 {
-    d->downArrowIcon = KDE::icon("go-down");
+    d->downArrowIcon = QIcon::fromTheme("go-down");
     d->jobTransfersVisible = jobTransfersVisible;
 }
 

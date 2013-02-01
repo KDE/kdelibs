@@ -25,7 +25,6 @@
 
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
-#include <kiconloader.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 
@@ -44,7 +43,7 @@ QAction* KUndoStack::createRedoAction(KActionCollection* actionCollection, const
         action->setObjectName(actionName);
     }
 
-    action->setIcon(KDE::icon("edit-redo"));
+    action->setIcon(QIcon::fromTheme("edit-redo"));
     action->setIconText(i18n("Redo"));
     action->setShortcuts(KStandardShortcut::redo());
 
@@ -63,7 +62,7 @@ QAction* KUndoStack::createUndoAction(KActionCollection* actionCollection, const
         action->setObjectName(actionName);
     }
 
-    action->setIcon(KDE::icon("edit-undo"));
+    action->setIcon(QIcon::fromTheme("edit-undo"));
     action->setIconText(i18n("Undo"));
     action->setShortcuts(KStandardShortcut::undo());
 

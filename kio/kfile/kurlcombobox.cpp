@@ -126,7 +126,7 @@ void KUrlComboBoxPrivate::init(KUrlComboBox::Mode mode)
         m_parent->completionObject()->setOrder( KCompletion::Sorted );
     }
 
-    opendirIcon = KDE::icon(QLatin1String("folder-open"));
+    opendirIcon = QIcon::fromTheme(QLatin1String("folder-open"));
 
     m_parent->connect( m_parent, SIGNAL(activated(int)), SLOT(_k_slotActivated(int)));
 }
@@ -424,7 +424,7 @@ QIcon KUrlComboBoxPrivate::getIcon( const QUrl& url ) const
     if (myMode == KUrlComboBox::Directories)
         return dirIcon;
     else
-        return KDE::icon(KIO::iconNameForUrl(url));
+        return QIcon::fromTheme(KIO::iconNameForUrl(url));
 }
 
 

@@ -31,7 +31,6 @@
 #include <kdeversion.h>
 #include <klocalizedstring.h>
 #include <ktitlewidget.h>
-#include <kiconloader.h>
 
 namespace KDEPrivate {
 
@@ -45,7 +44,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     KTitleWidget *titleWidget = new KTitleWidget(this);
     titleWidget->setText(i18n("<html><font size=\"5\">KDE - Be Free!</font><br /><b>Platform Version %1</b></html>",
                          QString(KDE_VERSION_STRING)));
-    titleWidget->setPixmap(KDE::icon("kde").pixmap(48), KTitleWidget::ImageLeft);
+    titleWidget->setPixmap(QIcon::fromTheme("kde").pixmap(48), KTitleWidget::ImageLeft);
 
     QLabel *about = new QLabel;
     about->setMargin(10);

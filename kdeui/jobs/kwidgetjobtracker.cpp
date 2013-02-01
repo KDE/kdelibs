@@ -38,7 +38,6 @@
 
 #include <ksqueezedtextlabel.h>
 #include <kguiitem.h>
-#include <kiconloader.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <kwindowsystem.h>
@@ -444,8 +443,8 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 {
     // Set a useful icon for this window!
     KWindowSystem::setIcons( winId(),
-                             KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 32 ),
-                             KIconLoader::global()->loadIcon( "document-save", KIconLoader::NoGroup, 16 ) );
+                             QIcon::fromTheme("document-save").pixmap(32),
+                             QIcon::fromTheme("document-save").pixmap(16) );
 
     QVBoxLayout *topLayout = new QVBoxLayout(this);
 
@@ -485,7 +484,7 @@ void KWidgetJobTracker::Private::ProgressWidget::init()
 
     arrowButton = new QPushButton(this);
     arrowButton->setMaximumSize(QSize(32,25));
-    arrowButton->setIcon(KDE::icon("arrow-down"));
+    arrowButton->setIcon(QIcon::fromTheme("arrow-down"));
     arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
     arrowState = Qt::DownArrow;
     connect(arrowButton, SIGNAL(clicked()), this, SLOT(_k_arrowToggled()));
@@ -650,14 +649,14 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_arrowToggled()
         //The arrow is in the down position, dialog is collapsed, expand it and change icon.
         progressLabel->show();
         speedLabel->show();
-        arrowButton->setIcon(KDE::icon("arrow-up"));
+        arrowButton->setIcon(QIcon::fromTheme("arrow-up"));
         arrowButton->setToolTip(i18n("Click this to collapse the dialog, to hide details"));
         arrowState = Qt::UpArrow;
     } else {
         //Collapse the dialog
         progressLabel->hide();
         speedLabel->hide();
-        arrowButton->setIcon(KDE::icon("arrow-down"));
+        arrowButton->setIcon(QIcon::fromTheme("arrow-down"));
         arrowButton->setToolTip(i18n("Click this to expand the dialog, to show details"));
         arrowState = Qt::DownArrow;
     }

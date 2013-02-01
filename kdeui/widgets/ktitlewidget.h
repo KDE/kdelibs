@@ -37,7 +37,7 @@
  * @code
 KTitleWidget *titleWidget = new KTitleWidget(this);
 titleWidget->setText(i18n("Title"));
-titleWidget->setPixmap(KDE::icon("screen").pixmap(22, 22), KTitleWidget::ImageLeft);
+titleWidget->setPixmap(QIcon::fromTheme("screen").pixmap(22, 22), KTitleWidget::ImageLeft);
  * @endcode
  *
  * Use it with an own widget:

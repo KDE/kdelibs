@@ -30,8 +30,6 @@
 #include <QMenu>
 #include <QMenuBar>
 
-#include <kiconloader.h>
-
 #include <QApplication>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -77,7 +75,7 @@ TestMainWindow::TestMainWindow()
     KAction * paQuit = new KAction( "&Quit", this );
     coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
-    paQuit->setIcon(KDE::icon("application-exit"));
+    paQuit->setIcon(QIcon::fromTheme("application-exit"));
     pFile->addAction(paQuit);
 
     setCentralWidget( m_splitter );

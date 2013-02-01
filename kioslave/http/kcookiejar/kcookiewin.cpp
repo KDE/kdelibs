@@ -44,13 +44,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QPushButton>
 #include <QRadioButton>
 #include <QShortcut>
+#include <QStyle>
 #include <QUrl>
 
 #include <kwindowsystem.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
-#include <kiconloader.h>
 #include <kdatetime.h>
 #include <kusertimestamp.h>
 
@@ -65,7 +65,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     setModal(true);
     setObjectName("cookiealert");
     setWindowTitle( i18n("Cookie Alert") );
-    setWindowIcon( KDE::icon("preferences-web-browser-cookies") );
+    setWindowIcon( QIcon::fromTheme("preferences-web-browser-cookies") );
     // all cookies in the list should have the same window at this time, so let's take the first
     if( cookieList.first().windowIds().count() > 0 )
     {
@@ -121,7 +121,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
 
     QPushButton *sessionOnlyButton = new QPushButton;
     sessionOnlyButton->setText(i18n("Accept for this &session"));
-    sessionOnlyButton->setIcon(KDE::icon("chronometer"));
+    sessionOnlyButton->setIcon(QIcon::fromTheme("chronometer"));
     sessionOnlyButton->setToolTip(i18n("Accept cookie(s) until the end of the current session"));
     connect(sessionOnlyButton, SIGNAL(clicked()), this, SLOT(slotSessionOnlyClicked()));
 
@@ -145,7 +145,7 @@ KCookieWin::KCookieWin( QWidget *parent, KHttpCookieList cookieList,
     hBoxLayout->setMargin( 0 );
     QLabel* icon = new QLabel( hBox );
     hBoxLayout->addWidget( icon );
-    icon->setPixmap(KDE::icon("dialog-warning").pixmap(IconSize(KIconLoader::Desktop)));
+    icon->setPixmap(QIcon::fromTheme("dialog-warning").pixmap(style()->pixelMetric(QStyle::PM_LargeIconSize)));
     icon->setAlignment( Qt::AlignCenter );
     icon->setFixedSize( 2*icon->sizeHint() );
 

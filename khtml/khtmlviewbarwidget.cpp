@@ -23,7 +23,6 @@
 #include <QHBoxLayout>
 #include <QToolButton>
 #include <QResizeEvent>
-#include <kiconloader.h>
 
 KHTMLViewBarWidget::KHTMLViewBarWidget( bool addCloseButton, QWidget *parent )
  : QWidget( parent )
@@ -37,7 +36,7 @@ KHTMLViewBarWidget::KHTMLViewBarWidget( bool addCloseButton, QWidget *parent )
     if ( addCloseButton ) {
         QToolButton *hideButton = new QToolButton( this );
         hideButton->setAutoRaise( true );
-        hideButton->setIcon( KDE::icon( "dialog-close" ) );
+        hideButton->setIcon( QIcon::fromTheme( "dialog-close" ) );
         connect( hideButton, SIGNAL(clicked()), SIGNAL(hideMe()) );
         layout->addWidget( hideButton );
         layout->setAlignment( hideButton, Qt::AlignLeft | Qt::AlignTop );

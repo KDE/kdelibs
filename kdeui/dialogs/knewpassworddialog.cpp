@@ -30,7 +30,6 @@
 #include <QtCore/QString>
 
 #include <qapplication.h>
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <klineedit.h>
@@ -67,7 +66,7 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::init()
 {
     ui.setupUi( q );
 
-    ui.labelIcon->setPixmap( KDE::icon("dialog-password").pixmap(96, 96) );
+    ui.labelIcon->setPixmap( QIcon::fromTheme("dialog-password").pixmap(96, 96) );
     ui.labelMatch->setHidden(true);
 
     const QString strengthBarWhatsThis(i18n("The password strength meter gives an indication of the security "
@@ -159,15 +158,15 @@ void KNewPasswordDialog::KNewPasswordDialogPrivate::_k_textChanged()
     }
 
     if ( match && !q->allowEmptyPasswords() && ui.linePassword->text().isEmpty()) {
-        ui.labelMatch->setPixmap( KDE::icon("dialog-error") );
+        ui.labelMatch->setPixmap( QIcon::fromTheme("dialog-error") );
         ui.labelMatch->setText( i18n("Password is empty") );
     }
     else {
         if ( ui.linePassword->text().length() < minPasswordLength ) {
-            ui.labelMatch->setPixmap( KDE::icon("dialog-error") );
+            ui.labelMatch->setPixmap( QIcon::fromTheme("dialog-error") );
             ui.labelMatch->setText(i18np("Password must be at least 1 character long", "Password must be at least %1 characters long", minPasswordLength));
         } else {
-            ui.labelMatch->setPixmap( match ? KDE::icon("dialog-ok") : KDE::icon("dialog-error") );
+            ui.labelMatch->setPixmap( match ? QIcon::fromTheme("dialog-ok") : QIcon::fromTheme("dialog-error") );
             // "ok" icon should probably be "dialog-success", but we don't have that icon in KDE 4.0
             ui.labelMatch->setText( match? i18n("Passwords match")
                 :i18n("Passwords do not match") );

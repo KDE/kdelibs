@@ -41,7 +41,6 @@
 #include <kuser.h>
 
 #include <kcomponentdata.h>
-#include <kiconloader.h> // KDE::icon
 #include <kdebug.h>
 #include <kurlmimedata.h>
 
@@ -756,7 +755,7 @@ QAction *KFilePlacesModel::teardownActionForIndex(const QModelIndex &index) cons
         }
 
         if (!iconName.isEmpty()) {
-            return new QAction(KDE::icon(iconName), text, 0);
+            return new QAction(QIcon::fromTheme(iconName), text, 0);
         } else {
             return new QAction(text, 0);
         }
@@ -774,7 +773,7 @@ QAction *KFilePlacesModel::ejectActionForIndex(const QModelIndex &index) const
         QString label = data(index, Qt::DisplayRole).toString().replace('&',"&&");
         QString text = i18n("&Eject '%1'", label);
 
-        return new QAction(KDE::icon("media-eject"), text, 0);
+        return new QAction(QIcon::fromTheme("media-eject"), text, 0);
     }
 
     return 0;

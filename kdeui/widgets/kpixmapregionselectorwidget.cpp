@@ -34,7 +34,6 @@
 #include <klocalizedstring.h>
 #include <kmenu.h>
 #include <kaction.h>
-#include <kiconloader.h>
 #include <stdlib.h>
 #include <QCursor>
 #include <QApplication>
@@ -194,14 +193,14 @@ KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 
     QAction *action = actions->addAction("rotateclockwise");
     action->setText(i18n("&Rotate Clockwise"));
-    action->setIcon( KDE::icon( "object-rotate-right" ) );
+    action->setIcon( QIcon::fromTheme( "object-rotate-right" ) );
     connect( action, SIGNAL(triggered(bool)), this, SLOT(rotateClockwise()) );
 
     popup->addAction(action);
 
     action = actions->addAction("rotatecounterclockwise");
     action->setText(i18n("Rotate &Counterclockwise"));
-    action->setIcon( KDE::icon( "object-rotate-left" ) );
+    action->setIcon( QIcon::fromTheme( "object-rotate-left" ) );
     connect( action, SIGNAL(triggered(bool)), this, SLOT(rotateCounterclockwise()) );
 
     popup->addAction(action);

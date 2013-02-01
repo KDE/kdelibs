@@ -64,7 +64,7 @@ KCertExport::KCertExport(QWidget *parent)
    connect(_filename, SIGNAL(textChanged(QString)), this, SLOT(slotTextChanged(QString)));
    connect(_filename, SIGNAL(returnPressed()), this, SLOT(slotExport()));
 
-   _choose = new QPushButton(KDE::icon("document-open"), QString(), this); // TODO: port to KUrlRequester
+   _choose = new QPushButton(QIcon::fromTheme("document-open"), QString(), this); // TODO: port to KUrlRequester
    grid->addWidget(_choose, 6, 5);
    connect(_choose, SIGNAL(clicked()), this, SLOT(slotChoose()));
 

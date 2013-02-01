@@ -62,7 +62,7 @@ void UploadDialog::Private::init()
 
     finishButton = new QPushButton;
     finishButton->setText(i18n("Finish"));
-    finishButton->setIcon(KDE::icon("dialog-ok-apply"));
+    finishButton->setIcon(QIcon::fromTheme("dialog-ok-apply"));
 
     buttonBox = new QDialogButtonBox(q);
     buttonBox->addButton(backButton, QDialogButtonBox::ActionRole);
@@ -340,7 +340,7 @@ void UploadDialog::Private::_k_updatedContentFetched(const Attica::Content& cont
 
     ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + content.detailpage().toString() + QLatin1String("\">")
                                        + i18nc("A link to the website where the get hot new stuff upload can be seen", "Visit website") + QLatin1String("</a>"));
-    ui.fetchContentLinkImageLabel->setPixmap(KDE::icon("dialog-ok").pixmap(16));
+    ui.fetchContentLinkImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
 }
 
 void UploadDialog::Private::_k_previewLoaded(int index, const QImage& image)
@@ -407,7 +407,7 @@ bool UploadDialog::init(const QString &configfile)
     d->ui.mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
                                  "%1 Add-On Uploader",
                                  KGlobal::activeComponent().aboutData()->programName()));
-    d->ui.mTitleWidget->setPixmap(KDE::icon(KGlobal::activeComponent().aboutData()->programIconName()));
+    d->ui.mTitleWidget->setPixmap(QIcon::fromTheme(KGlobal::activeComponent().aboutData()->programIconName()));
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
@@ -672,7 +672,7 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
         return;
     }
 
-    ui.createContentImageLabel->setPixmap(KDE::icon("dialog-ok").pixmap(16));
+    ui.createContentImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
 
     Attica::ItemPostJob<Attica::Content> * job = static_cast<Attica::ItemPostJob<Attica::Content> *>(baseJob);
     if (job->metadata().error() != Attica::Metadata::NoError) {
@@ -743,28 +743,28 @@ void UploadDialog::Private::doUpload(const QString& index, const QUrl & path)
 
 void UploadDialog::Private::_k_fileUploadFinished(Attica::BaseJob* )
 {
-    ui.uploadContentImageLabel->setPixmap(KDE::icon("dialog-ok").pixmap(16));
+    ui.uploadContentImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
     finishedContents = true;
     uploadFileFinished();
 }
 
 void UploadDialog::Private::_k_preview1UploadFinished(Attica::BaseJob* )
 {
-    ui.uploadPreview1ImageLabel->setPixmap(KDE::icon("dialog-ok").pixmap(16));
+    ui.uploadPreview1ImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
     finishedPreview1 = true;
     uploadFileFinished();
 }
 
 void UploadDialog::Private::_k_preview2UploadFinished(Attica::BaseJob* )
 {
-    ui.uploadPreview2ImageLabel->setPixmap(KDE::icon("dialog-ok").pixmap(16));
+    ui.uploadPreview2ImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
     finishedPreview2 = true;
     uploadFileFinished();
 }
 
 void UploadDialog::Private::_k_preview3UploadFinished(Attica::BaseJob* )
 {
-    ui.uploadPreview3ImageLabel->setPixmap(KDE::icon("dialog-ok").pixmap(16));
+    ui.uploadPreview3ImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
     finishedPreview3 = true;
     uploadFileFinished();
 }
@@ -787,7 +787,7 @@ void UploadDialog::Private::_k_detailsLinkLoaded(const QUrl& url)
 {
     ui.contentWebsiteLink->setText(QLatin1String("<a href=\"") + url.toString() + QLatin1String("\">")
                                        + i18nc("A link to the website where the get hot new stuff upload can be seen", "Visit website") + QLatin1String("</a>"));
-    ui.fetchContentLinkImageLabel->setPixmap(KDE::icon("dialog-ok").pixmap(16));
+    ui.fetchContentLinkImageLabel->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16));
 }
 
 #include "moc_uploaddialog.cpp"

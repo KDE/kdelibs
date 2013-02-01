@@ -61,7 +61,6 @@
 
 #include <kcombobox.h>
 #include <kconfig.h>
-#include <kiconloader.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -1211,7 +1210,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     // The color picker button
     //
     QPushButton* button = new QPushButton(page);
-    button->setIcon(KDE::icon("color-picker"));
+    button->setIcon(QIcon::fromTheme("color-picker"));
     int commonHeight = addButton->sizeHint().height();
     button->setFixedSize(commonHeight, commonHeight);
     l_hbox->addWidget(button, 0, Qt::AlignHCenter);

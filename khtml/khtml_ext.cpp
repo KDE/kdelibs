@@ -60,7 +60,6 @@
 #include <kmessagebox.h>
 #include <krun.h>
 #include <kurifilter.h>
-#include <kiconloader.h>
 #include <kdesktopfile.h>
 #include <qtemporaryfile.h>
 #include "khtml_global.h"
@@ -431,7 +430,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             }
             KAction *action = new KAction(i18n("Open '%1'", selectedTextURL), this);
             d->m_actionCollection->addAction( "openSelection", action );
-            action->setIcon( KDE::icon( "window-new" ) );
+            action->setIcon( QIcon::fromTheme( "window-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(openSelection()) );
             editActions.append(action);
         }
@@ -471,7 +470,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             KActionMenu* menu = new KActionMenu( i18nc("@title:menu HTML frame/iframe", "Frame"), this);
             KAction *action = new KAction( i18n( "Open in New &Window" ), this );
             d->m_actionCollection->addAction( "frameinwindow", action );
-            action->setIcon( KDE::icon( "window-new" ) );
+            action->setIcon( QIcon::fromTheme( "window-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInWindow()) );
             menu->addAction(action);
 
@@ -482,7 +481,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "Open in &New Tab" ), this );
             d->m_actionCollection->addAction( "frameintab", action );
-            action->setIcon( KDE::icon( "tab-new" ) );
+            action->setIcon( QIcon::fromTheme( "tab-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInTab()) );
             menu->addAction(action);
 
@@ -497,7 +496,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
             action = new KAction( i18n( "Print Frame..." ), this );
             d->m_actionCollection->addAction( "printFrame", action );
-            action->setIcon( KDE::icon( "document-print-frame" ) );
+            action->setIcon( QIcon::fromTheme( "document-print-frame" ) );
             connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(print()) );
             menu->addAction(action);
 
@@ -640,7 +639,7 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
         KAction *action = new KAction(i18n("Search for '%1' with %2",
                                            squeezedText, data.searchProvider()), this);
         action->setData(QUrl(data.uri()));
-        action->setIcon(KDE::icon(data.iconName()));
+        action->setIcon(QIcon::fromTheme(data.iconName()));
         connect(action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(searchProvider()));
         d->m_actionCollection->addAction("defaultSearchProvider", action);
         editActions.append(action);
@@ -654,7 +653,7 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
                 KAction *action = new KAction(searchProvider, this);
                 action->setData(data.queryForPreferredSearchProvider(searchProvider));
                 d->m_actionCollection->addAction(searchProvider, action);
-                action->setIcon(KDE::icon(data.iconNameForPreferredSearchProvider(searchProvider)));
+                action->setIcon(QIcon::fromTheme(data.iconNameForPreferredSearchProvider(searchProvider)));
                 connect(action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(searchProvider()));
                 providerList->addAction(action);
             }
@@ -1005,7 +1004,7 @@ extern const int KHTML_NO_EXPORT fastZoomSizeCount;
 KHTMLZoomFactorAction::KHTMLZoomFactorAction( KHTMLPart *part, bool direction, const QString &icon, const QString &text, QObject *parent )
     : KSelectAction( text, parent )
 {
-    setIcon( KDE::icon( icon ) );
+    setIcon( QIcon::fromTheme( icon ) );
 
     setToolBarMode(MenuMode);
     setToolButtonPopupMode(QToolButton::DelayedPopup);

@@ -20,7 +20,6 @@
 #include "kactionselector.h"
 
 #include <klocalizedstring.h>
-#include <kiconloader.h>
 #include <kdebug.h>
 #include <QApplication>
 #include <QToolButton>
@@ -174,19 +173,19 @@ void KActionSelector::setButtonIcon( const QString &icon, MoveButton button )
   {
     case ButtonAdd:
     d->addIcon = icon;
-    d->btnAdd->setIcon( KDE::icon( icon ) );
+    d->btnAdd->setIcon( QIcon::fromTheme( icon ) );
     break;
     case ButtonRemove:
     d->removeIcon = icon;
-    d->btnRemove->setIcon( KDE::icon( icon ) );
+    d->btnRemove->setIcon( QIcon::fromTheme( icon ) );
     break;
     case ButtonUp:
     d->upIcon = icon;
-    d->btnUp->setIcon( KDE::icon( icon ) );
+    d->btnUp->setIcon( QIcon::fromTheme( icon ) );
     break;
     case ButtonDown:
     d->downIcon = icon;
-    d->btnDown->setIcon( KDE::icon( icon ) );
+    d->btnDown->setIcon( QIcon::fromTheme( icon ) );
     break;
     default:
     kDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!";
@@ -501,10 +500,10 @@ void KActionSelectorPrivate::itemDoubleClicked( QListWidgetItem *item )
 
 void KActionSelectorPrivate::loadIcons()
 {
-  btnAdd->setIcon( KDE::icon( addIcon ) );
-  btnRemove->setIcon( KDE::icon( removeIcon ) );
-  btnUp->setIcon( KDE::icon( upIcon ) );
-  btnDown->setIcon( KDE::icon( downIcon ) );
+  btnAdd->setIcon( QIcon::fromTheme( addIcon ) );
+  btnRemove->setIcon( QIcon::fromTheme( removeIcon ) );
+  btnUp->setIcon( QIcon::fromTheme( upIcon ) );
+  btnDown->setIcon( QIcon::fromTheme( downIcon ) );
 }
 
 void KActionSelectorPrivate::moveItem( QListWidgetItem *item )

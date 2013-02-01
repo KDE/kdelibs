@@ -18,7 +18,6 @@
 
 #include "knewstuffbutton.h"
 
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include "downloaddialog.h"
 
@@ -55,7 +54,7 @@ Button::~Button()
 
 void Button::init()
 {
-    setIcon(KDE::icon("get-hot-new-stuff"));
+    setIcon(QIcon::fromTheme("get-hot-new-stuff"));
     connect(this, SIGNAL(clicked()), SLOT(showDialog()));
 }
 

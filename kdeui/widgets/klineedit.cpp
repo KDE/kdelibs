@@ -35,7 +35,6 @@
 #include <kcursor.h>
 #include <kdebug.h>
 #include <kcompletionbox.h>
-#include <kiconloader.h>
 #include <kicontheme.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
@@ -1204,7 +1203,7 @@ QMenu* KLineEdit::createStandardContextMenu()
     // menu item.
     if ( compObj() && !isReadOnly() && KAuthorized::authorize("lineedit_text_completion") )
     {
-        QMenu *subMenu = popup->addMenu( KDE::icon("text-completion"), i18nc("@title:menu", "Text Completion") );
+        QMenu *subMenu = popup->addMenu( QIcon::fromTheme("text-completion"), i18nc("@title:menu", "Text Completion") );
         connect( subMenu, SIGNAL(triggered(QAction*)),
                  this, SLOT(completionMenuActivated(QAction*)) );
 

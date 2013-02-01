@@ -24,7 +24,6 @@
 #include <klocalizedstring.h>
 #include <kaction.h>
 #include <kfileitemactions.h>
-#include <kiconloader.h>
 #include <kmenu.h>
 #include <ksqueezedtextlabel.h>
 #include <knotification.h>
@@ -81,7 +80,7 @@ public:
         QLabel *iconLabel = new QLabel(this);
         QStyleOption option;
         option.initFrom(this);
-        QIcon icon = KDE::icon("dialog-information");
+        QIcon icon = QIcon::fromTheme("dialog-information");
         iconLabel->setPixmap(icon.pixmap(style()->pixelMetric(QStyle::PM_MessageBoxIconSize, &option, this)));
 
         hLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
@@ -238,7 +237,7 @@ static KAction* createAppAction(const KService::Ptr& service, QObject* parent)
     actionName = i18nc("@action:inmenu", "Open &with %1", actionName);
 
     KAction *act = new KAction(parent);
-    act->setIcon(KDE::icon(service->icon()));
+    act->setIcon(QIcon::fromTheme(service->icon()));
     act->setText(actionName);
     act->setData(QVariant::fromValue(service));
     return act;
@@ -279,7 +278,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
                     menu->addAction(act);
                 }
                 KAction* openWithDialogAction = new KAction(d);
-                openWithDialogAction->setIcon(KDE::icon("document-open"));
+                openWithDialogAction->setIcon(QIcon::fromTheme("document-open"));
                 openWithDialogAction->setText(openWithDialogItem.text());
                 menu->addAction(openWithDialogAction);
             } else {

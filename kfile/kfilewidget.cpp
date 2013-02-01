@@ -454,7 +454,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     connect( showBookmarksAction, SIGNAL(toggled(bool)),
              SLOT(_k_toggleBookmarks(bool)) );
 
-    KActionMenu *menu = new KActionMenu( KDE::icon("configure"), i18n("Options"), this);
+    KActionMenu *menu = new KActionMenu( QIcon::fromTheme("configure"), i18n("Options"), this);
     coll->addAction("extra menu", menu);
     menu->setWhatsThis(i18n("<qt>This is the preferences menu for the file dialog. "
                             "Various options can be accessed from this menu including: <ul>"
@@ -499,9 +499,9 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
             d->iconSizeSlider, SLOT(setValue(int)));
 
-    KAction *furtherAction = new KAction(KDE::icon("file-zoom-out"), i18n("Zoom out"), this);
+    KAction *furtherAction = new KAction(QIcon::fromTheme("file-zoom-out"), i18n("Zoom out"), this);
     connect(furtherAction, SIGNAL(triggered()), SLOT(_k_zoomOutIconsSize()));
-    KAction *closerAction = new KAction(KDE::icon("file-zoom-in"), i18n("Zoom in"), this);
+    KAction *closerAction = new KAction(QIcon::fromTheme("file-zoom-in"), i18n("Zoom in"), this);
     connect(closerAction, SIGNAL(triggered()), SLOT(_k_zoomInIconsSize()));
 
     QWidget *midSpacer = new QWidget(this);
@@ -1436,7 +1436,7 @@ void KFileWidgetPrivate::_k_urlEntered(const QUrl& url)
     bool blocked = locationEdit->blockSignals(true);
     if (keepLocation) {
         QUrl currentUrl = QUrl::fromUserInput(filename);
-        locationEdit->changeUrl(0, KDE::icon(KIO::iconNameForUrl(currentUrl)), currentUrl);
+        locationEdit->changeUrl(0, QIcon::fromTheme(KIO::iconNameForUrl(currentUrl)), currentUrl);
         locationEdit->lineEdit()->setModified(true);
     }
 
@@ -1975,7 +1975,7 @@ void KFileWidget::setOperationMode( OperationMode mode )
     if ( mode == Opening ) {
         // don't use KStandardGuiItem::open() here which has trailing ellipsis!
         d->okButton->setText(i18n("&Open"));
-        d->okButton->setIcon(KDE::icon("document-open"));
+        d->okButton->setIcon(QIcon::fromTheme("document-open"));
         // hide the new folder actions...usability team says they shouldn't be in open file dialog
         actionCollection()->removeAction( actionCollection()->action("mkdir" ) );
     } else if ( mode == Saving ) {
@@ -2533,7 +2533,7 @@ void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
         q->connect( bookmarkHandler, SIGNAL(openUrl(QString)),
                     SLOT(_k_enterUrl(QString)));
 
-        bookmarkButton = new KActionMenu(KDE::icon("bookmarks"),i18n("Bookmarks"), q);
+        bookmarkButton = new KActionMenu(QIcon::fromTheme("bookmarks"),i18n("Bookmarks"), q);
         bookmarkButton->setDelayed(false);
         q->actionCollection()->addAction("bookmark", bookmarkButton);
         bookmarkButton->setMenu(bookmarkHandler->menu());

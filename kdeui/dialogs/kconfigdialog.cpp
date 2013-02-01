@@ -26,7 +26,6 @@
 #include <kcoreconfigskeleton.h>
 #include <kdebug.h>
 #include <khelpclient.h>
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 
@@ -175,7 +174,7 @@ KPageWidgetItem* KConfigDialog::KConfigDialogPrivate::addPageInternal(QWidget *p
   KPageWidgetItem *item = new KPageWidgetItem( frame, itemName );
   item->setHeader( header );
   if ( !pixmapName.isEmpty() )
-    item->setIcon( KDE::icon( pixmapName ) );
+    item->setIcon( QIcon::fromTheme( pixmapName ) );
 
   q->KPageDialog::addPage( item );
   return item;

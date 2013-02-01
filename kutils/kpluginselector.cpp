@@ -29,6 +29,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QStyle>
 #include <QStyleOptionViewItemV4>
 
 #include <kdebug.h>
@@ -124,7 +125,7 @@ KPluginSelector::Private::DependenciesWidget::DependenciesWidget(QWidget *parent
     layout->setAlignment(Qt::AlignLeft);
     QLabel *label = new QLabel();
     label->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    label->setPixmap(KIconLoader::global()->loadIcon("dialog-information", KIconLoader::Dialog));
+    label->setPixmap(QIcon::fromTheme("dialog-information").pixmap(style()->pixelMetric(QStyle::PM_MessageBoxIconSize)));
     label->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     layout->addWidget(label);
     KUrlLabel *link = new KUrlLabel();
@@ -575,7 +576,7 @@ KPluginSelector::Private::PluginDelegate::PluginDelegate(KPluginSelector::Privat
     , pushButton(new QPushButton)
     , pluginSelector_d(pluginSelector_d)
 {
-    pushButton->setIcon(KDE::icon("configure")); // only for getting size matters
+    pushButton->setIcon(QIcon::fromTheme("configure")); // only for getting size matters
 }
 
 KPluginSelector::Private::PluginDelegate::~PluginDelegate()
@@ -675,11 +676,11 @@ QList<QWidget*> KPluginSelector::Private::PluginDelegate::createItemWidgets() co
     connect(enabledCheckBox, SIGNAL(clicked(bool)), this, SLOT(emitChanged()));
 
     QPushButton *aboutPushButton = new QPushButton;
-    aboutPushButton->setIcon(KDE::icon("dialog-information"));
+    aboutPushButton->setIcon(QIcon::fromTheme("dialog-information"));
     connect(aboutPushButton, SIGNAL(clicked(bool)), this, SLOT(slotAboutClicked()));
 
     QPushButton *configurePushButton = new QPushButton;
-    configurePushButton->setIcon(KDE::icon("configure"));
+    configurePushButton->setIcon(QIcon::fromTheme("configure"));
     connect(configurePushButton, SIGNAL(clicked(bool)), this, SLOT(slotConfigureClicked()));
 
     setBlockedEventTypes(enabledCheckBox, QList<QEvent::Type>() << QEvent::MouseButtonPress

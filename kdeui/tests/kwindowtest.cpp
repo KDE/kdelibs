@@ -17,7 +17,6 @@
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
 #include <kdebug.h>
-#include <kiconloader.h>
 
 TestWindow::TestWindow (QWidget *parent)
     : KXmlGuiWindow (parent)
@@ -34,21 +33,21 @@ TestWindow::TestWindow (QWidget *parent)
     // We only need to create actions with the right name here.
 
     // First four  buttons
-    fileNewAction = new KAction(KDE::icon("document-new"), "Create.. (toggles upper button)", this);
+    fileNewAction = new KAction(QIcon::fromTheme("document-new"), "Create.. (toggles upper button)", this);
     actionCollection()->addAction("filenew", fileNewAction);
     fileNewAction->setCheckable(true);
     connect(fileNewAction, SIGNAL(triggered(bool)), SLOT(slotNew()));
 
-    KAction* fileOpenAction = new KAction(KDE::icon("document-open"), "Open", this);
+    KAction* fileOpenAction = new KAction(QIcon::fromTheme("document-open"), "Open", this);
     actionCollection()->addAction("fileopen", fileOpenAction);
     connect(fileOpenAction, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
-    KActionMenu* fileFloppyAction = new KActionMenu(KDE::icon("filefloppy"), "Save (beep or delayed popup)", this);
+    KActionMenu* fileFloppyAction = new KActionMenu(QIcon::fromTheme("filefloppy"), "Save (beep or delayed popup)", this);
     actionCollection()->addAction("filefloppy", fileFloppyAction);
     fileFloppyAction->setDelayed(true);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
-    KAction* filePrintAction = new KAction(KDE::icon("document-print"), "Print (enables/disables open)", this);
+    KAction* filePrintAction = new KAction(QIcon::fromTheme("document-print"), "Print (enables/disables open)", this);
     actionCollection()->addAction("fileprint", filePrintAction);
     filePrintAction->setToolTip("This tooltip does not work for menu items");
     filePrintAction->setWhatsThis("This is the longer explanation of the action");
@@ -71,25 +70,25 @@ TestWindow::TestWindow (QWidget *parent)
 //    connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 
     // Now add another button and align it right
-    exitAction = new KAction(KDE::icon( "application-exit" ), "Exit", this);
+    exitAction = new KAction(QIcon::fromTheme( "application-exit" ), "Exit", this);
     actionCollection()->addAction("exit", exitAction);
     connect (exitAction, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
 
     // Another toolbar
 
-    KAction* fileNewAction2 = new KAction(KDE::icon( "document-new" ), "Create new file2 (Toggle)", this);
+    KAction* fileNewAction2 = new KAction(QIcon::fromTheme( "document-new" ), "Create new file2 (Toggle)", this);
     actionCollection()->addAction("filenew2", fileNewAction2);
     connect(fileNewAction2, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
     fileNewAction2->setToolTip("Tooltip");
     fileNewAction2->setStatusTip("Statustip");
     fileNewAction2->setWhatsThis("WhatsThis");
 
-    KAction* fileOpenAction2 = new KAction(KDE::icon( "document-open" ), "Open (starts progress in sb)", this);
+    KAction* fileOpenAction2 = new KAction(QIcon::fromTheme( "document-open" ), "Open (starts progress in sb)", this);
     actionCollection()->addAction("fileopen2", fileOpenAction2);
     connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
     fileOpenAction2->setHelpText("This action starts a progressbar inside the statusbar");
 
-    KAction* fileFloppyAction2 = new KAction(KDE::icon( "filefloppy" ), "Save file2 (autorepeat)", this);
+    KAction* fileFloppyAction2 = new KAction(QIcon::fromTheme( "filefloppy" ), "Save file2 (autorepeat)", this);
     actionCollection()->addAction("filefloppy2", fileFloppyAction2);
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
 
@@ -103,7 +102,7 @@ TestWindow::TestWindow (QWidget *parent)
     itemsMenu->addAction ("Important msg in statusbar", this, SLOT(slotImportant()));
 
 
-    KAction* filePrintAction2 = new KAction(KDE::icon( "document-print" ), "Print (pops menu)", this);
+    KAction* filePrintAction2 = new KAction(QIcon::fromTheme( "document-print" ), "Print (pops menu)", this);
     actionCollection()->addAction("fileprint2", filePrintAction2);
     filePrintAction2->setMenu(itemsMenu);
 
@@ -112,19 +111,19 @@ TestWindow::TestWindow (QWidget *parent)
     QActionGroup* radioGroup = new QActionGroup(this);
     radioGroup->setExclusive(true);
 
-    KToggleAction *radioButton1 = new KToggleAction(KDE::icon( "document-new" ), "Radiobutton1", this);
+    KToggleAction *radioButton1 = new KToggleAction(QIcon::fromTheme( "document-new" ), "Radiobutton1", this);
     actionCollection()->addAction("radioButton1", radioButton1);
     radioButton1->setActionGroup(radioGroup);
 
-    KToggleAction *radioButton2 = new KToggleAction(KDE::icon( "document-open" ), "Radiobutton2", this);
+    KToggleAction *radioButton2 = new KToggleAction(QIcon::fromTheme( "document-open" ), "Radiobutton2", this);
     actionCollection()->addAction("radioButton2", radioButton2);
     radioButton2->setActionGroup(radioGroup);
 
-    KToggleAction *radioButton3 = new KToggleAction(KDE::icon( "filefloppy" ), "Radiobutton3", this);
+    KToggleAction *radioButton3 = new KToggleAction(QIcon::fromTheme( "filefloppy" ), "Radiobutton3", this);
     actionCollection()->addAction("radioButton3", radioButton3);
     radioButton3->setActionGroup(radioGroup);
 
-    KToggleAction *radioButton4 = new KToggleAction(KDE::icon( "document-print" ), "Radiobutton4", this);
+    KToggleAction *radioButton4 = new KToggleAction(QIcon::fromTheme( "document-print" ), "Radiobutton4", this);
     actionCollection()->addAction("radioButton4", radioButton4);
     radioButton4->setActionGroup(radioGroup);
 

@@ -21,12 +21,12 @@
 #define PHONON_MEDIACONTROLS_P_H
 
 #include "mediacontrols.h"
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <phonon/volumeslider.h>
 #include <phonon/seekslider.h>
 #include <QToolButton>
 #include <QBoxLayout>
+#include <QStyle>
 
 namespace Phonon
 {
@@ -43,15 +43,15 @@ class MediaControlsPrivate
             volumeSlider(parent),
             media(0)
         {
-            int size = KIconLoader::global()->currentSize(KIconLoader::Toolbar);
+            int size = parent->style()->pixelMetric(QStyle::PM_ToolBarIconSize);
             QSize iconSize(size, size);
             playButton.setIconSize(iconSize);
-            playButton.setIcon(KDE::icon("media-playback-start"));
+            playButton.setIcon(QIcon::fromTheme("media-playback-start"));
             playButton.setToolTip(i18n("start playback"));
             playButton.setAutoRaise(true);
 
             pauseButton.setIconSize(iconSize);
-            pauseButton.setIcon(KDE::icon("media-playback-pause"));
+            pauseButton.setIcon(QIcon::fromTheme("media-playback-pause"));
             pauseButton.setToolTip(i18n("pause playback"));
             pauseButton.hide();
             pauseButton.setAutoRaise(true);

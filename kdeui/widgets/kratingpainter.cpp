@@ -26,8 +26,8 @@
 #include <QtCore/QRect>
 #include <QtCore/QPoint>
 
-#include <kiconeffect.h>
 #include <kiconloader.h>
+#include <kiconeffect.h>
 #include <kdebug.h>
 
 
@@ -64,7 +64,7 @@ QPixmap KRatingPainter::Private::getPixmap( int size )
     else {
         QIcon _icon( icon );
         if ( _icon.isNull() ) {
-            _icon = KDE::icon( "rating" );
+            _icon = QIcon::fromTheme( "rating" );
         }
         return _icon.pixmap( size );
     }

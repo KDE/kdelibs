@@ -28,7 +28,6 @@
 
 #include <kdebug.h>
 #include <kurl.h>
-#include <kiconloader.h>
 
 #include "debugwindow.h"
 #include "debugdocument.h"
@@ -111,7 +110,7 @@ void ScriptsDock::addDocument(DebugDocument *document)
     {
         parent = new QTreeWidgetItem(QStringList() << domain);
         if (!favicon.isEmpty()) {
-            QIcon icon = KDE::icon(favicon);
+            QIcon icon = QIcon::fromTheme(favicon);
             parent->setIcon(0, icon);
         }
 

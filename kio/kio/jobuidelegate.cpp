@@ -27,7 +27,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
-#include <kiconloader.h>
 #include <QDBusInterface>
 
 #include <QPointer>
@@ -226,7 +225,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
 		i18nc("@info", "Do you want to permanently delete all items from Trash? This action cannot be undone."),
 		QString(),
 		KGuiItem(i18nc("@action:button", "Empty Trash"),
-		KDE::icon("user-trash")),
+		QIcon::fromTheme("user-trash")),
 		KStandardGuiItem::cancel(),
 		keyName, KMessageBox::Notify);
 	    break;

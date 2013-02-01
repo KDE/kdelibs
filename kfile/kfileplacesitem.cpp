@@ -153,7 +153,7 @@ QVariant KFilePlacesItem::bookmarkData(int role) const
     case Qt::DisplayRole:
         return m_text;
     case Qt::DecorationRole:
-        return KDE::icon(iconNameForBookmark(b));
+        return QIcon::fromTheme(iconNameForBookmark(b));
     case Qt::BackgroundRole:
         if (b.metaDataItem("IsHidden")=="true") {
             return QColor(Qt::lightGray);

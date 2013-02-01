@@ -28,7 +28,6 @@
 #include <kconfig.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
-#include <kiconloader.h>
 #include <kactioncollection.h>
 
 #include "kbookmarkimporter.h"
@@ -59,7 +58,7 @@ void KonqBookmarkContextMenu::addActions()
     if(filteredToolbar)
     {
         QString text = bookmark().showInToolbar() ? tr("Hide in toolbar") : tr("Show in toolbar");
-        addAction( SmallIcon(""), text, this, SLOT( toggleShowInToolbar()));
+        addAction( QIcon::fromTheme(""), text, this, SLOT( toggleShowInToolbar()));
     }
 
     addFolderActions();
@@ -68,15 +67,15 @@ void KonqBookmarkContextMenu::addActions()
   {
     if(owner())
     {
-      addAction( SmallIcon("window-new"), tr( "Open in New Window" ), this, SLOT( openInNewWindow() ) );
-      addAction( SmallIcon("tab-new"), tr( "Open in New Tab" ), this, SLOT( openInNewTab() ) );
+      addAction( QIcon::fromTheme("window-new"), tr( "Open in New Window" ), this, SLOT( openInNewWindow() ) );
+      addAction( QIcon::fromTheme("tab-new"), tr( "Open in New Tab" ), this, SLOT( openInNewTab() ) );
     }
     addBookmark();
 
     if(filteredToolbar)
     {
         QString text = bookmark().showInToolbar() ? tr("Hide in toolbar") : tr("Show in toolbar");
-        addAction( SmallIcon(""), text, this, SLOT( toggleShowInToolbar()));
+        addAction( QIcon::fromTheme(""), text, this, SLOT( toggleShowInToolbar()));
     }
 
     addBookmarkActions();
@@ -126,7 +125,7 @@ void KonqBookmarkMenu::fillDynamicBookmarks()
       }
 
       KActionMenu * actionMenu;
-      actionMenu = new KActionMenu( KDE::icon(info.type), info.name, this );
+      actionMenu = new KActionMenu( QIcon::fromTheme(info.type), info.name, this );
       m_actionCollection->addAction( "kbookmarkmenu", actionMenu );
 
       parentMenu()->addAction(actionMenu);

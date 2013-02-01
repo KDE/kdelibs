@@ -28,7 +28,6 @@
 #include <QIcon>
 
 #include <kdebug.h>
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 
 class KDeviceListModel::Private
@@ -102,7 +101,7 @@ QVariant KDeviceListModel::data(const QModelIndex &index, int role) const
     }
     // Only display icons in the first column
     else if (role == Qt::DecorationRole && index.column() == 0) {
-        returnData = KDE::icon(device.icon());
+        returnData = QIcon::fromTheme(device.icon());
     }
 
     return returnData;

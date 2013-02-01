@@ -31,7 +31,6 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kcomponentdata.h>
-#include <kiconloader.h>
 #include <QtCore/QFile>
 #include <QCheckBox>
 #include <QDialogButtonBox>
@@ -245,7 +244,7 @@ KPageWidgetItem *DialogPrivate::createPageItem(KPageWidgetItem *parentItem,
     page->setLayout(layout);
 
     KPageWidgetItem *item = new KPageWidgetItem(page, name);
-    item->setIcon(KDE::icon(iconName));
+    item->setIcon(QIcon::fromTheme(iconName));
     iconLabel->setPixmap(item->icon().pixmap(128, 128));
     item->setProperty("_k_weight", weight);
     checkBoxForItem.insert(item, checkBox);

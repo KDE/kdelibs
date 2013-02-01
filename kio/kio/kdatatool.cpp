@@ -22,7 +22,6 @@
 
 #include <kcomponentdata.h>
 #include <kactioncollection.h>
-#include <kiconloader.h>
 
 #include <kservicetypetrader.h>
 
@@ -223,7 +222,7 @@ KDataToolAction::KDataToolAction( const QString & text, const KDataToolInfo & in
     : KAction( text, parent ),
       d(new KDataToolActionPrivate)
 {
-    setIcon( KDE::icon( info.iconName() ) );
+    setIcon( QIcon::fromTheme( info.iconName() ) );
     d->command = command;
     d->info = info;
 }

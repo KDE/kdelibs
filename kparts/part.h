@@ -303,7 +303,7 @@ public:
     /**
      * Use this icon loader to load any icons that are specific to this part,
      * i.e. icons installed into this part's own directories as opposed to standard
-     * kde icons. Use KDE::icon("myicon", iconLoader()).
+     * kde icons.
      *
      * Make sure to call setComponentData before calling iconLoader.
      */

@@ -35,7 +35,6 @@
 #include <kconfiggroup.h>
 #include <kcomponentdata.h>
 #include <kdirnotify.h>
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <knotification.h>
@@ -576,14 +575,14 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     if (index.isValid()) {
         if (!placesModel->isDevice(index)) {
             if (placesModel->url(index).toString() == QLatin1String("trash:/")) {
-                emptyTrash = menu.addAction(KDE::icon("trash-empty"), i18nc("@action:inmenu", "Empty Trash"));
+                emptyTrash = menu.addAction(QIcon::fromTheme("trash-empty"), i18nc("@action:inmenu", "Empty Trash"));
                 KConfig trashConfig("trashrc", KConfig::SimpleConfig);
                 emptyTrash->setEnabled(!trashConfig.group("Status").readEntry("Empty", true));
                 menu.addSeparator();
             }
-            add = menu.addAction(KDE::icon("document-new"), i18n("Add Entry..."));
+            add = menu.addAction(QIcon::fromTheme("document-new"), i18n("Add Entry..."));
             mainSeparator = menu.addSeparator();
-            edit = menu.addAction(KDE::icon("document-properties"), i18n("&Edit Entry '%1'...", label));
+            edit = menu.addAction(QIcon::fromTheme("document-properties"), i18n("&Edit Entry '%1'...", label));
         } else {
             eject = placesModel->ejectActionForIndex(index);
             if (eject!=0) {
@@ -602,14 +601,14 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             }
         }
         if (add == 0) {
-            add = menu.addAction(KDE::icon("document-new"), i18n("Add Entry..."));
+            add = menu.addAction(QIcon::fromTheme("document-new"), i18n("Add Entry..."));
         }
 
         hide = menu.addAction(i18n("&Hide Entry '%1'", label));
         hide->setCheckable(true);
         hide->setChecked(placesModel->isHidden(index));
     } else {
-        add = menu.addAction(KDE::icon("document-new"), i18n("Add Entry..."));
+        add = menu.addAction(QIcon::fromTheme("document-new"), i18n("Add Entry..."));
     }
 
     QAction *showAll = 0;
@@ -625,7 +624,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
 
     QAction* remove = 0;
     if (index.isValid() && !placesModel->isDevice(index)) {
-        remove = menu.addAction( KDE::icon("edit-delete"), i18n("&Remove Entry '%1'", label));
+        remove = menu.addAction( QIcon::fromTheme("edit-delete"), i18n("&Remove Entry '%1'", label));
     }
 
     menu.addActions(actions());
@@ -642,7 +641,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
                                                             text,
                                                             QString(),
                                                             KGuiItem(i18nc("@action:button", "Empty Trash"),
-                                                                     KDE::icon("user-trash"))
+                                                                     QIcon::fromTheme("user-trash"))
                                                            ) == KMessageBox::Continue;
         if (del) {
             QByteArray packedArgs;
