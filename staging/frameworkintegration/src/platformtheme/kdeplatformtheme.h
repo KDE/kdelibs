@@ -25,6 +25,8 @@
 
 #include <QHash>
 
+class QIconEngine;
+
 class KdePlatformTheme : public QPlatformTheme
 {
 public:
@@ -34,6 +36,7 @@ public:
     virtual QVariant themeHint(ThemeHint hint) const;
     virtual const QPalette *palette(Palette type = SystemPalette) const;
     virtual const QFont *font(Font type) const;
+    virtual QIconEngine *createIconEngine(const QString &iconName) const;
 
 private:
     void loadSettings();

@@ -7,6 +7,8 @@ include_directories(
    ${kguiaddons_SOURCE_DIR}/src/colors
    ${kconfig_BINARY_DIR}/src/core
    ${kconfig_SOURCE_DIR}/src/core
+   ${kwidgets_BINARY_DIR}/src
+   ${kwidgets_SOURCE_DIR}/src/icons
 )
 
 set(platformtheme_SRCS

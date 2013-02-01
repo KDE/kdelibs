@@ -20,6 +20,7 @@
 
 #include "kdeplatformtheme.h"
 
+#include <QCoreApplication>
 #include <QDialogButtonBox>
 #include <QDir>
 #include <QFileInfo>
@@ -32,6 +33,8 @@
 
 #include <kcolorscheme.h>
 #include <kconfiggroup.h>
+#include <kiconengine_p.h>
+#include <kiconloader.h>
 #include <ksharedconfig.h>
 
 KdePlatformTheme::KdePlatformTheme()
@@ -67,6 +70,11 @@ const QFont *KdePlatformTheme::font(Font type) const
         return m_fonts.value(type);
     else
         return QPlatformTheme::font(type);
+}
+
+QIconEngine *KdePlatformTheme::createIconEngine(const QString &iconName) const
+{
+    return new KIconEngine(iconName, KIconLoader::global());
 }
 
 QStringList xdgIconThemePaths()
