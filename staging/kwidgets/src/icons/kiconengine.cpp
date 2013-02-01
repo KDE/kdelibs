@@ -103,6 +103,22 @@ QPixmap KIconEngine::pixmap(const QSize & size, QIcon::Mode mode, QIcon::State s
     return pix2;
 }
 
+QString KIconEngine::iconName() const
+{
+    return mIconName;
+}
+
+QList<QSize> KIconEngine::availableSizes(QIcon::Mode mode, QIcon::State state) const
+{
+    return QList<QSize>() << QSize(16, 16)
+                          << QSize(22, 22)
+                          << QSize(32, 32)
+                          << QSize(48, 48)
+                          << QSize(64, 64)
+                          << QSize(128, 128)
+                          << QSize(256, 256);
+}
+
 QString KIconEngine::key() const
 {
     return QString::fromLatin1("KIconEngine");
@@ -123,18 +139,4 @@ bool KIconEngine::write(QDataStream &out) const
 {
     out << mIconName << mOverlays;
     return true;
-}
-
-void KIconEngine::virtual_hook(int id, void *data)
-{
-    switch (id) {
-    case IconNameHook: {
-        QString *name = reinterpret_cast<QString*>(data);
-        *name = mIconName;
-        break;
-    }
-    default:
-        QIconEngine::virtual_hook(id, data);
-        break;
-    }
 }

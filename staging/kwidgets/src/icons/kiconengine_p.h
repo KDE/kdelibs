@@ -65,7 +65,9 @@ class KWIDGETS_EXPORT KIconEngine : public QIconEngine // only exported for kde4
     /// Reimplementation
     virtual QPixmap pixmap ( const QSize & size, QIcon::Mode mode, QIcon::State state );
     /// Reimplementation
-    virtual void virtual_hook ( int id, void * data );
+    virtual QString iconName() const;
+    /// Reimplementation
+    QList<QSize> availableSizes(QIcon::Mode mode, QIcon::State state) const;
 
     virtual QString key() const;
     virtual QIconEngine *clone() const;
