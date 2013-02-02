@@ -44,7 +44,6 @@
 
 #include <QtTest/qtest.h>
 
-QT_BEGIN_HEADER
 
 QT_BEGIN_NAMESPACE
 
@@ -96,7 +95,5 @@ inline bool qCompare(uint const &t1, quint64 const &t2, const char *actual,
 }
 
 QT_END_NAMESPACE
-
-QT_END_HEADER
 
 #endif
