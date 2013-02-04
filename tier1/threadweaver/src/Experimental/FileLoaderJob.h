@@ -51,13 +51,13 @@ public:
     const char* data () const;
     /** If an error occurred, return the error number.
         Otherwise, return zero. */
-    const int error() const;
+    int error() const;
     /** Returns the filename. */
     const QString filename() const;
     /** Free the memory that holds the files content. */
     void freeMemory();
     /** Returns the file size in bytes. */
-    const int size () const;
+    int size () const;
 
 protected:
     void run();

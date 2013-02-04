@@ -33,7 +33,7 @@ FileLoaderJob::~FileLoaderJob()
     freeMemory();
 }
 
-const int FileLoaderJob::error() const
+int FileLoaderJob::error() const
 {
     return m_error;
 }
@@ -80,7 +80,7 @@ void FileLoaderJob::run()
     }
 }
 
-const int FileLoaderJob::size () const
+int FileLoaderJob::size() const
 {
     return m_file.size();
 }
