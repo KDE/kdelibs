@@ -33,7 +33,6 @@ namespace Win
 
 class WinDevice : public Solid::Ifaces::Device
 {
-    friend class WinBlock;
     Q_OBJECT
 public:
     WinDevice(const QString &udi);
@@ -55,8 +54,6 @@ public:
 
     Solid::DeviceInterface::Type type() const;
 
-    QString driveLetter() const;
-
 private:
     QString m_udi;
     QString m_parentUdi;
@@ -64,8 +61,6 @@ private:
     QString m_product;
     QString m_description;
     Solid::DeviceInterface::Type m_type;
-
-    static QMap<QString,QString> m_driveLetters;
 
 
 

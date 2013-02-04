@@ -24,6 +24,9 @@
 
 using namespace Solid::Backends::Win;
 
+
+QMap<QString,QString> WinBlock::m_driveLetters = QMap<QString,QString>();
+
 WinBlock::WinBlock(WinDevice *device):
     WinInterface(device),
     m_major(-1),
@@ -31,7 +34,7 @@ WinBlock::WinBlock(WinDevice *device):
 {
     if(m_device->type() == Solid::DeviceInterface::StorageVolume)
     {
-        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(m_device->driveLetter(),IOCTL_STORAGE_GET_DEVICE_NUMBER);
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(driveLetter(m_device->udi()),IOCTL_STORAGE_GET_DEVICE_NUMBER);
         m_major = info.DeviceNumber;
         m_minor = info.PartitionNumber;
     }
@@ -65,7 +68,7 @@ int WinBlock::deviceMinor() const
 
 QString WinBlock::device() const
 {
-    return m_device->driveLetter();
+    return driveLetter(m_device->udi());
 }
 
 QStringList WinBlock::getUdis()
@@ -90,18 +93,18 @@ QStringList WinBlock::getUdis()
                 {
                     QString udi = QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
                     list<<udi;
-                    WinDevice::m_driveLetters[udi] = drive;
+                    m_driveLetters[udi] = drive;
                     list<<QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
                 }
                 else if(info.DeviceType == FILE_DEVICE_CD_ROM || info.DeviceType == FILE_DEVICE_DVD)
                 {
                     QString udi = QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
                     list<<udi;
-                    WinDevice::m_driveLetters[udi] = drive;
+                    m_driveLetters[udi] = drive;
 
                     udi = QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
                     list<<udi;
-                    WinDevice::m_driveLetters[udi] = drive;
+                    m_driveLetters[udi] = drive;
                 }
                 else if(info.DeviceType == 0)
                 {
@@ -118,6 +121,13 @@ QStringList WinBlock::getUdis()
         }
     }
     return list.toList();
+}
+
+QString WinBlock::driveLetter(const QString &udi)
+{
+    if(!m_driveLetters.contains(udi))
+        qWarning()<<udi<<"is not connected to a drive";
+    return m_driveLetters[udi];
 }
 
 #include "winblock.moc"

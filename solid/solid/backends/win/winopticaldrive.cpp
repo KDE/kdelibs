@@ -28,7 +28,7 @@ using namespace Solid::Backends::Win;
 WinOpticalDrive::WinOpticalDrive(WinDevice *device) :
     WinStorageDrive(device)
 {
-    QMap<ulong,MediaProfiles> profiles = MediaProfiles::profiles(m_device->driveLetter());
+    QMap<ulong,MediaProfiles> profiles = MediaProfiles::profiles(WinBlock::driveLetter(m_device->udi()));
     foreach(const MediaProfiles p,profiles.values())
     {
         m_supportedTypes |= p.type;
@@ -47,7 +47,7 @@ Solid::OpticalDrive::MediumTypes WinOpticalDrive::supportedMedia() const
 
 bool WinOpticalDrive::eject()
 {
-    WinDeviceManager::getDeviceInfo<void*>(m_device->driveLetter(),IOCTL_STORAGE_EJECT_MEDIA ,NULL,0,NULL);
+    WinDeviceManager::getDeviceInfo<void*>(WinBlock::driveLetter(m_device->udi()),IOCTL_STORAGE_EJECT_MEDIA ,NULL,0,NULL);
     return true;
 }
 

@@ -19,6 +19,7 @@
 */
 
 #include "winstorageaccess.h"
+#include "winblock.h"
 
 
 using namespace Solid::Backends::Win;
@@ -34,17 +35,17 @@ WinStorageAccess::~WinStorageAccess()
 
 bool WinStorageAccess::isAccessible() const
 {
-    return !m_device->driveLetter().isNull();
+    return !WinBlock::driveLetter(m_device->udi()).isNull();
 }
 
 QString WinStorageAccess::filePath() const
 {
-    return m_device->driveLetter();
+    return WinBlock::driveLetter(m_device->udi());
 }
 
 bool WinStorageAccess::isIgnored() const
 {
-    return m_device->driveLetter().isNull();
+    return WinBlock::driveLetter(m_device->udi()).isNull();
 }
 
 bool WinStorageAccess::setup()
