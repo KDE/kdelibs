@@ -45,6 +45,8 @@ public:
 
    virtual QString device() const;
 
+    static QStringList getUdis();
+
 private:
     int m_major;
     int m_minor;

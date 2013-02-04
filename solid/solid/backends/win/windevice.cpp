@@ -28,6 +28,8 @@
 #include "winstoragedrive.h"
 #include "winopticaldrive.h"
 #include "winopticaldisc.h"
+#include "windevice.h"
+#include "wincpu.h"
 
 using namespace Solid::Backends::Win;
 
@@ -54,6 +56,8 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::OpticalDrive;
     else if (type == "volume.cdrom")
         m_type = Solid::DeviceInterface::OpticalDisc;
+    else if (type == "cpu")
+        m_type = Solid::DeviceInterface::Processor;
 
 
 
@@ -74,12 +78,23 @@ WinDevice::WinDevice(const QString &udi) :
     }
 
     QString dev;
-    if(m_type == Solid::DeviceInterface::StorageDrive)
+
+    if(m_type == Solid::DeviceInterface::Processor)
+    {
+        WinCpu cpu(const_cast<WinDevice*>(this));
+        WinCpu::ProcessorInfo info = WinCpu::updateCache()[cpu.number()];
+        m_vendor = info.vendor;
+        m_product = info.produuct;
+        m_description = info.name;
+    }
+    else if(m_type == Solid::DeviceInterface::StorageDrive)
     {
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
     }
     else
     {
+        WinStorageVolume volume(const_cast<WinDevice*>(this));
+        m_description =  volume.label();
         dev = driveLetter();
     }
     if(!dev.isNull())
@@ -92,7 +107,9 @@ WinDevice::WinDevice(const QString &udi) :
         char buff[1024];
         WinDeviceManager::getDeviceInfo<STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
         STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
-        m_vendor = QString((char*)buff+ info->ProductIdOffset).trimmed();
+        QStringList tmp = QString((char*)buff+ info->ProductIdOffset).trimmed().split(" ");
+        m_vendor = tmp.takeFirst();
+        m_product = tmp.join(" ");
     }
 
 
@@ -115,19 +132,7 @@ QString WinDevice::vendor() const
 
 QString WinDevice::product() const
 {
-    switch(m_type)
-    {
-    case Solid::DeviceInterface::StorageVolume:
-    case Solid::DeviceInterface::OpticalDisc:
-    case Solid::DeviceInterface::OpticalDrive:
-    {
-        WinDevice wDev(udi());
-        WinStorageVolume dev(&wDev);
-        return dev.label();
-    }
-    default:
-        return QString("Not implemented");
-    }
+    return m_product;
 }
 
 QString WinDevice::icon() const
@@ -168,7 +173,7 @@ QStringList WinDevice::emblems() const
 
 QString WinDevice::description() const
 {
-    return product();
+    return m_description;
 }
 
 
@@ -227,6 +232,9 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         break;
     case Solid::DeviceInterface::Block:
         iface = new WinBlock(this);
+        break;
+    case Solid::DeviceInterface::Processor:
+        iface = new WinCpu(this);
         break;
     case Solid::DeviceInterface::StorageAccess:
         iface = new WinStorageAccess(this);
