@@ -62,7 +62,6 @@
 #  KDE4_KNEWSTUFF2_LIBRARY  - the knewstuff2 library
 #  KDE4_KNEWSTUFF3_LIBRARY  - the knewstuff3 library
 #  KDE4_KDNSSD_LIBRARY      - the kdnssd library
-#  KDE4_PHONON_LIBRARY      - the phonon library
 #  KDE4_THREADWEAVER_LIBRARY- the threadweaver library
 #  KDE4_SOLID_LIBRARY       - the solid library
 #  KDE4_KNOTIFYCONFIG_LIBRARY- the knotifyconfig library
@@ -98,7 +97,6 @@
 #  KDE4_KDNSSD_LIBS           - the kdnssd library and all depending libraries
 #  KDE4_KDESU_LIBS            - the kdesu library and all depending libraries
 #  KDE4_KPTY_LIBS             - the kpty library and all depending libraries
-#  KDE4_PHONON_LIBS           - the phonon library and all depending librairies
 #  KDE4_THREADWEAVER_LIBRARIES- the threadweaver library and all depending libraries
 #  KDE4_SOLID_LIBS            - the solid library and all depending libraries
 #  KDE4_KNOTIFYCONFIG_LIBS    - the knotify config library and all depending libraries
@@ -656,22 +654,6 @@ endif (UNIX)
 if(_kdeBootStrapping  OR  TARGET ${KDE4_TARGET_PREFIX}nepomuk)
    _kde4_set_lib_variables(NEPOMUK nepomuk "${KDE4_TARGET_PREFIX}")
 endif(_kdeBootStrapping  OR  TARGET ${KDE4_TARGET_PREFIX}nepomuk)
-
-
-################### try to find Phonon ############################################
-
-# we do this here instead of above together with the checks for Perl etc.
-# since FindPhonon.cmake also uses ${KDE4_LIB_INSTALL_DIR} to check for Phonon,
-# which helps with finding the phonon installed as part of kdesupport:
-
-find_package(Phonon 4.3.80)
-set(KDE4_PHONON_LIBRARY ${PHONON_LIBRARY})
-set(KDE4_PHONON_LIBS ${PHONON_LIBS})
-set(KDE4_PHONON_INCLUDES ${PHONON_INCLUDES})
-if(NOT PHONON_FOUND)
-   message(STATUS "Phonon not found")
-endif(NOT PHONON_FOUND)
-
 
 #####################  provide some options   ##########################################
 
@@ -1339,7 +1321,6 @@ endif (NOT KDE4Internal_FIND_QUIETLY)
 set(KDE4_INCLUDES
    ${KDE4_INCLUDE_DIR}
    ${KDE4_INCLUDE_DIR}/KDE
-   ${KDE4_PHONON_INCLUDES}
    ${QT_INCLUDES}
    ${_KDE4_PLATFORM_INCLUDE_DIRS}
 )
