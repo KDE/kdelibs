@@ -33,8 +33,6 @@
 
 using namespace Solid::Backends::Win;
 
-QMap<QString,QString> WinDevice::m_driveLetters = QMap<QString,QString>();
-
 WinDevice::WinDevice(const QString &udi) :
     Device(),
     m_udi(udi),
@@ -95,7 +93,7 @@ WinDevice::WinDevice(const QString &udi) :
     {
         WinStorageVolume volume(const_cast<WinDevice*>(this));
         m_description =  volume.label();
-        dev = driveLetter();
+        dev = WinBlock::driveLetter(udi);
     }
     if(!dev.isNull())
     {
@@ -269,11 +267,6 @@ Solid::DeviceInterface::Type WinDevice::type() const
     return m_type;
 }
 
-QString WinDevice::driveLetter() const
-{
-    if(!m_driveLetters.contains(udi()))
-        qWarning()<<udi()<<"is not connected to a drive";
-    return m_driveLetters[udi()];
-}
+
 
 #include "windevice.moc"

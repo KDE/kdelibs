@@ -48,6 +48,7 @@ int WinCpu::maxSpeed() const
 
 bool WinCpu::canChangeFrequency() const
 {
+    //TODO:implement
     return false;
 }
 
@@ -64,10 +65,7 @@ QStringList WinCpu::getUdis()
     {
         out<<QString("/org/kde/solid/win/cpu/device#%1,cpu#%2").arg(info.id).arg(info.lgicalId);
     }
-
-    qDebug()<<out;
     return out;
-
 }
 
 

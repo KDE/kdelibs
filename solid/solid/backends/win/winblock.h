@@ -39,15 +39,19 @@ public:
     WinBlock(WinDevice *device);
     ~WinBlock();
 
-   virtual int deviceMajor() const;
+    virtual int deviceMajor() const;
 
-   virtual int deviceMinor() const;
+    virtual int deviceMinor() const;
 
-   virtual QString device() const;
+    virtual QString device() const;
 
     static QStringList getUdis();
 
+    static QString driveLetter(const QString &udi);
+
 private:
+    static QMap<QString,QString> m_driveLetters;
+
     int m_major;
     int m_minor;
 };

@@ -72,7 +72,7 @@ void WinStorageDrive::updateCache()
     QString dev;
     if(m_device->type() == Solid::DeviceInterface::OpticalDrive)
     {
-        dev =  m_device->driveLetter();
+        dev =  WinBlock::driveLetter(m_device->udi());
     }
     else
     {
