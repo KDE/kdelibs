@@ -338,13 +338,19 @@ void KBugReport::setMessageBody(const QString &messageBody)
 
 void KBugReportPrivate::_k_updateUrl()
 {
-    url = QUrl("https://bugs.kde.org/wizard.cgi");
-    url.addQueryItem( "os", os );
-    url.addQueryItem( "compiler", KDE_COMPILER_VERSION );
-    url.addQueryItem( "kdeVersion", kde_version );
-    url.addQueryItem( "appVersion", m_strVersion );
-    url.addQueryItem( "package", appcombo->currentText() );
-    url.addQueryItem( "kbugreport", "1" );
+    url = QUrl( "https://bugs.kde.org/enter_bug.cgi" );
+    url.addQueryItem( "format", "guided" );  // use the guided form
+
+    // the string format is product/component, where component is optional
+    QStringList list = appcombo->currentText().split('/');
+    url.addQueryItem( "product", list[0] );
+    if (list.size() == 2) {
+        url.addQueryItem( "component", list[1] );
+    }
+
+    url.addQueryItem( "version", m_strVersion );
+
+    // TODO: guess and fill OS(sys_os) and Platform(rep_platform) fields
 }
 
 void KBugReportPrivate::_k_appChanged(int i)

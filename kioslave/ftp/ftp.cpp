@@ -1216,7 +1216,7 @@ bool Ftp::ftpRename(const QString & src, const QString & dst, KIO::JobFlags jobF
 
     // CD into parent folder
     const int pos = src.lastIndexOf('/');
-    if (pos > 0) {
+    if (pos >= 0) {
         if(!ftpFolder(src.left(pos+1), false))
             return false;
     }

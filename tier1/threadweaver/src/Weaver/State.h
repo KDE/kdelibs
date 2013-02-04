@@ -3,10 +3,10 @@
    This file implements the state handling in ThreadWeaver.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, 2006 Mirko Boehm $
+   $ Copyright: (C) 2005-2013 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
-         http://www.hackerbuero.org $
+         http://creative-destruction.me $
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public

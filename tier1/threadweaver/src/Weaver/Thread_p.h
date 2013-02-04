@@ -33,12 +33,11 @@
 
 #include "Thread.h"
 
-using namespace ThreadWeaver;
-
+namespace ThreadWeaver {
 
 // FIXME (0.7) it looks like we do not need this if the Thread object is
 // moved to its own thread (weaverimpl does that)
-class ThreadWeaver::ThreadRunHelper : public QObject
+class ThreadRunHelper : public QObject
 {
     Q_OBJECT
 public:
@@ -61,5 +60,7 @@ public:
 
     void requestAbort();
 };
+
+}
 
 #endif

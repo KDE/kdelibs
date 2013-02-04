@@ -5,10 +5,10 @@
    Thread is not a part of the public interface of the ThreadWeaver library.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2004, 2005 Mirko Boehm $
+   $ Copyright: (C) 2004-2013 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
-         http://www.hackerbuero.org $
+         http://creative-destruction.me $
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -29,7 +29,6 @@
 */
 
 #include "Thread.h"
-#include "Thread_p.h"
 
 #include <QtCore/QMutex>
 #include <QtCore/QDebug>
@@ -44,17 +43,18 @@ using namespace ThreadWeaver;
 class Thread::Private
 {
 public:
-    explicit Private ( WeaverImpl* theParent )
-        : parent ( theParent )
-        , runhelper ( 0 )
-        , id ( makeId() )
-    {}
+    explicit Private(WeaverImpl* theParent)
+        : parent(theParent)
+        , id(makeId())
+        , job(0)
+    {
+        Q_ASSERT(parent);
+    }
 
     WeaverImpl *parent;
-
-    ThreadRunHelper* runhelper;
-
     const unsigned int id;
+    Job* job;
+    QMutex mutex;
 
     static unsigned int makeId()
     {
@@ -65,52 +65,10 @@ public:
     }
 };
 
-
-ThreadWeaver::ThreadRunHelper::ThreadRunHelper()
-    : QObject ( 0 )
-    , m_job( 0 )
-{
-}
-
-void ThreadWeaver::ThreadRunHelper::run ( WeaverImpl *parent, Thread* th )
-{
-    Q_ASSERT ( thread() == th );
-    Q_EMIT ( started ( th) );
-
-    while (true)
-    {
-        debug ( 3, "Thread::run [%u]: trying to execute the next job.\n", th->id() );
-
-        // this is the *only* assignment to m_job  in the Thread class!
-        Job* tmp = m_job; m_job = 0;
-
-        Job* job = parent->applyForWork ( th, tmp );
-
-        if (job == 0)
-        {
-            break;
-        } else {
-            m_job = job;
-            Q_EMIT ( jobStarted ( th,  m_job ) );
-            m_job->execute (th);
-            Q_EMIT ( jobDone ( m_job ) );
-        }
-    }
-}
-
-void ThreadWeaver::ThreadRunHelper::requestAbort()
-{
-    Job* job = m_job;
-    if ( job )
-    {
-        job->requestAbort();
-    }
-}
-
 Thread::Thread (WeaverImpl *parent)
-    : QThread () // no parent, because the QObject hierarchy of this thread
+    : QThread() // no parent, because the QObject hierarchy of this thread
                  // does not have a parent (see QObject::pushToThread)
-    , d ( new Private ( parent ) )
+    , d(new Private(parent))
 {
 }
 
@@ -121,39 +79,47 @@ Thread::~Thread()
 
 unsigned int Thread::id()
 {
-    return d->id;
+    return d->id; //id is const
 }
 
 void Thread::run()
 {
-// disabled while testing movetothread...
-//    Q_ASSERT ( thread() != this ); // this is created and owned by the main thread
-    debug ( 3, "Thread::run [%u]: running.\n", id() );
+    debug(3, "Thread::run [%u]: running.\n", id());
+    Q_EMIT started(this);
 
-    ThreadRunHelper helper;
-    d->runhelper = &helper;
+    while (true) {
+        debug(3, "Thread::run [%u]: trying to execute the next job.\n", id());
+        Job* oldJob = 0;
+        {
+            QMutexLocker l(&d->mutex); Q_UNUSED(l);
+            oldJob = d->job; d->job = 0;
+        }
+        // this is the *only* assignment to m_job  in the Thread class!
+        Job* newJob = d->parent->applyForWork(this, oldJob);
 
-    connect ( &helper, SIGNAL (started(ThreadWeaver::Thread*)),
-              SIGNAL (started(ThreadWeaver::Thread*)) );
-    connect ( &helper, SIGNAL (jobStarted(ThreadWeaver::Thread*,ThreadWeaver::Job*)),
-              SIGNAL (jobStarted(ThreadWeaver::Thread*,ThreadWeaver::Job*)) );
-    connect ( &helper, SIGNAL (jobDone(ThreadWeaver::Job*)),
-              SIGNAL (jobDone(ThreadWeaver::Job*)) );
-    helper.run( d->parent,  this );
-
-    d->runhelper = 0;
+        if (newJob == 0) {
+            break;
+        } else {
+            {
+                QMutexLocker l(&d->mutex); Q_UNUSED(l);
+                d->job = newJob;
+            }
+            Q_EMIT jobStarted(this, newJob);
+            newJob->execute (this);
+            Q_EMIT jobDone(newJob);
+        }
+    }
     debug ( 3, "Thread::run [%u]: exiting.\n", id() );
 }
 
 void Thread::requestAbort ()
 {
-    if ( d->runhelper )
-    {
-        d->runhelper->requestAbort();
+    QMutexLocker l(&d->mutex); Q_UNUSED(l);
+    if (d->job) {
+        d->job->requestAbort();
     } else {
         qDebug ( "Thread::requestAbort: not running." );
     }
 }
 
-#include "moc_Thread.cpp"
-#include "moc_Thread_p.cpp"
+#include "Thread.moc"

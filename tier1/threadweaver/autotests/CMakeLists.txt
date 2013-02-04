@@ -10,7 +10,7 @@ include(ECMMarkAsTest)
 
 ########### next target ###############
 
-set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp)
+set(JobTests_SRCS JobTests.cpp AppendCharacterJob.cpp AppendCharacterAndVerifyJob.cpp)
 
 add_executable(ThreadWeaverJobTests ${JobTests_SRCS})
 add_test(ThreadWeaverJobTests ThreadWeaverJobTests)

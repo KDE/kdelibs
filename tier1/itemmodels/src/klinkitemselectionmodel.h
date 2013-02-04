@@ -39,7 +39,7 @@ class KLinkItemSelectionModelPrivate;
 
   @image html kproxyitemselectionmodel-simple.png "Sharing a QItemSelectionModel between views on the same model is trivial"
   @image html kproxyitemselectionmodel-error.png "If a proxy model is used, it is no longer possible to share the QItemSelectionModel directly"
-  @image html kproxyitemselectionmodel-solution.png "A KProxyItemSelectionModel can be used to map the selection through the proxy model"
+  @image html kproxyitemselectionmodel-solution.png "A KLinkItemSelectionModel can be used to map the selection through the proxy model"
 
   @code
     QAbstractItemModel *model = getModel();
@@ -50,10 +50,10 @@ class KLinkItemSelectionModelPrivate;
     QTreeView *view1 = new QTreeView(splitter);
     view1->setModel(model);
 
-    KProxyItemSelectionModel *view2SelectionModel = new KProxyItemSelectionModel( proxy, view1->selectionModel());
+    KLinkItemSelectionModel *view2SelectionModel = new KLinkItemSelectionModel( proxy, view1->selectionModel());
 
     QTreeView *view2 = new QTreeView(splitter);
-    // Note that the QAbstractItemModel passed to KProxyItemSelectionModel must be the same as what is used in the view
+    // Note that the QAbstractItemModel passed to KLinkItemSelectionModel must be the same as what is used in the view
     view2->setModel(proxy);
     view2->setSelectionModel( view2SelectionModel );
   @endcode
@@ -78,10 +78,10 @@ class KLinkItemSelectionModelPrivate;
     QSortFilterProxyModel *proxy5 = new QSortFilterProxyModel();
     proxy5->setSourceModel(proxy4);
 
-    KProxyItemSelectionModel *view2SelectionModel = new KProxyItemSelectionModel( proxy5, view1->selectionModel());
+    KLinkItemSelectionModel *view2SelectionModel = new KLinkItemSelectionModel( proxy5, view1->selectionModel());
 
     QTreeView *view2 = new QTreeView(splitter);
-    // Note that the QAbstractItemModel passed to KProxyItemSelectionModel must be the same as what is used in the view
+    // Note that the QAbstractItemModel passed to KLinkItemSelectionModel must be the same as what is used in the view
     view2->setModel(proxy5);
     view2->setSelectionModel( view2SelectionModel );
   @endcode

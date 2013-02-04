@@ -1009,6 +1009,64 @@ void KDirListerTest::testRedirection()
     disconnect(&m_dirLister, 0, this, 0);
 }
 
+void KDirListerTest::testWatchingAfterCopyJob() // #331582
+{
+    m_items.clear();
+
+    QTemporaryDir newDir;
+    const QString path = newDir.path() + '/';
+
+    // List and watch an empty dir
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    m_dirLister.openUrl(QUrl::fromLocalFile(path));
+    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
+    QVERIFY(spyCompleted.wait(1000));
+    QVERIFY(m_dirLister.isFinished());
+    QVERIFY(m_items.isEmpty());
+
+    // Create three subfolders.
+    QVERIFY(QDir().mkdir(path + "New Folder"));
+    QVERIFY(QDir().mkdir(path + "New Folder 1"));
+    QVERIFY(QDir().mkdir(path + "New Folder 2"));
+
+    QVERIFY(spyCompleted.wait(1000));
+    QVERIFY(m_dirLister.isFinished());
+    QCOMPARE(m_items.count(), 3);
+
+    // Create a new file and verify that the dir lister notices it.
+    m_items.clear();
+    createTestFile(path + "a");
+    QVERIFY(spyCompleted.wait(1000));
+    QVERIFY(m_dirLister.isFinished());
+    QCOMPARE(m_items.count(), 1);
+
+    // Rename one of the subfolders.
+    const QString oldPath = path + "New Folder 1";
+    const QString newPath = path + "New Folder 1a";
+
+    // NOTE: The following two lines are required to trigger the bug!
+    KIO::Job* job = KIO::moveAs(QUrl::fromLocalFile(oldPath), QUrl::fromLocalFile(newPath), KIO::HideProgressInfo);
+    job->exec();
+
+    // Now try to create a second new file in and verify that the
+    // dir lister notices it.
+    m_items.clear();
+    createTestFile(path + "b");
+
+    int numTries = 0;
+    // Give time for KDirWatch to notify us
+    // This should end up in "KDirListerCache::slotFileDirty"
+    while (m_items.isEmpty()) {
+        QVERIFY(++numTries < 10);
+        QTest::qWait(200);
+    }
+    QCOMPARE(m_items.count(), 1);
+
+    newDir.remove();
+    QSignalSpy clearSpy(&m_dirLister, SIGNAL(clear()));
+    QVERIFY(clearSpy.wait(1000));
+}
+
 void KDirListerTest::enterLoop(int exitCount)
 {
     //qDebug("enterLoop");

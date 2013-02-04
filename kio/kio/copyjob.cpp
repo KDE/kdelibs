@@ -1723,6 +1723,7 @@ void CopyJob::emitResult()
     // Even if some error made us abort midway, we might still have done
     // part of the job so we better update the views! (#118583)
     if (!d->m_bOnlyRenames) {
+        // If only renaming happened, KDirNotify::FileRenamed was emitted by the rename jobs
         QUrl url(d->m_globalDest);
         if (d->m_globalDestinationState != DEST_IS_DIR || d->m_asMethod)
             url = QUrlPathInfo(url).directoryUrl();
@@ -1733,12 +1734,12 @@ void CopyJob::emitResult()
             //qDebug() << "KDirNotify'ing FilesRemoved" << d->m_successSrcList;
             org::kde::KDirNotify::emitFilesRemoved(d->m_successSrcList);
         }
+    }
 
-        // Re-enable watching on the dirs that held the deleted files
-        if (d->m_mode == CopyJob::Move) {
-            for (QSet<QString>::const_iterator it = d->m_parentDirs.constBegin() ; it != d->m_parentDirs.constEnd() ; ++it)
-                KDirWatch::self()->restartDirScan( *it );
-        }
+    // Re-enable watching on the dirs that held the deleted/moved files
+    if (d->m_mode == CopyJob::Move) {
+        for (QSet<QString>::const_iterator it = d->m_parentDirs.constBegin() ; it != d->m_parentDirs.constEnd() ; ++it)
+            KDirWatch::self()->restartDirScan( *it );
     }
     Job::emitResult();
 }

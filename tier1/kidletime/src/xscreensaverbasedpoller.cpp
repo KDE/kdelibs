@@ -26,7 +26,7 @@
 #include <X11/extensions/scrnsaver.h>
 
 XScreensaverBasedPoller::XScreensaverBasedPoller(QObject *parent)
-        : WidgetBasedPoller(parent)
+        : WidgetBasedPoller(parent), m_screenSaverIface( 0 )
 {
 
 }

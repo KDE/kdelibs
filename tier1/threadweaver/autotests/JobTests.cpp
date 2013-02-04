@@ -12,12 +12,12 @@
 #include <ResourceRestrictionPolicy.h>
 
 #include "AppendCharacterJob.h"
-
+#include "AppendCharacterAndVerifyJob.h"
 QMutex s_GlobalMutex;
 
 void JobTests::initTestCase ()
 {
-    ThreadWeaver::setDebugLevel ( true,  1 );
+    ThreadWeaver::setDebugLevel ( true, 1 );
 }
 
 // call finish() before leave a test to make sure the queue is empty
@@ -238,7 +238,7 @@ void JobTests::MassiveJobSequenceTest() {
     const int NoOfChars = 1024;
     const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const int SizeOfAlphabet = strlen( Alphabet );
-    AppendCharacterJob jobs [NoOfChars];
+    AppendCharacterAndVerifyJob jobs[NoOfChars];
     ThreadWeaver::JobSequence jobSequence( this );
     QString sequence;
     QString in;
@@ -246,19 +246,22 @@ void JobTests::MassiveJobSequenceTest() {
     srand ( 1 );
     in.reserve( NoOfChars );
     sequence.reserve ( NoOfChars );
-
-    for ( int i = 0; i<NoOfChars; ++i )
-    {
+    for ( int i = 0; i<NoOfChars; ++i ) {
         const int position = static_cast<int> ( SizeOfAlphabet * ( ( 1.0 * rand() ) / RAND_MAX ) );
         Q_ASSERT ( 0 <= position && position < SizeOfAlphabet );
         QChar c( Alphabet[position] );
         in.append ( c );
-        jobs[i].setValues( c, &sequence );
+    }
+
+    for ( int i = 0; i<NoOfChars; ++i ) {
+        jobs[i].setValues( in.at(i), &sequence, in );
         jobSequence.addJob ( & ( jobs[i] ) );
     }
+
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
-    // ThreadWeaver::Job::DumpJobDependencies();
     ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     QCOMPARE ( sequence, in );
 }
 

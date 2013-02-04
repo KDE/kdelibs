@@ -55,8 +55,7 @@ void KStringHandlerTest::naturalCompare()
     QCOMPARE(KStringHandler::naturalCompare("b", "a", Qt::CaseSensitive), +1);
     QCOMPARE(KStringHandler::naturalCompare("a", "a", Qt::CaseSensitive), 0);
 
-    // 'A' > 'a' ...
-    QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseSensitive), +1);
+    QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseSensitive), QString::localeAwareCompare("A", "a"));
     QCOMPARE(KStringHandler::naturalCompare("A", "a", Qt::CaseInsensitive), 0);
     QCOMPARE(KStringHandler::naturalCompare("a", "A", Qt::CaseInsensitive), 0);
     QCOMPARE(KStringHandler::naturalCompare("aAa", "AaA", Qt::CaseInsensitive), 0);

@@ -5,10 +5,10 @@
    library.
 
    $ Author: Mirko Boehm $
-   $ Copyright: (C) 2005, Mirko Boehm $
+   $ Copyright: (C) 2005-2013 Mirko Boehm $
    $ Contact: mirko@kde.org
          http://www.kde.org
-         http://www.hackerbuero.org $
+         http://creative-destruction.me $
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -35,11 +35,11 @@
 
 namespace ThreadWeaver {
 
-    class Job;
-    class State;
-    class WeaverObserver;
+class Job;
+class State;
+class WeaverObserver;
 
-    /** The Weaver class provides the public implementation of the WeaverInterface.
+/** The Weaver class provides the public implementation of the WeaverInterface.
 
         Weaver provides a static instance that can be used to perform jobs in
         threads without managing a weaver object. The static instance will
@@ -61,58 +61,57 @@ namespace ThreadWeaver {
         derived WeaverImpl objects.
 
     */
-  // Note: All member documentation is in the WeaverInterface class.
-    class THREADWEAVER_EXPORT Weaver : public WeaverInterface
-    {
-        Q_OBJECT
-    public:
-	/** Construct a Weaver object. */
-        Weaver ( QObject* parent=0 );
+// Note: All member documentation is in the WeaverInterface class.
+class THREADWEAVER_EXPORT Weaver : public WeaverInterface
+{
+    Q_OBJECT
+public:
+    /** Construct a Weaver object. */
+    explicit Weaver ( QObject* parent=0 );
 
-	/** Destruct a Weaver object. */
-        virtual ~Weaver ();
+    /** Destruct a Weaver object. */
+    virtual ~Weaver ();
 
-	const State& state() const;
+    const State& state() const;
 
-        void setMaximumNumberOfThreads( int cap );
-        int maximumNumberOfThreads() const;
-        int currentNumberOfThreads () const;
+    void setMaximumNumberOfThreads( int cap );
+    int maximumNumberOfThreads() const;
+    int currentNumberOfThreads () const;
 
 
-        void registerObserver ( WeaverObserver* );
+    void registerObserver ( WeaverObserver* );
 
-        /** Return the global Weaver instance.
-	    In some cases, a global Weaver object per application is
-	    sufficient for the applications purpose. If this is the case,
-	    query instance() to a pointer to a global instance.
-	    If instance is never called, a global Weaver object will not be
-	    created.
-	*/
-        // FIXME (0.7) this should be a WeaverInterface pointer
-	static ThreadWeaver::Weaver* instance();
-        virtual void enqueue (Job*);
-        virtual bool dequeue (Job*);
-        virtual void dequeue ();
-	virtual void finish();
-        virtual void suspend( );
-        virtual void resume();
-        bool isEmpty () const;
-	bool isIdle () const;
-	int queueLength () const;
-        void requestAbort();
+    /** Return the global Weaver instance.
+        In some cases, a global Weaver object per application is
+        sufficient for the applications purpose. If this is the case,
+        query instance() to get a pointer to a global instance.
+        If instance is never called, a global Weaver object will not be
+        created.
+    */
+    // FIXME (0.7) this should be a WeaverInterface pointer
+    static ThreadWeaver::Weaver* instance();
+    virtual void enqueue (Job*);
+    virtual bool dequeue (Job*);
+    virtual void dequeue ();
+    virtual void finish();
+    virtual void suspend( );
+    virtual void resume();
+    bool isEmpty () const;
+    bool isIdle () const;
+    int queueLength () const;
+    void requestAbort();
 
-    protected:
+protected:
+    /** The factory method to create the actual Weaver implementation.
+    Overload this method to use a different or adapted implementation.
+    */
+    virtual WeaverInterface* makeWeaverImpl ();
 
-        /** The factory method to create the actual Weaver implementation.
-            Overload this method to use a different or adapted implementation.
-            */
-      virtual WeaverInterface* makeWeaverImpl ();
+private:
 
-    private:
-
-      class Private;
-      Private* const d;
-    };
+    class Private;
+    Private* const d;
+};
 }
 
 #endif // THREADWEAVER_H

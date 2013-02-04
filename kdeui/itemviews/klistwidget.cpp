@@ -30,16 +30,16 @@ class KListWidget::KListWidgetPrivate
     public:
         KListWidgetPrivate(KListWidget *q)
             : q(q),
-              m_pCurrentItem(0)
+              m_pCurrentItem(0),
+              m_eventPos()
         {
         }
-
-        void emitExecute( QListWidgetItem *item, const QPoint &pos );
 
         void _k_slotItemEntered(QListWidgetItem*);
         void _k_slotOnViewport();
         void _k_slotSettingsChanged(int);
         void _k_slotAutoSelect();
+        void _k_slotEmitExecute(QListWidgetItem *item);
 
         KListWidget *q;
         bool m_bUseSingle : 1;
@@ -48,6 +48,7 @@ class KListWidget::KListWidgetPrivate
         QListWidgetItem* m_pCurrentItem;
         QTimer* m_pAutoSelect;
         int m_autoSelectDelay;
+        QPoint m_eventPos;
 };
 
 KListWidget::KListWidget( QWidget *parent )
@@ -104,12 +105,12 @@ void KListWidget::KListWidgetPrivate::_k_slotSettingsChanged(int category)
     if( m_bUseSingle )
     {
         q->connect(q, SIGNAL(itemClicked(QListWidgetItem*)),
-                   SIGNAL(executed(QListWidgetItem*)));
+                   SLOT(_k_slotEmitExecute(QListWidgetItem*)));
     }
     else
     {
         q->connect(q, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
-                   SIGNAL(executed(QListWidgetItem*)));
+                   SLOT(_k_slotEmitExecute(QListWidgetItem*)));
     }
 
     m_bChangeCursorOverItem = KGlobalSettings::changeCursorOverIcon();
@@ -190,7 +191,7 @@ void KListWidget::KListWidgetPrivate::_k_slotAutoSelect()
     kDebug() << "That's not supposed to happen!!!!";
 }
 
-void KListWidget::KListWidgetPrivate::emitExecute( QListWidgetItem *item, const QPoint &pos )
+void KListWidget::KListWidgetPrivate::_k_slotEmitExecute(QListWidgetItem *item)
 {
   Qt::KeyboardModifiers keybstate = QApplication::keyboardModifiers();
 
@@ -199,7 +200,9 @@ void KListWidget::KListWidgetPrivate::emitExecute( QListWidgetItem *item, const 
   //Don't emit executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
     emit q->executed( item );
-    emit q->executed( item, pos );
+    if (!m_eventPos.isNull()) {
+        emit q->executed( item, m_eventPos );
+    }
   }
 }
 
@@ -256,16 +259,18 @@ void KListWidget::mousePressEvent( QMouseEvent *e )
 
 void KListWidget::mouseDoubleClickEvent ( QMouseEvent * e )
 {
-  QListWidget::mouseDoubleClickEvent( e );
+  QPoint oldPos = d->m_eventPos;
+  d->m_eventPos = e->globalPos();
+  QListWidget::mouseDoubleClickEvent(e);
+  d->m_eventPos = oldPos;
+}
 
-  QListWidgetItem* item = itemAt( e->pos() );
-
-  if( item ) {
-    emit doubleClicked( item, e->globalPos() );
-
-    if( (e->button() == Qt::LeftButton) && !d->m_bUseSingle )
-      d->emitExecute( item, e->globalPos() );
-  }
+void KListWidget::mouseReleaseEvent ( QMouseEvent * e )
+{
+  QPoint oldPos = d->m_eventPos;
+  d->m_eventPos = e->globalPos();
+  QListWidget::mouseReleaseEvent(e);
+  d->m_eventPos = oldPos;
 }
 
 #include "moc_klistwidget.cpp"

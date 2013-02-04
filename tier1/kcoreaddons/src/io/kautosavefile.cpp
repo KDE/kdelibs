@@ -154,11 +154,6 @@ bool KAutoSaveFile::open(OpenMode openmode)
     if (QFile::open(openmode)) {
 
         d->lock = new KLockFile(tempFile + QString::fromLatin1(".lock"));
-        if (d->lock->isLocked()) {
-            close();
-            return false;
-        }
-
         d->lock->setStaleTime(60); // HARDCODE, 1 minute
 
         if (d->lock->lock(KLockFile::ForceFlag|KLockFile::NoBlockFlag) == KLockFile::LockOK) {

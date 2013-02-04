@@ -136,6 +136,9 @@ private Q_SLOTS:
         }
 
         // An app (like emacs) listing explicitely the derived mimetype (c-src); not in mimeapps.list
+        // This interacted badly with mimeapps.list listing another app for text/plain, but the
+        // lookup found this app first, due to c-src. The fix: ignoring derived mimetypes when
+        // the base mimetype is already listed.
         fakeCSrcApplication = m_localApps + "fakecsrcapplication.desktop";
         if (!QFile::exists(fakeCSrcApplication)) {
             mustUpdateKSycoca = true;
@@ -194,7 +197,7 @@ private Q_SLOTS:
         preferredApps["image/jpeg"] << "fakejpegapplication.desktop";
         preferredApps["application/pdf"] << "fakejpegapplication.desktop";
         preferredApps["text/plain"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
-        // TODO preferredApps["text/x-csrc"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
+        preferredApps["text/x-csrc"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
         preferredApps["text/html"] << "fakehtmlapplication.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
         removedApps["text/html"] << "kde4-dolphin.desktop" << "kde4-kwrite.desktop";

@@ -232,12 +232,13 @@ class CfgEntry
     };
 
     CfgEntry( const QString &group, const QString &type, const QString &key,
-              const QString &name, const QString &context, const QString &label,
-              const QString &toolTip, const QString &whatsThis, const QString &code,
+              const QString &name, const QString &labelContext, const QString &label,
+              const QString &toolTipContext, const QString &toolTip, const QString &whatsThisContext, const QString &whatsThis, const QString &code,
               const QString &defaultValue, const Choices &choices, const QList<Signal> signalList,
               bool hidden )
       : mGroup( group ), mType( type ), mKey( key ), mName( name ),
-        mContext( context ), mLabel( label ), mToolTip( toolTip ), mWhatsThis( whatsThis ),
+        mLabelContext( labelContext ), mLabel( label ), mToolTipContext( toolTipContext ), mToolTip( toolTip ),
+        mWhatsThisContext( whatsThisContext ), mWhatsThis( whatsThis ),
         mCode( code ), mDefaultValue( defaultValue ), mChoices( choices ),
         mSignalList(signalList), mHidden( hidden )
     {
@@ -255,14 +256,20 @@ class CfgEntry
     void setName( const QString &name ) { mName = name; }
     QString name() const { return mName; }
 
-    void setContext( const QString &context ) { mContext = context; }
-    QString context() const { return mContext; }
+    void setLabelContext( const QString &labelContext ) { mLabelContext = labelContext; }
+    QString labelContext() const { return mLabelContext; }
 
     void setLabel( const QString &label ) { mLabel = label; }
     QString label() const { return mLabel; }
 
+    void setToolTipContext( const QString &toolTipContext ) { mToolTipContext = toolTipContext; }
+    QString toolTipContext() const { return mToolTipContext; }
+
     void setToolTip( const QString &toolTip ) { mToolTip = toolTip; }
     QString toolTip() const { return mToolTip; }
+
+    void setWhatsThisContext( const QString &whatsThisContext ) { mWhatsThisContext = whatsThisContext; }
+    QString whatsThisContext() const { return mWhatsThisContext; }
 
     void setWhatsThis( const QString &whatsThis ) { mWhatsThis = whatsThis; }
     QString whatsThis() const { return mWhatsThis; }
@@ -312,7 +319,7 @@ class CfgEntry
       cerr << "  type: " << mType << endl;
       cerr << "  key: " << mKey << endl;
       cerr << "  name: " << mName << endl;
-      cerr << "  context: " << mContext << endl;
+      cerr << "  label context: " << mLabelContext << endl;
       cerr << "  label: " << mLabel << endl;
 // whatsthis
       cerr << "  code: " << mCode << endl;
@@ -336,9 +343,11 @@ class CfgEntry
     QString mType;
     QString mKey;
     QString mName;
-    QString mContext;
+    QString mLabelContext;
     QString mLabel;
+    QString mToolTipContext;
     QString mToolTip;
+    QString mWhatsThisContext;
     QString mWhatsThis;
     QString mCode;
     QString mDefaultValue;
@@ -610,9 +619,11 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element, const Cf
   QString name = element.attribute( "name" );
   QString key = element.attribute( "key" );
   QString hidden = element.attribute( "hidden" );
-  QString context = element.attribute( "context" );
+  QString labelContext;
   QString label;
+  QString toolTipContext;
   QString toolTip;
+  QString whatsThisContext;
   QString whatsThis;
   QString defaultValue;
   QString code;
@@ -631,15 +642,15 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element, const Cf
     QString tag = e.tagName();
     if ( tag == "label" ) {
       label = e.text();
-      context = e.attribute( "context" );
+      labelContext = e.attribute( "context" );
     }
     else if ( tag == "tooltip" ) {
       toolTip = e.text();
-      context = e.attribute( "context" );
+      toolTipContext = e.attribute( "context" );
     }
     else if ( tag == "whatsthis" ) {
       whatsThis = e.text();
-      context = e.attribute( "context" );
+      whatsThisContext = e.attribute( "context" );
     }
     else if ( tag == "min" ) minValue = e.text();
     else if ( tag == "max" ) maxValue = e.text();
@@ -858,7 +869,7 @@ CfgEntry *parseEntry( const QString &group, const QDomElement &element, const Cf
     preProcessDefault(defaultValue, name, type, choices, code, cfg);
   }
 
-  CfgEntry *result = new CfgEntry( group, type, key, name, context, label, toolTip, whatsThis,
+  CfgEntry *result = new CfgEntry( group, type, key, name, labelContext, label, toolTipContext, toolTip, whatsThisContext, whatsThis,
                                    code, defaultValue, choices, signalList,
                                    hidden == "true" );
   if (!param.isEmpty())
@@ -1142,17 +1153,17 @@ QString userTextsFunctions( CfgEntry *e, const CfgConfig &cfg, QString itemVarSt
   if (itemVarStr.isNull()) itemVarStr=itemPath(e, cfg);
   if ( !e->label().isEmpty() ) {
     txt += "  " + itemVarStr + "->setLabel( ";
-    txt += translatedString(cfg, e->label(), e->context(), e->param(), i);
+    txt += translatedString(cfg, e->label(), e->labelContext(), e->param(), i);
     txt += " );\n";
   }
   if ( !e->toolTip().isEmpty() ) {
     txt += "  " + itemVarStr + "->setToolTip( ";
-    txt += translatedString(cfg, e->toolTip(), e->context(), e->param(), i);
+    txt += translatedString(cfg, e->toolTip(), e->toolTipContext(), e->param(), i);
     txt += " );\n";
   }
   if ( !e->whatsThis().isEmpty() ) {
     txt += "  " + itemVarStr + "->setWhatsThis( ";
-    txt += translatedString(cfg, e->whatsThis(), e->context(), e->param(), i);
+    txt += translatedString(cfg, e->whatsThis(), e->whatsThisContext(), e->param(), i);
     txt += " );\n";
   }
   return txt;

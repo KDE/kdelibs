@@ -204,7 +204,7 @@ void KStandarddirsTest::testFindAllResources()
     QStringList fileNames;
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
-    QVERIFY( configFilesWithFilter.count() >= 2 );
+    QVERIFY2( configFilesWithFilter.count() >= 2, qPrintable(configFilesWithFilter.join(",")) );
     QVERIFY( oneEndsWith( configFilesWithFilter, "kde-unit-test/xdg/config/foorc" ) );
     QVERIFY( oneEndsWith( configFilesWithFilter, "kdebugrc" ) ); // either global (etc/xdg/) or local (XDG_HOME)
     QVERIFY( !oneEndsWith( configFilesWithFilter, "etc/xdg/ui/ui_standards.rc" ) ); // recursive not set
