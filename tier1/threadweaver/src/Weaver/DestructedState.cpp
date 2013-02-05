@@ -28,7 +28,12 @@ $Id: DestructedState.cpp 30 2005-08-16 16:16:04Z mirko $
 
 #include "DestructedState.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
+
+DestructedState::DestructedState(WeaverInterface *weaver)
+    : WeaverImplState(weaver)
+{
+}
 
 void DestructedState::suspend()
 {
@@ -38,16 +43,18 @@ void DestructedState::resume()
 {
 }
 
-Job* DestructedState::applyForWork ( Thread*,  Job*)
+Job* DestructedState::applyForWork(Thread*, Job*)
 {
     return 0;
 }
 
-void DestructedState::waitForAvailableJob ( Thread * )
+void DestructedState::waitForAvailableJob(Thread*)
 {
 }
 
 StateId DestructedState::stateId() const
 {
     return Destructed;
+}
+
 }

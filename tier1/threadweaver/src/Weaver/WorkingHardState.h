@@ -29,7 +29,7 @@
 #ifndef WorkingHardState_H
 #define WorkingHardState_H
 
-#include "StateImplementation.h"
+#include "WeaverImplState.h"
 #include "WeaverImpl.h"
 
 #ifndef THREADWEAVER_PRIVATE_API
@@ -38,29 +38,25 @@
 
 namespace ThreadWeaver {
 
-    /* WorkingHardState handles the state dependent calls in the state where
-       jobs are executed.  */
-    class WorkingHardState : public StateImplementation
-    {
-    public:
-	explicit WorkingHardState( WeaverImpl *weaver)
-	    : StateImplementation (weaver)
-	    {
-	    }
-	/** Suspend job processing. */
-        virtual void suspend();
-        /** Resume job processing. */
-        virtual void resume();
-        /** Assign a job to an idle thread. */
-        virtual Job* applyForWork ( Thread *th,  Job* previous );
-        /** Wait (by suspending the calling thread) until a job becomes available. */
-        virtual void waitForAvailableJob ( Thread *th );
-	/** Overload. */
-	void activated();
-
-        /** reimpl */
-        StateId stateId() const;
-    };
+/* WorkingHardState handles the state dependent calls in the state where
+ * jobs are executed.  */
+class WorkingHardState : public WeaverImplState
+{
+public:
+    explicit WorkingHardState( WeaverImpl *weaver);
+    /** Suspend job processing. */
+    virtual void suspend();
+    /** Resume job processing. */
+    virtual void resume();
+    /** Assign a job to an idle thread. */
+    virtual Job* applyForWork ( Thread *th,  Job* previous );
+    /** Wait (by suspending the calling thread) until a job becomes available. */
+    virtual void waitForAvailableJob ( Thread *th );
+    /** Overload. */
+    void activated();
+    /** reimpl */
+    StateId stateId() const;
+};
 
 }
 

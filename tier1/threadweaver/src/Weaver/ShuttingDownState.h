@@ -33,32 +33,30 @@
 #define THREADWEAVER_PRIVATE_API
 #endif
 
-#include "StateImplementation.h"
+#include "WeaverImplState.h"
 
 namespace ThreadWeaver {
 
-    /** ShuttingDownState is enabled when the Weaver destructor is entered. It
-        prevents threads from still accessing queue management methods.
-    */
-    class ShuttingDownState : public StateImplementation
-    {
-    public:
-	explicit ShuttingDownState( WeaverInterface *weaver)
-	    : StateImplementation (weaver)
-	    {
-	    }
-	/** Suspend job processing. */
-        virtual void suspend();
-        /** Resume job processing. */
-        virtual void resume();
-        /** Assign a job to an idle thread. */
-        virtual Job* applyForWork ( Thread *th,  Job* previous );
-        /** Wait (by suspending the calling thread) until a job becomes available. */
-        virtual void waitForAvailableJob ( Thread *th );
+/** ShuttingDownState is enabled when the Weaver destructor is entered. It
+ *  prevents threads from still accessing queue management methods, and new jobs being queued.
+ */
+class ShuttingDownState : public WeaverImplState
+{
+public:
+    explicit ShuttingDownState( WeaverInterface *weaver);
 
-        /** reimpl */
-        StateId stateId() const;
-    };
+    /** Suspend job processing. */
+    virtual void suspend();
+    /** Resume job processing. */
+    virtual void resume();
+    /** Assign a job to an idle thread. */
+    virtual Job* applyForWork(Thread *th, Job* previous);
+    /** Wait (by suspending the calling thread) until a job becomes available. */
+    virtual void waitForAvailableJob(Thread *th);
+
+    /** reimpl */
+    StateId stateId() const;
+};
 
 }
 

@@ -28,7 +28,12 @@
 
 #include "ShuttingDownState.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
+
+ShuttingDownState::ShuttingDownState(WeaverInterface *weaver)
+    : WeaverImplState (weaver)
+{
+}
 
 void ShuttingDownState::suspend()
 {
@@ -37,7 +42,7 @@ void ShuttingDownState::suspend()
 
 void ShuttingDownState::resume()
 {
-    // ignored: when shutting down, we do not return to the suspended state
+    // ignored: when shutting down, we do not return from the suspended state
 }
 
 Job* ShuttingDownState::applyForWork ( Thread*,  Job* )
@@ -55,3 +60,4 @@ StateId ShuttingDownState::stateId() const
     return ShuttingDown;
 }
 
+}

@@ -31,7 +31,12 @@ $Id: SuspendedState.cpp 30 2005-08-16 16:16:04Z mirko $
 #include "ThreadWeaver.h"
 #include "WeaverImpl.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
+
+SuspendedState::SuspendedState(WeaverImpl *weaver)
+    : WeaverImplState (weaver)
+{
+}
 
 void SuspendedState::suspend()
 {
@@ -40,21 +45,23 @@ void SuspendedState::suspend()
 
 void SuspendedState::resume()
 {
-    weaver()->setState( WorkingHard );
+    weaver()->setState(WorkingHard);
 }
 
-Job* SuspendedState::applyForWork ( Thread *th,  Job* previous )
+Job* SuspendedState::applyForWork(Thread *th, Job* previous)
 {   // suspend all threads in case they wake up:
-    weaver()->waitForAvailableJob( th );
-    return weaver()->applyForWork ( th,  previous );
+    weaver()->waitForAvailableJob(th);
+    return weaver()->applyForWork(th, previous);
 }
 
-void SuspendedState::waitForAvailableJob ( Thread *th )
+void SuspendedState::waitForAvailableJob(Thread *th)
 {
-    weaver()->blockThreadUntilJobsAreBeingAssigned ( th );
+    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
 }
 
 StateId SuspendedState::stateId() const
 {
     return Suspended;
+}
+
 }

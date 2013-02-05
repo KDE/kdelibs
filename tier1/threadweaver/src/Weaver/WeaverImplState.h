@@ -1,6 +1,6 @@
 /* -*- C++ -*-
 
-   This file implements the StateImplementation class.
+   This file declares the StateIMplementation class.
 
    $ Author: Mirko Boehm $
    $ Copyright: (C) 2005-2013 Mirko Boehm $
@@ -23,17 +23,32 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 
-   $Id: InConstructionState.cpp 30 2005-08-16 16:16:04Z mirko $
+   $Id$
 */
 
-#include "StateImplementation.h"
+#ifndef STATEIMPLEMENTATION_H
+#define STATEIMPLEMENTATION_H
 
+#ifndef THREADWEAVER_PRIVATE_API
+#define THREADWEAVER_PRIVATE_API
+#endif
+
+#include "State.h"
 #include "WeaverImpl.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
 
-WeaverImpl* StateImplementation::weaver()
+/** @brief Base class for all WeaverImpl states. */
+class WeaverImplState : public State
 {
-    Q_ASSERT ( dynamic_cast<WeaverImpl*> ( State::weaver() ) );
-    return static_cast<WeaverImpl*> ( State::weaver() );
+public:
+    explicit WeaverImplState( WeaverInterface* weaver );
+
+protected:
+    /** Provide correct return type for WeaverImpl states. */
+    WeaverImpl* weaver();
+};
+
 }
+
+#endif

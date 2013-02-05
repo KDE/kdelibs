@@ -33,32 +33,29 @@
 #define THREADWEAVER_PRIVATE_API
 #endif
 
-#include "StateImplementation.h"
+#include "WeaverImplState.h"
 #include "WeaverImpl.h"
 
 namespace ThreadWeaver {
 
-    /** In SuspendedState, jobs are queued, but will not be executed. All
-        thread remains blocked.  */
-    class SuspendedState : public StateImplementation
-    {
-    public:
-	explicit SuspendedState( WeaverImpl *weaver)
-	    : StateImplementation (weaver)
-	    {
-	    }
-	/** Suspend job processing. */
-        virtual void suspend();
-        /** Resume job processing. */
-        virtual void resume();
-        /** Assign a job to an idle thread. */
-        virtual Job* applyForWork ( Thread *th,  Job* previous );
-        /** Wait (by suspending the calling thread) until a job becomes available. */
-        virtual void waitForAvailableJob ( Thread *th );
+/** In SuspendedState, jobs are queued, but will not be executed. All
+ *  thread remains blocked.  */
+class SuspendedState : public WeaverImplState
+{
+public:
+    explicit SuspendedState( WeaverImpl *weaver);
+    /** Suspend job processing. */
+    virtual void suspend();
+    /** Resume job processing. */
+    virtual void resume();
+    /** Assign a job to an idle thread. */
+    virtual Job* applyForWork ( Thread *th,  Job* previous );
+    /** Wait (by suspending the calling thread) until a job becomes available. */
+    virtual void waitForAvailableJob ( Thread *th );
 
-        /** reimpl */
-        StateId stateId() const;
-    };
+    /** reimpl */
+    StateId stateId() const;
+};
 
 }
 

@@ -30,7 +30,7 @@ $Id: State.cpp 20 2005-08-08 21:02:51Z mirko $
 
 #include <QtCore/QString>
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
 
 const char* StateNames[NoOfStates] = {
     "InConstruction",
@@ -48,16 +48,16 @@ public:
         : weaver( theWeaver )
     {
         Q_ASSERT_X( sizeof StateNames / sizeof StateNames[0] == NoOfStates, "State::Private ctor",
-                    "Make sure to keep StateId and StateNames in sync!" );
+                "Make sure to keep StateId and StateNames in sync!" );
     }
 
     /** The Weaver we relate to. */
-    WeaverInterface *weaver;
+    WeaverInterface * const weaver;
 };
 
 
-State::State ( WeaverInterface *weaver )
-    : d  ( new Private ( weaver ) )
+State::State(WeaverInterface *weaver)
+    : d(new Private(weaver))
 {
 }
 
@@ -66,9 +66,9 @@ State::~State()
     delete d;
 }
 
-QString State::stateName () const
+QString State::stateName() const
 {
-    return QLatin1String(StateNames[ stateId() ]);
+    return QLatin1String(StateNames[stateId()]);
 }
 
 void State::activated()
@@ -78,4 +78,6 @@ void State::activated()
 WeaverInterface* State::weaver()
 {
     return d->weaver;
+}
+
 }

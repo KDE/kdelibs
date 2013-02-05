@@ -9,7 +9,7 @@ set(ThreadWeaver_LIB_SRCS
     Thread.cpp
     Job.cpp
     State.cpp
-    StateImplementation.cpp
+    WeaverImplState.cpp
     InConstructionState.cpp
     WorkingHardState.cpp
     SuspendingState.cpp

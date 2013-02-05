@@ -37,16 +37,21 @@ $Id: WorkingHardState.cpp 30 2005-08-16 16:16:04Z mirko $
 #include "DebuggingAids.h"
 
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
 
 void WorkingHardState::activated()
 {
     weaver()->assignJobs();
 }
 
+WorkingHardState::WorkingHardState(WeaverImpl *weaver)
+    : WeaverImplState (weaver)
+{
+}
+
 void WorkingHardState::suspend()
 {
-    weaver()->setState ( Suspending );
+    weaver()->setState(Suspending);
 }
 
 void WorkingHardState::resume()
@@ -72,12 +77,14 @@ Job* WorkingHardState::applyForWork(Thread *th,  Job* previous)
     }
 }
 
-void WorkingHardState::waitForAvailableJob ( Thread *th )
+void WorkingHardState::waitForAvailableJob(Thread *th)
 {
-    weaver()->blockThreadUntilJobsAreBeingAssigned ( th );
+    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
 }
 
 StateId WorkingHardState::stateId() const
 {
     return WorkingHard;
+}
+
 }

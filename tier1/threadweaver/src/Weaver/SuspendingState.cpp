@@ -32,7 +32,12 @@
 #include "WeaverImpl.h"
 #include "ThreadWeaver.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
+
+SuspendingState::SuspendingState(WeaverImpl *weaver)
+    : WeaverImplState(weaver)
+{
+}
 
 void SuspendingState::suspend()
 {
@@ -42,33 +47,33 @@ void SuspendingState::suspend()
 
 void SuspendingState::resume()
 {
-    weaver()->setState ( WorkingHard );
+    weaver()->setState(WorkingHard);
 }
 
 void SuspendingState::activated()
 {
-    if ( weaver()->activeThreadCount() == 0 )
-    {
-        weaver()->setState( Suspended );
+    if (weaver()->activeThreadCount() == 0) {
+        weaver()->setState(Suspended);
     }
 }
 
-Job* SuspendingState::applyForWork ( Thread *th,  Job* previous )
+Job* SuspendingState::applyForWork(Thread *th, Job* previous)
 {
-    if ( weaver()->activeThreadCount() == 0 )
-    {
-        weaver()->setState ( Suspended );
+    if (weaver()->activeThreadCount() == 0) {
+        weaver()->setState(Suspended);
     }
-    weaver()->waitForAvailableJob ( th );
-    return weaver()->applyForWork ( th,  previous );
+    weaver()->waitForAvailableJob(th);
+    return weaver()->applyForWork(th, previous);
 }
 
-void SuspendingState::waitForAvailableJob ( Thread *th )
+void SuspendingState::waitForAvailableJob(Thread *th)
 {
-    weaver()->blockThreadUntilJobsAreBeingAssigned( th );
+    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
 }
 
 StateId SuspendingState::stateId() const
 {
     return Suspending;
+}
+
 }
