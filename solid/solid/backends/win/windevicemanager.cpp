@@ -93,7 +93,6 @@ QStringList WinDeviceManager::devicesFromQuery(const QString &parentUdi, Solid::
 
 QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi)
 {
-    //TODO:: implement
     if (allDevices().contains(udi)) {
         return new WinDevice(udi);
     } else {

@@ -125,7 +125,6 @@ const QMap<int,WinCpu::ProcessorInfo> &WinCpu::updateCache()
                 processorCoreCount++;
             }
         }
-        qDebug()<<logicalProcessorCount<<processorCoreCount;
     }
     return p;
 

@@ -87,8 +87,6 @@ QStringList WinBlock::getUdis()
 
                 STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
 
-
-
                 if(info.DeviceType == FILE_DEVICE_DISK)
                 {
                     QString udi = QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
@@ -119,7 +117,8 @@ QStringList WinBlock::getUdis()
             word = (word >> 1);
             ++i;
         }
-    }
+        qSort(list);
+    }    
     return list.toList();
 }
 
