@@ -89,10 +89,9 @@ WinDevice::WinDevice(const QString &udi) :
     {
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
     }
-    else
+    else if(queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
     {
-        WinStorageVolume volume(const_cast<WinDevice*>(this));
-        m_description =  volume.label();
+        m_description =  WinStorageVolume(this).label();
         dev = WinBlock::driveLetter(udi);
     }
     if(!dev.isNull())
