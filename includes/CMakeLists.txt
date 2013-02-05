@@ -1041,12 +1041,6 @@ install(FILES
   Nepomuk/Vocabulary/TMO
 DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Nepomuk/Vocabulary COMPONENT Devel)
 
-if(QT_QTOPENGL_FOUND)
-   install(FILES
-      Plasma/GLApplet
-      DESTINATION ${INCLUDE_INSTALL_DIR}/KDE/Plasma COMPONENT Devel)
-endif(QT_QTOPENGL_FOUND)
-
 
 install(FILES
   KUnitConversion/Converter
