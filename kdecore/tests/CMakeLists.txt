@@ -175,3 +175,8 @@ set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BU
 
 endif (NOT WIN32)
 
+########### kcompositejobtest ###############
+
+set(kcompositejobtest_SRCS kcompositejobtest.cpp)
+kde4_add_unit_test(kcompositejobtest TESTNAME kdecore-kcompositejobtest ${kcompositejobtest_SRCS})
+target_link_libraries(kcompositejobtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
