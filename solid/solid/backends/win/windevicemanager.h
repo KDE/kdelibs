@@ -129,11 +129,12 @@ private:
                     if(err == ERROR_ACCESS_DENIED)
                     {
                         //we would need admin rights
-//                        DebugBreak();
+                        //                        DebugBreak();
+                        qWarning()<<"we would need admin rights"<<devName<<"reason:"<<qGetLastError(err);
                     }
                     else
                     {
-                        qWarning()<<"Invalid Handle"<<devName<<"reason:"<<qGetLastError()<<" this should not happen.";
+                        qWarning()<<"Invalid Handle"<<devName<<"reason:"<<qGetLastError(err)<<" this should not happen.";
                     }
                     return;
                 }

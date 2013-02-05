@@ -96,14 +96,14 @@ void WinStorageDrive::updateCache()
         m_bus = Solid::StorageDrive::Ide;
     }
 
-    //TODO: this needs admin rights for a PhysicalDrive
-    GET_LENGTH_INFORMATION sizeInfo = WinDeviceManager::getDeviceInfo<GET_LENGTH_INFORMATION,void*>(dev,IOCTL_DISK_GET_LENGTH_INFO);
-    m_size = sizeInfo.Length.QuadPart;
+    DISK_GEOMETRY  sizeInfo = WinDeviceManager::getDeviceInfo<DISK_GEOMETRY,void*>(dev,IOCTL_DISK_GET_DRIVE_GEOMETRY);
+    m_size = sizeInfo.Cylinders.QuadPart * sizeInfo.TracksPerCylinder * sizeInfo.SectorsPerTrack * sizeInfo.BytesPerSector;
+
 
 
     STORAGE_HOTPLUG_INFO plugInfo = WinDeviceManager::getDeviceInfo<STORAGE_HOTPLUG_INFO,void*>(dev,IOCTL_STORAGE_GET_HOTPLUG_INFO);
-    m_isHotplugges = plugInfo.DeviceHotplug != 0;
-    m_isRemovable = plugInfo.MediaRemovable != 0;
+    m_isHotplugges = plugInfo.DeviceHotplug;
+    m_isRemovable = plugInfo.MediaRemovable;
 
 }
 
