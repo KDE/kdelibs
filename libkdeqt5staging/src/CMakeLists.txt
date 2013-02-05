@@ -3,6 +3,8 @@ set(libkdeqt5staging_SRCS
 )
 if (QT5_BUILD AND NOT WIN32)
 set(libkdeqt5staging_SRCS ${libkdeqt5staging_SRCS} qt5only/qx11info.cpp)
+INSTALL(FILES qt5only/QX11Info DESTINATION ${INCLUDE_INSTALL_DIR}/kdeqt5staging/QtX11Extras COMPONENT Devel)
+INSTALL(FILES qt5only/qx11info_x11.h DESTINATION ${INCLUDE_INSTALL_DIR}/kdeqt5staging COMPONENT Devel)
 include_directories(${Qt5Gui_PRIVATE_INCLUDE_DIRS})
 endif()
 
