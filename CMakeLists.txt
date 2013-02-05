@@ -187,12 +187,6 @@ set_package_properties(Libintl PROPERTIES DESCRIPTION "Support for multiple lang
                        PURPOSE "Enables KDE to be available in many different languages"
                       )
 
-find_package(QCA2 2.0.0)
-set_package_properties(QCA2 PROPERTIES DESCRIPTION "Support for remote plasma widgets"
-                       URL "http://delta.affinix.com/qca"
-                       TYPE OPTIONAL
-                      )
-
 find_package(DBusMenuQt)
 set_package_properties(DBusMenuQt PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
                        URL "https://launchpad.net/libdbusmenu-qt"
@@ -440,10 +434,6 @@ if(Qt5WebKit_FOUND)
   add_subdirectory( kdewebkit )
 endif()
 add_subdirectory( kdewidgets )
-
-if(Qt5Quick_FOUND)
-  add_subdirectory( plasma )
-endif()
 
 ################# write dependency file which will be installed #################
 
