@@ -29,7 +29,7 @@
 #include "winopticaldrive.h"
 #include "winopticaldisc.h"
 #include "windevice.h"
-#include "wincpu.h"
+#include "winprocessor.h"
 
 using namespace Solid::Backends::Win;
 
@@ -79,8 +79,8 @@ WinDevice::WinDevice(const QString &udi) :
 
     if(m_type == Solid::DeviceInterface::Processor)
     {
-        WinCpu cpu(const_cast<WinDevice*>(this));
-        WinCpu::ProcessorInfo info = WinCpu::updateCache()[cpu.number()];
+        WinProcessor cpu(this);
+        WinProcessor::ProcessorInfo info = WinProcessor::updateCache()[cpu.number()];
         m_vendor = info.vendor;
         m_product = info.produuct;
         m_description = info.name;
@@ -231,7 +231,7 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         iface = new WinBlock(this);
         break;
     case Solid::DeviceInterface::Processor:
-        iface = new WinCpu(this);
+        iface = new WinProcessor(this);
         break;
     case Solid::DeviceInterface::StorageAccess:
         iface = new WinStorageAccess(this);

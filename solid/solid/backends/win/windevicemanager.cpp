@@ -21,7 +21,7 @@
 #include <solid/deviceinterface.h>
 #include "windevicemanager.h"
 #include "windevice.h"
-#include "wincpu.h"
+#include "winprocessor.h"
 #include "winblock.h"
 
 
@@ -59,7 +59,7 @@ QStringList WinDeviceManager::allDevices()
         return m_devices;
 
     m_devices<<WinBlock::getUdis();
-    m_devices<<WinCpu::getUdis();
+    m_devices<<WinProcessor::getUdis();
     return m_devices;
 }
 

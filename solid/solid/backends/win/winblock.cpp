@@ -73,9 +73,10 @@ QString WinBlock::device() const
 
 QStringList WinBlock::getUdis()
 {
-    static QSet<QString> list;
-    if(list.isEmpty())
+    static QStringList out;
+    if(out.isEmpty())
     {
+        QSet<QString> list;
         DWORD word = GetLogicalDrives();
         char c = 'A';
         int i = 0;
@@ -117,9 +118,10 @@ QStringList WinBlock::getUdis()
             word = (word >> 1);
             ++i;
         }
-        qSort(list);
+        out = list.toList();
+        qSort(out);
     }    
-    return list.toList();
+    return out;
 }
 
 QString WinBlock::driveLetter(const QString &udi)
