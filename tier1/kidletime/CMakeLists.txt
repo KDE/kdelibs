@@ -10,6 +10,12 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets DBus)
 
+if(NOT kdelibs_SOURCE_DIR)
+  find_package(kdeqt5staging REQUIRED NO_MODULE)
+endif()
+
+include_directories(${kdeqt5staging_INCLUDE_DIR})
+
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
