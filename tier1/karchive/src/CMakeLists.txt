@@ -8,8 +8,6 @@ set(HAVE_XZ_SUPPORT ${LIBLZMA_FOUND})
 configure_file(config-compression.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compression.h)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 
-include_directories(${kdeqt5staging_INCLUDE_DIR})
-
 add_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 if(BZIP2_FOUND)
@@ -41,7 +39,7 @@ set(karchive_SRCS
 add_library(karchive ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 generate_export_header(karchive)
 
-target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} kdeqt5staging)
+target_link_libraries(karchive ${QT_QTCORE_LIBRARY} ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} )
 
 set_target_properties(karchive PROPERTIES VERSION   ${KARCHIVE_VERSION_STRING}
                                           SOVERSION ${KARCHIVE_SOVERSION}
