@@ -222,7 +222,7 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 
     Device device(udi);
 
-    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || device.interfaces().contains(UD2_DBUS_INTERFACE_FILESYSTEM))) {
+    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || interfaces.contains(UD2_DBUS_INTERFACE_FILESYSTEM))) {
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
         DeviceBackend::destroyBackend(udi);
