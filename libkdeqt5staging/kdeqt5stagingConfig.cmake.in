@@ -1,0 +1,17 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(kdeqt5staging_VERSION_MAJOR "@KDEQT5STAGING_VERSION_MAJOR@")
+set(kdeqt5staging_VERSION_MINOR "@KDEQT5STAGING_VERSION_MINOR@")
+set(kdeqt5staging_VERSION_PATCH "@KDEQT5STAGING_VERSION_PATCH@")
+
+set(kdeqt5staging_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+
+# append our subdir so we don't clutter the default install path
+# these files could collide with a real Qt5 installation.
+set_and_check(kdeqt5staging_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@/kdeqt5staging")
+
+include("${CMAKE_CURRENT_LIST_DIR}/kdeqt5stagingTargets.cmake")
+
+set(kdeqt5staging_LIBRARY kdeqt5staging)
