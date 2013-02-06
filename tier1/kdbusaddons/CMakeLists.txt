@@ -29,7 +29,7 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kdbusaddons")
 configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/kdbusaddonsConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR LIB_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
 install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfig.cmake"
                "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfigVersion.cmake"

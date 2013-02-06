@@ -8,7 +8,6 @@ set(karchive_VERSION_PATCH "@KARCHIVE_VERSION_PATCH@")
 
 set(karchive_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(karchive_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
-set_and_check(karchive_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
 set(karchive_HAVE_BZIP2 "@BZIP2_FOUND@")
 set(karchive_HAVE_LZMA  "@LIBLZMA_FOUND@")

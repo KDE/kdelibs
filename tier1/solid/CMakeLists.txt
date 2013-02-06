@@ -77,7 +77,7 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/solid")
 configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/solidConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/solidConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-                              PATH_VARS  INCLUDE_INSTALL_DIR LIB_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
 install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/solidConfig.cmake"
                "${CMAKE_CURRENT_BINARY_DIR}/solidConfigVersion.cmake"
