@@ -26,7 +26,7 @@
 
 #include <QtTest/QtTest>
 
-QTEST_MAIN(KRunUnitTest)
+QTEST_GUILESS_MAIN(KRunUnitTest)
 
 #include <qstandardpaths.h>
 
