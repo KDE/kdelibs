@@ -16,7 +16,7 @@ else()
 endif()
 
 # Our library dependencies (contains definitions for IMPORTED targets)
-include("${KDECLARATIVE_CMAKE_DIR}/KDeclarativeLibraryTargets.cmake")
+include("${KDECLARATIVE_CMAKE_DIR}/kdeclarativeLibraryTargets.cmake")
 
-# These are IMPORTED targets created by KDeclarativeLibraryDepends.cmake
+# These are IMPORTED targets created by kdeclarativeLibraryDepends.cmake
 set(KDECLARATIVE_LIBRARIES kdeclarative)

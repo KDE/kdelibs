@@ -1,19 +1,11 @@
 project(kdeclarative)
 
-if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
-    set(KDECLARATIVE_NO_KIO TRUE)
-endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kdeclarative.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeclarative.h)
-
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Qml REQUIRED)
 
 include_directories(
    ${CMAKE_SOURCE_DIR}
    ${CMAKE_BINARY_DIR}
-   ${KDE4_KIO_INCLUDES}
-   ${CMAKE_SOURCE_DIR}/kio
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
    )
@@ -31,7 +23,7 @@ generate_export_header(kdeclarative)
 
 set_target_properties(kdeclarative PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
-target_link_libraries(kdeclarative ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS} ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} kcoreaddons ki18n)
+target_link_libraries(kdeclarative ${KDE4_KDECORE_LIBS} kdeui ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} kcoreaddons ki18n)
 
 
 ## test
@@ -56,14 +48,14 @@ install(TARGETS kdeclarative EXPORT kdeclarativeTargets ${INSTALL_TARGETS_DEFAUL
 install(
    EXPORT kdeclarativeTargets
    DESTINATION ${LIB_INSTALL_DIR}/cmake/KDeclarative
-   FILE KDeclarativeLibraryTargets.cmake
+   FILE kdeclarativeLibraryTargets.cmake
    )
 
-configure_file(KDeclarativeConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfig.cmake" @ONLY)
-configure_file(KDeclarativeConfigVersion.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfigVersion.cmake" @ONLY)
+configure_file(kdeclarativeConfig.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/kdeclarativeConfig.cmake" @ONLY)
+configure_file(kdeclarativeConfigVersion.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/kdeclarativeConfigVersion.cmake" @ONLY)
 
 install(
-   FILES ${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfig.cmake
-         ${CMAKE_CURRENT_BINARY_DIR}/KDeclarativeConfigVersion.cmake
+   FILES ${CMAKE_CURRENT_BINARY_DIR}/kdeclarativeConfig.cmake
+         ${CMAKE_CURRENT_BINARY_DIR}/kdeclarativeConfigVersion.cmake
          DESTINATION ${LIB_INSTALL_DIR}/cmake/KDeclarative
 )
