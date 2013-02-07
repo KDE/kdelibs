@@ -708,7 +708,6 @@ install( FILES
   KIO/NetRC
   KIO/PreviewJob
   KIO/RenameDialog
-  KIO/RenameDialogPlugin
   KIO/Scheduler
   KIO/SessionData
   KIO/SimpleJob
