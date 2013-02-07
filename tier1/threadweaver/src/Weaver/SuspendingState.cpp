@@ -53,7 +53,7 @@ void SuspendingState::resume()
 void SuspendingState::activated()
 {
     if (weaver()->activeThreadCount() == 0) {
-        weaver()->setState(Suspended);
+        weaver()->setState_p(Suspended);
     }
 }
 

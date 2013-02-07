@@ -105,12 +105,12 @@ bool WeaverImplState::isIdle() const
 
 int WeaverImplState::queueLength() const
 {
-    return weaver()->queueLength();
+    return weaver()->queueLength_p();
 }
 
 void WeaverImplState::requestAbort()
 {
-    return weaver()->requestAbort();
+    return weaver()->requestAbort_p();
 }
 
 }

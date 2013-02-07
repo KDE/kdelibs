@@ -64,6 +64,7 @@ Job* WorkingHardState::applyForWork(Thread *th,  Job* previous)
             "in %s state.\n", th->id(),
             qPrintable ( weaver()->state().stateName() ) );
 
+    //FIXME this should block until a job is available, return 0 if thread should exit (one atomic operation)
     Job *next = weaver()->takeFirstAvailableJob(previous);
     if ( next ) {
         return next;

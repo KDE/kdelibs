@@ -45,6 +45,7 @@ class Job;
 class Thread;
 class WeaverObserver;
 class WeaverImplState;
+class SuspendingState;
 
 /** A WeaverImpl is the manager of worker threads (Thread objects) to
         which it assigns jobs from its queue. It extends the API of
@@ -98,8 +99,9 @@ public:
     /** Decrement the count of active threads. */
     void decActiveThreadCount();
     /** Returns the number of active threads.
-            Threads are active if they process a job.
-        */
+     * Threads are active if they process a job.
+     * Requires that the mutex is being held when called.
+     */
     int activeThreadCount();
     /** Take the first available job out of the queue and return it.
             The job will be removed from the queue (therefore, take).
@@ -142,15 +144,16 @@ protected:
         */
     virtual Thread* createThread();
     /** Adjust the inventory size.
-
-        This method creates threads on demand. Threads in the inventory
-        are not created upon construction of the WeaverImpl object, but
-        when jobs are queued. This avoids costly delays on the application
-        startup time. Threads are created when the inventory size is under
-        inventoryMin and new jobs are queued.
-        */
-    // @TODO: add code to raise inventory size over inventoryMin
-    // @TODO: add code to quit unnecessary threads
+     * Requires that the mutex is being held when called
+     *
+     * This method creates threads on demand. Threads in the inventory
+     * are not created upon construction of the WeaverImpl object, but
+     * when jobs are queued. This avoids costly delays on the application
+     * startup time. Threads are created when the inventory size is under
+     * inventoryMin and new jobs are queued.
+     */
+    //TODO add code to raise inventory size over inventoryMin
+    //TODO add code to quit unnecessary threads
     void adjustInventory ( int noOfNewJobs );
     /** Lock the mutex for this weaver. The threads in the
         inventory need to lock the weaver's mutex to synchronize
@@ -174,6 +177,9 @@ protected:
 
 private:
     friend class WeaverImplState;
+    friend class SuspendingState;
+    void setState_p( StateId );
+    const State& state_p() const;
     void setMaximumNumberOfThreads_p(int cap);
     int maximumNumberOfThreads_p() const;
     int currentNumberOfThreads_p() const;
@@ -187,12 +193,10 @@ private:
     bool isEmpty_p() const;
     bool isIdle_p() const;
     int queueLength_p() const;
+    void requestAbort_p();
 
     /** Mutex to serialize operations. */
     QMutex *m_mutex;
-
-    /** Non-recursive mutex to serialize calls to finish(). */
-    QMutex* m_finishMutex;
 
     /** Mutex used by m_jobAvailable wait condition. */
     QMutex* m_jobAvailableMutex;
