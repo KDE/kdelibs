@@ -18,7 +18,7 @@ add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 
 generate_export_header(kguiaddons)
 
-target_link_libraries(kguiaddons kconfigcore ${kdeqt5staging_LIBRARY} Qt5::Widgets)
+target_link_libraries(kguiaddons kconfigcore ${kdeqt5staging_LIBRARIES} Qt5::Widgets)
 
 install(TARGETS kguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 

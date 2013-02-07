@@ -9,6 +9,9 @@ set(kplotting_VERSION_PATCH "@KPLOTTING_VERSION_PATCH@")
 set(kplotting_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(kplotting_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/kplottingTargets.cmake")
+if(NOT TARGET KF5::kplotting)
+  include("${CMAKE_CURRENT_LIST_DIR}/kplottingTargets.cmake")
+endif()
 
-set(kplotting_LIBRARY KF5::kplotting)
+set(kplotting_LIBRARIES KF5::kplotting)
+set(kplotting_INCLUDE_DIRS ${kplotting_INCLUDE_DIR})

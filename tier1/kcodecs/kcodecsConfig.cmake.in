@@ -9,6 +9,9 @@ set(kcodecs_VERSION_PATCH "@KCODECS_VERSION_PATCH@")
 set(kcodecs_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(kcodecs_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/kcodecsTargets.cmake")
+if(NOT TARGET KF5::kcodecs)
+  include("${CMAKE_CURRENT_LIST_DIR}/kcodecsTargets.cmake")
+endif()
 
-set(kcodecs_LIBRARY KF5::kcodecs)
+set(kcodecs_LIBRARIES KF5::kcodecs)
+set(kcodecs_INCLUDE_DIRS ${kcodecs_INCLUDE_DIR})

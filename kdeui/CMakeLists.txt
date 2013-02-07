@@ -6,7 +6,7 @@ project(kdeui)
 #endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 # TODO QT5 Make the above work and port it to whatever parts of QtGui actually need attica.
 set(KDEUI_NO_ATTICA TRUE)
- 
+
 include_directories(
  ${CMAKE_SOURCE_DIR}/interfaces
  ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
@@ -86,16 +86,16 @@ find_package(DBusMenuQt)
 macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "https://launchpad.net/libdbusmenu-qt" TRUE "" "")
 macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
 
-check_include_files(sys/stat.h    HAVE_SYS_STAT_H) 
+check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
 check_include_files(paths.h       HAVE_PATHS_H)
 check_include_files(limits.h      HAVE_LIMITS_H)
 check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 check_include_files(unistd.h      HAVE_UNISTD_H)
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
-check_function_exists(strlcpy    HAVE_STRLCPY)         
+check_function_exists(strlcpy    HAVE_STRLCPY)
 check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
-check_include_files(string.h      HAVE_STRING_H) 
+check_include_files(string.h      HAVE_STRING_H)
 
 configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
 
@@ -404,7 +404,7 @@ kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
 target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore kauth kguiaddons kwidgets kwidgetsaddons ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARY} ${kdeqt5staging_LIBRARY} kconfiggui)
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} kconfiggui)
 
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
@@ -655,4 +655,4 @@ install(FILES
 install( FILES
     KDEUIMacros.cmake
     kde4uic.cmake
-    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
+    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )

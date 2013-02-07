@@ -9,7 +9,9 @@ set(threadweaver_VERSION_PATCH "@THREADWEAVER_VERSION_PATCH@")
 set(threadweaver_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(threadweaver_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
+if(NOT TARGET KF5::threadweaver)
+  include("${CMAKE_CURRENT_LIST_DIR}/threadweaverTargets.cmake")
+endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/threadweaverTargets.cmake")
-
-set(threadweaver_LIBRARY KF5::threadweaver)
+set(threadweaver_LIBRARIES KF5::threadweaver)
+set(threadweaver_INCLUDE_DIRS  ${threadweaver_INCLUDE_DIR})

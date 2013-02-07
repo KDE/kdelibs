@@ -29,7 +29,7 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
 
-get_filename_component(KDE4_MODULE_DIR  ${CMAKE_CURRENT_LIST_FILE} PATH)
+set(KDE4_MODULE_DIR  ${CMAKE_CURRENT_LIST_DIR} )
 
 # This macro doesn't set up the RPATH related options for executables anymore,
 # since now (wioth cmake 2.6) just the full RPATH is used always for everything.
@@ -64,21 +64,12 @@ macro (KDE4_HANDLE_RPATH_FOR_EXECUTABLE _target_NAME)
       get_target_property(_executable ${_target_NAME} LOCATION )
 
       # use add_custom_target() to have the sh-wrapper generated during build time instead of cmake time
-      if (CMAKE_VERSION VERSION_GREATER 2.8.4)
-         add_custom_command(TARGET ${_target_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND}
-            -D_filename=${_executable}.shell -D_library_path_variable=${_library_path_variable}
-            -D_ld_library_path="${_ld_library_path}" -D_executable=$<TARGET_FILE:${_target_NAME}>
-            -P ${KDE4_MODULE_DIR}/kde4_exec_via_sh.cmake
-            )
-      else ()
-         add_custom_command(TARGET ${_target_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND}
-            -D_filename=${_executable}.shell -D_library_path_variable=${_library_path_variable}
-            -D_ld_library_path="${_ld_library_path}" -D_executable=${_executable}
-            -P ${KDE4_MODULE_DIR}/kde4_exec_via_sh.cmake
-            )
-      endif ()
+      add_custom_command(TARGET ${_target_NAME} POST_BUILD
+         COMMAND ${CMAKE_COMMAND}
+         -D_filename=${_executable}.shell -D_library_path_variable=${_library_path_variable}
+         -D_ld_library_path="${_ld_library_path}" -D_executable=$<TARGET_FILE:${_target_NAME}>
+         -P ${KDE4_MODULE_DIR}/kde4_exec_via_sh.cmake
+         )
 
       macro_additional_clean_files(${_executable}.shell)
 
@@ -115,7 +106,7 @@ macro (KDE4_ADD_PLUGIN _target_NAME )
    # default to module
    set(_add_lib_param "MODULE")
    set(_with_pre FALSE)
-   
+
    foreach(arg ${_args})
       if (arg STREQUAL "WITH_PREFIX")
          set(_with_pre TRUE)
@@ -235,9 +226,9 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
 
    configure_file(${KDE4_MODULE_DIR}/kde4init_dummy.cpp.in ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_dummy.cpp)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_dummy.cpp PROPERTIES SKIP_AUTOMOC TRUE)
-   # under Windows, build a normal executable and additionally a dummy kdeinit4_foo.lib, whose only purpose on windows is to 
+   # under Windows, build a normal executable and additionally a dummy kdeinit4_foo.lib, whose only purpose on windows is to
    # keep the linking logic from the CMakeLists.txt on UNIX working (under UNIX all necessary libs are linked against the kdeinit
-   # library instead against the executable, under windows we want to have everything in the executable, but for compatibility we have to 
+   # library instead against the executable, under windows we want to have everything in the executable, but for compatibility we have to
    # keep the library there-
    if(WIN32)
       if (MINGW)
@@ -291,7 +282,7 @@ macro (KDE4_ADD_UNIT_TEST _test_NAME)
         set(_targetName ${ARGV2})
         list(REMOVE_AT _srcList 0 1)
     endif( ${ARGV1} STREQUAL "TESTNAME" )
-    
+
     set(_nogui)
     list(GET _srcList 0 first_PARAM)
     if( ${first_PARAM} STREQUAL "NOGUI" )
@@ -330,7 +321,7 @@ macro (KDE4_ADD_UNIT_TEST _test_NAME)
         set(_executable "${loc}.shell")
       endif (Q_WS_MAC AND NOT _nogui)
     endif(WIN32)
-    
+
     if (using_qtest AND KDE4_TEST_OUTPUT STREQUAL "xml")
         #MESSAGE(STATUS "${_targetName} : Using QTestLib, can produce XML report.")
         add_test( ${_targetName} ${_executable} -xml -o ${_targetName}.tml)
@@ -356,32 +347,32 @@ macro (KDE4_ADD_UNIT_TEST _test_NAME)
 endmacro (KDE4_ADD_UNIT_TEST)
 
 
-# add a  manifest file to executables. 
-# 
-# There is a henn-egg problem when a target runtime part is renamed using 
-# the OUTPUT_NAME option of cmake's set_target_properties command. 
+# add a  manifest file to executables.
 #
-# At now the Makefiles rules creating for manifest adding are performed 
-# *after* the cmake's add_executable command but *before* an optional 
-# set_target_properties command. 
-# This means that in KDE4_ADD_MANIFEST the LOCATION property contains 
+# There is a henn-egg problem when a target runtime part is renamed using
+# the OUTPUT_NAME option of cmake's set_target_properties command.
+#
+# At now the Makefiles rules creating for manifest adding are performed
+# *after* the cmake's add_executable command but *before* an optional
+# set_target_properties command.
+# This means that in KDE4_ADD_MANIFEST the LOCATION property contains
 #  the unchanged runtime part name of the target. :-(
-# 
-# The recently used workaround is to specify a variable build off the target name followed 
-# by _OUTPUT_NAME before calling kde4_add_executable as shown in the following example: 
-# 
+#
+# The recently used workaround is to specify a variable build off the target name followed
+# by _OUTPUT_NAME before calling kde4_add_executable as shown in the following example:
+#
 # set(xyz_OUTPUT_NAME test)
 # kde4_add_executable( xyz <source>)
-# set_target_properties( xyz PROPERTIES OUTPUT_NAME ${xyz_OUTPUT_NAME} )  
+# set_target_properties( xyz PROPERTIES OUTPUT_NAME ${xyz_OUTPUT_NAME} )
 #
-# The full solution would be to introduce a kde4_target_link_libraries macro and to 
-# call KDE4_ADD_MANIFEST inside instead of calling in kde4_add_executable. 
-# This would require patching of *all* places in the KDE sources where target_link_libraries 
+# The full solution would be to introduce a kde4_target_link_libraries macro and to
+# call KDE4_ADD_MANIFEST inside instead of calling in kde4_add_executable.
+# This would require patching of *all* places in the KDE sources where target_link_libraries
 # is used and to change the related docs.
-# 
-# Because yet I found only 2 locations where this problem occurs (kjs, k3b), the workaround 
-# seems to be a pragmatically solution. 
-# 
+#
+# Because yet I found only 2 locations where this problem occurs (kjs, k3b), the workaround
+# seems to be a pragmatically solution.
+#
 # This macro is an internal macro only used by kde4_add_executable
 #
 macro (_KDE4_ADD_MANIFEST _target_NAME)
@@ -392,14 +383,14 @@ macro (_KDE4_ADD_MANIFEST _target_NAME)
     else(${x})
         get_target_property(_executable ${_target_NAME} LOCATION )
     endif(${x})
-        
+
     if (_kdeBootStrapping)
         set(_cmake_module_path ${CMAKE_SOURCE_DIR}/cmake/modules)
     else (_kdeBootStrapping)
         set(_cmake_module_path ${KDE4_INSTALL_DIR}/share/apps/cmake/modules)
     endif (_kdeBootStrapping)
-       
-    set(_manifest ${_cmake_module_path}/Win32.Manifest.in)
+
+    set(_manifest ${KDE4_MODULE_DIR}/Win32.Manifest.in)
     #message(STATUS ${_executable} ${_manifest})
     add_custom_command(
         TARGET ${_target_NAME}
@@ -410,7 +401,7 @@ macro (_KDE4_ADD_MANIFEST _target_NAME)
            -updateresource:${_executable}
         COMMENT "adding vista trustInfo manifest to ${_target_NAME}"
    )
-endmacro(_KDE4_ADD_MANIFEST) 
+endmacro(_KDE4_ADD_MANIFEST)
 
 
 macro (KDE4_ADD_EXECUTABLE _target_NAME)
@@ -498,15 +489,10 @@ if (_kdeBootStrapping)
   include("${CMAKE_SOURCE_DIR}/kdecore/KDECoreMacros.cmake")
   include("${CMAKE_SOURCE_DIR}/kdeui/KDEUIMacros.cmake")
   include("${CMAKE_SOURCE_DIR}/kdoctools/KDocToolsMacros.cmake")
-  if (QT_QT3SUPPORT_FOUND)
-    include("${CMAKE_SOURCE_DIR}/kde3support/KDE3SupportMacros.cmake")
-  endif()
 else()
-  include("${KDE4_MODULE_DIR}/KAuthMacros.cmake")
-  include("${KDE4_MODULE_DIR}/KDECoreMacros.cmake")
-  include("${KDE4_MODULE_DIR}/KDEUIMacros.cmake")
-  include("${KDE4_MODULE_DIR}/KDocToolsMacros.cmake")
-  if (QT_QT3SUPPORT_FOUND)
-    include("${KDE4_MODULE_DIR}/KDE3SupportMacros.cmake")
-  endif()
+  include("${KDE4_LIB_DIR}/cmake/kauth/KAuthMacros.cmake")
+  include("${KDE4_LIB_DIR}/cmake/kconfig/KConfigMacros.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/KDECoreMacros.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/KDEUIMacros.cmake")
+  include("${CMAKE_CURRENT_LIST_DIR}/KDocToolsMacros.cmake")
 endif()

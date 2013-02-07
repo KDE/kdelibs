@@ -60,16 +60,14 @@ if (Qt5_POSITION_INDEPENDENT_CODE)
 endif()
 
 add_subdirectory( libkdeqt5staging )
-set(kdeqt5staging_LIBRARY kdeqt5staging)
-set(kdeqt5staging_INCLUDE_DIR
+set(kdeqt5staging_LIBRARIES kdeqt5staging)
+set(kdeqt5staging_INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
-   )
-
-set(kdeqt5staging_INCLUDE_DIR ${kdeqt5staging_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/qt5only)
+    ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/qt5only)
 
 
-include_directories(${kdeqt5staging_INCLUDE_DIR})
+include_directories(${kdeqt5staging_INCLUDE_DIRS})
 
 # TODO: Move to where it's really needed/remove.
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
@@ -80,7 +78,7 @@ add_subdirectory( tier1 )
 
 add_subdirectory( tier2 )
 
-set(kwindowsystem_LIBRARY kwindowsystem)
+set(kwindowsystem_LIBRARIES kwindowsystem)
 set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
 
 set(CMAKE_AUTOMOC ON)
@@ -369,6 +367,8 @@ configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compil
 
 # Needed for the calls to kconfig_add_kcfg_files in some modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/tier2/kconfig/cmake")
+set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
+
 set(KCONFIG_KCFGC_EXECUTABLE kconfig_compiler)
 include(KConfigMacros)
 
@@ -443,8 +443,16 @@ include(CreateKDELibsDependenciesFile.cmake)
 
 ################# install files #################
 
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake  DESTINATION ${DATA_INSTALL_DIR}/cmake/modules)
+install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/KDELibs4Config.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake
+               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/KDE4Macros.cmake
+               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4init_dummy.cpp.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4_exec_via_sh.cmake
+               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4init_win32lib_dummy.cpp.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/kde4_cmake_uninstall.cmake.in
+               ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules/Win32.Manifest.in
+         DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel)
 
 # run a script before installing the exports files which deletes previously installed
 # configuration specific export files KDELibs4(Library|Tools)Targets-<config>.cmake
@@ -453,9 +461,9 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDEPlatformProfile.cmake  DESTINATION
 # which might have a different set of targets or targets with different names.
 # The code for installing the exports files will soon go into a macro. Alex
 install(CODE "set(EXPORT_FILES KDELibs4LibraryTargets.cmake KDELibs4ToolsTargets.cmake)"
-        CODE "set(EXPORT_INSTALL_DIR \"${DATA_INSTALL_DIR}/cmake/modules\")"
+        CODE "set(EXPORT_INSTALL_DIR \"${CMAKECONFIG_INSTALL_DIR}\")"
         SCRIPT "${CMAKE_SOURCE_DIR}/cmake/modules/check_installed_exports_file.cmake" )
-install( EXPORT kdelibsLibraryTargets DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4LibraryTargets.cmake )
-install( EXPORT kdelibsToolsTargets   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4ToolsTargets.cmake )
+install( EXPORT kdelibsLibraryTargets DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4LibraryTargets.cmake  COMPONENT Devel)
+install( EXPORT kdelibsToolsTargets   DESTINATION ${CMAKECONFIG_INSTALL_DIR} NAMESPACE ${KDE4_TARGET_PREFIX} FILE KDELibs4ToolsTargets.cmake  COMPONENT Devel)
 
 feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)

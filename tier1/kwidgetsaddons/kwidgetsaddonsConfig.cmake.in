@@ -9,6 +9,9 @@ set(kwidgetsaddons_VERSION_PATCH "@KWIDGETSADDONS_VERSION_PATCH@")
 set(kwidgetsaddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(kwidgetsaddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/kwidgetsaddonsTargets.cmake")
+if(NOT TARGET KF5::kwidgetsaddons)
+  include("${CMAKE_CURRENT_LIST_DIR}/kwidgetsaddonsTargets.cmake")
+endif()
 
-set(kwidgetsaddons_LIBRARY KF5::kwidgetsaddons)
+set(kwidgetsaddons_LIBRARIES KF5::kwidgetsaddons)
+set(kwidgetsaddons_INCLUDE_DIRS ${kwidgetsaddons_INCLUDE_DIR})

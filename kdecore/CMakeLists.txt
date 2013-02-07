@@ -297,4 +297,4 @@ install(FILES
 
 install( FILES
     KDECoreMacros.cmake
-    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
+    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )

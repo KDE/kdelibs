@@ -106,7 +106,7 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
    target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ki18n karchive ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} kcoreaddons)
 
-   add_dependencies(meinproc4 docbookl10nhelper) 
+   add_dependencies(meinproc4 docbookl10nhelper)
 
    # "export" this target too so we can use the LOCATION property of the imported target in
    # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
@@ -114,7 +114,7 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
 #    # export this binary for cross-compilation
 #    export(TARGETS meinproc4 FILE ${CMAKE_BINARY_DIR}/ImportMeinProc4Executable.cmake)
-# 
+#
 # endif (CMAKE_CROSSCOMPILING)
 
 ########### next target ###############
@@ -128,7 +128,7 @@ if (NOT CMAKE_CROSSCOMPILING)
 
    target_link_libraries(meinproc4_simple ${QT_QTCORE_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
 
-   add_dependencies(meinproc4_simple docbookl10nhelper) 
+   add_dependencies(meinproc4_simple docbookl10nhelper)
 
    install(TARGETS meinproc4_simple ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -197,7 +197,7 @@ set(expr "customization/catalog.xml")
 install_customize_l_dir( ${expr} customization/)
 
 set(customizedir af bg ca cs da de dtd el en-GB en entities eo es et fi fo fr gl he hu id it ja ko lt nds nl nn no pl pt-BR pt ro ru sk sl sr sr@latin sr@ijekavian sr@ijekavianlatin sv th tr uk wa xh xsl xx zh-CN zh-TW)
- 
+
 foreach (_currentcustomizedir ${customizedir})
 	set(expr "customization/${_currentcustomizedir}/README")
 	install_customize_l_dir( ${expr} customization/${_currentcustomizedir})
@@ -215,9 +215,9 @@ foreach (_currentcustomizedir ${customizedir})
 	install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
 	set(expr "customization/${_currentcustomizedir}/*.elements")
 	install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
-	
-endforeach(_currentcustomizedir ${customizedir}) 
-	  
+
+endforeach(_currentcustomizedir ${customizedir})
+
 
 
 ########### l10n xml helper ###############
@@ -237,4 +237,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/customization/xsl/all-l10n.xml
 
 install( FILES
     KDocToolsMacros.cmake
-    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
+    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )

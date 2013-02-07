@@ -9,6 +9,9 @@ set(itemmodels_VERSION_PATCH "@ITEMMODELS_VERSION_PATCH@")
 set(itemmodels_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(itemmodels_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/itemmodelsTargets.cmake")
+if(NOT TARGET KF5::itemmodels)
+  include("${CMAKE_CURRENT_LIST_DIR}/itemmodelsTargets.cmake")
+endif()
 
-set(itemmodels_LIBRARY KF5::itemmodels)
+set(itemmodels_LIBRARIES KF5::itemmodels)
+set(itemmodels_INCLUDE_DIRS ${itemmodels_INCLUDE_DIR} )

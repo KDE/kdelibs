@@ -9,6 +9,9 @@ set(kdbusaddons_VERSION_PATCH "@KDBUSADDONS_VERSION_PATCH@")
 set(kdbusaddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(kdbusaddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/kdbusaddonsTargets.cmake")
+if(NOT TARGET KF5::kdbusaddons)
+  include("${CMAKE_CURRENT_LIST_DIR}/kdbusaddonsTargets.cmake")
+endif()
 
-set(kdbusaddons_LIBRARY KF5::kdbusaddons)
+set(kdbusaddons_LIBRARIES KF5::kdbusaddons)
+set(kdbusaddons_INCLUDE_DIRS ${kdbusaddons_INCLUDE_DIR})

@@ -97,8 +97,8 @@ kde4_add_library(kde3support ${LIBRARY_TYPE} ${kde3support_LIB_SRCS})
 target_link_libraries(kde3support  ${KDE4_KPARTS_LIBS} ${KDE4_KPTY_LIBS} ${QT_QTXML_LIBRARY} ${QT_QT3SUPPORT_LIBRARY} ${KDE4_KFILE_LIBS} kwindowsystem ${X11_LIBRARIES} kguiaddons kwidgets kwidgetsaddons kde4support ki18n)
 target_link_libraries(kde3support  LINK_INTERFACE_LIBRARIES kio kdeui kdecore Qt5::Widgets ${QT_QT3SUPPORT_LIBRARY} )
 
-set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION} 
-                                             SOVERSION ${GENERIC_LIB_SOVERSION} 
+set_target_properties(kde3support PROPERTIES VERSION ${GENERIC_LIB_VERSION}
+                                             SOVERSION ${GENERIC_LIB_SOVERSION}
                      )
 
 install(TARGETS kde3support EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
@@ -173,4 +173,4 @@ install( FILES
 
 install( FILES
     KDE3SupportMacros.cmake
-    DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
+    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )

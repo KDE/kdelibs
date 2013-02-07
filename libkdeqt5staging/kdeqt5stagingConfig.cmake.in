@@ -12,8 +12,10 @@ set(kdeqt5staging_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 # these files could collide with a real Qt5 installation.
 set_and_check(kdeqt5staging_base_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@/kdeqt5staging")
 set_and_check(kdeqt5staging_extra_INCLUDE_DIR   "@PACKAGE_INCLUDE_INSTALL_DIR@/kdeqt5staging/QtX11Extras")
-set(kdeqt5staging_INCLUDE_DIR  "${kdeqt5staging_base_INCLUDE_DIR}"  "${kdeqt5staging_extra_INCLUDE_DIR}")
 
-include("${CMAKE_CURRENT_LIST_DIR}/kdeqt5stagingTargets.cmake")
+if(NOT TARGET kdeqt5staging)
+  include("${CMAKE_CURRENT_LIST_DIR}/kdeqt5stagingTargets.cmake")
+endif()
 
-set(kdeqt5staging_LIBRARY kdeqt5staging)
+set(kdeqt5staging_LIBRARIES kdeqt5staging)
+set(kdeqt5staging_INCLUDE_DIRS  "${kdeqt5staging_base_INCLUDE_DIR}"  "${kdeqt5staging_extra_INCLUDE_DIR}")

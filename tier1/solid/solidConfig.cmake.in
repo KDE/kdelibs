@@ -28,9 +28,10 @@ set(solid_VERSION_PATCH "@SOLID_VERSION_PATCH@")
 set(solid_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(solid_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/solidTargets.cmake")
+if(NOT TARGET KF5::solid)
+  include("${CMAKE_CURRENT_LIST_DIR}/solidTargets.cmake")
+endif()
 
-set(solid_LIBRARY KF5::solid)  # is this one needed ?
 
 # "public" variables:
 

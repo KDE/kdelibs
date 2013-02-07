@@ -8,8 +8,10 @@ set(ki18n_VERSION_PATCH "@KI18N_VERSION_PATCH@")
 
 set(ki18n_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(ki18n_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
-set_and_check(ki18n_LIBRARY_DIR    "@PACKAGE_LIB_INSTALL_DIR@")
 
-include("${CMAKE_CURRENT_LIST_DIR}/ki18nTargets.cmake")
+if(NOT TARGET KDE4__ki18n)
+  include("${CMAKE_CURRENT_LIST_DIR}/ki18nTargets.cmake")
+endif()
 
-set(ki18n_LIBRARY KDE4__ki18n)
+set(ki18n_INCLUDE_DIRS ${ki18n_INCLUDE_DIR})
+set(ki18n_LIBRARIES KDE4__ki18n)

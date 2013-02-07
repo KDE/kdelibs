@@ -42,7 +42,7 @@ install(FILES
 
 install( FILES
    cmake/KConfigMacros.cmake
-   DESTINATION ${DATA_INSTALL_DIR}/cmake/modules COMPONENT Devel )
+   DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
 
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")

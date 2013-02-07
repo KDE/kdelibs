@@ -61,7 +61,7 @@ endif ()
 add_library(kwindowsystem ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
 
-target_link_libraries(kwindowsystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${kdeqt5staging_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
+target_link_libraries(kwindowsystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${kdeqt5staging_LIBRARIES} ${platformLinkLibraries} ${qt5CompatLib})
 
 set_target_properties(kwindowsystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
                                                SOVERSION ${KWINDOWSYSTEM_SOVERSION})

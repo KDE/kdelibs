@@ -14,7 +14,7 @@ if(NOT kdelibs_SOURCE_DIR)
   find_package(kdeqt5staging REQUIRED NO_MODULE)
 endif()
 
-include_directories(${kdeqt5staging_INCLUDE_DIR})
+include_directories(${kdeqt5staging_INCLUDE_DIRS})
 
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)
