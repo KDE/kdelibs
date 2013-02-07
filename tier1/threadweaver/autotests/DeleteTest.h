@@ -1,26 +1,29 @@
 #ifndef DELETETEST_H
 #define DELETETEST_H
 
-#include <QtCore/QCoreApplication>
+#include <QtCore/QObject>
 #include <QtCore/QMutex>
+#include <QtTest/QtTest>
 
 namespace ThreadWeaver { class Job; }
 
 using namespace ThreadWeaver;
 
-class DeleteTest : public QCoreApplication
+class DeleteTest : public QObject
 {
-  Q_OBJECT
-
+    Q_OBJECT
 public:
-  DeleteTest(int argc, char **argv);
+    DeleteTest();
 
-public Q_SLOTS:
-  void deleteSequence(ThreadWeaver::Job* job);
+private Q_SLOTS:
+    void DeleteSequenceTest();
+
+public Q_SLOTS: // not a test!
+    void deleteSequence(ThreadWeaver::Job* job);
 
 private:
-  int m_finishCount;
-  mutable QMutex m_finishMutex;
+    int m_finishCount;
+    mutable QMutex m_finishMutex;
 };
 
 #endif

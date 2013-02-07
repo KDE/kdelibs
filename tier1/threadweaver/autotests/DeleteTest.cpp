@@ -1,67 +1,48 @@
 #include "DeleteTest.h"
 
-#include <QtCore/QChar>
-
-#include <QtCore/QObject>
-#include <QtCore/QThread>
-#include <QtCore/QDebug>
-#include <QtTest/QtTest>
-
-#include <Job.h>
-#include <State.h>
-#include <QueuePolicy.h>
 #include <JobSequence.h>
-#include <JobCollection.h>
-#include <DebuggingAids.h>
-#include <WeaverObserver.h>
-#include <DependencyPolicy.h>
-#include <ResourceRestrictionPolicy.h>
-
 #include <ThreadWeaver.h>
-#include <Thread.h>
+#include <DebuggingAids.h>
 
 #include "AppendCharacterJob.h"
 
-int main(int argc, char **argv)
+DeleteTest::DeleteTest()
 {
-  DeleteTest dt(argc, argv);
-  return dt.exec();
+    ThreadWeaver::setDebugLevel ( true,  1 );
+    ThreadWeaver::Weaver::instance()->setMaximumNumberOfThreads(4);
 }
 
-DeleteTest::DeleteTest(int argc, char **argv)
-  : QCoreApplication(argc, argv)
+void DeleteTest::DeleteSequenceTest()
 {
-  ThreadWeaver::setDebugLevel ( true,  1 );
+    m_finishCount = 100;
 
-  ThreadWeaver::Weaver::instance()->setMaximumNumberOfThreads(4);
+    for (int i = 0; i < 100; ++i) {
+        ThreadWeaver::JobSequence* jobSeq = new ThreadWeaver::JobSequence( this );
+        connect ( jobSeq, SIGNAL(done(ThreadWeaver::Job*)),
+                  SLOT(deleteSequence(ThreadWeaver::Job*)) );
 
-  m_finishCount = 100;
+        jobSeq->addJob( new BusyJob );
+        jobSeq->addJob( new BusyJob );
 
-  for (int i = 0; i < 100; ++i) {
-    ThreadWeaver::JobSequence* jobSeq = new ThreadWeaver::JobSequence( this );
-    connect ( jobSeq, SIGNAL(done(ThreadWeaver::Job*)),
-              SLOT(deleteSequence(ThreadWeaver::Job*)) );
+        ThreadWeaver::Weaver::instance()->enqueue( jobSeq );
+    }
 
-    jobSeq->addJob( new BusyJob );
-    jobSeq->addJob( new BusyJob );
-
-    ThreadWeaver::Weaver::instance()->enqueue( jobSeq );
-  }
-
-  ThreadWeaver::Weaver::instance()->resume();
+    ThreadWeaver::Weaver::instance()->resume();
 }
 
 void DeleteTest::deleteSequence(ThreadWeaver::Job* job)
 {
-  Q_ASSERT(job);
-  delete job;
+    Q_ASSERT(job);
+    delete job;
 
-  QMutexLocker lock(&m_finishMutex);
-  --m_finishCount;
-  if (m_finishCount == 0)
-    exit(0);
+    QMutexLocker lock(&m_finishMutex);
+    --m_finishCount;
+    if (m_finishCount == 0)
+        exit(0);
 }
 
 QMutex s_GlobalMutex;
+
+QTEST_MAIN(DeleteTest)
 
 #include "DeleteTest.moc"
