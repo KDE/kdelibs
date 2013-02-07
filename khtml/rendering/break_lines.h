@@ -98,15 +98,13 @@ namespace khtml {
         0xFFE5  //full width yen sign
     };
 
-    inline bool break_bsearch( const ushort* arr, const ushort val ) {
-        int left = 0;
-        int right = (sizeof(arr) / sizeof(ushort)) - 1;
+    inline bool break_bsearch( const ushort* arr, const unsigned int count, const ushort val )
+    {
+        unsigned int left = 0;
+        unsigned int right = count - 1;
 
-        while (1) {
-            if (left == right)
-                return val != arr[left];
-
-            int i = (left + right) >> 1;
+        while (left != right) {
+            unsigned int i = (left + right) / 2;
             if ( val == arr[i] )
                 return false;
             if ( val < arr[i] )
@@ -114,6 +112,8 @@ namespace khtml {
             else
                 left = i + 1;
         }
+
+        return val != arr[left];
     }
     
     bool isBreakableThai( const QChar *string, const int pos, const int len);
@@ -147,8 +147,8 @@ namespace khtml {
                     return false;
 
                 // do binary search in dontbreak[]
-                return break_bsearch(dontbreakbefore, c->unicode()) &&
-                       break_bsearch(dontbreakafter, (str+(pos-1))->unicode());
+                return break_bsearch(dontbreakbefore, (sizeof(dontbreakbefore) / sizeof(*dontbreakbefore)), c->unicode()) &&
+                       break_bsearch(dontbreakafter, (sizeof(dontbreakafter) / sizeof(*dontbreakafter)), (str+(pos-1))->unicode());
             } else // no asian font
 		return c->isSpace();
 	} else {
