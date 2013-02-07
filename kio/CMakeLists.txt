@@ -226,13 +226,6 @@ set(kbookmarks_STAT_SRCS
   bookmarks/kbookmarkdialog.cc
 )
 
-if(NOT KDE_NO_DEPRECATED)
-  set(kbookmarks_STAT_SRCS
-    ${kbookmarks_STAT_SRCS}
-    bookmarks/kbookmarkimporter_crash.cc
-    )
-endif(NOT KDE_NO_DEPRECATED)
-
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
@@ -484,7 +477,6 @@ install( FILES
 
 if(NOT KDE_NO_DEPRECATED)
 install( FILES
-  bookmarks/kbookmarkimporter_crash.h
   kfile/kdiskfreespace.h
   kio/kmimetyperesolver.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
