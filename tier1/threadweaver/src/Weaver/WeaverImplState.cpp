@@ -32,14 +32,85 @@
 
 namespace ThreadWeaver {
 
-WeaverImplState::WeaverImplState(WeaverInterface *weaver)
+WeaverImplState::WeaverImplState(Queue *weaver)
     : State(weaver)
 {}
+
+const State &WeaverImplState::state() const
+{
+    return *this;
+}
 
 WeaverImpl* WeaverImplState::weaver()
 {
     Q_ASSERT ( dynamic_cast<WeaverImpl*> ( State::weaver() ) );
     return static_cast<WeaverImpl*> ( State::weaver() );
+}
+
+const WeaverImpl *WeaverImplState::weaver() const
+{
+    Q_ASSERT ( dynamic_cast<const WeaverImpl*> ( State::weaver() ) );
+    return static_cast<const WeaverImpl*> ( State::weaver() );
+}
+
+void WeaverImplState::setMaximumNumberOfThreads(int cap)
+{
+    weaver()->setMaximumNumberOfThreads_p(cap);
+}
+
+int WeaverImplState::maximumNumberOfThreads() const
+{
+    return weaver()->maximumNumberOfThreads_p();
+}
+
+int WeaverImplState::currentNumberOfThreads() const
+{
+    return weaver()->currentNumberOfThreads_p();
+}
+
+void WeaverImplState::registerObserver(WeaverObserver *obs)
+{
+    weaver()->registerObserver_p(obs);
+}
+
+void WeaverImplState::enqueue(Job* job)
+{
+    weaver()->enqueue_p(job);
+}
+
+bool WeaverImplState::dequeue(Job* job)
+{
+    return weaver()->dequeue_p(job);
+}
+
+void WeaverImplState::dequeue()
+{
+    weaver()->dequeue_p();
+}
+
+void WeaverImplState::finish()
+{
+    weaver()->finish_p();
+}
+
+bool WeaverImplState::isEmpty() const
+{
+    return weaver()->isEmpty_p();
+}
+
+bool WeaverImplState::isIdle() const
+{
+    return weaver()->isIdle_p();
+}
+
+int WeaverImplState::queueLength() const
+{
+    return weaver()->queueLength();
+}
+
+void WeaverImplState::requestAbort()
+{
+    return weaver()->requestAbort();
 }
 
 }

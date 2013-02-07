@@ -38,6 +38,7 @@
 namespace ThreadWeaver {
 
 class WeaverImpl;
+class Queue;
 
 /** InConstructionState handles the calls to the WeaverImpl
         object until the constructor has finished.
@@ -45,7 +46,7 @@ class WeaverImpl;
 class InConstructionState : public WeaverImplState
 {
 public:
-    explicit InConstructionState( WeaverInterface *weaver);
+    explicit InConstructionState( Queue *weaver);
     /** Suspend job processing. */
     virtual void suspend();
     /** Resume job processing. */
@@ -54,7 +55,6 @@ public:
     virtual Job* applyForWork ( Thread *th,  Job* previous );
     /** Wait (by suspending the calling thread) until a job becomes available. */
     virtual void waitForAvailableJob ( Thread *th );
-
     /** reimpl */
     StateId stateId() const;
 };

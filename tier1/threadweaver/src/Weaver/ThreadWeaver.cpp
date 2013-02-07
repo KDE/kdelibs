@@ -23,7 +23,6 @@ http://creative-destruction.me $
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 
-$Id: ThreadWeaver.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
 #include "ThreadWeaver.h"
@@ -42,11 +41,11 @@ public:
         : implementation(0)
     {}
 
-    WeaverInterface* implementation;
+    Queue* implementation;
 };
 
 Weaver::Weaver ( QObject* parent )
-    : WeaverInterface( parent )
+    : Queue( parent )
     , d (new Private)
 {
     d->implementation = makeWeaverImpl();
@@ -62,7 +61,7 @@ Weaver::~Weaver()
     delete d;
 }
 
-WeaverInterface* Weaver::makeWeaverImpl()
+Queue *Weaver::makeWeaverImpl()
 {
     return new WeaverImpl ( this );
 }

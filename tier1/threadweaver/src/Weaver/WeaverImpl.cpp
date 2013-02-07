@@ -50,7 +50,7 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 using namespace ThreadWeaver;
 
 WeaverImpl::WeaverImpl( QObject* parent )
-    : WeaverInterface(parent)
+    : Queue(parent)
     , m_active(0)
     , m_inventoryMax( qMax(4, 2 * QThread::idealThreadCount() ) )
     , m_mutex ( new QMutex( QMutex::Recursive ) )
@@ -148,24 +148,51 @@ const State& WeaverImpl::state() const
 
 void WeaverImpl::setMaximumNumberOfThreads( int cap )
 {
+    //FIXME really? Why not 0?
     Q_ASSERT_X ( cap > 0, "Weaver Impl", "Thread inventory size has to be larger than zero." );
     QMutexLocker l (m_mutex);
+    m_state->setMaximumNumberOfThreads(cap);
+    Q_ASSERT(false); //NI, states do not handle this yet, see setMaximumNumberOfThreads_p
+}
+
+void WeaverImpl::setMaximumNumberOfThreads_p(int cap)
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
     m_inventoryMax = cap;
 }
 
 int WeaverImpl::maximumNumberOfThreads() const
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
+    return m_state->maximumNumberOfThreads();
+    Q_ASSERT(false); //NI, return m_inventoryMax
+}
+
+int WeaverImpl::maximumNumberOfThreads_p() const
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
     return m_inventoryMax;
 }
 
 int WeaverImpl::currentNumberOfThreads () const
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_inventory.count ();
+    return m_state->currentNumberOfThreads();
+}
+
+int WeaverImpl::currentNumberOfThreads_p() const
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+    return m_inventory.count();
 }
 
 void WeaverImpl::registerObserver ( WeaverObserver *ext )
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    return m_state->registerObserver(ext);
+}
+
+void WeaverImpl::registerObserver_p(WeaverObserver *ext)
 {
     connect ( this,  SIGNAL (stateChanged(ThreadWeaver::State*)),
               ext,  SIGNAL (weaverStateChanged(ThreadWeaver::State*)) );
@@ -181,6 +208,13 @@ void WeaverImpl::registerObserver ( WeaverObserver *ext )
 
 void WeaverImpl::enqueue(Job* job)
 {
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    return m_state->enqueue(job);
+}
+
+void WeaverImpl::enqueue_p(Job *job)
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
     if (job) {
         adjustInventory ( 1 );
         debug ( 3, "WeaverImpl::enqueue: queueing job %p of type %s.\n",
@@ -200,6 +234,143 @@ void WeaverImpl::enqueue(Job* job)
         }
         assignJobs();
     }
+}
+
+bool WeaverImpl::dequeue ( Job* job )
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    return m_state->dequeue(job);
+}
+
+bool WeaverImpl::dequeue_p(Job* job)
+{
+    bool result;
+    {
+        QMutexLocker l (m_mutex);
+
+        int i = m_assignments.indexOf ( job );
+        if ( i != -1 )
+        {
+            job->aboutToBeDequeued( this );
+
+            m_assignments.removeAt( i );
+            result = true;
+            debug( 3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n",
+                   (void*)job, m_assignments.size() );
+        } else {
+            debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", (void*)job );
+            result = false;
+        }
+    }
+
+    // from the queues point of view, a job is just as finished if
+    // it gets dequeued:
+    m_jobFinished.wakeOne();
+    return result;
+}
+
+void WeaverImpl::dequeue ()
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    m_state->dequeue();
+}
+
+void WeaverImpl::dequeue_p()
+{
+    debug( 3, "WeaverImpl::dequeue: dequeueing all jobs.\n" );
+    QMutexLocker l (m_mutex);
+    for ( int index = 0; index < m_assignments.size(); ++index )
+    {
+        m_assignments.at( index )->aboutToBeDequeued( this );
+    }
+    m_assignments.clear();
+    ENSURE ( m_assignments.isEmpty() );
+}
+
+void WeaverImpl::finish()
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    m_state->finish();
+}
+
+void WeaverImpl::finish_p()
+{
+#ifdef QT_NO_DEBUG
+    const int MaxWaitMilliSeconds = 50;
+#else
+    const int MaxWaitMilliSeconds = 500;
+#endif
+    while ( !isIdle() ) {
+        Q_ASSERT(state().stateId() == WorkingHard);
+        debug (2, "WeaverImpl::finish: not done, waiting.\n" );
+        QMutexLocker l( m_finishMutex );
+        if ( m_jobFinished.wait( l.mutex(), MaxWaitMilliSeconds ) == false ) {
+            debug ( 2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n",
+                    queueLength() );
+            m_jobAvailable.wakeAll();
+        }
+    }
+    debug (2, "WeaverImpl::finish: done.\n\n\n" );
+}
+
+void WeaverImpl::suspend ()
+{
+    //FIXME?
+    //QMutexLocker l(m_mutex); Q_UNUSED(l);
+    m_state->suspend();
+}
+
+void WeaverImpl::suspend_p()
+{
+    //FIXME ?
+}
+
+void WeaverImpl::resume ( )
+{
+    //FIXME?
+    //QMutexLocker l(m_mutex); Q_UNUSED(l);
+    m_state->resume();
+}
+
+void WeaverImpl::resume_p()
+{
+    //FIXME ?
+}
+
+bool WeaverImpl::isEmpty() const
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    return m_state->isEmpty();
+}
+
+bool WeaverImpl::isEmpty_p() const
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+    return  m_assignments.isEmpty();
+}
+
+bool WeaverImpl::isIdle() const
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    return m_state->isIdle();
+}
+
+bool WeaverImpl::isIdle_p() const
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+    return isEmpty() && m_active == 0;
+}
+
+int WeaverImpl::queueLength() const
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    return m_state->queueLength();
+}
+
+int WeaverImpl::queueLength_p() const
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+    return m_assignments.count();
 }
 
 void WeaverImpl::adjustInventory ( int numberOfNewJobs )
@@ -235,67 +406,10 @@ Thread* WeaverImpl::createThread()
     return new Thread( this );
 }
 
-bool WeaverImpl::dequeue ( Job* job )
-{
-    bool result;
-    {
-        QMutexLocker l (m_mutex);
-
-        int i = m_assignments.indexOf ( job );
-        if ( i != -1 )
-        {
-            job->aboutToBeDequeued( this );
-
-            m_assignments.removeAt( i );
-            result = true;
-            debug( 3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n",
-                   (void*)job, m_assignments.size() );
-        } else {
-            debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", (void*)job );
-            result = false;
-        }
-    }
-
-    // from the queues point of view, a job is just as finished if
-    // it gets dequeued:
-    m_jobFinished.wakeOne();
-    return result;
-}
-
-void WeaverImpl::dequeue ()
-{
-    debug( 3, "WeaverImpl::dequeue: dequeueing all jobs.\n" );
-    QMutexLocker l (m_mutex);
-    for ( int index = 0; index < m_assignments.size(); ++index )
-    {
-        m_assignments.at( index )->aboutToBeDequeued( this );
-    }
-    m_assignments.clear();
-
-    ENSURE ( m_assignments.isEmpty() );
-}
-
-void WeaverImpl::suspend ()
-{
-    m_state->suspend();
-}
-
-void WeaverImpl::resume ( )
-{
-    m_state->resume();
-}
-
 void WeaverImpl::assignJobs()
 {
     m_jobAvailable.wakeAll();
 }
-
-bool WeaverImpl::isEmpty() const
-{
-    QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return  m_assignments.isEmpty();
-}
-
 
 void WeaverImpl::incActiveThreadCount()
 {
@@ -369,38 +483,6 @@ void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
     QMutexLocker l( m_jobAvailableMutex );
     m_jobAvailable.wait( m_jobAvailableMutex );
     debug ( 4,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());
-}
-
-int WeaverImpl::queueLength() const
-{
-    QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_assignments.count();
-}
-
-bool WeaverImpl::isIdle () const
-{
-    QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return isEmpty() && m_active == 0;
-}
-
-void WeaverImpl::finish()
-{
-#ifdef QT_NO_DEBUG
-    const int MaxWaitMilliSeconds = 50;
-#else
-    const int MaxWaitMilliSeconds = 500;
-#endif
-    while ( !isIdle() ) {
-        Q_ASSERT(state().stateId() == WorkingHard);
-        debug (2, "WeaverImpl::finish: not done, waiting.\n" );
-        QMutexLocker l( m_finishMutex );
-        if ( m_jobFinished.wait( l.mutex(), MaxWaitMilliSeconds ) == false ) {
-            debug ( 2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n",
-                    queueLength() );
-            m_jobAvailable.wakeAll();
-        }
-    }
-    debug (2, "WeaverImpl::finish: done.\n\n\n" );
 }
 
 void WeaverImpl::requestAbort()

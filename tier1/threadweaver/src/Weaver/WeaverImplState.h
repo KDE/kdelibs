@@ -38,15 +38,45 @@
 
 namespace ThreadWeaver {
 
+class Queue;
+
 /** @brief Base class for all WeaverImpl states. */
 class WeaverImplState : public State
 {
 public:
-    explicit WeaverImplState( WeaverInterface* weaver );
+    explicit WeaverImplState( Queue* weaver );
+
+    const State& state() const;
+
+    /** Set the maximum number of threads this Weaver object may start. */
+    void setMaximumNumberOfThreads( int cap );
+    /** Get the maximum number of threads this Weaver may start. */
+    int maximumNumberOfThreads() const;
+    /** Returns the current number of threads in the inventory. */
+    int currentNumberOfThreads () const;
+    /** Register an observer. */
+    void registerObserver(WeaverObserver* obs);
+    /** Enqueue a job. */
+    void enqueue(Job*job);
+    /** Dequeue a job. */
+    bool dequeue(Job*job);
+    /** Dequeue all jobs. */
+    void dequeue();
+    /** Finish all queued jobs. */
+    void finish();
+    /** Are no more jobs queued? */
+    bool isEmpty() const;
+    /** Are all threads waiting? */
+    bool isIdle() const;
+    /** How many jobs are currently queued? */
+    int queueLength() const;
+    /** Request abort for all queued and currently executed jobs. */
+    void requestAbort();
 
 protected:
     /** Provide correct return type for WeaverImpl states. */
     WeaverImpl* weaver();
+    const WeaverImpl* weaver() const;
 };
 
 }

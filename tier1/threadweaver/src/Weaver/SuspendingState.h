@@ -55,7 +55,6 @@ public:
     virtual void waitForAvailableJob ( Thread *th );
     /** Overload. */
     void activated();
-
     /** reimpl */
     StateId stateId() const;
 };

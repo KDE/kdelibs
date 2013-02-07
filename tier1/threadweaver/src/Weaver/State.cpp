@@ -56,7 +56,7 @@ public:
 };
 
 
-State::State(WeaverInterface *weaver)
+State::State(Queue *weaver)
     : d(new Private(weaver))
 {
 }
@@ -76,6 +76,11 @@ void State::activated()
 }
 
 WeaverInterface* State::weaver()
+{
+    return d->weaver;
+}
+
+const WeaverInterface *State::weaver() const
 {
     return d->weaver;
 }

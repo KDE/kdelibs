@@ -25,13 +25,13 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 
-   $Id: ThreadWeaver.h 32 2005-08-17 08:38:01Z mirko $
 */
 #ifndef THREADWEAVER_H
 #define THREADWEAVER_H
 
 #include <QtCore/QObject>
-#include "WeaverInterface.h"
+
+#include "Queue.h"
 
 namespace ThreadWeaver {
 
@@ -62,7 +62,7 @@ class WeaverObserver;
 
     */
 // Note: All member documentation is in the WeaverInterface class.
-class THREADWEAVER_EXPORT Weaver : public WeaverInterface
+class THREADWEAVER_EXPORT Weaver : public Queue
 {
     Q_OBJECT
 public:
@@ -88,7 +88,6 @@ public:
         If instance is never called, a global Weaver object will not be
         created.
     */
-    // FIXME (0.7) this should be a WeaverInterface pointer
     static ThreadWeaver::Weaver* instance();
     virtual void enqueue (Job*);
     virtual bool dequeue (Job*);
@@ -105,10 +104,9 @@ protected:
     /** The factory method to create the actual Weaver implementation.
     Overload this method to use a different or adapted implementation.
     */
-    virtual WeaverInterface* makeWeaverImpl ();
+    virtual Queue* makeWeaverImpl ();
 
 private:
-
     class Private;
     Private* const d;
 };

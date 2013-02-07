@@ -2,7 +2,7 @@
 ########### next target ###############
 
 set(ThreadWeaver_LIB_SRCS
-    WeaverInterface.cpp
+    Queue.cpp
     ThreadWeaver.cpp
     WeaverImpl.cpp
     DebuggingAids.cpp

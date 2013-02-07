@@ -37,13 +37,15 @@
 
 namespace ThreadWeaver {
 
+class Queue;
+
 /** DestructedState is only active after the thread have been destroyed by
  *  the destructor, but before superclass destructors have finished.
  */
 class DestructedState : public WeaverImplState
 {
 public:
-    explicit DestructedState( WeaverInterface *weaver);
+    explicit DestructedState(Queue *weaver);
     /** Suspend job processing. */
     virtual void suspend();
     /** Resume job processing. */
@@ -52,7 +54,6 @@ public:
     virtual Job* applyForWork ( Thread *th,  Job* previous );
     /** Wait (by suspending the calling thread) until a job becomes available. */
     virtual void waitForAvailableJob ( Thread *th );
-
     /** reimpl */
     StateId stateId() const;
 };

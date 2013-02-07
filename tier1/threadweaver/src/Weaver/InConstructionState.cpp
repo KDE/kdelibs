@@ -33,7 +33,7 @@
 
 namespace ThreadWeaver {
 
-InConstructionState::InConstructionState(WeaverInterface *weaver)
+InConstructionState::InConstructionState(Queue *weaver)
     : WeaverImplState(weaver)
 {
 }

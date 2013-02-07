@@ -23,7 +23,6 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 
-   $Id: WeaverImpl.h 29 2005-08-14 19:04:30Z mirko $
 */
 
 #ifndef WeaverInterface_H
@@ -58,14 +57,8 @@ decorators. The member documentation is provided in the Weaver and
 WeaverImpl classes.
 */
 
-class THREADWEAVER_EXPORT WeaverInterface : public QObject {
-    Q_OBJECT
-
+class THREADWEAVER_EXPORT WeaverInterface {
 public:
-    /** A ThreadWeaver object manages a queue of Jobs.
-    It inherits QObject.
-    */
-    explicit WeaverInterface ( QObject* parent = 0 );
     virtual ~WeaverInterface() {}
     /** Return the state of the weaver object. */
     virtual const State& state() const = 0;
@@ -159,33 +152,6 @@ public:
     to the application to decide if and how job aborts are
     necessary. */
     virtual void requestAbort() = 0;
-
-Q_SIGNALS:
-    /** This signal is emitted when the Weaver has finished ALL currently
-    queued jobs.
-    If a number of jobs is enqueued sequentially, this signal might be
-    emitted a couple of times (what happens is that all already queued
-    jobs have been processed while you still add new ones). This is
-    not a bug, but the intended behaviour. */
-    void finished ();
-
-    /** Thread queueing has been suspended.
-    When suspend is called with, all threads are
-    allowed to finish their job. When the last thread
-    finished, this signal is emitted. */
-    void suspended ();
-
-    /** This signal is emitted when a job is finished.  In addition,
-    the Job itself emits a done() signal just before the jobDone() signal
-    is emitted.
-    */
-    void jobDone ( ThreadWeaver::Job* );
-    // FIXME (0.7) test if signal is emitted properly
-    // FIXME (0.7) provide jobStarted and jobFailed signals
-    // FIXME (0.7) or remove all these, and add them to WeaverObserver
-
-    /** The Weaver's state has changed. */
-    void stateChanged ( ThreadWeaver::State* );
 };
 
 }

@@ -31,6 +31,9 @@
 
 #include <QString>
 
+#include "WeaverInterface.h"
+#include "QueueInterface.h"
+#include "Queue.h"
 #include <threadweaver_export.h>
 
 namespace ThreadWeaver {
@@ -68,11 +71,11 @@ enum StateId {
 };
 
 /** We use a State pattern to handle the system state in ThreadWeaver. */
-class THREADWEAVER_EXPORT State
+class THREADWEAVER_EXPORT State : public WeaverInterface, public QueueInterface
 {
 public:
     /** Default constructor. */
-    explicit State( WeaverInterface *weaver );
+    explicit State( Queue *weaver );
 
     /** Destructor. */
     virtual ~State();
@@ -81,27 +84,18 @@ public:
      *  @see StateNames, StateID
      */
     QString stateName() const;
+
     /** The state Id. */
     virtual StateId stateId() const = 0;
-    /** Suspend job processing. */
-    virtual void suspend() = 0;
-    /** Resume job processing. */
-    virtual void resume() = 0;
-    /** Assign a job to an idle thread.
-     * @param th the thread to give a new Job to
-     * @param previous the job this thread finished before calling
-     */
-    virtual Job* applyForWork ( Thread *th,  Job* previous ) = 0;
-    /** Wait (by suspending the calling thread) until a job becomes available. */
-    virtual void waitForAvailableJob ( Thread *th ) = 0;
+
     /** The state has been changed so that this object is responsible for
      *  state handling. */
     virtual void activated();
 
-protected:
+ protected:
     /** The Weaver interface this state handles. */
     virtual WeaverInterface* weaver();
-
+    virtual const WeaverInterface* weaver() const;
     class Private;
     Private * const d;
 };

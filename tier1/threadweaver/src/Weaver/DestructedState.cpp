@@ -30,7 +30,7 @@ $Id: DestructedState.cpp 30 2005-08-16 16:16:04Z mirko $
 
 namespace ThreadWeaver {
 
-DestructedState::DestructedState(WeaverInterface *weaver)
+DestructedState::DestructedState(Queue *weaver)
     : WeaverImplState(weaver)
 {
 }
