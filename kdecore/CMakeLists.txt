@@ -1,5 +1,7 @@
 project(kdecore)
 
+find_package(X11)
+
 # Generate config-kstandarddirs.h
 set( KDELIBSUFF ${LIB_SUFFIX} )
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
@@ -198,7 +200,7 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    ${kdecore_OPTIONAL_SRCS}
 )
 
-if (NOT Q_OS_X11)
+if (NOT HAVE_X11)
    add_definitions(-DNO_DISPLAY)
 endif()
 

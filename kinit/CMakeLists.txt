@@ -37,15 +37,15 @@ endif (WIN32)
 
 # on win32 kdeinit5 has to be a console application 
 # to be able to catch stderr based --verbose output
-if (Q_OS_MAC)
+if (APPLE)
   # this has to be GUI on OSX because it launches GUI apps and need a quartz context
   kde4_add_executable(kdeinit5 ${kdeinit_SRCS})
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kde.kdeinit5")
   set_target_properties(kdeinit5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Init")
-else (Q_OS_MAC)
+else (APPLE)
   kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
-endif (Q_OS_MAC)
+endif (APPLE)
 
 target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} kcoreaddons ki18n )
 if (X11_FOUND)

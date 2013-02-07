@@ -48,12 +48,12 @@ if (HAVE_X11)
                                                 netwm.cpp )
 endif ()
 
-if (Q_OS_MAC)
+if (APPLE)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_mac.cpp
                                                 kwindowinfo_mac.cpp)
 endif ()
 
-if (Q_OS_WIN)
+if (WIN32)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_win.cpp
                                                 kwindowinfo_win.cpp)
 endif ()

@@ -27,11 +27,11 @@ set(kded_KDEINIT_SRCS kded.cpp kdedadaptor.cpp
 
 kde4_add_kdeinit_executable(kded5  ${kded_KDEINIT_SRCS})
 
-if (Q_OS_MAC)
+if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.template)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "org.kded.kded5")
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
-endif (Q_OS_MAC)
+endif (APPLE)
 
 target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons kdbusaddons ki18n)
 

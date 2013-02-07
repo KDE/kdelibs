@@ -258,7 +258,7 @@ macro (KDE4_ADD_APP_ICON appsources pattern)
             message(STATUS "Unable to find the png2ico utility - application will not have an application icon!")
         endif(PNG2ICO_EXECUTABLE)
     endif(WIN32)
-    if (Q_OS_MAC)
+    if (APPLE)
         # first convert image to a tiff using the Mac OS X "sips" utility,
         # then use tiff2icns to convert to an icon
         find_program(SIPS_EXECUTABLE NAMES sips)
