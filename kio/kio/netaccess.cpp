@@ -32,12 +32,12 @@
 #include <QtCore/QCharRef>
 #include <QApplication>
 #include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 #include <QtCore/QMetaClassInfo>
 #include <QtCore/QTextStream>
 #include <qtemporaryfile.h>
 
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 
 #include "job.h"
 #include "mkdirjob.h"
@@ -95,15 +95,14 @@ bool NetAccess::download(const QUrl& u, QString & target, QWidget* window)
   if (u.isLocalFile()) {
     // file protocol. We do not need the network
     target = u.toLocalFile();
-    bool accessible = KStandardDirs::checkAccess(target, R_OK);
-    if(!accessible)
-    {
+    const bool readable = QFileInfo(target).isReadable();
+    if (!readable) {
         if(!lastErrorMsg)
             lastErrorMsg = new QString;
         *lastErrorMsg = i18n("File '%1' is not readable", target);
         lastErrorCode = ERR_COULD_NOT_READ;
     }
-    return accessible;
+    return readable;
   }
 
   if (target.isEmpty())
