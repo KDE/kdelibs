@@ -17,14 +17,10 @@
 IF(WIN32)
     # Store CMAKE_MODULE_PATH so that the cmake supplied FindFLEX.cmake is
     # used since cmake FIND_PACKAGE is case insensitive on Windows
-    MESSAGE(STATUS ${CMAKE_SOURCE_DIR})
-    MESSAGE(STATUS ${CMAKE_MODULE_PATH})
     SET(_kde_cmake_module_path_back ${CMAKE_MODULE_PATH})
     SET(CMAKE_MODULE_PATH)
-    MESSAGE(STATUS ${CMAKE_MODULE_PATH})
     FIND_PACKAGE(FLEX)
     SET(CMAKE_MODULE_PATH ${_kde_cmake_module_path_back})
-    MESSAGE(STATUS ${CMAKE_MODULE_PATH})
     SET(_kde_cmake_module_path_back)
 ELSE(WIN32)
     FIND_PROGRAM(FLEX_EXECUTABLE NAMES flex)
