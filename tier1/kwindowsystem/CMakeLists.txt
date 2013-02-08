@@ -30,7 +30,7 @@ add_subdirectory(autotests)
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kwindowsystem")
 
-configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/kwindowsystemConfig.cmake.in"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kwindowsystemConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )

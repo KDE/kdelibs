@@ -33,7 +33,7 @@ set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/itemmodels")
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_LIST_DIR}/itemmodelsConfig.cmake.in"
+  "${CMAKE_CURRENT_SOURCE_DIR}/itemmodelsConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/itemmodelsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
   PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX

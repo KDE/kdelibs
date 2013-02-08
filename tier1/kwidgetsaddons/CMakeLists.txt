@@ -24,7 +24,7 @@ add_subdirectory(tests)
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kwidgetsaddons")
 
-configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/kwidgetsaddonsConfig.cmake.in"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kwidgetsaddonsConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )

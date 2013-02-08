@@ -74,7 +74,7 @@ add_subdirectory(tests)
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/solid")
 
-configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/solidConfig.cmake.in"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/solidConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/solidConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )

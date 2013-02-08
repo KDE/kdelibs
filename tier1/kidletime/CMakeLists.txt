@@ -30,7 +30,7 @@ add_subdirectory(examples)
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kidletime")
 
-configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/kidletimeConfig.cmake.in"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kidletimeConfig.cmake.in"
                               "${CMAKE_CURRENT_BINARY_DIR}/kidletimeConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
