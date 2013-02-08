@@ -52,6 +52,7 @@ KDEUI_UNIT_TESTS(
   kdatecomboboxtest
   kdatetimeedittest
   kconfigdialog_unittest
+  kcolorbuttontest
 )
 
 KDEUI_EXECUTABLE_TESTS(

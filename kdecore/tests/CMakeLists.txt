@@ -74,3 +74,8 @@ set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeform
 kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
 target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
 
+########### kcompositejobtest ###############
+
+set(kcompositejobtest_SRCS kcompositejobtest.cpp)
+kde4_add_unit_test(kcompositejobtest TESTNAME kdecore-kcompositejobtest ${kcompositejobtest_SRCS})
+target_link_libraries(kcompositejobtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )

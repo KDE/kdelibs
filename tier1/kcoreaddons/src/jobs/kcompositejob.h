@@ -53,6 +53,8 @@ protected:
      * is emitted. This has obviously to be called before
      * the result has been emitted by the job.
      *
+     * Note that the composite job takes ownership of @p job
+     *
      * @param job the subjob to add
      * @return true if the job has been added correctly, false otherwise
      */
@@ -60,6 +62,8 @@ protected:
 
     /**
      * Mark a sub job as being done.
+     *
+     * The ownership of @p job is passed on to the caller.
      *
      * @param job the subjob to remove
      * @return true if the job has been removed correctly, false otherwise
@@ -82,9 +86,12 @@ protected:
 
     /**
      * Clears the list of subjobs.
+     *
+     * Note that this will *not* delete the subjobs.
+     * Ownership of the subjobs is passed on to the caller.
      */
     void clearSubjobs();
-    
+
 protected Q_SLOTS:
     /**
      * Called whenever a subjob finishes.
