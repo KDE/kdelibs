@@ -38,7 +38,6 @@
 # The following variables are defined for the various tools required to
 # compile KDE software:
 #
-#  KDE4_KCFGC_EXECUTABLE    - the kconfig_compiler executable
 #  KDE4_MEINPROC_EXECUTABLE - the meinproc4 executable
 #  KDE4_MAKEKDEWIDGETS_EXECUTABLE - the makekdewidgets executable
 #
@@ -437,7 +436,6 @@ endmacro(_KDE4_SET_LIB_VARIABLES _var _lib _prefix)
 #######################  #now try to find some kde stuff  ################################
 
 # ... but NOT otherwise
-set( _KDE4_KCONFIG_COMPILER_DEP)
 set( _KDE4_MAKEKDEWIDGETS_DEP)
 set( _KDE4_MEINPROC_EXECUTABLE_DEP)
 set( _KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP)
@@ -492,17 +490,10 @@ include(${CMAKE_CURRENT_LIST_DIR}/KDELibs4ToolsTargets.cmake)
 
 # get the build CONFIGURATIONS which were exported in this file, and use just the first
 # of them to get the location of the installed executables
-get_target_property(_importedConfigurations  ${KDE4_TARGET_PREFIX}kconfig_compiler IMPORTED_CONFIGURATIONS )
+get_target_property(_importedConfigurations  ${KDE4_TARGET_PREFIX}meinproc4 IMPORTED_CONFIGURATIONS )
 list(GET _importedConfigurations 0 _firstConfig)
 
-if(NOT WINCE)
-  get_target_property(KDE4_KCFGC_EXECUTABLE             ${KDE4_TARGET_PREFIX}kconfig_compiler    LOCATION_${_firstConfig})
-  get_target_property(KDE4_MEINPROC_EXECUTABLE          ${KDE4_TARGET_PREFIX}meinproc4           LOCATION_${_firstConfig})
-else(NOT WINCE)
-  set(KDE4_KCFGC_EXECUTABLE             ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
-  set(KDE4_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc4 )
-endif(NOT WINCE)
-
+get_target_property(KDE4_MEINPROC_EXECUTABLE          ${KDE4_TARGET_PREFIX}meinproc4           LOCATION_${_firstConfig})
 get_target_property(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${KDE4_TARGET_PREFIX}kauth-policy-gen    LOCATION_${_firstConfig})
 get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makekdewidgets      LOCATION_${_firstConfig})
 
@@ -902,10 +893,10 @@ include(${CMAKE_CURRENT_LIST_DIR}/KDE4Macros.cmake)
 
 # decide whether KDE4 has been found
 set(KDE4_FOUND FALSE)
-if (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_KCFGC_EXECUTABLE AND KDE4_INSTALLED_VERSION_OK)
+if (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_INSTALLED_VERSION_OK)
    set(KDE4_FOUND TRUE)
    set(KDE4Internal_FOUND TRUE) # for feature_summary
-endif (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_KCFGC_EXECUTABLE AND KDE4_INSTALLED_VERSION_OK)
+endif (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_INSTALLED_VERSION_OK)
 
 
 macro (KDE4_PRINT_RESULTS)
@@ -923,11 +914,6 @@ macro (KDE4_PRINT_RESULTS)
       message(STATUS "ERROR: unable to find the KDE 4 core library")
    endif(KDE4_LIB_DIR)
 
-   if(KDE4_KCFGC_EXECUTABLE)
-      message(STATUS "Found the KDE4 kconfig_compiler preprocessor: ${KDE4_KCFGC_EXECUTABLE}")
-   else(KDE4_KCFGC_EXECUTABLE)
-      message(STATUS "Didn't find the KDE4 kconfig_compiler preprocessor")
-   endif(KDE4_KCFGC_EXECUTABLE)
 endmacro (KDE4_PRINT_RESULTS)
 
 
@@ -937,10 +923,6 @@ if (KDELibs4_FIND_REQUIRED AND NOT KDE4_FOUND)
    if (NOT KDE4_INSTALLED_VERSION_OK)
      message(FATAL_ERROR "ERROR: the installed kdelibs version ${KDE_VERSION} is too old, at least version ${KDE_MIN_VERSION} is required")
    endif (NOT KDE4_INSTALLED_VERSION_OK)
-
-   if (NOT KDE4_KCFGC_EXECUTABLE)
-     message(FATAL_ERROR "ERROR: could not detect a usable kconfig_compiler")
-   endif (NOT KDE4_KCFGC_EXECUTABLE)
 
    message(FATAL_ERROR "ERROR: could NOT find everything required for compiling KDE 4 programs")
 endif ()

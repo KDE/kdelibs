@@ -1,3 +1,9 @@
+#  KCONFIG_ADD_KCFG_FILES (SRCS_VAR [GENERATE_MOC] [USE_RELATIVE_PATH] file1.kcfgc ... fileN.kcfgc)
+#    Use this to add KDE config compiler files to your application/library.
+#    Use optional GENERATE_MOC to generate moc if you use signals in your kcfg files.
+#    Use optional USE_RELATIVE_PATH to generate the classes in the build following the given
+#    relative path to the file.
+#
 # Copyright (c) 2006-2009 Alexander Neundorf, <neundorf@kde.org>
 # Copyright (c) 2006, 2007, Laurent Montel, <montel@kde.org>
 # Copyright (c) 2007 Matthias Kretz <kretz@kde.org>
@@ -60,7 +66,7 @@ macro (KCONFIG_ADD_KCFG_FILES _sources )
 
        # the command for creating the source file from the kcfg file
        add_custom_command(OUTPUT ${_header_FILE} ${_src_FILE}
-                          COMMAND ${KCONFIG_KCFGC_EXECUTABLE}
+                          COMMAND ${kconfig_KCFGC_EXECUTABLE}
                           ARGS ${_kcfg_FILE} ${_tmp_FILE} -d ${CMAKE_CURRENT_BINARY_DIR}/${_rel_PATH}
                           MAIN_DEPENDENCY ${_tmp_FILE}
                           DEPENDS ${_kcfg_FILE} ${_KDE4_KCONFIG_COMPILER_DEP} )

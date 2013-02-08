@@ -369,11 +369,10 @@ configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h
 configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
 
 # Needed for the calls to kconfig_add_kcfg_files in some modules
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/tier2/kconfig/cmake")
 set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
-set(KCONFIG_KCFGC_EXECUTABLE kconfig_compiler)
-include(KConfigMacros)
+set(kconfig_KCFGC_EXECUTABLE kconfig_compiler)
+include(${CMAKE_SOURCE_DIR}/tier2/kconfig/KConfigMacros.cmake)
 
 set(kde4support_LIBRARY kde4support)
 

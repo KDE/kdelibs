@@ -19,11 +19,11 @@ target_link_libraries(kconfigcore ${kcoreaddons_LIBRARIES})
 if(WIN32)
     target_link_libraries(kconfigcore ${KDEWIN_LIBRARIES})
 endif()
-set_target_properties(kconfigcore PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                             SOVERSION ${ECM_SOVERSION}
-)
 
-install(TARGETS kconfigcore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+set_target_properties(kconfigcore PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
+                                             SOVERSION ${KCONFIG_SOVERSION} )
+
+install(TARGETS kconfigcore EXPORT kconfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfigcore_export.h
