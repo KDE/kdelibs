@@ -24,13 +24,7 @@
 #include <QDialog>
 
 class KBookmarkManager;
-class QDialogButtonBox;
-class QWidget;
-class QLabel;
-class QTreeWidget;
-class QLineEdit;
-class QTreeWidgetItem;
-class QGridLayout;
+class KBookmarkDialogPrivate;
 
 /**
  * This class provides a Dialog for editing properties, adding Bookmarks and creating new folders.
@@ -74,63 +68,16 @@ public:
    */
   KBookmarkGroup selectFolder(KBookmark start = KBookmark());
 
+  ~KBookmarkDialog();
 protected:
-  typedef enum { NewFolder, NewBookmark, EditBookmark, NewMultipleBookmarks, SelectFolder } BookmarkDialogMode;
-  /**
-   * initLayout is called to set the dialog up, indepent from the mode
-   * If you want to add widgets or a custom layout, reimplement this function.
-   * The default implementation is rather simple, take a look at the source.
-   * 
-   */
-  virtual void initLayout();
-  /**
-   *  aboutToShow is called immediately before exec()
-   *  Reimplement this to show or hide UI elements for certain modes.
-   *  
-  */
-  virtual void aboutToShow(BookmarkDialogMode mode);
-  /** 
-   * save all your custom data in this method
-   * This is called after the users has accepted() the dialog.
-   *
-  */
-  virtual void save(BookmarkDialogMode mode, const KBookmark &);
-
-  /**
-   * selects the specified bookmark in the folder tree
-   */
-  void setParentBookmark(const KBookmark & bm);
-  /**
-   * returns the selected bookmark in the folder tree, or the root (top-level)
-   * bookmark if none was selected
-   */
-  KBookmarkGroup parentBookmark();
-
-
   void accept();
-
-  // TODO KDE5: move all these variables to a d pointer; make as many methods private as possible.
-  BookmarkDialogMode m_mode;
-  void fillGroup( QTreeWidgetItem * parentItem, const KBookmarkGroup &group);
-  QDialogButtonBox *m_buttonBox;
-  QLineEdit * m_url;
-  QLineEdit * m_title;
-  QLineEdit * m_comment;
-  QLabel * m_titleLabel;
-  QLabel * m_urlLabel;
-  QLabel * m_commentLabel;
-  QTreeWidget * m_folderTree;
-  KBookmarkManager * m_mgr;
-  KBookmark m_bm;
-  QList<QPair<QString, QString> > m_list;
-  bool m_layout;
-  // WARNING: do not add new member variables here; replace one of the pointers with a d pointer,
-  // assuming that variable isn't used anywhere in apps...
-
-  void initLayoutPrivate();
 
 protected Q_SLOTS:
   void newFolderButton();
+
+private:
+  KBookmarkDialogPrivate * const d;
+  friend class KBookmarkDialogPrivate;
 };
 
 #endif
