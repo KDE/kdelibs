@@ -34,7 +34,7 @@ include(FeatureSummary)
 
 # Needed for the tests or examples to build correctly
 set(KCONFIG_KCFGC_EXECUTABLE kconfig_compiler)
-include(cmake/KConfigMacros.cmake)
+include(KConfigMacros.cmake)
 
 add_subdirectory(src)
 add_subdirectory(autotests)
@@ -46,9 +46,8 @@ install(FILES
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-install( FILES
-   cmake/KConfigMacros.cmake
-   DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
+install( FILES KConfigMacros.cmake
+         DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
 
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")

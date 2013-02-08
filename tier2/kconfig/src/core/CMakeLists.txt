@@ -18,7 +18,7 @@ generate_export_header(kconfigcore)
 target_link_libraries(kconfigcore ${kcoreaddons_LIBRARIES})
 if(WIN32)
     target_link_libraries(kconfigcore ${KDEWIN_LIBRARIES})
-endif(WIN32)
+endif()
 set_target_properties(kconfigcore PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                              SOVERSION ${ECM_SOVERSION}
 )
