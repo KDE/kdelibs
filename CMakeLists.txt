@@ -66,6 +66,9 @@ set(kdeqt5staging_INCLUDE_DIRS
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/qt5only)
 
+set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io   # klockfile.h
+                              ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src )
+set(kcoreaddons_LIBRARIES kcoreaddons)
 
 include_directories(${kdeqt5staging_INCLUDE_DIRS})
 

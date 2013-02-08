@@ -2,9 +2,18 @@ cmake_minimum_required(VERSION 2.8.10.1)
 
 project(kconfig)
 
-find_package(ECM 0.0.5 REQUIRED NO_MODULE)
+if(NOT kdelibs_SOURCE_DIR)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} cmake/)
+  find_package(ECM 0.0.6 REQUIRED NO_MODULE)
+  set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} cmake/)
+
+  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets Xml Test)
+
+  find_package(kdeqt5staging REQUIRED NO_MODULE)
+
+  # once we can build tier2 libs standalone, add "kcoreaddons" component
+  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs kcoreaddons)
+endif()
 
 include(ECMVersion)
 
@@ -12,13 +21,10 @@ include(ECMVersion)
 ecm_version(5 0 0)
 # --
 
-# once we can build tier2 libs standalone, add "kcoreaddons" component
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Test)
 if(WIN32)
     find_package(KDEWin REQUIRED)
     include_directories(${KDEWIN_INCLUDES})

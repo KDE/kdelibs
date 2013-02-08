@@ -1,7 +1,4 @@
-include_directories(
-  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io   # klockfile.h
-  ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
-)
+include_directories(${kcoreaddons_INCLUDE_DIRS}  ${kdeqt5staging_INCLUDE_DIRS})
 
 set(libkconfigcore_SRCS
    kconfig.cpp
@@ -18,7 +15,7 @@ set(libkconfigcore_SRCS
 add_library(kconfigcore ${libkconfigcore_SRCS})
 generate_export_header(kconfigcore)
 
-target_link_libraries(kconfigcore kcoreaddons)
+target_link_libraries(kconfigcore ${kcoreaddons_LIBRARIES})
 if(WIN32)
     target_link_libraries(kconfigcore ${KDEWIN_LIBRARIES})
 endif(WIN32)
