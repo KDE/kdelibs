@@ -20,7 +20,8 @@
 #ifndef KCOLORBUTTONTEST_H
 #define KCOLORBUTTONTEST_H
 
-#include <QtGui/QWidget>
+#include <QObject>
+#include <QColor>
 
 class KColorButtonTest : public QObject
 {
