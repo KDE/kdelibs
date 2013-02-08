@@ -497,28 +497,6 @@ get_target_property(KDE4_MEINPROC_EXECUTABLE          ${KDE4_TARGET_PREFIX}meinp
 get_target_property(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${KDE4_TARGET_PREFIX}kauth-policy-gen    LOCATION_${_firstConfig})
 get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makekdewidgets      LOCATION_${_firstConfig})
 
-# allow searching cmake modules in all given kde install locations (KDEDIRS based)
-execute_process(COMMAND "${KDE4_KDECONFIG_EXECUTABLE}" --path data OUTPUT_VARIABLE _data_DIR ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-file(TO_CMAKE_PATH "${_data_DIR}" _data_DIR)
-foreach(dir ${_data_DIR})
-   set (apath "${dir}/cmake/modules")
-   if (EXISTS "${apath}")
-      set (included 0)
-      string(TOLOWER "${apath}" _apath)
-      # ignore already added pathes, case insensitive
-      foreach(adir ${CMAKE_MODULE_PATH})
-        string(TOLOWER "${adir}" _adir)
-        if ("${_adir}" STREQUAL "${_apath}")
-            set (included 1)
-        endif ("${_adir}" STREQUAL "${_apath}")
-      endforeach(adir)
-      if (NOT included)
-        message(STATUS "Adding ${apath} to CMAKE_MODULE_PATH")
-        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${apath}")
-      endif (NOT included)
-   endif (EXISTS "${apath}")
-endforeach(dir)
-
 
 # This file contains the exported library target from kdelibs (new with cmake 2.6.x), e.g.
 # the library target "kdeui" is exported as "KDE4__kdeui". The "KDE4__" is used as
@@ -604,7 +582,6 @@ option(KDE4_USE_COMMON_CMAKE_PACKAGE_CONFIG_DIR "Prefer to install the <package>
 option(KDE4_ENABLE_FPIE  "Enable platform supports PIE linking")
 
 if (WIN32)
-   list(APPEND CMAKE_MODULE_PATH "${CMAKE_INSTALL_PREFIX}/share/apps/cmake/modules")
    find_package(KDEWin REQUIRED)
    option(KDE4_ENABLE_UAC_MANIFEST "add manifest to make vista uac happy" OFF)
    if (KDE4_ENABLE_UAC_MANIFEST)
