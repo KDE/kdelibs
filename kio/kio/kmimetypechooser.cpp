@@ -216,7 +216,7 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
 void KMimeTypeChooserPrivate::_k_slotCurrentChanged(QTreeWidgetItem* item)
 {
   if ( btnEditMimeType )
-    btnEditMimeType->setEnabled( item->parent() );
+    btnEditMimeType->setEnabled(item && item->parent());
 }
 
 void KMimeTypeChooserPrivate::_k_slotSycocaDatabaseChanged(const QStringList& changedResources)
