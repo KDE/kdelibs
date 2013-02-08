@@ -58,6 +58,7 @@ KIO_EXECUTABLE_TESTS(
   kurlrequestertest_gui
   kopenwithtest
   kfiledialogtest
+  kbookmarkdialogtest
 )
 
 if(UNIX)
