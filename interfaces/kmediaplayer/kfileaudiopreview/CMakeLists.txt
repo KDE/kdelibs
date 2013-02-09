@@ -1,5 +1,5 @@
 
-include_directories(${KDE4_PHONON_INCLUDES} ${KDE4_KIO_INCLUDES})
+include_directories(${PHONON_INCLUDE_DIR} ${KDE4_KIO_INCLUDES})
 include_directories( ${ki18n_SOURCE_DIR}/src )
 include_directories( ${ki18n_BINARY_DIR}/src )
 
@@ -14,7 +14,7 @@ mediacontrols.cpp
 
 kde4_add_plugin(kfileaudiopreview ${kfileaudiopreview_PART_SRCS})
 
-target_link_libraries(kfileaudiopreview ${KDE4_KIO_LIBS} ${KDE4_PHONON_LIBS} kwidgets ki18n)
+target_link_libraries(kfileaudiopreview ${KDE4_KIO_LIBS} ${PHONON_LIBRARIES} kwidgets ki18n)
 
 install(TARGETS kfileaudiopreview  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

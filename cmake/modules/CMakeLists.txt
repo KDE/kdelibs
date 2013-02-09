@@ -78,7 +78,6 @@ set(cmakeFiles
                FindNetworkManager.cmake
                FindOggVorbis.cmake
                FindOpenEXR.cmake
-               FindPhonon.cmake
                FindPlasma.cmake
                FindPopplerQt4.cmake
                FindPostgreSQL.cmake

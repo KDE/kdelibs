@@ -468,7 +468,7 @@ add_subdirectory( css )
 add_subdirectory( pics )
 
 include_directories(
-   ${KDE4_PHONON_INCLUDES}
+   ${PHONON_INCLUDE_DIR}
    ${KDE4_KPARTS_INCLUDES}
    ${CMAKE_BINARY_DIR}/kio/kssl
    ${KDE4_KJS_INCLUDES}
@@ -580,7 +580,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${KDE4_PHONON_LIBS} kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kguiaddons kwidgetsaddons ki18n ${kwindowsystem_LIBRARIES})
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${PHONON_LIBRARIES} kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kguiaddons kwidgetsaddons ki18n ${kwindowsystem_LIBRARIES})
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()

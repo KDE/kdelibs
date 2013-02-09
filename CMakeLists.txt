@@ -410,9 +410,9 @@ add_subdirectory( kparts     )
 add_subdirectory( kunitconversion )
 
 find_package(Phonon4Qt5 4.6.60)
-if (PHONON_FOUND)
+if (Phonon4Qt5_FOUND)
     add_subdirectory( khtml  )
-endif(PHONON_FOUND)
+endif(Phonon4Qt5_FOUND)
 add_subdirectory( interfaces  )
 if (NOT QT5_BUILD) # TODO: Qt5UiTools_FOUND
     add_subdirectory( kross )
