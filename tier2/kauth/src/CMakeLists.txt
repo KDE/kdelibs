@@ -39,38 +39,36 @@ if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
     target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
 
     install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
-endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+endif ()
 
-if ( NOT WINCE )
-    # KAuth backend plugin
+# KAuth backend plugin
 
-    if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
-        set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS})
-	# KAuth::AuthBackend is not exported
-        add_library(kauth_backend_plugin MODULE ${KAUTH_BACKEND_SRCS} AuthBackend.cpp)
-        target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
-        set_target_properties(kauth_backend_plugin PROPERTIES PREFIX "")
-        install(TARGETS kauth_backend_plugin
-                LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-                ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-                RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
-        )
-    endif (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
+    set(KAUTH_BACKEND_SRCS ${KAUTH_BACKEND_SRCS})
+    # KAuth::AuthBackend is not exported
+    add_library(kauth_backend_plugin MODULE ${KAUTH_BACKEND_SRCS} AuthBackend.cpp)
+    target_link_libraries(kauth_backend_plugin ${KAUTH_BACKEND_LIBS})
+    set_target_properties(kauth_backend_plugin PROPERTIES PREFIX "")
+    install(TARGETS kauth_backend_plugin
+            LIBRARY DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+            ARCHIVE DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+            RUNTIME DESTINATION ${KAUTH_BACKEND_PLUGIN_DIR}
+    )
+endif ()
 
-    # KAuth helper plugin
+# KAuth helper plugin
 
-    if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
-        # KAuth::HelperProxy is not exported
-        add_library(kauth_helper_plugin MODULE ${KAUTH_HELPER_BACKEND_SRCS} HelperProxy.cpp)
-        target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
-        set_target_properties(kauth_helper_plugin PROPERTIES PREFIX "")
-        install(TARGETS kauth_helper_plugin
-                LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-                ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-                RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
-        )
-    endif (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
-endif ( NOT WINCE )
+if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
+    # KAuth::HelperProxy is not exported
+    add_library(kauth_helper_plugin MODULE ${KAUTH_HELPER_BACKEND_SRCS} HelperProxy.cpp)
+    target_link_libraries(kauth_helper_plugin ${KAUTH_HELPER_BACKEND_LIBS})
+    set_target_properties(kauth_helper_plugin PROPERTIES PREFIX "")
+    install(TARGETS kauth_helper_plugin
+            LIBRARY DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+            ARCHIVE DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+            RUNTIME DESTINATION ${KAUTH_HELPER_PLUGIN_DIR}
+    )
+endif ()
 
 install(TARGETS kauth EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
