@@ -49,7 +49,7 @@ add_library(kiocore ${kiocore_SRCS})
 generate_export_header(kiocore)
 
 target_link_libraries(kiocore
- ${KDE4_KDECORE_LIBS} # TODO remove once i18n is in a framework
+ ${KDE4_KDECORE_LIBS} # TODO remove once klocale is in a framework
  kconfigcore
  kcoreaddons
  ki18n
