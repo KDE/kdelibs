@@ -1,8 +1,6 @@
 # This file handles all the logic for compiling KAuth's backends
 include(ConfigureChecks.cmake)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
 # Configure a small file to tell BackendsManager what to use
 configure_file(BackendsConfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/BackendsConfig.h)
 
@@ -22,9 +20,9 @@ set(libkauth_SRCS
 add_library(kauth ${libkauth_SRCS})
 generate_export_header(kauth)
 
-target_link_libraries(kauth Qt5::Widgets ${QT_QTDBUS_LIBRARY} kcoreaddons)
-set_target_properties(kauth PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                       SOVERSION ${ECM_SOVERSION}
+target_link_libraries(kauth Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${kcoreaddons_LIBRARIES})
+set_target_properties(kauth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
+                                       SOVERSION ${KAUTH_SOVERSION}
 )
 
 # KAuth policy generator executable
@@ -38,7 +36,7 @@ if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
     # KAUTH_POLICY_GEN_LIBRARIES has been generated from ConfigureChecks.cmake
     target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
 
-    install( TARGETS kauth-policy-gen EXPORT kdelibsToolsTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
+    install( TARGETS kauth-policy-gen EXPORT kauthTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
 endif ()
 
 # KAuth backend plugin
@@ -70,7 +68,7 @@ if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
     )
 endif ()
 
-install(TARGETS kauth EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kauth EXPORT kauthTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kauthaction.h

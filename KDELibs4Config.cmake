@@ -438,7 +438,6 @@ endmacro(_KDE4_SET_LIB_VARIABLES _var _lib _prefix)
 # ... but NOT otherwise
 set( _KDE4_MAKEKDEWIDGETS_DEP)
 set( _KDE4_MEINPROC_EXECUTABLE_DEP)
-set( _KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP)
 
 set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/lib )
 
@@ -494,7 +493,6 @@ get_target_property(_importedConfigurations  ${KDE4_TARGET_PREFIX}meinproc4 IMPO
 list(GET _importedConfigurations 0 _firstConfig)
 
 get_target_property(KDE4_MEINPROC_EXECUTABLE          ${KDE4_TARGET_PREFIX}meinproc4           LOCATION_${_firstConfig})
-get_target_property(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${KDE4_TARGET_PREFIX}kauth-policy-gen    LOCATION_${_firstConfig})
 get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makekdewidgets      LOCATION_${_firstConfig})
 
 

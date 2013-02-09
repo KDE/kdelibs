@@ -41,17 +41,17 @@ endfunction(KDE4_INSTALL_AUTH_HELPER_FILES)
 function(KDE4_INSTALL_AUTH_ACTIONS HELPER_ID ACTIONS_FILE)
 
   if(KDE4_AUTH_BACKEND_NAME STREQUAL "APPLE")
-    install(CODE "execute_process(COMMAND ${KDE4_KAUTH_POLICY_GEN_EXECUTABLE} ${ACTIONS_FILE} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
+    install(CODE "execute_process(COMMAND ${kauth_POLICY_GEN_EXECUTABLE} ${ACTIONS_FILE} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})")
   elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT" OR KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
     set(_output ${CMAKE_CURRENT_BINARY_DIR}/${HELPER_ID}.policy)
     get_filename_component(_input ${ACTIONS_FILE} ABSOLUTE)
 
     add_custom_command(OUTPUT ${_output}
-                       COMMAND ${KDE4_KAUTH_POLICY_GEN_EXECUTABLE} ${_input} > ${_output}
+                       COMMAND ${kauth_POLICY_GEN_EXECUTABLE} ${_input} > ${_output}
                        MAIN_DEPENDENCY ${_input}
                        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                        COMMENT "Generating ${HELPER_ID}.policy"
-                       DEPENDS ${_KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP})
+                       DEPENDS ${_kauth_POLICY_GEN_EXECUTABLE_DEP})
     add_custom_target("actions for ${HELPER_ID}" ALL DEPENDS ${_output})
 
     install(FILES ${_output} DESTINATION ${KDE4_AUTH_POLICY_FILES_INSTALL_DIR})
