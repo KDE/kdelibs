@@ -41,7 +41,7 @@ endif()
 set(platformLinkLibraries)
 
 if (HAVE_X11)
-   set(platformLinkLibraries ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${XCB_XCB_LIBRARIES})
+   set(platformLinkLibraries Qt5::X11Extras ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${XCB_XCB_LIBRARIES})
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
                                                 kxmessages.cpp
@@ -61,7 +61,7 @@ endif ()
 add_library(kwindowsystem ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
 
-target_link_libraries(kwindowsystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${kdeqt5staging_LIBRARIES} ${platformLinkLibraries} ${qt5CompatLib})
+target_link_libraries(kwindowsystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
 
 set_target_properties(kwindowsystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
                                                SOVERSION ${KWINDOWSYSTEM_SOVERSION})

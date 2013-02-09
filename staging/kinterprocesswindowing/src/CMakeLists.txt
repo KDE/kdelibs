@@ -20,9 +20,14 @@ add_library(kinterprocesswindowing ${libkinterprocesswindowing_SRCS})
 generate_export_header(kinterprocesswindowing)
 
 target_link_libraries(kinterprocesswindowing
-   LINK_PUBLIC Qt5::Widgets ${kwindowsystem_LIBRARIES} ${X11_LIBRARIES} ${kdeqt5staging_LIBRARIES}
+   LINK_PUBLIC Qt5::Widgets ${kwindowsystem_LIBRARIES} ${X11_LIBRARIES}
    kwidgets ki18n kconfigcore kdeui
 )
+
+if (X11_FOUND)
+  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+  target_link_libraries(kinterprocesswindowing Qt5::X11Extras)
+endif()
 
 set_target_properties(kinterprocesswindowing PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                                         SOVERSION ${ECM_SOVERSION}

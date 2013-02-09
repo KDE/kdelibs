@@ -15,7 +15,7 @@ set(libkconfigcore_SRCS
 add_library(kconfigcore ${libkconfigcore_SRCS})
 generate_export_header(kconfigcore)
 
-target_link_libraries(kconfigcore ${kcoreaddons_LIBRARIES})
+target_link_libraries(kconfigcore ${kcoreaddons_LIBRARIES} ${kdeqt5staging_LIBRARIES})
 if(WIN32)
     target_link_libraries(kconfigcore ${KDEWIN_LIBRARIES})
 endif()

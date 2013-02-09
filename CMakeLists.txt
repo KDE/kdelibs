@@ -64,10 +64,7 @@ add_subdirectory( libkdeqt5staging )
 set(kdeqt5staging_LIBRARIES kdeqt5staging)
 set(kdeqt5staging_INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
-    ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
-    ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/qt5only)
-
-include_directories(${kdeqt5staging_INCLUDE_DIRS})
+    ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/)
 
 # TODO: Move to where it's really needed/remove.
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
@@ -280,6 +277,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
                           ${CMAKE_SOURCE_DIR}/staging/kservice/src/plugin
                           ${QT_INCLUDES}
+                          ${kdeqt5staging_INCLUDE_DIRS}
                           ${_KDE4_PLATFORM_INCLUDE_DIRS})
 
 include_directories(${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel) # For QLocalizedString

@@ -17,7 +17,7 @@ add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 
 generate_export_header(kguiaddons)
 
-target_link_libraries(kguiaddons ${kconfig_LIBRARIES} ${kdeqt5staging_LIBRARIES} Qt5::Widgets)
+target_link_libraries(kguiaddons ${kconfig_LIBRARIES} Qt5::Widgets)
 set_target_properties(kguiaddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
                                             SOVERSION ${KGUIADDONS_SOVERSION} )
 

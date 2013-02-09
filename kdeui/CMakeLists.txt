@@ -406,6 +406,11 @@ generate_export_header(kdeui)
 target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore kauth kguiaddons kwidgets kwidgetsaddons ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} kconfiggui)
 
+if(X11_FOUND)
+  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+  target_link_libraries(kdeui LINK_PUBLIC Qt5::X11Extras)
+endif()
+
 if(NOT WINCE)
 target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
 endif(NOT WINCE)

@@ -19,12 +19,6 @@ include(ECMWriteVersionHeader)
 
 find_package(Qt5Transitional REQUIRED Test)
 
-if(NOT kdelibs_SOURCE_DIR)
-  find_package(kdeqt5staging REQUIRED NO_MODULE)
-  set_package_properties(kdeqt5staging PROPERTIES PURPOSE "Stuff which will go into Qt5.")
-endif()
-
-include_directories(${kdeqt5staging_INCLUDE_DIRS})
 include_directories(${kwindowsystem_SOURCE_DIR}/src)
 include_directories(${kwindowsystem_BINARY_DIR}/src)
 include_directories(

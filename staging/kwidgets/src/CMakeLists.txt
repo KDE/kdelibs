@@ -40,6 +40,11 @@ target_link_libraries(kwidgets
   kservice
 )
 
+if(X11_FOUND)
+  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+  target_link_libraries(kwidgets Qt5::X11Extras)
+endif()
+
 set_target_properties(kwidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
                                         SOVERSION ${ECM_SOVERSION}
 )
