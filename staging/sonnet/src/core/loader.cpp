@@ -24,8 +24,6 @@
 #include "client_p.h"
 #include "spellerplugin_p.h"
 
-#include <kservicetypetrader.h>
-#include <kpluginloader.h>
 
 #include <kconfig.h>
 
@@ -33,7 +31,9 @@
 #include <QtCore/QMap>
 #include <QtCore/QLocale>
 #include <QtCore/QCoreApplication>
+#include <QtCore/QPluginLoader>
 #include <QDebug>
+#include <QtCore/QDir>
 
 #define DEFAULT_CONFIG_FILE   "sonnetrc"
 
@@ -43,7 +43,6 @@ namespace Sonnet
 class Loader::Private
 {
 public:
-    KService::List plugins;
     Settings *settings;
 
     // <language, Clients with that language >
@@ -79,7 +78,6 @@ Loader::Loader()
 Loader::~Loader()
 {
     //qDebug()<<"Removing loader : "<< this;
-    d->plugins.clear();
     delete d->settings; d->settings = 0;
     delete d;
 }
@@ -247,39 +245,44 @@ Settings* Loader::settings() const
 
 void Loader::loadPlugins()
 {
-    d->plugins = KServiceTypeTrader::self()->query(QString::fromLatin1("Sonnet/SpellClient"));
-
-    for (KService::List::const_iterator itr = d->plugins.constBegin();
-         itr != d->plugins.constEnd(); ++itr ) {
-        loadPlugin((*itr));
+    const QStringList libPaths = QCoreApplication::libraryPaths();
+    const QLatin1String pathSuffix("/sonnet_clients/");
+    foreach(const QString &libPath, libPaths) {
+        QDir dir(libPath + pathSuffix);
+        if (!dir.exists()) continue;
+        foreach(const QString &plugin, dir.entryList(QDir::Files)) {
+            loadPlugin(plugin);
+        }
     }
 }
 
-void Loader::loadPlugin(const KSharedPtr<KService> &service)
+void Loader::loadPlugin(const QString &pluginPath)
 {
-    QString error;
+    QPluginLoader plugin(pluginPath);
+    if (!plugin.load()) { // We do this separately for better error handling
+        qWarning() << "Unable to load plugin" << plugin.errorString();
+        return;
+    }
 
-    Client *client = service->createInstance<Client>(this,
-                                                      QVariantList(),
-                                                      &error);
+    Client *client = qobject_cast<Client*>(plugin.instance());
+    if (!client) {
+        qWarning() << "Invalid plugin loaded" << pluginPath;
+        plugin.unload(); // don't leave it in memory
+        return;
+    }
 
-    if (client) {
-        const QStringList languages = client->languages();
-        d->clients.append(client->name());
+    const QStringList languages = client->languages();
+    d->clients.append(client->name());
 
-        for (QStringList::const_iterator itr = languages.begin();
-             itr != languages.end(); ++itr) {
-            if (!d->languageClients[*itr].isEmpty() &&
-                client->reliability() <
-                d->languageClients[*itr].first()->reliability())
-                d->languageClients[*itr].append(client);
-            else
-                d->languageClients[*itr].prepend(client);
-        }
+    foreach(const QString &language, languages) {
+        QList<Client*> &languageClients = d->languageClients[language];
 
-        //qDebug() << "Successfully loaded plugin:" << service->entryPath();
-    } else {
-        qDebug() << error;
+        if (languageClients.isEmpty())
+            languageClients.append(client); // no clients yet, just add it
+        else if (client->reliability() < languageClients.first()->reliability())
+            languageClients.append(client); // less reliable, to the end
+        else
+            languageClients.prepend(client); // more reliable, to the front
     }
 }
 

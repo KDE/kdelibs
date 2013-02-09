@@ -5,17 +5,10 @@ include_directories( ${HUNSPELL_INCLUDE_DIR} )
 set(kspell_hunspell_PART_SRCS kspell_hunspellclient.cpp kspell_hunspelldict.cpp )
 
 
-kde4_add_plugin(kspell_hunspell ${kspell_hunspell_PART_SRCS})
+add_library(kspell_hunspell MODULE ${kspell_hunspell_PART_SRCS})
 
 target_link_libraries(kspell_hunspell  ${KDE4_KDECORE_LIBS} sonnetcore ${HUNSPELL_LIBRARIES} )
 
-install(TARGETS kspell_hunspell  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
-########### install files ###############
-
-install( FILES kspell_hunspell.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
-
-
+install(TARGETS kspell_hunspell  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/sonnet_clients/ )
 
 

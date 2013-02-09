@@ -116,7 +116,7 @@ namespace Sonnet
         void changed();
     private:
         void loadPlugins();
-        void loadPlugin(const KSharedPtr<KService>&);
+        void loadPlugin(const QString &pluginPath);
     private:
         class Private;
         Private *const d;
