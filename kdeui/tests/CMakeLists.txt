@@ -24,7 +24,6 @@ MACRO(KDEUI_EXECUTABLE_TESTS)
        ENDFOREACH(_testname)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
-
 KDEUI_UNIT_TESTS(
   kactioncollectiontest
   kactioncategorytest
@@ -119,12 +118,14 @@ KDEUI_EXECUTABLE_TESTS(
 endif (NOT KDE_NO_DEPRECATED)
 
 if (X11_FOUND)
-
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 KDEUI_EXECUTABLE_TESTS(
  fixx11h_test
  fixx11h_test2
  kxerrorhandlertest
 )
+
 # TODO! PORT TO NEW KManagerSelection API!
 #KDEUI_UNIT_TESTS(
 #kmanagerselectiontest

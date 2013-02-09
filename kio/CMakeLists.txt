@@ -35,6 +35,8 @@ if(NOT KIO_NO_NEPOMUK)
     )
 endif(NOT KIO_NO_NEPOMUK)
 
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+
 # This applies to all subdirs; let's put kio's dependencies (and own dirs) here, once and for all
 include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/bookmarks
@@ -56,6 +58,7 @@ include_directories(
    ${CMAKE_BINARY_DIR}/staging/kio/src/include
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
+   ${Qt5X11Extras_INCLUDE_DIRS}
 )
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})

@@ -86,6 +86,7 @@ include_directories(
     ${kauth_SOURCE_DIR}/src # kpushbutton -> kauthaction
     ${kinterprocesswindowing_BINARY_DIR}/src
     ${kinterprocesswindowing_SOURCE_DIR}/src
+    ${Qt5X11Extras_INCLUDE_DIRS}
 )
 
 # Configure checks for network/ but also for netsupp.*

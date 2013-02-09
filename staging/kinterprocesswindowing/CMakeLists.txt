@@ -17,7 +17,8 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5Transitional REQUIRED Test)
+find_package(Qt5Transitional REQUIRED Test X11Extras)
+include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 
 include_directories(${kwindowsystem_SOURCE_DIR}/src)
 include_directories(${kwindowsystem_BINARY_DIR}/src)

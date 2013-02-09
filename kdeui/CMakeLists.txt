@@ -409,6 +409,7 @@ target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore kauth kguiaddons k
 if(X11_FOUND)
   find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
   target_link_libraries(kdeui LINK_PUBLIC Qt5::X11Extras)
+  include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 endif()
 
 if(NOT WINCE)

@@ -17,7 +17,7 @@ ecm_version(5 0 0)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core)
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Core X11Extras)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)

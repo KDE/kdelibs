@@ -60,6 +60,7 @@ endif ()
 
 add_library(kwindowsystem ${kwindowsystem_SRCS})
 generate_export_header(kwindowsystem)
+include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 
 target_link_libraries(kwindowsystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
 
