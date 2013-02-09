@@ -12,7 +12,6 @@ include(ECMVersion)
 
 include_directories(
   ${QT_INCLUDES}
-  ${KDE4_KDECORE_INCLUDES}
   ${CMAKE_CURRENT_SOURCE_DIR}/src/colors
   ${CMAKE_CURRENT_SOURCE_DIR}/src/text
 )
