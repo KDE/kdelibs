@@ -19,8 +19,11 @@ add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 generate_export_header(kguiaddons)
 
 target_link_libraries(kguiaddons kconfigcore ${kdeqt5staging_LIBRARIES} Qt5::Widgets)
+set_target_properties(kguiaddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
+                                            SOVERSION ${KGUIADDONS_SOVERSION} )
 
-install(TARGETS kguiaddons EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+
+install(TARGETS kguiaddons EXPORT kguiaddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_export.h
