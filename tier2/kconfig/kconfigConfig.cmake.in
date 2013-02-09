@@ -2,6 +2,12 @@
 
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
+if(NOT TARGET KF5::kcoreaddons)
+   set(kconfig_NOT_FOUND_MESSAGE "kconfig depends on the package kcoreaddons, which is missing. Use find_package() to find it before kconfig.")
+   set(kconfig_FOUND FALSE)
+   return()
+endif()
+
 set(kconfig_VERSION_MAJOR "@KCONFIG_VERSION_MAJOR@")
 set(kconfig_VERSION_MINOR "@KCONFIG_VERSION_MINOR@")
 set(kconfig_VERSION_PATCH "@KCONFIG_VERSION_PATCH@")
