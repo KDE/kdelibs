@@ -49,6 +49,7 @@ Weaver::Weaver ( QObject* parent )
     , d (new Private)
 {
     d->implementation = makeWeaverImpl();
+    //FIXME move to makeWeaverImpl(), so that implementations can be replaced
     connect ( d->implementation, SIGNAL (finished()), SIGNAL (finished()) );
     connect ( d->implementation, SIGNAL (suspended()), SIGNAL (suspended()) );
     connect ( d->implementation, SIGNAL (jobDone(ThreadWeaver::Job*)),

@@ -51,7 +51,7 @@ namespace ThreadWeaver {
 
     protected:
         /** Overload to queue the sequence. */
-        void aboutToBeQueued ( WeaverInterface *weaver );
+        void aboutToBeQueued ( QueueAPI *api );
 
         /** reimplemented */
         void internalJobDone( Job* );

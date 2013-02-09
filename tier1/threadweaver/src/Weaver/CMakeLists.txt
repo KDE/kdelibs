@@ -3,6 +3,7 @@
 
 set(ThreadWeaver_LIB_SRCS
     Queue.cpp
+    QueueAPI.cpp
     ThreadWeaver.cpp
     WeaverImpl.cpp
     DebuggingAids.cpp

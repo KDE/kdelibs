@@ -73,10 +73,10 @@ namespace ThreadWeaver {
 
     protected:
         /** Overload to queue the collection. */
-        void aboutToBeQueued ( WeaverInterface *weaver );
+        void aboutToBeQueued ( QueueAPI *api );
 
         /** Overload to dequeue the collection. */
-        void aboutToBeDequeued ( WeaverInterface *weaver );
+        void aboutToBeDequeued ( QueueAPI *api );
 
         /** Return a reference to the job in the job list at position i. */
         Job* jobAt( int i );

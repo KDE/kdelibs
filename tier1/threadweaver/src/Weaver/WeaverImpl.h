@@ -36,8 +36,7 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 #endif
 
 #include "State.h"
-#include "Queue.h"
-#include "QueueInterface.h"
+#include "QueueAPI.h"
 
 namespace ThreadWeaver {
 
@@ -51,7 +50,7 @@ class SuspendingState;
         which it assigns jobs from its queue. It extends the API of
         WeaverInterface to provide additional methods needed by the Thread
         objects. */
-class WeaverImpl : public Queue, public QueueInterface
+class WeaverImpl : public QueueAPI
 {
     Q_OBJECT
 public:
@@ -64,7 +63,6 @@ public:
     void setMaximumNumberOfThreads( int cap );
     int maximumNumberOfThreads() const;
     int currentNumberOfThreads () const;
-
 
     /** Set the object state. */
     void setState( StateId );
@@ -117,6 +115,26 @@ public:
 
     /** Dump the current jobs to the console. Not part of the API. */
     void dumpJobs();
+
+    //FIXME: rename _p to _locked:
+    friend class WeaverImplState;
+    friend class SuspendingState;
+    void setState_p( StateId );
+    const State& state_p() const;
+    void setMaximumNumberOfThreads_p(int cap);
+    int maximumNumberOfThreads_p() const;
+    int currentNumberOfThreads_p() const;
+    void registerObserver_p(WeaverObserver*);
+    void enqueue_p(Job* job);
+    bool dequeue_p(Job* job);
+    void dequeue_p();
+    void finish_p();
+    void suspend_p( );
+    void resume_p();
+    bool isEmpty_p() const;
+    bool isIdle_p() const;
+    int queueLength_p() const;
+    void requestAbort_p();
 
 Q_SIGNALS:
     /** A Thread has been created. */
@@ -176,25 +194,6 @@ protected:
     QWaitCondition m_jobFinished;
 
 private:
-    friend class WeaverImplState;
-    friend class SuspendingState;
-    void setState_p( StateId );
-    const State& state_p() const;
-    void setMaximumNumberOfThreads_p(int cap);
-    int maximumNumberOfThreads_p() const;
-    int currentNumberOfThreads_p() const;
-    void registerObserver_p(WeaverObserver*);
-    void enqueue_p(Job* job);
-    bool dequeue_p(Job* job);
-    void dequeue_p();
-    void finish_p();
-    void suspend_p( );
-    void resume_p();
-    bool isEmpty_p() const;
-    bool isIdle_p() const;
-    int queueLength_p() const;
-    void requestAbort_p();
-
     /** Mutex to serialize operations. */
     QMutex *m_mutex;
 

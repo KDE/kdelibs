@@ -29,7 +29,7 @@ $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 #include "JobCollection.h"
 #include "JobCollection_p.h"
 
-#include "WeaverInterface.h"
+#include "QueueAPI.h"
 #include "DebuggingAids.h"
 
 #include <QtCore/QList>
@@ -65,14 +65,14 @@ Job* JobCollectionJobRunner::payload ()
     return m_payload;
 }
 
-void JobCollectionJobRunner::aboutToBeQueued ( WeaverInterface *weaver )
+void JobCollectionJobRunner::aboutToBeQueued (QueueAPI *api )
 {
-    m_payload->aboutToBeQueued( weaver );
+    m_payload->aboutToBeQueued( api );
 }
 
-void JobCollectionJobRunner::aboutToBeDequeued ( WeaverInterface *weaver )
+void JobCollectionJobRunner::aboutToBeDequeued (QueueAPI *api )
 {
-    m_payload->aboutToBeDequeued( weaver );
+    m_payload->aboutToBeDequeued( api );
 }
 
 void JobCollectionJobRunner::execute ( Thread *t )
@@ -104,7 +104,7 @@ public:
 
     Private()
         : elements ( new JobList() )
-        , weaver ( 0 )
+        , api ( 0 )
         , jobCounter (0)
     {}
 
@@ -117,7 +117,7 @@ public:
     JobList* elements;
 
     /* The Weaver interface this collection is queued in. */
-    WeaverInterface *weaver;
+    QueueAPI *api;
 
     /* Counter for the finished jobs.
        Set to the number of elements when started.
@@ -136,7 +136,7 @@ JobCollection::JobCollection ( QObject *parent )
 
 JobCollection::~JobCollection()
 {   // dequeue all remaining jobs:
-    if ( d->weaver != 0 ) // still queued
+    if ( d->api != 0 ) // still queued
         dequeueElements();
     // QObject cleanup takes care of the job runners
     delete d;
@@ -144,7 +144,7 @@ JobCollection::~JobCollection()
 
 void JobCollection::addJob ( Job *job )
 {
-    REQUIRE( d->weaver == 0 );
+    REQUIRE( d->api == 0 );
     REQUIRE( job != 0);
 
 	JobCollectionJobRunner* runner = new JobCollectionJobRunner( this, job, this );
@@ -156,50 +156,50 @@ void JobCollection::stop( Job *job )
 {   // this only works if there is an event queue executed by the main
     // thread, and it is not blocked:
     Q_UNUSED( job );
-    if ( d->weaver != 0 )
+    if ( d->api != 0 )
     {
         debug( 4, "JobCollection::stop: dequeueing %p.\n", (void*)this);
-        d->weaver->dequeue( this );
+        d->api->dequeue( this );
     }
     // FIXME ENSURE ( d->weaver == 0 ); // verify that aboutToBeDequeued has been called
 }
 
-void JobCollection::aboutToBeQueued ( WeaverInterface *weaver )
+void JobCollection::aboutToBeQueued (QueueAPI *api )
 {
-    REQUIRE ( d->weaver == 0 ); // never queue twice
+    REQUIRE ( d->api == 0 ); // never queue twice
 
-    d->weaver = weaver;
+    d->api = api;
 
     if ( d->elements->size() > 0 )
     {
-        d->elements->at( 0 )->aboutToBeQueued( weaver );
+        d->elements->at( 0 )->aboutToBeQueued( api );
     }
 
-    ENSURE(d->weaver != 0);
+    ENSURE(d->api != 0);
 }
 
-void JobCollection::aboutToBeDequeued( WeaverInterface* weaver )
+void JobCollection::aboutToBeDequeued(QueueAPI *api )
 {   //  Q_ASSERT ( d->weaver != 0 );
     // I thought: "must have been queued first"
     // but the user can queue and dequeue in a suspended Weaver
 
-    if ( d->weaver )
+    if ( d->api )
     {
         dequeueElements();
 
         if ( !d->elements->isEmpty() )
         {
-            d->elements->at( 0 )->aboutToBeDequeued( weaver );
+            d->elements->at( 0 )->aboutToBeDequeued( api );
         }
     }
 
-    d->weaver = 0;
-    ENSURE ( d->weaver == 0 );
+    d->api = 0;
+    ENSURE ( d->api == 0 );
 }
 
 void JobCollection::execute ( Thread *t )
 {
-    REQUIRE ( d->weaver != 0);
+    REQUIRE ( d->api != 0);
 
     // this is async,
     // JobTests::JobSignalsAreEmittedAsynchronouslyTest() proves it
@@ -220,7 +220,7 @@ void JobCollection::execute ( Thread *t )
         // queue elements:
         for (int index = 1; index < d->elements->size(); ++index)
 	{
-            d->weaver->enqueue (d->elements->at(index));
+            d->api->enqueue (d->elements->at(index));
 	}
     }
     // this is a hack (but a good one): instead of queueing (this), we
@@ -276,7 +276,7 @@ void JobCollection::jobRunnerDone()
 		if ( d->jobCounter == 0 )
 		{   // there is a small chance that (this) has been dequeued in the
 			// meantime, in this case, there is nothing left to clean up:
-			d->weaver = 0;
+            d->api = 0;
 			return;
 		}
 
@@ -309,7 +309,7 @@ void JobCollection::finalCleanup()
 {
     freeQueuePolicyResources();
     setFinished(true);
-    d->weaver = 0;
+    d->api = 0;
 }
 
 void JobCollection::dequeueElements()
@@ -324,7 +324,7 @@ void JobCollection::dequeueElements()
 		// dequeue everything:
 		QMutexLocker l( &d->mutex );
 
-		if ( d->weaver != 0 )
+        if ( d->api != 0 )
 		{
 			for ( int index = 1; index < d->elements->size(); ++index )
 			{
@@ -332,7 +332,7 @@ void JobCollection::dequeueElements()
 				{
 					debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
 							(void*)d->elements->at( index ) );
-					d->weaver->dequeue ( d->elements->at( index ) );
+                    d->api->dequeue_p( d->elements->at( index ) );
 				} else {
 					debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
 							(void*)d->elements->at( index ) );

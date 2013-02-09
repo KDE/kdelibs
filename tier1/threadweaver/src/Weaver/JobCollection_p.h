@@ -53,9 +53,9 @@ public:
 
     Job* payload ();
 
-    void aboutToBeQueued ( WeaverInterface *weaver );
+    void aboutToBeQueued ( QueueAPI *api );
 
-    void aboutToBeDequeued ( WeaverInterface *weaver );
+    void aboutToBeDequeued ( QueueAPI *api );
 
     void execute ( Thread *t );
 

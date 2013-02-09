@@ -41,7 +41,7 @@ namespace ThreadWeaver {
     class Thread;
     class QueuePolicy;
     class JobRunHelper;
-    class WeaverInterface;
+    class QueueAPI;
     class QueuePolicyList;
 
     /** A Job is a simple abstraction of an action that is to be
@@ -146,7 +146,7 @@ namespace ThreadWeaver {
 
             @param weaver the Weaver object the job will be queued in
         */
-        virtual void aboutToBeQueued ( WeaverInterface *weaver );
+        virtual void aboutToBeQueued ( QueueAPI *weaver );
 
         /** This Job is about the be dequeued from the weaver's job queue.
             The job will be removed from the queue right after this method
@@ -161,7 +161,7 @@ namespace ThreadWeaver {
 
             @param weaver the Weaver object from which the job will be dequeued
         */
-        virtual void aboutToBeDequeued ( WeaverInterface *weaver );
+        virtual void aboutToBeDequeued ( QueueAPI *weaver );
 
         /** canBeExecuted() returns true if all the jobs queue policies agree to it.
             If it returns true, it expects that the job is executed right

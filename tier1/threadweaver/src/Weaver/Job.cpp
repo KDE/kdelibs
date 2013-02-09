@@ -154,11 +154,11 @@ void Job::freeQueuePolicyResources()
     }
 }
 
-void Job::aboutToBeQueued ( WeaverInterface* )
+void Job::aboutToBeQueued (QueueAPI * )
 {
 }
 
-void Job::aboutToBeDequeued ( WeaverInterface* )
+void Job::aboutToBeDequeued (QueueAPI * )
 {
 }
 

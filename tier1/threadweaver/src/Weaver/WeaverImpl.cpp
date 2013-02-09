@@ -50,7 +50,7 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 using namespace ThreadWeaver;
 
 WeaverImpl::WeaverImpl( QObject* parent )
-    : Queue(parent)
+    : QueueAPI(parent)
     , m_active(0)
     , m_inventoryMax( qMax(4, 2 * QThread::idealThreadCount() ) )
     , m_mutex ( new QMutex( QMutex::NonRecursive ) )

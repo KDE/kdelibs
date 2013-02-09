@@ -27,7 +27,7 @@
 */
 
 #include "JobSequence.h"
-#include "WeaverInterface.h"
+#include "QueueAPI.h"
 #include "DebuggingAids.h"
 #include "DependencyPolicy.h"
 
@@ -38,9 +38,9 @@ JobSequence::JobSequence ( QObject *parent )
 {
 }
 
-void JobSequence::aboutToBeQueued ( WeaverInterface *weaver )
+void JobSequence::aboutToBeQueued (QueueAPI *api )
 {
-    REQUIRE (weaver != 0);
+    REQUIRE (api != 0);
 
     if ( jobListLength() > 1 )
     {
@@ -55,7 +55,7 @@ void JobSequence::aboutToBeQueued ( WeaverInterface *weaver )
         }
     }
 
-    JobCollection::aboutToBeQueued( weaver );
+    JobCollection::aboutToBeQueued( api );
 }
 
 void JobSequence::internalJobDone( Job* job)
