@@ -60,6 +60,7 @@ namespace KPAC
         : Downloader( parent ),
           m_helper( new KProcess(this) )
     {
+        m_helper->setOutputChannelMode(KProcess::SeparateChannels);
         connect( m_helper, SIGNAL(readyReadStandardOutput()), SLOT(helperOutput()) );
         connect( m_helper, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(failed()) );
         *m_helper << KStandardDirs::findExe("kpac_dhcp_helper");
@@ -122,11 +123,14 @@ namespace KPAC
         }
 
         const int dot = m_domainName.indexOf( '.' );
-        if ( dot >= 0 )
+        if ( dot > -1 || firstQuery )
         {
-            KUrl url( QLatin1String("http://wpad.") + m_domainName + QLatin1String("/wpad.dat") );
-            m_domainName.remove( 0, dot + 1 ); // remove one domain level
-            download( url );
+            QString address (QLatin1String("http://wpad."));
+            address += m_domainName;
+            address += QLatin1String ("/wpad.dat");
+            if ( dot > -1 )
+                m_domainName.remove (0, dot + 1); // remove one domain level
+            download( KUrl(address) );
             return;
         }
 
