@@ -2,11 +2,20 @@ cmake_minimum_required(VERSION 2.8.10.1)
 
 project(kguiaddons)
 
-find_package(ECM 0.0.6 REQUIRED NO_MODULE)
+if(NOT kdelibs_SOURCE_DIR)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+  find_package(ECM 0.0.6 REQUIRED NO_MODULE)
+  set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets)
+
+  find_package(kdeqt5staging REQUIRED NO_MODULE)
+
+  find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs
+                                                  kcoreaddons
+                                                  kconfig)
+
+endif()
 
 include(ECMSetupVersion)
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KGUIADDONS
