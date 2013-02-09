@@ -325,7 +325,7 @@ endif(APPLE)
 
 if(WIN32)
 
-   if(WBEM_FOUND AND NOT WINCE)
+   if(WBEM_FOUND)
        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_WBEM")
        message(STATUS "-- Building Solid WMI backend." )
 
