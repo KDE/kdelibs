@@ -15,7 +15,7 @@ add_definitions(-DWTF_PLATFORM_QT)
 
 add_subdirectory( tests )
 
-find_package(Phonon4Qt5 4.6.60 REQUIRED)
+find_package(Phonon4Qt5 4.6.60 REQUIRED NO_MODULE)
 
 find_package(JPEG)
 set_package_properties(JPEG PROPERTIES DESCRIPTION "JPEG image format support"

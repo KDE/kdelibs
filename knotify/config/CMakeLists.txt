@@ -1,6 +1,6 @@
 configure_file(knotify-config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/knotify-config.h )
 
-find_package(Phonon4Qt5 4.6.60)
+find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 
 macro_bool_to_01(Phonon4Qt5_FOUND HAVE_PHONON)
 
