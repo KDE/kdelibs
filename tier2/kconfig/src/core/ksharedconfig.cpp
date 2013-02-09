@@ -20,7 +20,6 @@
 */
 
 #include "ksharedconfig.h"
-#include "kcoreauthorized.h"
 #include "kconfigbackend.h"
 #include "kconfiggroup.h"
 #include "kconfig_p.h"
@@ -68,7 +67,7 @@ KSharedConfigPtr KSharedConfig::openConfig(const QString& _fileName,
             userWarned = true;
             QByteArray readOnly = qgetenv("KDE_HOME_READONLY");
             if (readOnly.isEmpty() && QCoreApplication::applicationName() != QLatin1String("kdialog")) {
-                if (KAuthorized::authorize(QLatin1String("warn_unwritable_config")))
+                if (ptr->group("General").readEntry(QLatin1String("warn_unwritable_config"), true))
                     ptr->isConfigWritable(true);
             }
         }
