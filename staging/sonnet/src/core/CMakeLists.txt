@@ -7,7 +7,7 @@ include_directories(
 
   ${kcoreaddons_SOURCE_DIR}/src/io
   ${kcoreaddons_BINARY_DIR}/src
-  ${kconfig_SOURCE_DIR}/src/core # ksharedptr.h, used by kservice
+  ${kconfig_SOURCE_DIR}/src/core
   ${kconfig_BINARY_DIR}/src/core
   ${CMAKE_CURRENT_BINARY_DIR}
 )
