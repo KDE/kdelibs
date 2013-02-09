@@ -11,7 +11,6 @@ if(NOT kdelibs_SOURCE_DIR)
 
   find_package(kdeqt5staging REQUIRED NO_MODULE)
 
-  # once we can build tier2 libs standalone, add "kcoreaddons" component
   find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs kcoreaddons)
 endif()
 
