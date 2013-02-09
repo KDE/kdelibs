@@ -8,7 +8,7 @@ if(NOT kdelibs_SOURCE_DIR)
 
   set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets DBus)
+  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets DBus Test)
 
   find_package(kdeqt5staging REQUIRED NO_MODULE)
 
