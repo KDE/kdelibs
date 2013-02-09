@@ -60,16 +60,12 @@ if (Qt5_POSITION_INDEPENDENT_CODE)
 endif()
 
 add_subdirectory( libkdeqt5staging )
+
 set(kdeqt5staging_LIBRARIES kdeqt5staging)
 set(kdeqt5staging_INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/qt5only)
-
-set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
-                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
-                              ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src )
-set(kcoreaddons_LIBRARIES kcoreaddons)
 
 include_directories(${kdeqt5staging_INCLUDE_DIRS})
 
@@ -78,11 +74,17 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 add_subdirectory( tier1 )
 
+set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
+                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
+                              ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src )
+set(kcoreaddons_LIBRARIES kcoreaddons)
+
+set(kwindowsystem_LIBRARIES kwindowsystem)
+
 # tier1/ already builds standalone, so it should not get any include dirs from here.
 
 add_subdirectory( tier2 )
 
-set(kwindowsystem_LIBRARIES kwindowsystem)
 set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
 
 set(CMAKE_AUTOMOC ON)
@@ -114,7 +116,8 @@ configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCu
 
 set (QT_MIN_VERSION "4.8.0")
 
-find_package(KDE4Internal REQUIRED)
+include(FindKDE4Internal)
+include(KDE4Macros)
 include(KDE4Defaults)
 include (MacroLibrary)
 if (APPLE)

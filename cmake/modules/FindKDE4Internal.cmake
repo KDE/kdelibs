@@ -359,9 +359,6 @@ cmake_policy(SET CMP0011 OLD)
 # in this directory over those from CMAKE_MODULE_PATH
 cmake_policy(SET CMP0017 NEW)
 
-# Only do something if it hasn't been found yet
-if(NOT KDE4_FOUND)
-
 # get the directory of the current file, used later on in the file
 get_filename_component( kde_cmake_module_dir  ${CMAKE_CURRENT_LIST_FILE} PATH)
 
@@ -378,50 +375,6 @@ message(STATUS "Building kdelibs...")
 # we have to check for both KDE4_FIND_REQUIRED and KDE4Internal_FIND_REQUIRED.
 set(_REQ_STRING_KDE4 "REQUIRED")
 set(_REQ_STRING_KDE4_MESSAGE "FATAL_ERROR")
-
-
-# Store CMAKE_MODULE_PATH and then append the current dir to it, so we are sure
-# we get the FindQt4.cmake located next to us and not a different one.
-# The original CMAKE_MODULE_PATH is restored later on.
-set(_kde_cmake_module_path_back ${CMAKE_MODULE_PATH})
-set(CMAKE_MODULE_PATH ${kde_cmake_module_dir} ${CMAKE_MODULE_PATH} )
-
-# if the minimum Qt requirement is changed, change all occurrence in the
-# following lines
-if( NOT QT_MIN_VERSION )
-  set(QT_MIN_VERSION "4.5.0")
-endif( NOT QT_MIN_VERSION )
-if( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
-  set(QT_MIN_VERSION "4.5.0")
-endif( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
-
-# Tell FindQt4.cmake to point the QT_QTFOO_LIBRARY targets at the imported targets
-# for the Qt libraries, so we get full handling of release and debug versions of the
-# Qt libs and are flexible regarding the install location of Qt under Windows:
-set(QT_USE_IMPORTED_TARGETS TRUE)
-
-find_package(Qt5Transitional MODULE)
-
-# Perl is not required for building KDE software, but we had that here since 4.0
-find_package(Perl)
-if(NOT PERL_FOUND)
-   message(STATUS "Perl not found")
-endif(NOT PERL_FOUND)
-
-# restore the original CMAKE_MODULE_PATH
-set(CMAKE_MODULE_PATH ${_kde_cmake_module_path_back})
-
-# Check that we really found everything.
-# If KDE4 was searched with REQUIRED, we error out with FATAL_ERROR if something wasn't found
-# already above in the other FIND_PACKAGE() calls.
-# If KDE4 was searched without REQUIRED and something in the FIND_PACKAGE() calls above wasn't found,
-# then we get here and must check that everything has actually been found. If something is missing,
-# we must not fail with FATAL_ERROR, but only not set KDE4_FOUND.
-
-if(NOT QT5_BUILD AND NOT QT4_FOUND)
-   message(STATUS "KDE4 not found, because Qt4 was not found")
-   return()
-endif()
 
 # now we are sure we have everything we need
 
@@ -1126,19 +1079,6 @@ endif (CMAKE_C_COMPILER MATCHES "icc")
 ###########    end of platform specific stuff  ##########################
 
 
-# KDE4Macros.cmake contains all the KDE specific macros
-include(${kde_cmake_module_dir}/KDE4Macros.cmake)
-
-
-# decide whether KDE4 has been found
-set(KDE4_FOUND FALSE)
-if (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_KCFGC_EXECUTABLE AND KDE4_INSTALLED_VERSION_OK)
-   set(KDE4_FOUND TRUE)
-   set(KDE4Internal_FOUND TRUE) # for feature_summary
-endif (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_KCFGC_EXECUTABLE AND KDE4_INSTALLED_VERSION_OK)
-
-
-
 #add the found Qt and KDE include directories to the current include path
 #the ${KDE4_INCLUDE_DIR}/KDE directory is for forwarding includes, eg. #include <KMainWindow>
 set(KDE4_INCLUDES
@@ -1163,4 +1103,3 @@ if (NOT _kde4_uninstall_rule_created)
 
 endif (NOT _kde4_uninstall_rule_created)
 
-endif(NOT KDE4_FOUND)
