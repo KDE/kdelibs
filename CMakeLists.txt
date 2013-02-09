@@ -81,6 +81,10 @@ set(kcoreaddons_LIBRARIES kcoreaddons)
 
 set(kwindowsystem_LIBRARIES kwindowsystem)
 
+set(kconfig_INCLUDE_DIRS   ${kconfig_BINARY_DIR}/src/core
+                           ${kconfig_SOURCE_DIR}/src/core )
+set(kconfig_LIBRARIES kconfigcore kconfiggui)
+
 # tier1/ already builds standalone, so it should not get any include dirs from here.
 
 add_subdirectory( tier2 )
