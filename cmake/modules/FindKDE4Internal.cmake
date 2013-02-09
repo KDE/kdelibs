@@ -365,28 +365,19 @@ if(NOT KDE4_FOUND)
 # get the directory of the current file, used later on in the file
 get_filename_component( kde_cmake_module_dir  ${CMAKE_CURRENT_LIST_FILE} PATH)
 
-# are we trying to compile kdelibs ? kdelibs_SOURCE_DIR comes from "project(kdelibs)" in kdelibs/CMakeLists.txt
+# This file is only used when building kdelibs itself. When using an installed
+# kdelibs, KDELibs4Config.cmake is loaded instead.
 # then enter bootstrap mode
-
-if(kdelibs_SOURCE_DIR)
-   set(_kdeBootStrapping TRUE)
-   message(STATUS "Building kdelibs...")
-else(kdelibs_SOURCE_DIR)
-   set(_kdeBootStrapping FALSE)
-endif(kdelibs_SOURCE_DIR)
+set(_kdeBootStrapping TRUE)
+message(STATUS "Building kdelibs...")
 
 
 # We may only search for other packages with "REQUIRED" if we are required ourselves.
 # This file can be processed either (usually) included in FindKDE4.cmake or
 # (when building kdelibs) directly via FIND_PACKAGE(KDE4Internal), that's why
 # we have to check for both KDE4_FIND_REQUIRED and KDE4Internal_FIND_REQUIRED.
-if(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
-  set(_REQ_STRING_KDE4 "REQUIRED")
-  set(_REQ_STRING_KDE4_MESSAGE "FATAL_ERROR")
-else(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
-  set(_REQ_STRING_KDE4 )
-  set(_REQ_STRING_KDE4_MESSAGE "STATUS")
-endif(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
+set(_REQ_STRING_KDE4 "REQUIRED")
+set(_REQ_STRING_KDE4_MESSAGE "FATAL_ERROR")
 
 
 # Store CMAKE_MODULE_PATH and then append the current dir to it, so we are sure
@@ -408,11 +399,6 @@ endif( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
 # for the Qt libraries, so we get full handling of release and debug versions of the
 # Qt libs and are flexible regarding the install location of Qt under Windows:
 set(QT_USE_IMPORTED_TARGETS TRUE)
-
-if(NOT _kdeBootStrapping)
-  find_package(ECM 0.0.5 NO_MODULE REQUIRED)
-  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
-endif()
 
 find_package(Qt5Transitional MODULE)
 
@@ -453,155 +439,42 @@ endmacro(_KDE4_SET_LIB_VARIABLES _var _lib _prefix)
 
 #######################  #now try to find some kde stuff  ################################
 
-if (_kdeBootStrapping)
-   set(KDE4_INCLUDE_DIR ${kdelibs_SOURCE_DIR})
+set(KDE4_INCLUDE_DIR ${kdelibs_SOURCE_DIR})
 
-   set(EXECUTABLE_OUTPUT_PATH ${kdelibs_BINARY_DIR}/bin )
+set(EXECUTABLE_OUTPUT_PATH ${kdelibs_BINARY_DIR}/bin )
 
-   if (WIN32)
-      set(LIBRARY_OUTPUT_PATH               ${EXECUTABLE_OUTPUT_PATH} )
-      # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
-      if (NOT WINCE)
-        set(KDE4_KCFGC_EXECUTABLE             ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
-        set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
-      else (NOT WINCE)
-        set(KDE4_KCFGC_EXECUTABLE             ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
-        set(KDE4_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc4 )
-      endif(NOT WINCE)
-
-      set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
-      set(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kauth-policy-gen )
-      set(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
-   else (WIN32)
-      set(LIBRARY_OUTPUT_PATH               ${CMAKE_BINARY_DIR}/lib )
-      set(KDE4_KCFGC_EXECUTABLE             ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kconfig_compiler${CMAKE_EXECUTABLE_SUFFIX}.shell )
-      set(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kauth-policy-gen${CMAKE_EXECUTABLE_SUFFIX}.shell )
-      set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4${CMAKE_EXECUTABLE_SUFFIX}.shell )
-      set(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX}.shell )
-   endif (WIN32)
-
-   set(KDE4_LIB_DIR ${LIBRARY_OUTPUT_PATH}/${CMAKE_CFG_INTDIR})
-
-
-   # when building kdelibs, make the kcfg rules depend on the binaries...
-   set( _KDE4_KCONFIG_COMPILER_DEP kconfig_compiler)
-   set( _KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP kauth-policy-gen)
-   set( _KDE4_MAKEKDEWIDGETS_DEP makekdewidgets)
-   set( _KDE4_MEINPROC_EXECUTABLE_DEP meinproc4)
-
-   set(KDE4_INSTALLED_VERSION_OK TRUE)
-
-else (_kdeBootStrapping)
-
-  # ... but NOT otherwise
-   set( _KDE4_KCONFIG_COMPILER_DEP)
-   set( _KDE4_MAKEKDEWIDGETS_DEP)
-   set( _KDE4_MEINPROC_EXECUTABLE_DEP)
-   set( _KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP)
-
-   set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/lib )
-
-   if (WIN32)
-      # we don't want to be forced to set two paths into the build tree
-      set(LIBRARY_OUTPUT_PATH  ${CMAKE_BINARY_DIR}/bin )
-
-      # on win32 the install dir is determined on runtime not install time
-      # KDELIBS_INSTALL_DIR and QT_INSTALL_DIR are used in KDELibsDependencies.cmake to setup
-      # kde install paths and library dependencies
-      get_filename_component(_DIR ${KDE4_KDECONFIG_EXECUTABLE} PATH )
-      get_filename_component(KDE4_INSTALL_DIR ${_DIR} PATH )
-      get_filename_component(_DIR ${QT_QMAKE_EXECUTABLE} PATH )
-      get_filename_component(QT_INSTALL_DIR ${_DIR} PATH )
-   endif (WIN32)
-
-   # These files contain information about the installed kdelibs, Alex
-   include(${kde_cmake_module_dir}/KDELibsDependencies.cmake)
-   include(${kde_cmake_module_dir}/KDEPlatformProfile.cmake)
-
-   # Check the version of KDE. It must be at least KDE_MIN_VERSION as set by the user.
-   # KDE_VERSION is set in KDELibsDependencies.cmake since KDE 4.0.x. Alex
-   # Support for the new-style (>= 2.6.0) support for requiring some version of a package:
-   if (NOT KDE_MIN_VERSION)
-      if (KDE4_FIND_VERSION_MAJOR)
-         set(KDE_MIN_VERSION "${KDE4_FIND_VERSION_MAJOR}.${KDE4_FIND_VERSION_MINOR}.${KDE4_FIND_VERSION_PATCH}")
-      else (KDE4_FIND_VERSION_MAJOR)
-         set(KDE_MIN_VERSION "4.0.0")
-      endif (KDE4_FIND_VERSION_MAJOR)
-   endif (NOT KDE_MIN_VERSION)
-
-   #message(FATAL_ERROR "KDE_MIN_VERSION=${KDE_MIN_VERSION}  found ${KDE_VERSION} exact: -${KDE4_FIND_VERSION_EXACT}- version: -${KDE4_FIND_VERSION}-")
-   macro_ensure_version( ${KDE_MIN_VERSION} ${KDE_VERSION} KDE4_INSTALLED_VERSION_OK )
-
-
-   # KDE4_LIB_INSTALL_DIR and KDE4_INCLUDE_INSTALL_DIR are set in KDELibsDependencies.cmake,
-   # use them to set the KDE4_LIB_DIR and KDE4_INCLUDE_DIR "public interface" variables
-   set(KDE4_LIB_DIR ${KDE4_LIB_INSTALL_DIR} )
-   set(KDE4_INCLUDE_DIR ${KDE4_INCLUDE_INSTALL_DIR} )
-
-
-   # This setting is currently not recorded in KDELibsDependencies.cmake:
-   find_file(KDE4_PLASMA_OPENGL_FOUND plasma/glapplet.h PATHS ${KDE4_INCLUDE_DIR} NO_DEFAULT_PATH)
-
-   # Now include the file with the imported tools (executable targets).
-   # This export-file is generated and installed by the toplevel CMakeLists.txt of kdelibs.
-   # Having the libs and tools in two separate files should help with cross compiling.
-   include(${kde_cmake_module_dir}/KDELibs4ToolsTargets.cmake)
-
-   # get the build CONFIGURATIONS which were exported in this file, and use just the first
-   # of them to get the location of the installed executables
-   get_target_property(_importedConfigurations  ${KDE4_TARGET_PREFIX}kconfig_compiler IMPORTED_CONFIGURATIONS )
-   list(GET _importedConfigurations 0 _firstConfig)
-
-   if(NOT WINCE)
-   get_target_property(KDE4_KCFGC_EXECUTABLE             ${KDE4_TARGET_PREFIX}kconfig_compiler    LOCATION_${_firstConfig})
-   get_target_property(KDE4_MEINPROC_EXECUTABLE          ${KDE4_TARGET_PREFIX}meinproc4           LOCATION_${_firstConfig})
-   else(NOT WINCE)
-    set(KDE4_KCFGC_EXECUTABLE             ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
-    set(KDE4_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc4 )
+if (WIN32)
+   set(LIBRARY_OUTPUT_PATH               ${EXECUTABLE_OUTPUT_PATH} )
+   # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
+   if (NOT WINCE)
+     set(KDE4_KCFGC_EXECUTABLE             ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
+     set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
+   else (NOT WINCE)
+     set(KDE4_KCFGC_EXECUTABLE             ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
+     set(KDE4_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc4 )
    endif(NOT WINCE)
-   get_target_property(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${KDE4_TARGET_PREFIX}kauth-policy-gen    LOCATION_${_firstConfig})
-   get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makekdewidgets      LOCATION_${_firstConfig})
 
-   # allow searching cmake modules in all given kde install locations (KDEDIRS based)
-   execute_process(COMMAND "${KDE4_KDECONFIG_EXECUTABLE}" --path data OUTPUT_VARIABLE _data_DIR ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-   file(TO_CMAKE_PATH "${_data_DIR}" _data_DIR)
-   foreach(dir ${_data_DIR})
-      set (apath "${dir}/cmake/modules")
-      if (EXISTS "${apath}")
-         set (included 0)
-         string(TOLOWER "${apath}" _apath)
-         # ignore already added pathes, case insensitive
-         foreach(adir ${CMAKE_MODULE_PATH})
-            string(TOLOWER "${adir}" _adir)
-            if ("${_adir}" STREQUAL "${_apath}")
-               set (included 1)
-            endif ("${_adir}" STREQUAL "${_apath}")
-         endforeach(adir)
-         if (NOT included)
-            message(STATUS "Adding ${apath} to CMAKE_MODULE_PATH")
-            set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${apath}")
-         endif (NOT included)
-      endif (EXISTS "${apath}")
-   endforeach(dir)
+   set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
+   set(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kauth-policy-gen )
+   set(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
+else (WIN32)
+   set(LIBRARY_OUTPUT_PATH               ${CMAKE_BINARY_DIR}/lib )
+   set(KDE4_KCFGC_EXECUTABLE             ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kconfig_compiler${CMAKE_EXECUTABLE_SUFFIX}.shell )
+   set(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kauth-policy-gen${CMAKE_EXECUTABLE_SUFFIX}.shell )
+   set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4${CMAKE_EXECUTABLE_SUFFIX}.shell )
+   set(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX}.shell )
+endif (WIN32)
+
+set(KDE4_LIB_DIR ${LIBRARY_OUTPUT_PATH}/${CMAKE_CFG_INTDIR})
 
 
-   # This file contains the exported library target from kdelibs (new with cmake 2.6.x), e.g.
-   # the library target "kdeui" is exported as "KDE4__kdeui". The "KDE4__" is used as
-   # "namespace" to separate the imported targets from "normal" targets, it is stored in
-   # KDE4_TARGET_PREFIX, which is set in KDELibsDependencies.cmake .
-   # This export-file is generated and installed by the toplevel CMakeLists.txt of kdelibs.
-   # Include it to "import" the libraries from kdelibs into the current projects as targets.
-   # This makes setting the _LIBRARY and _LIBS variables actually a bit superfluos, since e.g.
-   # the kdeui library could now also be used just as "KDE4__kdeui" and still have all their
-   # dependent libraries handled correctly. But to keep compatibility and not to change
-   # behaviour we set all these variables anyway as seen below. Alex
-   include(${kde_cmake_module_dir}/KDELibs4LibraryTargets.cmake)
-   include(${KDE4_LIB_INSTALL_DIR}/cmake/threadweaver/threadweaverTargets.cmake)
+# when building kdelibs, make the kcfg rules depend on the binaries...
+set( _KDE4_KCONFIG_COMPILER_DEP kconfig_compiler)
+set( _KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP kauth-policy-gen)
+set( _KDE4_MAKEKDEWIDGETS_DEP makekdewidgets)
+set( _KDE4_MEINPROC_EXECUTABLE_DEP meinproc4)
 
-   # This one is for compatibility only:
-   set(KDE4_THREADWEAVER_LIBRARIES ${KDE4_TARGET_PREFIX}threadweaver )
-
-endif (_kdeBootStrapping)
+set(KDE4_INSTALLED_VERSION_OK TRUE)
 
 
 # Set the various KDE4_FOO_LIBRARY/LIBS variables.
@@ -649,9 +522,7 @@ endif (UNIX)
 
 # The nepomuk target does not always exist, since is is built conditionally. When bootstrapping
 # we set it always anyways.
-if(_kdeBootStrapping  OR  TARGET ${KDE4_TARGET_PREFIX}nepomuk)
-   _kde4_set_lib_variables(NEPOMUK nepomuk "${KDE4_TARGET_PREFIX}")
-endif(_kdeBootStrapping  OR  TARGET ${KDE4_TARGET_PREFIX}nepomuk)
+_kde4_set_lib_variables(NEPOMUK nepomuk "${KDE4_TARGET_PREFIX}")
 
 #####################  provide some options   ##########################################
 
@@ -904,23 +775,19 @@ if (WIN32)
 
    # limit win32 packaging to kdelibs at now
    # don't know if package name, version and notes are always available
-   if(_kdeBootStrapping)
-      find_package(KDEWIN_Packager)
-      if (KDEWIN_PACKAGER_FOUND)
-         kdewin_packager("kdelibs" "${KDE_VERSION}" "KDE base library" "")
-      endif (KDEWIN_PACKAGER_FOUND)
+   find_package(KDEWIN_Packager)
+   if (KDEWIN_PACKAGER_FOUND)
+      kdewin_packager("kdelibs" "${KDE_VERSION}" "KDE base library" "")
+   endif (KDEWIN_PACKAGER_FOUND)
 
-      include(Win32Macros)
-      addExplorerWrapper("kdelibs")
-   endif(_kdeBootStrapping)
+   include(Win32Macros)
+   addExplorerWrapper("kdelibs")
 
    set( _KDE4_PLATFORM_INCLUDE_DIRS ${KDEWIN_INCLUDES})
 
    # if we are compiling kdelibs, add KDEWIN_LIBRARIES explicitly,
    # otherwise they come from KDELibsDependencies.cmake, Alex
-   if (_kdeBootStrapping)
-      set( KDE4_KDECORE_LIBS ${KDE4_KDECORE_LIBS} ${KDEWIN_LIBRARIES} )
-   endif (_kdeBootStrapping)
+   set( KDE4_KDECORE_LIBS ${KDE4_KDECORE_LIBS} ${KDEWIN_LIBRARIES} )
 
    # we prefer to use a different postfix for debug libs only on Windows
    # does not work atm
@@ -1271,48 +1138,6 @@ if (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_KCFGC_EXECUTABLE AND KDE4_INSTALL
 endif (KDE4_INCLUDE_DIR AND KDE4_LIB_DIR AND KDE4_KCFGC_EXECUTABLE AND KDE4_INSTALLED_VERSION_OK)
 
 
-macro (KDE4_PRINT_RESULTS)
-
-   # inside kdelibs the include dir and lib dir are internal, not "found"
-   if (NOT _kdeBootStrapping)
-       if(KDE4_INCLUDE_DIR)
-          message(STATUS "Found KDE 4.10 include dir: ${KDE4_INCLUDE_DIR}")
-       else(KDE4_INCLUDE_DIR)
-          message(STATUS "ERROR: unable to find the KDE 4 headers")
-       endif(KDE4_INCLUDE_DIR)
-
-       if(KDE4_LIB_DIR)
-          message(STATUS "Found KDE 4.10 library dir: ${KDE4_LIB_DIR}")
-       else(KDE4_LIB_DIR)
-          message(STATUS "ERROR: unable to find the KDE 4 core library")
-       endif(KDE4_LIB_DIR)
-   endif (NOT _kdeBootStrapping)
-
-   if(KDE4_KCFGC_EXECUTABLE)
-      message(STATUS "Found the KDE4 kconfig_compiler preprocessor: ${KDE4_KCFGC_EXECUTABLE}")
-   else(KDE4_KCFGC_EXECUTABLE)
-      message(STATUS "Didn't find the KDE4 kconfig_compiler preprocessor")
-   endif(KDE4_KCFGC_EXECUTABLE)
-endmacro (KDE4_PRINT_RESULTS)
-
-
-if (KDE4Internal_FIND_REQUIRED AND NOT KDE4_FOUND)
-   #bail out if something wasn't found
-   kde4_print_results()
-   if (NOT KDE4_INSTALLED_VERSION_OK)
-     message(FATAL_ERROR "ERROR: the installed kdelibs version ${KDE_VERSION} is too old, at least version ${KDE_MIN_VERSION} is required")
-   endif (NOT KDE4_INSTALLED_VERSION_OK)
-
-   if (NOT KDE4_KCFGC_EXECUTABLE)
-     message(FATAL_ERROR "ERROR: could not detect a usable kconfig_compiler")
-   endif (NOT KDE4_KCFGC_EXECUTABLE)
-
-   message(FATAL_ERROR "ERROR: could NOT find everything required for compiling KDE 4 programs")
-endif (KDE4Internal_FIND_REQUIRED AND NOT KDE4_FOUND)
-
-if (NOT KDE4Internal_FIND_QUIETLY)
-   kde4_print_results()
-endif (NOT KDE4Internal_FIND_QUIETLY)
 
 #add the found Qt and KDE include directories to the current include path
 #the ${KDE4_INCLUDE_DIR}/KDE directory is for forwarding includes, eg. #include <KMainWindow>
