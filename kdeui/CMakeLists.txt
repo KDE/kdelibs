@@ -27,6 +27,8 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
  ${CMAKE_SOURCE_DIR}/staging/kinterprocesswindowing/src
  ${CMAKE_BINARY_DIR}/staging/kinterprocesswindowing/src
+ ${CMAKE_SOURCE_DIR}/staging/sonnet/src/ui
+ ${CMAKE_BINARY_DIR}/staging/sonnet/src/ui
  ${kcoreaddons_BINARY_DIR}/src
  ${kcoreaddons_SOURCE_DIR}/src/caching
  ${kcoreaddons_SOURCE_DIR}/src/io
@@ -57,7 +59,6 @@ include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
- ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
@@ -215,11 +216,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
- sonnet/dialog.cpp
- sonnet/configwidget.cpp
- sonnet/highlighter.cpp
- sonnet/configdialog.cpp
- sonnet/dictionarycombobox.cpp
  util/strlcpy-fake.c
  util/kckey.cpp
  util/kcompletion.cpp
@@ -355,8 +351,6 @@ set( kdeui_UI
    dialogs/kshortcutsdialog.ui
    widgets/kdatetimeedit.ui
    widgets/kshortcutwidget.ui
-   sonnet/sonnetui.ui
-   sonnet/configui.ui
    )
 
 if (X11_FOUND)
@@ -403,7 +397,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore kauth kguiaddons kwidgets kwidgetsaddons ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
+target_link_libraries(kdeui LINK_PUBLIC itemmodels sonnetcore sonnetui kauth kguiaddons kwidgets kwidgetsaddons ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${kwindowsystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} kconfiggui)
 
 if(X11_FOUND)
@@ -632,14 +626,6 @@ install(FILES
  widgets/keditlistbox.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 endif(NOT KDE_NO_DEPRECATED)
-
-install( FILES
-  sonnet/dialog.h
-  sonnet/highlighter.h
-  sonnet/configdialog.h
-  sonnet/configwidget.h
-  sonnet/dictionarycombobox.h
-  DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 

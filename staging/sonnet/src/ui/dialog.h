@@ -24,7 +24,7 @@
 #define SONNET_DIALOG_H
 
 #include <QDialog>
-#include <kdeui_export.h>
+#include <sonnetui_export.h>
 
 class QListWidgetItem;
 class QModelIndex;
@@ -48,7 +48,7 @@ namespace Sonnet
      * You can change buffer inside a slot connected to done() signal
      * and spellcheck will continue with new data automatically.
      */
-    class KDEUI_EXPORT Dialog : public QDialog
+    class SONNETUI_EXPORT Dialog : public QDialog
     {
         Q_OBJECT
     public:
@@ -134,7 +134,6 @@ namespace Sonnet
 
         void slotFinished();
         void slotCancel();
-        void slotHelp();
 
         void slotAddWord();
         void slotReplaceWord();
