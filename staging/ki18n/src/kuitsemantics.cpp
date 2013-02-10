@@ -46,6 +46,29 @@ static QString shorten (const QString &str)
         return str.left(maxlen).append(QLatin1String("..."));
 }
 
+// Custom entity resolver for QXmlStreamReader.
+class KuitEntityResolver : public QXmlStreamEntityResolver
+{
+    public:
+
+    void setEntities (const QHash<QString, QString> &entities)
+    {
+        entityMap = entities;
+    }
+
+    QString resolveUndeclaredEntity (const QString &name)
+    {
+        QString value = entityMap[name];
+        // This will return empty string if the entity name is not known,
+        // which will make QXmlStreamReader signal unknown entity error.
+        return value;
+    }
+
+    private:
+
+    QHash<QString, QString> entityMap;
+};
+
 // -----------------------------------------------------------------------------
 // All the tag, attribute, and context marker element enums.
 namespace Kuit {
@@ -128,6 +151,7 @@ class KuitSemanticsStaticData
 
     QHash<QString, QString> xmlEntities;
     QHash<QString, QString> xmlEntitiesInverse;
+    KuitEntityResolver xmlEntityResolver;
 
     KuitSemanticsStaticData ();
 };
@@ -303,7 +327,7 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     SETUP_TAG_NL(Bcode, 1);
     SETUP_TAG_NL(Item, 1);
 
-    // Known XML entities, direct/inverse mapping.
+    // Default XML entities, direct and inverse mapping.
     xmlEntities[QString::fromLatin1("lt")] = QString(QLatin1Char('<'));
     xmlEntities[QString::fromLatin1("gt")] = QString(QLatin1Char('>'));
     xmlEntities[QString::fromLatin1("amp")] = QString(QLatin1Char('&'));
@@ -314,6 +338,9 @@ KuitSemanticsStaticData::KuitSemanticsStaticData ()
     xmlEntitiesInverse[QString(QLatin1Char('&'))] = QString::fromLatin1("amp");
     xmlEntitiesInverse[QString(QLatin1Char('\''))] = QString::fromLatin1("apos");
     xmlEntitiesInverse[QString(QLatin1Char('"'))] = QString::fromLatin1("quot");
+    // Custom XML entities.
+    xmlEntities[QString::fromLatin1("nbsp")] = QString(QChar(0xa0));
+    xmlEntityResolver.setEntities(xmlEntities);
 }
 
 Q_GLOBAL_STATIC(KuitSemanticsStaticData, semanticsStaticData)
@@ -1111,6 +1138,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
     bool hadAnyHtmlTag = false;
     QStack<OpenEl> openEls;
     QXmlStreamReader xml(text);
+    xml.setEntityResolver(&s->xmlEntityResolver);
     QStringRef lastElementName;
 
     while (!xml.atEnd()) {
