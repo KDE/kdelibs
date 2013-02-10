@@ -197,9 +197,6 @@ private:
     /** Mutex to serialize operations. */
     QMutex *m_mutex;
 
-    /** Mutex used by m_jobAvailable wait condition. */
-    QMutex* m_jobAvailableMutex;
-
     // @TODO: make state objects static
     /** The state of the art.
     * @see StateId

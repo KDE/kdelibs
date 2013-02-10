@@ -54,7 +54,6 @@ WeaverImpl::WeaverImpl( QObject* parent )
     , m_active(0)
     , m_inventoryMax( qMax(4, 2 * QThread::idealThreadCount() ) )
     , m_mutex ( new QMutex( QMutex::NonRecursive ) )
-    , m_jobAvailableMutex ( new QMutex )
     , m_state (0)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
@@ -111,7 +110,6 @@ WeaverImpl::~WeaverImpl()
         delete th;
     }
     Q_ASSERT(m_inventory.isEmpty());
-    delete m_jobAvailableMutex;
     debug ( 3, "WeaverImpl dtor: done\n" );
     setState ( Destructed ); // m_state = Halted;
     // FIXME: delete state objects. what sense does DestructedState make then?
@@ -156,9 +154,8 @@ void WeaverImpl::setMaximumNumberOfThreads( int cap )
 {
     //FIXME really? Why not 0?
     Q_ASSERT_X ( cap > 0, "Weaver Impl", "Thread inventory size has to be larger than zero." );
-    QMutexLocker l (m_mutex);
+    QMutexLocker l (m_mutex);  Q_UNUSED(l);
     m_state->setMaximumNumberOfThreads(cap);
-    Q_ASSERT(false); //NI, states do not handle this yet, see setMaximumNumberOfThreads_p
 }
 
 void WeaverImpl::setMaximumNumberOfThreads_p(int cap)
@@ -486,12 +483,14 @@ void WeaverImpl::waitForAvailableJob(Thread* th)
 }
 
 void WeaverImpl::blockThreadUntilJobsAreBeingAssigned ( Thread *th )
-{   // th is the thread that calls this method:
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    //Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+    // th is the thread that calls this method:
     Q_UNUSED ( th );
     debug ( 4,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
     Q_EMIT asyncThreadSuspended ( th );
-    QMutexLocker l( m_jobAvailableMutex );
-    m_jobAvailable.wait( m_jobAvailableMutex );
+    m_jobAvailable.wait(m_mutex);
     debug ( 4,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());
 }
 
