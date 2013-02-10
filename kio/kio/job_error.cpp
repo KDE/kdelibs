@@ -257,7 +257,7 @@ QStringList KIO::Job::detailedErrorStrings(const QUrl *reqUrl /*= 0*/,
   if ( reqUrl ) {
     QString prettyUrl;
     prettyUrl = reqUrl->toDisplayString();
-    url = Qt::escape(prettyUrl);
+    url = prettyUrl.toHtmlEscaped();
     protocol = reqUrl->scheme();
   } else {
     url = i18nc("@info url", "(unknown)" );

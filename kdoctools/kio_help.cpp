@@ -148,7 +148,7 @@ QString HelpProtocol::lookupFile(const QString &fname,
             }
             else
             {
-                unicodeError( i18n("There is no documentation available for %1." , Qt::escape(path)) );
+                unicodeError( i18n("There is no documentation available for %1." , path.toHtmlEscaped()) );
                 return QString();
             }
         }
@@ -168,7 +168,7 @@ void HelpProtocol::unicodeError( const QString &t )
 #endif
    data(fromUnicode( QString(
         "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\"></head>\n"
-        "%2</html>" ).arg( encoding, Qt::escape(t) ) ) );
+        "%2</html>" ).arg( encoding, t.toHtmlEscaped() ) ) );
 
 }
 
