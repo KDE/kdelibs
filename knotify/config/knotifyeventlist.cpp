@@ -100,10 +100,10 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
 	iconOption.initFrom( this );
 	int iconWidth = iconOption.fontMetrics.height() -2 ; //1px margin top & bottom
 	setIconSize( QSize(iconWidth, iconWidth) );
-	
-	header()->setResizeMode( 0, QHeaderView::Fixed ); 
+
+	header()->setSectionResizeMode( 0, QHeaderView::Fixed );
 	header()->resizeSection( 0, KNotifyConfigElement::have_kttsd() ? (iconWidth+4)*6: (iconWidth+4)*5 );
-	header()->setResizeMode( 1, QHeaderView::ResizeToContents );
+	header()->setSectionResizeMode( 1, QHeaderView::ResizeToContents );
 
 	connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)) , this , SLOT(slotSelectionChanged(QTreeWidgetItem*,QTreeWidgetItem*)));
 }

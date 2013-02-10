@@ -89,7 +89,7 @@ bool KDirOperatorDetailView::setViewMode(KFile::FileView viewMode)
     // a plain treeview instead of cutting off filenames, especially useful when
     // using KDirOperator in horizontally limited parts of an app.
     if( tree && m_hideDetailColumns ) {
-        header()->setResizeMode( QHeaderView::ResizeToContents );
+        header()->setSectionResizeMode( QHeaderView::ResizeToContents );
         header()->setStretchLastSection( false );
     }
     
@@ -100,9 +100,9 @@ bool KDirOperatorDetailView::event(QEvent *event)
 {
     if (event->type() == QEvent::Polish) {
         QHeaderView *headerView = header();
-        headerView->setResizeMode(QHeaderView::Interactive);
+        headerView->setSectionResizeMode(QHeaderView::Interactive);
         headerView->setStretchLastSection(true);
-        headerView->setMovable(false);
+        headerView->setSectionsMovable(false);
 
         setColumnHidden(KDirModel::Size, m_hideDetailColumns);
         setColumnHidden(KDirModel::ModifiedTime, m_hideDetailColumns);
