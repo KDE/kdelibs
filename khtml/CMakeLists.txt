@@ -43,6 +43,9 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
 
+find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+include_directories(${Qt5X11Extras_INCLUDE_DIRS})
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
@@ -580,7 +583,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${PHONON_LIBRARIES} kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kguiaddons kwidgetsaddons ki18n ${kwindowsystem_LIBRARIES})
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${PHONON_LIBRARIES} kjs karchive sonnetcore ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kguiaddons kwidgetsaddons ki18n ${kwindowsystem_LIBRARIES} Qt5::X11Extras)
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()
