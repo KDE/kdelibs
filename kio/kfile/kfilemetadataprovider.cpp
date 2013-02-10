@@ -153,9 +153,9 @@ public:
     QList<KFileMetaDataReader*> m_metaDataReaders;
     KFileMetaDataReader* m_latestMetaDataReader;
 
-    QWeakPointer<KRatingWidget> m_ratingWidget;
-    QWeakPointer<Nepomuk::TagWidget> m_tagWidget;
-    QWeakPointer<KCommentWidget> m_commentWidget;
+    QPointer<KRatingWidget> m_ratingWidget;
+    QPointer<Nepomuk::TagWidget> m_tagWidget;
+    QPointer<KCommentWidget> m_commentWidget;
 #endif
 
 private:

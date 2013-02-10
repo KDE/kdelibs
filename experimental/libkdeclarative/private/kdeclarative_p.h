@@ -22,14 +22,14 @@
 
 #include "kdeclarative.h"
 
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
 
 class KDeclarativePrivate
 {
 public:
     KDeclarativePrivate();
 
-    QWeakPointer<QQmlEngine> declarativeEngine;
+    QPointer<QQmlEngine> declarativeEngine;
     bool initialized;
 };
 

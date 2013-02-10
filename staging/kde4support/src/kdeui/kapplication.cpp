@@ -232,7 +232,7 @@ static int kde_x_errhandler( Display *dpy, XErrorEvent *err )
 }
 #endif
 
-static QList< QWeakPointer< QWidget > > *x11Filter = 0;
+static QList< QPointer< QWidget > > *x11Filter = 0;
 
 /**
    * Installs a handler for the SIGPIPE signal. It is thrown when you write to
@@ -257,7 +257,7 @@ void KApplication::installX11EventFilter( QWidget* filter )
     if ( !filter )
         return;
     if (!x11Filter)
-        x11Filter = new QList< QWeakPointer< QWidget > >;
+        x11Filter = new QList< QPointer< QWidget > >;
     connect ( filter, SIGNAL(destroyed()), this, SLOT(_k_x11FilterDestroyed()) );
     x11Filter->append( filter );
 }
@@ -271,9 +271,9 @@ void KApplication::removeX11EventFilter( const QWidget* filter )
 {
     if ( !x11Filter || !filter )
         return;
-    // removeAll doesn't work, creating QWeakPointer to something that's about to be deleted aborts
+    // removeAll doesn't work, creating QPointer to something that's about to be deleted aborts
     // x11Filter->removeAll( const_cast< QWidget* >( filter ));
-    for( QMutableListIterator< QWeakPointer< QWidget > > it( *x11Filter );
+    for( QMutableListIterator< QPointer< QWidget > > it( *x11Filter );
          it.hasNext();
          ) {
         QWidget* w = it.next().data();
@@ -835,7 +835,7 @@ public:
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     if (x11Filter) {
-        foreach (const QWeakPointer< QWidget >& wp, *x11Filter) {
+        foreach (const QPointer< QWidget >& wp, *x11Filter) {
             if( QWidget* w = wp.data())
                 if ( static_cast<KAppX11HackWidget*>( w )->publicx11Event(_event))
                     return true;

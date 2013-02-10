@@ -193,7 +193,7 @@ public:
   QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
 
   int m_overlap;
-  QWeakPointer<QStyle> m_subStyle;
+  QPointer<QStyle> m_subStyle;
   QString m_lastStyleClass;
   bool m_sentinel;
 };

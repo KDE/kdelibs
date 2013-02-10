@@ -52,7 +52,7 @@ public:
     QColor col;
     QPoint mPos;
 
-    QWeakPointer<QColorDialog> dialogPtr;
+    QPointer<QColorDialog> dialogPtr;
 
     void initStyleOption(QStyleOptionButton* opt) const;    
 };

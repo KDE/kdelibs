@@ -74,7 +74,7 @@ class KWIDGETS_EXPORT KIconEngine : public QIconEngineV2 // only exported for kd
   private:
     QString mIconName;
     QStringList mOverlays;
-    QWeakPointer<KIconLoader> mIconLoader;
+    QPointer<KIconLoader> mIconLoader;
 };
 
 inline KIconEngine::~KIconEngine()

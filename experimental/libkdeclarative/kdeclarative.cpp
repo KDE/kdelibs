@@ -28,7 +28,7 @@
 #include <QtQml/QQmlEngine>
 #include <QtQml/QQmlExpression>
 #include <QtQml/QQmlDebuggingEnabler>
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
 
 #include <kdebug.h>
 #include <kglobal.h>

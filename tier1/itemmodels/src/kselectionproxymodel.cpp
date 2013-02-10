@@ -21,7 +21,7 @@
 
 #include <QtCore/QStack>
 #include <QtCore/QStringList>
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
 #include <QItemSelectionRange>
 
 #include "kmodelindexproxymapper.h"
@@ -586,7 +586,7 @@ public:
     bool m_layoutChanging;
     bool m_ignoreNextLayoutAboutToBeChanged;
     bool m_ignoreNextLayoutChanged;
-    const QWeakPointer<QItemSelectionModel> m_selectionModel;
+    const QPointer<QItemSelectionModel> m_selectionModel;
 
     KSelectionProxyModel::FilterBehavior m_filterBehavior;
 

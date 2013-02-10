@@ -22,7 +22,7 @@
 
 #include <QObject>
 #include <QWidget>
-#include <QWeakPointer>
+#include <QPointer>
 #include <QSet>
 #include <QAbstractNativeEventFilter>
 #include <QCoreApplication>
@@ -67,7 +67,7 @@ public:
     bool nativeEventFilter(const QByteArray&, void *message, long *);
 
     // the installed event filters
-    QList< QWeakPointer<QWidget> > m_filters;
+    QList< QPointer<QWidget> > m_filters;
 };
 
 Q_GLOBAL_STATIC(KSystemEventFilterPrivate, kSystemEventFilter)
@@ -81,7 +81,7 @@ bool KSystemEventFilterPrivate::nativeEventFilter(const QByteArray& eventType, v
 {
     if (!m_filters.isEmpty()) {
         // pass the event as long as it's not consumed
-        Q_FOREACH (const QWeakPointer<QWidget> &wp, m_filters) {
+        Q_FOREACH (const QPointer<QWidget> &wp, m_filters) {
             if (QWidget *w = wp.data()) {
                 if (static_cast<KEventHackWidget*>(w)->publicNativeEvent(eventType, message, result)) {
                     return true;
@@ -106,7 +106,7 @@ void installEventFilter(QWidget *filter)
 
 void removeEventFilter(const QWidget *filter)
 {
-    QMutableListIterator< QWeakPointer<QWidget> > it(kSystemEventFilter()->m_filters);
+    QMutableListIterator< QPointer<QWidget> > it(kSystemEventFilter()->m_filters);
     while (it.hasNext()) {
         QWidget *w = it.next().data();
         if (w == filter || w == 0) {

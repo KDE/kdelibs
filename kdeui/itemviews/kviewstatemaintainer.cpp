@@ -21,7 +21,7 @@
 
 #include "kviewstatemaintainer.h"
 
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
 
 class KViewStateMaintainerBasePrivate
 {
@@ -37,8 +37,8 @@ class KViewStateMaintainerBasePrivate
   void _k_modelAboutToBeReset();
   void _k_modelReset();
 
-  QWeakPointer<QAbstractItemView> m_view;
-  QWeakPointer<QItemSelectionModel> m_selectionModel;
+  QPointer<QAbstractItemView> m_view;
+  QPointer<QItemSelectionModel> m_selectionModel;
 };
 
 void KViewStateMaintainerBasePrivate::_k_modelAboutToBeReset()

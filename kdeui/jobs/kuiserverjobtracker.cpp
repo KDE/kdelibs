@@ -89,7 +89,7 @@ void KUiServerJobTracker::registerJob(KJob *job)
         programIconName = componentData.aboutData()->appName();
     }
 
-    QWeakPointer<KJob> jobWatch = job;
+    QPointer<KJob> jobWatch = job;
     QDBusReply<QDBusObjectPath> reply = serverProxy()->uiserver().requestView(componentData.aboutData()->programName(),
                                                                             programIconName,
                                                                             job->capabilities());

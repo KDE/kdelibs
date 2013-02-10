@@ -360,7 +360,7 @@ public:
     QTimer* m_iconUpdateTimer;
     QTimer* m_scrollAreaTimer;
     QList<KJob*> m_previewJobs;
-    QWeakPointer<KDirModel> m_dirModel;
+    QPointer<KDirModel> m_dirModel;
     QAbstractProxyModel* m_proxyModel;
 
     /**

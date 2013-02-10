@@ -38,7 +38,7 @@
 #include "windowspoller.h"
 #endif
 
-#include <QWeakPointer>
+#include <QPointer>
 #include <QSet>
 
 
@@ -75,7 +75,7 @@ public:
     void _k_resumingFromIdle();
     void _k_timeoutReached(int msec);
 
-    QWeakPointer<AbstractSystemPoller> poller;
+    QPointer<AbstractSystemPoller> poller;
     bool catchResume;
 
     int currentId;

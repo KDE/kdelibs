@@ -178,7 +178,7 @@ public:
     bool clickInClear:1;
     bool wideEnoughForClear:1;
     KLineEditButton *clearButton;
-    QWeakPointer<KLineEditStyle> style;
+    QPointer<KLineEditStyle> style;
     QString lastStyleClass;
 
     KCompletionBox *completionBox;

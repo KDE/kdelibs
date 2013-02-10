@@ -24,7 +24,7 @@
 #include <QtTest/QSignalSpy>
 #include <kdialog.h>
 #include <QPushButton>
-#include <QWeakPointer>
+#include <QPointer>
 
 Q_DECLARE_METATYPE(KDialog::ButtonCode)
 
@@ -201,7 +201,7 @@ private Q_SLOTS:
         QFETCH(int, emitRejected);
 
         KDialog* dialog = new KDialog;
-        QWeakPointer<KDialog> dialogPointer(dialog);
+        QPointer<KDialog> dialogPointer(dialog);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
         dialog->setButtons(KDialog::Ok | button);
         QSignalSpy qAcceptedSpy(dialog, SIGNAL(accepted()));
@@ -232,7 +232,7 @@ private Q_SLOTS:
         QFETCH(QString, signal);
 
         KDialog* dialog = new KDialog;
-        QWeakPointer<KDialog> dialogPointer(dialog);
+        QPointer<KDialog> dialogPointer(dialog);
         dialog->setAttribute(Qt::WA_DeleteOnClose);
         dialog->setButtons(KDialog::Ok | button);
         QSignalSpy qCancelOrCloseClickedSpy(dialog, signal.toLatin1().constData());

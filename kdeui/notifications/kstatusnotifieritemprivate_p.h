@@ -96,7 +96,7 @@ private Q_SLOTS:
     }
 
 private:
-    QWeakPointer<QMovie> m_movie;
+    QPointer<QMovie> m_movie;
 };
 
 class KStatusNotifierItemPrivate

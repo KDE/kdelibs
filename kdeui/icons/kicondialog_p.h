@@ -17,6 +17,7 @@
 #include <QtCore/QStringList>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QPointer>
 
 #include <kiconloader.h>
 #include <klistwidget.h>
@@ -149,7 +150,7 @@ class KIconDialog::KIconDialogPrivate
     QString custom;
     QString customLocation;
     KListWidgetSearchLine *searchLine;
-    QWeakPointer<QFileDialog> browseDialog;
+    QPointer<QFileDialog> browseDialog;
 };
 
 

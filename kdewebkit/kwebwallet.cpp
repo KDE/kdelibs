@@ -28,7 +28,7 @@
 #include <QtCore/QSet>
 #include <QtCore/QHash>
 #include <QtCore/QFile>
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
 #include <QtCore/QScopedPointer>
 #include <QWebPage>
 #include <QWebFrame>
@@ -131,7 +131,7 @@ class KWebWallet::KWebWalletPrivate
 public:
     struct FormsData
     {
-        QWeakPointer<QWebFrame> frame;
+        QPointer<QWebFrame> frame;
         KWebWallet::WebFormList forms;
     };
 
@@ -429,7 +429,7 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
             kWarning(800) << "Duplicate request rejected!";
         } else {
             KWebWalletPrivate::FormsData data;
-            data.frame = QWeakPointer<QWebFrame>(frame);
+            data.frame = QPointer<QWebFrame>(frame);
             data.forms << formsList;
             d->pendingFillRequests.insert(url, data);
             urlList << url;
@@ -450,7 +450,7 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
                 kWarning(800) << "Duplicate request rejected!!!";
             } else {
                 KWebWalletPrivate::FormsData data;
-                data.frame = QWeakPointer<QWebFrame>(childFrame);
+                data.frame = QPointer<QWebFrame>(childFrame);
                 data.forms << formsList;
                 d->pendingFillRequests.insert(url, data);
                 urlList << url;
@@ -539,7 +539,7 @@ void KWebWallet::rejectSaveFormDataRequest(const QString & key)
 
 void KWebWallet::fillWebForm(const QUrl &url, const KWebWallet::WebFormList &forms)
 {
-    QWeakPointer<QWebFrame> frame = d->pendingFillRequests.value(url).frame;
+    QPointer<QWebFrame> frame = d->pendingFillRequests.value(url).frame;
     if (!frame)
         return;
 
