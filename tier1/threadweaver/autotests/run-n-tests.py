@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 import re
 import os
 import sys
@@ -10,7 +9,8 @@ def RunTests( Number ):
     # use Linux as the default:
     SuccessCount = 0
     Platform = platform.platform()
-    Command = "./Tests/ThreadWeaverJobTests >/dev/null"
+#   Command = "./Tests/ThreadWeaverJobTests >/dev/null"
+    Command = "make test"
 #    if re.search( "Darwin", Platform ):
 #        Command = "DYLD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests.app/Contents/MacOs/JobTests >/dev/null"
     for count in range( Number ):

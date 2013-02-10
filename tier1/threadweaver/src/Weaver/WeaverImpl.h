@@ -203,7 +203,6 @@ private:
     */
     State*  m_state;
     /** The state objects. */
-    //FIXME use scoped pointers
     State *m_states[NoOfStates];
 };
 
