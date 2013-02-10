@@ -52,14 +52,13 @@ public:
     Private ()
         : thread (0)
         , queuePolicies ( new QueuePolicyList )
-        , mutex (new QMutex (QMutex::NonRecursive) )
+        , mutex(QMutex::NonRecursive)
         , finished (false)
     {}
 
     ~Private()
     {
         delete queuePolicies;
-        delete mutex;
     }
 
     /* The thread that executes this job. Zero when the job is not executed. */
@@ -68,7 +67,7 @@ public:
     /* The list of QueuePolicies assigned to this Job. */
     QueuePolicyList* queuePolicies;
 
-    QMutex *mutex;
+    mutable QMutex mutex;
     /* d->finished is set to true when the Job has been executed. */
     bool finished;
 };
@@ -97,25 +96,25 @@ ThreadWeaver::JobRunHelper::JobRunHelper()
 void ThreadWeaver::JobRunHelper::runTheJob ( Thread* th, Job* job )
 {
     P_ASSERT ( th == thread() );
-    job->d->mutex->lock();
-    job->d->thread = th;
-    job->d->mutex->unlock();
-
+    {
+        QMutexLocker l(&job->d->mutex); Q_UNUSED(l);
+        job->d->thread = th;
+    }
     Q_EMIT ( started ( job ) );
 
     job->run();
 
-    job->d->mutex->lock();
-    job->d->thread = 0;
-    job->setFinished (true);
-    job->d->mutex->unlock();
+    {
+        QMutexLocker l(&job->d->mutex); Q_UNUSED(l);
+        job->d->thread = 0;
+        job->setFinished (true);
+    }
+    //FIXME this requires the job lock?
     job->freeQueuePolicyResources();
 
-    if ( ! job->success() )
-    {
+    if ( ! job->success() ) {
         Q_EMIT ( failed( job ) );
     }
-
     Q_EMIT ( done( job ) );
 }
 
@@ -232,10 +231,10 @@ void Job::setFinished ( bool status )
     d->finished = status;
 }
 
-// QMutex& Job::mutex()
-// {
-//     return * d->mutex;
-// }
+QMutex* Job::mutex() const
+{
+    return &d->mutex;
+}
 
 #include "moc_Job.cpp"
 #include "moc_Job_p.cpp"

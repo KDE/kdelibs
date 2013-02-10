@@ -206,10 +206,11 @@ namespace ThreadWeaver {
         */
         void failed( ThreadWeaver::Job* );
 
-    protected:
+    private:
         class Private;
         Private* d;
 
+    protected:
         /** Free the queue policies acquired before this job has been
             executed. */
         void freeQueuePolicyResources();
@@ -230,7 +231,7 @@ namespace ThreadWeaver {
         void setFinished ( bool status );
 
         /** The mutex used to protect this job. */
-        // QMutex& mutex();
+        QMutex* mutex() const;
 
     };
 }
