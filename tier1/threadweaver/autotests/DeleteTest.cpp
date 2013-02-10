@@ -16,7 +16,7 @@ void DeleteTest::DeleteSequenceTest()
 {
     m_finishCount = 100;
 
-    for (int i = 0; i < 100; ++i) {
+    for (int i = 0; i < m_finishCount; ++i) {
         ThreadWeaver::JobSequence* jobSeq = new ThreadWeaver::JobSequence( this );
         connect ( jobSeq, SIGNAL(done(ThreadWeaver::Job*)),
                   SLOT(deleteSequence(ThreadWeaver::Job*)) );
@@ -28,6 +28,7 @@ void DeleteTest::DeleteSequenceTest()
     }
 
     ThreadWeaver::Weaver::instance()->resume();
+    ThreadWeaver::Weaver::instance()->finish();
 }
 
 void DeleteTest::deleteSequence(ThreadWeaver::Job* job)
