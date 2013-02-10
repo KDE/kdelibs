@@ -62,7 +62,7 @@ class KuitEntityResolver : public QXmlStreamEntityResolver
 
     QString resolveUndeclaredEntity (const QString &name)
     {
-        QString value = entityMap[name];
+        QString value = entityMap.value(name);
         // This will return empty string if the entity name is not known,
         // which will make QXmlStreamReader signal unknown entity error.
         return value;
