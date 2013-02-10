@@ -124,8 +124,6 @@ public:
        When zero, all elements are done.
     */
     int jobCounter;
-
-    QMutex mutex;
 };
 
 JobCollection::JobCollection ( QObject *parent )
@@ -214,7 +212,7 @@ void JobCollection::execute ( Thread *t )
     {   // d->elements is supposedly constant at this time, since we are
         // already queued
         // set job counter:
-        QMutexLocker l ( & d->mutex );
+        QMutexLocker l(mutex()); Q_UNUSED(l);
         d->jobCounter = d->elements->size();
 
         // queue elements:
@@ -238,14 +236,14 @@ void JobCollection::execute ( Thread *t )
 
 Job* JobCollection::jobAt( int i )
 {
-    QMutexLocker l( &d->mutex );
+    QMutexLocker l(mutex()); Q_UNUSED(l);
     REQUIRE ( i >= 0 && i < d->elements->size() );
     return d->elements->at( i )->payload();
 }
 
 int JobCollection::jobListLength() const
 {
-    QMutexLocker l( &d->mutex );
+    QMutexLocker l(mutex()); Q_UNUSED(l);
     return d->elements->size();
 }
 
@@ -253,7 +251,7 @@ bool JobCollection::canBeExecuted()
 {
     bool inheritedCanRun = true;
 
-    QMutexLocker l( &d->mutex );
+    QMutexLocker l(mutex()); Q_UNUSED(l);
 
     if ( d->elements->size() > 0 )
     {
@@ -271,7 +269,7 @@ void JobCollection::jobRunnerDone()
 	bool emitDone = false;
 
 	{
-		QMutexLocker l(&d->mutex);
+        QMutexLocker l(mutex()); Q_UNUSED(l);
 
 		if ( d->jobCounter == 0 )
 		{   // there is a small chance that (this) has been dequeued in the
@@ -322,7 +320,7 @@ void JobCollection::dequeueElements()
 
 	{
 		// dequeue everything:
-		QMutexLocker l( &d->mutex );
+        QMutexLocker l(mutex()); Q_UNUSED(l);
 
         if ( d->api != 0 )
 		{
