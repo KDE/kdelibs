@@ -350,13 +350,13 @@ public:
      * but it probably isn't used.
      */
     KEditToolBarWidgetPrivate(KEditToolBarWidget* widget,
-                              const KComponentData &cData, KActionCollection* collection)
+                              const QString &cName, KActionCollection* collection)
         : m_collection( collection ),
           m_widget(widget),
           m_factory(NULL),
           m_loadedOnce( false )
     {
-        m_componentData = cData;
+        m_componentName = cName;
         m_isPart   = false;
         m_helpArea = 0L;
         m_kdialogProcess = 0;
@@ -400,8 +400,7 @@ public:
 
     QString xmlFile(const QString& xml_file) const
     {
-        return xml_file.isEmpty() ? QString(m_componentData.componentName()) + "ui.rc" :
-            xml_file;
+        return xml_file.isEmpty() ? m_componentName + "ui.rc" : xml_file;
     }
 
     /**
@@ -416,7 +415,7 @@ public:
         if ( !QDir::isRelativePath(xml_file) )
             raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
         else
-            raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_componentData.componentName());
+            raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_componentName);
 
         return raw_xml;
     }
@@ -464,7 +463,7 @@ public:
     KActionCollection* m_collection;
     KEditToolBarWidget* m_widget;
     KXMLGUIFactory* m_factory;
-    KComponentData m_componentData;
+    QString m_componentName;
 
     QPixmap m_emptyIcon;
 
@@ -728,14 +727,14 @@ void KEditToolBar::setGlobalDefaultToolBar(const char *toolbarName)
 KEditToolBarWidget::KEditToolBarWidget( KActionCollection *collection,
                                         QWidget *parent )
   : QWidget(parent),
-    d(new KEditToolBarWidgetPrivate(this, componentData(), collection))
+    d(new KEditToolBarWidgetPrivate(this, componentName(), collection))
 {
     d->setupLayout();
 }
 
 KEditToolBarWidget::KEditToolBarWidget( QWidget *parent )
   : QWidget(parent),
-    d(new KEditToolBarWidgetPrivate(this, componentData(), KXMLGUIClient::actionCollection() /*create new one*/))
+    d(new KEditToolBarWidgetPrivate(this, componentName(), KXMLGUIClient::actionCollection() /*create new one*/))
 {
     d->setupLayout();
 }
@@ -908,7 +907,7 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
   //kDebug(240) << "rebuilding the gui";
   foreach (KXMLGUIClient* client, clients)
   {
-    //kDebug(240) << "updating client " << client << " " << client->componentData().componentName() << "  xmlFile=" << client->xmlFile();
+    //kDebug(240) << "updating client " << client << " " << client->componentName() << "  xmlFile=" << client->xmlFile();
     QString file( client->xmlFile() ); // before setting ui_standards!
     if ( !file.isEmpty() )
     {

@@ -34,7 +34,7 @@ int main( int argc, char **argv )
     KXMLGUIFactory *factory = new KXMLGUIFactory( builder );
 
     Client *shell = new Client;
-    shell->setComponentData(KComponentData("konqueror"));
+    shell->setComponentName("konqueror", "Konqueror");
 
     a = new KAction( KDE::icon( "view-split-left-right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );

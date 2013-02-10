@@ -22,8 +22,10 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDomDocument>
+#include <QStandardPaths>
 
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kxmlguiclient.h>
@@ -38,7 +40,7 @@ bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collectio
 
     QString schemeFileName;
     if (!dir.isEmpty())
-        schemeFileName = dir + "shortcuts/" + client->componentData().componentName() + schemeName;
+        schemeFileName = dir + "shortcuts/" + client->componentName() + schemeName;
     else
         schemeFileName = shortcutSchemeFileName(client, schemeName);
 
@@ -52,7 +54,7 @@ bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collectio
     QDomDocument doc;
     QDomElement docElem = doc.createElement("kpartgui");
     docElem.setAttribute("version", "1");
-    docElem.setAttribute("name", client->componentData().componentName());
+    docElem.setAttribute("name", client->componentName());
     doc.appendChild(docElem);
     QDomElement elem = doc.createElement("ActionProperties");
     docElem.appendChild(elem);
@@ -87,8 +89,8 @@ QString KShortcutSchemesHelper::currentShortcutSchemeName()
 QString KShortcutSchemesHelper::shortcutSchemeFileName(const KXMLGUIClient *client, const QString &schemeName)
 {
     return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' +
-        client->componentData().componentName() + "/shortcuts/" +
-        client->componentData().componentName() + schemeName;
+        client->componentName() + "/shortcuts/" +
+        client->componentName() + schemeName;
 }
 
 QString KShortcutSchemesHelper::applicationShortcutSchemeFileName(const QString &schemeName)

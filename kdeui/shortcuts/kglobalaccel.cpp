@@ -249,7 +249,7 @@ void KGlobalAccelPrivate::doRegister(KAction *action)
     // Under configuration mode - deprecated - we ignore the component given
     // from the action and use our own.
     if (isUsingForeignComponentName) {
-        action->d->componentData = mainComponent;
+        action->d->componentName = mainComponent.componentName();
     }
     QStringList actionId = makeActionId(action);
 
@@ -395,15 +395,13 @@ KShortcut KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
 
 QString KGlobalAccelPrivate::componentUniqueForAction(const KAction *action)
 {
-    Q_ASSERT(action->d->componentData.isValid());
-    return action->d->componentData.componentName();
+    return action->d->componentName;
 }
 
 
 QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
 {
-    Q_ASSERT(action->d->componentData.isValid());
-    return action->d->componentData.aboutData()->programName();
+    return action->d->componentDisplayName;
 }
 
 

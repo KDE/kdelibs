@@ -35,6 +35,7 @@
 
 #include <kdirnotify.h>
 #include <kfiledialog.h>
+#include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
@@ -71,6 +72,7 @@ public:
     {
     }
 
+    KComponentData m_componentData;
     PartBase *q_ptr;
     PartBase::PluginLoadingMode m_pluginLoadingMode;
     int m_pluginInterfaceVersion;
@@ -135,6 +137,12 @@ QObject *PartBase::partObject() const
     return d->m_obj;
 }
 
+KComponentData PartBase::componentData() const
+{
+    Q_D(const PartBase);
+    return d->m_componentData;
+}
+
 void PartBase::setComponentData(const KComponentData &componentData)
 {
     setComponentData(componentData, true);
@@ -144,7 +152,8 @@ void PartBase::setComponentData(const KComponentData &componentData, bool bLoadP
 {
     Q_D(PartBase);
 
-    KXMLGUIClient::setComponentData(componentData);
+    d->m_componentData = componentData;
+    KXMLGUIClient::setComponentName(componentData.componentName(), componentData.aboutData()->programName());
     KLocalizedString::insertCatalog(componentData.catalogName());
     if (bLoadPlugins) {
         loadPlugins(d->m_obj, this, componentData);
@@ -246,8 +255,7 @@ KIconLoader* Part::iconLoader()
     Q_D(Part);
 
     if (!d->m_iconLoader) {
-        Q_ASSERT(componentData().isValid());
-        d->m_iconLoader = new KIconLoader(componentData().componentName());
+        d->m_iconLoader = new KIconLoader(componentName());
     }
     return d->m_iconLoader;
 }

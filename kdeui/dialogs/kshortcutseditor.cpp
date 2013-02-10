@@ -118,16 +118,9 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
     // checking.
     d->delegate->setCheckActionCollections(d->actionCollections);
     QString displayTitle = title;
-
     if (displayTitle.isEmpty()) {
         // Use the programName (Translated).
-        if (const KAboutData *about = collection->componentData().aboutData()) {
-            displayTitle = about->programName();
-        }
-        // Yes it happens. Some apps don't set the programName.
-        if (displayTitle.isEmpty()) {
-            displayTitle = i18n("Unknown");
-        }
+        displayTitle = collection->componentDisplayName();
     }
 
     QTreeWidgetItem *hier[3];

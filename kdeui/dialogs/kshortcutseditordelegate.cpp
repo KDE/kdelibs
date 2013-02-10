@@ -178,7 +178,7 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
                 editor->setMultiKeyShortcutsAllowed(false);
                 KAction *kaction = qobject_cast<KAction*>(action);
                 if (kaction) {
-                    editor->setComponentName(kaction->d->componentData.componentName());
+                    editor->setComponentName(kaction->d->componentName);
                 }
             }
 

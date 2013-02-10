@@ -82,6 +82,8 @@ public:
   void setPartObject( QObject *object );
   QObject *partObject() const;
 
+  KComponentData componentData() const;
+
 protected:
   /**
    * Set the componentData(KComponentData) for this part.

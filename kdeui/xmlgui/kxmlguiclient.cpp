@@ -28,9 +28,9 @@
 #include <QTextStream>
 #include <QRegExp>
 #include <QPointer>
+#include <QCoreApplication>
 #include <qstandardpaths.h>
 
-#include <kcomponentdata.h>
 #include <kcoreauthorized.h>
 #include <kdebug.h>
 
@@ -43,7 +43,7 @@ class KXMLGUIClientPrivate
 {
 public:
   KXMLGUIClientPrivate() 
-    : m_componentData(KComponentData::mainComponent()),
+    : m_componentName(QCoreApplication::applicationName()),
       m_actionCollection(0),
       m_parent(0L),
       m_builder(0L)
@@ -61,7 +61,7 @@ public:
   QDomElement findMatchingElement( const QDomElement &base,
                                    const QDomElement &additive );
 
-  KComponentData m_componentData;
+  QString m_componentName;
 
   QDomDocument m_doc;
   KActionCollection *m_actionCollection;
@@ -140,9 +140,9 @@ QAction *KXMLGUIClient::action( const QDomElement &element ) const
   return actionCollection()->action( qPrintable(element.attribute( QLatin1String("name") )) );
 }
 
-KComponentData KXMLGUIClient::componentData() const
+QString KXMLGUIClient::componentName() const
 {
-  return d->m_componentData;
+  return d->m_componentName;
 }
 
 QDomDocument KXMLGUIClient::domDocument() const
@@ -166,7 +166,7 @@ QString KXMLGUIClient::localXMLFile() const
     if (d->m_xmlFile.isEmpty()) // setXMLFile not called at all, can't save. Use case: ToolBarHandler
         return QString();
 
-    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + componentData().componentName() + '/' + d->m_xmlFile;
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + componentName() + '/' + d->m_xmlFile;
 }
 
 
@@ -180,10 +180,11 @@ void KXMLGUIClient::reloadXML()
         setXMLFile( file );
 }
 
-void KXMLGUIClient::setComponentData(const KComponentData &componentData)
+void KXMLGUIClient::setComponentName(const QString &componentName, const QString &componentDisplayName)
 {
-  d->m_componentData = componentData;
-  actionCollection()->setComponentData( componentData );
+  d->m_componentName = componentName;
+  actionCollection()->setComponentName(componentName);
+  actionCollection()->setComponentDisplayName(componentDisplayName);
   if ( d->m_builder )
     d->m_builder->setBuilderClient( this );
 }
@@ -213,14 +214,14 @@ void KXMLGUIClient::setXMLFile( const QString& _file, bool merge, bool setXMLDoc
   if ( !QDir::isRelativePath( file ) ) {
     allFiles.append( file );
   } else {
-    const QString filter = componentData().componentName() + '/' + _file;
+    const QString filter = componentName() + '/' + _file;
     allFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, filter) +
                QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, _file);
   }
   if ( allFiles.isEmpty() && !_file.isEmpty() ) {
     // if a non-empty file gets passed and we can't find it,
     // inform the developer using some debug output
-    kWarning() << "cannot find .rc file" << _file << "for component" << componentData().componentName();
+    kWarning() << "cannot find .rc file" << _file << "for component" << componentName();
   }
 
   // make sure to merge the settings from any file specified by setLocalXMLFile()

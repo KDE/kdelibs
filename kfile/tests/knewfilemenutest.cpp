@@ -64,8 +64,7 @@ private Q_SLOTS:
         QFETCH(QString, expectedFilename);
 
         QWidget parentWidget;
-        KComponentData comp("foo");
-        KActionCollection coll(this, comp);
+        KActionCollection coll(this, "foo");
         KNewFileMenu menu(&coll, "the_action", this);
         menu.setModal(false);
         menu.setParentWidget(&parentWidget);

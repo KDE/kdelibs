@@ -146,7 +146,7 @@ void MainWindow::createShellGUI( bool create )
     if ( create )
     {
         if ( isHelpMenuEnabled() && !d->m_helpMenu )
-            d->m_helpMenu = new KHelpMenu( this, componentData().aboutData(), true, actionCollection() );
+            d->m_helpMenu = new KHelpMenu( this, KComponentData::mainComponent().aboutData(), true, actionCollection() );
 
         QString f = xmlFile();
         setXMLFile(QStandardPaths::locate(QStandardPaths::ConfigLocation, "ui/ui_standards.rc"));
@@ -154,7 +154,7 @@ void MainWindow::createShellGUI( bool create )
             setXMLFile( f, true );
         else
         {
-            QString auto_file( componentData().componentName() + "ui.rc" );
+            QString auto_file( componentName() + "ui.rc" );
             setXMLFile( auto_file, true );
         }
 

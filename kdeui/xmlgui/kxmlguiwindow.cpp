@@ -234,10 +234,10 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     if (d->showHelpMenu) {
         delete d->helpMenu;
         // we always want a help menu
-        d->helpMenu = new KHelpMenu(this, componentData().aboutData(), true, actionCollection());
+        d->helpMenu = new KHelpMenu(this, KComponentData::mainComponent().aboutData(), true, actionCollection());
     }
 
-    const QString windowXmlFile = xmlfile.isNull() ? componentData().componentName() + "ui.rc" : xmlfile;
+    const QString windowXmlFile = xmlfile.isNull() ? componentName() + "ui.rc" : xmlfile;
 
     // Help beginners who call setXMLFile and then setupGUI...
     if (!xmlFile().isEmpty() && xmlFile() != windowXmlFile) {

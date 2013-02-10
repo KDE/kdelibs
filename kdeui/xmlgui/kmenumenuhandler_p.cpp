@@ -166,7 +166,7 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
     const KXMLGUIClient* client = collection->parentGUIClient ();
     QString xmlFile = client->localXMLFile();
     QDomDocument document;
-    document.setContent(KXMLGUIFactory::readConfigFile( client->xmlFile(), client->componentData().componentName()));
+    document.setContent(KXMLGUIFactory::readConfigFile( client->xmlFile(), client->componentName()));
     QDomElement elem = document.documentElement().toElement();
 
     const QLatin1String tagToolBar( "ToolBar" );

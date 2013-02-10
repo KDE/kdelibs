@@ -19,6 +19,7 @@
 #include <QTextEdit>
 #include <QTimer>
 #include <QApplication>
+#include <QStandardPaths>
 
 #include <kxmlguiwindow.h>
 #include <kaboutdata.h>

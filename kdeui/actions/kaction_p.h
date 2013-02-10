@@ -21,7 +21,6 @@
 
 #include "kglobalaccel.h"
 #include "kgesturemap.h"
-#include <kcomponentdata.h>
 #include <kshortcut.h>
 
 class KAction;
@@ -34,7 +33,7 @@ class KActionPrivate
 {
     public:
         KActionPrivate()
-            : componentData(KComponentData::mainComponent()), globalShortcutEnabled(false), q(0), decorator(0)
+            : componentName(), globalShortcutEnabled(false), q(0), decorator(0)
         {
         }
 
@@ -44,14 +43,17 @@ class KActionPrivate
         void init(KAction *q_ptr);
         void setActiveGlobalShortcutNoEnable(const KShortcut &cut);
 
-        void maybeSetComponentData(const KComponentData &kcd)
+        // called by KActionCollection
+        void maybeSetComponentName(const QString &cname, const QString &dispName)
         {
             if (neverSetGlobalShortcut) {
-                componentData = kcd;
+                componentName = cname;
+                componentDisplayName = dispName;
             }
         }
 
-        KComponentData componentData;   //this is **way** more lightweight than it looks
+        QString componentName;
+        QString componentDisplayName;
         KShortcut globalShortcut, defaultGlobalShortcut;
 
         bool globalShortcutEnabled : 1;

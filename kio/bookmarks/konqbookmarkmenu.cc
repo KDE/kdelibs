@@ -26,6 +26,7 @@
 
 #include <kmenu.h>
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kiconloader.h>
 #include <kactioncollection.h>

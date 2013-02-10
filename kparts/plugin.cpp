@@ -30,6 +30,7 @@
 #include <QtCore/QFileInfo>
 #include <QDir>
 
+#include <kaboutdata.h>
 #include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kxmlguifactory.h>
@@ -217,7 +218,7 @@ bool Plugin::hasPlugin( QObject* parent, const QString& library )
 void Plugin::setComponentData(const KComponentData &componentData)
 {
     KLocalizedString::insertCatalog(componentData.catalogName());
-    KXMLGUIClient::setComponentData(componentData);
+    KXMLGUIClient::setComponentName(componentData.componentName(), componentData.aboutData()->programName());
 }
 
 void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,

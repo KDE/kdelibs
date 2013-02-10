@@ -30,7 +30,6 @@ class QWidget;
 
 class QAction;
 class KActionCollection;
-class KComponentData;
 class KXMLGUIClientPrivate;
 class KXMLGUIFactory;
 class KXMLGUIBuilder;
@@ -98,9 +97,9 @@ public:
   virtual KActionCollection* actionCollection() const;
 
   /**
-   * @return The componentData ( KComponentData ) for this GUI client.
+   * @return The component name for this GUI client.
    */
-  virtual KComponentData componentData() const;
+  virtual QString componentName() const;
 
   /**
    * @return The parsed XML in a QDomDocument, set by
@@ -298,18 +297,12 @@ public:
 
 protected:
   /**
-   * Returns true if client was added to super client list.
-   * Returns false if client was already in list.
-   */
-  //bool addSuperClient( KXMLGUIClient * );
-
-  /**
-   * Sets the componentData ( KComponentData) for this part.
+   * Sets the component name for this part.
    *
    * Call this first in the inherited class constructor.
    * (At least before setXMLFile().)
    */
-  virtual void setComponentData(const KComponentData &componentData);
+  virtual void setComponentName(const QString &componentName, const QString &componentDisplayName);
 
   /**
    * Sets the name of the rc file containing the XML for the part.
@@ -321,7 +314,7 @@ protected:
    * @param file Either an absolute path for the file, or simply the
    *             filename, which will then be assumed to be installed
    *             in the "data" resource, under a directory named like
-   *             the componentData.
+   *             the component name.
    *             If you pass an absolute path here, make sure to also call
    *             setLocalXMLFile, otherwise toolbar editing won't work.
    * @param merge Whether to merge with the global document.

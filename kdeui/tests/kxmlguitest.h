@@ -10,8 +10,8 @@ class Client : public QObject, public KXMLGUIClient
 public:
     Client() {}
 
-    void setXMLFile( const QString &f, bool merge = true, bool setXMLDoc = true ) { KXMLGUIClient::setXMLFile( f, merge, setXMLDoc ); }
-    void setComponentData(const KComponentData &inst) { KXMLGUIClient::setComponentData(inst); }
+    using KXMLGUIClient::setXMLFile;
+    using KXMLGUIClient::setComponentName;
 
 public Q_SLOTS:
     void slotSec();

@@ -28,14 +28,13 @@
 
 #include <kdeui_export.h>
 #include <kstandardaction.h>
-#include <kcomponentdata.h>
 
 #include <QtCore/QObject>
 
 class QAction;
 class KAction;
 class KXMLGUIClient;
-
+class KConfigGroup;
 class QActionGroup;
 class QString;
 
@@ -65,10 +64,10 @@ class KDEUI_EXPORT KActionCollection : public QObject
 
 public:
   /**
-   * Constructor.  Allows specification of a KComponentData other than the default
-   * global KComponentData, where needed.
+   * Constructor.  Allows specification of a component name other than the default
+   * application name, where needed (remember to call setComponentDisplayName() too).
    */
-  explicit KActionCollection(QObject *parent, const KComponentData &cData = KComponentData());
+  explicit KActionCollection(QObject *parent, const QString &cName = QString());
 
   /**
    * Destructor.
@@ -234,18 +233,27 @@ public:
   const QList<QActionGroup*> actionGroups() const;
 
   /**
-   * Set the \a componentData associated with this action collection.
+   * Set the \a componentName associated with this action collection.
    *
    * \warning Don't call this method on a KActionCollection that contains
    * actions. This is not supported.
    *
-   * \param componentData the KComponentData which is to be associated with this action collection,
-   * or an invalid KComponentData instance to indicate the default KComponentData.
+   * \param componentData the KComponentName which is to be associated with this action collection,
+   * or QString() to indicate the app name.
    */
-  void setComponentData(const KComponentData &componentData);
+  void setComponentName(const QString &componentName);
 
-  /** The KComponentData with which this class is associated. */
-  KComponentData componentData() const;
+  /** The component name with which this class is associated. */
+  QString componentName() const;
+
+  /**
+   * Set the component display name associated with this action collection.
+   * (e.g. for the toolbar editor)
+   */
+  void setComponentDisplayName(const QString &displayName);
+
+  /** The display name for the associated component. */
+  QString componentDisplayName() const;
 
   /**
    * The parent KXMLGUIClient, or null if not available.

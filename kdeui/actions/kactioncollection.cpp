@@ -36,13 +36,13 @@
 
 #include <QtXml/QDomDocument>
 #include <QtCore/QSet>
+#include <QGuiApplication>
 #include <QtCore/QMap>
 #include <QtCore/QList>
 #include <QAction>
 #include <QMetaMethod>
 
 #include <stdio.h>
-#include "kcomponentdata.h"
 #include "kconfiggroup.h"
 
 class KActionCollectionPrivate
@@ -60,7 +60,7 @@ public:
   }
 
   void setComponentForAction(KAction *kaction)
-    { kaction->d->maybeSetComponentData(m_componentData); }
+    { kaction->d->maybeSetComponentName(m_componentName, m_componentDisplayName); }
 
   static QList<KActionCollection*> s_allCollections;
 
@@ -69,7 +69,8 @@ public:
 
   bool writeKXMLGUIConfigFile();
 
-  KComponentData m_componentData;
+  QString m_componentName;
+  QString m_componentDisplayName;
 
   //! Remove a action from our internal bookkeeping. Returns NULL if the
   //! action doesn't belong to us.
@@ -93,14 +94,14 @@ public:
 
 QList<KActionCollection*> KActionCollectionPrivate::s_allCollections;
 
-KActionCollection::KActionCollection(QObject *parent, const KComponentData &cData)
+KActionCollection::KActionCollection(QObject *parent, const QString &cName)
   : QObject( parent )
   , d(new KActionCollectionPrivate)
 {
   d->q = this;
   KActionCollectionPrivate::s_allCollections.append(this);
 
-  setComponentData(cData);
+  setComponentName(cName);
 }
 
 KActionCollection::KActionCollection( const KXMLGUIClient *parent )
@@ -111,7 +112,7 @@ KActionCollection::KActionCollection( const KXMLGUIClient *parent )
   KActionCollectionPrivate::s_allCollections.append(this);
 
   d->m_parentGUIClient=parent;
-  d->m_componentData = parent->componentData();
+  d->m_componentName = parent->componentName();
 }
 
 KActionCollection::~KActionCollection()
@@ -154,7 +155,7 @@ bool KActionCollection::isEmpty() const
   return count() == 0;
 }
 
-void KActionCollection::setComponentData(const KComponentData &cData)
+void KActionCollection::setComponentName(const QString &cName)
 {
   if (count() > 0) {
     // Its component name is part of an action's signature in the context of
@@ -166,16 +167,30 @@ void KActionCollection::setComponentData(const KComponentData &cData)
     qWarning() << "this does not work on a KActionCollection containing actions!";
   }
 
-  if (cData.isValid()) {
-    d->m_componentData = cData;
-  } else {
-    d->m_componentData = KComponentData::mainComponent();
-  }
+    if (!cName.isEmpty()) {
+        d->m_componentName = cName;
+    } else {
+        d->m_componentName = QCoreApplication::applicationName();
+    }
 }
 
-KComponentData KActionCollection::componentData() const
+QString KActionCollection::componentName() const
 {
-  return d->m_componentData;
+    return d->m_componentName;
+}
+
+void KActionCollection::setComponentDisplayName(const QString &displayName)
+{
+    d->m_componentDisplayName = displayName;
+}
+
+QString KActionCollection::componentDisplayName() const
+{
+    if (!d->m_componentDisplayName.isEmpty())
+        return d->m_componentDisplayName;
+    if (!QGuiApplication::applicationDisplayName().isEmpty())
+        return QGuiApplication::applicationDisplayName();
+    return QCoreApplication::applicationName();
 }
 
 const KXMLGUIClient *KActionCollection::parentGUIClient() const
@@ -506,7 +521,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
     QString attrShortcut = QLatin1String("shortcut");
 
     // Read XML file
-    QString sXml(KXMLGUIFactory::readConfigFile(kxmlguiClient->xmlFile(), q->componentData().componentName()));
+    QString sXml(KXMLGUIFactory::readConfigFile(kxmlguiClient->xmlFile(), q->componentName()));
     QDomDocument doc;
     doc.setContent( sXml );
 
@@ -555,7 +570,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
     }
 
     // Write back to XML file
-    KXMLGUIFactory::saveConfigFile(doc, kxmlguiClient->localXMLFile(), q->componentData().componentName());
+    KXMLGUIFactory::saveConfigFile(doc, kxmlguiClient->localXMLFile(), q->componentName());
     return true;
 }
 

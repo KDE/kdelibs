@@ -689,27 +689,27 @@ void KToolBar::Private::slotContextShowText()
     contextButtonAction->setPriority(priority);
 
     // Find to which xml file and componentData the action belongs to
-    KComponentData componentData;
+    QString componentName;
     QString filename;
     KXMLGUIClient *client;
     if (findAction(contextButtonAction->objectName(), &client)) {
-        componentData = client->componentData();
+        componentName = client->componentName();
         filename = client->xmlFile();
     }
     if (filename.isEmpty()) {
-        componentData = KComponentData::mainComponent();
-        filename = componentData.componentName() + "ui.rc";
+        componentName = QCoreApplication::applicationName();
+        filename = componentName + "ui.rc";
     }
 
     // Save the priority state of the action
-    const QString configFile = KXMLGUIFactory::readConfigFile(filename, componentData.componentName());
+    const QString configFile = KXMLGUIFactory::readConfigFile(filename, componentName);
 
     QDomDocument document;
     document.setContent(configFile);
     QDomElement elem = KXMLGUIFactory::actionPropertiesElement(document);
     QDomElement actionElem = KXMLGUIFactory::findActionByName(elem, contextButtonAction->objectName(), true);
     actionElem.setAttribute("priority", priority);
-    KXMLGUIFactory::saveConfigFile(document, filename, componentData.componentName());
+    KXMLGUIFactory::saveConfigFile(document, filename, componentName);
 }
 
 void KToolBar::Private::slotContextTop()

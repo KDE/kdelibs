@@ -39,7 +39,6 @@
 
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kcomponentdata.h>
 #include <kiconloader.h>
 #include <kshortcut.h>
 
@@ -734,7 +733,7 @@ void KXMLGUIFactoryPrivate::applyShortcutScheme(KXMLGUIClient *client, const QLi
 
     //Check if we really have the shortcut configuration here
     if (!actionPropElement.isNull()) {
-        kDebug(260) << "Applying shortcut scheme for XMLGUI client" << client->componentData().componentName();
+        kDebug(260) << "Applying shortcut scheme for XMLGUI client" << client->componentName();
 
         //Apply all shortcuts we have
         applyActionProperties(actionPropElement, KXMLGUIFactoryPrivate::SetDefaultShortcut);

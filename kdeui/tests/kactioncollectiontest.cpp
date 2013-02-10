@@ -4,7 +4,7 @@
 #include <QtCore/QPointer>
 
 #include <kaction.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 
 #include <assert.h>
 #include <kaboutdata.h>

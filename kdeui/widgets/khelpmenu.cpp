@@ -40,6 +40,7 @@
 #include <kaction.h>
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
+#include <kcomponentdata.h>
 #include <kbugreport.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
