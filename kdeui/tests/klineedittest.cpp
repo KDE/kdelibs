@@ -1,18 +1,15 @@
 #include <QPushButton>
-#include <QtCore/QTimer>
+#include <QTimer>
 #include <QBoxLayout>
 #include <QApplication>
+#include <QDebug>
+#include <QLabel>
+#include <QHBoxLayout>
 
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
-#include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kcompletionbox.h>
 
 #include "klineedittest.h"
-#include <QLabel>
-#include <QHBoxLayout>
 #include <krestrictedline.h>
 
 KLineEditTest::KLineEditTest ( QWidget* widget )
@@ -78,7 +75,7 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
     QPushButton *btnStyle = new QPushButton( "Stylesheet", this);
     connect( btnStyle, SIGNAL(clicked()), SLOT(slotSetStyleSheet()));
 
-    QHBoxLayout *buttonLayout = new QHBoxLayout(this);
+    QHBoxLayout *buttonLayout = new QHBoxLayout();
     buttonLayout->addWidget( m_btnExit );
     buttonLayout->addWidget( m_btnReadOnly );
     buttonLayout->addWidget( m_btnPassword );
@@ -120,17 +117,17 @@ void KLineEditTest::show()
 
 void KLineEditTest::slotReturnPressed()
 {
-    kDebug() << "Return pressed";
+    qDebug() << "Return pressed";
 }
 
 void KLineEditTest::slotReturnPressed( const QString& text )
 {
-    kDebug() << "Return pressed: " << text;
+    qDebug() << "Return pressed: " << text;
 }
 
 void KLineEditTest::resultOutput( const QString& text )
 {
-    kDebug() << "KlineEditTest Debug: " << text;
+    qDebug() << "KlineEditTest Debug: " << text;
 }
 
 void KLineEditTest::slotReadOnly( bool ro )
@@ -188,11 +185,7 @@ void KLineEditTest::slotInvalidChar(int key)
 
 int main ( int argc, char **argv)
 {
-    KAboutData aboutData( "klineedittest", 0, qi18n("klineedittest"), "1.0" );
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KCmdLineArgs::addStdCmdLineOptions();
-
-    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+    QApplication a(argc, argv);
     KLineEditTest *t = new KLineEditTest();
     //t->lineEdit()->setTrapReturnKey( true );
     //t->lineEdit()->completionBox()->setTabHandling( false );

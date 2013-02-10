@@ -1,29 +1,21 @@
 #include "kpixmapregionselectordialog.h"
 #include <QPixmap>
 #include <QImage>
+#include <QFile>
 #include <QApplication>
-#include <kcmdlineargs.h>
 #include <iostream>
 
 int main(int argc, char**argv)
 {
-  KCmdLineOptions options;
-  options.add("+file", qi18n("The image file to open"));
+  QApplication app(argc, argv);
 
-  KCmdLineArgs::init(argc, argv, "test", 0, qi18n("test"), "1.0", qi18n("test"));
-  KCmdLineArgs::addCmdLineOptions( options );
-  QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-  if (args->count()!=1)
-  {
-    std::cout << "Usage: kpixmapregionselectordialogtest <imageFile>" << std::endl;
+  if (argc <= 1) {
+    std::cerr << "Usage: kpixmapregionselectordialogtest <imageFile>" << std::endl;
     return 1;
   }
 
-  QImage image=
-     KPixmapRegionSelectorDialog::getSelectedImage(QPixmap(args->arg(0)),100,100);
-
+  QPixmap pix(QFile::decodeName(argv[1]));
+  QImage image = KPixmapRegionSelectorDialog::getSelectedImage(pix, 100, 100);
   image.save("output.png", "PNG");
 
   return 0;
