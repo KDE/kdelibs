@@ -36,7 +36,6 @@
 #include <QMenuBar>
 #include <QStatusBar>
 #include "kmenumenuhandler_p.h"
-#include <kcomponentdata.h>
 
 using namespace KDEPrivate;
 
@@ -67,7 +66,6 @@ class KXMLGUIBuilderPrivate
 
     QString attrIcon;
 
-    KComponentData m_componentData;
     KXMLGUIClient *m_client;
 
     KMenuMenuHandler *m_menumenuhandler;
@@ -383,18 +381,6 @@ KXMLGUIClient *KXMLGUIBuilder::builderClient() const
 void KXMLGUIBuilder::setBuilderClient( KXMLGUIClient *client )
 {
   d->m_client = client;
-  if ( client )
-      setBuilderComponentData( client->componentData() );
-}
-
-KComponentData KXMLGUIBuilder::builderComponentData() const
-{
-  return d->m_componentData;
-}
-
-void KXMLGUIBuilder::setBuilderComponentData(const KComponentData &componentData)
-{
-  d->m_componentData = componentData;
 }
 
 void KXMLGUIBuilder::finalizeGUI( KXMLGUIClient * )

@@ -629,8 +629,6 @@ QList<KXMLGUIClient*> KXMLGUIClient::childClients()
 void KXMLGUIClient::setClientBuilder( KXMLGUIBuilder *builder )
 {
   d->m_builder = builder;
-  if ( builder )
-    builder->setBuilderComponentData( componentData() );
 }
 
 KXMLGUIBuilder *KXMLGUIClient::clientBuilder() const

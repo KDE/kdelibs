@@ -22,7 +22,6 @@
 
 #include <kdeui_export.h>
 
-class KComponentData;
 class KXMLGUIBuilderPrivate;
 class KXMLGUIClient;
 
@@ -49,10 +48,6 @@ class KDEUI_EXPORT KXMLGUIBuilder
   KXMLGUIClient *builderClient() const;
   /* @internal */
   void setBuilderClient( KXMLGUIClient *client );
-  /* @internal */
-  KComponentData builderComponentData() const;
-  /* @internal */
-  void setBuilderComponentData(const KComponentData &componentData);
   /* @internal */
   QWidget *widget();
 

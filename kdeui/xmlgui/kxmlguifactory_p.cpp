@@ -822,14 +822,12 @@ QWidget *BuildHelper::createContainer( QWidget *parent, int index,
         }
     }
 
-    KComponentData oldInstance = m_state.builder->builderComponentData();
     KXMLGUIClient *oldClient = m_state.builder->builderClient();
 
     m_state.builder->setBuilderClient( m_state.guiClient );
 
     res = m_state.builder->createContainer( parent, index, element, containerAction );
 
-    m_state.builder->setBuilderComponentData(oldInstance);
     m_state.builder->setBuilderClient( oldClient );
 
     if ( res )
