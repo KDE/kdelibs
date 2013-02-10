@@ -108,7 +108,7 @@ QString KIconEngine::key() const
     return QString::fromLatin1("KIconEngine");
 }
 
-QIconEngineV2 *KIconEngine::clone() const
+QIconEngine *KIconEngine::clone() const
 {
     return new KIconEngine(mIconName, mIconLoader.data(), mOverlays);
 }
@@ -134,7 +134,7 @@ void KIconEngine::virtual_hook(int id, void *data)
         break;
     }
     default:
-        QIconEngineV2::virtual_hook(id, data);
+        QIconEngine::virtual_hook(id, data);
         break;
     }
 }
