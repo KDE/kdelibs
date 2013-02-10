@@ -416,7 +416,7 @@ public:
         if ( !QDir::isRelativePath(xml_file) )
             raw_xml = KXMLGUIFactory::readConfigFile(xml_file);
         else
-            raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_componentData);
+            raw_xml = KXMLGUIFactory::readConfigFile(xml_file, m_componentData.componentName());
 
         return raw_xml;
     }

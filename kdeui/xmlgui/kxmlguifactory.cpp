@@ -29,6 +29,7 @@
 #include <QtCore/QDir>
 #include <QtXml/QDomDocument>
 #include <QtCore/QFile>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QTextStream>
 #include <QWidget>
 #include <QtCore/QDate>
@@ -112,16 +113,16 @@ public:
     BuildStateStack m_stateStack;
 };
 
-QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponentData &_componentData )
+QString KXMLGUIFactory::readConfigFile(const QString &filename, const QString &_componentName)
 {
+    QString componentName = _componentName.isEmpty() ? QCoreApplication::applicationName() : _componentName;
     QString xml_file;
 
     if (!QDir::isRelativePath(filename))
         xml_file = filename;
     else
     {
-        KComponentData componentData = _componentData.isValid() ? _componentData : KComponentData::mainComponent();
-        xml_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, componentData.componentName() + '/' + filename);
+        xml_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, componentName + '/' + filename);
         if ( !QFile::exists( xml_file ) )
           xml_file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, filename);
     }
@@ -137,14 +138,14 @@ QString KXMLGUIFactory::readConfigFile( const QString &filename, const KComponen
     return QString::fromUtf8(buffer.constData(), buffer.size());
 }
 
-bool KXMLGUIFactory::saveConfigFile( const QDomDocument& doc,
-                                     const QString& filename, const KComponentData &_componentData )
+bool KXMLGUIFactory::saveConfigFile(const QDomDocument& doc,
+                                    const QString& filename, const QString &_componentName)
 {
-    KComponentData componentData = _componentData.isValid() ? _componentData : KComponentData::mainComponent();
+    QString componentName = _componentName.isEmpty() ? QCoreApplication::applicationName() : _componentName;
     QString xml_file(filename);
 
     if (QDir::isRelativePath(xml_file))
-        xml_file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + componentData.componentName() + '/' + filename;
+        xml_file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + '/' + componentName + '/' + filename;
 
     QFile file( xml_file );
     if ( xml_file.isEmpty() || !file.open( QIODevice::WriteOnly ) )
@@ -610,7 +611,7 @@ void KXMLGUIFactoryPrivate::applyActionProperties( const QDomElement &actionProp
 void KXMLGUIFactoryPrivate::configureAction( QAction *action, const QDomNamedNodeMap &attributes,
         ShortcutOption shortcutOption )
 {
-    for ( uint i = 0; i < attributes.length(); i++ )
+    for (int i = 0; i < attributes.length(); i++)
     {
         QDomAttr attr = attributes.item( i ).toAttr();
         if ( attr.isNull() )

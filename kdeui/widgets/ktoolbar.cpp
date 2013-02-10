@@ -702,14 +702,14 @@ void KToolBar::Private::slotContextShowText()
     }
 
     // Save the priority state of the action
-    const QString configFile = KXMLGUIFactory::readConfigFile(filename, componentData);
+    const QString configFile = KXMLGUIFactory::readConfigFile(filename, componentData.componentName());
 
     QDomDocument document;
     document.setContent(configFile);
     QDomElement elem = KXMLGUIFactory::actionPropertiesElement(document);
     QDomElement actionElem = KXMLGUIFactory::findActionByName(elem, contextButtonAction->objectName(), true);
     actionElem.setAttribute("priority", priority);
-    KXMLGUIFactory::saveConfigFile(document, filename, componentData);
+    KXMLGUIFactory::saveConfigFile(document, filename, componentData.componentName());
 }
 
 void KToolBar::Private::slotContextTop()

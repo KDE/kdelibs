@@ -506,7 +506,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
     QString attrShortcut = QLatin1String("shortcut");
 
     // Read XML file
-    QString sXml(KXMLGUIFactory::readConfigFile(kxmlguiClient->xmlFile(), q->componentData()));
+    QString sXml(KXMLGUIFactory::readConfigFile(kxmlguiClient->xmlFile(), q->componentData().componentName()));
     QDomDocument doc;
     doc.setContent( sXml );
 
@@ -555,7 +555,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
     }
 
     // Write back to XML file
-    KXMLGUIFactory::saveConfigFile(doc, kxmlguiClient->localXMLFile(), q->componentData());
+    KXMLGUIFactory::saveConfigFile(doc, kxmlguiClient->localXMLFile(), q->componentData().componentName());
     return true;
 }
 

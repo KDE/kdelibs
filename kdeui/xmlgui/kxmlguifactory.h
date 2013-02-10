@@ -84,10 +84,10 @@ class KDEUI_EXPORT KXMLGUIFactory : public QObject
   // XXX move to somewhere else? (Simon)
   /// @internal
   static QString readConfigFile(const QString &filename,
-          const KComponentData &componentData = KComponentData());
+                                const QString &componentName = QString());
   /// @internal
   static bool saveConfigFile(const QDomDocument& doc, const QString& filename,
-          const KComponentData &componentData = KComponentData());
+                             const QString &componentName = QString());
 
   /**
    * @internal
