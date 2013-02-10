@@ -40,6 +40,7 @@ JobSequence::JobSequence ( QObject *parent )
 
 void JobSequence::aboutToBeQueued (QueueAPI *api )
 {
+    Q_ASSERT(!mutex()->tryLock());
     REQUIRE (api != 0);
 
     if ( jobListLength() > 1 )
