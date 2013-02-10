@@ -219,6 +219,9 @@ static QString stateToString(KTcpSocket::State state)
 }
 
 #define HTTPREQUEST QByteArray("GET / HTTP/1.1\nHost: www.example.com\n\n")
+// I assume that example.com, hosted by the IANA, will exist indefinitely.
+// It is a nice test site because it serves a very small HTML page that should
+// fit into a TCP packet or two.
 
 void KTcpSocketTest::statesIana()
 {
@@ -232,17 +235,31 @@ void KTcpSocketTest::statesIana()
     QCOMPARE(s->state(), KTcpSocket::HostLookupState);
     s->waitForBytesWritten(2500) ;
     QCOMPARE(s->state(), KTcpSocket::ConnectedState);
-    s->waitForReadyRead(2500);
-    //I actually assume that the page delivered by www.iana.org will exist for years
-    QVERIFY(s->bytesAvailable() > 200);
+
+    // Try to ensure that inbound data in the next part of the test is really from the second request;
+    // it is not *guaranteed* that this reads all data, e.g. if the connection is very slow (so too many
+    // of the waitForReadyRead() time out), or if the reply packets are extremely fragmented (so 50 reads
+    // are not enough to receive all of them). I don't know the details of fragmentation so the latter
+    // problem could be nonexistent.
+    QByteArray received;
+    for (int i = 0; i < 50; i++) {
+        s->waitForReadyRead(50);
+        received.append(s->readAll());
+    }
+    QVERIFY(received.size() > 200);
+
+    // Here, the connection should neither have data in its write buffer nor inbound packets in flight
+
+    // Now reuse the connection for another request / reply pair
 
     s->write(HTTPREQUEST);
     s->waitForReadyRead();
+    // After waitForReadyRead(), the write buffer should be empty because the server has to wait for the
+    // end of the request before sending a reply.
+    // The socket can then shut down without having to wait for draining the write buffer.
+    // Incoming data cannot delay the transition to UnconnectedState, as documented in
+    // QAbstractSocket::disconnectFromHost(). close() just wraps disconnectFromHost().
     s->close();
-    if (s->state() == KTcpSocket::ClosingState)
-        s->waitForDisconnected();
-    //What happens is that during waitForReadyRead() the write buffer is written out
-    //completely so that the socket can shut down without having to wait for writeout.
     QCOMPARE((int)s->state(), (int)KTcpSocket::UnconnectedState);
 
     delete s;
