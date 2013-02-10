@@ -51,6 +51,7 @@ generate_export_header(kservice)
 target_link_libraries(kservice
    ${QT_QTDBUS_LIBRARY}
    kconfigcore
+   ki18n
 )
 
 set_target_properties(kservice PROPERTIES VERSION ${ECM_VERSION_STRING}

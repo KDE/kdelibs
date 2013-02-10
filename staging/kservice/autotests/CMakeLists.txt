@@ -26,6 +26,7 @@ macro(KSERVICE_UNIT_TESTS)
        ${QT_QTXML_LIBRARY}
        ${QT_QTMAIN_LIBRARY}
        kconfigcore
+       ki18n
     )
     #target_link_libraries(${_testname} kservice ${QT_QTCONCURRENT_LIBRARY})
     ecm_mark_as_test(${_testname})

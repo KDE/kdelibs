@@ -100,8 +100,6 @@ install(FILES
     jobs/kjob_p.h
     jobs/kjobtrackerinterface.h
     jobs/kjobuidelegate.h
-    # Only so that we can build kdepimlibs against kf5.
-    kernel/qlocalizedstring_porting.h
     randomness/krandom.h
     randomness/krandomsequence.h
     text/kmacroexpander.h
