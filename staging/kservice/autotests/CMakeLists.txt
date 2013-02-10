@@ -10,6 +10,8 @@ include_directories(
 include_directories(
   ${kconfig_SOURCE_DIR}/src/core
   ${kconfig_BINARY_DIR}/src/core
+  ${ki18n_SOURCE_DIR}/src
+  ${ki18n_BINARY_DIR}/src
 )
 
 include(ECMMarkAsTest)
