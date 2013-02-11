@@ -138,42 +138,6 @@ if(QT_QTDESIGNER_FOUND)
 
   endif() # webkit
 
-  if (QT_QT3SUPPORT_FOUND)
-
-     include_directories(
-       ${CMAKE_SOURCE_DIR}/kde3support
-       ${CMAKE_SOURCE_DIR}/kde3support/kdeui
-     )
-
-     add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.cpp
-       COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kde3support.widgets
-       MAIN_DEPENDENCY kde3support.widgets DEPENDS makekdewidgets)
-
-     set(kde3supportwidgets_PART_SRCS
-        classpreviews.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.cpp
-        ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.moc
-     )
-
-     qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kde3supportwidgets.moc)
-
-
-     qt4_add_resources(kde3supportwidgets_PART_SRCS kde3supportwidgets.qrc)
-
-     kde4_add_plugin(kde3supportwidgets ${kde3supportwidgets_PART_SRCS})
-
-     target_link_libraries(kde3supportwidgets ${KDE4_KDE3SUPPORT_LIBS} ${KDE4_KIO_LIBS} kwidgets)
-     if(NOT WIN32)
-        set_target_properties(kde3supportwidgets PROPERTIES
-                                     INSTALL_RPATH_USE_LINK_PATH TRUE
-                                     SKIP_BUILD_RPATH TRUE
-                                     BUILD_WITH_INSTALL_RPATH TRUE
-                                     INSTALL_RPATH ${LIB_INSTALL_DIR}
-                             )
-     endif(NOT WIN32)
-
-     install(TARGETS kde3supportwidgets  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
-  endif (QT_QT3SUPPORT_FOUND)
 endif (QT_QTDESIGNER_FOUND)
 
 ########### install files ###############

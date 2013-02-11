@@ -34,6 +34,6 @@ David Faure
 
 */
 
-// DOXYGEN_REFERENCES = kdecore kdeui kio kde3support solid
+// DOXYGEN_REFERENCES = kdecore kdeui kio solid
 // DOXYGEN_SET_PROJECT_NAME = KFile
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

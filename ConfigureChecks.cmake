@@ -32,10 +32,10 @@ set(SVG_SUPPORT 1)              # unused yet, but for the future
 # checks below.
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
-check_include_files(stdio.h       HAVE_STDIO_H)                        # kdoctools 
+check_include_files(stdio.h       HAVE_STDIO_H)                        # kdoctools
 check_include_files(stdlib.h      HAVE_STDLIB_H)                       # kdecore, kdoctools
 check_include_files(string.h      HAVE_STRING_H)                       # kdecore, kioslave/file
-check_include_files(strings.h     HAVE_STRINGS_H)                      # kjs, kdecore, kde3support
+check_include_files(strings.h     HAVE_STRINGS_H)                      # kjs, kdecore
 check_include_files(malloc.h      HAVE_MALLOC_H)                       # khtml
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)                  # kdecore, kioslave
 check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, config.h
@@ -205,7 +205,7 @@ endif (UNIX)
 #set(CMAKE_REQUIRED_LIBRARIES)
 
 check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
-check_function_exists(initgroups HAVE_INITGROUPS)        # kde3support/k3process, kdesu
+check_function_exists(initgroups HAVE_INITGROUPS)        # kdesu
 check_function_exists(mkstemps   HAVE_MKSTEMPS)          # dcop, kdecore/fakes.c
 check_function_exists(mkstemp    HAVE_MKSTEMP)           # kdecore/fakes.c
 check_function_exists(random     HAVE_RANDOM)            # kdecore/fakes.c

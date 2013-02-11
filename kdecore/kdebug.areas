@@ -16,7 +16,6 @@
 170        kdecore (KNetwork socket)
 172        kdecore (KStartupInfo)
 173        kdecore (KLocale)
-174        kde3support (K3ProcIO)
 175        kdecore (KPty/K3Process)
 176        kdeui (KWindowInfo)
 179        kdecore (KNetwork resolver)
@@ -28,7 +27,6 @@
 264        kdeui (KIconLoader)
 265        kdeui (KIconEffect)
 281        kdeui (KCModule)
-282        kde3support (K3DockWidget)
 283        kdeui (K*Gesture*)
 285        kdeui (Wallet)
 291        kdeui (KAboutDialog)
@@ -51,7 +49,6 @@
 711        kutils (KCModuleProxy)
 712        kutils (KCModuleInfo)
 713        kutils (KCModuleContainer)
-750        kde3support (kspell)
 800        kdewebkit
 912        ksmartcard (kdelibs)
 920        Solid (kdelibs)
