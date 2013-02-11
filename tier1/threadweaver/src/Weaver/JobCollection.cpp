@@ -67,12 +67,12 @@ Job* JobCollectionJobRunner::payload ()
 
 void JobCollectionJobRunner::aboutToBeQueued_locked (QueueAPI *api )
 {
-    m_payload->aboutToBeQueued_locked( api );
+    m_payload->aboutToBeQueued( api );
 }
 
 void JobCollectionJobRunner::aboutToBeDequeued_locked (QueueAPI *api )
 {
-    m_payload->aboutToBeDequeued_locked( api );
+    m_payload->aboutToBeDequeued( api );
 }
 
 void JobCollectionJobRunner::execute ( Thread *t )
@@ -183,14 +183,12 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
 {   //  Q_ASSERT ( d->weaver != 0 );
     // I thought: "must have been queued first"
     // but the user can queue and dequeue in a suspended Weaver
-
-    if ( d->api )
-    {
+    Q_ASSERT(!mutex()->tryLock());
+    if (d->api) {
         dequeueElements();
 
-        if ( !d->elements->isEmpty() )
-        {
-            d->elements->at( 0 )->aboutToBeDequeued_locked( api );
+        if (!d->elements->isEmpty()) {
+            d->elements->at(0)->aboutToBeDequeued(api);
         }
     }
 
