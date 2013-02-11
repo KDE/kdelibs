@@ -65,7 +65,6 @@ public:
         disableRestoreSelection = false;
         enableSqueezedText = false;
 
-        drawClickMsg = false;
         enableClickMsg = false;
         threeStars = false;
         completionRunning = false;
@@ -172,7 +171,6 @@ public:
 
     QString clickMessage;
     bool enableClickMsg:1;
-    bool drawClickMsg:1;
     bool threeStars:1;
 
     bool possibleTripleClick :1;  // set in mousePressEvent, deleted in tripleClickTimeout
@@ -572,8 +570,7 @@ void KLineEdit::setText( const QString& text )
 {
     if( d->enableClickMsg )
     {
-          d->drawClickMsg = text.isEmpty();
-          update();
+        update();
     }
     if( d->enableSqueezedText && isReadOnly() )
     {
@@ -1751,7 +1748,7 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
         QLineEdit::paintEvent( ev );
     }
 
-    if (d->enableClickMsg && d->drawClickMsg && !hasFocus() && text().isEmpty()) {
+    if (d->enableClickMsg && text().isEmpty()) {
         QPainter p(this);
         QFont f = font();
         f.setItalic(d->italicizePlaceholder);
@@ -1802,21 +1799,11 @@ void KLineEdit::paintEvent( QPaintEvent *ev )
 
 void KLineEdit::focusInEvent( QFocusEvent *ev )
 {
-    if ( d->enableClickMsg && d->drawClickMsg )
-    {
-        d->drawClickMsg = false;
-        update();
-    }
     QLineEdit::focusInEvent( ev );
 }
 
 void KLineEdit::focusOutEvent( QFocusEvent *ev )
 {
-    if ( d->enableClickMsg && text().isEmpty() )
-    {
-        d->drawClickMsg = true;
-        update();
-    }
     QLineEdit::focusOutEvent( ev );
 }
 
@@ -1824,7 +1811,6 @@ void KLineEdit::setClickMessage( const QString &msg )
 {
     d->enableClickMsg = !msg.isEmpty();
     d->clickMessage = msg;
-    d->drawClickMsg = text().isEmpty();
     update();
 }
 
