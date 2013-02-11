@@ -30,6 +30,7 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 
 #include <QtCore/QObject>
 #include <QtCore/QWaitCondition>
+#include <QSharedPointer>
 
 #ifndef THREADWEAVER_PRIVATE_API
 #define THREADWEAVER_PRIVATE_API
@@ -179,6 +180,7 @@ protected:
     // 	void lock ();
     // 	/** Unlock. See lock(). */
     // 	void unlock ();
+    //FIXME make private!
     /** The thread inventory. */
     QList<Thread*> m_inventory;
     /** The job queue. */
@@ -201,9 +203,9 @@ private:
     /** The state of the art.
     * @see StateId
     */
-    State*  m_state;
+    State* m_state;
     /** The state objects. */
-    State *m_states[NoOfStates];
+    QSharedPointer<State> m_states[NoOfStates];
 };
 
 } // namespace ThreadWeaver

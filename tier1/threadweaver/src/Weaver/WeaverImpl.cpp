@@ -58,13 +58,13 @@ WeaverImpl::WeaverImpl( QObject* parent )
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     // initialize state objects:
-    m_states[InConstruction] = new InConstructionState( this );
+    m_states[InConstruction] = QSharedPointer<State>(new InConstructionState(this));
     setState_p(InConstruction);
-    m_states[WorkingHard] = new WorkingHardState( this );
-    m_states[Suspending] = new SuspendingState( this );
-    m_states[Suspended] = new SuspendedState( this );
-    m_states[ShuttingDown] = new ShuttingDownState( this );
-    m_states[Destructed] = new DestructedState( this );
+    m_states[WorkingHard] = QSharedPointer<State>(new WorkingHardState(this));
+    m_states[Suspending] = QSharedPointer<State>(new SuspendingState(this));
+    m_states[Suspended] = QSharedPointer<State>(new SuspendedState(this));
+    m_states[ShuttingDown] = QSharedPointer<State>(new ShuttingDownState(this));
+    m_states[Destructed] = QSharedPointer<State>(new DestructedState(this));
 
     // FIXME (0.7) this is supposedly unnecessary
     connect ( this, SIGNAL (asyncThreadSuspended(ThreadWeaver::Thread*)),
@@ -127,7 +127,7 @@ void WeaverImpl::setState_p(StateId id)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
     if ( m_state==0 || m_state->stateId() != id ) {
-        m_state = m_states[id];
+        m_state = m_states[id].data();
         debug ( 2, "WeaverImpl::setState: state changed to \"%s\".\n",
                 m_state->stateName().toLatin1().constData() );
         if ( id == Suspended ) {
