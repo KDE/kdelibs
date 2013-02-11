@@ -147,13 +147,6 @@ Q_SIGNALS:
     /** The thread is busy executing job j. */
     void threadBusy ( ThreadWeaver::Thread*,  ThreadWeaver::Job* j);
 
-    // FIXME (0.7) this seems to be unnecessary
-    // some more private Q_SIGNALS: There are situations where other threads
-    // call functions of (this). In this case, there may be confusion
-    // about whether to handle the signals synchronously or not. The
-    // following signals are asynchroneoulsy connected to their siblings.
-    void asyncThreadSuspended( ThreadWeaver::Thread* );
-
 protected:
     /** Adjust active thread count.
             This is a helper function for incActiveThreadCount and decActiveThreadCount. */
