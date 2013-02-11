@@ -22,6 +22,7 @@
 #include "kglobalaccel.h"
 #include "kgesturemap.h"
 #include <kshortcut.h>
+#include <QCoreApplication>
 
 class KAction;
 
@@ -33,7 +34,7 @@ class KActionPrivate
 {
     public:
         KActionPrivate()
-            : componentName(), globalShortcutEnabled(false), q(0), decorator(0)
+            : componentName(QCoreApplication::applicationName()), globalShortcutEnabled(false), q(0), decorator(0)
         {
         }
 
