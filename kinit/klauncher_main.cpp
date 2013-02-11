@@ -71,7 +71,6 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
 #endif
 
    KComponentData componentData("klauncher", "kdelibs4");
-   KLocale::global();
 
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));
@@ -79,6 +78,8 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
    // We need a QCoreApplication to get a DBus event loop
    QCoreApplication app(argc, argv);
    app.setApplicationName( componentData.componentName() );
+
+   KLocale::global();
 
    int maxTry = 3;
    while(true)
