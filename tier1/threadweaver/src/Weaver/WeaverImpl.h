@@ -180,7 +180,7 @@ protected:
     // 	void lock ();
     // 	/** Unlock. See lock(). */
     // 	void unlock ();
-    //FIXME make private!
+private:
     /** The thread inventory. */
     QList<Thread*> m_inventory;
     /** The job queue. */
@@ -194,12 +194,8 @@ protected:
     QWaitCondition m_jobAvailable;
     /** Wait for a job to finish. */
     QWaitCondition m_jobFinished;
-
-private:
     /** Mutex to serialize operations. */
     QMutex *m_mutex;
-
-    // @TODO: make state objects static
     /** The state of the art.
     * @see StateId
     */
