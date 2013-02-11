@@ -118,6 +118,9 @@ void ThreadWeaver::JobRunHelper::runTheJob ( Thread* th, Job* job )
     Q_EMIT ( done( job ) );
 }
 
+//FIXME Would it make sense to hold the Jobs mutex while it is being executed?
+//...and have execute wrappers?
+//...and separate execute() and virtual execute_locked() methods?
 void Job::execute(Thread *th)
 {
 //    P_ASSERT (sm_dep()->values(this).isEmpty());

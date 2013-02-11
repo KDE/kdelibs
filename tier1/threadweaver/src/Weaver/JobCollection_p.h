@@ -35,14 +35,14 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
 
 /* QPointers are used internally to be able to dequeue jobs at destruction
    time. The owner of the jobs could have deleted them in the meantime.
    We use a class instead of a typedef to be able to forward-declare the
    class in the declaration.
 */
-class ThreadWeaver::JobCollectionJobRunner : public Job
+class JobCollectionJobRunner : public Job
 {
     Q_OBJECT
 
@@ -67,5 +67,7 @@ private:
     QPointer<Job> m_payload;
     JobCollection* m_collection;
 };
+
+}
 
 #endif // THREADWEAVER_JOBCOLLECTION_P_H

@@ -40,15 +40,15 @@ $Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 
 using namespace ThreadWeaver;
 
+//FIXME All we need is to wrap execute().
+//Think of a way to wrap execute() without requiring an extra job object.
 JobCollectionJobRunner::JobCollectionJobRunner ( JobCollection* collection, Job* payload, QObject* parent )
     : Job( parent )
     , m_payload( payload )
     , m_collection( collection )
 {
     Q_ASSERT ( payload ); // will not accept zero jobs
-
-    if ( ! m_payload->objectName().isEmpty() )
-    {   // this is most useful for debugging...
+    if ( ! m_payload->objectName().isEmpty() ) {   // this is most useful for debugging...
         setObjectName( tr( "JobRunner executing " ) + m_payload->objectName() );
     } else {
         setObjectName( tr( "JobRunner (unnamed payload)" ) );
@@ -77,10 +77,9 @@ void JobCollectionJobRunner::aboutToBeDequeued_locked (QueueAPI *api )
 
 void JobCollectionJobRunner::execute ( Thread *t )
 {
-    if ( m_payload )
-    {
+    if ( m_payload ) {
         m_payload->execute ( t );
-		m_collection->internalJobDone ( m_payload);
+        m_collection->internalJobDone ( m_payload);
     } else {
         debug ( 1, "JobCollection: job in collection has been deleted." );
     }
@@ -145,6 +144,7 @@ JobCollection::~JobCollection()
 
 void JobCollection::addJob ( Job *job )
 {
+    QMutexLocker l(mutex()); Q_UNUSED(l);
     REQUIRE( d->api == 0 );
     REQUIRE( job != 0);
 
@@ -153,12 +153,13 @@ void JobCollection::addJob ( Job *job )
 	connect( runner , SIGNAL(done(ThreadWeaver::Job*)) , this , SLOT(jobRunnerDone()) );
 }
 
+//FIXME add test!
+//This method is unused and untested. And probably does not work.
 void JobCollection::stop( Job *job )
 {   // this only works if there is an event queue executed by the main
     // thread, and it is not blocked:
     Q_UNUSED( job );
-    if ( d->api != 0 )
-    {
+    if ( d->api != 0 ) {
         debug( 4, "JobCollection::stop: dequeueing %p.\n", (void*)this);
         d->api->dequeue( this );
     }
@@ -167,12 +168,11 @@ void JobCollection::stop( Job *job )
 
 void JobCollection::aboutToBeQueued_locked (QueueAPI *api )
 {
+    Q_ASSERT(!mutex()->tryLock());
     REQUIRE ( d->api == 0 ); // never queue twice
-
     d->api = api;
 
-    if ( d->elements->size() > 0 )
-    {
+    if ( d->elements->size() > 0 ) {
         d->elements->at( 0 )->aboutToBeQueued( api );
     }
 
@@ -180,7 +180,7 @@ void JobCollection::aboutToBeQueued_locked (QueueAPI *api )
 }
 
 void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
-{   //  Q_ASSERT ( d->weaver != 0 );
+{   // Q_ASSERT ( d->weaver != 0 );
     // I thought: "must have been queued first"
     // but the user can queue and dequeue in a suspended Weaver
     Q_ASSERT(!mutex()->tryLock());
@@ -217,10 +217,9 @@ void JobCollection::execute ( Thread *t )
         d->jobCounter = d->elements->size();
 
         // queue elements:
-        for (int index = 1; index < d->elements->size(); ++index)
-	{
+        for (int index = 1; index < d->elements->size(); ++index) {
             d->api->enqueue (d->elements->at(index));
-	}
+        }
     }
     // this is a hack (but a good one): instead of queueing (this), we
     // execute the last job, to avoid to have (this) wait for an
@@ -258,9 +257,7 @@ bool JobCollection::canBeExecuted()
     bool inheritedCanRun = true;
 
     QMutexLocker l(mutex()); Q_UNUSED(l);
-
-    if ( d->elements->size() > 0 )
-    {
+    if ( d->elements->size() > 0 ) {
         inheritedCanRun = d->elements->at( 0 )->canBeExecuted();
     }
 
@@ -268,17 +265,17 @@ bool JobCollection::canBeExecuted()
 }
 
 void JobCollection::jobRunnerDone()
-{
-	// Note:  d->mutex must be unlocked before emitting the done() signal
+{	// Note:  d->mutex must be unlocked before emitting the done() signal
 	// because this JobCollection may be deleted by a slot connected to done()
 	// in another thread
-	bool emitDone = false;
+    //FIXME use delayed signal emitter
+    bool emitDone = false;
 
 	{
         QMutexLocker l(mutex()); Q_UNUSED(l);
 
-		if ( d->jobCounter == 0 )
-		{   // there is a small chance that (this) has been dequeued in the
+        if ( d->jobCounter == 0 ) {
+            // there is a small chance that (this) has been dequeued in the
 			// meantime, in this case, there is nothing left to clean up:
             d->api = 0;
 			return;
@@ -286,14 +283,12 @@ void JobCollection::jobRunnerDone()
 
 		--d->jobCounter;
 
-		ENSURE (d->jobCounter >= 0);
-
-		if (d->jobCounter == 0)
-		{
-			if (! success())
-			{
-				Q_EMIT failed(this);
-			}
+        ENSURE (d->jobCounter >= 0);
+        if (d->jobCounter == 0) {
+            if (! success()) {
+                //FIXME use delayed signal emitter
+                Q_EMIT failed(this);
+            }
 
 			finalCleanup();
 			emitDone = true;
@@ -303,6 +298,7 @@ void JobCollection::jobRunnerDone()
 	if (emitDone)
 		Q_EMIT done(this);
 }
+
 void JobCollection::internalJobDone ( Job* job )
 {
 	REQUIRE( job != 0 );
@@ -311,6 +307,7 @@ void JobCollection::internalJobDone ( Job* job )
 
 void JobCollection::finalCleanup()
 {
+    Q_ASSERT(!mutex()->tryLock());
     freeQueuePolicyResources();
     setFinished(true);
     d->api = 0;
