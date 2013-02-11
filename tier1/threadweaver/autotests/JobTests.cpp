@@ -265,15 +265,18 @@ void JobTests::MassiveJobSequenceTest() {
     QCOMPARE ( sequence, in );
 }
 
-/* TODO: reenable, they currently hang up */
-/*
 void JobTests::SimpleRecursiveSequencesTest() {
+    QEXPECT_FAIL("", "Recursive sequences are broken", Abort);
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
+
     QString sequence;
-    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
-    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
     ThreadWeaver::JobSequence jobSequence1( this );
     jobSequence1.addJob( &jobB );
+
+    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
+    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     ThreadWeaver::JobSequence jobSequence2( this );
     jobSequence2.addJob( &jobA );
     jobSequence2.addJob( &jobSequence1 );
@@ -284,6 +287,8 @@ void JobTests::SimpleRecursiveSequencesTest() {
     QCOMPARE ( sequence, QString( "abc" ) );
 }
 
+/* TODO: reenable, they currently hang up */
+/*
 void JobTests::SequenceOfSequencesTest() {
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
