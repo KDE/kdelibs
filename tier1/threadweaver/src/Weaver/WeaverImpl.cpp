@@ -436,7 +436,7 @@ int WeaverImpl::activeThreadCount()
     return m_active;
 }
 
-Job* WeaverImpl::takeFirstAvailableJob(Job *previous)
+Job* WeaverImpl::takeFirstAvailableJobOrWait(Thread *th, Job *previous)
 {
     QMutexLocker l (m_mutex); Q_UNUSED(l);
     if (previous) {
@@ -453,8 +453,11 @@ Job* WeaverImpl::takeFirstAvailableJob(Job *previous)
     }
     if (next) {
         incActiveThreadCount();
+        return next;
+    } else {
+        blockThreadUntilJobsAreBeingAssigned_locked(th);
+        return 0;
     }
-    return next;
 }
 
 Job* WeaverImpl::applyForWork(Thread *th, Job* previous)
@@ -469,13 +472,18 @@ void WeaverImpl::waitForAvailableJob(Thread* th)
 
 void WeaverImpl::blockThreadUntilJobsAreBeingAssigned(Thread *th)
 {
-    // th is the thread that calls this method:
-    Q_UNUSED ( th );
-    debug ( 4,  "WeaverImpl::blockThread...: thread %i blocked.\n", th->id());
-    Q_EMIT threadSuspended(th);
     QMutexLocker l(m_mutex); Q_UNUSED(l);
+    blockThreadUntilJobsAreBeingAssigned_locked(th);
+}
+
+void WeaverImpl::blockThreadUntilJobsAreBeingAssigned_locked(Thread *th)
+{
+    Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
+    debug ( 4,  "WeaverImpl::waitForAvailableJob_locked: thread %i blocked.\n", th->id());
+    //FIXME use delayed signal emitter
+    Q_EMIT threadSuspended(th);
     m_jobAvailable.wait(m_mutex);
-    debug ( 4,  "WeaverImpl::blockThread...: thread %i resumed.\n", th->id());
+    debug ( 4,  "WeaverImpl::waitForAvailableJob_locked: thread %i resumed.\n", th->id());
 }
 
 void WeaverImpl::dumpJobs()

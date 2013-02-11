@@ -94,7 +94,6 @@ void Thread::run()
             QMutexLocker l(&d->mutex); Q_UNUSED(l);
             oldJob = d->job; d->job = 0;
         }
-        // this is the *only* assignment to m_job  in the Thread class!
         Job* newJob = d->parent->applyForWork(this, oldJob);
 
         if (newJob == 0) {

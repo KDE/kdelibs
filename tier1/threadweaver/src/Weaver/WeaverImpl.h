@@ -89,10 +89,13 @@ public:
         In *previous*, threads give the job they have completed. If this is
         the first job, previous is zero. */
     virtual Job* applyForWork (Thread *thread, Job *previous);
-    /** Blocks the calling thread until some actor calls assignJobs. */
-    void blockThreadUntilJobsAreBeingAssigned(Thread *th);
     /** Wait for a job to become available. */
     void waitForAvailableJob(Thread *th);
+    /** Blocks the calling thread until some actor calls assignJobs. */
+    void blockThreadUntilJobsAreBeingAssigned(Thread* th);
+    /** Blocks the calling thread until some actor calls assignJobs.
+      * Mutex must be held when calling this method. */
+    void blockThreadUntilJobsAreBeingAssigned_locked(Thread* th);
     /** Increment the count of active threads. */
     void incActiveThreadCount();
     /** Decrement the count of active threads. */
@@ -103,14 +106,11 @@ public:
      */
     int activeThreadCount();
     /** Take the first available job out of the queue and return it.
-            The job will be removed from the queue (therefore, take).
-            Only jobs that have no unresolved dependencies are considered
-        available. If only jobs that depened on other, unfinished jobs are
-        in the queue, this method returns a nil pointer. */
-    Job* takeFirstAvailableJob(Job* previous);
+     * The job will be removed from the queue (therefore, take). Only jobs that have no unresolved dependencies are considered
+     * available. If only jobs that depened on other, unfinished jobs are in the queue, this method blocks on m_jobAvailable. */
+    Job* takeFirstAvailableJobOrWait(Thread* th, Job* previous);
     /** Schedule enqueued jobs to be executed by idle threads.
-            This will try to distribute as many jobs as possible
-            to all idle threads. */
+     * This will try to distribute as many jobs as possible to all idle threads. */
     void assignJobs();
     void requestAbort();
 

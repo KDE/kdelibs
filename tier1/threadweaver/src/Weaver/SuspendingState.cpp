@@ -58,6 +58,7 @@ void SuspendingState::activated()
 
 Job* SuspendingState::applyForWork(Thread *th, Job* previous)
 {
+    //FIXME race!
     if (weaver()->activeThreadCount() == 0) {
         weaver()->setState(Suspended);
     }
