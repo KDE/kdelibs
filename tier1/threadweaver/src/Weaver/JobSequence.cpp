@@ -38,16 +38,14 @@ JobSequence::JobSequence ( QObject *parent )
 {
 }
 
-void JobSequence::aboutToBeQueued (QueueAPI *api )
+void JobSequence::aboutToBeQueued_locked (QueueAPI *api )
 {
     Q_ASSERT(!mutex()->tryLock());
     REQUIRE (api != 0);
 
-    if ( jobListLength() > 1 )
-    {
+    if (jobListLength_locked() > 1) {
         // set up the dependencies:
-        for ( int i = 1; i < jobListLength(); ++i )
-        {
+        for (int i = 1; i < jobListLength_locked(); ++i) {
             Job* jobA = jobAt(i);
             Job* jobB = jobAt(i-1);
             P_ASSERT ( jobA != 0 );
@@ -56,7 +54,7 @@ void JobSequence::aboutToBeQueued (QueueAPI *api )
         }
     }
 
-    JobCollection::aboutToBeQueued( api );
+    JobCollection::aboutToBeQueued_locked( api );
 }
 
 void JobSequence::internalJobDone( Job* job)

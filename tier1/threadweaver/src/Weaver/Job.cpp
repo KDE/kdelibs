@@ -153,11 +153,23 @@ void Job::freeQueuePolicyResources()
     }
 }
 
-void Job::aboutToBeQueued (QueueAPI * )
+void Job::aboutToBeQueued(QueueAPI* api)
+{
+    QMutexLocker l(mutex()); Q_UNUSED(l);
+    aboutToBeQueued_locked(api);
+}
+
+void Job::aboutToBeQueued_locked (QueueAPI*)
 {
 }
 
-void Job::aboutToBeDequeued (QueueAPI * )
+void Job::aboutToBeDequeued(QueueAPI* api)
+{
+    QMutexLocker l(mutex()); Q_UNUSED(l);
+    aboutToBeDequeued_locked(api);
+}
+
+void Job::aboutToBeDequeued_locked (QueueAPI*)
 {
 }
 

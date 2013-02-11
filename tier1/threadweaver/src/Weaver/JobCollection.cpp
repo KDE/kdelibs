@@ -65,14 +65,14 @@ Job* JobCollectionJobRunner::payload ()
     return m_payload;
 }
 
-void JobCollectionJobRunner::aboutToBeQueued (QueueAPI *api )
+void JobCollectionJobRunner::aboutToBeQueued_locked (QueueAPI *api )
 {
-    m_payload->aboutToBeQueued( api );
+    m_payload->aboutToBeQueued_locked( api );
 }
 
-void JobCollectionJobRunner::aboutToBeDequeued (QueueAPI *api )
+void JobCollectionJobRunner::aboutToBeDequeued_locked (QueueAPI *api )
 {
-    m_payload->aboutToBeDequeued( api );
+    m_payload->aboutToBeDequeued_locked( api );
 }
 
 void JobCollectionJobRunner::execute ( Thread *t )
@@ -162,7 +162,7 @@ void JobCollection::stop( Job *job )
     // FIXME ENSURE ( d->weaver == 0 ); // verify that aboutToBeDequeued has been called
 }
 
-void JobCollection::aboutToBeQueued (QueueAPI *api )
+void JobCollection::aboutToBeQueued_locked (QueueAPI *api )
 {
     REQUIRE ( d->api == 0 ); // never queue twice
 
@@ -176,7 +176,7 @@ void JobCollection::aboutToBeQueued (QueueAPI *api )
     ENSURE(d->api != 0);
 }
 
-void JobCollection::aboutToBeDequeued(QueueAPI *api )
+void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
 {   //  Q_ASSERT ( d->weaver != 0 );
     // I thought: "must have been queued first"
     // but the user can queue and dequeue in a suspended Weaver
@@ -187,7 +187,7 @@ void JobCollection::aboutToBeDequeued(QueueAPI *api )
 
         if ( !d->elements->isEmpty() )
         {
-            d->elements->at( 0 )->aboutToBeDequeued( api );
+            d->elements->at( 0 )->aboutToBeDequeued_locked( api );
         }
     }
 
@@ -236,7 +236,7 @@ void JobCollection::execute ( Thread *t )
 
 Job* JobCollection::jobAt( int i )
 {
-    QMutexLocker l(mutex()); Q_UNUSED(l);
+    Q_ASSERT(!mutex()->tryLock());
     REQUIRE ( i >= 0 && i < d->elements->size() );
     return d->elements->at( i )->payload();
 }
@@ -244,6 +244,11 @@ Job* JobCollection::jobAt( int i )
 int JobCollection::jobListLength() const
 {
     QMutexLocker l(mutex()); Q_UNUSED(l);
+    return jobListLength_locked();
+}
+
+int JobCollection::jobListLength_locked() const
+{
     return d->elements->size();
 }
 
@@ -316,6 +321,7 @@ void JobCollection::dequeueElements()
 	// because this JobCollection may be deleted by a slot connected to done() in another
 	// thread
 	
+    //FIXME never set to true?
 	bool emitDone = false;
 
 	{

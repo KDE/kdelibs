@@ -53,9 +53,9 @@ public:
 
     Job* payload ();
 
-    void aboutToBeQueued ( QueueAPI *api );
+    void aboutToBeQueued_locked ( QueueAPI *api );
 
-    void aboutToBeDequeued ( QueueAPI *api );
+    void aboutToBeDequeued_locked ( QueueAPI *api );
 
     void execute ( Thread *t );
 

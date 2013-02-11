@@ -73,16 +73,21 @@ namespace ThreadWeaver {
 
     protected:
         /** Overload to queue the collection. */
-        void aboutToBeQueued ( QueueAPI *api );
+        void aboutToBeQueued_locked ( QueueAPI *api );
 
         /** Overload to dequeue the collection. */
-        void aboutToBeDequeued ( QueueAPI *api );
+        void aboutToBeDequeued_locked ( QueueAPI *api );
 
         /** Return a reference to the job in the job list at position i. */
         Job* jobAt( int i );
 
         /** Return the number of jobs in the joblist. */
         int jobListLength() const;
+
+        /** Return the number of jobs in the joblist.
+         *  Assumes that the mutex is being held.
+         */
+        virtual int jobListLength_locked() const;
 
         /** Callback method for done jobs.
         */

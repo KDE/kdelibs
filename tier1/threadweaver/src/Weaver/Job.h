@@ -146,7 +146,9 @@ namespace ThreadWeaver {
 
             @param weaver the Weaver object the job will be queued in
         */
-        virtual void aboutToBeQueued ( QueueAPI *weaver );
+        void aboutToBeQueued(QueueAPI *api);
+        /** Called from aboutToBeQueued() while the mutex is being held. */
+        virtual void aboutToBeQueued_locked ( QueueAPI *api );
 
         /** This Job is about the be dequeued from the weaver's job queue.
             The job will be removed from the queue right after this method
@@ -161,7 +163,10 @@ namespace ThreadWeaver {
 
             @param weaver the Weaver object from which the job will be dequeued
         */
-        virtual void aboutToBeDequeued ( QueueAPI *weaver );
+        void aboutToBeDequeued(QueueAPI *api);
+
+        /** Called from aboutToBeDequeued() while the mutex is being held. */
+        virtual void aboutToBeDequeued_locked(QueueAPI *api);
 
         /** canBeExecuted() returns true if all the jobs queue policies agree to it.
             If it returns true, it expects that the job is executed right
