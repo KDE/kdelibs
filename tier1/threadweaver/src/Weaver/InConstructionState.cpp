@@ -61,11 +61,6 @@ Job* InConstructionState::applyForWork(Thread *th, Job *previous)
     return weaver()->applyForWork(th, previous);
 }
 
-void InConstructionState::waitForAvailableJob(Thread* th)
-{
-    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
-}
-
 StateId InConstructionState::stateId() const
 {
     return InConstruction;

@@ -113,4 +113,9 @@ void WeaverImplState::requestAbort()
     return weaver()->requestAbort_p();
 }
 
+void WeaverImplState::waitForAvailableJob(Thread *th)
+{
+    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
+}
+
 }

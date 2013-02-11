@@ -78,11 +78,6 @@ Job* WorkingHardState::applyForWork(Thread *th,  Job* previous)
     }
 }
 
-void WorkingHardState::waitForAvailableJob(Thread *th)
-{
-    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
-}
-
 StateId WorkingHardState::stateId() const
 {
     return WorkingHard;

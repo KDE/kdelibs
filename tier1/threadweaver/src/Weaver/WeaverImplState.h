@@ -72,6 +72,8 @@ public:
     int queueLength() const;
     /** Request abort for all queued and currently executed jobs. */
     void requestAbort();
+    /** Wait (by suspending the calling thread) until a job becomes available. */
+    void waitForAvailableJob(Thread *th );
 
 protected:
     /** Provide correct return type for WeaverImpl states. */

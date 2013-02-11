@@ -54,11 +54,6 @@ Job* SuspendedState::applyForWork(Thread *th, Job* previous)
     return weaver()->applyForWork(th, previous);
 }
 
-void SuspendedState::waitForAvailableJob(Thread *th)
-{
-    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
-}
-
 StateId SuspendedState::stateId() const
 {
     return Suspended;

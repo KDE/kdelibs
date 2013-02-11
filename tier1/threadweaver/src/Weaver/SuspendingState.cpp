@@ -41,8 +41,7 @@ SuspendingState::SuspendingState(WeaverImpl *weaver)
 
 void SuspendingState::suspend()
 {
-    // this request is not handled in Suspending state (we are already
-    // suspending...)
+    // this request is not handled in Suspending state (we are already suspending...)
 }
 
 void SuspendingState::resume()
@@ -64,11 +63,6 @@ Job* SuspendingState::applyForWork(Thread *th, Job* previous)
     }
     weaver()->waitForAvailableJob(th);
     return weaver()->applyForWork(th, previous);
-}
-
-void SuspendingState::waitForAvailableJob(Thread *th)
-{
-    weaver()->blockThreadUntilJobsAreBeingAssigned(th);
 }
 
 StateId SuspendingState::stateId() const

@@ -48,13 +48,11 @@ class InConstructionState : public WeaverImplState
 public:
     explicit InConstructionState( Queue *weaver);
     /** Suspend job processing. */
-    virtual void suspend();
+    void suspend();
     /** Resume job processing. */
-    virtual void resume();
+    void resume();
     /** Assign a job to an idle thread. */
-    virtual Job* applyForWork ( Thread *th,  Job* previous );
-    /** Wait (by suspending the calling thread) until a job becomes available. */
-    virtual void waitForAvailableJob ( Thread *th );
+    Job* applyForWork ( Thread *th,  Job* previous );
     /** reimpl */
     StateId stateId() const;
 };
