@@ -133,9 +133,12 @@ JobCollection::JobCollection ( QObject *parent )
 }
 
 JobCollection::~JobCollection()
-{   // dequeue all remaining jobs:
-    if ( d->api != 0 ) // still queued
-        dequeueElements();
+{
+    {   // dequeue all remaining jobs:
+        QMutexLocker l(mutex()); Q_UNUSED(l);
+        if ( d->api != 0 ) // still queued
+            dequeueElements();
+    }
     // QObject cleanup takes care of the job runners
     delete d;
 }
