@@ -2998,6 +2998,7 @@ public:
     QString m_suidUserStr;
     QString m_dbusStartupType;
     QString m_dbusServiceName;
+    QString m_origDesktopFile;
     bool m_terminalBool;
     bool m_suidBool;
     bool m_startupBool;
@@ -3041,14 +3042,15 @@ KDesktopPropsPlugin::KDesktopPropsPlugin( KPropertiesDialog *_props )
     if (!url.isLocalFile()) {
         return;
     }
-    QString path = url.toLocalFile();
 
-    QFile f( path );
+    d->m_origDesktopFile = url.toLocalFile();
+
+    QFile f( d->m_origDesktopFile );
     if ( !f.open( QIODevice::ReadOnly ) )
         return;
     f.close();
 
-    KDesktopFile  _config( path );
+    KDesktopFile  _config( d->m_origDesktopFile );
     KConfigGroup config = _config.desktopGroup();
     QString nameStr = _config.readName();
     QString genNameStr = _config.readGenericName();
@@ -3197,10 +3199,10 @@ void KDesktopPropsPlugin::applyChanges()
         //FIXME: 4.2 add this: KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
         return;
     }
-    QString path = url.toLocalFile();
+
+    const QString path (url.toLocalFile());
 
     QFile f( path );
-
     if ( !f.open( QIODevice::ReadWrite ) ) {
         KMessageBox::sorry( 0, i18n("<qt>Could not save properties. You do not have "
                                     "sufficient access to write to <b>%1</b>.</qt>", path));
@@ -3212,8 +3214,9 @@ void KDesktopPropsPlugin::applyChanges()
     // coupled to the command.
     checkCommandChanged();
 
-    KDesktopFile _config( path );
-    KConfigGroup config = _config.desktopGroup();
+    KDesktopFile origConfig (d->m_origDesktopFile);
+    QScopedPointer<KDesktopFile> _config (origConfig.copyTo(path));
+    KConfigGroup config = _config->desktopGroup();
     config.writeEntry( "Type", QString::fromLatin1("Application"));
     config.writeEntry( "Comment", d->w->commentEdit->text() );
     config.writeEntry( "Comment", d->w->commentEdit->text(), KConfigGroup::Persistent|KConfigGroup::Localized ); // for compat
