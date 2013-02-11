@@ -316,44 +316,28 @@ void JobCollection::finalCleanup()
 }
 
 void JobCollection::dequeueElements()
-{
-	// Note:  d->mutex must be unlocked before emitting the done() signal
-	// because this JobCollection may be deleted by a slot connected to done() in another
-	// thread
-	
-    //FIXME never set to true?
-	bool emitDone = false;
+{   // dequeue everything:
+    Q_ASSERT(!mutex()->tryLock());
+    if ( d->api != 0 ) {
+        for ( int index = 1; index < d->elements->size(); ++index ) {
+            if ( d->elements->at( index ) && ! d->elements->at( index )->isFinished() ) { // ... a QPointer
+                debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
+                       (void*)d->elements->at( index ) );
+                d->api->dequeue_p( d->elements->at( index ) );
+            } else {
+                debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
+                       (void*)d->elements->at( index ) );
+            }
+        }
 
-	{
-		// dequeue everything:
-        QMutexLocker l(mutex()); Q_UNUSED(l);
-
-        if ( d->api != 0 )
-		{
-			for ( int index = 1; index < d->elements->size(); ++index )
-			{
-				if ( d->elements->at( index ) && ! d->elements->at( index )->isFinished() ) // ... a QPointer
-				{
-					debug( 4, "JobCollection::dequeueElements: dequeueing %p.\n",
-							(void*)d->elements->at( index ) );
-                    d->api->dequeue_p( d->elements->at( index ) );
-				} else {
-					debug( 4, "JobCollection::dequeueElements: not dequeueing %p, already finished.\n",
-							(void*)d->elements->at( index ) );
-				}
-			}
-
-			if (d->jobCounter != 0)
-			{ 	// if jobCounter is not zero, then we where waiting for the
-				// last job to finish before we would have freed our queue
-				// policies, but in this case we have to do it here:
-				finalCleanup();
-			}
-			d->jobCounter = 0;
-		}
-	}
-	if (emitDone)
-		Q_EMIT done(this);
+        if (d->jobCounter != 0) {
+            // if jobCounter is not zero, then we where waiting for the
+            // last job to finish before we would have freed our queue
+            // policies, but in this case we have to do it here:
+            finalCleanup();
+        }
+        d->jobCounter = 0;
+    }
 }
 
 #include "moc_JobCollection.cpp"
