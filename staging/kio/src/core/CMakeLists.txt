@@ -16,6 +16,7 @@ include_directories(
   ${kiocore_BINARY_DIR}/..           #kio_version.h
   ${kservice_SOURCE_DIR}/src/plugin  #kpluginfactory.h
   ${kservice_SOURCE_DIR}/src/services
+  ${kservice_SOURCE_DIR}/src/sycoca  #ksycocaentry.h
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
