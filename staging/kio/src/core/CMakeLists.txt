@@ -17,6 +17,7 @@ include_directories(
   ${kservice_SOURCE_DIR}/src/plugin  #kpluginfactory.h
   ${kservice_SOURCE_DIR}/src/services
   ${kservice_SOURCE_DIR}/src/sycoca  #ksycocaentry.h
+  ${kservice_BINARY_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
