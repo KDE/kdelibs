@@ -420,6 +420,7 @@ if(NOT QT5_BUILD)
   macro_optional_add_subdirectory( doc )
 endif()
 
+find_package(Qt5Quick)
 if(NOT QT5_BUILD)
   add_subdirectory( kimgio )
 elseif(Qt5Quick_FOUND)
