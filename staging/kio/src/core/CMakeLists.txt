@@ -13,6 +13,9 @@ include_directories(
   ${kconfig_BINARY_DIR}/src/core
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
+  ${kiocore_BINARY_DIR}/..           #kio_version.h
+  ${kservice_SOURCE_DIR}/src/plugin  #kpluginfactory.h
+  ${kservice_SOURCE_DIR}/src/services
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -55,6 +58,7 @@ target_link_libraries(kiocore
  kconfigcore
  kcoreaddons
  ki18n
+ kservice
  ${QT_QTNETWORK_LIBRARY}
  ${QT_QTDBUS_LIBRARY}
 )

@@ -23,7 +23,7 @@
 
 #include <QtCore/QObject>
 #include <kiocore_export.h>
-#include <kio/metadata.h>
+#include "metadata.h"
 
 namespace KIO {
 

@@ -23,7 +23,7 @@
 
 #include <QtCore/QStringList>
 
-#include <kio/global.h> // KIO::CacheControl
+#include "global.h" // KIO::CacheControl
 #include "kiocore_export.h"
 #include "kprotocolinfo.h"
 

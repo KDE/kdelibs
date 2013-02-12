@@ -24,7 +24,7 @@
 
 #include "hostinfo.h"
 
-#include <config-kio.h>
+#include <config-kiocore.h>
 
 #include <string.h>
 #include <unistd.h>
@@ -52,9 +52,9 @@
 #include <kmimetypetrader.h>
 #include <kprotocolinfofactory_p.h>
 
-#include <kio/slaveconfig.h>
-#include <kio/ioslave_defaults.h>
-#include <kio/http_slave_defaults.h>
+#include "slaveconfig.h"
+#include "ioslave_defaults.h"
+#include "http_slave_defaults.h"
 
 #define QL1S(x)   QLatin1String(x)
 #define QL1C(x)   QLatin1Char(x)
