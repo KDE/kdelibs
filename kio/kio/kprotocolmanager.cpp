@@ -31,7 +31,6 @@
 #include <sys/utsname.h>
 
 #include <QtCore/QCoreApplication>
-#include <QGuiApplication>
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QHostAddress>
 #include <QtNetwork/QHostInfo>
@@ -671,19 +670,17 @@ static QString defaultUserAgentFromPreferredService()
 }
 
 // This is not the OS, but the windowing system, e.g. X11 on Unix/Linux.
-// So we use QGuiApplication. If this code has to be ported away from QtGui at some point,
-// then we'll have to revert to Q_OS_*, which is actually incorrect.
 static QString platform()
 {
-    const QString platform = QGuiApplication::platformName();
-    if (platform == "xcb")
-        return QL1S("X11");
-    else if (platform == "Cocoa")
-        return QL1S("Macintosh");
-    else if (platform == "windows")
-        return QL1S("Windows");
-    else
-        return platform; // directfb, qnx, etc.
+#if HAVE_X11
+  return QL1S("X11");
+#elif defined(Q_OS_MAC)
+  return QL1S("Macintosh");
+#elif defined(Q_OS_WIN)
+  return QL1S("Windows");
+#else
+  return QL1S("Unknown");
+#endif
 }
 
 QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
