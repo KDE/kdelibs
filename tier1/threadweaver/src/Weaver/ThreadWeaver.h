@@ -109,6 +109,7 @@ protected:
 private:
     class Private;
     Private* const d;
+    void shutDown();
 };
 }
 

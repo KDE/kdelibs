@@ -35,6 +35,10 @@ ShuttingDownState::ShuttingDownState(Queue *weaver)
 {
 }
 
+void ShuttingDownState::shutDown()
+{
+}
+
 void ShuttingDownState::suspend()
 {
     // ignored: when shutting down, we do not return to the suspended state

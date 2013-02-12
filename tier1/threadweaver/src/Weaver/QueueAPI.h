@@ -14,6 +14,7 @@ class QueueAPI : public Queue, public QueueInterface
 public:
     explicit QueueAPI(QObject *parent = 0);
     
+    virtual void shutDown_p() = 0;
     virtual void setState_p( StateId ) = 0;
     virtual const State& state_p() const = 0;
     virtual void setMaximumNumberOfThreads_p(int cap) = 0;

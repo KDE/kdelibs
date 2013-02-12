@@ -69,10 +69,22 @@ WeaverImpl::WeaverImpl( QObject* parent )
 }
 
 WeaverImpl::~WeaverImpl()
-{   // the constructor may only be called from the thread that owns this
+{
+    Q_ASSERT_X(state().stateId() == Destructed, Q_FUNC_INFO, "shutDown() method was not called before WeaverImpl destructor!");
+    delete m_mutex;
+}
+
+void WeaverImpl::shutDown()
+{
+    m_state->shutDown();
+}
+
+void WeaverImpl::shutDown_p()
+{
+    // the constructor may only be called from the thread that owns this
     // object (everything else would be what we professionals call "insane")
     REQUIRE( QThread::currentThread() == thread() );
-    debug ( 3, "WeaverImpl dtor: destroying inventory.\n" );
+    debug ( 3, "WeaverImpl::shutDown: destroying inventory.\n" );
     setState ( ShuttingDown );
 
     m_jobAvailable.wakeAll();
@@ -97,19 +109,16 @@ WeaverImpl::~WeaverImpl()
             {
                 m_jobAvailable.wakeAll();
                 if ( th->wait( 100 ) ) break;
-                debug ( 1,  "WeaverImpl::~WeaverImpl: thread %i did not exit as expected, "
+                debug ( 1,  "WeaverImpl::shutDown: thread %i did not exit as expected, "
                         "retrying.\n", th->id() );
-	    }
-	}
+            }
+        }
         Q_EMIT ( threadExited ( th ) );
         delete th;
     }
     Q_ASSERT(m_inventory.isEmpty());
-    debug ( 3, "WeaverImpl dtor: done\n" );
-    setState ( Destructed ); // m_state = Halted;
-    // FIXME: delete state objects. what sense does DestructedState make then?
-    // FIXME: make state objects static, since they are
-    delete m_mutex;
+    debug ( 3, "WeaverImpl::shutDown: done\n" );
+    setState ( Destructed ); // Destructed ignores all calls into the queue API
 }
 
 void WeaverImpl::setState ( StateId id )

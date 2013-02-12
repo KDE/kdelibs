@@ -30,8 +30,76 @@ $Id: DestructedState.cpp 30 2005-08-16 16:16:04Z mirko $
 
 namespace ThreadWeaver {
 
-DestructedState::DestructedState(Queue *weaver)
-    : WeaverImplState(weaver)
+DestructedState::DestructedState(Queue*)
+    : WeaverImplState(0) // make sure we cannot use weaver, ever :-)
+{
+}
+
+void DestructedState::shutDown()
+{
+}
+
+WeaverImpl *DestructedState::weaver()
+{
+    return 0;
+}
+
+const WeaverImpl *DestructedState::weaver() const
+{
+    return 0;
+}
+
+void DestructedState::setMaximumNumberOfThreads(int)
+{
+}
+
+int DestructedState::maximumNumberOfThreads() const
+{
+    return 0;
+}
+
+int DestructedState::currentNumberOfThreads() const
+{
+    return 0;
+}
+
+void DestructedState::registerObserver(WeaverObserver*)
+{
+}
+
+void DestructedState::enqueue(Job*)
+{
+}
+
+bool DestructedState::dequeue(Job*)
+{
+    return false;
+}
+
+void DestructedState::dequeue()
+{
+}
+
+void DestructedState::finish()
+{
+}
+
+bool DestructedState::isEmpty() const
+{
+    return true;
+}
+
+bool DestructedState::isIdle() const
+{
+    return true;
+}
+
+int DestructedState::queueLength() const
+{
+    return 0;
+}
+
+void DestructedState::requestAbort()
 {
 }
 

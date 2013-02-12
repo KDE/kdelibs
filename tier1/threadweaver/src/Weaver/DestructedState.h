@@ -46,15 +46,25 @@ class DestructedState : public WeaverImplState
 {
 public:
     explicit DestructedState(Queue *weaver);
-    /** Suspend job processing. */
+    void shutDown();
+    WeaverImpl* weaver();
+    const WeaverImpl* weaver() const;
+    void setMaximumNumberOfThreads(int cap);
+    int maximumNumberOfThreads() const;
+    int currentNumberOfThreads() const;
+    void registerObserver(WeaverObserver *obs);
+    void enqueue(Job *job);
+    bool dequeue(Job* job);
+    void dequeue();
+    void finish();
+    bool isEmpty() const;
+    bool isIdle() const;
+    int queueLength() const;
+    void requestAbort();
     void suspend();
-    /** Resume job processing. */
     void resume();
-    /** Assign a job to an idle thread. */
     Job* applyForWork ( Thread *th,  Job* previous );
-    /** Wait (by suspending the calling thread) until a job becomes available. */
     void waitForAvailableJob ( Thread *th );
-    /** reimpl */
     StateId stateId() const;
 };
 

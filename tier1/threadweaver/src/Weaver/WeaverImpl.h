@@ -59,6 +59,11 @@ public:
     explicit WeaverImpl (QObject* parent=0 );
     /** Destruct a WeaverImpl object. */
     virtual ~WeaverImpl ();
+    /** Enter Destructed state.
+     * Once this method returns, it is save to delete this object. */
+    void shutDown();
+    void shutDown_p();
+
     const State& state() const;
 
     void setMaximumNumberOfThreads( int cap );

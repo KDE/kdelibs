@@ -58,6 +58,7 @@ Weaver::Weaver ( QObject* parent )
 
 Weaver::~Weaver()
 {
+    d->implementation->shutDown();
     delete d->implementation;
     delete d;
 }
@@ -65,6 +66,10 @@ Weaver::~Weaver()
 Queue *Weaver::makeWeaverImpl()
 {
     return new WeaverImpl ( this );
+}
+
+void Weaver::shutDown()
+{
 }
 
 const State& Weaver::state() const

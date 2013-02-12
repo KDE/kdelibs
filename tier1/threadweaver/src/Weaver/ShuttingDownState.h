@@ -47,6 +47,8 @@ class ShuttingDownState : public WeaverImplState
 public:
     explicit ShuttingDownState(Queue *weaver);
 
+    /** Shut down the queue. */
+    void shutDown();
     /** Suspend job processing. */
     void suspend();
     /** Resume job processing. */

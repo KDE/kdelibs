@@ -41,6 +41,11 @@ const State &WeaverImplState::state() const
     return *this;
 }
 
+void WeaverImplState::shutDown()
+{
+    weaver()->shutDown_p();
+}
+
 WeaverImpl* WeaverImplState::weaver()
 {
     Q_ASSERT ( dynamic_cast<WeaverImpl*> ( State::weaver() ) );

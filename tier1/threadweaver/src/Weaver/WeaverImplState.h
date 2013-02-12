@@ -48,6 +48,8 @@ public:
 
     const State& state() const;
 
+    /** Shut down the queue. */
+    void shutDown();
     /** Set the maximum number of threads this Weaver object may start. */
     void setMaximumNumberOfThreads( int cap );
     /** Get the maximum number of threads this Weaver may start. */

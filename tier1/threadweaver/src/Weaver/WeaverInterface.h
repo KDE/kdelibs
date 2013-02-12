@@ -63,6 +63,12 @@ public:
     /** Return the state of the weaver object. */
     virtual const State& state() const = 0;
 
+    /** Shut down the queue.
+     * Tells all threads to exit, and changes to Destructed state.
+     * It is safe to destroy the queue once this method returns.
+     */
+    virtual void shutDown() = 0;
+
     /** Set the maximum number of threads this Weaver object may start. */
     virtual void setMaximumNumberOfThreads( int cap ) = 0;
 
