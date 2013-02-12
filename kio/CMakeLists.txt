@@ -145,7 +145,6 @@ set(kiocore_STAT_SRCS
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/kprotocolmanager.cpp
   kio/kremoteencoding.cpp
   kio/krun.cpp
   kio/kscan.cpp
@@ -166,7 +165,6 @@ set(kiocore_STAT_SRCS
   kio/skipdialog.cpp
   kio/slave.cpp
   kio/slavebase.cpp
-  kio/slaveconfig.cpp
   kio/slaveinterface.cpp
   kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
@@ -379,7 +377,6 @@ install(  FILES
   kio/accessmanager.h
   kio/slaveinterface.h
   kio/slave.h
-  kio/slaveconfig.h
   kio/pixmaploader.h
   kio/netaccess.h
   kio/job.h
@@ -437,7 +434,6 @@ install( FILES
   kio/kimageio.h
   kio/kmimetypechooser.h
   kio/knfsshare.h
-  kio/kprotocolmanager.h
   kio/kremoteencoding.h
   kio/krun.h
   kio/ksambashare.h

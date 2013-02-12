@@ -22,7 +22,7 @@
 #define KIO_SLAVE_CONFIG_H
 
 #include <QtCore/QObject>
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 #include <kio/metadata.h>
 
 namespace KIO {
@@ -45,7 +45,7 @@ namespace KIO {
      * only applied when the slave is connecting with a host that matches with 
      * the host and/or domain specified by the group.
      */
-    class KIO_EXPORT SlaveConfig : public QObject
+    class KIOCORE_EXPORT SlaveConfig : public QObject
     {
 	Q_OBJECT
     public:

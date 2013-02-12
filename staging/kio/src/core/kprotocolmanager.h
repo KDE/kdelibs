@@ -24,7 +24,7 @@
 #include <QtCore/QStringList>
 
 #include <kio/global.h> // KIO::CacheControl
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include "kprotocolinfo.h"
 
 class KSharedConfig;
@@ -57,7 +57,7 @@ namespace KIO
  * @author Dawit Alemayehu <adawit@kde.org>
  * @see KPAC
  */
-class KIO_EXPORT KProtocolManager
+class KIOCORE_EXPORT KProtocolManager
 {
 public:
 
@@ -690,6 +690,6 @@ private:
    * @internal
    * (Shared with SlaveConfig)
    */
-  KIO_NO_EXPORT static KSharedConfigPtr config();
+  KIOCORE_NO_EXPORT static KSharedConfigPtr config();
 };
 #endif
