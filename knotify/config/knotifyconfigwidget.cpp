@@ -113,6 +113,7 @@ KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QS
 	connect(w,SIGNAL(changed(bool)) , dialog , SLOT(enableButtonApply(bool)));
 
 	w->setApplication(appname);
+	dialog->setAttribute( Qt::WA_DeleteOnClose );
 	dialog->show();
 	return w;
 }
