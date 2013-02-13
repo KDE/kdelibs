@@ -331,6 +331,12 @@ Containment *View::swapContainment(Plasma::Containment *existing, const QString 
         // Copy configuration to new containment
         oldConfig.copyTo(&newConfig);
 
+        if (name != old->pluginName()) {
+            // we want to delete the form factor config key, as that may change from
+            // containment to containment. see https://bugs.kde.org/show_bug.cgi?id=253485
+            newConfig.deleteEntry("formfactor");
+        }
+
         if (old == d->containment) {
             // set our containment to the new one, if the the old containment was us
             setContainment(c);
