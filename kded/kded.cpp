@@ -23,6 +23,7 @@
 #include "kdedmodule.h"
 
 #include <kcrash.h>
+#include <kdeversion.h>
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -857,7 +858,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char *argv[])
 {
      KAboutData aboutData( "kded" /*don't change this one to kded4! dbus registration should be org.kde.kded etc.*/,
         "kdelibs4", ki18n("KDE Daemon"),
-        "$Id$",
+        KDE_VERSION_STRING,
         ki18n("KDE Daemon - triggers Sycoca database updates when needed"));
 
      KCmdLineOptions options;
