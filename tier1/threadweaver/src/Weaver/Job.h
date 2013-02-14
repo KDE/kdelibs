@@ -38,207 +38,167 @@ class QWaitCondition;
 
 namespace ThreadWeaver {
 
-    class Thread;
-    class QueuePolicy;
-    class JobRunHelper;
-    class QueueAPI;
-    class QueuePolicyList;
+class Thread;
+class QueuePolicy;
+class QueueAPI;
+class QueuePolicyList;
 
-    /** A Job is a simple abstraction of an action that is to be
-        executed in a thread context.
-	It is essential for the ThreadWeaver library that as a kind of
-        convention, the different creators of Job objects do not touch the
-        protected data members of the Job until somehow notified by the
-        Job.
+/** A Job is a simple abstraction of an action that is to be executed in a thread context.
+ * It is essential for the ThreadWeaver library that as a kind of convention, the different creators of Job objects do not touch
+ * the protected data members of the Job until somehow notified by the Job.
+ *
+ * Also, please note that Jobs may not be executed twice. Create two different objects to perform two consecutive or parallel runs.
+ *
+ * Jobs may declare dependencies. If Job B depends on Job A, B may not be executed before A is finished. To learn about
+ * dependencies, see DependencyPolicy.
+ *
+ * Job objects finish by emitting the done(Job*) signal.  Once this has been emitted, ThreadWeaver is no longer using the Job which
+ * may then be deleted.
+ */
+class THREADWEAVER_EXPORT Job : public QObject
+{
+    Q_OBJECT
 
-	Also, please note that Jobs may not be executed twice. Create two
-	different objects to perform two consecutive or parallel runs.
+public:
+    /** Construct a Job.
+     * @param parent the parent QObject
+     */
+    explicit Job ( QObject* parent = 0 );
 
-	Jobs may declare dependencies. If Job B depends on Job A, B may not be
-	executed before A is finished. To learn about dependencies, see
-	DependencyPolicy.
+    /** Destructor. */
+    virtual ~Job();
 
-	Job objects finish by emitting the done(Job*) signal.  Once this has been emitted,
-	ThreadWeaver is no longer using the Job which may then be deleted.
-    */
+    /** Perform the job. The thread in which this job is executed is given as a parameter.
+     *
+     * Do not overload this method to create your own Job implementation, overload run(). */
+    virtual void execute(Thread*);
 
-    class THREADWEAVER_EXPORT Job : public QObject
-    {
-        Q_OBJECT
+    /** The queueing priority of the job.
+     * Jobs will be sorted by their queueing priority when enqueued. A higher queueing priority will place the job in front of all
+     * lower-priority jobs in the queue.
+     *
+     * Note: A higher or lower priority does not influence queue policies. For example, a high-priority job that has an unresolved
+     * dependency will not be executed, which means an available lower-priority job will take precedence.
+     *
+     * The default implementation returns zero. Only if this method is overloaded for some job classes, priorities will influence
+     * the execution order of jobs. */
+    virtual int priority() const;
 
-    public:
-        friend class JobRunHelper;
+    /** Return whether the Job finished successfully or not.
+     * The default implementation simply returns true. Overload in derived classes if the derived Job class can fail.
+     *
+     * If a job fails (success() returns false), it will *NOT* resolve its dependencies when it finishes. This will make sure that
+     * Jobs that depend on the failed job will not be started.
+     *
+     * There is an important gotcha: When a Job object it deleted, it will always resolve its dependencies. If dependent jobs should
+     * not be executed after a failure, it is important to dequeue those before deleting the failed Job. A JobSequence may be
+     * helpful for that purpose.
+     */
+    virtual bool success () const;
 
-        /** Construct a Job.
+    /** Abort the execution of the job.
+     *
+     * Call this method to ask the Job to abort if it is currently executed. Please note that the default implementation of
+     * the method does nothing (!). This is due to the fact that there is no generic method to abort a processing Job. Not even a
+     * default boolean flag makes sense, as Job could, for example, be in an event loop and will need to create an exit event. You
+     * have to reimplement the method to actually initiate an abort action.
+     *
+     * The method is not pure virtual because users are not supposed to be forced to always implement requestAbort(). Also, this
+     * method is supposed to return immediately, not after the abort has completed. It requests the abort, the Job has to act on
+     * the request. */
+    virtual void requestAbort () {}
 
-        @param parent the parent QObject
-        */
-        explicit Job ( QObject* parent = 0 );
+    /** The job is about to be added to the weaver's job queue.
+     *
+     * The job will be added right after this method finished. The default implementation does nothing. Use this method to, for
+     * example, queue sub-operations as jobs before the job itself is queued.
+     *
+     * Note: When this method is called, the associated Weaver object's thread holds a lock on the weaver's queue. Therefore, it
+     * is save to assume that recursive queueing is atomic from the queues perspective.
+     *
+     * @param api the QueueAPI object the job will be queued in */
+    void aboutToBeQueued(QueueAPI *api);
 
-	/** Destructor. */
-        virtual ~Job();
+    /** Called from aboutToBeQueued() while the mutex is being held. */
+    virtual void aboutToBeQueued_locked ( QueueAPI *api );
 
-	/** Perform the job. The thread in which this job is executed
-	    is given as a parameter.
-            Do not overload this method to create your own Job
-            implementation, overload run(). */
-        virtual void execute(Thread*);
+    /** This Job is about the be dequeued from the weaver's job queue.
+     *
+     * The job will be removed from the queue right after this method returns. Use this method to dequeue, if necessary,
+     * sub-operations (jobs) that this job has enqueued.
+     *
+     * Note: When this method is called, the associated Weaver object's thread does hold a lock on the weaver's queue.
+     * Note: The default implementation does nothing.
+     *
+     * @param weaver the Weaver object from which the job will be dequeued */
+    void aboutToBeDequeued(QueueAPI *api);
 
-        /** The queueing priority of the job.
-            Jobs will be sorted by their queueing priority when
-            enqueued. A higher queueing priority will place the job in
-            front of all lower-priority jobs in the queue.
+    /** Called from aboutToBeDequeued() while the mutex is being held. */
+    virtual void aboutToBeDequeued_locked(QueueAPI *api);
 
-            Note: A higher or lower priority does not influence queue
-            policies. For example, a high-priority job that has an
-            unresolved dependency will not be executed, which means an
-            available lower-priority job will take precedence.
+    /** canBeExecuted() returns true if all the jobs queue policies agree to it.
+     *
+     * If it returns true, it expects that the job is executed right after that. The done() methods of the queue policies will be
+     * automatically called when the job is finished.
+     *
+     * If it returns false, all queue policy resources have been freed, and the method can be called again at a later time.
+     */
+    virtual bool canBeExecuted();
 
-            The default implementation returns zero. Only if this method
-            is overloaded for some job classes, priorities will
-            influence the execution order of jobs.
-        */
-        virtual int priority() const;
+    /** Returns true if the jobs's execute method finished. */
+    bool isFinished() const;
 
-        /** Return whether the Job finished successfully or not.
-            The default implementation simply returns true. Overload in
-            derived classes if the derived Job class can fail.
+    /** Assign a queue policy.
+     *
+     * Queue Policies customize the queueing (running) behaviour of sets of jobs. Examples for queue policies are dependencies
+     * and resource restrictions. Every queue policy object can only be assigned once to a job, multiple assignments will be
+     * IGNORED. */
+    void assignQueuePolicy ( QueuePolicy* );
 
-            If a job fails (success() returns false), it will *NOT* resolve
-            its dependencies when it finishes. This will make sure that Jobs
-            that depend on the failed job will not be started.
+    /** Remove a queue policy from this job. */
+    void removeQueuePolicy ( QueuePolicy* );
 
-            There is an important gotcha: When a Job object is deleted, it
-            will always resolve its dependencies. If dependent jobs should
-            not be executed after a failure, it is important to dequeue those
-            before deleting the failed Job.
+Q_SIGNALS:
+    /** This signal is emitted when this job is being processed by a thread. */
+    void started ( ThreadWeaver::Job* );
+    /** This signal is emitted when the job has been finished (no matter if it succeeded or not).
+     * After this signal has been emitted, ThreadWeaver no longer references the Job internally
+     * and the Job can be deleted. */
+    void done ( ThreadWeaver::Job* );
 
-            A JobSequence may be helpful for that purpose.
-        */
-        virtual bool success () const;
+    /** This job has failed.
+     *
+     * This signal is emitted when success() returns false after the job is executed. */
+    void failed( ThreadWeaver::Job* );
 
-        /** Abort the execution of the job.
-            Call this method to ask the Job to abort if it is currently executed.
-            Please note that the default implementation of the method does
-            nothing (!). This is due to the fact that there is no generic
-            method to abort a processing Job. Not even a default boolean flag
-            makes sense, as Job could, for example, be in an event loop and
-            will need to create an exit event.
-            You have to reimplement the method to actually initiate an abort
-            action.
-            The method is not pure virtual because users are not supposed to
-            be forced to always implement requestAbort().
-            Also, this method is supposed to return immediately, not after the
-            abort has completed. It requests the abort, the Job has to act on
-            the request. */
-        virtual void requestAbort () {}
+private:
+    class Private;
+    Private* d;
 
-        /** The job is about to be added to the weaver's job queue.
-            The job will be added right after this method finished. The
-            default implementation does nothing.
-            Use this method to, for example, queue sub-operations as jobs
-            before the job itself is queued.
+protected:
+    /** Free the queue policies acquired before this job has been executed. */
+    void freeQueuePolicyResources();
 
-            Note: When this method is called, the associated Weaver object's
-            thread holds a lock on the weaver's queue. Therefore, it is save
-            to assume that recursive queueing is atomic from the queues
-            perspective.
+    /** The method that actually performs the job.
+     *
+     * It is called from execute(). This method is the one to overload it with the job's task. */
 
-            @param weaver the Weaver object the job will be queued in
-        */
-        void aboutToBeQueued(QueueAPI *api);
-        /** Called from aboutToBeQueued() while the mutex is being held. */
-        virtual void aboutToBeQueued_locked ( QueueAPI *api );
+    virtual void run () = 0;
+    /** Return the thread that executes this job.
+     *
+     * Returns zero of the job is not currently executed.
+     * @note Do not confuse with QObject::thread() const!
+     * @todo rename to executingThread() */
+    Thread *thread();
 
-        /** This Job is about the be dequeued from the weaver's job queue.
-            The job will be removed from the queue right after this method
-            returns.
-            Use this method to dequeue, if necessary,  sub-operations (jobs) that this job
-            has enqueued.
+    /** Call with status = true to mark this job as done. */
+    void setFinished ( bool status );
 
-            Note: When this method is called, the associated Weaver object's
-            thread does hold a lock on the weaver's queue.
+    /** The mutex used to protect this job. */
+    QMutex* mutex() const;
 
-            Note: The default implementation does nothing.
+};
 
-            @param weaver the Weaver object from which the job will be dequeued
-        */
-        void aboutToBeDequeued(QueueAPI *api);
-
-        /** Called from aboutToBeDequeued() while the mutex is being held. */
-        virtual void aboutToBeDequeued_locked(QueueAPI *api);
-
-        /** canBeExecuted() returns true if all the jobs queue policies agree to it.
-            If it returns true, it expects that the job is executed right
-            after that. The done() methods of the queue policies will be
-            automatically called when the job is finished.
-
-            If it returns false, all queue policy resources have been freed,
-            and the method can be called again at a later time.
-        */
-        virtual bool canBeExecuted();
-
-        /** Returns true if the jobs's execute method finished. */
-        bool isFinished() const;
-
-        /** Assign a queue policy.
-            Queue Policies customize the queueing (running) behaviour of sets
-            of jobs. Examples for queue policies are dependencies and resource
-            restrictions.
-            Every queue policy object can only be assigned once to a job,
-            multiple assignments will be IGNORED.
-        */
-        void assignQueuePolicy ( QueuePolicy* );
-
-        /** Remove a queue policy from this job.
-         */
-        void removeQueuePolicy ( QueuePolicy* );
-
-    Q_SIGNALS:
-	/** This signal is emitted when this job is being processed by a
-	    thread. */
-	void started ( ThreadWeaver::Job* );
-	/** 
-	 * This signal is emitted when the job has been finished (no matter if it succeeded or not).
-	 * After this signal has been emitted, ThreadWeaver no longer references the Job internally
-	 * and the Job can be deleted.
-	 */
-	void done ( ThreadWeaver::Job* );
-
-        /** This job has failed.
-            This signal is emitted when success() returns false after the job
-            is executed.
-        */
-        void failed( ThreadWeaver::Job* );
-
-    private:
-        class Private;
-        Private* d;
-
-    protected:
-        /** Free the queue policies acquired before this job has been
-            executed. */
-        void freeQueuePolicyResources();
-
-        /** The method that actually performs the job. It is called from
-            execute(). This method is the one to overload it with the
-            job's task. */
-        virtual void run () = 0;
-	/** Return the thread that executes this job.
-	    Returns zero of the job is not currently executed.
-
-	    Do not confuse with QObject::thread() const !
-	    //  @todo rename to executingThread()
-	    */
-        Thread *thread();
-
-	/** Call with status = true to mark this job as done. */
-        void setFinished ( bool status );
-
-        /** The mutex used to protect this job. */
-        QMutex* mutex() const;
-
-    };
 }
 
 #endif // THREADWEAVER_JOB_H

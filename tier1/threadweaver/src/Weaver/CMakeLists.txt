@@ -1,4 +1,3 @@
-
 ########### next target ###############
 
 set(ThreadWeaver_LIB_SRCS

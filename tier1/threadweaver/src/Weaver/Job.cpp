@@ -27,52 +27,43 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 */
 
 #include "Job.h"
-#include "Job_p.h"
 
-#include <QtCore/QSet>
 #include <QtCore/QList>
 #include <QtCore/QMutex>
-#include <QtCore/QObject>
-#include <QtCore/QMap>
-#include <QtCore/QArgument>
-#include <QtCore/QWaitCondition>
 #include <DebuggingAids.h>
 #include <Thread.h>
 
 #include "QueuePolicy.h"
 #include "DependencyPolicy.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
 
-class ThreadWeaver::QueuePolicyList : public QList<QueuePolicy*> {};
+class QueuePolicyList : public QList<QueuePolicy*> {};
 
 class Job::Private
 {
 public:
     Private ()
         : thread (0)
-        , queuePolicies ( new QueuePolicyList )
         , mutex(QMutex::NonRecursive)
         , finished (false)
     {}
 
     ~Private()
-    {
-        delete queuePolicies;
-    }
+    {}
 
     /* The thread that executes this job. Zero when the job is not executed. */
     Thread * thread;
 
     /* The list of QueuePolicies assigned to this Job. */
-    QueuePolicyList* queuePolicies;
+    QueuePolicyList queuePolicies;
 
     mutable QMutex mutex;
     /* d->finished is set to true when the Job has been executed. */
     bool finished;
 };
 
-Job::Job ( QObject *parent )
+Job::Job(QObject *parent)
     : QObject (parent)
     , d(new Private())
 {
@@ -80,61 +71,38 @@ Job::Job ( QObject *parent )
 
 Job::~Job()
 {
-    for ( int index = 0; index < d->queuePolicies->size(); ++index )
-    {
-        d->queuePolicies->at( index )->destructed( this );
+    for (int index = 0; index < d->queuePolicies.size(); ++index ) {
+        d->queuePolicies.at(index)->destructed(this);
     }
-
     delete d;
 }
 
-ThreadWeaver::JobRunHelper::JobRunHelper()
-    : QObject ( 0 )
-{
-}
-
-void ThreadWeaver::JobRunHelper::runTheJob ( Thread* th, Job* job )
-{
-    P_ASSERT ( th == thread() );
-    {
-        QMutexLocker l(&job->d->mutex); Q_UNUSED(l);
-        job->d->thread = th;
-    }
-    Q_EMIT ( started ( job ) );
-
-    job->run();
-
-    {
-        QMutexLocker l(&job->d->mutex); Q_UNUSED(l);
-        job->d->thread = 0;
-        job->setFinished (true);
-    }
-    //FIXME this requires the job lock?
-    job->freeQueuePolicyResources();
-
-    if ( ! job->success() ) {
-        Q_EMIT ( failed( job ) );
-    }
-    Q_EMIT ( done( job ) );
-}
-
-//FIXME Would it make sense to hold the Jobs mutex while it is being executed?
 //...and have execute wrappers?
 //...and separate execute() and virtual execute_locked() methods?
 void Job::execute(Thread *th)
 {
-//    P_ASSERT (sm_dep()->values(this).isEmpty());
-    JobRunHelper helper;
-    connect ( &helper,  SIGNAL (started(ThreadWeaver::Job*)),
-              SIGNAL (started(ThreadWeaver::Job*)) );
-    connect ( &helper,  SIGNAL (done(ThreadWeaver::Job*)),
-              SIGNAL (done(ThreadWeaver::Job*)) );
-    connect ( &helper, SIGNAL(failed(ThreadWeaver::Job*)),
-              SIGNAL(failed(ThreadWeaver::Job*)) );
-
     debug(3, "Job::execute: executing job of type %s %s in thread %i.\n",
-          metaObject()->className(), objectName().isEmpty() ? "" : qPrintable( objectName() ), th->id());
-    helper.runTheJob( th, this );
+          metaObject()->className(), objectName().isEmpty() ? "" : qPrintable(objectName()), th->id());
+    {
+        QMutexLocker l(&d->mutex); Q_UNUSED(l);
+        d->thread = th;
+    }
+    Q_EMIT(started(this));
+
+    run();
+
+    {
+        QMutexLocker l(&d->mutex); Q_UNUSED(l);
+        d->thread = 0;
+        setFinished (true);
+    }
+    //FIXME this requires the job lock?
+    freeQueuePolicyResources();
+
+    if (!success()) {
+        Q_EMIT(failed(this));
+    }
+    Q_EMIT(done(this));
     debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
 }
 
@@ -150,9 +118,8 @@ bool Job::success () const
 
 void Job::freeQueuePolicyResources()
 {
-    for ( int index = 0; index < d->queuePolicies->size(); ++index )
-    {
-        d->queuePolicies->at( index )->free( this );
+    for (int index = 0; index < d->queuePolicies.size(); ++index) {
+        d->queuePolicies.at(index)->free(this);
     }
 }
 
@@ -182,52 +149,43 @@ bool Job::canBeExecuted()
 
     bool success = true;
 
-    if ( d->queuePolicies->size() > 0 )
-    {
+    if (!d->queuePolicies.isEmpty()) {
         debug( 4, "Job::canBeExecuted: acquiring permission from %i queue %s.\n",
-               d->queuePolicies->size(), d->queuePolicies->size()==1 ? "policy" : "policies" );
-        for ( int index = 0; index < d->queuePolicies->size(); ++index )
-        {
-            if ( d->queuePolicies->at( index )->canRun( this ) )
-            {
-                acquired.append( d->queuePolicies->at( index ) );
+               d->queuePolicies.size(), d->queuePolicies.size()==1 ? "policy" : "policies" );
+        for (int index = 0; index < d->queuePolicies.size(); ++index) {
+            if (d->queuePolicies.at(index)->canRun(this)) {
+                acquired.append(d->queuePolicies.at(index));
             } else {
                 success = false;
                 break;
             }
         }
 
-        debug( 4, "Job::canBeExecuted: queue policies returned %s.\n", success ? "true" : "false" );
+        debug(4, "Job::canBeExecuted: queue policies returned %s.\n", success ? "true" : "false");
 
-        if ( ! success )
-        {
-
-            for ( int index = 0; index < acquired.size(); ++index )
-            {
-                acquired.at( index )->release( this );
+        if (!success) {
+            for (int index = 0; index < acquired.size(); ++index) {
+                acquired.at(index)->release(this);
             }
         }
     } else {
-        debug( 4, "Job::canBeExecuted: no queue policies, this job can be executed.\n" );
+        debug(4, "Job::canBeExecuted: no queue policies, this job can be executed.\n");
     }
-
     return success;
 }
 
-void Job::assignQueuePolicy( QueuePolicy* policy )
+void Job::assignQueuePolicy(QueuePolicy* policy)
 {
-    if ( ! d->queuePolicies->contains( policy ) )
-    {
-        d->queuePolicies->append( policy );
+    if (! d->queuePolicies.contains(policy)) {
+        d->queuePolicies.append(policy);
     }
 }
 
-void Job::removeQueuePolicy( QueuePolicy* policy )
+void Job::removeQueuePolicy(QueuePolicy* policy)
 {
-    int index = d->queuePolicies->indexOf( policy );
-    if ( index != -1 )
-    {
-        d->queuePolicies->removeAt( index );
+    int index = d->queuePolicies.indexOf(policy);
+    if (index != -1) {
+        d->queuePolicies.removeAt(index);
     }
 }
 
@@ -241,7 +199,7 @@ Thread* Job::thread()
     return d->thread;
 }
 
-void Job::setFinished ( bool status )
+void Job::setFinished(bool status)
 {
     d->finished = status;
 }
@@ -251,5 +209,6 @@ QMutex* Job::mutex() const
     return &d->mutex;
 }
 
+}
+
 #include "moc_Job.cpp"
-#include "moc_Job_p.cpp"

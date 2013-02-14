@@ -96,6 +96,7 @@ void QueueBenchmarksTest::BaselineBenchmark()
         jobs[i].setCount(m);
     }
 
+    //Actually, executeLocal needs to emit similar signals as execute(), to be comparable to the threaded variants
     QBENCHMARK {
         for(int i = 0; i < n; ++i) {
             jobs[i].executeLocal();
