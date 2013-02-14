@@ -1,11 +1,13 @@
 #include <numeric>
 
+#include <QtDebug>
 #include <QString>
 #include <QtTest>
 #include <QCoreApplication>
 #include <QList>
 
 #include <Job.h>
+#include <JobCollection.h>
 #include <ThreadWeaver.h>
 
 //FIXME Wouldn't it be nice to be able to execute jobs in the local thread?
@@ -57,6 +59,8 @@ private Q_SLOTS:
     void BaselineBenchmark_data();
     void IndividualJobsBenchmark();
     void IndividualJobsBenchmark_data();
+    void CollectionsBenchmark();
+    void CollectionsBenchmark_data();
 
 private:
     void defaultBenchmarkData(bool singleThreaded);
@@ -128,6 +132,47 @@ void QueueBenchmarksTest::IndividualJobsBenchmark()
 }
 
 void QueueBenchmarksTest::IndividualJobsBenchmark_data()
+{
+    defaultBenchmarkData(false);
+}
+
+void QueueBenchmarksTest::CollectionsBenchmark()
+{
+    QFETCH(int, m);
+    QFETCH(int, c);
+    QFETCH(int, b);
+    QFETCH(int, t);
+    const int n = c*b;
+
+    if (b > 32 || c || 32) return; // too slow for now
+
+    ThreadWeaver::Weaver weaver;
+    weaver.setMaximumNumberOfThreads(t);
+    weaver.suspend();
+    AccumulateJob jobs[n];
+
+
+    QObject parent;
+    qDebug() << b << "blocks" << c << "operations, queueing...";
+    //queue the jobs blockwise as collections
+    for (int block = 0; block < b; ++block) {
+        ThreadWeaver::JobCollection* collection = new ThreadWeaver::JobCollection(&parent);
+        for (int operation = 0; operation < c; ++operation) {
+            const int index = block * b + operation;
+            jobs[index].setCount(m);
+            collection->addJob(&jobs[index]);
+        }
+        weaver.enqueue(collection);
+    }
+
+    qDebug() << b << "blocks" << c << "operations, executing...";
+    QBENCHMARK {
+        weaver.resume();
+        weaver.finish();
+    }
+}
+
+void QueueBenchmarksTest::CollectionsBenchmark_data()
 {
     defaultBenchmarkData(false);
 }
