@@ -23,6 +23,7 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX THREADWEAVER
 
 add_subdirectory(src)
 add_subdirectory(autotests)
+add_subdirectory(benchmarks)
 #add_subdirectory(examples)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them

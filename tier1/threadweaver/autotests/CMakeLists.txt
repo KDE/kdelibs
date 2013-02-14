@@ -33,12 +33,3 @@ ecm_mark_as_test(ThreadWeaverDeleteTest)
 
 target_link_libraries(ThreadWeaverDeleteTest ${QT_QTTEST_LIBRARY} ThreadWeaver)
 
-########### next target ###############
-
-set(QueueBenchmarks_SRCS QueueBenchmarks.cpp)
-
-add_executable(ThreadWeaverQueueBenchmarks ${QueueBenchmarks_SRCS})
-add_test(ThreadWeaverQueueBenchmarks ThreadWeaverQueueBenchmarks)
-ecm_mark_as_test(ThreadWeaverQueueBenchmarks)
-
-target_link_libraries(ThreadWeaverQueueBenchmarks ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} threadweaver)
