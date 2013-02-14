@@ -312,6 +312,7 @@ KAboutApplicationDialog::~KAboutApplicationDialog()
 void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
 {
     KDialog *dialog = new KDialog(q);
+    dialog->setAttribute( Qt::WA_DeleteOnClose );
 
     dialog->setCaption(i18n("License Agreement"));
     dialog->setButtons(KDialog::Close);

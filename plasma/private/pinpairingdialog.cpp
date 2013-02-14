@@ -61,6 +61,7 @@ public:
 
     ~PinPairingDialogPrivate()
     {
+        //Laurent: dialog is deleted ? TODO verify
     }
 
     void slotAccept()
