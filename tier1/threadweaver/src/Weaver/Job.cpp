@@ -33,6 +33,7 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include <DebuggingAids.h>
 #include <Thread.h>
 #include <QtDebug>
+#include <QAtomicPointer>
 
 #include "QueuePolicy.h"
 #include "DependencyPolicy.h"
@@ -83,7 +84,7 @@ public:
         : thread (0)
         , mutex(QMutex::NonRecursive)
         , finished (false)
-        , executeWrapper(&defaultExecutor)
+        , executor(&defaultExecutor)
     {
     }
 
@@ -100,8 +101,8 @@ public:
     /* d->finished is set to true when the Job has been executed. */
     bool finished;
 
-    /** The ExecuteWrapper that will execute this Job. */
-    Executor* executeWrapper;
+    /** The Executor that will execute this Job. */
+    QAtomicPointer<Executor> executor;
 
     //FIXME What is the correct KDE frameworks no debug switch?
 #if not defined NDEBUG
@@ -136,7 +137,9 @@ void Job::execute(Thread *th)
         QMutexLocker l(&d->mutex); Q_UNUSED(l);
         d->thread = th;
     }
-    d->executeWrapper->execute(this, th);
+    Executor* executor = d->executor.fetchAndAddOrdered(0);
+    Q_ASSERT(executor); //may never be unset!
+    executor->execute(this, th);
     //FIXME this requires the job lock?
     freeQueuePolicyResources();
     {
@@ -149,10 +152,7 @@ void Job::execute(Thread *th)
 
 Executor *Job::setExecutor(Executor *executor)
 {
-    //FIXME QAtomicPointer
-    Executor* old = d->executeWrapper;
-    d->executeWrapper = executor == 0 ? &defaultExecutor : executor;
-    return old;
+    return d->executor.fetchAndStoreOrdered(executor == 0 ? &defaultExecutor : executor);
 }
 
 int Job::priority () const

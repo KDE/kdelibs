@@ -8,12 +8,14 @@ ExecuteWrapper::ExecuteWrapper()
 
 void ExecuteWrapper::wrap(Executor *previous)
 {
-    wrapped = previous;
+    wrapped.fetchAndStoreOrdered(previous);
 }
 
 void ExecuteWrapper::executeWrapped(Job *job, Thread *thread)
 {
-    wrapped->execute(job, thread);
+    Executor* executor = wrapped.fetchAndAddOrdered(0);
+    Q_ASSERT_X(executor!=0, Q_FUNC_INFO, "Wrapped Executor cannot be zero!");
+    executor->execute(job, thread);
 }
 
 }
