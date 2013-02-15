@@ -17,7 +17,9 @@ class ExecuteWrapper : public Executor
 {
 public:
     ExecuteWrapper();
-    void wrap(Executor* previous);
+    Executor* wrap(Executor* previous);
+    Executor* unwrap(Job*);
+
     void executeWrapped(Job* job, Thread* thread);
 
 private:

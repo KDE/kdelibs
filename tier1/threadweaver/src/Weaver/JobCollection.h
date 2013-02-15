@@ -34,7 +34,8 @@
 namespace ThreadWeaver {
 
 class Thread;
-class JobCollectionJobRunner;
+class CollectionExecuteWrapper;
+//class JobCollectionJobRunner;
 
 /** A JobCollection is a vector of Jobs that will be queued together.
  * In a JobCollection, the order of execution of the elements is not guaranteed.
@@ -47,7 +48,7 @@ class JobCollectionJobRunner;
  */
 class THREADWEAVER_EXPORT JobCollection : public Job
 {
-    friend class JobCollectionJobRunner;
+//    friend class JobCollectionJobRunner;
     Q_OBJECT
 
 public:
@@ -60,9 +61,6 @@ public:
     further Jobs are supposed to be added.
     */
     virtual void addJob ( Job* );
-
-    /** Overload to manage recursive sets. */
-    bool canBeExecuted();
 
 public Q_SLOTS:
     /** Stop processing, dequeue all remaining Jobs.
@@ -91,20 +89,20 @@ protected:
     /** Callback method for done jobs. */
     virtual void internalJobDone( Job* );
 
+    //FIXME move to d
     /** Perform the task usually done when one individual job is
      * finished, but in our case only when the whole collection
      * is finished or partly dequeued.
      */
     void finalCleanup();
 
-private Q_SLOTS:
-    // called when an internal job runner emits its done(Job*) signal.
-    // JobCollection emits done(Job*) after the last JobCollectionJobRunner finishes
-    void jobRunnerDone();
-
 private:
     /** Overload the execute method. */
     void execute ( Thread * );
+
+    friend class CollectionExecuteWrapper;
+    void elementStarted(Job*);
+    void elementFinished(Job*);
 
     /** Overload run().
      * We have to. */

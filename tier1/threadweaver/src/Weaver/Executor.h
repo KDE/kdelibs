@@ -14,6 +14,7 @@ class Executor
 public:
     virtual ~Executor();
     virtual void execute(Job*, Thread*) = 0;
+    virtual void cleanup(Job*, Thread*);
 
     void run(Job* job);
 };

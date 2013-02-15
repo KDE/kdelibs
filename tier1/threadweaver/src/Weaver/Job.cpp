@@ -147,12 +147,17 @@ void Job::execute(Thread *th)
         d->thread = 0;
         setFinished (true);
     }
-
+    executor->cleanup(this, th);
 }
 
 Executor *Job::setExecutor(Executor *executor)
 {
     return d->executor.fetchAndStoreOrdered(executor == 0 ? &defaultExecutor : executor);
+}
+
+Executor *Job::executor() const
+{
+    return d->executor.fetchAndAddOrdered(0);
 }
 
 int Job::priority () const

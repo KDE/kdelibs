@@ -82,6 +82,9 @@ public:
      */
     Executor* setExecutor(Executor* executor);
 
+    /** Returns the executor currently set on the Job. */
+    Executor* executor() const;
+
     /** The queueing priority of the job.
      * Jobs will be sorted by their queueing priority when enqueued. A higher queueing priority will place the job in front of all
      * lower-priority jobs in the queue.

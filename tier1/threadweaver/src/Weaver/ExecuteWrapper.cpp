@@ -6,9 +6,17 @@ ExecuteWrapper::ExecuteWrapper()
 {
 }
 
-void ExecuteWrapper::wrap(Executor *previous)
+Executor *ExecuteWrapper::wrap(Executor *previous)
 {
-    wrapped.fetchAndStoreOrdered(previous);
+    return wrapped.fetchAndStoreOrdered(previous);
+}
+
+Executor *ExecuteWrapper::unwrap(Job* job)
+{
+    Executor* executor = job->setExecutor(wrapped.fetchAndAddOrdered(0));
+    Q_ASSERT_X(executor == this, Q_FUNC_INFO, "ExecuteWrapper can only unwrap itself!");
+    wrapped.fetchAndStoreOrdered(0);
+    return executor;
 }
 
 void ExecuteWrapper::executeWrapped(Job *job, Thread *thread)
@@ -21,4 +29,3 @@ void ExecuteWrapper::executeWrapped(Job *job, Thread *thread)
 }
 
 #include "ExecuteWrapper.h"
-
