@@ -111,7 +111,7 @@ private:
     /** Dequeue all elements of the collection.
      * Note: This will not dequeue the collection itself.
      */
-    void dequeueElements();
+    void dequeueElements(bool queueApiIsLocked);
 
     class Private;
     Private * const d;

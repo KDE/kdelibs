@@ -104,7 +104,7 @@ JobCollection::~JobCollection()
     {   // dequeue all remaining jobs:
         QMutexLocker l(mutex()); Q_UNUSED(l);
         if (d->api != 0) // still queued
-            dequeueElements();
+            dequeueElements(false);
     }
     // QObject cleanup takes care of the job runners
     delete d;
@@ -151,7 +151,7 @@ void JobCollection::aboutToBeQueued_locked(QueueAPI *api)
 void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
 {   Q_ASSERT(!mutex()->tryLock());
     Q_ASSERT(api && d->api == api );
-    dequeueElements();
+    dequeueElements(true);
     d->api = 0;
     Job::aboutToBeDequeued_locked(api);
 }
@@ -223,14 +223,18 @@ void JobCollection::finalCleanup()
     d->api = 0;
 }
 
-void JobCollection::dequeueElements()
+void JobCollection::dequeueElements(bool queueApiIsLocked)
 {   // dequeue everything:
     Q_ASSERT(!mutex()->tryLock());
     if ( d->api == 0 ) return; //not queued
     //FIXME only if not finished?
     for ( int index = 0; index < d->elements.size(); ++index ) {
         debug(4, "JobCollection::dequeueElements: dequeueing %p.\n", (void*)d->elements.at(index));
-        d->api->dequeue( d->elements.at(index));
+        if (queueApiIsLocked) {
+            d->api->dequeue_p(d->elements.at(index));
+        } else {
+            d->api->dequeue(d->elements.at(index));
+        }
     }
 
     const int jobCount = d->jobCounter.fetchAndAddOrdered(0);
