@@ -46,7 +46,7 @@ endif (KHTML_BUILD_TESTREGRESSION)
 
 option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
 
-find_package(ECM 0.0.6 REQUIRED NO_MODULE)
+find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
@@ -57,7 +57,8 @@ set(KDE_SKIP_BUILD_SETTINGS TRUE)
 
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
-find_package(KF5 REQUIRED MODULE COMPONENTS CMake InstallDirs)
+find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_FROM_BYTEARRAY -DQT_NO_KEYWORDS -DQT_STRICT_ITERATORS)
 unset(KDE_SKIP_BUILD_SETTINGS)
 
 find_package(Qt5Core REQUIRED NO_MODULE)
