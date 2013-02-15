@@ -616,38 +616,8 @@ if (WIN32)
 endif (WIN32)
 
 
-# setup default RPATH/install_name handling, may be overridden by KDE4_HANDLE_RPATH_FOR_EXECUTABLE
-# It sets up to build with full RPATH. When installing, RPATH will be changed to the LIB_INSTALL_DIR
-# and all link directories which are not inside the current build dir.
 if (UNIX)
    set( _KDE4_PLATFORM_INCLUDE_DIRS)
-
-   set(_abs_LIB_INSTALL_DIR "${LIB_INSTALL_DIR}")
-   if (NOT IS_ABSOLUTE "${_abs_LIB_INSTALL_DIR}")
-      set(_abs_LIB_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${LIB_INSTALL_DIR}")
-   endif()
-
-   # the rest is RPATH handling
-   # here the defaults are set
-   # which are partly overwritten in kde4_handle_rpath_for_library()
-   # and kde4_handle_rpath_for_executable(), both located in KDE4Macros.cmake, Alex
-   if (APPLE)
-      set(CMAKE_INSTALL_NAME_DIR ${_abs_LIB_INSTALL_DIR})
-   else (APPLE)
-      # add our LIB_INSTALL_DIR to the RPATH (but only when it is not one of the standard system link
-      # directories listed in CMAKE_{PLATFORM,C,CXX}_IMPLICIT_LINK_DIRECTORIES) and use the RPATH figured out by cmake when compiling
-
-      list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${_abs_LIB_INSTALL_DIR}" _isSystemPlatformLibDir)
-      list(FIND CMAKE_C_IMPLICIT_LINK_DIRECTORIES "${_abs_LIB_INSTALL_DIR}" _isSystemCLibDir)
-      list(FIND CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES "${_abs_LIB_INSTALL_DIR}" _isSystemCxxLibDir)
-      if("${_isSystemPlatformLibDir}" STREQUAL "-1" AND "${_isSystemCLibDir}" STREQUAL "-1" AND "${_isSystemCxxLibDir}" STREQUAL "-1")
-         set(CMAKE_INSTALL_RPATH "${_abs_LIB_INSTALL_DIR}")
-      endif("${_isSystemPlatformLibDir}" STREQUAL "-1" AND "${_isSystemCLibDir}" STREQUAL "-1" AND "${_isSystemCxxLibDir}" STREQUAL "-1")
-
-      set(CMAKE_SKIP_BUILD_RPATH FALSE)
-      set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-      set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-   endif (APPLE)
 endif (UNIX)
 
 

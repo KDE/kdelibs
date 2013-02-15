@@ -51,8 +51,14 @@ find_package(ECM 0.0.6 REQUIRED NO_MODULE)
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 
-# this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake)
-find_package(KF5 REQUIRED MODULE COMPONENTS InstallDirs)
+
+# skip the cmake-build related settings (like automoc)for now, we'll do that later, I need to have a close look at those settings first.
+set(KDE_SKIP_BUILD_SETTINGS TRUE)
+
+# this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
+# RPATH handling and test settings.
+find_package(KF5 REQUIRED MODULE COMPONENTS CMake InstallDirs)
+unset(KDE_SKIP_BUILD_SETTINGS)
 
 find_package(Qt5Core REQUIRED NO_MODULE)
 
