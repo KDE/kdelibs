@@ -42,6 +42,7 @@ class Thread;
 class QueuePolicy;
 class QueueAPI;
 class QueuePolicyList;
+class Executor;
 
 /** A Job is a simple abstraction of an action that is to be executed in a thread context.
  * It is essential for the ThreadWeaver library that as a kind of convention, the different creators of Job objects do not touch
@@ -72,6 +73,14 @@ public:
      *
      * Do not overload this method to create your own Job implementation, overload run(). */
     virtual void execute(Thread*);
+
+
+    /** Set the Executor object that is supposed to run the job.
+     *
+     * Returns the previously set executor. The executor can never be unset. If zero is passed in as the new executor, the Job
+     * will internally reset to a default executor that only invokes run().
+     */
+    Executor* setExecutor(Executor* executor);
 
     /** The queueing priority of the job.
      * Jobs will be sorted by their queueing priority when enqueued. A higher queueing priority will place the job in front of all
@@ -179,10 +188,10 @@ protected:
     /** Free the queue policies acquired before this job has been executed. */
     void freeQueuePolicyResources();
 
+    friend class Executor;
     /** The method that actually performs the job.
      *
      * It is called from execute(). This method is the one to overload it with the job's task. */
-
     virtual void run () = 0;
     /** Return the thread that executes this job.
      *

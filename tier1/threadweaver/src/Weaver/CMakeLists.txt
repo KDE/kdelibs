@@ -8,6 +8,8 @@ set(ThreadWeaver_LIB_SRCS
     DebuggingAids.cpp
     Thread.cpp
     Job.cpp
+    Executor.cpp
+    ExecuteWrapper.cpp
     State.cpp
     WeaverImplState.cpp
     InConstructionState.cpp

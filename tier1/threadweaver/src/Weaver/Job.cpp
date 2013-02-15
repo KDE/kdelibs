@@ -32,9 +32,45 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include <QtCore/QMutex>
 #include <DebuggingAids.h>
 #include <Thread.h>
+#include <QtDebug>
 
 #include "QueuePolicy.h"
 #include "DependencyPolicy.h"
+#include "Executor.h"
+#include "ExecuteWrapper.h"
+
+namespace {
+
+//TODO QObjectExecutor? that would allows for Jobs to no inherit QObject?
+//maaaaaaybeeee...
+class DefaultExecutor : public ThreadWeaver::Executor {
+public:
+    void execute(ThreadWeaver::Job *job, ThreadWeaver::Thread *) /* override */ {
+        job->started(job);
+
+        run(job);
+
+        if (!job->success()) {
+            job->failed(job);
+        }
+        job->done(job);
+    }
+};
+
+class DebugExecuteWrapper : public ThreadWeaver::ExecuteWrapper {
+public:
+    void execute(ThreadWeaver::Job *job,ThreadWeaver::Thread *th) /* override */ {
+        Q_ASSERT_X(job, Q_FUNC_INFO, "job may not be zero!");
+        ThreadWeaver::debug(3, "DefaultExecuteWrapper::execute: executing job of type %s %s in thread %i.\n",
+                            job->metaObject()->className(), job->objectName().isEmpty() ? "" : qPrintable(job->objectName()),
+                            th->id());
+        executeWrapped(job, th);
+        ThreadWeaver::debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
+    }
+};
+
+static DefaultExecutor defaultExecutor;
+}
 
 namespace ThreadWeaver {
 
@@ -47,26 +83,41 @@ public:
         : thread (0)
         , mutex(QMutex::NonRecursive)
         , finished (false)
-    {}
+        , executeWrapper(&defaultExecutor)
+    {
+    }
 
     ~Private()
     {}
 
+    //FIXME use QAtomicPointer and avoid acquiring the mutex for run().
     /* The thread that executes this job. Zero when the job is not executed. */
     Thread * thread;
-
     /* The list of QueuePolicies assigned to this Job. */
     QueuePolicyList queuePolicies;
 
     mutable QMutex mutex;
     /* d->finished is set to true when the Job has been executed. */
     bool finished;
+
+    /** The ExecuteWrapper that will execute this Job. */
+    Executor* executeWrapper;
+
+    //FIXME What is the correct KDE frameworks no debug switch?
+#if not defined NDEBUG
+    /** DebugExecuteWrapper for logging of Job execution. */
+    DebugExecuteWrapper debugExecuteWrapper;
+#endif
 };
 
 Job::Job(QObject *parent)
     : QObject (parent)
     , d(new Private())
 {
+    //FIXME What is the correct KDE frameworks no debug switch?
+#if not defined NDEBUG
+    d->debugExecuteWrapper.wrap(setExecutor(&d->debugExecuteWrapper));
+#endif
 }
 
 Job::~Job()
@@ -81,29 +132,27 @@ Job::~Job()
 //...and separate execute() and virtual execute_locked() methods?
 void Job::execute(Thread *th)
 {
-    debug(3, "Job::execute: executing job of type %s %s in thread %i.\n",
-          metaObject()->className(), objectName().isEmpty() ? "" : qPrintable(objectName()), th->id());
     {
         QMutexLocker l(&d->mutex); Q_UNUSED(l);
         d->thread = th;
     }
-    Q_EMIT(started(this));
-
-    run();
-
+    d->executeWrapper->execute(this, th);
+    //FIXME this requires the job lock?
+    freeQueuePolicyResources();
     {
         QMutexLocker l(&d->mutex); Q_UNUSED(l);
         d->thread = 0;
         setFinished (true);
     }
-    //FIXME this requires the job lock?
-    freeQueuePolicyResources();
 
-    if (!success()) {
-        Q_EMIT(failed(this));
-    }
-    Q_EMIT(done(this));
-    debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
+}
+
+Executor *Job::setExecutor(Executor *executor)
+{
+    //FIXME QAtomicPointer
+    Executor* old = d->executeWrapper;
+    d->executeWrapper = executor == 0 ? &defaultExecutor : executor;
+    return old;
 }
 
 int Job::priority () const
