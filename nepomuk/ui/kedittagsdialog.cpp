@@ -260,7 +260,7 @@ void KEditTagsDialog::loadTags()
         const QString label = tag.genericLabel();
 
         QListWidgetItem* item = new QListWidgetItem(label, m_tagsList);
-        item->setData(Qt::UserRole, tag.uri());
+        item->setData(Qt::UserRole, tag.resourceUri());
 
         const bool check = m_tags.contains( tag );
         item->setCheckState(check ? Qt::Checked : Qt::Unchecked);
