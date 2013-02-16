@@ -325,8 +325,6 @@ void KWebPage::downloadRequest(const QNetworkRequest& request)
     KIO::TransferJob* job = KIO::get(request.url());
     connect(job, SIGNAL(mimetype(KIO::Job*,QString)),
             this, SLOT(_k_receivedContentType(KIO::Job*,QString)));
-    connect(job, SIGNAL(result(KJob*)),
-            this, SLOT(_k_receivedContentTypeResult(KJob*)));
 
     job->setMetaData(request.attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData)).toMap());
     job->addMetaData(QL1S("MaxCacheSize"), QL1S("0")); // Don't store in http cache.
