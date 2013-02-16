@@ -219,7 +219,7 @@ public:
 
 KDataToolAction::KDataToolAction( const QString & text, const KDataToolInfo & info, const QString & command,
                                   QObject *parent )
-    : KAction( text, parent ),
+    : QAction( text, parent ),
       d(new KDataToolActionPrivate)
 {
     setIcon( QIcon::fromTheme( info.iconName() ) );

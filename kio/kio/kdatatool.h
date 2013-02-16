@@ -25,7 +25,8 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <kaction.h>
+#include <QAction>
+
 #include <kservice.h>
 #include <kcomponentdata.h>
 
@@ -182,7 +183,7 @@ private:
  * The slot defined for step 2 is called when the action is activated, and
  * that's where the tool should be created and run.
  */
-class KIO_EXPORT KDataToolAction : public KAction
+class KIO_EXPORT KDataToolAction : public QAction
 {
     Q_OBJECT
 public:
