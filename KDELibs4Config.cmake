@@ -380,20 +380,6 @@ endif(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
 set(_kde_cmake_module_path_back ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../../../share/cmake/modules ${CMAKE_MODULE_PATH} )
 
-# if the minimum Qt requirement is changed, change all occurrence in the
-# following lines
-if( NOT QT_MIN_VERSION )
-  set(QT_MIN_VERSION "4.5.0")
-endif( NOT QT_MIN_VERSION )
-if( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
-  set(QT_MIN_VERSION "4.5.0")
-endif( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
-
-# Tell FindQt4.cmake to point the QT_QTFOO_LIBRARY targets at the imported targets
-# for the Qt libraries, so we get full handling of release and debug versions of the
-# Qt libs and are flexible regarding the install location of Qt under Windows:
-set(QT_USE_IMPORTED_TARGETS TRUE)
-
 find_package(ECM 0.0.6 NO_MODULE REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
@@ -404,18 +390,6 @@ find_package(Perl)
 if(NOT PERL_FOUND)
    message(STATUS "Perl not found")
 endif(NOT PERL_FOUND)
-
-# Check that we really found everything.
-# If KDE4 was searched with REQUIRED, we error out with FATAL_ERROR if something wasn't found
-# already above in the other FIND_PACKAGE() calls.
-# If KDE4 was searched without REQUIRED and something in the FIND_PACKAGE() calls above wasn't found,
-# then we get here and must check that everything has actually been found. If something is missing,
-# we must not fail with FATAL_ERROR, but only not set KDE4_FOUND.
-
-if(NOT QT5_BUILD AND NOT QT4_FOUND)
-   message(STATUS "KDE4 not found, because Qt4 was not found")
-   return()
-endif()
 
 # now we are sure we have everything we need
 
