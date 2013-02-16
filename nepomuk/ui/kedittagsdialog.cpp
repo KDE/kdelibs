@@ -129,10 +129,15 @@ void KEditTagsDialog::slotButtonClicked(int button)
         for (int i = 0; i < count; ++i) {
             QListWidgetItem* item = m_tagsList->item(i);
             if (item->checkState() == Qt::Checked) {
-                const QString label = item->data(Qt::UserRole).toString();
-                Nepomuk::Tag tag(label);
-                tag.setLabel(label);
-                m_tags.append(tag);
+                const QUrl uri = item->data(Qt::UserRole).toUrl();
+                if( uri.isEmpty() ) {
+                    Nepomuk::Tag tag( item->text() );
+                    tag.setLabel( item->text() );
+                    m_tags.append( tag );
+                }
+                else {
+                    m_tags.append( Nepomuk::Tag(uri) );
+                }
             }
         }
 
@@ -185,7 +190,7 @@ void KEditTagsDialog::slotTextEdited(const QString& text)
         m_autoCheckedItem = 0;
     }
 
-    m_newTagItem->setData(Qt::UserRole, tagText);
+    m_newTagItem->setData(Qt::UserRole, QUrl());
     m_newTagItem->setCheckState(Qt::Checked);
     m_tagsList->scrollToItem(m_newTagItem);
 }
@@ -221,8 +226,8 @@ void KEditTagsDialog::deleteTag()
     if (KMessageBox::warningYesNo(this, text, caption, deleteItem, cancelItem) == KMessageBox::Yes) {
         int row = m_tagsList->row( m_deleteCandidate );
 
-        const QString label = m_deleteCandidate->data(Qt::UserRole).toString();
-        Nepomuk::Tag tag(label);
+        const QUrl uri = m_deleteCandidate->data(Qt::UserRole).toUrl();
+        Nepomuk::Tag tag(uri);
         tag.remove();
 
         delete m_deleteCandidate;
@@ -255,7 +260,7 @@ void KEditTagsDialog::loadTags()
         const QString label = tag.genericLabel();
 
         QListWidgetItem* item = new QListWidgetItem(label, m_tagsList);
-        item->setData(Qt::UserRole, label);
+        item->setData(Qt::UserRole, tag.resourceUri());
 
         const bool check = m_tags.contains( tag );
         item->setCheckState(check ? Qt::Checked : Qt::Unchecked);

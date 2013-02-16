@@ -548,8 +548,11 @@ void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant
         foreach( const Nepomuk::Variant var, value.toVariantList() ) {
             // make sure resource values are in the store
             if( var.simpleType() == qMetaTypeId<Resource>() ) {
-                var.toResource().m_data->store();
-                varList << var.toUrl();
+                Resource res = var.toResource();
+                res.determineFinalResourceData();
+                res.m_data->store();
+
+                varList << res.resourceUri();
             }
             else {
                 varList << var.variant();
