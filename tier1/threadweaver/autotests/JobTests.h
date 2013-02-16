@@ -56,7 +56,7 @@ private Q_SLOTS:
 
     void JobSignalsAreEmittedAsynchronouslyTest();
 
-    void DequeSuspendedSequence();
+    void DequeueSuspendedSequence();
 
 public Q_SLOTS: // slots used during tests that are not test cases
     void jobStarted( ThreadWeaver::Job* );
