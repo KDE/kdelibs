@@ -54,7 +54,8 @@ class MainWindow : public KXmlGuiWindow
       actionCollection()->addAction("label1", label1);
 
       KLineEdit* lineEdit = new KLineEdit( this );
-      KAction* lineEditAction = new KAction( "Line Edit", this );
+      QWidgetAction* lineEditAction = new QWidgetAction(this);
+      lineEditAction->setText("Line Edit");
       actionCollection()->addAction( "lineEdit", lineEditAction );
       lineEditAction->setDefaultWidget(lineEdit);
 

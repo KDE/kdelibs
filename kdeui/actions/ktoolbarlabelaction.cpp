@@ -31,17 +31,19 @@ class KToolBarLabelAction::Private
 };
 
 KToolBarLabelAction::KToolBarLabelAction(const QString &text, QObject *parent)
-  : KAction(text, parent),
+  : QWidgetAction(parent),
     d( new Private )
 {
+  setText(text);
   d->label = 0;
 }
 
 KToolBarLabelAction::KToolBarLabelAction(QAction* buddy, const QString &text, QObject *parent)
-  : KAction(text, parent),
+  : QWidgetAction(parent),
     d( new Private )
 {
   setBuddy( buddy );
+  setText(text);
 
   d->label = 0;
 }
@@ -84,7 +86,7 @@ bool KToolBarLabelAction::event( QEvent *event )
     }
   }
 
-  return KAction::event( event );
+  return QWidgetAction::event( event );
 }
 
 bool KToolBarLabelAction::eventFilter( QObject *watched, QEvent *event )
@@ -98,14 +100,14 @@ bool KToolBarLabelAction::eventFilter( QObject *watched, QEvent *event )
     }
   }
   
-  return KAction::eventFilter( watched, event );
+  return QWidgetAction::eventFilter( watched, event );
 }
 
 QWidget *KToolBarLabelAction::createWidget( QWidget* _parent )
 {
   QToolBar *parent = qobject_cast<QToolBar *>(_parent);
   if (!parent)
-    return KAction::createWidget(_parent);
+    return QWidgetAction::createWidget(_parent);
   if (!d->label) {
     d->label = new QLabel( parent );
 

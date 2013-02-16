@@ -19,7 +19,9 @@
 #ifndef KTOOLBARLABELACTION_H
 #define KTOOLBARLABELACTION_H
 
-#include <kaction.h>
+#include <QWidgetAction>
+
+#include <kdeui_export.h>
 
 /**
  * @short Class to display a label in a toolbar.
@@ -38,7 +40,7 @@
  *                                            Qt::Key_F6, this, SLOT( slotFocus() ),
  *                                            actionCollection(), "find_combo");
  *
- * KAction *action = new KToolBarLabelAction( action, i18n( "Find "), "find_label" );
+ * QAction *action = new KToolBarLabelAction( action, i18n( "Find "), "find_label" );
  * action->setShortcut( Qt::Key_F6 );
  * connect( action, SIGNAL( triggered() ), this, SLOT( slotFocus() ) );
  *
@@ -46,7 +48,7 @@
  *
  * @author Felix Berger <felixberger@beldesign.de>
  */
-class KDEUI_EXPORT KToolBarLabelAction : public KAction
+class KDEUI_EXPORT KToolBarLabelAction : public QWidgetAction
 {
   Q_OBJECT
 
