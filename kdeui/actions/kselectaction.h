@@ -32,8 +32,9 @@
 #define KSELECTACTION_H
 
 #include <QToolButton>
+#include <QWidgetAction>
 
-#include <kaction.h>
+#include <kdeui_export.h>
 
 class KSelectActionPrivate;
 
@@ -48,7 +49,7 @@ class KSelectActionPrivate;
  *  the formerly checked item becomes unchecked.
  *  There can be only one item checked at a time.
  */
-class KDEUI_EXPORT KSelectAction : public KAction
+class KDEUI_EXPORT KSelectAction : public QWidgetAction
 {
     Q_OBJECT
     Q_PROPERTY( QAction* currentAction READ currentAction WRITE setCurrentAction )
@@ -224,7 +225,7 @@ public:
      *
      * The newly created action is checkable and not user configurable.
      */
-    KAction* addAction(const QString& text);
+    QAction* addAction(const QString& text);
 
     /**
      * \overload addAction(QAction* action)
@@ -234,7 +235,7 @@ public:
      *
      * The newly created action is checkable and not user configurable.
      */
-    KAction* addAction(const QIcon& icon, const QString& text);
+    QAction* addAction(const QIcon& icon, const QString& text);
 
     /**
      * Remove the specified \a action from this action selector.

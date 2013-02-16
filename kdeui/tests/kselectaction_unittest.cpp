@@ -183,7 +183,7 @@ void KSelectAction_UnitTest::testChildActionStateChangeComboMode()
     KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
     QVERIFY(comboBox);
     const QString itemText = "foo";
-    KAction* childAction = selectAction.addAction(itemText);
+    QAction* childAction = selectAction.addAction(itemText);
     QCOMPARE(comboBox->itemText(0), itemText);
     childAction->setEnabled(false);
     // There's no API for item-is-enabled, need to go via the internal model like kselectaction does...

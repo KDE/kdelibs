@@ -53,7 +53,7 @@ static QString DropAmpersands(const QString &text)
 
 
 KSelectAction::KSelectAction(QObject *parent)
-  : KAction(parent)
+  : QWidgetAction(parent)
   , d_ptr(new KSelectActionPrivate())
 {
   Q_D(KSelectAction);
@@ -61,7 +61,7 @@ KSelectAction::KSelectAction(QObject *parent)
 }
 
 KSelectAction::KSelectAction(const QString &text, QObject *parent)
-  : KAction(parent)
+  : QWidgetAction(parent)
   , d_ptr(new KSelectActionPrivate())
 {
   Q_D(KSelectAction);
@@ -70,15 +70,17 @@ KSelectAction::KSelectAction(const QString &text, QObject *parent)
 }
 
 KSelectAction::KSelectAction(const QIcon & icon, const QString &text, QObject *parent)
-  : KAction(icon, text, parent)
+  : QWidgetAction(parent)
   , d_ptr(new KSelectActionPrivate())
 {
   Q_D(KSelectAction);
+  setIcon(icon);
+  setText(text);
   d->init(this);
 }
 
 KSelectAction::KSelectAction(KSelectActionPrivate &dd, QObject *parent)
-  : KAction(parent)
+  : QWidgetAction(parent)
   , d_ptr(&dd)
 {
   Q_D(KSelectAction);
@@ -250,13 +252,13 @@ void KSelectAction::addAction(QAction* action)
   menu()->addAction(action);
 }
 
-KAction* KSelectAction::addAction(const QString &text)
+QAction* KSelectAction::addAction(const QString &text)
 {
   Q_D(KSelectAction);
-  KAction* newAction = new KAction(parent());
+  QAction* newAction = new QAction(parent());
   newAction->setText(text);
   newAction->setCheckable( true );
-  newAction->setShortcutConfigurable(false);
+  newAction->setProperty("isShortcutConfigurable", false);
 
   if (!d->m_menuAccelsEnabled) {
     newAction->setText(text);
@@ -267,9 +269,9 @@ KAction* KSelectAction::addAction(const QString &text)
   return newAction;
 }
 
-KAction* KSelectAction::addAction(const QIcon& icon, const QString& text)
+QAction* KSelectAction::addAction(const QIcon& icon, const QString& text)
 {
-  KAction* newAction = addAction(text);
+  QAction* newAction = addAction(text);
   newAction->setIcon(icon);
   return newAction;
 }
@@ -483,7 +485,7 @@ void KSelectActionPrivate::_k_comboBoxCurrentIndexChanged(int index)
     triggeringCombo->removeItem (index);
     triggeringCombo->blockSignals (blocked);
 
-    KAction *newAction = q->addAction (newItemText);
+    QAction *newAction = q->addAction (newItemText);
 
     newAction->trigger();
   } else {
@@ -581,7 +583,7 @@ void KSelectAction::deleteWidget(QWidget *widget)
         d->m_buttons.removeAll(toolButton);
     else if (KComboBox *comboBox = qobject_cast<KComboBox *>(widget))
         d->m_comboBoxes.removeAll(comboBox);
-    KAction::deleteWidget(widget);
+    QWidgetAction::deleteWidget(widget);
 }
 
 bool KSelectAction::event(QEvent *event)
@@ -599,7 +601,7 @@ bool KSelectAction::event(QEvent *event)
             toolButton->setStatusTip(statusTip());
         }
     }
-    return KAction::event(event);
+    return QWidgetAction::event(event);
 }
 
 // KSelectAction::eventFilter() is called before action->setChecked()

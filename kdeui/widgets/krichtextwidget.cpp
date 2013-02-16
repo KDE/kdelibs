@@ -83,7 +83,7 @@ public:
     QTextCharFormat painterFormat;
     bool painterActive;
 
-    QList<KAction*> richTextActionList;
+    QList<QAction*> richTextActionList;
 
     bool richTextEnabled;
     KToggleAction *enableRichText;
