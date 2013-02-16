@@ -19,7 +19,9 @@
 #ifndef KTOOLBARSPACERACTION_H
 #define KTOOLBARSPACERACTION_H
 
-#include "kaction.h"
+#include <QWidgetAction>
+
+#include <kdeui_export.h>
 
 /**
  * An extension to KAction which allows for adding a spacer item into a
@@ -29,7 +31,7 @@
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KToolBarSpacerAction : public KAction
+class KDEUI_EXPORT KToolBarSpacerAction : public QWidgetAction
 {
   Q_OBJECT
   Q_PROPERTY( int width READ width WRITE setWidth )

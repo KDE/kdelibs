@@ -40,7 +40,7 @@ class KToolBarSpacerAction::Private
 };
 
 KToolBarSpacerAction::KToolBarSpacerAction(QObject *parent)
-  : KAction(parent),
+  : QWidgetAction(parent),
     d( new Private )
 {
 }
@@ -102,7 +102,7 @@ QWidget * KToolBarSpacerAction::createWidget( QWidget * _parent )
 {
   QToolBar *parent = qobject_cast<QToolBar *>(_parent);
   if (!_parent)
-    return KAction::createWidget(_parent);
+    return QWidgetAction::createWidget(_parent);
   QWidget* spacer = new QWidget( parent );
   spacer->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Fixed );
 
@@ -116,7 +116,7 @@ QWidget * KToolBarSpacerAction::createWidget( QWidget * _parent )
 void KToolBarSpacerAction::deleteWidget(QWidget *widget)
 {
     d->spacers.removeAll(widget);
-    KAction::deleteWidget(widget);
+    QWidgetAction::deleteWidget(widget);
 }
 
 #include "moc_ktoolbarspaceraction.cpp"
