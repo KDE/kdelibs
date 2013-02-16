@@ -55,11 +55,11 @@ public:
     explicit JobCollection ( QObject *parent = 0 );
     ~JobCollection ();
     /** Append a job to the collection.
-
-    To use JobCollection, create the Job objects first, add them to the
-    collection, and then queue it. After the collection has been queued, no
-    further Jobs are supposed to be added.
-    */
+     *
+     * To use JobCollection, create the Job objects first, add them to the collection, and then queue it. After
+     * the collection has been queued, no further Jobs are supposed to be added.
+     *
+     * @note Once the job has been added, execute wrappers ca no more be set on it */
     virtual void addJob ( Job* );
 
 public Q_SLOTS:

@@ -22,8 +22,6 @@ http://creative-destruction.me $
    along with this library; see the file COPYING.LIB.  If not, write to
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
-
-$Id: DebuggingAids.h 30 2005-08-16 16:16:04Z mirko $
 */
 
 #include "JobCollection.h"
@@ -51,13 +49,16 @@ public:
     }
 
     void execute(ThreadWeaver::Job* job, ThreadWeaver::Thread *thread) {
+        Q_ASSERT(collection);
         collection->elementStarted(job);
         executeWrapped(job, thread);
         collection->elementFinished(job);
     }
 
     void cleanup(Job *job, Thread *) {
-        unwrap(job);
+        //Once job is unwrapped from us, this object is dangling. Job::executor points to the next higher up execute wrapper.
+        //It is thus safe to "delete this". By no means add any later steps after delete!
+        delete unwrap(job);
     }
 
 private:
@@ -177,8 +178,7 @@ void JobCollection::elementFinished(Job *)
     Q_ASSERT(remainingJobs >=0);
     if (remainingJobs == 0 && jobsInProgresss == 0) {
         // there is a small chance that (this) has been dequeued in the
-        // meantime, in this case, there is nothing left to clean up:
-        d->api = 0;
+        // meantime, in this case, there is nothing left to clean up
         finalCleanup();
         if (!success()) {
             //FIXME use delayed signal emitter
