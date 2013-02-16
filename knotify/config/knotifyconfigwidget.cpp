@@ -125,6 +125,7 @@ KNotifyConfigWidget * KNotifyConfigWidget::configure( QWidget * parent, const QS
     connect(buttonBox, SIGNAL(rejected()), dialog, SLOT(reject()));
 
     w->setApplication(appname);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
     return w;
 }

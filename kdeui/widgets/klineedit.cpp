@@ -68,7 +68,6 @@ public:
         disableRestoreSelection = false;
         enableSqueezedText = false;
 
-        threeStars = false;
         completionRunning = false;
         if (!s_initialized) {
             KConfigGroup config( KSharedConfig::openConfig(), "General" );

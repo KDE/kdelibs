@@ -686,7 +686,7 @@ QString Device::parentUdi() const
     QString parent;
 
     if (propertyExists("Drive"))  // block
-        parent = prop("Drive").value<QDBusObjectPath>().path();
+        parent = drivePath();
     else if (propertyExists("Table"))  // partition
         parent = prop("Table").value<QDBusObjectPath>().path();
     else if (parent.isEmpty() || parent=="/") {

@@ -323,6 +323,7 @@ KAboutApplicationDialog::~KAboutApplicationDialog()
 void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
 {
     QDialog *dialog = new QDialog(q);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
     QVBoxLayout *layout = new QVBoxLayout;
     dialog->setLayout(layout);
 

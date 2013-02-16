@@ -106,6 +106,11 @@ ActionReply::Type ActionReply::type() const
     return d->type;
 }
 
+void ActionReply::setType(ActionReply::Type type)
+{
+    d->type = type;
+}
+
 bool ActionReply::succeeded() const
 {
     return d->type == SuccessType;

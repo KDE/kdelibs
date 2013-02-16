@@ -23,6 +23,7 @@
 #define WTF_HashSet_h
 
 #include "HashTable.h"
+#include <CommonIdentifiers.h>
 
 namespace WTF {
 

@@ -121,7 +121,7 @@ class KTextEdit::Private
     void slotAllowTab();
     void menuActivated( QAction* action );
 
-    void updateClickMessageRect();
+    QRect clickMessageRect() const;
 
     void init();
 
@@ -298,12 +298,11 @@ void KTextEdit::Private::slotReplaceText(const QString &text, int replacementInd
     lastReplacedPosition = replacementIndex;
 }
 
-void KTextEdit::Private::updateClickMessageRect()
+QRect KTextEdit::Private::clickMessageRect() const
 {
     int margin = int(parent->document()->documentMargin());
     QRect rect = parent->viewport()->rect().adjusted(margin, margin, -margin, -margin);
-    rect = parent->fontMetrics().boundingRect(rect, Qt::AlignTop | Qt::TextWordWrap, clickMessage);
-    parent->viewport()->update(rect);
+    return parent->fontMetrics().boundingRect(rect, Qt::AlignTop | Qt::TextWordWrap, clickMessage);
 }
 
 void KTextEdit::Private::init()
@@ -779,9 +778,6 @@ void KTextEdit::focusInEvent( QFocusEvent *event )
   if ( d->checkSpellingEnabled && !isReadOnly() && !d->highlighter )
     createHighlighter();
 
-  if (!d->clickMessage.isEmpty()) {
-      d->updateClickMessageRect();
-  }
   QTextEdit::focusInEvent( event );
 }
 
@@ -1106,11 +1102,11 @@ void KTextEdit::setClickMessage(const QString &msg)
 {
     if (msg != d->clickMessage) {
         if (!d->clickMessage.isEmpty()) {
-            d->updateClickMessageRect();
+            viewport()->update(d->clickMessageRect());
         }
         d->clickMessage = msg;
         if (!d->clickMessage.isEmpty()) {
-            d->updateClickMessageRect();
+            viewport()->update(d->clickMessageRect());
         }
     }
 }
@@ -1124,7 +1120,7 @@ void KTextEdit::paintEvent(QPaintEvent *ev)
 {
     QTextEdit::paintEvent(ev);
 
-    if (!d->clickMessage.isEmpty() && !hasFocus() && document()->isEmpty()) {
+    if (!d->clickMessage.isEmpty() && document()->isEmpty()) {
         QPainter p(viewport());
 
         QFont f = font();
@@ -1135,18 +1131,13 @@ void KTextEdit::paintEvent(QPaintEvent *ev)
         color.setAlphaF(0.5);
         p.setPen(color);
 
-        int margin = int(document()->documentMargin());
-        QRect cr = viewport()->rect().adjusted(margin, margin, -margin, -margin);
-
+        QRect cr = d->clickMessageRect();
         p.drawText(cr, Qt::AlignTop | Qt::TextWordWrap, d->clickMessage);
     }
 }
 
 void KTextEdit::focusOutEvent(QFocusEvent *ev)
 {
-    if (!d->clickMessage.isEmpty()) {
-        d->updateClickMessageRect();
-    }
     QTextEdit::focusOutEvent(ev);
 }
 
