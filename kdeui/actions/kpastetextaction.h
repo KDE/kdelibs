@@ -27,7 +27,9 @@
 #ifndef KPASTETEXTACTION_H
 #define KPASTETEXTACTION_H
 
-#include <kaction.h>
+#include <QAction>
+
+#include <kdeui_export.h>
 
 
 class KPasteTextActionPrivate;
@@ -39,7 +41,7 @@ class KPasteTextActionPrivate;
  * If klipper is not running, the menu has only one
  * item: the current clipboard content.
  */
-class KDEUI_EXPORT KPasteTextAction: public KAction
+class KDEUI_EXPORT KPasteTextAction: public QAction
 {
     Q_OBJECT
 public:

@@ -60,20 +60,20 @@ public:
 };
 
 KPasteTextAction::KPasteTextAction(QObject *parent)
-  : KAction(parent), d(new KPasteTextActionPrivate(this))
+  : QAction(parent), d(new KPasteTextActionPrivate(this))
 {
   d->init();
 }
 
 KPasteTextAction::KPasteTextAction(const QString &text, QObject *parent)
-  : KAction(parent), d(new KPasteTextActionPrivate(this))
+  : QAction(parent), d(new KPasteTextActionPrivate(this))
 {
   d->init();
   setText(text);
 }
 
 KPasteTextAction::KPasteTextAction(const QIcon &icon, const QString &text, QObject *parent)
-  : KAction(icon, text, parent), d(new KPasteTextActionPrivate(this))
+  : QAction(icon, text, parent), d(new KPasteTextActionPrivate(this))
 {
   d->init();
 }
