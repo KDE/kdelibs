@@ -23,6 +23,7 @@ private Q_SLOTS:
     void SimpleJobTest();
     void SimpleJobCollectionTest();
     void EmptyJobCollectionTest();
+    void CollectionQueueingTest();
     void ShortJobSequenceTest();
     void EmptyJobSequenceTest();
     void QueueAndDequeueSequenceTest();

@@ -78,6 +78,27 @@ void JobTests::EmptyJobCollectionTest() {
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
+void JobTests::CollectionQueueingTest()
+{
+    ThreadWeaver::Weaver weaver;
+    Q_ASSERT(weaver.isIdle());
+    weaver.suspend();
+    QString sequence;
+    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
+    AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
+    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
+    ThreadWeaver::JobCollection jobCollection( this );
+    jobCollection.addJob ( &jobA );
+    jobCollection.addJob ( &jobB );
+    jobCollection.addJob ( &jobC );
+    weaver.enqueue(&jobCollection);
+    QCOMPARE(weaver.queueLength(), 4); //collection queues itself plus three elements
+    weaver.resume();
+    weaver.finish();
+    QCOMPARE(sequence.length(), 3);
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
+}
+
 void JobTests::ShortJobSequenceTest() {
     return; //MARK_TEMPORARILY_DISABLED
     QString sequence;
