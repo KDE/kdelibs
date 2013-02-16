@@ -20,11 +20,7 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX ITEMMODELS
 
 
 add_subdirectory(src)
-if (NOT QT5_BUILD)
-  # Re-enable when we don't support Qt4 anymore.
-  # Avoiding source incompatibility in QMetaMethod.
-  add_subdirectory(autotests)
-endif()
+add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
