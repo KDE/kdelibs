@@ -60,7 +60,7 @@ namespace KPAC
         : Downloader( parent ),
           m_helper( new QProcess(this) )
     {
-        m_helper->setOutputChannelMode(KProcess::SeparateChannels);
+        m_helper->setProcessChannelMode(QProcess::SeparateChannels);
         connect( m_helper, SIGNAL(readyReadStandardOutput()), SLOT(helperOutput()) );
         connect( m_helper, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(failed()) );
         m_helper->start(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/kpac_dhcp_helper");
