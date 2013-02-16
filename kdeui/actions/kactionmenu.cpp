@@ -27,12 +27,12 @@
 
 #include "kactionmenu.h"
 
+#include <QMenu>
 #include <QToolButton>
 #include <QToolBar>
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kmenu.h>
 
 class KActionMenuPrivate
 {
@@ -53,6 +53,7 @@ KActionMenu::KActionMenu(QObject *parent)
   : QWidgetAction(parent)
   , d(new KActionMenuPrivate)
 {
+  setMenu(new QMenu);
   setProperty("isShortcutConfigurable", false);
 }
 
@@ -60,6 +61,7 @@ KActionMenu::KActionMenu(const QString &text, QObject *parent)
   : QWidgetAction(parent)
   , d(new KActionMenuPrivate)
 {
+  setMenu(new QMenu);
   setProperty("isShortcutConfigurable", false);
   setText(text);
 }
@@ -68,6 +70,7 @@ KActionMenu::KActionMenu(const QIcon & icon, const QString & text, QObject *pare
   : QWidgetAction(parent)
   , d(new KActionMenuPrivate)
 {
+  setMenu(new QMenu);
   setProperty("isShortcutConfigurable", false);
   setIcon(icon);
   setText(text);
@@ -159,19 +162,6 @@ bool KActionMenu::stickyMenu() const {
 
 void KActionMenu::setStickyMenu(bool sticky) {
     d->m_stickyMenu = sticky;
-}
-
-KMenu* KActionMenu::menu()
-{
-  if (!QWidgetAction::menu())
-    setMenu(new KMenu());
-
-  return qobject_cast<KMenu*>(QWidgetAction::menu());
-}
-
-void KActionMenu::setMenu(KMenu *menu)
-{
-    QWidgetAction::setMenu( menu );
 }
 
 /* vim: et sw=2 ts=2

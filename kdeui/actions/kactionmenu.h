@@ -31,7 +31,7 @@
 
 #include <kdeui_export.h>
 
-class KMenu;
+class QMenu;
 
 /**
  * A KActionMenu is an action that has several properties specific to holding a
@@ -77,19 +77,8 @@ public:
      * @deprecated use menu() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    inline KDEUI_DEPRECATED KMenu* popupMenu() { return menu(); }
+    inline KDEUI_DEPRECATED QMenu* popupMenu() { return menu(); }
 #endif
-
-    /**
-     * Returns this action's menu as a KMenu, if it is one.
-     * If none exists, one will be created.
-     */
-    KMenu* menu();
-
-    /*
-     * Overload of QAction::setMenu to make sure a KMenu is passed
-     **/
-    void setMenu( KMenu *menu );
 
     /**
      * Returns true if this action creates a delayed popup menu
