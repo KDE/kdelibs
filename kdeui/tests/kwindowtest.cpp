@@ -13,6 +13,7 @@
 #include "kwindowtest.h"
 #include <klineedit.h>
 #include <kxmlguifactory.h>
+#include <kaction.h>
 #include <kactionmenu.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>

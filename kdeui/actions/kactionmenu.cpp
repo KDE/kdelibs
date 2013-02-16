@@ -50,25 +50,27 @@ public:
 };
 
 KActionMenu::KActionMenu(QObject *parent)
-  : KAction(parent)
+  : QWidgetAction(parent)
   , d(new KActionMenuPrivate)
 {
-  setShortcutConfigurable( false );
+  setProperty("isShortcutConfigurable", false);
 }
 
 KActionMenu::KActionMenu(const QString &text, QObject *parent)
-  : KAction(parent)
+  : QWidgetAction(parent)
   , d(new KActionMenuPrivate)
 {
-  setShortcutConfigurable( false );
+  setProperty("isShortcutConfigurable", false);
   setText(text);
 }
 
 KActionMenu::KActionMenu(const QIcon & icon, const QString & text, QObject *parent)
-  : KAction(icon, text, parent)
+  : QWidgetAction(parent)
   , d(new KActionMenuPrivate)
 {
-  setShortcutConfigurable( false );
+  setProperty("isShortcutConfigurable", false);
+  setIcon(icon);
+  setText(text);
 }
 
 KActionMenu::~KActionMenu()
@@ -81,7 +83,7 @@ QWidget * KActionMenu::createWidget( QWidget * _parent )
 {
   QToolBar *parent = qobject_cast<QToolBar *>(_parent);
   if (!parent)
-    return KAction::createWidget(_parent);
+    return QWidgetAction::createWidget(_parent);
   QToolButton* button = new QToolButton(parent);
   button->setAutoRaise(true);
   button->setFocusPolicy(Qt::NoFocus);
@@ -105,7 +107,7 @@ QWidget * KActionMenu::createWidget( QWidget * _parent )
 }
 
 #ifndef KDE_NO_DEPRECATED
-void KActionMenu::remove( KAction* cmd )
+void KActionMenu::remove( QAction* cmd )
 {
   if ( cmd )
     menu()->removeAction(cmd);
@@ -161,15 +163,15 @@ void KActionMenu::setStickyMenu(bool sticky) {
 
 KMenu* KActionMenu::menu()
 {
-  if (!KAction::menu())
+  if (!QWidgetAction::menu())
     setMenu(new KMenu());
 
-  return qobject_cast<KMenu*>(KAction::menu());
+  return qobject_cast<KMenu*>(QWidgetAction::menu());
 }
 
 void KActionMenu::setMenu(KMenu *menu)
 {
-    KAction::setMenu( menu );
+    QWidgetAction::setMenu( menu );
 }
 
 /* vim: et sw=2 ts=2

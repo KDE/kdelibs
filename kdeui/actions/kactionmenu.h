@@ -27,7 +27,9 @@
 #ifndef KACTIONMENU_H
 #define KACTIONMENU_H
 
-#include <kaction.h>
+#include <QWidgetAction>
+
+#include <kdeui_export.h>
 
 class KMenu;
 
@@ -44,7 +46,7 @@ class KMenu;
  * If you want a submenu for selecting one tool among many (without icons), see KSelectAction.
  * See also setDelayed about the main action.
  */
-class KDEUI_EXPORT KActionMenu : public KAction
+class KDEUI_EXPORT KActionMenu : public QWidgetAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
@@ -60,7 +62,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void remove( KAction* );
+    KDEUI_DEPRECATED void remove( QAction* );
 #endif
 
     void addAction(QAction* action);
