@@ -88,8 +88,8 @@ set(kcoreaddons_LIBRARIES kcoreaddons)
 
 set(kwindowsystem_LIBRARIES kwindowsystem)
 
-set(kconfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier1/kconfig}/src/core
-                           ${CMAKE_BINARY_DIR}/tier1/kconfig}/src/core )
+set(kconfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
+                           ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core )
 set(kconfig_LIBRARIES kconfigcore kconfiggui)
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.
