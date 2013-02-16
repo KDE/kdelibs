@@ -27,7 +27,9 @@
 #ifndef KTOGGLEACTION_H
 #define KTOGGLEACTION_H
 
-#include <kaction.h>
+#include <QAction>
+
+#include <kdeui_export.h>
 
 class KGuiItem;
 
@@ -37,7 +39,7 @@ class KGuiItem;
  *  This action provides two states: checked or not.
  *
  */
-class KDEUI_EXPORT KToggleAction : public KAction
+class KDEUI_EXPORT KToggleAction : public QAction
 {
     Q_OBJECT
 

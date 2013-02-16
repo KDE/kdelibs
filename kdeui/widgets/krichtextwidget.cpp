@@ -21,6 +21,7 @@
 #include "krichtextwidget.h"
 
 // KDE includes
+#include <kaction.h>
 #include <kactioncollection.h>
 #include <kcolorscheme.h>
 #include <kfontaction.h>
@@ -105,8 +106,8 @@ public:
 
     KAction *action_manage_link;
     KAction *action_insert_horizontal_rule;
-    KAction *action_format_painter;
-    KAction *action_to_plain_text;
+    QAction *action_format_painter;
+    QAction *action_to_plain_text;
 
     KToggleAction *action_align_left;
     KToggleAction *action_align_right;
@@ -279,7 +280,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         d->action_text_bold->setFont(bold);
         d->richTextActionList.append((d->action_text_bold));
         actionCollection->addAction("format_text_bold", d->action_text_bold);
-        d->action_text_bold->setShortcut(KShortcut(Qt::CTRL + Qt::Key_B));
+        d->action_text_bold->setShortcut(Qt::CTRL + Qt::Key_B);
         connect(d->action_text_bold, SIGNAL(triggered(bool)), this, SLOT(setTextBold(bool)));
     } else {
         actionCollection->removeAction(d->action_text_bold);
@@ -293,7 +294,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         d->action_text_italic->setFont(italic);
         d->richTextActionList.append((d->action_text_italic));
         actionCollection->addAction("format_text_italic", d->action_text_italic);
-        d->action_text_italic->setShortcut(KShortcut(Qt::CTRL + Qt::Key_I));
+        d->action_text_italic->setShortcut(Qt::CTRL + Qt::Key_I);
         connect(d->action_text_italic, SIGNAL(triggered(bool)),
                 this, SLOT(setTextItalic(bool)));
     } else {
@@ -308,7 +309,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         d->action_text_underline->setFont(underline);
         d->richTextActionList.append((d->action_text_underline));
         actionCollection->addAction("format_text_underline", d->action_text_underline);
-        d->action_text_underline->setShortcut(KShortcut(Qt::CTRL + Qt::Key_U));
+        d->action_text_underline->setShortcut(Qt::CTRL + Qt::Key_U);
         connect(d->action_text_underline, SIGNAL(triggered(bool)),
                 this, SLOT(setTextUnderline(bool)));
     } else {
@@ -320,7 +321,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
         d->action_text_strikeout = new KToggleAction(QIcon::fromTheme("format-text-strikethrough"), i18nc("@action", "&Strike Out"), actionCollection);
         d->richTextActionList.append((d->action_text_strikeout));
         actionCollection->addAction("format_text_strikeout", d->action_text_strikeout);
-        d->action_text_strikeout->setShortcut(KShortcut(Qt::CTRL + Qt::Key_L));
+        d->action_text_strikeout->setShortcut(Qt::CTRL + Qt::Key_L);
         connect(d->action_text_strikeout, SIGNAL(triggered(bool)),
                 this, SLOT(setTextStrikeOut(bool)));
     } else {

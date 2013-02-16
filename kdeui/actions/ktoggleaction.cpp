@@ -57,23 +57,26 @@ class KToggleAction::Private
 
 
 KToggleAction::KToggleAction( QObject *parent )
-  : KAction( parent ),
+  : QAction( parent ),
     d( new Private( this ) )
 {
   d->init();
 }
 
 KToggleAction::KToggleAction( const QString & text, QObject *parent )
-  : KAction( text, parent ),
+  : QAction(parent),
     d( new Private( this ) )
 {
+  setText(text);
   d->init();
 }
 
 KToggleAction::KToggleAction( const QIcon & icon, const QString & text, QObject *parent )
-  : KAction( icon, text, parent ),
+  : QAction(parent),
     d( new Private( this ) )
 {
+  setIcon(icon);
+  setText(text);
   d->init();
 }
 

@@ -28,6 +28,7 @@
 #include <qpushbutton.h>
 #include <qurlpathinfo.h>
 
+#include <kaction.h>
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
 #include <kconfig.h>
@@ -97,7 +98,7 @@ public:
     KUrl m_startURL;
     KAction* moveToTrash;
     KAction* deleteAction;
-    KAction* showHiddenFoldersAction;
+    QAction* showHiddenFoldersAction;
 };
 
 void KDirSelectDialog::Private::readConfig(const KSharedConfig::Ptr &config, const QString& group)
