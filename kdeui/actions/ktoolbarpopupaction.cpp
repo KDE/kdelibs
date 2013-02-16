@@ -47,9 +47,11 @@ class KToolBarPopupAction::Private
 };
 
 KToolBarPopupAction::KToolBarPopupAction(const QIcon& icon, const QString& text, QObject *parent)
-  : KAction(icon, text, parent),
+  : QWidgetAction(parent),
     d( new Private )
 {
+  setIcon(icon);
+  setText(text);
   setMenu( new KMenu );
 }
 
@@ -70,7 +72,7 @@ QWidget * KToolBarPopupAction::createWidget( QWidget * _parent )
 {
   QToolBar *parent = qobject_cast<QToolBar *>(_parent);
   if (!parent)
-    return KAction::createWidget(_parent);
+    return QWidgetAction::createWidget(_parent);
   QToolButton* button = new QToolButton( parent );
   button->setAutoRaise( true );
   button->setFocusPolicy( Qt::NoFocus );
