@@ -25,6 +25,7 @@ void JobTests::initTestCase ()
 void JobTests::WeaverLazyThreadCreationTest()
 {
     ThreadWeaver::Weaver weaver;
+    Q_ASSERT(weaver.isIdle());
     QString sequence;
     QCOMPARE (weaver.currentNumberOfThreads(), 0);
     AppendCharacterJob a( QChar('a'), &sequence, this);
@@ -32,9 +33,12 @@ void JobTests::WeaverLazyThreadCreationTest()
     weaver.finish();
     QVERIFY(a.isFinished());
     QCOMPARE (weaver.currentNumberOfThreads(), 1);
+    Q_ASSERT(weaver.isIdle());
 }
 
 void JobTests::SimpleJobTest() {
+    ThreadWeaver::Weaver::instance()->finish();
+    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     QString sequence;
     AppendCharacterJob job( QChar( '1' ), &sequence, this );
     ThreadWeaver::Weaver::instance()->enqueue ( &job );
@@ -43,6 +47,8 @@ void JobTests::SimpleJobTest() {
 }
 
 void JobTests::SimpleJobCollectionTest() {
+    ThreadWeaver::Weaver::instance()->finish();
+    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -63,10 +69,13 @@ void JobTests::SimpleJobCollectionTest() {
 }
 
 void JobTests::EmptyJobCollectionTest() {
+    ThreadWeaver::Weaver::instance()->finish();
+    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     ThreadWeaver::JobCollection collection;
     ThreadWeaver::Weaver::instance()->enqueue ( &collection );
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(collection.isFinished());
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
 void JobTests::ShortJobSequenceTest() {

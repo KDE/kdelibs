@@ -20,23 +20,14 @@ private Q_SLOTS:
     // call finish() before leave a test to make sure the queue is empty
 
     void WeaverLazyThreadCreationTest();
-
     void SimpleJobTest();
-
     void SimpleJobCollectionTest();
-
     void EmptyJobCollectionTest();
-
     void ShortJobSequenceTest();
-
     void EmptyJobSequenceTest();
-
     void QueueAndDequeueSequenceTest();
-
     void RecursiveQueueAndDequeueSequenceTest();
-
     void QueueAndDequeueAllSequenceTest();
-
     void RecursiveQueueAndDequeueAllSequenceTest();
 
 //     This test is not the most efficient, as the mutex locking takes most of
@@ -53,9 +44,7 @@ private Q_SLOTS:
     */
 
     void ResourceRestrictionPolicyBasicsTest ();
-
     void JobSignalsAreEmittedAsynchronouslyTest();
-
     void DequeueSuspendedSequence();
 
 public Q_SLOTS: // slots used during tests that are not test cases
