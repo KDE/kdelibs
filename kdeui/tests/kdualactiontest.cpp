@@ -24,7 +24,7 @@
 #include "kguiitem.h"
 
 
-Q_DECLARE_METATYPE(KAction*)
+Q_DECLARE_METATYPE(QAction*)
 
 static const QString INACTIVE_TEXT = "Show Foo";
 static const QString ACTIVE_TEXT = "Hide Foo";
@@ -36,7 +36,7 @@ class KDualActionTest : public QObject
 private Q_SLOTS:
     void initTestCase()
     {
-        qRegisterMetaType<KAction*>("KAction*");
+        qRegisterMetaType<QAction*>("QAction*");
     }
 
     void testSetGuiItem()

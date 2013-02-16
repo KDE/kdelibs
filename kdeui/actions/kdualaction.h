@@ -20,8 +20,9 @@
 #ifndef KDUALACTION_H
 #define KDUALACTION_H
 
+#include <QAction>
+
 #include <kdeui_export.h>
-#include <kaction.h>
 
 class KDualActionPrivate;
 class KGuiItem;
@@ -56,7 +57,7 @@ class KGuiItem;
  * @author Aurélien Gâteau <agateau@kde.org>
  * @since 4.6
  */
-class KDEUI_EXPORT KDualAction : public KAction
+class KDEUI_EXPORT KDualAction : public QAction
 {
     Q_OBJECT
 public:

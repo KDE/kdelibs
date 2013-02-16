@@ -59,7 +59,7 @@ void KDualActionPrivate::slotTriggered()
 // KDualAction
 //---------------------------------------------------------------------
 KDualAction::KDualAction(const QString &inactiveText, const QString &activeText, QObject *parent)
-: KAction(parent)
+: QAction(parent)
 , d(new KDualActionPrivate)
 {
     d->init(this);
@@ -69,7 +69,7 @@ KDualAction::KDualAction(const QString &inactiveText, const QString &activeText,
 }
 
 KDualAction::KDualAction(QObject *parent)
-: KAction(parent)
+: QAction(parent)
 , d(new KDualActionPrivate)
 {
     d->init(this);
