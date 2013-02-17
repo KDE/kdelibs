@@ -614,7 +614,9 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                 if ( (_flags & KIO::Resume) )
                 {
                     fd = KDE::open( dest, O_RDWR );  // append if resuming
-                    KDE_lseek(fd, 0, SEEK_END); // Seek to end
+                    if (fd != -1) {
+                        KDE_lseek(fd, 0, SEEK_END); // Seek to end
+                    }
                 }
                 else
                 {
