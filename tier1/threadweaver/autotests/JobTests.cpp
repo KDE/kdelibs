@@ -143,18 +143,21 @@ void JobTests::IncompleteJobSequenceTest()
     ThreadWeaver::JobSequence sequence;
     sequence.addJob(&jobA);
     ThreadWeaver::DependencyPolicy::instance().addDependency(&jobA, &jobB);
-    QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::Job*)));
-    QCOMPARE(doneSignalSpy.count(), 0);
+    QSignalSpy collectionDoneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::Job*)));
+    QSignalSpy jobADoneSignalSpy(&jobA, SIGNAL(done(ThreadWeaver::Job*)));
+    QCOMPARE(collectionDoneSignalSpy.count(), 0);
     ThreadWeaver::Weaver::instance()->enqueue ( &sequence );
     ThreadWeaver::Weaver::instance()->resume();
     QTest::qWait(500);
-    QCOMPARE(doneSignalSpy.count(), 0);
+    QCOMPARE(collectionDoneSignalSpy.count(), 0);
+    QCOMPARE(jobADoneSignalSpy.count(), 0);
     ThreadWeaver::DependencyPolicy::instance().removeDependency(&jobA, &jobB);
     ThreadWeaver::Weaver::instance()->finish();
     QTest::qWait(100);
     QVERIFY(sequence.isFinished());
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
-    QCOMPARE(doneSignalSpy.count(), 1);
+    QCOMPARE(collectionDoneSignalSpy.count(), 1);
+    QCOMPARE(jobADoneSignalSpy.count(), 1);
 }
 
 void JobTests::EmitStartedOnFirstElementStartTest()
