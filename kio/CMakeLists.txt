@@ -270,13 +270,6 @@ if(NOT KIO_NO_NEPOMUK)
     )
 endif(NOT KIO_NO_NEPOMUK)
 
-if(NOT WIN32)
-  set(kfile_STAT_SRCS
-    ${kfile_STAT_SRCS}
-    kfile/kfilesharedialog.cpp
-    kfile/kfsprocess.cpp
-  )
-endif(NOT WIN32)
 qt4_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
 # kio/kssl/Makefile.am: kssl
@@ -405,12 +398,6 @@ install(  FILES
   kssl/sslui.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
-
-if( NOT WIN32 )
-  install( FILES
-    kfile/kfilesharedialog.h
-    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-endif( NOT WIN32 )
 
 install( FILES
   kio/kabstractfileitemactionplugin.h

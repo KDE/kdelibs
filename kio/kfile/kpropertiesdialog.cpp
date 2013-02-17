@@ -126,10 +126,6 @@ extern "C" {
 #include <kfileitemlistproperties.h>
 #include <kwindowconfig.h>
 
-#ifndef Q_OS_WIN
-#include "kfilesharedialog.h"
-#endif
-
 #include "ui_kpropertiesdesktopbase.h"
 #include "ui_kpropertiesdesktopadvbase.h"
 #if HAVE_POSIX_ACL
