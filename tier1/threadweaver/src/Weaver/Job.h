@@ -196,6 +196,15 @@ protected:
      *
      * It is called from execute(). This method is the one to overload it with the job's task. */
     virtual void run () = 0;
+
+    /** @brief Perform standard tasks before starting the execution of a job.
+     * This emits the started() signal. */
+    void defaultBegin(Job* job, Thread* thread);
+
+    /** @brief Perform standard task after the execution of a job.
+     * This emits the done() and maybe the failed() signals. */
+    void defaultEnd(Job* job, Thread* thread);
+
     /** Return the thread that executes this job.
      *
      * Returns zero of the job is not currently executed.

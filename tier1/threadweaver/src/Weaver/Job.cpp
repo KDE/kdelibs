@@ -46,15 +46,16 @@ namespace {
 //maaaaaaybeeee...
 class DefaultExecutor : public ThreadWeaver::Executor {
 public:
+    void begin(ThreadWeaver::Job *job, ThreadWeaver::Thread *thread) {
+        defaultBegin(job, thread);
+    }
+
     void execute(ThreadWeaver::Job *job, ThreadWeaver::Thread *) /* override */ {
-        job->started(job);
-
         run(job);
+    }
 
-        if (!job->success()) {
-            job->failed(job);
-        }
-        job->done(job);
+    void end(ThreadWeaver::Job *job, ThreadWeaver::Thread *thread) {
+        defaultEnd(job, thread);
     }
 };
 
@@ -139,7 +140,9 @@ void Job::execute(Thread *th)
     }
     Executor* executor = d->executor.fetchAndAddOrdered(0);
     Q_ASSERT(executor); //may never be unset!
+    executor->begin(this, th);
     executor->execute(this, th);
+    executor->end(this, th);
     //FIXME this requires the job lock?
     freeQueuePolicyResources();
     {
@@ -175,6 +178,20 @@ void Job::freeQueuePolicyResources()
     for (int index = 0; index < d->queuePolicies.size(); ++index) {
         d->queuePolicies.at(index)->free(this);
     }
+}
+
+void Job::defaultBegin(Job*, Thread *)
+{
+    Q_EMIT started(this);
+}
+
+void Job::defaultEnd(Job *job, Thread *)
+{
+    Q_ASSERT(job == this);
+    if (!success()) {
+        Q_EMIT failed(job);
+    }
+    Q_EMIT done(job);
 }
 
 void Job::aboutToBeQueued(QueueAPI* api)

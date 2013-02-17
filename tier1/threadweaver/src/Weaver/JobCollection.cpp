@@ -50,9 +50,9 @@ public:
 
     void execute(ThreadWeaver::Job* job, ThreadWeaver::Thread *thread) {
         Q_ASSERT(collection);
-        collection->elementStarted(job);
+        collection->elementStarted(job, thread);
         executeWrapped(job, thread);
-        collection->elementFinished(job);
+        collection->elementFinished(job, thread);
     }
 
     void cleanup(Job *job, Thread *) {
@@ -65,6 +65,13 @@ private:
     ThreadWeaver::JobCollection* collection;
 };
 
+class CollectionSelfExecuteWrapper : public ThreadWeaver::ExecuteWrapper {
+public:
+    void end(Job *, Thread *) {
+        //do nothing, this is delayed until all elements of the sequence have been completed
+    }
+};
+
 
 class JobCollection::Private
 {
@@ -74,7 +81,8 @@ public:
     Private()
         : api ( 0 )
         , jobCounter (0)
-    {}
+    {
+    }
 
     ~Private()
     {
@@ -92,12 +100,17 @@ public:
     */
     QAtomicInt jobCounter;
     QAtomicInt jobsInProgress;
+    CollectionSelfExecuteWrapper selfExecuteWrapper;
 };
 
-JobCollection::JobCollection ( QObject *parent )
-    : Job ( parent )
-    , d (new Private)
+JobCollection::JobCollection(QObject *parent)
+    : Job(parent)
+    , d(new Private)
 {
+    d->selfExecuteWrapper.wrap(setExecutor(&d->selfExecuteWrapper));
+    CollectionExecuteWrapper* wrapper = new CollectionExecuteWrapper();
+    wrapper->setCollection(this);
+    wrapper->wrap(setExecutor(wrapper));
 }
 
 JobCollection::~JobCollection()
@@ -125,7 +138,7 @@ void JobCollection::addJob ( Job *job )
 
 //FIXME add test!
 //This method is unused and untested. And probably does not work.
-void JobCollection::stop( Job *job )
+void JobCollection::stop(Job *job)
 {   // this only works if there is an event queue executed by the main
     // thread, and it is not blocked:
     Q_UNUSED( job );
@@ -142,7 +155,7 @@ void JobCollection::aboutToBeQueued_locked(QueueAPI *api)
     Q_ASSERT(d->api == 0); // never queue twice
     d->api = api;
 
-    d->jobCounter.fetchAndStoreOrdered(d->elements.count());
+    d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
     Q_FOREACH(Job* child, d->elements) {
         api->enqueue_p(child);
     }
@@ -157,36 +170,29 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
     Job::aboutToBeDequeued_locked(api);
 }
 
-void JobCollection::execute ( Thread *t )
+void JobCollection::execute(Thread *thread)
 {
     Q_ASSERT(d->api!= 0);
-    Q_EMIT (started (this));
-    Job::execute(t);
+    Job::execute(thread);
 }
 
-void JobCollection::elementStarted(Job *)
+void JobCollection::elementStarted(Job*, Thread*)
 {
     d->jobsInProgress.fetchAndAddOrdered(1);
 }
 
-void JobCollection::elementFinished(Job *)
+void JobCollection::elementFinished(Job*, Thread *thread)
 {
     QMutexLocker l(mutex()); Q_UNUSED(l);
-    const int jobsInProgresss = d->jobsInProgress.fetchAndAddOrdered(-1);
-    Q_ASSERT(jobsInProgresss >=0);
-    const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1);
+    const int jobsInProgress = d->jobsInProgress.fetchAndAddOrdered(-1) -1;
+    Q_ASSERT(jobsInProgress >=0);
+    const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1) -1;
     Q_ASSERT(remainingJobs >=0);
-    if (remainingJobs == 0 && jobsInProgresss == 0) {
+    if (remainingJobs == 0 && jobsInProgress == 0) {
         // there is a small chance that (this) has been dequeued in the
         // meantime, in this case, there is nothing left to clean up
         finalCleanup();
-        if (!success()) {
-            //FIXME use delayed signal emitter
-            Q_EMIT failed(this);
-        }
-        //FIXME use delayed signal emitter
-        Q_EMIT done(this);
-        return;
+        executor()->defaultEnd(this, thread);
     }
 }
 

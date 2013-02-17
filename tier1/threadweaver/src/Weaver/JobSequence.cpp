@@ -31,10 +31,11 @@
 #include "DebuggingAids.h"
 #include "DependencyPolicy.h"
 
-using namespace ThreadWeaver;
+namespace ThreadWeaver {
 
 JobSequence::JobSequence ( QObject *parent )
-    : JobCollection ( parent ), d ( 0 )
+    : JobCollection ( parent )
+    , d(0)
 {
 }
 
@@ -61,12 +62,13 @@ void JobSequence::internalJobDone( Job* job)
 {
     REQUIRE ( job != 0 );
     
-	if ( !job->success() )
-    {
+    if ( !job->success() ) {
         stop( job );
     }
 
 	JobCollection::internalJobDone(job);
+}
+
 }
 
 #include "JobSequence.moc"

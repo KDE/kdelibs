@@ -4,12 +4,14 @@
 
 #include <QtCore/QMutex>
 #include <QtTest/QtTest>
+#include <QSignalSpy>
 
 #include <JobSequence.h>
 #include <ThreadWeaver.h>
 #include <DebuggingAids.h>
 #include <JobCollection.h>
 #include <ResourceRestrictionPolicy.h>
+#include <DependencyPolicy.h>
 
 #include "AppendCharacterJob.h"
 #include "AppendCharacterAndVerifyJob.h"
@@ -100,7 +102,8 @@ void JobTests::CollectionQueueingTest()
 }
 
 void JobTests::ShortJobSequenceTest() {
-    return; //MARK_TEMPORARILY_DISABLED
+    ThreadWeaver::Weaver::instance()->finish();
+    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -114,14 +117,49 @@ void JobTests::ShortJobSequenceTest() {
     // ThreadWeaver::Job::DumpJobDependencies();
     ThreadWeaver::Weaver::instance()->finish();
     QCOMPARE ( sequence, QString( "abc" ) );
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
 void JobTests::EmptyJobSequenceTest() {
-    return; //MARK_TEMPORARILY_DISABLED
+    ThreadWeaver::Weaver::instance()->finish();
+    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     ThreadWeaver::JobSequence sequence;
+    QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::Job*)));
+    QCOMPARE(doneSignalSpy.count(), 0);
     ThreadWeaver::Weaver::instance()->enqueue ( &sequence );
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(sequence.isFinished());
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
+    QCOMPARE(doneSignalSpy.count(), 1);
+}
+
+void JobTests::IncompleteJobSequenceTest()
+{
+    ThreadWeaver::Weaver::instance()->finish();
+    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
+    QString result;
+    AppendCharacterJob jobA ( QChar( 'a' ), &result, this );
+    AppendCharacterJob jobB ( QChar( 'b' ), &result, this ); //jobB does not get added to the sequence and queued
+    ThreadWeaver::JobSequence sequence;
+    sequence.addJob(&jobA);
+    ThreadWeaver::DependencyPolicy::instance().addDependency(&jobA, &jobB);
+    QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::Job*)));
+    QCOMPARE(doneSignalSpy.count(), 0);
+    ThreadWeaver::Weaver::instance()->enqueue ( &sequence );
+    ThreadWeaver::Weaver::instance()->resume();
+    QTest::qWait(500);
+    QCOMPARE(doneSignalSpy.count(), 0);
+    ThreadWeaver::DependencyPolicy::instance().removeDependency(&jobA, &jobB);
+    ThreadWeaver::Weaver::instance()->finish();
+    QTest::qWait(100);
+    QVERIFY(sequence.isFinished());
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
+    QCOMPARE(doneSignalSpy.count(), 1);
+}
+
+void JobTests::EmitStartedOnFirstElementStartTest()
+{
+    QFAIL("NI");
 }
 
 void JobTests::QueueAndDequeueSequenceTest() {

@@ -33,33 +33,29 @@
 
 namespace ThreadWeaver {
 
-    /** A JobSequence is a vector of Jobs that will be executed in a sequence.
+/** A JobSequence is a vector of Jobs that will be executed in a sequence.
+ *
+ * It is implemented by automatically creating the necessary dependencies between the Jobs in the sequence.
+ *
+ * JobSequence provides a handy cleanup and unwind mechanism: the stop() slot. If it is called, the processing
+ * of the sequence will stop, and all its remaining Jobs will be dequeued. */
+class THREADWEAVER_EXPORT JobSequence : public JobCollection
+{
+    Q_OBJECT
+public:
+    explicit JobSequence ( QObject *parent = 0 );
 
-        It is implemented by automatically creating the necessary dependencies
-        between the Jobs in the sequence.
+protected:
+    /** Overload to queue the sequence. */
+    void aboutToBeQueued_locked ( QueueAPI *api );
 
-        JobSequence provides a handy cleanup and unwind mechanism: the stop()
-        slot. If it is called, the processing of the sequence will stop, and
-        all its remaining Jobs will be dequeued.
-    */
-    class THREADWEAVER_EXPORT JobSequence : public JobCollection
-    {
-        Q_OBJECT
+    /** reimplemented */
+    void internalJobDone( Job* );
 
-    public:
-        explicit JobSequence ( QObject *parent = 0 );
-
-    protected:
-        /** Overload to queue the sequence. */
-        void aboutToBeQueued_locked ( QueueAPI *api );
-
-        /** reimplemented */
-        void internalJobDone( Job* );
-
-    private:
-        class Private;
-        Private * const d;
-    };
+private:
+    class Private;
+    Private * const d;
+};
 
 }
 

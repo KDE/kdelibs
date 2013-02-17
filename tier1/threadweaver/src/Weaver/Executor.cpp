@@ -6,6 +6,16 @@ Executor::~Executor()
 {
 }
 
+void Executor::defaultBegin(Job *job, Thread *thread)
+{
+    job->defaultBegin(job, thread);
+}
+
+void Executor::defaultEnd(Job *job, Thread *thread)
+{
+    job->defaultEnd(job, thread);
+}
+
 void Executor::cleanup(Job *, Thread *)
 {
 }

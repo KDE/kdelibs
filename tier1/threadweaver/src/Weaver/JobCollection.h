@@ -101,8 +101,8 @@ private:
     void execute ( Thread * );
 
     friend class CollectionExecuteWrapper;
-    void elementStarted(Job*);
-    void elementFinished(Job*);
+    void elementStarted(Job* job, Thread* thread);
+    void elementFinished(Job* job, Thread* thread);
 
     /** Overload run().
      * We have to. */
