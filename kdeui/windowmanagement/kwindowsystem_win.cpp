@@ -126,6 +126,7 @@ KWindowSystemPrivate::KWindowSystemPrivate(int what) : QWidget(0),activated(fals
 
 void KWindowSystemPrivate::activate ( )
 {
+#if 0
 	//prevent us from doing the same over and over again
 	if(activated)
 		return;
@@ -150,6 +151,7 @@ void KWindowSystemPrivate::activate ( )
 
     //fetch window infos
     reloadStackList();
+#endif
 }
 
 KWindowSystemPrivate::~KWindowSystemPrivate()
@@ -317,7 +319,7 @@ void KWindowSystemPrivate::reloadStackList ()
 {
     KWindowSystem::s_d_func()->stackingOrder.clear();
     KWindowSystem::s_d_func()->winInfos.clear();
-    EnumWindows((WNDENUMPROC)EnumWindProc, 0 );
+//    EnumWindows((WNDENUMPROC)EnumWindProc, 0 );
 }
 
 
