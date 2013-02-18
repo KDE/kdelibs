@@ -21,7 +21,7 @@
 #ifndef TEST_DIALOG_H
 #define TEST_DIALOG_H
 
-#include "sonnet/dialog.h"
+#include "ui/dialog.h"
 #include "loader_p.h"
 
 #include <QtCore/QObject>
