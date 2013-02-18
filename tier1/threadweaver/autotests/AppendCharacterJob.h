@@ -38,8 +38,9 @@ public:
                m_c.toLatin1(), qPrintable( *m_stringref ) );
     }
 
+    QChar character() const { return m_c; }
+
 protected:
-    QChar c() const { return m_c; }
     QString* stringRef() const { return m_stringref; }
 
 private:

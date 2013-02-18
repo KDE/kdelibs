@@ -7,7 +7,7 @@ class AppendCharacterAndVerifyJob : public AppendCharacterJob
 {
 public:
     AppendCharacterAndVerifyJob();
-    void setValues(QChar c, QString *stringref, const QString& expected);
+    void setValues(QChar character, QString *stringref, const QString& expected);
     void run();
 
 private:

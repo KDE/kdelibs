@@ -18,6 +18,8 @@
 
 QMutex s_GlobalMutex;
 
+//Ensure that after the object is created, the weaver is idle and resumed.
+//Upon desruction, ensure the weaver is idle and suspended.
 class WaitForIdleAndFinished {
 public:
     explicit WaitForIdleAndFinished(ThreadWeaver::Weaver* weaver)
@@ -26,9 +28,12 @@ public:
         Q_ASSERT(weaver);
         weaver_->finish();
         Q_ASSERT(weaver_->isIdle());
+        weaver_->resume();
     }
 
     ~WaitForIdleAndFinished() {
+        weaver_->suspend();
+        weaver_->dequeue();
         weaver_->finish();
         Q_ASSERT(weaver_->isIdle());
     }
@@ -101,10 +106,6 @@ void JobTests::EmptyJobCollectionTest() {
 
 void JobTests::CollectionQueueingTest()
 {
-    ThreadWeaver::Weaver weaver;
-    WaitForIdleAndFinished w(&weaver);
-    Q_ASSERT(weaver.isIdle());
-    weaver.suspend();
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -113,8 +114,12 @@ void JobTests::CollectionQueueingTest()
     jobCollection.addJob ( &jobA );
     jobCollection.addJob ( &jobB );
     jobCollection.addJob ( &jobC );
+
+    ThreadWeaver::Weaver weaver;
+    WaitForIdleAndFinished w(&weaver);
+    weaver.suspend();
     weaver.enqueue(&jobCollection);
-    QCOMPARE(weaver.queueLength(), 4); //collection queues itself plus three elements
+    QCOMPARE(weaver.queueLength(), 1); //collection queues itself, and it's elements upon execution of self
     weaver.resume();
     weaver.finish();
     QCOMPARE(sequence.length(), 3);
@@ -202,6 +207,36 @@ void JobTests::EmitStartedOnFirstElementTest()
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(collection.isFinished());
     QCOMPARE(collectionDoneSignalSpy.count(), 1);
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
+}
+
+/* This test verifies that all elements of a collection are only executed after all dependencies for the collection
+ * itself have been resolved.
+ * Previous tests have already verified that collections without dependencies get executes right away. */
+void JobTests::CollectionDependenciesTest()
+{
+    QString result;
+    AppendCharacterJob jobA(QChar('a'), &result, this);
+    AppendCharacterJob jobB(QChar('b'), &result, this);
+    AppendCharacterJob jobC(QChar('c'), &result, this);
+    ThreadWeaver::JobCollection collection;
+    QSignalSpy collectionStartedSignalSpy(&collection, SIGNAL(started(ThreadWeaver::Job*)));
+    collection.addJob(&jobA);
+    collection.addJob(&jobB);
+    ThreadWeaver::DependencyPolicy::instance().addDependency(&collection, &jobC);
+
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    ThreadWeaver::Weaver::instance()->suspend();
+    ThreadWeaver::Weaver::instance()->enqueue(&collection);
+    ThreadWeaver::Weaver::instance()->resume();
+    QTest::qWait(500);
+    QCOMPARE(collectionStartedSignalSpy.count(), 0);
+    ThreadWeaver::Weaver::instance()->enqueue(&jobC);
+    QTest::qWait(500);
+    QCOMPARE(collectionStartedSignalSpy.count(), 1);
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(collection.isFinished());
+    QVERIFY(result.startsWith(jobC.character()));
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
@@ -503,6 +538,7 @@ void JobTests::ResourceRestrictionPolicyBasicsTest () {
     collection.addJob( &g );
     g.assignQueuePolicy ( &restriction);
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->enqueue ( &collection );
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY ( ThreadWeaver::Weaver::instance()->isIdle() );
@@ -544,6 +580,7 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
         collection.addJob( job );
     }
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->enqueue ( &collection );
     QTest::qWait( 100 );
     ThreadWeaver::Weaver::instance()->finish();

@@ -15,10 +15,10 @@ void AppendCharacterAndVerifyJob::run()
 {
     using namespace ThreadWeaver;
     QMutexLocker locker ( &s_GlobalMutex );
-    stringRef()->append( c() );
+    stringRef()->append( character() );
     if (m_expected.mid(0, stringRef()->length()) != *stringRef()) {
         debug(3, "It broke!");
     }
     debug( 3, "AppendCharacterJob::run: %c appended, result is %s.\n",
-           c().toLatin1(), qPrintable( *stringRef() ) );
+           character().toLatin1(), qPrintable( *stringRef() ) );
 }

@@ -12,7 +12,7 @@ class LowPriorityAppendCharacterJob : public AppendCharacterJob
     Q_OBJECT
 
 public:
-    LowPriorityAppendCharacterJob (QChar c = QChar(), QString* stringref = 0,
+    LowPriorityAppendCharacterJob (QChar character = QChar(), QString* stringref = 0,
                                    QObject* parent = 0);
 
     int priority() const;
@@ -23,7 +23,7 @@ class HighPriorityAppendCharacterJob : public AppendCharacterJob
     Q_OBJECT
 
 public:
-    HighPriorityAppendCharacterJob (QChar c = QChar(), QString* stringref = 0,
+    HighPriorityAppendCharacterJob (QChar character = QChar(), QString* stringref = 0,
                                     QObject* parent = 0);
 
     int priority() const;

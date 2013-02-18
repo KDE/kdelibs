@@ -28,6 +28,7 @@ private Q_SLOTS:
     void EmptyJobSequenceTest();
     void IncompleteCollectionTest();
     void EmitStartedOnFirstElementTest();
+    void CollectionDependenciesTest();
     void QueueAndDequeueSequenceTest();
     void RecursiveQueueAndDequeueSequenceTest();
     void QueueAndDequeueAllSequenceTest();

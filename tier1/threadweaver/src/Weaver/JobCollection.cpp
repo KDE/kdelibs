@@ -156,11 +156,6 @@ void JobCollection::aboutToBeQueued_locked(QueueAPI *api)
     Q_ASSERT(!mutex()->tryLock());
     Q_ASSERT(d->api == 0); // never queue twice
     d->api = api;
-
-    d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
-    Q_FOREACH(Job* child, d->elements) {
-        api->enqueue_p(child);
-    }
     Job::aboutToBeQueued_locked(api);
 }
 
@@ -175,6 +170,13 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
 void JobCollection::execute(Thread *thread)
 {
     Q_ASSERT(d->api!= 0);
+    {
+        QMutexLocker l(mutex()); Q_UNUSED(l);
+        d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
+        Q_FOREACH(Job* child, d->elements) {
+            d->api->enqueue(child);
+        }
+    }
     Job::execute(thread);
 }
 
