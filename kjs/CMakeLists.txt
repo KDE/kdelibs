@@ -239,7 +239,7 @@ set (kjs_bin_OUTPUT_NAME kjs)
 # 'kjs_bin' because cmake doesn't like having a lib and app with the same name
 kde4_add_executable(kjs_bin NOGUI ${kjs_SRCS})
 
-set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
+set_target_properties(kjs_bin PROPERTIES RUNTIME_OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
 
 target_link_libraries(kjs_bin ${KJSLIBNAME})
 
