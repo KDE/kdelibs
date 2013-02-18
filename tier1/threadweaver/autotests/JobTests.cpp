@@ -346,7 +346,6 @@ void JobTests::RecursiveQueueAndDequeueSequenceTest() {
 }
 
 void JobTests::QueueAndDequeueAllSequenceTest() {
-    return; //MARK_TEMPORARILY_DISABLED
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -356,17 +355,12 @@ void JobTests::QueueAndDequeueAllSequenceTest() {
     jobSequence.addJob ( &jobB );
     jobSequence.addJob ( &jobC );
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->suspend();
 
     ThreadWeaver::Weaver::instance()->enqueue ( & jobSequence );
     ThreadWeaver::Weaver::instance()->dequeue ();
-    bool empty = ThreadWeaver::Weaver::instance()->isEmpty();
-
-    ThreadWeaver::Weaver::instance()->resume();
-
-    ThreadWeaver::Weaver::instance()->finish();
-
-    QVERIFY ( empty == true );
+    QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
 }
 
 void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
