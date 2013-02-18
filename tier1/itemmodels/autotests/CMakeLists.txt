@@ -33,7 +33,7 @@ endmacro()
 
 itemmodels_proxymodel_tests(
   kdescendantsproxymodeltest
-  # BROKEN WITH QT5 kselectionproxymodeltest
+  kselectionproxymodeltest
   testmodelqueuedconnections
 )
 

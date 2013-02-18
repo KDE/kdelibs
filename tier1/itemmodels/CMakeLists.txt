@@ -20,7 +20,8 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX ITEMMODELS
 
 
 add_subdirectory(src)
-add_subdirectory(autotests)
+# TODO re-enable, after grantlee is ported to Qt5
+#add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
