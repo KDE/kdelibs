@@ -36,7 +36,7 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QtCore/QTimer>
-#include <QtGui/QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 
 namespace Sonnet
