@@ -622,7 +622,7 @@ void KArchiveTest::testTarDirectoryForgotten()
 void KArchiveTest::testTarRootDir() // bug 309463
 {
     KTar tar(QString::fromLatin1(KDESRCDIR) + QLatin1String("tar_rootdir.tar.bz2"));
-    QVERIFY(tar.open(QIODevice::ReadOnly));
+    QVERIFY2(tar.open(QIODevice::ReadOnly), qPrintable(tar.fileName()));
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
