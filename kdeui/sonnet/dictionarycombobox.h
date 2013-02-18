@@ -21,9 +21,9 @@
 #ifndef SONNET_DICTIONARYCOMBOBOX_H
 #define SONNET_DICTIONARYCOMBOBOX_H
 
-#include "sonnetui_export.h"
+#include "kdeui_export.h"
 
-#include <QtWidgets/QComboBox>
+#include <kcombobox.h>
 
 namespace Sonnet
 {
@@ -35,7 +35,7 @@ namespace Sonnet
  * @since 4.2
  **/
 
-class SONNETUI_EXPORT DictionaryComboBox : public QComboBox
+class KDEUI_EXPORT DictionaryComboBox : public KComboBox
 {
     Q_OBJECT
 public:

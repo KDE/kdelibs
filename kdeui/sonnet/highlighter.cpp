@@ -27,6 +27,9 @@
 #include "filter_p.h"
 #include "settings_p.h"
 
+#include <kconfig.h>
+#include <klocalizedstring.h>
+
 #include <QDebug>
 #include <QTextEdit>
 #include <QTextCharFormat>
@@ -95,7 +98,11 @@ Highlighter::Highlighter(QTextEdit *textEdit,
     //if the KLocale::global()->language() (default value) spellchecker is not installed,
     //and we have a global sonnetrc file with a spellcheck lang installed which could be used.
     if (!configFile.isEmpty()) {
-        d->filter->setSettings(d->loader->settings());
+        KConfig conf(configFile);
+        if (conf.hasGroup("Spelling")) {
+            d->loader->settings()->restore(&conf);
+            d->filter->setSettings(d->loader->settings());
+        }
     }
 
     d->dict = new Sonnet::Speller();
@@ -229,9 +236,9 @@ void Highlighter::slotAutoDetection()
 
     if (d->active != savedActive) {
         if (d->active) {
-            emit activeChanged(tr("As-you-type spell checking enabled."));
+            emit activeChanged(i18n("As-you-type spell checking enabled."));
         } else {
-            emit activeChanged(tr( "Too many misspelled words. "
+            emit activeChanged(i18n( "Too many misspelled words. "
                                "As-you-type spell checking disabled."));
         }
 
@@ -251,9 +258,9 @@ void Highlighter::setActive( bool active )
 
 
     if ( d->active )
-        emit activeChanged( tr("As-you-type spell checking enabled.") );
+        emit activeChanged( i18n("As-you-type spell checking enabled.") );
     else
-        emit activeChanged( tr("As-you-type spell checking disabled.") );
+        emit activeChanged( i18n("As-you-type spell checking disabled.") );
 }
 
 bool Highlighter::isActive() const

@@ -21,16 +21,18 @@
 #define SONNET_CONFIGWIDGET_H
 
 #include <QWidget>
-#include <sonnetui_export.h>
+#include <kdeui_export.h>
+
+class KConfig;
 
 namespace Sonnet
 {
     /// The sonnet ConfigWidget
-    class SONNETUI_EXPORT ConfigWidget : public QWidget
+    class KDEUI_EXPORT ConfigWidget : public QWidget
     {
         Q_OBJECT
     public:
-        explicit ConfigWidget(QWidget *parent);
+        ConfigWidget(KConfig *config, QWidget *parent);
         ~ConfigWidget();
 
         bool backgroundCheckingButtonShown() const;
@@ -58,8 +60,7 @@ namespace Sonnet
         void setBackgroundCheckingButtonShown( bool );
         void slotDefault();
     protected Q_SLOTS:
-        void slotIgnoreWordRemoved();
-        void slotIgnoreWordAdded();
+        void slotChanged();
 
     Q_SIGNALS:
         /**
@@ -69,7 +70,9 @@ namespace Sonnet
         void configChanged();
 
     private:
+        void init(KConfig *config);
         void setFromGui();
+        void setCorrectLanguage( const QStringList& langs ); // remove in KDE5, no implementation anymore
 
     private:
         class Private;

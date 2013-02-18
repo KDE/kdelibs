@@ -25,6 +25,8 @@
 #include <QtCore/QString>
 #include <sonnetcore_export.h>
 
+class KConfig;
+
 namespace Sonnet
 {
     class Loader;
@@ -63,14 +65,14 @@ namespace Sonnet
         QStringList currentIgnoreList() const;
         bool ignore(const QString &word);
 
-        void save();
-        void restore();
+        void save(KConfig *config);
+        void restore(KConfig *config);
 
         int disablePercentageWordError() const;
         int disableWordErrorCount() const;
 
     private:
-        void readIgnoreList();
+        void readIgnoreList(KConfig *config);
         void setQuietIgnoreList(const QStringList &ignores);
 
     private:

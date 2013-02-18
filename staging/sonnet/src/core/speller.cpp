@@ -24,6 +24,7 @@
 #include "settings_p.h"
 #include "spellerplugin_p.h"
 
+#include <kconfig.h>
 #include <QtCore/QLocale>
 #include <QSet>
 #include <QDebug>
@@ -165,18 +166,18 @@ QString Speller::language() const
 }
 
 
-void Speller::save()
+void Speller::save(KConfig *config)
 {
     if (d->settings) {
-        d->settings->save();
+        d->settings->save(config);
     }
 }
 
 
-void Speller::restore()
+void Speller::restore(KConfig *config)
 {
     if (d->settings) {
-        d->settings->restore();
+        d->settings->restore(config);
         d->recreateDict();
     }
 }

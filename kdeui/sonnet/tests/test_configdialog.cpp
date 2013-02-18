@@ -30,7 +30,8 @@ int main( int argc, char** argv )
 {
     QApplication app(argc, argv);
 
-    ConfigDialog *dialog = new ConfigDialog(0);
+    KConfig config("sonnetrc");
+    ConfigDialog *dialog = new ConfigDialog(&config, 0);
 
     dialog->show();
 

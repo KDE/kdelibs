@@ -23,14 +23,14 @@
 
 #include <QSyntaxHighlighter>
 #include <QtCore/QStringList>
-#include <sonnetui_export.h>
+#include <kdeui_export.h>
 
 class QTextEdit;
 
 namespace Sonnet
 {
     /// The Sonnet Highlighter
-    class SONNETUI_EXPORT Highlighter : public QSyntaxHighlighter
+    class KDEUI_EXPORT Highlighter : public QSyntaxHighlighter
     {
         Q_OBJECT
     public:

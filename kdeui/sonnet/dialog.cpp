@@ -27,6 +27,11 @@
 #include "filter_p.h"
 #include "settings_p.h"
 
+#include <kconfig.h>
+#include <kguiitem.h>
+#include <khelpclient.h>
+#include <klocalizedstring.h>
+#include <kmessagebox.h>
 #include <qprogressdialog.h>
 
 #include <QDialogButtonBox>
@@ -36,7 +41,6 @@
 #include <QComboBox>
 #include <QLabel>
 #include <QtCore/QTimer>
-#include <QtGui/QMessageBox>
 
 
 namespace Sonnet
@@ -98,7 +102,7 @@ Dialog::Dialog(BackgroundChecker *checker,
       d(new Private)
 {
     setModal(true);
-    setWindowTitle(tr("Check Spelling", "@title:window"));
+    setWindowTitle(i18nc("@title:window", "Check Spelling"));
 
     d->checker = checker;
 
@@ -143,6 +147,7 @@ void Dialog::initConnections()
              SLOT(slotReplaceWord()) );
     connect( d->buttonBox, SIGNAL(accepted()), this, SLOT(slotFinished()) );
     connect( d->buttonBox, SIGNAL(rejected()),this, SLOT(slotCancel()) );
+    connect( d->buttonBox, SIGNAL(helpRequested()),this, SLOT(slotHelp()) );
     connect( d->ui.m_replacement, SIGNAL(returnPressed()), this, SLOT(slotReplaceWord()) );
     connect( d->ui.m_autoCorrect, SIGNAL(clicked()),
              SLOT(slotAutocorrect()) );
@@ -162,7 +167,9 @@ void Dialog::initGui()
     setGuiEnabled(false);
 
     d->buttonBox = new QDialogButtonBox(this);
-    d->buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    d->buttonBox->setStandardButtons(QDialogButtonBox::Help | QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+    KGuiItem::assign(d->buttonBox->button(QDialogButtonBox::Ok),
+                     KGuiItem(i18nc("@action:button", "&Finished")));
 
     layout->addWidget(d->wdg);
 
@@ -223,8 +230,8 @@ void Dialog::setProgressDialogVisible(bool b)
       return;
     }
     d->progressDialog = new QProgressDialog(this);
-    d->progressDialog->setLabelText(tr("Spell checking in progress...", "progress label"));
-    d->progressDialog->setWindowTitle(tr("Check Spelling", "@title:window"));
+    d->progressDialog->setLabelText(i18nc("progress label", "Spell checking in progress..."));
+    d->progressDialog->setWindowTitle(i18nc("@title:window", "Check Spelling"));
     d->progressDialog->setModal(true);
     d->progressDialog->setAutoClose(false);
     d->progressDialog->setAutoReset(false);
@@ -244,7 +251,7 @@ void Dialog::slotFinished()
     emit stop();
     //FIXME: should we emit done here?
     emit done(d->checker->text());
-    emit spellCheckStatus(tr("Spell check stopped."));
+    emit spellCheckStatus(i18n("Spell check stopped."));
     accept();
 }
 
@@ -254,8 +261,13 @@ void Dialog::slotCancel()
     d->deleteProgressDialog(false); // this method can be called in response to
                                     // pressing 'Cancel' on the dialog
     emit cancel();
-    emit spellCheckStatus(tr("Spell check canceled."));
+    emit spellCheckStatus(i18n("Spell check canceled."));
     reject();
+}
+
+void Dialog::slotHelp()
+{
+    KHelpClient::invokeHelp(QString(), "sonnet");
 }
 
 QString Dialog::originalBuffer() const
@@ -435,11 +447,11 @@ void Dialog::slotDone()
     else
     {
         setProgressDialogVisible(false);
-        emit spellCheckStatus(tr("Spell check complete."));
+        emit spellCheckStatus(i18n("Spell check complete."));
         accept();
         if(!d->canceled && d->showCompletionMessageBox)
         {
-          QMessageBox::information(this, tr("Spell check complete."), tr("Check Spelling", "@title:window"));
+          KMessageBox::information(this, i18n("Spell check complete."), i18nc("@title:window", "Check Spelling"));
         }
     }
 }

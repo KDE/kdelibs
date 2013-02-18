@@ -24,9 +24,13 @@
 #include "loader_p.h"
 #include "settings_p.h"
 
+#include <keditlistbox.h>
+#include <kcombobox.h>
+#include <kconfig.h>
+#include <klocalizedstring.h>
+
 #include <QCheckBox>
 #include <QLayout>
-#include <QListWidgetItem>
 
 using namespace Sonnet;
 
@@ -36,13 +40,26 @@ public:
     Loader *loader;
     Ui_SonnetConfigUI ui;
     QWidget *wdg;
+    KConfig *config;
 };
 
-ConfigWidget::ConfigWidget(QWidget *parent)
+ConfigWidget::ConfigWidget(KConfig *config, QWidget *parent)
     : QWidget(parent),
       d(new Private)
 {
+    init(config);
+}
+
+ConfigWidget::~ConfigWidget()
+{
+    delete d;
+}
+
+void ConfigWidget::init(KConfig *config)
+{
     d->loader = Loader::openLoader();
+    d->loader->settings()->restore(config);
+    d->config = config;
 
     QVBoxLayout *layout = new QVBoxLayout( this );
     layout->setMargin( 0 );
@@ -58,11 +75,10 @@ ConfigWidget::ConfigWidget(QWidget *parent)
     d->ui.m_checkerEnabledByDefaultCB->setChecked( d->loader->settings()->checkerEnabledByDefault() );
     QStringList ignoreList = d->loader->settings()->currentIgnoreList();
     ignoreList.sort();
-    d->ui.ignoreListWidget->addItems(ignoreList);
+    d->ui.m_ignoreListBox->insertStringList( ignoreList );
     d->ui.m_bgSpellCB->setChecked( d->loader->settings()->backgroundCheckerEnabled() );
     d->ui.m_bgSpellCB->hide();//hidden by default
-    connect(d->ui.addButton, SIGNAL(clicked()), SLOT(slotIgnoreAdded()));
-    connect(d->ui.removeButton, SIGNAL(clicked()), SLOT(slotIgnoreAdded()));
+    connect( d->ui.m_ignoreListBox, SIGNAL(changed()), SLOT(slotChanged()) );
 
     layout->addWidget( d->wdg );
     connect(d->ui.m_langCombo, SIGNAL(dictionaryChanged(QString)), this, SIGNAL(configChanged()));
@@ -70,16 +86,13 @@ ConfigWidget::ConfigWidget(QWidget *parent)
     connect(d->ui.m_skipUpperCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
     connect(d->ui.m_skipRunTogetherCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
     connect(d->ui.m_checkerEnabledByDefaultCB, SIGNAL(clicked(bool)), this, SIGNAL(configChanged()));
-}
-
-ConfigWidget::~ConfigWidget()
-{
-    delete d;
+    connect(d->ui.m_ignoreListBox, SIGNAL(changed()), this, SIGNAL(configChanged()));
 }
 
 void ConfigWidget::save()
 {
     setFromGui();
+    d->loader->settings()->save(d->config);
 }
 
 void ConfigWidget::setFromGui()
@@ -97,30 +110,15 @@ void ConfigWidget::setFromGui()
         d->ui.m_checkerEnabledByDefaultCB->isChecked() );
 }
 
-void ConfigWidget::slotIgnoreWordAdded()
+void ConfigWidget::slotChanged()
 {
-    QStringList ignoreList = d->loader->settings()->currentIgnoreList();
-    QString newWord = d->ui.newIgnoreEdit->text();
-    if (newWord.isEmpty() || ignoreList.contains(newWord))
-        return;
-    ignoreList.append(newWord);
-    d->loader->settings()->setCurrentIgnoreList(ignoreList);
-    
-    d->ui.ignoreListWidget->clear();
-    d->ui.ignoreListWidget->addItems(ignoreList);
+    d->loader->settings()->setCurrentIgnoreList(
+        d->ui.m_ignoreListBox->items() );
 }
 
-void ConfigWidget::slotIgnoreWordRemoved()
+void ConfigWidget::setCorrectLanguage( const QStringList& )
 {
-    QStringList ignoreList = d->loader->settings()->currentIgnoreList();
-    const QList<QListWidgetItem*> selectedItems = d->ui.ignoreListWidget->selectedItems();
-    foreach(const QListWidgetItem *item, selectedItems) {
-        ignoreList.removeAll(item->text());
-    }
-    d->loader->settings()->setCurrentIgnoreList(ignoreList);
-    
-    d->ui.ignoreListWidget->clear();
-    d->ui.ignoreListWidget->addItems(ignoreList);
+    // can be removed in KDE5.
 }
 
 void ConfigWidget::setBackgroundCheckingButtonShown( bool b )
@@ -139,7 +137,7 @@ void ConfigWidget::slotDefault()
     d->ui.m_skipRunTogetherCB->setChecked( false );
     d->ui.m_checkerEnabledByDefaultCB->setChecked( false );
     d->ui.m_bgSpellCB->setChecked( true );
-    d->ui.ignoreListWidget->clear();
+    d->ui.m_ignoreListBox->clear();
 }
 
 void ConfigWidget::setLanguage( const QString &language )

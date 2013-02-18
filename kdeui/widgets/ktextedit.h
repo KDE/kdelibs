@@ -157,6 +157,21 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
     void highlightWord( int length, int pos );
 
     /**
+     * Allows to override the config file where the settings for spell checking,
+     * like the current language or encoding, are stored.
+     * By default, the global config file (kdeglobals) is used, to share
+     * spell check settings between all applications.
+     *
+     * This has to be called before any spell checking is initiated.
+     *
+     * @param fileName the URL of the config file which will be used to
+     *                 read spell settings
+     * @bug this has no effect for the spell dialog, only for the background
+     *      check
+     */
+    void setSpellCheckingConfigFileName(const QString &fileName);
+
+    /**
      * Allows to create a specific highlighter if reimplemented.
      *
      * By default, it creates a normal highlighter, based on the config
@@ -333,7 +348,8 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
     void checkSpelling();
 
     /**
-     * Opens a Sonnet::ConfigDialog for this text edit.
+     * Opens a Sonnet::ConfigDialog for this text edit. The config settings the
+     * user makes are read from and stored to the given config file.
      * The spellcheck language of the config dialog is set to the current spellcheck
      * language of the textedit. If the user changes the language in that dialog,
      * the languageChanged() signal is emitted.
@@ -345,7 +361,8 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      *
      * @since 4.2
      */
-    void showSpellConfigDialog(const QString &windowIcon = QString());
+    void showSpellConfigDialog(const QString &configFileName,
+                               const QString &windowIcon = QString());
 
     /**
      * Create replace dialogbox

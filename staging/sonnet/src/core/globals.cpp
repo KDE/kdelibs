@@ -23,6 +23,8 @@
 #include "loader_p.h"
 #include "settings_p.h"
 
+#include <kconfig.h>
+
 #include <QMap>
 #include <QVector>
 #include <QSet>
@@ -87,7 +89,8 @@ QString detectLanguage(const QString &sentence)
 QString defaultLanguageName()
 {
   Loader *loader = Loader::openLoader();
-  loader->settings()->restore();
+  KConfig config(QString::fromLatin1("sonnetrc"));
+  loader->settings()->restore(&config);
 
   return loader->languageNameForCode(loader->settings()->defaultLanguage());
 }

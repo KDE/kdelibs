@@ -2,6 +2,13 @@ project(sonnetcore)
 
 include_directories(
   ${QT_INCLUDES}
+  ${CMAKE_SOURCE_DIR}/kdecore/localization # TODO port to i18n framework
+  ${CMAKE_BINARY_DIR}/kdecore
+
+  ${kcoreaddons_SOURCE_DIR}/src/io
+  ${kcoreaddons_BINARY_DIR}/src
+  ${kconfig_SOURCE_DIR}/src/core
+  ${kconfig_BINARY_DIR}/src/core
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -22,7 +29,8 @@ set(sonnetcore_SRCS
 add_library(sonnetcore ${sonnetcore_SRCS})
 generate_export_header(sonnetcore)
 
-target_link_libraries(sonnetcore ${QT_QTCORE_LIBRARY})
+# TODO: port away from KDE4_KDECORE_LIBS
+target_link_libraries(sonnetcore ${KDE4_KDECORE_LIBS})
 
 set_target_properties(sonnetcore PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}

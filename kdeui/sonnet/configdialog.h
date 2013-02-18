@@ -22,16 +22,18 @@
 #define SONNET_CONFIGDIALOG_H
 
 #include <QDialog>
-#include <sonnetui_export.h>
+#include <kdeui_export.h>
+#include <kconfig.h>
 
 namespace Sonnet
 {
     /// The sonnet ConfigDialog
-    class SONNETUI_EXPORT ConfigDialog : public QDialog
+    class KDEUI_EXPORT ConfigDialog : public QDialog
     {
         Q_OBJECT
     public:
-        explicit ConfigDialog(QWidget *parent);
+        ConfigDialog(KConfig *config,
+                     QWidget *parent);
         ~ConfigDialog();
 
         /**
@@ -48,7 +50,7 @@ namespace Sonnet
          * @since 4.8.1
          */
         QString language() const;
-
+        
     protected Q_SLOTS:
         virtual void slotOk();
         virtual void slotApply();
@@ -71,10 +73,13 @@ namespace Sonnet
         void configChanged();
         
     private:
+        void init(KConfig *config);
+    private:
         class Private;
         friend class Private;
         Private *const d;
         Q_DISABLE_COPY(ConfigDialog)
+        Q_PRIVATE_SLOT(d, void slotHelp())
         Q_PRIVATE_SLOT(d, void slotConfigChanged())
     };
 }

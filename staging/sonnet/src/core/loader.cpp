@@ -24,6 +24,9 @@
 #include "client_p.h"
 #include "spellerplugin_p.h"
 
+
+#include <kconfig.h>
+
 #include <QtCore/QHash>
 #include <QtCore/QMap>
 #include <QtCore/QLocale>
@@ -31,6 +34,8 @@
 #include <QtCore/QPluginLoader>
 #include <QDebug>
 #include <QtCore/QDir>
+
+#define DEFAULT_CONFIG_FILE   "sonnetrc"
 
 namespace Sonnet
 {
@@ -65,7 +70,8 @@ Loader::Loader()
     :d(new Private)
 {
     d->settings = new Settings(this);
-    d->settings->restore();
+    KConfig config(QString::fromLatin1(DEFAULT_CONFIG_FILE));
+    d->settings->restore(&config);
     loadPlugins();
 }
 
