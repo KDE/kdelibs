@@ -143,8 +143,6 @@ void Job::execute(Thread *th)
     executor->begin(this, th);
     executor->execute(this, th);
     executor->end(this, th);
-    //FIXME this requires the job lock?
-    freeQueuePolicyResources();
     {
         QMutexLocker l(&d->mutex); Q_UNUSED(l);
         d->thread = 0;
@@ -192,6 +190,8 @@ void Job::defaultEnd(Job *job, Thread *)
         Q_EMIT failed(job);
     }
     Q_EMIT done(job);
+    //FIXME this requires the job lock?
+    freeQueuePolicyResources();
 }
 
 void Job::aboutToBeQueued(QueueAPI* api)

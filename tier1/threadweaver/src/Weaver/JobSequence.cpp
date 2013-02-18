@@ -44,18 +44,19 @@ void JobSequence::aboutToBeQueued_locked (QueueAPI *api )
     Q_ASSERT(!mutex()->tryLock());
     REQUIRE (api != 0);
 
-    if (jobListLength_locked() > 1) {
+    const int jobs = jobListLength_locked();
+    if (jobs > 0) {
+        DependencyPolicy::instance().addDependency(jobAt(0), this);
         // set up the dependencies:
-        for (int i = 1; i < jobListLength_locked(); ++i) {
+        for (int i = 1; i < jobs; ++i) {
             Job* jobA = jobAt(i);
             Job* jobB = jobAt(i-1);
-            P_ASSERT ( jobA != 0 );
-            P_ASSERT ( jobB != 0 );
-            DependencyPolicy::instance().addDependency ( jobA, jobB );
+            P_ASSERT(jobA != 0);
+            P_ASSERT(jobB != 0);
+            DependencyPolicy::instance().addDependency(jobA, jobB);
         }
     }
-
-    JobCollection::aboutToBeQueued_locked( api );
+    JobCollection::aboutToBeQueued_locked(api);
 }
 
 void JobSequence::elementFinished(Job *job, Thread *thread)
@@ -64,6 +65,10 @@ void JobSequence::elementFinished(Job *job, Thread *thread)
     JobCollection::elementFinished(job, thread);
     if (!job->success()) {
         stop(job);
+    }
+    QMutexLocker l(mutex()); Q_UNUSED(l);
+    if (jobListLength_locked() > 0) {
+        DependencyPolicy::instance().removeDependency(jobAt(0), this);
     }
 }
 
