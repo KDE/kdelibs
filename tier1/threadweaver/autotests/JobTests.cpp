@@ -15,7 +15,26 @@
 
 #include "AppendCharacterJob.h"
 #include "AppendCharacterAndVerifyJob.h"
+
 QMutex s_GlobalMutex;
+
+class WaitForIdleAndFinished {
+public:
+    explicit WaitForIdleAndFinished(ThreadWeaver::Weaver* weaver)
+        : weaver_(weaver)
+    {
+        Q_ASSERT(weaver);
+        weaver_->finish();
+        Q_ASSERT(weaver_->isIdle());
+    }
+
+    ~WaitForIdleAndFinished() {
+        weaver_->finish();
+        Q_ASSERT(weaver_->isIdle());
+    }
+private:
+    ThreadWeaver::Weaver* weaver_;
+};
 
 void JobTests::initTestCase ()
 {
@@ -27,6 +46,7 @@ void JobTests::initTestCase ()
 void JobTests::WeaverLazyThreadCreationTest()
 {
     ThreadWeaver::Weaver weaver;
+    WaitForIdleAndFinished w(&weaver);
     Q_ASSERT(weaver.isIdle());
     QString sequence;
     QCOMPARE (weaver.currentNumberOfThreads(), 0);
@@ -39,7 +59,7 @@ void JobTests::WeaverLazyThreadCreationTest()
 }
 
 void JobTests::SimpleJobTest() {
-    ThreadWeaver::Weaver::instance()->finish();
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     QString sequence;
     AppendCharacterJob job( QChar( '1' ), &sequence, this );
@@ -49,8 +69,7 @@ void JobTests::SimpleJobTest() {
 }
 
 void JobTests::SimpleJobCollectionTest() {
-    ThreadWeaver::Weaver::instance()->finish();
-    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -71,7 +90,7 @@ void JobTests::SimpleJobCollectionTest() {
 }
 
 void JobTests::EmptyJobCollectionTest() {
-    ThreadWeaver::Weaver::instance()->finish();
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     ThreadWeaver::JobCollection collection;
     ThreadWeaver::Weaver::instance()->enqueue ( &collection );
@@ -83,6 +102,7 @@ void JobTests::EmptyJobCollectionTest() {
 void JobTests::CollectionQueueingTest()
 {
     ThreadWeaver::Weaver weaver;
+    WaitForIdleAndFinished w(&weaver);
     Q_ASSERT(weaver.isIdle());
     weaver.suspend();
     QString sequence;
@@ -102,8 +122,7 @@ void JobTests::CollectionQueueingTest()
 }
 
 void JobTests::ShortJobSequenceTest() {
-    ThreadWeaver::Weaver::instance()->finish();
-    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -121,7 +140,7 @@ void JobTests::ShortJobSequenceTest() {
 }
 
 void JobTests::EmptyJobSequenceTest() {
-    ThreadWeaver::Weaver::instance()->finish();
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     ThreadWeaver::JobSequence sequence;
     QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::Job*)));
@@ -133,20 +152,22 @@ void JobTests::EmptyJobSequenceTest() {
     QCOMPARE(doneSignalSpy.count(), 1);
 }
 
-void JobTests::IncompleteJobSequenceTest()
+/** This test verifies that the done signal for a collection is only sent after all element of the collection have completed. */
+void JobTests::IncompleteCollectionTest()
 {
-    ThreadWeaver::Weaver::instance()->finish();
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
     QString result;
     AppendCharacterJob jobA ( QChar( 'a' ), &result, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &result, this ); //jobB does not get added to the sequence and queued
-    ThreadWeaver::JobSequence sequence;
-    sequence.addJob(&jobA);
+    ThreadWeaver::JobCollection collection;
+    collection.addJob(&jobA);
     ThreadWeaver::DependencyPolicy::instance().addDependency(&jobA, &jobB);
-    QSignalSpy collectionDoneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::Job*)));
+    QSignalSpy collectionDoneSignalSpy(&collection, SIGNAL(done(ThreadWeaver::Job*)));
     QSignalSpy jobADoneSignalSpy(&jobA, SIGNAL(done(ThreadWeaver::Job*)));
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
-    ThreadWeaver::Weaver::instance()->enqueue ( &sequence );
+    QCOMPARE(jobADoneSignalSpy.count(), 0);
+    ThreadWeaver::Weaver::instance()->enqueue ( &collection );
     ThreadWeaver::Weaver::instance()->resume();
     QTest::qWait(500);
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
@@ -154,15 +175,34 @@ void JobTests::IncompleteJobSequenceTest()
     ThreadWeaver::DependencyPolicy::instance().removeDependency(&jobA, &jobB);
     ThreadWeaver::Weaver::instance()->finish();
     QTest::qWait(100);
-    QVERIFY(sequence.isFinished());
+    QVERIFY(collection.isFinished());
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     QCOMPARE(collectionDoneSignalSpy.count(), 1);
     QCOMPARE(jobADoneSignalSpy.count(), 1);
 }
 
-void JobTests::EmitStartedOnFirstElementStartTest()
+/** This test verifies that started() is emitted for a collection at the time the first of any elements of the collection gets
+ * executed. */
+void JobTests::EmitStartedOnFirstElementTest()
 {
-    QFAIL("NI");
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    ThreadWeaver::Weaver::instance()->suspend();
+    QString result;
+    AppendCharacterJob jobA ( QChar( 'a' ), &result, this );
+    AppendCharacterJob jobB ( QChar( 'b' ), &result, this );
+    ThreadWeaver::JobCollection collection;
+    collection.addJob(&jobA);
+    collection.addJob(&jobB);
+    ThreadWeaver::Weaver::instance()->enqueue(&collection);
+    QSignalSpy collectionStartedSignalSpy(&collection, SIGNAL(started(ThreadWeaver::Job*)));
+    QSignalSpy collectionDoneSignalSpy(&collection, SIGNAL(done(ThreadWeaver::Job*)));
+    ThreadWeaver::Weaver::instance()->resume();
+    QTest::qWait(500);
+    QCOMPARE(collectionStartedSignalSpy.count(), 1);
+    ThreadWeaver::Weaver::instance()->finish();
+    QVERIFY(collection.isFinished());
+    QCOMPARE(collectionDoneSignalSpy.count(), 1);
+    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
 void JobTests::QueueAndDequeueSequenceTest() {

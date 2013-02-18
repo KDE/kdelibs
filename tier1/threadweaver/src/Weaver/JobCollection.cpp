@@ -67,8 +67,10 @@ private:
 
 class CollectionSelfExecuteWrapper : public ThreadWeaver::ExecuteWrapper {
 public:
-    void end(Job *, Thread *) {
-        //do nothing, this is delayed until all elements of the sequence have been completed
+    void begin(Job*, Thread*) {
+    }
+
+    void end(Job*, Thread*) {
     }
 };
 
@@ -99,7 +101,7 @@ public:
        When zero, all elements are done.
     */
     QAtomicInt jobCounter;
-    QAtomicInt jobsInProgress;
+    QAtomicInt jobsStarted;
     CollectionSelfExecuteWrapper selfExecuteWrapper;
 };
 
@@ -176,19 +178,22 @@ void JobCollection::execute(Thread *thread)
     Job::execute(thread);
 }
 
-void JobCollection::elementStarted(Job*, Thread*)
+void JobCollection::elementStarted(Job*, Thread* thread)
 {
-    d->jobsInProgress.fetchAndAddOrdered(1);
+    if (d->jobsStarted.fetchAndAddOrdered(1) == 0) {
+        //emit started() signal on beginning of first job execution
+        executor()->defaultBegin(this, thread);
+    }
 }
 
 void JobCollection::elementFinished(Job*, Thread *thread)
 {
     QMutexLocker l(mutex()); Q_UNUSED(l);
-    const int jobsInProgress = d->jobsInProgress.fetchAndAddOrdered(-1) -1;
-    Q_ASSERT(jobsInProgress >=0);
+    const int jobsStarted = d->jobsStarted.fetchAndAddOrdered(0);
+    Q_ASSERT(jobsStarted >=0);
     const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1) -1;
     Q_ASSERT(remainingJobs >=0);
-    if (remainingJobs == 0 && jobsInProgress == 0) {
+    if (remainingJobs == 0 ) {
         // there is a small chance that (this) has been dequeued in the
         // meantime, in this case, there is nothing left to clean up
         finalCleanup();
