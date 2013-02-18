@@ -152,8 +152,8 @@ void KStandarddirsTest::testFindAllResources()
     QStringList fileNames;
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
-    QVERIFY( configFilesWithFilter.count() >= 4 );
     QVERIFY( oneEndsWith( configFilesWithFilter, "share/config/kdebugrc" ) );
+    QVERIFY2( configFilesWithFilter.count() >= 4, qPrintable(configFilesWithFilter.join(",")) );
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/ui/ui_standards.rc" ) ); // not recursive
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/accept-languages.codes" ) ); // didn't match the filter
     QCOMPARE(fileNames.count(), configFilesWithFilter.count());

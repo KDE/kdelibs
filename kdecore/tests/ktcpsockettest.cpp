@@ -239,6 +239,8 @@ void KTcpSocketTest::statesIana()
     s->write(HTTPREQUEST);
     s->waitForReadyRead();
     s->close();
+    if (s->state() == KTcpSocket::ClosingState)
+        s->waitForDisconnected();
     //What happens is that during waitForReadyRead() the write buffer is written out
     //completely so that the socket can shut down without having to wait for writeout.
     QCOMPARE((int)s->state(), (int)KTcpSocket::UnconnectedState);

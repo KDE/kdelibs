@@ -283,9 +283,10 @@ void PopupAppletPrivate::popupConstraintsEvent(Plasma::Constraints constraints)
         }
 
         //Applet on desktop
-        if ((!parentApplet || parentApplet->isContainment() ) && icon && (!icon->svg().isEmpty() || !icon->icon().isNull()) && ((f != Plasma::Vertical && f != Plasma::Horizontal) ||
-            ((f == Plasma::Vertical && parentSize.width() >= minimum.width()) ||
-             (f == Plasma::Horizontal && parentSize.height() >= minimum.height())))) {
+        if (((!parentApplet || parentApplet->isContainment() ) && icon && (!icon->svg().isEmpty() || !icon->icon().isNull()) && ((f != Plasma::Vertical && f != Plasma::Horizontal)) ||
+            (((f == Plasma::Vertical && parentSize.width() >= minimum.width()) ||
+             (f == Plasma::Horizontal && parentSize.height() >= minimum.height())) &&
+             (!q->parentWidget() || (q->parentWidget()->size().width() >= minimum.width() && q->parentWidget()->size().height() >= minimum.height()))))) {
             //kDebug() << "we are expanding the popupapplet";
 
 

@@ -58,8 +58,13 @@ if (PYTHONINTERP_FOUND)
     if(INSTALL_PYTHON_FILES_IN_PYTHON_PREFIX)
         set(PYTHON_SITE_PACKAGES_INSTALL_DIR ${PYTHON_SITE_PACKAGES_DIR})
     else()
-        set(PYTHON_SITE_PACKAGES_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/python${PYTHON_SHORT_VERSION}/site-packages
-            CACHE PATH "The directory where Python modules will be installed to.")
+        execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(True, prefix='${CMAKE_INSTALL_PREFIX}'))"
+                        OUTPUT_VARIABLE PYTHON_SITE_PACKAGES_INSTALL_DIR
+                        OUTPUT_STRIP_TRAILING_WHITESPACE
+                       )
+    endif()
+
+    if(NOT PYTHON_SITE_PACKAGES_INSTALL_DIR STREQUAL PYTHON_SITE_PACKAGES_DIR)
         message(STATUS "The Python files will be installed to ${PYTHON_SITE_PACKAGES_INSTALL_DIR}. Make sure to add them to the Python search path (e.g. by setting PYTHONPATH)")
     endif()
 

@@ -73,6 +73,7 @@ KDEUI_UNIT_TESTS(
   kdatecomboboxtest
   kdatetimeedittest
   kconfigdialog_unittest
+  kcolorbuttontest
 )
 
 KDEUI_PROXYMODEL_TESTS(

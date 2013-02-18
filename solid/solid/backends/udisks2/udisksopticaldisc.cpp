@@ -180,7 +180,7 @@ OpticalDisc::OpticalDisc(Device *dev)
     //qDebug() << "udev device:" << m_udevDevice.name() << "valid:" << m_udevDevice.isValid();
     /*qDebug() << "\tProperties:" << */ m_udevDevice.deviceProperties(); // initialize the properties DB so that it doesn't crash further down, #298416
 
-    m_drive = new Device(m_device->prop("Drive").value<QDBusObjectPath>().path());
+    m_drive = new Device(m_device->drivePath());
     QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, m_drive->udi(), DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
                                          SLOT(slotDrivePropertiesChanged(QString,QVariantMap,QStringList)));
 }

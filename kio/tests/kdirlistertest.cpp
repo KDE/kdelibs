@@ -1000,6 +1000,62 @@ void KDirListerTest::testRedirection()
 
 }
 
+void KDirListerTest::testWatchingAfterCopyJob() // #331582
+{
+    m_items.clear();
+
+    KTempDir newDir;
+    const QString path = newDir.name();
+
+    // List and watch an empty dir
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    m_dirLister.openUrl(KUrl(path));
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+    QVERIFY(m_items.isEmpty());
+
+    // Create three subfolders.
+    QVERIFY(QDir().mkdir(path + "New Folder"));
+    QVERIFY(QDir().mkdir(path + "New Folder 1"));
+    QVERIFY(QDir().mkdir(path + "New Folder 2"));
+
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+    QCOMPARE(m_items.count(), 3);
+
+    // Create a new file and verify that the dir lister notices it.
+    m_items.clear();
+    createTestFile(path + "a");
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+    QCOMPARE(m_items.count(), 1);
+
+    // Rename one of the subfolders.
+    const QString oldPath = path + "New Folder 1";
+    const QString newPath = path + "New Folder 1a";
+
+    // NOTE: The following two lines are required to trigger the bug!
+    KIO::Job* job = KIO::moveAs(KUrl(oldPath), KUrl(newPath), KIO::HideProgressInfo);
+    job->exec();
+
+    // Now try to create a second new file in and verify that the
+    // dir lister notices it.
+    m_items.clear();
+    createTestFile(path + "b");
+
+    int numTries = 0;
+    // Give time for KDirWatch to notify us
+    // This should end up in "KDirListerCache::slotFileDirty"
+    while (m_items.isEmpty()) {
+        QVERIFY(++numTries < 10);
+        QTest::qWait(200);
+    }
+    QCOMPARE(m_items.count(), 1);
+
+    newDir.unlink();
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(clear()), 1000));
+}
+
 void KDirListerTest::enterLoop(int exitCount)
 {
     //qDebug("enterLoop");

@@ -349,6 +349,7 @@ void FileProtocol::listDir( const KUrl& url)
        to see for the user what the problem would be */
     const QString pathBuffer(QDir::currentPath());
     if (!QDir::setCurrent(path)) {
+        closedir(dp);
         error(ERR_CANNOT_ENTER_DIRECTORY, path);
         return;
     }
@@ -500,8 +501,7 @@ void FileProtocol::symlink( const QString &target, const KUrl &destUrl, KIO::Job
             else
             {
                 KDE_struct_stat buff_dest;
-                KDE_lstat( QFile::encodeName(dest), &buff_dest );
-                if (S_ISDIR(buff_dest.st_mode))
+                if (KDE_lstat(QFile::encodeName(dest), &buff_dest) == 0 && S_ISDIR(buff_dest.st_mode))
                     error(KIO::ERR_DIR_ALREADY_EXIST, dest);
                 else
                     error(KIO::ERR_FILE_ALREADY_EXIST, dest);
