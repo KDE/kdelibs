@@ -22,28 +22,23 @@
 #include "job.h"
 #include "job_p.h"
 
-#include <sys/types.h>
-
 #include <time.h>
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
+#include <qurlpathinfo.h>
 
 #include <kauthorized.h>
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kde_file.h>
-
-#include <errno.h>
-
-#include "jobuidelegate.h"
-#include "slave.h"
-#include "scheduler.h"
-#include "kprotocolmanager.h"
-#include <qurlpathinfo.h>
 
 #include <kdirnotify.h>
+#include "kprotocolmanager.h"
+
+#include "jobuidelegate.h" // GUI!!!
+#include "slave.h"
+#include "scheduler.h"
 
 using namespace KIO;
 
@@ -2881,174 +2876,6 @@ QByteArray SpecialJob::arguments() const
 {
     return d_func()->m_packedArgs;
 }
-
-// Never defined, never used - what's this code about?
-#ifdef CACHE_INFO
-CacheInfo::CacheInfo(const QUrl &url)
-{
-    m_url = url;
-}
-
-QString CacheInfo::cachedFileName()
-{
-   const QChar separator = '_';
-
-   QString CEF = m_url.path();
-
-   int p = CEF.find('/');
-
-   while(p != -1)
-   {
-      CEF[p] = separator;
-      p = CEF.find('/', p);
-   }
-
-   QString host = m_url.host().toLower();
-   CEF = host + CEF + '_';
-
-   QString dir = KProtocolManager::cacheDir();
-   if (dir[dir.length()-1] != '/')
-      dir += '/';
-
-   int l = m_url.host().length();
-   for(int i = 0; i < l; i++)
-   {
-      if (host[i].isLetter() && (host[i] != 'w'))
-      {
-         dir += host[i];
-         break;
-      }
-   }
-   if (dir[dir.length()-1] == '/')
-      dir += '0';
-
-   unsigned long hash = 0x00000000;
-   QString u = m_url.url().toLatin1();
-   for(int i = u.length(); i--;)
-   {
-      hash = (hash * 12211 + u[i]) % 2147483563;
-   }
-
-   QString hashString;
-   hashString.sprintf("%08lx", hash);
-
-   CEF = CEF + hashString;
-
-   CEF = dir + '/' + CEF;
-
-   return CEF;
-}
-
-QFile *CacheInfo::cachedFile()
-{
-#ifdef Q_OS_WIN
-   const char *mode = (readWrite ? "rb+" : "rb");
-#else
-   const char *mode = (readWrite ? "r+" : "r");
-#endif
-
-   FILE *fs = KDE::fopen(CEF, mode); // Open for reading and writing
-   if (!fs)
-      return 0;
-
-   char buffer[401];
-   bool ok = true;
-
-  // CacheRevision
-  if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;
-   if (ok && (strcmp(buffer, CACHE_REVISION) != 0))
-      ok = false;
-
-   time_t date;
-   time_t currentDate = time(0);
-
-   // URL
-   if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;
-   if (ok)
-   {
-      int l = strlen(buffer);
-      if (l>0)
-         buffer[l-1] = 0; // Strip newline
-      if (m_.url.url() != buffer)
-      {
-         ok = false; // Hash collision
-      }
-   }
-
-   // Creation Date
-   if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;
-   if (ok)
-   {
-      date = (time_t) strtoul(buffer, 0, 10);
-      if (m_maxCacheAge && (difftime(currentDate, date) > m_maxCacheAge))
-      {
-         m_bMustRevalidate = true;
-         m_expireDate = currentDate;
-      }
-   }
-
-   // Expiration Date
-   m_cacheExpireDateOffset = KDE_ftell(fs);
-   if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;
-   if (ok)
-   {
-      if (m_request.cache == CC_Verify)
-      {
-         date = (time_t) strtoul(buffer, 0, 10);
-         // After the expire date we need to revalidate.
-         if (!date || difftime(currentDate, date) >= 0)
-            m_bMustRevalidate = true;
-         m_expireDate = date;
-      }
-   }
-
-   // ETag
-   if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;
-   if (ok)
-   {
-      m_etag = QString(buffer).trimmed();
-   }
-
-   // Last-Modified
-   if (ok && (!fgets(buffer, 400, fs)))
-      ok = false;
-   if (ok)
-   {
-      m_lastModified = QString(buffer).trimmed();
-   }
-
-   fclose(fs);
-
-   if (ok)
-      return fs;
-
-   unlink( QFile::encodeName(CEF) );
-   return 0;
-
-}
-
-void CacheInfo::flush()
-{
-    cachedFile().remove();
-}
-
-void CacheInfo::touch()
-{
-
-}
-void CacheInfo::setExpireDate(int);
-void CacheInfo::setExpireTimeout(int);
-
-
-int CacheInfo::creationDate();
-int CacheInfo::expireDate();
-int CacheInfo::expireTimeout();
-#endif
 
 #include "moc_jobclasses.cpp"
 #include "moc_job_p.cpp"
