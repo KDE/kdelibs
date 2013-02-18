@@ -32,9 +32,10 @@ public:
     }
 
     ~WaitForIdleAndFinished() {
-        weaver_->suspend();
+        weaver_->resume();
         weaver_->dequeue();
         weaver_->finish();
+        weaver_->suspend();
         Q_ASSERT(weaver_->isIdle());
     }
 private:
@@ -241,7 +242,6 @@ void JobTests::CollectionDependenciesTest()
 }
 
 void JobTests::QueueAndDequeueSequenceTest() {
-    return; //MARK_TEMPORARILY_DISABLED
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -251,16 +251,12 @@ void JobTests::QueueAndDequeueSequenceTest() {
     jobSequence.addJob ( &jobB );
     jobSequence.addJob ( &jobC );
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->suspend();
 
     ThreadWeaver::Weaver::instance()->enqueue ( & jobSequence );
     ThreadWeaver::Weaver::instance()->dequeue ( & jobSequence );
-    bool empty = ThreadWeaver::Weaver::instance()->isEmpty();
-    ThreadWeaver::Weaver::instance()->resume();
-
-    ThreadWeaver::Weaver::instance()->finish();
-
-    QVERIFY ( empty == true );
+    QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
 }
 
 void JobTests::RecursiveQueueAndDequeueSequenceTest() {
