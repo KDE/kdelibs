@@ -130,11 +130,11 @@ private:
                     {
                         //we would need admin rights
                         //                        DebugBreak();
-                        qWarning()<<"we would need admin rights"<<devName<<"reason:"<<qGetLastError(err);
+                        qWarning()<<"we would need admin rights"<<dev<<"reason:"<<qGetLastError(err);
                     }
                     else
                     {
-                        qWarning()<<"Invalid Handle"<<devName<<"reason:"<<qGetLastError(err)<<" this should not happen.";
+                        qWarning()<<"Invalid Handle"<<dev<<"reason:"<<qGetLastError(err)<<" this should not happen.";
                     }
                     return;
                 }
@@ -151,7 +151,7 @@ private:
                     return;
                 }
             }
-#if 0
+#if 1
             ::CloseHandle(handle);
             qFatal("Failed to query %s reason: %s",qPrintable(dev),qPrintable(qGetLastError(err)));
 #else
