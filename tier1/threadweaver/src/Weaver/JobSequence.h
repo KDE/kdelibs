@@ -50,8 +50,7 @@ protected:
     void aboutToBeQueued_locked ( QueueAPI *api );
 
     /** reimplemented */
-    void internalJobDone( Job* );
-
+    void elementFinished(Job *job, Thread *thread);
 private:
     class Private;
     Private * const d;

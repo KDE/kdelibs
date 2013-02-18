@@ -45,8 +45,8 @@ private Q_SLOTS:
 
     void SequenceOfSequencesTest();
 
-    void QueueAndStopTest();
     */
+    void QueueAndStopTest();
 
     void ResourceRestrictionPolicyBasicsTest ();
     void JobSignalsAreEmittedAsynchronouslyTest();

@@ -58,15 +58,13 @@ void JobSequence::aboutToBeQueued_locked (QueueAPI *api )
     JobCollection::aboutToBeQueued_locked( api );
 }
 
-void JobSequence::internalJobDone( Job* job)
+void JobSequence::elementFinished(Job *job, Thread *thread)
 {
     REQUIRE ( job != 0 );
-    
-    if ( !job->success() ) {
-        stop( job );
+    JobCollection::elementFinished(job, thread);
+    if (!job->success()) {
+        stop(job);
     }
-
-	JobCollection::internalJobDone(job);
 }
 
 }

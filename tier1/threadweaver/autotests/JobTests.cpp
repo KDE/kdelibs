@@ -512,6 +512,8 @@ void JobTests::SequenceOfSequencesTest() {
     QCOMPARE ( sequence, QString( "abcdefghij" ) );
 }
 
+*/
+
 void JobTests::QueueAndStopTest() {
     QString sequence;
     AppendCharacterJob a( 'a', &sequence );
@@ -530,12 +532,11 @@ void JobTests::QueueAndStopTest() {
     jobSequence.addJob( &f );
     jobSequence.addJob( &g );
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
     ThreadWeaver::Weaver::instance()->finish();
-
     QCOMPARE ( sequence, QString( "abcd" ) );
 }
-*/
 
 void JobTests::ResourceRestrictionPolicyBasicsTest () {
     // this test tests that with resource restrictions assigned, jobs

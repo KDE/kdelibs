@@ -86,9 +86,6 @@ protected:
      */
     virtual int jobListLength_locked() const;
 
-    /** Callback method for done jobs. */
-    virtual void internalJobDone( Job* );
-
     //FIXME move to d
     /** Perform the task usually done when one individual job is
      * finished, but in our case only when the whole collection
@@ -96,13 +93,15 @@ protected:
      */
     void finalCleanup();
 
+protected:
+    friend class CollectionExecuteWrapper;
+    virtual void elementStarted(Job* job, Thread* thread);
+    virtual void elementFinished(Job* job, Thread* thread);
+
 private:
     /** Overload the execute method. */
     void execute ( Thread * );
 
-    friend class CollectionExecuteWrapper;
-    void elementStarted(Job* job, Thread* thread);
-    void elementFinished(Job* job, Thread* thread);
 
     /** Overload run().
      * We have to. */

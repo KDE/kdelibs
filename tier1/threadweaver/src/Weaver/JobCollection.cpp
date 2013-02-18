@@ -138,15 +138,15 @@ void JobCollection::addJob ( Job *job )
     d->elements.append(job);
 }
 
-//FIXME add test!
-//This method is unused and untested. And probably does not work.
 void JobCollection::stop(Job *job)
-{   // this only works if there is an event queue executed by the main
-    // thread, and it is not blocked:
+{
     Q_UNUSED( job );
+    QMutexLocker l(mutex()); Q_UNUSED(l);
     if ( d->api != 0 ) {
         debug( 4, "JobCollection::stop: dequeueing %p.\n", (void*)this);
-        d->api->dequeue( this );
+        if (!d->api->dequeue(this)) {
+            dequeueElements(false);
+        }
     }
     // FIXME ENSURE ( d->weaver == 0 ); // verify that aboutToBeDequeued has been called
 }
@@ -219,13 +219,6 @@ int JobCollection::jobListLength() const
 int JobCollection::jobListLength_locked() const
 {
     return d->elements.size();
-}
-
-//FIXME get rid off
-void JobCollection::internalJobDone ( Job* job )
-{
-	REQUIRE( job != 0 );
-    Q_UNUSED (job);
 }
 
 void JobCollection::finalCleanup()
