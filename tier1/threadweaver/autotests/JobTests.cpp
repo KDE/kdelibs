@@ -338,7 +338,6 @@ void JobTests::RecursiveQueueAndDequeueSequenceTest() {
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->suspend();
-
     ThreadWeaver::Weaver::instance()->enqueue ( & jobSequence4 );
     ThreadWeaver::Weaver::instance()->dequeue ( & jobSequence4 );
     QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
@@ -364,7 +363,6 @@ void JobTests::QueueAndDequeueAllSequenceTest() {
 }
 
 void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
-    return; //MARK_TEMPORARILY_DISABLED
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -399,6 +397,7 @@ void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
     jobSequence4.addJob ( &jobSequence2 );
     jobSequence4.addJob ( &jobSequence3 );
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->suspend();
 
     ThreadWeaver::Weaver::instance()->enqueue ( & jobSequence4 );
