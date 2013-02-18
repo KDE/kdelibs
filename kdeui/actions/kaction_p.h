@@ -34,15 +34,15 @@ class KActionPrivate
 {
     public:
         KActionPrivate()
-            : componentName(QCoreApplication::applicationName()), globalShortcutEnabled(false), q(0), decorator(0)
+            : componentName(QCoreApplication::applicationName()), q(0), decorator(0)
         {
         }
 
         void slotTriggered();
+        void _k_emitActionGlobalShortcutChanged(KAction *action, const QKeySequence &seq);
         void authStatusChanged(KAuth::Action::AuthStatus status);
 
         void init(KAction *q_ptr);
-        void setActiveGlobalShortcutNoEnable(const KShortcut &cut);
 
         // called by KActionCollection
         void maybeSetComponentName(const QString &cname, const QString &dispName)
@@ -55,9 +55,7 @@ class KActionPrivate
 
         QString componentName;
         QString componentDisplayName;
-        KShortcut globalShortcut, defaultGlobalShortcut;
 
-        bool globalShortcutEnabled : 1;
         bool neverSetGlobalShortcut : 1;
         KAction *q;
 

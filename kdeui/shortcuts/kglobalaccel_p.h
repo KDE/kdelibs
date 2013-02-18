@@ -24,12 +24,13 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
+#include <kaction.h>
 
 #include "kcomponentdata.h"
+#include "kglobalaccel.h"
 #include "kglobalaccel_interface.h"
 #include "kglobalaccel_component_interface.h"
 
-class KAction;
 class KShortcut;
 
 enum SetShortcutFlag
@@ -51,10 +52,10 @@ public:
 
     ///Propagate any shortcut changes to the KDED module that does the bookkeeping
     ///and the key grabbing.
-    void updateGlobalShortcut(KAction *action, /*KAction::ShortcutTypes*/uint flags);
+    void updateGlobalShortcut(KAction *action, KAction::ShortcutTypes actionFlags, KAction::GlobalShortcutLoading globalFlags);
 
     ///Register the action in this class and in the KDED module
-    void doRegister(KAction *action);   //"register" is a C keyword :p
+    bool doRegister(KAction *action);   //"register" is a C keyword :p
     ///cf. the RemoveAction enum
     void remove (KAction *action, Removal r);
 
@@ -92,6 +93,8 @@ public:
 
     //! The components the application is using
     QHash<QString, org::kde::kglobalaccel::Component *> components;
+    QMap<const KAction*, KShortcut> actionDefaultShortcuts;
+    QMap<const KAction*, KShortcut> actionShortcuts;
 };
 
 #endif

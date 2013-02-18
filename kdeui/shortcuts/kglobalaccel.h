@@ -149,7 +149,7 @@ public:
             const QString &component = QString());
 
     /**
-     * Show a messagebox to inform the user that a global shorcut is already occupied,
+     * Show a messagebox to inform the user that a global shortcut is already occupied,
      * and ask to take it away from its current action(s). This is GUI only, so nothing will
      * be actually changed.
      *
@@ -161,6 +161,91 @@ public:
             QWidget *parent,
             const QList<KGlobalShortcutInfo> &shortcuts,
             const QKeySequence &seq);
+
+    /**
+     * Assign a default global shortcut for a given KAction.
+     * For more information about global shortcuts @see setShortcut
+     * Upon shortcut change the globalShortcutChanged will be triggered so other applications get notified
+     *
+     * @sa globalShortcutChanged
+     *
+     * @since 5.0
+     */
+    bool setDefaultShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag);
+
+    /**
+     * Assign a global shortcut for the given action. Global shortcuts
+     * allow an action to respond to key shortcuts independently of the focused window,
+     * i.e. the action will trigger if the keys were pressed no matter where in the X session.
+     *
+     * The action must have a per main component unique
+     * action->objectName() to enable cross-application bookeeping. If the action->objectName() is empty this method will
+     * do nothing and will return false.
+     *
+     * It is mandatory that the action->objectName() doesn't change once the shortcut has been sucessfully registered.
+     *
+     * \note KActionCollection::insert(name, action) will set action's objectName to name so you often
+     * don't have to set an objectName explicitly.
+     *
+     * When an action, identified by main component name and objectName(), is assigned
+     * a global shortcut for the first time on a KDE installation the assignment will
+     * be saved. The shortcut will then be restored every time setGlobalShortcut() is
+     * called with @p loading == Autoloading.
+     *
+     * If you actually want to change the global shortcut you have to set
+     * @p loading to NoAutoloading. The new shortcut will be automatically saved again.
+     *
+     * @param action the action for which the shortcut will be assigned
+     * @param shortcut global shortcut(s) to assign. Will be ignored unless @p loading is set to NoAutoloading or this is the first time ever you call this method (see above).
+     * @param loadFlag if Autoloading, assign the global shortcut this action has previously had if any.
+     *                   That way user preferences and changes made to avoid clashes will be conserved.
+     *                if NoAutoloading the given shortcut will be assigned without looking up old values.
+     *                   You should only do this if the user wants to change the shortcut or if you have
+     *                   another very good reason. Key combinations that clash with other shortcuts will be
+     *                   dropped.
+     *
+     * \note the default shortcut will never be influenced by autoloading - it will be set as given.
+     * @sa shortcut()
+     * @sa globalShortcutChanged
+     * @since 5.0
+     */
+    bool setShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag);
+
+    /**
+     * Get the global default shortcut for this action, if one exists. Global shortcuts
+     * allow your actions to respond to accellerators independently of the focused window.
+     * Unlike regular shortcuts, the application's window does not need focus
+     * for them to be activated.
+     *
+     * @sa setDefaultShortcut()
+     * @since 5.0
+     */
+    KShortcut defaultShortcut(const KAction *action) const;
+
+    /**
+     * Get the global shortcut for this action, if one exists. Global shortcuts
+     * allow your actions to respond to accellerators independently of the focused window.
+     * Unlike regular shortcuts, the application's window does not need focus
+     * for them to be activated.
+     *
+     * @sa setShortcut()
+     * @since 5.0
+     */
+    KShortcut shortcut(const KAction *action) const;
+
+    /**
+     * Unregister and remove all defined global shortcuts for the given action.
+     *
+     * @since 5.0
+     */
+    void removeAllShortcuts(KAction *action);
+
+    /**
+     * Returns true if a shortcut or a default shortcut has been registered for the given action
+     *
+     * @since 5.0
+     */
+    bool hasShortcut(const KAction *action) const;
 
     /**
      * No effect.
@@ -236,6 +321,20 @@ public:
 #ifndef KDE_NO_DEPRECATED
     KDEUI_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
 #endif
+
+Q_SIGNALS:
+    /**
+     * Emitted when the global shortcut is changed. A global shortcut is
+     * subject to be changed by the global shortcuts kcm.
+     *
+     * @param action pointer to the action for which the changed shortcut was registered
+     * @param seq the key sequence that corresponds to the changed shortcut
+     *
+     * @see setGlobalShortcut
+     * @see setDefaultShortcut
+     * @since 5.0
+     */
+    void globalShortcutChanged(KAction *action, const QKeySequence &seq);
 
 private:
 

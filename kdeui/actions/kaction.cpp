@@ -45,7 +45,6 @@
 void KActionPrivate::init(KAction *q_ptr)
 {
   q = q_ptr;
-  globalShortcutEnabled = false;
   neverSetGlobalShortcut = true;
 
   QObject::connect(q, SIGNAL(triggered(bool)), q, SLOT(slotTriggered()));
@@ -55,14 +54,9 @@ void KActionPrivate::init(KAction *q_ptr)
   decorator = new KAuth::ObjectDecorator(q);
   QObject::connect(decorator, SIGNAL(authorized(KAuth::Action)),
                    q, SIGNAL(authorized(KAuth::Action)));
+  QObject::connect(KGlobalAccel::self(), SIGNAL(globalShortcutChanged(KAction*,const QKeySequence&)),
+        q, SLOT(_k_emitActionGlobalShortcutChanged(KAction*,const QKeySequence&)));
 }
-
-void KActionPrivate::setActiveGlobalShortcutNoEnable(const KShortcut &cut)
-{
-    globalShortcut = cut;
-    emit q->globalShortcutChanged(cut.primary());
-}
-
 
 void KActionPrivate::slotTriggered()
 {
@@ -70,6 +64,15 @@ void KActionPrivate::slotTriggered()
   emit q->activated();
 #endif
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
+}
+
+void KActionPrivate::_k_emitActionGlobalShortcutChanged(KAction *action, const QKeySequence &seq)
+{
+    if (action == q) {
+        // reemit the legacy KAction::globalShortcutChanged
+        // TODO: completely remove this method when KAction::globalShortcutChanged signal will be removed
+        emit action->globalShortcutChanged(seq);
+    }
 }
 
 //---------------------------------------------------------------------
@@ -99,9 +102,8 @@ KAction::KAction(const QIcon &icon, const QString &text, QObject *parent)
 
 KAction::~KAction()
 {
-    if (d->globalShortcutEnabled) {
+    if (isGlobalShortcutEnabled()) {
         // - remove the action from KGlobalAccel
-        d->globalShortcutEnabled = false;
         KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
     }
 
@@ -170,9 +172,9 @@ const KShortcut & KAction::globalShortcut(ShortcutTypes type) const
   Q_ASSERT(type);
 
   if (type == DefaultShortcut)
-    return d->defaultGlobalShortcut;
+    return KGlobalAccel::self()->defaultShortcut(this);
 
-  return d->globalShortcut;
+  return KGlobalAccel::self()->shortcut(this);
 }
 
 void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
@@ -181,46 +183,18 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   Q_ASSERT(type);
   bool changed = false;
 
-  // protect against garbage keycode -1 that Qt sometimes produces for exotic keys;
-  // at the moment (~mid 2008) Multimedia PlayPause is one of those keys.
-  int shortcutKeys[8];
-  for (int i = 0; i < 4; i++) {
-    shortcutKeys[i] = shortcut.primary()[i];
-    shortcutKeys[i + 4] = shortcut.alternate()[i];
-  }
-  for (int i = 0; i < 8; i++) {
-    if (shortcutKeys[i] == -1) {
-      qWarning() << "Encountered garbage keycode (keycode = -1) in input, not doing anything.";
-      return;
-    }
+  if ((type & DefaultShortcut) && globalShortcut(DefaultShortcut) != shortcut) {
+    changed = KGlobalAccel::self()->setDefaultShortcut(this, shortcut, load);
   }
 
-  if (!d->globalShortcutEnabled) {
-    changed = true;
-    if (objectName().isEmpty() || objectName().startsWith(QLatin1String("unnamed-"))) {
-      qWarning() << "Attempt to set global shortcut for action without objectName()."
-                       " Read the setGlobalShortcut() documentation.";
-      return;
-    }
-    d->globalShortcutEnabled = true;
-    KGlobalAccel::self()->d->doRegister(this);
-  }
-
-  if ((type & DefaultShortcut) && d->defaultGlobalShortcut != shortcut) {
-    d->defaultGlobalShortcut = shortcut;
-    changed = true;
-  }
-
-  if ((type & ActiveShortcut) && d->globalShortcut != shortcut) {
-    d->globalShortcut = shortcut;
-    changed = true;
+  if ((type & ActiveShortcut) && globalShortcut(ActiveShortcut) != shortcut) {
+    changed = KGlobalAccel::self()->setShortcut(this, shortcut, load);
   }
 
   //We want to have updateGlobalShortcuts called on a new action in any case so that
   //it will be registered properly. In the case of the first setShortcut() call getting an
   //empty shortcut parameter this would not happen...
   if (changed || d->neverSetGlobalShortcut) {
-    KGlobalAccel::self()->d->updateGlobalShortcut(this, type | load);
     d->neverSetGlobalShortcut = false;
   }
 }
@@ -228,13 +202,13 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
 #ifndef KDE_NO_DEPRECATED
 bool KAction::globalShortcutAllowed() const
 {
-  return d->globalShortcutEnabled;
+  return isGlobalShortcutEnabled();
 }
 #endif
 
 bool KAction::isGlobalShortcutEnabled() const
 {
-  return d->globalShortcutEnabled;
+  return KGlobalAccel::self()->hasShortcut(this);
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -250,12 +224,9 @@ void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading /* l
 
 void KAction::forgetGlobalShortcut()
 {
-    d->globalShortcut = KShortcut();
-    d->defaultGlobalShortcut = KShortcut();
-    if (d->globalShortcutEnabled) {
-        d->globalShortcutEnabled = false;
+    if (isGlobalShortcutEnabled()) {
         d->neverSetGlobalShortcut = true;   //it's a fresh start :)
-        KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::UnRegister);
+        KGlobalAccel::self()->removeAllShortcuts(this);
     }
 }
 

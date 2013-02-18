@@ -236,15 +236,17 @@ KGlobalAccel *KGlobalAccel::self()
 }
 
 
-void KGlobalAccelPrivate::doRegister(KAction *action)
+bool KGlobalAccelPrivate::doRegister(KAction *action)
 {
-    if (!action || action->objectName().isEmpty()) {
-        return;
+    if (!action || action->objectName().isEmpty() || action->objectName().startsWith(QLatin1String("unnamed-"))) {
+        qWarning() << "Attempt to set global shortcut for action without objectName()."
+                        " Read the setGlobalShortcut() documentation.";
+        return false;
     }
 
     const bool isRegistered = actions.contains(action);
     if (isRegistered)
-        return;
+        return true;
 
     // Under configuration mode - deprecated - we ignore the component given
     // from the action and use our own.
@@ -256,6 +258,7 @@ void KGlobalAccelPrivate::doRegister(KAction *action)
     nameToAction.insertMulti(actionId.at(KGlobalAccel::ActionUnique), action);
     actions.insert(action);
     iface.doRegister(actionId);
+    return true;
 }
 
 
@@ -289,10 +292,12 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
                 : iface.setInactive(actionId);
         }
     }
+
+    actionDefaultShortcuts.remove(action);
+    actionShortcuts.remove(action);
 }
 
-
-void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
+void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, KAction::ShortcutTypes actionFlags, KAction::GlobalShortcutLoading globalFlags)
 {
     // No action or no objectname -> Do nothing
     // KAction::setGlobalShortcut informs the user
@@ -301,15 +306,15 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
     }
 
     QStringList actionId = makeActionId(action);
-    const KShortcut activeShortcut = action->globalShortcut();
-    const KShortcut defaultShortcut = action->globalShortcut(KAction::DefaultShortcut);
+    const KShortcut activeShortcut = actionShortcuts.value(action);
+    const KShortcut defaultShortcut = actionDefaultShortcuts.value(action);
 
     uint setterFlags = 0;
-    if (flags & KAction::NoAutoloading) {
+    if (globalFlags & NoAutoloading) {
         setterFlags |= NoAutoloading;
     }
 
-    if (flags & KAction::ActiveShortcut) {
+    if (actionFlags & KAction::ActiveShortcut) {
         bool isConfigurationAction = isUsingForeignComponentName
             || action->property("isConfigurationAction").toBool();
         uint activeSetterFlags = setterFlags;
@@ -331,7 +336,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
         // Create a shortcut from the result
         const KShortcut scResult(shortcutFromIntList(result));
 
-        if (isConfigurationAction && (flags & KAction::NoAutoloading)) {
+        if (isConfigurationAction && (globalFlags & NoAutoloading)) {
             // If this is a configuration action and we have set the shortcut,
             // inform the real owner of the change.
             // Note that setForeignShortcut will cause a signal to be sent to applications
@@ -347,11 +352,11 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, uint flags)
         if (scResult != activeShortcut) {
             // If kglobalaccel returned a shortcut that differs from the one we
             // sent, use that one. There must have been clashes or some other problem.
-            action->d->setActiveGlobalShortcutNoEnable(scResult);
+            emit q->globalShortcutChanged(action, scResult.primary());
         }
     }
 
-    if (flags & KAction::DefaultShortcut) {
+    if (actionFlags & KAction::DefaultShortcut) {
         iface.setShortcut(actionId, intListFromShortcut(defaultShortcut),
                           setterFlags | IsDefault);
     }
@@ -456,7 +461,7 @@ void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
     if (!action)
         return;
 
-    action->d->setActiveGlobalShortcutNoEnable(shortcutFromIntList(keys));
+    emit q->globalShortcutChanged(action, shortcutFromIntList(keys).primary());
 }
 
 void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QString &oldOwner,
@@ -485,8 +490,9 @@ void KGlobalAccelPrivate::reRegisterAll()
     nameToAction.clear();
     actions.clear();
     foreach(KAction *const action, allActions) {
-        doRegister(action);
-        updateGlobalShortcut(action, KAction::Autoloading | KAction::ActiveShortcut);
+        if (doRegister(action)) {
+            updateGlobalShortcut(action, KAction::ActiveShortcut, KAction::Autoloading);
+        }
     }
 }
 
@@ -602,6 +608,68 @@ void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
             sc[i] = 0;
 
     self()->d->iface.setForeignShortcut(actionId, sc);
+}
+
+bool checkGarbageKeycode(const KShortcut &shortcut)
+{
+  // protect against garbage keycode -1 that Qt sometimes produces for exotic keys;
+  // at the moment (~mid 2008) Multimedia PlayPause is one of those keys.
+  int shortcutKeys[8];
+  for (int i = 0; i < 4; i++) {
+    shortcutKeys[i] = shortcut.primary()[i];
+    shortcutKeys[i + 4] = shortcut.alternate()[i];
+  }
+  for (int i = 0; i < 8; i++) {
+    if (shortcutKeys[i] == -1) {
+      qWarning() << "Encountered garbage keycode (keycode = -1) in input, not doing anything.";
+      return true;
+    }
+  }
+  return false;
+}
+
+bool KGlobalAccel::setDefaultShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag)
+{
+    if (checkGarbageKeycode(shortcut))
+        return false;
+
+    if (!d->doRegister(action))
+        return false;
+
+    d->updateGlobalShortcut(action, KAction::DefaultShortcut, loadFlag);
+    return true;
+}
+
+bool KGlobalAccel::setShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag)
+{
+    if (checkGarbageKeycode(shortcut))
+        return false;
+
+    if (!d->doRegister(action))
+        return false;
+
+    d->updateGlobalShortcut(action, KAction::ActiveShortcut, loadFlag);
+    return true;
+}
+
+KShortcut KGlobalAccel::defaultShortcut(const KAction *action) const
+{
+    return d->actionDefaultShortcuts.value(action);
+}
+
+KShortcut KGlobalAccel::shortcut(const KAction *action) const
+{
+    return d->actionShortcuts.value(action);
+}
+
+void KGlobalAccel::removeAllShortcuts(KAction *action)
+{
+    d->remove(action, KGlobalAccelPrivate::UnRegister);
+}
+
+bool KGlobalAccel::hasShortcut(const KAction *action) const
+{
+    return d->actionShortcuts.contains(action) || d->actionDefaultShortcuts.contains(action);
 }
 
 #include "moc_kglobalaccel.cpp"

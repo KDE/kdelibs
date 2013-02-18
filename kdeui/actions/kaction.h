@@ -528,6 +528,7 @@ Q_SIGNALS:
     /**
      * Emitted when the global shortcut is changed. A global shortcut is
      * subject to be changed by the global shortcuts kcm.
+     * @deprecated use KGlobalAccel::globalShortcutChanged instead
      */
     void globalShortcutChanged(const QKeySequence&);
 
@@ -536,6 +537,7 @@ private:
     friend class KActionCollectionPrivate; // Needs access to the component
     friend class KShortcutsEditorDelegate; // Needs access to the component
     Q_PRIVATE_SLOT(d, void slotTriggered())
+    Q_PRIVATE_SLOT(d, void _k_emitActionGlobalShortcutChanged(KAction*, const QKeySequence&))
     class KActionPrivate* const d;
     friend class KActionPrivate;
     friend class KGlobalShortcutTest;
