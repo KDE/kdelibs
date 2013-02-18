@@ -30,6 +30,7 @@ private Q_SLOTS:
     void EmitStartedOnFirstElementTest();
     void CollectionDependenciesTest();
     void QueueAndDequeueSequenceTest();
+    void RecursiveSequenceTest();
     void RecursiveQueueAndDequeueSequenceTest();
     void QueueAndDequeueAllSequenceTest();
     void RecursiveQueueAndDequeueAllSequenceTest();
