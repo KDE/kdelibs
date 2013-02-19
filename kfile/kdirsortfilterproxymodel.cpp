@@ -84,7 +84,11 @@ KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
     setSortCaseSensitivity(Qt::CaseInsensitive);
     sort(KDirModel::Name, Qt::AscendingOrder);
 
-    setSupportedDragActions(Qt::CopyAction | Qt::MoveAction | Qt::LinkAction | Qt::IgnoreAction);
+}
+
+Qt::DropActions KDirSortFilterProxyModel::supportedDragOptions()
+{
+    return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction | Qt::IgnoreAction;
 }
 
 KDirSortFilterProxyModel::~KDirSortFilterProxyModel()

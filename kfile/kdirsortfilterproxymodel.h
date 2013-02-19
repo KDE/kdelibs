@@ -83,6 +83,8 @@ public:
      */
     bool sortFoldersFirst() const;
 
+    Qt::DropActions supportedDragOptions();
+
 protected:
     /**
      * Reimplemented from KCategorizedSortFilterProxyModel.
