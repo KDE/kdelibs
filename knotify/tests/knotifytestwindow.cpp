@@ -11,8 +11,6 @@
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kxmlguifactory.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -29,15 +27,13 @@ KNotifyTestWindow::KNotifyTestWindow(QWidget *parent)
 //	statusBar()->message(i18n("Test program for KNotify"));
 	setCaption( i18n("Test program for KNotify") );
 
-        KGlobal::dirs()->addResourceDir( "data", KDESRCDIR );
-
 	setCentralWidget(w);
 
 	// set up the actions
         actionCollection()->addAction(KStandardAction::Quit, this, SLOT(close()));
         actionCollection()->addAction(KStandardAction::KeyBindings, guiFactory(), SLOT(configureShortcuts()));
 
-	createGUI();
+	createGUI( KDESRCDIR "/knotifytestui.rc" );
 
 	connect ( view.b_online , SIGNAL(clicked()) , this , SLOT(slotSendOnlineEvent()));
 	connect ( view.b_message , SIGNAL(clicked()) , this , SLOT(slotSendMessageEvent()));
