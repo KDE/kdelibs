@@ -87,21 +87,40 @@ void Weaver::registerObserver ( WeaverObserver *ext )
     d->implementation->registerObserver ( ext );
 }
 
+namespace {
+
+class StaticThreadWeaverInstanceGuard : public QObject {
+    Q_OBJECT
+public:
+    explicit StaticThreadWeaverInstanceGuard(QAtomicPointer<Weaver>& instance, QCoreApplication* app)
+        : QObject(app)
+        , instance_(instance)
+    {
+        Q_ASSERT_X(app!=0, Q_FUNC_INFO, "Calling ThreadWeaver::Weaver::instance() requires a QCoreApplication!");
+    }
+
+    ~StaticThreadWeaverInstanceGuard() {
+        instance_.fetchAndStoreOrdered(0);
+    }
+private:
+    QAtomicPointer<Weaver>& instance_;
+};
+
+}
+
+/** @brief The application-global Weaver instance.
+ * This  instance will only be created if this method is actually called in the lifetime of the application.
+ * The method will create the Weaver instance on first call. The Q(Core)Application object must exist at that time.
+ * The instance will be deleted when Q(Core)Application is destructed. After that, the instance() method returns zero. */
 Weaver* Weaver::instance()
 {
-    /** The application-global Weaver instance.
-
-    This  instance will only be created if this method is actually called
-    in the lifetime of the application. */
-    static Weaver* s_instance;
-
-    static QMutex mutex;
-    QMutexLocker l(&mutex);
-    if ( s_instance == 0 )
-    {
-        s_instance = new Weaver(qApp);
-    }
-    return s_instance;
+    static QAtomicPointer<Weaver> s_instance(new Weaver(qApp));
+    //Order is of importance here:
+    //When s_instanceGuard is destructed (first, before s_instance), it sets the value of s_instance to zero. Next, qApp will delete
+    //the object s_instance pointed to.
+    static StaticThreadWeaverInstanceGuard* s_instanceGuard = new StaticThreadWeaverInstanceGuard(s_instance, qApp);
+    Q_UNUSED(s_instanceGuard);
+    return s_instance.fetchAndAddOrdered(0);
 }
 
 void Weaver::enqueue (Job* j)
