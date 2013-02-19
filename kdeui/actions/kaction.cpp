@@ -72,26 +72,6 @@ void KActionPrivate::slotTriggered()
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 }
 
-bool KAction::event(QEvent *event)
-{
-    if (event->type() == QEvent::Shortcut) {
-        QShortcutEvent *se = static_cast<QShortcutEvent*>(event);
-        if(se->isAmbiguous()) {
-            KMessageBox::information(
-                    NULL,  // No widget to be seen around here
-                    i18n( "The key sequence '%1' is ambiguous. Use 'Configure Shortcuts'\n"
-                          "from the 'Settings' menu to solve the ambiguity.\n"
-                          "No action will be triggered.",
-                                se->key().toString(QKeySequence::NativeText)),
-                    i18n("Ambiguous shortcut detected"));
-            return true;
-        }
-    }
-
-    return QAction::event(event);
-}
-
-
 //---------------------------------------------------------------------
 // KAction
 //---------------------------------------------------------------------

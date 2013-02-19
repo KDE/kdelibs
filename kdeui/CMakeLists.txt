@@ -125,6 +125,7 @@ add_subdirectory( sonnet/tests )
 ########### next target ###############
 set(kdeui_LIB_SRCS
  actions/kactioncollection.cpp
+ actions/kactionconflictdetector.cpp
  actions/kactioncategory.cpp
  actions/kaction.cpp
  actions/kactionmenu.cpp

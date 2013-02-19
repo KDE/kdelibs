@@ -491,11 +491,6 @@ public:
      */
      void setAuthAction(const QString &actionName);
 
-    /**
-     * @reimp
-     */
-    bool event(QEvent*);
-
 
 Q_SIGNALS:
 #ifdef KDE3_SUPPORT
