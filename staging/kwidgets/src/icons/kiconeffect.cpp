@@ -532,7 +532,7 @@ void KIconEffect::semiTransparent(QImage &img)
         int transColor = -1;
 
         // search for a color that is already transparent
-        for (int x=0; x<img.numColors(); ++x) {
+        for (int x=0; x<img.colorCount(); ++x) {
             // try to find already transparent pixel
             if (qAlpha(img.color(x)) < 127) {
                 transColor = x;
@@ -541,7 +541,7 @@ void KIconEffect::semiTransparent(QImage &img)
         }
 
         // FIXME: image must have transparency
-        if (transColor < 0 || transColor >= img.numColors())
+        if (transColor < 0 || transColor >= img.colorCount())
             return;
 
 	img.setColor(transColor, 0);
