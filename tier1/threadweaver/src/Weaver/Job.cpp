@@ -65,9 +65,9 @@ public:
         Q_ASSERT_X(job, Q_FUNC_INFO, "job may not be zero!");
         ThreadWeaver::debug(3, "DefaultExecuteWrapper::execute: executing job of type %s %s in thread %i.\n",
                             job->metaObject()->className(), job->objectName().isEmpty() ? "" : qPrintable(job->objectName()),
-                            th->id());
+                            th ? th->id() : 0);
         executeWrapped(job, th);
-        ThreadWeaver::debug(3, "Job::execute: finished execution of job in thread %i.\n", th->id());
+        ThreadWeaver::debug(3, "Job::execute: finished execution of job in thread %i.\n", th ? th->id() : 0);
     }
 };
 
@@ -130,8 +130,6 @@ Job::~Job()
     delete d;
 }
 
-//...and have execute wrappers?
-//...and separate execute() and virtual execute_locked() methods?
 void Job::execute(Thread *th)
 {
     {
@@ -149,6 +147,11 @@ void Job::execute(Thread *th)
         setFinished (true);
     }
     executor->cleanup(this, th);
+}
+
+void Job::operator ()()
+{
+    execute(0);
 }
 
 Executor *Job::setExecutor(Executor *executor)

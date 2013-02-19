@@ -74,6 +74,8 @@ public:
      * Do not overload this method to create your own Job implementation, overload run(). */
     virtual void execute(Thread*);
 
+    /** Perform the job synchroneously in the current thread. */
+    void operator()();
 
     /** Set the Executor object that is supposed to run the job.
      *
