@@ -85,9 +85,11 @@ void WeaverImpl::shutDown_p()
     // object (everything else would be what we professionals call "insane")
     REQUIRE( QThread::currentThread() == thread() );
     debug ( 3, "WeaverImpl::shutDown: destroying inventory.\n" );
+    finish();
+    suspend();
     setState ( ShuttingDown );
-
     m_jobAvailable.wakeAll();
+    m_jobFinished.wakeAll();
 
     // problem: Some threads might not be asleep yet, just finding
     // out if a job is available. Those threads will suspend
@@ -107,6 +109,7 @@ void WeaverImpl::shutDown_p()
         {
             for ( ;; )
             {
+                Q_ASSERT(state().stateId() == ShuttingDown);
                 m_jobAvailable.wakeAll();
                 if ( th->wait( 100 ) ) break;
                 debug ( 1,  "WeaverImpl::shutDown: thread %i did not exit as expected, "
