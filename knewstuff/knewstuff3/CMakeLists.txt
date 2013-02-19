@@ -1,5 +1,8 @@
 project(knewstuff3)
 
+# QUrl
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
+
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
 include_directories(

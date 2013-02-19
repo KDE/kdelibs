@@ -1,5 +1,8 @@
 project(kfile)
 
+# QUrl
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
+
 configure_file(config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kfile.h )
 macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 

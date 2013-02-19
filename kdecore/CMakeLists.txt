@@ -2,6 +2,9 @@ project(kdecore)
 
 find_package(X11)
 
+# QUrl
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
+
 # Generate config-kstandarddirs.h
 set( KDELIBSUFF ${LIB_SUFFIX} )
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )

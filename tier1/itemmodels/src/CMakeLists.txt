@@ -1,3 +1,4 @@
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 set(itemmodels_SRCS
   kbreadcrumbselectionmodel.cpp

@@ -5,6 +5,11 @@ if(X11_FOUND)
     include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 endif(X11_FOUND)
 
+
+# QUrl
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
+
+
 configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidgets.h )
 
 set(kwidgets_LIB_SRCS

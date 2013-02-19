@@ -76,8 +76,6 @@ set(kdeqt5staging_INCLUDE_DIRS
     ${CMAKE_SOURCE_DIR}/libkdeqt5staging/src/
     ${CMAKE_BINARY_DIR}/libkdeqt5staging/src/)
 
-# TODO: Move to where it's really needed/remove.
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 add_subdirectory( tier1 )
 
