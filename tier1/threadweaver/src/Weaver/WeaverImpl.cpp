@@ -30,6 +30,7 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 
 #include "WeaverImpl.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QObject>
 #include <QtCore/QMutex>
 #include <QtCore/QDebug>
@@ -83,6 +84,7 @@ void WeaverImpl::shutDown_p()
 {
     // the constructor may only be called from the thread that owns this
     // object (everything else would be what we professionals call "insane")
+
     REQUIRE( QThread::currentThread() == thread() );
     debug ( 3, "WeaverImpl::shutDown: destroying inventory.\n" );
     finish();

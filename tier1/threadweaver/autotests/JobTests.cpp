@@ -447,31 +447,27 @@ void JobTests::MassiveJobSequenceTest() {
     QCOMPARE ( sequence, in );
 }
 
-/* TODO: reenable, they currently hang up */
-/*
 void JobTests::SimpleRecursiveSequencesTest() {
-    QEXPECT_FAIL("", "Recursive sequences are broken", Continue);
-    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
-    ThreadWeaver::Weaver::instance()->finish();
-    return;
-
     QString sequence;
-    AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
-    ThreadWeaver::JobSequence jobSequence1( this );
-    jobSequence1.addJob( &jobB );
+    AppendCharacterJob jobB(QChar('b'), &sequence, this);
+    ThreadWeaver::JobSequence jobSequence1(this);
+    jobSequence1.addJob(&jobB);
 
-    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
-    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
-    ThreadWeaver::JobSequence jobSequence2( this );
-    jobSequence2.addJob( &jobA );
-    jobSequence2.addJob( &jobSequence1 );
-    jobSequence2.addJob( &jobC );
+    AppendCharacterJob jobC(QChar('c'), &sequence, this);
+    AppendCharacterJob jobA(QChar('a'), &sequence, this);
+    ThreadWeaver::JobSequence jobSequence2(this);
+    jobSequence2.addJob(&jobA);
+    jobSequence2.addJob(&jobSequence1);
+    jobSequence2.addJob(&jobC);
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence2 );
     ThreadWeaver::Weaver::instance()->finish();
-    QCOMPARE ( sequence, QString( "abc" ) );
+    QCOMPARE(sequence, QString("abc"));
 }
 
+/* TODO: reenable, they currently hang up */
+/*
 void JobTests::SequenceOfSequencesTest() {
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );

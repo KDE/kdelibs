@@ -32,6 +32,7 @@
 
 #include <QtCore/QMutex>
 #include <QtCore/QDebug>
+#include <QtCore/QCoreApplication>
 
 #include "ThreadWeaver.h"
 #include "WeaverImpl.h"
@@ -85,6 +86,7 @@ unsigned int Thread::id()
 void Thread::run()
 {
     debug(3, "Thread::run [%u]: running.\n", id());
+    Q_ASSERT(qApp && !qApp->closingDown());
     Q_EMIT started(this);
 
     while (true) {

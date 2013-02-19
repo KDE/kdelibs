@@ -33,3 +33,13 @@ ecm_mark_as_test(ThreadWeaverDeleteTest)
 
 target_link_libraries(ThreadWeaverDeleteTest ${QT_QTTEST_LIBRARY} ThreadWeaver)
 
+########### next target ###############
+
+set(LifecycleTest_SRCS LifecycleTests.cpp)
+
+add_executable(ThreadWeaverLifecycleTest ${LifecycleTest_SRCS})
+add_test(ThreadWeaverLifecycleTest ThreadWeaverLifecycleTest)
+ecm_mark_as_test(ThreadWeaverLifecycleTest)
+
+target_link_libraries(ThreadWeaverLifecycleTest ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} threadweaver)
+

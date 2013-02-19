@@ -37,8 +37,8 @@ private Q_SLOTS:
 //     in the right order, and the order is randomized.
     void MassiveJobSequenceTest();
 
-    /* TODO: reenable
     void SimpleRecursiveSequencesTest();
+    /* TODO: reenable
 
     void SequenceOfSequencesTest();
 

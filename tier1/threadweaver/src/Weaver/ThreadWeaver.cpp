@@ -27,6 +27,7 @@ http://creative-destruction.me $
 
 #include "ThreadWeaver.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QMutex>
 
 #include "WeaverImpl.h"
@@ -58,14 +59,18 @@ Weaver::Weaver ( QObject* parent )
 
 Weaver::~Weaver()
 {
-    d->implementation->shutDown();
+    if (d->implementation->state().stateId()!=Destructed) {
+        d->implementation->shutDown();
+    }
     delete d->implementation;
     delete d;
 }
 
 Queue *Weaver::makeWeaverImpl()
 {
-    return new WeaverImpl ( this );
+    Q_ASSERT_X(qApp!=0, Q_FUNC_INFO, "Cannot create global ThreadWeaver instance before QApplication!");
+    Queue *queue = new WeaverImpl(this);
+    return queue;
 }
 
 void Weaver::shutDown()
@@ -94,7 +99,7 @@ Weaver* Weaver::instance()
     QMutexLocker l(&mutex);
     if ( s_instance == 0 )
     {
-        s_instance = new Weaver();
+        s_instance = new Weaver(qApp);
     }
     return s_instance;
 }
