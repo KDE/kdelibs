@@ -38,11 +38,7 @@ private Q_SLOTS:
     void MassiveJobSequenceTest();
 
     void SimpleRecursiveSequencesTest();
-    /* TODO: reenable
-
     void SequenceOfSequencesTest();
-
-    */
     void QueueAndStopTest();
     void ResourceRestrictionPolicyBasicsTest ();
     void JobSignalsAreEmittedAsynchronouslyTest();

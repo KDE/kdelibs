@@ -466,8 +466,6 @@ void JobTests::SimpleRecursiveSequencesTest() {
     QCOMPARE(sequence, QString("abc"));
 }
 
-/* TODO: reenable, they currently hang up */
-/*
 void JobTests::SequenceOfSequencesTest() {
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
@@ -503,14 +501,12 @@ void JobTests::SequenceOfSequencesTest() {
     jobSequence4.addJob ( &jobSequence2 );
     jobSequence4.addJob ( &jobSequence3 );
 
-    // now go already:
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence4 );
     // ThreadWeaver::Job::DumpJobDependencies();
     ThreadWeaver::Weaver::instance()->finish();
-    QCOMPARE ( sequence, QString( "abcdefghij" ) );
+    QCOMPARE(sequence,QString("abcdefghij"));
 }
-
-*/
 
 void JobTests::QueueAndStopTest() {
     QString sequence;
