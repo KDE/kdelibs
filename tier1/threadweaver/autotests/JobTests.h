@@ -31,12 +31,7 @@ private Q_SLOTS:
     void RecursiveQueueAndDequeueSequenceTest();
     void QueueAndDequeueAllSequenceTest();
     void RecursiveQueueAndDequeueAllSequenceTest();
-
-//     This test is not the most efficient, as the mutex locking takes most of
-//     the execution time. Anyway, it will fail if the jobs are not executed
-//     in the right order, and the order is randomized.
     void MassiveJobSequenceTest();
-
     void SimpleRecursiveSequencesTest();
     void SequenceOfSequencesTest();
     void QueueAndStopTest();

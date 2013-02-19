@@ -416,7 +416,6 @@ void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
 //     the execution time. Anyway, it will fail if the jobs are not executed
 //     in the right order, and the order is randomized.
 void JobTests::MassiveJobSequenceTest() {
-    return; //MARK_TEMPORARILY_DISABLED
     const int NoOfChars = 1024;
     const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const int SizeOfAlphabet = strlen( Alphabet );
@@ -440,11 +439,12 @@ void JobTests::MassiveJobSequenceTest() {
         jobSequence.addJob ( & ( jobs[i] ) );
     }
 
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     ThreadWeaver::Weaver::instance()->enqueue ( &jobSequence );
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
-    QCOMPARE ( sequence, in );
+    QCOMPARE(sequence,in);
 }
 
 void JobTests::SimpleRecursiveSequencesTest() {
