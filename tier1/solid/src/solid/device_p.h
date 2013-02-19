@@ -23,7 +23,9 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QSharedData>
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
+
+#include <ifaces/device.h>
 
 #if defined(Q_OS_WIN32)
 #undef interface
@@ -31,11 +33,6 @@
 
 namespace Solid
 {
-    namespace Ifaces
-    {
-        class Device;
-    }
-
     class DevicePrivate : public QObject, public QSharedData
     {
         Q_OBJECT
@@ -56,7 +53,7 @@ namespace Solid
 
     private:
         QString m_udi;
-        QWeakPointer<Ifaces::Device> m_backendObject;
+        QPointer<Ifaces::Device> m_backendObject;
         QMap<DeviceInterface::Type, DeviceInterface *> m_ifaces;
     };
 }

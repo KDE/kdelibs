@@ -53,7 +53,7 @@ Solid::DeviceManagerPrivate::~DeviceManagerPrivate()
         disconnect(backend, 0, this, 0);
     }
 
-    Q_FOREACH (QWeakPointer<DevicePrivate> dev, m_devicesMap) {
+    Q_FOREACH (QPointer<DevicePrivate> dev, m_devicesMap) {
         if (!dev.data()->ref.deref()) {
             delete dev.data();
         }
@@ -228,7 +228,7 @@ Solid::DevicePrivate *Solid::DeviceManagerPrivate::findRegisteredDevice(const QS
         DevicePrivate *devData = new DevicePrivate(udi);
         devData->setBackendObject(iface);
 
-        QWeakPointer<DevicePrivate> ptr(devData);
+        QPointer<DevicePrivate> ptr(devData);
         m_devicesMap[udi] = ptr;
         m_reverseMap[devData] = udi;
 

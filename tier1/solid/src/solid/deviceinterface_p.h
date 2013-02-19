@@ -21,7 +21,7 @@
 #ifndef SOLID_DEVICEINTERFACE_P_H
 #define SOLID_DEVICEINTERFACE_P_H
 
-#include <QtCore/QWeakPointer>
+#include <QtCore/QPointer>
 
 namespace Solid
 {
@@ -37,7 +37,7 @@ namespace Solid
         void setDevicePrivate(DevicePrivate *devicePrivate);
 
     private:
-        QWeakPointer<QObject> m_backendObject;
+        QPointer<QObject> m_backendObject;
         DevicePrivate* m_devicePrivate;
     };
 }
