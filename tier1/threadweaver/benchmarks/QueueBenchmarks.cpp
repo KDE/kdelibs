@@ -8,6 +8,7 @@
 
 #include <Job.h>
 #include <JobCollection.h>
+#include <JobSequence.h>
 #include <ThreadWeaver.h>
 
 //FIXME Wouldn't it be nice to be able to execute jobs in the local thread?
@@ -57,10 +58,14 @@ private Q_SLOTS:
     void cleanupTestCase();
     void BaselineBenchmark();
     void BaselineBenchmark_data();
+    void BaselineAsJobsBenchmark();
+    void BaselineAsJobsBenchmark_data();
     void IndividualJobsBenchmark();
     void IndividualJobsBenchmark_data();
     void CollectionsBenchmark();
     void CollectionsBenchmark_data();
+    void SequencesBenchmark();
+    void SequencesBenchmark_data();
 
 private:
     void defaultBenchmarkData(bool singleThreaded);
@@ -104,7 +109,36 @@ void QueueBenchmarksTest::BaselineBenchmark()
     }
 }
 
+
+
 void QueueBenchmarksTest::BaselineBenchmark_data()
+{
+    defaultBenchmarkData(true);
+}
+
+void QueueBenchmarksTest::BaselineAsJobsBenchmark()
+{
+    QFETCH(int, m);
+    QFETCH(int, c);
+    QFETCH(int, b);
+    QFETCH(int, t);
+    const int n = c*b;
+    Q_UNUSED(t); // in this case
+
+    AccumulateJob jobs[n];
+    for(int i = 0; i < n; ++i) {
+        jobs[i].setCount(m);
+    }
+
+    //Actually, executeLocal needs to emit similar signals as execute(), to be comparable to the threaded variants
+    QBENCHMARK {
+        for(int i = 0; i < n; ++i) {
+            jobs[i]();
+        }
+    }
+}
+
+void QueueBenchmarksTest::BaselineAsJobsBenchmark_data()
 {
     defaultBenchmarkData(true);
 }
@@ -145,8 +179,6 @@ void QueueBenchmarksTest::CollectionsBenchmark()
     QFETCH(int, t);
     const int n = c*b;
 
-    if (b > 32 || c || 32) return; // too slow for now
-
     ThreadWeaver::Weaver weaver;
     weaver.setMaximumNumberOfThreads(t);
     weaver.suspend();
@@ -174,6 +206,45 @@ void QueueBenchmarksTest::CollectionsBenchmark()
 }
 
 void QueueBenchmarksTest::CollectionsBenchmark_data()
+{
+    defaultBenchmarkData(false);
+}
+
+void QueueBenchmarksTest::SequencesBenchmark()
+{
+    QFETCH(int, m);
+    QFETCH(int, c);
+    QFETCH(int, b);
+    QFETCH(int, t);
+    const int n = c*b;
+
+    ThreadWeaver::Weaver weaver;
+    weaver.setMaximumNumberOfThreads(t);
+    weaver.suspend();
+    AccumulateJob jobs[n];
+
+
+    QObject parent;
+    qDebug() << b << "blocks" << c << "operations, queueing...";
+    //queue the jobs blockwise as collections
+    for (int block = 0; block < b; ++block) {
+        ThreadWeaver::JobSequence* sequence = new ThreadWeaver::JobSequence(&parent);
+        for (int operation = 0; operation < c; ++operation) {
+            const int index = block * b + operation;
+            jobs[index].setCount(m);
+            sequence->addJob(&jobs[index]);
+        }
+        weaver.enqueue(sequence);
+    }
+
+    qDebug() << b << "blocks" << c << "operations, executing...";
+    QBENCHMARK {
+        weaver.resume();
+        weaver.finish();
+    }
+}
+
+void QueueBenchmarksTest::SequencesBenchmark_data()
 {
     defaultBenchmarkData(false);
 }
