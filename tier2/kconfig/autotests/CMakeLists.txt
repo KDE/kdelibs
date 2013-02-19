@@ -11,11 +11,13 @@ include_directories(
 
 include(ECMMarkAsTest)
 
+find_package(Qt5Transitional REQUIRED Concurrent)
+
 macro(KCONFIGCORE_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
       add_test(kconfigcore-${_testname} ${_testname})
-      target_link_libraries(${_testname} kconfigcore ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY})
+      target_link_libraries(${_testname} kconfigcore ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} Qt5::Concurrent)
       ecm_mark_as_test(${_testname})
    endforeach()
 endmacro()

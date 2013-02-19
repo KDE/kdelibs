@@ -46,6 +46,7 @@ target_link_libraries(solidhwtest ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_
 set(solidmttest_SRCS
    solidmttest.cpp )
 
+find_package(Qt5Transitional REQUIRED Concurrent)
 
 add_executable(solidmttest ${solidmttest_SRCS})
 add_test(solidmttest solidmttest)
@@ -54,5 +55,5 @@ set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
-target_link_libraries(solidmttest ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} ${LIBS} solid_static)
+target_link_libraries(solidmttest ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} ${LIBS} solid_static Qt5::Concurrent)
 
