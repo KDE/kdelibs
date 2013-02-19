@@ -89,7 +89,7 @@ void WeaverImpl::shutDown_p()
     debug ( 3, "WeaverImpl::shutDown: destroying inventory.\n" );
     finish();
     suspend();
-    setState ( ShuttingDown );
+    setState(ShuttingDown);
     m_jobAvailable.wakeAll();
     m_jobFinished.wakeAll();
 

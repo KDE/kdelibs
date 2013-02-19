@@ -32,6 +32,7 @@
 
 #include <QtCore/QMutex>
 #include <QtCore/QDebug>
+#include <QPointer>
 #include <QtCore/QCoreApplication>
 
 #include "ThreadWeaver.h"
@@ -85,10 +86,14 @@ unsigned int Thread::id()
 
 void Thread::run()
 {
-    debug(3, "Thread::run [%u]: running.\n", id());
-    Q_ASSERT(qApp && !qApp->closingDown());
-    Q_EMIT started(this);
+    Q_ASSERT(d->parent);
+    //There is a chance that the thread was started and right after, QApplication entered it's destructor.
+    //Not a problem, except that emits will crash. Abort in this case. qAppPointer will only go to Null, not from.
+    QPointer<QCoreApplication> qAppPointer(QCoreApplication::instance());
+    if (qAppPointer.isNull()) return;
 
+    Q_EMIT started(this);
+    debug(3, "Thread::run [%u]: running.\n", id());
     while (true) {
         debug(3, "Thread::run [%u]: trying to execute the next job.\n", id());
         Job* oldJob = 0;
