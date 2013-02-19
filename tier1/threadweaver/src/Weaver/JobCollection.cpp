@@ -192,7 +192,7 @@ void JobCollection::elementFinished(Job*, Thread *thread)
 {
     QMutexLocker l(mutex()); Q_UNUSED(l);
     const int jobsStarted = d->jobsStarted.fetchAndAddOrdered(0);
-    Q_ASSERT(jobsStarted >=0);
+    Q_ASSERT(jobsStarted >=0); Q_UNUSED(jobsStarted);
     const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1) -1;
     Q_ASSERT(remainingJobs >=0);
     if (remainingJobs == 0 ) {
