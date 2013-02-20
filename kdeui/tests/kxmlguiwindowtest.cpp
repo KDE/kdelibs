@@ -20,6 +20,7 @@
 #include <QTimer>
 #include <QApplication>
 #include <QStandardPaths>
+#include <QtTest/QtTest>
 
 #include <kxmlguiwindow.h>
 #include <kaboutdata.h>
@@ -99,7 +100,7 @@ void MainWindow::setupActions()
 MainWindow::MainWindow(QWidget *parent)
     : KXmlGuiWindow(parent)
 {
-    setXMLFile(KDESRCDIR "/kxmlguiwindowtestui.rc", true);
+    setXMLFile(QFINDTESTDATA("kxmlguiwindowtestui.rc"), true);
     // Because we use a full path in setXMLFile, we need to call setLocalXMLFile too.
     // In your apps, just pass a relative filename to setXMLFile instead.
     setLocalXMLFile(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kxmlguiwindowtest/kxmlguiwindowtestui.rc");

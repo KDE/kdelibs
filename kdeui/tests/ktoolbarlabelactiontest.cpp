@@ -26,6 +26,7 @@
 #include <assert.h>
 
 #include <QVBoxLayout>
+#include <QtTest/QtTest>
 
 class MainWindow : public KXmlGuiWindow
 {
@@ -71,7 +72,7 @@ class MainWindow : public KXmlGuiWindow
       // another widget so lineEdit can loose focus and check budyness works
       boxLayout->addWidget(new KLineEdit( main ));
 
-      setupGUI( Default, KDESRCDIR "ktoolbarlabelactiontestui.rc" );
+      setupGUI( Default, QFINDTESTDATA("ktoolbarlabelactiontestui.rc") );
     }
 
     bool eventFilter(QObject * watched, QEvent * event )

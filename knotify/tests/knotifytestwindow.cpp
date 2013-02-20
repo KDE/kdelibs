@@ -16,6 +16,7 @@
 #include <QDialogButtonBox>
 #include <QStatusBar>
 #include <QVBoxLayout>
+#include <QtTest/QtTest>
 
 // ------------------------------------------------------------------------
 
@@ -33,7 +34,7 @@ KNotifyTestWindow::KNotifyTestWindow(QWidget *parent)
         actionCollection()->addAction(KStandardAction::Quit, this, SLOT(close()));
         actionCollection()->addAction(KStandardAction::KeyBindings, guiFactory(), SLOT(configureShortcuts()));
 
-	createGUI( KDESRCDIR "/knotifytestui.rc" );
+	createGUI( QFINDTESTDATA("knotifytestui.rc") );
 
 	connect ( view.b_online , SIGNAL(clicked()) , this , SLOT(slotSendOnlineEvent()));
 	connect ( view.b_message , SIGNAL(clicked()) , this , SLOT(slotSendMessageEvent()));

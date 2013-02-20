@@ -25,6 +25,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDir>
+#include <QtTest/QtTest>
 #include <qtemporarydir.h>
 
 class KIconLoader_UnitTest : public QObject
@@ -142,7 +143,7 @@ private Q_SLOTS:
         // as the "data" resource. But if the file is installed, then it will be
         // preferred (because KStandardDirs::resourceDirs() looks at relative paths first)
         // So we have to expect that one -or- the other will be found.
-        const QString dataDir = QDir(KDESRCDIR "/../../..").canonicalPath();
+        const QString dataDir = QDir(QFINDTESTDATA("../../..")).canonicalPath();
 
         const QString appName = "kdewidgets";
         KIconLoader appIconLoader(appName, QStringList() << dataDir);
@@ -169,7 +170,7 @@ private Q_SLOTS:
 
     void testAppPicsDir_KDE_icon()
     {
-        const QString dataDir = QDir(KDESRCDIR "/../../").canonicalPath();
+        const QString dataDir = QDir(QFINDTESTDATA("../../")).canonicalPath();
         // #### This test is broken; it passes even if appName is set to foobar, because
         // QIcon::pixmap returns an unknown icon if it can't find the real icon...
         const QString appName = "kdewidgets";

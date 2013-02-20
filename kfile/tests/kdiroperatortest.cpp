@@ -81,14 +81,15 @@ private Q_SLOTS:
 
     void testBug187066()
     {
-        const QUrl kFileDirUrl(QUrlPathInfo(QUrl::fromLocalFile(KDESRCDIR)).directoryUrl());
+        const QString dir = QFileInfo(QFINDTESTDATA("kdiroperatortest.cpp")).absolutePath();
+        const QUrl kFileDirUrl(QUrlPathInfo(QUrl::fromLocalFile(dir)).directoryUrl());
 
         KDirOperator dirOp(kFileDirUrl);
         QSignalSpy completedSpy(dirOp.dirLister(), SIGNAL(completed()));
         dirOp.setView(KFile::DetailTree);
         completedSpy.wait(1000);
         dirOp.setCurrentItem(QUrl("file:///"));
-        dirOp.setCurrentItem(QUrl::fromLocalFile(KDESRCDIR "kdiroperatortest.cpp"));
+        dirOp.setCurrentItem(QUrl::fromLocalFile(QFINDTESTDATA("kdiroperatortest.cpp")));
         //completedSpy.wait(1000);
         QTest::qWait(1000);
     }

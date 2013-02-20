@@ -11,8 +11,6 @@ macro(KARCHIVE_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
       add_test(karchive-${_testname} ${_testname})
-      # TODO: QT5 remove KDESRCDIR, QFINDTESTDATA doesn't need it
-      set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
       target_link_libraries(${_testname} karchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTMAIN_LIBRARY})
       ecm_mark_as_test(${_testname})
    endforeach(_testname)

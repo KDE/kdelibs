@@ -26,6 +26,7 @@
 #include <kde_file.h>
 #include <QPushButton>
 #include <QLayout>
+#include <QtTest/QtTest>
 
 #include <stdlib.h>
 #include <unistd.h>
@@ -41,7 +42,7 @@ void testKRun::foundMimeType( const QString& _type )
   return;
 }
 
-static const char testFile[] = KDESRCDIR "/kruntest.cpp";
+static const char testFile[] = "kruntest.cpp";
 
 static const struct {
     const char* text;
@@ -107,8 +108,12 @@ void Receiver::slotLaunchTest()
     if (QByteArray(s_tests[testNumber].text).startsWith("runCommand")) {
         KRun::runCommand(s_tests[testNumber].exec, this);
     } else {
-        if (s_tests[testNumber].url)
-            urls << QUrl::fromUserInput(s_tests[testNumber].url);
+        if (s_tests[testNumber].url){
+            QString urlStr(s_tests[testNumber].url);
+            if (urlStr == QLatin1String(testFile))
+                urlStr = QFINDTESTDATA(testFile);
+            urls << QUrl::fromUserInput(urlStr);
+        }
         KRun::run(s_tests[testNumber].exec, urls, this);
     }
 }

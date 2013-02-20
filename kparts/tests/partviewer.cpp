@@ -30,13 +30,14 @@
 #include <QWidget>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtTest/QtTest>
 
 #include "partviewer.h"
 #include <kmimetypetrader.h>
 
 PartViewer::PartViewer()
 {
-    setXMLFile(KDESRCDIR "/partviewer_shell.rc");
+    setXMLFile(QFINDTESTDATA("partviewer_shell.rc"));
 
     KAction * paOpen = new KAction( KDE::icon("document-open"), "&Open file", this );
     actionCollection()->addAction( "file_open", paOpen );

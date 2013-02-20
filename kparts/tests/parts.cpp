@@ -30,8 +30,10 @@
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <QtCore/QTextStream>
+#include <QtTest/QtTest>
 #include <QTextEdit>
 #include <QLineEdit>
+#include <QtTest/QtTest>
 
 #include <kdebug.h>
 #include <kaction.h>
@@ -45,7 +47,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     m_edit = new QTextEdit( parentWidget );
     setWidget( m_edit );
 
-    setXMLFile(KDESRCDIR "/kpartstest_part1.rc");
+    setXMLFile(QFINDTESTDATA("kpartstest_part1.rc"));
 
     // An action and an action menu (test code for #70459)
 
@@ -110,7 +112,7 @@ Part2::Part2( QObject *parent, QWidget * parentWidget )
     w->setObjectName( "Part2Widget" );
     setWidget( w );
 
-    setXMLFile(KDESRCDIR "/kpartstest_part2.rc");
+    setXMLFile(QFINDTESTDATA("kpartstest_part2.rc"));
 
     /*QCheckBox * cb =*/ new QCheckBox( "something", w );
 

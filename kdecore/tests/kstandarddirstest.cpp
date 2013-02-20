@@ -32,6 +32,7 @@ QTEST_MAIN(KStandarddirsTest)
 #include <qtemporarydir.h>
 #include <config-prefix.h>
 #include <QtCore/QDebug>
+#include <QtTest/QtTest>
 #include <kconfiggroup.h>
 
 // we need case-insensitive comparison of file paths on windows
@@ -398,7 +399,7 @@ void KStandarddirsTest::testAddResourceType()
 
 void KStandarddirsTest::testAddResourceDir()
 {
-    const QString dir = QString::fromLatin1(KDESRCDIR);
+    const QString dir = QFileInfo(QFINDTESTDATA("Cairo")).absolutePath();
     const QString file = "Cairo";
     QString ret = KStandardDirs::locate( "here", file );
     QCOMPARE(ret, QString()); // not set up yet

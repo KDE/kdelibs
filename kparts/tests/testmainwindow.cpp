@@ -36,11 +36,12 @@
 #include <klocalizedstring.h>
 #include <kparts/partmanager.h>
 #include <qstandardpaths.h>
+#include <QtTest/QtTest>
 
 TestMainWindow::TestMainWindow()
     : KParts::MainWindow()
 {
-    setXMLFile(KDESRCDIR "/kpartstest_shell.rc");
+    setXMLFile(QFINDTESTDATA("kpartstest_shell.rc"));
 
     m_manager = new KParts::PartManager( this );
 

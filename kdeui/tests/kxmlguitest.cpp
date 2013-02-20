@@ -10,6 +10,7 @@
 #include <kiconloader.h>
 #include <QLineEdit>
 #include <QtCore/QDir>
+#include <QtTest/QtTest>
 
 void Client::slotSec()
 {
@@ -39,7 +40,7 @@ int main( int argc, char **argv )
     a = new KAction( KDE::icon( "view-split-left-right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );
 
-    shell->setXMLFile( KDESRCDIR "/kxmlguitest_shell.rc" );
+    shell->setXMLFile( QFINDTESTDATA("kxmlguitest_shell.rc") );
 
     factory->addClient( shell );
 
@@ -52,7 +53,7 @@ int main( int argc, char **argv )
     a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT(slotSec()) );
 
-    part->setXMLFile( KDESRCDIR "/kxmlguitest_part.rc" );
+    part->setXMLFile( QFINDTESTDATA("kxmlguitest_part.rc") );
 
     factory->addClient( part );
     for ( int i = 0; i < 10; ++i )

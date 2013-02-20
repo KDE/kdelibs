@@ -232,9 +232,6 @@
 #    are created but not built by default. You can build them by manually building the target.
 #    The name of the target can be specified using TESTNAME <targetname>, if it is not given
 #    the macro will default to the <testname>
-#    KDESRCDIR is set to the source directory of the test, this can be used with
-#    KGlobal::dirs()->addResourceDir( "data", KDESRCDIR )
-#
 #
 #  KDE4_ADD_APP_ICON (SRCS_VAR pattern)
 #  adds an application icon to target source list.

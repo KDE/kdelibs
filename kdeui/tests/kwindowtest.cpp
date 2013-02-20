@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QTextEdit>
 #include <QtCore/QDir>
+#include <QtTest/QtTest>
 
 #include <stdlib.h>
 
@@ -170,7 +171,7 @@ TestWindow::TestWindow (QWidget *parent)
 
     // KXMLGUIClient looks in the "data" resource for the .rc files
     // This line is for test programs only!
-    qputenv("XDG_DATA_HOME", KDESRCDIR);
+    qputenv("XDG_DATA_HOME", QFile::encodeName(QFileInfo(QFINDTESTDATA("kwindowtest.rc")).absolutePath()));
     setupGUI( QSize(400, 500), Default, "kwindowtest.rc" );
 
     tb=toolBar();

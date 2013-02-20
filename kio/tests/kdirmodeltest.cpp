@@ -1023,7 +1023,7 @@ void KDirModelTest::testRemoteUrlWithHost() // #178416
 
 void KDirModelTest::testZipFile() // # 171721
 {
-    const QString path = KDESRCDIR;
+    const QString path = QFileInfo(QFINDTESTDATA("wronglocalsizes.zip")).absolutePath();
     KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(KUrl(path), KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));

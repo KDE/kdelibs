@@ -22,6 +22,7 @@
 
 #include <QFile>
 #include <QAction>
+#include <QtTest/QtTest>
 
 int main( int argc, char **argv )
 {
@@ -34,7 +35,7 @@ int main( int argc, char **argv )
     //edit->addAction(action);
     //QObject::connect(action, SIGNAL(triggered()), edit, SLOT(selectAll()));
 
-    QFile file(KDESRCDIR "/ktextedittest.cpp");
+    QFile file(QFINDTESTDATA("ktextedittest.cpp"));
     if ( file.open( QIODevice::ReadOnly ) )
     {
         edit->setPlainText( file.readAll() );

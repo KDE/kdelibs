@@ -500,7 +500,7 @@ void KTimeZonesTest::tzfileDstShifts()
         qDebug() << tz.name();
         QVERIFY(tz.isValid());
         QCOMPARE(tz.type(), QByteArray("KTzfileTimeZone"));
-        QFile file(QString::fromLatin1(KDESRCDIR) + tz.name().remove(QRegExp("^.+/")) + QLatin1String(".zdump"));
+        QFile file(QFINDTESTDATA(tz.name().remove(QRegExp("^.+/")) + QLatin1String(".zdump")));
         QVERIFY(file.open(QIODevice::ReadOnly));
         QTextStream in(&file);
         QString line;

@@ -253,11 +253,11 @@ private Q_SLOTS:
     void testCookieFile_data()
     {
         QTest::addColumn<QString>("fileName");
-        QTest::newRow("cookie.test") << KDESRCDIR "/cookie.test";
-        QTest::newRow("cookie_rfc.test") << KDESRCDIR "/cookie_rfc.test";
-        QTest::newRow("cookie_saving.test") << KDESRCDIR "/cookie_saving.test";
-        QTest::newRow("cookie_settings.test") << KDESRCDIR "/cookie_settings.test";
-        QTest::newRow("cookie_session.test") << KDESRCDIR "/cookie_session.test";
+        QTest::newRow("cookie.test") << QFINDTESTDATA("cookie.test");
+        QTest::newRow("cookie_rfc.test") << QFINDTESTDATA("cookie_rfc.test");
+        QTest::newRow("cookie_saving.test") << QFINDTESTDATA("cookie_saving.test");
+        QTest::newRow("cookie_settings.test") << QFINDTESTDATA("cookie_settings.test");
+        QTest::newRow("cookie_session.test") << QFINDTESTDATA("cookie_session.test");
     }
     void testCookieFile()
     {

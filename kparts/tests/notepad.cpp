@@ -26,6 +26,7 @@
 #include <QSplitter>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
+#include <QtTest/QtTest>
 #include <QStatusBar>
 #include <QTextEdit>
 
@@ -54,7 +55,7 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
   actionCollection()->addAction( "searchreplace", searchReplace );
   connect(searchReplace, SIGNAL(triggered()), this, SLOT(slotSearchReplace()));
 
-  setXMLFile( KDESRCDIR "/notepadpart.rc" );
+  setXMLFile(QFINDTESTDATA("notepadpart.rc"));
 
   setReadWrite( true );
 

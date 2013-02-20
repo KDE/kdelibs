@@ -14,7 +14,6 @@ macro(KWINDOWSYSTEM_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
       add_test(kwindowsystem-${_testname} ${_testname})
-      # TODO: QT5 remove KDESRCDIR, QFINDTESTDATA doesn't need it
       target_link_libraries(${_testname} kwindowsystem ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} Qt5::Widgets Qt5::X11Extras ${QT_QTMAIN_LIBRARY})
       ecm_mark_as_test(${_testname})
    endforeach(_testname)

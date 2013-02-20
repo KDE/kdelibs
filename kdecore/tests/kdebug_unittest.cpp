@@ -35,7 +35,7 @@ void KDebugTest::initTestCase()
     qputenv("QT_MESSAGE_PATTERN", "%{appname}(%{pid})/%{category} %{function}: %{message}");
 
     // The source files (kdebugrc and kdebug.areas) are in the "global" config dir:
-    qputenv("XDG_CONFIG_DIRS", QByteArray(KDESRCDIR) + "/..");
+    qputenv("XDG_CONFIG_DIRS", QFile::encodeName(QFileInfo(QFINDTESTDATA("../kdebug.areas")).absolutePath()));
 
     QStandardPaths::enableTestMode(true);
 
@@ -48,7 +48,7 @@ void KDebugTest::initTestCase()
     // Check that we can find kdebugrc and kdebug.areas
     QString filename(QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("kdebug.areas")));
     QVERIFY2(QFile::exists(filename), filename.toLatin1() + " not found");
-    QVERIFY(QFile::exists(KDESRCDIR "/../kdebugrc"));
+    QVERIFY(QFile::exists(QFINDTESTDATA("../kdebugrc")));
 
     // Now set up logging to file
     KConfig config("kdebugrc");
