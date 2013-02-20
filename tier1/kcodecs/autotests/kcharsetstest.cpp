@@ -154,6 +154,18 @@ void KCharsetsTest::testEncodingNames()
     Q_FOREACH(QString encodingName, singleton->availableEncodingNames()) {
         bool ok = false;
 
+#if QT_VERSION <= QT_VERSION_CHECK(5, 2, 0)
+        if (encodingName == QString::fromLatin1("ISO 8859-11")
+         || encodingName == QString::fromLatin1("ISO 8859-16")
+         || encodingName == QString::fromLatin1("jis7")
+         || encodingName == QString::fromLatin1("winsami2")) {
+            qWarning() << "Pending fix in Qt, for now" << encodingName << "is missing";
+            singleton->codecForName(encodingName, ok);
+            QVERIFY(!ok);
+            continue;
+        }
+#endif
+
         if (encodingName == QString::fromLatin1("ucs2") || encodingName == QString::fromLatin1("ISO 10646-UCS-2"))
             singleton->codecForName(QString::fromLatin1("UTF-16"), ok);
         else if (encodingName == QString::fromLatin1("utf7"))
