@@ -393,18 +393,20 @@ void SolidHwTest::testPredicate()
     ifaceType = Solid::DeviceInterface::Unknown;
     QList<Solid::Device> list;
 
+    QSet<QString> cpuSet;
+    cpuSet << QString("/org/kde/solid/fakehw/acpi_CPU0")
+           << QString("/org/kde/solid/fakehw/acpi_CPU1");
+
     list = Solid::Device::listFromQuery(p1, parentUdi);
     QCOMPARE(list.size(), 2);
-    QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
-    QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
+    QCOMPARE(to_string_set(list), cpuSet);
 
     list = Solid::Device::listFromQuery(p2, parentUdi);
     QCOMPARE(list.size(), 0);
 
     list = Solid::Device::listFromQuery(p3, parentUdi);
     QCOMPARE(list.size(), 2);
-    QCOMPARE(list.at(0).udi(), QString("/org/kde/solid/fakehw/acpi_CPU0"));
-    QCOMPARE(list.at(1).udi(), QString("/org/kde/solid/fakehw/acpi_CPU1"));
+    QCOMPARE(to_string_set(list), cpuSet);
 
     list = Solid::Device::listFromQuery(p4, parentUdi);
     QCOMPARE(list.size(), 0);
