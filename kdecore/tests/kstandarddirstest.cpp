@@ -127,6 +127,14 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( !cmakeModulesFiles.isEmpty() );
     QVERIFY( cmakeModulesFiles.count() > 80 ); // I have 150 here, installed by kdelibs.
 
+    // Create a local config file, the file will be used as expected result
+    KConfig foorc("foorc");
+    KConfigGroup dummyGroup(&foorc, "Dummy");
+    dummyGroup.writeEntry("someEntry", true);
+    dummyGroup.sync();
+    const QString localConfigFile = KGlobal::dirs()->localxdgconfdir() + "foorc";
+    QVERIFY2(QFile::exists(localConfigFile), qPrintable(localConfigFile));
+
     const QStringList configFiles = KGlobal::dirs()->findAllResources( "config" );
     QVERIFY( !configFiles.isEmpty() );
     QVERIFY( configFiles.count() > 5 ); // I have 9 here
@@ -153,7 +161,8 @@ void KStandarddirsTest::testFindAllResources()
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
     QVERIFY( oneEndsWith( configFilesWithFilter, "share/config/kdebugrc" ) );
-    QVERIFY2( configFilesWithFilter.count() >= 4, qPrintable(configFilesWithFilter.join(",")) );
+    QVERIFY( oneEndsWith( configFilesWithFilter, "kde-unit-test/share/config/foorc" ) );
+    QVERIFY2( configFilesWithFilter.count() >= 2, qPrintable(configFilesWithFilter.join(",")) );
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/ui/ui_standards.rc" ) ); // not recursive
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/accept-languages.codes" ) ); // didn't match the filter
     QCOMPARE(fileNames.count(), configFilesWithFilter.count());
