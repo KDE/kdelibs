@@ -77,6 +77,7 @@ FakeManager::FakeManager(QObject *parent, const QString &xmlFile)
 
 FakeManager::~FakeManager()
 {
+    QDBusConnection::sessionBus().unregisterObject("/org/kde/solid/fakehw", QDBusConnection::UnregisterTree);
     qDeleteAll(d->loadedDevices);
     delete d;
 }

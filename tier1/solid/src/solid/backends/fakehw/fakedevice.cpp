@@ -87,6 +87,7 @@ FakeDevice::FakeDevice(const FakeDevice& dev)
 
 FakeDevice::~FakeDevice()
 {
+    QDBusConnection::sessionBus().unregisterObject(d->udi, QDBusConnection::UnregisterTree);
 }
 
 QString FakeDevice::udi() const
