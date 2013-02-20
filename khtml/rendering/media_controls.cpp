@@ -32,6 +32,7 @@
 #include <rendering/render_media.h>
 #include <phonon/videowidget.h>
 #include <ktogglefullscreenaction.h>
+#include <kaction.h>
 #include <kshortcut.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -50,7 +51,7 @@ MediaControls::MediaControls(MediaPlayer* mediaPlayer, QWidget* parent) : QWidge
     connect(m_pause, SIGNAL(clicked()), mediaObject, SLOT(pause()));
     layout()->addWidget(m_pause);
     layout()->addWidget(new Phonon::SeekSlider(mediaObject, this));
-    KAction* fsac = new KToggleFullScreenAction(this);
+    QAction* fsac = new KToggleFullScreenAction(this);
     fsac->setObjectName("KHTMLMediaPlayerFullScreenAction"); // needed for global shortcut activation.
     m_fullscreen = new QToolButton(this);
     m_fullscreen->setDefaultAction(fsac);

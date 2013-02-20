@@ -27,6 +27,7 @@
 #include <kxmlguiwindow.h>
 #include <kcmdlineargs.h>
 #include <ktoggleaction.h>
+#include <kaction.h>
 #include <kactioncollection.h>
 #include "kxmlguifactory.h"
 #include <kfiledialog.h>

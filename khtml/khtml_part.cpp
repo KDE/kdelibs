@@ -383,7 +383,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
           // TODO: Why also CTRL+=?  Because of http://trolltech.com/developer/knowledgebase/524/?
           // Nobody else does it...
-          d->m_paIncZoomFactor->setShortcut( KShortcut("CTRL++; CTRL+=") );
+          d->m_paIncZoomFactor->setShortcuts( KShortcut("CTRL++; CTRL+=") );
           d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
       }
   }
@@ -454,7 +454,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( d->m_paToggleCaretMode, SIGNAL(triggered(bool)), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())
-      d->m_paToggleCaretMode->setShortcut(KShortcut()); // avoid clashes
+      d->m_paToggleCaretMode->setShortcuts(KShortcut()); // avoid clashes
 
   // set the default java(script) flags according to the current host.
   d->m_bOpenMiddleClick = d->m_settings->isOpenMiddleClickEnabled();

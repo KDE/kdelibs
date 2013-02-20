@@ -20,6 +20,7 @@
 #include <ktoggleaction.h>
 #include <kcombobox.h>
 #include <kstandardaction.h>
+#include <kaction.h>
 #include <kactioncollection.h>
 
 #include "css/cssstyleselector.h"
