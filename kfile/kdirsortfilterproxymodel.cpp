@@ -86,7 +86,7 @@ KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
 
 }
 
-Qt::DropActions KDirSortFilterProxyModel::supportedDragOptions()
+Qt::DropActions KDirSortFilterProxyModel::supportedDragOptions() const
 {
     return Qt::CopyAction | Qt::MoveAction | Qt::LinkAction | Qt::IgnoreAction;
 }

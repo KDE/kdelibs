@@ -83,7 +83,7 @@ public:
      */
     bool sortFoldersFirst() const;
 
-    Qt::DropActions supportedDragOptions();
+    Qt::DropActions supportedDragOptions() const;
 
 protected:
     /**
