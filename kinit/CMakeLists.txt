@@ -35,7 +35,7 @@ else (WIN32)
   set(kdeinit_LIBS "")
 endif (WIN32)
 
-# on win32 kdeinit5 has to be a console application 
+# on win32 kdeinit5 has to be a console application
 # to be able to catch stderr based --verbose output
 if (APPLE)
   # this has to be GUI on OSX because it launches GUI apps and need a quartz context
@@ -142,10 +142,6 @@ install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 if (NOT WIN32)
   set(start_kdeinit_SRCS start_kdeinit.c)
   kde4_add_executable(start_kdeinit ${start_kdeinit_SRCS})
-  if(KDE4_ENABLE_FPIE)
-      macro_add_compile_flags(start_kdeinit ${KDE4_CXX_FPIE_FLAGS})
-      macro_add_link_flags(start_kdeinit ${KDE4_PIE_LDFLAGS})
-  endif(KDE4_ENABLE_FPIE)
 
   set(start_kdeinit_wrapper_SRCS start_kdeinit_wrapper.c)
   kde4_add_executable(start_kdeinit_wrapper ${start_kdeinit_wrapper_SRCS})
