@@ -7,6 +7,7 @@ set(HAVE_PCREPOSIX ${PCRE_FOUND})
 # Configuration checks
 include(ConfigureChecks.cmake)
 # Generate global.h
+check_cxx_compiler_flag(-fvisibility=hidden __KDE_HAVE_GCC_VISIBILITY)
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
 
 include_directories(
