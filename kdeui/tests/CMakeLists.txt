@@ -4,13 +4,6 @@ include_directories( ${KDE4_KDEUI_INCLUDES} proxymodeltestsuite )
 
 include(ECMMarkAsTest)
 
-# QtTest needs this in order to include the gui stuff.
-# The alternative (which requires Qt>=4.6) is #include <QTestGui>
-add_definitions(-DQT_GUI_LIB)
-
-add_definitions(-DQT_WIDGETS_LIB)
-
-
 MACRO(KDEUI_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kdeui-${_testname} ${_testname}.cpp)

@@ -1,9 +1,5 @@
 set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 
-# TODO: include <QTestWidgets> with Qt 5
-add_definitions(-DQT_GUI_LIB)
-add_definitions(-DQT_WIDGETS_LIB)
-
 include(ECMMarkAsTest)
 
 MACRO(KFILE_UNIT_TESTS)
