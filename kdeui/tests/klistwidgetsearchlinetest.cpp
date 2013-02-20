@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 
 #include <klistwidgetsearchline.h>
 

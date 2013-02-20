@@ -24,6 +24,7 @@
 
 #include <qtestevent.h>
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include <qtextcursor.h>
 #include <QTextList>
 #include <qfont.h>

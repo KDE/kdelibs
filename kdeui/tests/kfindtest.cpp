@@ -21,6 +21,7 @@
 
 #include "kfindtest.h"
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 
 #include "kfind.h"
 #include <kdebug.h>

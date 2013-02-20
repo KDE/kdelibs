@@ -2,6 +2,7 @@
 #include <QTextEdit>
 #include <QtCore/QDir>
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 
 #include <stdlib.h>
 

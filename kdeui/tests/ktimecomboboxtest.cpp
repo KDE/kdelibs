@@ -22,6 +22,7 @@
 #include <QtCore/QTime>
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include "kdebug.h"
 #include "klineedit.h"
 #include <ktimecombobox.h>

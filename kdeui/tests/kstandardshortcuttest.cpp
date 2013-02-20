@@ -18,6 +18,7 @@
 */
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include "kstandardshortcuttest.h"
 
 QTEST_MAIN( KStandardShortcutTest) // GUI needed by KAccel

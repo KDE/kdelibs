@@ -20,6 +20,7 @@
 */
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 
 #include <QtTest/QTestEvent>
 

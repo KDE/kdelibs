@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QAction>
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 
 int main( int argc, char **argv )
 {

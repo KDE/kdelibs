@@ -19,6 +19,7 @@
 */
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include "kxmlgui_unittest.h"
 #include <QDialogButtonBox>
 #include <QShowEvent>

@@ -21,6 +21,7 @@
 
 #include <QClipboard>
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include <qtestevent.h>
 #include <ktextedit.h>
 

@@ -19,6 +19,7 @@
 
 #include "kcolorbuttontest.h"
 
+#include <QtTestWidgets>
 #include <QtTest/QtTest>
 #include <kcolorbutton.h>
 #include <QColorDialog>
@@ -36,11 +37,11 @@ void KColorButtonTest::testChangeAndCancel()
 {
     KColorButton colorButton(Qt::red);
     colorButton.show();
-    QVERIFY(QTest::qWaitForWindowShown(&colorButton));
+    QVERIFY(QTest::qWaitForWindowExposed(&colorButton));
     QTest::mouseClick(&colorButton, Qt::LeftButton);
     QColorDialog *dialog = colorButton.findChild<QColorDialog*>();
     QVERIFY(dialog != NULL);
-    QVERIFY(QTest::qWaitForWindowShown(dialog));
+    QVERIFY(QTest::qWaitForWindowExposed(dialog));
 #pragma message port to QColorDialog
 #if 0
     KColorCells *cells = dialog->findChild<KColorCells*>();
@@ -56,11 +57,11 @@ void KColorButtonTest::testDoubleClickChange()
 {
     KColorButton colorButton(Qt::red);
     colorButton.show();
-    QVERIFY(QTest::qWaitForWindowShown(&colorButton));
+    QVERIFY(QTest::qWaitForWindowExposed(&colorButton));
     QTest::mouseClick(&colorButton, Qt::LeftButton);
     QColorDialog *dialog = colorButton.findChild<QColorDialog*>();
     QVERIFY(dialog != NULL);
-    QVERIFY(QTest::qWaitForWindowShown(dialog));
+    QVERIFY(QTest::qWaitForWindowExposed(dialog));
 #pragma message port to QColorDialog
 #if 0
     KColorCells *cells = dialog->findChild<KColorCells*>();
@@ -74,11 +75,11 @@ void KColorButtonTest::testOkChange()
 {
     KColorButton colorButton(Qt::red);
     colorButton.show();
-    QVERIFY(QTest::qWaitForWindowShown(&colorButton));
+    QVERIFY(QTest::qWaitForWindowExposed(&colorButton));
     QTest::mouseClick(&colorButton, Qt::LeftButton);
     QColorDialog *dialog = colorButton.findChild<QColorDialog*>();
     QVERIFY(dialog != NULL);
-    QVERIFY(QTest::qWaitForWindowShown(dialog));
+    QVERIFY(QTest::qWaitForWindowExposed(dialog));
 #pragma message port to QColorDialog
 #if 0
     KColorCells *cells = dialog->findChild<KColorCells*>();
@@ -105,11 +106,11 @@ void KColorButtonTest::testRecentColorsPick()
 {
     KColorButton colorButton(Qt::red);
     colorButton.show();
-    QVERIFY(QTest::qWaitForWindowShown(&colorButton));
+    QVERIFY(QTest::qWaitForWindowExposed(&colorButton));
     QTest::mouseClick(&colorButton, Qt::LeftButton);
     QColorDialog *dialog = colorButton.findChild<QColorDialog*>();
     QVERIFY(dialog != NULL);
-    QVERIFY(QTest::qWaitForWindowShown(dialog));
+    QVERIFY(QTest::qWaitForWindowExposed(dialog));
 
 #pragma message port to QColorDialog
 #if 0

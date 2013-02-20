@@ -22,6 +22,7 @@
 #include <QtCore/QDate>
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include "kdebug.h"
 #include "kdatecombobox.h"
 #include "kcalendarsystem.h"

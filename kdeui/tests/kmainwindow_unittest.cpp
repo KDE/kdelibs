@@ -18,6 +18,7 @@
 */
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include "kmainwindow_unittest.h"
 #include <kmainwindow.h>
 #include <QStatusBar>

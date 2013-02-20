@@ -19,6 +19,7 @@
 */
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include "kshortcut.h"
 
 class tst_KShortcut : public QObject

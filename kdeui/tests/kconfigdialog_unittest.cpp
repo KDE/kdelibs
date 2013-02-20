@@ -19,6 +19,7 @@
 */
 
 #include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include <qtestevent.h>
 
 #include <QDialogButtonBox>
