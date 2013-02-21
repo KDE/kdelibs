@@ -469,18 +469,17 @@ void KActionCollection::readSettings( KConfigGroup* config )
 
   for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
        it != d->actionByName.constEnd(); ++it) {
-      KAction *kaction = qobject_cast<KAction*>(it.value());
-      if (!kaction)
+      QAction *action = it.value();
+      if (!action)
           continue;
 
-
-      if( kaction->isShortcutConfigurable() ) {
+      if(isShortcutsConfigurable(action)) {
           QString actionName = it.key();
           QString entry = config->readEntry(actionName, QString());
           if( !entry.isEmpty() ) {
-              kaction->setShortcut( KShortcut(entry), KAction::ActiveShortcut );
+              action->setShortcuts(KShortcut(entry));
           } else {
-              kaction->setShortcut( kaction->shortcut(KAction::DefaultShortcut) );
+              action->setShortcuts(defaultShortcuts(action));
           }
       }
   }
@@ -631,9 +630,8 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
     for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
          it != d->actionByName.constEnd(); ++it) {
 
-        // Get the action. We only handle KActions so skip QActions
-        KAction *kaction = qobject_cast<KAction*>(it.value());
-        if (!kaction) {
+        QAction *action = it.value();
+        if (!action) {
             continue;
         }
 
@@ -642,14 +640,14 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
         // If the action name starts with unnamed- spit out a warning and ignore
         // it. That name will change at will and will break loading writing
         if (actionName.startsWith(QLatin1String("unnamed-"))) {
-            kError() << "Skipped saving Shortcut for action without name " << kaction->text() << "!";
+            kError() << "Skipped saving Shortcut for action without name " << action->text() << "!";
             continue;
         }
 
         // Write the shortcut
-        if( kaction->isShortcutConfigurable() ) {
+        if(isShortcutsConfigurable(action)) {
             bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
-            bool bSameAsDefault = (kaction->shortcut() == kaction->shortcut(KAction::DefaultShortcut));
+            bool bSameAsDefault = (action->shortcuts() == defaultShortcuts(action));
             // If we're using a global config or this setting
             //  differs from the default, then we want to write.
             KConfigGroup::WriteConfigFlags flags = KConfigGroup::Persistent;
@@ -662,7 +660,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
             if( writeAll || !bSameAsDefault ) {
                 // We are instructed to write all shortcuts or the shortcut is
                 // not set to its default value. Write it
-                QString s = kaction->shortcut().toString();
+                QString s = KShortcut(action->shortcuts()).toString();
                 if( s.isEmpty() )
                     s = "none";
                 qDebug() << "\twriting " << actionName << " = " << s;

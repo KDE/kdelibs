@@ -1,9 +1,9 @@
 #include <QtTestWidgets>
 #include "kactioncollectiontest.h"
 #include <klocalizedstring.h>
+#include <QAction>
 #include <QtCore/QPointer>
 
-#include <kaction.h>
 #include <ksharedconfig.h>
 
 #include <assert.h>
@@ -22,13 +22,13 @@ void tst_KActionCollection::cleanup()
 
 void tst_KActionCollection::clear()
 {
-    QPointer<QAction> action1 = collection->addAction("test1");
-    QPointer<QAction> action2 = collection->addAction("test2");
-    QPointer<QAction> action3 = collection->addAction("test3");
-    QPointer<QAction> action4 = collection->addAction("test4");
-    QPointer<QAction> action5 = collection->addAction("test5");
-    QPointer<QAction> action6 = collection->addAction("test6");
-    QPointer<QAction> action7 = collection->addAction("test7");
+    QPointer<QAction> action1 = collection->add<QAction>("test1");
+    QPointer<QAction> action2 = collection->add<QAction>("test2");
+    QPointer<QAction> action3 = collection->add<QAction>("test3");
+    QPointer<QAction> action4 = collection->add<QAction>("test4");
+    QPointer<QAction> action5 = collection->add<QAction>("test5");
+    QPointer<QAction> action6 = collection->add<QAction>("test6");
+    QPointer<QAction> action7 = collection->add<QAction>("test7");
 
     collection->clear();
     QVERIFY(collection->isEmpty());
@@ -45,13 +45,13 @@ void tst_KActionCollection::clear()
 void tst_KActionCollection::deleted()
 {
     // Delete action -> automatically removed from collection
-    QAction *a = collection->addAction("test");
+    QAction *a = collection->add<QAction>("test");
     delete a;
     QVERIFY(collection->isEmpty());
 
     // Delete action's parent -> automatically removed from collection
     QWidget* myWidget = new QWidget(0);
-    QPointer<KAction> action = new KAction( /*i18n()*/ "Foo", myWidget);
+    QPointer<QAction> action = new QAction( /*i18n()*/ "Foo", myWidget);
     collection->addAction("foo", action);
     delete myWidget;
     QVERIFY(collection->isEmpty());
@@ -61,7 +61,7 @@ void tst_KActionCollection::deleted()
     // and that widget gets deleted first.
     myWidget = new QWidget(0);
     QWidget* myAssociatedWidget = new QWidget(myWidget); // child widget
-    action = new KAction( /*i18n()*/ "Foo", myWidget); // child action
+    action = new QAction( /*i18n()*/ "Foo", myWidget); // child action
     collection->addAction("foo", action);
     collection->addAssociatedWidget(myAssociatedWidget);
     QVERIFY(myAssociatedWidget->actions().contains(action));
@@ -73,7 +73,7 @@ void tst_KActionCollection::deleted()
 
 void tst_KActionCollection::take()
 {
-    QAction *a = collection->addAction("test");
+    QAction *a = collection->add<QAction>("test");
     collection->takeAction(a);
     QVERIFY(collection->isEmpty());
     delete a;
@@ -91,26 +91,26 @@ void tst_KActionCollection::writeSettings()
     temporaryShortcut.setPrimary(Qt::Key_C);
     temporaryShortcut.setAlternate(Qt::Key_D);
 
-    KAction *actionWithDifferentShortcut = new KAction(this);
-    actionWithDifferentShortcut->setShortcut(defaultShortcut, KAction::DefaultShortcut);
-    actionWithDifferentShortcut->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
+    QAction *actionWithDifferentShortcut = new QAction(this);
+    collection->setDefaultShortcuts(actionWithDifferentShortcut, defaultShortcut);
+    actionWithDifferentShortcut->setShortcuts(temporaryShortcut);
     collection->addAction("actionWithDifferentShortcut", actionWithDifferentShortcut);
 
-    KAction *immutableAction = new KAction(this);
-    immutableAction->setShortcut(defaultShortcut, KAction::DefaultShortcut);
-    immutableAction->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
-    immutableAction->setShortcutConfigurable(false);
+    QAction *immutableAction = new QAction(this);
+    collection->setDefaultShortcuts(immutableAction, defaultShortcut);
+    immutableAction->setShortcuts(temporaryShortcut);
+    collection->setShortcutsConfigurable(immutableAction, false);
     collection->addAction("immutableAction", immutableAction);
 
-    KAction *actionWithSameShortcut = new KAction(this);
-    actionWithSameShortcut->setShortcut(defaultShortcut, KAction::DefaultShortcut);
-    actionWithSameShortcut->setShortcut(defaultShortcut, KAction::ActiveShortcut);
+    QAction *actionWithSameShortcut = new QAction(this);
+    collection->setDefaultShortcuts(actionWithSameShortcut, defaultShortcut);
+    actionWithSameShortcut->setShortcuts(defaultShortcut);
     collection->addAction("actionWithSameShortcut", actionWithSameShortcut);
 
     cfg.writeEntry("actionToDelete", QString("Foobar"));
-    KAction *actionToDelete = new KAction(this);
-    actionToDelete->setShortcut(defaultShortcut, KAction::DefaultShortcut);
-    actionToDelete->setShortcut(defaultShortcut, KAction::ActiveShortcut);
+    QAction *actionToDelete = new QAction(this);
+    collection->setDefaultShortcuts(actionToDelete, defaultShortcut);
+    actionToDelete->setShortcuts(defaultShortcut);
     collection->addAction("actionToDelete", actionToDelete);
 
     collection->writeSettings(&cfg);
@@ -139,19 +139,19 @@ void tst_KActionCollection::readSettings()
     cfg.writeEntry("immutable", defaultShortcut.toString());
     cfg.writeEntry("empty", QString());
 
-    KAction *normal = new KAction(this);
+    QAction *normal = new QAction(this);
     collection->addAction("normalAction", normal);
 
-    KAction *immutable = new KAction(this);
-    immutable->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
-    immutable->setShortcut(temporaryShortcut, KAction::DefaultShortcut);
-    immutable->setShortcutConfigurable(false);
+    QAction *immutable = new QAction(this);
+    immutable->setShortcuts(temporaryShortcut);
+    collection->setDefaultShortcuts(immutable, temporaryShortcut);
+    collection->setShortcutsConfigurable(immutable, false);
     collection->addAction("immutable", immutable);
 
-    KAction *empty = new KAction(this);
+    QAction *empty = new QAction(this);
     collection->addAction("empty", empty);
-    empty->setShortcut(temporaryShortcut, KAction::ActiveShortcut);
-    empty->setShortcut(defaultShortcut, KAction::DefaultShortcut);
+    empty->setShortcuts(temporaryShortcut);
+    collection->setDefaultShortcuts(empty, defaultShortcut);
     QCOMPARE(KShortcut(empty->shortcuts()).toString(), temporaryShortcut.toString());
 
     collection->readSettings(&cfg);
@@ -166,8 +166,8 @@ void tst_KActionCollection::readSettings()
 
 void tst_KActionCollection::insertReplaces1()
 {
-    KAction *a = new KAction(0);
-    KAction *b = new KAction(0);
+    QAction *a = new QAction(0);
+    QAction *b = new QAction(0);
 
     collection->addAction("a", a);
     QVERIFY(collection->actions().contains(a));
@@ -188,7 +188,7 @@ void tst_KActionCollection::insertReplaces1()
  */
 void tst_KActionCollection::insertReplaces2()
 {
-    KAction *a = new KAction(0);
+    QAction *a = new QAction(0);
 
     collection->addAction("a", a);
     QVERIFY(collection->actions().contains(a));
@@ -220,13 +220,14 @@ KConfigGroup tst_KActionCollection::clearConfig()
 
 void tst_KActionCollection::testSetShortcuts()
 {
-    KAction *action = new KAction(i18n("Next Unread &Folder"), this);
+    QAction *action = new QAction(i18n("Next Unread &Folder"), this);
     collection->addAction("go_next_unread_folder", action);
     action->setShortcut(QKeySequence(Qt::ALT+Qt::Key_Plus));
+    collection->setDefaultShortcut(action, QKeySequence(Qt::ALT+Qt::Key_Plus));
     KShortcut shortcut = KShortcut(action->shortcuts());
     shortcut.setAlternate( QKeySequence( Qt::CTRL+Qt::Key_Plus ) );
     action->setShortcuts( shortcut );
-    QCOMPARE(action->shortcut().toString(), QString("Alt++; Ctrl++"));
+    QCOMPARE(KShortcut(action->shortcuts()).toString(), QString("Alt++; Ctrl++"));
 
     // Simpler way:
     KShortcut shortcut2;
