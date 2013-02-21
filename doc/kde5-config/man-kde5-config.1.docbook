@@ -16,18 +16,18 @@
 </refentryinfo>
 
 <refmeta>
-<refentrytitle><command>kf5-config</command></refentrytitle>
+<refentrytitle><command>kde5-config</command></refentrytitle>
 <manvolnum>1</manvolnum>
 </refmeta>
 
 <refnamediv>
-<refname><command>kf5-config</command></refname>
+<refname><command>kde5-config</command></refname>
 <refpurpose>Prints &kde; installation paths</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>kf5-config</command>
+<command>kde5-config</command>
 <arg>--expandvars</arg>
 <arg>--prefix</arg>
 <arg>--exec-prefix</arg>
@@ -43,7 +43,7 @@
 
 <refsect1>
 <title>Description</title>
-<para>kf5-config is a command line program used to retrieve information
+<para>kde5-config is a command line program used to retrieve information
 about &kde; installation or user paths.</para>
 
 <para>Use this program to determine where the various aspects of the &kde;
@@ -134,21 +134,21 @@ installation reside on your system.
 
 <para>Print the top-level &kde; installation directory:</para>
 <para>
-<prompt>&percnt;</prompt><userinput> <command>kf5-config --prefix</command>
+<prompt>&percnt;</prompt><userinput> <command>kde5-config --prefix</command>
 </userinput>
 </para>
 
 <para>Print a list of all resource types:</para>
 
 <para>
-<prompt>&percnt;</prompt><userinput> <command>kf5-config --types</command>
+<prompt>&percnt;</prompt><userinput> <command>kde5-config --types</command>
 </userinput>
 </para>
 
 <para>Print the installed wallpaper path:</para>
 
 <para>
-<prompt>&percnt;</prompt><userinput> <command>kf5-config --path wallpaper</command>
+<prompt>&percnt;</prompt><userinput> <command>kde5-config --path wallpaper</command>
 </userinput>
 </para>
 
