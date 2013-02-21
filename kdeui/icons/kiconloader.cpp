@@ -66,13 +66,6 @@
 // Used to make cache keys for icons with no group. Result type is QString*
 K_GLOBAL_STATIC_WITH_ARGS(QString, NULL_EFFECT_FINGERPRINT, (QString::fromLatin1("noeffect")))
 
-// Qt implements Tiny SVG specification. This specification does not cover important elements
-// that are pretty globally used on our icons, like blurring (and other filters). TT seems to have
-// no interest in supporting the full SVG specification (it would be slower, even with JS, CSS
-// support...). So, we have no chance for now. Let's disable svg rendering unconditionally.
-// (ereslibre)
-#undef KDE_QT_SVG_RENDERER_FIXED
-
 /**
  * Checks for relative paths quickly on UNIX-alikes, slowly on everything else.
  */
@@ -913,87 +906,7 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 
     K3Icon icon;
 
-// The following code has been commented out because the Qt SVG renderer needs
-// to be improved. If you are going to change/remove some code from this part,
-// please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
-#ifdef KDE_QT_SVG_RENDERER_FIXED
-    const char * ext1[4] = { ".png", ".svgz", ".svg", ".xpm" };
-    const char * ext2[4] = { ".svgz", ".svg", ".png", ".xpm" };
-    const char ** ext;
-
-    if (size == KIconLoader::SizeSmall ||
-        size == KIconLoader::SizeSmallMedium ||
-        size == KIconLoader::SizeMedium ||
-        size == KIconLoader::SizeLarge ||
-        size == KIconLoader::SizeHuge ||
-        size == KIconLoader::SizeEnormous)
-    {
-        ext = ext1; // size is standard, give preference to PNG over SVG when searching
-    }
-    else
-    {
-        ext = ext2; // size is non-standard, give preference to SVG over PNG when searching
-    }
-
-    /* If size parameter is a standard one, that means:
-
-           - KIconLoader::SizeSmall
-           - KIconLoader::SizeSmallMedium
-           - KIconLoader::SizeMedium
-           - KIconLoader::SizeLarge
-           - KIconLoader::SizeHuge
-           - KIconLoader::SizeEnormous
-
-       To follow the XDG icon theme and icon naming specifications,
-       the order in which we look for an icon is:
-
-       png, svgz, svg, xpm exact match
-       png, svgz, svg, xpm best match
-       less specific fallback in this theme: png, svgz, svg, xpm exact match
-                                             png, svgz, svg, xpm best match
-       even less specific fallback in this theme: [same order]
-       (...)
-
-       next theme in inheritance tree: png, svgz, svg, xpm exact match
-                                       png, svgz, svg, xpm best match
-       less specific fallbacks in this next theme
-       (...)
-
-       next theme in inheritance tree: png, svgz, svg, xpm exact match
-                                       png, svgz, svg, xpm best match
-       less specific fallbacks in this next theme
-       (...)
-
-       and so on.
-
-       If size parameter is a non-standard one, then we give more preference to
-       SVG format since drawing SVG's gives better quality and despite being
-       slower than resizing a PNG image, the cases where non-standard sizes are
-       asked are very rare. For non-standard sizes what we have is:
-
-       svgz, svg, png, xpm exact match
-       svgz, svg, png, xpm best match
-       less specific fallback in this theme: svgz, svg, png, xpm exact match
-                                             svgz, svg, png, xpm best match
-       even less specific fallback in this theme: [same order]
-       (...)
-
-       next theme in inheritance tree: svgz, svg, png, xpm exact match
-                                       svgz, svg, png, xpm best match
-       less specific fallbacks in this next theme
-       (...)
-
-       next theme in inheritance tree: svgz, svg, png, xpm exact match
-                                       svgz, svg, png, xpm best match
-       less specific fallbacks in this next theme
-       (...)
-
-       and so on.
-       */
-#else
     const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
-#endif
-
     bool genericFallback = name.endsWith(QLatin1String("-x-generic"));
 
     foreach(KIconThemeNode *themeNode, links)
@@ -1008,21 +921,6 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
 // The following code has been commented out because the Qt SVG renderer needs
 // to be improved. If you are going to change/remove some code from this part,
 // please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
-#ifdef KDE_QT_SVG_RENDERER_FIXED
-            for (int i = 0 ; i < 4 ; i++)
-            {
-                icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchExact);
-                if (icon.isValid())
-                    return icon;
-            }
-
-            for (int i = 0 ; i < 4 ; i++)
-            {
-                icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchBest);
-                if (icon.isValid())
-                    return icon;
-            }
-#else
             for (int i = 0 ; i < 4 ; i++)
             {
                 icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchExact);
@@ -1033,7 +931,7 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
                 if (icon.isValid())
                     return icon;
             }
-#endif
+
             if (genericFallback)
                 // we already tested the base name
                 break;
