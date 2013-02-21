@@ -183,9 +183,8 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
     QStringList::ConstIterator it;
     uint emitProgress = 10; // so we will emit it once in the beginning
     QStringList::ConstIterator end(mFiles.constEnd());
-    for (it=mFiles.constBegin(), i=0; it!=end; ++it, i++)
-    {
-	if ( emitProgress >= 10 ) {
+    for (it = mFiles.constBegin(), i = 0; it != end; ++it, i++) {
+        if (emitProgress >= 10) {
             emit q->progress(i);
             emitProgress = 0;
         }
@@ -195,15 +194,15 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
         if (!m_bLoading) { // user clicked on a button that will load another set of icons
             break;
         }
-	QImage img;
+        QImage img;
 
-	// Use the extension as the format. Works for XPM and PNG, but not for SVG
-	QString path= *it;
-	QString ext = path.right(3).toUpper();
+        // Use the extension as the format. Works for XPM and PNG, but not for SVG
+        QString path= *it;
+        QString ext = path.right(3).toUpper();
 
-	if (ext != "SVG" && ext != "VGZ")
-	    img.load(*it);
-	else {
+        if (ext != "SVG" && ext != "VGZ") {
+            img.load(*it);
+        } else {
 #ifndef _WIN32_WCE
             // Special stuff for SVG icons
             img = QImage(canvasIconWidth, canvasIconHeight, QImage::Format_ARGB32_Premultiplied);
@@ -216,36 +215,34 @@ void KIconCanvas::KIconCanvasPrivate::_k_slotLoadFiles()
 #endif
         }
 
-	if (img.isNull())
-	    continue;
-	if (img.width() > canvasIconWidth || img.height() > canvasIconHeight)
-	{
-	    if (img.width() / (float)canvasIconWidth  > img.height() / (float)canvasIconHeight)
-	    {
-		int height = (int) (((float)canvasIconWidth / img.width()) * img.height());
-		img = img.scaled(canvasIconWidth, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-	    } else
-	    {
-		int width = (int) (((float)canvasIconHeight / img.height()) * img.width());
-		img = img.scaled(width, canvasIconHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-	    }
-	}
-	
-	if (uniformIconSize && (img.width() != canvasIconWidth || img.height() != canvasIconHeight))
-	{
-	   // Image is smaller than desired.  Draw onto a transparent QImage of the required dimensions.
-	   // (Unpleasant glitches occur if we break the uniformIconSizes() contract).
-	   QImage paddedImage = QImage(canvasIconWidth, canvasIconHeight, QImage::Format_ARGB32_Premultiplied);
-	   paddedImage.fill(0);
-	   QPainter painter(&paddedImage);
-	   painter.drawImage( (canvasIconWidth - img.width()) / 2, (canvasIconHeight - img.height()) / 2, img);
-	   img = paddedImage;
-	}
-	
-	QPixmap pm = QPixmap::fromImage(img);
-	QFileInfo fi(*it);
+        if (img.isNull()) {
+            continue;
+        }
+
+        if (img.width() > canvasIconWidth || img.height() > canvasIconHeight) {
+            if (img.width() / (float)canvasIconWidth  > img.height() / (float)canvasIconHeight) {
+                int height = (int) (((float)canvasIconWidth / img.width()) * img.height());
+                img = img.scaled(canvasIconWidth, height, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            } else {
+                int width = (int) (((float)canvasIconHeight / img.height()) * img.width());
+                img = img.scaled(width, canvasIconHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+            }
+        }
+
+        if (uniformIconSize && (img.width() != canvasIconWidth || img.height() != canvasIconHeight)) {
+            // Image is smaller than desired.  Draw onto a transparent QImage of the required dimensions.
+            // (Unpleasant glitches occur if we break the uniformIconSizes() contract).
+            QImage paddedImage = QImage(canvasIconWidth, canvasIconHeight, QImage::Format_ARGB32_Premultiplied);
+            paddedImage.fill(0);
+            QPainter painter(&paddedImage);
+            painter.drawImage( (canvasIconWidth - img.width()) / 2, (canvasIconHeight - img.height()) / 2, img);
+            img = paddedImage;
+        }
+
+        QPixmap pm = QPixmap::fromImage(img);
+        QFileInfo fi(*it);
         QListWidgetItem *item = new QListWidgetItem(pm, fi.completeBaseName(), q);
-	item->setData(Qt::UserRole, *it);
+        item->setData(Qt::UserRole, *it);
         item->setToolTip(fi.completeBaseName());
     }
 
@@ -464,12 +461,8 @@ void KIconDialog::KIconDialogPrivate::init()
     // check all 3 arrays have same sizes
     Q_ASSERT( cnt == sizeof( context_id ) / sizeof( context_id[ 0 ] )
             && cnt == sizeof( mContextMap ) / sizeof( mContextMap[ 0 ] ));
-    for( int i = 0;
-         i < cnt;
-         ++i )
-    {
-        if( mpLoader->hasContext( context_id[ i ] ))
-        {
+    for (int i = 0; i < cnt; ++i) {
+        if (mpLoader->hasContext( context_id[ i ])) {
             mpCombo->addItem(i18n( context_text[ i ] ));
             mContextMap[ mNumContext++ ] = context_id[ i ];
         }
@@ -499,16 +492,17 @@ void KIconDialog::KIconDialogPrivate::showIcons()
 {
     mpCanvas->clear();
     QStringList filelist;
-    if (mpSystemIcons->isChecked())
-        if (m_bStrictIconSize)
-            filelist=mpLoader->queryIcons(mGroupOrSize, mContext);
-        else
-            filelist=mpLoader->queryIconsByContext(mGroupOrSize, mContext);
-    else if (!customLocation.isNull()) {
+    if (mpSystemIcons->isChecked()) {
+        if (m_bStrictIconSize) {
+            filelist = mpLoader->queryIcons(mGroupOrSize, mContext);
+        } else {
+            filelist = mpLoader->queryIconsByContext(mGroupOrSize, mContext);
+        }
+    } else if (!customLocation.isEmpty()) {
         filelist = mpLoader->queryIconsByDir(customLocation);
+    } else {
+        filelist = mFileList;
     }
-    else
-	filelist=mFileList;
 
     QList<IconPath> iconlist;
     QStringList::const_iterator it;
@@ -529,13 +523,11 @@ void KIconDialog::KIconDialogPrivate::showIcons()
     // all added icons to be the same size, otherwise weirdness ensues :)
     // Ensure all SVGs are scaled to the desired size and that as few icons
     // need to be padded as possible by specifying a sensible size.
-    if (mGroupOrSize < -1) // mGroupOrSize can be -1 if NoGroup is chosen.
-    {
+    if (mGroupOrSize < -1) {
+        // mGroupOrSize can be -1 if NoGroup is chosen.
         // Explicit size.
         mpCanvas->setIconSize(QSize(-mGroupOrSize, -mGroupOrSize));
-    }
-    else
-    {
+    } else {
         // Icon group.
         int groupSize = mpLoader->currentSize((KIconLoader::Group)mGroupOrSize);
         mpCanvas->setIconSize(QSize(groupSize, groupSize));
@@ -577,25 +569,19 @@ void KIconDialog::setup(KIconLoader::Group group, KIconLoader::Context context,
     d->m_bStrictIconSize = strictIconSize;
     d->m_bLockUser = lockUser;
     d->m_bLockCustomDir = lockCustomDir;
-    if (iconSize == 0)
-    {
-        if (group == KIconLoader::NoGroup)
-        {
+    if (iconSize == 0) {
+        if (group == KIconLoader::NoGroup) {
             // NoGroup has numeric value -1, which should
             // not really be used with KIconLoader::queryIcons*(...);
             // pick a proper group.
             d->mGroupOrSize = KIconLoader::Small;
-        }
-        else
-        {
+        } else {
             d->mGroupOrSize = group;
         }
-    }
-    else
-    {
+    } else {
         d->mGroupOrSize = -iconSize;
     }
-    
+
     d->mpSystemIcons->setChecked(!user);
     d->mpSystemIcons->setEnabled(!lockUser || !user);
     d->mpOtherIcons->setChecked(user);
@@ -608,14 +594,12 @@ void KIconDialog::setup(KIconLoader::Group group, KIconLoader::Context context,
 void KIconDialog::KIconDialogPrivate::setContext(KIconLoader::Context context)
 {
     mContext = context;
-    for( int i = 0;
-         i < mNumContext;
-         ++i )
-        if( mContextMap[ i ] == context )
-        {
-            mpCombo->setCurrentIndex( i );
+    for (int i = 0; i < mNumContext; ++i) {
+        if( mContextMap[ i ] == context ) {
+            mpCombo->setCurrentIndex(i);
             return;
         }
+    }
 }
 
 void KIconDialog::setCustomLocation( const QString& location )
@@ -628,17 +612,20 @@ QString KIconDialog::openDialog()
     d->showIcons();
     d->searchLine->setFocus();
 
-    if ( exec() == Accepted )
-    {
-        if (!d->custom.isNull())
+    if (exec() == Accepted) {
+        if (!d->custom.isEmpty()) {
             return d->custom;
+        }
+
         QString name = d->mpCanvas->getCurrent();
         if (name.isEmpty() || d->mpOtherIcons->isChecked()) {
             return name;
         }
+
         QFileInfo fi(name);
         return fi.completeBaseName();
     }
+
     return QString();
 }
 
@@ -653,12 +640,9 @@ void KIconDialog::showDialog()
 void KIconDialog::slotOk()
 {
     QString name;
-    if (!d->custom.isNull())
-    {
+    if (!d->custom.isEmpty()) {
         name = d->custom;
-    }
-    else
-    {
+    } else {
         name = d->mpCanvas->getCurrent();
         if (!name.isEmpty() && d->mpSystemIcons->isChecked()) {
             const QFileInfo fi(name);
@@ -675,9 +659,10 @@ QString KIconDialog::getIcon(KIconLoader::Group group, KIconLoader::Context cont
                              QWidget *parent, const QString &caption)
 {
     KIconDialog dlg(parent);
-    dlg.setup( group, context, strictIconSize, iconSize, user );
-    if (!caption.isNull())
+    dlg.setup(group, context, strictIconSize, iconSize, user);
+    if (!caption.isEmpty()) {
         dlg.setCaption(caption);
+    }
 
     return dlg.openDialog();
 }
@@ -906,8 +891,9 @@ void KIconButton::KIconButtonPrivate::_k_slotChangeIcon()
 
 void KIconButton::KIconButtonPrivate::_k_newIconName(const QString& name)
 {
-    if (name.isEmpty())
+    if (name.isEmpty()) {
         return;
+    }
 
     q->setIcon(KIcon(name));
     mIcon = name;
