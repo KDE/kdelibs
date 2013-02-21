@@ -428,6 +428,59 @@ public:
       return a;
   }
 
+    /**
+     * Get the default primary shortcut for the given action.
+     *
+     * @param action the action for which the default primary shortcut should be returned.
+     * @return the default primary shortcut of the given action
+     * @since 5.0
+     */
+    QKeySequence defaultShortcut(QAction *action) const;
+
+    /**
+     * Get the default shortcuts for the given action.
+     *
+     * @param action the action for which the default shortcuts should be returned.
+     * @return the default shortcuts of the given action
+     * @since 5.0
+     */
+    QList<QKeySequence> defaultShortcuts(QAction *action) const;
+
+    /**
+     * Set the default shortcut for the given action.
+     *
+     * @param action the action for which the default shortcut should be set.
+     * @param shortcut the shortcut to use for the given action in its specified shortcutContext()
+     * @since 5.0
+     */
+    void setDefaultShortcut(QAction *action, const QKeySequence &shortcut);
+
+    /**
+     * Set the default shortcuts for the given action.
+     *
+     * @param action the action for which the default shortcut should be set.
+     * @param shortcuts the shortcuts to use for the given action in its specified shortcutContext()
+     * @since 5.0
+     */
+    void setDefaultShortcuts(QAction *action, const QList<QKeySequence>& shortcuts);
+
+    /**
+     * Returns true if the given action's shortcuts may be configured by the user.
+     *
+     * @param action the action for the hint should be verified.
+     * @since 5.0
+     */
+    bool isShortcutsConfigurable(QAction *action) const;
+
+    /**
+     * Indicate whether the user may configure the action's shortcuts.
+     *
+     * @param action the action for the hint should be verified.
+     * @param configurable set to true if the shortcuts of the given action may be configured by the user, otherwise false.
+     * @since 5.0
+     */
+    void setShortcutsConfigurable(QAction *action, bool configurable);
+
 private:
   Q_PRIVATE_SLOT(d, void _k_actionDestroyed(QObject *))
   Q_PRIVATE_SLOT(d, void _k_associatedWidgetDestroyed(QObject*))
