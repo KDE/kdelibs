@@ -27,6 +27,10 @@ remove_definitions(-DQT_NO_KEYWORDS)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h)
 
+include_directories(
+       ${ki18n_SOURCE_DIR}/src
+       ${ki18n_BINARY_DIR}/src
+)
 kde4_add_executable(kf5-config NOGUI kde-config.cpp )
 
 target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} kcoreaddons)
