@@ -661,8 +661,8 @@ void KIconDialog::slotOk()
     {
         name = d->mpCanvas->getCurrent();
         if (!name.isEmpty() && d->mpSystemIcons->isChecked()) {
-            QFileInfo fi(name);
-            name = fi.baseName();
+            const QFileInfo fi(name);
+            name = fi.completeBaseName();
         }
     }
 
