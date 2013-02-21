@@ -938,32 +938,29 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
         }
     }
 
-    foreach (KIconThemeNode *themeNode, links)
-    {
+    foreach (KIconThemeNode *themeNode, links) {
         QString currentName = name;
 
-        while (!currentName.isEmpty())
-        {
-
+        while (!currentName.isEmpty()) {
             //kDebug(264) << "Looking up" << currentName;
 
-// The following code has been commented out because the Qt SVG renderer needs
-// to be improved. If you are going to change/remove some code from this part,
-// please contact me before (ereslibre@kde.org), or kde-core-devel@kde.org. (ereslibre)
-            for (int i = 0 ; i < 4 ; i++)
-            {
+            for (int i = 0 ; i < 4 ; i++) {
                 icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchExact);
-                if (icon.isValid())
-                    return icon;
+                if (icon.isValid()) {
+                    break;
+                }
 
                 icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchBest);
-                if (icon.isValid())
-                    return icon;
+                if (icon.isValid()) {
+                    break;
+                }
             }
+            //kDebug(264) << "Looking up" << currentName;
 
-            if (genericFallback)
+            if (genericFallback) {
                 // we already tested the base name
                 break;
+            }
 
             int rindex = currentName.lastIndexOf('-');
             if (rindex > 1) { // > 1 so that we don't split x-content or x-epoc
