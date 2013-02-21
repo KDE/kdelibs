@@ -947,12 +947,12 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
             for (int i = 0 ; i < 4 ; i++) {
                 icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchExact);
                 if (icon.isValid()) {
-                    break;
+                    return icon;
                 }
 
                 icon = themeNode->theme->iconPath(currentName + ext[i], size, KIconLoader::MatchBest);
                 if (icon.isValid()) {
-                    break;
+                    return icon;
                 }
             }
             //kDebug(264) << "Looking up" << currentName;
