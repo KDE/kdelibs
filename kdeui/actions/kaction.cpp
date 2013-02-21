@@ -126,9 +126,8 @@ KShortcut KAction::shortcut(ShortcutTypes type) const
   Q_ASSERT(type);
 
   if (type == DefaultShortcut) {
-      QKeySequence primary = property("defaultPrimaryShortcut").value<QKeySequence>();
-      QKeySequence secondary = property("defaultAlternateShortcut").value<QKeySequence>();
-      return KShortcut(primary, secondary);
+      QList<QKeySequence> shortcuts = property("defaultShortcuts").value<QList<QKeySequence> >();
+      return KShortcut(shortcuts);
   }
 
   QKeySequence primary = shortcuts().value(0);
@@ -141,8 +140,7 @@ void KAction::setShortcut( const KShortcut & shortcut, ShortcutTypes type )
   Q_ASSERT(type);
 
   if (type & DefaultShortcut) {
-      setProperty("defaultPrimaryShortcut", shortcut.primary());
-      setProperty("defaultAlternateShortcut", shortcut.alternate());
+      setProperty("defaultShortcuts", QVariant::fromValue(shortcut.toList()));
   }
 
   if (type & ActiveShortcut) {
@@ -155,7 +153,7 @@ void KAction::setShortcut( const QKeySequence & keySeq, ShortcutTypes type )
   Q_ASSERT(type);
 
   if (type & DefaultShortcut)
-      setProperty("defaultPrimaryShortcut", keySeq);
+      setProperty("defaultShortcuts", QVariant::fromValue(QList<QKeySequence>() << keySeq));
 
   if (type & ActiveShortcut) {
       QAction::setShortcut(keySeq);
