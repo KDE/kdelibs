@@ -909,7 +909,36 @@ K3Icon KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) const
     const char * const ext[4] = { ".png", ".svgz", ".svg", ".xpm" };
     bool genericFallback = name.endsWith(QLatin1String("-x-generic"));
 
-    foreach(KIconThemeNode *themeNode, links)
+    // Do two passes through themeNodes.
+    //
+    // The first pass looks for an exact match in each themeNode one after the other.
+    // If one is found and it is an app icon then return that icon.
+    //
+    // In the next pass (assuming the first pass failed), it looks for exact matches
+    // and then generic fallbacks in each themeNode one after the other
+    //
+    // The reasoning is that application icons should always match exactly, all other
+    // icons may fallback. Since we do not know what the context is here when we start
+    // looking for it, we can only go by the path found.
+    foreach (KIconThemeNode *themeNode, links) {
+        for (int i = 0 ; i < 4 ; i++) {
+            icon = themeNode->theme->iconPath(name + ext[i], size, KIconLoader::MatchExact);
+            if (icon.isValid()) {
+                break;
+            }
+
+            icon = themeNode->theme->iconPath(name + ext[i], size, KIconLoader::MatchBest);
+            if (icon.isValid()) {
+                break;
+            }
+        }
+
+        if (icon.isValid() && icon.path.contains("/apps/")) {
+            return icon;
+        }
+    }
+
+    foreach (KIconThemeNode *themeNode, links)
     {
         QString currentName = name;
 
