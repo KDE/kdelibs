@@ -47,7 +47,7 @@ void KConfigNoKdeHomeTest::testNoKdeHome()
     xdgConfigHomeDir.removeRecursively();
     QVERIFY(!QFile::exists(xdgConfigHome));
 
-    // Do what kde5-config does, and ensure kdehome doesn't get created (#233892)
+    // Do what kf5-config does, and ensure kdehome doesn't get created (#233892)
     QVERIFY(!QFile::exists(xdgConfigHome));
     KGlobal::dirs();
     QVERIFY(!QFile::exists(xdgConfigHome));

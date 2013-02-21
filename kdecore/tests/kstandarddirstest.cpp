@@ -411,7 +411,7 @@ void KStandarddirsTest::testAddResourceDir()
 
 void KStandarddirsTest::testSetXdgDataDirs()
 {
-    // By default we should have KDEDIR/share/applications in `kde5-config --path xdgdata-apps`
+    // By default we should have KDEDIR/share/applications in `kf5-config --path xdgdata-apps`
     const QStringList dirs = KGlobal::dirs()->resourceDirs("xdgdata-apps");
     const QString kdeDataApps = KStandardDirs::realPath(CMAKE_INSTALL_PREFIX "/share/applications/");
     if (!dirs.contains(kdeDataApps)) {

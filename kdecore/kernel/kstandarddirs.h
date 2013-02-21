@@ -317,9 +317,9 @@ public:
      * then look into the subdir lib of all elements of all prefixes
      * ($KDEDIRS) for a file libkdecore.la and return the path to
      * the first one it finds (e.g. /opt/kde/lib/libkdecore.la).
-     * You can use the program kde5-config to list all resource types:
+     * You can use the program kf5-config to list all resource types:
      * @code
-     * $ kde5-config --types
+     * $ kf5-config --types
      * @endcode
      *
      * Example:
@@ -455,7 +455,7 @@ public:
      * @param type The type of resource to locate directories for. Can be icon,
      *        lib, pixmap, .... To get a complete list, call
      *        @code
-     *        kde5-config --types
+     *        kf5-config --types
      *        @endcode
      * @param filter Only accept filenames that fit to filter. The filter
      *        may consist of an optional directory and a QRegExp

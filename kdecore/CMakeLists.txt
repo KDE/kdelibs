@@ -242,13 +242,6 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 
 configure_file(localization/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
 
-kde4_add_executable(kde5-config NOGUI kde-config.cpp )
-
-target_link_libraries(kde5-config ${KDE4_KDECORE_LIBS} kcoreaddons)
-
-install(TARGETS kde5-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
-
-
 ########### install files ###############
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en_US )
