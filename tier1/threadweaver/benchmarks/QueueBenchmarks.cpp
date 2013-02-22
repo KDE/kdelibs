@@ -28,7 +28,7 @@ public:
         return m_result;
     }
 
-    void executeLocal() {
+    void executeRun() {
         run();
     }
 
@@ -101,10 +101,12 @@ void QueueBenchmarksTest::BaselineBenchmark()
         jobs[i].setCount(m);
     }
 
-    //Actually, executeLocal needs to emit similar signals as execute(), to be comparable to the threaded variants
+    //executeLocal needs to emit similar signals as execute(), to be comparable to the threaded variants.
+    //BaselineAsJobsBenchmark does that. Compare BaselineAsJobsBenchmark and BaselineBenchmark to evaluate the overhead of executing
+    //an operation in a job.
     QBENCHMARK {
         for(int i = 0; i < n; ++i) {
-            jobs[i].executeLocal();
+            jobs[i].executeRun();
         }
     }
 }
@@ -130,7 +132,6 @@ void QueueBenchmarksTest::BaselineAsJobsBenchmark()
         jobs[i].setCount(m);
     }
 
-    //Actually, executeLocal needs to emit similar signals as execute(), to be comparable to the threaded variants
     QBENCHMARK {
         for(int i = 0; i < n; ++i) {
             jobs[i]();

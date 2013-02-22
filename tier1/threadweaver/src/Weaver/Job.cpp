@@ -82,8 +82,7 @@ class Job::Private
 {
 public:
     Private ()
-        : thread (0)
-        , mutex(QMutex::NonRecursive)
+        : mutex(QMutex::NonRecursive)
         , finished (false)
         , executor(&defaultExecutor)
     {
@@ -92,9 +91,8 @@ public:
     ~Private()
     {}
 
-    //FIXME use QAtomicPointer and avoid acquiring the mutex for run().
     /* The thread that executes this job. Zero when the job is not executed. */
-    Thread * thread;
+    QAtomicPointer<Thread> thread;
     /* The list of QueuePolicies assigned to this Job. */
     QueuePolicyList queuePolicies;
 
@@ -132,20 +130,14 @@ Job::~Job()
 
 void Job::execute(Thread *th)
 {
-    {
-        QMutexLocker l(&d->mutex); Q_UNUSED(l);
-        d->thread = th;
-    }
+    d->thread.fetchAndStoreOrdered(th);
     Executor* executor = d->executor.fetchAndAddOrdered(0);
     Q_ASSERT(executor); //may never be unset!
     executor->begin(this, th);
     executor->execute(this, th);
     executor->end(this, th);
-    {
-        QMutexLocker l(&d->mutex); Q_UNUSED(l);
-        d->thread = 0;
-        setFinished (true);
-    }
+    d->thread.fetchAndStoreOrdered(0);
+    setFinished (true);
     executor->cleanup(this, th);
 }
 
@@ -270,7 +262,7 @@ bool Job::isFinished() const
 
 Thread* Job::thread()
 {
-    return d->thread;
+    return d->thread.fetchAndAddOrdered(0);
 }
 
 void Job::setFinished(bool status)
