@@ -998,67 +998,6 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 }
 
 void
-VFolderMenu::processKDELegacyDirs()
-{
-    kDebug(7021);
-
-   QHash<QString,KService::Ptr> items;
-   QString prefix = "kde4-"; // leave this to be kde4. We don't install kde5 applications into the very old applnk dir.
-
-   QStringList relFiles;
-
-   (void) KGlobal::dirs()->findAllResources( "apps",
-                                             QString(),
-                                             KStandardDirs::Recursive |
-                                             KStandardDirs::NoDuplicates,
-                                             relFiles);
-   for(QStringList::ConstIterator it = relFiles.constBegin();
-       it != relFiles.constEnd(); ++it)
-   {
-      if (!m_forcedLegacyLoad && (*it).endsWith(QLatin1String(".directory")))
-      {
-         QString name = *it;
-         if (!name.endsWith(QLatin1String("/.directory")))
-            continue; // Probably ".directory", skip it.
-
-         name = name.left(name.length()-11);
-
-         SubMenu *newMenu = new SubMenu;
-         newMenu->directoryFile = KStandardDirs::locate("apps", *it);
-
-         insertSubMenu(m_currentMenu, name, newMenu);
-         continue;
-      }
-
-      if ((*it).endsWith(QLatin1String(".desktop")))
-      {
-         QString name = *it;
-         KService::Ptr service = m_kbuildsycocaInterface->createService(name);
-
-         if (service && !m_forcedLegacyLoad)
-         {
-            QString id = name;
-            // Strip path from id
-            int i = id.lastIndexOf('/');
-            if (i >= 0)
-               id = id.mid(i+1);
-
-            id.prepend(prefix);
-
-            // TODO: add Legacy category
-            addApplication(id, service);
-            items.insert(service->menuId(), service);
-            if (service->categories().isEmpty())
-               insertService(m_currentMenu, name, service);
-
-         }
-      }
-   }
-   markUsedApplications(items);
-   m_legacyLoaded = true;
-}
-
-void
 VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix)
 {
    kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
@@ -1116,7 +1055,6 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
    QString directoryFile;
    bool onlyUnallocated = false;
    bool isDeleted = false;
-   bool kdeLegacyDirsDone = false;
    QDomElement defaultLayoutNode;
    QDomElement layoutNode;
 
@@ -1243,23 +1181,6 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
 
             loadApplications(dir, QString());
          }
-         else if (e.tagName() == "KDELegacyDirs")
-         {
-            createAppsInfo();
-            if (!kdeLegacyDirsDone)
-            {
-kDebug(7021) << "Processing KDE Legacy dirs for <KDE>";
-               SubMenu *oldMenu = m_currentMenu;
-               m_currentMenu = new SubMenu;
-
-               processKDELegacyDirs();
-
-               m_legacyNodes.insert("<KDE>", m_currentMenu);
-               m_currentMenu = oldMenu;
-
-               kdeLegacyDirsDone = true;
-            }
-         }
          else if (e.tagName() == "LegacyDir")
          {
             createAppsInfo();
@@ -1267,34 +1188,15 @@ kDebug(7021) << "Processing KDE Legacy dirs for <KDE>";
 
             QString prefix = e.attributes().namedItem("prefix").toAttr().value();
 
-            if (m_defaultLegacyDirs.contains(dir))
-            {
-               if (!kdeLegacyDirsDone)
-               {
-kDebug(7021) << "Processing KDE Legacy dirs for" << dir;
-                  SubMenu *oldMenu = m_currentMenu;
-                  m_currentMenu = new SubMenu;
+            SubMenu *oldMenu = m_currentMenu;
+            m_currentMenu = new SubMenu;
 
-                  processKDELegacyDirs();
+            registerDirectory(dir);
 
-                  m_legacyNodes.insert("<KDE>", m_currentMenu);
-                  m_currentMenu = oldMenu;
+            processLegacyDir(dir, QString(), prefix);
 
-                  kdeLegacyDirsDone = true;
-               }
-            }
-            else
-            {
-               SubMenu *oldMenu = m_currentMenu;
-               m_currentMenu = new SubMenu;
-
-               registerDirectory(dir);
-
-               processLegacyDir(dir, QString(), prefix);
-
-               m_legacyNodes.insert(dir, m_currentMenu);
-               m_currentMenu = oldMenu;
-            }
+            m_legacyNodes.insert(dir, m_currentMenu);
+            m_currentMenu = oldMenu;
          }
          n = n.nextSibling();
       }
@@ -1370,17 +1272,6 @@ kDebug(7021) << "Processing KDE Legacy dirs for" << dir;
          {
             // Add legacy nodes to Menu structure
             QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"));
-            SubMenu *legacyMenu = m_legacyNodes[dir];
-            if (legacyMenu)
-            {
-               mergeMenu(m_currentMenu, legacyMenu);
-            }
-         }
-
-         else if (e.tagName() == "KDELegacyDirs")
-         {
-            // Add legacy nodes to Menu structure
-            QString dir = "<KDE>";
             SubMenu *legacyMenu = m_legacyNodes[dir];
             if (legacyMenu)
             {
@@ -1577,11 +1468,8 @@ VFolderMenu::markUsedApplications(const QHash<QString,KService::Ptr>& items)
       m_usedAppsDict.insert(p->menuId());
 }
 
-VFolderMenu::SubMenu *
-VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
+VFolderMenu::SubMenu * VFolderMenu::parseMenu(const QString &file)
 {
-   m_forcedLegacyLoad = false;
-   m_legacyLoaded = false;
    m_appsInfo = 0;
 
    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QLatin1String("menus"), QStandardPaths::LocateDirectory);
@@ -1627,12 +1515,6 @@ VFolderMenu::parseMenu(const QString &file, bool forceLegacyLoad)
       default:
           break;
       }
-   }
-
-   if (!m_legacyLoaded && forceLegacyLoad)
-   {
-      m_forcedLegacyLoad = true;
-      processKDELegacyDirs();
    }
 
    return m_rootMenu;

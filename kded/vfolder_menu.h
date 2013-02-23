@@ -64,14 +64,12 @@ public:
    * a specific service description.
    *
    * @param file Menu file to load
-   * @param forceLegacyLoad flag indicating whether the KDE "applnk"
-   * directory should be processed at least once.
    */
-  SubMenu *parseMenu(const QString &file, bool forceLegacyLoad=false);
+  SubMenu *parseMenu(const QString &file);
 
   /**
    * Returns a list of all directories involved in the last call to
-   * parseMenu(), excluding the KDE Legacy directories.
+   * parseMenu().
    *
    * A change in any of these directories or in any of their child-
    * directories can result in changes to the menu.
@@ -142,8 +140,6 @@ public:
   QDomDocument m_doc;
   SubMenu *m_rootMenu;
   SubMenu *m_currentMenu;
-  bool m_forcedLegacyLoad;
-  bool m_legacyLoaded;
   bool m_track;
   QString m_trackId;
 
@@ -253,7 +249,6 @@ private:
    */
   void registerDirectory(const QString &directory);
 
-  void processKDELegacyDirs();
   void processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix);
   void processMenu(QDomElement &docElem, int pass);
   void layoutMenu(VFolderMenu::SubMenu *menu, QStringList defaultLayout);
