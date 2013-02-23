@@ -1019,7 +1019,9 @@ void KConfigTest::testSubGroup()
     //QEXPECT_FAIL("", "Empty subgroups do not show up in groupList()", Continue);
     //QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child2" << "NEG Child3" << "NEG Child4");
     // This is what happens
-    QCOMPARE(neg.groupList(), QStringList() << "NEG Child1" << "NEG Child4");
+    QStringList groups = neg.groupList();
+    groups.sort(); // Qt5 made the ordering unreliable, due to QHash
+    QCOMPARE(groups, QStringList() << "NEG Child1" << "NEG Child4");
 
     // make sure groupList() isn't returning something it shouldn't
     Q_FOREACH(const QString& group, sc.groupList()) {
