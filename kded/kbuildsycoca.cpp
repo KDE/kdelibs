@@ -39,10 +39,8 @@
 #include <errno.h>
 
 #include <assert.h>
-#include <kglobal.h>
 #include <kdebug.h>
 #include <kdirwatch.h>
-#include <kstandarddirs.h>
 #include <qsavefile.h>
 #include <klocale.h>
 #include <kaboutdata.h>
@@ -233,13 +231,17 @@ bool KBuildSycoca::build()
      g_resource = it1.value();
 
      QStringList relFiles;
-     (void) KGlobal::dirs()->findAllResources(g_resource,
-                                              QString(),
-                                              KStandardDirs::Recursive |
-                                              KStandardDirs::NoDuplicates,
-                                              relFiles);
-     kDebug() << g_resourceSubdir << KGlobal::dirs()->resourceDirs("xdgdata") << relFiles;
-
+     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, g_resourceSubdir, QStandardPaths::LocateDirectory);
+     Q_FOREACH(const QString& dir, dirs) {
+         QDirIterator it(dir, QDirIterator::Subdirectories);
+         while (it.hasNext()) {
+             const QString filePath = it.next();
+             Q_ASSERT(filePath.startsWith(dir)); // due to the line below...
+             const QString relPath = filePath.mid(dir.length()+1);
+             if (!relFiles.contains(relPath))
+                 relFiles.append(relPath);
+         }
+     }
      // Now find all factories that use this resource....
      // For each factory
      KBSEntryDictList::const_iterator ed_it = entryDictList.begin();
@@ -381,7 +383,8 @@ void KBuildSycoca::createMenu(const QString &caption_, const QString &name_, VFo
      if (bMenuTest)
      {
         if (!menu->isDeleted && !p->noDisplay())
-           printf("%s\t%s\t%s\n", qPrintable( caption ), qPrintable( p->menuId() ), qPrintable( KStandardDirs::locate("apps", p->entryPath() ) ) );
+            printf("%s\t%s\t%s\n", qPrintable( caption ), qPrintable( p->menuId() ),
+                   qPrintable(QStandardPaths::locate(QStandardPaths::ApplicationsLocation, p->entryPath())));
      }
      else
      {

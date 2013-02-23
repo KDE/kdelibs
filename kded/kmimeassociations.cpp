@@ -23,8 +23,7 @@
 #include <kconfiggroup.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
+#include <qstandardpaths.h>
 #include <qmimedatabase.h>
 
 KMimeAssociations::KMimeAssociations(KOfferHash& offerHash)
@@ -52,7 +51,7 @@ text/plain=gnome-gedit.desktop;gnu-emacs.desktop;
 bool KMimeAssociations::parseAllMimeAppsList()
 {
     // Using the "merged view" from KConfig is not enough since we -add- at every level, we don't replace.
-    const QStringList mimeappsFiles = KGlobal::dirs()->findAllResources("xdgdata-apps", "mimeapps.list");
+    const QStringList mimeappsFiles = QStandardPaths::locateAll(QStandardPaths::ApplicationsLocation, "mimeapps.list");
     if (mimeappsFiles.isEmpty())
         return false;
 

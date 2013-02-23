@@ -27,6 +27,7 @@
 // NOTE: the storing of "resource" here is now completely useless (since everything is under GenericDataLocation),
 // except for remainingResourceList() which is used for the compat signal databaseChanged(...)
 // We could possibly replace this with a subdir->old_resource mapping (applications -> apps, kde5/services -> services, etc.)
+// Alternatively, we could use an enum in the signal...
 
 static inline QString key(const QString &path, const QByteArray& resource)
 {
