@@ -18,7 +18,7 @@
  ***************************************************************************/
 
 #include "kurlnavigatortest.h"
-#include <QtTest/QtTest>
+#include <QtTestWidgets>
 #include <kurlnavigator.h>
 
 QTEST_MAIN(KUrlNavigatorTest)
