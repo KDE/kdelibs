@@ -147,7 +147,7 @@ becomes:
     QStringList files;
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "foo/bar", QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString&amp; dir, dirs) {
-        Q_FOREACH(const QString&amp; file, QDir(dir).entryList(QStringList() &lt;&lt; QLatin1String("*.desktop"))) {
+        Q_FOREACH(const QString&amp; file, QDir(dir).entryList(QStringList() &lt;&lt; QStringLiteral("*.desktop"))) {
             files.append(dir + '/' + file);
         }
     }
@@ -157,7 +157,7 @@ Example using QDirIterator:
     QStringList files;
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "foo/bar", QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString&amp; dir, dirs) {
-        QDirIterator it(dir, QStringList() &lt;&lt; QLatin1String("*.desktop"));
+        QDirIterator it(dir, QStringList() &lt;&lt; QStringLiteral("*.desktop"));
         while (it.hasNext()) {
             files.append(it.next());
         }
@@ -165,7 +165,7 @@ Example using QDirIterator:
 </pre>
 On the other hand, findAllResources("locale", "*/entry.desktop") requires
 <pre>
-    const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QLatin1String("locale"), QStandardPaths::LocateDirectory);
+    const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("locale"), QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString&amp; localeDir, localeDirs) {
         const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
         Q_FOREACH(const QString&amp; d, entries) {
