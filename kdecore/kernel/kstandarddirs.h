@@ -672,7 +672,8 @@ public:
      * Don't use this function if you can use locateLocal()
      * @return the toplevel directory
      * @deprecated since 5.0, there is no KDEDIRS nor KDEHOME anymore.
-     * Use localxdgdatadir or localxdgconfdir instead.
+     * Use QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) or
+     * QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) instead.
      */
 #ifndef KDE_NO_DEPRECATED
     KDECORE_DEPRECATED QString localkdedir() const;
@@ -681,18 +682,25 @@ public:
     /**
      * @return @c $XDG_DATA_HOME
      * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
+     * @deprecated since 5.0 use QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation)
      */
-    QString localxdgdatadir() const;
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED QString localxdgdatadir() const;
+#endif
 
     /**
      * @return @c $XDG_CONFIG_HOME
      * See also http://www.freedesktop.org/standards/basedir/draft/basedir-spec/basedir-spec.html
+     * @deprecated since 5.0 use QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)
      */
-    QString localxdgconfdir() const;
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED QString localxdgconfdir() const;
+#endif
 
     /**
      * @return the path where type was installed to by kdelibs. This is an absolute path and only
      * one out of many search paths
+     * @deprecated since 5.0, use QStandardPaths::standardLocations(...).last()
      */
     static QString installPath(const char *type);
 
@@ -702,8 +710,11 @@ public:
      * @param fullPath the path to check. IMPORTANT: must end with a slash if expected to be a directory
      *                 (and no slash for a file, obviously).
      * @return @c true if the directory exists, @c false otherwise
+     * @deprecated since 5.0, use QFile::exists or QFileInfo::isFile()/isDir() to be more precise.
      */
-    static bool exists(const QString &fullPath);
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED static bool exists(const QString &fullPath);
+#endif
 
     /**
      * Expands all symbolic links and resolves references to

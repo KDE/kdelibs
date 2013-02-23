@@ -24,7 +24,6 @@
 #include <kbookmark.h>
 #include <kdebug.h>
 #include <kfileplacesmodel.h>
-#include <kstandarddirs.h>
 #include <kuser.h>
 #include <solid/device.h>
 
@@ -89,12 +88,12 @@ void KFilePlacesModelTest::initTestCase()
     qt_qhash_seed.fetchAndStoreRelaxed(0);
 
     // Ensure we'll have a clean bookmark file to start
-    const QString file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "kfileplaces/bookmarks.xml";
+    const QString file = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/kfileplaces/bookmarks.xml";
     QFile f(file);
     f.remove();
 
     // Erase the shared bookmarks file also
-    const QString sharedBookmarksFile = KStandardDirs().localxdgdatadir() + "/user-places.xbel";
+    const QString sharedBookmarksFile = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/user-places.xbel";
     QFile f2(sharedBookmarksFile);
     f2.remove();
 

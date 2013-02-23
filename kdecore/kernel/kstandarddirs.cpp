@@ -2097,7 +2097,6 @@ QString KStandardDirs::localkdedir() const
     // Return the prefix to use for saving
     return d->m_prefixes.first();
 }
-#endif
 
 QString KStandardDirs::localxdgdatadir() const
 {
@@ -2110,7 +2109,7 @@ QString KStandardDirs::localxdgconfdir() const
     // Return the prefix to use for saving
     return d->xdgconf_prefixes.first();
 }
-
+#endif // KDE_NO_DEPRECATED
 
 // just to make code more readable without macros
 QString KStandardDirs::locate(const char *type,
