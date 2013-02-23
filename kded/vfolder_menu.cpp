@@ -822,13 +822,11 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
 void
 VFolderMenu::initDirs()
 {
-   m_defaultDataDirs = KGlobal::dirs()->kfsstnd_prefixes().split(':', QString::SkipEmptyParts);
-   const QString localDir = m_defaultDataDirs.first();
-   m_defaultDataDirs.removeAll(localDir); // Remove local dir
+   m_defaultAppDirs = QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation);
+   m_defaultDirectoryDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "desktop-directories", QStandardPaths::LocateDirectory);
 
-   m_defaultAppDirs = KGlobal::dirs()->findDirs("xdgdata-apps", QString());
-   m_defaultDirectoryDirs = KGlobal::dirs()->findDirs("xdgdata-dirs", QString());
-   m_defaultLegacyDirs = KGlobal::dirs()->resourceDirs("apps");
+   // ### it's time to get rid of applnk dirs, isn't it?
+   m_defaultLegacyDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "applnk", QStandardPaths::LocateDirectory);
 }
 
 void

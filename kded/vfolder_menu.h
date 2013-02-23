@@ -96,7 +96,6 @@ public:
 public:
   QStringList m_allDirectories; // A list of all the directories that we touch
 
-  QStringList m_defaultDataDirs;
   QStringList m_defaultAppDirs;
   QStringList m_defaultDirectoryDirs;
   QStringList m_defaultMergeDirs;

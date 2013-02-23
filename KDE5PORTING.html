@@ -133,6 +133,7 @@ Otherwise, you need to use GenericDataLocation and add the subdirectory name man
     dirs()-&gt;resourceDirs("xdgdata-icon") -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "icons", QStandardPaths::LocateDirectory) // xdgata-icon is the "icons" subdir under the xdg data locations
     dirs()-&gt;findAllResources("xdgdata-mime", file) -&gt; QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/" + file)
     Similarly, xdgconf-menu is QStandardPaths::ConfigLocation + "menus", and xdgconf-autostart is QStandardPaths::ConfigLocation + "autostart";
+    "xdgdata-dirs" is QStandardPaths::GenericDataLocation + "desktop-directories"
     "templates" is QStandardPaths::GenericDataLocation + "templates"
     "wallpaper" is QStandardPaths::GenericDataLocation + "wallpapers" (note the additional 's')
 </pre>
