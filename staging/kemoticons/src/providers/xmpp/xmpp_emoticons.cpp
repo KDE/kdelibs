@@ -24,8 +24,6 @@
 
 #include <kpluginfactory.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <qmimedatabase.h>
 
 K_PLUGIN_FACTORY(XmppEmoticonsFactory, registerPlugin<XmppEmoticons>();)
@@ -46,14 +44,14 @@ bool XmppEmoticons::removeEmoticon(const QString &emo)
         return false;
 
     QDomNodeList nl = fce.childNodes();
-    for (uint i = 0; i < nl.length(); i++) {
+    for (int i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
         if (!de.isNull() && de.tagName() == "icon") {
             QDomNodeList snl = de.childNodes();
             QStringList sl;
             QStringList mime;
 
-            for (uint k = 0; k < snl.length(); k++) {
+            for (int k = 0; k < snl.length(); k++) {
                 QDomElement sde = snl.item(k).toElement();
 
                 if (!sde.isNull() && sde.tagName() == "object" && sde.text() == emoticon) {
@@ -161,7 +159,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
 
     clearEmoticonsMap();
 
-    for (uint i = 0; i < nl.length(); i++) {
+    for (int i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
 
         if (!de.isNull() && de.tagName() == "icon") {
@@ -171,7 +169,7 @@ bool XmppEmoticons::loadTheme(const QString &path)
             QStringList mime;
             mime << "image/png" << "image/gif" << "image/bmp" << "image/jpeg";
 
-            for (uint k = 0; k < snl.length(); k++) {
+            for (int k = 0; k < snl.length(); k++) {
                 QDomElement sde = snl.item(k).toElement();
 
                 if (!sde.isNull() && sde.tagName() == "text") {
@@ -181,9 +179,9 @@ bool XmppEmoticons::loadTheme(const QString &path)
                 }
             }
 
-            emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + emo);
+            emo = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "emoticons/" + themeName() + '/' + emo);
 
-            if (emo.isNull()) {
+            if (emo.isEmpty()) {
                 continue;
             }
 
@@ -197,7 +195,8 @@ bool XmppEmoticons::loadTheme(const QString &path)
 
 void XmppEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
+    QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
+    QDir().mkpath(path);
 
     QFile fp(path + '/' + "icondef.xml");
 

@@ -19,14 +19,13 @@
 #include "kde_emoticons.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QImageReader>
 #include <QTextDocument>
 
 #include <kpluginfactory.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
 K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))
@@ -46,7 +45,7 @@ bool KdeEmoticons::removeEmoticon(const QString &emo)
         return false;
 
     QDomNodeList nl = fce.childNodes();
-    for (uint i = 0; i < nl.length(); i++) {
+    for (int i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
         if (!de.isNull() && de.tagName() == "emoticon" && (de.attribute("file") == emoticon || de.attribute("file") == QFileInfo(emoticon).baseName())) {
             fce.removeChild(de);
@@ -140,14 +139,14 @@ bool KdeEmoticons::loadTheme(const QString &path)
 
     clearEmoticonsMap();
 
-    for (uint i = 0; i < nl.length(); i++) {
+    for (int i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
 
         if (!de.isNull() && de.tagName() == "emoticon") {
             QDomNodeList snl = de.childNodes();
             QStringList sl;
 
-            for (uint k = 0; k < snl.length(); k++) {
+            for (int k = 0; k < snl.length(); k++) {
                 QDomElement sde = snl.item(k).toElement();
 
                 if (!sde.isNull() && sde.tagName() == "string") {
@@ -155,13 +154,13 @@ bool KdeEmoticons::loadTheme(const QString &path)
                 }
             }
 
-            QString emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + de.attribute("file"));
+            QString emo = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "emoticons/" + themeName() + '/' + de.attribute("file"));
 
             if (emo.isEmpty()) {
                 QList<QByteArray> ext = QImageReader::supportedImageFormats();
 
                 for (int j = 0; j < ext.size(); ++j) {
-                    emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + de.attribute("file") + '.' + ext.at(j));
+                    emo = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "emoticons/" + themeName() + '/' + de.attribute("file") + '.' + ext.at(j));
                     if (!emo.isEmpty()) {
                         break;
                     }
@@ -182,7 +181,8 @@ bool KdeEmoticons::loadTheme(const QString &path)
 
 void KdeEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
+    QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
+    QDir().mkpath(path);
 
     QFile fp(path + '/' + "emoticons.xml");
 

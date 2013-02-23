@@ -13,8 +13,6 @@ macro(kemoticons_unit_tests)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
       add_test(kemoticons-${_testname} ${_testname})
-      # TODO: QT5 Port to QFINDTESTDATA
-      set_target_properties(${_testname} PROPERTIES COMPILE_FLAGS -DSRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
       target_link_libraries(${_testname} ${KDE4_KIO_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons kemoticons)
       ecm_mark_as_test(${_testname})
    endforeach()

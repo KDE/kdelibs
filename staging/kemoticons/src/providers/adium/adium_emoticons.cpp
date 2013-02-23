@@ -19,6 +19,7 @@
 #include "adium_emoticons.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QImageReader>
 
@@ -46,7 +47,7 @@ bool AdiumEmoticons::removeEmoticon(const QString &emo)
     }
 
     QDomNodeList nl = fce.childNodes();
-    for (uint i = 0; i < nl.length(); i++) {
+    for (int i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
         if (!de.isNull() && de.tagName() == "key" && (de.text() == emoticon)) {
             QDomElement dict = de.nextSiblingElement();
@@ -167,18 +168,18 @@ bool AdiumEmoticons::loadTheme(const QString &path)
 
     clearEmoticonsMap();
     QString name;
-    for (uint i = 0; i < nl.length(); i++) {
+    for (int i = 0; i < nl.length(); i++) {
         QDomElement de = nl.item(i).toElement();
 
         if (!de.isNull() && de.tagName() == "key") {
-            name = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + de.text());
+            name = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "emoticons/" + themeName() + '/' + de.text());
             continue;
         } else if (!de.isNull() && de.tagName() == "dict") {
             QDomElement arr = de.firstChildElement("array");
             QDomNodeList snl = arr.childNodes();
             QStringList sl;
 
-            for (uint k = 0; k < snl.length(); k++) {
+            for (int k = 0; k < snl.length(); k++) {
                 QDomElement sde = snl.item(k).toElement();
 
                 if (!sde.isNull() && sde.tagName() == "string") {
@@ -198,7 +199,8 @@ bool AdiumEmoticons::loadTheme(const QString &path)
 
 void AdiumEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
+    QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
+    QDir().mkpath(path);
 
     QFile fp(path + '/' + "Emoticons.plist");
 

@@ -31,8 +31,6 @@
 #include <kzip.h>
 #include <qmimedatabase.h>
 #include <kdirwatch.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 
 class KEmoticonsPrivate
 {
@@ -154,7 +152,7 @@ QString KEmoticons::currentThemeName()
 QStringList KEmoticons::themeList()
 {
     QStringList ls;
-    const QStringList themeDirs = KGlobal::dirs()->findDirs("emoticons", "");
+    const QStringList themeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "emoticons", QStandardPaths::LocateDirectory);
 
     for (int i = 0; i < themeDirs.count(); ++i) {
         QDir themeQDir(themeDirs[i]);

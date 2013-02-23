@@ -16,9 +16,7 @@
     *************************************************************************
 */
 
-#define QT_GUI_LIB 1
-#define QT_WIDGETS_LIB 1
-// TODO: include <QTestWidgets> with Qt 5 instead of the above defines
+#include <QtTestWidgets>
 
 #include "kemoticontest.h"
 #include <QtTest/QtTest>
@@ -29,8 +27,6 @@
 #include <QFile>
 #include <QTextStream>
 
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kemoticons.h>
 
@@ -49,7 +45,8 @@ QTEST_MAIN(KEmoticonTest)
 void KEmoticonTest::testEmoticonParser()
 {
     KEmoticonsTheme emo = KEmoticons().theme("kde4");
-    QString basePath = QString::fromLatin1(SRCDIR) + QString::fromLatin1("/emoticon-parser-testcases");
+    QString basePath = QFINDTESTDATA("emoticon-parser-testcases");
+    QVERIFY(!basePath.isEmpty());
     QDir testCasesDir(basePath);
 
     QStringList inputFileNames = testCasesDir.entryList(QStringList(QLatin1String("*.input")));
@@ -73,7 +70,7 @@ void KEmoticonTest::testEmoticonParser()
             inputFile.close();
             expectedFile.close();
 
-            const QString path = KGlobal::dirs()->findResource("emoticons", "kde4/smile.png").remove("smile.png");
+            const QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "emoticons/kde4/smile.png").remove("smile.png");
             if (path.isEmpty())
                 QSKIP("Emoticons not installed, skipping. kdebase-runtime needed.");
 

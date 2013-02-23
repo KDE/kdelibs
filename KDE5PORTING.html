@@ -135,6 +135,7 @@ Otherwise, you need to use GenericDataLocation and add the subdirectory name man
     Similarly, xdgconf-menu is QStandardPaths::ConfigLocation + "menus", and xdgconf-autostart is QStandardPaths::ConfigLocation + "autostart";
     "xdgdata-dirs" is QStandardPaths::GenericDataLocation + "desktop-directories"
     "templates" is QStandardPaths::GenericDataLocation + "templates"
+    "emoticons" is QStandardPaths::GenericDataLocation + "emoticons
     "wallpaper" is QStandardPaths::GenericDataLocation + "wallpapers" (note the additional 's')
 </pre>
 When the code uses wildcard filters or the Recursive flag in findAllResources, you cannot port it to one line of QStandardPaths.

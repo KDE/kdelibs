@@ -19,12 +19,11 @@
 #include "pidgin_emoticons.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 
 #include <kpluginfactory.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 
 K_PLUGIN_FACTORY(PidginEmoticonsFactory, registerPlugin<PidginEmoticons>();)
 K_EXPORT_PLUGIN(PidginEmoticonsFactory("PidginEmoticons"))
@@ -173,10 +172,11 @@ bool PidginEmoticons::loadTheme(const QString &path)
         int i = 1;
         if (splitted.at(0) == "!") {
             i = 2;
-            emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + splitted.at(1));
+            emo = splitted.at(1);
         } else {
-            emo = KGlobal::dirs()->findResource("emoticons", themeName() + '/' + splitted.at(0));
+            emo = splitted.at(0);
         }
+        emo = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "emoticons/" + themeName() + '/' + emo);
 
         QStringList sl;
         for (; i < splitted.size(); ++i) {
@@ -196,7 +196,8 @@ bool PidginEmoticons::loadTheme(const QString &path)
 
 void PidginEmoticons::createNew()
 {
-    QString path = KGlobal::dirs()->saveLocation("emoticons", themeName());
+    QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/emoticons/" + themeName();
+    QDir().mkpath(path);
 
     QFile fp(path + '/' + "theme");
 
