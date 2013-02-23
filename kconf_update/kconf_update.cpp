@@ -18,11 +18,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <kde_file.h>
+#include <config-prefix.h> // CMAKE_INSTALL_PREFIX
 
 #include <QtCore/QDate>
 #include <QtCore/QFile>
@@ -38,8 +34,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <kaboutdata.h>
 #include <qstandardpaths.h>
 
@@ -213,24 +207,19 @@ KonfUpdate::logFileError()
 QStringList KonfUpdate::findUpdateFiles(bool dirtyOnly)
 {
     QStringList result;
-    const QStringList list = KGlobal::dirs()->findAllResources("data", "kconf_update/*.upd",
-                             KStandardDirs::NoDuplicates);
-    for (QStringList::ConstIterator it = list.constBegin();
-            it != list.constEnd();
-            ++it) {
-        QString file = *it;
-        KDE_struct_stat buff;
-        if (KDE::stat(file, &buff) == 0) {
-            int i = file.lastIndexOf('/');
-            if (i != -1) {
-                file = file.mid(i + 1);
-            }
-            KConfigGroup cg(m_config, file);
-            time_t ctime = cg.readEntry("ctime", 0);
-            time_t mtime = cg.readEntry("mtime", 0);
+
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kconf_update", QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& dir, dirs) {
+        Q_FOREACH(const QString& fileName, QDir(dir).entryList(QStringList() << QStringLiteral("*.upd"))) {
+            const QString file = dir + '/' + fileName;
+            QFileInfo info(file);
+
+            KConfigGroup cg(m_config, fileName);
+            const QDateTime ctime = QDateTime::fromTime_t(cg.readEntry("ctime", 0));
+            const QDateTime mtime = QDateTime::fromTime_t(cg.readEntry("mtime", 0));
             if (!dirtyOnly ||
-                    (ctime != buff.st_ctime) || (mtime != buff.st_mtime)) {
-                result.append(*it);
+                    (ctime != info.created()) || (mtime != info.lastModified())) {
+                result.append(file);
             }
         }
     }
@@ -376,13 +365,11 @@ bool KonfUpdate::updateFile(const QString &filename)
     // Flush.
     gotId(QString());
 
-    KDE_struct_stat buff;
-    if (KDE::stat(filename, &buff) == 0) {
-        KConfigGroup cg(m_config, m_currentFilename);
-        cg.writeEntry("ctime", int(buff.st_ctime));
-        cg.writeEntry("mtime", int(buff.st_mtime));
-        cg.sync();
-    }
+    QFileInfo info(filename);
+    KConfigGroup cg(m_config, m_currentFilename);
+    cg.writeEntry("ctime", info.created().toTime_t());
+    cg.writeEntry("mtime", info.lastModified().toTime_t());
+    cg.sync();
     return true;
 }
 
@@ -447,12 +434,10 @@ void KonfUpdate::gotFile(const QString &_file)
         m_oldConfig2 = 0;
 
         QString file = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + m_oldFile;
-        KDE_struct_stat s_buf;
-        if (KDE::stat(file, &s_buf) == 0) {
-            if (s_buf.st_size == 0) {
-                // Delete empty file.
-                QFile::remove(file);
-            }
+        QFileInfo info(file);
+        if (info.exists() && info.size() == 0) {
+            // Delete empty file.
+            QFile::remove(file);
         }
 
         m_oldFile.clear();
@@ -767,7 +752,11 @@ void KonfUpdate::gotScript(const QString &_script)
     QString path = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kconf_update/" + script);
     if (path.isEmpty()) {
         if (interpreter.isEmpty()) {
-            path = KStandardDirs::locate("lib", "kconf_update_bin/" + script);
+            // KDE4: this was looking into locate("lib", "kconf_update_bin/"). But QStandardPaths doesn't know the lib dirs.
+            // Let's look in the install prefix and in PATH.
+            path = CMAKE_INSTALL_PREFIX "/" LIB_INSTALL_DIR "/kconf_update_bin/" + script;
+            if (QFile::exists(path))
+                path = QStandardPaths::findExecutable(script);
         }
 
         if (path.isEmpty()) {
