@@ -19,6 +19,7 @@
 #include "xmpp_emoticons.h"
 
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QImageReader>
 
