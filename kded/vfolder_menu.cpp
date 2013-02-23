@@ -428,13 +428,11 @@ VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepR
    {
       dir = baseDir + dir;
    }
-   if (!dir.endsWith('/'))
-      dir += '/';
 
    bool relative = QDir::isRelativePath(dir);
    if (relative && !keepRelativeToCfg) {
       relative = false;
-      dir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("menus/") + dir);
+      dir = QStandardPaths::locate(QStandardPaths::ConfigLocation, QLatin1String("menus/") + dir, QStandardPaths::LocateDirectory);
    }
 
     if (!relative) {
@@ -442,6 +440,9 @@ VFolderMenu::absoluteDir(const QString &_dir, const QString &baseDir, bool keepR
         if (!resolved.isEmpty())
             dir = resolved;
     }
+
+   if (!dir.endsWith('/'))
+      dir += '/';
 
    return dir;
 }
@@ -506,7 +507,7 @@ VFolderMenu::loadDoc()
 void
 VFolderMenu::mergeFile(QDomElement &parent, const QDomNode &mergeHere)
 {
-kDebug(7021) << "VFolderMenu::mergeFile:" << m_docInfo.path;
+   kDebug(7021) << m_docInfo.path;
    QDomDocument doc = loadDoc();
 
    QDomElement docElem = doc.documentElement();
@@ -622,10 +623,12 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
          menuNodes.insert(name, e);
       }
       else if( e.tagName() == "MergeFile") {
-         if ((e.attribute("type") == "parent"))
-            pushDocInfoParent(e.attribute("__BasePath"), e.attribute("__BaseDir"));
-         else
-            pushDocInfo(e.text(), e.attribute("__BaseDir"));
+          if ((e.attribute("type") == "parent")) {
+              // Ignore e.text(), as per the standard. We'll just look up the parent (more global) xml file.
+              pushDocInfoParent(e.attribute("__BasePath"), e.attribute("__BaseDir"));
+          } else {
+              pushDocInfo(e.text(), e.attribute("__BaseDir"));
+          }
 
          if (!m_docInfo.path.isEmpty())
             mergeFile(docElem, n);
@@ -638,31 +641,25 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
       }
       else if( e.tagName() == "MergeDir") {
          QString dir = absoluteDir(e.text(), e.attribute("__BaseDir"), true);
+         Q_ASSERT(dir.endsWith('/'));
 
-         const QStringList dirs = KGlobal::dirs()->findDirs("xdgconf-menu", dir);
-         for(QStringList::ConstIterator it=dirs.begin();
-             it != dirs.end(); ++it)
-         {
-            registerDirectory(*it);
+         const bool relative = QDir::isRelativePath(dir);
+         const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, "menus/" + dir, QStandardPaths::LocateDirectory);
+         Q_FOREACH(const QString& menuDir, dirs) {
+            registerDirectory(menuDir);
          }
 
          QStringList fileList;
-         if (!QDir::isRelativePath(dir))
-         {
-            // Absolute
-            fileList = KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu");
-         }
-         else
-         {
-            // Relative
-            (void) KGlobal::dirs()->findAllResources("xdgconf-menu", dir+"*.menu",
-                                                     KStandardDirs::NoDuplicates, fileList);
+         Q_FOREACH(const QString& menuDir, dirs) {
+             Q_FOREACH(const QString& file, QDir(menuDir).entryList(QStringList() << QStringLiteral("*.menu"))) {
+                 const QString fileToAdd = relative ? dir + file : menuDir + file;
+                 if (!fileList.contains(fileToAdd))
+                     fileList.append(fileToAdd);
+             }
          }
 
-         for(QStringList::ConstIterator it=fileList.constBegin();
-             it != fileList.constEnd(); ++it)
-         {
-            pushDocInfo(*it);
+         Q_FOREACH(const QString& file, fileList) {
+            pushDocInfo(file);
             mergeFile(docElem, n);
             popDocInfo();
          }
@@ -733,25 +730,26 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
 void
 VFolderMenu::pushDocInfoParent(const QString &basePath, const QString &baseDir)
 {
-    m_docInfoStack.push(m_docInfo);
+   m_docInfoStack.push(m_docInfo);
 
    m_docInfo.baseDir = baseDir;
 
    QString fileName = basePath.mid(basePath.lastIndexOf('/')+1);
-   m_docInfo.baseName = fileName.left( fileName.length() - 5 );
+   m_docInfo.baseName = fileName.left( fileName.length() - 5 ); // without ".menu"
    QString baseName = QDir::cleanPath(m_docInfo.baseDir + fileName);
 
-   QStringList result = KGlobal::dirs()->findAllResources("xdgconf-menu", baseName);
+   QStringList result = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, "menus/" + baseName);
 
-   while( !result.isEmpty() && (result[0] != basePath))
-      result.erase(result.begin());
+   // Remove anything "more local" than basePath.
+   while (!result.isEmpty() && (result.at(0) != basePath))
+      result.removeFirst();
 
-   if (result.count() <= 1)
-   {
+   if (result.count() <= 1) {
       m_docInfo.path.clear(); // No parent found
       return;
    }
-   m_docInfo.path = result[1];
+   // Now result.at(0) == basePath, take the next one, i.e. the one in the parent dir.
+   m_docInfo.path = result.at(1);
 }
 
 void
@@ -765,7 +763,7 @@ VFolderMenu::locateMenuFile(const QString &fileName)
 {
    if (!QDir::isRelativePath(fileName))
    {
-      if (KStandardDirs::exists(fileName))
+      if (QFile::exists(fileName))
          return fileName;
       return QString();
    }
@@ -803,7 +801,7 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
 
    if (!QDir::isRelativePath(fileName))
    {
-      if (KStandardDirs::exists(fileName))
+      if (QFile::exists(fileName))
          return fileName;
       return QString();
    }
@@ -814,7 +812,7 @@ VFolderMenu::locateDirectoryFile(const QString &fileName)
        ++it)
    {
       QString tmp = (*it)+fileName;
-      if (KStandardDirs::exists(tmp))
+      if (QFile::exists(tmp))
          return tmp;
    }
 
