@@ -21,9 +21,8 @@
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 
+#include <QStandardPaths>
 #include <QStyledItemDelegate>
 #include <QPainter>
 #include <QHeaderView>
@@ -71,7 +70,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 		iconList << ( optionsList.contains("KTTS") ? QIcon::fromTheme("text-speak") : QIcon() );
 
 	int mc_x=0;
-	
+
 	int iconWidth = option.decorationSize.width();
 	int iconHeight = option.decorationSize.height();
 	foreach(const QIcon &icon, iconList)
@@ -89,7 +88,7 @@ KNotifyEventList::KNotifyEventList(QWidget *parent)
 	QStringList headerLabels;
 	headerLabels << i18nc( "State of the notified event", "State" ) << i18nc( "Title of the notified event", "Title" ) << i18nc( "Description of the notified event", "Description" );
 	setHeaderLabels( headerLabels );
-	
+
 	setItemDelegate(new KNotifyEventListDelegate(this));
 	setRootIsDecorated(false);
 	setAlternatingRowColors(true);
@@ -119,8 +118,8 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 	clear();
 	delete config;
 	config = new KConfig(appname + ".notifyrc" , KConfig::NoGlobals);
-        config->addConfigSources(KGlobal::dirs()->findAllResources("data",
-                                 appname + '/' + appname + ".notifyrc"));
+        config->addConfigSources(QStandardPaths::locateAll(QStandardPaths::GenericDataLocation,
+                                                           appname + '/' + appname + ".notifyrc"));
 
 	QStringList conflist = config->groupList();
 	QRegExp rx("^Event/([^/]*)$");
@@ -145,7 +144,7 @@ void KNotifyEventList::fill( const QString & appname , const QString & context_n
 
 		m_elements << new KNotifyEventListItem(this, id, name, description, config );
 	}
-	
+
 	resizeColumnToContents(2);
 }
 
@@ -160,7 +159,7 @@ void KNotifyEventList::save( )
 void KNotifyEventList::slotSelectionChanged(  QTreeWidgetItem *current , QTreeWidgetItem *previous)
 {
 	Q_UNUSED( current );
-    
+
 	KNotifyEventListItem *it=dynamic_cast<KNotifyEventListItem *>(currentItem());
 	if(it)
 		emit eventSelected( it->configElement() );

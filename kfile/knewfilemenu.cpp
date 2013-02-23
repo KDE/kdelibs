@@ -27,6 +27,8 @@
 #include <QVBoxLayout>
 #include <QList>
 #include <QLabel>
+#include <QStandardPaths>
+
 #include <qtemporaryfile.h>
 #include <kactioncollection.h>
 #include <kconfiggroup.h>
@@ -38,7 +40,6 @@
 #include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kmessagebox.h>
-#include <kstandarddirs.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
 #include <kmenu.h>
@@ -813,7 +814,7 @@ void KNewFileMenuPrivate::_k_slotFillTemplates()
     // Ensure any changes in the templates dir will call this
     if (! s->dirWatch) {
         s->dirWatch = new KDirWatch;
-        const QStringList dirs = KGlobal::dirs()->resourceDirs("templates");
+        const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "templates", QStandardPaths::LocateDirectory);
         for (QStringList::const_iterator it = dirs.constBegin() ; it != dirs.constEnd() ; ++it) {
             //kDebug(1203) << "Templates resource dir:" << *it;
             s->dirWatch->addDir(*it);
@@ -832,7 +833,7 @@ void KNewFileMenuPrivate::_k_slotFillTemplates()
     s->templatesList->clear();
 
     // Look into "templates" dirs.
-    const QStringList files = KGlobal::dirs()->findAllResources("templates");
+    const QStringList files = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "templates", QStandardPaths::LocateDirectory);
     QMap<QString, KNewFileMenuSingleton::Entry> slist; // used for sorting
     Q_FOREACH(const QString& file, files) {
         //kDebug(1203) << file;

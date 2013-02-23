@@ -21,6 +21,8 @@
 #include "kpluginselector.h"
 #include "kpluginselector_p.h"
 
+#include <QDir>
+#include <QDirIterator>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -29,6 +31,7 @@
 #include <QApplication>
 #include <QCheckBox>
 #include <QPushButton>
+#include <QStandardPaths>
 #include <QStyle>
 #include <QStyleOptionViewItemV4>
 
@@ -40,8 +43,6 @@
 #include <kcmoduleproxy.h>
 #include <kmessagebox.h>
 #include <kiconloader.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <klocalizedstring.h>
 #include <kcategorydrawer.h>
 #include <kcategorizedview.h>
@@ -299,8 +300,14 @@ void KPluginSelector::addPlugins(const QString &componentName,
                                  const QString &categoryKey,
                                  KSharedConfig::Ptr config)
 {
-    QStringList desktopFileNames = KGlobal::dirs()->findAllResources("data",
-        componentName + "/kpartplugins/*.desktop", KStandardDirs::Recursive);
+    QStringList desktopFileNames;
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, componentName + "/kpartplugins", QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& dir, dirs) {
+        QDirIterator it(dir, QStringList() << QStringLiteral("*.desktop"), QDir::NoFilter, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            desktopFileNames.append(it.next());
+        }
+    }
 
     QList<KPluginInfo> pluginInfoList = KPluginInfo::fromFiles(desktopFileNames);
 
