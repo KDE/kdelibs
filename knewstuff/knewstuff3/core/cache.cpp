@@ -23,7 +23,6 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QXmlStreamReader>
 #include <qstandardpaths.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 
 using namespace KNS3;
@@ -93,12 +92,11 @@ void Cache::readRegistry()
 
 void Cache::readKns2MetaFiles()
 {
-    KStandardDirs d;
     kDebug() << "Loading KNS2 registry of files for the component: " << m_kns2ComponentName;
 
     QString realAppName = m_kns2ComponentName.split(':')[0];
 
-    const QStringList dirs = d.findDirs("data", "knewstuff2-entries.registry");
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "knewstuff2-entries.registry", QStandardPaths::LocateDirectory);
     for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it) {
         //kDebug() << " + Load from directory '" + (*it) + "'.";
         QDir dir((*it));

@@ -21,9 +21,8 @@
 
 #include <QDir>
 #include <QFile>
+#include <QTemporaryFile>
 
-#include "kglobal.h"
-#include "kstandarddirs.h"
 #include "qmimedatabase.h"
 #include "karchive.h"
 #include "kzip.h"
@@ -76,6 +75,11 @@ bool Installation::readConfig(const KConfigGroup& group)
     standardResourceDirectory = group.readEntry("StandardResource", QString());
     targetDirectory = group.readEntry("TargetDir", QString());
     xdgTargetDirectory = group.readEntry("XdgTargetDir", QString());
+
+    // Provide some compatibility
+    if (standardResourceDirectory == "wallpaper")
+        xdgTargetDirectory = "wallpapers";
+
     installPath = group.readEntry("InstallPath", QString());
     absoluteInstallPath = group.readEntry("AbsoluteInstallPath", QString());
     customName = group.readEntry("CustomName", false);
@@ -179,8 +183,11 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
     }
 
     QString fileName(source.fileName());
-    KUrl destination = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + '-' + fileName);
-    kDebug() << "Downloading payload '" << source << "' to '" << destination << "'";
+    QTemporaryFile tempFile(QDir::tempPath() + "/XXXXXX-" + fileName);
+    if (!tempFile.open())
+        return; // ERROR
+    QUrl destination = QUrl::fromLocalFile(tempFile.fileName());
+    kDebug() << "Downloading payload" << source << "to" << destination;
 
     // FIXME: check for validity
     KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
@@ -328,6 +335,7 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
 
         // installpath also contains the file name if it's a single file, otherwise equal to installdir
         int pathcounter = 0;
+#if 0 // not available in KF5
         if (!standardResourceDirectory.isEmpty()) {
             if (scope == ScopeUser) {
                 installdir = KStandardDirs::locateLocal(standardResourceDirectory.toUtf8(), "/");
@@ -336,16 +344,17 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
             }
             pathcounter++;
         }
+#endif
         if (!targetDirectory.isEmpty()) {
             if (scope == ScopeUser) {
                 installdir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + targetDirectory + '/';
             } else { // system scope
-                installdir = KStandardDirs::installPath("data") + targetDirectory + '/';
+                installdir = QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).last() + '/' + targetDirectory + '/';
             }
             pathcounter++;
         }
         if (!xdgTargetDirectory.isEmpty()) {
-            installdir = KStandardDirs().localxdgdatadir() + '/' + xdgTargetDirectory + '/';
+            installdir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + xdgTargetDirectory + '/';
             pathcounter++;
         }
         if (!installPath.isEmpty()) {
