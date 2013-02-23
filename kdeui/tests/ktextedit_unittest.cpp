@@ -20,8 +20,8 @@
 */
 
 #include <QClipboard>
-#include <QtTest/QtTest>
 #include <QtTestWidgets>
+#include <QtTest/QtTest>
 #include <qtestevent.h>
 #include <ktextedit.h>
 

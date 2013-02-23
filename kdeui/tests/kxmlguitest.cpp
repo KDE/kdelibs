@@ -10,7 +10,6 @@
 #include <QLineEdit>
 #include <QtCore/QDir>
 #include <QtTest/QtTest>
-#include <QtTestWidgets>
 
 void Client::slotSec()
 {

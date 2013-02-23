@@ -19,8 +19,8 @@
  */
 #include <kdualaction.h>
 
-#include <QtTest/QtTest>
 #include <QtTestWidgets>
+#include <QtTest/QtTest>
 
 #include "kguiitem.h"
 

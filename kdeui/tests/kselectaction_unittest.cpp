@@ -19,8 +19,8 @@
 
 #include "kselectaction_unittest.h"
 #include <QStandardItemModel>
-#include <QtTest/QtTest>
 #include <QtTestWidgets>
+#include <QtTest/QtTest>
 #include <kselectaction.h>
 #include <kcombobox.h>
 #include <qtoolbar.h>

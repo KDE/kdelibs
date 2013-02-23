@@ -23,8 +23,8 @@
 #include <kcolorscheme.h>
 
 #include <qtestevent.h>
-#include <QtTest/QtTest>
 #include <QtTestWidgets>
+#include <QtTest/QtTest>
 #include <qtextcursor.h>
 #include <QTextList>
 #include <qfont.h>

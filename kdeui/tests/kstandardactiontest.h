@@ -21,7 +21,7 @@
 #ifndef KSTANDARDACTIONTEST_H
 #define KSTANDARDACTIONTEST_H
 
-#include <QtTest/QtTest>
+#include <QObject>
 
 class tst_KStandardAction : public QObject
 {

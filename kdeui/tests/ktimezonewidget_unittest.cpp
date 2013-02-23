@@ -17,8 +17,8 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/QtTest>
 #include <QtTestWidgets>
+#include <QtTest/QtTest>
 #include <ktimezonewidget.h>
 #include <kconfiggroup.h>
 #include <QtDBus/QtDBus>

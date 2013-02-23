@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/QtTest>
 #include <QtTestWidgets>
+#include <QtTest/QtTest>
 
 #include <QtTest/QTestEvent>
 

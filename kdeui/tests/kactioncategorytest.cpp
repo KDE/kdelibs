@@ -1,3 +1,4 @@
+#include <QtTestWidgets>
 #include "kactioncategorytest.h"
 
 #include "kaction.h"

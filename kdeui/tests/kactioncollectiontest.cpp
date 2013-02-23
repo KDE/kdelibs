@@ -1,4 +1,4 @@
-
+#include <QtTestWidgets>
 #include "kactioncollectiontest.h"
 #include <klocalizedstring.h>
 #include <QtCore/QPointer>

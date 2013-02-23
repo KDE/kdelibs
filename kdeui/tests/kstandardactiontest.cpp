@@ -19,6 +19,8 @@
 
 #include "kstandardactiontest.h"
 
+#include <QtTestWidgets>
+
 #include "kstandardaction.h"
 #include "kactioncollection.h"
 #include "kaction.h"

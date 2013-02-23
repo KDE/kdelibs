@@ -18,8 +18,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/QtTest>
 #include <QtTestWidgets>
+#include <QtTest/QtTest>
 #include "kxmlgui_unittest.h"
 #include <QDialogButtonBox>
 #include <QShowEvent>

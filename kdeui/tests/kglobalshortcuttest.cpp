@@ -20,10 +20,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QtTestWidgets>
 #include "kglobalshortcuttest.h"
 #include <qdbusinterface.h>
 #include <QtTest/QtTest>
-#include <QtTestWidgets>
 #include <kaction.h>
 #include <kaction_p.h>
 #include <kactioncollection.h>

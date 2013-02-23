@@ -21,7 +21,6 @@
 #include <QApplication>
 #include <QStandardPaths>
 #include <QtTest/QtTest>
-#include <QtTestWidgets>
 
 #include <kxmlguiwindow.h>
 #include <kaboutdata.h>
