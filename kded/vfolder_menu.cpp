@@ -20,16 +20,8 @@
 #include "kbuildservicefactory.h"
 #include "kbuildsycocainterface.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
-
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <kservice.h>
-#include <kde_file.h>
 
 #include <QtCore/QMap>
 #include <QtCore/QFile>
@@ -687,17 +679,27 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
    }
 }
 
+static QString makeRelative(const QString& dir)
+{
+    const QString canonical = QDir(dir).canonicalPath();
+    Q_FOREACH(const QString& base, QStandardPaths::locateAll(QStandardPaths::ConfigLocation, "menus", QStandardPaths::LocateDirectory)) {
+        if (canonical.startsWith(base))
+            return canonical.mid(base.length()+1);
+    }
+    return dir;
+}
+
 void
 VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
 {
-   m_docInfoStack.push(m_docInfo);
-   if (!baseDir.isEmpty())
-   {
-      if (!QDir::isRelativePath(baseDir))
-         m_docInfo.baseDir = KGlobal::dirs()->relativeLocation("xdgconf-menu", baseDir);
-      else
-         m_docInfo.baseDir = baseDir;
-   }
+    m_docInfoStack.push(m_docInfo);
+    if (!baseDir.isEmpty()) {
+        if (!QDir::isRelativePath(baseDir)) {
+            m_docInfo.baseDir = makeRelative(baseDir);
+        } else {
+            m_docInfo.baseDir = baseDir;
+        }
+    }
 
    QString baseName = fileName;
    if (!QDir::isRelativePath(baseName))
