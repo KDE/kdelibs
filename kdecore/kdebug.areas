@@ -273,8 +273,8 @@
 7016        kio (KLauncher)
 7017        kio (KIOConnection)
 7019        kio (kioslave)
-7020        kded4
-7021        kbuildsycoca4
+7020        kded5
+7021        kbuildsycoca5
 7022        kurifilter
 7023        kurifilter (plugins)
 7024        kio (UIServer)
