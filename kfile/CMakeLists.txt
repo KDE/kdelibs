@@ -10,8 +10,7 @@ include_directories(
   ${KDE4_KIO_INCLUDES}
   ${CMAKE_SOURCE_DIR}/tier1/solid/src
   ${CMAKE_BINARY_DIR}/tier1/solid/src
-  ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
-  ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
+  ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
 )
@@ -61,7 +60,7 @@ target_link_libraries(kfile
    ${X11_LIBRARIES}
    kcoreaddons
    kwidgets
-   kwidgetsaddons
+   ${KWidgetsAddons_LIBRARIES}
    ki18n
 )
 

@@ -25,7 +25,7 @@ qt4_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
 
 kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
 
-target_link_libraries( kcookiejar4 ${KDE4_KDECORE_LIBS} kcoreaddons ki18n kwidgetsaddons)
+target_link_libraries( kcookiejar4 ${KDE4_KDECORE_LIBS} kcoreaddons ki18n ${KWidgetsAddons_LIBRARIES})
 
 install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
@@ -42,7 +42,7 @@ qt4_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.K
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_SRCS})
 
-target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${KWindowSystem_LIBRARIES} kcoreaddons ki18n kwidgets kwidgetsaddons kinterprocesswindowing)
+target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${KWindowSystem_LIBRARIES} kcoreaddons ki18n kwidgets ${KWidgetsAddons_LIBRARIES} kinterprocesswindowing)
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

@@ -85,8 +85,12 @@ set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
 set(kcoreaddons_LIBRARIES kcoreaddons)
 
 set(KWindowSystem_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
-                               ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src)
+                               ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src )
 set(KWindowSystem_LIBRARIES KWindowSystem)
+
+set(KWidgetsAddons_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
+                                ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src )
+set(KWidgetsAddons_LIBRARIES KWidgetsAddons )
 
 set(KPlotting_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier1/kplotting/src/
                              ${CMAKE_BINARY_DIR}/tier1/kplotting/src/ )

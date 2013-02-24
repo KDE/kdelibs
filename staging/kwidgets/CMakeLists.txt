@@ -36,8 +36,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
   ${CMAKE_BINARY_DIR}/tier2/kconfig/src/gui
   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/gui
-  ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
-  ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
+  ${KWidgetsAddons_INCLUDE_DIRS}
   ${KWindowSystem_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
   ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs # kjob (dependency of kauth)

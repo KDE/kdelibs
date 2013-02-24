@@ -5,8 +5,7 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${CMAKE_CURRENT_BINARY_DIR}
                      ${karchive_SOURCE_DIR}/src
                      ${karchive_BINARY_DIR}/src
-                     ${kwidgetsaddons_SOURCE_DIR}/src
-                     ${kwidgetsaddons_BINARY_DIR}/src
+                     ${KWidgetSAddons_INCLUDE_DIRS}
                      ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
                      ${CMAKE_BINARY_DIR}/tier2/kauth/src/
                      ${ki18n_SOURCE_DIR}/src
@@ -34,7 +33,7 @@ set(kcmutils_LIB_SRCS
 kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 generate_export_header(kcmutils)
 
-target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth kcoreaddons kwidgetsaddons ki18n)
+target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth kcoreaddons ${KWidgetsAddons_LIBRARIES} ki18n)
 target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdeui Qt5::Widgets)
 set_target_properties(kcmutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

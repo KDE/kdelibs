@@ -40,7 +40,7 @@ target_link_libraries(kwidgets
   kconfiggui
   kcoreaddons
   kguiaddons
-  kwidgetsaddons
+  ${KWidgetsAddons_LIBRARIES}
   kauth
   ${KWindowSystem_LIBRARIES}
   kservice

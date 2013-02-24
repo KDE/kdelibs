@@ -9,8 +9,7 @@ include_directories(
   ${kcoreaddons_SOURCE_DIR}/src/io   # kurl.h
   ${kcoreaddons_SOURCE_DIR}/src/text # kmacroexpander.h
   ${kcoreaddons_BINARY_DIR}/src
-  ${kwidgetsaddons_SOURCE_DIR}/src
-  ${kwidgetsaddons_BINARY_DIR}/src
+  ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
   ${CMAKE_BINARY_DIR}/kdewebkit
@@ -55,7 +54,7 @@ if(QT_QTDESIGNER_FOUND)
 
   kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} kwidgets kwidgetsaddons ki18n)
+  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} kwidgets ${KWidgetsAddons_LIBRARIES} ki18n)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

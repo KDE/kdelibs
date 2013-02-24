@@ -35,8 +35,7 @@ include_directories( ${KDE4_KIO_INCLUDES}
                      ${CMAKE_BINARY_DIR}/tier1/solid/src
                      ${karchive_SOURCE_DIR}/src
                      ${karchive_BINARY_DIR}/src
-                     ${kwidgetsaddons_SOURCE_DIR}/src
-                     ${kwidgetsaddons_BINARY_DIR}/src
+                     ${KWidgetsAddons_INCLUDE_DIRS}
                      ${kcoreaddons_SOURCE_DIR}/src/randomness
                      ${kcoreaddons_SOURCE_DIR}/src/kernel
                      ${kcoreaddons_SOURCE_DIR}/src/io

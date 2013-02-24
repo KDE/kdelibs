@@ -53,8 +53,7 @@ include_directories(
    ${KDE4_KDEUI_INCLUDES}
    ${KDE4_KDECORE_INCLUDES}
    ${ZLIB_INCLUDE_DIR}
-   ${CMAKE_SOURCE_DIR}/tier1/kwidgetsaddons/src
-   ${CMAKE_BINARY_DIR}/tier1/kwidgetsaddons/src
+   ${KWidgetsAddons_INCLUDE_DIRS}
    ${kiocore_SOURCE_DIR}/
    ${kiocore_BINARY_DIR}/
    ${kiocore_BINARY_DIR}/..   # kio_version.h
@@ -329,7 +328,7 @@ if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
 
-target_link_libraries(kio kdeqt5staging kiocore kcoreaddons ki18n kwidgetsaddons ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
+target_link_libraries(kio kdeqt5staging kiocore kcoreaddons ki18n ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTSVG_LIBRARY} ${X11_LIBRARIES} ${KIO_EXTRA_LIBS})
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kiocore kdeui kdecore ${QT_QTNETWORK_LIBRARY} ${QT_QTXML_LIBRARY} Qt5::Widgets )
 
 if(ACL_FOUND)

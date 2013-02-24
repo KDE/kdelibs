@@ -8,16 +8,16 @@ set(kwidgetsaddons_SRCS
   kseparator.cpp
 )
 
-add_library(kwidgetsaddons ${kwidgetsaddons_SRCS})
-generate_export_header(kwidgetsaddons)
+add_library(KWidgetsAddons ${kwidgetsaddons_SRCS})
+generate_export_header(KWidgetsAddons)
 
-target_link_libraries(kwidgetsaddons Qt5::Widgets)
+target_link_libraries(KWidgetsAddons Qt5::Widgets)
 
-set_target_properties(kwidgetsaddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSION_STRING}
+set_target_properties(KWidgetsAddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSION_STRING}
                                                 SOVERSION ${KWIDGETSADDONS_SOVERSION}
 )
 
-install(TARGETS kwidgetsaddons EXPORT kwidgetsaddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kled.h
