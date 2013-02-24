@@ -86,6 +86,11 @@ set(kcoreaddons_LIBRARIES kcoreaddons)
 
 set(kwindowsystem_LIBRARIES kwindowsystem)
 
+set(KPlotting_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier1/kplotting/src/
+                             ${CMAKE_BINARY_DIR}/tier1/kplotting/src/ )
+set(KPlotting_LIBRARIES KPlotting)
+
+
 set(kconfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
                            ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core )
 set(kconfig_LIBRARIES kconfigcore kconfiggui)

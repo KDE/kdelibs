@@ -5,8 +5,7 @@ add_subdirectory( pics )
 add_subdirectory( tests )
 
 include_directories(
-  ${CMAKE_SOURCE_DIR}/tier1/kplotting/src
-  ${CMAKE_BINARY_DIR}/tier1/kplotting/src
+  ${KPlotting_INCLUDE_DIRS}
   ${kcoreaddons_SOURCE_DIR}/src/io   # kurl.h
   ${kcoreaddons_SOURCE_DIR}/src/text # kmacroexpander.h
   ${kcoreaddons_BINARY_DIR}/src
@@ -56,7 +55,7 @@ if(QT_QTDESIGNER_FOUND)
 
   kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  kplotting kwidgets kwidgetsaddons ki18n)
+  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} kwidgets kwidgetsaddons ki18n)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

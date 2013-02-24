@@ -1,0 +1,17 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(KPlotting_VERSION_MAJOR "@KPLOTTING_VERSION_MAJOR@")
+set(KPlotting_VERSION_MINOR "@KPLOTTING_VERSION_MINOR@")
+set(KPlotting_VERSION_PATCH "@KPLOTTING_VERSION_PATCH@")
+
+set(KPlotting_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KPlotting_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+if(NOT TARGET KF5::KPlotting)
+  include("${CMAKE_CURRENT_LIST_DIR}/KPlottingTargets.cmake")
+endif()
+
+set(KPlotting_LIBRARIES KF5::KPlotting)
+set(KPlotting_INCLUDE_DIRS ${KPlotting_INCLUDE_DIR})
