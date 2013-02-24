@@ -20,7 +20,7 @@ add_library(kinterprocesswindowing ${libkinterprocesswindowing_SRCS})
 generate_export_header(kinterprocesswindowing)
 
 target_link_libraries(kinterprocesswindowing
-   LINK_PUBLIC Qt5::Widgets ${kwindowsystem_LIBRARIES} ${X11_LIBRARIES}
+   LINK_PUBLIC Qt5::Widgets ${KWindowSystem_LIBRARIES} ${X11_LIBRARIES}
    kwidgets ki18n kconfigcore kdeui
 )
 

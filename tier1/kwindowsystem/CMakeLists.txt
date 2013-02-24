@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(kwindowsystem)
+project(KWindowSystem)
 
 find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
@@ -16,25 +16,25 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KWINDOWSYSTEM
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfigVersion.cmake")
 
 add_subdirectory(src)
 add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kwindowsystem")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KWindowSystem")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kwindowsystemConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KWindowSystemConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/kwindowsystemConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KWindowSystemConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kwindowsystemTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwindowsystemTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KWindowSystemTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KWindowSystemTargets.cmake NAMESPACE KF5:: )
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_version.h

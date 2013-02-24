@@ -84,7 +84,9 @@ set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
                               ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src )
 set(kcoreaddons_LIBRARIES kcoreaddons)
 
-set(kwindowsystem_LIBRARIES kwindowsystem)
+set(KWindowSystem_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
+                               ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src)
+set(KWindowSystem_LIBRARIES KWindowSystem)
 
 set(KPlotting_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier1/kplotting/src/
                              ${CMAKE_BINARY_DIR}/tier1/kplotting/src/ )
@@ -317,8 +319,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/widgets
                         ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
                         ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
-                        ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
-                        ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src
+                        ${KWindowSystem_INCLUDE_DIRS}
                         ${CMAKE_BINARY_DIR}/tier2/kauth/src/
                         ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
                         ${CMAKE_BINARY_DIR}/tier2/kconfig/src/gui

@@ -20,8 +20,7 @@ include(ECMWriteVersionHeader)
 find_package(Qt5Transitional REQUIRED Test X11Extras)
 include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 
-include_directories(${kwindowsystem_SOURCE_DIR}/src)
-include_directories(${kwindowsystem_BINARY_DIR}/src)
+include_directories(${KWindowSystem_INCLUDE_DIRS})
 include_directories(
     ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
     ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core

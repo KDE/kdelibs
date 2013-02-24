@@ -1,0 +1,17 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(KWindowSystem_VERSION_MAJOR "@KWINDOWSYSTEM_VERSION_MAJOR@")
+set(KWindowSystem_VERSION_MINOR "@KWINDOWSYSTEM_VERSION_MINOR@")
+set(KWindowSystem_VERSION_PATCH "@KWINDOWSYSTEM_VERSION_PATCH@")
+
+set(KWindowSystem_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KWindowSystem_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+if(NOT TARGET KF5::KWindowSystem)
+  include("${CMAKE_CURRENT_LIST_DIR}/KWindowSystemTargets.cmake")
+endif()
+
+set(KWindowSystem_LIBRARIES KF5::KWindowSystem)
+set(KWindowSystem_INCLUDE_DIRS ${KWindowSystem_INCLUDE_DIR})

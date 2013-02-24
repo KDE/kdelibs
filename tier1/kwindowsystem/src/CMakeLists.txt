@@ -58,16 +58,16 @@ if (WIN32)
                                                 kwindowinfo_win.cpp)
 endif ()
 
-add_library(kwindowsystem ${kwindowsystem_SRCS})
-generate_export_header(kwindowsystem)
+add_library(KWindowSystem ${kwindowsystem_SRCS})
+generate_export_header(KWindowSystem)
 include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 
-target_link_libraries(kwindowsystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
+target_link_libraries(KWindowSystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
 
-set_target_properties(kwindowsystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
+set_target_properties(KWindowSystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
                                                SOVERSION ${KWINDOWSYSTEM_SOVERSION})
 
-install(TARGETS kwindowsystem EXPORT kwindowsystemTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KWindowSystem EXPORT KWindowSystemTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    kstartupinfo.h

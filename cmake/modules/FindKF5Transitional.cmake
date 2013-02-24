@@ -8,7 +8,7 @@ find_package(KDE4Internal REQUIRED)
 set(KDE4_KDECORE_LIBRARY ${KDE4_KDECORE_LIBS} ${KDE4_KDE4SUPPORT_LIBS})
 
 
-list(APPEND KDE4_KDEUI_LIBS ${KDE4_KDE4SUPPORT_LIBS}  KDE4__kwidgetsaddons KDE4__itemmodels KDE4__sonnetcore KDE4__kguiaddons KDE4__kwidgets KDE4__kwindowsystem KDE4__karchive)
+list(APPEND KDE4_KDEUI_LIBS ${KDE4_KDE4SUPPORT_LIBS}  KDE4__kwidgetsaddons KDE4__itemmodels KDE4__sonnetcore KDE4__kguiaddons KDE4__kwidgets KDE4__KWindowSystem KDE4__karchive)
 
 list(APPEND KDE4_KIO_LIBS ${KDE4_KDEUI_LIBS} ${KDE4_KDE4SUPPORT_LIBS} KDE4__kiocore KDE4__kwidgetsaddons)
 list(APPEND KDE4_KFILE_LIBS ${KDE4_KDE4SUPPORT_LIBS} KDE4__kguiaddons KDE4__karchive  KDE4__kwidgetsaddons)
