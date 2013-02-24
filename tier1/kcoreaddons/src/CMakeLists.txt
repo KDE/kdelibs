@@ -68,8 +68,6 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/text/
 )
 
-include_directories(${QT_MKSPECS_DIR}/default) # for qplatformdefs.h
-
 add_library(kcoreaddons ${libkcoreaddons_SRCS})
 generate_export_header(kcoreaddons)
 
