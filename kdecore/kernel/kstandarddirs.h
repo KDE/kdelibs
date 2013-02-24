@@ -166,6 +166,8 @@ class KConfig;
  *    myFile = KStandardDirs::locateLocal("appdata", "groups.lst");
  *    myWriteGroups(myFile, myData);
  *    @endcode
+ *
+ * @deprecated since 5.0, use QStandardPaths, see KDE5PORTING.html for details
  **/
 class KDECORE_EXPORT KStandardDirs
 {
@@ -600,8 +602,24 @@ public:
      * @return A relative path relative to resource @p type that
      * will find @p absPath. If no such relative path exists, @p absPath
      * will be returned unchanged.
+     * @deprecated since 5.0, write your own loop, for instance:
+     * @code
+     relativeLocation("xdgdata-apps", file) becomes:
+     static QString relativeToApplications(const QString& file)
+     {
+         const QString canonical = QFileInfo(file).canonicalFilePath();
+         Q_FOREACH(const QString& base, QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation)) {
+             if (canonical.startsWith(base))
+                 return canonical.mid(base.length()+1);
+         }
+         return file; // in this example we return an absolute path, you can also choose return QString()
+     }
+     * @endcode
+     * See KDE5PORTING.html for how to port other resources.
      */
-    QString relativeLocation(const char *type, const QString &absPath) const;
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED QString relativeLocation(const char *type, const QString &absPath) const;
+#endif
 
     /**
      * Recursively creates still-missing directories in the given path.
@@ -612,8 +630,11 @@ public:
      * @param dir Absolute path of the directory to be made.
      * @param mode Directory permissions.
      * @return true if successful, false otherwise
+     * @deprecated since 5.0, use QDir().mkpath(dir).
      */
-    static bool makeDir(const QString& dir, int mode = 0755);
+#ifndef KDE_NO_DEPRECATED
+    KDECORE_DEPRECATED static bool makeDir(const QString& dir, int mode = 0755);
+#endif
 
     /**
      * This returns a default relative path for the standard KDE
