@@ -32,11 +32,12 @@ K_EXPORT_PLUGIN( ASpellClientFactory( "kspell_aspell" ) )
 using namespace Sonnet;
 
 #ifdef Q_OS_WIN
-#include <kstandarddirs.h>
 #define ASPELL_DATA_ROOT "lib/aspell-0.60/"
 
 QString aspell_data_dir() {
-    return KStandardDirs::installPath("kdedir") + ASPELL_DATA_ROOT;        
+    // TODO: is this still valid on Windows?
+    // A generated config-aspell.h (or config-kspell.h, if shared) should be added then, to define CMAKE_INSTALL_PREFIX
+    return CMAKE_INSTALL_PREFIX + '/' + ASPELL_DATA_ROOT;
 }
 #endif
 
