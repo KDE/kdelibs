@@ -18,22 +18,17 @@
  */
 
 #include "kdeclarative.h"
-#include <QCoreApplication>
 #include "private/kdeclarative_p.h"
 #include "private/engineaccess_p.h"
 #include "private/kiconprovider_p.h"
 
+#include <QCoreApplication>
 #include <QtQml/QQmlComponent>
 #include <QtQml/QQmlContext>
 #include <QtQml/QQmlEngine>
 #include <QtQml/QQmlExpression>
 #include <QtQml/QQmlDebuggingEnabler>
-#include <QtCore/QPointer>
 
-#include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
-#include <kurl.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 
@@ -80,20 +75,20 @@ void KDeclarative::setupBindings()
     addImportPath adds the path at the beginning, so to honour user's
     paths we need to traverse the list in reverse order*/
 
-    const QStringList importPathList = KGlobal::dirs()->findDirs("module", "imports");
-    QStringListIterator importPathIterator(importPathList);
-    importPathIterator.toBack();
-    while (importPathIterator.hasPrevious()) {
-        d->declarativeEngine.data()->addImportPath(importPathIterator.previous());
+    const QStringList pluginPathList = QCoreApplication::libraryPaths();
+    QStringListIterator pluginPathIterator(pluginPathList);
+    pluginPathIterator.toBack();
+    while (pluginPathIterator.hasPrevious()) {
+        d->declarativeEngine.data()->addImportPath(pluginPathIterator.previous() + "/imports");
     }
 
     const QString target = componentsTarget();
     if (target != defaultComponentsTarget()) {
-        const QStringList paths = KGlobal::dirs()->findDirs("module", "platformimports/" % target);
+        const QStringList paths = pluginPathList;
         QStringListIterator it(paths);
         it.toBack();
         while (it.hasPrevious()) {
-            d->declarativeEngine.data()->addImportPath(it.previous());
+            d->declarativeEngine.data()->addImportPath(it.previous() + "/platformimports/" + target);
         }
     }
 
@@ -130,7 +125,7 @@ QStringList KDeclarative::runtimePlatform()
         const QString env = getenv("PLASMA_PLATFORM");
         runtimePlatform = new QStringList(env.split(":", QString::SkipEmptyParts));
         if (runtimePlatform->isEmpty()) {
-            KConfigGroup cg(KGlobal::config(), "General");
+            KConfigGroup cg(KSharedConfig::openConfig(), "General");
             *runtimePlatform = cg.readEntry("runtimePlatform", *runtimePlatform);
         }
     }
