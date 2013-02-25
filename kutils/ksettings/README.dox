@@ -117,10 +117,9 @@ Some explanation for those keys:
   desktop file. For more docu on this look for the KCModule docu.
 - X-KDE-ParentApp is the name of the application this config page belongs to. It
   is used by the first two \ref KSettings::Dialog constructors. The Dialog will
-  use all modules that set X-KDE-ParentApp to
-  KGlobal::instance()->instanceName(). It
-  should be pretty easy to find out what name that is: look at the first
-  argument to the KAboutData ctor.
+  use all modules that set X-KDE-ParentApp to QCoreApplication::applicationName().
+  It should be pretty easy to find out what name that is: look for setApplicationName()
+  in main(), otherwise the name of the executable is used.
 - X-KDE-ParentComponents is a list of the components (plugin/KPart/whatever)
   this config page belongs to. Normally there is only one component.
   It is used for two things:

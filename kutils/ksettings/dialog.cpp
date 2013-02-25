@@ -28,10 +28,9 @@
 #include <kdebug.h>
 #include <kservicetypetrader.h>
 #include <kconfig.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
-#include <kcomponentdata.h>
+
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 #include <QCheckBox>
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -309,17 +308,17 @@ void DialogPrivate::parseGroupFile( const QString & filename )
 void DialogPrivate::createDialogFromServices()
 {
     Q_Q(Dialog);
-	// read .setdlg files
-	QString setdlgpath = KStandardDirs::locate( "appdata",
-                                                QCoreApplication::instance()->applicationName() + ".setdlg" );
-	const QStringList setdlgaddon = KGlobal::dirs()->findAllResources( "appdata",
-			"ksettingsdialog/*.setdlg" );
-    if (!setdlgpath.isNull()) {
+    // read .setdlg files   (eg: share/kapp/kapp.setdlg)
+    QString setdlgpath = QStandardPaths::locate(QStandardPaths::DataLocation /*includes appname, too*/,
+                                                QCoreApplication::instance()->applicationName() + ".setdlg");
+    if (!setdlgpath.isEmpty()) {
         parseGroupFile(setdlgpath);
     }
-    if (setdlgaddon.size() > 0) {
-        for (QStringList::ConstIterator it = setdlgaddon.begin(); it != setdlgaddon.end(); ++it) {
-            parseGroupFile(*it);
+
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::DataLocation, "ksettingsdialog",  QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& dir, dirs) {
+        Q_FOREACH(const QString& file, QDir(dir).entryList(QStringList() << QStringLiteral("*.setdlg"))) {
+            parseGroupFile(dir + '/' + file);
         }
     }
 

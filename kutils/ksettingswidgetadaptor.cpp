@@ -19,7 +19,7 @@
 
 #include "ksettingswidgetadaptor.h"
 #include <QtCore/QString>
-#include <kglobal.h>
+#include <QGuiApplication>
 
 KSettingsWidgetAdaptor::KSettingsWidgetAdaptor(QObject *parent)
     : QObject(parent)
@@ -28,6 +28,10 @@ KSettingsWidgetAdaptor::KSettingsWidgetAdaptor(QObject *parent)
 
 QString KSettingsWidgetAdaptor::applicationName()
 {
-	return KGlobal::caption();
+    const QString displayName = QGuiApplication::applicationDisplayName();
+    if (!displayName.isEmpty()) {
+        return displayName;
+    }
+    return QCoreApplication::applicationName();
 }
 
