@@ -392,8 +392,11 @@ if (UNIX)
    add_subdirectory( kpty )
    add_subdirectory( kdesu )
 endif (UNIX)
+
+find_package(Qt5UiTools)
+
 if(NOT WINCE)
-  if (NOT QT5_BUILD) # TODO: Qt5UiTools_FOUND
+  if (Qt5UiTools_FOUND)
       add_subdirectory( kjsembed )
   endif()
 endif(NOT WINCE)

@@ -65,7 +65,7 @@ SlotProxy::SlotProxy(KJS::JSObject *obj, KJS::Interpreter *interpreter, QObject 
     m_stringData += QByteArray("\0\0", 2);
 
     staticMetaObject.d.superdata = &QObject::staticMetaObject;
-    staticMetaObject.d.stringdata = m_stringData.data();
+    staticMetaObject.d.stringdata = m_stringData.data_ptr();
     staticMetaObject.d.data = m_data;
     staticMetaObject.d.extradata = 0;
 #ifdef DEBUG_SLOTPROXY

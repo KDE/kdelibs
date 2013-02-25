@@ -135,7 +135,7 @@ void setup( KJS::ExecState *exec, KJS::JSObject *parent )
 
     // check if this is a GUI application
     QApplication* app = ::qobject_cast<QApplication*>(QCoreApplication::instance());
-    if (app && (app->type() != QApplication::Tty))
+    if (app)
     {
         //qDebug("Loading GUI Bindings");
 
@@ -226,7 +226,7 @@ KJS::Completion Engine::runFile( KJS::Interpreter *interpreter, const KJS::UStri
     }
 
 //    qDebug() << "Loaded code: " << toQString(code);
-    
+
     return interpreter->evaluate( fileName, 0, code, 0 );
 }
 

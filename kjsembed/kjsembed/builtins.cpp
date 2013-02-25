@@ -24,15 +24,11 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
+#include <QtCore/QStandardPaths>
 #include <QMessageBox>
 #include <QtCore/QTextStream>
 #include <QtCore/QDebug>
 #include <QtCore/QMetaType>
-
-#ifndef QT_ONLY
-#include <kstandarddirs.h>
-#endif // QT_ONLY
-
 
 #include "variant_binding.h"
 #include "object_binding.h"
@@ -69,36 +65,34 @@ KJS::JSValue *callInclude( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         qDebug() << "include: " << toQString(filename);
 
         KJS::Completion c = Engine::runFile( exec->dynamicInterpreter(), filename );
-        
+
         if ( c.complType() == KJS::Normal )
             return KJS::jsNull();
-        
+
         if (c.complType() == KJS::ReturnValue)
         {
             if (c.isValueCompletion())
                 return c.value();
-            
+
             return KJS::jsNull();
         }
-        
+
         if (c.complType() == KJS::Throw)
         {
             QString message = toQString(c.value()->toString(exec));
             int line = c.value()->toObject(exec)->get(exec, "line")->toUInt32(exec);
-            return throwError(exec, KJS::EvalError, 
+            return throwError(exec, KJS::EvalError,
                               toUString(i18n("Error encountered while processing include '%1' line %2: %3", toQString(filename), line, message)));
         }
     }
     else
     {
-        return throwError(exec, KJS::URIError, 
+        return throwError(exec, KJS::URIError,
                           toUString(i18n("include only takes 1 argument, not %1.", args.size())));
     }
 
     return KJS::jsNull();
 }
-
-#ifndef QT_ONLY
 
 KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
@@ -106,26 +100,26 @@ KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
     if( args.size() == 1)
     {
         KJS::UString filename = args[0]->toString(exec);
-        QString qualifiedFilename = KStandardDirs::locate( "scripts", toQString(filename) );
+        QString qualifiedFilename = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "scripts/" + toQString(filename) );
         if ( !qualifiedFilename.isEmpty() )
         {
             KJS::Completion c = Engine::runFile( exec->dynamicInterpreter(), toUString(qualifiedFilename) );
             if ( c.complType() == KJS::Normal )
                 return KJS::jsNull();
-            
+
             if (c.complType() == KJS::ReturnValue)
             {
                 if (c.isValueCompletion())
                     return c.value();
-                
+
                 return KJS::jsNull();
             }
-            
+
             if (c.complType() == KJS::Throw)
             {
                 QString message = toQString(c.value()->toString(exec));
                 int line = c.value()->toObject(exec)->get(exec, "line")->toUInt32(exec);
-                return throwError(exec, KJS::EvalError, 
+                return throwError(exec, KJS::EvalError,
                                   toUString(i18n("Error encountered while processing include '%1' line %2: %3", toQString(filename), line, message)));
             }
         }
@@ -135,14 +129,12 @@ KJS::JSValue *callLibrary( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         }
     }
     else {
-        return throwError(exec, KJS::URIError, 
+        return throwError(exec, KJS::URIError,
                           toUString(i18n("library only takes 1 argument, not %1.", args.size())));
     }
 
     return KJS::jsNull();
 }
-
-#endif // QT_ONLY
 
 KJS::JSValue *callAlert( KJS::ExecState *exec, KJS::JSObject *self, const KJS::List &args )
 {
@@ -151,7 +143,7 @@ KJS::JSValue *callAlert( KJS::ExecState *exec, KJS::JSObject *self, const KJS::L
     {
         (*KJSEmbed::conerr()) << "callAlert";
         QString message = toQString(args[0]->toString(exec));
-        QMessageBox::warning(0, i18n("Alert"), message, QMessageBox::Ok, QMessageBox::NoButton); 
+        QMessageBox::warning(0, i18n("Alert"), message, QMessageBox::Ok, QMessageBox::NoButton);
     }
     return KJS::jsNull();
 }
@@ -213,9 +205,7 @@ const Method BuiltinsFactory::BuiltinMethods[] =
     {"exec", 0, KJS::DontDelete|KJS::ReadOnly, &callExec},
     {"dump", 1, KJS::DontDelete|KJS::ReadOnly, &callDump},
     {"include", 1, KJS::DontDelete|KJS::ReadOnly, &callInclude},
-#ifndef QT_ONLY
     {"library", 1, KJS::DontDelete|KJS::ReadOnly, &callLibrary},
-#endif // QT_ONLY
     {"alert", 1, KJS::DontDelete|KJS::ReadOnly, &callAlert},
     {"confirm", 1, KJS::DontDelete|KJS::ReadOnly, &callConfirm},
     {"isVariantType", 1, KJS::DontDelete|KJS::ReadOnly, &callIsVariantType},

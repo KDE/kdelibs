@@ -1,5 +1,8 @@
 project(kjsembed-kjsembed)
 
+find_package(Qt5UiTools REQUIRED)
+find_package(Qt5Svg REQUIRED)
+
 if (NOT QTONLY_WEBKIT)
    include_directories(
        ${CMAKE_SOURCE_DIR}
@@ -72,7 +75,7 @@ kde4_add_library(${KJSEMBEDLIBNAME} ${LIBRARY_TYPE} ${kjsembed_LIB_SRCS})
 
 generate_export_header(${KJSEMBEDLIBNAME})
 
-target_link_libraries(${KJSEMBEDLIBNAME} ${KDE4_KDECORE_LIBS} ${QT_QTUITOOLS_LIBRARY} Qt5::Widgets ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${KJSLIBNAME} )
+target_link_libraries(${KJSEMBEDLIBNAME} ki18n ${QT_QTXML_LIBRARY} Qt5::Widgets Qt5::Svg Qt5::UiTools ${KJSLIBNAME} )
 
 set_target_properties(${KJSEMBEDLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS ${KJSEMBEDLIBNAME} EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
