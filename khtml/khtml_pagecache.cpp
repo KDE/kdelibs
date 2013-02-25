@@ -23,14 +23,13 @@
 
 #include <kfilterdev.h>
 #include <QTemporaryFile>
-#include <kstandarddirs.h>
 
 #include <QQueue>
 #include <QHash>
 #include <QList>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
-#include <errno.h>
+#include <QtCore/QDir>
 #include <sys/types.h>
 #include <unistd.h>
 #include <assert.h>
@@ -78,15 +77,13 @@ KHTMLPageCacheEntry::KHTMLPageCacheEntry(long id)
     : m_id(id)
     , m_complete(false)
 {
-  //get tmp file name
-  QTemporaryFile* f=new QTemporaryFile(KStandardDirs::locateLocal("tmp", "")+"khtmlcacheXXXXXX.tmp");
-  f->open();
-  m_fileName=f->fileName();
-  f->setAutoRemove(false);
-  delete f;
+    QTemporaryFile f(QDir::tempPath() + "/khtmlcacheXXXXXX.tmp");
+    f.open();
+    m_fileName = f.fileName();
+    f.setAutoRemove(false);
 
-  m_file = KFilterDev::deviceForFile(m_fileName, "application/x-gzip"/*,false*/);
-  m_file->open(QIODevice::WriteOnly);
+    m_file = KFilterDev::deviceForFile(m_fileName, "application/x-gzip"/*,false*/);
+    m_file->open(QIODevice::WriteOnly);
 }
 
 KHTMLPageCacheEntry::~KHTMLPageCacheEntry()

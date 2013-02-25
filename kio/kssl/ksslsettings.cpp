@@ -31,8 +31,6 @@
 
 #include <QtCore/QFile>
 
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 
@@ -99,10 +97,6 @@ KSSLSettings::KSSLSettings(bool readConfig)
 	:d(new KSSLSettingsPrivate)
 {
         m_cfg = new KConfig("cryptodefaults", KConfig::NoGlobals);
-
-	if (!KGlobal::dirs()->addResourceType("kssl", "data", "kssl")) {
-		//kDebug(7029) << "Error adding (kssl, share/apps/kssl)";
-	}
 
 	if (readConfig) load();
 }

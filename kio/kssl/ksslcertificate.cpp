@@ -27,14 +27,12 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtCore/QFile>
+#include <QtCore/QStandardPaths>
 
 #include "kssldefs.h"
 #include "ksslcertchain.h"
 #include "ksslutils.h"
 
-#include <kglobal.h>
-#include <kstandarddirs.h>
-#include <kde_file.h>
 #include <klocalizedstring.h>
 #include <QtCore/QDate>
 #include <qtemporaryfile.h>
@@ -92,7 +90,6 @@ public:
 KSSLCertificate::KSSLCertificate() {
     d = new KSSLCertificatePrivate;
     d->m_stateCached = false;
-    KGlobal::dirs()->addResourceType("kssl", "data", "kssl");
     #if KSSL_HAVE_SSL
         d->m_cert = NULL;
     #endif
@@ -102,7 +99,6 @@ KSSLCertificate::KSSLCertificate() {
 KSSLCertificate::KSSLCertificate(const KSSLCertificate& x) {
     d = new KSSLCertificatePrivate;
     d->m_stateCached = false;
-    KGlobal::dirs()->addResourceType("kssl", "data", "kssl");
     #if KSSL_HAVE_SSL
         d->m_cert = NULL;
         setCert(KOSSL::self()->X509_dup(const_cast<KSSLCertificate&>(x).getCert()));
@@ -659,7 +655,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
         return errors;
     }
 
-    const QStringList qsl = KGlobal::dirs()->resourceDirs("kssl");
+    const QStringList qsl = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "kssl", QStandardPaths::LocateDirectory);
 
     if (qsl.isEmpty()) {
         errors << KSSLCertificate::NoCARoot;
@@ -669,9 +665,8 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
     KSSLCertificate::KSSLValidation ksslv = Unknown;
 
     for (QStringList::ConstIterator j = qsl.begin(); j != qsl.end(); ++j) {
-        KDE_struct_stat sb;
         QString _j = (*j) + "ca-bundle.crt";
-        if (-1 == KDE_stat(_j.toLatin1().constData(), &sb)) {
+        if (!QFile::exists(_j)) {
             continue;
         }
 

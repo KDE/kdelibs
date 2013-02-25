@@ -24,11 +24,9 @@
 #include "ui_keygenwizard.h"
 
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kopenssl.h>
-#include <kstandarddirs.h>
 #include <kwallet.h>
 
 #include <QProgressDialog>
@@ -207,9 +205,7 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 	// back from there.  Yes it's inefficient, but it doesn't happen
 	// often and this way things are uniform.
 
-	KGlobal::dirs()->addResourceType("kssl", "data", "kssl");
-
-	const QString path = KGlobal::dirs()->saveLocation("kssl");
+	const QString path = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/kssl";
 	QTemporaryFile csrFile(path + "csr_XXXXXX.der");
 	csrFile.setAutoRemove(false);
 

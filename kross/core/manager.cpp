@@ -31,7 +31,6 @@
 #include <QtCore/QLibrary>
 #include <QtCore/QCoreApplication>
 
-#include <kstandarddirs.h>
 #include <klocalizedstring.h>
 
 extern "C"
@@ -82,24 +81,12 @@ void* loadLibrary(const char* libname, const char* functionname)
     if( ! lib.load() ) {
         const QString err = QString("Error: %1").arg(lib.errorString());
 
-        //TODO move that functionality out of Kross since we like to be Qt-only
-        foreach(const QString &dir, KStandardDirs().resourceDirs("module")) {
-            lib.setFileName( QFileInfo(dir, libname).filePath() );
+        foreach (const QString& path, QCoreApplication::instance()->libraryPaths()) {
+            lib.setFileName( QFileInfo(path, libname).filePath() );
             lib.setLoadHints( QLibrary::ExportExternalSymbolsHint );
             if( lib.load() )
                 break;
         }
-
-        /*
-        if( ! lib.isLoaded() ) {
-            foreach(const QString& path, QCoreApplication::instance()->libraryPaths()) {
-                lib.setFileName( QFileInfo(path, libname).filePath() );
-                lib.setLoadHints( QLibrary::ExportExternalSymbolsHint );
-                if( lib.load() )
-                    break;
-            }
-        }
-        */
 
         if( ! lib.isLoaded() ) {
             #ifdef KROSS_INTERPRETER_DEBUG

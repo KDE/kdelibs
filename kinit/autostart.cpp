@@ -21,8 +21,8 @@
 #include "autostart.h"
 
 #include <kautostart.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
+#include <QStandardPaths>
+#include <QDir>
 
 class AutoStartItem
 {
@@ -37,9 +37,6 @@ AutoStart::AutoStart()
   : m_phase(-1), m_phasedone(false)
 {
   m_startList = new AutoStartList;
-  KGlobal::dirs()->addResourceType("xdgconf-autostart", NULL, "autostart/"); // xdg ones
-  KGlobal::dirs()->addResourceType("autostart", "xdgconf-autostart", "/"); // merge them
-  KGlobal::dirs()->addResourceType("autostart", 0, "share/autostart"); // KDE ones are higher priority
 }
 
 AutoStart::~AutoStart()
@@ -78,16 +75,22 @@ static QString extractName(QString path) // krazy:exclude=passbyvalue
 void
 AutoStart::loadAutoStartList()
 {
-   const QStringList files = KGlobal::dirs()->findAllResources("autostart",
-                                                               QString::fromLatin1("*.desktop"),
-                                                               KStandardDirs::NoDuplicates);
+    // XDG autostart dirs
 
-   for(QStringList::ConstIterator it = files.begin();
-       it != files.end();
-       ++it)
-   {
-       KAutostart config(*it);
-       if( !config.autostarts(QString::fromLatin1("KDE"), KAutostart::CheckAll))
+    // Make unique list of relative paths
+    QStringList files;
+    QStringList dirs = QStandardPaths::locateAll(QStandardPaths::ConfigLocation, QStringLiteral("autostart"), QStandardPaths::LocateDirectory);
+    Q_FOREACH (const QString& dir, dirs) {
+        Q_FOREACH (const QString& file, QDir(dir).entryList(QStringList() << QStringLiteral("*.desktop"))) {
+            if (!files.contains(file))
+                files.append(file);
+        }
+    }
+
+   for (QStringList::ConstIterator it = files.constBegin(); it != files.constEnd(); ++it) {
+       const QString file = QStandardPaths::locate(QStandardPaths::ConfigLocation, QStringLiteral("autostart/") + *it);
+       KAutostart config(file);
+       if (!config.autostarts(QStringLiteral("KDE"), KAutostart::CheckAll))
            continue;
 
        AutoStartItem *item = new AutoStartItem;

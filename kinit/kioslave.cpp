@@ -28,6 +28,7 @@
 
 #include <QtCore/QString>
 #include <QtCore/QLibrary>
+#include <QtCore/QPluginLoader>
 #include <QtCore/QFile>
 
 #if defined(Q_OS_WIN) || defined(Q_OS_MAC)
@@ -42,7 +43,6 @@
 #include <windows.h>
 #include <process.h>
 #endif
-#include "kstandarddirs.h"
 #endif
 
 #ifndef Q_OS_WIN
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
      if (argc < 5)
      {
         fprintf(stderr, "Usage: kioslave <slave-lib> <protocol> <klauncher-socket> <app-socket>\n\nThis program is part of KDE.\n");
-        exit(1);
+        return 1;
      }
 #ifndef _WIN32_WCE
      setlocale(LC_ALL, "");
@@ -66,55 +66,30 @@ int main(int argc, char **argv)
      if (libpath.isEmpty())
      {
         fprintf(stderr, "library path is empty.\n");
-        exit(1);
+        return 1;
      }
 
-     QLibrary lib(libpath);
-#ifdef USE_KPROCESS_FOR_KIOSLAVES
-     qDebug("trying to load '%s'", qPrintable(libpath));
-#endif
-     if ( !lib.load() || !lib.isLoaded() )
-     {
-#ifdef USE_KPROCESS_FOR_KIOSLAVES
-        libpath = KStandardDirs::installPath("module") + QFileInfo(libpath).fileName();
-        lib.setFileName( libpath );
-        if(!lib.load() || !lib.isLoaded())
-        {
-            QByteArray kdedirs = qgetenv("KDEDIRS");
-            if (!kdedirs.size()) {
-              qDebug("not able to find '%s' because KDEDIRS environment variable is not set.\n"
-                     "Set KDEDIRS to the KDE installation root dir and restart klauncher to fix this problem.",
-                     qPrintable(libpath));
-              exit(1);
-            }
-            QString paths = QString::fromLocal8Bit(kdedirs);
-            QStringList pathlist = paths.split(';');
-            Q_FOREACH(const QString &path, pathlist) {
-              QString slave_path = path + QLatin1String("/lib/kde5/") + QFileInfo(libpath).fileName();
-              qDebug() << "trying to load" << slave_path;
-              lib.setFileName(slave_path);
-              if (lib.load() && lib.isLoaded() )
-                break;
-            }
-            if (!lib.isLoaded())
-            {
-              qWarning("could not open %s: %s", libpath.data(), qPrintable (lib.errorString()) );
-              exit(1);
-            }
-        }
-#else
-        fprintf(stderr, "could not open %s: %s", qPrintable(libpath),
-                qPrintable (lib.errorString()) );
-        exit(1);
-#endif
+     // Use QPluginLoader to locate the library when using a relative path
+     // But we need to use QLibrary to actually load it, because of resolve()!
+     QPluginLoader loader(libpath);
+     if (loader.fileName().isEmpty()) {
+         fprintf(stderr, "could not locate %s, check QT_PLUGIN_PATH\n", qPrintable(libpath));
+         return 1;
+     }
+
+     qDebug() << "trying to load" << libpath << "from" << loader.fileName();
+     QLibrary lib(loader.fileName());
+     if (!lib.load()) {
+         fprintf(stderr, "could not open %s: %s\n", qPrintable(libpath),
+                 qPrintable(lib.errorString()));
+         return 1;
      }
 
 #warning QT5 Port to QFunctionPointer
      void* sym = (void*)lib.resolve("kdemain");
-     if (!sym )
-     {
+     if (!sym) {
         fprintf(stderr, "Could not find kdemain: %s\n", qPrintable(lib.errorString() ));
-        exit(1);
+        return 1;
      }
 
 #ifdef Q_OS_WIN

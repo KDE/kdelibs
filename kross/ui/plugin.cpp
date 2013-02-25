@@ -21,8 +21,6 @@
 
 #include <kaction.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
 #include <krun.h>
 #include <kxmlguifactory.h>
 #include <kactioncollection.h>
@@ -123,7 +121,14 @@ QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
         collection=new Kross::ActionCollection(d->collectionName, Kross::Manager::self().actionCollection());
     }
 
-    QStringList allActionFiles = KGlobal::dirs()->findAllResources("appdata", "scripts/"+d->referenceActionsDir+"/*.rc");
+    QStringList allActionFiles;
+    const QStringList scriptDirs = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("scripts/") + d->referenceActionsDir, QStandardPaths::LocateDirectory);
+    Q_FOREACH(const QString& scriptDir, scriptDirs) {
+        QDirIterator it(dir, QStringList() << QStringLiteral("*.rc"));
+        while (it.hasNext()) {
+            allActionFiles.append(it.next());
+        }
+
     //move userActionsFile to the end so that it updates existing actions and adds new ones.
     int pos=allActionFiles.indexOf(d->userActionsFile);
     if (pos!=-1)
@@ -131,7 +136,7 @@ QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
     else if (QFile::exists(d->userActionsFile)) //in case d->userActionsFile isn't in the standard local dir
         allActionFiles.append(d->userActionsFile);
 
-    QStringList searchPath=KGlobal::dirs()->findDirs("appdata", "scripts/"+d->referenceActionsDir);
+    QStringList searchPath = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("scripts/") + d->referenceActionsDir, QStandardPaths::LocateDirectory);
     foreach(const QString &file, allActionFiles) {
         QFile f(file);
         if (!f.open(QIODevice::ReadOnly))
@@ -214,7 +219,7 @@ void ScriptingPlugin::save()
     bool collectionEmpty = !collection||(collection->actions().empty()&&collection->collections().empty());
 
     if( !collectionEmpty ) {
-        QStringList searchPath=KGlobal::dirs()->findDirs("appdata", "scripts/"+d->referenceActionsDir);
+        QStringList searchPath = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("scripts/") + d->referenceActionsDir, QStandardPaths::LocateDirectory);
         searchPath.append(QFileInfo(d->userActionsFile).absolutePath());
         if( collection->writeXml(&f, 2, searchPath) ) {
             kDebug() << "Successfully saved file: " << d->userActionsFile;

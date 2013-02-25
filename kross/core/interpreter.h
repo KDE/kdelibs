@@ -113,9 +113,7 @@ namespace Kross {
 
             /**
              * \return the file-wildcard used to determinate by this interpreter
-             * used scriptingfiles. Those filter will be used e.g. with
-             * KGlobal::dirs()->findAllResources() as filtermask. For example
-             * python just defines it as "*py".
+             * used scriptingfiles. For example python just defines it as "*py".
              */
             const QString wildcard() const;
 

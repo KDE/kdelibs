@@ -60,8 +60,7 @@ KSSLCertDialog::KSSLCertDialog(QWidget *parent, const char *name, bool modal)
    grid->addWidget(lblCertificate);
 
    _certs = new QListWidget(this);
-   QFontMetrics fm( KGlobalSettings::generalFont() );
-   _certs->setMinimumHeight(4*fm.height());
+   _certs->setMinimumHeight(4*fontMetrics().height());
    grid->addWidget(_certs);
 
    _save = new QCheckBox(i18n("Save selection for this host."), this);

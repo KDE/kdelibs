@@ -20,12 +20,10 @@
 #include <QObject>
 
 #include <QtTest/QtTest>
-#include <kstandarddirs.h>
 #include <ksharedconfig.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 
 class KConfigNoKdeHomeTest : public QObject
 {
@@ -38,9 +36,6 @@ private Q_SLOTS:
 
 void KConfigNoKdeHomeTest::testNoKdeHome()
 {
-    // TODO Qt5: remove this, app name will be set automatically
-    QCoreApplication::setApplicationName("kconfignokdehometest");
-
     const QString xdgConfigHome = QDir::homePath() + "/.kde-unit-test-does-not-exist";
     QDir xdgConfigHomeDir(xdgConfigHome);
     qputenv("XDG_CONFIG_HOME", QFile::encodeName(xdgConfigHome));
@@ -48,8 +43,6 @@ void KConfigNoKdeHomeTest::testNoKdeHome()
     QVERIFY(!QFile::exists(xdgConfigHome));
 
     // Do what kf5-config does, and ensure kdehome doesn't get created (#233892)
-    QVERIFY(!QFile::exists(xdgConfigHome));
-    KGlobal::dirs();
     QVERIFY(!QFile::exists(xdgConfigHome));
     KSharedConfig::openConfig();
     QVERIFY(!QFile::exists(xdgConfigHome));

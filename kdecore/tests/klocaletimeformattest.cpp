@@ -25,19 +25,24 @@
 #include <kconfiggroup.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
-#include <kstandarddirs.h>
 #include <klocale.h>
 #include "kdayperiod_p.h"
+
+#include <QStandardPaths>
 #include <QtCore/QStringList>
 #include <QtTest/QTest>
 
 static QString loadTimeFormat(const QString &country)
 {
-    KConfig entryFile(KStandardDirs::locate("locale",
-                                            QString::fromLatin1("l10n/%1/entry.desktop")
-                                            .arg(country)));
+    const QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                                                QString::fromLatin1("locale/l10n/%1/entry.desktop")
+                                                .arg(country));
+    if (file.isEmpty()) {
+        return QString();
+    }
+    KConfig entryFile(file);
     KConfigGroup entry(&entryFile, "KCM Locale");
-    return entry.readEntry("TimeFormat", "");
+    return entry.readEntry("TimeFormat", QString());
 }
 
 void KLocaleTimeFormatTest::initTestCase()

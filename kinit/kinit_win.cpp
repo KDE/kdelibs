@@ -41,10 +41,10 @@
 #include <QtDBus/QtDBus>
 
 #include <kcomponentdata.h>
-#include <kstandarddirs.h>
+#include <kstandarddirs.h> // TODO REMOVE
 #include <kdeversion.h>
 
-//#define ENABLE_SUICIDE 
+//#define ENABLE_SUICIDE
 //#define ENABLE_EXIT
 
 #define KDED_EXENAME "kded5"
@@ -58,14 +58,14 @@ int verbose=0;
 QList<QProcess*> startedProcesses;
 
 /* --------------------------------------------------------------------
-  sid helper - will be migrated later to a class named Sid, which could 
-  be used as base class for platform independent K_UID and K_GID types 
-  - would this be possible before KDE 5 ? 
+  sid helper - will be migrated later to a class named Sid, which could
+  be used as base class for platform independent K_UID and K_GID types
+  - would this be possible before KDE 5 ?
   --------------------------------------------------------------------- */
 
 /**
- copy sid 
- @param from sif to copy from 
+ copy sid
+ @param from sif to copy from
  @return copied sid, need to be free'd with free
  @note null sid's are handled too
 */
@@ -80,8 +80,8 @@ PSID copySid(PSID from)
 }
 
 /**
- copy sid 
- @param from sif to copy from 
+ copy sid
+ @param from sif to copy from
  @return copied sid, need to be free'd with free
  @note null sid's are handled too
 */
@@ -92,8 +92,8 @@ void freeSid(PSID sid)
 }
 
 /**
- copy sid 
- @param from sif to copy from 
+ copy sid
+ @param from sif to copy from
  @return copied sid, need to be free'd with free
  @note null sid's are handled too
 */
@@ -109,14 +109,14 @@ QString toString(PSID sid)
 }
 
 /* --------------------------------------------------------------------
-  process helper 
+  process helper
   --------------------------------------------------------------------- */
 
-/** 
+/**
  return process handle
- @param pid process id 
+ @param pid process id
  @return process handle
- */ 
+ */
 static HANDLE getProcessHandle(int processID)
 {
     return OpenProcess( SYNCHRONIZE|PROCESS_QUERY_INFORMATION |
@@ -124,11 +124,11 @@ static HANDLE getProcessHandle(int processID)
                         false, processID );
 }
 
-/** 
- return absolute path of process 
- @param pid process id 
+/**
+ return absolute path of process
+ @param pid process id
  @return process name
- */ 
+ */
 static QString getProcessName(DWORD pid)
 {
     HANDLE hModuleSnap = INVALID_HANDLE_VALUE;
@@ -157,15 +157,15 @@ static QString getProcessName(DWORD pid)
 static PSID getProcessOwner(HANDLE hProcess)
 {
 #ifndef _WIN32_WCE
-    HANDLE hToken = NULL;    
+    HANDLE hToken = NULL;
     PSID sid;
-            
+
     OpenProcessToken(hProcess, TOKEN_READ, &hToken);
     if(hToken)
     {
         DWORD size;
         PTOKEN_USER userStruct;
-                
+
         // check how much space is needed
         GetTokenInformation(hToken, TokenUser, NULL, 0, &size);
         if( ERROR_INSUFFICIENT_BUFFER == GetLastError() )
@@ -191,17 +191,17 @@ static PSID getCurrentProcessOwner()
     return getProcessOwner(GetCurrentProcess());
 }
 
-/** 
+/**
  holds single process
  */
 class ProcessListEntry {
     public:
-       ProcessListEntry( HANDLE _handle, QString _path, int _pid, PSID _owner=0 ) 
-       {    
+       ProcessListEntry( HANDLE _handle, QString _path, int _pid, PSID _owner=0 )
+       {
            QFileInfo p(_path);
            path = p.absolutePath();
            name = p.baseName();
-           handle = _handle; 
+           handle = _handle;
            pid = _pid;
            owner = copySid(_owner);
        }
@@ -211,7 +211,7 @@ class ProcessListEntry {
            freeSid(owner);
            CloseHandle(handle);
        }
-       
+
        QString name;
        QString path;
        int pid;
@@ -222,7 +222,7 @@ class ProcessListEntry {
 
 QDebug operator <<(QDebug out, const ProcessListEntry &c)
 {
-    out << "(ProcessListEntry" 
+    out << "(ProcessListEntry"
         << "name" << c.name
         << "path" << c.path
         << "pid" << c.pid
@@ -230,41 +230,41 @@ QDebug operator <<(QDebug out, const ProcessListEntry &c)
         << "sid" << toString(c.owner)
         << ")";
     return out;
-}    
+}
 
 /**
- holds system process list snapshot 
+ holds system process list snapshot
 
- Could be used as a public platform independent class or namespace in kdecore 
- for dealing with system processes, named perhaps KSystemProcessSnapshot or similar. 
+ Could be used as a public platform independent class or namespace in kdecore
+ for dealing with system processes, named perhaps KSystemProcessSnapshot or similar.
  If implemented at Qt level it will be named QSystemProcessSnapshot or similar
 */
 class ProcessList {
 public:
     /**
-    collect process 
+    collect process
     @param userSid  sid of user for which processes should be collected or 0 for all processes
     */
     ProcessList(PSID userSid=0);
 
     ~ProcessList();
 
-    /** 
+    /**
     find process in list
     @param name process name (with or without extension)
-    @return instance of process entry 
+    @return instance of process entry
     */
     ProcessListEntry *find(const QString &name);
 
-    /** 
+    /**
     killprocess from list
     @param name process name (with or without extension)
-    @return ... 
+    @return ...
     */
     bool terminateProcess(const QString &name);
 
     /**
-    return all processes 
+    return all processes
     @return list with processes
     */
     QList<ProcessListEntry *> &list() { return m_processes; }
@@ -275,10 +275,10 @@ private:
     PSID m_userId;
 };
 
-ProcessList::ProcessList(PSID userSid) 
+ProcessList::ProcessList(PSID userSid)
 {
     m_userId = userSid;
-    init(); 
+    init();
 }
 
 ProcessList::~ProcessList()
@@ -299,7 +299,7 @@ void ProcessList::init()
     pe32.dwSize = sizeof(PROCESSENTRY32);
     if (!Process32First( h, &pe32 ))
         return;
-      
+
     do
     {
         HANDLE hProcess = getProcessHandle(pe32.th32ProcessID);
@@ -329,15 +329,15 @@ ProcessListEntry *ProcessList::find(const QString &name)
 {
     ProcessListEntry *ple;
     foreach(ple,m_processes) {
-        if (ple->pid < 0) { 
+        if (ple->pid < 0) {
             qDebug() << "negative pid!";
             continue;
         }
-        
+
         if (ple->name != name && ple->name != name + ".exe") {
             continue;
         }
-        
+
         if (!ple->path.isEmpty() && !ple->path.toLower().startsWith(KStandardDirs::installPath("kdedir").toLower())) {
             // process is outside of installation directory
             qDebug() << "path of the process" << name << "seems to be outside of the installPath:" << ple->path << KStandardDirs::installPath("kdedir");
@@ -416,7 +416,7 @@ void listAllRunningKDEProcesses(ProcessList &processList)
 {
     QString installPrefix = KStandardDirs::installPath("kdedir");
 
-    foreach(const ProcessListEntry *ple, processList.list()) 
+    foreach(const ProcessListEntry *ple, processList.list())
     {
         if (!ple->path.isEmpty() && ple->path.toLower().startsWith(installPrefix.toLower()))
             fprintf(stderr,"path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
@@ -427,9 +427,9 @@ void terminateAllRunningKDEProcesses(ProcessList &processList)
 {
     QString installPrefix = KStandardDirs::installPath("kdedir");
 
-    foreach(const ProcessListEntry *ple, processList.list()) 
+    foreach(const ProcessListEntry *ple, processList.list())
     {
-        if (!ple->path.isEmpty() && ple->path.toLower().startsWith(installPrefix.toLower())) 
+        if (!ple->path.isEmpty() && ple->path.toLower().startsWith(installPrefix.toLower()))
         {
             if (verbose)
                 fprintf(stderr,"terminating path: %s name: %s pid: %u\n", ple->path.toLatin1().data(), ple->name.toLatin1().data(), ple->pid);
@@ -505,15 +505,15 @@ int main(int argc, char **argv, char **envp)
 #ifdef ENABLE_EXIT
         if (strcmp(safe_argv[i], "--exit") == 0)
             keep_running = 0;
-#endif            
+#endif
         if (strcmp(safe_argv[i], "--verbose") == 0)
             verbose = 1;
-        if (strcmp(safe_argv[i], "--version") == 0) 
-        { 
-            printf("Qt: %s\n",qVersion()); 
-            printf("KDE: %s\n", KDE_VERSION_STRING); 
+        if (strcmp(safe_argv[i], "--version") == 0)
+        {
+            printf("Qt: %s\n",qVersion());
+            printf("KDE: %s\n", KDE_VERSION_STRING);
             exit(0);
-        } 
+        }
         if (strcmp(safe_argv[i], "--help") == 0)
         {
            printf("Usage: kdeinit5 [options]\n");
@@ -576,7 +576,7 @@ int main(int argc, char **argv, char **envp)
         Sleep(2000);
         terminateAllRunningKDEProcesses(processList);
     }
-    
+
     /** Create our instance **/
     s_instance = new KComponentData("kdeinit5", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
@@ -655,6 +655,6 @@ int main(int argc, char **argv, char **envp)
         } while(!can_exit);
         return 0;
     }
-#endif    
+#endif
     return 0;
 }

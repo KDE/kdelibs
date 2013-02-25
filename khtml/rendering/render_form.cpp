@@ -48,7 +48,6 @@
 #include <kurl.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
-#include <kstandarddirs.h>
 #include <kbuildsycocaprogressdialog.h>
 #include <kservicetypetrader.h>
 #include <kservice.h>
@@ -57,6 +56,7 @@
 #include <QAbstractTextDocumentLayout>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QDir>
 #include <QStyle>
 #include <QStyleOptionButton>
 #include <QLabel>
@@ -887,10 +887,10 @@ void WebShortcutCreator::createFile(QString query, QString name, QString keys)
     // SearchProvider class is part of kdebase, so the file is written as
     // an standard desktop file.
     QString fileName( keys );
-    KStandardDirs dirs;
-    QString dir = dirs.saveLocation( "services", "searchproviders" );
-    while ( KStandardDirs::exists( dir + fileName + ".desktop" ) )
-    fileName += '_';
+    QString dir = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + "/kde5/services/searchproviders";
+    QDir().mkpath(dir);
+    while ( QFile::exists( dir + fileName + ".desktop" ) )
+        fileName += '_';
     KDesktopFile f( dir + fileName + ".desktop");
     f.desktopGroup().writeEntry( "Keys", keys );
     f.desktopGroup().writeEntry( "Type", "Service" );
