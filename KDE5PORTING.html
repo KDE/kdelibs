@@ -145,14 +145,16 @@ When the code uses wildcard filters or the Recursive flag in findAllResources, y
 Either keep using KStandardDirs, or write your own filtering (QDir::entryList) or recursive listing (use QDirIterator with the Subdirectories flag).
 Also, check for absolute paths first, findAllResources(res, "/absolute/path") returned the path, QStandardPaths doesn't.
 <br/>
+If NoDuplicates was used, make a unique list of relative paths first, then use locate on each one (see autostart.cpp for an example).
+<br/>
 Example using entryList:
 <pre>
     QStringList files = dirs()-&gt;findAllResources("data", "foo/bar/*.desktop")
 becomes:
     QStringList files;
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "foo/bar", QStandardPaths::LocateDirectory);
-    Q_FOREACH(const QString&amp; dir, dirs) {
-        Q_FOREACH(const QString&amp; file, QDir(dir).entryList(QStringList() &lt;&lt; QStringLiteral("*.desktop"))) {
+    Q_FOREACH (const QString&amp; dir, dirs) {
+        Q_FOREACH (const QString&amp; file, QDir(dir).entryList(QStringList() &lt;&lt; QStringLiteral("*.desktop"))) {
             files.append(dir + '/' + file);
         }
     }
@@ -161,7 +163,7 @@ Example using QDirIterator:
 <pre>
     QStringList files;
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "foo/bar", QStandardPaths::LocateDirectory);
-    Q_FOREACH(const QString&amp; dir, dirs) {
+    Q_FOREACH (const QString&amp; dir, dirs) {
         QDirIterator it(dir, QStringList() &lt;&lt; QStringLiteral("*.desktop"));
         while (it.hasNext()) {
             files.append(it.next());
@@ -171,9 +173,9 @@ Example using QDirIterator:
 On the other hand, findAllResources("locale", "*/entry.desktop") requires
 <pre>
     const QStringList localeDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, QStringLiteral("locale"), QStandardPaths::LocateDirectory);
-    Q_FOREACH(const QString&amp; localeDir, localeDirs) {
+    Q_FOREACH (const QString&amp; localeDir, localeDirs) {
         const QStringList entries = QDir(localeDir).entryList(QDir::Dirs);
-        Q_FOREACH(const QString&amp; d, entries) {
+        Q_FOREACH (const QString&amp; d, entries) {
             if (QFile::exists(localeDir + '/' + d + "/entry.desktop")) {
                 // ...
             }
