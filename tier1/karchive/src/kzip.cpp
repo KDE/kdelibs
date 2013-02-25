@@ -33,6 +33,16 @@
 #include <time.h>
 #include <string.h>
 
+#ifdef Q_OS_WIN
+#ifndef S_IFLNK
+#define        S_IFLNK  0120000
+#endif
+
+#ifndef S_ISLNK
+#define	S_ISLNK(m)	(((m) & S_IFMT) == S_IFLNK)	/* symbolic link */
+#endif
+#endif
+
 const int max_path_len = 4095;	// maximum number of character a path may contain
 
 static void transformToMsDos(const QDateTime& dt, char* buffer)

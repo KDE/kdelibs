@@ -35,15 +35,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h>
 #include <errno.h>
-#include <grp.h>
-#include <pwd.h>
+
 #include <assert.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+
 #ifdef Q_OS_UNIX
+#include <grp.h>
+#include <pwd.h>
 #include <limits.h>  // PATH_MAX
+#include <unistd.h>
 #endif
 
 class KArchivePrivate
@@ -211,8 +213,13 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
         return false;
     }
 
+#if defined(Q_OS_UNIX)
     QT_STATBUF fi;
     if (QT_LSTAT(QFile::encodeName(fileName).constData(), &fi) == -1) {
+#elif defined(Q_OS_WIN)
+    struct stat fi;
+    if (::stat(QFile::encodeName(fileName).constData(), &fi) == -1) {
+#endif
         /*qWarning() << "stat'ing" << fileName
             << "failed:" << strerror(errno);*/
         return false;
@@ -388,15 +395,42 @@ bool KArchive::finishWriting( qint64 size )
     return doFinishWriting( size );
 }
 
+static QString getCurrentUserName()
+{
+#if defined(Q_OS_UNIX)
+    struct passwd* pw = getpwuid( getuid() );
+    return pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
+#elif defined(Q_OS_WIN)
+    wchar_t buffer[255];
+    DWORD size = 255;
+    bool ok = GetUserNameW(buffer, &size);
+    if (!ok)
+        return QString();
+    return QString::fromWCharArray(buffer);
+#else
+    return QString();
+#endif
+}
+
+static QString getCurrentGroupName()
+{
+#if defined(Q_OS_UNIX)
+    struct group* grp = getgrgid( getgid() );
+    return grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
+#elif defined(Q_OS_WIN)
+    return QString();
+#else
+    return QString();
+#endif
+}
+
 KArchiveDirectory * KArchive::rootDir()
 {
     if ( !d->rootDir )
     {
         //qDebug() << "Making root dir ";
-        struct passwd* pw =  getpwuid( getuid() );
-        struct group* grp = getgrgid( getgid() );
-        QString username = pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
-        QString groupname = grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
+        QString username = ::getCurrentUserName();
+        QString groupname = ::getCurrentGroupName();
 
         d->rootDir = new KArchiveDirectory( this, QLatin1String("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString() );
     }
@@ -798,7 +832,7 @@ void KArchiveDirectory::copyTo(const QString& dest, bool recursiveCopy ) const
     for ( QStringList::const_iterator it = dirEntries.begin(); it != dirEntries.end(); ++it ) {
       const KArchiveEntry* curEntry = curDir->entry(*it);
       if (!curEntry->symLinkTarget().isEmpty()) {
-          const QString linkName = curDirName+QLatin1Char('/')+curEntry->name();
+          QString linkName = curDirName+QLatin1Char('/')+curEntry->name();
           // To create a valid link on Windows, linkName must have a .lnk file extension.
 #ifdef Q_OS_WIN
           if (!linkName.endsWith(".lnk")) {

@@ -28,6 +28,10 @@ include_directories(
   ${ZLIB_INCLUDE_DIR}
 )
 
+if( MSVC )
+    add_definitions( /Zc:wchar_t- )
+endif( MSVC )
+
 set(INCLUDE_INSTALL_DIR "include")
 
 add_subdirectory(src)

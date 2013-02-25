@@ -23,14 +23,17 @@
 #include <config-compression.h>
 #include "kfilterdev.h"
 #include "kfilterbase.h"
-#include <unistd.h>
-#include <limits.h>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <zlib.h>
+
+#ifdef Q_OS_UNIX
+#include <unistd.h>
+#include <limits.h>
+#endif
 
 QTEST_MAIN(KFilterTest)
 

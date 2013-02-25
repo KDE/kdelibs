@@ -33,6 +33,13 @@
 #include <errno.h>
 #endif
 
+#ifdef Q_OS_WIN
+#include <Windows.h>
+#else
+#include <grp.h>
+#include <pwd.h>
+#endif
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 #define QFINDTESTDATA(a) KDESRCDIR + a
 #endif
@@ -84,6 +91,35 @@ static void writeTestFilesToArchive( KArchive* archive )
 #ifndef Q_OS_WIN
     // Add local symlink
     QVERIFY( archive->addLocalFile( "test3_symlink", "z/test3_symlink") );
+#endif
+}
+
+static QString getCurrentUserName()
+{
+#if defined(Q_OS_UNIX)
+    struct passwd* pw = getpwuid( getuid() );
+    return pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
+#elif defined(Q_OS_WIN)
+    wchar_t buffer[255];
+    DWORD size = 255;
+    bool ok = GetUserNameW(buffer, &size);
+    if (!ok)
+        return QString();
+    return QString::fromWCharArray(buffer);
+#else
+    return QString();
+#endif
+}
+
+static QString getCurrentGroupName()
+{
+#if defined(Q_OS_UNIX)
+    struct group* grp = getgrgid( getgid() );
+    return grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
+#elif defined(Q_OS_WIN)
+    return QString();
+#else
+    return QString();
 #endif
 }
 
@@ -292,6 +328,8 @@ void KArchiveTest::initTestCase()
         QVERIFY(false);
     }
 #endif
+
+    QVERIFY(QFileInfo(":/qt-project.org/qmime/freedesktop.org.xml").exists());
 }
 
 void KArchiveTest::testCreateTar_data()
@@ -386,19 +424,22 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
 #else
     QCOMPARE( listing.count(), 14 );
 #endif
+    QString owner = localFileData.owner().isEmpty() ? getCurrentUserName() : localFileData.owner();
+    QString group = localFileData.group().isEmpty() ? getCurrentGroupName() : localFileData.group();
+
     QCOMPARE( listing[ 0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir") );
-    QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
-    QCOMPARE( listing[ 2], QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir").arg(owner).arg(group));
+    QCOMPARE( listing[ 2], QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir").arg(owner).arg(group) );
     QCOMPARE( listing[ 3], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100") );
     QCOMPARE( listing[ 4], QString("mode=100644 user=weis group=users path=empty type=file size=0") );
     QCOMPARE( listing[ 5], QString("mode=100644 user=user group=group path=hugefile type=file size=20000") );
     QCOMPARE( listing[ 6], QString("mode=100644 user=user group=group path=mediumfile type=file size=100") );
-    QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
-    QCOMPARE( listing[ 8], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my type=dir").arg(owner).arg(group) );
+    QCOMPARE( listing[ 8], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir").arg(owner).arg(group) );
     QCOMPARE( listing[ 9], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29") );
     QCOMPARE( listing[10], QString("mode=100440 user=weis group=users path=test1 type=file size=5") );
     QCOMPARE( listing[11], QString("mode=100644 user=weis group=users path=test2 type=file size=8") );
-    QCOMPARE( listing[12], QString("mode=40777 user=%1 group=%2 path=z type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QCOMPARE( listing[12], QString("mode=40777 user=%1 group=%2 path=z type=dir").arg(owner).arg(group) );
     // This one was added with addLocalFile, so ignore mode/user/group.
     QString str = listing[13];
     str.replace(QRegExp("mode.*path"), "path" );
@@ -570,10 +611,10 @@ void KArchiveTest::testTarGlobalHeader()
 
     const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
 
+    QCOMPARE( listing.count(), 2 );
+
     QCOMPARE( listing[  0], QString("mode=40775 user=root group=root path=Test type=dir") );
     QCOMPARE( listing[  1], QString("mode=664 user=root group=root path=Test/test.txt type=file size=0") );
-
-    QCOMPARE( listing.count(), 2 );
 
     QVERIFY( tar.close() );
 }
@@ -689,19 +730,20 @@ void KArchiveTest::testReadZipError()
     brokenZip.write( QByteArray( "PK\003" ) );
 
     brokenZip.close();
+    {
+        KZip zip( "broken.zip" );
 
-    KZip zip( "broken.zip" );
+        QVERIFY( !zip.open(QIODevice::ReadOnly) );
 
-    QVERIFY( !zip.open(QIODevice::ReadOnly) );
+        QVERIFY( brokenZip.open( QIODevice::WriteOnly | QIODevice::Append ) );
 
-    QVERIFY( brokenZip.open( QIODevice::WriteOnly | QIODevice::Append ) );
+        // add rest of magic, but still incomplete header
+        brokenZip.write( QByteArray( "\004\000\000\000\000" ) );
 
-    // add rest of magic, but still incomplete header
-    brokenZip.write( QByteArray( "\004\000\000\000\000" ) );
+        brokenZip.close();
 
-    brokenZip.close();
-
-    QVERIFY( !zip.open(QIODevice::ReadOnly) );
+        QVERIFY( !zip.open(QIODevice::ReadOnly) );
+    }
 
     QVERIFY( brokenZip.remove() );
 }

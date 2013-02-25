@@ -31,6 +31,10 @@
 
 #include <karchive_qt4_export.h>
 
+#ifdef Q_OS_WIN
+#include <qplatformdefs.h> // mode_t
+#endif
+
 class KArchiveDirectory;
 class KArchiveFile;
 
