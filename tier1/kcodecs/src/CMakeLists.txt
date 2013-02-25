@@ -32,16 +32,16 @@ set(kcodecs_SRCS
     probers/nsUniversalDetector.cpp
 )
 
-add_library(kcodecs ${kcodecs_SRCS})
-generate_export_header(kcodecs)
+add_library(KCodecs ${kcodecs_SRCS})
+generate_export_header(KCodecs)
 
-target_link_libraries(kcodecs LINK_PUBLIC ${QT_QTCORE_LIBRARY} )
+target_link_libraries(KCodecs LINK_PUBLIC ${QT_QTCORE_LIBRARY} )
 
-set_target_properties(kcodecs PROPERTIES VERSION   ${KCODECS_VERSION_STRING}
+set_target_properties(KCodecs PROPERTIES VERSION   ${KCODECS_VERSION_STRING}
                                          SOVERSION ${KCODECS_SOVERSION}
 )
 
-install(TARGETS kcodecs EXPORT kcodecsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KCodecs EXPORT KCodecsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kcharsets.h

@@ -5,7 +5,7 @@ include(ECMMarkAsTest)
 macro(KCODECS_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
-        target_link_libraries(${_testname} kcodecs)
+        target_link_libraries(${_testname} KCodecs)
     endforeach()
 endmacro()
 
