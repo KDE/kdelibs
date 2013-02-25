@@ -40,17 +40,44 @@
 ****************************************************************************/
 
 #include "qsavefile.h"
-//#include "qplatformdefs.h"
 #include "qdebug.h"
 #include "qtemporaryfile.h"
 #include "qtemporaryfile.h"
 #include "qsavefile_p.h"
+#include <qdir.h>
 #include <qfileinfo.h>
 
+#ifdef Q_OS_UNIX
 #include <stdio.h>
 #include <errno.h>
+#endif
+
+#ifdef Q_OS_WIN
+#include <Windows.h>
+#endif
 
 QT_BEGIN_NAMESPACE
+
+#ifdef Q_OS_WIN
+static QString windowsErrorString(int errorCode)
+{
+    QString ret;
+    wchar_t *string = 0;
+    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM,
+                  NULL,
+                  errorCode,
+                  MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                  (LPWSTR)&string,
+                  0,
+                  NULL);
+    ret = QString::fromWCharArray(string);
+    LocalFree((HLOCAL)string);
+
+    if (ret.isEmpty() && errorCode == ERROR_MOD_NOT_FOUND)
+        ret = QString::fromLatin1("The specified module could not be found.");
+    return ret;
+}
+#endif
 
 QSaveFilePrivate::QSaveFilePrivate()
     : tempFile(0), error(QFile::NoError)
@@ -300,24 +327,26 @@ bool QSaveFile::commit()
     // (used by the Qt5-QFileDevice-based QSaveFile).
     // So we have to do it by hand (non portable) for now.
     d->tempFile->close();
-#if 0
-    QAbstractFileEngine* fileEngine = d->tempFile->fileEngine();
-    Q_ASSERT(fileEngine);
-    if (!fileEngine->rename(d->fileName)) {
-        d->error = fileEngine->error();
-        setErrorString(fileEngine->errorString());
-#else
-    if (::rename(QFile::encodeName(d->tempFile->fileName()).constData(), QFile::encodeName(d->fileName).constData()) != 0) {
-        d->error = QFile::RenameError;
-        setErrorString(QString::fromLocal8Bit(strerror(errno)));
-#endif
-        d->tempFile->remove();
-        delete d->tempFile;
-        d->tempFile = 0;
-        return false;
-    }
+    d->tempFile->flush();
+
+    QString tempFilePath = d->tempFile->fileName();
     delete d->tempFile;
     d->tempFile = 0;
+
+#if defined(Q_OS_UNIX)
+    if (::rename(QFile::encodeName(tempFilePath).constData(), QFile::encodeName(d->fileName).constData()) != 0) {
+        d->error = QFile::RenameError;
+        setErrorString(QString::fromLocal8Bit(strerror(errno)));
+#elif defined(Q_OS_WIN)
+    if (::MoveFileExW((wchar_t*)QDir::toNativeSeparators(tempFilePath).utf16(),
+                     (wchar_t*)QDir::toNativeSeparators(d->fileName).utf16(),
+                     MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED) == 0) {
+        d->error = QFile::RenameError;
+        setErrorString(windowsErrorString(::GetLastError()));
+#endif
+        QFile::remove(tempFilePath);
+        return false;
+    }
     return true;
 }
 
