@@ -79,7 +79,8 @@ QString lookForCache( const QString &filename )
     // accessing user data from another location invalids cached files.
     // Accessing user data under a different path is possible
     // when using usb sticks - this may affect unix/mac systems also
-    cache = '/' + fi.absolutePath().remove(KStandardDirs::installPath("html"),Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
+    const QString installPath = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "doc/HTML", QStandardPaths::LocateDirectory).last();
+    cache = '/' + fi.absolutePath().remove(installPath,Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
 #endif
     if ( readCache( filename,
                     QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1Char('/') + "kio_help" + cache + "cache.bz2", output ) )

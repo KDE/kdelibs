@@ -93,9 +93,7 @@ extern "C" {
 #include <kurlrequester.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
-#include <kstandarddirs.h>
 #include <kjobuidelegate.h>
 #include <kio/global.h>
 #include <kio/job.h>
@@ -1175,14 +1173,20 @@ void KFilePropsPlugin::nameFileChanged(const QString &text )
     emit changed();
 }
 
+static QString relativeAppsLocation(const QString& file)
+{
+    const QString canonical = QFileInfo(file).canonicalFilePath();
+    Q_FOREACH(const QString& base, QStandardPaths::standardLocations(QStandardPaths::ApplicationsLocation)) {
+        if (canonical.startsWith(base))
+            return canonical.mid(base.length()+1);
+    }
+    return QString(); // return empty if the file is not in apps
+}
+
 void KFilePropsPlugin::determineRelativePath( const QString & path )
 {
     // now let's make it relative
-    d->m_sRelativePath =KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-    if (d->m_sRelativePath.startsWith('/'))
-        d->m_sRelativePath.clear();
-    else
-        d->m_sRelativePath = path;
+    d->m_sRelativePath = relativeAppsLocation(path);
 }
 
 void KFilePropsPlugin::slotFoundMountPoint( const QString&,
@@ -1383,7 +1387,7 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
     Q_ASSERT( !properties->item().isNull() );
     Q_ASSERT( !properties->item().url().isEmpty() );
 
-    // Save the file where we can -> usually in ~/.kde/...
+    // Save the file locally
     if (d->bDesktopFile && !d->m_sRelativePath.isEmpty())
     {
         kDebug(250) << "KFilePropsPlugin::slotCopyFinished " << d->m_sRelativePath;
@@ -3266,8 +3270,7 @@ void KDesktopPropsPlugin::applyChanges()
     config.sync();
 
     // KSycoca update needed?
-    QString sycocaPath = KGlobal::dirs()->relativeLocation("xdgdata-apps", path);
-    bool updateNeeded = !sycocaPath.startsWith('/');
+    bool updateNeeded = !relativeAppsLocation(path).isEmpty();
     if (updateNeeded)
         KBuildSycocaProgressDialog::rebuildKSycoca(d->m_frame);
 }

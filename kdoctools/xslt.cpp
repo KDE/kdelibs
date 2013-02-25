@@ -44,21 +44,21 @@ int closeQString(void * context) {
 
 #if defined (SIMPLE_XSLT) && defined(Q_OS_WIN)
 
-#define MAX_PATHS 64 
+#define MAX_PATHS 64
 xmlExternalEntityLoader defaultEntityLoader = NULL;
-static xmlChar *paths[MAX_PATHS + 1]; 
-static int nbpaths = 0; 
+static xmlChar *paths[MAX_PATHS + 1];
+static int nbpaths = 0;
 static QHash<QString,QString> replaceURLList;
 
 /*
 * Entity loading control and customization.
 * taken from xsltproc.c
 */
-static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const char *ID,xmlParserCtxtPtr ctxt) 
+static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const char *ID,xmlParserCtxtPtr ctxt)
 {
     xmlParserInputPtr ret;
     warningSAXFunc warning = NULL;
-	
+
     // use local available dtd versions instead of fetching it every time from the internet
 	QString url = QLatin1String(_URL);
 	QHash<QString, QString>::const_iterator i;
@@ -70,7 +70,7 @@ static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const ch
 			qDebug() << "converted" << _URL << "to" << url;
 		}
 	}
-	char URL[1024]; 
+	char URL[1024];
 	strcpy(URL,url.toLatin1().constData());
 
     const char *lastsegment = URL;
@@ -88,7 +88,7 @@ static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const ch
         warning = ctxt->sax->warning;
         ctxt->sax->warning = NULL;
     }
-        
+
     if (defaultEntityLoader != NULL) {
         ret = defaultEntityLoader(URL, ID, ctxt);
         if (ret != NULL) {
@@ -124,7 +124,7 @@ static xmlParserInputPtr xsltprocExternalEntityLoader(const char *_URL, const ch
             warning(ctxt, "failed to load external entity \"%s\"\n", ID);
     }
     return(NULL);
-} 
+}
 #endif
 
 QString transform( const QString &pat, const QString& tss,
@@ -203,7 +203,7 @@ xmlParserInputPtr meinExternalEntityLoader(const char *URL, const char *ID,
 	URL = "docbook/xml-dtd-4.1.2/docbookx.dtd";
 
     QString file;
-    if (KStandardDirs::exists( QDir::currentPath() + "/" + URL ) )
+    if (QFile::exists( QDir::currentPath() + "/" + URL ) )
         file = QDir::currentPath() + "/" + URL;
     else
         file = locate("dtd", URL);
@@ -315,22 +315,22 @@ QByteArray fromUnicode( const QString &data )
         offset += part_len;
     }
     return result;
-#endif	
+#endif
 }
 
 void replaceCharsetHeader( QString &output )
 {
     QString name;
 #ifdef Q_OS_WIN
-    name = "utf-8"; 
-    // may be required for all xml output 
+    name = "utf-8";
+    // may be required for all xml output
     if (output.contains("<table-of-contents>"))
         output.replace( QString( "<?xml version=\"1.0\"?>" ),
                         QString( "<?xml version=\"1.0\" encoding=\"%1\"?>").arg( name ) );
-#else                    
+#else
     name = QTextCodec::codecForLocale()->name();
     name.replace( QString( "ISO " ), "iso-" );
     output.replace( QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
                     QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name ) );
-#endif    
+#endif
 }

@@ -48,7 +48,7 @@ private:
 
     QString langLookup(const QString &fname);
     void emitFile( const QUrl &url );
-    void get_file( const QUrl& url );
+    void get_file(const QString& path);
     QString lookupFile(const QString &fname, const QString &query,
                        bool &redirect);
 

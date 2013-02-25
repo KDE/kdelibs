@@ -18,8 +18,7 @@
 #include "knotifyconfigactionswidget.h"
 #include "knotifyconfigelement.h"
 
-#include <kglobal.h>
-#include <kstandarddirs.h>
+#include <QStandardPaths>
 
 #include "knotify-config.h"
 #if HAVE_PHONON
@@ -32,7 +31,7 @@ KNotifyConfigActionsWidget::KNotifyConfigActionsWidget( QWidget * parent )
 	m_ui.setupUi(this);
 
 	//Show sounds directory by default
-	QStringList soundDirs = KGlobal::dirs()->resourceDirs( "sound" );
+	QStringList soundDirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "sounds", QStandardPaths::LocateDirectory);
 	if ( !soundDirs.isEmpty() )
             m_ui.Sound_select->setStartDir(QUrl::fromLocalFile(soundDirs.last()));
 
@@ -135,7 +134,7 @@ void KNotifyConfigActionsWidget::slotPlay(  )
         /*QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
           search = KComponentData::mainComponent().dirs()->findResource("data", search);
           if ( search.isEmpty() )*/
-        soundURL = QUrl::fromLocalFile(KStandardDirs::locate("sound", soundString));
+        soundURL = QUrl::fromLocalFile(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "sounds/" + soundString));
     }
 #if HAVE_PHONON
 	Phonon::MediaObject* media = Phonon::createPlayer( Phonon::NotificationCategory, soundURL );

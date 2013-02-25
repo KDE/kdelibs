@@ -27,11 +27,8 @@
 #include "xslt_help.h"
 
 #include <kdebug.h>
-#include <kde_file.h>
-#include <kglobal.h>
 #include <klocale.h>
 #include <kstandarddirs.h>
-#include <kcomponentdata.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -40,23 +37,6 @@
 #include <QtCore/QTextCodec>
 #include <QTextDocument>
 #include <QUrl>
-
-
-#if HAVE_SYS_TYPES_H
-# include <sys/types.h>
-#endif
-#if HAVE_SYS_STAT_H
-# include <sys/stat.h>
-#endif
-
-#include <errno.h>
-#include <fcntl.h>
-#if HAVE_STDIO_H
-# include <stdio.h>
-#endif
-#if HAVE_STDLIB_H
-# include <stdlib.h>
-#endif
 
 #include <libxslt/xsltutils.h>
 #include <libxslt/transform.h>
@@ -68,7 +48,7 @@ QString HelpProtocol::langLookup(const QString &fname)
     QStringList search;
 
     // assemble the local search paths
-    const QStringList localDoc = KGlobal::dirs()->resourceDirs("html");
+    const QStringList localDoc = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "doc/HTML", QStandardPaths::LocateDirectory);
 
     QStringList langs = KLocale::global()->languageList();
     langs.append( "en" );
@@ -230,12 +210,12 @@ void HelpProtocol::get( const QUrl& url )
 
     if ( mGhelp ) {
       if ( !file.endsWith( QLatin1String( ".xml" ) ) ) {
-         get_file( target );
+         get_file(file);
          return;
       }
     } else {
         QString docbook_file = file.left(file.lastIndexOf('/')) + "/index.docbook";
-        if (!KStandardDirs::exists(file)) {
+        if (!QFile::exists(file)) {
             file = docbook_file;
         } else {
             QFileInfo fi(file);
@@ -243,7 +223,7 @@ void HelpProtocol::get( const QUrl& url )
                 file = file + "/index.docbook";
             } else {
                 if ( !file.endsWith( QLatin1String( ".html" ) ) || !compareTimeStamps( file, docbook_file ) ) {
-                    get_file( target );
+                    get_file(file);
                     return;
                 } else
                     file = docbook_file;
@@ -289,13 +269,14 @@ void HelpProtocol::get( const QUrl& url )
                 // accessing user data from another location invalids cached files
                 // Accessing user data under a different path is possible
                 // when using usb sticks - this may affect unix/mac systems also
-                QString cache = '/' + fi.absolutePath().remove(KStandardDirs::installPath("html"),Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
+                const QString installPath = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "doc/HTML", QStandardPaths::LocateDirectory).last();
+
+                QString cache = '/' + fi.absolutePath().remove(installPath,Qt::CaseInsensitive).replace('/','_') + '_' + fi.baseName() + '.';
 #else
                 QString cache = file.left( file.length() - 7 );
 #endif
-                saveToCache( mParsed, KStandardDirs::locateLocal( "cache",
-                                                                  "kio_help" + cache +
-                                                                  "cache.bz2" ) );
+                saveToCache( mParsed, QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation)
+                                      + "/kio_help" + cache + "cache.bz2" );
             }
         } else infoMessage( i18n( "Using cached version" ) );
 
@@ -391,18 +372,17 @@ void HelpProtocol::mimetype( const QUrl &)
 
 #define MAX_IPC_SIZE (1024*32)
 
-void HelpProtocol::get_file( const QUrl& url )
+void HelpProtocol::get_file(const QString& path)
 {
-    kDebug( 7119 ) << "get_file " << url;
+    kDebug(7119) << path;
 
-#ifdef Q_OS_WIN
-    QFile f( url.toLocalFile() );
-    if ( !f.exists() ) {
-        error(KIO::ERR_DOES_NOT_EXIST, url.toString());
+    QFile f(path);
+    if (!f.exists()) {
+        error(KIO::ERR_DOES_NOT_EXIST, path);
         return;
     }
-    if ( !f.open(QIODevice::ReadOnly) ) {
-        error(KIO::ERR_CANNOT_OPEN_FOR_READING, url.path());
+    if (!f.open(QIODevice::ReadOnly) || f.isSequential() /*socket, fifo or pipe*/) {
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, path);
         return;
     }
     int processed_size = 0;
@@ -411,12 +391,11 @@ void HelpProtocol::get_file( const QUrl& url )
     QByteArray array;
     array.resize(MAX_IPC_SIZE);
 
-    while( 1 )
+    Q_FOREVER
     {
-        qint64 n = f.read(array.data(),array.size());
+        const qint64 n = f.read(array.data(), array.size());
         if (n == -1) {
-            error( KIO::ERR_COULD_NOT_READ, url.path());
-            f.close();
+            error( KIO::ERR_COULD_NOT_READ, path);
             return;
        }
        if (n == 0)
@@ -433,66 +412,4 @@ void HelpProtocol::get_file( const QUrl& url )
 
     processedSize( f.size() );
     finished();
-#else
-    QByteArray _path( QFile::encodeName(url.path()));
-    KDE_struct_stat buff;
-    if ( KDE_stat( _path.data(), &buff ) == -1 ) {
-        if ( errno == EACCES )
-           error(KIO::ERR_ACCESS_DENIED, url.toString());
-        else
-           error(KIO::ERR_DOES_NOT_EXIST, url.toString());
-        return;
-    }
-
-    if ( S_ISDIR( buff.st_mode ) ) {
-        error( KIO::ERR_IS_DIRECTORY, url.path() );
-        return;
-    }
-    if ( S_ISFIFO( buff.st_mode ) || S_ISSOCK ( buff.st_mode ) ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
-        return;
-    }
-
-    int fd = KDE_open( _path.data(), O_RDONLY);
-    if ( fd < 0 ) {
-        error( KIO::ERR_CANNOT_OPEN_FOR_READING, url.path() );
-        return;
-    }
-
-    totalSize( buff.st_size );
-    int processed_size = 0;
-
-    char buffer[ MAX_IPC_SIZE ];
-    QByteArray array;
-
-    while( 1 )
-    {
-       int n = ::read( fd, buffer, MAX_IPC_SIZE );
-       if (n == -1)
-       {
-          if (errno == EINTR)
-              continue;
-          error( KIO::ERR_COULD_NOT_READ, url.path());
-          ::close(fd);
-          return;
-       }
-       if (n == 0)
-          break; // Finished
-
-       array = array.fromRawData(buffer, n);
-       data( array );
-       array = array.fromRawData(buffer, n);
-
-       processed_size += n;
-       processedSize( processed_size );
-    }
-
-    data( QByteArray() );
-
-    ::close( fd );
-
-    processedSize( buff.st_size );
-
-    finished();
-#endif
 }
