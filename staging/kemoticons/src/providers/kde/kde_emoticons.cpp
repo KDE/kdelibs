@@ -20,12 +20,12 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 #include <QImageReader>
 #include <QTextDocument>
 
 #include <kpluginfactory.h>
-#include <kdebug.h>
 
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
 K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))
@@ -88,12 +88,12 @@ void KdeEmoticons::save()
     QFile fp(themePath() + '/' + fileName());
 
     if (!fp.exists()) {
-        kWarning() << fp.fileName() << "doesn't exist!";
+        qWarning() << fp.fileName() << "doesn't exist!";
         return;
     }
 
     if (!fp.open(QIODevice::WriteOnly)) {
-        kWarning() << fp.fileName() << "can't open WriteOnly!";
+        qWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
 
@@ -110,20 +110,20 @@ bool KdeEmoticons::loadTheme(const QString &path)
     QFile fp(path);
 
     if (!fp.exists()) {
-        kWarning() << path << "doesn't exist!";
+        qWarning() << path << "doesn't exist!";
         return false;
     }
 
     if (!fp.open(QIODevice::ReadOnly)) {
-        kWarning() << fp.fileName() << "can't open ReadOnly!";
+        qWarning() << fp.fileName() << "can't open ReadOnly!";
         return false;
     }
 
     QString error;
     int eli, eco;
     if (!m_themeXml.setContent(&fp, &error, &eli, &eco)) {
-        kWarning() << fp.fileName() << "can't copy to xml!";
-        kWarning() << error << "line:" << eli << "column:" << eco;
+        qWarning() << fp.fileName() << "can't copy to xml!";
+        qWarning() << error << "line:" << eli << "column:" << eco;
         fp.close();
         return false;
     }
@@ -187,7 +187,7 @@ void KdeEmoticons::createNew()
     QFile fp(path + '/' + "emoticons.xml");
 
     if (!fp.open(QIODevice::WriteOnly)) {
-        kWarning() << fp.fileName() << "can't open WriteOnly!";
+        qWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
 

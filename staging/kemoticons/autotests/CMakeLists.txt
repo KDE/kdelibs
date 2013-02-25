@@ -2,7 +2,6 @@ include_directories(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/../src/core
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/core
-    ${CMAKE_SOURCE_DIR}/kdecore/util
     ${CMAKE_SOURCE_DIR}/kdeui/widgets
     ${KDE4_KDEUI_INCLUDES}
     ${CMAKE_BINARY_DIR}/staging/kwidgets/src

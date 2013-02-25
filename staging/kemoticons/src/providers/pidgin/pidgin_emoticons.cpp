@@ -20,10 +20,10 @@
 
 #include <QtCore/QFile>
 #include <QtCore/QDir>
+#include <QtCore/QDebug>
 #include <QtCore/QFileInfo>
 
 #include <kpluginfactory.h>
-#include <kdebug.h>
 
 K_PLUGIN_FACTORY(PidginEmoticonsFactory, registerPlugin<PidginEmoticons>();)
 K_EXPORT_PLUGIN(PidginEmoticonsFactory("PidginEmoticons"))
@@ -104,12 +104,12 @@ void PidginEmoticons::save()
     QFile fp(themePath() + '/' + fileName());
 
     if (!fp.exists()) {
-        kWarning() << fp.fileName() << "doesn't exist!";
+        qWarning() << fp.fileName() << "doesn't exist!";
         return;
     }
 
     if (!fp.open(QIODevice::WriteOnly)) {
-        kWarning() << fp.fileName() << "can't open WriteOnly!";
+        qWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
 
@@ -132,12 +132,12 @@ bool PidginEmoticons::loadTheme(const QString &path)
     QFile fp(path);
 
     if (!fp.exists()) {
-        kWarning() << path << "doesn't exist!";
+        qWarning() << path << "doesn't exist!";
         return false;
     }
 
     if (!fp.open(QIODevice::ReadOnly)) {
-        kWarning() << fp.fileName() << "can't open ReadOnly!";
+        qWarning() << fp.fileName() << "can't open ReadOnly!";
         return false;
     }
 
@@ -202,7 +202,7 @@ void PidginEmoticons::createNew()
     QFile fp(path + '/' + "theme");
 
     if (!fp.open(QIODevice::WriteOnly)) {
-        kWarning() << fp.fileName() << "can't open WriteOnly!";
+        qWarning() << fp.fileName() << "can't open WriteOnly!";
         return;
     }
 

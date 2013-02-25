@@ -2,9 +2,6 @@
 include_directories( 
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_BINARY_DIR}/kdecore
-    ${CMAKE_SOURCE_DIR}/kdecore/io
-    ${CMAKE_SOURCE_DIR}/kdecore/kernel
     ${KDE4_KIO_INCLUDES}
     ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
     ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs # kjob.h
@@ -24,7 +21,7 @@ set(kemoticons_LIB_SRCS
 
 kde4_add_library(kemoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
 generate_export_header(kemoticons)
-target_link_libraries(kemoticons kdecore kio kcoreaddons karchive kconfigcore kservice kwidgets)
+target_link_libraries(kemoticons kio kcoreaddons karchive kconfigcore kservice kwidgets)
 target_link_libraries(kemoticons LINK_INTERFACE_LIBRARIES Qt5::Widgets)
 set_target_properties(kemoticons PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
