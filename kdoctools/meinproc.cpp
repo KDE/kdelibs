@@ -18,7 +18,6 @@
 #include <kdebug.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
-#include <kstandarddirs.h>
 #include <qurl.h>
 
 #include <libxml/xmlversion.h>
@@ -137,7 +136,7 @@ int main(int argc, char **argv) {
     if ( args->isSet( "check" ) ) {
 
         QByteArray catalogs;
-        catalogs += QUrl::fromLocalFile( KStandardDirs::locate( "dtd", "customization/catalog.xml" ) ).toEncoded();
+        catalogs += QUrl::fromLocalFile(locateFileInDtdResource("customization/catalog.xml")).toEncoded();
 
         QString exe;
 #if defined( XMLLINT )
@@ -193,7 +192,7 @@ int main(int argc, char **argv) {
     if ( index )
         tss = "customization/htdig_index.xsl" ;
 
-    tss = KStandardDirs::locate( "dtd", tss );
+    tss = locateFileInDtdResource(tss);
     const QString cache = args->getOption( "cache" );
     const bool usingStdOut = args->isSet( "stdout" );
     const bool usingOutput = args->isSet("output");

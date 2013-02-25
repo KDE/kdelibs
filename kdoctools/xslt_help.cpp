@@ -8,27 +8,22 @@
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
 #include <libxml/catalog.h>
-#include <kdebug.h>
-#include <kglobal.h>
-#include <kstandarddirs.h>
+
 #include <QtCore/QDate>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
-#include <kcomponentdata.h>
-#include <klocalizedstring.h>
-#include <assert.h>
+#include <QtCore/QStandardPaths>
+
+#include <kdebug.h>
 #include <kfilterdev.h>
-#include <stdlib.h>
-#include <qstandardpaths.h>
 
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
 {
-    kDebug( 7119 ) << filename << " " << cache;
-    KGlobal::dirs()->addResourceType("dtd", "data", "ksgmltools2/");
+    kDebug(7119) << filename << cache;
     if ( !compareTimeStamps( filename, cache ) )
         return false;
-    if ( !compareTimeStamps( KStandardDirs::locate( "dtd", "customization/kde-chunk.xsl"), cache ) )
+    if ( !compareTimeStamps(locateFileInDtdResource("customization/kde-chunk.xsl"), cache))
         return false;
 
     kDebug( 7119 ) << "create filter";
@@ -66,9 +61,9 @@ static bool readCache( const QString &filename,
 
 QString lookForCache( const QString &filename )
 {
-    kDebug() << "lookForCache " << filename;
-    assert( filename.endsWith( QLatin1String(".docbook") ) );
-    assert( QDir::isAbsolutePath(filename));
+    kDebug() << "lookForCache" << filename;
+    Q_ASSERT( filename.endsWith( QLatin1String(".docbook") ) );
+    Q_ASSERT( QDir::isAbsolutePath(filename));
     QString cache = filename.left( filename.length() - 7 );
     QString output;
     if ( readCache( filename, cache + "cache.bz2", output) )
@@ -93,7 +88,7 @@ bool compareTimeStamps( const QString &older, const QString &newer )
 {
     QFileInfo _older( older );
     QFileInfo _newer( newer );
-    assert( _older.exists() );
+    Q_ASSERT( _older.exists() );
     if ( !_newer.exists() )
         return false;
     return ( _newer.lastModified() > _older.lastModified() );

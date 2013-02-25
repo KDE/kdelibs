@@ -2,12 +2,7 @@
 #define _MEIN_XSLT_KDE_H_
 
 #include <QtCore/QString>
-#include <QtCore/QVector>
 
-class QByteArray;
-class QIODevice;
-
-void setupStandardDirs(const QString &srcdir = QString() );
 bool saveToCache( const QString &contents, const QString &filename );
 
 #endif

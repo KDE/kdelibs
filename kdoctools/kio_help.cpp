@@ -28,7 +28,6 @@
 
 #include <kdebug.h>
 #include <klocale.h>
-#include <kstandarddirs.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
@@ -235,7 +234,7 @@ void HelpProtocol::get( const QUrl& url )
 
     if ( mGhelp ) {
         QString xsl = "customization/kde-nochunk.xsl";
-        mParsed = transform(file, KStandardDirs::locate("dtd", xsl));
+        mParsed = transform(file, locateFileInDtdResource(xsl));
 
         kDebug( 7119 ) << "parsed " << mParsed.length();
 
@@ -260,7 +259,7 @@ void HelpProtocol::get( const QUrl& url )
         kDebug( 7119 ) << "cached parsed " << mParsed.length();
 
         if ( mParsed.isEmpty() ) {
-            mParsed = transform(file, KStandardDirs::locate("dtd", "customization/kde-chunk.xsl"));
+            mParsed = transform(file, locateFileInDtdResource("customization/kde-chunk.xsl"));
             if ( !mParsed.isEmpty() ) {
                 infoMessage( i18n( "Saving to cache" ) );
 #ifdef Q_OS_WIN

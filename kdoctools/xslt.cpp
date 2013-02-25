@@ -7,18 +7,18 @@
 #include <libxml/xmlIO.h>
 #include <libxml/parserInternals.h>
 #include <libxml/catalog.h>
+
 #include <QtCore/QDate>
 #include <QtCore/QDir>
+#include <QtCore/QFile>
 #include <QtCore/QRegExp>
-#include <assert.h>
+#include <QtCore/QStandardPaths>
 #include <QtCore/QTextCodec>
-#include <stdlib.h>
-#include <stdarg.h>
+#include <QtCore/QUrl>
+#include <QtCore/QDebug>
 
 #ifdef Q_OS_WIN
 #include <config-kdoctools.h>
-#include <QtCore/QCoreApplication>
-#include <QtCore/QDebug>
 #include <QtCore/QHash>
 #endif
 
@@ -333,4 +333,44 @@ void replaceCharsetHeader( QString &output )
     output.replace( QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">" ),
                     QString( "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%1\">" ).arg( name ) );
 #endif
+}
+
+class DtdStandardDirs
+{
+public:
+    QString srcdir;
+};
+
+Q_GLOBAL_STATIC(DtdStandardDirs, s_dtdDirs);
+
+void setupStandardDirs(const QString &srcdir)
+{
+    QByteArray catalogs;
+
+    if ( srcdir.isEmpty() ) {
+        catalogs += QUrl::fromLocalFile(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "ksgmltools2customization/catalog.xml")).toEncoded();
+    } else {
+        catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
+        s_dtdDirs()->srcdir = srcdir;
+    }
+    qDebug() << catalogs << srcdir;
+
+    qputenv( "XML_CATALOG_FILES", catalogs);
+    xmlInitializeCatalog();
+}
+
+QString locateFileInDtdResource(const QString& file)
+{
+    QFileInfo info(file);
+    if (info.exists() && info.isAbsolute())
+        return file;
+
+    const QString srcdir = s_dtdDirs()->srcdir;
+    if (!srcdir.isEmpty()) {
+        const QString test = srcdir + '/' + file;
+        if (QFile::exists(test))
+            return test;
+        return QString();
+    }
+    return QStandardPaths::locate(QStandardPaths::GenericDataLocation, "ksgmltools2/" + file);
 }
