@@ -2105,13 +2105,13 @@ int main( int argc, char **argv )
       cpp << (*itEntry)->code() << endl;
     }
     if ( (*itEntry)->type() == "Enum" ) {
-      cpp << "  QList<"+cfg.inherits+"::ItemEnum::Choice2> values"
+      cpp << "  QList<"+cfg.inherits+"::ItemEnum::Choice> values"
           << (*itEntry)->name() << ";" << endl;
       const QList<CfgEntry::Choice> choices = (*itEntry)->choices().choices;
       QList<CfgEntry::Choice>::ConstIterator it;
       for( it = choices.constBegin(); it != choices.constEnd(); ++it ) {
         cpp << "  {" << endl;
-        cpp << "    "+cfg.inherits+"::ItemEnum::Choice2 choice;" << endl;
+        cpp << "    "+cfg.inherits+"::ItemEnum::Choice choice;" << endl;
         cpp << "    choice.name = QLatin1String(\"" << (*it).name << "\");" << endl;
         if ( cfg.setUserTexts ) {
           if ( !(*it).label.isEmpty() ) {
