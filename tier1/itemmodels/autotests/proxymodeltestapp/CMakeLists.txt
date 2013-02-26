@@ -32,7 +32,7 @@ set(proxymodeltestapp_SRCS
 add_executable(proxymodeltestapp ${proxymodeltestapp_SRCS})
 
 target_link_libraries(proxymodeltestapp
-   itemmodels
+   ItemModels
    proxymodeltestsuite
    ${QT_QTSCRIPT_LIBRARY}
    Qt5::Widgets

@@ -12,16 +12,16 @@ set(itemmodels_SRCS
   kviewstatemaintainerbase.cpp
 )
 
-add_library(itemmodels ${itemmodels_SRCS})
-generate_export_header(itemmodels)
+add_library(ItemModels ${itemmodels_SRCS})
+generate_export_header(ItemModels)
 
-target_link_libraries(itemmodels Qt5::Widgets)
+target_link_libraries(ItemModels Qt5::Widgets)
 
-set_target_properties(itemmodels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
+set_target_properties(ItemModels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
                                             SOVERSION ${ITEMMODELS_SOVERSION}
 )
 
-install(TARGETS itemmodels EXPORT itemmodelsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS ItemModels EXPORT ItemModelsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   kbreadcrumbselectionmodel.h

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(itemmodels)
+project(ItemModels)
 
 find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
@@ -16,7 +16,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX ITEMMODELS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/itemmodelsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfigVersion.cmake")
 
 
 add_subdirectory(src)
@@ -25,25 +25,25 @@ add_subdirectory(src)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/itemmodels")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/ItemModels")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/itemmodelsConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/itemmodelsConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ItemModelsConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
   PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/itemmodelsConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/itemmodelsConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/ItemModelsConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT itemmodelsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE itemmodelsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT ItemModelsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE ItemModelsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES
    ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_version.h

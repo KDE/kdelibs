@@ -1,0 +1,17 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(ItemModels_VERSION_MAJOR "@ITEMMODELS_VERSION_MAJOR@")
+set(ItemModels_VERSION_MINOR "@ITEMMODELS_VERSION_MINOR@")
+set(ItemModels_VERSION_PATCH "@ITEMMODELS_VERSION_PATCH@")
+
+set(ItemModels_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(ItemModels_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+if(NOT TARGET KF5::ItemModels)
+  include("${CMAKE_CURRENT_LIST_DIR}/ItemModelsTargets.cmake")
+endif()
+
+set(ItemModels_LIBRARIES KF5::ItemModels)
+set(ItemModels_INCLUDE_DIRS ${ItemModels_INCLUDE_DIR} )

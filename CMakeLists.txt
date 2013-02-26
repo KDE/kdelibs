@@ -79,6 +79,10 @@ set(kdeqt5staging_INCLUDE_DIRS
 
 add_subdirectory( tier1 )
 
+set(ItemModels_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
+                            ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src )
+set(ItemModels_LIBRARIES ItemModels)
+
 set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
                               ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
                               ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src )
