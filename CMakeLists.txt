@@ -96,6 +96,10 @@ set(KCodecs_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kcodecs/src
                          ${CMAKE_SOURCE_DIR}/tier1/kcodecs/src )
 set(KCodecs_LIBRARIES KCodecs)
 
+set(KDBusAddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kdbusaddons/src
+                              ${CMAKE_BINARY_DIR}/tier1/kdbusaddons/src )
+set(KDBusAddons_LIBRARIES KDBusAddons)
+
 set(KIdleTime_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kidletime/src
                            ${CMAKE_SOURCE_DIR}/tier1/kidletime/src )
 set(KIdleTime_LIBRARIES KIdleTime)

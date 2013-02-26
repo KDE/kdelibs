@@ -6,8 +6,7 @@ include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 include_directories(
   ${KDE4_KIO_INCLUDES}
   ${KDE4_KCONFIG_INCLUDES}
-  ${kdbusaddons_SOURCE_DIR}/src
-  ${kdbusaddons_BINARY_DIR}/src
+  ${KDBusAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
 )
@@ -36,7 +35,7 @@ if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (APPLE)
 
-target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons kdbusaddons ki18n)
+target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} kcoreaddons ${KDBusAddons_LIBRARIES} ki18n)
 
 install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 

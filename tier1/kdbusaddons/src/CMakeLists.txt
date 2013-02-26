@@ -5,16 +5,16 @@ set(libkdbusaddons_SRCS
     kdbusservice.cpp
 )
 
-add_library(kdbusaddons ${libkdbusaddons_SRCS})
-generate_export_header(kdbusaddons)
+add_library(KDBusAddons ${libkdbusaddons_SRCS})
+generate_export_header(KDBusAddons)
 
-target_link_libraries(kdbusaddons ${QT_QTDBUS_LIBRARY})
+target_link_libraries(KDBusAddons ${QT_QTDBUS_LIBRARY})
 
-set_target_properties(kdbusaddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
+set_target_properties(KDBusAddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
                                              SOVERSION ${KDBUSADDONS_SOVERSION}
 )
 
-install(TARGETS kdbusaddons EXPORT kdbusaddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KDBusAddons EXPORT KDBusAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kdbusconnectionpool.h

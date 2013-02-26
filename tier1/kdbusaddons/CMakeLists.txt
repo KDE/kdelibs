@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(kdbusaddons)
+project(KDBusAddons)
 
 find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
@@ -16,7 +16,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KDBUSADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddons_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDBusAddonsConfigVersion.cmake")
 
 
 
@@ -24,18 +24,18 @@ add_subdirectory(src)
 add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kdbusaddons")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KDBusAddons")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kdbusaddonsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KDBusAddonsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KDBusAddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/kdbusaddonsConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KDBusAddonsConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KDBusAddonsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kdbusaddonsTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE kdbusaddonsTargets.cmake  NAMESPACE KF5:: )
+install(EXPORT KDBusAddonsTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE KDBusAddonsTargets.cmake  NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kdbusaddons_version.h  DESTINATION ${INCLUDE_INSTALL_DIR}  COMPONENT Devel )
