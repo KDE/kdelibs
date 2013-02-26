@@ -24,7 +24,7 @@
 #include <QtTest/QtTestGui>
 
 
-QTEST_MAIN( KConfigSkeletonTest )
+QTEST_MAIN( KConfigSkeletonTest)
 
 
 #define DEFAULT_SETTING1 false
@@ -37,61 +37,75 @@ QTEST_MAIN( KConfigSkeletonTest )
 #define WRITE_SETTING3 QFont("helvetica",14)
 #define WRITE_SETTING4 QString("KDE")
 
-
-
-
 void KConfigSkeletonTest::initTestCase()
 {
+    setCurrentGroup("MyGroup");
+    addItemBool("MySetting1", mMyBool, DEFAULT_SETTING1);
+    addItemColor("MySetting2", mMyColor, DEFAULT_SETTING2);
 
-  setCurrentGroup("MyGroup");
-  addItemBool("MySetting1",mMyBool,DEFAULT_SETTING1);
-  addItemColor("MySetting2",mMyColor,DEFAULT_SETTING2);
+    setCurrentGroup("MyOtherGroup");
+    addItemFont("MySetting3", mMyFont, DEFAULT_SETTING3);
+    addItemString("MySetting4", mMyString, DEFAULT_SETTING4);
 
-  setCurrentGroup("MyOtherGroup");
-  addItemFont("MySetting3",mMyFont,DEFAULT_SETTING3);
-  addItemString("MySetting4",mMyString,DEFAULT_SETTING4);
-
-  QCOMPARE( mMyBool, DEFAULT_SETTING1 );
-  QCOMPARE( mMyColor, DEFAULT_SETTING2 );
-  QCOMPARE( mMyFont, DEFAULT_SETTING3 );
-  QCOMPARE( mMyString, DEFAULT_SETTING4 );
-
+    QCOMPARE(mMyBool, DEFAULT_SETTING1);
+    QCOMPARE(mMyColor, DEFAULT_SETTING2);
+    QCOMPARE(mMyFont, DEFAULT_SETTING3);
+    QCOMPARE(mMyString, DEFAULT_SETTING4);
 }
 
 void KConfigSkeletonTest::testSimple()
 {
-  mMyBool=WRITE_SETTING1;
-  mMyColor=WRITE_SETTING2;
-  mMyFont=WRITE_SETTING3;
-  mMyString=WRITE_SETTING4;
+    mMyBool = WRITE_SETTING1;
+    mMyColor = WRITE_SETTING2;
+    mMyFont = WRITE_SETTING3;
+    mMyString = WRITE_SETTING4;
 
-  writeConfig ();
+    writeConfig ();
 
-  mMyBool=false;
-  mMyColor=QColor();
-  mMyString.clear();
-  mMyFont=QFont();
+    mMyBool = false;
+    mMyColor = QColor();
+    mMyString.clear();
+    mMyFont = QFont();
 
-  readConfig ();
+    readConfig ();
 
-  QCOMPARE( mMyBool, WRITE_SETTING1 );
-  QCOMPARE( mMyColor, WRITE_SETTING2 );
-  QCOMPARE( mMyFont, WRITE_SETTING3 );
-  QCOMPARE( mMyString, WRITE_SETTING4 );
+    QCOMPARE(mMyBool, WRITE_SETTING1);
+    QCOMPARE(mMyColor, WRITE_SETTING2);
+    QCOMPARE(mMyFont, WRITE_SETTING3);
+    QCOMPARE(mMyString, WRITE_SETTING4);
 
 }
 
-void KConfigSkeletonTest::cleanupTestCase()
+void KConfigSkeletonTest::testRemoveItem()
 {
-  setDefaults ();
+    QVERIFY(findItem("MySetting1"));
+    removeItem("MySetting1");
+    QVERIFY(!findItem("MySetting1"));
+}
 
-  QCOMPARE( mMyBool, DEFAULT_SETTING1 );
-  QCOMPARE( mMyColor, DEFAULT_SETTING2 );
-  QCOMPARE( mMyFont, DEFAULT_SETTING3 );
-  QCOMPARE( mMyString, DEFAULT_SETTING4 );
+void KConfigSkeletonTest::testClear()
+{
+    QVERIFY(findItem("MySetting2"));
+    QVERIFY(findItem("MySetting3"));
+    QVERIFY(findItem("MySetting4"));
 
-  writeConfig();
+    clearItems();
 
+    QVERIFY(!findItem("MySetting2"));
+    QVERIFY(!findItem("MySetting3"));
+    QVERIFY(!findItem("MySetting4"));
+}
+
+void KConfigSkeletonTest::testDefaults()
+{
+    setDefaults ();
+
+    QCOMPARE(mMyBool, DEFAULT_SETTING1);
+    QCOMPARE(mMyColor, DEFAULT_SETTING2);
+    QCOMPARE(mMyFont, DEFAULT_SETTING3);
+    QCOMPARE(mMyString, DEFAULT_SETTING4);
+
+    writeConfig();
 }
 
 

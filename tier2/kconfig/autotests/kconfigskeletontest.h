@@ -29,7 +29,9 @@ class KConfigSkeletonTest : public KConfigSkeleton
 private Q_SLOTS:
     void initTestCase();
     void testSimple();
-    void cleanupTestCase();
+    void testDefaults();
+    void testRemoveItem();
+    void testClear();
 
 private:
      bool mMyBool;
