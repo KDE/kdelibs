@@ -478,10 +478,10 @@ get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makek
 # dependent libraries handled correctly. But to keep compatibility and not to change
 # behaviour we set all these variables anyway as seen below. Alex
 include(${CMAKE_CURRENT_LIST_DIR}/KDELibs4LibraryTargets.cmake)
-include(${KDE4_LIB_INSTALL_DIR}/cmake/threadweaver/threadweaverTargets.cmake)
+include(${KDE4_LIB_INSTALL_DIR}/cmake/ThreadWeaver/ThreadWeaverTargets.cmake)
 
 # This one is for compatibility only:
-set(KDE4_THREADWEAVER_LIBRARIES ${KDE4_TARGET_PREFIX}threadweaver )
+set(KDE4_THREADWEAVER_LIBRARIES ${KDE4_TARGET_PREFIX}ThreadWeaver )
 
 
 # Set the various KDE4_FOO_LIBRARY/LIBS variables.
@@ -514,7 +514,7 @@ _kde4_set_lib_variables(KUNITCONVERSION kunitconversion "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KUTILS        kutils        "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(PLASMA        plasma        "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(SOLID         solid         "${KDE4_TARGET_PREFIX}")
-_kde4_set_lib_variables(THREADWEAVER  threadweaver  "${KDE4_TARGET_PREFIX}")
+_kde4_set_lib_variables(THREADWEAVER  ThreadWeaver  "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDE4SUPPORT   kde4support   "${KDE4_TARGET_PREFIX}")
 
 set(KDE4_KDEUI_LIBRARY ${KDE4_KDEUI_UNPORTED_LIBRARY} )

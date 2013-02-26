@@ -16,6 +16,6 @@ qt4_wrap_ui(QProcessJob_SRCS ${QProcessJob_SRCS_UI} )
 
 add_executable(QProcessJob ${QProcessJob_SRCS})
 
-target_link_libraries(QProcessJob Qt5::Widgets ${KDE4_KDECORE_LIBS} threadweaver)
+target_link_libraries(QProcessJob Qt5::Widgets ${KDE4_KDECORE_LIBS} ThreadWeaver)
 
 install(TARGETS QProcessJob DESTINATION ${BIN_INSTALL_DIR} )

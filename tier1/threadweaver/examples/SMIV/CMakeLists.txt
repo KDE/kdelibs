@@ -21,6 +21,6 @@ qt4_wrap_ui(SMIV_SRCS ${SMIV_SRCS_UI} )
 
 add_executable(SMIV ${SMIV_SRCS})
 
-target_link_libraries(SMIV Qt5::Widgets ${KDE4_KDECORE_LIBS} threadweaver ThreadWeaverExperimental)
+target_link_libraries(SMIV Qt5::Widgets ${KDE4_KDECORE_LIBS} ThreadWeaver ThreadWeaverExperimental)
 
 install(TARGETS SMIV DESTINATION ${BIN_INSTALL_DIR} )

@@ -23,15 +23,15 @@ set(ThreadWeaver_LIB_SRCS
     ResourceRestrictionPolicy.cpp
 )
 
-add_library(threadweaver ${ThreadWeaver_LIB_SRCS})
-generate_export_header(threadweaver)
-target_link_libraries(threadweaver LINK_PUBLIC ${QT_QTCORE_LIBRARY})
+add_library(ThreadWeaver ${ThreadWeaver_LIB_SRCS})
+generate_export_header(ThreadWeaver)
+target_link_libraries(ThreadWeaver LINK_PUBLIC ${QT_QTCORE_LIBRARY})
 
-set_target_properties(threadweaver PROPERTIES
+set_target_properties(ThreadWeaver PROPERTIES
     VERSION ${THREADWEAVER_VERSION_STRING}
     SOVERSION ${THREADWEAVER_SOVERSION}
 )
-install(TARGETS threadweaver EXPORT threadweaverTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS ThreadWeaver EXPORT ThreadWeaverTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     WeaverInterface.h

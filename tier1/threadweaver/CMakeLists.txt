@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(threadweaver)
+project(ThreadWeaver)
 
 find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
@@ -18,7 +18,7 @@ include(ECMSetupVersion)
 # -- Maintained by scripty
 ecm_setup_version(5 0 0 VARIABLE_PREFIX THREADWEAVER
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/threadweaver_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/threadweaverConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfigVersion.cmake")
 # --
 
 add_subdirectory(src)
@@ -26,12 +26,12 @@ add_subdirectory(autotests)
 #add_subdirectory(examples)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/threadweaver")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/ThreadWeaver")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/threadweaverConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/threadweaverConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/ThreadWeaverConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
@@ -39,13 +39,13 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/threadweaver_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/threadweaverConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/threadweaverConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/ThreadWeaverConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT threadweaverTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE threadweaverTargets.cmake NAMESPACE KF5:: )
+install(EXPORT ThreadWeaverTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE ThreadWeaverTargets.cmake NAMESPACE KF5:: )
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
     feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
