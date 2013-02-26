@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(karchive)
+project(KArchive)
 
 find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
@@ -44,7 +44,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KARCHIVE
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfigVersion.cmake")
 
 
 add_subdirectory(src)
@@ -53,13 +53,13 @@ add_subdirectory(tests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/karchive")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KArchive")
 
 include(CMakePackageConfigHelpers)
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/karchiveConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KArchiveConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
   PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
 )
@@ -68,10 +68,10 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/karchive_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/karchiveConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KArchiveConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT karchiveTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE karchiveTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KArchiveTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KArchiveTargets.cmake NAMESPACE KF5:: )

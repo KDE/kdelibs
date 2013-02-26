@@ -3,8 +3,7 @@ set( EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR} )
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include_directories(
-   ${CMAKE_SOURCE_DIR}/tier1/karchive/src
-   ${CMAKE_BINARY_DIR}/tier1/karchive/src
+   ${KArchive_INCLUDE_DIRS}
 )
 
 include(ECMMarkAsTest)
@@ -15,6 +14,6 @@ include(ECMMarkAsTest)
 # (only part of kio_http and kmultipart)
 
 add_executable(httpfiltertest httpfiltertest.cpp ../httpfilter.cc)
-target_link_libraries(httpfiltertest ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} karchive ${ZLIB_LIBRARIES})
+target_link_libraries(httpfiltertest ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} ${KArchive_LIBRARIES} ${ZLIB_LIBRARIES})
 
 add_test(kiohttp-httpfiltertest httpfiltertest)

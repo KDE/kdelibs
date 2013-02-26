@@ -83,6 +83,10 @@ set(ItemModels_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/itemmodels/src
                             ${CMAKE_SOURCE_DIR}/tier1/itemmodels/src )
 set(ItemModels_LIBRARIES ItemModels)
 
+set(KArchive_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/tier1/karchive/src
+                          ${CMAKE_BINARY_DIR}/tier1/karchive/src )
+set(KArchive_LIBRARIES KArchive)
+
 set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
                               ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
                               ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src )

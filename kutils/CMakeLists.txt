@@ -3,8 +3,6 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${KDE4_KPARTS_INCLUDES}
                      ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR}
-                     ${karchive_SOURCE_DIR}/src
-                     ${karchive_BINARY_DIR}/src
                      ${KWidgetSAddons_INCLUDE_DIRS}
                      ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
                      ${CMAKE_BINARY_DIR}/tier2/kauth/src/

@@ -9,8 +9,7 @@ include_directories(
    ${KDE4_KIO_INCLUDES}
    ${CMAKE_CURRENT_SOURCE_DIR}/..
    ${LIBATTICA_INCLUDE_DIR}
-   ${karchive_SOURCE_DIR}/src
-   ${karchive_BINARY_DIR}/src
+   ${KArchive_INCLUDE_DIRS}
    ${kcoreaddons_SOURCE_DIR}/src/randomness
    ${kcoreaddons_BINARY_DIR}/src
    ${ki18n_SOURCE_DIR}/src
@@ -61,7 +60,7 @@ target_link_libraries(knewstuff3
     kcoreaddons
     kwidgets
     ${LIBATTICA_LIBRARIES}
-    karchive
+    ${KArchive_LIBRARIES}
     ki18n
 )
 
