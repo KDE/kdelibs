@@ -84,31 +84,31 @@ TestDPointer::TestDPointer(  )
   d->archiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), QLatin1String( "Archive File" ), d->archiveFile );
   d->archiveFileItem->setLabel( QObject::tr("Archive File") );
   addItem( d->archiveFileItem, QLatin1String( "ArchiveFile" ) );
-  QList<KConfigSkeleton::ItemEnum::Choice2> valuesDestination;
+  QList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("standardDestination");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("askDestination");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl1");
     choice.label = QObject::tr("Argl1 Label");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl2");
     choice.whatsThis = QObject::tr("Argl2 Whatsthis");
     valuesDestination.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl3");
     choice.label = QObject::tr("Argl3 Label");
     choice.whatsThis = QObject::tr("Argl3 Whatsthis");

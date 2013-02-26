@@ -21,31 +21,31 @@ Test11::Test11(  )
   mArchiveFileItem = new MyPrefs::ItemString( currentGroup(), QLatin1String( "Archive File" ), mArchiveFile );
   mArchiveFileItem->setLabel( QObject::tr("Archive File") );
   addItem( mArchiveFileItem, QLatin1String( "ArchiveFile" ) );
-  QList<MyPrefs::ItemEnum::Choice2> valuesDestination;
+  QList<MyPrefs::ItemEnum::Choice> valuesDestination;
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("standardDestination");
     valuesDestination.append( choice );
   }
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("askDestination");
     valuesDestination.append( choice );
   }
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl1");
     choice.label = QObject::tr("Argl1 Label");
     valuesDestination.append( choice );
   }
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl2");
     choice.whatsThis = QObject::tr("Argl2 Whatsthis");
     valuesDestination.append( choice );
   }
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl3");
     choice.label = QObject::tr("Argl3 Label");
     choice.whatsThis = QObject::tr("Argl3 Whatsthis");
@@ -91,15 +91,15 @@ Test11::Test11(  )
 
   setCurrentGroup( QLatin1String( "Email" ) );
 
-  QList<MyPrefs::ItemEnum::Choice2> valuesEmailClient;
+  QList<MyPrefs::ItemEnum::Choice> valuesEmailClient;
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("sendmail");
     choice.label = /*: @option */ QObject::tr("Sendmail");
     valuesEmailClient.append( choice );
   }
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("kmail");
     choice.label = /*: @option */ QObject::tr("KMail");
     valuesEmailClient.append( choice );
@@ -108,14 +108,14 @@ Test11::Test11(  )
   mEmailClientItem->setLabel( /*: @label */ QObject::tr("Email client") );
   mEmailClientItem->setWhatsThis( /*: @info:whatsthis */ QObject::tr("<para>How to send email when an email alarm is triggered.<list><item>KMail: The email is sent automatically via <application>KMail</application>. <application>KMail</application> is started first if necessary.</item><item>Sendmail: The email is sent automatically. This option will only work if your system is configured to use <application>sendmail</application> or a sendmail compatible mail transport agent.</item></list></para>") );
   addItem( mEmailClientItem, QLatin1String( "EmailClient" ) );
-  QList<MyPrefs::ItemEnum::Choice2> valuesDefaultReminderUnits;
+  QList<MyPrefs::ItemEnum::Choice> valuesDefaultReminderUnits;
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("Minutes");
     valuesDefaultReminderUnits.append( choice );
   }
   {
-    MyPrefs::ItemEnum::Choice2 choice;
+    MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("HoursMinutes");
     choice.label = /*: @option */ QObject::tr("Hours/Minutes");
     valuesDefaultReminderUnits.append( choice );

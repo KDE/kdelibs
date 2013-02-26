@@ -16,19 +16,19 @@ Test1::Test1(  const QString & transport, const QString & folder )
   KConfigSkeleton::ItemInt  *itemAnotherOption;
   itemAnotherOption = new KConfigSkeleton::ItemInt( currentGroup(), QLatin1String( "Another Option" ), mAnotherOption, 5 );
   addItem( itemAnotherOption, QLatin1String( "AnotherOption" ) );
-  QList<KConfigSkeleton::ItemEnum::Choice2> valuesListOption;
+  QList<KConfigSkeleton::ItemEnum::Choice> valuesListOption;
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("One");
     valuesListOption.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("Two");
     valuesListOption.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("Three");
     valuesListOption.append( choice );
   }

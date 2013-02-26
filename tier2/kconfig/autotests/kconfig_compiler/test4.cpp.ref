@@ -43,24 +43,24 @@ QColor defaultColor[4] = { Qt::red, Qt::blue, Qt::green, Qt::black };
   addItem( itemColor[2], QLatin1String( "Color2" ) );
   itemColor[3] = new KConfigSkeleton::ItemColor( currentGroup(), QLatin1String( "color #3" ), mColor[3], defaultColor[3] );
   addItem( itemColor[3], QLatin1String( "Color3" ) );
-  QList<KConfigSkeleton::ItemEnum::Choice2> valuesMouseAction;
+  QList<KConfigSkeleton::ItemEnum::Choice> valuesMouseAction;
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("Encrypt");
     valuesMouseAction.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("Decrypt");
     valuesMouseAction.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("CrashNBurn");
     valuesMouseAction.append( choice );
   }
   {
-    KConfigSkeleton::ItemEnum::Choice2 choice;
+    KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("PumpNDump");
     valuesMouseAction.append( choice );
   }
