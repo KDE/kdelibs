@@ -446,18 +446,6 @@ KCoreConfigSkeleton::ItemEnum::ItemEnum( const QString &_group, const QString &_
                                      qint32 &reference,
                                      const QList<Choice> &choices,
                                      qint32 defaultValue )
-  : ItemInt( _group, _key, reference, defaultValue )
-{
-    Q_FOREACH (const ItemEnum::Choice &c, choices) {
-        ItemEnum::Choice2 cc = { c.name, c.label, QString(), c.whatsThis };
-        mChoices.append(cc);
-    }
-}
-
-KCoreConfigSkeleton::ItemEnum::ItemEnum( const QString &_group, const QString &_key,
-                                     qint32 &reference,
-                                     const QList<Choice2> &choices,
-                                     qint32 defaultValue )
   : ItemInt( _group, _key, reference, defaultValue ), mChoices(choices)
 {
 }
@@ -474,7 +462,7 @@ void KCoreConfigSkeleton::ItemEnum::readConfig( KConfig *config )
     int i = 0;
     mReference = -1;
     QString tmp = cg.readEntry( mKey, QString() ).toLower();
-    for(QList<Choice2>::ConstIterator it = mChoices.constBegin();
+    for(QList<Choice>::ConstIterator it = mChoices.constBegin();
         it != mChoices.constEnd(); ++it, ++i)
     {
       if ((*it).name.toLower() == tmp)
@@ -505,17 +493,7 @@ void KCoreConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
   }
 }
 
-QList<KCoreConfigSkeleton::ItemEnum::Choice> KCoreConfigSkeleton::ItemEnum::choices() const
-{
-    QList<KCoreConfigSkeleton::ItemEnum::Choice> r;
-    Q_FOREACH (const KCoreConfigSkeleton::ItemEnum::Choice2 &c, mChoices) {
-        KCoreConfigSkeleton::ItemEnum::Choice cc = { c.name, c.label, c.whatsThis };
-        r.append(cc);
-    }
-    return r;
-}
-
-QList<KCoreConfigSkeleton::ItemEnum::Choice2> KCoreConfigSkeleton::ItemEnum::choices2() const
+QList<KCoreConfigSkeleton::ItemEnum::Choice> KCoreConfigSkeleton::ItemEnum::choices2() const
 {
     return mChoices;
 }
