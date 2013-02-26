@@ -493,11 +493,15 @@ void KCoreConfigSkeleton::ItemEnum::writeConfig( KConfig *config )
   }
 }
 
-QList<KCoreConfigSkeleton::ItemEnum::Choice> KCoreConfigSkeleton::ItemEnum::choices2() const
+QList<KCoreConfigSkeleton::ItemEnum::Choice> KCoreConfigSkeleton::ItemEnum::choices() const
 {
     return mChoices;
 }
 
+QList<KCoreConfigSkeleton::ItemEnum::Choice> KCoreConfigSkeleton::ItemEnum::choices2() const
+{
+    return mChoices;
+}
 
 KCoreConfigSkeleton::ItemUInt::ItemUInt( const QString &_group, const QString &_key,
                                 quint32 &reference,

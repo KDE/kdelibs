@@ -623,13 +623,17 @@ public:
     ItemEnum(const QString & _group, const QString & _key, qint32 &reference,
              const QList<Choice> &choices, qint32 defaultValue = 0);
 
-    QList<Choice2> choices() const;
+    QList<Choice> choices() const;
 
     /** @copydoc KConfigSkeletonItem::readConfig(KConfig*) */
     void readConfig(KConfig * config);
 
     /** @copydoc KConfigSkeletonItem::writeConfig(KConfig*) */
     void writeConfig(KConfig * config);
+
+    // Source compatibility with 4.x
+    typedef Choice Choice2;
+    QList<Choice> choices2() const;
 
   private:
     QList<Choice> mChoices;
