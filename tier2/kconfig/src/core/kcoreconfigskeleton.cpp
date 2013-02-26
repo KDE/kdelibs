@@ -1104,11 +1104,41 @@ void KCoreConfigSkeleton::usrWriteConfig()
 
 void KCoreConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )
 {
-  item->setName( name.isEmpty() ? item->key() : name );
-  d->mItems.append( item );
-  d->mItemDict.insert( item->name(), item );
-  item->readDefault( d->mConfig.data() );
-  item->readConfig( d->mConfig.data() );
+    if (d->mItems.contains(item)) {
+        if (item->name() == name ||
+            (name.isEmpty() && item->name() == item->key())) {
+            // nothing to do -> it is already in our collection
+            // and the name isn't changing
+            return;
+        }
+
+        d->mItemDict.remove(item->name());
+    } else {
+        d->mItems.append( item );
+    }
+
+    item->setName(name.isEmpty() ? item->key() : name);
+    d->mItemDict.insert(item->name(), item);
+    item->readDefault(d->mConfig.data());
+    item->readConfig(d->mConfig.data());
+}
+
+void KCoreConfigSkeleton::removeItem(const QString &name)
+{
+    KConfigSkeletonItem *item = d->mItemDict.value(name);
+    if (item) {
+        d->mItems.removeAll(item);
+        d->mItemDict.remove(item->name());
+        delete item;
+    }
+}
+
+void KCoreConfigSkeleton::clearItems()
+{
+    KConfigSkeletonItem::List items = d->mItems;
+    d->mItems.clear();
+    d->mItemDict.clear();
+    qDeleteAll(items);
 }
 
 KCoreConfigSkeleton::ItemString *KCoreConfigSkeleton::addItemString( const QString &name, QString &reference,
@@ -1294,20 +1324,10 @@ KCoreConfigSkeleton::ItemIntList *KCoreConfigSkeleton::addItemIntList( const QSt
   return item;
 }
 
-bool KCoreConfigSkeleton::isImmutable(const QString &name)
-{
-  return const_cast<const KCoreConfigSkeleton*>(this)->isImmutable(name);
-}
-
 bool KCoreConfigSkeleton::isImmutable(const QString &name) const
 {
   KConfigSkeletonItem *item = findItem(name);
   return !item || item->isImmutable();
-}
-
-KConfigSkeletonItem *KCoreConfigSkeleton::findItem(const QString &name)
-{
-  return const_cast<const KCoreConfigSkeleton*>(this)->findItem(name);
 }
 
 KConfigSkeletonItem *KCoreConfigSkeleton::findItem(const QString &name) const

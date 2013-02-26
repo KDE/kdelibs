@@ -1306,23 +1306,22 @@ public:
    */
   KConfigSkeletonItem::List items() const;
 
-  // KDE5 TODO: Remove this non-const version. Kept only for BC.
   /**
-   * Return whether a certain item is immutable
+   * Removes and deletes an item by name
+   * @arg name the name of the item to remove
    */
-  bool isImmutable(const QString & name);
+  void removeItem(const QString &name);
+
+  /**
+   * Removes and deletes all items
+   */
+  void clearItems();
 
   /**
    * Return whether a certain item is immutable
    * @since 4.4
    */
   bool isImmutable(const QString & name) const;
-
-  // KDE5 TODO: Remove this non-const version. Kept only for BC.
-  /**
-   * Lookup item by name
-   */
-  KConfigSkeletonItem * findItem(const QString & name);
 
   /**
    * Lookup item by name
