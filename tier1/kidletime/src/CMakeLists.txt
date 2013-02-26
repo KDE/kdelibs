@@ -51,14 +51,14 @@ elseif (WIN32)
    set(kidletime_LIB_SRCS ${kidletime_LIB_SRCS} windowspoller.cpp)
 endif (X11_FOUND)
 
-add_library(kidletime ${kidletime_LIB_SRCS})
-generate_export_header(kidletime)
-target_link_libraries(kidletime LINK_PUBLIC Qt5::Widgets ${kidletime_LIBS} )
+add_library(KIdleTime ${kidletime_LIB_SRCS})
+generate_export_header(KIdleTime)
+target_link_libraries(KIdleTime LINK_PUBLIC Qt5::Widgets ${kidletime_LIBS} )
 
-set_target_properties(kidletime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
+set_target_properties(KIdleTime PROPERTIES  VERSION ${KIDLETIME_VERSION_STRING}
                                             SOVERSION ${KIDLETIME_SOVERSION})
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kidletime_export.h
                kidletime.h
          DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
-install(TARGETS kidletime EXPORT kidletimeTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KIdleTime EXPORT KIdleTimeTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

@@ -88,6 +88,10 @@ set(KCodecs_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kcodecs/src
                          ${CMAKE_SOURCE_DIR}/tier1/kcodecs/src )
 set(KCodecs_LIBRARIES KCodecs)
 
+set(KIdleTime_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kidletime/src
+                           ${CMAKE_SOURCE_DIR}/tier1/kidletime/src )
+set(KIdleTime_LIBRARIES KIdleTime)
+
 set(KWindowSystem_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kwindowsystem/src
                                ${CMAKE_SOURCE_DIR}/tier1/kwindowsystem/src )
 set(KWindowSystem_LIBRARIES KWindowSystem)
