@@ -31,8 +31,7 @@ configure_file(config-gssapi.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-gssapi.h
 
 include_directories( ${KDE4_KIO_INCLUDES}
                      ${ZLIB_INCLUDE_DIR}
-                     ${CMAKE_SOURCE_DIR}/tier1/solid/src
-                     ${CMAKE_BINARY_DIR}/tier1/solid/src
+                     ${Solid_INCLUDE_DIRS}
                      ${KArchive_INCLUDE_DIRS}
                      ${KWidgetsAddons_INCLUDE_DIRS}
                      ${kcoreaddons_SOURCE_DIR}/src/randomness
@@ -78,7 +77,7 @@ set(kio_http_PART_SRCS
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http ${KArchive_LIBRARIES} ${KDE4_KIO_LIBS} ${KDE4_SOLID_LIBS} kntlm ${ZLIB_LIBRARY} kcoreaddons ki18n)
+target_link_libraries(kio_http ${KArchive_LIBRARIES} ${KDE4_KIO_LIBS} ${Solid_LIBRARIES} kntlm ${ZLIB_LIBRARY} kcoreaddons ki18n)
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)

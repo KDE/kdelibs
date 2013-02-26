@@ -68,22 +68,22 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/text/
 )
 
-add_library(kcoreaddons ${libkcoreaddons_SRCS})
-generate_export_header(kcoreaddons)
+add_library(KCoreAddons ${libkcoreaddons_SRCS})
+generate_export_header(KCoreAddons)
 
-target_link_libraries(kcoreaddons
+target_link_libraries(KCoreAddons
   LINK_PUBLIC ${QT_QTCORE_LIBRARY} ${kcoreaddons_OPTIONAL_LIBS}
   LINK_PRIVATE ${kdeqt5staging_LIBRARIES}
 )
 if(NOT WIN32)
-    target_link_libraries(kcoreaddons LINK_PRIVATE pthread)
+    target_link_libraries(KCoreAddons LINK_PRIVATE pthread)
 endif(NOT WIN32)
 
-set_target_properties(kcoreaddons PROPERTIES VERSION   ${KCOREADDONS_VERSION_STRING}
+set_target_properties(KCoreAddons PROPERTIES VERSION   ${KCOREADDONS_VERSION_STRING}
                                              SOVERSION ${KCOREADDONS_SOVERSION}
 )
 
-install(TARGETS kcoreaddons EXPORT kcoreaddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KCoreAddons EXPORT KCoreAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     caching/kshareddatacache.h

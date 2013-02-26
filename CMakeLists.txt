@@ -116,6 +116,10 @@ set(KPlotting_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier1/kplotting/src/
                              ${CMAKE_BINARY_DIR}/tier1/kplotting/src/ )
 set(KPlotting_LIBRARIES KPlotting)
 
+set(Solid_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/solid/src
+                        ${CMAKE_BINARY_DIR}/tier1/solid/src )
+set(Solid_LIBRARIES Solid)
+
 
 set(kconfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
                            ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core )

@@ -8,8 +8,7 @@ macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 
 include_directories(
   ${KDE4_KIO_INCLUDES}
-  ${CMAKE_SOURCE_DIR}/tier1/solid/src
-  ${CMAKE_BINARY_DIR}/tier1/solid/src
+  ${Solid_INCLUDE_DIRS}
   ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
@@ -56,7 +55,7 @@ generate_export_header(kfile)
 target_link_libraries(kfile
    ${KDE4_KIO_LIBS}
    ${ZLIB_LIBRARY}
-   ${KDE4_SOLID_LIBS}
+   ${Solid_LIBRARIES}
    ${X11_LIBRARIES}
    kcoreaddons
    kwidgets

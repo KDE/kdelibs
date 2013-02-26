@@ -6,9 +6,8 @@ endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 include_directories( ${CMAKE_SOURCE_DIR}/kded )
 
 if(NOT KPAC_NO_SOLID)
-    include_directories(${CMAKE_BINARY_DIR}/solid/)
-    include_directories(${CMAKE_SOURCE_DIR}/solid/)
-   set(KPAC_EXTRA_LIBS ${KDE4_SOLID_LIBS})
+    include_directories(${Solid_INCLUDE_DIRS})
+   set(KPAC_EXTRA_LIBS ${Solid_LIBRARIES})
 endif(NOT KPAC_NO_SOLID)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}")

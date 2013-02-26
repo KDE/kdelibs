@@ -513,7 +513,7 @@ _kde4_set_lib_variables(KTEXTEDITOR   ktexteditor   "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KUNITCONVERSION kunitconversion "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KUTILS        kutils        "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(PLASMA        plasma        "${KDE4_TARGET_PREFIX}")
-_kde4_set_lib_variables(SOLID         solid         "${KDE4_TARGET_PREFIX}")
+_kde4_set_lib_variables(SOLID         Solid         "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(THREADWEAVER  ThreadWeaver  "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDE4SUPPORT   kde4support   "${KDE4_TARGET_PREFIX}")
 

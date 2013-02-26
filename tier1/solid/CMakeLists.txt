@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(solid)
+project(Solid)
 
 find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
@@ -53,7 +53,7 @@ option(WITH_SOLID_UDISKS2 "Enable the udisks2 solid backend instead")
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX SOLID
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/solid_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/solidConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/SolidConfigVersion.cmake")
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
@@ -72,19 +72,19 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/solid")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/Solid")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/solidConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/solidConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/SolidConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/SolidConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/solidConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/solidConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/SolidConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/SolidConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT solidTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE solidTargets.cmake  NAMESPACE KF5:: )
+install(EXPORT SolidTargets  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"  FILE SolidTargets.cmake  NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_version.h  DESTINATION ${INCLUDE_INSTALL_DIR}  COMPONENT Devel )
 

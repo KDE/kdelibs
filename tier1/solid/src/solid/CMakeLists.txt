@@ -389,20 +389,20 @@ endif ()
 
 include_directories (${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 
-add_library(solid  ${solid_LIB_SRCS})
-generate_export_header(solid)
+add_library(Solid  ${solid_LIB_SRCS})
+generate_export_header(Solid)
 
-target_link_libraries(solid LINK_PUBLIC ${QT_QTCORE_LIBRARY}
+target_link_libraries(Solid LINK_PUBLIC ${QT_QTCORE_LIBRARY}
                             LINK_PRIVATE ${QT_QTDBUS_LIBRARY}
                                          ${QT_QTXML_LIBRARY}
                                          Qt5::Widgets
                                          ${solid_OPTIONAL_LIBS}
  )
 
-set_target_properties(solid PROPERTIES  VERSION ${SOLID_VERSION_STRING}
+set_target_properties(Solid PROPERTIES  VERSION ${SOLID_VERSION_STRING}
                                         SOVERSION ${SOLID_SOVERSION} )
 
-install(TARGETS solid EXPORT solidTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS Solid EXPORT SolidTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES org.kde.Solid.Networking.Client.xml
               org.kde.Solid.PowerManagement.PolicyAgent.xml
@@ -412,10 +412,10 @@ install(FILES org.kde.Solid.Networking.Client.xml
 
 ########### static lib for tests  ###############
 
-add_library(solid_static STATIC ${solid_LIB_SRCS})
-set_target_properties(solid_static PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1)
+add_library(Solid_static STATIC ${solid_LIB_SRCS})
+set_target_properties(Solid_static PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE=1)
 
-target_link_libraries(solid_static ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} Qt5::Widgets ${solid_OPTIONAL_LIBS})
+target_link_libraries(Solid_static ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} Qt5::Widgets ${solid_OPTIONAL_LIBS})
 
 ########### install files ###############
 

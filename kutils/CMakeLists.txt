@@ -31,8 +31,13 @@ set(kcmutils_LIB_SRCS
 kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 generate_export_header(kcmutils)
 
+<<<<<<< HEAD
 target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth kcoreaddons ${KWidgetsAddons_LIBRARIES} ki18n)
 target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdeui Qt5::Widgets)
+=======
+target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} ki18n)
+target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdecore kdeui Qt5::Widgets)
+>>>>>>> CamelCase the kcoreaddons library
 set_target_properties(kcmutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
@@ -65,7 +70,7 @@ set(kprintutils_LIB_SRCS
 kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 generate_export_header(kprintutils)
 
-target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS} kcoreaddons)
+target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS} ${KCoreAddons_LIBRARIES})
 target_link_libraries(kprintutils LINK_INTERFACE_LIBRARIES kdeui Qt5::Widgets)
 set_target_properties(kprintutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
