@@ -8,7 +8,7 @@ macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 
 include_directories(
   ${KDE4_KIO_INCLUDES}
-  ${Solid_INCLUDE_DIRS}
+  ${}
   ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
@@ -57,7 +57,7 @@ target_link_libraries(kfile
    ${ZLIB_LIBRARY}
    ${Solid_LIBRARIES}
    ${X11_LIBRARIES}
-   kcoreaddons
+   ${KCoreAddons_LIBRARIES}
    kwidgets
    ${KWidgetsAddons_LIBRARIES}
    ki18n
@@ -67,7 +67,7 @@ if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore Qt5::Widgets kcoreaddons)
+target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore Qt5::Widgets ${KCoreAddons_LIBRARIES})
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                        SOVERSION ${GENERIC_LIB_SOVERSION}
@@ -96,6 +96,6 @@ set(kfilemodule_SRCS
   kfilemodule.cpp
 )
 kde4_add_plugin(kfilemodule ${kfilemodule_SRCS})
-target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS} kcoreaddons)
+target_link_libraries(kfilemodule ${KDE4_KFILE_LIBS} ${KDE4_KIO_LIBS} ${KCoreAddons_LIBRARIES} )
 install(TARGETS kfilemodule DESTINATION ${PLUGIN_INSTALL_DIR})
 install(FILES kfilemodule.desktop DESTINATION ${SERVICES_INSTALL_DIR})

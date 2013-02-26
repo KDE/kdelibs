@@ -71,7 +71,7 @@ set(kio_help_PART_SRCS
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
-target_link_libraries(kio_help  ${KDE4_KDECORE_LIBS} ki18n ${KArchive_LIBRARIES} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} kcoreaddons)
+target_link_libraries(kio_help  ${KDE4_KDECORE_LIBS} ki18n ${KArchive_LIBRARIES} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} ${KCoreAddons_LIBRARIES} )
 
 install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -83,7 +83,7 @@ set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt.cpp xslt_help.cpp xslt_
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
-target_link_libraries(kio_ghelp  ${KDE4_KDECORE_LIBS} ki18n ${KArchive_LIBRARIES} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} kcoreaddons)
+target_link_libraries(kio_ghelp  ${KDE4_KDECORE_LIBS} ki18n ${KArchive_LIBRARIES} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} ${KCoreAddons_LIBRARIES} )
 
 install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -103,7 +103,7 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
    kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
 
-   target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ki18n ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} kcoreaddons)
+   target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ki18n ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} ${KCoreAddons_LIBRARIES} )
 
    add_dependencies(meinproc4 docbookl10nhelper)
 
@@ -140,7 +140,7 @@ set(genshortcutents_SRCS genshortcutents.cpp )
 
 kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 
-target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} kcoreaddons ki18n)
+target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
 
 
 ########### customize includes for xslt ###############

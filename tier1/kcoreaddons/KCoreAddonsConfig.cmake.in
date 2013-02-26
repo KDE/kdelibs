@@ -1,0 +1,17 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(KCoreAddons_VERSION_MAJOR "@KCOREADDONS_VERSION_MAJOR@")
+set(KCoreAddons_VERSION_MINOR "@KCOREADDONS_VERSION_MINOR@")
+set(KCoreAddons_VERSION_PATCH "@KCOREADDONS_VERSION_PATCH@")
+
+set(KCoreAddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KCoreAddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+if(NOT TARGET KF5::KCoreAddons)
+  include("${CMAKE_CURRENT_LIST_DIR}/KCoreAddonsTargets.cmake")
+endif()
+
+set(KCoreAddons_LIBRARIES KF5::KCoreAddons)
+set(KCoreAddons_INCLUDE_DIRS ${KCoreAddons_INCLUDE_DIR})

@@ -10,8 +10,7 @@ if(NOT kdelibs_SOURCE_DIR)
 
   find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets DBus Concurrent Test)
 
-  # once we can build tier2 libs standalone, add "kcoreaddons" component
-  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs kcoreaddons)
+  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KCoreAddons)
 
 endif()
 
@@ -28,7 +27,7 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KAUTH
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 
-include_directories(${kcoreaddons_INCLUDE_DIRS})  #for kjob
+include_directories(${KCoreAddons_INCLUDE_DIRS})  #for kjob
 
 add_subdirectory(src)
 add_subdirectory(autotests)

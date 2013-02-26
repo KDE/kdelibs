@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(kcoreaddons)
+project(KCoreAddons)
 
 find_package(ECM 0.0.7 REQUIRED NO_MODULE)
 
@@ -43,7 +43,7 @@ configure_file(src/io/config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/i
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KCOREADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddonsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfigVersion.cmake")
 
 
 add_subdirectory(src)
@@ -51,19 +51,19 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kcoreaddons")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KCoreAddons")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kcoreaddonsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddonsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KCoreAddonsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddonsConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddonsConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kcoreaddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kcoreaddonsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KCoreAddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KCoreAddonsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )

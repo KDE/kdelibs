@@ -10,8 +10,7 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/..
    ${LIBATTICA_INCLUDE_DIR}
    ${KArchive_INCLUDE_DIRS}
-   ${kcoreaddons_SOURCE_DIR}/src/randomness
-   ${kcoreaddons_BINARY_DIR}/src
+   ${KCoreAddons_INCLUDE_DIRS}
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
 )
@@ -57,7 +56,7 @@ kde4_add_library(knewstuff3 ${LIBRARY_TYPE} ${knewstuff3_SRCS} )
 target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
-    kcoreaddons
+    ${KCoreAddons_LIBRARIES}
     kwidgets
     ${LIBATTICA_LIBRARIES}
     ${KArchive_LIBRARIES}

@@ -4,8 +4,7 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR}
                      ${KWidgetSAddons_INCLUDE_DIRS}
-                     ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
-                     ${CMAKE_BINARY_DIR}/tier2/kauth/src/
+                     ${KAuth_INCLUDE_DIRS}
                      ${ki18n_SOURCE_DIR}/src
                      ${ki18n_BINARY_DIR}/src
 )
@@ -31,13 +30,8 @@ set(kcmutils_LIB_SRCS
 kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 generate_export_header(kcmutils)
 
-<<<<<<< HEAD
-target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth kcoreaddons ${KWidgetsAddons_LIBRARIES} ki18n)
+target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} ${KAuth_LIBRARIES} ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} ki18n)
 target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdeui Qt5::Widgets)
-=======
-target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} kauth ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} ki18n)
-target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdecore kdeui Qt5::Widgets)
->>>>>>> CamelCase the kcoreaddons library
 set_target_properties(kcmutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})

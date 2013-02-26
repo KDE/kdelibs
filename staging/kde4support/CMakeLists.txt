@@ -33,7 +33,7 @@ include_directories(
 )
 kde4_add_executable(kf5-config NOGUI kde-config.cpp )
 
-target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} kcoreaddons)
+target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} )
 
 install(TARGETS kf5-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h

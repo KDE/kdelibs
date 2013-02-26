@@ -24,7 +24,7 @@ set(libkauth_tests_static_SRCS
 
 add_library(kauth_tests_static STATIC ${libkauth_tests_static_SRCS})
 
-target_link_libraries(kauth_tests_static ${QT_QTDBUS_LIBRARY} ${kcoreaddons_LIBRARIES})
+target_link_libraries(kauth_tests_static ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES})
 
 include(ECMMarkAsTest)
 

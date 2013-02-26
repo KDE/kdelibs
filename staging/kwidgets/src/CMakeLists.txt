@@ -38,7 +38,7 @@ target_link_libraries(kwidgets
 
   kconfigcore
   kconfiggui
-  kcoreaddons
+  ${KCoreAddons_LIBRARIES}
   kguiaddons
   ${KWidgetsAddons_LIBRARIES}
   kauth

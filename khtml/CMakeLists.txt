@@ -483,7 +483,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core
    ${CMAKE_BINARY_DIR}/staging/sonnet/src/core
    ${KArchive_INCLUDE_DIRS}
-   ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness/
+   ${KCoreAddons_INCLUDE_DIRS}
    ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core/
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src

@@ -7,7 +7,7 @@ include(ECMMarkAsTest)
 MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME "kdecore-${_testname}" NOGUI ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} kcoreaddons)
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} )
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -17,7 +17,7 @@ MACRO(KDECORE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_executable(${_testname} NOGUI ${_testname}.cpp)
                ecm_mark_as_test(${_testname})
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -64,14 +64,14 @@ KDECORE_EXECUTABLE_TESTS(
 # compile into the test since it's not exported
 set(klocaletest_SRCS klocaletest.cpp ../date/kdayperiod.cpp)
 kde4_add_unit_test(klocaletest ${klocaletest_SRCS})
-target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES})
 
 ########### kdatetimeformattertest ###############
 
 # compile KDateTimeFormatter and KDayPeriod into the test since it's not exported
 set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter.cpp ../date/kdayperiod.cpp)
 kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
-target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES})
 
 ########### kcompositejobtest ###############
 

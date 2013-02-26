@@ -4,7 +4,7 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/core
   ${CMAKE_CURRENT_BINARY_DIR}/../src/core
 
-  ${CMAKE_CURRENT_BINARY_DIR}/../../../tier1/kcoreaddons/src
+  ${KCoreAddons_INCLUDE_DIRS}
 )
 
 include(ECMMarkAsTest)

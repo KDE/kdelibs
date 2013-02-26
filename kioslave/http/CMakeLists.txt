@@ -34,11 +34,7 @@ include_directories( ${KDE4_KIO_INCLUDES}
                      ${Solid_INCLUDE_DIRS}
                      ${KArchive_INCLUDE_DIRS}
                      ${KWidgetsAddons_INCLUDE_DIRS}
-                     ${kcoreaddons_SOURCE_DIR}/src/randomness
-                     ${kcoreaddons_SOURCE_DIR}/src/kernel
-                     ${kcoreaddons_SOURCE_DIR}/src/io
-                     ${kcoreaddons_SOURCE_DIR}/src/text
-                     ${kcoreaddons_BINARY_DIR}/src
+                     ${KCoreAddons_INCLUDE_DIRS}
                      ${ki18n_SOURCE_DIR}/src
                      ${ki18n_BINARY_DIR}/src
 )
@@ -56,7 +52,7 @@ set(kio_http_cache_cleaner_KDEINIT_SRCS
 
 kde4_add_kdeinit_executable( kio_http_cache_cleaner NOGUI ${kio_http_cache_cleaner_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY} kcoreaddons ki18n)
+target_link_libraries(kdeinit_kio_http_cache_cleaner ${KDE4_KIO_LIBS} ${ZLIB_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n)
 
 install(TARGETS kdeinit_kio_http_cache_cleaner ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -77,7 +73,7 @@ set(kio_http_PART_SRCS
 
 kde4_add_plugin(kio_http ${kio_http_PART_SRCS})
 
-target_link_libraries(kio_http ${KArchive_LIBRARIES} ${KDE4_KIO_LIBS} ${Solid_LIBRARIES} kntlm ${ZLIB_LIBRARY} kcoreaddons ki18n)
+target_link_libraries(kio_http ${KArchive_LIBRARIES} ${KDE4_KIO_LIBS} ${Solid_LIBRARIES} kntlm ${ZLIB_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n)
 if(GSSAPI_FOUND)
   target_link_libraries(kio_http ${GSSAPI_LIBS} )
 endif(GSSAPI_FOUND)

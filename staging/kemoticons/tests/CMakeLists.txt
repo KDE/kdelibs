@@ -11,4 +11,4 @@ include_directories(
 )
 
 kde4_add_executable(kemoticonstest main.cpp)
-target_link_libraries(kemoticonstest ${KDE4_KDEUI_LIBS} kcoreaddons kemoticons)
+target_link_libraries(kemoticonstest ${KDE4_KDEUI_LIBS} ${KCoreAddons_LIBRARIES} kemoticons)

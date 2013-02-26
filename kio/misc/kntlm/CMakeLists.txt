@@ -1,6 +1,5 @@
 include_directories(
-  ${kcoreaddons_SOURCE_DIR}/src/randomness
-  ${kcoreaddons_BINARY_DIR}/src
+  ${KCoreAddons_INCLUDE_DIRS}
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -9,7 +8,7 @@ set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 kde4_add_library(kntlm ${LIBRARY_TYPE} ${kntlm_LIB_SRCS})
 generate_export_header(kntlm)
 
-target_link_libraries(kntlm  ${KDE4_KDECORE_LIBS} kcoreaddons)
+target_link_libraries(kntlm  ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} )
 
 set_target_properties(kntlm PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 

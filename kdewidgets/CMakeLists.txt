@@ -6,9 +6,7 @@ add_subdirectory( tests )
 
 include_directories(
   ${KPlotting_INCLUDE_DIRS}
-  ${kcoreaddons_SOURCE_DIR}/src/io   # kurl.h
-  ${kcoreaddons_SOURCE_DIR}/src/text # kmacroexpander.h
-  ${kcoreaddons_BINARY_DIR}/src
+  ${KCoreAddons_INCLUDE_DIRS}
   ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
@@ -24,7 +22,7 @@ set(makekdewidgets_SRCS makekdewidgets.cpp )
 
 kde4_add_executable(makekdewidgets NOGUI ${makekdewidgets_SRCS})
 
-target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} kcoreaddons ki18n)
+target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
 
 # "export" this target too so we can use the LOCATION property of the imported target in
 # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex

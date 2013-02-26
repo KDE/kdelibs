@@ -49,12 +49,7 @@ include_directories( ${KDE4_KDECORE_INCLUDES} )
 include_directories( ${ZLIB_INCLUDE_DIR} )
 include_directories( ${QT_INCLUDES} )
 include_directories( ${KCodecs_INCLUDE_DIRS} )
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs )
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text )
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel )
-include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness )
-include_directories( ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src/ )
+include_directories( ${KCoreAddons_INCLUDE_DIRS} )
 include_directories( ${CMAKE_BINARY_DIR}/staging/kservice/src
                      ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
                      ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
@@ -208,7 +203,7 @@ generate_export_header(kdecore)
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} kcoreaddons kconfigcore ${KCodecs_LIBRARIES} kservice ki18n
+    ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES} kconfigcore ${KCodecs_LIBRARIES} kservice ki18n
   LINK_PRIVATE
     ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )

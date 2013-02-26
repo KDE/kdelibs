@@ -23,12 +23,12 @@ set(kdewebkit_LIB_SRCS
     kwebpluginfactory.cpp
 )
 
-kde4_add_library(kdewebkit ${LIBRARY_TYPE} 
-    ${kdewebkit_LIB_SRCS} 
+kde4_add_library(kdewebkit ${LIBRARY_TYPE}
+    ${kdewebkit_LIB_SRCS}
 )
 generate_export_header(kdewebkit)
 
-target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY} kcoreaddons ki18n)
+target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n)
 target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES kparts kio kdecore ${QT_QTWEBKIT_LIBRARY} ${QT_QTNETWORK_LIBRARY} Qt5::Widgets)
 
 set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})

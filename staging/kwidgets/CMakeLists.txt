@@ -23,8 +23,7 @@ include(FeatureSummary)
 
 include_directories(
   ${QT_INCLUDES}
-  ${kcoreaddons_BINARY_DIR}
-  ${kcoreaddons_SOURCE_DIR}/src/caching
+  ${KCoreAddons_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}/tier2/kauth/src
   ${CMAKE_SOURCE_DIR}/tier2/kauth/src
   ${CMAKE_BINARY_DIR}/kdecore
@@ -38,8 +37,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/gui
   ${KWidgetsAddons_INCLUDE_DIRS}
   ${KWindowSystem_INCLUDE_DIRS}
-  ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
-  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs # kjob (dependency of kauth)
   ${CMAKE_BINARY_DIR}/staging/kguiaddons/src
   ${CMAKE_SOURCE_DIR}/staging/kguiaddons/src/colors
   ${CMAKE_CURRENT_SOURCE_DIR}/src/utils

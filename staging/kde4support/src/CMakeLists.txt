@@ -66,9 +66,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/kdecore/util/
     ${CMAKE_SOURCE_DIR}/kdecore/localization/
     ${KDE4_KDEUI_INCLUDES}
-    ${kcoreaddons_SOURCE_DIR}/src/randomness # for KRandom
-    ${kcoreaddons_SOURCE_DIR}/src/io # for KBackup
-    ${kcoreaddons_BINARY_DIR}/src
+    ${KCoreAddons_INCLUDE_DIRS}
     ${kconfig_BINARY_DIR}/src/core # ksharedconfig.h
     ${kconfig_SOURCE_DIR}/src/core
     ${kservice_BINARY_DIR}/src
@@ -96,7 +94,7 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 add_library(kde4support ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
-target_link_libraries(kde4support Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY} kdecore kcoreaddons ${KWidgetsAddons_LIBRARIES} kwidgets kauth kdeui ki18n kinterprocesswindowing ${X11_LIBRARIES})
+target_link_libraries(kde4support Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY} kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets kauth kdeui ki18n kinterprocesswindowing ${X11_LIBRARIES})
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})

@@ -27,13 +27,7 @@ include_directories(
  ${CMAKE_SOURCE_DIR}/staging/kwidgets/src/dialogs
  ${CMAKE_SOURCE_DIR}/staging/kinterprocesswindowing/src
  ${CMAKE_BINARY_DIR}/staging/kinterprocesswindowing/src
- ${kcoreaddons_BINARY_DIR}/src
- ${kcoreaddons_SOURCE_DIR}/src/caching
- ${kcoreaddons_SOURCE_DIR}/src/io
- ${kcoreaddons_SOURCE_DIR}/src/jobs
- ${kcoreaddons_SOURCE_DIR}/src/text
- ${kcoreaddons_SOURCE_DIR}/src/kernel
- ${kcoreaddons_SOURCE_DIR}/src/randomness
+ ${KCoreAddons_INCLUDE_DIRS}
  ${ki18n_BINARY_DIR}/src
  ${ki18n_SOURCE_DIR}/src
  ${kauth_BINARY_DIR}/src
@@ -405,7 +399,7 @@ kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
 target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore kauth kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} kcoreaddons ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} kconfiggui)
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} kconfiggui)
 
 if(X11_FOUND)
   find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)

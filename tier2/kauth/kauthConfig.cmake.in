@@ -2,8 +2,8 @@
 
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
-if(NOT TARGET KF5::kcoreaddons)
-   set(kconfig_NOT_FOUND_MESSAGE "kauth depends on the package kcoreaddons, which is missing. Use find_package() to find it before kauth.")
+if(NOT TARGET KF5::KCoreAddons)
+   set(kconfig_NOT_FOUND_MESSAGE "kauth depends on the package KCoreAddons, which is missing. Use find_package() to find it before kauth.")
    set(kconfig_FOUND FALSE)
    return()
 endif()

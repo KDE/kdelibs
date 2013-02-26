@@ -4,8 +4,7 @@ project(kconf_update)
 include_directories(
  ${KDE4_KDECORE_INCLUDES}
  ${KDE4_KCONFIG_INCLUDES}
- ${kcoreaddons_BINARY_DIR}/src
- ${kcoreaddons_SOURCE_DIR}/src/kernel
+ ${KCoreAddons_INCLUDE_DIRS}
  ${ki18n_SOURCE_DIR}/src
  ${ki18n_BINARY_DIR}/src
 )
@@ -21,7 +20,7 @@ set(kconf_update_KDEINIT_SRCS
 
 kde4_add_kdeinit_executable( kconf_update NOGUI ${kconf_update_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kconf_update  ${KDE4_KDECORE_LIBS} kcoreaddons ki18n)
+target_link_libraries(kdeinit_kconf_update  ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
 
 install(TARGETS kdeinit_kconf_update ${INSTALL_TARGETS_DEFAULT_ARGS})
 

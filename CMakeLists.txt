@@ -87,10 +87,15 @@ set(KArchive_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/tier1/karchive/src
                           ${CMAKE_BINARY_DIR}/tier1/karchive/src )
 set(KArchive_LIBRARIES KArchive)
 
-set(kcoreaddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
+set(KCoreAddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
+                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/caching
                               ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
-                              ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src )
-set(kcoreaddons_LIBRARIES kcoreaddons)
+                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel
+                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
+                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness
+                              ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
+                              )
+set(KCoreAddons_LIBRARIES KCoreAddons)
 
 set(KCodecs_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier1/kcodecs/src
                          ${CMAKE_SOURCE_DIR}/tier1/kcodecs/src )
@@ -307,11 +312,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/util
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
                           ${KCodecs_INCLUDE_DIRS}
-                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
-                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel
-                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/jobs
-                          ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
-                          ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
+                          ${KCoreAddons_INCLUDE_DIRS}
                           ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
                           ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
                           ${CMAKE_BINARY_DIR}/staging/kservice/src/

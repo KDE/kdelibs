@@ -13,7 +13,7 @@ notepad.cpp
 
 kde4_add_executable(kpartstest TEST ${kpartstest_SRCS})
 
-target_link_libraries(kpartstest  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(kpartstest  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
 
 
 ########### next target ###############
@@ -27,7 +27,7 @@ notepad.cpp
 
 kde4_add_executable(normalktmtest TEST ${normalktmtest_SRCS})
 
-target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
 
 
 ########### next target ###############
@@ -37,12 +37,12 @@ partviewer.cpp
 )
 
 kde4_add_executable(partviewer TEST ${partviewer_SRCS})
-target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
 
 ########### test prog for "open or save question" ###############
 
 kde4_add_executable(openorsavequestion TEST openorsavequestion.cpp)
-target_link_libraries(openorsavequestion  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(openorsavequestion  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
 
 ########### next target ###############
 
@@ -62,7 +62,7 @@ set(notepadpart_PART_SRCS notepad.cpp)
 
 kde4_add_plugin(notepadpart ${notepadpart_PART_SRCS})
 
-target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
 
 install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -72,7 +72,7 @@ install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 MACRO(KPARTS_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kparts-${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} kcoreaddons)
+               target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_UNIT_TESTS)
 MACRO(KPARTS_EXECUTABLE_TESTS)

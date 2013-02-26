@@ -9,7 +9,6 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin
    ${QT_INCLUDES} )
-#include_directories( ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io )
 include_directories(
    ${kconfig_SOURCE_DIR}/src/core
    ${kconfig_BINARY_DIR}/src/core

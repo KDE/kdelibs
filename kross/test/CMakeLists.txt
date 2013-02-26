@@ -10,5 +10,5 @@ set(krosstest_SRCS
 
 add_executable(krosstest ${krosstest_SRCS})
 ecm_mark_as_test(${krosstest})
-target_link_libraries(krosstest ${KDE4_KDEUI_LIBS} krosscore kcoreaddons)
+target_link_libraries(krosstest ${KDE4_KDEUI_LIBS} krosscore ${KCoreAddons_LIBRARIES} )
 

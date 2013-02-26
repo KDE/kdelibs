@@ -5,8 +5,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/kdecore/localization # TODO port to i18n framework
   ${CMAKE_BINARY_DIR}/kdecore
 
-  ${kcoreaddons_SOURCE_DIR}/src/io
-  ${kcoreaddons_BINARY_DIR}/src
+  ${KCoreAddons_INCLUDE_DIRS}
   ${kconfig_SOURCE_DIR}/src/core
   ${kconfig_BINARY_DIR}/src/core
   ${CMAKE_CURRENT_BINARY_DIR}
