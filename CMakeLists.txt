@@ -126,13 +126,18 @@ set(Solid_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/solid/src
 set(Solid_LIBRARIES Solid)
 
 
+# tier1/ already builds standalone, so it should not get any include dirs from here.
+
+add_subdirectory( tier2 )
+
+set(KAuth_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier2/kauth/src/
+                       ${CMAKE_SOURCE_DIR}/tier2/kauth/src/ )
+set(KAuth_LIBRARIES  KAuth)
+
 set(kconfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
                            ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core )
 set(kconfig_LIBRARIES kconfigcore kconfiggui)
 
-# tier1/ already builds standalone, so it should not get any include dirs from here.
-
-add_subdirectory( tier2 )
 
 set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
 
@@ -348,8 +353,6 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
                         ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
                         ${KWindowSystem_INCLUDE_DIRS}
-                        ${CMAKE_BINARY_DIR}/tier2/kauth/src/
-                        ${CMAKE_SOURCE_DIR}/tier2/kauth/src/
                         ${CMAKE_BINARY_DIR}/tier2/kconfig/src/gui
                         ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/gui
                         ${CMAKE_BINARY_DIR}/staging/kguiaddons/src/

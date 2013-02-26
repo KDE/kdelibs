@@ -17,11 +17,11 @@ set(libkauth_SRCS
     backends/fakehelper/FakeHelperProxy.cpp
 )
 
-add_library(kauth ${libkauth_SRCS})
-generate_export_header(kauth)
+add_library(KAuth ${libkauth_SRCS})
+generate_export_header(KAuth)
 
-target_link_libraries(kauth Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES})
-set_target_properties(kauth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
+target_link_libraries(KAuth Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES})
+set_target_properties(KAuth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
                                        SOVERSION ${KAUTH_SOVERSION}
 )
 
@@ -36,7 +36,7 @@ if (NOT "${KDE4_AUTH_BACKEND_NAME}" STREQUAL "FAKE")
     # KAUTH_POLICY_GEN_LIBRARIES has been generated from ConfigureChecks.cmake
     target_link_libraries( kauth-policy-gen ${KAUTH_POLICY_GEN_LIBRARIES} )
 
-    install( TARGETS kauth-policy-gen EXPORT kauthTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
+    install( TARGETS kauth-policy-gen EXPORT KAuthTargets DESTINATION ${LIBEXEC_INSTALL_DIR})
 endif ()
 
 # KAuth backend plugin
@@ -68,7 +68,7 @@ if (NOT "${KDE4_AUTH_HELPER_BACKEND_NAME}" STREQUAL "FAKE")
     )
 endif ()
 
-install(TARGETS kauth EXPORT kauthTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KAuth EXPORT KAuthTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kauthaction.h

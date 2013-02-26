@@ -24,8 +24,7 @@ include(FeatureSummary)
 include_directories(
   ${QT_INCLUDES}
   ${KCoreAddons_INCLUDE_DIRS}
-  ${CMAKE_BINARY_DIR}/tier2/kauth/src
-  ${CMAKE_SOURCE_DIR}/tier2/kauth/src
+  ${KAuth_INCLUDE_DIRS}
   ${CMAKE_BINARY_DIR}/kdecore
   ${ki18n_SOURCE_DIR}/src # KLocalizedString::localizedFilePath
   ${ki18n_BINARY_DIR}/src # KLocalizedString::localizedFilePath

@@ -30,8 +30,7 @@ include_directories(
  ${KCoreAddons_INCLUDE_DIRS}
  ${ki18n_BINARY_DIR}/src
  ${ki18n_SOURCE_DIR}/src
- ${kauth_BINARY_DIR}/src
- ${kauth_SOURCE_DIR}/src
+ ${KAuth_INCLUDE_DIRS}
  ${kconfig_BINARY_DIR}/src/core
  ${kconfig_SOURCE_DIR}/src/core
  ${kconfig_BINARY_DIR}/src/gui
@@ -398,7 +397,7 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore kauth kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
+target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} kconfiggui)
 
 if(X11_FOUND)

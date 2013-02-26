@@ -1,0 +1,31 @@
+@PACKAGE_INIT@
+
+# Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
+
+if(NOT TARGET KF5::KCoreAddons)
+   set(KAuth_NOT_FOUND_MESSAGE "KAuth depends on the package KCoreAddons, which is missing. Use find_package() to find it before KAuth.")
+   set(KAuth_FOUND FALSE)
+   return()
+endif()
+
+set(KAuth_VERSION_MAJOR "@KAUTH_VERSION_MAJOR@")
+set(KAuth_VERSION_MINOR "@KAUTH_VERSION_MINOR@")
+set(KAuth_VERSION_PATCH "@KAUTH_VERSION_PATCH@")
+
+set(KAuth_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KAuth_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+if(NOT TARGET KF5::KAuth)
+  include("${CMAKE_CURRENT_LIST_DIR}/KAuthTargets.cmake")
+endif()
+
+set(KAuth_LIBRARIES KF5::KAuth)
+set(KAuth_INCLUDE_DIRS ${KAuth_INCLUDE_DIR})
+
+get_target_property(_importedConfigurations  KF5::kauth_policy_gen IMPORTED_CONFIGURATIONS )
+list(GET _importedConfigurations 0 _firstConfig)
+get_target_property(KAuth_POLICY_GEN_EXECUTABLE  KF5::kauth_compiler  LOCATION_${_firstConfig})
+
+
+unset(_KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP)
+include("${CMAKE_CURRENT_LIST_DIR}/KAuthMacros.cmake")
