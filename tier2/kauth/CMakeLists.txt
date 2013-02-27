@@ -4,7 +4,7 @@ project(KAuth)
 
 if(NOT kdelibs_SOURCE_DIR)
 
-  find_package(ECM 0.0.7 REQUIRED NO_MODULE)
+  find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
   set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 

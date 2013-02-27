@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.10.1)
 
 project(KIdleTime)
 
-find_package(ECM 0.0.7 REQUIRED NO_MODULE)
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
