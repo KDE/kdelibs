@@ -20,11 +20,10 @@
 */
 
 #include "karchive.h"
+#include "karchive_p.h"
 #include "klimitediodevice_p.h"
 
 #include <qplatformdefs.h> // QT_STATBUF, QT_LSTAT
-
-#include <qsavefile.h>
 
 #include <QStack>
 #include <QtCore/QMap>
@@ -47,33 +46,6 @@
 #include <limits.h>  // PATH_MAX
 #include <unistd.h>
 #endif
-
-class KArchivePrivate
-{
-public:
-    KArchivePrivate()
-        : rootDir( 0 ),
-          saveFile( 0 ),
-          dev ( 0 ),
-          fileName(),
-          mode( QIODevice::NotOpen ),
-          deviceOwned( false )
-    {}
-    ~KArchivePrivate()
-    {
-        delete saveFile;
-        delete rootDir;
-    }
-    void abortWriting();
-
-    KArchiveDirectory* rootDir;
-    QSaveFile* saveFile;
-    QIODevice * dev;
-    QString fileName;
-    QIODevice::OpenMode mode;
-    bool deviceOwned; // if true, we (KArchive) own dev and must delete it
-};
-
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////// KArchive ///////////////////////////////////

@@ -73,6 +73,7 @@ install(TARGETS karchive-qt4 EXPORT KArchive_Qt4Targets
 
 install( FILES
   karchive.h
+  karchive_p.h
   kar.h
   kcompressiondevice.h
   kfilterbase.h
