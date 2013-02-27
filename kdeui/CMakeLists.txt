@@ -438,7 +438,7 @@ if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${KConfig_GUI_LIBRARY} Qt5::Widgets)
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${KConfig_GUI_LIBRARY} Qt5::Widgets)
 
 if(NOT WINCE)
 target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${QT_QTSVG_LIBRARY})

@@ -284,15 +284,15 @@ include(CheckIncludeFiles)
 include(CheckFunctionExists)
 include(CheckCXXSourceCompiles)
 
-check_include_files(mntent.h      HAVE_MNTENT_H)                       # solid, kio, kdecore
-check_include_files(sys/types.h   HAVE_SYS_TYPES_H)                    # various
-check_include_files(sys/param.h   HAVE_SYS_PARAM_H)                    # various
-check_include_files("stdio.h;sys/mnttab.h"  HAVE_SYS_MNTTAB_H)         # kio, kdecore
-check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)       # kio, kdecore
+check_include_files(mntent.h      HAVE_MNTENT_H)
+check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
+check_include_files(sys/param.h   HAVE_SYS_PARAM_H)
+check_include_files("stdio.h;sys/mnttab.h"  HAVE_SYS_MNTTAB_H)
+check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)
 
-check_function_exists(getmntinfo HAVE_GETMNTINFO)        # kdecore, kio
+check_function_exists(getmntinfo HAVE_GETMNTINFO)
 
-check_function_exists(setmntent  HAVE_SETMNTENT)         # solid, kio, kdecore
+check_function_exists(setmntent  HAVE_SETMNTENT)
 
 check_cxx_source_compiles("
   #include <sys/types.h>
