@@ -2,9 +2,9 @@
 
 # Any changes in this file will be overwritten by CMake.
 
-if(NOT TARGET KF5::kconfigcore)
-   set(kconfig_NOT_FOUND_MESSAGE "kguiaddons depends on the package kconfig, which is missing. Use find_package() to find it before kguiaddons.")
-   set(kconfig_FOUND FALSE)
+if(NOT TARGET KF5::KConfigCore)
+   set(KConfig_NOT_FOUND_MESSAGE "kguiaddons depends on the package KConfig, which is missing. Use find_package() to find it before kguiaddons.")
+   set(KConfig_FOUND FALSE)
    return()
 endif()
 

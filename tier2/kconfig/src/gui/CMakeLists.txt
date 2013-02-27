@@ -10,15 +10,15 @@ set(libkconfiggui_SRCS
    kwindowconfig.cpp
 )
 
-add_library(kconfiggui ${libkconfiggui_SRCS})
-generate_export_header(kconfiggui)
+add_library(KConfigGui ${libkconfiggui_SRCS})
+generate_export_header(KConfigGui)
 
-target_link_libraries(kconfiggui Qt5::Widgets kconfigcore)
-set_target_properties(kconfiggui PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
+target_link_libraries(KConfigGui Qt5::Widgets KConfigCore)
+set_target_properties(KConfigGui PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
                                             SOVERSION ${KCONFIG_SOVERSION}
 )
 
-install(TARGETS kconfiggui EXPORT kconfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KConfigGui EXPORT KConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfiggui_export.h

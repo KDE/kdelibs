@@ -67,8 +67,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/kdecore/localization/
     ${KDE4_KDEUI_INCLUDES}
     ${KCoreAddons_INCLUDE_DIRS}
-    ${kconfig_BINARY_DIR}/src/core # ksharedconfig.h
-    ${kconfig_SOURCE_DIR}/src/core
+    ${KConfig_INCLUDE_DIRS}
     ${kservice_BINARY_DIR}/src
     ${kservice_SOURCE_DIR}/src/sycoca
     ${kservice_SOURCE_DIR}/src/services

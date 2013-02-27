@@ -8,8 +8,7 @@ include_directories(
 )
 
 include_directories(
-  ${kconfig_SOURCE_DIR}/src/core
-  ${kconfig_BINARY_DIR}/src/core
+  ${KConfig_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
 )
@@ -27,7 +26,7 @@ macro(KSERVICE_UNIT_TESTS)
        ${QT_QTTEST_LIBRARY}
        ${QT_QTXML_LIBRARY}
        ${QT_QTMAIN_LIBRARY}
-       kconfigcore
+       ${KConfig_CORE_LIBRARY}
        ki18n
     )
     #target_link_libraries(${_testname} kservice ${QT_QTCONCURRENT_LIBRARY})

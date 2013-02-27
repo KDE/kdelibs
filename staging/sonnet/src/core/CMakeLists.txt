@@ -6,8 +6,7 @@ include_directories(
   ${CMAKE_BINARY_DIR}/kdecore
 
   ${KCoreAddons_INCLUDE_DIRS}
-  ${kconfig_SOURCE_DIR}/src/core
-  ${kconfig_BINARY_DIR}/src/core
+  ${KConfig_INCLUDE_DIRS}
   ${CMAKE_CURRENT_BINARY_DIR}
 )
 

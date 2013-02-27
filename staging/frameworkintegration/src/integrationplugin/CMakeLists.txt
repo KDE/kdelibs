@@ -1,8 +1,7 @@
 
 include_directories(
  ${KDE4_KDEUI_INCLUDES} # kmessagebox.h
- ${kconfig_BINARY_DIR}/src/core
- ${kconfig_SOURCE_DIR}/src/core
+ ${KConfig_INCLUDE_DIRS}
 )
 
 set(plugin_SRCS frameworkintegrationplugin.cpp)

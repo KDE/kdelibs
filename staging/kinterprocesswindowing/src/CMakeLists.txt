@@ -21,7 +21,7 @@ generate_export_header(kinterprocesswindowing)
 
 target_link_libraries(kinterprocesswindowing
    LINK_PUBLIC Qt5::Widgets ${KWindowSystem_LIBRARIES} ${X11_LIBRARIES}
-   kwidgets ki18n kconfigcore kdeui
+   kwidgets ki18n ${KConfig_CORE_LIBRARY} kdeui
 )
 
 if (X11_FOUND)

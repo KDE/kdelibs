@@ -5,8 +5,7 @@ include_directories(
    ${kguiaddons_BINARY_DIR}/src
    ${kguiaddons_BINARY_DIR}/src/colors
    ${kguiaddons_SOURCE_DIR}/src/colors
-   ${kconfig_BINARY_DIR}/src/core
-   ${kconfig_SOURCE_DIR}/src/core
+   ${KConfig_INCLUDE_DIRS}
    ${kwidgets_BINARY_DIR}/src
    ${kwidgets_SOURCE_DIR}/src/icons
 )
@@ -23,6 +22,6 @@ add_library(kdeplatformtheme MODULE ${platformtheme_SRCS})
 set_target_properties(kdeplatformtheme PROPERTIES PREFIX "") # remove lib prefix
 
 # We link to KIO to pull in the qfiledialog hooks
-target_link_libraries(kdeplatformtheme ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDE4_KIO_LIBS} kconfigcore kguiaddons)
+target_link_libraries(kdeplatformtheme ${QT_QTGUI_LIBRARY} ${QT_QTCORE_LIBRARY} ${KDE4_KIO_LIBS} ${KConfig_CORE_LIBRARY} kguiaddons)
 
 install(TARGETS kdeplatformtheme DESTINATION ${QT_PLUGIN_INSTALL_DIR}/platformthemes)

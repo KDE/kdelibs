@@ -10,8 +10,7 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin
    ${QT_INCLUDES} )
 include_directories(
-   ${kconfig_SOURCE_DIR}/src/core
-   ${kconfig_BINARY_DIR}/src/core
+   ${KConfig_INCLUDE_DIRS}
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
 )
@@ -51,7 +50,7 @@ generate_export_header(kservice)
 
 target_link_libraries(kservice
    ${QT_QTDBUS_LIBRARY}
-   kconfigcore
+   ${KConfig_CORE_LIBRARY}
    ki18n
 )
 

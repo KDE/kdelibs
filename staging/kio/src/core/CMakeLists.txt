@@ -8,8 +8,7 @@ configure_file(config-kiocore.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiocore
 include_directories(
   ${QT_INCLUDES}
   ${KCoreAddons_INCLUDE_DIRS}
-  ${kconfig_SOURCE_DIR}/src/core
-  ${kconfig_BINARY_DIR}/src/core
+  ${KConfig_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
   ${kiocore_BINARY_DIR}/..           #kio_version.h
@@ -56,7 +55,7 @@ generate_export_header(kiocore)
 
 target_link_libraries(kiocore
  ${KDE4_KDECORE_LIBS} # TODO remove once klocale is in a framework
- kconfigcore
+ ${KConfig_CORE_LIBRARY}
  ${KCoreAddons_LIBRARIES}
  ki18n
  kservice

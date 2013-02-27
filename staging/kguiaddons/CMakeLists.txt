@@ -11,7 +11,7 @@ if(NOT kdelibs_SOURCE_DIR)
 
   find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs
                                                   KCoreAddons
-                                                  kconfig)
+                                                  KConfig)
 
 endif()
 

@@ -1,7 +1,7 @@
 include_directories(
  ${CMAKE_CURRENT_SOURCE_DIR}
  ${CMAKE_BINARY_SOURCE_DIR}
- ${kconfig_INCLUDE_DIRS}
+ ${KConfig_INCLUDE_DIRS}
 )
 
 set(kguiaddons_LIB_SRCS
@@ -17,7 +17,7 @@ add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 
 generate_export_header(kguiaddons)
 
-target_link_libraries(kguiaddons ${kconfig_LIBRARIES} Qt5::Widgets)
+target_link_libraries(kguiaddons ${KConfig_LIBRARIES} Qt5::Widgets)
 set_target_properties(kguiaddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
                                             SOVERSION ${KGUIADDONS_SOVERSION} )
 

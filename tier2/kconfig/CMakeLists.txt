@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.1)
 
-project(kconfig)
+project(KConfig)
 
 if(NOT kdelibs_SOURCE_DIR)
 
@@ -19,7 +19,7 @@ include(FeatureSummary)
 include(ECMSetupVersion)
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KCONFIG
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kconfigConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfigVersion.cmake")
 
 
 if(WIN32)
@@ -28,7 +28,7 @@ if(WIN32)
 endif()
 
 # Needed for the tests or examples to build correctly
-set(kconfig_KCFGC_EXECUTABLE kconfig_compiler)
+set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
 include(KConfigMacros.cmake)
 
 add_subdirectory(src)
@@ -36,24 +36,24 @@ add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kconfig")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KConfig")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kconfigConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/kconfigConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KConfigConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kconfigConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/kconfigConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KConfigConfigVersion.cmake"
                "${CMAKE_CURRENT_SOURCE_DIR}/KConfigMacros.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
 
-install(EXPORT kconfigTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE kconfigTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
+install(EXPORT KConfigTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        FILE KConfigTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kconfig_version.h

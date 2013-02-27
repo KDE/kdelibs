@@ -31,10 +31,7 @@ include_directories(
  ${ki18n_BINARY_DIR}/src
  ${ki18n_SOURCE_DIR}/src
  ${KAuth_INCLUDE_DIRS}
- ${kconfig_BINARY_DIR}/src/core
- ${kconfig_SOURCE_DIR}/src/core
- ${kconfig_BINARY_DIR}/src/gui
- ${kconfig_SOURCE_DIR}/src/gui
+ ${KConfig_INCLUDE_DIRS}
  ${CMAKE_SOURCE_DIR}/kdeui
  ${CMAKE_BINARY_DIR}/kdeui
  ${KDE4_KDECORE_INCLUDES}
@@ -398,7 +395,7 @@ kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
 target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} kconfiggui)
+                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} )
 
 if(X11_FOUND)
   find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
@@ -441,7 +438,7 @@ if (X11_Xrender_FOUND)
    target_link_libraries(kdeui ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore kconfiggui Qt5::Widgets)
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES kdecore ${KConfig_GUI_LIBRARY} Qt5::Widgets)
 
 if(NOT WINCE)
 target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${QT_QTSVG_LIBRARY})

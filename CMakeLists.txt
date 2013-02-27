@@ -134,9 +134,15 @@ set(KAuth_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier2/kauth/src/
                        ${CMAKE_SOURCE_DIR}/tier2/kauth/src/ )
 set(KAuth_LIBRARIES  KAuth)
 
-set(kconfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
+set(KConfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
                            ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core )
-set(kconfig_LIBRARIES kconfigcore kconfiggui)
+set(KConfig_CORE_LIBRARY KConfigCore)
+set(KConfig_GUI_LIBRARY KConfigGui)
+set(KConfig_LIBRARIES KConfigCore KConfigGui)
+
+set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
+include(${CMAKE_SOURCE_DIR}/tier2/kconfig/KConfigMacros.cmake)
+
 
 
 set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
@@ -318,8 +324,7 @@ set(KDE4_KDECORE_INCLUDES ${KDE4_KDECORE_INCLUDES}
                           ${CMAKE_SOURCE_DIR}/kdecore/sonnet
                           ${KCodecs_INCLUDE_DIRS}
                           ${KCoreAddons_INCLUDE_DIRS}
-                          ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
-                          ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
+                          ${KConfig_INCLUDE_DIRS}
                           ${CMAKE_BINARY_DIR}/staging/kservice/src/
                           ${CMAKE_SOURCE_DIR}/staging/kservice/src/sycoca
                           ${CMAKE_SOURCE_DIR}/staging/kservice/src/services
@@ -353,8 +358,7 @@ set(KDE4_KDEUI_INCLUDES ${CMAKE_SOURCE_DIR}/kdeui
                         ${CMAKE_SOURCE_DIR}/kdeui/windowmanagement
                         ${CMAKE_SOURCE_DIR}/kdeui/xmlgui
                         ${KWindowSystem_INCLUDE_DIRS}
-                        ${CMAKE_BINARY_DIR}/tier2/kconfig/src/gui
-                        ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/gui
+                        ${KConfig_INCLUDE_DIRS}
                         ${CMAKE_BINARY_DIR}/staging/kguiaddons/src/
                         ${CMAKE_SOURCE_DIR}/staging/kguiaddons/src/colors
                         ${CMAKE_BINARY_DIR}/staging/kwidgets/src
@@ -414,9 +418,6 @@ configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compil
 
 # Needed for the calls to kconfig_add_kcfg_files in some modules
 set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
-
-set(kconfig_KCFGC_EXECUTABLE kconfig_compiler)
-include(${CMAKE_SOURCE_DIR}/tier2/kconfig/KConfigMacros.cmake)
 
 set(kde4support_LIBRARY kde4support)
 

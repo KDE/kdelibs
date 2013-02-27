@@ -12,18 +12,18 @@ set(libkconfigcore_SRCS
    kcoreauthorized.cpp
 )
 
-add_library(kconfigcore ${libkconfigcore_SRCS})
-generate_export_header(kconfigcore)
+add_library(KConfigCore ${libkconfigcore_SRCS})
+generate_export_header(KConfigCore)
 
-target_link_libraries(kconfigcore ${KCoreAddons_LIBRARIES} ${kdeqt5staging_LIBRARIES})
+target_link_libraries(KConfigCore ${KCoreAddons_LIBRARIES} ${kdeqt5staging_LIBRARIES})
 if(WIN32)
-    target_link_libraries(kconfigcore ${KDEWIN_LIBRARIES})
+    target_link_libraries(KConfigCore ${KDEWIN_LIBRARIES})
 endif()
 
-set_target_properties(kconfigcore PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
+set_target_properties(KConfigCore PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
                                              SOVERSION ${KCONFIG_SOVERSION} )
 
-install(TARGETS kconfigcore EXPORT kconfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KConfigCore EXPORT KConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfigcore_export.h
