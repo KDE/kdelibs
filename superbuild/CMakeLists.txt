@@ -13,7 +13,6 @@ sb_add_project(tier1/kplotting )
 sb_add_project(tier1/kwidgetsaddons )
 sb_add_project(tier1/kwindowsystem )
 sb_add_project(tier1/solid )
-sb_add_project(tier1/superbuild )
 sb_add_project(tier1/threadweaver )
 
 sb_add_project(tier2/kconfig DEPENDS kcoreaddons)
