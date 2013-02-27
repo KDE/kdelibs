@@ -24,6 +24,7 @@
 
 #include "kabstractwidgetjobtracker_p.h"
 
+#include <QEventLoopLocker>
 #include <QWidget>
 #include <QMap>
 #include <QTime>
@@ -31,8 +32,6 @@
 #include <QCheckBox>
 #include <QUrl>
 #include <QDebug>
-
-#include <kglobal.h>
 
 class QPushButton;
 class KSqueezedTextLabel;
@@ -46,11 +45,13 @@ public:
     Private(QWidget *parent, KWidgetJobTracker *tracker)
         : KAbstractWidgetJobTracker::Private(tracker)
         , parent(parent)
+        , eventLoopLocker(NULL)
     {
     }
 
     virtual ~Private()
     {
+        delete eventLoopLocker;
     }
 
     virtual void setStopOnClose(KJob *job, bool stopOnClose);
@@ -63,6 +64,7 @@ public:
     class ProgressWidget;
 
     QWidget *parent;
+    QEventLoopLocker* eventLoopLocker;
     QMap<KJob*, ProgressWidget*> progressWidget;
     QQueue<KJob*> progressWidgetsToBeShown;
 };
@@ -87,9 +89,8 @@ public:
 
     ~ProgressWidget()
     {
-        if (keepOpenCheck->isChecked()) {
-            KGlobal::deref();
-        }
+        delete tracker->d->eventLoopLocker;
+        tracker->d->eventLoopLocker = NULL;
     }
 
     KWidgetJobTracker *const tracker;

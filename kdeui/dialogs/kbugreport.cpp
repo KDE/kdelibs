@@ -43,7 +43,6 @@
 #include <kcomponentdata.h>
 #include <ktextedit.h>
 #include <ktitlewidget.h>
-#include <kglobal.h>
 
 #include <stdio.h>
 #include <pwd.h>
@@ -107,7 +106,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   // Use supplied aboutdata, otherwise the one from the active componentData
   // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
   d->m_aboutData = aboutData ? aboutData
-      : (KGlobal::activeComponent().isValid() ? KGlobal::activeComponent().aboutData()
+      : (KComponentData::activeComponent().isValid() ? KComponentData::activeComponent().aboutData()
                                   : KComponentData::mainComponent().aboutData());
   d->m_process = 0;
   d->submitBugWeb = false;

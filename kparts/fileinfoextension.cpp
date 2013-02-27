@@ -20,7 +20,6 @@
 #include "fileinfoextension.h"
 
 #include "part.h"
-#include "kglobal.h"
 
 KParts::FileInfoExtension::FileInfoExtension(KParts::ReadOnlyPart* parent)
                           : QObject(parent),
@@ -35,7 +34,7 @@ KParts::FileInfoExtension::~FileInfoExtension()
 
 KParts::FileInfoExtension* KParts::FileInfoExtension::childObject(QObject* obj)
 {
-    return KGlobal::findDirectChild<KParts::FileInfoExtension*>(obj);
+    return obj->findChild<KParts::FileInfoExtension*>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 KParts::FileInfoExtension::QueryModes KParts::FileInfoExtension::supportedQueryModes() const

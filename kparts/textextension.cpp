@@ -18,7 +18,6 @@
  */
 
 #include "textextension.h"
-#include <kglobal.h>
 #include "part.h"
 
 KParts::TextExtension::TextExtension(KParts::ReadOnlyPart* parent)
@@ -47,7 +46,7 @@ QString KParts::TextExtension::completeText(Format) const
 
 KParts::TextExtension * KParts::TextExtension::childObject(QObject *obj)
 {
-    return KGlobal::findDirectChild<KParts::TextExtension *>(obj);
+    return obj->findChild<KParts::TextExtension *>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 int KParts::TextExtension::pageCount() const

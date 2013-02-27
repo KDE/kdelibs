@@ -60,7 +60,6 @@
 #include <time.h>
 #endif
 
-#include <kglobal.h> // K_GLOBAL_STATIC
 #include "kdatetime.h"
 
 #include <kmessage.h>
@@ -696,8 +695,7 @@ struct KDebugPrivate
     KLineEndStrippingDebugStream lineendstrippingwriter;
 };
 
-// TODO wait for Qt 5.1, uses isDestroyed()
-K_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
+Q_GLOBAL_STATIC(KDebugPrivate, kDebug_data)
 
 #if HAVE_BACKTRACE
 static QString maybeDemangledName(char *name)
@@ -755,7 +753,7 @@ QString kRealBacktrace(int levels)
 
 QDebug kDebugDevNull()
 {
-    return QDebug(&kDebug_data->devnull);
+    return QDebug(&kDebug_data()->devnull);
 }
 
 QDebug kDebugStream(QtMsgType level, int area, const char *file, int line, const char *funcinfo)
@@ -770,8 +768,8 @@ QDebug kDebugStream(QtMsgType level, int area, const char *file, int line, const
         return QDebug(level);
     }
 
-    QMutexLocker locker(&kDebug_data->mutex);
-    return kDebug_data->stream(level, area, file, line, funcinfo);
+    QMutexLocker locker(&kDebug_data()->mutex);
+    return kDebug_data()->stream(level, area, file, line, funcinfo);
 }
 
 QDebug perror(QDebug s, KDebugTag)
@@ -888,7 +886,7 @@ KDebug::Block::Block(const char* label, int area)
         kDebug(area) << "BEGIN:" << label;
 
         // The indent string is per thread
-        QThreadStorage<QString*> & indentString = kDebug_data->m_indentString;
+        QThreadStorage<QString*> & indentString = kDebug_data()->m_indentString;
         if (!indentString.hasLocalData()) {
             indentString.setLocalData(new QString);
         }
@@ -900,7 +898,7 @@ KDebug::Block::~Block()
 {
     if (d) {
         const double duration = m_startTime.elapsed() / 1000.0;
-        QThreadStorage<QString*> & indentString = kDebug_data->m_indentString;
+        QThreadStorage<QString*> & indentString = kDebug_data()->m_indentString;
         indentString.localData()->chop(2);
 
         // Print timing information, and a special message (DELAY) if the method took longer than 5s

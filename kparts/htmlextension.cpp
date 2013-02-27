@@ -20,10 +20,8 @@
 #include "htmlextension.h"
 
 #include "part.h"
-
-#include <kglobal.h>
+#include <QHash>
 #include <klocalizedstring.h>
-
 
 using namespace KParts;
 
@@ -43,7 +41,7 @@ bool HtmlExtension::hasSelection() const
 
 HtmlExtension * KParts::HtmlExtension::childObject( QObject *obj )
 {
-    return KGlobal::findDirectChild<KParts::HtmlExtension *>(obj);
+    return obj->findChild<KParts::HtmlExtension *>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 SelectorInterface::QueryMethods SelectorInterface::supportedQueryMethods() const

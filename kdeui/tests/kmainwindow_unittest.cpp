@@ -20,9 +20,9 @@
 #include <QtTestWidgets>
 #include <QtTest/QtTest>
 #include "kmainwindow_unittest.h"
+#include <QEventLoopLocker>
 #include <kmainwindow.h>
 #include <QStatusBar>
-#include <kglobal.h>
 #include <QResizeEvent>
 #include <ktoolbar.h>
 #include <ksharedconfig.h>
@@ -129,7 +129,7 @@ public:
 // - that autodeletion happens
 void KMainWindow_UnitTest::testDeleteOnClose()
 {
-    KGlobal::ref(); // don't let the deref in KMainWindow quit the app.
+    QEventLoopLocker locker; // don't let the deref in KMainWindow quit the app.
     s_mainWindowDeleted = false;
     MyMainWindow* mw = new MyMainWindow;
     QVERIFY( mw->testAttribute( Qt::WA_DeleteOnClose ) );

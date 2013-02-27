@@ -27,12 +27,10 @@
 #include <QDoubleSpinBox>
 #include <QtCore/QString>
 #include <QtCore/QSignalMapper>
+#include <QCoreApplication>
 
-#include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
-#include <kglobal.h>
 
 #include <kpixmapsequence.h>
 #include <kpixmapsequencewidget.h>
@@ -366,8 +364,7 @@ void UploadDialog::Private::_k_updateContentsToggled(bool update)
 UploadDialog::UploadDialog(QWidget *parent)
     : QDialog(parent), d(new Private(this))
 {
-    KComponentData component = KGlobal::activeComponent();
-    QString name = component.componentName();
+    const QString name = QCoreApplication::applicationName();
     init(name + ".knsrc");
 }
 
@@ -404,10 +401,13 @@ bool UploadDialog::init(const QString &configfile)
     connect(d->buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
     connect(d->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
+    QString displayName = QGuiApplication::applicationDisplayName();
+    if (displayName.isEmpty())
+        displayName = QCoreApplication::applicationName();
     d->ui.mTitleWidget->setText(i18nc("Program name followed by 'Add On Uploader'",
                                  "%1 Add-On Uploader",
-                                 KGlobal::activeComponent().aboutData()->programName()));
-    d->ui.mTitleWidget->setPixmap(QIcon::fromTheme(KGlobal::activeComponent().aboutData()->programIconName()));
+                                 displayName));
+    //d->ui.mTitleWidget->setPixmap(QIcon::fromTheme(KGlobal::activeComponent().aboutData()->programIconName()));
 
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
@@ -619,7 +619,7 @@ void UploadDialog::Private::_k_startUpload()
     content.addAttribute("downloadbuy1", ui.priceCheckBox->isChecked() ? "1" : "0");
     content.addAttribute("downloadbuyprice1", QString::number(ui.priceSpinBox->value()));
     content.addAttribute("downloadbuyreason1", ui.priceReasonLineEdit->text());
-    
+
     if (ui.radioNewUpload->isChecked()) {
         // upload a new content
         Attica::ItemPostJob<Attica::Content>* job = currentProvider().addNewContent(category, content);
@@ -737,7 +737,7 @@ void UploadDialog::Private::doUpload(const QString& index, const QUrl & path)
         job = currentProvider().setPreviewImage(contentId, index, fileName, fileContents);
         q->connect(job, SIGNAL(finished(Attica::BaseJob*)), q, SLOT(_k_preview3UploadFinished(Attica::BaseJob*)));
     }
-    if( job ) 
+    if( job )
       job->start();
 }
 

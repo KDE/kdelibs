@@ -59,7 +59,6 @@
 
 #include <kauthorized.h>
 #include <kmessageboxwrapper.h>
-#include <kglobal.h>
 #include <ktoolinvocation.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
@@ -1163,8 +1162,6 @@ void KRun::KRunPrivate::init(const QUrl& url, QWidget* window, mode_t mode, bool
     q->connect(&m_timer, SIGNAL(timeout()), q, SLOT(slotTimeout()));
     startTimer();
     //qDebug() << "new KRun" << q << url << "timer=" << &m_timer;
-
-    KGlobal::ref();
 }
 
 void KRun::init()
@@ -1288,7 +1285,6 @@ KRun::~KRun()
     //qDebug() << this;
     d->m_timer.stop();
     killJob();
-    KGlobal::deref();
     //qDebug() << this << "done";
     delete d;
 }
@@ -1831,9 +1827,8 @@ KProcessRunner::slotProcessExited(int exitCode, QProcess::ExitStatus exitStatus)
         // We'll try to find the executable relatively to current directory,
         // (or with a full path, if m_executable is absolute), and then in the PATH.
         if (!QFile(m_executable).exists() && QStandardPaths::findExecutable(m_executable).isEmpty()) {
-            KGlobal::ref();
+            QEventLoopLocker locker;
             KMessageBox::sorry(0L, i18n("Could not find the program '%1'", m_executable));
-            KGlobal::deref();
         }
         else {
             //qDebug() << process->readAllStandardError();

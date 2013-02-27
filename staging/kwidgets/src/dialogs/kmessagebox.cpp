@@ -42,7 +42,6 @@
 #include <knotification.h>
 #include <ksqueezedtextlabel.h>
 #include <kwindowsystem.h>
-#include <kglobal.h>
 
 // Some i18n filters, that standard button texts are piped through
 // (the new KGuiItem object with filtered text is created from the old one).
@@ -912,13 +911,9 @@ void informationList(QWidget *parent,const QString &text, const QStringList & st
 void about(QWidget *parent, const QString &text,
                    const QString &caption, Options options)
 {
-    QString _caption = caption;
-    if (_caption.isEmpty()) {
-        _caption = i18n("About %1", KGlobal::caption());
-    }
-
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
-    dialog->setWindowTitle(caption);
+    if (!caption.isEmpty())
+        dialog->setWindowTitle(caption);
     dialog->setObjectName( "about" );
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);

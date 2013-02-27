@@ -20,7 +20,6 @@
 #include "listingextension.h"
 
 #include "part.h"
-#include "kglobal.h"
 
 
 KParts::ListingFilterExtension::ListingFilterExtension (KParts::ReadOnlyPart* parent)
@@ -35,7 +34,7 @@ KParts::ListingFilterExtension::~ListingFilterExtension()
 
 KParts::ListingFilterExtension* KParts::ListingFilterExtension::childObject (QObject* obj)
 {
-    return KGlobal::findDirectChild<KParts::ListingFilterExtension*>(obj);
+    return obj->findChild<KParts::ListingFilterExtension*>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 KParts::ListingFilterExtension::FilterModes KParts::ListingFilterExtension::supportedFilterModes() const
@@ -61,7 +60,7 @@ KParts::ListingNotificationExtension::~ListingNotificationExtension()
 
 KParts::ListingNotificationExtension* KParts::ListingNotificationExtension::childObject(QObject* obj)
 {
-    return KGlobal::findDirectChild<KParts::ListingNotificationExtension*>(obj);
+    return obj->findChild<KParts::ListingNotificationExtension*>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 KParts::ListingNotificationExtension::NotificationEventTypes KParts::ListingNotificationExtension::supportedNotificationEventTypes() const

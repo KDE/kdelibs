@@ -25,7 +25,6 @@
 
 #include <QtCore/QRegExp>
 
-#include <kde_file.h>
 #include <klocalizedstring.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
@@ -36,7 +35,6 @@
 #include <QFile>
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
-#include <kglobal.h>
 
 // Enable this to get printDebug() called often, to see the contents of the cache
 //#define DEBUG_CACHE
@@ -46,8 +44,7 @@
 #undef DEBUG_CACHE
 #endif
 
-// TODO Qt 5.1 uses .destroy
-K_GLOBAL_STATIC(KDirListerCache, kDirListerCache)
+Q_GLOBAL_STATIC(KDirListerCache, kDirListerCache)
 
 KDirListerCache::KDirListerCache()
     : itemsCached( 10 ) // keep the last 10 directories around
@@ -308,14 +305,14 @@ void KDirLister::Private::CachedItemsJob::done()
 {
     if (!m_lister) // job was already killed, but waiting deletion due to deleteLater
         return;
-    kDirListerCache->emitItemsFromCache(this, m_lister, m_url, m_reload, m_emitCompleted);
+    kDirListerCache()->emitItemsFromCache(this, m_lister, m_url, m_reload, m_emitCompleted);
     emitResult();
 }
 
 bool KDirLister::Private::CachedItemsJob::doKill()
 {
     //qDebug() << this;
-    kDirListerCache->forgetCachedItemsJob(this, m_lister, m_url);
+    kDirListerCache()->forgetCachedItemsJob(this, m_lister, m_url);
     if (!property("_kdlc_silent").toBool()) {
         emit m_lister->canceled(m_url);
         emit m_lister->canceled();
@@ -330,7 +327,7 @@ void KDirListerCache::emitItemsFromCache(KDirLister::Private::CachedItemsJob* ca
     KDirLister::Private* kdl = lister->d;
     kdl->complete = false;
 
-    DirItem *itemU = kDirListerCache->itemsInUse.value(urlStr);
+    DirItem *itemU = kDirListerCache()->itemsInUse.value(urlStr);
     if (!itemU) {
         qWarning() << "Can't find item for directory" << urlStr << "anymore";
     } else {
@@ -709,9 +706,9 @@ void KDirListerCache::updateDirectory( const QUrl& _dir )
         qWarning() << "The unexpected happened.";
         qWarning() << "listers for" << _dir << "=" << listers;
         qWarning() << "job=" << job;
-        Q_FOREACH(KDirLister *kdl, listers) {
+        //Q_FOREACH(KDirLister *kdl, listers) {
             //qDebug() << "lister" << kdl << "m_cachedItemsJobs=" << kdl->d->m_cachedItemsJobs;
-        }
+        //}
 #ifndef NDEBUG
         printDebug();
 #endif
@@ -1080,13 +1077,12 @@ void KDirListerCache::slotFileDirty( const QString& path )
 {
     //qDebug() << path;
     // File or dir?
-    KDE_struct_stat buff;
-    if ( KDE::stat( path, &buff ) != 0 )
+    QFileInfo info(path);
+    if (!info.exists())
         return; // error
-    const bool isDir = S_ISDIR(buff.st_mode);
     QUrlPathInfo urlInfo(QUrl::fromLocalFile(path));
     urlInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    if (isDir) {
+    if (info.isDir()) {
         Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(urlInfo.url())) {
             handleDirDirty(dir);
         }
@@ -2065,7 +2061,7 @@ KDirLister::~KDirLister()
     // Stop all running jobs, remove lister from lists
     if (!kDirListerCache.isDestroyed()) {
         stop();
-        kDirListerCache->forgetDirs( this );
+        kDirListerCache()->forgetDirs( this );
     }
 
     delete d;
@@ -2079,17 +2075,17 @@ bool KDirLister::openUrl( const QUrl& _url, OpenUrlFlags _flags )
 
     d->hasPendingChanges = false;
 
-    return kDirListerCache->listDir( this, _url, _flags & Keep, _flags & Reload );
+    return kDirListerCache()->listDir( this, _url, _flags & Keep, _flags & Reload );
 }
 
 void KDirLister::stop()
 {
-    kDirListerCache->stop( this );
+    kDirListerCache()->stop( this );
 }
 
 void KDirLister::stop( const QUrl& _url )
 {
-    kDirListerCache->stopListingUrl( this, _url );
+    kDirListerCache()->stopListingUrl( this, _url );
 }
 
 bool KDirLister::autoUpdate() const
@@ -2103,7 +2099,7 @@ void KDirLister::setAutoUpdate( bool _enable )
         return;
 
     d->autoUpdate = _enable;
-    kDirListerCache->setAutoUpdate( this, _enable );
+    kDirListerCache()->setAutoUpdate( this, _enable );
 }
 
 bool KDirLister::showingDotFiles() const
@@ -2174,7 +2170,7 @@ void KDirLister::Private::emitChanges()
 
     // Mark all items that are currently visible
     Q_FOREACH(const QUrl& dir, lstDirs) {
-        KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        KFileItemList* itemList = kDirListerCache()->itemsForDir(dir);
         if (!itemList) {
             continue;
         }
@@ -2194,7 +2190,7 @@ void KDirLister::Private::emitChanges()
     Q_FOREACH(const QUrl& dir, lstDirs) {
         KFileItemList deletedItems;
 
-        KFileItemList* itemList = kDirListerCache->itemsForDir(dir);
+        KFileItemList* itemList = kDirListerCache()->itemsForDir(dir);
         if (!itemList) {
             continue;
         }
@@ -2225,7 +2221,7 @@ void KDirLister::Private::emitChanges()
 
 void KDirLister::updateDirectory( const QUrl& _u )
 {
-  kDirListerCache->updateDirectory( _u );
+  kDirListerCache()->updateDirectory( _u );
 }
 
 bool KDirLister::isFinished() const
@@ -2240,7 +2236,7 @@ KFileItem KDirLister::rootItem() const
 
 KFileItem KDirLister::findByUrl( const QUrl& _url ) const
 {
-  KFileItem *item = kDirListerCache->findByUrl( this, _url );
+  KFileItem *item = kDirListerCache()->findByUrl( this, _url );
   if (item) {
       return *item;
   } else {
@@ -2250,7 +2246,7 @@ KFileItem KDirLister::findByUrl( const QUrl& _url ) const
 
 KFileItem KDirLister::findByName( const QString& _name ) const
 {
-  return kDirListerCache->findByName( this, _name );
+  return kDirListerCache()->findByName( this, _name );
 }
 
 
@@ -2684,7 +2680,7 @@ KFileItemList KDirLister::items( WhichItems which ) const
 
 KFileItemList KDirLister::itemsForDir( const QUrl& dir, WhichItems which ) const
 {
-    KFileItemList *allItems = kDirListerCache->itemsForDir( dir );
+    KFileItemList *allItems = kDirListerCache()->itemsForDir( dir );
     if ( !allItems )
         return KFileItemList();
 
@@ -2774,7 +2770,7 @@ void KDirListerCacheDirectoryData::moveListersWithoutCachedItemsJob(const QUrl& 
 
 KFileItem KDirLister::cachedItemForUrl(const QUrl& url)
 {
-    return kDirListerCache->itemForUrl(url);
+    return kDirListerCache()->itemForUrl(url);
 }
 
 #include "moc_kdirlister.cpp"

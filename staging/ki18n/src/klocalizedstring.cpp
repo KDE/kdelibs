@@ -1202,6 +1202,14 @@ void KLocalizedString::setApplicationCatalog (const QString &catalogName)
     insertCatalog(catalogName);
 }
 
+QString KLocalizedString::applicationCatalog()
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
+
+    QMutexLocker lock(&s->klspMutex);
+    return s->appCatalogName;
+}
+
 void KLocalizedString::setLanguages (const QStringList &languages)
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP();

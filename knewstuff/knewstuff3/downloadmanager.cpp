@@ -17,8 +17,7 @@
 
 #include "downloadmanager.h"
 
-#include <kcomponentdata.h>
-#include <kglobal.h>
+#include <QCoreApplication>
 #include <kdebug.h>
 
 #include "core/engine.h"
@@ -40,14 +39,14 @@ public:
         , pageSize(100)
     {}
     ~Private() { delete engine; }
-    
+
     bool isInitialized;
     bool checkForUpdates;
     bool doSearch;
-    
+
     int page;
     int pageSize;
-    
+
     void init(const QString& configFile);
     void _k_slotProvidersLoaded();
     void _k_slotUpdatesLoaded(const KNS3::EntryInternal::List& entries);
@@ -62,8 +61,7 @@ DownloadManager::DownloadManager(QObject* parent)
     : QObject(parent)
     , d(new Private(this))
 {
-    KComponentData component = KGlobal::activeComponent();
-    QString name = component.componentName();
+    QString name = QCoreApplication::applicationName();
     d->init(name + ".knsrc");
 }
 

@@ -185,17 +185,7 @@ QList<KParts::Plugin *> Plugin::pluginObjects( QObject *parent )
   if (!parent )
     return objects;
 
-  // TODO: Qt5: use QObject::findChildren(... FindDirectChildrenOnly)
-  const QObjectList plugins = parent->children();
-
-  QObjectList::ConstIterator it = plugins.begin();
-  for ( ; it != plugins.end() ; ++it )
-  {
-    Plugin * plugin = qobject_cast<Plugin *>( *it );
-    if ( plugin )
-        objects.append( plugin );
-  }
-
+  objects = parent->findChildren<Plugin *>(QString(), Qt::FindDirectChildrenOnly);
   return objects;
 }
 

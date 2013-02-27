@@ -32,7 +32,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kurifilter.h>
-#include <kglobal.h>
 
 using namespace KParts;
 
@@ -733,7 +732,7 @@ BrowserExtension::ActionSlotMap * BrowserExtension::actionSlotMapPtr()
 
 BrowserExtension *BrowserExtension::childObject( QObject *obj )
 {
-    return KGlobal::findDirectChild<KParts::BrowserExtension *>(obj);
+    return obj->findChild<KParts::BrowserExtension *>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 namespace KParts
@@ -784,7 +783,7 @@ bool BrowserHostExtension::openUrlInFrame( const QUrl &,
 
 BrowserHostExtension *BrowserHostExtension::childObject( QObject *obj )
 {
-    return KGlobal::findDirectChild<KParts::BrowserHostExtension *>(obj);
+    return obj->findChild<KParts::BrowserHostExtension *>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 BrowserHostExtension *
@@ -816,6 +815,6 @@ void LiveConnectExtension::unregister( const unsigned long ) {}
 
 LiveConnectExtension *LiveConnectExtension::childObject( QObject *obj )
 {
-    return KGlobal::findDirectChild<KParts::LiveConnectExtension *>(obj);
+    return obj->findChild<KParts::LiveConnectExtension *>(QString(), Qt::FindDirectChildrenOnly);
 }
 

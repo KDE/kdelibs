@@ -26,7 +26,6 @@
 
 #include <kmainwindow.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <kparts/part.h>
 #include <kparts/event.h>
 
@@ -112,7 +111,7 @@ StatusBarExtension::~StatusBarExtension()
 
 StatusBarExtension *StatusBarExtension::childObject( QObject *obj )
 {
-    return KGlobal::findDirectChild<KParts::StatusBarExtension*>(obj);
+    return obj->findChild<KParts::StatusBarExtension*>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)

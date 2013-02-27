@@ -6,7 +6,7 @@
     Copyright (C) 2007-2009 Jeremy Whiting <jpwhiting@kde.org>
     Copyright (C) 2009-2010 Frederik Gladhorn <gladhorn@kde.org>
     Copyright (C) 2010 Reza Fatahilah Shah <rshah0385@kireihana.com>
-    
+
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
     License as published by the Free Software Foundation; either
@@ -27,12 +27,10 @@
 #include <QtCore/QTimer>
 #include <QScrollBar>
 #include <QKeyEvent>
+#include <QCoreApplication>
 
 #include <kmessagebox.h>
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
 #include <kdebug.h>
-#include <kglobal.h>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
@@ -44,8 +42,7 @@ DownloadWidget::DownloadWidget(QWidget* parent)
     : QWidget(parent)
     , d(new DownloadWidgetPrivate(this))
 {
-    KComponentData component = KGlobal::activeComponent();
-    QString name = component.componentName();
+    const QString name = QCoreApplication::applicationName();
     init(name + ".knsrc");
 }
 
@@ -216,7 +213,7 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     ui.backButton->setVisible(false);
     KGuiItem::assign(ui.backButton, KStandardGuiItem::Back);
     q->connect(ui.backButton, SIGNAL(clicked()), q, SLOT(slotShowOverview()));
-    
+
     q->connect(engine, SIGNAL(signalBusy(QString)), ui.progressIndicator, SLOT(busy(QString)));
     q->connect(engine, SIGNAL(signalError(QString)), ui.progressIndicator, SLOT(error(QString)));
     q->connect(engine, SIGNAL(signalIdle(QString)), ui.progressIndicator, SLOT(idle(QString)));
@@ -318,7 +315,7 @@ void DownloadWidgetPrivate::setListViewMode(QListView::ViewMode mode)
     }
     ui.m_listView->setItemDelegate(delegate);
     delete oldDelegate;
-    
+
     q->connect(ui.m_listView, SIGNAL(doubleClicked(QModelIndex)), delegate, SLOT(slotDetailsClicked(QModelIndex)));
     q->connect(delegate, SIGNAL(signalShowDetails(KNS3::EntryInternal)), q, SLOT(slotShowDetails(KNS3::EntryInternal)));
 }
@@ -367,7 +364,7 @@ void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
         return;
     }
     titleText = ui.m_titleWidget->text();
-    
+
     ui.backButton->setVisible(true);
     ui.detailsStack->setCurrentIndex(1);
     ui.descriptionScrollArea->verticalScrollBar()->setValue(0);
@@ -381,12 +378,12 @@ void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
 void DownloadWidgetPrivate::slotShowOverview()
 {
     ui.backButton->setVisible(false);
-    
+
     ui.updateButton->setVisible(false);
     ui.installButton->setVisible(false);
     ui.becomeFanButton->setVisible(false);
     ui.uninstallButton->setVisible(false);
-    
+
     ui.detailsStack->setCurrentIndex(0);
     ui.m_titleWidget->setText(titleText);
 }

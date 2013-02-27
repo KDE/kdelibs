@@ -29,7 +29,7 @@
 #include <QPixmap>
 #include <QSystemTrayIcon>
 #include <QWheelEvent>
-
+#include <QEventLoopLocker>
 
 #include "kstatusnotifieritem.h"
 #include "kstatusnotifieritemdbus_p.h"
@@ -163,6 +163,10 @@ public:
 
     KStatusNotifierLegacyIcon *systemTrayIcon;
     KStatusNotifierItemDBus *statusNotifierItemDBus;
+
+    // Ensure that closing the last KMainWindow doesn't exit the application
+    // if a system tray icon is still present.
+    QEventLoopLocker eventLoopLocker;
 
     bool hasQuit : 1;
     bool onAllDesktops : 1;

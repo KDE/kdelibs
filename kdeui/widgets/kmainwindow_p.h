@@ -31,6 +31,7 @@
 
 #include <kconfiggroup.h>
 #include <qpointer.h>
+#include <QEventLoopLocker>
 
 #define K_D(Class) Class##Private * const d = k_func()
 
@@ -57,6 +58,7 @@ public:
     QPointer<QObject> dockResizeListener;
     QString dbusName;
     bool letDirtySettings;
+    QEventLoopLocker locker;
 
     void _k_shuttingDown();
     // This slot will be called when the style KCM changes settings that need

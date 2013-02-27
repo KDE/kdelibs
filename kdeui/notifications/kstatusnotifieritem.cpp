@@ -40,7 +40,6 @@
 #include <kwindowsystem.h>
 #include <kmessagebox.h>
 #include <kactioncollection.h>
-#include <kglobal.h>
 
 #include <netinet/in.h>
 
@@ -125,7 +124,6 @@ KStatusNotifierItem::~KStatusNotifierItem()
         delete d->menu;
     }
     delete d;
-    KGlobal::deref();
 }
 
 QString KStatusNotifierItem::id() const
@@ -729,10 +727,6 @@ KStatusNotifierItemPrivate::KStatusNotifierItemPrivate(KStatusNotifierItem *item
 
 void KStatusNotifierItemPrivate::init(const QString &extraId)
 {
-    // Ensure that closing the last KMainWindow doesn't exit the application
-    // if a system tray icon is still present.
-    KGlobal::ref();
-
     qDBusRegisterMetaType<KDbusImageStruct>();
     qDBusRegisterMetaType<KDbusImageVector>();
     qDBusRegisterMetaType<KDbusToolTipStruct>();
@@ -750,10 +744,11 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
 
     //create a default menu, just like in KSystemtrayIcon
     KMenu *m = new KMenu(associatedWidget);
-    titleAction = m->addTitle(qApp->windowIcon(), KGlobal::caption());
+
     title = QGuiApplication::applicationDisplayName();
     if (title.isEmpty())
         title = QCoreApplication::applicationName();
+    titleAction = m->addTitle(qApp->windowIcon(), title);
     m->setTitle(title);
     q->setContextMenu(m);
 
@@ -936,7 +931,10 @@ void KStatusNotifierItemPrivate::contextMenuAboutToShow()
 
 void KStatusNotifierItemPrivate::maybeQuit()
 {
-    QString caption = KGlobal::caption();
+    QString caption = QGuiApplication::applicationDisplayName();
+    if (caption.isEmpty())
+        caption = QCoreApplication::applicationName();
+
     QString query = i18n("<qt>Are you sure you want to quit <b>%1</b>?</qt>", caption);
 
     if (KMessageBox::warningContinueCancel(associatedWidget, query,

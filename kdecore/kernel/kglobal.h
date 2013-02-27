@@ -526,7 +526,7 @@ namespace KGlobal
      * executable.
      * @return the text for the window caption
      * @deprecated since 5.0. Don't use in window titles anymore, Qt takes care of it.
-     * If you really need this, use QApplication::applicationDisplayName().
+     * If you really need this, use QGuiApplication::applicationDisplayName(), and if that's empty, QCoreApplication::applicationName().
      */
     KDECORE_DEPRECATED_EXPORT QString caption();
 

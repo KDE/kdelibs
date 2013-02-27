@@ -21,8 +21,6 @@
 
 #include <QtCore/QSet>
 
-#include <kglobal.h>
-
 using namespace KParts;
 
 class KParts::HistoryProviderPrivate
@@ -42,36 +40,35 @@ public:
     HistoryProvider *q;
 };
 
-// TODO wait for Qt 5.1, uses isDestroyed()
-K_GLOBAL_STATIC(HistoryProviderPrivate, historyProviderPrivate)
+Q_GLOBAL_STATIC(HistoryProviderPrivate, historyProviderPrivate)
 
 HistoryProvider * HistoryProvider::self()
 {
-    if (!historyProviderPrivate->q) {
+    if (!historyProviderPrivate()->q) {
         new HistoryProvider;
     }
 
-    return historyProviderPrivate->q;
+    return historyProviderPrivate()->q;
 }
 
 bool HistoryProvider::exists()
 {
-    return historyProviderPrivate->q;
+    return historyProviderPrivate()->q;
 }
 
 HistoryProvider::HistoryProvider( QObject *parent )
     : QObject( parent ), d(historyProviderPrivate)
 {
-    Q_ASSERT(!historyProviderPrivate->q);
-    historyProviderPrivate->q = this;
+    Q_ASSERT(!historyProviderPrivate()->q);
+    historyProviderPrivate()->q = this;
     setObjectName("history provider");
 }
 
 HistoryProvider::~HistoryProvider()
 {
     if (!historyProviderPrivate.isDestroyed() &&
-        historyProviderPrivate->q == this)
-        historyProviderPrivate->q = 0;
+        historyProviderPrivate()->q == this)
+        historyProviderPrivate()->q = 0;
 }
 
 bool HistoryProvider::contains( const QString& item ) const

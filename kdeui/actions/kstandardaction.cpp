@@ -29,7 +29,6 @@
 #include <QApplication>
 #include <kcomponentdata.h>
 #include <kdebug.h>
-#include <kglobal.h>
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>
 #include <kmainwindow.h>

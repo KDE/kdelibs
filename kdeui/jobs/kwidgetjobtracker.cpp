@@ -608,9 +608,11 @@ void KWidgetJobTracker::Private::ProgressWidget::checkDestination(const QUrl &de
 void KWidgetJobTracker::Private::ProgressWidget::_k_keepOpenToggled(bool keepOpen)
 {
     if (keepOpen) {
-        KGlobal::ref();
+        Q_ASSERT(!tracker->d->eventLoopLocker);
+        tracker->d->eventLoopLocker = new QEventLoopLocker;
     } else {
-        KGlobal::deref();
+        delete tracker->d->eventLoopLocker;
+        tracker->d->eventLoopLocker = NULL;
     }
 }
 

@@ -606,6 +606,12 @@ public:
      */
     static void setApplicationCatalog (const QString &catalogName);
 
+    /**
+     * Returns the name of the application catalog
+     * @since 5.0
+     */
+    static QString applicationCatalog();
+
     #if 0 // until locale system is ready
     /**
      * Set the locale for which translations will be made.
@@ -964,7 +970,7 @@ inline QString i18n (const char *text, const A1 &a1, const A2 &a2, const A3 &a3,
 /**
  * Translate a string and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @return translated string
  */
 inline QString i18nc (const char *ctxt, const char *text)
@@ -975,7 +981,7 @@ inline QString i18nc (const char *ctxt, const char *text)
 /**
  * Translate a string with 1 argument and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @return translated string
  */
@@ -988,7 +994,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1)
 /**
  * Translate a string with 2 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @return translated string
@@ -1002,7 +1008,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 /**
  * Translate a string with 3 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @param a3 third argument
@@ -1017,7 +1023,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 /**
  * Translate a string with 4 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @param a3 third argument
@@ -1033,7 +1039,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 /**
  * Translate a string with 5 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @param a3 third argument
@@ -1050,7 +1056,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 /**
  * Translate a string with 6 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @param a3 third argument
@@ -1068,7 +1074,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 /**
  * Translate a string with 7 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @param a3 third argument
@@ -1087,7 +1093,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 /**
  * Translate a string with 8 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @param a3 third argument
@@ -1107,7 +1113,7 @@ inline QString i18nc (const char *ctxt, const char *text, const A1 &a1, const A2
 /**
  * Translate a string with 9 arguments and a context.
  * @param ctxt context of the string
- * @param text string to be translated 
+ * @param text string to be translated
  * @param a1 first argument
  * @param a2 second argument
  * @param a3 third argument

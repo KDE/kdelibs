@@ -27,12 +27,10 @@
 #include <QScrollBar>
 #include <QKeyEvent>
 
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
 #include <ktitlewidget.h>
 #include <kdebug.h>
 #include <kwindowconfig.h>
-#include <kglobal.h>
+#include <QCoreApplication>
 #include <kstandardguiitem.h>
 
 #include "downloadwidget.h"
@@ -60,8 +58,7 @@ DownloadDialog::DownloadDialog(QWidget* parent)
     : QDialog(parent)
     , d(new DownloadDialogPrivate)
 {
-    KComponentData component = KGlobal::activeComponent();
-    QString name = component.componentName();
+    const QString name = QCoreApplication::applicationName();
     init(name + ".knsrc");
 }
 
@@ -86,10 +83,12 @@ void DownloadDialog::init(const QString& configFile)
     layout->addWidget(d->downloadWidget);
     setLayout(layout);
 
+    QString displayName = QGuiApplication::applicationDisplayName();
+    if (displayName.isEmpty())
+        displayName = QCoreApplication::applicationName();
     d->downloadWidget->d->ui.m_titleWidget->setText(i18nc("Program name followed by 'Add On Installer'",
-        "%1 Add-On Installer",
-        KGlobal::activeComponent().aboutData()->programName()));
-    d->downloadWidget->d->ui.m_titleWidget->setPixmap(QIcon::fromTheme(KGlobal::activeComponent().aboutData()->programIconName()));
+                                                          "%1 Add-On Installer", displayName));
+    //d->downloadWidget->d->ui.m_titleWidget->setPixmap(QIcon::fromTheme(KGlobal::activeComponent().aboutData()->programIconName()));
     d->downloadWidget->d->ui.m_titleWidget->setVisible(true);
     d->downloadWidget->d->ui.closeButton->setVisible(true);
     KGuiItem::assign(d->downloadWidget->d->ui.closeButton, KStandardGuiItem::Close);

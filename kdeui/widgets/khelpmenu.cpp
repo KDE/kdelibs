@@ -48,7 +48,6 @@
 #include <kstandardaction.h>
 #include <kswitchlanguagedialog_p.h>
 #include <khelpclient.h>
-#include <kglobal.h>
 
 #pragma message("Revive QX11EmbedWidget in Qt5")
 #if 0
@@ -301,7 +300,10 @@ void KHelpMenu::aboutApplication()
     if( !d->mAboutApp )
     {
       d->mAboutApp = new QDialog( d->mParent, Qt::Dialog );
-      d->mAboutApp->setWindowTitle( i18n("About %1", KGlobal::caption() ) );
+      QString caption = QGuiApplication::applicationDisplayName();
+      if (caption.isEmpty())
+          caption = QCoreApplication::applicationName();
+      d->mAboutApp->setWindowTitle(i18n("About %1", caption));
       d->mAboutApp->setObjectName( "about" );
       connect( d->mAboutApp, SIGNAL(finished(int)), this, SLOT(dialogFinished()) );
 

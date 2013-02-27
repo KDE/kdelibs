@@ -19,7 +19,6 @@
 */
 #include "scriptableextension.h"
 #include "scriptableextension_p.h"
-#include <kglobal.h>
 #include <kdebug.h>
 
 namespace KParts {
@@ -42,7 +41,7 @@ ScriptableExtension::~ScriptableExtension()
 
 ScriptableExtension* ScriptableExtension::childObject(QObject* obj)
 {
-    return KGlobal::findDirectChild<KParts::ScriptableExtension*>(obj);
+    return obj->findChild<KParts::ScriptableExtension*>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 ScriptableExtension* ScriptableExtension::adapterFromLiveConnect(QObject* parentObj,

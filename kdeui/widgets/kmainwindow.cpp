@@ -52,25 +52,20 @@
 #include <ktoolbar.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
-#include <kglobal.h>
 #include <kglobalsettings.h>
 #include <kwindowconfig.h>
 #include <kconfiggui.h>
 
-#include <stdlib.h>
-#include <ctype.h>
-#include <assert.h>
+//#include <ctype.h>
 
 static QMenuBar *internalMenuBar(KMainWindow *mw)
 {
-    return KGlobal::findDirectChild<QMenuBar *>(mw);
+    return mw->findChild<QMenuBar *>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 static QStatusBar *internalStatusBar(KMainWindow *mw)
 {
-    // Don't use qFindChild here, it's recursive!
-    // (== slow, but also finds konqueror's per-view statusbars)
-    return KGlobal::findDirectChild<QStatusBar *>(mw);
+    return mw->findChild<QStatusBar *>(QString(), Qt::FindDirectChildrenOnly);
 }
 
 /**
@@ -164,12 +159,10 @@ KMainWindow::KMainWindow(KMainWindowPrivate &dd, QWidget *parent, Qt::WindowFlag
 
 void KMainWindowPrivate::init(KMainWindow *_q)
 {
-    KGlobal::ref();
-
     // We set allow quit to true when the first mainwindow is created, so that when the refcounting
     // reaches 0 the application can quit. We don't want this to happen before the first mainwindow
     // is created, otherwise running a job in main would exit the app too early.
-    KGlobal::setAllowQuit(true);
+    QCoreApplication::setQuitLockEnabled(true);
 
     q = _q;
 
@@ -177,7 +170,8 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     q->setAttribute( Qt::WA_DeleteOnClose );
 
-    // We handle this functionality (quitting the app) ourselves, with KGlobal::ref/deref.
+    // TODO QT5: check if this call is still necessary
+    // We handle this functionality (quitting the app) ourselves, with QEventLoopLocker
     // This makes apps stay alive even if they only have a systray icon visible, or
     // a progress widget with "keep open" checked, for instance.
     // So don't let the default Qt mechanism allow any toplevel widget to just quit the app on us.
@@ -205,8 +199,6 @@ void KMainWindowPrivate::init(KMainWindow *_q)
     settingsTimer = 0;
     sizeTimer = 0;
     shuttingDown = false;
-
-    q->setWindowTitle( KGlobal::caption() );
 
     dockResizeListener = new DockResizeListener(_q);
     letDirtySettings = true;
@@ -350,7 +342,6 @@ KMainWindow::~KMainWindow()
     sMemberList()->removeAll( this );
     delete static_cast<QObject *>(k_ptr->dockResizeListener);  //so we don't get anymore events after k_ptr is destroyed
     delete k_ptr;
-    KGlobal::deref();
 }
 
 KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )

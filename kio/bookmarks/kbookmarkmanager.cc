@@ -37,8 +37,6 @@
 #include <kconfiggroup.h>
 #include <qsavefile.h>
 #include <qstandardpaths.h>
-#include <kglobal.h>
-
 
 #include "kbookmarkmenu.h"
 #include "kbookmarkmenu_p.h"
@@ -58,8 +56,7 @@ public:
     QReadWriteLock lock;
 };
 
-// TODO Qt 5.1 uses isDestroyed
-K_GLOBAL_STATIC(KBookmarkManagerList, s_pSelf)
+Q_GLOBAL_STATIC(KBookmarkManagerList, s_pSelf)
 
 class KBookmarkMap : private KBookmarkGroupTraverser {
 public:
@@ -141,7 +138,7 @@ public:
 
 static KBookmarkManager* lookupExisting(const QString& bookmarksFile)
 {
-    for ( KBookmarkManagerList::ConstIterator bmit = s_pSelf->constBegin(), bmend = s_pSelf->constEnd();
+    for ( KBookmarkManagerList::ConstIterator bmit = s_pSelf()->constBegin(), bmend = s_pSelf()->constEnd();
           bmit != bmend; ++bmit ) {
         if ( (*bmit)->path() == bookmarksFile )
             return *bmit;
@@ -154,21 +151,21 @@ KBookmarkManager* KBookmarkManager::managerForFile( const QString& bookmarksFile
 {
     KBookmarkManager* mgr(0);
     {
-        QReadLocker readLock(&s_pSelf->lock);
+        QReadLocker readLock(&s_pSelf()->lock);
         mgr = lookupExisting(bookmarksFile);
         if (mgr) {
             return mgr;
         }
     }
 
-    QWriteLocker writeLock(&s_pSelf->lock);
+    QWriteLocker writeLock(&s_pSelf()->lock);
     mgr = lookupExisting(bookmarksFile);
     if (mgr) {
         return mgr;
     }
 
     mgr = new KBookmarkManager( bookmarksFile, dbusObjectName );
-    s_pSelf->append( mgr );
+    s_pSelf()->append( mgr );
     return mgr;
 }
 
@@ -176,21 +173,21 @@ KBookmarkManager* KBookmarkManager::managerForExternalFile( const QString& bookm
 {
     KBookmarkManager* mgr(0);
     {
-        QReadLocker readLock(&s_pSelf->lock);
+        QReadLocker readLock(&s_pSelf()->lock);
         mgr = lookupExisting(bookmarksFile);
         if (mgr) {
             return mgr;
         }
     }
 
-    QWriteLocker writeLock(&s_pSelf->lock);
+    QWriteLocker writeLock(&s_pSelf()->lock);
     mgr = lookupExisting(bookmarksFile);
     if (mgr) {
         return mgr;
     }
 
     mgr = new KBookmarkManager( bookmarksFile );
-    s_pSelf->append( mgr );
+    s_pSelf()->append( mgr );
     return mgr;
 }
 
@@ -199,7 +196,7 @@ KBookmarkManager* KBookmarkManager::managerForExternalFile( const QString& bookm
 KBookmarkManager* KBookmarkManager::createTempManager()
 {
     KBookmarkManager* mgr = new KBookmarkManager();
-    s_pSelf->append( mgr );
+    s_pSelf()->append( mgr );
     return mgr;
 }
 
@@ -307,7 +304,7 @@ void KBookmarkManager::slotFileChanged(const QString& path)
 KBookmarkManager::~KBookmarkManager()
 {
     if (!s_pSelf.isDestroyed()) {
-        s_pSelf->removeAll(this);
+        s_pSelf()->removeAll(this);
     }
 
     delete d;
@@ -668,7 +665,10 @@ KBookmarkManager* KBookmarkManager::userBookmarksManager()
 {
      const QString bookmarksFile = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + QString::fromLatin1("konqueror/bookmarks.xml");
      KBookmarkManager* bookmarkManager = KBookmarkManager::managerForFile( bookmarksFile, "konqueror" );
-     bookmarkManager->setEditorOptions(KGlobal::caption(), true);
+     QString caption = QGuiApplication::applicationDisplayName();
+     if (caption.isEmpty())
+         caption = QCoreApplication::applicationName();
+     bookmarkManager->setEditorOptions(caption, true);
      return bookmarkManager;
 }
 

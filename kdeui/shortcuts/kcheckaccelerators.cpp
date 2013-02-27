@@ -41,9 +41,8 @@
 #include <QProcess>
 
 #include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kdebug.h>
-#include <kglobal.h>
-#include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include <kshortcut.h>
 #include <ktextbrowser.h>
@@ -163,7 +162,7 @@ bool KCheckAccelerators::eventFilter(QObject* obj, QEvent* e)
             else
             {
                 QProcess* script=new QProcess(this);
-                script->start(copyWidgetTextCommand.arg(text).arg(KGlobal::activeComponent().catalogName()));
+                script->start(copyWidgetTextCommand.arg(text).arg(KLocalizedString::applicationCatalog()));
                 connect(script,SIGNAL(finished(int,QProcess::ExitStatus)),script,SLOT(deleteLater()));
             }
             e->accept();

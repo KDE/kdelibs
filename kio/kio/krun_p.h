@@ -25,6 +25,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
+#include <QtCore/QEventLoopLocker>
 
 #include "config-kio.h"
 #include "kprocess.h"
@@ -99,6 +100,8 @@ public:
     KRun *q;
     bool m_showingDialog;
     bool m_runExecutables;
+    // Don't exit the app while a KRun is running.
+    QEventLoopLocker m_eventLoopLocker;
 
     QString m_preferredService;
     QString m_externalBrowser;
