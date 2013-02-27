@@ -14,4 +14,4 @@ if(NOT TARGET KF5::ThreadWeaver)
 endif()
 
 set(ThreadWeaver_LIBRARIES KF5::ThreadWeaver)
-set(ThreadWeaver_INCLUDE_DIRS  ${ThreadWeaver_INCLUDE_DIR})
+set(ThreadWeaver_INCLUDE_DIRS  "${ThreadWeaver_INCLUDE_DIR}" "${ThreadWeaver_INCLUDE_DIR}/threadweaver")
