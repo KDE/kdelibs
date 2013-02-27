@@ -88,11 +88,6 @@ void KStandarddirsTest::testResourceDirs()
                  || dir.endsWith("share/config/") // KDE4 compat path
                  || dir.endsWith(".kde-unit-test/xdg/config/"), qPrintable(dir));
     }
-
-    const QStringList dataDirs = KGlobal::dirs()->resourceDirs("data");
-    Q_FOREACH(const QString& dir, dataDirs) {
-        QVERIFY2(dir.endsWith("share/") || dir.endsWith(".kde-unit-test/xdg/local/"), qPrintable(dir));
-    }
 }
 
 void KStandarddirsTest::testAppData()
@@ -399,14 +394,14 @@ void KStandarddirsTest::testAddResourceType()
 
 void KStandarddirsTest::testAddResourceDir()
 {
-    const QString dir = QFileInfo(QFINDTESTDATA("Cairo")).absolutePath();
-    const QString file = "Cairo";
+    const QString dir = QFileInfo(QFINDTESTDATA("kstandarddirstest.cpp")).absolutePath();
+    const QString file = "kstandarddirstest.cpp";
     QString ret = KStandardDirs::locate( "here", file );
     QCOMPARE(ret, QString()); // not set up yet
 
     KGlobal::dirs()->addResourceDir("here", dir);
     ret = KStandardDirs::locate( "here", file );
-    QCOMPARE_PATHS(ret, KStandardDirs::realPath(dir) + "Cairo");
+    QCOMPARE_PATHS(ret, KStandardDirs::realPath(dir) + "kstandarddirstest.cpp");
 }
 
 void KStandarddirsTest::testSetXdgDataDirs()

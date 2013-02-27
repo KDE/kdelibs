@@ -32,6 +32,7 @@ kde4support_unit_tests(
   kconfigcompattest
   kmimetypetest
   kmimetype_nomimetypes
+  kstandarddirstest
   kasciitest
   kglobaltest
 )
