@@ -20,7 +20,6 @@
 #include "plugin.h"
 
 #include <kaction.h>
-#include <kdebug.h>
 #include <krun.h>
 #include <kxmlguifactory.h>
 #include <kactioncollection.h>
@@ -29,6 +28,8 @@
 #include <kio/netaccess.h>
 
 #include <QPointer>
+#include <QTextStream>
+#include <QDirIterator>
 #include <QUrl>
 #include <qstandardpaths.h>
 #include <qurlpathinfo.h>
@@ -124,10 +125,11 @@ QDomDocument ScriptingPlugin::buildDomDocument(const QDomDocument& document)
     QStringList allActionFiles;
     const QStringList scriptDirs = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("scripts/") + d->referenceActionsDir, QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString& scriptDir, scriptDirs) {
-        QDirIterator it(dir, QStringList() << QStringLiteral("*.rc"));
+        QDirIterator it(scriptDir, QStringList() << QStringLiteral("*.rc"));
         while (it.hasNext()) {
             allActionFiles.append(it.next());
         }
+    }
 
     //move userActionsFile to the end so that it updates existing actions and adds new ones.
     int pos=allActionFiles.indexOf(d->userActionsFile);
@@ -222,7 +224,7 @@ void ScriptingPlugin::save()
         QStringList searchPath = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("scripts/") + d->referenceActionsDir, QStandardPaths::LocateDirectory);
         searchPath.append(QFileInfo(d->userActionsFile).absolutePath());
         if( collection->writeXml(&f, 2, searchPath) ) {
-            kDebug() << "Successfully saved file: " << d->userActionsFile;
+            //kDebug() << "Successfully saved file: " << d->userActionsFile;
         }
     }
     else {

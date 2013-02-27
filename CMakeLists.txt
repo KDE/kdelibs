@@ -463,7 +463,7 @@ if (Phonon4Qt5_FOUND)
 endif(Phonon4Qt5_FOUND)
 
 add_subdirectory( interfaces  )
-if (NOT QT5_BUILD) # TODO: Qt5UiTools_FOUND
+if (Qt5UiTools_FOUND)
     add_subdirectory( kross )
 endif()
 add_subdirectory( kutils     )
