@@ -33,7 +33,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <errno.h>
 
 #include <assert.h>
@@ -222,8 +221,8 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
         if (symLinkTarget.isEmpty()) // Mac or Windows
             symLinkTarget = fileInfo.symLinkTarget();
         return writeSymLink(destName, symLinkTarget, fileInfo.owner(),
-                            fileInfo.group(), fi.st_mode, fi.st_atime, fi.st_mtime,
-                            fi.st_ctime);
+                            fileInfo.group(), fi.st_mode, fileInfo.lastRead(), fileInfo.lastModified(),
+                            fileInfo.created());
     }/*end if*/
 
     qint64 size = fileInfo.size();
@@ -239,7 +238,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     }
 
     if ( !prepareWriting( destName, fileInfo.owner(), fileInfo.group(), size,
-            fi.st_mode, fi.st_atime, fi.st_mtime, fi.st_ctime ) )
+            fi.st_mode, fileInfo.lastRead(), fileInfo.lastModified(), fileInfo.created() ) )
     {
         //qWarning() << " prepareWriting" << destName << "failed";
         return false;
@@ -295,9 +294,9 @@ bool KArchive::addLocalDirectory( const QString& path, const QString& destName )
     return true;
 }
 
-bool KArchive::writeFile( const QString& name, const QString& user,
+bool KArchive::writeFile(const QString& name, const QString& user,
                           const QString& group, const char* data, qint64 size,
-                          mode_t perm, time_t atime, time_t mtime, time_t ctime )
+                          mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime )
 {
     if ( !prepareWriting( name, user, group, size, perm, atime, mtime, ctime ) )
     {
@@ -335,26 +334,26 @@ bool KArchive::writeData( const char* data, qint64 size )
 // additional argument in the d pointer, and doWriteDir reimplementations can fetch
 // it from there.
 
-bool KArchive::writeDir( const QString& name, const QString& user, const QString& group,
-                         mode_t perm, time_t atime,
-                         time_t mtime, time_t ctime )
+bool KArchive::writeDir(const QString& name, const QString& user, const QString& group,
+                         mode_t perm, const QDateTime &atime,
+                         const QDateTime &mtime, const QDateTime &ctime )
 {
     return doWriteDir( name, user, group, perm | 040000, atime, mtime, ctime );
 }
 
 bool KArchive::writeSymLink(const QString &name, const QString &target,
                             const QString &user, const QString &group,
-                            mode_t perm, time_t atime,
-                            time_t mtime, time_t ctime )
+                            mode_t perm, const QDateTime &atime,
+                            const QDateTime &mtime, const QDateTime &ctime )
 {
     return doWriteSymLink( name, target, user, group, perm, atime, mtime, ctime );
 }
 
 
-bool KArchive::prepareWriting( const QString& name, const QString& user,
+bool KArchive::prepareWriting(const QString& name, const QString& user,
                                const QString& group, qint64 size,
-                               mode_t perm, time_t atime,
-                               time_t mtime, time_t ctime )
+                               mode_t perm, const QDateTime &atime,
+                               const QDateTime &mtime, const QDateTime &ctime )
 {
     bool ok = doPrepareWriting( name, user, group, size, perm, atime, mtime, ctime );
     if ( !ok )
@@ -404,7 +403,7 @@ KArchiveDirectory * KArchive::rootDir()
         QString username = ::getCurrentUserName();
         QString groupname = ::getCurrentGroupName();
 
-        d->rootDir = new KArchiveDirectory( this, QLatin1String("/"), (int)(0777 + S_IFDIR), 0, username, groupname, QString() );
+        d->rootDir = new KArchiveDirectory( this, QLatin1String("/"), (int)(0777 + S_IFDIR), QDateTime(), username, groupname, QString() );
     }
     return d->rootDir;
 }
@@ -504,6 +503,14 @@ void KArchivePrivate::abortWriting()
     }
 }
 
+// this is a hacky wrapper to check if time_t value is invalid
+QDateTime KArchivePrivate::time_tToDateTime(uint time_t)
+{
+    if (time_t == uint(-1))
+        return QDateTime();
+    return QDateTime::fromTime_t(time_t);
+}
+
 ////////////////////////////////////////////////////////////////////////
 /////////////////////// KArchiveEntry //////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -512,7 +519,7 @@ class KArchiveEntryPrivate
 {
 public:
     KArchiveEntryPrivate( KArchive* _archive, const QString& _name, int _access,
-                          int _date, const QString& _user, const QString& _group,
+                          const QDateTime& _date, const QString& _user, const QString& _group,
                           const QString& _symlink) :
         name(_name),
         date(_date),
@@ -523,7 +530,7 @@ public:
         archive(_archive)
     {}
     QString name;
-    int date;
+    QDateTime date;
     mode_t access;
     QString user;
     QString group;
@@ -531,7 +538,7 @@ public:
     KArchive* archive;
 };
 
-KArchiveEntry::KArchiveEntry( KArchive* t, const QString& name, int access, int date,
+KArchiveEntry::KArchiveEntry( KArchive* t, const QString& name, int access, const QDateTime& date,
                       const QString& user, const QString& group, const
                       QString& symlink) :
     d(new KArchiveEntryPrivate(t,name,access,date,user,group,symlink))
@@ -543,14 +550,7 @@ KArchiveEntry::~KArchiveEntry()
     delete d;
 }
 
-QDateTime KArchiveEntry::datetime() const
-{
-  QDateTime datetimeobj;
-  datetimeobj.setTime_t( d->date );
-  return datetimeobj;
-}
-
-int KArchiveEntry::date() const
+QDateTime KArchiveEntry::date() const
 {
     return d->date;
 }
@@ -610,7 +610,7 @@ public:
     qint64 size;
 };
 
-KArchiveFile::KArchiveFile( KArchive* t, const QString& name, int access, int date,
+KArchiveFile::KArchiveFile( KArchive* t, const QString& name, int access, const QDateTime& date,
                             const QString& user, const QString& group,
                             const QString & symlink,
                             qint64 pos, qint64 size )
@@ -706,8 +706,8 @@ public:
     QHash<QString, KArchiveEntry *> entries;
 };
 
-KArchiveDirectory::KArchiveDirectory( KArchive* t, const QString& name, int access,
-                              int date,
+KArchiveDirectory::KArchiveDirectory(KArchive* t, const QString& name, int access,
+                              const QDateTime &date,
                               const QString& user, const QString& group,
                               const QString &symlink)
   : KArchiveEntry( t, name, access, date, user, group, symlink ),

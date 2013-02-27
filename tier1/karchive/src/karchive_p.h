@@ -23,6 +23,8 @@ public:
     }
     void abortWriting();
 
+    static QDateTime time_tToDateTime(uint time_t);
+
     KArchiveDirectory* rootDir;
     QSaveFile* saveFile;
     QIODevice * dev;

@@ -18,10 +18,10 @@
 */
 
 #include "kar.h"
+#include "karchive_p.h"
 
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
-#include <time.h>
 
 #include "kfilterdev.h"
 //#include "klimitediodevice_p.h"
@@ -53,8 +53,8 @@ KAr::~KAr()
     delete d;
 }
 
-bool KAr::doPrepareWriting( const QString&, const QString&, const QString&,
-                            qint64, mode_t, time_t, time_t, time_t )
+bool KAr::doPrepareWriting(const QString&, const QString&, const QString&,
+                            qint64, mode_t, const QDateTime &, const QDateTime &, const QDateTime & )
 {
     return false;
 }
@@ -64,14 +64,14 @@ bool KAr::doFinishWriting( qint64 )
     return false;
 }
 
-bool KAr::doWriteDir( const QString&, const QString&, const QString&,
-                      mode_t, time_t, time_t, time_t )
+bool KAr::doWriteDir(const QString&, const QString&, const QString&,
+                      mode_t, const QDateTime &, const QDateTime &, const QDateTime & )
 {
     return false;
 }
 
-bool KAr::doWriteSymLink( const QString&, const QString&, const QString&,
-                          const QString&, mode_t, time_t, time_t, time_t )
+bool KAr::doWriteSymLink(const QString&, const QString&, const QString&,
+                          const QString&, mode_t, const QDateTime &, const QDateTime &, const QDateTime & )
 {
     return false;
 }
@@ -155,7 +155,7 @@ bool KAr::openArchive( QIODevice::OpenMode mode )
         name.replace( '/', QByteArray() );
         //qDebug() << "Filename: " << name << " Size: " << size;
 
-        KArchiveEntry* entry = new KArchiveFile(this, QString::fromLocal8Bit(name.constData()), mode, date,
+        KArchiveEntry* entry = new KArchiveFile(this, QString::fromLocal8Bit(name.constData()), mode, KArchivePrivate::time_tToDateTime(date),
                                                 rootDir()->user(), rootDir()->group(), /*symlink*/ QString(),
                                                 dev->pos(), size);
         rootDir()->addEntry(entry); // Ar files don't support directories, so everything in root

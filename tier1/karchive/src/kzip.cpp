@@ -18,6 +18,7 @@
 */
 
 #include "kzip.h"
+#include "karchive_p.h"
 #include "kfilterdev.h"
 #include "klimitediodevice_p.h"
 
@@ -29,8 +30,8 @@
 #include <QtCore/QDate>
 #include <QtCore/QList>
 
-#include <zlib.h>
 #include <time.h>
+#include <zlib.h>
 #include <string.h>
 
 #ifdef Q_OS_WIN
@@ -74,7 +75,7 @@ static void transformToMsDos(const QDateTime& dt, char* buffer)
     }
 }
 
-static time_t transformFromMsDos(const char* buffer)
+static uint transformFromMsDos(const char* buffer)
 {
     quint16 time = (uchar)buffer[0] | ( (uchar)buffer[1] << 8 );
     int h = time >> 11;
@@ -98,9 +99,10 @@ static time_t transformFromMsDos(const char* buffer)
 struct ParseFileInfo {
   // file related info
   mode_t perm;			// permissions of this file
-  time_t atime;			// last access time (UNIX format)
-  time_t mtime;			// modification time (UNIX format)
-  time_t ctime;			// creation time (UNIX format)
+  // TODO: use quint32 instead of a uint?
+  uint atime;			// last access time (UNIX format)
+  uint mtime;			// modification time (UNIX format)
+  uint ctime;			// creation time (UNIX format)
   int uid;			// user id (-1 if not specified)
   int gid;			// group id (-1 if not specified)
   QByteArray guessed_symlink;	// guessed symlink target
@@ -108,12 +110,12 @@ struct ParseFileInfo {
 
   // parsing related info
   bool exttimestamp_seen;	// true if extended timestamp extra field
-  				// has been parsed
+                // has been parsed
   bool newinfounix_seen;	// true if Info-ZIP Unix New extra field has
-  				// been parsed
+                // been parsed
 
   ParseFileInfo() : perm(0100644), uid(-1), gid(-1), extralen(0),
-  	exttimestamp_seen(false), newinfounix_seen(false) {
+    exttimestamp_seen(false), newinfounix_seen(false) {
     ctime = mtime = atime = time(0);
   }
 };
@@ -127,7 +129,7 @@ struct ParseFileInfo {
   * @return true if processing was successful
   */
 static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
-			ParseFileInfo &pfi) {
+            ParseFileInfo &pfi) {
   if (size < 1) {
     //qDebug() << "premature end of extended timestamp (#1)";
     return false;
@@ -141,8 +143,8 @@ static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
       //qDebug() << "premature end of extended timestamp (#2)";
       return false;
     }/*end if*/
-    pfi.mtime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
-    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+    pfi.mtime = uint((uchar)buffer[0] | (uchar)buffer[1] << 8
+                | (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
     buffer += 4;
     size -= 4;
   }/*end if*/
@@ -158,8 +160,8 @@ static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
       //qDebug() << "premature end of extended timestamp (#3)";
       return true;
     }/*end if*/
-    pfi.atime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
-    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+    pfi.atime = uint((uchar)buffer[0] | (uchar)buffer[1] << 8
+                | (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
     buffer += 4;
     size -= 4;
   }/*end if*/
@@ -169,8 +171,8 @@ static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
       //qDebug() << "premature end of extended timestamp (#4)";
       return true;
     }/*end if*/
-    pfi.ctime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
-    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+    pfi.ctime = uint((uchar)buffer[0] | (uchar)buffer[1] << 8
+                | (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
     buffer += 4;
   }/*end if*/
 
@@ -187,7 +189,7 @@ static bool parseExtTimestamp(const char *buffer, int size, bool islocal,
   * @return true if processing was successful
   */
 static bool parseInfoZipUnixOld(const char *buffer, int size, bool islocal,
-			ParseFileInfo &pfi) {
+            ParseFileInfo &pfi) {
   // spec mandates to omit this field if one of the newer fields are available
   if (pfi.exttimestamp_seen || pfi.newinfounix_seen) return true;
 
@@ -196,11 +198,11 @@ static bool parseInfoZipUnixOld(const char *buffer, int size, bool islocal,
     return false;
   }/*end if*/
 
-  pfi.atime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
-    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+  pfi.atime = uint((uchar)buffer[0] | (uchar)buffer[1] << 8
+                | (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
   buffer += 4;
-  pfi.mtime = time_t((uchar)buffer[0] | (uchar)buffer[1] << 8
-    			| (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
+  pfi.mtime = uint((uchar)buffer[0] | (uchar)buffer[1] << 8
+                | (uchar)buffer[2] << 16 | (uchar)buffer[3] << 24);
   buffer += 4;
   if (islocal && size >= 12) {
     pfi.uid = (uchar)buffer[0] | (uchar)buffer[1] << 8;
@@ -221,7 +223,7 @@ static bool parseInfoZipUnixOld(const char *buffer, int size, bool islocal,
   * @return true if processing was successful
   */
 static bool parseInfoZipUnixNew(const char *buffer, int size, bool islocal,
-			ParseFileInfo &pfi) {
+            ParseFileInfo &pfi) {
   if (!islocal) {	// contains nothing in central field
     pfi.newinfounix = true;
     return true;
@@ -251,7 +253,7 @@ static bool parseInfoZipUnixNew(const char *buffer, int size, bool islocal,
  * @return true if parsing was successful
  */
 static bool parseExtraField(const char *buffer, int size, bool islocal,
-			ParseFileInfo &pfi) {
+            ParseFileInfo &pfi) {
   // extra field in central directory doesn't contain useful data, so we
   // don't bother parsing it
   if (!islocal) return true;
@@ -272,14 +274,14 @@ static bool parseExtraField(const char *buffer, int size, bool islocal,
     switch (magic) {
       case 0x5455:		// extended timestamp
         if (!parseExtTimestamp(buffer, fieldsize, islocal, pfi)) return false;
-	break;
+    break;
       case 0x5855:		// old Info-ZIP unix extra field
         if (!parseInfoZipUnixOld(buffer, fieldsize, islocal, pfi)) return false;
-	break;
+    break;
 #if 0	// not needed yet
       case 0x7855:		// new Info-ZIP unix extra field
         if (!parseInfoZipUnixNew(buffer, fieldsize, islocal, pfi)) return false;
-	break;
+    break;
 #endif
       default:
         /* ignore everything else */;
@@ -304,7 +306,7 @@ public:
           m_currentDev( 0 ),
           m_compression( 8 ),
           m_extraField( KZip::NoExtraField ),
-	  m_offset( 0 )
+      m_offset( 0 )
     {}
 
     unsigned long           m_crc;         // checksum
@@ -377,28 +379,28 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 
         if ( !memcmp( buffer, "PK\5\6", 4 ) ) // 'end of entries'
         {
-	    //qDebug() << "PK56 found end of archive";
+        //qDebug() << "PK56 found end of archive";
             startOfFile = false;
-	    break;
-	}
+        break;
+    }
 
-	if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
+    if ( !memcmp( buffer, "PK\3\4", 4 ) ) // local file header
         {
-	    //qDebug() << "PK34 found local file header";
+        //qDebug() << "PK34 found local file header";
             startOfFile = false;
             // can this fail ???
-	    dev->seek( dev->pos() + 2 ); // skip 'version needed to extract'
+        dev->seek( dev->pos() + 2 ); // skip 'version needed to extract'
 
-	    // read static header stuff
+        // read static header stuff
             n = dev->read( buffer, 24 );
-	    if (n < 24) {
+        if (n < 24) {
                 //qWarning() << "Invalid ZIP file. Unexpected end of file. (#4)";
                 return false;
-	    }
+        }
 
-	    int gpf = (uchar)buffer[0];	// "general purpose flag" not "general protection fault" ;-)
-	    int compression_mode = (uchar)buffer[2] | (uchar)buffer[3] << 8;
-	    time_t mtime = transformFromMsDos( buffer+4 );
+        int gpf = (uchar)buffer[0];	// "general purpose flag" not "general protection fault" ;-)
+        int compression_mode = (uchar)buffer[2] | (uchar)buffer[3] << 8;
+        uint mtime = transformFromMsDos( buffer+4 );
 
             const qint64 compr_size = uint(uchar(buffer[12])) | uint(uchar(buffer[13])) << 8 |
                                       uint(uchar(buffer[14])) << 16 | uint(uchar(buffer[15])) << 24;
@@ -408,53 +410,53 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
             const int extralen = uint(uchar(buffer[22])) | uint(uchar(buffer[23])) << 8;
 
             /*
-	    qDebug() << "general purpose bit flag: " << gpf;
+        qDebug() << "general purpose bit flag: " << gpf;
        qDebug() << "compressed size: " << compr_size;
-	    qDebug() << "uncompressed size: " << uncomp_size;
-	    qDebug() << "namelen: " << namelen;
-	    qDebug() << "extralen: " << extralen;
-	    qDebug() << "archive size: " << dev->size();
-	    */
+        qDebug() << "uncompressed size: " << uncomp_size;
+        qDebug() << "namelen: " << namelen;
+        qDebug() << "extralen: " << extralen;
+        qDebug() << "archive size: " << dev->size();
+        */
 
-	    // read fileName
+        // read fileName
             Q_ASSERT( namelen > 0 );
-	    QByteArray fileName = dev->read(namelen);
+        QByteArray fileName = dev->read(namelen);
             if ( fileName.size() < namelen ) {
                 //qWarning() << "Invalid ZIP file. Name not completely read (#2)";
-		return false;
-	    }
+        return false;
+        }
 
-	    ParseFileInfo pfi;
-	    pfi.mtime = mtime;
+        ParseFileInfo pfi;
+        pfi.mtime = mtime;
 
             // read and parse the beginning of the extra field,
             // skip rest of extra field in case it is too long
             unsigned int extraFieldEnd = dev->pos() + extralen;
-	    pfi.extralen = extralen;
-	    int handledextralen = qMin(extralen, (int)sizeof buffer);
+        pfi.extralen = extralen;
+        int handledextralen = qMin(extralen, (int)sizeof buffer);
 
             //if ( handledextralen )
             //    qDebug() << "handledextralen: " << handledextralen;
 
-	    n = dev->read(buffer, handledextralen);
-	    // no error msg necessary as we deliberately truncate the extra field
-	    if (!parseExtraField(buffer, handledextralen, true, pfi))
-	    {
-	        //qWarning() << "Invalid ZIP File. Broken ExtraField.";
-	        return false;
-	    }
+        n = dev->read(buffer, handledextralen);
+        // no error msg necessary as we deliberately truncate the extra field
+        if (!parseExtraField(buffer, handledextralen, true, pfi))
+        {
+            //qWarning() << "Invalid ZIP File. Broken ExtraField.";
+            return false;
+        }
 
             // jump to end of extra field
             dev->seek( extraFieldEnd );
 
-	    // we have to take care of the 'general purpose bit flag'.
+        // we have to take care of the 'general purpose bit flag'.
             // if bit 3 is set, the header doesn't contain the length of
             // the file and we look for the signature 'PK\7\8'.
             if ( gpf & 8 )
             {
-	    	// here we have to read through the compressed data to find
-		// the next PKxx
-	        //qDebug() << "trying to seek for next PK78";
+            // here we have to read through the compressed data to find
+        // the next PKxx
+            //qDebug() << "trying to seek for next PK78";
                 bool foundSignature = false;
 
                 while (!foundSignature)
@@ -477,17 +479,17 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
                     }
 
                     // we have to detect three magic tokens here:
-		    // PK34 for the next local header in case there is no data descriptor
-		    // PK12 for the central header in case there is no data descriptor
-		    // PK78 for the data descriptor in case it is following the compressed data
+            // PK34 for the next local header in case there is no data descriptor
+            // PK12 for the central header in case there is no data descriptor
+            // PK78 for the data descriptor in case it is following the compressed data
 
-		    if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
+            if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
                     {
                         foundSignature = true;
                         dev->seek( dev->pos() + 12 ); // skip the 'data_descriptor'
                     }
-		    else if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
-		         || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
+            else if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
+                 || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
                     {
                         foundSignature = true;
                         dev->seek( dev->pos() - 4 ); // go back 4 bytes, so that the magic bytes can be found...
@@ -502,81 +504,81 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
             }
             else
             {
-	    	// here we skip the compressed data and jump to the next header
-	        //qDebug() << "general purpose bit flag indicates, that local file header contains valid size";
-		// check if this could be a symbolic link
-		if (compression_mode == NoCompression
-	    		&& uncomp_size <= max_path_len
-			&& uncomp_size > 0) {
-		    // read content and store it
+            // here we skip the compressed data and jump to the next header
+            //qDebug() << "general purpose bit flag indicates, that local file header contains valid size";
+        // check if this could be a symbolic link
+        if (compression_mode == NoCompression
+                && uncomp_size <= max_path_len
+            && uncomp_size > 0) {
+            // read content and store it
                     // If it's not a symlink, then we'll just discard the data for now.
-		    pfi.guessed_symlink = dev->read(uncomp_size);
-		    if (pfi.guessed_symlink.size() < uncomp_size) {
-			//qWarning() << "Invalid ZIP file. Unexpected end of file. (#5)";
-			return false;
-		    }
-		} else {
+            pfi.guessed_symlink = dev->read(uncomp_size);
+            if (pfi.guessed_symlink.size() < uncomp_size) {
+            //qWarning() << "Invalid ZIP file. Unexpected end of file. (#5)";
+            return false;
+            }
+        } else {
 
-	            if ( compr_size > dev->size() )
-		    {
-		    	// here we cannot trust the compressed size, so scan through the compressed
-			// data to find the next header
-			bool foundSignature = false;
+                if ( compr_size > dev->size() )
+            {
+                // here we cannot trust the compressed size, so scan through the compressed
+            // data to find the next header
+            bool foundSignature = false;
 
-			while (!foundSignature)
-			{
-				n = dev->read( buffer, 1 );
-				if (n < 1)
-				{
-					//qWarning() << "Invalid ZIP file. Unexpected end of file. (#2)";
-					return false;
-				}
+            while (!foundSignature)
+            {
+                n = dev->read( buffer, 1 );
+                if (n < 1)
+                {
+                    //qWarning() << "Invalid ZIP file. Unexpected end of file. (#2)";
+                    return false;
+                }
 
-				if ( buffer[0] != 'P' )
-					continue;
+                if ( buffer[0] != 'P' )
+                    continue;
 
-				n = dev->read( buffer, 3 );
-				if (n < 3)
-				{
-					//qWarning() << "Invalid ZIP file. Unexpected end of file. (#3)";
-					return false;
-				}
+                n = dev->read( buffer, 3 );
+                if (n < 3)
+                {
+                    //qWarning() << "Invalid ZIP file. Unexpected end of file. (#3)";
+                    return false;
+                }
 
-				// we have to detect three magic tokens here:
-				// PK34 for the next local header in case there is no data descriptor
-				// PK12 for the central header in case there is no data descriptor
-				// PK78 for the data descriptor in case it is following the compressed data
+                // we have to detect three magic tokens here:
+                // PK34 for the next local header in case there is no data descriptor
+                // PK12 for the central header in case there is no data descriptor
+                // PK78 for the data descriptor in case it is following the compressed data
 
-				if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
-				{
-					foundSignature = true;
-					dev->seek( dev->pos() + 12 ); // skip the 'data_descriptor'
-				}
+                if ( buffer[0] == 'K' && buffer[1] == 7 && buffer[2] == 8 )
+                {
+                    foundSignature = true;
+                    dev->seek( dev->pos() + 12 ); // skip the 'data_descriptor'
+                }
 
-				if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
-					|| ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
-				{
-					foundSignature = true;
-					dev->seek( dev->pos() - 4 );
-					// go back 4 bytes, so that the magic bytes can be found
-					// in the next cycle...
-				}
-			}
-		    }
-		    else
-		    {
+                if ( ( buffer[0] == 'K' && buffer[1] == 1 && buffer[2] == 2 )
+                    || ( buffer[0] == 'K' && buffer[1] == 3 && buffer[2] == 4 ) )
+                {
+                    foundSignature = true;
+                    dev->seek( dev->pos() - 4 );
+                    // go back 4 bytes, so that the magic bytes can be found
+                    // in the next cycle...
+                }
+            }
+            }
+            else
+            {
 // 			qDebug() << "before interesting dev->pos(): " << dev->pos();
           bool success = dev->seek( dev->pos() + compr_size ); // can this fail ???
           Q_UNUSED( success ); // prevent warning in release builds.
           Q_ASSERT( success ); // let's see...
 /*			qDebug() << "after interesting dev->pos(): " << dev->pos();
-			if ( success )
-				qDebug() << "dev->at was successful... ";
-			else
-				qDebug() << "dev->at failed... ";*/
-		    }
+            if ( success )
+                qDebug() << "dev->at was successful... ";
+            else
+                qDebug() << "dev->at failed... ";*/
+            }
 
-		}
+        }
 
 // not needed any more
 /*                // here we calculate the length of the file in the zip
@@ -588,7 +590,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
         }
         else if ( !memcmp( buffer, "PK\1\2", 4 ) ) // central block
         {
-	    //qDebug() << "PK12 found central block";
+        //qDebug() << "PK12 found central block";
             startOfFile = false;
 
             // so we reached the central header at the end of the zip file
@@ -637,21 +639,21 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
 
             // uncompressed file size
             uint ucsize = (uchar)buffer[27] << 24 | (uchar)buffer[26] << 16 |
-	    		(uchar)buffer[25] << 8 | (uchar)buffer[24];
+                (uchar)buffer[25] << 8 | (uchar)buffer[24];
             // compressed file size
             uint csize = (uchar)buffer[23] << 24 | (uchar)buffer[22] << 16 |
-	    		(uchar)buffer[21] << 8 | (uchar)buffer[20];
+                (uchar)buffer[21] << 8 | (uchar)buffer[20];
 
             // offset of local header
             uint localheaderoffset = (uchar)buffer[45] << 24 | (uchar)buffer[44] << 16 |
-				(uchar)buffer[43] << 8 | (uchar)buffer[42];
+                (uchar)buffer[43] << 8 | (uchar)buffer[42];
 
             // some clever people use different extra field lengths
             // in the central header and in the local header... funny.
             // so we need to get the localextralen to calculate the offset
             // from localheaderstart to dataoffset
             int localextralen = pfi.extralen; // FIXME: this will not work if
-	    					// no local header exists
+                            // no local header exists
 
             //qDebug() << "localextralen: " << localextralen;
 
@@ -662,13 +664,13 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
             //qDebug() << "eoffset: " << eoffset;
             //qDebug() << "csize: " << csize;
 
-	    int os_madeby = (uchar)buffer[5];
+        int os_madeby = (uchar)buffer[5];
             bool isdir = false;
             int access = 0100644;
 
-	    if (os_madeby == 3) {	// good ole unix
-	    	access = (uchar)buffer[40] | (uchar)buffer[41] << 8;
-	    }
+        if (os_madeby == 3) {	// good ole unix
+            access = (uchar)buffer[40] | (uchar)buffer[41] << 8;
+        }
 
             QString entryName;
 
@@ -676,7 +678,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
                 isdir = true;
                 name = name.left( name.length() - 1 );
                 if (os_madeby != 3) access = S_IFDIR | 0755;
-		else Q_ASSERT(access & S_IFDIR);
+        else Q_ASSERT(access & S_IFDIR);
             }
 
             int pos = name.lastIndexOf(QLatin1Char('/'));
@@ -698,20 +700,22 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
                 }
                 else
                 {
-                    entry = new KArchiveDirectory( this, entryName, access, (int)pfi.mtime, rootDir()->user(), rootDir()->group(), QString() );
+                    QDateTime mtime = KArchivePrivate::time_tToDateTime(pfi.mtime);
+                    entry = new KArchiveDirectory( this, entryName, access, mtime, rootDir()->user(), rootDir()->group(), QString() );
                     //qDebug() << "KArchiveDirectory created, entryName= " << entryName << ", name=" << name;
                 }
-	    }
+        }
             else
             {
-	        QString symlink;
-		if (S_ISLNK(access)) {
-		    symlink = QFile::decodeName(pfi.guessed_symlink);
-		}
-                entry = new KZipFileEntry( this, entryName, access, pfi.mtime,
-					rootDir()->user(), rootDir()->group(),
-					symlink, name, dataoffset,
-					ucsize, cmethod, csize );
+            QString symlink;
+        if (S_ISLNK(access)) {
+            symlink = QFile::decodeName(pfi.guessed_symlink);
+        }
+                QDateTime mtime = KArchivePrivate::time_tToDateTime(pfi.mtime);
+                entry = new KZipFileEntry( this, entryName, access, mtime,
+                    rootDir()->user(), rootDir()->group(),
+                    symlink, name, dataoffset,
+                    ucsize, cmethod, csize );
                 static_cast<KZipFileEntry *>(entry)->setHeaderStart( localheaderoffset );
                 static_cast<KZipFileEntry*>(entry)->setCRC32(crc32);
                 //qDebug() << "KZipFileEntry created, entryName= " << entryName << ", name=" << name;
@@ -818,12 +822,12 @@ bool KZip::closeArchive()
 
     while(it.hasNext())
     {	//set crc and compressed size in each local file header
-	    it.next();
+        it.next();
         if ( !device()->seek( it.value()->headerStart() + 14 ) )
             return false;
-	//qDebug() << "closearchive setcrcandcsize: fileName:"
-	//    << it.current()->path()
-	//    << "encoding:" << it.current()->encoding();
+    //qDebug() << "closearchive setcrcandcsize: fileName:"
+    //    << it.current()->path()
+    //    << "encoding:" << it.current()->encoding();
 
         uLong mycrc = it.value()->crc32();
         buffer[0] = char(mycrc); // crc checksum, at headerStart+14
@@ -851,13 +855,13 @@ bool KZip::closeArchive()
     it.toFront();
     while (it.hasNext())
     {
-	it.next();
+    it.next();
         //qDebug() << "fileName:" << it.current()->path()
         //              << "encoding:" << it.current()->encoding();
 
         QByteArray path = QFile::encodeName(it.value()->path());
 
-	const int extra_field_len = 9;
+    const int extra_field_len = 9;
         int bufferSize = extra_field_len + path.length() + 46;
         char* buffer = new char[ bufferSize ];
 
@@ -870,14 +874,14 @@ bool KZip::closeArchive()
             0x14, 0         // version needed to extract
         };
 
-	// I do not know why memcpy is not working here
+    // I do not know why memcpy is not working here
         //memcpy(buffer, head, sizeof(head));
         memmove(buffer, head, sizeof(head));
 
         buffer[ 10 ] = char(it.value()->encoding()); // compression method
         buffer[ 11 ] = char(it.value()->encoding() >> 8);
 
-        transformToMsDos( it.value()->datetime(), &buffer[ 12 ] );
+        transformToMsDos( it.value()->date(), &buffer[ 12 ] );
 
         uLong mycrc = it.value()->crc32();
         buffer[ 16 ] = char(mycrc); // crc checksum
@@ -900,11 +904,11 @@ bool KZip::closeArchive()
         buffer[ 28 ] = char(path.length()); // fileName length
         buffer[ 29 ] = char(path.length() >> 8);
 
-	buffer[ 30 ] = char(extra_field_len);
-	buffer[ 31 ] = char(extra_field_len >> 8);
+    buffer[ 30 ] = char(extra_field_len);
+    buffer[ 31 ] = char(extra_field_len >> 8);
 
-	buffer[ 40 ] = char(it.value()->permissions());
-	buffer[ 41 ] = char(it.value()->permissions() >> 8);
+    buffer[ 40 ] = char(it.value()->permissions());
+    buffer[ 41 ] = char(it.value()->permissions() >> 8);
 
         int myhst = it.value()->headerStart();
         buffer[ 42 ] = char(myhst); //relative offset of local header
@@ -914,22 +918,22 @@ bool KZip::closeArchive()
 
         // file name
         strncpy( buffer + 46, path.constData(), path.length() );
-	//qDebug() << "closearchive length to write: " << bufferSize;
+    //qDebug() << "closearchive length to write: " << bufferSize;
 
-	// extra field
-	char *extfield = buffer + 46 + path.length();
-	extfield[0] = 'U';
-	extfield[1] = 'T';
-	extfield[2] = 5;
-	extfield[3] = 0;
-	extfield[4] = 1 | 2 | 4;	// specify flags from local field
-					// (unless I misread the spec)
-	// provide only modification time
-	unsigned long time = (unsigned long)it.value()->date();
-	extfield[5] = char(time);
-	extfield[6] = char(time >> 8);
-	extfield[7] = char(time >> 16);
-	extfield[8] = char(time >> 24);
+    // extra field
+    char *extfield = buffer + 46 + path.length();
+    extfield[0] = 'U';
+    extfield[1] = 'T';
+    extfield[2] = 5;
+    extfield[3] = 0;
+    extfield[4] = 1 | 2 | 4;	// specify flags from local field
+                    // (unless I misread the spec)
+    // provide only modification time
+    unsigned long time = (unsigned long)it.value()->date().toTime_t();
+    extfield[5] = char(time);
+    extfield[6] = char(time >> 8);
+    extfield[7] = char(time >> 16);
+    extfield[8] = char(time >> 24);
 
         crc = crc32(crc, (Bytef *)buffer, bufferSize );
         bool ok = ( device()->write( buffer, bufferSize ) == bufferSize );
@@ -986,8 +990,8 @@ bool KZip::closeArchive()
     return true;
 }
 
-bool KZip::doWriteDir( const QString &name, const QString &user, const QString &group,
-                       mode_t perm, time_t atime, time_t mtime, time_t ctime ) {
+bool KZip::doWriteDir(const QString &name, const QString &user, const QString &group, mode_t perm,
+                      const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime ) {
     // Zip files have no explicit directories, they are implicitly created during extraction time
     // when file entries have paths in them.
     // However, to support empty directories, we must create a dummy file entry which ends with '/'.
@@ -999,7 +1003,7 @@ bool KZip::doWriteDir( const QString &name, const QString &user, const QString &
 
 bool KZip::doPrepareWriting(const QString &name, const QString &user,
                                const QString &group, qint64 /*size*/, mode_t perm,
-                               time_t atime, time_t mtime, time_t ctime) {
+                               const QDateTime &accessTime, const QDateTime &modificationTime, const QDateTime &creationTime) {
     //qDebug();
     if ( !isOpen() )
     {
@@ -1021,21 +1025,25 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
         return false;
     }
 
+    uint atime = accessTime.toTime_t();
+    uint mtime = modificationTime.toTime_t();
+    uint ctime = creationTime.toTime_t();
+
     // delete entries in the filelist with the same fileName as the one we want
     // to save, so that we don't have duplicate file entries when viewing the zip
     // with konqi...
     // CAUTION: the old file itself is still in the zip and won't be removed !!!
     QMutableListIterator<KZipFileEntry*> it( d->m_fileList );
-	//qDebug() << "fileName to write: " << name;
+    //qDebug() << "fileName to write: " << name;
     while(it.hasNext())
     {
-	    it.next();
-    	//qDebug() << "prepfileName: " << it.current()->path();
-		if (name == it.value()->path() )
+        it.next();
+        //qDebug() << "prepfileName: " << it.current()->path();
+        if (name == it.value()->path() )
         {
-	    	//qDebug() << "removing following entry: " << it.current()->path();
-		delete it.value();
-	        it.remove();
+            //qDebug() << "removing following entry: " << it.current()->path();
+        delete it.value();
+            it.remove();
         }
 
     }
@@ -1051,7 +1059,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     }
 
     // construct a KZipFileEntry and add it to list
-    KZipFileEntry * e = new KZipFileEntry( this, fileName, perm, mtime, user, group, QString(),
+    KZipFileEntry * e = new KZipFileEntry( this, fileName, perm, modificationTime, user, group, QString(),
                                            name, device()->pos() + 30 + name.length(), // start
                                            0 /*size unknown yet*/, d->m_compression, 0 /*csize unknown yet*/ );
     e->setHeaderStart( device()->pos() );
@@ -1085,7 +1093,7 @@ bool KZip::doPrepareWriting(const QString &name, const QString &user,
     buffer[ 8 ] = char(e->encoding()); // compression method
     buffer[ 9 ] = char(e->encoding() >> 8);
 
-    transformToMsDos( e->datetime(), &buffer[ 10 ] );
+    transformToMsDos( e->date(), &buffer[ 10 ] );
 
     buffer[ 14 ] = 'C'; //dummy crc
     buffer[ 15 ] = 'R';
@@ -1189,7 +1197,7 @@ bool KZip::doFinishWriting( qint64 size )
     const QByteArray encodedName = QFile::encodeName(d->m_currentFile->path());
     int csize = device()->pos() -
         d->m_currentFile->headerStart() - 30 -
-		encodedName.length() - extra_field_len;
+        encodedName.length() - extra_field_len;
     d->m_currentFile->setCompressedSize(csize);
     //qDebug() << "usize: " << d->m_currentFile->size();
     //qDebug() << "csize: " << d->m_currentFile->compressedSize();
@@ -1207,7 +1215,7 @@ bool KZip::doFinishWriting( qint64 size )
 
 bool KZip::doWriteSymLink(const QString &name, const QString &target,
                           const QString &user, const QString &group,
-                          mode_t perm, time_t atime, time_t mtime, time_t ctime) {
+                          mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime) {
   // reassure that symlink flag is set, otherwise strange things happen on
   // extraction
   perm |= S_IFLNK;
@@ -1298,7 +1306,7 @@ public:
     QString       path;
 };
 
-KZipFileEntry::KZipFileEntry(KZip* zip, const QString& name, int access, int date,
+KZipFileEntry::KZipFileEntry(KZip* zip, const QString& name, int access, const QDateTime& date,
                              const QString& user, const QString& group, const QString& symlink,
                              const QString& path, qint64 start, qint64 uncompressedSize,
                              int encoding, qint64 compressedSize)
