@@ -9,6 +9,7 @@ macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 include_directories(
   ${KDE4_KIO_INCLUDES}
   ${Solid_INCLUDE_DIRS}
+  ${KAuth_INCLUDE_DIRS}
   ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
