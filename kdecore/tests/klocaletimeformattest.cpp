@@ -23,8 +23,6 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <klocale.h>
 #include "kdayperiod_p.h"
 
@@ -47,9 +45,6 @@ static QString loadTimeFormat(const QString &country)
 
 void KLocaleTimeFormatTest::initTestCase()
 {
-    KAboutData about("KLocaleTimeFormatTest", 0, qi18n("klocaletimeformattest"), "");
-    KComponentData comp(&about);
-
     // get countries with according time formats
     // for formatAndReadAllCountriesTest().
     QStringList countries(KLocale::global()->allCountriesList());
