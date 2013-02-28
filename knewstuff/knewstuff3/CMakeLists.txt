@@ -10,6 +10,7 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/..
    ${LIBATTICA_INCLUDE_DIR}
    ${KArchive_INCLUDE_DIRS}
+   ${KAuth_INCLUDE_DIRS}
    ${KCoreAddons_INCLUDE_DIRS}
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
