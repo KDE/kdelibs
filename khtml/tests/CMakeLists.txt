@@ -7,6 +7,7 @@ include_directories(${KDE4_KPARTS_INCLUDES}
   ${CMAKE_CURRENT_BINARY_DIR}/..
 )
 include_directories(
+  ${KAuth_INCLUDE_DIRS}
   ${CMAKE_SOURCE_DIR}/khtml/misc
   ${CMAKE_SOURCE_DIR}/khtml/dom
   ${CMAKE_SOURCE_DIR}/khtml/xml
