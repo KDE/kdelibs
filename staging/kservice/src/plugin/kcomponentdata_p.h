@@ -37,7 +37,6 @@ class KComponentDataPrivate
 public:
     KComponentDataPrivate(const KAboutData &aboutData_)
         : aboutData(aboutData_),
-        syncing(false),
         shouldRemoveCatalog(false),
         refCount(1)
     {
@@ -82,7 +81,6 @@ public:
     KAboutData aboutData;
     QString configName;
     KSharedConfig::Ptr sharedConfig;
-    bool syncing;
 
 private:
     bool shouldRemoveCatalog;
