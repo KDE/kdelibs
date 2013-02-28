@@ -348,7 +348,7 @@ ActionReply Action::execute(const QString &helperID) const
     }
 
     if (d->async) {
-        if (hasHelper()) {
+        if (!hasHelper()) {
             // It makes no sense
             return ActionReply::InvalidActionReply;
         }
