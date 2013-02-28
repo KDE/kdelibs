@@ -266,26 +266,6 @@ public:
 #endif
 
     /**
-     * Set the KComponentData for which to manipulate shortcuts. This is for exceptional
-     * situations, when you want to modify the shortcuts of another application
-     * as if they were yours.
-     * You cannot have your own working global shortcuts in a module/application using this
-     * special functionality. All global shortcuts of KActions will essentially be proxies.
-     * Be sure to set the default global shortcuts of the proxy KActions to the same as
-     * those on the receiving end.
-     * An example use case is the KControl Module for the window manager KWin, which has
-     * no own facility for users to change its global shortcuts.
-     *
-     * @param componentData a KComponentData about the application for which you want to
-     *                      manipulate shortcuts.
-     *
-     * @deprecated
-     */
-#ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void overrideMainComponentData(const KComponentData &componentData);
-#endif
-
-    /**
      * Return the unique and common names of all main components that have global shortcuts.
      * The action strings of the returned actionId stringlists will be empty.
      *

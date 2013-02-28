@@ -77,9 +77,6 @@ public:
     QMultiHash<QString, KAction *> nameToAction;
     QSet<KAction *> actions;
 
-    //! The main component data. For convenience
-    KComponentData mainComponent;
-    bool isUsingForeignComponentName;
     bool enabled;
 
     org::kde::KGlobalAccel iface;

@@ -348,38 +348,6 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     // cleanup
     action->forgetGlobalShortcut();
     delete coll.takeAction(action);
-
-#ifndef KDE_NO_DEPRECATED
-    // activate overrideMainComponentData, it's not revokable currently!
-    // overrideMainComponentData only overrides the component if the action
-    // gets a real global shortcut!
-    QString globalComponent("test_component2");
-    KComponentData cDataGlobal("test_component2");
-    KGlobalAccel::self()->overrideMainComponentData(cDataGlobal);
-
-    // Action with action collection gets the global component
-    action = new KAction("Text For Action A", this);
-    QCOMPARE(action->d->componentName, QString("kglobalshortcuttest"));
-    action->setObjectName("Action A");
-    action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QCOMPARE(action->d->componentName, globalComponent);
-
-    // Action with action collection get the component of the collection until
-    // a global shortcut is set when overrideMainComponentData is active
-    action->forgetGlobalShortcut();
-    delete action;
-    QVERIFY(coll.isEmpty());
-
-    action = coll.addAction("Action A");
-    QCOMPARE(action->d->componentName, otherComponent);
-    action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QCOMPARE(action->d->componentName, globalComponent);
-
-    // forget the global shortcut
-    action->forgetGlobalShortcut();
-    // Actions that were created by the KActionCollection::addAction have the
-    // collections as parent. Ensure action is not deleted.
-#endif
 }
 
 void KGlobalShortcutTest::testNotification()

@@ -102,7 +102,7 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
 
 
 KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
-     :  isUsingForeignComponentName(false),
+     :
 #ifndef KDE_NO_DEPRECATED
         enabled(true),
 #endif
@@ -126,17 +126,6 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
 }
 
 
-void KGlobalAccelPrivate::readComponentData(const KComponentData &componentData)
-{
-    Q_ASSERT(!componentData.componentName().isEmpty());
-
-    mainComponent = componentData;
-    if (componentData.aboutData()->programName().isEmpty()) {
-        qDebug() << componentData.componentName() << " has empty programName()";
-    }
-}
-
-
 KGlobalAccel::KGlobalAccel()
     : d(new KGlobalAccelPrivate(this))
 {
@@ -147,11 +136,6 @@ KGlobalAccel::KGlobalAccel()
 
     connect(&d->iface, SIGNAL(yourShortcutGotChanged(QStringList,QList<int>)),
             SLOT(_k_shortcutGotChanged(QStringList,QList<int>)));
-
-    if (KComponentData::hasMainComponent()) {
-        d->readComponentData( KComponentData::mainComponent() );
-    }
-
 }
 
 
@@ -214,14 +198,6 @@ void KGlobalAccel::setEnabled(bool enabled)
 #endif
 
 
-#ifndef KDE_NO_DEPRECATED
-void KGlobalAccel::overrideMainComponentData(const KComponentData &kcd)
-{
-    d->readComponentData(kcd);
-    d->isUsingForeignComponentName = true;
-}
-#endif
-
 class KGlobalAccelSingleton
 {
 public:
@@ -248,11 +224,6 @@ bool KGlobalAccelPrivate::doRegister(KAction *action)
     if (isRegistered)
         return true;
 
-    // Under configuration mode - deprecated - we ignore the component given
-    // from the action and use our own.
-    if (isUsingForeignComponentName) {
-        action->d->componentName = mainComponent.componentName();
-    }
     QStringList actionId = makeActionId(action);
 
     nameToAction.insertMulti(actionId.at(KGlobalAccel::ActionUnique), action);
@@ -315,8 +286,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, KAction::Shortcu
     }
 
     if (actionFlags & KAction::ActiveShortcut) {
-        bool isConfigurationAction = isUsingForeignComponentName
-            || action->property("isConfigurationAction").toBool();
+        bool isConfigurationAction = action->property("isConfigurationAction").toBool();
         uint activeSetterFlags = setterFlags;
 
         // setPresent tells kglobalaccel that the shortcut is active
@@ -415,12 +385,6 @@ void KGlobalAccelPrivate::_k_invokeAction(
         const QString &actionUnique,
         qlonglong timestamp)
 {
-    // If overrideMainComponentData() is active the app can only have
-    // configuration actions.
-    if (isUsingForeignComponentName ) {
-        return;
-    }
-
     KAction *action = 0;
     QList<KAction *> candidates = nameToAction.values(actionUnique);
     foreach (KAction *const a, candidates) {
@@ -477,8 +441,6 @@ void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QStr
 
 void KGlobalAccelPrivate::reRegisterAll()
 {
-    //### Special case for isUsingForeignComponentName?
-
     //We clear all our data, assume that all data on the other side is clear too,
     //and register each action as if it just was allowed to have global shortcuts.
     //If the kded side still has the data it doesn't matter because of the
