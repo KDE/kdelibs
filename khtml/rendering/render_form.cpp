@@ -1519,8 +1519,8 @@ void RenderFileButton::updateFromElement()
     KLineEdit* edit = widget()->lineEdit();
     bool blocked = edit->blockSignals(true);
     edit->setText(element()->value().string());
-    edit->blockSignals(false);
-    edit->setModified(blocked );
+    edit->blockSignals(blocked);
+    edit->setModified(false);
 
     RenderFormElement::updateFromElement();
 }
