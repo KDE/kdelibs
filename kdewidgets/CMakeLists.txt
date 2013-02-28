@@ -6,6 +6,7 @@ add_subdirectory( tests )
 
 include_directories(
   ${KPlotting_INCLUDE_DIRS}
+  ${KAuth_INCLUDE_DIRS}
   ${KCoreAddons_INCLUDE_DIRS}
   ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
