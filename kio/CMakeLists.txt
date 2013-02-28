@@ -54,6 +54,7 @@ include_directories(
    ${KDE4_KDECORE_INCLUDES}
    ${ZLIB_INCLUDE_DIR}
    ${KWidgetsAddons_INCLUDE_DIRS}
+   ${KAuth_INCLUDE_DIRS}
    ${kiocore_SOURCE_DIR}/
    ${kiocore_BINARY_DIR}/
    ${kiocore_BINARY_DIR}/..   # kio_version.h
