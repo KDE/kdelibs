@@ -3,7 +3,7 @@ include_directories( ${KDE4_KDEUI_INCLUDES}
                      ${KDE4_KPARTS_INCLUDES}
                      ${CMAKE_CURRENT_SOURCE_DIR}
                      ${CMAKE_CURRENT_BINARY_DIR}
-                     ${KWidgetSAddons_INCLUDE_DIRS}
+                     ${KWidgetsAddons_INCLUDE_DIRS}
                      ${KAuth_INCLUDE_DIRS}
                      ${ki18n_SOURCE_DIR}/src
                      ${ki18n_BINARY_DIR}/src
