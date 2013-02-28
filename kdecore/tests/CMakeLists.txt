@@ -38,7 +38,6 @@ KDECORE_UNIT_TESTS(
  ksharedptrtest
  kdatetimetest
  kautostarttest
- kglobalstatictest
  globalcleanuptest
  kprocesstest
  kconfigafterkglobaltest1

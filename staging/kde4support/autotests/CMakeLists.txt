@@ -30,6 +30,7 @@ kde4support_unit_tests(
   klibloadertest
   ksavefiletest
   kconfigcompattest
+  kglobalstatictest
   kmimetypetest
   kmimetype_nomimetypes
   kstandarddirstest
