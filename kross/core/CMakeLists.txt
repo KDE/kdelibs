@@ -1,8 +1,7 @@
 include_directories(
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
-   ${kconfig_SOURCE_DIR}/src/core # ksharedptr.h
-   ${kconfig_BINARY_DIR}/src
+   ${KConfig_INCLUDE_DIRS}
 )
 
 set(krosscore_LIB_SRCS
