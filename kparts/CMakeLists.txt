@@ -1,7 +1,7 @@
 project(kparts)
 
 include_directories(${ki18n_BINARY_DIR}/src ${ki18n_SOURCE_DIR}/src)
-include_directories(${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR})
+include_directories(${KDE4_KIO_INCLUDES} ${kparts_BINARY_DIR} ${KAuth_INCLUDE_DIRS})
 
 add_subdirectory( tests )
 
