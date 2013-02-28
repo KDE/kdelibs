@@ -376,7 +376,7 @@ public:
      * \sa KGlobalAccel
      * \sa setGlobalShortcut()
      */
-    const KShortcut& globalShortcut(ShortcutTypes type = ActiveShortcut) const;
+    KShortcut globalShortcut(ShortcutTypes type = ActiveShortcut) const;
 
     /**
      * Assign a global shortcut for this action. Global shortcuts

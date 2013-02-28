@@ -167,7 +167,7 @@ void KAction::setShortcuts(const QList<QKeySequence>& shortcuts, ShortcutTypes t
   setShortcut(KShortcut(shortcuts), type);
 }
 
-const KShortcut & KAction::globalShortcut(ShortcutTypes type) const
+KShortcut KAction::globalShortcut(ShortcutTypes type) const
 {
   Q_ASSERT(type);
 
