@@ -478,15 +478,20 @@ get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makek
 # dependent libraries handled correctly. But to keep compatibility and not to change
 # behaviour we set all these variables anyway as seen below. Alex
 include(${CMAKE_CURRENT_LIST_DIR}/KDELibs4LibraryTargets.cmake)
-include(${KDE4_LIB_INSTALL_DIR}/cmake/ThreadWeaver/ThreadWeaverTargets.cmake)
+
+if(NOT TARGET KF5::ThreadWeaver)
+   include(${KDE4_LIB_INSTALL_DIR}/cmake/ThreadWeaver/ThreadWeaverTargets.cmake)
+endif()
 
 # This one is for compatibility only:
-set(KDE4_THREADWEAVER_LIBRARIES ${KDE4_TARGET_PREFIX}ThreadWeaver )
+set(KDE4_THREADWEAVER_LIBRARIES KF5::ThreadWeaver )
 
 
 # Set the various KDE4_FOO_LIBRARY/LIBS variables.
 # In bootstrapping mode KDE4_TARGET_PREFIX is empty, so e.g. KDE4_KDECORE_LIBRARY
 # will be simply set to "kdecore".
+
+set(_KF5_TARGET_PREFIX "KF5::")
 
 # Sorted by names:
 _kde4_set_lib_variables(KCMUTILS      kcmutils      "${KDE4_TARGET_PREFIX}")
@@ -498,7 +503,7 @@ _kde4_set_lib_variables(KDNSSD        kdnssd        "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KEMOTICONS    kemoticons    "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KFILE         kfile         "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KHTML         khtml         "${KDE4_TARGET_PREFIX}")
-_kde4_set_lib_variables(KIDLETIME     KIdleTime     "${KDE4_TARGET_PREFIX}")
+_kde4_set_lib_variables(KIDLETIME     KIdleTime     "${_KF5_TARGET_PREFIX}")
 _kde4_set_lib_variables(KIO           kio           "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KJS           kjs           "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KJSAPI        kjsapi        "${KDE4_TARGET_PREFIX}")
@@ -513,8 +518,8 @@ _kde4_set_lib_variables(KTEXTEDITOR   ktexteditor   "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KUNITCONVERSION kunitconversion "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(KUTILS        kutils        "${KDE4_TARGET_PREFIX}")
 _kde4_set_lib_variables(PLASMA        plasma        "${KDE4_TARGET_PREFIX}")
-_kde4_set_lib_variables(SOLID         Solid         "${KDE4_TARGET_PREFIX}")
-_kde4_set_lib_variables(THREADWEAVER  ThreadWeaver  "${KDE4_TARGET_PREFIX}")
+_kde4_set_lib_variables(SOLID         Solid         "${_KF5_TARGET_PREFIX}")
+_kde4_set_lib_variables(THREADWEAVER  ThreadWeaver  "${_KF5_TARGET_PREFIX}")
 _kde4_set_lib_variables(KDE4SUPPORT   kde4support   "${KDE4_TARGET_PREFIX}")
 
 set(KDE4_KDEUI_LIBRARY ${KDE4_KDEUI_UNPORTED_LIBRARY} )
