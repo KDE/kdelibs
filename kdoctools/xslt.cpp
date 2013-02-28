@@ -353,7 +353,6 @@ void setupStandardDirs(const QString &srcdir)
         catalogs += QUrl::fromLocalFile( srcdir +"/customization/catalog.xml" ).toEncoded();
         s_dtdDirs()->srcdir = srcdir;
     }
-    qDebug() << catalogs << srcdir;
 
     qputenv( "XML_CATALOG_FILES", catalogs);
     xmlInitializeCatalog();
