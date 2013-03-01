@@ -65,10 +65,6 @@ find_package(Qt5Core REQUIRED NO_MODULE)
 
 find_package(Qt5Transitional MODULE)
 
-if (Qt5_POSITION_INDEPENDENT_CODE)
-  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-endif()
-
 add_subdirectory( libkdeqt5staging )
 
 set(kdeqt5staging_LIBRARIES kdeqt5staging)
