@@ -31,7 +31,6 @@
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kservice.h>
-#include <kio_dbushelper.h>
 
 #if ! KIO_NO_SOLID
 //Solid
@@ -260,7 +259,7 @@ QList<KServiceAction> KDesktopFileActions::userDefinedServices( const KService& 
             QDBusInterface remote( app, object, interface );
             // Do NOT use QDBus::BlockWithGui here. It runs a nested event loop,
             // in which timers can fire, leading to crashes like #149736.
-            QDBusReply<QStringList> reply = remote.call(function, KIO::DBus::convertUriList(file_list));
+            QDBusReply<QStringList> reply = remote.call(function, QUrl::toStringList(file_list));
             keys = reply;               // ensures that the reply was a QStringList
             if (keys.isEmpty())
                 return result;

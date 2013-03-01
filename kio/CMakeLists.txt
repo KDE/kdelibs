@@ -113,7 +113,6 @@ set(kiocore_STAT_SRCS
   kio/dataprotocol.cpp
   kio/dataslave.cpp
   kio/davjob.cpp
-  kio/kio_dbushelper.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
   kio/deletejob.cpp

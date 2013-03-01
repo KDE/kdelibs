@@ -864,11 +864,7 @@ void KDirListerCache::slotFilesRemoved( const QStringList &fileList ) // from KD
     // TODO: handling of symlinks-to-directories isn't done here,
     // because I'm not sure how to do it and keep the performance ok...
 
-    // Qt5 TODO: use QUrl::fromStringList
-    QList<QUrl> urls;
-    Q_FOREACH(const QString& file, fileList)
-        urls.append(QUrl(file));
-    slotFilesRemoved(urls);
+    slotFilesRemoved(QUrl::fromStringList(fileList));
 }
 
 void KDirListerCache::slotFilesRemoved(const QList<QUrl>& fileList)

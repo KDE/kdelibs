@@ -55,7 +55,6 @@
 #include "kfile/kopenwithdialog.h"
 #include "kfile/krecentdocument.h"
 #include "kdesktopfileactions.h"
-#include "kio_dbushelper.h"
 
 #include <kauthorized.h>
 #include <kmessageboxwrapper.h>
@@ -461,7 +460,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
             result << "--suggestedfilename";
             result << suggestedFileName;
         }
-        result += KIO::DBus::convertUriList(_urls); // ## abuse, this isn't related to DBus...
+        result += QUrl::toStringList(_urls);
         return result;
     }
 
@@ -496,7 +495,7 @@ QStringList KRun::processDesktopExec(const KService &_service, const QList<QUrl>
             result << suggestedFileName;
         }
         result << exec;
-        result += KIO::DBus::convertUriList(_urls);
+        result += QUrl::toStringList(_urls);
         return result;
     }
 
@@ -1062,7 +1061,7 @@ bool KRun::run(const KService& _service, const QList<QUrl>& _urls, QWidget* wind
     }
 
     int i = KToolInvocation::startServiceByDesktopPath(
-        _service.entryPath(), KIO::DBus::convertUriList(urls), &error, 0L, &pid, myasn
+        _service.entryPath(), QUrl::toStringList(urls), &error, 0L, &pid, myasn
         );
 
     if (i != 0) {

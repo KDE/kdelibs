@@ -33,7 +33,6 @@
 #include <QFile>
 #include <qmimedatabase.h>
 #include <QtAlgorithms>
-#include <kio_dbushelper.h>
 
 #include <QtDBus/QtDBus>
 
@@ -290,7 +289,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
             //    continue; //app does not exist so cannot send call
 
             QDBusMessage reply = QDBusInterface(app, obj, interface).
-                                 call(method, KIO::DBus::convertUriList(urlList));
+                                 call(method, QUrl::toStringList(urlList));
             if (reply.arguments().count() < 1 || reply.arguments().at(0).type() != QVariant::Bool || !reply.arguments().at(0).toBool()) {
                 continue;
             }
