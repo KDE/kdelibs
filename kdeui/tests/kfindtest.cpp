@@ -20,7 +20,6 @@
 */
 
 #include "kfindtest.h"
-#include <QtTestWidgets>
 #include <QtTest/QtTest>
 
 #include "kfind.h"

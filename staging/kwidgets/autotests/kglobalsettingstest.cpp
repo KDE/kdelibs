@@ -17,8 +17,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTest/QtTestWidgets>
 #include <QSignalSpy>
+#include <QtTest/QtTest>
 #include "kglobalsettingstest.h"
 
 QTEST_MAIN( KGlobalSettingsTest )

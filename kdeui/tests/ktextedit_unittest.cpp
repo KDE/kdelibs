@@ -20,7 +20,6 @@
 */
 
 #include <QClipboard>
-#include <QtTestWidgets>
 #include <QtTest/QtTest>
 #include <qtestevent.h>
 #include <ktextedit.h>

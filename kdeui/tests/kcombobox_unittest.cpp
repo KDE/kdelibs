@@ -18,7 +18,6 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QtTestWidgets>
 #include <QtTest/QtTest>
 #include <qtestevent.h>
 #include <kcombobox.h>

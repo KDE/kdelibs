@@ -19,7 +19,6 @@
 */
 
 #include <kglobalsettings.h>
-#include <QtTestWidgets>
 #include <QtTest/QtTest>
 #include <ktoolbar.h>
 #include <kmainwindow.h>

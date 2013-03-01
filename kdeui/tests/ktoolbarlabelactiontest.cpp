@@ -26,7 +26,6 @@
 #include <assert.h>
 
 #include <QVBoxLayout>
-#include <QtTestWidgets>
 #include <QtTest/QtTest>
 
 class MainWindow : public KXmlGuiWindow

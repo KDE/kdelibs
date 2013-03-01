@@ -21,7 +21,6 @@
 
 #include <QtCore/QTime>
 
-#include <QtTestWidgets>
 #include <QtTest/QtTest>
 #include "kdebug.h"
 #include "klineedit.h"

@@ -16,8 +16,6 @@
     *************************************************************************
 */
 
-#include <QtTestWidgets>
-
 #include "kemoticontest.h"
 #include <QtTest/QtTest>
 
