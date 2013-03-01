@@ -185,12 +185,12 @@ void DeclarativeWidgetPrivate::finishExecute()
                 QObject::connect(object, SIGNAL(maximumHeightChanged()), q, SLOT(maximumHeightChanged()));
             }
 
-            if (object->metaObject()->indexOfProperty("preferredWidth")>=0) {
-                preferredWidth = object->property("preferredWidth").toReal();
+            if (object->metaObject()->indexOfProperty("implicitWidth")>=0) {
+                preferredWidth = object->property("implicitWidth").toReal();
                 QObject::connect(object, SIGNAL(preferredWidthChanged()), q, SLOT(preferredWidthChanged()));
             }
-            if (object->metaObject()->indexOfProperty("preferredHeight")>=0) {
-                preferredHeight = object->property("preferredHeight").toReal();
+            if (object->metaObject()->indexOfProperty("implicitHeight")>=0) {
+                preferredHeight = object->property("implicitHeight").toReal();
                 QObject::connect(object, SIGNAL(preferredHeightChanged()), q, SLOT(preferredHeightChanged()));
             }
         }
