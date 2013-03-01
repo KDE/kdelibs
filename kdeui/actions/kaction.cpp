@@ -53,8 +53,8 @@ void KActionPrivate::init(KAction *q_ptr)
   decorator = new KAuth::ObjectDecorator(q);
   QObject::connect(decorator, SIGNAL(authorized(KAuth::Action)),
                    q, SIGNAL(authorized(KAuth::Action)));
-  QObject::connect(KGlobalAccel::self(), SIGNAL(globalShortcutChanged(KAction*,const QKeySequence&)),
-        q, SLOT(_k_emitActionGlobalShortcutChanged(KAction*,const QKeySequence&)));
+  QObject::connect(KGlobalAccel::self(), SIGNAL(globalShortcutChanged(QAction*,const QKeySequence&)),
+        q, SLOT(_k_emitActionGlobalShortcutChanged(QAction*,const QKeySequence&)));
 }
 
 void KActionPrivate::slotTriggered()
@@ -65,12 +65,12 @@ void KActionPrivate::slotTriggered()
   emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 }
 
-void KActionPrivate::_k_emitActionGlobalShortcutChanged(KAction *action, const QKeySequence &seq)
+void KActionPrivate::_k_emitActionGlobalShortcutChanged(QAction *action, const QKeySequence &seq)
 {
     if (action == q) {
         // reemit the legacy KAction::globalShortcutChanged
         // TODO: completely remove this method when KAction::globalShortcutChanged signal will be removed
-        emit action->globalShortcutChanged(seq);
+        emit q->globalShortcutChanged(seq);
     }
 }
 
@@ -176,11 +176,13 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
   bool changed = false;
 
   if ((type & DefaultShortcut) && globalShortcut(DefaultShortcut) != shortcut) {
-    changed = KGlobalAccel::self()->setDefaultShortcut(this, shortcut, load);
+    changed = KGlobalAccel::self()->setDefaultShortcut(this, shortcut,
+                                                       static_cast<KGlobalAccel::GlobalShortcutLoading>(load));
   }
 
   if ((type & ActiveShortcut) && globalShortcut(ActiveShortcut) != shortcut) {
-    changed = KGlobalAccel::self()->setShortcut(this, shortcut, load);
+    changed = KGlobalAccel::self()->setShortcut(this, shortcut,
+                                                static_cast<KGlobalAccel::GlobalShortcutLoading>(load));
   }
 
   //We want to have updateGlobalShortcuts called on a new action in any case so that

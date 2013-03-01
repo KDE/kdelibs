@@ -23,12 +23,12 @@
 #define _KGLOBALACCEL_H_
 
 #include "kdeui_export.h"
-#include "kaction.h"
 #include "kglobalshortcutinfo.h"
 #include "kcomponentdata.h"
 
 #include <QtCore/QObject>
 
+class QAction;
 class QWidget;
 class KShortcut;
 class KComponentData;
@@ -49,6 +49,17 @@ class KDEUI_EXPORT KGlobalAccel : public QObject
     Q_OBJECT
 
 public:
+    /**
+     * An enum about global shortcut setter semantics
+     */
+    enum GlobalShortcutLoading {
+      /// Look up the action in global settings (using its main component's name and text())
+      /// and set the shortcut as saved there.
+      /// @see setGlobalShortcut()
+      Autoloading = 0x0,
+      /// Prevent autoloading of saved global shortcut for action
+      NoAutoloading = 0x4
+    };
 
     /**
      * Index for actionId QStringLists
@@ -163,7 +174,7 @@ public:
             const QKeySequence &seq);
 
     /**
-     * Assign a default global shortcut for a given KAction.
+     * Assign a default global shortcut for a given QAction.
      * For more information about global shortcuts @see setShortcut
      * Upon shortcut change the globalShortcutChanged will be triggered so other applications get notified
      *
@@ -171,7 +182,7 @@ public:
      *
      * @since 5.0
      */
-    bool setDefaultShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag);
+    bool setDefaultShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag);
 
     /**
      * Assign a global shortcut for the given action. Global shortcuts
@@ -184,7 +195,7 @@ public:
      *
      * It is mandatory that the action->objectName() doesn't change once the shortcut has been sucessfully registered.
      *
-     * \note KActionCollection::insert(name, action) will set action's objectName to name so you often
+     * \note QActionCollection::insert(name, action) will set action's objectName to name so you often
      * don't have to set an objectName explicitly.
      *
      * When an action, identified by main component name and objectName(), is assigned
@@ -209,7 +220,7 @@ public:
      * @sa globalShortcutChanged
      * @since 5.0
      */
-    bool setShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag);
+    bool setShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag);
 
     /**
      * Get the global default shortcut for this action, if one exists. Global shortcuts
@@ -220,7 +231,7 @@ public:
      * @sa setDefaultShortcut()
      * @since 5.0
      */
-    KShortcut defaultShortcut(const KAction *action) const;
+    KShortcut defaultShortcut(const QAction *action) const;
 
     /**
      * Get the global shortcut for this action, if one exists. Global shortcuts
@@ -231,21 +242,21 @@ public:
      * @sa setShortcut()
      * @since 5.0
      */
-    KShortcut shortcut(const KAction *action) const;
+    KShortcut shortcut(const QAction *action) const;
 
     /**
      * Unregister and remove all defined global shortcuts for the given action.
      *
      * @since 5.0
      */
-    void removeAllShortcuts(KAction *action);
+    void removeAllShortcuts(QAction *action);
 
     /**
      * Returns true if a shortcut or a default shortcut has been registered for the given action
      *
      * @since 5.0
      */
-    bool hasShortcut(const KAction *action) const;
+    bool hasShortcut(const QAction *action) const;
 
     /**
      * No effect.
@@ -319,12 +330,9 @@ Q_SIGNALS:
      * @see setDefaultShortcut
      * @since 5.0
      */
-    void globalShortcutChanged(KAction *action, const QKeySequence &seq);
+    void globalShortcutChanged(QAction *action, const QKeySequence &seq);
 
 private:
-
-    friend class KAction;
-
     /// Creates a new KGlobalAccel object
     KGlobalAccel();
 

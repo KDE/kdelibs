@@ -24,7 +24,7 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
-#include <kaction.h>
+#include <QWidget>
 
 #include "kcomponentdata.h"
 #include "kglobalaccel.h"
@@ -44,6 +44,15 @@ enum SetShortcutFlag
 class KGlobalAccelPrivate
 {
 public:
+    enum ShortcutType {
+      /// The shortcut will immediately become active but may be reset to "default".
+      ActiveShortcut = 0x1,
+      /// The shortcut is a default shortcut - it becomes active when somebody decides to
+      /// reset shortcuts to default.
+      DefaultShortcut = 0x2
+    };
+
+    Q_DECLARE_FLAGS(ShortcutTypes, ShortcutType)
     enum Removal {
         SetInactive = 0,    ///< Forget the action in this class and mark it as not present in the KDED module
         UnRegister          ///< Remove any trace of the action in this class and in the KDED module
@@ -52,17 +61,17 @@ public:
 
     ///Propagate any shortcut changes to the KDED module that does the bookkeeping
     ///and the key grabbing.
-    void updateGlobalShortcut(KAction *action, KAction::ShortcutTypes actionFlags, KAction::GlobalShortcutLoading globalFlags);
+    void updateGlobalShortcut(QAction *action, ShortcutTypes actionFlags, KGlobalAccel::GlobalShortcutLoading globalFlags);
 
     ///Register the action in this class and in the KDED module
-    bool doRegister(KAction *action);   //"register" is a C keyword :p
+    bool doRegister(QAction *action);   //"register" is a C keyword :p
     ///cf. the RemoveAction enum
-    void remove (KAction *action, Removal r);
+    void remove (QAction *action, Removal r);
 
     //"private" helpers
-    QString componentUniqueForAction(const KAction *action);
-    QString componentFriendlyForAction(const KAction *action);
-    QStringList makeActionId(const KAction *action);
+    QString componentUniqueForAction(const QAction *action);
+    QString componentFriendlyForAction(const QAction *action);
+    QStringList makeActionId(const QAction *action);
     QList<int> intListFromShortcut(const KShortcut &cut);
     KShortcut shortcutFromIntList(const QList<int> &list);
     void readComponentData(const KComponentData &component);
@@ -74,8 +83,8 @@ public:
     void reRegisterAll();
 
     //for all actions with (isEnabled() && globalShortcutAllowed())
-    QMultiHash<QString, KAction *> nameToAction;
-    QSet<KAction *> actions;
+    QMultiHash<QString, QAction *> nameToAction;
+    QSet<QAction *> actions;
     QWidget actionsWidget; // Used to know when an action is deleted (via event filter)
 
     bool enabled;
@@ -91,8 +100,10 @@ public:
 
     //! The components the application is using
     QHash<QString, org::kde::kglobalaccel::Component *> components;
-    QMap<const KAction*, KShortcut> actionDefaultShortcuts;
-    QMap<const KAction*, KShortcut> actionShortcuts;
+    QMap<const QAction*, KShortcut> actionDefaultShortcuts;
+    QMap<const QAction*, KShortcut> actionShortcuts;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(KGlobalAccelPrivate::ShortcutTypes)
 
 #endif

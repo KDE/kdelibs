@@ -26,6 +26,7 @@
 
 #include <memory>
 
+#include <QAction>
 #include <QActionEvent>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
@@ -38,8 +39,6 @@
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include <kcomponentdata.h>
-#include "kaction.h"
-#include "kaction_p.h"
 #include "kmessagebox.h"
 #include "kshortcut.h"
 
@@ -217,7 +216,7 @@ KGlobalAccel *KGlobalAccel::self()
 }
 
 
-bool KGlobalAccelPrivate::doRegister(KAction *action)
+bool KGlobalAccelPrivate::doRegister(QAction *action)
 {
     if (!action || action->objectName().isEmpty() || action->objectName().startsWith(QLatin1String("unnamed-"))) {
         qWarning() << "Attempt to set global shortcut for action without objectName()."
@@ -239,7 +238,7 @@ bool KGlobalAccelPrivate::doRegister(KAction *action)
 }
 
 
-void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
+void KGlobalAccelPrivate::remove(QAction *action, Removal removal)
 {
     if (!action  || action->objectName().isEmpty()) {
         return;
@@ -275,10 +274,11 @@ void KGlobalAccelPrivate::remove(KAction *action, Removal removal)
     actionShortcuts.remove(action);
 }
 
-void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, KAction::ShortcutTypes actionFlags, KAction::GlobalShortcutLoading globalFlags)
+void KGlobalAccelPrivate::updateGlobalShortcut(QAction *action,
+                                               ShortcutTypes actionFlags,
+                                               KGlobalAccel::GlobalShortcutLoading globalFlags)
 {
     // No action or no objectname -> Do nothing
-    // KAction::setGlobalShortcut informs the user
     if (!action || action->objectName().isEmpty()) {
         return;
     }
@@ -292,8 +292,14 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, KAction::Shortcu
         setterFlags |= NoAutoloading;
     }
 
+<<<<<<< HEAD
     if (actionFlags & KAction::ActiveShortcut) {
         bool isConfigurationAction = action->property("isConfigurationAction").toBool();
+=======
+    if (actionFlags & ActiveShortcut) {
+        bool isConfigurationAction = isUsingForeignComponentName
+            || action->property("isConfigurationAction").toBool();
+>>>>>>> KGlobalAccel doesn't depend on KAction anymore
         uint activeSetterFlags = setterFlags;
 
         // setPresent tells kglobalaccel that the shortcut is active
@@ -333,14 +339,14 @@ void KGlobalAccelPrivate::updateGlobalShortcut(KAction *action, KAction::Shortcu
         }
     }
 
-    if (actionFlags & KAction::DefaultShortcut) {
+    if (actionFlags & DefaultShortcut) {
         iface.setShortcut(actionId, intListFromShortcut(defaultShortcut),
                           setterFlags | IsDefault);
     }
 }
 
 
-QStringList KGlobalAccelPrivate::makeActionId(const KAction *action)
+QStringList KGlobalAccelPrivate::makeActionId(const QAction *action)
 {
     QStringList ret(componentUniqueForAction(action));  // Component Unique Id ( see actionIdFields )
     Q_ASSERT(!ret.at(KGlobalAccel::ComponentUnique).isEmpty());
@@ -375,15 +381,19 @@ KShortcut KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
 }
 
 
-QString KGlobalAccelPrivate::componentUniqueForAction(const KAction *action)
+QString KGlobalAccelPrivate::componentUniqueForAction(const QAction *action)
 {
-    return action->d->componentName;
+    if (!action->property("componentName").isValid()) {
+        return QCoreApplication::applicationName();
+    } else {
+        return action->property("componentName").toString();
+    }
 }
 
 
-QString KGlobalAccelPrivate::componentFriendlyForAction(const KAction *action)
+QString KGlobalAccelPrivate::componentFriendlyForAction(const QAction *action)
 {
-    return action->d->componentDisplayName;
+    return action->property("componentDisplayName").toString();
 }
 
 
@@ -392,9 +402,21 @@ void KGlobalAccelPrivate::_k_invokeAction(
         const QString &actionUnique,
         qlonglong timestamp)
 {
+<<<<<<< HEAD
     KAction *action = 0;
     QList<KAction *> candidates = nameToAction.values(actionUnique);
     foreach (KAction *const a, candidates) {
+=======
+    // If overrideMainComponentData() is active the app can only have
+    // configuration actions.
+    if (isUsingForeignComponentName ) {
+        return;
+    }
+
+    QAction *action = 0;
+    QList<QAction *> candidates = nameToAction.values(actionUnique);
+    foreach (QAction *const a, candidates) {
+>>>>>>> KGlobalAccel doesn't depend on KAction anymore
         if (componentUniqueForAction(a) == componentUnique) {
             action = a;
         }
@@ -428,7 +450,7 @@ void KGlobalAccelPrivate::_k_invokeAction(
 void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
                                                 const QList<int> &keys)
 {
-    KAction *action = nameToAction.value(actionId.at(KGlobalAccel::ActionUnique));
+    QAction *action = nameToAction.value(actionId.at(KGlobalAccel::ActionUnique));
     if (!action)
         return;
 
@@ -455,13 +477,13 @@ void KGlobalAccelPrivate::reRegisterAll()
     //shortcut was changed but the kded side died before it got the message so
     //autoloading will now assign an old shortcut to the action. Particularly
     //picky apps might assert or misbehave.
-    QSet<KAction *> allActions = actions;
+    QSet<QAction *> allActions = actions;
     nameToAction.clear();
     actions.clear();
-    foreach(KAction *const action, allActions) {
+    foreach(QAction *const action, allActions) {
         actionsWidget.removeAction(action);
         if (doRegister(action)) {
-            updateGlobalShortcut(action, KAction::ActiveShortcut, KAction::Autoloading);
+            updateGlobalShortcut(action, ActiveShortcut, KGlobalAccel::Autoloading);
         }
     }
 }
@@ -598,7 +620,7 @@ bool checkGarbageKeycode(const KShortcut &shortcut)
   return false;
 }
 
-bool KGlobalAccel::setDefaultShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag)
+bool KGlobalAccel::setDefaultShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag)
 {
     if (checkGarbageKeycode(shortcut))
         return false;
@@ -606,11 +628,11 @@ bool KGlobalAccel::setDefaultShortcut(KAction *action, const KShortcut &shortcut
     if (!d->doRegister(action))
         return false;
 
-    d->updateGlobalShortcut(action, KAction::DefaultShortcut, loadFlag);
+    d->updateGlobalShortcut(action, KGlobalAccelPrivate::DefaultShortcut, loadFlag);
     return true;
 }
 
-bool KGlobalAccel::setShortcut(KAction *action, const KShortcut &shortcut, KAction::GlobalShortcutLoading loadFlag)
+bool KGlobalAccel::setShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag)
 {
     if (checkGarbageKeycode(shortcut))
         return false;
@@ -618,26 +640,26 @@ bool KGlobalAccel::setShortcut(KAction *action, const KShortcut &shortcut, KActi
     if (!d->doRegister(action))
         return false;
 
-    d->updateGlobalShortcut(action, KAction::ActiveShortcut, loadFlag);
+    d->updateGlobalShortcut(action, KGlobalAccelPrivate::ActiveShortcut, loadFlag);
     return true;
 }
 
-KShortcut KGlobalAccel::defaultShortcut(const KAction *action) const
+KShortcut KGlobalAccel::defaultShortcut(const QAction *action) const
 {
     return d->actionDefaultShortcuts.value(action);
 }
 
-KShortcut KGlobalAccel::shortcut(const KAction *action) const
+KShortcut KGlobalAccel::shortcut(const QAction *action) const
 {
     return d->actionShortcuts.value(action);
 }
 
-void KGlobalAccel::removeAllShortcuts(KAction *action)
+void KGlobalAccel::removeAllShortcuts(QAction *action)
 {
     d->remove(action, KGlobalAccelPrivate::UnRegister);
 }
 
-bool KGlobalAccel::hasShortcut(const KAction *action) const
+bool KGlobalAccel::hasShortcut(const QAction *action) const
 {
     return d->actionShortcuts.contains(action) || d->actionDefaultShortcuts.contains(action);
 }
@@ -652,7 +674,7 @@ bool KGlobalAccel::eventFilter(QObject *watched, QEvent *event)
 
     if (watched == &d->actionsWidget && event->type() == QEvent::ActionRemoved) {
         QActionEvent *e = static_cast<QActionEvent*>(event);
-        KAction *action = static_cast<KAction*>(e->action());
+        QAction *action = e->action();
         if (d->actions.contains(action) && hasShortcut(action)) {
             d->remove(action, KGlobalAccelPrivate::SetInactive);
         }

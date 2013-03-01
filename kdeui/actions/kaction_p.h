@@ -19,6 +19,7 @@
 #ifndef KACTION_P_H
 #define KACTION_P_H
 
+#include "kaction.h"
 #include "kglobalaccel.h"
 #include "kgesturemap.h"
 #include <kshortcut.h>
@@ -39,7 +40,7 @@ class KActionPrivate
         }
 
         void slotTriggered();
-        void _k_emitActionGlobalShortcutChanged(KAction *action, const QKeySequence &seq);
+        void _k_emitActionGlobalShortcutChanged(QAction *action, const QKeySequence &seq);
         void authStatusChanged(KAuth::Action::AuthStatus status);
 
         void init(KAction *q_ptr);
@@ -48,8 +49,8 @@ class KActionPrivate
         void maybeSetComponentName(const QString &cname, const QString &dispName)
         {
             if (neverSetGlobalShortcut) {
-                componentName = cname;
-                componentDisplayName = dispName;
+                q->setProperty("componentName", cname);
+                q->setProperty("componentDisplayName", dispName);
             }
         }
 
