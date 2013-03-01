@@ -35,7 +35,7 @@ class KActionPrivate
 {
     public:
         KActionPrivate()
-            : componentName(QCoreApplication::applicationName()), q(0), decorator(0)
+            : q(0), decorator(0)
         {
         }
 
@@ -45,10 +45,6 @@ class KActionPrivate
 
         void init(KAction *q_ptr);
 
-        QString componentName;
-        QString componentDisplayName;
-
-        bool neverSetGlobalShortcut : 1;
         KAction *q;
 
         KAuth::ObjectDecorator *decorator;

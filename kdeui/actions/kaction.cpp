@@ -44,7 +44,6 @@
 void KActionPrivate::init(KAction *q_ptr)
 {
   q = q_ptr;
-  neverSetGlobalShortcut = true;
 
   QObject::connect(q, SIGNAL(triggered(bool)), q, SLOT(slotTriggered()));
 
@@ -184,13 +183,6 @@ void KAction::setGlobalShortcut( const KShortcut & shortcut, ShortcutTypes type,
     changed = KGlobalAccel::self()->setShortcut(this, shortcut,
                                                 static_cast<KGlobalAccel::GlobalShortcutLoading>(load));
   }
-
-  //We want to have updateGlobalShortcuts called on a new action in any case so that
-  //it will be registered properly. In the case of the first setShortcut() call getting an
-  //empty shortcut parameter this would not happen...
-  if (changed || d->neverSetGlobalShortcut) {
-    d->neverSetGlobalShortcut = false;
-  }
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -219,7 +211,6 @@ void KAction::setGlobalShortcutAllowed( bool allowed, GlobalShortcutLoading /* l
 void KAction::forgetGlobalShortcut()
 {
     if (isGlobalShortcutEnabled()) {
-        d->neverSetGlobalShortcut = true;   //it's a fresh start :)
         KGlobalAccel::self()->removeAllShortcuts(this);
     }
 }
