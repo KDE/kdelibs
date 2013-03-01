@@ -28,7 +28,7 @@
 #include "kgesture.h"
 
 class QApplication;
-class KAction;
+class QAction;
 class QEvent;
 
 class KDEUI_EXPORT KGestureMap : public QObject
@@ -38,20 +38,20 @@ public:
     static KGestureMap *self();
 
     virtual bool eventFilter(QObject *obj, QEvent *e);
-    void setShapeGesture(KAction *kact, const KShapeGesture &gesture);
-    void setRockerGesture(KAction *kact, const KRockerGesture &gesture);
-    void setDefaultShapeGesture(KAction *kact, const KShapeGesture &gesture);
-    void setDefaultRockerGesture(KAction *kact, const KRockerGesture &gesture);
+    void setShapeGesture(QAction *kact, const KShapeGesture &gesture);
+    void setRockerGesture(QAction *kact, const KRockerGesture &gesture);
+    void setDefaultShapeGesture(QAction *kact, const KShapeGesture &gesture);
+    void setDefaultRockerGesture(QAction *kact, const KRockerGesture &gesture);
     /**
      * This method will remove all gestures defined for a given action
      */
-    void removeAllGestures(KAction *kact);
-    KAction *findAction(const KShapeGesture &gesture) const;
-    KAction *findAction(const KRockerGesture &gesture) const;
-    KShapeGesture shapeGesture(const KAction *kact ) const;
-    KShapeGesture defaultShapeGesture(const KAction *kact) const;
-    KRockerGesture rockerGesture(const KAction *kact) const;
-    KRockerGesture defaultRockerGesture(const KAction *kact) const;
+    void removeAllGestures(QAction *kact);
+    QAction *findAction(const KShapeGesture &gesture) const;
+    QAction *findAction(const KRockerGesture &gesture) const;
+    KShapeGesture shapeGesture(const QAction *kact ) const;
+    KShapeGesture defaultShapeGesture(const QAction *kact) const;
+    KRockerGesture rockerGesture(const QAction *kact) const;
+    KRockerGesture defaultRockerGesture(const QAction *kact) const;
 
 private Q_SLOTS:
     void stopAcquisition();
@@ -66,12 +66,12 @@ private:
     void installEventFilterOnMe(QApplication *app);
 
     inline int bitCount(int n);
-    void handleAction(KAction *kact);
+    void handleAction(QAction *kact);
     void matchShapeGesture();
 
     //this is an internal class so don't bother with a d-pointer
-    typedef QHash< KShapeGesture, KAction* > ShapeGestureHash;
-    typedef QHash< KRockerGesture, KAction* > RockerGestureHash;
+    typedef QHash< KShapeGesture, QAction* > ShapeGestureHash;
+    typedef QHash< KRockerGesture, QAction* > RockerGestureHash;
     ShapeGestureHash m_shapeGestures;
     ShapeGestureHash m_defaultShapeGestures;
     RockerGestureHash m_rockerGestures;

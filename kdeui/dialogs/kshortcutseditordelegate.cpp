@@ -80,7 +80,7 @@ KShortcutsEditorDelegate::KShortcutsEditorDelegate(QTreeWidget *parent, bool all
 
 void KShortcutsEditorDelegate::stealShortcut(
     const QKeySequence &seq,
-    KAction *action)
+    QAction *action)
 {
     QTreeWidget *view = static_cast<QTreeWidget *>(parent());
 
@@ -93,7 +93,7 @@ void KShortcutsEditorDelegate::stealShortcut(
 
             // We found the action, snapshot the current state. Steal the
             // shortcut. We will save the change later.
-            KShortcut cut = action->shortcut();
+            KShortcut cut(action->shortcuts());
             if (   cut.primary().matches(seq) != QKeySequence::NoMatch
                 || seq.matches(cut.primary()) != QKeySequence::NoMatch) {
                 item->setKeySequence(LocalPrimary, QKeySequence());
@@ -196,8 +196,8 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
 
             connect(m_editor, SIGNAL(keySequenceChanged(QKeySequence)),
                     this, SLOT(keySequenceChanged(QKeySequence)));
-            connect(m_editor, SIGNAL(stealShortcut(QKeySequence,KAction*)),
-                    this, SLOT(stealShortcut(QKeySequence,KAction*)));
+            connect(m_editor, SIGNAL(stealShortcut(QKeySequence,QAction*)),
+                    this, SLOT(stealShortcut(QKeySequence,QAction*)));
 
         } else if (column == RockerGesture) {
             m_editor = new QLabel("A lame placeholder", viewport);

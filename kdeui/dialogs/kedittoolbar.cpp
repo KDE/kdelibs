@@ -22,6 +22,7 @@
 #include <QShowEvent>
 
 
+#include <QAction>
 #include <QDialogButtonBox>
 #include <QtXml/QDomDocument>
 #include <QLayout>
@@ -51,7 +52,6 @@
 #include <kcombobox.h>
 #include <klineedit.h>
 
-#include "kaction.h"
 #include "kactioncollection.h"
 
 static const char * const separatorstring = I18N_NOOP("--- separator ---");
@@ -458,7 +458,7 @@ public:
     QToolButton *m_insertAction;
     QToolButton *m_downAction;
 
-    //QValueList<KAction*> m_actionList;
+    //QValueList<QAction*> m_actionList;
     KActionCollection* m_collection;
     KEditToolBarWidget* m_widget;
     KXMLGUIFactory* m_factory;

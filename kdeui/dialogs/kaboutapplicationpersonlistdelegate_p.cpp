@@ -20,13 +20,13 @@
 #include "kaboutapplicationpersonmodel_p.h"
 #include "kaboutapplicationpersonlistview_p.h"
 #include "ktoolbar.h"
-#include "kaction.h"
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
 #include <qdesktopservices.h>
 #include <qstandardpaths.h>
+#include <QAction>
 #include <QApplication>
 #include <QPainter>
 
@@ -56,17 +56,17 @@ QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets() const
 
     KToolBar *mainLinks = new KToolBar( itemView(), false, false );
 
-    KAction *emailAction = new KAction( QIcon::fromTheme( "internet-mail" ),
+    QAction *emailAction = new QAction( QIcon::fromTheme( "internet-mail" ),
                                         i18nc( "Action to send an email to a contributor", "Email contributor" ),
                                         mainLinks );
     emailAction->setVisible( false );
     mainLinks->addAction( emailAction );
-    KAction *homepageAction = new KAction( QIcon::fromTheme( "applications-internet" ),
+    QAction *homepageAction = new QAction( QIcon::fromTheme( "applications-internet" ),
                                            i18n( "Visit contributor's homepage" ),
                                            mainLinks );
     homepageAction->setVisible( false );
     mainLinks->addAction( homepageAction );
-    KAction *visitProfileAction = new KAction( QIcon::fromTheme( "get-hot-new-stuff" ), "", mainLinks );
+    QAction *visitProfileAction = new QAction( QIcon::fromTheme( "get-hot-new-stuff" ), "", mainLinks );
     visitProfileAction->setVisible( false );
     mainLinks->addAction( visitProfileAction );
 
@@ -75,7 +75,7 @@ QList< QWidget *> KAboutApplicationPersonListDelegate::createItemWidgets() const
 
     KToolBar *socialLinks = new KToolBar( itemView(), false, false );
     for( int i = 0; i < MAX_SOCIAL_LINKS; ++i ) {
-        KAction *action = new KAction( QIcon::fromTheme( "applications-internet" ), "", socialLinks );
+        QAction *action = new QAction( QIcon::fromTheme( "applications-internet" ), "", socialLinks );
         action->setVisible( false );
         socialLinks->addAction( action );
     }
@@ -120,22 +120,22 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     mainLinks->setIconSize( QSize( 22, 22 ) );
     mainLinks->setContentsMargins( 0, 0, 0, 0 );
     mainLinks->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
-    KAction *action;
+    QAction *action;
     if( !profile.email().isEmpty() ) {
-        action = qobject_cast< KAction * >( mainLinks->actions().at( EmailAction ) );
+        action = mainLinks->actions().at(EmailAction);
         action->setToolTip( i18nc( "Action to send an email to a contributor",
                                    "Email contributor\n%1", profile.email() ) );
         action->setData( QString( QLatin1String( "mailto:") + profile.email() ) );
         action->setVisible( true );
     }
     if( !profile.homepage().isEmpty() ) {
-        action = qobject_cast< KAction * >( mainLinks->actions().at( HomepageAction ) );
+        action = mainLinks->actions().at(HomepageAction);
         action->setToolTip( i18n( "Visit contributor's homepage\n%1", profile.homepage().toString() ) );
         action->setData( profile.homepage().toString() );
         action->setVisible( true );
     }
     if( !profile.ocsProfileUrl().isEmpty() ) {
-        action = qobject_cast< KAction * >( mainLinks->actions().at( VisitProfileAction ) );
+        action = mainLinks->actions().at(VisitProfileAction);
         KAboutApplicationPersonModel *model = qobject_cast< KAboutApplicationPersonModel * >( itemView()->model() );
         action->setToolTip( i18n( "Visit contributor's profile on %1\n%2",
                                   model->providerName(),
@@ -157,7 +157,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
         if( !profile.homepage().isEmpty() && profile.homepage() == link.url() )
             continue;   //We skip it if it's the same as the homepage from KAboutData
 
-        action = qobject_cast< KAction * >( socialLinks->actions().at( currentSocialLinkAction ) );
+        action = socialLinks->actions().at(currentSocialLinkAction);
         if( link.type() == KAboutApplicationPersonProfileOcsLink::Other ) {
             action->setToolTip( i18n( "Visit contributor's page\n%1",
                                       link.url().toString() ) );

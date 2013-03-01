@@ -29,7 +29,6 @@
 #include "kactioncollection.h"
 
 
-class KAction;
 struct KActionCategoryPrivate;
 
 class QAction;
@@ -121,8 +120,6 @@ public:
     //@{
     QAction * addAction(const QString &name, QAction *action);
 
-    KAction * addAction(const QString &name, KAction *action);
-
     QAction * addAction(
             KStandardAction::StandardAction actionType,
             const QObject *receiver = NULL,
@@ -134,7 +131,7 @@ public:
             const QObject *receiver = NULL,
             const char *member = NULL);
 
-    KAction *addAction(
+    QAction *addAction(
             const QString &name,
             const QObject *receiver = NULL,
             const char *member = NULL);

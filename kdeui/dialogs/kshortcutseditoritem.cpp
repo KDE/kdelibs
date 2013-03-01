@@ -25,14 +25,15 @@
 
 #include "kshortcutsdialog_p.h"
 
-#include <kaction.h>
+#include <QAction>
 #include <kgesturemap.h>
+#include <kglobalaccel.h>
 #include <kdebug.h>
 #include <kstringhandler.h>
 
 #include <QTreeWidgetItem>
 
-KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action)
+KShortcutsEditorItem::KShortcutsEditorItem(QTreeWidgetItem *parent, QAction *action)
     : QTreeWidgetItem(parent, ActionItem)
     , m_action(action)
     , m_isNameBold(false)
@@ -97,7 +98,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
     case Qt::WhatsThisRole:
         return m_action->whatsThis();
     case Qt::ToolTipRole:
-        // There is no such thing as a KAction::description(). So we have
+        // There is no such thing as a QAction::description(). So we have
         // nothing to display here.
         return QVariant();
     case Qt::FontRole:
@@ -113,13 +114,11 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             return false;
         case LocalPrimary:
         case LocalAlternate:
-            if (!m_action->isShortcutConfigurable()) {
-                return false;
-            }
-            return true;
+            return !m_action->property("isShortcutConfigurable").isValid()
+                || m_action->property("isShortcutConfigurable").toBool();
         case GlobalPrimary:
         case GlobalAlternate:
-            if (!m_action->isGlobalShortcutEnabled()) {
+            if (KGlobalAccel::self()->hasShortcut(m_action)) {
                 return false;
             }
             return true;
@@ -148,16 +147,20 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             return QVariant();
         }
 
-    case DefaultShortcutRole:
+
+    case DefaultShortcutRole: {
+        QList<QKeySequence> defaultShortcuts = m_action->property("defaultShortcuts").value<QList<QKeySequence> >();
+        KShortcut defaultGlobalShortcuts = KGlobalAccel::self()->defaultShortcut(m_action);
+
         switch(column) {
         case LocalPrimary:
-            return m_action->shortcut(KAction::DefaultShortcut).primary();
+            return defaultShortcuts.isEmpty() ? QKeySequence() : defaultShortcuts.at(0);
         case LocalAlternate:
-            return m_action->shortcut(KAction::DefaultShortcut).alternate();
+            return defaultShortcuts.size() <= 1 ? QKeySequence() : defaultShortcuts.at(1);
         case GlobalPrimary:
-            return m_action->globalShortcut(KAction::DefaultShortcut).primary();
+            return defaultGlobalShortcuts.primary();
         case GlobalAlternate:
-            return m_action->globalShortcut(KAction::DefaultShortcut).alternate();
+            return defaultGlobalShortcuts.alternate();
         case ShapeGesture: {
             QVariant ret;
             ret.setValue(KGestureMap::self()->defaultShapeGesture(m_action));
@@ -171,6 +174,7 @@ QVariant KShortcutsEditorItem::data(int column, int role) const
             Q_ASSERT(false);
             return QVariant();
         }
+    }
     case ObjectRole:
         return qVariantFromValue((QObject*)m_action);
 
@@ -191,15 +195,18 @@ bool KShortcutsEditorItem::operator<(const QTreeWidgetItem &other) const
 
 QKeySequence KShortcutsEditorItem::keySequence(uint column) const
 {
+    QList<QKeySequence> shortcuts = m_action->shortcuts();
+    KShortcut globalShortcut = KGlobalAccel::self()->shortcut(m_action);
+
     switch (column) {
     case LocalPrimary:
-        return m_action->shortcut().primary();
+        return shortcuts.isEmpty() ? QKeySequence() : shortcuts.at(0);
     case LocalAlternate:
-        return m_action->shortcut().alternate();
+        return shortcuts.size() <= 1 ? QKeySequence() : shortcuts.at(1);
     case GlobalPrimary:
-        return m_action->globalShortcut().primary();
+        return globalShortcut.primary();
     case GlobalAlternate:
-        return m_action->globalShortcut().alternate();
+        return globalShortcut.alternate();
     default:
         return QKeySequence();
     }
@@ -210,11 +217,11 @@ void KShortcutsEditorItem::setKeySequence(uint column, const QKeySequence &seq)
 {
     KShortcut ks;
     if (column == GlobalPrimary || column == GlobalAlternate) {
-        ks = m_action->globalShortcut();
+        ks = KGlobalAccel::self()->shortcut(m_action);
         if (!m_oldGlobalShortcut)
             m_oldGlobalShortcut = new KShortcut(ks);
      } else {
-        ks = m_action->shortcut();
+        ks = KShortcut(m_action->shortcuts());
         if (!m_oldLocalShortcut)
             m_oldLocalShortcut = new KShortcut(ks);
     }
@@ -226,9 +233,9 @@ void KShortcutsEditorItem::setKeySequence(uint column, const QKeySequence &seq)
 
     //avoid also setting the default shortcut - what we are setting here is custom by definition
     if (column == GlobalPrimary || column == GlobalAlternate) {
-        m_action->setGlobalShortcut(ks, KAction::ActiveShortcut, KAction::NoAutoloading);
+        KGlobalAccel::self()->setShortcut(m_action, ks, KGlobalAccel::NoAutoloading);
     } else {
-        m_action->setShortcut(ks, KAction::ActiveShortcut);
+        m_action->setShortcuts(ks);
     }
 
     updateModified();
@@ -260,11 +267,11 @@ void KShortcutsEditorItem::setRockerGesture(const KRockerGesture &gst)
 //our definition of modified is "modified since the chooser was shown".
 void KShortcutsEditorItem::updateModified()
 {
-    if (m_oldLocalShortcut && *m_oldLocalShortcut == m_action->shortcut()) {
+    if (m_oldLocalShortcut && *m_oldLocalShortcut == KShortcut(m_action->shortcuts())) {
         delete m_oldLocalShortcut;
         m_oldLocalShortcut = 0;
     }
-    if (m_oldGlobalShortcut && *m_oldGlobalShortcut == m_action->globalShortcut()) {
+    if (m_oldGlobalShortcut && *m_oldGlobalShortcut == KGlobalAccel::self()->shortcut(m_action)) {
         delete m_oldGlobalShortcut;
         m_oldGlobalShortcut = 0;
     }
@@ -289,17 +296,17 @@ bool KShortcutsEditorItem::isModified(uint column) const
         if (!m_oldLocalShortcut)
             return false;
         if (column == LocalPrimary)
-            return m_oldLocalShortcut->primary() != m_action->shortcut().primary();
+            return m_oldLocalShortcut->primary() != KShortcut(m_action->shortcuts()).primary();
         else
-            return m_oldLocalShortcut->alternate() != m_action->shortcut().alternate();
+            return m_oldLocalShortcut->alternate() != KShortcut(m_action->shortcut()).alternate();
     case GlobalPrimary:
     case GlobalAlternate:
         if (!m_oldGlobalShortcut)
             return false;
         if (column == GlobalPrimary)
-            return m_oldGlobalShortcut->primary() != m_action->globalShortcut().primary();
+            return m_oldGlobalShortcut->primary() != KGlobalAccel::self()->shortcut(m_action).primary();
         else
-            return m_oldGlobalShortcut->alternate() != m_action->globalShortcut().alternate();
+            return m_oldGlobalShortcut->alternate() != KGlobalAccel::self()->shortcut(m_action).alternate();
     case ShapeGesture:
         return static_cast<bool>(m_oldShapeGesture);
     case RockerGesture:
@@ -320,12 +327,11 @@ void KShortcutsEditorItem::undo()
 #endif
     if (m_oldLocalShortcut) {
         // We only ever reset the active Shortcut
-        m_action->setShortcut(*m_oldLocalShortcut, KAction::ActiveShortcut);
+        m_action->setShortcuts(*m_oldLocalShortcut);
     }
 
     if (m_oldGlobalShortcut) {
-        m_action->setGlobalShortcut(*m_oldGlobalShortcut, KAction::ActiveShortcut,
-                                    KAction::NoAutoloading);
+        KGlobalAccel::self()->setShortcut(m_action, *m_oldGlobalShortcut, KGlobalAccel::NoAutoloading);
     }
 
     if (m_oldShapeGesture) {

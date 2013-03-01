@@ -20,7 +20,7 @@
 #include "kgesturemap.h"
 
 #include <qapplication.h>
-#include <kaction.h>
+#include <QAction>
 #include <QActionEvent>
 
 
@@ -64,7 +64,7 @@ KGestureMap::KGestureMap()
 }
 
 
-void KGestureMap::setShapeGesture(KAction *act, const KShapeGesture &gesture)
+void KGestureMap::setShapeGesture(QAction *act, const KShapeGesture &gesture)
 {
     if (!gesture.isValid() || !act)
         return;
@@ -76,7 +76,7 @@ void KGestureMap::setShapeGesture(KAction *act, const KShapeGesture &gesture)
 }
 
 
-void KGestureMap::setRockerGesture(KAction *act, const KRockerGesture &gesture)
+void KGestureMap::setRockerGesture(QAction *act, const KRockerGesture &gesture)
 {
     if (!gesture.isValid() || !act)
         return;
@@ -87,7 +87,7 @@ void KGestureMap::setRockerGesture(KAction *act, const KRockerGesture &gesture)
     m_rockerGestures.insert(gesture, act);
 }
 
-void KGestureMap::setDefaultShapeGesture(KAction *act, const KShapeGesture &gesture)
+void KGestureMap::setDefaultShapeGesture(QAction *act, const KShapeGesture &gesture)
 {
     if (!gesture.isValid() || !act)
         return;
@@ -99,7 +99,7 @@ void KGestureMap::setDefaultShapeGesture(KAction *act, const KShapeGesture &gest
 }
 
 
-void KGestureMap::setDefaultRockerGesture(KAction *act, const KRockerGesture &gesture)
+void KGestureMap::setDefaultRockerGesture(QAction *act, const KRockerGesture &gesture)
 {
     if (!gesture.isValid() || !act)
         return;
@@ -110,7 +110,7 @@ void KGestureMap::setDefaultRockerGesture(KAction *act, const KRockerGesture &ge
     m_defaultRockerGestures.insert(gesture, act);
 }
 
-void KGestureMap::removeAllGestures(KAction* kact)
+void KGestureMap::removeAllGestures(QAction* kact)
 {
     KShapeGesture activeGesture;
     ShapeGestureHash::iterator si = m_shapeGestures.begin();
@@ -150,13 +150,13 @@ void KGestureMap::removeAllGestures(KAction* kact)
     }
 }
 
-KAction *KGestureMap::findAction(const KShapeGesture &gesture) const
+QAction *KGestureMap::findAction(const KShapeGesture &gesture) const
 {
     return m_shapeGestures.value(gesture);
 }
 
 
-KAction *KGestureMap::findAction(const KRockerGesture &gesture) const
+QAction *KGestureMap::findAction(const KRockerGesture &gesture) const
 {
     return m_rockerGestures.value(gesture);
 }
@@ -167,7 +167,7 @@ void KGestureMap::installEventFilterOnMe(QApplication *app)
     app->installEventFilter(this);
 }
 
-KShapeGesture KGestureMap::shapeGesture(const KAction* kact) const
+KShapeGesture KGestureMap::shapeGesture(const QAction* kact) const
 {
     KShapeGesture activeGesture;
     ShapeGestureHash::const_iterator it = m_shapeGestures.constBegin();
@@ -181,7 +181,7 @@ KShapeGesture KGestureMap::shapeGesture(const KAction* kact) const
     return activeGesture;
 }
 
-KShapeGesture KGestureMap::defaultShapeGesture(const KAction* kact) const
+KShapeGesture KGestureMap::defaultShapeGesture(const QAction* kact) const
 {
     KShapeGesture defaultGesture;
     ShapeGestureHash::const_iterator it = m_defaultShapeGestures.constBegin();
@@ -195,7 +195,7 @@ KShapeGesture KGestureMap::defaultShapeGesture(const KAction* kact) const
     return defaultGesture;
 }
 
-KRockerGesture KGestureMap::rockerGesture(const KAction* kact) const
+KRockerGesture KGestureMap::rockerGesture(const QAction* kact) const
 {
     KRockerGesture activeGesture;
     RockerGestureHash::const_iterator it = m_rockerGestures.constBegin();
@@ -209,7 +209,7 @@ KRockerGesture KGestureMap::rockerGesture(const KAction* kact) const
     return activeGesture;
 }
 
-KRockerGesture KGestureMap::defaultRockerGesture(const KAction* kact) const
+KRockerGesture KGestureMap::defaultRockerGesture(const QAction* kact) const
 {
     KRockerGesture defaultGesture;
     RockerGestureHash::const_iterator it = m_defaultRockerGestures.constBegin();
@@ -235,7 +235,7 @@ inline int KGestureMap::bitCount(int n)
 }
 
 
-void KGestureMap::handleAction(KAction *kact)
+void KGestureMap::handleAction(QAction *kact)
 {
     if (!kact)
         return;
@@ -251,9 +251,9 @@ void KGestureMap::matchShapeGesture()
     //TODO: tune and tweak until satisfied with result :)
     m_shapeGesture.setShape(m_points);
     float dist, minDist = 20.0;
-    KAction *bestMatch = 0;
+    QAction *bestMatch = 0;
 
-    for (QHash<KShapeGesture, KAction *>::const_iterator it = m_shapeGestures.constBegin();
+    for (QHash<KShapeGesture, QAction *>::const_iterator it = m_shapeGestures.constBegin();
         it != m_shapeGestures.constEnd(); ++it) {
         dist = m_shapeGesture.distance(it.key(), 1000.0);
         if (dist < minDist) {
@@ -328,7 +328,7 @@ bool KGestureMap::eventFilter(QObject *obj, QEvent *e)
         stopAcquisition();
         int buttonHeld = me->buttons() ^ me->button();
         m_rockerGesture.setButtons(static_cast<Qt::MouseButton>(buttonHeld), me->button());
-        KAction *match = m_rockerGestures.value(m_rockerGesture);
+        QAction *match = m_rockerGestures.value(m_rockerGesture);
         if (!match)
             return false;
         handleAction(match);

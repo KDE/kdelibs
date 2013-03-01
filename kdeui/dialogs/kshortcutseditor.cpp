@@ -28,6 +28,7 @@
 // The following is needed for KShortcutsEditorPrivate and QTreeWidgetHack
 #include "kshortcutsdialog_p.h"
 
+#include <QAction>
 #include <QHeaderView>
 #include <QList>
 #include <QObject>
@@ -39,7 +40,6 @@
 #include <QPrinter>
 #include <QPrintDialog>
 
-#include "kaction.h"
 #include "kactioncollection.h"
 #include "kactioncategory.h"
 #include "kconfiggroup.h"
@@ -341,9 +341,9 @@ bool KShortcutsEditorPrivate::addAction(QAction *action, QTreeWidgetItem *hier[]
     // This code doesn't allow editing of QAction. It can not distinguish
     // between default and active shortcuts. This breaks many assumptions the
     // editor makes.
-    KAction *kact;
-    if ((kact = qobject_cast<KAction *>(action)) && kact->isShortcutConfigurable()) {
-        new KShortcutsEditorItem((hier[level]), kact);
+    const QVariant value = action->property("isShortcutConfigurable");
+    if (!value.isValid() || value.toBool()) {
+        new KShortcutsEditorItem((hier[level]), action);
         return true;
     }
 
@@ -357,16 +357,20 @@ void KShortcutsEditorPrivate::allDefault()
             continue;
 
         KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
-        KAction *act = item->m_action;
+        QAction *act = item->m_action;
 
-        if (act->shortcut() != act->shortcut(KAction::DefaultShortcut)) {
-            changeKeyShortcut(item, LocalPrimary, act->shortcut(KAction::DefaultShortcut).primary());
-            changeKeyShortcut(item, LocalAlternate, act->shortcut(KAction::DefaultShortcut).alternate());
+        QList<QKeySequence> defaultShortcuts = act->property("defaultShortcuts").value<QList<QKeySequence> >();
+        if (act->shortcuts() != defaultShortcuts) {
+            QKeySequence primary = defaultShortcuts.isEmpty() ? QKeySequence() : defaultShortcuts.at(0);
+            QKeySequence alternate = defaultShortcuts.size() <= 1 ? QKeySequence() : defaultShortcuts.at(1);
+            changeKeyShortcut(item, LocalPrimary, primary);
+            changeKeyShortcut(item, LocalAlternate, alternate);
         }
 
-        if (act->globalShortcut() != act->globalShortcut(KAction::DefaultShortcut)) {
-            changeKeyShortcut(item, GlobalPrimary, act->globalShortcut(KAction::DefaultShortcut).primary());
-            changeKeyShortcut(item, GlobalAlternate, act->globalShortcut(KAction::DefaultShortcut).alternate());
+        if (KGlobalAccel::self()->shortcut(act) != KGlobalAccel::self()->defaultShortcut(act)) {
+            KShortcut defaultShortcut = KGlobalAccel::self()->defaultShortcut(act);
+            changeKeyShortcut(item, GlobalPrimary, defaultShortcut.primary());
+            changeKeyShortcut(item, GlobalAlternate, defaultShortcut.alternate());
         }
 
         KShapeGesture actShapeGesture = KGestureMap::self()->shapeGesture(act);
@@ -704,7 +708,7 @@ void KShortcutsEditorPrivate::printShortcuts() const
               }
             }
 
-            KAction* action = editoritem->m_action;
+            QAction* action = editoritem->m_action;
             cell = table->cellAt(currow, 2);
             format = cell.format();
             format.setProperty(QTextFormat::FontSizeAdjustment, -1);

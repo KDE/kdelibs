@@ -1,7 +1,6 @@
 #include <QtTestWidgets>
 #include "kactioncategorytest.h"
 
-#include "kaction.h"
 #include "kactioncollection.h"
 #include "kactioncategory.h"
 #include "kselectaction.h"
@@ -105,13 +104,13 @@ void tst_KActionCategory::tstActionCreation()
     KActionCategory category("category", &collection);
 
     // QAction * addAction(const QString &name, QAction *action);
-    QAction *action1 = new KAction(NULL);
+    QAction *action1 = new QAction(NULL);
     category.addAction("action1", action1);
     Q_ASSERT( category.actions().count(action1) == 1 );
     Q_ASSERT( collection.actions().count(action1) == 1 );
 
-    // KAction * addAction(const QString &name, KAction *action);
-    KAction *action2 = new KAction(NULL);
+    // QAction * addAction(const QString &name, QAction *action);
+    QAction *action2 = new QAction(NULL);
     category.addAction("action2", action2);
     Q_ASSERT( category.actions().count(action2) == 1 );
     Q_ASSERT( collection.actions().count(action2) == 1 );
@@ -134,11 +133,11 @@ void tst_KActionCategory::tstActionCreation()
     Q_ASSERT( category.actions().count(action4) == 1 );
     Q_ASSERT( collection.actions().count(action4) == 1 );
 
-    // KAction *addAction(
+    // QAction *addAction(
     //         const QString &name,
     //         const QObject *receiver = NULL,
     //         const char *member = NULL);
-    KAction *action5 = category.addAction("action5");
+    QAction *action5 = category.addAction("action5");
     Q_ASSERT( category.actions().count(action5) == 1 );
     Q_ASSERT( collection.actions().count(action5) == 1 );
 

@@ -20,8 +20,6 @@
 
 #include <QAction>
 
-#include "kaction.h"
-
 
 struct KActionCategoryPrivate
     {
@@ -68,14 +66,6 @@ QAction * KActionCategory::addAction(const QString &name, QAction *action)
     }
 
 
-KAction * KActionCategory::addAction(const QString &name, KAction *action)
-    {
-    collection()->addAction(name, action);
-    addAction(action);
-    return action;
-    }
-
-
 QAction * KActionCategory::addAction(
         KStandardAction::StandardAction actionType,
         const QObject *receiver,
@@ -99,12 +89,12 @@ QAction * KActionCategory::addAction(
     }
 
 
-KAction *KActionCategory::addAction(
+QAction *KActionCategory::addAction(
         const QString &name,
         const QObject *receiver,
         const char *member)
     {
-    KAction *action = collection()->add<KAction>(name, receiver, member);
+    QAction *action = collection()->addAction(name, receiver, member);
     addAction(action);
     return action;
     }

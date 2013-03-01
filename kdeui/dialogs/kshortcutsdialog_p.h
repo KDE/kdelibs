@@ -40,7 +40,7 @@ class QLabel;
 class QTreeWidget;
 class QTreeWidgetItem;
 class QRadioButton;
-class KAction;
+class QAction;
 class KActionCollection;
 class QPushButton;
 class KComboBox;
@@ -133,7 +133,7 @@ private Q_SLOTS:
      * If the user allowed stealing a shortcut we want to be able to undo
      * that.
      */
-    void stealShortcut(const QKeySequence &seq, KAction *action);
+    void stealShortcut(const QKeySequence &seq, QAction *action);
 
     void keySequenceChanged(const QKeySequence &);
     void shapeGestureChanged(const KShapeGesture &);
@@ -200,7 +200,7 @@ Q_SIGNALS:
     void keySequenceChanged(const QKeySequence &);
 
     //! @see KKeySequenceWidget::stealShortcut()
-    void stealShortcut(const QKeySequence &seq, KAction *action);
+    void stealShortcut(const QKeySequence &seq, QAction *action);
 
 private Q_SLOTS:
 
@@ -250,13 +250,13 @@ private:
 };
 
 
-class KAction;
+class QAction;
 class KShortcut;
 class KShapeGesture;
 class KRockerGesture;
 
 /**
- * A QTreeWidgetItem that can handle KActions.
+ * A QTreeWidgetItem that can handle QActions.
  *
  * It provides undo, commit functionality for changes made. Changes are effective immediately. You
  * have to commit them or they will be undone when deleting the item.
@@ -267,7 +267,7 @@ class KShortcutsEditorItem : public QTreeWidgetItem
 {
 public:
 
-    KShortcutsEditorItem(QTreeWidgetItem *parent, KAction *action);
+    KShortcutsEditorItem(QTreeWidgetItem *parent, QAction *action);
 
     /**
      * Destructor
@@ -302,7 +302,7 @@ private:
     void updateModified();
 
     //! The action this item is responsible for
-    KAction *m_action;
+    QAction *m_action;
 
     //! Should the Name column be painted in bold?
     bool m_isNameBold;

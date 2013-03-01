@@ -19,9 +19,9 @@
 #ifndef KSTANDARDACTION_PRIVATE_H
 #define KSTANDARDACTION_PRIVATE_H
 
+#include <QAction>
 #include <QApplication>
 
-#include <kaction.h>
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>
 

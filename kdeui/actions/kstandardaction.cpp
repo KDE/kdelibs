@@ -25,7 +25,6 @@
 #include <QToolButton>
 
 #include <kaboutdata.h>
-#include <kaction.h>
 #include <QApplication>
 #include <kcomponentdata.h>
 #include <kdebug.h>
