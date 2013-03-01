@@ -45,15 +45,6 @@ class KActionPrivate
 
         void init(KAction *q_ptr);
 
-        // called by KActionCollection
-        void maybeSetComponentName(const QString &cname, const QString &dispName)
-        {
-            if (neverSetGlobalShortcut) {
-                q->setProperty("componentName", cname);
-                q->setProperty("componentDisplayName", dispName);
-            }
-        }
-
         QString componentName;
         QString componentDisplayName;
 

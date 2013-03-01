@@ -59,8 +59,13 @@ public:
   {
   }
 
-  void setComponentForAction(KAction *kaction)
-    { kaction->d->maybeSetComponentName(m_componentName, m_componentDisplayName); }
+    void setComponentForAction(QAction *action)
+    {
+        if (!KGlobalAccel::self()->hasShortcut(action)) {
+            action->setProperty("componentName", m_componentName);
+            action->setProperty("componentDisplayName", m_componentDisplayName);
+        }
+    }
 
   static QList<KActionCollection*> s_allCollections;
 

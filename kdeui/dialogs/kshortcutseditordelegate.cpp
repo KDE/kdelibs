@@ -176,10 +176,11 @@ void KShortcutsEditorDelegate::itemActivated(QModelIndex index)
                     action, SIGNAL(globalShortcutChanged(QKeySequence)),
                     editor, SLOT(setKeySequence(QKeySequence)));
                 editor->setMultiKeyShortcutsAllowed(false);
-                KAction *kaction = qobject_cast<KAction*>(action);
-                if (kaction) {
-                    editor->setComponentName(kaction->d->componentName);
+                QString componentName = action->property("componentName").toString();
+                if (componentName.isEmpty()) {
+                    componentName = QCoreApplication::applicationName();
                 }
+                editor->setComponentName(componentName);
             }
 
             m_editor = editor;
