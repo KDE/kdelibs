@@ -23,7 +23,6 @@
 #include <QtTest/QtTest>
 
 #include <kxmlguiwindow.h>
-#include <kaboutdata.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kaction.h>
@@ -110,12 +109,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData("kxmlguiwindowtest", 0,
-                         qi18n("kxmlguiwindowtest"), "0.1",
-                         qi18n("kxmlguiwindowtest"),
-                         KAboutData::License_LGPL,
-                         qi18n("Copyright (c) 2008 Rafael Fernandez Lopez"));
-    QApplication::setApplicationName(aboutData.appName());
     QApplication app(argc, argv);
 
     MainWindow *mainWindow = new MainWindow;

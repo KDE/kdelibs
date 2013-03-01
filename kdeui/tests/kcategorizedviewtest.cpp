@@ -22,7 +22,6 @@
 #include <QMainWindow>
 #include <QStringListModel>
 
-#include <kaboutdata.h>
 #include <kiconloader.h>
 
 #include <kcategorizedview.h>
@@ -60,17 +59,6 @@ int main(int argc, char **argv)
     icons << "plasma";
     icons << "system-file-manager";
 
-    KAboutData aboutData("KCategorizedViewTest",
-                         0,
-                         qi18n("KCategorizedViewTest"),
-                         "1.0",
-                         qi18n("KCategorizedViewTest"),
-                         KAboutData::License_LGPL_V3,
-                         qi18n("(c) 2009 Rafael Fernández López"),
-                         qi18n("KCategorizedViewTest"),
-                         "http://www.kde.org");
-
-    QApplication::setApplicationName(aboutData.appName());
     QApplication app(argc, argv);
 
     QMainWindow *mainWindow = new QMainWindow();

@@ -4,8 +4,6 @@
  */
 
 #include <QApplication>
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
 #include <kinputdialog.h>
 #include <kdebug.h>
 #include <klistwidget.h>
@@ -16,9 +14,6 @@
 int main( int argc, char *argv[] )
 {
   QApplication app( argc, argv );
-//  app.setApplicationName("kinputdialogtest"); //since there is no kapp usage, set the application name directly
-  KAboutData aboutData( "kinputdialogtest", 0, qi18n("kinputdialogtest"), "1.0" );
-  KComponentData i( &aboutData );
 
   bool ok;
   QString svalue;
@@ -71,4 +66,6 @@ int main( int argc, char *argv[] )
   slvalue = KInputDialog::getItemList( "_caption", "_label:", list, select,
     true, &ok );
   kDebug() << "value10: " << slvalue << ", ok: " << ok;
+
+  return 0;
 }

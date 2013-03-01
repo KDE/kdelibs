@@ -17,7 +17,6 @@
 
 #include "kcolorutilsdemo.h"
 #include "../colors/kcolorspaces.h"
-#include <kaboutdata.h>
 #include <kcolorutils.h>
 #include <kcolorscheme.h>
 
@@ -199,14 +198,6 @@ void KColorUtilsDemo::targetSwatchChanged(const QColor &color)
 }
 
 int main(int argc, char* argv[]) {
-    KAboutData about("kcolorutilsdemo", 0, qi18n("kcolorutilsdemo"), "0.1",
-                     qi18n("KColorUtils demo/test application"),
-                     KAboutData::License_GPL, qi18n("Copyright 2009 Matthew Woehlke"),
-                     QLocalizedString(), 0, "mw_triad@users.sourceforge.net");
-    about.addAuthor(qi18n("Matthew Woehlke"), QLocalizedString(),
-                    "mw_triad@users.sourceforge.net");
-    QApplication::setApplicationName(about.appName());
-
     QApplication app(argc, argv);
 
     KColorUtilsDemo *d = new KColorUtilsDemo;

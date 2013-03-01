@@ -32,7 +32,6 @@
 #include <QToolButton>
 #include <QMenu>
 
-#include <kaboutdata.h>
 #include <kmessagebox.h>
 
 #include <klineedit.h>
@@ -291,17 +290,6 @@ private:
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData("goyaTest",
-                         0,
-                         qi18n("Goya Test"),
-                         "1.0",
-                         qi18n("Goya Test"),
-                         KAboutData::License_LGPL_V3,
-                         qi18n("(c) 2008 Rafael Fernández López and Kevin Ottens "),
-                         qi18n("Goya Test"),
-                         "http://www.kde.org");
-
-    QApplication::setApplicationName(aboutData.appName());
     QApplication app(argc, argv);
 
     QMainWindow *mainWindow = new QMainWindow();

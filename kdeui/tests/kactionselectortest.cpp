@@ -19,8 +19,6 @@
 
 #include <kactionselector.h>
 
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
 #include <kdebug.h>
 
 #include <QApplication>
@@ -29,8 +27,6 @@
 int main( int argc, char *argv[] )
 {
   QApplication app( argc, argv );
-  KAboutData aboutData( "kactionselectortest", 0, qi18n("kactionselectortest"), "1.0" );
-  KComponentData i( &aboutData );
 
   KActionSelector actionSelector(0);
   actionSelector.availableListWidget()->addItems(QStringList() << "A" << "B" << "C" << "D" << "E");
