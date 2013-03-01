@@ -665,7 +665,7 @@ void HTMLFormElementImpl::submit(  )
                 if (w->hasFolder(KWallet::Wallet::FormDataFolder())) {
                     w->setFolder(KWallet::Wallet::FormDataFolder());
                     QMap<QString, QString> map;
-                    if (!w->readMap(key, map)) {
+                    if ( !w->readMap(key, map) && (map.count() == m_walletMap.count()) ) {
                         QMap<QString, QString>::const_iterator it = map.constBegin();
                         const QMap<QString, QString>::const_iterator itEnd = map.constEnd();
                         for ( ; it != itEnd; ++it )
