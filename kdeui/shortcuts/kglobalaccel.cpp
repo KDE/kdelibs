@@ -292,14 +292,8 @@ void KGlobalAccelPrivate::updateGlobalShortcut(QAction *action,
         setterFlags |= NoAutoloading;
     }
 
-<<<<<<< HEAD
-    if (actionFlags & KAction::ActiveShortcut) {
-        bool isConfigurationAction = action->property("isConfigurationAction").toBool();
-=======
     if (actionFlags & ActiveShortcut) {
-        bool isConfigurationAction = isUsingForeignComponentName
-            || action->property("isConfigurationAction").toBool();
->>>>>>> KGlobalAccel doesn't depend on KAction anymore
+        bool isConfigurationAction = action->property("isConfigurationAction").toBool();
         uint activeSetterFlags = setterFlags;
 
         // setPresent tells kglobalaccel that the shortcut is active
@@ -402,21 +396,9 @@ void KGlobalAccelPrivate::_k_invokeAction(
         const QString &actionUnique,
         qlonglong timestamp)
 {
-<<<<<<< HEAD
-    KAction *action = 0;
-    QList<KAction *> candidates = nameToAction.values(actionUnique);
-    foreach (KAction *const a, candidates) {
-=======
-    // If overrideMainComponentData() is active the app can only have
-    // configuration actions.
-    if (isUsingForeignComponentName ) {
-        return;
-    }
-
     QAction *action = 0;
     QList<QAction *> candidates = nameToAction.values(actionUnique);
     foreach (QAction *const a, candidates) {
->>>>>>> KGlobalAccel doesn't depend on KAction anymore
         if (componentUniqueForAction(a) == componentUnique) {
             action = a;
         }
