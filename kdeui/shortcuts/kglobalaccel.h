@@ -302,6 +302,11 @@ public:
     KDEUI_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
 #endif
 
+    /**
+     * @internal
+     */
+    bool eventFilter(QObject *watched, QEvent *event);
+
 Q_SIGNALS:
     /**
      * Emitted when the global shortcut is changed. A global shortcut is

@@ -26,7 +26,6 @@
 
 #include "kaction.h"
 #include "kaction_p.h"
-#include "kglobalaccel_p.h"
 #include "klocalizedstring.h"
 #include "kmessagebox.h"
 #include "kauthobjectdecorator.h"
@@ -102,11 +101,6 @@ KAction::KAction(const QIcon &icon, const QString &text, QObject *parent)
 
 KAction::~KAction()
 {
-    if (isGlobalShortcutEnabled()) {
-        // - remove the action from KGlobalAccel
-        KGlobalAccel::self()->d->remove(this, KGlobalAccelPrivate::SetInactive);
-    }
-
     KGestureMap::self()->removeAllGestures(this);
     delete d;
 }

@@ -76,6 +76,7 @@ public:
     //for all actions with (isEnabled() && globalShortcutAllowed())
     QMultiHash<QString, KAction *> nameToAction;
     QSet<KAction *> actions;
+    QWidget actionsWidget; // Used to know when an action is deleted (via event filter)
 
     bool enabled;
 
