@@ -104,7 +104,7 @@ KAction *KActionCategory::addAction(
         const QObject *receiver,
         const char *member)
     {
-    KAction *action = collection()->addAction(name, receiver, member);
+    KAction *action = collection()->add<KAction>(name, receiver, member);
     addAction(action);
     return action;
     }

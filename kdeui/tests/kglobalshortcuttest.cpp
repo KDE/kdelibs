@@ -278,16 +278,16 @@ void KGlobalShortcutTest::testComponentAssignment()
         KAction action("Text For Action A", NULL);
         action.setObjectName("Action C");
 
-        QCOMPARE(action.property("componentName"), QString());
+        QCOMPARE(action.property("componentName").toString(), QString());
         action.setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-        QCOMPARE(action.property("componentName"), QString());
+        QCOMPARE(action.property("componentName").toString(), QString());
         // cleanup
         action.forgetGlobalShortcut();
     }
 
     // Action with action collection get the component of the collection
     {
-        KAction *action = coll.addAction("Action C");
+        KAction *action = coll.add<KAction>("Action C");
 
         QCOMPARE(action->property("componentName").toString(), otherComponent);
         action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
@@ -331,7 +331,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
 
     // Action without action collection
     KAction *action = new KAction("Text For Action A", this);
-    QCOMPARE(action->propety("componentName").toString(), QString());
+    QCOMPARE(action->property("componentName").toString(), QString());
     action->setObjectName("Action A");
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
     QCOMPARE(action->property("componentName").toString(), QString());
@@ -339,10 +339,10 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     // Action with action collection
     action->forgetGlobalShortcut();
     delete action;
-    action = coll.addAction("Action A");
-    QCOMPARE(action->property("componentName"), otherComponent);
+    action = coll.add<KAction>("Action A");
+    QCOMPARE(action->property("componentName").toString(), otherComponent);
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QCOMPARE(action->property("componentName"), otherComponent);
+    QCOMPARE(action->property("componentName").toString(), otherComponent);
 
     // cleanup
     action->forgetGlobalShortcut();
@@ -359,7 +359,7 @@ void KGlobalShortcutTest::testNotification()
     action->setObjectName("Action A");
     KShortcut cutB;
     action->setGlobalShortcut(cutB, KAction::ActiveShortcut, KAction::NoAutoloading);
-    QCOMPARE(action->property("componentName"), QString());
+    QCOMPARE(action->property("componentName").toString(), QString());
 
     // kglobalacceld collects registrations and shows the together. Give it
     // time to kick in.

@@ -27,12 +27,11 @@
 #include "kactioncollection.h"
 #include "kactioncategory.h"
 #include <kcoreauthorized.h>
+#include "kglobalaccel.h"
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 
 #include "kdebug.h"
-#include "kaction.h"
-#include "kaction_p.h"
 
 #include <QtXml/QDomDocument>
 #include <QtCore/QSet>
@@ -226,14 +225,6 @@ const QList< QActionGroup * > KActionCollection::actionGroups( ) const
   return set.toList();
 }
 
-KAction *KActionCollection::addAction(const QString &name, KAction *action)
-{
-    QAction* ret = addAction(name, static_cast<QAction*>(action));
-    Q_ASSERT(ret == action);
-    Q_UNUSED(ret); // fix compiler warning in release mode
-    return action;
-}
-
 QAction *KActionCollection::addAction(const QString &name, QAction *action)
 {
     if (!action)
@@ -253,12 +244,11 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
             // The user specified a new name and the action already has a
             // different one. The objectName is used for saving shortcut
             // settings to disk. Both for local and global shortcuts.
-            KAction *kaction = qobject_cast<KAction*>(action);
             qDebug() << "Registering action " << objectName << " under new name " << indexName;
             // If there is a global shortcuts it's a very bad idea.
-            if (kaction && kaction->isGlobalShortcutEnabled()) {
+            if (KGlobalAccel::self()->hasShortcut(action)) {
                 // In debug mode assert
-                Q_ASSERT(!kaction->isGlobalShortcutEnabled());
+                Q_ASSERT(!KGlobalAccel::self()->hasShortcut(action));
                 // In release mode keep the old name
                 kError() << "Changing action name from " << objectName << " to " << indexName << "\nignored because of active global shortcut.";
                 indexName = objectName;
@@ -318,10 +308,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
 
     connect(action, SIGNAL(destroyed(QObject*)), SLOT(_k_actionDestroyed(QObject*)));
 
-    // only our private class is a friend of KAction
-    if (KAction *kaction = dynamic_cast<KAction *>(action)) {
-      d->setComponentForAction(kaction);
-    }
+    d->setComponentForAction(action);
 
     if (d->connectHovered)
         connect(action, SIGNAL(hovered()), SLOT(slotActionHovered()));
@@ -375,9 +362,9 @@ QAction *KActionCollection::addAction(KStandardAction::StandardAction actionType
   return addAction(name, action);
 }
 
-KAction *KActionCollection::addAction(const QString &name, const QObject *receiver, const char *member)
+QAction *KActionCollection::addAction(const QString &name, const QObject *receiver, const char *member)
 {
-  KAction *a = new KAction(this);
+  QAction *a = new QAction(this);
   if (receiver && member)
     connect(a, SIGNAL(triggered(bool)), receiver, member);
   return addAction(name, a);
@@ -444,18 +431,19 @@ void KActionCollection::importGlobalShortcuts( KConfigGroup* config )
 
   for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
        it != d->actionByName.constEnd(); ++it) {
-      KAction *kaction = qobject_cast<KAction*>(it.value());
-      if (!kaction)
+      QAction *action = it.value();
+      if (!action)
           continue;
 
       QString actionName = it.key();
 
-      if( kaction->isShortcutConfigurable() ) {
+      if(isShortcutsConfigurable(action)) {
           QString entry = config->readEntry(actionName, QString());
           if( !entry.isEmpty() ) {
-              kaction->setGlobalShortcut( KShortcut(entry), KAction::ActiveShortcut, KAction::NoAutoloading );
+              KGlobalAccel::self()->setShortcut(action, KShortcut(entry), KGlobalAccel::NoAutoloading );
           } else {
-              kaction->setGlobalShortcut( kaction->shortcut(KAction::DefaultShortcut), KAction::ActiveShortcut, KAction::NoAutoloading );
+              KShortcut defaultShortcut = KGlobalAccel::self()->defaultShortcut(action);
+              KGlobalAccel::self()->setShortcut(action, defaultShortcut, KGlobalAccel::NoAutoloading );
           }
       }
   }
@@ -504,28 +492,28 @@ void KActionCollection::exportGlobalShortcuts( KConfigGroup* config, bool writeA
   for (QMap<QString, QAction *>::ConstIterator it = d->actionByName.constBegin();
        it != d->actionByName.constEnd(); ++it) {
 
-      KAction *kaction = qobject_cast<KAction*>(it.value());
-      if (!kaction)
+      QAction *action = it.value();
+      if (!action)
           continue;
       QString actionName = it.key();
 
       // If the action name starts with unnamed- spit out a warning. That name
       // will change at will and will break loading writing
       if (actionName.startsWith(QLatin1String("unnamed-"))) {
-          kError() << "Skipped exporting Shortcut for action without name " << kaction->text() << "!";
+          kError() << "Skipped exporting Shortcut for action without name " << action->text() << "!";
           continue;
       }
 
-      if( kaction->isShortcutConfigurable() && kaction->isGlobalShortcutEnabled() ) {
+      if(isShortcutsConfigurable(action) && KGlobalAccel::self()->hasShortcut(action)) {
           bool bConfigHasAction = !config->readEntry( actionName, QString() ).isEmpty();
-          bool bSameAsDefault = (kaction->globalShortcut() == kaction->globalShortcut(KAction::DefaultShortcut));
+          bool bSameAsDefault = (KGlobalAccel::self()->shortcut(action) == KGlobalAccel::self()->defaultShortcut(action));
           // If we're using a global config or this setting
           //  differs from the default, then we want to write.
           KConfigGroup::WriteConfigFlags flags = KConfigGroup::Persistent;
           if (configIsGlobal())
               flags |= KConfigGroup::Global;
           if( writeAll || !bSameAsDefault ) {
-              QString s = kaction->globalShortcut().toString();
+              QString s = KGlobalAccel::self()->shortcut(action).toString();
               if( s.isEmpty() )
                   s = "none";
               qDebug() << "\twriting " << actionName << " = " << s;
@@ -569,8 +557,8 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
     // now, iterate through our actions
     for (QMap<QString, QAction *>::ConstIterator it = actionByName.constBegin();
          it != actionByName.constEnd(); ++it) {
-      KAction *kaction = qobject_cast<KAction*>(it.value());
-      if (!kaction) {
+      QAction *action = it.value();
+      if (!action) {
         continue;
       }
 
@@ -579,15 +567,15 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
       // If the action name starts with unnamed- spit out a warning and ignore
       // it. That name will change at will and will break loading writing
       if (actionName.startsWith(QLatin1String("unnamed-"))) {
-          kError() << "Skipped writing shortcut for action " << actionName << "(" << kaction->text() << ")!";
+          kError() << "Skipped writing shortcut for action " << actionName << "(" << action->text() << ")!";
           continue;
       }
 
-      bool bSameAsDefault = (kaction->shortcut() == kaction->shortcut(KAction::DefaultShortcut));
+      bool bSameAsDefault = (action->shortcuts() == q->defaultShortcuts(action));
       qDebug() << "name = " << actionName
-                  << " shortcut = " << kaction->shortcut(KAction::ActiveShortcut).toString()
-                  << " globalshortcut = " << kaction->globalShortcut(KAction::ActiveShortcut).toString()
-                  << " def = " << kaction->shortcut(KAction::DefaultShortcut).toString();
+                  << " shortcut = " << KShortcut(action->shortcuts()).toString()
+                  << " globalshortcut = " << KGlobalAccel::self()->shortcut(action).toString()
+                  << " def = " << KShortcut(q->defaultShortcuts(action)).toString();
 
       // now see if this element already exists
       // and create it if necessary (unless bSameAsDefault)
@@ -601,7 +589,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
         if( act_elem.attributes().count() == 1 )
           elem.removeChild( act_elem );
       } else {
-        act_elem.setAttribute( attrShortcut, kaction->shortcut().toString() );
+        act_elem.setAttribute( attrShortcut, KShortcut(action->shortcuts()).toString() );
       }
     }
 

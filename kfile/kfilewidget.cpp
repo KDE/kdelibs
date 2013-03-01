@@ -438,7 +438,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     coll->action( "mkdir" )->setShortcut( QKeySequence(Qt::Key_F10) );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
-    KAction *goToNavigatorAction = coll->addAction( "gotonavigator", this, SLOT(_k_activateUrlNavigator()) );
+    KAction *goToNavigatorAction = coll->add<KAction>( "gotonavigator", this, SLOT(_k_activateUrlNavigator()) );
     goToNavigatorAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_L) );
 
     KToggleAction *showSidebarAction =

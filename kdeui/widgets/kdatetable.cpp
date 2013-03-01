@@ -280,27 +280,27 @@ void KDateTable::initAccels()
 {
     KActionCollection * localCollection = new KActionCollection( this );
 
-    KAction* next = localCollection->addAction( QLatin1String( "next" ) );
+    KAction* next = localCollection->add<KAction>( QLatin1String( "next" ) );
     next->setShortcuts( KStandardShortcut::next() );
     connect( next, SIGNAL(triggered(bool)), SLOT(nextMonth()) );
 
-    KAction* prior = localCollection->addAction( QLatin1String( "prior" ) );
+    KAction* prior = localCollection->add<KAction>( QLatin1String( "prior" ) );
     prior->setShortcuts( KStandardShortcut::prior() );
     connect( prior, SIGNAL(triggered(bool)), SLOT(previousMonth()) );
 
-    KAction* beginMonth = localCollection->addAction( QLatin1String( "beginMonth" ) );
+    KAction* beginMonth = localCollection->add<KAction>( QLatin1String( "beginMonth" ) );
     beginMonth->setShortcuts( KStandardShortcut::begin() );
     connect( beginMonth, SIGNAL(triggered(bool)), SLOT(beginningOfMonth()) );
 
-    KAction* endMonth = localCollection->addAction( QLatin1String( "endMonth" ) );
+    KAction* endMonth = localCollection->add<KAction>( QLatin1String( "endMonth" ) );
     endMonth->setShortcuts( KStandardShortcut::end() );
     connect( endMonth, SIGNAL(triggered(bool)), SLOT(endOfMonth()) );
 
-    KAction* beginWeek = localCollection->addAction( QLatin1String( "beginWeek" ) );
+    KAction* beginWeek = localCollection->add<KAction>( QLatin1String( "beginWeek" ) );
     beginWeek->setShortcuts( KStandardShortcut::beginningOfLine() );
     connect( beginWeek, SIGNAL(triggered(bool)), SLOT(beginningOfWeek()) );
 
-    KAction* endWeek = localCollection->addAction( "endWeek" );
+    KAction* endWeek = localCollection->add<KAction>( "endWeek" );
     endWeek->setShortcuts( KStandardShortcut::endOfLine() );
     connect( endWeek, SIGNAL(triggered(bool)), SLOT(endOfWeek()) );
 

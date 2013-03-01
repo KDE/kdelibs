@@ -32,7 +32,6 @@
 #include <QtCore/QObject>
 
 class QAction;
-class KAction;
 class KXMLGUIClient;
 class KConfigGroup;
 class QActionGroup;
@@ -208,14 +207,14 @@ public:
   /**
    * Get the action with the given \a name from the action collection.
    *
-   * @param name Name of the KAction
-   * @return A pointer to the KAction in the collection which matches the parameters or
+   * @param name Name of the QAction
+   * @return A pointer to the QAction in the collection which matches the parameters or
    * null if nothing matches.
    */
   QAction* action( const QString& name ) const;
 
   /**
-   * Returns the list of KActions which belong to this action collection.
+   * Returns the list of QActions which belong to this action collection.
    *
    * The list is guaranteed to be in the same order the action were put into
    * the collection.
@@ -223,7 +222,7 @@ public:
   QList<QAction*> actions() const;
 
   /**
-   * Returns the list of KActions without an QAction::actionGroup() which belong to this action collection.
+   * Returns the list of QActions without an QAction::actionGroup() which belong to this action collection.
    */
   const QList<QAction*> actionsWithoutGroup() const;
 
@@ -323,7 +322,6 @@ public:
    * simply ignore the return value.
    */
   QAction *addAction(const QString &name, QAction *action);
-  KAction *addAction(const QString &name, KAction *action);
 
   /**
    * Removes an action from the collection and deletes it.
@@ -400,7 +398,7 @@ public:
    *               connection is desired.
    * @return new action of the given type ActionType.
    */
-  KAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
+  QAction *addAction(const QString &name, const QObject *receiver = 0, const char *member = 0);
 
   /**
    * Creates a new action under the given name, adds it to the collection and connects the action's triggered(bool)

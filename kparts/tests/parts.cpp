@@ -50,7 +50,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
 
     // An action and an action menu (test code for #70459)
 
-    KAction* testAction = actionCollection()->addAction("p1_blah");
+    KAction* testAction = actionCollection()->add<KAction>("p1_blah");
     testAction->setText("Part1's action");
     testAction->setShortcut(Qt::CTRL + Qt::Key_B);
     connect(testAction, SIGNAL(triggered()), this, SLOT(slotBlah()));
