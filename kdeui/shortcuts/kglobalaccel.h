@@ -182,7 +182,7 @@ public:
      *
      * @since 5.0
      */
-    bool setDefaultShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag);
+    bool setDefaultShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag = Autoloading);
 
     /**
      * Assign a global shortcut for the given action. Global shortcuts
@@ -220,7 +220,7 @@ public:
      * @sa globalShortcutChanged
      * @since 5.0
      */
-    bool setShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag);
+    bool setShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag = Autoloading);
 
     /**
      * Get the global default shortcut for this action, if one exists. Global shortcuts
