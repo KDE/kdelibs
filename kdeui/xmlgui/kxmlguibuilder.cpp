@@ -26,12 +26,12 @@
 #include "ktoolbar.h"
 #include "kmainwindow.h"
 #include "kxmlguiwindow.h"
-#include "kaction.h"
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <QtXml/QDomElement>
 #include <QtCore/QObject>
 #include <QtCore/QMutableStringListIterator>
+#include <QAction>
 #include <QMenuBar>
 #include <QStatusBar>
 #include "kmenumenuhandler_p.h"

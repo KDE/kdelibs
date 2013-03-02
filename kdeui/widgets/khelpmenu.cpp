@@ -24,6 +24,7 @@
 #include "khelpmenu.h"
 
 #include <QtCore/QTimer>
+#include <QAction>
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -37,7 +38,6 @@
 #include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>
 #include <kaboutkdedialog_p.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
 #include <kcomponentdata.h>

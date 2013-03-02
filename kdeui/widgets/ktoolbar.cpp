@@ -27,6 +27,7 @@
 #include "ktoolbar.h"
 
 #include <QtCore/QPointer>
+#include <QAction>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QFrame>
@@ -37,7 +38,6 @@
 #include <QToolButton>
 #include <QtXml/QDomElement>
 
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
 #include <kconfig.h>
@@ -217,7 +217,7 @@ class KToolBar::Private
     QAction* dropIndicatorAction;
 
     KMenu* context;
-    KAction* dragAction;
+    QAction* dragAction;
     QPoint dragStartPosition;
 };
 
@@ -1203,7 +1203,7 @@ void KToolBar::dropEvent(QDropEvent *event)
 void KToolBar::mousePressEvent(QMouseEvent *event)
 {
   if (toolBarsEditable() && event->button() == Qt::LeftButton) {
-    if (KAction* action = qobject_cast<KAction*>(actionAt(event->pos()))) {
+    if (QAction* action = actionAt(event->pos())) {
       d->dragAction = action;
       d->dragStartPosition = event->pos();
       event->accept();

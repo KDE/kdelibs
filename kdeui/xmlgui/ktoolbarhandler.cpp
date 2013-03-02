@@ -19,8 +19,8 @@
 #include "ktoolbarhandler_p.h"
 
 #include <QtXml/QDomDocument>
+#include <QAction>
 
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 #include <kcoreauthorized.h>

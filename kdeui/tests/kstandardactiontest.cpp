@@ -19,11 +19,11 @@
 
 #include "kstandardactiontest.h"
 
+#include <QAction>
 #include <QtTestWidgets>
 
 #include "kstandardaction.h"
 #include "kactioncollection.h"
-#include "kaction.h"
 
 void tst_KStandardAction::implicitInsertionUsingCreate()
 {

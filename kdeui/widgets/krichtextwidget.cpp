@@ -21,7 +21,6 @@
 #include "krichtextwidget.h"
 
 // KDE includes
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kcolorscheme.h>
 #include <kfontaction.h>
@@ -31,6 +30,7 @@
 #include <kdebug.h>
 
 // Qt includes
+#include <QAction>
 #include <QColorDialog>
 #include <QTextList>
 
@@ -89,8 +89,8 @@ public:
     bool richTextEnabled;
     KToggleAction *enableRichText;
 
-    KAction *action_text_foreground_color;
-    KAction *action_text_background_color;
+    QAction *action_text_foreground_color;
+    QAction *action_text_background_color;
 
     KToggleAction *action_text_bold;
     KToggleAction *action_text_italic;
@@ -101,11 +101,11 @@ public:
     KFontSizeAction *action_font_size;
 
     KSelectAction *action_list_style;
-    KAction *action_list_indent;
-    KAction *action_list_dedent;
+    QAction *action_list_indent;
+    QAction *action_list_dedent;
 
-    KAction *action_manage_link;
-    KAction *action_insert_horizontal_rule;
+    QAction *action_manage_link;
+    QAction *action_insert_horizontal_rule;
     QAction *action_format_painter;
     QAction *action_to_plain_text;
 
@@ -230,7 +230,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportTextForegroundColor) {
         //Foreground Color
-        d->action_text_foreground_color = new KAction(QIcon::fromTheme("format-stroke-color"), i18nc("@action", "Text &Color..."), actionCollection);
+        d->action_text_foreground_color = new QAction(QIcon::fromTheme("format-stroke-color"), i18nc("@action", "Text &Color..."), actionCollection);
         d->action_text_foreground_color->setIconText(i18nc("@label stroke color", "Color"));
         d->richTextActionList.append((d->action_text_foreground_color));
         actionCollection->addAction("format_text_foreground_color", d->action_text_foreground_color);
@@ -242,7 +242,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
 
     if (d->richTextSupport & SupportTextBackgroundColor) {
         //Background Color
-        d->action_text_background_color = new KAction(QIcon::fromTheme("format-fill-color"), i18nc("@action", "Text &Highlight..."), actionCollection);
+        d->action_text_background_color = new QAction(QIcon::fromTheme("format-fill-color"), i18nc("@action", "Text &Highlight..."), actionCollection);
         d->richTextActionList.append((d->action_text_background_color));
         actionCollection->addAction("format_text_background_color", d->action_text_background_color);
         connect(d->action_text_background_color, SIGNAL(triggered()), this, SLOT(_k_setTextBackgroundColor()));
@@ -431,7 +431,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     }
 
     if (d->richTextSupport & SupportIndentLists) {
-        d->action_list_indent = new KAction(QIcon::fromTheme("format-indent-more"), i18nc("@action", "Increase Indent"), actionCollection);
+        d->action_list_indent = new QAction(QIcon::fromTheme("format-indent-more"), i18nc("@action", "Increase Indent"), actionCollection);
         d->richTextActionList.append((d->action_list_indent));
         actionCollection->addAction("format_list_indent_more", d->action_list_indent);
         connect(d->action_list_indent, SIGNAL(triggered()),
@@ -444,7 +444,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     }
 
     if (d->richTextSupport & SupportDedentLists) {
-        d->action_list_dedent = new KAction(QIcon::fromTheme("format-indent-less"), i18nc("@action", "Decrease Indent"), actionCollection);
+        d->action_list_dedent = new QAction(QIcon::fromTheme("format-indent-less"), i18nc("@action", "Decrease Indent"), actionCollection);
         d->richTextActionList.append((d->action_list_dedent));
         actionCollection->addAction("format_list_indent_less", d->action_list_dedent);
         connect(d->action_list_dedent, SIGNAL(triggered()),
@@ -457,7 +457,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     }
 
     if (d->richTextSupport & SupportRuleLine) {
-        d->action_insert_horizontal_rule = new KAction(QIcon::fromTheme("insert-horizontal-rule"), i18nc("@action", "Insert Rule Line"), actionCollection);
+        d->action_insert_horizontal_rule = new QAction(QIcon::fromTheme("insert-horizontal-rule"), i18nc("@action", "Insert Rule Line"), actionCollection);
         d->richTextActionList.append((d->action_insert_horizontal_rule));
         actionCollection->addAction("insert_horizontal_rule", d->action_insert_horizontal_rule);
         connect(d->action_insert_horizontal_rule, SIGNAL(triggered()),
@@ -468,7 +468,7 @@ void KRichTextWidget::createActions(KActionCollection *actionCollection)
     }
 
     if (d->richTextSupport & SupportHyperlinks) {
-        d->action_manage_link = new KAction(QIcon::fromTheme("insert-link"), i18nc("@action", "Link"), actionCollection);
+        d->action_manage_link = new QAction(QIcon::fromTheme("insert-link"), i18nc("@action", "Link"), actionCollection);
         d->richTextActionList.append((d->action_manage_link));
         actionCollection->addAction("manage_link", d->action_manage_link);
         connect(d->action_manage_link, SIGNAL(triggered()),

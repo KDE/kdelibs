@@ -1,5 +1,5 @@
 #include <QApplication>
-#include <kaction.h>
+#include <QAction>
 #include <kactioncollection.h>
 #include <QMainWindow>
 #include <ktoolbar.h>

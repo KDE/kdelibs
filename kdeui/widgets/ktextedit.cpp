@@ -21,6 +21,7 @@
 
 #include "ktextedit.h"
 
+#include <QAction>
 #include <QApplication>
 #include <QClipboard>
 #include <QKeyEvent>
@@ -36,7 +37,6 @@
 #include <configdialog.h>
 #include <dialog.h>
 #include "backgroundchecker.h"
-#include <kaction.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>
 #include <kglobalsettings.h>

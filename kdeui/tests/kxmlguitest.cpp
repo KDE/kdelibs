@@ -1,10 +1,10 @@
 #include "kxmlguitest.h"
+#include <QAction>
 #include <QApplication>
 #include <kmainwindow.h>
 #include <kxmlguifactory.h>
 #include <kxmlguiclient.h>
 #include <kxmlguibuilder.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kdebug.h>
 #include <QLineEdit>
@@ -20,7 +20,7 @@ int main( int argc, char **argv )
 {
     QApplication::setApplicationName("test");
     QApplication app(argc, argv);
-    KAction *a;
+    QAction *a;
 
     KMainWindow *mainwindow = new KMainWindow;
 
@@ -36,7 +36,7 @@ int main( int argc, char **argv )
     Client *shell = new Client;
     shell->setComponentName("konqueror", "Konqueror");
 
-    a = new KAction( QIcon::fromTheme( "view-split-left-right" ), "Split", shell );
+    a = new QAction( QIcon::fromTheme( "view-split-left-right" ), "Split", shell );
     shell->actionCollection()->addAction( "splitviewh", a );
 
     shell->setXMLFile( QFINDTESTDATA("kxmlguitest_shell.rc") );
@@ -45,11 +45,11 @@ int main( int argc, char **argv )
 
     Client *part = new Client;
 
-    a = new KAction( QIcon::fromTheme( "zoom-out" ), "decfont", part );
+    a = new QAction( QIcon::fromTheme( "zoom-out" ), "decfont", part );
     part->actionCollection()->addAction( "decFontSizes", a );
-    a = new KAction( QIcon::fromTheme( "security-low" ), "sec", part );
+    a = new QAction( QIcon::fromTheme( "security-low" ), "sec", part );
     part->actionCollection()->addAction( "security", a );
-    a->setShortcut( KShortcut(Qt::ALT + Qt::Key_1), KAction::DefaultShortcut );
+    part->actionCollection()->setDefaultShortcuts(a, KShortcut(Qt::ALT + Qt::Key_1));
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT(slotSec()) );
 
     part->setXMLFile( QFINDTESTDATA("kxmlguitest_part.rc") );

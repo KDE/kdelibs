@@ -16,6 +16,7 @@
    Boston, MA 02110-1301, USA.
 */
 
+#include <QAction>
 #include <QTextEdit>
 #include <QTimer>
 #include <QApplication>
@@ -25,7 +26,6 @@
 #include <kxmlguiwindow.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
-#include <kaction.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 
@@ -74,7 +74,7 @@ void MainWindow::slotCreate()
 
 void MainWindow::setupActions()
 {
-    KAction *testAction = new KAction(this);
+    QAction *testAction = new QAction(this);
     testAction->setText("Test");
     testAction->setIcon(QIcon::fromTheme("kde"));
     actionCollection()->addAction("test", testAction);

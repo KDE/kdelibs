@@ -21,12 +21,12 @@
 #include <QtTestWidgets>
 #include <QtTest/QtTest>
 #include "kxmlgui_unittest.h"
+#include <QAction>
 #include <QDialogButtonBox>
 #include <QShowEvent>
 #include <QMenuBar>
 #include <QPushButton>
 #include <kedittoolbar.h>
-#include <kaction.h>
 #include <kconfiggroup.h>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>
@@ -633,13 +633,13 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
 
     kDebug() << "Now plugging the actionlist";
 
-    KAction* action1 = new KAction(this);
+    QAction* action1 = new QAction(this);
     action1->setObjectName("action1");
-    action1->setShortcut(KShortcut("Ctrl+2"));
+    action1->setShortcuts(KShortcut("Ctrl+2"));
     QList<QAction*> actionList;
     actionList << action1;
     client.plugActionList("view_groups_list", actionList);
-    QCOMPARE(action1->shortcut().toString(), QString("Ctrl+2"));
+    QCOMPARE(KShortcut(action1->shortcuts()).toString(), QString("Ctrl+2"));
 
     //debugActions(menu->actions());
     checkActions(menu->actions(), QStringList()

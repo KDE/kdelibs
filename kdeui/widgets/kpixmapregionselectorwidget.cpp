@@ -24,6 +24,7 @@
  */
 
 #include "kpixmapregionselectorwidget.h"
+#include <QAction>
 #include <QPainter>
 #include <QColor>
 #include <QImage>
@@ -33,7 +34,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmenu.h>
-#include <kaction.h>
 #include <stdlib.h>
 #include <QCursor>
 #include <QApplication>

@@ -18,6 +18,7 @@
 */
 #include "kshortcutschemeshelper_p.h"
 
+#include <QAction>
 #include <QCoreApplication>
 #include <QFile>
 #include <QTextStream>
@@ -26,7 +27,6 @@
 
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kxmlguiclient.h>
 #include <kdebug.h>
@@ -61,12 +61,11 @@ bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collectio
 
     // now, iterate through our actions
     foreach (QAction *action, collection->actions()) {
-        KAction *kaction = qobject_cast<KAction*>(action);
-        if (!kaction)
+        if (!action)
             continue;
 
-        QString actionName = kaction->objectName();
-        QString shortcut = kaction->shortcut(KAction::ActiveShortcut).toString();
+        QString actionName = action->objectName();
+        QString shortcut = KShortcut(action->shortcuts()).toString();
         if (!shortcut.isEmpty())
         {
             QDomElement act_elem = doc.createElement("Action");

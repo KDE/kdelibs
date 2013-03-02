@@ -34,7 +34,6 @@
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include <kmenu.h>
-#include <kaction.h>
 #include <kiconloader.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>

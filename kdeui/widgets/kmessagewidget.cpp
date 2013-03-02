@@ -19,12 +19,12 @@
  */
 #include "kmessagewidget.h"
 
-#include <kaction.h>
 #include <kcolorscheme.h>
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kstandardaction.h>
 
+#include <QAction>
 #include <QEvent>
 #include <QGridLayout>
 #include <QHBoxLayout>

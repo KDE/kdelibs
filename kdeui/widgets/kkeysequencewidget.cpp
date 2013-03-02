@@ -24,6 +24,7 @@
 
 #include "kkeyserver.h"
 
+#include <QAction>
 #include <QKeyEvent>
 #include <QTimer>
 #include <QtCore/QHash>
@@ -35,7 +36,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kshortcut.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 
 #include "kdebug.h"
@@ -184,9 +184,9 @@ public:
     /**
      * The action to steal the shortcut from.
      */
-    QList<KAction*> stealActions;
+    QList<QAction*> stealActions;
 
-    bool stealShortcuts(const QList<KAction *> &actions, const QKeySequence &seq);
+    bool stealShortcuts(const QList<QAction *> &actions, const QKeySequence &seq);
     void wontStealShortcut(QAction *item, const QKeySequence &seq);
 
 };
@@ -208,7 +208,7 @@ KKeySequenceWidgetPrivate::KKeySequenceWidgetPrivate(KKeySequenceWidget *q)
 
 
 bool KKeySequenceWidgetPrivate::stealShortcuts(
-        const QList<KAction *> &actions,
+        const QList<QAction *> &actions,
         const QKeySequence &seq)
 {
 
@@ -217,7 +217,7 @@ bool KKeySequenceWidgetPrivate::stealShortcuts(
     QString title = i18ncp("%1 is the number of conflicts", "Shortcut Conflict", "Shortcut Conflicts", listSize);
 
     QString conflictingShortcuts;
-    Q_FOREACH(const KAction *action, actions) {
+    Q_FOREACH(const QAction *action, actions) {
         conflictingShortcuts += i18n("Shortcut '%1' for action '%2'\n",
                 action->shortcut().toString(QKeySequence::NativeText),
                 KLocalizedString::removeAcceleratorMarker(action->text()));
@@ -400,10 +400,10 @@ void KKeySequenceWidget::applyStealShortcut()
 {
     QSet<KActionCollection *> changedCollections;
 
-    Q_FOREACH (KAction *stealAction, d->stealActions) {
+    Q_FOREACH (QAction *stealAction, d->stealActions) {
 
         // Stealing a shortcut means setting it to an empty one.
-        stealAction->setShortcut(KShortcut(), KAction::ActiveShortcut);
+        stealAction->setShortcuts(KShortcut());
 
         // The following code will find the action we are about to
         // steal from and save it's actioncollection.
@@ -554,26 +554,16 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
     //
     // Some weird combination of Example 1 and 2 with three shortcuts using
     // 1/2/3 key shortcuts. I think you can imagine.
-    QList<KAction*> conflictingActions;
+    QList<QAction*> conflictingActions;
 
     //find conflicting shortcuts with existing actions
     foreach(QAction * qaction , allActions ) {
-        KAction *kaction=qobject_cast<KAction*>(qaction);
-        if(kaction) {
-            if(kaction->shortcut().conflictsWith(keySequence)) {
-                // A conflict with a KAction. If that action is configurable
-                // ask the user what to do. If not reject this keySequence.
-                if(kaction->isShortcutConfigurable ()) {
-                    conflictingActions.append(kaction);
-                } else {
-                    wontStealShortcut(kaction, keySequence);
-                    return true;
-                }
-            }
-        } else {
-            if(qaction->shortcut() == keySequence) {
-                // A conflict with a QAction. Don't know why :-( but we won't
-                // steal from that kind of actions.
+        if(KShortcut(qaction->shortcuts()).conflictsWith(keySequence)) {
+            // A conflict with a KAction. If that action is configurable
+            // ask the user what to do. If not reject this keySequence.
+            if (checkActionCollections.first()->isShortcutsConfigurable(qaction)) {
+                conflictingActions.append(qaction);
+            } else {
                 wontStealShortcut(qaction, keySequence);
                 return true;
             }
@@ -589,7 +579,7 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
         stealActions = conflictingActions;
         // Announce that the user
         // agreed
-        Q_FOREACH (KAction *stealAction, stealActions) {
+        Q_FOREACH (QAction *stealAction, stealActions) {
             emit q->stealShortcut(
                 keySequence,
                 stealAction);

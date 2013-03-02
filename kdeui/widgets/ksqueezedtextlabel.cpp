@@ -19,9 +19,9 @@
 #include "ksqueezedtextlabel.h"
 #include <kdebug.h>
 #include <klocalizedstring.h>
+#include <QAction>
 #include <QContextMenuEvent>
 #include <QDesktopWidget>
-#include <kaction.h>
 #include <QMenu>
 #include <QClipboard>
 #include <QApplication>
@@ -163,7 +163,7 @@ void KSqueezedTextLabel::contextMenuEvent(QContextMenuEvent* ev)
     if (showCustomPopup) {
         QMenu menu(this);
 
-        KAction* act = new KAction(i18n("&Copy Full Text"), &menu);
+        QAction* act = new QAction(i18n("&Copy Full Text"), &menu);
         connect(act, SIGNAL(triggered()), this, SLOT(_k_copyFullText()));
         menu.addAction(act);
 

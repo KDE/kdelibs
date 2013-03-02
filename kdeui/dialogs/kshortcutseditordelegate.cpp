@@ -27,7 +27,6 @@
 
 
 #include "kshortcutsdialog_p.h"
-#include "kaction_p.h"
 
 #include <QApplication>
 #include <QHeaderView>
@@ -35,8 +34,6 @@
 #include <QLabel>
 #include <QPainter>
 #include <QTreeWidgetItemIterator>
-
-#include "kaction.h"
 
 #include "kdebug.h"
 

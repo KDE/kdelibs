@@ -24,13 +24,12 @@
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
 #include "kmenu.h"
-#include "kaction.h"
 #include "kactioncollection.h"
 #include <kshortcutwidget.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
 
-
+#include <QAction>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QWidget>
@@ -97,7 +96,7 @@ void KMenuMenuHandler::slotSetShortcut()
     KMenu * menu=KMenu::contextMenuFocus();
     if(!menu)
         return;
-    KAction *action= qobject_cast<KAction*>(menu->contextMenuFocusAction());
+    QAction *action= menu->contextMenuFocusAction();
     if(!action)
         return;
 
@@ -105,7 +104,7 @@ void KMenuMenuHandler::slotSetShortcut()
     dialog.setLayout(new QVBoxLayout);
 
     KShortcutWidget swidget(&dialog);
-    swidget.setShortcut(action->shortcut());
+    swidget.setShortcut(KShortcut(action->shortcuts()));
     dialog.layout()->addWidget(&swidget);
 
     QDialogButtonBox box(&dialog);
@@ -128,7 +127,7 @@ void KMenuMenuHandler::slotSetShortcut()
 
     if(dialog.exec())
     {
-        action->setShortcut(swidget.shortcut(), KAction::ActiveShortcut);
+        action->setShortcuts(swidget.shortcut());
         swidget.applyStealShortcut();
         if(parentCollection)
             parentCollection->writeSettings();
@@ -145,7 +144,7 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
     KMenu * menu=KMenu::contextMenuFocus();
     if(!menu)
         return;
-    QAction *action= qobject_cast<QAction*>(menu->contextMenuFocusAction());
+    QAction *action= menu->contextMenuFocusAction();
     if(!action)
         return;
 

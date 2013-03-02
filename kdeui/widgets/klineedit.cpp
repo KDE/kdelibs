@@ -28,7 +28,6 @@
 #include "klineedit.h"
 #include "klineedit_p.h"
 
-#include <kaction.h>
 #include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -43,6 +42,7 @@
 #include <kurlmimedata.h>
 
 #include <QtCore/QTimer>
+#include <QAction>
 #include <QApplication>
 #include <QClipboard>
 #include <QStyleOption>

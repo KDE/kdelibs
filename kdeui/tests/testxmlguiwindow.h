@@ -22,7 +22,7 @@
 #define TESTXMLGUIWINDOW_H
 
 #include <kactioncollection.h>
-#include <kaction.h>
+#include <QAction>
 #include <kdebug.h>
 #include <QMenu>
 #include <QResizeEvent>

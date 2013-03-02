@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include <QAction>
 #include <QApplication>
 #include <QStatusBar>
 #include <kcombobox.h>
@@ -14,7 +15,6 @@
 #include "kwindowtest.h"
 #include <klineedit.h>
 #include <kxmlguifactory.h>
-#include <kaction.h>
 #include <kactionmenu.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
@@ -35,12 +35,12 @@ TestWindow::TestWindow (QWidget *parent)
     // We only need to create actions with the right name here.
 
     // First four  buttons
-    fileNewAction = new KAction(QIcon::fromTheme("document-new"), "Create.. (toggles upper button)", this);
+    fileNewAction = new QAction(QIcon::fromTheme("document-new"), "Create.. (toggles upper button)", this);
     actionCollection()->addAction("filenew", fileNewAction);
     fileNewAction->setCheckable(true);
     connect(fileNewAction, SIGNAL(triggered(bool)), SLOT(slotNew()));
 
-    KAction* fileOpenAction = new KAction(QIcon::fromTheme("document-open"), "Open", this);
+    QAction* fileOpenAction = new QAction(QIcon::fromTheme("document-open"), "Open", this);
     actionCollection()->addAction("fileopen", fileOpenAction);
     connect(fileOpenAction, SIGNAL(triggered(bool)), SLOT(slotOpen()));
 
@@ -49,7 +49,7 @@ TestWindow::TestWindow (QWidget *parent)
     fileFloppyAction->setDelayed(true);
     connect(fileFloppyAction, SIGNAL(triggered(bool)), SLOT(slotSave()));
 
-    KAction* filePrintAction = new KAction(QIcon::fromTheme("document-print"), "Print (enables/disables open)", this);
+    QAction* filePrintAction = new QAction(QIcon::fromTheme("document-print"), "Print (enables/disables open)", this);
     actionCollection()->addAction("fileprint", filePrintAction);
     filePrintAction->setToolTip("This tooltip does not work for menu items");
     filePrintAction->setWhatsThis("This is the longer explanation of the action");
@@ -72,25 +72,25 @@ TestWindow::TestWindow (QWidget *parent)
 //    connect(testLineEdit, SIGNAL(returnPressed()), this, SLOT(slotReturn()));
 
     // Now add another button and align it right
-    exitAction = new KAction(QIcon::fromTheme( "application-exit" ), "Exit", this);
+    exitAction = new QAction(QIcon::fromTheme( "application-exit" ), "Exit", this);
     actionCollection()->addAction("exit", exitAction);
     connect (exitAction, SIGNAL(triggered(bool)), qApp, SLOT(quit()));
 
     // Another toolbar
 
-    KAction* fileNewAction2 = new KAction(QIcon::fromTheme( "document-new" ), "Create new file2 (Toggle)", this);
+    QAction* fileNewAction2 = new QAction(QIcon::fromTheme( "document-new" ), "Create new file2 (Toggle)", this);
     actionCollection()->addAction("filenew2", fileNewAction2);
     connect(fileNewAction2, SIGNAL(toggled(bool)), this, SLOT(slotToggle(bool)));
     fileNewAction2->setToolTip("Tooltip");
     fileNewAction2->setStatusTip("Statustip");
     fileNewAction2->setWhatsThis("WhatsThis");
 
-    KAction* fileOpenAction2 = new KAction(QIcon::fromTheme( "document-open" ), "Open (starts progress in sb)", this);
+    QAction* fileOpenAction2 = new QAction(QIcon::fromTheme( "document-open" ), "Open (starts progress in sb)", this);
     actionCollection()->addAction("fileopen2", fileOpenAction2);
     connect(fileOpenAction2, SIGNAL(triggered(bool)), SLOT(slotOpen()));
-    fileOpenAction2->setHelpText("This action starts a progressbar inside the statusbar");
+    fileOpenAction2->setToolTip("This action starts a progressbar inside the statusbar");
 
-    KAction* fileFloppyAction2 = new KAction(QIcon::fromTheme( "filefloppy" ), "Save file2 (autorepeat)", this);
+    QAction* fileFloppyAction2 = new QAction(QIcon::fromTheme( "filefloppy" ), "Save file2 (autorepeat)", this);
     actionCollection()->addAction("filefloppy2", fileFloppyAction2);
     connect(fileFloppyAction2, SIGNAL(triggered(bool)), this, SLOT(slotSave()));
 
@@ -104,7 +104,7 @@ TestWindow::TestWindow (QWidget *parent)
     itemsMenu->addAction ("Important msg in statusbar", this, SLOT(slotImportant()));
 
 
-    KAction* filePrintAction2 = new KAction(QIcon::fromTheme( "document-print" ), "Print (pops menu)", this);
+    QAction* filePrintAction2 = new QAction(QIcon::fromTheme( "document-print" ), "Print (pops menu)", this);
     actionCollection()->addAction("fileprint2", filePrintAction2);
     filePrintAction2->setMenu(itemsMenu);
 
@@ -235,7 +235,7 @@ void TestWindow::slotPrint()
 {
     statusBar->showMessage("Print file pressed");
     ena=!ena;
-    qobject_cast<KAction*>(sender())->setEnabled(ena);
+    qobject_cast<QAction*>(sender())->setEnabled(ena);
 }
 void TestWindow::slotReturn()
 {

@@ -29,7 +29,6 @@
 
 class KKeySequenceWidgetPrivate;
 class QAction;
-class KAction;
 class KActionCollection;
 
 /**
@@ -259,7 +258,7 @@ Q_SIGNALS:
 	 * If you listen to that signal and don't call applyStealShortcut() you
 	 * are supposed to steal the shortcut and save this change.
 	 */
-	void stealShortcut(const QKeySequence &seq, KAction *action);
+	void stealShortcut(const QKeySequence &seq, QAction *action);
 
 public Q_SLOTS:
 

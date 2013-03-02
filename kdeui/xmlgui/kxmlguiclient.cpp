@@ -22,6 +22,7 @@
 #include "kxmlguifactory.h"
 #include "kxmlguibuilder.h"
 
+#include <QAction>
 #include <QDir>
 #include <QFile>
 #include <QDomDocument>
@@ -34,7 +35,6 @@
 #include <kcoreauthorized.h>
 #include <kdebug.h>
 
-#include "kaction.h"
 #include "kactioncollection.h"
 
 #include <assert.h>

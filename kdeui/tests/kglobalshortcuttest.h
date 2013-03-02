@@ -24,7 +24,7 @@
 
 #include <QtCore/QObject>
 
-class KAction;
+class QAction;
 
 class KGlobalShortcutTest : public QObject
 {
@@ -52,8 +52,8 @@ public:
 private:
     void setupTest(QString id);
 
-    KAction *m_actionA;
-    KAction *m_actionB;
+    QAction *m_actionA;
+    QAction *m_actionB;
     bool m_daemonInstalled;
 };
 
