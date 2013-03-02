@@ -252,28 +252,28 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_bCleared = false;
 
   if ( prof == BrowserViewGUI ) {
-    d->m_paViewDocument = new KAction( i18n( "View Do&cument Source" ), this );
+    d->m_paViewDocument = new QAction( i18n( "View Do&cument Source" ), this );
     actionCollection()->addAction( "viewDocumentSource", d->m_paViewDocument );
     connect( d->m_paViewDocument, SIGNAL(triggered(bool)), this, SLOT(slotViewDocumentSource()) );
     if (!parentPart()) {
         d->m_paViewDocument->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_U) );
     }
 
-    d->m_paViewFrame = new KAction( i18n( "View Frame Source" ), this );
+    d->m_paViewFrame = new QAction( i18n( "View Frame Source" ), this );
     actionCollection()->addAction( "viewFrameSource", d->m_paViewFrame );
     connect( d->m_paViewFrame, SIGNAL(triggered(bool)), this, SLOT(slotViewFrameSource()) );
     if (!parentPart()) {
         d->m_paViewFrame->setShortcut( QKeySequence(Qt::CTRL + Qt::SHIFT + Qt::Key_U) );
     }
 
-    d->m_paViewInfo = new KAction( i18n( "View Document Information" ), this );
+    d->m_paViewInfo = new QAction( i18n( "View Document Information" ), this );
     actionCollection()->addAction( "viewPageInfo", d->m_paViewInfo );
     if (!parentPart()) {
         d->m_paViewInfo->setShortcut( QKeySequence(Qt::CTRL+Qt::Key_I) );
     }
     connect( d->m_paViewInfo, SIGNAL(triggered(bool)), this, SLOT(slotViewPageInfo()) );
 
-    d->m_paSaveBackground = new KAction( i18n( "Save &Background Image As..." ), this );
+    d->m_paSaveBackground = new QAction( i18n( "Save &Background Image As..." ), this );
     actionCollection()->addAction( "saveBackground", d->m_paSaveBackground );
     connect( d->m_paSaveBackground, SIGNAL(triggered(bool)), this, SLOT(slotSaveBackground()) );
 
@@ -282,7 +282,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     if ( parentPart() )
         d->m_paSaveDocument->setShortcuts( KShortcut() ); // avoid clashes
 
-    d->m_paSaveFrame = new KAction( i18n( "Save &Frame As..." ), this );
+    d->m_paSaveFrame = new QAction( i18n( "Save &Frame As..." ), this );
     actionCollection()->addAction( "saveFrame", d->m_paSaveFrame );
     connect( d->m_paSaveFrame, SIGNAL(triggered(bool)), this, SLOT(slotSaveFrame()) );
   } else {
@@ -294,23 +294,23 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     d->m_paSaveFrame = 0;
   }
 
-  d->m_paSecurity = new KAction( i18n( "SSL" ), this );
+  d->m_paSecurity = new QAction( i18n( "SSL" ), this );
   actionCollection()->addAction( "security", d->m_paSecurity );
   connect( d->m_paSecurity, SIGNAL(triggered(bool)), this, SLOT(slotSecurity()) );
 
-  d->m_paDebugRenderTree = new KAction( i18n( "Print Rendering Tree to STDOUT" ), this );
+  d->m_paDebugRenderTree = new QAction( i18n( "Print Rendering Tree to STDOUT" ), this );
   actionCollection()->addAction( "debugRenderTree", d->m_paDebugRenderTree );
   connect( d->m_paDebugRenderTree, SIGNAL(triggered(bool)), this, SLOT(slotDebugRenderTree()) );
 
-  d->m_paDebugDOMTree = new KAction( i18n( "Print DOM Tree to STDOUT" ), this );
+  d->m_paDebugDOMTree = new QAction( i18n( "Print DOM Tree to STDOUT" ), this );
   actionCollection()->addAction( "debugDOMTree", d->m_paDebugDOMTree );
   connect( d->m_paDebugDOMTree, SIGNAL(triggered(bool)), this, SLOT(slotDebugDOMTree()) );
 
-  KAction* paDebugFrameTree = new KAction( i18n( "Print frame tree to STDOUT" ), this );
+  QAction* paDebugFrameTree = new QAction( i18n( "Print frame tree to STDOUT" ), this );
   actionCollection()->addAction( "debugFrameTree", paDebugFrameTree );
   connect( paDebugFrameTree, SIGNAL(triggered(bool)), this, SLOT(slotDebugFrameTree()) );
 
-  d->m_paStopAnimations = new KAction( i18n( "Stop Animated Images" ), this );
+  d->m_paStopAnimations = new QAction( i18n( "Stop Animated Images" ), this );
   actionCollection()->addAction( "stopAnimations", d->m_paStopAnimations );
   connect( d->m_paStopAnimations, SIGNAL(triggered(bool)), this, SLOT(slotStopAnimations()) );
 
@@ -404,14 +404,14 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
                                        "have found using the <b>Find Text</b> function.</qt>" ) );
 
   // These two actions aren't visible in the menus, but exist for the (configurable) shortcut
-  d->m_paFindAheadText = new KAction( i18n("Find Text as You Type"), this );
+  d->m_paFindAheadText = new QAction( i18n("Find Text as You Type"), this );
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
   d->m_paFindAheadText->setShortcuts( KShortcut( '/' ) );
   d->m_paFindAheadText->setToolTip(i18n("This shortcut shows the find bar, for finding text in the displayed page. It cancels the effect of \"Find Links as You Type\", which sets the \"Find links only\" option."));
   d->m_paFindAheadText->setStatusTip(d->m_paFindAheadText->toolTip());
   connect( d->m_paFindAheadText, SIGNAL(triggered(bool)), this, SLOT(slotFindAheadText()) );
 
-  d->m_paFindAheadLinks = new KAction( i18n("Find Links as You Type"), this );
+  d->m_paFindAheadLinks = new QAction( i18n("Find Links as You Type"), this );
   actionCollection()->addAction( "findAheadLink", d->m_paFindAheadLinks );
   // The issue is that it sets the (sticky) option FindLinksOnly, so
   // if you trigger this shortcut once by mistake, Esc and Ctrl+F will still have the option set.
@@ -430,7 +430,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
       d->m_paFindAheadLinks->setShortcuts( KShortcut());
   }
 
-  d->m_paPrintFrame = new KAction( i18n( "Print Frame..." ), this );
+  d->m_paPrintFrame = new QAction( i18n( "Print Frame..." ), this );
   actionCollection()->addAction( "printFrame", d->m_paPrintFrame );
   d->m_paPrintFrame->setIcon( QIcon::fromTheme( "document-print-frame" ) );
   connect( d->m_paPrintFrame, SIGNAL(triggered(bool)), this, SLOT(slotPrintFrame()) );
@@ -1468,7 +1468,7 @@ void KHTMLPart::setAutoloadImages( bool enable )
     d->m_paLoadImages = 0;
   }
   else if ( !d->m_paLoadImages ) {
-    d->m_paLoadImages = new KAction( i18n( "Display Images on Page" ), this );
+    d->m_paLoadImages = new QAction( i18n( "Display Images on Page" ), this );
     actionCollection()->addAction( "loadImages", d->m_paLoadImages );
     d->m_paLoadImages->setIcon( QIcon::fromTheme( "image-loading" ) );
     connect( d->m_paLoadImages, SIGNAL(triggered(bool)), this, SLOT(slotLoadImages()) );
@@ -7377,7 +7377,7 @@ void KHTMLPart::setDebugScript( bool enable )
   unplugActionList( "debugScriptList" );
   if ( enable ) {
     if (!d->m_paDebugScript) {
-      d->m_paDebugScript = new KAction( i18n( "JavaScript &Debugger" ), this );
+      d->m_paDebugScript = new QAction( i18n( "JavaScript &Debugger" ), this );
       actionCollection()->addAction( "debugScript", d->m_paDebugScript );
       connect( d->m_paDebugScript, SIGNAL(triggered(bool)), this, SLOT(slotDebugScript()) );
     }

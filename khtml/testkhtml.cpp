@@ -13,6 +13,7 @@
 #include "khtml_part.h"
 #undef protected
 #include "misc/loader.h"
+#include <QAction>
 #include <QCursor>
 #include <QDomDocument>
 #include <dom_string.h>
@@ -27,7 +28,6 @@
 #include <kxmlguiwindow.h>
 #include <kcmdlineargs.h>
 #include <ktoggleaction.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include "kxmlguifactory.h"
 #include <kfiledialog.h>
@@ -97,16 +97,16 @@ int main(int argc, char *argv[])
     e.setAttribute( "name", "print" );
     toolBar.insertBefore( e, toolBar.firstChild() );
 
-    KAction *action = new KAction(QIcon::fromTheme("view-refresh"),  "Reload", doc );
+    QAction *action = new QAction(QIcon::fromTheme("view-refresh"),  "Reload", doc );
     doc->actionCollection()->addAction( "reload", action );
     QObject::connect(action, SIGNAL(triggered(bool)), dummy, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
 
-    KAction *bench = new KAction( QIcon(), "Benchmark...", doc );
+    QAction *bench = new QAction( QIcon(), "Benchmark...", doc );
     doc->actionCollection()->addAction( "debugDoBenchmark", bench );
     QObject::connect(bench, SIGNAL(triggered(bool)), dummy, SLOT(doBenchmark()));
 
-    KAction *kprint = new KAction(QIcon::fromTheme("document-print"),  "Print", doc );
+    QAction *kprint = new QAction(QIcon::fromTheme("document-print"),  "Print", doc );
     doc->actionCollection()->addAction( "print", kprint );
     QObject::connect(kprint, SIGNAL(triggered(bool)), doc->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);

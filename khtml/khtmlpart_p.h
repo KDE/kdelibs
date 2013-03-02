@@ -28,12 +28,12 @@
 
 #include <kcursor.h>
 #include <kxmlguifactory.h>
-#include <kaction.h>
 #include <kparts/partmanager.h>
 #include <kparts/statusbarextension.h>
 #include <kparts/browserextension.h>
 #include <kparts/scriptableextension.h>
 
+#include <QAction>
 #include <QtCore/QDate>
 #include <QtCore/QPointer>
 #include <QtCore/QMap>

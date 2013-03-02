@@ -2,6 +2,7 @@
 
 #include "testkhtmlnew.h"
 
+#include <QAction>
 #include <QCursor>
 #include <QBoxLayout>
 #include <QFrame>
@@ -20,7 +21,6 @@
 #include <ktoggleaction.h>
 #include <kcombobox.h>
 #include <kstandardaction.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 
 #include "css/cssstyleselector.h"
@@ -150,12 +150,12 @@ void TestKHTML::setupActions()
     element.setAttribute("name", "print");
     toolBar.insertBefore(element, toolBar.firstChild());
 
-    KAction *action = new KAction(QIcon::fromTheme("view-refresh"), "Reload", this );
+    QAction *action = new QAction(QIcon::fromTheme("view-refresh"), "Reload", this );
     m_part->actionCollection()->addAction( "reload", action );
     connect(action, SIGNAL(triggered(bool)), this, SLOT(reload()));
     action->setShortcut(Qt::Key_F5);
 
-    KAction *kprint = new KAction(QIcon::fromTheme("document-print"), "Print", this );
+    QAction *kprint = new QAction(QIcon::fromTheme("document-print"), "Print", this );
     m_part->actionCollection()->addAction( "print", kprint );
     connect(kprint, SIGNAL(triggered(bool)), m_part->browserExtension(), SLOT(print()));
     kprint->setEnabled(true);

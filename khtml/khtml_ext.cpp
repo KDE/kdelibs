@@ -262,7 +262,7 @@ void KHTMLPartBrowserExtension::copy()
 
 void KHTMLPartBrowserExtension::searchProvider()
 {
-    KAction *action = qobject_cast<KAction*>(sender());
+    QAction *action = qobject_cast<QAction*>(sender());
     if (action) {
         KUrl url = action->data().toUrl();
         if (url.host().isEmpty()) {
@@ -428,14 +428,14 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
                 selectedTextURL.truncate(15);
                 selectedTextURL += "...";
             }
-            KAction *action = new KAction(i18n("Open '%1'", selectedTextURL), this);
+            QAction *action = new QAction(i18n("Open '%1'", selectedTextURL), this);
             d->m_actionCollection->addAction( "openSelection", action );
             action->setIcon( QIcon::fromTheme( "window-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(openSelection()) );
             editActions.append(action);
         }
 
-        KAction* separator = new KAction(d->m_actionCollection);
+        QAction* separator = new QAction(d->m_actionCollection);
         separator->setSeparator(true);
         editActions.append(separator);
 
@@ -445,17 +445,17 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
     if (!url.isEmpty()) {
         QList<QAction *> linkActions;
         if (url.scheme() == "mailto") {
-            KAction *action = new KAction( i18n( "&Copy Email Address" ), this );
+            QAction *action = new QAction( i18n( "&Copy Email Address" ), this );
             d->m_actionCollection->addAction( "copylinklocation", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyLinkLocation()) );
             linkActions.append(action);
         } else {
-            KAction *action = new KAction( i18n( "&Save Link As..." ), this );
+            QAction *action = new QAction( i18n( "&Save Link As..." ), this );
             d->m_actionCollection->addAction( "savelinkas", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSaveLinkAs()) );
             linkActions.append(action);
 
-            action = new KAction( i18n( "&Copy Link Address" ), this );
+            action = new QAction( i18n( "&Copy Link Address" ), this );
             d->m_actionCollection->addAction( "copylinklocation", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyLinkLocation()) );
             linkActions.append(action);
@@ -468,59 +468,59 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
     if (!hasSelection) {
         if ( khtml->parentPart() ) {
             KActionMenu* menu = new KActionMenu( i18nc("@title:menu HTML frame/iframe", "Frame"), this);
-            KAction *action = new KAction( i18n( "Open in New &Window" ), this );
+            QAction *action = new QAction( i18n( "Open in New &Window" ), this );
             d->m_actionCollection->addAction( "frameinwindow", action );
             action->setIcon( QIcon::fromTheme( "window-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInWindow()) );
             menu->addAction(action);
 
-            action = new KAction( i18n( "Open in &This Window" ), this );
+            action = new QAction( i18n( "Open in &This Window" ), this );
             d->m_actionCollection->addAction( "frameintop", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInTop()) );
             menu->addAction(action);
 
-            action = new KAction( i18n( "Open in &New Tab" ), this );
+            action = new QAction( i18n( "Open in &New Tab" ), this );
             d->m_actionCollection->addAction( "frameintab", action );
             action->setIcon( QIcon::fromTheme( "tab-new" ) );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotFrameInTab()) );
             menu->addAction(action);
 
-            action = new KAction(d->m_actionCollection);
+            action = new QAction(d->m_actionCollection);
             action->setSeparator(true);
             menu->addAction(action);
 
-            action = new KAction( i18n( "Reload Frame" ), this );
+            action = new QAction( i18n( "Reload Frame" ), this );
             d->m_actionCollection->addAction( "reloadframe", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotReloadFrame()) );
             menu->addAction(action);
 
-            action = new KAction( i18n( "Print Frame..." ), this );
+            action = new QAction( i18n( "Print Frame..." ), this );
             d->m_actionCollection->addAction( "printFrame", action );
             action->setIcon( QIcon::fromTheme( "document-print-frame" ) );
             connect( action, SIGNAL(triggered(bool)), d->m_khtml->browserExtension(), SLOT(print()) );
             menu->addAction(action);
 
-            action = new KAction( i18n( "Save &Frame As..." ), this );
+            action = new QAction( i18n( "Save &Frame As..." ), this );
             d->m_actionCollection->addAction( "saveFrame", action );
             connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT(slotSaveFrame()) );
             menu->addAction(action);
 
-            action = new KAction( i18n( "View Frame Source" ), this );
+            action = new QAction( i18n( "View Frame Source" ), this );
             d->m_actionCollection->addAction( "viewFrameSource", action );
             connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT(slotViewDocumentSource()) );
             menu->addAction(action);
 
-            action = new KAction( i18n( "View Frame Information" ), this );
+            action = new QAction( i18n( "View Frame Information" ), this );
             d->m_actionCollection->addAction( "viewFrameInfo", action );
             connect( action, SIGNAL(triggered(bool)), d->m_khtml, SLOT(slotViewPageInfo()) );
 
-            action = new KAction(d->m_actionCollection);
+            action = new QAction(d->m_actionCollection);
             action->setSeparator(true);
             menu->addAction(action);
 
             if ( KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled() ) {
                 if ( khtml->d->m_frame->m_type == khtml::ChildFrame::IFrame ) {
-                    action = new KAction( i18n( "Block IFrame..." ), this );
+                    action = new QAction( i18n( "Block IFrame..." ), this );
                     d->m_actionCollection->addAction( "blockiframe", action );
                     connect( action, SIGNAL(triggered(bool)), this, SLOT(slotBlockIFrame()) );
                     menu->addAction(action);
@@ -545,18 +545,18 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         }
         else
             d->m_imageURL = KUrl( static_cast<DOM::HTMLInputElement>( e ).src().string() );
-        KAction *action = new KAction( i18n( "Save Image As..." ), this );
+        QAction *action = new QAction( i18n( "Save Image As..." ), this );
         d->m_actionCollection->addAction( "saveimageas", action );
         connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSaveImageAs()) );
         partActions.append(action);
 
-        action = new KAction( i18n( "Send Image..." ), this );
+        action = new QAction( i18n( "Send Image..." ), this );
         d->m_actionCollection->addAction( "sendimage", action );
         connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSendImage()) );
         partActions.append(action);
 
 #ifndef QT_NO_MIMECLIPBOARD
-        action = new KAction( i18n( "Copy Image" ), this );
+        action = new QAction( i18n( "Copy Image" ), this );
         d->m_actionCollection->addAction( "copyimage", action );
         action->setEnabled(!d->m_pixmap.isNull());
         connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyImage()) );
@@ -564,7 +564,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 #endif
 
         if(d->m_pixmap.isNull()) {    //fallback to image location if still loading the image.  this will always be true if ifdef QT_NO_MIMECLIPBOARD
-            action = new KAction( i18n( "Copy Image Location" ), this );
+            action = new QAction( i18n( "Copy Image Location" ), this );
             d->m_actionCollection->addAction( "copyimagelocation", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotCopyImageLocation()) );
             partActions.append(action);
@@ -573,13 +573,13 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         QString actionText = d->m_suggestedFilename.isEmpty() ?
                                    KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25)
                                    : d->m_suggestedFilename;
-        action = new KAction( i18n("View Image (%1)", actionText.replace("&", "&&")), this );
+        action = new QAction( i18n("View Image (%1)", actionText.replace("&", "&&")), this );
         d->m_actionCollection->addAction( "viewimage", action );
         connect( action, SIGNAL(triggered(bool)), this, SLOT(slotViewImage()) );
         partActions.append(action);
 
         if (KHTMLGlobal::defaultHTMLSettings()->isAdFilterEnabled()) {
-            action = new KAction( i18n( "Block Image..." ), this );
+            action = new QAction( i18n( "Block Image..." ), this );
             d->m_actionCollection->addAction( "blockimage", action );
             connect( action, SIGNAL(triggered(bool)), this, SLOT(slotBlockImage()) );
             partActions.append(action);
@@ -587,23 +587,23 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             if (!d->m_imageURL.host().isEmpty() &&
                 !d->m_imageURL.scheme().isEmpty())
             {
-                action = new KAction( i18n( "Block Images From %1" , d->m_imageURL.host()), this );
+                action = new QAction( i18n( "Block Images From %1" , d->m_imageURL.host()), this );
                 d->m_actionCollection->addAction( "blockhost", action );
                 connect( action, SIGNAL(triggered(bool)), this, SLOT(slotBlockHost()) );
                 partActions.append(action);
             }
         }
-        KAction* separator = new KAction(d->m_actionCollection);
+        QAction* separator = new QAction(d->m_actionCollection);
         separator->setSeparator(true);
         partActions.append(separator);
     }
 
     if ( isImage || url.isEmpty() ) {
-        KAction *action = new KAction( i18n( "Stop Animations" ), this );
+        QAction *action = new QAction( i18n( "Stop Animations" ), this );
         d->m_actionCollection->addAction( "stopanimations", action );
         connect( action, SIGNAL(triggered(bool)), this, SLOT(slotStopAnimations()) );
         partActions.append(action);
-        KAction* separator = new KAction(d->m_actionCollection);
+        QAction* separator = new QAction(d->m_actionCollection);
         separator->setSeparator(true);
         partActions.append(separator);
     }
@@ -636,7 +636,7 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
 
     if (KUriFilter::self()->filterSearchUri(data, KUriFilter::NormalTextFilter)) {
         const QString squeezedText = KStringHandler::rsqueeze(selectedText, 21);
-        KAction *action = new KAction(i18n("Search for '%1' with %2",
+        QAction *action = new QAction(i18n("Search for '%1' with %2",
                                            squeezedText, data.searchProvider()), this);
         action->setData(QUrl(data.uri()));
         action->setIcon(QIcon::fromTheme(data.iconName()));
@@ -650,7 +650,7 @@ void KHTMLPopupGUIClient::addSearchActions(QList<QAction *>& editActions)
             Q_FOREACH(const QString &searchProvider, preferredSearchProviders) {
                 if (searchProvider == data.searchProvider())
                     continue;
-                KAction *action = new KAction(searchProvider, this);
+                QAction *action = new QAction(searchProvider, this);
                 action->setData(data.queryForPreferredSearchProvider(searchProvider));
                 d->m_actionCollection->addAction(searchProvider, action);
                 action->setIcon(QIcon::fromTheme(data.iconNameForPreferredSearchProvider(searchProvider)));

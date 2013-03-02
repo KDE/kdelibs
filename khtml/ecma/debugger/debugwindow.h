@@ -45,7 +45,7 @@
 #include "interpreter_ctx.h"
 #include "debugdocument.h"
 
-class KAction;
+class QAction;
 class KToggleAction;
 class QTabWidget;
 class QFrame;
@@ -167,14 +167,14 @@ private:
     bool checkSourceLocation(KJS::ExecState* exec, int sourceId, int firstLine, int lastLine);
 
     // Standard actions
-    KAction *m_exitAct;
+    QAction *m_exitAct;
 
     // Flow control actions
-    KAction *m_continueAct;
-    KAction *m_stopAct;
-    KAction *m_stepIntoAct;
-    KAction *m_stepOutAct;
-    KAction *m_stepOverAct;
+    QAction *m_continueAct;
+    QAction *m_stopAct;
+    QAction *m_stepIntoAct;
+    QAction *m_stepOutAct;
+    QAction *m_stepOverAct;
 
     KToggleAction *m_catchExceptionsAction;
     KToggleAction *m_reindentAction;

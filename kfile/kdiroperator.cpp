@@ -52,7 +52,6 @@
 #include <QWheelEvent>
 #include <qurlpathinfo.h>
 
-#include <kaction.h>
 #include <qapplication.h>
 #include <kdebug.h>
 #include <kdirlister.h>
@@ -1865,18 +1864,18 @@ void KDirOperator::setupActions()
     reloadAction->setText(i18n("Reload"));
     reloadAction->setShortcuts(KStandardShortcut::shortcut(KStandardShortcut::Reload));
 
-    KAction* mkdirAction = new KAction(i18n("New Folder..."), this);
+    QAction* mkdirAction = new QAction(i18n("New Folder..."), this);
     d->actionCollection->addAction("mkdir", mkdirAction);
     mkdirAction->setIcon(QIcon::fromTheme(QLatin1String("folder-new")));
     connect(mkdirAction, SIGNAL(triggered(bool)), this, SLOT(mkdir()));
 
-    KAction* trash = new KAction(i18n("Move to Trash"), this);
+    QAction* trash = new QAction(i18n("Move to Trash"), this);
     d->actionCollection->addAction("trash", trash);
     trash->setIcon(QIcon::fromTheme("user-trash"));
     trash->setShortcuts(KShortcut(Qt::Key_Delete));
     connect(trash, SIGNAL(triggered(bool)), SLOT(trashSelected()));
 
-    KAction* action = new KAction(i18n("Delete"), this);
+    QAction* action = new QAction(i18n("Delete"), this);
     d->actionCollection->addAction("delete", action);
     action->setIcon(QIcon::fromTheme("edit-delete"));
     action->setShortcuts(KShortcut(Qt::SHIFT + Qt::Key_Delete));
@@ -1974,15 +1973,15 @@ void KDirOperator::setupActions()
     d->actionCollection->addAction("inline preview", inlinePreview);
     connect(inlinePreview, SIGNAL(toggled(bool)), SLOT(_k_toggleInlinePreviews(bool)));
 
-    KAction *fileManager = new KAction(i18n("Open File Manager"), this);
+    QAction *fileManager = new QAction(i18n("Open File Manager"), this);
     d->actionCollection->addAction("file manager", fileManager);
     fileManager->setIcon(QIcon::fromTheme(QLatin1String("system-file-manager")));
     connect(fileManager, SIGNAL(triggered()), SLOT(_k_slotOpenFileManager()));
 
-    action = new KAction(i18n("Properties"), this);
+    action = new QAction(i18n("Properties"), this);
     d->actionCollection->addAction("properties", action);
     action->setIcon(QIcon::fromTheme("document-properties"));
-    action->setShortcut(KShortcut(Qt::ALT + Qt::Key_Return));
+    action->setShortcuts(KShortcut(Qt::ALT + Qt::Key_Return));
     connect(action, SIGNAL(triggered(bool)), this, SLOT(_k_slotProperties()));
 
     // the view menu actions

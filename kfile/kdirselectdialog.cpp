@@ -28,7 +28,6 @@
 #include <qpushbutton.h>
 #include <qurlpathinfo.h>
 
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
 #include <kconfig.h>
@@ -96,8 +95,8 @@ public:
     KHistoryComboBox *m_urlCombo;
     QString m_recentDirClass;
     KUrl m_startURL;
-    KAction* moveToTrash;
-    KAction* deleteAction;
+    QAction* moveToTrash;
+    QAction* deleteAction;
     QAction* showHiddenFoldersAction;
 };
 
@@ -328,24 +327,24 @@ KDirSelectDialog::KDirSelectDialog(const QUrl &startDir, bool localOnly,
 
     d->m_contextMenu = new KMenu( this );
 
-    KAction* newFolder = new KAction( i18nc("@action:inmenu","New Folder..."), this);
+    QAction* newFolder = new QAction( i18nc("@action:inmenu","New Folder..."), this);
     d->m_actions->addAction( newFolder->objectName(), newFolder );
     newFolder->setIcon( QIcon::fromTheme( "folder-new" ) );
     newFolder->setShortcut( Qt::Key_F10);
     connect( newFolder, SIGNAL(triggered(bool)), this, SLOT(slotNewFolder()) );
     d->m_contextMenu->addAction( newFolder );
 
-    d->moveToTrash = new KAction( i18nc( "@action:inmenu","Move to Trash" ), this );
+    d->moveToTrash = new QAction( i18nc( "@action:inmenu","Move to Trash" ), this );
     d->m_actions->addAction( d->moveToTrash->objectName(), d->moveToTrash );
     d->moveToTrash->setIcon( QIcon::fromTheme( "user-trash" ) );
-    d->moveToTrash->setShortcut(KShortcut(Qt::Key_Delete));
+    d->moveToTrash->setShortcuts(KShortcut(Qt::Key_Delete));
     connect( d->moveToTrash, SIGNAL(triggered(bool)), this, SLOT(slotMoveToTrash()) );
     d->m_contextMenu->addAction( d->moveToTrash );
 
-    d->deleteAction = new KAction( i18nc("@action:inmenu","Delete"), this );
+    d->deleteAction = new QAction( i18nc("@action:inmenu","Delete"), this );
     d->m_actions->addAction( d->deleteAction->objectName(), d->deleteAction );
     d->deleteAction->setIcon( QIcon::fromTheme( "edit-delete" ) );
-    d->deleteAction->setShortcut( KShortcut( Qt::SHIFT + Qt::Key_Delete ) );
+    d->deleteAction->setShortcuts( KShortcut( Qt::SHIFT + Qt::Key_Delete ) );
     connect( d->deleteAction, SIGNAL(triggered(bool)), this, SLOT(slotDelete()) );
     d->m_contextMenu->addAction( d->deleteAction );
 
@@ -358,10 +357,10 @@ KDirSelectDialog::KDirSelectDialog(const QUrl &startDir, bool localOnly,
     d->m_contextMenu->addAction( d->showHiddenFoldersAction );
     d->m_contextMenu->addSeparator();
 
-    KAction* propertiesAction = new KAction( i18nc("@action:inmenu","Properties"), this);
+    QAction* propertiesAction = new QAction( i18nc("@action:inmenu","Properties"), this);
     d->m_actions->addAction(propertiesAction->objectName(), propertiesAction);
     propertiesAction->setIcon(QIcon::fromTheme("document-properties"));
-    propertiesAction->setShortcut(KShortcut(Qt::ALT + Qt::Key_Return));
+    propertiesAction->setShortcuts(KShortcut(Qt::ALT + Qt::Key_Return));
     connect( propertiesAction, SIGNAL(triggered(bool)), this, SLOT(slotProperties()) );
     d->m_contextMenu->addAction( propertiesAction );
 
