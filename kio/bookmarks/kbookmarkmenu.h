@@ -28,7 +28,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QStack>
 
-#include <kaction.h>
 #include <kactionmenu.h>
 #include <krun.h>
 #include <kmenu.h>
@@ -39,9 +38,6 @@
 class QString;
 class QMenu;
 class KBookmark;
-class KAction;
-class QAction;
-class KActionMenu;
 class KActionCollection;
 class KBookmarkOwner;
 class KBookmarkMenu;
@@ -249,7 +245,7 @@ public:
  *
  */
 
-class KIO_EXPORT KBookmarkAction : public KAction, public KBookmarkActionInterface
+class KIO_EXPORT KBookmarkAction : public QAction, public KBookmarkActionInterface
 {
   Q_OBJECT
 public:

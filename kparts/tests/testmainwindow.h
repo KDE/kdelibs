@@ -25,7 +25,7 @@
 #include <kparts/mainwindow.h>
 
 namespace KParts { class PartManager; }
-class KAction;
+class QAction;
 class QWidget;
 
 class TestMainWindow : public KParts::MainWindow
@@ -46,8 +46,8 @@ protected:
 
 private:
 
-  KAction * m_paEditFile;
-  KAction * m_paCloseEditor;
+  QAction * m_paEditFile;
+  QAction * m_paCloseEditor;
 
   KParts::ReadOnlyPart *m_part1;
   KParts::Part *m_part2;

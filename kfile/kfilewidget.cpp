@@ -438,7 +438,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     coll->action( "mkdir" )->setShortcut( QKeySequence(Qt::Key_F10) );
     coll->action( "mkdir" )->setWhatsThis(i18n("Click this button to create a new folder."));
 
-    KAction *goToNavigatorAction = coll->add<KAction>( "gotonavigator", this, SLOT(_k_activateUrlNavigator()) );
+    QAction *goToNavigatorAction = coll->addAction( "gotonavigator", this, SLOT(_k_activateUrlNavigator()) );
     goToNavigatorAction->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_L) );
 
     KToggleAction *showSidebarAction =
@@ -469,9 +469,9 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     menu->addSeparator();
     menu->addAction(coll->action("decoration menu"));
     menu->addSeparator();
-    KAction * showHidden = qobject_cast<KAction*>(coll->action( "show hidden" ));
+    QAction * showHidden = coll->action( "show hidden" );
     if (showHidden) {
-        showHidden->setShortcut(
+        showHidden->setShortcuts(
                     KShortcut( QKeySequence(Qt::ALT + Qt::Key_Period), QKeySequence(Qt::Key_F8) ) );
     }
     menu->addAction( showHidden );
@@ -499,9 +499,9 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     connect(d->ops, SIGNAL(currentIconSizeChanged(int)),
             d->iconSizeSlider, SLOT(setValue(int)));
 
-    KAction *furtherAction = new KAction(QIcon::fromTheme("file-zoom-out"), i18n("Zoom out"), this);
+    QAction *furtherAction = new QAction(QIcon::fromTheme("file-zoom-out"), i18n("Zoom out"), this);
     connect(furtherAction, SIGNAL(triggered()), SLOT(_k_zoomOutIconsSize()));
-    KAction *closerAction = new KAction(QIcon::fromTheme("file-zoom-in"), i18n("Zoom in"), this);
+    QAction *closerAction = new QAction(QIcon::fromTheme("file-zoom-in"), i18n("Zoom in"), this);
     connect(closerAction, SIGNAL(triggered()), SLOT(_k_zoomInIconsSize()));
 
     QWidget *midSpacer = new QWidget(this);

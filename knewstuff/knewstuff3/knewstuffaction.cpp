@@ -18,18 +18,18 @@
 
 #include "knewstuffaction.h"
 
-#include <kaction.h>
+#include <QAction>
 #include <klocalizedstring.h>
 #include <kactioncollection.h>
 
 using namespace KNS3;
 
-KAction *KNS3::standardAction(const QString &what,
+QAction *KNS3::standardAction(const QString &what,
                              const QObject *receiver,
                              const char *slot, KActionCollection *parent,
                              const char *name)
 {
-    KAction *action = new KAction(what, parent);
+    QAction *action = new QAction(what, parent);
     parent->addAction(QString(name), action);
     action->setIcon(QIcon::fromTheme("get-hot-new-stuff"));
     QObject::connect(action, SIGNAL(triggered(bool)), receiver, slot);
@@ -37,12 +37,12 @@ KAction *KNS3::standardAction(const QString &what,
     return action;
 }
 
-KAction *KNS3::standardActionUpload(const QString &what,
+QAction *KNS3::standardActionUpload(const QString &what,
                              const QObject *receiver,
                              const char *slot, KActionCollection *parent,
                              const char *name)
 {
-    KAction *action = new KAction(what, parent);
+    QAction *action = new QAction(what, parent);
     parent->addAction(QString(name), action);
     // FIXME: Get a specific upload icon!
     action->setIcon(QIcon::fromTheme("get-hot-new-stuff"));

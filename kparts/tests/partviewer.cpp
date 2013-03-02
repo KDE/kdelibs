@@ -19,12 +19,12 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kfiledialog.h>
 #include <qmimedatabase.h>
 
+#include <QAction>
 #include <QApplication>
 #include <QWidget>
 #include <QtCore/QDir>
@@ -38,11 +38,11 @@ PartViewer::PartViewer()
 {
     setXMLFile(QFINDTESTDATA("partviewer_shell.rc"));
 
-    KAction * paOpen = new KAction( QIcon::fromTheme("document-open"), "&Open file", this );
+    QAction * paOpen = new QAction( QIcon::fromTheme("document-open"), "&Open file", this );
     actionCollection()->addAction( "file_open", paOpen );
     connect( paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()) );
 
-    KAction * paQuit = new KAction( QIcon::fromTheme("application-exit"), "&Quit", this );
+    QAction * paQuit = new QAction( QIcon::fromTheme("application-exit"), "&Quit", this );
     actionCollection()->addAction( "file_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
 

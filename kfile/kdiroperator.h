@@ -36,7 +36,6 @@ class QAbstractItemView;
 class QModelIndex;
 class QProgressBar;
 
-class KAction;
 class KActionCollection;
 class KActionMenu;
 class KDirLister;

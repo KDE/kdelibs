@@ -30,9 +30,9 @@
 #include <QMenu>
 #include <QMenuBar>
 
+#include <QAction>
 #include <QApplication>
 #include <kmessagebox.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <qstandardpaths.h>
@@ -50,29 +50,29 @@ TestMainWindow::TestMainWindow()
 
     QMenu * pFile = new QMenu( "File", menuBar() );
     KActionCollection * coll = actionCollection();
-    KAction * paLocal = new KAction( "&View local file", this );
+    QAction * paLocal = new QAction( "&View local file", this );
     coll->addAction( "open_local_file", paLocal );
     connect(paLocal, SIGNAL(triggered()), this, SLOT(slotFileOpen()));
     // No XML: we need to add our actions to the menus ourselves
     pFile->addAction(paLocal);
 
-    KAction * paRemote = new KAction( "&View remote file", this );
+    QAction * paRemote = new QAction( "&View remote file", this );
     coll->addAction( "open_remote_file", paRemote );
     connect(paRemote, SIGNAL(triggered()), this, SLOT(slotFileOpenRemote()));
     pFile->addAction(paRemote);
 
-    m_paEditFile = new KAction( "&Edit file", this );
+    m_paEditFile = new QAction( "&Edit file", this );
     coll->addAction( "edit_file", m_paEditFile );
     connect(m_paEditFile, SIGNAL(triggered()), this, SLOT(slotFileEdit()));
     pFile->addAction(m_paEditFile);
 
-    m_paCloseEditor = new KAction( "&Close file editor", this );
+    m_paCloseEditor = new QAction( "&Close file editor", this );
     coll->addAction( "close_editor", m_paCloseEditor );
     connect(m_paCloseEditor, SIGNAL(triggered()), this, SLOT(slotFileCloseEditor()));
     m_paCloseEditor->setEnabled(false);
     pFile->addAction(m_paCloseEditor);
 
-    KAction * paQuit = new KAction( "&Quit", this );
+    QAction * paQuit = new QAction( "&Quit", this );
     coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
     paQuit->setIcon(QIcon::fromTheme("application-exit"));

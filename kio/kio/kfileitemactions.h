@@ -26,7 +26,7 @@
 #include <kio/kio_export.h>
 
 class KFileItemListProperties;
-class KAction;
+class QAction;
 class QMenu;
 class KFileItemActionsPrivate;
 
@@ -89,7 +89,7 @@ public:
      * from the "open with" list. Example: "DesktopEntryName != 'kfmclient'".
      * @return the action - or 0 if no application was found.
      */
-    KAction* preferredOpenWithAction(const QString& traderConstraint);
+    QAction* preferredOpenWithAction(const QString& traderConstraint);
 
     /**
      * Helper method used internally, can also be used for similar GUIs that

@@ -23,6 +23,7 @@
 #include "parts.h"
 #include "notepad.h"
 
+#include <QAction>
 #include <QSplitter>
 #include <QCheckBox>
 #include <QtCore/QDir>
@@ -30,7 +31,6 @@
 #include <QApplication>
 #include <kxmlguifactory.h>
 #include <kmessagebox.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kparts/partmanager.h>
@@ -58,27 +58,27 @@ TestMainWindow::TestMainWindow()
 
     KActionCollection *coll = actionCollection();
 
-    KAction* paOpen = new KAction( "&View local file", this );
+    QAction* paOpen = new QAction( "&View local file", this );
     coll->addAction( "open_local_file", paOpen );
     connect(paOpen, SIGNAL(triggered()), this, SLOT(slotFileOpen()));
-    KAction* paOpenRemote = new KAction( "&View remote file", this );
+    QAction* paOpenRemote = new QAction( "&View remote file", this );
     coll->addAction( "open_remote_file", paOpenRemote );
     connect(paOpenRemote, SIGNAL(triggered()), this, SLOT(slotFileOpenRemote()));
 
-    m_paEditFile = new KAction( "&Edit file", this );
+    m_paEditFile = new QAction( "&Edit file", this );
     coll->addAction( "edit_file", m_paEditFile );
     connect(m_paEditFile, SIGNAL(triggered()), this, SLOT(slotFileEdit()));
-    m_paCloseEditor = new KAction( "&Close file editor", this );
+    m_paCloseEditor = new QAction( "&Close file editor", this );
     coll->addAction( "close_editor", m_paCloseEditor );
     connect(m_paCloseEditor, SIGNAL(triggered()), this, SLOT(slotFileCloseEditor()));
     m_paCloseEditor->setEnabled(false);
-    KAction * paQuit = new KAction( "&Quit", this );
+    QAction * paQuit = new QAction( "&Quit", this );
     coll->addAction( "shell_quit", paQuit );
     connect(paQuit, SIGNAL(triggered()), this, SLOT(close()));
     paQuit->setIcon(QIcon::fromTheme("application-exit"));
 
-//  (void)new KAction( "Yet another menu item", coll, "shell_yami" );
-//  (void)new KAction( "Yet another submenu item", coll, "shell_yasmi" );
+//  (void)new QAction( "Yet another menu item", coll, "shell_yami" );
+//  (void)new QAction( "Yet another submenu item", coll, "shell_yasmi" );
 
     KStandardAction::configureToolbars(this, SLOT(configureToolbars()), actionCollection());
     KStandardAction::keyBindings(guiFactory(), SLOT(configureShortcuts()), actionCollection());

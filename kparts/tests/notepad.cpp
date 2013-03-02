@@ -23,6 +23,7 @@
 #include <kparts/partmanager.h>
 #include <kparts/mainwindow.h>
 
+#include <QAction>
 #include <QSplitter>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
@@ -32,7 +33,6 @@
 
 #include <kaboutdata.h>
 #include <kdebug.h>
-#include <kaction.h>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kpluginfactory.h>
@@ -51,7 +51,7 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
   m_edit->setPlainText( "NotepadPart's multiline edit" );
   setWidget( m_edit );
 
-  KAction* searchReplace = new KAction( "Search and replace", this );
+  QAction* searchReplace = new QAction( "Search and replace", this );
   actionCollection()->addAction( "searchreplace", searchReplace );
   connect(searchReplace, SIGNAL(triggered()), this, SLOT(slotSearchReplace()));
 

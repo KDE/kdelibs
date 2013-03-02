@@ -19,7 +19,6 @@
 
 #include "plugin.h"
 
-#include <kaction.h>
 #include <krun.h>
 #include <kxmlguifactory.h>
 #include <kactioncollection.h>
@@ -27,6 +26,7 @@
 #include <kross/core/actioncollection.h>
 #include <kio/netaccess.h>
 
+#include <QAction>
 #include <QPointer>
 #include <QTextStream>
 #include <QDirIterator>
@@ -196,7 +196,7 @@ void ScriptingPlugin::buildDomDocument(QDomDocument& document,
         menuElement.appendChild(newActionElement);
 
 
-        KAction* adaptor=new KAction(action->text(), action);
+        QAction* adaptor = new QAction(action->text(), action);
         connect (adaptor,SIGNAL(triggered()),action,SLOT(trigger()));
         adaptor->setEnabled(action->isEnabled());
         adaptor->setIcon(action->icon());

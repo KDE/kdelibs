@@ -20,7 +20,6 @@
 
 #include "kfileitemactions.h"
 #include "kfileitemactions_p.h"
-#include <kaction.h>
 #include <krun.h>
 #include <kmimetypetrader.h>
 #include <kdesktopfileactions.h>
@@ -143,7 +142,7 @@ int KFileItemActionsPrivate::insertServices(const ServiceList& list,
         }
 
         if (isBuiltin || !(*it).noDisplay()) {
-            KAction *act = new KAction(m_parentWidget);
+            QAction *act = new QAction(m_parentWidget);
             m_ownActions.append(act);
             act->setObjectName("menuaction"); // for the unittest
             QString text = (*it).text();
@@ -513,7 +512,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
             topMenu->addSeparator();
         }
 
-        KAction *runAct = new KAction(d->m_parentWidget);
+        QAction *runAct = new QAction(d->m_parentWidget);
         QString runActionName;
 
 
@@ -564,7 +563,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
 
             KService::List::ConstIterator it = offers.constBegin();
             for(; it != offers.constEnd(); it++) {
-                KAction* act = d->createAppAction(*it,
+                QAction* act = d->createAppAction(*it,
                                                   // no submenu -> prefix single offer
                                                   menu == topMenu);
                 menu->addAction(act);
@@ -577,7 +576,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
             } else {
                 openWithActionName = i18nc("@title:menu", "&Open With...");
             }
-            KAction *openWithAct = new KAction(d->m_parentWidget);
+            QAction *openWithAct = new QAction(d->m_parentWidget);
             d->m_ownActions.append(openWithAct);
             openWithAct->setText(openWithActionName);
             QObject::connect(openWithAct, SIGNAL(triggered()), d, SLOT(slotOpenWithDialog()));
@@ -585,7 +584,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
         }
         else // no app offers -> Open With...
         {
-            KAction *act = new KAction(d->m_parentWidget);
+            QAction *act = new QAction(d->m_parentWidget);
             d->m_ownActions.append(act);
             act->setText(i18nc("@title:menu", "&Open With..."));
             QObject::connect(act, SIGNAL(triggered()), d, SLOT(slotOpenWithDialog()));
@@ -686,7 +685,7 @@ QStringList KFileItemActionsPrivate::listPreferredServiceIds(const QStringList& 
     return serviceIdList;
 }
 
-KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, bool singleOffer)
+QAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, bool singleOffer)
 {
     QString actionName(service->name().replace('&', "&&"));
     if (singleOffer) {
@@ -695,7 +694,7 @@ KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, 
         actionName = i18nc("@item:inmenu Open With, %1 is application name", "%1", actionName);
     }
 
-    KAction *act = new KAction(m_parentWidget);
+    QAction *act = new QAction(m_parentWidget);
     m_ownActions.append(act);
     act->setIcon(QIcon::fromTheme(service->icon()));
     act->setText(actionName);
@@ -704,7 +703,7 @@ KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, 
     return act;
 }
 
-KAction* KFileItemActions::preferredOpenWithAction(const QString& traderConstraint)
+QAction* KFileItemActions::preferredOpenWithAction(const QString& traderConstraint)
 {
     const KService::List offers = associatedApplications(d->m_mimeTypeList, traderConstraint);
     if (offers.isEmpty()) {

@@ -44,7 +44,7 @@ public:
 
     // For "open with"
     KService::List associatedApplications(const QString& traderConstraint);
-    KAction* createAppAction(const KService::Ptr& service, bool singleOffer);
+    QAction* createAppAction(const KService::Ptr& service, bool singleOffer);
 
     struct ServiceRank
     {
@@ -82,7 +82,7 @@ public:
     KFileItemList m_fileOpenList;
     QActionGroup m_executeServiceActionGroup;
     QActionGroup m_runApplicationActionGroup;
-    QList<KAction*> m_ownActions;
+    QList<QAction*> m_ownActions;
     QWidget* m_parentWidget;
 };
 

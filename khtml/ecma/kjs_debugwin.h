@@ -44,7 +44,7 @@
 
 class QListWidget;
 class QComboBox;
-class KAction;
+class QAction;
 
 namespace KJS {
   class List;
@@ -262,11 +262,11 @@ namespace KJS {
     SourceDisplay *m_sourceDisplay;
     QListWidget *m_contextList;
 
-    KAction *m_stepAction;
-    KAction *m_nextAction;
-    KAction *m_continueAction;
-    KAction *m_stopAction;
-    KAction *m_breakAction;
+    QAction *m_stepAction;
+    QAction *m_nextAction;
+    QAction *m_continueAction;
+    QAction *m_stopAction;
+    QAction *m_breakAction;
 
     QComboBox *m_sourceSel;
     EvalMultiLineEdit *m_evalEdit;

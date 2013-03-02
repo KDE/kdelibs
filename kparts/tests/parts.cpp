@@ -25,6 +25,7 @@
 #include <kactionmenu.h>
 #include <kactioncollection.h>
 
+#include <QAction>
 #include <QCheckBox>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
@@ -35,7 +36,6 @@
 #include <QtTest/QtTest>
 
 #include <kdebug.h>
-#include <kaction.h>
 #include <klocalizedstring.h>
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
@@ -50,7 +50,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
 
     // An action and an action menu (test code for #70459)
 
-    KAction* testAction = actionCollection()->add<KAction>("p1_blah");
+    QAction* testAction = actionCollection()->addAction("p1_blah");
     testAction->setText("Part1's action");
     testAction->setShortcut(Qt::CTRL + Qt::Key_B);
     connect(testAction, SIGNAL(triggered()), this, SLOT(slotBlah()));
@@ -58,7 +58,7 @@ Part1::Part1( QObject *parent, QWidget * parentWidget )
     KActionMenu * menu = new KActionMenu(QIcon::fromTheme("mail_forward"), "Foo", this);
     actionCollection()->addAction("p1_foo", menu);
 
-    KAction* mailForward = new KAction(QIcon::fromTheme("mail_forward"), "Bar", this);
+    QAction* mailForward = new QAction(QIcon::fromTheme("mail_forward"), "Bar", this);
     mailForward->setShortcut(Qt::CTRL + Qt::Key_F);
     connect(mailForward, SIGNAL(triggered()), this, SLOT(slotFooBar()));
     actionCollection()->addAction("p1_foo_bar", mailForward);

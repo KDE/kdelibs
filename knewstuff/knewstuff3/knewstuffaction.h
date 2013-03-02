@@ -22,7 +22,7 @@
 #include <QtCore/QString>
 
 class QObject;
-class KAction;
+class QAction;
 class KActionCollection;
 
 namespace KNS3
@@ -41,7 +41,7 @@ namespace KNS3
  * @param name The name by which the action will be retrieved again from the collection.
  * @since 4.4
  */
-KNEWSTUFF3_EXPORT KAction *standardAction(const QString &what,
+KNEWSTUFF3_EXPORT QAction *standardAction(const QString &what,
         const QObject *receiver,
         const char *slot,
         KActionCollection *parent,
@@ -61,7 +61,7 @@ KNEWSTUFF3_EXPORT KAction *standardAction(const QString &what,
  * @param name The name by which the action will be retrieved again from the collection.
  * @since 4.5
  */
-KNEWSTUFF3_EXPORT KAction *standardActionUpload(const QString &what,
+KNEWSTUFF3_EXPORT QAction *standardActionUpload(const QString &what,
         const QObject *receiver,
         const char *slot,
         KActionCollection *parent,

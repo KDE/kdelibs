@@ -21,7 +21,7 @@
 #include "notepad.h" // this plugin applies to a notepad part
 #include <QTextEdit>
 #include "plugin_spellcheck.h"
-#include <kaction.h>
+#include <QAction>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
 #include <kpluginfactory.h>
@@ -32,7 +32,7 @@ PluginSpellCheck::PluginSpellCheck( QObject* parent,
                                     const QVariantList& )
     : Plugin( parent )
 {
-    KAction* act = new KAction( "&Select current line (plugin)", this );
+    QAction* act = new QAction( "&Select current line (plugin)", this );
     actionCollection()->addAction( "spellcheck", act );
     connect(act, SIGNAL(triggered()), this, SLOT(slotSpellCheck()));
 }

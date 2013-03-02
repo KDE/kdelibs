@@ -22,7 +22,6 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kaction.h>
 #include <kfileitemactions.h>
 #include <kmenu.h>
 #include <ksqueezedtextlabel.h>
@@ -32,6 +31,7 @@
 #include <kguiitem.h>
 #include <kmessagebox.h>
 #include <qmimedatabase.h>
+#include <QAction>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QPushButton>
@@ -231,12 +231,12 @@ BrowserOpenOrSaveQuestion::~BrowserOpenOrSaveQuestion()
     delete d;
 }
 
-static KAction* createAppAction(const KService::Ptr& service, QObject* parent)
+static QAction* createAppAction(const KService::Ptr& service, QObject* parent)
 {
     QString actionName(service->name().replace('&', "&&"));
     actionName = i18nc("@action:inmenu", "Open &with %1", actionName);
 
-    KAction *act = new KAction(parent);
+    QAction *act = new QAction(parent);
     act->setIcon(QIcon::fromTheme(service->icon()));
     act->setText(actionName);
     act->setData(QVariant::fromValue(service));
@@ -274,10 +274,10 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
                 d->openWithButton->setMenu(menu);
                 QObject::connect(menu, SIGNAL(triggered(QAction*)), d, SLOT(slotAppSelected(QAction*)));
                 for (KService::List::const_iterator it = apps.begin(); it != apps.end(); ++it) {
-                    KAction* act = createAppAction(*it, d);
+                    QAction* act = createAppAction(*it, d);
                     menu->addAction(act);
                 }
-                KAction* openWithDialogAction = new KAction(d);
+                QAction* openWithDialogAction = new QAction(d);
                 openWithDialogAction->setIcon(QIcon::fromTheme("document-open"));
                 openWithDialogAction->setText(openWithDialogItem.text());
                 menu->addAction(openWithDialogAction);

@@ -724,13 +724,15 @@ void KBookmarkMenuImporter::endFolder()
 
 
 KBookmarkAction::KBookmarkAction(const KBookmark &bk, KBookmarkOwner* owner, QObject *parent )
-  : KAction( bk.text().replace('&', "&&"), parent),
+  : QAction( bk.text().replace('&', "&&"), parent),
     KBookmarkActionInterface(bk),
     m_pOwner(owner)
 {
   setIcon(QIcon::fromTheme(bookmark().icon()));
   setIconText(text());
-  setHelpText(bookmark().url().toDisplayString(QUrl::PreferLocalFile));
+  setToolTip(bookmark().url().toDisplayString(QUrl::PreferLocalFile));
+  setStatusTip(toolTip());
+  setWhatsThis(toolTip());
   const QString description = bk.description();
   if (!description.isEmpty())
     setToolTip( description );

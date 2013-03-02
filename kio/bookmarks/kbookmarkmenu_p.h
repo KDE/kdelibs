@@ -24,7 +24,6 @@
 
 #include <QtCore/QObject>
 
-#include <kaction.h>
 #include <kactionmenu.h>
 #include <QTreeWidget>
 
@@ -36,7 +35,6 @@ class QString;
 class QMenu;
 class KBookmark;
 class KBookmarkGroup;
-class KAction;
 class KBookmarkOwner;
 class KBookmarkMenu;
 
