@@ -437,7 +437,7 @@ install( FILES
   KTypeListLength
   KTzfileTimeZone
   KTzfileTimeZoneSource
-  KUndoStack
+  KUndoActions
   KUniqueApplication
   KUriFilter
   KUriFilterData

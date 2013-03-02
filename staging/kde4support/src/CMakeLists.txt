@@ -52,6 +52,7 @@ set(libkde4support_SRCS
     kdeui/kmessagebox_queued.cpp
     kdeui/kmessageboxmessagehandler.cpp
     kdeui/kpushbutton.cpp
+    kdeui/kundostack.cpp
 )
 
 if (Q_OS_WIN)
@@ -146,6 +147,7 @@ install(FILES
     kdeui/kmessagebox_queued.h
     kdeui/kmessageboxmessagehandler.h
     kdeui/kpushbutton.h
+    kdeui/kundostack.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
