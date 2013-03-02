@@ -114,7 +114,6 @@ set(kdeui_LIB_SRCS
  actions/kactioncollection.cpp
  actions/kactionconflictdetector.cpp
  actions/kactioncategory.cpp
- actions/kaction.cpp
  actions/kactionmenu.cpp
  actions/kcodecaction.cpp
  actions/kdualaction.cpp
@@ -477,7 +476,6 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  actions/kactioncollection.h
  actions/kactioncategory.h
- actions/kaction.h
  actions/kactionmenu.h
  actions/kdualaction.h
  actions/kcodecaction.h

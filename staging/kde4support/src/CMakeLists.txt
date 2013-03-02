@@ -27,6 +27,7 @@ set(libkde4support_SRCS
     kdecore/qtest_kde.cpp
 
     kdeui/k3icon.cpp
+    kdeui/kaction.cpp
     kdeui/kapplication.cpp
     kdeui/kcolorchoosermode.cpp
     kdeui/kcolordialog.cpp
@@ -124,6 +125,7 @@ install(FILES
     kdecore/k4aboutdata.h
     kdecore/qtest_kde.h
 
+    kdeui/kaction.h
     kdeui/kapplication.h
     kdeui/kcolorchoosermode.h
     kdeui/kcolordialog.h
