@@ -40,7 +40,6 @@
 
 #include <klistwidgetsearchline.h>
 #include <klocalizedstring.h>
-#include <kcomponentdata.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
 #include <kseparator.h>

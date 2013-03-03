@@ -60,7 +60,6 @@
 #include <QScrollBar>
 #include <QStyleOption>
 
-#include <kcomponentdata.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kiconloader.h>
@@ -105,29 +104,13 @@ class KStylePrivate
 public:
     KStylePrivate();
     QCache<quint64, SelectionTiles> selectionCache;
-    KComponentData m_componentData;
 
     QHash<QString, int> styleElements;
     int hintCounter, controlCounter, subElementCounter;
 };
 
-KStylePrivate::KStylePrivate() : m_componentData()
+KStylePrivate::KStylePrivate()
 {
-    if(KComponentData::hasMainComponent())
-    {
-        m_componentData = KComponentData::mainComponent();
-    } else
-    {
-        QString name(QApplication::applicationName());
-
-        if(name.isEmpty())
-            name=qAppName();
-
-        if(name.isEmpty())
-            name="KStyle";
-
-        m_componentData = KComponentData(name.toLatin1(), name.toLatin1(), KComponentData::SkipMainComponentRegistration);
-    }
     selectionCache.setMaxCost(10);
     controlCounter = subElementCounter = X_KdeBase;
     hintCounter = X_KdeBase+1; //sic! X_KdeBase is covered by SH_KCustomStyleElement
@@ -2549,7 +2532,7 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
             return false;
 
         case SH_ItemView_ActivateItemOnSingleClick:
-            return d->m_componentData.config()->group("KDE").readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
+            return KSharedConfig::openConfig()->group("KDE").readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
         case SH_KCustomStyleElement:
             if (!widget)
                 return 0;

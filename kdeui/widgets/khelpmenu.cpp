@@ -34,13 +34,13 @@
 #include <QFile>
 #include <QDir>
 #include <QBoxLayout>
+#include <QStandardPaths>
 
 #include <kaboutapplicationdialog.h>
 #include <kaboutdata.h>
 #include <kaboutkdedialog_p.h>
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
-#include <kcomponentdata.h>
 #include <kbugreport.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>

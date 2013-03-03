@@ -40,7 +40,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <qstandardpaths.h>
-#include <kcomponentdata.h>
 #include <ktextedit.h>
 #include <ktitlewidget.h>
 

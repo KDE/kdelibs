@@ -26,7 +26,6 @@
 #include <kdebug.h>
 
 #include <assert.h>
-#include <kcomponentdata.h>
 #include <ktoolbar.h>
 
 using namespace KXMLGUI;

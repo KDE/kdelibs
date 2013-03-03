@@ -21,7 +21,6 @@
  */
 #include "kconfigdialog.h"
 
-#include <kcomponentdata.h>
 #include <kconfigdialogmanager.h>
 #include <kcoreconfigskeleton.h>
 #include <kdebug.h>

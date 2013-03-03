@@ -28,7 +28,6 @@
 #include <QtCore/QPointer>
 #include <QWidget>
 
-#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kconfiggroup.h>
 

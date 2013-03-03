@@ -39,8 +39,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
-#include <kcomponentdata.h>
 #include <klocalizedstring.h>
+#include <ksharedconfig.h>
 #include <krandom.h>
 #include <kseparator.h>
 #include <ktextbrowser.h>

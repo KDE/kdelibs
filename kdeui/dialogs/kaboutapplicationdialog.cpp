@@ -32,7 +32,6 @@
 #include "ktitlewidget.h"
 
 #include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <klocalizedstring.h>
 
 #include <QApplication>

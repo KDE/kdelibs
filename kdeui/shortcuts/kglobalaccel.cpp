@@ -38,7 +38,6 @@
 
 #include <kdebug.h>
 #include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include "kmessagebox.h"
 #include "kshortcut.h"
 

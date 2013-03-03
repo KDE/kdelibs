@@ -46,7 +46,6 @@
 #include <errno.h>
 
 #include <qwindowdefs.h>
-#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kdebug.h>
 #include <kstartupinfo.h>
@@ -56,6 +55,7 @@
 #include <QCoreApplication>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
+#include <QStandardPaths>
 
 #include <config-kdeui.h>
 #if HAVE_X11
