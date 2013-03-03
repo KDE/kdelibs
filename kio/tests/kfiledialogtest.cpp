@@ -19,23 +19,11 @@
  */
 
 #include <QApplication>
-#include <kaboutdata.h>
 #include <kfiledialog.h>
 #include <kmessagebox.h>
 
 int main (int argc, char **argv)
 {
-    KAboutData aboutData("kfiledialogtest",
-                         0,
-                         qi18n("kfiledialogtest"),
-                         "0.1",
-                         qi18n("kfiledialogtest"),
-                         KAboutData::License_LGPL,
-                         qi18n("(c) 2008 Rafael Fernández López"),
-                         qi18n("kfiledialogtest"),
-                         "http://www.kde.org/");
-
-    QApplication::setApplicationName(aboutData.appName());
     QApplication app(argc, argv);
 
     // Test for: saved location keyword.

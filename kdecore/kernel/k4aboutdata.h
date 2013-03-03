@@ -21,54 +21,54 @@
  *
  */
 
-#ifndef KABOUTDATA_H
-#define KABOUTDATA_H
+#ifndef K4ABOUTDATA_H
+#define K4ABOUTDATA_H
 
-#include <kservice_export.h>
+#include <kdecore_export.h>
+#include <klocalizedstring.h>
 // Qt
 #include <QtCore/QString>
 #include <QtCore/QSharedDataPointer>
 
-#include "qlocalizedstring_porting.h"
-
 template <class T> class QList;
 class QVariant;
 class KAboutData;
+class K4AboutData;
 
 /**
  * This class is used to store information about a person or developer.
  * It can store the person's name, a task, an email address and a
  * link to a home page. This class is intended for use in the
- * KAboutData class, but it can be used elsewhere as well.
+ * K4AboutData class, but it can be used elsewhere as well.
  * Normally you should at least define the person's name.
- * Creating a KAboutPerson object by yourself is relatively useless,
- * but the KAboutData methods KAboutData::authors() and KAboutData::credits()
- * return lists of KAboutPerson data objects which you can examine.
+ * Creating a K4AboutPerson object by yourself is relatively useless,
+ * but the K4AboutData methods K4AboutData::authors() and K4AboutData::credits()
+ * return lists of K4AboutPerson data objects which you can examine.
  *
  * Example usage within a main(), retrieving the list of people involved
  * with a program and re-using data from one of them:
  *
  * @code
- * KAboutData about("khello", "khello", ki18n("KHello"), "0.1",
+ * K4AboutData about("khello", "khello", ki18n("KHello"), "0.1",
  *                   ki18n("A KDE version of Hello, world!"),
- *                   KAboutData::License_LGPL,
+ *                   K4AboutData::License_LGPL,
  *                   ki18n("Copyright (C) 2003 Developer"));
  *
  * about.addAuthor(ki18n("Joe Developer"), ki18n("developer"), "joe@host.com", 0);
- * QList<KAboutPerson> people = about.authors();
+ * QList<K4AboutPerson> people = about.authors();
  * about.addCredit(people[0].name(), people[0].task());
  * @endcode
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
- * calls are used to produce QLocalizedStrings, which can delay the translation
+ * calls are used to produce KLocalizedStrings, which can delay the translation
  * lookup. This is necessary because the translation catalogs are usually not
- * yet initialized at the point where KAboutData is constructed.
+ * yet initialized at the point where K4AboutData is constructed.
  *
  * @bc KDE4
  */
-class KSERVICE_EXPORT KAboutPerson
+class KDECORE_EXPORT K4AboutPerson
 {
-    friend class KAboutData;
+    friend class K4AboutData;
 public:
     /**
      * Convenience constructor
@@ -81,8 +81,8 @@ public:
      *
      * @param webAddress Home page of the person.
      */
-    explicit KAboutPerson( const QLocalizedString &name,
-                           const QLocalizedString &task = QLocalizedString(),
+    explicit K4AboutPerson( const KLocalizedString &name,
+                           const KLocalizedString &task = KLocalizedString(),
                            const QByteArray &emailAddress = QByteArray(),
                            const QByteArray &webAddress = QByteArray() );
 
@@ -99,8 +99,8 @@ public:
      *
      * @param ocsUsername Open Collaboration Services username of the person.
      */
-    explicit KAboutPerson( const QLocalizedString &name,
-                           const QLocalizedString &task,
+    explicit K4AboutPerson( const KLocalizedString &name,
+                           const KLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
                            const QByteArray &ocsUsername ); //KDE5: merge into main ctor
@@ -109,15 +109,15 @@ public:
      * Copy constructor.  Performs a deep copy.
      * @param other object to copy
      */
-    KAboutPerson(const KAboutPerson& other);
+    K4AboutPerson(const K4AboutPerson& other);
 
-    ~KAboutPerson();
+    ~K4AboutPerson();
 
     /**
      * Assignment operator.  Performs a deep copy.
      * @param other object to copy
      */
-    KAboutPerson& operator=(const KAboutPerson& other);
+    K4AboutPerson& operator=(const K4AboutPerson& other);
 
 
     /**
@@ -157,15 +157,15 @@ public:
 
 private:
     /**
-     * @internal Used by KAboutData to construct translator data.
+     * @internal Used by K4AboutData to construct translator data.
      */
-    explicit KAboutPerson( const QString &name, const QString &email );
+    explicit K4AboutPerson( const QString &name, const QString &email );
 
     class Private;
     Private *const d;
 };
 
-class KAboutLicense;
+class K4AboutLicense;
 
 // KDE5: refactor together with KComponentData.
 // Like changing all property names which contain Program or App.
@@ -174,29 +174,29 @@ class KAboutLicense;
  * This class is used to store information about a program. It can store
  * such values as version number, program name, home page, email address
  * for bug reporting, multiple authors and contributors
- * (using KAboutPerson), license and copyright information.
+ * (using K4AboutPerson), license and copyright information.
  *
  * Currently, the values set here are shown by the "About" box
- * (see KAboutDialog), used by the bug report dialog (see KBugReport),
+ * (see K4AboutDialog), used by the bug report dialog (see KBugReport),
  * and by the help shown on command line (see KCmdLineArgs).
  * They are also used for the icon and the name of the program's windows.
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
- * calls are used to produce QLocalizedStrings, which can delay the translation
+ * calls are used to produce KLocalizedStrings, which can delay the translation
  * lookup. This is necessary because the translation catalogs are usually not
- * yet initialized at the point where KAboutData is constructed.
+ * yet initialized at the point where K4AboutData is constructed.
  *
  * @short Holds information needed by the "About" box and other
  * classes.
  * @author Espen Sand (espen@kde.org), David Faure (faure@kde.org)
  */
-class KSERVICE_EXPORT KAboutData
+class KDECORE_EXPORT K4AboutData
 {
   public:
   /**
    * Describes the license of the software.
    */
-    enum LicenseKey // KDE5: move to KAboutLicense, cut License_ prefix
+    enum LicenseKey // KDE5: move to K4AboutLicense, cut License_ prefix
     {
       License_Custom = -2,
       License_File = -1,
@@ -216,7 +216,7 @@ class KSERVICE_EXPORT KAboutData
   /**
    * Format of the license name.
    */
-    enum NameFormat // KDE5: move to KAboutLicense
+    enum NameFormat // KDE5: move to K4AboutLicense
     {
         ShortName,
         FullName
@@ -264,14 +264,14 @@ class KSERVICE_EXPORT KAboutData
      *        This defaults to the kde.org bug system.
      *
      */
-    KAboutData( const QByteArray &appName,
+    K4AboutData( const QByteArray &appName,
                 const QByteArray &catalogName,
-                const QLocalizedString &programName,
+                const KLocalizedString &programName,
                 const QByteArray &version,
-                const QLocalizedString &shortDescription = QLocalizedString(),
+                const KLocalizedString &shortDescription = KLocalizedString(),
                 enum LicenseKey licenseType = License_Unknown,
-                const QLocalizedString &copyrightStatement = QLocalizedString(),
-                const QLocalizedString &otherText = QLocalizedString(),
+                const KLocalizedString &copyrightStatement = KLocalizedString(),
+                const KLocalizedString &otherText = KLocalizedString(),
                 const QByteArray &homePageAddress = QByteArray(),
                 const QByteArray &bugsEmailAddress = "submit@bugs.kde.org"
               );
@@ -280,15 +280,17 @@ class KSERVICE_EXPORT KAboutData
      * Copy constructor.  Performs a deep copy.
      * @param other object to copy
      */
-     KAboutData(const KAboutData& other);
+     K4AboutData(const K4AboutData& other);
 
     /**
      * Assignment operator.  Performs a deep copy.
      * @param other object to copy
      */
-     KAboutData& operator=(const KAboutData& other);
+     K4AboutData& operator=(const K4AboutData& other);
 
-     ~KAboutData();
+     ~K4AboutData();
+
+     operator KAboutData() const;
 
     /**
      * Defines an author.
@@ -312,8 +314,8 @@ class KSERVICE_EXPORT KAboutData
      *        correct, "some.domain" is not. Can be left empty.
      *
      */
-    KAboutData &addAuthor( const QLocalizedString &name,
-                           const QLocalizedString &task = QLocalizedString(),
+    K4AboutData &addAuthor( const KLocalizedString &name,
+                           const KLocalizedString &task = KLocalizedString(),
                            const QByteArray &emailAddress = QByteArray(),
                            const QByteArray &webAddress = QByteArray() );
 
@@ -342,8 +344,8 @@ class KSERVICE_EXPORT KAboutData
      *        The provider can be optionally specified with @see setOcsProvider.
      *
      */
-    KAboutData &addAuthor( const QLocalizedString &name,
-                           const QLocalizedString &task,
+    K4AboutData &addAuthor( const KLocalizedString &name,
+                           const KLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
                            const QByteArray &ocsUsername ); //KDE5: merge with addAuthor
@@ -370,8 +372,8 @@ class KSERVICE_EXPORT KAboutData
      *        is correct, "some.domain" is not. Can be left empty.
      *
      */
-    KAboutData &addCredit( const QLocalizedString &name,
-                           const QLocalizedString &task = QLocalizedString(),
+    K4AboutData &addCredit( const KLocalizedString &name,
+                           const KLocalizedString &task = KLocalizedString(),
                            const QByteArray &emailAddress = QByteArray(),
                            const QByteArray &webAddress = QByteArray() );
 
@@ -400,8 +402,8 @@ class KSERVICE_EXPORT KAboutData
      *        The provider can be optionally specified with @see setOcsProvider.
      *
      */
-    KAboutData &addCredit( const QLocalizedString &name,
-                           const QLocalizedString &task,
+    K4AboutData &addCredit( const KLocalizedString &name,
+                           const KLocalizedString &task,
                            const QByteArray &emailAddress,
                            const QByteArray &webAddress,
                            const QByteArray &ocsUsername ); //KDE5: merge with addCredit
@@ -426,10 +428,10 @@ class KSERVICE_EXPORT KAboutData
      *
      * @param name the name(s) of the translator(s)
      * @param emailAddress the email address(es) of the translator(s)
-     * @see KAboutTranslator
+     * @see K4AboutTranslator
      */
-    KAboutData &setTranslator( const QLocalizedString& name,
-                               const QLocalizedString& emailAddress );
+    K4AboutData &setTranslator( const KLocalizedString& name,
+                               const KLocalizedString& emailAddress );
 
     /**
      * Defines a license text, which is marked for translation.
@@ -441,7 +443,7 @@ class KSERVICE_EXPORT KAboutData
      *
      * @param license The license text.
      */
-    KAboutData &setLicenseText( const QLocalizedString &license );
+    K4AboutData &setLicenseText( const KLocalizedString &license );
 
     /**
      * Adds a license text, which is marked for translation.
@@ -458,7 +460,7 @@ class KSERVICE_EXPORT KAboutData
      * @see setLicenseText, addLicense, addLicenseTextFile
      * @since 4.1
      */
-    KAboutData &addLicenseText( const QLocalizedString &license );
+    K4AboutData &addLicenseText( const KLocalizedString &license );
 
     /**
      * Defines a license text by pointing to a file where it resides.
@@ -466,7 +468,7 @@ class KSERVICE_EXPORT KAboutData
      *
      * @param file Path to the file in the local filesystem containing the license text.
      */
-    KAboutData &setLicenseTextFile( const QString &file );
+    K4AboutData &setLicenseTextFile( const QString &file );
 
     /**
      * Adds a license text by pointing to a file where it resides.
@@ -479,14 +481,14 @@ class KSERVICE_EXPORT KAboutData
      * @see addLicenseText, addLicense, setLicenseTextFile
      * @since 4.1
      */
-    KAboutData &addLicenseTextFile( const QString &file );
+    K4AboutData &addLicenseTextFile( const QString &file );
 
     /**
      * Defines the program name used internally.
      *
      * @param appName The application name. Example: "kate".
      */
-    KAboutData &setAppName( const QByteArray &appName );
+    K4AboutData &setAppName( const QByteArray &appName );
 
     /**
      * Defines the displayable program name string.
@@ -495,7 +497,7 @@ class KSERVICE_EXPORT KAboutData
      *        marked for translation.
      *        Example: ki18n("Advanced Text Editor").
      */
-    KAboutData &setProgramName( const QLocalizedString &programName );
+    K4AboutData &setProgramName( const KLocalizedString &programName );
 
     /**
      * Defines the program icon.
@@ -507,7 +509,7 @@ class KSERVICE_EXPORT KAboutData
      * @see programIconName()
      * @since 4.1
      */
-    KAboutData &setProgramIconName( const QString &iconName );
+    K4AboutData &setProgramIconName( const QString &iconName );
 
     /**
      * Defines the program logo.
@@ -515,13 +517,13 @@ class KSERVICE_EXPORT KAboutData
      * Use this if you need to have an application logo
      * in AboutData other than the application icon.
      *
-     * Because KAboutData is a core class it cannot use QImage directly,
+     * Because K4AboutData is in kdecore it cannot use QImage directly,
      * so this is a QVariant that should contain a QImage.
      *
      * @param image logo image.
      * @see programLogo()
     */
-    KAboutData &setProgramLogo(const QVariant& image);
+    K4AboutData &setProgramLogo(const QVariant& image);
 
     /**
      * Specifies an Open Collaboration Services provider by URL.
@@ -529,20 +531,20 @@ class KSERVICE_EXPORT KAboutData
      *
      * Use this if you need to override the default provider.
      *
-     * If this method is not used, all the KAboutPerson OCS usernames
+     * If this method is not used, all the K4AboutPerson OCS usernames
      * will be used with the openDesktop.org entry from the default
      * provider file.
      *
      * @param providerUrl The provider URL as defined in the provider file.
      */
-    KAboutData &setOcsProvider( const QByteArray &providerUrl );
+    K4AboutData &setOcsProvider( const QByteArray &providerUrl );
 
     /**
      * Defines the program version string.
      *
      * @param version The program version.
      */
-    KAboutData &setVersion( const QByteArray &version );
+    K4AboutData &setVersion( const QByteArray &version );
 
     /**
      * Defines a short description of what the program does.
@@ -551,14 +553,14 @@ class KSERVICE_EXPORT KAboutData
      *        be marked for translation. Example: ki18n("An advanced text
      *        editor with syntax highlighting support.").
      */
-    KAboutData &setShortDescription( const QLocalizedString &shortDescription );
+    K4AboutData &setShortDescription( const KLocalizedString &shortDescription );
 
     /**
      * Defines the translation catalog that the program uses.
      *
      * @param catalogName The translation catalog name.
      */
-    KAboutData &setCatalogName( const QByteArray &catalogName );
+    K4AboutData &setCatalogName( const QByteArray &catalogName );
 
     /**
      * Defines the license identifier.
@@ -566,7 +568,7 @@ class KSERVICE_EXPORT KAboutData
      * @param licenseKey The license identifier.
      * @see addLicenseText, setLicenseText, setLicenseTextFile
      */
-    KAboutData &setLicense( LicenseKey licenseKey );
+    K4AboutData &setLicense( LicenseKey licenseKey );
 
     /**
      * Adds a license identifier.
@@ -578,7 +580,7 @@ class KSERVICE_EXPORT KAboutData
      * @see setLicenseText, addLicenseText, addLicenseTextFile
      * @since 4.1
      */
-    KAboutData &addLicense( LicenseKey licenseKey );
+    K4AboutData &addLicense( LicenseKey licenseKey );
 
     /**
      * Defines the copyright statement to show when displaying the license.
@@ -587,7 +589,7 @@ class KSERVICE_EXPORT KAboutData
      *        this: ki18n("Copyright (C) 1999-2000 Name"). The string specified here is
      *        taken verbatim; the author information from addAuthor is not used.
      */
-    KAboutData &setCopyrightStatement( const QLocalizedString &copyrightStatement );
+    K4AboutData &setCopyrightStatement( const KLocalizedString &copyrightStatement );
 
     /**
      * Defines the additional text to show in the about dialog.
@@ -596,7 +598,7 @@ class KSERVICE_EXPORT KAboutData
      *        information. The text can contain newlines. This string
      *        should be marked for translation.
      */
-    KAboutData &setOtherText( const QLocalizedString &otherText );
+    K4AboutData &setOtherText( const KLocalizedString &otherText );
 
     /**
      * Defines the program homepage.
@@ -605,7 +607,7 @@ class KSERVICE_EXPORT KAboutData
      *        Start the address with "http://". "http://kate.kde.org"
      *        is correct but "kate.kde.org" is not.
      */
-    KAboutData &setHomepage( const QByteArray &homepage );
+    K4AboutData &setHomepage( const QByteArray &homepage );
 
     /**
      * Defines the address where bug reports should be sent.
@@ -613,7 +615,7 @@ class KSERVICE_EXPORT KAboutData
      * @param bugAddress The bug report email address string.
      *        This defaults to the kde.org bug system.
      */
-    KAboutData &setBugAddress( const QByteArray &bugAddress );
+    K4AboutData &setBugAddress( const QByteArray &bugAddress );
 
     /**
      * Defines the Internet domain of the organization that wrote this application.
@@ -632,7 +634,7 @@ class KSERVICE_EXPORT KAboutData
      *
      * @param domain the domain name, for instance kde.org, koffice.org, kdevelop.org, etc.
      */
-    KAboutData &setOrganizationDomain( const QByteArray &domain );
+    K4AboutData &setOrganizationDomain( const QByteArray &domain );
 
     /**
      * Defines the product name which will be used in the KBugReport dialog.
@@ -642,7 +644,7 @@ class KSERVICE_EXPORT KAboutData
      *
      * @param name The name of product
      */
-    KAboutData &setProductName( const QByteArray &name );
+    K4AboutData &setProductName( const QByteArray &name );
 
     /**
      * Returns the application's internal name.
@@ -700,7 +702,7 @@ class KSERVICE_EXPORT KAboutData
     /**
      * Returns the program logo image.
      *
-     * Because KAboutData is a core class it cannot use QImage directly,
+     * Because K4AboutData is in kdecore it cannot use QImage directly,
      * so this is a QVariant containing a QImage.
      *
      * @return the program logo data, or a null image if there is
@@ -762,19 +764,19 @@ class KSERVICE_EXPORT KAboutData
      * Returns a list of authors.
      * @return author information (list of persons).
      */
-    QList<KAboutPerson> authors() const;
+    QList<K4AboutPerson> authors() const;
 
     /**
      * Returns a list of persons who contributed.
      * @return credit information (list of persons).
      */
-    QList<KAboutPerson> credits() const;
+    QList<K4AboutPerson> credits() const;
 
     /**
      * Returns a list of translators.
      * @return translators information (list of persons)
      */
-    QList<KAboutPerson> translators() const;
+    QList<K4AboutPerson> translators() const;
 
     /**
      * Returns a message about the translation team.
@@ -814,7 +816,7 @@ class KSERVICE_EXPORT KAboutData
      * @return licenses information (list of licenses)
      * @since 4.1
      */
-    QList<KAboutLicense> licenses() const;
+    QList<K4AboutLicense> licenses() const;
 
     /**
      * Returns the copyright statement.
@@ -856,19 +858,19 @@ class KSERVICE_EXPORT KAboutData
      * @param plainText The plain text.
      * @param richText The rich text.
      *
-     * Setting both to parameters to QLocalizedString() will cause no message to be
+     * Setting both to parameters to KLocalizedString() will cause no message to be
      * displayed at all.  Call unsetCustomAuthorText() to revert to the default
      * message.
      */
-    KAboutData &setCustomAuthorText(const QLocalizedString &plainText,
-                                    const QLocalizedString &richText);
+    K4AboutData &setCustomAuthorText(const KLocalizedString &plainText,
+                                    const KLocalizedString &richText);
 
     /**
      * Clears any custom text displayed around the list of authors and falls
      * back to the default message telling users to send bug reports to
      * bugAddress().
      */
-    KAboutData &unsetCustomAuthorText();
+    K4AboutData &unsetCustomAuthorText();
 
   private:
 
@@ -880,35 +882,35 @@ class KSERVICE_EXPORT KAboutData
 /**
  * This class is used to store information about a license.
  * The license can be one of some predefined, one given as text or one
- * that can be loaded from a file. This class is used in the KAboutData class.
- * Explicitly creating a KAboutLicense object is not possible.
- * If the license is wanted for a KDE component having KAboutData object,
- * use KAboutData::licenses() to get the licenses for that component.
+ * that can be loaded from a file. This class is used in the K4AboutData class.
+ * Explicitly creating a K4AboutLicense object is not possible.
+ * If the license is wanted for a KDE component having K4AboutData object,
+ * use K4AboutData::licenses() to get the licenses for that component.
  * If the license is for a non-code resource and given by a keyword
- * (e.g. in .desktop files), try using KAboutLicense::byKeyword().
+ * (e.g. in .desktop files), try using K4AboutLicense::byKeyword().
  *
  * @note Instead of the more usual i18n calls, for translatable text the ki18n
- * calls are used to produce QLocalizedStrings, which can delay the translation
+ * calls are used to produce KLocalizedStrings, which can delay the translation
  * lookup. This is necessary because the translation catalogs are usually not
- * yet initialized at the point where KAboutData is constructed.
+ * yet initialized at the point where K4AboutData is constructed.
  */
-class KSERVICE_EXPORT KAboutLicense
+class KDECORE_EXPORT K4AboutLicense
 {
-    friend class KAboutData;
+    friend class K4AboutData;
 public:
     /**
      * Copy constructor.  Performs a deep copy.
      * @param other object to copy
      */
-    KAboutLicense(const KAboutLicense& other);
+    K4AboutLicense(const K4AboutLicense& other);
 
-    ~KAboutLicense();
+    ~K4AboutLicense();
 
     /**
      * Assignment operator.  Performs a deep copy.
      * @param other object to copy
      */
-    KAboutLicense& operator=(const KAboutLicense& other);
+    K4AboutLicense& operator=(const K4AboutLicense& other);
 
 
     /**
@@ -925,53 +927,53 @@ public:
      *
      * @return The license name as a string.
      */
-    QString name(KAboutData::NameFormat formatName) const;
+    QString name(K4AboutData::NameFormat formatName) const;
 
     /**
      * Returns the license key.
      *
-     * @return The license key as element of KAboutData::LicenseKey enum.
+     * @return The license key as element of K4AboutData::LicenseKey enum.
      * @since 4.1
      */
-    KAboutData::LicenseKey key() const;
+    K4AboutData::LicenseKey key() const;
 
     /**
      * Fetch a known license by a keyword.
      *
      * Frequently the license data is provided by a terse keyword-like string,
      * e.g. by a field in a .desktop file. Using this method, an application
-     * can get hold of a proper KAboutLicense object, providing that the
+     * can get hold of a proper K4AboutLicense object, providing that the
      * license is one of the several known to KDE, and use it to present
      * more human-readable information to the user.
      *
      * Keywords are matched by stripping all whitespace and lowercasing.
-     * The known keywords correspond to the KAboutData::LicenseKey enumeration,
+     * The known keywords correspond to the K4AboutData::LicenseKey enumeration,
      * e.g. any of "LGPLV3", "LGPLv3", "LGPL v3" would match License_LGPL_V3.
      * If there is no match for the keyword, a valid license object is still
      * returned, with its name and text informing about a custom license,
-     * and its key equal to KAboutData::License_Custom.
+     * and its key equal to K4AboutData::License_Custom.
      *
      * @param keyword The license keyword.
      * @return The license object.
      *
-     * @see KAboutData::LicenseKey
+     * @see K4AboutData::LicenseKey
      * @since 4.1
      */
-    static KAboutLicense byKeyword(const QString &keyword);
+    static K4AboutLicense byKeyword(const QString &keyword);
 
 private:
     /**
-     * @internal Used by KAboutData to construct a predefined license.
+     * @internal Used by K4AboutData to construct a predefined license.
      */
-    explicit KAboutLicense( enum KAboutData::LicenseKey licenseType, const KAboutData *aboutData );
+    explicit K4AboutLicense( enum K4AboutData::LicenseKey licenseType, const K4AboutData *aboutData );
     /**
-     * @internal Used by KAboutData to construct license by given text
+     * @internal Used by K4AboutData to construct license by given text
      */
-    explicit KAboutLicense( const QString &pathToFile, const KAboutData *aboutData );
+    explicit K4AboutLicense( const QString &pathToFile, const K4AboutData *aboutData );
     /**
-     * @internal Used by KAboutData to construct license by given text
+     * @internal Used by K4AboutData to construct license by given text
      */
-    explicit KAboutLicense( const QLocalizedString &licenseText, const KAboutData *aboutData );
+    explicit K4AboutLicense( const KLocalizedString &licenseText, const K4AboutData *aboutData );
 
     class Private;
     QSharedDataPointer<Private> d;

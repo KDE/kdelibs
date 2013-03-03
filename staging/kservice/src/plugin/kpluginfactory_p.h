@@ -26,10 +26,6 @@
 
 #include <QtCore/QHash>
 
-#include <kaboutdata.h>
-
-class KAboutData;
-
 class KPluginFactoryPrivate
 {
     Q_DECLARE_PUBLIC(KPluginFactory)
@@ -43,7 +39,8 @@ protected:
     }
 
     QHash<QString, Plugin> createInstanceHash;
-    KComponentData componentData;
+    QString componentName;
+    QString catalogName;
     bool catalogInitialized;
 
     KPluginFactory *q_ptr;

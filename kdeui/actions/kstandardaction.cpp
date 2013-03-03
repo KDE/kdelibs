@@ -24,9 +24,7 @@
 #include <QtCore/QMutableStringListIterator>
 #include <QToolButton>
 
-#include <kaboutdata.h>
 #include <QApplication>
-#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>
@@ -106,16 +104,10 @@ QAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       case AboutApp:
       case HelpContents:
       {
-        const KAboutData *aboutData = KComponentData::mainComponent().aboutData();
-        /* TODO KDE4
-        const KAboutData *aboutData;
-        if ( parent )
-          aboutData = parent->componentData().aboutData();
-        else
-          aboutData = KGlobal::aboutData();
-        */
-        QString appName = (aboutData) ? aboutData->programName() : qApp->applicationName();
-        sLabel = i18n( pInfo->psLabel, appName );
+          QString appDisplayName = QGuiApplication::applicationDisplayName();
+          if (appDisplayName.isEmpty())
+              appDisplayName = QCoreApplication::applicationName();
+          sLabel = i18n(pInfo->psLabel, appDisplayName);
       }
        break;
      default:

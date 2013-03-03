@@ -29,7 +29,7 @@
 
 class KComponentData;
 class KIconLoader;
-class KAboutData;
+class K4AboutData;
 class KHTMLSettings;
 class KHTMLPart;
 
@@ -81,7 +81,7 @@ private:
     static KHTMLGlobal *s_self;
     static KComponentData *s_componentData;
     static KIconLoader *s_iconLoader;
-    static KAboutData *s_about;
+    static K4AboutData *s_about;
     static KHTMLSettings *s_settings;
 };
 

@@ -36,7 +36,6 @@
 #include <kdirnotify.h>
 #include <kfiledialog.h>
 #include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <klocalizedstring.h>
@@ -61,22 +60,23 @@ class PartBasePrivate
 public:
     Q_DECLARE_PUBLIC(PartBase)
 
-    PartBasePrivate(PartBase *q): q_ptr(q)
+    PartBasePrivate(PartBase *q): q_ptr(q),
+          m_pluginLoadingMode(PartBase::LoadPlugins),
+          m_pluginInterfaceVersion(0),
+          m_obj(0),
+          m_componentData(KAboutData::applicationData())
     {
-        m_pluginLoadingMode = PartBase::LoadPlugins;
-        m_pluginInterfaceVersion = 0;
-        m_obj = 0;
     }
 
     virtual ~PartBasePrivate()
     {
     }
 
-    KComponentData m_componentData;
     PartBase *q_ptr;
     PartBase::PluginLoadingMode m_pluginLoadingMode;
     int m_pluginInterfaceVersion;
     QObject *m_obj;
+    KAboutData m_componentData;
 };
 
 class PartPrivate: public PartBasePrivate
@@ -137,35 +137,36 @@ QObject *PartBase::partObject() const
     return d->m_obj;
 }
 
-KComponentData PartBase::componentData() const
+KAboutData PartBase::componentData() const
 {
     Q_D(const PartBase);
     return d->m_componentData;
 }
 
-void PartBase::setComponentData(const KComponentData &componentData)
+void PartBase::setComponentData(const KAboutData &componentData)
 {
     setComponentData(componentData, true);
 }
 
-void PartBase::setComponentData(const KComponentData &componentData, bool bLoadPlugins)
+void PartBase::setComponentData(const KAboutData &pluginData, bool bLoadPlugins)
 {
     Q_D(PartBase);
 
-    d->m_componentData = componentData;
-    KXMLGUIClient::setComponentName(componentData.componentName(), componentData.aboutData()->programName());
-    KLocalizedString::insertCatalog(componentData.catalogName());
+    d->m_componentData = pluginData;
+    KAboutData::registerPluginData(pluginData);
+    KXMLGUIClient::setComponentName(pluginData.componentName(), pluginData.displayName());
+    KLocalizedString::insertCatalog(pluginData.catalogName());
     if (bLoadPlugins) {
-        loadPlugins(d->m_obj, this, componentData);
+        loadPlugins(d->m_obj, this, pluginData);
     }
 }
 
-void PartBase::loadPlugins(QObject *parent, KXMLGUIClient *parentGUIClient, const KComponentData &instance)
+void PartBase::loadPlugins(QObject *parent, KXMLGUIClient *parentGUIClient, const KAboutData &instance)
 {
     Q_D(PartBase);
 
     if( d->m_pluginLoadingMode != DoNotLoadPlugins )
-        Plugin::loadPlugins( parent, parentGUIClient, instance, d->m_pluginLoadingMode == LoadPlugins, d->m_pluginInterfaceVersion );
+        Plugin::loadPlugins( parent, parentGUIClient, instance.componentName(), d->m_pluginLoadingMode == LoadPlugins, d->m_pluginInterfaceVersion );
 }
 
 void PartBase::setPluginLoadingMode( PluginLoadingMode loadingMode )

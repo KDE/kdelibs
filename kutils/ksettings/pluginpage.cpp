@@ -23,7 +23,7 @@
 #include "kpluginselector.h"
 #include <QLayout>
 #include "ksettings/dispatcher.h"
-#include <kcomponentdata.h>
+#include <kaboutdata.h>
 
 namespace KSettings
 {
@@ -40,8 +40,8 @@ class PluginPagePrivate
         void _k_reparseConfiguration(const QByteArray &a);
 };
 
-PluginPage::PluginPage(const KComponentData &componentData, QWidget *parent, const QVariantList &args)
-    : KCModule(componentData, parent, args),
+PluginPage::PluginPage(const KAboutData *aboutData, QWidget *parent, const QVariantList &args)
+    : KCModule(aboutData, parent, args),
     d_ptr(new PluginPagePrivate)
 {
     Q_D(PluginPage);

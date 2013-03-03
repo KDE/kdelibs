@@ -12,7 +12,7 @@
 #include <QtCore/QList>
 #include <qstandardpaths.h>
 
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
@@ -85,20 +85,20 @@ int main(int argc, char **argv) {
     // xsltSetGenericDebugFunc(stderr, NULL);
 
     KCmdLineOptions options;
-    options.add("stylesheet <xsl>", qi18n("Stylesheet to use"));
-    options.add("stdout", qi18n("Output whole document to stdout"));
+    options.add("stylesheet <xsl>", ki18n("Stylesheet to use"));
+    options.add("stdout", ki18n("Output whole document to stdout"));
     options.add("o");
-    options.add("output <file>", qi18n("Output whole document to file"));
-    options.add("htdig", qi18n("Create a ht://dig compatible index"));
-    options.add("check", qi18n("Check the document for validity"));
-    options.add("cache <file>", qi18n("Create a cache file for the document"));
-    options.add("srcdir <dir>", qi18n("Set the srcdir, for kdelibs"));
-    options.add("param <key>=<value>", qi18n("Parameters to pass to the stylesheet"));
-    options.add("+xml", qi18n("The file to transform"));
+    options.add("output <file>", ki18n("Output whole document to file"));
+    options.add("htdig", ki18n("Create a ht://dig compatible index"));
+    options.add("check", ki18n("Check the document for validity"));
+    options.add("cache <file>", ki18n("Create a cache file for the document"));
+    options.add("srcdir <dir>", ki18n("Set the srcdir, for kdelibs"));
+    options.add("param <key>=<value>", ki18n("Parameters to pass to the stylesheet"));
+    options.add("+xml", ki18n("The file to transform"));
 
-    KAboutData aboutData( "meinproc4", "kio_help4", qi18n("XML-Translator" ),
+    K4AboutData aboutData( "meinproc4", "kio_help4", ki18n("XML-Translator" ),
     "$Revision$",
-    qi18n("KDE Translator for XML"));
+    ki18n("KDE Translator for XML"));
 
     KCmdLineArgs::init(argc, argv, &aboutData, KCmdLineArgs::CmdLineArgKDE);
     KCmdLineArgs::addCmdLineOptions( options );

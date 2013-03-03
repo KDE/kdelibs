@@ -49,7 +49,6 @@
 #include "kmessagebox.h"
 #include "kshortcut.h"
 #include <kgesturemap.h>
-#include "kaboutdata.h"
 
 //---------------------------------------------------------------------
 // KShortcutsEditor
@@ -633,7 +632,7 @@ void KShortcutsEditorPrivate::printShortcuts() const
     headerFormat.setProperty(QTextFormat::FontSizeAdjustment, 3);
     headerFormat.setFontWeight(QFont::Bold);
     cursor.insertText(i18nc("header for an applications shortcut list","Shortcuts for %1",
-                            KComponentData::mainComponent().aboutData()->programName()),
+                            QGuiApplication::applicationDisplayName()),
                       headerFormat);
     QTextCharFormat componentFormat;
     componentFormat.setProperty(QTextFormat::FontSizeAdjustment, 2);

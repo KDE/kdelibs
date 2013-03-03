@@ -31,13 +31,13 @@
 #include <QtCore/QArgument>
 #include <QtCore/QMetaEnum>
 #include <QApplication>
+#include <QUrl>
 
 // KDE
 #include <kdebug.h>
 #include <kcomponentdata.h>
 #include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kurl.h>
+#include <k4aboutdata.h>
 
 // for std namespace
 #include <string>
@@ -90,7 +90,7 @@ int runScriptFile(const QString& scriptfile)
     }
 
     // First we need a Action and fill it.
-    Kross::Action* action = new Kross::Action(0 /*no parent*/, KUrl(scriptfile));
+    Kross::Action* action = new Kross::Action(0 /*no parent*/, QUrl::fromUserInput(scriptfile));
     action->setObjectName("MyAction");
     action->setInterpreter( interpretername );
     action->setCode( scriptcode );
@@ -136,22 +136,22 @@ int main(int argc, char **argv)
 {
     int result = 0;
 
-    KAboutData about("krosstest",
+    K4AboutData about("krosstest",
                      0,
-                     qi18n("KrossTest"),
+                     ki18n("KrossTest"),
                      "0.1",
-                     qi18n("KDE application to test the Kross framework."),
-                     KAboutData::License_LGPL,
-                     qi18n("(C) 2005-2007 Sebastian Sauer"),
-                     qi18n("Test the Kross framework!"),
+                     ki18n("KDE application to test the Kross framework."),
+                     K4AboutData::License_LGPL,
+                     ki18n("(C) 2005-2007 Sebastian Sauer"),
+                     ki18n("Test the Kross framework!"),
                      "http://kross.dipe.org",
                      "kross@dipe.org");
-    about.addAuthor(qi18n("Sebastian Sauer"), qi18n("Author"), "mail@dipe.org");
+    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
     KCmdLineOptions options;
-    options.add("+file", qi18n("Scriptfile"));
-    //options.add("functionname <functioname>", qi18n("Execute the function in the defined script file."));
-    //options.add("functionargs <functioarguments>", qi18n("List of arguments to pass to the function on execution."));
+    options.add("+file", ki18n("Scriptfile"));
+    //options.add("functionname <functioname>", ki18n("Execute the function in the defined script file."));
+    //options.add("functionargs <functioarguments>", ki18n("List of arguments to pass to the function on execution."));
 
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions(options);

@@ -24,8 +24,6 @@
 
 #include <kparts/kparts_export.h>
 
-class KComponentData;
-
 namespace KParts
 {
 
@@ -244,12 +242,6 @@ Q_SIGNALS:
     void activePartChanged( KParts::Part *newPart );
 
 protected:
-    /**
-     * Changes the active instance when the active part changes.
-     * The active instance is used by KBugReport and KAboutDialog.
-     * Override if you really need to - usually you don't need to.
-     */
-    virtual void setActiveComponent(const KComponentData &instance);
 
     /**
      * Sets whether the PartManager ignores explict set focus requests

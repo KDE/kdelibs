@@ -26,7 +26,6 @@
 
 #include <klocalizedstring.h>
 #include <kdebug.h>
-#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <kjob.h>
 
@@ -82,17 +81,17 @@ void KUiServerJobTracker::registerJob(KJob *job)
         return;
     }
 
-    KComponentData componentData = KComponentData::mainComponent();
-    QString programIconName = componentData.aboutData()->programIconName();
+    const QString appName = QCoreApplication::applicationName();
+    QString programIconName = KAboutData::applicationData().programIconName();
 
     if (programIconName.isEmpty()) {
-        programIconName = componentData.aboutData()->appName();
+        programIconName = appName;
     }
 
     QPointer<KJob> jobWatch = job;
-    QDBusReply<QDBusObjectPath> reply = serverProxy()->uiserver().requestView(componentData.aboutData()->programName(),
-                                                                            programIconName,
-                                                                            job->capabilities());
+    QDBusReply<QDBusObjectPath> reply = serverProxy()->uiserver().requestView(appName,
+                                                                              programIconName,
+                                                                              job->capabilities());
 
     // If we got a valid reply, register the interface for later usage.
     if (reply.isValid()) {

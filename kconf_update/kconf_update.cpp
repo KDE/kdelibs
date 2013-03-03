@@ -34,7 +34,7 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <qstandardpaths.h>
 
 #include "kconfigutils.h"
@@ -956,17 +956,17 @@ void KonfUpdate::resetOptions()
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
     KCmdLineOptions options;
-    options.add("debug", qi18n("Keep output results from scripts"));
-    options.add("check <update-file>", qi18n("Check whether config file itself requires updating"));
-    options.add("+[file]", qi18n("File to read update instructions from"));
+    options.add("debug", ki18n("Keep output results from scripts"));
+    options.add("check <update-file>", ki18n("Check whether config file itself requires updating"));
+    options.add("+[file]", ki18n("File to read update instructions from"));
 
-    KAboutData aboutData("kconf_update", 0, qi18n("KConf Update"),
+    K4AboutData aboutData("kconf_update", 0, ki18n("KConf Update"),
                          "1.0.2",
-                         qi18n("KDE Tool for updating user configuration files"),
-                         KAboutData::License_GPL,
-                         qi18n("(c) 2001, Waldo Bastian"));
+                         ki18n("KDE Tool for updating user configuration files"),
+                         K4AboutData::License_GPL,
+                         ki18n("(c) 2001, Waldo Bastian"));
 
-    aboutData.addAuthor(qi18n("Waldo Bastian"), QLocalizedString(), "bastian@kde.org");
+    aboutData.addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineArgs::addCmdLineOptions(options);

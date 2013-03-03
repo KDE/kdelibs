@@ -23,7 +23,7 @@
 #include <time.h>
 
 #include <iostream>
-
+#include <QCoreApplication>
 #include <QtCore/QBuffer>
 #include <QtCore/QFile>
 
@@ -315,29 +315,29 @@ void MD5_string (const char *input, const char* expected, bool rawOutput )
 int main (int argc, char *argv[])
 {
     KCmdLineOptions options;
-    options.add("c <digest>", qi18n("compare <digest> with the calculated digest for a string or file."));
-    options.add("d", qi18n("decode the given string or file using base64"));
-    options.add("e", qi18n("encode the given string or file using base64"));
-    options.add("f", qi18n("the filename to be used as input"), "default");
-    options.add("p", qi18n("encode the given string or file using quoted-printable"));
-    options.add("q", qi18n("decode the given string or file using quoted-printable"));
-    options.add("r", qi18n("calculate the raw md5 for the given string or file"));
-    options.add("s", qi18n("the string to be used as input"));
-    options.add("t", qi18n("perform a timed message-digest test"));
-    options.add("u", qi18n("uuencode the given string or file"));
-    options.add("x", qi18n("uudecode the given string or file"));
-    options.add("z", qi18n("run a preset message-digest test"));
-    options.add("+command", qi18n("[input1, input2,...]"));
+    options.add("c <digest>", ki18n("compare <digest> with the calculated digest for a string or file."));
+    options.add("d", ki18n("decode the given string or file using base64"));
+    options.add("e", ki18n("encode the given string or file using base64"));
+    options.add("f", ki18n("the filename to be used as input"), "default");
+    options.add("p", ki18n("encode the given string or file using quoted-printable"));
+    options.add("q", ki18n("decode the given string or file using quoted-printable"));
+    options.add("r", ki18n("calculate the raw md5 for the given string or file"));
+    options.add("s", ki18n("the string to be used as input"));
+    options.add("t", ki18n("perform a timed message-digest test"));
+    options.add("u", ki18n("uuencode the given string or file"));
+    options.add("x", ki18n("uudecode the given string or file"));
+    options.add("z", ki18n("run a preset message-digest test"));
+    options.add("+command", ki18n("[input1, input2,...]"));
 
     KCmdLineArgs::init( argc, argv, "kmdcodectest", 0,
-                        qi18n("KMDCodecTest"), "1.0",
-                        qi18n("Unit test for md5, base64 encode/decode "
+                        ki18n("KMDCodecTest"), "1.0",
+                        ki18n("Unit test for md5, base64 encode/decode "
                                    "and uuencode/decode facilities" ) );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
     int count = args->count();
 
-    //KApplication app;
+    //QCoreApplication app;
 
     if (!count)
     {

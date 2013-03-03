@@ -62,7 +62,8 @@ public:
     KHelpMenuPrivate()
       : mSwitchApplicationLanguage(0),
 	mActionsCreated(false),
-        mSwitchApplicationLanguageAction(0)
+        mSwitchApplicationLanguageAction(0),
+        mAboutData(KAboutData::applicationData())
     {
         mMenu = 0;
         mAboutApp = 0;
@@ -101,7 +102,7 @@ public:
     QAction *mHandBookAction, *mWhatsThisAction;
     QAction *mReportBugAction, *mSwitchApplicationLanguageAction, *mAboutAppAction, *mAboutKDEAction;
 
-    const KAboutData *mAboutData;
+    KAboutData mAboutData;
 };
 
 KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
@@ -111,11 +112,10 @@ KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
   d->mAboutAppText = aboutAppText;
   d->mShowWhatsThis = showWhatsThis;
   d->mParent = parent;
-  d->mAboutData = 0;
 }
 
-KHelpMenu::KHelpMenu( QWidget *parent, const KAboutData *aboutData,
-		      bool showWhatsThis, KActionCollection *actions )
+KHelpMenu::KHelpMenu(QWidget *parent, const KAboutData &aboutData,
+                      bool showWhatsThis, KActionCollection *actions )
   : QObject(parent), d(new KHelpMenuPrivate)
 {
   d->mShowWhatsThis = showWhatsThis;
@@ -157,8 +157,7 @@ void KHelpMenuPrivate::createActions(KHelpMenu* q)
         mWhatsThisAction = KStandardAction::whatsThis(q, SLOT(contextHelpActivated()), q);
     }
 
-    const KAboutData *aboutData = mAboutData ? mAboutData : KComponentData::mainComponent().aboutData();
-    if (KAuthorized::authorizeKAction("help_report_bug") && aboutData && !aboutData->bugAddress().isEmpty()) {
+    if (KAuthorized::authorizeKAction("help_report_bug") && !mAboutData.bugAddress().isEmpty()) {
         mReportBugAction = KStandardAction::reportBug(q, SLOT(reportBug()), q);
     }
 
@@ -286,7 +285,7 @@ void KHelpMenu::aboutApplication()
   {
     emit showAboutApplication();
   }
-  else if (d->mAboutData)
+  else  // if (d->mAboutData)
   {
     if( !d->mAboutApp )
     {
@@ -295,6 +294,7 @@ void KHelpMenu::aboutApplication()
     }
     d->mAboutApp->show();
   }
+#if 0 // KF5: when can this happen?
   else
   {
     if( !d->mAboutApp )
@@ -336,6 +336,7 @@ void KHelpMenu::aboutApplication()
     }
     d->mAboutApp->show();
   }
+#endif
 }
 
 
@@ -354,7 +355,7 @@ void KHelpMenu::reportBug()
 {
   if( !d->mBugReport )
   {
-    d->mBugReport = new KBugReport( d->mParent, false, d->mAboutData );
+    d->mBugReport = new KBugReport(d->mAboutData, d->mParent);
     connect( d->mBugReport, SIGNAL(finished()),this,SLOT(dialogFinished()) );
   }
   d->mBugReport->show();

@@ -1,5 +1,5 @@
 /* Copyright (C) 2004-2005 ian reinhart geiser <geiseri@sourcextreme.com> */
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <kcmdlineargs.h>
 #include <kconfig.h>
 #include <kmacroexpander.h>
@@ -81,19 +81,19 @@ static void buildFile( QTextStream &stream, const QString& group, const QString&
 
 int main( int argc, char **argv ) {
 
-    QLocalizedString description = qi18n( "Builds Qt widget plugins from an ini style description file." );
+    KLocalizedString description = ki18n( "Builds Qt widget plugins from an ini style description file." );
     const char version[] = "0.4";
 
     KCmdLineOptions options;
-    options.add("+file", qi18n( "Input file" ) );
-    options.add("o <file>", qi18n( "Output file" ) );
-    options.add("n <plugin name>", qi18n( "Name of the plugin class to generate" ), "WidgetsPlugin" );
-    options.add("g <group>", qi18n( "Default widget group name to display in designer" ), "Custom" );
+    options.add("+file", ki18n( "Input file" ) );
+    options.add("o <file>", ki18n( "Output file" ) );
+    options.add("n <plugin name>", ki18n( "Name of the plugin class to generate" ), "WidgetsPlugin" );
+    options.add("g <group>", ki18n( "Default widget group name to display in designer" ), "Custom" );
 
 
-    KAboutData about( "makekdewidgets", 0, qi18n( "makekdewidgets" ), version, description, KAboutData::License_GPL, qi18n("(C) 2004-2005 Ian Reinhart Geiser"), QLocalizedString(), 0, "geiseri@kde.org" );
-    about.addAuthor( qi18n("Ian Reinhart Geiser"), QLocalizedString(), "geiseri@kde.org" );
-    about.addAuthor( qi18n("Daniel Molkentin"), QLocalizedString(), "molkentin@kde.org" );
+    K4AboutData about( "makekdewidgets", 0, ki18n( "makekdewidgets" ), version, description, K4AboutData::License_GPL, ki18n("(C) 2004-2005 Ian Reinhart Geiser"), KLocalizedString(), 0, "geiseri@kde.org" );
+    about.addAuthor( ki18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );
+    about.addAuthor( ki18n("Daniel Molkentin"), KLocalizedString(), "molkentin@kde.org" );
     KCmdLineArgs::init( argc, argv, &about );
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

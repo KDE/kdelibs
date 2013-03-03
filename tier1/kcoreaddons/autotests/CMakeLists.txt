@@ -25,10 +25,12 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/jobs
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/io
     ${CMAKE_CURRENT_SOURCE_DIR}/../src/caching
+    ${CMAKE_CURRENT_SOURCE_DIR}/../src
     ${CMAKE_CURRENT_BINARY_DIR}/../src
 )
 
 kcoreaddons_unit_tests(
+    kaboutdatatest
     kjobtest
     klockfiletest
     kautosavefiletest

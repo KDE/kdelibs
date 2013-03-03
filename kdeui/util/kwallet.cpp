@@ -29,11 +29,9 @@
 #include <QtDBus/QtDBus>
 
 #include <assert.h>
-#include <kcomponentdata.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kdeversion.h>
-#include <kaboutdata.h>
 #include <ksharedconfig.h>
 #include <kwindowsystem.h>
 
@@ -73,16 +71,6 @@ Q_GLOBAL_STATIC(KWalletDLauncher, walletLauncher)
 
 static QString appid()
 {
-    if (KComponentData::hasMainComponent()) {
-        KComponentData cData = KComponentData::mainComponent();
-        if (cData.isValid()) {
-            const KAboutData* aboutData = cData.aboutData();
-            if (aboutData) {
-                return aboutData->programName();
-            }
-            return cData.componentName();
-        }
-    }
     return qApp->applicationName();
 }
 

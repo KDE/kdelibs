@@ -49,8 +49,7 @@ public:
    * since KHelpMenu takes care of the menu item
    * for "Report Bug..." and of creating a KBugReport dialog.
    */
-  // ###KDE5: remove modal argument
-  explicit KBugReport(QWidget *parent = 0L, bool modal=true, const KAboutData *aboutData = 0L);
+  explicit KBugReport(const KAboutData& aboutData, QWidget *parent = 0L);
   
   /**
    * Destructor

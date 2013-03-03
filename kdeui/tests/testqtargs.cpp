@@ -45,9 +45,10 @@ application palette (light and dark shades are\ncalculated)."), 0},
 
 #include <QWidget>
 #include <QApplication>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
 #include <klocalizedstring.h>
+
+#include <kcmdlineargs.h>
+#include <k4aboutdata.h>
 
 int main(int argc, char *argv[])
 {
@@ -55,11 +56,11 @@ int main(int argc, char *argv[])
   {
     qDebug("argv[%d] = %s", i, argv[i]);
   }
-  KAboutData aboutData( "testqtargs", 0, qi18n("testqtargs"),
-    "1.0", qi18n("testqtargs"), KAboutData::License_GPL);
+  K4AboutData aboutData( "testqtargs", 0, ki18n("testqtargs"),
+    "1.0", ki18n("testqtargs"), K4AboutData::License_GPL);
 
   KCmdLineOptions options;
-  options.add("hello ", qi18n("Says hello"));
+  options.add("hello ", ki18n("Says hello"));
 
   KCmdLineArgs::init(argc, argv, &aboutData);
   KCmdLineArgs::addCmdLineOptions(options);

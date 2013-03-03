@@ -49,98 +49,77 @@ class KAboutApplicationDialog::Private
 public:
     Private(KAboutApplicationDialog *parent)
         : q(parent),
-          aboutData(0)
+          aboutData(KAboutData::applicationData())
     {}
 
-    void init( const KAboutData *aboutData, Options opt );
+    void init( const KAboutData &aboutData, Options opt );
 
     void _k_showLicense( const QString &number );
 
     KAboutApplicationDialog *q;
 
-    const KAboutData *aboutData;
+    KAboutData aboutData;
 };
 
-KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent)
+KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData &aboutData, QWidget *parent)
   : QDialog(parent),
     d(new Private(this))
 {
-    d->init( aboutData, NoOptions );
+    d->init(aboutData, NoOptions);
 }
 
-KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData *aboutData, Options opt, QWidget *parent)
+KAboutApplicationDialog::KAboutApplicationDialog(const KAboutData &aboutData, Options opt, QWidget *parent)
   : QDialog(parent),
     d(new Private(this))
 {
-    d->init( aboutData, opt );
+    d->init(aboutData, opt);
 }
 
-void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
+void KAboutApplicationDialog::Private::init( const KAboutData &ad, Options opt )
 {
-    if (ad == 0)
-        ad = KComponentData::mainComponent().aboutData();
-
     aboutData = ad;
 
-    if (!aboutData) {
-        QVBoxLayout *layout = new QVBoxLayout;
-        q->setLayout(layout);
-
-        QLabel *errorLabel = new QLabel(i18n("<qt>No information available.<br />"
-                                             "The supplied KAboutData object does not exist.</qt>"), q);
-        errorLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
-        layout->addWidget(errorLabel);
-
-        QDialogButtonBox *buttonBox = new QDialogButtonBox(q);
-        buttonBox->setStandardButtons(QDialogButtonBox::Close);
-        connect(buttonBox, SIGNAL(accepted()), q, SLOT(accept()));
-        connect(buttonBox, SIGNAL(rejected()), q, SLOT(reject()));
-        layout->addWidget(buttonBox);
-
-        return;
-    }
-
-    q->setWindowTitle(i18n("About %1", aboutData->programName()));
+    q->setWindowTitle(i18n("About %1", aboutData.displayName()));
     q->setModal(false);
 
     //Set up the title widget...
     KTitleWidget *titleWidget = new KTitleWidget(q);
 
     QIcon windowIcon;
-    if (!aboutData->programIconName().isEmpty()) {
-        windowIcon = QIcon::fromTheme(aboutData->programIconName());
+    if (!aboutData.programIconName().isEmpty()) {
+        windowIcon = QIcon::fromTheme(aboutData.programIconName());
     } else {
         windowIcon = qApp->windowIcon();
     }
     titleWidget->setPixmap(windowIcon.pixmap(64, 64), KTitleWidget::ImageLeft);
-    if (aboutData->programLogo().canConvert<QPixmap>())
-        titleWidget->setPixmap(aboutData->programLogo().value<QPixmap>(), KTitleWidget::ImageLeft);
-    else if (aboutData->programLogo().canConvert<QImage>())
-        titleWidget->setPixmap(QPixmap::fromImage(aboutData->programLogo().value<QImage>()), KTitleWidget::ImageLeft);
+    if (aboutData.programLogo().canConvert<QPixmap>())
+        titleWidget->setPixmap(aboutData.programLogo().value<QPixmap>(), KTitleWidget::ImageLeft);
+    else if (aboutData.programLogo().canConvert<QImage>())
+        titleWidget->setPixmap(QPixmap::fromImage(aboutData.programLogo().value<QImage>()), KTitleWidget::ImageLeft);
 
     if ( opt & HideKdeVersion )
         titleWidget->setText(i18n("<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />&nbsp;</html>",
-                                  aboutData->programName(), aboutData->version()));
+                                  aboutData.displayName(), aboutData.version()));
     else
         titleWidget->setText(i18nc("Program name, version and KDE platform version; do not translate 'Development Platform'",
                                    "<html><font size=\"5\">%1</font><br /><b>Version %2</b><br />Using KDE Development Platform %3</html>",
-                                   aboutData->programName(), aboutData->version(), QString(KDE_VERSION_STRING)));
+                                   aboutData.displayName(), aboutData.version(), QString(KDE_VERSION_STRING)));
 
     //Then the tab bar...
     QTabWidget *tabWidget = new QTabWidget;
     tabWidget->setUsesScrollButtons(false);
 
     //Set up the first page...
-    QString aboutPageText = aboutData->shortDescription() + '\n';
+    QString aboutPageText = aboutData.shortDescription() + '\n';
 
-    if (!aboutData->otherText().isEmpty())
-        aboutPageText += '\n' + aboutData->otherText() + '\n';
+    if (!aboutData.otherText().isEmpty())
+        aboutPageText += '\n' + aboutData.otherText() + '\n';
 
-    if (!aboutData->copyrightStatement().isEmpty())
-        aboutPageText += '\n' + aboutData->copyrightStatement() + '\n';
+    if (!aboutData.copyrightStatement().isEmpty())
+        aboutPageText += '\n' + aboutData.copyrightStatement() + '\n';
 
-    if (!aboutData->homepage().isEmpty())
-        aboutPageText += '\n' + QString("<a href=\"%1\">%1</a>").arg(aboutData->homepage()) + '\n';
+    if (!aboutData.homepage().isEmpty())
+        aboutPageText += '\n' + QString("<a href=\"%1\">%1</a>").arg(aboutData.homepage()) + '\n';
     aboutPageText = aboutPageText.trimmed();
 
     QLabel *aboutLabel = new QLabel;
@@ -153,9 +132,9 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
     aboutLayout->addStretch();
     aboutLayout->addWidget(aboutLabel);
 
-    const int licenseCount = aboutData->licenses().count();
+    const int licenseCount = aboutData.licenses().count();
     for (int i = 0; i < licenseCount; ++i) {
-        const KAboutLicense &license = aboutData->licenses().at(i);
+        const KAboutLicense &license = aboutData.licenses().at(i);
 
         QLabel *showLicenseLabel = new QLabel;
         showLicenseLabel->setText(QString("<a href=\"%1\">%2</a>").arg(QString::number(i),
@@ -180,41 +159,41 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
     transparentBackgroundPalette.setColor(QPalette::Text, transparentBackgroundPalette.color(QPalette::WindowText));
 
     //And here we go, authors page...
-    const int authorCount = aboutData->authors().count();
+    const int authorCount = aboutData.authors().count();
     if (authorCount) {
         QWidget *authorWidget = new QWidget( q );
         QVBoxLayout *authorLayout = new QVBoxLayout( authorWidget );
         authorLayout->setMargin( 0 );
 
-        if (!aboutData->customAuthorTextEnabled() || !aboutData->customAuthorRichText().isEmpty()) {
+        if (!aboutData.customAuthorTextEnabled() || !aboutData.customAuthorRichText().isEmpty()) {
             QLabel *bugsLabel = new QLabel( authorWidget );
             bugsLabel->setContentsMargins( 4, 2, 0, 4 );
             bugsLabel->setOpenExternalLinks( true );
-            if (!aboutData->customAuthorTextEnabled()) {
-                if (aboutData->bugAddress().isEmpty() || aboutData->bugAddress() == "submit@bugs.kde.org")
+            if (!aboutData.customAuthorTextEnabled()) {
+                if (aboutData.bugAddress().isEmpty() || aboutData.bugAddress() == "submit@bugs.kde.org")
                     bugsLabel->setText( i18n("Please use <a href=\"http://bugs.kde.org\">http://bugs.kde.org</a> to report bugs.\n") );
                 else {
-                    if( ( aboutData->authors().count() == 1 ) &&
-                        ( aboutData->authors().first().emailAddress() == aboutData->bugAddress() ) ) {
+                    if( ( aboutData.authors().count() == 1 ) &&
+                        ( aboutData.authors().first().emailAddress() == aboutData.bugAddress() ) ) {
                         bugsLabel->setText( i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
-                                              aboutData->authors().first().emailAddress(),
-                                              aboutData->authors().first().emailAddress() ) );
+                                              aboutData.authors().first().emailAddress(),
+                                              aboutData.authors().first().emailAddress() ) );
                     }
                     else {
                         bugsLabel->setText( i18n("Please report bugs to <a href=\"mailto:%1\">%2</a>.\n",
-                                              aboutData->bugAddress(), aboutData->bugAddress()));
+                                              aboutData.bugAddress(), aboutData.bugAddress()));
                     }
                 }
             }
             else
-                bugsLabel->setText( aboutData->customAuthorRichText() );
+                bugsLabel->setText( aboutData.customAuthorRichText() );
             bugsLabel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Minimum );
             authorLayout->addWidget( bugsLabel );
         }
 
         KDEPrivate::KAboutApplicationPersonModel *authorModel =
-                new KDEPrivate::KAboutApplicationPersonModel( aboutData->authors(),
-                                                              aboutData->ocsProviderUrl(),
+                new KDEPrivate::KAboutApplicationPersonModel( aboutData.authors(),
+                                                              aboutData.ocsProviderUrl(),
                                                               authorWidget );
 
         KDEPrivate::KAboutApplicationPersonListView *authorView =
@@ -233,15 +212,15 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
     }
 
     //And credits page...
-    const int creditsCount = aboutData->credits().count();
+    const int creditsCount = aboutData.credits().count();
     if (creditsCount) {
         QWidget *creditWidget = new QWidget( q );
         QVBoxLayout *creditLayout = new QVBoxLayout( creditWidget );
         creditLayout->setMargin( 0 );
 
         KDEPrivate::KAboutApplicationPersonModel *creditModel =
-                new KDEPrivate::KAboutApplicationPersonModel( aboutData->credits(),
-                                                              aboutData->ocsProviderUrl(),
+                new KDEPrivate::KAboutApplicationPersonModel( aboutData.credits(),
+                                                              aboutData.ocsProviderUrl(),
                                                               creditWidget );
 
         KDEPrivate::KAboutApplicationPersonListView *creditView =
@@ -260,15 +239,15 @@ void KAboutApplicationDialog::Private::init( const KAboutData *ad, Options opt )
 
     //Finally, the optional translators page...
     if ( !( opt & HideTranslators ) ) {
-        const int translatorsCount = aboutData->translators().count();
+        const int translatorsCount = aboutData.translators().count();
         if( translatorsCount ) {
             QWidget *translatorWidget = new QWidget( q );
             QVBoxLayout *translatorLayout = new QVBoxLayout( translatorWidget );
             translatorLayout->setMargin( 0 );
 
             KDEPrivate::KAboutApplicationPersonModel *translatorModel =
-                    new KDEPrivate::KAboutApplicationPersonModel( aboutData->translators(),
-                                                                  aboutData->ocsProviderUrl(),
+                    new KDEPrivate::KAboutApplicationPersonModel( aboutData.translators(),
+                                                                  aboutData.ocsProviderUrl(),
                                                                   translatorWidget );
 
             KDEPrivate::KAboutApplicationPersonListView *translatorView =
@@ -331,7 +310,7 @@ void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
     const QFont font = KGlobalSettings::fixedFont();
     QFontMetrics metrics(font);
 
-    const QString licenseText = aboutData->licenses().at(number.toInt()).text();
+    const QString licenseText = aboutData.licenses().at(number.toInt()).text();
     KTextBrowser *licenseBrowser = new KTextBrowser(dialog);
     licenseBrowser->setFont(font);
     licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);

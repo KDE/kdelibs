@@ -158,15 +158,6 @@ public:
 	// this one's available via realModule()->
 
 	/**
-	 * Returns the embedded KCModule's KComponentData.
-	 * @return The module's KComponentData.
-	 * @deprecated
-	 */
-	KComponentData componentData() const;
-	//KDE4 remove. There's a limit for convenience functions,
-	// this one's available via realModule()
-
-	/**
 	 * @return true if the module is modified
 	 * and needs to be saved.
 	 */

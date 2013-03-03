@@ -42,6 +42,7 @@ if (UNIX)
 endif ()
 
 set(libkcoreaddons_SRCS
+    kaboutdata.cpp
     io/kautosavefile.cpp
     io/kdirwatch.cpp
     io/kfilesystemtype_p.cpp
@@ -86,6 +87,7 @@ set_target_properties(KCoreAddons PROPERTIES VERSION   ${KCOREADDONS_VERSION_STR
 install(TARGETS KCoreAddons EXPORT KCoreAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+    kaboutdata.h
     caching/kshareddatacache.h
     io/kautosavefile.h
     io/kdirwatch.h

@@ -68,7 +68,7 @@ class KDEUI_EXPORT KAboutApplicationDialog : public QDialog
         /**
          * Constructor. Creates a fully featured "About Application" dialog box.
          *
-         * @param aboutData A pointer to a KAboutData object which data
+         * @param aboutData A KAboutData object which data
          *        will be used for filling the dialog.
          * @param opts Additional options that can be applied, such as hiding the KDE version
          *             or the translators tab.
@@ -77,7 +77,7 @@ class KDEUI_EXPORT KAboutApplicationDialog : public QDialog
          *
          * @since 4.4
          */
-        explicit KAboutApplicationDialog(const KAboutData *aboutData, Options opts, QWidget *parent = 0);
+        explicit KAboutApplicationDialog(const KAboutData &aboutData, Options opts, QWidget *parent = 0);
 
         /**
          * Constructor. Creates a fully featured "About Application" dialog box.
@@ -87,7 +87,7 @@ class KDEUI_EXPORT KAboutApplicationDialog : public QDialog
          * @param parent The parent of the dialog box. You should use the
          *        toplevel window so that the dialog becomes centered.
          */
-        explicit KAboutApplicationDialog(const KAboutData *aboutData, QWidget *parent = 0);
+        explicit KAboutApplicationDialog(const KAboutData &aboutData, QWidget *parent = 0);
 
         virtual ~KAboutApplicationDialog();
 

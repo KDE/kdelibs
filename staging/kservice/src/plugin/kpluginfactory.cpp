@@ -39,42 +39,12 @@ KPluginFactory::KPluginFactory(const char *componentName, const char *catalogNam
     d->q_ptr = this;
 
     if (componentName)
-        d->componentData = KComponentData(componentName, catalogName, KComponentData::SkipMainComponentRegistration);
+        d->componentName = QString::fromUtf8(componentName);
+    if (catalogName)
+        d->catalogName = QString::fromUtf8(catalogName);
 
     factorycleanup()->add(this);
 }
-
-#ifndef KDE_NO_DEPRECATED
-KPluginFactory::KPluginFactory(const KAboutData *aboutData, QObject *parent)
-    : QObject(parent), d_ptr(new KPluginFactoryPrivate)
-{
-    Q_D(KPluginFactory);
-    d->q_ptr = this;
-    d->componentData = KComponentData(*aboutData, KComponentData::SkipMainComponentRegistration);
-
-    factorycleanup()->add(this);
-}
-#endif
-
-KPluginFactory::KPluginFactory(const KAboutData &aboutData, QObject *parent)
-    : QObject(parent), d_ptr(new KPluginFactoryPrivate)
-{
-    Q_D(KPluginFactory);
-    d->q_ptr = this;
-    d->componentData = KComponentData(aboutData, KComponentData::SkipMainComponentRegistration);
-
-    factorycleanup()->add(this);
-}
-
-#ifndef KDE_NO_DEPRECATED
-KPluginFactory::KPluginFactory(QObject *parent)
-    : QObject(parent), d_ptr(new KPluginFactoryPrivate())
-{
-    Q_D(KPluginFactory);
-    d->q_ptr = this;
-    factorycleanup()->add(this);
-}
-#endif
 
 KPluginFactory::KPluginFactory(KPluginFactoryPrivate &d, QObject *parent)
     : QObject(parent), d_ptr(&d)
@@ -87,18 +57,18 @@ KPluginFactory::~KPluginFactory()
     Q_D(KPluginFactory);
 
 #if 0 // TEMP_KF5_REENABLE
-    if (d->catalogInitialized && d->componentData.isValid() && KLocale::global()) {
-        KLocale::global()->removeCatalog(d->componentData.catalogName());
+    if (d->catalogInitialized && !d->catalogName.isEmpty() && KLocale::global()) {
+        KLocale::global()->removeCatalog(d->catalogName);
     }
 #endif
 
     delete d_ptr;
 }
 
-KComponentData KPluginFactory::componentData() const
+QString KPluginFactory::componentName() const
 {
     Q_D(const KPluginFactory);
-    return d->componentData;
+    return d->componentName;
 }
 
 void KPluginFactory::registerPlugin(const QString &keyword, const QMetaObject *metaObject, CreateInstanceFunction instanceFunction)
@@ -176,7 +146,7 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
 #ifndef KDE_NO_DEPRECATED
     if (keyword.isEmpty()) {
 
-        // kde3-kparts compatibility, remove in kde5
+        // KDE5 TODO: kde3-kparts compatibility, remove in kde5
         const char* kpartsIface = iface;
         if (args.contains(QVariant(QString::fromLatin1("Browser/View"))))
             kpartsIface = "Browser/View";
@@ -220,18 +190,12 @@ void KPluginFactory::setupTranslations()
 {
     Q_D(KPluginFactory);
 
-    if (!d->componentData.isValid())
+    if (d->catalogName.isEmpty())
         return;
 
 #if 0 // TEMP_KF5_REENABLE
-    KLocale::global()->insertCatalog(d->componentData.catalogName());
+    KLocale::global()->insertCatalog(d->catalogName);
 #endif
-}
-
-void KPluginFactory::setComponentData(const KComponentData &kcd)
-{
-    Q_D(KPluginFactory);
-    d->componentData = kcd;
 }
 
 QStringList KPluginFactory::variantListToStringList(const QVariantList &list)

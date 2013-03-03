@@ -19,13 +19,12 @@
 */
 
 #include "factory.h"
-#include "part.h"
+#include "kparts/part.h"
 
 #include <QWidget>
 
 #include <kpluginloader.h>
 #include <klocalizedstring.h>
-#include <kcomponentdata.h>
 #include <assert.h>
 
 using namespace KParts;

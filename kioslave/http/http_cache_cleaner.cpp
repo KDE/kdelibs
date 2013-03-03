@@ -727,12 +727,12 @@ private:
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
     KCmdLineArgs::init(argc, argv, appName, "kdelibs4",
-                       qi18n("KDE HTTP cache maintenance tool"), version,
-                       qi18n("KDE HTTP cache maintenance tool"), KCmdLineArgs::CmdLineArgNone);
+                       ki18n("KDE HTTP cache maintenance tool"), version,
+                       ki18n("KDE HTTP cache maintenance tool"), KCmdLineArgs::CmdLineArgNone);
 
     KCmdLineOptions options;
-    options.add("clear-all", qi18n("Empty the cache"));
-    options.add("file-info <filename>", qi18n("Display information about cache file"));
+    options.add("clear-all", ki18n("Empty the cache"));
+    options.add("file-info <filename>", ki18n("Display information about cache file"));
 
     KCmdLineArgs::addCmdLineOptions( options );
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

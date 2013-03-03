@@ -20,11 +20,10 @@
 
 #include "kautostart.h"
 
-#include "kaboutdata.h"
-#include "kcomponentdata.h"
 #include "kdesktopfile.h"
 #include "kconfiggroup.h"
 
+#include <QCoreApplication>
 #include <QtCore/QFile>
 #include <QStringList>
 
@@ -75,7 +74,7 @@ KAutostart::KAutostart(const QString& entryName, QObject* parent)
       d(new Private)
 {
     if (entryName.isEmpty()) {
-        d->name = KComponentData::mainComponent().aboutData()->appName();
+        d->name = QCoreApplication::applicationName();
     } else {
         d->name = entryName;
     }

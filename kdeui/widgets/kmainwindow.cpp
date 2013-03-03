@@ -44,7 +44,7 @@
 #include <QStyle>
 #include <QWidget>
 
-#include <kcomponentdata.h>
+#include <kaboutdata.h>
 #include <kconfig.h>
 #include <kdebug.h>
 #include <khelpmenu.h>
@@ -349,7 +349,7 @@ KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
     K_D(KMainWindow);
     if(!d->helpMenu) {
         if ( aboutAppText.isEmpty() )
-            d->helpMenu = new KHelpMenu( this, KComponentData::mainComponent().aboutData(), showWhatsThis);
+            d->helpMenu = new KHelpMenu( this, KAboutData::applicationData(), showWhatsThis);
         else
             d->helpMenu = new KHelpMenu( this, aboutAppText, showWhatsThis );
 

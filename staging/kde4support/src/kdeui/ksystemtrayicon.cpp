@@ -143,7 +143,7 @@ void KSystemTrayIcon::init( QWidget* parent )
     KGlobal::ref();
     d->menu = new KMenu( parent );
     d->titleAction = d->menu->addTitle( qApp->windowIcon(), KGlobal::caption() );
-    d->menu->setTitle( KComponentData::mainComponent().aboutData()->programName() );
+    d->menu->setTitle( QGuiApplication::applicationDisplayName() );
     connect( d->menu, SIGNAL(aboutToShow()), this, SLOT(contextMenuAboutToShow()) );
     setContextMenu( d->menu );
 

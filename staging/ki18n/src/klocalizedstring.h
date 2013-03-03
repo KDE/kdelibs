@@ -25,8 +25,6 @@
 #include <QtCore/QLatin1Char>
 #include <QtCore/QStringList>
 
-#include "qlocalizedstring_porting.h"
-
 class KLocalizedStringPrivate;
 
 /**
@@ -334,8 +332,6 @@ public:
      * Destructor.
      */
     ~KLocalizedString ();
-
-    KI18N_DEPRECATED operator QLocalizedString() const { return QLocalizedString(toString().toLatin1().constData()); }
 
     /**
      * Finalize the translation.

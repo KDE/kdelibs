@@ -37,7 +37,7 @@
 
 #include <kcomponentdata.h>
 #include <kiconloader.h>
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <klocalizedstring.h>
 
 #include <assert.h>
@@ -51,7 +51,7 @@ KHTMLGlobal *KHTMLGlobal::s_self = 0;
 unsigned long int KHTMLGlobal::s_refcnt = 0;
 KComponentData *KHTMLGlobal::s_componentData = 0;
 KIconLoader *KHTMLGlobal::s_iconLoader = 0;
-KAboutData *KHTMLGlobal::s_about = 0;
+K4AboutData *KHTMLGlobal::s_about = 0;
 KHTMLSettings *KHTMLGlobal::s_settings = 0;
 
 static QLinkedList<KHTMLPart*> *s_parts = 0;
@@ -205,9 +205,9 @@ const KComponentData &KHTMLGlobal::componentData()
 
   if ( !s_componentData )
   {
-    s_about = new KAboutData( "khtml", 0, ki18n( "KHTML" ), "4.0",
+    s_about = new K4AboutData( "khtml", 0, ki18n( "KHTML" ), "4.0",
                               ki18n( "Embeddable HTML component" ),
-                              KAboutData::License_LGPL );
+                              K4AboutData::License_LGPL );
     s_about->addAuthor(ki18n("Lars Knoll"), KLocalizedString(), "knoll@kde.org");
     s_about->addAuthor(ki18n("Antti Koivisto"), KLocalizedString(), "koivisto@kde.org");
     s_about->addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");

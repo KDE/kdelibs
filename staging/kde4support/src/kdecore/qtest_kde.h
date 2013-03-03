@@ -24,8 +24,9 @@
 #include "qtest_staging.h"
 #include <stdlib.h>
 #include <assert.h>
-#include <kaboutdata.h>
-#include <qlocalizedstring_porting.h>
+#include <k4aboutdata.h>
+#include <klocalizedstring.h>
+#include <kcmdlineargs.h>
 #include <kcomponentdata.h>
 #include "kglobal.h"
 #include <kurl.h>
@@ -80,7 +81,7 @@ int main(int argc, char *argv[]) \
     qputenv("KDE_SKIP_KDERC", "1"); \
     unsetenv("KDE_COLOR_DEBUG"); \
     QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config/qttestrc"));  \
-    KAboutData aboutData( QByteArray(componentName), QByteArray(), qi18n("KDE Test Program"), QByteArray("version") );  \
+    K4AboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KDEMainFlags mainFlags = flags;                         \
     KComponentData cData(&aboutData); \
     QApplication app( argc, argv, (mainFlags & GUI) != 0 ); \
@@ -131,7 +132,7 @@ int main(int argc, char *argv[]) \
     qputenv("KDE_SKIP_KDERC", "1"); \
     unsetenv("KDE_COLOR_DEBUG"); \
     QFile::remove(QDir::homePath() + QString::fromLatin1("/.kde-unit-test/xdg/config/qttestrc"));  \
-    KAboutData aboutData( QByteArray(componentName), QByteArray(), qi18n("KDE Test Program"), QByteArray("version") );  \
+    K4AboutData aboutData( QByteArray(componentName), QByteArray(), ki18n("KDE Test Program"), QByteArray("version") );  \
     KComponentData cData(&aboutData); \
     QCoreApplication app( argc, argv ); \
     app.setApplicationName( QLatin1String("qttest") ); \

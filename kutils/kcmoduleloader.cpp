@@ -32,6 +32,7 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
+#include <kaboutdata.h>
 
 using namespace KCModuleLoader;
 
@@ -44,7 +45,7 @@ class KCMError : public KCModule
 {
 	public:
 		KCMError( const QString& msg, const QString& details, QWidget* parent )
-			: KCModule( KComponentData::mainComponent(), parent )
+			: KCModule( parent )
 		{
 			QVBoxLayout* topLayout = new QVBoxLayout( this );
       QLabel *lab = new QLabel( msg, this );

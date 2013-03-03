@@ -26,10 +26,8 @@
 #include "core/xmlloader.h"
 #include "ui/imageloader.h"
 
-#include <kaboutdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 

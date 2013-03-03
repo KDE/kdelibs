@@ -39,7 +39,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSet>
 
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <kconfig.h>
 #include <klocale.h>
 #include <klocalizedstring.h>

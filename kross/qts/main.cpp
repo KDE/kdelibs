@@ -25,8 +25,7 @@
 #include <QApplication>
 
 #include <kcmdlineargs.h>
-#include <kaboutdata.h>
-// #include <kurl.h>
+#include <k4aboutdata.h>
 
 QApplication* app = 0;
 
@@ -55,19 +54,19 @@ bool runScriptFile(QScriptEngine* engine, const QString& scriptfile)
 
 int main(int argc, char **argv)
 {
-    KAboutData about("kross",0,qi18n("Kross"),"0.1",
-                     qi18n("KDE application to run Kross scripts."),
-                     KAboutData::License_LGPL,
-                     qi18n("(C) 2006 Sebastian Sauer"),
-                     qi18n("Run Kross scripts."),
+    K4AboutData about("kross",0,ki18n("Kross"),"0.1",
+                     ki18n("KDE application to run Kross scripts."),
+                     K4AboutData::License_LGPL,
+                     ki18n("(C) 2006 Sebastian Sauer"),
+                     ki18n("Run Kross scripts."),
                      "http://kross.dipe.org","kross@dipe.org");
-    about.addAuthor(qi18n("Sebastian Sauer"), qi18n("Author"), "mail@dipe.org");
+    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
     // Initialize command line args
     KCmdLineArgs::init(argc, argv, &about);
     // Tell which options are supported and parse them.
     KCmdLineOptions options;
-    options.add("+file", qi18n("Scriptfile"));
+    options.add("+file", ki18n("Scriptfile"));
     KCmdLineArgs::addCmdLineOptions(options);
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 

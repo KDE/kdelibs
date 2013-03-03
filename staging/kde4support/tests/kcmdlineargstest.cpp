@@ -12,22 +12,21 @@ int
 main(int argc, char *argv[])
 {
    KCmdLineOptions options;
-   options.add("test", qi18n("do a short test only, note that\n"
+   options.add("test", ki18n("do a short test only, note that\n"
                              "this is rather long comment"));
    options.add("b");
-   options.add("baud <baudrate>", qi18n("set baudrate"), "9600");
-   options.add("+file(s)", qi18n("Files to load"));
+   options.add("baud <baudrate>", ki18n("set baudrate"), "9600");
+   options.add("+file(s)", ki18n("Files to load"));
 
    KCmdLineArgs::init(argc, argv, "testapp", 0,
-                      qi18n("TestApp"), "v0.0.2",
-                      qi18n("This is a test program.\n"
+                      ki18n("TestApp"), "v0.0.2",
+                      ki18n("This is a test program.\n"
                             "1999 (c) Waldo Bastian"));
 
    KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
    // MyWidget::addCmdLineOptions();
 
-   //KApplication app( false );
    QCoreApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv() );
 
    // Get application specific arguments

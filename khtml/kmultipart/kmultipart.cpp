@@ -37,16 +37,16 @@
 
 static KAboutData kmultipartAboutData()
 {
-    KAboutData aboutData( "kmultipart", 0, ki18n("KMultiPart"),
+    KAboutData aboutData( "kmultipart", QString(), i18n("KMultiPart"),
                                             "0.1",
-                                            ki18n( "Embeddable component for multipart/mixed" ),
+                                            i18n( "Embeddable component for multipart/mixed" ),
                                             KAboutData::License_GPL,
-                                            ki18n("Copyright 2001-2011, David Faure <email>faure@kde.org</email>"));
+                                            i18n("Copyright 2001-2011, David Faure <email>faure@kde.org</email>"));
     return aboutData;
 }
 
 K_PLUGIN_FACTORY(KMultiPartFactory, registerPlugin<KMultiPart>();)
-K_EXPORT_PLUGIN(KMultiPartFactory(kmultipartAboutData()))
+K_EXPORT_PLUGIN(KMultiPartFactory("kmultipart"))
 
 //#define DEBUG_PARSING
 
@@ -110,7 +110,7 @@ KMultiPart::KMultiPart( QWidget *parentWidget,
 {
     m_filter = 0L;
 
-    setComponentData( KMultiPartFactory::componentData() );
+    setComponentData(kmultipartAboutData());
 
     QWidget *box = new QWidget( parentWidget );
     box->setLayout( new QVBoxLayout( box ) );

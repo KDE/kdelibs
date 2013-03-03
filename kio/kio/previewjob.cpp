@@ -44,11 +44,13 @@
 #include <kde_file.h>
 #include <kservicetypetrader.h>
 #include <kservice.h>
+#include <ksharedconfig.h>
 #include <QtCore/QLinkedList>
 #include <kconfiggroup.h>
 #include <kprotocolinfo.h>
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
+#include <qstandardpaths.h>
 
 #include "jobuidelegate.h"
 #include "job_p.h"

@@ -54,6 +54,7 @@ public:
         s_self = 0;
     }
 
+#if 0 // not available anymore. Port away from KGenericFactory!
     static KComponentData componentData()
     {
         Q_ASSERT(s_self);
@@ -73,7 +74,7 @@ protected:
     {
         return new KComponentData(componentData());
     }
-
+#endif
 private:
     static bool s_createComponentDataCalled;
     static KGenericFactoryBase<T> *s_self;

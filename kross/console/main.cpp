@@ -24,11 +24,11 @@
 
 #include <QtCore/QFile>
 #include <QApplication>
+#include <QUrl>
 
 // KDE
 #include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kurl.h>
+#include <k4aboutdata.h>
 
 // Kross
 #include "../core/manager.h"
@@ -67,7 +67,7 @@ int runScriptFile(const QString& scriptfile)
     }
 
     // First we need a Action and fill it.
-    Kross::Action* action = new Kross::Action(0 /*no parent*/, KUrl(scriptfile));
+    Kross::Action* action = new Kross::Action(0 /*no parent*/, QUrl::fromUserInput(scriptfile));
     action->setInterpreter( interpreterinfo->interpreterName() );
     action->setCode(scriptcode);
 
@@ -89,23 +89,23 @@ int main(int argc, char **argv)
 {
     int result = ERROR_OK;
 
-    KAboutData about("kross",
+    K4AboutData about("kross",
                      "kdelibs4",
-                     qi18n("Kross"),
+                     ki18n("Kross"),
                      "0.1",
-                     qi18n("KDE application to run Kross scripts."),
-                     KAboutData::License_LGPL,
-                     qi18n("(C) 2006 Sebastian Sauer"),
-                     qi18n("Run Kross scripts."),
+                     ki18n("KDE application to run Kross scripts."),
+                     K4AboutData::License_LGPL,
+                     ki18n("(C) 2006 Sebastian Sauer"),
+                     ki18n("Run Kross scripts."),
                      "http://kross.dipe.org",
                      "kross@dipe.org");
-    about.addAuthor(qi18n("Sebastian Sauer"), qi18n("Author"), "mail@dipe.org");
+    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
     // Initialize command line args
     KCmdLineArgs::init(argc, argv, &about);
     // Tell which options are supported and parse them.
     KCmdLineOptions options;
-    options.add("+file", qi18n("Scriptfile"));
+    options.add("+file", ki18n("Scriptfile"));
 
     KCmdLineArgs::addCmdLineOptions(options);
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
@@ -116,7 +116,6 @@ int main(int argc, char **argv)
         return ERROR_HELP;
     }
 
-    // Create KApplication instance.
     app = new QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), true);
 
     // Each argument is a scriptfile to open

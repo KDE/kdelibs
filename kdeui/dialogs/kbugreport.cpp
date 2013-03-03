@@ -57,7 +57,7 @@
 
 class KBugReportPrivate {
 public:
-    KBugReportPrivate(KBugReport *q): q(q) {}
+    KBugReportPrivate(KBugReport *q): q(q), m_aboutData(KAboutData::applicationData()) {}
 
     void _k_slotConfigureEmail();
     void _k_slotSetFrom();
@@ -66,7 +66,7 @@ public:
 
     KBugReport *q;
     QProcess * m_process;
-    const KAboutData * m_aboutData;
+    KAboutData m_aboutData;
 
     KTextEdit * m_lineedit;
     KLineEdit * m_subject;
@@ -91,27 +91,21 @@ public:
     bool submitBugWeb;
 };
 
-KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutData )
+KBugReport::KBugReport(const KAboutData &aboutData, QWidget * _parent)
   : QDialog( _parent ), d( new KBugReportPrivate(this) )
 {
   setWindowTitle( i18n("Submit Bug Report") );
-  setModal(modal);
 
   QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
   buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
   connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
   connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
-
-  // Use supplied aboutdata, otherwise the one from the active componentData
-  // otherwise the KGlobal one. _activeInstance should neved be 0L in theory.
-  d->m_aboutData = aboutData ? aboutData
-      : (KComponentData::activeComponent().isValid() ? KComponentData::activeComponent().aboutData()
-                                  : KComponentData::mainComponent().aboutData());
+  d->m_aboutData = aboutData;
   d->m_process = 0;
   d->submitBugWeb = false;
 
-  if ( d->m_aboutData->bugAddress() == QLatin1String("submit@bugs.kde.org") )
+  if ( d->m_aboutData.bugAddress() == QLatin1String("submit@bugs.kde.org") )
   {
     // This is a core KDE application -> redirect to the web form
     d->submitBugWeb = true;
@@ -156,14 +150,14 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     tmpLabel = new QLabel(i18nc("Email receiver address", "To:"), this);
     glay->addWidget( tmpLabel, ++row,0 );
     tmpLabel->setWhatsThis(qwtstr );
-    tmpLabel = new QLabel(d->m_aboutData->bugAddress(), this);
+    tmpLabel = new QLabel(d->m_aboutData.bugAddress(), this);
     tmpLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     glay->addWidget( tmpLabel, row, 1 );
     tmpLabel->setWhatsThis(qwtstr );
 
     KGuiItem::assign(buttonBox->button(QDialogButtonBox::Ok),
                      KGuiItem(i18n("&Send"), "mail-send", i18n("Send bug report."),
-                              i18n("Send this bug report to %1.", d->m_aboutData->bugAddress())));
+                              i18n("Send this bug report to %1.", d->m_aboutData.bugAddress())));
     row++;
   }
   else
@@ -184,9 +178,7 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
     packageList << QString::fromLatin1(packages[c]);
   d->appcombo->addItems(packageList);
   connect(d->appcombo, SIGNAL(activated(int)), SLOT(_k_appChanged(int)));
-  d->appname = d->m_aboutData
-                                    ? d->m_aboutData->productName()
-                                    : qApp->applicationName() ;
+  d->appname = d->m_aboutData.productName();
   glay->addWidget( d->appcombo, row, 1 );
   int index = 0;
   for (; index < d->appcombo->count(); index++) {
@@ -206,9 +198,8 @@ KBugReport::KBugReport( QWidget * _parent, bool modal, const KAboutData *aboutDa
   tmpLabel = new QLabel(i18n("Version:"), this);
   glay->addWidget( tmpLabel, ++row, 0 );
   tmpLabel->setWhatsThis(qwtstr );
-  if (d->m_aboutData)
-      d->m_strVersion = d->m_aboutData->version();
-  else
+  d->m_strVersion = d->m_aboutData.version();
+  if (d->m_strVersion.isEmpty())
       d->m_strVersion = i18n("no version set (programmer error)");
   d->kde_version = QString::fromLatin1( KDE_VERSION_STRING );
   d->kde_version += ", " + QString::fromLatin1( KDE_DISTRIBUTION_TEXT );
@@ -360,8 +351,8 @@ void KBugReportPrivate::_k_appChanged(int i)
     kDebug() << "appName " << appName;
 
     QString strDisplayVersion; //Version string to show in the UI
-    if (appname == appName && m_aboutData) {
-        m_strVersion = m_aboutData->version();
+    if (appname == appName && !m_aboutData.version().isEmpty()) {
+        m_strVersion = m_aboutData.version();
         strDisplayVersion = m_strVersion;
     } else {
         m_strVersion = QLatin1String("unknown"); //English string to put in the bug report
@@ -542,9 +533,9 @@ QString KBugReport::text() const
 
 bool KBugReport::sendBugReport()
 {
-  QString recipient ( d->m_aboutData ?
-    d->m_aboutData->bugAddress() :
-    QString::fromLatin1("submit@bugs.kde.org") );
+    QString recipient = d->m_aboutData.bugAddress();
+    if (recipient.isEmpty())
+        recipient = QStringLiteral("submit@bugs.kde.org");
 
   QString command = QStandardPaths::findExecutable("ksendbugmail");
   if (command.isEmpty())

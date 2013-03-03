@@ -169,7 +169,11 @@ set(kdecore_LIB_SRCS
    io/kmountpoint.cpp
    io/kprocess.cpp
    io/kurl.cpp
+
    kernel/kcmdlineargs.cpp
+   kernel/k4aboutdata.cpp
+   kernel/kcomponentdata.cpp
+
    kernel/ktoolinvocation.cpp
 )
 
@@ -247,7 +251,11 @@ install( FILES
    io/kprocess.h
    io/kmountpoint.h
    io/kurl.h
+
    kernel/kcmdlineargs.h
+   kernel/k4aboutdata.h
+   kernel/kcomponentdata.h
+
    kernel/ktoolinvocation.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

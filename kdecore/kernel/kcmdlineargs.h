@@ -20,9 +20,7 @@
 #define KCMDLINEARGS_H
 
 #include <kdecore_export.h>
-
-
-#include "qlocalizedstring_porting.h"
+#include <klocalizedstring.h>
 
 template <class T> class QList;
 class QString;
@@ -119,7 +117,7 @@ class KDECORE_EXPORT KCmdLineOptions
      *                     on the command line; can be left off
      */
     KCmdLineOptions &add (const QByteArray &name,
-                          const QLocalizedString &description = QLocalizedString(),
+                          const KLocalizedString &description = KLocalizedString(),
                           const QByteArray &defaultValue = QByteArray());
 
     /**
@@ -136,7 +134,7 @@ class KDECORE_EXPORT KCmdLineOptions
 
 class KCmdLineArgsList;
 class KApplication;
-class KAboutData;
+class K4AboutData;
 
 /**
  *  @short A class for command-line argument handling.
@@ -315,26 +313,26 @@ public:
    static void init(int argc, char **argv,
                     const QByteArray &appname,
                     const QByteArray &catalog,
-                    const QLocalizedString &programName,
+                    const KLocalizedString &programName,
                     const QByteArray &version,
-                    const QLocalizedString &description = QLocalizedString(),
+                    const KLocalizedString &description = KLocalizedString(),
                     StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE));
 
   /**
    * Initialize class.
    *
    * This function should be called as the very first thing in
-   *  your application. It uses KAboutData to replace some of the
+   *  your application. It uses K4AboutData to replace some of the
    *  arguments that would otherwise be required.
    *
    * @param _argc As passed to @p main(...).
    * @param _argv As passed to @p main(...).
-   * @param about A KAboutData object describing your program.
+   * @param about A K4AboutData object describing your program.
    * @param stdargs KDE/Qt or no default parameters
    */
   static void init(int _argc,
                    char **_argv,
-                   const KAboutData *about,
+                   const K4AboutData *about,
                    StdCmdLineArgs stdargs=StdCmdLineArgs(CmdLineArgQt|CmdLineArgKDE));
   /**
    * Initialize Class
@@ -342,14 +340,14 @@ public:
    * This function should be called as the very first thing in your
    * application. This method will rarely be used, since it doesn't
    * provide any argument parsing. It does provide access to the
-   * KAboutData information.
+   * K4AboutData information.
    * This method is exactly the same as calling
-   * init(0,0, const KAboutData *about, CmdLineArgNone).
+   * init(0,0, const K4AboutData *about, CmdLineArgNone).
    *
    * @param about the about data.
-   * @see KAboutData
+   * @see K4AboutData
    */
-  static void init(const KAboutData *about);
+  static void init(const K4AboutData *about);
 
   /**
    * add standard Qt/KDE command-line args
@@ -420,7 +418,7 @@ public:
    * @param afterId The options are inserted after this set of options, can be empty.
    */
   static void addCmdLineOptions(const KCmdLineOptions &options,
-                                const QLocalizedString &name = QLocalizedString(),
+                                const KLocalizedString &name = KLocalizedString(),
                                 const QByteArray &id = QByteArray(),
                                 const QByteArray &afterId = QByteArray());
 
@@ -643,16 +641,16 @@ public:
   static QStringList allArguments();
 
   /**
-   * Returns the KAboutData for consumption by KComponentData
+   * Returns the K4AboutData for consumption by KComponentData
    */
-  static const KAboutData *aboutData();
+  static const K4AboutData *aboutData();
 
 protected:
   /**
    * @internal
    *  Constructor.
    */
-  KCmdLineArgs( const KCmdLineOptions &_options, const QLocalizedString &_name,
+  KCmdLineArgs( const KCmdLineOptions &_options, const KLocalizedString &_name,
                 const QByteArray &_id);
 
   /**

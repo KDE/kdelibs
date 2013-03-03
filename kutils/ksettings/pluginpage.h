@@ -78,7 +78,7 @@ class KCMUTILS_EXPORT PluginPage : public KCModule
          * Standard KCModule constructor.
          * Automatically creates the KPluginSelector widget.
          */
-        explicit PluginPage( const KComponentData &componentData,
+        explicit PluginPage( const KAboutData *aboutData,
                              QWidget *parent = 0,
                              const QVariantList &args = QVariantList() );
 

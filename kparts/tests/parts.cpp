@@ -40,7 +40,7 @@
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
     : KParts::ReadOnlyPart(parent),
-      m_componentData("kpartstestpart")
+      m_componentData("kpartstestpart", QString(), i18n("KParts test part"), "0.1")
 {
     setComponentData(m_componentData, false);
     m_edit = new QTextEdit( parentWidget );
@@ -104,7 +104,7 @@ bool Part1::openFile()
 
 Part2::Part2( QObject *parent, QWidget * parentWidget )
     : KParts::Part(parent),
-    m_componentData("part2")
+    m_componentData("part2", QString(), "Part 2", "0.2")
 {
     setComponentData(m_componentData, false);
     QWidget * w = new QWidget( parentWidget );

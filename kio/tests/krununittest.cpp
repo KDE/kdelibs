@@ -34,6 +34,7 @@ QTEST_GUILESS_MAIN(KRunUnitTest)
 #include <kshell.h>
 #include <kservice.h>
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 #include <kprocess.h>
 #include "kiotesthelper.h" // createTestFile etc.
 

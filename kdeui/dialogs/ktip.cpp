@@ -36,7 +36,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QPushButton>
 #include <qstandardpaths.h>
 
-#include <kaboutdata.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
@@ -120,8 +119,8 @@ KTipDatabase::KTipDatabase( const QString &_tipFile )
 {
   QString tipFile = _tipFile;
 
-  if ( tipFile.isEmpty() )
-    tipFile = KComponentData::mainComponent().aboutData()->appName() + "/tips";
+    if (tipFile.isEmpty())
+      tipFile = QCoreApplication::applicationName() + "/tips";
 
   d->loadTips( tipFile );
 
@@ -133,7 +132,7 @@ KTipDatabase::KTipDatabase( const QStringList& tipsFiles )
   : d( new Private )
 {
   if ( tipsFiles.isEmpty() || ( ( tipsFiles.count() == 1 ) && tipsFiles.first().isEmpty() ) ) {
-    d->addTips( KComponentData::mainComponent().aboutData()->appName() + "/tips" );
+      d->addTips(QCoreApplication::applicationName() + "/tips");
   } else {
     for ( QStringList::ConstIterator it = tipsFiles.begin(); it != tipsFiles.end(); ++it )
       d->addTips( *it );

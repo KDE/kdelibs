@@ -45,6 +45,7 @@
 #include "kabstractfilemodule.h"
 #include "krecentdirs.h"
 #include "kservice.h"
+#include <ksharedconfig.h>
 #include <kwindowconfig.h>
 
 /** File dialogs are native by default on Windows. */

@@ -23,6 +23,7 @@
  */
 
 #include "k4aboutdata.h"
+#include "kaboutdata.h"
 
 #include "qstandardpaths.h"
 #include <QtCore/QFile>
@@ -31,9 +32,6 @@
 #include <QtCore/QVariant>
 #include <QtCore/QList>
 #include <QHash>
-
-// PORTING HACK (KDE5 TODO: clean up)
-#define i18nc(a,b) QObject::tr(b, a)
 
 // -----------------------------------------------------------------------------
 // Design notes:
@@ -503,6 +501,15 @@ K4AboutData &K4AboutData::operator=(const K4AboutData& other)
     return *this;
 }
 
+K4AboutData::operator KAboutData() const
+{
+    KAboutData aboutData(appName(), catalogName(), programName(), version(), shortDescription(),
+                         KAboutData::License_Unknown, copyrightStatement(),
+                         otherText(), d->_homepageAddress, bugAddress());
+    // TODO K4AboutLicense -> KAboutLicense conversion, using licenses()
+    return aboutData;
+}
+
 K4AboutData &K4AboutData::addAuthor( const KLocalizedString &name,
                                    const KLocalizedString &task,
                                    const QByteArray &emailAddress,
@@ -832,7 +839,7 @@ QList<K4AboutPerson> K4AboutData::translators() const
         translatorName = d->translatorName.toString();
     }
     else {
-        translatorName = qi18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS).toString(); //toString(tmpLocale);
+        translatorName = ki18nc("NAME OF TRANSLATORS", NAME_OF_TRANSLATORS).toString(); //toString(tmpLocale);
     }
 
     QString translatorEmail;
@@ -840,7 +847,7 @@ QList<K4AboutPerson> K4AboutData::translators() const
         translatorEmail = d->translatorEmail.toString();
     }
     else {
-        translatorEmail = qi18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS).toString(); //toString(tmpLocale);
+        translatorEmail = ki18nc("EMAIL OF TRANSLATORS", EMAIL_OF_TRANSLATORS).toString(); //toString(tmpLocale);
     }
 #if 0
     delete tmpLocale;

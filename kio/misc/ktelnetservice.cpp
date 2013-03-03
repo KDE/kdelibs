@@ -24,34 +24,26 @@
 #include <ktoolinvocation.h>
 #include <kcoreauthorized.h>
 #include <kmessagebox.h>
-#include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kurl.h>
+#include <QUrl>
 
 int main(int argc, char **argv)
 {
-    KCmdLineOptions options;
-    options.add("+url");
+    QApplication a(argc, argv);
 
-    KCmdLineArgs::init(argc, argv, "ktelnetservice", "kdelibs4", qi18n("telnet service"),
-               "unknown", qi18n("telnet protocol handler"));
-    KCmdLineArgs::addCmdLineOptions(options);
-
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-    if (args->count() != 1)
+    if (argc != 1) {
+        fprintf(stderr, "Usage: ktelnetservice <url>\n");
         return 1;
+    }
 
     KConfig config("kdeglobals");
     KConfigGroup cg(&config, "General");
     QString terminal = cg.readPathEntry("TerminalApplication", "konsole");
 
-    KUrl url(args->arg(0));
+    QUrl url(argv[1]);
     QStringList cmd;
     if (terminal == "konsole")
         cmd << "--noclose";
@@ -75,10 +67,10 @@ int main(int argc, char **argv)
             return 3;
         }
 
-    if (!url.user().isEmpty())
+    if (!url.userName().isEmpty())
     {
         cmd << "-l";
-        cmd << url.user();
+        cmd << url.userName();
     }
 
         QString host;

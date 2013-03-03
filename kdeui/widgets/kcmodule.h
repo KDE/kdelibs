@@ -36,7 +36,6 @@ class KConfigDialogManager;
 class KCoreConfigSkeleton;
 class KConfigSkeleton;
 class KCModulePrivate;
-class KComponentData;
 
 /**
  * The base class for configuration modules.
@@ -70,7 +69,7 @@ class KComponentData;
  * The constructor of the KCModule then looks like this:
  * \code
  * YourKCModule::YourKCModule( QWidget* parent )
- *   : KCModule( YourKCModuleFactory::componentData(), parent )
+ *   : KCModule( parent )
  * {
  *   KAboutData *about = new KAboutData(
  *     <kcm name>, 0, ki18n( "..." ),
@@ -114,11 +113,14 @@ public:
   enum Button { NoAdditionalButton=0, Help=1, Default=2, Apply=4, Export=8 };
   Q_DECLARE_FLAGS( Buttons, Button )
 
-#ifdef KDE3_SUPPORT
-  KDEUI_DEPRECATED KCModule( QWidget *parent, const char *name, const QStringList& args = QStringList() );
-
-  KDEUI_DEPRECATED KCModule(const KComponentData &componentData, QWidget *parent, const QStringList& args);
-#endif
+  /**
+   * Base class for all KControlModules.
+   *
+   * @note do not emit changed signals here, since they are not yet connected
+   *       to any slot.
+   * @param aboutData becomes owned by the KCModule
+   */
+  explicit KCModule(const KAboutData *aboutData, QWidget *parent = 0, const QVariantList& args = QVariantList());
 
   /**
    * Base class for all KControlModules.
@@ -126,7 +128,7 @@ public:
    * @note do not emit changed signals here, since they are not yet connected
    *       to any slot.
    */
-  explicit KCModule(const KComponentData &componentData, QWidget *parent = 0, const QVariantList& args = QVariantList());
+  explicit KCModule(QWidget *parent = 0, const QVariantList& args = QVariantList());
 
   /**
    * Destroys the module.
@@ -155,8 +157,9 @@ public:
 
   /**
    * This sets the KAboutData returned by aboutData()
+   * The about data is now owned by KCModule.
    */
-  void setAboutData( const KAboutData* about );
+  void setAboutData(const KAboutData* about);
 
   /**
    * Indicate which buttons will be used.
@@ -194,7 +197,7 @@ public:
    */
   bool useRootOnlyMessage() const;
 
-  KComponentData componentData() const;
+  KAboutData componentData() const;
 
   /**
    * @return a list of @ref KConfigDialogManager's in use, if any.

@@ -93,7 +93,6 @@ public:
      * plasma to switch the active global shortcuts when switching between
      * activities.
      *
-     * @param component the name of the component. KComponentData::componentName
      * @param context the name of the context.
      *
      * @since 4.2
@@ -101,7 +100,7 @@ public:
     static void activateGlobalShortcutContext(
             const QString &contextUnique,
             const QString &contextFriendly,
-            const KComponentData &component = KComponentData::mainComponent());
+            const QString &programName);
 
     /**
      * Clean the shortcuts for component @a componentUnique.

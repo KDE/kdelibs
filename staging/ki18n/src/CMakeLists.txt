@@ -20,7 +20,6 @@ install(TARGETS ki18n EXPORT ki18nTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     klocalizedstring.h
-    qlocalizedstring_porting.h
     ${CMAKE_CURRENT_BINARY_DIR}/ki18n_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

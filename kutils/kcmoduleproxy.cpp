@@ -120,7 +120,7 @@ void KCModuleProxyPrivate::loadModule()
 		{
 			/*rootInfo = new QLabel( parent );
 			topLayout->insertWidget( 0, rootInfo );
-			
+
 			QPalette palette = rootInfo->palette();
 			KStatefulBrush stbrush(KColorScheme::Window, KColorScheme::NeutralBackground);
 			qDebug() << stbrush.brush(rootInfo);
@@ -310,11 +310,6 @@ QString KCModuleProxy::rootOnlyMessage() const
 bool KCModuleProxy::useRootOnlyMessage() const
 {
 	return realModule() ? realModule()->useRootOnlyMessage() : true;
-}
-
-KComponentData KCModuleProxy::componentData() const
-{
-	return realModule() ? realModule()->componentData() : KComponentData();
 }
 
 bool KCModuleProxy::changed() const

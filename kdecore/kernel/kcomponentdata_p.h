@@ -27,7 +27,7 @@
 #include <QString>
 
 #include <kconfig.h>
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #if 0 // TEMP_KF5_REENABLE
 #include <klocale.h>
 #endif
@@ -35,7 +35,7 @@
 class KComponentDataPrivate
 {
 public:
-    KComponentDataPrivate(const KAboutData &aboutData_)
+    KComponentDataPrivate(const K4AboutData &aboutData_)
         : aboutData(aboutData_),
         shouldRemoveCatalog(false),
         refCount(1)
@@ -78,7 +78,7 @@ public:
     void lazyInit();
     void configInit();  //call this only from lazyInit()!
 
-    KAboutData aboutData;
+    K4AboutData aboutData;
     QString configName;
     KSharedConfig::Ptr sharedConfig;
 

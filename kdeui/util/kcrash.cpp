@@ -421,8 +421,7 @@ KCrash::defaultCrashHandler (int sig)
         argv[i++] = "--pid";
         argv[i++] = pidtxt;
 
-        const KComponentData componentData = KComponentData::mainComponent();
-        const KAboutData *about = componentData.isValid() ? componentData.aboutData() : 0;
+        const KAboutData* about = KAboutData::applicationDataPointer();
         if (about) {
             if (about->internalVersion()) {
                 argv[i++] = "--appversion";

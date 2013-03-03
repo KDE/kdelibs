@@ -31,7 +31,6 @@
 #include <QDir>
 
 #include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kxmlguifactory.h>
 #include <klocalizedstring.h>
@@ -44,7 +43,7 @@ using namespace KParts;
 class Plugin::PluginPrivate
 {
 public:
-    KComponentData m_parentInstance;
+    QString m_parentInstance;
     QString m_library; // filename of the library
 };
 
@@ -63,10 +62,10 @@ QString Plugin::xmlFile() const
 {
     QString path = KXMLGUIClient::xmlFile();
 
-    if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
+    if ( d->m_parentInstance.isEmpty() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, d->m_parentInstance.componentName() + '/' + path );
+    QString absPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, d->m_parentInstance + '/' + path );
     assert( !absPath.isEmpty() );
     return absPath;
 }
@@ -75,24 +74,21 @@ QString Plugin::localXMLFile() const
 {
     QString path = KXMLGUIClient::xmlFile();
 
-    if ( !d->m_parentInstance.isValid() || ( path.length() > 0 && path[ 0 ] == '/' ) )
+    if ( d->m_parentInstance.isEmpty() || ( path.length() > 0 && path[ 0 ] == '/' ) )
         return path;
 
-    QString absPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + d->m_parentInstance.componentName() + '/' + path;
+    QString absPath = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + d->m_parentInstance + '/' + path;
     return absPath;
 }
 
 //static
-QList<Plugin::PluginInfo> Plugin::pluginInfos(const KComponentData &componentData)
+QList<Plugin::PluginInfo> Plugin::pluginInfos(const QString &componentName)
 {
-  if (!componentData.isValid())
-    kError(1000) << "No componentData ???" << endl;
-
   QList<PluginInfo> plugins;
 
     QMap<QString,QStringList> sortedPlugins;
 
-    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, componentData.componentName() + "/kpartplugins", QStandardPaths::LocateDirectory);
+    const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, componentName + "/kpartplugins", QStandardPaths::LocateDirectory);
     Q_FOREACH(const QString& dir, dirs) {
         Q_FOREACH(const QString& file, QDir(dir).entryList(QStringList() << QLatin1String("*.rc"))) {
             const QFileInfo fInfo(dir + '/' + file);
@@ -127,12 +123,12 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos(const KComponentData &componentDat
   return plugins;
 }
 
-void Plugin::loadPlugins(QObject *parent, const KComponentData &componentData)
+void Plugin::loadPlugins(QObject *parent, const QString &componentName)
 {
-  loadPlugins( parent, pluginInfos( componentData ), componentData );
+  loadPlugins( parent, pluginInfos( componentName ), componentName );
 }
 
-void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, const KComponentData &componentData)
+void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, const QString &componentName)
 {
    QList<PluginInfo>::ConstIterator pIt = pluginInfos.begin();
    QList<PluginInfo>::ConstIterator pEnd = pluginInfos.end();
@@ -147,7 +143,7 @@ void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, 
 
      if ( plugin )
      {
-       plugin->d->m_parentInstance = componentData;
+       plugin->d->m_parentInstance = componentName;
        plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
        plugin->setDOMDocument( (*pIt).m_document );
 
@@ -158,7 +154,7 @@ void Plugin::loadPlugins(QObject *parent, const QList<PluginInfo> &pluginInfos, 
 
 void Plugin::loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos )
 {
-   loadPlugins(parent, pluginInfos, KComponentData());
+   loadPlugins(parent, pluginInfos, QString());
 }
 
 // static
@@ -205,18 +201,19 @@ bool Plugin::hasPlugin( QObject* parent, const QString& library )
   return false;
 }
 
-void Plugin::setComponentData(const KComponentData &componentData)
+void Plugin::setComponentData(const KAboutData &pluginData)
 {
-    KLocalizedString::insertCatalog(componentData.catalogName());
-    KXMLGUIClient::setComponentName(componentData.componentName(), componentData.aboutData()->programName());
+    KAboutData::registerPluginData(pluginData);
+    KXMLGUIClient::setComponentName(pluginData.componentName(), pluginData.displayName());
+    KLocalizedString::insertCatalog(pluginData.catalogName());
 }
 
 void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
-        const KComponentData &componentData, bool enableNewPluginsByDefault,
+        const QString &componentName, bool enableNewPluginsByDefault,
         int interfaceVersionRequired)
 {
-    KConfigGroup cfgGroup( componentData.config(), "KParts Plugins" );
-    const QList<PluginInfo> plugins = pluginInfos( componentData );
+    KConfigGroup cfgGroup( KSharedConfig::openConfig(componentName + "rc"), "KParts Plugins" );
+    const QList<PluginInfo> plugins = pluginInfos( componentName );
     QList<PluginInfo>::ConstIterator pIt = plugins.begin();
     const QList<PluginInfo>::ConstIterator pEnd = plugins.end();
     for (; pIt != pEnd; ++pIt )
@@ -238,12 +235,12 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
         }
         else
         { // no user-setting, load plugin default setting
-            QString relPath = QString( componentData.componentName() ) + '/' + (*pIt).m_relXMLFileName;
+            QString relPath = componentName + '/' + (*pIt).m_relXMLFileName;
             relPath.truncate( relPath.lastIndexOf( '.' ) ); // remove extension
             relPath += ".desktop";
             //kDebug(1000) << "looking for " << relPath;
             const QString desktopfile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, relPath);
-            if( !desktopfile.isEmpty() )
+            if (!desktopfile.isEmpty())
             {
                 //kDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile;
                 KDesktopFile _desktop( desktopfile );
@@ -301,7 +298,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
 
         if ( plugin )
         {
-            plugin->d->m_parentInstance = componentData;
+            plugin->d->m_parentInstance = componentName;
             plugin->setXMLFile( (*pIt).m_relXMLFileName, false, false );
             plugin->setDOMDocument( (*pIt).m_document );
             parentGUIClient->insertChildClient( plugin );

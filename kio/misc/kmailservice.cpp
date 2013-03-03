@@ -18,26 +18,19 @@
 
 #include <QApplication>
 #include <qdesktopservices.h>
-#include <klocalizedstring.h>
-#include <kcmdlineargs.h>
 #include <qurl.h>
+#include <stdio.h>
 
 int main( int argc, char **argv )
 {
-    KCmdLineOptions options;
-    options.add("+url");
+    QGuiApplication a(argc, argv);
 
-    KCmdLineArgs::init( argc, argv, "kmailservice", "kdelibs4", qi18n("KMailService"), "unknown", qi18n("Mail service") );
-    KCmdLineArgs::addCmdLineOptions( options );
-
-    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false);
-
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-    if ( args->count() != 1 )
+    if (argc != 1) {
+        fprintf(stderr, "Usage: kmailservice <url>\n");
         return 1;
+    }
 
-    QDesktopServices::openUrl(QUrl(args->arg(0)));
+    QDesktopServices::openUrl(QUrl(argv[1]));
 
     return 0;
 }

@@ -112,15 +112,6 @@ public:
                     KSharedConfig::Ptr config = KSharedConfig::Ptr());
 
     /**
-      * Add a list of KParts plugins. Convenience method for the one above.
-      * If not set explicitly, @p config is set to componentData.config()
-      */
-    void addPlugins(const KComponentData &instance,
-                    const QString &categoryName = QString(),
-                    const QString &categoryKey = QString(),
-                    const KSharedConfig::Ptr &config = KSharedConfig::Ptr());
-
-    /**
       * Add a list of non-KParts plugins
       *
       * @param pluginInfoList   A list of KPluginInfo objects containing the

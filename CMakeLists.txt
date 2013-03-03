@@ -93,6 +93,7 @@ set(KCoreAddons_INCLUDE_DIRS  ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/io
                               ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/kernel
                               ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/text
                               ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src/randomness
+                              ${CMAKE_SOURCE_DIR}/tier1/kcoreaddons/src
                               ${CMAKE_BINARY_DIR}/tier1/kcoreaddons/src
                               )
 set(KCoreAddons_LIBRARIES KCoreAddons)

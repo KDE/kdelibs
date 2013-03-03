@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 #include <kcmdlineargs.h>
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <kdebug.h>
 
 #include <QTimer>
@@ -78,9 +78,9 @@ int TestApp::newInstance()
 int main(int argc, char *argv[])
 {
     KCmdLineOptions options;
-    options.add("!+[argument]", qi18n("arguments passed to new instance"));
+    options.add("!+[argument]", ki18n("arguments passed to new instance"));
 
-    KAboutData about("kuniqueapptest", 0, qi18n("kuniqueapptest"), "version");
+    K4AboutData about("kuniqueapptest", 0, ki18n("kuniqueapptest"), "version");
     KCmdLineArgs::init(argc, argv, &about);
     KCmdLineArgs::addCmdLineOptions( options );
     KUniqueApplication::addCmdLineOptions();

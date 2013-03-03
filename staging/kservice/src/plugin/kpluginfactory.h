@@ -27,7 +27,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
-#include <kcomponentdata.h>
+#include <ksharedconfig.h> // for source compat
 #include <kexportplugin.h>
 
 class KPluginFactoryPrivate;
@@ -38,32 +38,19 @@ class name : public baseFactory \
 { \
     public: \
         explicit name(const char * = 0, const char * = 0, QObject * = 0); \
-        explicit name(const KAboutData &, QObject * = 0); \
         ~name(); \
-        static KComponentData componentData(); \
     private: \
         void init(); \
 };
 
 #define K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
-Q_GLOBAL_STATIC(KComponentData, name##factorycomponentdata) \
 name::name(const char *componentName, const char *catalogName, QObject *parent) \
     : baseFactory(componentName, catalogName, parent) { init(); } \
-name::name(const KAboutData &aboutData, QObject *parent) \
-    : baseFactory(aboutData, parent) { init(); } \
 void name::init() \
 { \
-    if (name##factorycomponentdata()->isValid()) \
-        setComponentData(*name##factorycomponentdata()); \
-    else \
-        *name##factorycomponentdata() = KPluginFactory::componentData(); \
     pluginRegistrations \
 } \
-name::~name() {} \
-KComponentData name::componentData() \
-{ \
-    return *name##factorycomponentdata(); \
-}
+name::~name() {}
 
 #define K_PLUGIN_FACTORY_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
     K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
@@ -72,15 +59,6 @@ KComponentData name::componentData() \
 /**
  * \relates KPluginFactory
  * Defines a KPluginFactory subclass with two constructors and a static componentData function.
- *
- * The first constructor takes the arguments (const char *componentName, const char *catalogName,
- * QObject *parent).
- * The second constructor takes (const KAboutData *aboutData, QObject *parent).
- *
- * The static componentData method returns the same KComponentData object as the
- * KPluginFactory::componentData function returns. As you normally don't have a pointer to the
- * factory object in the plugin code the static componentData function is a convenient way to access
- * the KComponentData.
  *
  * \param name The name of the KPluginFactory derived class. This is the name you'll need for
  * K_EXPORT_PLUGIN
@@ -99,23 +77,13 @@ KComponentData name::componentData() \
  * K_PLUGIN_FACTORY(MyPluginFactory,
  *                  registerPlugin<MyPlugin>();
  *                 )
- * K_EXPORT_PLUGIN(MyPluginFactory("componentName", "catalogName"))
- *
- * // or:
- * static KAboutData createAboutData()
- * {
- *     KAboutData aboutData("myplugin", "myplugin", ki18n("MyPlugin"), "0.1",
- *             ki18n("a description of the plugin"), KAboutData::License_LGPL,
- *             ki18n("Copyright (C) 2007 Your Name"));
- *     aboutData.addAuthor(ki18n("Your Name"), ...);
- *     return aboutData;
- * }
- * K_EXPORT_PLUGIN(MyPluginFactory(createAboutData()))
+ * K_EXPORT_PLUGIN(MyPluginFactory("componentName"))
  *
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KComponentData kcd = MyPluginFactory::componentData();
+ *     KAboutData pluginAboutData("componentName", "catalogName", i18n("My Component"), "1.0");
+ *     KAboutData::registerPluginData(pluginAboutData);
  *     ...
  * };
  * \endcode
@@ -178,7 +146,8 @@ KComponentData name::componentData() \
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KComponentData kcd = MyPluginFactory::componentData();
+ *     KAboutData pluginAboutData("componentName", "catalogName", i18n("My Component"), "1.0");
+ *     KAboutData::registerPluginData(pluginAboutData);
  *     ...
  * };
  * \endcode
@@ -235,9 +204,7 @@ class KSERVICE_EXPORT KPluginFactory : public QObject
 public:
     /**
      * This constructor creates a factory for a plugin with the given \p componentName and
-     * \p catalogName. Those values are used to initialize a KComponentData object for the plugin.
-     * You can later access it with componentData(). If \p componentName is 0, an invalid KComponentData
-     * object will be created.
+     * \p catalogName.
      *
      * \param componentName the component name of the plugin
      * \param catalogName the translation catalog to use
@@ -246,48 +213,20 @@ public:
     explicit KPluginFactory(const char *componentName = 0, const char *catalogName = 0, QObject *parent = 0);
 
     /**
-     * This constructor creates a factory for a plugin with the given KAboutData object. This object is
-     * used to initialize a KComponentData object for the plugin. You can later access it with
-     * componentData().
-     * KPluginFactory takes ownership of the \p aboutData object, so don't delete it yourself!
-     *
-     * \param aboutData the KAboutData for the plugin
-     * \param parent a parent object
-     */
-    explicit KPluginFactory(const KAboutData &aboutData, QObject *parent = 0);
-    /**
-     * @deprecated
-     */
-#ifndef KDE_NO_DEPRECATED
-    KSERVICE_DEPRECATED explicit KPluginFactory(const KAboutData *aboutData, QObject *parent = 0);
-#endif
-
-    /**
-     * @deprecated
-     */
-#ifndef KDE_NO_DEPRECATED
-    explicit KSERVICE_DEPRECATED KPluginFactory(QObject *parent);
-#endif
-
-    /**
      * This destroys the PluginFactory. It will remove the translation catalog for the plugin,
      * if it was initialized.
      */
     virtual ~KPluginFactory();
 
     /**
-     * You can use this method to get the component data of the plugin. It is filled with the
+     * You can use this method to get the component name of the plugin. It is filled with the
      * information given to the constructor of KPluginFactory.
      * The K_PLUGIN_FACTORY macros provide a static version of this method, this can be used from
      * any place within the plugin.
      *
-     * Only use this method if you specified a componentData name or instance to the factory
-     * constructor or to setComponentData.
-     * Otherwise you get an invalid KComponentData, which will crash if used.
-     *
-     * \returns The KComponentData for the plugin
+     * \returns The name of the plugin
      */
-    KComponentData componentData() const;
+    QString componentName() const;
 
     /**
      * Use this method to create an object. It will try to create an object which inherits
@@ -434,20 +373,6 @@ protected:
 #ifndef KDE_NO_DEPRECATED
     virtual KSERVICE_DEPRECATED KParts::Part *createPartObject(QWidget *parentWidget, QObject *parent, const char *classname, const QStringList &args);
 #endif
-
-
-    /**
-     * This method sets the component data of the plugin. You can access the component data object
-     * later with componentData().
-     * Normally you don't have to call this, because the factory constructs a component data object
-     * from the information given to the constructor.
-     * The object is destroyed, when the module containing the plugin is unloaded. Normally this happens
-     * only on application shutdown.
-     *
-     * \param componentData the new KComponentData object
-     */
-
-    void setComponentData(const KComponentData &componentData);
 
     /**
      * This function is called when the factory asked to create an Object.

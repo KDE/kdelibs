@@ -24,6 +24,7 @@
 #include <QtCore/QSharedDataPointer>
 
 #include <kxmlguiclient.h>
+#include <kaboutdata.h> // for source compat
 
 #include <kparts/kparts_export.h>
 
@@ -33,7 +34,7 @@
     friend class Class##Private;
 
 class KIconLoader;
-class KComponentData;
+class KAboutData;
 class QWidget;
 class QEvent;
 class QPoint;
@@ -82,19 +83,19 @@ public:
   void setPartObject( QObject *object );
   QObject *partObject() const;
 
-  KComponentData componentData() const;
+  KAboutData componentData() const;
 
 protected:
   /**
-   * Set the componentData(KComponentData) for this part.
+   * Set the componentData(KAboutData) for this part.
    *
    * Call this *first* in the inherited class constructor,
    * because it loads the i18n catalogs.
    */
-  virtual void setComponentData(const KComponentData &componentData);
+  virtual void setComponentData(const KAboutData &componentData);
 
   /**
-   * Set the componentData(KComponentData) for this part.
+   * Set the componentData(KAboutData) for this part.
    *
    * Call this *first* in the inherited class constructor,
    * because it loads the i18n catalogs.
@@ -104,7 +105,7 @@ protected:
    * KParts::MainWindow, plugins are automatically loaded in createGUI anyway,
    * so set loadPlugins to false for KParts::MainWindow as well).
    */
-  virtual void setComponentData(const KComponentData &componentData, bool loadPlugins);
+  virtual void setComponentData(const KAboutData &pluginData, bool loadPlugins);
   // TODO KDE5: merge the above two methods, using loadPlugins=true. Or better, remove loadPlugins
   // altogether and change plugins to call loadPlugins() manually at the end of their ctor.
     // In the case of KParts MainWindows, plugins are automatically loaded in createGUI anyway,
@@ -112,7 +113,7 @@ protected:
 
   /**
    * We have three different policies, whether to load new plugins or not. The
-   * value in the KConfig object of the KComponentData object always overrides
+   * value in the KConfig object of the KAboutData object always overrides
    * LoadPlugins and LoadPluginsIfEnabled.
    */
   enum PluginLoadingMode {
@@ -152,7 +153,7 @@ protected:
    * }
    * \endcode
    */
-  void loadPlugins(QObject *parent, KXMLGUIClient *parentGUIClient, const KComponentData &componentData);
+  void loadPlugins(QObject *parent, KXMLGUIClient *parentGUIClient, const KAboutData &aboutData);
 
   /**
    * Set how plugins should be loaded

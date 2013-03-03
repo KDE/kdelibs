@@ -34,13 +34,13 @@ K_EXPORT_PLUGIN(KcmSslFactory("kcm_ssl"))
 
 
 KcmSsl::KcmSsl(QWidget *parent, const QVariantList &args)
-    : KCModule(KcmSslFactory::componentData(), parent, args)
+    : KCModule(parent, args)
 {
     KAboutData *about = new KAboutData(
-        "kcm_ssl", 0, qi18n("SSL Configuration Module"),
-        KDE_VERSION_STRING, QLocalizedString(), KAboutData::License_GPL,
-        qi18n("Copyright 2010 Andreas Hartmetz"));
-    about->addAuthor(qi18n("Andreas Hartmetz"), QLocalizedString(), "ahartmetz@gmail.com");
+        "kcm_ssl", 0, i18n("SSL Configuration Module"),
+        KDE_VERSION_STRING, QString(), KAboutData::License_GPL,
+        i18n("Copyright 2010 Andreas Hartmetz"));
+    about->addAuthor(i18n("Andreas Hartmetz"), QString(), "ahartmetz@gmail.com");
     setAboutData(about);
     setButtons(Apply | Default | Help);
 

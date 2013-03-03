@@ -26,6 +26,7 @@
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
+#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kservice.h>
 #include <ktabwidget.h>
@@ -56,14 +57,14 @@ class KCModuleContainer::KCModuleContainerPrivate
 // KComponentData objects when needed.
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
-    : KCModule( KComponentData::mainComponent(), parent ),
+    : KCModule( parent ),
       d(new KCModuleContainerPrivate( QString(mods).remove( ' ' ).split( ',', QString::SkipEmptyParts ) ))
 {
 	init();
 }
 
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QStringList& mods )
-    : KCModule( KComponentData::mainComponent(), parent ),
+    : KCModule( parent ),
       d( new KCModuleContainerPrivate( mods ) )
 {
 	init();
@@ -96,7 +97,7 @@ void KCModuleContainer::addModule( const QString& module )
 	KService::Ptr service = KService::serviceByDesktopName( module );
 	if ( !service )
 	{
-		kDebug(713) << "KCModuleContainer: module '" << 
+		kDebug(713) << "KCModuleContainer: module '" <<
 			module << "' was not found and thus not loaded" << endl;
 		return;
 	}

@@ -29,7 +29,7 @@
 #include <kemailsettings.h>
 #include <klocalizedstring.h>
 #include <kcmdlineargs.h>
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <kdebug.h>
 #include <kconfig.h>
 
@@ -70,14 +70,14 @@ void BugMailer::slotSend() {
 
 int main(int argc, char **argv) {
 
-    KAboutData d("ksendbugmail", "kdelibs4", qi18n("KSendBugMail"), "1.0",
-                 qi18n("Sends a bug report by email"),
-                 KAboutData::License_GPL, qi18n("(c) 2000 Stephan Kulow"));
-    d.addAuthor(qi18n("Stephan Kulow"), qi18n("Author"), "coolo@kde.org");
+    K4AboutData d("ksendbugmail", "kdelibs4", ki18n("KSendBugMail"), "1.0",
+                 ki18n("Sends a bug report by email"),
+                 K4AboutData::License_GPL, ki18n("(c) 2000 Stephan Kulow"));
+    d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
 
     KCmdLineOptions options;
-    options.add("subject <argument>", qi18n("Subject line"));
-    options.add("recipient <argument>", qi18n("Recipient"), "submit@bugs.kde.org");
+    options.add("subject <argument>", ki18n("Subject line"));
+    options.add("recipient <argument>", ki18n("Recipient"), "submit@bugs.kde.org");
 
     KCmdLineArgs::init(argc, argv, &d);
     KCmdLineArgs::addCmdLineOptions(options);

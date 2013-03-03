@@ -19,8 +19,6 @@
 
 #include "knotificationrestrictions.h"
 
-#include <kaboutdata.h>
-#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
@@ -105,7 +103,7 @@ void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 void KNotificationRestrictions::Private::startScreenSaverPrevention()
 {
     kDebug(297);
-    
+
     QDBusMessage message = QDBusMessage::createMethodCall(
             "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit");
     message << determineProgramName();
@@ -151,7 +149,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
 
 void KNotificationRestrictions::Private::stopScreenSaverPrevention()
 {
-  
+
     if (screenSaverDbusCookie != -1) {
         QDBusMessage message = QDBusMessage::createMethodCall(
                 "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "UnInhibit");
@@ -169,11 +167,8 @@ void KNotificationRestrictions::Private::stopScreenSaverPrevention()
 
 QString KNotificationRestrictions::Private::determineProgramName()
 {
-    QString appName;
-    if (KComponentData::mainComponent().isValid()) {
-        appName = KComponentData::mainComponent().aboutData()->programName();
-    }
-    if (appName.isEmpty() && qApp) {
+    QString appName = QGuiApplication::applicationDisplayName();
+    if (appName.isEmpty()) {
         appName = QCoreApplication::applicationName();
     }
     if (appName.isEmpty()) {

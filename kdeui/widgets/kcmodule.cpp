@@ -4,7 +4,7 @@
    Copyright (c) 2001 Michael Goffioul <kdeprint@swing.be>
    Copyright (C) 2004 Frans Englich <frans.englich@telia.com>
    Copyright (C) 2009 Dario Freddi <drf@kde.org>
-   
+
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
@@ -33,7 +33,6 @@
 #include <kconfigskeleton.h>
 #include <kconfigdialogmanager.h>
 #include <kdebug.h>
-#include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include "kauthaction.h"
 #include "kauthexecutejob.h"
@@ -54,7 +53,6 @@ public:
     void authStatusChanged(int status);
 
     KCModule::Buttons _buttons;
-    KComponentData _componentData;
     const KAboutData *_about;
     QString _rootOnlyMessage;
     QList<KConfigDialogManager*> managers;
@@ -73,34 +71,15 @@ public:
     bool _unmanagedWidgetChangeState : 1;
 };
 
-KCModule::KCModule( QWidget *parent, const char *name, const QStringList& )
-    : QWidget(parent), d(new KCModulePrivate)
-{
-    if (name && strlen(name)) {
-        d->_componentData = KComponentData(name);
-        KLocalizedString::insertCatalog(name);
-    } else
-        d->_componentData = KComponentData("kcmunnamed");
-}
-
-KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const QStringList &)
-    : QWidget(parent), d(new KCModulePrivate)
-{
-    Q_ASSERT(componentData.isValid());
-
-    KLocalizedString::insertCatalog(componentData.componentName());
-
-    d->_componentData = componentData;
-}
-
-KCModule::KCModule(const KComponentData &componentData, QWidget *parent, const QVariantList &)
+KCModule::KCModule(const KAboutData *aboutData, QWidget *parent, const QVariantList &)
     : QWidget( parent ), d(new KCModulePrivate)
 {
-    Q_ASSERT(componentData.isValid());
+    setAboutData(aboutData);
+}
 
-    KLocalizedString::insertCatalog(componentData.componentName());
-
-    d->_componentData = componentData;
+KCModule::KCModule(QWidget *parent, const QVariantList &)
+    : QWidget( parent ), d(new KCModulePrivate)
+{
 }
 
 void KCModule::showEvent(QShowEvent *ev)
@@ -146,9 +125,9 @@ void KCModule::setNeedsAuthorization(bool needsAuth)
 {
     d->_needsAuthorization = needsAuth;
     if (needsAuth && d->_about) {
-        d->_authAction = KAuth::Action(QString("org.kde.kcontrol." + d->_about->appName() + ".save"));
+        d->_authAction = KAuth::Action(QString("org.kde.kcontrol." + d->_about->componentName() + ".save"));
         d->_needsAuthorization = d->_authAction.isValid();
-        d->_authAction.setHelperId("org.kde.kcontrol." + d->_about->appName());
+        d->_authAction.setHelperId("org.kde.kcontrol." + d->_about->componentName());
         d->_authAction.setParentWidget(this);
         authStatusChanged(d->_authAction.status());
     } else {
@@ -244,8 +223,10 @@ const KAboutData *KCModule::aboutData() const
     return d->_about;
 }
 
-void KCModule::setAboutData( const KAboutData* about )
+void KCModule::setAboutData(const KAboutData *about)
 {
+    KLocalizedString::insertCatalog(about->catalogName());
+
     delete d->_about;
     d->_about = about;
 }
@@ -277,9 +258,9 @@ void KCModule::changed()
     emit changed(true);
 }
 
-KComponentData KCModule::componentData() const
+KAboutData KCModule::componentData() const
 {
-    return d->_componentData;
+    return *d->_about;
 }
 
 QString KCModule::exportText() const
@@ -287,7 +268,7 @@ QString KCModule::exportText() const
   return d->m_ExportText;
 }
 
-void KCModule::setExportText(const QString& text) 
+void KCModule::setExportText(const QString& text)
 {
   d->m_ExportText = text;
 }

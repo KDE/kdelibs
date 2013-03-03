@@ -310,7 +310,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'
-                QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + d->m_part->componentData().componentName() + QLatin1String("XXXXXX") + extension);
+                QTemporaryFile tempFile(QDir::tempPath() + QLatin1Char('/') + QCoreApplication::applicationName() + QLatin1String("XXXXXX") + extension);
                 tempFile.setAutoRemove(false);
                 tempFile.open();
                 QUrl destURL = QUrl::fromLocalFile(tempFile.fileName());

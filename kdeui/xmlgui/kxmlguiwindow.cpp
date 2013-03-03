@@ -47,6 +47,7 @@
 #include <khelpmenu.h>
 #include <klocalizedstring.h>
 #include <ktoolbar.h>
+#include <kaboutdata.h>
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
 
@@ -233,7 +234,7 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     if (d->showHelpMenu) {
         delete d->helpMenu;
         // we always want a help menu
-        d->helpMenu = new KHelpMenu(this, KComponentData::mainComponent().aboutData(), true, actionCollection());
+        d->helpMenu = new KHelpMenu(this, KAboutData::applicationData(), true, actionCollection());
     }
 
     const QString windowXmlFile = xmlfile.isNull() ? componentName() + "ui.rc" : xmlfile;

@@ -31,7 +31,7 @@
 #include <kconfig.h>
 #include <qdir.h>
 #include <stdio.h>
-#include <kaboutdata.h>
+#include <k4aboutdata.h>
 #include <kdeversion.h>
 #include <QDir>
 #include <QtCore/QLibraryInfo>
@@ -56,28 +56,28 @@ static void printResult(const QString &s)
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
-    KAboutData about("kf5-config", "kdelibs4", qi18n("kf5-config"), "1.0",
-                     qi18n("A little program to output installation paths"),
-                     KAboutData::License_GPL,
-                     qi18n("(C) 2000 Stephan Kulow"));
+    K4AboutData about("kf5-config", "kdelibs4", ki18n("kf5-config"), "1.0",
+                     ki18n("A little program to output installation paths"),
+                     K4AboutData::License_GPL,
+                     ki18n("(C) 2000 Stephan Kulow"));
     KCmdLineArgs::init( argc, argv, &about);
 
     KCmdLineOptions options;
-    options.add("expandvars",  qi18n("Left for legacy support"));
-    options.add("prefix",      qi18n("Compiled in prefix for KDE libraries"));
-    options.add("exec-prefix", qi18n("Compiled in exec_prefix for KDE libraries"));
-    options.add("libsuffix",   qi18n("Compiled in library path suffix"));
-    //options.add("localprefix", qi18n("Prefix in $HOME used to write files"));
-    options.add("kde-version", qi18n("Compiled in version string for KDE libraries"));
-    options.add("types",       qi18n("Available KDE resource types"));
-    options.add("path type",       qi18n("Search path for resource type"));
-    options.add("locate filename", qi18n("Find filename inside the resource type given to --path"));
-    options.add("userpath type",   qi18n("User path: desktop|autostart|document"));
-    options.add("install type",    qi18n("Prefix to install resource files to"));
-    options.add("qt-prefix",   qi18n("Installation prefix for Qt"));
-    options.add("qt-binaries", qi18n("Location of installed Qt binaries"));
-    options.add("qt-libraries", qi18n("Location of installed Qt libraries"));
-    options.add("qt-plugins", qi18n("Location of installed Qt plugins"));
+    options.add("expandvars",  ki18n("Left for legacy support"));
+    options.add("prefix",      ki18n("Compiled in prefix for KDE libraries"));
+    options.add("exec-prefix", ki18n("Compiled in exec_prefix for KDE libraries"));
+    options.add("libsuffix",   ki18n("Compiled in library path suffix"));
+    //options.add("localprefix", ki18n("Prefix in $HOME used to write files"));
+    options.add("kde-version", ki18n("Compiled in version string for KDE libraries"));
+    options.add("types",       ki18n("Available KDE resource types"));
+    options.add("path type",       ki18n("Search path for resource type"));
+    options.add("locate filename", ki18n("Find filename inside the resource type given to --path"));
+    options.add("userpath type",   ki18n("User path: desktop|autostart|document"));
+    options.add("install type",    ki18n("Prefix to install resource files to"));
+    options.add("qt-prefix",   ki18n("Installation prefix for Qt"));
+    options.add("qt-binaries", ki18n("Location of installed Qt binaries"));
+    options.add("qt-libraries", ki18n("Location of installed Qt libraries"));
+    options.add("qt-plugins", ki18n("Location of installed Qt plugins"));
     KCmdLineArgs::addCmdLineOptions( options ); // Add my own options.
 
     (void)KGlobal::dirs(); // trigger the creation

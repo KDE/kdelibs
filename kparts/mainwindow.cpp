@@ -23,19 +23,19 @@
 #include <kparts/event.h>
 #include <kparts/part.h>
 #include <kparts/plugin.h>
-#include <kcomponentdata.h>
 #include <khelpmenu.h>
+#include <kaboutdata.h>
+#include <kxmlguifactory.h>
+#include <kconfiggroup.h>
+#include <kdebug.h>
 
 #include <QApplication>
 #include <QPointer>
 #include <QStatusBar>
-#include <kxmlguifactory.h>
-#include <kconfiggroup.h>
+#include <qstandardpaths.h>
 
-#include <kdebug.h>
 
 #include <assert.h>
-#include <qstandardpaths.h>
 
 using namespace KParts;
 
@@ -112,7 +112,7 @@ void MainWindow::createGUI( Part * part )
 
   if ( !d->m_bShellGUIActivated )
   {
-    loadPlugins( this, this, KComponentData::mainComponent() );
+    loadPlugins(this, this, KAboutData::applicationData());
     createShellGUI();
     d->m_bShellGUIActivated = true;
   }
@@ -146,7 +146,7 @@ void MainWindow::createShellGUI( bool create )
     if ( create )
     {
         if ( isHelpMenuEnabled() && !d->m_helpMenu )
-            d->m_helpMenu = new KHelpMenu( this, KComponentData::mainComponent().aboutData(), true, actionCollection() );
+            d->m_helpMenu = new KHelpMenu(this, KAboutData::applicationData(), true, actionCollection());
 
         QString f = xmlFile();
         setXMLFile(QStandardPaths::locate(QStandardPaths::ConfigLocation, "ui/ui_standards.rc"));

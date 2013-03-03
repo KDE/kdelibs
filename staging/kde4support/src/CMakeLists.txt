@@ -27,7 +27,6 @@ set(libkde4support_SRCS
     kdecore/k3socketbuffer.cpp
     kdecore/netsupp.cpp
     kdecore/kascii.cpp
-    kdecore/k4aboutdata.cpp
     kdecore/qtest_kde.cpp
     kdecore/kstandarddirs.cpp
     kdecore/kglobal.cpp
@@ -60,6 +59,8 @@ set(libkde4support_SRCS
     kdeui/kmessageboxmessagehandler.cpp
     kdeui/kpushbutton.cpp
     kdeui/kundostack.cpp
+
+    kparts/factory.cpp
 )
 
 if (Q_OS_WIN)
@@ -128,7 +129,6 @@ install(FILES
     kdecore/kgenericfactory.tcc
     kdecore/ktypelist.h
     kdecore/kascii.h
-    kdecore/k4aboutdata.h
     kdecore/qtest_kde.h
     kdecore/kstandarddirs.h
     kdecore/kglobal.cpp
@@ -175,5 +175,6 @@ endif (NOT X11_FOUND)
 install(FILES
     kparts/componentfactory.h
     kparts/genericfactory.h
+    kparts/factory.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel
 )

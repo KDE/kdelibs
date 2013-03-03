@@ -22,7 +22,6 @@ set(kparts_LIB_SRCS
    mainwindow.cpp
    event.cpp
    browserextension.cpp
-   factory.cpp
    historyprovider.cpp
    browserinterface.cpp
    browserrun.cpp
@@ -56,7 +55,7 @@ install(TARGETS kparts EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_AR
 
 install( FILES kpart.desktop krop.desktop krwp.desktop browserview.desktop   DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/kparts_export.h part.h plugin.h partmanager.h mainwindow.h event.h
-         browserextension.h factory.h historyprovider.h browserinterface.h
+         browserextension.h historyprovider.h browserinterface.h
          browserrun.h statusbarextension.h browseropenorsavequestion.h
          scriptableextension.h textextension.h htmlextension.h fileinfoextension.h
          listingextension.h

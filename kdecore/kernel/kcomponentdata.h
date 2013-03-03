@@ -21,16 +21,17 @@
 
 #include <kservice_export.h>
 #include <ksharedconfig.h>
+#include <kaboutdata.h>
 
 class QByteArray;
 class QString;
-class KAboutData;
+class K4AboutData;
 class KComponentDataPrivate;
 
 /**
  * @short Per component data.
  *
- * This class holds a KAboutData object or only a component name, and a KSharedConfig object.
+ * This class holds a K4AboutData object or only a component name, and a KSharedConfig object.
  * Those objects normally are different per component but the same per
  * instance of one component.
  *
@@ -110,15 +111,21 @@ public:
      *                       already has a main component.
      *                       @see KComponentData::mainComponent
      *
-     * @see KAboutData
+     * @see K4AboutData
      */
-    explicit KComponentData(const KAboutData &aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
-    explicit KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
+    explicit KComponentData(const K4AboutData &aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
+    explicit KComponentData(const K4AboutData *aboutData, MainComponentRegistration registerAsMain = RegisterAsMainComponent);
 
     /**
      * Destructor.
      */
     virtual ~KComponentData();
+
+    /**
+     * Implicit conversion to KAboutData, to be able to call setComponentData(myComponentData)
+     * even if the method is now setComponentData(const KAboutData &)
+     */
+    operator KAboutData() const;
 
     /**
      * Returns whether this is a valid object.
@@ -139,16 +146,16 @@ public:
      *
      * @return The about data of the component. If none has been set in the
      *         constructor but a component name was set, a default constructed
-     *         KAboutData object is returned.
+     *         K4AboutData object is returned.
      */
-    const KAboutData *aboutData() const;
+    const K4AboutData *aboutData() const;
 
     /**
      * Sets the about data of this component.
      *
      * @since 4.5
      */
-    void setAboutData(const KAboutData &aboutData);
+    void setAboutData(const K4AboutData &aboutData);
 
     /**
      * Returns the name of the component.

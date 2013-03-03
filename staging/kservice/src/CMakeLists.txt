@@ -10,6 +10,7 @@ include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin
    ${QT_INCLUDES} )
 include_directories(
+   ${KCoreAddons_INCLUDE_DIRS} # for KAboutData
    ${KConfig_INCLUDE_DIRS}
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
@@ -38,11 +39,9 @@ set(kservice_SRCS
    sycoca/ksycocaentry.cpp
    sycoca/ksycocafactory.cpp
    sycoca/kmemfile.cpp
-   plugin/kaboutdata.cpp
    plugin/klibrary.cpp
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
-   plugin/kcomponentdata.cpp
 )
 
 add_library(kservice ${kservice_SRCS})
@@ -50,6 +49,7 @@ generate_export_header(kservice)
 
 target_link_libraries(kservice
    ${QT_QTDBUS_LIBRARY}
+   ${KCoreAddons_LIBRARIES}
    ${KConfig_CORE_LIBRARY}
    ki18n
 )
@@ -75,12 +75,10 @@ install(FILES
    sycoca/ksycoca.h
    sycoca/ksycocaentry.h
    sycoca/ksycocatype.h
-   plugin/kaboutdata.h
    plugin/klibrary.h
    plugin/kpluginfactory.h
    plugin/kpluginloader.h
    plugin/kexportplugin.h
-   plugin/kcomponentdata.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

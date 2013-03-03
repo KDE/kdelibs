@@ -41,10 +41,7 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QUrl>
 
-#include "kaboutdata.h"
-
-// PORTING HACK (KDE5 TODO: clean up)
-#define i18nc(a,b) QObject::tr(b, a)
+#include "k4aboutdata.h"
 
 // -----------------------------------------------------------------------------
 // Design notes:
@@ -52,13 +49,13 @@
 // These classes deal with a lot of text, some of which needs to be
 // marked for translation. Since at the time when these object and calls are
 // made the translation catalogs are usually still not initialized, the
-// translation has to be delayed. This is achieved by using QLocalizedString
-// for translatable strings. QLocalizedStrings are produced by qi18n* calls,
+// translation has to be delayed. This is achieved by using KLocalizedString
+// for translatable strings. KLocalizedStrings are produced by ki18n* calls,
 // instead of the more usuall i18n* calls which produce QString by trying to
 // translate immediately.
 //
 // All the non-translatable string arguments to methods are taken QByteArray,
-// all the translatable are QLocalizedString. The getter methods always return
+// all the translatable are KLocalizedString. The getter methods always return
 // proper QString: the non-translatable strings supplied by the code are
 // treated with QString::fromUtf8(), those coming from the outside with
 // QTextCodec::toUnicode(), and translatable strings are finalized to QStrings
@@ -109,7 +106,7 @@ public:
 class KCmdLineOptionsPrivate {
     public:
     QList<QByteArray> names;
-    QList<QLocalizedString> descriptions;
+    QList<KLocalizedString> descriptions;
     QStringList defaults;
 };
 
@@ -136,7 +133,7 @@ KCmdLineOptions& KCmdLineOptions::operator= (const KCmdLineOptions &options)
 }
 
 KCmdLineOptions &KCmdLineOptions::add (const QByteArray &name,
-                                       const QLocalizedString &description,
+                                       const KLocalizedString &description,
                                        const QByteArray &defaultValue)
 {
     d->names.append(name);
@@ -161,7 +158,7 @@ class KCmdLineArgsStatic {
     public:
 
     KCmdLineArgsList *argsList; // All options.
-    const KAboutData *about;
+    const K4AboutData *about;
 
     int all_argc; // The original argc
     char **all_argv; // The original argv
@@ -273,46 +270,46 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
     // Qt options
     //FIXME: Check if other options are specific to Qt/X11
 #if HAVE_X11
-    qt_options.add("display <displayname>", qi18n("Use the X-server display 'displayname'"));
+    qt_options.add("display <displayname>", ki18n("Use the X-server display 'displayname'"));
 #else
 #endif
-    qt_options.add("session <sessionId>", qi18n("Restore the application for the given 'sessionId'"));
-    qt_options.add("cmap", qi18n("Causes the application to install a private color\nmap on an 8-bit display"));
-    qt_options.add("ncols <count>", qi18n("Limits the number of colors allocated in the color\ncube on an 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification"));
-    qt_options.add("nograb", qi18n("tells Qt to never grab the mouse or the keyboard"));
-    qt_options.add("dograb", qi18n("running under a debugger can cause an implicit\n-nograb, use -dograb to override"));
-    qt_options.add("sync", qi18n("switches to synchronous mode for debugging"));
+    qt_options.add("session <sessionId>", ki18n("Restore the application for the given 'sessionId'"));
+    qt_options.add("cmap", ki18n("Causes the application to install a private color\nmap on an 8-bit display"));
+    qt_options.add("ncols <count>", ki18n("Limits the number of colors allocated in the color\ncube on an 8-bit display, if the application is\nusing the QApplication::ManyColor color\nspecification"));
+    qt_options.add("nograb", ki18n("tells Qt to never grab the mouse or the keyboard"));
+    qt_options.add("dograb", ki18n("running under a debugger can cause an implicit\n-nograb, use -dograb to override"));
+    qt_options.add("sync", ki18n("switches to synchronous mode for debugging"));
     qt_options.add("fn");
-    qt_options.add("font <fontname>", qi18n("defines the application font"));
+    qt_options.add("font <fontname>", ki18n("defines the application font"));
     qt_options.add("bg");
-    qt_options.add("background <color>", qi18n("sets the default background color and an\napplication palette (light and dark shades are\ncalculated)"));
+    qt_options.add("background <color>", ki18n("sets the default background color and an\napplication palette (light and dark shades are\ncalculated)"));
     qt_options.add("fg");
-    qt_options.add("foreground <color>", qi18n("sets the default foreground color"));
+    qt_options.add("foreground <color>", ki18n("sets the default foreground color"));
     qt_options.add("btn");
-    qt_options.add("button <color>", qi18n("sets the default button color"));
-    qt_options.add("name <name>", qi18n("sets the application name"));
-    qt_options.add("title <title>", qi18n("sets the application title (caption)"));
-    qt_options.add("testability", qi18n("load the testability framework"));
+    qt_options.add("button <color>", ki18n("sets the default button color"));
+    qt_options.add("name <name>", ki18n("sets the application name"));
+    qt_options.add("title <title>", ki18n("sets the application title (caption)"));
+    qt_options.add("testability", ki18n("load the testability framework"));
 #if HAVE_X11
-    qt_options.add("visual TrueColor", qi18n("forces the application to use a TrueColor visual on\nan 8-bit display"));
-    qt_options.add("inputstyle <inputstyle>", qi18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));
-    qt_options.add("im <XIM server>", qi18n("set XIM server"));
-    qt_options.add("noxim", qi18n("disable XIM"));
+    qt_options.add("visual TrueColor", ki18n("forces the application to use a TrueColor visual on\nan 8-bit display"));
+    qt_options.add("inputstyle <inputstyle>", ki18n("sets XIM (X Input Method) input style. Possible\nvalues are onthespot, overthespot, offthespot and\nroot"));
+    qt_options.add("im <XIM server>", ki18n("set XIM server"));
+    qt_options.add("noxim", ki18n("disable XIM"));
 #endif
-    qt_options.add("reverse", qi18n("mirrors the whole layout of widgets"));
-    qt_options.add("stylesheet <file.qss>", qi18n("applies the Qt stylesheet to the application widgets"));
-    qt_options.add("graphicssystem <system>", qi18n("use a different graphics system instead of the default one, options are raster and opengl (experimental)"));
-    qt_options.add("qmljsdebugger <port>", qi18n("QML JS debugger information. Application must be\nbuilt with -DQT_DECLARATIVE_DEBUG for the debugger to be\nenabled"));
+    qt_options.add("reverse", ki18n("mirrors the whole layout of widgets"));
+    qt_options.add("stylesheet <file.qss>", ki18n("applies the Qt stylesheet to the application widgets"));
+    qt_options.add("graphicssystem <system>", ki18n("use a different graphics system instead of the default one, options are raster and opengl (experimental)"));
+    qt_options.add("qmljsdebugger <port>", ki18n("QML JS debugger information. Application must be\nbuilt with -DQT_DECLARATIVE_DEBUG for the debugger to be\nenabled"));
     // KDE options
-    kde_options.add("caption <caption>",   qi18n("Use 'caption' as name in the titlebar"));
-    kde_options.add("icon <icon>",         qi18n("Use 'icon' as the application icon"));
-    kde_options.add("config <filename>",   qi18n("Use alternative configuration file"));
-    kde_options.add("nocrashhandler",      qi18n("Disable crash handler, to get core dumps"));
+    kde_options.add("caption <caption>",   ki18n("Use 'caption' as name in the titlebar"));
+    kde_options.add("icon <icon>",         ki18n("Use 'icon' as the application icon"));
+    kde_options.add("config <filename>",   ki18n("Use alternative configuration file"));
+    kde_options.add("nocrashhandler",      ki18n("Disable crash handler, to get core dumps"));
 #if HAVE_X11
-    kde_options.add("waitforwm",           qi18n("Waits for a WM_NET compatible windowmanager"));
+    kde_options.add("waitforwm",           ki18n("Waits for a WM_NET compatible windowmanager"));
 #endif
-    kde_options.add("style <style>",       qi18n("sets the application GUI style"));
-    kde_options.add("geometry <geometry>", qi18n("sets the client geometry of the main widget - see man X for the argument format (usually WidthxHeight+XPos+YPos)"));
+    kde_options.add("style <style>",       ki18n("sets the application GUI style"));
+    kde_options.add("geometry <geometry>", ki18n("sets the client geometry of the main widget - see man X for the argument format (usually WidthxHeight+XPos+YPos)"));
 #ifndef Q_OS_WIN
     kde_options.add("smkey <sessionKey>"); // this option is obsolete and exists only to allow smooth upgrades from sessions
 #endif
@@ -321,7 +318,7 @@ KCmdLineArgsStatic::KCmdLineArgsStatic () {
 KCmdLineArgsStatic::~KCmdLineArgsStatic ()
 {
     delete argsList;
-    // KAboutData object is deleted by ~KCleanUpGlobalStatic.
+    // K4AboutData object is deleted by ~KCleanUpGlobalStatic.
     //delete about;
 }
 
@@ -333,7 +330,7 @@ class KCmdLineArgsPrivate
 {
     friend class KCmdLineArgsStatic;
 public:
-    KCmdLineArgsPrivate(const KCmdLineOptions &_options, const QLocalizedString &_name, const QByteArray &_id)
+    KCmdLineArgsPrivate(const KCmdLineOptions &_options, const KLocalizedString &_name, const QByteArray &_id)
         : options(_options)
         , name(_name)
         , id(_id)
@@ -348,7 +345,7 @@ public:
         delete parsedArgList;
     }
     const KCmdLineOptions options;
-    const QLocalizedString name;
+    const KLocalizedString name;
     const QByteArray id;
     KCmdLineParsedOptions *parsedOptionList;
     KCmdLineParsedArgs *parsedArgList;
@@ -416,13 +413,13 @@ void
 KCmdLineArgs::init(int _argc, char **_argv,
                    const QByteArray &_appname,
                    const QByteArray &_catalog,
-                   const QLocalizedString &_programName,
+                   const KLocalizedString &_programName,
                    const QByteArray &_version,
-                   const QLocalizedString &_description,
+                   const KLocalizedString &_description,
                    StdCmdLineArgs stdargs)
 {
    init(_argc, _argv,
-        new KAboutData(_appname, _catalog, _programName, _version, _description),
+        new K4AboutData(_appname, _catalog, _programName, _version, _description),
         stdargs);
 }
 
@@ -430,12 +427,12 @@ void
 KCmdLineArgs::initIgnore(int _argc, char **_argv, const QByteArray &_appname )
 {
    init(_argc, _argv,
-        new KAboutData(_appname, 0, qi18n(_appname.data()), "unknown", qi18n("KDE Application")));
+        new K4AboutData(_appname, 0, ki18n(_appname.data()), "unknown", ki18n("KDE Application")));
    staticObj()->ignoreUnknown = true;
 }
 
 void
-KCmdLineArgs::init(const KAboutData* ab)
+KCmdLineArgs::init(const K4AboutData* ab)
 {
    char **_argv = (char **) malloc(sizeof(char *));
    _argv[0] = (char *) staticObj()->encodeOutput(ab->appName()).data();
@@ -444,7 +441,7 @@ KCmdLineArgs::init(const KAboutData* ab)
 
 
 void
-KCmdLineArgs::init(int _argc, char **_argv, const KAboutData *_about, StdCmdLineArgs stdargs)
+KCmdLineArgs::init(int _argc, char **_argv, const K4AboutData *_about, StdCmdLineArgs stdargs)
 {
    staticObj()->all_argc = _argc;
    staticObj()->all_argv = _argv;
@@ -489,16 +486,16 @@ QString KCmdLineArgs::appName()
   */
 void KCmdLineArgs::addStdCmdLineOptions(StdCmdLineArgs stdargs) {
    if (stdargs & KCmdLineArgs::CmdLineArgQt) {
-       KCmdLineArgs::addCmdLineOptions(staticObj()->qt_options, qi18n("Qt"), "qt");
+       KCmdLineArgs::addCmdLineOptions(staticObj()->qt_options, ki18n("Qt"), "qt");
    }
    if (stdargs & KCmdLineArgs::CmdLineArgKDE) {
-       KCmdLineArgs::addCmdLineOptions(staticObj()->kde_options, qi18n("KDE"), "kde");
+       KCmdLineArgs::addCmdLineOptions(staticObj()->kde_options, ki18n("KDE"), "kde");
    }
    staticObj()->mStdargs = stdargs;
 }
 
 void
-KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions &options, const QLocalizedString &name,
+KCmdLineArgs::addCmdLineOptions( const KCmdLineOptions &options, const KLocalizedString &name,
          const QByteArray &id, const QByteArray &afterId)
 {
    if (!staticObj()->argsList)
@@ -926,10 +923,10 @@ KCmdLineArgsStatic::parseAllArgs()
          } else if (option == "author") {
              KCmdLineArgs::enable_i18n();
        if ( staticObj()->about ) {
-         const QList<KAboutPerson> authors = staticObj()->about->authors();
+         const QList<K4AboutPerson> authors = staticObj()->about->authors();
          if ( !authors.isEmpty() ) {
            QString authorlist;
-           for (QList<KAboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
+           for (QList<K4AboutPerson>::ConstIterator it = authors.begin(); it != authors.end(); ++it ) {
              QString email;
              if ( !(*it).emailAddress().isEmpty() )
                email = QString::fromLatin1(" &lt;") + (*it).emailAddress() + QLatin1String("&gt;");
@@ -1079,7 +1076,7 @@ KCmdLineArgs::qtArgv()
    return s_qt_argv;
 }
 
-const KAboutData *
+const K4AboutData *
 KCmdLineArgs::aboutData()
 {
     return staticObj()->about;
@@ -1323,7 +1320,7 @@ KCmdLineArgs::usage(const QByteArray &id)
  *  The given arguments are assumed to be constants.
  */
 KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions &_options,
-                            const QLocalizedString &_name,
+                            const KLocalizedString &_name,
                             const QByteArray &_id)
   : d(new KCmdLineArgsPrivate(_options, _name, _id))
 {
@@ -1424,7 +1421,7 @@ KCmdLineArgsPrivate::setOption(const QByteArray &opt, const QByteArray &value)
       QByteArray argString = "-"; // krazy:exclude=doublequote_chars
       argString += opt;
       if (opt == "qmljsdebugger") {
-          // hack: Qt expects the value of the "qmljsdebugger" option to be 
+          // hack: Qt expects the value of the "qmljsdebugger" option to be
           // passed using a '=' separator rather than a space, so we recreate it
           // correctly.
           // See code of QCoreApplicationPrivate::processCommandLineArguments()
@@ -1619,8 +1616,8 @@ void
 KCmdLineArgs::addTempFileOption()
 {
     KCmdLineOptions tmpopt;
-    tmpopt.add( "tempfile", qi18n("The files/URLs opened by the application will be deleted after use") );
-    KCmdLineArgs::addCmdLineOptions( tmpopt, qi18n("KDE-tempfile"), "kde-tempfile" );
+    tmpopt.add( "tempfile", ki18n("The files/URLs opened by the application will be deleted after use") );
+    KCmdLineArgs::addCmdLineOptions( tmpopt, ki18n("KDE-tempfile"), "kde-tempfile" );
 }
 
 bool KCmdLineArgs::isTempFileSet()

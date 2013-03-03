@@ -25,7 +25,6 @@
 
 #include <QApplication>
 #include <QScrollBar>
-#include <kcomponentdata.h>
 
 //#define DEBUG_PARTMANAGER
 
@@ -483,18 +482,12 @@ void PartManager::setActivePart( Part *part, QWidget *widget )
         }
     }
     // Set the new active instance
-    setActiveComponent(d->m_activePart ? d->m_activePart->componentData() : KComponentData::mainComponent());
+    //setActiveComponent(d->m_activePart ? d->m_activePart->componentData() : KComponentData::mainComponent());
 
 #ifdef DEBUG_PARTMANAGER
     kDebug(1000) << this << " emitting activePartChanged " << d->m_activePart;
 #endif
     emit activePartChanged( d->m_activePart );
-}
-
-void PartManager::setActiveComponent(const KComponentData &instance)
-{
-    // It's a separate method to allow redefining this behavior
-    KComponentData::setActiveComponent(instance);
 }
 
 Part *PartManager::activePart() const

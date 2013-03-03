@@ -20,8 +20,9 @@
 #ifndef __kparts_factory_h__
 #define __kparts_factory_h__
 
-#include <kparts/kparts_export.h>
+#include <kde4support_export.h>
 #include <kpluginfactory.h>
+#include <kcomponentdata.h>
 
 class QWidget;
 
@@ -38,7 +39,7 @@ class Part;
  *
  * @see KPluginFactory.
  */
-class KPARTS_EXPORT Factory : public KPluginFactory
+class KDE4SUPPORT_EXPORT Factory : public KPluginFactory
 {
   Q_OBJECT
 public:

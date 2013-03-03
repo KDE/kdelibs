@@ -26,7 +26,7 @@
 
 #include <kparts/kparts_export.h>
 
-class KComponentData;
+class KAboutData;
 
 namespace KParts
 {
@@ -88,7 +88,7 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const KComponentData &instance );
+    static void loadPlugins( QObject *parent, const QString &instance );
 
     /**
      * Load the plugin libraries specified by the list @p docs and make the
@@ -106,7 +106,8 @@ public:
      * It is recommended to use the last loadPlugins method instead,
      * to support enabling and disabling of plugins.
      */
-    static void loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos, const KComponentData &instance );
+    static void loadPlugins( QObject *parent, const QList<PluginInfo> &pluginInfos, const
+            QString &instance );
 
     /**
      * Load the plugin libraries for the given @p instance, make the
@@ -146,7 +147,7 @@ public:
      * \endcode
      */
     static void loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
-            const KComponentData &instance, bool enableNewPluginsByDefault = true,
+            const QString &instance, bool enableNewPluginsByDefault = true,
             int interfaceVersionRequired = 0);
 
     /**
@@ -157,7 +158,7 @@ public:
     static QList<Plugin *> pluginObjects( QObject *parent );
 
 protected:
-    virtual void setComponentData(const KComponentData &instance);
+    virtual void setComponentData(const KAboutData &pluginData);
 
 private:
     /**
@@ -165,7 +166,7 @@ private:
      *
      * @return A list of QDomDocument s, containing the parsed xml documents returned by plugins.
      */
-    static QList<Plugin::PluginInfo> pluginInfos(const KComponentData &instance);
+    static QList<Plugin::PluginInfo> pluginInfos(const QString &instance);
 
     /**
      * @internal

@@ -35,7 +35,7 @@
 #include <QtCore/QMetaType>
 
 #include "kcoreauthorized.h"
-#include "kaboutdata.h"
+#include "k4aboutdata.h"
 #include "kcheckaccelerators.h"
 #include "kcrash.h"
 #include "kconfig.h"

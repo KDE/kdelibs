@@ -27,9 +27,10 @@
 #include <QApplication>
 
 #include <kcmdlineargs.h>
+#include <k4aboutdata.h>
+
 #include <kiconloader.h>
 #include <kdebug.h>
-#include <kaboutdata.h>
 #include <kmenu.h>
 
 KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifierItem *tray)
@@ -72,11 +73,11 @@ void KStatusNotifierItemTest::setPassive()
 
 int main(int argc, char **argv)
 {
-    KAboutData aboutData( "kstatusnotifieritemtest", 0 , qi18n("KStatusNotifierItemtest"), "1.0" );
+    K4AboutData aboutData( "kstatusnotifieritemtest", 0 , ki18n("KStatusNotifierItemtest"), "1.0" );
     KCmdLineArgs::init(argc, argv, &aboutData);
     KCmdLineOptions options;
-    options.add("active-icon <name>", qi18n("Name of active icon"), "konqueror");
-    options.add("ksni-count <count>", qi18n("How many instances of KStatusNotifierItem to create"), "1");
+    options.add("active-icon <name>", ki18n("Name of active icon"), "konqueror");
+    options.add("ksni-count <count>", ki18n("How many instances of KStatusNotifierItem to create"), "1");
     KCmdLineArgs::addCmdLineOptions(options);
 
     QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());

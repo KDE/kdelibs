@@ -142,7 +142,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      *        standard actions.
      *
      */
-    KHelpMenu( QWidget *parent, const KAboutData *aboutData,
+    KHelpMenu( QWidget *parent, const KAboutData &aboutData,
 	       bool showWhatsThis=true, KActionCollection *actions = 0 );
 
     /**

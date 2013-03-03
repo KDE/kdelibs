@@ -29,14 +29,11 @@
 #include "kdatetimeformatter_p.h"
 #include "klocale.h"
 #include "kdebug.h"
-#include "kcomponentdata.h"
 #include "kconfiggroup.h"
 
 #include "kdatetimeformattertest.moc"
 
 QTEST_MAIN(KDateTimeFormatterTest)
-
-KComponentData mainComponent("kdecalendarsystems" /*so that the .po exists*/);
 
 void KDateTimeFormatterTest::testFormatDateTimePosix()
 {

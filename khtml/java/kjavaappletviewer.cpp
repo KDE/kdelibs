@@ -481,7 +481,7 @@ void KJavaAppletViewer::infoMessage (const QString & msg) {
 }
 
 KAboutData* KJavaAppletViewer::createAboutData () {
-    return new KAboutData("KJavaAppletViewer", 0, ki18n("KDE Java Applet Plugin"), "1.0");
+    return new KAboutData("KJavaAppletViewer", QString(), i18n("KDE Java Applet Plugin"), "1.0");
 }
 
 //---------------------------------------------------------------------

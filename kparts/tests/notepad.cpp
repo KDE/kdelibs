@@ -45,7 +45,8 @@ NotepadPart::NotepadPart( QWidget* parentWidget,
                           const QVariantList& )
  : KParts::ReadWritePart( parent )
 {
-  setComponentData(NotepadFactory::componentData(), false);
+    KAboutData aboutData("notepadpart", QString(), "Notepad Part", "0.1");
+    setComponentData(aboutData, false);
 
   m_edit = new QTextEdit( parentWidget );
   m_edit->setPlainText( "NotepadPart's multiline edit" );
@@ -80,7 +81,7 @@ void NotepadPart::setReadWrite( bool rw )
 
 KAboutData* NotepadPart::createAboutData()
 {
-  return new KAboutData( "notepadpart", 0, qi18n( "Notepad" ), "2.0" );
+  return new KAboutData( "notepadpart", QString(), i18n( "Notepad" ), "2.0" );
 }
 
 bool NotepadPart::openFile()

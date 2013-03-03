@@ -25,13 +25,6 @@
 #include <QtCore/QDebug>
 #include <QtCore/QStringList>
 
-#ifndef QT_ONLY
-#include <kapplication.h>
-#include <kaboutdata.h>
-#include <kcmdlineargs.h>
-#include <kdeversion.h>
-#endif // QT_ONLY
-
 #include <kjs/interpreter.h>
 #include <kjs/ustring.h>
 
@@ -46,17 +39,10 @@ void printUsage(QString appName)
 {
     (*KJSEmbed::conerr()) << "Usage: " << appName << " [options] [file]" << endl
                           << "Options:" << endl
-                          << "    -e, --exec            execute script without gui support." << endl 
+                          << "    -e, --exec            execute script without gui support." << endl
                           << "    -i, --interactive     start interactive kjs interpreter." << endl
-#ifndef QT_ONLY
-                          << "    -n, --no-kde          start without KDE KApplication support." << endl
-#endif
                           << endl;
 }
-
-#ifndef QT_ONLY
-
-#endif // QT_ONLY
 
 int main( int argc, char **argv )
 {
@@ -80,20 +66,6 @@ int main( int argc, char **argv )
     QString script;
     KJS::List scriptArgs;
     bool gui = true;
-#ifndef QT_ONLY
-    /*
-    #ifdef __GNUC__
-        #warning "KDE Support enabled"
-    #endif
-    */
-    bool kde = true;
-#else
-    /*
-    #ifdef __GNUC__
-        #warning "KDE Support disabled"
-    #endif
-    */
-#endif
 
     if (argc > 1)
     {
@@ -104,10 +76,7 @@ int main( int argc, char **argv )
             {
                 if ((arg == "--version") || (arg == "-v"))
 		{
-		    printf("Qt: %s\n", qVersion()); 
-#ifndef QT_ONLY
-		    printf("KDE: %s\n", KDE_VERSION_STRING); 
-#endif
+		    printf("Qt: %s\n", qVersion());
 		     return 0;
 		}
                 if ((arg == "--exec") || (arg == "-e"))
@@ -116,12 +85,6 @@ int main( int argc, char **argv )
 		}
                 else if ((arg == "--interactive") || (arg == "-i"))
                     (*KJSEmbed::conout()) << "Interactive";
-#ifndef QT_ONLY
-                else if ((arg == "-n") || (arg == "--no-kde"))
-		{
-		    kde = false;
-		}
-#endif
 		else
                 {
                     printUsage(appName);
@@ -146,36 +109,10 @@ int main( int argc, char **argv )
     // Setup QApplication
     QCoreApplication *app;
 
-#ifndef QT_ONLY
-    if (kde)
-    {
-        KAboutData aboutData( "kjscmd", 0, qi18n("KJSCmd"), "0.2",
-            qi18n(""
-            "Utility for running KJSEmbed scripts \n" ),
-            KAboutData::License_LGPL,
-            qi18n("(C) 2005-2006 The KJSEmbed Authors") );
-
-        KCmdLineOptions options;
-        options.add("e", qi18n("Execute script without gui support"));
-        options.add("exec", qi18n("Execute script without gui support"));
-        options.add("i", qi18n("start interactive kjs interpreter"));
-        options.add("interactive", qi18n("start interactive kjs interpreter"));
-        options.add("n", qi18n("start without KDE KApplication support."));
-        options.add("no-kde", qi18n("start without KDE KApplication support."));
-        options.add("!+command", qi18n("Script to execute"));
-
-        KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
-        KCmdLineArgs::init( argc, argv, &aboutData );
-
-        app = new KApplication(gui);
-    }
-    else
-#endif
     if (gui)
     {
-	qDebug("no KDE");
         app = new QApplication( argc, argv );
-        dynamic_cast<QApplication*>(app)->connect( app, SIGNAL(lastWindowClosed()), SLOT(quit()) );
+        QObject::connect( app, SIGNAL(lastWindowClosed()), app, SLOT(quit()) );
     }
     else
     {
@@ -185,7 +122,7 @@ int main( int argc, char **argv )
     qDebug(" New %s %dms", app->metaObject()->className(), time.elapsed());
 
     app->setApplicationName( appName );
-    
+
     // Setup Interpreter
     time.restart();
     Engine kernel;

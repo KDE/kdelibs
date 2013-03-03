@@ -30,17 +30,17 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 int main(int argc, char *argv[])
 {
-   QLocalizedString description = qi18n("HTTP Cookie Daemon");
+   KLocalizedString description = ki18n("HTTP Cookie Daemon");
 
    const char version[] = "1.0";
 
-   KCmdLineArgs::init(argc, argv, "kcookiejar", "kdelibs4", qi18n("HTTP cookie daemon"), version, description);
+   KCmdLineArgs::init(argc, argv, "kcookiejar", "kdelibs4", ki18n("HTTP cookie daemon"), version, description);
 
    KCmdLineOptions options;
-   options.add("shutdown", qi18n("Shut down cookie jar"));
-   options.add("remove <domain>", qi18n("Remove cookies for domain"));
-   options.add("remove-all", qi18n("Remove all cookies"));
-   options.add("reload-config", qi18n("Reload configuration file"));
+   options.add("shutdown", ki18n("Shut down cookie jar"));
+   options.add("remove <domain>", ki18n("Remove cookies for domain"));
+   options.add("remove-all", ki18n("Remove all cookies"));
+   options.add("reload-config", ki18n("Reload configuration file"));
 
    KCmdLineArgs::addCmdLineOptions( options );
 

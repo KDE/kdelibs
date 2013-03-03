@@ -24,6 +24,7 @@
 #include <QtCore/QCoreApplication>
 
 #include "kaboutdata.h"
+#include "k4aboutdata.h"
 #include "kconfig.h"
 #include "kconfiggroup.h"
 #include <QtDebug>
@@ -88,6 +89,7 @@ public:
             return;
         }
         mainComponent = c;
+        KAboutData::setApplicationData(KAboutData(*c.aboutData()));
         KConfig::setMainConfigName(c.aboutData()->appName() + QLatin1String("rc"));
 #if 0 // TEMP_KF5_REENABLE
         KLocale::setMainCatalog(c.catalogName());
@@ -116,7 +118,7 @@ Q_GLOBAL_STATIC(KComponentDataStatic, globalStatic)
 Q_GLOBAL_STATIC_WITH_ARGS(KComponentData, fakeComponent, (initFakeComponent()))
 
 KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog, MainComponentRegistration registerAsMain)
-    : d(new KComponentDataPrivate(KAboutData(name, catalog, QLocalizedString(), "", QLocalizedString())))
+    : d(new KComponentDataPrivate(K4AboutData(name, catalog, KLocalizedString(), QByteArray())))
 {
     Q_ASSERT(!name.isEmpty());
 
@@ -130,7 +132,7 @@ KComponentData::KComponentData(const QByteArray &name, const QByteArray &catalog
     }
 }
 
-KComponentData::KComponentData(const KAboutData *aboutData, MainComponentRegistration registerAsMain)
+KComponentData::KComponentData(const K4AboutData *aboutData, MainComponentRegistration registerAsMain)
     : d(new KComponentDataPrivate(*aboutData))
 {
     Q_ASSERT(!aboutData->appName().isEmpty());
@@ -145,7 +147,7 @@ KComponentData::KComponentData(const KAboutData *aboutData, MainComponentRegistr
     }
 }
 
-KComponentData::KComponentData(const KAboutData &aboutData, MainComponentRegistration registerAsMain)
+KComponentData::KComponentData(const K4AboutData &aboutData, MainComponentRegistration registerAsMain)
     : d(new KComponentDataPrivate(aboutData))
 {
     Q_ASSERT(!aboutData.appName().isEmpty());
@@ -243,13 +245,13 @@ void KComponentData::setConfigName(const QString &configName)
     d->configName = configName;
 }
 
-const KAboutData *KComponentData::aboutData() const
+const K4AboutData *KComponentData::aboutData() const
 {
     Q_ASSERT(d);
     return &d->aboutData;
 }
 
-void KComponentData::setAboutData(const KAboutData &aboutData)
+void KComponentData::setAboutData(const K4AboutData &aboutData)
 {
     d->aboutData = aboutData;
 }
@@ -294,5 +296,11 @@ void KComponentData::setActiveComponent(const KComponentData &c)
 #endif
 }
 
+KComponentData::operator KAboutData() const
+{
+    return KAboutData(*aboutData());
+}
+
 void KComponentData::virtual_hook(int, void*)
 { /*BASE::virtual_hook(id, data);*/ }
+

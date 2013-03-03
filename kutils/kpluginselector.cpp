@@ -325,14 +325,6 @@ void KPluginSelector::addPlugins(const QString &componentName,
     d->proxyModel->sort(0);
 }
 
-void KPluginSelector::addPlugins(const KComponentData &instance,
-                                 const QString &categoryName,
-                                 const QString &categoryKey,
-                                 const KSharedConfig::Ptr &config)
-{
-    addPlugins(instance.componentName(), categoryName, categoryKey, config);
-}
-
 void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
                                  PluginLoadMethod pluginLoadMethod,
                                  const QString &categoryName,
@@ -772,10 +764,10 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
         KPluginLoader loader(*entryService);
         KPluginFactory *factory = loader.factory();
         if (factory) {
-            const KAboutData *aboutData = factory->componentData().aboutData();
-            if (!aboutData->programName().isEmpty()) { // Be sure the about data is not completely empty
-                KAboutApplicationDialog aboutPlugin(aboutData, itemView());
-                aboutPlugin.setWindowTitle(i18nc("Used only for plugins", "About %1", aboutData->programName()));
+            const KAboutData *aboutData = KAboutData::pluginData(factory->componentName());
+            if (aboutData) {
+                KAboutApplicationDialog aboutPlugin(*aboutData, itemView());
+                aboutPlugin.setWindowTitle(i18nc("Used only for plugins", "About %1", aboutData->displayName()));
                 aboutPlugin.exec();
                 return;
             }
@@ -790,7 +782,7 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
     const QString version = model->data(index, VersionRole).toString();
     const QString license = model->data(index, LicenseRole).toString();
 
-    KAboutData aboutData(name.toUtf8(), name.toUtf8(), qi18n(name.toUtf8()), version.toUtf8(), qi18n(comment.toUtf8()), KAboutLicense::byKeyword(license).key(), qi18n(QByteArray()), qi18n(QByteArray()), website.toLatin1());
+    KAboutData aboutData(name, name, name, version, comment, KAboutLicense::byKeyword(license).key(), QString(), QString(), website);
     aboutData.setProgramIconName(index.model()->data(index, Qt::DecorationRole).toString());
     const QStringList authors = author.split(',');
     const QStringList emails = email.split(',');
@@ -798,13 +790,13 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
 	int i = 0;
         foreach (const QString &author, authors) {
             if (!author.isEmpty()) {
-                aboutData.addAuthor(qi18n(author.toUtf8()), qi18n(QByteArray()), emails[i].toUtf8(), 0);
+                aboutData.addAuthor(author, QString(), emails[i]);
             }
             i++;
         }
     }
-    KAboutApplicationDialog aboutPlugin(&aboutData, itemView());
-    aboutPlugin.setWindowTitle(i18nc("Used only for plugins", "About %1", aboutData.programName()));
+    KAboutApplicationDialog aboutPlugin(aboutData, itemView());
+    aboutPlugin.setWindowTitle(i18nc("Used only for plugins", "About %1", aboutData.displayName()));
     aboutPlugin.exec();
 }
 

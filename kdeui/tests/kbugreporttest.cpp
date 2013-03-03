@@ -18,28 +18,27 @@
 */
 
 #include <QApplication>
-
+#include <klocalizedstring.h>
 #include <kaboutdata.h>
 #include <kbugreport.h>
 
-int main(int argc, char **argv) {
-
-    // First a bug report to bugs.kde.org
-    KAboutData about("kbugreporttest", 0, qi18n("kbugreporttest"), "version");
-
-    QApplication::setApplicationName(about.appName());
+int main(int argc, char **argv)
+{
     QApplication a(argc, argv);
     a.setQuitOnLastWindowClosed(false);
-    KBugReport rep(0,true,&about);
+
+    // First a bug report to bugs.kde.org
+    KAboutData about("kbugreporttest", 0, i18n("kbugreporttest"), "version");
+    KBugReport rep(about);
     rep.exec();
 
     // Then a bug report by email.
     // Change the email address to check if it worked :)
-    KAboutData about1("kbugreporttest", 0, qi18n("kbugreporttest"), "version",
-                      qi18n("description"), KAboutData::License_Unknown,
-                      qi18n("copyright"), qi18n("bug report tool"),
-                      QByteArray(), "null@bugs.kde.org");
-    KBugReport rep1(0,true,&about1);
+    KAboutData about1("kbugreporttest", 0, i18n("kbugreporttest"), "version",
+                      i18n("description"), KAboutData::License_Unknown,
+                      i18n("copyright"), i18n("bug report tool"),
+                      QString(), "null@bugs.kde.org");
+    KBugReport rep1(about1);
     rep1.exec();
 
     return 0;
