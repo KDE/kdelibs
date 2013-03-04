@@ -22,7 +22,7 @@
 
 #include "kdialog.h"
 #include "kdialog_p.h"
-#include "kglobal.h" // remove KGlobal::caption once done by QPA
+#include <kglobal.h> // remove KGlobal::caption once done by QPA
 
 #include <QApplication>
 #include <QDesktopWidget>
