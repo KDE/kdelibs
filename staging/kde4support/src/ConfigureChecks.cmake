@@ -94,6 +94,7 @@ check_type_size("struct sockaddr_in6" HAVE_STRUCT_SOCKADDR_IN6)
 set(CMAKE_EXTRA_INCLUDE_FILES)  #reset CMAKE_EXTRA_INCLUDE_FILES
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
+check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE)
 check_prototype_exists(res_init "sys/types.h;netinet/in.h;arpa/nameser.h;resolv.h" HAVE_RES_INIT_PROTO)
 
 check_c_source_runs("

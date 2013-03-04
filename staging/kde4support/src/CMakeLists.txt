@@ -1,3 +1,7 @@
+# Generate config-kstandarddirs.h
+set( KDELIBSUFF ${LIB_SUFFIX} )
+configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
+
 set(libkde4support_SRCS
     kdecore/klibloader.cpp
     kdecore/ktemporaryfile.cpp
@@ -25,6 +29,8 @@ set(libkde4support_SRCS
     kdecore/kascii.cpp
     kdecore/k4aboutdata.cpp
     kdecore/qtest_kde.cpp
+    kdecore/kstandarddirs.cpp
+    kdecore/kglobal.cpp
 
     kdeui/k3icon.cpp
     kdeui/kaction.cpp
@@ -124,6 +130,8 @@ install(FILES
     kdecore/kascii.h
     kdecore/k4aboutdata.h
     kdecore/qtest_kde.h
+    kdecore/kstandarddirs.h
+    kdecore/kglobal.cpp
 
     kdeui/kaction.h
     kdeui/kapplication.h

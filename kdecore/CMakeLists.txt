@@ -5,10 +5,6 @@ find_package(X11)
 # QUrl
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
-# Generate config-kstandarddirs.h
-set( KDELIBSUFF ${LIB_SUFFIX} )
-configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
-
 find_package(X11)
 if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
@@ -173,9 +169,7 @@ set(kdecore_LIB_SRCS
    io/kmountpoint.cpp
    io/kprocess.cpp
    io/kurl.cpp
-   kernel/kglobal.cpp
    kernel/kcmdlineargs.cpp
-   kernel/kstandarddirs.cpp
    kernel/ktoolinvocation.cpp
 )
 
@@ -253,9 +247,7 @@ install( FILES
    io/kprocess.h
    io/kmountpoint.h
    io/kurl.h
-   kernel/kglobal.h
    kernel/kcmdlineargs.h
-   kernel/kstandarddirs.h
    kernel/ktoolinvocation.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

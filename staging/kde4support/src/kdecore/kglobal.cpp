@@ -30,7 +30,7 @@
 #include <QThread>
 
 #include <kdefakes.h>
-#include <config-kernel.h>
+#include <config-kde4support.h>
 
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
