@@ -22,7 +22,6 @@
 #define TESTGUICLIENT_H
 
 #include <qstandardpaths.h>
-#include <kcomponentdata.h>
 #include <kxmlguiclient.h>
 
 // because setDOMDocument and setXML are protected

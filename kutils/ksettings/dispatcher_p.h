@@ -25,7 +25,6 @@
 #include <QtCore/QMap>
 #include <QtCore/QObject>
 
-#include <kcomponentdata.h>
 
 namespace KSettings
 {
@@ -35,7 +34,6 @@ namespace Dispatcher
 class ComponentInfo
 {
 public:
-    KComponentData componentData;
     typedef QPair<QObject*, const char*> Slot;
     QList<Slot> slotList;
     int count;

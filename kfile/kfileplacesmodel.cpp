@@ -40,7 +40,6 @@
 #include <klocalizedstring.h>
 #include <kuser.h>
 
-#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kurlmimedata.h>
 

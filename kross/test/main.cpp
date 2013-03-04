@@ -35,7 +35,6 @@
 
 // KDE
 #include <kdebug.h>
-#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <k4aboutdata.h>
 

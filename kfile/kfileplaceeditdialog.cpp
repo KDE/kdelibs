@@ -24,7 +24,6 @@
 #include <kdebug.h>
 #include <kiconbutton.h>
 #include <kiconloader.h>
-#include <kcomponentdata.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kio/global.h>

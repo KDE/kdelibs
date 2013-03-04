@@ -24,7 +24,7 @@
 #include "kxmlguiclient.h"
 #include "kxmlguibuilder.h"
 
-#include <assert.h>
+#include <ksharedconfig.h>
 
 #include <QAction>
 #include <QtCore/QDir>

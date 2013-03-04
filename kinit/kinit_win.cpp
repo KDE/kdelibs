@@ -40,7 +40,6 @@
 #undef interface
 #include <QtDBus/QtDBus>
 
-#include <kcomponentdata.h>
 #include <kstandarddirs.h> // TODO REMOVE
 #include <kdeversion.h>
 
@@ -48,8 +47,6 @@
 //#define ENABLE_EXIT
 
 #define KDED_EXENAME "kded5"
-
-static KComponentData *s_instance = 0;
 
 // print verbose messages
 int verbose=0;
@@ -576,9 +573,6 @@ int main(int argc, char **argv, char **envp)
         Sleep(2000);
         terminateAllRunningKDEProcesses(processList);
     }
-
-    /** Create our instance **/
-    s_instance = new KComponentData("kdeinit5", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
 #ifdef _DEBUG
     // first try to launch dbus-daemond in debug mode

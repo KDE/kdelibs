@@ -21,7 +21,6 @@
 #define KNOTIFICATION_H
 
 #include <kdeui_export.h>
-#include <kcomponentdata.h>
 
 #include <QPixmap>
 #include <QtCore/QObject>
@@ -412,10 +411,10 @@ public:
 	void setFlags(const NotificationFlags &flags);
 
 	/**
-	 * The componentData is used to determine the location of the config file.  By default, kapp is used
-	 * @param componentData the new componentData
+	 * The componentData is used to determine the location of the config file.  By default, the app name is used
+	 * @param componentName the new component name
 	 */
-	void setComponentData(const KComponentData &componentData);
+	void setComponentName(const QString &componentName);
 
    Q_SIGNALS:
 	/**
@@ -538,13 +537,13 @@ public:
 	 * @param pixmap is a picture which may be shown in the popup.
 	 * @param widget is a widget where the notification reports to
 	 * @param flags is a bitmask of NotificationFlag
-	 * @param componentData used to determine the location of the config file.  by default, kapp is used
+	 * @param componentName used to determine the location of the config file.  by default, appname is used
 	 * @since 4.4
 	 */
 	static KNotification *event(const QString &eventId , const QString &title, const QString &text,
 	                const QPixmap &pixmap = QPixmap(), QWidget *widget = 0L,
 	                const NotificationFlags &flags = CloseOnTimeout,
-	                const KComponentData &componentData = KComponentData());
+	                const QString &componentName = QString());
 
 	/**
 	 * @brief emit a standard event
@@ -563,7 +562,7 @@ public:
 	static KNotification *event(const QString &eventId , const QString &text = QString(),
 	                const QPixmap &pixmap = QPixmap(), QWidget *widget = 0L,
 	                const NotificationFlags &flags = CloseOnTimeout,
-	                const KComponentData &componentData = KComponentData());
+	                const QString &componentName = QString());
 
 	/**
 	 * @brief emit a standard event

@@ -28,7 +28,6 @@
 #include <kcmutils_export.h>
 #include <ksharedconfig.h>
 
-class KComponentData;
 class KPluginInfo;
 
 
@@ -82,7 +81,7 @@ public:
       * The information about the plugins will be loaded from the
       * share/apps/&lt;instancename&gt;/kpartplugins directory
       *
-      * @param componentName The name of the KComponentData of the plugin's parent.
+      * @param componentName The name of the component of the plugin's parent.
       * @param categoryName  The translated name of the category. This is the
       *                      name that is shown in the title. If the category
       *                      did exist before because of another call to

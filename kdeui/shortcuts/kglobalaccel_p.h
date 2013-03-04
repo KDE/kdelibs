@@ -26,7 +26,6 @@
 #include <QtCore/QStringList>
 #include <QWidget>
 
-#include "kcomponentdata.h"
 #include "kglobalaccel.h"
 #include "kglobalaccel_interface.h"
 #include "kglobalaccel_component_interface.h"
@@ -74,7 +73,6 @@ public:
     QStringList makeActionId(const QAction *action);
     QList<int> intListFromShortcut(const KShortcut &cut);
     KShortcut shortcutFromIntList(const QList<int> &list);
-    void readComponentData(const KComponentData &component);
 
     //private slot implementations
     void _k_invokeAction(const QString &, const QString &,qlonglong);

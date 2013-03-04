@@ -754,7 +754,7 @@ void KPluginSelector::Private::PluginDelegate::slotAboutClicked()
     const QModelIndex index = focusedIndex();
     const QAbstractItemModel *model = index.model();
 
-    // Try to retrieve the plugin information from the KComponentData object of the plugin.
+    // Try to retrieve the plugin information from the component name of the plugin.
     // If there is no valid information, go and fetch it from the service itself (the .desktop
     // file).
 

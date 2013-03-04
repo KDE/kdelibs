@@ -54,7 +54,6 @@
 #include <QtCore/QRegExp>
 #include <QFont>
 #include <kcrash.h>
-#include <kcomponentdata.h>
 #include <klibrary.h>
 #include <kconfig.h>
 #include <kapplication.h>
@@ -1775,9 +1774,6 @@ int main(int argc, char **argv, char **envp)
    /** Make process group leader (for shutting down children later) **/
    if(keep_running)
       setsid();
-
-   /** Create our instance **/
-   //s_instance = new KComponentData("kdeinit5", QByteArray(), KComponentData::SkipMainComponentRegistration);
 
    /** Prepare to change process name **/
 #ifndef SKIP_PROCTITLE

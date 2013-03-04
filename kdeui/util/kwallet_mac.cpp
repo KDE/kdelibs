@@ -72,14 +72,6 @@ static bool isError( OSStatus s, QString* errMsg ) {
 
 static QString appid()
 {
-    KComponentData cData = KComponentData::mainComponent();
-    if (cData.isValid()) {
-        const KAboutData* aboutData = cData.aboutData();
-        if (aboutData) {
-            return aboutData->programName();
-        }
-        return cData.componentName();
-    }
     return qApp->applicationName();
 }
 

@@ -27,6 +27,7 @@
 #include <kaboutdata.h>
 #include <kxmlguifactory.h>
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 #include <kdebug.h>
 
 #include <QApplication>

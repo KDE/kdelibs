@@ -45,7 +45,7 @@ public:
 
     /**
      * Create a DownloadManager
-     * It will try to find a appname.knsrc file (using KComponentData).
+     * It will try to find a appname.knsrc file.
      * Appname is the name of your application as provided in the about data->
      *
      * @param parent the parent of the dialog

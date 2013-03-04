@@ -20,12 +20,10 @@
 #include <QApplication>
 #include <kmimetypechooser.h>
 #include <klocalizedstring.h>
-#include <kcomponentdata.h>
 #include <kdebug.h>
 
 int main( int argc, char** argv ) {
     QApplication app( argc, argv );
-    KComponentData componentData(QByteArray("kmimetypechoosertest_gui"));
 
     QString text = i18n("Select the MimeTypes you want for this file type.");
     QStringList list; list << "inode/directory"; list << "text/plain";

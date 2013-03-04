@@ -32,8 +32,8 @@
 #include <kdebug.h>
 
 #include <kmenu.h>
+#include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kcomponentdata.h>
 #include <kdirnotify.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>

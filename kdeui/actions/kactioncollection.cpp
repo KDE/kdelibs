@@ -32,6 +32,8 @@
 #include "kxmlguifactory.h"
 
 #include "kdebug.h"
+#include <kconfiggroup.h>
+#include <ksharedconfig.h>
 
 #include <QtXml/QDomDocument>
 #include <QtCore/QSet>
@@ -42,7 +44,6 @@
 #include <QMetaMethod>
 
 #include <stdio.h>
-#include "kconfiggroup.h"
 
 class KActionCollectionPrivate
 {

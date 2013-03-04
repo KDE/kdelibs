@@ -8,7 +8,6 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include "xslt.h"
 
 
-#include <kcomponentdata.h>
 #include <kdebug.h>
 
 #include <QtCore/QString>
@@ -35,10 +34,7 @@ extern "C"
 {
     Q_DECL_EXPORT int kdemain( int argc, char **argv )
     {
-        Q_ASSERT(!KComponentData::hasMainComponent()); // kdeinit is messed up if this is the case.
-        KComponentData componentData( "kio_help", "kio_help4" );
         setupStandardDirs();
-        (void)componentData.config(); // we need this one to make sure system globals are read
 
         kDebug(7101) << "Starting " << getpid();
 

@@ -23,7 +23,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "k4aboutdata.h"
-#include "kcomponentdata.h"
 #include "kcmdlineargs.h"
 #include "klocalizedstring.h"
 #include "kstandardshortcut.h"
@@ -344,7 +343,6 @@ int main( int argc, char **argv )
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KCmdLineArgs::addCmdLineOptions( cmdLineOptions );
 
-	KComponentData componentData( &aboutData );
 	QCoreApplication app( KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv() );
 
 	KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

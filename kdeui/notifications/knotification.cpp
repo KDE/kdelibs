@@ -60,7 +60,7 @@ struct KNotification::Private
     QPixmap pixmap;
     ContextList contexts;
     NotificationFlags flags;
-    KComponentData componentData;
+    QString componentName;
 
     QTimer updateTimer;
     bool needUpdate;
@@ -209,9 +209,9 @@ void KNotification::setFlags(const NotificationFlags & flags)
 }
 
 
-void KNotification::setComponentData(const KComponentData &c)
+void KNotification::setComponentName(const QString &c)
 {
-    d->componentData = c;
+    d->componentName = c;
 }
 
 void KNotification::activate(unsigned int action)
@@ -284,13 +284,13 @@ void KNotification::Private::raiseWidget(QWidget *w)
 }
 
 KNotification *KNotification::event( const QString& eventid , const QString& title, const QString& text,
-        const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const KComponentData &componentData)
+        const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const QString &componentName)
 {
 	KNotification *notify=new KNotification(eventid, widget, flags);
 	notify->setTitle(title);
 	notify->setText(text);
 	notify->setPixmap(pixmap);
-	notify->setComponentData(componentData);
+	notify->setComponentName(componentName);
 
 	QTimer::singleShot(0,notify,SLOT(sendEvent()));
 
@@ -298,9 +298,9 @@ KNotification *KNotification::event( const QString& eventid , const QString& tit
 }
 
 KNotification *KNotification::event( const QString& eventid , const QString& text,
-        const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const KComponentData &componentData)
+        const QPixmap& pixmap, QWidget *widget, const NotificationFlags &flags, const QString &componentName)
 {
-	return event( eventid, QString(), text, pixmap, widget, flags, componentData );
+	return event( eventid, QString(), text, pixmap, widget, flags, componentName);
 }
 
 
@@ -356,10 +356,10 @@ void KNotification::sendEvent()
 	{
 		QString appname;
 
-		if(d->flags & DefaultEvent)
+		if (d->flags & DefaultEvent)
 			appname = QLatin1String("kde");
-		else if(d->componentData.isValid()) {
-			appname = d->componentData.componentName();
+		else if (!d->componentName.isEmpty()) {
+			appname = d->componentName;
 		} else {
 			appname = QCoreApplication::applicationName();
 		}

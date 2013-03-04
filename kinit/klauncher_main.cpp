@@ -23,7 +23,6 @@
 #include <fcntl.h>
 
 #include "klauncher.h"
-#include <kcomponentdata.h>
 #include "kcrash.h"
 #include "kdebug.h"
 #include <stdio.h>
@@ -70,16 +69,14 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
    mac_initialize_dbus();
 #endif
 
-   KComponentData componentData("klauncher", "kdelibs4");
-
    // WABA: Make sure not to enable session management.
    putenv(strdup("SESSION_MANAGER="));
 
    // We need a QCoreApplication to get a DBus event loop
    QCoreApplication app(argc, argv);
-   app.setApplicationName( componentData.componentName() );
+   app.setApplicationName("klauncher");
 
-   KLocale::global();
+   KLocalizedString::setApplicationCatalog("kdelibs4");
 
    int maxTry = 3;
    while(true)

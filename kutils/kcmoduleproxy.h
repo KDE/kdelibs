@@ -30,7 +30,6 @@
 
 class KAboutData;
 class KCModuleInfo;
-class KComponentData;
 class KCModuleProxyPrivate;
 
 /**

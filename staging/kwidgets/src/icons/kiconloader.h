@@ -32,7 +32,6 @@ class QIcon;
 class QMovie;
 class QPixmap;
 
-class KComponentData;
 class KIconLoaderPrivate;
 class KIconEffect;
 class KIconTheme;
@@ -182,8 +181,7 @@ public:
      *
      * Usually, you use the default iconloader, which can be accessed via
      * KIconLoader::global(), so you hardly ever have to create an
-     * iconloader object yourself. That one is the current KComponentData's
-     * (typically KApplication's) iconloader.
+     * iconloader object yourself. That one is the application's iconloader.
      */
     explicit KIconLoader(const QString& appname = QString(), const QStringList& extraSearchPaths = QStringList(), QObject* parent = 0);
 
@@ -193,7 +191,7 @@ public:
     ~KIconLoader();
 
     /**
-     * Returns the global icon loader initialized with the global KComponentData.
+     * Returns the global icon loader initialized with the application name.
      * @return global icon loader
      */
     static KIconLoader* global();
@@ -409,7 +407,7 @@ public:
     KIconEffect *iconEffect() const;
 
     /**
-     * Called by KComponentData::newIconLoader to reconfigure the icon loader.
+     * Called by newIconLoader to reconfigure the icon loader.
      * @param _appname the new application name
      * @param extraSearchPaths additional search paths, either absolute or relative to GenericDataLocation
      */

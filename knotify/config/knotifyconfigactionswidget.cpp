@@ -132,7 +132,7 @@ void KNotifyConfigActionsWidget::slotPlay(  )
         const QString soundString = soundURL.toLocalFile();
         // we need a way to get the application name in order to ba able to do this :
         /*QString search = QString("%1/sounds/%2").arg(config->appname).arg(soundFile);
-          search = KComponentData::mainComponent().dirs()->findResource("data", search);
+          search = locate("data", search);
           if ( search.isEmpty() )*/
         soundURL = QUrl::fromLocalFile(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "sounds/" + soundString));
     }

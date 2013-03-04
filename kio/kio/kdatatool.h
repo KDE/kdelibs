@@ -28,7 +28,6 @@
 #include <QAction>
 
 #include <kservice.h>
-#include <kcomponentdata.h>
 
 class KDataTool;
 class QPixmap;
@@ -57,9 +56,9 @@ public:
     /**
      * Create a valid KDataToolInfo.
      * @param service the corresponding service
-     * @param instance the instance to use
+     * @param componentName the name of the component to use
      */
-    KDataToolInfo(const KService::Ptr& service, const KComponentData &instance);
+    KDataToolInfo(const KService::Ptr& service, const QString &componentName);
     /**
      * Destructor
      */
@@ -146,9 +145,9 @@ public:
 
     /**
      * The instance of the service.
-     * @return the instance
+     * @return the component name
      */
-    KComponentData componentData() const;
+    QString componentName() const;
 
     /**
      * A DataToolInfo may be invalid if the KService passed to its constructor does
@@ -161,11 +160,11 @@ public:
      * Queries the KServiceTypeTrader about installed KDataTool implementations.
      * @param datatype a type that the application can 'export' to the tools (e.g. QString)
      * @param mimetype the mimetype of the data (e.g. text/plain)
-     * @param instance the application (or the part)'s instance (to check if a tool is excluded from this part,
+     * @param componentName the application (or the part)'s instance (to check if a tool is excluded from this part,
      * and also used if the tool wants to read its configuration in the app's config file).
      * @return the list of results
      */
-    static QList<KDataToolInfo> query(const QString& datatype, const QString& mimetype, const KComponentData &instance);
+    static QList<KDataToolInfo> query(const QString& datatype, const QString& mimetype, const QString &componentName);
 
 private:
     class KDataToolInfoPrivate;
@@ -263,14 +262,14 @@ public:
     /**
      * @internal. Do not use under any circumstance (including bad weather).
      */
-    void setComponentData(const KComponentData &componentData);
+    void setComponentName(const QString &componentName);
 
     /**
      * Returns the instance of the part that created this tool.
      * Usually used if the tool wants to read its configuration in the app's config file.
      * @return the instance of the part that created this tool.
      */
-    const KComponentData &componentData() const;
+    QString componentName() const;
 
     /**
      * Interface for 'running' this tool.

@@ -142,8 +142,7 @@ class KSERVICE_EXPORT KPluginInfo
 
         /**
          * @return A list of KPluginInfo objects for the KParts plugins of a
-         * component. You only need the name of the component not a pointer to the
-         * KComponentData object.
+         * component.
          *
          * @param componentName Use the component name to look up all KParts plugins for it.
          * @param config The config group where to save/load whether the plugin is enabled/disabled

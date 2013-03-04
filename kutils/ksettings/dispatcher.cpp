@@ -21,9 +21,6 @@
 #include "dispatcher_p.h"
 
 #include <kdebug.h>
-#include <kconfig.h>
-#include <kcomponentdata.h>
-#include <assert.h>
 
 namespace KSettings
 {
@@ -33,17 +30,11 @@ namespace Dispatcher
 
 Q_GLOBAL_STATIC(DispatcherPrivate, d)
 
-void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot)
+void registerComponent(const QString &componentName, QObject *recv, const char *slot)
 {
-    Q_ASSERT(componentData.isValid());
-    // keep the KComponentData around and call
-    // componentData.config()->reparseConfiguration when the app should reparse
-    QString componentName = componentData.componentName();
+    Q_ASSERT(!componentName.isEmpty());
     kDebug(701) << componentName;
     d()->m_componentName[recv] = componentName;
-    if (!d()->m_componentInfo.contains(componentName)) {
-        d()->m_componentInfo[componentName].componentData = componentData;
-    }
     d()->m_componentInfo[componentName].slotList.append(ComponentInfo::Slot(recv, slot));
 
     ++(d()->m_componentInfo[componentName].count);
@@ -53,16 +44,7 @@ void registerComponent(const KComponentData &componentData, QObject *recv, const
 KSharedConfig::Ptr configForComponentName(const QString &componentName)
 {
     kDebug(701) ;
-    if (d()->m_componentInfo.contains(componentName)) {
-        KComponentData componentData = d()->m_componentInfo[componentName].componentData;
-        if (componentData.isValid()) {
-            return componentData.config();
-        }
-    }
-    kError(701) << "configForComponentName('" << componentName.constData()
-        << "') could not find the KComponentData object" << endl;
-    Q_ASSERT(!d()->m_componentInfo.isEmpty());
-    return d()->m_componentInfo.constBegin()->componentData.config();
+    return KSharedConfig::openConfig(componentName + "rc");
 }
 
 QList<QString> componentNames()
@@ -84,10 +66,10 @@ void reparseConfiguration(const QString & componentName)
     if (! d()->m_componentInfo.contains(componentName)) {
         return;
     }
-    // first we reparse the config of the componentData so that the KConfig object
-    // will be up to date
-    KSharedConfig::Ptr config = d()->m_componentInfo[componentName].componentData.config();
+    // first we reparse the config so that the KConfig object will be up to date
+    KSharedConfig::Ptr config = configForComponentName(componentName);
     config->reparseConfiguration();
+
     foreach(const ComponentInfo::Slot& slot, d()->m_componentInfo[componentName].slotList ) {
         QMetaObject::invokeMethod(slot.first, slot.second);
     }
@@ -96,7 +78,7 @@ void reparseConfiguration(const QString & componentName)
 void syncConfiguration()
 {
     for (QMap<QString, ComponentInfo>::ConstIterator it = d()->m_componentInfo.constBegin(); it != d()->m_componentInfo.constEnd(); ++it) {
-        KSharedConfig::Ptr config = (*it).componentData.config();
+        KSharedConfig::Ptr config = configForComponentName(it.key());
         config->sync();
     }
 }

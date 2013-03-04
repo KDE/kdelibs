@@ -25,7 +25,6 @@
 #include <config-kded.h>
 
 #include <kservice.h>
-#include <kcomponentdata.h>
 #include "kbuildservicetypefactory.h"
 #include "kbuildmimetypefactory.h"
 #include "kbuildservicefactory.h"
@@ -653,7 +652,6 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    }
 
    QCoreApplication k(argc, argv);
-   KComponentData mainComponent(d);
 
 #if !KBUILDSYCOCA_NO_KCRASH
    KCrash::setCrashHandler(KCrash::defaultCrashHandler);

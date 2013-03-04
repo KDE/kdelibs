@@ -21,7 +21,6 @@
 #define kxmlguifactory_h
 
 #include <kdeui_export.h>
-#include <kcomponentdata.h>
 
 #include <QtCore/QObject>
 
@@ -29,7 +28,6 @@ class QAction;
 class KXMLGUIFactoryPrivate;
 class KXMLGUIClient;
 class KXMLGUIBuilder;
-class KComponentData;
 
 class QDomAttr;
 class QDomDocument;

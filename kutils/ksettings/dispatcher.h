@@ -23,7 +23,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QMap>
 #include <kcmutils_export.h>
-#include <kcomponentdata.h>
+#include <ksharedconfig.h>
 
 namespace KSettings
 {
@@ -43,17 +43,16 @@ namespace Dispatcher
 {
     /**
      * Register a slot to be called when the configuration for the componentData
-     * has changed. @p componentData is the KComponentData object
-     * that is passed to KPluginFactory (if it is used). You can query
-     * it with MyPluginFactory::componentData().
-     * componentData.componentName() is also the same name that is put into the
+     * has changed. @p componentName is the string that is passed to KPluginFactory (if it is used).
+     * You can query it with MyPluginFactory::componentName(), or from a KAboutData.
+     * componentName is also the same name that is put into the
      * .desktop file of the KCMs for the X-KDE-ParentComponents.
      *
-     * @param componentData     The KComponentData object
+     * @param componentName     The name of the component
      * @param recv         The object that should receive the signal
      * @param slot         The slot to be called: "slotName"
      */
-    KCMUTILS_EXPORT void registerComponent(const KComponentData &componentData, QObject *recv, const char *slot);
+    KCMUTILS_EXPORT void registerComponent(const QString &componentName, QObject *recv, const char *slot);
 
     /**
      * @return the KConfig object that belongs to the componentName

@@ -103,6 +103,7 @@ using namespace DOM;
 #include <ktoggleaction.h>
 #include <kcodecaction.h>
 #include <kselectaction.h>
+#include <kcomponentdata.h>
 
 #include <ksslinfodialog.h>
 #include <ksslsettings.h>

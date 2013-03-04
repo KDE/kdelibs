@@ -41,8 +41,6 @@ using namespace KIO;
 extern "C" {
 
   int kdemain( int argc, char **argv ) {
-    KComponentData componentData( "kio_data" );
-
     //qDebug() << "*** Starting kio_data ";
 
     if (argc != 4) {

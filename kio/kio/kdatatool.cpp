@@ -20,7 +20,6 @@
 
 #include "kdatatool.h"
 
-#include <kcomponentdata.h>
 #include <kactioncollection.h>
 
 #include <kservicetypetrader.h>
@@ -42,7 +41,7 @@ public:
     {}
 
     KService::Ptr service;
-    KComponentData componentData;
+    QString componentName;
 };
 
 KDataToolInfo::KDataToolInfo()
@@ -50,11 +49,11 @@ KDataToolInfo::KDataToolInfo()
 {
 }
 
-KDataToolInfo::KDataToolInfo(const KService::Ptr& service, const KComponentData &componentData)
+KDataToolInfo::KDataToolInfo(const KService::Ptr& service, const QString &componentName)
     : d(new KDataToolInfoPrivate)
 {
     d->service = service;
-    d->componentData = componentData;
+    d->componentName = componentName;
 
     if ( !d->service && !d->service->serviceTypes().contains( "KDataTool" ) )
     {
@@ -68,13 +67,13 @@ KDataToolInfo::KDataToolInfo( const KDataToolInfo& info )
     : d(new KDataToolInfoPrivate)
 {
     d->service = info.service();
-    d->componentData = info.componentData();
+    d->componentName = info.componentName();
 }
 
 KDataToolInfo& KDataToolInfo::operator= ( const KDataToolInfo& info )
 {
     d->service = info.service();
-    d->componentData = info.componentData();
+    d->componentName = info.componentName();
     return *this;
 }
 
@@ -137,7 +136,7 @@ KDataTool* KDataToolInfo::createTool( QObject* parent ) const
 
     KDataTool* tool = d->service->createInstance<KDataTool>(parent);
     if ( tool )
-        tool->setComponentData(d->componentData);
+        tool->setComponentName(d->componentName);
     return tool;
 }
 
@@ -146,12 +145,12 @@ KService::Ptr KDataToolInfo::service() const
     return d->service;
 }
 
-KComponentData KDataToolInfo::componentData() const
+QString KDataToolInfo::componentName() const
 {
-    return d->componentData;
+    return d->componentName;
 }
 
-QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString& mimetype, const KComponentData &componentData)
+QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString& mimetype, const QString &componentName)
 {
     QList<KDataToolInfo> lst;
 
@@ -170,9 +169,9 @@ QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString
             constr = constr + " and " + tmp;
     }
 /* Bug in KServiceTypeTrader ? Test with HEAD-kdelibs!
-    if ( componentData )
+    if (!componentName.isEmpty())
     {
-        QString tmp = QString::fromLatin1( "not ('%1' in ExcludeFrom)" ).arg( componentData.componentName() );
+        QString tmp = QString::fromLatin1( "not ('%1' in ExcludeFrom)" ).arg(componentName);
         if ( constr.isEmpty() )
             constr = tmp;
         else
@@ -187,9 +186,9 @@ QList<KDataToolInfo> KDataToolInfo::query(const QString& datatype, const QString
     for( ; it != offers.end(); ++it )
     {
         // Temporary replacement for the non-working trader query above
-        if (!componentData.isValid() || !(*it)->property("ExcludeFrom").toStringList()
-             .contains(componentData.componentName())) {
-            lst.append(KDataToolInfo(*it, componentData));
+        if (componentName.isEmpty() || !(*it)->property("ExcludeFrom").toStringList()
+             .contains(componentName)) {
+            lst.append(KDataToolInfo(*it, componentName));
         } else {
             //qDebug() << (*it)->entryPath() << " excluded.";
         }
@@ -283,7 +282,7 @@ class KDataTool::KDataToolPrivate
 public:
     KDataToolPrivate() {}
 
-    KComponentData componentData;
+    QString componentName;
 };
 
 KDataTool::KDataTool( QObject* parent )
@@ -296,13 +295,13 @@ KDataTool::~KDataTool()
     delete d;
 }
 
-void KDataTool::setComponentData(const KComponentData &componentData)
+void KDataTool::setComponentName(const QString &componentName)
 {
-    d->componentData = componentData;
+    d->componentName = componentName;
 }
 
-const KComponentData &KDataTool::componentData() const
+QString KDataTool::componentName() const
 {
-   return d->componentData;
+   return d->componentName;
 }
 

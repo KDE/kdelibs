@@ -22,9 +22,8 @@
 #define KPAC_PROXYSCOUT_H
 
 #include <kdedmodule.h>
-#include <kcomponentdata.h>
-#include <kurl.h>
 
+#include <QUrl>
 #include <QtCore/QMap>
 #include <QtDBus/QtDBus>
 
@@ -58,7 +57,7 @@ namespace KPAC
         bool startDownload();
         QStringList handleRequest( const QUrl & url );
 
-        KComponentData m_componentData;
+        QString m_componentName;
         Downloader* m_downloader;
         Script* m_script;
 
@@ -68,7 +67,7 @@ namespace KPAC
             QueuedRequest( const QDBusMessage&, const QUrl &, bool sendall = false);
 
             QDBusMessage transaction;
-            KUrl url;
+            QUrl url;
             bool sendAll;
         };
         typedef QList< QueuedRequest > RequestQueue;

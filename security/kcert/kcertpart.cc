@@ -21,7 +21,6 @@
 #include "kcertpart.h"
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
-#include <kcomponentdata.h>
 #include <kaboutdata.h>
 #include <QFrame>
 #include <klocalizedstring.h>

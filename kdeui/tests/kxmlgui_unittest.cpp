@@ -27,6 +27,7 @@
 #include <QMenuBar>
 #include <QPushButton>
 #include <kedittoolbar.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kxmlguibuilder.h>
 #include <kxmlguiclient.h>

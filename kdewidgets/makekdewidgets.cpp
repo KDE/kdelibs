@@ -43,7 +43,6 @@ static const char collClassDef[] = "class %CollName : public QObject, public QDe
 static const char collClassImpl[] = "%CollName::%CollName(QObject *parent)\n"
                                 "	: QObject(parent)"
                                 "{\n"
-                                "	(void) new KComponentData(\"makekdewidgets\");\n"
                                 "%CollectionAdd\n"
                                 "}\n\n";
 

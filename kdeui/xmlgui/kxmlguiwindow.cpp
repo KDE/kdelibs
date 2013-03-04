@@ -49,6 +49,7 @@
 #include <ktoolbar.h>
 #include <kaboutdata.h>
 #include <kwindowsystem.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
 #include <stdlib.h>

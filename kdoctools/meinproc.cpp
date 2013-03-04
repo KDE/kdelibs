@@ -13,7 +13,6 @@
 #include <qstandardpaths.h>
 
 #include <k4aboutdata.h>
-#include <kcomponentdata.h>
 #include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <klocale.h>
@@ -104,7 +103,6 @@ int main(int argc, char **argv) {
     KCmdLineArgs::addCmdLineOptions( options );
 
     QCoreApplication app( argc, argv );
-    KComponentData ins("kio_help4");
     KLocale::global();
 
     KCmdLineArgs *args = KCmdLineArgs::parsedArgs();

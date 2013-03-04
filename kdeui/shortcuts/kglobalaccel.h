@@ -24,14 +24,12 @@
 
 #include "kdeui_export.h"
 #include "kglobalshortcutinfo.h"
-#include "kcomponentdata.h"
 
 #include <QtCore/QObject>
 
 class QAction;
 class QWidget;
 class KShortcut;
-class KComponentData;
 class OrgKdeKglobalaccelComponentInterface;
 
 /**

@@ -31,6 +31,7 @@
 #include <kactioncollection.h>
 #include "kxmlguifactory.h"
 #include <kfiledialog.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
 int main(int argc, char *argv[])

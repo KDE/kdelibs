@@ -28,7 +28,6 @@
 
 #include "krecentdocument.h"
 
-#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kio/global.h>
 #include <kdesktopfile.h>

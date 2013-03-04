@@ -1,14 +1,12 @@
 #include <stdio.h>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
-#include <kcomponentdata.h>
 #include <kurl.h>
 #include <kfilemetainfo.h>
 #include <qmimedatabase.h>
 
 int main (int argc, char **argv)
 {
-	KComponentData ins(QByteArray("kmfitest"));
 
 	if (argc < 2) {
 		printf("usage: %s <file>\n", argv[0]);

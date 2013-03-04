@@ -26,7 +26,6 @@
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
-#include <kcomponentdata.h>
 #include <kdebug.h>
 #include <kservice.h>
 #include <ktabwidget.h>
@@ -52,9 +51,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 
 
 
-// The KCModuleContainer is only a wrapper around real KCModules. Therefore it doesn't need a
-// special KComponentData and can just use the global instance. The contained KCModules create their own
-// KComponentData objects when needed.
+// The KCModuleContainer is only a wrapper around real KCModules.
 /***********************************************************************/
 KCModuleContainer::KCModuleContainer( QWidget* parent, const QString& mods )
     : KCModule( parent ),

@@ -1,7 +1,7 @@
 [Global]
 PluginName=KDE3SupportWidgets
-Includes=kcomponentdata.h,classpreviews.h,ktimezone.h
-Init=new KComponentData("kdewidgets");
+Includes=classpreviews.h,ktimezone.h
+Init=
 
 [KArrowButton]
 IncludeFile=karrowbutton.h

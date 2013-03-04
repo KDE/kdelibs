@@ -28,8 +28,6 @@
 #include <QtCore/QTimer>
 #include <QScrollBar>
 #include <QListView>
-#include <kcomponentdata.h>
-#include <kaboutdata.h>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewbasedelegate.h"

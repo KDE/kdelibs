@@ -77,7 +77,7 @@ namespace KPAC
 
     ProxyScout::ProxyScout(QObject* parent, const QList<QVariant>&)
         : KDEDModule(parent),
-          m_componentData("proxyscout"),
+          m_componentName("proxyscout"),
           m_downloader( 0 ),
           m_script( 0 ),
           m_suspendTime( 0 ),
@@ -237,14 +237,14 @@ namespace KPAC
                 kWarning() << "Error:" << e.message();
                 KNotification *notify= new KNotification ( "script-error" );
                 notify->setText( i18n("The proxy configuration script is invalid:\n%1" , e.message() ) );
-                notify->setComponentData(m_componentData);
+                notify->setComponentName(m_componentName);
                 notify->sendEvent();
                 success = false;
             }
         } else {
             KNotification *notify = new KNotification ("download-error");
             notify->setText( m_downloader->error() );
-            notify->setComponentData(m_componentData);
+            notify->setComponentName(m_componentName);
             notify->sendEvent();
         }
 
@@ -287,7 +287,7 @@ namespace KPAC
         m_watcher->addPath(path);
 
         // Reload...
-        m_downloader->download(KUrl::fromPath(path));
+        m_downloader->download(QUrl::fromLocalFile(path));
     }
 
     QStringList ProxyScout::handleRequest( const QUrl & url )
@@ -320,9 +320,9 @@ namespace KPAC
                     const int index = address.indexOf(QLatin1Char(':'));
                     if (index == -1 || !KProtocolInfo::isKnownProtocol(address.left(index))) {
                         const QString protocol ((type == Proxy ? QLatin1String("http://") : QLatin1String("socks://")));
-                        const KUrl url (protocol + address);
+                        const QUrl url (protocol + address);
                         if (url.isValid()) {
-                            address = url.url();
+                            address = url.toString();
                         } else {
                             continue;
                         }
@@ -349,7 +349,7 @@ namespace KPAC
             kError() << e.message();
             KNotification *n=new KNotification( "evaluation-error" );
             n->setText( i18n( "The proxy configuration script returned an error:\n%1" , e.message() ) );
-            n->setComponentData(m_componentData);
+            n->setComponentName(m_componentName);
             n->sendEvent();
         }
 

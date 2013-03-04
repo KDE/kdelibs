@@ -703,7 +703,7 @@ int main(int argc, char *argv[])
     KConfig sc1( "cryptodefaults", KConfig::SimpleConfig );
     KConfigGroup grp = sc1.group("Warnings");
     grp.writeEntry( "OnUnencrypted",  false );
-    KSharedConfigPtr config = KComponentData::mainComponent().config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     grp = config->group("Notification Messages" );
     grp.writeEntry( "kjscupguard_alarmhandler", true );
     grp.writeEntry("ReportJSErrors", false);
