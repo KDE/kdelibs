@@ -30,6 +30,8 @@ ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h)
 include_directories(
        ${ki18n_SOURCE_DIR}/src
        ${ki18n_BINARY_DIR}/src
+       ${kde4support_SOURCE_DIR}/src/kde4support
+       ${kde4support_BINARY_DIR}/src
 )
 kde4_add_executable(kf5-config NOGUI kde-config.cpp )
 
