@@ -27,7 +27,7 @@
 #include <kaboutdata.h>
 #include <qlocalizedstring_porting.h>
 #include <kcomponentdata.h>
-#include <kglobal.h>
+#include "kglobal.h"
 #include <kurl.h>
 #include <QApplication>
 #include <QtCore/QEventLoop>

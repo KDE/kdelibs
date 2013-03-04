@@ -30,7 +30,7 @@
 #include "kshortcut.h"
 #include "kactioncollection.h"
 #include "kstandardaction.h"
-#include <kglobal.h>
+#include "kglobal.h"
 #include <kwindowsystem.h>
 
 #include <config-kdeui.h>

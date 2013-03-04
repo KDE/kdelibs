@@ -20,7 +20,7 @@
 
 #include "kde4support_export.h"
 
-#include <kglobal.h>
+#include "kglobal.h"
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>

@@ -22,7 +22,7 @@
 #define ktemporaryfile_h
 
 #include <kde4support_export.h>
-#include <kglobal.h>
+#include "kglobal.h"
 
 #include <QtCore/QTemporaryFile>
 
