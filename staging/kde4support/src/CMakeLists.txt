@@ -131,7 +131,7 @@ install(FILES
     kdecore/kascii.h
     kdecore/qtest_kde.h
     kdecore/kstandarddirs.h
-    kdecore/kglobal.cpp
+    kdecore/kglobal.h
 
     kdeui/kaction.h
     kdeui/kapplication.h
