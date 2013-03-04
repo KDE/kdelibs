@@ -44,7 +44,7 @@
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <kcharsets.h>
-#include <kstandarddirs.h>
+#include "kstandarddirs.h"
 #include <kcomponentdata.h>
 #undef QT_NO_TRANSLATION
 #include <QtCore/QCoreApplication>
