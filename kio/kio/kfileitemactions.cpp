@@ -582,6 +582,7 @@ void KFileItemActions::addOpenWithActionsTo(QMenu* topMenu, const QString& trade
             KAction *openWithAct = new KAction(d->m_parentWidget);
             d->m_ownActions.append(openWithAct);
             openWithAct->setText(openWithActionName);
+            openWithAct->setObjectName("openwith_browse"); // for the unittest
             QObject::connect(openWithAct, SIGNAL(triggered()), d, SLOT(slotOpenWithDialog()));
             menu->addAction(openWithAct);
         }
@@ -698,6 +699,7 @@ KAction* KFileItemActionsPrivate::createAppAction(const KService::Ptr& service, 
     }
 
     KAction *act = new KAction(m_parentWidget);
+    act->setObjectName("openwith"); // for the unittest
     m_ownActions.append(act);
     act->setIcon(KIcon(service->icon()));
     act->setText(actionName);
