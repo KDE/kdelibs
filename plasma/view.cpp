@@ -320,6 +320,12 @@ Containment *View::swapContainment(Plasma::Containment *existing, const QString 
     Plasma::Corona *corona = old->corona();
     Plasma::Containment *c = corona->addContainmentDelayed(name, args);
     if (c) {
+        const bool fail = c->pluginName() != name;
+        if (fail) {
+            delete c;
+            return old;
+        }
+
         c->init();
 
         KConfigGroup oldConfig = old->config();
