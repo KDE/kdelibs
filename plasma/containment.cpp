@@ -118,7 +118,6 @@ Containment::Containment(QGraphicsItem *parent,
     setPos(0, 0);
     setBackgroundHints(NoBackground);
     setContainmentType(CustomContainment);
-    setHasConfigurationInterface(false);
 }
 
 Containment::Containment(QObject *parent, const QVariantList &args)
@@ -129,7 +128,6 @@ Containment::Containment(QObject *parent, const QVariantList &args)
     //          that requires a scene, which is not available at this point
     setPos(0, 0);
     setBackgroundHints(NoBackground);
-    setHasConfigurationInterface(false);
 }
 
 Containment::Containment(const QString &packagePath, uint appletId, const QVariantList &args)
@@ -140,7 +138,6 @@ Containment::Containment(const QString &packagePath, uint appletId, const QVaria
     //          that requires a scene, which is not available at this point
     setPos(0, 0);
     setBackgroundHints(NoBackground);
-    setHasConfigurationInterface(false);
 }
 
 Containment::~Containment()
