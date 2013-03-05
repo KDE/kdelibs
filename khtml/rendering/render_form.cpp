@@ -91,6 +91,7 @@ using namespace DOM;
         {
             noBorder = false;
             left = right = top = bottom = 0;
+            clearButtonOverlay = 0;
             setParent(parent);
         }
 
@@ -101,7 +102,7 @@ using namespace DOM;
               case QStyle::SE_PushButtonContents:
               case QStyle::SE_LineEditContents:
               case QStyle::SE_ShapedFrameContents:
-                r.adjust(left, top, -right, -bottom);
+                r.adjust(left, top, -qMax(0, right - clearButtonOverlay), -bottom);
               default:
                 break;
             }
@@ -224,6 +225,7 @@ using namespace DOM;
         }
 
         int left, right, top, bottom;
+        int clearButtonOverlay;
         bool noBorder;
     };
 
@@ -1121,6 +1123,10 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
                 w->installEventFilter(view());
             }
         }
+    }
+
+    if (m_proxyStyle) {
+        static_cast<KHTMLProxyStyle*>(m_proxyStyle)->clearButtonOverlay = qMax(0, widget()->clearButtonUsedSize().width());
     }
 }
 
