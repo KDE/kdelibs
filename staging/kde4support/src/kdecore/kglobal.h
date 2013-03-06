@@ -19,7 +19,7 @@
 #ifndef _KGLOBAL_H
 #define _KGLOBAL_H
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 #include <QtCore/QAtomicPointer>
 #include <sys/types.h>
 #include <QtCore/QObject>
@@ -326,7 +326,7 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
  * static const KCatalogLoader loader("libkdepim");
  * @endcode
  */
-class KDECORE_EXPORT KCatalogLoader
+class KDE4SUPPORT_EXPORT KCatalogLoader
 {
     public:
         KCatalogLoader(const QString &catalogName);
@@ -351,27 +351,27 @@ namespace KGlobal
      * @return the global component data
      * @deprecated since 5.0 use KComponentData::mainComponent() if you really need a KComponentData
      */
-    KDECORE_DEPRECATED_EXPORT const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
+    KDE4SUPPORT_DEPRECATED_EXPORT const KComponentData &mainComponent(); //krazy:exclude=constref (don't mess up ref-counting)
 
     /**
      * @internal
      * Returns whether a main KComponentData is available.
      * @deprecated since 5.0, use KComponentData::hasMainComponent() if you really need a KComponentData
      */
-    KDECORE_DEPRECATED_EXPORT bool hasMainComponent();
+    KDE4SUPPORT_DEPRECATED_EXPORT bool hasMainComponent();
 
     /**
      * Returns the application standard dirs object.
      * @return the global standard dir object
      */
-    KDECORE_EXPORT KStandardDirs *dirs();
+    KDE4SUPPORT_EXPORT KStandardDirs *dirs();
 
     /**
      * Returns the general config object.
      * @return the global configuration object.
      * @deprecated since 5.0, use KSharedConfig::openConfig()
      */
-    KDECORE_DEPRECATED_EXPORT KSharedConfigPtr config();
+    KDE4SUPPORT_DEPRECATED_EXPORT KSharedConfigPtr config();
 
     /**
      * Inserts the catalog in the main locale object if it exists.
@@ -379,7 +379,7 @@ namespace KGlobal
      * @since 4.6
      * @deprecated since 5.0, use KLocalizedString::insertCatalog
      */
-    KDECORE_DEPRECATED_EXPORT void insertCatalog(const QString& catalog);
+    KDE4SUPPORT_DEPRECATED_EXPORT void insertCatalog(const QString& catalog);
 
     /**
      * Returns the global locale object.
@@ -393,26 +393,26 @@ namespace KGlobal
      *
      * @deprecated since 5.0, use KLocale::global()
      */
-    KDECORE_DEPRECATED_EXPORT KLocale *locale();
+    KDE4SUPPORT_DEPRECATED_EXPORT KLocale *locale();
     /**
      * @internal
      * Returns whether KGlobal has a valid KLocale object
      * @deprecated since 5.0, port to if (qApp) because KLocale::global() can be called, as soon as a qApp exists.
      */
-    KDECORE_DEPRECATED_EXPORT bool hasLocale();
+    KDE4SUPPORT_DEPRECATED_EXPORT bool hasLocale();
 
     /**
      * The global charset manager.
      * @return the global charset manager
      * @deprecated since 5.0, use KCharsets::charsets()
      */
-    KDECORE_DEPRECATED_EXPORT KCharsets *charsets();
+    KDE4SUPPORT_DEPRECATED_EXPORT KCharsets *charsets();
 
     /**
      * Returns the umask of the process.
      * @return the umask of the process
      */
-    KDECORE_EXPORT mode_t umask();
+    KDE4SUPPORT_EXPORT mode_t umask();
 
     /**
      * Creates a static QString.
@@ -432,7 +432,7 @@ namespace KGlobal
      * @return the static string
      * @deprecated since 5.0, use QLatin1Literal()
      */
-    KDECORE_DEPRECATED_EXPORT const QString& staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDE4SUPPORT_DEPRECATED_EXPORT const QString& staticQString(const char *str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Creates a static QString.
@@ -452,7 +452,7 @@ namespace KGlobal
      * @return the static string
      * @deprecated since 5.0 don't make the string static
      */
-    KDECORE_DEPRECATED_EXPORT const QString& staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
+    KDE4SUPPORT_DEPRECATED_EXPORT const QString& staticQString(const QString &str); //krazy:exclude=constref (doesn't make sense otherwise)
 
     /**
      * Tells KGlobal about one more operations that should be finished
@@ -475,13 +475,13 @@ namespace KGlobal
      * Note that for this to happen you must call qApp->setQuitOnLastWindowClosed(false),
      * in main() for instance.
      */
-    KDECORE_EXPORT void ref();
+    KDE4SUPPORT_EXPORT void ref();
 
     /**
      * Tells KGlobal that one operation such as those described in ref() just finished.
      * This call makes the QApplication quit if the counter is back to 0.
      */
-    KDECORE_EXPORT void deref();
+    KDE4SUPPORT_EXPORT void deref();
 
     /**
      * If refcounting reaches 0 (or less), and @p allowQuit is true, the instance of the application
@@ -498,7 +498,7 @@ namespace KGlobal
      *
      * @since 4.1.1
      */
-    KDECORE_EXPORT void setAllowQuit(bool allowQuit);
+    KDE4SUPPORT_EXPORT void setAllowQuit(bool allowQuit);
 
     /**
      * The component currently active (useful in a multi-component
@@ -507,7 +507,7 @@ namespace KGlobal
      * @internal
      * @deprecated since 5.0 use KComponentData::activeComponent()
      */
-    KDECORE_DEPRECATED_EXPORT KComponentData activeComponent();
+    KDE4SUPPORT_DEPRECATED_EXPORT KComponentData activeComponent();
 
     /**
      * Set the active component for use by KAboutDialog and KBugReport.
@@ -516,7 +516,7 @@ namespace KGlobal
      * @see activeComponent()
      * @deprecated since 5.0 use KComponentData::setActiveComponent
      */
-    KDECORE_DEPRECATED_EXPORT void setActiveComponent(const KComponentData &d);
+    KDE4SUPPORT_DEPRECATED_EXPORT void setActiveComponent(const KComponentData &d);
 
     /**
      * Returns a text for the window caption.
@@ -528,10 +528,10 @@ namespace KGlobal
      * @deprecated since 5.0. Don't use in window titles anymore, Qt takes care of it.
      * If you really need this, use QGuiApplication::applicationDisplayName(), and if that's empty, QCoreApplication::applicationName().
      */
-    KDECORE_DEPRECATED_EXPORT QString caption();
+    KDE4SUPPORT_DEPRECATED_EXPORT QString caption();
 
     /// @internal
-    KDECORE_EXPORT QObject* findDirectChild_helper(const QObject* parent, const QMetaObject& mo);
+    KDE4SUPPORT_EXPORT QObject* findDirectChild_helper(const QObject* parent, const QMetaObject& mo);
 
     /**
      * Returns the child of the given object that can be cast into type T, or 0 if there is no such object.
@@ -540,7 +540,7 @@ namespace KGlobal
      * @deprecated since Qt 5, use QObject::findChild(FindDirectChildrenOnly)
      */
     template<typename T>
-    KDECORE_DEPRECATED inline T findDirectChild(const QObject* object) {
+    KDE4SUPPORT_DEPRECATED inline T findDirectChild(const QObject* object) {
         return static_cast<T>(findDirectChild_helper(object, (static_cast<T>(0))->staticMetaObject));
     }
 }
