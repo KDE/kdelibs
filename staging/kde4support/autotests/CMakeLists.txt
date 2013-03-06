@@ -20,8 +20,14 @@ macro(KDE4SUPPORT_UNIT_TESTS)
 endmacro(KDE4SUPPORT_UNIT_TESTS)
 
 kde4support_unit_tests(
+  globalcleanuptest
+  kdebugtest
   kdialog_unittest
   kfadewidgeteffecttest
+  kconfigafterkglobaltest1
+  kconfigafterkglobaltest2
+  kdebug_unittest
+  kdebug_qcoreapptest
   kmd5benchmark
   ktempdirtest
   ktemporaryfiletest

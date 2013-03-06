@@ -38,21 +38,15 @@ KDECORE_UNIT_TESTS(
  ksharedptrtest
  kdatetimetest
  kautostarttest
- globalcleanuptest
  kprocesstest
- kconfigafterkglobaltest1
- kconfigafterkglobaltest2
  ktcpsockettest
- kdebug_unittest
  qcoreapptest
- kdebug_qcoreapptest
  kcalendartest
  kconfignokdehometest
 )
 
 
 KDECORE_EXECUTABLE_TESTS(
- kdebugtest
  kmemtest
  dbuscalltest
  startserviceby
