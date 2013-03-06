@@ -1762,14 +1762,14 @@ public:
     /**
      * Returns the preferred page size for printing.
      *
-     * @return The preferred page size, cast it to QPrinter::PageSize
+     * @return The preferred page size, cast it to QPrinter::PaperSize
      */
     int pageSize() const;
 
     /**
      * Changes the preferred page size when printing.
      *
-     * @param paperFormat the new preferred page size in the format QPrinter::PageSize
+     * @param paperFormat the new preferred page size in the format QPrinter::PaperSize
      */
     void setPageSize(int paperFormat);
 
