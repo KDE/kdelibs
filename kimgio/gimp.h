@@ -245,7 +245,7 @@ static void HSVTORGB ( uchar& hue, uchar& saturation, uchar& value )
   if ( saturation == 0 ) {
     hue        = value;
     saturation = value;
-    value      = value;
+    //value      = value;
   }
   else {
     double h = hue * 6. / 255.;
