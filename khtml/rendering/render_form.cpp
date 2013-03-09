@@ -560,6 +560,8 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     setQWidget(p);
     //p->setAutoMask(true);
     p->setMouseTracking(true);
+    p->setDefault(false);
+    p->setAutoDefault(false);
 }
 
 static inline void setStyleSheet_helper(const QString& s, QWidget* w)
@@ -665,13 +667,9 @@ void RenderSubmitButton::calcMinMaxWidth()
     s = s.expandedTo(QApplication::globalStrut());
     int margin = pb->style()->pixelMetric( QStyle::PM_ButtonMargin) +
               pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
-    int w = ts.width() + margin;
 
+    int w = ts.width() + margin;
     int h = s.height();
-    if (pb->isDefault() || pb->autoDefault()) {
-        int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
-        w += dbw;
-    }
 
     assert(includesPadding());
     int hpadding = RenderWidget::paddingLeft() + RenderWidget::paddingRight();
