@@ -123,8 +123,8 @@ AccessManagerReply::~AccessManagerReply()
 
 void AccessManagerReply::abort()
 {
-    if (!m_kioJob)
-        kDebug(7044) << this;
+    if (m_kioJob)
+        m_kioJob.data()->disconnect(this);
     m_kioJob.clear();
     m_data.clear();
     m_metaDataRead = false;
