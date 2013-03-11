@@ -657,12 +657,6 @@ QString KWindowSystem::readNameProperty( WId window, unsigned long atom )
   return QString();
 }
 
-void KWindowSystem::doNotManage( const QString& title )
-{
-  //TODO
-  qDebug() << "KWindowSystem::doNotManage( const QString& title ) isn't yet implemented!";
-}
-
 QList<WId> KWindowSystem::stackingOrder()
 {
   KWindowSystem::init(INFO_WINDOWS);

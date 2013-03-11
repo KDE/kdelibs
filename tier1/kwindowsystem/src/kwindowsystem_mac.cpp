@@ -604,13 +604,6 @@ QString KWindowSystem::readNameProperty( WId window, unsigned long atom )
     return QString();
 }
 
-void KWindowSystem::doNotManage( const QString& title )
-{
-    //TODO
-    qDebug() << "KWindowSystem::doNotManage( const QString& title ) isn't yet implemented!";
-}
-
-
 void KWindowSystem::connectNotify( const char* signal )
 {
     qDebug() << "connectNotify( const char* signal )  isn't yet implemented!";

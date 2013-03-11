@@ -468,17 +468,6 @@ public:
     static QString readNameProperty( WId window, unsigned long atom );
 
     /**
-     * Informs kwin via dbus to not manage a window with the
-     * specified @p title.
-     *
-     * Useful for swallowing legacy applications, for example java
-     * applets.
-     *
-     * @param title the title of the window
-     */
-    static void doNotManage( const QString& title );
-
-    /**
      * Allows a window from another process to raise and activate itself.
      * Depending on the window manager, the grant may only be temporary,
      * or for a single activation, and it may require the current process
