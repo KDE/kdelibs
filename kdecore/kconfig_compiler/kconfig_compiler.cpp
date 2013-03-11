@@ -536,7 +536,11 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
       if (!code.isEmpty())
          cpp << endl;
 
-      cpp << "  QStringList default" << name << ";" << endl;
+      if( type == "UrlList" ) {
+        cpp << "  KUrl::List default" << name << ";" << endl;
+      } else {
+        cpp << "  QStringList default" << name << ";" << endl;
+      }
       const QStringList defaults = defaultValue.split(QLatin1Char(','));
       QStringList::ConstIterator it;
       for( it = defaults.constBegin(); it != defaults.constEnd(); ++it ) {
