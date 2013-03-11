@@ -46,22 +46,7 @@ public:
     }
 
     // virtual because reimplemented in KFolderMimeType
-    virtual QString iconName(const KUrl &) const
-    {
-        ensureXmlDataLoaded();
-        if (!m_iconName.isEmpty())
-            return m_iconName;
-
-        // Make default icon name from the mimetype name
-        // Don't store this in m_iconName, it would make the filetype editor
-        // write out icon names in every local mimetype definition file.
-        QString icon = name();
-        const int slashindex = icon.indexOf(QLatin1Char('/'));
-        if (slashindex != -1) {
-            icon[slashindex] = QLatin1Char('-');
-        }
-        return icon;
-    }
+    virtual QString iconName(const KUrl &) const;
 
     bool inherits(const QString& mime) const;
     void ensureXmlDataLoaded() const;

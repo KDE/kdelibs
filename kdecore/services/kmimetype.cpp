@@ -780,3 +780,29 @@ int KMimeTypePrivate::serviceOffersOffset() const
 {
     return KMimeTypeFactory::self()->serviceOffersOffset(name());
 }
+
+QString KMimeTypePrivate::iconName(const KUrl &) const
+{
+    static QHash<QUrl, QString> iconNameCache;
+    QString iconNameFromCache = iconNameCache.value(m_strName);
+    if (!iconNameFromCache.isEmpty())
+        return iconNameFromCache;
+
+    ensureXmlDataLoaded();
+    QString result;
+    if (!m_iconName.isEmpty()) {
+        result = m_iconName;
+    } else {
+        // Make default icon name from the mimetype name
+        // Don't store this in m_iconName, it would make the filetype editor
+        // write out icon names in every local mimetype definition file.
+        QString icon = m_strName;
+        const int slashindex = icon.indexOf(QLatin1Char('/'));
+        if (slashindex != -1) {
+            icon[slashindex] = QLatin1Char('-');
+        }
+        result = icon;
+    }
+    iconNameCache.insert(m_strName, result);
+    return result;
+}

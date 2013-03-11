@@ -26,7 +26,7 @@
 #include <QtGui/QFont>
 
 
-QTEST_KDEMAIN( KConfigSkeletonTest, NoGUI )
+QTEST_KDEMAIN( KConfigSkeletonTest, GUI )
 
 
 #define DEFAULT_SETTING1 false
