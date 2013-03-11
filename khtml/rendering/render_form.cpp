@@ -91,6 +91,7 @@ using namespace DOM;
         {
             noBorder = false;
             left = right = top = bottom = 0;
+            clearButtonOverlay = 0;
             setParent(parent);
         }
 
@@ -101,7 +102,7 @@ using namespace DOM;
               case QStyle::SE_PushButtonContents:
               case QStyle::SE_LineEditContents:
               case QStyle::SE_ShapedFrameContents:
-                r.adjust(left, top, -right, -bottom);
+                r.adjust(left, top, -qMax(0, right - clearButtonOverlay), -bottom);
               default:
                 break;
             }
@@ -224,6 +225,7 @@ using namespace DOM;
         }
 
         int left, right, top, bottom;
+        int clearButtonOverlay;
         bool noBorder;
     };
 
@@ -558,6 +560,8 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     setQWidget(p);
     //p->setAutoMask(true);
     p->setMouseTracking(true);
+    p->setDefault(false);
+    p->setAutoDefault(false);
 }
 
 static inline void setStyleSheet_helper(const QString& s, QWidget* w)
@@ -663,13 +667,9 @@ void RenderSubmitButton::calcMinMaxWidth()
     s = s.expandedTo(QApplication::globalStrut());
     int margin = pb->style()->pixelMetric( QStyle::PM_ButtonMargin) +
               pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
-    int w = ts.width() + margin;
 
+    int w = ts.width() + margin;
     int h = s.height();
-    if (pb->isDefault() || pb->autoDefault()) {
-        int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
-        w += dbw;
-    }
 
     assert(includesPadding());
     int hpadding = RenderWidget::paddingLeft() + RenderWidget::paddingRight();
@@ -1127,6 +1127,10 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
             }
         }
     }
+
+    if (m_proxyStyle) {
+        static_cast<KHTMLProxyStyle*>(m_proxyStyle)->clearButtonOverlay = qMax(0, widget()->clearButtonUsedSize().width());
+    }
 }
 
 void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
@@ -1524,8 +1528,8 @@ void RenderFileButton::updateFromElement()
     KLineEdit* edit = widget()->lineEdit();
     bool blocked = edit->blockSignals(true);
     edit->setText(element()->value().string());
-    edit->blockSignals(false);
-    edit->setModified(blocked );
+    edit->blockSignals(blocked);
+    edit->setModified(false);
 
     RenderFormElement::updateFromElement();
 }

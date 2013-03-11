@@ -74,7 +74,7 @@ void RenderMedia::layout()
 
 bool RenderMedia::eventFilter(QObject* o, QEvent* e)
 {
-    if (widget()->layout()->count() != 1 && mediaElement()->isVideo()) {
+    if (widget()->layout()->count() > 1 && mediaElement()->isVideo()) {
         switch(e->type()) {
         case QEvent::Enter:
 	case QEvent::FocusIn:

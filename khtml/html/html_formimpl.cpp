@@ -531,7 +531,7 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
                     !current->readOnly() &&
                     map.contains(current->name().string())) {
                 document()->setFocusNode(current);
-                current->setValue(map[current->name().string()]);
+                current->setValue(map.value(current->name().string()));
             }
         }
     }
@@ -664,11 +664,11 @@ void HTMLFormElementImpl::submit(  )
                 if (w->hasFolder(KWallet::Wallet::FormDataFolder())) {
                     w->setFolder(KWallet::Wallet::FormDataFolder());
                     QMap<QString, QString> map;
-                    if (!w->readMap(key, map)) {
+                    if ( !w->readMap(key, map) && (map.count() == m_walletMap.count()) ) {
                         QMap<QString, QString>::const_iterator it = map.constBegin();
                         const QMap<QString, QString>::const_iterator itEnd = map.constEnd();
                         for ( ; it != itEnd; ++it )
-                            if ( map[it.key()] != m_walletMap[it.key()] ) {
+                            if ( it.value() != m_walletMap.value(it.key()) ) {
                                 login_changed = true;
                                 break;
                             }

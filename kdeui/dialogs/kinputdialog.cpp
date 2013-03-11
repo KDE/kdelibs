@@ -40,7 +40,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
                                         QValidator *validator, const QString &mask )
     : QDialog(parent),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0), m_listBox(0)
 {
     setWindowTitle(caption);
     setModal(true);
@@ -121,7 +121,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
                                         QWidget *parent )
     : QDialog(parent),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0), m_listBox(0)
 {
     setWindowTitle(caption);
     setModal(true);
@@ -153,7 +153,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
                                         QWidget *parent )
     : QDialog( parent ),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0), m_listBox(0)
 {
     setWindowTitle(caption);
     setModal(true);
@@ -189,7 +189,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
                                         const QStringList &list, int current, bool editable, QWidget *parent )
     : QDialog(parent),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0), m_listBox(0)
 {
     setWindowTitle(caption);
     setModal(true);
@@ -242,7 +242,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
                                         QWidget *parent )
     : QDialog( parent ),
       m_label(0), m_lineEdit(0), m_intSpinBox(0),
-      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0)
+      m_doubleSpinBox(0), m_comboBox(0), m_buttonBox(0), m_listBox(0)
 {
     setWindowTitle(caption);
     setModal(true);
