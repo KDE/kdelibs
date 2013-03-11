@@ -206,6 +206,10 @@ if(NOT WIN32 AND NOT APPLE)
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
       )
+      set(UDEV_DETAILED_OUTPUT OFF CACHE BOOL "provide extended output regarding udev events")
+      if(UDEV_DETAILED_OUTPUT)
+         add_definitions(-DUDEV_DETAILED_OUTPUT)
+      endif(UDEV_DETAILED_OUTPUT)
 
       # check for media-player-info (runtime-only optional dependency)
       set(XDG_DATA_DIRS_ENV $ENV{XDG_DATA_DIRS})  # if(ENV{..}) does not work for me

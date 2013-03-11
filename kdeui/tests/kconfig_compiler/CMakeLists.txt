@@ -168,6 +168,17 @@ target_link_libraries(test11  ${KDE4_KDEUI_LIBS} )
 
 ########### next target ###############
 
+set(test12_SRCS test12main.cpp )
+
+gen_kcfg_test_source(test12 test12_SRCS)
+
+kde4_add_executable(test12 TEST ${test11_SRCS})
+
+target_link_libraries(test12  ${KDE4_KDEUI_LIBS} )
+
+
+########### next target ###############
+
 set(test_dpointer_SRCS test_dpointer_main.cpp )
 
 
