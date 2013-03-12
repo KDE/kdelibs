@@ -137,7 +137,8 @@ set(solid_LIB_SRCS
 if(NOT APPLE)
   macro_optional_find_package( HUpnp )
 
-  if ( HUPNP_FOUND AND ((HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9) OR (HUPNP_VERSION_MAJOR EQUAL 1)))
+  set(HUPNP_ENABLED FALSE CACHE BOOL "explicitly enable the compilation of the hupnp backend")
+  if (HUPNP_ENABLED AND HUPNP_FOUND AND ((HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9) OR (HUPNP_VERSION_MAJOR EQUAL 1)))
     include_directories( ${HUPNP_INCLUDE_DIR} )
     message(STATUS "Building Solid UPnP backend." )
     set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -149,6 +150,9 @@ if(NOT APPLE)
        backends/upnp/upnpcontrolpoint.cpp
     )
   else ()
+    if(NOT HUPNP_ENABLED)
+        message(STATUS "To have UPnP support, explicitly enable HUPNP_ENABLED in the cmake cache")
+    endif(NOT HUPNP_ENABLED)
     set(HUPNP_FOUND false)
   endif ()
   macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
