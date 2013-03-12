@@ -32,9 +32,17 @@
 #include <klocalizedstring.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
+#include <kcrash.h>
 
 // This test is actually called by kdebug_unittest
 // in order to see how kDebug behaves when there is no KComponentData.
+
+// Disable drkonqi, to avoid warning about it not being found (which breaks kdebug_unittest)
+void disableDrKonqi()
+{
+    KCrash::setDrKonqiEnabled(false);
+}
+Q_CONSTRUCTOR_FUNCTION(disableDrKonqi)
 
 int main(int argc, char **argv)
 {

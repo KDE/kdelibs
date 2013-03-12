@@ -92,10 +92,13 @@ static char **s_autoRestartCommandLine = 0;
 static char *s_drkonqiPath = 0;
 static char *s_kdeinit_socket_file = 0;
 static KCrash::CrashFlags s_flags = 0;
-static bool s_launchDrKonqi = false;
+static int s_launchDrKonqi = -1; // -1=initial value 0=disabled 1=enabled
 
 static void kcrashInitialize()
 {
+    if (s_launchDrKonqi == 0) { // disabled by the program itself
+        return;
+    }
     const QStringList args = QCoreApplication::arguments();
     if (qgetenv("KDE_DEBUG").isEmpty()
      && !args.contains("--nocrashhandler")) {
@@ -227,7 +230,7 @@ KCrash::setApplicationName(const QString& name)
 
 void KCrash::setDrKonqiEnabled(bool enabled)
 {
-    s_launchDrKonqi = enabled;
+    s_launchDrKonqi = enabled ? 1 : 0;
     if (s_launchDrKonqi && !s_drkonqiPath) {
         s_drkonqiPath = qstrdup(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/drkonqi");
         if (!QFile::exists(s_drkonqiPath)) {
@@ -244,7 +247,7 @@ void KCrash::setDrKonqiEnabled(bool enabled)
 
 bool KCrash::isDrKonqiEnabled()
 {
-    return s_launchDrKonqi;
+    return s_launchDrKonqi == 1;
 }
 
 static char *getDisplay();

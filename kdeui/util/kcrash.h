@@ -136,9 +136,14 @@ namespace KCrash
 
   /**
    * Enables or disables launching DrKonqi from the crash handler.
-   * By default, launching DrKonqi is disabled. However, KApplication
-   * will enable it in its constructor, so you don't need to call this
-   * function if you are using KApplication.
+   * By default, launching DrKonqi is enabled when QCoreApplication is created.
+   * To disable it:
+   * @code
+   void disableDrKonqi()
+   {
+       KCrash::setDrKonqiEnabled(false);
+   }
+   Q_CONSTRUCTOR_FUNCTION(disableDrKonqi)
    * @note It is the crash handler's responsibility to launch DrKonqi.
    * Therefore, if no crash handler is set, this method also installs
    * the default crash handler to ensure that DrKonqi will be launched.
