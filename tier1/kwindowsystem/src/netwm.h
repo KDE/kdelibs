@@ -34,7 +34,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-#include <fixx11h_p.h>
+#include <fixx11h.h>
 
 #include "netwm_def.h"
 

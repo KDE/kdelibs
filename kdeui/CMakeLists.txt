@@ -455,7 +455,7 @@ if (APPLE)
 elseif (WIN32)
     install( FILES util/kkeyserver_win.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 else(WIN32)
-   install( FILES util/fixx11h.h util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+   install( FILES util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 endif (APPLE)
 
 install( FILES

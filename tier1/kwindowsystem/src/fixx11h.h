@@ -27,9 +27,6 @@ DEALINGS IN THE SOFTWARE.
 //#define   multiple times
 
 #include <QtCore/QtGlobal>
-#include <config-kdeui.h>
-
-#if HAVE_X11
 
 /* Usage:
 
@@ -303,5 +300,3 @@ const char* rindex( const char* s, int c )
 }
 
 using namespace X;
-
-#endif

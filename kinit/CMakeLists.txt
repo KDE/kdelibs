@@ -3,6 +3,7 @@ project(kdeinit)
 include_directories( ${KDE4_KPARTS_INCLUDES} )
 include_directories( ${CMAKE_BINARY_DIR}/staging/kio/src/core )
 include_directories( ${ki18n_SOURCE_DIR}/src ${ki18n_BINARY_DIR}/src )
+include_directories( ${KWindowSystem_INCLUDE_DIRS} )
 
 ########### Configuring (mainly for proctitle) ###########
 

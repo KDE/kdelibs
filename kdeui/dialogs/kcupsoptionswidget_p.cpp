@@ -20,7 +20,9 @@
 
 #include "kcupsoptionswidget_p.h"
 
+#if HAVE_X11
 #include <fixx11h.h>
+#endif
 #include <QPrinter>
 #include <QPrintEngine>
 #include <QPrintDialog>

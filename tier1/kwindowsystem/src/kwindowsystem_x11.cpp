@@ -26,7 +26,7 @@
 #include <kxerrorhandler_p.h>
 #include <kxutils_p.h>
 #include <netwm.h>
-#include <fixx11h_p.h>
+#include <fixx11h.h>
 
 #include <QApplication>
 #include <QBitmap>

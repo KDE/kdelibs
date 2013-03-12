@@ -18,9 +18,20 @@ macro(KWINDOWSYSTEM_UNIT_TESTS)
       ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KWINDOWSYSTEM_UNIT_TESTS)
+macro(KWINDOWSYSTEM_EXECUTABLE_TESTS)
+   foreach(_testname ${ARGN})
+      add_executable(${_testname} ${_testname}.cpp)
+      target_link_libraries(${_testname} KWindowSystem ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} Qt5::X11Extras)
+      ecm_mark_as_test(${_testname})
+   endforeach()
+endmacro()
 
 kwindowsystem_unit_tests(
    kstartupinfo_unittest
    kxmessages_unittest
 )
 
+kwindowsystem_executable_tests(
+   fixx11h_test
+   fixx11h_test2
+)

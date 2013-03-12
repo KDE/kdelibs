@@ -70,6 +70,7 @@ set_target_properties(KWindowSystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION
 install(TARGETS KWindowSystem EXPORT KWindowSystemTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
+   fixx11h.h
    kstartupinfo.h
    kwindoweffects.h
    kwindowinfo.h

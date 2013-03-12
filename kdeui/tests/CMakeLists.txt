@@ -114,8 +114,6 @@ if (X11_FOUND)
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
 include_directories(${Qt5X11Extras_INCLUDE_DIRS})
 KDEUI_EXECUTABLE_TESTS(
- fixx11h_test
- fixx11h_test2
  kxerrorhandlertest
 )
 

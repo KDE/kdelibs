@@ -13,6 +13,7 @@ include_directories(
   ${KWidgetsAddons_INCLUDE_DIRS}
   ${ki18n_SOURCE_DIR}/src
   ${ki18n_BINARY_DIR}/src
+  ${KWindowSystem_INCLUDE_DIRS}
 )
 if(Soprano_FOUND)
 include_directories(${SOPRANO_INCLUDE_DIR})

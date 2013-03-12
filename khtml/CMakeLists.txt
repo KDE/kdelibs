@@ -488,6 +488,7 @@ include_directories(
    ${CMAKE_SOURCE_DIR}/staging/sonnet/src/core/
    ${ki18n_SOURCE_DIR}/src
    ${ki18n_BINARY_DIR}/src
+   ${KWindowSystem_INCLUDE_DIRS}
 )
 
 include_directories(

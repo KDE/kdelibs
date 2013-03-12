@@ -36,7 +36,9 @@
 #include <assert.h>
 #include <QX11Info>
 #include <QPainter>
+#if HAVE_X11
 #include <fixx11h.h>
+#endif
 #include <QtGlobal>
 #include <kdebug.h>
 

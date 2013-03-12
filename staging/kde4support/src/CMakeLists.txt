@@ -85,6 +85,7 @@ include_directories(
     ${kwidgets_SOURCE_DIR}/src/utils # kglobalsettings
     ${kwidgets_SOURCE_DIR}/src/widgets # kpushbutton
     ${KWidgetsAddons_INCLUDE_DIRS}
+    ${KWindowSystem_INCLUDE_DIRS}
     ${KAuth_INCLUDE_DIRS}
     ${kinterprocesswindowing_BINARY_DIR}/src
     ${kinterprocesswindowing_SOURCE_DIR}/src

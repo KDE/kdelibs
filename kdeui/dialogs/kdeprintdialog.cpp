@@ -33,7 +33,9 @@
 #include "klocalizedstring.h"
 #include "kdeversion.h"
 
+#if HAVE_X11
 #include <fixx11h.h> // for enable-final
+#endif
 #include <QPrintDialog>
 #include <QLabel>
 
