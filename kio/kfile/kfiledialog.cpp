@@ -1189,12 +1189,7 @@ public:
         }
 
         fileModule(); // make sure i18n is initialized properly, needed for pure Qt applications
-        QUrl url(KFileDialog::getExistingDirectory(QUrl::fromLocalFile(dir), parent, caption));
-
-        if (url.isLocalFile())
-            return url.toLocalFile();
-        else
-            return QString();
+        return KFileDialog::getExistingDirectory(QUrl::fromLocalFile(dir), parent, caption);
     }
 
     static QString getOpenFileName(QWidget *parent, const QString &caption, const QString &dir,
