@@ -273,14 +273,7 @@ void PreviewJobPrivate::startPreview()
             protocols.append(p);
         }
         foreach (const QString &protocol, protocols) {
-            QStringList mtypes = (*it)->serviceTypes();
-            // Filter out non-mimetype servicetypes
-            // TODO KDE5: use KService::mimeTypes()
-            foreach (const QString &_mtype, mtypes) {
-                if (!((*it)->hasMimeType(_mtype))) {
-                    mtypes.removeAll(_mtype);
-                }
-            }
+            const QStringList mtypes = (*it)->mimeTypes();
             // Add supported mimetype for this protocol
             QStringList &_ms = m_remoteProtocolPlugins[protocol];
             foreach (const QString &_m, mtypes) {
