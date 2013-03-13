@@ -26,13 +26,18 @@
 #include <kdebug.h>
 #include <QtCore/QProcess>
 
+// Set up the env before the first qDebug/qWarning (e.g. from kcrash)
+void setEnvironmentVariables()
+{
+    qputenv("KDE_DEBUG_TIMESTAMP", "");
+    qputenv("QT_MESSAGE_PATTERN", "%{appname}(%{pid})/%{category} %{function}: %{message}");
+}
+Q_CONSTRUCTOR_FUNCTION(setEnvironmentVariables)
+
 QTEST_MAIN(KDebugTest)
 
 void KDebugTest::initTestCase()
 {
-    qputenv("KDE_DEBUG_TIMESTAMP", "");
-    qputenv("QT_MESSAGE_PATTERN", "%{appname}(%{pid})/%{category} %{function}: %{message}");
-
     // The source files (kdebugrc and kdebug.areas) are in the "global" config dir:
     qputenv("XDG_CONFIG_DIRS", QFile::encodeName(QFileInfo(QFINDTESTDATA("../../../kdecore/kdebug.areas")).absolutePath()));
 
