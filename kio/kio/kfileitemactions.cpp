@@ -355,7 +355,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
                 // next, do we match all files?
                 if (!ok &&
                     !d->m_props.isDirectory() &&
-                    *it == "all/allfiles") {
+                    (*it == "all/allfiles" || *it == "application/octet-stream")) {
                     checkTheMimetypes = true;
                 }
 
