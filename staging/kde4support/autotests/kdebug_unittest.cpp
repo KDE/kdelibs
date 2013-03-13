@@ -30,7 +30,6 @@ QTEST_MAIN(KDebugTest)
 
 void KDebugTest::initTestCase()
 {
-    qputenv("KDE_DEBUG_FILELINE", "");
     qputenv("KDE_DEBUG_TIMESTAMP", "");
     qputenv("QT_MESSAGE_PATTERN", "%{appname}(%{pid})/%{category} %{function}: %{message}");
 
