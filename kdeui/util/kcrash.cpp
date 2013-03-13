@@ -234,7 +234,7 @@ void KCrash::setDrKonqiEnabled(bool enabled)
     if (s_launchDrKonqi && !s_drkonqiPath) {
         s_drkonqiPath = qstrdup(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/drkonqi");
         if (!QFile::exists(s_drkonqiPath)) {
-            kError() << "Could not find drkonqi at" << s_drkonqiPath;
+            qWarning() << "Could not find drkonqi at" << s_drkonqiPath;
             s_launchDrKonqi = false;
         }
     }
