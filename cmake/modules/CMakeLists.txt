@@ -84,12 +84,9 @@ set(cmakeFiles
                FindPulseAudio.cmake
                FindPyKDE4.cmake
                FindPyQt4.cmake
-               Qt4Macros.cmake
-               Qt4ConfigDependentSettings.cmake
                FindPythonLibrary.cmake
                FindQCA2.cmake
                FindQImageBlitz.cmake
-               FindQt4.cmake
                FindRUBY.cmake
                FindSIP.cmake
                FindSamba.cmake
