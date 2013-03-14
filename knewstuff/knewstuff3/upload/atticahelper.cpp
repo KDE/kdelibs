@@ -39,6 +39,17 @@ void AtticaHelper::init()
     providerManager.loadDefaultProviders();
 }
 
+void AtticaHelper::addProviderFile(const QUrl& file)
+{
+    if (! providerManager.providerFiles().contains(file)) {
+        // If a custom provider file is added, remove all the default ones.
+        foreach ( const QUrl& url, providerManager.defaultProviderFiles() ) {
+            providerManager.removeProviderFileFromDefaultProviders(url);
+        }
+        providerManager.addProviderFile(file);
+    }
+}
+
 void AtticaHelper::defaultProvidersLoaded()
 {
     QStringList providers;

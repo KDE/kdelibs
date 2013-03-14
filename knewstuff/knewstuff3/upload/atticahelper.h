@@ -44,6 +44,7 @@ public:
     void init();
 
     void setCurrentProvider(const QString& provider);
+    void addProviderFile(const QUrl& file);
 
     Attica::Provider provider();
 
