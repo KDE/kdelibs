@@ -27,7 +27,7 @@
 #include "soliddefs_p.h"
 #include "org_kde_solid_networking_client.h"
 
-SOLID_GLOBAL_STATIC(Solid::NetworkingPrivate, globalNetworkManager)
+Q_GLOBAL_STATIC(Solid::NetworkingPrivate, globalNetworkManager)
 
 Solid::NetworkingPrivate::NetworkingPrivate()
     : netStatus(Solid::Networking::Unknown),

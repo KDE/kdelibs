@@ -51,7 +51,7 @@ struct ParsingData
 }
 }
 
-SOLID_GLOBAL_STATIC(QThreadStorage<Solid::PredicateParse::ParsingData *>, s_parsingData)
+Q_GLOBAL_STATIC(QThreadStorage<Solid::PredicateParse::ParsingData *>, s_parsingData)
 
 Solid::Predicate Solid::Predicate::fromString(const QString &predicate)
 {

@@ -25,7 +25,7 @@
 
 #include <QtCore/QCoreApplication>
 
-SOLID_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
+Q_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
 
 Solid::PowerManagementPrivate::PowerManagementPrivate()
     : managerIface("org.freedesktop.PowerManagement",

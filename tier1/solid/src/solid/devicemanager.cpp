@@ -30,7 +30,7 @@
 
 #include "soliddefs_p.h"
 
-SOLID_GLOBAL_STATIC(Solid::DeviceManagerStorage, globalDeviceStorage)
+Q_GLOBAL_STATIC(Solid::DeviceManagerStorage, globalDeviceStorage)
 
 Solid::DeviceManagerPrivate::DeviceManagerPrivate()
     : m_nullDevice(new DevicePrivate(QString()))

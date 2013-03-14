@@ -103,7 +103,7 @@
 #define FSNAME(var) var.mnt_special
 #endif
 
-SOLID_GLOBAL_STATIC(Solid::Backends::Fstab::FstabHandling, globalFstabCache)
+Q_GLOBAL_STATIC(Solid::Backends::Fstab::FstabHandling, globalFstabCache)
 
 Solid::Backends::Fstab::FstabHandling::FstabHandling()
     : m_fstabCacheValid(false),

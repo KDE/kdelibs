@@ -36,8 +36,8 @@
 #include "soliddefs_p.h"
 
 typedef QMap<QByteArray, Solid::OpticalDisc::ContentTypes> ContentTypesCache;
-SOLID_GLOBAL_STATIC(ContentTypesCache, cache)
-SOLID_GLOBAL_STATIC(QMutex, cacheLock)
+Q_GLOBAL_STATIC(ContentTypesCache, cache)
+Q_GLOBAL_STATIC(QMutex, cacheLock)
 
 // inspired by http://cgit.freedesktop.org/hal/tree/hald/linux/probing/probe-volume.c
 static Solid::OpticalDisc::ContentType advancedDiscDetect(const QByteArray & device_file)
