@@ -9,7 +9,7 @@ add_executable(fakehardwaretest ${fakehardwaretest_SRCS})
 add_test(fakehardwaretest fakehardwaretest)
 ecm_mark_as_test(fakehardwaretest)
 
-target_link_libraries(fakehardwaretest Solid_static ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY})
+target_link_libraries(fakehardwaretest Solid_static ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY})
 # QT5 TODO Port solid to QFINDTESTDATA
 set_target_properties(fakehardwaretest PROPERTIES COMPILE_FLAGS -DTEST_DATA="\\"${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw/fakecomputer.xml\\"")
 
@@ -39,7 +39,7 @@ set_target_properties(solidhwtest PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
-target_link_libraries(solidhwtest ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} ${LIBS} Solid_static)
+target_link_libraries(solidhwtest ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} Solid_static)
 
 ########### solidmttest ###############
 
@@ -55,5 +55,5 @@ set_target_properties(solidmttest PROPERTIES COMPILE_FLAGS -DSOLID_STATIC_DEFINE
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../src/solid/backends/fakehw )
 
-target_link_libraries(solidmttest ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} ${LIBS} Solid_static Qt5::Concurrent)
+target_link_libraries(solidmttest ${QT_QTDBUS_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTTEST_LIBRARY} ${LIBS} Solid_static Qt5::Concurrent)
 

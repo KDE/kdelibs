@@ -250,7 +250,7 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
 
       set_target_properties(kdeinit_${_target_NAME} PROPERTIES OUTPUT_NAME kdeinit4_${_target_NAME})
 
-      target_link_libraries(${_target_NAME} ${QT_QTMAIN_LIBRARY} kdeinit_${_target_NAME})
+      target_link_libraries(${_target_NAME} kdeinit_${_target_NAME})
    else(WIN32)
 
       add_library(kdeinit_${_target_NAME} SHARED ${_SRCS})
@@ -440,10 +440,6 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
    endif (_test)
 
    kde4_handle_rpath_for_executable(${_target_NAME})
-
-   if (WIN32)
-      target_link_libraries(${_target_NAME} ${QT_QTMAIN_LIBRARY})
-   endif (WIN32)
 
 endmacro (KDE4_ADD_EXECUTABLE)
 

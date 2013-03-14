@@ -36,7 +36,6 @@ target_link_libraries(proxymodeltestapp
    proxymodeltestsuite
    ${QT_QTSCRIPT_LIBRARY}
    Qt5::Widgets
-   ${QT_QTMAIN_LIBRARY}
 )
 
 

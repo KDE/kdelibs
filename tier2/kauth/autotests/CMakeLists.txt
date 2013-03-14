@@ -36,7 +36,7 @@ add_executable(KAuthSetupActionTest ${SetupActionTest_SRCS})
 add_test(KAuthSetupActionTest KAuthSetupActionTest)
 ecm_mark_as_test(KAuthSetupActionTest)
 
-target_link_libraries(KAuthSetupActionTest ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} kauth_tests_static)
+target_link_libraries(KAuthSetupActionTest ${QT_QTTEST_LIBRARY} kauth_tests_static)
 
 ########### next target ###############
 
@@ -46,4 +46,4 @@ add_executable(KAuthHelperTest ${HelperTest_SRCS})
 add_test(KAuthHelperTest KAuthHelperTest)
 ecm_mark_as_test(KAuthHelperTest)
 
-target_link_libraries(KAuthHelperTest ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} kauth_tests_static)
+target_link_libraries(KAuthHelperTest ${QT_QTTEST_LIBRARY} kauth_tests_static)

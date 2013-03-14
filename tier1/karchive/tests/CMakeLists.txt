@@ -11,7 +11,7 @@ include(ECMMarkAsTest)
 macro(KARCHIVE_EXECUTABLE_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
-      target_link_libraries(${_testname} KArchive ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY})
+      target_link_libraries(${_testname} KArchive ${QT_QTTEST_LIBRARY})
       ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KARCHIVE_EXECUTABLE_TESTS)
