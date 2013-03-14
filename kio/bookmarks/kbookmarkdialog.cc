@@ -33,7 +33,7 @@
 #include <QTreeWidget>
 #include <QHeaderView>
 #include <kiconloader.h>
-#include <kstandardguiitem.h>
+#include <kguiitem.h>
 
 KBookmarkDialogPrivate::KBookmarkDialogPrivate(KBookmarkDialog *q)
     : q(q)
