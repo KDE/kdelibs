@@ -39,7 +39,6 @@
 #include <kcoreauthorized.h>
 #include <khistorycombobox.h>
 #include <kdesktopfile.h>
-#include <kiconloader.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
