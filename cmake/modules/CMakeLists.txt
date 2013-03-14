@@ -26,7 +26,6 @@ set(cmakeFiles
                FindAGG.cmake
                FindAkode.cmake
                FindAlsa.cmake
-               FindAutomoc4.cmake
                FindAvahi.cmake
                FindBerkeleyDB.cmake
                FindBlitz.cmake
@@ -82,8 +81,6 @@ set(cmakeFiles
                FindPopplerQt4.cmake
                FindPostgreSQL.cmake
                FindPulseAudio.cmake
-               FindPyKDE4.cmake
-               FindPyQt4.cmake
                FindPythonLibrary.cmake
                FindQCA2.cmake
                FindQImageBlitz.cmake
@@ -130,11 +127,8 @@ set(cmakeFiles
                config-alsa.h.cmake
                create_exe_symlink.cmake
                cmake-modules-styleguide.txt
-               kde4automoc.files.in
                BasicFindPackageVersion.cmake.in
                FindLibPython.py
-               FindPyKDE4.py
-               FindPyQt.py
                FindSIP.py
                PythonCompile.py
                )
