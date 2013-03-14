@@ -155,11 +155,7 @@ if(NOT APPLE)
     endif(NOT HUPNP_ENABLED)
     set(HUPNP_FOUND false)
   endif ()
-  set_package_properties(HUpnp PROPERTIES DESCRIPTION "UPnP support for Solid"
-                         URL "http://www.herqq.org"
-                         TYPE OPTIONAL
-                         PURPOSE "Allows Solid to provide information about UPnP devices on the network"
-                        )
+  macro_log_feature( HUPNP_FOUND "HUPnP" "UPnP support for Solid" "http://www.herqq.org" FALSE "" "Allows Solid to provide information about UPnP devices on the network" )
 endif(NOT APPLE)
 
 if(NOT WIN32 AND NOT APPLE)
