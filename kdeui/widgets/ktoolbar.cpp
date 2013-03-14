@@ -45,7 +45,6 @@
 #include <kicontheme.h>
 #include <kedittoolbar.h>
 #include <kglobalsettings.h>
-#include <kguiitem.h>
 #include <klocalizedstring.h>
 #include <kxmlguiwindow.h>
 #include <kmenu.h>
