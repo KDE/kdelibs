@@ -189,7 +189,7 @@ The "lib" resource was not used directly in code (the linker finds shared libs, 
 The "module" resource, on the other hand, was used to locate plugins. KPluginLoader now uses QT_PLUGIN_PATH instead, and looks in the kf5 subdirectory.
 Please email kde-frameworks-devel@kde.org if you would need public API for this.
 
-A script is available in kdesdk/scripts/kf5/convert-kstandarddirs.pl to port some of this.
+A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to port some of this.
 </li>
 <li>KConfig has been ported to QStandardPaths. This changes the "const char* resourceType" in the API into QStandardPaths::StandardLocation, and means that modifying the "config" resource before using KConfig has no effect on KConfig anymore.
 </li>
