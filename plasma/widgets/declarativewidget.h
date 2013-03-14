@@ -133,8 +133,8 @@ private:
     Q_PRIVATE_SLOT(d, void minimumHeightChanged())
     Q_PRIVATE_SLOT(d, void maximumWidthChanged())
     Q_PRIVATE_SLOT(d, void maximumHeightChanged())
-    Q_PRIVATE_SLOT(d, void preferredWidthChanged())
-    Q_PRIVATE_SLOT(d, void preferredHeightChanged())
+    Q_PRIVATE_SLOT(d, void implicitWidthChanged())
+    Q_PRIVATE_SLOT(d, void implicitHeightChanged())
 };
 
 } // namespace Plasma

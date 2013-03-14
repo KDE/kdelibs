@@ -331,6 +331,10 @@ void KDirWatchPrivate::inotifyEventReceived()
             e->wd = -1;
             e->m_ctime = invalid_ctime;
             emitEvent(e, Deleted, e->path);
+            // If the parent dir was already watched, tell it something changed
+            Entry* parentEntry = entry(e->parentDirectory());
+            if (parentEntry)
+                parentEntry->dirty = true;
             // Add entry to parent dir to notice if the entry gets recreated
             addEntry(0, e->parentDirectory(), e, true /*isDir*/);
           }
@@ -1594,6 +1598,10 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
           e->m_status = NonExistent;
           e->m_ctime = invalid_ctime;
           emitEvent(e, Deleted, e->path);
+          // If the parent dir was already watched, tell it something changed
+          Entry* parentEntry = entry(e->parentDirectory());
+          if (parentEntry)
+              parentEntry->dirty = true;
           // Add entry to parent dir to notice if the entry gets recreated
           addEntry(0, e->parentDirectory(), e, true /*isDir*/);
         } else {
