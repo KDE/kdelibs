@@ -22,8 +22,6 @@
 #ifndef KCHECKACCELERATORS_H_
 #define KCHECKACCELERATORS_H_
 
-#include <kdeui_export.h>
-
 #include <QObject>
 #include <QPointer>
 
@@ -81,23 +79,17 @@ class QTextBrowser;
 
 */
 
-class KDEUI_EXPORT KCheckAccelerators: public QObject
+class KCheckAccelerators: public QObject
 {
     Q_OBJECT
 public:
-    /**
-     * Creates a KCheckAccelerators instance for the given object if this feature is enabled in kdeglobals.
-     * @param parent the parent to check
-     */
-    static void initiateIfNeeded(QObject* parent);
+    KCheckAccelerators(QObject* parent, int key, bool autoCheck, bool copyWidgetText);
     /**
      * Re-implemented to filter the parent's events.
      */
     bool eventFilter(QObject*, QEvent* e);
 
 private:
-    KCheckAccelerators(QObject* parent, int key, bool autoCheck, bool copyWidgetText);
-
     void checkAccelerators(bool automatic);
     int key;
     bool block;

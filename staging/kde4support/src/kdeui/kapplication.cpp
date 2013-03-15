@@ -36,7 +36,6 @@
 
 #include "kcoreauthorized.h"
 #include "k4aboutdata.h"
-#include "kcheckaccelerators.h"
 #include "kcrash.h"
 #include "kconfig.h"
 #include "kcmdlineargs.h"
@@ -489,7 +488,6 @@ void KApplicationPrivate::init(bool GUIenabled)
 
     KMessage::setMessageHandler( new KMessageBoxMessageHandler(0) );
 
-    KCheckAccelerators::initiateIfNeeded(q);
     KGestureMap::self()->installEventFilterOnMe( q );
 
     q->connect(KToolInvocation::self(), SIGNAL(kapplication_hook(QStringList&,QByteArray&)),

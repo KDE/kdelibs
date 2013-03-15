@@ -19,8 +19,6 @@
     Boston, MA 02110-1301, USA.
  */
 
-#define INCLUDE_MENUITEM_DEF
-
 #include "kcheckaccelerators.h"
 
 #include <QApplication>
@@ -30,7 +28,6 @@
 #include <QMouseEvent>
 #include <QLayout>
 #include <QMenuBar>
-#include <QMetaObject>
 #include <QPushButton>
 #include <QTabBar>
 
@@ -50,24 +47,39 @@
 #include "kacceleratormanager.h"
 #include <kconfiggroup.h>
 
-void KCheckAccelerators::initiateIfNeeded(QObject* parent)
+class KCheckAcceleratorsInitializer : public QObject
 {
-    KConfigGroup cg( KSharedConfig::openConfig(), "Development" );
-    QString sKey = cg.readEntry( "CheckAccelerators" ).trimmed();
-    int key=0;
-    if( !sKey.isEmpty() ) {
-      KShortcut cuts( sKey );
-      if( !cuts.isEmpty() )
-        key = cuts.primary()[0];
+    Q_OBJECT
+public Q_SLOTS:
+    void initiateIfNeeded()
+    {
+        KConfigGroup cg(KSharedConfig::openConfig(), "Development");
+        QString sKey = cg.readEntry("CheckAccelerators").trimmed();
+        int key = 0;
+        if (!sKey.isEmpty()) {
+          KShortcut cuts(sKey);
+          if (!cuts.isEmpty())
+            key = cuts.primary()[0];
+        }
+        const bool autoCheck = cg.readEntry("AutoCheckAccelerators", true);
+        const bool copyWidgetText = cg.readEntry("CopyWidgetText", false);
+        if (!copyWidgetText && key == 0 && !autoCheck)
+            return;
+
+        new KCheckAccelerators(qApp, key, autoCheck, copyWidgetText);
+        deleteLater();
     }
-    bool autoCheck = cg.readEntry( "AutoCheckAccelerators", true );
-    bool copyWidgetText = cg.readEntry( "CopyWidgetText", false );
+};
 
-    if (!copyWidgetText && key==0 && !autoCheck)
-        return;
-
-    new KCheckAccelerators(parent, key, autoCheck, copyWidgetText);
+static void startupFunc()
+{
+    // Call initiateIfNeeded once we're in the event loop
+    // This is to prevent using KSharedConfig before main() can set the app name
+    KCheckAcceleratorsInitializer* initializer = new KCheckAcceleratorsInitializer;
+    QTimer::singleShot(0, initializer, SLOT(initiateIfNeeded));
 }
+
+Q_COREAPP_STARTUP_FUNCTION(startupFunc)
 
 KCheckAccelerators::KCheckAccelerators(QObject* parent, int key_, bool autoCheck_, bool copyWidgetText_)
     : QObject(parent)
@@ -273,3 +285,4 @@ void KCheckAccelerators::checkAccelerators( bool automatic )
     // dlg will be destroyed before returning
 }
 
+#include "kcheckaccelerators.moc"
