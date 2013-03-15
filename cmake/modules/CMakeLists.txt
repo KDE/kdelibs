@@ -54,8 +54,6 @@ set(cmakeFiles
                FindKDevPlatform.cmake
                FindKdcraw.cmake
                FindKdeMultimedia.cmake
-               FindKdepim.cmake
-               FindKdepimLibs.cmake
                FindKexiv2.cmake
                FindKF5Transitional.cmake
                FindKipi.cmake
