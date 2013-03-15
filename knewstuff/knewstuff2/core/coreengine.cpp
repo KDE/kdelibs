@@ -1454,7 +1454,6 @@ bool CoreEngine::install(const QString &payloadfile)
                        || mimeType->name() == "application/x-xz") {
                 archive = new KTar(payloadfile);
             } else {
-                delete archive;
                 kError() << "Could not determine type of archive file '" << payloadfile << "'";
                 if (m_installation->uncompression() == "always") {
                     return false;
