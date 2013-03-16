@@ -76,7 +76,7 @@ static void startupFunc()
     // Call initiateIfNeeded once we're in the event loop
     // This is to prevent using KSharedConfig before main() can set the app name
     KCheckAcceleratorsInitializer* initializer = new KCheckAcceleratorsInitializer;
-    QTimer::singleShot(0, initializer, SLOT(initiateIfNeeded()));
+    QMetaObject::invokeMethod(initializer, "initiateIfNeeded", Qt::QueuedConnection);
 }
 
 Q_COREAPP_STARTUP_FUNCTION(startupFunc)
