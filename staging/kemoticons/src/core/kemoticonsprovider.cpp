@@ -25,7 +25,8 @@
 #include <QTextDocument>
 #include <QUrl>
 
-#include <kio/netaccess.h>
+#include <kio/copyjob.h>
+#include <kio/jobuidelegate.h>
 #include "kdebug.h"
 
 class KEmoticonsProviderPrivate
@@ -71,7 +72,8 @@ bool KEmoticonsProvider::removeEmoticon(const QString &emo)
 bool KEmoticonsProvider::addEmoticon(const QString &emo, const QString &text, AddEmoticonOption option)
 {
     if (option == Copy) {
-        KIO::NetAccess::dircopy(QUrl::fromLocalFile(emo), QUrl::fromLocalFile(d->m_themePath), 0);
+        KIO::CopyJob* job = KIO::copy(QUrl::fromLocalFile(emo), QUrl::fromLocalFile(d->m_themePath));
+        job->exec();
     }
 
     Q_UNUSED(text);

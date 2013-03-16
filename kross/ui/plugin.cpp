@@ -33,6 +33,9 @@
 #include <QUrl>
 #include <qstandardpaths.h>
 #include <qurlpathinfo.h>
+#include <job.h>
+#include <deletejob.h>
+#include <mkdirjob.h>
 
 using namespace Kross;
 
@@ -260,7 +263,8 @@ void ScriptingPlugin::slotEditScriptActions()
 {
     if(!KIO::NetAccess::exists(QUrl::fromLocalFile(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
         QUrl dir = QUrlPathInfo(QUrl::fromLocalFile(d->userActionsFile)).directoryUrl();
-        KIO::NetAccess::mkdir(dir, 0);
+        KIO::MkdirJob* job = KIO::mkdir(dir, 0);
+        job->exec();
 
         save();
     }
@@ -271,6 +275,7 @@ void ScriptingPlugin::slotEditScriptActions()
 
 void ScriptingPlugin::slotResetScriptActions()
 {
-    KIO::NetAccess::del(QUrl::fromLocalFile(d->userActionsFile), 0);
+    KIO::DeleteJob* job = KIO::del(QUrl::fromLocalFile(d->userActionsFile));
+    job->exec();
 }
 

@@ -39,6 +39,7 @@
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
+#include <kio/mkdirjob.h>
 #include <kio/netaccess.h>
 #include <kio/renamedialog.h>
 #include <jobuidelegate.h>
@@ -149,7 +150,11 @@ void KDirSelectDialog::Private::slotMkdir()
     {
         folderurl.addPath( *it );
         exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, m_parent );
-        writeOk = !exists && KIO::NetAccess::mkdir( folderurl, m_parent );
+        if (!exists) {
+            KIO::MkdirJob* job = KIO::mkdir(folderurl);
+            job->ui()->setWindow(m_parent);
+            writeOk = job->exec();
+        }
     }
 
     if ( exists ) // url was already existent

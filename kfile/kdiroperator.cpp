@@ -63,6 +63,7 @@
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
+#include <kio/mkdirjob.h>
 #include <kio/jobuidelegate.h>
 #include <kio/jobclasses.h>
 #include <kio/netaccess.h>
@@ -754,7 +755,11 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     for (; it != dirs.end(); ++it) {
         urlInfo.addPath(*it);
         exists = KIO::NetAccess::exists(urlInfo.url(), KIO::NetAccess::DestinationSide, this);
-        writeOk = !exists && KIO::NetAccess::mkdir(urlInfo.url(), this);
+        if (!exists) {
+            KIO::MkdirJob *job = KIO::mkdir(urlInfo.url());
+            job->ui()->setWindow(this);
+            writeOk = job->exec();
+        }
     }
 
     if (exists) { // url was already existent

@@ -187,10 +187,10 @@ public:
      *               prompted for passwords as needed.
      *
      * @return true if successful, false for failure
+     * @deprecated since 5.0, use KIO::file_copy + job->ui()->setWindow() + job->exec() instead
      */
-    static bool file_copy( const QUrl& src, const QUrl& target, QWidget* window = 0 );
-    /// @deprecated, use file_copy instead
 #ifndef KDE_NO_DEPRECATED
+    static KIO_DEPRECATED bool file_copy( const QUrl& src, const QUrl& target, QWidget* window = 0 );
     static KIO_DEPRECATED bool copy( const QUrl& src, const QUrl& target,
                                      QWidget* window = 0 );
 #endif
@@ -214,18 +214,23 @@ public:
      *               only for a short duration after which the user will again be
      *               prompted for passwords as needed.
      * @return true if successful, false for failure
+     * @deprecated since 5.0, use KIO::copy + job->ui()->setWindow() + job->exec() instead
      */
-    static bool dircopy( const QUrl& src, const QUrl& target, QWidget* window ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
+#ifndef KDE_NO_DEPRECATED
+    static KIO_DEPRECATED bool dircopy( const QUrl& src, const QUrl& target, QWidget* window );
+#endif
 
     /**
      * Overloaded method, which takes a list of source URLs
+     * @deprecated since 5.0, use KIO::copy + job->ui()->setWindow() + job->exec() instead
      */
-    static bool dircopy( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L ); // TODO deprecate in favor of KIO::copy + synchronousRun (or job->exec())
-
+#ifndef KDE_NO_DEPRECATED
+    static KIO_DEPRECATED bool dircopy( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L );
+#endif
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames one file or directory.
-     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
+     * @deprecated since 5.0, use KIO::move + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
     static KIO_DEPRECATED bool move( const QUrl& src, const QUrl& target, QWidget* window = 0L );
@@ -234,7 +239,7 @@ public:
     /**
      * Full-fledged equivalent of KIO::move.
      * Moves or renames a list of files or directories.
-     * @deprecated use KIO::move and then KIO::NetAccess::synchronousRun (or job->exec())
+     * @deprecated since 5.0, use KIO::move + job->ui()->setWindow() + job->exec() instead
      */
 #ifndef KDE_NO_DEPRECATED
     static KIO_DEPRECATED bool move( const QList<QUrl>& src, const QUrl& target, QWidget* window = 0L );
@@ -326,8 +331,11 @@ public:
      *               cached only for a short duration after which the user will
      *               again be prompted for passwords as needed.
      * @return true on success, false on failure.
+     * @deprecated since 5.0, use KIO::del + job->ui()->setWindow() + job->exec() instead
      */
-    static bool del( const QUrl & url, QWidget* window );
+#ifndef KDE_NO_DEPRECATED
+    static KIO_DEPRECATED bool del( const QUrl & url, QWidget* window );
+#endif
 
     /**
      * Creates a directory in a synchronous way.
@@ -343,8 +351,11 @@ public:
      *               again be prompted for passwords as needed.
      * @param permissions directory permissions.
      * @return true on success, false on failure.
+     * @deprecated since 5.0, use KIO::mkdir + job->ui()->setWindow() + job->exec() instead
      */
-    static bool mkdir( const QUrl & url, QWidget* window, int permissions = -1 );
+#ifndef KDE_NO_DEPRECATED
+    static KIO_DEPRECATED bool mkdir( const QUrl & url, QWidget* window, int permissions = -1 );
+#endif
 
     /**
      * Executes a remote process via the fish ioslave in a synchronous way.
