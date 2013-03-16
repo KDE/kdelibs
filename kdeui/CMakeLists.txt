@@ -209,7 +209,6 @@ set(kdeui_LIB_SRCS
  widgets/kkeysequencewidget.cpp
  widgets/klanguagebutton.cpp
  widgets/klineedit.cpp
- widgets/kmainwindow.cpp
  widgets/kmenu.cpp
  widgets/kmessagewidget.cpp
  widgets/kmultitabbar.cpp
@@ -230,7 +229,6 @@ set(kdeui_LIB_SRCS
  widgets/ktimecombobox.cpp
  widgets/ktimezonewidget.cpp
  widgets/ktitlewidget.cpp
- widgets/ktoolbar.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -242,6 +240,8 @@ set(kdeui_LIB_SRCS
  xmlgui/kxmlguifactory.cpp
  xmlgui/kxmlguifactory_p.cpp
  xmlgui/kxmlguiversionhandler.cpp
+ xmlgui/kmainwindow.cpp
+ xmlgui/ktoolbar.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -570,7 +570,6 @@ install( FILES
  widgets/kkeysequencewidget.h
  widgets/klanguagebutton.h
  widgets/klineedit.h
- widgets/kmainwindow.h
  widgets/kmenu.h
  widgets/kmessagewidget.h
  widgets/kmultitabbar.h
@@ -591,11 +590,12 @@ install( FILES
  widgets/ktabbar.h
  widgets/ktabwidget.h
  widgets/kshortcutwidget.h
- widgets/ktoolbar.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
  xmlgui/kxmlguibuilder.h
  xmlgui/kxmlguifactory.h
+ xmlgui/kmainwindow.h
+ xmlgui/ktoolbar.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 if(NOT KDE_NO_DEPRECATED)
