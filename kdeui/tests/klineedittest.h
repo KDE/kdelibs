@@ -5,7 +5,7 @@
 #include <QtCore/QPointer>
 
 class QLabel;
-class KRestrictedLine;
+class QLineEdit;
 class QString;
 class QPushButton;
 
@@ -39,7 +39,7 @@ private Q_SLOTS:
 
 protected:
    KLineEdit* m_lineedit;
-   KRestrictedLine* m_restrictedLine;
+   QLineEdit* m_restrictedLine;
    QLabel* m_invalidCharLabel;
    QPushButton* m_btnExit;
    QPushButton* m_btnReadOnly;

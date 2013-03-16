@@ -211,7 +211,6 @@ set(kdeui_LIB_SRCS
  widgets/kpixmapregionselectorwidget.cpp
  widgets/kratingpainter.cpp
  widgets/kratingwidget.cpp
- widgets/krestrictedline.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
@@ -569,7 +568,6 @@ install( FILES
  widgets/kpixmapregionselectorwidget.h
  widgets/kratingpainter.h
  widgets/kratingwidget.h
- widgets/krestrictedline.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
  widgets/ksqueezedtextlabel.h

@@ -5,12 +5,13 @@
 #include <QDebug>
 #include <QLabel>
 #include <QHBoxLayout>
+#include <QRegExp>
+#include <QRegExpValidator>
 
 #include <klineedit.h>
 #include <kcompletionbox.h>
 
 #include "klineedittest.h"
-#include <krestrictedline.h>
 
 KLineEditTest::KLineEditTest ( QWidget* widget )
               :QWidget( widget )
@@ -33,9 +34,11 @@ KLineEditTest::KLineEditTest ( QWidget* widget )
              SLOT(slotReturnPressed(QString)) );
 
     QHBoxLayout* restrictedHBox = new QHBoxLayout;
-    m_restrictedLine = new KRestrictedLine(this);
-    m_restrictedLine->setValidChars(QString::fromUtf8("aeiouyé"));
-    connect(m_restrictedLine, SIGNAL(invalidChar(int)), this, SLOT(slotInvalidChar(int)));
+    m_restrictedLine = new QLineEdit(this);
+    QRegExp regex(QString::fromUtf8("[aeiouyé]*"));
+    QRegExpValidator* validator = new QRegExpValidator(regex, m_restrictedLine);
+    m_restrictedLine->setValidator(validator);
+    connect( m_restrictedLine, SIGNAL(invalidChar(int)), this, SLOT(slotInvalidChar(int)));
     connect( m_restrictedLine, SIGNAL(returnPressed()), SLOT(slotReturnPressed()) );
     connect( m_restrictedLine, SIGNAL(returnPressed(QString)),
              SLOT(slotReturnPressed(QString)) );

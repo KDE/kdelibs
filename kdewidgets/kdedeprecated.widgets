@@ -49,3 +49,6 @@ ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
 Group=Buttons (KDE)
 
+[KRestrictedLine]
+ToolTip=Line Edit for restricted input (KDE)
+Group=Input (KDE)

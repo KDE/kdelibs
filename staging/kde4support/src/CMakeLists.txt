@@ -59,6 +59,7 @@ set(libkde4support_SRCS
     kdeui/kmessageboxmessagehandler.cpp
     kdeui/kpushbutton.cpp
     kdeui/kundostack.cpp
+    kdeui/krestrictedline.cpp
 
     kparts/factory.cpp
 )
@@ -144,6 +145,7 @@ install(FILES
     kdeui/kmessageboxmessagehandler.h
     kdeui/kpushbutton.h
     kdeui/kundostack.h
+    kdeui/krestrictedline.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

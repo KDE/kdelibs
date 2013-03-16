@@ -225,10 +225,6 @@ ToolTip=Rating value display (KDE)
 WhatsThis=Displays a rating as a range of stars or other arbitrary pixmaps.
 Group=Display (KDE)
 
-[KRestrictedLine]
-ToolTip=Line Edit for restricted input (KDE)
-Group=Input (KDE)
-
 [KRichTextEdit]
 IncludeFile=krichtextedit.h
 ToolTip=Rich Text Editor (KDE)
