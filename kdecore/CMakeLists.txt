@@ -190,7 +190,6 @@ target_include_directories(kdecore PRIVATE
   ${LIBINTL_INCLUDE_DIR})
 
 set(kdecore_INCLUDES
-                          ${CMAKE_CURRENT_BINARY_DIR}
                           ${CMAKE_CURRENT_SOURCE_DIR}/compression
                           ${CMAKE_CURRENT_SOURCE_DIR}/config
                           ${CMAKE_CURRENT_SOURCE_DIR}/date
