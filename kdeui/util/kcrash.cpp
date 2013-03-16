@@ -79,7 +79,6 @@
 
 namespace KCrash {
     KDEUI_EXPORT bool loadedByKdeinit = false;
-    void setup();
 }
 
 static KCrash::HandlerType s_emergencySaveFunction = 0;
