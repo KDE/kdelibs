@@ -2,10 +2,6 @@
 
 # Any changes in this file will be overwritten by CMake.
 
-set(KWidgetsAddons_VERSION_MAJOR "@KWIDGETSADDONS_VERSION_MAJOR@")
-set(KWidgetsAddons_VERSION_MINOR "@KWIDGETSADDONS_VERSION_MINOR@")
-set(KWidgetsAddons_VERSION_PATCH "@KWIDGETSADDONS_VERSION_PATCH@")
-
 set(KWidgetsAddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KWidgetsAddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 

@@ -8,10 +8,6 @@ if(NOT TARGET KF5::KConfigCore)
    return()
 endif()
 
-set(kguiaddons_VERSION_MAJOR "@KGUIADDONS_VERSION_MAJOR@")
-set(kguiaddons_VERSION_MINOR "@KGUIADDONS_VERSION_MINOR@")
-set(kguiaddons_VERSION_PATCH "@KGUIADDONS_VERSION_PATCH@")
-
 set(kguiaddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(kguiaddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 

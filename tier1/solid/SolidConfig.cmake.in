@@ -20,10 +20,6 @@
 
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
 
-set(Solid_VERSION_MAJOR "@SOLID_VERSION_MAJOR@")
-set(Solid_VERSION_MINOR "@SOLID_VERSION_MINOR@")
-set(Solid_VERSION_PATCH "@SOLID_VERSION_PATCH@")
-
 set(Solid_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(Solid_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 

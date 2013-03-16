@@ -2,10 +2,6 @@
 
 # Any changes in this file will be overwritten by CMake.
 
-set(ItemModels_VERSION_MAJOR "@ITEMMODELS_VERSION_MAJOR@")
-set(ItemModels_VERSION_MINOR "@ITEMMODELS_VERSION_MINOR@")
-set(ItemModels_VERSION_PATCH "@ITEMMODELS_VERSION_PATCH@")
-
 set(ItemModels_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(ItemModels_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 

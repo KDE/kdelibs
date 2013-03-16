@@ -2,10 +2,6 @@
 
 # Any changes in this file will be overwritten by CMake.
 
-set(ThreadWeaver_VERSION_MAJOR "@THREADWEAVER_VERSION_MAJOR@")
-set(ThreadWeaver_VERSION_MINOR "@THREADWEAVER_VERSION_MINOR@")
-set(ThreadWeaver_VERSION_PATCH "@THREADWEAVER_VERSION_PATCH@")
-
 set(ThreadWeaver_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(ThreadWeaver_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
