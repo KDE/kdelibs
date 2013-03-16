@@ -75,4 +75,6 @@ namespace Sonnet
     };
 }
 
+Q_DECLARE_INTERFACE(Sonnet::Client, "org.kde.sonnet.Client")
+
 #endif // SONNET_CLIENT_P_H

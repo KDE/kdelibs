@@ -22,12 +22,8 @@
 
 #include "kspell_aspelldict.h"
 
-#include <kpluginfactory.h>
-#include <kpluginloader.h>
 #include <QDebug>
-
-K_PLUGIN_FACTORY( ASpellClientFactory, registerPlugin<ASpellClient>(); )
-K_EXPORT_PLUGIN( ASpellClientFactory( "kspell_aspell" ) )
+#include <QtPlugin>
 
 using namespace Sonnet;
 
@@ -41,7 +37,7 @@ QString aspell_data_dir() {
 }
 #endif
 
-ASpellClient::ASpellClient( QObject *parent, const QVariantList& /* args */  )
+ASpellClient::ASpellClient( QObject *parent)
     : Client( parent )
 {
     m_config = new_aspell_config();
@@ -77,5 +73,7 @@ QStringList ASpellClient::languages() const
 
     return langs;
 }
+
+Q_PLUGIN_METADATA(IID "org.kde.Sonnet.ASpellClient" FILE "aspell.json")
 
 #include "kspell_aspellclient.moc"

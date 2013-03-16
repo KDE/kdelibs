@@ -34,8 +34,10 @@ using Sonnet::SpellerPlugin;
 class ASpellClient : public Sonnet::Client
 {
     Q_OBJECT
+    Q_INTERFACES(Sonnet::Client)
+
 public:
-    ASpellClient(QObject *parent, const QVariantList & /* args */);
+    ASpellClient(QObject* parent);
     ~ASpellClient();
 
     virtual int reliability() const {
