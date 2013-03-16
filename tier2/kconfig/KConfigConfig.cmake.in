@@ -11,9 +11,7 @@ endif()
 set(KConfig_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KConfig_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-if(NOT TARGET KF5::KConfigCore)
-  include("${CMAKE_CURRENT_LIST_DIR}/KConfigTargets.cmake")
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/KConfigTargets.cmake")
 
 set(KConfig_CORE_LIBRARY KF5::KConfigCore)
 set(KConfig_GUI_LIBRARY KF5::KConfigGui)

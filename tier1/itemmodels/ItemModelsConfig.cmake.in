@@ -5,9 +5,7 @@
 set(ItemModels_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(ItemModels_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-if(NOT TARGET KF5::ItemModels)
-  include("${CMAKE_CURRENT_LIST_DIR}/ItemModelsTargets.cmake")
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/ItemModelsTargets.cmake")
 
 set(ItemModels_LIBRARIES KF5::ItemModels)
 set(ItemModels_INCLUDE_DIRS ${ItemModels_INCLUDE_DIR} )

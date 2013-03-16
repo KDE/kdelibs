@@ -11,9 +11,7 @@ endif()
 set(KAuth_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KAuth_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-if(NOT TARGET KF5::KAuth)
-  include("${CMAKE_CURRENT_LIST_DIR}/KAuthTargets.cmake")
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/KAuthTargets.cmake")
 
 set(KAuth_LIBRARIES KF5::KAuth)
 set(KAuth_INCLUDE_DIRS ${KAuth_INCLUDE_DIR})

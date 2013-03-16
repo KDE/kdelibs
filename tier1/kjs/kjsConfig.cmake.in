@@ -7,9 +7,7 @@ set_and_check(kjs_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 set(kjs_HAVE_PCRE_REGEX "@PCRE_FOUND@")
 
-if(NOT TARGET KF5::kjs)
-  include("${CMAKE_CURRENT_LIST_DIR}/kjsTargets.cmake")
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/kjsTargets.cmake")
 
 set(kjs_LIBRARIES KF5::kjs KF5::kjsapi)
 set(kjs_INCLUDE_DIRS ${kjs_INCLUDE_DIR})

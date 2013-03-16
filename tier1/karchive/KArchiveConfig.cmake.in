@@ -8,9 +8,7 @@ set_and_check(KArchive_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 set(KArchive_HAVE_BZIP2 "@BZIP2_FOUND@")
 set(KArchive_HAVE_LZMA  "@LIBLZMA_FOUND@")
 
-if(NOT TARGET KF5::KArchive)
-  include("${CMAKE_CURRENT_LIST_DIR}/KArchiveTargets.cmake")
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/KArchiveTargets.cmake")
 
 set(KArchive_LIBRARIES KF5::KArchive)
 set(KArchive_INCLUDE_DIRS ${KArchive_INCLUDE_DIR})

@@ -5,9 +5,7 @@
 set(KDBusAddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KDBusAddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
-if(NOT TARGET KF5::KDBusAddons)
-  include("${CMAKE_CURRENT_LIST_DIR}/KDBusAddonsTargets.cmake")
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/KDBusAddonsTargets.cmake")
 
 set(KDBusAddons_LIBRARIES KF5::KDBusAddons)
 set(KDBusAddons_INCLUDE_DIRS ${KDBusAddons_INCLUDE_DIR})
