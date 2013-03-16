@@ -51,12 +51,9 @@ Q_GLOBAL_STATIC(Loader, s_loader)
 
 Loader *Loader::openLoader()
 {
-#pragma message("Reenable once Qt-5.1 has the new QGlobalStatic")
-#if 0
     if (s_loader.isDestroyed()) {
         return 0;
     }
-#endif
 
     return s_loader();
 }
