@@ -21,6 +21,8 @@ install(TARGETS makekdewidgets  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEF
 ########### next target ###############
 
 if(QT_QTDESIGNER_FOUND)
+
+  include_directories(${Qt5Designer_INCLUDE_DIRS})
   # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
   get_target_property(MAKEKDEWIDGETS_EXECUTABLE makekdewidgets WRAPPER_SCRIPT)
 
