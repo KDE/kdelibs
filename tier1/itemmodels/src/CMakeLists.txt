@@ -8,8 +8,6 @@ set(itemmodels_SRCS
   kmodelindexproxymapper.cpp
   krecursivefilterproxymodel.cpp
   kselectionproxymodel.cpp
-  kviewstateserializer.cpp
-  kviewstatemaintainerbase.cpp
 )
 
 add_library(ItemModels ${itemmodels_SRCS})
@@ -29,8 +27,6 @@ install(FILES
   klinkitemselectionmodel.h
   krecursivefilterproxymodel.h
   kdescendantsproxymodel.h
-  kviewstateserializer.h
-  kviewstatemaintainerbase.h
   kmodelindexproxymapper.h
   kselectionproxymodel.h
   ${CMAKE_CURRENT_BINARY_DIR}/itemmodels_export.h

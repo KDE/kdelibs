@@ -25,7 +25,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPair>
 
-#include "itemmodels_export.h"
+#include "kwidgetsaddons_export.h"
 
 class QAbstractItemView;
 class QItemSelectionModel;
@@ -164,7 +164,7 @@ class KViewStateSerializerPrivate;
   @author Stephen Kelly <stephen@kdab.com>
   @since 4.5
 */
-class ITEMMODELS_EXPORT KViewStateSerializer : public QObject
+class KWIDGETSADDONS_EXPORT KViewStateSerializer : public QObject
 {
   Q_OBJECT
 public:

@@ -22,7 +22,7 @@
 #ifndef KVIEWSTATEMAINTAINERBASE_H
 #define KVIEWSTATEMAINTAINERBASE_H
 
-#include "itemmodels_export.h"
+#include "kwidgetsaddons_export.h"
 
 #include <QObject>
 
@@ -31,7 +31,7 @@ class QAbstractItemView;
 
 class KViewStateMaintainerBasePrivate;
 
-class ITEMMODELS_EXPORT KViewStateMaintainerBase : public QObject
+class KWIDGETSADDONS_EXPORT KViewStateMaintainerBase : public QObject
 {
   Q_OBJECT
 public:
