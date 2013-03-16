@@ -13,7 +13,7 @@ set(itemmodels_SRCS
 add_library(ItemModels ${itemmodels_SRCS})
 generate_export_header(ItemModels)
 
-target_link_libraries(ItemModels Qt5::Widgets)
+target_link_libraries(ItemModels Qt5::Core)
 
 set_target_properties(ItemModels PROPERTIES VERSION   ${ITEMMODELS_VERSION_STRING}
                                             SOVERSION ${ITEMMODELS_SOVERSION}
