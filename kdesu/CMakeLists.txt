@@ -37,6 +37,8 @@ set(kdesu_LIB_SRCS
 kde4_add_library(kdesu ${LIBRARY_TYPE} ${kdesu_LIB_SRCS})
 generate_export_header(kdesu)
 
+target_include_directories(kdesu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
+
 target_link_libraries(kdesu ${KDE4_KPTY_LIBS} )
 target_link_libraries(kdesu LINK_INTERFACE_LIBRARIES ki18n)
 

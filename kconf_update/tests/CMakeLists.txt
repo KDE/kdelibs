@@ -7,6 +7,8 @@ target_link_libraries(test_kconf_update
     ${QT_QTTEST_LIBRARY}
     )
 
+target_include_directories(test_kconf_update PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/../..)
+
 kde4_add_unit_test(test_kconfigutils
     test_kconfigutils.cpp
     ../kconfigutils.cpp

@@ -76,7 +76,7 @@ if (HAVE_DNSSD)
 endif (HAVE_DNSSD)
 
 target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore )
-target_include_directories(kdnssd PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+target_include_directories(kdnssd PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 
 set_target_properties(kdnssd PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

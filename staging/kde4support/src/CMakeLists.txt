@@ -77,6 +77,8 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 add_library(kde4support ${libkde4support_SRCS})
 generate_export_header(kde4support)
 
+target_include_directories(kde4support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
+
 set(kde4support_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/kdecore"
   "${CMAKE_CURRENT_SOURCE_DIR}/kdeui"

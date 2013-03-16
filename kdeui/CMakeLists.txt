@@ -353,6 +353,8 @@ qt4_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
+target_include_directories(kdeui PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
+
 set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/actions
  ${CMAKE_CURRENT_SOURCE_DIR}/colors

@@ -1,6 +1,8 @@
 
 include(ECMMarkAsTest)
 
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/../../..")
+
 macro(KDE4SUPPORT_UNIT_TESTS)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)

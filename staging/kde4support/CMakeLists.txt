@@ -29,6 +29,7 @@ ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h)
 kde4_add_executable(kf5-config NOGUI kde-config.cpp )
 
 target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} kde4support)
+target_include_directories(kf5-config PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../..")
 
 install(TARGETS kf5-config ${INSTALL_TARGETS_DEFAULT_ARGS} )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h
