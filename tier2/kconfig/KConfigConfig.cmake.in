@@ -18,9 +18,7 @@ set(KConfig_GUI_LIBRARY KF5::KConfigGui)
 set(KConfig_LIBRARIES KF5::KConfigCore KF5::KConfigGui)
 set(KConfig_INCLUDE_DIRS ${KConfig_INCLUDE_DIR})
 
-get_target_property(_importedConfigurations  KF5::kconfig_compiler IMPORTED_CONFIGURATIONS )
-list(GET _importedConfigurations 0 _firstConfig)
-get_target_property(KConfig_KCFGC_EXECUTABLE  KF5::kconfig_compiler  LOCATION_${_firstConfig})
+get_target_property(KConfig_KCFGC_EXECUTABLE  KF5::kconfig_compiler  LOCATION)
 
 
 unset( _KDE4_KCONFIG_COMPILER_DEP)
