@@ -165,11 +165,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
- sonnet/dialog.cpp
- sonnet/configwidget.cpp
- sonnet/highlighter.cpp
- sonnet/configdialog.cpp
- sonnet/dictionarycombobox.cpp
  util/strlcpy-fake.c
  util/kckey.cpp
  util/kcompletion.cpp
@@ -305,8 +300,6 @@ set( kdeui_UI
    dialogs/kshortcutsdialog.ui
    widgets/kdatetimeedit.ui
    widgets/kshortcutwidget.ui
-   sonnet/sonnetui.ui
-   sonnet/configui.ui
    )
 
 if (X11_FOUND)
@@ -368,7 +361,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
- ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
  ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
@@ -376,7 +368,7 @@ set(kdeui_INCLUDES
  )
 target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
+target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} ${QT_QTNETWORK_LIBRARY} ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY})
 
 if(X11_FOUND)
@@ -603,14 +595,6 @@ install(FILES
  widgets/keditlistbox.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 endif(NOT KDE_NO_DEPRECATED)
-
-install( FILES
-  sonnet/dialog.h
-  sonnet/highlighter.h
-  sonnet/configdialog.h
-  sonnet/configwidget.h
-  sonnet/dictionarycombobox.h
-  DESTINATION  ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 

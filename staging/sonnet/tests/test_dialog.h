@@ -22,7 +22,6 @@
 #define TEST_DIALOG_H
 
 #include "dialog.h"
-#include "loader_p.h"
 
 #include <QtCore/QObject>
 
@@ -35,8 +34,6 @@ public:
 public Q_SLOTS:
     void check( const QString& buffer );
     void doneChecking( const QString& );
-private:
-    Sonnet::Loader *m_loader;
 };
 
 #endif

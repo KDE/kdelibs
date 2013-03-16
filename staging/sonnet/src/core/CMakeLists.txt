@@ -11,12 +11,18 @@ set(sonnetcore_SRCS
    backgroundengine.cpp
    globals.cpp
 )
+set(sonnetcore_HEADERS
+    backgroundchecker.h
+    speller.h
+    globals.h
+    ${CMAKE_CURRENT_BINARY_DIR}/sonnetcore_export.h
+)
+
 
 add_library(sonnetcore ${sonnetcore_SRCS})
 generate_export_header(sonnetcore)
 
-# TODO: port away from KDE4_KDECORE_LIBS
-target_link_libraries(sonnetcore ${KDE4_KDECORE_LIBS})
+target_link_libraries(sonnetcore ${QT_QTCORE_LIBRARY})
 
 set_target_properties(sonnetcore PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}
@@ -25,7 +31,7 @@ set_target_properties(sonnetcore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS sonnetcore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 
-install( FILES backgroundchecker.h speller.h globals.h ${CMAKE_CURRENT_BINARY_DIR}/sonnetcore_export.h
+install( FILES ${sonnetcore_HEADERS}
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
 
 

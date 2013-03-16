@@ -21,7 +21,7 @@
 #ifndef SONNET_BACKGROUNDENGINE_P_H
 #define SONNET_BACKGROUNDENGINE_P_H
 
-#include "speller.h"
+#include "sonnet/speller.h"
 #include "loader_p.h"
 
 #include <QtCore/QObject>

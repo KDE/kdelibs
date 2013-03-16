@@ -24,9 +24,6 @@
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 
-#include <khelpclient.h>
-#include <klocalizedstring.h>
-
 using namespace Sonnet;
 
 class ConfigDialog::Private
@@ -36,48 +33,30 @@ public:
        : q( parent ) {}
     ConfigWidget *ui;
     ConfigDialog *q;
-    void slotHelp();
     void slotConfigChanged();
 };
-
-void ConfigDialog::Private::slotHelp()
-{
-    KHelpClient::invokeHelp(QString(), "kcontrol/spellchecking");
-}
 
 void ConfigDialog::Private::slotConfigChanged()
 {
   emit q->languageChanged( ui->language() );
 }
 
-ConfigDialog::ConfigDialog(KConfig *config, QWidget *parent)
+ConfigDialog::ConfigDialog(QWidget *parent)
     : QDialog(parent),
       d(new Private(this))
 {
     setObjectName( "SonnetConfigDialog" );
     setModal( true );
-    setWindowTitle( i18n( "Spell Checking Configuration" ) );
+    setWindowTitle( tr( "Spell Checking Configuration" ) );
 
-    init(config);
-}
-
-ConfigDialog::~ConfigDialog()
-{
-    delete d;
-}
-
-void ConfigDialog::init(KConfig *config)
-{
     QVBoxLayout *layout = new QVBoxLayout;
     setLayout(layout);
 
-    d->ui = new ConfigWidget(config, this);
+    d->ui = new ConfigWidget(this);
     layout->addWidget(d->ui);
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
-    buttonBox->setStandardButtons(QDialogButtonBox::Help
-                                | QDialogButtonBox::Ok
-                                //| QDialogButtonBox::Apply
+    buttonBox->setStandardButtons(QDialogButtonBox::Ok
                                 | QDialogButtonBox::Cancel);
 
     connect(buttonBox, SIGNAL(accepted()),
@@ -87,12 +66,17 @@ void ConfigDialog::init(KConfig *config)
     /*
     connect(buttonBox->button(QDialogButtonBox::Apply), SIGNAL(clicked()),
             this, SLOT(slotApply()));
-	    */
+        */
     connect(d->ui, SIGNAL(configChanged()),
             this, SLOT(slotConfigChanged()));
     
     connect(d->ui, SIGNAL(configChanged()),
             this, SIGNAL(configChanged()));
+}
+
+ConfigDialog::~ConfigDialog()
+{
+    delete d;
 }
 
 void ConfigDialog::slotOk()

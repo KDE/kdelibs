@@ -63,13 +63,6 @@ BackgroundChecker::~BackgroundChecker()
     delete d;
 }
 
-void BackgroundChecker::restore(KConfig *config)
-{
-    Loader *loader = Loader::openLoader();
-    loader->settings()->restore(config);
-    d->engine->filter()->setSettings(loader->settings());
-}
-
 void BackgroundChecker::setText(const QString &text)
 {
     d->currentText = text;

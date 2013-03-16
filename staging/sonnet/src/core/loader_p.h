@@ -22,7 +22,6 @@
 #define SONNET_LOADER_P_H
 
 #include <sonnetcore_export.h>
-#include <ksharedptr.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>

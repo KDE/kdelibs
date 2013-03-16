@@ -43,7 +43,7 @@ void DictionaryComboBox::Private::slotDictionaryChanged( int idx )
 //@endcon
 
 DictionaryComboBox::DictionaryComboBox( QWidget * parent )
-        : KComboBox( parent ), d( new DictionaryComboBox::Private( this ) )
+        : QComboBox( parent ), d( new DictionaryComboBox::Private( this ) )
 {
     reloadCombo();
     connect( this, SIGNAL(activated(int)),

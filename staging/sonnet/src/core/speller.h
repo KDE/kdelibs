@@ -26,8 +26,6 @@
 
 #include "sonnetcore_export.h"
 
-class KConfig;
-
 namespace Sonnet
 {
     /**
@@ -109,8 +107,8 @@ namespace Sonnet
             CheckUppercase,
             SkipRunTogether
         };
-        void save(KConfig *config);
-        void restore(KConfig *config);
+        void save();
+        void restore();
 
         /**
          * Returns names of all supported backends (e.g. ISpell, ASpell)

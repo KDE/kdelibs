@@ -329,11 +329,6 @@ KTextEdit::~KTextEdit()
   delete d;
 }
 
-void KTextEdit::setSpellCheckingConfigFileName(const QString &_fileName)
-{
-    d->spellCheckingConfigFileName = _fileName;
-}
-
 const QString& KTextEdit::spellCheckingLanguage() const
 {
     return d->spellCheckingLanguage;
@@ -352,11 +347,9 @@ void KTextEdit::setSpellCheckingLanguage(const QString &_language)
     }
 }
 
-void KTextEdit::showSpellConfigDialog(const QString &configFileName,
-                                      const QString &windowIcon)
+void KTextEdit::showSpellConfigDialog(const QString &windowIcon)
 {
-    KConfig config(configFileName);
-    Sonnet::ConfigDialog dialog(&config, this);
+    Sonnet::ConfigDialog dialog(this);
     if (!d->spellCheckingLanguage.isEmpty())
         dialog.setLanguage(d->spellCheckingLanguage);
     if (!windowIcon.isEmpty())

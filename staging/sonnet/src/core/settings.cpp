@@ -23,12 +23,10 @@
 
 #include "loader_p.h"
 
-#include <kconfig.h>
-#include <kconfiggroup.h>
-
 #include <QtCore/QMap>
 #include <QtCore/QMutableStringListIterator>
 #include <QtCore/QLocale>
+#include <QtCore/QSettings>
 
 namespace Sonnet
 {
@@ -59,6 +57,7 @@ Settings::Settings(Loader *loader)
 
     d->modified = false;
     d->checkerEnabledByDefault = false;
+    restore();
 }
 
 Settings::~Settings()
@@ -72,7 +71,6 @@ void Settings::setDefaultLanguage(const QString &lang)
     if (cs.indexOf(lang) != -1 &&
         d->defaultLanguage != lang) {
         d->defaultLanguage = lang;
-        //readIgnoreList();
         d->modified = true;
         d->loader->changed();
     }
@@ -185,14 +183,6 @@ bool Settings::ignore( const QString& word )
     return d->ignore.contains( word );
 }
 
-void Settings::readIgnoreList(KConfig *config)
-{
-    const KConfigGroup conf(config, "Spelling");
-    const QString ignoreEntry = QString::fromLatin1( "ignore_%1" ).arg(d->defaultLanguage);
-    const QStringList ignores = conf.readEntry(ignoreEntry, QStringList());
-    setQuietIgnoreList(ignores);
-}
-
 int Settings::disablePercentageWordError() const
 {
     return d->disablePercentage;
@@ -203,49 +193,39 @@ int Settings::disableWordErrorCount() const
     return d->disableWordCount;
 }
 
-void Settings::save(KConfig *config)
+void Settings::save()
 {
-    KConfigGroup conf(config, "Spelling");
-    conf.writeEntry("defaultClient", d->defaultClient);
-    conf.writeEntry("defaultLanguage", d->defaultLanguage);
-    conf.writeEntry("checkUppercase", d->checkUppercase);
-    conf.writeEntry("skipRunTogether", d->skipRunTogether);
-    conf.writeEntry("backgroundCheckerEnabled", d->backgroundCheckerEnabled);
-    conf.writeEntry("checkerEnabledByDefault", d->checkerEnabledByDefault);
+    QSettings settings("KDE", "Sonnet");
+    settings.setValue("defaultClient", d->defaultClient);
+    settings.setValue("defaultLanguage", d->defaultLanguage);
+    settings.setValue("checkUppercase", d->checkUppercase);
+    settings.setValue("skipRunTogether", d->skipRunTogether);
+    settings.setValue("backgroundCheckerEnabled", d->backgroundCheckerEnabled);
+    settings.setValue("checkerEnabledByDefault", d->checkerEnabledByDefault);
     QString defaultLanguage = QString::fromLatin1( "ignore_%1" ).arg(d->defaultLanguage);
-    if(conf.hasKey(defaultLanguage) && d->ignore.isEmpty())
-      conf.deleteEntry(defaultLanguage);
+    if(settings.contains(defaultLanguage) && d->ignore.isEmpty())
+        settings.remove(defaultLanguage);
     else if(!d->ignore.isEmpty())
-        conf.writeEntry(defaultLanguage, d->ignore.keys());
-
-    conf.sync();
+        settings.setValue(defaultLanguage, QStringList(d->ignore.keys()));
 }
 
-void Settings::restore(KConfig *config)
+void Settings::restore()
 {
-    KConfigGroup conf(config, "Spelling");
-    d->defaultClient = conf.readEntry("defaultClient",
-                                      QString());
-    d->defaultLanguage = conf.readEntry(
-        "defaultLanguage", QLocale::system().bcp47Name());
+    QSettings settings("KDE", "Sonnet");
+    d->defaultClient = settings.value("defaultClient", QString()).toString();
+    d->defaultLanguage = settings.value("defaultLanguage", QLocale::system().bcp47Name()).toString();
 
     //same defaults are in the default filter (filter.cpp)
-    d->checkUppercase = conf.readEntry(
-        "checkUppercase", true);
+    d->checkUppercase = settings.value("checkUppercase", true).toBool();
+    d->skipRunTogether = settings.value("skipRunTogether", true).toBool();
+    d->backgroundCheckerEnabled = settings.value("backgroundCheckerEnabled", true).toBool();
+    d->checkerEnabledByDefault = settings.value("checkerEnabledByDefault", false).toBool();
+    d->disablePercentage = settings.value("Sonnet_AsYouTypeDisablePercentage", 42).toInt();
+    d->disableWordCount = settings.value("Sonnet_AsYouTypeDisableWordCount", 100).toInt();
 
-    d->skipRunTogether = conf.readEntry(
-        "skipRunTogether", true);
-
-    d->backgroundCheckerEnabled = conf.readEntry(
-        "backgroundCheckerEnabled", true);
-
-    d->checkerEnabledByDefault = conf.readEntry(
-        "checkerEnabledByDefault", false);
-
-    d->disablePercentage = conf.readEntry("Sonnet_AsYouTypeDisablePercentage", 42);
-    d->disableWordCount = conf.readEntry("Sonnet_AsYouTypeDisableWordCount", 100);
-
-    readIgnoreList(config);
+    const QString ignoreEntry = QString::fromLatin1( "ignore_%1" ).arg(d->defaultLanguage);
+    const QStringList ignores = settings.value(ignoreEntry, QStringList()).toStringList();
+    setQuietIgnoreList(ignores);
 }
 
 
