@@ -26,9 +26,9 @@
 #include <QtCore/QPointer>
 #include <QtCore/QTimer>
 #include <QtCore/QEventLoopLocker>
+#include <QtCore/QProcess>
 
 #include "config-kio.h"
-#include "kprocess.h"
 #include "kstartupinfo.h"
 
 /**
@@ -44,9 +44,9 @@ class KProcessRunner : public QObject
   public:
 
 #if !HAVE_X11
-    static int run(KProcess *, const QString & executable);
+    static int run(const QString &command, const QString & executable, const QString &workingDirectory = QString());
 #else
-    static int run(KProcess *, const QString & executable, const KStartupInfoId& id);
+    static int run(const QString &command, const QString & executable, const KStartupInfoId& id, const QString &workingDirectory = QString());
 #endif
 
     virtual ~KProcessRunner();
@@ -59,14 +59,14 @@ class KProcessRunner : public QObject
 
   private:
 #if !HAVE_X11
-    KProcessRunner(KProcess *, const QString & binName);
+    KProcessRunner(const QString &command, const QString & binName, const QString &workingDirectory);
 #else
-    KProcessRunner(KProcess *, const QString & binName, const KStartupInfoId& id);
+    KProcessRunner(const QString &command, const QString & binName, const KStartupInfoId& id, const QString &workingDirectory);
 #endif
 
     void terminateStartupNotification();
 
-    KProcess *process;
+    QProcess *process;
     QString m_executable; // can be a full path
     KStartupInfoId id;
     int m_pid;
