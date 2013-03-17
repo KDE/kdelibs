@@ -28,6 +28,7 @@
 
 #include <QtDBus/QDBusInterface>
 #include <QtCore/QSet>
+#include <QtCore/QPointer>
 
 namespace Solid
 {
@@ -75,6 +76,7 @@ private:
     mutable QDBusInterface *m_device;
     QString m_udi;
     mutable QVariantMap m_cache;
+    mutable QPointer<UDisksDevice> m_parentDevice;
 
     void checkCache(const QString &key) const;
 };
