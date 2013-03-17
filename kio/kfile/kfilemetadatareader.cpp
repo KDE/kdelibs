@@ -19,7 +19,7 @@
 
 #include "kfilemetadatareader_p.h"
 
-#include <kprocess.h>
+#include <QtCore/QProcess>
 
 
 #include <qstandardpaths.h>
@@ -33,7 +33,8 @@ public:
     void slotLoadingFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
     bool m_readContextData;
-    KProcess* m_process;
+    QProcess* m_process;
+    QStringList arguments;
     QHash<QUrl, Nepomuk::Variant> m_metaData;
 
 private:
@@ -42,7 +43,7 @@ private:
 
 KFileMetaDataReader::Private::Private(KFileMetaDataReader* parent) :
     m_readContextData(true),
-    m_process(new KProcess()),
+    m_process(new QProcess()),
     m_metaData(),
     q(parent)
 {
@@ -102,15 +103,11 @@ KFileMetaDataReader::KFileMetaDataReader(const QList<QUrl>& urls, QObject* paren
     QObject(parent),
     d(new Private(this))
 {
-    const QString fileMetaDataReaderExe = QStandardPaths::findExecutable(QLatin1String("kfilemetadatareader"));
-    (*d->m_process) << fileMetaDataReaderExe;
-
     foreach (const QUrl& url, urls) {
-        (*d->m_process) << url.toString();
+        d->arguments.append(url.toString());
     }
 
-    d->m_process->setOutputChannelMode(KProcess::OnlyStdoutChannel);
-    d->m_process->setNextOpenMode(QIODevice::ReadOnly);
+    d->m_process->setReadChannel(QProcess::StandardOutput);
     connect(d->m_process, SIGNAL(finished(int,QProcess::ExitStatus)),
             this, SLOT(slotLoadingFinished(int,QProcess::ExitStatus)));
 }
@@ -133,10 +130,11 @@ bool KFileMetaDataReader::readContextData() const
 void KFileMetaDataReader::start()
 {
     if (d->m_process->state() == QProcess::NotRunning) {
+        const QString fileMetaDataReaderExe = QStandardPaths::findExecutable(QLatin1String("kfilemetadatareader"));
         if (!d->m_readContextData) {
-            (*d->m_process) << "--file";
+            d->arguments.append("--file");
         }
-        d->m_process->start();
+        d->m_process->start(fileMetaDataReaderExe, d->arguments, QIODevice::ReadOnly);
     }
 }
 
