@@ -14,6 +14,7 @@ add_subdirectory(kidletime)
 add_subdirectory(kwindowsystem)
 add_subdirectory(kwidgetsaddons)
 add_subdirectory(kjs)
+add_subdirectory(sonnet)
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
