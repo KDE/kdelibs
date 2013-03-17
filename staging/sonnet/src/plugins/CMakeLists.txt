@@ -37,14 +37,14 @@ if (ENCHANT_FOUND)
    add_subdirectory( enchant )
 endif ()
 
-#find_package(HUNSPELL)
-#set_package_properties(HUNSPELL PROPERTIES
-#    URL "http://hunspell.sourceforge.net/"
-#    DESCRIPTION "Spell checking support via Hunspell"
-#    TYPE OPTIONAL
-#    PURPOSE "This is not needed for spell checking if Enchant or Aspell is provided or only Hebrew spell checking is required."
-#)
-#if (HUNSPELL_FOUND)
-#   add_subdirectory( hunspell )
-#endif (HUNSPELL_FOUND)
+find_package(HUNSPELL)
+set_package_properties(HUNSPELL PROPERTIES
+    URL "http://hunspell.sourceforge.net/"
+    DESCRIPTION "Spell checking support via Hunspell"
+    TYPE OPTIONAL
+    PURPOSE "This is not needed for spell checking if Enchant or Aspell is provided or only Hebrew spell checking is required."
+)
+if (HUNSPELL_FOUND)
+   add_subdirectory( hunspell )
+endif (HUNSPELL_FOUND)
 
