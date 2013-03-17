@@ -25,6 +25,7 @@
 #include <QAction>
 #include <QDialogButtonBox>
 #include <QtXml/QDomDocument>
+#include <QtCore/QProcess>
 #include <QLayout>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -45,7 +46,6 @@
 #include <kseparator.h>
 #include <kconfig.h>
 #include <kdebug.h>
-#include <kprocess.h>
 #include <ktoolbar.h>
 #include <kdeversion.h>
 #include <kcombobox.h>
@@ -484,7 +484,7 @@ public:
     QLabel * m_helpArea;
     QPushButton* m_changeIcon;
     QPushButton* m_changeIconText;
-    KProcess* m_kdialogProcess;
+    QProcess* m_kdialogProcess;
     bool m_isPart : 1;
     bool m_hasKDialog : 1;
     bool m_loadedOnce : 1;
@@ -1546,19 +1546,18 @@ void KEditToolBarWidgetPrivate::slotChangeIcon()
   m_currentXmlData->dump();
   Q_ASSERT( m_currentXmlData->type() != XmlData::Merged );
 
-  m_kdialogProcess = new KProcess;
+  m_kdialogProcess = new QProcess;
   QString kdialogExe = QStandardPaths::findExecutable(QLatin1String("kdialog"));
-  (*m_kdialogProcess) << kdialogExe;
-  (*m_kdialogProcess) << "--caption";
-  (*m_kdialogProcess) << i18n( "Change Icon" );
-  (*m_kdialogProcess) << "--embed";
-  (*m_kdialogProcess) << QString::number( (quintptr)m_widget->window()->winId() );
-  (*m_kdialogProcess) << "--geticon";
-  (*m_kdialogProcess) << "Toolbar";
-  (*m_kdialogProcess) << "Actions";
-  m_kdialogProcess->setOutputChannelMode(KProcess::OnlyStdoutChannel);
-  m_kdialogProcess->setNextOpenMode( QIODevice::ReadOnly | QIODevice::Text );
-  m_kdialogProcess->start();
+  QStringList arguments;
+  arguments << "--caption"
+            << i18n( "Change Icon" )
+            << "--embed"
+            << QString::number( (quintptr)m_widget->window()->winId() )
+            << "--geticon"
+            << "Toolbar"
+            << "Actions";
+  m_kdialogProcess->setReadChannel(QProcess::StandardOutput);
+  m_kdialogProcess->start(kdialogExe, arguments, QIODevice::ReadOnly | QIODevice::Text);
   if ( !m_kdialogProcess->waitForStarted() ) {
     kError(240) << "Can't run " << kdialogExe << endl;
     delete m_kdialogProcess;
