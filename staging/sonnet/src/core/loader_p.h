@@ -27,7 +27,6 @@
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 
-class KService;
 namespace Sonnet
 {
     class Settings;
