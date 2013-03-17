@@ -22,12 +22,12 @@
 #include <QDir>
 #include <QFile>
 #include <QTemporaryFile>
+#include <QtCore/QProcess>
 
 #include "qmimedatabase.h"
 #include "karchive.h"
 #include "kzip.h"
 #include "ktar.h"
-#include "kprocess.h"
 #include "kio/job.h"
 #include "krandom.h"
 #include "kshell.h"
@@ -521,15 +521,13 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
 
 void Installation::runPostInstallationCommand(const QString& installPath)
 {
-    KProcess process;
     QString command(postInstallationCommand);
     QString fileArg(KShell::quoteArg(installPath));
     command.replace("%f", fileArg);
 
     kDebug() << "Run command: " << command;
 
-    process.setShellCommand(command);
-    int exitcode = process.execute();
+    int exitcode = QProcess::execute(command);
 
     if (exitcode) {
         kError() << "Command failed" << endl;
@@ -542,7 +540,6 @@ void Installation::uninstall(EntryInternal entry)
     entry.setStatus(Entry::Deleted);
 
     if (!uninstallCommand.isEmpty()) {
-        KProcess process;
         foreach (const QString& file, entry.installedFiles()) {
             QFileInfo info(file);
             if (info.isFile()) {
@@ -550,8 +547,7 @@ void Installation::uninstall(EntryInternal entry)
                 QString command(uninstallCommand);
                 command.replace("%f", fileArg);
 
-                process.setShellCommand(command);
-                int exitcode = process.execute();
+                int exitcode = QProcess::execute(command);
 
                 if (exitcode) {
                     kError() << "Command failed" << endl;
