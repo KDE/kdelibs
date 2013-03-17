@@ -34,9 +34,3 @@ install(TARGETS sonnetcore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARG
 install( FILES ${sonnetcore_HEADERS}
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
 
-
-install( FILES
-   sonnetspeller.desktop
-   DESTINATION  ${SERVICETYPES_INSTALL_DIR}
-)
-
