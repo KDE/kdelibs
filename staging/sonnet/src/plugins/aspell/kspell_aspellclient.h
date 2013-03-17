@@ -22,7 +22,6 @@
 #define KSPELL_ASPELLCLIENT_H
 
 #include "client_p.h"
-#include <QtCore/QVariantList>
 
 #include "aspell.h"
 

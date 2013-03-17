@@ -23,17 +23,11 @@
 
 #include "kspell_hspelldict.h"
 
-#include <kpluginfactory.h>
-#include <kpluginloader.h>
 #include <QDebug>
-
-K_PLUGIN_FACTORY( HSpellClientFactory, registerPlugin<HSpellClient>(); )
-K_EXPORT_PLUGIN( HSpellClientFactory( "kspell_hspell" ) )
 
 using namespace Sonnet;
 
-HSpellClient::HSpellClient(QObject *parent,
-                           const QVariantList &/* args */)
+HSpellClient::HSpellClient(QObject *parent)
     : Client(parent)
 {
 }

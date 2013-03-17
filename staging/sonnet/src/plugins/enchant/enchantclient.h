@@ -35,8 +35,10 @@ using Sonnet::SpellerPlugin;
 class QSpellEnchantClient : public Sonnet::Client
 {
     Q_OBJECT
+    Q_INTERFACES(Sonnet::Client)
+    Q_PLUGIN_METADATA(IID "org.kde.Sonnet.EnchantClient")
 public:
-    QSpellEnchantClient(QObject *parent, const QVariantList & /* args */);
+    QSpellEnchantClient(QObject *parent = 0);
     ~QSpellEnchantClient();
 
     virtual int reliability() const {

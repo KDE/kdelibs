@@ -22,7 +22,6 @@
 #define KSPELL_HUNSPELLCLIENT_H
 
 #include "client_p.h"
-#include <QtCore/QVariantList>
 
 #include "hunspell/hunspell.hxx"
 
@@ -34,8 +33,10 @@ using Sonnet::SpellerPlugin;
 class HunspellClient : public Sonnet::Client
 {
     Q_OBJECT
+    Q_INTERFACES(Sonnet::Client)
+    Q_PLUGIN_METADATA(IID "org.kde.Sonnet.ASpellClient")
 public:
-    HunspellClient(QObject *parent, const QVariantList & /* args */);
+    HunspellClient(QObject *parent = 0);
     ~HunspellClient();
 
     virtual int reliability() const {

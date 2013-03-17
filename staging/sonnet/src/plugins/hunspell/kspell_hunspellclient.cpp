@@ -23,16 +23,11 @@
 
 #include "kspell_hunspelldict.h"
 
-#include <kpluginfactory.h>
-#include <kpluginloader.h>
 #include <QDebug>
-
-K_PLUGIN_FACTORY( HunspellClientFactory, registerPlugin<HunspellClient>(); )
-K_EXPORT_PLUGIN( HunspellClientFactory( "kspell_hunspell" ) )
 
 using namespace Sonnet;
 
-HunspellClient::HunspellClient( QObject *parent, const QVariantList& /* args */  )
+HunspellClient::HunspellClient( QObject *parent = 0)
     : Client( parent )
 {
     qDebug()<<" HunspellClient::HunspellClient";
