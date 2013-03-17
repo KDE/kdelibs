@@ -35,9 +35,10 @@ class ASpellClient : public Sonnet::Client
 {
     Q_OBJECT
     Q_INTERFACES(Sonnet::Client)
+    Q_PLUGIN_METADATA(IID "org.kde.Sonnet.ASpellClient")
 
 public:
-    ASpellClient(QObject* parent);
+    ASpellClient(QObject* parent=0);
     ~ASpellClient();
 
     virtual int reliability() const {

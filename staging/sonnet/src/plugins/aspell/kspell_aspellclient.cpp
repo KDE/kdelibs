@@ -74,6 +74,4 @@ QStringList ASpellClient::languages() const
     return langs;
 }
 
-Q_PLUGIN_METADATA(IID "org.kde.Sonnet.ASpellClient" FILE "aspell.json")
-
 #include "kspell_aspellclient.moc"
