@@ -11,7 +11,6 @@
 #include <JobSequence.h>
 #include <ThreadWeaver.h>
 
-//FIXME Wouldn't it be nice to be able to execute jobs in the local thread?
 class AccumulateJob : public ThreadWeaver::Job {
 public:
     explicit AccumulateJob()
@@ -161,7 +160,7 @@ void QueueBenchmarksTest::IndividualJobsBenchmark()
         weaver.enqueue(&jobs[i]);
     }
 
-    QBENCHMARK {
+    QBENCHMARK_ONCE {
         weaver.resume();
         weaver.finish();
     }
@@ -200,7 +199,7 @@ void QueueBenchmarksTest::CollectionsBenchmark()
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";
-    QBENCHMARK {
+    QBENCHMARK_ONCE {
         weaver.resume();
         weaver.finish();
     }
@@ -239,7 +238,7 @@ void QueueBenchmarksTest::SequencesBenchmark()
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";
-    QBENCHMARK {
+    QBENCHMARK_ONCE {
         weaver.resume();
         weaver.finish();
     }
