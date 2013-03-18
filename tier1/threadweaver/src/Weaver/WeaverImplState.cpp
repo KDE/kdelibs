@@ -36,9 +36,9 @@ WeaverImplState::WeaverImplState(Queue *weaver)
     : State(weaver)
 {}
 
-const State &WeaverImplState::state() const
+const State *WeaverImplState::state() const
 {
-    return *this;
+    return this;
 }
 
 void WeaverImplState::shutDown()

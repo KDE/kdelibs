@@ -61,7 +61,7 @@ void WorkingHardState::resume()
 Job* WorkingHardState::applyForWork(Thread *th,  Job* previous)
 {   // beware: this code is executed in the applying thread!
     debug ( 2, "WorkingHardState::applyForWork: thread %i applies for work in %s state.\n", th->id(),
-            qPrintable ( weaver()->state().stateName() ) );
+            qPrintable ( weaver()->state()->stateName() ) );
     Job *next = weaver()->takeFirstAvailableJobOrWait(th, previous);
     if ( next ) {
         return next;

@@ -55,7 +55,6 @@ WeaverImpl::WeaverImpl( QObject* parent )
     , m_active(0)
     , m_inventoryMax( qMax(4, 2 * QThread::idealThreadCount() ) )
     , m_mutex ( new QMutex( QMutex::NonRecursive ) )
-    , m_state (0)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     // initialize state objects:
@@ -66,18 +65,18 @@ WeaverImpl::WeaverImpl( QObject* parent )
     m_states[Suspended] = QSharedPointer<State>(new SuspendedState(this));
     m_states[ShuttingDown] = QSharedPointer<State>(new ShuttingDownState(this));
     m_states[Destructed] = QSharedPointer<State>(new DestructedState(this));
-    setState_p(  WorkingHard );
+    setState_p(WorkingHard);
 }
 
 WeaverImpl::~WeaverImpl()
 {
-    Q_ASSERT_X(state().stateId() == Destructed, Q_FUNC_INFO, "shutDown() method was not called before WeaverImpl destructor!");
+    Q_ASSERT_X(state()->stateId() == Destructed, Q_FUNC_INFO, "shutDown() method was not called before WeaverImpl destructor!");
     delete m_mutex;
 }
 
 void WeaverImpl::shutDown()
 {
-    m_state->shutDown();
+    state()->shutDown();
 }
 
 void WeaverImpl::shutDown_p()
@@ -111,7 +110,7 @@ void WeaverImpl::shutDown_p()
         {
             for ( ;; )
             {
-                Q_ASSERT(state().stateId() == ShuttingDown);
+                Q_ASSERT(state()->stateId() == ShuttingDown);
                 m_jobAvailable.wakeAll();
                 if ( th->wait( 100 ) ) break;
                 debug ( 1,  "WeaverImpl::shutDown: thread %i did not exit as expected, "
@@ -132,40 +131,38 @@ void WeaverImpl::setState ( StateId id )
     setState_p(id);
 }
 
-//FIXME Use delayed signal emitter!
 void WeaverImpl::setState_p(StateId id)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
-    if ( m_state==0 || m_state->stateId() != id ) {
-        m_state = m_states[id].data();
-        debug ( 2, "WeaverImpl::setState: state changed to \"%s\".\n",
-                m_state->stateName().toLatin1().constData() );
-        if ( id == Suspended ) {
-            Q_EMIT ( suspended() );
+    State* newState = m_states[id].data();
+    State* previous = m_state.fetchAndStoreOrdered(newState);
+    if (previous==0 || previous->stateId() != id) {
+        newState->activated();
+        debug(2, "WeaverImpl::setState: state changed to \"%s\".\n", newState->stateName().toLatin1().constData());
+        if (id == Suspended) {
+            Q_EMIT(suspended());
         }
-
-        m_state->activated();
-        Q_EMIT ( stateChanged ( m_state ) );
+        Q_EMIT(stateChanged(newState));
     }
 }
 
-const State& WeaverImpl::state() const
+const State *WeaverImpl::state() const
 {
-    QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return state_p();
+    return m_state.loadAcquire();
 }
 
-const State& WeaverImpl::state_p() const
+State* WeaverImpl::state()
 {
-    return *m_state;
+    return m_state.loadAcquire();
 }
+
 
 void WeaverImpl::setMaximumNumberOfThreads( int cap )
 {
     //FIXME really? Why not 0?
     Q_ASSERT_X ( cap > 0, "Weaver Impl", "Thread inventory size has to be larger than zero." );
     QMutexLocker l (m_mutex);  Q_UNUSED(l);
-    m_state->setMaximumNumberOfThreads(cap);
+    state()->setMaximumNumberOfThreads(cap);
 }
 
 void WeaverImpl::setMaximumNumberOfThreads_p(int cap)
@@ -177,7 +174,7 @@ void WeaverImpl::setMaximumNumberOfThreads_p(int cap)
 int WeaverImpl::maximumNumberOfThreads() const
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->maximumNumberOfThreads();
+    return state()->maximumNumberOfThreads();
 }
 
 int WeaverImpl::maximumNumberOfThreads_p() const
@@ -189,7 +186,7 @@ int WeaverImpl::maximumNumberOfThreads_p() const
 int WeaverImpl::currentNumberOfThreads () const
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->currentNumberOfThreads();
+    return state()->currentNumberOfThreads();
 }
 
 int WeaverImpl::currentNumberOfThreads_p() const
@@ -201,7 +198,7 @@ int WeaverImpl::currentNumberOfThreads_p() const
 void WeaverImpl::registerObserver ( WeaverObserver *ext )
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->registerObserver(ext);
+    return state()->registerObserver(ext);
 }
 
 void WeaverImpl::registerObserver_p(WeaverObserver *ext)
@@ -221,7 +218,7 @@ void WeaverImpl::registerObserver_p(WeaverObserver *ext)
 void WeaverImpl::enqueue(Job* job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->enqueue(job);
+    state()->enqueue(job);
 }
 
 void WeaverImpl::enqueue_p(Job *job)
@@ -246,7 +243,7 @@ void WeaverImpl::enqueue_p(Job *job)
 bool WeaverImpl::dequeue ( Job* job )
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->dequeue(job);
+    return state()->dequeue(job);
 }
 
 bool WeaverImpl::dequeue_p(Job* job)
@@ -269,7 +266,7 @@ bool WeaverImpl::dequeue_p(Job* job)
 void WeaverImpl::dequeue ()
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    m_state->dequeue();
+    state()->dequeue();
 }
 
 void WeaverImpl::dequeue_p()
@@ -286,7 +283,7 @@ void WeaverImpl::dequeue_p()
 void WeaverImpl::finish()
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    m_state->finish();
+    state()->finish();
 }
 
 void WeaverImpl::finish_p()
@@ -298,7 +295,7 @@ void WeaverImpl::finish_p()
     const int MaxWaitMilliSeconds = 500;
 #endif
     while (!isIdle_p()) {
-        Q_ASSERT(state_p().stateId() == WorkingHard);
+        Q_ASSERT(state()->stateId() == WorkingHard);
         debug (2, "WeaverImpl::finish: not done, waiting.\n" );
         if (m_jobFinished.wait(m_mutex, MaxWaitMilliSeconds) == false) {
             debug ( 2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n",
@@ -313,7 +310,7 @@ void WeaverImpl::suspend ()
 {
     //FIXME?
     //QMutexLocker l(m_mutex); Q_UNUSED(l);
-    m_state->suspend();
+    state()->suspend();
 }
 
 void WeaverImpl::suspend_p()
@@ -325,7 +322,7 @@ void WeaverImpl::resume ( )
 {
     //FIXME?
     //QMutexLocker l(m_mutex); Q_UNUSED(l);
-    m_state->resume();
+    state()->resume();
 }
 
 void WeaverImpl::resume_p()
@@ -336,7 +333,7 @@ void WeaverImpl::resume_p()
 bool WeaverImpl::isEmpty() const
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->isEmpty();
+    return state()->isEmpty();
 }
 
 bool WeaverImpl::isEmpty_p() const
@@ -348,7 +345,7 @@ bool WeaverImpl::isEmpty_p() const
 bool WeaverImpl::isIdle() const
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->isIdle();
+    return state()->isIdle();
 }
 
 bool WeaverImpl::isIdle_p() const
@@ -360,7 +357,7 @@ bool WeaverImpl::isIdle_p() const
 int WeaverImpl::queueLength() const
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->queueLength();
+    return state()->queueLength();
 }
 
 int WeaverImpl::queueLength_p() const
@@ -372,7 +369,7 @@ int WeaverImpl::queueLength_p() const
 void WeaverImpl::requestAbort()
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return m_state->requestAbort();
+    return state()->requestAbort();
 }
 
 void WeaverImpl::requestAbort_p()
@@ -476,12 +473,12 @@ Job* WeaverImpl::takeFirstAvailableJobOrWait(Thread *th, Job *previous)
 
 Job* WeaverImpl::applyForWork(Thread *th, Job* previous)
 {
-    return m_state->applyForWork ( th,  previous );
+    return state()->applyForWork ( th,  previous );
 }
 
 void WeaverImpl::waitForAvailableJob(Thread* th)
 {
-    m_state->waitForAvailableJob ( th );
+    state()->waitForAvailableJob ( th );
 }
 
 void WeaverImpl::blockThreadUntilJobsAreBeingAssigned(Thread *th)

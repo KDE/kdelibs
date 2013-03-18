@@ -31,6 +31,7 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 #include <QtCore/QObject>
 #include <QtCore/QWaitCondition>
 #include <QSharedPointer>
+#include <QAtomicPointer>
 
 #ifndef THREADWEAVER_PRIVATE_API
 #define THREADWEAVER_PRIVATE_API
@@ -64,7 +65,8 @@ public:
     void shutDown();
     void shutDown_p();
 
-    const State& state() const;
+    const State* state() const;
+    State* state();
 
     void setMaximumNumberOfThreads( int cap );
     int maximumNumberOfThreads() const;
@@ -126,7 +128,6 @@ public:
     friend class WeaverImplState;
     friend class SuspendingState;
     void setState_p( StateId );
-    const State& state_p() const;
     void setMaximumNumberOfThreads_p(int cap);
     int maximumNumberOfThreads_p() const;
     int currentNumberOfThreads_p() const;
@@ -197,7 +198,7 @@ private:
     /** The state of the art.
     * @see StateId
     */
-    State* m_state;
+    QAtomicPointer<State> m_state;
     /** The state objects. */
     QSharedPointer<State> m_states[NoOfStates];
 };

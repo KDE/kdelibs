@@ -46,7 +46,7 @@ class WeaverImplState : public State
 public:
     explicit WeaverImplState( Queue* weaver );
 
-    const State& state() const;
+    const State* state() const;
 
     /** Shut down the queue. */
     void shutDown();

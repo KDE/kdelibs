@@ -15,8 +15,8 @@ public:
     explicit QueueAPI(QObject *parent = 0);
     
     virtual void shutDown_p() = 0;
-    virtual void setState_p( StateId ) = 0;
-    virtual const State& state_p() const = 0;
+    virtual const State* state() const = 0;
+    virtual State* state() = 0;
     virtual void setMaximumNumberOfThreads_p(int cap) = 0;
     virtual int maximumNumberOfThreads_p() const = 0;
     virtual int currentNumberOfThreads_p() const = 0;

@@ -59,7 +59,7 @@ Weaver::Weaver ( QObject* parent )
 
 Weaver::~Weaver()
 {
-    if (d->implementation->state().stateId()!=Destructed) {
+    if (d->implementation->state()->stateId()!=Destructed) {
         d->implementation->shutDown();
     }
     delete d->implementation;
@@ -77,7 +77,7 @@ void Weaver::shutDown()
 {
 }
 
-const State& Weaver::state() const
+const State* Weaver::state() const
 {
     return d->implementation->state();
 }
@@ -120,7 +120,7 @@ Weaver* Weaver::instance()
     //the object s_instance pointed to.
     static StaticThreadWeaverInstanceGuard* s_instanceGuard = new StaticThreadWeaverInstanceGuard(s_instance, qApp);
     Q_UNUSED(s_instanceGuard);
-    return s_instance.fetchAndAddOrdered(0);
+    return s_instance.loadAcquire();
 }
 
 void Weaver::enqueue (Job* j)

@@ -61,7 +61,7 @@ class THREADWEAVER_EXPORT WeaverInterface {
 public:
     virtual ~WeaverInterface() {}
     /** Return the state of the weaver object. */
-    virtual const State& state() const = 0;
+    virtual const State* state() const = 0;
 
     /** Shut down the queue.
      * Tells all threads to exit, and changes to Destructed state.

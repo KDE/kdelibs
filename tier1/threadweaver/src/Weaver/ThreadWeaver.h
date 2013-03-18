@@ -72,7 +72,7 @@ public:
     /** Destruct a Weaver object. */
     virtual ~Weaver ();
 
-    const State& state() const;
+    const State* state() const;
 
     void setMaximumNumberOfThreads( int cap );
     int maximumNumberOfThreads() const;

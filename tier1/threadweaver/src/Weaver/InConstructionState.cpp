@@ -55,7 +55,7 @@ Job* InConstructionState::applyForWork(Thread *th, Job *previous)
     // return from the blocked state when jobs are queued. By then, we
     // should not be in InConstruction state anymore, and we hand the job
     // application over to the then active state.
-    while (weaver()->state().stateId() == InConstruction) {
+    while (weaver()->state()->stateId() == InConstruction) {
         weaver()->waitForAvailableJob(th);
     }
     return weaver()->applyForWork(th, previous);
