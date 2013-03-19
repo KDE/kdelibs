@@ -99,6 +99,7 @@ public:
     bool isIdle () const;
     int queueLength () const;
     void requestAbort();
+    void shutDown();
 
 protected:
     /** The factory method to create the actual Weaver implementation.
@@ -109,7 +110,6 @@ protected:
 private:
     class Private;
     Private* const d;
-    void shutDown();
 };
 }
 

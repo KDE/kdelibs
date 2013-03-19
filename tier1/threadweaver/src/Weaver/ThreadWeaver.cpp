@@ -75,6 +75,7 @@ Queue *Weaver::makeWeaverImpl()
 
 void Weaver::shutDown()
 {
+    d->implementation->shutDown();
 }
 
 const State* Weaver::state() const
@@ -97,12 +98,18 @@ public:
         , instance_(instance)
     {
         Q_ASSERT_X(app!=0, Q_FUNC_INFO, "Calling ThreadWeaver::Weaver::instance() requires a QCoreApplication!");
+        qAddPostRoutine(shutDownGlobalQueue);
     }
 
     ~StaticThreadWeaverInstanceGuard() {
         instance_.fetchAndStoreOrdered(0);
     }
 private:
+    static void shutDownGlobalQueue() {
+        Weaver::instance()->shutDown();
+        Q_ASSERT(Weaver::instance()->state()->stateId() == Destructed);
+    }
+
     QAtomicPointer<Weaver>& instance_;
 };
 
