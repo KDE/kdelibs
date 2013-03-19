@@ -119,6 +119,7 @@ set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_BUILD_INTERFACE_INCLUDES ON)
+set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
 
 # By default don't add any linked libraries to the "exported"
 # link interfaces of shared libraries, so that executables linking
