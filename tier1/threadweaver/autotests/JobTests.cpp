@@ -178,12 +178,12 @@ void JobTests::IncompleteCollectionTest()
     QCOMPARE(jobADoneSignalSpy.count(), 0);
     ThreadWeaver::Weaver::instance()->enqueue ( &collection );
     ThreadWeaver::Weaver::instance()->resume();
-    QTest::qWait(500);
+    QCoreApplication::processEvents();
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
     QCOMPARE(jobADoneSignalSpy.count(), 0);
     ThreadWeaver::DependencyPolicy::instance().removeDependency(&jobA, &jobB);
     ThreadWeaver::Weaver::instance()->finish();
-    QTest::qWait(100);
+    QCoreApplication::processEvents();
     QVERIFY(collection.isFinished());
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     QCOMPARE(collectionDoneSignalSpy.count(), 1);
@@ -206,10 +206,10 @@ void JobTests::EmitStartedOnFirstElementTest()
     QSignalSpy collectionStartedSignalSpy(&collection, SIGNAL(started(ThreadWeaver::Job*)));
     QSignalSpy collectionDoneSignalSpy(&collection, SIGNAL(done(ThreadWeaver::Job*)));
     ThreadWeaver::Weaver::instance()->resume();
-    QTest::qWait(500);
-    QCOMPARE(collectionStartedSignalSpy.count(), 1);
+    QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
-    QVERIFY(collection.isFinished());
+    QVERIFY(collection.isFinished());    
+    QCOMPARE(collectionStartedSignalSpy.count(), 1);
     QCOMPARE(collectionDoneSignalSpy.count(), 1);
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
@@ -233,12 +233,13 @@ void JobTests::CollectionDependenciesTest()
     ThreadWeaver::Weaver::instance()->suspend();
     ThreadWeaver::Weaver::instance()->enqueue(&collection);
     ThreadWeaver::Weaver::instance()->resume();
-    QTest::qWait(500);
+    QCoreApplication::processEvents();
+    QTest::qWait(100);
     QCOMPARE(collectionStartedSignalSpy.count(), 0);
     ThreadWeaver::Weaver::instance()->enqueue(&jobC);
-    QTest::qWait(500);
-    QCOMPARE(collectionStartedSignalSpy.count(), 1);
+    QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
+    QCOMPARE(collectionStartedSignalSpy.count(), 1);
     QVERIFY(collection.isFinished());
     QVERIFY(result.startsWith(jobC.character()));
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
@@ -604,7 +605,7 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->enqueue ( &collection );
-    QTest::qWait( 100 );
+    QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY( sequence.length() == NumberOfBits );
 }
