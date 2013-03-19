@@ -9,7 +9,7 @@ set(libki18n_SRCS
 add_library(ki18n ${libki18n_SRCS})
 generate_export_header(ki18n)
 
-target_link_libraries(ki18n LINK_PUBLIC  ${QT_QTCORE_LIBRARY} KCoreAddons
+target_link_libraries(ki18n LINK_PUBLIC  ${QT_QTCORE_LIBRARY}
                             LINK_PRIVATE ${QT_QTXML_LIBRARY})
 
 set_target_properties(ki18n PROPERTIES VERSION   ${KI18N_VERSION_STRING}
