@@ -35,7 +35,6 @@ namespace ThreadWeaver {
 
 class Thread;
 class CollectionExecuteWrapper;
-//class JobCollectionJobRunner;
 
 /** A JobCollection is a vector of Jobs that will be queued together.
  * In a JobCollection, the order of execution of the elements is not guaranteed.
@@ -48,7 +47,6 @@ class CollectionExecuteWrapper;
  */
 class THREADWEAVER_EXPORT JobCollection : public Job
 {
-//    friend class JobCollectionJobRunner;
     Q_OBJECT
 
 public:
@@ -86,7 +84,6 @@ protected:
      */
     virtual int jobListLength_locked() const;
 
-    //FIXME move to d
     /** Perform the task usually done when one individual job is
      * finished, but in our case only when the whole collection
      * is finished or partly dequeued.

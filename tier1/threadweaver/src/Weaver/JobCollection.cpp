@@ -148,7 +148,6 @@ void JobCollection::stop(Job *job)
             dequeueElements(false);
         }
     }
-    // FIXME ENSURE ( d->weaver == 0 ); // verify that aboutToBeDequeued has been called
 }
 
 void JobCollection::aboutToBeQueued_locked(QueueAPI *api)
@@ -191,7 +190,7 @@ void JobCollection::elementStarted(Job*, Thread* thread)
 void JobCollection::elementFinished(Job*, Thread *thread)
 {
     QMutexLocker l(mutex()); Q_UNUSED(l);
-    const int jobsStarted = d->jobsStarted.fetchAndAddOrdered(0);
+    const int jobsStarted = d->jobsStarted.loadAcquire();
     Q_ASSERT(jobsStarted >=0); Q_UNUSED(jobsStarted);
     const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1) -1;
     Q_ASSERT(remainingJobs >=0);
@@ -233,7 +232,7 @@ void JobCollection::dequeueElements(bool queueApiIsLocked)
 {   // dequeue everything:
     Q_ASSERT(!mutex()->tryLock());
     if ( d->api == 0 ) return; //not queued
-    //FIXME only if not finished?
+
     for ( int index = 0; index < d->elements.size(); ++index ) {
         debug(4, "JobCollection::dequeueElements: dequeueing %p.\n", (void*)d->elements.at(index));
         if (queueApiIsLocked) {
@@ -243,14 +242,13 @@ void JobCollection::dequeueElements(bool queueApiIsLocked)
         }
     }
 
-    const int jobCount = d->jobCounter.fetchAndAddOrdered(0);
+    const int jobCount = d->jobCounter.fetchAndStoreAcquire(0);
     if (jobCount != 0) {
         // if jobCounter is not zero, then we where waiting for the
         // last job to finish before we would have freed our queue
-        // policies, but in this case we have to do it here:
+        // policies. In this case we have to do it here:
         finalCleanup();
     }
-    d->jobCounter = 0;
 }
 
 }
