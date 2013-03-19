@@ -87,6 +87,7 @@ unsigned int Thread::id()
 void Thread::run()
 {
     Q_ASSERT(d->parent);
+    d->parent->threadEnteredRun(this);
     //There is a chance that the thread was started and right after, QApplication entered it's destructor.
     //Not a problem, except that emits will crash. Abort in this case. qAppPointer will only go to Null, not from.
     QPointer<QCoreApplication> qAppPointer(QCoreApplication::instance());
@@ -94,6 +95,7 @@ void Thread::run()
 
     Q_EMIT started(this);
     debug(3, "Thread::run [%u]: running.\n", id());
+
     while (true) {
         debug(3, "Thread::run [%u]: trying to execute the next job.\n", id());
         Job* oldJob = 0;

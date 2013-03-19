@@ -32,6 +32,7 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 #include <QtCore/QWaitCondition>
 #include <QSharedPointer>
 #include <QAtomicPointer>
+#include <QAtomicInt>
 
 #ifndef THREADWEAVER_PRIVATE_API
 #define THREADWEAVER_PRIVATE_API
@@ -39,6 +40,7 @@ $Id: WeaverImpl.h 32 2005-08-17 08:38:01Z mirko $
 
 #include "State.h"
 #include "QueueAPI.h"
+#include <QSemaphore>
 
 namespace ThreadWeaver {
 
@@ -112,6 +114,9 @@ public:
      * Requires that the mutex is being held when called.
      */
     int activeThreadCount();
+
+    /** Called from a new thread when entering the run method. */
+    void threadEnteredRun(Thread* thread);
     /** Take the first available job out of the queue and return it.
      * The job will be removed from the queue (therefore, take). Only jobs that have no unresolved dependencies are considered
      * available. If only jobs that depened on other, unfinished jobs are in the queue, this method blocks on m_jobAvailable. */
@@ -195,6 +200,11 @@ private:
     QWaitCondition m_jobFinished;
     /** Mutex to serialize operations. */
     QMutex *m_mutex;
+    /** Semaphore to ensure thread startup is  in sequence. */
+    QSemaphore m_semaphore;
+    /** Before shutdown can proceed to close the running threads, it needs to ensure that all of them
+     *  entered the run method. */
+    QAtomicInt m_createdThreads;
     /** The state of the art.
     * @see StateId
     */

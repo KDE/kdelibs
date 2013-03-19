@@ -86,6 +86,7 @@ void WeaverImpl::shutDown_p()
 
     REQUIRE( QThread::currentThread() == thread() );
     debug ( 3, "WeaverImpl::shutDown: destroying inventory.\n" );
+    m_semaphore.acquire(m_createdThreads.loadAcquire());
     finish();
     suspend();
     setState(ShuttingDown);
@@ -395,10 +396,8 @@ void WeaverImpl::adjustInventory ( int numberOfNewJobs )
                       SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)) );
             connect ( th,  SIGNAL (jobDone(ThreadWeaver::Job*)),
                       SIGNAL (jobDone(ThreadWeaver::Job*)) );
-            connect ( th,  SIGNAL (started(ThreadWeaver::Thread*)),
-                      SIGNAL (threadStarted(ThreadWeaver::Thread*)) );
-
             th->start();
+            m_createdThreads.ref();
             debug(2, "WeaverImpl::adjustInventory: thread created, "
                   "%i threads in inventory.\n", currentNumberOfThreads_p());
         }
@@ -445,6 +444,12 @@ int WeaverImpl::activeThreadCount()
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
     return m_active;
+}
+
+void WeaverImpl::threadEnteredRun(Thread *thread)
+{
+    m_semaphore.release(1);
+    Q_EMIT threadStarted(thread);
 }
 
 Job* WeaverImpl::takeFirstAvailableJobOrWait(Thread *th, Job *previous)
