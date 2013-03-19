@@ -109,6 +109,7 @@ void QueueTests::WeaverInitializationTest()
 
 void QueueTests::QueueFromSecondThreadTest()
 {
+    ThreadWeaver::Weaver::instance(); //create global instance in the main thread
     SecondThreadThatQueues thread;
     thread.start();
     thread.wait();
