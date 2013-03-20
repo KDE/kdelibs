@@ -107,6 +107,8 @@ public:
     void blockThreadUntilJobsAreBeingAssigned_locked(Thread* th);
     /** Increment the count of active threads. */
     void incActiveThreadCount();
+    /** Go to suspended state if the active thread count is now zero. */
+    void suspendIfSuspendingAndNoThreadsActive();
     /** Decrement the count of active threads. */
     void decActiveThreadCount();
     /** Returns the number of active threads.
@@ -181,9 +183,6 @@ protected:
     /** Lock the mutex for this weaver. The threads in the
         inventory need to lock the weaver's mutex to synchronize
         the job management. */
-    // 	void lock ();
-    // 	/** Unlock. See lock(). */
-    // 	void unlock ();
 private:
     /** The thread inventory. */
     QList<Thread*> m_inventory;

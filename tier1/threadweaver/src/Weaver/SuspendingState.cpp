@@ -51,17 +51,12 @@ void SuspendingState::resume()
 
 void SuspendingState::activated()
 {
-    if (weaver()->activeThreadCount() == 0) {
-        weaver()->setState_p(Suspended);
-    }
+    weaver()->assignJobs();
 }
 
 Job* SuspendingState::applyForWork(Thread *th, Job* previous)
 {
-    //FIXME race!
-    if (weaver()->activeThreadCount() == 0) {
-        weaver()->setState(Suspended);
-    }
+    weaver()->suspendIfSuspendingAndNoThreadsActive();
     weaver()->waitForAvailableJob(th);
     return weaver()->applyForWork(th, previous);
 }

@@ -256,7 +256,7 @@ bool WeaverImpl::dequeue_p(Job* job)
         m_assignments.removeAt( i );
         debug(3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n", (void*)job, queueLength_p());
         // from the queues point of view, a job is just as finished if it gets dequeued:
-        m_jobFinished.wakeOne();
+        m_jobFinished.wakeAll();
         return true;
     } else {
         debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", (void*)job );
@@ -296,11 +296,10 @@ void WeaverImpl::finish_p()
     const int MaxWaitMilliSeconds = 500;
 #endif
     while (!isIdle_p()) {
-        Q_ASSERT(state()->stateId() == WorkingHard);
-        debug (2, "WeaverImpl::finish: not done, waiting.\n" );
+        Q_ASSERT_X(state()->stateId() == WorkingHard, Q_FUNC_INFO, qPrintable(state()->stateName()));
+        debug(2, "WeaverImpl::finish: not done, waiting.\n" );
         if (m_jobFinished.wait(m_mutex, MaxWaitMilliSeconds) == false) {
-            debug ( 2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n",
-                    queueLength_p() );
+            debug(2, "WeaverImpl::finish: wait timed out, %i jobs left, waking threads.\n", queueLength_p());
             m_jobAvailable.wakeAll();
         }
     }
@@ -417,6 +416,15 @@ void WeaverImpl::assignJobs()
 void WeaverImpl::incActiveThreadCount()
 {
     adjustActiveThreadCount ( 1 );
+}
+
+void WeaverImpl::suspendIfSuspendingAndNoThreadsActive()
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    //make sure to switch only once even if multiple threads are waiting here, and only if the queue is still in Suspending state
+    if (m_active == 0 && state()->stateId() == Suspending) {
+        setState_p(Suspended);
+    }
 }
 
 void WeaverImpl::decActiveThreadCount()
