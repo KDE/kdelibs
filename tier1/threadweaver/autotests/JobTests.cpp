@@ -245,8 +245,28 @@ void JobTests::CollectionDependenciesTest()
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
+void JobTests::QueueAndDequeueCollectionTest()
+{
+    QString sequence;
+    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
+    AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
+    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
+    ThreadWeaver::JobCollection collection( this );
+    collection.addJob ( &jobA );
+    collection.addJob ( &jobB );
+    collection.addJob ( &jobC );
+
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    ThreadWeaver::Weaver::instance()->suspend();
+
+    ThreadWeaver::Weaver::instance()->enqueue ( & collection );
+    ThreadWeaver::Weaver::instance()->dequeue ( & collection );
+    QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
+}
+
+
 void JobTests::QueueAndDequeueSequenceTest() {
-    return; //TODO fails, race
+    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -309,8 +329,52 @@ void JobTests::RecursiveSequenceTest()
     QCOMPARE(sequence, QLatin1String("abcdefghij"));
 }
 
+void JobTests::RecursiveQueueAndDequeueCollectionTest()
+{
+    QString sequence;
+    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
+    AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
+    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
+    AppendCharacterJob jobD ( QChar( 'd' ), &sequence, this );
+    AppendCharacterJob jobE ( QChar( 'e' ), &sequence, this );
+    AppendCharacterJob jobF ( QChar( 'f' ), &sequence, this );
+    AppendCharacterJob jobG ( QChar( 'g' ), &sequence, this );
+    AppendCharacterJob jobH ( QChar( 'h' ), &sequence, this );
+    AppendCharacterJob jobI ( QChar( 'i' ), &sequence, this );
+    AppendCharacterJob jobJ ( QChar( 'j' ), &sequence, this );
+    ThreadWeaver::JobCollection collection1( this );
+    collection1.setObjectName( "Coll_1" );
+    collection1.addJob ( &jobA );
+    collection1.addJob ( &jobB );
+    collection1.addJob ( &jobC );
+    ThreadWeaver::JobCollection collection2( this );
+    collection2.setObjectName( "Coll_2" );
+    collection2.addJob ( &jobD );
+    collection2.addJob ( &jobE );
+    collection2.addJob ( &jobF );
+    ThreadWeaver::JobCollection collection3( this );
+    collection3.setObjectName( "Coll_3" );
+    collection3.addJob ( &jobG );
+    collection3.addJob ( &jobH );
+    collection3.addJob ( &jobI );
+    collection3.addJob ( &jobJ );
+    // sequence 4 will contain sequences 1, 2, and 3, in that order:
+    ThreadWeaver::JobCollection collection4( this );
+    collection4.setObjectName( "Coll_4" );
+    collection4.addJob ( &collection1 );
+    collection4.addJob ( &collection2 );
+    collection4.addJob ( &collection3 );
+
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    ThreadWeaver::Weaver::instance()->suspend();
+    ThreadWeaver::Weaver::instance()->enqueue ( & collection4 );
+    ThreadWeaver::Weaver::instance()->dequeue ( & collection4 );
+    QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
+    ThreadWeaver::Weaver::instance()->resume();
+}
+
 void JobTests::RecursiveQueueAndDequeueSequenceTest() {
-    return; //FIXME fails, race
+    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -353,8 +417,26 @@ void JobTests::RecursiveQueueAndDequeueSequenceTest() {
     ThreadWeaver::Weaver::instance()->resume();
 }
 
+void JobTests::QueueAndDequeueAllCollectionTest()
+{
+    QString sequence;
+    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
+    AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
+    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
+    ThreadWeaver::JobCollection collection( this );
+    collection.addJob ( &jobA );
+    collection.addJob ( &jobB );
+    collection.addJob ( &jobC );
+
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    ThreadWeaver::Weaver::instance()->suspend();
+    ThreadWeaver::Weaver::instance()->enqueue ( & collection );
+    ThreadWeaver::Weaver::instance()->dequeue ();
+    QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
+}
+
 void JobTests::QueueAndDequeueAllSequenceTest() {
-    return; //FIXME fails, race
+    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -372,8 +454,54 @@ void JobTests::QueueAndDequeueAllSequenceTest() {
     QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
 }
 
+void JobTests::RecursiveQueueAndDequeueAllCollectionTest()
+{
+    QString sequence;
+    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
+    AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
+    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
+    AppendCharacterJob jobD ( QChar( 'd' ), &sequence, this );
+    AppendCharacterJob jobE ( QChar( 'e' ), &sequence, this );
+    AppendCharacterJob jobF ( QChar( 'f' ), &sequence, this );
+    AppendCharacterJob jobG ( QChar( 'g' ), &sequence, this );
+    AppendCharacterJob jobH ( QChar( 'h' ), &sequence, this );
+    AppendCharacterJob jobI ( QChar( 'i' ), &sequence, this );
+    AppendCharacterJob jobJ ( QChar( 'j' ), &sequence, this );
+    ThreadWeaver::JobCollection collection1( this );
+    collection1.setObjectName( "Coll_1" );
+    collection1.addJob ( &jobA );
+    collection1.addJob ( &jobB );
+    collection1.addJob ( &jobC );
+    ThreadWeaver::JobCollection collection2( this );
+    collection2.setObjectName( "Coll_2" );
+    collection2.addJob ( &jobD );
+    collection2.addJob ( &jobE );
+    collection2.addJob ( &jobF );
+    ThreadWeaver::JobCollection collection3( this );
+    collection3.setObjectName( "Coll_3" );
+    collection3.addJob ( &jobG );
+    collection3.addJob ( &jobH );
+    collection3.addJob ( &jobI );
+    collection3.addJob ( &jobJ );
+    // sequence 4 will contain sequences 1, 2, and 3, in that order:
+    ThreadWeaver::JobCollection collection4( this );
+    collection4.setObjectName( "Coll_4" );
+    collection4.addJob ( &collection1 );
+    collection4.addJob ( &collection2 );
+    collection4.addJob ( &collection3 );
+
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    ThreadWeaver::Weaver::instance()->suspend();
+    ThreadWeaver::Weaver::instance()->enqueue ( & collection4 );
+    ThreadWeaver::Weaver::instance()->dequeue ();
+    QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
+    ThreadWeaver::Weaver::instance()->resume();
+    ThreadWeaver::Weaver::instance()->finish();
+
+}
+
 void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
-    return; //TODO fails, race
+    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
