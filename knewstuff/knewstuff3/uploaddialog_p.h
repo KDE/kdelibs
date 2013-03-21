@@ -84,7 +84,7 @@ namespace KNS3 {
         bool finishedPreview3;
         bool finishedContents;
 
-        void init();
+        bool init(const QString& configfile);
         void setBusy(const QString& message);
         void setIdle(const QString& message);
 
