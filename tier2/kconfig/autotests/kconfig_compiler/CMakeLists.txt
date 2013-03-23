@@ -169,9 +169,9 @@ set(test12_SRCS test12main.cpp )
 
 gen_kcfg_test_source(test12 test12_SRCS)
 
-add_executable(test12 ${test11_SRCS})
+add_executable(test12 ${test12_SRCS})
 
-target_link_libraries(test12  ${KDE4_KDEUI_LIBS} )
+target_link_libraries(test12 Qt5::Widgets KConfigCore KConfigGui)
 
 
 ########### next target ###############

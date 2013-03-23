@@ -23,8 +23,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 int main( int, char** )
 {
-  KComponentData i("test");
-  Test12 *t = new Test12( QString(), QString() );
+  Test12 *t = new Test12();
   delete t;
   return 0;
 }
