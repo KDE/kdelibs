@@ -554,7 +554,7 @@ static void preProcessDefault( QString &defaultValue, const QString &name,
          cpp << endl;
 
       if( type == "UrlList" ) {
-        cpp << "  KUrl::List default" << name << ";" << endl;
+        cpp << "  QList<QUrl> default" << name << ";" << endl;
       } else {
         cpp << "  QStringList default" << name << ";" << endl;
       }
