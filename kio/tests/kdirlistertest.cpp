@@ -1071,13 +1071,14 @@ void KDirListerTest::testRemoveWatchedDirectory()
 {
     m_items.clear();
 
-    KTempDir newDir;
-    const QString path = newDir.name();
+    QTemporaryDir newDir;
+    const QString path = newDir.path() + '/';
 
     // List and watch an empty dir
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
-    m_dirLister.openUrl(KUrl(path));
-    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    m_dirLister.openUrl(QUrl::fromLocalFile(path));
+    QSignalSpy spyCompleted(&m_dirLister, SIGNAL(completed()));
+    QVERIFY(spyCompleted.wait(1000));
     QVERIFY(m_dirLister.isFinished());
     QVERIFY(m_items.isEmpty());
 
@@ -1085,7 +1086,7 @@ void KDirListerTest::testRemoveWatchedDirectory()
     const QString subDirPath = path + "abc";
     QVERIFY(QDir().mkdir(subDirPath));
 
-    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(spyCompleted.wait(1000));
     QVERIFY(m_dirLister.isFinished());
     QCOMPARE(m_items.count(), 1);
     const KFileItem item = m_items.at(0);
@@ -1101,7 +1102,7 @@ void KDirListerTest::testRemoveWatchedDirectory()
     QVERIFY(QDir().rmdir(path + "abc"));
 
     // This should trigger an update.
-    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(spyCompleted.wait(1000));
     QVERIFY(m_dirLister.isFinished());
     QCOMPARE(m_items.count(), 0);
     QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
