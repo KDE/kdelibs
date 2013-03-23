@@ -191,7 +191,7 @@ Please email kde-frameworks-devel@kde.org if you would need public API for this.
 
 A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to port some of this.
 </li>
-<li>KConfig has been ported to QStandardPaths. This changes the "const char* resourceType" in the API into QStandardPaths::StandardLocation, and means that modifying the "config" resource before using KConfig has no effect on KConfig anymore.
+<li>KConfig and KDesktopFile have been ported to QStandardPaths. This changes the "const char* resourceType" in the API into QStandardPaths::StandardLocation, and means that modifying the "config" resource before using KConfig has no effect on KConfig anymore.
 </li>
 <li>KTemporaryFile is deprecated, port to QTemporaryFile instead, see KTemporaryFile API documentation for details.</li>
 <li>KTempDir is deprecated, port to QTemporaryDir instead, see KTempDir API documentation for details.</li>
@@ -223,6 +223,14 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
    KMimeType::patterns() -&gt; QMimeType::globPatterns()
    KMimeType::allMimeTypes() -&gt; db.allMimeTypes()
 </pre>
+</li>
+<li>KLocale has been splitted up: KLocale is now only about locale settings, while translation support has moved to KLocalizedString.
+<pre>
+    KLocale::insertCatalog -&gt; KLocalizedString::insertCatalog
+</pre>
+</li>
+<li>KCmdLineArgs uses K4AboutData rather than KAboutData: K4AboutData keeps the old mechanism for delayed translations
+ (I18N_NOOP), while KAboutData is the one used by plugins, which can use immediate translation (i18n).
 </li>
 <li>KEncodingDetector is removed, port to KEncodingProber. Porting guide:
 <pre>
