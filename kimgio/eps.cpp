@@ -267,7 +267,8 @@ bool EPSHandler::write(const QImage &image)
 
     // Copy file to imageio struct
     QFile inFile(tmpFile.fileName());
-    inFile.open( QIODevice::ReadOnly );
+    if ( !inFile.open( QIODevice::ReadOnly ) )
+        return false;
 
     QTextStream in( &inFile );
     in.setCodec( "ISO-8859-1" );

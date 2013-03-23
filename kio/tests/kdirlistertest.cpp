@@ -1067,6 +1067,48 @@ void KDirListerTest::testWatchingAfterCopyJob() // #331582
     QVERIFY(clearSpy.wait(1000));
 }
 
+void KDirListerTest::testRemoveWatchedDirectory()
+{
+    m_items.clear();
+
+    KTempDir newDir;
+    const QString path = newDir.name();
+
+    // List and watch an empty dir
+    connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
+    m_dirLister.openUrl(KUrl(path));
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+    QVERIFY(m_items.isEmpty());
+
+    // Create a subfolder.
+    const QString subDirPath = path + "abc";
+    QVERIFY(QDir().mkdir(subDirPath));
+
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+    QCOMPARE(m_items.count(), 1);
+    const KFileItem item = m_items.at(0);
+
+    // Watch the subfolder for changes, independently.
+    // This is what triggers the bug.
+    // (Technically, this could become a KDirWatch unittest, but if one day we use QFSW, good to have the tests here)
+    KDirWatch watcher;
+    watcher.addDir(subDirPath);
+
+    // Remove the subfolder.
+    m_items.clear();
+    QVERIFY(QDir().rmdir(path + "abc"));
+
+    // This should trigger an update.
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(completed()), 1000));
+    QVERIFY(m_dirLister.isFinished());
+    QCOMPARE(m_items.count(), 0);
+    QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
+    const KFileItem deletedItem = m_dirLister.spyItemsDeleted.at(0).at(0).value<KFileItemList>().at(0);
+    QCOMPARE(item, deletedItem);
+}
+
 void KDirListerTest::enterLoop(int exitCount)
 {
     //qDebug("enterLoop");

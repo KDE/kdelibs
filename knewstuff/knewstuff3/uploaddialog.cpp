@@ -41,13 +41,14 @@
 
 using namespace KNS3;
 
-void UploadDialog::Private::init()
+bool UploadDialog::Private::init(const QString& configfile)
 {
     QVBoxLayout *layout = new QVBoxLayout;
     q->setLayout(layout);
 
     QWidget* _mainWidget = new QWidget(q);
     ui.setupUi(_mainWidget);
+
     layout->addWidget(_mainWidget);
 
     backButton = new QPushButton;
@@ -70,6 +71,52 @@ void UploadDialog::Private::init()
     layout->addWidget(buttonBox);
 
     atticaHelper = new AtticaHelper(q);
+
+    bool success = true;
+    KConfig conf(configfile);
+    if (conf.accessMode() == KConfig::NoAccess) {
+        kError() << "No knsrc file named '" << configfile << "' was found." << endl;
+        success = false;
+    }
+    // FIXME: accessMode() doesn't return NoAccess for non-existing files
+    // - bug in kdecore?
+    // - this needs to be looked at again until KConfig backend changes for KDE 4
+    //   the check below is a workaround
+    if (QStandardPaths::locate(QStandardPaths::ConfigLocation, configfile).isEmpty()) {
+        kError() << "No knsrc file named '" << configfile << "' was found." << endl;
+        success = false;
+    }
+
+    KConfigGroup group;
+    if (conf.hasGroup("KNewStuff3")) {
+        kDebug() << "Loading KNewStuff3 config: " << configfile;
+        group = conf.group("KNewStuff3");
+    } else {
+        kError() << "A knsrc file was found but it doesn't contain a KNewStuff3 section." << endl;
+        success = false;
+    }
+
+    if ( success ) {
+        const QString providersFileUrl = group.readEntry("ProvidersUrl", QString());
+
+        categoryNames = group.readEntry("UploadCategories", QStringList());
+        // fall back to download categories
+        if (categoryNames.isEmpty()) {
+            categoryNames = group.readEntry("Categories", QStringList());
+        }
+
+        atticaHelper->addProviderFile(QUrl(providersFileUrl));
+    }
+
+    ui.mCategoryCombo->addItems(categoryNames);
+
+    if (categoryNames.size() == 1) {
+        ui.mCategoryLabel->setVisible(false);
+        ui.mCategoryCombo->setVisible(false);
+    }
+
+    kDebug() << "Categories: " << categoryNames;
+
     q->connect(atticaHelper, SIGNAL(providersLoaded(QStringList)), q, SLOT(_k_providersLoaded(QStringList)));
     q->connect(atticaHelper, SIGNAL(loginChecked(bool)), q, SLOT(_k_checkCredentialsFinished(bool)));
     q->connect(atticaHelper, SIGNAL(licensesLoaded(Attica::License::List)), q, SLOT(_k_licensesLoaded(Attica::License::List)));
@@ -96,9 +143,7 @@ void UploadDialog::Private::init()
     ui.busyWidget->layout()->addWidget(busyWidget);
     busyWidget->setVisible(false);
 
-    //ui.previewImage1->showPreview(KUrl("invalid"));
-    //ui.previewImage2->showPreview(KUrl("invalid"));
-    //ui.previewImage3->showPreview(KUrl("invalid"));
+    return success;
 }
 
 void UploadDialog::Private::setBusy(const QString& message)
@@ -381,7 +426,7 @@ UploadDialog::~UploadDialog()
 
 bool UploadDialog::init(const QString &configfile)
 {
-    d->init();
+    bool success = d->init(configfile);
 
     setWindowTitle(i18n("Share Hot New Stuff"));
 
@@ -409,47 +454,11 @@ bool UploadDialog::init(const QString &configfile)
                                  displayName));
     //d->ui.mTitleWidget->setPixmap(QIcon::fromTheme(KGlobal::activeComponent().aboutData()->programIconName()));
 
-    KConfig conf(configfile);
-    if (conf.accessMode() == KConfig::NoAccess) {
-        kError() << "No knsrc file named '" << configfile << "' was found." << endl;
-        return false;
-    }
-    // FIXME: accessMode() doesn't return NoAccess for non-existing files
-    // - bug in kdecore?
-    // - this needs to be looked at again until KConfig backend changes for KDE 4
-    // the check below is a workaround
-    if (QStandardPaths::locate(QStandardPaths::ConfigLocation, configfile).isEmpty()) {
-        kError() << "No knsrc file named '" << configfile << "' was found." << endl;
-        return false;
+    if ( success ) {
+        d->_k_showPage(0);
     }
 
-    KConfigGroup group;
-    if (conf.hasGroup("KNewStuff3")) {
-        kDebug() << "Loading KNewStuff3 config: " << configfile;
-        group = conf.group("KNewStuff3");
-    } else {
-        kError() << "A knsrc file was found but it doesn't contain a KNewStuff3 section." << endl;
-        return false;
-    }
-
-    d->categoryNames = group.readEntry("UploadCategories", QStringList());
-    // fall back to download categories
-    if (d->categoryNames.isEmpty()) {
-        d->categoryNames = group.readEntry("Categories", QStringList());
-    }
-
-    d->ui.mCategoryCombo->addItems(d->categoryNames);
-
-    if (d->categoryNames.size() == 1) {
-        d->ui.mCategoryLabel->setVisible(false);
-        d->ui.mCategoryCombo->setVisible(false);
-    }
-
-    kDebug() << "Categories: " << d->categoryNames;
-
-    d->_k_showPage(0);
-
-    return true;
+    return success;
 }
 
 void UploadDialog::setUploadFile(const QUrl & payloadFile)

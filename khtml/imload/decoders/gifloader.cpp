@@ -44,6 +44,11 @@ extern "C" {
 #include <gif_lib.h>
 }
 
+/* avoid cpp warning about undefined macro, old giflib had no GIFLIB_MAJOR */
+#ifndef GIFLIB_MAJOR
+#define GIFLIB_MAJOR 4
+#endif
+
 // #define DEBUG_GIFLOADER
 
 namespace khtmlImLoad {
@@ -299,7 +304,11 @@ public:
     }
     
     
+#if GIFLIB_MAJOR >= 5
+    static unsigned int decode16Bit(unsigned char* signedLoc)
+#else
     static unsigned int decode16Bit(char* signedLoc)
+#endif
     {
         unsigned char* loc = reinterpret_cast<unsigned char*>(signedLoc);
     
@@ -347,7 +356,12 @@ public:
     virtual int processEOF()
     {
         //Feed the buffered data to libUnGif
+#if GIFLIB_MAJOR >= 5
+        int errorCode;
+        GifFileType* file = DGifOpen(this, gifReaderBridge, &errorCode);
+#else
         GifFileType* file = DGifOpen(this, gifReaderBridge);
+#endif
         
         if (!file)
             return Error;

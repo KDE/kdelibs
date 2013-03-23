@@ -1240,7 +1240,8 @@ QString KSSLCertificate::toText() {
     fclose(ktf_fs);
 
     QFile qf(ktf.fileName());
-    qf.open(QIODevice::ReadOnly);
+    if (!qf.open(QIODevice::ReadOnly) )
+       return text;
     char *buf = new char[qf.size()+1];
     qf.read(buf, qf.size());
     buf[qf.size()] = 0;

@@ -29,8 +29,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
 
-#define DETAILED_OUTPUT 0
-
 using namespace Solid::Backends::UDev;
 using namespace Solid::Backends::Shared;
 
@@ -66,7 +64,7 @@ UDevManager::Private::~Private()
 
 bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 {
-#if DETAILED_OUTPUT
+#ifdef UDEV_DETAILED_OUTPUT
     qDebug() << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
     qDebug() << "Path:" << device.sysfsPath();
     qDebug() << "Properties:" << device.deviceProperties();

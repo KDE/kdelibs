@@ -131,18 +131,26 @@ set(solid_LIB_SRCS
    backends/shared/cpufeatures.cpp
 )
 
-if ( HUPNP_FOUND )
-  include_directories( ${HUPNP_INCLUDE_DIR} )
-  message(STATUS "Building Solid UPnP backend." )
-  set(solid_LIB_SRCS ${solid_LIB_SRCS}
-      backends/upnp/upnpdevice.cpp
-      backends/upnp/upnpdevicemanager.cpp
-      backends/upnp/upnpdeviceinterface.cpp
-      backends/upnp/upnpmediaserver.cpp
-      backends/upnp/upnpinternetgateway.cpp
-      backends/upnp/upnpcontrolpoint.cpp
-  )
-endif ()
+if(NOT APPLE)
+  set(HUPNP_ENABLED FALSE CACHE BOOL "explicitly enable the compilation of the hupnp backend")
+  if (HUPNP_ENABLED AND HUPNP_FOUND AND ((HUPNP_VERSION_MAJOR EQUAL 0 AND HUPNP_VERSION_MINOR EQUAL 9) OR (HUPNP_VERSION_MAJOR EQUAL 1)))
+    include_directories( ${HUPNP_INCLUDE_DIR} )
+    message(STATUS "Building Solid UPnP backend." )
+    set(solid_LIB_SRCS ${solid_LIB_SRCS}
+       backends/upnp/upnpdevice.cpp
+       backends/upnp/upnpdevicemanager.cpp
+       backends/upnp/upnpdeviceinterface.cpp
+       backends/upnp/upnpmediaserver.cpp
+       backends/upnp/upnpinternetgateway.cpp
+       backends/upnp/upnpcontrolpoint.cpp
+    )
+  else ()
+    if(NOT HUPNP_ENABLED)
+        message(STATUS "To have UPnP support, explicitly enable HUPNP_ENABLED in the cmake cache")
+    endif(NOT HUPNP_ENABLED)
+    set(HUPNP_FOUND false)
+  endif ()
+endif(NOT APPLE)
 
 if(NOT WIN32 AND NOT APPLE)
 #   message(STATUS "Building Solid KUPnP backend." )
@@ -183,6 +191,10 @@ if(NOT WIN32 AND NOT APPLE)
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
       )
+      set(UDEV_DETAILED_OUTPUT OFF CACHE BOOL "provide extended output regarding udev events")
+      if(UDEV_DETAILED_OUTPUT)
+         add_definitions(-DUDEV_DETAILED_OUTPUT)
+      endif(UDEV_DETAILED_OUTPUT)
 
       # check for media-player-info (runtime-only optional dependency)
       find_package(MediaPlayerInfo)

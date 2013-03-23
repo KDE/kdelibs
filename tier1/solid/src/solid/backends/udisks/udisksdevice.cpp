@@ -550,15 +550,11 @@ QString UDisksDevice::icon() const
         bool isPartition = prop( "DeviceIsPartition" ).toBool();
         if ( isPartition )      // this is a slave device, we need to return its parent's icon
         {
-            UDisksDevice* parent = 0;
-            if ( !parentUdi().isEmpty() )
-                parent = new UDisksDevice( parentUdi() );
+            if ( !m_parentDevice && !parentUdi().isEmpty() )
+                m_parentDevice = new UDisksDevice( parentUdi() );
 
-            if ( parent )
-            {
-                iconName = parent->icon();
-                delete parent;
-            }
+            if ( m_parentDevice )
+                iconName = m_parentDevice->icon();
 
             if ( !iconName.isEmpty() )
                 return iconName;

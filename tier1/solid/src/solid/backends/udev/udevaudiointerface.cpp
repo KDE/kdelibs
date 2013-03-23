@@ -25,6 +25,7 @@
 #include "udevdevice.h"
 
 #include <QFile>
+#include <QDebug>
 
 using namespace Solid::Backends::UDev;
 
@@ -50,10 +51,10 @@ QVariant AudioInterface::driverHandle() const
     {
         QList<QVariant> list;
         if (d->m_cardnum != -1) {
-            list << QVariant(d->m_cardnum);
-            if (d->m_devicenum != -1) {
-                list << QVariant(d->m_devicenum);
-            }
+            QVariant card_id = d->m_cardnum;
+            QVariant dev_id = d->m_devicenum != -1 ? d->m_devicenum : QVariant();
+            QVariant subdev_id;
+            list << card_id << dev_id << subdev_id;
         } else if(!d->m_deviceFile.isEmpty()) {
             list << QVariant(d->m_deviceFile);
         }

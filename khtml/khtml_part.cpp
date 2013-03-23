@@ -5199,7 +5199,10 @@ KHTMLPart* KHTMLPartPrivate::findFrameParent(KParts::ReadOnlyPart* callingPart,
     kDebug(6050) << q << "URL =" << q->url() << "name =" << q->objectName() << "findFrameParent(" << f << ")";
 #endif
     // Check access
-    KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
+    KHTMLPart* const callingHtmlPart = qobject_cast<KHTMLPart *>(callingPart);
+
+    if (!callingHtmlPart)
+        return 0;
 
     if (!checkForNavigation && !q->checkFrameAccess(callingHtmlPart))
         return 0;

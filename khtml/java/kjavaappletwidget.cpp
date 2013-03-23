@@ -75,8 +75,6 @@ void KJavaAppletWidget::showApplet()
     connect( KWindowSystem::self(), SIGNAL(windowAdded(WId)),
 	         this,  SLOT(setWindow(WId)) );
 
-    KWindowSystem::doNotManage( m_swallowTitle );
-
     //Now we send applet info to the applet server
     if ( !m_applet->isCreated() )
         m_applet->create();
@@ -92,6 +90,7 @@ void KJavaAppletWidget::setWindow( WId w )
     if ( m_swallowTitle == w_info.name() ||
          m_swallowTitle == w_info.visibleName() )
     {
+        KWindowSystem::setState(w, NET::Hidden | NET::SkipTaskbar | NET::SkipPager);
         kDebug(6100) << "swallowing our window: " << m_swallowTitle
                       << ", window id = " << w << endl;
         delete d->tmplabel;
