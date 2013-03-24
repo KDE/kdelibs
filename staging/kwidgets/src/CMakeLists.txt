@@ -1,7 +1,7 @@
 
 find_package(X11)
 if(X11_FOUND)
-	macro_bool_to_01(X11_FOUND HAVE_X11)
+  macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
 
 
@@ -59,11 +59,12 @@ if(X11_FOUND)
   target_link_libraries(kwidgets Qt5::X11Extras)
 endif()
 
-set_target_properties(kwidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                        SOVERSION ${ECM_SOVERSION}
+set_target_properties(kwidgets PROPERTIES VERSION ${KWIDGETS_VERSION_STRING}
+                                        SOVERSION ${KWIDGETS_SOVERSION}
 )
 
-install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+# TODO : export into KWidgetsTargets instead of kdelibsLibraryTargets
+install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   dialogs/kmessagebox.h

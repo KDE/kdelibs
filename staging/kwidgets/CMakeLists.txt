@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.10.20130309)
 
-project(kwidgets)
+project(KWidgets)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
@@ -8,18 +8,16 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-include(ECMVersion)
-
-# -- Maintained by scripty
-ecm_version(5 0 0)
-# --
-
-include(ECMQtFramework)
-include(ECMWriteVersionHeader)
-
 find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets Svg X11Extras)
 
 include(FeatureSummary)
+
+include(ECMSetupVersion)
+
+ecm_setup_version(5 0 0 VARIABLE_PREFIX KWIDGETS
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfigVersion.cmake")
+
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
@@ -34,12 +32,29 @@ add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(autotests)
 
-ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h)
 
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h
-  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
-)
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kwidgets")
+
+include(CMakePackageConfigHelpers)
+
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kwidgetsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfig.cmake"
+                              INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
+                             )
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfigVersion.cmake"
+        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel
+       )
+
+# install(EXPORT KWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KWidgetsTargets.cmake NAMESPACE KF5:: )
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+       )
 
 if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
   feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
