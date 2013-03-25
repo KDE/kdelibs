@@ -336,6 +336,8 @@ void KTreeWidgetSearchLine::updateSearch( QTreeWidget *treeWidget )
 
   if ( currentItem )
     treeWidget->scrollToItem( currentItem );
+
+  emit searchUpdated(d->search);
 }
 
 void KTreeWidgetSearchLine::setCaseSensitivity( Qt::CaseSensitivity caseSensitive )

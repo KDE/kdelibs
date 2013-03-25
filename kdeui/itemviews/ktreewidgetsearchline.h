@@ -114,6 +114,14 @@ Q_SIGNALS:
      */
     void hiddenChanged(QTreeWidgetItem *, bool);
 
+    /**
+     * This signal is emitted when user finished entering filter text or
+     * when he made a pause long enough, after the QTreeWidget items got filtered
+     * @param searchString is the text currently entered by the user
+     * @since 5.0
+     */
+    void searchUpdated(const QString &searchString);
+
   public Q_SLOTS:
     /**
      * Adds a QTreeWidget to the list of listviews filtered by this search line.
