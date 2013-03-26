@@ -382,8 +382,8 @@ void RenderWidget::updateFromElement()
             backgroundColor = Qt::transparent;
 
         // check if we have to paint our background and let it show through the widget
-        bool trans = ( isRedirectedWidget() && style()->backgroundLayers() && 
-                       style()->backgroundLayers()->hasImage() && !qobject_cast<KUrlRequester*>(m_widget) );
+        bool trans = ( isRedirectedWidget() && !qobject_cast<KUrlRequester*>(m_widget) &&
+                       (style()->hasBackgroundImage() || (style()->hasBackground() && shouldPaintCSSBorders())) );
 
         QPalette pal(QApplication::palette(m_widget));
         // We need a non-transparent version for widgets with popups (e.g. kcombobox). The popups must not let
