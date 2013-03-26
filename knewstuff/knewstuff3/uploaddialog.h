@@ -191,6 +191,8 @@ private:
     Q_PRIVATE_SLOT( d, void _k_updatedContentFetched(Attica::Content) )
     Q_PRIVATE_SLOT( d, void _k_detailsLinkLoaded(QUrl) )
 
+    Q_PRIVATE_SLOT( d, void _k_openRegisterAccountWebpage(QString) )
+
     Q_DISABLE_COPY( UploadDialog )
 };
 

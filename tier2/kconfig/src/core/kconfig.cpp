@@ -437,6 +437,7 @@ void KConfig::sync()
             KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(d->sGlobalFileName);
             if (d->configState == ReadWrite && !tmp->lock()) {
                 qWarning() << "couldn't lock global file";
+                d->bDirty = true;
                 return;
             }
             if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal)) {

@@ -284,10 +284,9 @@ public Q_SLOTS:
     void slotReturnPressed();
     void slotTextChanged(const QString &string);
 protected:
-
+    virtual bool canHaveBorder() const { return true; }
 private:
     virtual bool isEditable() const { return true; }
-    virtual bool canHaveBorder() const { return true; }
     bool m_blockElementUpdates;
 };
 
@@ -381,7 +380,6 @@ protected:
     virtual void handleFocusOut();
 
     virtual bool isEditable() const { return true; }
-    virtual bool canHaveBorder() const { return true; }
     virtual bool acceptsSyntheticEvents() const { return false; }
 
     virtual bool includesPadding() const { return false; }

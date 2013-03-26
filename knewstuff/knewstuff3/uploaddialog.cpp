@@ -34,6 +34,7 @@
 
 #include <kpixmapsequence.h>
 #include <kpixmapsequencewidget.h>
+#include <krun.h>
 
 #include <kdebug.h>
 #include <kconfiggroup.h>
@@ -134,6 +135,8 @@ bool UploadDialog::Private::init(const QString& configfile)
 
     q->connect(ui.providerComboBox, SIGNAL(currentIndexChanged(QString)), q, SLOT(_k_providerChanged(QString)));
     q->connect(ui.radioUpdate, SIGNAL(toggled(bool)), q, SLOT(_k_updateContentsToggled(bool)));
+
+    q->connect(ui.registerNewAccountLabel, SIGNAL(linkActivated(QString)), q, SLOT(_k_openRegisterAccountWebpage(QString)));
 
     //Busy widget
     busyWidget = new KPixmapSequenceWidget();
@@ -277,6 +280,13 @@ void UploadDialog::Private::_k_providersLoaded(const QStringList& providers)
 void UploadDialog::Private::_k_providerChanged(const QString& providerName)
 {
     atticaHelper->setCurrentProvider(providerName);
+    QString registerUrl = atticaHelper->provider().getRegisterAccountUrl();
+    if ( ! registerUrl.isEmpty() ) {
+        ui.registerNewAccountLabel->setText("<a href=\"register\">" + i18n("Register a new account") + "</a>");
+    }
+    else {
+        ui.registerNewAccountLabel->setText(QString());
+    }
     ui.username->clear();
     ui.password->clear();
     QString user;
@@ -715,6 +725,10 @@ void UploadDialog::Private::_k_contentAdded(Attica::BaseJob* baseJob)
     if (ui.radioNewUpload->isChecked()) {
         atticaHelper->loadDetailsLink(contentId);
     }
+}
+
+void UploadDialog::Private::_k_openRegisterAccountWebpage(QString) {
+    KRun::runUrl(atticaHelper->provider().getRegisterAccountUrl(), "text/html", q);
 }
 
 void UploadDialog::Private::doUpload(const QString& index, const QUrl & path)
