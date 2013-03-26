@@ -70,7 +70,7 @@ void KSharedConfigTest::testReadWriteSync()
         cg.writeEntry("NumKey", value);
     }
     QVERIFY(!QFile::exists(m_path));
-    KSharedConfig::openConfig()->sync();
+    QVERIFY(KSharedConfig::openConfig()->sync());
     QVERIFY(QFile::exists(m_path));
     {
         KConfigGroup cg(KSharedConfig::openConfig(), "KSharedConfigTest");

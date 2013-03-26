@@ -47,14 +47,14 @@ void KConfigTest::initTestCase()
   cg.writeEntry( "colorEntry3", (QList<int>() << 234 << 234 << 127));
   cg.writeEntry( "colorEntry4",  (QList<int>() << 235 << 235 << 100 << 125));
   cg.writeEntry( "fontEntry", FONTENTRY );
-  sc.sync();
+  QVERIFY(sc.sync());
 
   KConfig sc1("kdebugrc");
   KConfigGroup sg0(&sc1, "0");
   sg0.writeEntry("AbortFatal", false);
   sg0.writeEntry("WarnOutput", 0);
   sg0.writeEntry("FatalOutput", 0);
-  sc1.sync();
+  QVERIFY(sc1.sync());
 }
 
 void KConfigTest::cleanupTestCase()
@@ -98,47 +98,47 @@ void KConfigTest::testInvalid()
   // 1 element list
   list << 1;
   sc3.writeEntry( QString("badList"), list);
-  sc.sync();
+  QVERIFY(sc.sync());
 
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
 
   // 2 element list
   list << 2;
   sc3.writeEntry( "badList", list);
-  sc.sync();
+  QVERIFY(sc.sync());
 
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
 
   // 3 element list
   list << 303;
   sc3.writeEntry( "badList", list);
-  sc.sync();
+  QVERIFY(sc.sync());
 
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
 
   // 4 element list
   list << 4;
   sc3.writeEntry( "badList", list );
-  sc.sync();
+  QVERIFY(sc.sync());
 
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
 
   list[2] = -3;
-  sc3.writeEntry( "badList", list ); sc.sync();
+  sc3.writeEntry( "badList", list ); QVERIFY(sc.sync());
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() ); // out of bounds
 
   // 5 element list
   list[2] = 3;
   list << 5;
   sc3.writeEntry( "badList", list);
-  sc.sync();
+  QVERIFY(sc.sync());
 
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
 
   // 6 element list
   list << 6;
   sc3.writeEntry( "badList", list);
-  sc.sync();
+  QVERIFY(sc.sync());
 
   QVERIFY( sc3.readEntry( "badList", QColor() ) == QColor() );
 }
