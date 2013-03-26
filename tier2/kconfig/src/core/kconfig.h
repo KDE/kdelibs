@@ -159,7 +159,7 @@ public:
     QString name() const;
 
     /// @reimp
-    bool sync();
+    void sync();
 
     /// @reimp
     void markAsClean();

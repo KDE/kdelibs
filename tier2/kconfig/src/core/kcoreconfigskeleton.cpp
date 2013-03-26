@@ -1072,7 +1072,7 @@ void KCoreConfigSkeleton::readConfig()
   usrReadConfig();
 }
 
-bool KCoreConfigSkeleton::writeConfig()
+void KCoreConfigSkeleton::writeConfig()
 {
     //kDebug(kCoreConfigSkeletionDebugArea());
   KConfigSkeletonItem::List::ConstIterator it;
@@ -1080,17 +1080,13 @@ bool KCoreConfigSkeleton::writeConfig()
   {
     (*it)->writeConfig( d->mConfig.data() );
   }
-  if (!usrWriteConfig())
-    return false;
+  usrWriteConfig();
 
-  if (!d->mConfig->sync())
-    return false;
+  d->mConfig->sync();
 
   readConfig();
 
   Q_EMIT configChanged();
-
-  return true;
 }
 
 bool KCoreConfigSkeleton::usrUseDefaults(bool)
@@ -1106,9 +1102,8 @@ void KCoreConfigSkeleton::usrReadConfig()
 {
 }
 
-bool KCoreConfigSkeleton::usrWriteConfig()
+void KCoreConfigSkeleton::usrWriteConfig()
 {
-  return true;
 }
 
 void KCoreConfigSkeleton::addItem( KConfigSkeletonItem *item, const QString &name )

@@ -126,7 +126,7 @@ public:
      *
      * Syncs the parent config.
      */
-    bool sync();
+    void sync();
 
     /// @reimp
     void markAsClean();

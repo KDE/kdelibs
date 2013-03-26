@@ -119,7 +119,7 @@ public:
      * not overwritten. Note however, that this object is @em not automatically
      * updated with those changes.
      */
-    virtual bool sync() = 0;
+    virtual void sync() = 0;
 
     /**
      * Reset the dirty flags of all entries in the entry map, so the

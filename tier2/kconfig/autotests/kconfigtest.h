@@ -65,7 +65,6 @@ private Q_SLOTS:
     void testSubGroup();
     void testAddConfigSources();
     void testWriteOnSync();
-    void testFailOnReadOnlyFileSync();
     void testDirtyOnEqual();
     void testDirtyOnEqualOverdo();
     void testCreateDir();

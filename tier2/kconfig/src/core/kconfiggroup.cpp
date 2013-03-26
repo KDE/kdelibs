@@ -589,14 +589,12 @@ bool KConfigGroup::exists() const
     return config()->hasGroup( d->fullName() );
 }
 
-bool KConfigGroup::sync()
+void KConfigGroup::sync()
 {
     Q_ASSERT_X(isValid(), "KConfigGroup::sync", "accessing an invalid group");
 
     if (!d->bConst)
-        return config()->sync();
-
-    return false;
+        config()->sync();
 }
 
 QMap<QString, QString> KConfigGroup::entryMap() const

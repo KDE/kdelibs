@@ -1357,7 +1357,7 @@ public Q_SLOTS:
    * If you need more fine-grained control of storing the settings from
    * the registered items you can override writeConfig() in a derived class.
    */
-  virtual bool writeConfig();
+  virtual void writeConfig();
 
 Q_SIGNALS:
   /**
@@ -1395,7 +1395,7 @@ protected:
    * Override in derived classes to write special config values.
    * Called from @ref writeConfig()
    */
-  virtual bool usrWriteConfig();
+  virtual void usrWriteConfig();
 
 private:
   class Private;
