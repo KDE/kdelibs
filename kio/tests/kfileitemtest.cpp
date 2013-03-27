@@ -182,10 +182,12 @@ void KFileItemTest::testMimeTypeOnDemand()
         KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, KUrl(file.fileName()), true /*on demand*/);
         QCOMPARE(fileItem.mimeTypePtr()->name(), KMimeType::defaultMimeType());
         QVERIFY(!fileItem.isMimeTypeKnown());
+        QVERIFY(!fileItem.isFinalIconKnown());
         //kDebug() << fileItem.determineMimeType()->name();
         QCOMPARE(fileItem.determineMimeType()->name(), QString("application/x-zerosize"));
         QCOMPARE(fileItem.mimetype(), QString("application/x-zerosize"));
         QVERIFY(fileItem.isMimeTypeKnown());
+        QVERIFY(fileItem.isFinalIconKnown());
     }
 
     {

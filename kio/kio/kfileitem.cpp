@@ -183,7 +183,7 @@ public:
     bool m_bIsLocalUrl:1;
 
     mutable bool m_bMimeTypeKnown:1;
-    bool m_delayedMimeTypes:1;
+    mutable bool m_delayedMimeTypes:1;
 
     /** True if m_iconName should be used as cache. */
     mutable bool m_useIconNameCache:1;
@@ -792,6 +792,12 @@ KMimeType::Ptr KFileItem::determineMimeType() const
         d->m_bMimeTypeKnown = true;
     }
 
+    if (isSlow() && d->m_delayedMimeTypes) { // if we delayed getting the iconName up till now, this is the right point in time to do so
+        d->m_delayedMimeTypes = false;
+        d->m_useIconNameCache = false;
+        (void)iconName();
+    }
+
     return d->m_pMimeType;
 }
 
@@ -804,6 +810,14 @@ bool KFileItem::isMimeTypeKnown() const
     // or if this fileitem has a guessed mimetype (e.g. ftp symlink) - in which case
     // it always remains "not fully determined"
     return d->m_bMimeTypeKnown && d->m_guessedMimeType.isEmpty();
+}
+
+bool KFileItem::isFinalIconKnown() const
+{
+    if (!d) {
+        return false;
+    }
+    return d->m_bMimeTypeKnown && (!d->m_delayedMimeTypes || !isSlow());
 }
 
 QString KFileItem::mimeComment() const
@@ -888,7 +902,9 @@ QString KFileItem::iconName() const
         mime = mimeTypePtr();
     }
 
-    if (isLocalUrl && !isSlow() && mime->is("application/x-desktop")) {
+    const bool delaySlowOperations = isSlow() && d->m_delayedMimeTypes;
+
+    if (isLocalUrl && !delaySlowOperations && mime->is("application/x-desktop")) {
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
             d->m_useIconNameCache = d->m_bMimeTypeKnown;
@@ -899,7 +915,7 @@ QString KFileItem::iconName() const
     // KDE5: handle .directory files here too, and get rid of
     // KFolderMimeType and the url argument in KMimeType::iconName().
 
-    if (isSlow())
+    if (delaySlowOperations)
         d->m_iconName = mime->iconName();
     else
         d->m_iconName = mime->iconName(url);
