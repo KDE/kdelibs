@@ -7,18 +7,25 @@
     <signal name="CanHibernateChanged">
       <arg type="b" name="can_hibernate" direction="out"/>
     </signal>
+    <signal name="CanHybridSuspendChanged">
+      <arg type="b" name="can_hybrid_suspend" direction="out"/>
+    </signal>
     <signal name="PowerSaveStatusChanged">
       <arg type="b" name="save_power" direction="out"/>
     </signal>
 
     <method name="Suspend"/>
     <method name="Hibernate"/>
+    <method name="HybridSuspend"/>
 
     <method name="CanSuspend">
       <arg type="b" name="can_suspend" direction="out"/>
     </method>
     <method name="CanHibernate">
       <arg type="b" name="can_hibernate" direction="out"/>
+    </method>
+    <method name="CanHybridSuspend">
+      <arg type="b" name="can_hybrid_suspend" direction="out"/>
     </method>
     <method name="GetPowerSaveStatus">
       <arg type="b" name="save_power" direction="out"/>

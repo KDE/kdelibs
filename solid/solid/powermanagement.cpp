@@ -1,5 +1,6 @@
 /*
     Copyright 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright 2013 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -48,6 +49,8 @@ Solid::PowerManagementPrivate::PowerManagementPrivate()
             this, SLOT(slotCanSuspendChanged(bool)));
     connect(&managerIface, SIGNAL(CanHibernateChanged(bool)),
             this, SLOT(slotCanHibernateChanged(bool)));
+    connect(&managerIface, SIGNAL(CanHybridSuspendChanged(bool)),
+            this, SLOT(slotCanHybridSuspendChanged(bool)));
     connect(&managerIface, SIGNAL(PowerSaveStatusChanged(bool)),
             this, SLOT(slotPowerSaveStatusChanged(bool)));
     connect(&serviceWatcher, SIGNAL(serviceRegistered(QString)),
@@ -94,12 +97,14 @@ void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, c
     switch (state)
     {
     case StandbyState:
-        break;
     case SuspendState:
         globalPowerManager->managerIface.Suspend();
         break;
     case HibernateState:
         globalPowerManager->managerIface.Hibernate();
+        break;
+    case HybridSuspendState:
+        globalPowerManager->managerIface.HybridSuspend();
         break;
     }
 }
@@ -215,6 +220,19 @@ void Solid::PowerManagementPrivate::slotCanHibernateChanged(bool newState)
     }
 }
 
+void Solid::PowerManagementPrivate::slotCanHybridSuspendChanged(bool newState)
+{
+    if (supportedSleepStates.contains(Solid::PowerManagement::HybridSuspendState) == newState) {
+        return;
+    }
+
+    if (newState) {
+        supportedSleepStates+= Solid::PowerManagement::HybridSuspendState;
+    } else {
+        supportedSleepStates-= Solid::PowerManagement::HybridSuspendState;
+    }
+}
+
 void Solid::PowerManagementPrivate::slotPowerSaveStatusChanged(bool newState)
 {
     if (powerSaveStatus == newState) {
@@ -236,6 +254,10 @@ void Solid::PowerManagementPrivate::slotServiceRegistered(const QString &service
         QDBusPendingReply<bool> hibernateReply = managerIface.CanHibernate();
         hibernateReply.waitForFinished();
         slotCanHibernateChanged(hibernateReply.isValid() ? hibernateReply.value() : false);
+
+        QDBusPendingReply<bool> hybridSuspendReply = managerIface.CanHybridSuspend();
+        hybridSuspendReply.waitForFinished();
+        slotCanHybridSuspendChanged(hybridSuspendReply.isValid() ? hybridSuspendReply.value() : false);
 
         QDBusPendingReply<bool> saveStatusReply = managerIface.GetPowerSaveStatus();
         saveStatusReply.waitForFinished();
@@ -267,6 +289,7 @@ void Solid::PowerManagementPrivate::slotServiceUnregistered(const QString &servi
         // Reset the values
         slotCanSuspendChanged(false);
         slotCanHibernateChanged(false);
+        slotCanHybridSuspendChanged(false);
         slotPowerSaveStatusChanged(false);
     } else {
         // Disconnect the signal
