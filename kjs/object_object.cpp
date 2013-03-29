@@ -45,7 +45,7 @@ public:
 
     enum { GetOwnPropertyDescriptor, DefineProperty, GetPrototypeOf,
            GetOwnPropertyNames, Keys, DefineProperties, Create, IsExtensible,
-           PreventExtensible, IsSealed, Seal };
+           PreventExtensible, IsSealed, Seal, IsFrozen, Freeze };
 
 private:
     int id;
@@ -189,8 +189,10 @@ ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, Fun
   static const Identifier* getPrototypeOf = new Identifier("getPrototypeOf");
   static const Identifier* getOwnPropertyNames = new Identifier("getOwnPropertyNames");
   static const Identifier* sealName = new Identifier("seal");
+  static const Identifier* freezeName = new Identifier("freeze");
   static const Identifier* preventExtensionsName = new Identifier("preventExtensions");
   static const Identifier* isSealedName = new Identifier("isSealed");
+  static const Identifier* isFrozenName = new Identifier("isFrozen");
   static const Identifier* isExtensibleName = new Identifier("isExtensible");
   static const Identifier* keys = new Identifier("keys");
 
@@ -204,8 +206,10 @@ ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, Fun
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetPrototypeOf, 1, *getPrototypeOf), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyNames, 1, *getOwnPropertyNames), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Seal, 1, *sealName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Freeze, 1, *freezeName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::PreventExtensible, 1, *preventExtensionsName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsSealed, 1, *isSealedName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsFrozen, 1, *isFrozenName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsExtensible, 1, *isExtensibleName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Keys, 1, *keys), DontEnum);
 
@@ -372,6 +376,29 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
         jso->preventExtensions();
         return jso;
     }
+    case Freeze: { //ECMA Edition 5.1r6 - 15.2.3.9
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.isDataDescriptor())
+                if (desc.writable())
+                    desc.setWritable(false);
+            if (desc.configurable())
+                desc.setConfigureable(false);
+            if (!jso->defineOwnProperty(exec, names[i], desc, true))
+                return jsUndefined();
+        }
+        jso->preventExtensions();
+        return jso;
+    }
     case PreventExtensible: { //ECMA Edition 5.1r6 - 15.2.3.10
         JSObject* jso = args[0]->getObject();
         if (!jso)
@@ -391,6 +418,26 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
         PropertyDescriptor desc;
         for (int i = 0; i < size; ++i) {
             jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.configurable())
+                return jsBoolean(false);
+        }
+        return jsBoolean(!jso->isExtensible());
+    }
+    case IsFrozen: { //ECMA Edition 5.1r6 - 15.2.3.12
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.isDataDescriptor())
+                if (desc.writable())
+                    return jsBoolean(false);
             if (desc.configurable())
                 return jsBoolean(false);
         }
