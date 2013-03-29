@@ -438,7 +438,11 @@ bool JSObject::defineOwnProperty(ExecState* exec, const Identifier& propertyName
 
     // if Object does not have propertyName as OwnProperty just push it.
     if (!getOwnPropertyDescriptor(exec, propertyName, current)) {
-        //TODO: implement extensible
+        if (!isExtensible()) {
+            if (shouldThrow)
+                throwError(exec, TypeError, "Object is not extensible \'" + propertyName.ustring() + "\'");
+            return false;
+        }
         if (desc.isGenericDescriptor() || desc.isDataDescriptor()) {
             putDirect(propertyName, desc.value() ? desc.value() : jsUndefined(), desc.attributes());
         } else if (desc.isAccessorDescriptor()) {
