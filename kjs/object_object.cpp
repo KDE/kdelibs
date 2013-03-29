@@ -44,7 +44,7 @@ public:
     virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
     enum { GetOwnPropertyDescriptor, DefineProperty, GetPrototypeOf,
-           GetOwnPropertyNames, Keys, DefineProperties };
+           GetOwnPropertyNames, Keys, DefineProperties, Create };
 
 private:
     int id;
@@ -182,6 +182,7 @@ ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, Fun
   : InternalFunctionImp(funcProto)
 {
   static const Identifier* getOwnPropertyDescriptorName = new Identifier("getOwnPropertyDescriptor");
+  static const Identifier* createName = new Identifier("create");
   static const Identifier* definePropertyName = new Identifier("defineProperty");
   static const Identifier* definePropertiesName = new Identifier("defineProperties");
   static const Identifier* getPrototypeOf = new Identifier("getPrototypeOf");
@@ -192,6 +193,7 @@ ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, Fun
   putDirect(exec->propertyNames().prototype, objProto, DontEnum|DontDelete|ReadOnly);
 
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyDescriptor, 2, *getOwnPropertyDescriptorName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Create, 2, *createName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::DefineProperty, 3, *definePropertyName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::DefineProperties, 2, *definePropertiesName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetPrototypeOf, 1, *getPrototypeOf), DontEnum);
@@ -240,6 +242,29 @@ ObjectObjectFuncImp::ObjectObjectFuncImp(ExecState* exec, FunctionPrototype* fun
     putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
 }
 
+static JSValue* defineProperties(ExecState* exec, JSObject* object, JSValue* properties)
+{
+    JSObject* props = properties->toObject(exec);
+    if (exec->hadException())
+        return object;
+    PropertyNameArray names;
+    props->getOwnPropertyNames(exec, names, PropertyMap::ExcludeDontEnumProperties);
+    int size = names.size();
+    Vector<PropertyDescriptor> descriptors;
+    for (int i = 0; i < size; ++i) {
+        PropertyDescriptor desc;
+        if (!desc.setPropertyDescriptorFromObject(exec, props->get(exec, names[i])))
+            return jsUndefined();
+        descriptors.append(desc);
+    }
+    for (int i = 0; i < size; ++i) {
+        object->defineOwnProperty(exec, names[i], descriptors[i], true);
+        if (exec->hadException())
+            return jsUndefined();
+    }
+    return object;
+}
+
 JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const List& args)
 {
     switch (id) {
@@ -283,6 +308,20 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
         ret->put(exec, exec->propertyNames().length, jsNumber(n), DontEnum | DontDelete);
         return ret;
     }
+    case Create: { //ECMA Edition 5.1r6 - 15.2.3.5
+        JSObject *proto = args[0]->getObject();
+        if (!proto && !args[0]->isNull())
+            return throwError(exec, TypeError, "Not an Object");
+
+        JSObject *ret = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty()));
+        if (proto)
+            ret->setPrototype(proto);
+        else
+            ret->setPrototype(jsNull());
+        if (args.size() >= 2 && !args[1]->isUndefined())
+            return defineProperties(exec, ret, args[1]);
+        return ret;
+    }
     case DefineProperty: { //ECMA Edition 5.1r6 - 15.2.3.6
         JSObject* jso = args[0]->getObject();
         if (!jso)
@@ -301,29 +340,7 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
             return throwError(exec, TypeError, "Not an Object");
 
         JSObject* jso = args[0]->getObject();
-        JSObject* props = args[1]->toObject(exec);
-        if (exec->hadException())
-            return jso;
-        PropertyNameArray names;
-        props->getOwnPropertyNames(exec, names, PropertyMap::ExcludeDontEnumProperties);
-        int size = names.size();
-        Vector<PropertyDescriptor> descriptors;
-        for (int i = 0; i < size; ++i) {
-            JSValue* val = props->get(exec, names[i]);
-            PropertyDescriptor desc;
-            JSObject* descObj = val->getObject();
-            if (!descObj)
-                return throwError(exec, TypeError, "Not an Object");
-            if (!desc.setPropertyDescriptorFromObject(exec, descObj))
-                return jsUndefined();
-            descriptors.append(desc);
-        }
-        for (int i = 0; i < size; ++i) {
-            jso->defineOwnProperty(exec, names[i], descriptors[i], true);
-            if (exec->hadException())
-                return jsUndefined();
-        }
-        return jso;
+        return defineProperties(exec, jso, args[1]);
     }
     default:
         return jsUndefined();
