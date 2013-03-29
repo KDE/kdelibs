@@ -55,7 +55,8 @@
     macro(writable) \
     macro(enumerable) \
     macro(get) \
-    macro(set)
+    macro(set) \
+    macro(toISOString)
 
 namespace KJS {
 

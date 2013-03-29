@@ -530,6 +530,10 @@ static void millisecondsToTM(double milli, bool utc, tm *t)
   }
 }
 
+static bool isNaNorInf(double value)
+{
+    return isNaN(value) || isInf(value);
+}
 
 // ------------------------------ DatePrototype -----------------------------
 
@@ -543,6 +547,7 @@ const ClassInfo DatePrototype::info = {"Date", &DateInstance::info, &dateTable, 
   toDateString		DateProtoFunc::ToDateString		DontEnum|Function	0
   toTimeString		DateProtoFunc::ToTimeString		DontEnum|Function	0
   toISOString       DateProtoFunc::ToISOString      DontEnum|Function   0
+  toJSON            DateProtoFunc::ToJSON           DontEnum|Function   1
   toLocaleString	DateProtoFunc::ToLocaleString	DontEnum|Function	0
   toLocaleDateString	DateProtoFunc::ToLocaleDateString	DontEnum|Function	0
   toLocaleTimeString	DateProtoFunc::ToLocaleTimeString	DontEnum|Function	0
@@ -661,6 +666,8 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
         return jsNaN();
       case ToISOString:
         return throwError(exec, RangeError, "Invalid Date");
+      case ToJSON:
+        return jsNull();
     }
   }
 
@@ -692,6 +699,15 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
     return jsString(formatDateUTCVariant(t).append(' ').append(formatTime(t, utc)));
   case ToISOString:
     return jsString(formatDateISOVariant(t, utc, milli).append('T').append(formatTimeISOVariant(t, utc, milli, ms)).append('Z'));
+  case ToJSON: {
+    JSValue *toISO = thisObj->get(exec, exec->propertyNames().toISOString);
+    if (!toISO->implementsCall())
+      return throwError(exec, TypeError, "toISOString is not callable");
+    JSObject* toISOobj = toISO->toObject(exec);
+    if (!toISOobj)
+      return throwError(exec, TypeError, "toISOString is not callable");
+    return toISOobj->call(exec, thisDateObj, List::empty());
+  }
 
 #if PLATFORM(MAC)
   case ToLocaleString:
@@ -814,11 +830,6 @@ static double getCurrentUTCTime()
     double utc = floor(tv.tv_sec * msPerSecond + tv.tv_usec / 1000);
 #endif
     return utc;
-}
-
-static bool isNaNorInf(double value)
-{
-    return isNaN(value) || isInf(value);
 }
 
 static double makeTimeFromList(ExecState *exec, const List &args, bool utc)
