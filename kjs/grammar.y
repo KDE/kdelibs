@@ -251,11 +251,11 @@ PropertyName:
 
 Property:
     PropertyName ':' AssignmentExpr     { $$ = new PropertyNode($1, $3, PropertyNode::Constant); }
-  | IDENT IdentifierName '(' ')' {inFuncExpr()} FunctionBody  {
+  | IDENT IdentifierName '(' ')' {inFuncExpr();} FunctionBody  {
           if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, 0, $6))
             YYABORT;
         }
-  | IDENT IdentifierName '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+  | IDENT IdentifierName '(' FormalParameterList ')' {inFuncExpr();} FunctionBody {
           if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, $4, $7))
             YYABORT;
         }
@@ -750,7 +750,7 @@ IfStatement:
 
 IterationStatement:
     DO Statement WHILE '(' Expr ')' ';' { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3);}
-  | DO Statement WHILE '(' Expr ')' { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3); }
+  | DO Statement WHILE '(' Expr ')' error { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3); AUTO_SEMICOLON; }
   | WHILE '(' Expr ')' Statement        { $$ = new WhileNode($3, $5); DBG($$, @1, @4); }
   | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
                                         { $$ = new ForNode($3, $5, $7, $9); DBG($$, @1, @8); }
@@ -877,20 +877,20 @@ ImportStatement:
 ;
 
 FunctionDeclaration:
-    FUNCTION IDENT '(' ')' {inFuncDecl()} FunctionBody { $$ = new FuncDeclNode(*$2, $6); }
-  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncDecl()} FunctionBody
+    FUNCTION IDENT '(' ')' {inFuncDecl();} FunctionBody { $$ = new FuncDeclNode(*$2, $6); }
+  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncDecl();} FunctionBody
                                         { $$ = new FuncDeclNode(*$2, $4, $7); }
 ;
 
 FunctionExpr:
-    FUNCTION '(' ')' {inFuncExpr()} FunctionBody  {
+    FUNCTION '(' ')' {inFuncExpr();} FunctionBody  {
       $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $5);
     }
-  | FUNCTION '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+  | FUNCTION '(' FormalParameterList ')' {inFuncExpr();} FunctionBody {
       $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $6, $3);
     }
-  | FUNCTION IDENT '(' ')' {inFuncExpr()} FunctionBody { $$ = new FuncExprNode(*$2, $6); }
-  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+  | FUNCTION IDENT '(' ')' {inFuncExpr();} FunctionBody { $$ = new FuncExprNode(*$2, $6); }
+  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncExpr();} FunctionBody {
       $$ = new FuncExprNode(*$2, $7, $4);
     }
 ;
