@@ -102,6 +102,16 @@ bool StringInstance::getOwnPropertySlot(ExecState* exec, unsigned propertyName, 
     return JSObject::getOwnPropertySlot(exec, Identifier::from(propertyName), slot);
 }
 
+bool StringInstance::getOwnPropertyDescriptor(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc)
+{
+    if (propertyName == exec->propertyNames().length) {
+        desc.setPropertyDescriptorValues(exec, jsNumber(internalValue()->value().size()), ReadOnly|DontDelete|DontEnum);
+        return true;
+    }
+
+    return KJS::JSObject::getOwnPropertyDescriptor(exec, propertyName, desc);
+}
+
 void StringInstance::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
   if (propertyName == exec->propertyNames().length)

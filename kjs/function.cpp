@@ -279,6 +279,16 @@ bool FunctionImp::getOwnPropertySlot(ExecState* exec, const Identifier& property
     return InternalFunctionImp::getOwnPropertySlot(exec, propertyName, slot);
 }
 
+bool FunctionImp::getOwnPropertyDescriptor(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc)
+{
+    if (propertyName == exec->propertyNames().length) {
+        desc.setPropertyDescriptorValues(exec, jsNumber(body->numParams()), ReadOnly|DontDelete|DontEnum);
+        return true;
+    }
+
+    return KJS::JSObject::getOwnPropertyDescriptor(exec, propertyName, desc);
+}
+
 void FunctionImp::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
     if (propertyName == exec->propertyNames().arguments ||
