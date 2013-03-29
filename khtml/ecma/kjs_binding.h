@@ -258,7 +258,7 @@ namespace KJS {
 
   /* Helper for the below*/
   template<class JSTypeImp>
-  JSValue *indexGetterAdapter(ExecState* exec, JSObject*, const Identifier& , const PropertySlot& slot)
+  JSValue *indexGetterAdapter(ExecState* exec, JSObject*, unsigned, const PropertySlot& slot)
   {
     JSTypeImp *thisObj = static_cast<JSTypeImp*>(slot.slotBase());
     return thisObj->indexGetter(exec, slot.index());

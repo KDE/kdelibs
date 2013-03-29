@@ -76,7 +76,6 @@ namespace KJS {
         inline T* bufferStart() const { return m_bufferStart; }
 
     private:
-        static JSValue* itemGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot&);
         // checks if the pos is a valid array index, returns false if not
         inline bool checkIndex(ExecState* exec, unsigned pos);
 
@@ -362,7 +361,7 @@ namespace KJS {
         if (!checkIndex(exec, i))
             return false;
 
-        slot.setCustomIndex(this, i, itemGetter);
+        slot.setValue(this, jsNumber(m_bufferStart[i]));
         return true;
     }
 
@@ -426,13 +425,6 @@ namespace KJS {
         if (pos*sizeof(T) >= m_byteLength)
             return false;
         return true;
-    }
-
-    template <typename T>
-    JSValue* ArrayBufferView<T>::itemGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
-    {
-        ArrayBufferView<T> *view = static_cast<ArrayBufferView<T>*>(slot.slotBase());
-        return jsNumber(view->bufferStart()[slot.index()]);
     }
 
 } // namespace KJS

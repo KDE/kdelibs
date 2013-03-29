@@ -67,7 +67,7 @@ JSValue *StringInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, 
     return jsNumber(static_cast<StringInstance*>(slot.slotBase())->internalValue()->value().size());
 }
 
-JSValue *StringInstance::indexGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot &slot)
+JSValue *StringInstance::indexGetter(ExecState*, JSObject*, unsigned, const PropertySlot &slot)
 {
     const UChar c = static_cast<StringInstance*>(slot.slotBase())->internalValue()->value()[slot.index()];
     return jsString(UString(&c, 1));
