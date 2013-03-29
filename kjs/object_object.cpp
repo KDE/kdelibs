@@ -45,7 +45,7 @@ public:
 
     enum { GetOwnPropertyDescriptor, DefineProperty, GetPrototypeOf,
            GetOwnPropertyNames, Keys, DefineProperties, Create, IsExtensible,
-           PreventExtensible };
+           PreventExtensible, IsSealed, Seal };
 
 private:
     int id;
@@ -188,7 +188,9 @@ ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, Fun
   static const Identifier* definePropertiesName = new Identifier("defineProperties");
   static const Identifier* getPrototypeOf = new Identifier("getPrototypeOf");
   static const Identifier* getOwnPropertyNames = new Identifier("getOwnPropertyNames");
+  static const Identifier* sealName = new Identifier("seal");
   static const Identifier* preventExtensionsName = new Identifier("preventExtensions");
+  static const Identifier* isSealedName = new Identifier("isSealed");
   static const Identifier* isExtensibleName = new Identifier("isExtensible");
   static const Identifier* keys = new Identifier("keys");
 
@@ -201,7 +203,9 @@ ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, Fun
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::DefineProperties, 2, *definePropertiesName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetPrototypeOf, 1, *getPrototypeOf), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyNames, 1, *getOwnPropertyNames), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Seal, 1, *sealName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::PreventExtensible, 1, *preventExtensionsName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsSealed, 1, *isSealedName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsExtensible, 1, *isExtensibleName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Keys, 1, *keys), DontEnum);
 
@@ -347,12 +351,50 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
         JSObject* jso = args[0]->getObject();
         return defineProperties(exec, jso, args[1]);
     }
+    case Seal: { //ECMA Edition 5.1r6 - 15.2.3.8
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.configurable()) {
+                desc.setConfigureable(false);
+                if (!jso->defineOwnProperty(exec, names[i], desc, true))
+                    return jsUndefined();
+            }
+        }
+        jso->preventExtensions();
+        return jso;
+    }
     case PreventExtensible: { //ECMA Edition 5.1r6 - 15.2.3.10
         JSObject* jso = args[0]->getObject();
         if (!jso)
             return throwError(exec, TypeError, "Not an Object");
         jso->preventExtensions();
         return jso;
+    }
+    case IsSealed: { //ECMA Edition 5.1r6 - 15.2.3.11
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.configurable())
+                return jsBoolean(false);
+        }
+        return jsBoolean(!jso->isExtensible());
     }
     case IsExtensible: { //ECMA Edition 5.1r6 - 15.2.3.13
         JSObject* jso = args[0]->getObject();
