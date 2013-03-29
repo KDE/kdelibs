@@ -198,6 +198,183 @@ JSValue *Screen::getValueProperty(ExecState *exec, int token) const
   }
 }
 
+////////////////////// Console Object ////////////////////////
+
+// table for console object
+/*
+@begin ConsoleTable 7
+  assert        Console::Assert     DontEnum|Function 1
+  log           Console::Log        DontEnum|Function 1
+  debug         Console::Debug      DontEnum|Function 1
+  warn          Console::Warn       DontEnum|Function 1
+  error         Console::Error      DontEnum|Function 1
+  info          Console::Info       DontEnum|Function 1
+  clear         Console::Clear      DontEnum|Function 0
+@end
+*/
+
+KJS_IMPLEMENT_PROTOFUNC(ConsoleFunc)
+
+const ClassInfo Console::info = { "Console", 0, &ConsoleTable, 0 };
+
+// We set the object prototype so that toString is implemented
+Console::Console(ExecState *exec)
+    : JSObject(exec->lexicalInterpreter()->builtinObjectPrototype()) {}
+
+bool Console::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
+{
+#ifdef KJS_VERBOSE
+    kDebug(6070) << "Console::getPropertyName " << propertyName.qstring();
+#endif
+    return getStaticFunctionSlot<ConsoleFunc, JSObject>(exec, &ConsoleTable, this, propertyName, slot);
+}
+
+void printMessage(Console::MessageType msgType, const UString& message)
+{
+    const char* type;
+    switch (msgType)
+    {
+        case Console::DebugType:
+            type = "DEBUG";
+            break;
+        case Console::ErrorType:
+            type = "ERROR";
+            break;
+        case Console::InfoType:
+            type = "INFO";
+            break;
+        case Console::LogType:
+            type = "LOG";
+            break;
+        case Console::WarnType:
+            type = "WARN";
+            break;
+
+        default:
+            type = "UNKNOWN";
+            ASSERT_NOT_REACHED();
+    }
+    static const int s_area = KDebug::registerArea("khtml (jscript console)");
+    kDebug(s_area) << "[" << type << "]\t" << message.ascii();
+}
+
+JSValue* consolePrintf(ExecState *exec, Console::MessageType msgType, const List &args)
+{
+    if (!args[0]->isString())
+        return jsUndefined();
+    UString output = args[0]->toString(exec);
+    if (exec->hadException())
+        return jsUndefined();
+    int size = output.size();
+    int arg = 1;
+    int last = 0;
+    UString composedOutput;
+    for (int i = 0; i < size; ++i)
+    {
+        if (!(output[i] == '%'))
+            continue;
+        if (i+1 >= size)
+            break;
+
+        UString replace;
+        switch (output[i+1].uc) {
+            case 's': {
+                if (args[arg]->isString()) {
+                    replace = args[arg]->toString(exec);
+                    ++arg;
+                }
+                break;
+            }
+            case 'f':
+            case 'i':
+            case 'd': {
+                if (args[arg]->isNumber()) {
+                    double val = args[arg]->toNumber(exec);
+                    replace = UString::from(val);
+                    ++arg;
+                }
+                break;
+            }
+            case 'o':
+            case 'c':
+                //not yet implemented skip me
+                i += 1;
+                ++arg;
+
+            default:
+                continue;
+        }
+        if (exec->hadException())
+            return jsUndefined();
+        composedOutput += output.substr(last, i-last);
+        composedOutput += replace;
+        i += 1;
+        last = i+1;
+    }
+
+    if (last == 0) // no % magic used, just copy the original
+        composedOutput = output;
+    else
+        composedOutput += output.substr(last);
+
+    printMessage(msgType, composedOutput);
+    return jsUndefined();
+}
+
+JSValue *ConsoleFunc::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, const List &args)
+{
+    switch (id) {
+        case Console::Assert: {
+            JSType type = args[0]->type();
+            bool assertFailed = false;
+            switch (type) {
+                case UnspecifiedType:
+                case NullType:
+                case UndefinedType:
+                    assertFailed = true;
+                    break;
+                case BooleanType:
+                    assertFailed = !args[0]->getBoolean();
+                    break;
+                case NumberType:
+                case StringType:
+                case ObjectType:
+                case GetterSetterType:
+                    assertFailed = false;
+                    break;
+                default:
+                    assertFailed = true;
+                    ASSERT_NOT_REACHED();
+                    break;
+            }
+
+            if (assertFailed) {
+                // ignore further parameter for now..
+                if (args.size() > 1 && args[1]->isString())
+                    printMessage(Console::ErrorType, args[1]->getString());
+                else
+                    printMessage(Console::ErrorType, "Assert failed!");
+            }
+            return jsUndefined();
+        }
+        case Console::Log:
+            return consolePrintf(exec, Console::LogType, args);
+        case Console::Debug:
+            return consolePrintf(exec, Console::DebugType, args);
+        case Console::Warn:
+            return consolePrintf(exec, Console::WarnType, args);
+        case Console::Error:
+            return consolePrintf(exec, Console::ErrorType, args);
+        case Console::Info:
+            return consolePrintf(exec, Console::InfoType, args);
+        case Console::Clear:
+            // TODO: clear the console
+            return jsUndefined();
+    }
+    return jsUndefined();
+};
+
+
 ////////////////////// Window Object ////////////////////////
 
 const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable, 0 };
@@ -250,6 +427,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   window	Window::_Window		DontDelete|ReadOnly
   top		Window::Top		DontDelete
   screen	Window::_Screen		DontDelete|ReadOnly
+  console	Window::_Console		DontDelete|ReadOnly
   alert		Window::Alert		DontDelete|Function 1
   confirm	Window::Confirm		DontDelete|Function 1
   prompt	Window::Prompt		DontDelete|Function 2
@@ -407,7 +585,7 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
 KJS_IMPLEMENT_PROTOFUNC(WindowFunc)
 
 Window::Window(khtml::ChildFrame *p)
-  : JSGlobalObject(/*no proto*/), m_frame(p), screen(0), history(0), external(0), loc(0), m_evt(0)
+  : JSGlobalObject(/*no proto*/), m_frame(p), screen(0), console(0), history(0), external(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
   //kDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name();
@@ -485,6 +663,8 @@ void Window::mark()
   JSObject::mark();
   if (screen && !screen->marked())
     screen->mark();
+  if (console && !console->marked())
+    console->mark();
   if (history && !history->marked())
     history->mark();
   if (external && !external->marked())
@@ -1040,6 +1220,9 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     case _Screen:
       return screen ? screen :
                    (const_cast<Window*>(this)->screen = new Screen(exec));
+    case _Console:
+      return console ? console :
+                   (const_cast<Window*>(this)->console = new Console(exec));
     case Audio:
       return new AudioConstructorImp(exec, part->xmlDocImpl());
     case Image:
@@ -1471,6 +1654,7 @@ void Window::clear( ExecState *exec )
 
   // Ditto for the special subobjects.
   screen   = 0;
+  console  = 0;
   history  = 0;
   external = 0;
   loc      = 0;
