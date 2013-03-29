@@ -140,15 +140,23 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
     /**
      * If \a hide is true, the tabbar is hidden along with any corner
      * widgets.
+     *
+     * @deprecated since 5.0, use tabBar()->hide() instead.
      */
-    void setTabBarHidden( bool hide );
+#ifndef KDE_NO_DEPRECATED
+    KDEUI_DEPRECATED void setTabBarHidden( bool hide );
+#endif
 
     /**
      * Returns true if the tabbar was hidden by a call to setTabBarHidden( true ).
      * Returns false if the widget itself is hidden, but no call to setTabBarHidden( true )
      * has been made.
+     *
+     * @deprecated since 5.0, use tabBar()->isHidden() instead.
      */
-    bool isTabBarHidden() const;
+#ifndef KDE_NO_DEPRECATED
+    KDEUI_DEPRECATED bool isTabBarHidden() const;
+#endif
 
     /**
       Reimplemented for internal reasons.

@@ -123,7 +123,8 @@ private Q_SLOTS:
         }
      }
 
-     void testSetHidden()
+#ifndef KDE_NO_DEPRECATED
+    void testSetHidden()
      {
          KTabWidget w;
          w.insertTab(0, new QWidget, "a tab");
@@ -133,7 +134,7 @@ private Q_SLOTS:
          w.setTabBarHidden(true);
          QVERIFY(w.isTabBarHidden());
      }
-
+#endif
      void testMiddleClickTabReordering();
      void testTabMoved();
 
