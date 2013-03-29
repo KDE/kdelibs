@@ -147,12 +147,12 @@ JSValue *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
       QString mimeType = "text/xml";
 
       if (!m_mimeTypeOverride.isEmpty()) {
-	  mimeType = m_mimeTypeOverride;
+        mimeType = m_mimeTypeOverride;
       } else {
-          int dummy;
-	  JSValue *header = getResponseHeader("Content-Type", dummy);
-	  if (header->type() != UndefinedType)
-	      mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
+        int dummy;
+        JSValue *header = getResponseHeader("Content-Type", dummy);
+        if (!header->isUndefinedOrNull())
+          mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
