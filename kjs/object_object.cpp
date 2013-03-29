@@ -25,6 +25,7 @@
 
 #include "operations.h"
 #include "function_object.h"
+#include "propertydescriptor.h"
 #include <stdio.h>
 
 namespace KJS {
@@ -42,7 +43,7 @@ public:
 
     virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
-    enum { GetPrototypeOf, GetOwnPropertyNames, Keys };
+    enum { GetOwnPropertyDescriptor, DefineProperty, GetPrototypeOf, GetOwnPropertyNames, Keys };
 
 private:
     int id;
@@ -179,6 +180,8 @@ JSValue *ObjectProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, FunctionPrototype* funcProto)
   : InternalFunctionImp(funcProto)
 {
+  static const Identifier* getOwnPropertyDescriptorName = new Identifier("getOwnPropertyDescriptor");
+  static const Identifier* definePropertyName = new Identifier("defineProperty");
   static const Identifier* getPrototypeOf = new Identifier("getPrototypeOf");
   static const Identifier* getOwnPropertyNames = new Identifier("getOwnPropertyNames");
   static const Identifier* keys = new Identifier("keys");
@@ -186,6 +189,8 @@ ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, Fun
   // ECMA 15.2.3.1
   putDirect(exec->propertyNames().prototype, objProto, DontEnum|DontDelete|ReadOnly);
 
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyDescriptor, 2, *getOwnPropertyDescriptorName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::DefineProperty, 3, *definePropertyName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetPrototypeOf, 1, *getPrototypeOf), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyNames, 1, *getOwnPropertyNames), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Keys, 1, *keys), DontEnum);
@@ -241,6 +246,17 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
             return throwError(exec, TypeError, "\'" + args[0]->toString(exec) + "\' is not an Object");
         return jso->prototype();
     }
+    case GetOwnPropertyDescriptor: { //ECMA Edition 5.1r6 - 15.2.3.3
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        UString name = args[1]->toString(exec);
+        PropertyDescriptor desc;
+        if (!jso->getOwnPropertyDescriptor(exec, Identifier(name), desc))
+            return jsUndefined();
+        return desc.fromPropertyDescriptor(exec);
+    }
     case GetOwnPropertyNames: //ECMA Edition 5.1r6 - 15.2.3.4
     case Keys: { //ECMA Edition 5.1r6 - 15.2.3.14
         JSObject* jso = args[0]->getObject();
@@ -263,6 +279,19 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
         }
         ret->put(exec, exec->propertyNames().length, jsNumber(n), DontEnum | DontDelete);
         return ret;
+    }
+    case DefineProperty: { //ECMA Edition 5.1r6 - 15.2.3.6
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        UString name = args[1]->toString(exec);
+        PropertyDescriptor desc;
+        if (!desc.setPropertyDescriptorFromObject(exec, args[2]))
+            return jsUndefined();
+        if (!jso->defineOwnProperty(exec, Identifier(name), desc, true))
+            return jsUndefined();
+        return jso;
     }
     default:
         return jsUndefined();

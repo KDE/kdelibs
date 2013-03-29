@@ -31,6 +31,7 @@
 #include <wtf/HashMap.h>
 
 #include <algorithm>
+#include <stdio.h>
 
 using std::min;
 using std::max;
@@ -38,14 +39,33 @@ using std::max;
 
 namespace KJS {
 
-typedef HashMap<unsigned, JSValue*> SparseArrayValueMap;
+struct ArrayEntity {
+    ArrayEntity()
+        : value(0),
+          attributes(0)
+    {
+    }
+
+    ArrayEntity(JSValue* jsVal, uint32_t attr)
+        : value(jsVal),
+          attributes(attr)
+    {
+    }
+
+    JSValue* value;
+    uint32_t attributes;
+};
+
+typedef HashMap<unsigned, ArrayEntity> SparseArrayValueMap;
 
 struct ArrayStorage {
     unsigned m_numValuesInVector;
     SparseArrayValueMap* m_sparseValueMap;
-    JSValue* m_vector[1];
+    ArrayEntity m_vector[1];
 };
 
+// (2^32)-1
+static const unsigned maxArrayLength = 0xFFFFFFFFU;
 // 0xFFFFFFFF is a bit weird -- is not an array index even though it's an integer
 static const unsigned maxArrayIndex = 0xFFFFFFFEU;
 
@@ -62,7 +82,7 @@ const ClassInfo ArrayInstance::info = {"Array", 0, 0, 0};
 
 static inline size_t storageSize(unsigned vectorLength)
 {
-    return sizeof(ArrayStorage) - sizeof(JSValue*) + vectorLength * sizeof(JSValue*);
+    return sizeof(ArrayStorage) - sizeof(ArrayEntity) + vectorLength * sizeof(ArrayEntity);
 }
 
 static inline unsigned increasedVectorLength(unsigned newLength)
@@ -83,8 +103,9 @@ ArrayInstance::ArrayInstance(JSObject* prototype, unsigned initialLength)
     m_length = initialLength;
     m_vectorLength = initialCapacity;
     m_storage = static_cast<ArrayStorage*>(fastCalloc(storageSize(initialCapacity), 1));
+    m_lengthAttributes = DontDelete | DontEnum;
 
-    Collector::reportExtraMemoryCost(initialCapacity * sizeof(JSValue*));
+    Collector::reportExtraMemoryCost(initialCapacity * sizeof(ArrayEntity));
 }
 
 ArrayInstance::ArrayInstance(JSObject* prototype, const List& list)
@@ -94,6 +115,7 @@ ArrayInstance::ArrayInstance(JSObject* prototype, const List& list)
 
     m_length = length;
     m_vectorLength = length;
+    m_lengthAttributes = DontDelete | DontEnum;
 
     ArrayStorage* storage = static_cast<ArrayStorage*>(fastMalloc(storageSize(length)));
 
@@ -101,8 +123,10 @@ ArrayInstance::ArrayInstance(JSObject* prototype, const List& list)
     storage->m_sparseValueMap = 0;
 
     ListIterator it = list.begin();
-    for (unsigned i = 0; i < length; ++i)
-        storage->m_vector[i] = it++;
+    for (unsigned i = 0; i < length; ++i) {
+        storage->m_vector[i].value = it++;
+        storage->m_vector[i].attributes = 0;
+    }
 
     m_storage = storage;
 
@@ -120,19 +144,10 @@ JSValue* ArrayInstance::getItem(unsigned i) const
 {
     ASSERT(i <= maxArrayIndex);
 
-    ArrayStorage* storage = m_storage;
-
-    if (i < m_vectorLength) {
-        JSValue* value = storage->m_vector[i];
-        return value ? value : jsUndefined();
-    }
-
-    SparseArrayValueMap* map = storage->m_sparseValueMap;
-    if (!map)
-        return jsUndefined();
-
-    JSValue* value = map->get(i);
-    return value ? value : jsUndefined();
+    ArrayEntity* ent = getArrayEntity(i);
+    if (ent)
+        return ent->value;
+    return jsUndefined();
 }
 
 JSValue* ArrayInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot& slot)
@@ -142,29 +157,50 @@ JSValue* ArrayInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, c
 
 ALWAYS_INLINE bool ArrayInstance::inlineGetOwnPropertySlot(ExecState* exec, unsigned i, PropertySlot& slot)
 {
-    ArrayStorage* storage = m_storage;
-
     if (i >= m_length) {
         if (i > maxArrayIndex)
             return getOwnPropertySlot(exec, Identifier::from(i), slot);
         return false;
     }
 
-    if (i < m_vectorLength) {
-        JSValue*& valueSlot = storage->m_vector[i];
-        if (valueSlot) {
-            slot.setValueSlot(this, &valueSlot);
+    ArrayEntity* ent = getArrayEntity(i);
+    if (ent) {
+        if (ent->attributes & GetterSetter) {
+            GetterSetterImp *gs = static_cast<GetterSetterImp *>(ent->value);
+            JSObject *getterFunc = gs->getGetter();
+            if (getterFunc)
+                slot.setGetterSlot(this, getterFunc);
+            else
+                slot.setUndefined(this);
             return true;
         }
-    } else if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
-        SparseArrayValueMap::iterator it = map->find(i);
-        if (it != map->end()) {
-            slot.setValueSlot(this, &it->second);
-            return true;
-        }
+        slot.setValueSlot(this, &ent->value);
+        return true;
     }
 
     return false;
+}
+
+ArrayEntity* ArrayInstance::getArrayEntity(unsigned int i) const
+{
+    if (i >= m_length)
+        return 0;
+
+    ArrayStorage* storage = m_storage;
+    if (i < m_vectorLength) {
+        if (storage->m_vector[i].value)
+            return &storage->m_vector[i];
+    }
+
+    SparseArrayValueMap* map = storage->m_sparseValueMap;
+    if (map && i > 0 && i <= maxArrayIndex) {
+        SparseArrayValueMap::iterator it = map->find(i);
+        if (it != map->end()) {
+            return &it->second;
+        }
+    }
+
+    return 0;
 }
 
 bool ArrayInstance::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
@@ -198,11 +234,14 @@ void ArrayInstance::put(ExecState* exec, const Identifier& propertyName, JSValue
     }
 
     if (propertyName == exec->propertyNames().length) {
+        if (m_lengthAttributes & ReadOnly)
+            return;
         unsigned newLength = value->toUInt32(exec);
         if (value->toNumber(exec) != static_cast<double>(newLength)) {
             throwError(exec, RangeError, "Invalid array length.");
             return;
         }
+        m_lengthAttributes = attributes;
         setLength(newLength);
         return;
     }
@@ -210,26 +249,287 @@ void ArrayInstance::put(ExecState* exec, const Identifier& propertyName, JSValue
     JSObject::put(exec, propertyName, value, attributes);
 }
 
-
 void ArrayInstance::put(ExecState* exec, unsigned i, JSValue* value, int attributes)
+{
+    ArrayEntity *ent = getArrayEntity(i);
+    if (ent) {
+        if (ent->attributes & ReadOnly)
+            return;
+        attributes |= ent->attributes;
+
+        JSValue* gs = ent->value;
+        if (gs && !gs->isUndefined()) {
+            if (ent->attributes & GetterSetter) {
+                JSObject *setterFunc = static_cast<GetterSetterImp *>(gs)->getSetter();
+
+                if (!setterFunc) {
+                    if (false) //if strict is true
+                        throwError(exec, TypeError, "setting a property that has only a getter");
+                    return;
+                }
+
+                List args;
+                args.append(value);
+
+                setterFunc->call(exec, this, args);
+                return;
+            }
+        }
+    }
+
+    KJS::ArrayInstance::putDirect(i, value, attributes);
+}
+
+bool ArrayInstance::deleteProperty(ExecState* exec, const Identifier& propertyName)
+{
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+    if (isArrayIndex)
+        return deleteProperty(exec, i);
+
+    if (propertyName == exec->propertyNames().length)
+        return false;
+
+    return JSObject::deleteProperty(exec, propertyName);
+}
+
+bool ArrayInstance::deleteProperty(ExecState* exec, unsigned i)
+{
+    ArrayStorage* storage = m_storage;
+
+    if (i < m_vectorLength) {
+        ArrayEntity* ent = &storage->m_vector[i];
+        if (ent->value) {
+            if (ent->attributes & DontDelete)
+                return false;
+
+            JSValue*& valueSlot = ent->value;
+            bool hadValue = valueSlot;
+            valueSlot = 0;
+            storage->m_numValuesInVector -= hadValue;
+            ent->value = 0;
+            return hadValue;
+        }
+    }
+
+    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        SparseArrayValueMap::iterator it = map->find(i);
+        if (it != map->end()) {
+            if ((*it).second.attributes & DontDelete)
+                return false;
+            map->remove(it->first);
+            return true;
+        }
+    }
+
+    if (i > maxArrayIndex)
+        return JSObject::deleteProperty(exec, Identifier::from(i));
+
+    return true;
+}
+
+void ArrayInstance::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames, PropertyMap::PropertyMode mode)
+{
+    // FIXME: Filling PropertyNameArray with an identifier for every integer
+    // is incredibly inefficient for large arrays. We need a different approach.
+
+    ArrayStorage* storage = m_storage;
+
+    unsigned usedVectorLength = min(m_length, m_vectorLength);
+    for (unsigned i = 0; i < usedVectorLength; ++i) {
+        if (storage->m_vector[i].value &&
+            (!(storage->m_vector[i].attributes & DontEnum) ||
+             mode == PropertyMap::IncludeDontEnumProperties))
+            propertyNames.add(Identifier::from(i));
+    }
+
+    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        SparseArrayValueMap::iterator end = map->end();
+        for (SparseArrayValueMap::iterator it = map->begin(); it != end; ++it)
+            if (!((*it).second.attributes & DontEnum) ||
+                mode == PropertyMap::IncludeDontEnumProperties)
+                propertyNames.add(Identifier::from(it->first));
+    }
+
+    if (mode == PropertyMap::IncludeDontEnumProperties)
+        propertyNames.add(exec->propertyNames().length);
+
+    JSObject::getOwnPropertyNames(exec, propertyNames, mode);
+}
+
+bool ArrayInstance::getOwnPropertyDescriptor(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& descriptor)
+{
+    if (propertyName == exec->propertyNames().length) {
+        descriptor.setPropertyDescriptorValues(exec, jsNumber(m_length), m_lengthAttributes);
+        return true;
+    }
+
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+
+    if (isArrayIndex) {
+        ArrayEntity* ent = getArrayEntity(i);
+        if (ent) {
+            descriptor.setPropertyDescriptorValues(exec, ent->value, ent->attributes);
+            return true;
+        }
+    }
+    return JSObject::getOwnPropertyDescriptor(exec, propertyName, descriptor);
+}
+
+
+//ECMAScript Edition 5.1r6 - 15.4.5.1
+bool ArrayInstance::defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow)
+{
+    PropertyDescriptor oldLenDesc;
+    getOwnPropertyDescriptor(exec, exec->propertyNames().length, oldLenDesc);
+    unsigned int oldLen = oldLenDesc.value()->toUInt32(exec);
+
+    //4a
+    bool isArrayIndex;
+    unsigned index = propertyName.toArrayIndex(&isArrayIndex);
+
+    //Step 3
+    if (propertyName == exec->propertyNames().length) {
+        //a
+        if (!desc.value())
+            return JSObject::defineOwnProperty(exec, propertyName, desc, shouldThrow);
+
+        //b
+        PropertyDescriptor newLenDesc(desc);
+        //c
+        unsigned int newLen = desc.value()->toUInt32(exec);
+        //d
+        if (newLen != desc.value()->toNumber(exec) || desc.value()->toNumber(exec) > maxArrayLength) {
+            throwError(exec, RangeError, "Index out of range");
+            return false;
+        }
+        //e
+        newLenDesc.setValue(jsNumber(newLen));
+        //f
+        if (newLen >= oldLen)
+            return JSObject::defineOwnProperty(exec, propertyName, newLenDesc, shouldThrow);
+        //g
+        if (!oldLenDesc.writable()) {
+            if (shouldThrow)
+                throwError(exec, TypeError, "length is not writable");
+            return false;
+        }
+        //h
+        bool newWriteable;
+        if (!newLenDesc.writableSet() || newLenDesc.writable()) {
+            newWriteable = true;
+        } else { //i
+            if (anyItemHasAttribute(DontDelete))
+                newLenDesc.setWritable(false);
+            else
+                newLenDesc.setWritable(true);
+            newWriteable = false;
+        }
+        //j
+        bool succeeded = JSObject::defineOwnProperty(exec, propertyName, newLenDesc, shouldThrow);
+        //k
+        if (!succeeded) return false;
+        //l
+        while (newLen < oldLen) {
+            --oldLen;
+            bool deleteSucceeded = deleteProperty(exec, oldLen); // 3. argument should be false
+            if (!deleteSucceeded) {
+                newLenDesc.setValue(jsNumber(oldLen+1));
+                if (!newWriteable)
+                    newLenDesc.setWritable(false);
+                JSObject::defineOwnProperty(exec, propertyName, newLenDesc, false);
+                if (shouldThrow)
+                    throwError(exec, TypeError);
+                return false;
+            }
+        }
+        //m
+        if (!newWriteable) {
+            PropertyDescriptor writableDesc;
+            writableDesc.setWritable(false);
+            return JSObject::defineOwnProperty(exec, propertyName, writableDesc, false);
+        }
+        return true;
+    } else if (isArrayIndex) {//Step 4
+        //b
+        if (index >= oldLen && !oldLenDesc.writable()) {
+            if (shouldThrow)
+                throwError(exec, TypeError);
+            return false;
+        }
+        //c
+        bool succeeded = JSObject::defineOwnProperty(exec, propertyName, desc, false);
+        //d
+        if (!succeeded) {
+            if (shouldThrow)
+                throwError(exec, TypeError);
+            return false;
+        }
+        //e
+        if (index >= oldLen) {
+            oldLenDesc.setValue(jsNumber(index+1));
+            JSObject::defineOwnProperty(exec, exec->propertyNames().length, oldLenDesc, false);
+        }
+        return true;
+    }
+
+    return JSObject::defineOwnProperty(exec, propertyName, desc, shouldThrow);
+}
+
+bool ArrayInstance::getPropertyAttributes(const Identifier& propertyName, unsigned int& attributes) const
+{
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+
+    if (isArrayIndex) {
+        ArrayEntity* ent = getArrayEntity(i);
+        if (ent) {
+            attributes = ent->attributes;
+            return true;
+        }
+    }
+
+    return KJS::JSObject::getPropertyAttributes(propertyName, attributes);
+}
+
+JSValue* ArrayInstance::getDirect(const Identifier& propertyName) const
+{
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+
+    if (isArrayIndex) {
+        ArrayEntity* ent = getArrayEntity(i);
+        if (ent) {
+            if (ent->value)
+                return ent->value;
+        }
+    }
+
+    return KJS::JSObject::getDirect(propertyName);
+}
+
+void ArrayInstance::putDirect(unsigned i, JSValue* value, int attributes)
 {
     unsigned length = m_length;
 
     if (i >= length) {
         if (i > maxArrayIndex) {
-            put(exec, Identifier::from(i), value, attributes);
+            KJS::JSObject::putDirect(Identifier::from(i), value, attributes);
             return;
         }
         length = i + 1;
-        m_length = length;        
+        m_length = length;
     }
-    
+
     ArrayStorage* storage = m_storage;
 
     if (i < m_vectorLength) {
-        JSValue*& valueSlot = storage->m_vector[i];
+        ArrayEntity* ent = &storage->m_vector[i];
+        JSValue*& valueSlot = ent->value;
         storage->m_numValuesInVector += !valueSlot;
         valueSlot = value;
+        ent->attributes = attributes;
         return;
     }
 
@@ -248,7 +548,7 @@ void ArrayInstance::put(ExecState* exec, unsigned i, JSValue* value, int attribu
                 increaseVectorLength(1);
         }
 
-        map->set(i, value);
+        map->set(i, ArrayEntity(value, attributes));
         return;
     }
 
@@ -261,7 +561,8 @@ void ArrayInstance::put(ExecState* exec, unsigned i, JSValue* value, int attribu
         increaseVectorLength(i + 1);
         storage = m_storage;
         ++storage->m_numValuesInVector;
-        storage->m_vector[i] = value;
+        storage->m_vector[i].value = value;
+        storage->m_vector[i].attributes = attributes;
         return;
     }
 
@@ -298,18 +599,19 @@ void ArrayInstance::put(ExecState* exec, unsigned i, JSValue* value, int attribu
     // to see what to remove from it
     if (newNumValuesInVector == storage->m_numValuesInVector + 1) {
         for (unsigned j = vectorLength; j < newVectorLength; ++j)
-            storage->m_vector[j] = 0;
+            storage->m_vector[j].value = 0;
         if (i > sparseArrayCutoff)
             map->remove(i);
     } else {
         // Move over things from the map to the new array portion
         for (unsigned j = vectorLength; j < max(vectorLength, sparseArrayCutoff); ++j)
-            storage->m_vector[j] = 0;        
+            storage->m_vector[j].value = 0;
         for (unsigned j = max(vectorLength, sparseArrayCutoff); j < newVectorLength; ++j)
             storage->m_vector[j] = map->take(j);
     }
-    
-    storage->m_vector[i] = value;
+
+    storage->m_vector[i].value = value;
+    storage->m_vector[i].attributes = attributes;
 
     m_vectorLength = newVectorLength;
     storage->m_numValuesInVector = newNumValuesInVector;
@@ -317,65 +619,62 @@ void ArrayInstance::put(ExecState* exec, unsigned i, JSValue* value, int attribu
     m_storage = storage;
 }
 
-bool ArrayInstance::deleteProperty(ExecState* exec, const Identifier& propertyName)
+void ArrayInstance::putDirect(const Identifier& propertyName, JSValue* value, int attr)
 {
     bool isArrayIndex;
     unsigned i = propertyName.toArrayIndex(&isArrayIndex);
-    if (isArrayIndex)
-        return deleteProperty(exec, i);
 
-    if (propertyName == exec->propertyNames().length)
-        return false;
-
-    return JSObject::deleteProperty(exec, propertyName);
-}
-
-bool ArrayInstance::deleteProperty(ExecState* exec, unsigned i)
-{
-    ArrayStorage* storage = m_storage;
-
-    if (i < m_vectorLength) {
-        JSValue*& valueSlot = storage->m_vector[i];
-        bool hadValue = valueSlot;
-        valueSlot = 0;
-        storage->m_numValuesInVector -= hadValue;
-        return hadValue;
+    if (isArrayIndex) {
+        KJS::ArrayInstance::putDirect(i, value, attr);
+        return;
     }
 
-    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
-        SparseArrayValueMap::iterator it = map->find(i);
-        if (it != map->end()) {
-            map->remove(it);
-            return true;
+    KJS::JSObject::putDirect(propertyName, value, attr);
+}
+
+void ArrayInstance::putDirect(const Identifier& propertyName, int value, int attr)
+{
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+
+    if (isArrayIndex) {
+        KJS::ArrayInstance::putDirect(i, jsNumber(value), attr);
+        return;
+    }
+
+    KJS::JSObject::putDirect(propertyName, jsNumber(value), attr);
+}
+
+void ArrayInstance::removeDirect(const Identifier& propertyName)
+{
+    bool isArrayIndex;
+    unsigned i = propertyName.toArrayIndex(&isArrayIndex);
+
+    if (isArrayIndex) {
+        ArrayStorage* storage = m_storage;
+
+        if (i < m_vectorLength) {
+            ArrayEntity* ent = &storage->m_vector[i];
+            if (ent->value) {
+                JSValue*& valueSlot = ent->value;
+                bool hadValue = valueSlot;
+                valueSlot = 0;
+                storage->m_numValuesInVector -= hadValue;
+                ent->value = 0;
+                return;
+            }
+        }
+
+        if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+            SparseArrayValueMap::iterator it = map->find(i);
+            if (it != map->end()) {
+                map->remove(it->first);
+                return;
+            }
         }
     }
 
-    if (i > maxArrayIndex)
-        return deleteProperty(exec, Identifier::from(i));
-
-    return false;
-}
-
-void ArrayInstance::getOwnPropertyNames(ExecState* exec, PropertyNameArray& propertyNames, PropertyMap::PropertyMode mode)
-{
-    // FIXME: Filling PropertyNameArray with an identifier for every integer
-    // is incredibly inefficient for large arrays. We need a different approach.
-
-    ArrayStorage* storage = m_storage;
-
-    unsigned usedVectorLength = min(m_length, m_vectorLength);
-    for (unsigned i = 0; i < usedVectorLength; ++i) {
-        if (storage->m_vector[i])
-            propertyNames.add(Identifier::from(i));
-    }
-
-    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
-        SparseArrayValueMap::iterator end = map->end();
-        for (SparseArrayValueMap::iterator it = map->begin(); it != end; ++it)
-            propertyNames.add(Identifier::from(it->first));
-    }
-
-    JSObject::getOwnPropertyNames(exec, propertyNames, mode);
+    JSObject::removeDirect(Identifier::from(i));
 }
 
 void ArrayInstance::increaseVectorLength(unsigned newLength)
@@ -393,7 +692,7 @@ void ArrayInstance::increaseVectorLength(unsigned newLength)
     m_vectorLength = newVectorLength;
 
     for (unsigned i = vectorLength; i < newVectorLength; ++i)
-        storage->m_vector[i] = 0;
+        storage->m_vector[i].value = 0;
 
     m_storage = storage;
 }
@@ -403,23 +702,44 @@ void ArrayInstance::setLength(unsigned newLength)
     ArrayStorage* storage = m_storage;
 
     unsigned length = m_length;
+    unsigned newLenSet = newLength;
 
     if (newLength < length) {
         unsigned usedVectorLength = min(length, m_vectorLength);
-        for (unsigned i = newLength; i < usedVectorLength; ++i) {
-            JSValue*& valueSlot = storage->m_vector[i];
-            bool hadValue = valueSlot;
-            valueSlot = 0;
-            storage->m_numValuesInVector -= hadValue;
+        if (usedVectorLength > 0) {
+            for (unsigned i = usedVectorLength-1; i >= newLength && i > 0; --i) {
+                ArrayEntity* ent = &storage->m_vector[i];
+                if (ent->value) {
+                    if (ent->attributes & DontDelete) {
+                        newLenSet = i+1;
+                        break;
+                    }
+                    JSValue*& valueSlot = ent->value;
+                    bool hadValue = valueSlot;
+                    valueSlot = 0;
+                    ent->value = 0;
+                    storage->m_numValuesInVector -= hadValue;
+                }
+            }
         }
 
         if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
             SparseArrayValueMap copy = *map;
             SparseArrayValueMap::iterator end = copy.end();
             for (SparseArrayValueMap::iterator it = copy.begin(); it != end; ++it) {
-                if (it->first >= newLength)
-                    map->remove(it->first);
+                if (it->first >= newLength) {
+                    if (it->second.attributes & DontDelete) {
+                        newLenSet = it->first + 1;
+                    }
+                }
             }
+
+            for (SparseArrayValueMap::iterator it = copy.begin(); it != end; ++it) {
+                if (it->first >= newLenSet) {
+                    map->remove(it->first);
+                }
+            }
+
             if (map->isEmpty()) {
                 delete map;
                 storage->m_sparseValueMap = 0;
@@ -427,7 +747,7 @@ void ArrayInstance::setLength(unsigned newLength)
         }
     }
 
-    m_length = newLength;
+    m_length = newLenSet;
 }
 
 void ArrayInstance::mark()
@@ -438,17 +758,17 @@ void ArrayInstance::mark()
 
     unsigned usedVectorLength = min(m_length, m_vectorLength);
     for (unsigned i = 0; i < usedVectorLength; ++i) {
-        JSValue* value = storage->m_vector[i];
-        if (value && !value->marked())
-            value->mark();
+        ArrayEntity* ent = &storage->m_vector[i];
+        if (ent->value && !ent->value->marked())
+            ent->value->mark();
     }
 
     if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
         SparseArrayValueMap::iterator end = map->end();
         for (SparseArrayValueMap::iterator it = map->begin(); it != end; ++it) {
-            JSValue* value = it->second;
-            if (!value->marked())
-                value->mark();
+            ArrayEntity* ent = &it->second;
+            if (!ent->value->marked())
+                ent->value->mark();
         }
     }
 }
@@ -459,12 +779,13 @@ static int compareByStringForQSort(const void* a, const void* b)
 {
     ExecState* exec = execForCompareByStringForQSort;
 
-    JSValue* va = *static_cast<JSValue* const*>(a);
-    JSValue* vb = *static_cast<JSValue* const*>(b);
-    ASSERT(!va->isUndefined());
-    ASSERT(!vb->isUndefined());
+    const ArrayEntity* va = static_cast<const ArrayEntity*>(a);
+    const ArrayEntity* vb = static_cast<const ArrayEntity*>(b);
 
-    return compare(va->toString(exec), vb->toString(exec));
+    ASSERT(va->value && !va->value->isUndefined());
+    ASSERT(vb->value && !vb->value->isUndefined());
+
+    return compare(va->value->toString(exec), vb->value->toString(exec));
 }
 
 void ArrayInstance::sort(ExecState* exec)
@@ -491,7 +812,7 @@ void ArrayInstance::sort(ExecState* exec)
         size_t size = storageSize(m_vectorLength);
         ArrayStorage* copy = static_cast<ArrayStorage*>(fastMalloc(size));
         memcpy(copy, m_storage, size);
-        mergesort(copy->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareByStringForQSort);
+        mergesort(copy->m_vector, lengthNotIncludingUndefined, sizeof(ArrayEntity), compareByStringForQSort);
         fastFree(m_storage);
         m_storage = copy;
         execForCompareByStringForQSort = oldExec;
@@ -499,7 +820,7 @@ void ArrayInstance::sort(ExecState* exec)
     }
 #endif
 
-    qsort(m_storage->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareByStringForQSort);
+    qsort(m_storage->m_vector, lengthNotIncludingUndefined, sizeof(ArrayEntity), compareByStringForQSort);
     execForCompareByStringForQSort = oldExec;
 }
 
@@ -523,14 +844,15 @@ static int compareWithCompareFunctionForQSort(const void* a, const void* b)
 {
     CompareWithCompareFunctionArguments *args = compareWithCompareFunctionArguments;
 
-    JSValue* va = *static_cast<JSValue* const*>(a);
-    JSValue* vb = *static_cast<JSValue* const*>(b);
-    ASSERT(!va->isUndefined());
-    ASSERT(!vb->isUndefined());
+    const ArrayEntity* va = static_cast<const ArrayEntity*>(a);
+    const ArrayEntity* vb = static_cast<const ArrayEntity*>(b);
+
+    ASSERT(va->value && !va->value->isUndefined());
+    ASSERT(vb->value && !vb->value->isUndefined());
 
     args->arguments.clear();
-    args->arguments.append(va);
-    args->arguments.append(vb);
+    args->arguments.append(va->value);
+    args->arguments.append(vb->value);
     double compareResult = args->compareFunction->call
         (args->exec, args->globalObject, args->arguments)->toNumber(args->exec);
     return compareResult < 0 ? -1 : compareResult > 0 ? 1 : 0;
@@ -560,7 +882,7 @@ void ArrayInstance::sort(ExecState* exec, JSObject* compareFunction)
         size_t size = storageSize(m_vectorLength);
         ArrayStorage* copy = static_cast<ArrayStorage*>(fastMalloc(size));
         memcpy(copy, m_storage, size);
-        mergesort(copy->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareWithCompareFunctionForQSort);
+        mergesort(copy->m_vector, lengthNotIncludingUndefined, sizeof(ArrayEntity), compareWithCompareFunctionForQSort);
         fastFree(m_storage);
         m_storage = copy;
         compareWithCompareFunctionArguments = oldArgs;
@@ -568,9 +890,10 @@ void ArrayInstance::sort(ExecState* exec, JSObject* compareFunction)
     }
 #endif
 
-    qsort(m_storage->m_vector, lengthNotIncludingUndefined, sizeof(JSValue*), compareWithCompareFunctionForQSort);
+    qsort(m_storage->m_vector, lengthNotIncludingUndefined, sizeof(ArrayEntity), compareWithCompareFunctionForQSort);
     compareWithCompareFunctionArguments = oldArgs;
 }
+
 
 unsigned ArrayInstance::compactForSorting()
 {
@@ -587,19 +910,18 @@ unsigned ArrayInstance::compactForSorting()
 
     // count the first contiguous run of defined values in the vector store
     for (; numDefined < usedVectorLength; ++numDefined) {
-        JSValue* v = storage->m_vector[numDefined];
-        if (!v || v->isUndefined())
+        ArrayEntity* v = &storage->m_vector[numDefined];
+        if (!v->value || v->value->isUndefined())
             break;
     }
 
     // compact the rest, counting along the way
     for (unsigned i = numDefined; i < usedVectorLength; ++i) {
-        if (JSValue* v = storage->m_vector[i]) {
-            if (v->isUndefined())
-                ++numUndefined;
-            else
-                storage->m_vector[numDefined++] = v;
-        }
+        ArrayEntity v = storage->m_vector[i];
+        if (!v.value || v.value->isUndefined())
+            ++numUndefined;
+        else
+            storage->m_vector[numDefined++] = storage->m_vector[i];
     }
 
     unsigned newUsedVectorLength = numDefined + numUndefined;
@@ -620,11 +942,31 @@ unsigned ArrayInstance::compactForSorting()
     }
 
     for (unsigned i = numDefined; i < newUsedVectorLength; ++i)
-        storage->m_vector[i] = jsUndefined();
+        storage->m_vector[i].value = 0;
     for (unsigned i = newUsedVectorLength; i < usedVectorLength; ++i)
-        storage->m_vector[i] = 0;
+        storage->m_vector[i].value = 0;
 
     return numDefined;
+}
+
+bool KJS::ArrayInstance::anyItemHasAttribute(unsigned int attributes) const
+{
+    ArrayStorage* storage = m_storage;
+
+    unsigned usedVectorLength = min(m_length, m_vectorLength);
+    for (unsigned i = 0; i < usedVectorLength; ++i) {
+        if (storage->m_vector[i].value && storage->m_vector[i].attributes & attributes)
+            return true;
+    }
+
+    if (SparseArrayValueMap* map = storage->m_sparseValueMap) {
+        SparseArrayValueMap::iterator end = map->end();
+        for (SparseArrayValueMap::iterator it = map->begin(); it != end; ++it)
+            if ((*it).second.attributes & attributes)
+                return true;
+    }
+
+    return false;
 }
 
 }

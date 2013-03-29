@@ -32,6 +32,7 @@
 #include "property_slot.h"
 #include "scope_chain.h"
 #include <wtf/AlwaysInline.h>
+#include "propertydescriptor.h"
 
 namespace KJS {
 
@@ -224,9 +225,12 @@ namespace KJS {
 
     bool getPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     bool getPropertySlot(ExecState *, unsigned, PropertySlot&);
+    // Fills the PropertyDescriptor looking the ownPropertys and all prototypes until found.
+    bool getPropertyDescriptor(ExecState*, const Identifier& propertyName, PropertyDescriptor&);
 
     virtual bool getOwnPropertySlot(ExecState *, const Identifier&, PropertySlot&);
     virtual bool getOwnPropertySlot(ExecState *, unsigned index, PropertySlot&);
+    virtual bool getOwnPropertyDescriptor(ExecState*, const Identifier&, PropertyDescriptor&);
 
     /**
      * Sets the specified property.
@@ -425,15 +429,18 @@ namespace KJS {
     virtual UString toString(ExecState *exec) const;
     virtual JSObject *toObject(ExecState *exec) const;
 
-    bool getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const;
+    virtual bool getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const;
 
     // Returns whether the object should be treated as undefined when doing equality comparisons
     virtual bool masqueradeAsUndefined() const { return false; }
 
-    // This get function only looks at the property map.
+    // This get function only looks at the property map for Object.
+    // It is virtual because for all custom-data classes we want to by-pass
+    // the prototype and get it directly. For example called from
+    // Object::defineOwnProperty to directly get GetterSetterImp and update it.
     // This is used e.g. by lookupOrCreateFunction (to cache a function, we don't want
     // to look up in the prototype, it might already exist there)
-    JSValue *getDirect(const Identifier& propertyName) const
+    virtual JSValue *getDirect(const Identifier& propertyName) const
         { return _prop.get(propertyName); }
     JSValue **getDirectLocation(const Identifier& propertyName)
         { return _prop.getLocation(propertyName); }
@@ -444,10 +451,16 @@ namespace KJS {
     JSValue **getDirectWriteLocation(const Identifier& propertyName)
         { return _prop.getWriteLocation(propertyName); }
 
-    void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0)
+    // This function is virtual to directly store, by-pass the prototype, values
+    // for all custom-data classes like the Array. For example an Array with a prototype
+    // to store values via getter/setter. It would be impossible to store a value
+    // by-passing the getter/setter prototype.
+    // This is for example called in Object::defineOwnProperty to directly store the values.
+    // Same for removeDirect.
+    virtual void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0)
         { _prop.put(propertyName, value, attr); }
-    void putDirect(const Identifier &propertyName, int value, int attr = 0);
-    void removeDirect(const Identifier &propertyName);
+    virtual void putDirect(const Identifier &propertyName, int value, int attr = 0);
+    virtual void removeDirect(const Identifier &propertyName);
 
     // convenience to add a function property under the function's own built-in name
     void putDirectFunction(InternalFunctionImp*, int attr = 0);
@@ -457,6 +470,8 @@ namespace KJS {
 
     void defineGetter(ExecState *exec, const Identifier& propertyName, JSObject *getterFunc);
     void defineSetter(ExecState *exec, const Identifier& propertyName, JSObject *setterFunc);
+
+    virtual bool defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow);
 
     /**
      * Remove all properties from this object.

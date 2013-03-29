@@ -102,6 +102,8 @@ namespace KJS {
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
     virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
+    virtual bool defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow);
+
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   private:
@@ -132,6 +134,11 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+
+    virtual void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0);
+    using JSObject::putDirect;
+    virtual JSValue *getDirect(const Identifier& propertyName) const;
+    virtual bool getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const;
 
     bool isLocalReadOnly(int propertyID) const {
       return (localStorage[propertyID].attributes & ReadOnly) == ReadOnly;

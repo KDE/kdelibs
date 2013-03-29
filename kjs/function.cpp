@@ -434,7 +434,8 @@ indexToNameMap(func, args)
   ListIterator iterator = args.begin();
   for (; iterator != args.end(); i++, iterator++) {
     if (!indexToNameMap.isMapped(Identifier::from(i))) {
-      JSObject::put(exec, Identifier::from(i), *iterator, DontEnum);
+      //ECMAScript Edition 5.1r6 - 10.6.11.b, [[Writable]]: true, [[Enumerable]]: true, [[Configurable]]: true
+      JSObject::put(exec, Identifier::from(i), *iterator, None);
     }
   }
 }
@@ -465,6 +466,11 @@ bool Arguments::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
 void Arguments::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)
 {
   if (indexToNameMap.isMapped(propertyName)) {
+    unsigned attr = 0;
+    JSObject::getPropertyAttributes(propertyName, attr);
+    if (attr & ReadOnly)
+      return;
+
     _activationObject->put(exec, indexToNameMap[propertyName], value, attr);
   } else {
     JSObject::put(exec, propertyName, value, attr);
@@ -474,7 +480,11 @@ void Arguments::put(ExecState *exec, const Identifier &propertyName, JSValue *va
 bool Arguments::deleteProperty(ExecState *exec, const Identifier &propertyName)
 {
   if (indexToNameMap.isMapped(propertyName)) {
-    indexToNameMap.unMap(propertyName);
+    bool result = JSObject::deleteProperty(exec, propertyName);
+    if (result) {
+        _activationObject->deleteProperty(exec, indexToNameMap[propertyName]);
+        indexToNameMap.unMap(propertyName);
+    }
     return true;
   } else {
     return JSObject::deleteProperty(exec, propertyName);
@@ -498,6 +508,39 @@ void Arguments::getOwnPropertyNames(ExecState* exec, PropertyNameArray& property
     }
 
     JSObject::getOwnPropertyNames(exec, propertyNames, mode);
+}
+
+bool Arguments::defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow)
+{
+    bool isMapped = indexToNameMap.isMapped(propertyName);
+
+    Identifier mappedName;
+    if (isMapped)
+        mappedName = indexToNameMap[propertyName];
+    else
+        mappedName = propertyName;
+
+    bool allowed = JSObject::defineOwnProperty(exec, propertyName, desc, false);
+
+    if (!allowed) {
+        if (shouldThrow)
+            throwError(exec, TypeError);
+        return false;
+    }
+    if (isMapped) {
+        if (desc.isAccessorDescriptor()) {
+            indexToNameMap.unMap(propertyName);
+        } else {
+            if (desc.value()) {
+                _activationObject->putDirect(mappedName, desc.value(), desc.attributes());
+            }
+            if (desc.writableSet() && desc.writable() == false) {
+                indexToNameMap.unMap(propertyName);
+            }
+        }
+    }
+
+    return true;
 }
 
 // ------------------------------ ActivationImp --------------------------------
@@ -641,6 +684,42 @@ bool ActivationImp::deleteProperty(ExecState *exec, const Identifier &propertyNa
         return false;
 
     return JSVariableObject::deleteProperty(exec, propertyName);
+}
+
+void ActivationImp::putDirect(const Identifier& propertyName, JSValue* value, int attr)
+{
+    size_t index = symbolTable->get(propertyName.ustring().rep());
+    if (index != missingSymbolMarker()) {
+        LocalStorageEntry& entry = localStorage[index];
+        entry.val.valueVal = value;
+        entry.attributes = attr;
+        return;
+    }
+
+    JSVariableObject::putDirect(propertyName, value, attr);
+}
+
+JSValue* ActivationImp::getDirect(const Identifier& propertyName) const
+{
+    size_t index = symbolTable->get(propertyName.ustring().rep());
+    if (index != missingSymbolMarker()) {
+        LocalStorageEntry& entry = localStorage[index];
+        return entry.val.valueVal;
+    }
+
+    return JSVariableObject::getDirect(propertyName);
+}
+
+bool ActivationImp::getPropertyAttributes(const Identifier& propertyName, unsigned int& attributes) const
+{
+    size_t index = symbolTable->get(propertyName.ustring().rep());
+    if (index != missingSymbolMarker()) {
+        LocalStorageEntry& entry = localStorage[index];
+        attributes = entry.attributes;
+        return true;
+    }
+
+    return JSVariableObject::getPropertyAttributes(propertyName, attributes);
 }
 
 void ActivationImp::put(ExecState*, const Identifier& propertyName, JSValue* value, int attr)
