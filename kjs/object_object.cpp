@@ -246,7 +246,7 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
     case GetPrototypeOf: { //ECMA Edition 5.1r6 - 15.2.3.2
         JSObject* jso = args[0]->getObject();
         if (!jso)
-            return throwError(exec, TypeError, "\'" + args[0]->toString(exec) + "\' is not an Object");
+            return throwError(exec, TypeError, "Not an Object");
         return jso->prototype();
     }
     case GetOwnPropertyDescriptor: { //ECMA Edition 5.1r6 - 15.2.3.3
@@ -264,7 +264,7 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
     case Keys: { //ECMA Edition 5.1r6 - 15.2.3.14
         JSObject* jso = args[0]->getObject();
         if (!jso)
-            return throwError(exec, TypeError, "\'" + args[0]->toString(exec) + "\' is not an Object");
+            return throwError(exec, TypeError, "Not an Object");
 
         JSObject *ret = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
         PropertyNameArray propertyNames;
