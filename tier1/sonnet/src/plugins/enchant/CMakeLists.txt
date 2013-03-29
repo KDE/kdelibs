@@ -8,7 +8,7 @@ set(kspell_enchant_PART_SRCS enchantdict.cpp enchantclient.cpp )
 
 add_library(kspell_enchant MODULE ${kspell_enchant_PART_SRCS})
 
-target_link_libraries(kspell_enchant  ${QT_QTCORE_LIBRARY} sonnetcore ${ENCHANT_LIBRARIES} )
+target_link_libraries(kspell_enchant sonnetcore ${ENCHANT_LIBRARIES} )
 
 install(TARGETS kspell_enchant  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/sonnet_clients/ )
 

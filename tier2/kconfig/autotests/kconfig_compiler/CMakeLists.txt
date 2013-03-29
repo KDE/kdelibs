@@ -198,7 +198,7 @@ set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
 add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 add_test(kconfig-kconfigcompiler kconfigcompiler_test)
 
-target_link_libraries(kconfigcompiler_test ${QT_QTCORE_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES})
+target_link_libraries(kconfigcompiler_test ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES})
 
 ########### install files ###############
 

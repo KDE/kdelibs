@@ -30,7 +30,6 @@ add_executable(bihash_benchmarks_exec ${benchmarks_srcs} )
 add_test(bihash_benchmarks bihash_benchmarks_exec)
 
 target_link_libraries(bihash_benchmarks_exec
-  ${QT_QTCORE_LIBRARIES}
   Qt5::Widgets
   ${QT_QTTEST_LIBRARIES}
 )

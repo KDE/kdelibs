@@ -7,7 +7,7 @@ set(kspell_hunspell_PART_SRCS kspell_hunspellclient.cpp kspell_hunspelldict.cpp 
 
 add_library(kspell_hunspell MODULE ${kspell_hunspell_PART_SRCS})
 
-target_link_libraries(kspell_hunspell ${QT_QTCORE_LIBRARY} sonnetcore ${HUNSPELL_LIBRARIES} )
+target_link_libraries(kspell_hunspell sonnetcore ${HUNSPELL_LIBRARIES} )
 
 install(TARGETS kspell_hunspell  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/sonnet_clients/ )
 

@@ -105,7 +105,7 @@ set(kioslave_SRCS kioslave.cpp)
 
 kde4_add_executable(kioslave NOGUI ${kioslave_SRCS})
 
-target_link_libraries(kioslave  ${KDE4_KIO_LIBS}  ${QT_QTCORE_LIBRARY})
+target_link_libraries(kioslave  ${KDE4_KIO_LIBS})
 
 install(TARGETS kioslave DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
