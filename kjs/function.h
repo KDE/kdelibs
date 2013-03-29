@@ -60,6 +60,43 @@ namespace KJS {
   };
 
   /**
+   * A minimal object that just throws an exception if executed.
+   */
+  class Thrower : public JSObject {
+  public:
+    Thrower(ErrorType type);
+
+    virtual JSValue *callAsFunction(ExecState* exec, JSObject*, const List& args);
+    virtual bool implementsCall() const { return true; };
+  private:
+    ErrorType m_type;
+  };
+
+  class BoundFunction : public InternalFunctionImp {
+  public:
+    explicit BoundFunction(ExecState* exec, JSObject* targetFunction, JSObject* boundThis, List boundArgs);
+
+    void setTargetFunction(JSObject* targetFunction);
+    void setBoundThis(JSObject* boundThis);
+    void setBoundArgs(const List& boundArgs);
+
+    virtual JSValue *callAsFunction(ExecState* exec, JSObject* thisObj, const List& extraArgs);
+    virtual bool implementsCall() const { return true; };
+
+    using KJS::JSObject::construct;
+    virtual JSObject* construct(ExecState* exec, const List& extraArgs);
+    virtual bool implementsConstruct() const { return true; };
+
+    virtual bool hasInstance(ExecState *exec, JSValue *value);
+    virtual bool implementsHasInstance() const { return true; };
+
+  private:
+    ProtectedPtr<JSObject> m_targetFunction;
+    ProtectedPtr<JSObject> m_boundThis;
+    List m_boundArgs;
+  };
+
+  /**
    * @internal
    *
    * The initial value of Function.prototype (and thus all objects created

@@ -354,6 +354,89 @@ JSObject *FunctionImp::construct(ExecState *exec, const List &args)
     return obj;
 }
 
+// ------------------------------ Thrower ---------------------------------
+
+Thrower::Thrower(ErrorType type)
+    : JSObject(),
+      m_type(type)
+{
+}
+
+JSValue* Thrower::callAsFunction(ExecState* exec, JSObject* /*thisObj*/, const List& /*args*/)
+{
+    return throwError(exec, m_type);
+}
+
+
+// ------------------------------ BoundFunction ---------------------------------
+
+BoundFunction::BoundFunction(ExecState* exec, JSObject* targetFunction, JSObject* boundThis, KJS::List boundArgs)
+    : InternalFunctionImp(static_cast<FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype())),
+      m_targetFunction(targetFunction),
+      m_boundThis(boundThis),
+      m_boundArgs(boundArgs)
+{
+}
+
+// ECMAScript Edition 5.1r6 - 15.3.4.5.2
+JSObject* BoundFunction::construct(ExecState* exec, const List& extraArgs)
+{
+    JSObject* target = m_targetFunction;
+    if (!target->implementsConstruct())
+        return throwError(exec, TypeError);
+    List boundArgs = m_boundArgs;
+
+    List args;
+    for (int i = 0; i < boundArgs.size(); ++i)
+        args.append(boundArgs.at(i));
+    for (int i = 0; i < extraArgs.size(); ++i)
+        args.append(extraArgs.at(i));
+
+    return target->construct(exec, args);
+}
+
+// ECMAScript Edition 5.1r6 - 15.3.4.5.1
+JSValue* BoundFunction::callAsFunction(ExecState* exec, JSObject* /*thisObj*/, const List& extraArgs)
+{
+    List boundArgs = m_boundArgs;
+    JSObject* boundThis = m_boundThis;
+    JSObject* target = m_targetFunction;
+
+    List args;
+    for (int i = 0; i < boundArgs.size(); ++i)
+        args.append(boundArgs.at(i));
+    for (int i = 0; i < extraArgs.size(); ++i)
+        args.append(extraArgs.at(i));
+
+    return target->callAsFunction(exec, boundThis, args);
+}
+
+// ECMAScript Edition 5.1r6 - 15.3.4.5.3
+bool BoundFunction::hasInstance(ExecState* exec, JSValue* value)
+{
+    JSObject* target = m_targetFunction;
+    if (!target->implementsHasInstance())
+        return throwError(exec, TypeError);
+
+    return target->hasInstance(exec, value);
+}
+
+void BoundFunction::setTargetFunction(JSObject* targetFunction)
+{
+    m_targetFunction = targetFunction;
+}
+
+void BoundFunction::setBoundArgs(const List& boundArgs)
+{
+    m_boundArgs = boundArgs;
+}
+
+void BoundFunction::setBoundThis(JSObject* boundThis)
+{
+    m_boundThis = boundThis;
+}
+
+
 // ------------------------------ IndexToNameMap ---------------------------------
 
 // We map indexes in the arguments array to their corresponding argument names.
