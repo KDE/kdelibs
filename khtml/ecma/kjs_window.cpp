@@ -75,6 +75,8 @@
 #include "xmlhttprequest.h"
 #include "xmlserializer.h"
 #include "domparser.h"
+#include "kjs_arraybuffer.h"
+#include "kjs_arraybufferview.h"
 
 #include <rendering/render_replaced.h>
 
@@ -508,6 +510,15 @@ const ClassInfo Window::info = { "Window", &DOMAbstractView::info, &WindowTable,
   XMLHttpRequest Window::XMLHttpRequest DontEnum|DontDelete
   XMLSerializer	Window::XMLSerializer	DontEnum|DontDelete
   DOMParser	Window::DOMParser	DontEnum|DontDelete
+  ArrayBuffer   Window::ArrayBuffer   DontEnum|DontDelete
+  Int8Array     Window::Int8Array     DontEnum|DontDelete
+  Uint8Array    Window::Uint8Array    DontEnum|DontDelete
+  Int16Array    Window::Int16Array    DontEnum|DontDelete
+  Uint16Array   Window::Uint16Array   DontEnum|DontDelete
+  Int32Array    Window::Int32Array    DontEnum|DontDelete
+  Uint32Array   Window::Uint32Array   DontEnum|DontDelete
+  Float32Array  Window::Float32Array  DontEnum|DontDelete
+  Float64Array  Window::Float64Array  DontEnum|DontDelete
 
 # Mozilla dom emulation ones.
   Element   Window::ElementCtor DontEnum|DontDelete
@@ -1235,6 +1246,24 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
       return new XMLSerializerConstructorImp(exec);
     case DOMParser:
       return new DOMParserConstructorImp(exec, part->xmlDocImpl());
+    case ArrayBuffer:
+      return new ArrayBufferConstructorImp(exec, part->xmlDocImpl());
+    case Int8Array:
+      return new ArrayBufferViewConstructorImp<int8_t>(exec, part->xmlDocImpl());
+    case Uint8Array:
+      return new ArrayBufferViewConstructorImp<uint8_t>(exec, part->xmlDocImpl());
+    case Int16Array:
+      return new ArrayBufferViewConstructorImp<int16_t>(exec, part->xmlDocImpl());
+    case Uint16Array:
+      return new ArrayBufferViewConstructorImp<uint16_t>(exec, part->xmlDocImpl());
+    case Int32Array:
+      return new ArrayBufferViewConstructorImp<int32_t>(exec, part->xmlDocImpl());
+    case Uint32Array:
+      return new ArrayBufferViewConstructorImp<uint32_t>(exec, part->xmlDocImpl());
+    case Float32Array:
+      return new ArrayBufferViewConstructorImp<float>(exec, part->xmlDocImpl());
+    case Float64Array:
+      return new ArrayBufferViewConstructorImp<double>(exec, part->xmlDocImpl());
     case Onabort:
       return getListener(exec,DOM::EventImpl::ABORT_EVENT);
     case Onblur:

@@ -312,6 +312,8 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_xpath.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_scriptable.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_data.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybuffer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybufferview.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
@@ -586,6 +588,8 @@ create_lut(ecma/xmlserializer.cpp xmlserializer.lut.h)
 create_lut(ecma/domparser.cpp domparser.lut.h)
 create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
 create_lut(ecma/kjs_xpath.cpp kjs_xpath.lut.h)
+create_lut(ecma/kjs_arraybuffer.cpp kjs_arraybuffer.lut.h)
+create_lut(ecma/kjs_arraybufferview.cpp kjs_arraybufferview.lut.h)
 
 macro(create_js_binding _in_FILE)
    get_filename_component(_in_filename ${_in_FILE} NAME_WE)
