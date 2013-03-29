@@ -585,7 +585,6 @@ create_lut(ecma/xmlhttprequest.cpp xmlhttprequest.lut.h)
 create_lut(ecma/xmlserializer.cpp xmlserializer.lut.h)
 create_lut(ecma/domparser.cpp domparser.lut.h)
 create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
-create_lut(ecma/kjs_audio.cpp kjs_audio.lut.h)
 create_lut(ecma/kjs_xpath.cpp kjs_xpath.lut.h)
 
 macro(create_js_binding _in_FILE)
