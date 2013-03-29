@@ -78,7 +78,7 @@ namespace KJS {
             GetFullYear, GetMonth, GetDate, GetDay, GetHours, GetMinutes,
             GetSeconds, GetMilliSeconds, GetTimezoneOffset, SetTime,
             SetMilliSeconds, SetSeconds, SetMinutes, SetHours, SetDate,
-            SetMonth, SetFullYear, ToUTCString,
+            SetMonth, SetFullYear, ToUTCString, ToISOString,
             // non-normative properties (Appendix B)
             GetYear, SetYear, ToGMTString };
     private:
