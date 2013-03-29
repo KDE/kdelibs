@@ -473,6 +473,9 @@ namespace KJS {
 
     virtual bool defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow);
 
+    void preventExtensions();
+    bool isExtensible() { return _prop.isExtensible(); }
+
     /**
      * Remove all properties from this object.
      * This doesn't take DontDelete into account, and isn't in the ECMA spec.

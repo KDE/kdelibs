@@ -526,12 +526,17 @@ void ArrayInstance::putDirect(unsigned i, JSValue* value, int attributes)
 
     if (i < m_vectorLength) {
         ArrayEntity* ent = &storage->m_vector[i];
+        if (!ent->value && !isExtensible())
+            return;
         JSValue*& valueSlot = ent->value;
         storage->m_numValuesInVector += !valueSlot;
         valueSlot = value;
         ent->attributes = attributes;
         return;
     }
+
+    if (!isExtensible())
+        return;
 
     SparseArrayValueMap* map = storage->m_sparseValueMap;
     if (i >= sparseArrayCutoff) {

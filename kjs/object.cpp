@@ -275,6 +275,8 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
     }
   }
 
+  if (!isExtensible() && !_prop.get(propertyName))
+      return;
   _prop.put(propertyName,value,attr,checkRO);
 }
 
@@ -580,6 +582,12 @@ bool JSObject::defineOwnProperty(ExecState* exec, const Identifier& propertyName
         put(exec, propertyName, jsval, newAttr);
 
     return true; //Step 13
+}
+
+void JSObject::preventExtensions()
+{
+    if (isExtensible())
+        _prop.setExtensible(false);
 }
 
 bool JSObject::implementsConstruct() const
