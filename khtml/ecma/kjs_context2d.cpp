@@ -231,7 +231,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::Rotate: {
         KJS_REQUIRE_ARGS(1);
         // Rotate actually rejects NaN/infinity as well
-        KJS_CHECK_FLOAT_ARGS(0, 0);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 0);
 
 
         ctx->rotate(args[0]->toFloat(exec));
