@@ -582,6 +582,11 @@ void CanvasGradientImpl::addColorStop(float offset, const DOM::DOMString& color,
     // ### we may have to handle the "currentColor" KW here. ouch.
 
     exceptionCode = 0;
+    if (isInfArg(offset)) {
+        exceptionCode = DOMException::INDEX_SIZE_ERR;
+        return;
+    }
+
     //### fuzzy compare (also for alpha)
     if (offset < 0 || offset > 1) {
         exceptionCode = DOMException::INDEX_SIZE_ERR;
