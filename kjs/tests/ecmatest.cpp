@@ -191,6 +191,7 @@ void ECMAscriptTest::initTestCase()
     }
 
     m_passed = 0;
+    m_failed = 0;
 }
 
 static QByteArray getTextProperty( const QByteArray &property, const QByteArray &code )
