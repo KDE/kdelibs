@@ -666,7 +666,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int
         ctx->setShadowOffsetY(value->toFloat(exec));
         break;
     case ShadowBlur:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setShadowBlur(value->toFloat(exec));
         break;
     case ShadowColor:
