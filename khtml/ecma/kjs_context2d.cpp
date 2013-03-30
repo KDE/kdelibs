@@ -438,7 +438,9 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::IsPointInPath: {
         KJS_REQUIRE_ARGS(2);
-        KJS_CHECK_FLOAT_ARGS(0, 1);
+        if (argumentsContainInforNaN(exec, args, 0, 1)) {
+            return jsBoolean(false);
+        }
         return jsBoolean(ctx->isPointInPath(args[0]->toFloat(exec),
                                             args[1]->toFloat(exec)));
     }
