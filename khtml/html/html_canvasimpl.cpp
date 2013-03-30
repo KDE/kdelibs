@@ -970,8 +970,7 @@ void CanvasContext2DImpl::setShadowColor(const DOMString& newColor)
 void CanvasContext2DImpl::clearRect (float x, float y, float w, float h, int& exceptionCode)
 {
     exceptionCode = 0;
-    if (w < 0.0f || h < 0.0f) {
-        exceptionCode = DOMException::INDEX_SIZE_ERR;
+    if (w == 0.0f || h == 0.0f) {
         return;
     }
 
