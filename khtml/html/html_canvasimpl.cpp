@@ -1000,8 +1000,7 @@ void CanvasContext2DImpl::fillRect (float x, float y, float w, float h, int& exc
 void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& exceptionCode)
 {
     exceptionCode = 0;
-    if (w < 0.0f || h < 0.0f) {
-        exceptionCode = DOMException::INDEX_SIZE_ERR;
+    if (w == 0.0f && h == 0.0f) {
         return;
     }
 
