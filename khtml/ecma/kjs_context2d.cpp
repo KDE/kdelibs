@@ -458,13 +458,13 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         }
 
         if (args.size() < 5) { // 3 or 4 arguments
-            KJS_CHECK_FLOAT_ARGS(1, 2);
+            KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(1, 2);
             ctx->drawImage(el,
                            args[1]->toFloat(exec),
                            args[2]->toFloat(exec),
                            exception);
         } else if (args.size() < 9) { // 5 through 9 arguments
-            KJS_CHECK_FLOAT_ARGS(1, 4);
+            KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(1, 4);
             ctx->drawImage(el,
                            args[1]->toFloat(exec),
                            args[2]->toFloat(exec),
@@ -472,7 +472,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
                            args[4]->toFloat(exec),
                            exception);
         } else  { // 9 or more arguments
-            KJS_CHECK_FLOAT_ARGS(1, 8);
+            KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(1, 8);
             ctx->drawImage(el,
                            args[1]->toFloat(exec),
                            args[2]->toFloat(exec),
