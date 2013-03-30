@@ -162,11 +162,37 @@ static bool argFloatsOK(ExecState* exec, const List& args, int minArg, int maxAr
     return true;
 }
 
+// Checks if the JSValue is Inf or NaN
+static bool argFloatIsInforNaN(ExecState* exec, const JSValue* v)
+{
+    float val = v->toFloat(exec);
+    if (KJS::isNaN(val) || KJS::isInf(val))
+        return true;
+    return false;
+}
+
+
+// Checks if one the arguments if Inf or NaN
+static bool argumentsContainInforNaN(ExecState* exec, const List& args, int minArg, int maxArg)
+{
+    for (int c = minArg; c <= maxArg; ++c) {
+        if (argFloatIsInforNaN(exec, args[c]))
+            return true;
+    }
+    return false;
+}
+
 // HTML5-style checking
 #define KJS_REQUIRE_ARGS(n) do { if (!enoughArguments(exec, args,n)) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_ARGS(min,max) do { if (!argFloatsOK(exec, args, min, max, false )) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_OR_INF_ARGS(min,max) do { if (!argFloatsOK(exec, args, min, max, true)) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_VAL(v) if (!valFloatOK(exec, v, false)) return;
+
+// Unlike the above checks, ignore the invalid(Inf/NaN) values,
+// without throwing an exception 
+#define KJS_CHECK_FLOAT_IGNORE_INVALID(v) do { if (argFloatIsInforNaN(exec, v)) return; } while(0)
+#define KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(min,max) do { if (argumentsContainInforNaN(exec, args, min, max)) return jsUndefined(); } while(0)
+
 
 JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
@@ -618,7 +644,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int
         ctx->setFillStyle(decodeStyle(exec, value));
         break;
     case LineWidth:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setLineWidth(value->toFloat(exec));
         break;
     case LineCap:
