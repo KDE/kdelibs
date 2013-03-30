@@ -658,11 +658,11 @@ void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int
         ctx->setMiterLimit(value->toFloat(exec));
         break;
     case ShadowOffsetX:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setShadowOffsetX(value->toFloat(exec));
         break;
     case ShadowOffsetY:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setShadowOffsetY(value->toFloat(exec));
         break;
     case ShadowBlur:
