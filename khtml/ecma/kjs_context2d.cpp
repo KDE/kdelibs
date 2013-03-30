@@ -382,7 +382,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::BezierCurveTo: {
         KJS_REQUIRE_ARGS(6);
-        KJS_CHECK_FLOAT_ARGS(0, 5);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 5);
 
         ctx->bezierCurveTo(args[0]->toFloat(exec), args[1]->toFloat(exec),
                            args[2]->toFloat(exec), args[3]->toFloat(exec),
