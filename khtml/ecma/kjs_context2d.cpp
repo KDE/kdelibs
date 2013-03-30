@@ -654,7 +654,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int
         ctx->setLineJoin(value->toString(exec).domString());
         break;
     case MiterLimit:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setMiterLimit(value->toFloat(exec));
         break;
     case ShadowOffsetX:
