@@ -1076,10 +1076,6 @@ void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, floa
 void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptionCode)
 {
     exceptionCode = 0;
-    if (w < 0 || h < 0) {
-        exceptionCode = DOMException::INDEX_SIZE_ERR;
-        return;
-    }
 
     path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
     path.closeSubpath();
