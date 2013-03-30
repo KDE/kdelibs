@@ -392,7 +392,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::ArcTo: {
         KJS_REQUIRE_ARGS(5);
-        KJS_CHECK_FLOAT_ARGS(0, 4);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 4);
 
         ctx->arcTo(args[0]->toFloat(exec), args[1]->toFloat(exec),
                    args[2]->toFloat(exec), args[3]->toFloat(exec),
