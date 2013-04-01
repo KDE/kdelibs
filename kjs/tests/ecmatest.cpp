@@ -333,6 +333,19 @@ void ECMAscriptTest::runAllTests_data()
     if ( !chapter.isEmpty() )
         QWARN( "===> Testing chapter " + chapter.toLatin1() );
 
+    if ( chapter.isEmpty() || chapter.startsWith("ch15")) {
+        const QByteArray timeZoneDepend = "this test depends on the timezone and may or may not fail, avoid it for the moment";
+        // The tests are timezone dependent because of the Date implementation in kjs.
+        // It only affects the limit by +/- 24h (or less, depending on your timezone),
+        // the "normal" use is not affected.
+        // It requieres a complete Date rewrite to fix this, see ECMA Edition 5.1r6 15.9.1.1
+        skips[ "15.9.5.43-0-8" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-9" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-10" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-11" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-12" ] = timeZoneDepend;
+    }
+
 #ifndef USE_KJS_GLOBAL
     // some tests fail when the suite is run as a whole
     if ( chapter.isEmpty() || chapter.startsWith("ch15") || chapter.startsWith("ch12")) {
