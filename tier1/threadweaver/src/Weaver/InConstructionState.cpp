@@ -50,6 +50,7 @@ void InConstructionState::resume()
 
 Job* InConstructionState::applyForWork(Thread *th, Job *previous)
 {
+    Q_ASSERT(previous==0);
     // As long as we are in the construction state, no jobs will be given
     // to the worker threads. The threads will be suspended. They will
     // return from the blocked state when jobs are queued. By then, we

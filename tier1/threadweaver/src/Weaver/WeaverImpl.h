@@ -107,8 +107,6 @@ public:
     void blockThreadUntilJobsAreBeingAssigned_locked(Thread* th);
     /** Increment the count of active threads. */
     void incActiveThreadCount();
-    /** Go to suspended state if the active thread count is now zero. */
-    void suspendIfSuspendingAndNoThreadsActive();
     /** Decrement the count of active threads. */
     void decActiveThreadCount();
     /** Returns the number of active threads.
@@ -121,8 +119,10 @@ public:
     void threadEnteredRun(Thread* thread);
     /** Take the first available job out of the queue and return it.
      * The job will be removed from the queue (therefore, take). Only jobs that have no unresolved dependencies are considered
-     * available. If only jobs that depened on other, unfinished jobs are in the queue, this method blocks on m_jobAvailable. */
-    Job* takeFirstAvailableJobOrWait(Thread* th, Job* previous);
+     * available. If only jobs that depened on other, unfinished jobs are in the queue, this method blocks on m_jobAvailable.
+     * Go to suspended state if the active thread count is now zero and suspendIfAllThreadsInactive is true.
+     * If justReturning is true, do not assign a new job, just process the completed previous one. */
+    Job* takeFirstAvailableJobOrSuspendOrWait(Thread* th, Job* previous, bool suspendIfAllThreadsInactive, bool justReturning);
     /** Schedule enqueued jobs to be executed by idle threads.
      * This will try to distribute as many jobs as possible to all idle threads. */
     void assignJobs();

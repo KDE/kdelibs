@@ -60,14 +60,16 @@ void WorkingHardState::resume()
 
 Job* WorkingHardState::applyForWork(Thread *th,  Job* previous)
 {   // beware: this code is executed in the applying thread!
-    debug ( 2, "WorkingHardState::applyForWork: thread %i applies for work in %s state.\n", th->id(),
-            qPrintable ( weaver()->state()->stateName() ) );
-    Job *next = weaver()->takeFirstAvailableJobOrWait(th, previous);
-    if ( next ) {
+    debug(2, "WorkingHardState::applyForWork: thread %i applies for work in %s state.\n", th->id(),
+          qPrintable ( weaver()->state()->stateName() ) );
+    Job *next = weaver()->takeFirstAvailableJobOrSuspendOrWait(th, previous, false, false);
+    if (next) {
         return next;
     } else {
         // this is no infinite recursion: the state may have changed meanwhile, or jobs may have become available:
-        return weaver()->applyForWork( th,  0 );
+        debug(2, "WorkingHardState::applyForWork: repeating for thread %i in %s state.\n", th->id(),
+              qPrintable ( weaver()->state()->stateName() ) );
+        return weaver()->applyForWork(th, 0);
     }
 }
 

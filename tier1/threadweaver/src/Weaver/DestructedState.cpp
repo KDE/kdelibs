@@ -111,8 +111,9 @@ void DestructedState::resume()
 {
 }
 
-Job* DestructedState::applyForWork(Thread*, Job*)
+Job* DestructedState::applyForWork(Thread*, Job* previous)
 {
+    Q_ASSERT(previous==0);
     return 0;
 }
 

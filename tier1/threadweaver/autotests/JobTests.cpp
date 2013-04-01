@@ -266,7 +266,6 @@ void JobTests::QueueAndDequeueCollectionTest()
 
 
 void JobTests::QueueAndDequeueSequenceTest() {
-    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -374,7 +373,6 @@ void JobTests::RecursiveQueueAndDequeueCollectionTest()
 }
 
 void JobTests::RecursiveQueueAndDequeueSequenceTest() {
-    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -430,13 +428,15 @@ void JobTests::QueueAndDequeueAllCollectionTest()
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->suspend();
-    ThreadWeaver::Weaver::instance()->enqueue ( & collection );
-    ThreadWeaver::Weaver::instance()->dequeue ();
+    QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
+    ThreadWeaver::Weaver::instance()->enqueue(&collection);
+    //collection cannot have been started, so only one job is queued at the moment:
+    QCOMPARE(ThreadWeaver::Weaver::instance()->queueLength(), 1);
+    ThreadWeaver::Weaver::instance()->dequeue();
     QVERIFY(ThreadWeaver::Weaver::instance()->isEmpty());
 }
 
 void JobTests::QueueAndDequeueAllSequenceTest() {
-    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
@@ -501,7 +501,6 @@ void JobTests::RecursiveQueueAndDequeueAllCollectionTest()
 }
 
 void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
-    return; //TODO fails, race, collection equivalent added
     QString sequence;
     AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
     AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );

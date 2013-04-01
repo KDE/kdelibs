@@ -49,8 +49,9 @@ void ShuttingDownState::resume()
     // ignored: when shutting down, we do not return from the suspended state
 }
 
-Job* ShuttingDownState::applyForWork ( Thread*,  Job* )
+Job* ShuttingDownState::applyForWork ( Thread*,  Job* previous)
 {
+    Q_ASSERT(previous==0);
     return 0;  // tell threads to exit
 }
 

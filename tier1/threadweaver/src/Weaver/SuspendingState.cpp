@@ -56,9 +56,9 @@ void SuspendingState::activated()
 
 Job* SuspendingState::applyForWork(Thread *th, Job* previous)
 {
-    weaver()->suspendIfSuspendingAndNoThreadsActive();
+    weaver()->takeFirstAvailableJobOrSuspendOrWait(th, previous, true, true);
     weaver()->waitForAvailableJob(th);
-    return weaver()->applyForWork(th, previous);
+    return weaver()->applyForWork(th, 0);
 }
 
 StateId SuspendingState::stateId() const

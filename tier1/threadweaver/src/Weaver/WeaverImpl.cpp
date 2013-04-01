@@ -250,13 +250,16 @@ bool WeaverImpl::dequeue ( Job* job )
 bool WeaverImpl::dequeue_p(Job* job)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
-    int i = m_assignments.indexOf ( job );
-    if ( i != -1 ) {
+    int position = m_assignments.indexOf ( job );
+    if ( position != -1 ) {
         job->aboutToBeDequeued( this );
-        m_assignments.removeAt( i );
+        int newPosition = m_assignments.indexOf ( job );
+        m_assignments.removeAt(newPosition);
+        Q_ASSERT(!m_assignments.contains(job));
         debug(3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n", (void*)job, queueLength_p());
         // from the queues point of view, a job is just as finished if it gets dequeued:
         m_jobFinished.wakeAll();
+        Q_ASSERT(!m_assignments.contains(job));
         return true;
     } else {
         debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", (void*)job );
@@ -418,15 +421,6 @@ void WeaverImpl::incActiveThreadCount()
     adjustActiveThreadCount ( 1 );
 }
 
-void WeaverImpl::suspendIfSuspendingAndNoThreadsActive()
-{
-    QMutexLocker l(m_mutex); Q_UNUSED(l);
-    //make sure to switch only once even if multiple threads are waiting here, and only if the queue is still in Suspending state
-    if (m_active == 0 && state()->stateId() == Suspending) {
-        setState_p(Suspended);
-    }
-}
-
 void WeaverImpl::decActiveThreadCount()
 {
     adjustActiveThreadCount(-1);
@@ -443,7 +437,7 @@ void WeaverImpl::adjustActiveThreadCount(int diff)
           " in queue).\n", m_active,  queueLength_p());
 
     if (m_assignments.isEmpty() && m_active == 0) {
-        P_ASSERT ( diff < 0 ); // cannot reach Zero otherwise
+        P_ASSERT ( diff < 0 ); // cannot reach zero otherwise
         Q_EMIT ( finished() );
     }
 }
@@ -460,13 +454,29 @@ void WeaverImpl::threadEnteredRun(Thread *thread)
     Q_EMIT threadStarted(thread);
 }
 
-Job* WeaverImpl::takeFirstAvailableJobOrWait(Thread *th, Job *previous)
+Job* WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, Job *previous, bool suspendIfInactive, bool justReturning)
 {
     QMutexLocker l (m_mutex); Q_UNUSED(l);
+    Q_ASSERT(previous==0 || (previous != 0 && m_active > 0));
+    debug(3, "WeaverImpl::takeFirstAvailableJobOrWait: trying to assign new job to thread %i (%s state).\n",
+          th->id(), qPrintable(state()->stateName()));
+    debug(5, "WeaverImpl::takeFirstAvailableJobOrWait: %i active threads, previous: %p, suspend?: %s, assign new job?: %s.\n",
+          activeThreadCount(), previous, suspendIfInactive ? "yes" : "no", !justReturning ? "yes" : "no");
     if (previous) {
         // cleanup and send events:
         decActiveThreadCount();
     }
+    Q_ASSERT(m_active >= 0);
+
+    if (suspendIfInactive && m_active == 0 && state()->stateId() == Suspending) {
+        setState_p(Suspended);
+        return 0;
+    }
+
+    if (state()->stateId() != WorkingHard || justReturning) {
+        return 0;
+    }
+
     Job *next = 0;
     for (int index = 0; index < m_assignments.size(); ++index) {
         if (m_assignments.at(index)->canBeExecuted()) {
@@ -477,21 +487,23 @@ Job* WeaverImpl::takeFirstAvailableJobOrWait(Thread *th, Job *previous)
     }
     if (next) {
         incActiveThreadCount();
+        debug(3, "WeaverImpl::takeFirstAvailableJobOrWait: job %p assigned to thread %i (%s state).\n",
+              next, th->id(), qPrintable(state()->stateName()));
         return next;
-    } else {
-        blockThreadUntilJobsAreBeingAssigned_locked(th);
-        return 0;
     }
+
+    blockThreadUntilJobsAreBeingAssigned_locked(th);
+    return 0;
 }
 
 Job* WeaverImpl::applyForWork(Thread *th, Job* previous)
 {
-    return state()->applyForWork ( th,  previous );
+    return state()->applyForWork(th, previous);
 }
 
 void WeaverImpl::waitForAvailableJob(Thread* th)
 {
-    state()->waitForAvailableJob ( th );
+    state()->waitForAvailableJob(th);
 }
 
 void WeaverImpl::blockThreadUntilJobsAreBeingAssigned(Thread *th)
@@ -503,11 +515,12 @@ void WeaverImpl::blockThreadUntilJobsAreBeingAssigned(Thread *th)
 void WeaverImpl::blockThreadUntilJobsAreBeingAssigned_locked(Thread *th)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
-    debug ( 4,  "WeaverImpl::waitForAvailableJob_locked: thread %i blocked.\n", th->id());
-    //FIXME use delayed signal emitter
+    debug(4, "WeaverImpl::blockThreadUntilJobsAreBeingAssigned_locked: thread %i blocked (%s state).\n",
+          th->id(), qPrintable(state()->stateName()));
     Q_EMIT threadSuspended(th);
     m_jobAvailable.wait(m_mutex);
-    debug ( 4,  "WeaverImpl::waitForAvailableJob_locked: thread %i resumed.\n", th->id());
+    debug(4, "WeaverImpl::blockThreadUntilJobsAreBeingAssigned_locked: thread %i resumed  (%s state).\n",
+          th->id(), qPrintable(state()->stateName()));
 }
 
 void WeaverImpl::dumpJobs()
