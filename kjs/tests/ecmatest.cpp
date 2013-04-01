@@ -21,6 +21,10 @@
 #include <QtCore/QMap>
 #include <QtCore/QDebug>
 
+
+// Let the interpreter create its own global Object instead of using our selfcreated
+#define USE_KJS_GLOBAL 1
+
 // from khtml/ecma/kjs_binding.cpp"
 KJS::UString::UString(const QString &d)
 {
@@ -131,12 +135,14 @@ static QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exceptionOb
     return exceptionMsg;
 }
 
+#ifndef USE_KJS_GLOBAL
 class GlobalImp : public KJS::JSGlobalObject {
 public:
   virtual KJS::UString className() const { return "global"; }
 };
 
 static GlobalImp* global;
+#endif
 static QString basedir( "" );
 static QByteArray testrunner;
 static QMap<QByteArray, QByteArray> includes;
@@ -245,7 +251,11 @@ void ECMAscriptTest::runAllTests()
 
     QVERIFY( ! testdata.isEmpty() );
 
+#ifdef USE_KJS_GLOBAL
+    RefPtr<KJS::Interpreter> interp = new KJS::Interpreter();
+#else
     RefPtr<KJS::Interpreter> interp = new KJS::Interpreter(global);
+#endif
 
     KJS::Interpreter::setShouldPrintExceptions(true);
 
@@ -280,6 +290,7 @@ void ECMAscriptTest::runAllTests()
 
     const QString scriptutf = QString::fromUtf8( testscript.constData() );
 
+//     QWARN(filename.toAscii().data());
     KJS::Completion completion = interp->evaluate(info.fileName().toLatin1().constData(), 0, scriptutf);
 
     const bool knownBroken = expectedBroken.contains( QString::fromLatin1( QTest::currentDataTag() ) );
@@ -309,7 +320,9 @@ void ECMAscriptTest::runAllTests()
 
 void ECMAscriptTest::runAllTests_data()
 {
+#ifndef USE_KJS_GLOBAL
     global = new GlobalImp();
+#endif
 
     QTest::addColumn<QString>( "filename" );
 
@@ -320,15 +333,22 @@ void ECMAscriptTest::runAllTests_data()
     if ( !chapter.isEmpty() )
         QWARN( "===> Testing chapter " + chapter.toLatin1() );
 
+#ifndef USE_KJS_GLOBAL
     // some tests fail when the suite is run as a whole
-    if ( chapter.isEmpty() || chapter.startsWith("ch15") ) {
+    if ( chapter.isEmpty() || chapter.startsWith("ch15") || chapter.startsWith("ch12")) {
         const QByteArray endlessLoop = "this test causes an endless loop, avoid it for the moment";
+        const QByteArray crashTest = "this test causes a crash when run as part of the whole suite";
+        skips[ "S12.7_A9_T1" ] = endlessLoop;
+        skips[ "S12.7_A9_T2" ] = endlessLoop;
         skips[ "S15.1.2.3_A6" ] = endlessLoop;
         skips[ "S15.1.3.1_A2.5_T1" ] = endlessLoop;
         skips[ "S15.1.3.2_A2.4_T1" ] = endlessLoop;
         skips[ "S15.1.3.2_A2.5_T1" ] = endlessLoop;
-        skips[ "15.2.3.4-4-1" ] = "this test causes a crash when run as part of the whole suite";
+        skips[ "15.2.3.4-4-1" ] = crashTest;
+        skips[ "15.2.3.11-4-1" ] = crashTest;
+        skips[ "15.2.3.12-3-1" ] = crashTest;
     }
+#endif
 
     QDirIterator it( basedir + QLatin1String("test/suite/") + chapter, QDirIterator::Subdirectories);
     while ( it.hasNext() ) {
@@ -349,7 +369,9 @@ void ECMAscriptTest::runAllTests_data()
 
 void ECMAscriptTest::cleanup()
 {
+#ifndef USE_KJS_GLOBAL
     global->clearProperties();
+#endif
 }
 
 void ECMAscriptTest::cleanupTestCase()
