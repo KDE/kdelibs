@@ -478,23 +478,30 @@ void RenderWidget::updateFromElement()
                     assert( w->parentWidget() != m_widget );
                     if (w->parentWidget()) {
                         w->parentWidget()->setPalette(non_trans_pal);
-                        // System colors for scrollbar
+                        // Set system color for vertical scrollbar
                         lView->verticalScrollBar()->setPalette(QApplication::palette());
                     }
                 }
             }
-        } // Border:
-        else if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
-            if (shouldDisableNativeBorders()) {
-                if (frame->frameShape() != QFrame::NoFrame) {
-                    m_nativeFrameShape = frame->frameShape();
-                    frame->setFrameShape(QFrame::NoFrame);
+        }
+        else if (QAbstractScrollArea* scrollView = qobject_cast<QAbstractScrollArea*>(m_widget)) {
+            // Border
+            if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
+                if (shouldDisableNativeBorders()) {
+                    if (frame->frameShape() != QFrame::NoFrame) {
+                        m_nativeFrameShape = frame->frameShape();
+                        frame->setFrameShape(QFrame::NoFrame);
+                    }
                 }
-
-            } else if (m_nativeFrameShape != QFrame::NoFrame) {
-                frame->setFrameShape(m_nativeFrameShape);
+                else if (m_nativeFrameShape != QFrame::NoFrame) {
+                        frame->setFrameShape(m_nativeFrameShape);
+                }
             }
-        } else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
+            // Set system color for scrollbars
+            scrollView->horizontalScrollBar()->setPalette(QApplication::palette());
+            scrollView->verticalScrollBar()->setPalette(QApplication::palette());
+        }
+        else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
             lineEdit->setFrame(!shouldDisableNativeBorders()); 
         }
     }
