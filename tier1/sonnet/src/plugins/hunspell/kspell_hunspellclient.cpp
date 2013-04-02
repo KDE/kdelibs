@@ -27,7 +27,7 @@
 
 using namespace Sonnet;
 
-HunspellClient::HunspellClient( QObject *parent = 0)
+HunspellClient::HunspellClient(QObject *parent)
     : Client( parent )
 {
     qDebug()<<" HunspellClient::HunspellClient";
