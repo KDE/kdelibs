@@ -41,5 +41,5 @@ add_executable(ThreadWeaverLifecycleTest ${LifecycleTest_SRCS})
 add_test(ThreadWeaverLifecycleTest ThreadWeaverLifecycleTest)
 ecm_mark_as_test(ThreadWeaverLifecycleTest)
 
-target_link_libraries(ThreadWeaverLifecycleTest ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} threadweaver)
+target_link_libraries(ThreadWeaverLifecycleTest ${QT_QTTEST_LIBRARY} ThreadWeaver)
 

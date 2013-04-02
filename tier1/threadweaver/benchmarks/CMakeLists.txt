@@ -12,4 +12,4 @@ set(QueueBenchmarks_SRCS QueueBenchmarks.cpp)
 add_executable(ThreadWeaverQueueBenchmarks ${QueueBenchmarks_SRCS})
 # add_test(ThreadWeaverQueueBenchmarks ThreadWeaverQueueBenchmarks)
 
-target_link_libraries(ThreadWeaverQueueBenchmarks ${QT_QTTEST_LIBRARY} ${QT_QTMAIN_LIBRARY} threadweaver)
+target_link_libraries(ThreadWeaverQueueBenchmarks ${QT_QTTEST_LIBRARY} ThreadWeaver)
