@@ -48,15 +48,12 @@ QStringList HunspellClient::languages() const
 {
     QStringList lst;
     QDir dir("/usr/share/myspell/dicts/");
-    if(dir.exists())
-    {
+    if (dir.exists()) {
         QStringList lstDic = dir.entryList(QStringList("*.dic"), QDir::Files );
-        foreach(const QString &tmp, lstDic)
-        {
-            lst<< tmp.remove(".dic");
+        foreach (const QString &tmp, lstDic) {
+            lst << tmp.left(tmp.length() - 4); // remove ".dic"
         }
     }
-    qDebug()<<" lst !!!!!!!!!!!!!!!!!!!!!!!! :"<<lst;
     return lst;
 }
 
