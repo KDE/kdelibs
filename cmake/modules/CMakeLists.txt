@@ -2,7 +2,6 @@
 
 set(module_install_dir ${DATA_INSTALL_DIR}/cmake/modules )
 
-# maybe FindHUNSPELL.cmake doesn't have to be installed ?
 # This variable doesn't actually do anything, but it's probably a good idea
 # to have it around, so there is a place where the modules which are not installed
 # are listed explicitly:
@@ -48,7 +47,6 @@ set(cmakeFiles
                FindGStreamer.cmake
                FindGettext.cmake
                FindGphoto2.cmake
-               FindHUNSPELL.cmake
                FindIOKit.cmake
                FindKDE4Workspace.cmake
                FindKDevPlatform.cmake
