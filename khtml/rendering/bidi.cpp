@@ -898,8 +898,10 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
 #endif
         }
         if (doPageBreak) {
+#ifdef PAGE_DEBUG
+            int oldYPos = lineBox->yPos();
+#endif
             int pTop = pageTopAfter(lineBox->yPos());
-
             m_height = pTop;
             lineBox->setAfterPageBreak(true);
             lineBox->verticallyAlignBoxes(m_height);

@@ -710,7 +710,7 @@ void CachedImage::do_notify(const QRect& r)
     for (QHashIterator<CachedObjectClient*,CachedObjectClient*> it( m_clients ); it.hasNext();)
     {
 #ifdef LOADER_DEBUG
-        kDebug(6060) << " image "<<this<<" notify of geom client " << it.peekNext() << "\n";
+        kDebug(6060) << "image" << this << "notify of geom client" << it.peekNext().value();
 #endif
         it.next().value()->updatePixmap( r, this);
     }
