@@ -24,7 +24,6 @@
 #include <kdirnotify.h>
 #include <kdebug.h>
 #include <kmountpoint.h>
-#include <sys/mount.h>
 
 /***********************************************************************
  *
