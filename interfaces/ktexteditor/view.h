@@ -138,6 +138,10 @@ class Document;
  *      KXMLGUIClient
  * \author Christoph Cullmann \<cullmann@kde.org\>
  */
+// KDE5: consider deriving from QFrame instead of QWidget, since e.g. the Oxygen style
+// http://lxr.kde.org/source/kde/kde-workspace/kstyles/oxygen/oxygenstyle.cpp#614
+// checks for a QFrame and then KStyle::pixelMetric returns a better margin (Frame_FrameWidth)
+// This is needed because the Oxygen "focus border" paints over the line numbers otherwise.
 class KTEXTEDITOR_EXPORT View :  public QWidget, public KXMLGUIClient
 {
   Q_OBJECT
@@ -188,6 +192,7 @@ class KTEXTEDITOR_EXPORT View :  public QWidget, public KXMLGUIClient
      * whatever other edit modes are supported. The string should be
      * translated (i18n), as this is a user aimed representation of the view
      * state, which should be shown in the GUI, for example in the status bar.
+     * This string may be rich-text.
      * \return
      * \see viewModeChanged()
      */
@@ -198,8 +203,9 @@ class KTEXTEDITOR_EXPORT View :  public QWidget, public KXMLGUIClient
      * These correspond to various modes the text editor might be in.
      */
     enum EditMode {
-      EditInsert = 0,   /**< Insert mode. Characters will be added. */
-      EditOverwrite = 1 /**< Overwrite mode. Characters will be replaced. */
+      EditInsert = 0,    /**< Insert mode. Characters will be added. */
+      EditOverwrite = 1, /**< Overwrite mode. Characters will be replaced. */
+      EditViMode = 2     /**< Vi mode. The view will behave like the editor vi(m) @since 4.11 */
     };
 
     /**
@@ -620,7 +626,9 @@ class KTEXTEDITOR_EXPORT View :  public QWidget, public KXMLGUIClient
  *
  * \see KTextEditor::View
  * \since 4.2
- * \note KDE5: merge into KTextEditor::View
+ * \note KDE5: merge into KTextEditor::View (or name it ViewportInterface
+ *       and add accessors to the QScrollBars and convenience functions like
+ *       cursorToCoordinate(), scollLines(int count), etc.
  */
 class KTEXTEDITOR_EXPORT CoordinatesToCursorInterface
 {
