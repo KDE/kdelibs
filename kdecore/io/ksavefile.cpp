@@ -48,12 +48,12 @@ public:
 
     QFile::FileError error;
     QString errorString;
-    bool wasFinalized;
+    bool directWriteFallback;
 
     Private()
+        : error(QFile::NoError),
+          directWriteFallback(false)
     {
-        error = QFile::NoError;
-        wasFinalized = false;
     }
 };
 
@@ -71,8 +71,7 @@ KSaveFile::KSaveFile(const QString &filename, const KComponentData & /*TODO REMO
 
 KSaveFile::~KSaveFile()
 {
-    if (!d->wasFinalized)
-        finalize();
+    finalize();
 
     delete d;
 }
@@ -107,6 +106,16 @@ bool KSaveFile::open(OpenMode flags)
     tempFile.setAutoRemove(false);
     tempFile.setFileTemplate(d->realFileName + QLatin1String("XXXXXX.new"));
     if (!tempFile.open()) {
+#ifdef Q_OS_UNIX
+        if (d->directWriteFallback && errno == EACCES) {
+            QFile::setFileName(d->realFileName);
+            if (QFile::open(flags)) {
+                d->tempFileName.clear();
+                d->error = QFile::NoError;
+                return true;
+            }
+        }
+#endif
         d->error=QFile::OpenError;
         d->errorString=i18n("Unable to open temporary file.");
         return false;
@@ -185,8 +194,9 @@ QString KSaveFile::fileName() const
 void KSaveFile::abort()
 {
     close();
-    QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
-    d->wasFinalized = true;
+    if (!d->tempFileName.isEmpty()) {
+        QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
+    }
 }
 
 #ifdef HAVE_FDATASYNC
@@ -198,31 +208,33 @@ void KSaveFile::abort()
 bool KSaveFile::finalize()
 {
     bool success = false;
-
-    if ( !d->wasFinalized ) {
+    if (!isOpen()) {
+        return false;
+    }
 
 #ifdef Q_OS_UNIX
-        static int extraSync = -1;
-        if (extraSync < 0)
-            extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
-        if (extraSync) {
-            if (flush()) {
-                forever {
-                    if (!FDATASYNC(handle()))
-                        break;
-                    if (errno != EINTR) {
-                        d->error = QFile::WriteError;
-                        d->errorString = i18n("Synchronization to disk failed");
-                        break;
-                    }
+    static int extraSync = -1;
+    if (extraSync < 0)
+        extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
+    if (extraSync) {
+        if (flush()) {
+            forever {
+                if (!FDATASYNC(handle()))
+                    break;
+                if (errno != EINTR) {
+                    d->error = QFile::WriteError;
+                    d->errorString = i18n("Synchronization to disk failed");
+                    break;
                 }
             }
         }
+    }
 #endif
 
-        close();
+    close();
 
-        if( error() != NoError ) {
+    if (!d->tempFileName.isEmpty()) {
+        if (error() != NoError) {
             QFile::remove(d->tempFileName);
         }
         //Qt does not allow us to atomically overwrite an existing file,
@@ -239,14 +251,24 @@ bool KSaveFile::finalize()
             d->errorString=i18n("Error during rename.");
             QFile::remove(d->tempFileName);
         }
-
-        d->wasFinalized = true;
+    } else { // direct overwrite
+        success = true;
     }
 
     return success;
 }
 
 #undef FDATASYNC
+
+void KSaveFile::setDirectWriteFallback(bool enabled)
+{
+    d->directWriteFallback = enabled;
+}
+
+bool KSaveFile::directWriteFallback() const
+{
+    return d->directWriteFallback;
+}
 
 bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
 {
