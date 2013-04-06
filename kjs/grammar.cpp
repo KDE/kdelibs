@@ -1618,7 +1618,9 @@ while (YYID (0))
 
 /* Print *YYLOCP on YYO.  Private, do not rely on its existence. */
 
+#ifndef _MSC_VER
 __attribute__((__unused__))
+#endif
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static unsigned
