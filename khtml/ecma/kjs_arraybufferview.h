@@ -90,7 +90,7 @@ namespace KJS {
     template <class T>
     class ArrayBufferViewProto : public KJS::JSObject
     {
-        friend KJS::JSObject* cacheGlobalObject<ArrayBufferViewProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName);
+        friend KJS::JSObject* ::cacheGlobalObject<ArrayBufferViewProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName);
     public:
         static KJS::JSObject *self(KJS::ExecState *exec);
         virtual const KJS::ClassInfo *classInfo() const { return &info; }
