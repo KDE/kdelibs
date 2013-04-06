@@ -23,6 +23,7 @@
 #define KRESTRICTEDLINE_H
 
 #include <klineedit.h>
+#include <kde4support_export.h>
 
 class KRestrictedLinePrivate;
 /**
@@ -44,7 +45,7 @@ class KRestrictedLinePrivate;
  *
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
  */
-class KDEUI_EXPORT KRestrictedLine : public KLineEdit
+class KDE4SUPPORT_EXPORT KRestrictedLine : public KLineEdit
 {
   Q_OBJECT
   Q_PROPERTY( QString validChars READ validChars WRITE setValidChars )

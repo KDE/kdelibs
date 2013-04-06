@@ -71,7 +71,6 @@ kpanelmenu.cpp
 kpassdlg.cpp		
 kprogressdialog.cpp     Urs Wolfer <uwolfer @ fwo.ch>
 kpushbutton.cpp		Carsten Pfeiffer <pfeiffer@kde.org>, Martijn Klingens <klingens@kde.org>
-krestrictedline.cpp
 kruler.cpp
 kselect.cpp
 kseparator.cpp		
