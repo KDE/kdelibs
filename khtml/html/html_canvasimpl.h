@@ -416,6 +416,10 @@ private:
 
     // Flushes changes to the backbuffer.
     void syncBackBuffer();
+
+    // False if no user moveTo-element was inserted in the path
+    // see CanvasContext2DImpl::beginPath()
+    bool emptyPath;
 };
 
 

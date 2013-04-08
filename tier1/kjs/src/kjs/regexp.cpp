@@ -257,7 +257,12 @@ static bool sanitizePatternExtensions(UString &p, WTF::Vector<int>* parenIdx)
 
 bool RegExp::tryGrowingMaxStackSize = true;
 bool RegExp::didIncreaseMaxStackSize = false;
+
+#if HAVE(SYS_TIME_H)
+rlim_t RegExp::availableStackSize = 8*1024*1024;
+#else
 int RegExp::availableStackSize = 8*1024*1024;
+#endif
 
 RegExp::RegExp(const UString &p, char flags)
   : _pat(p), _flags(flags), _valid(true), _numSubPatterns(0)

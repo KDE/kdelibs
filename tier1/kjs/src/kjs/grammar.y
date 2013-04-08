@@ -23,6 +23,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "value.h"
 #include "object.h"
 #include "types.h"
@@ -177,7 +178,48 @@ using namespace KJS;
 %type <pnode> Property
 %type <plist> PropertyList
 %type <pkgn>  PackageName
+%type <ident> Keywords
+%type <ident> IdentifierName
 %%
+
+Keywords:
+    BREAK                               { $$ = new Identifier("break"); }
+  | CASE                                { $$ = new Identifier("case"); }
+  | DEFAULT                             { $$ = new Identifier("default"); }
+  | FOR                                 { $$ = new Identifier("for"); }
+  | NEW                                 { $$ = new Identifier("new"); }
+  | VAR                                 { $$ = new Identifier("var"); }
+  | CONSTTOKEN                          { $$ = new Identifier("const"); }
+  | CONTINUE                            { $$ = new Identifier("continue"); }
+  | FUNCTION                            { $$ = new Identifier("function"); }
+  | RETURN                              { $$ = new Identifier("return"); }
+  | VOIDTOKEN                           { $$ = new Identifier("void"); }
+  | DELETETOKEN                         { $$ = new Identifier("delete"); }
+  | IF                                  { $$ = new Identifier("if"); }
+  | THISTOKEN                           { $$ = new Identifier("this"); }
+  | DO                                  { $$ = new Identifier("do"); }
+  | WHILE                               { $$ = new Identifier("while"); }
+  | INTOKEN                             { $$ = new Identifier("in"); }
+  | INSTANCEOF                          { $$ = new Identifier("instanceof"); }
+  | TYPEOF                              { $$ = new Identifier("typeof"); }
+  | SWITCH                              { $$ = new Identifier("switch"); }
+  | WITH                                { $$ = new Identifier("with"); }
+  | THROW                               { $$ = new Identifier("throw"); }
+  | TRY                                 { $$ = new Identifier("try"); }
+  | CATCH                               { $$ = new Identifier("catch"); }
+  | FINALLY                             { $$ = new Identifier("finally"); }
+  | DEBUGGER                            { $$ = new Identifier("debugger"); }
+  | IMPORT                              { $$ = new Identifier("import"); }
+  | NULLTOKEN                           { $$ = new Identifier("null"); }
+  | TRUETOKEN                           { $$ = new Identifier("true"); }
+  | FALSETOKEN                          { $$ = new Identifier("false"); }
+  | ELSE                                { $$ = new Identifier("else"); }
+;
+
+IdentifierName:
+    IDENT                               { $$ = $1; }
+  | Keywords                            { $$ = $1; }
+;
 
 Literal:
     NULLTOKEN                           { $$ = new NullNode(); }
@@ -200,18 +242,18 @@ Literal:
 ;
 
 PropertyName:
-    IDENT                               { $$ = new PropertyNameNode(*$1); }
+    IdentifierName                      { $$ = new PropertyNameNode(*$1); }
   | STRING                              { $$ = new PropertyNameNode(Identifier(*$1)); }
   | NUMBER                              { $$ = new PropertyNameNode(Identifier(UString::from($1))); }
 ;
 
 Property:
     PropertyName ':' AssignmentExpr     { $$ = new PropertyNode($1, $3, PropertyNode::Constant); }
-  | IDENT IDENT '(' ')' {inFuncExpr()} FunctionBody  {
+  | IDENT IdentifierName '(' ')' {inFuncExpr();} FunctionBody  {
           if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, 0, $6))
             YYABORT;
         }
-  | IDENT IDENT '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+  | IDENT IdentifierName '(' FormalParameterList ')' {inFuncExpr();} FunctionBody {
           if (!makeGetterOrSetterPropertyNode($$, *$1, *$2, $4, $7))
             YYABORT;
         }
@@ -265,14 +307,14 @@ MemberExpr:
     PrimaryExpr
   | FunctionExpr                        { $$ = $1; }
   | MemberExpr '[' Expr ']'             { $$ = new BracketAccessorNode($1, $3); }
-  | MemberExpr '.' IDENT                { $$ = new DotAccessorNode($1, *$3); }
+  | MemberExpr '.' IdentifierName       { $$ = new DotAccessorNode($1, *$3); }
   | NEW MemberExpr Arguments            { $$ = new NewExprNode($2, $3); }
 ;
 
 MemberExprNoBF:
     PrimaryExprNoBrace
   | MemberExprNoBF '[' Expr ']'         { $$ = new BracketAccessorNode($1, $3); }
-  | MemberExprNoBF '.' IDENT            { $$ = new DotAccessorNode($1, *$3); }
+  | MemberExprNoBF '.' IdentifierName   { $$ = new DotAccessorNode($1, *$3); }
   | NEW MemberExpr Arguments            { $$ = new NewExprNode($2, $3); }
 ;
 
@@ -290,14 +332,14 @@ CallExpr:
     MemberExpr Arguments                { $$ = makeFunctionCallNode($1, $2); }
   | CallExpr Arguments                  { $$ = makeFunctionCallNode($1, $2); }
   | CallExpr '[' Expr ']'               { $$ = new BracketAccessorNode($1, $3); }
-  | CallExpr '.' IDENT                  { $$ = new DotAccessorNode($1, *$3); }
+  | CallExpr '.' IdentifierName         { $$ = new DotAccessorNode($1, *$3); }
 ;
 
 CallExprNoBF:
     MemberExprNoBF Arguments            { $$ = makeFunctionCallNode($1, $2); }
   | CallExprNoBF Arguments              { $$ = makeFunctionCallNode($1, $2); }
   | CallExprNoBF '[' Expr ']'           { $$ = new BracketAccessorNode($1, $3); }
-  | CallExprNoBF '.' IDENT              { $$ = new DotAccessorNode($1, *$3); }
+  | CallExprNoBF '.' IdentifierName     { $$ = new DotAccessorNode($1, *$3); }
 ;
 
 Arguments:
@@ -706,7 +748,7 @@ IfStatement:
 
 IterationStatement:
     DO Statement WHILE '(' Expr ')' ';' { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3);}
-  | DO Statement WHILE '(' Expr ')' { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3); }
+  | DO Statement WHILE '(' Expr ')' error { $$ = new DoWhileNode($2, $5); DBG($$, @1, @3); AUTO_SEMICOLON; }
   | WHILE '(' Expr ')' Statement        { $$ = new WhileNode($3, $5); DBG($$, @1, @4); }
   | FOR '(' ExprNoInOpt ';' ExprOpt ';' ExprOpt ')' Statement
                                         { $$ = new ForNode($3, $5, $7, $9); DBG($$, @1, @8); }
@@ -833,20 +875,20 @@ ImportStatement:
 ;
 
 FunctionDeclaration:
-    FUNCTION IDENT '(' ')' {inFuncDecl()} FunctionBody { $$ = new FuncDeclNode(*$2, $6); }
-  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncDecl()} FunctionBody
+    FUNCTION IDENT '(' ')' {inFuncDecl();} FunctionBody { $$ = new FuncDeclNode(*$2, $6); }
+  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncDecl();} FunctionBody
                                         { $$ = new FuncDeclNode(*$2, $4, $7); }
 ;
 
 FunctionExpr:
-    FUNCTION '(' ')' {inFuncExpr()} FunctionBody  {
+    FUNCTION '(' ')' {inFuncExpr();} FunctionBody  {
       $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $5);
     }
-  | FUNCTION '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+  | FUNCTION '(' FormalParameterList ')' {inFuncExpr();} FunctionBody {
       $$ = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, $6, $3);
     }
-  | FUNCTION IDENT '(' ')' {inFuncExpr()} FunctionBody { $$ = new FuncExprNode(*$2, $6); }
-  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncExpr()} FunctionBody {
+  | FUNCTION IDENT '(' ')' {inFuncExpr();} FunctionBody { $$ = new FuncExprNode(*$2, $6); }
+  | FUNCTION IDENT '(' FormalParameterList ')' {inFuncExpr();} FunctionBody {
       $$ = new FuncExprNode(*$2, $7, $4);
     }
 ;

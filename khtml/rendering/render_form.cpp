@@ -132,7 +132,6 @@ using namespace DOM;
                     if (noBorder) {
                         // Need to expand a bit for some styles
                         comboOpt.rect.adjust(-1, -2, 1, 2);
-                        comboOpt.rect.translate(-1, 0);
                         comboOpt.state &= ~State_On;
                     }
                     return style()->drawControl(element, &comboOpt, painter, widget);
@@ -148,26 +147,26 @@ using namespace DOM;
                 if (const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt)) {
                     bool enabled = (cbOpt->state & State_Enabled);
                     QColor color = cbOpt->palette.color(QPalette::ButtonText);
-                    if (color.value() < 128)
-                        color = color.lighter();
                     painter->save();
                     painter->setBackgroundMode(Qt::TransparentMode);
                     painter->setPen(color);
+                    painter->setRenderHint(QPainter::Antialiasing);
                     // Drop down indicator
-                    painter->setBrush(enabled ? QBrush(color, Qt::SolidPattern) : Qt::NoBrush);
                     QRect arrowRect = style()->subControlRect(cc, opt, SC_ComboBoxArrow, widget);
+                    arrowRect.setTop(cbOpt->rect.top());
+                    arrowRect.setBottom(cbOpt->rect.bottom());
                     if (enabled && (cbOpt->state & State_On))
                         arrowRect.translate(1, 1); // push effect
-                    const int arrowDown[] = { 5,-2, 0,3, -5,-2, -4,-3, -3,-3, 0,0, 3,-3, 4,-3 };
-                    QPolygon a(8);
-                    a.setPoints(8, arrowDown);
-                    a.translate((arrowRect.x() + (arrowRect.width() >> 1)), (arrowRect.y() + (arrowRect.height() >> 1)));
-                    painter->drawPolygon(a);
-                    // Focus rect
+                    //if (!enabled) color = color.lighter();
+                    painter->setBrush(enabled ? QBrush(color, Qt::SolidPattern) : Qt::NoBrush);
+                    QPolygon cbArrowDown;
+                    cbArrowDown.setPoints(6,  3,-2, 4,-2, 0,2, -4,-2, -3,-2, 0,1);
+                    cbArrowDown.translate((arrowRect.x() + (arrowRect.width() >> 1)), (arrowRect.y() + (arrowRect.height() >> 1)));
+                    painter->drawPolygon(cbArrowDown);
+                    // Focus rect (from qcleanlooksstyle)
                     if (enabled && (cbOpt->state & State_HasFocus)) {
                         QRect focusRect = style()->subElementRect(SE_ComboBoxFocusRect, cbOpt, widget);
                         focusRect.adjust(0, -2, 0, 2);
-                        // Begin drawing focus rect (from qcleanlooksstyle)
                         painter->setBrush(QBrush(color, Qt::Dense4Pattern));
                         painter->setBrushOrigin(focusRect.topLeft());
                         painter->setPen(Qt::NoPen);
@@ -178,7 +177,6 @@ using namespace DOM;
                             QRect(focusRect.right(), focusRect.top(), 1, focusRect.height())   // Right
                         };
                         painter->drawRects(rects, 4);
-                        // End drawing focus rect
                     }
                     painter->restore();
 

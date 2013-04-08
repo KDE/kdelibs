@@ -23,7 +23,6 @@
 #include "kio/jobuidelegate.h"
 #include <kdirnotify.h>
 #include <kmountpoint.h>
-#include <sys/mount.h>
 
 /***********************************************************************
  *

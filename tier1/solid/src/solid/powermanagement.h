@@ -1,5 +1,6 @@
 /*
     Copyright 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright 2013 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -47,12 +48,16 @@ namespace Solid
          * - StandbyState: Processes are stopped, some hardware is deactivated (ACPI S1)
          * - SuspendState: Most devices are deactivated, only RAM is powered (ACPI S3)
          * - HibernateState: State of the machine is saved to disk, and the machine is powered down (ACPI S4)
+         * - HybridSleepState: The contents of RAM are first copied to non-volatile storage like for regular hibernation,
+         *   but then, instead of powering down, the computer enters sleep mode
          */
-        enum SleepState { StandbyState = 1, SuspendState = 2, HibernateState = 4 };
+        enum SleepState { StandbyState = 1, SuspendState = 2, HibernateState = 4,
+                          /// @since 4.11
+                          HybridSuspendState = 8 };
 
         /**
          * Retrieves a high level indication of how applications should behave according to the
-         * power management subsystem.  For example, when on battery power, this method will return
+         * power management subsystem. For example, when on battery power, this method will return
          * true.
          *
          * @return whether apps should conserve power
@@ -64,8 +69,7 @@ namespace Solid
          * Retrieves the set of suspend methods supported by the system.
          *
          * @return the suspend methods supported by this system
-         * @see Solid::PowerManager::SuspendMethod
-         * @see Solid::PowerManager::SuspendMethods
+         * @see Solid::PowerManagement::SleepState
          */
         SOLID_EXPORT QSet<SleepState> supportedSleepStates();
 
@@ -131,8 +135,7 @@ namespace Solid
             /**
              * This signal is emitted when the AC adapter is plugged or unplugged.
              *
-             * @param newState the new state of the AC adapter, it's one of the
-             * type @see Solid::PowerManager::AcAdapterState
+             * @param newState whether the system runs on battery
              */
             void appShouldConserveResourcesChanged(bool newState);
 

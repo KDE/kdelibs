@@ -40,7 +40,7 @@ namespace KJS {
 
     virtual JSValue *callAsFunction(ExecState *exec, JSObject *thisObj, const List &args);
 
-    enum { ToString, Apply, Call };
+    enum { ToString, Apply, Call, Bind };
   private:
     int id;
   };

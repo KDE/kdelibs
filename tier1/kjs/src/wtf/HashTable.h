@@ -733,7 +733,6 @@ namespace WTF {
     {
         ASSERT(m_table);
         ASSERT(!lookupForWriting(Extractor::extract(entry)).second);
-        ASSERT(!isDeletedBucket(*(lookupForWriting(Extractor::extract(entry)).first)));
 #if DUMP_HASHTABLE_STATS
         ++HashTableStats::numReinserts;
 #endif

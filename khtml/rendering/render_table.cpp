@@ -521,7 +521,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 
     pI.phase = oldphase;
 #ifdef BOX_DEBUG
-    outlineBox(p, _tx, _ty, "blue");
+    outlineBox(pI.p, _tx, _ty, "blue");
 #endif
 }
 
@@ -2995,7 +2995,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
         RenderBlock::paintObject(pI, _tx, _ty + _topExtra, false);
 
 #ifdef BOX_DEBUG
-    ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
+    ::outlineBox(pI.p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
 #endif
 }
 

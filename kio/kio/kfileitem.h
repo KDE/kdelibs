@@ -370,6 +370,12 @@ public:
     QMimeType currentMimeType() const; // KDE4: was mimeTypePtr()
 
     /**
+     * @return true if we have determined the final icon of this file already.
+     * @since 4.10.2
+     */
+    bool isFinalIconKnown() const;
+
+    /**
      * @return true if we have determined the mimetype of this file already,
      * i.e. if determineMimeType() will be fast. Otherwise it will have to
      * find what the mimetype is, which is a possibly slow operation; usually

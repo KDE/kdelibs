@@ -30,6 +30,9 @@ class KSaveFileTest : public QObject
 private Q_SLOTS:
     void initTestCase();
     void test_ksavefile();
+    void transactionalWriteNoPermissionsOnDir_data();
+    void transactionalWriteNoPermissionsOnDir();
+
     void test_numberedBackupFile();
     void test_rcsBackupFile();
     void test_simpleBackupFile();

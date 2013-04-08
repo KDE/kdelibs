@@ -401,7 +401,7 @@ void RenderCanvas::paint(PaintInfo& paintInfo, int _tx, int _ty)
         _ty += m_view->contentsY();
     }
 
-    outlineBox(p, _tx, _ty);
+    outlineBox(paintInfo.p, _tx, _ty);
 #endif
 
 }

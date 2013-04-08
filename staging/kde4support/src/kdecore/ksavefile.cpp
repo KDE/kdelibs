@@ -56,12 +56,12 @@ public:
 
     QFile::FileError error;
     QString errorString;
-    bool wasFinalized;
+    bool directWriteFallback;
 
     Private()
+        : error(QFile::NoError),
+          directWriteFallback(false)
     {
-        error = QFile::NoError;
-        wasFinalized = false;
     }
 };
 
@@ -78,8 +78,7 @@ KSaveFile::KSaveFile(const QString &filename)
 
 KSaveFile::~KSaveFile()
 {
-    if (!d->wasFinalized)
-        finalize();
+    finalize();
 
     delete d;
 }
@@ -117,6 +116,16 @@ bool KSaveFile::open(OpenMode flags)
     tempFile.setAutoRemove(false);
     tempFile.setFileTemplate(d->realFileName + QLatin1String("XXXXXX.new"));
     if (!tempFile.open()) {
+#ifdef Q_OS_UNIX
+        if (d->directWriteFallback && errno == EACCES) {
+            QFile::setFileName(d->realFileName);
+            if (QFile::open(flags)) {
+                d->tempFileName.clear();
+                d->error = QFile::NoError;
+                return true;
+            }
+        }
+#endif
         d->error=QFile::OpenError;
         d->errorString=tr("Unable to open temporary file.");
         return false;
@@ -195,8 +204,9 @@ QString KSaveFile::fileName() const
 void KSaveFile::abort()
 {
     close();
-    QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
-    d->wasFinalized = true;
+    if (!d->tempFileName.isEmpty()) {
+        QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
+    }
 }
 
 #if HAVE_FDATASYNC
@@ -208,31 +218,33 @@ void KSaveFile::abort()
 bool KSaveFile::finalize()
 {
     bool success = false;
-
-    if ( !d->wasFinalized ) {
+    if (!isOpen()) {
+        return false;
+    }
 
 #ifdef Q_OS_UNIX
-        static int extraSync = -1;
-        if (extraSync < 0)
-            extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
-        if (extraSync) {
-            if (flush()) {
-                Q_FOREVER {
-                    if (!FDATASYNC(handle()))
-                        break;
-                    if (errno != EINTR) {
-                        d->error = QFile::WriteError;
-                        d->errorString = tr("Synchronization to disk failed");
-                        break;
-                    }
+    static int extraSync = -1;
+    if (extraSync < 0)
+        extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
+    if (extraSync) {
+        if (flush()) {
+            Q_FOREVER {
+                if (!FDATASYNC(handle()))
+                    break;
+                if (errno != EINTR) {
+                    d->error = QFile::WriteError;
+                    d->errorString = tr("Synchronization to disk failed");
+                    break;
                 }
             }
         }
+    }
 #endif
 
-        close();
+    close();
 
-        if( error() != NoError ) {
+    if (!d->tempFileName.isEmpty()) {
+        if (error() != NoError) {
             QFile::remove(d->tempFileName);
         }
         //Qt does not allow us to atomically overwrite an existing file,
@@ -240,12 +252,7 @@ bool KSaveFile::finalize()
         //to the temp file without creating a small race condition. So we use
         //the standard rename call instead, which will do the copy without the
         //race condition.
-#ifdef Q_OS_WIN
-        else if (0 == kdewin32_rename(d->tempFileName,d->realFileName)) {
-#else
-        else if (0 == ::rename(QFile::encodeName(d->tempFileName).constData(),
-                               QFile::encodeName(d->realFileName).constData())) {
-#endif
+        else if (0 == KDE::rename(d->tempFileName,d->realFileName)) {
             d->error=QFile::NoError;
             d->errorString.clear();
             success = true;
@@ -254,8 +261,8 @@ bool KSaveFile::finalize()
             d->errorString=tr("Error during rename.");
             QFile::remove(d->tempFileName);
         }
-
-        d->wasFinalized = true;
+    } else { // direct overwrite
+        success = true;
     }
 
     return success;
@@ -263,5 +270,13 @@ bool KSaveFile::finalize()
 
 #undef FDATASYNC
 
+void KSaveFile::setDirectWriteFallback(bool enabled)
+{
+    d->directWriteFallback = enabled;
+}
 
+bool KSaveFile::directWriteFallback() const
+{
+    return d->directWriteFallback;
+}
 

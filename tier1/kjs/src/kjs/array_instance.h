@@ -36,13 +36,25 @@ namespace KJS {
 
     virtual bool getOwnPropertySlot(ExecState*, const Identifier& propertyName, PropertySlot&);
     virtual bool getOwnPropertySlot(ExecState*, unsigned propertyName, PropertySlot&);
+    virtual bool getOwnPropertyDescriptor(ExecState*, const Identifier&, PropertyDescriptor&);
     virtual void put(ExecState*, const Identifier& propertyName, JSValue*, int attributes = None);
     virtual void put(ExecState*, unsigned propertyName, JSValue*, int attributes = None);
     virtual bool deleteProperty(ExecState *, const Identifier& propertyName);
     virtual bool deleteProperty(ExecState *, unsigned propertyName);
     virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
+    virtual bool defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow);
     virtual void mark();
+
+    virtual bool getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const;
+
+    virtual JSValue *getDirect(const Identifier& propertyName) const;
+
+    virtual void putDirect(unsigned index, JSValue *value, int attr = 0);
+    virtual void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0);
+    virtual void putDirect(const Identifier &propertyName, int value, int attr = 0);
+
+    virtual void removeDirect(const Identifier &propertyName);
 
     virtual const ClassInfo* classInfo() const { return &info; }
     static const ClassInfo info;
@@ -56,6 +68,7 @@ namespace KJS {
   private:
     static JSValue* lengthGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot&);
     bool inlineGetOwnPropertySlot(ExecState*, unsigned propertyName, PropertySlot&);
+    inline struct ArrayEntity* getArrayEntity(unsigned) const;
 
     void setLength(unsigned);
     void increaseVectorLength(unsigned newLength);
@@ -65,6 +78,9 @@ namespace KJS {
     unsigned m_length;
     unsigned m_vectorLength;
     ArrayStorage* m_storage;
+
+    inline bool anyItemHasAttribute(unsigned attributes) const;
+    uint32_t m_lengthAttributes;
   };
 
 } // namespace KJS

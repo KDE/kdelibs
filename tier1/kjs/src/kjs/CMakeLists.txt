@@ -167,6 +167,7 @@ set(kjs_LIB_SRCS
    jsonlexer.cpp
    json_object.cpp
    jsonstringify.cpp
+   propertydescriptor.cpp
    )
 
 

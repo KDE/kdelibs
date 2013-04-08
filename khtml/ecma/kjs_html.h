@@ -251,7 +251,7 @@ namespace KJS {
 
   class HTMLSelectCollection : public HTMLCollection {
   public:
-    enum { Add };
+    enum { Add, Remove };
     HTMLSelectCollection(ExecState *exec, DOM::HTMLCollectionImpl* c, DOM::HTMLSelectElementImpl* e);
     using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);

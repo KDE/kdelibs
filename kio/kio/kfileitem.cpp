@@ -184,7 +184,7 @@ public:
     bool m_bIsLocalUrl:1;
 
     mutable bool m_bMimeTypeKnown:1;
-    bool m_delayedMimeTypes:1;
+    mutable bool m_delayedMimeTypes:1;
 
     /** True if m_iconName should be used as cache. */
     mutable bool m_useIconNameCache:1;
@@ -766,6 +766,12 @@ QMimeType KFileItem::determineMimeType() const
         d->m_bMimeTypeKnown = true;
     }
 
+    if (isSlow() && d->m_delayedMimeTypes) { // if we delayed getting the iconName up till now, this is the right point in time to do so
+        d->m_delayedMimeTypes = false;
+        d->m_useIconNameCache = false;
+        (void)iconName();
+    }
+
     return d->m_mimeType;
 }
 
@@ -780,6 +786,7 @@ bool KFileItem::isMimeTypeKnown() const
     return d->m_bMimeTypeKnown && d->m_guessedMimeType.isEmpty();
 }
 
+<<<<<<< HEAD
 static bool isDirectoryMounted(const QUrl& url)
 {
     // Stating .directory files can cause long freezes when e.g. /home
@@ -800,6 +807,16 @@ static bool isDirectoryMounted(const QUrl& url)
 }
 
 // KDE5 TODO: merge with comment()? Need to see what lxr says about the usage of both.
+=======
+bool KFileItem::isFinalIconKnown() const
+{
+    if (!d) {
+        return false;
+    }
+    return d->m_bMimeTypeKnown && (!d->m_delayedMimeTypes || !isSlow());
+}
+
+>>>>>>> origin/master
 QString KFileItem::mimeComment() const
 {
     if (!d)
@@ -929,7 +946,13 @@ QString KFileItem::iconName() const
         mime = currentMimeType();
     }
 
+<<<<<<< HEAD
     if (isLocalUrl && !isSlow() && mime.inherits("application/x-desktop")) {
+=======
+    const bool delaySlowOperations = isSlow() && d->m_delayedMimeTypes;
+
+    if (isLocalUrl && !delaySlowOperations && mime->is("application/x-desktop")) {
+>>>>>>> origin/master
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
         if (!d->m_iconName.isEmpty()) {
             d->m_useIconNameCache = d->m_bMimeTypeKnown;
@@ -945,7 +968,14 @@ QString KFileItem::iconName() const
         }
     }
 
+<<<<<<< HEAD
     d->m_iconName = mime.iconName();
+=======
+    if (delaySlowOperations)
+        d->m_iconName = mime->iconName();
+    else
+        d->m_iconName = mime->iconName(url);
+>>>>>>> origin/master
     d->m_useIconNameCache = d->m_bMimeTypeKnown;
     return d->m_iconName;
 }
