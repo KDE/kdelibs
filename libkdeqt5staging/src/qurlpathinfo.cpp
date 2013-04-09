@@ -41,6 +41,8 @@
 
 #include "qurlpathinfo.h"
 
+#include <qfileinfo.h>
+
 /*!
     \class QUrlPathInfo
     \inmodule QtCore
@@ -391,7 +393,7 @@ bool QUrlPathInfo::isParentOfOrEqual(const QUrl &child) const
 }
 
 /*!
-    Compares this url with \a u.
+    Compares this url with \a url.
     \param u the URL to compare this one with.
     \param options a set of EqualsOption flags
     \return True if both urls are the same. If at least one of the urls is invalid,
@@ -399,14 +401,29 @@ bool QUrlPathInfo::isParentOfOrEqual(const QUrl &child) const
     \see operator==. This function should be used if you want to
     set additional options, like ignoring trailing '/' characters.
 */
-bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
+bool QUrlPathInfo::equals(const QUrl& url, EqualsOptions options) const
 {
-    if (!d->url.isValid() || !u.isValid())
+    if (!d->url.isValid() || !url.isValid())
         return false;
 
     if (options != StrictComparison) {
+        if (d->url.scheme() != url.scheme() ||
+            d->url.authority() != url.authority() || // user+pass+host+port
+            d->url.query() != url.query() ||
+            ((options & CompareWithoutFragment) && d->url.fragment() != url.fragment()))
+            return false;
+
+        const bool bLocal1 = d->url.isLocalFile();
+        const bool bLocal2 = url.isLocalFile();
+        if (bLocal1 != bLocal2)
+            return false;
+
+        // local files: use QFileInfo in case the filesystem is case sensitive
+        if (bLocal1 && bLocal2)
+            return QFileInfo(d->url.toLocalFile()) == QFileInfo(url.toLocalFile());
+
         QString path1 = path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
-        QString path2 = QUrlPathInfo(u).path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
+        QString path2 = QUrlPathInfo(url).path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
 
         if (options & AllowEmptyPath) {
             if (path1 == QLatin1String("/"))
@@ -414,34 +431,10 @@ bool QUrlPathInfo::equals(const QUrl& u, EqualsOptions options) const
             if (path2 == QLatin1String("/"))
                 path2.clear();
         }
-
-#ifdef Q_OS_WIN
-        const bool bLocal1 = d->url.isLocalFile();
-        const bool bLocal2 = u.isLocalFile();
-        if (!bLocal1 && bLocal2 || bLocal1 && !bLocal2)
-            return false;
-        // local files are case insensitive
-        if (bLocal1 && bLocal2)
-            options |= ComparePathsCaseInsensitively;
-#endif
-        if (options & ComparePathsCaseInsensitively) {
-            if (QString::compare(path1, path2, Qt::CaseInsensitive) != 0)
-                return false;
-        } else {
-            if (path1 != path2)
-                return false;
-        }
-
-        if (d->url.scheme() == u.scheme() &&
-            d->url.authority() == u.authority() && // user+pass+host+port
-            d->url.query() == u.query() &&
-            (d->url.fragment() == u.fragment() || options & CompareWithoutFragment)   )
-            return true;
-
-        return false;
+        return path1 == path2;
     }
 
-    return d->url == u;
+    return d->url == url;
 }
 
 /*!

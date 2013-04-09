@@ -215,8 +215,6 @@ void tst_QUrlPathInfo::equals_data()
     const QUrlPathInfo::EqualsOptions strict(QUrlPathInfo::StrictComparison);
     const QUrlPathInfo::EqualsOptions noTrailing(QUrlPathInfo::CompareWithoutTrailingSlash);
     const QUrlPathInfo::EqualsOptions allowEmpty(QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::AllowEmptyPath);
-    const QUrlPathInfo::EqualsOptions caseInsensitive(QUrlPathInfo::ComparePathsCaseInsensitively);
-    const QUrlPathInfo::EqualsOptions caseInsensitiveNoTrailing(QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::ComparePathsCaseInsensitively);
 
     QTest::newRow("slash_diff") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir/" << strict << false;
     QTest::newRow("slash_diff_ignore_slash") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir/" << noTrailing << true;
@@ -224,10 +222,6 @@ void tst_QUrlPathInfo::equals_data()
     QTest::newRow("slash_vs_empty") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << strict << false;
     QTest::newRow("slash_vs_empty_ignore_slash") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << noTrailing << false;
     QTest::newRow("slash_vs_empty_allow_empty") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << allowEmpty << true;
-    QTest::newRow("same_case") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir" << caseInsensitive << true;
-    QTest::newRow("case_insensitive") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/DIR" << caseInsensitive << true;
-    QTest::newRow("case_insensitive_different") << "ftp://ftp.kde.org/dir/" << "ftp://ftp.kde.org/DIR" << caseInsensitive << false;
-    QTest::newRow("case_insensitive_ignore_slash") << "ftp://ftp.kde.org/dir/" << "ftp://ftp.kde.org/DIR" << caseInsensitiveNoTrailing << true;
 
 }
 

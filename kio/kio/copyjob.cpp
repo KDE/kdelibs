@@ -1828,16 +1828,12 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
         // Direct renaming didn't work. Try renaming to a temp name,
         // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
         // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
-      if ( m_currentSrcURL.isLocalFile() && dest.isLocalFile() &&
-           !QUrlPathInfo(m_currentSrcURL).equals(dest, QUrlPathInfo::CompareWithoutTrailingSlash) &&
-           QUrlPathInfo(m_currentSrcURL).equals(dest, QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::ComparePathsCaseInsensitively) &&
-             ( err == ERR_FILE_ALREADY_EXIST ||
-               err == ERR_DIR_ALREADY_EXIST ||
-               err == ERR_IDENTICAL_FILES ) )
-        {
+        if ((err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST || err == ERR_IDENTICAL_FILES) &&
+            m_currentSrcURL.isLocalFile() && dest.isLocalFile()) {
+          const QString _src(QUrlPathInfo(m_currentSrcURL).localPath(QUrlPathInfo::StripTrailingSlash));
+          const QString _dest(QUrlPathInfo(dest).localPath(QUrlPathInfo::StripTrailingSlash));
+          if (_src != _dest && QString::compare(_src, _dest, Qt::CaseInsensitive) == 0) {
             //qDebug() << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls";
-            const QString _src( m_currentSrcURL.toLocalFile() );
-            const QString _dest( dest.toLocalFile() );
             const QString srcDir = QFileInfo(_src).absolutePath();
             QTemporaryFile tmpFile(srcDir + "kio_XXXXXX");
             const bool openOk = tmpFile.open();
@@ -1868,6 +1864,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 }
             }
         }
+      }
     }
     if ( err )
     {

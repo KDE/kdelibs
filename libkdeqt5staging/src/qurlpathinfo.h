@@ -68,8 +68,7 @@ public:
         StrictComparison = 0x00,
         CompareWithoutTrailingSlash = 0x01,
         CompareWithoutFragment = 0x02,
-        AllowEmptyPath = 0x04,
-        ComparePathsCaseInsensitively = 0x08
+        AllowEmptyPath = 0x04
     };
     Q_DECLARE_FLAGS(EqualsOptions, EqualsOption)
 
