@@ -88,6 +88,7 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
     textLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     textLabel->setTextInteractionFlags(Qt::TextBrowserInteraction);
     QObject::connect(textLabel, SIGNAL(linkActivated(const QString&)), q, SIGNAL(linkActivated(const QString&)));
+    QObject::connect(textLabel, SIGNAL(linkHovered(const QString&)), q, SIGNAL(linkHovered(const QString&)));
 
     KAction* closeAction = KStandardAction::close(q, SLOT(animatedHide()), q);
 

@@ -164,6 +164,15 @@ Q_SIGNALS:
      */
     void linkActivated(const QString& contents);
 
+    /**
+     * This signal is emitted when the user hovers over a link in the text label.
+     * The URL referred to by the href anchor is passed in contents.
+     * @param contents text of the href anchor
+     * @see QLabel::linkHovered()
+     * @since 4.11
+     */
+    void linkHovered(const QString& contents);
+
 protected:
     void paintEvent(QPaintEvent *event);
 
