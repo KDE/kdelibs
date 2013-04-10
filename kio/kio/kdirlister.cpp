@@ -35,6 +35,7 @@
 #include <QFile>
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
+#include <QDebug>
 
 // Enable this to get printDebug() called often, to see the contents of the cache
 //#define DEBUG_CACHE
@@ -391,7 +392,8 @@ bool KDirListerCache::validUrl( const KDirLister *lister, const QUrl& url ) cons
   {
     if ( lister->d->autoErrorHandling )
     {
-      QString tmp = i18n("Malformed URL\n%1", url.toString() );
+      QString tmp = i18n("Malformed URL\n%1", url.errorString() );
+      qWarning() << url.errorString();
       KMessageBox::error( lister->d->errorParent, tmp );
     }
     return false;

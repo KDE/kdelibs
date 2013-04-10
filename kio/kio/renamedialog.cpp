@@ -37,6 +37,7 @@
 #include <QtCore/QDir>
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
+#include <QDebug>
 
 #include <klineedit.h>
 #include <kiconloader.h>
@@ -404,7 +405,8 @@ void RenameDialog::renamePressed()
     } else {
         const QUrl u = newDestUrl();
         if (!u.isValid()) {
-            KMessageBox::error(this, i18n("Malformed URL\n%1", u.toString())); // probably won't work...
+            KMessageBox::error(this, i18n("Malformed URL\n%1", u.errorString()));
+            qWarning() << u.errorString();
             return;
         }
 

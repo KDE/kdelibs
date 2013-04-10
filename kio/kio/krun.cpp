@@ -43,6 +43,7 @@
 #include <QDesktopWidget>
 #include <qmimedatabase.h>
 #include <qurlpathinfo.h>
+#include <QDebug>
 
 #include <kiconloader.h>
 #include <kmimetypetrader.h>
@@ -1163,7 +1164,8 @@ void KRun::init()
     if (!d->m_strURL.isValid()) {
         // TODO KDE5: call virtual method on error (see BrowserRun::init)
         d->m_showingDialog = true;
-        KMessageBoxWrapper::error(d->m_window, i18n("Malformed URL\n%1", d->m_strURL.toString()));
+        KMessageBoxWrapper::error(d->m_window, i18n("Malformed URL\n%1", d->m_strURL.errorString()));
+        qWarning() << d->m_strURL.errorString();
         d->m_showingDialog = false;
         d->m_bFault = true;
         d->m_bFinished = true;

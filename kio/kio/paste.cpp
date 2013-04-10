@@ -39,6 +39,7 @@
 #include <qtemporaryfile.h>
 #include <qmimedatabase.h>
 #include <qinputdialog.h>
+#include <QDebug>
 
 static bool decodeIsCutSelection(const QMimeData *mimeData)
 {
@@ -335,7 +336,8 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const QUrl& destUrl, QWidget* widget, 
     Q_UNUSED(move);
 
   if ( !destUrl.isValid() ) {
-    KMessageBox::error(widget, i18n("Malformed URL\n%1", destUrl.toString()));
+    KMessageBox::error(widget, i18n("Malformed URL\n%1", destUrl.errorString()));
+    qWarning() << destUrl.errorString();
     return 0;
   }
 
