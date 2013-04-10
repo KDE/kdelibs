@@ -22,13 +22,13 @@
 
 class QLabel;
 class QValidator;
-
 class QDialogButtonBox;
-class KComboBox;
 class QDoubleSpinBox;
+class QListWidget;
+
+class KComboBox;
 class KIntSpinBox;
 class KLineEdit;
-class KListWidget;
 class KTextEdit;
 
 #include <QDialog>
@@ -64,7 +64,7 @@ class KInputDialogHelper : public QDialog
     KIntSpinBox *intSpinBox() const;
     QDoubleSpinBox *doubleSpinBox() const;
     KComboBox *comboBox() const;
-    KListWidget *listBox() const;
+    QListWidget *listBox() const;
     KTextEdit *textEdit() const;
 
   private Q_SLOTS:
@@ -77,7 +77,7 @@ class KInputDialogHelper : public QDialog
     KIntSpinBox *m_intSpinBox;
     QDoubleSpinBox *m_doubleSpinBox;
     KComboBox *m_comboBox;
-    KListWidget *m_listBox;
+    QListWidget *m_listBox;
     KTextEdit *m_textEdit;
     QDialogButtonBox *m_buttonBox;
 };

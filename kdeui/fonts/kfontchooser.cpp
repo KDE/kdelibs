@@ -30,11 +30,12 @@ Boston, MA 02110-1301, USA.
 #include <QScrollBar>
 #include <QFontDatabase>
 #include <QGroupBox>
+#include <QListWidget>
+
 #include <kcharsets.h>
 #include <kconfig.h>
 #include <kglobalsettings.h>
 #include <klineedit.h>
-#include <klistwidget.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <knuminput.h>
@@ -128,9 +129,9 @@ public:
     QCheckBox    *styleCheckbox;
     QCheckBox    *sizeCheckbox;
     QLabel       *sizeLabel;
-    KListWidget     *familyListBox;
-    KListWidget     *styleListBox;
-    KListWidget     *sizeListBox;
+    QListWidget     *familyListBox;
+    QListWidget     *styleListBox;
+    QListWidget     *sizeListBox;
     QCheckBox    *sizeIsRelativeCheckBox;
 
     QFont        selFont;
@@ -255,7 +256,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     //
     // now create the actual boxes that hold the info
     //
-    d->familyListBox = new KListWidget( page );
+    d->familyListBox = new QListWidget( page );
     d->familyListBox->setEnabled( flags ^ ShowDifferences );
     gridLayout->addWidget( d->familyListBox, row, 0 );
     QString fontFamilyWhatsThisText (
@@ -282,7 +283,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     d->familyListBox->setMinimumHeight(
         minimumListHeight( d->familyListBox, visibleListSize  ) );
 
-    d->styleListBox = new KListWidget( page );
+    d->styleListBox = new QListWidget( page );
     d->styleListBox->setEnabled( flags ^ ShowDifferences );
     gridLayout->addWidget(d->styleListBox, row, 1);
     d->styleListBox->setWhatsThis(i18nc("@info:whatsthis","Here you can choose the font style to be used." ));
@@ -306,7 +307,7 @@ KFontChooser::KFontChooser( QWidget *parent,
             this, SLOT(_k_style_chosen_slot(QString)));
 
 
-    d->sizeListBox = new KListWidget( page );
+    d->sizeListBox = new QListWidget( page );
     d->sizeOfFont = new KDoubleNumInput(page);
     d->sizeOfFont->setMinimum(4);
     d->sizeOfFont->setMaximum(999);

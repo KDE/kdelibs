@@ -39,7 +39,7 @@ class QWidget;
 #include <QCheckBox>
 #include <QRadioButton>
 #include <QPushButton>
-#include <klistwidget.h>
+#include <QListWidget>
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
@@ -430,10 +430,10 @@ protected:
 
 // -------------------------------------------------------------------------
 
-class ListBoxWidget: public KListWidget, public KHTMLWidget
+class ListBoxWidget: public QListWidget, public KHTMLWidget
 {
 public:
-    ListBoxWidget(QWidget* p): KListWidget(p) { m_kwp->setIsRedirected(true); }
+    ListBoxWidget(QWidget* p): QListWidget(p) { m_kwp->setIsRedirected(true); }
 protected:
     void scrollContentsBy(int, int)
     {

@@ -23,7 +23,8 @@
 #ifndef KCOMPLETIONBOX_H
 #define KCOMPLETIONBOX_H
 
-#include <klistwidget.h>
+#include <QListWidget>
+#include "kdeui_export.h"
 
 class QEvent;
 
@@ -40,7 +41,7 @@ class QEvent;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KCompletionBox : public KListWidget
+class KDEUI_EXPORT KCompletionBox : public QListWidget
 {
     Q_OBJECT
     Q_PROPERTY( bool isTabHandling READ isTabHandling WRITE setTabHandling )
@@ -210,7 +211,7 @@ protected:
     void sizeAndPosition();
 
     /**
-     * Reimplemented from KListWidget to get events from the viewport (to hide
+     * Reimplemented from QListWidget to get events from the viewport (to hide
      * this widget on mouse-click, Escape-presses, etc.
      */
     virtual bool eventFilter( QObject *, QEvent * );

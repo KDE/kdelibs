@@ -46,7 +46,7 @@ public:
 };
 
 KCompletionBox::KCompletionBox( QWidget *parent )
- :KListWidget( parent), d(new KCompletionBoxPrivate)
+ : QListWidget( parent), d(new KCompletionBoxPrivate)
 {
     d->m_parent        = parent;
     d->tabHandling     = true;
@@ -255,7 +255,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
         }
     }
 
-    return KListWidget::eventFilter( o, e );
+    return QListWidget::eventFilter( o, e );
 }
 
 void KCompletionBox::popup()
@@ -342,7 +342,7 @@ void KCompletionBox::setVisible( bool visible )
         d->cancelText.clear();
     }
 
-    KListWidget::setVisible(visible);
+    QListWidget::setVisible(visible);
 }
 
 QRect KCompletionBox::calculateGeometry() const
@@ -355,8 +355,8 @@ QRect KCompletionBox::calculateGeometry() const
     int ih = visualRect.height();
     int h = qMin( 15 * ih, (int) count() * ih ) + 2*frameWidth();
 
-    int w = (d->m_parent) ? d->m_parent->width() : KListWidget::minimumSizeHint().width();
-    w = qMax( KListWidget::minimumSizeHint().width(), w );
+    int w = (d->m_parent) ? d->m_parent->width() : QListWidget::minimumSizeHint().width();
+    w = qMax( QListWidget::minimumSizeHint().width(), w );
 
   //### M.O.: Qt4 doesn't actually honor SC_ComboBoxListBoxPopup ???
 #if 0
@@ -502,7 +502,7 @@ void KCompletionBox::insertItems( const QStringList& items, int index )
 {
     bool block = signalsBlocked();
     blockSignals( true );
-    KListWidget::insertItems( index, items );
+    QListWidget::insertItems( index, items );
     blockSignals( block );
     setCurrentRow(-1);
 }

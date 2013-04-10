@@ -18,9 +18,9 @@
 #include <QFileDialog>
 #include <QPushButton>
 #include <QPointer>
+#include <QListWidget>
 
 #include <kiconloader.h>
-#include <klistwidget.h>
 
 class QProgressBar;
 class QRadioButton;
@@ -32,7 +32,7 @@ class KListWidgetSearchLine;
 /**
  * Icon canvas for KIconDialog.
  */
-class KIconCanvas: public KListWidget
+class KIconCanvas: public QListWidget
 {
     Q_OBJECT
 

@@ -86,7 +86,7 @@ QSize KIconCanvasDelegate::sizeHint ( const QStyleOptionViewItem & option, const
  */
 
 KIconCanvas::KIconCanvas(QWidget *parent)
-    : KListWidget(parent),
+    : QListWidget(parent),
       m_loading(false),
       m_timer(new QTimer(this)),
       m_delegate(new KIconCanvasDelegate(this, itemDelegate()))

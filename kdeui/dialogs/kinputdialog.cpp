@@ -25,12 +25,12 @@
 #include <QLabel>
 #include <QLayout>
 #include <QPushButton>
+#include <QListWidget>
 
 #include <kcombobox.h>
 #include <kcompletion.h>
 #include <kguiitem.h>
 #include <klineedit.h>
-#include <klistwidget.h>
 #include <knuminput.h>
 #include <kstandardguiitem.h>
 #include <ktextedit.h>
@@ -214,11 +214,11 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
                 SLOT(slotUpdateButtons(QString)));
         m_comboBox->setFocus();
     } else {
-        m_listBox = new KListWidget(this);
+        m_listBox = new QListWidget(this);
         m_listBox->addItems(list);
         m_listBox->setCurrentRow(current);
         layout->addWidget(m_listBox, 10);
-        connect(m_listBox, SIGNAL(executed(QListWidgetItem*)),
+        connect(m_listBox, SIGNAL(itemActivated(QListWidgetItem*)),
                 SLOT(accept()));
         m_listBox->setFocus();
     }
@@ -254,7 +254,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
-    m_listBox = new KListWidget(this);
+    m_listBox = new QListWidget(this);
     m_listBox->addItems(list);
     layout->addWidget(m_listBox);
 
@@ -267,7 +267,7 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
                 m_listBox->setCurrentItem(matches.first());
         }
     } else {
-        connect(m_listBox, SIGNAL(executed(QListWidgetItem*)), SLOT(accept()));
+        connect(m_listBox, SIGNAL(itemActivated(QListWidgetItem*)), SLOT(accept()));
 
         if (!select.isEmpty()) {
             QString text = select.first();
@@ -335,7 +335,7 @@ KComboBox *KInputDialogHelper::comboBox() const
     return m_comboBox;
 }
 
-KListWidget *KInputDialogHelper::listBox() const
+QListWidget *KInputDialogHelper::listBox() const
 {
     return m_listBox;
 }
@@ -457,7 +457,7 @@ QString getItem( const QString &caption, const QString &label,
     KInputDialogHelper dlg(caption, label, list, current, editable, parent);
 
     if (!editable)
-        dlg.connect(dlg.listBox(), SIGNAL(executed(QListWidgetItem*)), &dlg, SLOT(accept()));
+        dlg.connect(dlg.listBox(), SIGNAL(itemActivated(QListWidgetItem*)), &dlg, SLOT(accept()));
 
     bool _ok = (dlg.exec() == QDialog::Accepted);
 

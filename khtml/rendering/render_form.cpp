@@ -62,6 +62,7 @@
 #include <QLabel>
 #include <QStyleOptionFrameV3>
 #include <QStandardItemModel>
+#include <QListWidget>
 
 #include <misc/helper.h>
 #include <xml/dom2_eventsimpl.h>
@@ -1583,7 +1584,7 @@ bool ListBoxWidget::event( QEvent * event )
 {
     // accept all wheel events so that they are not propagated to the view
     // once either end of the list is reached.
-    bool ret = KListWidget::event(event);
+    bool ret = QListWidget::event(event);
     if (event->type() == QEvent::Wheel) {
         event->accept();
         ret = true;
@@ -1723,7 +1724,7 @@ RenderSelect::RenderSelect(HTMLSelectElementImpl *element)
 void RenderSelect::clearItemFlags(int index, Qt::ItemFlags flags)
 {
     if(m_useListBox) {
-        QListWidgetItem* item = static_cast<KListWidget*>(m_widget)->item(index);
+        QListWidgetItem* item = static_cast<QListWidget*>(m_widget)->item(index);
         item->setFlags(item->flags() & ~flags);
     } else {
         KComboBox* combo = static_cast<KComboBox*>(m_widget);
@@ -1770,7 +1771,7 @@ void RenderSelect::updateFromElement()
         }
 
         if (m_useListBox && oldMultiple != m_multiple) {
-            static_cast<KListWidget*>(m_widget)->setSelectionMode(m_multiple ?
+            static_cast<QListWidget*>(m_widget)->setSelectionMode(m_multiple ?
                                             QListWidget::ExtendedSelection
                                           : QListWidget::SingleSelection);
         }
@@ -1786,7 +1787,7 @@ void RenderSelect::updateFromElement()
         int listIndex;
 
         if(m_useListBox)
-            static_cast<KListWidget*>(m_widget)->clear();
+            static_cast<QListWidget*>(m_widget)->clear();
         else
             static_cast<KComboBox*>(m_widget)->clear();
 
@@ -1800,7 +1801,7 @@ void RenderSelect::updateFromElement()
 
                 if(m_useListBox) {
                     QListWidgetItem *item = new QListWidgetItem(QString(text.implementation()->s, text.implementation()->l));
-                    static_cast<KListWidget*>(m_widget)->insertItem(listIndex,item);
+                    static_cast<QListWidget*>(m_widget)->insertItem(listIndex,item);
                 } else {
                     static_cast<KComboBox*>(m_widget)->insertItem(listIndex, QString(text.implementation()->s, text.implementation()->l));
                 }
@@ -1833,7 +1834,7 @@ void RenderSelect::updateFromElement()
                 }
 
                 if(m_useListBox)
-                    static_cast<KListWidget*>(m_widget)->insertItem(listIndex,text);
+                    static_cast<QListWidget*>(m_widget)->insertItem(listIndex,text);
                 else
                     static_cast<KComboBox*>(m_widget)->insertItem(listIndex, text);
 
@@ -1912,7 +1913,7 @@ void RenderSelect::layout( )
 
     // calculate size
     if(m_useListBox) {
-        KListWidget* w = static_cast<KListWidget*>(m_widget);
+        QListWidget* w = static_cast<QListWidget*>(m_widget);
 
         int width = 0;
         int height = 0;
@@ -2071,7 +2072,7 @@ void RenderSelect::slotSelectionChanged() // emitted by the listbox only
         // again with updateSelection.
         if ( listItems[i]->id() == ID_OPTION )
             static_cast<HTMLOptionElementImpl*>( listItems[i] )
-                ->m_selected = static_cast<KListWidget*>( m_widget )->item(i)->isSelected();
+                ->m_selected = static_cast<QListWidget*>( m_widget )->item(i)->isSelected();
 
     ref();
     element()->onChange();
@@ -2112,7 +2113,7 @@ void RenderSelect::updateSelection()
     int i;
     if (m_useListBox) {
         // if multi-select, we select only the new selected index
-        KListWidget *listBox = static_cast<KListWidget*>(m_widget);
+        QListWidget *listBox = static_cast<QListWidget*>(m_widget);
         for (i = 0; i < int(listItems.size()); i++)
             listBox->item(i)->setSelected(listItems[i]->id() == ID_OPTION &&
                                  static_cast<HTMLOptionElementImpl*>(listItems[i])->selectedBit());
