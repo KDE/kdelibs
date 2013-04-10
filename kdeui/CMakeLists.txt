@@ -126,7 +126,6 @@ set(kdeui_LIB_SRCS
  fonts/kfontutils.cpp
  icons/kiconbutton.cpp
  icons/kicondialog.cpp
- itemviews/klistwidget.cpp
  itemviews/kconfigviewstatesaver.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
@@ -492,7 +491,6 @@ install( FILES
  icons/kiconbutton.h
  icons/kicondialog.h
  itemviews/kconfigviewstatesaver.h
- itemviews/klistwidget.h
  itemviews/kviewstatesaver.h
  itemviews/kviewstatemaintainer.h
  itemviews/klistwidgetsearchline.h

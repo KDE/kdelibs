@@ -60,6 +60,7 @@ set(libkde4support_SRCS
     kdeui/kpushbutton.cpp
     kdeui/kundostack.cpp
     kdeui/krestrictedline.cpp
+    kdeui/klistwidget.cpp
 
     kparts/factory.cpp
 )
@@ -146,6 +147,7 @@ install(FILES
     kdeui/kpushbutton.h
     kdeui/kundostack.h
     kdeui/krestrictedline.h
+    kdeui/klistwidget.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

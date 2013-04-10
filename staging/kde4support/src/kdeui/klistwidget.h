@@ -18,11 +18,12 @@
 #ifndef KLISTWIDGET_H
 #define KLISTWIDGET_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QListWidget>
 
 /**
+ * @deprecated since 5.0, use QListWidget instead
  * @short A variant of QListWidget that honors KDE's system-wide settings.
  *
  * Extends the functionality of QListWidget to honor the system
@@ -37,7 +38,7 @@
  * settings.  If you want to get informed when the user selects
  * something connect to the QListWidget::itemSelectionChanged() signal.
  **/
-class KDEUI_EXPORT KListWidget : public QListWidget
+class KDE4SUPPORT_DEPRECATED KListWidget : public QListWidget
 {
     Q_OBJECT
 
