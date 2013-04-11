@@ -43,7 +43,7 @@ if(NOT MSVC)
         testkhtmlnew.cpp
     )
 
-    qt4_add_resources( khtmltest_SRCS testkhtml.qrc )
+    qt5_add_resources( khtmltest_SRCS testkhtml.qrc )
     add_executable(khtmltest ${khtmltest_SRCS} )
     ecm_mark_as_test(khtmltest)
     target_link_libraries( khtmltest ${KDE4_KDECORE_LIBS} khtml )

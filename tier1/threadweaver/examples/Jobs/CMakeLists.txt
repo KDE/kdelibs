@@ -11,7 +11,7 @@ set( Jobs_SRCS_UI
     JobsBase.ui
 )
 
-qt4_wrap_ui(Jobs_SRCS ${Jobs_SRCS_UI} )
+qt5_wrap_ui(Jobs_SRCS ${Jobs_SRCS_UI} )
 
 
 add_executable(Jobs ${Jobs_SRCS})

@@ -34,7 +34,7 @@ target_link_libraries( kded5 kdeinit_kded5)
 install(TARGETS kded5 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 
-qt4_generate_dbus_interface( kdedadaptor.h org.kde.kded5.xml )
+qt5_generate_dbus_interface( kdedadaptor.h org.kde.kded5.xml )
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 #include(MacroDBusAddActivationService) # for dbus_add_activation_service

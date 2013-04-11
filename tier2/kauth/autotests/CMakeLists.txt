@@ -1,5 +1,5 @@
 
-qt4_add_dbus_adaptor(kauth_dbus_adaptor_tests_SRCS
+qt5_add_dbus_adaptor(kauth_dbus_adaptor_tests_SRCS
                      ../src/backends/dbus/org.kde.auth.xml
                      ../src/backends/dbus/DBusHelperProxy.h
                      KAuth::DBusHelperProxy)

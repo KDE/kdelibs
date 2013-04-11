@@ -372,11 +372,11 @@ set_source_files_properties( org.freedesktop.PowerManagement.xml
                              org.kde.Solid.PowerManagement.PolicyAgent.xml
                              PROPERTIES NO_NAMESPACE TRUE)
 
-qt4_add_dbus_interfaces(solid_LIB_SRCS org.freedesktop.PowerManagement.xml
+qt5_add_dbus_interfaces(solid_LIB_SRCS org.freedesktop.PowerManagement.xml
                         org.freedesktop.PowerManagement.Inhibit.xml
                         org.kde.Solid.PowerManagement.PolicyAgent.xml)
 
-qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
+qt5_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
                        org_kde_solid_networking_client)
 
 set(solid_OPTIONAL_LIBS)

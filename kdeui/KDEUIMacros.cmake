@@ -178,7 +178,7 @@ macro (KDE4_ADD_WIDGET_FILES _sources)
         MAIN_DEPENDENCY ${_input} DEPENDS ${_KDE4_MAKEKDEWIDGETS_DEP})
 
       # create moc file
-      qt4_generate_moc(${_source} ${_moc} )
+      qt5_generate_moc(${_source} ${_moc} )
 
       list(APPEND ${_sources} ${_source} ${_moc})
 

@@ -25,7 +25,7 @@ set(benchmarks_srcs2
 
 # set(moc_output_file "${CMAKE_CURRENT_BINARY_DIR}/benchmarks.moc")
 
-# qt4_generate_moc(benchmarks.cpp ${moc_output_file})
+# qt5_generate_moc(benchmarks.cpp ${moc_output_file})
 add_executable(bihash_benchmarks_exec ${benchmarks_srcs} )
 add_test(bihash_benchmarks bihash_benchmarks_exec)
 

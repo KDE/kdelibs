@@ -11,7 +11,7 @@ set( QProcessJob_SRCS_UI
     MainWindowUi.ui
 )
 
-qt4_wrap_ui(QProcessJob_SRCS ${QProcessJob_SRCS_UI} )
+qt5_wrap_ui(QProcessJob_SRCS ${QProcessJob_SRCS_UI} )
 
 
 add_executable(QProcessJob ${QProcessJob_SRCS})

@@ -346,7 +346,7 @@ if (KJS_DEBUGGER)
   )
 endif()
 
-#qt4_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )
+#qt5_add_resources( kjs_html_STAT_SRCS ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugger.qrc )
 
 # khtml/rendering/Makefile.am: khtmlrender
 
@@ -560,12 +560,12 @@ set(khtml_LIB_SRCS
    ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KHTMLPart.xml # just so that it gets generated
    )
 
-qt4_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
+qt5_generate_dbus_interface(khtml_iface.h org.kde.KHTMLPart.xml)
 
 set(kcookiejar_XML ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
-qt4_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
+qt5_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookieserver.h org.kde.KCookieServer.xml)
 set_source_files_properties(${kcookiejar_XML} PROPERTIES INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/../kioslave/http/kcookiejar/kcookiejar_include.h")
-qt4_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
+qt5_add_dbus_interface(khtml_LIB_SRCS ${kcookiejar_XML} kcookiejar_interface)
 
 kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
@@ -775,7 +775,7 @@ if (KHTML_BUILD_TESTREGRESSION)
         test_regression_gui_main.cpp
     )
 
-    qt4_add_resources(testregressiongui_SRCS test_regression_gui.qrc)
+    qt5_add_resources(testregressiongui_SRCS test_regression_gui.qrc)
 
     kde4_add_ui_files(testregressiongui_SRCS test_regression_gui.ui)
 

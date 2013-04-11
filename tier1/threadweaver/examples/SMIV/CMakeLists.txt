@@ -16,7 +16,7 @@ set( SMIV_SRCS_UI
     SMIVBase.ui
 )
 
-qt4_wrap_ui(SMIV_SRCS ${SMIV_SRCS_UI} )
+qt5_wrap_ui(SMIV_SRCS ${SMIV_SRCS_UI} )
 
 
 add_executable(SMIV ${SMIV_SRCS})

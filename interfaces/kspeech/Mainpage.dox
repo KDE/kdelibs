@@ -207,7 +207,7 @@ kspeechinterface.cpp for you from the org.kde.KSpeech.xml interface
 definition file using qdbusxml2cpp utility.
 
    @verbatim
-     qt4_add_dbus_interfaces(myapp_SRCS org.kde.KSpeech.xml )
+     qt5_add_dbus_interfaces(myapp_SRCS org.kde.KSpeech.xml )
    @endverbatim
 
 Substitute your application's SRCS target for "myapp".

@@ -151,14 +151,14 @@ if(NOT KIO_NO_SOLID)
     )
 endif(NOT KIO_NO_SOLID)
 
-qt4_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
+qt5_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
 
-qt4_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.kuiserver.xml kuiserver_interface)
+qt5_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.kuiserver.xml kuiserver_interface)
 
 set_source_files_properties(kio/org.kde.KPasswdServer.xml
    PROPERTIES INCLUDE kio/authinfo.h
 )
-qt4_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.KPasswdServer.xml kpasswdserver_interface)
+qt5_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.KPasswdServer.xml kpasswdserver_interface)
 install(FILES kio/org.kde.KPasswdServer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 if(UNIX)
@@ -233,7 +233,7 @@ if(NOT KIO_NO_NEPOMUK)
     )
 endif(NOT KIO_NO_NEPOMUK)
 
-qt4_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
+qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
 # kio/kssl/Makefile.am: kssl
 

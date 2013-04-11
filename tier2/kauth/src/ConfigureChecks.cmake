@@ -215,7 +215,7 @@ set(KDE4_AUTH_HELPER_BACKEND_NAME ${KAUTH_HELPER_BACKEND} CACHE STRING "Specifie
 
 # Add the correct libraries/files depending on the backend
 if(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
-    qt4_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
+    qt5_add_dbus_adaptor(kauth_dbus_adaptor_SRCS
                         backends/dbus/org.kde.auth.xml
                         backends/dbus/DBusHelperProxy.h
                         KAuth::DBusHelperProxy)

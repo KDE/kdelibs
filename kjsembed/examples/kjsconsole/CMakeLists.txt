@@ -13,7 +13,7 @@ set(console_SRCS
 
 kde4_add_ui_files(console_SRCS jsconsole.ui )
 
-qt4_add_resources(console_SRCS console.qrc )
+qt5_add_resources(console_SRCS console.qrc )
 
 kde4_add_executable(kjsconsole ${console_SRCS})
 

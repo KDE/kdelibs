@@ -33,7 +33,7 @@ set(sonnetui_HDRS
     dictionarycombobox.h
 )
 
-qt4_wrap_ui(sonnetui_SRCS ${sonnetui_UI})
+qt5_wrap_ui(sonnetui_SRCS ${sonnetui_UI})
 
 add_library(sonnetui ${sonnetui_SRCS})
 generate_export_header(sonnetui)

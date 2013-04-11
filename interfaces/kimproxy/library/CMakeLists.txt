@@ -6,9 +6,9 @@ set(kimproxy_LIB_SRCS
   kimproxy.cpp
 )
 
-qt4_add_dbus_adaptor( kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimproxy.h  KIMProxy)
+qt5_add_dbus_adaptor( kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimproxy.h  KIMProxy)
 
-qt4_add_dbus_interface(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimiface )
+qt5_add_dbus_interface(kimproxy_LIB_SRCS ../interface/org.kde.KIMIface.xml kimiface )
 
 
 kde4_add_library(kimproxy ${LIBRARY_TYPE} ${kimproxy_LIB_SRCS})

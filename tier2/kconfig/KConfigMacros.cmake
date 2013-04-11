@@ -72,7 +72,7 @@ macro (KCONFIG_ADD_KCFG_FILES _sources )
                           DEPENDS ${_kcfg_FILE} ${_KDE4_KCONFIG_COMPILER_DEP} )
 
        if(_kcfg_generatemoc)
-          qt4_generate_moc(${_header_FILE} ${_moc_FILE} )
+          qt5_generate_moc(${_header_FILE} ${_moc_FILE} )
           set_source_files_properties(${_src_FILE} PROPERTIES SKIP_AUTOMOC TRUE)  # don't run automoc on this file
           list(APPEND ${_sources} ${_moc_FILE})
        endif()

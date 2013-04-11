@@ -36,10 +36,10 @@ if(QT_QTDESIGNER_FOUND)
      ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc
   )
 
-  qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc)
+  qt5_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewidgets.moc)
 
 
-  qt4_add_resources(kdewidgets_PART_SRCS kdewidgets.qrc)
+  qt5_add_resources(kdewidgets_PART_SRCS kdewidgets.qrc)
 
   kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
@@ -67,10 +67,10 @@ if(QT_QTDESIGNER_FOUND)
        ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc
     )
 
-    qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc)
+    qt5_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdedeprecated.moc)
 
 
-    qt4_add_resources(kdedeprecated_PART_SRCS kdedeprecated.qrc)
+    qt5_add_resources(kdedeprecated_PART_SRCS kdedeprecated.qrc)
 
     kde4_add_plugin(kdedeprecated ${kdedeprecated_PART_SRCS})
 
@@ -99,10 +99,10 @@ if(QT_QTDESIGNER_FOUND)
      ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.moc
   )
 
-  qt4_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.moc)
+  qt5_generate_moc(${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.moc)
 
 
-  qt4_add_resources(kdewebkitwidgets_PART_SRCS kdewebkitwidgets.qrc)
+  qt5_add_resources(kdewebkitwidgets_PART_SRCS kdewebkitwidgets.qrc)
 
   kde4_add_plugin(kdewebkitwidgets ${kdewebkitwidgets_PART_SRCS})
 

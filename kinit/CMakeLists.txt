@@ -121,7 +121,7 @@ set(klauncher_KDEINIT_SRCS
    )
 
 # The adaptor is manually edited, generate the xml from it.
-qt4_generate_dbus_interface(klauncher_adaptor.h org.kde.KLauncher.xml)
+qt5_generate_dbus_interface(klauncher_adaptor.h org.kde.KLauncher.xml)
 
 
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})

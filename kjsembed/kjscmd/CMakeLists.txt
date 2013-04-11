@@ -7,7 +7,7 @@ project(kjsembed-kjscmd)
 set(kjscmd_SRCS kjscmd.cpp )
 
 
-qt4_add_resources(kjscmd_SRCS kjscmd.qrc )
+qt5_add_resources(kjscmd_SRCS kjscmd.qrc )
 
 if (NOT DEFINED QT_ONLY)
    set(KJSLIBNAME kjs)

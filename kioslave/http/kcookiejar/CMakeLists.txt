@@ -8,13 +8,13 @@ main.cpp
 )
 
 
-qt4_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/kded/kdedadaptor.h org.kde.kded5.xml )
-qt4_add_dbus_interfaces(kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml)
+qt5_generate_dbus_interface( ${CMAKE_SOURCE_DIR}/kded/kdedadaptor.h org.kde.kded5.xml )
+qt5_add_dbus_interfaces(kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.kded5.xml)
 
-qt4_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/kcookieserver.h org.kde.KCookieServer.xml)
+qt5_generate_dbus_interface(${CMAKE_CURRENT_SOURCE_DIR}/kcookieserver.h org.kde.KCookieServer.xml)
 set(kcookieserver_xml ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml)
 set_source_files_properties(${kcookieserver_xml} PROPERTIES INCLUDE "kcookiejar_include.h")
-qt4_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
+qt5_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
 
 kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
 
@@ -30,7 +30,7 @@ set(kded_kcookiejar_SRCS
    kcookiewin.cpp
 )
 
-qt4_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml kcookieserver.h KCookieServer )
+qt5_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KCookieServer.xml kcookieserver.h KCookieServer )
 
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_SRCS})
