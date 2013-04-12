@@ -6,7 +6,6 @@
 #include <QApplication>
 #include <kinputdialog.h>
 #include <kdebug.h>
-#include <klistwidget.h>
 
 #include <QtCore/QString>
 #include <QValidator>
