@@ -327,7 +327,7 @@ add_subdirectory( kinit  )
 add_subdirectory( includes )
 macro_optional_add_subdirectory( doc )
 
-if(NOT QT5_BUILD)
+if(FALSE) # Needs porting
   add_subdirectory( kimgio )
 endif()
 
