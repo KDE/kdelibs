@@ -48,10 +48,12 @@ public:
 
     QFile::FileError error;
     QString errorString;
+    bool needFinalize;
     bool directWriteFallback;
 
     Private()
         : error(QFile::NoError),
+          needFinalize(false),
           directWriteFallback(false)
     {
     }
@@ -78,6 +80,10 @@ KSaveFile::~KSaveFile()
 
 bool KSaveFile::open(OpenMode flags)
 {
+    if (isOpen()) {
+        return false;
+    }
+    d->needFinalize = false;
     if ( d->realFileName.isNull() ) {
         d->error=QFile::OpenError;
         d->errorString=i18n("No target filename has been given.");
@@ -112,6 +118,7 @@ bool KSaveFile::open(OpenMode flags)
             if (QFile::open(flags)) {
                 d->tempFileName.clear();
                 d->error = QFile::NoError;
+                d->needFinalize = true;
                 return true;
             }
         }
@@ -150,6 +157,7 @@ bool KSaveFile::open(OpenMode flags)
     d->tempFileName = tempFile.fileName();
     d->error=QFile::NoError;
     d->errorString.clear();
+    d->needFinalize = true;
     return true;
 }
 
@@ -196,6 +204,7 @@ void KSaveFile::abort()
     close();
     if (!d->tempFileName.isEmpty()) {
         QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
+        d->needFinalize = false;
     }
 }
 
@@ -207,11 +216,11 @@ void KSaveFile::abort()
 
 bool KSaveFile::finalize()
 {
-    bool success = false;
-    if (!isOpen()) {
+    if (!d->needFinalize) {
         return false;
     }
 
+    bool success = false;
 #ifdef Q_OS_UNIX
     static int extraSync = -1;
     if (extraSync < 0)
@@ -254,6 +263,7 @@ bool KSaveFile::finalize()
     } else { // direct overwrite
         success = true;
     }
+    d->needFinalize = false;
 
     return success;
 }
