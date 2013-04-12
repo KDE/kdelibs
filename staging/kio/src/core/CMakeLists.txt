@@ -49,6 +49,7 @@ target_link_libraries(kiocore
  kservice
  ${QT_QTNETWORK_LIBRARY}
  ${QT_QTDBUS_LIBRARY}
+ Qt5::Concurrent
 )
 
 if(ACL_FOUND)
