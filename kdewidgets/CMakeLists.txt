@@ -87,7 +87,7 @@ if(QT_QTDESIGNER_FOUND)
     install(TARGETS kdedeprecated  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/designer )
   endif(NOT KDE_NO_DEPRECATED)
 
-  if(Qt5WebKit_FOUND)
+  if(Qt5WebKitWidgets_FOUND)
 
   add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp
     COMMAND "${MAKEKDEWIDGETS_EXECUTABLE}" -o ${CMAKE_CURRENT_BINARY_DIR}/kdewebkitwidgets.cpp ${CMAKE_CURRENT_SOURCE_DIR}/kdewebkit.widgets
@@ -106,7 +106,7 @@ if(QT_QTDESIGNER_FOUND)
 
   kde4_add_plugin(kdewebkitwidgets ${kdewebkitwidgets_PART_SRCS})
 
-  target_link_libraries(kdewebkitwidgets ${KDE4_KDEUI_LIBS} ${KDE4_KDEWEBKIT_LIBS} ${QT_QTWEBKIT_LIBRARY})
+  target_link_libraries(kdewebkitwidgets ${KDE4_KDEUI_LIBS} ${KDE4_KDEWEBKIT_LIBS} Qt5::WebKitWidgets)
   if(NOT WIN32)
     set_target_properties(kdewebkitwidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

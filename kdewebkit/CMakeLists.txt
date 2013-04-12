@@ -1,8 +1,8 @@
 project(kdewebkit)
 
-add_feature_info(QtWebkit QT_QTWEBKIT_FOUND "Needed for building kdelibs" "http://trac.webkit.org/wiki/QtWebKit")
+add_feature_info(QtWebkitWidgets Qt5WebKitWidgets_FOUND "Needed for building kdelibs" "http://trac.webkit.org/wiki/QtWebKit")
 
-if(NOT QT_QTWEBKIT_FOUND)
+if(NOT Qt5WebKitWidgets_FOUND)
   message(FATAL_ERROR "The QtWebkit module is required.")
 endif()
 
@@ -19,8 +19,8 @@ kde4_add_library(kdewebkit ${LIBRARY_TYPE}
 )
 generate_export_header(kdewebkit)
 
-target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} ${QT_QTWEBKIT_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n)
-target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES kparts kio kdecore ${QT_QTWEBKIT_LIBRARY} ${QT_QTNETWORK_LIBRARY} Qt5::Widgets)
+target_link_libraries(kdewebkit ${KDE4_KPARTS_LIBS} Qt5::WebKitWidgets ${KCoreAddons_LIBRARIES} ki18n)
+target_link_libraries(kdewebkit LINK_INTERFACE_LIBRARIES kparts kio kdecore Qt5::WebKitWidgets)
 
 set_target_properties(kdewebkit PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
