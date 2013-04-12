@@ -19,6 +19,7 @@ macro (KDE4_ADD_UI_FILES _sources )
       get_filename_component(_basename ${_tmp_FILE} NAME_WE)
       set(_header ${CMAKE_CURRENT_BINARY_DIR}/ui_${_basename}.h)
 
+      get_target_property(QT_UIC_EXECUTABLE Qt5::uic LOCATION)
       # we need to run uic and replace some things in the generated file
       # this is done by executing the cmake script kde4uic.cmake
       add_custom_command(OUTPUT ${_header}
