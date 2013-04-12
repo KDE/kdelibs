@@ -29,6 +29,7 @@ cmake_push_check_state()
   # If Qt is built with reduce-relocations (The default) we need to add -fPIE here.
   set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
 
+  set(CMAKE_REQUIRED_LIBRARIES Qt5::Network)
   check_cxx_source_compiles(
 "#include <QtNetwork/QSslSocket>
 int main()
