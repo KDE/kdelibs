@@ -38,7 +38,7 @@
  * settings.  If you want to get informed when the user selects
  * something connect to the QListWidget::itemSelectionChanged() signal.
  **/
-class KDE4SUPPORT_DEPRECATED KListWidget : public QListWidget
+class KDE4SUPPORT_DEPRECATED_EXPORT KListWidget : public QListWidget
 {
     Q_OBJECT
 
