@@ -502,7 +502,7 @@ bool HTMLMediaElement::endedPlayback() const
 #if 0
     return networkState() >= LOADED_METADATA && currentTime() >= effectiveEnd() && currentLoop() == playCount() - 1;
 #endif
-    return m_player->mediaObject()->remainingTime() == 0;
+    return m_player && m_player->mediaObject()->remainingTime() == 0;
 }
 
 void HTMLMediaElement::updateVolume()
