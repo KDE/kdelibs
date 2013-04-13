@@ -124,6 +124,7 @@ using namespace DOM;
 #include <QStatusBar>
 #include <QStyle>
 #include <qmimedatabase.h>
+#include <qurlpathinfo.h>
 
 #include "khtmlpart_p.h"
 #include "khtml_iface.h"
@@ -630,6 +631,21 @@ bool KHTMLPart::restoreURL( const KUrl &url )
   return true;
 }
 
+static bool areUrlsForSamePage(const QUrl& url1, const QUrl& url2)
+{
+    QUrl u1 = QUrlPathInfo(url1).url(QUrlPathInfo::StripTrailingSlash);
+    u1.setFragment(QString());
+    if (u1.path() == QLatin1String("/")) {
+        u1.setPath(QString());
+    }
+    QUrl u2 = QUrlPathInfo(url2).url(QUrlPathInfo::StripTrailingSlash);
+    u2.setFragment(QString());
+    if (u2.path() == QLatin1String("/")) {
+        u2.setPath(QString());
+    }
+    return u1 == u2;
+}
+
 bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
 {
     // kio_help actually uses fragments to identify different pages, so
@@ -637,8 +653,7 @@ bool KHTMLPartPrivate::isLocalAnchorJump( const KUrl& url )
     if (url.scheme() == QLatin1String("help"))
         return false;
 
-    return url.hasFragment() && url.equals( q->url(),
-              KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath );
+    return url.hasFragment() && areUrlsForSamePage(url, q->url());
 }
 
 void KHTMLPartPrivate::executeAnchorJump( const KUrl& url, bool lockHistory )
@@ -2630,9 +2645,7 @@ void KHTMLPart::slotRedirect()
     return;
   }
 
-  if ( url.equals(this->url(),
-                KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath) )
-  {
+  if (areUrlsForSamePage(url, this->url())) {
     args.metaData().insert("referrer", d->m_pageReferrer);
   }
 
@@ -4255,8 +4268,7 @@ bool KHTMLPart::requestObject( khtml::ChildFrame *child, const KUrl &url, const 
   }
 
   // ### Dubious -- the whole dir/ vs. img thing
-  if ( child->m_part && !args.reload() && KUrl(child->m_part.data()->url()).equals( url,
-              KUrl::CompareWithoutTrailingSlash | KUrl::CompareWithoutFragment | KUrl::AllowEmptyPath ) )
+  if ( child->m_part && !args.reload() && areUrlsForSamePage(child->m_part.data()->url(), url) )
     args.setMimeType(child->m_serviceType);
 
   child->m_browserArgs = browserArgs;

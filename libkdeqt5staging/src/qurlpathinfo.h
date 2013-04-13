@@ -66,9 +66,7 @@ public:
     enum EqualsOption
     {
         StrictComparison = 0x00,
-        CompareWithoutTrailingSlash = 0x01,
-        CompareWithoutFragment = 0x02,
-        AllowEmptyPath = 0x04
+        CompareWithoutTrailingSlash = 0x01
     };
     Q_DECLARE_FLAGS(EqualsOptions, EqualsOption)
 

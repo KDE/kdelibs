@@ -96,18 +96,6 @@
     (For instance ftp://user@host redirects to ftp://user@host/home/user (on a linux server),
     while ftp://user@host/ is the root dir).
     This is also why path(StripTrailingSlash) for "/" returns "/" and not "".
-    When dealing with web pages however, you should also set AllowEmptyPath so that
-    no path and "/" are considered equal.
-
-    \value CompareWithoutFragment Disables comparison of HTML-style references (fragments).
-
-    \value AllowEmptyPath Treat a URL with no path as equal to a URL with a path of "/",
-    when CompareWithoutTrailingSlash is set.
-    Example:
-    QUrlPathInfo urlInfo("http://www.qt-project.org");
-    urlInfo.equals("http://www.qt-project.org/", QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::AllowEmptyPath)
-    returns true.
-    This option is ignored if CompareWithoutTrailingSlash isn't set.
 */
 
 QT_BEGIN_NAMESPACE
@@ -410,7 +398,7 @@ bool QUrlPathInfo::equals(const QUrl& url, EqualsOptions options) const
         if (d->url.scheme() != url.scheme() ||
             d->url.authority() != url.authority() || // user+pass+host+port
             d->url.query() != url.query() ||
-            ((options & CompareWithoutFragment) && d->url.fragment() != url.fragment()))
+            d->url.fragment() != url.fragment())
             return false;
 
         const bool bLocal1 = d->url.isLocalFile();
@@ -425,12 +413,6 @@ bool QUrlPathInfo::equals(const QUrl& url, EqualsOptions options) const
         QString path1 = path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
         QString path2 = QUrlPathInfo(url).path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
 
-        if (options & AllowEmptyPath) {
-            if (path1 == QLatin1String("/"))
-                path1.clear();
-            if (path2 == QLatin1String("/"))
-                path2.clear();
-        }
         return path1 == path2;
     }
 

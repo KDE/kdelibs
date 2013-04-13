@@ -214,14 +214,11 @@ void tst_QUrlPathInfo::equals_data()
 
     const QUrlPathInfo::EqualsOptions strict(QUrlPathInfo::StrictComparison);
     const QUrlPathInfo::EqualsOptions noTrailing(QUrlPathInfo::CompareWithoutTrailingSlash);
-    const QUrlPathInfo::EqualsOptions allowEmpty(QUrlPathInfo::CompareWithoutTrailingSlash | QUrlPathInfo::AllowEmptyPath);
 
     QTest::newRow("slash_diff") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir/" << strict << false;
     QTest::newRow("slash_diff_ignore_slash") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir/" << noTrailing << true;
-    QTest::newRow("slash_diff_allow_empty") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir/" << allowEmpty << true;
     QTest::newRow("slash_vs_empty") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << strict << false;
     QTest::newRow("slash_vs_empty_ignore_slash") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << noTrailing << false;
-    QTest::newRow("slash_vs_empty_allow_empty") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << allowEmpty << true;
 
 }
 
