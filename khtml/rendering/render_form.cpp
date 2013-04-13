@@ -2215,8 +2215,6 @@ void TextAreaWidget::keyPressEvent(QKeyEvent *e)
 RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     : RenderFormElement(element)
 {
-    scrollbarsStyled = false;
-
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
     const KHTMLSettings *settings = view()->part()->settings();
@@ -2308,8 +2306,6 @@ void RenderTextArea::setStyle(RenderStyle* _style)
         element()->m_unsubmittedFormChange = unsubmittedFormChange;
     }
 
-    scrollbarsStyled = false;
-
     if (style()->overflowX() == OSCROLL)
         w->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
     else if (style()->overflowX() == OHIDDEN)
@@ -2322,21 +2318,6 @@ void RenderTextArea::setStyle(RenderStyle* _style)
         w->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     else
         w->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-}
-
-void RenderTextArea::layout()
-{
-    KHTMLAssert( needsLayout() );
-
-    RenderFormElement::layout();
-
-    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-
-    if (!scrollbarsStyled) {
-        w->horizontalScrollBar()->setPalette(style()->palette());
-        w->verticalScrollBar()->setPalette(style()->palette());
-        scrollbarsStyled=true;
-    }
 }
 
 short RenderTextArea::scrollWidth() const
