@@ -155,6 +155,7 @@ using namespace DOM;
                     QRect arrowRect = style()->subControlRect(cc, opt, SC_ComboBoxArrow, widget);
                     arrowRect.setTop(cbOpt->rect.top());
                     arrowRect.setBottom(cbOpt->rect.bottom());
+                    arrowRect.setRight(cbOpt->rect.right() - 1);
                     if (enabled && (cbOpt->state & State_On))
                         arrowRect.translate(1, 1); // push effect
                     //if (!enabled) color = color.lighter();
