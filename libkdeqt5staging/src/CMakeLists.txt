@@ -26,7 +26,6 @@ set_target_properties(kdeqt5staging PROPERTIES
 # Install into a kdeqt5staging subdir to prevent clashes with real Qt header files
 install(FILES
     qurlpathinfo.h
-    qtest_staging.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdeqt5staging_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kdeqt5staging COMPONENT Devel
 )

@@ -21,7 +21,6 @@
 
 #include <kde4support_export.h>
 #include <QtTest/QtTest>
-#include "qtest_staging.h"
 #include <stdlib.h>
 #include <assert.h>
 #include <k4aboutdata.h>

@@ -21,7 +21,6 @@
 
 #include <cstdlib>
 #include <QtTest/QtTest>
-#include <qtest_staging.h>
 #include <QtCore/QDir>
 #include <klocale.h>
 #include <kcalendarsystem.h>
