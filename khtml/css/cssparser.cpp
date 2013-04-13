@@ -1854,11 +1854,6 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                     break;
                 }
                 case CSS_PROP_BACKGROUND_CLIP:
-                    if (val->id == CSS_VAL_BORDER_BOX || val->id == CSS_VAL_PADDING_BOX) {
-                        currValue = new CSSPrimitiveValueImpl(val->id);
-                        valueList->next();
-                    }
-                    break;
                 case CSS_PROP_BACKGROUND_ORIGIN:
                     if (val->id == CSS_VAL_BORDER_BOX || val->id == CSS_VAL_PADDING_BOX || val->id == CSS_VAL_CONTENT_BOX) {
                         currValue = new CSSPrimitiveValueImpl(val->id);
