@@ -204,10 +204,8 @@ public:
      *             with multiple instances in parallel. The service name of
      *             an instance is equal to the desktopEntryName + "-" +
      *             the PID of the process.
-     * @li Wait - This service has no DBUS support, the launcher will wait
-     *            till it is finished.
      */
-    enum DBusStartupType { DBusNone = 0, DBusUnique, DBusMulti, DBusWait };
+    enum DBusStartupType { DBusNone = 0, DBusUnique, DBusMulti };
 
     /**
      * Returns the DBUSStartupType supported by this service.

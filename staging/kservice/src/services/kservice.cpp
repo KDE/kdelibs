@@ -239,8 +239,6 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         m_DBUSStartusType = KService::DBusUnique;
     else if (dbusStartupType == QLatin1String("multi"))
         m_DBUSStartusType = KService::DBusMulti;
-    else if (dbusStartupType == QLatin1String("wait"))
-        m_DBUSStartusType = KService::DBusWait;
     else
         m_DBUSStartusType = KService::DBusNone;
 

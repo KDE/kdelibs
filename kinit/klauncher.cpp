@@ -59,7 +59,7 @@
 // #define KLAUNCHER_VERBOSE_OUTPUT
 
 static const char* const s_DBusStartupTypeToString[] =
-    { "DBusNone", "DBusUnique", "DBusMulti", "DBusWait", "ERROR" };
+    { "DBusNone", "DBusUnique", "DBusMulti", "ERROR" };
 
 using namespace KIO;
 
@@ -364,7 +364,6 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
          lastRequest->status = KLaunchRequest::Running;
          break;
        case KService::DBusUnique:
-       case KService::DBusWait:
        case KService::DBusMulti:
          lastRequest->status = KLaunchRequest::Launching;
          break;
@@ -401,9 +400,7 @@ KLauncher::processDied(pid_t pid, long exitStatus)
 #endif
       if (request->pid == pid)
       {
-         if (request->dbus_startup_type == KService::DBusWait)
-             request->status = KLaunchRequest::Done;
-         else if ((request->dbus_startup_type == KService::DBusUnique)
+         if ((request->dbus_startup_type == KService::DBusUnique)
                   && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)) {
              request->status = KLaunchRequest::Running;
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
@@ -988,10 +985,7 @@ KLauncher::kdeinit_exec(const QString &app, const QStringList &args,
    request->autoStart = false;
    request->arg_list = args;
    request->name = app;
-   if (wait)
-      request->dbus_startup_type = KService::DBusWait;
-   else
-      request->dbus_startup_type = KService::DBusNone;
+   request->dbus_startup_type = KService::DBusNone;
    request->pid = 0;
 #if HAVE_X11
    request->startup_id = startup_id.toLocal8Bit();
