@@ -314,6 +314,7 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_data.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybuffer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybufferview.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraytyped.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp

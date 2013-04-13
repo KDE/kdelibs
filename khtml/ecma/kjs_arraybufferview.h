@@ -37,7 +37,8 @@ namespace KJS {
         };
     };
 
-    template <class T>
+    //type, TypedArrayClass
+    template <class T, class U>
     class ArrayBufferViewConstructorImp : public JSObject {
     public:
         ArrayBufferViewConstructorImp(ExecState *exec, DOM::DocumentImpl* d);
@@ -53,7 +54,8 @@ namespace KJS {
     };
 
 
-    template <class T>
+    //type, TypedArrayPrototype
+    template <class T, class P>
     class ArrayBufferView : public JSObject {
     public:
         explicit ArrayBufferView(ExecState* exec, ArrayBuffer* buffer, size_t byteOffset, size_t byteLength);
@@ -65,9 +67,6 @@ namespace KJS {
 
         void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
         void put(ExecState *exec, unsigned propertyName, JSValue *value, int attr = None);
-
-        static const ClassInfo info;
-        virtual const ClassInfo* classInfo() const { return &info; }
 
         ArrayBuffer* buffer() const { return m_buffer; }
         size_t byteLength() const { return m_byteLength; }
@@ -87,27 +86,23 @@ namespace KJS {
     };
 
     //unrolled KJS_DEFINE_PROTOTYPE(ArrayBufferViewProto), for template sake
-    template <class T>
+
+    //type, TypedArrayClass
+    template <class T, class U>
     class ArrayBufferViewProto : public KJS::JSObject
     {
-        friend KJS::JSObject* ::cacheGlobalObject<ArrayBufferViewProto>(KJS::ExecState *exec, const KJS::Identifier &propertyName);
     public:
-        static KJS::JSObject *self(KJS::ExecState *exec);
-        virtual const KJS::ClassInfo *classInfo() const { return &info; }
-        static const KJS::ClassInfo info;
         bool getOwnPropertySlot(KJS::ExecState *, const KJS::Identifier&, KJS::PropertySlot&);
         using JSObject::getOwnPropertySlot;
     protected:
         ArrayBufferViewProto(KJS::ExecState *exec);
-        static KJS::Identifier* s_name;
-        static KJS::Identifier* name();
     };
 
     //unrolled KJS_IMPLEMENT_PROTOFUNC(ArrayBufferViewProtoFunc), for template sake
-    template <class T>
+    template <class T, class U>
     class ArrayBufferViewProtoFunc : public KJS::InternalFunctionImp {
     public:
-        ArrayBufferViewProtoFunc<T>(KJS::ExecState* exec, int i, int len, const KJS::Identifier& name)
+        ArrayBufferViewProtoFunc<T, U>(KJS::ExecState* exec, int i, int len, const KJS::Identifier& name)
             : InternalFunctionImp(static_cast<KJS::FunctionPrototype*>(exec->lexicalInterpreter()->builtinFunctionPrototype()), name), id(i) {
             put(exec, exec->propertyNames().length, KJS::jsNumber(len), KJS::DontDelete|KJS::ReadOnly|KJS::DontEnum);
         }
@@ -124,49 +119,27 @@ namespace KJS {
 
     // unrolled KJS_IMPLEMENT_PROTOTYPE("ArrayBufferView", ArrayBufferViewProto, ArrayBufferViewProtoFunc, ObjectPrototype)
     // for template sake
-    template <class T>
-    KJS::JSObject *ArrayBufferViewProto<T>::self(KJS::ExecState *exec) {
-        return  cacheGlobalObject<ArrayBufferViewProto<T> >(exec, *name());
+    template <class T, class U>
+    bool ArrayBufferViewProto<T, U>::getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot) {
+        return KJS::getStaticFunctionSlot<ArrayBufferViewProtoFunc<T, U> , KJS::JSObject>(exec, &ArrayBufferViewProtoTable, this, propertyName, slot);
     }
 
-    template <class T>
-    bool ArrayBufferViewProto<T>::getOwnPropertySlot(KJS::ExecState *exec, const KJS::Identifier& propertyName, KJS::PropertySlot& slot) {
-        return KJS::getStaticFunctionSlot<ArrayBufferViewProtoFunc<T> , KJS::JSObject>(exec, &ArrayBufferViewProtoTable, this, propertyName, slot);
-    }
-
-    template <class T>
-    KJS::Identifier* ArrayBufferViewProto<T>::name() {
-        if (!s_name)
-            s_name = new KJS::Identifier("[[" "ArrayBufferView"  ".prototype]]");
-        return s_name;
-    }
-
-    template <class T>
-    ArrayBufferViewProto<T>::ArrayBufferViewProto(KJS::ExecState *exec)
+    template <class T, class U>
+    ArrayBufferViewProto<T, U>::ArrayBufferViewProto(KJS::ExecState *exec)
         : KJS::JSObject(ObjectPrototype::self(exec))
     {
     }
-
-    template <class T>
-    const KJS::ClassInfo ArrayBufferViewProto<T>::info = { "ArrayBufferView" , 0, &ArrayBufferViewProtoTable, 0 };
-
-    template <class T>
-    KJS::Identifier* ArrayBufferViewProto<T>::s_name = 0;
     // unroll end
-
-    template <class T>
-    const ClassInfo ArrayBufferView<T>::info = { "ArrayBufferView", 0, &ArrayBufferViewTable, 0 };
-
 
     // -------------------- ArrayBufferViewProtoFunc ---------------------
 
-    template <class T>
-    JSValue *ArrayBufferViewProtoFunc<T>::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
+    template <class T, class U>
+    JSValue *ArrayBufferViewProtoFunc<T, U>::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
     {
-        if (!thisObj->inherits(&ArrayBufferView<T>::info)) {
+        if (!thisObj->inherits(&U::info)) {
             return jsUndefined();
         }
-        ArrayBufferView<T> *view = static_cast<ArrayBufferView<T>*>(thisObj);
+        U *view = static_cast<U*>(thisObj);
 
         switch (id) {
             case ArrayBufferViewBase::Subarray: {
@@ -195,16 +168,16 @@ namespace KJS {
                 if (begin < end)
                     length = (end - begin) * sizeof(T);
 
-                ArrayBufferView<T> *newView = new ArrayBufferView<T>(exec, view->buffer(), begin * sizeof(T), length);
+                U *newView = new U(exec, view->buffer(), begin * sizeof(T), length);
                 return newView;
             }
             case ArrayBufferViewBase::Set: {
                 JSObject* obj = args[0]->getObject();
                 if (!obj)
                     return jsUndefined();
-                if (obj->inherits(&ArrayBufferView<T>::info))
+                if (obj->inherits(&U::info))
                 {
-                    ArrayBufferView<T> *other = static_cast<ArrayBufferView<T>*>(obj);
+                    U *other = static_cast<U*>(obj);
                     double tmp;
                     size_t offset = 0;
                     if (args.size() >= 2 && args[1]->getNumber(tmp) && tmp > 0)
@@ -240,21 +213,21 @@ namespace KJS {
 
     // -------------------- ArrayBufferViewConstructorImp ---------------------
 
-    template <class T>
-    ArrayBufferViewConstructorImp<T>::ArrayBufferViewConstructorImp(ExecState* exec, DOM::DocumentImpl* d)
+    template <class T, class U>
+    ArrayBufferViewConstructorImp<T, U>::ArrayBufferViewConstructorImp(ExecState* exec, DOM::DocumentImpl* d)
         : JSObject(exec->lexicalInterpreter()->builtinFunctionPrototype()),
           doc(d)
     {
     }
 
-    template <class T>
-    bool ArrayBufferViewConstructorImp<T>::implementsConstruct() const
+    template <class T, class U>
+    bool ArrayBufferViewConstructorImp<T, U>::implementsConstruct() const
     {
         return true;
     }
 
-    template <class T>
-    JSObject *ArrayBufferViewConstructorImp<T>::construct(ExecState *exec, const List &args)
+    template <class T, class U>
+    JSObject *ArrayBufferViewConstructorImp<T, U>::construct(ExecState *exec, const List &args)
     {
         JSType type = args[0]->type();
 
@@ -275,21 +248,21 @@ namespace KJS {
                     if (args.size() >= 3 && args[2]->getNumber(tmp) && tmp > 0)
                         byteLength = static_cast<size_t>(tmp) * sizeof(T);
 
-                    return new ArrayBufferView<T>(exec, buf, byteOffset, byteLength);
+                    return new U(exec, buf, byteOffset, byteLength);
                 } else if (obj->inherits(&ArrayInstance::info)) {
                     // new ArrayBufferView(Array)
                     ArrayInstance* arr = dynamic_cast<ArrayInstance*>(obj);
                     ArrayBuffer* buf = new ArrayBuffer(arr->getLength()*sizeof(T));
-                    ArrayBufferView<T>* view = new ArrayBufferView<T>(exec, buf, 0, 0);
+                    U* view = new U(exec, buf, 0, 0);
                     for (unsigned i = 0; i < arr->getLength(); ++i) {
                         view->put(exec, i, arr->getItem(i));
                     }
                     return view;
-                } else if (obj->inherits(&ArrayBufferView<T>::info)) {
+                } else if (obj->inherits(&U::info)) {
                     // new ArrayBufferView(ArrayBufferView)
-                    ArrayBufferView<uint8_t>* arr = static_cast<ArrayBufferView<uint8_t>*>(obj);
+                    U* arr = static_cast<U*>(obj);
                     ArrayBuffer* buf = new ArrayBuffer(arr->buffer()->buffer(), arr->byteLength());
-                    ArrayBufferView<T>* view = new ArrayBufferView<T>(exec, buf, 0, 0);
+                    U* view = new U(exec, buf, 0, 0);
                     return view;
                 } else {
                     break;
@@ -302,18 +275,18 @@ namespace KJS {
                 if (!KJS::isNaN(lengthF) && !KJS::isInf(lengthF) && lengthF > 0)
                     length = static_cast<size_t>(lengthF);
                 ArrayBuffer* buf = new ArrayBuffer(length*sizeof(T));
-                return new ArrayBufferView<T>(exec, buf, 0, 0);
+                return new U(exec, buf, 0, 0);
             }
             default:
                 break;
         }
         // new ArrayBufferView(), create empty ArrayBuffer
         ArrayBuffer* buf = new ArrayBuffer(0);
-        return new ArrayBufferView<T>(exec, buf, 0, 0);
+        return new U(exec, buf, 0, 0);
     }
 
-    template <class T>
-    JSValue* ArrayBufferViewConstructorImp<T>::getValueProperty(ExecState *, int) const
+    template <class T, class U>
+    JSValue* ArrayBufferViewConstructorImp<T, U>::getValueProperty(ExecState *, int) const
     {
         // switch (id)
         // {
@@ -322,17 +295,17 @@ namespace KJS {
         // }
     }
 
-    template <class T>
-    bool ArrayBufferViewConstructorImp<T>::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
+    template <class T, class U>
+    bool ArrayBufferViewConstructorImp<T, U>::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
     {
-        return getStaticValueSlot<ArrayBufferViewConstructorImp<T>, JSObject>(exec, &ArrayBufferViewConstTable, this, propertyName, slot);
+        return getStaticValueSlot<ArrayBufferViewConstructorImp<T, U>, JSObject>(exec, &ArrayBufferViewConstTable, this, propertyName, slot);
     }
 
 
     // -------------------- ArrayBufferView ---------------------
 
-    template <typename T>
-    ArrayBufferView<T>::ArrayBufferView(KJS::ExecState* exec, KJS::ArrayBuffer* buffer, size_t byteOffset, size_t byteLength)
+    template <class T, class P>
+    ArrayBufferView<T, P>::ArrayBufferView(KJS::ExecState* exec, KJS::ArrayBuffer* buffer, size_t byteOffset, size_t byteLength)
         : JSObject(),
           m_buffer(buffer),
           m_byteOffset(byteOffset)
@@ -346,17 +319,17 @@ namespace KJS {
             m_byteLength = byteLength;
         }
         m_length = m_byteLength / sizeof(T);
-        setPrototype(ArrayBufferViewProto<T>::self(exec));
+        setPrototype(P::self(exec));
         m_bufferStart = reinterpret_cast<T*>(m_buffer->buffer() + m_byteOffset);
     }
 
-    template <typename T>
-    ArrayBufferView<T>::~ArrayBufferView()
+    template <class T, class P>
+    ArrayBufferView<T, P>::~ArrayBufferView()
     {
     }
 
-    template <typename T>
-    bool ArrayBufferView<T>::getOwnPropertySlot(ExecState* exec, unsigned int i, PropertySlot& slot)
+    template <class T, class P>
+    bool ArrayBufferView<T, P>::getOwnPropertySlot(ExecState* exec, unsigned int i, PropertySlot& slot)
     {
         if (!checkIndex(exec, i))
             return false;
@@ -365,19 +338,19 @@ namespace KJS {
         return true;
     }
 
-    template <typename T>
-    bool ArrayBufferView<T>::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
+    template <class T, class P>
+    bool ArrayBufferView<T, P>::getOwnPropertySlot(ExecState* exec, const Identifier& propertyName, PropertySlot& slot)
     {
         bool ok = false;
         unsigned i = propertyName.toArrayIndex(&ok);
         if (ok)
-            return ArrayBufferView<T>::getOwnPropertySlot(exec, i, slot);
+            return ArrayBufferView<T, P>::getOwnPropertySlot(exec, i, slot);
 
-        return getStaticValueSlot<ArrayBufferView<T>, JSObject>(exec, &ArrayBufferViewTable, this, propertyName, slot);
+        return getStaticValueSlot< ArrayBufferView<T, P>, JSObject>(exec, &ArrayBufferViewTable, this, propertyName, slot);
     }
 
-    template <typename T>
-    JSValue *ArrayBufferView<T>::getValueProperty(ExecState * /*exec*/, int token) const
+    template <class T, class P>
+    JSValue *ArrayBufferView<T, P>::getValueProperty(ExecState * /*exec*/, int token) const
     {
         switch (token) {
             case ArrayBufferViewBase::Buffer:
@@ -396,19 +369,19 @@ namespace KJS {
         return 0;
     }
 
-    template <typename T>
-    void ArrayBufferView<T>::put(ExecState* exec, const Identifier& propertyName, JSValue* value, int attr)
+    template <class T, class P>
+    void ArrayBufferView<T, P>::put(ExecState* exec, const Identifier& propertyName, JSValue* value, int attr)
     {
         bool ok = false;
         unsigned i = propertyName.toArrayIndex(&ok);
         if (ok)
-            ArrayBufferView<T>::put(exec, i, value, attr);
+            ArrayBufferView<T, P>::put(exec, i, value, attr);
         else
             KJS::JSObject::put(exec, propertyName, value, attr);
     }
 
-    template <typename T>
-    void ArrayBufferView<T>::put(ExecState* exec, unsigned int i, JSValue* value, int /*attr*/)
+    template <class T, class P>
+    void ArrayBufferView<T, P>::put(ExecState* exec, unsigned int i, JSValue* value, int /*attr*/)
     {
         if (!checkIndex(exec, i))
             return;
@@ -417,8 +390,8 @@ namespace KJS {
         m_bufferStart[i] = static_cast<T>(value->getNumber());
     }
 
-    template <typename T>
-    bool ArrayBufferView<T>::checkIndex(KJS::ExecState* /*exec*/, unsigned int pos)
+    template <class T, class P>
+    bool ArrayBufferView<T, P>::checkIndex(KJS::ExecState* /*exec*/, unsigned int pos)
     {
         if (m_byteOffset + (pos+1)*sizeof(T) > m_buffer->byteLength())
             return false;
