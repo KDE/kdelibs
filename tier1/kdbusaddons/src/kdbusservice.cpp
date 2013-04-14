@@ -30,6 +30,8 @@
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusReply>
 
+#include "kdbusservice_adaptor.h"
+
 class KDBusServicePrivate
 {
 public:
@@ -63,6 +65,7 @@ public:
 KDBusService::KDBusService(StartupOptions options, QObject *parent)
     : QObject(parent), d(new KDBusServicePrivate)
 {
+    new KDBusServiceAdaptor(this);
     QDBusConnectionInterface *bus = 0;
 
     if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
@@ -81,14 +84,11 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
             d->serviceName += QLatin1Char('-') + pid;
         }
 
-        // Register our objects first, so that we are ready as soon as we appear on the bus.
         QDBusConnection::sessionBus().registerObject(QLatin1String("/MainApplication"), QCoreApplication::instance(),
                                                      QDBusConnection::ExportScriptableSlots |
                                                      QDBusConnection::ExportScriptableProperties |
                                                      QDBusConnection::ExportAdaptors);
         QDBusConnection::sessionBus().registerObject(objectPath, this,
-                                                     QDBusConnection::ExportScriptableSlots |
-                                                     QDBusConnection::ExportScriptableProperties |
                                                      QDBusConnection::ExportAdaptors);
 
         d->registered = bus->registerService(d->serviceName) == QDBusConnectionInterface::ServiceRegistered;
@@ -99,13 +99,16 @@ KDBusService::KDBusService(StartupOptions options, QObject *parent)
                 // Already running so it's ok!
                 QDBusInterface iface(d->serviceName, objectPath);
                 iface.setTimeout(5 * 60 * 1000); // Application can take time to answer
-                QDBusReply<int> reply = iface.call(QLatin1String("Activate"));
+                QVariantMap platform_data;
+
+                // TODO getter for startup id in qapp (documented to be empty after showing the first window)
+                // platform_data.insert("desktop-startup-id", ?);
+                QDBusReply<void> reply = iface.call(QLatin1String("Activate"), platform_data);
                 if (reply.isValid()) {
-                    exit(reply);
+                    exit(0);
                 } else {
                     d->errorMessage = reply.error().message();
                 }
-
             } else {
                 d->errorMessage = QLatin1String("Couldn't register name '")
                                 + d->serviceName
@@ -149,7 +152,25 @@ void KDBusService::unregister()
     bus->unregisterService(d->serviceName);
 }
 
-int KDBusService::Activate()
+void KDBusService::Activate(const QVariantMap &platform_data)
 {
-    return 0;
+    // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
+    Q_EMIT activateRequested();
+    // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
+}
+
+void KDBusService::Open(const QStringList &uris, const QVariantMap &platform_data)
+{
+    // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
+    Q_EMIT openRequested(QUrl::fromStringList(uris));
+    // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
+}
+
+void KDBusService::ActivateAction(const QString &action_name, const QVariantList &maybeParameter, const QVariantMap &platform_data)
+{
+    // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
+    // This is a workaround for DBus not supporting null variants.
+    const QVariant param = maybeParameter.count() == 1 ? maybeParameter.first() : QVariant();
+    Q_EMIT activateActionRequested(action_name, param);
+    // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
 }

@@ -30,34 +30,30 @@
 
 #include <stdio.h>
 
-class TestService : public KDBusService
+class TestObject : public QObject
 {
     Q_OBJECT
 public:
-    TestService()
-        : KDBusService(Unique),
-          m_callCount(0) { }
+    TestObject()
+        : m_callCount(0) { }
 
     int callCount() const { return m_callCount; }
 
-public Q_SLOTS:
-    Q_SCRIPTABLE int Activate()
+private Q_SLOTS:
+    void slotActivateRequested()
     {
-        qDebug() << "Activate";
+        qDebug();
 
         ++m_callCount;
 
         if (m_callCount == 2) { // OK, all done, quit
             QCoreApplication::instance()->quit();
         }
-
-        return 0;
     }
 
-private Q_SLOTS:
     void executeNewChild()
     {
-        qDebug() << "executeNewChild";
+        qDebug();
 
         // Duplicated from kglobalsettingstest.cpp - make a shared helper method?
         QProcess* proc = new QProcess(this);
@@ -87,7 +83,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName("kdbusservicetest");
     QCoreApplication::setOrganizationDomain("kde.org");
 
-    TestService service;
+    KDBusService service(KDBusService::Unique);
+    TestObject testObject;
+    QObject::connect(&service, SIGNAL(activateRequested()), &testObject, SLOT(slotActivateRequested()));
 
     // Testcase for the problem coming from the old fork-on-startup solution:
     // the "Activate" D-Bus call would time out if the app took too much time
@@ -95,15 +93,15 @@ int main(int argc, char *argv[])
     //printf("Sleeping.\n");
     //sleep(200);
 
-    QTimer::singleShot( 0, &service, SLOT(Activate()) );
-    QTimer::singleShot( 400, &service, SLOT(executeNewChild()) );
+    QTimer::singleShot( 0, &service, SIGNAL(activateRequested()) );
+    QTimer::singleShot( 400, &testObject, SLOT(executeNewChild()) );
 
     qDebug() << "Running.";
     a.exec();
     qDebug() << "Terminating.";
 
-    Q_ASSERT(service.callCount() == 2);
-    const bool ok = service.callCount() == 2;
+    Q_ASSERT(testObject.callCount() == 2);
+    const bool ok = testObject.callCount() == 2;
 
     return ok ? 0 : 1;
 }

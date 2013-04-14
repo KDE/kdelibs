@@ -23,7 +23,8 @@
 #ifndef KDBUSSERVICE_H
 #define KDBUSSERVICE_H
 
-#include <QObject>
+#include <QtCore/QObject>
+#include <QtCore/QUrl>
 
 #include <kdbusaddons_export.h>
 
@@ -71,6 +72,7 @@ class KDBUSADDONS_EXPORT KDBusService : public QObject
     Q_OBJECT
     Q_ENUMS(StartupOption)
     Q_FLAGS(StartupOptions)
+    //Q_CLASSINFO("D-Bus Interface", "org.freedesktop.Application")
 
 public:
     enum StartupOption {
@@ -115,6 +117,28 @@ public:
      */
     QString errorMessage() const;
 
+Q_SIGNALS:
+    /**
+     * This method is called when a Unique application is launched while it is
+     * already running. In single-windows applications, this method would typically
+     * raise the window.
+     * The default implementation does nothing.
+     */
+    void activateRequested();
+
+    /**
+     * Opens one or more files in the application.
+     * @param uris The URLs of the files to open.
+     */
+    void openRequested(const QList<QUrl> &uris);
+
+    /**
+     * This method is called when a Unique application is launched while it is
+     * already running, and the user selected a specific application action to trigger.
+     * The default implementation does nothing.
+     */
+    void activateActionRequested(const QString &actionName, const QVariant& parameter);
+
 public Q_SLOTS:
     /**
      * Unregister from DBus.
@@ -124,13 +148,12 @@ public Q_SLOTS:
      */
     void unregister();
 
-    /**
-     * This method is called when a Unique application is launched while it is
-     * already running. In single-windows applications, this method would typically
-     * raise the window.
-     * The default implementation does nothing.
-     */
-    Q_SCRIPTABLE virtual int Activate();
+private:
+    // fdo.Application spec
+    void Activate(const QVariantMap &platform_data);
+    void Open(const QStringList &uris, const QVariantMap &platform_data);
+    void ActivateAction(const QString &action_name, const QVariantList &maybeParameter, const QVariantMap &platform_data);
+    friend class KDBusServiceAdaptor;
 
 private:
     KDBusServicePrivate * const d;
@@ -139,4 +162,3 @@ private:
 Q_DECLARE_OPERATORS_FOR_FLAGS(KDBusService::StartupOptions)
 
 #endif /* KDBUSSERVICE_H */
-

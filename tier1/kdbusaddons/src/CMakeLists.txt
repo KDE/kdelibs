@@ -5,8 +5,12 @@ set(libkdbusaddons_SRCS
     kdbusservice.cpp
 )
 
+qt5_add_dbus_adaptor(libkdbusaddons_SRCS org.freedesktop.Application.xml kdbusservice.h KDBusService kdbusservice_adaptor KDBusServiceAdaptor)
+
 add_library(KDBusAddons ${libkdbusaddons_SRCS})
 generate_export_header(KDBusAddons)
+
+
 
 target_link_libraries(KDBusAddons Qt5::DBus)
 
