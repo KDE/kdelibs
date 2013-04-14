@@ -13,5 +13,5 @@ ecm_mark_as_test(test_suggest)
 
 set(test_dialog_SRCS test_dialog.cpp)
 add_executable(test_dialog ${test_dialog_SRCS})
-target_link_libraries(test_dialog ${QT_QTWIDGETS_LIBRARY} sonnetcore sonnetui)
+target_link_libraries(test_dialog Qt5::Widgets sonnetcore sonnetui)
 ecm_mark_as_test(test_dialog)

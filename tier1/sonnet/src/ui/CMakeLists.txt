@@ -38,7 +38,7 @@ qt5_wrap_ui(sonnetui_SRCS ${sonnetui_UI})
 add_library(sonnetui ${sonnetui_SRCS})
 generate_export_header(sonnetui)
 
-target_link_libraries(sonnetui ${QT_QTWIDGETS_LIBRARY} sonnetcore)
+target_link_libraries(sonnetui Qt5::Widgets sonnetcore)
 
 set_target_properties(sonnetui PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}
