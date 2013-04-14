@@ -19,7 +19,7 @@ macro(ITEMMODELS_PROXYMODEL_TESTS)
         add_executable(${_testname} ${_testname}.cpp ${proxyModelTestSources} )
         add_test(itemmodels-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} ItemModels Qt5::Test Qt5::Widgets ${QT_QTXML_LIBRARY} proxymodeltestsuite )
+        target_link_libraries(${_testname} ItemModels Qt5::Test Qt5::Widgets Qt5::Xml proxymodeltestsuite )
     endforeach(_testname)
 endmacro()
 

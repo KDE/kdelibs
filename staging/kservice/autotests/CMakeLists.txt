@@ -13,7 +13,7 @@ macro(KSERVICE_UNIT_TESTS)
     target_link_libraries(${_testname}
        kservice
        Qt5::Test
-       ${QT_QTXML_LIBRARY}
+       Qt5::Xml
        ${KConfig_CORE_LIBRARY}
        ki18n
        Qt5::Concurrent

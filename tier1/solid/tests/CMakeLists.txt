@@ -11,7 +11,7 @@ include(ECMMarkAsTest)
 
 #kde4_add_executable(solidnettestdbusservice TEST ${solidnettestdbusservice_SRCS})
 
-#target_link_libraries(solidnettestdbusservice Qt5::DBus ${QT_QTXML_LIBRARY} Qt5::Test)
+#target_link_libraries(solidnettestdbusservice Qt5::DBus Qt5::Xml Qt5::Test)
 
 ########### networkingclient ###############
 

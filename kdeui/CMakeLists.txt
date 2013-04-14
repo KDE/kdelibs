@@ -369,7 +369,7 @@ target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 find_package(Qt5PrintSupport REQUIRED NO_MODULE)
 
 target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            ${QT_QTXML_LIBRARY} ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} Qt5::Concurrent)
+                            Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} Qt5::Concurrent)
 
 if(X11_FOUND)
   find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)

@@ -10,7 +10,7 @@ add_library(ki18n ${libki18n_SRCS})
 generate_export_header(ki18n)
 
 target_link_libraries(ki18n LINK_PUBLIC  Qt5::Core
-                            LINK_PRIVATE ${QT_QTXML_LIBRARY})
+                            LINK_PRIVATE Qt5::Xml)
 
 set_target_properties(ki18n PROPERTIES VERSION   ${KI18N_VERSION_STRING}
                                        SOVERSION ${KI18N_SOVERSION}

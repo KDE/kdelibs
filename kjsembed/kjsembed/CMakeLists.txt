@@ -54,7 +54,7 @@ target_include_directories(${KJSEMBEDLIBNAME} PUBLIC "$<BUILD_INTERFACE:${CMAKE_
 
 generate_export_header(${KJSEMBEDLIBNAME})
 
-target_link_libraries(${KJSEMBEDLIBNAME} ki18n ${QT_QTXML_LIBRARY} Qt5::Widgets Qt5::Svg Qt5::UiTools ${KJSLIBNAME} kdecore)
+target_link_libraries(${KJSEMBEDLIBNAME} ki18n Qt5::Xml Qt5::Widgets Qt5::Svg Qt5::UiTools ${KJSLIBNAME} kdecore)
 
 set_target_properties(${KJSEMBEDLIBNAME} PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 install(TARGETS ${KJSEMBEDLIBNAME} EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
