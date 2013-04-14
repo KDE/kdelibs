@@ -24,7 +24,7 @@ if (Qt5Script_FOUND)
 
     kde4_add_plugin(kded_proxyscout ${kded_proxyscout_PART_SRCS})
 
-    target_link_libraries(kded_proxyscout ${QT_QTSCRIPT_LIBRARY} ${KPAC_EXTRA_LIBS} ${KDE4_KDECORE_LIBS} kio ${KCoreAddons_LIBRARIES} )
+    target_link_libraries(kded_proxyscout Qt5::Script ${KPAC_EXTRA_LIBS} ${KDE4_KDECORE_LIBS} kio ${KCoreAddons_LIBRARIES} )
 
     # this needs -lresolv e.g on Slackware, but not on FreeBSD
     if (HAVE_RESOLV_LIBRARY)

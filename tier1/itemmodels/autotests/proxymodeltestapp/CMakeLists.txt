@@ -28,7 +28,7 @@ add_executable(proxymodeltestapp ${proxymodeltestapp_SRCS})
 target_link_libraries(proxymodeltestapp
    ItemModels
    proxymodeltestsuite
-   ${QT_QTSCRIPT_LIBRARY}
+   Qt5::Script
    Qt5::Widgets
 )
 
