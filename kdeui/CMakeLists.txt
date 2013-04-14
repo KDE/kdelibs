@@ -372,7 +372,7 @@ target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonne
                             Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} Qt5::Concurrent)
 
 if(X11_FOUND)
-  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+  find_package(Qt5X11Extras REQUIRED NO_MODULE)
   target_link_libraries(kdeui LINK_PUBLIC Qt5::X11Extras)
 endif()
 

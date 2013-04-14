@@ -33,7 +33,7 @@ if(NOT KIO_NO_NEPOMUK)
     )
 endif(NOT KIO_NO_NEPOMUK)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+find_package(Qt5X11Extras REQUIRED NO_MODULE)
 
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})

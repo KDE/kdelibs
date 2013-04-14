@@ -47,7 +47,7 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+find_package(Qt5X11Extras REQUIRED NO_MODULE)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 

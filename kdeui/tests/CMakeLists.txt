@@ -109,7 +109,7 @@ KDEUI_EXECUTABLE_TESTS(
 endif (NOT KDE_NO_DEPRECATED)
 
 if (X11_FOUND)
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS X11Extras)
+find_package(Qt5X11Extras REQUIRED NO_MODULE)
 KDEUI_EXECUTABLE_TESTS(
  kxerrorhandlertest
 )
