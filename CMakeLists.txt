@@ -39,15 +39,10 @@ find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 
-
-# skip the cmake-build related settings (like automoc)for now, we'll do that later, I need to have a close look at those settings first.
-set(KDE_SKIP_BUILD_SETTINGS TRUE)
-
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
 find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_FROM_BYTEARRAY -DQT_NO_KEYWORDS -DQT_STRICT_ITERATORS)
-unset(KDE_SKIP_BUILD_SETTINGS)
 
 find_package(Qt5Core REQUIRED NO_MODULE)
 
@@ -99,22 +94,7 @@ set(KConfig_LIBRARIES KConfigCore KConfigGui)
 set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
 include(${CMAKE_SOURCE_DIR}/tier2/kconfig/KConfigMacros.cmake)
 
-
-
 set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
-
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_BUILD_INTERFACE_INCLUDES ON)
-set(CMAKE_INCLUDE_CURRENT_DIR_IN_INTERFACE ON)
-
-# By default don't add any linked libraries to the "exported"
-# link interfaces of shared libraries, so that executables linking
-# against these libraries will not automatically add implicit
-# dependencies to their link list.
-#
-# This reduces inter-package dependencies and makes it easier to remove
-# dependencies of shared libraries without breaking binary compatibility.
-set(CMAKE_LINK_INTERFACE_LIBRARIES "")
 
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
