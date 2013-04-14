@@ -6,18 +6,6 @@ project(kdelibs)
 # Make CPack available to easy generate binary packages
 include(CPack)
 
-find_file(FOUND_KDE4_HEADERS kglobal.h)
-
-if (${FOUND_KDE4_HEADERS})
-  string(REGEX MATCH ${CMAKE_INSTALL_PREFIX} COMPATIBLE_HEADERS_TEST ${FOUND_KDE4_HEADERS})
-
-  if (NOT ${COMPATIBLE_HEADERS_TEST})
-    message("Found KDE4 headers. This will cause compiling failures while developing KDE Frameworks 5. Uninstall distro installed headers if applicable")
-    message("FOUND: ${FOUND_KDE4_HEADERS}")
-    return()
-  endif()
-endif()
-
 ################# set KDE specific information #################
 
 set (KDE_VERSION_MAJOR 4)
