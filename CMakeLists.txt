@@ -209,10 +209,6 @@ endif(QCA2_FOUND)
 
 ################# configure checks and create the configured files #################
 
-if(WINCE)
-  set(STATIC_LIBRARY ON)
-  add_definitions(-DSTATIC_INSTALL_PATH=L\\\"/programme/kde\\\")
-endif(WINCE)
 
 if(STATIC_LIBRARY)
   set(LIBRARY_TYPE STATIC)
