@@ -155,8 +155,7 @@ void KCharsetsTest::testEncodingNames()
         bool ok = false;
 
 #if QT_VERSION <= QT_VERSION_CHECK(5, 2, 0)
-        if (encodingName == QString::fromLatin1("ISO 8859-11")
-         || encodingName == QString::fromLatin1("ISO 8859-16")
+        if (encodingName == QString::fromLatin1("ISO 8859-16")
          || encodingName == QString::fromLatin1("jis7")
          || encodingName == QString::fromLatin1("winsami2")) {
             qWarning() << "Pending fix in Qt, for now" << encodingName << "is missing";
