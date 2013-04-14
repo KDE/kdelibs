@@ -209,7 +209,7 @@ target_include_directories(kdecore PUBLIC "$<BUILD_INTERFACE:${kdecore_INCLUDES}
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTNETWORK_LIBRARY} ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} kservice ki18n
+    ${QT_QTNETWORK_LIBRARY} Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} kservice ki18n
   LINK_PRIVATE
     ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )
@@ -219,12 +219,12 @@ if(WINCE)
 endif(WINCE)
 
 if(WIN32)
-  set(kdecore_LINK_INTERFACE_LIBRARIES  ${QT_QTDBUS_LIBRARY} ${KDEWIN_LIBRARIES})
+  set(kdecore_LINK_INTERFACE_LIBRARIES  Qt5::DBus ${KDEWIN_LIBRARIES})
 else(WIN32)
   if(APPLE)
-    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} ${CARBON_LIBRARY})
+    set(kdecore_LINK_INTERFACE_LIBRARIES Qt5::DBus ${CARBON_LIBRARY})
   else(APPLE)
-    set(kdecore_LINK_INTERFACE_LIBRARIES ${QT_QTDBUS_LIBRARY} )
+    set(kdecore_LINK_INTERFACE_LIBRARIES Qt5::DBus )
   endif(APPLE)
 endif(WIN32)
 

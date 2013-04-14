@@ -41,7 +41,7 @@ target_link_libraries(kwidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}
   Qt5::Widgets
   ${QT_QTSVG_LIBRARY}
-  ${QT_QTDBUS_LIBRARY}
+  Qt5::DBus
   ${KDE4_KDECORE_LIBS} # KGlobal, KLocale, KLocalizedString
 
   ${KConfig_CORE_LIBRARY}

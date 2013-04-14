@@ -41,7 +41,7 @@ set(kservice_includes
 target_include_directories(kservice PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
 
 target_link_libraries(kservice
-   ${QT_QTDBUS_LIBRARY})
+   Qt5::DBus)
 target_link_libraries(kservice
   LINK_PUBLIC
     KConfigCore

@@ -61,7 +61,7 @@ endif ()
 add_library(KWindowSystem ${kwindowsystem_SRCS})
 generate_export_header(KWindowSystem)
 
-target_link_libraries(KWindowSystem Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${platformLinkLibraries} ${qt5CompatLib})
+target_link_libraries(KWindowSystem Qt5::Widgets Qt5::DBus ${platformLinkLibraries} ${qt5CompatLib})
 
 set_target_properties(KWindowSystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
                                                SOVERSION ${KWINDOWSYSTEM_SOVERSION})

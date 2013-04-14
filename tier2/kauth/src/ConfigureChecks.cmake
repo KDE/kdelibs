@@ -148,7 +148,7 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
         backends/polkit-1/Polkit1Backend.cpp
     )
 
-    set(KAUTH_BACKEND_LIBS ${POLKITQT-1_CORE_LIBRARY} ${QT_QTDBUS_LIBRARY} Qt5::Widgets)
+    set(KAUTH_BACKEND_LIBS ${POLKITQT-1_CORE_LIBRARY} Qt5::DBus Qt5::Widgets)
 
     find_package(X11)
     if (X11_FOUND)
@@ -225,7 +225,7 @@ if(KDE4_AUTH_HELPER_BACKEND_NAME STREQUAL "DBUS")
         ${kauth_dbus_adaptor_SRCS}
     )
 
-    set(KAUTH_HELPER_BACKEND_LIBS ${QT_QTDBUS_LIBRARY} KAuth)
+    set(KAUTH_HELPER_BACKEND_LIBS Qt5::DBus KAuth)
 
     # Install some files as well
     install( FILES backends/dbus/org.kde.auth.conf

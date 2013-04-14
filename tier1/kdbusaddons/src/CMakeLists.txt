@@ -8,7 +8,7 @@ set(libkdbusaddons_SRCS
 add_library(KDBusAddons ${libkdbusaddons_SRCS})
 generate_export_header(KDBusAddons)
 
-target_link_libraries(KDBusAddons ${QT_QTDBUS_LIBRARY})
+target_link_libraries(KDBusAddons Qt5::DBus)
 
 set_target_properties(KDBusAddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
                                              SOVERSION ${KDBUSADDONS_SOVERSION}

@@ -89,7 +89,7 @@ set(kde4support_INCLUDES
 )
 target_include_directories(kde4support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
-target_link_libraries(kde4support Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${QT_QTTEST_LIBRARY} kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets ${KAuth_LIBRARIESss} kdeui ki18n kinterprocesswindowing ${X11_LIBRARIES})
+target_link_libraries(kde4support Qt5::Widgets Qt5::DBus ${QT_QTTEST_LIBRARY} kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets ${KAuth_LIBRARIESss} kdeui ki18n kinterprocesswindowing ${X11_LIBRARIES})
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})

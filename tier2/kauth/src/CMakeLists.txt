@@ -23,7 +23,7 @@ set(libkauth_SRCS
 add_library(KAuth ${libkauth_SRCS})
 generate_export_header(KAuth)
 
-target_link_libraries(KAuth Qt5::Widgets ${QT_QTDBUS_LIBRARY} ${KCoreAddons_LIBRARIES})
+target_link_libraries(KAuth Qt5::Widgets Qt5::DBus ${KCoreAddons_LIBRARIES})
 set_target_properties(KAuth PROPERTIES VERSION   ${KAUTH_VERSION_STRING}
                                        SOVERSION ${KAUTH_SOVERSION}
 )
