@@ -8,7 +8,7 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Test Widgets)
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Test Widgets)
 
 add_subdirectory(proxymodeltestsuite)
 

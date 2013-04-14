@@ -8,7 +8,7 @@ if(NOT kdelibs_SOURCE_DIR)
 
   set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-  find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets DBus Concurrent Test)
+  find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Widgets DBus Concurrent Test)
 
   find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KCoreAddons)
 

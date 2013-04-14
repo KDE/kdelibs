@@ -63,8 +63,6 @@ unset(KDE_SKIP_BUILD_SETTINGS)
 
 find_package(Qt5Core REQUIRED NO_MODULE)
 
-find_package(Qt5Transitional MODULE)
-
 add_subdirectory( libkdeqt5staging )
 
 set(kdeqt5staging_LIBRARIES kdeqt5staging)
@@ -283,6 +281,8 @@ set(kde4support_LIBRARY kde4support)
 ################# list the subdirectories #################
 
 add_subdirectory( cmake )
+# For convenience only. Move down/remove and find dependencies with more locality instead.
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Widgets Test Network Xml Concurrent DBus Svg)
 add_subdirectory( kdecore )
 add_subdirectory( staging )
 if (UNIX)

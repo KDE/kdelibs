@@ -27,7 +27,7 @@ remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS DBus Test)
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS DBus Test)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/src/kservice_version.h)
 

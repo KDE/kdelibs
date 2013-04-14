@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Test Widgets)
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Test Widgets)
 
 include(FeatureSummary)
 include(CMakePackageConfigHelpers)

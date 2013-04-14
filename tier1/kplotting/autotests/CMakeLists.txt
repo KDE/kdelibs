@@ -1,5 +1,5 @@
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Test Widgets)
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Test Widgets)
 
 include(ECMMarkAsTest)
 

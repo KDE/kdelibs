@@ -380,8 +380,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../../
 find_package(ECM 0.0.6 NO_MODULE REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
 
-find_package(Qt5Transitional MODULE REQUIRED)
-
 # Perl is not required for building KDE software, but we had that here since 4.0
 find_package(Perl)
 if(NOT PERL_FOUND)
