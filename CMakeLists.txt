@@ -197,7 +197,6 @@ endif(${generatedFileInSourceDir})
 #########################################################################
 
 add_definitions(${KDE4_DEFINITIONS})
-remove_definitions(-DQT3_SUPPORT_WARNINGS -DQT3_SUPPORT)
 
 add_definitions(-DQT_USE_FAST_CONCATENATION -DQT_USE_FAST_OPERATOR_PLUS)
 add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
