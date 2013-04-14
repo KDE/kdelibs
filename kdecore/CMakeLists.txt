@@ -209,7 +209,7 @@ target_include_directories(kdecore PUBLIC "$<BUILD_INTERFACE:${kdecore_INCLUDES}
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    ${QT_QTNETWORK_LIBRARY} Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} kservice ki18n
+    Qt5::Network Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} kservice ki18n
   LINK_PRIVATE
     ${QT_QTXML_LIBRARY} ${kdecore_OPTIONAL_LIBS}
 )

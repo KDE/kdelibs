@@ -8,7 +8,7 @@ macro(KARCHIVE_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp) # TODO NOGUI
       add_test(karchive-${_testname} ${_testname})
-      target_link_libraries(${_testname} KArchive ${QT_QTTEST_LIBRARY} ${QT_QTNETWORK_LIBRARY})
+      target_link_libraries(${_testname} KArchive ${QT_QTTEST_LIBRARY} Qt5::Network)
       ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KARCHIVE_UNIT_TESTS)

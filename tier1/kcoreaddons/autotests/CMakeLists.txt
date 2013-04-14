@@ -8,7 +8,7 @@ macro(KCOREADDONS_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
         # TODO: split out the QtNetwork-dependent stuff into a separate addon?
-        target_link_libraries(${_testname} ${QT_QTNETWORK_LIBRARY} KCoreAddons )
+        target_link_libraries(${_testname} Qt5::Network KCoreAddons )
         ecm_mark_as_test(${_testname})
     endforeach()
 endmacro()

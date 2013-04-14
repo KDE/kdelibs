@@ -47,7 +47,7 @@ target_link_libraries(kiocore
  ${KCoreAddons_LIBRARIES}
  ki18n
  kservice
- ${QT_QTNETWORK_LIBRARY}
+ Qt5::Network
  Qt5::DBus
  Qt5::Concurrent
 )
