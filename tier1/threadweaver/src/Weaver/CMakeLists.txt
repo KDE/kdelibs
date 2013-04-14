@@ -27,7 +27,7 @@ set(ThreadWeaver_LIB_SRCS
 
 add_library(ThreadWeaver ${ThreadWeaver_LIB_SRCS})
 generate_export_header(ThreadWeaver)
-target_link_libraries(ThreadWeaver LINK_PUBLIC ${QT_QTCORE_LIBRARY})
+target_link_libraries(ThreadWeaver LINK_PUBLIC Qt5::Core)
 target_include_directories(ThreadWeaver PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 
 set_target_properties(ThreadWeaver PROPERTIES

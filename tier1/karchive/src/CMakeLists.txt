@@ -37,7 +37,7 @@ set(karchive_SRCS
 add_library(KArchive ${karchive_SRCS} ${karchive_OPTIONAL_SRCS})
 generate_export_header(KArchive)
 
-target_link_libraries(KArchive LINK_PUBLIC ${QT_QTCORE_LIBRARY})
+target_link_libraries(KArchive LINK_PUBLIC Qt5::Core)
 target_link_libraries(KArchive ${karchive_OPTIONAL_LIBS} ${ZLIB_LIBRARY} )
 
 set_target_properties(KArchive PROPERTIES VERSION   ${KARCHIVE_VERSION_STRING}

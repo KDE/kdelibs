@@ -120,7 +120,7 @@ if (NOT CMAKE_CROSSCOMPILING)
    kde4_add_executable(meinproc4_simple NOGUI ${meinproc_qt_SRCS})
 
    # kdecore for kcmdlineargs
-   target_link_libraries(meinproc4_simple ${KDE4_KDECORE_LIBS} ${QT_QTCORE_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
+   target_link_libraries(meinproc4_simple ${KDE4_KDECORE_LIBS} Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
 
    add_dependencies(meinproc4_simple docbookl10nhelper)
 
@@ -219,7 +219,7 @@ endforeach(_currentcustomizedir ${customizedir})
 
 set( docbookl10nhelper_SRCS docbookl10nhelper.cpp )
 kde4_add_executable( docbookl10nhelper NOGUI ${docbookl10nhelper_SRCS} )
-target_link_libraries( docbookl10nhelper ${QT_QTCORE_LIBRARIES} )
+target_link_libraries( docbookl10nhelper Qt5::Core )
 
 add_custom_command( TARGET docbookl10nhelper POST_BUILD
   COMMAND ${EXECUTABLE_OUTPUT_PATH}/docbookl10nhelper

@@ -35,7 +35,7 @@ set(kcodecs_SRCS
 add_library(KCodecs ${kcodecs_SRCS})
 generate_export_header(KCodecs)
 
-target_link_libraries(KCodecs LINK_PUBLIC ${QT_QTCORE_LIBRARY} )
+target_link_libraries(KCodecs LINK_PUBLIC Qt5::Core )
 
 set_target_properties(KCodecs PROPERTIES VERSION   ${KCODECS_VERSION_STRING}
                                          SOVERSION ${KCODECS_SOVERSION}

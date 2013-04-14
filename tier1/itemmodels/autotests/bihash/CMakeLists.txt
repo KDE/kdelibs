@@ -13,7 +13,7 @@ set(functionalitytest_srcs
 add_executable(bihash_functionalitytest ${functionalitytest_srcs})
 
 target_link_libraries(bihash_functionalitytest
-  ${QT_QTCORE_LIBRARIES}
+  Qt5::Core
 )
 
 set(benchmarks_srcs

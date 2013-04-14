@@ -9,7 +9,7 @@ set(kjsapi_LIB_SRCS
 add_library(kjsapi ${kjsapi_LIB_SRCS})
 generate_export_header(kjsapi)
 
-target_link_libraries(kjsapi kjs ${QT_QTCORE_LIBRARY})
+target_link_libraries(kjsapi kjs Qt5::Core)
 
 set_target_properties(kjsapi PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
 install(TARGETS kjsapi EXPORT kjsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

@@ -22,7 +22,7 @@ set(sonnetcore_HEADERS
 add_library(sonnetcore ${sonnetcore_SRCS})
 generate_export_header(sonnetcore)
 
-target_link_libraries(sonnetcore LINK_PUBLIC ${QT_QTCORE_LIBRARY})
+target_link_libraries(sonnetcore LINK_PUBLIC Qt5::Core)
 
 set_target_properties(sonnetcore PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}

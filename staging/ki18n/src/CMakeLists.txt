@@ -9,7 +9,7 @@ set(libki18n_SRCS
 add_library(ki18n ${libki18n_SRCS})
 generate_export_header(ki18n)
 
-target_link_libraries(ki18n LINK_PUBLIC  ${QT_QTCORE_LIBRARY}
+target_link_libraries(ki18n LINK_PUBLIC  Qt5::Core
                             LINK_PRIVATE ${QT_QTXML_LIBRARY})
 
 set_target_properties(ki18n PROPERTIES VERSION   ${KI18N_VERSION_STRING}
@@ -46,7 +46,7 @@ set(ktranscript_LIB_SRCS
 
 add_library(ktranscript MODULE ${ktranscript_LIB_SRCS})
 set_target_properties(ktranscript PROPERTIES PREFIX "") # remove lib prefix
-target_link_libraries(ktranscript kjs ${QT_QTCORE_LIBRARY})
+target_link_libraries(ktranscript kjs Qt5::Core)
 
 install(TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR})
 
