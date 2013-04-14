@@ -1,7 +1,7 @@
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Test)
+find_package(Qt5Test REQUIRED NO_MODULE)
 
 include(ECMMarkAsTest)
 
