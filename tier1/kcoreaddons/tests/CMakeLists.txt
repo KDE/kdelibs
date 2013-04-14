@@ -1,6 +1,6 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets)
+find_package(Qt5Widgets REQUIRED NO_MODULE)
 
 macro(KCOREADDONS_EXAMPLES)
     foreach(_testname ${ARGN})

@@ -2,7 +2,7 @@
 
 set(ThreadWeaverGui_LIB_SRCS  WeaverThreadGrid.cpp )
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Widgets)
+find_package(Qt5Widgets REQUIRED NO_MODULE)
 
 add_library(ThreadWeaverGui ${ThreadWeaverGui_LIB_SRCS})
 generate_export_header(ThreadWeaverGui)
