@@ -32,8 +32,6 @@ if (KHTML_BUILD_TESTREGRESSION)
    set (__KDE_HAVE_GCC_VISIBILITY 0)
 endif (KHTML_BUILD_TESTREGRESSION)
 
-option(STATIC_LIBRARY "Build kdelibs as static libraries." FALSE)
-
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
 # where to look first for cmake modules, before ${CMAKE_ROOT}/Modules/ is checked
@@ -208,15 +206,6 @@ endif(QCA2_FOUND)
 
 
 ################# configure checks and create the configured files #################
-
-
-if(STATIC_LIBRARY)
-  set(LIBRARY_TYPE STATIC)
-  add_definitions(-DKDELIBS_STATIC_LIBS)
-  message(STATUS "Building kdelibs as static libraries")
-else(STATIC_LIBRARY)
-  set(LIBRARY_TYPE SHARED)
-endif(STATIC_LIBRARY)
 
 # now create config headers
 configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
