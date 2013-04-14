@@ -4,7 +4,7 @@ remove_definitions(-DQT_NO_KEYWORDS)
 
 include(ECMMarkAsTest)
 
-find_package(Qt5Transitional REQUIRED Concurrent)
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Concurrent Test Widgets)
 
 macro(KCONFIGCORE_UNIT_TESTS)
    foreach(_testname ${ARGN})
@@ -14,8 +14,6 @@ macro(KCONFIGCORE_UNIT_TESTS)
       ecm_mark_as_test(${_testname})
    endforeach()
 endmacro()
-
-find_package(Qt5Transitional REQUIRED Concurrent)
 
 macro(KCONFIGGUI_UNIT_TESTS)
    foreach(_testname ${ARGN})

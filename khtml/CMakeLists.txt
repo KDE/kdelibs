@@ -3,6 +3,10 @@ project(khtml)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=6000)
 
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
+
+find_package(Qt5PrintSupport REQUIRED NO_MODULE)
+
 include(ConfigureChecks.cmake)
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
 

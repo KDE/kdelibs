@@ -5,6 +5,8 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
 include(ECMMarkAsTest)
 
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Test Network)
+
 macro(KWINDOWSYSTEM_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)

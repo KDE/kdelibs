@@ -1,4 +1,6 @@
 
+find_package(Qt5Widgets REQUIRED NO_MODULE)
+
 set(libkconfiggui_SRCS
    kconfiggui.cpp
    kconfiggroupgui.cpp

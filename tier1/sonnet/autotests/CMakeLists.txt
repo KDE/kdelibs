@@ -2,6 +2,8 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
 
+find_package(Qt5Xml REQUIRED NO_MODULE)
+
 ########### unittests ###############
 
 macro(SONNET_UNIT_TESTS)

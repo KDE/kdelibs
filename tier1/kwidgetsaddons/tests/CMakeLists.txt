@@ -1,6 +1,8 @@
 
 include(ECMMarkAsTest)
 
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Xml Test)
+
 macro(kwidgetsaddons_executable_tests)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)

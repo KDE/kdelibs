@@ -2,6 +2,8 @@ project(kdecore)
 
 find_package(X11)
 
+find_package(Qt5PrintSupport REQUIRED NO_MODULE)
+
 # QUrl
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 

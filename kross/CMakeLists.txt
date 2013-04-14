@@ -1,4 +1,6 @@
 
+find_package(Qt5Script)
+
 # the core library
 add_subdirectory( core )
 # the ui library

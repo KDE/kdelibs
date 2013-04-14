@@ -1,4 +1,6 @@
 
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS DBus Test)
+
 qt5_add_dbus_adaptor(kauth_dbus_adaptor_tests_SRCS
                      ../src/backends/dbus/org.kde.auth.xml
                      ../src/backends/dbus/DBusHelperProxy.h

@@ -1,3 +1,6 @@
+
+find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Widgets DBus)
+
 # This file handles all the logic for compiling KAuth's backends
 include(ConfigureChecks.cmake)
 
