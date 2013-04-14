@@ -46,7 +46,7 @@ target_link_libraries(solidhwtest Qt5::DBus Qt5::Xml Qt5::Test ${LIBS} Solid_sta
 set(solidmttest_SRCS
    solidmttest.cpp )
 
-find_package(Qt5Transitional REQUIRED Concurrent)
+find_package(Qt5Concurrent REQUIRED NO_MODULE)
 
 add_executable(solidmttest ${solidmttest_SRCS})
 add_test(solidmttest solidmttest)
