@@ -76,14 +76,7 @@ set(Solid_LIBRARIES Solid)
 
 add_subdirectory( tier2 )
 
-set(KAuth_INCLUDE_DIRS ${CMAKE_BINARY_DIR}/tier2/kauth/src/
-                       ${CMAKE_SOURCE_DIR}/tier2/kauth/src/ )
 set(KAuth_LIBRARIES  KAuth)
-
-set(KConfig_INCLUDE_DIRS   ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/core
-                           ${CMAKE_BINARY_DIR}/tier2/kconfig/src/core
-                           ${CMAKE_SOURCE_DIR}/tier2/kconfig/src/gui
-                           ${CMAKE_BINARY_DIR}/tier2/kconfig/src/gui )
 
 set(KConfig_CORE_LIBRARY KConfigCore)
 set(KConfig_GUI_LIBRARY KConfigGui)
