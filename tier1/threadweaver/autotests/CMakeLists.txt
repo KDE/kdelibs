@@ -11,7 +11,7 @@ add_executable(ThreadWeaverJobTests ${JobTests_SRCS})
 add_test(ThreadWeaverJobTests ThreadWeaverJobTests)
 ecm_mark_as_test(ThreadWeaverJobTests)
 
-target_link_libraries(ThreadWeaverJobTests ${QT_QTTEST_LIBRARY} ThreadWeaver)
+target_link_libraries(ThreadWeaverJobTests Qt5::Test ThreadWeaver)
 
 ########### next target ###############
 
@@ -21,7 +21,7 @@ add_executable(ThreadWeaverQueueTests ${QueueTests_SRCS})
 add_test(ThreadWeaverQueueTests ThreadWeaverQueueTests)
 ecm_mark_as_test(ThreadWeaverQueueTests)
 
-target_link_libraries(ThreadWeaverQueueTests ${QT_QTTEST_LIBRARY} ThreadWeaver)
+target_link_libraries(ThreadWeaverQueueTests Qt5::Test ThreadWeaver)
 
 ########### next target ###############
 
@@ -31,7 +31,7 @@ add_executable(ThreadWeaverDeleteTest ${DeleteTest_SRCS})
 add_test(ThreadWeaverDeleteTest ThreadWeaverDeleteTest)
 ecm_mark_as_test(ThreadWeaverDeleteTest)
 
-target_link_libraries(ThreadWeaverDeleteTest ${QT_QTTEST_LIBRARY} ThreadWeaver)
+target_link_libraries(ThreadWeaverDeleteTest Qt5::Test ThreadWeaver)
 
 ########### next target ###############
 
@@ -41,5 +41,5 @@ add_executable(ThreadWeaverLifecycleTest ${LifecycleTest_SRCS})
 add_test(ThreadWeaverLifecycleTest ThreadWeaverLifecycleTest)
 ecm_mark_as_test(ThreadWeaverLifecycleTest)
 
-target_link_libraries(ThreadWeaverLifecycleTest ${QT_QTTEST_LIBRARY} ThreadWeaver)
+target_link_libraries(ThreadWeaverLifecycleTest Qt5::Test ThreadWeaver)
 

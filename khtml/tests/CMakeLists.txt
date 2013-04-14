@@ -33,7 +33,7 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/../css
 )
 kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
-target_link_libraries( khtmlparttest ${QT_QTTEST_LIBRARY} ${KDE4_KDECORE_LIBS} khtml Qt5::Widgets)
+target_link_libraries( khtmlparttest Qt5::Test ${KDE4_KDECORE_LIBS} khtml Qt5::Widgets)
 
 # msvc linker doesn't like "#define protected public"
 if(NOT MSVC)
@@ -56,4 +56,4 @@ set(kencodingdetector_SRCS
     ${CMAKE_SOURCE_DIR}/khtml/misc/guess_ja.cpp
 )
 kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
-target_link_libraries(kencodingdetectortest ${QT_QTTEST_LIBRARY} ${KDE4_KDECORE_LIBS})
+target_link_libraries(kencodingdetectortest Qt5::Test ${KDE4_KDECORE_LIBS})

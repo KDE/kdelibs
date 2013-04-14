@@ -4,7 +4,7 @@ kde4_add_unit_test(test_kconf_update
 
 target_link_libraries(test_kconf_update
     ${KDE4_KDECORE_LIBS}
-    ${QT_QTTEST_LIBRARY}
+    Qt5::Test
     )
 
 target_include_directories(test_kconf_update PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/../..)
@@ -16,5 +16,5 @@ kde4_add_unit_test(test_kconfigutils
 
 target_link_libraries(test_kconfigutils
     ${KDE4_KDECORE_LIBS}
-    ${QT_QTTEST_LIBRARY}
+    Qt5::Test
     )

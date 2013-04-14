@@ -6,7 +6,7 @@ include(ECMMarkAsTest)
 MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME "kdecore-${_testname}" NOGUI ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} Qt5::Network ${KCoreAddons_LIBRARIES}  kdeqt5staging)
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} Qt5::Test Qt5::Network ${KCoreAddons_LIBRARIES}  kdeqt5staging)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -16,7 +16,7 @@ MACRO(KDECORE_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_executable(${_testname} NOGUI ${_testname}.cpp)
                ecm_mark_as_test(${_testname})
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES} )
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -57,17 +57,17 @@ KDECORE_EXECUTABLE_TESTS(
 # compile into the test since it's not exported
 set(klocaletest_SRCS klocaletest.cpp ../date/kdayperiod.cpp)
 kde4_add_unit_test(klocaletest ${klocaletest_SRCS})
-target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES})
+target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES})
 
 ########### kdatetimeformattertest ###############
 
 # compile KDateTimeFormatter and KDayPeriod into the test since it's not exported
 set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter.cpp ../date/kdayperiod.cpp)
 kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
-target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} ${KCoreAddons_LIBRARIES})
+target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES})
 
 ########### kcompositejobtest ###############
 
 set(kcompositejobtest_SRCS kcompositejobtest.cpp)
 kde4_add_unit_test(kcompositejobtest TESTNAME kdecore-kcompositejobtest ${kcompositejobtest_SRCS})
-target_link_libraries(kcompositejobtest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
+target_link_libraries(kcompositejobtest ${KDE4_KDECORE_LIBS} Qt5::Test )

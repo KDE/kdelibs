@@ -7,7 +7,7 @@ macro(QT5_STAGING_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
       add_test(qt5staging-${_testname} ${_testname})
-      target_link_libraries(${_testname} kdeqt5staging ${QT_QTTEST_LIBRARY})
+      target_link_libraries(${_testname} kdeqt5staging Qt5::Test)
    endforeach()
 endmacro()
 

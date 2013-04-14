@@ -31,5 +31,5 @@ add_test(bihash_benchmarks bihash_benchmarks_exec)
 
 target_link_libraries(bihash_benchmarks_exec
   Qt5::Widgets
-  ${QT_QTTEST_LIBRARIES}
+  Qt5::Test
 )

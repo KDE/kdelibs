@@ -12,7 +12,7 @@ macro(KSERVICE_UNIT_TESTS)
     add_test(kservice-${_testname} ${_testname})
     target_link_libraries(${_testname}
        kservice
-       ${QT_QTTEST_LIBRARY}
+       Qt5::Test
        ${QT_QTXML_LIBRARY}
        ${KConfig_CORE_LIBRARY}
        ki18n
