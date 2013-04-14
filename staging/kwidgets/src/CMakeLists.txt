@@ -40,7 +40,7 @@ target_include_directories(kwidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDE
 target_link_libraries(kwidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}
   Qt5::Widgets
-  ${QT_QTSVG_LIBRARY}
+  Qt5::Svg
   Qt5::DBus
   ${KDE4_KDECORE_LIBS} # KGlobal, KLocale, KLocalizedString
 

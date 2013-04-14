@@ -377,7 +377,7 @@ if(X11_FOUND)
 endif()
 
 if(NOT WINCE)
-target_link_libraries(kdeui  ${QT_QTSVG_LIBRARY})
+target_link_libraries(kdeui  Qt5::Svg)
 endif(NOT WINCE)
 
 if(HAVE_DBUSMENUQT)
@@ -414,7 +414,7 @@ endif(X11_Xrender_FOUND)
 target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${KConfig_GUI_LIBRARY} Qt5::Widgets)
 
 if(NOT WINCE)
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${QT_QTSVG_LIBRARY})
+target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES Qt5::Svg)
 endif(NOT WINCE)
 
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
