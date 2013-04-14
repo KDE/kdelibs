@@ -1,5 +1,5 @@
 
-find_package(Qt5Transitional REQUIRED MODULE COMPONENTS Script)
+find_package(Qt5Script REQUIRED NO_MODULE)
 
 set(proxymodeltestapp_SRCS
     main.cpp
