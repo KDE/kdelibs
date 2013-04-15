@@ -257,7 +257,7 @@ void KSaveFileTest::transactionalWriteNoPermissionsOnDir()
         QCOMPARE(QString::fromLatin1(reader.readAll()), QString::fromLatin1("W"));
     } else {
         QVERIFY(!file.open(QIODevice::WriteOnly));
-        QCOMPARE((int)file.error(), (int)QFile::OpenError);
+        QCOMPARE((int)file.error(), (int)QFile::PermissionsError);
     }
 #endif
 }
