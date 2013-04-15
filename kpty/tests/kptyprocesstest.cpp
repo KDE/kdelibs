@@ -24,6 +24,13 @@
 #include <kptydevice.h>
 #include <qtest_kde.h>
 
+// Qt4 workaround, fixed in Qt5
+class MyQThread : public QThread
+{
+public:
+    using QThread::msleep;
+};
+
 void KPtyProcessTest::test_suspend_pty()
 {
     KPtyProcess p;
@@ -77,7 +84,7 @@ void KPtyProcessTest::test_shared_pty()
     for (int i = 0; i < 5; ++i) {
         if (p.pty()->canReadLine())
             break;
-        QThread::msleep(500);
+        MyQThread::msleep(500);
     }
     QCOMPARE(p.pty()->readAll(), QByteArray("hello from me\r\n"));
 
@@ -90,7 +97,7 @@ void KPtyProcessTest::test_shared_pty()
     for (int i = 0; i < 5; ++i) {
         if (p.pty()->canReadLine())
             break;
-        QThread::msleep(500);
+        MyQThread::msleep(500);
     }
     QCOMPARE(p.pty()->readAll(), QByteArray("hello from process 2\r\n"));
 
@@ -103,7 +110,7 @@ void KPtyProcessTest::test_shared_pty()
     for (int i = 0; i < 5; ++i) {
         if (p.pty()->canReadLine())
             break;
-        QThread::msleep(500);
+        MyQThread::msleep(500);
     }
     QCOMPARE(p2.pty()->readAll(), QByteArray("hi from process 1\r\n"));
 
