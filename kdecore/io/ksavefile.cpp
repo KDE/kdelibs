@@ -98,15 +98,6 @@ bool KSaveFile::open(OpenMode flags)
         return false;
     }
 
-    // we only check here if the directory can be written to
-    // the actual filename isn't written to, but replaced later
-    // with the contents of our tempfile
-    if (!KStandardDirs::checkAccess(d->realFileName, W_OK)) {
-        d->error=QFile::PermissionsError;
-        d->errorString=i18n("Insufficient permissions in target directory.");
-        return false;
-    }
-
     //Create our temporary file
     QTemporaryFile tempFile;
     tempFile.setAutoRemove(false);
@@ -123,6 +114,17 @@ bool KSaveFile::open(OpenMode flags)
             }
         }
 #endif
+
+        // we only check here if the directory can be written to
+        // the actual filename isn't written to, but replaced later
+        // with the contents of our tempfile
+        const QFileInfo fileInfo(d->realFileName);
+        QDir parentDir = fileInfo.dir();
+        if (!QFileInfo(parentDir.absolutePath()).isWritable()) {
+            d->error=QFile::PermissionsError;
+            d->errorString=i18n("Insufficient permissions in target directory.");
+            return false;
+        }
         d->error=QFile::OpenError;
         d->errorString=i18n("Unable to open temporary file.");
         return false;
