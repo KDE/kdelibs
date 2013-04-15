@@ -842,7 +842,7 @@ public:
 #endif
 
           if (bCheckHostname)
-            (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
+//             (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
 
           kded->initModules();
        } else
