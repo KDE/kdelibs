@@ -842,11 +842,11 @@ unsigned char CanvasImageDataArray::decodeComponent(ExecState* exec, JSValue* js
 {
     double val = jsVal->toNumber(exec);
 
-    if (jsVal == jsUndefined())
+    if (jsVal->isUndefined())
         val = 0.0;
-    if (val < 0.0)
+    else if (val < 0.0)
         val = 0.0;
-    if (val > 255.0)
+    else if (val > 255.0)
         val = 255.0;
 
     // ### fixme: round to even

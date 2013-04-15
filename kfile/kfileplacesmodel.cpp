@@ -584,8 +584,18 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         KFilePlacesItem *item = d->items[itemRow];
         KBookmark bookmark = item->bookmark();
 
+        int destRow = row == -1 ? d->items.count() : row;
+        beginMoveRows(QModelIndex(), itemRow, itemRow, QModelIndex(), destRow);
         d->bookmarkManager->root().moveBookmark(bookmark, afterBookmark);
-
+        // Move item ourselves so that _k_reloadBookmarks() does not consider
+        // the move as a remove + insert.
+        //
+        // 2nd argument of QList::move() expects the final destination index,
+        // but 'row' is the value of the destination index before the moved
+        // item has been removed from its original position. That is why we
+        // adjust if necessary.
+        d->items.move(itemRow, itemRow < destRow ? (destRow - 1) : destRow);
+        endMoveRows();
     } else if (data->hasFormat("text/uri-list")) {
         // The operation is an add
         const QList<QUrl> urls = KUrlMimeData::urlsFromMimeData(data);

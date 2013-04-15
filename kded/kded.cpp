@@ -23,6 +23,7 @@
 #include "kdedmodule.h"
 
 #include <kcrash.h>
+#include <kdeversion.h>
 
 #include <unistd.h>
 #include <stdlib.h>

@@ -392,6 +392,10 @@ void KFilePlacesModelTest::testMove()
 void KFilePlacesModelTest::testDragAndDrop()
 {
     QList<QVariant> args;
+    QSignalSpy spy_moved(m_places, SIGNAL(rowsMoved(QModelIndex,int,int,QModelIndex,int)));
+
+    // Monitor rowsInserted() and rowsRemoved() to ensure they are never emitted:
+    // Moving with drag and drop is expected to emit rowsMoved()
     QSignalSpy spy_inserted(m_places, SIGNAL(rowsInserted(QModelIndex,int,int)));
     QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex,int,int)));
 
@@ -405,15 +409,15 @@ void KFilePlacesModelTest::testDragAndDrop()
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom" << "trash:/";
     CHECK_PLACES_URLS(urls);
-    args = spy_inserted.takeFirst();
-    QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
-    QCOMPARE(args.at(1).toInt(), 8);
-    QCOMPARE(args.at(2).toInt(), 8);
-    QCOMPARE(spy_removed.count(), 1);
-    args = spy_removed.takeFirst();
+    QCOMPARE(spy_inserted.count(), 0);
+    QCOMPARE(spy_removed.count(), 0);
+    QCOMPARE(spy_moved.count(), 1);
+    args = spy_moved.takeFirst();
     QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
     QCOMPARE(args.at(1).toInt(), 3);
     QCOMPARE(args.at(2).toInt(), 3);
+    QCOMPARE(args.at(3).value<QModelIndex>(), QModelIndex());
+    QCOMPARE(args.at(4).toInt(), 9);
 
     // Move the trash at the beginning of the list
     indexes.clear();
@@ -425,16 +429,15 @@ void KFilePlacesModelTest::testDragAndDrop()
     urls << "trash:/" << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
-    QCOMPARE(spy_inserted.count(), 1);
-    args = spy_inserted.takeFirst();
+    QCOMPARE(spy_inserted.count(), 0);
+    QCOMPARE(spy_removed.count(), 0);
+    QCOMPARE(spy_moved.count(), 1);
+    args = spy_moved.takeFirst();
     QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
-    QCOMPARE(args.at(1).toInt(), 0);
-    QCOMPARE(args.at(2).toInt(), 0);
-    QCOMPARE(spy_removed.count(), 1);
-    args = spy_removed.takeFirst();
-    QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
-    QCOMPARE(args.at(1).toInt(), 9);
-    QCOMPARE(args.at(2).toInt(), 9);
+    QCOMPARE(args.at(1).toInt(), 8);
+    QCOMPARE(args.at(2).toInt(), 8);
+    QCOMPARE(args.at(3).value<QModelIndex>(), QModelIndex());
+    QCOMPARE(args.at(4).toInt(), 0);
 
     // Move the trash in the list (at its original place)
     indexes.clear();
@@ -446,16 +449,15 @@ void KFilePlacesModelTest::testDragAndDrop()
     urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
-    QCOMPARE(spy_inserted.count(), 1);
-    args = spy_inserted.takeFirst();
-    QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
-    QCOMPARE(args.at(1).toInt(), 3);
-    QCOMPARE(args.at(2).toInt(), 3);
-    QCOMPARE(spy_removed.count(), 1);
-    args = spy_removed.takeFirst();
+    QCOMPARE(spy_inserted.count(), 0);
+    QCOMPARE(spy_removed.count(), 0);
+    QCOMPARE(spy_moved.count(), 1);
+    args = spy_moved.takeFirst();
     QCOMPARE(args.at(0).value<QModelIndex>(), QModelIndex());
     QCOMPARE(args.at(1).toInt(), 0);
     QCOMPARE(args.at(2).toInt(), 0);
+    QCOMPARE(args.at(3).value<QModelIndex>(), QModelIndex());
+    QCOMPARE(args.at(4).toInt(), 4);
 
     // Dropping on an item is not allowed
     indexes.clear();
@@ -465,6 +467,7 @@ void KFilePlacesModelTest::testDragAndDrop()
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
     QCOMPARE(spy_removed.count(), 0);
+    QCOMPARE(spy_moved.count(), 0);
 }
 
 void KFilePlacesModelTest::testPlacesLifecycle()

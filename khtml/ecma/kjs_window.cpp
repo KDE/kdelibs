@@ -73,7 +73,7 @@
 #include "xmlserializer.h"
 #include "domparser.h"
 #include "kjs_arraybuffer.h"
-#include "kjs_arraybufferview.h"
+#include "kjs_arraytyped.h"
 
 #include <rendering/render_replaced.h>
 
@@ -1242,21 +1242,21 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
     case ArrayBuffer:
       return new ArrayBufferConstructorImp(exec, part->xmlDocImpl());
     case Int8Array:
-      return new ArrayBufferViewConstructorImp<int8_t>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpInt8(exec, part->xmlDocImpl());
     case Uint8Array:
-      return new ArrayBufferViewConstructorImp<uint8_t>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpUint8(exec, part->xmlDocImpl());
     case Int16Array:
-      return new ArrayBufferViewConstructorImp<int16_t>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpInt16(exec, part->xmlDocImpl());
     case Uint16Array:
-      return new ArrayBufferViewConstructorImp<uint16_t>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpUint16(exec, part->xmlDocImpl());
     case Int32Array:
-      return new ArrayBufferViewConstructorImp<int32_t>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpInt32(exec, part->xmlDocImpl());
     case Uint32Array:
-      return new ArrayBufferViewConstructorImp<uint32_t>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpUint32(exec, part->xmlDocImpl());
     case Float32Array:
-      return new ArrayBufferViewConstructorImp<float>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpFloat32(exec, part->xmlDocImpl());
     case Float64Array:
-      return new ArrayBufferViewConstructorImp<double>(exec, part->xmlDocImpl());
+      return new ArrayBufferConstructorImpFloat64(exec, part->xmlDocImpl());
     case Onabort:
       return getListener(exec,DOM::EventImpl::ABORT_EVENT);
     case Onblur:

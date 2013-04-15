@@ -51,6 +51,10 @@ static bool allowAutomaticSemicolon();
 #define AUTO_SEMICOLON do { if (!allowAutomaticSemicolon()) YYABORT; } while (0)
 #define DBG(l, s, e) (l)->setLoc((s).first_line, (e).last_line)
 
+#ifndef __GNUC__
+#   define  __attribute__(x)
+#endif
+
 using namespace KJS;
 
 %}

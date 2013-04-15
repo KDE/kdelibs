@@ -332,6 +332,7 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_data.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybuffer.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybufferview.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraytyped.cpp
 )
 
 # TODO: set(KJS_DEBUGGER) once we can depend on the ktexteditor interfaces

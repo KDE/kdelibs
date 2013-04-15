@@ -513,7 +513,6 @@ public:
 
     virtual const char *renderName() const { return "RenderTextArea"; }
     virtual void calcMinMaxWidth();
-    virtual void layout();
     virtual void setStyle(RenderStyle *style);
 
     virtual short scrollWidth() const;
@@ -547,7 +546,6 @@ protected:
     virtual bool isEditable() const { return true; }
     virtual bool canHaveBorder() const { return true; }
 
-    bool scrollbarsStyled;
     Qt::Alignment m_textAlignment;
 };
 

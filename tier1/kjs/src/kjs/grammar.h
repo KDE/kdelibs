@@ -116,7 +116,7 @@ extern int kjsyydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 60 "grammar.y"
+#line 64 "grammar.y"
 
   int                 ival;
   double              dval;

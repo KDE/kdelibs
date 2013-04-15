@@ -497,9 +497,9 @@ void RenderWidget::updateFromElement()
                         frame->setFrameShape(m_nativeFrameShape);
                 }
             }
-            // Set system color for scrollbars
-            scrollView->horizontalScrollBar()->setPalette(QApplication::palette());
-            scrollView->verticalScrollBar()->setPalette(QApplication::palette());
+            // Scrollbars color (ie css extension)
+            scrollView->horizontalScrollBar()->setPalette(style()->palette());
+            scrollView->verticalScrollBar()->setPalette(style()->palette());
         }
         else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
             lineEdit->setFrame(!shouldDisableNativeBorders()); 
