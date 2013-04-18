@@ -4400,6 +4400,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
                 if (mime->is("text/html")
                     || mime->is("application/xml")) { // this includes xhtml and svg
                     child->m_serviceName = "khtml";
+                } else {
+                    if (!pluginsEnabled()) {
+                        childLoadFailure(child);
+                        return false;
+                    }
                 }
             }
 

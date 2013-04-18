@@ -507,12 +507,6 @@ void HTMLObjectBaseElementImpl::computeContent()
         KHTMLPart* p = document()->part();
         if (!p || !p->javaEnabled())
             newRenderAlternative = true;
-    } else {    
-        // Similarly for plugins.
-        KHTMLPart* p = document()->part();
-
-        if (!p || !p->pluginsEnabled())
-            newRenderAlternative = true;
     }
 
     // If there is no <embed> (here or as a child), and we don't have a type + url to go on,
