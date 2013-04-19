@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.8.10.20130405)
+cmake_minimum_required(VERSION 2.8.10.20130411)
 
 project(kdelibs)
 
