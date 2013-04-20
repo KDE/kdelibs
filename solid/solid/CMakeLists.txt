@@ -188,6 +188,7 @@ if(NOT WIN32 AND NOT APPLE)
    if ( UDEV_FOUND )
       message(STATUS "Building Solid UDev backend." )
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
+      backends/udev/utils.cpp
       backends/udev/udevdevice.cpp
       backends/udev/udevmanager.cpp
       backends/udev/udevdeviceinterface.cpp
@@ -203,6 +204,7 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevportablemediaplayer.cpp
       backends/udev/udevdvbinterface.cpp
       backends/udev/udevblock.cpp
+      backends/udev/udevbutton.cpp
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
       )
