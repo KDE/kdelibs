@@ -271,8 +271,8 @@ void Solid::PowerManagementPrivate::slotServiceRegistered(const QString &service
         if (reply.isValid() && reply.value() > 0) {
                 // Connect the signal
                 QDBusConnection::sessionBus().connect(QLatin1String("org.kde.Solid.PowerManagement"),
-                                                      QLatin1String("/org/kde/Solid/PowerManagement"),
-                                                      QLatin1String("org.kde.Solid.PowerManagement"),
+                                                      QLatin1String("/org/kde/Solid/PowerManagement/Actions/SuspendSession"),
+                                                      QLatin1String("org.kde.Solid.PowerManagement.Actions.SuspendSession"),
                                                       QLatin1String("resumingFromSuspend"),
                                                       this,
                                                       SIGNAL(resumingFromSuspend()));
