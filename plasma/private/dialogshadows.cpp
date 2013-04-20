@@ -35,8 +35,7 @@ class DialogShadows::Private
 {
 public:
     Private(DialogShadows *shadows)
-        : q(shadows),
-          m_managePixmaps(false)
+        : q(shadows)
     {
     }
 
@@ -68,7 +67,6 @@ public:
 
     QHash<Plasma::FrameSvg::EnabledBorders, QVector<unsigned long> > data;
     QHash<const QWidget *, Plasma::FrameSvg::EnabledBorders> m_windows;
-    bool m_managePixmaps;
 };
 
 class DialogShadowsSingleton
@@ -145,17 +143,13 @@ void DialogShadows::Private::initPixmap(const QString &element)
 {
 #ifdef Q_WS_X11
     QPixmap pix = q->pixmap(element);
-    if (!pix.isNull() && pix.handle() == 0) {
-        Pixmap xPix = XCreatePixmap(QX11Info::display(), QX11Info::appRootWindow(), pix.width(), pix.height(), 32);
-        QPixmap tempPix = QPixmap::fromX11Pixmap(xPix, QPixmap::ExplicitlyShared);
-        tempPix.fill(Qt::transparent);
-        QPainter p(&tempPix);
-        p.drawPixmap(QPoint(0, 0), pix);
-        m_shadowPixmaps << tempPix;
-        m_managePixmaps = true;
-    } else {
-        m_shadowPixmaps << pix;
-    }
+    Pixmap xPix = XCreatePixmap(QX11Info::display(), QX11Info::appRootWindow(), pix.width(), pix.height(), 32);
+    QPixmap tempPix = QPixmap::fromX11Pixmap(xPix, QPixmap::ExplicitlyShared);
+    tempPix.fill(Qt::transparent);
+    QPainter p(&tempPix);
+    p.drawPixmap(QPoint(0, 0), pix);
+    p.end();
+    m_shadowPixmaps << tempPix;
 #endif
 }
 
@@ -327,21 +321,39 @@ void DialogShadows::Private::setupData(Plasma::FrameSvg::EnabledBorders enabledB
 void DialogShadows::Private::clearPixmaps()
 {
 #ifdef Q_WS_X11
-    if (m_managePixmaps) {
-        foreach (const QPixmap &pixmap, m_shadowPixmaps) {
-            XFreePixmap(QX11Info::display(), pixmap.handle());
-        }
-
-        XFreePixmap(QX11Info::display(), m_emptyCornerPix.handle());
-        XFreePixmap(QX11Info::display(), m_emptyCornerBottomPix.handle());
-        XFreePixmap(QX11Info::display(), m_emptyCornerLeftPix.handle());
-        XFreePixmap(QX11Info::display(), m_emptyCornerRightPix.handle());
-        XFreePixmap(QX11Info::display(), m_emptyCornerTopPix.handle());
-        XFreePixmap(QX11Info::display(), m_emptyVerticalPix.handle());
-        XFreePixmap(QX11Info::display(), m_emptyHorizontalPix.handle());
-
-        m_managePixmaps = false;
+    foreach (const QPixmap &pixmap, m_shadowPixmaps) {
+        XFreePixmap(QX11Info::display(), pixmap.handle());
     }
+
+    if (!m_emptyCornerPix.isNull()) {
+        XFreePixmap(QX11Info::display(), m_emptyCornerPix.handle());
+    }
+    if (!m_emptyCornerBottomPix.isNull()) {
+        XFreePixmap(QX11Info::display(), m_emptyCornerBottomPix.handle());
+    }
+    if (!m_emptyCornerLeftPix.isNull()) {
+        XFreePixmap(QX11Info::display(), m_emptyCornerLeftPix.handle());
+    }
+    if (!m_emptyCornerRightPix.isNull()) {
+        XFreePixmap(QX11Info::display(), m_emptyCornerRightPix.handle());
+    }
+    if (!m_emptyCornerTopPix.isNull()) {
+        XFreePixmap(QX11Info::display(), m_emptyCornerTopPix.handle());
+    }
+    if (!m_emptyVerticalPix.isNull()) {
+        XFreePixmap(QX11Info::display(), m_emptyVerticalPix.handle());
+    }
+    if (!m_emptyHorizontalPix.isNull()) {
+        XFreePixmap(QX11Info::display(), m_emptyHorizontalPix.handle());
+    }
+
+    m_emptyCornerPix = QPixmap();
+    m_emptyCornerBottomPix = QPixmap();
+    m_emptyCornerLeftPix = QPixmap();
+    m_emptyCornerRightPix = QPixmap();
+    m_emptyCornerTopPix = QPixmap();
+    m_emptyVerticalPix = QPixmap();
+    m_emptyHorizontalPix = QPixmap();
 #endif
     m_shadowPixmaps.clear();
     data.clear();
