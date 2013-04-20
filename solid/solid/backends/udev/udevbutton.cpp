@@ -25,16 +25,14 @@ using namespace Solid::Backends::UDev;
 Button::Button(UDevDevice* device)
  : DeviceInterface(device)
 {
-    long bitmask[NBITS(KEY_MAX)];
-    QByteArray keys = m_device->property("KEY").toByteArray();
-    int nbits = input_str_to_bitmask(keys, bitmask, sizeof(bitmask));
-
-    Q_ASSERT(nbits == 1);
-
-    if (test_bit(KEY_POWER, bitmask)) {
+    if (m_device->propertyExists("KEY")) {
         m_type = Solid::Button::PowerButton;
-    } else if (!test_bit(SW_LID, bitmask)) {
+        return;
+    }
+
+    if (m_device->propertyExists("SW")) {
         m_type = Solid::Button::LidButton;
+        return;
     }
 }
 

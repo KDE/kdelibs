@@ -39,7 +39,8 @@ public:
     ~Private();
 
     bool isOfInterest(const UdevQt::Device &device);
-    bool isInputOfInterest(const UdevQt::Device &device);
+    bool isPowerBubtton(const UdevQt::Device &device);
+    bool isLidBubtton(const UdevQt::Device &device);
 
     UdevQt::Client *m_client;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
@@ -98,8 +99,13 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         }
     }
 
-    if (device.subsystem() == QLatin1String("input") && device.deviceProperties().contains("KEY")) {
-        return isInputOfInterest(device);
+    if (device.subsystem() == QLatin1String("input")) {
+        if (device.deviceProperties().contains("KEY")) {
+            return isPowerBubtton(device);
+        }
+        if (device.deviceProperties().contains("SW")) {
+            return isLidBubtton(device);
+        }
     }
 
     return device.subsystem() == QLatin1String("dvb") ||
@@ -109,7 +115,21 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
            device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
 }
 
-bool UDevManager::Private::isInputOfInterest(const UdevQt::Device& device)
+bool UDevManager::Private::isLidBubtton(const UdevQt::Device& device)
+{
+    long bitmask[NBITS(SW_MAX)];
+    int nbits = input_str_to_bitmask(device.deviceProperty("SW").toByteArray(), bitmask, sizeof(bitmask));
+    if (nbits == 1) {
+        if (test_bit (SW_LID, bitmask)) {
+            qDebug() << "Lid button detected";
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool UDevManager::Private::isPowerBubtton(const UdevQt::Device& device)
 {
     long bitmask[NBITS(KEY_MAX)];
     int nbits = input_str_to_bitmask(device.deviceProperty("KEY").toByteArray(), bitmask, sizeof(bitmask));
