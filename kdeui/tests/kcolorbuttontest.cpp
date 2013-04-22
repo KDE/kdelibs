@@ -27,6 +27,17 @@
 
 QTEST_MAIN(KColorButtonTest)
 
+static void workaround()
+{
+    // Workaround for Qt-5.1 bug, which assumes GTK if there's no running desktop.
+    // (and apparently QTest::qWaitForWindowExposed doesn't work for GTK native dialogs)
+    qputenv("KDE_FULL_SESSION", "1");
+
+    // TODO: it means this test will always fail with native dialogs, though.
+    // But we can't set QColorDialog::DontUseNativeDialog from here...
+}
+Q_CONSTRUCTOR_FUNCTION(workaround)
+
 void KColorButtonTest::initTestCase()
 {
     black40Colors.setHsv(-1, 0, 0);
