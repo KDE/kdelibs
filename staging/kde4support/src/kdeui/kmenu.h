@@ -20,7 +20,7 @@
 #ifndef KMENU_H
 #define KMENU_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QMenu>
 
@@ -39,7 +39,7 @@
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KMenu : public QMenu {
+class KDE4SUPPORT_EXPORT KMenu : public QMenu {
     Q_OBJECT
 public:
     /**

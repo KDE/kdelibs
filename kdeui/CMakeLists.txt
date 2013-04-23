@@ -203,7 +203,6 @@ set(kdeui_LIB_SRCS
  widgets/kkeysequencewidget.cpp
  widgets/klanguagebutton.cpp
  widgets/klineedit.cpp
- widgets/kmenu.cpp
  widgets/kmessagewidget.cpp
  widgets/kmultitabbar.cpp
  widgets/knuminput.cpp
@@ -561,7 +560,6 @@ install( FILES
  widgets/kkeysequencewidget.h
  widgets/klanguagebutton.h
  widgets/klineedit.h
- widgets/kmenu.h
  widgets/kmessagewidget.h
  widgets/kmultitabbar.h
  widgets/knuminput.h

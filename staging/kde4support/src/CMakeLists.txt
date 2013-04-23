@@ -49,6 +49,7 @@ set(libkde4support_SRCS
     kdeui/ksplashscreen.cpp
     kdeui/kdialogbuttonbox.cpp
     kdeui/kprogressdialog.cpp
+    kdeui/kmenu.cpp
     kdeui/kmenubar.cpp
     kdeui/kstatusbar.cpp
     kdeui/ksystemtrayicon.cpp
@@ -136,6 +137,7 @@ install(FILES
     kdeui/ksplashscreen.h
     kdeui/kdialogbuttonbox.h
     kdeui/kprogressdialog.h
+    kdeui/kmenu.h
     kdeui/kmenubar.h
     kdeui/kstatusbar.h
     kdeui/ksystemtrayicon.h
