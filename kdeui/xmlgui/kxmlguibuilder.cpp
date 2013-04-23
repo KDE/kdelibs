@@ -22,7 +22,6 @@
 
 #include "kcoreauthorized.h"
 #include "kxmlguiclient.h"
-#include "kmenu.h"
 #include "ktoolbar.h"
 #include "kmainwindow.h"
 #include "kxmlguiwindow.h"
@@ -32,6 +31,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QMutableStringListIterator>
 #include <QAction>
+#include <QMenu>
 #include <QMenuBar>
 #include <QStatusBar>
 #include "kmenumenuhandler_p.h"
@@ -161,10 +161,10 @@ QWidget *KXMLGUIBuilder::createContainer( QWidget *parent, int index, const QDom
     if (!KAuthorized::authorizeKAction(name))
        return 0;
 
-    KMenu *popup = new KMenu(p);
+    QMenu *popup = new QMenu(p);
     popup->setObjectName(name);
 
-    d->m_menumenuhandler->insertKMenu(popup);
+    d->m_menumenuhandler->insertMenu(popup);
 
     QString i18nText;
     QDomElement textElem = element.namedItem( d->attrText1 ).toElement();
@@ -335,7 +335,7 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
   }
   else if (tagName == d->tagMenuTitle)
   {
-    if ( KMenu* m = qobject_cast<KMenu*>( parent ) )
+    if ( QMenu* m = qobject_cast<QMenu*>( parent ) )
     {
       QString i18nText;
       QByteArray text = element.text().toUtf8();
@@ -354,9 +354,9 @@ QAction* KXMLGUIBuilder::createCustomElement( QWidget *parent, int index, const 
       }
 
       if ( !icon.isEmpty() ) {
-        return m->addTitle( pix, i18nText, before );
+        return m->insertSection(before, pix, i18nText);
       } else {
-        return m->addTitle( i18nText, before );
+        return m->insertSection(before, i18nText);
       }
     }
   }

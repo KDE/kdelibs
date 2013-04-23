@@ -23,18 +23,19 @@
 #include "kxmlguibuilder.h"
 #include "kxmlguiclient.h"
 #include "kxmlguifactory.h"
-#include "kmenu.h"
 #include "kactioncollection.h"
 #include <kshortcutwidget.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
 
 #include <QAction>
+#include <QContextMenuEvent>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QWidget>
 #include <QDomDocument>
 #include <QDomNode>
+#include <QMenu>
 #include <QVBoxLayout>
 #include <kmainwindow.h>
 #include <ktoolbar.h>
@@ -44,7 +45,7 @@
 namespace KDEPrivate {
 
 KMenuMenuHandler::KMenuMenuHandler( KXMLGUIBuilder *builder )
-  : QObject() , m_builder(builder)
+  : QObject() , m_builder(builder), m_popupMenu(0), m_popupAction(0), m_contextMenu(0)
 {
   m_toolbarAction = new KSelectAction(i18n("Add to Toolbar"), this);
   connect(m_toolbarAction , SIGNAL(triggered(int)) , this , SLOT(slotAddToToolBar(int)));
@@ -52,18 +53,45 @@ KMenuMenuHandler::KMenuMenuHandler( KXMLGUIBuilder *builder )
 
 
 
-void KMenuMenuHandler::insertKMenu( KMenu *popup )
+void KMenuMenuHandler::insertMenu( QMenu *popup )
 {
-  popup->contextMenu()->addAction( i18n("Configure Shortcut...") , this , SLOT(slotSetShortcut()));
-
-  KMainWindow *window=qobject_cast<KMainWindow*>(m_builder->widget());
-  if(window)
-  {
-    popup->contextMenu()->addAction( m_toolbarAction );
-    connect(popup, SIGNAL(aboutToShowContextMenu(KMenu*,QAction*,QMenu*)) , this, SLOT(buildToolbarAction()));
-  }
+    popup->installEventFilter(this);
 }
 
+bool KMenuMenuHandler::eventFilter(QObject *watched, QEvent *event)
+{
+    switch (event->type()) {
+    case QEvent::MouseButtonPress:
+        if (m_contextMenu && m_contextMenu->isVisible()) {
+            m_contextMenu->hide();
+            return true;
+        }
+        break;
+
+    case QEvent::MouseButtonRelease:
+        if (m_contextMenu && m_contextMenu->isVisible()) {
+            return true;
+        }
+        break;
+
+    case QEvent::ContextMenu: {
+            QContextMenuEvent *e = static_cast<QContextMenuEvent *>(event);
+            QMenu *menu = static_cast<QMenu *>(watched);
+            if (e->reason() == QContextMenuEvent::Mouse) {
+                showContextMenu(menu, e->pos());
+            } else if (menu->activeAction()) {
+                showContextMenu(menu, menu->actionGeometry(menu->activeAction()).center());
+            }
+        }
+        event->accept();
+        return true;
+
+    default:
+        break;
+    }
+
+    return false;
+}
 
 
 void KMenuMenuHandler::buildToolbarAction()
@@ -93,18 +121,14 @@ static KActionCollection* findParentCollection(KXMLGUIFactory* factory, QAction*
 
 void KMenuMenuHandler::slotSetShortcut()
 {
-    KMenu * menu=KMenu::contextMenuFocus();
-    if(!menu)
-        return;
-    QAction *action= menu->contextMenuFocusAction();
-    if(!action)
+    if(!m_popupMenu || !m_popupAction)
         return;
 
     QDialog dialog(m_builder->widget());
     dialog.setLayout(new QVBoxLayout);
 
     KShortcutWidget swidget(&dialog);
-    swidget.setShortcut(KShortcut(action->shortcuts()));
+    swidget.setShortcut(KShortcut(m_popupAction->shortcuts()));
     dialog.layout()->addWidget(&swidget);
 
     QDialogButtonBox box(&dialog);
@@ -118,7 +142,7 @@ void KMenuMenuHandler::slotSetShortcut()
     {
         QList<KActionCollection*> checkCollections;
         KXMLGUIFactory *factory=dynamic_cast<KXMLGUIClient*>(m_builder)->factory();
-        parentCollection = findParentCollection(factory, action);
+        parentCollection = findParentCollection(factory, m_popupAction);
         foreach(KXMLGUIClient *client, factory->clients()) {
             checkCollections += client->actionCollection();
         }
@@ -127,7 +151,7 @@ void KMenuMenuHandler::slotSetShortcut()
 
     if(dialog.exec())
     {
-        action->setShortcuts(swidget.shortcut());
+        m_popupAction->setShortcuts(swidget.shortcut());
         swidget.applyStealShortcut();
         if(parentCollection)
             parentCollection->writeSettings();
@@ -141,18 +165,14 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
     if(!window)
         return;
 
-    KMenu * menu=KMenu::contextMenuFocus();
-    if(!menu)
-        return;
-    QAction *action= menu->contextMenuFocusAction();
-    if(!action)
+    if(!m_popupMenu || !m_popupAction)
         return;
 
     KXMLGUIFactory *factory = dynamic_cast<KXMLGUIClient*>(m_builder)->factory();
-    QString actionName = action->objectName(); // set by KActionCollection::addAction
+    QString actionName = m_popupAction->objectName(); // set by KActionCollection::addAction
     KActionCollection *collection = 0;
     if (factory) {
-        collection = findParentCollection(factory, action);
+        collection = findParentCollection(factory, m_popupAction);
     }
     if(!collection) {
          kWarning(240) << "Cannot find the action collection for action " << actionName;
@@ -160,7 +180,7 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
     }
 
     KToolBar *toolbar=window->toolBars()[tb];
-    toolbar->addAction(action);
+    toolbar->addAction(m_popupAction);
 
     const KXMLGUIClient* client = collection->parentGUIClient ();
     QString xmlFile = client->localXMLFile();
@@ -200,7 +220,31 @@ void KMenuMenuHandler::slotAddToToolBar(int tb)
 
 }
 
+void KMenuMenuHandler::showContextMenu(QMenu *menu, const QPoint &pos)
+{
+    Q_ASSERT(!m_popupMenu);
+    Q_ASSERT(!m_popupAction);
+    Q_ASSERT(!m_contextMenu);
 
+    m_popupMenu = menu;
+    m_popupAction = menu->actionAt(pos);
+
+    m_contextMenu = new QMenu;
+    m_contextMenu->addAction(i18n("Configure Shortcut..."), this, SLOT(slotSetShortcut()));
+
+    KMainWindow *window = qobject_cast<KMainWindow*>(m_builder->widget());
+    if(window) {
+        m_contextMenu->addAction(m_toolbarAction);
+        buildToolbarAction();
+    }
+
+    m_contextMenu->exec(menu->mapToGlobal(pos));
+    delete m_contextMenu;
+    m_contextMenu = 0;
+
+    m_popupAction = 0;
+    m_popupMenu = 0;
+}
 
 } //END namespace KDEPrivate
 

@@ -24,16 +24,17 @@
 
 #include <QObject>
 
+class QAction;
+class QMenu;
 
 class KXMLGUIBuilder;
-class KMenu;
 class KSelectAction;
 
 namespace KDEPrivate {
 
 /**
  * @internal
- * This class handle the context menu of KMenu.
+ * This class handle the context menu of QMenu.
  * Used by KXmlGuiBuilder
  * @author Olivier Goffart <ogoffart@kde.org>
  */
@@ -43,7 +44,8 @@ class KMenuMenuHandler : public QObject
 public:
   KMenuMenuHandler(KXMLGUIBuilder *b);
   ~KMenuMenuHandler() {}
-  void insertKMenu( KMenu *menu );
+  void insertMenu( QMenu *menu );
+    bool eventFilter(QObject *watched, QEvent *event);
   
   private Q_SLOTS:
     void slotSetShortcut();
@@ -51,8 +53,13 @@ public:
     void slotAddToToolBar(int);
     
   private:
+    void showContextMenu(QMenu *menu, const QPoint &pos);
+
     KXMLGUIBuilder *m_builder;
     KSelectAction *m_toolbarAction;
+    QMenu *m_popupMenu;
+    QAction *m_popupAction;
+    QMenu *m_contextMenu;
     
     
 };
