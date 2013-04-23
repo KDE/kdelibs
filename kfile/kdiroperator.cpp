@@ -43,6 +43,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QListView>
+#include <QMenu>
 #include <QMouseEvent>
 #include <QTreeView>
 #include <QPushButton>
@@ -58,7 +59,6 @@
 #include <kfileitemdelegate.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kmenu.h>
 #include <kstandardaction.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>

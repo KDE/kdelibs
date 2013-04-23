@@ -30,7 +30,7 @@
 
 #include <klocale.h>
 
-class KMenu;
+class QMenu;
 class KCalendarSystem;
 class KColorScheme;
 
@@ -290,7 +290,7 @@ Q_SIGNALS:
      * right clicks on that date and the popup menu is enabled). Connect
      * the slot where you fill the menu to this signal.
      */
-    void aboutToShowContextMenu( KMenu *menu, const QDate &date );
+    void aboutToShowContextMenu( QMenu *menu, const QDate &date );
 
 private:
     Q_PRIVATE_SLOT( d, void nextMonth() )

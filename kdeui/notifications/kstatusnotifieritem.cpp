@@ -27,13 +27,13 @@
 #include <QPixmap>
 #include <QImage>
 #include <QApplication>
+#include <QMenu>
 #include <QMovie>
 #include <QPainter>
 #include <qstandardpaths.h>
 
 #include <kdebug.h>
 #include <kaboutdata.h>
-#include <kmenu.h>
 #include <kiconloader.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>
@@ -429,7 +429,7 @@ QString KStatusNotifierItem::toolTipSubTitle() const
     return d->toolTipSubTitle;
 }
 
-void KStatusNotifierItem::setContextMenu(KMenu *menu)
+void KStatusNotifierItem::setContextMenu(QMenu *menu)
 {
     if (d->menu && d->menu != menu) {
         d->menu->removeEventFilter(this);
@@ -465,7 +465,7 @@ void KStatusNotifierItem::setContextMenu(KMenu *menu)
     d->menu->setParent(0);
 }
 
-KMenu *KStatusNotifierItem::contextMenu() const
+QMenu *KStatusNotifierItem::contextMenu() const
 {
     return d->menu;
 }
@@ -742,12 +742,12 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
                      q, SLOT(serviceChange(QString,QString,QString)));
 
     //create a default menu, just like in KSystemtrayIcon
-    KMenu *m = new KMenu(associatedWidget);
+    QMenu *m = new QMenu(associatedWidget);
 
     title = QGuiApplication::applicationDisplayName();
     if (title.isEmpty())
         title = QCoreApplication::applicationName();
-    titleAction = m->addTitle(qApp->windowIcon(), title);
+    titleAction = m->addSection(qApp->windowIcon(), title);
     m->setTitle(title);
     q->setContextMenu(m);
 
@@ -865,7 +865,7 @@ void KStatusNotifierItemPrivate::setLegacySystemTrayEnabled(bool enabled)
     }
 
     if (menu) {
-        KMenu *m = menu;
+        QMenu *m = menu;
         menu = 0;
         q->setContextMenu(m);
     }

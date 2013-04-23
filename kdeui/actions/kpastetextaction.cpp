@@ -29,12 +29,11 @@
 
 #include <QApplication>
 #include <QClipboard>
+#include <QMenu>
 #include <QtDBus/QtDBus>
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-
-#include "kmenu.h"
 
 class KPasteTextActionPrivate
 {
@@ -55,7 +54,7 @@ public:
   void init();
 
   KPasteTextAction *q;
-  KMenu *m_popup;
+  QMenu *m_popup;
   bool m_mixedMode;
 };
 
@@ -80,7 +79,7 @@ KPasteTextAction::KPasteTextAction(const QIcon &icon, const QString &text, QObje
 
 void KPasteTextActionPrivate::init()
 {
-  m_popup = new KMenu;
+  m_popup = new QMenu;
   q->connect(m_popup, SIGNAL(aboutToShow()), q, SLOT(_k_menuAboutToShow()));
   q->connect(m_popup, SIGNAL(triggered(QAction*)), q, SLOT(_k_slotTriggered(QAction*)));
   m_mixedMode = true;

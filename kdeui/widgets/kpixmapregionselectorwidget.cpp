@@ -30,10 +30,10 @@
 #include <QImage>
 #include <QLabel>
 #include <QLayout>
+#include <QMenu>
 #include <QRubberBand>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kmenu.h>
 #include <stdlib.h>
 #include <QCursor>
 #include <QApplication>
@@ -184,12 +184,12 @@ void KPixmapRegionSelectorWidget::Private::updatePixmap()
 }
 
 
-KMenu *KPixmapRegionSelectorWidget::createPopupMenu()
+QMenu *KPixmapRegionSelectorWidget::createPopupMenu()
 {
-    KMenu *popup=new KMenu(this );
+    QMenu *popup=new QMenu(this );
     KActionCollection *actions=new KActionCollection(popup);
     popup->setObjectName( "PixmapRegionSelectorPopup");
-    popup->addTitle(i18n("Image Operations"));
+    popup->addSection(i18n("Image Operations"));
 
     QAction *action = actions->addAction("rotateclockwise");
     action->setText(i18n("&Rotate Clockwise"));
@@ -289,7 +289,7 @@ bool KPixmapRegionSelectorWidget::eventFilter(QObject *obj, QEvent *ev)
 
       if ( mev->button() == Qt::RightButton )
       {
-         KMenu *popup = createPopupMenu( );
+         QMenu *popup = createPopupMenu( );
          popup->exec( mev->globalPos() );
          delete popup;
          return true;

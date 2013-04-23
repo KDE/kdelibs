@@ -25,7 +25,7 @@
 #include <QPixmap>
 #include <QWidget>
 
-class KMenu;
+class QMenu;
 
 
 /**
@@ -149,9 +149,9 @@ Q_SIGNALS:
 
 protected:
    /**
-    * Creates a KMenu with the menu that appears when clicking with the right button on the label
+    * Creates a QMenu with the menu that appears when clicking with the right button on the label
     */
-   virtual KMenu *createPopupMenu();
+   virtual QMenu *createPopupMenu();
 
 private:
    bool eventFilter(QObject *obj, QEvent *ev);

@@ -40,7 +40,6 @@
 #include <kdirselectdialog.h>
 #include <kfilefiltercombo.h>
 #include <kimagefilepreview.h>
-#include <kmenu.h>
 #include <krecentdocument.h>
 #include <ktoolbar.h>
 #include <kurlcompletion.h>

@@ -20,13 +20,13 @@
 
 #include <QtXml/QDomDocument>
 #include <QAction>
+#include <QMenu>
 
 #include <kactioncollection.h>
 #include <kactionmenu.h>
 #include <kcoreauthorized.h>
 #include <klocalizedstring.h>
 #include <kxmlguiwindow.h>
-#include <kmenu.h>
 #include <ktoggletoolbaraction.h>
 #include <ktoolbar.h>
 #include <kxmlguifactory.h>

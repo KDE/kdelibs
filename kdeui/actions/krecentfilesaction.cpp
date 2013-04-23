@@ -31,13 +31,12 @@
 #include <QtCore/QFile>
 #include <QDesktopWidget>
 #include <QDir>
+#include <QMenu>
 #include <qurlpathinfo.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
-
-#include "kmenu.h"
 
 
 KRecentFilesAction::KRecentFilesAction(QObject *parent)
@@ -72,7 +71,7 @@ void KRecentFilesActionPrivate::init()
 {
   Q_Q(KRecentFilesAction);
   delete q->menu();
-  q->setMenu(new KMenu());
+  q->setMenu(new QMenu());
   q->setToolBarMode(KSelectAction::MenuMode);
   m_noEntriesAction = q->menu()->addAction(i18n("No Entries"));
   m_noEntriesAction->setEnabled(false);

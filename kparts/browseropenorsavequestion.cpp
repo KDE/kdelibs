@@ -23,7 +23,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kfileitemactions.h>
-#include <kmenu.h>
 #include <ksqueezedtextlabel.h>
 #include <knotification.h>
 #include <kmimetypetrader.h>
@@ -34,6 +33,7 @@
 #include <QAction>
 #include <QDialog>
 #include <QDialogButtonBox>
+#include <QMenu>
 #include <QPushButton>
 #include <QStyle>
 #include <QStyleOption>
@@ -266,7 +266,7 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
             // OpenDefault shall use this service
             d->selectedService = apps.first();
             d->openWithButton->show();
-            KMenu* menu = new KMenu(d);
+            QMenu* menu = new QMenu(d);
             if (apps.count() > 1) {
                 // Provide an additional button with a menu of associated apps
                 KGuiItem openWithItem(i18nc("@label:button", "&Open with"), "document-open");

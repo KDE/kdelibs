@@ -39,7 +39,7 @@
 
 class KActionCollection;
 class KSystemTrayIcon;
-class KMenu;
+class QMenu;
 class QAction;
 
 
@@ -154,7 +154,7 @@ public:
     QString iconThemePath;
     QString menuObjectPath;
 
-    KMenu *menu;
+    QMenu *menu;
     KActionCollection* actionCollection;
     QWidget *associatedWidget;
     QAction* titleAction;

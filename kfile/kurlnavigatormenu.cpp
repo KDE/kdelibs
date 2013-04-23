@@ -28,7 +28,7 @@ namespace KDEPrivate
 {
 
 KUrlNavigatorMenu::KUrlNavigatorMenu(QWidget* parent) :
-    KMenu(parent)
+    QMenu(parent)
 {
     setAcceptDrops(true);
 }
@@ -67,7 +67,7 @@ void KUrlNavigatorMenu::mouseReleaseEvent(QMouseEvent* event)
             emit middleMouseButtonClicked(action);
         }
     }
-    KMenu::mouseReleaseEvent(event);
+    QMenu::mouseReleaseEvent(event);
 }
 
 } // namespace KDEPrivate

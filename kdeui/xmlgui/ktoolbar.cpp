@@ -32,6 +32,7 @@
 #include <QDesktopWidget>
 #include <QFrame>
 #include <QLayout>
+#include <QMenu>
 #include <QMimeData>
 #include <QDrag>
 #include <QMouseEvent>
@@ -47,7 +48,6 @@
 #include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <kxmlguiwindow.h>
-#include <kmenu.h>
 #include <kstandardaction.h>
 #include <ktoggleaction.h>
 #include <kxmlguifactory.h>
@@ -131,7 +131,7 @@ class KToolBar::Private
 
     void init(bool readConfig = true, bool isMainToolBar = false);
     QString getPositionAsString() const;
-    KMenu *contextMenu(const QPoint &globalPos);
+    QMenu *contextMenu(const QPoint &globalPos);
     void setLocked(bool locked);
     void adjustSeparatorVisibility();
     void loadKDESettings();
@@ -215,7 +215,7 @@ class KToolBar::Private
     QList<QAction*> actionsBeingDragged;
     QAction* dropIndicatorAction;
 
-    KMenu* context;
+    QMenu* context;
     QAction* dragAction;
     QPoint dragStartPosition;
 };
@@ -281,17 +281,17 @@ QString KToolBar::Private::getPositionAsString() const
   }
 }
 
-KMenu *KToolBar::Private::contextMenu(const QPoint &globalPos)
+QMenu *KToolBar::Private::contextMenu(const QPoint &globalPos)
 {
   if (!context) {
-    context = new KMenu(q);
+    context = new QMenu(q);
 
-    contextButtonTitle = context->addTitle(i18nc("@title:menu", "Show Text"));
+    contextButtonTitle = context->addSection(i18nc("@title:menu", "Show Text"));
     contextShowText = context->addAction(QString(), q, SLOT(slotContextShowText()));
 
-    context->addTitle(i18nc("@title:menu", "Toolbar Settings"));
+    context->addSection(i18nc("@title:menu", "Toolbar Settings"));
 
-    contextOrient = new KMenu(i18nc("Toolbar orientation", "Orientation"), context);
+    contextOrient = new QMenu(i18nc("Toolbar orientation", "Orientation"), context);
 
     contextTop = contextOrient->addAction(i18nc("toolbar position string", "Top"), q, SLOT(slotContextTop()));
     contextTop->setChecked(true);
@@ -305,7 +305,7 @@ KMenu *KToolBar::Private::contextMenu(const QPoint &globalPos)
       action->setCheckable(true);
     }
 
-    contextMode = new KMenu(i18n("Text Position"), context);
+    contextMode = new QMenu(i18n("Text Position"), context);
 
     contextIcons = contextMode->addAction(i18n("Icons Only"), q, SLOT(slotContextIcons()));
     contextText = contextMode->addAction(i18n("Text Only"), q, SLOT(slotContextText()));
@@ -318,7 +318,7 @@ KMenu *KToolBar::Private::contextMenu(const QPoint &globalPos)
       action->setCheckable(true);
     }
 
-    contextSize = new KMenu(i18n("Icon Size"), context);
+    contextSize = new QMenu(i18n("Icon Size"), context);
 
     contextIconSizes.insert(contextSize->addAction(i18nc("@item:inmenu Icon size", "Default"), q, SLOT(slotContextIconSize())),
                             iconSizeSettings.defaultValue());

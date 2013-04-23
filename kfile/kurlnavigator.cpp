@@ -31,7 +31,6 @@
 #include <kfileitem.h>
 #include <kfileplacesmodel.h>
 #include <klocalizedstring.h>
-#include <kmenu.h>
 #include <kprotocolinfo.h>
 #include <kurlcombobox.h>
 #include <kurlcompletion.h>
@@ -46,6 +45,7 @@
 #include <QDropEvent>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QMenu>
 #include <QPainter>
 #include <QStyleOption>
 #include <qmimedatabase.h>
@@ -348,7 +348,7 @@ void KUrlNavigator::Private::openPathSelectorMenu()
     const QUrl firstVisibleUrl = m_navButtons.first()->url();
 
     QString spacer;
-    KMenu* popup = new KMenu(q);
+    QMenu* popup = new QMenu(q);
     popup->setLayoutDirection(Qt::LeftToRight);
 
     const QString placePath = retrievePlacePath();
@@ -420,7 +420,7 @@ void KUrlNavigator::Private::openContextMenu()
 {
     q->setActive(true);
 
-    KMenu popup(q);
+    QMenu popup(q);
 
     // provide 'Copy' action, which copies the current URL of
     // the URL navigator into the clipboard

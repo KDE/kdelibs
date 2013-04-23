@@ -29,7 +29,6 @@
 #include <ktoolbar.h>
 #include <klocalizedstring.h>
 #include <kdebug.h>
-#include <kmenu.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
 #include <kshortcut.h>
@@ -59,6 +58,7 @@
 #include <kjs/context.h>
 #include <ecma/kjs_window.h>
 
+#include <QMenu>
 #include <QMenuBar>
 #include <QVBoxLayout>
 #include <QSplitter>
@@ -222,7 +222,7 @@ void DebugWindow::createActions()
 
 void DebugWindow::createMenus()
 {
-    KMenu *debugMenu = new KMenu(i18n("&Debug"), menuBar());
+    QMenu *debugMenu = new QMenu(i18n("&Debug"), menuBar());
     debugMenu->addAction(m_stopAct);
     debugMenu->addAction(m_continueAct);
     debugMenu->addAction(m_stepOverAct);
@@ -230,7 +230,7 @@ void DebugWindow::createMenus()
     debugMenu->addAction(m_stepOutAct);
     menuBar()->addMenu(debugMenu);
 
-    KMenu *settingsMenu = new KMenu(i18n("&Settings"), menuBar());
+    QMenu *settingsMenu = new QMenu(i18n("&Settings"), menuBar());
     settingsMenu->addAction(m_catchExceptionsAction);
     settingsMenu->addAction(m_reindentAction);
     menuBar()->addMenu(settingsMenu);

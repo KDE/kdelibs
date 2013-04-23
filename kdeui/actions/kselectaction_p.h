@@ -33,7 +33,6 @@
 #define KSELECTACTION_P_H
 
 #include "kcombobox.h"
-#include "kmenu.h"
 
 class KSelectActionPrivate
 {

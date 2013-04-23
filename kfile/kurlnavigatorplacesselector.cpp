@@ -21,7 +21,6 @@
 #include "kurlnavigatorplacesselector_p.h"
 
 #include <kfileplacesmodel.h>
-#include <kmenu.h>
 #include <kdebug.h>
 #include <kurlmimedata.h>
 
@@ -29,6 +28,7 @@
 #include <QDragEnterEvent>
 #include <QDragLeaveEvent>
 #include <QDropEvent>
+#include <QMenu>
 #include <QPainter>
 #include <QPixmap>
 #include <QMimeData>
@@ -44,7 +44,7 @@ KUrlNavigatorPlacesSelector::KUrlNavigatorPlacesSelector(QWidget* parent, KFileP
 {
     setFocusPolicy(Qt::NoFocus);
 
-    m_placesMenu = new KMenu(this);
+    m_placesMenu = new QMenu(this);
 
     updateMenu();
 

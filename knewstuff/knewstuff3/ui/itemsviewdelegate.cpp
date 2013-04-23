@@ -28,7 +28,6 @@
 #include <kdebug.h>
 
 #include <klocalizedstring.h>
-#include <kmenu.h>
 #include <kratingwidget.h>
 
 #include "itemsmodel.h"
@@ -151,7 +150,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         installButton->setEnabled(enabled);
         installButton->setIcon(icon);
         if (installable && entry.downloadLinkCount() > 1) {
-            KMenu * installMenu = new KMenu(installButton);
+            QMenu * installMenu = new QMenu(installButton);
             foreach (EntryInternal::DownloadLinkInformation info, entry.downloadLinkInformationList()) {
                 QString text = info.name;
                 if (!info.distributionType.trimmed().isEmpty()) {

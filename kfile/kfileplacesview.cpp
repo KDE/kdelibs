@@ -27,11 +27,11 @@
 #include <QAbstractItemDelegate>
 #include <QKeyEvent>
 #include <QApplication>
+#include <QMenu>
 #include <QScrollBar>
 
 #include <kdebug.h>
 
-#include <kmenu.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdirnotify.h>
@@ -562,7 +562,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
     QModelIndex index = indexAt(event->pos());
     QString label = placesModel->text(index).replace('&',"&&");
 
-    KMenu menu;
+    QMenu menu;
 
     QAction *edit = 0;
     QAction *hide = 0;

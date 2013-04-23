@@ -49,7 +49,6 @@
 #include <kfind.h>
 #include <kreplace.h>
 #include <kmessagebox.h>
-#include <kmenu.h>
 #include <kwindowsystem.h>
 #include <QDebug>
 

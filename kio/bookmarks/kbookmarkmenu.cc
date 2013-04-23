@@ -24,7 +24,6 @@
 #include "kbookmarkdialog.h"
 
 #include <kcoreauthorized.h>
-#include <kmenu.h>
 #include <kstandardaction.h>
 #include <kstringhandler.h>
 #include <krun.h>

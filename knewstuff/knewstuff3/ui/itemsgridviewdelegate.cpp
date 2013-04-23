@@ -30,7 +30,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kmenu.h>
 #include <kratingwidget.h>
 #include <ksqueezedtextlabel.h>
 
@@ -358,7 +357,7 @@ void ItemsGridViewDelegate::displayOperationBar(const QRect &rect,const QModelIn
         m_installButton->setIcon(icon);
         m_installButton->setEnabled(enabled);
         if (installable && entry.downloadLinkCount() > 1) {
-            KMenu * installMenu = new KMenu(m_installButton);
+            QMenu * installMenu = new QMenu(m_installButton);
             foreach (EntryInternal::DownloadLinkInformation info, entry.downloadLinkInformationList()) {
                 QString text = info.name;
                 if (!info.distributionType.trimmed().isEmpty()) {

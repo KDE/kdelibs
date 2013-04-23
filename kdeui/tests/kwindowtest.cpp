@@ -10,7 +10,6 @@
 #include <QStatusBar>
 #include <kcombobox.h>
 #include <khelpmenu.h>
-#include <kmenu.h>
 #include "kwindowtest.h"
 #include <klineedit.h>
 #include <kxmlguifactory.h>

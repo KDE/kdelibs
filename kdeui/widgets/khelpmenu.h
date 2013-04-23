@@ -28,7 +28,7 @@
 #include <QtCore/QString>
 
 class KActionCollection;
-class KMenu;
+class QMenu;
 class QWidget;
 class QAction;
 
@@ -62,7 +62,7 @@ class KHelpMenuPrivate;
  * \endcode
  *
  * IMPORTANT:
- * The first time you use KHelpMenu::menu(), a KMenu object is
+ * The first time you use KHelpMenu::menu(), a QMenu object is
  * allocated. Only one object is created by the class so if you call
  * KHelpMenu::menu() twice or more, the same pointer is returned. The class
  * will destroy the popupmenu in the destructor so do not delete this
@@ -163,7 +163,7 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * Note: This method will only create one instance of the menu. If
      * you call this method twice or more the same pointer is returned.
      */
-    KMenu *menu();
+    QMenu *menu();
 
     enum MenuId
     {

@@ -114,6 +114,7 @@ using namespace DOM;
 #include <kurlmimedata.h>
 
 #include <QClipboard>
+#include <QMenu>
 #include <QToolTip>
 #include <QDrag>
 #include <QtCore/QFile>
@@ -129,7 +130,6 @@ using namespace DOM;
 #include "khtmlpart_p.h"
 #include "khtml_iface.h"
 #include "kpassivepopup.h"
-#include "kmenu.h"
 #include "rendering/render_form.h"
 #include <kwindowsystem.h>
 #include <kconfiggroup.h>
@@ -1277,7 +1277,7 @@ void KHTMLPart::disableJSErrorExtension() {
 }
 
 void KHTMLPart::jsErrorDialogContextMenu() {
-  KMenu *m = new KMenu(0L);
+  QMenu *m = new QMenu(0L);
   m->addAction(i18n("&Hide Errors"), this, SLOT(removeJSErrorExtension()));
   m->addAction(i18n("&Disable Error Reporting"), this, SLOT(disableJSErrorExtension()));
   m->popup(QCursor::pos());
@@ -7276,7 +7276,7 @@ void KHTMLPart::launchWalletManager()
 void KHTMLPart::walletMenu()
 {
 #ifndef KHTML_NO_WALLET
-  KMenu *menu = new KMenu(0L);
+  QMenu *menu = new QMenu(0L);
   QActionGroup *menuActionGroup = new QActionGroup(menu);
   connect( menuActionGroup, SIGNAL(triggered(QAction*)), this, SLOT(removeStoredPasswordForm(QAction*)) );
 
@@ -7442,7 +7442,7 @@ void KHTMLPart::setSuppressedPopupIndicator( bool enable, KHTMLPart *originPart 
 }
 
 void KHTMLPart::suppressedPopupMenu() {
-  KMenu *m = new KMenu(0L);
+  QMenu *m = new QMenu(0L);
   if ( d->m_openableSuppressedPopups )
       m->addAction(i18np("&Show Blocked Popup Window","&Show %1 Blocked Popup Windows", d->m_openableSuppressedPopups), this, SLOT(showSuppressedPopups()));
   QAction *a = m->addAction(i18n("Show Blocked Window Passive Popup &Notification"), this, SLOT(togglePopupPassivePopup()));

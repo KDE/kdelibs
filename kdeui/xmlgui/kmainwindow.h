@@ -35,7 +35,7 @@
 #include <QMainWindow>
 #include <QtCore/QMetaClassInfo>
 
-class KMenu;
+class QMenu;
 class KConfig;
 class KConfigGroup;
 class KMWSessionManager;
@@ -164,7 +164,7 @@ public:
      *
      * Example (adding a standard help menu to your application):
      * \code
-     * KMenu *help = helpMenu( <myTextString> );
+     * QMenu *help = helpMenu( <myTextString> );
      * menuBar()->addMenu( help );
      * \endcode
      *
@@ -179,7 +179,7 @@ public:
      * @return A standard help menu.
      * @deprecated use KHelpMenu directly
      */
-    KDEUI_DEPRECATED KMenu* helpMenu(const QString &aboutAppText = QString(),
+    KDEUI_DEPRECATED QMenu* helpMenu(const QString &aboutAppText = QString(),
                                    bool showWhatsThis = true );
 
     /**
@@ -205,7 +205,7 @@ public:
      * @return A standard help menu.
      * @deprecated use XMLGUI instead, or KHelpMenu directly
      */
-    KDEUI_DEPRECATED KMenu* customHelpMenu( bool showWhatsThis = true );
+    KDEUI_DEPRECATED QMenu* customHelpMenu( bool showWhatsThis = true );
 
     /**
      * If the session did contain so high a number, @p true is returned,

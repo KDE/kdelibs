@@ -34,8 +34,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
-#include "kmenu.h"
-
 class KFontSizeAction::Private
 {
     public:

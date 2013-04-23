@@ -27,16 +27,15 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStack>
+#include <QMenu>
 
 #include <kactionmenu.h>
 #include <krun.h>
-#include <kmenu.h>
 
 #include "kbookmark.h"
 #include "kbookmarkmanager.h"
 
 class QString;
-class QMenu;
 class KBookmark;
 class KActionCollection;
 class KBookmarkOwner;

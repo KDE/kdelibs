@@ -344,7 +344,7 @@ KMainWindow::~KMainWindow()
     delete k_ptr;
 }
 
-KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
+QMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 {
     K_D(KMainWindow);
     if(!d->helpMenu) {
@@ -360,7 +360,7 @@ KMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
     return d->helpMenu->menu();
 }
 
-KMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
+QMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 {
     K_D(KMainWindow);
     if (!d->helpMenu) {

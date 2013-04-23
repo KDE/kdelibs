@@ -21,7 +21,7 @@
 #ifndef KURLNAVIGATORMENU_P_H
 #define KURLNAVIGATORMENU_P_H
 
-#include <kmenu.h>
+#include <QMenu>
 
 namespace KDEPrivate
 {
@@ -33,7 +33,7 @@ namespace KDEPrivate
  *
  * @internal
  */
-class KUrlNavigatorMenu : public KMenu
+class KUrlNavigatorMenu : public QMenu
 {
     Q_OBJECT
 

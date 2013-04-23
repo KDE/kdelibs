@@ -22,7 +22,7 @@
 #include <kbookmarkmanager.h>
 #include <kbookmarkmenu.h>
 
-class KMenu;
+class QMenu;
 class KFileWidget;
 
 /**
@@ -42,7 +42,7 @@ public:
     virtual QString currentUrl() const;
     virtual QString currentTitle() const;
 
-    KMenu *menu() const { return m_menu; }
+    QMenu *menu() const { return m_menu; }
 
 public Q_SLOTS:
     void openBookmark(const KBookmark & bm, Qt::MouseButtons buttons, Qt::KeyboardModifiers modifiers );
@@ -54,7 +54,7 @@ private:
     void importOldBookmarks( const QString& path, KBookmarkManager *manager );
 
     KFileWidget *m_widget;
-    KMenu *m_menu;
+    QMenu *m_menu;
     KBookmarkMenu *m_bookmarkMenu;
 
 private:

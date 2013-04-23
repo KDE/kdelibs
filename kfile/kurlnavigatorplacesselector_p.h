@@ -27,7 +27,7 @@
 #include <QtCore/QPersistentModelIndex>
 
 class KFilePlacesModel;
-class KMenu;
+class QMenu;
 
 namespace KDEPrivate
 {
@@ -104,7 +104,7 @@ private Q_SLOTS:
 private:
     int m_selectedItem;
     QPersistentModelIndex m_lastClickedIndex;
-    KMenu* m_placesMenu;
+    QMenu* m_placesMenu;
     KFilePlacesModel* m_placesModel;
     QUrl m_selectedUrl;
 };

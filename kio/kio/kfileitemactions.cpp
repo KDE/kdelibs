@@ -23,13 +23,13 @@
 #include <krun.h>
 #include <kmimetypetrader.h>
 #include <kdesktopfileactions.h>
-#include <kmenu.h>
 #include <klocalizedstring.h>
 #include <kcoreauthorized.h>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kservicetypetrader.h>
 #include <QFile>
+#include <QMenu>
 #include <qmimedatabase.h>
 #include <QtAlgorithms>
 
@@ -116,7 +116,7 @@ int KFileItemActionsPrivate::insertServicesSubmenus(const QMap<QString, ServiceL
             continue;
         }
 
-        QMenu* actionSubmenu = new KMenu(menu);
+        QMenu* actionSubmenu = new QMenu(menu);
         actionSubmenu->setTitle(it.key());
         actionSubmenu->menuAction()->setObjectName("services_submenu"); // for the unittest
         menu->addMenu(actionSubmenu);
@@ -399,7 +399,7 @@ int KFileItemActions::addServiceActionsTo(QMenu* mainMenu)
     if (s.user.count() + s.userSubmenus.count() +
         s.userPriority.count() + s.userPrioritySubmenus.count() > 1) {
         // we have more than one item, so let's make a submenu
-        actionMenu = new KMenu(i18nc("@title:menu", "&Actions"), mainMenu);
+        actionMenu = new QMenu(i18nc("@title:menu", "&Actions"), mainMenu);
         actionMenu->menuAction()->setObjectName("actions_submenu"); // for the unittest
         mainMenu->addMenu(actionMenu);
     }

@@ -36,7 +36,6 @@
 #include <kcompletionbox.h>
 #include <kicontheme.h>
 #include <klocalizedstring.h>
-#include <kmenu.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
 #include <kurlmimedata.h>
@@ -45,6 +44,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QClipboard>
+#include <QMenu>
 #include <QStyleOption>
 #include <QToolTip>
 

@@ -31,7 +31,6 @@
 #include <kshortcut.h>
 #include <kstandardshortcut.h>
 #include "kdatepicker.h"
-#include "kmenu.h"
 #include "kactioncollection.h"
 #include <kdeversion.h>
 
@@ -47,6 +46,7 @@
 #include <QActionEvent>
 #include <QtCore/QHash>
 #include <QApplication>
+#include <QMenu>
 #include <assert.h>
 
 #include <cmath>
@@ -745,8 +745,8 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
     emit tableClicked();
 
     if (  e->button() == Qt::RightButton && d->m_popupMenuEnabled ) {
-        KMenu * menu = new KMenu();
-        menu->addTitle( d->m_date.formatDate() );
+        QMenu * menu = new QMenu();
+        menu->addSection( d->m_date.formatDate() );
         emit aboutToShowContextMenu( menu, clickedDate );
         menu->popup( e->globalPos() );
     }

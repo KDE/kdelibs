@@ -17,7 +17,7 @@
 
 #include "entrydetailsdialog.h"
 
-#include <kmenu.h>
+#include <QMenu>
 #include <kdebug.h>
 
 #include <knewstuff3/core/engine.h>
@@ -218,7 +218,7 @@ void EntryDetails::updateButtons()
         buttonMenu->deleteLater();
     }
     if (ui->installButton->isVisible() && m_entry.downloadLinkCount() > 1) {
-        KMenu * installMenu = new KMenu(ui->installButton);
+        QMenu * installMenu = new QMenu(ui->installButton);
         foreach (EntryInternal::DownloadLinkInformation info, m_entry.downloadLinkInformationList()) {
             QString text = info.name;
             if (!info.distributionType.trimmed().isEmpty()) {

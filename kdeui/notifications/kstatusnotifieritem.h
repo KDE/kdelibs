@@ -29,7 +29,7 @@
 #include "kdeui_export.h"
 
 class KActionCollection;
-class KMenu;
+class QMenu;
 
 class KStatusNotifierItemPrivate;
 
@@ -357,14 +357,14 @@ public:
      * the menu will be shown with a contextMenu(int,int)
      * call by the systemtray over dbus
      * usually you don't need to call this unless you want to use
-     * a custom KMenu subclass as context menu
+     * a custom QMenu subclass as context menu
      */
-    void setContextMenu(KMenu *menu);
+    void setContextMenu(QMenu *menu);
 
     /**
      * Access the context menu associated to this status notifier item
      */
-    KMenu *contextMenu() const;
+    QMenu *contextMenu() const;
 
     /**
      * Sets the main widget associated with this StatusNotifierItem

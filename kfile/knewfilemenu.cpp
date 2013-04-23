@@ -27,6 +27,7 @@
 #include <QVBoxLayout>
 #include <QList>
 #include <QLabel>
+#include <QMenu>
 #include <QStandardPaths>
 
 #include <qtemporaryfile.h>
@@ -40,7 +41,6 @@
 #include <kmessagebox.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
-#include <kmenu.h>
 #include <krun.h>
 #include <kshell.h>
 #include <kio/job.h>

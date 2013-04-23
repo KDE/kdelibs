@@ -26,8 +26,8 @@
 */
 
 #include "ktoolbarpopupaction.h"
-#include "kmenu.h"
 
+#include <QMenu>
 #include <QToolBar>
 #include <QToolButton>
 
@@ -52,7 +52,7 @@ KToolBarPopupAction::KToolBarPopupAction(const QIcon& icon, const QString& text,
 {
   setIcon(icon);
   setText(text);
-  setMenu( new KMenu );
+  setMenu( new QMenu );
 }
 
 KToolBarPopupAction::~KToolBarPopupAction()
@@ -62,9 +62,9 @@ KToolBarPopupAction::~KToolBarPopupAction()
 }
 
 #ifndef KDE_NO_DEPRECATED
-KMenu* KToolBarPopupAction::popupMenu() const
+QMenu* KToolBarPopupAction::popupMenu() const
 {
-  return qobject_cast<KMenu*>( menu() );
+  return menu();
 }
 #endif
 

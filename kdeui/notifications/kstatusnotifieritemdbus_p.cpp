@@ -26,12 +26,12 @@
 #include <QPixmap>
 #include <QImage>
 #include <QApplication>
+#include <QMenu>
 #include <QMovie>
 
 
 #include <kdebug.h>
 #include <kaboutdata.h>
-#include <kmenu.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>
 

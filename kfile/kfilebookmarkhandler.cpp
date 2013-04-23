@@ -21,9 +21,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <QMenu>
+
 #include <kbookmarkimporter.h>
 #include <kbookmarkdombuilder.h>
-#include <kmenu.h>
 #include <qstandardpaths.h>
 
 
@@ -35,7 +36,7 @@ KFileBookmarkHandler::KFileBookmarkHandler( KFileWidget *widget )
       m_widget( widget )
 {
     setObjectName( "KFileBookmarkHandler" );
-    m_menu = new KMenu( widget );
+    m_menu = new QMenu( widget );
     m_menu->setObjectName( "bookmark menu" );
 
     QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kfile/bookmarks.xml" );

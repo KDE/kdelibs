@@ -34,6 +34,7 @@
 
 #include <QActionEvent>
 #include <QEvent>
+#include <QMenu>
 #include <QToolButton>
 #include <QToolBar>
 #include <QStandardItem>
@@ -41,7 +42,6 @@
 #include <kdebug.h>
 
 #include "kcombobox.h"
-#include "kmenu.h"
 
 // QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes
 // QAction::text() to return "&Hi" :(  Comboboxes don't have accels and
@@ -98,7 +98,7 @@ void KSelectActionPrivate::init(KSelectAction *q)
   q_ptr = q;
   QObject::connect(q_ptr->selectableActionGroup(), SIGNAL(triggered(QAction*)), q_ptr, SLOT(actionTriggered(QAction*)));
   QObject::connect(q_ptr, SIGNAL(toggled(bool)), q_ptr, SLOT(slotToggled(bool)));
-  q_ptr->setMenu(new KMenu());
+  q_ptr->setMenu(new QMenu());
   q_ptr->setEnabled( false );
 }
 

@@ -79,7 +79,7 @@ class KDEUI_EXPORT KToolBarPopupAction : public QWidgetAction
      * \deprecated use menu() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED KMenu *popupMenu() const;
+    KDEUI_DEPRECATED QMenu *popupMenu() const;
 #endif
 
     /**

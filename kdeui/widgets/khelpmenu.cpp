@@ -28,6 +28,7 @@
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QMenu>
 #include <QStyle>
 #include <QWidget>
 #include <QWhatsThis>
@@ -44,7 +45,6 @@
 #include <kbugreport.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
-#include <kmenu.h>
 #include <kstandardaction.h>
 #include <kswitchlanguagedialog_p.h>
 #include <khelpclient.h>
@@ -86,7 +86,7 @@ public:
 
     void createActions(KHelpMenu* q);
 
-    KMenu *mMenu;
+    QMenu *mMenu;
     QDialog *mAboutApp;
     KAboutKdeDialog *mAboutKDE;
     KBugReport *mBugReport;
@@ -190,11 +190,11 @@ void KHelpMenuPrivate::createActions(KHelpMenu* q)
 }
 
 // Used in the non-xml-gui case, like kfind or ksnapshot's help button.
-KMenu* KHelpMenu::menu()
+QMenu* KHelpMenu::menu()
 {
   if( !d->mMenu )
   {
-    d->mMenu = new KMenu();
+    d->mMenu = new QMenu();
     connect( d->mMenu, SIGNAL(destroyed()), this, SLOT(menuDestroyed()));
 
     d->mMenu->setTitle(i18n("&Help"));

@@ -3,11 +3,11 @@
 #include <QCursor>
 #include <QKeyEvent>
 #include <QPainter>
-#include "kmenu.h"
+#include <QMenu>
 
 class DemoWidget : public QWidget {
 private:
-    KMenu *menu;
+    QMenu *menu;
 
 void mousePressEvent(QMouseEvent *)
 {
@@ -23,7 +23,7 @@ void paintEvent(QPaintEvent *)
 public:
     DemoWidget() : QWidget()
     {
-        menu = new KMenu("Popup Menu:");
+        menu = new QMenu("Popup Menu:");
         menu->addAction( "Item1" );
         menu->addAction( "Item2" );
         menu->addSeparator();

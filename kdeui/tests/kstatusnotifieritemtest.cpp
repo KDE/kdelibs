@@ -23,6 +23,7 @@
 #include "notifications/kstatusnotifieritem.h"
 #include <QDateTime>
 #include <QLabel>
+#include <QMenu>
 #include <QMovie>
 #include <QApplication>
 
@@ -31,12 +32,11 @@
 
 #include <kiconloader.h>
 #include <kdebug.h>
-#include <kmenu.h>
 
 KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifierItem *tray)
   : QObject(parent)
 {
-    KMenu *menu = tray->contextMenu();
+    QMenu *menu = tray->contextMenu();
     m_tray = tray;
 
     QAction *needsAttention = new QAction("Set needs attention", menu);
