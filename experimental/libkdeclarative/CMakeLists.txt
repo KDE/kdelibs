@@ -3,7 +3,11 @@ project(kdeclarative)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Qml REQUIRED)
 
+include_directories(${KDE4_INCLUDE_DIR}/KDE)
+
 set(kdeclarative_LIB_SRCS
+   # configpropertymap.cpp
+    qmlobject.cpp
     kdeclarative.cpp
     private/kiconprovider.cpp)
 
@@ -29,9 +33,12 @@ target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} Qt5::Wi
 
 set(kdeclarative_LIB_HEADERS
     kdeclarative.h
-    ${CMAKE_CURRENT_BINARY_DIR}/kdeclarative_export.h)
+    qmlobject.h
+    configpropertymap.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kdeclarative_export.h
+    )
 
-install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/ COMPONENT Devel)
+install(FILES ${kdeclarative_LIB_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kdeclarative/ COMPONENT Devel)
 
 install(TARGETS kdeclarative EXPORT kdeclarativeTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
