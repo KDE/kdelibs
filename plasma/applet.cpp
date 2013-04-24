@@ -2713,6 +2713,8 @@ AppletPrivate::AppletPrivate(KService::Ptr service, const KPluginInfo *info, int
     } else if (appletId > s_maxAppletId) {
         s_maxAppletId = appletId;
     }
+
+    publishUI.publishCheckbox = 0;
 }
 
 AppletPrivate::~AppletPrivate()
