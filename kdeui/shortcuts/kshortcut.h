@@ -127,7 +127,7 @@ public:
      * @param seqs List of key sequeces.
      */
     // TODO KDE5 move to QShortcut
-    explicit KShortcut(const QList<QKeySequence> &seqs);
+    KShortcut(const QList<QKeySequence> &seqs);
 
     /**
      * Destructor.
