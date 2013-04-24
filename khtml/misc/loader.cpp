@@ -1301,7 +1301,7 @@ void Loader::slotFinished( KJob* job )
 
 void Loader::slotData( KIO::Job*job, const QByteArray &data )
 {
-    Request *r = m_requestsLoading[job];
+    Request *r = m_requestsLoading.value(job);
     if(!r) {
         kDebug( 6060 ) << "got data for unknown request!";
         return;
