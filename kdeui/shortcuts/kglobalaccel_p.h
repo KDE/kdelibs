@@ -24,13 +24,13 @@
 
 #include <QtCore/QHash>
 #include <QtCore/QStringList>
+#include <QKeySequence>
+#include <QList>
 #include <QWidget>
 
 #include "kglobalaccel.h"
 #include "kglobalaccel_interface.h"
 #include "kglobalaccel_component_interface.h"
-
-class KShortcut;
 
 enum SetShortcutFlag
     {
@@ -71,8 +71,8 @@ public:
     QString componentUniqueForAction(const QAction *action);
     QString componentFriendlyForAction(const QAction *action);
     QStringList makeActionId(const QAction *action);
-    QList<int> intListFromShortcut(const KShortcut &cut);
-    KShortcut shortcutFromIntList(const QList<int> &list);
+    QList<int> intListFromShortcut(const QList<QKeySequence> &cut);
+    QList<QKeySequence> shortcutFromIntList(const QList<int> &list);
 
     //private slot implementations
     void _k_invokeAction(const QString &, const QString &,qlonglong);
@@ -98,8 +98,8 @@ public:
 
     //! The components the application is using
     QHash<QString, org::kde::kglobalaccel::Component *> components;
-    QMap<const QAction*, KShortcut> actionDefaultShortcuts;
-    QMap<const QAction*, KShortcut> actionShortcuts;
+    QMap<const QAction*, QList<QKeySequence> > actionDefaultShortcuts;
+    QMap<const QAction*, QList<QKeySequence> > actionShortcuts;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KGlobalAccelPrivate::ShortcutTypes)

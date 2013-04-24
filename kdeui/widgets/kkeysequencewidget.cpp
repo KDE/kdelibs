@@ -35,12 +35,16 @@
 #include <kglobalaccel.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kshortcut.h>
 #include <kactioncollection.h>
 
 #include "kdebug.h"
 
 #include <config-kdeui.h>
+
+uint qHash(const QKeySequence &seq)
+{
+    return qHash(seq.toString());
+}
 
 class KKeySequenceWidgetPrivate
 {
@@ -403,7 +407,7 @@ void KKeySequenceWidget::applyStealShortcut()
     Q_FOREACH (QAction *stealAction, d->stealActions) {
 
         // Stealing a shortcut means setting it to an empty one.
-        stealAction->setShortcuts(KShortcut());
+        stealAction->setShortcuts(QList<QKeySequence>());
 
         // The following code will find the action we are about to
         // steal from and save it's actioncollection.
@@ -518,6 +522,24 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
 }
 
 
+bool shortcutsConflictWith(const QList<QKeySequence> &shortcuts, const QKeySequence &needle)
+{
+    if (needle.isEmpty())
+        return false;
+
+    foreach (const QKeySequence &sequence, shortcuts) {
+        if (sequence.isEmpty())
+            continue;
+
+        if (sequence.matches(needle) != QKeySequence::NoMatch
+         || needle.matches(sequence) != QKeySequence::NoMatch) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &keySequence)
 {
     if (!(checkAgainstShortcutTypes & KKeySequenceWidget::LocalShortcuts)) {
@@ -558,7 +580,7 @@ bool KKeySequenceWidgetPrivate::conflictWithLocalShortcuts(const QKeySequence &k
 
     //find conflicting shortcuts with existing actions
     foreach(QAction * qaction , allActions ) {
-        if(KShortcut(qaction->shortcuts()).conflictsWith(keySequence)) {
+        if(shortcutsConflictWith(qaction->shortcuts(), keySequence)) {
             // A conflict with a KAction. If that action is configurable
             // ask the user what to do. If not reject this keySequence.
             if (checkActionCollections.first()->isShortcutsConfigurable(qaction)) {

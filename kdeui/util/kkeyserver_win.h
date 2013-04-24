@@ -20,7 +20,7 @@
 #ifndef _KKEYSERVER_WIN_H
 #define _KKEYSERVER_WIN_H
 
-#include "kshortcut.h"
+#include <kdeui_export.h>
 
 namespace KKeyServer
 {

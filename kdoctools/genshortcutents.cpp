@@ -305,7 +305,7 @@ static QString entityForAccel( KStandardShortcut::StandardShortcut accel )
 
 	markup += "\t\"";
 
-	QString internalStr = KStandardShortcut::shortcut( accel ).toString();
+	QString internalStr = QKeySequence::listToString(KStandardShortcut::shortcut( accel ));
 	QString firstSequence = internalStr.left( internalStr.indexOf( ';' ) );
 	const QStringList keys = firstSequence.split( '+',QString::SkipEmptyParts );
 	if ( keys.empty() ) {

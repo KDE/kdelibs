@@ -41,7 +41,6 @@
 #include <ksharedconfig.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kshortcut.h>
 #include <ktextbrowser.h>
 
 #include "kacceleratormanager.h"
@@ -57,9 +56,9 @@ public Q_SLOTS:
         QString sKey = cg.readEntry("CheckAccelerators").trimmed();
         int key = 0;
         if (!sKey.isEmpty()) {
-          KShortcut cuts(sKey);
+          QList<QKeySequence> cuts = QKeySequence::listFromString(sKey);
           if (!cuts.isEmpty())
-            key = cuts.primary()[0];
+            key = cuts.first()[0];
         }
         const bool autoCheck = cg.readEntry("AutoCheckAccelerators", true);
         const bool copyWidgetText = cg.readEntry("CopyWidgetText", false);

@@ -54,6 +54,18 @@
 /*                                                                      */
 /************************************************************************/
 
+
+QKeySequence primarySequence(const QList<QKeySequence> &sequences)
+{
+    return sequences.isEmpty() ? QKeySequence() : sequences.at(0);
+}
+
+QKeySequence alternateSequence(const QList<QKeySequence> &sequences)
+{
+    return sequences.size() <= 1 ? QKeySequence() : sequences.at(1);
+}
+
+
 class KShortcutsDialog::KShortcutsDialogPrivate
 {
 public:

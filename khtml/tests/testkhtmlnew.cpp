@@ -162,13 +162,13 @@ void TestKHTML::setupActions()
 
     KToggleAction *ta = new KToggleAction( QIcon::fromTheme("edit-rename"), "Navigable", this );
     actionCollection()->addAction( "navigable", ta );
-    ta->setShortcuts( KShortcut() );
+    ta->setShortcuts( QList<QKeySequence>() );
     ta->setChecked(m_part->isCaretMode());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleNavigable(bool)));
 
     ta = new KToggleAction( QIcon::fromTheme("document-properties"), "Editable", this );
     actionCollection()->addAction( "editable", ta );
-    ta->setShortcuts( KShortcut() );
+    ta->setShortcuts( QList<QKeySequence>() );
     ta->setChecked(m_part->isEditable());
     connect(ta, SIGNAL(toggled(bool)), this, SLOT(toggleEditable(bool)));
 

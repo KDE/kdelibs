@@ -75,6 +75,9 @@ enum ItemTypes {
     ActionItem = 1
 };
 
+QKeySequence primarySequence(const QList<QKeySequence> &sequences);
+QKeySequence alternateSequence(const QList<QKeySequence> &sequences);
+
 
 /**
  * Mixes the KShortcutWidget into the treeview used by KShortcutsEditor. When selecting an shortcut
@@ -251,7 +254,6 @@ private:
 
 
 class QAction;
-class KShortcut;
 class KShapeGesture;
 class KRockerGesture;
 
@@ -309,8 +311,8 @@ private:
 
     //@{
     //! The original shortcuts before user changes. 0 means no change.
-    KShortcut *m_oldLocalShortcut;
-    KShortcut *m_oldGlobalShortcut;
+    QList<QKeySequence> *m_oldLocalShortcut;
+    QList<QKeySequence> *m_oldGlobalShortcut;
     KShapeGesture *m_oldShapeGesture;
     KRockerGesture *m_oldRockerGesture;
     //@}

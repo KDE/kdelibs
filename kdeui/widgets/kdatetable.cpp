@@ -28,7 +28,6 @@
 #include <knotification.h>
 #include <kcalendarsystem.h>
 #include <klocalizeddate.h>
-#include <kshortcut.h>
 #include <kstandardshortcut.h>
 #include "kdatepicker.h"
 #include "kactioncollection.h"

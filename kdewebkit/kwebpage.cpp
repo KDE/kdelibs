@@ -212,10 +212,10 @@ static void setActionIcon(QAction* action, const QIcon& icon)
     }
 }
 
-static void setActionShortcut(QAction* action, const KShortcut& shortcut)
+static void setActionShortcut(QAction* action, const QList<QKeySequence>& shortcut)
 {
     if (action) {
-        action->setShortcuts(shortcut.toList());
+        action->setShortcuts(shortcut);
     }
 }
 
@@ -273,7 +273,7 @@ KWebPage::KWebPage(QObject *parent, Integration flags)
     setActionShortcut(action(Back), KStandardShortcut::back());
     setActionShortcut(action(Forward), KStandardShortcut::forward());
     setActionShortcut(action(Reload), KStandardShortcut::reload());
-    setActionShortcut(action(Stop), KShortcut(QKeySequence(Qt::Key_Escape)));
+    setActionShortcut(action(Stop), QList<QKeySequence>() << QKeySequence(Qt::Key_Escape));
     setActionShortcut(action(Cut), KStandardShortcut::cut());
     setActionShortcut(action(Copy), KStandardShortcut::copy());
     setActionShortcut(action(Paste), KStandardShortcut::paste());

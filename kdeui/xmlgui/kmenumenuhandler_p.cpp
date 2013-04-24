@@ -128,7 +128,7 @@ void KMenuMenuHandler::slotSetShortcut()
     dialog.setLayout(new QVBoxLayout);
 
     KShortcutWidget swidget(&dialog);
-    swidget.setShortcut(KShortcut(m_popupAction->shortcuts()));
+    swidget.setShortcut(m_popupAction->shortcuts());
     dialog.layout()->addWidget(&swidget);
 
     QDialogButtonBox box(&dialog);

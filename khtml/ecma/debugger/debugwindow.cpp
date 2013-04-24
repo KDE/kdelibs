@@ -31,7 +31,6 @@
 #include <kdebug.h>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
-#include <kshortcut.h>
 #include <kconfig.h>
 #include <kstringhandler.h>
 #include <kxmlguifactory.h>

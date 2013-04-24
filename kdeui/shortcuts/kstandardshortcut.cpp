@@ -24,7 +24,6 @@
 #include "kdebug.h"
 #include "klocalizedstring.h"
 #include "ksharedconfig.h"
-#include "kshortcut.h"
 #include <kconfiggroup.h>
 
 #include <config-kdeui.h>
@@ -59,7 +58,7 @@ struct KStandardShortcutInfo
     int cutDefault, cutDefault2;
 
     //! A shortcut that is created with @a cutDefault and @cutDefault2
-    KShortcut cut;
+    QList<QKeySequence> cut;
 
     //! If this struct is initialized. If not initialized @cut is not valid
     bool isInitialized;
@@ -84,104 +83,104 @@ struct KStandardShortcutInfo
 static KStandardShortcutInfo g_infoStandardShortcut[] =
 {
 //Group File,
-    {AccelNone, 0      , 0                   , 0       , 0      , 0           , KShortcut(), false },
-    { Open    , "Open" , I18N_NOOP2("@action", "Open") , CTRL(O), 0           , KShortcut(), false }    ,
-    { New     , "New"  , I18N_NOOP2("@action", "New")  , CTRL(N), 0           , KShortcut(), false }    ,
-    { Close   , "Close", I18N_NOOP2("@action", "Close"), CTRL(W), CTRL(Escape), KShortcut(), false }    ,
-    { Save    , "Save" , I18N_NOOP2("@action", "Save") , CTRL(S), 0           , KShortcut(), false }    ,
-    { Print   , "Print", I18N_NOOP2("@action", "Print"), CTRL(P), 0           , KShortcut(), false }    ,
-    { Quit    , "Quit" , I18N_NOOP2("@action", "Quit") , CTRL(Q), 0           , KShortcut(), false }    ,
+    {AccelNone, 0      , 0                   , 0       , 0      , 0           , QList<QKeySequence>(), false },
+    { Open    , "Open" , I18N_NOOP2("@action", "Open") , CTRL(O), 0           , QList<QKeySequence>(), false }    ,
+    { New     , "New"  , I18N_NOOP2("@action", "New")  , CTRL(N), 0           , QList<QKeySequence>(), false }    ,
+    { Close   , "Close", I18N_NOOP2("@action", "Close"), CTRL(W), CTRL(Escape), QList<QKeySequence>(), false }    ,
+    { Save    , "Save" , I18N_NOOP2("@action", "Save") , CTRL(S), 0           , QList<QKeySequence>(), false }    ,
+    { Print   , "Print", I18N_NOOP2("@action", "Print"), CTRL(P), 0           , QList<QKeySequence>(), false }    ,
+    { Quit    , "Quit" , I18N_NOOP2("@action", "Quit") , CTRL(Q), 0           , QList<QKeySequence>(), false }    ,
 
 //Group Edit
-    { Undo             , "Undo"             , I18N_NOOP2("@action", "Undo")                 , CTRL(Z)          , 0            , KShortcut(), false },
-    { Redo             , "Redo"             , I18N_NOOP2("@action", "Redo")                 , CTRLSHIFT(Z)     , 0            , KShortcut(), false },
-    { Cut              , "Cut"              , I18N_NOOP2("@action", "Cut")                  , CTRL(X)          , SHIFT(Delete), KShortcut(), false },
-    { Copy             , "Copy"             , I18N_NOOP2("@action", "Copy")                 , CTRL(C)          , CTRL(Insert) , KShortcut(), false },
-    { Paste            , "Paste"            , I18N_NOOP2("@action", "Paste")                , CTRL(V)          , SHIFT(Insert), KShortcut(), false },
-    { PasteSelection   , "Paste Selection"  , I18N_NOOP2("@action", "Paste Selection")      , CTRLSHIFT(Insert), 0            , KShortcut(), false },
+    { Undo             , "Undo"             , I18N_NOOP2("@action", "Undo")                 , CTRL(Z)          , 0            , QList<QKeySequence>(), false },
+    { Redo             , "Redo"             , I18N_NOOP2("@action", "Redo")                 , CTRLSHIFT(Z)     , 0            , QList<QKeySequence>(), false },
+    { Cut              , "Cut"              , I18N_NOOP2("@action", "Cut")                  , CTRL(X)          , SHIFT(Delete), QList<QKeySequence>(), false },
+    { Copy             , "Copy"             , I18N_NOOP2("@action", "Copy")                 , CTRL(C)          , CTRL(Insert) , QList<QKeySequence>(), false },
+    { Paste            , "Paste"            , I18N_NOOP2("@action", "Paste")                , CTRL(V)          , SHIFT(Insert), QList<QKeySequence>(), false },
+    { PasteSelection   , "Paste Selection"  , I18N_NOOP2("@action", "Paste Selection")      , CTRLSHIFT(Insert), 0            , QList<QKeySequence>(), false },
 
-    { SelectAll        , "SelectAll"        , I18N_NOOP2("@action", "Select All")           , CTRL(A)          , 0            , KShortcut(), false },
-    { Deselect         , "Deselect"         , I18N_NOOP2("@action", "Deselect")             , CTRLSHIFT(A)     , 0            , KShortcut(), false },
-    { DeleteWordBack   , "DeleteWordBack"   , I18N_NOOP2("@action", "Delete Word Backwards"), CTRL(Backspace)  , 0            , KShortcut(), false },
-    { DeleteWordForward, "DeleteWordForward", I18N_NOOP2("@action", "Delete Word Forward")  , CTRL(Delete)     , 0            , KShortcut(), false },
+    { SelectAll        , "SelectAll"        , I18N_NOOP2("@action", "Select All")           , CTRL(A)          , 0            , QList<QKeySequence>(), false },
+    { Deselect         , "Deselect"         , I18N_NOOP2("@action", "Deselect")             , CTRLSHIFT(A)     , 0            , QList<QKeySequence>(), false },
+    { DeleteWordBack   , "DeleteWordBack"   , I18N_NOOP2("@action", "Delete Word Backwards"), CTRL(Backspace)  , 0            , QList<QKeySequence>(), false },
+    { DeleteWordForward, "DeleteWordForward", I18N_NOOP2("@action", "Delete Word Forward")  , CTRL(Delete)     , 0            , QList<QKeySequence>(), false },
 
-    { Find             , "Find"             , I18N_NOOP2("@action", "Find")                 , CTRL(F)          , 0            , KShortcut(), false },
-    { FindNext         , "FindNext"         , I18N_NOOP2("@action", "Find Next")            , Qt::Key_F3       , 0            , KShortcut(), false },
-    { FindPrev         , "FindPrev"         , I18N_NOOP2("@action", "Find Prev")            , SHIFT(F3)        , 0            , KShortcut(), false },
-    { Replace          , "Replace"          , I18N_NOOP2("@action", "Replace")              , CTRL(R)          , 0            , KShortcut(), false },
+    { Find             , "Find"             , I18N_NOOP2("@action", "Find")                 , CTRL(F)          , 0            , QList<QKeySequence>(), false },
+    { FindNext         , "FindNext"         , I18N_NOOP2("@action", "Find Next")            , Qt::Key_F3       , 0            , QList<QKeySequence>(), false },
+    { FindPrev         , "FindPrev"         , I18N_NOOP2("@action", "Find Prev")            , SHIFT(F3)        , 0            , QList<QKeySequence>(), false },
+    { Replace          , "Replace"          , I18N_NOOP2("@action", "Replace")              , CTRL(R)          , 0            , QList<QKeySequence>(), false },
 
 //Group Navigation
-    { Home           , "Home"                 , I18N_NOOP2("@action Go to main page"      , "Home")                 , ALT(Home)       , Qt::Key_HomePage  , KShortcut(), false },
-    { Begin          , "Begin"                , I18N_NOOP2("@action Beginning of document", "Begin")                , CTRL(Home)      , 0                 , KShortcut(), false },
-    { End            , "End"                  , I18N_NOOP2("@action End of document"      , "End")                  , CTRL(End)       , 0                 , KShortcut(), false },
-    { Prior          , "Prior"                , I18N_NOOP2("@action"                      , "Prior")                , Qt::Key_PageUp  , 0                 , KShortcut(), false },
-    { Next           , "Next"                 , I18N_NOOP2("@action Opposite to Prior"    , "Next")                 , Qt::Key_PageDown, 0                 , KShortcut(), false },
+    { Home           , "Home"                 , I18N_NOOP2("@action Go to main page"      , "Home")                 , ALT(Home)       , Qt::Key_HomePage  , QList<QKeySequence>(), false },
+    { Begin          , "Begin"                , I18N_NOOP2("@action Beginning of document", "Begin")                , CTRL(Home)      , 0                 , QList<QKeySequence>(), false },
+    { End            , "End"                  , I18N_NOOP2("@action End of document"      , "End")                  , CTRL(End)       , 0                 , QList<QKeySequence>(), false },
+    { Prior          , "Prior"                , I18N_NOOP2("@action"                      , "Prior")                , Qt::Key_PageUp  , 0                 , QList<QKeySequence>(), false },
+    { Next           , "Next"                 , I18N_NOOP2("@action Opposite to Prior"    , "Next")                 , Qt::Key_PageDown, 0                 , QList<QKeySequence>(), false },
 
-    { Up             , "Up"                   , I18N_NOOP2("@action"                      , "Up")                   , ALT(Up)         , 0                 , KShortcut(), false },
-    { Back           , "Back"                 , I18N_NOOP2("@action"                      , "Back")                 , ALT(Left)       , Qt::Key_Back      , KShortcut(), false },
-    { Forward        , "Forward"              , I18N_NOOP2("@action"                      , "Forward")              , ALT(Right)      , Qt::Key_Forward   , KShortcut(), false },
-    { Reload         , "Reload"               , I18N_NOOP2("@action"                      , "Reload")               , Qt::Key_F5      , Qt::Key_Refresh   , KShortcut(), false },
+    { Up             , "Up"                   , I18N_NOOP2("@action"                      , "Up")                   , ALT(Up)         , 0                 , QList<QKeySequence>(), false },
+    { Back           , "Back"                 , I18N_NOOP2("@action"                      , "Back")                 , ALT(Left)       , Qt::Key_Back      , QList<QKeySequence>(), false },
+    { Forward        , "Forward"              , I18N_NOOP2("@action"                      , "Forward")              , ALT(Right)      , Qt::Key_Forward   , QList<QKeySequence>(), false },
+    { Reload         , "Reload"               , I18N_NOOP2("@action"                      , "Reload")               , Qt::Key_F5      , Qt::Key_Refresh   , QList<QKeySequence>(), false },
 
-    { BeginningOfLine, "BeginningOfLine"      , I18N_NOOP2("@action"                      , "Beginning of Line")    , Qt::Key_Home    , 0                 , KShortcut(), false },
-    { EndOfLine      , "EndOfLine"            , I18N_NOOP2("@action"                      , "End of Line")          , Qt::Key_End     , 0                 , KShortcut(), false },
-    { GotoLine       , "GotoLine"             , I18N_NOOP2("@action"                      , "Go to Line")           , CTRL(G)         , 0                 , KShortcut(), false },
-    { BackwardWord   , "BackwardWord"         , I18N_NOOP2("@action"                      , "Backward Word")        , CTRL(Left)      , 0                 , KShortcut(), false },
-    { ForwardWord    , "ForwardWord"          , I18N_NOOP2("@action"                      , "Forward Word")         , CTRL(Right)     , 0                 , KShortcut(), false },
+    { BeginningOfLine, "BeginningOfLine"      , I18N_NOOP2("@action"                      , "Beginning of Line")    , Qt::Key_Home    , 0                 , QList<QKeySequence>(), false },
+    { EndOfLine      , "EndOfLine"            , I18N_NOOP2("@action"                      , "End of Line")          , Qt::Key_End     , 0                 , QList<QKeySequence>(), false },
+    { GotoLine       , "GotoLine"             , I18N_NOOP2("@action"                      , "Go to Line")           , CTRL(G)         , 0                 , QList<QKeySequence>(), false },
+    { BackwardWord   , "BackwardWord"         , I18N_NOOP2("@action"                      , "Backward Word")        , CTRL(Left)      , 0                 , QList<QKeySequence>(), false },
+    { ForwardWord    , "ForwardWord"          , I18N_NOOP2("@action"                      , "Forward Word")         , CTRL(Right)     , 0                 , QList<QKeySequence>(), false },
 
-    { AddBookmark    , "AddBookmark"          , I18N_NOOP2("@action"                      , "Add Bookmark")         , CTRL(B)         , 0                 , KShortcut(), false },
-    { ZoomIn         , "ZoomIn"               , I18N_NOOP2("@action"                      , "Zoom In")              , CTRL(Plus)      , CTRL(Equal)       , KShortcut(), false },
-    { ZoomOut        , "ZoomOut"              , I18N_NOOP2("@action"                      , "Zoom Out")             , CTRL(Minus)     , 0                 , KShortcut(), false },
-    { FullScreen     , "FullScreen"           , I18N_NOOP2("@action"                      , "Full Screen Mode")     , CTRLSHIFT(F)    , 0                 , KShortcut(), false },
+    { AddBookmark    , "AddBookmark"          , I18N_NOOP2("@action"                      , "Add Bookmark")         , CTRL(B)         , 0                 , QList<QKeySequence>(), false },
+    { ZoomIn         , "ZoomIn"               , I18N_NOOP2("@action"                      , "Zoom In")              , CTRL(Plus)      , CTRL(Equal)       , QList<QKeySequence>(), false },
+    { ZoomOut        , "ZoomOut"              , I18N_NOOP2("@action"                      , "Zoom Out")             , CTRL(Minus)     , 0                 , QList<QKeySequence>(), false },
+    { FullScreen     , "FullScreen"           , I18N_NOOP2("@action"                      , "Full Screen Mode")     , CTRLSHIFT(F)    , 0                 , QList<QKeySequence>(), false },
 
-    { ShowMenubar    , "ShowMenubar"          , I18N_NOOP2("@action"                      , "Show Menu Bar")        , CTRL(M)         , 0                 , KShortcut(), false },
-    { TabNext        , "Activate Next Tab"    , I18N_NOOP2("@action"                      , "Activate Next Tab")    , CTRL(Period)    , CTRL(BracketRight), KShortcut(), false },
-    { TabPrev        , "Activate Previous Tab", I18N_NOOP2("@action"                      , "Activate Previous Tab"), CTRL(Comma)     , CTRL(BracketLeft) , KShortcut(), false },
+    { ShowMenubar    , "ShowMenubar"          , I18N_NOOP2("@action"                      , "Show Menu Bar")        , CTRL(M)         , 0                 , QList<QKeySequence>(), false },
+    { TabNext        , "Activate Next Tab"    , I18N_NOOP2("@action"                      , "Activate Next Tab")    , CTRL(Period)    , CTRL(BracketRight), QList<QKeySequence>(), false },
+    { TabPrev        , "Activate Previous Tab", I18N_NOOP2("@action"                      , "Activate Previous Tab"), CTRL(Comma)     , CTRL(BracketLeft) , QList<QKeySequence>(), false },
 
     //Group Help
-    { Help           , "Help"                 , I18N_NOOP2("@action"                      , "Help")                 , Qt::Key_F1      , 0                 , KShortcut(), false },
-    { WhatsThis      , "WhatsThis"            , I18N_NOOP2("@action"                      , "What's This")          , SHIFT(F1)       , 0                 , KShortcut(), false },
+    { Help           , "Help"                 , I18N_NOOP2("@action"                      , "Help")                 , Qt::Key_F1      , 0                 , QList<QKeySequence>(), false },
+    { WhatsThis      , "WhatsThis"            , I18N_NOOP2("@action"                      , "What's This")          , SHIFT(F1)       , 0                 , QList<QKeySequence>(), false },
 
 //Group TextCompletion
-    { TextCompletion           , "TextCompletion"           , I18N_NOOP2("@action", "Text Completion")          , CTRL(E)     , 0, KShortcut(), false },
-    { PrevCompletion           , "PrevCompletion"           , I18N_NOOP2("@action", "Previous Completion Match"), CTRL(Up)    , 0, KShortcut(), false },
-    { NextCompletion           , "NextCompletion"           , I18N_NOOP2("@action", "Next Completion Match")    , CTRL(Down)  , 0, KShortcut(), false },
-    { SubstringCompletion      , "SubstringCompletion"      , I18N_NOOP2("@action", "Substring Completion")     , CTRL(T)     , 0, KShortcut(), false },
+    { TextCompletion           , "TextCompletion"           , I18N_NOOP2("@action", "Text Completion")          , CTRL(E)     , 0, QList<QKeySequence>(), false },
+    { PrevCompletion           , "PrevCompletion"           , I18N_NOOP2("@action", "Previous Completion Match"), CTRL(Up)    , 0, QList<QKeySequence>(), false },
+    { NextCompletion           , "NextCompletion"           , I18N_NOOP2("@action", "Next Completion Match")    , CTRL(Down)  , 0, QList<QKeySequence>(), false },
+    { SubstringCompletion      , "SubstringCompletion"      , I18N_NOOP2("@action", "Substring Completion")     , CTRL(T)     , 0, QList<QKeySequence>(), false },
 
-    { RotateUp                 , "RotateUp"                 , I18N_NOOP2("@action", "Previous Item in List")    , Qt::Key_Up  , 0, KShortcut(), false },
-    { RotateDown               , "RotateDown"               , I18N_NOOP2("@action", "Next Item in List")        , Qt::Key_Down, 0, KShortcut(), false },
+    { RotateUp                 , "RotateUp"                 , I18N_NOOP2("@action", "Previous Item in List")    , Qt::Key_Up  , 0, QList<QKeySequence>(), false },
+    { RotateDown               , "RotateDown"               , I18N_NOOP2("@action", "Next Item in List")        , Qt::Key_Down, 0, QList<QKeySequence>(), false },
 
-    { OpenRecent               , "OpenRecent"               , I18N_NOOP2("@action", "Open Recent")               , 0           , 0, KShortcut(), false },
-    { SaveAs                   , "SaveAs"                   , I18N_NOOP2("@action", "Save As")                   , 0           , 0, KShortcut(), false },
-    { Revert                   , "Revert"                   , I18N_NOOP2("@action", "Revert")                   , 0           , 0, KShortcut(), false },
-    { PrintPreview             , "PrintPreview"             , I18N_NOOP2("@action", "Print Preview")             , 0           , 0, KShortcut(), false },
-    { Mail                     , "Mail"                     , I18N_NOOP2("@action", "Mail")                     , 0           , 0, KShortcut(), false },
-    { Clear                    , "Clear"                    , I18N_NOOP2("@action", "Clear")                    , 0           , 0, KShortcut(), false },
-    { ActualSize               , "ActualSize"               , I18N_NOOP2("@action", "Actual Size")               , 0           , 0, KShortcut(), false },
-    { FitToPage                , "FitToPage"                , I18N_NOOP2("@action", "Fit To Page")                , 0           , 0, KShortcut(), false },
-    { FitToWidth               , "FitToWidth"               , I18N_NOOP2("@action", "Fit To Width")               , 0           , 0, KShortcut(), false },
-    { FitToHeight              , "FitToHeight"              , I18N_NOOP2("@action", "Fit To Height")              , 0           , 0, KShortcut(), false },
-    { Zoom                     , "Zoom"                     , I18N_NOOP2("@action", "Zoom")                     , 0           , 0, KShortcut(), false },
-    { Goto                     , "Goto"                     , I18N_NOOP2("@action", "Goto")                     , 0           , 0, KShortcut(), false },
-    { GotoPage                 , "GotoPage"                 , I18N_NOOP2("@action", "Goto Page")                 , 0           , 0, KShortcut(), false },
-    { DocumentBack             , "DocumentBack"             , I18N_NOOP2("@action", "Document Back")             , ALTSHIFT(Left), 0, KShortcut(), false },
-    { DocumentForward          , "DocumentForward"          , I18N_NOOP2("@action", "Document Forward")          , ALTSHIFT(Right), 0, KShortcut(), false },
-    { EditBookmarks            , "EditBookmarks"            , I18N_NOOP2("@action", "Edit Bookmarks")            , 0           , 0, KShortcut(), false },
-    { Spelling                 , "Spelling"                 , I18N_NOOP2("@action", "Spelling")                 , 0           , 0, KShortcut(), false },
-    { ShowToolbar              , "ShowToolbar"              , I18N_NOOP2("@action", "Show Toolbar")              , 0           , 0, KShortcut(), false },
-    { ShowStatusbar            , "ShowStatusbar"            , I18N_NOOP2("@action", "Show Statusbar")            , 0           , 0, KShortcut(), false },
-    { SaveOptions              , "SaveOptions"              , I18N_NOOP2("@action", "Save Options")              , 0           , 0, KShortcut(), false },
-    { KeyBindings              , "KeyBindings"              , I18N_NOOP2("@action", "Key Bindings")              , 0           , 0, KShortcut(), false },
-    { Preferences              , "Preferences"              , I18N_NOOP2("@action", "Preferences")              , 0           , 0, KShortcut(), false },
-    { ConfigureToolbars        , "ConfigureToolbars"        , I18N_NOOP2("@action", "Configure Toolbars")        , 0           , 0, KShortcut(), false },
-    { ConfigureNotifications   , "ConfigureNotifications"   , I18N_NOOP2("@action", "Configure Notifications")   , 0           , 0, KShortcut(), false },
-    { TipofDay                 , "TipofDay"                 , I18N_NOOP2("@action", "Tip Of Day")                 , 0           , 0, KShortcut(), false },
-    { ReportBug                , "ReportBug"                , I18N_NOOP2("@action", "Report Bug")                , 0           , 0, KShortcut(), false },
-    { SwitchApplicationLanguage, "SwitchApplicationLanguage", I18N_NOOP2("@action", "Switch Application Language"), 0           , 0, KShortcut(), false },
-    { AboutApp                 , "AboutApp"                 , I18N_NOOP2("@action", "About Application")                 , 0           , 0, KShortcut(), false },
-    { AboutKDE                 , "AboutKDE"                 , I18N_NOOP2("@action", "About KDE")                 , 0           , 0, KShortcut(), false },
+    { OpenRecent               , "OpenRecent"               , I18N_NOOP2("@action", "Open Recent")               , 0           , 0, QList<QKeySequence>(), false },
+    { SaveAs                   , "SaveAs"                   , I18N_NOOP2("@action", "Save As")                   , 0           , 0, QList<QKeySequence>(), false },
+    { Revert                   , "Revert"                   , I18N_NOOP2("@action", "Revert")                   , 0           , 0, QList<QKeySequence>(), false },
+    { PrintPreview             , "PrintPreview"             , I18N_NOOP2("@action", "Print Preview")             , 0           , 0, QList<QKeySequence>(), false },
+    { Mail                     , "Mail"                     , I18N_NOOP2("@action", "Mail")                     , 0           , 0, QList<QKeySequence>(), false },
+    { Clear                    , "Clear"                    , I18N_NOOP2("@action", "Clear")                    , 0           , 0, QList<QKeySequence>(), false },
+    { ActualSize               , "ActualSize"               , I18N_NOOP2("@action", "Actual Size")               , 0           , 0, QList<QKeySequence>(), false },
+    { FitToPage                , "FitToPage"                , I18N_NOOP2("@action", "Fit To Page")                , 0           , 0, QList<QKeySequence>(), false },
+    { FitToWidth               , "FitToWidth"               , I18N_NOOP2("@action", "Fit To Width")               , 0           , 0, QList<QKeySequence>(), false },
+    { FitToHeight              , "FitToHeight"              , I18N_NOOP2("@action", "Fit To Height")              , 0           , 0, QList<QKeySequence>(), false },
+    { Zoom                     , "Zoom"                     , I18N_NOOP2("@action", "Zoom")                     , 0           , 0, QList<QKeySequence>(), false },
+    { Goto                     , "Goto"                     , I18N_NOOP2("@action", "Goto")                     , 0           , 0, QList<QKeySequence>(), false },
+    { GotoPage                 , "GotoPage"                 , I18N_NOOP2("@action", "Goto Page")                 , 0           , 0, QList<QKeySequence>(), false },
+    { DocumentBack             , "DocumentBack"             , I18N_NOOP2("@action", "Document Back")             , ALTSHIFT(Left), 0, QList<QKeySequence>(), false },
+    { DocumentForward          , "DocumentForward"          , I18N_NOOP2("@action", "Document Forward")          , ALTSHIFT(Right), 0, QList<QKeySequence>(), false },
+    { EditBookmarks            , "EditBookmarks"            , I18N_NOOP2("@action", "Edit Bookmarks")            , 0           , 0, QList<QKeySequence>(), false },
+    { Spelling                 , "Spelling"                 , I18N_NOOP2("@action", "Spelling")                 , 0           , 0, QList<QKeySequence>(), false },
+    { ShowToolbar              , "ShowToolbar"              , I18N_NOOP2("@action", "Show Toolbar")              , 0           , 0, QList<QKeySequence>(), false },
+    { ShowStatusbar            , "ShowStatusbar"            , I18N_NOOP2("@action", "Show Statusbar")            , 0           , 0, QList<QKeySequence>(), false },
+    { SaveOptions              , "SaveOptions"              , I18N_NOOP2("@action", "Save Options")              , 0           , 0, QList<QKeySequence>(), false },
+    { KeyBindings              , "KeyBindings"              , I18N_NOOP2("@action", "Key Bindings")              , 0           , 0, QList<QKeySequence>(), false },
+    { Preferences              , "Preferences"              , I18N_NOOP2("@action", "Preferences")              , 0           , 0, QList<QKeySequence>(), false },
+    { ConfigureToolbars        , "ConfigureToolbars"        , I18N_NOOP2("@action", "Configure Toolbars")        , 0           , 0, QList<QKeySequence>(), false },
+    { ConfigureNotifications   , "ConfigureNotifications"   , I18N_NOOP2("@action", "Configure Notifications")   , 0           , 0, QList<QKeySequence>(), false },
+    { TipofDay                 , "TipofDay"                 , I18N_NOOP2("@action", "Tip Of Day")                 , 0           , 0, QList<QKeySequence>(), false },
+    { ReportBug                , "ReportBug"                , I18N_NOOP2("@action", "Report Bug")                , 0           , 0, QList<QKeySequence>(), false },
+    { SwitchApplicationLanguage, "SwitchApplicationLanguage", I18N_NOOP2("@action", "Switch Application Language"), 0           , 0, QList<QKeySequence>(), false },
+    { AboutApp                 , "AboutApp"                 , I18N_NOOP2("@action", "About Application")                 , 0           , 0, QList<QKeySequence>(), false },
+    { AboutKDE                 , "AboutKDE"                 , I18N_NOOP2("@action", "About KDE")                 , 0           , 0, QList<QKeySequence>(), false },
 
     //dummy entry to catch simple off-by-one errors. Insert new entries before this line.
-    { AccelNone                , 0                          , 0                   , 0                           , 0, 0, KShortcut(), false }
+    { AccelNone                , 0                          , 0                   , 0                           , 0, 0, QList<QKeySequence>(), false }
 };
 
 
@@ -225,9 +224,9 @@ static void initialize(StandardShortcut id)
     {
         QString s = cg.readEntry(info->name);
         if (s != "none")
-            info->cut = KShortcut(s);
+            info->cut = QKeySequence::listFromString(s);
         else
-            info->cut = KShortcut();
+            info->cut = QList<QKeySequence>();
     } else {
         info->cut = hardcodedDefaultShortcut(id);
     }
@@ -235,7 +234,7 @@ static void initialize(StandardShortcut id)
     info->isInitialized = true;
 }
 
-void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
+void saveShortcut(StandardShortcut id, const QList<QKeySequence> &newShortcut)
 {
     KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
     // If the action has no standard shortcut associated there is nothing to
@@ -258,7 +257,7 @@ void saveShortcut(StandardShortcut id, const KShortcut &newShortcut)
     }
 
     // Write the changed shortcut to kdeglobals
-    cg.writeEntry(info->name, info->cut.toString(), KConfig::Global|KConfig::Persistent);
+    cg.writeEntry(info->name, QKeySequence::listToString(info->cut), KConfig::Global|KConfig::Persistent);
 }
 
 QString name(StandardShortcut id)
@@ -284,7 +283,7 @@ QString whatsThis( StandardShortcut /*id*/ )
         return QString();
 }
 
-const KShortcut &shortcut(StandardShortcut id)
+const QList<QKeySequence> &shortcut(StandardShortcut id)
 {
     KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
@@ -319,61 +318,71 @@ StandardShortcut find(const char *keyName)
     return AccelNone;
 }
 
-KShortcut hardcodedDefaultShortcut(StandardShortcut id)
+QList<QKeySequence> hardcodedDefaultShortcut(StandardShortcut id)
 {
-    KShortcut cut;
+    QList<QKeySequence> cut;
     KStandardShortcutInfo *info = guardedStandardShortcutInfo(id);
 
-    return KShortcut(info->cutDefault, info->cutDefault2);
+    if (info->cutDefault != 0)
+        cut << info->cutDefault;
+
+    if (info->cutDefault2 != 0) {
+        if (cut.isEmpty())
+            cut << QKeySequence();
+
+        cut << info->cutDefault2;
+    }
+
+    return cut;
 }
 
-const KShortcut& open()                  { return shortcut( Open ); }
-const KShortcut& openNew()               { return shortcut( New ); }
-const KShortcut& close()                 { return shortcut( Close ); }
-const KShortcut& save()                  { return shortcut( Save ); }
-const KShortcut& print()                 { return shortcut( Print ); }
-const KShortcut& quit()                  { return shortcut( Quit ); }
-const KShortcut& cut()                   { return shortcut( Cut ); }
-const KShortcut& copy()                  { return shortcut( Copy ); }
-const KShortcut& paste()                 { return shortcut( Paste ); }
-const KShortcut& pasteSelection()        { return shortcut( PasteSelection ); }
-const KShortcut& deleteWordBack()        { return shortcut( DeleteWordBack ); }
-const KShortcut& deleteWordForward()     { return shortcut( DeleteWordForward ); }
-const KShortcut& undo()                  { return shortcut( Undo ); }
-const KShortcut& redo()                  { return shortcut( Redo ); }
-const KShortcut& find()                  { return shortcut( Find ); }
-const KShortcut& findNext()              { return shortcut( FindNext ); }
-const KShortcut& findPrev()              { return shortcut( FindPrev ); }
-const KShortcut& replace()               { return shortcut( Replace ); }
-const KShortcut& home()                  { return shortcut( Home ); }
-const KShortcut& begin()                 { return shortcut( Begin ); }
-const KShortcut& end()                   { return shortcut( End ); }
-const KShortcut& beginningOfLine()       { return shortcut( BeginningOfLine ); }
-const KShortcut& endOfLine()             { return shortcut( EndOfLine ); }
-const KShortcut& prior()                 { return shortcut( Prior ); }
-const KShortcut& next()                  { return shortcut( Next ); }
-const KShortcut& backwardWord()          { return shortcut( BackwardWord ); }
-const KShortcut& forwardWord()           { return shortcut( ForwardWord ); }
-const KShortcut& gotoLine()              { return shortcut( GotoLine ); }
-const KShortcut& addBookmark()           { return shortcut( AddBookmark ); }
-const KShortcut& tabNext()               { return shortcut( TabNext ); }
-const KShortcut& tabPrev()               { return shortcut( TabPrev ); }
-const KShortcut& fullScreen()            { return shortcut( FullScreen ); }
-const KShortcut& zoomIn()                { return shortcut( ZoomIn ); }
-const KShortcut& zoomOut()               { return shortcut( ZoomOut ); }
-const KShortcut& help()                  { return shortcut( Help ); }
-const KShortcut& completion()            { return shortcut( TextCompletion ); }
-const KShortcut& prevCompletion()        { return shortcut( PrevCompletion ); }
-const KShortcut& nextCompletion()        { return shortcut( NextCompletion ); }
-const KShortcut& rotateUp()              { return shortcut( RotateUp ); }
-const KShortcut& rotateDown()            { return shortcut( RotateDown ); }
-const KShortcut& substringCompletion()   { return shortcut( SubstringCompletion ); }
-const KShortcut& whatsThis()             { return shortcut( WhatsThis ); }
-const KShortcut& reload()                { return shortcut( Reload ); }
-const KShortcut& selectAll()             { return shortcut( SelectAll ); }
-const KShortcut& up()                    { return shortcut( Up ); }
-const KShortcut& back()                  { return shortcut( Back ); }
-const KShortcut& forward()               { return shortcut( Forward ); }
-const KShortcut& showMenubar()           { return shortcut( ShowMenubar ); }
+const QList<QKeySequence> &open()                  { return shortcut( Open ); }
+const QList<QKeySequence> &openNew()               { return shortcut( New ); }
+const QList<QKeySequence> &close()                 { return shortcut( Close ); }
+const QList<QKeySequence> &save()                  { return shortcut( Save ); }
+const QList<QKeySequence> &print()                 { return shortcut( Print ); }
+const QList<QKeySequence> &quit()                  { return shortcut( Quit ); }
+const QList<QKeySequence> &cut()                   { return shortcut( Cut ); }
+const QList<QKeySequence> &copy()                  { return shortcut( Copy ); }
+const QList<QKeySequence> &paste()                 { return shortcut( Paste ); }
+const QList<QKeySequence> &pasteSelection()        { return shortcut( PasteSelection ); }
+const QList<QKeySequence> &deleteWordBack()        { return shortcut( DeleteWordBack ); }
+const QList<QKeySequence> &deleteWordForward()     { return shortcut( DeleteWordForward ); }
+const QList<QKeySequence> &undo()                  { return shortcut( Undo ); }
+const QList<QKeySequence> &redo()                  { return shortcut( Redo ); }
+const QList<QKeySequence> &find()                  { return shortcut( Find ); }
+const QList<QKeySequence> &findNext()              { return shortcut( FindNext ); }
+const QList<QKeySequence> &findPrev()              { return shortcut( FindPrev ); }
+const QList<QKeySequence> &replace()               { return shortcut( Replace ); }
+const QList<QKeySequence> &home()                  { return shortcut( Home ); }
+const QList<QKeySequence> &begin()                 { return shortcut( Begin ); }
+const QList<QKeySequence> &end()                   { return shortcut( End ); }
+const QList<QKeySequence> &beginningOfLine()       { return shortcut( BeginningOfLine ); }
+const QList<QKeySequence> &endOfLine()             { return shortcut( EndOfLine ); }
+const QList<QKeySequence> &prior()                 { return shortcut( Prior ); }
+const QList<QKeySequence> &next()                  { return shortcut( Next ); }
+const QList<QKeySequence> &backwardWord()          { return shortcut( BackwardWord ); }
+const QList<QKeySequence> &forwardWord()           { return shortcut( ForwardWord ); }
+const QList<QKeySequence> &gotoLine()              { return shortcut( GotoLine ); }
+const QList<QKeySequence> &addBookmark()           { return shortcut( AddBookmark ); }
+const QList<QKeySequence> &tabNext()               { return shortcut( TabNext ); }
+const QList<QKeySequence> &tabPrev()               { return shortcut( TabPrev ); }
+const QList<QKeySequence> &fullScreen()            { return shortcut( FullScreen ); }
+const QList<QKeySequence> &zoomIn()                { return shortcut( ZoomIn ); }
+const QList<QKeySequence> &zoomOut()               { return shortcut( ZoomOut ); }
+const QList<QKeySequence> &help()                  { return shortcut( Help ); }
+const QList<QKeySequence> &completion()            { return shortcut( TextCompletion ); }
+const QList<QKeySequence> &prevCompletion()        { return shortcut( PrevCompletion ); }
+const QList<QKeySequence> &nextCompletion()        { return shortcut( NextCompletion ); }
+const QList<QKeySequence> &rotateUp()              { return shortcut( RotateUp ); }
+const QList<QKeySequence> &rotateDown()            { return shortcut( RotateDown ); }
+const QList<QKeySequence> &substringCompletion()   { return shortcut( SubstringCompletion ); }
+const QList<QKeySequence> &whatsThis()             { return shortcut( WhatsThis ); }
+const QList<QKeySequence> &reload()                { return shortcut( Reload ); }
+const QList<QKeySequence> &selectAll()             { return shortcut( SelectAll ); }
+const QList<QKeySequence> &up()                    { return shortcut( Up ); }
+const QList<QKeySequence> &back()                  { return shortcut( Back ); }
+const QList<QKeySequence> &forward()               { return shortcut( Forward ); }
+const QList<QKeySequence> &showMenubar()           { return shortcut( ShowMenubar ); }
 
 }

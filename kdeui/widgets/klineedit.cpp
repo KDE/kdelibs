@@ -1006,7 +1006,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         else if ( mode == KGlobalSettings::CompletionShell )
         {
             // Handles completion.
-            KShortcut cut;
+            QList<QKeySequence> cut;
             if ( keys[TextCompletion].isEmpty() )
                 cut = KStandardShortcut::shortcut(KStandardShortcut::TextCompletion);
             else
@@ -1032,7 +1032,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         if ( mode != KGlobalSettings::CompletionNone )
         {
             // Handles previous match
-            KShortcut cut;
+            QList<QKeySequence> cut;
             if ( keys[PrevCompletionMatch].isEmpty() )
                 cut = KStandardShortcut::shortcut(KStandardShortcut::PrevCompletion);
             else
@@ -1066,7 +1066,7 @@ void KLineEdit::keyPressEvent( QKeyEvent *e )
         // substring completion
         if ( compObj() )
         {
-            KShortcut cut;
+            QList<QKeySequence> cut;
             if ( keys[SubstringCompletion].isEmpty() )
                 cut = KStandardShortcut::shortcut(KStandardShortcut::SubstringCompletion);
             else
@@ -1477,7 +1477,7 @@ void KLineEdit::userCancelled(const QString & cancelText)
 
 bool KLineEditPrivate::overrideShortcut(const QKeyEvent* e)
 {
-    KShortcut scKey;
+    QList<QKeySequence> scKey;
 
     const int key = e->key() | e->modifiers();
     const KLineEdit::KeyBindingMap keys = q->getKeyBindings();

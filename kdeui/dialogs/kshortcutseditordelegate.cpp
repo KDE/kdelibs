@@ -90,14 +90,17 @@ void KShortcutsEditorDelegate::stealShortcut(
 
             // We found the action, snapshot the current state. Steal the
             // shortcut. We will save the change later.
-            KShortcut cut(action->shortcuts());
-            if (   cut.primary().matches(seq) != QKeySequence::NoMatch
-                || seq.matches(cut.primary()) != QKeySequence::NoMatch) {
+            const QList<QKeySequence> cut = action->shortcuts();
+            const QKeySequence primary = cut.isEmpty() ? QKeySequence() : cut.at(0);
+            const QKeySequence alternate = cut.size() <= 1 ? QKeySequence() : cut.at(1);
+
+            if (   primary.matches(seq) != QKeySequence::NoMatch
+                || seq.matches(primary) != QKeySequence::NoMatch) {
                 item->setKeySequence(LocalPrimary, QKeySequence());
             }
 
-            if (   cut.alternate().matches(seq) != QKeySequence::NoMatch
-                || seq.matches(cut.alternate()) != QKeySequence::NoMatch) {
+            if (   alternate.matches(seq) != QKeySequence::NoMatch
+                || seq.matches(alternate) != QKeySequence::NoMatch) {
                 item->setKeySequence(LocalAlternate, QKeySequence());
             }
             break;

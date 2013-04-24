@@ -282,7 +282,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
     d->m_paSaveDocument = actionCollection()->addAction( KStandardAction::SaveAs, "saveDocument",
                                                        this, SLOT(slotSaveDocument()) );
     if ( parentPart() )
-        d->m_paSaveDocument->setShortcuts( KShortcut() ); // avoid clashes
+        d->m_paSaveDocument->setShortcuts( QList<QKeySequence>() ); // avoid clashes
 
     d->m_paSaveFrame = new QAction( i18n( "Save &Frame As..." ), this );
     actionCollection()->addAction( "saveFrame", d->m_paSaveFrame );
@@ -385,7 +385,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
           // TODO: Why also CTRL+=?  Because of http://trolltech.com/developer/knowledgebase/524/?
           // Nobody else does it...
-          d->m_paIncZoomFactor->setShortcuts( KShortcut("CTRL++; CTRL+=") );
+          d->m_paIncZoomFactor->setShortcut( QKeySequence("CTRL++; CTRL+=") );
           d->m_paDecZoomFactor->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Minus) );
       }
   }
@@ -408,7 +408,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // These two actions aren't visible in the menus, but exist for the (configurable) shortcut
   d->m_paFindAheadText = new QAction( i18n("Find Text as You Type"), this );
   actionCollection()->addAction( "findAheadText", d->m_paFindAheadText );
-  d->m_paFindAheadText->setShortcuts( KShortcut( '/' ) );
+  d->m_paFindAheadText->setShortcut( QKeySequence("/") );
   d->m_paFindAheadText->setToolTip(i18n("This shortcut shows the find bar, for finding text in the displayed page. It cancels the effect of \"Find Links as You Type\", which sets the \"Find links only\" option."));
   d->m_paFindAheadText->setStatusTip(d->m_paFindAheadText->toolTip());
   connect( d->m_paFindAheadText, SIGNAL(triggered(bool)), this, SLOT(slotFindAheadText()) );
@@ -418,18 +418,18 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   // The issue is that it sets the (sticky) option FindLinksOnly, so
   // if you trigger this shortcut once by mistake, Esc and Ctrl+F will still have the option set.
   // Better let advanced users configure a shortcut for this advanced option
-  //d->m_paFindAheadLinks->setShortcuts( KShortcut( '\'' ) );
+  //d->m_paFindAheadLinks->setShortcut( QKeySequence("\'") );
   d->m_paFindAheadLinks->setToolTip(i18n("This shortcut shows the find bar, and sets the option \"Find links only\"."));
   d->m_paFindAheadLinks->setStatusTip(d->m_paFindAheadLinks->toolTip());
   connect( d->m_paFindAheadLinks, SIGNAL(triggered(bool)), this, SLOT(slotFindAheadLink()) );
 
   if ( parentPart() )
   {
-      d->m_paFind->setShortcuts( KShortcut() ); // avoid clashes
-      d->m_paFindNext->setShortcuts( KShortcut() ); // avoid clashes
-      d->m_paFindPrev->setShortcuts( KShortcut() ); // avoid clashes
-      d->m_paFindAheadText->setShortcuts( KShortcut());
-      d->m_paFindAheadLinks->setShortcuts( KShortcut());
+      d->m_paFind->setShortcuts( QList<QKeySequence>() ); // avoid clashes
+      d->m_paFindNext->setShortcuts( QList<QKeySequence>() ); // avoid clashes
+      d->m_paFindPrev->setShortcuts( QList<QKeySequence>() ); // avoid clashes
+      d->m_paFindAheadText->setShortcuts( QList<QKeySequence>());
+      d->m_paFindAheadLinks->setShortcuts( QList<QKeySequence>());
   }
 
   d->m_paPrintFrame = new QAction( i18n( "Print Frame..." ), this );
@@ -448,7 +448,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   d->m_paSelectAll = actionCollection()->addAction( KStandardAction::SelectAll, "selectAll",
                                                     this, SLOT(slotSelectAll()) );
   if ( parentPart() ) // Only the frameset has the shortcut, but the slot uses the current frame.
-      d->m_paSelectAll->setShortcuts( KShortcut() ); // avoid clashes
+      d->m_paSelectAll->setShortcuts( QList<QKeySequence>() ); // avoid clashes
 
   d->m_paToggleCaretMode = new KToggleAction(i18n("Toggle Caret Mode"), this );
   actionCollection()->addAction( "caretMode", d->m_paToggleCaretMode );
@@ -456,7 +456,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   connect( d->m_paToggleCaretMode, SIGNAL(triggered(bool)), this, SLOT(slotToggleCaretMode()) );
   d->m_paToggleCaretMode->setChecked(isCaretMode());
   if (parentPart())
-      d->m_paToggleCaretMode->setShortcuts(KShortcut()); // avoid clashes
+      d->m_paToggleCaretMode->setShortcuts(QList<QKeySequence>()); // avoid clashes
 
   // set the default java(script) flags according to the current host.
   d->m_bOpenMiddleClick = d->m_settings->isOpenMiddleClickEnabled();

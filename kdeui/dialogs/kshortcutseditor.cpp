@@ -47,7 +47,6 @@
 #include "kdeprintdialog.h"
 #include "kglobalaccel.h"
 #include "kmessagebox.h"
-#include "kshortcut.h"
 #include <kgesturemap.h>
 
 //---------------------------------------------------------------------
@@ -367,9 +366,9 @@ void KShortcutsEditorPrivate::allDefault()
         }
 
         if (KGlobalAccel::self()->shortcut(act) != KGlobalAccel::self()->defaultShortcut(act)) {
-            KShortcut defaultShortcut = KGlobalAccel::self()->defaultShortcut(act);
-            changeKeyShortcut(item, GlobalPrimary, defaultShortcut.primary());
-            changeKeyShortcut(item, GlobalAlternate, defaultShortcut.alternate());
+            QList<QKeySequence> defaultShortcut = KGlobalAccel::self()->defaultShortcut(act);
+            changeKeyShortcut(item, GlobalPrimary, primarySequence(defaultShortcut));
+            changeKeyShortcut(item, GlobalAlternate, alternateSequence(defaultShortcut));
         }
 
         KShapeGesture actShapeGesture = KGestureMap::self()->shapeGesture(act);
@@ -545,8 +544,8 @@ void KShortcutsEditorPrivate::importConfiguration(KConfigBase *config)
             KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
 
             QString actionName = item->data(Id).toString();
-            KShortcut sc(globalShortcutsGroup.readEntry(actionName, QString()));
-            changeKeyShortcut(item, GlobalPrimary, sc.primary());
+            QList<QKeySequence> sc = QKeySequence::listFromString(globalShortcutsGroup.readEntry(actionName, QString()));
+            changeKeyShortcut(item, GlobalPrimary, primarySequence(sc));
         }
     }
 
@@ -561,9 +560,9 @@ void KShortcutsEditorPrivate::importConfiguration(KConfigBase *config)
             KShortcutsEditorItem *item = static_cast<KShortcutsEditorItem *>(*it);
 
             QString actionName = item->data(Name).toString();
-            KShortcut sc(localShortcutsGroup.readEntry(actionName, QString()));
-            changeKeyShortcut(item, LocalPrimary, sc.primary());
-            changeKeyShortcut(item, LocalAlternate, sc.alternate());
+            QList<QKeySequence> sc = QKeySequence::listFromString(localShortcutsGroup.readEntry(actionName, QString()));
+            changeKeyShortcut(item, LocalPrimary, primarySequence(sc));
+            changeKeyShortcut(item, LocalAlternate, alternateSequence(sc));
         }
     }
 }

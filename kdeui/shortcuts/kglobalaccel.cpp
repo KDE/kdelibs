@@ -39,7 +39,6 @@
 #include <kdebug.h>
 #include <kaboutdata.h>
 #include "kmessagebox.h"
-#include "kshortcut.h"
 
 org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QString &componentUnique, bool remember = false)
 {
@@ -283,8 +282,8 @@ void KGlobalAccelPrivate::updateGlobalShortcut(QAction *action,
     }
 
     QStringList actionId = makeActionId(action);
-    const KShortcut activeShortcut = actionShortcuts.value(action);
-    const KShortcut defaultShortcut = actionDefaultShortcuts.value(action);
+    const QList<QKeySequence> activeShortcut = actionShortcuts.value(action);
+    const QList<QKeySequence> defaultShortcut = actionDefaultShortcuts.value(action);
 
     uint setterFlags = 0;
     if (globalFlags & NoAutoloading) {
@@ -310,7 +309,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(QAction *action,
         getComponent(componentUniqueForAction(action), true);
 
         // Create a shortcut from the result
-        const KShortcut scResult(shortcutFromIntList(result));
+        const QList<QKeySequence> scResult(shortcutFromIntList(result));
 
         if (isConfigurationAction && (globalFlags & NoAutoloading)) {
             // If this is a configuration action and we have set the shortcut,
@@ -328,7 +327,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(QAction *action,
         if (scResult != activeShortcut) {
             // If kglobalaccel returned a shortcut that differs from the one we
             // sent, use that one. There must have been clashes or some other problem.
-            emit q->globalShortcutChanged(action, scResult.primary());
+            emit q->globalShortcutChanged(action, scResult.isEmpty() ? QKeySequence() : scResult.first());
         }
     }
 
@@ -352,24 +351,22 @@ QStringList KGlobalAccelPrivate::makeActionId(const QAction *action)
 }
 
 
-QList<int> KGlobalAccelPrivate::intListFromShortcut(const KShortcut &cut)
+QList<int> KGlobalAccelPrivate::intListFromShortcut(const QList<QKeySequence> &cut)
 {
     QList<int> ret;
-    ret.append(cut.primary()[0]);
-    ret.append(cut.alternate()[0]);
+    foreach (const QKeySequence &sequence, cut)
+        ret.append(sequence[0]);
     while (!ret.isEmpty() && ret.last() == 0)
         ret.removeLast();
     return ret;
 }
 
 
-KShortcut KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
+QList<QKeySequence> KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
 {
-    KShortcut ret;
-    if (list.count() > 0)
-        ret.setPrimary(list[0]);
-    if (list.count() > 1)
-        ret.setAlternate(list[1]);
+    QList<QKeySequence> ret;
+    foreach (int i, list)
+        ret.append(i);
     return ret;
 }
 
@@ -435,7 +432,7 @@ void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
     if (!action)
         return;
 
-    emit q->globalShortcutChanged(action, shortcutFromIntList(keys).primary());
+    emit q->globalShortcutChanged(action, keys.isEmpty() ? QKeySequence() : shortcutFromIntList(keys).first());
 }
 
 void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QString &oldOwner,
@@ -583,25 +580,22 @@ void KGlobalAccel::stealShortcutSystemwide(const QKeySequence &seq)
     self()->d->iface.setForeignShortcut(actionId, sc);
 }
 
-bool checkGarbageKeycode(const KShortcut &shortcut)
+bool checkGarbageKeycode(const QList<QKeySequence> &shortcut)
 {
-  // protect against garbage keycode -1 that Qt sometimes produces for exotic keys;
-  // at the moment (~mid 2008) Multimedia PlayPause is one of those keys.
-  int shortcutKeys[8];
-  for (int i = 0; i < 4; i++) {
-    shortcutKeys[i] = shortcut.primary()[i];
-    shortcutKeys[i + 4] = shortcut.alternate()[i];
-  }
-  for (int i = 0; i < 8; i++) {
-    if (shortcutKeys[i] == -1) {
-      qWarning() << "Encountered garbage keycode (keycode = -1) in input, not doing anything.";
-      return true;
+    // protect against garbage keycode -1 that Qt sometimes produces for exotic keys;
+    // at the moment (~mid 2008) Multimedia PlayPause is one of those keys.
+    foreach (const QKeySequence &sequence, shortcut) {
+        for (int i = 0; i < 4; i++) {
+            if (sequence[i] == -1) {
+                qWarning() << "Encountered garbage keycode (keycode = -1) in input, not doing anything.";
+                return true;
+            }
+        }
     }
-  }
-  return false;
+    return false;
 }
 
-bool KGlobalAccel::setDefaultShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag)
+bool KGlobalAccel::setDefaultShortcut(QAction *action, const QList<QKeySequence> &shortcut, GlobalShortcutLoading loadFlag)
 {
     if (checkGarbageKeycode(shortcut))
         return false;
@@ -613,7 +607,7 @@ bool KGlobalAccel::setDefaultShortcut(QAction *action, const KShortcut &shortcut
     return true;
 }
 
-bool KGlobalAccel::setShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag)
+bool KGlobalAccel::setShortcut(QAction *action, const QList<QKeySequence> &shortcut, GlobalShortcutLoading loadFlag)
 {
     if (checkGarbageKeycode(shortcut))
         return false;
@@ -625,12 +619,12 @@ bool KGlobalAccel::setShortcut(QAction *action, const KShortcut &shortcut, Globa
     return true;
 }
 
-KShortcut KGlobalAccel::defaultShortcut(const QAction *action) const
+QList<QKeySequence> KGlobalAccel::defaultShortcut(const QAction *action) const
 {
     return d->actionDefaultShortcuts.value(action);
 }
 
-KShortcut KGlobalAccel::shortcut(const QAction *action) const
+QList<QKeySequence> KGlobalAccel::shortcut(const QAction *action) const
 {
     return d->actionShortcuts.value(action);
 }

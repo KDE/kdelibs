@@ -23,8 +23,8 @@
 
 #ifdef Q_OS_MAC // Only compile this module if we're compiling for Mac OS X
 
-#include "kshortcut.h"
 #include <kdebug.h>
+#include <QKeySequence>
 #include <QMultiMap>
 #include <Carbon/Carbon.h>
 

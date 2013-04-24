@@ -21,9 +21,9 @@
 #define KSTANDARDSHORTCUT_H
 
 #include <QtCore/QString>
+#include <QKeySequence>
 
-#include "kshortcut.h"
-
+#include <kdeui_export.h>
 
 /**
  * \namespace KStandardShortcut
@@ -124,7 +124,7 @@ namespace KStandardShortcut
    * default keybinding will always be returned.
    * @param id the id of the accelerator
    */
-  KDEUI_EXPORT const KShortcut &shortcut(StandardShortcut id);
+  KDEUI_EXPORT const QList<QKeySequence> &shortcut(StandardShortcut id);
 
   /**
    * Returns a unique name for the given accel.
@@ -173,309 +173,309 @@ namespace KStandardShortcut
    * @param id the id of the accelerator
    * @return the default shortcut of the accelerator
    */
-  KDEUI_EXPORT KShortcut hardcodedDefaultShortcut(StandardShortcut id);
+  KDEUI_EXPORT QList<QKeySequence> hardcodedDefaultShortcut(StandardShortcut id);
 
   /**
    * Saves the new shortcut \a cut for standard accel \a id.
    */
-  KDEUI_EXPORT void saveShortcut(StandardShortcut id, const KShortcut &newShortcut);
+  KDEUI_EXPORT void saveShortcut(StandardShortcut id, const QList<QKeySequence> &newShortcut);
 
   /**
    * Open file. Default: Ctrl-o
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &open();
+  KDEUI_EXPORT const QList<QKeySequence> &open();
 
   /**
    * Create a new document (or whatever). Default: Ctrl-n
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &openNew();
+  KDEUI_EXPORT const QList<QKeySequence> &openNew();
 
   /**
    * Close current document. Default: Ctrl-w
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &close();
+  KDEUI_EXPORT const QList<QKeySequence> &close();
 
   /**
    * Save current document. Default: Ctrl-s
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &save();
+  KDEUI_EXPORT const QList<QKeySequence> &save();
 
   /**
    * Print current document. Default: Ctrl-p
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &print();
+  KDEUI_EXPORT const QList<QKeySequence> &print();
 
   /**
    * Quit the program. Default: Ctrl-q
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &quit();
+  KDEUI_EXPORT const QList<QKeySequence> &quit();
 
   /**
    * Undo last operation. Default: Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &undo();
+  KDEUI_EXPORT const QList<QKeySequence> &undo();
 
   /**
    * Redo. Default: Shift-Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &redo();
+  KDEUI_EXPORT const QList<QKeySequence> &redo();
 
   /**
    * Cut selected area and store it in the clipboard. Default: Ctrl-x
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &cut();
+  KDEUI_EXPORT const QList<QKeySequence> &cut();
 
   /**
    * Copy selected area into the clipboard. Default: Ctrl-c
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &copy();
+  KDEUI_EXPORT const QList<QKeySequence> &copy();
 
   /**
    * Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &paste();
+  KDEUI_EXPORT const QList<QKeySequence> &paste();
 
   /**
    * Paste the selection at mouse/cursor position. Default: Ctrl-Shift-Insert
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &pasteSelection();
+  KDEUI_EXPORT const QList<QKeySequence> &pasteSelection();
 
   /**
    * Select all. Default: Ctrl-A
    * @return the shortcut of the standard accelerator
    **/
-  KDEUI_EXPORT const KShortcut &selectAll();
+  KDEUI_EXPORT const QList<QKeySequence> &selectAll();
 
   /**
    * Delete a word back from mouse/cursor position. Default: Ctrl-Backspace
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &deleteWordBack();
+  KDEUI_EXPORT const QList<QKeySequence> &deleteWordBack();
 
   /**
    * Delete a word forward from mouse/cursor position. Default: Ctrl-Delete
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &deleteWordForward();
+  KDEUI_EXPORT const QList<QKeySequence> &deleteWordForward();
 
   /**
    * Find, search. Default: Ctrl-f
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &find();
+  KDEUI_EXPORT const QList<QKeySequence> &find();
 
   /**
    * Find/search next. Default: F3
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &findNext();
+  KDEUI_EXPORT const QList<QKeySequence> &findNext();
 
   /**
    * Find/search previous. Default: Shift-F3
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &findPrev();
+  KDEUI_EXPORT const QList<QKeySequence> &findPrev();
 
   /**
    * Find and replace matches. Default: Ctrl-r
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &replace();
+  KDEUI_EXPORT const QList<QKeySequence> &replace();
 
   /**
    * Zoom in. Default: Ctrl-Plus
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &zoomIn();
+  KDEUI_EXPORT const QList<QKeySequence> &zoomIn();
 
   /**
    * Zoom out. Default: Ctrl-Minus
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &zoomOut();
+  KDEUI_EXPORT const QList<QKeySequence> &zoomOut();
 
   /**
    * Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &insert();
+  KDEUI_EXPORT const QList<QKeySequence> &insert();
 
   /**
    * Goto home page. Default: Alt-Home
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &home();
+  KDEUI_EXPORT const QList<QKeySequence> &home();
 
   /**
    * Goto beginning of the document. Default: Ctrl-Home
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &begin();
+  KDEUI_EXPORT const QList<QKeySequence> &begin();
 
   /**
    * Goto end of the document. Default: Ctrl-End
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &end();
+  KDEUI_EXPORT const QList<QKeySequence> &end();
 
   /**
    * Goto beginning of current line. Default: Home
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &beginningOfLine();
+  KDEUI_EXPORT const QList<QKeySequence> &beginningOfLine();
 
   /**
    * Goto end of current line. Default: End
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &endOfLine();
+  KDEUI_EXPORT const QList<QKeySequence> &endOfLine();
 
   /**
    * Scroll up one page. Default: Prior
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &prior();
+  KDEUI_EXPORT const QList<QKeySequence> &prior();
 
   /**
    * Scroll down one page. Default: Next
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &next();
+  KDEUI_EXPORT const QList<QKeySequence> &next();
 
   /**
    * Go to line. Default: Ctrl+G
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &gotoLine();
+  KDEUI_EXPORT const QList<QKeySequence> &gotoLine();
 
   /**
    * Add current page to bookmarks. Default: Ctrl+B
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &addBookmark();
+  KDEUI_EXPORT const QList<QKeySequence> &addBookmark();
 
   /**
    * Next Tab. Default: Ctrl-<
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &tabNext();
+  KDEUI_EXPORT const QList<QKeySequence> &tabNext();
 
   /**
    * Previous Tab. Default: Ctrl->
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &tabPrev();
+  KDEUI_EXPORT const QList<QKeySequence> &tabPrev();
 
   /**
    * Full Screen Mode. Default: Ctrl+Shift+F
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &fullScreen();
+  KDEUI_EXPORT const QList<QKeySequence> &fullScreen();
 
   /**
    * Help the user in the current situation. Default: F1
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &help();
+  KDEUI_EXPORT const QList<QKeySequence> &help();
 
   /**
    * Complete text in input widgets. Default Ctrl+E
    * @return the shortcut of the standard accelerator
    **/
-  KDEUI_EXPORT const KShortcut &completion();
+  KDEUI_EXPORT const QList<QKeySequence> &completion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Up
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &prevCompletion();
+  KDEUI_EXPORT const QList<QKeySequence> &prevCompletion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Down
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &nextCompletion();
+  KDEUI_EXPORT const QList<QKeySequence> &nextCompletion();
 
   /**
    * Find a string within another string or list of strings.
    * Default: Ctrl-T
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &substringCompletion();
+  KDEUI_EXPORT const QList<QKeySequence> &substringCompletion();
 
   /**
    * Help users iterate through a list of entries. Default: Up
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &rotateUp();
+  KDEUI_EXPORT const QList<QKeySequence> &rotateUp();
 
   /**
    * Help users iterate through a list of entries. Default: Down
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &rotateDown();
+  KDEUI_EXPORT const QList<QKeySequence> &rotateDown();
 
   /**
    * What's This button. Default: Shift+F1
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &whatsThis();
+  KDEUI_EXPORT const QList<QKeySequence> &whatsThis();
 
   /**
    * Reload. Default: F5
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &reload();
+  KDEUI_EXPORT const QList<QKeySequence> &reload();
 
   /**
    * Up. Default: Alt+Up
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &up();
+  KDEUI_EXPORT const QList<QKeySequence> &up();
 
   /**
    * Back. Default: Alt+Left
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &back();
+  KDEUI_EXPORT const QList<QKeySequence> &back();
 
   /**
    * Forward. Default: ALT+Right
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &forward();
+  KDEUI_EXPORT const QList<QKeySequence> &forward();
 
   /**
    * BackwardWord. Default: Ctrl+Left
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &backwardWord();
+  KDEUI_EXPORT const QList<QKeySequence> &backwardWord();
 
   /**
    * ForwardWord. Default: Ctrl+Right
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &forwardWord();
+  KDEUI_EXPORT const QList<QKeySequence> &forwardWord();
 
   /**
    * Show Menu Bar.  Default: Ctrl-M
    * @return the shortcut of the standard accelerator
    */
-  KDEUI_EXPORT const KShortcut &showMenubar();
+  KDEUI_EXPORT const QList<QKeySequence> &showMenubar();
 
 }
 

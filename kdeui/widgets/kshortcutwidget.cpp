@@ -20,8 +20,6 @@
 #include "kshortcutwidget.h"
 #include "ui_kshortcutwidget.h"
 
-#include <kshortcut.h>
-
 class KShortcutWidgetPrivate
 {
 public:
@@ -34,7 +32,7 @@ public:
 //members
     KShortcutWidget *const q;
     Ui::KShortcutWidget ui;
-    KShortcut cut;
+    QList<QKeySequence> cut;
     bool holdChangedSignal;
 };
 
@@ -78,11 +76,11 @@ void KShortcutWidget::setClearButtonsShown(bool show)
 }
 
 
-KShortcut KShortcutWidget::shortcut() const
+QList<QKeySequence> KShortcutWidget::shortcut() const
 {
-    KShortcut ret;
-    ret.setPrimary(d->ui.priEditor->keySequence());
-    ret.setAlternate(d->ui.altEditor->keySequence());
+    QList<QKeySequence> ret;
+    ret << d->ui.priEditor->keySequence()
+        << d->ui.altEditor->keySequence();
     return ret;
 }
 
@@ -109,14 +107,19 @@ void KShortcutWidget::applyStealShortcut()
 
 
 //slot
-void KShortcutWidget::setShortcut(const KShortcut &newSc)
+void KShortcutWidget::setShortcut(const QList<QKeySequence> &newSc)
 {
     if (newSc == d->cut)
         return;
 
     d->holdChangedSignal = true;
-    d->ui.priEditor->setKeySequence(newSc.primary());
-    d->ui.altEditor->setKeySequence(newSc.alternate());
+
+    if (!newSc.isEmpty())
+        d->ui.priEditor->setKeySequence(newSc.first());
+
+    if (newSc.size() > 1)
+        d->ui.altEditor->setKeySequence(newSc.at(1));
+
     d->holdChangedSignal = false;
 
     emit shortcutChanged(d->cut);
@@ -126,14 +129,18 @@ void KShortcutWidget::setShortcut(const KShortcut &newSc)
 //slot
 void KShortcutWidget::clearShortcut()
 {
-    setShortcut(KShortcut());
+    setShortcut(QList<QKeySequence>());
 }
 
 
 //private slot
 void KShortcutWidgetPrivate::priKeySequenceChanged(const QKeySequence &seq)
 {
-    cut.setPrimary(seq);
+    if (cut.isEmpty())
+        cut << seq;
+    else
+        cut[0] = seq;
+
     if (!holdChangedSignal)
         emit q->shortcutChanged(cut);
 }
@@ -142,7 +149,11 @@ void KShortcutWidgetPrivate::priKeySequenceChanged(const QKeySequence &seq)
 //private slot
 void KShortcutWidgetPrivate::altKeySequenceChanged(const QKeySequence &seq)
 {
-    cut.setAlternate(seq);
+    if (cut.size() <= 1)
+        cut << seq;
+    else
+        cut[1] = seq;
+
     if (!holdChangedSignal)
         emit q->shortcutChanged(cut);
 }

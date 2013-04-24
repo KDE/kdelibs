@@ -342,14 +342,14 @@ KDirSelectDialog::KDirSelectDialog(const QUrl &startDir, bool localOnly,
     d->moveToTrash = new QAction( i18nc( "@action:inmenu","Move to Trash" ), this );
     d->m_actions->addAction( d->moveToTrash->objectName(), d->moveToTrash );
     d->moveToTrash->setIcon( QIcon::fromTheme( "user-trash" ) );
-    d->moveToTrash->setShortcuts(KShortcut(Qt::Key_Delete));
+    d->moveToTrash->setShortcut(Qt::Key_Delete);
     connect( d->moveToTrash, SIGNAL(triggered(bool)), this, SLOT(slotMoveToTrash()) );
     d->m_contextMenu->addAction( d->moveToTrash );
 
     d->deleteAction = new QAction( i18nc("@action:inmenu","Delete"), this );
     d->m_actions->addAction( d->deleteAction->objectName(), d->deleteAction );
     d->deleteAction->setIcon( QIcon::fromTheme( "edit-delete" ) );
-    d->deleteAction->setShortcuts( KShortcut( Qt::SHIFT + Qt::Key_Delete ) );
+    d->deleteAction->setShortcut(Qt::SHIFT + Qt::Key_Delete);
     connect( d->deleteAction, SIGNAL(triggered(bool)), this, SLOT(slotDelete()) );
     d->m_contextMenu->addAction( d->deleteAction );
 
@@ -365,7 +365,7 @@ KDirSelectDialog::KDirSelectDialog(const QUrl &startDir, bool localOnly,
     QAction* propertiesAction = new QAction( i18nc("@action:inmenu","Properties"), this);
     d->m_actions->addAction(propertiesAction->objectName(), propertiesAction);
     propertiesAction->setIcon(QIcon::fromTheme("document-properties"));
-    propertiesAction->setShortcuts(KShortcut(Qt::ALT + Qt::Key_Return));
+    propertiesAction->setShortcut(Qt::ALT + Qt::Key_Return);
     connect( propertiesAction, SIGNAL(triggered(bool)), this, SLOT(slotProperties()) );
     d->m_contextMenu->addAction( propertiesAction );
 

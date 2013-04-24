@@ -441,9 +441,9 @@ void KActionCollection::importGlobalShortcuts( KConfigGroup* config )
       if(isShortcutsConfigurable(action)) {
           QString entry = config->readEntry(actionName, QString());
           if( !entry.isEmpty() ) {
-              KGlobalAccel::self()->setShortcut(action, KShortcut(entry), KGlobalAccel::NoAutoloading );
+              KGlobalAccel::self()->setShortcut(action, QKeySequence::listFromString(entry), KGlobalAccel::NoAutoloading );
           } else {
-              KShortcut defaultShortcut = KGlobalAccel::self()->defaultShortcut(action);
+              QList<QKeySequence> defaultShortcut = KGlobalAccel::self()->defaultShortcut(action);
               KGlobalAccel::self()->setShortcut(action, defaultShortcut, KGlobalAccel::NoAutoloading );
           }
       }
@@ -471,7 +471,7 @@ void KActionCollection::readSettings( KConfigGroup* config )
           QString actionName = it.key();
           QString entry = config->readEntry(actionName, QString());
           if( !entry.isEmpty() ) {
-              action->setShortcuts(KShortcut(entry));
+              action->setShortcuts(QKeySequence::listFromString(entry));
           } else {
               action->setShortcuts(defaultShortcuts(action));
           }
@@ -514,7 +514,7 @@ void KActionCollection::exportGlobalShortcuts( KConfigGroup* config, bool writeA
           if (configIsGlobal())
               flags |= KConfigGroup::Global;
           if( writeAll || !bSameAsDefault ) {
-              QString s = KGlobalAccel::self()->shortcut(action).toString();
+              QString s = QKeySequence::listToString(KGlobalAccel::self()->shortcut(action));
               if( s.isEmpty() )
                   s = "none";
               qDebug() << "\twriting " << actionName << " = " << s;
@@ -574,9 +574,9 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
 
       bool bSameAsDefault = (action->shortcuts() == q->defaultShortcuts(action));
       qDebug() << "name = " << actionName
-                  << " shortcut = " << KShortcut(action->shortcuts()).toString()
-                  << " globalshortcut = " << KGlobalAccel::self()->shortcut(action).toString()
-                  << " def = " << KShortcut(q->defaultShortcuts(action)).toString();
+                  << " shortcut = " << QKeySequence::listToString(action->shortcuts())
+                  << " globalshortcut = " << QKeySequence::listToString(KGlobalAccel::self()->shortcut(action))
+                  << " def = " << QKeySequence::listToString(q->defaultShortcuts(action));
 
       // now see if this element already exists
       // and create it if necessary (unless bSameAsDefault)
@@ -590,7 +590,7 @@ bool KActionCollectionPrivate::writeKXMLGUIConfigFile()
         if( act_elem.attributes().count() == 1 )
           elem.removeChild( act_elem );
       } else {
-        act_elem.setAttribute( attrShortcut, KShortcut(action->shortcuts()).toString() );
+        act_elem.setAttribute( attrShortcut, QKeySequence::listToString(action->shortcuts()) );
       }
     }
 
@@ -654,7 +654,7 @@ void KActionCollection::writeSettings( KConfigGroup* config, bool writeAll, QAct
             if( writeAll || !bSameAsDefault ) {
                 // We are instructed to write all shortcuts or the shortcut is
                 // not set to its default value. Write it
-                QString s = KShortcut(action->shortcuts()).toString();
+                QString s = QKeySequence::listToString(action->shortcuts());
                 if( s.isEmpty() )
                     s = "none";
                 qDebug() << "\twriting " << actionName << " = " << s;

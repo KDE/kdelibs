@@ -65,7 +65,7 @@ bool KShortcutSchemesHelper::exportActionCollection(KActionCollection *collectio
             continue;
 
         QString actionName = action->objectName();
-        QString shortcut = KShortcut(action->shortcuts()).toString();
+        QString shortcut = QKeySequence::listToString(action->shortcuts());
         if (!shortcut.isEmpty())
         {
             QDomElement act_elem = doc.createElement("Action");

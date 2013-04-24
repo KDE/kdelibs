@@ -21,10 +21,11 @@
 
 #include <kdeui_export.h>
 
+#include <QKeySequence>
+#include <QList>
 #include <QWidget>
 
 class KActionCollection;
-class KShortcut;
 class KShortcutWidgetPrivate;
 
 /**
@@ -43,7 +44,7 @@ public:
 
     void setClearButtonsShown(bool show);
 
-    KShortcut shortcut() const;
+    QList<QKeySequence> shortcut() const;
 
     /**
      * Set a list of action collections to check against for conflictuous shortcut.
@@ -71,10 +72,10 @@ public:
 #endif
 
 Q_SIGNALS:
-    void shortcutChanged(const KShortcut &cut);
+    void shortcutChanged(const QList<QKeySequence> &cut);
 
 public Q_SLOTS:
-    void setShortcut(const KShortcut &cut);
+    void setShortcut(const QList<QKeySequence> &cut);
     void clearShortcut();
 
     /**

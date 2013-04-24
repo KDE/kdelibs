@@ -471,7 +471,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
     QAction * showHidden = coll->action( "show hidden" );
     if (showHidden) {
         showHidden->setShortcuts(
-                    KShortcut( QKeySequence(Qt::ALT + Qt::Key_Period), QKeySequence(Qt::Key_F8) ) );
+                    QList<QKeySequence>() << QKeySequence(Qt::ALT + Qt::Key_Period) << QKeySequence(Qt::Key_F8) );
     }
     menu->addAction( showHidden );
     menu->addAction( showSidebarAction );

@@ -27,10 +27,10 @@ QTEST_MAIN( KStandardShortcutTest) // GUI needed by KAccel
 
 void KStandardShortcutTest::testShortcutDefault()
 {
-    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::FullScreen ).toString(), QLatin1String( "Ctrl+Shift+F" ) );
-    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::BeginningOfLine ).toString(), QLatin1String( "Home" ) );
-    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::EndOfLine ).toString(), QLatin1String( "End" ) );
-    QCOMPARE( KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::Home ).toString(), QLatin1String( "Alt+Home; Home Page" ) );
+    QCOMPARE( QKeySequence::listToString(KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::FullScreen )), QLatin1String( "Ctrl+Shift+F" ) );
+    QCOMPARE( QKeySequence::listToString(KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::BeginningOfLine )), QLatin1String( "Home" ) );
+    QCOMPARE( QKeySequence::listToString(KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::EndOfLine )), QLatin1String( "End" ) );
+    QCOMPARE( QKeySequence::listToString(KStandardShortcut::hardcodedDefaultShortcut( KStandardShortcut::Home )), QLatin1String( "Alt+Home; Home Page" ) );
 }
 
 void KStandardShortcutTest::testName()
@@ -49,7 +49,7 @@ void KStandardShortcutTest::testLabel()
 
 void KStandardShortcutTest::testShortcut()
 {
-    QCOMPARE( KStandardShortcut::shortcut( KStandardShortcut::ZoomIn ).toString(), KStandardShortcut::zoomIn().toString() );
+    QCOMPARE( QKeySequence::listToString(KStandardShortcut::shortcut( KStandardShortcut::ZoomIn )), QKeySequence::listToString(KStandardShortcut::zoomIn()) );
 }
 
 void KStandardShortcutTest::testFindStdAccel()

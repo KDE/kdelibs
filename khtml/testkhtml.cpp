@@ -113,12 +113,12 @@ int main(int argc, char *argv[])
     kprint->setEnabled(true);
     KToggleAction *ta = new KToggleAction( QIcon::fromTheme("edit-rename"), "Navigable", doc );
     doc->actionCollection()->addAction( "navigable", ta );
-    ta->setShortcuts( KShortcut() );
+    ta->setShortcuts( QList<QKeySequence>() );
     ta->setChecked(doc->isCaretMode());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT(toggleNavigable(bool)));
     ta = new KToggleAction( QIcon::fromTheme("document-properties"), "Editable", doc );
     doc->actionCollection()->addAction( "editable", ta );
-    ta->setShortcuts( KShortcut() );
+    ta->setShortcuts( QList<QKeySequence>() );
     ta->setChecked(doc->isEditable());
     QWidget::connect(ta, SIGNAL(toggled(bool)), dummy, SLOT(toggleEditable(bool)));
     toplevel->guiFactory()->addClient( doc );

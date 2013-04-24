@@ -33,7 +33,6 @@
 #include <phonon/videowidget.h>
 #include <ktogglefullscreenaction.h>
 #include <kglobalaccel.h>
-#include <kshortcut.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
@@ -67,7 +66,7 @@ void MediaControls::slotToggled(bool t)
 {
     if (t) {
         m_mediaPlayer->videoWidget()->enterFullScreen();
-        KGlobalAccel::self()->setShortcut(m_fullscreen->defaultAction(), KShortcut(Qt::Key_Escape));
+        KGlobalAccel::self()->setShortcut(m_fullscreen->defaultAction(), QList<QKeySequence>() << Qt::Key_Escape);
     } else {
         m_mediaPlayer->videoWidget()->exitFullScreen();
         KGlobalAccel::self()->removeAllShortcuts(m_fullscreen->defaultAction());

@@ -77,13 +77,13 @@ void KGlobalShortcutTest::setupTest(QString id)
 
     m_actionA = new QAction("Text For Action A", this);
     m_actionA->setObjectName("Action A:" + id);
-    KGlobalAccel::self()->setShortcut(m_actionA, KShortcut(sequenceA, sequenceB), KGlobalAccel::NoAutoloading);
-    KGlobalAccel::self()->setDefaultShortcut(m_actionA, KShortcut(sequenceA, sequenceB), KGlobalAccel::NoAutoloading);
+    KGlobalAccel::self()->setShortcut(m_actionA, QList<QKeySequence>() << sequenceA << sequenceB, KGlobalAccel::NoAutoloading);
+    KGlobalAccel::self()->setDefaultShortcut(m_actionA, QList<QKeySequence>() << sequenceA << sequenceB, KGlobalAccel::NoAutoloading);
 
     m_actionB = new QAction("Text For Action B", this);
     m_actionB->setObjectName("Action B:" + id);
-    KGlobalAccel::self()->setShortcut(m_actionB, KShortcut(), KGlobalAccel::NoAutoloading);
-    KGlobalAccel::self()->setDefaultShortcut(m_actionB, KShortcut(), KGlobalAccel::NoAutoloading);
+    KGlobalAccel::self()->setShortcut(m_actionB, QList<QKeySequence>(), KGlobalAccel::NoAutoloading);
+    KGlobalAccel::self()->setDefaultShortcut(m_actionB, QList<QKeySequence>(), KGlobalAccel::NoAutoloading);
 }
 
 
@@ -95,7 +95,8 @@ void KGlobalShortcutTest::testSetShortcut()
         QSKIP("kglobalaccel not installed");
 
     // Just ensure that the desired values are set for both actions
-    KShortcut cutA(sequenceA, sequenceB);
+    QList<QKeySequence> cutA;
+    cutA << sequenceA << sequenceB;
     QCOMPARE(KGlobalAccel::self()->shortcut(m_actionA), cutA);
     QCOMPARE(KGlobalAccel::self()->defaultShortcut(m_actionA), cutA);
 
@@ -144,26 +145,27 @@ void KGlobalShortcutTest::testChangeShortcut()
     if (!m_daemonInstalled)
         QSKIP("kglobalaccel not installed");
     // Change the shortcut
-    KShortcut newCutA(sequenceC);
-    KGlobalAccel::self()->setShortcut(m_actionA, newCutA, KGlobalAccel::NoAutoloading);
+    KGlobalAccel::self()->setShortcut(m_actionA, QList<QKeySequence>() << sequenceC, KGlobalAccel::NoAutoloading);
     // Ensure that the change is active
-    QCOMPARE(KGlobalAccel::self()->shortcut(m_actionA), newCutA);
+    QCOMPARE(KGlobalAccel::self()->shortcut(m_actionA), QList<QKeySequence>() << sequenceC);
     // We haven't changed the default shortcut, ensure it is unchanged
-    KShortcut cutA(sequenceA, sequenceB);
+    QList<QKeySequence> cutA;
+    cutA << sequenceA << sequenceB;
     QCOMPARE(KGlobalAccel::self()->defaultShortcut(m_actionA), cutA);
 
     // Try to set a already take shortcut
-    KShortcut cutB(KGlobalAccel::self()->shortcut(m_actionA).primary(), QKeySequence(sequenceE));
+    QList<QKeySequence> cutB;
+    cutB << KGlobalAccel::self()->shortcut(m_actionA).first() << QKeySequence(sequenceE);
     KGlobalAccel::self()->setShortcut(m_actionB, cutB, KGlobalAccel::NoAutoloading);
     // Ensure that no change was made to the primary active shortcut
-    QVERIFY(KGlobalAccel::self()->shortcut(m_actionB).primary().isEmpty());
+    QVERIFY(KGlobalAccel::self()->shortcut(m_actionB).first().isEmpty());
     // Ensure that the change to the secondary active shortcut was made
-    QCOMPARE(KGlobalAccel::self()->shortcut(m_actionB).alternate(), QKeySequence(sequenceE));
+    QCOMPARE(KGlobalAccel::self()->shortcut(m_actionB).at(1), QKeySequence(sequenceE));
     // Ensure that the default shortcut is still empty
     QVERIFY(KGlobalAccel::self()->defaultShortcut(m_actionB).isEmpty()); // unchanged
 
     // Only change the active shortcut
-    cutB.setPrimary(sequenceD);
+    cutB[0] = sequenceD;
     KGlobalAccel::self()->setShortcut(m_actionB, cutB, KGlobalAccel::NoAutoloading);
     // Check that the change went through
     QCOMPARE(KGlobalAccel::self()->shortcut(m_actionB), cutB);
@@ -179,14 +181,15 @@ void KGlobalShortcutTest::testStealShortcut()
 
     // Steal a shortcut from an action. First ensure the initial state is
     // correct
-    KShortcut cutA(sequenceA, sequenceB);
+    QList<QKeySequence> cutA;
+    cutA << sequenceA << sequenceB;
     QCOMPARE(KGlobalAccel::self()->shortcut(m_actionA), cutA);
     QCOMPARE(KGlobalAccel::self()->defaultShortcut(m_actionA), cutA);
 
     KGlobalAccel::stealShortcutSystemwide(sequenceA);
     //let DBus do its thing in case it happens asynchronously
     QTest::qWait(200);
-    QVERIFY(KGlobalAccel::self()->shortcut(m_actionB).primary().isEmpty());
+    QVERIFY(KGlobalAccel::self()->shortcut(m_actionB).first().isEmpty());
 }
 
 
@@ -195,7 +198,7 @@ void KGlobalShortcutTest::testSaveRestore()
     setupTest("testSaveRestore");
 
     //It /would be nice/ to test persistent storage. That is not so easy...
-    KShortcut cutA = KGlobalAccel::self()->shortcut(m_actionA);
+    QList<QKeySequence> cutA = KGlobalAccel::self()->shortcut(m_actionA);
     // Delete the action
     delete m_actionA;
 
@@ -206,7 +209,7 @@ void KGlobalShortcutTest::testSaveRestore()
     // Now it's empty
     QVERIFY(KGlobalAccel::self()->shortcut(m_actionA).isEmpty());
 
-    KGlobalAccel::self()->setShortcut(m_actionA, KShortcut());
+    KGlobalAccel::self()->setShortcut(m_actionA, QList<QKeySequence>());
     // Now it's restored
     QCOMPARE(KGlobalAccel::self()->shortcut(m_actionA), cutA);
 
@@ -214,7 +217,8 @@ void KGlobalShortcutTest::testSaveRestore()
     delete m_actionA;
     m_actionA = new QAction("Text For Action A", this);
     m_actionA->setObjectName("Action A:testSaveRestore");
-    KGlobalAccel::self()->setShortcut(m_actionA, KShortcut(QKeySequence(), cutA.primary()));
+    KGlobalAccel::self()->setShortcut(m_actionA, QList<QKeySequence>() << QKeySequence()
+                                                                       << (cutA.isEmpty() ? QKeySequence() : cutA.first()));
     QCOMPARE(KGlobalAccel::self()->shortcut(m_actionA), cutA);
 
 }
@@ -263,7 +267,7 @@ void KGlobalShortcutTest::testComponentAssignment()
     QString otherComponent("test_component1");
     KActionCollection coll((QObject*)NULL);
     coll.setComponentName(otherComponent);
-    KShortcut cutB;
+    QList<QKeySequence> cutB;
     /************************************************************
      * Ensure that the actions get a correct component assigned *
      ************************************************************/
@@ -301,7 +305,7 @@ void KGlobalShortcutTest::testConfigurationActions()
     QAction cfg_action("Text For Action A", NULL);
     cfg_action.setObjectName("Action A:testConfigurationActions");
     cfg_action.setProperty("isConfigurationAction", true);
-    KGlobalAccel::self()->setShortcut(&cfg_action, KShortcut());
+    KGlobalAccel::self()->setShortcut(&cfg_action, QList<QKeySequence>());
 
     // Check that the configuration action has the correct shortcuts
     QCOMPARE(KGlobalAccel::self()->shortcut(m_actionA), KGlobalAccel::self()->shortcut(&cfg_action));
@@ -321,7 +325,7 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     QString otherComponent("test_component1");
     KActionCollection coll((QObject*)NULL);
     coll.setComponentName(otherComponent);
-    KShortcut cutB;
+    QList<QKeySequence> cutB;
 
     // Action without action collection
     QAction *action = new QAction("Text For Action A", this);
@@ -351,7 +355,7 @@ void KGlobalShortcutTest::testNotification()
     QAction *action = new QAction("Text For Action A", this);
     QCOMPARE(action->property("componentName").toString(), QString());
     action->setObjectName("Action A");
-    KShortcut cutB;
+    QList<QKeySequence> cutB;
     KGlobalAccel::self()->setShortcut(action, cutB, KGlobalAccel::NoAutoloading);
     QCOMPARE(action->property("componentName").toString(), QString());
 

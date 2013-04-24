@@ -23,7 +23,7 @@
 #ifndef _KKEYSERVER_X11_H
 #define _KKEYSERVER_X11_H
 
-#include "kshortcut.h"
+#include <kdeui_export.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
 

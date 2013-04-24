@@ -33,7 +33,6 @@ class KConfig;
 class KConfigBase;
 class KConfigGroup;
 class KGlobalAccel;
-class KShortcut;
 class KShortcutsEditorPrivate;
 
 // KShortcutsEditor expects that the list of existing shortcuts is already
@@ -193,7 +192,7 @@ public:
      * Import the settings from configuration @p config.
      *
      * This will remove all current setting before importing. All shortcuts
-     * are set to KShortcut() prior to importing from @p config!
+     * are set to QList<QKeySequence>() prior to importing from @p config!
      *
      * @param config Config object
      */

@@ -49,7 +49,7 @@ int main( int argc, char **argv )
     part->actionCollection()->addAction( "decFontSizes", a );
     a = new QAction( QIcon::fromTheme( "security-low" ), "sec", part );
     part->actionCollection()->addAction( "security", a );
-    part->actionCollection()->setDefaultShortcuts(a, KShortcut(Qt::ALT + Qt::Key_1));
+    part->actionCollection()->setDefaultShortcuts(a, QList<QKeySequence>() << Qt::ALT + Qt::Key_1);
     a->connect( a, SIGNAL(triggered(bool)), part, SLOT(slotSec()) );
 
     part->setXMLFile( QFINDTESTDATA("kxmlguitest_part.rc") );

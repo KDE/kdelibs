@@ -635,11 +635,11 @@ void KXmlGui_UnitTest::testActionListAndSeparator()
 
     QAction* action1 = new QAction(this);
     action1->setObjectName("action1");
-    action1->setShortcuts(KShortcut("Ctrl+2"));
+    action1->setShortcuts(QKeySequence::listFromString("Ctrl+2"));
     QList<QAction*> actionList;
     actionList << action1;
     client.plugActionList("view_groups_list", actionList);
-    QCOMPARE(KShortcut(action1->shortcuts()).toString(), QString("Ctrl+2"));
+    QCOMPARE(QKeySequence::listToString(action1->shortcuts()), QString("Ctrl+2"));
 
     //debugActions(menu->actions());
     checkActions(menu->actions(), QStringList()

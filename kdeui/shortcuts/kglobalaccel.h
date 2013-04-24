@@ -26,10 +26,11 @@
 #include "kglobalshortcutinfo.h"
 
 #include <QtCore/QObject>
+#include <QKeySequence>
+#include <QList>
 
 class QAction;
 class QWidget;
-class KShortcut;
 class OrgKdeKglobalaccelComponentInterface;
 
 /**
@@ -179,7 +180,7 @@ public:
      *
      * @since 5.0
      */
-    bool setDefaultShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag = Autoloading);
+    bool setDefaultShortcut(QAction *action, const QList<QKeySequence> &shortcut, GlobalShortcutLoading loadFlag = Autoloading);
 
     /**
      * Assign a global shortcut for the given action. Global shortcuts
@@ -217,7 +218,7 @@ public:
      * @sa globalShortcutChanged
      * @since 5.0
      */
-    bool setShortcut(QAction *action, const KShortcut &shortcut, GlobalShortcutLoading loadFlag = Autoloading);
+    bool setShortcut(QAction *action, const QList<QKeySequence> &shortcut, GlobalShortcutLoading loadFlag = Autoloading);
 
     /**
      * Get the global default shortcut for this action, if one exists. Global shortcuts
@@ -228,7 +229,7 @@ public:
      * @sa setDefaultShortcut()
      * @since 5.0
      */
-    KShortcut defaultShortcut(const QAction *action) const;
+    QList<QKeySequence> defaultShortcut(const QAction *action) const;
 
     /**
      * Get the global shortcut for this action, if one exists. Global shortcuts
@@ -239,7 +240,7 @@ public:
      * @sa setShortcut()
      * @since 5.0
      */
-    KShortcut shortcut(const QAction *action) const;
+    QList<QKeySequence> shortcut(const QAction *action) const;
 
     /**
      * Unregister and remove all defined global shortcuts for the given action.
