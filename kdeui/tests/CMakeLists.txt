@@ -28,7 +28,6 @@ KDEUI_UNIT_TESTS(
   ktextedit_unittest
   kcombobox_unittest
   kreplacetest
-  kshortcuttest
   kstandardactiontest
   kstandardshortcuttest
   kxmlgui_unittest

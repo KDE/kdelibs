@@ -18,6 +18,7 @@ kde4support_examples(
   kmessageboxqueuedtest
   kprogressdialogtest
   khboxtest
+  kshortcuttest
   kstatusbartest
   ksystemtraytest
 )

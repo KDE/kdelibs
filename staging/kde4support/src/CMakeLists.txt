@@ -51,6 +51,7 @@ set(libkde4support_SRCS
     kdeui/kprogressdialog.cpp
     kdeui/kmenu.cpp
     kdeui/kmenubar.cpp
+    kdeui/kshortcut.cpp
     kdeui/kstatusbar.cpp
     kdeui/ksystemtrayicon.cpp
     kdeui/kuniqueapplication.cpp
@@ -139,6 +140,7 @@ install(FILES
     kdeui/kprogressdialog.h
     kdeui/kmenu.h
     kdeui/kmenubar.h
+    kdeui/kshortcut.h
     kdeui/kstatusbar.h
     kdeui/ksystemtrayicon.h
     kdeui/kuniqueapplication.h
