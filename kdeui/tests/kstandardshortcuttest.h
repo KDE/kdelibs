@@ -32,10 +32,6 @@ private Q_SLOTS:
     void testLabel();
     void testShortcut();
     void testFindStdAccel();
-    void testRemoveShortcut();
-
-    // KShortcut tests
-    void testKShortcut();
 };
 
 
