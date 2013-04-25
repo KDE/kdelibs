@@ -21,8 +21,9 @@
 #define CONFIGPROPERTYMAP_P
 
 #include <QQmlPropertyMap>
+#include <QPointer>
 
-#include <KConfigSkeleton>
+#include <kconfigskeleton.h>
 
 #include <kdeclarative_export.h>
 
@@ -40,7 +41,7 @@ private Q_SLOTS:
     void writeConfigValue(const QString &key, const QVariant &value);
 
 private:
-    QWeakPointer<KConfigSkeleton>m_config;
+    QPointer<KConfigSkeleton>m_config;
 };
 
 #endif

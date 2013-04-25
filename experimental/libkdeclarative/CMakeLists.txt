@@ -6,7 +6,7 @@ find_package(Qt5Qml REQUIRED)
 include_directories(${KDE4_INCLUDE_DIR}/KDE)
 
 set(kdeclarative_LIB_SRCS
-   # configpropertymap.cpp
+    configpropertymap.cpp
     qmlobject.cpp
     kdeclarative.cpp
     private/kiconprovider.cpp)
