@@ -24,6 +24,7 @@ Boston, MA 02110-1301, USA.
 #include "sampleedit_p.h"
 
 #include <QCheckBox>
+#include <QDoubleSpinBox>
 #include <QLabel>
 #include <QLayout>
 #include <QSplitter>
@@ -35,7 +36,6 @@ Boston, MA 02110-1301, USA.
 #include <kglobalsettings.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
-#include <knuminput.h>
 
 #include <cmath>
 
@@ -113,7 +113,7 @@ public:
 
     bool usingFixed:1;
 
-    KDoubleNumInput *sizeOfFont;
+    QDoubleSpinBox *sizeOfFont;
 
     SampleEdit   *sampleEdit;
 
@@ -302,12 +302,11 @@ KFontChooser::KFontChooser( QWidget *parent,
 
 
     d->sizeListBox = new QListWidget( page );
-    d->sizeOfFont = new KDoubleNumInput(page);
+    d->sizeOfFont = new QDoubleSpinBox(page);
     d->sizeOfFont->setMinimum(4);
     d->sizeOfFont->setMaximum(999);
     d->sizeOfFont->setDecimals(1);
     d->sizeOfFont->setSingleStep(1);
-    d->sizeOfFont->setSliderEnabled(false);
 
     d->sizeListBox->setEnabled( flags ^ ShowDifferences );
     d->sizeOfFont->setEnabled( flags ^ ShowDifferences );

@@ -22,11 +22,11 @@
 
 #include <QLayout>
 #include <QLabel>
+#include <QSpinBox>
 
 #include <klocalizedstring.h>
 #include <kdebug.h>
 #include <kdatepicker.h>
-#include <knuminput.h>
 
 KDateTimeDlg::KDateTimeDlg(QWidget *parent)
  : KDialog(parent)
@@ -43,20 +43,23 @@ KDateTimeDlg::KDateTimeDlg(QWidget *parent)
    grid->addWidget(_date, 0, 0, 6, 6);
 
    grid->addWidget(new QLabel(i18nc("Set Hours of Time", "Hour:"), this), 7, 0);
-   _hours = new KIntNumInput(this);
-   _hours->setRange(0, 23, 1);
+   _hours = new QSpinBox(this);
+   _hours->setRange(0, 23);
+   _hours->setSingleStep(1);
    _hours->setSliderEnabled(false);
    grid->addWidget(_hours, 7, 1);
 
    grid->addWidget(new QLabel(i18nc("Set Minutes of Time", "Minute:"), this), 7, 2);
-   _mins = new KIntNumInput(this);
-   _mins->setRange(0, 59, 1);
+   _mins = new QSpinBox(this);
+   _mins->setRange(0, 59);
+   _mins->setSingleStep(1);
    _mins->setSliderEnabled(false);
    grid->addWidget(_mins, 7, 3);
 
    grid->addWidget(new QLabel(i18nc("Set Seconds of Time", "Second:"), this), 7, 4);
-   _secs = new KIntNumInput(this);
-   _secs->setRange(0, 59, 1);
+   _secs = new QSpinBox(this);
+   _secs->setRange(0, 59);
+   _secs->setSingleStep(1);
    _secs->setSliderEnabled(false);
    grid->addWidget(_secs, 7, 5);
 

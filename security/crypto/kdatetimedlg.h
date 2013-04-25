@@ -24,7 +24,7 @@
 #include <kdialog.h>
 
 class KDatePicker;
-class KIntNumInput;
+class QSpinBox;
 class QPushButton;
 class QDate;
 class QTime;
@@ -51,7 +51,7 @@ protected Q_SLOTS:
 
 private:
    KDatePicker *_date;
-   KIntNumInput *_hours, *_mins, *_secs;
+   QSpinBox *_hours, *_mins, *_secs;
 
    KDateTimeDlgPrivate *d;
 };

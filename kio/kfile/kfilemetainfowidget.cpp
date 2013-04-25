@@ -20,7 +20,6 @@
 
 #include <ktextedit.h>
 #include <klocalizedstring.h>
-#include <knuminput.h>
 #include <kcombobox.h>
 #include <klineedit.h>
 #include <kstringvalidator.h>
@@ -274,9 +273,12 @@ QWidget* KFileMetaInfoWidget::makeDoubleWidget()
 {
     double value = d->m_item.value().toDouble();
 
-    KDoubleNumInput* dni = new KDoubleNumInput(qMin(0.0,value), //krazy:exclude=qminmax
-                                               qMax(0.0,value), //krazy:exclude=qminmax
-                                               value, this, 0.01 ,2);
+    QDoubleSpinBox* dni = new QDoubleSpinBox(this);
+    dni->setMinimum(qMin(0.0, value)); //krazy:exclude=qminmax
+    dni->setMaximum(qMax(0.0, value)); //krazy:exclude=qminmax
+    dni->setValue(value);
+    dni->setSingleStep(0.01);
+    dni->setDecimals(2);
 
 
     if (d->m_validator) {
@@ -378,7 +380,7 @@ void KFileMetaInfoWidget::slotChanged(int value)
 
 void KFileMetaInfoWidget::slotChanged(double value)
 {
-    Q_ASSERT(qobject_cast<KDoubleNumInput*>(d->m_widget));
+    Q_ASSERT(qobject_cast<QSpinBox*>(d->m_widget));
     d->m_value = QVariant(value);
     emit valueChanged(d->m_value);
     d->m_dirty = true;
