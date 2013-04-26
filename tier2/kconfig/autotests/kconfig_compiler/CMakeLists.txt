@@ -14,7 +14,7 @@ macro(GEN_KCFG_TEST_SOURCE _testName _srcs)
    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp PROPERTIES SKIP_AUTOMOC TRUE)
    set( ${_srcs} ${${_srcs}} ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.h )
 
-   macro_add_file_dependencies(${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.moc )
+   set_property(SOURCE ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.cpp APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${_testName}.moc )
 endmacro(GEN_KCFG_TEST_SOURCE)
 
 ########### next target ###############
