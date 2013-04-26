@@ -31,6 +31,7 @@ class DialogShadows : public Plasma::Svg
 
 public:
     explicit DialogShadows(QObject *parent = 0, const QString &prefix = "dialogs/background");
+    ~DialogShadows();
 
     static DialogShadows *self();
 
