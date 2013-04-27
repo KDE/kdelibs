@@ -19,4 +19,4 @@ if(BUILDING_EXPERIMENTAL_SEPARATELY)
 endif(BUILDING_EXPERIMENTAL_SEPARATELY)
 
 
-add_subdirectory(libkdeclarative)
+add_subdirectory(kdeclarative)
