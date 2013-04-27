@@ -28,20 +28,25 @@ class QString;
 
 /**
  * \class KLockFile klockfile.h <KLockFile>
- * 
+ *
  * The KLockFile class provides NFS safe lockfiles.
  *
  * @author Waldo Bastian <bastian@kde.org>
+ * @deprecated since 5.0, please use QLockFile instead
  */
 class KCOREADDONS_EXPORT KLockFile
 {
 public:
 
+   /**
+    * Constructor
+    * @deprecated since 5.0, use QLockFile(file), drop the component name.
+    */
    explicit KLockFile(const QString &file, const QString &componentName = QString());
 
    /**
     * Destroys the object, releasing the lock if held
-    **/
+    */
    ~KLockFile();
 
    /**
@@ -88,6 +93,14 @@ public:
     * Attempt to acquire the lock
     *
     * @param flags A set of @ref LockFlag values OR'ed together.
+    * @deprecated since 5.0
+    * KLockFile::lock() --> QLockFile::lock(). Possibly after setStaleLockTime(0), but
+    *                                  only for the case of protecting a resource for a very long time.
+    * KLockFile::lock(NoBlockFlag) --> QLockFile::tryLock(). Possibly after setStaleLockTime(0), but
+    *                                  only for the case of protecting a resource for a very long time.
+    * KLockFile::lock(ForceFlag) --> QLockFile::lock().
+    * KLockFile::lock(NoBlockFlag|ForceFlag) --> QLockFile::tryLock().
+    * Note that the return value is now simply a bool (success/failure).
     */
    LockResult lock(LockFlags flags=LockFlags());
 
@@ -104,11 +117,13 @@ public:
    /**
     * Return the time in seconds after which a lock is considered stale
     * The default is 30.
+    * @deprecated since 5.0. WARNING: QLockFile::staleTime() is in ms, so divide by 1000!
     */
    int staleTime() const;
 
    /**
     * Set the time in seconds after which a lock is considered stale
+    * @deprecated since 5.0. WARNING: QLockFile::setStaleTime() is in ms, so divide by 1000!
     */
    void setStaleTime(int _staleTime);
 
@@ -116,6 +131,7 @@ public:
     * Returns the pid, hostname and appname of the process holding
     * the lock after the lock functon has returned with LockStale.
     * @returns false if the pid and hostname could not be determined
+    * @deprecated since 5.0. Use QLockFile::getLockInfo(qint64 *pid, QString *hostname, QString *appname)
     */
    bool getLockInfo(int &pid, QString &hostname, QString &appname);
 
