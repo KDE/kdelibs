@@ -21,9 +21,9 @@
 #include "ktoolinvocation.h"
 #include "klauncher_iface.h"
 #include "kdebug.h"
-#include <klockfile.h>
 #include <klocalizedstring.h>
 
+#include <qlockfile.h>
 #include <QUrl>
 #include <QCoreApplication>
 #include <QThread>
@@ -296,9 +296,8 @@ void KToolInvocation::invokeMailer(const QUrl &mailtoURL, const QByteArray& star
 
 void KToolInvocation::startKdeinit()
 {
-    //KComponentData inst( "startkdeinitlock" );
-  KLockFile lock(QDir::tempPath() + QLatin1Char('/') + QLatin1String("startkdeinitlock"));
-  if( lock.lock( KLockFile::NoBlockFlag ) != KLockFile::LockOK ) {
+  QLockFile lock(QDir::tempPath() + QLatin1Char('/') + QLatin1String("startkdeinitlock"));
+  if (!lock.tryLock()) {
      lock.lock();
      if( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5")))
          return; // whoever held the lock has already started it
