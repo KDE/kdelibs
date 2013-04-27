@@ -35,10 +35,6 @@ set(HAVE_SYS_INOTIFY_H ${SYS_INOTIFY_H_FOUND})
 # Generate io/config-kdirwatch.h
 configure_file(src/io/config-kdirwatch.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/io/config-kdirwatch.h)
 
-check_include_files(sys/stat.h HAVE_SYS_STAT_H)
-check_include_files(sys/time.h HAVE_SYS_TIME_H)
-configure_file(src/io/config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/src/io/config-klockfile.h)
-
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KCOREADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KCoreAddonsConfigVersion.cmake")

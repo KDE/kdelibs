@@ -77,6 +77,9 @@ endif ()
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
 configure_file(config-kde4support.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde4support.h )
+check_include_files(sys/stat.h HAVE_SYS_STAT_H)
+check_include_files(sys/time.h HAVE_SYS_TIME_H)
+configure_file(kdecore/config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdecore/config-klockfile.h)
 
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
