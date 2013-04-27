@@ -117,13 +117,13 @@ public:
    /**
     * Return the time in seconds after which a lock is considered stale
     * The default is 30.
-    * @deprecated since 5.0. WARNING: QLockFile::staleTime() is in ms, so divide the result by 1000.
+    * @deprecated since 5.0. WARNING: QLockFile::staleLockTime() is in ms, so divide the result by 1000.
     */
    int staleTime() const;
 
    /**
     * Set the time in seconds after which a lock is considered stale
-    * @deprecated since 5.0. WARNING: QLockFile::setStaleTime() is in ms, so multiply the argument by 1000.
+    * @deprecated since 5.0. WARNING: QLockFile::setStaleLockTime() is in ms, so multiply the argument by 1000.
     */
    void setStaleTime(int _staleTime);
 

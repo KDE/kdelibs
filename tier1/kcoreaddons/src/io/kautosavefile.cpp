@@ -24,7 +24,7 @@
 #include <QtCore/QLatin1Char>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
-#include "klockfile.h"
+#include "qlockfile.h"
 #include "krandom.h"
 #include "qstandardpaths.h"
 #include <qurlpathinfo.h>
@@ -39,7 +39,7 @@ public:
 
     QString tempFileName();
     QUrl managedFile;
-    KLockFile *lock;
+    QLockFile *lock;
     static const int padding;
     bool managedFileNameChanged;
 };
@@ -153,10 +153,10 @@ bool KAutoSaveFile::open(OpenMode openmode)
 
     if (QFile::open(openmode)) {
 
-        d->lock = new KLockFile(tempFile + QString::fromLatin1(".lock"));
-        d->lock->setStaleTime(60); // HARDCODE, 1 minute
+        d->lock = new QLockFile(tempFile + QString::fromLatin1(".lock"));
+        d->lock->setStaleLockTime(60 * 1000); // HARDCODE, 1 minute
 
-        if (d->lock->lock(KLockFile::ForceFlag|KLockFile::NoBlockFlag) == KLockFile::LockOK) {
+        if (d->lock->tryLock()) {
             return true;
         } else {
             close();
