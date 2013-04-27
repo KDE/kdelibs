@@ -3,6 +3,14 @@ include(ECMMarkAsTest)
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/../../..")
 
+macro(KDE4SUPPORT_EXECUTABLE_TESTS)
+    foreach(_testname ${ARGN})
+        add_executable(${_testname} ${_testname}.cpp)
+        target_link_libraries(${_testname} kde4support )
+        ecm_mark_as_test(${_testname})
+    endforeach()
+endmacro()
+
 macro(KDE4SUPPORT_UNIT_TESTS)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
@@ -35,6 +43,13 @@ kde4support_unit_tests(
   kstandarddirstest
   kasciitest
   kglobaltest
+  klockfiletest
+)
+
+
+# Helper for klockfiletest
+kde4support_executable_tests(
+  klockfile_testlock
 )
 
 ########### module for klibloadertest ###############

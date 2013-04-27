@@ -67,9 +67,11 @@ set(libkde4support_SRCS
     kparts/factory.cpp
 )
 
-if (Q_OS_WIN)
-    set(libkde4support_SRCS ${libkde4support_SRCS} kernel/kapplication_win.cpp)
-endif (Q_OS_WIN)
+if (WIN32)
+    set(libkde4support_SRCS ${libkde4support_SRCS} kernel/kapplication_win.cpp kdecore/klockfile_win.cpp)
+else()
+    set(libkde4support_SRCS ${libkde4support_SRCS} kdecore/klockfile_unix.cpp)
+endif ()
 
 # Configure checks for network/ but also for netsupp.*
 include(ConfigureChecks.cmake)
@@ -122,6 +124,7 @@ install(FILES
     kdecore/qtest_kde.h
     kdecore/kstandarddirs.h
     kdecore/kglobal.h
+    kdecore/klockfile.h
 
     kdeui/kaction.h
     kdeui/kapplication.h

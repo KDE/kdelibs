@@ -20,7 +20,7 @@
 #ifndef KLOCKFILE_H
 #define KLOCKFILE_H
 
-#include <kcoreaddons_export.h>
+#include <kde4support_export.h>
 #include <QtCore/QString>
 #include <QtCore/QFlags>
 
@@ -34,7 +34,7 @@ class QString;
  * @author Waldo Bastian <bastian@kde.org>
  * @deprecated since 5.0, please use QLockFile instead
  */
-class KCOREADDONS_EXPORT KLockFile
+class KDE4SUPPORT_DEPRECATED_EXPORT KLockFile
 {
 public:
 

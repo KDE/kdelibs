@@ -25,15 +25,9 @@ endmacro()
 kcoreaddons_unit_tests(
     kaboutdatatest
     kjobtest
-    klockfiletest
     kautosavefiletest
     kurlmimedatatest
     kdirwatch_unittest
     kshareddatacachetest
-)
-
-# Helper for klockfiletest
-kcoreaddons_executable_tests(
-    klockfile_testlock
 )
 

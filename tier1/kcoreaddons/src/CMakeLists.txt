@@ -28,7 +28,6 @@ endif(NOT WIN32)
 if (WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
         ${kcoreaddons_OPTIONAL_SRCS}
-        io/klockfile_win.cpp
         text/kmacroexpander_win.cpp
     )
 endif ()
@@ -36,7 +35,6 @@ endif ()
 if (UNIX)
     set(kcoreaddons_OPTIONAL_SRCS
         ${kcoreaddons_OPTIONAL_SRCS}
-        io/klockfile_unix.cpp
         text/kmacroexpander_unix.cpp
     )
 endif ()
@@ -94,7 +92,6 @@ install(FILES
     caching/kshareddatacache.h
     io/kautosavefile.h
     io/kdirwatch.h
-    io/klockfile.h
     io/kbackup.h
     io/kurlmimedata.h
     jobs/kcompositejob.h
