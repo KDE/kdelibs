@@ -25,8 +25,8 @@
 
 #include <kconfigcore_export.h>
 #include <kconfigbackend.h>
-#include <klockfile.h>
 
+class QLockFile;
 class QIODevice;
 
 class KConfigIniBackend : public KConfigBackend
@@ -34,7 +34,7 @@ class KConfigIniBackend : public KConfigBackend
 private:
     class BufferFragment;
 
-    KLockFile *lockFile;
+    QLockFile *lockFile;
 public:
 
     KConfigIniBackend();

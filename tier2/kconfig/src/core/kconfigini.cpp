@@ -26,8 +26,9 @@
 #include "kconfigbackend.h"
 #include "bufferfragment_p.h"
 #include "kconfigdata.h"
-#include <qsavefile.h>
 
+#include <qsavefile.h>
+#include <qlockfile.h>
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qfile.h>
@@ -570,11 +571,10 @@ bool KConfigIniBackend::lock()
     Q_ASSERT(!filePath().isEmpty());
 
     if (!lockFile) {
-        lockFile = new KLockFile(filePath() + QLatin1String(".lock"));
+        lockFile = new QLockFile(filePath() + QLatin1String(".lock"));
     }
 
-    if (lockFile->lock() == KLockFile::LockStale) // attempt to break the lock
-        lockFile->lock(KLockFile::ForceFlag);
+    lockFile->lock();
     return lockFile->isLocked();
 }
 
