@@ -36,13 +36,13 @@
 #include <QtCore/QList>
 #include <qdir.h>
 #include <qstandardpaths.h>
+#include <qlockfile.h>
 
-#include <kdebug.h>
-#include <klockfile.h>
 #include <qsavefile.h>
 #ifndef _WIN32_WCE
 #include <QtSvg/QSvgRenderer>
 #endif
+#include <kdebug.h>
 #include <kdefakes.h>
 
 #include <config-kdeui.h>
@@ -75,20 +75,10 @@ public:
     KPCLockFile(const QString& filename)
     {
         mValid = false;
-        mLockFile = new KLockFile(filename);
-        // Try to lock the file up to 5 times, waiting 5 ms between retries
-        KLockFile::LockResult result;
-        for (int i = 0; i < 5; i++) {
-            result = mLockFile->lock(KLockFile::NoBlockFlag);
-            if (result == KLockFile::LockOK) {
-                mValid = true;
-                break;
-            }
-            usleep(5*1000);
-        }
-        // Output error msg if locking failed
+        mLockFile = new QLockFile(filename);
+        mValid = mLockFile->tryLock(200);
         if (!mValid) {
-            kError() << "Failed to lock file" << filename << ", last result =" << result;
+            kError() << "Failed to lock file" << filename;
         }
     }
     ~KPCLockFile()
@@ -109,7 +99,7 @@ public:
 
 private:
     bool mValid;
-    KLockFile* mLockFile;
+    QLockFile* mLockFile;
 };
 
 // Contained in the header so we will know if we created this or not.  Older
@@ -252,7 +242,6 @@ public:
     int binarySearchKey(QDataStream& stream, const QString& key, int start);
     void writeIndexEntry(QDataStream& stream, const QString& key, int dataoffset);
 
-    bool checkLockFile();
     bool checkFileVersion(const QString& filename);
     bool loadIndexHeader();
     bool loadDataHeader();
@@ -664,18 +653,6 @@ int KPixmapCache::Private::findOffset(const QString& key)
     return -1;
 }
 
-bool KPixmapCache::Private::checkLockFile()
-{
-    // For KLockFile we need to ensure the lock file doesn't exist.
-    if (QFile::exists(mLockFileName)) {
-        if (!QFile::remove(mLockFileName)) {
-            kError() << "Couldn't remove lockfile" << mLockFileName;
-            return false;
-        }
-    }
-    return true;
-}
-
 bool KPixmapCache::Private::checkFileVersion(const QString& filename)
 {
     if (!mEnabled) {
@@ -1016,7 +993,6 @@ void KPixmapCache::Private::init()
     mDataFile  = cacheDir + "/kpc/" + mName + ".data";
     mLockFileName = cacheDir + "/kpc/" + mName + ".lock";
 
-    mEnabled = mEnabled && checkLockFile();
     mEnabled = mEnabled && checkFileVersion(mDataFile);
     mEnabled = mEnabled && checkFileVersion(mIndexFile);
     if (!mEnabled) {
