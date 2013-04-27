@@ -78,7 +78,7 @@ public:
 ////////////////////////////////////////////////////////////////////////
 
 KArchive::KArchive( const QString& fileName )
-	: d(new KArchivePrivate)
+    : d(new KArchivePrivate)
 {
     Q_ASSERT( !fileName.isEmpty() );
     d->fileName = fileName;
@@ -87,7 +87,7 @@ KArchive::KArchive( const QString& fileName )
 }
 
 KArchive::KArchive( QIODevice * dev )
-	: d(new KArchivePrivate)
+    : d(new KArchivePrivate)
 {
     d->dev = dev;
 }
@@ -214,7 +214,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     QT_STATBUF fi;
     if (QT_LSTAT(QFile::encodeName(fileName).constData(), &fi) == -1) {
         /*qWarning() << "stat'ing" << fileName
-        	<< "failed:" << strerror(errno);*/
+            << "failed:" << strerror(errno);*/
         return false;
     }
 
@@ -260,7 +260,7 @@ bool KArchive::addLocalFile( const QString& fileName, const QString& destName )
     }
 
     if ( !prepareWriting( destName, fileInfo.owner(), fileInfo.group(), size,
-    		fi.st_mode, fi.st_atime, fi.st_mtime, fi.st_ctime ) )
+            fi.st_mode, fi.st_atime, fi.st_mtime, fi.st_ctime ) )
     {
         //qWarning() << " prepareWriting" << destName << "failed";
         return false;
