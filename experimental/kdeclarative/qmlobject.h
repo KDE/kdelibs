@@ -28,7 +28,7 @@
 #include <QGuiApplication>
 #include <QScreen>
 
-#include <kdeclarative/kdeclarative_export.h>
+#include <kdeclarative_export.h>
 
 class QQmlEngine;
 class QQmlComponent;
