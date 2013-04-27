@@ -37,7 +37,6 @@
 
 #include <QFile>
 #include <QDebug>
-#include <QCoreApplication>
 
 using namespace Solid::Backends::UDev;
 
@@ -174,16 +173,16 @@ QStringList UDevDevice::emblems() const
 QString UDevDevice::description() const
 {
     if (parentUdi().isEmpty()) {
-        return QCoreApplication::translate("", "Computer");
+        return tr("Computer");
     }
 
     if (queryDeviceInterface(Solid::DeviceInterface::Processor)) {
-        return QCoreApplication::translate("", "Processor");
+        return tr("Processor");
     } else if (queryDeviceInterface(Solid::DeviceInterface::PortableMediaPlayer)) {
         // TODO: check out special cases like iPod
-        return QCoreApplication::translate("", "Portable Media Player");
+        return tr("Portable Media Player");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Camera)) {
-        return QCoreApplication::translate("", "Camera");
+        return tr("Camera");
     } else if (queryDeviceInterface(Solid::DeviceInterface::Video)) {
         return product();
     } else if (queryDeviceInterface(Solid::DeviceInterface::AudioInterface)) {
@@ -191,9 +190,9 @@ QString UDevDevice::description() const
     } else if (queryDeviceInterface(Solid::DeviceInterface::NetworkInterface)) {
         const NetworkInterface networkIface(const_cast<UDevDevice *>(this));
         if (networkIface.isWireless()) {
-            return QCoreApplication::translate("", "WLAN Interface");
+            return tr("WLAN Interface");
         }
-        return QCoreApplication::translate("", "Networking Interface");
+        return tr("Networking Interface");
     }
 
     return QString();

@@ -22,7 +22,6 @@
 
 #include "kentities.c"
 
-#include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <QtCore/QCharRef>
@@ -656,9 +655,9 @@ QString KCharsets::languageForEncoding( const QString &encoding ) const
                                                language_for_encoding_indices,
                                                encoding.toUtf8().constData() );
     if ( lang )
-        return QCoreApplication::translate( "", lang, "@item Text character set" );
+        return tr(lang, "@item Text character set" );
     else
-        return QCoreApplication::translate( "", "Other", "@item Text character set" );
+        return tr("Other", "@item Text character set" );
 }
 #endif
 
@@ -668,10 +667,10 @@ QString KCharsets::descriptionForEncoding( const QString& encoding ) const
                                                language_for_encoding_indices,
                                                encoding.toUtf8().data() );
     if ( lang )
-        return QCoreApplication::translate("", "%1 ( %2 )", "@item %1 character set, %2 encoding")
-            .arg(QCoreApplication::translate("", lang, "@item Text character set"), encoding);
+        return tr("%1 ( %2 )", "@item %1 character set, %2 encoding")
+            .arg(tr(lang, "@item Text character set"), encoding);
     else
-        return QCoreApplication::translate("", "Other encoding (%1)", "@item").arg(encoding);
+        return tr("Other encoding (%1)", "@item").arg(encoding);
 }
 
 QString KCharsets::encodingForName( const QString &descriptiveName ) const
@@ -696,8 +695,8 @@ QStringList KCharsets::descriptiveEncodingNames() const
     QStringList encodings;
     for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
         const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
-        const QString description = QCoreApplication::translate( "", language_for_encoding_string + p[1], "@item Text character set"  );
-    encodings.append(QCoreApplication::translate("", "%1 ( %2 )", "@item Text encoding: %1 character set, %2 encoding").arg(description, name));
+        const QString description = tr(language_for_encoding_string + p[1], "@item Text character set"  );
+        encodings.append(tr("%1 ( %2 )", "@item Text encoding: %1 character set, %2 encoding").arg(description, name));
     }
     encodings.sort();
     return encodings;
@@ -710,7 +709,7 @@ QList<QStringList> KCharsets::encodingsByScript() const
     int i;
     for ( const int *p = language_for_encoding_indices; *p != -1; p += 2) {
         const QString name = QString::fromUtf8( language_for_encoding_string + p[0] );
-        const QString description = QCoreApplication::translate("", language_for_encoding_string + p[1], "@item Text character set");
+        const QString description = tr(language_for_encoding_string + p[1], "@item Text character set");
 
         for (i=0; i<d->encodingsByScript.size(); ++i) {
             if (d->encodingsByScript.at(i).at(0) == description) {

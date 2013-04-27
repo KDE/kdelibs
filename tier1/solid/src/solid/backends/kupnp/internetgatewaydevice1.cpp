@@ -63,7 +63,7 @@ QString InternetGatewayDevice1::icon() const
 
 QString InternetGatewayDevice1::description() const
 {
-    return QCoreApplication::translate("", "UPnP Internet Gateway Device");
+    return tr("UPnP Internet Gateway Device");
 }
 
 

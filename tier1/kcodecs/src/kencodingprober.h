@@ -26,9 +26,12 @@
 // #define DEBUG_PROBE
 
 #include <kcodecs_export.h>
+
 #ifdef DEBUG_PROBE
 #include <QtCore/QDebug>
 #endif
+
+#include <QtCore/QCoreApplication>
 #include <QtCore/QString>
 
 class KEncodingProberPrivate;
@@ -66,6 +69,8 @@ class KEncodingProberPrivate;
  */
 class KCODECS_EXPORT KEncodingProber
 {
+    Q_DECLARE_TR_FUNCTIONS(KEncodingProber)
+
 public:
 
     enum ProberState {

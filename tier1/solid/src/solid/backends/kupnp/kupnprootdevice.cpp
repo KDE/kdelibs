@@ -50,7 +50,7 @@ QString KUPnPRootDevice::vendor() const { return QString(); }
 
 QString KUPnPRootDevice::product() const
 {
-    return QCoreApplication::translate("", "UPnP devices");
+    return tr("UPnP devices");
 }
 
 QString KUPnPRootDevice::icon() const

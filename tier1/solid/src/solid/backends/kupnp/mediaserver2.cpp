@@ -77,7 +77,7 @@ QString MediaServer2::icon() const
 
 QString MediaServer2::description() const
 {
-    return QCoreApplication::translate("", "UPnP Media Server v2");
+    return tr("UPnP Media Server v2");
 }
 
 

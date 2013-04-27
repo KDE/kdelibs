@@ -21,7 +21,6 @@
 #include "upnpdevicemanager.h"
 #include "upnpdevice.h"
 
-#include <QtCore/QCoreApplication>
 #include <QtCore/QtDebug>
 #include <QtCore/QList>
 #include <QtCore/QMap>
@@ -102,8 +101,8 @@ QObject *UPnPDeviceManager::createDevice(const QString& udi)
     if (udi==udiPrefix()) {
         RootDevice *root = new RootDevice(udiPrefix());
 
-        root->setProduct(QCoreApplication::translate("", "UPnP Devices"));
-        root->setDescription(QCoreApplication::translate("", "UPnP devices detected on your network"));
+        root->setProduct(tr("UPnP Devices"));
+        root->setDescription(tr("UPnP devices detected on your network"));
         root->setIcon("network-server");
 
         return root;

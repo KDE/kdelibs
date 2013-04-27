@@ -24,7 +24,6 @@
 #include "udevdevice.h"
 #include "../shared/rootdevice.h"
 
-#include <QtCore/QCoreApplication>
 #include <QtCore/QSet>
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
@@ -181,8 +180,8 @@ QObject *UDevManager::createDevice(const QString &udi_)
 {
     if (udi_ == udiPrefix()) {
         RootDevice *const device = new RootDevice(UDEV_UDI_PREFIX);
-        device->setProduct(QCoreApplication::translate("", "Devices"));
-        device->setDescription(QCoreApplication::translate("", "Devices declared in your system"));
+        device->setProduct(tr("Devices"));
+        device->setDescription(tr("Devices declared in your system"));
         device->setIcon("computer");
         return device;
     }

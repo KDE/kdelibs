@@ -29,7 +29,6 @@
 #include <solid/genericinterface.h>
 #include <solid/device.h>
 
-#include <QtCore/QCoreApplication>
 #include <QtCore/QStringList>
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusPendingReply>
@@ -100,9 +99,9 @@ QStringList UPowerDevice::emblems() const
 QString UPowerDevice::description() const
 {
     if (queryDeviceInterface(Solid::DeviceInterface::AcAdapter))
-        return QCoreApplication::translate("", "A/C Adapter");
+        return tr("A/C Adapter");
     else if (queryDeviceInterface(Solid::DeviceInterface::Battery))
-        return QCoreApplication::translate("", "%1 Battery", "%1 is battery technology").arg(batteryTechnology());
+        return tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology());
     else
         return product();
 }
@@ -113,19 +112,19 @@ QString UPowerDevice::batteryTechnology() const
     switch (tech)
     {
     case 1:
-        return QCoreApplication::translate("", "Lithium Ion", "battery technology");
+        return tr("Lithium Ion", "battery technology");
     case 2:
-        return QCoreApplication::translate("", "Lithium Polymer", "battery technology");
+        return tr("Lithium Polymer", "battery technology");
     case 3:
-        return QCoreApplication::translate("", "Lithium Iron Phosphate", "battery technology");
+        return tr("Lithium Iron Phosphate", "battery technology");
     case 4:
-        return QCoreApplication::translate("", "Lead Acid", "battery technology");
+        return tr("Lead Acid", "battery technology");
     case 5:
-        return QCoreApplication::translate("", "Nickel Cadmium", "battery technology");
+        return tr("Nickel Cadmium", "battery technology");
     case 6:
-        return QCoreApplication::translate("", "Nickel Metal Hydride", "battery technology");
+        return tr("Nickel Metal Hydride", "battery technology");
     default:
-        return QCoreApplication::translate("", "Unknown", "battery technology");
+        return tr("Unknown", "battery technology");
     }
 }
 

@@ -21,8 +21,6 @@
 
 #include "wmibattery.h"
 
-#include <QtCore/QCoreApplication>
-
 using namespace Solid::Backends::Wmi;
 
 Battery::Battery(WmiDevice *device)
@@ -95,17 +93,17 @@ QString Battery::batteryTechnology() const
     switch (tech)
     {
     case 3:
-        return QCoreApplication::translate("", "Lead Acid", "battery technology");
+        return tr("Lead Acid", "battery technology");
     case 4:
-        return QCoreApplication::translate("", "Nickel Cadmium", "battery technology");
+        return tr("Nickel Cadmium", "battery technology");
     case 5:
-        return QCoreApplication::translate("", "Nickel Metal Hydride", "battery technology");
+        return tr("Nickel Metal Hydride", "battery technology");
     case 6:
-        return QCoreApplication::translate("", "Lithium Ion", "battery technology");
+        return tr("Lithium Ion", "battery technology");
     case 8:
-        return QCoreApplication::translate("", "Lithium Polymer", "battery technology");
+        return tr("Lithium Polymer", "battery technology");
     default:
-        return QCoreApplication::translate("", "Unknown", "battery technology");
+        return tr("Unknown", "battery technology");
     }
 }
 

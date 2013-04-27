@@ -23,7 +23,6 @@
 #include "upowerdevice.h"
 #include "upower.h"
 
-#include <QtCore/QCoreApplication>
 #include <QtDBus/QDBusReply>
 #include <QtCore/QDebug>
 #include <QtDBus/QDBusMetaType>
@@ -81,8 +80,8 @@ QObject* UPowerManager::createDevice(const QString& udi)
     if (udi==udiPrefix()) {
         RootDevice *root = new RootDevice(udiPrefix());
 
-        root->setProduct(QCoreApplication::translate("", "Power Management"));
-        root->setDescription(QCoreApplication::translate("", "Batteries and other sources of power"));
+        root->setProduct(tr("Power Management"));
+        root->setDescription(tr("Batteries and other sources of power"));
         root->setIcon("preferences-system-power-management");
 
         return root;

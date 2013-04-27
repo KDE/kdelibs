@@ -20,6 +20,8 @@
 #define KCHARSETS_H
 
 #include <kcodecs_export.h>
+
+#include <QtCore/QCoreApplication>
 #include <QtCore/QList>
 
 class KCharsets;
@@ -40,6 +42,8 @@ class QTextCodec;
  */
 class KCODECS_EXPORT KCharsets
 {
+    Q_DECLARE_TR_FUNCTIONS(KCharsets)
+
 protected:
     /** Protected constructor. If you need the kcharsets object, use
         KCharsets::charsets() instead.
