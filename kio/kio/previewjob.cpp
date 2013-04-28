@@ -37,11 +37,11 @@
 #include <QtCore/QTimer>
 #include <QtCore/QRegExp>
 #include <qtemporaryfile.h>
+#include <qsavefile.h>
 
 #include <QtCore/QCryptographicHash>
 
 #include <kfileitem.h>
-#include <kde_file.h>
 #include <kservicetypetrader.h>
 #include <kservice.h>
 #include <ksharedconfig.h>
@@ -683,10 +683,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
         s >> thumb;
     }
 
-    QString tempFileName;
-    bool savedCorrectly = false;
-    if (save)
-    {
+    if (save) {
         thumb.setText("Thumb::URI", origName);
         thumb.setText("Thumb::MTime", QString::number(tOrig));
         thumb.setText("Thumb::Size", number(currentItem.item.size()));
@@ -697,18 +694,12 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
             signature.append(" (v"+thumbnailerVersion+')');
         }
         thumb.setText("Software", signature);
-        QTemporaryFile temp(thumbPath + "kde-tmp-XXXXXX.png");
-        temp.setAutoRemove(false);
-        if (temp.open()) //Only try to write out the thumbnail if we
-        {                //actually created the temp file.
-            tempFileName = temp.fileName();
-            savedCorrectly = thumb.save(tempFileName, "PNG");
+        QSaveFile saveFile(thumbPath + "kde-tmp-XXXXXX.png");
+        if (saveFile.open(QIODevice::WriteOnly)) {
+            if (thumb.save(&saveFile, "PNG")) {
+                saveFile.commit();
+            }
         }
-    }
-    if(savedCorrectly)
-    {
-        Q_ASSERT(!tempFileName.isEmpty());
-        KDE::rename(tempFileName, thumbPath + thumbName);
     }
     emitPreview( thumb );
     succeeded = true;

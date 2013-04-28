@@ -76,7 +76,6 @@
 #include <kmacroexpander.h>
 #include <kshell.h>
 #include <QTextDocument>
-#include <kde_file.h>
 #include <kconfiggroup.h>
 #include <kstandardguiitem.h>
 #include <kguiitem.h>
