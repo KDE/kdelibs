@@ -23,7 +23,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <QList>
-#include <qurlpathinfo.h>
+#include <QUrl>
 
 #include <QCoreApplication>
 #include <ksharedconfig.h>
@@ -342,10 +342,13 @@ KCONFIGCORE_EXPORT void allowUrlActionInternal(const QString &action, const QUrl
   MY_D
   QMutexLocker locker((&d->mutex));
 
-  //const QString basePath = _baseURL.path(QUrl::RemoveTrailingSlash);
-  //const QString destPath = _destURL.path(QUrl::RemoveTrailingSlash);
-  const QString basePath = QUrlPathInfo(_baseURL).path(QUrlPathInfo::StripTrailingSlash);
-  const QString destPath = QUrlPathInfo(_destURL).path(QUrlPathInfo::StripTrailingSlash);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+  const QString basePath = _baseURL.adjusted(QUrl::StripTrailingSlash).path();
+  const QString destPath = _destURL.adjusted(QUrl::StripTrailingSlash).path();
+#else
+  const QString basePath = QUrl(_baseURL.toString(QUrl::StripTrailingSlash)).path();
+  const QString destPath = QUrl(_destURL.toString(QUrl::StripTrailingSlash)).path();
+#endif
 
   d->urlActionRestrictions.append( URLActionRule
       ( action.toLatin1(), _baseURL.scheme(), _baseURL.host(), basePath,

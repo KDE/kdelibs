@@ -16,7 +16,7 @@ set(libkconfigcore_SRCS
 add_library(KConfigCore ${libkconfigcore_SRCS})
 generate_export_header(KConfigCore)
 
-target_link_libraries(KConfigCore ${KCoreAddons_LIBRARIES} ${kdeqt5staging_LIBRARIES})
+target_link_libraries(KConfigCore Qt5::Core)
 if(WIN32)
     target_link_libraries(KConfigCore ${KDEWIN_LIBRARIES})
 endif()
