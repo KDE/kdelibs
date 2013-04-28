@@ -358,7 +358,7 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
 
     // Ask KRun to handle the response when mimetype is unknown
     if (mimeType.isEmpty()) {
-        (void)new KRun(replyUrl, d->windowWidget(), 0 , replyUrl.isLocalFile());
+        (void)new KRun(replyUrl, d->windowWidget());
         return;
     }
 

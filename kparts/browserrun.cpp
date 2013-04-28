@@ -32,7 +32,6 @@
 #include <qtemporaryfile.h>
 #include <qmimedatabase.h>
 #include <kdebug.h>
-#include <kde_file.h>
 #include <kdatetime.h>
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
@@ -61,7 +60,7 @@ BrowserRun::BrowserRun( const QUrl & url, const KParts::OpenUrlArguments& args,
                         const KParts::BrowserArguments& browserArgs,
                         KParts::ReadOnlyPart *part, QWidget* window,
                         bool removeReferrer, bool trustedSource, bool hideErrorDialog )
-    : KRun( url, window, 0 /*mode*/, false /*is_local_file known*/, false /* no GUI */ ),
+    : KRun( url, window, false /* no GUI */ ),
       d(new BrowserRunPrivate)
 {
     d->m_bHideErrorDialog = hideErrorDialog;
@@ -99,18 +98,14 @@ void BrowserRun::init()
         redirectToError(KIO::ERR_MALFORMED_URL, KRun::url().toString());
         return;
     }
-    if ( !isLocalFile() && !hasError() && KRun::url().isLocalFile() )
-      setIsLocalFile( true );
 
     if ( isLocalFile() )  {
-      KDE_struct_stat buff;
-      if ( KDE::stat( KRun::url().toLocalFile(), &buff ) == -1 )
-      {
-        kDebug(1000) << KRun::url().toLocalFile() << "doesn't exist.";
-        redirectToError( KIO::ERR_DOES_NOT_EXIST, KRun::url().toLocalFile() );
+      const QString localPath = KRun::url().toLocalFile();
+      if (!QFile::exists(localPath)) {
+        kDebug(1000) << localPath << "doesn't exist.";
+        redirectToError(KIO::ERR_DOES_NOT_EXIST, localPath);
         return;
       }
-      setMode( buff.st_mode ); // while we're at it, save it for KRun::init() to use it
     }
   }
   KRun::init();

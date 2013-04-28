@@ -27,7 +27,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QUrl>
-#include <sys/types.h>
 
 class KService;
 class KStartupInfo;
@@ -69,26 +68,21 @@ public:
      *        It is used to make sure private information like passwords
      *        are properly handled per application.
      *
-     * @param mode The @p st_mode field of <tt>struct stat</tt>. If
-     *        you don't know this set it to 0.
-     *
-     * @param isLocalFile
-     *        If this parameter is set to @p false then @p url is
-     *        examined to find out whether it is a local URL or
-     *        not. This flag is just used to improve speed, since the
-     *        function KUrl::isLocalFile was a bit slow (this is historical now).
-     *
      * @param showProgressInfo
      *        Whether to show progress information when determining the
      *        type of the file (i.e. when using KIO::stat and KIO::mimetype)
      *        Before you set this to false to avoid a dialog box, think about
      *        a very slow FTP server...
      *        It is always better to provide progress info in such cases.
+     *
      * @param asn
      *        Application startup notification id, if available (otherwise "").
+     *
+     * Porting note: KDE4 had mode_t mode and bool isLocalFile arguments after
+     * window and before showProgressInfo. Removed in KF5.
      */
-    KRun(const QUrl& url, QWidget* window, mode_t mode = 0,
-         bool isLocalFile = false, bool showProgressInfo = true,
+    KRun(const QUrl& url, QWidget* window,
+         bool showProgressInfo = true,
          const QByteArray& asn = QByteArray());
 
     /**
@@ -547,24 +541,9 @@ protected:
 #endif
 
     /**
-     * Sets whether it is a local file.
-     */
-    void setIsLocalFile(bool isLocalFile);
-
-    /**
      * Returns whether it is a local file.
      */
     bool isLocalFile() const;
-
-    /**
-     * Sets the file mode.
-     */
-    void setMode(mode_t mode);
-
-    /**
-     * Returns the file mode.
-     */
-    mode_t mode() const;
 
 private:
     class KRunPrivate;

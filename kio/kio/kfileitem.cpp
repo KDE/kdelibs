@@ -1350,7 +1350,7 @@ void KFileItem::run( QWidget* parentWidget ) const
         return;
     }
 
-    (void) new KRun( targetUrl(), parentWidget, d->m_fileMode, d->m_bIsLocalUrl );
+    (void) new KRun(targetUrl(), parentWidget);
 }
 
 bool KFileItem::cmp( const KFileItem & item ) const

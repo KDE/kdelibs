@@ -82,8 +82,8 @@ class KRun::KRunPrivate
 public:
     KRunPrivate(KRun *parent);
 
-    void init (const QUrl& url, QWidget* window, mode_t mode,
-               bool isLocalFile, bool showProgressInfo, const QByteArray& asn);
+    void init (const QUrl& url, QWidget* window,
+               bool showProgressInfo, const QByteArray& asn);
 
     // This helper method makes debugging easier: a single breakpoint for all
     // the code paths that start the timer - at least from KRun itself.
@@ -129,9 +129,6 @@ public:
      * This action is invoked from slotTimeout
      */
     bool m_bInit;
-
-    bool m_bIsLocalFile;
-    mode_t m_mode;
 };
 
 #endif  // KRUN_P_H

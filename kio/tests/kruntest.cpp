@@ -134,8 +134,7 @@ void Receiver::slotStart()
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
     kDebug() << "creating testKRun " << i;
-    myArray[i] = new testKRun( QUrl::fromLocalFile("file:///tmp"), window(), 0,
-                               true /*isLocalFile*/, false /* showProgressInfo */ );
+    myArray[i] = new testKRun(QUrl::fromLocalFile("file:///tmp"), window());
     myArray[i]->setAutoDelete(false);
   }
   start->setEnabled(false);

@@ -1122,16 +1122,16 @@ bool KRun::runCommand(const QString& cmd, const QString &execName, const QString
                               iconName, window, asn, workingDirectory);
 }
 
-KRun::KRun(const QUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
+KRun::KRun(const QUrl& url, QWidget* window,
            bool showProgressInfo, const QByteArray& asn)
         : d(new KRunPrivate(this))
 {
     d->m_timer.setObjectName("KRun::timer");
     d->m_timer.setSingleShot(true);
-    d->init(url, window, mode, isLocalFile, showProgressInfo, asn);
+    d->init(url, window, showProgressInfo, asn);
 }
 
-void KRun::KRunPrivate::init(const QUrl& url, QWidget* window, mode_t mode, bool isLocalFile,
+void KRun::KRunPrivate::init(const QUrl& url, QWidget* window,
                              bool showProgressInfo, const QByteArray& asn)
 {
     m_bFault = false;
@@ -1142,8 +1142,6 @@ void KRun::KRunPrivate::init(const QUrl& url, QWidget* window, mode_t mode, bool
     m_strURL = url;
     m_bScanFile = false;
     m_bIsDirectory = false;
-    m_bIsLocalFile = isLocalFile;
-    m_mode = mode;
     m_runExecutables = true;
     m_window = window;
     m_asn = asn;
@@ -1183,34 +1181,27 @@ void KRun::init()
         return;
     }
 
-    if (!d->m_bIsLocalFile && d->m_strURL.isLocalFile()) {
-        d->m_bIsLocalFile = true;
-    }
-
     if (!d->m_externalBrowser.isEmpty() && d->m_strURL.scheme().startsWith(QLatin1String("http"))) {
         if (d->runExecutable(d->m_externalBrowser)) {
             return;
         }
-    } else if (d->m_bIsLocalFile) {
-        if (d->m_mode == 0) {
-            KDE_struct_stat buff;
-            if (KDE::stat(d->m_strURL.toLocalFile(), &buff) == -1) {
-                d->m_showingDialog = true;
-                KMessageBoxWrapper::error(d->m_window,
-                                          i18n("<qt>Unable to run the command specified. "
-                                          "The file or folder <b>%1</b> does not exist.</qt>" ,
-                                          Qt::escape(d->m_strURL.toDisplayString())));
-                d->m_showingDialog = false;
-                d->m_bFault = true;
-                d->m_bFinished = true;
-                d->startTimer();
-                return;
-            }
-            d->m_mode = buff.st_mode;
+    } else if (d->m_strURL.isLocalFile()) {
+        const QString localPath = d->m_strURL.toLocalFile();
+        if (!QFile::exists(localPath)) {
+            d->m_showingDialog = true;
+            KMessageBoxWrapper::error(d->m_window,
+                                      i18n("<qt>Unable to run the command specified. "
+                                      "The file or folder <b>%1</b> does not exist.</qt>" ,
+                                      Qt::escape(localPath)));
+            d->m_showingDialog = false;
+            d->m_bFault = true;
+            d->m_bFinished = true;
+            d->startTimer();
+            return;
         }
 
         QMimeDatabase db;
-        QMimeType mime = db.mimeTypeForUrl(d->m_strURL); // doesn't use d->m_mode anymore...
+        QMimeType mime = db.mimeTypeForUrl(d->m_strURL);
         //qDebug() << "MIME TYPE is " << mime.name();
         if (!d->m_externalBrowser.isEmpty() && (
                mime.inherits(QLatin1String("text/html")) ||
@@ -1218,9 +1209,9 @@ void KRun::init()
             if (d->runExecutable(d->m_externalBrowser)) {
                 return;
             }
-        } else if (mime.isDefault() && !QFileInfo(d->m_strURL.toLocalFile()).isReadable()) {
+        } else if (mime.isDefault() && !QFileInfo(localPath).isReadable()) {
             // Unknown mimetype because the file is unreadable, no point in showing an open-with dialog (#261002)
-            const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.toDisplayString());
+            const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, localPath);
             d->m_showingDialog = true;
             KMessageBoxWrapper::error(d->m_window, msg);
             d->m_showingDialog = false;
@@ -1248,11 +1239,13 @@ void KRun::init()
         }
     }
 
+#if 0 // removed for KF5 (for portability). Reintroduce a bool or flag if useful.
     // Did we already get the information that it is a directory ?
     if (S_ISDIR(d->m_mode)) {
         mimeTypeDetermined("inode/directory");
         return;
     }
+#endif
 
     // Let's see whether it is a directory
 
@@ -1316,7 +1309,7 @@ void KRun::scanFile()
     if (!d->m_strURL.hasQuery()) {
         QMimeDatabase db;
         QMimeType mime = db.mimeTypeForUrl(d->m_strURL);
-        if (!mime.isDefault() || d->m_bIsLocalFile) {
+        if (!mime.isDefault() || d->m_strURL.isLocalFile()) {
             //qDebug() << "Scanfile: MIME TYPE is " << mime.name();
             mimeTypeDetermined(mime.name());
             return;
@@ -1723,24 +1716,9 @@ bool KRun::initializeNextAction() const
 }
 #endif
 
-void KRun::setIsLocalFile(bool isLocalFile)
-{
-    d->m_bIsLocalFile = isLocalFile;
-}
-
 bool KRun::isLocalFile() const
 {
-    return d->m_bIsLocalFile;
-}
-
-void KRun::setMode(mode_t mode)
-{
-    d->m_mode = mode;
-}
-
-mode_t KRun::mode() const
-{
-    return d->m_mode;
+    return d->m_strURL.isLocalFile();
 }
 
 /****************/

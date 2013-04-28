@@ -217,8 +217,8 @@ void KRunUnitTest::testProcessDesktopExecNoFile()
 class KRunImpl : public KRun
 {
 public:
-    KRunImpl(const QUrl& url, bool isLocalFile = false)
-        : KRun(url, 0, 0, isLocalFile, false) {}
+    KRunImpl(const QUrl& url)
+        : KRun(url, 0, false) {}
 
     virtual void foundMimeType(const QString& type) {
         m_mimeType = type;
@@ -236,7 +236,7 @@ void KRunUnitTest::testMimeTypeFile()
 {
     const QString filePath = homeTmpDir() + "file";
     createTestFile(filePath, true);
-    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(filePath), true);
+    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(filePath));
     krun->setAutoDelete(false);
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
     QVERIFY(spyFinished.wait(1000));
@@ -248,7 +248,7 @@ void KRunUnitTest::testMimeTypeDirectory()
 {
     const QString dir = homeTmpDir() + "dir";
     createTestDirectory(dir);
-    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir), true);
+    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir));
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
     QVERIFY(spyFinished.wait(1000));
     QCOMPARE(krun->mimeTypeFound(), QString::fromLatin1("inode/directory"));
@@ -258,7 +258,7 @@ void KRunUnitTest::testMimeTypeBrokenLink()
 {
     const QString dir = homeTmpDir() + "dir";
     createTestDirectory(dir);
-    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir + "/testlink"), true);
+    KRunImpl* krun = new KRunImpl(QUrl::fromLocalFile(dir + "/testlink"));
     QSignalSpy spyError(krun, SIGNAL(error()));
     QSignalSpy spyFinished(krun, SIGNAL(finished()));
     QVERIFY(spyFinished.wait(1000));
