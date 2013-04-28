@@ -21,8 +21,10 @@
 #include <QtTest/QtTest>
 #include "kmountpoint.h"
 #include <kdebug.h>
-#include <kde_file.h>
+#ifdef Q_OS_UNIX
 #include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 QTEST_MAIN( KMountPointTest )
 
@@ -73,10 +75,10 @@ void KMountPointTest::testCurrentMountPoints()
     QCOMPARE(rootMountPoint->mountPoint(), QString("/"));
     QVERIFY(!rootMountPoint->probablySlow());
 
-    KDE_struct_stat rootStatBuff;
-    QCOMPARE( KDE_stat( "/", &rootStatBuff ), 0 );
-    KDE_struct_stat homeStatBuff;
-    if ( KDE_stat( "/home", &homeStatBuff ) == 0 ) {
+    struct stat rootStatBuff;
+    QCOMPARE( ::stat( "/", &rootStatBuff ), 0 );
+    struct stat homeStatBuff;
+    if ( ::stat( "/home", &homeStatBuff ) == 0 ) {
         bool sameDevice = rootStatBuff.st_dev == homeStatBuff.st_dev;
         const KMountPoint::Ptr homeMountPoint = mountPoints.findByPath("/home");
         QVERIFY(homeMountPoint);
