@@ -25,7 +25,7 @@
 
 #include <kconfigskeleton.h>
 
-#include <kdeclarative_export.h>
+#include <kdeclarative/kdeclarative_export.h>
 
 class KDECLARATIVE_EXPORT ConfigPropertyMap : public QQmlPropertyMap
 {

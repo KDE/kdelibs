@@ -22,7 +22,7 @@
 
 #include <QtQml/QQmlEngine>
 
-#include <kdeclarative_export.h>
+#include <kdeclarative/kdeclarative_export.h>
 
 #include <QStringList>
 
