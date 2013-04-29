@@ -28,7 +28,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>
-#include <kmainwindow.h>
 
 #include "kdualaction.h"
 #include "krecentfilesaction.h"
