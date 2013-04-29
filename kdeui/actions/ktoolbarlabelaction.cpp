@@ -17,11 +17,11 @@
 */
 
 #include "ktoolbarlabelaction.h"
-#include "ktoolbar.h"
 
 #include <QtCore/QPointer>
 #include <QApplication>
 #include <QLabel>
+#include <QToolBar>
 
 class KToolBarLabelAction::Private
 {
