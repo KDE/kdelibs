@@ -41,9 +41,12 @@ public:
 
     ~Private()
     {
-        clearPixmaps();
+        // Do not call clearPixmaps() from here: it creates new QPixmap(),
+        // which causes a crash when application is stopping.
+        freeX11Pixmaps();
     }
 
+    void freeX11Pixmaps();
     void clearPixmaps();
     void setupPixmaps();
     void initPixmap(const QString &element);
@@ -87,6 +90,11 @@ DialogShadows::DialogShadows(QObject *parent, const QString &prefix)
 {
     setImagePath(prefix);
     connect(this, SIGNAL(repaintNeeded()), this, SLOT(updateShadows()));
+}
+
+DialogShadows::~DialogShadows()
+{
+    delete d;
 }
 
 DialogShadows *DialogShadows::self()
@@ -318,7 +326,7 @@ void DialogShadows::Private::setupData(Plasma::FrameSvg::EnabledBorders enabledB
     data[enabledBorders] << top << right << bottom << left;
 }
 
-void DialogShadows::Private::clearPixmaps()
+void DialogShadows::Private::freeX11Pixmaps()
 {
 #ifdef Q_WS_X11
     foreach (const QPixmap &pixmap, m_shadowPixmaps) {
@@ -346,6 +354,13 @@ void DialogShadows::Private::clearPixmaps()
     if (!m_emptyHorizontalPix.isNull()) {
         XFreePixmap(QX11Info::display(), m_emptyHorizontalPix.handle());
     }
+#endif
+}
+
+void DialogShadows::Private::clearPixmaps()
+{
+#ifdef Q_WS_X11
+    freeX11Pixmaps();
 
     m_emptyCornerPix = QPixmap();
     m_emptyCornerBottomPix = QPixmap();
