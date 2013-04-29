@@ -31,9 +31,6 @@
 #include <QToolBar>
 #include <QToolButton>
 
-#include <kdebug.h>
-#include <klocalizedstring.h>
-
 class KToolBarPopupAction::Private
 {
   public:

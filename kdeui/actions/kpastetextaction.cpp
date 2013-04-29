@@ -32,9 +32,6 @@
 #include <QMenu>
 #include <QtDBus/QtDBus>
 
-#include <kdebug.h>
-#include <klocalizedstring.h>
-
 class KPasteTextActionPrivate
 {
 public:
