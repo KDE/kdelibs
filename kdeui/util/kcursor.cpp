@@ -26,9 +26,6 @@
 #include <QWidget>
 #include <QFile>
 
-#include <ksharedconfig.h>
-#include <kconfiggroup.h>
-
 void KCursor::setAutoHideCursor( QWidget *w, bool enable,
                                  bool customEventFilter )
 {
@@ -183,9 +180,6 @@ KCursorPrivate * KCursorPrivate::self()
 KCursorPrivate::KCursorPrivate()
 {
     hideCursorDelay = 5000; // 5s default value
-
-    KConfigGroup cg( KSharedConfig::openConfig(), QLatin1String("KDE") );
-    enabled = cg.readEntry( QLatin1String("Autohiding cursor enabled"), true);
 }
 
 KCursorPrivate::~KCursorPrivate()
