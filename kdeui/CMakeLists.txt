@@ -144,6 +144,7 @@ set(kdeui_LIB_SRCS
  jobs/kwidgetjobtracker.cpp
  jobs/kstatusbarjobtracker.cpp
  jobs/kuiserverjobtracker.cpp
+ jobs/kjobtrackerformatters.cpp
  kernel/kstyle.cpp
  notifications/knotification.cpp
  notifications/knotificationmanager.cpp

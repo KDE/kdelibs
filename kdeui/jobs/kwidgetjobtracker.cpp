@@ -22,6 +22,7 @@
 
 #include "kwidgetjobtracker.h"
 #include "kwidgetjobtracker_p.h"
+#include "kjobtrackerformatters_p.h"
 
 #include <QDir>
 #include <QProcess>
@@ -38,7 +39,6 @@
 
 #include <ksqueezedtextlabel.h>
 #include <kguiitem.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kwindowsystem.h>
 #include <kseparator.h>
@@ -328,10 +328,10 @@ void KWidgetJobTracker::Private::ProgressWidget::processedAmount(KJob::Unit unit
         if (totalSizeKnown) {
             tmp = i18np( "%2 of %3 complete", "%2 of %3 complete",
 						amount,
-                        KLocale::global()->formatByteSize(amount),
-                        KLocale::global()->formatByteSize(totalSize));
+                        KJobTrackerFormatters::byteSize(amount),
+                        KJobTrackerFormatters::byteSize(totalSize));
         } else {
-            tmp = KLocale::global()->formatByteSize(amount);
+            tmp = KJobTrackerFormatters::byteSize(amount);
         }
         sizeLabel->setText(tmp);
         if (!totalSizeKnown) // update jumping progressbar
@@ -369,7 +369,7 @@ void KWidgetJobTracker::Private::ProgressWidget::percent(unsigned long percent)
 
     if (totalSizeKnown) {
         title += i18n("%1% of %2", percent,
-                      KLocale::global()->formatByteSize(totalSize));
+                      KJobTrackerFormatters::byteSize(totalSize));
     } else if (totalFiles) {
         title += i18np("%2% of 1 file", "%2% of %1 files", totalFiles, percent);
     } else {
@@ -388,11 +388,11 @@ void KWidgetJobTracker::Private::ProgressWidget::speed(unsigned long value)
     if (value == 0) {
         speedLabel->setText(i18n("Stalled"));
     } else {
-        const QString speedStr = KLocale::global()->formatByteSize(value);
+        const QString speedStr = KJobTrackerFormatters::byteSize(value);
         if (totalSizeKnown) {
             const int remaining = 1000*(totalSize - processedSize)/value;
             speedLabel->setText(i18np("%2/s (%3 remaining)", "%2/s (%3 remaining)", remaining, speedStr,
-                                     KLocale::global()->prettyFormatDuration(remaining)));
+                                     KJobTrackerFormatters::duration(remaining)));
         } else { // total size is not known (#24228)
             speedLabel->setText(i18nc("speed in bytes per second", "%1/s", speedStr));
         }
@@ -414,7 +414,7 @@ void KWidgetJobTracker::Private::ProgressWidget::slotClean()
         if (!s)
             s = 1;
         speedLabel->setText(i18n("%1/s (done)",
-                                    KLocale::global()->formatByteSize(1000 * totalSize / s)));
+                                    KJobTrackerFormatters::byteSize(1000 * totalSize / s)));
     }
 }
 

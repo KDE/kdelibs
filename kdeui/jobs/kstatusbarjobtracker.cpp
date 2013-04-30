@@ -21,6 +21,7 @@
 
 #include "kstatusbarjobtracker.h"
 #include "kstatusbarjobtracker_p.h"
+#include "kjobtrackerformatters_p.h"
 
 #include <QWidget>
 #include <QPushButton>
@@ -30,7 +31,6 @@
 #include <QStackedWidget>
 #include <QMouseEvent>
 
-#include <klocale.h>
 #include <klocalizedstring.h>
 
 KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
@@ -243,7 +243,7 @@ void KStatusBarJobTracker::Private::ProgressWidget::speed(unsigned long value)
     if (value == 0 ) { // speed is measured in bytes-per-second
         label->setText(i18n(" Stalled "));
     } else {
-        label->setText(i18n(" %1/s ", KLocale::global()->formatByteSize(value)));
+        label->setText(i18n(" %1/s ", KJobTrackerFormatters::byteSize(value)));
     }
 }
 
