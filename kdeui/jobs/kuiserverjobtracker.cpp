@@ -26,7 +26,6 @@
 
 #include <klocalizedstring.h>
 #include <kdebug.h>
-#include <kaboutdata.h>
 #include <kjob.h>
 
 Q_GLOBAL_STATIC(KSharedUiServerProxy, serverProxy)
@@ -82,7 +81,8 @@ void KUiServerJobTracker::registerJob(KJob *job)
     }
 
     const QString appName = QCoreApplication::applicationName();
-    QString programIconName = KAboutData::applicationData().programIconName();
+    // Positionned by KAboutData
+    QString programIconName = QCoreApplication::instance()->property("applicationIconName").toString();
 
     if (programIconName.isEmpty()) {
         programIconName = appName;
