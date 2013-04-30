@@ -27,9 +27,6 @@
 #include <QtCore/QRect>
 #include <QtCore/QPoint>
 
-#include <kiconloader.h>
-#include <kiconeffect.h>
-
 
 class KRatingPainter::Private
 {
@@ -178,6 +175,36 @@ void KRatingPainter::setSpacing( int s )
     d->spacing = qMax( 0, s );
 }
 
+void _k_imageToGrayScale(QImage &img, float value)
+{
+    QRgb *data = (QRgb*) img.bits();
+    QRgb *end = data + img.width() * img.height();
+
+    unsigned char gray;
+    unsigned char val = (unsigned char)(255.0*value);
+    while(data != end){
+        gray = qGray(*data);
+        *data = qRgba((val * gray + (255 - val) * qRed(*data)) >> 8,
+                      (val * gray + (255 - val) * qGreen(*data)) >> 8,
+                      (val * gray + (255 - val) * qBlue(*data)) >> 8,
+                      qAlpha(*data));
+        ++data;
+    }
+}
+
+void _k_imageToSemiTransparent(QImage &img)
+{
+    QRgb *data = (QRgb*) img.bits();
+    QRgb *end = data + img.width() * img.height();
+
+    while(data != end){
+        *data = qRgba(qRed(*data),
+                      qGreen(*data),
+                      qBlue(*data),
+                      qAlpha(*data) >> 1);
+        ++data;
+    }
+}
 
 void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, int hoverRating ) const
 {
@@ -198,14 +225,18 @@ void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, in
     int maxHSizeOnePix = ( rect.width() - (numUsedStars-1)*usedSpacing ) / numUsedStars;
     QPixmap ratingPix = d->getPixmap( qMin( rect.height(), maxHSizeOnePix ) );
 
-    KIconEffect *iconEffect = KIconLoader::global()->iconEffect();
-    QPixmap disabledRatingPix = iconEffect->apply( ratingPix, KIconEffect::ToGray, 1.0, QColor(), QColor(), false );
+    QImage disabledRatingImage = ratingPix.toImage().convertToFormat(QImage::Format_ARGB32);
+    _k_imageToGrayScale(disabledRatingImage, 1.0);
+
+    QPixmap disabledRatingPix = QPixmap::fromImage(disabledRatingImage);
     QPixmap hoverPix;
 
     // if we are disabled we become gray and more transparent
     if ( !d->isEnabled ) {
         ratingPix = disabledRatingPix;
-        KIconEffect::semiTransparent( disabledRatingPix );
+
+        _k_imageToSemiTransparent(disabledRatingImage);
+        disabledRatingPix = QPixmap::fromImage(disabledRatingImage);
     }
 
     bool half = d->bHalfSteps && rating%2;
@@ -216,7 +247,11 @@ void KRatingPainter::paint( QPainter* painter, const QRect& rect, int rating, in
     if ( hoverRating > 0 && rating != hoverRating && d->isEnabled ) {
         numHoverStars = d->bHalfSteps ? hoverRating/2 : hoverRating;
         halfHover = d->bHalfSteps && hoverRating%2;
-        hoverPix = iconEffect->apply( ratingPix, KIconEffect::ToGray, 0.5, QColor(), QColor(), false );
+
+        disabledRatingImage = ratingPix.toImage().convertToFormat(QImage::Format_ARGB32);
+        _k_imageToGrayScale(disabledRatingImage, 0.5);
+
+        hoverPix = QPixmap::fromImage(disabledRatingImage);
     }
 
     if ( d->alignment & Qt::AlignJustify ) {

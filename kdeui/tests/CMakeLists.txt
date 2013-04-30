@@ -82,6 +82,7 @@ KDEUI_EXECUTABLE_TESTS(
   kpassworddialogtest
   kpixmapregionselectordialogtest
   kpopuptest
+  kratingwidgettest
   krulertest
   kselectactiontest
   ksqueezedtextlabeltest
