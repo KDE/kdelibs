@@ -22,6 +22,7 @@
 // Qt
 #include <QApplication>
 #include <QBitmap>
+#include <QDebug>
 #include <QLabel>
 #include <QLayout>
 #include <QBoxLayout>
@@ -34,10 +35,6 @@
 #include <QTimer>
 #include <QToolTip>
 #include <QSystemTrayIcon>
-
-#include <kdebug.h>
-
-#include <kconfig.h>
 
 #include <config-kdeui.h>
 #if HAVE_X11
@@ -177,7 +174,7 @@ void KPassivePopup::setView( QWidget *child )
 void KPassivePopup::setView( const QString &caption, const QString &text,
                              const QPixmap &icon )
 {
-    // kDebug() << "KPassivePopup::setView " << caption << ", " << text;
+    // qDebug() << "KPassivePopup::setView " << caption << ", " << text;
     setView( standardView( caption, text, icon, this ) );
 }
 
