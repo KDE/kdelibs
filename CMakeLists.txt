@@ -1,6 +1,5 @@
 
 set(reqd_cmake 2.8.10.20130411)
-message("VERSION ${CMAKE_VERSION}")
 if (CMAKE_VERSION VERSION_LESS reqd_cmake)
   message(FATAL_ERROR "
   KDE Frameworks requires CMake 2.8.11 RC 3 or later.
