@@ -26,7 +26,7 @@
 class QColor;
 class QDrag;
 class QMimeData;
-class QWidget;
+class QObject;
 
 /**
  * Drag-and-drop and clipboard mimedata manipulation for QColor objects. The according MIME type
@@ -62,7 +62,7 @@ namespace KColorMimeData
      * The drag object's mime data has the application/x-color and text/plain type set and a pixmap
      * filled with the specified color, which is going to be displayed next to the mouse cursor
      */
-    KGUIADDONS_EXPORT QDrag* createDrag(const QColor& color, QWidget *dragsource);
+    KGUIADDONS_EXPORT QDrag* createDrag(const QColor& color, QObject *dragsource);
 }
 
 
