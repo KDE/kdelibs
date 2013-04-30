@@ -23,7 +23,6 @@
 
 #include <klocalizedstring.h>
 #include <klineedit.h>
-#include <kwindowconfig.h>
 
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -78,9 +77,6 @@ KLinkDialog::KLinkDialog(QWidget *parent)
     connect(d->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
     layout->addWidget(d->buttonBox);
 
-    KConfigGroup group(KSharedConfig::openConfig(), "KLinkDialog");
-    KWindowConfig::restoreWindowSize(this, group);
-
     d->textLineEdit->setFocus();
     d->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     connect(d->textLineEdit, SIGNAL(textChanged(QString)), this, SLOT(slotTextChanged(QString)));
@@ -88,8 +84,6 @@ KLinkDialog::KLinkDialog(QWidget *parent)
 
 KLinkDialog::~KLinkDialog()
 {
-    KConfigGroup group(KSharedConfig::openConfig(), "KLinkDialog");
-    KWindowConfig::saveWindowSize(this, group);
     delete d;
 }
 
