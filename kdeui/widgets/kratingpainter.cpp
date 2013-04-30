@@ -20,6 +20,7 @@
 
 #include "kratingpainter.h"
 
+#include <QDebug>
 #include <QPainter>
 #include <QPixmap>
 #include <QIcon>
@@ -28,7 +29,6 @@
 
 #include <kiconloader.h>
 #include <kiconeffect.h>
-#include <kdebug.h>
 
 
 class KRatingPainter::Private
@@ -329,7 +329,7 @@ int KRatingPainter::ratingFromPosition( const QRect& rect, const QPoint& pos ) c
 
         double one = ( double )usedRect.width() / ( double )d->maxRating;
 
-//        kDebug() << "rating:" << ( int )( ( double )x/one + 0.5 );
+//        qDebug() << "rating:" << ( int )( ( double )x/one + 0.5 );
 
         return ( int )( ( double )x/one + 0.5 );
     }
