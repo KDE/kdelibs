@@ -30,8 +30,6 @@
 #include <kconfig.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
-#include <kconfiggroup.h>
 #include <ktitlewidget.h>
 
 #include "ui_kpassworddialog.h"
