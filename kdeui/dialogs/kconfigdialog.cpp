@@ -24,7 +24,6 @@
 #include <kconfigdialogmanager.h>
 #include <kcoreconfigskeleton.h>
 #include <kdebug.h>
-#include <khelpclient.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
 
@@ -34,6 +33,7 @@
 #include <QPushButton>
 #include <QtCore/QMap>
 #include <QCoreApplication>
+#include <QDesktopServices>
 
 class KConfigDialog::KConfigDialogPrivate
 {
@@ -333,7 +333,7 @@ void KConfigDialog::settingsChangedSlot()
 
 void KConfigDialog::showHelp()
 {
-    KHelpClient::invokeHelp(QString(), QCoreApplication::instance()->applicationName());
+    QDesktopServices::openUrl(QUrl("help:/"));
 }
 
 #include "moc_kconfigdialog.cpp"
