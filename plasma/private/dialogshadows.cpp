@@ -151,12 +151,15 @@ void DialogShadows::Private::initPixmap(const QString &element)
 {
 #ifdef Q_WS_X11
     QPixmap pix = q->pixmap(element);
-    Pixmap xPix = XCreatePixmap(QX11Info::display(), QX11Info::appRootWindow(), pix.width(), pix.height(), 32);
-    QPixmap tempPix = QPixmap::fromX11Pixmap(xPix, QPixmap::ExplicitlyShared);
-    tempPix.fill(Qt::transparent);
-    QPainter p(&tempPix);
-    p.drawPixmap(QPoint(0, 0), pix);
-    p.end();
+    QPixmap tempPix;
+    if (!pix.isNull()) {
+        Pixmap xPix = XCreatePixmap(QX11Info::display(), QX11Info::appRootWindow(), pix.width(), pix.height(), 32);
+        tempPix = QPixmap::fromX11Pixmap(xPix, QPixmap::ExplicitlyShared);
+        tempPix.fill(Qt::transparent);
+        QPainter p(&tempPix);
+        p.drawPixmap(QPoint(0, 0), pix);
+        p.end();
+    }
     m_shadowPixmaps << tempPix;
 #endif
 }
@@ -164,9 +167,12 @@ void DialogShadows::Private::initPixmap(const QString &element)
 QPixmap DialogShadows::Private::initEmptyPixmap(const QSize &size)
 {
 #ifdef Q_WS_X11
-    Pixmap emptyXPix = XCreatePixmap(QX11Info::display(), QX11Info::appRootWindow(), size.width(), size.height(), 32);
-    QPixmap tempEmptyPix = QPixmap::fromX11Pixmap(emptyXPix, QPixmap::ExplicitlyShared);
-    tempEmptyPix.fill(Qt::transparent);
+    QPixmap tempEmptyPix;
+    if (!size.isEmpty()) {
+        Pixmap emptyXPix = XCreatePixmap(QX11Info::display(), QX11Info::appRootWindow(), size.width(), size.height(), 32);
+        tempEmptyPix = QPixmap::fromX11Pixmap(emptyXPix, QPixmap::ExplicitlyShared);
+        tempEmptyPix.fill(Qt::transparent);
+    }
     return tempEmptyPix;
 #else
     return QPixmap();
@@ -330,7 +336,9 @@ void DialogShadows::Private::freeX11Pixmaps()
 {
 #ifdef Q_WS_X11
     foreach (const QPixmap &pixmap, m_shadowPixmaps) {
-        XFreePixmap(QX11Info::display(), pixmap.handle());
+        if (!pixmap.isNull()) {
+            XFreePixmap(QX11Info::display(), pixmap.handle());
+        }
     }
 
     if (!m_emptyCornerPix.isNull()) {
