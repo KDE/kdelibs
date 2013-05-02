@@ -24,10 +24,10 @@
 #ifdef _WIN32_WCE
 #include "Windows.h"
 #include "WinBase.h"
-#include <QtCore/QDir>
 #endif
 
 #include <QCoreApplication>
+#include <QtCore/QDir>
 #include <QtCore/QMimeData>
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
@@ -38,7 +38,6 @@
 
 #include <kfileitem.h>
 #include <klocalizedstring.h>
-#include <kuser.h>
 
 #include <kdebug.h>
 #include <kurlmimedata.h>
@@ -118,7 +117,7 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
 
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                               "Home", I18N_NOOP2("KFile System Bookmarks", "Home"),
-                                              QUrl::fromLocalFile(KUser().homeDir()), "user-home");
+                                              QUrl::fromLocalFile(QDir::homePath()), "user-home");
         KFilePlacesItem::createSystemBookmark(d->bookmarkManager,
                                               "Network", I18N_NOOP2("KFile System Bookmarks", "Network"),
                                               QUrl("remote:/"), "network-workgroup");

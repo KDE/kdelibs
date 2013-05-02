@@ -24,7 +24,6 @@
 #include <kbookmark.h>
 #include <kdebug.h>
 #include <kfileplacesmodel.h>
-#include <kuser.h>
 #include <solid/device.h>
 
 #include <QtTest/QtTest>
@@ -171,7 +170,7 @@ void KFilePlacesModelTest::testInitialState()
 void KFilePlacesModelTest::testInitialList()
 {
     QStringList urls;
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
 
     CHECK_PLACES_URLS(urls);
@@ -186,7 +185,7 @@ void KFilePlacesModelTest::testReparse()
     m_places->addPlace("foo", KUrl("/foo"),
                                     QString(), QString());
 
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom" << "/foo";
 
     CHECK_PLACES_URLS(urls);
@@ -208,7 +207,7 @@ void KFilePlacesModelTest::testReparse()
 
     urls.clear();
 
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
 
     CHECK_PLACES_URLS(urls);
@@ -335,7 +334,7 @@ void KFilePlacesModelTest::testMove()
     bookmarkManager->emitChanged(root);
 
     QStringList urls;
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom" << "trash:/";
 
     CHECK_PLACES_URLS(urls);
@@ -355,7 +354,7 @@ void KFilePlacesModelTest::testMove()
     bookmarkManager->emitChanged(root);
 
     urls.clear();
-    urls << "trash:/" << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
+    urls << "trash:/" << QDir::homePath() << "remote:/" << KDE_ROOT_PATH
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
 
     CHECK_PLACES_URLS(urls);
@@ -374,7 +373,7 @@ void KFilePlacesModelTest::testMove()
     root.moveBookmark(trash, before_trash);
     bookmarkManager->emitChanged(root);
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 1);
@@ -406,7 +405,7 @@ void KFilePlacesModelTest::testDragAndDrop()
     QVERIFY(m_places->dropMimeData(mimeData, Qt::MoveAction, -1, 0, QModelIndex()));
 
     QStringList urls;
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom" << "trash:/";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -426,7 +425,7 @@ void KFilePlacesModelTest::testDragAndDrop()
     QVERIFY(m_places->dropMimeData(mimeData, Qt::MoveAction, 0, 0, QModelIndex()));
 
     urls.clear();
-    urls << "trash:/" << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
+    urls << "trash:/" << QDir::homePath() << "remote:/" << KDE_ROOT_PATH
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -446,7 +445,7 @@ void KFilePlacesModelTest::testDragAndDrop()
     QVERIFY(m_places->dropMimeData(mimeData, Qt::MoveAction, 4, 0, QModelIndex()));
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -480,7 +479,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     m_places->addPlace("Foo", KUrl("/home/foo"));
 
     QStringList urls;
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom" << "/home/foo";
 
     CHECK_PLACES_URLS(urls);
@@ -503,7 +502,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     bookmarkManager->emitChanged(root);
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "/home/foo"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "/home/foo"
          << "trash:/" << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 1);
@@ -520,7 +519,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     m_places->editPlace(m_places->index(3, 0), "Foo", KUrl("/mnt/foo"));
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "/mnt/foo"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "/mnt/foo"
          << "trash:/" << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -535,7 +534,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     bookmarkManager->notifyCompleteChange(QString());
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "/mnt/foo"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "/mnt/foo"
          << "trash:/" << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -549,7 +548,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     m_places->removePlace(m_places->index(3, 0));
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -562,7 +561,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     m_places->addPlace("Foo", KUrl("/home/foo"), QString(), QString(), m_places->index(1, 0));
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << "/home/foo" << KDE_ROOT_PATH
+    urls << QDir::homePath() << "remote:/" << "/home/foo" << KDE_ROOT_PATH
          << "trash:/" << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
 
     CHECK_PLACES_URLS(urls);
@@ -585,7 +584,7 @@ void KFilePlacesModelTest::testDevicePlugging()
     fakeManager()->call("unplug", "/org/kde/solid/fakehw/volume_part1_size_993284096");
 
     QStringList urls;
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -598,7 +597,7 @@ void KFilePlacesModelTest::testDevicePlugging()
     fakeManager()->call("plug", "/org/kde/solid/fakehw/volume_part1_size_993284096");
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 1);
@@ -622,7 +621,7 @@ void KFilePlacesModelTest::testDevicePlugging()
     bookmarkManager->emitChanged(root);
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "/media/XO-Y4"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "/media/XO-Y4"
          << "trash:/" << "/media/nfs" << "/foreign" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 1);
@@ -639,7 +638,7 @@ void KFilePlacesModelTest::testDevicePlugging()
     fakeManager()->call("unplug", "/org/kde/solid/fakehw/volume_part1_size_993284096");
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH
          << "trash:/" << "/media/nfs" << "/foreign" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 0);
@@ -652,7 +651,7 @@ void KFilePlacesModelTest::testDevicePlugging()
     fakeManager()->call("plug", "/org/kde/solid/fakehw/volume_part1_size_993284096");
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "/media/XO-Y4"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "/media/XO-Y4"
          << "trash:/" << "/media/nfs" << "/foreign" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 1);
@@ -668,7 +667,7 @@ void KFilePlacesModelTest::testDevicePlugging()
     bookmarkManager->emitChanged(root);
 
     urls.clear();
-    urls << KUser().homeDir() << "remote:/" << KDE_ROOT_PATH << "trash:/"
+    urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
          << "/media/nfs" << "/foreign" << "/media/XO-Y4" << "/media/floppy0" << "/media/cdrom";
     CHECK_PLACES_URLS(urls);
     QCOMPARE(spy_inserted.count(), 1);
