@@ -28,13 +28,13 @@
 #include <QtCore/QTextStream>
 #include <QtCore/QTimer>
 #include <QtCore/QStringList>
+#include <QInputDialog>
 #include <qstandardpaths.h>
 
 #include <QCryptographicHash>
 
 //kde includes
 #include <kdebug.h>
-#include <kinputdialog.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
@@ -340,9 +340,9 @@ void Security::slotSignFile()
 
     if (secretKeys.count() > 1) {
         bool ok;
-        secretKeys = KInputDialog::getItemList(i18n("Select Signing Key"), i18n("Key used for signing:"), secretKeys, QStringList(secretKeys[0]), false, &ok);
+        QString selectedKey = QInputDialog::getItem(0, i18n("Select Signing Key"), i18n("Key used for signing:"), secretKeys, 0, false, &ok);
         if (ok)
-            m_secretKey = secretKeys[0];
+            m_secretKey = selectedKey;
         else {
             emit fileSigned(0);
             return;
