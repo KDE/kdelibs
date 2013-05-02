@@ -112,31 +112,17 @@ KHelpMenu::KHelpMenu( QWidget *parent, const QString &aboutAppText,
   d->mAboutAppText = aboutAppText;
   d->mShowWhatsThis = showWhatsThis;
   d->mParent = parent;
+  d->createActions(this);
 }
 
 KHelpMenu::KHelpMenu(QWidget *parent, const KAboutData &aboutData,
-                      bool showWhatsThis, KActionCollection *actions )
+                      bool showWhatsThis)
   : QObject(parent), d(new KHelpMenuPrivate)
 {
   d->mShowWhatsThis = showWhatsThis;
   d->mParent = parent;
   d->mAboutData = aboutData;
-
-    if (actions) {
-        d->createActions(this);
-        if (d->mHandBookAction)
-            actions->addAction(d->mHandBookAction->objectName(), d->mHandBookAction);
-        if (d->mWhatsThisAction)
-            actions->addAction(d->mWhatsThisAction->objectName(), d->mWhatsThisAction);
-        if (d->mReportBugAction)
-            actions->addAction(d->mReportBugAction->objectName(), d->mReportBugAction);
-        if (d->mSwitchApplicationLanguageAction)
-            actions->addAction(d->mSwitchApplicationLanguageAction->objectName(), d->mSwitchApplicationLanguageAction);
-        if (d->mAboutAppAction)
-            actions->addAction(d->mAboutAppAction->objectName(), d->mAboutAppAction);
-        if (d->mAboutKDEAction)
-            actions->addAction(d->mAboutKDEAction->objectName(), d->mAboutKDEAction);
-    }
+  d->createActions(this);
 }
 
 KHelpMenu::~KHelpMenu()

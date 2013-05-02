@@ -235,7 +235,28 @@ void KXmlGuiWindow::createGUI( const QString &xmlfile )
     if (d->showHelpMenu) {
         delete d->helpMenu;
         // we always want a help menu
-        d->helpMenu = new KHelpMenu(this, KAboutData::applicationData(), true, actionCollection());
+        d->helpMenu = new KHelpMenu(this, KAboutData::applicationData(), true);
+
+        KActionCollection *actions = actionCollection();
+        QAction *helpContentsAction = d->helpMenu->action(KHelpMenu::menuHelpContents);
+        QAction *whatsThisAction = d->helpMenu->action(KHelpMenu::menuWhatsThis);
+        QAction *reportBugAction = d->helpMenu->action(KHelpMenu::menuReportBug);
+        QAction *switchLanguageAction = d->helpMenu->action(KHelpMenu::menuSwitchLanguage);
+        QAction *aboutAppAction = d->helpMenu->action(KHelpMenu::menuAboutApp);
+        QAction *aboutKdeAction = d->helpMenu->action(KHelpMenu::menuAboutKDE);
+
+        if (helpContentsAction)
+            actions->addAction(helpContentsAction->objectName(), helpContentsAction);
+        if (whatsThisAction)
+            actions->addAction(whatsThisAction->objectName(), whatsThisAction);
+        if (reportBugAction)
+            actions->addAction(reportBugAction->objectName(), reportBugAction);
+        if (switchLanguageAction)
+            actions->addAction(switchLanguageAction->objectName(), switchLanguageAction);
+        if (aboutAppAction)
+            actions->addAction(aboutAppAction->objectName(), aboutAppAction);
+        if (aboutKdeAction)
+            actions->addAction(aboutKdeAction->objectName(), aboutKdeAction);
     }
 
     const QString windowXmlFile = xmlfile.isNull() ? componentName() + "ui.rc" : xmlfile;

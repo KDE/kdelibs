@@ -19,6 +19,7 @@
 */
 
 #include "mainwindow.h"
+#include <kactioncollection.h>
 #include <kedittoolbar.h>
 #include <kparts/event.h>
 #include <kparts/part.h>
@@ -30,6 +31,7 @@
 #include <ksharedconfig.h>
 #include <kdebug.h>
 
+#include <QAction>
 #include <QApplication>
 #include <QPointer>
 #include <QStatusBar>
@@ -146,8 +148,30 @@ void MainWindow::createShellGUI( bool create )
     d->m_bShellGUIActivated = create;
     if ( create )
     {
-        if ( isHelpMenuEnabled() && !d->m_helpMenu )
-            d->m_helpMenu = new KHelpMenu(this, KAboutData::applicationData(), true, actionCollection());
+        if ( isHelpMenuEnabled() && !d->m_helpMenu ) {
+            d->m_helpMenu = new KHelpMenu(this, KAboutData::applicationData(), true);
+
+            KActionCollection *actions = actionCollection();
+            QAction *helpContentsAction = d->m_helpMenu->action(KHelpMenu::menuHelpContents);
+            QAction *whatsThisAction = d->m_helpMenu->action(KHelpMenu::menuWhatsThis);
+            QAction *reportBugAction = d->m_helpMenu->action(KHelpMenu::menuReportBug);
+            QAction *switchLanguageAction = d->m_helpMenu->action(KHelpMenu::menuSwitchLanguage);
+            QAction *aboutAppAction = d->m_helpMenu->action(KHelpMenu::menuAboutApp);
+            QAction *aboutKdeAction = d->m_helpMenu->action(KHelpMenu::menuAboutKDE);
+
+            if (helpContentsAction)
+                actions->addAction(helpContentsAction->objectName(), helpContentsAction);
+            if (whatsThisAction)
+                actions->addAction(whatsThisAction->objectName(), whatsThisAction);
+            if (reportBugAction)
+                actions->addAction(reportBugAction->objectName(), reportBugAction);
+            if (switchLanguageAction)
+                actions->addAction(switchLanguageAction->objectName(), switchLanguageAction);
+            if (aboutAppAction)
+                actions->addAction(aboutAppAction->objectName(), aboutAppAction);
+            if (aboutKdeAction)
+                actions->addAction(aboutKdeAction->objectName(), aboutKdeAction);
+        }
 
         QString f = xmlFile();
         setXMLFile(QStandardPaths::locate(QStandardPaths::ConfigLocation, "ui/ui_standards.rc"));

@@ -27,7 +27,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-class KActionCollection;
 class QMenu;
 class QWidget;
 class QAction;
@@ -138,12 +137,9 @@ class KDEUI_EXPORT KHelpMenu : public QObject
      * @param aboutData User and app data used in the About app dialog
      * @param showWhatsThis Decides whether a "Whats this" entry will be
      *        added to the dialog.
-     * @param actions KActionCollection that is used instead of the
-     *        standard actions.
-     *
      */
     KHelpMenu( QWidget *parent, const KAboutData &aboutData,
-	       bool showWhatsThis=true, KActionCollection *actions = 0 );
+               bool showWhatsThis=true );
 
     /**
      * Destructor
