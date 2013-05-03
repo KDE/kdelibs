@@ -131,9 +131,9 @@ QString KGuiItem::plainText() const
     const QChar* data    = d->m_text.unicode();
     for ( int pos = 0; pos < len; ++pos )
     {
-        if ( data[ pos ] != '&' )
+        if ( data[ pos ] != QLatin1Char('&') )
             stripped[ resultLength++ ] = data[ pos ];
-        else if ( pos + 1 < len && data[ pos + 1 ] == '&' )
+        else if ( pos + 1 < len && data[ pos + 1 ] == QLatin1Char('&') )
             stripped[ resultLength++ ] = data[ pos++ ];
     }
 

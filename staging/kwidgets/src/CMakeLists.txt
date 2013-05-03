@@ -14,7 +14,6 @@ configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidge
 set(kwidgets_LIB_SRCS
   dialogs/kmessagebox.cpp
   utils/kglobalsettings.cpp
-  utils/kguiitem.cpp
   utils/khelpclient.cpp
   utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
@@ -66,7 +65,6 @@ install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_
 install(FILES
   dialogs/kmessagebox.h
   utils/kglobalsettings.h
-  utils/kguiitem.h
   utils/khelpclient.h
   utils/kstandardguiitem.h
   utils/kstandardshortcut.h

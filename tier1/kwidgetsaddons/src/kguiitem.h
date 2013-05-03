@@ -26,7 +26,7 @@
 
 #include <QIcon>
 
-#include <kwidgets_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QPushButton;
 
@@ -36,7 +36,7 @@ class QPushButton;
  * @author Holger Freyther <freyher@yahoo.com>
  * @see KStandardGuiItem
  */
-class KWIDGETS_EXPORT KGuiItem
+class KWIDGETSADDONS_EXPORT KGuiItem
 {
 public:
     KGuiItem();

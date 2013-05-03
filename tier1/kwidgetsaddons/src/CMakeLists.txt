@@ -1,5 +1,6 @@
 
 set(kwidgetsaddons_SRCS
+  kguiitem.cpp
   kled.cpp
   kcapacitybar.cpp
   kruler.cpp
@@ -22,6 +23,7 @@ set_target_properties(KWidgetsAddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSI
 install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  kguiitem.h
   kled.h
   kcapacitybar.h
   kruler.h
