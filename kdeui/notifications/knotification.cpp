@@ -28,13 +28,10 @@
 #include "knotification.h"
 #include "knotificationmanager_p.h"
 
-#include <klocalizedstring.h>
-#include <kconfig.h>
-#include <kpassivepopup.h>
 #include <kwindowsystem.h>
-#include <kdebug.h>
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QMap>
 #include <QPixmap>
 #include <QPointer>
@@ -408,7 +405,7 @@ void KNotification::slotReceivedIdError(const QDBusError& error)
 		deleteLater();
 		return;
 	}
-	kWarning(299) << "Error while contacting notify daemon" << error.message();
+	qWarning() << "Error while contacting notify daemon" << error.message();
 	d->id = -3;
 	QTimer::singleShot(0, this, SLOT(deref()));
 }
@@ -428,7 +425,7 @@ bool KNotification::eventFilter( QObject * watched, QEvent * event )
 			if( d->flags &  CloseWhenWidgetActivated )
 				QTimer::singleShot(500, this, SLOT(close()));
 		}
-		//kDebug(299) << event->type();
+		//qDebug() << event->type();
 	}
 
 	return false;

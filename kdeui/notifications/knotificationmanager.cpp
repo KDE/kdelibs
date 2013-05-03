@@ -19,14 +19,11 @@
 #include "knotificationmanager_p.h"
 #include "knotification.h"
 
+#include <QDebug>
 #include <QHash>
 #include <QWidget>
 #include <QtDBus/QtDBus>
 #include <QPointer>
-
-#include <kdebug.h>
-#include <kconfig.h>
-#include <klocalizedstring.h>
 
 #include "knotify_interface.h"
 
@@ -59,7 +56,7 @@ KNotificationManager::KNotificationManager()
     if (!bus->isServiceRegistered("org.kde.knotify")) {
         QDBusReply<void> reply = bus->startService("org.kde.knotify");
         if (!reply.isValid()) {
-            kError() << "Couldn't start knotify from org.kde.knotify.service:" << reply.error();
+            qCritical() << "Couldn't start knotify from org.kde.knotify.service:" << reply.error();
         }
     }
     d->knotify =
@@ -81,7 +78,7 @@ void KNotificationManager::notificationActivated( int id, int action )
 {
     if(d->notifications.contains(id))
     {
-        kDebug(299) << id << " " << action;
+        qDebug() << id << " " << action;
         KNotification *n = d->notifications[id];
         d->notifications.remove(id);
         n->activate( action );
@@ -92,7 +89,7 @@ void KNotificationManager::notificationClosed( int id )
 {
     if(d->notifications.contains(id))
     {
-        kDebug( 299 ) << id;
+        qDebug() << id;
         KNotification *n = d->notifications[id];
         d->notifications.remove(id);
         n->close();
@@ -104,7 +101,7 @@ void KNotificationManager::close( int id, bool force )
 {
 	if(force || d->notifications.contains(id)) {
 		d->notifications.remove(id);
-		kDebug( 299 ) << id;
+		qDebug() << id;
 		d->knotify->closeNotification(id);
 	}
 }
@@ -170,7 +167,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 	typedef QPair<QString,QString> Context;
 	foreach (const Context& ctx, n->contexts())
 	{
-//		kDebug(299) << "add context " << ctx.first << "-" << ctx.second;
+//		qDebug() << "add context " << ctx.first << "-" << ctx.second;
 		QVariantList vl;
 		vl << ctx.first << ctx.second;
 		contextList << vl;
