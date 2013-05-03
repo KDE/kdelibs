@@ -64,8 +64,12 @@ public:
     void enqueue(Job*job);
     /** Enqueue a job. */
     void enqueue(JobPointer job);
-    /** Dequeue a job. */
+    /** Dequeue a job.
+    * TODO deprecated
+    */
     bool dequeue(Job* job);
+    /** Dequeue a job. */
+    bool dequeue(JobPointer job);
     /** Dequeue all jobs. */
     void dequeue();
     /** Finish all queued jobs. */

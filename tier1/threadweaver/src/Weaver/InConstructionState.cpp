@@ -48,7 +48,7 @@ void InConstructionState::resume()
     // this request is not handled in InConstruction state
 }
 
-Job* InConstructionState::applyForWork(Thread *th, Job *previous)
+JobPointer InConstructionState::applyForWork(Thread *th, JobPointer previous)
 {
     Q_ASSERT(previous==0);
     // As long as we are in the construction state, no jobs will be given

@@ -11,4 +11,6 @@ typedef QSharedPointer<Job> JobPointer;
 
 }
 
+Q_DECLARE_METATYPE(ThreadWeaver::JobPointer)
+
 #endif // JOBPOINTER_H

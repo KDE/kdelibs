@@ -80,6 +80,11 @@ bool DestructedState::dequeue(Job*)
     return false;
 }
 
+bool DestructedState::dequeue(JobPointer)
+{
+    return false;
+}
+
 void DestructedState::dequeue()
 {
 }
@@ -115,10 +120,10 @@ void DestructedState::resume()
 {
 }
 
-Job* DestructedState::applyForWork(Thread*, Job* previous)
+JobPointer DestructedState::applyForWork(Thread*, JobPointer previous)
 {
     Q_ASSERT(previous==0);
-    return 0;
+    return JobPointer();
 }
 
 void DestructedState::waitForAvailableJob(Thread*)

@@ -93,6 +93,11 @@ bool WeaverImplState::dequeue(Job* job)
     return weaver()->dequeue_p(job);
 }
 
+bool WeaverImplState::dequeue(JobPointer job)
+{
+    return weaver()->dequeue_p(job);
+}
+
 void WeaverImplState::dequeue()
 {
     weaver()->dequeue_p();
