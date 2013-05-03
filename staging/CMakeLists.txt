@@ -1,6 +1,7 @@
 find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 add_subdirectory(itemviews)
+add_subdirectory(kcompletion)
 
 add_subdirectory(ki18n) # must be before kwidgets, etc.
 add_subdirectory(kservice)

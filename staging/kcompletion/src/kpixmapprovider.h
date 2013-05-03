@@ -21,7 +21,7 @@
 #ifndef KPIXMAPPROVIDER_H
 #define KPIXMAPPROVIDER_H
 
-#include <kdeui_export.h>
+#include <kcompletion_export.h>
 #include <QPixmap>
 
 /**
@@ -35,7 +35,7 @@
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  * @short an abstract interface for looking up icons
  */
-class KDEUI_EXPORT KPixmapProvider
+class KCOMPLETION_EXPORT KPixmapProvider
 {
 public:
     virtual ~KPixmapProvider();
