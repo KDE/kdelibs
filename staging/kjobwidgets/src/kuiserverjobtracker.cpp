@@ -25,8 +25,9 @@
 #include "jobviewifacev2.h"
 
 #include <klocalizedstring.h>
-#include <kdebug.h>
 #include <kjob.h>
+
+#include <QDebug>
 
 Q_GLOBAL_STATIC(KSharedUiServerProxy, serverProxy)
 
@@ -303,14 +304,14 @@ KSharedUiServerProxy::KSharedUiServerProxy()
     if (!bus->isServiceRegistered("org.kde.JobViewServer")) {
         QDBusReply<void> reply = bus->startService("org.kde.kuiserver");
         if (!reply.isValid()) {
-            kError() << "Couldn't start kuiserver from org.kde.kuiserver.service:" << reply.error();
+            qCritical() << "Couldn't start kuiserver from org.kde.kuiserver.service:" << reply.error();
         }
         if (!bus->isServiceRegistered("org.kde.JobViewServer"))
-            kDebug() << "The dbus name org.kde.JobViewServer is STILL NOT REGISTERED, even after starting kuiserver. Should not happen.";
+            qDebug() << "The dbus name org.kde.JobViewServer is STILL NOT REGISTERED, even after starting kuiserver. Should not happen.";
         else
-            kDebug() << "kuiserver registered";
+            qDebug() << "kuiserver registered";
     } else {
-            kDebug() << "kuiserver found";
+            qDebug() << "kuiserver found";
     }
 }
 

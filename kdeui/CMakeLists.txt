@@ -141,7 +141,6 @@ set(kdeui_LIB_SRCS
  jobs/kabstractwidgetjobtracker.cpp
  jobs/kwidgetjobtracker.cpp
  jobs/kstatusbarjobtracker.cpp
- jobs/kuiserverjobtracker.cpp
  jobs/kjobtrackerformatters.cpp
  kernel/kstyle.cpp
  notifications/knotification.cpp
@@ -308,10 +307,6 @@ set(kwallet_xml util/org.kde.KWallet.xml)
 install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 qt5_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
-qt5_add_dbus_interfaces(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewServer.xml )
-
-qt5_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobView.xml jobviewiface )
-qt5_add_dbus_interface(kdeui_LIB_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/jobs/org.kde.JobViewV2.xml jobviewifacev2 )
 
 set(statusnotifierwatcher_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierWatcher.xml)
 qt5_add_dbus_interface(kdeui_LIB_SRCS ${statusnotifierwatcher_xml} statusnotifierwatcher_interface)
@@ -363,7 +358,7 @@ target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 
 find_package(Qt5PrintSupport REQUIRED NO_MODULE)
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ItemViews KCompletion KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
+target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ItemViews KCompletion KJobWidgets KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} Qt5::Concurrent)
 
 if(X11_FOUND)
@@ -501,7 +496,6 @@ install( FILES
  jobs/kabstractwidgetjobtracker.h
  jobs/kwidgetjobtracker.h
  jobs/kstatusbarjobtracker.h
- jobs/kuiserverjobtracker.h
  kernel/kstyle.h
  notifications/kstatusnotifieritem.h
  notifications/knotification.h
@@ -588,12 +582,6 @@ install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 if (APPLE)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
 endif (APPLE)
-
-install( FILES
-  jobs/org.kde.JobViewServer.xml
-  jobs/org.kde.JobView.xml
-  jobs/org.kde.JobViewV2.xml
-  DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install(FILES
     notifications/org.kde.StatusNotifierItem.xml

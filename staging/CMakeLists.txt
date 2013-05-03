@@ -4,6 +4,7 @@ add_subdirectory(itemviews)
 add_subdirectory(kcompletion)
 add_subdirectory(kconfigwidgets)
 add_subdirectory(kiconthemes)
+add_subdirectory(kjobwidgets)
 
 add_subdirectory(ki18n) # must be before kwidgets, etc.
 add_subdirectory(kservice)

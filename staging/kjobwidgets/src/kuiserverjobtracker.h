@@ -20,7 +20,7 @@
 #ifndef KUISERVERJOBTRACKER_H
 #define KUISERVERJOBTRACKER_H
 
-#include <kdeui_export.h>
+#include <kjobwidgets_export.h>
 #include <kjobtrackerinterface.h>
 
 class KJob;
@@ -28,7 +28,7 @@ class KJob;
 /**
  * The interface to implement to track the progresses of a job.
  */
-class KDEUI_EXPORT KUiServerJobTracker : public KJobTrackerInterface
+class KJOBWIDGETS_EXPORT KUiServerJobTracker : public KJobTrackerInterface
 {
     Q_OBJECT
 
