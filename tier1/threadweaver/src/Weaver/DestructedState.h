@@ -54,6 +54,7 @@ public:
     int currentNumberOfThreads() const;
     void registerObserver(WeaverObserver *obs);
     void enqueue(Job *job);
+    void enqueue(JobPointer job);
     bool dequeue(Job* job);
     void dequeue();
     void finish();

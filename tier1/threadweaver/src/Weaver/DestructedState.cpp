@@ -71,6 +71,10 @@ void DestructedState::enqueue(Job*)
 {
 }
 
+void DestructedState::enqueue(JobPointer job)
+{
+}
+
 bool DestructedState::dequeue(Job*)
 {
     return false;

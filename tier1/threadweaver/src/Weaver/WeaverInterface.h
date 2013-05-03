@@ -31,6 +31,7 @@
 #include <QtCore/QObject>
 
 #include <threadweaver_export.h>
+#include <JobPointer.h>
 
 namespace ThreadWeaver {
 
@@ -93,11 +94,25 @@ public:
 
     It depends on the state if execution of the job will be attempted
     immediately. In suspended state, jobs can be added to the queue,
-    but the threads remain suspended. In WorkongHard state, an idle
+    but the threads remain suspended. In WorkingHard state, an idle
     thread may immediately execute the job, or it might be queued if
     all threads are busy.
     */
     virtual void enqueue ( Job* ) = 0;
+
+    /** Add a job to be executed.
+
+    It depends on the state if execution of the job will be attempted
+    immediately. In suspended state, jobs can be added to the queue,
+    but the threads remain suspended. In WorkongHard state, an idle
+    thread may immediately execute the job, or it might be queued if
+    all threads are busy.
+
+    JobPointer is a shared pointer. This means the object pointed to will be deleted if this object
+    is the last remaining reference to it. Keep a JobPointer to the job to avoid automatic deletion.
+    */
+    virtual void enqueue(JobPointer job) = 0;
+
     /** Remove a job from the queue.
     If the job was queued but not started so far, it is simply
     removed from the queue. For now, it is unsupported to

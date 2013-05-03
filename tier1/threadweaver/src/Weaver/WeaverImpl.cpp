@@ -222,6 +222,12 @@ void WeaverImpl::enqueue(Job* job)
     state()->enqueue(job);
 }
 
+void WeaverImpl::enqueue(JobPointer job)
+{
+    QMutexLocker l(m_mutex); Q_UNUSED(l);
+    state()->enqueue(job);
+}
+
 void WeaverImpl::enqueue_p(Job *job)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
@@ -239,6 +245,10 @@ void WeaverImpl::enqueue_p(Job *job)
         }
         assignJobs();
     }
+}
+
+void WeaverImpl::enqueue_p(JobPointer job)
+{
 }
 
 bool WeaverImpl::dequeue ( Job* job )

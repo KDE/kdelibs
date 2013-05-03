@@ -90,6 +90,7 @@ public:
     */
     static ThreadWeaver::Weaver* instance();
     virtual void enqueue (Job*);
+    virtual void enqueue(JobPointer);
     virtual bool dequeue (Job*);
     virtual void dequeue ();
     virtual void finish();

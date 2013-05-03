@@ -78,6 +78,7 @@ public:
     void setState( StateId );
     void registerObserver ( WeaverObserver* );
     void enqueue (Job*);
+    void enqueue(JobPointer job);
     bool dequeue (Job*);
     void dequeue ();
     void finish();
@@ -140,6 +141,7 @@ public:
     int currentNumberOfThreads_p() const;
     void registerObserver_p(WeaverObserver*);
     void enqueue_p(Job* job);
+    void enqueue_p(JobPointer job);
     bool dequeue_p(Job* job);
     void dequeue_p();
     void finish_p();
