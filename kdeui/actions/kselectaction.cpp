@@ -33,13 +33,14 @@
 #include "kselectaction_p.h"
 
 #include <QActionEvent>
+#include <QDebug>
 #include <QEvent>
 #include <QMenu>
 #include <QToolButton>
 #include <QToolBar>
 #include <QStandardItem>
+
 #include <klocalizedstring.h>
-#include <kdebug.h>
 
 // QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes
 // QAction::text() to return "&Hi" :(  Comboboxes don't have accels and

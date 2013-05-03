@@ -28,10 +28,10 @@
 
 #include "kfontaction.h"
 
+#include <QDebug>
 #include <QFontComboBox>
 #include <QToolBar>
 
-#include <kdebug.h>
 #include <kfontdialog.h>
 #include <klocalizedstring.h>
 #include <kfontchooser.h>

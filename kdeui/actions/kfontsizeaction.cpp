@@ -27,11 +27,11 @@
 
 #include "kfontsizeaction.h"
 
+#include <QDebug>
 #include <QFontDatabase>
 #include <QToolBar>
 #include <QToolButton>
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 
 class KFontSizeAction::Private

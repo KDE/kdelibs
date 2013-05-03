@@ -28,9 +28,9 @@
 #include "kcodecaction.h"
 
 #include <kcharsets.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 
+#include <QDebug>
 #include <QMenu>
 #include <QVariant>
 #include <QtCore/QTextCodec>
