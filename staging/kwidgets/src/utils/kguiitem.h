@@ -78,7 +78,6 @@ public:
     void setEnabled( bool enable );
 
     static void assign(QPushButton *button, const KGuiItem &item);
-    static void assign(QPushButton *button, int);
 private:
     class KGuiItemPrivate;
     KGuiItemPrivate *d; //krazy:exclude=dpointer (implicitly shared)

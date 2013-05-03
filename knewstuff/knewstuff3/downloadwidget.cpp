@@ -211,7 +211,7 @@ void DownloadWidgetPrivate::init(const QString& configFile)
     ui.m_titleWidget->setVisible(false);
     ui.closeButton->setVisible(dialogMode);
     ui.backButton->setVisible(false);
-    KGuiItem::assign(ui.backButton, KStandardGuiItem::Back);
+    KStandardGuiItem::assign(ui.backButton, KStandardGuiItem::Back);
     q->connect(ui.backButton, SIGNAL(clicked()), q, SLOT(slotShowOverview()));
 
     q->connect(engine, SIGNAL(signalBusy(QString)), ui.progressIndicator, SLOT(busy(QString)));

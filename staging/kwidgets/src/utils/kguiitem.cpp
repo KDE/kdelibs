@@ -22,8 +22,6 @@
 
 #include <QPushButton>
 
-#include "kstandardguiitem.h"
-
 class KGuiItem::KGuiItemPrivate
 {
 public:
@@ -222,11 +220,6 @@ void KGuiItem::assign(QPushButton *button, const KGuiItem &item)
     button->setIcon(item.icon());
     button->setToolTip(item.d->m_toolTip);
     button->setWhatsThis(item.d->m_whatsThis);
-}
-
-void KGuiItem::assign(QPushButton *button, int item)
-{
-    KGuiItem::assign(button, KStandardGuiItem::guiItem(KStandardGuiItem::StandardItem(item)));
 }
 
 // vim: set et sw=4:

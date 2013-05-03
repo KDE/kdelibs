@@ -308,5 +308,10 @@ KGuiItem overwrite()
   return KGuiItem(i18n("&Overwrite"));
 }
 
+void assign(QPushButton *button, StandardItem item)
+{
+    KGuiItem::assign(button, KStandardGuiItem::guiItem(item));
+}
+
 } // KStandardGuiItem namespace
 

@@ -259,6 +259,8 @@ namespace KStandardGuiItem
      */
     KWIDGETS_EXPORT KGuiItem test();
 
+
+    KWIDGETS_EXPORT void assign(QPushButton *button, StandardItem item);
 }
 
 #endif
