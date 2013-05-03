@@ -321,7 +321,7 @@ public:
    * (chaining calls) and consistency with the other addAction methods, you can also
    * simply ignore the return value.
    */
-  QAction *addAction(const QString &name, QAction *action);
+  Q_INVOKABLE QAction *addAction(const QString &name, QAction *action);
 
   /**
    * Removes an action from the collection and deletes it.

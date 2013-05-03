@@ -33,7 +33,6 @@
 #include "krecentfilesaction.h"
 #include "ktogglefullscreenaction.h"
 #include "kpastetextaction.h"
-#include "kactioncollection.h"
 
 namespace KStandardAction
 {
@@ -199,9 +198,8 @@ QAction *create(StandardAction id, const QObject *recvr, const char *slot, QObje
       }
   }
 
-  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
-  if (pAction && collection)
-      collection->addAction(pAction->objectName(), pAction);
+  if (pAction && parent && parent->inherits("KActionCollection"))
+      QMetaObject::invokeMethod(parent, "addAction", Q_ARG(QString, pAction->objectName()), Q_ARG(QAction*, pAction));
 
   return pAction;
 }
@@ -470,9 +468,8 @@ static QAction *buildAutomaticAction( QObject* parent, StandardAction id, const 
       action->setToolTip(i18n(p->psToolTip));
   }
 
-  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
-  if (collection)
-      collection->addAction(action->objectName(), action);
+    if (parent && parent->inherits("KActionCollection"))
+        QMetaObject::invokeMethod(parent, "addAction", Q_ARG(QString, action->objectName()), Q_ARG(QAction*, action));
 
     return action;
 }
@@ -518,9 +515,8 @@ KToggleAction *showMenubar(const QObject *recvr, const char *slot, QObject *pare
   if ( recvr && slot )
     QObject::connect( ret, SIGNAL(triggered(bool)), recvr, slot );
 
-  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
-  if (collection)
-    collection->addAction(ret->objectName(), ret);
+    if (parent && parent->inherits("KActionCollection"))
+        QMetaObject::invokeMethod(parent, "addAction", Q_ARG(QString, ret->objectName()), Q_ARG(QAction*, ret));
 
   return ret;
 }
@@ -538,9 +534,8 @@ KToggleAction *showStatusbar(const QObject *recvr, const char *slot, QObject *pa
   if ( recvr && slot )
     QObject::connect( ret, SIGNAL(triggered(bool)), recvr, slot );
 
-  KActionCollection *collection = qobject_cast<KActionCollection *>(parent);
-  if (collection)
-    collection->addAction(ret->objectName(), ret);
+    if (parent && parent->inherits("KActionCollection"))
+        QMetaObject::invokeMethod(parent, "addAction", Q_ARG(QString, ret->objectName()), Q_ARG(QAction*, ret));
 
   return ret;
 }
