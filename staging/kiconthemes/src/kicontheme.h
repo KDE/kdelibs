@@ -23,7 +23,7 @@
 #ifndef KICONTHEME_H
 #define KICONTHEME_H
 
-#include <kwidgets_export.h>
+#include <kiconthemes_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -42,7 +42,7 @@ class KIconThemeDir;
  *          the KCM needs it.
  * @see KIconLoader
  */
-class KWIDGETS_EXPORT KIconTheme
+class KICONTHEMES_EXPORT KIconTheme
 {
 public:
     /**

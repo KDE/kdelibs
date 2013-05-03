@@ -24,7 +24,7 @@
 #ifndef KICONEFFECT_H
 #define KICONEFFECT_H
 
-#include <kwidgets_export.h>
+#include <kiconthemes_export.h>
 
 #include <QImage>
 #include <QPixmap>
@@ -44,7 +44,7 @@ class KIconEffectPrivate;
  *
  * @see QIcon::fromTheme
  */
-class KWIDGETS_EXPORT KIconEffect
+class KICONTHEMES_EXPORT KIconEffect
 {
 public:
   /**

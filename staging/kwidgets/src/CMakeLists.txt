@@ -13,10 +13,6 @@ configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidge
 
 set(kwidgets_LIB_SRCS
   dialogs/kmessagebox.cpp
-  icons/kiconeffect.cpp
-  icons/kiconengine.cpp
-  icons/kiconloader.cpp # cannot move down to kguiaddons: depends on KSharedDataCache (kcoreaddons) and localizedFilePath (ki18n)
-  icons/kicontheme.cpp
   utils/kglobalsettings.cpp
   utils/kguiitem.cpp
   utils/khelpclient.cpp
@@ -68,9 +64,6 @@ install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_
 
 install(FILES
   dialogs/kmessagebox.h
-  icons/kiconeffect.h
-  icons/kiconloader.h
-  icons/kicontheme.h
   utils/kglobalsettings.h
   utils/kguiitem.h
   utils/khelpclient.h
