@@ -77,9 +77,7 @@ set(kdeui_LIB_SRCS
  actions/kactionmenu.cpp
  actions/kpastetextaction.cpp
  actions/kstandardaction.cpp
- actions/ktoggleaction.cpp
  actions/ktoggletoolbaraction.cpp
- actions/ktogglefullscreenaction.cpp
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
@@ -431,9 +429,7 @@ install( FILES
  actions/kactionmenu.h
  actions/kpastetextaction.h
  actions/kstandardaction.h
- actions/ktoggleaction.h
  actions/ktoggletoolbaraction.h
- actions/ktogglefullscreenaction.h
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h

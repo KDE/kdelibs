@@ -29,7 +29,7 @@
 
 #include <QAction>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 class KGuiItem;
 
@@ -39,7 +39,7 @@ class KGuiItem;
  *  This action provides two states: checked or not.
  *
  */
-class KDEUI_EXPORT KToggleAction : public QAction
+class KWIDGETSADDONS_EXPORT KToggleAction : public QAction
 {
     Q_OBJECT
 

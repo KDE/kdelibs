@@ -28,7 +28,6 @@
 #define KTOGGLEFULLSCREENACTION_H
 
 #include <ktoggleaction.h>
-#include <kdeui_export.h>
 
 /**
  * An action for switching between to/from full screen mode. Note that
@@ -47,7 +46,7 @@
  * state (for example, showNormal() resets all window states, not just
  * fullscreen). Use the KToggleFullScreenAction::setFullScreen() helper function.
  */
-class KDEUI_EXPORT KToggleFullScreenAction : public KToggleAction
+class KWIDGETSADDONS_EXPORT KToggleFullScreenAction : public KToggleAction
 {
     Q_OBJECT
 

@@ -29,9 +29,6 @@
 
 #include <QtCore/QEvent>
 
-#include <kdebug.h>
-#include <klocalizedstring.h>
-
 class KToggleFullScreenAction::Private
 {
 public:
@@ -44,15 +41,15 @@ public:
     void updateTextsAndIcon()
     {
         if ( q->isChecked() ) {
-            q->setText( i18nc( "@action:inmenu", "Exit F&ull Screen Mode" ) );
-            q->setIconText( i18nc( "@action:intoolbar", "Exit Full Screen" ) );
-            q->setToolTip( i18nc( "@info:tooltip", "Exit full screen mode" ) );
-            q->setIcon( QIcon::fromTheme( "view-restore" ) );
+            q->setText( KToggleFullScreenAction::tr( "Exit F&ull Screen Mode", "@action:inmenu" ) );
+            q->setIconText( KToggleFullScreenAction::tr( "Exit Full Screen", "@action:intoolbar" ) );
+            q->setToolTip( KToggleFullScreenAction::tr( "Exit full screen mode", "@info:tooltip" ) );
+            q->setIcon( QIcon::fromTheme( QStringLiteral("view-restore") ) );
         } else {
-            q->setText( i18nc( "@action:inmenu", "F&ull Screen Mode" ) );
-            q->setIconText( i18nc( "@action:intoolbar", "Full Screen" ) );
-            q->setToolTip( i18nc( "@info:tooltip", "Display the window in full screen" ) );
-            q->setIcon( QIcon::fromTheme( "view-fullscreen" ) );
+            q->setText( KToggleFullScreenAction::tr( "F&ull Screen Mode", "@action:inmenu" ) );
+            q->setIconText( KToggleFullScreenAction::tr( "Full Screen", "@action:intoolbar" ) );
+            q->setToolTip( KToggleFullScreenAction::tr( "Display the window in full screen", "@info:tooltip" ) );
+            q->setIcon( QIcon::fromTheme( QStringLiteral("view-fullscreen") ) );
         }
     }
 

@@ -8,6 +8,8 @@ set(kwidgetsaddons_SRCS
   kselector.cpp
   kxyselector.cpp
   kseparator.cpp
+  ktoggleaction.cpp
+  ktogglefullscreenaction.cpp
   kviewstateserializer.cpp
   kviewstatemaintainerbase.cpp
 )
@@ -32,6 +34,8 @@ install(FILES
   kselector.h
   kxyselector.h
   kseparator.h
+  ktoggleaction.h
+  ktogglefullscreenaction.h
   kviewstateserializer.h
   kviewstatemaintainerbase.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h

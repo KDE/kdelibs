@@ -28,6 +28,7 @@
 #define KTOGGLETOOLBARACTION_H
 
 #include <ktoggleaction.h>
+#include <kdeui_export.h>
 
 class KToolBar;
 

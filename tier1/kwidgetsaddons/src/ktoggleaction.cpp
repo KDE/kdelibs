@@ -27,9 +27,7 @@
 
 #include "ktoggleaction.h"
 
-#include <kdebug.h>
 #include <kguiitem.h>
-#include <klocalizedstring.h>
 
 class KToggleAction::Private
 {
