@@ -357,7 +357,7 @@ class KDE4SUPPORT_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      * @deprecated use KWindowConfig::restoreDialogSize() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KWIDGETS_DEPRECATED void restoreDialogSize( const KConfigGroup& config ) ;
+    KDE4SUPPORT_DEPRECATED void restoreDialogSize( const KConfigGroup& config ) ;
 #endif
 
     /**
@@ -371,7 +371,7 @@ class KDE4SUPPORT_EXPORT KDialog : public QDialog //krazy:exclude=qclasses
      * @deprecated use KWindowConfig::saveDialogSize() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KWIDGETS_DEPRECATED void saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options = KConfigGroup::Normal ) const;
+    KDE4SUPPORT_DEPRECATED void saveDialogSize( KConfigGroup& config, KConfigGroup::WriteConfigFlags options = KConfigGroup::Normal ) const;
 #endif
 
     /**
