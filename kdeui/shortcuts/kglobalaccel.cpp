@@ -28,6 +28,7 @@
 
 #include <QAction>
 #include <QActionEvent>
+#include <QDebug>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
 #include <config-kdeui.h>
@@ -36,7 +37,6 @@
 #include <netwm_def.h>
 #endif
 
-#include <kdebug.h>
 #include <kaboutdata.h>
 #include "kmessagebox.h"
 
@@ -112,7 +112,7 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
     if (!bus->isServiceRegistered("org.kde.kglobalaccel")) {
         QDBusReply<void> reply = bus->startService("org.kde.kglobalaccel");
         if (!reply.isValid()) {
-            kError() << "Couldn't start kglobalaccel from org.kde.kglobalaccel.service:" << reply.error();
+            qCritical() << "Couldn't start kglobalaccel from org.kde.kglobalaccel.service:" << reply.error();
         }
     }
     QDBusServiceWatcher *watcher = new QDBusServiceWatcher(iface.service(),
