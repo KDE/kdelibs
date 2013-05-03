@@ -26,8 +26,8 @@
 
 Q_DECLARE_METATYPE(QAction*)
 
-static const QString INACTIVE_TEXT = "Show Foo";
-static const QString ACTIVE_TEXT = "Hide Foo";
+static const QString INACTIVE_TEXT = QStringLiteral("Show Foo");
+static const QString ACTIVE_TEXT = QStringLiteral("Hide Foo");
 
 class KDualActionTest : public QObject
 {
@@ -51,7 +51,7 @@ private Q_SLOTS:
 
     void testSetIconForStates()
     {
-        QIcon icon = QIcon::fromTheme("kde");
+        QIcon icon = QIcon::fromTheme(QStringLiteral("kde"));
         KDualAction action(0);
         QVERIFY(action.inactiveIcon().isNull());
         QVERIFY(action.activeIcon().isNull());

@@ -21,8 +21,6 @@
 
 #include <QIcon>
 
-#include <kdebug.h>
-
 #include "kdualaction_p.h"
 
 //---------------------------------------------------------------------

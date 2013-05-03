@@ -76,7 +76,6 @@ set(kdeui_LIB_SRCS
  actions/kactioncategory.cpp
  actions/kactionmenu.cpp
  actions/kcodecaction.cpp
- actions/kdualaction.cpp
  actions/kfontaction.cpp
  actions/kfontsizeaction.cpp
  actions/kpastetextaction.cpp
@@ -435,7 +434,6 @@ install( FILES
  actions/kactioncollection.h
  actions/kactioncategory.h
  actions/kactionmenu.h
- actions/kdualaction.h
  actions/kcodecaction.h
  actions/kfontaction.h
  actions/kfontsizeaction.h

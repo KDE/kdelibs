@@ -22,7 +22,7 @@
 
 #include <QAction>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 class KDualActionPrivate;
 class KGuiItem;
@@ -57,7 +57,7 @@ class KGuiItem;
  * @author Aurélien Gâteau <agateau@kde.org>
  * @since 4.6
  */
-class KDEUI_EXPORT KDualAction : public QAction
+class KWIDGETSADDONS_EXPORT KDualAction : public QAction
 {
     Q_OBJECT
 public:

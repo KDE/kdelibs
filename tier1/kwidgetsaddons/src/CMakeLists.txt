@@ -1,5 +1,6 @@
 
 set(kwidgetsaddons_SRCS
+  kdualaction.cpp
   kguiitem.cpp
   kled.cpp
   kcapacitybar.cpp
@@ -23,6 +24,7 @@ set_target_properties(KWidgetsAddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSI
 install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  kdualaction.h
   kguiitem.h
   kled.h
   kcapacitybar.h

@@ -20,7 +20,6 @@ KDEUI_UNIT_TESTS(
   kactioncategorytest
   kbuttongrouptest
   kcompletioncoretest
-  kdualactiontest
   kfindtest
   kglobalshortcuttest
   kmainwindow_unittest
