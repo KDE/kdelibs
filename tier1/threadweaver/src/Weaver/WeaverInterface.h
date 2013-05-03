@@ -90,15 +90,6 @@ public:
     To unregister, simply delete the observer.
     */
     virtual void registerObserver ( WeaverObserver* ) = 0;
-    /** Add a job to be executed.
-
-    It depends on the state if execution of the job will be attempted
-    immediately. In suspended state, jobs can be added to the queue,
-    but the threads remain suspended. In WorkingHard state, an idle
-    thread may immediately execute the job, or it might be queued if
-    all threads are busy.
-    */
-    virtual void enqueue ( Job* ) = 0;
 
     /** Add a job to be executed.
 
@@ -112,21 +103,6 @@ public:
     is the last remaining reference to it. Keep a JobPointer to the job to avoid automatic deletion.
     */
     virtual void enqueue(JobPointer job) = 0;
-
-    /** Remove a job from the queue.
-    If the job was queued but not started so far, it is simply
-    removed from the queue. For now, it is unsupported to
-    dequeue a job once its execution has started.
-
-    For that case, you will have to provide a method to interrupt your
-    job's execution (and receive the done signal).
-    Returns true if the job has been dequeued, false if the
-    job has already been started or is not found in the
-    queue.
-
-    TODO deprecated
-    */
-    virtual bool dequeue ( Job* ) = 0;
 
     /** Remove a job from the queue.
     If the job was queued but not started so far, it is simply

@@ -58,16 +58,8 @@ public:
     int currentNumberOfThreads () const;
     /** Register an observer. */
     void registerObserver(WeaverObserver* obs);
-    /** Enqueue a job.
-     * TODO deprecated
-     */
-    void enqueue(Job*job);
     /** Enqueue a job. */
     void enqueue(JobPointer job);
-    /** Dequeue a job.
-    * TODO deprecated
-    */
-    bool dequeue(Job* job);
     /** Dequeue a job. */
     bool dequeue(JobPointer job);
     /** Dequeue all jobs. */

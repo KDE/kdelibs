@@ -218,21 +218,10 @@ void WeaverImpl::registerObserver_p(WeaverObserver *ext)
               ext,  SIGNAL (threadExited(ThreadWeaver::Thread*)) );
 }
 
-void WeaverImpl::enqueue(Job* job)
-{
-    QMutexLocker l(m_mutex); Q_UNUSED(l);
-    state()->enqueue(job);
-}
-
 void WeaverImpl::enqueue(JobPointer job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     state()->enqueue(job);
-}
-
-void WeaverImpl::enqueue_p(Job *job)
-{
-    //TODO: possible?
 }
 
 void WeaverImpl::enqueue_p(JobPointer job)
@@ -254,22 +243,10 @@ void WeaverImpl::enqueue_p(JobPointer job)
     }
 }
 
-bool WeaverImpl::dequeue ( Job* job )
-{
-    QMutexLocker l(m_mutex); Q_UNUSED(l);
-    return state()->dequeue(job);
-}
-
 bool WeaverImpl::dequeue(JobPointer job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     return state()->dequeue(job);
-}
-
-bool WeaverImpl::dequeue_p(Job* job)
-{
-    //TODO deprecated
-    return false;
 }
 
 bool WeaverImpl::dequeue_p(JobPointer job)
