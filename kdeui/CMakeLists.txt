@@ -151,7 +151,6 @@ set(kdeui_LIB_SRCS
  paged/kpagewidget.cpp
  paged/kpagewidgetmodel.cpp
  shortcuts/kshortcutschemeshelper.cpp
- shortcuts/kstandardshortcut.cpp
  shortcuts/kglobalaccel.cpp
  shortcuts/kglobalshortcutinfo.cpp
  shortcuts/kglobalshortcutinfo_dbus.cpp
@@ -499,7 +498,6 @@ install( FILES
  paged/kpageview.h
  paged/kpagewidget.h
  paged/kpagewidgetmodel.h
- shortcuts/kstandardshortcut.h
  shortcuts/kglobalaccel.h
  shortcuts/kglobalshortcutinfo.h
  shortcuts/kglobalshortcutinfo_p.h
