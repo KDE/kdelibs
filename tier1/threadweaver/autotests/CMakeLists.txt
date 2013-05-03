@@ -42,4 +42,3 @@ add_test(ThreadWeaverLifecycleTest ThreadWeaverLifecycleTest)
 ecm_mark_as_test(ThreadWeaverLifecycleTest)
 
 target_link_libraries(ThreadWeaverLifecycleTest Qt5::Test ThreadWeaver)
-
