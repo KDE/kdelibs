@@ -65,7 +65,7 @@ void PackageStructureTest::type()
 void PackageStructureTest::directories()
 {
     QList<const char*> dirs;
-    dirs << "animations" << "config" << "data" << "images" << "scripts" << "translations" << "ui";
+    dirs << "animations" << "config" << "data" << "images" << "scripts" << "theme" << "translations" << "ui";
 
     QList<const char*> psDirs = ps->directories();
 
@@ -133,6 +133,7 @@ void PackageStructureTest::mimetypes()
     QStringList mimetypes;
     mimetypes << "image/svg+xml" << "image/png" << "image/jpeg";
     QCOMPARE(ps->mimetypes("images"), mimetypes);
+    QCOMPARE(ps->mimetypes("theme"), mimetypes);
 }
 
 void PackageStructureTest::read()
@@ -190,7 +191,7 @@ void PackageStructureTest::write()
 
     // check groups
     QStringList groups;
-    groups << "images" << "config" << "data" << "defaultconfig" << "scripts"
+    groups << "images" << "theme" << "config" << "data" << "defaultconfig" << "scripts"
            << "mainconfigui" << "mainconfigxml" << "mainscript"
            << "translations" << "ui" << "animations";
     groups.sort();
