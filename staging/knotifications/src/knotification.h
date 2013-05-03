@@ -20,7 +20,7 @@
 #ifndef KNOTIFICATION_H
 #define KNOTIFICATION_H
 
-#include <kdeui_export.h>
+#include <knotifications_export.h>
 
 #include <QPixmap>
 #include <QtCore/QObject>
@@ -176,7 +176,7 @@ class QDBusError;
  * 
  * @author Olivier Goffart  \<ogoffart at kde.org\>
  */
-class KDEUI_EXPORT KNotification : public QObject
+class KNOTIFICATIONS_EXPORT KNotification : public QObject
 {
         Q_OBJECT
 

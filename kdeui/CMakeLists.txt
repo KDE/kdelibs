@@ -143,8 +143,6 @@ set(kdeui_LIB_SRCS
  jobs/kstatusbarjobtracker.cpp
  jobs/kjobtrackerformatters.cpp
  kernel/kstyle.cpp
- notifications/knotification.cpp
- notifications/knotificationmanager.cpp
  notifications/knotificationrestrictions.cpp
  paged/kpagedialog.cpp
  paged/kpagemodel.cpp
@@ -328,9 +326,6 @@ set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kg
 qt5_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
 install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
-set(knotify_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.KNotify.xml)
-qt5_add_dbus_interface(kdeui_LIB_SRCS ${knotify_xml} knotify_interface)
-
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
 
@@ -358,7 +353,7 @@ target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 
 find_package(Qt5PrintSupport REQUIRED NO_MODULE)
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ItemViews KCompletion KJobWidgets KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
+target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ItemViews KCompletion KNotifications KJobWidgets KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} Qt5::Concurrent)
 
 if(X11_FOUND)
@@ -498,7 +493,6 @@ install( FILES
  jobs/kstatusbarjobtracker.h
  kernel/kstyle.h
  notifications/kstatusnotifieritem.h
- notifications/knotification.h
  notifications/knotificationrestrictions.h
  paged/kpagedialog.h
  paged/kpagemodel.h
