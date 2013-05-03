@@ -32,7 +32,7 @@
 #ifndef KSELECTACTION_P_H
 #define KSELECTACTION_P_H
 
-#include "kcombobox.h"
+#include <QComboBox>
 
 class KSelectActionPrivate
 {
@@ -57,7 +57,7 @@ public:
   {
     // unhook the event filter, as the deletion of the actiongroup
     // will trigger it
-    Q_FOREACH( KComboBox* box, m_comboBoxes )
+    Q_FOREACH( QComboBox* box, m_comboBoxes )
         box->removeEventFilter( q_ptr );
     Q_FOREACH( QToolButton* button, m_buttons )
         button->removeEventFilter( q_ptr );
@@ -80,7 +80,7 @@ public:
   QActionGroup* m_actionGroup;
 
   QList<QToolButton*> m_buttons;
-  QList<KComboBox*> m_comboBoxes;
+  QList<QComboBox*> m_comboBoxes;
 
   QString makeMenuText( const QString &_text )
   {

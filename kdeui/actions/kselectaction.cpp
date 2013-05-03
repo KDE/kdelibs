@@ -41,8 +41,6 @@
 #include <klocalizedstring.h>
 #include <kdebug.h>
 
-#include "kcombobox.h"
-
 // QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes
 // QAction::text() to return "&Hi" :(  Comboboxes don't have accels and
 // display ampersands literally.
@@ -207,7 +205,7 @@ void KSelectAction::setComboWidth( int width )
 
   d->m_comboWidth = width;
 
-  foreach (KComboBox* box, d->m_comboBoxes)
+  foreach (QComboBox* box, d->m_comboBoxes)
     box->setMaximumWidth(d->m_comboWidth);
 
   emit changed();
@@ -218,7 +216,7 @@ void KSelectAction::setMaxComboViewCount( int n )
   Q_D(KSelectAction);
   d->m_maxComboViewCount = n;
 
-  foreach (KComboBox* box, d->m_comboBoxes)
+  foreach (QComboBox* box, d->m_comboBoxes)
     if ( d->m_maxComboViewCount != -1 )
       box->setMaxVisibleItems(d->m_maxComboViewCount);
     else
@@ -244,7 +242,7 @@ void KSelectAction::addAction(QAction* action)
     button->addAction(action);
   }
 
-  foreach (KComboBox* comboBox, d->m_comboBoxes) {
+  foreach (QComboBox* comboBox, d->m_comboBoxes) {
     comboBox->setEnabled(true);
     comboBox->addAction(action);
   }
@@ -295,7 +293,7 @@ QAction* KSelectAction::removeAction(QAction* action)
     button->removeAction(action);
   }
 
-  foreach (KComboBox* comboBox, d->m_comboBoxes)
+  foreach (QComboBox* comboBox, d->m_comboBoxes)
   {
     comboBox->setEnabled( !hasActions );
     comboBox->removeAction(action);
@@ -407,7 +405,7 @@ void KSelectAction::setEditable( bool edit )
   Q_D(KSelectAction);
   d->m_edit = edit;
 
-  foreach (KComboBox* comboBox, d->m_comboBoxes)
+  foreach (QComboBox* comboBox, d->m_comboBoxes)
     comboBox->setEditable(edit);
 
   emit changed();
@@ -452,9 +450,9 @@ void KSelectAction::setToolButtonPopupMode( QToolButton::ToolButtonPopupMode mod
 
 void KSelectActionPrivate::_k_comboBoxDeleted(QObject* object)
 {
-  foreach (KComboBox* comboBox, m_comboBoxes)
+  foreach (QComboBox* comboBox, m_comboBoxes)
     if (object == comboBox) {
-      m_comboBoxes.removeAll(static_cast<KComboBox*>(object));
+      m_comboBoxes.removeAll(static_cast<QComboBox*>(object));
       break;
     }
 }
@@ -464,7 +462,7 @@ void KSelectActionPrivate::_k_comboBoxCurrentIndexChanged(int index)
     Q_Q(KSelectAction);
   //qDebug () << "KSelectActionPrivate::_k_comboBoxCurrentIndexChanged(" << index << ")";
 
-  KComboBox *triggeringCombo = qobject_cast <KComboBox *> (q->sender ());
+  QComboBox *triggeringCombo = qobject_cast <QComboBox *> (q->sender ());
 
   QAction *a = q->action(index);
   //qDebug () << "\ta=" << a;
@@ -545,7 +543,7 @@ QWidget * KSelectAction::createWidget( QWidget * parent )
     }
 
     case ComboBoxMode: {
-      KComboBox* comboBox = new KComboBox(parent);
+      QComboBox* comboBox = new QComboBox(parent);
       comboBox->installEventFilter (this);
 
       if ( d->m_maxComboViewCount != -1 )
@@ -581,7 +579,7 @@ void KSelectAction::deleteWidget(QWidget *widget)
     Q_D(KSelectAction);
     if (QToolButton *toolButton = qobject_cast<QToolButton *>(widget))
         d->m_buttons.removeAll(toolButton);
-    else if (KComboBox *comboBox = qobject_cast<KComboBox *>(widget))
+    else if (QComboBox *comboBox = qobject_cast<QComboBox *>(widget))
         d->m_comboBoxes.removeAll(comboBox);
     QWidgetAction::deleteWidget(widget);
 }
@@ -590,7 +588,7 @@ bool KSelectAction::event(QEvent *event)
 {
     Q_D(KSelectAction);
     if (event->type() == QEvent::ActionChanged) {
-        Q_FOREACH(KComboBox* comboBox, d->m_comboBoxes) {
+        Q_FOREACH(QComboBox* comboBox, d->m_comboBoxes) {
             comboBox->setToolTip(toolTip());
             comboBox->setWhatsThis(whatsThis());
             comboBox->setStatusTip(statusTip());
@@ -646,7 +644,7 @@ Q_DECLARE_METATYPE(QAction*)
 
 bool KSelectAction::eventFilter (QObject *watched, QEvent *event)
 {
-  KComboBox *comboBox = qobject_cast <KComboBox *> (watched);
+  QComboBox *comboBox = qobject_cast <QComboBox *> (watched);
   if (!comboBox)
     return false/*propagate event*/;
 

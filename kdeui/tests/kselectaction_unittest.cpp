@@ -18,10 +18,10 @@
 */
 
 #include "kselectaction_unittest.h"
+#include <QComboBox>
 #include <QStandardItemModel>
 #include <QtTest/QtTest>
 #include <kselectaction.h>
-#include <kcombobox.h>
 #include <qtoolbar.h>
 
 QTEST_MAIN( KSelectAction_UnitTest)
@@ -37,7 +37,7 @@ void KSelectAction_UnitTest::testSetToolTipBeforeRequestingComboBoxWidget()
     QWidget* widget = selectAction.requestWidget(&parent);
 
     QVERIFY(widget);
-    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
     QVERIFY(comboBox);
     QCOMPARE(comboBox->toolTip(), QString("Test"));
     QCOMPARE(comboBox->isEnabled(), false);
@@ -55,7 +55,7 @@ void KSelectAction_UnitTest::testSetToolTipAfterRequestingComboBoxWidget()
     selectAction.setEnabled(false); // also test disabling the action
 
     QVERIFY(widget);
-    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
     QVERIFY(comboBox);
     QCOMPARE(comboBox->toolTip(), QString("Test"));
     QCOMPARE(comboBox->isEnabled(), false);
@@ -112,7 +112,7 @@ void KSelectAction_UnitTest::testSetWhatsThisBeforeRequestingComboBoxWidget()
     QWidget* widget = selectAction.requestWidget(&parent);
 
     QVERIFY(widget);
-    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
     QVERIFY(comboBox);
     QCOMPARE(comboBox->whatsThis(), QString("Test"));
 }
@@ -128,7 +128,7 @@ void KSelectAction_UnitTest::testSetWhatsThisAfterRequestingComboBoxWidget()
     selectAction.setWhatsThis("Test");
 
     QVERIFY(widget);
-    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
     QVERIFY(comboBox);
     QCOMPARE(comboBox->whatsThis(), QString("Test"));
 }
@@ -180,7 +180,7 @@ void KSelectAction_UnitTest::testChildActionStateChangeComboMode()
     selectAction.setToolBarMode(KSelectAction::ComboBoxMode);
     QWidget parent;
     QWidget* widget = selectAction.requestWidget(&parent);
-    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
     QVERIFY(comboBox);
     const QString itemText = "foo";
     QAction* childAction = selectAction.addAction(itemText);
@@ -206,7 +206,7 @@ void KSelectAction_UnitTest::testRequestWidgetComboBoxModeWidgetParent()
     QWidget* widget = toolBar.widgetForAction(&selectAction);
 
     QVERIFY(widget);
-    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
     QVERIFY(comboBox);
     QVERIFY(!comboBox->isEnabled());
 }
@@ -225,7 +225,7 @@ void KSelectAction_UnitTest::testRequestWidgetComboBoxModeWidgetParentSeveralAct
     QWidget* widget = toolBar.widgetForAction(&selectAction);
 
     QVERIFY(widget);
-    KComboBox* comboBox = qobject_cast<KComboBox*>(widget);
+    QComboBox* comboBox = qobject_cast<QComboBox*>(widget);
     QVERIFY(comboBox);
     QVERIFY(comboBox->isEnabled());
 }

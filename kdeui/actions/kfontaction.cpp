@@ -28,26 +28,27 @@
 
 #include "kfontaction.h"
 
+#include <QFontComboBox>
 #include <QToolBar>
 
 #include <kdebug.h>
 #include <kfontdialog.h>
 #include <klocalizedstring.h>
 #include <kfontchooser.h>
-#include <kfontcombobox.h>
 
 class KFontAction::KFontActionPrivate
 {
     public:
         KFontActionPrivate(KFontAction *parent)
             : q(parent),
-              settingFont(0)
+              settingFont(0),
+              fontFilters(QFontComboBox::AllFonts)
         {
         }
 
         void _k_slotFontChanged(const QFont &font)
         {
-            qDebug() << "KFontComboBox - slotFontChanged("
+            qDebug() << "QFontComboBox - slotFontChanged("
                         << font.family() << ") settingFont=" << settingFont;
             if (settingFont)
                 return;
@@ -61,41 +62,69 @@ class KFontAction::KFontActionPrivate
 
         KFontAction *q;
         int settingFont;
+        QFontComboBox::FontFilters fontFilters;
 };
+
+QStringList _k_fontList(const QFontComboBox::FontFilters &fontFilters = QFontComboBox::AllFonts)
+{
+    QFontDatabase dbase;
+
+    QStringList families;
+    if (fontFilters == QFontComboBox::AllFonts) {
+        families = dbase.families();
+    } else {
+        const QFontComboBox::FontFilters scalableMask = (QFontComboBox::ScalableFonts | QFontComboBox::NonScalableFonts);
+        const QFontComboBox::FontFilters spacingMask = (QFontComboBox::ProportionalFonts | QFontComboBox::MonospacedFonts);
+
+        foreach (const QString &family, dbase.families()) {
+            if ((fontFilters & scalableMask) && (fontFilters & scalableMask) != scalableMask) {
+                if (bool(fontFilters & QFontComboBox::ScalableFonts) != dbase.isSmoothlyScalable(family))
+                    continue;
+            }
+            if ((fontFilters & spacingMask) && (fontFilters & spacingMask) != spacingMask) {
+                if (bool(fontFilters & QFontComboBox::MonospacedFonts) != dbase.isFixedPitch(family))
+                    continue;
+            }
+
+            families << family;
+        }
+    }
+
+    families.sort();
+    return families;
+}
 
 KFontAction::KFontAction(uint fontListCriteria, QObject *parent)
   : KSelectAction(parent), d(new KFontActionPrivate(this))
 {
-    QStringList list;
-    KFontChooser::getFontList( list, fontListCriteria );
-    KSelectAction::setItems( list );
+    if (fontListCriteria & KFontChooser::FixedWidthFonts)
+        d->fontFilters |= QFontComboBox::MonospacedFonts;
+
+    if (fontListCriteria & KFontChooser::SmoothScalableFonts)
+        d->fontFilters |= QFontComboBox::ScalableFonts;
+
+    KSelectAction::setItems( _k_fontList(d->fontFilters) );
     setEditable( true );
 }
 
 KFontAction::KFontAction(QObject *parent)
   : KSelectAction(parent), d(new KFontActionPrivate(this))
 {
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
+    KSelectAction::setItems( _k_fontList() );
     setEditable( true );
 }
 
 KFontAction::KFontAction(const QString & text, QObject *parent)
   : KSelectAction(text, parent), d(new KFontActionPrivate(this))
 {
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
+    KSelectAction::setItems( _k_fontList() );
     setEditable( true );
 }
 
 KFontAction::KFontAction(const QIcon &icon, const QString &text, QObject *parent)
   : KSelectAction(icon, text, parent), d(new KFontActionPrivate(this))
 {
-    QStringList list;
-    KFontChooser::getFontList( list, 0 );
-    KSelectAction::setItems( list );
+    KSelectAction::setItems( _k_fontList() );
     setEditable( true );
 }
 
@@ -118,8 +147,8 @@ QWidget* KFontAction::createWidget(QWidget* parent)
     // This is the visual element on the screen.  This method overrides
     // the KSelectAction one, preventing KSelectAction from creating its
     // regular KComboBox.
-    KFontComboBox *cb = new KFontComboBox( parent );
-    cb->setFontList(items());
+    QFontComboBox *cb = new QFontComboBox( parent );
+    cb->setFontFilters(d->fontFilters);
 
     qDebug() << "\tset=" << font();
     // Do this before connecting the signal so that nothing will fire.
@@ -132,7 +161,7 @@ QWidget* KFontAction::createWidget(QWidget* parent)
 }
 
 /*
- * Maintenance note: Keep in sync with KFontComboBox::setCurrentFont()
+ * Maintenance note: Keep in sync with QFontComboBox::setCurrentFont()
  */
 void KFontAction::setFont( const QString &family )
 {
@@ -143,7 +172,7 @@ void KFontAction::setFont( const QString &family )
 
     foreach(QWidget *w, createdWidgets())
     {
-        KFontComboBox *cb = qobject_cast<KFontComboBox *>(w);
+        QFontComboBox *cb = qobject_cast<QFontComboBox *>(w);
         qDebug() << "\tw=" << w << "cb=" << cb;
 
         if(!cb) continue;
@@ -173,7 +202,7 @@ void KFontAction::setFont( const QString &family )
     if (setCurrentAction(lowerName, Qt::CaseInsensitive))
       return;
 
-    // TODO: Inconsistent state if KFontComboBox::setCurrentFont() succeeded
+    // TODO: Inconsistent state if QFontComboBox::setCurrentFont() succeeded
     //       but setCurrentAction() did not and vice-versa.
     qDebug() << "Font not found " << family.toLower();
 }

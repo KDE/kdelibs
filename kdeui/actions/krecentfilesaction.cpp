@@ -201,7 +201,7 @@ void KRecentFilesAction::addAction(QAction* action, const QUrl& url, const QStri
   foreach (QToolButton* button, d->m_buttons)
     button->insertAction(button->actions().value(0), action);
 
-  foreach (KComboBox* comboBox, d->m_comboBoxes)
+  foreach (QComboBox* comboBox, d->m_comboBoxes)
     comboBox->insertAction(comboBox->actions().value(0), action);
 
   menu()->insertAction(menu()->actions().value(0), action);
