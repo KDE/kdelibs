@@ -63,7 +63,7 @@ QList<StandardAction> actionIds()
   return result;
 }
 
-KDEUI_EXPORT KStandardShortcut::StandardShortcut shortcutForActionId(StandardAction id)
+KWIDGETS_EXPORT KStandardShortcut::StandardShortcut shortcutForActionId(StandardAction id)
 {
   const KStandardActionInfo* pInfo = infoPtr( id );
   return (pInfo) ? pInfo->idAccel : KStandardShortcut::AccelNone;

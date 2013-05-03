@@ -18,6 +18,7 @@ set(kwidgets_LIB_SRCS
   actions/kpastetextaction.cpp
   actions/krecentfilesaction.cpp
   actions/kselectaction.cpp
+  actions/kstandardaction.cpp
   dialogs/kmessagebox.cpp
   utils/kglobalsettings.cpp
   utils/khelpclient.cpp
@@ -77,6 +78,7 @@ install(FILES
   actions/kpastetextaction.h
   actions/krecentfilesaction.h
   actions/kselectaction.h
+  actions/kstandardaction.h
   dialogs/kmessagebox.h
   utils/kglobalsettings.h
   utils/khelpclient.h

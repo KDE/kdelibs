@@ -75,7 +75,6 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  actions/kactioncategory.cpp
  actions/kactionmenu.cpp
- actions/kstandardaction.cpp
  actions/ktoggletoolbaraction.cpp
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
@@ -426,7 +425,6 @@ install( FILES
  actions/kactioncollection.h
  actions/kactioncategory.h
  actions/kactionmenu.h
- actions/kstandardaction.h
  actions/ktoggletoolbaraction.h
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
