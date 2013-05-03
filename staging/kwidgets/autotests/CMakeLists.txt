@@ -23,5 +23,6 @@ kwidgets_executable_tests(
 
 kwidgets_unit_tests(
     kglobalsettingstest
+    kselectaction_unittest
     kstandardshortcuttest
 )

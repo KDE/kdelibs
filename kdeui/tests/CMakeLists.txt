@@ -33,7 +33,6 @@ KDEUI_UNIT_TESTS(
   ktabwidget_unittest
   ktoolbar_unittest
   krichtextedittest
-  kselectaction_unittest
   klistwidgetsearchlinetest
   ktimecomboboxtest
   kdatecomboboxtest
@@ -49,7 +48,6 @@ KDEUI_EXECUTABLE_TESTS(
   kassistantdialogtest
   kbugreporttest
   kcategorizedviewtest
-  kcodecactiontest
   kcolorcollectiontest
   kcolorcombotest
   kcomboboxtest
@@ -81,7 +79,6 @@ KDEUI_EXECUTABLE_TESTS(
   kpopuptest
   kratingwidgettest
   krulertest
-  kselectactiontest
   ksqueezedtextlabeltest
   ktabwidgettest
   ktextedittest

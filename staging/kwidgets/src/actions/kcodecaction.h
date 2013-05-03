@@ -35,7 +35,7 @@
  *
  *  This action shows up a submenu with a list of the available codecs on the system.
  */
-class KDEUI_EXPORT KCodecAction
+class KWIDGETS_EXPORT KCodecAction
     : public KSelectAction
 {
     Q_OBJECT

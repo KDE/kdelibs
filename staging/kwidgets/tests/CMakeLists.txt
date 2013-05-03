@@ -10,6 +10,8 @@ macro(kwidgets_executable_tests)
 endmacro()
 
 kwidgets_executable_tests(
+    kcodecactiontest
     kmessagetest
     kmessageboxtest
+    kselectactiontest
 )

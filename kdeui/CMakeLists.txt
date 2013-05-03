@@ -75,12 +75,7 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  actions/kactioncategory.cpp
  actions/kactionmenu.cpp
- actions/kcodecaction.cpp
- actions/kfontaction.cpp
- actions/kfontsizeaction.cpp
  actions/kpastetextaction.cpp
- actions/krecentfilesaction.cpp
- actions/kselectaction.cpp
  actions/kstandardaction.cpp
  actions/ktoggleaction.cpp
  actions/ktoggletoolbaraction.cpp
@@ -434,12 +429,7 @@ install( FILES
  actions/kactioncollection.h
  actions/kactioncategory.h
  actions/kactionmenu.h
- actions/kcodecaction.h
- actions/kfontaction.h
- actions/kfontsizeaction.h
  actions/kpastetextaction.h
- actions/krecentfilesaction.h
- actions/kselectaction.h
  actions/kstandardaction.h
  actions/ktoggleaction.h
  actions/ktoggletoolbaraction.h

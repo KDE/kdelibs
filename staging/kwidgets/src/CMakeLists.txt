@@ -12,6 +12,11 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidgets.h )
 
 set(kwidgets_LIB_SRCS
+  actions/kcodecaction.cpp
+  actions/kfontaction.cpp
+  actions/kfontsizeaction.cpp
+  actions/krecentfilesaction.cpp
+  actions/kselectaction.cpp
   dialogs/kmessagebox.cpp
   utils/kglobalsettings.cpp
   utils/khelpclient.cpp
@@ -25,6 +30,7 @@ add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
 generate_export_header(kwidgets)
 
 set(kwidgets_INCLUDES
+  ${CMAKE_CURRENT_SOURCE_DIR}/actions
   ${CMAKE_CURRENT_SOURCE_DIR}/utils
   ${CMAKE_CURRENT_SOURCE_DIR}/icons
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
@@ -40,6 +46,7 @@ target_link_libraries(kwidgets
   Qt5::DBus
   ${KDE4_KDECORE_LIBS} # KGlobal, KLocale, KLocalizedString
 
+  kdeqt5staging # QUrlPathInfo
   ${KConfig_CORE_LIBRARY}
   ${KConfig_GUI_LIBRARY}
   ${KCoreAddons_LIBRARIES}
@@ -63,6 +70,11 @@ set_target_properties(kwidgets PROPERTIES VERSION ${KWIDGETS_VERSION_STRING}
 install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  actions/kcodecaction.h
+  actions/kfontaction.h
+  actions/kfontsizeaction.h
+  actions/krecentfilesaction.h
+  actions/kselectaction.h
   dialogs/kmessagebox.h
   utils/kglobalsettings.h
   utils/khelpclient.h

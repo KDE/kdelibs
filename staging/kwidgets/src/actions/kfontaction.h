@@ -24,43 +24,38 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KFONTSIZEACTION_H
-#define KFONTSIZEACTION_H
+#ifndef KFONTACTION_H
+#define KFONTACTION_H
 
 #include <kselectaction.h>
 
 /**
- * An action to allow changing of the font size.
- * This action will be shown as a combobox on a toolbar with a proper set of font sizes.
+ * An action to select a font family.
+ * On a toolbar this will show a combobox with all the fonts on the system.
  */
-class KDEUI_EXPORT KFontSizeAction : public KSelectAction
+class KWIDGETS_EXPORT KFontAction : public KSelectAction
 {
     Q_OBJECT
-    Q_PROPERTY( int fontSize READ fontSize WRITE setFontSize )
+    Q_PROPERTY( QString font READ font WRITE setFont )
 
 public:
-    explicit KFontSizeAction(QObject *parent);
-    KFontSizeAction(const QString &text, QObject *parent);
-    KFontSizeAction(const QIcon &icon, const QString &text, QObject *parent);
+    KFontAction(uint fontListCriteria, QObject *parent);
+    explicit KFontAction(QObject *parent);
+    KFontAction(const QString& text, QObject *parent);
+    KFontAction(const QIcon &icon, const QString &text, QObject *parent);
+    virtual ~KFontAction();
 
-    virtual ~KFontSizeAction();
+    QString font() const;
 
-    int fontSize() const;
+    void setFont( const QString &family );
 
-    void setFontSize( int size );
-
-Q_SIGNALS:
-    void fontSizeChanged( int );
-
-protected Q_SLOTS:
-    /**
-     * This function is called whenever an action from the selections is triggered.
-     */
-    virtual void actionTriggered(QAction* action);
+    virtual QWidget* createWidget(QWidget* parent);
 
 private:
-    class Private;
-    Private* const d;
+    class KFontActionPrivate;
+    KFontActionPrivate * const d;
+
+    Q_PRIVATE_SLOT( d, void _k_slotFontChanged(const QFont&) )
 };
 
 #endif
