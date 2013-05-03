@@ -47,7 +47,6 @@ KDEUI_UNIT_TESTS(
 KDEUI_EXECUTABLE_TESTS(
   kaccelgentest
   kactionselectortest
-  kanimatedbuttontest
   kcharselecttest
   kassistantdialogtest
   kbugreporttest

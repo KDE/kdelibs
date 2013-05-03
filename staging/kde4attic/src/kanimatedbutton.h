@@ -19,7 +19,7 @@
 #ifndef KANIMATEDBUTTON_H
 #define KANIMATEDBUTTON_H
 
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 #include <QToolButton>
 
 /**
@@ -35,7 +35,7 @@
  *
  * @author Kurt Granroth <granroth@kde.org>
  */
-class KDEUI_EXPORT KAnimatedButton : public QToolButton
+class KDE4ATTIC_EXPORT KAnimatedButton : public QToolButton
 {
   Q_OBJECT
   Q_PROPERTY( QString icons READ icons WRITE setIcons )

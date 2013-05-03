@@ -181,7 +181,6 @@ set(kdeui_LIB_SRCS
  util/kpixmapsequencewidget.cpp
  util/kzoneallocator.cpp
  widgets/kactionselector.cpp
- widgets/kanimatedbutton.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
  widgets/kcharselectdata.cpp
@@ -535,7 +534,6 @@ install( FILES
  util/kpixmapsequenceoverlaypainter.h
  util/kpixmapsequencewidget.h
  widgets/kactionselector.h
- widgets/kanimatedbutton.h
  widgets/kdatecombobox.h
  widgets/kdatepicker.h
  widgets/kcmodule.h
