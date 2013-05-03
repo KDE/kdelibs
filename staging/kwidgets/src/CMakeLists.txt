@@ -15,6 +15,7 @@ set(kwidgets_LIB_SRCS
   actions/kcodecaction.cpp
   actions/kfontaction.cpp
   actions/kfontsizeaction.cpp
+  actions/kpastetextaction.cpp
   actions/krecentfilesaction.cpp
   actions/kselectaction.cpp
   dialogs/kmessagebox.cpp
@@ -73,6 +74,7 @@ install(FILES
   actions/kcodecaction.h
   actions/kfontaction.h
   actions/kfontsizeaction.h
+  actions/kpastetextaction.h
   actions/krecentfilesaction.h
   actions/kselectaction.h
   dialogs/kmessagebox.h
