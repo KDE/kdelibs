@@ -21,8 +21,7 @@
 
 #include "kconfiggui.h"
 
-// TODO: Will become QGuiApplication once the session properties moved there
-#include <QApplication>
+#include <QGuiApplication>
 
 #include <kconfig.h>
 
@@ -47,6 +46,6 @@ QString KConfigGui::sessionConfigName()
 #endif
     const QString sessionKey = qApp->sessionKey();
     const QString sessionId = qApp->sessionId();
-    return QString(QLatin1String("session/%1_%2_%3")).arg(QApplication::applicationName()).arg(sessionId).arg(sessionKey);
+    return QString(QLatin1String("session/%1_%2_%3")).arg(QGuiApplication::applicationName()).arg(sessionId).arg(sessionKey);
 }
 
