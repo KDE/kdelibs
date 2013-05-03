@@ -39,7 +39,10 @@
 
 #include <qapplication.h>
 #include <klocalizedstring.h>
+#if 0
+    // NOTE waiting for the notification framework plan
 #include <knotification.h>
+#endif
 #include <ksqueezedtextlabel.h>
 #include <kwindowsystem.h>
 
