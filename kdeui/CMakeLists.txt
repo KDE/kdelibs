@@ -126,7 +126,6 @@ set(kdeui_LIB_SRCS
  fonts/kfontutils.cpp
  icons/kiconbutton.cpp
  icons/kicondialog.cpp
- itemviews/kconfigviewstatesaver.cpp
  itemviews/klistwidgetsearchline.cpp
  itemviews/ktreewidgetsearchline.cpp
  itemviews/kviewstatemaintainer.cpp
@@ -365,7 +364,7 @@ target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 
 find_package(Qt5PrintSupport REQUIRED NO_MODULE)
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ItemViews KCompletion ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
+target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n ItemViews KCompletion KConfigWidgets ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
                             Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} Qt5::Concurrent)
 
 if(X11_FOUND)
@@ -489,7 +488,6 @@ install( FILES
  fonts/kfontutils.h
  icons/kiconbutton.h
  icons/kicondialog.h
- itemviews/kconfigviewstatesaver.h
  itemviews/kviewstatesaver.h
  itemviews/kviewstatemaintainer.h
  itemviews/klistwidgetsearchline.h
