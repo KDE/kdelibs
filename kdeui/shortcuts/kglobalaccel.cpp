@@ -22,7 +22,6 @@
 
 #include "kglobalaccel.h"
 #include "kglobalaccel_p.h"
-#include <klocalizedstring.h>
 
 #include <memory>
 
@@ -345,7 +344,7 @@ QStringList KGlobalAccelPrivate::makeActionId(const QAction *action)
     Q_ASSERT(!action->objectName().isEmpty());
     ret.append(action->objectName());                   // Action Unique Name
     ret.append(componentFriendlyForAction(action));     // Component Friendly name
-    const QString actionText = KLocalizedString::removeAcceleratorMarker(action->text());
+    const QString actionText = action->text().replace('&', "");
     ret.append(actionText);                             // Action Friendly Name
     return ret;
 }
@@ -512,14 +511,14 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringL
     if (actionIdentifier.size() < 4) {
         return false;
     }
-    QString title = i18n("Conflict with Global Shortcut");
-    QString message = i18n("The '%1' key combination has already been allocated "
+    QString title = tr("Conflict with Global Shortcut");
+    QString message = tr("The '%1' key combination has already been allocated "
                            "to the global action \"%2\" in %3.\n"
-                           "Do you want to reassign it from that action to the current one?",
-                           seq.toString(), actionIdentifier.at(KGlobalAccel::ActionFriendly),
-                           actionIdentifier.at(KGlobalAccel::ComponentFriendly));
+                           "Do you want to reassign it from that action to the current one?")
+                    .arg(seq.toString(), actionIdentifier.at(KGlobalAccel::ActionFriendly))
+                    .arg(actionIdentifier.at(KGlobalAccel::ComponentFriendly));
 
-    return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
+    return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(tr("Reassign")))
            == KMessageBox::Continue;
 }
 #endif
@@ -540,26 +539,26 @@ bool KGlobalAccel::promptStealShortcutSystemwide(
 
     QString message;
     if (shortcuts.size()==1) {
-        message = i18n("The '%1' key combination is registered by application %2 for action %3:",
-                seq.toString(),
-                component,
-                shortcuts[0].friendlyName());
+        message = tr("The '%1' key combination is registered by application %2 for action %3:")
+                .arg(seq.toString())
+                .arg(component)
+                .arg(shortcuts[0].friendlyName());
     } else {
         QString actionList;
         Q_FOREACH(const KGlobalShortcutInfo &info, shortcuts) {
-            actionList += i18n("In context '%1' for action '%2'\n",
-                    info.contextFriendlyName(),
-                    info.friendlyName());
+            actionList += tr("In context '%1' for action '%2'\n")
+                        .arg(info.contextFriendlyName())
+                        .arg(info.friendlyName());
         }
-        message = i18n("The '%1' key combination is registered by application %2.\n%3",
-                           seq.toString(),
-                           component,
-                           actionList);
+        message = tr("The '%1' key combination is registered by application %2.\n%3")
+                .arg(seq.toString())
+                .arg(component)
+                .arg(actionList);
     }
 
-    QString title = i18n("Conflict With Registered Global Shortcut");
+    QString title = tr("Conflict With Registered Global Shortcut");
 
-    return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(i18n("Reassign")))
+    return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(tr("Reassign")))
            == KMessageBox::Continue;
 }
 
