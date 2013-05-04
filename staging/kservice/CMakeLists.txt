@@ -47,7 +47,7 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/kserviceConfig.cmake"
         COMPONENT Devel
        )
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/src/kservice_version.h
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
