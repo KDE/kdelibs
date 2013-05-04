@@ -27,6 +27,7 @@ Boston, MA 02110-1301, USA.
 #include <QDoubleSpinBox>
 #include <QLabel>
 #include <QLayout>
+#include <QLocale>
 #include <QSplitter>
 #include <QScrollBar>
 #include <QFontDatabase>
@@ -34,7 +35,6 @@ Boston, MA 02110-1301, USA.
 #include <QListWidget>
 
 #include <kglobalsettings.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 
 #include <cmath>
@@ -70,7 +70,7 @@ static int minimumListHeight( const QListWidget *list, int numVisibleEntry )
 
 static QString formatFontSize(qreal size)
 {
-    return KLocale::global()->formatNumber(size, (size == floor(size)) ? 0 : 1);
+    return QLocale::system().toString(size, 'f', (size == floor(size)) ? 0 : 1);
 }
 
 class KFontChooser::Private
@@ -372,7 +372,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     //
     d->sampleEdit = new SampleEdit(page);
     d->sampleEdit->setAcceptRichText(false);
-    QFont tmpFont( KGlobalSettings::generalFont().family(), 64, QFont::Black );
+    QFont tmpFont( font().family(), 64, QFont::Black );
     d->sampleEdit->setFont(tmpFont);
     d->sampleEdit->setMinimumHeight( d->sampleEdit->fontMetrics().lineSpacing() );
     // i18n: A classical test phrase, with all letters of the English alphabet.
@@ -397,7 +397,7 @@ KFontChooser::KFontChooser( QWidget *parent,
     // Finished setting up the chooser layout.
 
     // lets initialize the display if possible
-    setFont( d->usingFixed ? KGlobalSettings::fixedFont() : KGlobalSettings::generalFont(), d->usingFixed );
+    setFont( d->usingFixed ? KGlobalSettings::fixedFont() : font(), d->usingFixed );
 
     // check or uncheck or gray out the "relative" checkbox
     if( sizeIsRelativeState && d->sizeIsRelativeCheckBox )
@@ -681,9 +681,9 @@ void KFontChooser::Private::_k_size_chosen_slot(const QString& size)
 
     qreal currentSize;
     if (size.isEmpty()) {
-        currentSize = KLocale::global()->readNumber(sizeListBox->currentItem()->text());
+        currentSize = QLocale::system().toDouble(sizeListBox->currentItem()->text());
     } else {
-        currentSize = KLocale::global()->readNumber(size);
+        currentSize = QLocale::system().toDouble(size);
     }
 
     // Reset the customized size slot in the list if not needed.
@@ -735,18 +735,18 @@ void KFontChooser::Private::_k_size_value_slot(double dval)
         int nrow;
         if (val - selFont.pointSizeF() > 0) {
             for (nrow = row + 1; nrow < nrows; ++nrow)
-                if (KLocale::global()->readNumber(sizeListBox->item(nrow)->text()) >= val)
+                if (QLocale::system().toDouble(sizeListBox->item(nrow)->text()) >= val)
                     break;
         }
         else {
             for (nrow = row - 1; nrow >= 0; --nrow)
-                if (KLocale::global()->readNumber(sizeListBox->item(nrow)->text()) <= val)
+                if (QLocale::system().toDouble(sizeListBox->item(nrow)->text()) <= val)
                     break;
         }
         // Make sure the new row is not out of bounds.
         nrow = nrow < 0 ? 0 : nrow >= nrows ? nrows - 1 : nrow;
         // Get the size from the new row and set the spinbox to that size.
-        val = KLocale::global()->readNumber(sizeListBox->item(nrow)->text());
+        val = QLocale::system().toDouble(sizeListBox->item(nrow)->text());
         sizeOfFont->setValue(val);
     }
 
@@ -776,7 +776,7 @@ int KFontChooser::Private::nearestSizeRow (qreal val, bool customize)
     qreal diff = 1000;
     int row = 0;
     for (int r = 0; r < sizeListBox->count(); ++r) {
-        qreal cval = KLocale::global()->readNumber(sizeListBox->item(r)->text());
+        qreal cval = QLocale::system().toDouble(sizeListBox->item(r)->text());
         if (qAbs(cval - val) < diff) {
             diff = qAbs(cval - val);
             row = r;
@@ -832,7 +832,7 @@ qreal KFontChooser::Private::fillSizeList (const QList<qreal> &sizes_)
     // thus size slot customization is not allowed.
     customSizeRow = -1;
     int row = nearestSizeRow(selectedSize, canCustomize);
-    return KLocale::global()->readNumber(sizeListBox->item(row)->text());
+    return QLocale::system().toDouble(sizeListBox->item(row)->text());
 }
 
 qreal KFontChooser::Private::setupSizeListBox (const QString& family, const QString& style)
@@ -957,7 +957,7 @@ void KFontChooser::Private::setupDisplay()
     sizeListBox->setCurrentRow(nearestSizeRow(size, canCustomize));
 
     // Set current size in the spinbox.
-    sizeOfFont->setValue(KLocale::global()->readNumber(sizeListBox->currentItem()->text()));
+    sizeOfFont->setValue(QLocale::system().toDouble(sizeListBox->currentItem()->text()));
 }
 
 
