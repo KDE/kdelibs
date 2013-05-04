@@ -28,6 +28,8 @@
 #include <QAction>
 #include <QActionEvent>
 #include <QDebug>
+#include <QMessageBox>
+#include <QPushButton>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
 #include <config-kdeui.h>
@@ -35,8 +37,6 @@
 #include <QX11Info>
 #include <netwm_def.h>
 #endif
-
-#include "kmessagebox.h"
 
 org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QString &componentUnique, bool remember = false)
 {
@@ -517,8 +517,13 @@ bool KGlobalAccel::promptStealShortcutSystemwide(QWidget *parent, const QStringL
                     .arg(seq.toString(), actionIdentifier.at(KGlobalAccel::ActionFriendly))
                     .arg(actionIdentifier.at(KGlobalAccel::ComponentFriendly));
 
-    return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(tr("Reassign")))
-           == KMessageBox::Continue;
+    QMessageBox box(parent);
+    box.setWindowTitle(title);
+    box.setText(message);
+    box.addButton(QMessageBox::Ok)->setText(tr("Reassign"));
+    box.addButton(QMessageBox::Cancel);
+
+    return box.exec() == QMessageBox::Ok;
 }
 #endif
 
@@ -557,8 +562,13 @@ bool KGlobalAccel::promptStealShortcutSystemwide(
 
     QString title = tr("Conflict With Registered Global Shortcut");
 
-    return KMessageBox::warningContinueCancel(parent, message, title, KGuiItem(tr("Reassign")))
-           == KMessageBox::Continue;
+    QMessageBox box(parent);
+    box.setWindowTitle(title);
+    box.setText(message);
+    box.addButton(QMessageBox::Ok)->setText(tr("Reassign"));
+    box.addButton(QMessageBox::Cancel);
+
+    return box.exec() == QMessageBox::Ok;
 }
 
 
