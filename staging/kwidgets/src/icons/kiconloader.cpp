@@ -50,7 +50,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kglobalsettings.h>
-#include <kde_file.h> // TODO: port away from KDE_struct_dirent, add unit test for that method
 #include <kshareddatacache.h>
 
 // kdeui
@@ -1308,20 +1307,16 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIconLoader::Group gr
         return lst;
 
     QString path = file.left(file.length()-8);
-    DIR* dp = opendir( QFile::encodeName(path) );
-    if(!dp)
+    QDir dir(QFile::encodeName(path));
+    if(!dir.exists())
         return lst;
 
-    KDE_struct_dirent* ep;
-    while( ( ep = KDE_readdir( dp ) ) != 0L )
-    {
-        QString fn(QFile::decodeName(ep->d_name));
-        if(!(fn.left(4)).toUInt())
+    foreach (const QString &entry, dir.entryList()) {
+        if(!(entry.left(4)).toUInt())
             continue;
 
-        lst += path + fn;
+        lst += path + entry;
     }
-    closedir ( dp );
     lst.sort();
     return lst;
 }
