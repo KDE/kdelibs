@@ -191,8 +191,10 @@ void KdePlatformTheme::loadFonts()
     KConfigGroup cg(KSharedConfig::openConfig("kdeglobals"), "General");
     QFont defaultFont = QFont("Sans Serif", 9);
     defaultFont.setStyleHint(QFont::SansSerif);
+    QFont defaultFixedFont = QFont("Monospace", 9);
 
     const QFont generalFont = cg.readEntry("font", defaultFont);
+    const QFont fixedFont = cg.readEntry("fixed", defaultFixedFont);
     const QFont menuFont = cg.readEntry("menuFont", defaultFont);
 
     defaultFont.setPointSize(8);
