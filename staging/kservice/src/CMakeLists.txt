@@ -53,7 +53,7 @@ target_link_libraries(kservice
 set_target_properties(kservice PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION})
 
-install(TARGETS kservice EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS kservice EXPORT kserviceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
    "${CMAKE_CURRENT_BINARY_DIR}/kservice_export.h"
