@@ -25,7 +25,6 @@
 #include <QToolButton>
 
 #include <QApplication>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kstandardshortcut.h>
 

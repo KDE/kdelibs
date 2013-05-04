@@ -32,7 +32,6 @@
 #include <QFontComboBox>
 #include <QToolBar>
 
-#include <kfontdialog.h>
 #include <klocalizedstring.h>
 #include <kfontchooser.h>
 

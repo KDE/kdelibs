@@ -37,7 +37,7 @@ set(kwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
   ${CMAKE_CURRENT_SOURCE_DIR}/widgets
 )
-target_include_directories(kwidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDES}>" "$<TARGET_PROPERTY:kdeui,INTERFACE_INCLUDE_DIRECTORIES>"
+target_include_directories(kwidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDES}>"
 )
 
 target_link_libraries(kwidgets

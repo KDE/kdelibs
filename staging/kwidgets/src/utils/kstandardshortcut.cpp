@@ -21,13 +21,13 @@
 #include "kstandardshortcut.h"
 
 #include "kconfig.h"
-#include "kdebug.h"
 #include "klocalizedstring.h"
 #include "ksharedconfig.h"
 #include <kconfiggroup.h>
 
-#include <config-kdeui.h>
+#include <config-kwidgets.h>
 
+#include <QDebug>
 #include <QKeySequence>
 #if HAVE_X11
 #include <qx11info_x11.h>
@@ -191,7 +191,7 @@ static KStandardShortcutInfo *guardedStandardShortcutInfo(StandardShortcut id)
 {
     if (id >= static_cast<int>(sizeof(g_infoStandardShortcut) / sizeof(KStandardShortcutInfo)) ||
              id < 0) {
-        kWarning(125) << "KStandardShortcut: id not found!";
+        qWarning() << "KStandardShortcut: id not found!";
         return &g_infoStandardShortcut[AccelNone];
     } else
         return &g_infoStandardShortcut[id];
