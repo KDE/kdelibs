@@ -77,7 +77,6 @@ KDEUI_EXECUTABLE_TESTS(
   kpopuptest
   kratingwidgettest
   krulertest
-  ksqueezedtextlabeltest
   ktabwidgettest
   ktextedittest
   ktextbrowsertest

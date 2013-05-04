@@ -19,7 +19,7 @@
 #ifndef KSQUEEZEDTEXTLABEL_H
 #define KSQUEEZEDTEXTLABEL_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 #include <QLabel>
 
 class KSqueezedTextLabelPrivate;
@@ -44,7 +44,7 @@ class KSqueezedTextLabelPrivate;
 /*
  * QLabel
  */
-class KDEUI_EXPORT KSqueezedTextLabel : public QLabel {
+class KWIDGETSADDONS_EXPORT KSqueezedTextLabel : public QLabel {
   Q_OBJECT
   Q_PROPERTY( Qt::TextElideMode textElideMode READ textElideMode WRITE setTextElideMode )
 

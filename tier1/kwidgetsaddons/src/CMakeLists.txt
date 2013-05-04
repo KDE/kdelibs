@@ -10,6 +10,7 @@ set(kwidgetsaddons_SRCS
   kselector.cpp
   kxyselector.cpp
   kseparator.cpp
+  ksqueezedtextlabel.cpp
   ktitlewidget.cpp
   ktoggleaction.cpp
   ktogglefullscreenaction.cpp
@@ -39,6 +40,7 @@ install(FILES
   ktitlewidget.h
   kxyselector.h
   kseparator.h
+  ksqueezedtextlabel.h
   ktoggleaction.h
   ktogglefullscreenaction.h
   kviewstateserializer.h

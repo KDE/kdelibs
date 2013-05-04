@@ -17,8 +17,6 @@
 */
 
 #include "ksqueezedtextlabel.h"
-#include <kdebug.h>
-#include <klocalizedstring.h>
 #include <QAction>
 #include <QContextMenuEvent>
 #include <QDesktopWidget>
@@ -104,7 +102,7 @@ void KSqueezedTextLabel::squeezeTextToLabel()
   int labelWidth = size().width();
   QStringList squeezedLines;
   bool squeezed = false;
-  Q_FOREACH(const QString& line, d->fullText.split('\n')) {
+  Q_FOREACH(const QString& line, d->fullText.split(QLatin1Char('\n'))) {
     int lineWidth = fm.width(line);
     if (lineWidth > labelWidth) {
       squeezed = true;
@@ -115,7 +113,7 @@ void KSqueezedTextLabel::squeezeTextToLabel()
   }
 
   if (squeezed) {
-    QLabel::setText(squeezedLines.join("\n"));
+    QLabel::setText(squeezedLines.join(QStringLiteral("\n")));
     setToolTip(d->fullText);
   } else {
     QLabel::setText(d->fullText);
@@ -163,7 +161,7 @@ void KSqueezedTextLabel::contextMenuEvent(QContextMenuEvent* ev)
     if (showCustomPopup) {
         QMenu menu(this);
 
-        QAction* act = new QAction(i18n("&Copy Full Text"), &menu);
+        QAction* act = new QAction(tr("&Copy Full Text"), &menu);
         connect(act, SIGNAL(triggered()), this, SLOT(_k_copyFullText()));
         menu.addAction(act);
 
@@ -197,7 +195,7 @@ void KSqueezedTextLabel::mouseReleaseEvent(QMouseEvent* ev)
             // Strip markup tags
             if (textFormat() == Qt::RichText
                 || (textFormat() == Qt::AutoText && Qt::mightBeRichText(txt))) {
-                txt.replace(QRegExp("<[^>]*>"), "");
+                txt.replace(QRegExp(QStringLiteral("<[^>]*>")), QStringLiteral(""));
                 // account for stripped characters
                 charsAfterSelection -= d->fullText.length() - txt.length();
             }

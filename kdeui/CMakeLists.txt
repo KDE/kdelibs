@@ -191,7 +191,6 @@ set(kdeui_LIB_SRCS
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
- widgets/ksqueezedtextlabel.cpp
  widgets/kstringvalidator.cpp
  widgets/ktabbar.cpp
  widgets/ktabwidget.cpp
@@ -508,7 +507,6 @@ install( FILES
  widgets/kratingwidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
- widgets/ksqueezedtextlabel.h
  widgets/kstringvalidator.h
  widgets/ktextbrowser.h
  widgets/ktextedit.h
