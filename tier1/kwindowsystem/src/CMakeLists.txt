@@ -23,11 +23,27 @@ endif ()
 configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwindowsystem.h )
 
 set(kwindowsystem_SRCS
+    kglobalaccel.cpp
+    kglobalshortcutinfo.cpp
+    kglobalshortcutinfo_dbus.cpp
     kstartupinfo.cpp
     kwindoweffects.cpp
     kxerrorhandler.cpp
     kxutils.cpp
     )
+
+
+set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.KGlobalAccel.xml)
+set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
+qt5_add_dbus_interface(kwindowsystem_SRCS ${kglobalaccel_xml} kglobalaccel_interface )
+install(FILES ${kglobalaccel_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
+set(kglobalaccel_component_xml ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.kglobalaccel.Component.xml)
+set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
+qt5_add_dbus_interface(kwindowsystem_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
+install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
+
 
 set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
   ksystemeventfilter.cpp
@@ -70,6 +86,9 @@ install(TARGETS KWindowSystem EXPORT KWindowSystemTargets ${INSTALL_TARGETS_DEFA
 
 install( FILES
    fixx11h.h
+   kglobalaccel.h
+   kglobalshortcutinfo.h
+   kglobalshortcutinfo_p.h
    kstartupinfo.h
    kwindoweffects.h
    kwindowinfo.h

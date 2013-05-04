@@ -33,13 +33,13 @@ QDBusArgument &operator<< (QDBusArgument &argument, const KGlobalShortcutInfo &s
     argument.beginArray(qMetaTypeId<int>());
     Q_FOREACH(const QKeySequence &key, shortcut.keys())
         {
-        argument << key.operator int();
+        argument << key[0];
         }
     argument.endArray();
     argument.beginArray(qMetaTypeId<int>());
     Q_FOREACH(const QKeySequence &key, shortcut.defaultKeys())
         {
-        argument << key.operator int();
+        argument << key[0];
         }
     argument.endArray();
     argument.endStructure();

@@ -32,7 +32,7 @@
 #include <QPushButton>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
-#include <config-kdeui.h>
+#include <config-kwindowsystem.h>
 #if HAVE_X11
 #include <QX11Info>
 #include <netwm_def.h>
@@ -47,8 +47,8 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
 
     // Connect to the kglobalaccel daemon
     org::kde::KGlobalAccel kglobalaccel(
-            "org.kde.kglobalaccel",
-            "/kglobalaccel",
+            QStringLiteral("org.kde.kglobalaccel"),
+            QStringLiteral("/kglobalaccel"),
             QDBusConnection::sessionBus());
     if (!kglobalaccel.isValid()) {
         qDebug() << "Failed to connect to the kglobalaccel daemon" << QDBusConnection::sessionBus().lastError();
@@ -60,7 +60,7 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
     QDBusReply<QDBusObjectPath> reply = kglobalaccel.getComponent(componentUnique);
     if (!reply.isValid()) {
 
-        if (reply.error().name() == "org.kde.kglobalaccel.NoSuchComponent") {
+        if (reply.error().name() == QStringLiteral("org.kde.kglobalaccel.NoSuchComponent")) {
             // No problem. The component doesn't exists. That's normal
             return NULL;
         }
@@ -72,7 +72,7 @@ org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QStri
 
     // Now get the component
     org::kde::kglobalaccel::Component *component = new org::kde::kglobalaccel::Component(
-        "org.kde.kglobalaccel",
+        QStringLiteral("org.kde.kglobalaccel"),
         reply.value().path(),
         QDBusConnection::sessionBus(),
         q);
@@ -102,13 +102,13 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
 #ifndef KDE_NO_DEPRECATED
         enabled(true),
 #endif
-        iface("org.kde.kglobalaccel", "/kglobalaccel", QDBusConnection::sessionBus()),
+        iface(QStringLiteral("org.kde.kglobalaccel"), QStringLiteral("/kglobalaccel"), QDBusConnection::sessionBus()),
         q(q)
 {
     // Make sure kglobalaccel is running. The iface declaration above somehow works anyway.
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
-    if (!bus->isServiceRegistered("org.kde.kglobalaccel")) {
-        QDBusReply<void> reply = bus->startService("org.kde.kglobalaccel");
+    if (!bus->isServiceRegistered(QStringLiteral("org.kde.kglobalaccel"))) {
+        QDBusReply<void> reply = bus->startService(QStringLiteral("org.kde.kglobalaccel"));
         if (!reply.isValid()) {
             qCritical() << "Couldn't start kglobalaccel from org.kde.kglobalaccel.service:" << reply.error();
         }
@@ -120,7 +120,7 @@ KGlobalAccelPrivate::KGlobalAccelPrivate(KGlobalAccel *q)
     q->connect(watcher, SIGNAL(serviceOwnerChanged(QString,QString,QString)),
                      q, SLOT(_k_serviceOwnerChanged(QString,QString,QString)));
 
-    actionsWidget.setObjectName("KGlobalAccel/actionsWidget");
+    actionsWidget.setObjectName(QStringLiteral("KGlobalAccel/actionsWidget"));
 }
 
 
@@ -325,7 +325,7 @@ void KGlobalAccelPrivate::updateGlobalShortcut(QAction *action,
         if (scResult != activeShortcut) {
             // If kglobalaccel returned a shortcut that differs from the one we
             // sent, use that one. There must have been clashes or some other problem.
-            emit q->globalShortcutChanged(action, scResult.isEmpty() ? QKeySequence() : scResult.first());
+            Q_EMIT q->globalShortcutChanged(action, scResult.isEmpty() ? QKeySequence() : scResult.first());
         }
     }
 
@@ -343,7 +343,7 @@ QStringList KGlobalAccelPrivate::makeActionId(const QAction *action)
     Q_ASSERT(!action->objectName().isEmpty());
     ret.append(action->objectName());                   // Action Unique Name
     ret.append(componentFriendlyForAction(action));     // Component Friendly name
-    const QString actionText = action->text().replace('&', "");
+    const QString actionText = action->text().replace(QLatin1Char('&'), QStringLiteral(""));
     ret.append(actionText);                             // Action Friendly Name
     return ret;
 }
@@ -352,7 +352,7 @@ QStringList KGlobalAccelPrivate::makeActionId(const QAction *action)
 QList<int> KGlobalAccelPrivate::intListFromShortcut(const QList<QKeySequence> &cut)
 {
     QList<int> ret;
-    foreach (const QKeySequence &sequence, cut)
+    Q_FOREACH (const QKeySequence &sequence, cut)
         ret.append(sequence[0]);
     while (!ret.isEmpty() && ret.last() == 0)
         ret.removeLast();
@@ -363,7 +363,7 @@ QList<int> KGlobalAccelPrivate::intListFromShortcut(const QList<QKeySequence> &c
 QList<QKeySequence> KGlobalAccelPrivate::shortcutFromIntList(const QList<int> &list)
 {
     QList<QKeySequence> ret;
-    foreach (int i, list)
+    Q_FOREACH (int i, list)
         ret.append(i);
     return ret;
 }
@@ -392,7 +392,7 @@ void KGlobalAccelPrivate::_k_invokeAction(
 {
     QAction *action = 0;
     QList<QAction *> candidates = nameToAction.values(actionUnique);
-    foreach (QAction *const a, candidates) {
+    Q_FOREACH (QAction *const a, candidates) {
         if (componentUniqueForAction(a) == componentUnique) {
             action = a;
         }
@@ -430,7 +430,7 @@ void KGlobalAccelPrivate::_k_shortcutGotChanged(const QStringList &actionId,
     if (!action)
         return;
 
-    emit q->globalShortcutChanged(action, keys.isEmpty() ? QKeySequence() : shortcutFromIntList(keys).first());
+    Q_EMIT q->globalShortcutChanged(action, keys.isEmpty() ? QKeySequence() : shortcutFromIntList(keys).first());
 }
 
 void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QString &oldOwner,
@@ -456,7 +456,7 @@ void KGlobalAccelPrivate::reRegisterAll()
     QSet<QAction *> allActions = actions;
     nameToAction.clear();
     actions.clear();
-    foreach(QAction *const action, allActions) {
+    Q_FOREACH(QAction *const action, allActions) {
         actionsWidget.removeAction(action);
         if (doRegister(action)) {
             updateGlobalShortcut(action, ActiveShortcut, KGlobalAccel::Autoloading);
@@ -592,7 +592,7 @@ bool checkGarbageKeycode(const QList<QKeySequence> &shortcut)
 {
     // protect against garbage keycode -1 that Qt sometimes produces for exotic keys;
     // at the moment (~mid 2008) Multimedia PlayPause is one of those keys.
-    foreach (const QKeySequence &sequence, shortcut) {
+    Q_FOREACH (const QKeySequence &sequence, shortcut) {
         for (int i = 0; i < 4; i++) {
             if (sequence[i] == -1) {
                 qWarning() << "Encountered garbage keycode (keycode = -1) in input, not doing anything.";

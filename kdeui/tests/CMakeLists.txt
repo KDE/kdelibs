@@ -21,7 +21,6 @@ KDEUI_UNIT_TESTS(
   kbuttongrouptest
   kcompletioncoretest
   kfindtest
-  kglobalshortcuttest
   kmainwindow_unittest
   klineedit_unittest
   ktextedit_unittest

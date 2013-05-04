@@ -11,7 +11,7 @@ macro(KWINDOWSYSTEM_UNIT_TESTS)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
       add_test(kwindowsystem-${_testname} ${_testname})
-      target_link_libraries(${_testname} KWindowSystem Qt5::Test Qt5::Network Qt5::Widgets Qt5::X11Extras )
+      target_link_libraries(${_testname} KWindowSystem Qt5::Test Qt5::DBus Qt5::Network Qt5::Widgets Qt5::X11Extras )
       ecm_mark_as_test(${_testname})
    endforeach(_testname)
 endmacro(KWINDOWSYSTEM_UNIT_TESTS)
@@ -24,6 +24,7 @@ macro(KWINDOWSYSTEM_EXECUTABLE_TESTS)
 endmacro()
 
 kwindowsystem_unit_tests(
+   kglobalshortcuttest
    kstartupinfo_unittest
    kxmessages_unittest
 )

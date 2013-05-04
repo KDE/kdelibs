@@ -24,10 +24,7 @@
 #include <qdbusinterface.h>
 #include <QtTest/QtTest>
 #include <QAction>
-#include <kactioncollection.h>
 #include <kglobalaccel.h>
-#include <kdebug.h>
-#include <kservice.h>
 #include <qstandardpaths.h>
 
 #include <unistd.h>
@@ -51,7 +48,15 @@ QTEST_MAIN( KGlobalShortcutTest)
 void KGlobalShortcutTest::initTestCase()
 {
     QStandardPaths::enableTestMode(true);
-    m_daemonInstalled = !KService::serviceByDesktopName("kglobalaccel").isNull();
+    m_daemonInstalled = true;
+
+    QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
+    if (!bus->isServiceRegistered(QStringLiteral("org.kde.kglobalaccel"))) {
+        QDBusReply<void> reply = bus->startService(QStringLiteral("org.kde.kglobalaccel"));
+        if (!reply.isValid()) {
+            m_daemonInstalled = false;
+        }
+    }
 }
 
 void KGlobalShortcutTest::setupTest(QString id)
@@ -265,13 +270,11 @@ void KGlobalShortcutTest::testComponentAssignment()
     // setupTest();
 
     QString otherComponent("test_component1");
-    KActionCollection coll((QObject*)NULL);
-    coll.setComponentName(otherComponent);
     QList<QKeySequence> cutB;
     /************************************************************
      * Ensure that the actions get a correct component assigned *
      ************************************************************/
-    // Action without action collection get the global component
+    // Action without component name get the global component
     {
         QAction action("Text For Action A", NULL);
         action.setObjectName("Action C");
@@ -283,16 +286,17 @@ void KGlobalShortcutTest::testComponentAssignment()
         KGlobalAccel::self()->removeAllShortcuts(&action);
     }
 
-    // Action with action collection get the component of the collection
+    // Action with component name keeps its component name
     {
-        QAction *action = coll.addAction("Action C");
+        QAction action("Text for Action C", 0);
+        action.setObjectName("Action C");
+        action.setProperty("componentName", otherComponent);
 
-        QCOMPARE(action->property("componentName").toString(), otherComponent);
-        KGlobalAccel::self()->setShortcut(action, cutB, KGlobalAccel::NoAutoloading);
-        QCOMPARE(action->property("componentName").toString(), otherComponent);
+        QCOMPARE(action.property("componentName").toString(), otherComponent);
+        KGlobalAccel::self()->setShortcut(&action, cutB, KGlobalAccel::NoAutoloading);
+        QCOMPARE(action.property("componentName").toString(), otherComponent);
         // cleanup
-        KGlobalAccel::self()->removeAllShortcuts(action);
-        delete action;
+        KGlobalAccel::self()->removeAllShortcuts(&action);
     }
 }
 
@@ -323,35 +327,34 @@ void KGlobalShortcutTest::testOverrideMainComponentData()
     setupTest("testOverrideMainComponentData");
 
     QString otherComponent("test_component1");
-    KActionCollection coll((QObject*)NULL);
-    coll.setComponentName(otherComponent);
     QList<QKeySequence> cutB;
 
-    // Action without action collection
+    // Action without component name
     QAction *action = new QAction("Text For Action A", this);
     QCOMPARE(action->property("componentName").toString(), QString());
     action->setObjectName("Action A");
     KGlobalAccel::self()->setShortcut(action, cutB, KGlobalAccel::NoAutoloading);
     QCOMPARE(action->property("componentName").toString(), QString());
 
-    // Action with action collection
+    // Action with component name
     KGlobalAccel::self()->removeAllShortcuts(action);
     delete action;
-    action = coll.addAction("Action A");
+    action = new QAction("Text For Action A", this);
+    action->setObjectName("Action A");
+    action->setProperty("componentName", otherComponent);
     QCOMPARE(action->property("componentName").toString(), otherComponent);
     KGlobalAccel::self()->setShortcut(action, cutB, KGlobalAccel::NoAutoloading);
     QCOMPARE(action->property("componentName").toString(), otherComponent);
 
     // cleanup
     KGlobalAccel::self()->removeAllShortcuts(action);
-    delete coll.takeAction(action);
 }
 
 void KGlobalShortcutTest::testNotification()
 {
     setupTest("testNotification");
 
-    // Action without action collection
+    // Action without component name
     QAction *action = new QAction("Text For Action A", this);
     QCOMPARE(action->property("componentName").toString(), QString());
     action->setObjectName("Action A");

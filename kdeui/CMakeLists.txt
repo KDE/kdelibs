@@ -141,9 +141,6 @@ set(kdeui_LIB_SRCS
  paged/kpagewidget.cpp
  paged/kpagewidgetmodel.cpp
  shortcuts/kshortcutschemeshelper.cpp
- shortcuts/kglobalaccel.cpp
- shortcuts/kglobalshortcutinfo.cpp
- shortcuts/kglobalshortcutinfo_dbus.cpp
  shortcuts/kacceleratormanager.cpp
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
@@ -304,16 +301,6 @@ if(NOT WINCE)
 qt5_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierItem.xml
                      ${CMAKE_CURRENT_SOURCE_DIR}/notifications/kstatusnotifieritemdbus_p.h KStatusNotifierItemDBus)
 endif(NOT WINCE)
-
-set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.KGlobalAccel.xml)
-set_source_files_properties(${kglobalaccel_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
-qt5_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_xml} kglobalaccel_interface )
-install(FILES ${kglobalaccel_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-set(kglobalaccel_component_xml ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts/org.kde.kglobalaccel.Component.xml)
-set_source_files_properties(${kglobalaccel_component_xml} PROPERTIES INCLUDE "kglobalshortcutinfo_p.h")
-qt5_add_dbus_interface(kdeui_LIB_SRCS ${kglobalaccel_component_xml} kglobalaccel_component_interface )
-install(FILES ${kglobalaccel_component_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
@@ -478,9 +465,6 @@ install( FILES
  paged/kpageview.h
  paged/kpagewidget.h
  paged/kpagewidgetmodel.h
- shortcuts/kglobalaccel.h
- shortcuts/kglobalshortcutinfo.h
- shortcuts/kglobalshortcutinfo_p.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/kaccelgen.h
