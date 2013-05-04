@@ -15,8 +15,6 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KSERVICE
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kserviceConfigVersion.cmake")
 
-include(ECMQtFramework)
-
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
