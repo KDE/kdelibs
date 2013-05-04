@@ -205,6 +205,8 @@ void KdePlatformTheme::loadFonts()
     const QFont windowTitleFont = wmcg.readEntry("activeFont", defaultFont);
 
 
+    QCoreApplication::instance()->setProperty("_k_fixedFont", QVariant::fromValue(fixedFont));
+
     m_fonts[SystemFont] = new QFont(generalFont);
     m_fonts[MenuFont] = new QFont(menuFont);
     m_fonts[MenuBarFont] = new QFont(menuFont);
