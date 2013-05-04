@@ -35,6 +35,7 @@ set(kservice_SRCS
 add_library(kservice ${kservice_SRCS})
 generate_export_header(kservice)
 set(kservice_includes
+   ${CMAKE_CURRENT_BINARY_DIR}/.. # Since we publicly include kservice_version.h
    ${CMAKE_CURRENT_SOURCE_DIR}/services
    ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin)
