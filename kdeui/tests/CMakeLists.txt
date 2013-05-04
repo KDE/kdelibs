@@ -81,7 +81,6 @@ KDEUI_EXECUTABLE_TESTS(
   ktabwidgettest
   ktextedittest
   ktextbrowsertest
-  ktitlewidgettest
   ktoolbartest
   ktoolbarlabelactiontest
   ktreewidgetsearchlinetest

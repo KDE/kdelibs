@@ -40,7 +40,7 @@ public:
 
     QString textStyleSheet() const
     {
-        return QString("QLabel { font-weight: bold; color: %1}").arg(q->palette().color(QPalette::WindowText).name());
+        return QStringLiteral("QLabel { font-weight: bold; color: %1}").arg(q->palette().color(QPalette::WindowText).name());
     }
 
     QString commentStyleSheet() const
@@ -54,7 +54,7 @@ public:
             case InfoMessage:
             case WarningMessage:
             case ErrorMessage:
-                styleSheet = QString("QLabel { color: palette(%1); background: palette(%2); }").arg(q->palette().color(QPalette::HighlightedText).name()).arg(q->palette().color(QPalette::Highlight).name());
+                styleSheet = QStringLiteral("QLabel { color: palette(%1); background: palette(%2); }").arg(q->palette().color(QPalette::HighlightedText).name()).arg(q->palette().color(QPalette::Highlight).name());
                 break;
             case PlainMessage:
             default:

@@ -14,4 +14,5 @@ endmacro()
 kwidgetsaddons_executable_tests(
   kledtest
   kseparatortest
+  ktitlewidgettest
 )

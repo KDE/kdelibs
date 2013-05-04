@@ -8,6 +8,7 @@ set(kwidgetsaddons_SRCS
   kselector.cpp
   kxyselector.cpp
   kseparator.cpp
+  ktitlewidget.cpp
   ktoggleaction.cpp
   ktogglefullscreenaction.cpp
   kviewstateserializer.cpp
@@ -32,6 +33,7 @@ install(FILES
   kcapacitybar.h
   kruler.h
   kselector.h
+  ktitlewidget.h
   kxyselector.h
   kseparator.h
   ktoggleaction.h

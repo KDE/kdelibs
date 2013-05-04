@@ -33,14 +33,14 @@ public:
         QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
         KTitleWidget *titleWidget = new KTitleWidget(this);
-        titleWidget->setText("Title");
-        titleWidget->setPixmap(QIcon::fromTheme("screen").pixmap(22, 22), KTitleWidget::ImageLeft);
+        titleWidget->setText(QStringLiteral("Title"));
+        titleWidget->setPixmap(QIcon::fromTheme(QStringLiteral("screen")).pixmap(22, 22), KTitleWidget::ImageLeft);
 
         mainLayout->addWidget(titleWidget);
 
         KTitleWidget *errorTitle = new KTitleWidget(this);
-        errorTitle->setText("Title");
-        errorTitle->setComment("Error Comment", KTitleWidget::ErrorMessage);
+        errorTitle->setText(QStringLiteral("Title"));
+        errorTitle->setComment(QStringLiteral("Error Comment"), KTitleWidget::ErrorMessage);
 
         mainLayout->addWidget(errorTitle);
 
@@ -50,13 +50,13 @@ public:
         QVBoxLayout *titleLayout = new QVBoxLayout(checkBoxTitleMainWidget);
         titleLayout->setMargin(6);
 
-        QCheckBox *checkBox = new QCheckBox("Text Checkbox", checkBoxTitleMainWidget);
+        QCheckBox *checkBox = new QCheckBox(QStringLiteral("Text Checkbox"), checkBoxTitleMainWidget);
         titleLayout->addWidget(checkBox);
         checkboxTitleWidget->setWidget(checkBoxTitleMainWidget);
 
         mainLayout->addWidget(checkboxTitleWidget);
 
-        QLabel *otherLabel = new QLabel("Some text...", this);
+        QLabel *otherLabel = new QLabel(QStringLiteral("Some text..."), this);
 
         mainLayout->addWidget(otherLabel);
 
@@ -66,7 +66,7 @@ public:
 
 int main(int argc, char **argv)
 {
-    QApplication::setApplicationName("ktitlewidgettest");
+    QApplication::setApplicationName(QStringLiteral("ktitlewidgettest"));
 
     QApplication app(argc, argv);
 

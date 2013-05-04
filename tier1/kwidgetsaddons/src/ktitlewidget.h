@@ -19,7 +19,7 @@
 #ifndef KTITLEWIDGET_H
 #define KTITLEWIDGET_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QWidget>
 
@@ -58,7 +58,7 @@ checkboxTitleWidget->setWidget(checkBoxTitleMainWidget);
  * @author Urs Wolfer \<uwolfer @ kde.org\>
  */
 
-class KDEUI_EXPORT KTitleWidget : public QWidget
+class KWIDGETSADDONS_EXPORT KTitleWidget : public QWidget
 {
     Q_OBJECT
     Q_ENUMS(ImageAlignment)

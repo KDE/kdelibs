@@ -199,7 +199,6 @@ set(kdeui_LIB_SRCS
  widgets/ktextedit.cpp
  widgets/ktimecombobox.cpp
  widgets/ktimezonewidget.cpp
- widgets/ktitlewidget.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -515,7 +514,6 @@ install( FILES
  widgets/ktextedit.h
  widgets/ktimecombobox.h
  widgets/ktimezonewidget.h
- widgets/ktitlewidget.h
  widgets/ktabbar.h
  widgets/ktabwidget.h
  widgets/kshortcutwidget.h
