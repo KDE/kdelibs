@@ -151,6 +151,7 @@ set(kdeui_LIB_SRCS
  util/kcompletionbase.cpp
  util/kcrash.cpp
  util/kcursor.cpp
+ util/khelpclient.cpp
  util/kimagecache.cpp
  util/kkeyserver.cpp
  util/kmodifierkeyinfo.cpp
@@ -470,6 +471,7 @@ install( FILES
  util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
+ util/khelpclient.h
  util/kkeyserver.h
  util/kmodifierkeyinfo.h
  util/kpassivepopup.h

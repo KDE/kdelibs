@@ -21,7 +21,6 @@ set(kwidgets_LIB_SRCS
   actions/kstandardaction.cpp
   dialogs/kmessagebox.cpp
   utils/kglobalsettings.cpp
-  utils/khelpclient.cpp
   utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
   widgets/kdragwidgetdecorator.cpp
@@ -46,7 +45,6 @@ target_link_libraries(kwidgets
   Qt5::Widgets
   Qt5::Svg
   Qt5::DBus
-  ${KDE4_KDECORE_LIBS} # KGlobal, KLocale, KLocalizedString
 
   kdeqt5staging # QUrlPathInfo
   ${KConfig_CORE_LIBRARY}
@@ -57,6 +55,8 @@ target_link_libraries(kwidgets
   ${KAuth_LIBRARIES}
   ${KWindowSystem_LIBRARIES}
   kservice
+  ki18n
+  KCodecs
 )
 
 if(X11_FOUND)
@@ -80,7 +80,6 @@ install(FILES
   actions/kstandardaction.h
   dialogs/kmessagebox.h
   utils/kglobalsettings.h
-  utils/khelpclient.h
   utils/kstandardguiitem.h
   utils/kstandardshortcut.h
   widgets/kdragwidgetdecorator.h
