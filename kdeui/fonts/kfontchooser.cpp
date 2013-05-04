@@ -24,6 +24,7 @@ Boston, MA 02110-1301, USA.
 
 #include <QCheckBox>
 #include <QDoubleSpinBox>
+#include <QGuiApplication>
 #include <QLabel>
 #include <QLayout>
 #include <QLocale>
@@ -33,8 +34,6 @@ Boston, MA 02110-1301, USA.
 #include <QGroupBox>
 #include <QListWidget>
 #include <QTextEdit>
-
-#include <kglobalsettings.h>
 
 #include <cmath>
 
@@ -396,7 +395,19 @@ KFontChooser::KFontChooser( QWidget *parent,
     // Finished setting up the chooser layout.
 
     // lets initialize the display if possible
-    setFont( d->usingFixed ? KGlobalSettings::fixedFont() : font(), d->usingFixed );
+    if (d->usingFixed) {
+#ifdef Q_OS_MAC
+        QFont fixedFont("Monaco", 10);
+#else
+        QFont fixedFont("Monospace", 9);
+#endif
+        if (QGuiApplication::instance()->property("_k_fixedFont").isValid()) {
+            fixedFont = QGuiApplication::instance()->property("_k_fixedFont").value<QFont>();
+        }
+        setFont( fixedFont, d->usingFixed );
+    } else {
+        setFont( QGuiApplication::font(), d->usingFixed );
+    }
 
     // check or uncheck or gray out the "relative" checkbox
     if( sizeIsRelativeState && d->sizeIsRelativeCheckBox )
