@@ -31,13 +31,13 @@ pkg_check_modules(PC_DBUSMENUQT QUIET dbusmenu-qt)
 set(DBUSMENUQT_DEFINITIONS ${PC_DBUSMENUQT_CFLAGS_OTHER})
 
 find_library(DBUSMENUQT_LIBRARIES
-    NAMES dbusmenu-qt dbusmenu-qtd
+    NAMES dbusmenu-qt5 dbusmenu-qt5d dbusmenu-qt dbusmenu-qtd
     HINTS ${PC_DBUSMENUQT_LIBDIR} ${PC_DBUSMENUQT_LIBRARY_DIRS}
     )
 
 find_path(DBUSMENUQT_INCLUDE_DIR dbusmenuexporter.h
     HINTS ${PC_DBUSMENUQT_INCLUDEDIR} ${PC_DBUSMENUQT_INCLUDE_DIRS}
-    PATH_SUFFIXES dbusmenu-qt
+    PATH_SUFFIXES dbusmenu-qt5 dbusmenu-qt
     )
 
 
