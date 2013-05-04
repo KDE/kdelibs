@@ -21,7 +21,6 @@ Boston, MA 02110-1301, USA.
 
 #include "kfontchooser.h"
 #include "fonthelpers_p.h"
-#include "sampleedit_p.h"
 
 #include <QCheckBox>
 #include <QDoubleSpinBox>
@@ -33,6 +32,7 @@ Boston, MA 02110-1301, USA.
 #include <QFontDatabase>
 #include <QGroupBox>
 #include <QListWidget>
+#include <QTextEdit>
 
 #include <kglobalsettings.h>
 
@@ -114,7 +114,7 @@ public:
 
     QDoubleSpinBox *sizeOfFont;
 
-    SampleEdit   *sampleEdit;
+    QTextEdit   *sampleEdit;
 
     QLabel       *familyLabel;
     QLabel       *styleLabel;
@@ -369,7 +369,7 @@ KFontChooser::KFontChooser( QWidget *parent,
 
     // Add the font preview into the lower part of the splitter.
     //
-    d->sampleEdit = new SampleEdit(page);
+    d->sampleEdit = new QTextEdit(page);
     d->sampleEdit->setAcceptRichText(false);
     QFont tmpFont( font().family(), 64, QFont::Black );
     d->sampleEdit->setFont(tmpFont);
