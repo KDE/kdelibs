@@ -68,8 +68,7 @@ set_target_properties(kwidgets PROPERTIES VERSION ${KWIDGETS_VERSION_STRING}
                                         SOVERSION ${KWIDGETS_SOVERSION}
 )
 
-# TODO : export into KWidgetsTargets instead of kdelibsLibraryTargets
-install(TARGETS kwidgets EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS kwidgets EXPORT kwidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   actions/kcodecaction.h

@@ -44,13 +44,13 @@ configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kwidgetsConfig.cmake.
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
                              )
 
+install(EXPORT kwidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwidgetsTargets.cmake NAMESPACE KF5:: )
+
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfig.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
        )
-
-# install(EXPORT KWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KWidgetsTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
