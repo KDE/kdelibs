@@ -24,7 +24,7 @@
 #ifndef K_FONT_CHOOSER_H
 #define K_FONT_CHOOSER_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 #include <QWidget>
 
 class QFont;
@@ -44,7 +44,7 @@ class QStringList;
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  */
-class KDEUI_EXPORT KFontChooser : public QWidget
+class KWIDGETSADDONS_EXPORT KFontChooser : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QFont font READ font WRITE setFont NOTIFY fontSelected USER true )

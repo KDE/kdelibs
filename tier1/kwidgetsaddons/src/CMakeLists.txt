@@ -1,6 +1,8 @@
 
 set(kwidgetsaddons_SRCS
+  fonthelpers.cpp
   kdualaction.cpp
+  kfontchooser.cpp
   kguiitem.cpp
   kled.cpp
   kcapacitybar.cpp
@@ -28,6 +30,7 @@ install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DE
 
 install(FILES
   kdualaction.h
+  kfontchooser.h
   kguiitem.h
   kled.h
   kcapacitybar.h

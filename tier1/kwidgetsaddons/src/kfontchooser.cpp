@@ -47,7 +47,7 @@ static int minimumListWidth( const QListWidget *list )
     {
         int itemWidth = list->visualItemRect(list->item(i)).width();
         // ...and add a space on both sides for not too tight look.
-        itemWidth += list->fontMetrics().width(' ') * 2;
+        itemWidth += list->fontMetrics().width(QLatin1Char(' ')) * 2;
         w = qMax(w,itemWidth);
     }
     if( w == 0 ) { w = 40; }
@@ -397,9 +397,9 @@ KFontChooser::KFontChooser( QWidget *parent,
     // lets initialize the display if possible
     if (d->usingFixed) {
 #ifdef Q_OS_MAC
-        QFont fixedFont("Monaco", 10);
+        QFont fixedFont(QStringLiteral("Monaco"), 10);
 #else
-        QFont fixedFont("Monospace", 9);
+        QFont fixedFont(QStringLiteral("Monospace"), 9);
 #endif
         if (QGuiApplication::instance()->property("_k_fixedFont").isValid()) {
             fixedFont = QGuiApplication::instance()->property("_k_fixedFont").value<QFont>();
@@ -589,7 +589,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     QStringList filteredStyles;
     qtStyles.clear();
     styleIDs.clear();
-    foreach (const QString &style, styles) {
+    Q_FOREACH (const QString &style, styles) {
         // Sometimes the font database will report an invalid style,
         // that falls back back to another when set.
         // Remove such styles, by checking set/get round-trip.
@@ -638,7 +638,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     if (dbase.isSmoothlyScalable(currentFamily, currentStyle) && selFont.pointSize() == floor(currentSize)) {
         selFont.setPointSizeF(currentSize);
     }
-    emit q->fontSelected(selFont);
+    Q_EMIT q->fontSelected(selFont);
 
     signalsAllowed = true;
 }
@@ -667,7 +667,7 @@ void KFontChooser::Private::_k_style_chosen_slot(const QString& style)
     if (dbase.isSmoothlyScalable(currentFamily, currentStyle) && selFont.pointSize() == floor(currentSize)) {
         selFont.setPointSizeF(currentSize);
     }
-    emit q->fontSelected(selFont);
+    Q_EMIT q->fontSelected(selFont);
 
     if (!style.isEmpty()) {
         selectedStyle = currentStyle;
@@ -699,7 +699,7 @@ void KFontChooser::Private::_k_size_chosen_slot(const QString& size)
 
     sizeOfFont->setValue(currentSize);
     selFont.setPointSizeF(currentSize);
-    emit q->fontSelected(selFont);
+    Q_EMIT q->fontSelected(selFont);
 
     if (!size.isEmpty()) {
         selectedSize = currentSize;
@@ -761,7 +761,7 @@ void KFontChooser::Private::_k_size_value_slot(double dval)
 
     selectedSize = val;
     selFont.setPointSizeF(val);
-    emit q->fontSelected( selFont );
+    Q_EMIT q->fontSelected( selFont );
 
     signalsAllowed = true;
 }
@@ -826,7 +826,7 @@ qreal KFontChooser::Private::fillSizeList (const QList<qreal> &sizes_)
     // Insert sizes into the listbox.
     sizeListBox->clear();
     qSort(sizes);
-    foreach (qreal size, sizes) {
+    Q_FOREACH (qreal size, sizes) {
         sizeListBox->addItem(formatFontSize(size));
     }
 
@@ -852,7 +852,7 @@ qreal KFontChooser::Private::setupSizeListBox (const QString& family, const QStr
         // A bitmap font.
         //sampleEdit->setPaletteBackgroundPixmap( BitmapPixmap ); // TODO
         QList<int> smoothSizes = dbase.smoothSizes(family, style);
-        foreach (int size, smoothSizes) {
+        Q_FOREACH (int size, smoothSizes) {
             sizes.append(size);
         }
     }
@@ -896,9 +896,9 @@ void KFontChooser::Private::setupDisplay()
     // 1st family fallback.
     if ( i == numEntries )
     {
-        if (family.contains('['))
+        if (family.contains(QLatin1Char('[')))
         {
-            family = family.left(family.indexOf('[')).trimmed();
+            family = family.left(family.indexOf(QLatin1Char('['))).trimmed();
             for (i = 0; i < numEntries; i++) {
                 if (family == qtFamilies[familyListBox->item(i)->text()].toLower()) {
                     familyListBox->setCurrentRow(i);
@@ -911,7 +911,7 @@ void KFontChooser::Private::setupDisplay()
     // 2nd family fallback.
     if ( i == numEntries )
     {
-        QString fallback = family+" [";
+        QString fallback = family + QStringLiteral(" [");
         for (i = 0; i < numEntries; i++) {
             if (qtFamilies[familyListBox->item(i)->text()].toLower().startsWith(fallback)) {
                 familyListBox->setCurrentRow(i);
@@ -988,7 +988,7 @@ void KFontChooser::getFontList( QStringList &list, uint fontListCriteria)
             // Fallback.. if there are no fixed fonts found, it's probably a
             // bug in the font server or Qt.  In this case, just use 'fixed'
             if (lstFonts.count() == 0)
-                lstFonts.append("fixed");
+                lstFonts.append(QStringLiteral("fixed"));
         }
 
         lstSys = lstFonts;
@@ -1032,5 +1032,3 @@ QString KFontChooser::Private::styleIdentifier(const QFont &font)
 }
 
 #include "moc_kfontchooser.cpp"
-#include "moc_sampleedit_p.cpp"
-

@@ -26,6 +26,7 @@
 
 #include <QDialog>
 #include <kfontchooser.h>
+#include <kdeui_export.h>
 
 class QFont;
 class QStringList;
