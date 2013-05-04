@@ -22,7 +22,7 @@
 
 #include "fonthelpers_p.h"
 
-#include "klocalizedstring.h"
+#include <QCoreApplication>
 
 #ifdef NEVERDEFINE // never true
 // Font names up for translation, listed for extraction.
@@ -67,10 +67,10 @@ QString translateFontName (const QString &name)
     splitFontString(name, &family, &foundry);
 
     // Obtain any regular translations for the family and foundry.
-    QString trFamily = i18nc("@item Font name", family.toUtf8());
+    QString trFamily = QCoreApplication::translate("FontHelpers", family.toUtf8(), "@item Font name");
     QString trFoundry = foundry;
     if (!foundry.isEmpty()) {
-        trFoundry = i18nc("@item Font foundry", foundry.toUtf8());
+        trFoundry = QCoreApplication::translate("FontHelpers", foundry.toUtf8(), "@item Font foundry");
     }
 
     // Assemble full translation.
@@ -78,12 +78,12 @@ QString translateFontName (const QString &name)
     if (foundry.isEmpty()) {
         // i18n: Filter by which the translators can translate, or otherwise
         // operate on the font names not put up for regular translation.
-        trfont = i18nc("@item Font name", "%1", trFamily);
+        trfont = QCoreApplication::translate("FontHelpers", "%1", "@item Font name").arg(trFamily);
     } else {
         // i18n: Filter by which the translators can translate, or otherwise
         // operate on the font names not put up for regular translation.
-        trfont = i18nc("@item Font name [foundry]", "%1 [%2]",
-                       trFamily, trFoundry);
+        trfont = QCoreApplication::translate("FontHelpers", "%1 [%2]", "@item Font name [foundry]")
+               .arg(trFamily).arg(trFoundry);
     }
     return trfont;
 }
