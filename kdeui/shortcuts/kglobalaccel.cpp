@@ -36,7 +36,6 @@
 #include <netwm_def.h>
 #endif
 
-#include <kaboutdata.h>
 #include "kmessagebox.h"
 
 org::kde::kglobalaccel::Component *KGlobalAccelPrivate::getComponent(const QString &componentUnique, bool remember = false)
