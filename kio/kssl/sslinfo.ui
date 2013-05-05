@@ -155,7 +155,7 @@
     </spacer>
    </item>
    <item row="7" column="0" colspan="3">
-    <widget class="KTabWidget" name="certParties"/>
+    <widget class="QTabWidget" name="certParties"/>
    </item>
    <item row="8" column="0">
     <widget class="QLabel" name="trustedTag">
@@ -264,12 +264,6 @@
    <class>KComboBox</class>
    <extends>QComboBox</extends>
    <header>kcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KTabWidget</class>
-   <extends>QTabWidget</extends>
-   <header>ktabwidget.h</header>
-   <container>1</container>
   </customwidget>
   <customwidget>
    <class>KSqueezedTextLabel</class>
