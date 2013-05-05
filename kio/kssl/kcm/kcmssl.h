@@ -22,7 +22,7 @@
 
 #include <kcmodule.h>
 
-class KTabWidget;
+class QTabWidget;
 class CaCertificatesPage;
 
 class KcmSsl : public KCModule
@@ -39,7 +39,7 @@ private Q_SLOTS:
     void pageChanged(bool isChanged);
 
 private:
-    KTabWidget *m_tabs;
+    QTabWidget *m_tabs;
     CaCertificatesPage *m_caCertificatesPage;
 };
 

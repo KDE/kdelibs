@@ -22,7 +22,6 @@
 
 #include <kaboutdata.h>
 #include <kdeversion.h>
-#include <ktabwidget.h>
 
 #include <QVBoxLayout>
 #include <kpluginfactory.h>
@@ -44,7 +43,7 @@ KcmSsl::KcmSsl(QWidget *parent, const QVariantList &args)
     setAboutData(about);
     setButtons(Apply | Default | Help);
 
-    m_tabs = new KTabWidget(this);
+    m_tabs = new QTabWidget(this);
     // tell the tab widget to resize itself to fill all space, basically...
     setLayout(new QVBoxLayout);
     layout()->setMargin(0);
