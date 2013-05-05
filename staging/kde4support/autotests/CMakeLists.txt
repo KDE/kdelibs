@@ -30,6 +30,7 @@ kde4support_unit_tests(
   kdebug_unittest
   kdebug_qcoreapptest
   kmd5benchmark
+  ktabwidget_unittest
   ktempdirtest
   ktemporaryfiletest
   kuniqueapptest

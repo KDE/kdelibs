@@ -193,7 +193,6 @@ set(kdeui_LIB_SRCS
  widgets/kshortcutwidget.cpp
  widgets/kstringvalidator.cpp
  widgets/ktabbar.cpp
- widgets/ktabwidget.cpp
  widgets/ktextbrowser.cpp
  widgets/ktextedit.cpp
  widgets/ktimecombobox.cpp
@@ -513,7 +512,6 @@ install( FILES
  widgets/ktimecombobox.h
  widgets/ktimezonewidget.h
  widgets/ktabbar.h
- widgets/ktabwidget.h
  widgets/kshortcutwidget.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h

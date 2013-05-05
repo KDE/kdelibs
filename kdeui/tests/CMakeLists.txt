@@ -28,7 +28,6 @@ KDEUI_UNIT_TESTS(
   kreplacetest
   kxmlgui_unittest
   ktimezonewidget_unittest
-  ktabwidget_unittest
   ktoolbar_unittest
   krichtextedittest
   klistwidgetsearchlinetest
@@ -73,11 +72,9 @@ KDEUI_EXECUTABLE_TESTS(
   kpagewidgettest
   kpassivepopuptest
   kpassworddialogtest
-  kpixmapregionselectordialogtest
   kpopuptest
   kratingwidgettest
   krulertest
-  ktabwidgettest
   ktextedittest
   ktextbrowsertest
   ktoolbartest

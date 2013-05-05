@@ -21,5 +21,6 @@ kde4support_examples(
   kshortcuttest
   kstatusbartest
   ksystemtraytest
+  ktabwidgettest
 )
 

@@ -209,7 +209,7 @@ void KTabWidget::Private::updateTab( int index )
       toolTipText.remove( i, 1 );
 
     if ( Qt::mightBeRichText( toolTipText ) )
-      m_parent->setTabToolTip( index, Qt::escape( toolTipText ) );
+      m_parent->setTabToolTip( index, toolTipText.toHtmlEscaped() );
     else
       m_parent->setTabToolTip( index, toolTipText );
   }

@@ -22,7 +22,7 @@
 #ifndef KTABWIDGET_H
 #define KTABWIDGET_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QTabWidget>
 
@@ -41,7 +41,7 @@ class QTab;
  *
  * \image html ktabwidget.png "KDE Tab Widget"
  */
-class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
+class KDE4SUPPORT_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
 {
     Q_OBJECT
 #ifndef KDE_NO_DEPRECATED
@@ -87,7 +87,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated Use QTabWidget::isMovable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool isTabReorderingEnabled() const;
+    KDE4SUPPORT_DEPRECATED bool isTabReorderingEnabled() const;
 #endif
 
     /**
@@ -97,7 +97,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated Use QTabWidget::tabsClosable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool hoverCloseButton() const;
+    KDE4SUPPORT_DEPRECATED bool hoverCloseButton() const;
 #endif
 
     /**
@@ -107,7 +107,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated Use QTabWidget::setTabsClosable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool hoverCloseButtonDelayed() const;
+    KDE4SUPPORT_DEPRECATED bool hoverCloseButtonDelayed() const;
 #endif
 
     /**
@@ -118,7 +118,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated Use QTabWidget::tabsClosable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool isCloseButtonEnabled() const;
+    KDE4SUPPORT_DEPRECATED bool isCloseButtonEnabled() const;
 #endif
 
     /**
@@ -128,7 +128,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated Use tabBar()->selectionBehaviorOnRemove() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool tabCloseActivatePrevious() const;
+    KDE4SUPPORT_DEPRECATED bool tabCloseActivatePrevious() const;
 #endif
 
     /**
@@ -144,7 +144,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated since 5.0, use tabBar()->hide() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setTabBarHidden( bool hide );
+    KDE4SUPPORT_DEPRECATED void setTabBarHidden( bool hide );
 #endif
 
     /**
@@ -155,7 +155,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated since 5.0, use tabBar()->isHidden() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool isTabBarHidden() const;
+    KDE4SUPPORT_DEPRECATED bool isTabBarHidden() const;
 #endif
 
     /**
@@ -183,21 +183,21 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated use tabText
      */
 #ifndef KDE_NO_DEPRECATED
-    inline KDEUI_DEPRECATED QString label( int index ) const { return tabText( index ); }
+    inline KDE4SUPPORT_DEPRECATED QString label( int index ) const { return tabText( index ); }
 #endif
 
     /**
      * @deprecated use tabText
      */
 #ifndef KDE_NO_DEPRECATED
-    inline KDEUI_DEPRECATED QString tabLabel( QWidget *w ) const { return tabText( indexOf( w ) ); }
+    inline KDE4SUPPORT_DEPRECATED QString tabLabel( QWidget *w ) const { return tabText( indexOf( w ) ); }
 #endif
 
     /**
      * @deprecated use setTabText
      */
 #ifndef KDE_NO_DEPRECATED
-    inline KDEUI_DEPRECATED void setTabLabel( QWidget *w, const QString &l ) { setTabText( indexOf( w ),l ); }
+    inline KDE4SUPPORT_DEPRECATED void setTabLabel( QWidget *w, const QString &l ) { setTabText( indexOf( w ),l ); }
 #endif
 #endif
 
@@ -389,7 +389,7 @@ class KDEUI_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
      * @deprecated  This method has no effect and should not be called
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void currentChanged( int );
+    KDE4SUPPORT_DEPRECATED void currentChanged( int );
 #endif
 
   protected Q_SLOTS:
