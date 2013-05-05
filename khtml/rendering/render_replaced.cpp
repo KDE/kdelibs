@@ -37,6 +37,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QLineEdit>
 #include <QtGui/QComboBox>
+#include <QtGui/QCheckBox>
+#include <QtGui/QRadioButton>
 #include <kglobalsettings.h>
 #include <kurlrequester.h>
 #include <QtCore/QObject>
@@ -381,9 +383,10 @@ void RenderWidget::updateFromElement()
         if (!backgroundColor.isValid() && !style()->htmlHacks())
             backgroundColor = Qt::transparent;
 
+        bool hasBackgroundImage = style()->hasBackgroundImage();
         // check if we have to paint our background and let it show through the widget
         bool trans = ( isRedirectedWidget() && !qobject_cast<KUrlRequester*>(m_widget) &&
-                       (style()->hasBackgroundImage() || (style()->hasBackground() && shouldPaintCSSBorders())) );
+                       (hasBackgroundImage || (style()->hasBackground() && shouldPaintCSSBorders())) );
 
         QPalette pal(QApplication::palette(m_widget));
         // We need a non-transparent version for widgets with popups (e.g. kcombobox). The popups must not let
@@ -459,12 +462,17 @@ void RenderWidget::updateFromElement()
             }
         }
 
-        m_widget->setPalette(pal);
+        if ( (qobject_cast<QCheckBox*>(m_widget) || qobject_cast<QRadioButton*>(m_widget)) &&
+              (backgroundColor == Qt::transparent && !hasBackgroundImage) ) {
+            m_widget->setPalette(non_trans_pal);
+        } else {
+            m_widget->setPalette(pal);
+        }
 
         // Combobox's popup colors
         if (qobject_cast<QComboBox*>(m_widget)) {
             // Background
-            if (style()->hasBackgroundImage()) {
+            if (hasBackgroundImage) {
                 non_trans_pal = QApplication::palette();
             }
             else if (backgroundColor.isValid() && backgroundColor != Qt::transparent) {
