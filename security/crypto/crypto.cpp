@@ -62,7 +62,6 @@
 #include <knewpassworddialog.h>
 #include <k3resolver.h>
 #include <kseparator.h>
-#include <ktabwidget.h>
 #include <ktextbrowser.h>
 #include <kurllabel.h>
 #include <kurlrequester.h>
@@ -250,7 +249,7 @@ QString whatstr;
   // The eighth is peer [email] certificate related (unimplemented)
   ///////////////////////////////////////////////////////////////////////////
 
-  tabs = new KTabWidget(this);
+  tabs = new QTabWidget(this);
   top->addWidget(tabs);
 
   ///////////////////////////////////////////////////////////////////////////

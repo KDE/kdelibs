@@ -38,7 +38,6 @@
 #include <kdebug.h>
 #include <klineedit.h>
 #include <kurllabel.h>
-#include <ktabwidget.h>
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
 #include <kmessagebox.h>
@@ -811,9 +810,9 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
     QDialog configDialog(itemView());
     configDialog.setWindowTitle(model->data(index, NameRole).toString());
     // The number of KCModuleProxies in use determines whether to use a tabwidget
-    KTabWidget *newTabWidget = 0;
+    QTabWidget *newTabWidget = 0;
     // Widget to use for the setting dialog's main widget,
-    // either a KTabWidget or a KCModuleProxy
+    // either a QTabWidget or a KCModuleProxy
     QWidget * mainWidget = 0;
     // Widget to use as the KCModuleProxy's parent.
     // The first proxy is owned by the dialog itself
@@ -829,7 +828,7 @@ void KPluginSelector::Private::PluginDelegate::slotConfigureClicked()
                     // we already created one KCModuleProxy, so we need a tab widget.
                     // Move the first proxy into the tab widget and ensure this and subsequent
                     // proxies are in the tab widget
-                    newTabWidget = new KTabWidget(&configDialog);
+                    newTabWidget = new QTabWidget(&configDialog);
                     moduleProxyParentWidget = newTabWidget;
                     mainWidget->setParent( newTabWidget );
                     KCModuleProxy *moduleProxy = qobject_cast<KCModuleProxy*>(mainWidget);

@@ -44,7 +44,6 @@
 #include <kparts/browserextension.h>
 #include <kparts/browserinterface.h>
 #include <kmimetype.h>
-#include <ktabwidget.h>
 #include <ktextedit.h>
 
 K_PLUGIN_FACTORY( KCertPartFactory, registerPlugin<KCertPart>(); )
@@ -207,7 +206,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 //	Make the first tab
 //
-	_tabs = new KTabWidget(_pkcsFrame);
+	_tabs = new QTabWidget(_pkcsFrame);
 	grid->addWidget(_tabs, 8, 0, 5, 6);
 
 	QFrame *tab = new QFrame(_pkcsFrame);
@@ -298,7 +297,7 @@ KCertPart::KCertPart(QWidget *parentWidget,
 //
 //	Make the first tab
 //
-	_tabs = new KTabWidget(_x509Frame);
+	_tabs = new QTabWidget(_x509Frame);
 	grid->addWidget(_tabs, 7, 0, 5, 6);
 
 	tab = new QFrame(_x509Frame);

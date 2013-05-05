@@ -22,13 +22,13 @@
 #include <QLayout>
 #include <QPixmap>
 #include <QtCore/QStringList>
+#include <QTabWidget>
 
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
 #include <kdebug.h>
 #include <kservice.h>
-#include <ktabwidget.h>
 
 /***********************************************************************/
 class KCModuleContainer::KCModuleContainerPrivate
@@ -41,7 +41,7 @@ class KCModuleContainer::KCModuleContainerPrivate
 			{}
 
 		QStringList modules;
-		KTabWidget *tabWidget;
+		QTabWidget *tabWidget;
 		KCModule::Buttons buttons;
 		QVBoxLayout *topLayout;
 
@@ -72,7 +72,7 @@ void KCModuleContainer::init()
 	d->topLayout = new QVBoxLayout( this );
 	d->topLayout->setMargin( 0 );
 	d->topLayout->setObjectName( "topLayout" );
-	d->tabWidget = new KTabWidget(this);
+	d->tabWidget = new QTabWidget(this);
 	d->tabWidget->setObjectName( "tabWidget");
 	connect( d->tabWidget, SIGNAL(currentChanged(int)), SLOT(tabSwitched(int)));
 	d->topLayout->addWidget( d->tabWidget );
