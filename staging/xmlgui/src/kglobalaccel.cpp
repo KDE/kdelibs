@@ -32,7 +32,7 @@
 #include <QPushButton>
 #include <QtDBus/QDBusInterface>
 #include <QtDBus/QDBusMetaType>
-#include <config-kwindowsystem.h>
+#include <config-xmlgui.h>
 #if HAVE_X11
 #include <QX11Info>
 #endif

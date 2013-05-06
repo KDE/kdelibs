@@ -18,7 +18,7 @@
    Boston, MA 02110-1301, USA.
 */
 
-#include <kwindowsystem_export.h>
+#include <xmlgui_export.h>
 
 #include <QtCore/QList>
 #include <QtCore/QObject>
@@ -32,7 +32,7 @@ class KGlobalShortcutInfoPrivate;
 /**
  * @author Michael Jansen <kde@michael-jansen.biz>
  */
-class KWINDOWSYSTEM_EXPORT KGlobalShortcutInfo : public QObject
+class XMLGUI_EXPORT KGlobalShortcutInfo : public QObject
     {
     Q_OBJECT
 
@@ -80,7 +80,7 @@ private:
 
     friend class GlobalShortcut;
 
-    friend KWINDOWSYSTEM_EXPORT const QDBusArgument &operator>> (
+    friend XMLGUI_EXPORT const QDBusArgument &operator>> (
             const QDBusArgument &argument,
             KGlobalShortcutInfo &shortcut);
 

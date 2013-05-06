@@ -22,7 +22,7 @@
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
-#include "kwindowsystem_export.h"
+#include "xmlgui_export.h"
 #include "kglobalshortcutinfo.h"
 
 #include <QtCore/QObject>
@@ -43,7 +43,7 @@ class OrgKdeKglobalaccelComponentInterface;
  * @see KKeyChooser
  * @see KKeyDialog
  */
-class KWINDOWSYSTEM_EXPORT KGlobalAccel : public QObject
+class XMLGUI_EXPORT KGlobalAccel : public QObject
 {
     Q_OBJECT
 
@@ -262,7 +262,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KWINDOWSYSTEM_DEPRECATED bool isEnabled() const;
+    XMLGUI_DEPRECATED bool isEnabled() const;
 #endif
 
     /**
@@ -271,7 +271,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KWINDOWSYSTEM_DEPRECATED void setEnabled(bool enabled);
+    XMLGUI_DEPRECATED void setEnabled(bool enabled);
 #endif
 
     /**
@@ -281,7 +281,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KWINDOWSYSTEM_DEPRECATED QList<QStringList> allMainComponents();
+    XMLGUI_DEPRECATED QList<QStringList> allMainComponents();
 #endif
 
     /**
@@ -290,7 +290,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KWINDOWSYSTEM_DEPRECATED QList<QStringList> allActionsForComponent(const QStringList &actionId);
+    XMLGUI_DEPRECATED QList<QStringList> allActionsForComponent(const QStringList &actionId);
 #endif
 
     /**
@@ -299,7 +299,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KWINDOWSYSTEM_DEPRECATED static QStringList findActionNameSystemwide(const QKeySequence &seq);
+    XMLGUI_DEPRECATED static QStringList findActionNameSystemwide(const QKeySequence &seq);
 #endif
 
     /**
@@ -308,7 +308,7 @@ public:
      * @deprecated
      */
 #ifndef KDE_NO_DEPRECATED
-    KWINDOWSYSTEM_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
+    XMLGUI_DEPRECATED static bool promptStealShortcutSystemwide(QWidget *parent, const QStringList &actionIdentifier, const QKeySequence &seq);
 #endif
 
     /**

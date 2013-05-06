@@ -37,11 +37,11 @@ class KGlobalShortcutInfoPrivate
     QList<QKeySequence> defaultKeys;
     };
 
-KWINDOWSYSTEM_EXPORT QDBusArgument &operator<< (
+XMLGUI_EXPORT QDBusArgument &operator<< (
         QDBusArgument &argument,
         const KGlobalShortcutInfo &shortcut);
 
-KWINDOWSYSTEM_EXPORT const QDBusArgument &operator>> (
+XMLGUI_EXPORT const QDBusArgument &operator>> (
         const QDBusArgument &argument,
         KGlobalShortcutInfo &shortcut);
 

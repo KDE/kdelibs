@@ -24,7 +24,6 @@ macro(KWINDOWSYSTEM_EXECUTABLE_TESTS)
 endmacro()
 
 kwindowsystem_unit_tests(
-   kglobalshortcuttest
    kstartupinfo_unittest
    kxmessages_unittest
 )
