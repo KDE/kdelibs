@@ -949,7 +949,7 @@ void KMimeTypeTest::testHelperProtocols()
     KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
     if (kmail2) {
         //qDebug() << kmail2->entryPath();
-        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
+        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption ")), // comes from KMail2.desktop
                  qPrintable(KProtocolInfo::exec("mailto")));
     } else {
         QCOMPARE(KProtocolInfo::exec("mailto"), QLatin1String("kmailservice %u"));
