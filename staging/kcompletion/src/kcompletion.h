@@ -20,7 +20,7 @@
 #ifndef KCOMPLETION_H
 #define KCOMPLETION_H
 
-#include <kdeui_export.h>
+#include <kcompletion_export.h>
 #include <ksortablelist.h>
 
 #include <QtCore/QMap>
@@ -126,7 +126,7 @@ class KCompletionMatches;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KCompletion : public QObject
+class KCOMPLETION_EXPORT KCompletion : public QObject
 {
     Q_ENUMS( CompOrder )
     Q_PROPERTY( CompOrder order READ order WRITE setOrder )
@@ -605,7 +605,7 @@ class KCompletionMatchesPrivate;
  *
  * @short List for keeping matches returned from KCompletion
  */
-class KDEUI_EXPORT KCompletionMatches : public KCompletionMatchesList
+class KCOMPLETION_EXPORT KCompletionMatches : public KCompletionMatchesList
 {
 public:
     /**
@@ -671,7 +671,7 @@ private:
  * @short An abstract class for adding text completion support to widgets.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class KDEUI_EXPORT KCompletionBase
+class KCOMPLETION_EXPORT KCompletionBase
 {
 public:
     /**

@@ -31,7 +31,6 @@ KDECORE_UNIT_TESTS(
  kmountpointtest
  kurltest
  cplusplustest
- ksortablelisttest
  kshelltest
  ktimezonestest
  ksharedptrtest

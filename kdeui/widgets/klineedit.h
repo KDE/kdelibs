@@ -34,6 +34,8 @@
 
 #include <kcompletion.h>
 
+#include <kdeui_export.h>
+
 class QAction;
 class QMenu;
 class KCompletionBox;

@@ -146,8 +146,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kgesturemap.cpp
  util/strlcpy-fake.c
  util/kckey.cpp
- util/kcompletion.cpp
- util/kcompletionbase.cpp
  util/kcrash.cpp
  util/kcursor.cpp
  util/khelpclient.cpp
@@ -162,7 +160,6 @@ set(kdeui_LIB_SRCS
  util/kpixmapsequence.cpp
  util/kpixmapsequenceoverlaypainter.cpp
  util/kpixmapsequencewidget.cpp
- util/kzoneallocator.cpp
  widgets/kactionselector.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
@@ -464,7 +461,6 @@ install( FILES
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/kaccelgen.h
- util/kcompletion.h
  util/kcrash.h
  util/kcursor.h
  util/khelpclient.h

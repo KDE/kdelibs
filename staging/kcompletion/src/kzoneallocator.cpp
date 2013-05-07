@@ -28,7 +28,6 @@
  */
 
 #include "kzoneallocator_p.h"
-#include "kdebug.h"
 #include <QList>
 
 class KZoneAllocator::MemBlock

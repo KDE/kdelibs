@@ -4,13 +4,13 @@
 int main( int /*argc*/, char **/*argv*/ )
 {
     KSortableList<QString> list;
-    list.insert( 1,  "FOO           (1)" );
-    list.insert( 2,  "Test          (2)" );
-    list.insert( 1,  "Huba!         (1)" );
-    list.insert( 5,  "MAAOOAM!      (5)" );
-    list.insert( 10, "Teeheeest    (10)" );
-    list.insert( 2,  "I was here :) (2)" );
-    list.insert( 4,  "Yeehaa...     (4)" );
+    list.insert( 1,  QStringLiteral("FOO           (1)") );
+    list.insert( 2,  QStringLiteral("Test          (2)") );
+    list.insert( 1,  QStringLiteral("Huba!         (1)") );
+    list.insert( 5,  QStringLiteral("MAAOOAM!      (5)") );
+    list.insert( 10, QStringLiteral("Teeheeest    (10)") );
+    list.insert( 2,  QStringLiteral("I was here :) (2)") );
+    list.insert( 4,  QStringLiteral("Yeehaa...     (4)") );
 
     QList<KSortableItem<QString> >::iterator it = list.begin();
 

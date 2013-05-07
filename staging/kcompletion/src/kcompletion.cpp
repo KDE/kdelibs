@@ -21,8 +21,7 @@
 #include "kcompletion.h"
 #include "kcompletion_p.h"
 
-#include <kdebug.h>
-#include <klocalizedstring.h>
+#include <QDebug>
 #include <knotification.h>
 #include <kstringhandler.h>
 #include <QtCore/QMutableVectorIterator>
@@ -186,7 +185,7 @@ void KCompletion::addWeightedItem( const QString& item )
     uint weight = 0;
 
     // find out the weighting of this item (appended to the string as ":num")
-    int index = item.lastIndexOf(':');
+    int index = item.lastIndexOf(QLatin1Char(':'));
     if ( index > 0 ) {
         bool ok;
         weight = item.mid( index + 1 ).toUInt( &ok );
@@ -227,7 +226,7 @@ QString KCompletion::makeCompletion( const QString& string )
     if ( d->myCompletionMode == CompletionNone )
         return QString();
 
-    //kDebug(0) << "KCompletion: completing: " << string;
+    //qDebug() << "KCompletion: completing: " << string;
 
     d->matches.clear();
     d->myRotationIndex = 0;
@@ -273,7 +272,7 @@ QString KCompletion::makeCompletion( const QString& string )
     postProcessMatch( &completion );
 
     if ( !string.isEmpty() ) { // only emit match when string is not empty
-        //kDebug(0) << "KCompletion: Match: " << completion;
+        //qDebug() << "KCompletion: Match: " << completion;
         emit match( completion );
     }
 
@@ -551,7 +550,7 @@ void KCompletion::findAllCompletions(const QString& string,
                                      KCompletionMatchesWrapper *matches,
                                      bool& hasMultipleMatches) const
 {
-    //kDebug(0) << "*** finding all completions for " << string;
+    //qDebug() << "*** finding all completions for " << string;
 
     if ( string.isEmpty() )
         return;
@@ -585,7 +584,7 @@ void KCompletion::findAllCompletions(const QString& string,
         node = node->firstChild();
         if ( !node->isNull() )
             completion += *node;
-        // kDebug() << completion << node->latin1();
+        // qDebug() << completion << node->latin1();
     }
 
 
@@ -610,7 +609,7 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
     if ( !node || !matches )
         return;
 
-    // kDebug() << "Beginning: " << beginning;
+    // qDebug() << "Beginning: " << beginning;
     const KCompTreeChildren *list = node->children();
     QString string;
     QString w;
@@ -632,7 +631,7 @@ void KCompletion::extractStringsFromNode( const KCompTreeNode *node,
         if ( node && node->isNull() ) { // we found a leaf
             if ( addWeight ) {
                 // add ":num" to the string to store the weighting
-                string += ':';
+                string += QLatin1Char(':');
                 w.setNum( node->weight() );
                 string.append( w );
             }
@@ -689,19 +688,19 @@ void KCompletion::doBeep( BeepMode mode ) const
     switch ( mode ) {
         case Rotation:
             event = QLatin1String("Textcompletion: rotation");
-            text = i18n("You reached the end of the list\nof matching items.\n");
+            text = tr("You reached the end of the list\nof matching items.\n");
             break;
         case PartialMatch:
             if ( d->myCompletionMode == CompletionShell ||
                  d->myCompletionMode == CompletionMan ) {
                 event = QLatin1String("Textcompletion: partial match");
-                text = i18n("The completion is ambiguous, more than one\nmatch is available.\n");
+                text = tr("The completion is ambiguous, more than one\nmatch is available.\n");
             }
             break;
         case NoMatch:
             if ( d->myCompletionMode == CompletionShell ) {
                 event = QLatin1String("Textcompletion: no match");
-                text = i18n("There is no matching item available.\n");
+                text = tr("There is no matching item available.\n");
             }
             break;
     }

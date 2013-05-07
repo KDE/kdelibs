@@ -19,7 +19,6 @@ KDEUI_UNIT_TESTS(
   kactioncollectiontest
   kactioncategorytest
   kbuttongrouptest
-  kcompletioncoretest
   kfindtest
   kmainwindow_unittest
   klineedit_unittest
@@ -48,7 +47,6 @@ KDEUI_EXECUTABLE_TESTS(
   kcolorcollectiontest
   kcolorcombotest
   kcomboboxtest
-  kcompletionuitest
   kdatepicktest
   kdatetabletest
   kdatetimewidgettest

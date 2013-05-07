@@ -20,7 +20,7 @@
 #ifndef KSORTABLELIST_H
 #define KSORTABLELIST_H
 
-#include <kdecore_export.h>
+#include <kcompletion_export.h>
 
 #include <QtCore/QPair>
 #include <QtCore/QList>
@@ -121,7 +121,7 @@ public:
      * @deprecated use key()
      */
 #ifndef KDE_NO_DEPRECATED
-    KDECORE_DEPRECATED Key index() const { return this->first; }
+    KCOMPLETION_DEPRECATED Key index() const { return this->first; }
 #endif
     /**
      * @return the first value.

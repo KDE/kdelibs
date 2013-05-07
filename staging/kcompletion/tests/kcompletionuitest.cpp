@@ -17,14 +17,14 @@ Form1::Form1( QWidget* parent )
     : QWidget( parent )
 {
     setAttribute( Qt::WA_DeleteOnClose );
-    setObjectName( "Form1" );
+    setObjectName( QStringLiteral("Form1") );
     resize( 559, 465 );
-    setWindowTitle( "Form1" );
+    setWindowTitle( QStringLiteral("Form1") );
     Form1Layout = new QVBoxLayout( this );
 
     GroupBox1 = new QGroupBox( this );
     GroupBox1->setLayout( new QVBoxLayout() );
-    GroupBox1->setTitle( "Completion Test" );
+    GroupBox1->setTitle( QStringLiteral("Completion Test") );
     GroupBox1->layout()->setSpacing( 0 );
     GroupBox1->layout()->setMargin( 0 );
     GroupBox1Layout = new QVBoxLayout;
@@ -43,40 +43,40 @@ Form1::Form1( QWidget* parent )
     Layout1->setMargin( 0 );
 
     TextLabel1 = new QLabel( GroupBox1 );
-    TextLabel1->setObjectName( "TextLabel1" );
-    TextLabel1->setText( "Completion" );
+    TextLabel1->setObjectName( QStringLiteral("TextLabel1") );
+    TextLabel1->setText( QStringLiteral("Completion") );
     Layout1->addWidget( TextLabel1 );
 
     edit = new KLineEdit( GroupBox1 );
-    edit->setObjectName( "edit" );
+    edit->setObjectName( QStringLiteral("edit") );
     Layout1->addWidget( edit );
     Layout9->addLayout( Layout1 );
     edit->completionObject()->setItems( defaultItems() );
     edit->completionObject()->setIgnoreCase( true );
     edit->setFocus();
-    edit->setToolTip( "right-click to change completion mode" );
+    edit->setToolTip( QStringLiteral("right-click to change completion mode") );
 
     Layout2 = new QHBoxLayout;
     Layout2->setSpacing( 6 );
     Layout2->setMargin( 0 );
 
     combo = new KHistoryComboBox( GroupBox1 );
-    combo->setObjectName( "history combo" );
+    combo->setObjectName( QStringLiteral("history combo") );
     combo->setCompletionObject( edit->completionObject() );
     // combo->setMaxCount( 5 );
     combo->setHistoryItems( defaultItems(), true );
     connect( combo, SIGNAL(activated(QString)),
 	     combo, SLOT(addToHistory(QString)));
-    combo->setToolTip( "KHistoryComboBox" );
+    combo->setToolTip( QStringLiteral("KHistoryComboBox") );
     Layout2->addWidget( combo );
 
     LineEdit1 = new KLineEdit( GroupBox1 );
-    LineEdit1->setObjectName( "LineEdit1" );
+    LineEdit1->setObjectName( QStringLiteral("LineEdit1") );
     Layout2->addWidget( LineEdit1 );
 
     PushButton1 = new QPushButton( GroupBox1 );
-    PushButton1->setObjectName( "PushButton1" );
-    PushButton1->setText( "Add" );
+    PushButton1->setObjectName( QStringLiteral("PushButton1") );
+    PushButton1->setText( QStringLiteral("Add") );
     connect( PushButton1, SIGNAL(clicked()), SLOT(slotAdd()));
     Layout2->addWidget( PushButton1 );
     Layout9->addLayout( Layout2 );
@@ -88,8 +88,8 @@ Form1::Form1( QWidget* parent )
     Layout3->addItem( spacer );
 
     PushButton1_4 = new QPushButton( GroupBox1 );
-    PushButton1_4->setObjectName( "PushButton1_4" );
-    PushButton1_4->setText( "Remove" );
+    PushButton1_4->setObjectName( QStringLiteral("PushButton1_4") );
+    PushButton1_4->setText( QStringLiteral("Remove") );
     connect( PushButton1_4, SIGNAL(clicked()), SLOT(slotRemove()));
     Layout3->addWidget( PushButton1_4 );
     Layout9->addLayout( Layout3 );
@@ -102,21 +102,21 @@ Form1::Form1( QWidget* parent )
     Layout8->addWidget( ListBox1 );
     connect( ListBox1, SIGNAL(currentRowChanged(int)),
 	     SLOT(slotHighlighted(int)));
-    ListBox1->setToolTip("Contains the contents of the completion object.\n:x is the weighting, i.e. how often an item has been inserted");
+    ListBox1->setToolTip(QStringLiteral("Contains the contents of the completion object.\n:x is the weighting, i.e. how often an item has been inserted"));
 
     Layout7 = new QVBoxLayout;
     Layout7->setSpacing( 6 );
     Layout7->setMargin( 0 );
 
     PushButton1_3 = new QPushButton( GroupBox1 );
-    PushButton1_3->setObjectName( "PushButton1_3" );
-    PushButton1_3->setText( "Completion items" );
+    PushButton1_3->setObjectName( QStringLiteral("PushButton1_3") );
+    PushButton1_3->setText( QStringLiteral("Completion items") );
     connect( PushButton1_3, SIGNAL(clicked()), SLOT(slotList()));
     Layout7->addWidget( PushButton1_3 );
 
     PushButton1_2 = new QPushButton( GroupBox1 );
-    PushButton1_2->setObjectName( "PushButton1_2" );
-    PushButton1_2->setText( "Clear" );
+    PushButton1_2->setObjectName( QStringLiteral("PushButton1_2") );
+    PushButton1_2->setText( QStringLiteral("Clear") );
     connect( PushButton1_2, SIGNAL(clicked()),
 	     edit->completionObject(), SLOT(clear()));
     Layout7->addWidget( PushButton1_2 );
@@ -141,7 +141,7 @@ void Form1::slotAdd()
     qDebug("** adding: %s", LineEdit1->text().toLatin1().constData() );
     edit->completionObject()->addItem( LineEdit1->text() );
 
-    QStringList matches = edit->completionObject()->allMatches("S");
+    QStringList matches = edit->completionObject()->allMatches(QStringLiteral("S"));
     QStringList::ConstIterator it = matches.constBegin();
     for ( ; it != matches.constEnd(); ++it )
         qDebug("-- %s", (*it).toLatin1().constData());
@@ -170,7 +170,7 @@ void Form1::slotHighlighted( int row )
     QString text = i->text();
 
     // remove any "weighting"
-    int index = text.lastIndexOf( ':' );
+    int index = text.lastIndexOf( QLatin1Char(':') );
     if ( index > 0 )
 	LineEdit1->setText( text.left( index ) );
     else
@@ -181,16 +181,16 @@ void Form1::slotHighlighted( int row )
 QStringList Form1::defaultItems() const
 {
     QStringList items;
-    items << "Super" << "Sushi" << "Samson" << "Sucks" << "Sumo" << "Schumi";
-    items << "Slashdot" << "sUpEr" << "SUshi" << "sUshi" << "sUShi";
-    items << "sushI" << "SushI";
+    items << QStringLiteral("Super") << QStringLiteral("Sushi") << QStringLiteral("Samson") << QStringLiteral("Sucks") << QStringLiteral("Sumo") << QStringLiteral("Schumi");
+    items << QStringLiteral("Slashdot") << QStringLiteral("sUpEr") << QStringLiteral("SUshi") << QStringLiteral("sUshi") << QStringLiteral("sUShi");
+    items << QStringLiteral("sushI") << QStringLiteral("SushI");
     return items;
 }
 
 
 int main(int argc, char **argv )
 {
-    QApplication::setApplicationName("kcompletiontest");
+    QApplication::setApplicationName(QStringLiteral("kcompletiontest"));
 
     QApplication app(argc, argv);
 

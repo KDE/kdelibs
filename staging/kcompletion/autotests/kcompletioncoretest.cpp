@@ -31,14 +31,14 @@
 void
 Test_KCompletion::initTestCase()
 {
-	strings << QString("clampet@test.org")
-		<< QString("coolcat@test.org")
-		<< QString("carpet@test.org")
-		<< QString("carp@test.org");
-	wstrings << QString("clampet@test.org:30")
-		 << QString("coolcat@test.org:20")
-		 << QString("carpet@test.org:40")
-		 << QString("carp@test.org:7");
+	strings << QStringLiteral("clampet@test.org")
+		<< QStringLiteral("coolcat@test.org")
+		<< QStringLiteral("carpet@test.org")
+		<< QStringLiteral("carp@test.org");
+	wstrings << QStringLiteral("clampet@test.org:30")
+		 << QStringLiteral("coolcat@test.org:20")
+		 << QStringLiteral("carpet@test.org:40")
+		 << QStringLiteral("carp@test.org:7");
 	qRegisterMetaType<QStringList>("QStringList");
 }
 
@@ -65,13 +65,13 @@ Test_KCompletion::insertionOrder()
 	QVERIFY(completion.items().count() == strings.count());
 
 	completion.setCompletionMode(KCompletion::CompletionShell);
-	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
+	QCOMPARE(completion.makeCompletion(QStringLiteral("ca")), QStringLiteral("carp"));
 	QVERIFY(spy1.count() == 1);
-	QVERIFY(spy1.takeFirst().at(0).toString() == QString("carp"));
+	QVERIFY(spy1.takeFirst().at(0).toString() == QStringLiteral("carp"));
 	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
 	QSignalSpy spy2(&completion, SIGNAL(matches(QStringList)));
-	completion.makeCompletion("ca");
+	completion.makeCompletion(QStringLiteral("ca"));
 	QCOMPARE(spy2.count(), 1);
 	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
 	QStringList matches = spy2.takeFirst().at(0).toStringList();
@@ -80,7 +80,7 @@ Test_KCompletion::insertionOrder()
 	QCOMPARE(matches[1], carp);
 
 	completion.setCompletionMode(KCompletion::CompletionAuto);
-	QCOMPARE(completion.makeCompletion("ca"), carpet);
+	QCOMPARE(completion.makeCompletion(QStringLiteral("ca")), carpet);
 	QVERIFY(spy1.count() == 1);
 	QVERIFY(spy1.takeFirst().at(0).toString() == carpet);
 }
@@ -100,13 +100,13 @@ Test_KCompletion::sortedOrder()
 	QVERIFY(completion.items().count() == 4);
 
 	completion.setCompletionMode(KCompletion::CompletionShell);
-	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
+	QCOMPARE(completion.makeCompletion(QStringLiteral("ca")), QStringLiteral("carp"));
 	QVERIFY(spy1.count() == 1);
-	QCOMPARE(spy1.takeFirst().at(0).toString(), QString("carp"));
+	QCOMPARE(spy1.takeFirst().at(0).toString(), QStringLiteral("carp"));
 	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
 	QSignalSpy spy2(&completion, SIGNAL(matches(QStringList)));
-	completion.makeCompletion("ca");
+	completion.makeCompletion(QStringLiteral("ca"));
 	QCOMPARE(spy2.count(), 1);
 	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
 
@@ -116,7 +116,7 @@ Test_KCompletion::sortedOrder()
 	QCOMPARE(matches[1], carpet);
 
 	completion.setCompletionMode(KCompletion::CompletionAuto);
-	QCOMPARE(completion.makeCompletion("ca"), carp);
+	QCOMPARE(completion.makeCompletion(QStringLiteral("ca")), carp);
 	QVERIFY(spy1.count() == 1);
 	QCOMPARE(spy1.takeFirst().at(0).toString(), carp);
 }
@@ -136,12 +136,12 @@ Test_KCompletion::weightedOrder()
 	QVERIFY(completion.items().count() == 4);
 
 	completion.setCompletionMode(KCompletion::CompletionShell);
-	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
+	QCOMPARE(completion.makeCompletion(QStringLiteral("ca")), QStringLiteral("carp"));
 	spy1.takeFirst(); // empty the list
 	QVERIFY(spy3.count() == 1); spy3.takeFirst();
 
 	QSignalSpy spy2(&completion, SIGNAL(matches(QStringList)));
-	completion.makeCompletion("ca");
+	completion.makeCompletion(QStringLiteral("ca"));
 	QCOMPARE(spy2.count(), 1);
 	QVERIFY(spy3.count() == 0); // shouldn't be signaled on 2nd call
 
@@ -151,9 +151,9 @@ Test_KCompletion::weightedOrder()
 	QCOMPARE(matches[1], carp);
 
 	completion.setCompletionMode(KCompletion::CompletionAuto);
-	QCOMPARE(completion.makeCompletion("ca"), carpet);
+	QCOMPARE(completion.makeCompletion(QStringLiteral("ca")), carpet);
 
-	matches = completion.substringCompletion("ca");
+	matches = completion.substringCompletion(QStringLiteral("ca"));
 	QVERIFY(matches.count() == 3);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], coolcat);
@@ -171,25 +171,25 @@ Test_KCompletion::substringCompletion_Insertion()
 	completion.setItems(strings);
 	QVERIFY(completion.items().count() == 4);
 
-	QStringList matches = completion.substringCompletion("c");
+	QStringList matches = completion.substringCompletion(QStringLiteral("c"));
 	QVERIFY(matches.count() == 4);
 	QCOMPARE(matches[0], clampet);
 	QCOMPARE(matches[1], coolcat);
 	QCOMPARE(matches[2], carpet);
 	QCOMPARE(matches[3], carp);
 
-	matches = completion.substringCompletion("ca");
+	matches = completion.substringCompletion(QStringLiteral("ca"));
 	QVERIFY(matches.count() == 3);
 	QCOMPARE(matches[0], coolcat);
 	QCOMPARE(matches[1], carpet);
 	QCOMPARE(matches[2], carp);
 
-	matches = completion.substringCompletion("car");
+	matches = completion.substringCompletion(QStringLiteral("car"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], carp);
 
-	matches = completion.substringCompletion("pet");
+	matches = completion.substringCompletion(QStringLiteral("pet"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], clampet);
 	QCOMPARE(matches[1], carpet);
@@ -206,25 +206,25 @@ Test_KCompletion::substringCompletion_Sorted()
 	completion.setItems(strings);
 	QVERIFY(completion.items().count() == 4);
 
-	QStringList matches = completion.substringCompletion("c");
+	QStringList matches = completion.substringCompletion(QStringLiteral("c"));
 	QVERIFY(matches.count() == 4);
 	QCOMPARE(matches[0], carp);
 	QCOMPARE(matches[1], carpet);
 	QCOMPARE(matches[2], clampet);
 	QCOMPARE(matches[3], coolcat);
 
-	matches = completion.substringCompletion("ca");
+	matches = completion.substringCompletion(QStringLiteral("ca"));
 	QVERIFY(matches.count() == 3);
 	QCOMPARE(matches[0], carp);
 	QCOMPARE(matches[1], carpet);
 	QCOMPARE(matches[2], coolcat);
 
-	matches = completion.substringCompletion("car");
+	matches = completion.substringCompletion(QStringLiteral("car"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carp);
 	QCOMPARE(matches[1], carpet);
 
-	matches = completion.substringCompletion("pet");
+	matches = completion.substringCompletion(QStringLiteral("pet"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], clampet);
@@ -241,25 +241,25 @@ Test_KCompletion::substringCompletion_Weighted()
 	completion.setItems(wstrings);
 	QVERIFY(completion.items().count() == 4);
 
-	QStringList matches = completion.substringCompletion("c");
+	QStringList matches = completion.substringCompletion(QStringLiteral("c"));
 	QVERIFY(matches.count() == 4);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], clampet);
 	QCOMPARE(matches[2], coolcat);
 	QCOMPARE(matches[3], carp);
 
-	matches = completion.substringCompletion("ca");
+	matches = completion.substringCompletion(QStringLiteral("ca"));
 	QVERIFY(matches.count() == 3);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], coolcat);
 	QCOMPARE(matches[2], carp);
 
-	matches = completion.substringCompletion("car");
+	matches = completion.substringCompletion(QStringLiteral("car"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], carp);
 
-	matches = completion.substringCompletion("pet");
+	matches = completion.substringCompletion(QStringLiteral("pet"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], clampet);
@@ -276,19 +276,19 @@ Test_KCompletion::allMatches_Insertion()
 	completion.setItems(strings);
 	QVERIFY(completion.items().count() == 4);
 
-	QStringList matches = completion.allMatches("c");
+	QStringList matches = completion.allMatches(QStringLiteral("c"));
 	QVERIFY(matches.count() == 4);
 	QCOMPARE(matches[0], clampet);
 	QCOMPARE(matches[1], coolcat);
 	QCOMPARE(matches[2], carpet);
 	QCOMPARE(matches[3], carp);
 
-	matches = completion.allMatches("ca");
+	matches = completion.allMatches(QStringLiteral("ca"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], carp);
 
-	matches = completion.allMatches("pet");
+	matches = completion.allMatches(QStringLiteral("pet"));
 	QVERIFY(matches.count() == 0);
 }
 
@@ -303,19 +303,19 @@ Test_KCompletion::allMatches_Sorted()
 	completion.setItems(strings);
 	QVERIFY(completion.items().count() == 4);
 
-	QStringList matches = completion.allMatches("c");
+	QStringList matches = completion.allMatches(QStringLiteral("c"));
 	QVERIFY(matches.count() == 4);
 	QCOMPARE(matches[0], carp);
 	QCOMPARE(matches[1], carpet);
 	QCOMPARE(matches[2], clampet);
 	QCOMPARE(matches[3], coolcat);
 
-	matches = completion.allMatches("ca");
+	matches = completion.allMatches(QStringLiteral("ca"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carp);
 	QCOMPARE(matches[1], carpet);
 
-	matches = completion.allMatches("pet");
+	matches = completion.allMatches(QStringLiteral("pet"));
 	QVERIFY(matches.count() == 0);
 }
 
@@ -330,19 +330,19 @@ Test_KCompletion::allMatches_Weighted()
 	completion.setItems(wstrings);
 	QVERIFY(completion.items().count() == 4);
 
-	QStringList matches = completion.allMatches("c");
+	QStringList matches = completion.allMatches(QStringLiteral("c"));
 	QVERIFY(matches.count() == 4);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], clampet);
 	QCOMPARE(matches[2], coolcat);
 	QCOMPARE(matches[3], carp);
 
-	matches = completion.allMatches("ca");
+	matches = completion.allMatches(QStringLiteral("ca"));
 	QVERIFY(matches.count() == 2);
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], carp);
 
-	matches = completion.allMatches("pet");
+	matches = completion.allMatches(QStringLiteral("pet"));
 	QVERIFY(matches.count() == 0);
 }
 
@@ -355,7 +355,7 @@ Test_KCompletion::cycleMatches_Insertion()
 	completion.setItems(strings);
 	completion.setCompletionMode(KCompletion::CompletionAuto);
 
-	completion.makeCompletion("ca");
+	completion.makeCompletion(QStringLiteral("ca"));
 	QCOMPARE(completion.nextMatch(), carpet);
 	QCOMPARE(completion.nextMatch(), carp);
 	QCOMPARE(completion.previousMatch(), carpet);
@@ -371,7 +371,7 @@ Test_KCompletion::cycleMatches_Sorted()
 	completion.setItems(strings);
 	completion.setCompletionMode(KCompletion::CompletionAuto);
 
-	completion.makeCompletion("ca");
+	completion.makeCompletion(QStringLiteral("ca"));
 	QCOMPARE(completion.nextMatch(), carp);
 	QCOMPARE(completion.nextMatch(), carpet);
 	QCOMPARE(completion.previousMatch(), carp);
@@ -387,7 +387,7 @@ Test_KCompletion::cycleMatches_Weighted()
 	completion.setItems(wstrings);
 	completion.setCompletionMode(KCompletion::CompletionAuto);
 
-	completion.makeCompletion("ca");
+	completion.makeCompletion(QStringLiteral("ca"));
 	QCOMPARE(completion.nextMatch(), carpet);
 	QCOMPARE(completion.nextMatch(), carp);
 	QCOMPARE(completion.previousMatch(), carpet);

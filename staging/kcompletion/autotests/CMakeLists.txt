@@ -13,4 +13,6 @@ macro(KCOMPLETION_TESTS)
 endmacro()
 
 kcompletion_tests(
+   kcompletioncoretest
+   ksortablelisttest
 )

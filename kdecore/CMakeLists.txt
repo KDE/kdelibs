@@ -300,7 +300,6 @@ install(FILES
    util/kdedmodule.h
    util/klauncher_iface.h
    util/kshell.h
-   util/ksortablelist.h
    util/kuser.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
