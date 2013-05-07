@@ -32,9 +32,6 @@
 #include <QScrollBar>
 #include <QKeyEvent>
 
-#include <kdebug.h>
-#include <kconfig.h>
-
 class KCompletionBox::KCompletionBoxPrivate
 {
 public:
