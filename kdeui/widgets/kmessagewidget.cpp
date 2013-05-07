@@ -349,13 +349,6 @@ void KMessageWidget::paintEvent(QPaintEvent* event)
     }
 }
 
-void KMessageWidget::showEvent(QShowEvent* event)
-{
-    // Keep this method here to avoid breaking binary compatibility:
-    // QFrame::showEvent() used to be reimplemented.
-    QFrame::showEvent(event);
-}
-
 bool KMessageWidget::wordWrap() const
 {
     return d->wordWrap;
