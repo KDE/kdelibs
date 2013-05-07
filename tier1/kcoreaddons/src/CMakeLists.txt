@@ -63,7 +63,6 @@ set(kcoreaddons_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/io/
     ${CMAKE_CURRENT_SOURCE_DIR}/jobs/
     ${CMAKE_CURRENT_SOURCE_DIR}/randomness/
-    ${CMAKE_CURRENT_SOURCE_DIR}/kernel/
     ${CMAKE_CURRENT_SOURCE_DIR}/text/
     ${CMAKE_CURRENT_SOURCE_DIR}/caching/
 )

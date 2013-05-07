@@ -3,8 +3,7 @@ project(kdeclarative)
 find_package(Qt5Quick REQUIRED)
 find_package(Qt5Qml REQUIRED)
 
-include_directories(${KDE4_INCLUDE_DIR}/KDE
-                    ${CMAKE_CURRENT_SOURCE_DIR}/..
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..
 		    ${CMAKE_CURRENT_BINARY_DIR}/..
 		    )
 

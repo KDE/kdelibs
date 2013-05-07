@@ -33,7 +33,6 @@ generate_export_header(kwidgets)
 set(kwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/actions
   ${CMAKE_CURRENT_SOURCE_DIR}/utils
-  ${CMAKE_CURRENT_SOURCE_DIR}/icons
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
   ${CMAKE_CURRENT_SOURCE_DIR}/widgets
 )

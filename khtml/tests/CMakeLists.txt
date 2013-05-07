@@ -28,7 +28,6 @@ include_directories(
   ${ki18n_BINARY_DIR}/src
 )
 include_directories(
-  ${CMAKE_CURRENT_BINARY_DIR}/../ecma
   ${CMAKE_CURRENT_BINARY_DIR}/../java
   ${CMAKE_CURRENT_BINARY_DIR}/../css
 )

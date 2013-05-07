@@ -508,7 +508,6 @@ include_directories(
 # ${CMAKE_CURRENT_BINARY_DIR}/xml
 # ${CMAKE_CURRENT_BINARY_DIR}/html
 # ${CMAKE_CURRENT_BINARY_DIR}/rendering
-  ${CMAKE_CURRENT_BINARY_DIR}/ecma
 # ${CMAKE_CURRENT_BINARY_DIR}/imload
 # ${CMAKE_CURRENT_BINARY_DIR}/imload/decoders
   ${CMAKE_CURRENT_BINARY_DIR}/java

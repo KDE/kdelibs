@@ -214,18 +214,12 @@ target_include_directories(kdecore PRIVATE
   ${LIBINTL_INCLUDE_DIR})
 
 set(kdecore_INCLUDES
-                          ${CMAKE_CURRENT_SOURCE_DIR}/compression
-                          ${CMAKE_CURRENT_SOURCE_DIR}/config
                           ${CMAKE_CURRENT_SOURCE_DIR}/date
                           ${CMAKE_CURRENT_SOURCE_DIR}/io
                           ${CMAKE_CURRENT_SOURCE_DIR}/kernel
                           ${CMAKE_CURRENT_SOURCE_DIR}/network
-                          ${CMAKE_CURRENT_SOURCE_DIR}/services
                           ${CMAKE_CURRENT_SOURCE_DIR}/localization
-                          ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
-                          ${CMAKE_CURRENT_SOURCE_DIR}/text
                           ${CMAKE_CURRENT_SOURCE_DIR}/util
-                          ${CMAKE_CURRENT_SOURCE_DIR}/sonnet
 )
 target_include_directories(kdecore PUBLIC "$<BUILD_INTERFACE:${kdecore_INCLUDES}>")
 
