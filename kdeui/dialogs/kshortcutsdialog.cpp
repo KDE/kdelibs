@@ -41,6 +41,7 @@
 #include <kxmlguiclient.h>
 #include <kxmlguifactory.h>
 #include <kactioncollection.h>
+#include <ksharedconfig.h>
 
 /************************************************************************/
 /* KShortcutsDialog                                                     */

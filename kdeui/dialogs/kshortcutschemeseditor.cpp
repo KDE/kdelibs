@@ -33,6 +33,7 @@
 #include <kconfiggroup.h>
 #include <kactioncollection.h>
 #include <kmessagebox.h>
+#include <ksharedconfig.h>
 #include <kxmlguiclient.h>
 
 #include "kshortcutsdialog.h"

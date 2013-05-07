@@ -348,7 +348,7 @@ public:
 
     /**
      * @returns the completion-box, that is used in completion mode
-     * KGlobalSettings::CompletionPopup and KGlobalSettings::CompletionPopupAuto.
+     * CompletionPopup and CompletionPopupAuto.
      * This method will create a completion-box by calling
      * KLineEdit::completionBox, if none is there, yet.
      *
@@ -402,7 +402,7 @@ Q_SIGNALS:
     * The argument is the current text being edited.
     *
     * Note that this signal is @em not available when the widget is non-editable
-    * or the completion mode is set to @p KGlobalSettings::CompletionNone.
+    * or the completion mode is set to @p CompletionNone.
     */
     void completion( const QString& );
 
@@ -428,7 +428,7 @@ Q_SIGNALS:
      * Emitted whenever the completion mode is changed by the user
      * through the context menu.
      */
-    void completionModeChanged( KGlobalSettings::Completion );
+    void completionModeChanged( KCompletion::CompletionMode );
 
     /**
      * Emitted before the context menu is displayed.

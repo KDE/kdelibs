@@ -28,7 +28,7 @@ class KCompletionBasePrivate
 public:
     KCompletionBasePrivate()
       // Assign the default completion type to use.
-      : m_iCompletionMode( KGlobalSettings::completionMode() )
+      : m_iCompletionMode( KCompletion::CompletionPopup )
       , m_delegate( 0 )
     {
     }
@@ -48,7 +48,7 @@ public:
     // Determines whether this widget fires rotation signals
     bool m_bEmitSignals;
     // Stores the completion mode locally.
-    KGlobalSettings::Completion m_iCompletionMode;
+    KCompletion::CompletionMode m_iCompletionMode;
     // Pointer to Completion object.
     QPointer<KCompletion> m_pCompObj;
     // Keybindings
@@ -164,7 +164,7 @@ bool KCompletionBase::emitSignals() const
     return d->m_delegate ? d->m_delegate->emitSignals() : d->m_bEmitSignals;
 }
 
-void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
+void KCompletionBase::setCompletionMode( KCompletion::CompletionMode mode )
 {
     if ( d->m_delegate ) {
         d->m_delegate->setCompletionMode( mode );
@@ -174,11 +174,11 @@ void KCompletionBase::setCompletionMode( KGlobalSettings::Completion mode )
     d->m_iCompletionMode = mode;
     // Always sync up KCompletion mode with ours as long as we
     // are performing completions.
-    if( d->m_pCompObj && d->m_iCompletionMode != KGlobalSettings::CompletionNone )
+    if( d->m_pCompObj && d->m_iCompletionMode != KCompletion::CompletionNone )
         d->m_pCompObj->setCompletionMode( d->m_iCompletionMode );
 }
 
-KGlobalSettings::Completion KCompletionBase::completionMode() const
+KCompletion::CompletionMode KCompletionBase::completionMode() const
 {
     return d->m_delegate ? d->m_delegate->completionMode() : d->m_iCompletionMode;
 }

@@ -106,20 +106,20 @@ void KComboBox::setAutoCompletion( bool autocomplete )
     {
         if ( autocomplete )
         {
-            d->klineEdit->setCompletionMode( KGlobalSettings::CompletionAuto );
-            setCompletionMode( KGlobalSettings::CompletionAuto );
+            d->klineEdit->setCompletionMode( KCompletion::CompletionAuto );
+            setCompletionMode( KCompletion::CompletionAuto );
         }
         else
         {
-            d->klineEdit->setCompletionMode( KGlobalSettings::completionMode() );
-            setCompletionMode( KGlobalSettings::completionMode() );
+            d->klineEdit->setCompletionMode( KCompletion::CompletionPopup );
+            setCompletionMode( KCompletion::CompletionPopup );
         }
     }
 }
 
 bool KComboBox::autoCompletion() const
 {
-    return completionMode() == KGlobalSettings::CompletionAuto;
+    return completionMode() == KCompletion::CompletionAuto;
 }
 
 #ifndef KDE_NO_DEPRECATED
@@ -318,8 +318,8 @@ void KComboBox::setLineEdit( QLineEdit *edit )
                  SIGNAL(textRotation(KCompletionBase::KeyBindingType)) );
 
         connect( d->klineEdit,
-                 SIGNAL(completionModeChanged(KGlobalSettings::Completion)),
-                 SIGNAL(completionModeChanged(KGlobalSettings::Completion)));
+                 SIGNAL(completionModeChanged(KCompletion::CompletionMode)),
+                 SIGNAL(completionModeChanged(KCompletion::CompletionMode)));
 
         connect( d->klineEdit,
                  SIGNAL(aboutToShowContextMenu(QMenu*)),

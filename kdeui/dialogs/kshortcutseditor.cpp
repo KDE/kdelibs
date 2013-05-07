@@ -46,6 +46,7 @@
 #include "kdebug.h"
 #include "kdeprintdialog.h"
 #include "kglobalaccel.h"
+#include "kglobalsettings.h"
 #include "kmessagebox.h"
 #include <kgesturemap.h>
 

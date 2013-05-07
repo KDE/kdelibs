@@ -40,7 +40,7 @@ private:
     {
         KComboBox w(ctorArg /*initial value for editable*/);
         w.setEditable(true);
-        w.setCompletionMode( KGlobalSettings::CompletionPopup );
+        w.setCompletionMode( KCompletion::CompletionPopup );
         w.addItem("Hello world");
         QVERIFY(w.lineEdit());
         QVERIFY(qobject_cast<KLineEdit*>(w.lineEdit()));

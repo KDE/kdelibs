@@ -38,6 +38,7 @@ class QProgressBar;
 
 class KActionCollection;
 class KActionMenu;
+class KConfigGroup;
 class KDirLister;
 class KPreviewWidgetBase;
 class KFilePreviewGenerator;

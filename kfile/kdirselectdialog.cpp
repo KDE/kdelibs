@@ -33,6 +33,7 @@
 #include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 #include <khistorycombobox.h>
 #include <kfiledialog.h>
 #include <kfiletreeview.h>

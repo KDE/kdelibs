@@ -79,6 +79,7 @@
 #include <kactionmenu.h>
 #include <kconfiggroup.h>
 #include <qmimedatabase.h>
+#include <ksharedconfig.h>
 
 template class QHash<QString, KFileItem>;
 

@@ -27,6 +27,7 @@
 #include <QScrollBar>
 #include <QKeyEvent>
 
+#include <ksharedconfig.h>
 #include <ktitlewidget.h>
 #include <kdebug.h>
 #include <kwindowconfig.h>

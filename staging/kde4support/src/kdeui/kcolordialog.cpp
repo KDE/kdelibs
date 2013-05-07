@@ -80,6 +80,7 @@
 #include "khuesaturationselect.h"
 #include "kxyselector.h"
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 
 #if HAVE_X11
 #include <X11/Xlib.h>

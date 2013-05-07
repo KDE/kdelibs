@@ -46,7 +46,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   m_ro = new KComboBox(this);
   m_ro->setObjectName( "ReadOnlyCombo" );
   lbl->setBuddy (m_ro);
-  m_ro->setCompletionMode( KGlobalSettings::CompletionAuto );
+  m_ro->setCompletionMode( KCompletion::CompletionAuto );
   connectComboSignals(m_ro);
   hbox->addWidget(m_ro);
 
@@ -138,7 +138,7 @@ KComboBoxTest::KComboBoxTest(QWidget* widget)
   KCompletion * s_pCompletion = new KCompletion;
   s_pCompletion->setOrder( KCompletion::Weighted );
   s_pCompletion->setItems( cg.readEntry( "ComboContents", QStringList() ) );
-  s_pCompletion->setCompletionMode( KGlobalSettings::completionMode() );
+  s_pCompletion->setCompletionMode( KCompletion::CompletionPopup );
   m_konqc->setCompletionObject( s_pCompletion );
 
   QPixmap pix = SmallIcon("www");

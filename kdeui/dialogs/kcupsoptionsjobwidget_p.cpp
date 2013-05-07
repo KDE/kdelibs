@@ -31,6 +31,7 @@
 #include <QPrintEngine>
 
 #include <kcombobox.h>
+#include <kglobalsettings.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kdatetime.h>

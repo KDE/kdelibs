@@ -34,6 +34,7 @@
 #include <QDoubleValidator>
 
 #include <kcalendarsystem.h>
+#include <kglobalsettings.h>
 #include <klocalizeddate.h>
 #include <klocalizedstring.h>
 #include <kcombobox.h>

@@ -82,7 +82,7 @@ class KLineEditPrivate;
  * second argument.
  *
  * If @p EchoMode for this widget is set to something other than @p QLineEdit::Normal,
- * the completion mode will always be defaulted to KGlobalSettings::CompletionNone.
+ * the completion mode will always be defaulted to CompletionNone.
  * This is done purposefully to guard against protected entries such as passwords being
  * cached in KCompletion's list. Hence, if the @p EchoMode is not QLineEdit::Normal, the
  * completion mode is automatically disabled.
@@ -200,7 +200,7 @@ public:
      *
      * See KCompletionBase::setCompletionMode
      */
-    virtual void setCompletionMode( KGlobalSettings::Completion mode );
+    virtual void setCompletionMode( KCompletion::CompletionMode mode );
 
    /**
     * Disables completion modes by makeing them non-checkable.
@@ -208,7 +208,7 @@ public:
     * The context menu allows to change the completion mode.
     * This method allows to disable some modes.
     */
-    void setCompletionModeDisabled( KGlobalSettings::Completion mode, bool disable = true );
+    void setCompletionModeDisabled( KCompletion::CompletionMode mode, bool disable = true );
 
    /**
     * Enables/disables the popup (context) menu.
@@ -272,7 +272,7 @@ public:
 
     /**
      * @returns the completion-box, that is used in completion mode
-     * KGlobalSettings::CompletionPopup.
+     * CompletionPopup.
      * This method will create a completion-box if none is there, yet.
      *
      * @param create Set this to false if you don't want the box to be created
@@ -327,7 +327,7 @@ public:
 
     /**
      * Set the completion-box to be used in completion mode
-     * KGlobalSettings::CompletionPopup.
+     * CompletionPopup.
      * This will do nothing if a completion-box already exists.
      *
      * @param box The KCompletionBox to set
@@ -434,7 +434,7 @@ Q_SIGNALS:
      * KCompletionBase::setKeyBinding for details.
      *
      * Note that this signal is @em not emitted if the completion
-     * mode is set to @p KGlobalSettings::CompletionNone or @p echoMode() is @em not  normal.
+     * mode is set to @p CompletionNone or @p echoMode() is @em not  normal.
      */
     void textRotation( KCompletionBase::KeyBindingType );
 
@@ -442,7 +442,7 @@ Q_SIGNALS:
      * Emitted when the user changed the completion mode by using the
      * popupmenu.
      */
-    void completionModeChanged( KGlobalSettings::Completion );
+    void completionModeChanged( KCompletion::CompletionMode );
 
     /**
      * Emitted before the context menu is displayed.

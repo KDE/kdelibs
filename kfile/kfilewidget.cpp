@@ -55,6 +55,7 @@
 #include <klocalizedstring.h>
 #include <kio/kfileitemdelegate.h>
 #include <kde_file.h>
+#include <ksharedconfig.h>
 
 #include <QCheckBox>
 #include <QDockWidget>
@@ -1838,16 +1839,16 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
     autoDirectoryFollowing = configGroup.readEntry(AutoDirectoryFollowing,
                                                    DefaultDirectoryFollowing);
 
-    KGlobalSettings::Completion cm = (KGlobalSettings::Completion)
+    KCompletion::CompletionMode cm = (KCompletion::CompletionMode)
                                       configGroup.readEntry( PathComboCompletionMode,
-                                      static_cast<int>( KGlobalSettings::completionMode() ) );
-    if ( cm != KGlobalSettings::completionMode() )
+                                      static_cast<int>( KCompletion::CompletionPopup ) );
+    if ( cm != KCompletion::CompletionPopup )
         combo->setCompletionMode( cm );
 
-    cm = (KGlobalSettings::Completion)
+    cm = (KCompletion::CompletionMode)
          configGroup.readEntry( LocationComboCompletionMode,
-                        static_cast<int>( KGlobalSettings::completionMode() ) );
-    if ( cm != KGlobalSettings::completionMode() )
+                        static_cast<int>( KCompletion::CompletionPopup ) );
+    if ( cm != KCompletion::CompletionPopup )
         locationEdit->setCompletionMode( cm );
 
     // since we delayed this moment, initialize the directory of the completion object to

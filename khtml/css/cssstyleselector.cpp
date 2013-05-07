@@ -59,6 +59,7 @@ using namespace DOM;
 
 
 #include <kconfig.h>
+#include <kglobalsettings.h>
 #include <QtCore/QFile>
 #include <QtCore/QString>
 #include <QtCore/QFileInfo>

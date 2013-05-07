@@ -37,6 +37,7 @@
 #include <krun.h>
 
 #include <kdebug.h>
+#include <kconfig.h>
 #include <kconfiggroup.h>
 #include <qstandardpaths.h>
 

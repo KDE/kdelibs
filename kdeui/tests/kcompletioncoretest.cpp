@@ -64,7 +64,7 @@ Test_KCompletion::insertionOrder()
 	completion.setItems(strings);
 	QVERIFY(completion.items().count() == strings.count());
 
-	completion.setCompletionMode(KGlobalSettings::CompletionShell);
+	completion.setCompletionMode(KCompletion::CompletionShell);
 	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
 	QVERIFY(spy1.count() == 1);
 	QVERIFY(spy1.takeFirst().at(0).toString() == QString("carp"));
@@ -79,7 +79,7 @@ Test_KCompletion::insertionOrder()
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], carp);
 
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 	QCOMPARE(completion.makeCompletion("ca"), carpet);
 	QVERIFY(spy1.count() == 1);
 	QVERIFY(spy1.takeFirst().at(0).toString() == carpet);
@@ -99,7 +99,7 @@ Test_KCompletion::sortedOrder()
 	completion.setItems(strings);
 	QVERIFY(completion.items().count() == 4);
 
-	completion.setCompletionMode(KGlobalSettings::CompletionShell);
+	completion.setCompletionMode(KCompletion::CompletionShell);
 	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
 	QVERIFY(spy1.count() == 1);
 	QCOMPARE(spy1.takeFirst().at(0).toString(), QString("carp"));
@@ -115,7 +115,7 @@ Test_KCompletion::sortedOrder()
 	QCOMPARE(matches[0], carp);
 	QCOMPARE(matches[1], carpet);
 
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 	QCOMPARE(completion.makeCompletion("ca"), carp);
 	QVERIFY(spy1.count() == 1);
 	QCOMPARE(spy1.takeFirst().at(0).toString(), carp);
@@ -135,7 +135,7 @@ Test_KCompletion::weightedOrder()
 	completion.setItems(wstrings);
 	QVERIFY(completion.items().count() == 4);
 
-	completion.setCompletionMode(KGlobalSettings::CompletionShell);
+	completion.setCompletionMode(KCompletion::CompletionShell);
 	QCOMPARE(completion.makeCompletion("ca"), QString("carp"));
 	spy1.takeFirst(); // empty the list
 	QVERIFY(spy3.count() == 1); spy3.takeFirst();
@@ -150,7 +150,7 @@ Test_KCompletion::weightedOrder()
 	QCOMPARE(matches[0], carpet);
 	QCOMPARE(matches[1], carp);
 
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 	QCOMPARE(completion.makeCompletion("ca"), carpet);
 
 	matches = completion.substringCompletion("ca");
@@ -165,7 +165,7 @@ Test_KCompletion::substringCompletion_Insertion()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.setOrder(KCompletion::Insertion);
 	completion.setItems(strings);
@@ -200,7 +200,7 @@ Test_KCompletion::substringCompletion_Sorted()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.setOrder(KCompletion::Sorted);
 	completion.setItems(strings);
@@ -235,7 +235,7 @@ Test_KCompletion::substringCompletion_Weighted()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.setOrder(KCompletion::Weighted);
 	completion.setItems(wstrings);
@@ -270,7 +270,7 @@ Test_KCompletion::allMatches_Insertion()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.setOrder(KCompletion::Insertion);
 	completion.setItems(strings);
@@ -297,7 +297,7 @@ Test_KCompletion::allMatches_Sorted()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.setOrder(KCompletion::Sorted);
 	completion.setItems(strings);
@@ -324,7 +324,7 @@ Test_KCompletion::allMatches_Weighted()
 {
 	KCompletion completion;
 	completion.setSoundsEnabled(false);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.setOrder(KCompletion::Weighted);
 	completion.setItems(wstrings);
@@ -353,7 +353,7 @@ Test_KCompletion::cycleMatches_Insertion()
 	completion.setSoundsEnabled(false);
 	completion.setOrder(KCompletion::Insertion);
 	completion.setItems(strings);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.makeCompletion("ca");
 	QCOMPARE(completion.nextMatch(), carpet);
@@ -369,7 +369,7 @@ Test_KCompletion::cycleMatches_Sorted()
 	completion.setSoundsEnabled(false);
 	completion.setOrder(KCompletion::Sorted);
 	completion.setItems(strings);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.makeCompletion("ca");
 	QCOMPARE(completion.nextMatch(), carp);
@@ -385,7 +385,7 @@ Test_KCompletion::cycleMatches_Weighted()
 	completion.setSoundsEnabled(false);
 	completion.setOrder(KCompletion::Weighted);
 	completion.setItems(wstrings);
-	completion.setCompletionMode(KGlobalSettings::CompletionAuto);
+	completion.setCompletionMode(KCompletion::CompletionAuto);
 
 	completion.makeCompletion("ca");
 	QCOMPARE(completion.nextMatch(), carpet);

@@ -1,3 +1,11 @@
+find_package(X11)
+
+if (X11_FOUND)
+   set (HAVE_X11 1)
+else ()
+   set (HAVE_X11 0)
+endif ()
+
 # Generate config-kstandarddirs.h
 set( KDELIBSUFF ${LIB_SUFFIX} )
 configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )

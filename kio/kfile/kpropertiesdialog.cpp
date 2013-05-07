@@ -1781,8 +1781,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         for (i=0; ((user = getpwent()) != 0L) && (i < maxEntries); ++i)
             kcom->addItem(QString::fromLatin1(user->pw_name));
         endpwent();
-        d->usrEdit->setCompletionMode((i < maxEntries) ? KGlobalSettings::CompletionAuto :
-                                      KGlobalSettings::CompletionNone);
+        d->usrEdit->setCompletionMode((i < maxEntries) ? KCompletion::CompletionAuto :
+                                      KCompletion::CompletionNone);
         d->usrEdit->setText(d->strOwner);
         gl->addWidget(d->usrEdit, 1, 1);
         connect( d->usrEdit, SIGNAL(textChanged(QString)),
@@ -1849,7 +1849,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         kcom->setItems(groupList);
         d->grpEdit->setCompletionObject(kcom, true);
         d->grpEdit->setAutoDeleteCompletionObject( true );
-        d->grpEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
+        d->grpEdit->setCompletionMode(KCompletion::CompletionAuto);
         d->grpEdit->setText(d->strGroup);
         gl->addWidget(d->grpEdit, 2, 1);
         connect( d->grpEdit, SIGNAL(textChanged(QString)),
@@ -3373,7 +3373,7 @@ void KDesktopPropsPlugin::slotAdvanced()
     {
         w.suidEdit->setCompletionObject(kcom, true);
         w.suidEdit->setAutoDeleteCompletionObject( true );
-        w.suidEdit->setCompletionMode(KGlobalSettings::CompletionAuto);
+        w.suidEdit->setCompletionMode(KCompletion::CompletionAuto);
     }
     else
     {

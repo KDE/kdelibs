@@ -21,7 +21,6 @@
 #define KCOMPLETION_H
 
 #include <kdeui_export.h>
-#include <kglobalsettings.h>
 #include <ksortablelist.h>
 
 #include <QtCore/QMap>
@@ -137,6 +136,39 @@ class KDEUI_EXPORT KCompletion : public QObject
 
 public:
     /**
+     * This enum describes the completion mode used for by the KCompletion class.
+     * See <a href="http://developer.kde.org/documentation/standards/kde/style/keys/completion.html">
+     * the styleguide</a>.
+     **/
+    enum CompletionMode {
+        /**
+         * No completion is used.
+         */
+        CompletionNone=1,
+        /**
+         * Text is automatically filled in whenever possible.
+         */
+        CompletionAuto,
+        /**
+         * Same as automatic except shortest match is used for completion.
+         */
+        CompletionMan,
+        /**
+         * Complete text much in the same way as a typical *nix shell would.
+         */
+        CompletionShell,
+        /**
+         * Lists all possible matches in a popup list-box to choose from.
+         */
+        CompletionPopup,
+        /**
+         * Lists all possible matches in a popup list-box to choose from, and automatically
+         * fill the result whenever possible.
+         */
+        CompletionPopupAuto
+    };
+
+    /**
      * Constants that represent the order in which KCompletion performs
      * completion-lookups.
      */
@@ -246,23 +278,18 @@ public:
 
     /**
      * Sets the completion mode to Auto/Manual, Shell or None.
-     * If you don't set the mode explicitly, the global default value
-     * KGlobalSettings::completionMode() is used.
-     * KGlobalSettings::CompletionNone disables completion.
      * @param mode the completion mode
      * @see completionMode
-     * @see KGlobalSettings::completionMode
      */
-    virtual void setCompletionMode( KGlobalSettings::Completion mode );
+    virtual void setCompletionMode( CompletionMode mode );
 
     /**
      * Return the current completion mode.
-     * May be different from KGlobalSettings::completionMode(), if you
-     * explicitly called setCompletionMode().
-     * @return the current completion mode
+     *
+     * @return the current completion mode, default is CompletionPopup
      * @see setCompletionMode
      */
-    KGlobalSettings::Completion completionMode() const;
+    CompletionMode completionMode() const;
 
     /**
      * KCompletion offers three different ways in which it offers its items:
@@ -795,7 +822,7 @@ public:
      * Sets the type of completion to be used.
      *
      * The completion modes supported are those defined in
-     * KGlobalSettings().  See below.
+     * KCompletion::CompletionMode.  See below.
      *
      * @param mode Completion type:
      *   @li CompletionNone:  Disables completion feature.
@@ -811,17 +838,14 @@ public:
      *   @li CompletionPopup: Shows all available completions at once,
      *                        in a listbox popping up.
      */
-    virtual void setCompletionMode( KGlobalSettings::Completion mode );
+    virtual void setCompletionMode( KCompletion::CompletionMode mode );
 
     /**
      * Returns the current completion mode.
      *
-     * The return values are of type KGlobalSettings::Completion.
-     * See setCompletionMode() for details.
-     *
      * @return the completion mode.
      */
-    KGlobalSettings::Completion completionMode() const;
+    KCompletion::CompletionMode completionMode() const;
 
     /**
      * Sets the key-binding to be used for manual text

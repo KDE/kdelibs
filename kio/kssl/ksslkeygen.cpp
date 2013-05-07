@@ -30,6 +30,7 @@
 #include <kwallet.h>
 
 #include <QProgressDialog>
+#include <QStandardPaths>
 #include <qtemporaryfile.h>
 
 #include <assert.h>

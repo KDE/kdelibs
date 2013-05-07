@@ -57,7 +57,7 @@
 #include <kconfiggroup.h>
 
 inline void writeEntry( KConfigGroup& group, const char* key,
-                        const KGlobalSettings::Completion& aValue,
+                        const KCompletion::CompletionMode& aValue,
                         KConfigBase::WriteConfigFlags flags = KConfigBase::Normal )
 {
     group.writeEntry(key, int(aValue), flags);
@@ -584,8 +584,8 @@ void KOpenWithDialogPrivate::init(const QString &_text, const QString &_value)
     KConfigGroup cg( KSharedConfig::openConfig(), QString::fromLatin1("Open-with settings") );
     int max = cg.readEntry( "Maximum history", 15 );
     combo->setMaxCount( max );
-    int mode = cg.readEntry( "CompletionMode", int(KGlobalSettings::completionMode()));
-    combo->setCompletionMode((KGlobalSettings::Completion)mode);
+    int mode = cg.readEntry( "CompletionMode", int(KCompletion::CompletionPopup));
+    combo->setCompletionMode((KCompletion::CompletionMode)mode);
     const QStringList list = cg.readEntry( "History", QStringList() );
     combo->setHistoryItems( list, true );
     edit = new KUrlRequester(combo, q);

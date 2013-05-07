@@ -100,7 +100,7 @@ private Q_SLOTS:
         QVERIFY(!w.isModified());
 
         // the suggestion from auto completion emits textChanged but not userTextChanged nor textEdited
-        w.setCompletionMode(KGlobalSettings::CompletionAuto);
+        w.setCompletionMode(KCompletion::CompletionAuto);
         KCompletion completion;
         completion.setSoundsEnabled(false);
         QStringList items;
@@ -144,7 +144,7 @@ private Q_SLOTS:
         textEditedSpy.clear();
 
         // Now with popup completion
-        w.setCompletionMode(KGlobalSettings::CompletionPopup);
+        w.setCompletionMode(KCompletion::CompletionPopup);
         w.setText("KDE");
         QVERIFY(!w.isModified());
 #ifndef KDE_NO_DEPRECATED
@@ -206,7 +206,7 @@ private Q_SLOTS:
     {
         KLineEdit w;
         w.setText("/");
-        w.setCompletionMode(KGlobalSettings::CompletionPopup);
+        w.setCompletionMode(KCompletion::CompletionPopup);
         KCompletion completion;
         completion.setSoundsEnabled(false);
         w.setCompletionObject(&completion);

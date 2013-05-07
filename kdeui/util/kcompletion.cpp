@@ -31,7 +31,7 @@ class KCompletionPrivate
 {
 public:
     KCompletionPrivate()
-        : myCompletionMode( KGlobalSettings::completionMode() )
+        : myCompletionMode( KCompletion::CompletionPopup )
         , myTreeRoot( new KCompTreeNode )
         , myBeep( true )
         , myIgnoreCase( false )
@@ -46,7 +46,7 @@ public:
     // list used for nextMatch() and previousMatch()
     KCompletionMatchesWrapper matches;
 
-    KGlobalSettings::Completion myCompletionMode;
+    KCompletion::CompletionMode myCompletionMode;
 
     KCompletion::CompOrder myOrder;
     QString                myLastString;
@@ -224,7 +224,7 @@ void KCompletion::clear()
 
 QString KCompletion::makeCompletion( const QString& string )
 {
-    if ( d->myCompletionMode == KGlobalSettings::CompletionNone )
+    if ( d->myCompletionMode == CompletionNone )
         return QString();
 
     //kDebug(0) << "KCompletion: completing: " << string;
@@ -236,7 +236,7 @@ QString KCompletion::makeCompletion( const QString& string )
 
     // in Shell-completion-mode, emit all matches when we get the same
     // complete-string twice
-    if ( d->myCompletionMode == KGlobalSettings::CompletionShell &&
+    if ( d->myCompletionMode == CompletionShell &&
          string == d->myLastString ) {
         // Don't use d->matches since calling postProcessMatches()
         // on d->matches here would interfere with call to
@@ -255,8 +255,8 @@ QString KCompletion::makeCompletion( const QString& string )
 
     QString completion;
     // in case-insensitive popup mode, we search all completions at once
-    if ( d->myCompletionMode == KGlobalSettings::CompletionPopup ||
-         d->myCompletionMode == KGlobalSettings::CompletionPopupAuto ) {
+    if ( d->myCompletionMode == CompletionPopup ||
+         d->myCompletionMode == CompletionPopupAuto ) {
         findAllCompletions( string, &d->matches, d->myHasMultipleMatches );
         if ( !d->matches.isEmpty() )
             completion = d->matches.first();
@@ -323,12 +323,12 @@ QStringList KCompletion::substringCompletion( const QString& string ) const
 }
 
 
-void KCompletion::setCompletionMode( KGlobalSettings::Completion mode )
+void KCompletion::setCompletionMode( CompletionMode mode )
 {
     d->myCompletionMode = mode;
 }
 
-KGlobalSettings::Completion KCompletion::completionMode() const {
+KCompletion::CompletionMode KCompletion::completionMode() const {
     return d->myCompletionMode;
 }
 
@@ -502,7 +502,7 @@ QString KCompletion::findCompletion( const QString& string )
     if ( node && node->childrenCount() > 1 ) {
         d->myHasMultipleMatches = true;
 
-        if ( d->myCompletionMode == KGlobalSettings::CompletionAuto ) {
+        if ( d->myCompletionMode == CompletionAuto ) {
             d->myRotationIndex = 1;
             if (d->myOrder != Weighted) {
                 while ( (node = node->firstChild()) ) {
@@ -692,14 +692,14 @@ void KCompletion::doBeep( BeepMode mode ) const
             text = i18n("You reached the end of the list\nof matching items.\n");
             break;
         case PartialMatch:
-            if ( d->myCompletionMode == KGlobalSettings::CompletionShell ||
-                 d->myCompletionMode == KGlobalSettings::CompletionMan ) {
+            if ( d->myCompletionMode == CompletionShell ||
+                 d->myCompletionMode == CompletionMan ) {
                 event = QLatin1String("Textcompletion: partial match");
                 text = i18n("The completion is ambiguous, more than one\nmatch is available.\n");
             }
             break;
         case NoMatch:
-            if ( d->myCompletionMode == KGlobalSettings::CompletionShell ) {
+            if ( d->myCompletionMode == CompletionShell ) {
                 event = QLatin1String("Textcompletion: no match");
                 text = i18n("There is no matching item available.\n");
             }
