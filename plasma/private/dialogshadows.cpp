@@ -336,6 +336,9 @@ void DialogShadows::Private::freeX11Pixmaps()
 {
 #ifdef Q_WS_X11
     foreach (const QPixmap &pixmap, m_shadowPixmaps) {
+        if (!QX11Info::display()) {
+            return;
+        }
         if (!pixmap.isNull()) {
             XFreePixmap(QX11Info::display(), pixmap.handle());
         }
