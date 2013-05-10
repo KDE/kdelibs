@@ -41,7 +41,6 @@
 #include <kcrash.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kde_file.h>
 #include <klocalizedstring.h>
 
 #include "kremoteencoding.h"
@@ -159,7 +158,7 @@ static const char *s_protocol;
 extern "C" {
 static void genericsig_handler(int sigNumber)
 {
-   KDE_signal(sigNumber,SIG_IGN);
+   ::signal(sigNumber,SIG_IGN);
    //WABA: Don't do anything that requires malloc, we can deadlock on it since
    //a SIGTERM signal can come in while we are in malloc/free.
    //qDebug()<<"kioslave : exiting due to signal "<<sigNumber;
@@ -167,7 +166,7 @@ static void genericsig_handler(int sigNumber)
    //in lengthy operations in the various slaves
    if (globalSlave!=0)
       globalSlave->setKillFlag();
-   KDE_signal(SIGALRM,SIG_DFL);
+   ::signal(SIGALRM,SIG_DFL);
    alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
 }
 }
@@ -188,26 +187,26 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     if (qgetenv("KDE_DEBUG").isEmpty())
     {
         KCrash::setCrashHandler( sigsegv_handler );
-        KDE_signal(SIGILL,&sigsegv_handler);
-        KDE_signal(SIGTRAP,&sigsegv_handler);
-        KDE_signal(SIGABRT,&sigsegv_handler);
-        KDE_signal(SIGBUS,&sigsegv_handler);
-        KDE_signal(SIGALRM,&sigsegv_handler);
-        KDE_signal(SIGFPE,&sigsegv_handler);
+        ::signal(SIGILL,&sigsegv_handler);
+        ::signal(SIGTRAP,&sigsegv_handler);
+        ::signal(SIGABRT,&sigsegv_handler);
+        ::signal(SIGBUS,&sigsegv_handler);
+        ::signal(SIGALRM,&sigsegv_handler);
+        ::signal(SIGFPE,&sigsegv_handler);
 #ifdef SIGPOLL
-        KDE_signal(SIGPOLL, &sigsegv_handler);
+        ::signal(SIGPOLL, &sigsegv_handler);
 #endif
 #ifdef SIGSYS
-        KDE_signal(SIGSYS, &sigsegv_handler);
+        ::signal(SIGSYS, &sigsegv_handler);
 #endif
 #ifdef SIGVTALRM
-        KDE_signal(SIGVTALRM, &sigsegv_handler);
+        ::signal(SIGVTALRM, &sigsegv_handler);
 #endif
 #ifdef SIGXCPU
-        KDE_signal(SIGXCPU, &sigsegv_handler);
+        ::signal(SIGXCPU, &sigsegv_handler);
 #endif
 #ifdef SIGXFSZ
-        KDE_signal(SIGXFSZ, &sigsegv_handler);
+        ::signal(SIGXFSZ, &sigsegv_handler);
 #endif
     }
 
@@ -217,9 +216,9 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     act.sa_flags = 0;
     sigaction( SIGPIPE, &act, 0 );
 
-    KDE_signal(SIGINT,&genericsig_handler);
-    KDE_signal(SIGQUIT,&genericsig_handler);
-    KDE_signal(SIGTERM,&genericsig_handler);
+    ::signal(SIGINT,&genericsig_handler);
+    ::signal(SIGQUIT,&genericsig_handler);
+    ::signal(SIGTERM,&genericsig_handler);
 #endif
 
     globalSlave=this;
@@ -714,10 +713,10 @@ void SlaveBase::listEntries( const UDSEntryList& list )
 static void sigsegv_handler(int sig)
 {
 #ifdef Q_OS_UNIX
-    KDE_signal(sig,SIG_DFL); // Next one kills
+    ::signal(sig,SIG_DFL); // Next one kills
 
     //Kill us if we deadlock
-    KDE_signal(SIGALRM,SIG_DFL);
+    ::signal(SIGALRM,SIG_DFL);
     alarm(5);  //generate an alarm signal in 5 seconds, in this time the slave has to exit
 
     // Debug and printf should be avoided because they might
