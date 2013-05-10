@@ -22,6 +22,7 @@
 #ifndef KIO_METAINFOJOB_H
 #define KIO_METAINFOJOB_H
 
+#include <kde4support_export.h>
 #include <kio/job.h>
 #include <kfileitem.h>
 
@@ -32,7 +33,7 @@ namespace KIO {
      *
      * @short KIO Job to retrieve meta information from files.
      */
-    class KIO_EXPORT MetaInfoJob : public KIO::Job
+    class KDE4SUPPORT_DEPRECATED_EXPORT MetaInfoJob : public KIO::Job
     {
         Q_OBJECT
     public:
@@ -112,7 +113,7 @@ namespace KIO {
      * @return the MetaInfoJob to retrieve the items
      * @deprecated use strigi or KFileMetaInfo
      */
-    KIO_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const KFileItemList& items);
+    KDE4SUPPORT_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const KFileItemList& items);
 
     /**
      * Retrieves meta information for the given items.
@@ -121,7 +122,7 @@ namespace KIO {
      * @return the MetaInfoJob to retrieve the items
      * @deprecated use strigi or KFileMetaInfo
      */
-    KIO_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const QList<QUrl>& items);
+    KDE4SUPPORT_DEPRECATED_EXPORT MetaInfoJob* fileMetaInfo(const QList<QUrl>& items);
 }
 
 #endif

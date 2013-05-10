@@ -163,8 +163,7 @@ KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const QList<QUrl> &items)
 {
     KFileItemList fileItems;
     foreach (const QUrl& url, items) {
-        fileItems.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, url,
-            true));
+        fileItems.append(KFileItem(url));
     }
     MetaInfoJob *job = new MetaInfoJob(fileItems);
     job->setUiDelegate(new JobUiDelegate());

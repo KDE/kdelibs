@@ -115,7 +115,6 @@ set(kiocore_STAT_SRCS
   kio/kurifilter.cpp
   kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
-  kio/metainfojob.cpp
   kio/mkdirjob.cpp
   kio/netaccess.cpp
   kio/paste.cpp
@@ -381,7 +380,6 @@ install(  FILES
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h
-  kio/metainfojob.h
   kio/davjob.h
   kio/directorysizejob.h
   kio/renamedialog.h

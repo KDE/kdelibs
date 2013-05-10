@@ -73,6 +73,8 @@ set(libkde4support_SRCS
     kdeui/krestrictedline.cpp
     kdeui/klistwidget.cpp
 
+    kio/metainfojob.cpp
+
     kparts/factory.cpp
 )
 
@@ -100,12 +102,13 @@ target_include_directories(kde4support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../.
 set(kde4support_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/kdecore"
   "${CMAKE_CURRENT_SOURCE_DIR}/kdeui"
+  "${CMAKE_CURRENT_SOURCE_DIR}/kio"
   "${CMAKE_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/kparts"
 )
 target_include_directories(kde4support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
-target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets ${KAuth_LIBRARIESss} kdeui ki18n kinterprocesswindowing ${X11_LIBRARIES})
+target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES})
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
@@ -180,6 +183,12 @@ if (NOT X11_FOUND)
     # install our copy of the rgb.txt named colors list on systems without X11
     install(FILES kdeui/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
 endif (NOT X11_FOUND)
+
+# kio/*.h
+install(FILES
+    kio/metainfojob.h
+    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
+)
 
 # kparts/*.h
 install(FILES
