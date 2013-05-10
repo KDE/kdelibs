@@ -60,6 +60,7 @@
 #endif
 
 #include <assert.h>
+#include <cstdlib>
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
