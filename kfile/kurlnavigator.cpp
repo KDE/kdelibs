@@ -51,10 +51,6 @@
 #include <qmimedatabase.h>
 #include <QMimeData>
 
-#if HAVE_X11
-#include <fixx11h.h>
-#endif
-
 using namespace KDEPrivate;
 
 struct LocationData
