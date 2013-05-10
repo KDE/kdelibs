@@ -1686,7 +1686,7 @@ KUrl KUrl::fromPathOrUrl( const QString& text )
 static QString _relativePath(const QString &base_dir, const QString &path, bool &isParent)
 {
    QString _base_dir(QDir::cleanPath(base_dir));
-   QString _path(QDir::cleanPath(path.isEmpty() || (path[0] != QLatin1Char('/')) ? _base_dir+QLatin1Char('/')+path : path));
+   QString _path(QDir::cleanPath(path.isEmpty() || QDir::isRelativePath(path) ? _base_dir+QLatin1Char('/')+path : path));
 
    if (_base_dir.isEmpty())
       return _path;
