@@ -23,7 +23,7 @@
 #define KIO_JOB_H
 
 #include <kio/jobclasses.h>
-#include <time.h> // time_t
+#include <QDateTime>
 
 namespace KIO {
 
@@ -161,7 +161,7 @@ namespace KIO {
      * supposed to expire.
      * @return the job handling the operation.
      */
-    KIO_EXPORT SimpleJob *http_update_cache( const QUrl& url, bool no_cache, time_t expireDate);
+    KIO_EXPORT SimpleJob *http_update_cache( const QUrl& url, bool no_cache, const QDateTime &expireDate);
 
     /**
      * Find all details for one file or directory.

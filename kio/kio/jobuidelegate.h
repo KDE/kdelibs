@@ -86,10 +86,10 @@ public:
                                               QString& newDest,
                                               KIO::filesize_t sizeSrc = KIO::filesize_t(-1),
                                               KIO::filesize_t sizeDest = KIO::filesize_t(-1),
-                                              time_t ctimeSrc = time_t(-1),
-                                              time_t ctimeDest = time_t(-1),
-                                              time_t mtimeSrc = time_t(-1),
-                                              time_t mtimeDest = time_t(-1));
+                                              const QDateTime &ctimeSrc = QDateTime(),
+                                              const QDateTime &ctimeDest = QDateTime(),
+                                              const QDateTime &mtimeSrc = QDateTime(),
+                                              const QDateTime &mtimeDest = QDateTime());
 
     /**
      * @internal

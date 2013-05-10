@@ -107,7 +107,7 @@ void JobTest::initTestCase()
     qRegisterMetaType<KJob*>("KJob*");
     qRegisterMetaType<KIO::Job*>("KIO::Job*");
     qRegisterMetaType<KUrl>("KUrl");
-    qRegisterMetaType<time_t>("time_t");
+    qRegisterMetaType<QDateTime>("QDateTime");
 }
 
 
@@ -259,7 +259,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     // cleanup and retry with KIO::copy()
     QFile::remove( dest );
     job = KIO::copy(u, d, KIO::HideProgressInfo );
-    QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,QUrl,QUrl,time_t,bool,bool)));
+    QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,QUrl,QUrl,QDateTime,bool,bool)));
     job->setUiDelegate(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );

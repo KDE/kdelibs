@@ -2018,7 +2018,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         KUrl url = v->part()->url();
         if ((str == "no-cache") && url.scheme().startsWith(QLatin1String("http")))
         {
-           KIO::http_update_cache(url, true, 0);
+            KIO::http_update_cache(url, true, QDateTime::fromTime_t(0));
         }
     }
     else if( (strcasecmp(equiv, "set-cookie") == 0))

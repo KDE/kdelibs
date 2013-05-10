@@ -111,10 +111,10 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
                            RenameDialog_Mode _mode,
                            KIO::filesize_t sizeSrc,
                            KIO::filesize_t sizeDest,
-                           time_t ctimeSrc,
-                           time_t ctimeDest,
-                           time_t mtimeSrc,
-                           time_t mtimeDest)
+                           const QDateTime &ctimeSrc,
+                           const QDateTime & ctimeDest,
+                           const QDateTime & mtimeSrc,
+                           const QDateTime & mtimeDest)
         : QDialog(parent), d(new RenameDialogPrivate)
 {
     setObjectName("KIO::RenameDialog");
@@ -180,8 +180,8 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             UDSEntry srcUds;
 
             srcUds.insert(UDSEntry::UDS_NAME, QUrlPathInfo(d->src).fileName());
-            srcUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeSrc);
-            srcUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeSrc);
+            srcUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeSrc.toMSecsSinceEpoch() / 1000);
+            srcUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeSrc.toMSecsSinceEpoch() / 1000);
             srcUds.insert(UDSEntry::UDS_SIZE, sizeSrc);
 
             d->srcItem = KFileItem(srcUds, d->src);
@@ -193,8 +193,8 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
             UDSEntry destUds;
 
             destUds.insert(UDSEntry::UDS_NAME, QUrlPathInfo(d->dest).fileName());
-            destUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeDest);
-            destUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeDest);
+            destUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeDest.toMSecsSinceEpoch() / 1000);
+            destUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeDest.toMSecsSinceEpoch() / 1000);
             destUds.insert(UDSEntry::UDS_SIZE, sizeDest);
 
             d->destItem = KFileItem(destUds, d->dest);

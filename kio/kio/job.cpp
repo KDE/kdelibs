@@ -821,11 +821,11 @@ StatJob *KIO::stat(const QUrl& url, KIO::StatJob::StatSide side, short int detai
     return job;
 }
 
-SimpleJob *KIO::http_update_cache( const QUrl& url, bool no_cache, time_t expireDate)
+SimpleJob *KIO::http_update_cache( const QUrl& url, bool no_cache, const QDateTime &expireDate)
 {
     Q_ASSERT(url.scheme() == "http" || url.scheme() == "https");
     // Send http update_cache command (2)
-    KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate);
+    KIO_ARGS << (int)2 << url << no_cache << qlonglong(expireDate.toMSecsSinceEpoch() / 1000);
     SimpleJob * job = SimpleJobPrivate::newJob(url, CMD_SPECIAL, packedArgs);
     Scheduler::setJobPriority(job, 1);
     return job;

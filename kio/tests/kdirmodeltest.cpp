@@ -646,9 +646,12 @@ void KDirModelTest::testChmodDirectory() // #53397
     KFileItem rootItem = m_dirModel->itemForIndex(QModelIndex());
     const mode_t origPerm = rootItem.permissions();
     mode_t newPerm = origPerm ^ S_IWGRP;
+    //const QFile::Permissions origPerm = rootItem.filePermissions();
+    //QVERIFY(origPerm & QFile::ReadOwner);
+    //const QFile::Permissions newPerm = origPerm ^ QFile::WriteGroup;
     QVERIFY(newPerm != origPerm);
     KFileItemList items; items << rootItem;
-    KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP, QString(), QString(), false, KIO::HideProgressInfo);
+    KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP /*TODO: QFile::WriteGroup*/, QString(), QString(), false, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
     // ChmodJob doesn't talk to KDirNotify, kpropertiesdialog does.
@@ -663,7 +666,9 @@ void KDirModelTest::testChmodDirectory() // #53397
     kDebug() << receivedIndex;
     QVERIFY(!receivedIndex.isValid());
 
-    QCOMPARE(m_dirModel->itemForIndex(QModelIndex()).permissions(), newPerm);
+    const KFileItem newRootItem = m_dirModel->itemForIndex(QModelIndex());
+    QVERIFY(!newRootItem.isNull());
+    QCOMPARE(QString::number(newRootItem.permissions(), 16), QString::number(newPerm, 16));
 
     disconnect( m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)),
                 &m_eventLoop, SLOT(exitLoop()) );

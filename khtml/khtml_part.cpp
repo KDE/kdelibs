@@ -1973,7 +1973,7 @@ void KHTMLPart::slotFinished( KJob * job )
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
   if ( d->m_doc && d->m_doc->docLoader()->expireDate() && url().scheme().toLower().startsWith("http"))
-      KIO::http_update_cache(url(), false, d->m_doc->docLoader()->expireDate());
+      KIO::http_update_cache(url(), false, QDateTime::fromMSecsSinceEpoch(1000 * d->m_doc->docLoader()->expireDate()));
 
   d->m_workingURL = KUrl();
 

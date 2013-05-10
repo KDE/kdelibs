@@ -29,7 +29,6 @@
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kdesktopfile.h>
-#include <kde_file.h>
 
 #include "slave.h"
 #include "scheduler.h"
@@ -316,8 +315,6 @@ void CopyJobPrivate::slotResultStating( KJob *job )
             assert ( !q->hasSubjobs() ); // We should have only one job at a time ...
             struct CopyInfo info;
             info.permissions = (mode_t) -1;
-            info.mtime = (time_t) -1;
-            info.ctime = (time_t) -1;
             info.size = (KIO::filesize_t)-1;
             info.uSource = srcurl;
             info.uDest = m_dest;
@@ -586,8 +583,8 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const QUrl& 
 {
     struct CopyInfo info;
     info.permissions = entry.numberValue(KIO::UDSEntry::UDS_ACCESS, -1);
-    info.mtime = (time_t) entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1);
-    info.ctime = (time_t) entry.numberValue(KIO::UDSEntry::UDS_CREATION_TIME, -1);
+    info.mtime = QDateTime::fromMSecsSinceEpoch(1000 * entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1));
+    info.ctime = QDateTime::fromMSecsSinceEpoch(1000 * entry.numberValue(KIO::UDSEntry::UDS_CREATION_TIME, -1));
     info.size = (KIO::filesize_t) entry.numberValue(KIO::UDSEntry::UDS_SIZE, -1);
     if (info.size != (KIO::filesize_t) -1)
         m_totalSize += info.size;
@@ -708,8 +705,6 @@ void CopyJobPrivate::statCurrentSrc()
             m_currentDest = m_dest;
             struct CopyInfo info;
             info.permissions = -1;
-            info.mtime = (time_t) -1;
-            info.ctime = (time_t) -1;
             info.size = (KIO::filesize_t)-1;
             info.uSource = m_currentSrcURL;
             info.uDest = m_currentDest;
@@ -847,8 +842,6 @@ void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
 
     struct CopyInfo info;
     info.permissions = -1;
-    info.mtime = (time_t) -1;
-    info.ctime = (time_t) -1;
     info.size = (KIO::filesize_t)-1;
     info.uSource = m_currentSrcURL;
     info.uDest = dest;
@@ -1054,8 +1047,8 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     const UDSEntry entry = ((KIO::StatJob*)job)->statResult();
 
     // Its modification time:
-    const time_t destmtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
-    const time_t destctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
+    const QDateTime destmtime = QDateTime::fromMSecsSinceEpoch(1000 * entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1));
+    const QDateTime destctime = QDateTime::fromMSecsSinceEpoch(1000 * entry.numberValue(KIO::UDSEntry::UDS_CREATION_TIME, -1));
 
     const KIO::filesize_t destsize = entry.numberValue( KIO::UDSEntry::UDS_SIZE );
     const QString linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
@@ -1343,8 +1336,8 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         // Its modification time:
         const UDSEntry entry = static_cast<KIO::StatJob *>(job)->statResult();
 
-        const time_t destmtime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
-        const time_t destctime = (time_t) entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1 );
+        const QDateTime destmtime = QDateTime::fromMSecsSinceEpoch(1000 * entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1));
+        const QDateTime destctime = QDateTime::fromMSecsSinceEpoch(1000 * entry.numberValue( KIO::UDSEntry::UDS_CREATION_TIME, -1));
         const KIO::filesize_t destsize = entry.numberValue( KIO::UDSEntry::UDS_SIZE );
         const QString linkDest = entry.stringValue( KIO::UDSEntry::UDS_LINK_DEST );
 
@@ -1598,9 +1591,7 @@ void CopyJobPrivate::copyNextFile()
             JobFlags flags = bOverwrite ? Overwrite : DefaultFlags;
             KIO::FileCopyJob * moveJob = KIO::file_move( uSource, uDest, (*it).permissions, flags | HideProgressInfo/*no GUI*/ );
             moveJob->setSourceSize( (*it).size );
-            if ((*it).mtime != -1) {
-                moveJob->setModificationTime( QDateTime::fromTime_t( (*it).mtime ) ); // #55804
-            }
+            moveJob->setModificationTime((*it).mtime); // #55804
             newjob = moveJob;
             //qDebug() << "Moving" << uSource << "to" << uDest;
             //emit moving( this, uSource, uDest );
@@ -1621,9 +1612,7 @@ void CopyJobPrivate::copyNextFile()
             KIO::FileCopyJob * copyJob = KIO::file_copy( uSource, uDest, permissions, flags | HideProgressInfo/*no GUI*/ );
             copyJob->setParentJob( q ); // in case of rename dialog
             copyJob->setSourceSize( (*it).size );
-            if ((*it).mtime != -1) {
-                copyJob->setModificationTime( QDateTime::fromTime_t( (*it).mtime ) );
-            }
+            copyJob->setModificationTime((*it).mtime);
             newjob = copyJob;
             //qDebug() << "Copying" << uSource << "to" << uDest;
             m_currentSrcURL=uSource;
@@ -1671,13 +1660,12 @@ void CopyJobPrivate::setNextDirAttribute()
 {
     Q_Q(CopyJob);
     while (m_directoriesCopiedIterator != m_directoriesCopied.constEnd() &&
-           (*m_directoriesCopiedIterator).mtime == -1) {
+           !(*m_directoriesCopiedIterator).mtime.isValid()) {
         ++m_directoriesCopiedIterator;
     }
     if ( m_directoriesCopiedIterator != m_directoriesCopied.constEnd() ) {
         const QUrl url = (*m_directoriesCopiedIterator).uDest;
-        const time_t mtime = (*m_directoriesCopiedIterator).mtime;
-        const QDateTime dt = QDateTime::fromTime_t(mtime);
+        const QDateTime dt = (*m_directoriesCopiedIterator).mtime;
         ++m_directoriesCopiedIterator;
 
         KIO::SimpleJob *job = KIO::setModificationTime( url, dt );
@@ -1828,6 +1816,8 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
         // Direct renaming didn't work. Try renaming to a temp name,
         // this can help e.g. when renaming 'a' to 'A' on a VFAT partition.
         // In that case it's the _same_ dir, we don't want to copy+del (data loss!)
+        // TODO: replace all this code with QFile::rename once
+        // https://codereview.qt-project.org/44823 is in
         if ((err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST || err == ERR_IDENTICAL_FILES) &&
             m_currentSrcURL.isLocalFile() && dest.isLocalFile()) {
           const QString _src(QUrlPathInfo(m_currentSrcURL).localPath(QUrlPathInfo::StripTrailingSlash));
@@ -1844,15 +1834,15 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 tmpFile.close();
                 tmpFile.remove();
                 //qDebug() << "QTemporaryFile using" << _tmp << "as intermediary";
-                if (KDE::rename( _src, _tmp ) == 0) {
+                if (QFile::rename( _src, _tmp ) == 0) {
                     //qDebug() << "Renaming" << _src << "to" << _tmp << "succeeded";
-                    if (!QFile::exists( _dest ) && KDE::rename(_tmp, _dest) == 0) {
+                    if (!QFile::exists( _dest ) && QFile::rename(_tmp, _dest) == 0) {
                         err = 0;
                         org::kde::KDirNotify::emitFileRenamed(m_currentSrcURL, dest);
                     } else {
                         //qDebug() << "Didn't manage to rename" << _tmp << "to" << _dest << ", reverting";
                         // Revert back to original name!
-                        if (KDE::rename( _tmp, _src ) != 0) {
+                        if (QFile::rename( _tmp, _src ) != 0) {
                             qWarning() << "Couldn't rename" << _tmp << "back to" << _src << '!';
                             // Severe error, abort
                             q->Job::slotResult(job); // will set the error and emit result(this)
@@ -1908,30 +1898,33 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 // Let's do it for local files, at least
                 KIO::filesize_t sizeSrc = (KIO::filesize_t) -1;
                 KIO::filesize_t sizeDest = (KIO::filesize_t) -1;
-                time_t ctimeSrc = (time_t) -1;
-                time_t ctimeDest = (time_t) -1;
-                time_t mtimeSrc = (time_t) -1;
-                time_t mtimeDest = (time_t) -1;
+                QDateTime ctimeSrc;
+                QDateTime ctimeDest;
+                QDateTime mtimeSrc;
+                QDateTime mtimeDest;
 
                 bool destIsDir = err == ERR_DIR_ALREADY_EXIST;
 
                 // ## TODO we need to stat the source using KIO::stat
                 // so that this code is properly network-transparent.
 
-                KDE_struct_stat stat_buf;
-                if ( m_currentSrcURL.isLocalFile() &&
-                    KDE::stat(m_currentSrcURL.toLocalFile(), &stat_buf) == 0 ) {
-                    sizeSrc = stat_buf.st_size;
-                    ctimeSrc = stat_buf.st_ctime;
-                    mtimeSrc = stat_buf.st_mtime;
-                    isDir = S_ISDIR(stat_buf.st_mode);
+                if (m_currentSrcURL.isLocalFile()) {
+                    QFileInfo info(m_currentSrcURL.toLocalFile());
+                    if (info.exists()) {
+                        sizeSrc = info.size();
+                        ctimeSrc = info.created();
+                        mtimeSrc = info.lastModified();
+                        isDir = info.isDir();
+                    }
                 }
-                if ( dest.isLocalFile() &&
-                    KDE::stat(dest.toLocalFile(), &stat_buf) == 0 ) {
-                    sizeDest = stat_buf.st_size;
-                    ctimeDest = stat_buf.st_ctime;
-                    mtimeDest = stat_buf.st_mtime;
-                    destIsDir = S_ISDIR(stat_buf.st_mode);
+                if (dest.isLocalFile()) {
+                    QFileInfo destInfo(dest.toLocalFile());
+                    if (destInfo.exists()) {
+                        sizeDest = destInfo.size();
+                        ctimeDest = destInfo.created();
+                        mtimeDest = destInfo.lastModified();
+                        destIsDir = destInfo.isDir();
+                    }
                 }
 
                 // If src==dest, use "overwrite-itself"
@@ -2043,7 +2036,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     {
         //qDebug() << "Renaming succeeded, move on";
         ++m_processedFiles;
-        emit q->copyingDone( q, *m_currentStatSrc, dest, -1 /*mtime unknown, and not needed*/, true, true );
+        emit q->copyingDone( q, *m_currentStatSrc, dest, QDateTime() /*mtime unknown, and not needed*/, true, true );
         m_successSrcList.append(*m_currentStatSrc);
         statNextSrc();
     }

@@ -24,9 +24,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
-
-#include <sys/types.h> // time_t
-
+#include <QDateTime>
 #include <QUrl>
 
 #include "jobclasses.h"
@@ -44,8 +42,8 @@ namespace KIO {
         QUrl uDest;
         QString linkDest; // for symlinks only
         int permissions;
-        time_t ctime;
-        time_t mtime;
+        QDateTime ctime;
+        QDateTime mtime;
         KIO::filesize_t size; // 0 for dirs
     };
 
@@ -238,7 +236,7 @@ namespace KIO {
          * @param renamed indicates that the destination URL was created using a
          * rename operation (i.e. fast directory moving). true if is has been renamed
          */
-        void copyingDone(KIO::Job *job, const QUrl &from, const QUrl &to, time_t mtime, bool directory, bool renamed);
+        void copyingDone(KIO::Job *job, const QUrl &from, const QUrl &to, const QDateTime &mtime, bool directory, bool renamed);
         /**
          * The job is copying or moving a symbolic link, that points to target.
          * The new link is created in @p to. The existing one is/was in @p from.

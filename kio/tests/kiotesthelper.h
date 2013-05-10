@@ -127,10 +127,10 @@ public:
                                               QString& newDest,
                                               KIO::filesize_t = (KIO::filesize_t) -1,
                                               KIO::filesize_t = (KIO::filesize_t) -1,
-                                              time_t  = (time_t) -1,
-                                              time_t  = (time_t) -1,
-                                              time_t  = (time_t) -1,
-                                              time_t  = (time_t) -1) {
+                                              const QDateTime &  = QDateTime(),
+                                              const QDateTime &  = QDateTime(),
+                                              const QDateTime &  = QDateTime(),
+                                              const QDateTime &  = QDateTime()) Q_DECL_OVERRIDE {
         Q_UNUSED(job)
         Q_UNUSED(caption)
         Q_UNUSED(src)

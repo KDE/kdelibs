@@ -131,10 +131,10 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                            QString& newDest,
                                                            KIO::filesize_t sizeSrc,
                                                            KIO::filesize_t sizeDest,
-                                                           time_t ctimeSrc,
-                                                           time_t ctimeDest,
-                                                           time_t mtimeSrc,
-                                                           time_t mtimeDest)
+                                                           const QDateTime &ctimeSrc,
+                                                           const QDateTime &ctimeDest,
+                                                           const QDateTime &mtimeSrc,
+                                                           const QDateTime &mtimeDest)
 {
     Q_UNUSED(job);
     //qDebug() << "job=" << job;
