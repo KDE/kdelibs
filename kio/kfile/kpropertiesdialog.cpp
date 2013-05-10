@@ -273,7 +273,7 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _tempUrl, const QUrl& _current
     Q_ASSERT(!d->m_singleUrl.isEmpty());
 
     // Create the KFileItem for the _template_ file, in order to read from it.
-    d->m_items.append(KFileItem(KFileItem::Unknown, KFileItem::Unknown, d->m_singleUrl));
+    d->m_items.append(KFileItem(d->m_singleUrl));
     d->init();
 }
 

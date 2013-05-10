@@ -26,6 +26,7 @@
 #include <kio/kacl.h>
 #include <kio/udsentry.h>
 #include <QUrl>
+#include <QFile>
 
 #include <qmimetype.h>
 #include <kfilemetainfo.h>
@@ -100,9 +101,11 @@ public:
      *
      * @param delayedMimeTypes specify if the mimetype of the given URL
      *       should be determined immediately or on demand
+     * @deprecated since 5.0. Most callers gave Unknown for mode and permissions,
+     * so just port to KFileItem(url) and setDelayedMimeTypes(true) if necessary.
      */
-    KFileItem( mode_t mode, mode_t permissions, const QUrl& url,
-               bool delayedMimeTypes = false );
+   // KFileItem( mode_t mode, mode_t permissions, const QUrl& url,
+    //           bool delayedMimeTypes = false );
 
     /**
      * Creates an item representing a file, for which the mimetype is already known.
@@ -110,7 +113,7 @@ public:
      * @param mimeType the name of the file's mimetype
      * @param mode the mode (S_IFDIR...)
      */
-    KFileItem( const QUrl &url, const QString &mimeType, mode_t mode );
+    KFileItem(const QUrl &url, const QString &mimeType = QString(), mode_t mode = KFileItem::Unknown);
 
     /**
      * Copy constructor
@@ -140,6 +143,13 @@ public:
     void refreshMimeType();
 
     /**
+     * Sets mimetype determination to be immediate or on demand.
+     * Call this after the constructor, and before using any mimetype-related method.
+     * @since 5.0
+     */
+    void setDelayedMimeTypes(bool b);
+
+    /**
      * Returns the url of the file.
      * @return the url of the file
      */
@@ -161,10 +171,17 @@ public:
     void setName( const QString &name );
 
     /**
-     * Returns the permissions of the file (stat.st_mode containing only permissions).
+     * Returns the permissions of the file (using the portable QFile::Permissions enum).
      * @return the permissions of the file
      */
-    mode_t permissions() const;
+    QFile::Permissions filePermissions() const;
+
+    /**
+     * Returns the Unix permissions of the file (stat.st_mode containing only permissions).
+     * @return the permissions of the file
+     * Prefer to use filePermissions() for portability.
+     */
+    uint /*mode_t*/ permissions() const;
 
     /**
      * Returns the access permissions for the file as a string.
@@ -304,13 +321,10 @@ public:
     /**
      * Requests the modification, access or creation time, depending on @p which.
      * @param which the timestamp
-     * @return the time asked for, (time_t)0 if not available
+     * @return the time asked for, KDateTime() if not available
      * @see timeString()
      */
     KDateTime time( FileTimes which ) const;
-#ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED time_t time( unsigned int which ) const;
-#endif
 
     /**
      * Requests the modification, access or creation time as a string, depending

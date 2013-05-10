@@ -37,17 +37,20 @@ void KFileItemTest::testPermissionsString()
 {
     // Directory
     QTemporaryDir tempDir;
-    KFileItem dirItem(QUrl::fromLocalFile(tempDir.path() + '/' ), QString(), KFileItem::Unknown);
+    KFileItem dirItem(QUrl::fromLocalFile(tempDir.path() + '/' ));
     QCOMPARE((uint)dirItem.permissions(), (uint)0700);
+    QCOMPARE(int(dirItem.filePermissions()), int(QFile::ReadOwner|QFile::WriteOwner|QFile::ExeOwner));
     QCOMPARE(dirItem.permissionsString(), QString("drwx------"));
     QVERIFY(dirItem.isReadable());
 
     // File
     QFile file(tempDir.path() + "/afile");
     QVERIFY(file.open(QIODevice::WriteOnly));
-    file.setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadOther); // 0604
+    QFile::Permissions sixOhFour = QFile::ReadOwner | QFile::WriteOwner | QFile::ReadOther; // 0604
+    file.setPermissions(sixOhFour);
     KFileItem fileItem(QUrl::fromLocalFile(file.fileName()), QString(), KFileItem::Unknown);
     QCOMPARE((uint)fileItem.permissions(), (uint)0604);
+    QCOMPARE(int(fileItem.filePermissions()), int(sixOhFour));
     QCOMPARE(fileItem.permissionsString(), QString("-rw----r--"));
     QVERIFY(fileItem.isReadable());
 
@@ -57,6 +60,7 @@ void KFileItemTest::testPermissionsString()
     QUrl symlinkUrl = QUrl::fromLocalFile(symlink);
     KFileItem symlinkItem(symlinkUrl, QString(), KFileItem::Unknown);
     QCOMPARE((uint)symlinkItem.permissions(), (uint)0604);
+    QCOMPARE(int(symlinkItem.filePermissions()), int(sixOhFour));
     // This is a bit different from "ls -l": we get the 'l' but we see the permissions of the target.
     // This is actually useful though; the user sees it's a link, and can check if he can read the [target] file.
     QCOMPARE(symlinkItem.permissionsString(), QString("lrw----r--"));
@@ -179,7 +183,8 @@ void KFileItemTest::testMimeTypeOnDemand()
     QVERIFY(file.open());
 
     {
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
+        KFileItem fileItem(QUrl::fromLocalFile(file.fileName()));
+        fileItem.setDelayedMimeTypes(true);
         QVERIFY(fileItem.currentMimeType().isDefault());
         QVERIFY(!fileItem.isMimeTypeKnown());
         QVERIFY(!fileItem.isFinalIconKnown());
@@ -192,7 +197,8 @@ void KFileItemTest::testMimeTypeOnDemand()
 
     {
         // Calling mimeType directly also does mimetype determination
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
+        KFileItem fileItem(QUrl::fromLocalFile(file.fileName()));
+        fileItem.setDelayedMimeTypes(true);
         QVERIFY(!fileItem.isMimeTypeKnown());
         QCOMPARE(fileItem.mimetype(), QString("application/x-zerosize"));
         QVERIFY(fileItem.isMimeTypeKnown());
@@ -200,7 +206,8 @@ void KFileItemTest::testMimeTypeOnDemand()
 
     {
         // Calling overlays should NOT do mimetype determination (#237668)
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
+        KFileItem fileItem(QUrl::fromLocalFile(file.fileName()));
+        fileItem.setDelayedMimeTypes(true);
         QVERIFY(!fileItem.isMimeTypeKnown());
         fileItem.overlays();
         QVERIFY(!fileItem.isMimeTypeKnown());
@@ -215,7 +222,8 @@ void KFileItemTest::testMimeTypeOnDemand()
         QString fileName = file.fileName();
         QVERIFY(!fileName.isEmpty());
         file.close();
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(fileName), true /*on demand*/);
+        KFileItem fileItem(QUrl::fromLocalFile(fileName));
+        fileItem.setDelayedMimeTypes(true);
         QCOMPARE(fileItem.currentMimeType().name(), QLatin1String("application/octet-stream"));
         QVERIFY(fileItem.currentMimeType().isValid());
         QVERIFY(fileItem.currentMimeType().isDefault());
@@ -233,14 +241,15 @@ void KFileItemTest::testMimeTypeOnDemand()
         QString fileName = file.fileName();
         QVERIFY(!fileName.isEmpty());
         file.close();
-        KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(fileName), true /*on demand*/);
+        KFileItem fileItem(QUrl::fromLocalFile(fileName));
+        fileItem.setDelayedMimeTypes(true);
         QCOMPARE(fileItem.currentMimeType().name(), QString("text/plain"));
         QVERIFY(fileItem.isMimeTypeKnown());
         QCOMPARE(fileItem.determineMimeType().name(), QString("text/plain"));
         QCOMPARE(fileItem.mimetype(), QString("text/plain"));
 
         // And if the mimetype is not on demand?
-        KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(fileName));
+        KFileItem fileItem2(QUrl::fromLocalFile(fileName));
         QCOMPARE(fileItem2.currentMimeType().name(), QString("text/plain")); // XDG says: application/smil; but can't sniff all files so this can't work
         QVERIFY(fileItem2.isMimeTypeKnown());
     }
@@ -251,8 +260,9 @@ void KFileItemTest::testCmp()
     QTemporaryFile file;
     QVERIFY(file.open());
 
-    KFileItem fileItem(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), true /*on demand*/);
-    KFileItem fileItem2(KFileItem::Unknown, KFileItem::Unknown, QUrl::fromLocalFile(file.fileName()), false);
+    KFileItem fileItem(QUrl::fromLocalFile(file.fileName()));
+    fileItem.setDelayedMimeTypes(true);
+    KFileItem fileItem2(QUrl::fromLocalFile(file.fileName()));
     QVERIFY(fileItem == fileItem2); // created independently, but still 'equal'
     QVERIFY(fileItem.d != fileItem2.d);
     QVERIFY(!(fileItem != fileItem2));
