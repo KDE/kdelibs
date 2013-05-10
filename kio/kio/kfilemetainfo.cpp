@@ -212,7 +212,7 @@ public:
     QHash<QString, KFileMetaInfoItem> items;
     QUrl m_url;
 
-    void init ( QIODevice& stream, const QUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything );
+    void init ( QIODevice& stream, const QUrl& url, const QDateTime &mtime, KFileMetaInfo::WhatFlags w = KFileMetaInfo::Everything );
     void initWriters ( const QUrl& /*file*/ );
     void operator= ( const KFileMetaInfoPrivate& k ) {
         items = k.items;
@@ -240,7 +240,7 @@ private:
     KFileMetaInfo::WhatFlags m_indexDetail;
 };
 
-void KFileMetaInfoPrivate::init ( QIODevice& stream, const QUrl& url, time_t mtime, KFileMetaInfo::WhatFlags w )
+void KFileMetaInfoPrivate::init ( QIODevice& stream, const QUrl& url, const QDateTime &mtime, KFileMetaInfo::WhatFlags w )
 {
     m_url = url;
 
@@ -249,7 +249,7 @@ void KFileMetaInfoPrivate::init ( QIODevice& stream, const QUrl& url, time_t mti
     Strigi::StreamAnalyzer indexer ( c );
     KMetaInfoWriter writer;
     //qDebug() << url;
-    Strigi::AnalysisResult idx ( url.toLocalFile().toUtf8().constData(), mtime, writer, indexer );
+    Strigi::AnalysisResult idx ( url.toLocalFile().toUtf8().constData(), mtime.toTime_t(), writer, indexer );
     idx.setWriterData ( &items );
 
     QIODeviceInputStream strigiStream ( stream, c.maximalStreamReadLength(idx) );
@@ -282,7 +282,7 @@ KFileMetaInfo::KFileMetaInfo ( const QString& path, const QString& /*mimetype*/,
     if ( ( fileinfo.isFile() || fileinfo.isDir() || fileinfo.isSymLink() )
             && file.open ( QIODevice::ReadOnly ) ) {
         const QUrl u = QUrl::fromLocalFile(path);
-        d->init ( file, u, fileinfo.lastModified().toTime_t(), w );
+        d->init ( file, u, fileinfo.lastModified(), w );
         if ( fileinfo.isWritable() ) {
             d->initWriters ( u );
         }
@@ -295,7 +295,7 @@ KFileMetaInfo::KFileMetaInfo(const QUrl& url)
     QFile file(url.toLocalFile());
     if ( file.open ( QIODevice::ReadOnly ) ) {
         QFileInfo fileinfo(url.toLocalFile());
-        d->init ( file, url, fileinfo.lastModified().toTime_t() );
+        d->init(file, url, fileinfo.lastModified());
         if ( fileinfo.isWritable() ) {
             d->initWriters ( url );
         }
