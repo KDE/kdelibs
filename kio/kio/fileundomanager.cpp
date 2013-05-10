@@ -48,7 +48,7 @@ static const char* undoStateToString(UndoState state) {
 static QDataStream &operator<<(QDataStream &stream, const KIO::BasicOperation &op)
 {
     stream << op.m_valid << (qint8)op.m_type << op.m_renamed
-           << op.m_src << op.m_dst << op.m_target << (qint64)op.m_mtime;
+           << op.m_src << op.m_dst << op.m_target << qint64(op.m_mtime.toMSecsSinceEpoch() / 1000);
     return stream;
 }
 static QDataStream &operator>>(QDataStream &stream, BasicOperation &op)
@@ -58,7 +58,7 @@ static QDataStream &operator>>(QDataStream &stream, BasicOperation &op)
     stream >> op.m_valid >> type >> op.m_renamed
            >> op.m_src >> op.m_dst >> op.m_target >> mtime;
     op.m_type = static_cast<BasicOperation::Type>(type);
-    op.m_mtime = mtime;
+    op.m_mtime = QDateTime::fromMSecsSinceEpoch(1000 * mtime);
     return stream;
 }
 
@@ -139,8 +139,8 @@ CommandRecorder::CommandRecorder(FileUndoManager::CommandType op, const QList<QU
 
   // TODO whitelist, instead
   if (op != FileUndoManager::Mkdir && op != FileUndoManager::Put) {
-      connect(job, SIGNAL(copyingDone(KIO::Job*,QUrl,QUrl,time_t,bool,bool)),
-              this, SLOT(slotCopyingDone(KIO::Job*,QUrl,QUrl,time_t,bool,bool)));
+      connect(job, SIGNAL(copyingDone(KIO::Job*,QUrl,QUrl,QDateTime,bool,bool)),
+              this, SLOT(slotCopyingDone(KIO::Job*,QUrl,QUrl,QDateTime,bool,bool)));
       connect(job, SIGNAL(copyingLinkDone(KIO::Job*,QUrl,QString,QUrl)),
               this, SLOT(slotCopyingLinkDone(KIO::Job*,QUrl,QString,QUrl)));
   }
@@ -158,7 +158,7 @@ void CommandRecorder::slotResult(KJob *job)
     FileUndoManager::self()->d->addCommand(m_cmd);
 }
 
-void CommandRecorder::slotCopyingDone(KIO::Job *job, const QUrl &from, const QUrl &to, time_t mtime, bool directory, bool renamed)
+void CommandRecorder::slotCopyingDone(KIO::Job *job, const QUrl &from, const QUrl &to, const QDateTime &mtime, bool directory, bool renamed)
 {
   BasicOperation op;
   op.m_valid = true;
@@ -192,7 +192,7 @@ void CommandRecorder::slotCopyingLinkDone(KIO::Job *, const QUrl &from, const QS
   op.m_src = from;
   op.m_target = target;
   op.m_dst = to;
-  op.m_mtime = -1;
+  op.m_mtime = QDateTime();
   m_cmd.m_opStack.prepend(op);
 }
 
@@ -432,11 +432,11 @@ void FileUndoManagerPrivate::slotResult(KJob *job)
         BasicOperation op = m_current.m_opStack.last();
         //qDebug() << "stat result for " << op.m_dst;
         KIO::StatJob* statJob = static_cast<KIO::StatJob*>(job);
-        time_t mtime = statJob->statResult().numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1);
+        const QDateTime mtime = QDateTime::fromMSecsSinceEpoch(1000*statJob->statResult().numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1));
         if (mtime != op.m_mtime) {
             //qDebug() << op.m_dst << " was modified after being copied!";
-            KDateTime srcTime; srcTime.setTime_t(op.m_mtime); srcTime = srcTime.toLocalZone();
-            KDateTime destTime; destTime.setTime_t(mtime); destTime = destTime.toLocalZone();
+            KDateTime srcTime(op.m_mtime); srcTime = srcTime.toLocalZone();
+            KDateTime destTime(mtime); destTime = destTime.toLocalZone();
             if (!m_uiInterface->copiedFileWasModified(op.m_src, op.m_dst, srcTime, destTime)) {
                 stopUndo(false);
             }

@@ -24,7 +24,7 @@
 #include "fileundomanager.h"
 #include <QtCore/QStack>
 #include <QUndoCommand>
-#include <ctime>
+#include <QDateTime>
 
 class KJob;
 
@@ -48,7 +48,7 @@ struct BasicOperation
     QUrl m_src;
     QUrl m_dst;
     QString m_target;
-    time_t m_mtime;
+    QDateTime m_mtime;
 };
 
 class UndoCommand
@@ -86,7 +86,7 @@ public:
 private Q_SLOTS:
   void slotResult( KJob *job );
 
-  void slotCopyingDone( KIO::Job *, const QUrl &from, const QUrl &to, time_t, bool directory, bool renamed );
+  void slotCopyingDone( KIO::Job *, const QUrl &from, const QUrl &to, const QDateTime&, bool directory, bool renamed );
   void slotCopyingLinkDone( KIO::Job *, const QUrl &from, const QString &target, const QUrl &to );
 
 private:
