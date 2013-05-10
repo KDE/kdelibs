@@ -37,15 +37,14 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
-#include <QActionEvent>
 #include <qurlpathinfo.h>
+#include <qplatformdefs.h> // QT_LSTAT, QT_STAT, QT_STATBUF
 
 #include <kauthorized.h>
 #include <kio/job.h>
 #include <kprotocolmanager.h>
 #include <kconfig.h>
 #include <kglobalsettings.h>
-#include <kde_file.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -834,6 +833,12 @@ bool KUrlCompletionPrivate::exeCompletion(const KUrlCompletionPrivate::MyURL& ur
 
     if (!url.file().isEmpty()) {
         // $PATH
+        // ### maybe Qt should have a QDir::pathSeparator() to avoid ifdefs..
+#ifdef Q_OS_WIN
+        #define KPATH_SEPARATOR ';'
+#else
+        #define KPATH_SEPARATOR ':'
+#endif
         dirList = QString::fromLocal8Bit(qgetenv("PATH")).split(
                       KPATH_SEPARATOR, QString::SkipEmptyParts);
 
@@ -1287,11 +1292,10 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
 
             //qDebug() << "stat'ing" << copy;
 
-            KDE_struct_stat sbuff;
-
             QByteArray file = QFile::encodeName(copy);
 
-            if (KDE_stat(file.data(), &sbuff) == 0) {
+            QT_STATBUF sbuff;
+            if (QT_STAT(file.constData(), &sbuff) == 0) {
                 if (S_ISDIR(sbuff.st_mode))
                     pMatch->append(QLatin1Char('/'));
             } else {
