@@ -35,7 +35,7 @@ namespace KJS {
         enum {
             Buffer, ByteLength, ByteOffset, Subarray, Length, Set, BytesPerElement
         };
-    };
+    }
 
     //type, TypedArrayClass
     template <class T, class U>
@@ -111,7 +111,7 @@ namespace KJS {
     private:
         int id;
     };
-};
+}
 
 #include "kjs_arraybufferview.lut.h"
 

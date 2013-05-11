@@ -374,7 +374,7 @@ JSValue *ConsoleFunc::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, co
             return jsUndefined();
     }
     return jsUndefined();
-};
+}
 
 
 ////////////////////// Window Object ////////////////////////
