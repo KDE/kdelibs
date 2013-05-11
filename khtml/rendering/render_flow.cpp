@@ -480,7 +480,7 @@ void RenderFlow::repaint(Priority prior)
 int
 RenderFlow::lowestPosition(bool includeOverflowInterior, bool includeSelf) const
 {
-    int bottom = includeSelf && m_width > 0 ? m_height : 0;;
+    int bottom = includeSelf && m_width > 0 ? m_height : 0;
     if (!includeOverflowInterior && hasOverflowClip())
         return bottom;
 

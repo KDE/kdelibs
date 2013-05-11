@@ -1381,7 +1381,7 @@ int RenderBox::calcImplicitContentHeight() const {
     int top = style()->top().width(ch);
     int bottom = style()->bottom().width(ch);
 
-    return ch - top - bottom - borderTop() - borderBottom() - paddingTop() - paddingBottom();;
+    return ch - top - bottom - borderTop() - borderBottom() - paddingTop() - paddingBottom();
 }
 
 int RenderBox::calcPercentageHeight(const Length& height) const

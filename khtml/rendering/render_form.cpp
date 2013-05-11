@@ -111,16 +111,6 @@ using namespace DOM;
 
         void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
         {
-            if ( noBorder && element == QStyle::CE_PushButton ) {
-               const QStyleOptionButton *o = qstyleoption_cast<const QStyleOptionButton *>(option);
-               if (o) {
-                   QStyleOptionButton opt = *o;
-                   opt.rect = style()->subElementRect(SE_PushButtonFocusRect, &opt, widget);
-                   style()->drawControl(CE_PushButtonLabel, &opt, painter, widget);
-               }
-               return;
-            }
-
             if (element == QStyle::CE_ComboBoxLabel) {
                 const QStyleOptionComboBox *o = qstyleoption_cast<const QStyleOptionComboBox*>(option);
                 if (o) {
@@ -1021,11 +1011,6 @@ void LineEditWidget::clearHistoryActivated()
     m_view->clearCompletionHistory(m_input->name().string());
     if (compObj())
       compObj()->clear();
-}
-
-void LineEditWidget::paintEvent( QPaintEvent *pe )
-{
-    KLineEdit::paintEvent( pe );
 }
 
 bool LineEditWidget::event( QEvent *e )
