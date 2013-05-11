@@ -347,6 +347,30 @@ void RenderFormElement::layout()
     setNeedsLayout(false);
 }
 
+int RenderFormElement::calcContentWidth(int w) const
+{
+    if (!shouldDisableNativeBorders()) {
+        if (style()->boxSizing() == CONTENT_BOX) {
+            int nativeBorderWidth = m_widget->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, m_widget);
+            return RenderBox::calcContentWidth(w) + 2 * nativeBorderWidth;
+        }
+    }
+
+    return RenderBox::calcContentWidth(w);
+}
+
+int RenderFormElement::calcContentHeight(int h) const
+{
+    if (!shouldDisableNativeBorders()) {
+        if (style()->boxSizing() == CONTENT_BOX) {
+            int nativeBorderWidth = m_widget->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, m_widget);
+            return RenderBox::calcContentHeight(h) + 2 * nativeBorderWidth;
+        }
+    }
+
+    return RenderBox::calcContentHeight(h);
+}
+
 Qt::Alignment RenderFormElement::textAlignment() const
 {
     switch (style()->textAlign()) {

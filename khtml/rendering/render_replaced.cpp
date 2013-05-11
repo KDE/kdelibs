@@ -521,8 +521,8 @@ void RenderWidget::paintOneBackground(QPainter *p, const QColor& c, const Backgr
 {
     bool fudge = !shouldPaintCSSBorders();
     paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
-                                fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), paddingLeft(), paddingRight(),
-                                fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), paddingTop(), paddingBottom());
+                                fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), RenderWidget::paddingLeft(), RenderWidget::paddingRight(),
+                                fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), RenderWidget::paddingTop(), RenderWidget::paddingBottom());
 }
 
 void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)

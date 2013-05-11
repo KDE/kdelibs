@@ -86,6 +86,8 @@ public:
     virtual void layout();
     virtual void calcMinMaxWidth();
     virtual short baselinePosition( bool ) const;
+    virtual int calcContentWidth(int w) const;
+    virtual int calcContentHeight(int h) const;
 
     DOM::HTMLGenericFormElementImpl *element() const
     { return static_cast<DOM::HTMLGenericFormElementImpl*>(RenderObject::element()); }
