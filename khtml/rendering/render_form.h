@@ -304,7 +304,6 @@ public:
 
 protected:
     virtual bool event( QEvent *e );
-    virtual void paintEvent( QPaintEvent *pe );
     virtual void mouseMoveEvent(QMouseEvent *e);
     virtual void contextMenuEvent(QContextMenuEvent *e);
 private Q_SLOTS:

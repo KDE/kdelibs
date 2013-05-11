@@ -1763,7 +1763,7 @@ bool CSSStyleSelector::checkSimpleSelector(DOM::CSSSelector *sel, DOM::ElementIm
             // ### check xml:lang attribute in XML and XHTML documents
             DOMStringImpl* value = e->getAttributeImplById(ATTR_LANG);
             // The LANG attribute is inherited like a property
-            NodeImpl *n = e->parent();;
+            NodeImpl *n = e->parent();
             while (n && !(value && value->length())) {
                 if (n->isElementNode()) {
                     value = static_cast<ElementImpl*>(n)->getAttributeImplById(ATTR_LANG);
