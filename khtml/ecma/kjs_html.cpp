@@ -1858,7 +1858,12 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         return jsString(url.host() + ":" + QString::number(url.port()));
     }
     case AnchorPathName:        return jsString(KUrl(href).path());
-    case AnchorPort:            return jsString(QString::number(KUrl(href).port()));
+    case AnchorPort: {
+        int port = KUrl(href).port();
+        if (port > 0)
+            return jsString(QString::number(port));
+        return jsString("");
+    }
     case AnchorProtocol:        return jsString(KUrl(href).protocol()+":");
     case AnchorSearch:          { KUrl u(href);
                                   QString q = u.query();
