@@ -54,15 +54,15 @@ namespace KIO {
         virtual ~DataSlave();
 
         virtual void setHost(const QString &host, quint16 port,
-			const QString &user, const QString &passwd);
-	virtual void setConfig(const MetaData &config);
+			const QString &user, const QString &passwd) Q_DECL_OVERRIDE;
+	virtual void setConfig(const MetaData &config) Q_DECL_OVERRIDE;
 
-        virtual void suspend();
-        virtual void resume();
-        virtual bool suspended();
-        virtual void send(int cmd, const QByteArray &arr = QByteArray());
+        virtual void suspend() Q_DECL_OVERRIDE;
+        virtual void resume() Q_DECL_OVERRIDE;
+        virtual bool suspended() Q_DECL_OVERRIDE;
+        virtual void send(int cmd, const QByteArray &arr = QByteArray()) Q_DECL_OVERRIDE;
 
-	virtual void hold(const QUrl &url);
+	virtual void hold(const QUrl &url) Q_DECL_OVERRIDE;
 
 	// pure virtual methods that are defined by the actual protocol
 	virtual void get(const QUrl &url) = 0;

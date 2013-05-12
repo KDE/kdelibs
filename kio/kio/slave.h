@@ -34,7 +34,15 @@
 namespace KIO {
 
 class SlavePrivate;
+class SlaveKeeper;
 class SimpleJob;
+class Scheduler;
+class SchedulerPrivate;
+class DataProtocol;
+class ConnectedSlaveQueue;
+class ProtoQueue;
+class SimpleJobPrivate;
+
 // Attention developers: If you change the implementation of KIO::Slave,
 // do *not* use connection() or slaveconn but the respective KIO::Slave
 // accessor methods. Otherwise classes derived from Slave might break. (LS)
@@ -51,50 +59,13 @@ public:
 
   virtual ~Slave();
 
-  void setPID(pid_t);
-  int slave_pid();
-
-  void setJob(KIO::SimpleJob *job);
-  KIO::SimpleJob *job() const;
-
   /**
-   * Force termination
+   * Sends the given command to the kioslave.
+   * Called by the jobs.
+   * @param cmd command id
+   * @param arr byte array containing data
    */
-  void kill();
-
-  /**
-   * @return true if the slave survived the last mission.
-   */
-  bool isAlive();
-
-  /**
-   * Set host for url
-   * @param host to connect to.
-   * @param port to connect to.
-   * @param user to login as
-   * @param passwd to login with
-   */
-  virtual void setHost( const QString &host, quint16 port,
-                const QString &user, const QString &passwd);
-
-  /**
-   * Clear host info.
-   */
-  void resetHost();
-
-  /**
-   * Configure slave
-   */
-  virtual void setConfig(const MetaData &config);
-
-  /**
-   * The protocol this slave handles.
-   *
-   * @return name of protocol handled by this slave, as seen by the user
-   */
-  QString protocol();
-
-  void setProtocol(const QString & protocol);
+  virtual void send(int cmd, const QByteArray &arr = QByteArray());
 
   /**
    * The actual protocol used to handle the request.
@@ -150,7 +121,7 @@ public:
 
   /**
    * Returns true if klauncher is holding a slave for @p url.
-   *
+   * Used by klauncher only.
    * @since 4.7
    */
   static bool checkForHeldSlave(const QUrl& url);
@@ -174,14 +145,61 @@ public:
    */
   virtual bool suspended();
 
-  /**
-   * Sends the given command to the kioslave.
-   * @param cmd command id
-   * @param arr byte array containing data
-   */
-  virtual void send(int cmd, const QByteArray &arr = QByteArray());
-
   // == end communication with connected kioslave ==
+private:
+  friend class Scheduler;
+  friend class SchedulerPrivate;
+  friend class DataProtocol;
+  friend class SlaveKeeper;
+  friend class ConnectedSlaveQueue;
+  friend class ProtoQueue;
+  friend class SimpleJobPrivate;
+
+  void setPID(pid_t);
+  int slave_pid();
+
+  void setJob(KIO::SimpleJob *job);
+  KIO::SimpleJob *job() const;
+
+  /**
+   * Force termination
+   */
+  void kill();
+
+  /**
+   * @return true if the slave survived the last mission.
+   */
+  bool isAlive();
+
+  /**
+   * Set host for url
+   * @param host to connect to.
+   * @param port to connect to.
+   * @param user to login as
+   * @param passwd to login with
+   */
+  virtual void setHost( const QString &host, quint16 port,
+                const QString &user, const QString &passwd);
+
+  /**
+   * Clear host info.
+   */
+  void resetHost();
+
+  /**
+   * Configure slave
+   */
+  virtual void setConfig(const MetaData &config);
+
+  /**
+   * The protocol this slave handles.
+   *
+   * @return name of protocol handled by this slave, as seen by the user
+   */
+  QString protocol();
+
+  void setProtocol(const QString & protocol);
+
   /**
    * Puts the kioslave associated with @p url at halt, and return it to klauncher, in order
    * to let another application connect to it and finish the job.
@@ -190,7 +208,7 @@ public:
    * this method, and the final application can continue the same download by requesting
    * the same URL.
    */
-  void hold(const QUrl &url);
+  virtual void hold(const QUrl &url);
 
   /**
    * @return The time this slave has been idle.
