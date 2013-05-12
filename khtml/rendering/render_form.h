@@ -98,15 +98,14 @@ public:
 protected:
     virtual bool isRenderButton() const { return false; }
     virtual bool isEditable() const { return false; }
-    Qt::Alignment textAlignment() const;
-
     virtual void setPadding();
-    KdeUiProxyStyle* getProxyStyle();
+    virtual void paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
 
-//     QPoint m_mousePos;
-//     int m_state;
+    Qt::Alignment textAlignment() const;
+    KdeUiProxyStyle* getProxyStyle();
     KdeUiProxyStyle *m_proxyStyle;
     bool m_exposeInternalPadding;
+    bool m_isOxygenStyle;
 };
 
 // -------------------------------------------------------------------------

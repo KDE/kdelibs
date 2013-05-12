@@ -517,14 +517,6 @@ void RenderWidget::updateFromElement()
     RenderReplaced::updateFromElement();
 }
 
-void RenderWidget::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
-{
-    bool fudge = !shouldPaintCSSBorders();
-    paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
-                                fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), RenderWidget::paddingLeft(), RenderWidget::paddingRight(),
-                                fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), RenderWidget::paddingTop(), RenderWidget::paddingBottom());
-}
-
 void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
 {
     QRect r = QRect(_tx, _ty, width(), height());
