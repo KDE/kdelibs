@@ -225,19 +225,27 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
 //     , m_state(0)
     , m_proxyStyle(0)
     , m_exposeInternalPadding(false)
+    , m_isOxygenStyle(false)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
-
 }
 
 RenderFormElement::~RenderFormElement()
 {}
 
-void RenderFormElement::setStyle(RenderStyle *style)
+void RenderFormElement::setStyle(RenderStyle *_style)
 {
-    RenderWidget::setStyle(style);
+    RenderWidget::setStyle(_style);
     setPadding();
+    if (!shouldDisableNativeBorders()) {
+        // When the widget shows native border, clipping background to border
+        // results in a nasty rendering effects
+        if (style()->backgroundLayers()->backgroundClip() == BGBORDER) {
+            style()->accessBackgroundLayers()->setBackgroundClip(BGPADDING);
+        }
+        m_isOxygenStyle = QApplication::style()->objectName().contains("oxygen");
+    }
 }
 
 void RenderFormElement::calcMinMaxWidth()
@@ -369,6 +377,18 @@ int RenderFormElement::calcContentHeight(int h) const
     }
 
     return RenderBox::calcContentHeight(h);
+}
+
+void RenderFormElement::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
+{
+    int fudge = 0;
+    if (!shouldDisableNativeBorders()) {
+        fudge = m_isOxygenStyle ? 3 : 1;
+    }
+
+    paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
+                                fudge ? fudge : borderLeft() , fudge ? fudge : borderRight(), RenderWidget::paddingLeft(), RenderWidget::paddingRight(),
+                                fudge ? fudge : borderTop(), fudge ? fudge : borderBottom(), RenderWidget::paddingTop(), RenderWidget::paddingBottom());
 }
 
 Qt::Alignment RenderFormElement::textAlignment() const
