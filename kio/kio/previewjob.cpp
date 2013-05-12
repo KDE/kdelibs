@@ -23,9 +23,6 @@
 
 #include "previewjob.h"
 
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #ifdef Q_OS_UNIX
 #include <sys/ipc.h>
 #include <sys/shm.h>
@@ -106,7 +103,7 @@ public:
     // The current item
     PreviewItem currentItem;
     // The modification time of that URL
-    time_t tOrig;
+    qlonglong /*time_t*/ tOrig;
     // Path to thumbnail cache for the current size
     QString thumbPath;
     // Original URL of current item in TMS format
@@ -536,7 +533,7 @@ bool PreviewJobPrivate::statResultThumbnail()
     if ( !thumb.load( thumbPath + thumbName ) ) return false;
 
     if ( thumb.text( "Thumb::URI", 0 ) != origName ||
-         thumb.text( "Thumb::MTime", 0 ).toInt() != tOrig ) return false;
+         thumb.text( "Thumb::MTime", 0 ).toLongLong() != tOrig ) return false;
 
     QString thumbnailerVersion = currentItem.plugin->property("ThumbnailerVersion", QVariant::String).toString();
 
