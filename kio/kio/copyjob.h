@@ -261,7 +261,7 @@ namespace KIO {
         Q_PRIVATE_SLOT(d_func(), void slotProcessedSize( KJob*, qulonglong data_size ))
         Q_PRIVATE_SLOT(d_func(), void slotTotalSize( KJob*, qulonglong size ))
         Q_PRIVATE_SLOT(d_func(), void slotReport())
-        Q_PRIVATE_SLOT(d_func(), void sourceStated(const KIO::UDSEntry& entry, const KUrl& sourceUrl))
+        Q_PRIVATE_SLOT(d_func(), void sourceStated(const KIO::UDSEntry& entry, const QUrl& sourceUrl))
 
         Q_DECLARE_PRIVATE(CopyJob)
     };

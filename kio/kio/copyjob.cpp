@@ -785,7 +785,7 @@ void CopyJobPrivate::statCurrentSrc()
         if (entry.contains(KIO::UDSEntry::UDS_NAME)) {
             //qDebug() << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
             // sourceStated(entry, m_currentSrcURL); // don't recurse, see #319747, use queued invokeMethod instead
-            QMetaObject::invokeMethod(q, "sourceStated", Qt::QueuedConnection, Q_ARG(KIO::UDSEntry, entry), Q_ARG(KUrl, m_currentSrcURL));
+            QMetaObject::invokeMethod(q, "sourceStated", Qt::QueuedConnection, Q_ARG(KIO::UDSEntry, entry), Q_ARG(QUrl, m_currentSrcURL));
             return;
         }
 
