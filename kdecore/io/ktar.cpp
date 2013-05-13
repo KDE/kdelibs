@@ -471,10 +471,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                         setRootDir( static_cast<KArchiveDirectory *>( e ) );
                     }
                 } else {
-                    const KArchiveEntry* entry = rootDir()->entry(e->name());
-                    if (!entry || !entry->isDirectory()) {
-                        rootDir()->addEntry( e );
-                    }
+                    rootDir()->addEntry( e );
                 }
             }
             else

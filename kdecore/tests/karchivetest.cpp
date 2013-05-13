@@ -643,6 +643,23 @@ void KArchiveTest::testTarRootDir() // bug 309463
     QCOMPARE(listing.count(), 10);
 }
 
+void KArchiveTest::testTarDirectoryTwice() // bug 206994
+{
+    KTar tar(QString::fromLatin1(KDESRCDIR) + QLatin1String("tar_directory_twice.tar.bz2"));
+    QVERIFY(tar.open(QIODevice::ReadOnly));
+
+    const KArchiveDirectory* dir = tar.directory();
+    QVERIFY( dir != 0 );
+
+    const QStringList listing = recursiveListEntries(dir, "", WithUserGroup);
+    qDebug() << listing.join("\n");
+
+    QVERIFY(listing[0].contains("path=d"));
+    QVERIFY(listing[1].contains("path=d/f1.txt"));
+    QVERIFY(listing[2].contains("path=d/f2.txt"));
+
+    QCOMPARE(listing.count(), 3);
+}
 ///
 
 static const char s_zipFileName[] = "karchivetest.zip";
