@@ -24,8 +24,9 @@
 #include <QPushButton>
 #include <QLayout>
 #include <QFontDatabase>
+#include <QFontDialog>
 
-#include <kfontdialog.h>
+#include <kfontchooser.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 
@@ -184,10 +185,10 @@ void KFontRequester::KFontRequesterPrivate::_k_buttonClicked()
     if ( m_onlyFixed ) {
         flags |= KFontChooser::FixedFontsOnly;
     }
+    bool ok= false;
+    QFont font = QFontDialog::getFont( &ok, m_selFont, q->parentWidget() );
 
-    int result = KFontDialog::getFont( m_selFont, flags, q->parentWidget() );
-
-    if ( result == QDialog::Accepted )
+    if ( ok )
     {
         displaySampleText();
         emit q->fontSelected( m_selFont );

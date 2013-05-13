@@ -36,7 +36,7 @@ class QStringList;
  * While KFontChooser as an ordinary widget can be embedded in
  * custom dialogs and therefore is very flexible, in most cases
  * it is preferable to use the convenience functions in
- * KFontDialog.
+ * QFontDialog.
  *
  * \image html kfontchooser.png "KDE Font Chooser Widget"
  *
