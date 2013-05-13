@@ -26,7 +26,7 @@
 
 #include <QDialog>
 #include <kfontchooser.h>
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 class QFont;
 class QStringList;
@@ -54,7 +54,7 @@ class QStringList;
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  */
-class KDEUI_EXPORT KFontDialog : public QDialog  {
+class KDE4SUPPORT_EXPORT KFontDialog : public QDialog  {
     Q_OBJECT
 
 public:
