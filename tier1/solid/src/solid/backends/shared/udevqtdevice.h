@@ -49,6 +49,7 @@ class Device
         QString primaryDeviceFile() const;
         QStringList alternateDeviceSymlinks() const;
         QStringList deviceProperties() const;
+        QStringList sysfsProperties() const;
         Device parent() const;
 
         // ### should this really be a QVariant? as far as udev knows, everything is a string...

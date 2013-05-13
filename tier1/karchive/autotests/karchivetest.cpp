@@ -639,7 +639,7 @@ void KArchiveTest::testTarRootDir() // bug 309463
 
 void KArchiveTest::testTarDirectoryTwice() // bug 206994
 {
-    KTar tar(QString::fromLatin1(KDESRCDIR) + QLatin1String("tar_directory_twice.tar.bz2"));
+    KTar tar(QFINDTESTDATA(QLatin1String("tar_directory_twice.tar.bz2")));
     QVERIFY(tar.open(QIODevice::ReadOnly));
 
     const KArchiveDirectory* dir = tar.directory();
