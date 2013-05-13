@@ -356,7 +356,6 @@ button {
         border: 2px outset buttonface;
         background-color: buttonface;
         font-size: small;
-        -khtml-background-clip: padding;
         color: buttontext;
         padding: 2px 2px 2px 2px;
         cursor: default;
@@ -395,7 +394,6 @@ input[type="radio"], input[type="checkbox"] {
         margin: 0 0.5ex;
         background-color: window;
         color: windowtext;
-        -khtml-background-clip: padding;
         box-sizing: border-box;
         cursor: default;
 }
@@ -403,13 +401,11 @@ input[type="radio"], input[type="checkbox"] {
 input[type="text"], input[type="password"] {
         background-color: window;
         color: windowtext;
-        -khtml-background-clip: padding;
 	cursor: text;
 }
 
 input[type="submit"], input[type="reset"], input[type="button"] {
         background-color: buttonface;
-        -khtml-background-clip: padding;
         color: buttontext;
         box-sizing: border-box;
         cursor: default;
@@ -442,7 +438,6 @@ select {
         font-size: small;
         color: buttontext;
         background-color: window;
-        -khtml-background-clip: padding;
         box-sizing: border-box;
         border: 2px -khtml-native;
 }
@@ -460,7 +455,6 @@ select[size="1"]:not([multiple]) {
 textarea {
         color: windowtext;
         background-color: window;
-        -khtml-background-clip: padding;
         font-family: monospace;
         border: 2px -khtml-native;
         cursor: text;

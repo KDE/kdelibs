@@ -195,6 +195,7 @@ static int (*K_X509_NAME_add_entry_by_txt)(X509_NAME*, char*, int, unsigned char
 static X509_NAME *(*K_X509_NAME_new)() = 0L;
 static int (*K_X509_REQ_set_subject_name)(X509_REQ*,X509_NAME*) = 0L;
 static unsigned char *(*K_ASN1_STRING_data)(ASN1_STRING*) = 0L;
+static int (*K_ASN1_STRING_length)(ASN1_STRING*) = 0L;
 static STACK_OF(SSL_CIPHER) *(*K_SSL_get_ciphers)(const SSL *ssl) = 0L;
 
 #endif
@@ -524,6 +525,7 @@ KOpenSSLProxy::KOpenSSLProxy()
       K_X509_NAME_new = (X509_NAME *(*)()) d->cryptoLib->resolveFunction("X509_NAME_new");
       K_X509_REQ_set_subject_name = (int (*)(X509_REQ*,X509_NAME*)) d->cryptoLib->resolveFunction("X509_REQ_set_subject_name");
       K_ASN1_STRING_data = (unsigned char *(*)(ASN1_STRING*)) d->cryptoLib->resolveFunction("ASN1_STRING_data");
+      K_ASN1_STRING_length = (int (*)(ASN1_STRING*)) d->cryptoLib->resolveFunction("ASN1_STRING_length");
 #endif
    }
 
@@ -1570,6 +1572,13 @@ unsigned char *KOpenSSLProxy::ASN1_STRING_data(ASN1_STRING *x) {
    if (K_ASN1_STRING_data) return (K_ASN1_STRING_data)(x);
    return 0L;
 }
+
+
+int KOpenSSLProxy::ASN1_STRING_length(ASN1_STRING *x) {
+   if (K_ASN1_STRING_length) return (K_ASN1_STRING_length)(x);
+   return 0L;
+}
+
 
 STACK_OF(SSL_CIPHER) *KOpenSSLProxy::SSL_get_ciphers(const SSL* ssl) {
   if (K_SSL_get_ciphers) return (K_SSL_get_ciphers)(ssl);

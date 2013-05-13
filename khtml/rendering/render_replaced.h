@@ -99,7 +99,6 @@ public:
     virtual bool handleEvent(const DOM::EventImpl& ev);
     bool isRedirectedWidget() const;
     bool isDisabled() const { return m_widget && !m_widget->isEnabled(); }
-    
 
 #ifdef ENABLE_DUMP
     virtual void dump(QTextStream &stream, const QString &ind) const;
@@ -113,7 +112,6 @@ protected:
     void setDoesNotOwnWidget() { m_ownsWidget = false; }
 
     virtual void paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty);
-    virtual void paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
 
     virtual bool canHaveBorder() const { return false; }
     virtual bool includesPadding() const { return false; }

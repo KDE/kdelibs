@@ -304,6 +304,13 @@ void KJSProxy::initScript()
   globalObject->put(m_script->globalExec(),
 		   "debug", new TestFunctionImp(), Internal);
   applyUserAgent();
+
+#ifdef KJS_DEBUGGER
+  // Attach debugger as early as possible as not all scrips have a direct DOM-relation
+  // NOTE: attach can be called multiple times
+  if (m_debugEnabled)
+      m_debugWindow->attach(m_script);
+#endif
 }
 
 void KJSProxy::applyUserAgent()

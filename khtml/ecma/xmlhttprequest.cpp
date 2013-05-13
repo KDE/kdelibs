@@ -631,7 +631,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
   // TODO: Do something about "put" which kio_http sort of supports and
   // the webDAV headers such as PROPFIND etc...
   if (name == "get"  || name == "post") {
-    KUrl reqURL (doc->URL(), value.trimmed());
+    KUrl reqURL(doc->URL(), value);
     open(name, reqURL, async, ec);
     return;
   }

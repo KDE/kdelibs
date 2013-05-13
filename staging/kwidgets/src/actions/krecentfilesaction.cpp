@@ -156,7 +156,7 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
        return;
     QUrlPathInfo urlPathInfo(url);
     const QString tmpName = name.isEmpty() ? urlPathInfo.fileName() : name;
-   const QString pathOrUrl(url.toDisplayString(QUrl::PreferLocalFile));
+    const QString pathOrUrl(url.toDisplayString(QUrl::PreferLocalFile));
 
 #ifdef Q_OS_WIN
     const QString file = url.isLocalFile() ? QDir::toNativeSeparators(pathOrUrl) : pathOrUrl;
@@ -167,7 +167,13 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
     {
-      if ( d->m_urls[action].toDisplayString(QUrl::PreferLocalFile).endsWith(file) )
+      const QString urlStr = d->m_urls[action].toDisplayString(QUrl::PreferLocalFile);
+#ifdef Q_OS_WIN
+      const QString tmpFileName = url.isLocalFile() ? QDir::toNativeSeparators(urlStr) : urlStr;
+      if (tmpFileName.endsWith(file))
+#else
+      if (urlStr.endsWith(file))
+#endif
       {
         removeAction(action)->deleteLater();
         break;

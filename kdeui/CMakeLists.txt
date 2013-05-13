@@ -144,7 +144,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
  util/strlcpy-fake.c
- util/kckey.cpp
  util/kcrash.cpp
  util/kcursor.cpp
  util/khelpclient.cpp

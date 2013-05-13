@@ -475,6 +475,25 @@ KMountPoint::List::List()
 {
 }
 
+static bool pathsAreParentAndChildOrEqual(const QString& parent, const QString& child)
+{
+    const QLatin1Char slash('/');
+
+    if (child.startsWith(parent)) {
+        // Check if either
+        // (a) both paths are equal, or
+        // (b) parent ends with '/', or
+        // (c) the first character of child that is not shared with parent is '/'.
+        //     Note that child is guaranteed to be longer than parent if (a) is false.
+        //
+        // This prevents that we incorrectly consider "/books" a child of "/book".
+        return parent == child || parent.endsWith(slash) || child.at(parent.length()) == slash;
+    } else {
+        // Note that "/books" is a child of "/books/".
+        return parent.endsWith(slash) && (parent.length() == child.length() + 1) && parent.startsWith(child);
+    }
+}
+
 KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
 {
 #ifndef Q_OS_WIN
@@ -492,7 +511,7 @@ KMountPoint::Ptr KMountPoint::List::findByPath(const QString& path) const
     for (const_iterator it = begin(); it != end(); ++it) {
         const QString mountpoint = (*it)->d->mountPoint;
         const int length = mountpoint.length();
-        if (realname.startsWith(mountpoint) && length > max) {
+        if (length > max && pathsAreParentAndChildOrEqual(mountpoint, realname)) {
             max = length;
             result = *it;
             // keep iterating to check for a better match (bigger max)

@@ -617,6 +617,23 @@ DateProtoFunc::DateProtoFunc(ExecState *exec, int i, int len, const Identifier& 
 
 JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
+  if (id == ToJSON) {
+    JSValue* tv = thisObj->toPrimitive(exec, NumberType);
+    if (tv->isNumber()) {
+      double ms = tv->toNumber(exec);
+      if (isNaN(ms))
+        return jsNull();
+    }
+
+    JSValue *toISO = thisObj->get(exec, exec->propertyNames().toISOString);
+    if (!toISO->implementsCall())
+      return throwError(exec, TypeError, "toISOString is not callable");
+    JSObject* toISOobj = toISO->toObject(exec);
+    if (!toISOobj)
+      return throwError(exec, TypeError, "toISOString is not callable");
+    return toISOobj->call(exec, thisObj, List::empty());
+  }
+
   if (!thisObj->inherits(&DateInstance::info))
     return throwError(exec, TypeError);
 
@@ -666,8 +683,6 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
         return jsNaN();
       case ToISOString:
         return throwError(exec, RangeError, "Invalid Date");
-      case ToJSON:
-        return jsNull();
     }
   }
 
@@ -699,15 +714,6 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
     return jsString(formatDateUTCVariant(t).append(' ').append(formatTime(t, utc)));
   case ToISOString:
     return jsString(formatDateISOVariant(t, utc, milli).append('T').append(formatTimeISOVariant(t, utc, milli, ms)).append('Z'));
-  case ToJSON: {
-    JSValue *toISO = thisObj->get(exec, exec->propertyNames().toISOString);
-    if (!toISO->implementsCall())
-      return throwError(exec, TypeError, "toISOString is not callable");
-    JSObject* toISOobj = toISO->toObject(exec);
-    if (!toISOobj)
-      return throwError(exec, TypeError, "toISOString is not callable");
-    return toISOobj->call(exec, thisDateObj, List::empty());
-  }
 
 #if PLATFORM(MAC)
   case ToLocaleString:

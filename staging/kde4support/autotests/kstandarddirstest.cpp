@@ -161,11 +161,12 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( cmakeModulesFiles.count() > 80 ); // I have 150 here, installed by kdelibs.
 
     // Create a local config file, the file will be used as expected result
+    const QString localConfigFile = m_configHome + "/foorc";
+    QFile::remove(localConfigFile);
     KConfig foorc("foorc");
     KConfigGroup dummyGroup(&foorc, "Dummy");
     dummyGroup.writeEntry("someEntry", true);
     dummyGroup.sync();
-    const QString localConfigFile = KGlobal::dirs()->localxdgconfdir() + "foorc";
     QVERIFY2(QFile::exists(localConfigFile), qPrintable(localConfigFile));
 
     const QStringList configFiles = KGlobal::dirs()->findAllResources( "config" );

@@ -1079,7 +1079,7 @@ KStandardDirs::realFilePath(const QString &filename)
     }
     if (len == 0)
         return QString();
-    return QString::fromUtf16((const unsigned short*)buf.data()).replace(QLatin1Char('\\'),QLatin1Char('/')).toLower();
+    return QString::fromUtf16((const unsigned short*)buf.data()).replace(QLatin1Char('\\'),QLatin1Char('/'));
 #else
     char realpath_buffer[MAXPATHLEN + 1];
     memset(realpath_buffer, 0, MAXPATHLEN + 1);

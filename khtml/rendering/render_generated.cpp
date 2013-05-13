@@ -293,7 +293,7 @@ void RenderGlyph::setStyle(RenderStyle *_style)
     const QFontMetrics &fm = style()->fontMetrics();
     QRect xSize= fm.boundingRect('x');
     m_height = xSize.height();
-    m_width = xSize.width();;
+    m_width = xSize.width();
 
     switch(m_type) {
     // Glyphs:

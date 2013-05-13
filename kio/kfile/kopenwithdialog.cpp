@@ -714,7 +714,7 @@ void KOpenWithDialog::slotSelected( const QString& /*_name*/, const QString& _ex
 void KOpenWithDialog::slotHighlighted(const QString& entryPath, const QString&)
 {
     d->curService = KService::serviceByDesktopPath(entryPath);
-    if (!d->m_terminaldirty)
+    if (d->curService && !d->m_terminaldirty)
     {
         // ### indicate that default value was restored
         d->terminal->setChecked(d->curService->terminal());

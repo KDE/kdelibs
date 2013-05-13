@@ -197,6 +197,14 @@ QStringList Device::deviceProperties() const
     return listFromListEntry(udev_device_get_properties_list_entry(d->udev));
 }
 
+QStringList Device::sysfsProperties() const
+{
+    if (!d)
+        return QStringList();
+
+    return listFromListEntry(udev_device_get_sysattr_list_entry(d->udev));
+}
+
 Device Device::parent() const
 {
     if (!d)

@@ -103,9 +103,6 @@ void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, c
     case HibernateState:
         globalPowerManager->managerIface.Hibernate();
         break;
-    case HybridSuspendState:
-        globalPowerManager->managerIface.HybridSuspend();
-        break;
     }
 }
 
@@ -268,13 +265,13 @@ void Solid::PowerManagementPrivate::slotServiceRegistered(const QString &service
         reply.waitForFinished();
 
         if (reply.isValid() && reply.value() > 0) {
-            // Connect the signal
-            QDBusConnection::sessionBus().connect("org.kde.Solid.PowerManagement",
-                                                  "/org/kde/Solid/PowerManagement",
-                                                  "org.kde.Solid.PowerManagement",
-                                                  "resumingFromSuspend",
-                                                  this,
-                                                  SIGNAL(resumingFromSuspend()));
+                // Connect the signal
+                QDBusConnection::sessionBus().connect(QLatin1String("org.kde.Solid.PowerManagement"),
+                                                      QLatin1String("/org/kde/Solid/PowerManagement/Actions/SuspendSession"),
+                                                      QLatin1String("org.kde.Solid.PowerManagement.Actions.SuspendSession"),
+                                                      QLatin1String("resumingFromSuspend"),
+                                                      this,
+                                                      SIGNAL(resumingFromSuspend()));
         }
     }
 }

@@ -1994,7 +1994,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
             str = parseURL( DOMString(str) ).string();
             QString newURL = document()->completeURL( str );
             if ( ok )
-                v->part()->scheduleRedirection(delay, document()->completeURL( str ),  delay < 2 || newURL == URL().url());
+                v->part()->scheduleRedirection(delay, newURL,  delay < 2 || newURL == URL().url());
         }
     }
     else if(strcasecmp(equiv, "expires") == 0)

@@ -163,7 +163,7 @@ void HTMLCanvasElementImpl::attach()
 CanvasContext2DImpl* HTMLCanvasElementImpl::getContext2D()
 {
     if (!context)
-        context = new CanvasContext2DImpl(this, w, h);;
+        context = new CanvasContext2DImpl(this, w, h);
     return context.get();
 }
 
@@ -654,7 +654,7 @@ QRectF CanvasPatternImpl::clipForRepeat(const QPointF &origin, const QRectF &fil
 
 //-------
 
-CanvasImageDataImpl::CanvasImageDataImpl(unsigned width, unsigned height) : data(width, height, QImage::Format_ARGB32_Premultiplied)
+CanvasImageDataImpl::CanvasImageDataImpl(unsigned width, unsigned height) : data(width, height, QImage::Format_ARGB32)
 {}
 
 CanvasImageDataImpl::CanvasImageDataImpl(const QImage& _data): data(_data)
@@ -675,34 +675,33 @@ unsigned CanvasImageDataImpl::height() const
     return data.height();
 }
 
+#if 0
 static inline unsigned char unpremulComponent(unsigned original, unsigned alpha)
 {
     unsigned char val =  alpha ? (unsigned char)(original * 255 / alpha) : 0;
     return val;
 }
+#endif
 
 QColor CanvasImageDataImpl::pixel(unsigned pixelNum) const
 {
     int w = data.width();
     QRgb code = data.pixel(pixelNum % w, pixelNum / w);
-    unsigned char  a = qAlpha(code);
-    return QColor(unpremulComponent(qRed(code),  a), unpremulComponent(qGreen(code), a),
-                  unpremulComponent(qBlue(code), a), a);
+    return code;
 }
 
+#if 0
 static inline unsigned char premulComponent(unsigned original, unsigned alpha)
 {
     unsigned product = original * alpha; // this is conceptually 255 * intended value.
     return (unsigned char)((product + product/256 + 128)/256);
 }
+#endif
 
 void CanvasImageDataImpl::setPixel(unsigned pixelNum, const QColor& val)
 {
-    unsigned char a = val.alpha();
-    QRgb code = qRgba(premulComponent(val.red(), a), premulComponent(val.green(), a),
-                      premulComponent(val.blue(),a), a);
     int w = data.width();
-    data.setPixel(pixelNum % w, pixelNum / w, code);
+    data.setPixel(pixelNum % w, pixelNum / w, val.rgba());
 }
 
 void CanvasImageDataImpl::setComponent(unsigned pixelNum, int component,
@@ -713,22 +712,20 @@ void CanvasImageDataImpl::setComponent(unsigned pixelNum, int component,
     int y = pixelNum / w;
     // ### could avoid inherent QImage::detach() by a const cast
     QRgb *rgb = reinterpret_cast<QRgb*>(data.scanLine(y) + 4 * x);
-    unsigned char a = qAlpha(*rgb);
+
     switch (component) {
-    case 0:
-      *rgb = qRgba(premulComponent(value, a), qGreen(*rgb), qBlue(*rgb), a);
+    case 0: //Red
+      *rgb = qRgba(value, qGreen(*rgb), qBlue(*rgb), qAlpha(*rgb));
       break;
-    case 1:
-      *rgb = qRgba(qRed(*rgb), premulComponent(value, a), qBlue(*rgb), a);
+    case 1: //Green
+      *rgb = qRgba(qRed(*rgb), value, qBlue(*rgb), qAlpha(*rgb));
       break;
-    case 2:
-      *rgb = qRgba(qRed(*rgb), qGreen(*rgb), premulComponent(value, a), a);
+    case 2: //Blue
+      *rgb = qRgba(qRed(*rgb), qGreen(*rgb), value, qAlpha(*rgb));
       break;
+    case 3: //Alpha
     default:
-      *rgb = qRgba(premulComponent(unpremulComponent(qRed(*rgb), a), value),
-                   premulComponent(unpremulComponent(qGreen(*rgb), a), value),
-                   premulComponent(unpremulComponent(qBlue(*rgb), a), value),
-                   value);
+      *rgb = qRgba(qRed(*rgb), qGreen(*rgb), qBlue(*rgb), value);
       break;
     }
 }
