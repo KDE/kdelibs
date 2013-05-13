@@ -374,7 +374,7 @@ JSValue *ConsoleFunc::callAsFunction(ExecState *exec, JSObject * /*thisObj*/, co
             return jsUndefined();
     }
     return jsUndefined();
-};
+}
 
 
 ////////////////////// Window Object ////////////////////////
@@ -2877,7 +2877,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
     case Host: {
       UString str = url.host();
       if (url.port() > 0)
-        str += QString(QLatin1Char(':') + QString::number((int)url.port()));
+        str += QString(QLatin1Char(':') + QString::number(url.port()));
       return jsString(str);
       // Note: this is the IE spec. The NS spec swaps the two, it says
       // "The hostname property is the concatenation of the host and port properties, separated by a colon."
@@ -2897,7 +2897,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
 	return jsString("");
       return jsString( UString(url.path().isEmpty() ? QString("/") : url.path()) );
     case Port:
-      return jsString( UString(url.port() > 0 ? QString::number((int)url.port()) : QLatin1String("")) );
+      return jsString( UString(url.port() > 0 ? QString::number(url.port()) : QLatin1String("")) );
     case Protocol:
       return jsString( UString(url.protocol()+':') );
     case Search:

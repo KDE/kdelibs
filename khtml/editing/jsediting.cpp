@@ -613,7 +613,6 @@ static CommandDict createCommandDictionary()
 const CommandImp *JSEditor::commandImp(const DOMString &command)
 {
     static CommandDict commandDictionary = createCommandDictionary();
-    CommandDict::const_iterator it = commandDictionary.constFind(command.string().toLower());
     const CommandImp *result = commandDictionary.value( command.string().toLower() );
 #ifdef DEBUG_COMMANDS
     if (!result)

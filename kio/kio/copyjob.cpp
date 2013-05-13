@@ -784,7 +784,8 @@ void CopyJobPrivate::statCurrentSrc()
         // entries for UDS_USER and UDS_GROUP even on initially empty UDSEntries (#192185)
         if (entry.contains(KIO::UDSEntry::UDS_NAME)) {
             kDebug(7007) << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
-            sourceStated(entry, m_currentSrcURL);
+            // sourceStated(entry, m_currentSrcURL); // don't recurse, see #319747, use queued invokeMethod instead
+            QMetaObject::invokeMethod(q, "sourceStated", Qt::QueuedConnection, Q_ARG(KIO::UDSEntry, entry), Q_ARG(KUrl, m_currentSrcURL));
             return;
         }
 

@@ -165,7 +165,7 @@ void HTMLCanvasElementImpl::attach()
 CanvasContext2DImpl* HTMLCanvasElementImpl::getContext2D()
 {
     if (!context)
-        context = new CanvasContext2DImpl(this, w, h);;
+        context = new CanvasContext2DImpl(this, w, h);
     return context.get();
 }
 
