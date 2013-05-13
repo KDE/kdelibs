@@ -83,6 +83,11 @@ bool Battery::isRechargeable() const
     return m_device.data()->prop("IsRechargeable").toBool();
 }
 
+bool Battery::isPowerSupply() const
+{
+    return m_device.data()->prop("PowerSupply").toBool();
+}
+
 Solid::Battery::ChargeState Battery::chargeState() const
 {
     Solid::Battery::ChargeState result = Solid::Battery::NoCharge;
@@ -116,6 +121,7 @@ void Battery::slotChanged()
         const bool old_isPlugged = m_isPlugged;
         const int old_chargePercent = m_chargePercent;
         const Solid::Battery::ChargeState old_chargeState = m_chargeState;
+        const bool old_isPowerSupply = m_isPowerSupply;
         updateCache();
 
         if (old_chargePercent != m_chargePercent)
@@ -132,6 +138,11 @@ void Battery::slotChanged()
         {
             emit plugStateChanged(m_isPlugged, m_device.data()->udi());
         }
+
+        if (old_isPowerSupply != m_isPowerSupply)
+        {
+            emit powerSupplyStateChanged(m_isPowerSupply, m_device.data()->udi());
+        }
     }
 }
 
@@ -140,6 +151,7 @@ void Battery::updateCache()
     m_isPlugged = isPlugged();
     m_chargePercent = chargePercent();
     m_chargeState = chargeState();
+    m_isPowerSupply = isPowerSupply();
 }
 
 #include "backends/upower/upowerbattery.moc"

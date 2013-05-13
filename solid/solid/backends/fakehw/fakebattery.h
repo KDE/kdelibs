@@ -46,6 +46,7 @@ public Q_SLOTS:
     virtual int chargePercent() const;
 
     virtual bool isRechargeable() const;
+    virtual bool isPowerSupply() const;
     virtual Solid::Battery::ChargeState chargeState() const;
 
     void setChargeState(Solid::Battery::ChargeState newState);

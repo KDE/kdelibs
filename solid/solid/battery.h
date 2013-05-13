@@ -110,6 +110,14 @@ namespace Solid
         bool isPlugged() const;
 
         /**
+         * Indicates if this battery is powering the machine or from an attached deviced.
+         *
+         * @since 4.11
+         * @return true the battery is a powersupply, false otherwise
+         */
+        bool isPowerSupply() const;
+
+        /**
          * Retrieves the type of device holding this battery.
          *
          * @return the type of device holding this battery

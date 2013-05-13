@@ -46,6 +46,7 @@ public:
     virtual int chargePercent() const;
 
     virtual bool isRechargeable() const;
+    virtual bool isPowerSupply() const;
     virtual Solid::Battery::ChargeState chargeState() const;
 
     // TODO report stuff like capacity, technology, time-to-full, time-to-empty, energy rates, vendor, etc.
@@ -54,6 +55,7 @@ Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
+    void powerSupplyStateChanged(bool newState, const QString &udi);
 
 private Q_SLOTS:
     void slotChanged();
@@ -64,6 +66,7 @@ private:
     bool m_isPlugged;
     int m_chargePercent;
     Solid::Battery::ChargeState m_chargeState;
+    bool m_isPowerSupply;
 };
 }
 }

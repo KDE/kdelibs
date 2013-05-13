@@ -32,9 +32,22 @@
             <property key="voltageUnit">mV</property>
             <property key="voltage">11999</property>
             <property key="isRechargeable">true</property>
+            <property key="isPowerSupply">true</property>
             <property key="chargeState">discharging</property>
         </device>
-
+        <device udi="/org/kde/solid/fakehw/acpi_BAT1">
+            <property key="name">Miraculous Mouse</property>
+            <property key="vendor">Orange Inc.</property>
+            <property key="interfaces">Battery</property>
+            <property key="parent">/org/kde/solid/fakehw/computer</property>
+            <property key="isPluged">false</property>
+            <property key="batteryType">mouse</property>
+            <!-- Battery properties beyond charge percentage are only reported by UPower
+                 for primary batteries, not for other batteries like this mouse -->
+            <property key="isRechargeable">true</property>
+            <property key="isPowerSupply">true</property>
+            <property key="chargeState">discharging</property>
+        </device>
 
 
         <!-- So that it looks like a laptop,
