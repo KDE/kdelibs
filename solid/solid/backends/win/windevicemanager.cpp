@@ -87,7 +87,7 @@ QStringList WinDeviceManager::devicesFromQuery(const QString &parentUdi, Solid::
     } else if (type!=Solid::DeviceInterface::Unknown) {
         foreach(const QString &udi,allDevices()){
             WinDevice device(udi);
-            if(device.type() == type){
+            if(device.queryDeviceInterface(type)){
                 list<<udi;
             }
         }
