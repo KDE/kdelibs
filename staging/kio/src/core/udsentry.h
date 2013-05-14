@@ -25,6 +25,7 @@
 #include <QtCore/QString>
 #include <QtCore/QList>
 #include <QtCore/QSharedData>
+#include <QtCore/QMetaType>
 
 #include "kiocore_export.h"
 
@@ -296,5 +297,7 @@ namespace KIO
 
 KIOCORE_EXPORT QDataStream & operator<< ( QDataStream & s, const KIO::UDSEntry & a );
 KIOCORE_EXPORT QDataStream & operator>> ( QDataStream & s, KIO::UDSEntry & a );
+
+Q_DECLARE_METATYPE(KIO::UDSEntry)
 
 #endif /*UDSENTRY_H*/
