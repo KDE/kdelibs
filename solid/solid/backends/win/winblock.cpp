@@ -85,14 +85,18 @@ QSet<QString> WinBlock::getUdis()
 
             STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
 
-            if(info.DeviceType == FILE_DEVICE_DISK)
+            switch(info.DeviceType)
+            {
+            case FILE_DEVICE_DISK:
             {
                 QString udi = QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
                 list<<udi;
                 m_driveLetters[udi] = drive;
                 list<<QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
             }
-            else if(info.DeviceType == FILE_DEVICE_CD_ROM || info.DeviceType == FILE_DEVICE_DVD)
+                break;
+            case FILE_DEVICE_CD_ROM:
+            case FILE_DEVICE_DVD:
             {
                 QString udi = QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
                 list<<udi;
@@ -102,15 +106,15 @@ QSet<QString> WinBlock::getUdis()
                 list<<udi;
                 m_driveLetters[udi] = drive;
             }
-            else if(info.DeviceType == 0)
+                break;
+            case 0:
             {
                 //subst drive
             }
-            else
-            {
+                break;
+            default:
                 qDebug()<<"unknown device"<<drive<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
             }
-
         }
         word = (word >> 1);
         ++i;
