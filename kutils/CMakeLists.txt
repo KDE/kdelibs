@@ -78,7 +78,7 @@ set(kutils_LIB_SRCS
 
 kde4_add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
 
-find_package(Qt5PrintSupport REQUIRED NO_MODULE)
+find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
 target_link_libraries(kutils ${KIdleTime_LIBRARIES} kcmutils kprintutils)
 target_link_libraries(kutils LINK_INTERFACE_LIBRARIES kdeui Qt5::Widgets Qt5::PrintSupport ${KIdleTime_LIBRARIES} kcmutils kprintutils)

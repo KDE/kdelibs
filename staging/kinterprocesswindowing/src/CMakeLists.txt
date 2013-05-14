@@ -25,7 +25,7 @@ target_link_libraries(kinterprocesswindowing
 )
 
 if (X11_FOUND)
-  find_package(Qt5X11Extras REQUIRED NO_MODULE)
+  find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
   target_link_libraries(kinterprocesswindowing Qt5::X11Extras)
 endif()
 

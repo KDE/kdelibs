@@ -24,7 +24,7 @@ remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
-find_package(Qt5 REQUIRED NO_MODULE COMPONENTS DBus Test)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus Test)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kservice")

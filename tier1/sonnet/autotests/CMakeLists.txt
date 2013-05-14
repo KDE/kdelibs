@@ -2,7 +2,7 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
 
-find_package(Qt5Xml REQUIRED NO_MODULE)
+find_package(Qt5Xml 5.2.0 REQUIRED NO_MODULE)
 
 ########### unittests ###############
 

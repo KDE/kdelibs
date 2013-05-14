@@ -6,7 +6,7 @@ set(kconfig_compiler_SRCS kconfig_compiler.cpp)
 
 add_executable(kconfig_compiler ${kconfig_compiler_SRCS})
 
-find_package(Qt5Xml REQUIRED NO_MODULE)
+find_package(Qt5Xml 5.2.0 REQUIRED NO_MODULE)
 
 target_link_libraries(kconfig_compiler  Qt5::Xml)
 

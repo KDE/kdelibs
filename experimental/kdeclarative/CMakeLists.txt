@@ -1,7 +1,7 @@
 project(kdeclarative)
 
-find_package(Qt5Quick REQUIRED)
-find_package(Qt5Qml REQUIRED)
+find_package(Qt5Quick 5.2.0 REQUIRED)
+find_package(Qt5Qml 5.2.0 REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..
 		    ${CMAKE_CURRENT_BINARY_DIR}/..
@@ -27,7 +27,7 @@ set(kdeclarative_TEST_SRCS
 
 kde4_add_executable(kdeclarativetest ${kdeclarative_TEST_SRCS})
 
-find_package(Qt5Script REQUIRED NO_MODULE)
+find_package(Qt5Script 5.2.0 REQUIRED NO_MODULE)
 
 target_link_libraries(kdeclarativetest kdeclarative ${KDE4_KDECORE_LIBS} Qt5::Widgets ${Qt5Quick_LIBRARIES} ${Qt5Qml_LIBRARIES} Qt5::Script ki18n)
 

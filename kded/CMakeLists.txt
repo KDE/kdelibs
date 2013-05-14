@@ -1,6 +1,6 @@
 project(kded)
 
-find_package(Qt5X11Extras REQUIRED NO_MODULE)
+find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
 
 add_subdirectory( tests )
 

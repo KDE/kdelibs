@@ -1,5 +1,5 @@
 
-find_package(Qt5Core REQUIRED NO_MODULE)
+find_package(Qt5Core 5.2.0 REQUIRED NO_MODULE)
 
 set(libkconfigcore_SRCS
    kconfig.cpp

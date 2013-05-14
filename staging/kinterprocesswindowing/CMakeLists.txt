@@ -17,7 +17,7 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Test X11Extras)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test X11Extras)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kinterprocesswindowing_version.h)
 

@@ -17,7 +17,7 @@ ecm_version(5 0 0)
 include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
-find_package(Qt5 REQUIRED NO_MODULE COMPONENTS X11Extras Network)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras Network)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)

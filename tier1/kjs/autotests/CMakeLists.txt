@@ -1,6 +1,6 @@
 include(ECMMarkAsTest)
 
-find_package(Qt5Test REQUIRED NO_MODULE)
+find_package(Qt5Test 5.2.0 REQUIRED NO_MODULE)
 ########### ecmatest ##############
 
 add_executable(ecmatest

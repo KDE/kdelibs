@@ -5,7 +5,7 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA=6000)
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
-find_package(Qt5PrintSupport REQUIRED NO_MODULE)
+find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
 include(ConfigureChecks.cmake)
 configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
@@ -47,7 +47,7 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
 
-find_package(Qt5X11Extras REQUIRED NO_MODULE)
+find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 

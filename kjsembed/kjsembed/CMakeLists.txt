@@ -1,7 +1,7 @@
 project(kjsembed-kjsembed)
 
-find_package(Qt5UiTools REQUIRED)
-find_package(Qt5Svg REQUIRED)
+find_package(Qt5UiTools 5.2.0 REQUIRED)
+find_package(Qt5Svg 5.2.0 REQUIRED)
 
 ########### next target ###############
 

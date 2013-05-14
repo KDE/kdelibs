@@ -1,5 +1,5 @@
 
-find_package(Qt5Script REQUIRED NO_MODULE)
+find_package(Qt5Script 5.2.0 REQUIRED NO_MODULE)
 
 set(proxymodeltestapp_SRCS
     main.cpp

@@ -1,7 +1,7 @@
 
 include(ECMMarkAsTest)
 
-find_package(Qt5 REQUIRED NO_MODULE COMPONENTS Xml Test)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Xml Test)
 
 macro(kcompletion_executable_tests)
   foreach(_testname ${ARGN})
