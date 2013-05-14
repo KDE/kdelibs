@@ -104,9 +104,17 @@ WinDevice::WinDevice(const QString &udi) :
         char buff[1024];
         WinDeviceManager::getDeviceInfo<STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
         STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
-        QStringList tmp = QString((char*)buff+ info->ProductIdOffset).trimmed().split(" ");
-        m_vendor = tmp.takeFirst();
-        m_product = tmp.join(" ");
+        if(info->VendorIdOffset != 0)
+        {
+            m_vendor = QString((char*)buff+ info->VendorIdOffset).trimmed();
+            m_product = QString((char*)buff+ info->ProductIdOffset).trimmed();
+        }
+        else//fallback doesnt work for all devices
+        {
+            QStringList tmp = QString((char*)buff+ info->ProductIdOffset).trimmed().split(" ");
+            m_vendor = tmp.takeFirst();
+            m_product = tmp.join(" ");
+        }
     }
 
 
