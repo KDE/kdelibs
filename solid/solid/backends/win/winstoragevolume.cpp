@@ -66,7 +66,7 @@ void WinStorageVolume::updateCache()
     {
         m_label = QString::fromWCharArray(label);
         m_fs = QString::fromWCharArray(fs);
-        m_uuid = QString::number(serial);
+        m_uuid =  QString::number(serial,16);
     }
 
     ULARGE_INTEGER size;
