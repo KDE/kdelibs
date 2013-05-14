@@ -97,6 +97,7 @@ private slots:
 
 private:
     QSet<QString> m_devices;
+    QStringList m_devicesList;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 
     template< class INFO, class QUERY>

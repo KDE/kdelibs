@@ -68,9 +68,7 @@ QStringList WinDeviceManager::allDevices()
     {
         updateDeviceList();
     }
-    QStringList out = m_devices.toList();
-    qSort(out);
-    return out;
+    return m_devicesList;
 }
 
 
@@ -122,19 +120,22 @@ void WinDeviceManager::updateDeviceList()
     if(!m_devices.isEmpty())
     {
         QSet<QString> added = devices - m_devices;
-        foreach(const QString & s,added){
+        foreach(const QString & s,added)
+        {
             qDebug()<<"Device added"<<s;
             emit deviceAdded(s);
         }
         QSet<QString> removed = m_devices - devices;
-        foreach(const QString & s,removed){
+        foreach(const QString & s,removed)
+        {
             qDebug()<<"Device removed"<<s;
             emit deviceRemoved(s);
         }
     }
 
     m_devices = devices;
-
+    m_devicesList = m_devices.toList();
+    qSort(m_devicesList);
 }
 
 
