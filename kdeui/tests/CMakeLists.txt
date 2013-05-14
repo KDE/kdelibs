@@ -32,7 +32,6 @@ KDEUI_UNIT_TESTS(
   klistwidgetsearchlinetest
   ktimecomboboxtest
   kdatecomboboxtest
-  kdatetimeedittest
   kconfigdialog_unittest
   kcolorbuttontest
 )

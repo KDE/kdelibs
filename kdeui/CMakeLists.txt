@@ -168,7 +168,6 @@ set(kdeui_LIB_SRCS
  widgets/kdatecombobox.cpp
  widgets/kdatepicker.cpp
  widgets/kdatetable.cpp
- widgets/kdatetimeedit.cpp
  widgets/kdatetimewidget.cpp
  widgets/kdatewidget.cpp
  widgets/keditlistwidget.cpp
@@ -266,7 +265,6 @@ set( kdeui_UI
    dialogs/kpassworddialog.ui
    dialogs/knewpassworddialog.ui
    dialogs/kshortcutsdialog.ui
-   widgets/kdatetimeedit.ui
    widgets/kshortcutwidget.ui
    )
 
@@ -482,7 +480,6 @@ install( FILES
  widgets/kbuttongroup.h
  widgets/kcharselect.h
  widgets/kdatetable.h
- widgets/kdatetimeedit.h
  widgets/kdatetimewidget.h
  widgets/kdatewidget.h
  widgets/keditlistwidget.h

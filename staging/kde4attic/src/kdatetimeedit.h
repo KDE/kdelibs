@@ -20,7 +20,7 @@
 #ifndef KDATETIMEEDIT_H
 #define KDATETIMEEDIT_H
 
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 
 #include <QWidget>
 
@@ -31,7 +31,7 @@
 class KDateTimeEditPrivate;
 class KCalendarSystem;
 
-class KDEUI_EXPORT KDateTimeEdit : public QWidget
+class KDE4ATTIC_EXPORT KDateTimeEdit : public QWidget
 {
     Q_OBJECT
 

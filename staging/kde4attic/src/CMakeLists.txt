@@ -2,7 +2,14 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 set(kde4attic_SRCS
   kanimatedbutton.cpp
+  kdatetimeedit.cpp
 )
+
+set(kde4attic_UI
+  kdatetimeedit.ui
+)
+
+kde4_add_ui_files(kde4attic_SRCS ${kde4attic_UI} )
 
 add_library(KDE4Attic ${kde4attic_SRCS})
 generate_export_header(KDE4Attic)
@@ -17,6 +24,7 @@ install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS
 
 install(FILES
   kanimatedbutton.h
+  kdatetimeedit.h
   ${CMAKE_CURRENT_BINARY_DIR}/kde4attic_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
