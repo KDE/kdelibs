@@ -56,6 +56,7 @@ namespace Win
 
 class WinDeviceManager : public Solid::Ifaces::DeviceManager
 {
+    Q_OBJECT
 public:
     WinDeviceManager(QObject *parent=0);
 
@@ -91,8 +92,11 @@ public:
     }
 
 
+private slots:
+    void updateDeviceList();
+
 private:
-    QStringList m_devices;
+    QSet<QString> m_devices;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 
     template< class INFO, class QUERY>
@@ -151,7 +155,7 @@ private:
                     return;
                 }
             }
-#if 1
+#if 0
             ::CloseHandle(handle);
             qFatal("Failed to query %s reason: %s",qPrintable(dev),qPrintable(qGetLastError(err)));
 #else

@@ -45,7 +45,7 @@ public:
 
     virtual QString device() const;
 
-    static QStringList getUdis();
+    static QSet<QString> getUdis();
 
     static QString driveLetter(const QString &udi);
 

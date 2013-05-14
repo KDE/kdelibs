@@ -109,7 +109,7 @@ WinDevice::WinDevice(const QString &udi) :
             m_vendor = QString((char*)buff+ info->VendorIdOffset).trimmed();
             m_product = QString((char*)buff+ info->ProductIdOffset).trimmed();
         }
-        else//fallback doesnt work for all devices
+        else if(info->ProductIdOffset != 0)//fallback doesnt work for all devices
         {
             QStringList tmp = QString((char*)buff+ info->ProductIdOffset).trimmed().split(" ");
             m_vendor = tmp.takeFirst();

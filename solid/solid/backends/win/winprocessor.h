@@ -47,7 +47,7 @@ public:
 
     virtual Solid::Processor::InstructionSets instructionSets() const;
 
-    static QStringList getUdis();
+    static QSet<QString> getUdis();
 
 
 

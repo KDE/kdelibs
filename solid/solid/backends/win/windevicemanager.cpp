@@ -26,6 +26,9 @@
 
 
 #include <QDebug>
+#include <QTimer>
+#include <QTime>
+
 
 using namespace Solid::Backends::Win;
 
@@ -39,6 +42,12 @@ WinDeviceManager::WinDeviceManager(QObject *parent)
                           << Solid::DeviceInterface::OpticalDrive
                           << Solid::DeviceInterface::StorageVolume
                           << Solid::DeviceInterface::OpticalDisc;
+
+    QTimer *timer = new QTimer(parent);
+
+    timer->setInterval(10000);
+    connect(timer,SIGNAL(timeout()),this,SLOT(updateDeviceList()));
+    timer->start();
 
 }
 
@@ -55,12 +64,13 @@ QSet<Solid::DeviceInterface::Type> Solid::Backends::Win::WinDeviceManager::suppo
 
 QStringList WinDeviceManager::allDevices()
 {
-    if(!m_devices.isEmpty())
-        return m_devices;
-
-    m_devices<<WinBlock::getUdis();
-    m_devices<<WinProcessor::getUdis();
-    return m_devices;
+    if(m_devices.isEmpty())
+    {
+        updateDeviceList();
+    }
+    QStringList out = m_devices.toList();
+    qSort(out);
+    return out;
 }
 
 
@@ -98,6 +108,35 @@ QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi
     } else {
         return 0;
     }
+}
+
+void WinDeviceManager::updateDeviceList()
+{
+    QSet<QString> devices;
+
+    QTime t;
+    t.start();
+    devices |= WinBlock::getUdis();
+    devices |= WinProcessor::getUdis();
+
+    qDebug()<<"Generation of device list took"<<t.elapsed();
+
+    if(!m_devices.isEmpty())
+    {
+        QSet<QString> added = devices - m_devices;
+        foreach(const QString & s,added){
+            qDebug()<<"Device added"<<s;
+            emit deviceAdded(s);
+        }
+        QSet<QString> removed = m_devices - devices;
+        foreach(const QString & s,removed){
+            qDebug()<<"Device removed"<<s;
+            emit deviceRemoved(s);
+        }
+    }
+
+    m_devices = devices;
+
 }
 
 
