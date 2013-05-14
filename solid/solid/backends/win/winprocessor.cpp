@@ -60,10 +60,13 @@ Solid::Processor::InstructionSets WinProcessor::instructionSets() const
 
 QSet<QString> WinProcessor::getUdis()
 {
-    QSet<QString> out;
-    foreach(const ProcessorInfo &info,updateCache())
+    static QSet<QString> out;
+    if(out.isEmpty())
     {
-        out<<QString("/org/kde/solid/win/cpu/device#%1,cpu#%2").arg(info.id).arg(info.lgicalId);
+        foreach(const ProcessorInfo &info,updateCache())
+        {
+            out<<QString("/org/kde/solid/win/cpu/device#%1,cpu#%2").arg(info.id).arg(info.lgicalId);
+        }
     }
     return out;
 }

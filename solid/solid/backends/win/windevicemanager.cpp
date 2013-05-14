@@ -112,12 +112,10 @@ QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi
 
 void WinDeviceManager::updateDeviceList()
 {
-    QSet<QString> devices;
-
     QTime t;
     t.start();
+    QSet<QString> devices = WinProcessor::getUdis();
     devices |= WinBlock::getUdis();
-    devices |= WinProcessor::getUdis();
 
     qDebug()<<"Generation of device list took"<<t.elapsed();
 
