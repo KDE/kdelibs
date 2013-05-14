@@ -41,7 +41,7 @@ WinStorageVolume::~WinStorageVolume()
 
 bool WinStorageVolume::isIgnored() const
 {
-    return WinBlock::driveLetter(m_device->udi()).isNull();
+    return WinBlock::driveLetterFromUdi(m_device->udi()).isNull();
 }
 
 Solid::StorageVolume::UsageType WinStorageVolume::usage() const
@@ -58,7 +58,7 @@ void WinStorageVolume::updateCache()
     DWORD flags;
     //TODO:get correct name
     wchar_t dLetter[MAX_PATH];
-    int dLetterSize = WinBlock::driveLetter(m_device->udi()).toWCharArray(dLetter);
+    int dLetterSize = WinBlock::driveLetterFromUdi(m_device->udi()).toWCharArray(dLetter);
     dLetter[dLetterSize] = (wchar_t)'\\';
     dLetter[dLetterSize+1] = 0;
 

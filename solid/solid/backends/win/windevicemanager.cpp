@@ -24,17 +24,24 @@
 #include "winprocessor.h"
 #include "winblock.h"
 
+#include <dbt.h>
 
 #include <QDebug>
 #include <QTimer>
 #include <QTime>
+#include <QApplication>
 
 
 using namespace Solid::Backends::Win;
 
+WinDeviceManager *WinDeviceManager::m_instance = NULL;
+
 WinDeviceManager::WinDeviceManager(QObject *parent)
     :DeviceManager(parent)
 {
+    if(m_instance)
+        qFatal("There are multiple WinDeviceManager instances");
+    m_instance = this;
     m_supportedInterfaces << Solid::DeviceInterface::GenericInterface
                              //                          << Solid::DeviceInterface::Block
                           << Solid::DeviceInterface::StorageAccess
@@ -43,12 +50,43 @@ WinDeviceManager::WinDeviceManager(QObject *parent)
                           << Solid::DeviceInterface::StorageVolume
                           << Solid::DeviceInterface::OpticalDisc;
 
-    QTimer *timer = new QTimer(parent);
 
-    timer->setInterval(10000);
-    connect(timer,SIGNAL(timeout()),this,SLOT(updateDeviceList()));
-    timer->start();
+    updateDeviceList();
 
+    wchar_t title[] = L"KDEWinDeviceManager";
+
+    WNDCLASSEX wcex;
+
+    ZeroMemory(&wcex, sizeof(wcex));
+
+    wcex.cbSize = sizeof(WNDCLASSEX);
+
+
+    wcex.style			= CS_HREDRAW | CS_VREDRAW;
+    wcex.lpfnWndProc	= WinDeviceManager::WndProc;
+    wcex.cbClsExtra		= 0;
+    wcex.cbWndExtra		= 0;
+    wcex.hInstance		= (HINSTANCE)::GetModuleHandle(NULL);
+    wcex.hIcon			= NULL;
+    wcex.hCursor		= NULL;
+    wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW);
+    wcex.lpszMenuName	= NULL;
+    wcex.lpszClassName	= title;
+    wcex.hIconSm		= NULL;
+    qDebug()<<"foo";
+
+    RegisterClassEx(&wcex);
+
+    m_windowID = CreateWindow(title, title, WS_ICONIC, 0, 0,
+                              CW_USEDEFAULT, 0, NULL, NULL, wcex.hInstance, NULL);
+    ShowWindow(m_windowID, SW_HIDE);
+    UpdateWindow(m_windowID);
+}
+
+WinDeviceManager::~WinDeviceManager()
+{
+    PostMessage(m_windowID, WM_CLOSE, 0, 0);
+    m_instance = NULL;
 }
 
 QString WinDeviceManager::udiPrefix() const
@@ -64,10 +102,6 @@ QSet<Solid::DeviceInterface::Type> Solid::Backends::Win::WinDeviceManager::suppo
 
 QStringList WinDeviceManager::allDevices()
 {
-    if(m_devices.isEmpty())
-    {
-        updateDeviceList();
-    }
     return m_devicesList;
 }
 
@@ -110,33 +144,88 @@ QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi
 
 void WinDeviceManager::updateDeviceList()
 {
-    QTime t;
-    t.start();
     QSet<QString> devices = WinProcessor::getUdis();
-    devices |= WinBlock::getUdis();
+    devices += WinBlock::getUdis();
 
-    qDebug()<<"Generation of device list took"<<t.elapsed();
-
-    if(!m_devices.isEmpty())
-    {
-        QSet<QString> added = devices - m_devices;
-        foreach(const QString & s,added)
-        {
-            qDebug()<<"Device added"<<s;
-            emit deviceAdded(s);
-        }
-        QSet<QString> removed = m_devices - devices;
-        foreach(const QString & s,removed)
-        {
-            qDebug()<<"Device removed"<<s;
-            emit deviceRemoved(s);
-        }
-    }
 
     m_devices = devices;
     m_devicesList = m_devices.toList();
     qSort(m_devicesList);
 }
+
+
+
+
+LRESULT WinDeviceManager::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch(message)
+    {
+    case WM_DEVICECHANGE:
+    {
+
+        if ((wParam == DBT_DEVICEARRIVAL) || (wParam == DBT_DEVICEREMOVECOMPLETE))
+        {
+            DEV_BROADCAST_HDR* header = reinterpret_cast<DEV_BROADCAST_HDR*>(lParam);
+            if (header->dbch_devicetype == DBT_DEVTYP_VOLUME)
+            {
+
+                DEV_BROADCAST_VOLUME* devNot = reinterpret_cast<DEV_BROADCAST_VOLUME*>(lParam);
+                switch(wParam)
+                {
+
+                case DBT_DEVICEREMOVECOMPLETE:
+                {
+                    QSet<QString> udis = WinBlock::getFromBitMask(devNot->dbcv_unitmask);
+                    m_instance->promoteRemovedDevice(udis);
+                }
+                    break;
+                case DBT_DEVICEARRIVAL:
+                {
+                    QSet<QString> udis = WinBlock::updateUdiFromBitMask(devNot->dbcv_unitmask);
+                    m_instance->promoteAddedDevice(udis);
+                }
+                    break;
+                }
+                break;
+            }
+        }
+    }
+        break;
+    case WM_DESTROY:
+    {
+        PostQuitMessage(0);
+    }
+        break;
+    default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
+    return 0;
+}
+
+void WinDeviceManager::promoteAddedDevice(const QSet<QString> &udi)
+{
+    m_devices += udi;
+    m_devicesList = m_devices.toList();
+    qSort(m_devicesList);
+    foreach(const QString &s,udi)
+    {
+        qDebug()<<"Device added"<<s;
+        emit deviceAdded(s);
+    }
+}
+
+void WinDeviceManager::promoteRemovedDevice(const QSet<QString> &udi)
+{
+    m_devices -= udi;
+    m_devicesList = m_devices.toList();
+    qSort(m_devicesList);
+    foreach(const QString &s,udi)
+    {
+        qDebug()<<"Device removed"<<s;
+        emit deviceRemoved(s);
+    }
+}
+
 
 
 #include <windevicemanager.moc>

@@ -59,6 +59,7 @@ class WinDeviceManager : public Solid::Ifaces::DeviceManager
     Q_OBJECT
 public:
     WinDeviceManager(QObject *parent=0);
+    ~WinDeviceManager();
 
     virtual QString udiPrefix() const;
 
@@ -96,9 +97,16 @@ private slots:
     void updateDeviceList();
 
 private:
+    static WinDeviceManager *m_instance;
+    HWND m_windowID;
     QSet<QString> m_devices;
     QStringList m_devicesList;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
+
+    static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+    void promoteAddedDevice(const QSet<QString> &udi);
+    void promoteRemovedDevice(const QSet<QString> &udi);
 
     template< class INFO, class QUERY>
     static void getDeviceInfoPrivate(const QString &devName, int code,INFO *info,size_t size, QUERY *query = NULL)

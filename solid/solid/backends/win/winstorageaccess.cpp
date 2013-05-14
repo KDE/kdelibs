@@ -35,17 +35,17 @@ WinStorageAccess::~WinStorageAccess()
 
 bool WinStorageAccess::isAccessible() const
 {
-    return !WinBlock::driveLetter(m_device->udi()).isNull();
+    return !WinBlock::driveLetterFromUdi(m_device->udi()).isNull();
 }
 
 QString WinStorageAccess::filePath() const
 {
-    return WinBlock::driveLetter(m_device->udi()).append("/");
+    return WinBlock::driveLetterFromUdi(m_device->udi()).append("/");
 }
 
 bool WinStorageAccess::isIgnored() const
 {
-    return WinBlock::driveLetter(m_device->udi()).isNull();
+    return WinBlock::driveLetterFromUdi(m_device->udi()).isNull();
 }
 
 bool WinStorageAccess::setup()

@@ -28,7 +28,7 @@ WinOpticalDisc::WinOpticalDisc(WinDevice *device) :
     m_isRewritable(false)
 {
     //TODO: blueray etc
-    QMap<ulong,MediaProfiles> profiles = MediaProfiles::profiles(WinBlock::driveLetter(m_device->udi()));
+    QMap<ulong,MediaProfiles> profiles = MediaProfiles::profiles(WinBlock::driveLetterFromUdi(m_device->udi()));
 
     if(profiles[ProfileCdRecordable].active)
     {
@@ -86,7 +86,7 @@ bool WinOpticalDisc::isBlank() const
 {
 
     wchar_t dLetter[MAX_PATH];
-    int dLetterSize = WinBlock::driveLetter(m_device->udi()).toWCharArray(dLetter);
+    int dLetterSize = WinBlock::driveLetterFromUdi(m_device->udi()).toWCharArray(dLetter);
     dLetter[dLetterSize] = (wchar_t)'\\';
     dLetter[dLetterSize+1] = 0;
 

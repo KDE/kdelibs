@@ -26,6 +26,7 @@ using namespace Solid::Backends::Win;
 
 
 QMap<QString,QString> WinBlock::m_driveLetters = QMap<QString,QString>();
+QMap<QString,QSet<QString> > WinBlock::m_driveUDIS = QMap<QString,QSet<QString> >();
 
 WinBlock::WinBlock(WinDevice *device):
     WinInterface(device),
@@ -34,7 +35,7 @@ WinBlock::WinBlock(WinDevice *device):
 {
     if(m_device->type() == Solid::DeviceInterface::StorageVolume)
     {
-        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(driveLetter(m_device->udi()),IOCTL_STORAGE_GET_DEVICE_NUMBER);
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(driveLetterFromUdi(m_device->udi()),IOCTL_STORAGE_GET_DEVICE_NUMBER);
         m_major = info.DeviceNumber;
         m_minor = info.PartitionNumber;
     }
@@ -68,65 +69,97 @@ int WinBlock::deviceMinor() const
 
 QString WinBlock::device() const
 {
-    return driveLetter(m_device->udi());
+    return driveLetterFromUdi(m_device->udi());
+}
+
+QStringList WinBlock::drivesFromMask(const DWORD unitmask)
+{
+    QStringList result;
+    DWORD localUnitmask(unitmask);
+    for (int i = 0; i <= 25; ++i)
+    {
+        if (0x01 == (localUnitmask & 0x1))
+        {
+            result<<QString("%1:").arg((char)(i+'A'));
+        }
+        localUnitmask >>= 1;
+    }
+    return result;
 }
 
 QSet<QString> WinBlock::getUdis()
 {
-    QSet<QString> list;
-    DWORD word = GetLogicalDrives();
-    char c = 'A';
-    int i = 0;
-    while(word != 0)
-    {
-        if(word & 1 ){
-
-            QString drive = QString("%1:").arg((char)(c+i));
-
-            STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
-
-            switch(info.DeviceType)
-            {
-            case FILE_DEVICE_DISK:
-            {
-                QString udi = QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
-                list<<udi;
-                m_driveLetters[udi] = drive;
-                list<<QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
-            }
-                break;
-            case FILE_DEVICE_CD_ROM:
-            case FILE_DEVICE_DVD:
-            {
-                QString udi = QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
-                list<<udi;
-                m_driveLetters[udi] = drive;
-
-                udi = QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
-                list<<udi;
-                m_driveLetters[udi] = drive;
-            }
-                break;
-            case 0:
-            {
-                //subst drive
-            }
-                break;
-            default:
-                qDebug()<<"unknown device"<<drive<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
-            }
-        }
-        word = (word >> 1);
-        ++i;
-    }
-    return list;
+    return updateUdiFromBitMask(GetLogicalDrives());
 }
 
-QString WinBlock::driveLetter(const QString &udi)
+QString WinBlock::driveLetterFromUdi(const QString &udi)
 {
     if(!m_driveLetters.contains(udi))
         qWarning()<<udi<<"is not connected to a drive";
     return m_driveLetters[udi];
+}
+
+QSet<QString> WinBlock::updateUdiFromBitMask(const DWORD unitmask)
+{
+    QStringList drives = drivesFromMask(unitmask);
+    QSet<QString> list;
+    foreach(const QString &drive,drives)
+    {
+        QSet<QString> udis;
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
+
+        switch(info.DeviceType)
+        {
+        case FILE_DEVICE_DISK:
+        {
+            udis<<QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+            udis<<QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
+
+        }
+            break;
+        case FILE_DEVICE_CD_ROM:
+        case FILE_DEVICE_DVD:
+        {
+            udis<<QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
+            udis<<QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
+        }
+            break;
+        case 0:
+        {
+            //subst drive
+        }
+            break;
+        default:
+            qDebug()<<"unknown device"<<drive<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
+        }
+        m_driveUDIS[drive] = udis;
+        foreach(const QString&s,udis)
+        {
+            m_driveLetters[s] = drive;
+        }
+        list += udis;
+    }
+    return list;
+}
+
+QSet<QString> WinBlock::getFromBitMask(const DWORD unitmask)
+{
+    QSet<QString> list;
+    QStringList drives = drivesFromMask(unitmask);
+    foreach(const QString &drive,drives)
+    {
+        if(m_driveUDIS.contains(drive))
+        {
+            list += m_driveUDIS[drive];
+        }
+        else
+        {
+            //we have to update the cache
+            return updateUdiFromBitMask(unitmask);
+        }
+
+    }
+    return list;
 }
 
 #include "winblock.moc"
