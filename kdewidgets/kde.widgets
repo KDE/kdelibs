@@ -111,12 +111,6 @@ ToolTip=Font Chooser (KDE)
 WhatsThis=A font type, size and style selection widget complete with preview
 Group=Input (KDE)
 
-[KFontComboBox]
-IncludeFile=kfontcombobox.h
-ToolTip=Font Combo Box (KDE)
-WhatsThis=A combo box for font selection with language-specific previews
-Group=Input (KDE)
-
 [KFontRequester]
 IncludeFile=kfontrequester.h
 ToolTip=Font Requester (KDE)

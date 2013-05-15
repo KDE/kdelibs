@@ -31,12 +31,12 @@
 #include <QPushButton>
 #include <QToolButton>
 #include <QTextBrowser>
+#include <QFontComboBox>
 
 #include <kcombobox.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
-#include <kfontcombobox.h>
 #include <kactioncollection.h>
 #include <kstandardaction.h>
 
@@ -87,7 +87,7 @@ public:
     QToolButton *backButton;
     QToolButton *forwardButton;
     KLineEdit* searchLine;
-    KFontComboBox *fontCombo;
+    QFontComboBox *fontCombo;
     QSpinBox *fontSizeSpinBox;
     QComboBox *sectionCombo;
     QComboBox *blockCombo;
@@ -385,7 +385,7 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
     connect(d->sectionCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_sectionSelected(int)));
     connect(d->blockCombo, SIGNAL(currentIndexChanged(int)), this, SLOT(_k_blockSelected(int)));
 
-    d->fontCombo = new KFontComboBox(this);
+    d->fontCombo = new QFontComboBox(this);
     comboLayout->addWidget(d->fontCombo);
     d->fontCombo->setEditable(true);
     d->fontCombo->resize(d->fontCombo->sizeHint());
