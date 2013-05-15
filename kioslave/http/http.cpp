@@ -1581,7 +1581,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
   QString url = _url;
   if ( !url.isNull() )
-    url = m_request.url.url();
+    url = m_request.url.prettyUrl();
 
   QString action, errorString;
   int errorCode = ERR_SLAVE_DEFINED;
@@ -3464,7 +3464,7 @@ endParsing:
             KUrl u(m_request.url, locationStr);
             if(!u.isValid())
             {
-                error(ERR_MALFORMED_URL, u.url());
+                error(ERR_MALFORMED_URL, u.prettyUrl());
                 return false;
             }
 
