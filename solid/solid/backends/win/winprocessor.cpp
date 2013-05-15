@@ -65,7 +65,7 @@ QSet<QString> WinProcessor::getUdis()
     {
         foreach(const ProcessorInfo &info,updateCache())
         {
-            out<<QString("/org/kde/solid/win/cpu/device#%1,cpu#%2").arg(info.id).arg(info.lgicalId);
+            out << QString("/org/kde/solid/win/cpu/device#%1,cpu#%2").arg(info.id).arg(info.lgicalId);
         }
     }
     return out;
@@ -114,7 +114,7 @@ const QMap<int,WinProcessor::ProcessorInfo> &WinProcessor::updateCache()
                 logicalProcessorCount += countSetBits(info[i].ProcessorMask);
                 for(;old<logicalProcessorCount;++old)
                 {
-                    QSettings settings(QString("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\").append(QString::number(old)),  QSettings::NativeFormat);
+                    QSettings settings(QLatin1String("HKEY_LOCAL_MACHINE\\HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\") + QString::number(old),  QSettings::NativeFormat);
                     ProcessorInfo proc;
                     proc.id = processorCoreCount;
                     proc.lgicalId = old;

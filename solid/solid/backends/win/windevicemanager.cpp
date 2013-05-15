@@ -56,31 +56,26 @@ WinDeviceManager::WinDeviceManager(QObject *parent)
     wchar_t title[] = L"KDEWinDeviceManager";
 
     WNDCLASSEX wcex;
-
     ZeroMemory(&wcex, sizeof(wcex));
-
     wcex.cbSize = sizeof(WNDCLASSEX);
-
-
-    wcex.style			= CS_HREDRAW | CS_VREDRAW;
     wcex.lpfnWndProc	= WinDeviceManager::WndProc;
-    wcex.cbClsExtra		= 0;
-    wcex.cbWndExtra		= 0;
     wcex.hInstance		= (HINSTANCE)::GetModuleHandle(NULL);
-    wcex.hIcon			= NULL;
-    wcex.hCursor		= NULL;
     wcex.hbrBackground	= (HBRUSH)(COLOR_WINDOW);
-    wcex.lpszMenuName	= NULL;
     wcex.lpszClassName	= title;
-    wcex.hIconSm		= NULL;
-    qDebug()<<"foo";
-
-    RegisterClassEx(&wcex);
+    if(RegisterClassEx(&wcex) ==0)
+    {
+        qWarning() << "Failed to initialize KDEWinDeviceManager we will be unable to detect device changes";
+        return;
+    }
 
     m_windowID = CreateWindow(title, title, WS_ICONIC, 0, 0,
                               CW_USEDEFAULT, 0, NULL, NULL, wcex.hInstance, NULL);
+    if(m_windowID == NULL)
+    {
+        qWarning() << "Failed to initialize KDEWinDeviceManager we will be unable to detect device changes";
+        return;
+    }
     ShowWindow(m_windowID, SW_HIDE);
-    UpdateWindow(m_windowID);
 }
 
 WinDeviceManager::~WinDeviceManager()
@@ -115,18 +110,18 @@ QStringList WinDeviceManager::devicesFromQuery(const QString &parentUdi, Solid::
         foreach(const QString &udi,allDevices()){
             WinDevice device(udi);
             if(device.type() == type && device.parentUdi() == parentUdi ){
-                list<<udi;
+                list << udi;
             }
         }
     } else if (type!=Solid::DeviceInterface::Unknown) {
         foreach(const QString &udi,allDevices()){
             WinDevice device(udi);
             if(device.queryDeviceInterface(type)){
-                list<<udi;
+                list << udi;
             }
         }
     } else {
-        list<<allDevices();
+        list << allDevices();
     }
     return list;
 
@@ -209,7 +204,6 @@ void WinDeviceManager::promoteAddedDevice(const QSet<QString> &udi)
     qSort(m_devicesList);
     foreach(const QString &s,udi)
     {
-        qDebug()<<"Device added"<<s;
         emit deviceAdded(s);
     }
 }
@@ -221,7 +215,6 @@ void WinDeviceManager::promoteRemovedDevice(const QSet<QString> &udi)
     qSort(m_devicesList);
     foreach(const QString &s,udi)
     {
-        qDebug()<<"Device removed"<<s;
         emit deviceRemoved(s);
     }
 }

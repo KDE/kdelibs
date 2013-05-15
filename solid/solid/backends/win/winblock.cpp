@@ -112,16 +112,16 @@ QSet<QString> WinBlock::updateUdiFromBitMask(const DWORD unitmask)
         {
         case FILE_DEVICE_DISK:
         {
-            udis<<QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
-            udis<<QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
+            udis << QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+            udis << QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
 
         }
             break;
         case FILE_DEVICE_CD_ROM:
         case FILE_DEVICE_DVD:
         {
-            udis<<QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
-            udis<<QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
+            udis << QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
+            udis << QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
         }
             break;
         case 0:
@@ -130,7 +130,7 @@ QSet<QString> WinBlock::updateUdiFromBitMask(const DWORD unitmask)
         }
             break;
         default:
-            qDebug()<<"unknown device"<<drive<<info.DeviceType<<info.DeviceNumber<<info.PartitionNumber;
+            qDebug() << "unknown device" << drive << info.DeviceType << info.DeviceNumber << info.PartitionNumber;
         }
         m_driveUDIS[drive] = udis;
         foreach(const QString&s,udis)

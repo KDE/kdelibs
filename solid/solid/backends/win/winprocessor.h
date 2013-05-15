@@ -17,8 +17,8 @@
     You should have received a copy of the GNU Lesser General Public
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef WINProcessor_H
-#define WINProcessor_H
+#ifndef WINPROCESSOR_H
+#define WINPROCESSOR_H
 
 #include <solid/ifaces/processor.h>
 
@@ -73,4 +73,4 @@ private:
 }
 }
 
-#endif // WINProcessor_H
+#endif // WINPROCESSOR_H

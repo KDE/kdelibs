@@ -115,13 +115,13 @@ private:
         QMutexLocker lock(&mutex);
         Q_ASSERT(!devName.isNull());
         wchar_t deviceNameBuffer[MAX_PATH];
-        QString dev = QString("\\\\.\\%1").arg(devName);
+        QString dev = QLatin1String("\\\\.\\") + devName;
         deviceNameBuffer[dev.toWCharArray(deviceNameBuffer)] = 0;
-        //    qDebug()<<"querying "<<dev;
+
         HANDLE handle = ::CreateFile(deviceNameBuffer, 0, FILE_SHARE_WRITE|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
         if(handle == INVALID_HANDLE_VALUE)
         {
-            qWarning()<<"Invalid Handle"<<devName<<"reason:"<<qGetLastError()<<" is probaply a subst path or more seriously there is  bug!";
+            qWarning() <<" Invalid Handle" << devName << "reason:" << qGetLastError() << " is probaply a subst path or more seriously there is  bug!";
             return;
         }
 
@@ -143,11 +143,11 @@ private:
                     {
                         //we would need admin rights
                         //                        DebugBreak();
-                        qWarning()<<"we would need admin rights"<<dev<<"reason:"<<qGetLastError(err);
+                        qWarning() << "we would need admin rights" << dev << "reason:" << qGetLastError(err);
                     }
                     else
                     {
-                        qWarning()<<"Invalid Handle"<<dev<<"reason:"<<qGetLastError(err)<<" this should not happen.";
+                        qWarning() << "Invalid Handle" << dev << "reason:" << qGetLastError(err) << " this should not happen.";
                     }
                     return;
                 }
@@ -166,9 +166,9 @@ private:
             }
 #if 0
             ::CloseHandle(handle);
-            qFatal("Failed to query %s reason: %s",qPrintable(dev),qPrintable(qGetLastError(err)));
+            qFatal("Failed to query %s reason: %s", qPrintable(dev), qPrintable(qGetLastError(err)));
 #else
-            qWarning()<<"Failed to query"<<dev<<"reason:"<<qGetLastError(err);
+            qWarning() << "Failed to query" << dev << "reason:" << qGetLastError(err);
 #endif
         }
         ::CloseHandle(handle);

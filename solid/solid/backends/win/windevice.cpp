@@ -63,16 +63,16 @@ WinDevice::WinDevice(const QString &udi) :
     {
     case Solid::DeviceInterface::StorageVolume:
     {
-        m_parentUdi = QString("/org/kde/solid/win/storage/").append(parentName);
+        m_parentUdi = QLatin1String("/org/kde/solid/win/storage/") + parentName;
     }
         break;
     case Solid::DeviceInterface::OpticalDisc:
     {
-        m_parentUdi = QString("/org/kde/solid/win/storage.cdrom/").append(parentName);
+        m_parentUdi = QLatin1String("/org/kde/solid/win/storage.cdrom/") + parentName;
     }
         break;
     default:
-        m_parentUdi = QString("/org/kde/solid/win/").append(type);
+        m_parentUdi = QLatin1String("/org/kde/solid/win/")+ type;
     }
 
     QString dev;
@@ -173,7 +173,7 @@ QString WinDevice::icon() const
 QStringList WinDevice::emblems() const
 {
     //TODO:implement
-    return QStringList("Not implemented");
+    return QStringList();
 }
 
 QString WinDevice::description() const

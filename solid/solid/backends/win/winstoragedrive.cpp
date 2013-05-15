@@ -76,7 +76,7 @@ void WinStorageDrive::updateCache()
     }
     else
     {
-        dev = QString("PhysicalDrive%1").arg(deviceMajor());
+        dev = QLatin1String("PhysicalDrive") + QString::number(deviceMajor());
     }
     STORAGE_ADAPTER_DESCRIPTOR  busInfo = WinDeviceManager::getDeviceInfo<STORAGE_ADAPTER_DESCRIPTOR>(dev,IOCTL_STORAGE_QUERY_PROPERTY,&storageProperty);
 
