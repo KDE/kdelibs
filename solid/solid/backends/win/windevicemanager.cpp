@@ -153,6 +153,7 @@ void WinDeviceManager::updateDeviceList()
 
 LRESULT WinDeviceManager::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    //some parts of the code are based on http://www.codeproject.com/Articles/119168/Hardware-Change-Detection
     switch(message)
     {
     case WM_DEVICECHANGE:

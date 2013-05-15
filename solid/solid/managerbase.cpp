@@ -50,6 +50,9 @@
 
 #elif defined (Q_WS_WIN) && !defined(_WIN32_WCE)
 #include "backends/win/windevicemanager.h"
+#ifdef WITH_SOLID_WMI
+#include "backends/wmi/wmimanager.h"
+#endif
 #endif
 
 
@@ -72,9 +75,10 @@ void Solid::ManagerBasePrivate::loadBackends()
 #        if defined(Q_OS_MAC)
             m_backends << new Solid::Backends::IOKit::IOKitManager(0);
 
+#        elif defined(Q_WS_WIN) && defined(WITH_SOLID_WMI) && !defined(_WIN32_WCE)
+            m_backends << new Solid::Backends::Wmi::WmiManager(0);
 #        elif defined(Q_WS_WIN) && !defined(_WIN32_WCE)
             m_backends << new Solid::Backends::Win::WinDeviceManager(0);
-
 #        elif defined(Q_OS_UNIX) && !defined(Q_OS_LINUX)
             m_backends << new Solid::Backends::Hal::HalManager(0);
 

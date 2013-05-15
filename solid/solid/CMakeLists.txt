@@ -345,17 +345,20 @@ if(APPLE)
 endif(APPLE)
 
 if(WIN32)
-   include(CheckIncludeFileCXX)
-   check_include_file_cxx(wbemidl.h HAVE_WBEM)
-   FIND_LIBRARY(WBEM_LIBRARIES NAMES wbemuuid wbemuuidd)
-   if(HAVE_WBEM AND WBEM_LIBRARIES)
-      set(HAVE_WBEM True)
-      message(STATUS "Found wbemuuid library: ${WBEM_LIBRARIES}")
-   else(HAVE_WBEM AND WBEM_LIBRARIES)
-      set(HAVE_WBEM False)
-   endif(HAVE_WBEM AND WBEM_LIBRARIES)
-   if(False)#HAVE_WBEM AND NOT WINCE)
-       set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_WBEM")
+    if(WITH_SOLID_WMI)
+       include(CheckIncludeFileCXX)
+       check_include_file_cxx(wbemidl.h HAVE_WBEM)
+       FIND_LIBRARY(WBEM_LIBRARIES NAMES wbemuuid wbemuuidd)
+       if(HAVE_WBEM AND WBEM_LIBRARIES)
+          set(HAVE_WBEM True)
+          message(STATUS "Found wbemuuid library: ${WBEM_LIBRARIES}")
+       else(HAVE_WBEM AND WBEM_LIBRARIES)
+          set(HAVE_WBEM False)
+          set(WITH_SOLID_WMI False)
+      endif(HAVE_WBEM AND WBEM_LIBRARIES)
+   endif(WITH_SOLID_WMI)
+   if(WITH_SOLID_WMI)
+       add_definitions(-WITH_SOLID_WMI)
        message(STATUS "-- Building Solid WMI backend." )
 
        set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -382,8 +385,8 @@ if(WIN32)
        backends/wmi/wmivolume.cpp
 
        )
-    endif(False)#HAVE_WBEM AND NOT WINCE)
-
+    else(WITH_SOLID_WMI)
+       message(STATUS "-- Building Solid Windows backend." )
        set(solid_LIB_SRCS ${solid_LIB_SRCS}
        backends/win/winblock.cpp
        backends/win/winopticaldrive.cpp
@@ -397,8 +400,8 @@ if(WIN32)
        backends/win/winstorageaccess.cpp
        backends/win/winstoragedrive.cpp
        backends/win/winstoragevolume.cpp
-
        )
+    endif(WITH_SOLID_WMI)
 endif(WIN32)
 
 set_source_files_properties( org.freedesktop.PowerManagement.xml
