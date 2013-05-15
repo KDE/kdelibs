@@ -63,6 +63,7 @@ set(libkde4support_SRCS
     kdeui/kshortcut.cpp
     kdeui/kstatusbar.cpp
     kdeui/ksystemtrayicon.cpp
+    kdeui/ktabbar.cpp
     kdeui/ktabwidget.cpp
     kdeui/kuniqueapplication.cpp
     kdeui/khbox.cpp
@@ -157,6 +158,7 @@ install(FILES
     kdeui/knumvalidator.h
     kdeui/karrowbutton.h
     kdeui/ksplashscreen.h
+    kdeui/ktabbar.h
     kdeui/ktabwidget.h
     kdeui/kdialogbuttonbox.h
     kdeui/kprogressdialog.h

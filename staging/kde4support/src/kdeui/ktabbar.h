@@ -22,7 +22,7 @@
 #ifndef KTABBAR_H
 #define KTABBAR_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QTabBar>
 
@@ -31,7 +31,7 @@
  *
  * \image html ktabbar.png "KDE Tab Bar"
  */
-class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
+class KDE4SUPPORT_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
 {
     Q_OBJECT
 
@@ -60,7 +60,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * URL from Konqueror to another application)!
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setTabReorderingEnabled( bool enable );
+    KDE4SUPPORT_DEPRECATED void setTabReorderingEnabled( bool enable );
 #endif
 
     /**
@@ -69,7 +69,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * @deprecated Use QTabBar::isMovable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool isTabReorderingEnabled() const;
+    KDE4SUPPORT_DEPRECATED bool isTabReorderingEnabled() const;
 #endif
 
     /**
@@ -81,12 +81,12 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * @deprecated Use QTabBar::setTabsClosable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setHoverCloseButton( bool );
+    KDE4SUPPORT_DEPRECATED void setHoverCloseButton( bool );
 #endif
 
     /** @deprecated Use QTabBar::tabsClosable() instead. */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool hoverCloseButton() const;
+    KDE4SUPPORT_DEPRECATED bool hoverCloseButton() const;
 #endif
 
     /**
@@ -97,12 +97,12 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * @deprecated Use QTabBar::setTabsClosable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setHoverCloseButtonDelayed( bool );
+    KDE4SUPPORT_DEPRECATED void setHoverCloseButtonDelayed( bool );
 #endif
 
     /** @deprecated Use QTabBar::tabsClosable() instead. */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool hoverCloseButtonDelayed() const;
+    KDE4SUPPORT_DEPRECATED bool hoverCloseButtonDelayed() const;
 #endif
 
     /**
@@ -115,7 +115,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * @deprecated Use QTabBar::setTabsClosable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setCloseButtonEnabled( bool );
+    KDE4SUPPORT_DEPRECATED void setCloseButtonEnabled( bool );
 #endif
 
     /**
@@ -126,7 +126,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * @deprecated Use QTabBar::tabsClosable() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool isCloseButtonEnabled() const;
+    KDE4SUPPORT_DEPRECATED bool isCloseButtonEnabled() const;
 #endif
 
     /**
@@ -137,7 +137,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * @deprecated Use QTabBar::setSelectionBehaviorOnRemove() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setTabCloseActivatePrevious( bool );
+    KDE4SUPPORT_DEPRECATED void setTabCloseActivatePrevious( bool );
 #endif
 
     /**
@@ -147,7 +147,7 @@ class KDEUI_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
      * @deprecated Use QTabBar::selectionBehaviorOnRemove() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool tabCloseActivatePrevious() const;
+    KDE4SUPPORT_DEPRECATED bool tabCloseActivatePrevious() const;
 #endif
 
     /**
