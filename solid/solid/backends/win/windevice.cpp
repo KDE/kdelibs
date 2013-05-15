@@ -142,6 +142,10 @@ QString WinDevice::product() const
 
 QString WinDevice::icon() const
 {
+    if (parentUdi().isEmpty()) {
+        return QLatin1String("computer");
+    }
+
     QString icon;
     switch(type()){
 
@@ -149,20 +153,28 @@ QString WinDevice::icon() const
     {
         WinOpticalDisc disk(const_cast<WinDevice*>(this));
         if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
-            icon = "media-optical-audio";
+        {
+            icon =  QLatin1String("media-optical-audio");
+        }
         else
-            icon = "drive-optical";
+        {
+            icon =  QLatin1String("drive-optical");
+        }
         break;
     }
+    case Solid::DeviceInterface::StorageDrive:
     case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
     {
         WinStorageDrive storage(const_cast<WinDevice*>(this));
         if(storage.bus() == Solid::StorageDrive::Usb)
-            icon = "drive-removable-media-usb-pendrive";
+            icon =  QLatin1String("drive-removable-media-usb-pendrive");
         else
-            icon = "drive-harddisk";
+            icon =  QLatin1String("drive-harddisk");
     }
+        break;
+    case Solid::DeviceInterface::Processor:
+        icon = QLatin1String("cpu");
         break;
     default:
         break;
@@ -189,7 +201,7 @@ bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryTy
     }
 
     QList<Solid::DeviceInterface::Type> interfaceList;
-    interfaceList<<type();
+    interfaceList << type();
 
     switch (type())
     {
@@ -202,13 +214,13 @@ bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryTy
     case Solid::DeviceInterface::StorageDrive:
         break;
     case Solid::DeviceInterface::OpticalDrive:
-        interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageDrive;
+        interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageDrive;
         break;
     case Solid::DeviceInterface::StorageVolume:
-        interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageAccess;
+        interfaceList <<Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageAccess;
         break;
     case Solid::DeviceInterface::OpticalDisc:
-        interfaceList <<Solid::DeviceInterface::Block<<Solid::DeviceInterface::StorageVolume;
+        interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageVolume;
         break;
     case Solid::DeviceInterface::PortableMediaPlayer:
         break;
