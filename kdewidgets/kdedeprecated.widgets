@@ -65,3 +65,8 @@ ToolTip=Extended List Widget (KDE)
 WhatsThis=An improved version of the QListWidget that follows KDE settings
 Group=Views (KDE)
 
+
+[KTextBrowser]
+ToolTip=Improved QTextBrowser (KDE)
+WhatsThis=An improved version of the QTextBrowser with mail or system browser invocation support
+Group=Display (KDE)

@@ -28,7 +28,6 @@
 #include "kaboutapplicationpersonlistdelegate_p.h"
 #include "kdeversion.h"
 #include "kglobalsettings.h"
-#include "ktextbrowser.h"
 #include "ktitlewidget.h"
 
 #include <kaboutdata.h>
@@ -42,6 +41,7 @@
 #include <QScrollBar>
 #include <QStyle>
 #include <QTabWidget>
+#include <QTextBrowser>
 
 class KAboutApplicationDialog::Private
 {
@@ -310,7 +310,7 @@ void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
     QFontMetrics metrics(font);
 
     const QString licenseText = aboutData.licenses().at(number.toInt()).text();
-    KTextBrowser *licenseBrowser = new KTextBrowser(dialog);
+    QTextBrowser *licenseBrowser = new QTextBrowser(dialog);
     licenseBrowser->setFont(font);
     licenseBrowser->setLineWrapMode(QTextEdit::NoWrap);
     licenseBrowser->setText(licenseText);

@@ -35,6 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QDesktopWidget>
 #include <QPushButton>
 #include <qstandardpaths.h>
+#include <QTextBrowser>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -43,7 +44,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ksharedconfig.h>
 #include <krandom.h>
 #include <kseparator.h>
-#include <ktextbrowser.h>
 #include <kstandardguiitem.h>
 
 class KTipDatabase::Private
@@ -197,7 +197,7 @@ class KTipDialog::Private
     KTipDialog *parent;
     KTipDatabase *database;
     QCheckBox *tipOnStart;
-    KTextBrowser *tipText;
+    QTextBrowser *tipText;
 
     static KTipDialog *mInstance;
 };
@@ -254,7 +254,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   QHBoxLayout *browserLayout = new QHBoxLayout();
   mainLayout->addLayout( browserLayout );
 
-  d->tipText = new KTextBrowser( this );
+  d->tipText = new QTextBrowser( this );
 
   d->tipText->setOpenExternalLinks( true );
 
@@ -404,9 +404,9 @@ bool KTipDialog::eventFilter( QObject *object, QEvent *event )
 
   /**
    * If the user presses Return or Space, we close the dialog as if the
-   * default button was pressed even if the KTextBrowser has the keyboard
+   * default button was pressed even if the QTextBrowser has the keyboard
    * focus. This could have the bad side-effect that the user cannot use the
-   * keyboard to open urls in the KTextBrowser, so we just let it handle
+   * keyboard to open urls in the QTextBrowser, so we just let it handle
    * the key event _additionally_. (Antonio)
    */
 

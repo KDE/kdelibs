@@ -263,11 +263,6 @@ ToolTip=KDE Tab Bar
 WhatsThis=A QTabBar with extended features.
 Group=Display (KDE)
 
-[KTextBrowser]
-ToolTip=Improved QTextBrowser (KDE)
-WhatsThis=An improved version of the QTextBrowser with mail or system browser invocation support
-Group=Display (KDE)
-
 [KTextEdit]
 ToolTip=Improved QTextEdit (KDE)
 WhatsThis=An improved version of the QTextEdit with mail or system browser invocation support

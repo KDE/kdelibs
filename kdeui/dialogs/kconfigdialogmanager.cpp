@@ -140,7 +140,6 @@ void KConfigDialogManager::initMaps()
     s_changedMap()->insert( "KLineEdit", SIGNAL(textChanged(QString)));
     s_changedMap()->insert( "KPasswordEdit", SIGNAL(textChanged(QString)));
     s_changedMap()->insert( "KRestrictedLine", SIGNAL(textChanged(QString)));
-    s_changedMap()->insert( "KTextBrowser", SIGNAL(sourceChanged(QString)));
     s_changedMap()->insert( "KTextEdit", SIGNAL(textChanged()));
     s_changedMap()->insert( "KUrlRequester",  SIGNAL(textChanged(QString)));
     s_changedMap()->insert( "KUrlComboRequester",  SIGNAL(textChanged(QString)));
