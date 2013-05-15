@@ -30,6 +30,7 @@
 #include "winopticaldisc.h"
 #include "windevice.h"
 #include "winprocessor.h"
+#include "winbattery.h"
 
 using namespace Solid::Backends::Win;
 
@@ -176,6 +177,9 @@ QString WinDevice::icon() const
     case Solid::DeviceInterface::Processor:
         icon = QLatin1String("cpu");
         break;
+    case Solid::DeviceInterface::Battery:
+        icon = QLatin1String("battery");
+        break;
     default:
         break;
     }
@@ -271,6 +275,9 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         //      case Solid::DeviceInterface::PortableMediaPlayer:
         //          iface = new PortableMediaPlayer(this);
         //          break;
+    case Solid::DeviceInterface::Battery:
+        iface = new WinBattery(this);
+        break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:
         break;
