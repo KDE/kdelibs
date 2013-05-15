@@ -72,7 +72,6 @@ KDEUI_EXECUTABLE_TESTS(
   kratingwidgettest
   krulertest
   ktextedittest
-  ktextbrowsertest
   ktoolbartest
   ktoolbarlabelactiontest
   ktreewidgetsearchlinetest

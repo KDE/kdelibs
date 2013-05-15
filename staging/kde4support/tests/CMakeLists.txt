@@ -23,5 +23,6 @@ kde4support_examples(
   ksystemtraytest
   ktabwidgettest
   kfontdialogtest
+  ktextbrowsertest
 )
 

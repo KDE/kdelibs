@@ -187,7 +187,6 @@ set(kdeui_LIB_SRCS
  widgets/kshortcutwidget.cpp
  widgets/kstringvalidator.cpp
  widgets/ktabbar.cpp
- widgets/ktextbrowser.cpp
  widgets/ktextedit.cpp
  widgets/ktimecombobox.cpp
  widgets/ktimezonewidget.cpp
@@ -497,7 +496,6 @@ install( FILES
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
  widgets/kstringvalidator.h
- widgets/ktextbrowser.h
  widgets/ktextedit.h
  widgets/ktimecombobox.h
  widgets/ktimezonewidget.h
