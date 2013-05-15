@@ -24,14 +24,14 @@
 #include <QFont>
 #include <QtCore/QString>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QLabel;
 class QPushButton;
 
 /**
  * This class provides a widget with a lineedit and a button, which invokes
- * a font dialog (KFontDialog).
+ * a font dialog (QFontDialog).
  *
  * The lineedit provides a preview of the selected font. The preview text can
  * be customized. You can also have the font dialog show only the fixed fonts.
@@ -41,7 +41,7 @@ class QPushButton;
  * @author Nadeem Hasan <nhasan@kde.org>
  *
  */
-class KDEUI_EXPORT KFontRequester : public QWidget
+class KWIDGETSADDONS_EXPORT KFontRequester : public QWidget
 {
   Q_OBJECT
 
