@@ -95,8 +95,9 @@ const QMap<int,WinProcessor::ProcessorInfo> &WinProcessor::updateCache()
     static QMap<int,ProcessorInfo> p;
     if(p.isEmpty())
     {
-        DWORD size = 1024;
-        char buff[size];
+        DWORD size = 0;
+        GetLogicalProcessorInformation(NULL,&size);
+        char *buff = new char[size];
         SYSTEM_LOGICAL_PROCESSOR_INFORMATION *info = (SYSTEM_LOGICAL_PROCESSOR_INFORMATION*)buff;
         GetLogicalProcessorInformation(info,&size);
         size /= sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
@@ -127,7 +128,9 @@ const QMap<int,WinProcessor::ProcessorInfo> &WinProcessor::updateCache()
                 }
                 processorCoreCount++;
             }
+
         }
+        delete [] buff;
     }
     return p;
 
