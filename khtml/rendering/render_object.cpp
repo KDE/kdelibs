@@ -570,6 +570,29 @@ RenderLayer* RenderObject::enclosingStackingContext() const
     return l;
 }
 
+QRectF RenderObject::clientRectToViewport(const QRectF& rect)
+{
+    if (style()->position() != PFIXED) {
+        int offsetX = document()->part()->view()->contentsX();
+        int offsetY = document()->part()->view()->contentsY();
+
+        QRectF newRect(rect.x() - offsetX, rect.y() - offsetY,
+                       rect.width() - offsetX, rect.height() - offsetY);
+        return newRect;
+    }
+    return rect;
+}
+
+QList<QRectF> RenderObject::getClientRects()
+{
+    QList<QRectF> ret;
+
+    QRectF rect(offsetLeft(), offsetTop(), width(), height());
+    ret.append(clientRectToViewport(rect));
+
+    return ret;
+}
+
 int RenderObject::offsetLeft() const
 {
     if (isBody())

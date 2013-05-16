@@ -96,6 +96,8 @@ public:
 
     virtual void calcWidth();
 
+    virtual QList< QRectF > getClientRects();
+
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );
@@ -313,6 +315,8 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
 
+    virtual QList< QRectF > getClientRects();
+
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
 
@@ -388,6 +392,8 @@ public:
     int cellBottomExtra() const { return _bottomExtra; }
 
     int pageTopAfter(int x) const;
+
+    virtual QList< QRectF > getClientRects();
 
     virtual void paint( PaintInfo& i, int tx, int ty);
 
