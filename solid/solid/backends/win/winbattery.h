@@ -50,15 +50,23 @@ public:
 
     virtual Solid::Battery::ChargeState chargeState() const;
 
+    static QSet<QString> getUdis();
+
 signals:
     void chargePercentChanged(int value, const QString &udi) ;
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
 
+private slots:
+    void powerChanged();
+
 private:
+    typedef QPair<QString,ulong> Battery;
+    static QMap<QString,Battery> m_udiToGDI;
     bool m_pluggedIn;
     Solid::Battery::BatteryType m_type;
     int m_charge;
+    bool m_rechargabel;
     Solid::Battery::ChargeState m_state;
 };
 }

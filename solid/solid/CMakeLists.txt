@@ -421,9 +421,11 @@ set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
    set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY})
-   if(HAVE_WBEM)
+   if(WITH_SOLID_WMI)
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${WBEM_LIBRARIES})
-   endif(HAVE_WBEM)
+   else(WITH_SOLID_WMI)
+      set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} setupapi)
+   endif(WITH_SOLID_WMI)
 endif(WIN32)
 
 if(APPLE)

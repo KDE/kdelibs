@@ -23,6 +23,7 @@
 #include "windevice.h"
 #include "winprocessor.h"
 #include "winblock.h"
+#include "winbattery.h"
 
 #include <dbt.h>
 
@@ -139,10 +140,16 @@ QObject *Solid::Backends::Win::WinDeviceManager::createDevice(const QString &udi
     }
 }
 
+const WinDeviceManager *WinDeviceManager::instance()
+{
+    return m_instance;
+}
+
 void WinDeviceManager::updateDeviceList()
 {
     QSet<QString> devices = WinProcessor::getUdis();
     devices += WinBlock::getUdis();
+    devices += WinBattery::getUdis();
 
 
     m_devices = devices;
@@ -189,6 +196,11 @@ LRESULT WinDeviceManager::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
         }
     }
         break;
+    case WM_POWERBROADCAST:
+    {
+
+    }
+    break;
     case WM_DESTROY:
     {
         PostQuitMessage(0);
@@ -220,6 +232,11 @@ void WinDeviceManager::promoteRemovedDevice(const QSet<QString> &udi)
     {
         emit deviceRemoved(s);
     }
+}
+
+void WinDeviceManager::promotePowerChange()
+{
+    emit powerChanged();
 }
 
 

@@ -72,6 +72,7 @@ public:
 
     virtual QObject *createDevice(const QString &udi);
 
+    static const WinDeviceManager *instance();
 
 
 
@@ -92,6 +93,8 @@ public:
         getDeviceInfoPrivate(devName,code,out,outSize,query);
     }
 
+signals:
+    void powerChanged();
 
 private slots:
     void updateDeviceList();
@@ -107,6 +110,8 @@ private:
 
     void promoteAddedDevice(const QSet<QString> &udi);
     void promoteRemovedDevice(const QSet<QString> &udi);
+
+    void promotePowerChange();
 
     template< class INFO, class QUERY>
     static void getDeviceInfoPrivate(const QString &devName, int code,INFO *info,size_t size, QUERY *query = NULL)
