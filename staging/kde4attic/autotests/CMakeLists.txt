@@ -13,4 +13,5 @@ macro(KDE4ATTIC_TESTS)
 endmacro()
 
 kde4attic_tests(
+  kdatecomboboxtest
 )
