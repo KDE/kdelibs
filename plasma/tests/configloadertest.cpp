@@ -66,6 +66,13 @@ void ConfigLoaderTest::colorDefaultValue()
     QVERIFY(typeItem->isEqual(QColor("#00FF00")));
 }
 
+void ConfigLoaderTest::colorWithAlphaDefaultValue()
+{
+    GET_CONFIG_ITEM_VALUE(KConfigSkeleton::ItemColor*, "DefaultColorWithAlphaItem");
+
+    QVERIFY(typeItem->isEqual(QColor(100, 100, 100, 100)));
+}
+
 void ConfigLoaderTest::dateTimeDefaultValue()
 {
     GET_CONFIG_ITEM_VALUE(KCoreConfigSkeleton::ItemDateTime*, "DefaultDateTimeItem");
