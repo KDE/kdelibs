@@ -27,11 +27,15 @@
 
 
 /**
- * @short Extended QTextBrowser.
+ * @deprecated since 5.0, use QTextBrowser instead
  *
- * An extended QTextBrowser.
+ * @brief Extended QTextBrowser.
  *
- * By default it will
+ * Porting from KTextBrowser to QTextBrowser:
+ * - setNotifyClick becomes setOpenLinks, isNotifyClick is set to openLinks.
+ * - use the signal QTextBrowser::anchorClicked for KTextBrowser::urlClick
+ *
+ * By default KTextBrowser will
  * invoke the system mailer or the system browser when a link is
  * activated, or it can emit the signal urlClick() or mailClick()
  * when a link is activated.
@@ -42,6 +46,8 @@
  * \image html ktextbrowser.png "KDE Text Browser"
  *
  * @author Espen Sand (espensa@online.no)
+ *
+ * @see QTextBrowser
  */
 
 class KDE4SUPPORT_EXPORT KTextBrowser : public QTextBrowser
