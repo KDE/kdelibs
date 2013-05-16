@@ -94,7 +94,9 @@ QSet<QString> WinBattery::getUdis()
                                                 0);
                 if (ERROR_INSUFFICIENT_BUFFER == GetLastError())
                 {
-                    SP_DEVICE_INTERFACE_DETAIL_DATA *pdidd = (SP_DEVICE_INTERFACE_DETAIL_DATA*)LocalAlloc(LPTR,cbRequired);
+                    char *buffer = new char[cbRequired];
+                    SP_DEVICE_INTERFACE_DETAIL_DATA *pdidd = (SP_DEVICE_INTERFACE_DETAIL_DATA*)buffer;
+                    ZeroMemory(pdidd,cbRequired);
                     pdidd->cbSize = sizeof(*pdidd);
                     if (SetupDiGetDeviceInterfaceDetail(hdev,
                                                         &did,
@@ -108,9 +110,9 @@ QSet<QString> WinBattery::getUdis()
                         QString udi = QLatin1String("/org/kde/solid/win/battery#") + QString::number(bqi.BatteryTag);
                         udis << udi;
                         m_udiToGDI[udi] = Battery(path,bqi.BatteryTag);
-                        qDebug()<<udi;
+                        qDebug() << udi;
                     }
-                    LocalFree(pdidd);
+                    delete [] buffer;
 
                 }
             }
