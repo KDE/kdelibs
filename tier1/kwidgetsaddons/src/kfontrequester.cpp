@@ -25,10 +25,9 @@
 #include <QLayout>
 #include <QFontDatabase>
 #include <QFontDialog>
+#include <QLocale>
 
 #include <kfontchooser.h>
-#include <klocale.h>
-#include <klocalizedstring.h>
 
 #include <cmath>
 
@@ -47,7 +46,7 @@ static QFont nearestExistingFont (const QFont &font)
     const QStringList families = dbase.families();
     if (!families.contains(family)) {
         // Chose another family.
-        family = families.count() ? families[0] : "fixed";
+        family = families.count() ? families[0] : QLatin1String("fixed");
         // TODO: Try to find nearest match?
     }
 
@@ -64,7 +63,7 @@ static QFont nearestExistingFont (const QFont &font)
             // Find nearest available size.
             int mindiff = 1000;
             int refsize = size;
-            foreach (int lsize, sizes) {
+            Q_FOREACH (int lsize, sizes) {
                 int diff = qAbs(refsize - lsize);
                 if (mindiff > diff) {
                     mindiff = diff;
@@ -109,7 +108,7 @@ KFontRequester::KFontRequester( QWidget *parent, bool onlyFixed )
   layout->setMargin( 0 );
 
   d->m_sampleLabel = new QLabel( this );
-  d->m_button = new QPushButton( i18n( "Choose..." ), this );
+  d->m_button = new QPushButton( tr( "Choose..." ), this );
 
   d->m_sampleLabel->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
   setFocusProxy( d->m_button );
@@ -164,7 +163,7 @@ void KFontRequester::setFont( const QFont &font, bool onlyFixed )
   d->m_onlyFixed = onlyFixed;
 
   d->displaySampleText();
-  emit fontSelected( d->m_selFont );
+  Q_EMIT fontSelected( d->m_selFont );
 }
 
 void KFontRequester::setSampleText( const QString &text )
@@ -190,8 +189,9 @@ void KFontRequester::KFontRequesterPrivate::_k_buttonClicked()
 
     if ( ok )
     {
+        m_selFont = font;
         displaySampleText();
-        emit q->fontSelected( m_selFont );
+        Q_EMIT q->fontSelected( m_selFont );
     }
 }
 
@@ -205,7 +205,7 @@ void KFontRequester::KFontRequesterPrivate::displaySampleText()
 
   if ( m_sampleText.isEmpty() ) {
     QString family = translateFontName(m_selFont.family());
-    m_sampleLabel->setText( QString( "%1 %2" ).arg( family ).arg( KLocale::global()->formatNumber( size, (size == floor(size)) ? 0 : 1 ) ) );
+    m_sampleLabel->setText( QString::fromUtf8( "%1 %2" ).arg( family ).arg( size ) );
   }
   else {
     m_sampleLabel->setText( m_sampleText );
@@ -214,22 +214,22 @@ void KFontRequester::KFontRequesterPrivate::displaySampleText()
 
 void KFontRequester::KFontRequesterPrivate::setToolTip()
 {
-  m_button->setToolTip( i18n( "Click to select a font" ) );
+  m_button->setToolTip( tr( "Click to select a font" ) );
 
   m_sampleLabel->setToolTip( QString() );
   m_sampleLabel->setWhatsThis(QString());
 
   if ( m_title.isNull() )
   {
-    m_sampleLabel->setToolTip( i18n( "Preview of the selected font" ) );
-    m_sampleLabel->setWhatsThis( i18n( "This is a preview of the selected font. You can change it"
-        " by clicking the \"Choose...\" button." ) );
+    m_sampleLabel->setToolTip( tr( "Preview of the selected font" ) );
+    m_sampleLabel->setWhatsThis( tr( "This is a preview of the selected font. You can change it"
+         " by clicking the \"Choose...\" button." ) );
   }
   else
   {
-    m_sampleLabel->setToolTip( i18n( "Preview of the \"%1\" font" ,  m_title ) );
-    m_sampleLabel->setWhatsThis( i18n( "This is a preview of the \"%1\" font. You can change it"
-        " by clicking the \"Choose...\" button." ,  m_title ) );
+    m_sampleLabel->setToolTip( tr( "Preview of the \"%1\" font" ).arg( m_title ) );
+    m_sampleLabel->setWhatsThis( tr( "This is a preview of the \"%1\" font. You can change it"
+        " by clicking the \"Choose...\" button." ).arg( m_title ) );
   }
 }
 

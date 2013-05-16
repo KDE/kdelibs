@@ -6,6 +6,7 @@ set(kwidgetsaddons_SRCS
   kguiitem.cpp
   kled.cpp
   kcapacitybar.cpp
+  kfontrequester.cpp
   kruler.cpp
   kselector.cpp
   kxyselector.cpp
@@ -35,6 +36,7 @@ install(FILES
   kguiitem.h
   kled.h
   kcapacitybar.h
+  kfontrequester.h
   kruler.h
   kselector.h
   ktitlewidget.h
