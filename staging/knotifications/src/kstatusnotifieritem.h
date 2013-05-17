@@ -28,7 +28,7 @@
 
 #include "kdeui_export.h"
 
-class KActionCollection;
+class QAction;
 class QMenu;
 
 class KStatusNotifierItemPrivate;
@@ -386,7 +386,7 @@ public:
     /**
      * All the actions present in the menu
      */
-    KActionCollection *actionCollection() const;
+    QList<QAction *> actionCollection() const;
 
     /**
      * Sets whether to show the standard items in the menu, such as Quit

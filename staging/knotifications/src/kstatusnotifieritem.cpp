@@ -24,6 +24,7 @@
 #include "kstatusnotifieritemdbus_p.h"
 
 #include <QDBusConnection>
+#include <QDebug>
 #include <QPixmap>
 #include <QImage>
 #include <QApplication>
@@ -32,7 +33,6 @@
 #include <QPainter>
 #include <qstandardpaths.h>
 
-#include <kdebug.h>
 #include <kaboutdata.h>
 #include <kiconloader.h>
 #include <kwindowinfo.h>
@@ -42,7 +42,7 @@
 
 #include <netinet/in.h>
 
-#include <config-kdeui.h>
+#include <config-knotifications.h>
 
 static const QString s_statusNotifierWatcherServiceName("org.kde.StatusNotifierWatcher");
 
@@ -127,7 +127,7 @@ KStatusNotifierItem::~KStatusNotifierItem()
 
 QString KStatusNotifierItem::id() const
 {
-    //kDebug(299) << "id requested" << d->id;
+    //qDebug() << "id requested" << d->id;
     return d->id;
 }
 
@@ -485,10 +485,11 @@ void KStatusNotifierItem::setAssociatedWidget(QWidget *associatedWidget)
     }
 
     if (d->associatedWidget && d->associatedWidget != d->menu) {
-        QAction *action = d->actionCollection->action("minimizeRestore");
+        QAction *action = d->actionCollection.value("minimizeRestore");
 
         if (!action) {
-            action = d->actionCollection->addAction("minimizeRestore");
+            action = new QAction(this);
+            d->actionCollection.insert("minimizeRestore", action);
             action->setText(i18n("&Minimize"));
             connect(action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestore()));
         }
@@ -501,7 +502,7 @@ void KStatusNotifierItem::setAssociatedWidget(QWidget *associatedWidget)
 #endif
     } else {
         if (d->menu && d->hasQuit) {
-            QAction *action = d->actionCollection->action("minimizeRestore");
+            QAction *action = d->actionCollection.value("minimizeRestore");
             if (action) {
                 d->menu->removeAction(action);
             }
@@ -516,9 +517,9 @@ QWidget *KStatusNotifierItem::associatedWidget() const
     return d->associatedWidget;
 }
 
-KActionCollection *KStatusNotifierItem::actionCollection() const
+QList<QAction *> KStatusNotifierItem::actionCollection() const
 {
-    return d->actionCollection;
+    return d->actionCollection.values();
 }
 
 void KStatusNotifierItem::setStandardActionsEnabled(bool enabled)
@@ -530,12 +531,12 @@ void KStatusNotifierItem::setStandardActionsEnabled(bool enabled)
     d->standardActionsEnabled = enabled;
 
     if (d->menu && !enabled && d->hasQuit) {
-        QAction *action = d->actionCollection->action("minimizeRestore");
+        QAction *action = d->actionCollection.value("minimizeRestore");
         if (action) {
             d->menu->removeAction(action);
         }
 
-        action = d->actionCollection->action(KStandardAction::name(KStandardAction::Quit));
+        action = d->actionCollection.value(KStandardAction::name(KStandardAction::Quit));
         if (action) {
             d->menu->removeAction(action);
         }
@@ -730,7 +731,6 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
     qDBusRegisterMetaType<KDbusImageVector>();
     qDBusRegisterMetaType<KDbusToolTipStruct>();
 
-    actionCollection = new KActionCollection(q);
     statusNotifierItemDBus = new KStatusNotifierItemDBus(q);
     q->setAssociatedWidget(qobject_cast<QWidget*>(q->parent()));
 
@@ -751,7 +751,11 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
     m->setTitle(title);
     q->setContextMenu(m);
 
-    KStandardAction::quit(q, SLOT(maybeQuit()), actionCollection);
+    QAction *action = new QAction(q);
+    action->setText(i18n("Quit"));
+    action->setIcon(QIcon::fromTheme("application-exit"));
+    QObject::connect(action, SIGNAL(triggered()), q, SLOT(maybeQuit()));
+    actionCollection.insert("quit", action);
 
     id = title;
     if (!extraId.isEmpty()) {
@@ -766,7 +770,7 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
 
 void KStatusNotifierItemPrivate::registerToDaemon()
 {
-    kDebug(299) << "Registering a client interface to the KStatusNotifierWatcher";
+    qDebug() << "Registering a client interface to the KStatusNotifierWatcher";
     if (!statusNotifierWatcher) {
         statusNotifierWatcher = new org::kde::StatusNotifierWatcher(s_statusNotifierWatcherServiceName, "/StatusNotifierWatcher",
                                                                     QDBusConnection::sessionBus());
@@ -782,7 +786,7 @@ void KStatusNotifierItemPrivate::registerToDaemon()
         statusNotifierWatcher->RegisterStatusNotifierItem(statusNotifierItemDBus->service());
         setLegacySystemTrayEnabled(false);
     } else {
-        kDebug(299)<<"KStatusNotifierWatcher not reachable";
+        qDebug()<<"KStatusNotifierWatcher not reachable";
         setLegacySystemTrayEnabled(true);
     }
 }
@@ -792,7 +796,7 @@ void KStatusNotifierItemPrivate::serviceChange(const QString &name, const QStrin
     Q_UNUSED(name)
     if (newOwner.isEmpty()) {
         //unregistered
-        kDebug(299) << "Connection to the KStatusNotifierWatcher lost";
+        qDebug() << "Connection to the KStatusNotifierWatcher lost";
         setLegacyMode(true);
         delete statusNotifierWatcher;
         statusNotifierWatcher = 0;
@@ -902,14 +906,14 @@ void KStatusNotifierItemPrivate::contextMenuAboutToShow()
         // appear at the _END_ of the menu
         menu->addSeparator();
         if (associatedWidget && associatedWidget != menu) {
-            QAction *action = actionCollection->action("minimizeRestore");
+            QAction *action = actionCollection.value("minimizeRestore");
 
             if (action) {
                 menu->addAction(action);
             }
         }
 
-        QAction *action = actionCollection->action(KStandardAction::name(KStandardAction::Quit));
+        QAction *action = actionCollection.value(KStandardAction::name(KStandardAction::Quit));
 
         if (action) {
             menu->addAction(action);
@@ -919,7 +923,7 @@ void KStatusNotifierItemPrivate::contextMenuAboutToShow()
     }
 
     if (associatedWidget && associatedWidget != menu) {
-        QAction* action = actionCollection->action("minimizeRestore");
+        QAction* action = actionCollection.value("minimizeRestore");
         if (checkVisibility(QPoint(0, 0), false)) {
             action->setText(i18n("&Restore"));
         } else {
