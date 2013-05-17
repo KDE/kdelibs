@@ -37,6 +37,7 @@
 #include "statusnotifierwatcher_interface.h"
 #include "notifications_interface.h"
 
+class KActionCollection;
 class KSystemTrayIcon;
 class QMenu;
 class QAction;
@@ -154,7 +155,7 @@ public:
     QString menuObjectPath;
 
     QMenu *menu;
-    QHash<QString, QAction *> actionCollection;
+    KActionCollection* actionCollection;
     QWidget *associatedWidget;
     QAction* titleAction;
     org::kde::StatusNotifierWatcher *statusNotifierWatcher;

@@ -20,7 +20,7 @@
 
 #include "kstatusnotifieritemtest.h"
 
-#include "kstatusnotifieritem.h"
+#include "notifications/kstatusnotifieritem.h"
 #include <QDateTime>
 #include <QLabel>
 #include <QMenu>
@@ -96,7 +96,7 @@ int main(int argc, char **argv)
         //tray->setImage(QIcon::fromTheme("konqueror"));
         //tray->setAttentionIconByName("kmail");
         tray->setOverlayIconByName("emblem-important");
-        //tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
+        tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
 
         tray->setToolTipIconByName("konqueror");
         tray->setToolTipTitle("DBus System tray test");

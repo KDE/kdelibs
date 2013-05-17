@@ -130,6 +130,7 @@ set(kdeui_LIB_SRCS
  jobs/kstatusbarjobtracker.cpp
  jobs/kjobtrackerformatters.cpp
  kernel/kstyle.cpp
+ notifications/knotificationrestrictions.cpp
  paged/kpagedialog.cpp
  paged/kpagemodel.cpp
  paged/kpageview.cpp
@@ -224,6 +225,8 @@ if(NOT WINCE)
 set(kdeui_LIB_SRCS
  ${kdeui_LIB_SRCS}
  dialogs/kdeprintdialog.cpp
+ notifications/kstatusnotifieritem.cpp
+ notifications/kstatusnotifieritemdbus_p.cpp
 )
 endif(NOT WINCE)
 
@@ -276,6 +279,15 @@ install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 qt5_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 
+set(statusnotifierwatcher_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierWatcher.xml)
+qt5_add_dbus_interface(kdeui_LIB_SRCS ${statusnotifierwatcher_xml} statusnotifierwatcher_interface)
+set(notifications_xml ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.freedesktop.Notifications.xml)
+qt5_add_dbus_interface(kdeui_LIB_SRCS ${notifications_xml} notifications_interface)
+
+if(NOT WINCE)
+qt5_add_dbus_adaptor(kdeui_LIB_SRCS     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/org.kde.StatusNotifierItem.xml
+                     ${CMAKE_CURRENT_SOURCE_DIR}/notifications/kstatusnotifieritemdbus_p.h KStatusNotifierItemDBus)
+endif(NOT WINCE)
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
 generate_export_header(kdeui)
@@ -430,6 +442,8 @@ install( FILES
  jobs/kwidgetjobtracker.h
  jobs/kstatusbarjobtracker.h
  kernel/kstyle.h
+ notifications/kstatusnotifieritem.h
+ notifications/knotificationrestrictions.h
  paged/kpagedialog.h
  paged/kpagemodel.h
  paged/kpageview.h

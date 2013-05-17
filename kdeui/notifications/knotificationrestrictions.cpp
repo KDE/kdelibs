@@ -19,15 +19,15 @@
 
 #include "knotificationrestrictions.h"
 
+#include <kdebug.h>
 #include <klocalizedstring.h>
 
 #include <QApplication>
-#include <QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>
 
-#include <config-knotifications.h>
+#include <config-kdeui.h>
 
 #if HAVE_XTEST
 #include <QTimer>
@@ -90,9 +90,9 @@ KNotificationRestrictions::~KNotificationRestrictions()
 
 void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 {
-    qDebug();
+    kDebug(297);
 #if HAVE_XTEST
-    qDebug() << "---- using XTestFakeKeyEvent";
+    kDebug(297) << "---- using XTestFakeKeyEvent";
     Display* display = QX11Info::display();
     XTestFakeKeyEvent(display, XTestKeyCode, true, CurrentTime);
     XTestFakeKeyEvent(display, XTestKeyCode, false, CurrentTime);
@@ -102,7 +102,7 @@ void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 
 void KNotificationRestrictions::Private::startScreenSaverPrevention()
 {
-    qDebug();
+    kDebug(297);
 
     QDBusMessage message = QDBusMessage::createMethodCall(
             "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit");
@@ -119,7 +119,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
         haveXTest = XTestQueryExtension(QX11Info::display(), &a, &b, &c, &e);
 
         if ( !haveXTest ) {
-            qDebug() << "--- No XTEST!";
+            kDebug(297) << "--- No XTEST!";
             return;
         }
     }
@@ -128,7 +128,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
         XTestKeyCode = XKeysymToKeycode(QX11Info::display(), XK_Shift_L);
 
         if ( !XTestKeyCode ) {
-            qDebug() << "--- No XKeyCode for XK_Shift_L!";
+            kDebug(297) << "--- No XKeyCode for XK_Shift_L!";
             return;
         }
     }
@@ -139,7 +139,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
                  q, SLOT(screensaverFakeKeyEvent()) );
     }
 
-    qDebug() << "---- using XTest";
+    kDebug(297) << "---- using XTest";
     // send a fake event right away in case this got started after a period of
     // innactivity leading to the screensaver set to activate in <55s
     screensaverFakeKeyEvent();
