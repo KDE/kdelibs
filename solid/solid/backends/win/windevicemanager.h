@@ -131,60 +131,53 @@ private:
         wchar_t deviceNameBuffer[MAX_PATH];
         QString dev = QLatin1String("\\\\.\\") + devName;
         deviceNameBuffer[dev.toWCharArray(deviceNameBuffer)] = 0;
+        DWORD bytesReturned =  0;
 
-        HANDLE handle = ::CreateFile(deviceNameBuffer, 0, FILE_SHARE_WRITE|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+        //TODO:cleanup
+        ulong err = GetLastError();
+        HANDLE handle = ::CreateFile(deviceNameBuffer, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+        if(handle == INVALID_HANDLE_VALUE)
+        {
+
+            err = GetLastError();
+            if(err == ERROR_ACCESS_DENIED)
+            {
+                //we would need admin rights
+                //                        DebugBreak();
+                qWarning() << "we would need admin rights" << dev << "reason:" << qGetLastError(err);
+            }
+            else
+            {
+                qWarning() << "Invalid Handle" << dev << "reason:" << qGetLastError(err) << " this should not happen.";
+            }
+            return;
+        }
+        if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) == TRUE)
+        {
+            ::CloseHandle(handle);
+            return;
+        }
+        err = GetLastError();
+
+        if(err == ERROR_NOT_READY)
+        {
+            //the drive is a cd drive with no disk
+            ::CloseHandle(handle);
+            return;
+        }
         if(handle == INVALID_HANDLE_VALUE)
         {
             qWarning() <<" Invalid Handle" << devName << "reason:" << qGetLastError() << " is probaply a subst path or more seriously there is  bug!";
             return;
         }
-
-        DWORD bytesReturned =  0;
-
-        if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) != TRUE)
-        {
-            //TODO:cleanup
-            ulong err = GetLastError();
-            if(err == ERROR_ACCESS_DENIED)//we are probably a cd drive and have to get read acces
-            {
-                ::CloseHandle(handle);
-                handle = ::CreateFile(deviceNameBuffer, GENERIC_READ, FILE_SHARE_WRITE|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
-                if(handle == INVALID_HANDLE_VALUE)
-                {
-
-                    err = GetLastError();
-                    if(err == ERROR_ACCESS_DENIED)
-                    {
-                        //we would need admin rights
-                        //                        DebugBreak();
-                        qWarning() << "we would need admin rights" << dev << "reason:" << qGetLastError(err);
-                    }
-                    else
-                    {
-                        qWarning() << "Invalid Handle" << dev << "reason:" << qGetLastError(err) << " this should not happen.";
-                    }
-                    return;
-                }
-                if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) == TRUE)
-                {
-                    ::CloseHandle(handle);
-                    return;
-                }
-                err = GetLastError();
-            }
-            if(err == ERROR_NOT_READY)
-            {
-                //the drive is a cd drive with no disk
-                ::CloseHandle(handle);
-                return;
-            }
 #if 1
-            ::CloseHandle(handle);
-            qFatal("Failed to query %s reason: %s", qPrintable(dev), qPrintable(qGetLastError(err)));
+        ::CloseHandle(handle);
+        qFatal("Failed to query %s reason: %s", qPrintable(dev), qPrintable(qGetLastError(err)));
 #else
-            qWarning() << "Failed to query" << dev << "reason:" << qGetLastError(err);
+        qWarning() << "Failed to query" << dev << "reason:" << qGetLastError(err);
 #endif
-        }
+
+
         ::CloseHandle(handle);
     }
 
