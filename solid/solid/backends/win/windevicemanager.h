@@ -74,7 +74,11 @@ public:
 
     static const WinDeviceManager *instance();
 
-
+    template< class INFO>
+    static INFO getDeviceInfo(const QString &devName, int code)
+    {
+        return getDeviceInfo<INFO,void*>(devName,code);
+    }
 
 
     template< class INFO, class QUERY>

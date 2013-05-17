@@ -35,7 +35,7 @@ WinBlock::WinBlock(WinDevice *device):
 {
     if(m_device->type() == Solid::DeviceInterface::StorageVolume)
     {
-        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(driveLetterFromUdi(m_device->udi()),IOCTL_STORAGE_GET_DEVICE_NUMBER);
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER>(driveLetterFromUdi(m_device->udi()),IOCTL_STORAGE_GET_DEVICE_NUMBER);
         m_major = info.DeviceNumber;
         m_minor = info.PartitionNumber;
     }
@@ -106,7 +106,7 @@ QSet<QString> WinBlock::updateUdiFromBitMask(const DWORD unitmask)
     foreach(const QString &drive,drives)
     {
         QSet<QString> udis;
-        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER,void*>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
+        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
 
         switch(info.DeviceType)
         {

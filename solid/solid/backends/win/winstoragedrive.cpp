@@ -96,12 +96,12 @@ void WinStorageDrive::updateCache()
         m_bus = Solid::StorageDrive::Ide;
     }
 
-    DISK_GEOMETRY  sizeInfo = WinDeviceManager::getDeviceInfo<DISK_GEOMETRY,void*>(dev,IOCTL_DISK_GET_DRIVE_GEOMETRY);
+    DISK_GEOMETRY  sizeInfo = WinDeviceManager::getDeviceInfo<DISK_GEOMETRY>(dev,IOCTL_DISK_GET_DRIVE_GEOMETRY);
     m_size = sizeInfo.Cylinders.QuadPart * sizeInfo.TracksPerCylinder * sizeInfo.SectorsPerTrack * sizeInfo.BytesPerSector;
 
 
 
-    STORAGE_HOTPLUG_INFO plugInfo = WinDeviceManager::getDeviceInfo<STORAGE_HOTPLUG_INFO,void*>(dev,IOCTL_STORAGE_GET_HOTPLUG_INFO);
+    STORAGE_HOTPLUG_INFO plugInfo = WinDeviceManager::getDeviceInfo<STORAGE_HOTPLUG_INFO>(dev,IOCTL_STORAGE_GET_HOTPLUG_INFO);
     m_isHotplugges = plugInfo.DeviceHotplug;
     m_isRemovable = plugInfo.MediaRemovable;
 

@@ -106,7 +106,7 @@ QSet<QString> WinBattery::getUdis()
                                                         0))
                     {
                         QString path = QString::fromWCharArray(pdidd->DevicePath);
-                        BATTERY_QUERY_INFORMATION bqi = WinDeviceManager::getDeviceInfo<BATTERY_QUERY_INFORMATION,void*>(path,IOCTL_BATTERY_QUERY_TAG);
+                        BATTERY_QUERY_INFORMATION bqi = WinDeviceManager::getDeviceInfo<BATTERY_QUERY_INFORMATION>(path,IOCTL_BATTERY_QUERY_TAG);
                         QString udi = QLatin1String("/org/kde/solid/win/power/battery#") + QString::number(bqi.BatteryTag);
                         udis << udi;
                         m_udiToGDI[udi] = Battery(path,bqi.BatteryTag);
