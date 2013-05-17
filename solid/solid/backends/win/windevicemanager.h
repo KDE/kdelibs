@@ -133,8 +133,7 @@ private:
         deviceNameBuffer[dev.toWCharArray(deviceNameBuffer)] = 0;
         DWORD bytesReturned =  0;
 
-        //TODO:cleanup
-        ulong err = GetLastError();
+        ulong err = NO_ERROR;
         HANDLE handle = ::CreateFile(deviceNameBuffer, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
         if(handle == INVALID_HANDLE_VALUE)
         {
@@ -143,7 +142,6 @@ private:
             if(err == ERROR_ACCESS_DENIED)
             {
                 //we would need admin rights
-                //                        DebugBreak();
                 qWarning() << "we would need admin rights" << dev << "reason:" << qGetLastError(err);
             }
             else
