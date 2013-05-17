@@ -122,7 +122,7 @@ WinDevice::WinDevice(const QString &udi) :
     }
     else if(queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
     {
-        m_description =  WinStorageVolume(this).label();
+        m_description = WinStorageVolume(this).label();
         dev = WinBlock::driveLetterFromUdi(udi);
     }
     if(!dev.isNull())
@@ -258,7 +258,7 @@ bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryTy
         interfaceList <<Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageAccess;
         break;
     case Solid::DeviceInterface::OpticalDisc:
-        interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageVolume;
+        interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageVolume << Solid::DeviceInterface::StorageAccess;
         break;
     case Solid::DeviceInterface::PortableMediaPlayer:
         break;

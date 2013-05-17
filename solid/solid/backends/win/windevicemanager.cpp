@@ -214,11 +214,13 @@ LRESULT WinDeviceManager::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
 
 void WinDeviceManager::promoteAddedDevice(const QSet<QString> &udi)
 {
-    m_devices += udi;
+    QSet<QString> tmp = udi - m_devices;//dont report devices that are already known(cd drive)
+    m_devices += tmp;
     m_devicesList = m_devices.toList();
     qSort(m_devicesList);
-    foreach(const QString &s,udi)
+    foreach(const QString &s,tmp)
     {
+
         emit deviceAdded(s);
     }
 }
