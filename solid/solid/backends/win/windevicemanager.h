@@ -171,12 +171,12 @@ private:
                     return;
                 }
                 err = GetLastError();
-                if(err == ERROR_NOT_READY)
-                {
-                    //the drive is a cd drive with no disk
-                    ::CloseHandle(handle);
-                    return;
-                }
+            }
+            if(err == ERROR_NOT_READY)
+            {
+                //the drive is a cd drive with no disk
+                ::CloseHandle(handle);
+                return;
             }
 #if 1
             ::CloseHandle(handle);

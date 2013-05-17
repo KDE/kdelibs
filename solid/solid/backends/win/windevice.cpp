@@ -174,6 +174,11 @@ QString WinDevice::product() const
     return m_product;
 }
 
+QString WinDevice::description() const
+{
+    return m_description.isEmpty()?m_product:m_description;
+}
+
 QString WinDevice::icon() const
 {
     if (parentUdi().isEmpty()) {
@@ -226,12 +231,6 @@ QStringList WinDevice::emblems() const
     //TODO:implement
     return QStringList();
 }
-
-QString WinDevice::description() const
-{
-    return m_description;
-}
-
 
 bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryType) const
 {

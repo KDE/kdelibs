@@ -24,6 +24,8 @@
 
 using namespace Solid::Backends::Win;
 
+#include <ntddcdrm.h>
+#include <ntddmmc.h>
 
 QMap<QString,QString> WinBlock::m_driveLetters = QMap<QString,QString>();
 QMap<QString,QSet<QString> > WinBlock::m_driveUDIS = QMap<QString,QSet<QString> >();
@@ -121,7 +123,11 @@ QSet<QString> WinBlock::updateUdiFromBitMask(const DWORD unitmask)
         case FILE_DEVICE_DVD:
         {
             udis << QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
-            udis << QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
+            DISK_GEOMETRY_EX out = WinDeviceManager::getDeviceInfo<DISK_GEOMETRY_EX>(drive,IOCTL_DISK_GET_DRIVE_GEOMETRY_EX);
+            if(out.DiskSize.QuadPart != 0)
+            {
+                udis << QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
+            }
         }
             break;
         case 0:
