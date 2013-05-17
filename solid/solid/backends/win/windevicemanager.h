@@ -178,7 +178,7 @@ private:
                     return;
                 }
             }
-#if 0
+#if 1
             ::CloseHandle(handle);
             qFatal("Failed to query %s reason: %s", qPrintable(dev), qPrintable(qGetLastError(err)));
 #else

@@ -112,7 +112,11 @@ WinDevice::WinDevice(const QString &udi) :
 
 
     }
-    else if(m_type == Solid::DeviceInterface::StorageDrive)
+    else if(m_type == Solid::DeviceInterface::OpticalDrive)
+    {
+        dev = WinBlock::driveLetterFromUdi(udi);
+    }
+    else if(m_type == Solid::DeviceInterface::StorageDrive )
     {
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
     }
@@ -134,7 +138,10 @@ WinDevice::WinDevice(const QString &udi) :
         if(info->VendorIdOffset != 0)
         {
             m_vendor = QString((char*)buff+ info->VendorIdOffset).trimmed();
-            m_product = QString((char*)buff+ info->ProductIdOffset).trimmed();
+            if(info->ProductIdOffset != 0)
+            {
+                m_product = QString((char*)buff+ info->ProductIdOffset).trimmed();
+            }
         }
         else if(info->ProductIdOffset != 0)//fallback doesnt work for all devices
         {
@@ -175,11 +182,13 @@ QString WinDevice::icon() const
 
     QString icon;
     switch(type()){
-
+    case Solid::DeviceInterface::OpticalDrive:
+        icon =  QLatin1String("drive-optical");
+        break;
     case Solid::DeviceInterface::OpticalDisc:
     {
         WinOpticalDisc disk(const_cast<WinDevice*>(this));
-        if(disk.availableContent() | Solid::OpticalDisc::Audio)//no other are recognized yet
+        if(disk.availableContent() | Solid::OpticalDisc::Audio)
         {
             icon =  QLatin1String("media-optical-audio");
         }
