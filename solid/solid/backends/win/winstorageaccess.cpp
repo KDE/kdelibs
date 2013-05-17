@@ -20,6 +20,7 @@
 
 #include "winstorageaccess.h"
 #include "winblock.h"
+#include "winstoragedrive.h"
 
 
 using namespace Solid::Backends::Win;
@@ -35,7 +36,7 @@ WinStorageAccess::~WinStorageAccess()
 
 bool WinStorageAccess::isAccessible() const
 {
-    return !WinBlock::driveLetterFromUdi(m_device->udi()).isNull();
+    return true;
 }
 
 QString WinStorageAccess::filePath() const
@@ -45,7 +46,7 @@ QString WinStorageAccess::filePath() const
 
 bool WinStorageAccess::isIgnored() const
 {
-    return WinBlock::driveLetterFromUdi(m_device->udi()).isNull();
+    return false;
 }
 
 bool WinStorageAccess::setup()
@@ -55,6 +56,12 @@ bool WinStorageAccess::setup()
 
 bool WinStorageAccess::teardown()
 {
+    //only allow eject if we are an usb stick
+    //else we get "The request could not be performed because of an I/O device error. 1117"
+    if(WinStorageDrive(m_device).driveType() == Solid::StorageDrive::MemoryStick)
+    {
+        WinDeviceManager::deviceAction(WinBlock::driveLetterFromUdi(m_device->udi()),IOCTL_STORAGE_EJECT_MEDIA);
+    }
     return true;
 }
 
