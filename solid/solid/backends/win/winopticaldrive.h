@@ -24,6 +24,8 @@
 
 #include "winstoragedrive.h"
 
+struct _FEATURE_DATA_PROFILE_LIST_EX;
+typedef _FEATURE_DATA_PROFILE_LIST_EX FEATURE_DATA_PROFILE_LIST_EX;
 
 namespace Solid
 {
