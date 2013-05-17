@@ -24,9 +24,6 @@
 
 #include "winstoragedrive.h"
 
-#include <ntddcdrm.h>
-#include <ntddmmc.h>
-
 
 namespace Solid
 {
@@ -62,6 +59,7 @@ private:
 
 };
 
+#ifdef HEAVE_DRIVER_KIT
 class MediaProfiles//TODO: cleanup
 {
 public:
@@ -82,6 +80,7 @@ private:
 
     static const MediaProfiles getProfile(ulong id);
 } ;
+#endif
 }
 }
 }

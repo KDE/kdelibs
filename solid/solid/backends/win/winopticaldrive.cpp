@@ -20,7 +20,10 @@
 
 #include "winopticaldrive.h"
 
-
+#ifdef HEAVE_DRIVER_KIT
+#include <ntddcdrm.h>
+#include <ntddmmc.h>
+#endif
 
 
 using namespace Solid::Backends::Win;
@@ -28,11 +31,13 @@ using namespace Solid::Backends::Win;
 WinOpticalDrive::WinOpticalDrive(WinDevice *device) :
     WinStorageDrive(device)
 {
+#ifdef HEAVE_DRIVER_KIT
     QMap<ulong,MediaProfiles> profiles = MediaProfiles::profiles(WinBlock::driveLetterFromUdi(m_device->udi()));
     foreach(const MediaProfiles p,profiles.values())
     {
         m_supportedTypes |= p.type;
     }
+#endif
 }
 
 WinOpticalDrive::~WinOpticalDrive()
@@ -70,6 +75,7 @@ int WinOpticalDrive::readSpeed() const
 }
 
 
+#ifdef HEAVE_DRIVER_KIT
 MediaProfiles::MediaProfiles() :
     profile(0),
     type(0),
@@ -163,5 +169,7 @@ const MediaProfiles MediaProfiles::getProfile(ulong val)
     }
     return profiles[val];
 }
+#endif
+
 
 #include "winopticaldrive.moc"

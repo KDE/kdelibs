@@ -21,6 +21,12 @@
 #include "winopticaldisc.h"
 #include "winopticaldrive.h"
 
+
+#ifdef HEAVE_DRIVER_KIT
+#include <ntddcdrm.h>
+#include <ntddmmc.h>
+#endif
+
 using namespace Solid::Backends::Win;
 
 WinOpticalDisc::WinOpticalDisc(WinDevice *device) :
@@ -28,6 +34,7 @@ WinOpticalDisc::WinOpticalDisc(WinDevice *device) :
     m_isRewritable(false)
 {
     //TODO: blueray etc
+    #ifdef HEAVE_DRIVER_KIT
     QMap<ulong,MediaProfiles> profiles = MediaProfiles::profiles(WinBlock::driveLetterFromUdi(m_device->udi()));
 
     if(profiles[ProfileCdRecordable].active)
@@ -59,6 +66,7 @@ WinOpticalDisc::WinOpticalDisc(WinDevice *device) :
     {
         m_discType = Solid::OpticalDisc::UnknownDiscType;
     }
+#endif
 
 
 }
