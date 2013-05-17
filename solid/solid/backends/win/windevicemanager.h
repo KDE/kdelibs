@@ -86,11 +86,16 @@ public:
         return info;
     }
 
-    template<class QUERY>
-    static void getDeviceInfo(const QString &devName, int code, char *out, size_t outSize, QUERY *query = NULL)
+    template<class BUFFER_TYPE,class QUERY>
+    static void getDeviceInfo(const QString &devName, int code, BUFFER_TYPE *out, size_t outSize, QUERY *query = NULL)
     {
-        ZeroMemory(out,outSize);
+        ZeroMemory(out,sizeof(BUFFER_TYPE)*outSize);
         getDeviceInfoPrivate(devName,code,out,outSize,query);
+    }
+
+    static void deviceAction(const QString &devName, int code)
+    {
+        getDeviceInfoPrivate<void,void*>(devName,code,NULL,0,NULL);
     }
 
 signals:

@@ -47,7 +47,7 @@ Solid::OpticalDrive::MediumTypes WinOpticalDrive::supportedMedia() const
 
 bool WinOpticalDrive::eject()
 {
-    WinDeviceManager::getDeviceInfo<void*>(WinBlock::driveLetterFromUdi(m_device->udi()),IOCTL_STORAGE_EJECT_MEDIA ,NULL,0,NULL);
+    WinDeviceManager::deviceAction(WinBlock::driveLetterFromUdi(m_device->udi()),IOCTL_STORAGE_EJECT_MEDIA);
     return true;
 }
 
@@ -119,7 +119,7 @@ QMap<ulong,MediaProfiles> MediaProfiles::profiles(const QString &drive)
     input.Feature = FeatureProfileList;
     input.RequestType = SCSI_GET_CONFIGURATION_REQUEST_TYPE_ALL;
 
-    WinDeviceManager::getDeviceInfo<GET_CONFIGURATION_IOCTL_INPUT>(drive,IOCTL_CDROM_GET_CONFIGURATION,buffer,buffSize,&input);
+    WinDeviceManager::getDeviceInfo<char,GET_CONFIGURATION_IOCTL_INPUT>(drive,IOCTL_CDROM_GET_CONFIGURATION,buffer,buffSize,&input);
 
     GET_CONFIGURATION_HEADER *info = (GET_CONFIGURATION_HEADER*)buffer;
     FEATURE_DATA_PROFILE_LIST* profile = (FEATURE_DATA_PROFILE_LIST*)info->Data;

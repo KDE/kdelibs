@@ -99,15 +99,16 @@ WinDevice::WinDevice(const QString &udi) :
 
 
         size_t size = 1024;
-        char buff[size];
+        wchar_t buff[size];
 
         query2.InformationLevel = BatteryDeviceName;
-        WinDeviceManager::getDeviceInfo<BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
-        m_product = QString::fromWCharArray((wchar_t*)buff);
+        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
+        m_product = QString::fromWCharArray(buff);
 
         query2.InformationLevel = BatteryManufactureName;
-        WinDeviceManager::getDeviceInfo<BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
-        m_vendor = QString::fromWCharArray((wchar_t*)buff);
+        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
+        m_vendor = QString::fromWCharArray(buff);
+
 
 
     }
@@ -128,7 +129,7 @@ WinDevice::WinDevice(const QString &udi) :
         query.QueryType =  PropertyStandardQuery;
 
         char buff[1024];
-        WinDeviceManager::getDeviceInfo<STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
+        WinDeviceManager::getDeviceInfo<char,STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
         STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
         if(info->VendorIdOffset != 0)
         {
