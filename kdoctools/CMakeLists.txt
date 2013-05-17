@@ -106,8 +106,7 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
    kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
 
-   # kdecore for kcmdlineargs
-   target_link_libraries(meinproc4 ${KDE4_KDECORE_LIBS} ki18n ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} )
+   target_link_libraries(meinproc4 kdeqt5staging ki18n ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES} )
 
    add_dependencies(meinproc4 docbookl10nhelper)
 

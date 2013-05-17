@@ -12,10 +12,6 @@
 #include <QtCore/QList>
 #include <qstandardpaths.h>
 
-#include <k4aboutdata.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <qurl.h>
 
@@ -35,6 +31,8 @@
 #include <string.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #ifndef _WIN32
 extern "C" int xmlLoadExtDtdDefaultValue;
@@ -83,8 +81,8 @@ int main(int argc, char **argv) {
 
     // xsltSetGenericDebugFunc(stderr, NULL);
 
-    KCmdLineOptions options;
-    options.add("stylesheet <xsl>", ki18n("Stylesheet to use"));
+
+    /*options.add("stylesheet <xsl>", ki18n("Stylesheet to use"));
     options.add("stdout", ki18n("Output whole document to stdout"));
     options.add("o");
     options.add("output <file>", ki18n("Output whole document to file"));
@@ -93,21 +91,25 @@ int main(int argc, char **argv) {
     options.add("cache <file>", ki18n("Create a cache file for the document"));
     options.add("srcdir <dir>", ki18n("Set the srcdir, for kdelibs"));
     options.add("param <key>=<value>", ki18n("Parameters to pass to the stylesheet"));
-    options.add("+xml", ki18n("The file to transform"));
+    options.add("+xml", ki18n("The file to transform"));*/
 
-    K4AboutData aboutData( "meinproc4", "kio_help4", ki18n("XML-Translator" ),
-    "$Revision$",
-    ki18n("KDE Translator for XML"));
-
-    KCmdLineArgs::init(argc, argv, &aboutData, KCmdLineArgs::CmdLineArgKDE);
-    KCmdLineArgs::addCmdLineOptions( options );
+    QCommandLineParser parser;
+    parser.addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), QCommandLineOption::WithValue));
+    parser.addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
+    parser.addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), QCommandLineOption::WithValue));
+    parser.addOption(QCommandLineOption(QStringList() << "htdig", QCoreApplication::translate("main", "Create a ht://dig compatible index")));
+    parser.addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check the document for validity")));
+    parser.addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), QCommandLineOption::WithValue));
+    parser.addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), QCommandLineOption::WithValue));
+    parser.addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), QCommandLineOption::WithValue));
+    // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
 
     QCoreApplication app( argc, argv );
-    KLocale::global();
+    app.setApplicationName("meinproc");
+    KLocalizedString::setApplicationCatalog("kio_help4");
 
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    if ( args->count() != 1 ) {
-        args->usage();
+    if ( parser.remainingArguments().count() != 1 ) {
+        // TODO parser.showHelp();
         return ( 1 );
     }
 
@@ -115,23 +117,23 @@ int main(int argc, char **argv) {
 
     // Need to set SRCDIR before calling setupStandardDirs
     QString srcdir;
-    if ( args->isSet( "srcdir" ) )
-        srcdir = QDir( args->getOption( "srcdir" ) ).absolutePath();
+    if ( parser.isSet( "srcdir" ) )
+        srcdir = QDir( parser.argument( "srcdir" ) ).absolutePath();
     setupStandardDirs(srcdir);
 
     LIBXML_TEST_VERSION
 
-    const QString checkFilename = args->arg( 0 );
+    const QString checkFilename = parser.remainingArguments().first();
     CheckFileResult ckr = checkFile( checkFilename );
     if ( ckr != CheckFileSuccess )
     {
-        if ( ckr == CheckFileDoesNotExist ) kError() << "File '" << checkFilename << "' does not exist.";
-        else if ( ckr == CheckFileIsNotFile ) kError() << "'" << checkFilename << "' is not a file.";
-        else if ( ckr == CheckFileIsNotReadable ) kError() << "File '" << checkFilename << "' is not readable.";
+        if ( ckr == CheckFileDoesNotExist ) qWarning() << "File '" << checkFilename << "' does not exist.";
+        else if ( ckr == CheckFileIsNotFile ) qWarning() << "'" << checkFilename << "' is not a file.";
+        else if ( ckr == CheckFileIsNotReadable ) qWarning() << "File '" << checkFilename << "' is not readable.";
         return ( 2 );
     }
 
-    if ( args->isSet( "check" ) ) {
+    if ( parser.isSet( "check" ) ) {
 
         QByteArray catalogs;
         catalogs += QUrl::fromLocalFile(locateFileInDtdResource("customization/catalog.xml")).toEncoded();
@@ -147,7 +149,7 @@ int main(int argc, char **argv) {
         CheckResult cr = check( checkFilename, exe, catalogs );
         if ( cr != CheckSuccess )
         {
-            if ( cr == CheckNoXmllint ) kWarning() << "couldn't find xmllint";
+            if ( cr == CheckNoXmllint ) qWarning() << "couldn't find xmllint";
             return 1;
         }
     }
@@ -161,20 +163,20 @@ int main(int argc, char **argv) {
     // see libxslt/xsltEvalUserParams
     // this parameter is used only by share/apps/ksgmltools2/docbook/xsl/html/math.xsl
     // and is not supported on windows yet
-    if (args->isSet( "output" ) ) {
+    if (parser.isSet( "output" ) ) {
         params.append( qstrdup( "outputFile" ) );
-        params.append( qstrdup( args->getOption( "output" ).toLocal8Bit() ) );
+        params.append( qstrdup( parser.argument( "output" ).toLocal8Bit() ) );
     }
 #endif
     {
-        const QStringList paramList = args->getOptionList( "param" );
+        const QStringList paramList = parser.arguments( "param" );
         QStringList::ConstIterator it = paramList.begin();
         QStringList::ConstIterator end = paramList.end();
         for ( ; it != end; ++it ) {
             const QString tuple = *it;
             const int ch = tuple.indexOf( '=' );
             if ( ch == -1 ) {
-                kError() << "Key-Value tuple '" << tuple << "' lacks a '='!" << endl;
+                qWarning() << "Key-Value tuple '" << tuple << "' lacks a '='!";
                 return( 2 );
             }
             params.append( qstrdup( tuple.left( ch ).toUtf8() ) );
@@ -183,18 +185,18 @@ int main(int argc, char **argv) {
     }
     params.append( NULL );
 
-    bool index = args->isSet( "htdig" );
-    QString tss = args->getOption( "stylesheet" );
+    bool index = parser.isSet( "htdig" );
+    QString tss = parser.argument( "stylesheet" );
     if ( tss.isEmpty() )
         tss =  "customization/kde-chunk.xsl";
     if ( index )
         tss = "customization/htdig_index.xsl" ;
 
     tss = locateFileInDtdResource(tss);
-    const QString cache = args->getOption( "cache" );
-    const bool usingStdOut = args->isSet( "stdout" );
-    const bool usingOutput = args->isSet("output");
-    const QString outputOption = args->getOption( "output" );
+    const QString cache = parser.argument( "cache" );
+    const bool usingStdOut = parser.isSet( "stdout" );
+    const bool usingOutput = parser.isSet("output");
+    const QString outputOption = parser.argument( "output" );
 
     if ( index ) {
         xsltStylesheetPtr style_sheet =
@@ -225,10 +227,10 @@ int main(int argc, char **argv) {
 
                 xmlFreeDoc(res);
             } else {
-                kDebug() << "couldn't parse document " << checkFilename;
+                qWarning() << "couldn't parse document " << checkFilename;
             }
         } else {
-            kDebug() << "couldn't parse style sheet " << tss;
+            qWarning() << "couldn't parse style sheet " << tss;
         }
 
     } else {
@@ -240,7 +242,7 @@ int main(int argc, char **argv) {
 
         if ( !cache.isEmpty() ) {
             if ( !saveToCache( output, cache ) ) {
-                kError() << i18n( "Could not write to cache file %1." ,  cache ) << endl;
+                qWarning() << i18n( "Could not write to cache file %1." , cache );
             }
             goto end;
         }
