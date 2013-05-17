@@ -32,6 +32,8 @@
 #include "winprocessor.h"
 #include "winbattery.h"
 
+#include <batclass.h>
+
 using namespace Solid::Backends::Win;
 
 WinDevice::WinDevice(const QString &udi) :
@@ -57,6 +59,8 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::OpticalDisc;
     else if (type == "cpu")
         m_type = Solid::DeviceInterface::Processor;
+    else if (type == "battery")
+        m_type = Solid::DeviceInterface::Battery;
 
 
 
@@ -85,6 +89,27 @@ WinDevice::WinDevice(const QString &udi) :
         m_vendor = info.vendor;
         m_product = info.produuct;
         m_description = info.name;
+    }
+    else if(m_type == Solid::DeviceInterface::Battery)
+    {
+        WinBattery::Battery battery = WinBattery::batteryInfoFromUdi(m_udi);
+        BATTERY_QUERY_INFORMATION query2;
+        ZeroMemory(&query2,sizeof(query2));
+        query2.BatteryTag = battery.second;
+
+
+        size_t size = 1024;
+        char buff[size];
+
+        query2.InformationLevel = BatteryDeviceName;
+        WinDeviceManager::getDeviceInfo<BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
+        m_product = QString::fromWCharArray((wchar_t*)buff);
+
+        query2.InformationLevel = BatteryManufactureName;
+        WinDeviceManager::getDeviceInfo<BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
+        m_vendor = QString::fromWCharArray((wchar_t*)buff);
+
+
     }
     else if(m_type == Solid::DeviceInterface::StorageDrive)
     {

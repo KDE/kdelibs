@@ -123,6 +123,11 @@ QSet<QString> WinBattery::getUdis()
     return udis;
 }
 
+const WinBattery::Battery WinBattery::batteryInfoFromUdi(const QString &udi)
+{
+    return m_udiToGDI[udi];
+}
+
 void WinBattery::powerChanged()
 {
 

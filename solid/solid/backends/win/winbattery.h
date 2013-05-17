@@ -38,6 +38,8 @@ class WinBattery : public WinInterface, virtual public Solid::Ifaces::Battery
     Q_INTERFACES(Solid::Ifaces::Battery)
 
 public:
+    typedef QPair<QString,ulong> Battery;
+
     WinBattery(WinDevice *device);
 
     virtual bool isPlugged() const;
@@ -52,6 +54,8 @@ public:
 
     static QSet<QString> getUdis();
 
+    static const Battery batteryInfoFromUdi(const QString &udi);
+
 signals:
     void chargePercentChanged(int value, const QString &udi) ;
     void chargeStateChanged(int newState, const QString &udi);
@@ -61,7 +65,7 @@ private slots:
     void powerChanged();
 
 private:
-    typedef QPair<QString,ulong> Battery;
+
     static QMap<QString,Battery> m_udiToGDI;
     bool m_pluggedIn;
     Solid::Battery::BatteryType m_type;
