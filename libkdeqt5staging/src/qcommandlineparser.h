@@ -57,6 +57,9 @@ class KDEQT5STAGING_EXPORT QCommandLineParser
 public:
     bool addOption(const QCommandLineOption &commandLineOption);
 
+    void addVersionOption(const QString &version);
+    QString applicationVersion() const;
+
     bool setHelpOption(bool isHelpOption);
 
     bool isSet(const QString &name) const;

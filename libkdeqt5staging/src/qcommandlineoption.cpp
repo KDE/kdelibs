@@ -169,9 +169,14 @@ QStringList QCommandLineOption::names() const
 void QCommandLineOption::setNames(const QStringList &names)
 {
     foreach (const QString &name, names) {
-        if (!name.isEmpty() && !name.startsWith(QLatin1Char('-')) && !name.startsWith(QLatin1Char('?'))) {
+        if (name.isEmpty())
+            qWarning("Option names cannot be empty");
+        else if (name.startsWith(QLatin1Char('-')))
+            qWarning("Option names cannot start with a '-'");
+        else if (name.startsWith(QLatin1Char('?')))
+            qWarning("Option names cannot start with a '?'");
+        else
             d->nameSet.append(name);
-        }
     }
 }
 

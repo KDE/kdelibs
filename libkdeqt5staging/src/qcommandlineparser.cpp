@@ -43,6 +43,8 @@
 
 #include <qcoreapplication.h>
 #include <qhash.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -83,6 +85,9 @@ public:
     //! Names of options which were unknown.
     QStringList unknownOptionNames;
 
+    //! Application version
+    QString version;
+
     /*!
         Boolean variable whether or not to stop the command line argument
         parsing after the double dash occurence without any options names involved
@@ -105,7 +110,7 @@ QStringList QCommandLineParserPrivate::aliases(const QString &optionName) const
 }
 
 /*!
-    \since 5.1
+    \since 5.2
     \class QCommandLineParser
 
     \brief The QCommandLineParser class provides a means for handling the
@@ -189,9 +194,9 @@ QCommandLineParser::QCommandLineParser()
     : d(new QCommandLineParserPrivate)
 {
 #ifdef Q_OS_WIN32
-    addOption(QCommandLineOption(QStringList() << QLatin1String("-h") << QLatin1String("--help") << QLatin1String("/?"), QObject::tr(QStrinag("Displays this help."))));
+    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help") << QLatin1String("?"), QObject::tr(QStrinag("Displays this help."))));
 #else
-    addOption(QCommandLineOption(QStringList() << QLatin1String("-h") << QLatin1String("--help"), QObject::tr("Displays this help.")));
+    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help"), QObject::tr("Displays this help.")));
 #endif
 }
 
@@ -245,6 +250,24 @@ bool QCommandLineParser::addOption(const QCommandLineOption &option)
     }
 
     return false;
+}
+
+/*!
+    Sets the application \a version and adds the -v / --version option.
+    This option is handled automatically by QCommandLineParser.
+*/
+void QCommandLineParser::addVersionOption(const QString &version)
+{
+    d->version = version;
+    addOption(QCommandLineOption(QStringList() << QLatin1String("v") << QLatin1String("version"), QObject::tr("Displays version information.")));
+}
+
+/*!
+    Returns the application version set in addVersionOption().
+*/
+QString QCommandLineParser::applicationVersion() const
+{
+    return d->version;
 }
 
 bool QCommandLineParser::setHelpOption(bool isHelpOption)
@@ -387,6 +410,11 @@ bool QCommandLineParserPrivate::parse(const QStringList &arguments)
         } else {
             remainingArgumentList.append(argument);
         }
+    }
+
+    if (!version.isEmpty() && (optionNames.contains(QStringLiteral("version")) || optionNames.contains(QStringLiteral("v")))) {
+        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()), qPrintable(version));
+        ::exit(0);
     }
 
     return true;
