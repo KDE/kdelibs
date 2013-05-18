@@ -126,7 +126,7 @@ bool KSaveFile::open(OpenMode flags)
             return false;
         }
         d->error=QFile::OpenError;
-        d->errorString=i18n("Unable to open temporary file.");
+        d->errorString=i18n("Unable to open temporary file. Error was: %1.", tempFile.error());
         return false;
     }
 
