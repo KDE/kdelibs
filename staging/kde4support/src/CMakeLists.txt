@@ -145,6 +145,7 @@ install(FILES
     kdecore/kglobal.h
     kdecore/klockfile.h
 
+    kdeui/kaccelgen.h
     kdeui/kaction.h
     kdeui/kapplication.h
     kdeui/kcolorchoosermode.h

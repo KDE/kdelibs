@@ -22,6 +22,7 @@ endmacro(KDE4SUPPORT_UNIT_TESTS)
 
 kde4support_unit_tests(
   globalcleanuptest
+  kaccelgentest
   kdebugtest
   kdialog_unittest
   kfadewidgeteffecttest

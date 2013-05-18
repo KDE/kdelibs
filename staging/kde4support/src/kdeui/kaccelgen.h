@@ -20,8 +20,6 @@
 #ifndef KACCELGEN_H
 #define KACCELGEN_H
 
-#include <kdeui_export.h>
-
 #include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
@@ -76,6 +74,8 @@
  *
  * + Add more Deref classes so that we can access a wider variety of
  * collections.
+ *
+ * @deprecated
  * */
 namespace KAccelGen
 {

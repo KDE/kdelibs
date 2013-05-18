@@ -449,7 +449,6 @@ install( FILES
  paged/kpagewidgetmodel.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
- util/kaccelgen.h
  util/kcrash.h
  util/kcursor.h
  util/khelpclient.h
