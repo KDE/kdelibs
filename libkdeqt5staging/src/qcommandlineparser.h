@@ -60,7 +60,8 @@ public:
     void addVersionOption(const QString &version);
     QString applicationVersion() const;
 
-    bool setHelpOption(bool isHelpOption);
+    void addHelpOption(const QString &description);
+    QString applicationDescription() const;
 
     bool isSet(const QString &name) const;
 
@@ -73,6 +74,8 @@ public:
     QStringList optionNames() const;
 
     QStringList unknownOptionNames() const;
+
+    void showHelp();
 
 protected:
     friend class QCoreApplication;

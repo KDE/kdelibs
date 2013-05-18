@@ -65,7 +65,9 @@ public:
 
     bool parse();
     bool parse(const QStringList &arguments);
+    bool isSet(const QString &name) const;
     QStringList aliases(const QString &name) const;
+    void showHelp();
 
     //! The command line options used for parsing
     QList<QCommandLineOption> commandLineOptionList;
@@ -87,6 +89,9 @@ public:
 
     //! Application version
     QString version;
+
+    //! Application description
+    QString description;
 
     /*!
         Boolean variable whether or not to stop the command line argument
@@ -193,11 +198,6 @@ QStringList QCommandLineParserPrivate::aliases(const QString &optionName) const
 QCommandLineParser::QCommandLineParser()
     : d(new QCommandLineParserPrivate)
 {
-#ifdef Q_OS_WIN32
-    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help") << QLatin1String("?"), QObject::tr(QStrinag("Displays this help."))));
-#else
-    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help"), QObject::tr("Displays this help.")));
-#endif
 }
 
 /*!
@@ -270,9 +270,30 @@ QString QCommandLineParser::applicationVersion() const
     return d->version;
 }
 
-bool QCommandLineParser::setHelpOption(bool isHelpOption)
+/*!
+    Adds the help option (-h, --help and /? on Windows)
+    This option is handled automatically by QCommandLineParser.
+
+    The application \a description will be displayed when this option is used.
+    Example:
+        addHelpOption(QCoreApplication::translate("main", "The best application in the world"));
+*/
+void QCommandLineParser::addHelpOption(const QString &description)
 {
-    return false;
+    d->description = description;
+#ifdef Q_OS_WIN32
+    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help") << QLatin1String("?"), QObject::tr("Displays this help.")));
+#else
+    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help"), QObject::tr("Displays this help.")));
+#endif
+}
+
+/*!
+    Returns the application description set in addHelpOption().
+*/
+QString QCommandLineParser::applicationDescription() const
+{
+    return d->description;
 }
 
 /*!
@@ -412,9 +433,13 @@ bool QCommandLineParserPrivate::parse(const QStringList &arguments)
         }
     }
 
-    if (!version.isEmpty() && (optionNames.contains(QStringLiteral("version")) || optionNames.contains(QStringLiteral("v")))) {
+    if (!version.isEmpty() && isSet(QStringLiteral("version"))) {
         printf("%s %s\n", qPrintable(QCoreApplication::applicationName()), qPrintable(version));
         ::exit(0);
+    }
+
+    if (!description.isEmpty() && isSet(QStringLiteral("help"))) {
+        showHelp();
     }
 
     return true;
@@ -434,10 +459,15 @@ bool QCommandLineParserPrivate::parse(const QStringList &arguments)
 bool QCommandLineParser::isSet(const QString &name) const
 {
     d->parse();
-    if (d->optionNames.contains(name))
+    return d->isSet(name);
+}
+
+bool QCommandLineParserPrivate::isSet(const QString &name) const
+{
+    if (optionNames.contains(name))
         return true;
-    foreach (const QString &optionName, d->optionNames) {
-        if (d->aliases(optionName).contains(name))
+    foreach (const QString &optionName, optionNames) {
+        if (aliases(optionName).contains(name))
             return true;
     }
     return false;
@@ -556,6 +586,46 @@ QStringList QCommandLineParser::unknownOptionNames() const
 {
     d->parse();
     return d->unknownOptionNames;
+}
+
+/*!
+    Displays the help information, and exits the application.
+    This is automatically triggered by the --help option, but can also
+    be used to display the help when the user is not invoking the
+    application correctly.
+*/
+void QCommandLineParser::showHelp()
+{
+    d->showHelp();
+}
+
+void QCommandLineParserPrivate::showHelp()
+{
+    const QString exeName = QCoreApplication::instance()->arguments().first();
+    QString usage = QCoreApplication::translate("QCommandLineParser", "Usage: %1").arg(exeName);
+    if (!commandLineOptionList.isEmpty()) {
+        usage += QLatin1Char(' ');
+        usage += QCoreApplication::translate("QCommandLineParser", "[options]");
+        // TODO what about remaining arguments? e.g. "file"
+    }
+    fprintf(stdout, "%s\n\n%s\n\n", qPrintable(usage), qPrintable(description));
+    if (!commandLineOptionList.isEmpty()) {
+        fprintf(stdout, "%s\n", qPrintable(QCoreApplication::translate("QCommandLineParser", "Options:")));
+    }
+    QString optionFormatString = QString::fromLatin1("  %1 %2");
+    foreach (const QCommandLineOption &option, commandLineOptionList) {
+        QStringList optionNames;
+        foreach (const QString &optionName, option.names()) {
+            if (optionName.length() == 1)
+                optionNames.append(QLatin1Char('-') + optionName);
+            else
+                optionNames.append(QStringLiteral("--") + optionName);
+        }
+        const QString optionNamesString = optionNames.join(QStringLiteral(", "));
+        const QString optionString = optionFormatString.arg(optionNamesString, -25).arg(option.description());
+        fprintf(stdout, "%s\n", qPrintable(optionString));
+    }
+    ::exit(0);
 }
 
 QT_END_NAMESPACE

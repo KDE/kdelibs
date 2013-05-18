@@ -98,6 +98,7 @@ int main(int argc, char **argv) {
     KLocalizedString::setApplicationCatalog("kio_help4");
 
     QCommandLineParser* parser = new QCommandLineParser;
+    parser->addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));
     parser->addVersionOption("5.0");
     parser->addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), QCommandLineOption::WithValue));
     parser->addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
@@ -110,7 +111,7 @@ int main(int argc, char **argv) {
     // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
 
     if (parser->remainingArguments().count() != 1) {
-        // TODO parser->showHelp();
+        parser->showHelp();
         return ( 1 );
     }
 
