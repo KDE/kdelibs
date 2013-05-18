@@ -128,8 +128,7 @@ if (NOT CMAKE_CROSSCOMPILING)
 
    kde4_add_executable(meinproc4_simple NOGUI ${meinproc_qt_SRCS})
 
-   # kdecore for kcmdlineargs
-   target_link_libraries(meinproc4_simple ${KDE4_KDECORE_LIBS} Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
+   target_link_libraries(meinproc4_simple kdeqt5staging Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBEXSLT_LIBRARIES})
 
    add_dependencies(meinproc4_simple docbookl10nhelper)
 
@@ -144,8 +143,8 @@ set(genshortcutents_SRCS genshortcutents.cpp )
 
 kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
 
-# kdecore for kcmdlineargs, kdeui for kstandardshortcut
-target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
+# kdeui for kstandardshortcut
+target_link_libraries(genshortcutents kdeqt5staging ${KDE4_KDEUI_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
 
 
 ########### customize includes for xslt ###############

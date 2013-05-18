@@ -93,23 +93,24 @@ int main(int argc, char **argv) {
     options.add("param <key>=<value>", ki18n("Parameters to pass to the stylesheet"));
     options.add("+xml", ki18n("The file to transform"));*/
 
-    QCommandLineParser parser;
-    parser.addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), QCommandLineOption::WithValue));
-    parser.addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
-    parser.addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), QCommandLineOption::WithValue));
-    parser.addOption(QCommandLineOption(QStringList() << "htdig", QCoreApplication::translate("main", "Create a ht://dig compatible index")));
-    parser.addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check the document for validity")));
-    parser.addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), QCommandLineOption::WithValue));
-    parser.addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), QCommandLineOption::WithValue));
-    parser.addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), QCommandLineOption::WithValue));
-    // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
-
     QCoreApplication app( argc, argv );
     app.setApplicationName("meinproc");
     KLocalizedString::setApplicationCatalog("kio_help4");
 
-    if ( parser.remainingArguments().count() != 1 ) {
-        // TODO parser.showHelp();
+    QCommandLineParser* parser = new QCommandLineParser;
+    parser->addVersionOption("5.0");
+    parser->addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
+    parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "htdig", QCoreApplication::translate("main", "Create a ht://dig compatible index")));
+    parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check the document for validity")));
+    parser->addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), QCommandLineOption::WithValue));
+    // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
+
+    if (parser->remainingArguments().count() != 1) {
+        // TODO parser->showHelp();
         return ( 1 );
     }
 
@@ -117,13 +118,13 @@ int main(int argc, char **argv) {
 
     // Need to set SRCDIR before calling setupStandardDirs
     QString srcdir;
-    if ( parser.isSet( "srcdir" ) )
-        srcdir = QDir( parser.argument( "srcdir" ) ).absolutePath();
+    if (parser->isSet("srcdir"))
+        srcdir = QDir(parser->argument("srcdir")).absolutePath();
     setupStandardDirs(srcdir);
 
     LIBXML_TEST_VERSION
 
-    const QString checkFilename = parser.remainingArguments().first();
+    const QString checkFilename = parser->remainingArguments().first();
     CheckFileResult ckr = checkFile( checkFilename );
     if ( ckr != CheckFileSuccess )
     {
@@ -133,7 +134,7 @@ int main(int argc, char **argv) {
         return ( 2 );
     }
 
-    if ( parser.isSet( "check" ) ) {
+    if (parser->isSet("check")) {
 
         QByteArray catalogs;
         catalogs += QUrl::fromLocalFile(locateFileInDtdResource("customization/catalog.xml")).toEncoded();
@@ -163,13 +164,13 @@ int main(int argc, char **argv) {
     // see libxslt/xsltEvalUserParams
     // this parameter is used only by share/apps/ksgmltools2/docbook/xsl/html/math.xsl
     // and is not supported on windows yet
-    if (parser.isSet( "output" ) ) {
-        params.append( qstrdup( "outputFile" ) );
-        params.append( qstrdup( parser.argument( "output" ).toLocal8Bit() ) );
+    if (parser->isSet("output")) {
+        params.append(qstrdup("outputFile"));
+        params.append(qstrdup(parser->argument("output").toLocal8Bit()));
     }
 #endif
     {
-        const QStringList paramList = parser.arguments( "param" );
+        const QStringList paramList = parser->arguments("param");
         QStringList::ConstIterator it = paramList.begin();
         QStringList::ConstIterator end = paramList.end();
         for ( ; it != end; ++it ) {
@@ -185,18 +186,18 @@ int main(int argc, char **argv) {
     }
     params.append( NULL );
 
-    bool index = parser.isSet( "htdig" );
-    QString tss = parser.argument( "stylesheet" );
+    bool index = parser->isSet("htdig");
+    QString tss = parser->argument("stylesheet");
     if ( tss.isEmpty() )
         tss =  "customization/kde-chunk.xsl";
     if ( index )
         tss = "customization/htdig_index.xsl" ;
 
     tss = locateFileInDtdResource(tss);
-    const QString cache = parser.argument( "cache" );
-    const bool usingStdOut = parser.isSet( "stdout" );
-    const bool usingOutput = parser.isSet("output");
-    const QString outputOption = parser.argument( "output" );
+    const QString cache = parser->argument("cache");
+    const bool usingStdOut = parser->isSet("stdout");
+    const bool usingOutput = parser->isSet("output");
+    const QString outputOption = parser->argument("output");
 
     if ( index ) {
         xsltStylesheetPtr style_sheet =
