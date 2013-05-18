@@ -152,7 +152,6 @@ set(kdeui_LIB_SRCS
  util/kmodifierkeyinfoprovider.cpp
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
- util/kpixmapcache.cpp
  util/kundoactions.cpp
  util/kpixmapsequence.cpp
  util/kpixmapsequenceoverlaypainter.cpp
@@ -458,7 +457,6 @@ install( FILES
  util/kmodifierkeyinfo.h
  util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
- util/kpixmapcache.h
  util/kimagecache.h
  util/kwallet.h
  util/kxerrorhandler.h

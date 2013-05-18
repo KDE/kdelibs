@@ -57,6 +57,7 @@ set(libkde4support_SRCS
     kdeui/karrowbutton.cpp
     kdeui/ksplashscreen.cpp
     kdeui/kdialogbuttonbox.cpp
+    kdeui/kpixmapcache.cpp
     kdeui/kprogressdialog.cpp
     kdeui/kmenu.cpp
     kdeui/kmenubar.cpp
@@ -161,6 +162,7 @@ install(FILES
     kdeui/ktabbar.h
     kdeui/ktabwidget.h
     kdeui/kdialogbuttonbox.h
+    kdeui/kpixmapcache.h
     kdeui/kprogressdialog.h
     kdeui/kmenu.h
     kdeui/kmenubar.h

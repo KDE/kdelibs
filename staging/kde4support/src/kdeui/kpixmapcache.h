@@ -21,7 +21,7 @@
 #ifndef KPIXMAPCACHE_H
 #define KPIXMAPCACHE_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QtCore/QList>
 #include <QtCore/QSet>
@@ -82,7 +82,7 @@ class QPixmap;
  *
  * @author Rivo Laks
  */
-class KDEUI_EXPORT KPixmapCache
+class KDE4SUPPORT_EXPORT KPixmapCache
 {
 public:
     /**
