@@ -31,8 +31,8 @@ using namespace Solid::Backends::Win;
 
 WinOpticalDisc::WinOpticalDisc(WinDevice *device) :
     WinStorageVolume(device),
-    m_isRewritable(false),
-     m_discType(Solid::OpticalDisc::UnknownDiscType)
+    m_discType(Solid::OpticalDisc::UnknownDiscType),
+    m_isRewritable(false)
 {
     //TODO: blueray etc
     #ifdef HEAVE_DRIVER_KIT

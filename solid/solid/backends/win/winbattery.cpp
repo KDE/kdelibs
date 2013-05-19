@@ -28,7 +28,8 @@ using namespace Solid::Backends::Win;
 QMap<QString,WinBattery::Battery> WinBattery::m_udiToGDI = QMap<QString,WinBattery::Battery>();
 
 WinBattery::WinBattery(WinDevice *device) :
-    WinInterface(device)
+    WinInterface(device),
+    m_state(Solid::Battery::NoCharge)
 {
     powerChanged();
     connect(WinDeviceManager::instance(),SIGNAL(powerChanged()),this,SLOT(powerChanged()));
