@@ -37,6 +37,8 @@ WinOpticalDrive::WinOpticalDrive(WinDevice *device) :
     {
         m_supportedTypes |= p.type;
     }
+#else
+    m_supportedTypes = Solid::OpticalDrive::Cdr;
 #endif
 }
 

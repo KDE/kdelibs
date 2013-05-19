@@ -31,7 +31,8 @@ using namespace Solid::Backends::Win;
 
 WinOpticalDisc::WinOpticalDisc(WinDevice *device) :
     WinStorageVolume(device),
-    m_isRewritable(false)
+    m_isRewritable(false),
+     m_discType(Solid::OpticalDisc::UnknownDiscType)
 {
     //TODO: blueray etc
     #ifdef HEAVE_DRIVER_KIT
@@ -56,7 +57,7 @@ WinOpticalDisc::WinOpticalDisc(WinDevice *device) :
     else if(profiles[ProfileDvdRewritable].active)
     {
         m_discType = Solid::OpticalDisc::DvdRewritable;
-        m_isRewritable =  true;
+        m_isRewritable = true;
     }
     else if(profiles[ProfileDvdRom].active)
     {
