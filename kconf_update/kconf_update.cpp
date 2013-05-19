@@ -31,18 +31,18 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kcmdlineargs.h>
-#include <k4aboutdata.h>
+
 #include <qstandardpaths.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #include "kconfigutils.h"
 
 class KonfUpdate
 {
 public:
-    KonfUpdate();
+    KonfUpdate(QCommandLineParser *parser);
     ~KonfUpdate();
     QStringList findUpdateFiles(bool dirtyOnly);
 
@@ -103,7 +103,7 @@ protected:
     int m_lineCount;
 };
 
-KonfUpdate::KonfUpdate()
+KonfUpdate::KonfUpdate(QCommandLineParser * parser)
         : m_textStream(0), m_file(0)
 {
     bool updateAll = false;
@@ -115,28 +115,24 @@ KonfUpdate::KonfUpdate()
     KConfigGroup cg(m_config, QString());
 
     QStringList updateFiles;
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
-    m_debug = args->isSet("debug");
+    m_debug = parser->isSet("debug");
 
     m_bUseConfigInfo = false;
-    if (args->isSet("check")) {
+    if (parser->isSet("check")) {
         m_bUseConfigInfo = true;
-        QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kconf_update/" + args->getOption("check"));
+        QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kconf_update/" + parser->argument("check"));
         if (file.isEmpty()) {
-            qWarning("File '%s' not found.", args->getOption("check").toLocal8Bit().data());
-            log() << "File '" << args->getOption("check") << "' passed on command line not found" << endl;
+            qWarning("File '%s' not found.", parser->argument("check").toLocal8Bit().data());
+            log() << "File '" << parser->argument("check") << "' passed on command line not found" << endl;
             return;
         }
         updateFiles.append(file);
-    } else if (args->count()) {
-        for (int i = 0; i < args->count(); i++) {
-            QUrl url = args->url(i);
-            if (url.isLocalFile()) {
-                updateFiles.append(url.toLocalFile());
-            } else {
-                KCmdLineArgs::usageError(i18n("Only local files are supported."));
-            }
+    } else if (parser->remainingArguments().count()) {
+        const QStringList args = parser->remainingArguments();
+        for (int i = 0; i < args.count(); i++) {
+            QString path = args.at(i); // TODO relative paths?
+            updateFiles.append(path);
         }
     } else {
         if (cg.readEntry("autoUpdateDisabled", false))
@@ -955,25 +951,18 @@ void KonfUpdate::resetOptions()
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
-    KCmdLineOptions options;
-    options.add("debug", ki18n("Keep output results from scripts"));
-    options.add("check <update-file>", ki18n("Check whether config file itself requires updating"));
-    options.add("+[file]", ki18n("File to read update instructions from"));
+    QCoreApplication app(argc, argv);
 
-    K4AboutData aboutData("kconf_update", 0, ki18n("KConf Update"),
-                         "1.0.2",
-                         ki18n("KDE Tool for updating user configuration files"),
-                         K4AboutData::License_GPL,
-                         ki18n("(c) 2001, Waldo Bastian"));
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addVersionOption("1.1");
+    parser->addHelpOption(QCoreApplication::translate("main", "KDE Tool for updating user configuration files"));
+    parser->addOption(QCommandLineOption(QStringList() << "debug", QCoreApplication::translate("main", "Keep output results from scripts")));
+    parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check whether config file itself requires updating"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "+[file]", QCoreApplication::translate("main", "File to read update instructions from")));
 
-    aboutData.addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
+    // TODO aboutData.addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
 
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KCmdLineArgs::addCmdLineOptions(options);
-
-    QCoreApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-
-    KonfUpdate konfUpdate;
+    KonfUpdate konfUpdate(parser);
 
     return 0;
 }
