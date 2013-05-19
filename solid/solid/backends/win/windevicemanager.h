@@ -129,7 +129,11 @@ private:
         QMutexLocker lock(&mutex);
         Q_ASSERT(!devName.isNull());
         wchar_t deviceNameBuffer[MAX_PATH];
-        QString dev = QLatin1String("\\\\.\\") + devName;
+        QString dev = devName;
+        if(!dev.startsWith("\\"))
+        {
+            dev = QLatin1String("\\\\.\\") + dev;
+        }
         deviceNameBuffer[dev.toWCharArray(deviceNameBuffer)] = 0;
         DWORD bytesReturned =  0;
 

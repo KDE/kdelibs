@@ -85,7 +85,7 @@ QSet<QString> WinBattery::getUdis()
             {
                 DWORD cbRequired = 0;
 
-                SetupDiGetDeviceInterfaceDetail(hdev,
+                SetupDiGetDeviceInterfaceDetailW(hdev,
                                                 &did,
                                                 0,
                                                 0,
@@ -105,11 +105,10 @@ QSet<QString> WinBattery::getUdis()
                                                         0))
                     {
                         QString path = QString::fromWCharArray(pdidd->DevicePath);
-                        BATTERY_QUERY_INFORMATION bqi = WinDeviceManager::getDeviceInfo<BATTERY_QUERY_INFORMATION>(path,IOCTL_BATTERY_QUERY_TAG);
-                        QString udi = QLatin1String("/org/kde/solid/win/power.battery/battery#") + QString::number(bqi.BatteryTag);
+                        ulong tag = WinDeviceManager::getDeviceInfo<ulong>(path,IOCTL_BATTERY_QUERY_TAG);
+                        QString udi = QLatin1String("/org/kde/solid/win/power.battery/battery#") + QString::number(tag);
                         udis << udi;
-                        m_udiToGDI[udi] = Battery(path,bqi.BatteryTag);
-                        qDebug() << udi;
+                        m_udiToGDI[udi] = Battery(path,tag);
                     }
                     delete [] buffer;
 
@@ -143,7 +142,10 @@ void WinBattery::powerChanged()
     BATTERY_INFORMATION info = WinDeviceManager::getDeviceInfo<BATTERY_INFORMATION,BATTERY_QUERY_INFORMATION>(b.first,IOCTL_BATTERY_QUERY_INFORMATION,&query2);
 
     m_pluggedIn = status.PowerState & BATTERY_POWER_ON_LINE;
-    m_charge = status.Capacity/info.FullChargedCapacity*100.0;
+    if(info.FullChargedCapacity!=0)
+    {
+        m_charge = status.Capacity/info.FullChargedCapacity*100.0;
+    }
 
     if(status.PowerState == 0)
     {
