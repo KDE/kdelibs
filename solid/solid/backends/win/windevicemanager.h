@@ -145,33 +145,36 @@ private:
             err = GetLastError();
             if(err == ERROR_ACCESS_DENIED)
             {
-                //we would need admin rights
-                qWarning() << "we would need admin rights" << dev << "reason:" << qGetLastError(err);
+                //we would need admin rights for GENERIC_READ on systenm drives and volumes
+                handle = ::CreateFile(deviceNameBuffer, 0, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
             }
             else
             {
                 qWarning() << "Invalid Handle" << dev << "reason:" << qGetLastError(err) << " this should not happen.";
+                 return;
             }
-            return;
+
         }
         if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) == TRUE)
         {
             ::CloseHandle(handle);
             return;
         }
-        err = GetLastError();
 
+        if(handle == INVALID_HANDLE_VALUE)
+        {
+            qWarning() <<" Invalid Handle" << devName << "reason:" << qGetLastError() << " is probaply a subst path or more seriously there is  bug!";
+            return;
+        }
+
+        err = GetLastError();
         if(err == ERROR_NOT_READY)
         {
             //the drive is a cd drive with no disk
             ::CloseHandle(handle);
             return;
         }
-        if(handle == INVALID_HANDLE_VALUE)
-        {
-            qWarning() <<" Invalid Handle" << devName << "reason:" << qGetLastError() << " is probaply a subst path or more seriously there is  bug!";
-            return;
-        }
+
 #if 1
         ::CloseHandle(handle);
         qFatal("Failed to query %s reason: %s", qPrintable(dev), qPrintable(qGetLastError(err)));
