@@ -15,10 +15,10 @@
 #include <QtCore/QDir>
 #include <QGroupBox>
 #include <QStatusBar>
+#include <QDebug>
 
 #include <unistd.h>
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kurl.h>
 #include <kjobuidelegate.h>
@@ -326,7 +326,7 @@ void KioslaveTest::slotResult( KJob * _job )
   }
   else if ( selectedOperation == Mimetype )
   {
-      kDebug() << "mimetype is " << ((KIO::MimetypeJob*)_job)->mimetype();
+      qDebug() << "mimetype is " << ((KIO::MimetypeJob*)_job)->mimetype();
   }
 
   if (job == _job)
@@ -340,12 +340,12 @@ void KioslaveTest::slotResult( KJob * _job )
 
 void KioslaveTest::slotSlaveConnected()
 {
-   kDebug() << "Slave connected.";
+   qDebug() << "Slave connected.";
 }
 
 void KioslaveTest::slotSlaveError()
 {
-   kDebug() << "Error connected.";
+   qDebug() << "Error connected.";
    slave = 0;
 }
 
@@ -361,37 +361,37 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
             case KIO::UDSEntry::UDS_FILE_TYPE:
                 {
                     mode_t mode = (mode_t)entry.numberValue(*it);
-                    kDebug() << "File Type : " << mode;
+                    qDebug() << "File Type : " << mode;
                     if ( S_ISDIR( mode ) )
                     {
-                        kDebug() << "is a dir";
+                        qDebug() << "is a dir";
                     }
                 }
                 break;
             case KIO::UDSEntry::UDS_ACCESS:
-                kDebug() << "Access permissions : " << (mode_t)( entry.numberValue(*it) ) ;
+                qDebug() << "Access permissions : " << (mode_t)( entry.numberValue(*it) ) ;
                 break;
             case KIO::UDSEntry::UDS_USER:
-                kDebug() << "User : " << ( entry.stringValue(*it) );
+                qDebug() << "User : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_GROUP:
-                kDebug() << "Group : " << ( entry.stringValue(*it) );
+                qDebug() << "Group : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_NAME:
-                kDebug() << "Name : " << ( entry.stringValue(*it) );
+                qDebug() << "Name : " << ( entry.stringValue(*it) );
                 //m_strText = decodeFileName( it.value().toString() );
                 break;
             case KIO::UDSEntry::UDS_URL:
-                kDebug() << "URL : " << ( entry.stringValue(*it) );
+                qDebug() << "URL : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_MIME_TYPE:
-                kDebug() << "MimeType : " << ( entry.stringValue(*it) );
+                qDebug() << "MimeType : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_LINK_DEST:
-                kDebug() << "LinkDest : " << ( entry.stringValue(*it) );
+                qDebug() << "LinkDest : " << ( entry.stringValue(*it) );
                 break;
             case KIO::UDSEntry::UDS_SIZE:
-                kDebug() << "Size: " << KIO::convertSize(entry.numberValue(*it));
+                qDebug() << "Size: " << KIO::convertSize(entry.numberValue(*it));
                 break;
         }
     }
@@ -405,7 +405,7 @@ void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
     for (; it != list.end(); ++it) {
         // For each file...
         QString name = (*it).stringValue( KIO::UDSEntry::UDS_NAME );
-        kDebug() << name;
+        qDebug() << name;
 
         KProtocolInfo::ExtraFieldList::Iterator extraFieldsIt = extraFields.begin();
         const QList<uint> fields = it->listFields();
@@ -415,10 +415,10 @@ void KioslaveTest::slotEntries(KIO::Job* job, const KIO::UDSEntryList& list) {
                 if ( extraFieldsIt != extraFields.end() ) {
                     QString column = (*extraFieldsIt).name;
                     //QString type = (*extraFieldsIt).type;
-                    kDebug() << "  Extra data (" << column << ") :" << it->stringValue(*it2);
+                    qDebug() << "  Extra data (" << column << ") :" << it->stringValue(*it2);
                     ++extraFieldsIt;
                 } else {
-                    kDebug() << "  Extra data (UNDEFINED) :" << it->stringValue(*it2);
+                    qDebug() << "  Extra data (UNDEFINED) :" << it->stringValue(*it2);
                 }
             }
         }
@@ -429,11 +429,11 @@ void KioslaveTest::slotData(KIO::Job*, const QByteArray &data)
 {
     if (data.size() == 0)
     {
-       kDebug(0) << "Data: <End>";
+       qDebug() << "Data: <End>";
     }
     else
     {
-       kDebug(0) << "Data: \"" << QString( data ) << "\"";
+       qDebug() << "Data: \"" << QString( data ) << "\"";
     }
 }
 
@@ -456,19 +456,19 @@ void KioslaveTest::slotDataReq(KIO::Job*, QByteArray &data)
 
     if (!fileData)
     {
-       kDebug(0) << "DataReq: <End>";
+       qDebug() << "DataReq: <End>";
        return;
     }
     if (!strncmp(fileData, "BIG", 3))
 	data.fill(0, 8*1024*1024);
     else
 	data = QByteArray(fileData, strlen(fileData));
-    kDebug(0) << "DataReq: \"" << fileData << "\"";
+    qDebug() << "DataReq: \"" << fileData << "\"";
     sleep(1); // want to see progress info...
 }
 
 void KioslaveTest::stopJob() {
-  kDebug() << "KioslaveTest::stopJob()";
+  qDebug() << "KioslaveTest::stopJob()";
   job->kill();
   job = 0L;
 
