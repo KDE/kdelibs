@@ -59,7 +59,7 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::OpticalDisc;
     else if (type == "cpu")
         m_type = Solid::DeviceInterface::Processor;
-    else if (type == "power")
+    else if (type == "power.battery")
         m_type = Solid::DeviceInterface::Battery;
 
 
