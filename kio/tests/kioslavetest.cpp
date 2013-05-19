@@ -17,7 +17,7 @@
 #include <QStatusBar>
 
 #include <unistd.h>
-#include <kcmdlineargs.h>
+
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kurl.h>
@@ -29,6 +29,8 @@
 #include <kprotocolinfo.h>
 #include <QtCore/QTimer>
 #include <sys/stat.h>  // S_ISDIR
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #include "kioslavetest.h"
 
@@ -476,31 +478,25 @@ void KioslaveTest::stopJob() {
 
 int main(int argc, char **argv) {
 
-  KCmdLineOptions options;
-  options.add("s");
-  options.add("src <src>", ki18n("Source URL"), QByteArray());
-  options.add("d");
-  options.add("dest <dest>", ki18n("Destination URL"), QByteArray());
-  options.add("o");
-  options.add("operation <operation>", ki18n("Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)"));
-  options.add("p");
-  options.add("progress <progress>", ki18n("Progress Type (none,default,status)"), QByteArray("default"));
-
   const char version[] = "v0.0.0 0000";   // :-)
 
-  KCmdLineArgs::init( argc, argv, "kioslavetest", 0, ki18n("KIOSlave test"), version, ki18n("Test for kioslaves"));
-  KCmdLineArgs::addCmdLineOptions( options );
-  QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+  QApplication app(argc, argv);
 
-  KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+  QCommandLineParser *parser = new QCommandLineParser;
+  parser->addVersionOption(version);
+  parser->addHelpOption("Test for kioslaves");
+  parser->addOption(QCommandLineOption(QStringList() << "s" << "src", "Source URL", QCommandLineOption::WithValue));
+  parser->addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", QCommandLineOption::WithValue));
+  parser->addOption(QCommandLineOption(QStringList() << "o" << "operation", "Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)", QCommandLineOption::WithValue));
+  parser->addOption(QCommandLineOption(QStringList() << "p" << "progress", "Progress Type (none,default,status)", QCommandLineOption::WithValue, false, QStringList() << "default"));
 
-  QString src = args->getOption("src");
-  QString dest = args->getOption("dest");
+  QString src = parser->argument("src");
+  QString dest = parser->argument("dest");
 
   uint op = KioslaveTest::Copy;
   uint pr = 0;
 
-  QString operation = args->getOption("operation");
+  QString operation = parser->argument("operation");
   if ( operation == "list") {
     op = KioslaveTest::List;
   } else if ( operation == "listrecursive") {
@@ -520,19 +516,21 @@ int main(int argc, char **argv) {
   } else if ( operation == "mkdir") {
     op = KioslaveTest::Mkdir;
   } else if (!operation.isEmpty()) {
-    KCmdLineArgs::usage(QByteArray("unknown operation"));
+    qWarning("Unknown operation, see --help");
+    return 1;
   }
 
-  QString progress = args->getOption("progress");
+  QString progress = parser->argument("progress");
   if ( progress == "none") {
     pr = KioslaveTest::ProgressNone;
   } else if ( progress == "default") {
     pr = KioslaveTest::ProgressDefault;
   } else if ( progress == "status") {
     pr = KioslaveTest::ProgressStatus;
-  } else KCmdLineArgs::usage(QByteArray("unknown progress mode"));
-
-  args->clear(); // Free up memory
+  } else {
+    qWarning("Unknown progress mode, see --help");
+    return 1;
+  }
 
   KioslaveTest* test = new KioslaveTest( src, dest, op, pr );
   if (!operation.isEmpty())
