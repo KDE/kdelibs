@@ -19,7 +19,6 @@
 */
 #include "winbattery.h"
 
-#include <poclass.h>
 #include <setupapi.h>
 #include <batclass.h>
 #include <devguid.h>
