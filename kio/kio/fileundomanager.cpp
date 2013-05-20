@@ -40,10 +40,12 @@
 
 using namespace KIO;
 
+#if 0
 static const char* undoStateToString(UndoState state) {
     static const char* const s_undoStateToString[] = { "MAKINGDIRS", "MOVINGFILES", "STATINGFILE", "REMOVINGDIRS", "REMOVINGLINKS" };
     return s_undoStateToString[state];
 }
+#endif
 
 static QDataStream &operator<<(QDataStream &stream, const KIO::BasicOperation &op)
 {
