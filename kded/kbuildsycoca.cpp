@@ -35,13 +35,13 @@
 #include <QtCore/QEventLoop>
 #include <QtCore/QFile>
 #include <QtCore/QTimer>
+#include <QtCore/QDebug>
 #include <QtDBus/QtDBus>
+#include <qsavefile.h>
 #include <errno.h>
 
 #include <assert.h>
-#include <kdebug.h>
 #include <kdirwatch.h>
-#include <qsavefile.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 
@@ -93,7 +93,7 @@ static QString sycocaPath()
 {
   QFileInfo fi(KSycoca::absoluteFilePath(bGlobalDatabase ? KSycoca::GlobalDatabase : KSycoca::LocalDatabase));
   if (!QDir().mkpath(fi.absolutePath())) {
-      kWarning(7021) << "Couldn't create" << fi.absolutePath();
+      qWarning() << "Couldn't create" << fi.absolutePath();
   }
   return fi.absoluteFilePath();
 }
@@ -121,7 +121,7 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
       assert(g_ctimeDict);
       quint32 oldTimestamp = g_ctimeDict->ctime(file, g_resource);
       if (file.contains("fake"))
-          kDebug(7021) << "g_ctimeDict->ctime(" << file << ") = " << oldTimestamp << "compared with" << timeStamp;
+          qDebug() << "g_ctimeDict->ctime(" << file << ") = " << oldTimestamp << "compared with" << timeStamp;
 
       if (timeStamp && (timeStamp == oldTimestamp))
       {
@@ -136,19 +136,19 @@ KSycocaEntry::Ptr KBuildSycoca::createEntry(const QString &file, bool addToFacto
          // after all files have been processed, it means
          // some files were removed since last time
          if (file.contains("fake"))
-             kDebug(7021) << "reusing (and removing) old entry for:" << file << "entry=" << entry;
+             qDebug() << "reusing (and removing) old entry for:" << file << "entry=" << entry;
          g_ctimeDict->remove(file, g_resource);
       }
       else if (oldTimestamp)
       {
          g_changed = true;
          g_ctimeDict->remove(file, g_resource);
-         kDebug(7021) << "modified:" << file;
+         qDebug() << "modified:" << file;
       }
       else
       {
          g_changed = true;
-         kDebug(7021) << "new:" << file;
+         qDebug() << "new:" << file;
       }
    }
    g_ctimeInfo->dict()->addCTime(file, g_resource, timeStamp);
@@ -282,21 +282,21 @@ bool KBuildSycoca::build()
      if (g_changed || !g_allEntries)
      {
         uptodate = false;
-        //kDebug() << "CHANGED:" << resource;
+        //qDebug() << "CHANGED:" << resource;
         m_changedResources.append(g_resource);
      }
   }
 
   bool result = !uptodate || (g_ctimeDict && !g_ctimeDict->isEmpty());
   if (g_ctimeDict && !g_ctimeDict->isEmpty()) {
-      //kDebug() << "Still in time dict:";
+      //qDebug() << "Still in time dict:";
       //g_ctimeDict->dump();
       // ## It seems entries filtered out by vfolder are still in there,
       // so we end up always saving ksycoca, i.e. this method never returns false
 
       // Get the list of resources from which some files were deleted
       const QStringList resources = g_ctimeDict->remainingResourceList();
-      kDebug() << "Still in the time dict (i.e. deleted files)" << resources;
+      qDebug() << "Still in the time dict (i.e. deleted files)" << resources;
       m_changedResources += resources;
   }
 
@@ -324,7 +324,7 @@ bool KBuildSycoca::build()
      if (g_changed || !g_allEntries)
      {
         uptodate = false;
-        //kDebug() << "CHANGED:" << g_resource;
+        //qDebug() << "CHANGED:" << g_resource;
         m_changedResources.append(g_resource);
      }
      if (bMenuTest) {
@@ -416,7 +416,7 @@ bool KBuildSycoca::recreate()
   QDataStream* str = new QDataStream(&database);
   str->setVersion(QDataStream::Qt_3_1);
 
-  kDebug(7021).nospace() << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")";
+  qDebug().nospace() << "Recreating ksycoca file (" << path << ", version " << KSycoca::version() << ")";
 
   // It is very important to build the servicetype one first
   // Both are registered in KSycoca, no need to keep the pointers
@@ -446,7 +446,7 @@ bool KBuildSycoca::recreate()
     database.cancelWriting();
     if (bMenuTest)
        return true;
-    kDebug(7021) << "Database is up to date";
+    qDebug() << "Database is up to date";
   }
 
   if (!bGlobalDatabase)
@@ -507,7 +507,7 @@ void KBuildSycoca::save(QDataStream* str)
    serviceFactory->postProcessServices();
 
    // Here so that it's the last debug message
-   kDebug(7021) << "Saving";
+   qDebug() << "Saving";
 
    // Write factory data....
    for(KSycocaFactoryList::Iterator factory = factories()->begin();
@@ -547,7 +547,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
    {
       QFileInfo inf( dirname );
       if( inf.lastModified() > stamp ) {
-         kDebug( 7021 ) << "timestamp changed:" << dirname;
+         qDebug() << "timestamp changed:" << dirname;
          return false;
       }
    }
@@ -561,7 +561,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
          continue;
       if( fi.lastModified() > stamp )
       {
-         kDebug( 7201 ) << "timestamp changed:" << fi.filePath();
+         qDebug() << "timestamp changed:" << fi.filePath();
          return false;
       }
       if( fi.isDir() && !checkDirTimestamps( fi.filePath(), stamp, false ))
@@ -576,7 +576,7 @@ bool KBuildSycoca::checkDirTimestamps( const QString& dirname, const QDateTime& 
 // means that there's no need to rebuild ksycoca
 bool KBuildSycoca::checkTimestamps( quint32 timestamp, const QStringList &dirs )
 {
-   kDebug( 7021 ) << "checking file timestamps";
+   qDebug() << "checking file timestamps";
    QDateTime stamp;
    stamp.setTime_t( timestamp );
    for( QStringList::ConstIterator it = dirs.begin();
@@ -586,7 +586,7 @@ bool KBuildSycoca::checkTimestamps( quint32 timestamp, const QStringList &dirs )
       if( !checkDirTimestamps( *it, stamp, true ))
             return false;
    }
-   kDebug( 7021 ) << "timestamps check ok";
+   qDebug() << "timestamps check ok";
    return true;
 }
 
@@ -759,7 +759,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
       g_ctimeDict = 0;
       if (incremental)
       {
-         kDebug(7021) << "Reusing existing ksycoca";
+         qDebug() << "Reusing existing ksycoca";
          KSycoca::self();
          KSycocaFactoryList *factories = new KSycocaFactoryList;
          g_allEntries = new KSycocaEntryListList;
@@ -809,7 +809,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
      signal << changedResources;
 
      if (QDBusConnection::sessionBus().isConnected()) {
-         kDebug() << "Emitting notifyDatabaseChanged" << changedResources;
+         qDebug() << "Emitting notifyDatabaseChanged" << changedResources;
        QDBusConnection::sessionBus().send(signal);
        qApp->processEvents(); // make sure the dbus signal is sent before we quit.
      }
