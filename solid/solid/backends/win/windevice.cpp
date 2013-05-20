@@ -350,7 +350,7 @@ Solid::DeviceInterface::Type WinDevice::type() const
 
 QString WinDevice::batteryTechnology(QString tec) const
 {
-
+    //based on upowerdevice.cpp
     if(tec == "LION" || tec == "LI-I")
     {
         return QObject::tr("Lithium Ion", "battery technology");

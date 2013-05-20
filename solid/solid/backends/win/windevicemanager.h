@@ -147,11 +147,12 @@ private:
             {
                 //we would need admin rights for GENERIC_READ on systenm drives and volumes
                 handle = ::CreateFile(deviceNameBuffer, 0, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+                err = GetLastError();
             }
-            else
+            if(handle == INVALID_HANDLE_VALUE)
             {
                 qWarning() << "Invalid Handle" << dev << "reason:" << qGetLastError(err) << " this should not happen.";
-                 return;
+                return;
             }
 
         }
@@ -175,7 +176,7 @@ private:
             return;
         }
 
-#if 1
+#if 0
         ::CloseHandle(handle);
         qFatal("Failed to query %s reason: %s", qPrintable(dev), qPrintable(qGetLastError(err)));
 #else
