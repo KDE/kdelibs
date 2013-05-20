@@ -43,8 +43,8 @@
 #define QCOMMANDLINEPARSER_H
 
 #include <qstringlist.h>
-
 #include <qcommandlineoption.h>
+#include <qcoreapplication.h>
 
 QT_BEGIN_HEADER
 
@@ -54,6 +54,7 @@ class QCommandLineParserPrivate;
 
 class KDEQT5STAGING_EXPORT QCommandLineParser
 {
+    Q_DECLARE_TR_FUNCTIONS(QCommandLineParser)
 public:
     bool addOption(const QCommandLineOption &commandLineOption);
 
@@ -73,6 +74,7 @@ public:
 
     QStringList optionNames() const;
 
+    void setAbortOnUnknownOptions(bool b);
     QStringList unknownOptionNames() const;
 
     void showHelp();

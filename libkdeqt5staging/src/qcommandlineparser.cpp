@@ -60,7 +60,9 @@ class QCommandLineParserPrivate
 {
 public:
     inline QCommandLineParserPrivate()
-        : parseAfterDoubleDash(true), needsParsing(true)
+        : parseAfterDoubleDash(true),
+          needsParsing(true),
+          abortOnUnknownOptions(true)
     { }
 
     bool parse();
@@ -104,6 +106,8 @@ public:
 
     //! True if parse() needs to be called
     bool needsParsing;
+
+    bool abortOnUnknownOptions;
 };
 
 QStringList QCommandLineParserPrivate::aliases(const QString &optionName) const
@@ -259,7 +263,7 @@ bool QCommandLineParser::addOption(const QCommandLineOption &option)
 void QCommandLineParser::addVersionOption(const QString &version)
 {
     d->version = version;
-    addOption(QCommandLineOption(QStringList() << QLatin1String("v") << QLatin1String("version"), QObject::tr("Displays version information.")));
+    addOption(QCommandLineOption(QStringList() << QLatin1String("v") << QLatin1String("version"), tr("Displays version information.")));
 }
 
 /*!
@@ -281,11 +285,12 @@ QString QCommandLineParser::applicationVersion() const
 void QCommandLineParser::addHelpOption(const QString &description)
 {
     d->description = description;
-#ifdef Q_OS_WIN32
-    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help") << QLatin1String("?"), QObject::tr("Displays this help.")));
-#else
-    addOption(QCommandLineOption(QStringList() << QLatin1String("h") << QLatin1String("help"), QObject::tr("Displays this help.")));
+    addOption(QCommandLineOption(QStringList()
+#ifdef Q_OS_WIN
+                << QLatin1String("?")
 #endif
+                << QLatin1String("h")
+                << QLatin1String("help"), tr("Displays this help.")));
 }
 
 /*!
@@ -317,14 +322,11 @@ bool QCommandLineParserPrivate::parse()
     }
     needsParsing = false;
     QCoreApplication *pApp = QCoreApplication::instance();
-    if (pApp) {
-        QStringList args = pApp->arguments();
-        if (!args.isEmpty()) {
-            args.removeFirst();
-            return parse(args);
-        }
-    }
-    return false;
+    Q_ASSERT(pApp);
+    QStringList args = pApp->arguments();
+    Q_ASSERT(!args.isEmpty());
+    args.removeFirst();
+    return parse(args);
 
 }
 
@@ -437,9 +439,20 @@ bool QCommandLineParserPrivate::parse(const QStringList &arguments)
         ::exit(0);
     }
 
-    if (!description.isEmpty() && isSet(QStringLiteral("help"))) {
+    if (!description.isEmpty() && isSet(QStringLiteral("help")))
         showHelp();
+
+    if (abortOnUnknownOptions) {
+        if (unknownOptionNames.count() == 1) {
+            fprintf(stderr, "Unknown option '%s'.\n", qPrintable(unknownOptionNames.first()));
+            ::exit(1);
+        }
+        if (unknownOptionNames.count() > 1) {
+            fprintf(stderr, "Unknown options: %s.\n", qPrintable(unknownOptionNames.join(QLatin1String(", "))));
+            ::exit(1);
+        }
     }
+
 
     return true;
 }
@@ -493,9 +506,8 @@ QString QCommandLineParser::argument(const QString &optionName) const
     d->parse();
     const QStringList argumentList = arguments(optionName);
 
-    if (!argumentList.isEmpty()) {
+    if (!argumentList.isEmpty())
         return argumentList.last();
-    }
 
     return QString();
 }
@@ -568,6 +580,20 @@ QStringList QCommandLineParser::optionNames() const
 }
 
 /*!
+    Sets whether to abort on unknown options.
+
+    By default, QCommandLineParser prints an error and exits,
+    when the user passes unknown options.
+    However graphical applications can disable this behavior with
+    setAbortOnUnknownOptions(false), and handle the error themselves,
+    by calling unknownOptionNames().
+ */
+void QCommandLineParser::setAbortOnUnknownOptions(bool b)
+{
+    d->abortOnUnknownOptions = b;
+}
+
+/*!
     Return a list of unknown option names.
 
     This list will include both long an short name options that were not
@@ -601,15 +627,15 @@ void QCommandLineParser::showHelp()
 void QCommandLineParserPrivate::showHelp()
 {
     const QString exeName = QCoreApplication::instance()->arguments().first();
-    QString usage = QCoreApplication::translate("QCommandLineParser", "Usage: %1").arg(exeName);
+    QString usage = QCommandLineParser::tr("Usage: %1").arg(exeName);
     if (!commandLineOptionList.isEmpty()) {
         usage += QLatin1Char(' ');
-        usage += QCoreApplication::translate("QCommandLineParser", "[options]");
+        usage += QCommandLineParser::tr("[options]");
         // TODO what about remaining arguments? e.g. "file"
     }
     fprintf(stdout, "%s\n\n%s\n\n", qPrintable(usage), qPrintable(description));
     if (!commandLineOptionList.isEmpty()) {
-        fprintf(stdout, "%s\n", qPrintable(QCoreApplication::translate("QCommandLineParser", "Options:")));
+        fprintf(stdout, "%s\n", qPrintable(QCommandLineParser::tr("Options:")));
     }
     QString optionFormatString = QString::fromLatin1("  %1 %2");
     foreach (const QCommandLineOption &option, commandLineOptionList) {
