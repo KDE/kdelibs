@@ -58,7 +58,7 @@
 //
 #include <kfilewidget.h>
 #include <kurlcombobox.h>
-#include <widgets/ksqueezedtextlabel.h>
+#include <ksqueezedtextlabel.h>
 
 extern "C"
 {
