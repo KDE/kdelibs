@@ -44,7 +44,8 @@
 #include <kio/job.h>
 #include <kprotocolmanager.h>
 #include <kconfig.h>
-#include <kglobalsettings.h>
+#include <ksharedconfig.h>
+#include <kcompletion.h>
 
 #include <sys/types.h>
 #include <dirent.h>
@@ -726,10 +727,10 @@ bool KUrlCompletionPrivate::isListedUrl(int complType,
  */
 bool KUrlCompletionPrivate::isAutoCompletion()
 {
-    return q->completionMode() == KGlobalSettings::CompletionAuto
-           || q->completionMode() == KGlobalSettings::CompletionPopup
-           || q->completionMode() == KGlobalSettings::CompletionMan
-           || q->completionMode() == KGlobalSettings::CompletionPopupAuto;
+    return q->completionMode() == KCompletion::CompletionAuto
+           || q->completionMode() == KCompletion::CompletionPopup
+           || q->completionMode() == KCompletion::CompletionMan
+           || q->completionMode() == KCompletion::CompletionPopupAuto;
 }
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
@@ -891,7 +892,7 @@ bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL& u
 
     if (url.url().length() && url.url().at(0) == QLatin1Char('.')) {
         if (url.url().length() == 1) {
-            *pMatch = (q->completionMode() == KGlobalSettings::CompletionMan) ?
+            *pMatch = (q->completionMode() == KCompletion::CompletionMan) ?
                       QLatin1String(".") :
                       QLatin1String("..");
             return true;
@@ -938,8 +939,8 @@ bool KUrlCompletionPrivate::fileCompletion(const KUrlCompletionPrivate::MyURL& u
 
         // Append '/' to directories in Popup mode?
         bool append_slash = (popup_append_slash
-                             && (q->completionMode() == KGlobalSettings::CompletionPopup ||
-                                 q->completionMode() == KGlobalSettings::CompletionPopupAuto));
+                             && (q->completionMode() == KCompletion::CompletionPopup ||
+                                 q->completionMode() == KCompletion::CompletionPopupAuto));
 
         bool only_dir = (mode == KUrlCompletion::DirCompletion);
 
