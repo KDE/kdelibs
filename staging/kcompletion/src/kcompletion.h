@@ -74,9 +74,8 @@ class KCompletionMatches;
  *     of manual and auto-completion is therefore only visible in UI classes,
  *     KCompletion needs to know whether to deliver partial matches
  *     (shell completion) or whole matches (auto/manual completion), therefore
- * KGlobalSettings::CompletionMan and
- * KGlobalSettings::CompletionAuto have the exact same effect in
- *     KCompletion.
+ *     KCompletion::CompletionMan and KCompletion::CompletionAuto have the exact
+ *     same effect in KCompletion.
  *
  * @li shell completion works like how shells complete filenames:
  *     when multiple matches are available, the longest possible string of all
@@ -87,7 +86,7 @@ class KCompletionMatches;
  * You don't have to worry much about that though, KCompletion handles
  * that for you, according to the setting setCompletionMode().
  * The default setting is globally configured by the user and read
- * from KGlobalSettings::completionMode().
+ * from completionMode().
  *
  * A short example:
  * \code
