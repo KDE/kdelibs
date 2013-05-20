@@ -58,13 +58,21 @@ XSyncBasedPoller *XSyncBasedPoller::instance()
 XSyncBasedPoller::XSyncBasedPoller(QObject *parent)
         : AbstractSystemPoller(parent)
         , m_display(QX11Info::display())
-        , m_xcb_connection(XGetXCBConnection(m_display))
+        , m_xcb_connection(0)
         , m_idleCounter(None)
         , m_resetAlarm(None)
         , m_available(true)
 {
     Q_ASSERT(!s_globalXSyncBasedPoller()->q);
     s_globalXSyncBasedPoller()->q = this;
+    
+    if (Q_UNLIKELY(!m_display)) {
+        m_available = false;
+        qDebug() << "xcb sync could not find display";
+        return;
+    }
+    m_xcb_connection = XGetXCBConnection(m_display);
+
     QCoreApplication::instance()->installNativeEventFilter(s_globalXSyncBasedPoller());
 
     const xcb_query_extension_reply_t *sync_reply = xcb_get_extension_data(m_xcb_connection, &xcb_sync_id);

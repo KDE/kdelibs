@@ -109,7 +109,7 @@ void KIdleTime::catchNextResumeEvent()
 {
     Q_D(KIdleTime);
 
-    if (!d->catchResume) {
+    if (!d->catchResume && d->poller) {
         d->catchResume = true;
         d->poller.data()->catchIdleEvent();
     }
@@ -119,7 +119,7 @@ void KIdleTime::stopCatchingResumeEvent()
 {
     Q_D(KIdleTime);
 
-    if (d->catchResume) {
+    if (d->catchResume && d->poller) {
         d->catchResume = false;
         d->poller.data()->stopCatchingIdleEvents();
     }
@@ -128,6 +128,9 @@ void KIdleTime::stopCatchingResumeEvent()
 int KIdleTime::addIdleTimeout(int msec)
 {
     Q_D(KIdleTime);
+    if (Q_UNLIKELY(!d->poller)) {
+        return 0;
+    }
 
     d->poller.data()->addTimeout(msec);
 
@@ -141,7 +144,7 @@ void KIdleTime::removeIdleTimeout(int identifier)
 {
     Q_D(KIdleTime);
 
-    if (!d->associations.contains(identifier)) {
+    if (!d->associations.contains(identifier) || !d->poller) {
         return;
     }
 
@@ -167,7 +170,7 @@ void KIdleTime::removeAllIdleTimeouts()
 
         i = d->associations.erase(i);
 
-        if (!removed.contains(msec)) {
+        if (!removed.contains(msec) && d->poller) {
             d->poller.data()->removeTimeout(msec);
             removed.insert(msec);
         }
@@ -206,6 +209,9 @@ void KIdleTimePrivate::loadSystem()
     poller = new WindowsPoller();
 #endif
 
+    if (!poller->isAvailable()) {
+        poller = 0;
+    }
     if (!poller.isNull()) {
         poller.data()->setUpPoller();
     }
@@ -251,14 +257,18 @@ void KIdleTime::simulateUserActivity()
 {
     Q_D(KIdleTime);
 
-    d->poller.data()->simulateUserActivity();
+    if (Q_LIKELY(d->poller)) {
+        d->poller.data()->simulateUserActivity();
+    }
 }
 
 int KIdleTime::idleTime() const
 {
     Q_D(const KIdleTime);
-
-    return d->poller.data()->forcePollRequest();
+    if (Q_LIKELY(d->poller)) {
+        return d->poller.data()->forcePollRequest();
+    }
+    return 0;
 }
 
 QHash<int, int> KIdleTime::idleTimeouts() const
