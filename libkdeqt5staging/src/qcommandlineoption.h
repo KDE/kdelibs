@@ -56,14 +56,9 @@ class QCommandLineOptionPrivate;
 class KDEQT5STAGING_EXPORT QCommandLineOption
 {
 public:
-    enum OptionType {
-        NoValue,
-        WithValue
-    };
-
     QCommandLineOption();
     explicit QCommandLineOption(const QStringList &names, const QString &description = QString(),
-                                OptionType optionType = NoValue, bool required = false,
+                                const QString &valueName = QString(), bool required = false,
                                 const QStringList &defaultValues = QStringList());
     QCommandLineOption(const QCommandLineOption &other);
     QCommandLineOption &operator=(const QCommandLineOption &other);
@@ -75,8 +70,8 @@ public:
     void setNames(const QStringList &names);
     QStringList names() const;
 
-    void setOptionType(OptionType optionType);
-    OptionType optionType() const;
+    void setValueName(const QString &name);
+    QString valueName() const;
 
     void setRequired(bool required);
     bool required() const;

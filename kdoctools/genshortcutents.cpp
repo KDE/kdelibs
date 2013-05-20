@@ -339,7 +339,7 @@ int main( int argc, char **argv )
         QCommandLineParser *parser = new QCommandLineParser;
         parser->addVersionOption("1.0");
         parser->addHelpOption(QCoreApplication::translate("main", "Generates DocBook entities for key shortcuts of standard actions"));
-        parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output file"), QCommandLineOption::WithValue, false, QStringList() << "kde-standard-accels.entities"));
+        parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output file"), "file", false, QStringList() << "kde-standard-accels.entities"));
 
 	const QString outputFileName = parser->argument( "output" );
 	QFile outputFile( outputFileName );

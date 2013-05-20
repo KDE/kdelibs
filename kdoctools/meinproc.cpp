@@ -100,14 +100,14 @@ int main(int argc, char **argv) {
     QCommandLineParser* parser = new QCommandLineParser;
     parser->addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));
     parser->addVersionOption("5.0");
-    parser->addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), "xsl"));
     parser->addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
-    parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), "file"));
     parser->addOption(QCommandLineOption(QStringList() << "htdig", QCoreApplication::translate("main", "Create a ht://dig compatible index")));
     parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check the document for validity")));
-    parser->addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), QCommandLineOption::WithValue));
-    parser->addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), QCommandLineOption::WithValue));
-    parser->addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), "file"));
+    parser->addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), "dir"));
+    parser->addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), "key=value"));
     // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
 
     if (parser->remainingArguments().count() != 1) {

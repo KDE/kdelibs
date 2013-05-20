@@ -374,9 +374,8 @@ bool QCommandLineParserPrivate::parse(const QStringList &arguments)
                 if (nameHash.contains(optionName)) {
                     optionNames.append(optionName);
                     const NameHash_t::mapped_type optionOffset = *nameHash.find(optionName);
-                    const QCommandLineOption::OptionType type = commandLineOptionList.at(optionOffset).optionType();
-
-                    if (type == QCommandLineOption::WithValue) {
+                    const bool withValue = !commandLineOptionList.at(optionOffset).valueName().isEmpty();
+                    if (withValue) {
                         if (!argument.contains(assignChar)) {
                             ++argumentIterator;
 
@@ -410,8 +409,8 @@ bool QCommandLineParserPrivate::parse(const QStringList &arguments)
                 if (nameHash.contains(optionName)) {
                     optionNames.append(optionName);
                     const NameHash_t::mapped_type optionOffset = *nameHash.find(optionName);
-                    const QCommandLineOption::OptionType type = commandLineOptionList.at(optionOffset).optionType();
-                    if (type == QCommandLineOption::WithValue) {
+                    const bool withValue = !commandLineOptionList.at(optionOffset).valueName().isEmpty();
+                    if (withValue) {
                         if (!argument.contains(assignChar)) {
                             ++argumentIterator;
 
@@ -621,7 +620,9 @@ void QCommandLineParserPrivate::showHelp()
             else
                 optionNames.append(QStringLiteral("--") + optionName);
         }
-        const QString optionNamesString = optionNames.join(QStringLiteral(", "));
+        QString optionNamesString = optionNames.join(QStringLiteral(", "));
+        if (!option.valueName().isEmpty())
+            optionNamesString += QStringLiteral(" <") + option.valueName() + QLatin1Char('>');
         const QString optionString = optionFormatString.arg(optionNamesString, -25).arg(option.description());
         fprintf(stdout, "%s\n", qPrintable(optionString));
     }

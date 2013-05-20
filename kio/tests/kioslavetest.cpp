@@ -485,10 +485,10 @@ int main(int argc, char **argv) {
   QCommandLineParser *parser = new QCommandLineParser;
   parser->addVersionOption(version);
   parser->addHelpOption("Test for kioslaves");
-  parser->addOption(QCommandLineOption(QStringList() << "s" << "src", "Source URL", QCommandLineOption::WithValue));
-  parser->addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", QCommandLineOption::WithValue));
-  parser->addOption(QCommandLineOption(QStringList() << "o" << "operation", "Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)", QCommandLineOption::WithValue));
-  parser->addOption(QCommandLineOption(QStringList() << "p" << "progress", "Progress Type (none,default,status)", QCommandLineOption::WithValue, false, QStringList() << "default"));
+  parser->addOption(QCommandLineOption(QStringList() << "s" << "src", "Source URL", "url"));
+  parser->addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", "url"));
+  parser->addOption(QCommandLineOption(QStringList() << "o" << "operation", "Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)", "operation"));
+  parser->addOption(QCommandLineOption(QStringList() << "p" << "progress", "Progress Type (none,default,status)", "progress", false, QStringList() << "default"));
 
   QString src = parser->argument("src");
   QString dest = parser->argument("dest");

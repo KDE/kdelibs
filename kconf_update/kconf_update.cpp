@@ -953,7 +953,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     parser->addVersionOption("1.1");
     parser->addHelpOption(QCoreApplication::translate("main", "KDE Tool for updating user configuration files"));
     parser->addOption(QCommandLineOption(QStringList() << "debug", QCoreApplication::translate("main", "Keep output results from scripts")));
-    parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check whether config file itself requires updating"), QCommandLineOption::WithValue));
+    parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check whether config file itself requires updating"), "update-file"));
     //parser->addOption(QCommandLineOption(QStringList() << "+[file]", QCoreApplication::translate("main", "File to read update instructions from")));
 
     // TODO aboutData.addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");

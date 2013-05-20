@@ -49,14 +49,15 @@ class QCommandLineOptionPrivate : public QSharedData
 {
 public:
     inline QCommandLineOptionPrivate()
-        : optionType(QCommandLineOption::NoValue), isRequired(false)
+        : isRequired(false)
     { }
 
     //! The list of names used for this option.
     QStringList nameSet;
 
-    //! The mode used for this option.
-    QCommandLineOption::OptionType optionType;
+    //! The documentation name for the value, if one is expected
+    //! Example: "-o <file>" means valueName == "file"
+    QString valueName;
 
     //! Whether the option is required or optional.
     bool isRequired;
@@ -82,23 +83,6 @@ public:
 */
 
 /*!
-    \enum QCommandLineOption::optionType
-
-    The mode used for this option to interpret the meaning of its usage.
-
-    \value NoValue The option does not have any values assigned, thus it is more
-    like a boolean behavior. If the user specifies --foobar, it turns the
-    related things to that options on.
-
-    \value WithValue The option has a value assigned, for instance "-o file" or "--output file".
-    The application should call QCommandLineParser::argument() if it expects the
-    option to be present only once, and QCommandLineParser::arguments() if it expects
-    that option to be present multiple times.
-
-    \sa optionType(), setOptionType()
-*/
-
-/*!
     Constructs a command line option object
 */
 QCommandLineOption::QCommandLineOption()
@@ -110,13 +94,13 @@ QCommandLineOption::QCommandLineOption()
     Constructs a command line option object with the given arguments.
 */
 QCommandLineOption::QCommandLineOption(const QStringList &names, const QString &description,
-                                       OptionType optionType, bool required,
+                                       const QString &valueName, bool required,
                                        const QStringList &defaultValues)
     : d(new QCommandLineOptionPrivate)
 {
     setRequired(required);
     setNames(names);
-    setOptionType(optionType);
+    setValueName(valueName);
     setDescription(description);
     setDefaultValues(defaultValues);
 }
@@ -142,8 +126,8 @@ QCommandLineOption::operator=(const QCommandLineOption &other)
 
 bool QCommandLineOption::operator==(const QCommandLineOption &other) const
 {
-    return (d->nameSet == other.names() && d->optionType == other.optionType()
-            && d->isRequired == other.required() && d->optionType == other.optionType()
+    return (d->nameSet == other.names() && d->valueName == other.valueName()
+            && d->isRequired == other.required()
             && d->description == other.description() && d->defaultValues == other.defaultValues());
 }
 
@@ -181,33 +165,44 @@ void QCommandLineOption::setNames(const QStringList &names)
 }
 
 /*!
-    Set the option type used for this option to \a optionType
+    Set the name of the expected value, for the documentation.
 
+    Options without a value assigned have a boolean-like behavior:
+    either the user specifies --foobar or they don't.
 
-    \sa optionType()
+    Options with a value assigned, need to set a name for the expected value,
+    for the documentation of the option in the help output. An option with names "o" and "output",
+    and a value name of "file" will appear as  "-o, --output <file>".
+
+    The application should call QCommandLineParser::argument() if it expects the
+    option to be present only once, and QCommandLineParser::arguments() if it expects
+    that option to be present multiple times.
+
+    \sa valueName()
  */
-void QCommandLineOption::setOptionType(OptionType optionType)
+void QCommandLineOption::setValueName(const QString &valueName)
 {
-    d->optionType = optionType;
+    d->valueName = valueName;
 }
 
 /*!
-    Return the mode used for this option. The default is
-    QCommandLineOption::NoValue
+    Return the name of the expected value.
 
-    \sa setOptionType()
+    If empty, the option doesn't take a value.
+
+    \sa setValueName()
  */
-QCommandLineOption::OptionType QCommandLineOption::optionType() const
+QString QCommandLineOption::valueName() const
 {
-    return d->optionType;
+    return d->valueName;
 }
 
 /*!
     Set whether or not this option is required to \a required
 
     If this is set to true as required, the option needs to be set explicitely
-    without having a default value. Otherwise if it is set to false, this option
-    becomes option and the user is not obligated to define it while running the
+    and does not have a default value. Otherwise if it is set to false, this option
+    becomes optional and the user is not obligated to define it when running the
     application.
 
     \sa required()
