@@ -11,7 +11,7 @@ set(makekdewidgets_SRCS makekdewidgets.cpp )
 
 kde4_add_executable(makekdewidgets NOGUI ${makekdewidgets_SRCS})
 
-target_link_libraries(makekdewidgets  ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
+target_link_libraries(makekdewidgets kdeqt5staging KConfigCore ${KCoreAddons_LIBRARIES} ki18n)
 
 # "export" this target too so we can use the LOCATION property of the imported target in
 # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
@@ -20,7 +20,9 @@ install(TARGETS makekdewidgets  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEF
 
 ########### next target ###############
 
-if(QT_QTDESIGNER_FOUND)
+find_package(Qt5Designer)
+
+if(Qt5Designer_FOUND)
 
   include_directories(${Qt5Designer_INCLUDE_DIRS})
   # get the name of the generated wrapper script (which sets up LD_LIBRARY_PATH)
@@ -120,7 +122,7 @@ if(QT_QTDESIGNER_FOUND)
 
   endif() # webkit
 
-endif (QT_QTDESIGNER_FOUND)
+endif(Qt5Designer_FOUND)
 
 ########### install files ###############
 

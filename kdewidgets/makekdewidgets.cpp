@@ -1,11 +1,11 @@
 /* Copyright (C) 2004-2005 ian reinhart geiser <geiseri@sourcextreme.com> */
-#include <k4aboutdata.h>
-#include <kcmdlineargs.h>
+
 #include <kconfig.h>
 #include <kmacroexpander.h>
-#include <kdebug.h>
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
@@ -79,38 +79,37 @@ static QString buildWidgetInclude( const QString &name, KConfig &input );
 static void buildFile( QTextStream &stream, const QString& group, const QString& fileName, const QString& pluginName );
 
 int main( int argc, char **argv ) {
+    QCoreApplication app(argc, argv);
 
-    KLocalizedString description = ki18n( "Builds Qt widget plugins from an ini style description file." );
-    const char version[] = "0.4";
+    QString description = QCoreApplication::translate("main", "Builds Qt widget plugins from an ini style description file.");
+    const char version[] = "0.5";
 
-    KCmdLineOptions options;
-    options.add("+file", ki18n( "Input file" ) );
-    options.add("o <file>", ki18n( "Output file" ) );
-    options.add("n <plugin name>", ki18n( "Name of the plugin class to generate" ), "WidgetsPlugin" );
-    options.add("g <group>", ki18n( "Default widget group name to display in designer" ), "Custom" );
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addVersionOption(version);
+    parser->addHelpOption(description);
+    //options.add("+file", ki18n( "Input file" ) );
+    parser->addOption(QCommandLineOption(QStringList() << "o", QCoreApplication::translate("main", "Output file"), "file"));
+    parser->addOption(QCommandLineOption(QStringList() << "n", QCoreApplication::translate("main", "Name of the plugin class to generate"), "plugin name", false, QStringList() << "WidgetsPlugin"));
+    parser->addOption(QCommandLineOption(QStringList() << "g", QCoreApplication::translate("main", "Default widget group name to display in designer"), "group", false, QStringList() << "Custom"));
 
 
-    K4AboutData about( "makekdewidgets", 0, ki18n( "makekdewidgets" ), version, description, K4AboutData::License_GPL, ki18n("(C) 2004-2005 Ian Reinhart Geiser"), KLocalizedString(), 0, "geiseri@kde.org" );
-    about.addAuthor( ki18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );
-    about.addAuthor( ki18n("Daniel Molkentin"), KLocalizedString(), "molkentin@kde.org" );
-    KCmdLineArgs::init( argc, argv, &about );
-    KCmdLineArgs::addCmdLineOptions( options );
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    if ( args->count() < 1 ) {
-        args->usage();
-        return ( 1 );
+    //K4AboutData about( "makekdewidgets", 0, ki18n( "makekdewidgets" ), version, description, K4AboutData::License_GPL, ki18n("(C) 2004-2005 Ian Reinhart Geiser"), KLocalizedString(), 0, "geiseri@kde.org" );
+    //about.addAuthor( ki18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );
+    //about.addAuthor( ki18n("Daniel Molkentin"), KLocalizedString(), "molkentin@kde.org" );
+
+    if (parser->remainingArguments().count() < 1) {
+        parser->showHelp();
+        return 1;
     }
 
-    QCoreApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
+    QFileInfo fi(parser->remainingArguments().at(0));
 
-    QFileInfo fi( args->arg( args->count() - 1 ) );
-
-    QString outputFile = args->getOption( "o" );
-    QString pluginName = args->getOption( "n" );
-    QString group = args->getOption( "g" );
+    QString outputFile = parser->argument( "o" );
+    QString pluginName = parser->argument( "n" );
+    QString group = parser->argument( "g" );
     QString fileName = fi.absoluteFilePath();
 
-    if ( args->isSet( "o" ) ) {
+    if ( parser->isSet( "o" ) ) {
         QFile output( outputFile );
         if ( output.open( QIODevice::WriteOnly ) ) {
             QTextStream ts( &output );
