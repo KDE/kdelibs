@@ -82,7 +82,6 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    const QString exe = QStandardPaths::findExecutable(KBUILDSYCOCA_EXENAME);
    Q_ASSERT(!exe.isEmpty());
    QStringList args;
-   args.append("--incremental");
     if (QStandardPaths::isTestModeEnabled()) {
         args.append("--testmode");
     }
