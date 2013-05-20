@@ -31,6 +31,7 @@
 #include "windevice.h"
 #include "winprocessor.h"
 #include "winbattery.h"
+#include "winacadapter.h"
 
 #include <batclass.h>
 
@@ -61,6 +62,8 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::Processor;
     else if (type == "power.battery")
         m_type = Solid::DeviceInterface::Battery;
+    else if(type == "power")
+        m_type = Solid::DeviceInterface::AcAdapter;
 
 
 
@@ -93,24 +96,36 @@ WinDevice::WinDevice(const QString &udi) :
     else if(m_type == Solid::DeviceInterface::Battery)
     {
         WinBattery::Battery battery = WinBattery::batteryInfoFromUdi(m_udi);
-        BATTERY_QUERY_INFORMATION query2;
-        ZeroMemory(&query2,sizeof(query2));
-        query2.BatteryTag = battery.second;
+        BATTERY_QUERY_INFORMATION query;
+        ZeroMemory(&query,sizeof(query));
+        query.BatteryTag = battery.second;
 
 
         size_t size = 1024;
         wchar_t buff[size];
 
-        query2.InformationLevel = BatteryDeviceName;
-        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
+        query.InformationLevel = BatteryDeviceName;
+        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
         m_product = QString::fromWCharArray(buff);
 
-        query2.InformationLevel = BatteryManufactureName;
-        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query2);
+        query.InformationLevel = BatteryManufactureName;
+        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
         m_vendor = QString::fromWCharArray(buff);
 
+        query.InformationLevel = BatteryInformation;
+        BATTERY_INFORMATION info = WinDeviceManager::getDeviceInfo<BATTERY_INFORMATION,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,&query);
 
+        if(info.Chemistry != 0)
+        {
+            QString tech = QString::fromUtf8((const char*)info.Chemistry,4);
 
+            m_description = QObject::tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology(tech.toUpper()));
+        }
+
+    }
+    else if(m_type ==Solid::DeviceInterface::AcAdapter )
+    {
+        m_description = QObject::tr("A/C Adapter");
     }
     else if(m_type == Solid::DeviceInterface::OpticalDrive)
     {
@@ -220,6 +235,9 @@ QString WinDevice::icon() const
     case Solid::DeviceInterface::Battery:
         icon = QLatin1String("battery");
         break;
+    case Solid::DeviceInterface::AcAdapter:
+        icon = QLatin1String("preferences-system-power-management");
+        break;
     default:
         break;
     }
@@ -312,6 +330,9 @@ QObject *WinDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
     case Solid::DeviceInterface::Battery:
         iface = new WinBattery(this);
         break;
+    case Solid::DeviceInterface::AcAdapter:
+        iface = new WinAcadapter(this);
+        break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:
         break;
@@ -327,6 +348,35 @@ Solid::DeviceInterface::Type WinDevice::type() const
     return m_type;
 }
 
+QString WinDevice::batteryTechnology(QString tec) const
+{
+
+    if(tec == "LION" || tec == "LI-I")
+    {
+        return QObject::tr("Lithium Ion", "battery technology");
+    }
+    else if(tec == "PBAC")
+    {
+        return QObject::tr("Lead Acid", "battery technology");
+    }
+    else if(tec == "NICD")
+    {
+        return QObject::tr("Nickel Cadmium", "battery technology");
+    }
+    else if(tec == "NIMH")
+    {
+        return QObject::tr("Nickel Metal Hydride", "battery technology");
+    }
+    else if(tec == "NIZN")
+    {
+        return QObject::tr("Nickel  Zinc", "battery technology");
+    }
+    else
+    {
+        qDebug()<<tec<< QObject::tr("Unknown", "battery technology");
+        return QObject::tr("Unknown", "battery technology");
+    }
+}
 
 
 #include "windevice.moc"

@@ -24,6 +24,7 @@
 #include "winprocessor.h"
 #include "winblock.h"
 #include "winbattery.h"
+#include "winacadapter.h"
 
 #include <dbt.h>
 
@@ -150,6 +151,7 @@ void WinDeviceManager::updateDeviceList()
     QSet<QString> devices = WinProcessor::getUdis();
     devices += WinBlock::getUdis();
     devices += WinBattery::getUdis();
+    devices += WinAcadapter::getUdis();
 
 
     m_devices = devices;

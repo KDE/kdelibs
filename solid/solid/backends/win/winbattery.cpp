@@ -145,7 +145,7 @@ void WinBattery::powerChanged()
     m_pluggedIn = status.PowerState & BATTERY_POWER_ON_LINE;
     if(info.FullChargedCapacity!=0)
     {
-        m_charge = status.Capacity/info.FullChargedCapacity*100.0;
+        m_charge = (float)status.Capacity/info.FullChargedCapacity*100.0;
     }
 
     if(status.PowerState == 0)

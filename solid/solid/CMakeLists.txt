@@ -401,6 +401,7 @@ if(WIN32)
        backends/win/winstoragedrive.cpp
        backends/win/winstoragevolume.cpp
        backends/win/winbattery.cpp
+       backends/win/winacadapter.cpp
        )
     endif(WITH_SOLID_WMI)
 endif(WIN32)
