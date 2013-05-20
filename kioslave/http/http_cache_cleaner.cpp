@@ -37,7 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtNetwork/QLocalServer>
 #include <QtNetwork/QLocalSocket>
 
-#include <kcmdlineargs.h>
+
 #include <kdatetime.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -46,6 +46,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <unistd.h>
 #include <qstandardpaths.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 time_t g_currentDate;
 int g_maxCacheAge;
@@ -726,31 +728,27 @@ private:
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
-    KCmdLineArgs::init(argc, argv, appName, "kdelibs4",
-                       ki18n("KDE HTTP cache maintenance tool"), version,
-                       ki18n("KDE HTTP cache maintenance tool"), KCmdLineArgs::CmdLineArgNone);
-
-    KCmdLineOptions options;
-    options.add("clear-all", ki18n("Empty the cache"));
-    options.add("file-info <filename>", ki18n("Display information about cache file"));
-
-    KCmdLineArgs::addCmdLineOptions( options );
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-
-    // we need a QCoreApplication so QCoreApplication::processEvents() works as intended
     QCoreApplication app(argc, argv);
 
+    KLocalizedString::setApplicationCatalog("kio5");
+
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addVersionOption("5.0");
+    parser->addHelpOption(QCoreApplication::translate("main", "KDE HTTP cache maintenance tool"));
+    parser->addOption(QCommandLineOption(QStringList() << "clear-all", QCoreApplication::translate("main", "Empty the cache")));
+    parser->addOption(QCommandLineOption(QStringList() << "info", QCoreApplication::translate("main", "Display information about cache file"), "filename"));
+
     OperationMode mode = CleanCache;
-    if (args->isSet("clear-all")) {
+    if (parser->isSet("clear-all")) {
         mode = DeleteCache;
-    } else if (args->isSet("file-info")) {
+    } else if (parser->isSet("file-info")) {
         mode = FileInfo;
     }
 
     // file info mode: no scanning of directories, just output info and exit.
     if (mode == FileInfo) {
         CacheFileInfo fi;
-        if (!readCacheFile(args->getOption("file-info"), &fi, mode)) {
+        if (!readCacheFile(parser->argument("file-info"), &fi, mode)) {
             return 1;
         }
         fi.prettyPrint();
