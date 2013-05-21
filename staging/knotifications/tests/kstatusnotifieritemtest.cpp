@@ -20,15 +20,14 @@
 
 #include "kstatusnotifieritemtest.h"
 
-#include "notifications/kstatusnotifieritem.h"
+#include "kstatusnotifieritem.h"
 #include <QDateTime>
 #include <QLabel>
 #include <QMenu>
 #include <QMovie>
 #include <QApplication>
 
-#include <kcmdlineargs.h>
-#include <k4aboutdata.h>
+#include <kdeqt5staging/qcommandlineparser.h>
 
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -54,49 +53,52 @@ KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifie
 
 void KStatusNotifierItemTest::setNeedsAttention()
 {
-    kDebug()<<"Asking for attention";
+    qDebug()<<"Asking for attention";
     m_tray->showMessage("message test", "Test of the new systemtray notifications wrapper", "konqueror", 3000);
     m_tray->setStatus(KStatusNotifierItem::NeedsAttention);
 }
 
 void KStatusNotifierItemTest::setActive()
 {
-    kDebug()<<"Systray icon in active state";
+    qDebug()<<"Systray icon in active state";
     m_tray->setStatus(KStatusNotifierItem::Active);
 }
 
 void KStatusNotifierItemTest::setPassive()
 {
-    kDebug()<<"Systray icon in passive state";
+    qDebug()<<"Systray icon in passive state";
     m_tray->setStatus(KStatusNotifierItem::Passive);
 }
 
 int main(int argc, char **argv)
 {
-    K4AboutData aboutData( "kstatusnotifieritemtest", 0 , ki18n("KStatusNotifierItemtest"), "1.0" );
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KCmdLineOptions options;
-    options.add("active-icon <name>", ki18n("Name of active icon"), "konqueror");
-    options.add("ksni-count <count>", ki18n("How many instances of KStatusNotifierItem to create"), "1");
-    KCmdLineArgs::addCmdLineOptions(options);
+    QApplication app(argc, argv);
 
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    QCommandLineParser* parser = new QCommandLineParser;
+    parser->addHelpOption(QCoreApplication::translate("main", "KStatusNotifierItemtest"));
+    parser->addVersionOption("5.0");
+    parser->addOption(QCommandLineOption(QStringList() << "active-icon", QCoreApplication::translate("main", "Name of active icon"), "name", false, QStringList() << "konqueror"));
+    parser->addOption(QCommandLineOption(QStringList() << "ksni-count", QCoreApplication::translate("main", "How many instances of KStatusNotifierItem to create"), "count", false, QStringList() << "1"));
+
+    if (parser->remainingArguments().count() != 0) {
+        parser->showHelp();
+        return ( 1 );
+    }
 
     QLabel *l = new QLabel("System Tray Main Window", 0L);
 
-    int ksniCount = args->getOption("ksni-count").toInt();
+    int ksniCount = parser->argument("ksni-count").toInt();
     for (int x=0; x < ksniCount; ++x) {
         KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
         new KStatusNotifierItemTest(0, tray);
 
         tray->setTitle("DBus System tray test");
-        tray->setIconByName(args->getOption("active-icon"));
+        tray->setIconByName(parser->argument("active-icon"));
         //tray->setImage(QIcon::fromTheme("konqueror"));
         //tray->setAttentionIconByName("kmail");
         tray->setOverlayIconByName("emblem-important");
-        tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
+        //tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
 
         tray->setToolTipIconByName("konqueror");
         tray->setToolTipTitle("DBus System tray test");
