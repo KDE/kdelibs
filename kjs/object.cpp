@@ -24,7 +24,7 @@
  */
 
 #include "object.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "error_object.h"
 #include "lookup.h"

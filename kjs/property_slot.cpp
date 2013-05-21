@@ -22,7 +22,7 @@
 
 
 #include "property_slot.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "object.h"
 
 namespace KJS {

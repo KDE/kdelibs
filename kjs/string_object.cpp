@@ -22,7 +22,7 @@
 
 #include "string_object.h"
 #include "string_object.lut.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "JSWrapperObject.h"
 #include "error_object.h"

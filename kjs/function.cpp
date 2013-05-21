@@ -25,7 +25,7 @@
  */
 
 #include "function.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "scriptfunction.h"
 #include "dtoa.h"
 #include "internal.h"

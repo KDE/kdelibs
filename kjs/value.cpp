@@ -22,7 +22,7 @@
  */
 
 #include "value.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "error_object.h"
 #include "nodes.h"

@@ -22,7 +22,7 @@
  *
  */
 
-#include <config.h>
+#include <config-kjs.h>
 #include "array_instance.h"
 
 #include "PropertyNameArray.h"

@@ -20,7 +20,7 @@
 
 #include "CommonIdentifiers.h"
 
-#include "config.h"
+#include <config-kjs.h>
 #include "JSLock.h"
 
 namespace KJS {

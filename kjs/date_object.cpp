@@ -20,7 +20,7 @@
  */
 
 #include "date_object.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "date_object.lut.h"
 #include "internal.h"
 

@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 2.7.  */
+/* A Bison parser, made by GNU Bison 2.7.12-4996.  */
 
 /* Bison implementation for Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -44,7 +44,7 @@
 #define YYBISON 1
 
 /* Bison version.  */
-#define YYBISON_VERSION "2.7"
+#define YYBISON_VERSION "2.7.12-4996"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -95,7 +95,7 @@
  *
  */
 
-#include "config.h"
+#include <config-kjs.h>
 
 #include <string.h>
 #include <stdlib.h>
@@ -374,12 +374,21 @@ typedef short int yytype_int16;
 # endif
 #endif
 
+#ifndef __attribute__
+/* This feature is available in gcc versions 2.5 and later.  */
+# if (! defined __GNUC__ || __GNUC__ < 2 \
+      || (__GNUC__ == 2 && __GNUC_MINOR__ < 5))
+#  define __attribute__(Spec) /* empty */
+# endif
+#endif
+
 /* Suppress unused-variable warnings by "using" E.  */
 #if ! defined lint || defined __GNUC__
 # define YYUSE(E) ((void) (E))
 #else
 # define YYUSE(E) /* empty */
 #endif
+
 
 /* Identity function, used to suppress warnings about constant conditions.  */
 #ifndef lint
@@ -1727,11 +1736,7 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, yylocationp)
 # else
   YYUSE (yyoutput);
 # endif
-  switch (yytype)
-    {
-      default:
-        break;
-    }
+  YYUSE (yytype);
 }
 
 
@@ -2127,12 +2132,7 @@ yydestruct (yymsg, yytype, yyvaluep, yylocationp)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
 
-  switch (yytype)
-    {
-
-      default:
-        break;
-    }
+  YYUSE (yytype);
 }
 
 
@@ -2442,235 +2442,235 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 192 "grammar.y"
     { (yyval.ident) = new Identifier("break"); }
     break;
 
   case 3:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 193 "grammar.y"
     { (yyval.ident) = new Identifier("case"); }
     break;
 
   case 4:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 194 "grammar.y"
     { (yyval.ident) = new Identifier("default"); }
     break;
 
   case 5:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 195 "grammar.y"
     { (yyval.ident) = new Identifier("for"); }
     break;
 
   case 6:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 196 "grammar.y"
     { (yyval.ident) = new Identifier("new"); }
     break;
 
   case 7:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 197 "grammar.y"
     { (yyval.ident) = new Identifier("var"); }
     break;
 
   case 8:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 198 "grammar.y"
     { (yyval.ident) = new Identifier("const"); }
     break;
 
   case 9:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 199 "grammar.y"
     { (yyval.ident) = new Identifier("continue"); }
     break;
 
   case 10:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 200 "grammar.y"
     { (yyval.ident) = new Identifier("function"); }
     break;
 
   case 11:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 201 "grammar.y"
     { (yyval.ident) = new Identifier("return"); }
     break;
 
   case 12:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 202 "grammar.y"
     { (yyval.ident) = new Identifier("void"); }
     break;
 
   case 13:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 203 "grammar.y"
     { (yyval.ident) = new Identifier("delete"); }
     break;
 
   case 14:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 204 "grammar.y"
     { (yyval.ident) = new Identifier("if"); }
     break;
 
   case 15:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 205 "grammar.y"
     { (yyval.ident) = new Identifier("this"); }
     break;
 
   case 16:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 206 "grammar.y"
     { (yyval.ident) = new Identifier("do"); }
     break;
 
   case 17:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 207 "grammar.y"
     { (yyval.ident) = new Identifier("while"); }
     break;
 
   case 18:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 208 "grammar.y"
     { (yyval.ident) = new Identifier("in"); }
     break;
 
   case 19:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 209 "grammar.y"
     { (yyval.ident) = new Identifier("instanceof"); }
     break;
 
   case 20:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 210 "grammar.y"
     { (yyval.ident) = new Identifier("typeof"); }
     break;
 
   case 21:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 211 "grammar.y"
     { (yyval.ident) = new Identifier("switch"); }
     break;
 
   case 22:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 212 "grammar.y"
     { (yyval.ident) = new Identifier("with"); }
     break;
 
   case 23:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 213 "grammar.y"
     { (yyval.ident) = new Identifier("throw"); }
     break;
 
   case 24:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 214 "grammar.y"
     { (yyval.ident) = new Identifier("try"); }
     break;
 
   case 25:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 215 "grammar.y"
     { (yyval.ident) = new Identifier("catch"); }
     break;
 
   case 26:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 216 "grammar.y"
     { (yyval.ident) = new Identifier("finally"); }
     break;
 
   case 27:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 217 "grammar.y"
     { (yyval.ident) = new Identifier("debugger"); }
     break;
 
   case 28:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 218 "grammar.y"
     { (yyval.ident) = new Identifier("import"); }
     break;
 
   case 29:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 219 "grammar.y"
     { (yyval.ident) = new Identifier("null"); }
     break;
 
   case 30:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 220 "grammar.y"
     { (yyval.ident) = new Identifier("true"); }
     break;
 
   case 31:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 221 "grammar.y"
     { (yyval.ident) = new Identifier("false"); }
     break;
 
   case 32:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 222 "grammar.y"
     { (yyval.ident) = new Identifier("else"); }
     break;
 
   case 33:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 226 "grammar.y"
     { (yyval.ident) = (yyvsp[(1) - (1)].ident); }
     break;
 
   case 34:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 227 "grammar.y"
     { (yyval.ident) = (yyvsp[(1) - (1)].ident); }
     break;
 
   case 35:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 231 "grammar.y"
     { (yyval.node) = new NullNode(); }
     break;
 
   case 36:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 232 "grammar.y"
     { (yyval.node) = new BooleanNode(true); }
     break;
 
   case 37:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 233 "grammar.y"
     { (yyval.node) = new BooleanNode(false); }
     break;
 
   case 38:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 234 "grammar.y"
     { (yyval.node) = new NumberNode((yyvsp[(1) - (1)].dval)); }
     break;
 
   case 39:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 235 "grammar.y"
     { (yyval.node) = new StringNode((yyvsp[(1) - (1)].ustr)); }
     break;
 
   case 40:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 236 "grammar.y"
     {
                                             Lexer& l = lexer();
@@ -2681,7 +2681,7 @@ yyreduce:
     break;
 
   case 41:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 242 "grammar.y"
     {
                                             Lexer& l = lexer();
@@ -2692,37 +2692,37 @@ yyreduce:
     break;
 
   case 42:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 251 "grammar.y"
     { (yyval.pname) = new PropertyNameNode(*(yyvsp[(1) - (1)].ident)); }
     break;
 
   case 43:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 252 "grammar.y"
     { (yyval.pname) = new PropertyNameNode(Identifier(*(yyvsp[(1) - (1)].ustr))); }
     break;
 
   case 44:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 253 "grammar.y"
     { (yyval.pname) = new PropertyNameNode(Identifier(UString::from((yyvsp[(1) - (1)].dval)))); }
     break;
 
   case 45:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 257 "grammar.y"
     { (yyval.pnode) = new PropertyNode((yyvsp[(1) - (3)].pname), (yyvsp[(3) - (3)].node), PropertyNode::Constant); }
     break;
 
   case 46:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 258 "grammar.y"
     {inFuncExpr();}
     break;
 
   case 47:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 258 "grammar.y"
     {
           if (!makeGetterOrSetterPropertyNode((yyval.pnode), *(yyvsp[(1) - (6)].ident), *(yyvsp[(2) - (6)].ident), 0, (yyvsp[(6) - (6)].body)))
@@ -2731,13 +2731,13 @@ yyreduce:
     break;
 
   case 48:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 262 "grammar.y"
     {inFuncExpr();}
     break;
 
   case 49:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 262 "grammar.y"
     {
           if (!makeGetterOrSetterPropertyNode((yyval.pnode), *(yyvsp[(1) - (7)].ident), *(yyvsp[(2) - (7)].ident), (yyvsp[(4) - (7)].param), (yyvsp[(7) - (7)].body)))
@@ -2746,985 +2746,985 @@ yyreduce:
     break;
 
   case 50:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 269 "grammar.y"
     { (yyval.plist) = new PropertyListNode((yyvsp[(1) - (1)].pnode)); }
     break;
 
   case 51:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 270 "grammar.y"
     { (yyval.plist) = new PropertyListNode((yyvsp[(3) - (3)].pnode), (yyvsp[(1) - (3)].plist)); }
     break;
 
   case 53:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 275 "grammar.y"
     { (yyval.node) = new ObjectLiteralNode(); }
     break;
 
   case 54:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 276 "grammar.y"
     { (yyval.node) = new ObjectLiteralNode((yyvsp[(2) - (3)].plist)); }
     break;
 
   case 55:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 278 "grammar.y"
     { (yyval.node) = new ObjectLiteralNode((yyvsp[(2) - (4)].plist)); }
     break;
 
   case 56:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 282 "grammar.y"
     { (yyval.node) = new ThisNode(); }
     break;
 
   case 59:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 285 "grammar.y"
     { (yyval.node) = new VarAccessNode(*(yyvsp[(1) - (1)].ident)); }
     break;
 
   case 60:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 286 "grammar.y"
     { (yyval.node) = makeGroupNode((yyvsp[(2) - (3)].node)); }
     break;
 
   case 61:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 291 "grammar.y"
     { (yyval.node) = new ArrayNode((yyvsp[(2) - (3)].ival)); }
     break;
 
   case 62:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 292 "grammar.y"
     { (yyval.node) = new ArrayNode((yyvsp[(2) - (3)].elm)); }
     break;
 
   case 63:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 293 "grammar.y"
     { (yyval.node) = new ArrayNode((yyvsp[(4) - (5)].ival), (yyvsp[(2) - (5)].elm)); }
     break;
 
   case 64:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 297 "grammar.y"
     { (yyval.elm) = new ElementNode((yyvsp[(1) - (2)].ival), (yyvsp[(2) - (2)].node)); }
     break;
 
   case 65:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 299 "grammar.y"
     { (yyval.elm) = new ElementNode((yyvsp[(1) - (4)].elm), (yyvsp[(3) - (4)].ival), (yyvsp[(4) - (4)].node)); }
     break;
 
   case 66:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 303 "grammar.y"
     { (yyval.ival) = 0; }
     break;
 
   case 68:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 308 "grammar.y"
     { (yyval.ival) = 1; }
     break;
 
   case 69:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 309 "grammar.y"
     { (yyval.ival) = (yyvsp[(1) - (2)].ival) + 1; }
     break;
 
   case 71:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 314 "grammar.y"
     { (yyval.node) = (yyvsp[(1) - (1)].funcExpr); }
     break;
 
   case 72:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 315 "grammar.y"
     { (yyval.node) = new BracketAccessorNode((yyvsp[(1) - (4)].node), (yyvsp[(3) - (4)].node)); }
     break;
 
   case 73:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 316 "grammar.y"
     { (yyval.node) = new DotAccessorNode((yyvsp[(1) - (3)].node), *(yyvsp[(3) - (3)].ident)); }
     break;
 
   case 74:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 317 "grammar.y"
     { (yyval.node) = new NewExprNode((yyvsp[(2) - (3)].node), (yyvsp[(3) - (3)].args)); }
     break;
 
   case 76:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 322 "grammar.y"
     { (yyval.node) = new BracketAccessorNode((yyvsp[(1) - (4)].node), (yyvsp[(3) - (4)].node)); }
     break;
 
   case 77:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 323 "grammar.y"
     { (yyval.node) = new DotAccessorNode((yyvsp[(1) - (3)].node), *(yyvsp[(3) - (3)].ident)); }
     break;
 
   case 78:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 324 "grammar.y"
     { (yyval.node) = new NewExprNode((yyvsp[(2) - (3)].node), (yyvsp[(3) - (3)].args)); }
     break;
 
   case 80:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 329 "grammar.y"
     { (yyval.node) = new NewExprNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 82:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 334 "grammar.y"
     { (yyval.node) = new NewExprNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 83:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 338 "grammar.y"
     { (yyval.node) = makeFunctionCallNode((yyvsp[(1) - (2)].node), (yyvsp[(2) - (2)].args)); }
     break;
 
   case 84:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 339 "grammar.y"
     { (yyval.node) = makeFunctionCallNode((yyvsp[(1) - (2)].node), (yyvsp[(2) - (2)].args)); }
     break;
 
   case 85:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 340 "grammar.y"
     { (yyval.node) = new BracketAccessorNode((yyvsp[(1) - (4)].node), (yyvsp[(3) - (4)].node)); }
     break;
 
   case 86:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 341 "grammar.y"
     { (yyval.node) = new DotAccessorNode((yyvsp[(1) - (3)].node), *(yyvsp[(3) - (3)].ident)); }
     break;
 
   case 87:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 345 "grammar.y"
     { (yyval.node) = makeFunctionCallNode((yyvsp[(1) - (2)].node), (yyvsp[(2) - (2)].args)); }
     break;
 
   case 88:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 346 "grammar.y"
     { (yyval.node) = makeFunctionCallNode((yyvsp[(1) - (2)].node), (yyvsp[(2) - (2)].args)); }
     break;
 
   case 89:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 347 "grammar.y"
     { (yyval.node) = new BracketAccessorNode((yyvsp[(1) - (4)].node), (yyvsp[(3) - (4)].node)); }
     break;
 
   case 90:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 348 "grammar.y"
     { (yyval.node) = new DotAccessorNode((yyvsp[(1) - (3)].node), *(yyvsp[(3) - (3)].ident)); }
     break;
 
   case 91:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 352 "grammar.y"
     { (yyval.args) = new ArgumentsNode(); }
     break;
 
   case 92:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 353 "grammar.y"
     { (yyval.args) = new ArgumentsNode((yyvsp[(2) - (3)].alist)); }
     break;
 
   case 93:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 357 "grammar.y"
     { (yyval.alist) = new ArgumentListNode((yyvsp[(1) - (1)].node)); }
     break;
 
   case 94:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 358 "grammar.y"
     { (yyval.alist) = new ArgumentListNode((yyvsp[(1) - (3)].alist), (yyvsp[(3) - (3)].node)); }
     break;
 
   case 100:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 373 "grammar.y"
     { (yyval.node) = makePostfixNode((yyvsp[(1) - (2)].node), OpPlusPlus); }
     break;
 
   case 101:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 374 "grammar.y"
     { (yyval.node) = makePostfixNode((yyvsp[(1) - (2)].node), OpMinusMinus); }
     break;
 
   case 103:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 379 "grammar.y"
     { (yyval.node) = makePostfixNode((yyvsp[(1) - (2)].node), OpPlusPlus); }
     break;
 
   case 104:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 380 "grammar.y"
     { (yyval.node) = makePostfixNode((yyvsp[(1) - (2)].node), OpMinusMinus); }
     break;
 
   case 105:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 384 "grammar.y"
     { (yyval.node) = makeDeleteNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 106:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 385 "grammar.y"
     { (yyval.node) = new VoidNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 107:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 386 "grammar.y"
     { (yyval.node) = makeTypeOfNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 108:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 387 "grammar.y"
     { (yyval.node) = makePrefixNode((yyvsp[(2) - (2)].node), OpPlusPlus); }
     break;
 
   case 109:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 388 "grammar.y"
     { (yyval.node) = makePrefixNode((yyvsp[(2) - (2)].node), OpPlusPlus); }
     break;
 
   case 110:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 389 "grammar.y"
     { (yyval.node) = makePrefixNode((yyvsp[(2) - (2)].node), OpMinusMinus); }
     break;
 
   case 111:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 390 "grammar.y"
     { (yyval.node) = makePrefixNode((yyvsp[(2) - (2)].node), OpMinusMinus); }
     break;
 
   case 112:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 391 "grammar.y"
     { (yyval.node) = makeUnaryPlusNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 113:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 392 "grammar.y"
     { (yyval.node) = makeNegateNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 114:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 393 "grammar.y"
     { (yyval.node) = makeBitwiseNotNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 115:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 394 "grammar.y"
     { (yyval.node) = makeLogicalNotNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 121:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 408 "grammar.y"
     { (yyval.node) = makeMultNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpMult); }
     break;
 
   case 122:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 409 "grammar.y"
     { (yyval.node) = makeMultNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpDiv); }
     break;
 
   case 123:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 410 "grammar.y"
     { (yyval.node) = makeMultNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpMod); }
     break;
 
   case 125:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 416 "grammar.y"
     { (yyval.node) = makeMultNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpMult); }
     break;
 
   case 126:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 418 "grammar.y"
     { (yyval.node) = makeMultNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpDiv); }
     break;
 
   case 127:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 420 "grammar.y"
     { (yyval.node) = makeMultNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpMod); }
     break;
 
   case 129:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 425 "grammar.y"
     { (yyval.node) = makeAddNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpPlus); }
     break;
 
   case 130:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 426 "grammar.y"
     { (yyval.node) = makeAddNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpMinus); }
     break;
 
   case 132:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 432 "grammar.y"
     { (yyval.node) = makeAddNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpPlus); }
     break;
 
   case 133:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 434 "grammar.y"
     { (yyval.node) = makeAddNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpMinus); }
     break;
 
   case 135:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 439 "grammar.y"
     { (yyval.node) = makeShiftNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpLShift); }
     break;
 
   case 136:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 440 "grammar.y"
     { (yyval.node) = makeShiftNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpRShift); }
     break;
 
   case 137:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 441 "grammar.y"
     { (yyval.node) = makeShiftNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpURShift); }
     break;
 
   case 139:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 446 "grammar.y"
     { (yyval.node) = makeShiftNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpLShift); }
     break;
 
   case 140:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 447 "grammar.y"
     { (yyval.node) = makeShiftNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpRShift); }
     break;
 
   case 141:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 448 "grammar.y"
     { (yyval.node) = makeShiftNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node), OpURShift); }
     break;
 
   case 143:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 453 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpLess, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 144:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 454 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpGreater, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 145:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 455 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpLessEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 146:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 456 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpGreaterEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 147:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 457 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpInstanceOf, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 148:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 458 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpIn, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 150:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 463 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpLess, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 151:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 464 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpGreater, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 152:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 465 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpLessEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 153:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 466 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpGreaterEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 154:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 468 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpInstanceOf, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 156:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 473 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpLess, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 157:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 474 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpGreater, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 158:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 475 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpLessEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 159:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 476 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpGreaterEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 160:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 478 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpInstanceOf, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 161:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 479 "grammar.y"
     { (yyval.node) = makeRelationalNode((yyvsp[(1) - (3)].node), OpIn, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 163:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 484 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpEqEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 164:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 485 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpNotEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 165:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 486 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpStrEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 166:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 487 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpStrNEq, (yyvsp[(3) - (3)].node));}
     break;
 
   case 168:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 493 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpEqEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 169:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 495 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpNotEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 170:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 497 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpStrEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 171:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 499 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpStrNEq, (yyvsp[(3) - (3)].node));}
     break;
 
   case 173:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 505 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpEqEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 174:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 506 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpNotEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 175:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 508 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpStrEq, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 176:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 510 "grammar.y"
     { (yyval.node) = makeEqualNode((yyvsp[(1) - (3)].node), OpStrNEq, (yyvsp[(3) - (3)].node));}
     break;
 
   case 178:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 515 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitAnd, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 180:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 521 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitAnd, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 182:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 526 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitAnd, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 184:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 531 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitXOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 186:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 537 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitXOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 188:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 543 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitXOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 190:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 548 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 192:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 554 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 194:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 560 "grammar.y"
     { (yyval.node) = makeBitOperNode((yyvsp[(1) - (3)].node), OpBitOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 196:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 565 "grammar.y"
     { (yyval.node) = makeBinaryLogicalNode((yyvsp[(1) - (3)].node), OpAnd, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 198:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 571 "grammar.y"
     { (yyval.node) = makeBinaryLogicalNode((yyvsp[(1) - (3)].node), OpAnd, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 200:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 577 "grammar.y"
     { (yyval.node) = makeBinaryLogicalNode((yyvsp[(1) - (3)].node), OpAnd, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 202:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 582 "grammar.y"
     { (yyval.node) = makeBinaryLogicalNode((yyvsp[(1) - (3)].node), OpOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 204:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 588 "grammar.y"
     { (yyval.node) = makeBinaryLogicalNode((yyvsp[(1) - (3)].node), OpOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 206:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 593 "grammar.y"
     { (yyval.node) = makeBinaryLogicalNode((yyvsp[(1) - (3)].node), OpOr, (yyvsp[(3) - (3)].node)); }
     break;
 
   case 208:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 599 "grammar.y"
     { (yyval.node) = makeConditionalNode((yyvsp[(1) - (5)].node), (yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].node)); }
     break;
 
   case 210:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 605 "grammar.y"
     { (yyval.node) = makeConditionalNode((yyvsp[(1) - (5)].node), (yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].node)); }
     break;
 
   case 212:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 611 "grammar.y"
     { (yyval.node) = makeConditionalNode((yyvsp[(1) - (5)].node), (yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].node)); }
     break;
 
   case 214:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 617 "grammar.y"
     { (yyval.node) = makeAssignNode((yyvsp[(1) - (3)].node), (yyvsp[(2) - (3)].op), (yyvsp[(3) - (3)].node)); }
     break;
 
   case 216:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 623 "grammar.y"
     { (yyval.node) = makeAssignNode((yyvsp[(1) - (3)].node), (yyvsp[(2) - (3)].op), (yyvsp[(3) - (3)].node)); }
     break;
 
   case 218:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 629 "grammar.y"
     { (yyval.node) = makeAssignNode((yyvsp[(1) - (3)].node), (yyvsp[(2) - (3)].op), (yyvsp[(3) - (3)].node)); }
     break;
 
   case 219:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 633 "grammar.y"
     { (yyval.op) = OpEqual; }
     break;
 
   case 220:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 634 "grammar.y"
     { (yyval.op) = OpPlusEq; }
     break;
 
   case 221:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 635 "grammar.y"
     { (yyval.op) = OpMinusEq; }
     break;
 
   case 222:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 636 "grammar.y"
     { (yyval.op) = OpMultEq; }
     break;
 
   case 223:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 637 "grammar.y"
     { (yyval.op) = OpDivEq; }
     break;
 
   case 224:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 638 "grammar.y"
     { (yyval.op) = OpLShift; }
     break;
 
   case 225:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 639 "grammar.y"
     { (yyval.op) = OpRShift; }
     break;
 
   case 226:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 640 "grammar.y"
     { (yyval.op) = OpURShift; }
     break;
 
   case 227:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 641 "grammar.y"
     { (yyval.op) = OpAndEq; }
     break;
 
   case 228:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 642 "grammar.y"
     { (yyval.op) = OpXOrEq; }
     break;
 
   case 229:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 643 "grammar.y"
     { (yyval.op) = OpOrEq; }
     break;
 
   case 230:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 644 "grammar.y"
     { (yyval.op) = OpModEq; }
     break;
 
   case 232:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 649 "grammar.y"
     { (yyval.node) = new CommaNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
     break;
 
   case 234:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 654 "grammar.y"
     { (yyval.node) = new CommaNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
     break;
 
   case 236:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 659 "grammar.y"
     { (yyval.node) = new CommaNode((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
     break;
 
   case 254:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 683 "grammar.y"
     { (yyval.stat) = new BlockNode(0); DBG((yyval.stat), (yylsp[(2) - (2)]), (yylsp[(2) - (2)])); }
     break;
 
   case 255:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 684 "grammar.y"
     { (yyval.stat) = new BlockNode((yyvsp[(2) - (3)].srcs)); DBG((yyval.stat), (yylsp[(3) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 256:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 688 "grammar.y"
     { (yyval.stat) = new VarStatementNode((yyvsp[(2) - (3)].vlist)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 257:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 689 "grammar.y"
     { (yyval.stat) = new VarStatementNode((yyvsp[(2) - (3)].vlist)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(2) - (3)])); AUTO_SEMICOLON; }
     break;
 
   case 258:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 693 "grammar.y"
     { (yyval.vlist) = new VarDeclListNode((yyvsp[(1) - (1)].decl)); }
     break;
 
   case 259:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 695 "grammar.y"
     { (yyval.vlist) = new VarDeclListNode((yyvsp[(1) - (3)].vlist), (yyvsp[(3) - (3)].decl)); }
     break;
 
   case 260:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 699 "grammar.y"
     { (yyval.vlist) = new VarDeclListNode((yyvsp[(1) - (1)].decl)); }
     break;
 
   case 261:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 701 "grammar.y"
     { (yyval.vlist) = new VarDeclListNode((yyvsp[(1) - (3)].vlist), (yyvsp[(3) - (3)].decl)); }
     break;
 
   case 262:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 705 "grammar.y"
     { (yyval.decl) = new VarDeclNode(*(yyvsp[(1) - (1)].ident), 0, VarDeclNode::Variable); }
     break;
 
   case 263:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 706 "grammar.y"
     { (yyval.decl) = new VarDeclNode(*(yyvsp[(1) - (2)].ident), (yyvsp[(2) - (2)].init), VarDeclNode::Variable); }
     break;
 
   case 264:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 710 "grammar.y"
     { (yyval.decl) = new VarDeclNode(*(yyvsp[(1) - (1)].ident), 0, VarDeclNode::Variable); }
     break;
 
   case 265:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 711 "grammar.y"
     { (yyval.decl) = new VarDeclNode(*(yyvsp[(1) - (2)].ident), (yyvsp[(2) - (2)].init), VarDeclNode::Variable); }
     break;
 
   case 266:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 715 "grammar.y"
     { (yyval.stat) = new VarStatementNode((yyvsp[(2) - (3)].vlist)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 267:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 717 "grammar.y"
     { (yyval.stat) = new VarStatementNode((yyvsp[(2) - (3)].vlist)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(2) - (3)])); AUTO_SEMICOLON; }
     break;
 
   case 268:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 721 "grammar.y"
     { (yyval.vlist) = new VarDeclListNode((yyvsp[(1) - (1)].decl)); }
     break;
 
   case 269:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 723 "grammar.y"
     { (yyval.vlist) = new VarDeclListNode((yyvsp[(1) - (3)].vlist), (yyvsp[(3) - (3)].decl)); }
     break;
 
   case 270:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 727 "grammar.y"
     { (yyval.decl) = new VarDeclNode(*(yyvsp[(1) - (1)].ident), 0, VarDeclNode::Constant); }
     break;
 
   case 271:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 728 "grammar.y"
     { (yyval.decl) = new VarDeclNode(*(yyvsp[(1) - (2)].ident), (yyvsp[(2) - (2)].init), VarDeclNode::Constant); }
     break;
 
   case 272:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 732 "grammar.y"
     { (yyval.init) = new AssignExprNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 273:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 736 "grammar.y"
     { (yyval.init) = new AssignExprNode((yyvsp[(2) - (2)].node)); }
     break;
 
   case 274:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 740 "grammar.y"
     { (yyval.stat) = new EmptyStatementNode(); }
     break;
 
   case 275:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 744 "grammar.y"
     { (yyval.stat) = new ExprStatementNode((yyvsp[(1) - (2)].node)); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(2) - (2)])); }
     break;
 
   case 276:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 745 "grammar.y"
     { (yyval.stat) = new ExprStatementNode((yyvsp[(1) - (2)].node)); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(1) - (2)])); AUTO_SEMICOLON; }
     break;
 
   case 277:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 750 "grammar.y"
     { (yyval.stat) = makeIfNode((yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].stat), 0); DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(4) - (5)])); }
     break;
 
   case 278:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 752 "grammar.y"
     { (yyval.stat) = makeIfNode((yyvsp[(3) - (7)].node), (yyvsp[(5) - (7)].stat), (yyvsp[(7) - (7)].stat)); DBG((yyval.stat), (yylsp[(1) - (7)]), (yylsp[(4) - (7)])); }
     break;
 
   case 279:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 756 "grammar.y"
     { (yyval.stat) = new DoWhileNode((yyvsp[(2) - (7)].stat), (yyvsp[(5) - (7)].node)); DBG((yyval.stat), (yylsp[(1) - (7)]), (yylsp[(3) - (7)]));}
     break;
 
   case 280:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 757 "grammar.y"
     { (yyval.stat) = new DoWhileNode((yyvsp[(2) - (7)].stat), (yyvsp[(5) - (7)].node)); DBG((yyval.stat), (yylsp[(1) - (7)]), (yylsp[(3) - (7)])); AUTO_SEMICOLON; }
     break;
 
   case 281:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 758 "grammar.y"
     { (yyval.stat) = new WhileNode((yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].stat)); DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(4) - (5)])); }
     break;
 
   case 282:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 760 "grammar.y"
     { (yyval.stat) = new ForNode((yyvsp[(3) - (9)].node), (yyvsp[(5) - (9)].node), (yyvsp[(7) - (9)].node), (yyvsp[(9) - (9)].stat)); DBG((yyval.stat), (yylsp[(1) - (9)]), (yylsp[(8) - (9)])); }
     break;
 
   case 283:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 762 "grammar.y"
     { (yyval.stat) = new ForNode((yyvsp[(4) - (10)].vlist), (yyvsp[(6) - (10)].node), (yyvsp[(8) - (10)].node), (yyvsp[(10) - (10)].stat)); DBG((yyval.stat), (yylsp[(1) - (10)]), (yylsp[(9) - (10)])); }
     break;
 
   case 284:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 764 "grammar.y"
     {
                                             Node *n = (yyvsp[(3) - (7)].node)->nodeInsideAllParens();
@@ -3736,301 +3736,301 @@ yyreduce:
     break;
 
   case 285:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 772 "grammar.y"
     { (yyval.stat) = new ForInNode(*(yyvsp[(4) - (8)].ident), 0, (yyvsp[(6) - (8)].node), (yyvsp[(8) - (8)].stat)); DBG((yyval.stat), (yylsp[(1) - (8)]), (yylsp[(7) - (8)])); }
     break;
 
   case 286:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 774 "grammar.y"
     { (yyval.stat) = new ForInNode(*(yyvsp[(4) - (9)].ident), (yyvsp[(5) - (9)].init), (yyvsp[(7) - (9)].node), (yyvsp[(9) - (9)].stat)); DBG((yyval.stat), (yylsp[(1) - (9)]), (yylsp[(8) - (9)])); }
     break;
 
   case 287:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 778 "grammar.y"
     { (yyval.node) = 0; }
     break;
 
   case 289:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 783 "grammar.y"
     { (yyval.node) = 0; }
     break;
 
   case 291:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 788 "grammar.y"
     { (yyval.stat) = new ContinueNode(); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(2) - (2)])); }
     break;
 
   case 292:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 789 "grammar.y"
     { (yyval.stat) = new ContinueNode(); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(1) - (2)])); AUTO_SEMICOLON; }
     break;
 
   case 293:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 790 "grammar.y"
     { (yyval.stat) = new ContinueNode(*(yyvsp[(2) - (3)].ident)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 294:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 791 "grammar.y"
     { (yyval.stat) = new ContinueNode(*(yyvsp[(2) - (3)].ident)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(2) - (3)])); AUTO_SEMICOLON; }
     break;
 
   case 295:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 795 "grammar.y"
     { (yyval.stat) = new BreakNode(); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(2) - (2)])); }
     break;
 
   case 296:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 796 "grammar.y"
     { (yyval.stat) = new BreakNode(); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(1) - (2)])); AUTO_SEMICOLON; }
     break;
 
   case 297:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 797 "grammar.y"
     { (yyval.stat) = new BreakNode(*(yyvsp[(2) - (3)].ident)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 298:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 798 "grammar.y"
     { (yyval.stat) = new BreakNode(*(yyvsp[(2) - (3)].ident)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(2) - (3)])); AUTO_SEMICOLON; }
     break;
 
   case 299:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 802 "grammar.y"
     { (yyval.stat) = new ReturnNode(0); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(2) - (2)])); }
     break;
 
   case 300:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 803 "grammar.y"
     { (yyval.stat) = new ReturnNode(0); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(1) - (2)])); AUTO_SEMICOLON; }
     break;
 
   case 301:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 804 "grammar.y"
     { (yyval.stat) = new ReturnNode((yyvsp[(2) - (3)].node)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 302:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 805 "grammar.y"
     { (yyval.stat) = new ReturnNode((yyvsp[(2) - (3)].node)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(2) - (3)])); AUTO_SEMICOLON; }
     break;
 
   case 303:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 809 "grammar.y"
     { (yyval.stat) = new WithNode((yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].stat)); DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(4) - (5)])); }
     break;
 
   case 304:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 813 "grammar.y"
     { (yyval.stat) = new SwitchNode((yyvsp[(3) - (5)].node), (yyvsp[(5) - (5)].cblk)); DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(4) - (5)])); }
     break;
 
   case 305:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 817 "grammar.y"
     { (yyval.cblk) = new CaseBlockNode((yyvsp[(2) - (3)].clist), 0, 0); }
     break;
 
   case 306:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 819 "grammar.y"
     { (yyval.cblk) = new CaseBlockNode((yyvsp[(2) - (5)].clist), (yyvsp[(3) - (5)].ccl), (yyvsp[(4) - (5)].clist)); }
     break;
 
   case 307:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 823 "grammar.y"
     { (yyval.clist) = 0; }
     break;
 
   case 309:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 828 "grammar.y"
     { (yyval.clist) = new ClauseListNode((yyvsp[(1) - (1)].ccl)); }
     break;
 
   case 310:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 829 "grammar.y"
     { (yyval.clist) = new ClauseListNode((yyvsp[(1) - (2)].clist), (yyvsp[(2) - (2)].ccl)); }
     break;
 
   case 311:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 833 "grammar.y"
     { (yyval.ccl) = new CaseClauseNode((yyvsp[(2) - (3)].node)); }
     break;
 
   case 312:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 834 "grammar.y"
     { (yyval.ccl) = new CaseClauseNode((yyvsp[(2) - (4)].node), (yyvsp[(4) - (4)].srcs)); }
     break;
 
   case 313:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 838 "grammar.y"
     { (yyval.ccl) = new CaseClauseNode(0); }
     break;
 
   case 314:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 839 "grammar.y"
     { (yyval.ccl) = new CaseClauseNode(0, (yyvsp[(3) - (3)].srcs)); }
     break;
 
   case 315:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 843 "grammar.y"
     { (yyval.stat) = makeLabelNode(*(yyvsp[(1) - (3)].ident), (yyvsp[(3) - (3)].stat)); }
     break;
 
   case 316:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 847 "grammar.y"
     { (yyval.stat) = new ThrowNode((yyvsp[(2) - (3)].node)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 317:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 848 "grammar.y"
     { (yyval.stat) = new ThrowNode((yyvsp[(2) - (3)].node)); DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(2) - (3)])); AUTO_SEMICOLON; }
     break;
 
   case 318:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 852 "grammar.y"
     { (yyval.stat) = new TryNode((yyvsp[(2) - (4)].stat), CommonIdentifiers::shared()->nullIdentifier, 0, (yyvsp[(4) - (4)].stat)); DBG((yyval.stat), (yylsp[(1) - (4)]), (yylsp[(2) - (4)])); }
     break;
 
   case 319:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 853 "grammar.y"
     { (yyval.stat) = new TryNode((yyvsp[(2) - (7)].stat), *(yyvsp[(5) - (7)].ident), (yyvsp[(7) - (7)].stat), 0); DBG((yyval.stat), (yylsp[(1) - (7)]), (yylsp[(2) - (7)])); }
     break;
 
   case 320:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 855 "grammar.y"
     { (yyval.stat) = new TryNode((yyvsp[(2) - (9)].stat), *(yyvsp[(5) - (9)].ident), (yyvsp[(7) - (9)].stat), (yyvsp[(9) - (9)].stat)); DBG((yyval.stat), (yylsp[(1) - (9)]), (yylsp[(2) - (9)])); }
     break;
 
   case 321:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 859 "grammar.y"
     { (yyval.stat) = new EmptyStatementNode(); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(2) - (2)])); }
     break;
 
   case 322:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 860 "grammar.y"
     { (yyval.stat) = new EmptyStatementNode(); DBG((yyval.stat), (yylsp[(1) - (2)]), (yylsp[(1) - (2)])); AUTO_SEMICOLON; }
     break;
 
   case 323:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 864 "grammar.y"
     { (yyval.pkgn) = new PackageNameNode(*(yyvsp[(1) - (1)].ident)); }
     break;
 
   case 324:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 865 "grammar.y"
     { (yyval.pkgn) = new PackageNameNode((yyvsp[(1) - (3)].pkgn), *(yyvsp[(3) - (3)].ident)); }
     break;
 
   case 325:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 869 "grammar.y"
     { (yyval.stat) = makeImportNode((yyvsp[(2) - (5)].pkgn), true, 0);
                                           DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(5) - (5)])); }
     break;
 
   case 326:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 871 "grammar.y"
     { (yyval.stat) = makeImportNode((yyvsp[(2) - (5)].pkgn), true, 0);
                                           DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(5) - (5)])); AUTO_SEMICOLON; }
     break;
 
   case 327:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 873 "grammar.y"
     { (yyval.stat) = makeImportNode((yyvsp[(2) - (3)].pkgn), false, 0);
                                           DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 328:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 875 "grammar.y"
     { (yyval.stat) = makeImportNode((yyvsp[(2) - (3)].pkgn), false, 0);
                                           DBG((yyval.stat), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); AUTO_SEMICOLON; }
     break;
 
   case 329:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 877 "grammar.y"
     { (yyval.stat) = makeImportNode((yyvsp[(4) - (5)].pkgn), false, *(yyvsp[(2) - (5)].ident));
                                           DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(5) - (5)])); }
     break;
 
   case 330:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 879 "grammar.y"
     { (yyval.stat) = makeImportNode((yyvsp[(4) - (5)].pkgn), false, *(yyvsp[(2) - (5)].ident));
                                           DBG((yyval.stat), (yylsp[(1) - (5)]), (yylsp[(5) - (5)])); AUTO_SEMICOLON; }
     break;
 
   case 331:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 884 "grammar.y"
     {inFuncDecl();}
     break;
 
   case 332:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 884 "grammar.y"
     { (yyval.func) = new FuncDeclNode(*(yyvsp[(2) - (6)].ident), (yyvsp[(6) - (6)].body)); }
     break;
 
   case 333:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 885 "grammar.y"
     {inFuncDecl();}
     break;
 
   case 334:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 886 "grammar.y"
     { (yyval.func) = new FuncDeclNode(*(yyvsp[(2) - (7)].ident), (yyvsp[(4) - (7)].param), (yyvsp[(7) - (7)].body)); }
     break;
 
   case 335:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 890 "grammar.y"
     {inFuncExpr();}
     break;
 
   case 336:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 890 "grammar.y"
     {
       (yyval.funcExpr) = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, (yyvsp[(5) - (5)].body));
@@ -4038,13 +4038,13 @@ yyreduce:
     break;
 
   case 337:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 893 "grammar.y"
     {inFuncExpr();}
     break;
 
   case 338:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 893 "grammar.y"
     {
       (yyval.funcExpr) = new FuncExprNode(CommonIdentifiers::shared()->nullIdentifier, (yyvsp[(6) - (6)].body), (yyvsp[(3) - (6)].param));
@@ -4052,25 +4052,25 @@ yyreduce:
     break;
 
   case 339:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 896 "grammar.y"
     {inFuncExpr();}
     break;
 
   case 340:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 896 "grammar.y"
     { (yyval.funcExpr) = new FuncExprNode(*(yyvsp[(2) - (6)].ident), (yyvsp[(6) - (6)].body)); }
     break;
 
   case 341:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 897 "grammar.y"
     {inFuncExpr();}
     break;
 
   case 342:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 897 "grammar.y"
     {
       (yyval.funcExpr) = new FuncExprNode(*(yyvsp[(2) - (7)].ident), (yyvsp[(7) - (7)].body), (yyvsp[(4) - (7)].param));
@@ -4078,67 +4078,67 @@ yyreduce:
     break;
 
   case 343:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 903 "grammar.y"
     { (yyval.param) = new ParameterNode(*(yyvsp[(1) - (1)].ident)); }
     break;
 
   case 344:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 904 "grammar.y"
     { (yyval.param) = new ParameterNode((yyvsp[(1) - (3)].param), *(yyvsp[(3) - (3)].ident)); }
     break;
 
   case 345:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 908 "grammar.y"
     { (yyval.body) = new FunctionBodyNode(0); DBG((yyval.body), (yylsp[(1) - (2)]), (yylsp[(2) - (2)])); }
     break;
 
   case 346:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 909 "grammar.y"
     { (yyval.body) = new FunctionBodyNode((yyvsp[(2) - (3)].srcs)); DBG((yyval.body), (yylsp[(1) - (3)]), (yylsp[(3) - (3)])); }
     break;
 
   case 347:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 913 "grammar.y"
     { parser().didFinishParsing(new ProgramNode(0)); }
     break;
 
   case 348:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 914 "grammar.y"
     { parser().didFinishParsing(new ProgramNode((yyvsp[(1) - (1)].srcs))); }
     break;
 
   case 349:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 918 "grammar.y"
     { (yyval.srcs) = new SourceElementsNode((yyvsp[(1) - (1)].stat)); }
     break;
 
   case 350:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 919 "grammar.y"
     { (yyval.srcs) = new SourceElementsNode((yyvsp[(1) - (2)].srcs), (yyvsp[(2) - (2)].stat)); }
     break;
 
   case 351:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 923 "grammar.y"
     { (yyval.stat) = (yyvsp[(1) - (1)].func); }
     break;
 
   case 352:
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 924 "grammar.y"
     { (yyval.stat) = (yyvsp[(1) - (1)].stat); }
     break;
 
 
-/* Line 1792 of yacc.c  */
+/* Line 1787 of yacc.c  */
 #line 4143 "grammar.tab.c"
       default: break;
     }
@@ -4377,7 +4377,7 @@ yyreturn:
 }
 
 
-/* Line 2055 of yacc.c  */
+/* Line 2050 of yacc.c  */
 #line 927 "grammar.y"
 
 

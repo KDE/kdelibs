@@ -26,7 +26,7 @@
 
 #include "global.h"
 
-#include <config.h>
+#include <config-kjs.h>
 
 #ifdef HAVE_PCREPOSIX
 #include <pcre.h>

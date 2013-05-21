@@ -21,7 +21,7 @@
  */
 
 #include "bool_object.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "operations.h"
 #include "error_object.h"

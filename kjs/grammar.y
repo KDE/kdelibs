@@ -21,7 +21,7 @@
  *
  */
 
-#include "config.h"
+#include <config-kjs.h>
 
 #include <string.h>
 #include <stdlib.h>

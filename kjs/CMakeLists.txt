@@ -43,7 +43,7 @@ option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this wi
 
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
-configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+configure_file(config-kjs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kjs.h )
 
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 

@@ -23,7 +23,7 @@
  */
 
 #include "regexp.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "lexer.h"
 
 #include <assert.h>

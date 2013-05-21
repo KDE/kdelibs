@@ -21,7 +21,7 @@
  */
 
 #include "operations.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "object.h"
 #include "internal.h"
