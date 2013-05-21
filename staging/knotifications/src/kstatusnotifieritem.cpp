@@ -521,6 +521,16 @@ QList<QAction *> KStatusNotifierItem::actionCollection() const
     return d->actionCollection.values();
 }
 
+void KStatusNotifierItem::addAction(const QString &name, QAction *action)
+{
+    d->actionCollection.insert(name, action);
+}
+
+void KStatusNotifierItem::removeAction(const QString &name)
+{
+    d->actionCollection.remove(name);
+}
+
 void KStatusNotifierItem::setStandardActionsEnabled(bool enabled)
 {
     if (d->standardActionsEnabled == enabled) {

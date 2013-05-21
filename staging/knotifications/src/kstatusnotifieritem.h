@@ -389,6 +389,21 @@ public:
     QList<QAction *> actionCollection() const;
 
     /**
+     * Adds an action to the actionCollection()
+     *
+     * @param name the name of the action
+     * @param action the action we want to add
+     */
+    void addAction(const QString &name, QAction *action);
+
+    /**
+     * Removes an action to the collection
+     *
+     * @param name the name of the action
+     */
+    void removeAction(const QString &name);
+
+    /**
      * Sets whether to show the standard items in the menu, such as Quit
      */
     void setStandardActionsEnabled(bool enabled);
