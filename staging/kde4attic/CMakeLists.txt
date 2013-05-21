@@ -14,7 +14,7 @@ include(FeatureSummary)
 
 include(ECMSetupVersion)
 
-ecm_setup_version(5 0 0 VARIABLE_PREFIX ITEMVIEWS
+ecm_setup_version(5 0 0 VARIABLE_PREFIX KDE4ATTIC
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kde4attic_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KDE4AtticConfigVersion.cmake")
 
