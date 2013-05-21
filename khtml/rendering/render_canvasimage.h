@@ -54,9 +54,6 @@ public:
     virtual void layout();
     virtual void updateFromElement();
 
-    virtual int offsetLeft() const;
-    virtual int offsetTop() const;
-
     // don't even think about making this method virtual!
     DOM::HTMLCanvasElementImpl* element() const
     { return static_cast<DOM::HTMLCanvasElementImpl*>(RenderObject::element()); }

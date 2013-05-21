@@ -315,8 +315,6 @@ public:
     virtual int offsetLeft() const;
     virtual int offsetTop() const;
 
-    virtual QList< QRectF > getClientRects();
-
     virtual short lineHeight( bool ) const { return 0; }
     virtual void position(InlineBox*, int, int, bool) {}
 
@@ -392,8 +390,6 @@ public:
     int cellBottomExtra() const { return _bottomExtra; }
 
     int pageTopAfter(int x) const;
-
-    virtual QList< QRectF > getClientRects();
 
     virtual void paint( PaintInfo& i, int tx, int ty);
 

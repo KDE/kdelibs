@@ -572,7 +572,7 @@ RenderLayer* RenderObject::enclosingStackingContext() const
 
 QRectF RenderObject::clientRectToViewport(const QRectF& rect)
 {
-    if (style()->position() != PFIXED) {
+    if (style()->position() == PFIXED) {
         int offsetX = document()->part()->view()->contentsX();
         int offsetY = document()->part()->view()->contentsY();
 
@@ -587,7 +587,11 @@ QList<QRectF> RenderObject::getClientRects()
 {
     QList<QRectF> ret;
 
-    QRectF rect(offsetLeft(), offsetTop(), width(), height());
+    int x = 0;
+    int y = 0;
+    absolutePosition(x, y);
+
+    QRectF rect(x, y, width(), height());
     ret.append(clientRectToViewport(rect));
 
     return ret;

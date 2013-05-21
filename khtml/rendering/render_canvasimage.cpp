@@ -130,20 +130,4 @@ void RenderCanvasImage::updateFromElement()
         repaint();
 }
 
-int RenderCanvasImage::offsetLeft() const
-{
-    int xpos = 0;
-    for (RenderObject* obj = parent(); obj; obj = obj->parent())
-        xpos += obj->xPos();
-    return xpos;
-}
-
-int RenderCanvasImage::offsetTop() const
-{
-    int ypos = 0;
-    for (RenderObject* obj = parent(); obj; obj = obj->parent())
-        ypos += obj->yPos();
-    return ypos;
-}
-
 // kate: indent-width 4; replace-tabs on; tab-width 4; space-indent on;

@@ -303,11 +303,14 @@ QList< QRectF > RenderTable::getClientRects()
         // NOTE: first table, then caption
         QList<QRectF> list;
 
-        QRectF tableRect(offsetLeft(), offsetTop() + cap->height(),
-                         width(), height() - cap->height());
+        int x = 0;
+        int y = 0;
+        absolutePosition(x, y);
+
+        QRectF tableRect(x, y + cap->height(), width(), height() - cap->height());
         list.append(clientRectToViewport(tableRect));
 
-        QRectF captionRect(offsetLeft(), offsetTop(), cap->width(), cap->height());
+        QRectF captionRect(x, y, cap->width(), cap->height());
         list.append(clientRectToViewport(captionRect));
 
         return list;
@@ -2356,26 +2359,6 @@ int RenderTableRow::offsetTop() const
                   static_cast<RenderTableCell*>(child)->cellTopExtra();
 }
 
-QList< QRectF > RenderTableRow::getClientRects()
-{
-    QList<QRectF> list;
-
-    RenderFlow* cap = table()->caption();
-    int capHeight;
-    if (cap)
-        capHeight = cap->height();
-    else
-        capHeight = 0;
-
-    QRectF tableRowRect(xPos() + table()->offsetLeft(),
-                        yPos() + table()->offsetTop() + capHeight,
-                        width(), height());
-
-    list.append(clientRectToViewport(tableRowRect));
-
-    return list;
-}
-
 int RenderTableRow::offsetHeight() const
 {
     RenderObject *child = firstChild();
@@ -2582,24 +2565,6 @@ void RenderTableCell::repaintRectangle(int x, int y, int w, int h, Priority p, b
 int RenderTableCell::pageTopAfter(int y) const
 {
     return parent()->pageTopAfter(y+m_y + _topExtra) - (m_y  + _topExtra);
-}
-
-QList< QRectF > RenderTableCell::getClientRects()
-{
-    QList<QRectF> list;
-    RenderFlow* cap = table()->caption();
-    int capHeight;
-    if (cap)
-        capHeight = cap->height();
-    else
-        capHeight = 0;
-
-    QRectF tableCellRect(table()->offsetLeft() + xPos(),
-                         table()->offsetTop() + yPos() + capHeight,
-                         width(), height());
-
-    list.append(clientRectToViewport(tableCellRect));
-    return list;
 }
 
 short RenderTableCell::baselinePosition( bool ) const
