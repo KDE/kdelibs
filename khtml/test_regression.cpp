@@ -34,6 +34,7 @@
 
 #include <QApplication>
 #include <kacceleratormanager.h>
+#include <kconfiggroup.h>
 
 #include <QImage>
 #include <QtCore/QFile>
@@ -46,7 +47,7 @@
 #include "rendering/render_layer.h"
 #include "khtmldefaults.h"
 #include <QtCore/QProcess>
-#include <QWindowsStyle>
+#include <QCommonStyle>
 #include <QStyleOption>
 
 #include <dom/dom_node.h>
@@ -124,7 +125,7 @@ PalInfo disPalInfo[] =
 
 
 
-class TestStyle: public QWindowsStyle
+class TestStyle: public QCommonStyle // was QWindowsStyle in Qt4. TODO: Check if this draws everything we need in Qt5...
 {
 public:
     TestStyle()
@@ -162,13 +163,13 @@ public:
             break;
         }
 
-        QWindowsStyle::drawControl(element, option, painter, widget);
+        QCommonStyle::drawControl(element, option, painter, widget);
     }
 
     virtual QRect subControlRect(ComplexControl control, const QStyleOptionComplex* option,
                                  SubControl subControl, const QWidget* widget) const
     {
-        QRect rect = QWindowsStyle::subControlRect(control, option, subControl, widget);
+        QRect rect = QCommonStyle::subControlRect(control, option, subControl, widget);
 
         switch (control)
         {
@@ -184,7 +185,7 @@ public:
 
     virtual QSize sizeFromContents(ContentsType type, const QStyleOption* option, const QSize& contentsSize, const QWidget* widget) const
     {
-        QSize size = QWindowsStyle::sizeFromContents(type, option, contentsSize, widget);
+        QSize size = QCommonStyle::sizeFromContents(type, option, contentsSize, widget);
 
         switch (type)
         {
@@ -210,7 +211,7 @@ public:
     {
         if (metric == PM_ButtonMargin)
             return 7;
-        return QWindowsStyle::pixelMetric(metric, option, widget);
+        return QCommonStyle::pixelMetric(metric, option, widget);
     }
 
 };
@@ -219,7 +220,7 @@ const char* imageMissingIcon =
 "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAzrAAAM6wHl1kTSAAAB2ElEQVQ4jZWTMWsiQRTHfxlDCln2iFhIClksRUIQC6t8BkurzTewEBGx2GKrICmsUsg218rBWV2xdQqLRVJYhUQkBCKLeN6iixB5d0WyYOKGcP9mmHm83/u/NzMHvOobcMz/6Tfw5/Btc+z7/oWIoJRCKQWwt0ZSSqHr+vddACLyZck44GFc8OnpiX6/z3Q6RSmFYRhUq1UMw9gDqF2AUorRaES73WYymVAsFsnlcnieR6PRwPO8dy3uAcIwxHEcADRNo1qt0mq16PV6ZDIZut0uYRh+Dri7u2O1WlGr1QCwLIsgCMhkMlQqFebzOePx+P1cdgG+7wNQKpWwbRsRodlsslgsOD8/R0R4fHyMdwBwcnKCiHBzc0M6neby8hIRoV6vMxwOERGy2eznDvL5PJqmMRgMmM1mpFIprq6uEBFs20bXdc7OzkgkEvvXGA2uVqth2zamaVIul9E0jeVyiVKKdrtNMplkvV7HAwDK5TLX19c4jsN4PEZEKBQKmKbJdrvl/v4e13UfgAXAwVueEYbhRdwzTiQSvLy8cHt7y+npKZ1O59myrB8RQH10EKcgCDg6OoqSf/L6keJbiNNms8F13QfLsn69Jf+NYlELGpD+grMAgo+H/wARELhn1VB8lwAAAABJRU5ErkJggg==";
 //r 727816 of oxygen's image-missing, base64'd PNG
 
-#include <kcmdlineargs.h>
+
 #include <kio/job.h>
 #include <kmainwindow.h>
 #include <kconfig.h>
@@ -243,6 +244,8 @@ const char* imageMissingIcon =
 #include "khtmlpart_p.h"
 #include <kparts/browserextension.h>
 #include <qstandardpaths.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #include "khtmlview.h"
 #include "rendering/render_replaced.h"
@@ -608,45 +611,37 @@ int main(int argc, char *argv[])
     qputenv( "KDE_FORK_SLAVES", "true");
     signal( SIGALRM, signal_handler );
 
+    QApplication a(argc, argv);
     // workaround various Qt crashes by always enforcing a TrueColor visual
     QApplication::setColorSpec( QApplication::ManyColor );
 
-    KCmdLineOptions options;
-    options.add("b");
-    options.add("base <base_dir>", ki18n("Directory containing tests, basedir and output directories."));
-    options.add("d");
-    options.add("debug", ki18n("Do not suppress debug output"));
-    options.add("g");
-    options.add("genoutput", ki18n("Regenerate baseline (instead of checking)"));
-    options.add("s");
-    options.add("noshow", ki18n("Do not show the window while running tests"));
-    options.add("t");
-    options.add("test <filename>", ki18n("Only run a single test. Multiple options allowed."));
-    options.add("js", ki18n("Only run .js tests"));
-    options.add("html", ki18n("Only run .html tests"));
-    options.add("noxvfb", ki18n("Do not use Xvfb"));
-    options.add("o");
-    options.add("output <directory>", ki18n("Put output in &lt;directory&gt; instead of &lt;base_dir&gt;/output"));
-    options.add("r");
-    options.add("reference <directory>", ki18n("Use &lt;directory&gt; as reference instead of &lt;base_dir&gt;/baseline"));
-    options.add("+[base_dir]", ki18n("Directory containing tests, basedir and output directories. Only regarded if -b is not specified."));
-    options.add("+[testcases]", ki18n("Relative path to testcase, or directory of testcases to be run (equivalent to -t)."));
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addVersionOption("1.0");
+    parser->addHelpOption(QCoreApplication::translate("main", "Regression tester for khtml"));
+    parser->addOption(QCommandLineOption(QStringList() << "b" << "base", QCoreApplication::translate("main", "Directory containing tests, basedir and output directories."), "base_dir"));
+    parser->addOption(QCommandLineOption(QStringList() << "d" << "debug", QCoreApplication::translate("main", "Do not suppress debug output")));
+    parser->addOption(QCommandLineOption(QStringList() << "g" << "genoutput", QCoreApplication::translate("main", "Regenerate baseline (instead of checking)")));
+    parser->addOption(QCommandLineOption(QStringList() << "s" << "noshow", QCoreApplication::translate("main", "Do not show the window while running tests")));
+    parser->addOption(QCommandLineOption(QStringList() << "t" << "test", QCoreApplication::translate("main", "Only run a single test. Multiple options allowed."), "filename"));
+    parser->addOption(QCommandLineOption(QStringList() << "js", QCoreApplication::translate("main", "Only run .js tests")));
+    parser->addOption(QCommandLineOption(QStringList() << "html", QCoreApplication::translate("main", "Only run .html tests")));
+    parser->addOption(QCommandLineOption(QStringList() << "noxvfb", QCoreApplication::translate("main", "Do not use Xvfb")));
+    parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Put output in &lt;directory&gt; instead of &lt;base_dir&gt;/output"), "directory"));
+    parser->addOption(QCommandLineOption(QStringList() << "r" << "reference", QCoreApplication::translate("main", "Use &lt;directory&gt; as reference instead of &lt;base_dir&gt;/baseline"), "directory"));
+    parser->addOption(QCommandLineOption(QStringList() << "+[base_dir]", QCoreApplication::translate("main", "Directory containing tests, basedir and output directories. Only regarded if -b is not specified.")));
+    parser->addOption(QCommandLineOption(QStringList() << "+[testcases]", QCoreApplication::translate("main", "Relative path to testcase, or directory of testcases to be run (equivalent to -t).")));
 
-    KCmdLineArgs::init(argc, argv, "testregression", 0, ki18n("TestRegression"),
-                       "1.0", ki18n("Regression tester for khtml"));
-    KCmdLineArgs::addCmdLineOptions(options);
 
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
+    QString baseDir = parser->argument("base");
 
-    QString baseDir = args->getOption("base");
-
-    if ( args->count() < 1 && baseDir.isEmpty() ) {
-	KCmdLineArgs::usage();
-	::exit( 1 );
+    if ( parser->remainingArguments().count() < 1 && baseDir.isEmpty() ) {
+        parser->showHelp();
+        ::exit( 1 );
     }
 
     int testcase_index = 0;
-    if (baseDir.isEmpty()) baseDir = args->arg(testcase_index++);
+    if (baseDir.isEmpty())
+        baseDir = parser->remainingArguments().at(testcase_index++);
 
     QFileInfo bdInfo(baseDir);
     // font pathes passed to Xvfb must be absolute
@@ -662,7 +657,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (args->isSet("xvfb"))
+    if (parser->isSet("xvfb"))
     {
         QString xvfbPath = QStandardPaths::findExecutable("Xvfb");
         if ( xvfbPath.isEmpty() ) {
@@ -697,8 +692,6 @@ int main(int argc, char *argv[])
         qputenv( "DISPLAY", ":47");
     }
 
-    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-//    a.disableAutoDcopRegistration();
     a.setStyle( new TestStyle );
     KConfig sc1( "cryptodefaults", KConfig::SimpleConfig );
     KConfigGroup grp = sc1.group("Warnings");
@@ -738,7 +731,7 @@ int main(int argc, char *argv[])
 
     int rv = 1;
 
-    bool outputDebug = args->isSet( "debug" );
+    bool outputDebug = parser->isSet( "debug" );
 
     KConfig dc( "kdebugrc", KConfig::SimpleConfig );
     static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
@@ -773,10 +766,10 @@ int main(int argc, char *argv[])
     part->setJavaEnabled(false);
     part->setPluginsEnabled(false);
 
-    if (args->isSet("show"))
+    if (parser->isSet("show"))
 	visual = true;
 
-    a.setTopWidget(part->widget());
+    //a.setTopWidget(part->widget());
     if ( visual )
         toplevel->show();
 
@@ -794,21 +787,21 @@ int main(int argc, char *argv[])
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
                                                         baseDir,
-                                                        args->getOption("output"),
-                                                        args->getOption("reference"),
-                                                        args->isSet("genoutput"),
-                                                        !args->isSet( "html" ),
-                                                        !args->isSet( "js" ));
+                                                        parser->argument("output"),
+                                                        parser->argument("reference"),
+                                                        parser->isSet("genoutput"),
+                                                        !parser->isSet( "html" ),
+                                                        !parser->isSet( "js" ));
     QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
 		     regressionTest, SLOT(slotOpenURL(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget(int,int)),
 		     regressionTest, SLOT(resizeTopLevelWidget(int,int)));
 
     bool result = false;
-    QStringList tests = args->getOptionList("test");
+    QStringList tests = parser->arguments("test");
     // merge testcases specified on command line
-    for (; testcase_index < args->count(); testcase_index++)
-        tests << args->arg(testcase_index);
+    for (; testcase_index < parser->remainingArguments().count(); testcase_index++)
+        tests << parser->remainingArguments().at(testcase_index);
     if (tests.count() > 0)
         foreach (QString test, tests) {
 	    result = regressionTest->runTests(test,true);
@@ -818,7 +811,7 @@ int main(int argc, char *argv[])
 	result = regressionTest->runTests();
 
     if (result) {
-	if (args->isSet("genoutput")) {
+	if (parser->isSet("genoutput")) {
 	    printf("\nOutput generation completed.\n");
 	}
 	else {
@@ -1655,11 +1648,10 @@ void RegressionTest::testJSFile(const QString & filename )
     // NOTE: the basename is of little interest here, but the last basedir change
     // isn't taken in account
     QString basedir =  m_baseDir + "/tests/";
-    for ( QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it )
-    {
+    foreach(const QString &it, dirs) {
         if ( ! ::access( QFile::encodeName( basedir + "shell.js" ), R_OK ) )
             evalJS( interp, basedir + "shell.js", false );
-        basedir += *it + "/";	//krazy:exclude=duoblequote_chars DOM demands chars
+        basedir += it + "/";	//krazy:exclude=duoblequote_chars DOM demands chars
     }
     evalJS( interp, m_baseDir + "/tests/"+ filename, true );
 }
