@@ -1,13 +1,7 @@
-<para>Pour compiler et installer &kappname; sur votre système, saisissez les lignes
-suivantes dans le dossier de base de la distribution de &kappname;&nbsp;:</para>
+<para>Pour des informations détaillées sur comment compiler et installer les applications &kde;, consultez la page 
+<ulink url="http://techbase.kde.org/Getting_Started/fr#Construire_et_Lancer_KDE_.C3.A0_partir_des_sources">
+Construire et Lancer KDE à partir des sources</ulink></para>
 
-<screen><prompt>%</prompt> <userinput><command>./configure</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command></userinput>
-<prompt>%</prompt> <userinput><command>make</command> install</userinput>
-</screen>
-
-<para>Étant donné que &kappname; utilise <command>autoconf</command>
-et <command>automake</command>, vous ne devriez pas rencontrer
+<para>Étant donné que &kde; utilise <command>cmake</command>, vous ne devriez pas rencontrer
 de problèmes pour le compiler. Si c'est le cas, veuillez les signaler aux listes de
 discussions de &kde;.</para>
-
