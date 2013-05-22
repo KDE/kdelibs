@@ -23,6 +23,7 @@
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kstandardaction.h>
+#include <kiconloader.h>
 
 #include <QAction>
 #include <QEvent>
