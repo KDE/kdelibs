@@ -660,6 +660,9 @@ public:
      */
     int effectiveWidth() const { return hasOverflowClip() ? width() : overflowWidth() - overflowLeft(); }
 
+    QRectF clientRectToViewport(const QRectF& rect);
+    virtual QList< QRectF > getClientRects();
+
     // IE extensions, heavily used in ECMA
     virtual short offsetWidth() const { return width(); }
     virtual int offsetHeight() const { return height() + borderTopExtra() + borderBottomExtra(); }

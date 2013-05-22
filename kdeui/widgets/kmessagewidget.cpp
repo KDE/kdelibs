@@ -49,6 +49,7 @@ public:
     QLabel* textLabel;
     QToolButton* closeButton;
     QTimeLine* timeLine;
+    QIcon icon;
 
     KMessageWidget::MessageType messageType;
     bool wordWrap;
@@ -81,6 +82,7 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
 
     iconLabel = new QLabel(content);
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    iconLabel->hide();
 
     textLabel = new QLabel(content);
     textLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -249,26 +251,21 @@ static void getColorsFromColorScheme(KColorScheme::BackgroundRole bgRole, QColor
 void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
 {
     d->messageType = type;
-    QIcon icon;
     QColor bg0, bg1, bg2, border, fg;
     switch (type) {
     case Positive:
-        icon = QIcon::fromTheme("dialog-ok");
         getColorsFromColorScheme(KColorScheme::PositiveBackground, &bg1, &fg);
         break;
     case Information:
-        icon = QIcon::fromTheme("dialog-information");
         // There is no "information" background role in KColorScheme, use the
         // colors of highlighted items instead
         bg1 = palette().highlight().color();
         fg = palette().highlightedText().color();
         break;
     case Warning:
-        icon = QIcon::fromTheme("dialog-warning");
         getColorsFromColorScheme(KColorScheme::NeutralBackground, &bg1, &fg);
         break;
     case Error:
-        icon = QIcon::fromTheme("dialog-error");
         getColorsFromColorScheme(KColorScheme::NegativeBackground, &bg1, &fg);
         break;
     }
@@ -298,10 +295,6 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
         .arg(style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, this) -1)
         .arg(fg.name())
         );
-
-    // Icon
-    const int size = style()->pixelMetric(QStyle::PM_TabBarIconSize);
-    d->iconLabel->setPixmap(icon.pixmap(size));
 }
 
 QSize KMessageWidget::sizeHint() const
@@ -437,4 +430,22 @@ void KMessageWidget::animatedHide()
     }
 }
 
+QIcon KMessageWidget::icon() const
+{
+    return d->icon;
+}
+
+void KMessageWidget::setIcon(const QIcon& icon)
+{
+    d->icon = icon;
+    if (d->icon.isNull()) {
+        d->iconLabel->hide();
+    } else {
+        const int size = KIconLoader::global()->currentSize(KIconLoader::MainToolbar);
+        d->iconLabel->setPixmap(d->icon.pixmap(size));
+        d->iconLabel->show();
+    }
+}
+
 #include "moc_kmessagewidget.cpp"
+

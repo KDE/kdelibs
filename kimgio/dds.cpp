@@ -485,7 +485,8 @@ struct BlockDXTAlphaLinear {
 
     void GetBits( uchar bit_array[16] )
     {
-        uint b = (uint &) bits[0];
+        // Split 24 packed bits into 8 bytes, 3 bits at a time.
+        uint b = bits[0] | bits[1] << 8 | bits[2] << 16;
         bit_array[0] = uchar(b & 0x07); b >>= 3;
         bit_array[1] = uchar(b & 0x07); b >>= 3;
         bit_array[2] = uchar(b & 0x07); b >>= 3;
@@ -493,9 +494,9 @@ struct BlockDXTAlphaLinear {
         bit_array[4] = uchar(b & 0x07); b >>= 3;
         bit_array[5] = uchar(b & 0x07); b >>= 3;
         bit_array[6] = uchar(b & 0x07); b >>= 3;
-        bit_array[7] = uchar(b & 0x07); b >>= 3;
+        bit_array[7] = uchar(b & 0x07);
 
-        b = (uint &) bits[3];
+        b = bits[3] | bits[4] << 8 | bits[5] << 16;
         bit_array[8] = uchar(b & 0x07); b >>= 3;
         bit_array[9] = uchar(b & 0x07); b >>= 3;
         bit_array[10] = uchar(b & 0x07); b >>= 3;
@@ -503,7 +504,7 @@ struct BlockDXTAlphaLinear {
         bit_array[12] = uchar(b & 0x07); b >>= 3;
         bit_array[13] = uchar(b & 0x07); b >>= 3;
         bit_array[14] = uchar(b & 0x07); b >>= 3;
-        bit_array[15] = uchar(b & 0x07); b >>= 3;
+        bit_array[15] = uchar(b & 0x07);
     }
 };
 

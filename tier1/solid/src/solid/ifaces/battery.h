@@ -85,6 +85,13 @@ namespace Ifaces
         virtual bool isRechargeable() const = 0;
 
         /**
+         * Indicates if the battery is powering the machine.
+         *
+         * @return true if the battery is powersupply, false otherwise
+         */
+        virtual bool isPowerSupply() const = 0;
+
+        /**
          * Retrieves the current charge state of the battery. It can be in a stable
          * state (no charge), charging or discharging.
          *

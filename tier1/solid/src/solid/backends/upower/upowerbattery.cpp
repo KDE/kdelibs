@@ -88,6 +88,11 @@ bool Battery::isRechargeable() const
     return m_device.data()->prop("IsRechargeable").toBool();
 }
 
+bool Battery::isPowerSupply() const
+{
+    return m_device.data()->prop("PowerSupply").toBool();
+}
+
 Solid::Battery::ChargeState Battery::chargeState() const
 {
     Solid::Battery::ChargeState result = Solid::Battery::NoCharge;
@@ -160,6 +165,7 @@ void Battery::slotChanged()
         const Solid::Battery::ChargeState old_chargeState = m_chargeState;
         const double old_energy = m_energy;
         const double old_energyRate = m_energyRate;
+        const bool old_isPowerSupply = m_isPowerSupply;
         updateCache();
 
         if (old_chargePercent != m_chargePercent) {
@@ -181,6 +187,11 @@ void Battery::slotChanged()
         if (old_energyRate != m_energyRate) {
             Q_EMIT energyRateChanged(m_energyRate, m_device.data()->udi());
         }
+
+        if (old_isPowerSupply != m_isPowerSupply)
+        {
+            emit powerSupplyStateChanged(m_isPowerSupply, m_device.data()->udi());
+        }
     }
 }
 
@@ -191,4 +202,5 @@ void Battery::updateCache()
     m_chargeState = chargeState();
     m_energy = energy();
     m_energyRate = energyRate();
+    m_isPowerSupply = isPowerSupply();
 }

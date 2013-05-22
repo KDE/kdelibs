@@ -96,6 +96,11 @@ bool FakeBattery::isRechargeable() const
     return fakeDevice()->property("isRechargeable").toBool();
 }
 
+bool FakeBattery::isPowerSupply() const
+{
+    return fakeDevice()->property("isPowerSupply").toBool();
+}
+
 Solid::Battery::ChargeState FakeBattery::chargeState() const
 {
     QString state = fakeDevice()->property("chargeState").toString();

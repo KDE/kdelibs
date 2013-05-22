@@ -637,8 +637,7 @@ static pid_t startFromKdeinit(int argc, const char *argv[])
     return 0;
   }
   long pid;
-  read_socket(socket, buffer, header.arg_length);
-  pid = *((long *) buffer);
+  read_socket(socket, (char *) &pid, sizeof(pid));
   return static_cast<pid_t>(pid);
 }
 

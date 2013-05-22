@@ -94,6 +94,17 @@ bool Battery::isRechargeable() const
     return m_device->prop("battery.is_rechargeable").toBool();
 }
 
+bool Battery::isPowerSupply() const
+{
+    // NOTE Hal doesn't support the is power supply property, so we're assuming that primary
+    // and UPS batteries are power supply and all the others are not
+    if (type() == Solid::Battery::PrimaryBattery || type() == Solid::Battery::UpsBattery) {
+      return true;
+    }
+
+    return false;
+}
+
 Solid::Battery::ChargeState Battery::chargeState() const
 {
     bool charging = m_device->prop("battery.rechargeable.is_charging").toBool();

@@ -314,6 +314,34 @@ void RenderFlow::dirtyLinesFromChangedChild(RenderObject* child)
     }
 }
 
+QList< QRectF > RenderFlow::getClientRects()
+{
+    if (isRenderInline() && isInlineFlow()) {
+        QList<QRectF> list;
+        for (InlineFlowBox *child = firstLineBox(); child; child = child->nextFlowBox()) {
+            QRectF rect(parent()->offsetLeft() + child->xPos(),
+                        parent()->offsetTop() + child->yPos(),
+                        child->width(), child->height());
+
+            list.append(clientRectToViewport(rect));
+        }
+
+        // In case our flow is splitted by blocks
+        for (RenderObject *cont = continuation(); cont; cont = cont->continuation()) {
+            list.append(cont->getClientRects());
+        }
+
+        // Empty Flow, return the Flow itself
+        if (list.isEmpty()) {
+            return RenderObject::getClientRects();
+        }
+
+        return list;
+    } else {
+        return RenderObject::getClientRects();
+    }
+}
+
 void RenderFlow::detach()
 {
     if (continuation())

@@ -55,6 +55,12 @@ bool Solid::Battery::isPlugged() const
     return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), false, isPlugged());
 }
 
+bool Solid::Battery::isPowerSupply() const
+{
+    Q_D(const Battery);
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), true, isPowerSupply());
+}
+
 Solid::Battery::BatteryType Solid::Battery::type() const
 {
     Q_D(const Battery);
