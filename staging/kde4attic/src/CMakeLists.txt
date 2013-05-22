@@ -5,6 +5,7 @@ set(kde4attic_SRCS
   kdatecombobox.cpp
   kdatetimeedit.cpp
   kdatetimewidget.cpp
+  ktimezonewidget.cpp
 )
 
 set(kde4attic_UI
@@ -29,6 +30,7 @@ install(FILES
   kdatecombobox.h
   kdatetimeedit.h
   kdatetimewidget.h
+  ktimezonewidget.h
   ${CMAKE_CURRENT_BINARY_DIR}/kde4attic_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

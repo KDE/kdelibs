@@ -26,7 +26,6 @@ KDEUI_UNIT_TESTS(
   kcombobox_unittest
   kreplacetest
   kxmlgui_unittest
-  ktimezonewidget_unittest
   ktoolbar_unittest
   krichtextedittest
   klistwidgetsearchlinetest
