@@ -51,8 +51,8 @@ target_link_libraries(kservice
    ki18n
 )
 
-set_target_properties(kservice PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                          SOVERSION ${ECM_SOVERSION})
+set_target_properties(kservice PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
+                                        SOVERSION ${KSERVICE_SOVERSION})
 
 install(TARGETS kservice EXPORT kserviceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
