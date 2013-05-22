@@ -17,11 +17,13 @@
 
 #include <kxmlguifactory.h>
 #include <kxmlguiwindow.h>
-#include <kcmdlineargs.h>
+
 #include <ktoggleaction.h>
 #include <kcombobox.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #include "css/cssstyleselector.h"
 
@@ -234,32 +236,26 @@ void TestKHTML::toggleEditable(bool s)
     m_part->setEditable(s);
 }
 
+// a basic web browser using the KHTML library
 int main(int argc, char *argv[])
 {
-    KCmdLineArgs::init(argc, argv, "testkhtml", 0, ki18n("Testkhtml"), "1.0",
-            ki18n("a basic web browser using the KHTML library"));
+    QApplication app(argc, argv);
 
-    KCmdLineOptions options;
-    options.add("+file", ki18n("url to open"));
-    KCmdLineArgs::addCmdLineOptions(options);
-
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    if (args->count() == 0)
-    {
-        KCmdLineArgs::usage();
-        ::exit( 1 );
+    if (app.arguments().count() == 0) {
+        qWarning() << "Argument expected: url to open";
+        return 1;
     }
 
     TestKHTML *test = new TestKHTML;
-    if (args->url(0).toString().right(4).toLower() == ".xml")
+    QUrl url = QUrl::fromUserInput(app.arguments().at(0)); // TODO support for relative paths
+    if (url.path().right(4).toLower() == ".xml")
     {
         KParts::OpenUrlArguments args(test->doc()->arguments());
         args.setMimeType("text/xml");
         test->doc()->setArguments(args);
     }
 
-    test->openUrl(args->url(0));
+    test->openUrl(url);
     test->show();
 
     return app.exec();

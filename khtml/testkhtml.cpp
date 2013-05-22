@@ -26,7 +26,7 @@
 #include "rendering/render_style.h"
 #include "khtml_global.h"
 #include <kxmlguiwindow.h>
-#include <kcmdlineargs.h>
+
 #include <ktoggleaction.h>
 #include <kactioncollection.h>
 #include "kxmlguifactory.h"
@@ -36,18 +36,11 @@
 
 int main(int argc, char *argv[])
 {
-    KCmdLineOptions options;
-    options.add("+file", ki18n("URL to open"));
+    QApplication a(argc, argv);
 
-    KCmdLineArgs::init(argc, argv, "testkhtml", 0, ki18n("Testkhtml"),
-            "1.0", ki18n("a basic web browser using the KHTML library"));
-    KCmdLineArgs::addCmdLineOptions(options);
-
-    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs( );
-    if ( args->count() == 0 ) {
-	KCmdLineArgs::usage();
-	::exit( 1 );
+    if ( a.arguments().count() == 0 ) {
+        qWarning() << "Argument expected: url to open";
+        return 1;
     }
 
     new KHTMLGlobal;
@@ -61,13 +54,14 @@ int main(int argc, char *argv[])
 
     QObject::connect( doc, SIGNAL(completed()), dummy, SLOT(handleDone()) );
 
-    if (args->url(0).toString().right(4).toLower() == ".xml") {
+    QUrl url = QUrl::fromUserInput(a.arguments().at(0)); // TODO support for relative paths
+    if (url.path().right(4).toLower() == ".xml") {
         KParts::OpenUrlArguments args(doc->arguments());
         args.setMimeType("text/xml");
         doc->setArguments(args);
     }
 
-    doc->openUrl( args->url(0) );
+    doc->openUrl(url);
 
     toplevel->setCentralWidget( doc->widget() );
     toplevel->resize( 800, 600);
