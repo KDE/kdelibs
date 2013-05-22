@@ -28,10 +28,12 @@
 
 #include <kemailsettings.h>
 #include <klocalizedstring.h>
-#include <kcmdlineargs.h>
+
 #include <k4aboutdata.h>
 #include <kdebug.h>
 #include <kconfig.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #include "smtp.h"
 
@@ -70,22 +72,20 @@ void BugMailer::slotSend() {
 
 int main(int argc, char **argv) {
 
-    K4AboutData d("ksendbugmail", "kdelibs4", ki18n("KSendBugMail"), "1.0",
-                 ki18n("Sends a bug report by email"),
-                 K4AboutData::License_GPL, ki18n("(c) 2000 Stephan Kulow"));
-    d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
+    QCoreApplication a(argc, argv);
+    a.setApplicationName("ksendbugmail");
 
-    KCmdLineOptions options;
-    options.add("subject <argument>", ki18n("Subject line"));
-    options.add("recipient <argument>", ki18n("Recipient"), "submit@bugs.kde.org");
+    KLocalizedString::setApplicationCatalog("kdelibs4");
 
-    KCmdLineArgs::init(argc, argv, &d);
-    KCmdLineArgs::addCmdLineOptions(options);
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    //d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
 
-    QApplication a(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), false);
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addVersionOption("1.0");
+    parser->addHelpOption(QCoreApplication::translate("main", "Sends a bug report by email"));
+    parser->addOption(QCommandLineOption(QStringList() << "subject", QCoreApplication::translate("main", "Subject line"), "argument"));
+    parser->addOption(QCommandLineOption(QStringList() << "recipient", QCoreApplication::translate("main", "Recipient"), "argument", false, QStringList() << "submit@bugs.kde.org"));
 
-    QString recipient = args->getOption("recipient");
+    QString recipient = parser->argument("recipient");
     if (recipient.isEmpty())
         recipient = "submit@bugs.kde.org";
     else {
@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
     }
     kDebug() << "recp" << recipient;
 
-    QString subject = args->getOption("subject");
+    QString subject = parser->argument("subject");
     if (subject.isEmpty())
         subject = "(no subject)";
     else {
