@@ -42,7 +42,6 @@
 #cmakedefine01 HAVE_ALLOCA_H
 #cmakedefine01 HAVE_CRT_EXTERNS_H
 #cmakedefine01 HAVE_FSTAB_H
-#cmakedefine01 HAVE_LIMITS_H
 #cmakedefine01 HAVE_MNTENT_H
 #cmakedefine01 HAVE_PATHS_H
 #cmakedefine01 HAVE_UNISTD_H

@@ -76,7 +76,6 @@ KDEUI_EXECUTABLE_TESTS(
   kwindowtest
   kxmlguitest
   kxmlguiwindowtest
-  testqtargs
   kpixmapsequenceoverlaypaintertest
 )
 

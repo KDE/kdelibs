@@ -38,6 +38,7 @@ set(libkde4support_SRCS
     kdecore/qtest_kde.cpp
     kdecore/kstandarddirs.cpp
     kdecore/kglobal.cpp
+    kdecore/kcmdlineargs.cpp
 
     kdeui/k3icon.cpp
     kdeui/kaction.cpp
@@ -143,6 +144,7 @@ install(FILES
     kdecore/qtest_kde.h
     kdecore/kstandarddirs.h
     kdecore/kglobal.h
+    kdecore/kcmdlineargs.h
     kdecore/klockfile.h
 
     kdeui/kaccelgen.h

@@ -152,7 +152,6 @@ set(kdecore_LIB_SRCS
    io/kprocess.cpp
    io/kurl.cpp
 
-   kernel/kcmdlineargs.cpp
    kernel/k4aboutdata.cpp
    kernel/kcomponentdata.cpp
 
@@ -276,7 +275,6 @@ install( FILES
    io/kmountpoint.h
    io/kurl.h
 
-   kernel/kcmdlineargs.h
    kernel/k4aboutdata.h
    kernel/kcomponentdata.h
 

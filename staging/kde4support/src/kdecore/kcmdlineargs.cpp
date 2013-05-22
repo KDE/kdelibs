@@ -19,7 +19,7 @@
 #include "kcmdlineargs.h"
 
 #include <kdefakes.h>
-#include <config-kernel.h>
+#include <config-kde4support.h>
 
 #include <sys/param.h>
 

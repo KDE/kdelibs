@@ -42,7 +42,6 @@ check_include_files(crt_externs.h HAVE_CRT_EXTERNS_H)                  # kinit, 
 
 check_include_files(alloca.h      HAVE_ALLOCA_H)                       # kdecore, khtml
 check_include_files(fstab.h       HAVE_FSTAB_H)                        # kio, kdecore
-check_include_files(limits.h      HAVE_LIMITS_H)                       # various
 check_include_files(mntent.h      HAVE_MNTENT_H)                       # solid, kio, kdecore
 check_include_files(sysent.h      HAVE_SYSENT_H)                       # kdecore
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H)                     # various
