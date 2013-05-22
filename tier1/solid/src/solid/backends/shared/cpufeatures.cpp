@@ -1,5 +1,6 @@
 /*
     Copyright 2010 Kevin Ottens <ervin@kde.org>
+    Copyright 2013 Patrick Spendrin <ps_ml@gmx.de>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -20,9 +21,13 @@
 
 #include "cpufeatures.h"
 
+#ifndef _MSC_VER
 //for cpuFeatures
 #include <csignal>
 #include <csetjmp>
+#else
+#include <intrin.h>
+#endif
 #include <config-processor.h>
 
 #if defined(__GNUC__) || defined(__INTEL_COMPILER)
@@ -36,6 +41,7 @@ namespace Backends
 namespace Shared
 {
 
+#ifndef _MSC_VER
 typedef void (*kde_sighandler_t) (int);
 
 #if defined( __i386__ ) || defined( __x86_64__ )
@@ -68,6 +74,7 @@ static void sighandler( int )
   #define ASM_CMP_REG(reg1, reg2)   "cmpq   %%r" reg1 ", %%r" reg2 " \n\t"
   #define ASM_MOV_REG(reg1, reg2)   "movq   %%r" reg1 ", %%r" reg2 " \n\t"
   #define ASM_MOV_VAR(var, reg)     "movq   " var ",     %%r" reg "  \n\t"
+#endif
 #endif
 
 #ifdef __PPC__
@@ -124,8 +131,8 @@ Solid::Processor::InstructionSets cpuFeatures()
             ASM_POP("bx")                       // Restore EBX
             : "=d"(result), "=c"(result2) : : ASM_REG("ax") );
 
-        features = result & 0x06800000; //copy the mmx and sse bits to features
-        features |= result2 & 0x00080001; //copy the sse3 and sse4 bits to features
+        features = result & 0x06800000; //copy the mmx and sse & sse2 bits to features
+        features |= result2 & 0x00180101; //copy the ssse3, sse3 and sse4.1, sse4.2 bits to features
 
         __asm__ __volatile__ (
              ASM_PUSH("bx")
@@ -180,6 +187,15 @@ Solid::Processor::InstructionSets cpuFeatures()
         features = 0x2;
     }
 #endif // __i386__ || __x86_64__
+#elif defined(_MSC_VER)
+    int array[4], ft = 1;
+    __cpuid(array, ft);
+
+    features = array[3] & 0x06800000; //copy the mmx and sse & sse2 bits to features
+    features |= array[2] & 0x00180101; //copy the ssse3, sse3 and sse4.1, sse4.2 bits to features
+
+    if (array[3] & 0x80000000)
+        features |= 0x80000000;
 #endif //HAVE_GNU_INLINE_ASM
     Solid::Processor::InstructionSets featureflags;
 
@@ -191,10 +207,14 @@ Solid::Processor::InstructionSets cpuFeatures()
         featureflags |= Solid::Processor::IntelSse;
     if (features & 0x04000000)
         featureflags |= Solid::Processor::IntelSse2;
-    if (features & 0x00000001) // FIXME: Only SSE3. There is no flag for SSSE3.
+    if (features & 0x00000001)
         featureflags |= Solid::Processor::IntelSse3;
-    if (features & 0x00080000) // FIXME: Only SSE4.1. There is no flag for SSE4.2.
-        featureflags |= Solid::Processor::IntelSse4;
+    if (features & 0x00000100)
+        featureflags |= Solid::Processor::IntelSsse3;
+    if (features & 0x00080000)
+        featureflags |= Solid::Processor::IntelSse41;
+    if (features & 0x00100000)
+        featureflags |= Solid::Processor::IntelSse42;
 
     if (features & 0x2)
         featureflags |= Solid::Processor::AltiVec;
