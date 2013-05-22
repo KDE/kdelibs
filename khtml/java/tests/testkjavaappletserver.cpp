@@ -1,11 +1,8 @@
 #include <QtCore/QDebug>
 #include <QApplication>
 #include <klocalizedstring.h>
-#include <kcmdlineargs.h>
-#include <kdebug.h>
+
 #include <QtCore/QString>
-#include <stdio.h>
-#include <unistd.h>
 
 #include "java/kjavaappletserver.h"
 #include "java/kjavaapplet.h"
@@ -14,32 +11,13 @@
 
 int main(int argc, char **argv)
 {
-    KCmdLineArgs::init( argc, argv, "testKJASSever", 0, ki18n("testKJASServer"), "0.0", ki18n("test program"));
+    QApplication app(argc, argv);
 
-    KCmdLineOptions options;
-    options.add("+kdelibspath", ki18n("path to kdelibs directory"));
-
-    KCmdLineArgs::addCmdLineOptions( options );
-    //KCmdLineArgs::addStdCmdLineOptions();
-
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
-    QByteArray path;
-#if 0
-    path = args->getOption("kdelibspath");
-    if (path.isEmpty())
-    {
-      kWarning() << "you need to specify a path to your kdelibs source dir, see \"--help\"";
+    if (app.arguments().isEmpty()) {
+      qWarning() << "you need to specify a path to your kdelibs source dir, see \"--help\"";
       return -1;
     }
-#else
-    #ifdef __GNUC__
-    #warning better adjust this :)
-    #endif
-    path = "/home/danimo/src/kde/trunk/KDE/kdelibs/";
-#endif
-    QString testpath("file://" + path + "/kdelibs/khtml/test/");
+    const QString path = app.arguments().first();
 
     KJavaAppletContext *context = new KJavaAppletContext;
     KJavaAppletWidget *a = new KJavaAppletWidget;
@@ -49,7 +27,7 @@ int main(int argc, char **argv)
 
 //    c->registerApplet(a->applet());
 
-    a->applet()->setBaseURL( testpath );
+    a->applet()->setBaseURL(QUrl::fromLocalFile(path).toString());
     a->applet()->setAppletName( "Lake" );
     a->applet()->setAppletClass( "lake.class" );
     a->applet()->setParameter( "image", "konqi.gif" );
