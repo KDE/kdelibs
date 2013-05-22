@@ -46,7 +46,6 @@ KDEUI_EXECUTABLE_TESTS(
   kcomboboxtest
   kdatepicktest
   kdatetabletest
-  kdatetimewidgettest
   kdatewidgettest
   kdebugtest_gui
   keditlistwidgettest

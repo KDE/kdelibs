@@ -19,11 +19,10 @@
 #ifndef KDATETIMEWIDGET
 #define KDATETIMEWIDGET
 
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 
 #include <QWidget>
-
-class QDateTime;
+#include <QDateTime>
 
 /**
  * @short A combination of a date and a time selection widget.
@@ -36,7 +35,7 @@ class QDateTime;
  *
  * @author Hans Petter Bieker <bieker@kde.org>
  */
-class KDEUI_EXPORT KDateTimeWidget : public QWidget
+class KDE4ATTIC_EXPORT KDateTimeWidget : public QWidget
 {
   Q_OBJECT
   Q_PROPERTY( QDateTime dateTime READ dateTime WRITE setDateTime NOTIFY valueChanged USER true )
