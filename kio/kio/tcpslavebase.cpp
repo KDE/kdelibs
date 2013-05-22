@@ -352,12 +352,9 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
     /*
       By default the SSL handshake attempt uses these settings in the order shown:
 
-      1.) Protocol: KTcpSocket::SecureProtocols   SSL compression: ON  (DEFAULT)
-      2.) Protocol: KTcpSocket::SecureProtocols   SSL compression: OFF
-      3.) Protocol: KTcpSocket::TlsV1             SSL compression: ON
-      4.) Protocol: KTcpSocket::TlsV1             SSL compression: OFF
-      5.) Protocol: KTcpSocket::SslV3             SSL compression: ON
-      6.) Protocol: KTcpSocket::SslV3             SSL compression: OFF
+      1.) Protocol: KTcpSocket::SecureProtocols   SSL compression: OFF (DEFAULT)
+      2.) Protocol: KTcpSocket::TlsV1             SSL compression: OFF
+      3.) Protocol: KTcpSocket::SslV3             SSL compression: OFF
 
       If any combination other than the one marked DEFAULT is used to complete
       the SSL handshake, then that combination will be cached using KIO's internal
@@ -365,17 +362,17 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
     */
 
     QSslConfiguration sslConfig = d->socket.sslConfiguration();
+
 #if QT_VERSION >= 0x040800
-    const bool isSslCompressionDisabled = sslConfig.testSslOption(QSsl::SslOptionDisableCompression);
-    const bool shouldSslCompressBeDisabled = config()->readEntry("LastUsedSslDisableCompressionFlag", isSslCompressionDisabled);
-    sslConfig.setSslOption(QSsl::SslOptionDisableCompression, shouldSslCompressBeDisabled);
+    // NOTE: Due to 'CRIME' SSL attacks, compression is always disabled.
+    sslConfig.setSslOption(QSsl::SslOptionDisableCompression, true);
 #endif
     
     const int lastSslVerson = config()->readEntry("LastUsedSslVersion", static_cast<int>(KTcpSocket::SecureProtocols));
     KTcpSocket::SslVersion trySslVersion = static_cast<KTcpSocket::SslVersion>(lastSslVerson);
     KTcpSocket::SslVersions alreadyTriedSslVersions = trySslVersion;
 
-    const int timeout = (connectTimeout() * 1000);
+    const int timeout = (connectTimeout() * 1000); // 20 sec timeout value
     while (true) {
         disconnectFromHost();  //Reset some state, even if we are already disconnected
         d->host = host;
@@ -410,39 +407,23 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
         d->port = d->socket.peerPort();
 
         if (d->autoSSL) {
-            SslResult res = d->startTLSInternal(trySslVersion, sslConfig, 30000 /*30 secs timeout*/);
+            SslResult res = d->startTLSInternal(trySslVersion, sslConfig, timeout);
             if ((res & ResultFailed) && (res & ResultFailedEarly)) {
-#if QT_VERSION >= 0x040800
-                if (!sslConfig.testSslOption(QSsl::SslOptionDisableCompression)) {
-                    sslConfig.setSslOption(QSsl::SslOptionDisableCompression, true);
-                    continue;
-                }
-#endif
-
                 if (!(alreadyTriedSslVersions & KTcpSocket::SecureProtocols)) {
                     trySslVersion = KTcpSocket::SecureProtocols;
                     alreadyTriedSslVersions |= trySslVersion;
-#if QT_VERSION >= 0x040800
-                    sslConfig.setSslOption(QSsl::SslOptionDisableCompression, false);
-#endif
                     continue;
                 }
 
                 if (!(alreadyTriedSslVersions & KTcpSocket::TlsV1)) {
                     trySslVersion = KTcpSocket::TlsV1;
                     alreadyTriedSslVersions |= trySslVersion;
-#if QT_VERSION >= 0x040800
-                    sslConfig.setSslOption(QSsl::SslOptionDisableCompression, false);
-#endif
                     continue;
                 }
 
                 if (!(alreadyTriedSslVersions & KTcpSocket::SslV3)) {
                     trySslVersion = KTcpSocket::SslV3;
                     alreadyTriedSslVersions |= trySslVersion;
-#if QT_VERSION >= 0x040800
-                    sslConfig.setSslOption(QSsl::SslOptionDisableCompression, false);
-#endif
                     continue;
                 }
             }
@@ -460,12 +441,6 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
             setMetaData(QLatin1String("{internal~currenthost}LastUsedSslVersion"),
                         QString::number(trySslVersion));
         }
-#if QT_VERSION >= 0x040800
-        if (sslConfig.testSslOption(QSsl::SslOptionDisableCompression) && !shouldSslCompressBeDisabled) {
-            setMetaData(QLatin1String("{internal~currenthost}LastUsedSslDisableCompressionFlag"),
-                        QString::number(true));
-        }
-#endif
         return 0;
     }
     Q_ASSERT(false);
@@ -527,50 +502,6 @@ bool TCPSlaveBase::startSsl()
     return d->startTLSInternal(KTcpSocket::TlsV1) & ResultOk;
 }
 
-// Find out if a hostname matches an SSL certificate's Common Name (including wildcards)
-static bool isMatchingHostname(const QString &cnIn, const QString &hostnameIn)
-{
-    const QString cn = cnIn.toLower();
-    const QString hostname = hostnameIn.toLower();
-
-    const int wildcard = cn.indexOf(QLatin1Char('*'));
-
-    // Check this is a wildcard cert, if not then just compare the strings
-    if (wildcard < 0)
-        return cn == hostname;
-
-    const int firstCnDot = cn.indexOf(QLatin1Char('.'));
-    const int secondCnDot = cn.indexOf(QLatin1Char('.'), firstCnDot+1);
-
-    // Check at least 3 components
-    if ((-1 == secondCnDot) || (secondCnDot+1 >= cn.length()))
-        return false;
-
-    // Check * is last character of 1st component (ie. there's a following .)
-    if (wildcard+1 != firstCnDot)
-        return false;
-
-    // Check only one star
-    if (cn.lastIndexOf(QLatin1Char('*')) != wildcard)
-        return false;
-
-    // Check characters preceding * (if any) match
-    if (wildcard && (hostname.leftRef(wildcard) != cn.leftRef(wildcard)))
-        return false;
-
-    // Check characters following first . match
-    if (hostname.midRef(hostname.indexOf(QLatin1Char('.'))) != cn.midRef(firstCnDot))
-        return false;
-
-    // Check if the hostname is an IP address, if so then wildcards are not allowed
-    QHostAddress addr(hostname);
-    if (!addr.isNull())
-        return false;
-
-    // Ok, I guess this was a wildcard CN and the hostname matches.
-    return true;
-}
-
 TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTcpSocket::SslVersion version,
                                                                              const QSslConfiguration& sslConfig,
                                                                              int waitForEncryptedTimeout)
@@ -629,39 +560,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
                  << " supportedBits:" << cipher.supportedBits()
                  << " usedBits:" << cipher.usedBits();
 
-    // Since we connect by IP (cf. KIO::HostInfo) the SSL code will not recognize
-    // that the site certificate belongs to the domain. We therefore do the
-    // domain<->certificate matching here.
     sslErrors = socket.sslErrors();
-    QSslCertificate peerCert = socket.peerCertificateChain().first();
-    QMutableListIterator<KSslError> it(sslErrors);
-    while (it.hasNext()) {
-        // As of 4.4.0 Qt does not assign a certificate to the QSslError it emits
-        // *in the case of HostNameMismatch*. A HostNameMismatch, however, will always
-        // be an error of the peer certificate so we just don't check the error's
-        // certificate().
-
-        // Remove all HostNameMismatch, we have to redo name checking later.
-        if (it.next().error() == KSslError::HostNameMismatch) {
-            it.remove();
-        }
-    }
-    // Redo name checking here and (re-)insert HostNameMismatch to sslErrors if
-    // host name does not match any of the names in server certificate.
-    // QSslSocket may not report HostNameMismatch error, when server
-    // certificate was issued for the IP we are connecting to.
-    QStringList domainPatterns(peerCert.subjectInfo(QSslCertificate::CommonName));
-    domainPatterns += peerCert.alternateSubjectNames().values(QSsl::DnsEntry);
-    bool names_match = false;
-    foreach (const QString &dp, domainPatterns) {
-        if (isMatchingHostname(dp, host)) {
-            names_match = true;
-            break;
-        }
-    }
-    if (!names_match) {
-        sslErrors.insert(0, KSslError(KSslError::HostNameMismatch, peerCert));
-    }
 
     // TODO: review / rewrite / remove the comment
     // The app side needs the metadata now for the SSL error dialog (if any) but

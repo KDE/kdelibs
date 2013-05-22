@@ -215,7 +215,7 @@ QString KConfigPrivate::expandString(const QString& value)
                 else
 #endif
                 {
-                    QByteArray pEnv = qgetenv( aVarName.toAscii() );
+                    QByteArray pEnv = qgetenv( aVarName.toLatin1() );
                     if( !pEnv.isEmpty() )
                     // !!! Sergey A. Sukiyazov <corwin@micom.don.ru> !!!
                     // An environment variable may contain values in 8bit
@@ -455,6 +455,7 @@ void KConfig::sync()
             KSharedPtr<KConfigBackend> tmp = KConfigBackend::create(componentData(), d->sGlobalFileName);
             if (d->configState == ReadWrite && !tmp->lock(componentData())) {
                 qWarning() << "couldn't lock global file";
+                d->bDirty = true;
                 return;
             }
             if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal, d->componentData)) {

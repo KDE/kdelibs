@@ -57,7 +57,7 @@ KDEsuClient::KDEsuClient()
     :d(new KDEsuClientPrivate)
 {
 #ifdef Q_WS_X11
-    QString display = QString::fromAscii(qgetenv("DISPLAY"));
+    QString display = QString::fromLatin1(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {
         kWarning(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set.";

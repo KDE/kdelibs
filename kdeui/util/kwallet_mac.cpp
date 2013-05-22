@@ -86,6 +86,25 @@ static QString appid()
     return qApp->applicationName();
 }
 
+static OSStatus removeEntryImplementation(const QString& walletName, const QString& key) {
+    const QByteArray serviceName( walletName.toUtf8() );
+    const QByteArray accountName( key.toUtf8() );
+    SecKeychainItemRef itemRef;
+    QString errMsg;
+    OSStatus result = SecKeychainFindGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), NULL, NULL, &itemRef );
+    if ( isError( result, &errMsg ) ) {
+        qWarning() << "Could not retrieve password:"  << qPrintable(errMsg);
+        return result;
+    }
+    const CFReleaser<SecKeychainItemRef> itemReleaser( itemRef );
+    result = SecKeychainItemDelete( itemRef );
+    if ( isError( result, &errMsg ) ) {
+        qWarning() << "Could not delete password:"  << qPrintable(errMsg);
+        return result;
+    }
+    return result;
+}
+
 
 const QString Wallet::LocalWallet() {
     KConfigGroup cfg(KSharedConfig::openConfig("kwalletrc")->group("Wallet"));
@@ -529,28 +548,35 @@ int Wallet::readPasswordList(const QString& key, QMap<QString, QString>& value) 
     return -1;
 }
 
-
-int Wallet::writeEntry(const QString& key, const QByteArray& password, EntryType entryType) {
-    const QByteArray serviceName( walletName().toUtf8() );
+static OSStatus writeEntryImplementation( const QString& walletName, const QString& key, const QByteArray& value ) {
+    const QByteArray serviceName( walletName.toUtf8() );
     const QByteArray accountName( key.toUtf8() );
     QString errMsg;
-    if ( isError( SecKeychainAddGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), password.size(), password.constData(), NULL ), &errMsg ) ) {
-        kWarning() << "Could not store password in keychain: " << qPrintable(errMsg);
-        return -1;
+    OSStatus err = SecKeychainAddGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), value.size(), value.constData(), NULL );
+    if (err == errSecDuplicateItem) {
+        err = removeEntryImplementation( walletName, key );
+        if ( isError( err, &errMsg ) ) {
+            kWarning() << "Could not delete old key in keychain for replacing: " << qPrintable(errMsg);
+            return err;
+        }
     }
-    return 0;
+    if ( isError( err, &errMsg ) ) {
+        kWarning() << "Could not store password in keychain: " << qPrintable(errMsg);
+        return err;
+    }
+    kDebug() << "Succesfully written out key:" << key;
+    return err;
+
+}
+
+int Wallet::writeEntry(const QString& key, const QByteArray& password, EntryType entryType) {
+    Q_UNUSED( entryType )
+    return writeEntryImplementation( walletName(), key, password );
 }
 
 
 int Wallet::writeEntry(const QString& key, const QByteArray& value) {
-    const QByteArray serviceName( walletName().toUtf8() );
-    const QByteArray accountName( key.toUtf8() );
-    QString errMsg;
-    if ( isError( SecKeychainAddGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), value.size(), value.constData(), NULL ), &errMsg ) ) {
-        kWarning() << "Could not store password in keychain: " << qPrintable(errMsg);
-        return -1;
-    }
-    return 0;
+    return writeEntryImplementation( walletName(), key, value );
 }
 
 
@@ -573,22 +599,8 @@ bool Wallet::hasEntry(const QString& key) {
     return !isError( SecKeychainFindGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), NULL, NULL, NULL ), 0 );
 }
 
-
 int Wallet::removeEntry(const QString& key) {
-    const QByteArray serviceName( walletName().toUtf8() );
-    const QByteArray accountName( key.toUtf8() );
-    SecKeychainItemRef itemRef;
-    QString errMsg;
-    if ( isError( SecKeychainFindGenericPassword( NULL, serviceName.size(), serviceName.constData(), accountName.size(), accountName.constData(), NULL, NULL, &itemRef ), &errMsg ) ) {
-        qWarning() << "Could not retrieve password:"  << qPrintable(errMsg);
-        return -1;
-    }
-    const CFReleaser<SecKeychainItemRef> itemReleaser( itemRef );
-    if ( isError( SecKeychainItemDelete( itemRef ), &errMsg ) ) {
-        qWarning() << "Could not delete password:"  << qPrintable(errMsg);
-        return -1;
-    }
-    return 0;
+    return removeEntryImplementation( walletName(), key );
 }
 
 

@@ -190,9 +190,9 @@ namespace KParts {
          * additional "open with" buttons. In your code, you should write:
          * @code
             if (selectedService) {
-                KRun::setPreferredService(selectedService->desktopEntryName());
-                // and let this code path fall back to KRun::foundMimeType(mimeType);
-            } else {
+                KRun::setPreferredService(selectedService->desktopEntryName()); // not necessary since 4.9.3
+                KRun::foundMimeType(mimeType);
+            } else { // the user requested an open-with dialog
                 KRun::displayOpenWithDialog(url(), m_window, false, suggestedFileName());
                 setFinished(true);
             }

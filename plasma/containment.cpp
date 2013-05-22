@@ -118,7 +118,6 @@ Containment::Containment(QGraphicsItem *parent,
     setPos(0, 0);
     setBackgroundHints(NoBackground);
     setContainmentType(CustomContainment);
-    setHasConfigurationInterface(false);
 }
 
 Containment::Containment(QObject *parent, const QVariantList &args)
@@ -129,7 +128,6 @@ Containment::Containment(QObject *parent, const QVariantList &args)
     //          that requires a scene, which is not available at this point
     setPos(0, 0);
     setBackgroundHints(NoBackground);
-    setHasConfigurationInterface(false);
 }
 
 Containment::Containment(const QString &packagePath, uint appletId, const QVariantList &args)
@@ -140,15 +138,14 @@ Containment::Containment(const QString &packagePath, uint appletId, const QVaria
     //          that requires a scene, which is not available at this point
     setPos(0, 0);
     setBackgroundHints(NoBackground);
-    setHasConfigurationInterface(false);
 }
 
 Containment::~Containment()
 {
-    delete d;
     // Applet touches our dptr if we are a containment and is the superclass (think of dtors)
     // so we reset this as we exit the building
     Applet::d->isContainment = false;
+    delete d;
 }
 
 void Containment::init()
@@ -2065,6 +2062,7 @@ void Containment::showConfigurationInterface()
 
 void Containment::configChanged()
 {
+    Applet::configChanged();
 }
 
 void ContainmentPrivate::configChanged()

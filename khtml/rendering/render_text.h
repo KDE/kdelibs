@@ -244,6 +244,8 @@ public:
     InlineTextBox* firstTextBox() const { return m_firstTextBox; }
     InlineTextBox* lastTextBox() const { return m_lastTextBox; }
 
+    virtual QList< QRectF > getClientRects();
+
     bool hasBreakableChar() const { return m_hasBreakableChar; }
     bool isSimpleText() const { return m_isSimpleText; }
     const QFontMetrics &metrics(bool firstLine) const;

@@ -22,7 +22,7 @@
 
 #include "lookup.h"
 
-#include <config.h>
+#include <config-kjs.h>
 #include <stdio.h>
 #include <string.h>
 

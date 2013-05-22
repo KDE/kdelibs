@@ -139,7 +139,7 @@ bool KSSL::initialize() {
 	QString clist = m_cfg->getCipherList();
 	kDebug(7029) << "Cipher list: " << clist;
 	if (!clist.isEmpty())
-		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.toAscii().constData()));
+		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.toLatin1().constData()));
 
 	m_bInit = true;
 return true;

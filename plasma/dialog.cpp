@@ -51,6 +51,7 @@
 #include "plasma/corona.h"
 #include "plasma/extenders/extender.h"
 #include "plasma/private/extender_p.h"
+#include "plasma/private/dialogshadows_p.h"
 #include "plasma/framesvg.h"
 #include "plasma/theme.h"
 #include "plasma/widgets/scrollwidget.h"
@@ -99,6 +100,7 @@ void DialogPrivate::themeChanged()
     // WA_NoSystemBackground is going to fail combined with sliding popups, but is needed
     // when we aren't compositing
     q->setAttribute(Qt::WA_NoSystemBackground, !translucency);
+    WindowEffects::overrideShadow(q->winId(), !DialogShadows::self()->enabled());
     updateMask();
     q->update();
 }
@@ -139,7 +141,7 @@ void DialogPrivate::checkBorders(bool updateMaskIfNeeded)
     Plasma::Applet *applet = appletPtr.data();
 
     //used to remove borders at the edge of the desktop
-    QRect avail;
+    QRegion avail;
     QRect screenGeom;
     QDesktopWidget *desktop = QApplication::desktop();
     Plasma::Corona *c = 0;
@@ -149,17 +151,10 @@ void DialogPrivate::checkBorders(bool updateMaskIfNeeded)
         c = qobject_cast<Plasma::Corona *>(graphicsWidget->scene());
     }
     if (c) {
-        QRegion r = c->availableScreenRegion(desktop->screenNumber(q));
-        QRect maxRect;
-        foreach (QRect rect, r.rects()) {
-            if (rect.width() > maxRect.width() && rect.height() > maxRect.height()) {
-                maxRect = rect;
-            }
-        }
-        avail = maxRect;
+        avail = c->availableScreenRegion(desktop->screenNumber(q));
         screenGeom = c->screenGeometry(desktop->screenNumber(q));
     } else {
-        avail = desktop->availableGeometry(desktop->screenNumber(q));
+        avail = QRegion(desktop->availableGeometry(desktop->screenNumber(q)));
         screenGeom = desktop->screenGeometry(desktop->screenNumber(q));
     }
 
@@ -225,22 +220,23 @@ void DialogPrivate::checkBorders(bool updateMaskIfNeeded)
 
     //decide if to disable the other borders
     if (q->isVisible() && !q->testAttribute(Qt::WA_X11NetWmWindowTypeToolTip)) {
-        if (dialogGeom.left() <= avail.left()) {
+        if (!avail.contains(QPoint(dialogGeom.left()-1, dialogGeom.center().y()))) {
             borders &= ~FrameSvg::LeftBorder;
         }
-        if (dialogGeom.top() <= avail.top()) {
+        if (!avail.contains(QPoint(dialogGeom.center().x(), dialogGeom.top()-1))) {
             borders &= ~FrameSvg::TopBorder;
         }
         //FIXME: that 2 pixels offset has probably something to do with kwin
-        if (dialogGeom.right() + 2 > avail.right()) {
+        if (!avail.contains(QPoint(dialogGeom.right()+1, dialogGeom.center().y()))) {
             borders &= ~FrameSvg::RightBorder;
         }
-        if (dialogGeom.bottom() + 2 > avail.bottom()) {
+        if (!avail.contains(QPoint(dialogGeom.center().x(), dialogGeom.bottom()+1))) {
             borders &= ~FrameSvg::BottomBorder;
         }
     }
 
     background->setEnabledBorders(borders);
+    DialogShadows::self()->addWindow(q, borders);
 
     if (extender)  {
         FrameSvg::EnabledBorders disabledBorders = FrameSvg::NoBorder;
@@ -305,8 +301,6 @@ void Dialog::syncToGraphicsWidget()
 
         QDesktopWidget *desktop = QApplication::desktop();
         QSize maxSize = desktop->availableGeometry(desktop->screenNumber(this)).size();
-
-        graphicsWidget->setMaximumSize(maxSize - QSize(left + right, top + bottom).boundedTo(graphicsWidget->effectiveSizeHint(Qt::MaximumSize).toSize()));
 
         setMinimumSize(0, 0);
         setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
@@ -399,7 +393,7 @@ Dialog::Dialog(QWidget *parent, Qt::WindowFlags f)
     QPalette pal = palette();
     pal.setColor(backgroundRole(), Qt::transparent);
     setPalette(pal);
-    WindowEffects::overrideShadow(winId(), true);
+    WindowEffects::overrideShadow(winId(), !DialogShadows::self()->enabled());
 
     d->adjustViewTimer = new QTimer(this);
     d->adjustViewTimer->setSingleShot(true);
@@ -414,6 +408,7 @@ Dialog::Dialog(QWidget *parent, Qt::WindowFlags f)
 
 Dialog::~Dialog()
 {
+    DialogShadows::self()->removeWindow(this);
     delete d;
 }
 
@@ -728,7 +723,8 @@ void Dialog::showEvent(QShowEvent * event)
     }
 
     emit dialogVisible(true);
-    WindowEffects::overrideShadow(winId(), true);
+    WindowEffects::overrideShadow(winId(), !DialogShadows::self()->enabled());
+    DialogShadows::self()->addWindow(this, d->background->enabledBorders());
 }
 
 void Dialog::focusInEvent(QFocusEvent *event)

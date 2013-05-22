@@ -115,7 +115,7 @@ public:
      * @param f Window control flags
      **/
     explicit K3PanelApplet(const QString& configFile, Type t = Normal,
-                          int actions = 0, QWidget *parent = 0, Qt::WFlags f = 0);
+                          int actions = 0, QWidget *parent = 0, Qt::WindowFlags f = 0);
 
     /**
      * Destructor.

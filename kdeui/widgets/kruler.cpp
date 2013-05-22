@@ -123,7 +123,7 @@ KRuler::KRuler(QWidget *parent)
 
 
 KRuler::KRuler(Qt::Orientation orient,
-               QWidget *parent, Qt::WFlags f)
+               QWidget *parent, Qt::WindowFlags f)
   : QAbstractSlider(parent)
   , d( new KRulerPrivate )
 {
@@ -140,7 +140,7 @@ KRuler::KRuler(Qt::Orientation orient,
 
 
 KRuler::KRuler(Qt::Orientation orient, int widgetWidth,
-               QWidget *parent, Qt::WFlags f)
+               QWidget *parent, Qt::WindowFlags f)
   : QAbstractSlider(parent)
   , d( new KRulerPrivate )
 {

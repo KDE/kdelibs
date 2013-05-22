@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
         
         if( dlg.exec() )
         {
-            std::cout << "Entered password: " << (const char*)dlg.password().toAscii() << std::endl;
+            std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << std::endl;
         }
         else
         {
@@ -58,7 +58,7 @@ int main( int argc, char *argv[] )
         
         if( dlg.exec() )
         {
-            std::cout << "Entered password: " << (const char*)dlg.password().toAscii() << std::endl;
+            std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << std::endl;
         }
         else
         {
@@ -81,7 +81,7 @@ int main( int argc, char *argv[] )
 
         if( dlg.exec() )
         {
-            std::cout << "Entered password: " << (const char*)dlg.password().toAscii() << " for username " <<  (const  char*)dlg.username().toAscii() <<std::endl;
+            std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << " for username " <<  (const  char*)dlg.username().toAscii() <<std::endl;
         }
         else
         {

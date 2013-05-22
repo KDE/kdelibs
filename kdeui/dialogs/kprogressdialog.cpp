@@ -60,7 +60,7 @@ public:
 };
 
 KProgressDialog::KProgressDialog(QWidget* parent, const QString& caption,
-                                 const QString& text, Qt::WFlags flags)
+                                 const QString& text, Qt::WindowFlags flags)
   : KDialog(parent, flags),
     d(new KProgressDialogPrivate(this))
 {

@@ -20,7 +20,6 @@
  */
 
 #include "PropertyNameArray.h"
-#include <config.h>
 
 namespace KJS {
 
@@ -28,7 +27,7 @@ void PropertyNameArray::add(const Identifier& ident)
 {
     if (!m_set.add(ident.ustring().rep()).second)
         return;
-    
+
     m_vector.append(ident);
 }
 

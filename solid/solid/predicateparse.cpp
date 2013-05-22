@@ -57,7 +57,7 @@ Solid::Predicate Solid::Predicate::fromString(const QString &predicate)
 {
     Solid::PredicateParse::ParsingData *data = new Solid::PredicateParse::ParsingData();
     s_parsingData->setLocalData(data);
-    data->buffer = predicate.toAscii();
+    data->buffer = predicate.toLatin1();
     PredicateParse_mainParse(data->buffer.constData());
     Predicate result;
     if (data->result)

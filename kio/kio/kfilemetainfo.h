@@ -117,7 +117,7 @@ public:
     /**
      * @brief Copy a KFileMetaInfo instance from another one.
      **/
-    const KFileMetaInfo& operator=(KFileMetaInfo const& kfmi);
+    KFileMetaInfo& operator=(KFileMetaInfo const& kfmi);
     /**
      * @brief Save the changes made to this KFileMetaInfo instance.
      */

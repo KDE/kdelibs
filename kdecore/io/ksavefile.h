@@ -176,6 +176,40 @@ public:
     bool finalize();
 
     /**
+     * Allows writing over the existing file if necessary.
+     *
+     * QSaveFile creates a temporary file in the same directory as the final
+     * file and atomically renames it. However this is not possible if the
+     * directory permissions do not allow creating new files.
+     * In order to preserve atomicity guarantees, open() fails when it
+     * cannot create the temporary file.
+     *
+     * In order to allow users to edit files with write permissions in a
+     * directory with restricted permissions, call setDirectWriteFallback() with
+     * \a enabled set to true, and the following calls to open() will fallback to
+     * opening the existing file directly and writing into it, without the use of
+     * a temporary file.
+     * This does not have atomicity guarantees, i.e. an application crash or
+     * for instance a power failure could lead to a partially-written file on disk.
+     * It also means cancelWriting() has no effect, in such a case.
+     *
+     * Typically, to save documents edited by the user, call setDirectWriteFallback(true),
+     * and to save application internal files (configuration files, data files, ...), keep
+     * the default setting which ensures atomicity.
+     *
+     * @since 4.10.3
+     */
+    void setDirectWriteFallback(bool enabled);
+
+    /**
+     * Returns true if the fallback solution for saving files in read-only
+     * directories is enabled.
+     *
+     * @since 4.10.3
+     */
+    bool directWriteFallback() const;
+
+    /**
      * @brief Static method to create a backup file before saving.
      *
      * If empty (the default), the backup will be in the same directory as @p filename.

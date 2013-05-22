@@ -128,6 +128,18 @@ var testobj2 = TestObject2
         tester.passed();
         tester.assert(testobj2.name(), testobj3.name());
     } catch(error) { tester.unexpectedException("testobj1.func_qobject_qobject(testobj2)", error); }
+
+    try {
+        testobj4 = testobj1.func_qobject_qobject(0);
+        tester.passed();
+        tester.assert(testobj4, null);
+    } catch(error) { tester.unexpectedException("testobj1.func_qobject_qobject(0)", error); }
+
+    try {
+        testobj5 = testobj1.func_qobject_qobject(null);
+        tester.passed();
+        tester.assert(testobj5, null);
+    } catch(error) { tester.unexpectedException("testobj1.func_qobject_qobject(null)", error); }
 }
 
 // bool

@@ -91,6 +91,7 @@ using namespace DOM;
         {
             noBorder = false;
             left = right = top = bottom = 0;
+            clearButtonOverlay = 0;
             setParent(parent);
         }
 
@@ -101,7 +102,7 @@ using namespace DOM;
               case QStyle::SE_PushButtonContents:
               case QStyle::SE_LineEditContents:
               case QStyle::SE_ShapedFrameContents:
-                r.adjust(left, top, -right, -bottom);
+                r.adjust(left, top, -qMax(0, right - clearButtonOverlay), -bottom);
               default:
                 break;
             }
@@ -110,16 +111,6 @@ using namespace DOM;
 
         void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
         {
-            if ( noBorder && element == QStyle::CE_PushButton ) {
-               const QStyleOptionButton *o = qstyleoption_cast<const QStyleOptionButton *>(option);
-               if (o) {
-                   QStyleOptionButton opt = *o;
-                   opt.rect = style()->subElementRect(SE_PushButtonFocusRect, &opt, widget);
-                   style()->drawControl(CE_PushButtonLabel, &opt, painter, widget);
-               }
-               return;
-            }
-
             if (element == QStyle::CE_ComboBoxLabel) {
                 const QStyleOptionComboBox *o = qstyleoption_cast<const QStyleOptionComboBox*>(option);
                 if (o) {
@@ -131,7 +122,6 @@ using namespace DOM;
                     if (noBorder) {
                         // Need to expand a bit for some styles
                         comboOpt.rect.adjust(-1, -2, 1, 2);
-                        comboOpt.rect.translate(-1, 0);
                         comboOpt.state &= ~State_On;
                     }
                     return style()->drawControl(element, &comboOpt, painter, widget);
@@ -147,26 +137,27 @@ using namespace DOM;
                 if (const QStyleOptionComboBox *cbOpt = qstyleoption_cast<const QStyleOptionComboBox*>(opt)) {
                     bool enabled = (cbOpt->state & State_Enabled);
                     QColor color = cbOpt->palette.color(QPalette::ButtonText);
-                    if (color.value() < 128)
-                        color = color.lighter();
                     painter->save();
                     painter->setBackgroundMode(Qt::TransparentMode);
                     painter->setPen(color);
+                    painter->setRenderHint(QPainter::Antialiasing);
                     // Drop down indicator
-                    painter->setBrush(enabled ? QBrush(color, Qt::SolidPattern) : Qt::NoBrush);
                     QRect arrowRect = style()->subControlRect(cc, opt, SC_ComboBoxArrow, widget);
+                    arrowRect.setTop(cbOpt->rect.top());
+                    arrowRect.setBottom(cbOpt->rect.bottom());
+                    arrowRect.setRight(cbOpt->rect.right() - 1);
                     if (enabled && (cbOpt->state & State_On))
                         arrowRect.translate(1, 1); // push effect
-                    const int arrowDown[] = { 5,-2, 0,3, -5,-2, -4,-3, -3,-3, 0,0, 3,-3, 4,-3 };
-                    QPolygon a(8);
-                    a.setPoints(8, arrowDown);
-                    a.translate((arrowRect.x() + (arrowRect.width() >> 1)), (arrowRect.y() + (arrowRect.height() >> 1)));
-                    painter->drawPolygon(a);
-                    // Focus rect
+                    //if (!enabled) color = color.lighter();
+                    painter->setBrush(enabled ? QBrush(color, Qt::SolidPattern) : Qt::NoBrush);
+                    QPolygon cbArrowDown;
+                    cbArrowDown.setPoints(6,  3,-2, 4,-2, 0,2, -4,-2, -3,-2, 0,1);
+                    cbArrowDown.translate((arrowRect.x() + (arrowRect.width() >> 1)), (arrowRect.y() + (arrowRect.height() >> 1)));
+                    painter->drawPolygon(cbArrowDown);
+                    // Focus rect (from qcleanlooksstyle)
                     if (enabled && (cbOpt->state & State_HasFocus)) {
                         QRect focusRect = style()->subElementRect(SE_ComboBoxFocusRect, cbOpt, widget);
                         focusRect.adjust(0, -2, 0, 2);
-                        // Begin drawing focus rect (from qcleanlooksstyle)
                         painter->setBrush(QBrush(color, Qt::Dense4Pattern));
                         painter->setBrushOrigin(focusRect.topLeft());
                         painter->setPen(Qt::NoPen);
@@ -177,7 +168,6 @@ using namespace DOM;
                             QRect(focusRect.right(), focusRect.top(), 1, focusRect.height())   // Right
                         };
                         painter->drawRects(rects, 4);
-                        // End drawing focus rect
                     }
                     painter->restore();
 
@@ -224,6 +214,7 @@ using namespace DOM;
         }
 
         int left, right, top, bottom;
+        int clearButtonOverlay;
         bool noBorder;
     };
 
@@ -234,19 +225,27 @@ RenderFormElement::RenderFormElement(HTMLGenericFormElementImpl *element)
 //     , m_state(0)
     , m_proxyStyle(0)
     , m_exposeInternalPadding(false)
+    , m_isOxygenStyle(false)
 {
     // init RenderObject attributes
     setInline(true);   // our object is Inline
-
 }
 
 RenderFormElement::~RenderFormElement()
 {}
 
-void RenderFormElement::setStyle(RenderStyle *style)
+void RenderFormElement::setStyle(RenderStyle *_style)
 {
-    RenderWidget::setStyle(style);
+    RenderWidget::setStyle(_style);
     setPadding();
+    if (!shouldDisableNativeBorders()) {
+        // When the widget shows native border, clipping background to border
+        // results in a nasty rendering effects
+        if (style()->backgroundLayers()->backgroundClip() == BGBORDER) {
+            style()->accessBackgroundLayers()->setBackgroundClip(BGPADDING);
+        }
+        m_isOxygenStyle = QApplication::style()->objectName().contains("oxygen");
+    }
 }
 
 void RenderFormElement::calcMinMaxWidth()
@@ -354,6 +353,42 @@ void RenderFormElement::layout()
                      m_height-borderTop()-borderBottom()-paddingTop()-paddingBottom());
 
     setNeedsLayout(false);
+}
+
+int RenderFormElement::calcContentWidth(int w) const
+{
+    if (!shouldDisableNativeBorders()) {
+        if (style()->boxSizing() == CONTENT_BOX) {
+            int nativeBorderWidth = m_widget->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, m_widget);
+            return RenderBox::calcContentWidth(w) + 2 * nativeBorderWidth;
+        }
+    }
+
+    return RenderBox::calcContentWidth(w);
+}
+
+int RenderFormElement::calcContentHeight(int h) const
+{
+    if (!shouldDisableNativeBorders()) {
+        if (style()->boxSizing() == CONTENT_BOX) {
+            int nativeBorderWidth = m_widget->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, 0, m_widget);
+            return RenderBox::calcContentHeight(h) + 2 * nativeBorderWidth;
+        }
+    }
+
+    return RenderBox::calcContentHeight(h);
+}
+
+void RenderFormElement::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
+{
+    int fudge = 0;
+    if (!shouldDisableNativeBorders()) {
+        fudge = m_isOxygenStyle ? 3 : 1;
+    }
+
+    paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
+                                fudge ? fudge : borderLeft() , fudge ? fudge : borderRight(), RenderWidget::paddingLeft(), RenderWidget::paddingRight(),
+                                fudge ? fudge : borderTop(), fudge ? fudge : borderBottom(), RenderWidget::paddingTop(), RenderWidget::paddingBottom());
 }
 
 Qt::Alignment RenderFormElement::textAlignment() const
@@ -558,6 +593,8 @@ RenderSubmitButton::RenderSubmitButton(HTMLInputElementImpl *element)
     setQWidget(p);
     //p->setAutoMask(true);
     p->setMouseTracking(true);
+    p->setDefault(false);
+    p->setAutoDefault(false);
 }
 
 static inline void setStyleSheet_helper(const QString& s, QWidget* w)
@@ -663,13 +700,9 @@ void RenderSubmitButton::calcMinMaxWidth()
     s = s.expandedTo(QApplication::globalStrut());
     int margin = pb->style()->pixelMetric( QStyle::PM_ButtonMargin) +
               pb->style()->pixelMetric( QStyle::PM_DefaultFrameWidth ) * 2;
-    int w = ts.width() + margin;
 
+    int w = ts.width() + margin;
     int h = s.height();
-    if (pb->isDefault() || pb->autoDefault()) {
-        int dbw = pb->style()->pixelMetric( QStyle::PM_ButtonDefaultIndicator ) * 2;
-        w += dbw;
-    }
 
     assert(includesPadding());
     int hpadding = RenderWidget::paddingLeft() + RenderWidget::paddingRight();
@@ -1024,11 +1057,6 @@ void LineEditWidget::clearHistoryActivated()
       compObj()->clear();
 }
 
-void LineEditWidget::paintEvent( QPaintEvent *pe )
-{
-    KLineEdit::paintEvent( pe );
-}
-
 bool LineEditWidget::event( QEvent *e )
 {
     if (KLineEdit::event(e))
@@ -1122,6 +1150,10 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
             }
         }
     }
+
+    if (m_proxyStyle) {
+        static_cast<KHTMLProxyStyle*>(m_proxyStyle)->clearButtonOverlay = qMax(0, widget()->clearButtonUsedSize().width());
+    }
 }
 
 void RenderLineEdit::highLightWord( unsigned int length, unsigned int pos )
@@ -1167,14 +1199,14 @@ void RenderLineEdit::calcMinMaxWidth()
     const QFontMetrics &fm = style()->fontMetrics();
     QSize s;
 
-    int size = element()->size();
+    int size = (element()->size() > 0) ? (element()->size() + 1) : 17; // "some"
 
     int h = fm.lineSpacing();
-    int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
+    int w = (fm.height() * size) / 2; // on average a character cell is twice as tall as it is wide
 
     QStyleOptionFrame opt;
     opt.initFrom(widget());
-    if (static_cast<LineEditWidget*>(widget())->hasFrame())
+    if (widget()->hasFrame())
         opt.lineWidth = widget()->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt, widget());
 
     s = QSize(w, qMax(h, 14));
@@ -1483,21 +1515,22 @@ void RenderFileButton::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
     const QFontMetrics &fm = style()->fontMetrics();
-    int size = element()->size();
+    int size = (element()->size() > 0) ? (element()->size() + 1) : 17; // "some"
 
     int h = fm.lineSpacing();
-    int w = fm.width( 'x' ) * (size > 0 ? size+1 : 17); // "some"
-    KLineEdit* edit = static_cast<KUrlRequester*>( m_widget )->lineEdit();
+    int w = (fm.height() * size) / 2; // on average a character cell is twice as tall as it is wide
+    KLineEdit* edit = widget()->lineEdit();
 
     QStyleOptionFrame opt;
     opt.initFrom(edit);
     if (edit->hasFrame())
         opt.lineWidth = edit->style()->pixelMetric(QStyle::PM_DefaultFrameWidth, &opt, edit);
-    QSize s = edit->style()->sizeFromContents(QStyle::CT_LineEdit,
-                                             &opt,
-          QSize(w, qMax(h, 14)), edit)
-        .expandedTo(QApplication::globalStrut());
-    QSize bs = static_cast<KUrlRequester*>( m_widget )->minimumSizeHint() - edit->minimumSizeHint();
+
+    QSize s(w, qMax(h, 14));
+    s = edit->style()->sizeFromContents(QStyle::CT_LineEdit, &opt, s, edit);
+    s = s.expandedTo(QApplication::globalStrut());
+
+    QSize bs = widget()->minimumSizeHint() - edit->minimumSizeHint();
 
     setIntrinsicWidth( s.width() + bs.width() );
     setIntrinsicHeight( qMax(s.height(), bs.height()) );
@@ -1518,8 +1551,8 @@ void RenderFileButton::updateFromElement()
     KLineEdit* edit = widget()->lineEdit();
     bool blocked = edit->blockSignals(true);
     edit->setText(element()->value().string());
-    edit->blockSignals(false);
-    edit->setModified(blocked );
+    edit->blockSignals(blocked);
+    edit->setModified(false);
 
     RenderFormElement::updateFromElement();
 }
@@ -2212,8 +2245,6 @@ void TextAreaWidget::keyPressEvent(QKeyEvent *e)
 RenderTextArea::RenderTextArea(HTMLTextAreaElementImpl *element)
     : RenderFormElement(element)
 {
-    scrollbarsStyled = false;
-
     TextAreaWidget *edit = new TextAreaWidget(element->wrap(), view());
     setQWidget(edit);
     const KHTMLSettings *settings = view()->part()->settings();
@@ -2305,8 +2336,6 @@ void RenderTextArea::setStyle(RenderStyle* _style)
         element()->m_unsubmittedFormChange = unsubmittedFormChange;
     }
 
-    scrollbarsStyled = false;
-
     if (style()->overflowX() == OSCROLL)
         w->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOn );
     else if (style()->overflowX() == OHIDDEN)
@@ -2319,21 +2348,6 @@ void RenderTextArea::setStyle(RenderStyle* _style)
         w->setVerticalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
     else
         w->setVerticalScrollBarPolicy( Qt::ScrollBarAsNeeded );
-}
-
-void RenderTextArea::layout()
-{
-    KHTMLAssert( needsLayout() );
-
-    RenderFormElement::layout();
-
-    TextAreaWidget* w = static_cast<TextAreaWidget*>(m_widget);
-
-    if (!scrollbarsStyled) {
-        w->horizontalScrollBar()->setPalette(style()->palette());
-        w->verticalScrollBar()->setPalette(style()->palette());
-        scrollbarsStyled=true;
-    }
 }
 
 short RenderTextArea::scrollWidth() const
@@ -2363,7 +2377,7 @@ void RenderTextArea::setText(const QString& newText)
         int cx = w->horizontalScrollBar()->value();
         int cy = w->verticalScrollBar()->value();
         // Not using setPlaintext as it resets text alignment property
-        int minLen = (newTextLen < oldTextLen) ? newTextLen : oldTextLen;
+        int minLen = qMin(newTextLen, oldTextLen);
         int ex = 0;
         while (ex < minLen && (newText.at(ex) == oldText.at(ex)))
                ++ex;

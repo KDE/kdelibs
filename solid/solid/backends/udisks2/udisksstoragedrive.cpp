@@ -21,7 +21,7 @@
 
 #include "udisksstoragedrive.h"
 
-#include "../shared/udevqtclient.h"
+#include "../shared/udevqt.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QFile>

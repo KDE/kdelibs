@@ -470,7 +470,8 @@ QStringList KProtocolManager::proxiesForUrl( const KUrl &url )
         const QString protocol = adjustProtocol(u.protocol());
         u.setProtocol(protocol);
 
-        if (KProtocolInfo::protocolClass(protocol) != QL1S(":local")) {
+        if (protocol.startsWith(QL1S("http"), Qt::CaseInsensitive) ||
+            protocol.startsWith(QL1S("ftp"), Qt::CaseInsensitive)) {
           QDBusReply<QStringList> reply = QDBusInterface(QL1S("org.kde.kded"),
                                                          QL1S("/modules/proxyscout"),
                                                          QL1S("org.kde.KPAC.ProxyScout"))
@@ -1189,6 +1190,11 @@ QString KProtocolManager::protocolForArchiveMimetype( const QString& mimeType )
         }
     }
     return d->protocolForArchiveMimetypes.value(mimeType);
+}
+
+QString KProtocolManager::charsetFor(const KUrl& url)
+{
+    return KIO::SlaveConfig::self()->configData(url.scheme(), url.host(), QLatin1String("Charset"));
 }
 
 #undef PRIVATE_DATA

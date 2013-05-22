@@ -177,7 +177,7 @@ void Nepomuk::ResourceData::resetAll( bool isDelete )
             // See load() for an explanation of the QMetaObject call
 
             // stop the watcher since we do not want to watch all changes in case there is no ResourceData left
-            if(m_rm->m_watcher->resources().count() == 1) {
+            if(m_rm->m_watcher->resourceCount() == 1) {
                 QMetaObject::invokeMethod(m_rm->m_watcher, "stop", Qt::AutoConnection);
             }
 
@@ -457,7 +457,7 @@ bool Nepomuk::ResourceData::load()
                 // TODO: somehow handle pimo:referencingOccurrence and pimo:occurrence
                 QueryResultIterator pimoIt = MAINMODEL->executeQuery( QString( "select ?r where { ?r <%1> <%2> . }")
                                                                       .arg( Vocabulary::PIMO::groundingOccurrence().toString() )
-                                                                      .arg( QString::fromAscii( m_uri.toEncoded() ) ),
+                                                                      .arg( QString::fromLatin1( m_uri.toEncoded() ) ),
                                                                       Soprano::Query::QueryLanguageSparqlNoInference );
                 if( pimoIt.next() ) {
                     m_pimoThing = new Thing( pimoIt.binding("r").uri() );
@@ -491,11 +491,14 @@ void Nepomuk::ResourceData::setProperty( const QUrl& uri, const Nepomuk::Variant
                                                            QLatin1String("org.kde.nepomuk.DataManagement"),
                                                            QLatin1String("setProperty") );
         QVariantList varList;
-        foreach( const Nepomuk::Variant var, value.toVariantList() ) {
-            // make sure resource values are in the store
+        foreach( const Variant& var, value.toVariantList() ) {
+            // make sure resource values are identified and in the store
             if( var.simpleType() == qMetaTypeId<Resource>() ) {
-                var.toResource().m_data->store();
-                varList << var.toUrl();
+                Resource res = var.toResource();
+                res.determineFinalResourceData();
+                res.m_data->store();
+
+                varList << res.resourceUri();
             }
             else {
                 varList << var.variant();
@@ -545,8 +548,11 @@ void Nepomuk::ResourceData::addProperty( const QUrl& uri, const Nepomuk::Variant
         foreach( const Nepomuk::Variant var, value.toVariantList() ) {
             // make sure resource values are in the store
             if( var.simpleType() == qMetaTypeId<Resource>() ) {
-                var.toResource().m_data->store();
-                varList << var.toUrl();
+                Resource res = var.toResource();
+                res.determineFinalResourceData();
+                res.m_data->store();
+
+                varList << res.resourceUri();
             }
             else {
                 varList << var.variant();

@@ -68,7 +68,7 @@ bool Nepomuk::Types::EntityPrivate::load()
     const QString query = QString::fromLatin1( "select ?p ?o where { "
                                                "graph ?g { <%1> ?p ?o . } . "
                                                "{ ?g a %2 . } UNION { ?g a %3 . } . }" )
-                          .arg( QString::fromAscii( uri.toEncoded() ),
+                          .arg( QString::fromLatin1( uri.toEncoded() ),
                                 Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::Ontology() ),
                                 Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::KnowledgeBase() ) );
                           
@@ -118,7 +118,7 @@ bool Nepomuk::Types::EntityPrivate::loadAncestors()
     const QString query = QString::fromLatin1( "select ?s ?p where { "
                                                "graph ?g { ?s ?p <%1> . } . "
                                                "{ ?g a %2 . } UNION { ?g a %3 . } . }" )
-                          .arg( QString::fromAscii( uri.toEncoded() ),
+                          .arg( QString::fromLatin1( uri.toEncoded() ),
                                 Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::Ontology() ),
                                 Soprano::Node::resourceToN3( Soprano::Vocabulary::NRL::KnowledgeBase() ) );
                           

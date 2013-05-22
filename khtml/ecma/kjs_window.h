@@ -75,6 +75,27 @@ namespace KJS {
     static const ClassInfo info;
   };
 
+  class Console : public JSObject {
+  public:
+    Console(ExecState *exec);
+    enum {
+      Assert, Log, Debug, Info, Warn, Error, Clear
+    };
+
+    enum MessageType {
+        LogType     = 1,
+        DebugType   = 1 << 1,
+        InfoType    = 1 << 2,
+        WarnType    = 1 << 3,
+        ErrorType   = 1 << 4
+    };
+    using KJS::JSObject::getOwnPropertySlot;
+    virtual bool getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot);
+  private:
+    virtual const ClassInfo* classInfo() const { return &info; }
+    static const ClassInfo info;
+  };
+
   class Window : public JSGlobalObject {
     friend QPointer<KHTMLPart> getInstance();
     friend class KJS::Location;
@@ -148,8 +169,9 @@ namespace KJS {
            Parent, Personalbar, ScreenX, ScreenY, Scrollbars, Scroll, ScrollBy,
            ScreenTop, ScreenLeft, AToB, BToA, FrameElement, GetComputedStyle,
            ScrollTo, ScrollX, ScrollY, MoveBy, MoveTo, PostMessage, ResizeBy, ResizeTo, Self, _Window, Top, _Screen,
-           Audio, Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
-           XMLHttpRequest, XMLSerializer, DOMParser,
+           _Console, Audio, Image, Option, Alert, Confirm, Prompt, Open, SetTimeout, ClearTimeout,
+           XMLHttpRequest, XMLSerializer, DOMParser, ArrayBuffer, Int8Array, Uint8Array,
+           Int16Array, Uint16Array, Int32Array, Uint32Array, Float32Array, Float64Array,
            Focus, Blur, Close, SetInterval, ClearInterval, CaptureEvents, ReleaseEvents,
            Print, AddEventListener, RemoveEventListener, SideBar, GetSelection,
            ValueOf, ToString,
@@ -207,6 +229,7 @@ namespace KJS {
 
     QPointer<khtml::ChildFrame> m_frame;
     Screen *screen;
+    Console *console;
     History *history;
     External *external;
     Location *loc;

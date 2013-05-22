@@ -34,7 +34,9 @@
 #include <knewstuff3/downloaddialog.h>
 #endif
 
-#include "plasma/private/wallpaper_p.h"
+#include "kdeclarative.h"
+
+#include "private/wallpaper_p.h"
 
 namespace Plasma
 {
@@ -42,18 +44,23 @@ namespace Plasma
 PlasmoidPackage::PlasmoidPackage(QObject *parent)
     : Plasma::PackageStructure(parent, QString("Plasmoid"))
 {
-    QString pathsString(getenv("PLASMA_CUSTOM_PREFIX_PATHS"));
-    if (!pathsString.isEmpty()) {
-        QStringList prefixPaths(pathsString.split(":"));
-        if (!prefixPaths.isEmpty()) {
-            setContentsPrefixPaths(prefixPaths);
+    QStringList platform = KDeclarative::runtimePlatform();
+    if (!platform.isEmpty()) {
+        QMutableStringListIterator it(platform);
+        while (it.hasNext()) {
+            it.next();
+            it.setValue("platformcontents/" + it.value());
         }
+        platform.append("contents");
+        setContentsPrefixPaths(platform);
     }
 
     addDirectoryDefinition("images", "images", i18n("Images"));
+    addDirectoryDefinition("theme",  "theme",  i18n("Themed Images"));
     QStringList mimetypes;
     mimetypes << "image/svg+xml" << "image/png" << "image/jpeg";
     setMimetypes("images", mimetypes);
+    setMimetypes("theme",  mimetypes);
 
     addDirectoryDefinition("config", "config", i18n("Configuration Definitions"));
     mimetypes.clear();
@@ -109,6 +116,7 @@ void PlasmoidPackage::createNewWidgetBrowser(QWidget *parent)
         m_knsDialog = knsDialog = new KNS3::DownloadDialog("plasmoids.knsrc", parent);
         knsDialog->setProperty("DoNotCloseController", true);
         connect(knsDialog, SIGNAL(accepted()), this, SIGNAL(newWidgetBrowserFinished()));
+	connect(knsDialog, SIGNAL(accepted()), knsDialog, SLOT(deleteLater()));
     }
 
     knsDialog->show();
@@ -157,55 +165,109 @@ ThemePackage::ThemePackage(QObject *parent)
     : Plasma::PackageStructure(parent, QString("Plasma Theme"))
 {
     addDirectoryDefinition("dialogs", "dialogs/", i18n("Images for dialogs"));
+
     addFileDefinition("dialogs/background", "dialogs/background.svg",
                       i18n("Generic dialog background"));
+    addFileDefinition("dialogs/background", "dialogs/background.svgz",
+                      i18n("Generic dialog background"));
+
     addFileDefinition("dialogs/shutdowndialog", "dialogs/shutdowndialog.svg",
+                      i18n("Theme for the logout dialog"));
+    addFileDefinition("dialogs/shutdowndialog", "dialogs/shutdowndialog.svgz",
                       i18n("Theme for the logout dialog"));
 
     addDirectoryDefinition("wallpapers", "wallpapers/", i18n("Wallpaper packages"));
     addDirectoryDefinition("animations", "animations/", i18n("Animation scripts"));
 
     addDirectoryDefinition("widgets", "widgets/", i18n("Images for widgets"));
+
     addFileDefinition("widgets/background", "widgets/background.svg",
                       i18n("Background image for widgets"));
+    addFileDefinition("widgets/background", "widgets/background.svgz",
+                      i18n("Background image for widgets"));
+
     addFileDefinition("widgets/clock", "widgets/clock.svg",
                       i18n("Analog clock face"));
+    addFileDefinition("widgets/clock", "widgets/clock.svgz",
+                      i18n("Analog clock face"));
+
     addFileDefinition("widgets/panel-background", "widgets/panel-background.svg",
                       i18n("Background image for panels"));
+    addFileDefinition("widgets/panel-background", "widgets/panel-background.svgz",
+                      i18n("Background image for panels"));
+
     addFileDefinition("widgets/plot-background", "widgets/plot-background.svg",
                       i18n("Background for graphing widgets"));
+    addFileDefinition("widgets/plot-background", "widgets/plot-background.svg",
+                      i18n("Background for graphing widgets"));
+
     addFileDefinition("widgets/tooltip", "widgets/tooltip.svg",
+                      i18n("Background image for tooltips"));
+    addFileDefinition("widgets/tooltip", "widgets/tooltip.svgz",
                       i18n("Background image for tooltips"));
 
     addDirectoryDefinition("opaque/dialogs", "opaque/dialogs/", i18n("Opaque images for dialogs"));
+
     addFileDefinition("opaque/dialogs/background", "opaque/dialogs/background.svg",
                       i18n("Opaque generic dialog background"));
+    addFileDefinition("opaque/dialogs/background", "opaque/dialogs/background.svgz",
+                      i18n("Opaque generic dialog background"));
+
     addFileDefinition("opaque/dialogs/shutdowndialog", "opaque/dialogs/shutdowndialog.svg",
+                      i18n("Opaque theme for the logout dialog"));
+    addFileDefinition("opaque/dialogs/shutdowndialog", "opaque/dialogs/shutdowndialog.svgz",
                       i18n("Opaque theme for the logout dialog"));
 
     addDirectoryDefinition("opaque/widgets", "opaque/widgets/", i18n("Opaque images for widgets"));
+
     addFileDefinition("opaque/widgets/panel-background", "opaque/widgets/panel-background.svg",
                       i18n("Opaque background image for panels"));
+    addFileDefinition("opaque/widgets/panel-background", "opaque/widgets/panel-background.svgz",
+                      i18n("Opaque background image for panels"));
+
     addFileDefinition("opaque/widgets/tooltip", "opaque/widgets/tooltip.svg",
+                      i18n("Opaque background image for tooltips"));
+    addFileDefinition("opaque/widgets/tooltip", "opaque/widgets/tooltip.svgz",
                       i18n("Opaque background image for tooltips"));
 
     addDirectoryDefinition("locolor/dialogs", "locolor/dialogs/",
                            i18n("Low color images for dialogs"));
+
     addFileDefinition("locolor/dialogs/background", "locolor/dialogs/background.svg",
                       i18n("Low color generic dialog background"));
+    addFileDefinition("locolor/dialogs/background", "locolor/dialogs/background.svgz",
+                      i18n("Low color generic dialog background"));
+
     addFileDefinition("locolor/dialogs/shutdowndialog", "locolor/dialogs/shutdowndialog.svg",
+                      i18n("Low color theme for the logout dialog"));
+    addFileDefinition("locolor/dialogs/shutdowndialog", "locolor/dialogs/shutdowndialog.svgz",
                       i18n("Low color theme for the logout dialog"));
 
     addDirectoryDefinition("locolor/widgets", "locolor/widgets/", i18n("Images for widgets"));
+
     addFileDefinition("locolor/widgets/background", "locolor/widgets/background.svg",
                       i18n("Low color background image for widgets"));
+    addFileDefinition("locolor/widgets/background", "locolor/widgets/background.svgz",
+                      i18n("Low color background image for widgets"));
+
     addFileDefinition("locolor/widgets/clock", "locolor/widgets/clock.svg",
                       i18n("Low color analog clock face"));
+    addFileDefinition("locolor/widgets/clock", "locolor/widgets/clock.svgz",
+                      i18n("Low color analog clock face"));
+
     addFileDefinition("locolor/widgets/panel-background", "locolor/widgets/panel-background.svg",
                       i18n("Low color background image for panels"));
+    addFileDefinition("locolor/widgets/panel-background", "locolor/widgets/panel-background.svgz",
+                      i18n("Low color background image for panels"));
+
     addFileDefinition("locolor/widgets/plot-background", "locolor/widgets/plot-background.svg",
                       i18n("Low color background for graphing widgets"));
+    addFileDefinition("locolor/widgets/plot-background", "locolor/widgets/plot-background.svgz",
+                      i18n("Low color background for graphing widgets"));
+
     addFileDefinition("locolor/widgets/tooltip", "locolor/widgets/tooltip.svg",
+                      i18n("Low color background image for tooltips"));
+    addFileDefinition("locolor/widgets/tooltip", "locolor/widgets/tooltip.svgz",
                       i18n("Low color background image for tooltips"));
 
     addFileDefinition("colors", "colors", i18n("KColorScheme configuration file"));

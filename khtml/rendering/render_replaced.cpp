@@ -37,6 +37,8 @@
 #include <QtGui/QApplication>
 #include <QtGui/QLineEdit>
 #include <QtGui/QComboBox>
+#include <QtGui/QCheckBox>
+#include <QtGui/QRadioButton>
 #include <kglobalsettings.h>
 #include <kurlrequester.h>
 #include <QtCore/QObject>
@@ -381,9 +383,10 @@ void RenderWidget::updateFromElement()
         if (!backgroundColor.isValid() && !style()->htmlHacks())
             backgroundColor = Qt::transparent;
 
+        bool hasBackgroundImage = style()->hasBackgroundImage();
         // check if we have to paint our background and let it show through the widget
-        bool trans = ( isRedirectedWidget() && style()->backgroundLayers() && 
-                       style()->backgroundLayers()->hasImage() && !qobject_cast<KUrlRequester*>(m_widget) );
+        bool trans = ( isRedirectedWidget() && !qobject_cast<KUrlRequester*>(m_widget) &&
+                       (hasBackgroundImage || (style()->hasBackground() && shouldPaintCSSBorders())) );
 
         QPalette pal(QApplication::palette(m_widget));
         // We need a non-transparent version for widgets with popups (e.g. kcombobox). The popups must not let
@@ -459,12 +462,17 @@ void RenderWidget::updateFromElement()
             }
         }
 
-        m_widget->setPalette(pal);
+        if ( (qobject_cast<QCheckBox*>(m_widget) || qobject_cast<QRadioButton*>(m_widget)) &&
+              (backgroundColor == Qt::transparent && !hasBackgroundImage) ) {
+            m_widget->setPalette(non_trans_pal);
+        } else {
+            m_widget->setPalette(pal);
+        }
 
         // Combobox's popup colors
         if (qobject_cast<QComboBox*>(m_widget)) {
             // Background
-            if (style()->hasBackgroundImage()) {
+            if (hasBackgroundImage) {
                 non_trans_pal = QApplication::palette();
             }
             else if (backgroundColor.isValid() && backgroundColor != Qt::transparent) {
@@ -478,36 +486,35 @@ void RenderWidget::updateFromElement()
                     assert( w->parentWidget() != m_widget );
                     if (w->parentWidget()) {
                         w->parentWidget()->setPalette(non_trans_pal);
-                        // System colors for scrollbar
+                        // Set system color for vertical scrollbar
                         lView->verticalScrollBar()->setPalette(QApplication::palette());
                     }
                 }
             }
-        } // Border:
-        else if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
-            if (shouldDisableNativeBorders()) {
-                if (frame->frameShape() != QFrame::NoFrame) {
-                    m_nativeFrameShape = frame->frameShape();
-                    frame->setFrameShape(QFrame::NoFrame);
+        }
+        else if (QAbstractScrollArea* scrollView = qobject_cast<QAbstractScrollArea*>(m_widget)) {
+            // Border
+            if (QFrame* frame = qobject_cast<QFrame*>(m_widget)) {
+                if (shouldDisableNativeBorders()) {
+                    if (frame->frameShape() != QFrame::NoFrame) {
+                        m_nativeFrameShape = frame->frameShape();
+                        frame->setFrameShape(QFrame::NoFrame);
+                    }
                 }
-
-            } else if (m_nativeFrameShape != QFrame::NoFrame) {
-                frame->setFrameShape(m_nativeFrameShape);
+                else if (m_nativeFrameShape != QFrame::NoFrame) {
+                        frame->setFrameShape(m_nativeFrameShape);
+                }
             }
-        } else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
+            // Scrollbars color (ie css extension)
+            scrollView->horizontalScrollBar()->setPalette(style()->palette());
+            scrollView->verticalScrollBar()->setPalette(style()->palette());
+        }
+        else if (QLineEdit* lineEdit = qobject_cast<QLineEdit*>(m_widget)) {
             lineEdit->setFrame(!shouldDisableNativeBorders()); 
         }
     }
 
     RenderReplaced::updateFromElement();
-}
-
-void RenderWidget::paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height)
-{
-    bool fudge = !shouldPaintCSSBorders();
-    paintBackgroundExtended(p, c, bgLayer, clipr, _tx, _ty, w, height,
-                                fudge ? 1 : borderLeft() , fudge ? 1 : borderRight(), paddingLeft(), paddingRight(),
-                                fudge ? 1 : borderTop(), fudge ? 1 : borderBottom(), paddingTop(), paddingBottom());
 }
 
 void RenderWidget::paintBoxDecorations(PaintInfo& paintInfo, int _tx, int _ty)
@@ -1030,7 +1037,7 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             p.setY(qMin(qMax(0,p.y()),m_widget->height()));
         }
 
-        QWidget* target = 0;
+        QPointer<QWidget> target;
         target = m_widget->childAt(p);
 
         if (target) {
@@ -1103,16 +1110,18 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
             }
         }
 
-        QEvent *e = isMouseWheel ?
+        QScopedPointer<QEvent> e(isMouseWheel ?
                     static_cast<QEvent*>(new QWheelEvent(p, -me.detail()*40, buttons, state, orient)) :
-                    static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state));
+                    static_cast<QEvent*>(new QMouseEvent(type,    p, button, buttons, state)));
 
 
-        ret = bubblingSend(target, e, m_widget);
+        ret = bubblingSend(target, e.data(), m_widget);
 
+        if (!target)
+            break;
         if (needContextMenuEvent) {
             QContextMenuEvent cme(QContextMenuEvent::Mouse, p);
-            static_cast<EventPropagator *>(target)->sendEvent(&cme);
+            static_cast<EventPropagator *>(target.data())->sendEvent(&cme);
         } else if (type == QEvent::MouseMove && target->testAttribute(Qt::WA_Hover)) {
             QHoverEvent he( QEvent::HoverMove, p, p );
             QApplication::sendEvent(target, &he);
@@ -1120,7 +1129,6 @@ bool RenderWidget::handleEvent(const DOM::EventImpl& ev)
         if (ev.id() == EventImpl::MOUSEUP_EVENT) {
             view()->setMouseEventsTarget( 0 );
         }
-        delete e;
         break;
     }
     case EventImpl::KEYDOWN_EVENT:

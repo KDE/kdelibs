@@ -40,7 +40,7 @@ namespace ThreadWeaver {
     void WeaverObserverTest::slotWeaverStateChanged ( State *state )
     {
         debug ( 0, "WeaverObserverTest: state changed to \"%s\".\n",
-                state->stateName().toAscii().constData() );
+                state->stateName().toLatin1().constData() );
     }
 
     void WeaverObserverTest::slotThreadStarted ( Thread* th )

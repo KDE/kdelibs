@@ -186,13 +186,13 @@ void KDialogPrivate::helpLinkClicked()
     q_ptr->slotButtonClicked(KDialog::Help);
 }
 
-KDialog::KDialog( QWidget *parent, Qt::WFlags flags )
+KDialog::KDialog( QWidget *parent, Qt::WindowFlags flags )
   : QDialog(parent, sAllowEmbeddingInGraphicsView ? flags : flags | Qt::BypassGraphicsProxyWidget ), d_ptr(new KDialogPrivate)
 {
     d_ptr->init(this);
 }
 
-KDialog::KDialog(KDialogPrivate &dd, QWidget *parent, Qt::WFlags flags)
+KDialog::KDialog(KDialogPrivate &dd, QWidget *parent, Qt::WindowFlags flags)
     : QDialog(parent, sAllowEmbeddingInGraphicsView ? flags : flags | Qt::BypassGraphicsProxyWidget), d_ptr(&dd)
 {
     d_ptr->init(this);

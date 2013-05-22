@@ -1149,9 +1149,9 @@ void TestRegressionWindow::updateLogOutput(const QString &data)
 		}
 
 		if(!fileExists)
-			file.write(QString::fromLatin1("<html>\n<body>\n").toAscii());
+			file.write(QString::fromLatin1("<html>\n<body>\n").toLatin1());
 
-		file.write(QString(data + "\n").toAscii());	//krazy:exclude=duoblequote_chars DOM demands chars
+		file.write(QString(data + "\n").toLatin1());	//krazy:exclude=duoblequote_chars DOM demands chars
 		file.close();
 
 		// Reset save log url, if we reached the end...
@@ -1207,7 +1207,7 @@ void TestRegressionWindow::writeListFile(const QString &fileName, const QStringL
 		exit(1);
 	}
 
-	file.write(content.join("\n").toAscii());
+	file.write(content.join("\n").toLatin1());
 	file.close();
 }
 

@@ -106,7 +106,7 @@ QString KUser::faceIconPath() const
 
 QString KUser::shell() const
 {
-    return QString::fromAscii("cmd.exe");
+    return QString::fromLatin1("cmd.exe");
 }
 
 QList<KUserGroup> KUser::groups() const

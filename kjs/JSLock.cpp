@@ -21,7 +21,7 @@
  */
 
 #include "JSLock.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "collector.h"
 

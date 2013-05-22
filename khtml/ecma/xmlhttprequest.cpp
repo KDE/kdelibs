@@ -147,12 +147,12 @@ JSValue *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
       QString mimeType = "text/xml";
 
       if (!m_mimeTypeOverride.isEmpty()) {
-	  mimeType = m_mimeTypeOverride;
+        mimeType = m_mimeTypeOverride;
       } else {
-          int dummy;
-	  JSValue *header = getResponseHeader("Content-Type", dummy);
-	  if (header->type() != UndefinedType)
-	      mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
+        int dummy;
+        JSValue *header = getResponseHeader("Content-Type", dummy);
+        if (!header->isUndefinedOrNull())
+          mimeType = header->toString(exec).qstring().split(";")[0].trimmed();
       }
 
       if (mimeType == "text/xml" || mimeType == "application/xml" || mimeType == "application/xhtml+xml") {
@@ -631,7 +631,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
   // TODO: Do something about "put" which kio_http sort of supports and
   // the webDAV headers such as PROPFIND etc...
   if (name == "get"  || name == "post") {
-    KUrl reqURL (doc->URL(), value.trimmed());
+    KUrl reqURL(doc->URL(), value);
     open(name, reqURL, async, ec);
     return;
   }
@@ -922,15 +922,18 @@ JSValue *XMLHttpRequestProtoFunc::callAsFunction(ExecState *exec, JSObject *this
 
       bool async = true;
       if (args.size() >= 3) {
-	async = args[2]->toBoolean(exec);
+          async = args[2]->toBoolean(exec);
       }
 
-      if (args.size() >= 4) {
-	url.setUser(args[3]->toString(exec).qstring());
-      }
-
-      if (args.size() >= 5) {
-	url.setPass(args[4]->toString(exec).qstring());
+      // Set url userinfo
+      if (args.size() >= 4 && !args[3]->isUndefinedOrNull()) {
+          QString user = args[3]->toString(exec).qstring();
+          if (!user.isEmpty()) {
+              url.setUser(user);
+              if (args.size() >= 5 && !args[4]->isUndefinedOrNull()) {
+                  url.setPass(args[4]->toString(exec).qstring());
+              }
+          }
       }
 
       request->open(method, url, async, ec);

@@ -357,11 +357,10 @@ private: // don't tell moc, doxygen or kdevelop, but those signals are in fact p
      * This is a private signal, it can't be emitted directly by subclasses of
      * KJob, use emitResult() instead.
      *
-     * Client code is not supposed to connect to this signal, signal result should
-     * be used instead.
-     *
-     * If you store a list of jobs and they might get killed silently,
-     * then you must connect to this instead of result().
+     * In general, to be notified of a job's completion, client code should connect to result()
+     * rather than finished(), so that kill(Quietly) is indeed quiet.
+     * However if you store a list of jobs and they might get killed silently,
+     * then you must connect to this instead of result(), to avoid dangling pointers in your list.
      *
      * @param job the job that emitted this signal
      * @internal

@@ -300,7 +300,7 @@ static bool containsProtocolSection( const QString& string )
         int j=i-1;
         for (; j >= 0; j--) {
             const QChar& ch( string[j] );
-            if (ch.toAscii() == 0 || !ch.isLetter())
+            if (ch.toLatin1() == 0 || !ch.isLetter())
                 break;
             if (ch.isSpace() && (i-j-1) >= 2)
                 return true;
@@ -2496,6 +2496,9 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
     }
 
     static_cast<KToggleAction *>(q->actionCollection()->action("toggleSpeedbar"))->setChecked(show);
+
+    // if we don't show the places panel, at least show the places menu
+    urlNavigator->setPlacesSelectorVisible(!show);
 }
 
 void KFileWidgetPrivate::_k_toggleBookmarks(bool show)
@@ -2590,8 +2593,16 @@ KUrl KFileWidget::getStartUrl( const KUrl& startDir,
         }
         else						// not special "kfiledialog" URL
         {
-            if (!startDir.directory().isEmpty())	// has directory, maybe with filename
-            {
+            // "foo.png" only gives us a file name, the default start dir will be used.
+            // "file:foo.png" (from KHTML/webkit, due to fromPath()) means the same
+            //   (and is the reason why we don't just use QUrl::isRelative()).
+
+            // In all other cases (startDir contains a directory path, or has no
+            // fileName for us anyway, such as smb://), startDir is indeed a dir url.
+
+            if (!startDir.directory().isEmpty() ||
+                startDir.fileName().isEmpty()) {
+                // can use start directory
                 ret = startDir;				// will be checked by stat later
                 // If we won't be able to list it (e.g. http), then use default
                 if ( !KProtocolManager::supportsListing( ret ) ) {

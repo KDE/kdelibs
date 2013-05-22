@@ -251,6 +251,18 @@ protected:
      */
     virtual void setActiveComponent(const KComponentData &instance);
 
+    /**
+     * Sets whether the PartManager ignores explict set focus requests
+     * from the part.
+     *
+     * By default this option is set to false. Set it to true to prevent
+     * the part from sending explicit set focus requests to the client
+     * application.
+     *
+     * @since 4.10
+     */
+    void setIgnoreExplictFocusRequests(bool);
+
 protected Q_SLOTS:
     /**
      * Removes a part when it is destroyed.

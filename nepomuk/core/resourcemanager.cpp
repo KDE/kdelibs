@@ -223,6 +223,9 @@ void Nepomuk::ResourceManagerPrivate::_k_dbusServiceUnregistered( const QString&
     if( serviceName == QLatin1String("org.kde.NepomukStorage") ) {
         kDebug() << "Nepomuk Storage service went down.";
         cleanupCache(-1);
+        if( m_manager->d->mainModel && m_manager->d->mainModel->isValid() ){
+            m_manager->d->mainModel->disconnect();
+        }
         emit m_manager->nepomukSystemStopped();
     }
 }
@@ -480,7 +483,7 @@ QUrl Nepomuk::ResourceManager::generateUniqueUri( const QString& name )
                                                        "UNION "
                                                        "{ graph <%1> { ?s4 ?4 ?o4 . } . } "
                                                        "}")
-                                   .arg( QString::fromAscii( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
+                                   .arg( QString::fromLatin1( uri.toEncoded() ) ), Soprano::Query::QueryLanguageSparql ).boolValue() ) {
             return uri;
         }
     }

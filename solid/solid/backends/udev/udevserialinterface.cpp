@@ -37,7 +37,7 @@ SerialInterface::SerialInterface(UDevDevice *device)
     QString path = m_device->deviceName();
 
     int lastSlash = path.length() - path.lastIndexOf(QLatin1String("/")) -1;
-    QByteArray lastElement = path.right(lastSlash).toAscii();
+    QByteArray lastElement = path.right(lastSlash).toLatin1();
 
     const char *lastElementAscii = lastElement.constData();
 

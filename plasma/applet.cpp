@@ -1786,7 +1786,7 @@ bool Applet::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
                     QGraphicsWidget *pw = this;
                     //This is for the rare case of applet in applet (systray)
                     //if the applet is in an applet that is not a containment, don't create the handle BUG:301648
-                    while (pw = pw->parentWidget()) {
+                    while ((pw = pw->parentWidget())) {
                         if (qobject_cast<Containment *>(pw)) {
                             break;
                         } else if (qobject_cast<Applet *>(pw)) {
@@ -1816,6 +1816,15 @@ bool Applet::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
                 }
             break;
 
+            case QEvent::GraphicsSceneMousePress: {
+                QGraphicsSceneMouseEvent *me = static_cast<QGraphicsSceneMouseEvent *>(event);
+                if (!contentsRect().contains(me->pos())) {
+                    event->setAccepted(false);
+                    return true;
+                }
+            break;
+            }
+
         default:
             break;
         }
@@ -1827,6 +1836,10 @@ bool Applet::sceneEventFilter(QGraphicsItem *watched, QEvent *event)
     case QEvent::GraphicsSceneMousePress:
     case QEvent::GraphicsSceneMouseRelease:
     {
+        if (watched == this) {
+            event->setAccepted(false);
+            return false;
+        }
         // don't move when the containment is not mutable,
         // in the rare case the containment doesn't exists consider it as mutable
         if ((flags() & ItemIsMovable) && d->registeredAsDragHandle.contains(watched)) {
@@ -1970,7 +1983,6 @@ void Applet::showConfigurationInterface()
 
             if (hasPages) {
                 d->addGlobalShortcutsPage(dialog);
-                d->addPublishPage(dialog);
                 dialog->show();
             } else {
                 delete dialog;
@@ -2060,7 +2072,6 @@ KConfigDialog *AppletPrivate::generateGenericConfigDialog()
 void AppletPrivate::addStandardConfigurationPages(KConfigDialog *dialog)
 {
     addGlobalShortcutsPage(dialog);
-    addPublishPage(dialog);
 }
 
 void AppletPrivate::addGlobalShortcutsPage(KConfigDialog *dialog)
@@ -2085,31 +2096,6 @@ void AppletPrivate::addGlobalShortcutsPage(KConfigDialog *dialog)
 
     QObject::connect(dialog, SIGNAL(applyClicked()), q, SLOT(configDialogFinished()), Qt::UniqueConnection);
     QObject::connect(dialog, SIGNAL(okClicked()), q, SLOT(configDialogFinished()), Qt::UniqueConnection);
-#endif
-}
-
-void AppletPrivate::addPublishPage(KConfigDialog *dialog)
-{
-#ifdef ENABLE_REMOTE_WIDGETS
-    QWidget *page = new QWidget;
-    publishUI.setupUi(page);
-    publishUI.publishCheckbox->setChecked(q->isPublished());
-    QObject::connect(publishUI.publishCheckbox, SIGNAL(clicked(bool)), dialog, SLOT(settingsModified()));
-    publishUI.allUsersCheckbox->setEnabled(q->isPublished());
-    QObject::connect(publishUI.allUsersCheckbox, SIGNAL(clicked(bool)), dialog, SLOT(settingsModified()));
-
-    QString resourceName =
-    i18nc("%1 is the name of a plasmoid, %2 the name of the machine that plasmoid is published on",
-          "%1 on %2", q->name(), QHostInfo::localHostName());
-    if (AuthorizationManager::self()->d->matchingRule(resourceName, Credentials())) {
-        publishUI.allUsersCheckbox->setChecked(true);
-    } else {
-        publishUI.allUsersCheckbox->setChecked(false);
-    }
-
-    q->connect(publishUI.publishCheckbox, SIGNAL(stateChanged(int)),
-               q, SLOT(publishCheckboxStateChanged(int)));
-    dialog->addPage(page, i18n("Share"), "applications-internet");
 #endif
 }
 
@@ -2700,6 +2686,8 @@ AppletPrivate::AppletPrivate(KService::Ptr service, const KPluginInfo *info, int
     } else if (appletId > s_maxAppletId) {
         s_maxAppletId = appletId;
     }
+
+    publishUI.publishCheckbox = 0;
 }
 
 AppletPrivate::~AppletPrivate()
@@ -2770,53 +2758,32 @@ void AppletPrivate::init(const QString &packagePath)
     // we have a scripted plasmoid
     if (!api.isEmpty()) {
         // find where the Package is
-        QString path = packagePath;
-        if (path.isEmpty()) {
-            QString subPath = q->packageStructure()->defaultPackageRoot() + '/' + appletDescription.pluginName() + '/';
-            path = KStandardDirs::locate("data", subPath + "metadata.desktop");
-            if (path.isEmpty()) {
-                path = KStandardDirs::locate("data", subPath);
-            } else {
-                path.remove(QString("metadata.desktop"));
-            }
-        } else if (!path.endsWith('/')) {
-            path.append('/');
-        }
+        QString path = packagePath.isEmpty() ? appletDescription.pluginName() : packagePath;
+        // create the package and see if we have something real
+        PackageStructure::Ptr structure = Plasma::packageStructure(api, Plasma::AppletComponent);
+        package = new Package(path, structure);
+        //kDebug() << "***** package is" << package->path();
 
-        if (path.isEmpty()) {
-            q->setFailedToLaunch(
-                true,
-                i18nc("Package file, name of the widget",
-                      "Could not locate the %1 package required for the %2 widget.",
-                      appletDescription.pluginName(), appletDescription.name()));
-        } else {
-            // create the package and see if we have something real
-            //kDebug() << "trying for" << path;
-            PackageStructure::Ptr structure = Plasma::packageStructure(api, Plasma::AppletComponent);
-            structure->setPath(path);
-            package = new Package(path, structure);
+        if (package->isValid()) {
+            // now we try and set up the script engine.
+            // it will be parented to this applet and so will get
+            // deleted when the applet does
 
-            if (package->isValid()) {
-                // now we try and set up the script engine.
-                // it will be parented to this applet and so will get
-                // deleted when the applet does
-
-                script = Plasma::loadScriptEngine(api, q);
-                if (!script) {
-                    delete package;
-                    package = 0;
-                    q->setFailedToLaunch(true,
-                                         i18nc("API or programming language the widget was written in, name of the widget",
-                                               "Could not create a %1 ScriptEngine for the %2 widget.",
-                                               api, appletDescription.name()));
-                }
-            } else {
-                q->setFailedToLaunch(true, i18nc("Package file, name of the widget",
-                                                 "Could not open the %1 package required for the %2 widget.",
-                                                 appletDescription.pluginName(), appletDescription.name()));
+            script = Plasma::loadScriptEngine(api, q);
+            if (!script) {
                 delete package;
                 package = 0;
+                q->setFailedToLaunch(true,
+                        i18nc("API or programming language the widget was written in, name of the widget",
+                              "Could not create a %1 ScriptEngine for the %2 widget.",
+                              api, appletDescription.name()));
             }
+        } else {
+            q->setFailedToLaunch(true, i18nc("Package file, name of the widget",
+                                 "Could not open the %1 package required for the %2 widget.",
+                                 appletDescription.pluginName(), appletDescription.name()));
+            delete package;
+            package = 0;
         }
     }
 }
@@ -2830,8 +2797,8 @@ void AppletPrivate::setupScriptSupport()
     }
 
     kDebug() << "setting up script support, package is in" << package->path()
-             << "which is a" << package->structure()->type() << "package"
-             << ", main script is" << package->filePath("mainscript");
+        << "which is a" << package->structure()->type() << "package"
+        << ", main script is" << package->filePath("mainscript");
 
     QString translationsPath = package->filePath("translations");
     if (!translationsPath.isEmpty()) {
@@ -2969,7 +2936,9 @@ QString AppletPrivate::visibleFailureText(const QString &reason)
     if (reason.isEmpty()) {
         text = i18n("This object could not be created.");
     } else {
-        text = i18n("This object could not be created for the following reason:<p><b>%1</b></p>", reason);
+        QString r = reason;
+        r.replace('\n', "<br/>");
+        text = i18n("This object could not be created for the following reason:<p><b>%1</b></p>", r);
     }
 
     return text;

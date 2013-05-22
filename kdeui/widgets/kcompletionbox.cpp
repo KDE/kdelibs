@@ -54,6 +54,7 @@ KCompletionBox::KCompletionBox( QWidget *parent )
     d->emitSelected    = true;
 
     setWindowFlags( Qt::ToolTip ); // calls setVisible, so must be done after initializations
+    setUniformItemSizes(true);
 
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );
@@ -107,7 +108,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
 
     if (wid && wid == d->m_parent &&
         (type == QEvent::Move || type == QEvent::Resize)) {
-        hide();
+        sizeAndPosition();
         return false;
     }
 

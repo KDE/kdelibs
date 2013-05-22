@@ -219,6 +219,12 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     void modifiedChanged ( KTextEditor::Document *document );
 
+    /**
+     * This signal is emitted whenever the readWrite state of a document changes
+     */
+//warning ADD IN KDE5
+//    void readWriteChanged (KTextEditor::Document *document);
+
   /*
    * VERY IMPORTANT: Methods to set and query the current encoding of the
    * document
@@ -765,6 +771,13 @@ class KTEXTEDITOR_EXPORT Document : public KParts::ReadWritePart
      */
     bool openingError() const;
     QString openingErrorMessage() const;
+    
+    /**
+     * since in kate part opening an non existend local file, doesn't cause an error anymore, a new
+     * field for storing if the local document is an orphan is needed. In the remote case the opening error is still used
+     */
+    bool isOrphaned() const;
+    void setOrphaned(bool value);
 
   protected:
     void setOpeningError(bool errors);

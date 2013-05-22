@@ -123,7 +123,7 @@ public:
                                       const QVariantList &args = QVariantList(),
                                       QString *error = 0)
     {
-        const KService::List offers = self()->query(mimeType, QString::fromAscii("KParts/ReadOnlyPart"), constraint);
+        const KService::List offers = self()->query(mimeType, QString::fromLatin1("KParts/ReadOnlyPart"), constraint);
         Q_FOREACH (const KService::Ptr &ptr, offers) {
             T *component = ptr->template createInstance<T>(parentWidget, parent, args, error);
             if (component) {

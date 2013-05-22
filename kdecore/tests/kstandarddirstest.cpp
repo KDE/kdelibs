@@ -127,6 +127,15 @@ void KStandarddirsTest::testFindAllResources()
     QVERIFY( !cmakeModulesFiles.isEmpty() );
     QVERIFY( cmakeModulesFiles.count() > 80 ); // I have 150 here, installed by kdelibs.
 
+    // Create a local config file, the file will be used as expected result
+    const QString localConfigFile = m_kdehome + "/share/config/foorc";
+    QFile::remove(localConfigFile);
+    KConfig foorc("foorc");
+    KConfigGroup dummyGroup(&foorc, "Dummy");
+    dummyGroup.writeEntry("someEntry", true);
+    dummyGroup.sync();
+    QVERIFY2(QFile::exists(localConfigFile), qPrintable(localConfigFile));
+
     const QStringList configFiles = KGlobal::dirs()->findAllResources( "config" );
     QVERIFY( !configFiles.isEmpty() );
     QVERIFY( configFiles.count() > 5 ); // I have 9 here
@@ -152,8 +161,9 @@ void KStandarddirsTest::testFindAllResources()
     QStringList fileNames;
     const QStringList configFilesWithFilter = KGlobal::dirs()->findAllResources("config", "*rc", KStandardDirs::NoDuplicates, fileNames);
     QVERIFY( !configFilesWithFilter.isEmpty() );
-    QVERIFY( configFilesWithFilter.count() >= 4 );
     QVERIFY( oneEndsWith( configFilesWithFilter, "share/config/kdebugrc" ) );
+    QVERIFY( oneEndsWith( configFilesWithFilter, "kde-unit-test/share/config/foorc" ) );
+    QVERIFY2( configFilesWithFilter.count() >= 2, qPrintable(configFilesWithFilter.join(",")) );
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/ui/ui_standards.rc" ) ); // not recursive
     QVERIFY( !oneEndsWith( configFilesWithFilter, "share/config/accept-languages.codes" ) ); // didn't match the filter
     QCOMPARE(fileNames.count(), configFilesWithFilter.count());
@@ -162,12 +172,12 @@ void KStandarddirsTest::testFindAllResources()
 #if 0
     list = t.findAllResources("html", "en/*/index.html", false);
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-        kDebug() << "docs " << (*it).toAscii().constData();
+        kDebug() << "docs " << (*it).toLatin1().constData();
     }
 
     list = t.findAllResources("html", "*/*/*.html", false);
     for (QStringList::ConstIterator it = list.begin(); it != list.end(); ++it) {
-        kDebug() << "docs " << (*it).toAscii().constData();
+        kDebug() << "docs " << (*it).toLatin1().constData();
     }
 #endif
 }

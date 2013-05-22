@@ -389,7 +389,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             const KMimeType::Ptr ptr = KMimeType::findByUrl(path);
                             if (!ptr->name().isEmpty()) {
                                 hstr += "\r\nContent-Type: ";
-                                hstr += ptr->name().toAscii().constData();
+                                hstr += ptr->name().toLatin1().constData();
                             }
                         } else if (!val.isEmpty()) {
                             fileNotUploads << path.pathOrUrl();
@@ -448,7 +448,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
     }
 
     if (useMultipart)
-        enc_string = QString("--" + m_boundary + "--\r\n").toAscii().constData();
+        enc_string = QString("--" + m_boundary + "--\r\n").toLatin1().constData();
 
     const int old_size = form_data.size();
     form_data.resize( form_data.size() + enc_string.length() );
@@ -532,7 +532,7 @@ void HTMLFormElementImpl::walletOpened(KWallet::Wallet *w) {
                     !current->readOnly() &&
                     map.contains(current->name().string())) {
                 document()->setFocusNode(current);
-                current->setValue(map[current->name().string()]);
+                current->setValue(map.value(current->name().string()));
             }
         }
     }
@@ -665,11 +665,11 @@ void HTMLFormElementImpl::submit(  )
                 if (w->hasFolder(KWallet::Wallet::FormDataFolder())) {
                     w->setFolder(KWallet::Wallet::FormDataFolder());
                     QMap<QString, QString> map;
-                    if (!w->readMap(key, map)) {
+                    if ( !w->readMap(key, map) && (map.count() == m_walletMap.count()) ) {
                         QMap<QString, QString>::const_iterator it = map.constBegin();
                         const QMap<QString, QString>::const_iterator itEnd = map.constEnd();
                         for ( ; it != itEnd; ++it )
-                            if ( map[it.key()] != m_walletMap[it.key()] ) {
+                            if ( it.value() != m_walletMap.value(it.key()) ) {
                                 login_changed = true;
                                 break;
                             }

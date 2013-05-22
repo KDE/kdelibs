@@ -339,6 +339,16 @@ operation UnwindStacks {
 
 operation PopScope {
     impl void () [[
+        // As PushScope does not Push anything on Exception case, we can not Pop.
+        // NOTE: the Exception checking on Push/Pop-Scope is not optimal.
+        // Such a Situation, where PushScope already has a Exception can only
+        // occour if import is used inside the the "with"-statement. As import is
+        // executed at the beginning of the code (as val decl) and can leave a exception.
+        // As "import" is not (yet) part of ECMA-262 the correct behavior is unknown
+        // when this changes we can rework the bahavior, but for now just fix the crash.
+        if (exec->hadException())
+                continue;
+
         exec->popScope();
         exec->popExceptionHandler();
     ]]
@@ -1262,7 +1272,7 @@ operation EvalFuncExpr {
         FunctionImp *func = new FunctionImp(exec, *ident, static_cast<FunctionBodyNode*>(body), exec->scopeChain());
         JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
         proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
-        func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
+        func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete|DontEnum);
 
         if (named) {
             functionScopeObject->put(exec, *ident, func, Internal | ReadOnly | (exec->codeType() == EvalCode ? 0 : DontDelete));

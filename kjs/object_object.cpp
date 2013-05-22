@@ -21,10 +21,11 @@
  */
 
 #include "object_object.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "operations.h"
 #include "function_object.h"
+#include "propertydescriptor.h"
 #include <stdio.h>
 
 namespace KJS {
@@ -42,7 +43,9 @@ public:
 
     virtual JSValue *callAsFunction(ExecState *, JSObject *thisObj, const List &args);
 
-    enum { GetPrototypeOf, GetOwnPropertyNames, Keys };
+    enum { GetOwnPropertyDescriptor, DefineProperty, GetPrototypeOf,
+           GetOwnPropertyNames, Keys, DefineProperties, Create, IsExtensible,
+           PreventExtensible, IsSealed, Seal, IsFrozen, Freeze };
 
 private:
     int id;
@@ -179,15 +182,35 @@ JSValue *ObjectProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, con
 ObjectObjectImp::ObjectObjectImp(ExecState* exec, ObjectPrototype* objProto, FunctionPrototype* funcProto)
   : InternalFunctionImp(funcProto)
 {
+  static const Identifier* getOwnPropertyDescriptorName = new Identifier("getOwnPropertyDescriptor");
+  static const Identifier* createName = new Identifier("create");
+  static const Identifier* definePropertyName = new Identifier("defineProperty");
+  static const Identifier* definePropertiesName = new Identifier("defineProperties");
   static const Identifier* getPrototypeOf = new Identifier("getPrototypeOf");
   static const Identifier* getOwnPropertyNames = new Identifier("getOwnPropertyNames");
+  static const Identifier* sealName = new Identifier("seal");
+  static const Identifier* freezeName = new Identifier("freeze");
+  static const Identifier* preventExtensionsName = new Identifier("preventExtensions");
+  static const Identifier* isSealedName = new Identifier("isSealed");
+  static const Identifier* isFrozenName = new Identifier("isFrozen");
+  static const Identifier* isExtensibleName = new Identifier("isExtensible");
   static const Identifier* keys = new Identifier("keys");
 
   // ECMA 15.2.3.1
   putDirect(exec->propertyNames().prototype, objProto, DontEnum|DontDelete|ReadOnly);
 
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyDescriptor, 2, *getOwnPropertyDescriptorName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Create, 2, *createName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::DefineProperty, 3, *definePropertyName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::DefineProperties, 2, *definePropertiesName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetPrototypeOf, 1, *getPrototypeOf), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::GetOwnPropertyNames, 1, *getOwnPropertyNames), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Seal, 1, *sealName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Freeze, 1, *freezeName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::PreventExtensible, 1, *preventExtensionsName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsSealed, 1, *isSealedName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsFrozen, 1, *isFrozenName), DontEnum);
+  putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::IsExtensible, 1, *isExtensibleName), DontEnum);
   putDirectFunction(new ObjectObjectFuncImp(exec, funcProto, ObjectObjectFuncImp::Keys, 1, *keys), DontEnum);
 
   // no. of arguments for constructor
@@ -232,20 +255,54 @@ ObjectObjectFuncImp::ObjectObjectFuncImp(ExecState* exec, FunctionPrototype* fun
     putDirect(exec->propertyNames().length, len, DontDelete|ReadOnly|DontEnum);
 }
 
+static JSValue* defineProperties(ExecState* exec, JSObject* object, JSValue* properties)
+{
+    JSObject* props = properties->toObject(exec);
+    if (exec->hadException())
+        return object;
+    PropertyNameArray names;
+    props->getOwnPropertyNames(exec, names, PropertyMap::ExcludeDontEnumProperties);
+    int size = names.size();
+    Vector<PropertyDescriptor> descriptors;
+    for (int i = 0; i < size; ++i) {
+        PropertyDescriptor desc;
+        if (!desc.setPropertyDescriptorFromObject(exec, props->get(exec, names[i])))
+            return jsUndefined();
+        descriptors.append(desc);
+    }
+    for (int i = 0; i < size; ++i) {
+        object->defineOwnProperty(exec, names[i], descriptors[i], true);
+        if (exec->hadException())
+            return jsUndefined();
+    }
+    return object;
+}
+
 JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const List& args)
 {
     switch (id) {
     case GetPrototypeOf: { //ECMA Edition 5.1r6 - 15.2.3.2
         JSObject* jso = args[0]->getObject();
         if (!jso)
-            return throwError(exec, TypeError, "\'" + args[0]->toString(exec) + "\' is not an Object");
+            return throwError(exec, TypeError, "Not an Object");
         return jso->prototype();
+    }
+    case GetOwnPropertyDescriptor: { //ECMA Edition 5.1r6 - 15.2.3.3
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        UString name = args[1]->toString(exec);
+        PropertyDescriptor desc;
+        if (!jso->getOwnPropertyDescriptor(exec, Identifier(name), desc))
+            return jsUndefined();
+        return desc.fromPropertyDescriptor(exec);
     }
     case GetOwnPropertyNames: //ECMA Edition 5.1r6 - 15.2.3.4
     case Keys: { //ECMA Edition 5.1r6 - 15.2.3.14
         JSObject* jso = args[0]->getObject();
         if (!jso)
-            return throwError(exec, TypeError, "\'" + args[0]->toString(exec) + "\' is not an Object");
+            return throwError(exec, TypeError, "Not an Object");
 
         JSObject *ret = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinArray()->construct(exec, List::empty()));
         PropertyNameArray propertyNames;
@@ -263,6 +320,134 @@ JSValue *ObjectObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const L
         }
         ret->put(exec, exec->propertyNames().length, jsNumber(n), DontEnum | DontDelete);
         return ret;
+    }
+    case Create: { //ECMA Edition 5.1r6 - 15.2.3.5
+        JSObject *proto = args[0]->getObject();
+        if (!proto && !args[0]->isNull())
+            return throwError(exec, TypeError, "Not an Object");
+
+        JSObject *ret = static_cast<JSObject *>(exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty()));
+        if (proto)
+            ret->setPrototype(proto);
+        else
+            ret->setPrototype(jsNull());
+        if (args.size() >= 2 && !args[1]->isUndefined())
+            return defineProperties(exec, ret, args[1]);
+        return ret;
+    }
+    case DefineProperty: { //ECMA Edition 5.1r6 - 15.2.3.6
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        UString name = args[1]->toString(exec);
+        PropertyDescriptor desc;
+        if (!desc.setPropertyDescriptorFromObject(exec, args[2]))
+            return jsUndefined();
+        if (!jso->defineOwnProperty(exec, Identifier(name), desc, true))
+            return jsUndefined();
+        return jso;
+    }
+    case DefineProperties: { //ECMA Edition 5.1r6 - 15.2.3.7
+        if (!args[0]->isObject())
+            return throwError(exec, TypeError, "Not an Object");
+
+        JSObject* jso = args[0]->getObject();
+        return defineProperties(exec, jso, args[1]);
+    }
+    case Seal: { //ECMA Edition 5.1r6 - 15.2.3.8
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.configurable()) {
+                desc.setConfigureable(false);
+                if (!jso->defineOwnProperty(exec, names[i], desc, true))
+                    return jsUndefined();
+            }
+        }
+        jso->preventExtensions();
+        return jso;
+    }
+    case Freeze: { //ECMA Edition 5.1r6 - 15.2.3.9
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.isDataDescriptor())
+                if (desc.writable())
+                    desc.setWritable(false);
+            if (desc.configurable())
+                desc.setConfigureable(false);
+            if (!jso->defineOwnProperty(exec, names[i], desc, true))
+                return jsUndefined();
+        }
+        jso->preventExtensions();
+        return jso;
+    }
+    case PreventExtensible: { //ECMA Edition 5.1r6 - 15.2.3.10
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+        jso->preventExtensions();
+        return jso;
+    }
+    case IsSealed: { //ECMA Edition 5.1r6 - 15.2.3.11
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.configurable())
+                return jsBoolean(false);
+        }
+        return jsBoolean(!jso->isExtensible());
+    }
+    case IsFrozen: { //ECMA Edition 5.1r6 - 15.2.3.12
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+
+        PropertyNameArray names;
+        jso->getOwnPropertyNames(exec, names, PropertyMap::IncludeDontEnumProperties);
+        int size = names.size();
+
+        PropertyDescriptor desc;
+        for (int i = 0; i < size; ++i) {
+            jso->getOwnPropertyDescriptor(exec, names[i], desc);
+            if (desc.isDataDescriptor())
+                if (desc.writable())
+                    return jsBoolean(false);
+            if (desc.configurable())
+                return jsBoolean(false);
+        }
+        return jsBoolean(!jso->isExtensible());
+    }
+    case IsExtensible: { //ECMA Edition 5.1r6 - 15.2.3.13
+        JSObject* jso = args[0]->getObject();
+        if (!jso)
+            return throwError(exec, TypeError, "Not an Object");
+        return jsBoolean(jso->isExtensible());
     }
     default:
         return jsUndefined();

@@ -170,7 +170,7 @@
  */
 
 #include "dtoa.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "global.h"
 

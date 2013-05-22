@@ -31,17 +31,22 @@ macro_pop_required_vars()
 #Do not make PCRE optional here. PCRE is a hard requirement for modern systems
 #but we give old systems some slack... that's why we don't specify "REQUIRED".
 find_package(PCRE)
+set_package_properties(PCRE PROPERTIES DESCRIPTION "Perl-compatible regular expressions in KJS"
+                       URL "http://www.pcre.org"
+                       TYPE OPTIONAL
+                       PURPOSE "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages."
+                      )
+
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 
 option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support")
 
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
-configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+configure_file(config-kjs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kjs.h )
 
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 
-macro_log_feature(PCRE_FOUND "PCRE" "Perl-compatible regular expressions in KJS" "http://www.pcre.org" FALSE "" "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages.")
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
@@ -139,6 +144,7 @@ create_lut(kjs_LIB_SRCS number_object.cpp number_object.lut.h number_object.cpp)
 create_lut(kjs_LIB_SRCS string_object.cpp string_object.lut.h string_object.cpp)
 create_lut(kjs_LIB_SRCS array_object.cpp array_object.lut.h array_object.cpp)
 create_lut(kjs_LIB_SRCS math_object.cpp math_object.lut.h math_object.cpp)
+create_lut(kjs_LIB_SRCS json_object.cpp json_object.lut.h json_object.cpp)
 create_lut(kjs_LIB_SRCS regexp_object.cpp regexp_object.lut.h regexp_object.cpp)
 create_lut(kjs_LIB_SRCS keywords.table lexer.lut.h lexer.cpp)
 
@@ -190,6 +196,10 @@ set(kjs_LIB_SRCS
    ${CMAKE_CURRENT_BINARY_DIR}/machine.cpp
    nodes2bytecode.cpp
    CompileState.cpp
+   jsonlexer.cpp
+   json_object.cpp
+   jsonstringify.cpp
+   propertydescriptor.cpp
    )
 
 if (NOT DEFINED QT_ONLY)
@@ -230,7 +240,7 @@ set (kjs_bin_OUTPUT_NAME kjs)
 # 'kjs_bin' because cmake doesn't like having a lib and app with the same name
 kde4_add_executable(kjs_bin NOGUI ${kjs_SRCS})
 
-set_target_properties(kjs_bin PROPERTIES OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
+set_target_properties(kjs_bin PROPERTIES RUNTIME_OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
 
 target_link_libraries(kjs_bin ${KJSLIBNAME})
 

@@ -23,7 +23,7 @@
  */
 
 #include "lexer.h"
-#include <config.h>
+#include <config-kjs.h>
 #include <string.h>
 #include <limits.h>
 

@@ -658,7 +658,7 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
                 QString text;
                 QList<KSSLCertificate *> certs;
                 for (int i = certsnr - 1; i >= 0; --i) {
-                    const QByteArray &arg = args[i + 2].toAscii();
+                    const QByteArray &arg = args[i + 2].toLatin1();
                     KSSLCertificate * cert = KSSLCertificate::fromString(arg.constData());
                     if (cert) {
                         certs.prepend(cert);

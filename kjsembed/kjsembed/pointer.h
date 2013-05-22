@@ -102,7 +102,7 @@ public:
 
 struct NullPtr : public PointerBase
 {
-    NullPtr( )
+    NullPtr( ) : ptr(0)
     {
         ;
     }
@@ -122,8 +122,10 @@ struct NullPtr : public PointerBase
 
     void *voidStar()
     {
-        return (void*)0;
+        return &ptr;
     }
+
+    void* ptr;
 
 };
 

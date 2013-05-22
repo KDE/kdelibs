@@ -3737,6 +3737,17 @@ void KDateTimeTest::strings_format()
     dt = KDateTime::fromString(QLatin1String("pm2005absEpt/05sunday/20:2,03+03:00"), QLatin1String("%p%Yab%Bt/%d%A/%S:%l,%M %:z"), &zones);
     QVERIFY(!dt.isValid());    // wrong day-of-week
 
+    dtutc = KDateTime::fromString(QLatin1String("2000-01-01T00:00:00.000+0000"), QLatin1String("%Y-%m-%dT%H:%M%:S%:s%z"));
+    QVERIFY(dtutc.isValid());
+
+    dt = KDateTime::fromString(QLatin1String("2000-01-01T05:00:00.000+0500"), QLatin1String("%Y-%m-%dT%H:%M%:S%:s%z"));
+    QVERIFY(dt.isValid());
+    QVERIFY(dtutc == dt);
+
+    dt = KDateTime::fromString(QLatin1String("1999-12-31T20:30:00.000-0330"), QLatin1String("%Y-%m-%dT%H:%M%:S%:s%z"));
+    QVERIFY(dt.isValid());
+    QVERIFY(dtutc == dt);
+
     dt = KDateTime::fromString(QLatin1String("200509051430:01.3+0100"), QLatin1String("%Y%m%d%H%M%:S%:s%z"), &zones, true);
     QCOMPARE(dt.dateTime(), QDateTime(QDate(2005,9,5), QTime(14,30,01,300), Qt::LocalTime));
     QCOMPARE(dt.timeType(), KDateTime::TimeZone);
@@ -3807,7 +3818,6 @@ void KDateTimeTest::strings_format()
     QVERIFY(!dt.isValid());    // too early
     QVERIFY(dt.outOfRange());
 
-
     // Restore the original local time zone
     if (!originalZone)
         ::unsetenv("TZ");
@@ -3816,6 +3826,9 @@ void KDateTimeTest::strings_format()
     ::tzset();
 }
 
+#ifdef COMPILING_TESTS
+// This test requires a specially-modified kdecore, so use the same compile guard here
+// as used in kdecore/date/kdatetime.cpp
 void KDateTimeTest::cache()
 {
     KTimeZone london = KSystemTimeZones::zone("Europe/London");
@@ -3900,6 +3913,7 @@ void KDateTimeTest::cache()
         ::setenv("TZ", originalZone, 1);
     ::tzset();
 }
+#endif /* COMPILING_TESTS */
 
 void KDateTimeTest::stream()
 {

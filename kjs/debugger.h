@@ -177,14 +177,14 @@ namespace KJS {
      * enterContext() is not called for functions implemented in the native
      * code, since these do not use an execution context.
      *
-     * @param exec The current execution state (corresponding to the new stack
+     * @param exec The current execution state (corresponding to the new stack)
      * @param sourceId The ID of the source code being executed
      * @param lineno The line that is about to be executed
      * @param function The function being called. 0 in non-function context.
      * @param args The arguments that were passed to the function
      * line is being executed. Empty in non-function contexts.
      *
-     * @return true if execution should be continue, false if it should
+     * @return true if execution should be continued, false if it should
      * be aborted
      */
     virtual bool enterContext(ExecState *exec, int sourceId, int lineno,

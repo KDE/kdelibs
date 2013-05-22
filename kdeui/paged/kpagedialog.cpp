@@ -28,7 +28,7 @@
 #include <QTimer>
 #include <QLayout>
 
-KPageDialog::KPageDialog( QWidget *parent, Qt::WFlags flags )
+KPageDialog::KPageDialog( QWidget *parent, Qt::WindowFlags flags )
     : KDialog(*new KPageDialogPrivate, parent, flags)
 {
     Q_D(KPageDialog);
@@ -37,7 +37,7 @@ KPageDialog::KPageDialog( QWidget *parent, Qt::WFlags flags )
   d->init();
 }
 
-KPageDialog::KPageDialog( KPageWidget *widget, QWidget *parent, Qt::WFlags flags )
+KPageDialog::KPageDialog( KPageWidget *widget, QWidget *parent, Qt::WindowFlags flags )
     : KDialog(*new KPageDialogPrivate, parent, flags)
 {
     Q_D(KPageDialog);
@@ -48,7 +48,7 @@ KPageDialog::KPageDialog( KPageWidget *widget, QWidget *parent, Qt::WFlags flags
   d->init();
 }
 
-KPageDialog::KPageDialog(KPageDialogPrivate &dd, KPageWidget *widget, QWidget *parent, Qt::WFlags flags)
+KPageDialog::KPageDialog(KPageDialogPrivate &dd, KPageWidget *widget, QWidget *parent, Qt::WindowFlags flags)
     : KDialog(dd, parent, flags)
 {
     Q_D(KPageDialog);

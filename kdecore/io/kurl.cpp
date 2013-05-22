@@ -403,7 +403,7 @@ KUrl::KUrl( const QString &str )
   if ( !str.isEmpty() ) {
 #ifdef Q_WS_WIN
 #ifdef DEBUG_KURL
-    kDebug(kurlDebugArea()) << "KUrl::KUrl ( const QString &str = " << str.toAscii().data() << " )";
+    kDebug(kurlDebugArea()) << "KUrl::KUrl ( const QString &str = " << str.toLatin1().data() << " )";
 #endif
     QString pathToSet;
     // when it starts with file:// it's a url and must be valid. we don't care if the
@@ -776,7 +776,7 @@ static QString trailingSlash( KUrl::AdjustPathOption trailing, const QString &pa
   if ( trailing == KUrl::AddTrailingSlash )
   {
     int len = result.length();
-    if ( (len == 0) || (result[ len - 1 ] != QLatin1Char('/')) )
+    if ((len > 0) && (result[ len - 1 ] != QLatin1Char('/')))
       result += QLatin1Char('/');
     return result;
   }
@@ -1686,7 +1686,7 @@ KUrl KUrl::fromPathOrUrl( const QString& text )
 static QString _relativePath(const QString &base_dir, const QString &path, bool &isParent)
 {
    QString _base_dir(QDir::cleanPath(base_dir));
-   QString _path(QDir::cleanPath(path.isEmpty() || (path[0] != QLatin1Char('/')) ? _base_dir+QLatin1Char('/')+path : path));
+   QString _path(QDir::cleanPath(path.isEmpty() || QDir::isRelativePath(path) ? _base_dir+QLatin1Char('/')+path : path));
 
    if (_base_dir.isEmpty())
       return _path;
@@ -1769,7 +1769,7 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
 void KUrl::setPath( const QString& _path )
 {
 #if defined(Q_WS_WIN) && defined(DEBUG_KURL)
-    kDebug(kurlDebugArea()) << "KUrl::setPath " << " " << _path.toAscii().data();
+    kDebug(kurlDebugArea()) << "KUrl::setPath " << " " << _path.toLatin1().data();
 #endif
     if ( scheme().isEmpty() )
         setScheme( QLatin1String( "file" ) );

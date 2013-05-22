@@ -340,10 +340,14 @@ DOMString DOMString::format(const char *format, ...)
     va_start(args, format);
 #endif
 
-    if (result == 0)
+    if (result == 0) {
+        va_end(args);
         return DOMString("");
-    if (result < 0)
+    }
+    if (result < 0) {
+        va_end(args);
         return DOMString();
+    }
     unsigned len = result;
     buffer.grow(len + 1);
     

@@ -96,6 +96,20 @@ void KMimeTypeTest::initTestCase()
         group.writeEntry("MimeType", "text/plain;");
     }
 
+    // Create fake text editor service, for testPreferredService
+    m_kdeApp = KStandardDirs::locateLocal("xdgdata-apps", "fake_kde_application.desktop");
+    const bool mustCreateKdeApp = !QFile::exists(m_kdeApp);
+    if (mustCreateKdeApp) {
+        mustUpdateKSycoca = true;
+        KDesktopFile file(m_kdeApp);
+        KConfigGroup group = file.desktopGroup();
+        group.writeEntry("Name", "KDEApp");
+        group.writeEntry("Type", "Application");
+        group.writeEntry("Exec", "kate");
+        group.writeEntry("MimeType", "text/plain;");
+        group.writeEntry("Categories", "Qt;KDE;");
+    }
+
     // Create fake "NotShowIn=KDE" service
     m_nonKdeApp = KStandardDirs::locateLocal("xdgdata-apps", "fake_nonkde_application.desktop");
     const bool mustCreateNonKdeApp = !QFile::exists(m_nonKdeApp);
@@ -117,9 +131,10 @@ void KMimeTypeTest::initTestCase()
         QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
     }
 
-    KService::Ptr fakeApp = KService::serviceByStorageId("fake_nonkde_application.desktop");
-    QVERIFY(fakeApp); // it should be found.
+    QVERIFY(KService::serviceByStorageId("fake_nonkde_application.desktop"));
     QVERIFY(KService::serviceByDesktopPath(m_nonKdeApp)); // the desktoppath is the full path nowadays
+    QVERIFY(KService::serviceByStorageId("fake_kde_application.desktop"));
+    QVERIFY(KService::serviceByDesktopPath(m_kdeApp));
 
     KGlobal::locale();
 }
@@ -134,6 +149,8 @@ void KMimeTypeTest::cleanupTestCase()
     QFile::remove(fakePart);
     const QString fakePlugin = KStandardDirs::locateLocal("services", "faketextplugin.desktop");
     QFile::remove(fakePlugin);
+    QFile::remove(m_kdeApp);
+    QFile::remove(m_nonKdeApp);
     //QProcess::execute( KGlobal::dirs()->findExe(KBUILDSYCOCA_EXENAME) );
     KProcess proc;
     proc << KStandardDirs::findExe(KBUILDSYCOCA_EXENAME);
@@ -326,7 +343,8 @@ void KMimeTypeTest::testFindByPathWithContent()
     }
 
     // Now the case where extension differs from contents, but contents has >80 magic rule
-    // XDG spec says: contents wins. But we can't sniff all files...
+    // XDG spec used to say: contents wins. But we can't sniff all files...
+    // XDG spec has now been amended, extensions always win.
     {
         KTemporaryFile txtTempFile;
         txtTempFile.setSuffix(".txt");
@@ -683,6 +701,8 @@ void KMimeTypeTest::testPreferredService()
 {
     // The "NotShowIn=KDE" service should not be the preferred one!
     KService::Ptr serv = KMimeTypeTrader::self()->preferredService("text/plain");
+    QVERIFY( serv );
+    qDebug() << serv->entryPath();
     QVERIFY( serv->entryPath() != m_nonKdeApp );
 }
 
@@ -929,7 +949,7 @@ void KMimeTypeTest::testHelperProtocols()
     KService::Ptr kmail2 = KService::serviceByStorageId("KMail2.desktop");
     if (kmail2) {
         //qDebug() << kmail2->entryPath();
-        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption \"%c\"")), // comes from KMail2.desktop
+        QVERIFY2(KProtocolInfo::exec("mailto").contains(QLatin1String("kmail -caption ")), // comes from KMail2.desktop
                  qPrintable(KProtocolInfo::exec("mailto")));
     } else {
         QCOMPARE(KProtocolInfo::exec("mailto"), QLatin1String("kmailservice %u"));

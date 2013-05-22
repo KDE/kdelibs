@@ -90,7 +90,8 @@ KMimeTypeChooser::KMimeTypeChooser( const QString &text,
 
   d->mimeTypeTree->setColumnCount(headerLabels.count());
   d->mimeTypeTree->setHeaderLabels(headerLabels);
-  d->mimeTypeTree->setColumnWidth(0, 200); // big enough for most names, but not for the insanely long ones
+  QFontMetrics fm(d->mimeTypeTree->fontMetrics());
+  d->mimeTypeTree->setColumnWidth(0, 20 * fm.height()); // big enough for most names, but not for the insanely long ones
 
   d->loadMimeTypes( selMimeTypes );
 
@@ -207,6 +208,7 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
 #ifndef Q_OS_WIN
                       + " --parent " + QString::number( (ulong)q->topLevelWidget()->winId())
 #endif
+                      + " --caption " + KShell::quoteArg(KGlobal::caption())
                       + ' ' + KShell::quoteArg(mt),
                       keditfiletype, keditfiletype /*unused*/, q->topLevelWidget());
 }
@@ -214,7 +216,7 @@ void KMimeTypeChooserPrivate::_k_editMimeType()
 void KMimeTypeChooserPrivate::_k_slotCurrentChanged(QTreeWidgetItem* item)
 {
   if ( btnEditMimeType )
-    btnEditMimeType->setEnabled( item->parent() );
+    btnEditMimeType->setEnabled(item && item->parent());
 }
 
 void KMimeTypeChooserPrivate::_k_slotSycocaDatabaseChanged(const QStringList& changedResources)

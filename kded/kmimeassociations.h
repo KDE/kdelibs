@@ -45,6 +45,7 @@ public:
         return QList<KServiceOffer>();
     }
     void addServiceOffer(const QString& serviceType, const KServiceOffer& offer);
+    void addInheritedServiceOffer(const QString& serviceType, const KServiceOffer& offer);
     void removeServiceOffer(const QString& serviceType, KService::Ptr service);
     bool hasRemovedOffer(const QString& serviceType, KService::Ptr service) const;
 

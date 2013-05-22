@@ -108,10 +108,8 @@ static QDateTime parseDate(const QString& _value)
         };
 
         for (int i = 0; date_formats[i]; ++i) {
-            qDebug() << "Checking" << value << "vs" << date_formats[i];
             dt = KDateTime::fromString(value, QL1S(date_formats[i]));
             if (dt.isValid()) {
-                qDebug() << "Matched" << date_formats[i];
                 break;
             }
         }
@@ -135,6 +133,7 @@ QString KCookieJar::adviceToStr(KCookieAdvice _advice)
     switch( _advice )
     {
     case KCookieAccept: return QL1S("Accept");
+    case KCookieAcceptForSession: return QL1S("AcceptForSession");
     case KCookieReject: return QL1S("Reject");
     case KCookieAsk: return QL1S("Ask");
     default: return QL1S("Dunno");
@@ -150,6 +149,8 @@ KCookieAdvice KCookieJar::strToAdvice(const QString &_str)
 
     if (advice == QL1S("accept"))
         return KCookieAccept;
+    else if (advice == QL1S("acceptforsession"))
+        return KCookieAcceptForSession;
     else if (advice == QL1S("reject"))
         return KCookieReject;
     else if (advice == QL1S("ask"))
@@ -182,8 +183,10 @@ KHttpCookie::KHttpCookie(const QString &_host,
        mExpireDate(_expireDate),
        mProtocolVersion(_protocolVersion),
        mSecure(_secure),
+       mCrossDomain(false),
        mHttpOnly(_httpOnly),
-       mExplicitPath(_explicitPath)
+       mExplicitPath(_explicitPath),
+       mUserSelectedAdvice(KCookieDunno)
 {
 }
 
@@ -349,7 +352,6 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
     QString cookieStr, fqdn, path;
     QStringList domains;
     int port = -1;
-    KCookieAdvice advice = m_globalAdvice;
 
     if (!parseUrl(_url, fqdn, path, &port))
         return cookieStr;
@@ -383,20 +385,12 @@ QString KCookieJar::findCookies(const QString &_url, bool useDOMFormat, long win
              continue; // No cookies for this domain
        }
 
-       if (cookieList->getAdvice() != KCookieDunno)
-          advice = cookieList->getAdvice();
-
        QMutableListIterator<KHttpCookie> cookieIt (*cookieList);
        while (cookieIt.hasNext()) 
        {
           KHttpCookie& cookie = cookieIt.next();
-          // If the we are setup to automatically accept all session cookies and to
-          // treat all cookies as session cookies or the current cookie is a session
-          // cookie, then send the cookie back regardless of domain policy.
-          if (advice == KCookieReject &&
-              !(m_autoAcceptSessionCookies &&
-                (m_ignoreCookieExpirationDate || cookie.expireDate() == 0)))
-              continue;
+          if (cookieAdvice(cookie) == KCookieReject)
+             continue;
 
           if (!cookie.match(fqdn, domains, path, port))
              continue;
@@ -550,7 +544,7 @@ static const char * parseNameValue(const char *header,
 
 }
 
-void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
+void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain) const
 {
    QStringList domains;
    extractDomains(_fqdn, domains);
@@ -562,7 +556,7 @@ void KCookieJar::stripDomain(const QString &_fqdn, QString &_domain)
       _domain = QL1S("");
 }
 
-QString KCookieJar::stripDomain(const KHttpCookie& cookie)
+QString KCookieJar::stripDomain(const KHttpCookie& cookie) const
 {
     QString domain; // We file the cookie under this domain.
     if (cookie.domain().isEmpty())
@@ -572,10 +566,7 @@ QString KCookieJar::stripDomain(const KHttpCookie& cookie)
     return domain;
 }
 
-bool KCookieJar::parseUrl(const QString &_url,
-                          QString &_fqdn,
-                          QString &_path,
-                          int *port)
+bool KCookieJar::parseUrl(const QString &_url, QString &_fqdn, QString &_path, int *port)
 {
     KUrl kurl(_url);
     if (!kurl.isValid() || kurl.protocol().isEmpty())
@@ -948,6 +939,15 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
     // are properly removed and/or updated as necessary!
     extractDomains( cookie.host(), domains );
 
+    // If the cookie specifies a domain, check whether it is valid. Otherwise,
+    // accept the cookie anyways but removes the domain="" value to prevent
+    // cross-site cookie injection.
+    if (!cookie.domain().isEmpty()) {
+      if (!domains.contains(cookie.domain()) &&
+          !cookie.domain().endsWith(QL1C('.') + cookie.host()))
+         cookie.fixDomain(QString());
+    }
+
     QStringListIterator it (domains);
     while (it.hasNext())
     {
@@ -1007,26 +1007,19 @@ void KCookieJar::addCookie(KHttpCookie &cookie)
 // This function advices whether a single KHttpCookie object should
 // be added to the cookie jar.
 //
-KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
+KCookieAdvice KCookieJar::cookieAdvice(const KHttpCookie& cookie) const
 {
     if (m_rejectCrossDomainCookies && cookie.isCrossDomain())
        return KCookieReject;
 
+    if (cookie.getUserSelectedAdvice() != KCookieDunno)
+       return cookie.getUserSelectedAdvice();
+
+    if (m_autoAcceptSessionCookies && cookie.expireDate() == 0)
+       return KCookieAccept;
+
     QStringList domains;
     extractDomains(cookie.host(), domains);
-
-    // If the cookie specifies a domain, check whether it is valid. Otherwise,
-    // accept the cookie anyways but removes the domain="" value to prevent
-    // cross-site cookie injection.
-    if (!cookie.domain().isEmpty()) {
-      if (!domains.contains(cookie.domain()) &&
-          !cookie.domain().endsWith(QL1C('.') + cookie.host()))
-         cookie.fixDomain(QString());
-    }
-
-    if (m_autoAcceptSessionCookies && (cookie.expireDate() == 0 ||
-        m_ignoreCookieExpirationDate))
-       return KCookieAccept;
 
     KCookieAdvice advice = KCookieDunno;
     QStringListIterator it (domains);
@@ -1046,10 +1039,28 @@ KCookieAdvice KCookieJar::cookieAdvice(KHttpCookie& cookie)
 }
 
 //
+// This function tells whether a single KHttpCookie object should
+// be considered persistent. Persistent cookies do not get deleted
+// at the end of the session and are saved on disk.
+//
+bool KCookieJar::cookieIsPersistent(const KHttpCookie& cookie) const
+{
+    if (cookie.expireDate() == 0)
+       return false;
+
+    KCookieAdvice advice = cookieAdvice(cookie);
+
+    if (advice == KCookieReject || advice == KCookieAcceptForSession)
+       return false;
+
+    return true;
+}
+
+//
 // This function gets the advice for all cookies originating from
 // _domain.
 //
-KCookieAdvice KCookieJar::getDomainAdvice(const QString &_domain)
+KCookieAdvice KCookieJar::getDomainAdvice(const QString &_domain) const
 {
     KHttpCookieList *cookieList = m_cookieDomains.value(_domain);
     KCookieAdvice advice;
@@ -1213,9 +1224,9 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             KHttpCookie& cookie = cookieIterator.next();
-            if ((cookie.expireDate() != 0) && !m_ignoreCookieExpirationDate) {
+
+            if (cookieIsPersistent(cookie))
                continue;
-            }
 
             QList<long> &ids = cookie.windowIds();
 
@@ -1284,12 +1295,13 @@ bool KCookieJar::saveCookies(const QString &_filename)
         QMutableListIterator<KHttpCookie> cookieIterator(*cookieList);
         while (cookieIterator.hasNext()) {
             const KHttpCookie& cookie = cookieIterator.next();
+
             if (cookie.isExpired()) {
                 // Delete expired cookies
                 cookieIterator.remove();
                 continue;
             }
-            if (cookie.expireDate() != 0 && !m_ignoreCookieExpirationDate) {
+            if (cookieIsPersistent(cookie)) {
                 // Only save cookies that are not "session-only cookies"
                 if (!domainPrinted) {
                     domainPrinted = true;
@@ -1526,7 +1538,6 @@ void KCookieJar::loadConfig(KConfig *_config, bool reparse )
     // Warning: those default values are duplicated in the kcm (kio/kcookiespolicies.cpp)
     m_rejectCrossDomainCookies = policyGroup.readEntry("RejectCrossDomainCookies", true);
     m_autoAcceptSessionCookies = policyGroup.readEntry("AcceptSessionCookies", true);
-    m_ignoreCookieExpirationDate = policyGroup.readEntry("IgnoreExpirationDate", false);
     m_globalAdvice = strToAdvice(policyGroup.readEntry("CookieGlobalAdvice", QString(QL1S("Accept"))));
 
     // Reset current domain settings first.

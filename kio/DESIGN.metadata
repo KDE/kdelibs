@@ -81,7 +81,9 @@ setcookies      string          Used to send/receive HTTP cookies when "cookies"
 
 errorPage       bool            Flag that indicates that an errorPage() is preferred over an error().                                      (default:true)
 
-no-auth         bool            Flag that indicates that no authentication attempts should be made.
+no-auth         bool            Flag that indicates that no authentication (neither WWW nor proxy) attempts should be made.
+no-www-auth     bool            Flag that indicates that no HTTP WWW authentication attempts should be made.
+no-proxy-auth   bool            Flag that indicates that no HTTP proxy authentication attempts should be made.
 no-auth-prompt  bool            Flag that indicates that only cached authentication tokens should be used.
 no-preemptive-auth-reuse  bool  Flag that indicates whether cached credentials should be preemptively sent to the server.
 

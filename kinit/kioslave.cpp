@@ -92,7 +92,7 @@ int main(int argc, char **argv)
             QStringList pathlist = paths.split(';');
             Q_FOREACH(const QString &path, pathlist) {
               QString slave_path = path + QLatin1String("/lib/kde4/") + QFileInfo(libpath).fileName();
-              qDebug("trying to load '%s'",slave_path.toAscii().data());
+              qDebug("trying to load '%s'",slave_path.toLatin1().data());
               lib.setFileName(slave_path);
               if (lib.load() && lib.isLoaded() )
                 break;

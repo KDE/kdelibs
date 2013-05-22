@@ -2,45 +2,58 @@
 # Once done this will define
 #
 #  STRIGI_FOUND - system has Strigi
-#  STRIGI_INCLUDE_DIR - the Strigi include directory
+#  STRIGI_INCLUDE_DIRS - the Strigi include directories
 #  STRIGI_STREAMANALYZER_LIBRARY - Link these to use Strigi streamanalyzer
 #  STRIGI_STREAMS_LIBRARY - Link these to use Strigi streams
 #  STRIGI_LINE_ANALYZER_PREFIX - strigi plugin prefix
 #  STRIGI_THROUGH_ANALYZER_PREFIX - strigi plugin prefix
-
+#
+# The following variable is set for source compatibility purpose.
+#  STRIGI_INCLUDE_DIR - the Strigi include directory
+#
 # Copyright (c) 2008, Jos van den Oever, <jos@vandenoever.info>
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
+# Compat
+if(DEFINED STRIGI_MIN_VERSION)
+  set(Strigi_FIND_VERSION ${STRIGI_MIN_VERSION})
+endif()
 
-if(NOT STRIGI_MIN_VERSION)
-    set(STRIGI_MIN_VERSION "0.5.9")
-endif(NOT STRIGI_MIN_VERSION)
+if(NOT Strigi_FIND_VERSION)
+    set(Strigi_FIND_VERSION "0.5.9")
+endif()
 
 file(TO_CMAKE_PATH "$ENV{STRIGI_HOME}" strigi_home)
 
 set(_Strigi_FIND_QUIETLY ${Strigi_FIND_QUIETLY})
-# Try to find and load the StrigiConfig.cmake installed by kdesupport/strigi
+# Try to find and load the StrigiConfig.cmake installed by libstreams
 find_package(Strigi QUIET NO_MODULE PATHS "${strigi_home}/lib/strigi" "${strigi_home}/lib64/strigi")
 set(Strigi_FIND_QUIETLY ${_Strigi_FIND_QUIETLY})
 
-# If StrigiConfig.cmake (installed by kdesupport/Strigi) has been found
-# and it contains all necessary information (since November 16th, 2008), use the information 
-# included there, otherwise search it in the same way as any non-cmake project. 
-# This variable is set by StrigiConfig.cmake .  Alex
+# If StrigiConfig.cmake (installed by libstreams) has been found
+# and it contains all necessary information (since November 16th, 2008), use the information
+# included there, otherwise search it in the same way as any non-cmake project.
+# This variable is set by StrigiConfig.cmake.  Alex
 if (STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
-   set (_strigiErrorMessage "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_PREFIX_PATH) to the strigi install dir.")
-   set(STRIGI_VERSION_OK TRUE)
-   if(STRIGI_VERSION VERSION_LESS ${STRIGI_MIN_VERSION})
-      set(_strigiErrorMessage "Strigi version ${STRIGI_VERSION} found, but at least version ${STRIGI_MIN_VERSION} is required")
-      set(STRIGI_VERSION_OK FALSE)
-   endif(STRIGI_VERSION VERSION_LESS ${STRIGI_MIN_VERSION})
+
+   if(NOT STRIGI_VERSION VERSION_LESS ${Strigi_FIND_VERSION})
+     set(STRIGI_VERSION_OK TRUE)
+     set (_strigiErrorMessage "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_PREFIX_PATH) to the strigi install dir.")
+   else()
+     set(_strigiErrorMessage "Strigi version ${STRIGI_VERSION} found, but at least version ${Strigi_FIND_VERSION} is required")
+   endif()
 
    include(FindPackageHandleStandardArgs)
-   find_package_handle_standard_args(Strigi 
-       "${_strigiErrorMessage}"
-       STRIGI_STREAMS_LIBRARY  STRIGI_STREAMANALYZER_LIBRARY  STRIGI_INCLUDE_DIR  STRIGI_VERSION_OK)
+
+  # Redefine STRIGI_INCLUDE_DIR if _DIRS exists
+  # TODO KDE5 Remove STRIGI_INCLUDE_DIR
+  if(DEFINED STRIGI_INCLUDE_DIRS)
+    set(STRIGI_INCLUDE_DIR ${STRIGI_INCLUDE_DIRS})
+  endif()
+   find_package_handle_standard_args(Strigi "${_strigiErrorMessage}"
+       STRIGI_STREAMS_LIBRARY STRIGI_STREAMANALYZER_LIBRARY STRIGI_INCLUDE_DIR STRIGI_VERSION_OK)
 
 else(STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
    # this else() branch is for finding strigi versions before November 16th, 2008. Alex
@@ -55,7 +68,7 @@ else(STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
        if(NOT strigi_home)
            find_package(PkgConfig)
            if(PKG_CONFIG_EXECUTABLE)
-               pkg_check_modules(STRIGI QUIET libstreamanalyzer>=${STRIGI_MIN_VERSION})
+               pkg_check_modules(STRIGI QUIET libstreamanalyzer>=${Strigi_FIND_VERSION})
            endif(PKG_CONFIG_EXECUTABLE)
        endif(NOT strigi_home)
    endif(NOT WIN32)

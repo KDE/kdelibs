@@ -47,14 +47,14 @@ QDBusArgument& operator<<( QDBusArgument& arg, const Nepomuk::Query::Result& res
     arg.beginStructure();
 
     // resource URI and score
-    arg << QString::fromAscii( result.resource().resourceUri().toEncoded() ) << result.score();
+    arg << QString::fromLatin1( result.resource().resourceUri().toEncoded() ) << result.score();
 
     // request properties
     arg.beginMap( QVariant::String, qMetaTypeId<Soprano::Node>() );
     QHash<Nepomuk::Types::Property, Soprano::Node> rp = result.requestProperties();
     for ( QHash<Nepomuk::Types::Property, Soprano::Node>::const_iterator it = rp.constBegin(); it != rp.constEnd(); ++it ) {
         arg.beginMapEntry();
-        arg << QString::fromAscii( it.key().uri().toEncoded() ) << it.value();
+        arg << QString::fromLatin1( it.key().uri().toEncoded() ) << it.value();
         arg.endMapEntry();
     }
     arg.endMap();
@@ -89,7 +89,7 @@ const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::Query::Resul
     double score = 0.0;
 
     arg >> uri >> score;
-    result = Nepomuk::Query::Result( Nepomuk::Resource::fromResourceUri( QUrl::fromEncoded( uri.toAscii() ) ), score );
+    result = Nepomuk::Query::Result( Nepomuk::Resource::fromResourceUri( QUrl::fromEncoded( uri.toLatin1() ) ), score );
 
     arg.beginMap();
     while ( !arg.atEnd() ) {
@@ -98,7 +98,7 @@ const QDBusArgument& operator>>( const QDBusArgument& arg, Nepomuk::Query::Resul
         arg.beginMapEntry();
         arg >> rs >> node;
         arg.endMapEntry();
-        result.addRequestProperty( QUrl::fromEncoded( rs.toAscii() ), node );
+        result.addRequestProperty( QUrl::fromEncoded( rs.toLatin1() ), node );
     }
     arg.endMap();
 
@@ -131,7 +131,7 @@ QDBusArgument& operator<<( QDBusArgument& arg, const Soprano::Node& node )
     arg.beginStructure();
     arg << ( int )node.type();
     if ( node.type() == Soprano::Node::ResourceNode ) {
-        arg << QString::fromAscii( node.uri().toEncoded() );
+        arg << QString::fromLatin1( node.uri().toEncoded() );
     }
     else {
         arg << node.toString();
@@ -155,10 +155,10 @@ const QDBusArgument& operator>>( const QDBusArgument& arg, Soprano::Node& node )
         if ( dataTypeUri.isEmpty() )
             node = Soprano::Node( Soprano::LiteralValue::createPlainLiteral( value, language ) );
         else
-            node = Soprano::Node( Soprano::LiteralValue::fromString( value, QUrl::fromEncoded( dataTypeUri.toAscii() ) ) );
+            node = Soprano::Node( Soprano::LiteralValue::fromString( value, QUrl::fromEncoded( dataTypeUri.toLatin1() ) ) );
     }
     else if ( type == Soprano::Node::ResourceNode ) {
-        node = Soprano::Node( QUrl::fromEncoded( value.toAscii() ) );
+        node = Soprano::Node( QUrl::fromEncoded( value.toLatin1() ) );
     }
     else if ( type == Soprano::Node::BlankNode ) {
         node = Soprano::Node( value );

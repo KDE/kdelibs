@@ -35,17 +35,17 @@ GenericInterface::~GenericInterface()
 
 QVariant GenericInterface::property(const QString &key) const
 {
-    return m_device->prop(key);
+    return m_device.data()->prop(key);
 }
 
 QMap<QString, QVariant> GenericInterface::allProperties() const
 {
-    return m_device->allProperties();
+    return m_device.data()->allProperties();
 }
 
 bool GenericInterface::propertyExists(const QString &key) const
 {
-    return m_device->propertyExists(key);
+    return m_device.data()->propertyExists(key);
 }
 
 #include "backends/upower/upowergenericinterface.moc"

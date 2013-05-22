@@ -120,6 +120,7 @@ QWidget* KFontAction::createWidget(QWidget* parent)
     // the KSelectAction one, preventing KSelectAction from creating its
     // regular KComboBox.
     KFontComboBox *cb = new KFontComboBox( parent );
+    cb->setFontList(items());
 
     kDebug(129) << "\tset=" << font();
     // Do this before connecting the signal so that nothing will fire.

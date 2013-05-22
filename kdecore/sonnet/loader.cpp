@@ -83,14 +83,9 @@ SpellerPlugin *Loader::createSpeller(const QString& language,
 {
     QString pclient = clientName;
     QString plang   = language;
-    bool ddefault = false;
 
     if (plang.isEmpty()) {
         plang = d->settings->defaultLanguage();
-    }
-    if (clientName == d->settings->defaultClient() &&
-        plang == d->settings->defaultLanguage()) {
-        ddefault = true;
     }
 
     const QList<Client*> lClients = d->languageClients[plang];

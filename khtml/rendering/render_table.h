@@ -96,6 +96,8 @@ public:
 
     virtual void calcWidth();
 
+    virtual QList< QRectF > getClientRects();
+
     virtual FindSelectionResult checkSelectionPoint( int _x, int _y, int _tx, int _ty,
                                                      DOM::NodeImpl*& node, int & offset,
 						     SelPointState & );

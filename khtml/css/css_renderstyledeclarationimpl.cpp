@@ -35,6 +35,7 @@ using namespace khtml;
 // List of all properties we know how to compute, omitting shorthands.
 static const int computedProperties[] = {
     CSS_PROP_BACKGROUND_COLOR,
+    CSS_PROP_BACKGROUND_CLIP,
     CSS_PROP_BACKGROUND_IMAGE,
     CSS_PROP_BACKGROUND_REPEAT,
     CSS_PROP_BACKGROUND_ATTACHMENT,
@@ -415,6 +416,17 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
     {
     case CSS_PROP_BACKGROUND_COLOR:
         return valueForColor(style->backgroundColor());
+    case CSS_PROP_BACKGROUND_CLIP:
+        switch (style->backgroundLayers()->backgroundClip()) {
+            case BGBORDER:
+                return new CSSPrimitiveValueImpl(CSS_VAL_BORDER_BOX);
+            case BGPADDING:
+                return new CSSPrimitiveValueImpl(CSS_VAL_PADDING_BOX);
+            case BGCONTENT:
+                return new CSSPrimitiveValueImpl(CSS_VAL_CONTENT_BOX);
+        }
+        Q_ASSERT(0);
+        break;
     case CSS_PROP_BACKGROUND_IMAGE:
         if (style->backgroundImage())
             return new CSSPrimitiveValueImpl(style->backgroundImage()->url(),
@@ -433,6 +445,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         default:
             Q_ASSERT( 0 );
         }
+        break;
     case CSS_PROP_BACKGROUND_ATTACHMENT:
         switch (style->backgroundAttachment()) {
         case khtml::BGASCROLL:
@@ -443,7 +456,8 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             return new CSSPrimitiveValueImpl(CSS_VAL_LOCAL);
         default:
             Q_ASSERT( 0 );
-        }                    
+        }
+        break;
     case CSS_PROP_BACKGROUND_POSITION:
     {
         RETURN_NULL_ON_NULL(renderer);
@@ -706,6 +720,8 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
         case FRIGHT_ALIGN:
             return new CSSPrimitiveValueImpl(CSS_VAL__KHTML_RIGHT);
         }
+        Q_ASSERT( 0 );
+        break;
     }
     case CSS_PROP_FONT_FAMILY:
     {

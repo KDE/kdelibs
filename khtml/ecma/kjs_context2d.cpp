@@ -162,11 +162,37 @@ static bool argFloatsOK(ExecState* exec, const List& args, int minArg, int maxAr
     return true;
 }
 
+// Checks if the JSValue is Inf or NaN
+static bool argFloatIsInforNaN(ExecState* exec, const JSValue* v)
+{
+    float val = v->toFloat(exec);
+    if (KJS::isNaN(val) || KJS::isInf(val))
+        return true;
+    return false;
+}
+
+
+// Checks if one the arguments if Inf or NaN
+static bool argumentsContainInforNaN(ExecState* exec, const List& args, int minArg, int maxArg)
+{
+    for (int c = minArg; c <= maxArg; ++c) {
+        if (argFloatIsInforNaN(exec, args[c]))
+            return true;
+    }
+    return false;
+}
+
 // HTML5-style checking
 #define KJS_REQUIRE_ARGS(n) do { if (!enoughArguments(exec, args,n)) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_ARGS(min,max) do { if (!argFloatsOK(exec, args, min, max, false )) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_OR_INF_ARGS(min,max) do { if (!argFloatsOK(exec, args, min, max, true)) return jsUndefined(); } while(0);
 #define KJS_CHECK_FLOAT_VAL(v) if (!valFloatOK(exec, v, false)) return;
+
+// Unlike the above checks, ignore the invalid(Inf/NaN) values,
+// without throwing an exception 
+#define KJS_CHECK_FLOAT_IGNORE_INVALID(v) do { if (argFloatIsInforNaN(exec, v)) return; } while(0)
+#define KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(min,max) do { if (argumentsContainInforNaN(exec, args, min, max)) return jsUndefined(); } while(0)
+
 
 JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
@@ -205,7 +231,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     case Context2D::Rotate: {
         KJS_REQUIRE_ARGS(1);
         // Rotate actually rejects NaN/infinity as well
-        KJS_CHECK_FLOAT_ARGS(0, 0);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 0);
 
 
         ctx->rotate(args[0]->toFloat(exec));
@@ -287,7 +313,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     // Rectangle ops
     case Context2D::ClearRect: {
         KJS_REQUIRE_ARGS(4);
-        KJS_CHECK_FLOAT_ARGS(0, 3);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 3);
 
         ctx->clearRect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                        args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -298,7 +324,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::FillRect: {
         KJS_REQUIRE_ARGS(4);
-        KJS_CHECK_FLOAT_ARGS(0, 3);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 3);
 
         ctx->fillRect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                       args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -309,7 +335,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::StrokeRect: {
         KJS_REQUIRE_ARGS(4);
-        KJS_CHECK_FLOAT_ARGS(0, 3);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 3);
 
         ctx->strokeRect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                         args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -331,7 +357,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::MoveTo: {
         KJS_REQUIRE_ARGS(2);
-        KJS_CHECK_FLOAT_ARGS(0, 1);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 1);
 
         ctx->moveTo(args[0]->toFloat(exec), args[1]->toFloat(exec));
         break;
@@ -339,7 +365,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::LineTo: {
         KJS_REQUIRE_ARGS(2);
-        KJS_CHECK_FLOAT_ARGS(0, 1);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 1);
 
         ctx->lineTo(args[0]->toFloat(exec), args[1]->toFloat(exec));
         break;
@@ -347,7 +373,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::QuadraticCurveTo: {
         KJS_REQUIRE_ARGS(4);
-        KJS_CHECK_FLOAT_ARGS(0, 3);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 3);
 
         ctx->quadraticCurveTo(args[0]->toFloat(exec), args[1]->toFloat(exec),
                               args[2]->toFloat(exec), args[3]->toFloat(exec));
@@ -356,7 +382,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::BezierCurveTo: {
         KJS_REQUIRE_ARGS(6);
-        KJS_CHECK_FLOAT_ARGS(0, 5);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 5);
 
         ctx->bezierCurveTo(args[0]->toFloat(exec), args[1]->toFloat(exec),
                            args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -366,7 +392,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::ArcTo: {
         KJS_REQUIRE_ARGS(5);
-        KJS_CHECK_FLOAT_ARGS(0, 4);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 4);
 
         ctx->arcTo(args[0]->toFloat(exec), args[1]->toFloat(exec),
                    args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -376,7 +402,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::Rect: {
         KJS_REQUIRE_ARGS(4);
-        KJS_CHECK_FLOAT_ARGS(0, 3);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 3);
 
         ctx->rect(args[0]->toFloat(exec), args[1]->toFloat(exec),
                   args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -386,7 +412,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::Arc: {
         KJS_REQUIRE_ARGS(6);
-        KJS_CHECK_FLOAT_ARGS(0, 5);
+        KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(0, 5);
 
         ctx->arc(args[0]->toFloat(exec), args[1]->toFloat(exec),
                  args[2]->toFloat(exec), args[3]->toFloat(exec),
@@ -412,7 +438,9 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
 
     case Context2D::IsPointInPath: {
         KJS_REQUIRE_ARGS(2);
-        KJS_CHECK_FLOAT_ARGS(0, 1);
+        if (argumentsContainInforNaN(exec, args, 0, 1)) {
+            return jsBoolean(false);
+        }
         return jsBoolean(ctx->isPointInPath(args[0]->toFloat(exec),
                                             args[1]->toFloat(exec)));
     }
@@ -430,13 +458,13 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
         }
 
         if (args.size() < 5) { // 3 or 4 arguments
-            KJS_CHECK_FLOAT_ARGS(1, 2);
+            KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(1, 2);
             ctx->drawImage(el,
                            args[1]->toFloat(exec),
                            args[2]->toFloat(exec),
                            exception);
         } else if (args.size() < 9) { // 5 through 9 arguments
-            KJS_CHECK_FLOAT_ARGS(1, 4);
+            KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(1, 4);
             ctx->drawImage(el,
                            args[1]->toFloat(exec),
                            args[2]->toFloat(exec),
@@ -444,7 +472,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
                            args[4]->toFloat(exec),
                            exception);
         } else  { // 9 or more arguments
-            KJS_CHECK_FLOAT_ARGS(1, 8);
+            KJS_CHECK_FLOAT_ARGUMENTS_IGNORE_INVALID(1, 8);
             ctx->drawImage(el,
                            args[1]->toFloat(exec),
                            args[2]->toFloat(exec),
@@ -605,7 +633,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int
     CanvasContext2DImpl* ctx = impl();
     switch(token) {
     case GlobalAlpha:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setGlobalAlpha(value->toFloat(exec));
         break;
     case GlobalCompositeOperation:
@@ -618,7 +646,7 @@ void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int
         ctx->setFillStyle(decodeStyle(exec, value));
         break;
     case LineWidth:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setLineWidth(value->toFloat(exec));
         break;
     case LineCap:
@@ -628,19 +656,19 @@ void Context2D::putValueProperty(ExecState *exec, int token, JSValue *value, int
         ctx->setLineJoin(value->toString(exec).domString());
         break;
     case MiterLimit:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setMiterLimit(value->toFloat(exec));
         break;
     case ShadowOffsetX:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setShadowOffsetX(value->toFloat(exec));
         break;
     case ShadowOffsetY:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setShadowOffsetY(value->toFloat(exec));
         break;
     case ShadowBlur:
-        KJS_CHECK_FLOAT_VAL(value);
+        KJS_CHECK_FLOAT_IGNORE_INVALID(value);
         ctx->setShadowBlur(value->toFloat(exec));
         break;
     case ShadowColor:
@@ -816,11 +844,11 @@ unsigned char CanvasImageDataArray::decodeComponent(ExecState* exec, JSValue* js
 {
     double val = jsVal->toNumber(exec);
 
-    if (jsVal == jsUndefined())
+    if (jsVal->isUndefined())
         val = 0.0;
-    if (val < 0.0)
+    else if (val < 0.0)
         val = 0.0;
-    if (val > 255.0)
+    else if (val > 255.0)
         val = 255.0;
 
     // ### fixme: round to even

@@ -19,10 +19,12 @@
 */
 
 #include "udisksmanager.h"
+#include "udisksdevicebackend.h"
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
 #include <QtDBus>
+#include <QtXml/QDomDocument>
 
 #include "../shared/rootdevice.h"
 
@@ -75,6 +77,10 @@ Manager::Manager(QObject *parent)
 
 Manager::~Manager()
 {
+    while (!m_deviceCache.isEmpty()) {
+        QString udi = m_deviceCache.takeFirst();
+        DeviceBackend::destroyBackend(udi);
+    }
 }
 
 QObject* Manager::createDevice(const QString& udi)
@@ -126,39 +132,50 @@ QStringList Manager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInt
 
 QStringList Manager::allDevices()
 {
-    m_deviceCache.clear();
-
-    QDBusPendingReply<DBUSManagerStruct> reply = m_manager.GetManagedObjects();
-    reply.waitForFinished();
-    if (!reply.isError()) {  // enum devices
-        m_deviceCache << udiPrefix();
-
-        Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
-            const QString udi = path.path();
-            //qDebug() << "Adding device" << udi;
-
-            if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
-                continue;
-
-            Device device(udi);
-            if (device.mightBeOpticalDisc()) {
-                QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
-                                                     SLOT(slotMediaChanged(QDBusMessage)));
-                if (!device.isOpticalDisc())  // skip empty CD disc
-                    continue;
-            }
-
-            m_deviceCache.append(udi);
-        }
+    /* Clear the cache, destroy all backends */
+    while (!m_deviceCache.isEmpty()) {
+        QString udi= m_deviceCache.takeFirst();
+        DeviceBackend::destroyBackend(udi);
     }
-    else  // show error
-    {
-        qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
-    }
+
+    introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
+    introspect("/org/freedesktop/UDisks2/drives");
 
     return m_deviceCache;
 }
 
+void Manager::introspect(const QString & path, bool checkOptical)
+{
+    QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path,
+                                                       DBUS_INTERFACE_INTROSPECT, "Introspect");
+    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().call(call);
+
+    if (reply.isValid()) {
+        QDomDocument dom;
+        dom.setContent(reply.value());
+        QDomNodeList nodeList = dom.documentElement().elementsByTagName("node");
+        for (int i = 0; i < nodeList.count(); i++) {
+            QDomElement nodeElem = nodeList.item(i).toElement();
+            if (!nodeElem.isNull() && nodeElem.hasAttribute("name")) {
+                const QString udi = path + "/" + nodeElem.attribute("name");
+
+                if (checkOptical) {
+                    Device device(udi);
+                    if (device.mightBeOpticalDisc()) {
+                        QDBusConnection::systemBus().connect(UD2_DBUS_SERVICE, udi, DBUS_INTERFACE_PROPS, "PropertiesChanged", this,
+                                                             SLOT(slotMediaChanged(QDBusMessage)));
+                        if (!device.isOpticalDisc())  // skip empty CD disc
+                            continue;
+                    }
+                }
+
+                m_deviceCache.append(udi);
+            }
+        }
+    }
+    else
+        qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
+}
 
 QSet< Solid::DeviceInterface::Type > Manager::supportedInterfaces() const
 {
@@ -174,11 +191,22 @@ void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVar
 {
     const QString udi = object_path.path();
 
+    /* Ignore jobs */
+    if (udi.startsWith(UD2_DBUS_PATH_JOBS)) {
+        return;
+    }
+
     qDebug() << udi << "has new interfaces:" << interfaces_and_properties.keys();
+
+    updateBackend(udi);
 
     // new device, we don't know it yet
     if (!m_deviceCache.contains(udi)) {
         m_deviceCache.append(udi);
+        Q_EMIT deviceAdded(udi);
+    }
+    // re-emit in case of 2-stage devices like N9 or some Android phones
+    else if (m_deviceCache.contains(udi) && interfaces_and_properties.keys().contains(UD2_DBUS_INTERFACE_FILESYSTEM)) {
         Q_EMIT deviceAdded(udi);
     }
 }
@@ -187,13 +215,21 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
 {
     const QString udi = object_path.path();
 
+    /* Ignore jobs */
+    if (udi.startsWith(UD2_DBUS_PATH_JOBS)) {
+        return;
+    }
+
     qDebug() << udi << "lost interfaces:" << interfaces;
+
+    updateBackend(udi);
 
     Device device(udi);
 
-    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty() || device.interfaces().contains(UD2_DBUS_INTERFACE_FILESYSTEM))) {
+    if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty())) {
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+        DeviceBackend::destroyBackend(udi);
     }
 }
 
@@ -205,6 +241,7 @@ void Manager::slotMediaChanged(const QDBusMessage & msg)
         return;
 
     const QString udi = msg.path();
+    updateBackend(udi);
     qulonglong size = properties.value("Size").toULongLong();
     qDebug() << "MEDIA CHANGED in" << udi << "; size is:" << size;
 
@@ -216,6 +253,7 @@ void Manager::slotMediaChanged(const QDBusMessage & msg)
     if (m_deviceCache.contains(udi) && size == 0) {  // we know the optdisc, got removed
         Q_EMIT deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
+        DeviceBackend::destroyBackend(udi);
     }
 }
 
@@ -225,4 +263,25 @@ const QStringList & Manager::deviceCache()
         allDevices();
 
     return m_deviceCache;
+}
+
+void Manager::updateBackend(const QString & udi)
+{
+    DeviceBackend *backend = DeviceBackend::backendForUDI(udi);
+    if (!backend)
+        return;
+
+    //This doesn't emit "changed" signals. Signals are emitted later by DeviceBackend's slots
+    backend->allProperties();
+
+    QVariant driveProp = backend->prop("Drive");
+    if (!driveProp.isValid())
+        return;
+
+    QDBusObjectPath drivePath = qdbus_cast<QDBusObjectPath>(driveProp);
+    DeviceBackend *driveBackend = DeviceBackend::backendForUDI(drivePath.path(), false);
+    if (!driveBackend)
+        return;
+
+    driveBackend->invalidateProperties();
 }

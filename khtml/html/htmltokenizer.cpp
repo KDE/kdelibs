@@ -1048,7 +1048,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                 checkBuffer();
                 if (entityLen > 0 && entityLen < cBufferPos) {
                     int rem = cBufferPos - entityLen;
-                    src.prepend( TokenizerString(QString::fromAscii(cBuffer+entityLen, rem)) );
+                    src.prepend( TokenizerString(QString::fromLatin1(cBuffer+entityLen, rem)) );
                 }
                 src.push( EntityChar );
                 rawContentSinceLastEntity = -1;

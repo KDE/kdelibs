@@ -287,7 +287,7 @@ namespace KPAC
         m_watcher->addPath(path);
 
         // Reload...
-        m_downloader->download( KUrl( path ) );
+        m_downloader->download(KUrl::fromPath(path));
     }
 
     QStringList ProxyScout::handleRequest( const KUrl& url )

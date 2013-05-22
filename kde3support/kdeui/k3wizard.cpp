@@ -28,7 +28,7 @@
 #include <kguiitem.h>
 #include <kstandardguiitem.h>
 
-K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WFlags f )
+K3Wizard::K3Wizard( QWidget *parent, const char *name, bool modal, Qt::WindowFlags f )
             : Q3Wizard( parent, name, modal, f )
 {
   bool useIcons = KGlobalSettings::showIconsOnPushButtons();

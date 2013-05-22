@@ -1858,7 +1858,12 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
         return jsString(url.host() + ":" + QString::number(url.port()));
     }
     case AnchorPathName:        return jsString(KUrl(href).path());
-    case AnchorPort:            return jsString(QString::number(KUrl(href).port()));
+    case AnchorPort: {
+        int port = KUrl(href).port();
+        if (port > 0)
+            return jsString(QString::number(port));
+        return jsString("");
+    }
     case AnchorProtocol:        return jsString(KUrl(href).protocol()+":");
     case AnchorSearch:          { KUrl u(href);
                                   QString q = u.query();
@@ -3238,6 +3243,7 @@ JSValue* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, JSObject 
 /* Source for HTMLSelectCollectionProtoTable.
 @begin HTMLSelectCollectionProtoTable 1
   add		HTMLSelectCollection::Add		DontDelete|Function 2
+  remove    HTMLSelectCollection::Remove        DontDelete|Function 1
 @end
 */
 KJS_DEFINE_PROTOTYPE(HTMLSelectCollectionProto)
@@ -3397,6 +3403,19 @@ JSValue* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, JSO
       int dummy;
       element->insertBefore(option, items.at(pos), dummy);
     }
+    return jsUndefined();
+    break;
+  }
+  case KJS::HTMLSelectCollection::Remove:
+  {
+    double index;
+    if (!args[0]->getNumber(index))
+      index = 0;
+    else {
+      if (static_cast<long int>(index) >= element->length())
+        index = 0;
+    }
+    element->remove(static_cast<long int>(index));
     return jsUndefined();
     break;
   }

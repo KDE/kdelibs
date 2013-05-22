@@ -179,10 +179,10 @@ void StatusBarExtension::removeStatusBarItem( QWidget * widget )
       if ( sb )
         (*it).ensureItemHidden( sb );
       d->m_statusBarItems.erase( it );
-      break;
+      return;
     }
-  if ( it == d->m_statusBarItems.end() )
-    kWarning(1000) << "StatusBarExtension::removeStatusBarItem. Widget not found : " << widget;
+
+  kWarning(1000) << "StatusBarExtension::removeStatusBarItem. Widget not found : " << widget;
 }
 
 #include "statusbarextension.moc"

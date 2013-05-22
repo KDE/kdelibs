@@ -674,7 +674,10 @@ macro (KDE4_ADD_PLUGIN _target_NAME )
 
    set(_SRCS ${_args})
 
-   _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
+
+   if (NOT CMAKE_AUTOMOC)
+      _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
+   endif()
 
    if("${_add_lib_param}" STREQUAL "STATIC")
       add_definitions(-DQT_STATICPLUGIN)
@@ -687,7 +690,9 @@ macro (KDE4_ADD_PLUGIN _target_NAME )
       add_library(${_target_NAME} ${_add_lib_param}  ${_SRCS})
    endif (KDE4_ENABLE_FINAL)
 
-   _automoc4_kde4_post_target_handling(${_target_NAME})
+   if (NOT CMAKE_AUTOMOC)
+      _automoc4_kde4_post_target_handling(${_target_NAME})
+   endif()
 
    if (NOT _with_pre)
       set_target_properties(${_target_NAME} PROPERTIES PREFIX "")
@@ -804,7 +809,9 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
 
       target_link_libraries(${_target_NAME} ${QT_QTMAIN_LIBRARY} kdeinit_${_target_NAME})
    else(WIN32)
-      _automoc4_kde4_pre_target_handling(kdeinit_${_target_NAME} _SRCS)
+      if (NOT CMAKE_AUTOMOC)
+        _automoc4_kde4_pre_target_handling(kdeinit_${_target_NAME} _SRCS)
+      endif()
 
       if (KDE4_ENABLE_FINAL)
          kde4_create_final_files(${CMAKE_CURRENT_BINARY_DIR}/kdeinit_${_target_NAME}_final_cpp.cpp _separate_files ${_SRCS})
@@ -814,11 +821,19 @@ macro (KDE4_ADD_KDEINIT_EXECUTABLE _target_NAME )
          add_library(kdeinit_${_target_NAME} SHARED ${_SRCS})
       endif (KDE4_ENABLE_FINAL)
 
-      _automoc4_kde4_post_target_handling(kdeinit_${_target_NAME})
+      if (NOT CMAKE_AUTOMOC)
+        _automoc4_kde4_post_target_handling(kdeinit_${_target_NAME})
+      endif()
 
       set_target_properties(kdeinit_${_target_NAME} PROPERTIES OUTPUT_NAME kdeinit4_${_target_NAME})
 
-      kde4_add_executable(${_target_NAME} "${_nogui}" ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_dummy.cpp)
+      if (Q_WS_MAC)
+	      list(FIND _SRCS *.icns _icon_position)
+	      if(NOT _res_position EQUAL -1)
+		      list(GET _SRCS ${_icon_position} _resourcefile)
+	      endif(NOT _res_position EQUAL -1)
+      endif (Q_WS_MAC)
+      kde4_add_executable(${_target_NAME} "${_nogui}" ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_dummy.cpp ${_resourcefile})
       target_link_libraries(${_target_NAME} kdeinit_${_target_NAME})
    endif(WIN32)
 
@@ -984,8 +999,10 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
       set(_add_executable_param ${_add_executable_param} EXCLUDE_FROM_ALL)
    endif (_test AND NOT KDE4_BUILD_TESTS)
 
-   _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
-   
+   if (NOT CMAKE_AUTOMOC)
+      _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
+   endif()
+
    if (KDE4_ENABLE_FINAL)
       kde4_create_final_files(${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_final_cpp.cpp _separate_files ${_SRCS})
       add_executable(${_target_NAME} ${_add_executable_param} ${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_final_cpp.cpp ${_separate_files})
@@ -997,7 +1014,9 @@ macro (KDE4_ADD_EXECUTABLE _target_NAME)
        _kde4_add_manifest(${_target_NAME})
    ENDIF(KDE4_ENABLE_UAC_MANIFEST)
 
-   _automoc4_kde4_post_target_handling(${_target_NAME})
+   if (NOT CMAKE_AUTOMOC)
+      _automoc4_kde4_post_target_handling(${_target_NAME})
+   endif()
 
    if (_test)
       set_target_properties(${_target_NAME} PROPERTIES COMPILE_FLAGS -DKDESRCDIR="\\"${CMAKE_CURRENT_SOURCE_DIR}/\\"")
@@ -1032,7 +1051,9 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
 
    set(_SRCS ${_first_SRC} ${ARGN})
 
-   _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
+   if (NOT CMAKE_AUTOMOC)
+      _automoc4_kde4_pre_target_handling(${_target_NAME} _SRCS)
+   endif()
 
    if (KDE4_ENABLE_FINAL)
       kde4_create_final_files(${CMAKE_CURRENT_BINARY_DIR}/${_target_NAME}_final_cpp.cpp _separate_files ${_SRCS})
@@ -1041,7 +1062,9 @@ macro (KDE4_ADD_LIBRARY _target_NAME _lib_TYPE)
       add_library(${_target_NAME} ${_add_lib_param} ${_SRCS})
    endif (KDE4_ENABLE_FINAL)
 
-   _automoc4_kde4_post_target_handling(${_target_NAME})
+   if (NOT CMAKE_AUTOMOC)
+      _automoc4_kde4_post_target_handling(${_target_NAME})
+   endif()
 
    # for shared libraries a -DMAKE_target_LIB is required
    string(TOUPPER ${_target_NAME} _symbol)
@@ -1201,28 +1224,47 @@ macro (KDE4_ADD_APP_ICON appsources pattern)
         endif(PNG2ICO_EXECUTABLE)
     endif(WIN32)
     if (Q_WS_MAC)
-        # first convert image to a tiff using the Mac OS X "sips" utility,
-        # then use tiff2icns to convert to an icon
-        find_program(SIPS_EXECUTABLE NAMES sips)
-        find_program(TIFF2ICNS_EXECUTABLE NAMES tiff2icns)
-        if (SIPS_EXECUTABLE AND TIFF2ICNS_EXECUTABLE)
-            file(GLOB_RECURSE files  "${pattern}")
-            # we can only test for the 128-icon like that - we don't use patterns anymore
-            foreach (it ${files})
-                if (it MATCHES ".*128.*" )
-                    set (_icon ${it})
-                endif (it MATCHES ".*128.*")
-            endforeach (it)
+        # first generate .iconset directory structure, then convert to .icns format using the Mac OS X "iconutil" utility,
+        # to create retina compatible icon, you need png source files in pixel resolution 16x16, 32x32, 64x64, 128x128,
+	# 256x256, 512x512, 1024x1024
+	find_program(ICONUTIL_EXECUTABLE NAMES iconutil)
+	if (ICONUTIL_EXECUTABLE)
+	    file(GLOB_RECURSE files  "${pattern}")
+	    add_custom_command(OUTPUT ${_outfilename}.iconset
+	                       COMMAND ${CMAKE_COMMAND} -E make_directory ${_outfilename}.iconset
+		               DEPENDS ${files}
+                              )
+	    set(_icons)
+	    macro(copy_icons _pattern output)
+	        foreach(it ${files})
+		    if(it MATCHES ${_pattern})
+		        add_custom_command(OUTPUT ${_outfilename}.iconset/icon_${output}.png
+				           COMMAND ${CMAKE_COMMAND} -E copy ${it} icon_${output}.png
+				           WORKING_DIRECTORY ${_outfilename}.iconset
+				           DEPENDS ${_outfilename}.iconset
+				          )
+	                list(APPEND _icons ${_outfilename}.iconset/icon_${output}.png)
+	            endif(it MATCHES ${_pattern})
+		endforeach(it ${files})
+            endmacro(copy_icons)
 
-            if (_icon)
-                
-                # first, get the basename of our app icon
-                add_custom_command(OUTPUT ${_outfilename}.icns ${outfilename}.tiff
-                                   COMMAND ${SIPS_EXECUTABLE} -s format tiff ${_icon} --out ${outfilename}.tiff
-                                   COMMAND ${TIFF2ICNS_EXECUTABLE} ${outfilename}.tiff ${_outfilename}.icns
-                                   DEPENDS ${_icon}
-                                   )
-
+            copy_icons(".*16.*" "16x16")
+            copy_icons(".*32.*" "16x16@2x")
+            copy_icons(".*32.*" "32x32")
+            copy_icons(".*64.*" "32x32@2x")
+            copy_icons(".*128.*" "128x128")
+            copy_icons(".*256.*" "128x128@2x")
+            copy_icons(".*256.*" "256x256")
+            copy_icons(".*512.*" "256x256@2x")
+            copy_icons(".*512.*" "512x512")
+            copy_icons(".*1024.*" "512x512@2x")
+	    if (_icons)
+                # generate .icns icon file
+                add_custom_command(OUTPUT ${_outfilename}.icns
+			           COMMAND ${ICONUTIL_EXECUTABLE} --convert icns
+				           --output ${_outfilename}.icns ${_outfilename}.iconset
+                                   DEPENDS ${_icons}
+                                  )
                 # This will register the icon into the bundle
                 set(MACOSX_BUNDLE_ICON_FILE ${appsources}.icns)
 
@@ -1232,15 +1274,15 @@ macro (KDE4_ADD_APP_ICON appsources pattern)
 
                 # Install the icon into the Resources dir in the bundle
                 set_source_files_properties(${_outfilename}.icns PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
-
-            else(_icon)
-                # TODO - try to scale a non-128 icon...? Try to convert an SVG on the fly?
-                message(STATUS "Unable to find an 128x128 icon that matches pattern ${pattern} for variable ${appsources} - application will not have an application icon!")
-            endif(_icon)
-
-        else(SIPS_EXECUTABLE AND TIFF2ICNS_EXECUTABLE)
-            message(STATUS "Unable to find the sips and tiff2icns utilities - application will not have an application icon!")
-        endif(SIPS_EXECUTABLE AND TIFF2ICNS_EXECUTABLE)
+            else(_icons)
+                message(STATUS "Unable to find an icon that matches pattern ${pattern}
+		        for variable ${appsources} - application will not have an
+			application icon!
+		    ")
+            endif(_icons)
+        else(ICONUTIL_EXECUTABLE)
+            message(STATUS "Unable to find the iconutil utility - application will not have an application icon!")
+        endif(ICONUTIL_EXECUTABLE)
     endif(Q_WS_MAC)
 endmacro (KDE4_ADD_APP_ICON)
 

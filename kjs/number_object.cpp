@@ -23,7 +23,7 @@
  */
 
 #include "number_object.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "number_object.lut.h"
 
 #include "dtoa.h"

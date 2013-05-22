@@ -245,19 +245,20 @@ namespace WTF {
 
     using std::swap;
 
-#if !COMPILER(MSVC)
-    // Visual C++ has a swap for pairs defined.
+    // Work around MSVC's standard library, whose swap for pairs does not swap by component.
+    template<typename T> inline void hashTableSwap(T& a, T& b)
+    {
+        swap(a, b);
+    }
 
-    // swap pairs by component, in case of pair members that specialize swap
-    template<typename T, typename U> inline void swap(pair<T, U>& a, pair<T, U>& b)
+    template<typename T, typename U> inline void hashTableSwap(pair<T, U>& a, pair<T, U>& b)
     {
         swap(a.first, b.first);
         swap(a.second, b.second);
     }
-#endif
 
     template<typename T, bool useSwap> struct Mover;
-    template<typename T> struct Mover<T, true> { static void move(T& from, T& to) { swap(from, to); } };
+    template<typename T> struct Mover<T, true> { static void move(T& from, T& to) { hashTableSwap(from, to); } };
     template<typename T> struct Mover<T, false> { static void move(T& from, T& to) { to = from; } };
 
     template<typename Key, typename Value, typename HashFunctions> class IdentityHashTranslator {
@@ -291,9 +292,12 @@ namespace WTF {
         void swap(HashTable&);
         HashTable& operator=(const HashTable&);
 
-        iterator begin() { return makeIterator(m_table); }
+        // When the hash table is empty, just return the same iterator for end as for begin.
+        // This is more efficient because we don't have to skip all the empty and deleted
+        // buckets, and iterating an empty table is a common case that's worth optimizing.
+        iterator begin() { return isEmpty() ? end() : makeIterator(m_table); }
         iterator end() { return makeKnownGoodIterator(m_table + m_tableSize); }
-        const_iterator begin() const { return makeConstIterator(m_table); }
+        const_iterator begin() const { return isEmpty() ? end() : makeConstIterator(m_table); }
         const_iterator end() const { return makeKnownGoodConstIterator(m_table + m_tableSize); }
 
         int size() const { return m_keyCount; }
@@ -730,7 +734,6 @@ namespace WTF {
     {
         ASSERT(m_table);
         ASSERT(!lookupForWriting(Extractor::extract(entry)).second);
-        ASSERT(!isDeletedBucket(*(lookupForWriting(Extractor::extract(entry)).first)));
 #if DUMP_HASHTABLE_STATS
         ++HashTableStats::numReinserts;
 #endif

@@ -319,13 +319,13 @@ public:
     public:
         KPixmapCacheEntry(int indexoffset_, const QString& key_, int dataoffset_,
                           int pos_, quint32 timesused_, quint32 lastused_)
+	    : indexoffset(indexoffset_),
+	      key(key_),
+	      dataoffset(dataoffset_),
+	      pos(pos_),
+	      timesused(timesused_),
+	      lastused(lastused_)
         {
-            indexoffset = indexoffset_;
-            key = key_;
-            dataoffset = dataoffset_;
-            pos = pos_;
-            timesused = timesused_;
-            lastused = lastused_;
         }
 
         int indexoffset;

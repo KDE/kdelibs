@@ -190,6 +190,15 @@ namespace Nepomuk {
         QList<Types::Class> types() const;
 
         /**
+         * \brief Return the number of types that are being watched
+         *
+         * This method is slightly faster than called types().count()
+         *
+         * \sa types addType setType
+         */
+        int typeCount() const;
+
+        /**
          * \brief The resources that have been configured via addResource() and setResources().
          *
          * Every change to one of these resources will be
@@ -198,12 +207,30 @@ namespace Nepomuk {
         QList<Nepomuk::Resource> resources() const;
 
         /**
+         * \brief Return the number of resources that are being watched
+         *
+         * This method is slightly faster than called resources().count()
+         *
+         * \sa resources addResource setResources
+         */
+        int resourceCount() const;
+
+        /**
          * \brief The properties that have been configured via addProperty() and setProperties().
          *
          * Every change to a value of any of these properties
          * will be signalled, depending on the configured resources() or types().
          */
         QList<Types::Property> properties() const;
+
+        /**
+         * \brief Return the number of properties that are being watched
+         *
+         * This method is slightly faster than called properties().count()
+         *
+         * \sa properties addProperty setProperty
+         */
+        int propertyCount() const;
 
         /**
          * \brief Start the signalling of changes.

@@ -140,12 +140,10 @@ void KNewFileMenuSingleton::parseFiles()
 {
     //kDebug(1203);
     filesParsed = true;
-    KNewFileMenuSingleton::EntryList::iterator templ = templatesList->begin();
-    const KNewFileMenuSingleton::EntryList::iterator templ_end = templatesList->end();
-    for (; templ != templ_end; ++templ)
-    {
-        QString iconname;
-        QString filePath = (*templ).filePath;
+    QMutableListIterator<KNewFileMenuSingleton::Entry> templIter(*templatesList);
+    while (templIter.hasNext()) {
+        KNewFileMenuSingleton::Entry& templ = templIter.next();
+        const QString filePath = templ.filePath;
         if (!filePath.isEmpty())
         {
             QString text;
@@ -154,9 +152,13 @@ void KNewFileMenuSingleton::parseFiles()
             // Otherwise (or if no name in it?) use file name
             if (KDesktopFile::isDesktopFile(filePath)) {
                 KDesktopFile desktopFile( filePath);
+                if (desktopFile.noDisplay()) {
+                    templIter.remove();
+                    continue;
+                }
                 text = desktopFile.readName();
-                (*templ).icon = desktopFile.readIcon();
-                (*templ).comment = desktopFile.readComment();
+                templ.icon = desktopFile.readIcon();
+                templ.comment = desktopFile.readComment();
                 QString type = desktopFile.readType();
                 if (type == "Link")
                 {
@@ -177,11 +179,11 @@ void KNewFileMenuSingleton::parseFiles()
                 if (templatePath.isEmpty())
                 {
                     // No URL key, this is an old-style template
-                    (*templ).entryType = KNewFileMenuSingleton::Template;
-                    (*templ).templatePath = (*templ).filePath; // we'll copy the file
+                    templ.entryType = KNewFileMenuSingleton::Template;
+                    templ.templatePath = templ.filePath; // we'll copy the file
                 } else {
-                    (*templ).entryType = KNewFileMenuSingleton::LinkToTemplate;
-                    (*templ).templatePath = templatePath;
+                    templ.entryType = KNewFileMenuSingleton::LinkToTemplate;
+                    templ.templatePath = templatePath;
                 }
 
             }
@@ -191,13 +193,13 @@ void KNewFileMenuSingleton::parseFiles()
                 if (text.endsWith(".desktop"))
                     text.truncate(text.length() - 8);
             }
-            (*templ).text = text;
+            templ.text = text;
             /*kDebug(1203) << "Updating entry with text=" << text
-                          << "entryType=" << (*templ).entryType
-                          << "templatePath=" << (*templ).templatePath;*/
+                          << "entryType=" << templ.entryType
+                          << "templatePath=" << templ.templatePath;*/
         }
         else {
-            (*templ).entryType = KNewFileMenuSingleton::Separator;
+            templ.entryType = KNewFileMenuSingleton::Separator;
         }
     }
 }

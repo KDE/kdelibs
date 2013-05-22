@@ -94,6 +94,7 @@ KActionSelector::KActionSelector( QWidget *parent )
   d->showUpDownButtons = true;
 
   QHBoxLayout *lo = new QHBoxLayout( this );
+  lo->setMargin( 0 );
 
   QVBoxLayout *loAv = new QVBoxLayout();
   lo->addLayout( loAv );

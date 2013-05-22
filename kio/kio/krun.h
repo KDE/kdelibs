@@ -178,6 +178,12 @@ public:
      */
     QString suggestedFileName() const;
 
+    /**
+     * Associated window, as passed to the constructor
+     * @since 4.9.3
+     */
+    QWidget* window() const;
+
 
     /**
      * Open a list of URLs with a certain service (application).

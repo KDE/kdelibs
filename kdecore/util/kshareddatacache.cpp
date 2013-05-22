@@ -407,7 +407,7 @@ struct SharedMemory
     {
         unsigned _pageSize = static_cast<unsigned>(pageSize);
         // bits 9-18 may be set.
-        static const unsigned validSizeMask = 0x2F200u;
+        static const unsigned validSizeMask = 0x7FE00u;
 
         // Check for page sizes that are not a power-of-2, or are too low/high.
         if (KDE_ISUNLIKELY(countSetBits(_pageSize) != 1 || (_pageSize & ~validSizeMask))) {
@@ -1059,8 +1059,8 @@ class KSharedDataCache::Private
         // mutex support (systemSupportsProcessSharing), then we:
         // Open the file and resize to some sane value if the file is too small.
         if (file.open(QIODevice::ReadWrite) &&
-           (file.size() >= size || file.resize(size)) &&
-           ensureFileAllocated(file.handle(), size))
+            (file.size() >= size ||
+             (file.resize(size) && ensureFileAllocated(file.handle(), size))))
         {
             // Use mmap directly instead of QFile::map since the QFile (and its
             // shared mapping) will disappear unless we hang onto the QFile for no

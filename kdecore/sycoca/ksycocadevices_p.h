@@ -72,7 +72,7 @@ public:
     KSycocaFileDevice(const QString& path) {
         m_database = new QFile(path);
 #ifndef Q_OS_WIN
-        fcntl(m_database->handle(), F_SETFD, FD_CLOEXEC);
+        (void)fcntl(m_database->handle(), F_SETFD, FD_CLOEXEC);
 #endif
     }
     ~KSycocaFileDevice() {

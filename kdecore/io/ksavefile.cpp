@@ -48,12 +48,14 @@ public:
 
     QFile::FileError error;
     QString errorString;
-    bool wasFinalized;
+    bool needFinalize;
+    bool directWriteFallback;
 
     Private()
+        : error(QFile::NoError),
+          needFinalize(false),
+          directWriteFallback(false)
     {
-        error = QFile::NoError;
-        wasFinalized = false;
     }
 };
 
@@ -71,14 +73,17 @@ KSaveFile::KSaveFile(const QString &filename, const KComponentData & /*TODO REMO
 
 KSaveFile::~KSaveFile()
 {
-    if (!d->wasFinalized)
-        finalize();
+    finalize();
 
     delete d;
 }
 
 bool KSaveFile::open(OpenMode flags)
 {
+    if (isOpen()) {
+        return false;
+    }
+    d->needFinalize = false;
     if ( d->realFileName.isNull() ) {
         d->error=QFile::OpenError;
         d->errorString=i18n("No target filename has been given.");
@@ -93,22 +98,35 @@ bool KSaveFile::open(OpenMode flags)
         return false;
     }
 
-    // we only check here if the directory can be written to
-    // the actual filename isn't written to, but replaced later
-    // with the contents of our tempfile
-    if (!KStandardDirs::checkAccess(d->realFileName, W_OK)) {
-        d->error=QFile::PermissionsError;
-        d->errorString=i18n("Insufficient permissions in target directory.");
-        return false;
-    }
-
     //Create our temporary file
     QTemporaryFile tempFile;
     tempFile.setAutoRemove(false);
     tempFile.setFileTemplate(d->realFileName + QLatin1String("XXXXXX.new"));
     if (!tempFile.open()) {
+#ifdef Q_OS_UNIX
+        if (d->directWriteFallback && errno == EACCES) {
+            QFile::setFileName(d->realFileName);
+            if (QFile::open(flags)) {
+                d->tempFileName.clear();
+                d->error = QFile::NoError;
+                d->needFinalize = true;
+                return true;
+            }
+        }
+#endif
+
+        // we only check here if the directory can be written to
+        // the actual filename isn't written to, but replaced later
+        // with the contents of our tempfile
+        const QFileInfo fileInfo(d->realFileName);
+        QDir parentDir = fileInfo.dir();
+        if (!QFileInfo(parentDir.absolutePath()).isWritable()) {
+            d->error=QFile::PermissionsError;
+            d->errorString=i18n("Insufficient permissions in target directory.");
+            return false;
+        }
         d->error=QFile::OpenError;
-        d->errorString=i18n("Unable to open temporary file.");
+        d->errorString=i18n("Unable to open temporary file. Error was: %1.", tempFile.error());
         return false;
     }
 
@@ -141,6 +159,7 @@ bool KSaveFile::open(OpenMode flags)
     d->tempFileName = tempFile.fileName();
     d->error=QFile::NoError;
     d->errorString.clear();
+    d->needFinalize = true;
     return true;
 }
 
@@ -185,8 +204,10 @@ QString KSaveFile::fileName() const
 void KSaveFile::abort()
 {
     close();
-    QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
-    d->wasFinalized = true;
+    if (!d->tempFileName.isEmpty()) {
+        QFile::remove(d->tempFileName); //non-static QFile::remove() does not work.
+        d->needFinalize = false;
+    }
 }
 
 #ifdef HAVE_FDATASYNC
@@ -197,32 +218,34 @@ void KSaveFile::abort()
 
 bool KSaveFile::finalize()
 {
+    if (!d->needFinalize) {
+        return false;
+    }
+
     bool success = false;
-
-    if ( !d->wasFinalized ) {
-
 #ifdef Q_OS_UNIX
-        static int extraSync = -1;
-        if (extraSync < 0)
-            extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
-        if (extraSync) {
-            if (flush()) {
-                forever {
-                    if (!FDATASYNC(handle()))
-                        break;
-                    if (errno != EINTR) {
-                        d->error = QFile::WriteError;
-                        d->errorString = i18n("Synchronization to disk failed");
-                        break;
-                    }
+    static int extraSync = -1;
+    if (extraSync < 0)
+        extraSync = getenv("KDE_EXTRA_FSYNC") != 0 ? 1 : 0;
+    if (extraSync) {
+        if (flush()) {
+            forever {
+                if (!FDATASYNC(handle()))
+                    break;
+                if (errno != EINTR) {
+                    d->error = QFile::WriteError;
+                    d->errorString = i18n("Synchronization to disk failed");
+                    break;
                 }
             }
         }
+    }
 #endif
 
-        close();
+    close();
 
-        if( error() != NoError ) {
+    if (!d->tempFileName.isEmpty()) {
+        if (error() != NoError) {
             QFile::remove(d->tempFileName);
         }
         //Qt does not allow us to atomically overwrite an existing file,
@@ -239,14 +262,25 @@ bool KSaveFile::finalize()
             d->errorString=i18n("Error during rename.");
             QFile::remove(d->tempFileName);
         }
-
-        d->wasFinalized = true;
+    } else { // direct overwrite
+        success = true;
     }
+    d->needFinalize = false;
 
     return success;
 }
 
 #undef FDATASYNC
+
+void KSaveFile::setDirectWriteFallback(bool enabled)
+{
+    d->directWriteFallback = enabled;
+}
+
+bool KSaveFile::directWriteFallback() const
+{
+    return d->directWriteFallback;
+}
 
 bool KSaveFile::backupFile( const QString& qFilename, const QString& backupDir )
 {

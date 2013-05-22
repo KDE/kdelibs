@@ -18,7 +18,7 @@
 
 void debug(QString txt)
 {
- fprintf(stderr, "%s\n", txt.toAscii().constData());
+ fprintf(stderr, "%s\n", txt.toLatin1().constData());
 }
 
 void debug(const char *txt)

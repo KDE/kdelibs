@@ -28,11 +28,13 @@
 
 #include "../kcookiejar.cpp"
 
+
+
 static KCookieJar *jar;
 static QString *lastYear;
 static QString *nextYear;
 static KConfig *config = 0;
-static int windowId = -1;
+static int windowId = 1234; // random number to be used as windowId for test cookies
 
 
 static void FAIL(const QString &msg)
@@ -66,7 +68,6 @@ static void clearConfig()
    KConfigGroup cg(config, "Cookie Policy");
    cg.writeEntry("RejectCrossDomainCookies", false);
    cg.writeEntry("AcceptSessionCookies", false);
-   cg.writeEntry("IgnoreExpirationDate", false);
    cg.writeEntry("CookieGlobalAdvice", "Ask");
    jar->loadConfig(config, false);
 }
@@ -96,6 +97,11 @@ static void saveCookies()
    jar = new KCookieJar();
    clearConfig();
    jar->loadCookies(file);
+}
+
+static void endSession()
+{
+   jar->eatSessionCookies(windowId);
 }
 
 static void processCookie(QString &line)
@@ -204,6 +210,8 @@ static void processLine(QString line)
       processConfig(line);
    else if (command == "SAVE")
       saveCookies();
+   else if (command == "ENDSESSION")
+      endSession();
    else
       FAIL(QString("Unknown command '%1'").arg(command));
 }
@@ -247,6 +255,7 @@ private Q_SLOTS:
         QTest::newRow("cookie_rfc.test") << KDESRCDIR "/cookie_rfc.test";
         QTest::newRow("cookie_saving.test") << KDESRCDIR "/cookie_saving.test";
         QTest::newRow("cookie_settings.test") << KDESRCDIR "/cookie_settings.test";
+        QTest::newRow("cookie_session.test") << KDESRCDIR "/cookie_session.test";
     }
     void testCookieFile()
     {

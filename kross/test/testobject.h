@@ -98,6 +98,9 @@ class TestObject : public QObject
         QVariantList listProperty() const { return m_listproperty; }
         void setListProperty(QVariantList prop) { m_listproperty = prop; }
 
+        Kross::Action* m_krossAction;
+        QVariant m_testFunctionReturnedValue;
+
     Q_SIGNALS:
         void signalVoid();
         void signalBool(bool);
@@ -198,6 +201,13 @@ class TestObject : public QObject
         OtherObject* func_otherobject(const QByteArray& name);
         OtherObject* func_otherobject_otherobject(OtherObject*);
         QList<OtherObject*> func_otherobjectlist_otherobjectlist(QList<OtherObject*>);
+
+        // for PyQt signal test
+        void connectCallTestFunction(Kross::Action* krossAction, QObject* sender, const QString& signal);
+        void callTestFunction();
+        void connectCallTestFunctionException(Kross::Action* krossAction, QObject* sender, const QString& signal);
+        void callTestFunctionException();
+        QVariant testFunctionReturnedValue();
 };
 
 /// \internal class used in TestObject to test functionality within krosstest

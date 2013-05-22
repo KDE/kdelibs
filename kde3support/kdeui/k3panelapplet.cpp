@@ -49,7 +49,7 @@ public:
 };
 
 K3PanelApplet::K3PanelApplet(const QString& configFile, K3PanelApplet::Type type,
-                           int actions, QWidget *parent, Qt::WFlags f)
+                           int actions, QWidget *parent, Qt::WindowFlags f)
   : QFrame(parent, f),
     d(new Private())
 {

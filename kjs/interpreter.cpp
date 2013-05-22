@@ -24,7 +24,7 @@
  */
 
 #include "interpreter.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "SavedBuiltins.h"
 #include "array_object.h"
@@ -46,6 +46,7 @@
 #include "types.h"
 #include "value.h"
 #include "lexer.h"
+#include "json_object.h"
 
 #if USE(BINDINGS)
 #include "runtime.h"
@@ -59,6 +60,7 @@
 #endif
 
 #include <assert.h>
+#include <cstdlib>
 #include <math.h>
 #include <signal.h>
 #include <stdio.h>
@@ -465,6 +467,7 @@ void Interpreter::initGlobalObject()
 
     // built-in objects
     m_globalObject->put(&m_globalExec, "Math", new MathObjectImp(&m_globalExec, objProto), DontEnum);
+    m_globalObject->put(&m_globalExec, "JSON", new JSONObjectImp(&m_globalExec, objProto), DontEnum);
 }
 
 ExecState* Interpreter::globalExec()

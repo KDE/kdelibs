@@ -28,6 +28,7 @@
 #include "kfoldermimetype.h"
 #include <QFile>
 #include <QProcess>
+#include <QtEndian>
 
 extern int servicesDebugArea();
 
@@ -446,10 +447,10 @@ QList<KMimeMagicRule> KMimeTypeRepository::parseMagicFile(QIODevice* file, const
                 break;
             }
 
-            char lengthBuffer[2];
-            if (file->read(lengthBuffer, 2) != 2)
+            qint16 lengthBuffer;
+            if (file->read(reinterpret_cast<char*>(&lengthBuffer), 2) != 2)
                 break;
-            const short valueLength = ntohs(*(short*)lengthBuffer);
+            const qint16 valueLength = qFromBigEndian(lengthBuffer);
             //kDebug() << "indent=" << indent << " rangeStart=" << match.m_rangeStart
             //         << " valueLength=" << valueLength << endl;
 
@@ -704,8 +705,21 @@ static void addPlatformSpecificPkgConfigPath(QStringList& paths)
 
 static int mimeDataBaseVersion()
 {
-    // TODO: Remove the #idef'ed code below once the issue is fixed either
-    // in QProcess or the shared-mime-info utility provides its version number.
+    // shared-mime-info installs a "version" file since 0.91
+    const QStringList versionFiles = KGlobal::dirs()->findAllResources("xdgdata-mime", QLatin1String("version"));
+    if (!versionFiles.isEmpty()) {
+        QFile file(versionFiles.first()); // Look at the global file, not at a possibly old local one
+        if (file.open(QIODevice::ReadOnly)) {
+            const QByteArray line = file.readLine().simplified();
+            QRegExp versionRe(QString::fromLatin1("(\\d+)\\.(\\d+)(\\.(\\d+))?"));
+            if (versionRe.indexIn(QString::fromLocal8Bit(line)) > -1) {
+                return KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+            }
+        }
+    }
+
+    // TODO: Remove the #idef'ed code below once the issue is fixed
+    // in QProcess or when we require s-m-i >= 0.91
 #ifdef Q_OS_UNIX
     // Try to read the version number from the shared-mime-info.pc file
     QStringList paths;
@@ -752,15 +766,17 @@ static int mimeDataBaseVersion()
 
     QProcess smi;
     smi.start(umd, QStringList() << QString::fromLatin1("-v"));
-    smi.waitForStarted();
-    smi.waitForFinished();
-    const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
-    QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
-    if (versionRe.indexIn(out) > -1) {
-        return KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+    if (smi.waitForStarted() && smi.waitForFinished()) {
+        const QString out = QString::fromLocal8Bit(smi.readAllStandardError());
+        QRegExp versionRe(QString::fromLatin1("update-mime-database \\(shared-mime-info\\) (\\d+)\\.(\\d+)(\\.(\\d+))?"));
+        if (versionRe.indexIn(out) > -1) {
+            return KDE_MAKE_VERSION(versionRe.cap(1).toInt(), versionRe.cap(2).toInt(), versionRe.cap(4).toInt());
+        }
+        kWarning(servicesDebugArea()) << "Unexpected version scheme from update-mime-database -v: got" << out;
+    } else {
+        kWarning(servicesDebugArea()) << "Error running update-mime-database -v";
     }
 
-    kWarning(servicesDebugArea()) << "Unexpected version scheme from update-mime-database -v: got" << out;
     return -1;
 }
 

@@ -762,6 +762,7 @@ void KArchiveDirectory::addEntry( KArchiveEntry* entry )
   if( d->entries.value( entry->name() ) ) {
       kWarning() << "directory " << name()
                   << "has entry" << entry->name() << "already";
+      return;
   }
   d->entries.insert( entry->name(), entry );
 }

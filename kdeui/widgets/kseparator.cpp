@@ -22,7 +22,7 @@
 #include <QStyleOption>
 #include <QPainter>
 
-KSeparator::KSeparator(QWidget* parent, Qt::WFlags f) : QFrame(parent, f)
+KSeparator::KSeparator(QWidget* parent, Qt::WindowFlags f) : QFrame(parent, f)
 {
    setLineWidth(1);
    setMidLineWidth(0);
@@ -30,7 +30,7 @@ KSeparator::KSeparator(QWidget* parent, Qt::WFlags f) : QFrame(parent, f)
 }
 
 
-KSeparator::KSeparator(Qt::Orientation orientation, QWidget* parent, Qt::WFlags f)
+KSeparator::KSeparator(Qt::Orientation orientation, QWidget* parent, Qt::WindowFlags f)
    : QFrame(parent, f)
 {
    setLineWidth(1);

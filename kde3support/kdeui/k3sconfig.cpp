@@ -106,7 +106,7 @@ K3SpellConfig::K3SpellConfig( QWidget *parent,
   }
 
   QGridLayout *glay = new QGridLayout( this );
-  glay->setSpacing( KDialog::spacingHint() );
+  glay->setMargin( 0 );
   cb0 = new QCheckBox( i18nc("@option:check", "Do Spellchecking"), this );
   cb0->setObjectName( "DoSpellChecking" );
   connect( cb0, SIGNAL(toggled(bool)), SLOT(sDoSpell()) );

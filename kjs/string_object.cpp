@@ -22,7 +22,7 @@
 
 #include "string_object.h"
 #include "string_object.lut.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "JSWrapperObject.h"
 #include "error_object.h"
@@ -67,7 +67,7 @@ JSValue *StringInstance::lengthGetter(ExecState*, JSObject*, const Identifier&, 
     return jsNumber(static_cast<StringInstance*>(slot.slotBase())->internalValue()->value().size());
 }
 
-JSValue *StringInstance::indexGetter(ExecState*, JSObject*, const Identifier&, const PropertySlot &slot)
+JSValue *StringInstance::indexGetter(ExecState*, JSObject*, unsigned, const PropertySlot &slot)
 {
     const UChar c = static_cast<StringInstance*>(slot.slotBase())->internalValue()->value()[slot.index()];
     return jsString(UString(&c, 1));
@@ -100,6 +100,16 @@ bool StringInstance::getOwnPropertySlot(ExecState* exec, unsigned propertyName, 
     }
     
     return JSObject::getOwnPropertySlot(exec, Identifier::from(propertyName), slot);
+}
+
+bool StringInstance::getOwnPropertyDescriptor(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc)
+{
+    if (propertyName == exec->propertyNames().length) {
+        desc.setPropertyDescriptorValues(exec, jsNumber(internalValue()->value().size()), ReadOnly|DontDelete|DontEnum);
+        return true;
+    }
+
+    return KJS::JSObject::getOwnPropertyDescriptor(exec, propertyName, desc);
 }
 
 void StringInstance::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr)

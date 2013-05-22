@@ -4,7 +4,7 @@
  */
 
 img {margin: 0px; padding: 0px}
-body {margin: 0px; padding: 0px; background-color: #98A6AB; background-image: url(body-background.jpg); color: #111111; height="100%"; width="100%"}
+body {margin: 0px; padding: 0px; background-color: #062A4B; background-image: url(body-background.png); color: #111111; height="100%"; width="100%"}
 a { color: #1A2C36; text-decoration: none; font-weight: bold; }
 a:hover {
   color: #003B5A;
@@ -90,7 +90,7 @@ a:hover {
 #barCenter {
   text-align: center;
   /*background-color: #F5F5F4;*/
-  color: #111111;
+  color: #B0B0B0;
   padding-top: 0.5ex;
   padding-bottom: 0.5ex;
   font-weight: bold;
@@ -98,22 +98,22 @@ a:hover {
 }
 
 #barCenter a.selected, #barCenter a.selected:hover {
-  color: #111111;
+  color: #B0B0B0;
   text-decoration: none;
-  text-shadow: #CDE1FF 0px 0px 5px;
+  text-shadow: #ADC1DF 0px 0px 5px;
 }
 
 
 #barCenter li a:link, #barCenter li a:visited, #barCenter li a:active {
-  color: #111111;
+  color: #B0B0B0;
   text-decoration: none;
   text-shadow: none;
 }
 
 #barCenter li a:hover {
-  color: #111111;
+  color: #B0B0B0;
   text-decoration: none;
-  text-shadow: #CDE1FF 0px 0px 6px;
+  text-shadow: #ADC1DF 0px 0px 6px;
 }
 
 #barCenter ul {
@@ -166,12 +166,14 @@ a:hover {
   margin-right: 16px;
   background-image: url(box-top-middle.png);
   -khtml-background-size: 100%;
+  background-size: 100% 100%;
 }
 
 #boxL {
   background-image: url(box-middle-left.png);
   background-repeat: repeat-y;
   -khtml-background-size: 16px 100%;
+  background-size: 16px 100%;
   background-position: left;
   padding-left: 16px;
 }
@@ -181,6 +183,7 @@ a:hover {
   background-position: center;
   background-repeat: no-repeat;
   -khtml-background-size: 100%;
+  background-size: 100% 100%;
   text-align: left;
 }
 
@@ -188,6 +191,7 @@ a:hover {
   background-image: url(box-middle-right.png);
   background-repeat: repeat-y;
   -khtml-background-size: 16px 100%;
+  background-size: 16px 100%;
   background-position: right;
   padding-right: 16px;
 }
@@ -217,6 +221,7 @@ a:hover {
   margin-right: 16px;
   background-image: url(box-bottom-middle.png);
   -khtml-background-size: 100%;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 

@@ -1557,6 +1557,24 @@ void RenderText::repaint(Priority p)
         cb->repaint(p);
 }
 
+QList< QRectF > RenderText::getClientRects()
+{
+    QList<QRectF> list;
+
+    int x = 0;
+    int y = 0;
+    absolutePosition(x,y);
+
+    for (InlineTextBox* box = firstTextBox(); box; box = box->nextTextBox())
+    {
+        QRectF textBoxRect(box->xPos() + x, box->yPos() + y,
+                           box->width(), box->height());
+
+        list.append(clientRectToViewport(textBoxRect));
+    }
+    return list;
+}
+
 bool RenderText::isFixedWidthFont() const
 {
     return QFontInfo(style()->font()).fixedPitch();

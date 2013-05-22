@@ -34,15 +34,16 @@
 class KAutoMountPrivate
 {
 public:
-    KAutoMountPrivate(KAutoMount *qq, const QString &device, const QString &desktopFile,
-                      bool showFileManagerWindow)
-        : q(qq), m_strDevice(device), m_desktopFile(desktopFile),
+    KAutoMountPrivate(KAutoMount *qq, const QString &device, const QString& mountPoint,
+                      const QString &desktopFile, bool showFileManagerWindow)
+        : q(qq), m_strDevice(device), m_desktopFile(desktopFile), m_mountPoint(mountPoint),
           m_bShowFilemanagerWindow(showFileManagerWindow)
         { }
 
     KAutoMount *q;
     QString m_strDevice;
     QString m_desktopFile;
+    QString m_mountPoint;
     bool m_bShowFilemanagerWindow;
 
     void slotResult( KJob * );
@@ -51,7 +52,7 @@ public:
 KAutoMount::KAutoMount( bool _readonly, const QByteArray& _format, const QString& _device,
                         const QString&  _mountpoint, const QString & _desktopFile,
                         bool _show_filemanager_window )
-    : d(new KAutoMountPrivate(this, _device, _desktopFile, _show_filemanager_window))
+    : d(new KAutoMountPrivate(this, _device, _mountpoint, _desktopFile, _show_filemanager_window))
 {
     KIO::Job* job = KIO::mount( _readonly, _format, _device, _mountpoint );
     connect( job, SIGNAL(result(KJob*)), this, SLOT(slotResult(KJob*)) );
@@ -68,7 +69,16 @@ void KAutoMountPrivate::slotResult( KJob * job )
         emit q->error();
         job->uiDelegate()->showErrorMessage();
     } else {
-        KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( m_strDevice );
+        const KMountPoint::List mountPoints (KMountPoint::currentMountPoints());
+        KMountPoint::Ptr mp = mountPoints.findByDevice(m_strDevice);
+        // Mounting devices using "LABEL=" or "UUID=" will fail if we look for
+        // the device using only its real name since /etc/mtab will never contain
+        // the LABEL or UUID entries. Hence, we check using the mount point below
+        // when device name lookup fails. #247235
+        if (!mp) {
+            mp = mountPoints.findByPath(m_mountPoint);
+        }
+
         if (!mp) {
             kWarning(7015) << m_strDevice << "was correctly mounted, but findByDevice() didn't find it."
                            << "This looks like a bug, please report it on http://bugs.kde.org, together with your /etc/fstab and /etc/mtab lines for this device";

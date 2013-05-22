@@ -26,7 +26,7 @@
 #include <QKeyEvent>
 #include <QApplication>
 
-K3ListBox::K3ListBox( QWidget *parent, const char *name, Qt::WFlags f )
+K3ListBox::K3ListBox( QWidget *parent, const char *name, Qt::WindowFlags f )
     : Q3ListBox( parent, name, f ), d(0)
 {
     connect( this, SIGNAL(onViewport()),

@@ -638,11 +638,11 @@ void KRichTextWidget::Private::_k_setTextForegroundColor()
 {
     QColor currentTextForegroundColor = q->textColor();
 
-    int result = KColorDialog::getColor(currentTextForegroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
-    if (!currentTextForegroundColor.isValid())
-        currentTextForegroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
+    const int result = KColorDialog::getColor(currentTextForegroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
     if (result != QDialog::Accepted)
         return;
+    if (!currentTextForegroundColor.isValid())
+        currentTextForegroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
 
     q->setTextForegroundColor(currentTextForegroundColor);
 
@@ -653,11 +653,11 @@ void KRichTextWidget::Private::_k_setTextBackgroundColor()
     QTextCharFormat fmt = q->textCursor().charFormat();
     QColor currentTextBackgroundColor = fmt.background().color();
 
-    int result = KColorDialog::getColor(currentTextBackgroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
-    if (!currentTextBackgroundColor.isValid())
-        currentTextBackgroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
+    const int result = KColorDialog::getColor(currentTextBackgroundColor, KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() , q);
     if (result != QDialog::Accepted)
         return;
+    if (!currentTextBackgroundColor.isValid())
+        currentTextBackgroundColor = KColorScheme(QPalette::Active, KColorScheme::View).foreground().color() ;
 
     q->setTextBackgroundColor(currentTextBackgroundColor);
 

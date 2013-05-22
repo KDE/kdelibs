@@ -214,12 +214,6 @@ static bool isPotentialSpoofingAttack(const HTTPProtocol::HTTPRequest& request, 
         return false;
     }
 
-    // NOTE: Workaround for brain dead clients that include "undefined" as
-    // username and password in the request URL (BR# 275033).
-    if (request.url.user() == QLatin1String("undefined") && request.url.pass() == QLatin1String("undefined")) {
-        return false;
-    }
-
     // We already have cached authentication.
     if (config->readEntry(QLatin1String("cached-www-auth"), false)) {
         return false;
@@ -466,7 +460,9 @@ void HTTPProtocol::resetSessionSettings()
   m_request.useCookieJar = config()->readEntry("Cookies", false);
   m_request.cacheTag.useCache = config()->readEntry("UseCache", true);
   m_request.preferErrorPage = config()->readEntry("errorPage", true);
-  m_request.doNotAuthenticate = config()->readEntry("no-auth", false);
+  const bool noAuth = config()->readEntry("no-auth", false);
+  m_request.doNotWWWAuthenticate = config()->readEntry("no-www-auth", noAuth);
+  m_request.doNotProxyAuthenticate = config()->readEntry("no-proxy-auth", noAuth);
   m_strCacheDir = config()->readPathEntry("CacheDir", QString());
   m_maxCacheAge = config()->readEntry("MaxCacheAge", DEFAULT_MAX_CACHE_AGE);
   m_request.windowId = config()->readEntry("window-id");
@@ -592,7 +588,7 @@ void HTTPProtocol::setHost( const QString& host, quint16 port,
 
 bool HTTPProtocol::maybeSetRequestUrl(const KUrl &u)
 {
-  kDebug (7113) << u.url();
+  kDebug(7113) << u;
 
   m_request.url = u;
   m_request.url.setPort(u.port(defaultPort()) != defaultPort() ? u.port() : -1);
@@ -696,7 +692,7 @@ bool HTTPProtocol::proceedUntilResponseHeader()
 
 void HTTPProtocol::stat(const KUrl& url)
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
       return;
@@ -728,7 +724,7 @@ void HTTPProtocol::stat(const KUrl& url)
 
 void HTTPProtocol::listDir( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -891,7 +887,7 @@ void HTTPProtocol::davStatList( const KUrl& url, bool stat )
 
 void HTTPProtocol::davGeneric( const KUrl& url, KIO::HTTP_METHOD method, qint64 size )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1273,7 +1269,7 @@ void HTTPProtocol::davFinished()
 
 void HTTPProtocol::mkdir( const KUrl& url, int )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1293,7 +1289,7 @@ void HTTPProtocol::mkdir( const KUrl& url, int )
 
 void HTTPProtocol::get( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1312,7 +1308,7 @@ void HTTPProtocol::get( const KUrl& url )
 
 void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1368,7 +1364,7 @@ void HTTPProtocol::put( const KUrl &url, int, KIO::JobFlags flags )
 
 void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags flags )
 {
-  kDebug(7113) << src.url() << "->" << dest.url();
+  kDebug(7113) << src << "->" << dest;
 
   if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src))
     return;
@@ -1398,7 +1394,7 @@ void HTTPProtocol::copy( const KUrl& src, const KUrl& dest, int, KIO::JobFlags f
 
 void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flags )
 {
-  kDebug(7113) << src.url() << "->" << dest.url();
+  kDebug(7113) << src << "->" << dest;
 
   if (!maybeSetRequestUrl(dest) || !maybeSetRequestUrl(src))
     return;
@@ -1444,7 +1440,7 @@ void HTTPProtocol::rename( const KUrl& src, const KUrl& dest, KIO::JobFlags flag
 
 void HTTPProtocol::del( const KUrl& url, bool )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1454,7 +1450,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
   m_request.method = HTTP_DELETE;
   m_request.cacheTag.policy = CC_Reload;
 
-  if (m_protocol.startsWith("webdav")) {
+  if (m_protocol.startsWith("webdav")) { //krazy:exclude=strings due to QByteArray
     m_request.url.setQuery(QString());
     if (!proceedUntilResponseHeader()) {
       return;
@@ -1475,7 +1471,7 @@ void HTTPProtocol::del( const KUrl& url, bool )
 
 void HTTPProtocol::post( const KUrl& url, qint64 size )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1491,7 +1487,7 @@ void HTTPProtocol::post( const KUrl& url, qint64 size )
 void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
                             const QString& type, const QString& owner )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1554,7 +1550,7 @@ void HTTPProtocol::davLock( const KUrl& url, const QString& scope,
 
 void HTTPProtocol::davUnlock( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;
@@ -1585,7 +1581,7 @@ QString HTTPProtocol::davError( int code /* = -1 */, const QString &_url )
 
   QString url = _url;
   if ( !url.isNull() )
-    url = m_request.url.url();
+    url = m_request.url.prettyUrl();
 
   QString action, errorString;
   int errorCode = ERR_SLAVE_DEFINED;
@@ -1965,7 +1961,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
         //### should maybe call resetSessionSettings() if the server/domain is
         //    different from the last request!
 
-        kDebug(7113) << url.url();
+        kDebug(7113) << url;
 
         m_request.method = HTTP_GET;
         m_request.isKeepAlive = true;   //readResponseHeader clears it if necessary
@@ -2728,17 +2724,17 @@ bool HTTPProtocol::parseHeaderFromCache()
 
     Q_FOREACH (const QString &str, m_responseHeaders) {
         const QString header = str.trimmed();
-        if (header.startsWith(QLatin1String("content-type:")), Qt::CaseInsensitive) {
+        if (header.startsWith(QLatin1String("content-type:"), Qt::CaseInsensitive)) {
             int pos = header.indexOf(QLatin1String("charset="), Qt::CaseInsensitive);
             if (pos != -1) {
                 const QString charset = header.mid(pos + 8).toLower();
                 m_request.cacheTag.charset = charset;
                 setMetaData(QLatin1String("charset"), charset);
             }
-        } else if (header.startsWith(QLatin1String("content-language:")), Qt::CaseInsensitive) {
+        } else if (header.startsWith(QLatin1String("content-language:"), Qt::CaseInsensitive)) {
             const QString language = header.mid(17).trimmed().toLower();
             setMetaData(QLatin1String("content-language"), language);
-        } else if (header.startsWith(QLatin1String("content-disposition:")), Qt::CaseInsensitive) {
+        } else if (header.startsWith(QLatin1String("content-disposition:"), Qt::CaseInsensitive)) {
             parseContentDisposition(header.mid(20).toLower());
         }
     }
@@ -3032,16 +3028,16 @@ try_again:
     // sites they had no intention of visiting.
     if (isPotentialSpoofingAttack(m_request, config())) {
         // kDebug(7113) << "**** POTENTIAL ADDRESS SPOOFING:" << m_request.url;
-        const int result = messageBox(WarningYesNo,
-                                      i18nc("@warning: Security check on url "
-                                            "being accessed", "You are about to "
-                                            "log in to the site \"%1\" with the "
-                                            "username \"%2\", but the website "
-                                            "does not require authentication. "
-                                            "This may be an attempt to trick you."
-                                            "<p>Is \"%1\" the site you want to visit?",
-                                            m_request.url.host(), m_request.url.user()),
-                                      i18nc("@title:window", "Confirm Website Access"));
+        const int result =
+            messageBox(WarningYesNo,
+                       i18nc("@info Security check on url being accessed",
+                             "<p>You are about to log in to the site \"%1\" "
+                             "with the username \"%2\", but the website "
+                             "does not require authentication. "
+                             "This may be an attempt to trick you.</p>"
+                             "<p>Is \"%1\" the site you want to visit?</p>",
+                             m_request.url.host(), m_request.url.user()),
+                       i18nc("@title:window", "Confirm Website Access"));
         if (result == KMessageBox::No) {
             error(ERR_USER_CANCELED, m_request.url.url());
             return false;
@@ -3060,7 +3056,7 @@ try_again:
             ; // Ignore error
         } else {
             if (!sendErrorPageNotification()) {
-                error(ERR_INTERNAL_SERVER, m_request.url.url());
+                error(ERR_INTERNAL_SERVER, m_request.url.prettyUrl());
                 return false;
             }
         }
@@ -3076,9 +3072,9 @@ try_again:
         // Tell that we will only get an error page here.
         if (!sendErrorPageNotification()) {
             if (m_request.responseCode == 403)
-                error(ERR_ACCESS_DENIED, m_request.url.url());
+                error(ERR_ACCESS_DENIED, m_request.url.prettyUrl());
             else
-                error(ERR_DOES_NOT_EXIST, m_request.url.url());
+                error(ERR_DOES_NOT_EXIST, m_request.url.prettyUrl());
             return false;
         }
     } else if (m_request.responseCode >= 301 && m_request.responseCode<= 303) {
@@ -3092,7 +3088,7 @@ try_again:
         // However, because almost all client implementations treat a 301/302
         // response as a 303 response in violation of the spec, many servers
         // have simply adapted to this way of doing things! Thus, we are
-        // forced to do the same thing. Otherwise, we loose compatability and
+        // forced to do the same thing. Otherwise, we loose compatibility and
         // might not be able to correctly retrieve sites that redirect.
         if (m_request.method != HTTP_HEAD) {
             m_request.method = HTTP_GET; // Force a GET
@@ -3201,6 +3197,12 @@ endParsing:
             if (!l.isEmpty()) {
                 // Assign the mime-type.
                 m_mimeType = toQString(l.first().trimmed().toLower());
+                if (m_mimeType.startsWith(QLatin1Char('"'))) {
+                    m_mimeType.remove(0, 1);
+                }
+                if (m_mimeType.endsWith(QLatin1Char('"'))) {
+                    m_mimeType.chop(1);
+                }
                 kDebug(7113) << "Content-type:" << m_mimeType;
                 l.removeFirst();
             }
@@ -3221,11 +3223,11 @@ endParsing:
                 bool quoted = false;
                 if (mediaValue.startsWith(QLatin1Char('"'))) {
                     quoted = true;
-                    mediaValue.remove(QLatin1Char('"'));
+                    mediaValue.remove(0, 1);
                 }
 
                 if (mediaValue.endsWith(QLatin1Char('"'))) {
-                    mediaValue.truncate(mediaValue.length()-1);
+                    mediaValue.chop(1);
                 }
 
                 kDebug (7113) << "Encoding-type:" << mediaAttribute << "=" << mediaValue;
@@ -3439,7 +3441,8 @@ endParsing:
         // TODO cache the proxy auth data (not doing this means a small performance regression for now)
 
         // we may need to send (Proxy or WWW) authorization data
-        if (!m_request.doNotAuthenticate && isAuthenticationRequired(m_request.responseCode)) {
+        if ((!m_request.doNotWWWAuthenticate && m_request.responseCode == 401) ||
+            (!m_request.doNotProxyAuthenticate && m_request.responseCode == 407)) {
             authRequiresAnotherRoundtrip = handleAuthenticationHeader(&tokenizer);
             if (m_iError) {
                 // If error is set, then handleAuthenticationHeader failed.
@@ -3461,7 +3464,7 @@ endParsing:
             KUrl u(m_request.url, locationStr);
             if(!u.isValid())
             {
-                error(ERR_MALFORMED_URL, u.url());
+                error(ERR_MALFORMED_URL, u.prettyUrl());
                 return false;
             }
 
@@ -3492,8 +3495,8 @@ endParsing:
                 m_request.redirectUrl = u;
             }
 
-            kDebug(7113) << "Re-directing from" << m_request.url.url()
-                         << "to" << u.url();
+            kDebug(7113) << "Re-directing from" << m_request.url
+                         << "to" << u;
 
             redirection(u);
 
@@ -3785,12 +3788,12 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
 
     // validation handling
     if (mayCache && m_request.responseCode == 200 && !m_mimeType.isEmpty()) {
-        kDebug(7113) << "Cache, adding" << m_request.url.url();
+        kDebug(7113) << "Cache, adding" << m_request.url;
         // ioMode can still be ReadFromCache here if we're performing a conditional get
         // aka validation
         m_request.cacheTag.ioMode = WriteToCache;
         if (!cacheFileOpenWrite()) {
-            kDebug(7113) << "Error creating cache entry for " << m_request.url.url()<<"!\n";
+            kDebug(7113) << "Error creating cache entry for " << m_request.url << "!\n";
         }
         m_maxCacheSize = config()->readEntry("MaxCacheSize", DEFAULT_MAX_CACHE_SIZE);
     } else if (m_request.responseCode == 304 && m_request.cacheTag.file) {
@@ -4008,7 +4011,7 @@ void HTTPProtocol::slave_status()
 
 void HTTPProtocol::mimetype( const KUrl& url )
 {
-  kDebug(7113) << url.url();
+  kDebug(7113) << url;
 
   if (!maybeSetRequestUrl(url))
     return;

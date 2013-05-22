@@ -220,7 +220,7 @@ static QString stateToString(KTcpSocket::State state)
 
 #define HTTPREQUEST QByteArray("GET / HTTP/1.1\nHost: www.example.com\n\n")
 
-void KTcpSocketTest::states()
+void KTcpSocketTest::statesIana()
 {
     //A connection to a real internet host
     KTcpSocket *s = new KTcpSocket(this);
@@ -230,7 +230,7 @@ void KTcpSocketTest::states()
     QCOMPARE(s->state(), KTcpSocket::HostLookupState);
     s->write(HTTPREQUEST);
     QCOMPARE(s->state(), KTcpSocket::HostLookupState);
-    s->waitForBytesWritten(2500);
+    s->waitForBytesWritten(2500) ;
     QCOMPARE(s->state(), KTcpSocket::ConnectedState);
     s->waitForReadyRead(2500);
     //I actually assume that the page delivered by www.iana.org will exist for years
@@ -239,13 +239,22 @@ void KTcpSocketTest::states()
     s->write(HTTPREQUEST);
     s->waitForReadyRead();
     s->close();
+    if (s->state() == KTcpSocket::ClosingState)
+        s->waitForDisconnected();
     //What happens is that during waitForReadyRead() the write buffer is written out
     //completely so that the socket can shut down without having to wait for writeout.
     QCOMPARE((int)s->state(), (int)KTcpSocket::UnconnectedState);
 
+    delete s;
+}
+
+void KTcpSocketTest::statesLocalHost()
+{
     //Now again an internal connection
     invokeOnServer("states");
 
+    KTcpSocket *s = new KTcpSocket(this);
+    connect(s, SIGNAL(hostFound()), this, SLOT(states_hostFound()));
     s->connectToHost("127.0.0.1", testPort);
     QCOMPARE(s->state(), KTcpSocket::ConnectingState);
     s->waitForConnected(40);
@@ -260,7 +269,12 @@ void KTcpSocketTest::states()
     QCOMPARE(s->state(), KTcpSocket::UnconnectedState);
 
     disconnect(s, SIGNAL(hostFound()));
+    delete s;
+}
 
+void KTcpSocketTest::statesManyHosts()
+{
+    KTcpSocket *s = new KTcpSocket(this);
     QByteArray requestProlog("GET /  HTTP/1.1\r\n"         //exact copy of a real HTTP query
                              "Connection: Keep-Alive\r\n"  //not really...
                              "User-Agent: Mozilla/5.0 (compatible; Konqueror/3.96; Linux) "

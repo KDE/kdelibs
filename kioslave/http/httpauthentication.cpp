@@ -869,7 +869,7 @@ void KHttpNegotiateAuthentication::generateResponse(const QString &user, const Q
 
     // the service name is "HTTP/f.q.d.n"
     QByteArray servicename = "HTTP@";
-    servicename += m_resource.host().toAscii();
+    servicename += m_resource.host().toLatin1();
 
     input_token.value = (void *)servicename.data();
     input_token.length = servicename.length() + 1;

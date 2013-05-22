@@ -181,8 +181,7 @@ public:
 
     /**
      * Call this in get and copy, to give the total size
-     * of the file
-     * Call in listDir too, when you know the total number of items.
+     * of the file.
      */
     void totalSize( KIO::filesize_t _bytes );
     /**
@@ -456,8 +455,7 @@ public:
     /**
      * Lists the contents of @p url.
      * The slave should emit ERR_CANNOT_ENTER_DIRECTORY if it doesn't exist,
-     * if we don't have enough permissions, or if it is a file
-     * It should also emit totalFiles as soon as it knows how many
+     * if we don't have enough permissions.
      * files it will list.
      */
     virtual void listDir( const KUrl& url );

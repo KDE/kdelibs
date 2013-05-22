@@ -51,7 +51,7 @@ class KDE3SUPPORT_EXPORT DockMainWindow3 : public K3DockMainWindow, virtual publ
   /**
    * Constructor, same signature as K3DockMainWindow3.
    */
-  DockMainWindow3( QWidget* parent = 0L, const char *name = 0L, Qt::WFlags f = 0 );
+  DockMainWindow3( QWidget* parent = 0L, const char *name = 0L, Qt::WindowFlags f = 0 );
   /**
    * Destructor.
    */

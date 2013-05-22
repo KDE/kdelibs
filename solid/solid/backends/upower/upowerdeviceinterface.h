@@ -27,6 +27,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
+#include <QtCore/QWeakPointer>
 
 namespace Solid
 {
@@ -44,7 +45,7 @@ public:
     virtual ~DeviceInterface();
 
 protected:
-    UPowerDevice *m_device;
+    QWeakPointer<UPowerDevice> m_device;
 
 public:
     inline static QStringList toStringList(Solid::DeviceInterface::Type type)

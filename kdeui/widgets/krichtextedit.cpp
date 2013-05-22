@@ -308,10 +308,15 @@ void KRichTextEdit::switchToPlainText()
     if (d->mMode == Rich) {
         d->mMode = Plain;
         // TODO: Warn the user about this?
-        document()->setPlainText(document()->toPlainText());
+        QMetaObject::invokeMethod(this, "insertPlainTextImplementation");
         setAcceptRichText(false);
         emit textModeChanged(d->mMode);
     }
+}
+
+void KRichTextEdit::insertPlainTextImplementation()
+{
+    document()->setPlainText(document()->toPlainText());
 }
 
 void KRichTextEdit::setTextSuperScript(bool superscript)

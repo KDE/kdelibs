@@ -62,7 +62,7 @@ bool NetworkInterface::isWireless() const
         struct iwreq iwr;
 
         int ioctl_fd = socket (PF_INET, SOCK_DGRAM, 0);
-        strncpy (iwr.ifr_ifrn.ifrn_name, ifaceName().toAscii().constData(), IFNAMSIZ);
+        strncpy (iwr.ifr_ifrn.ifrn_name, ifaceName().toLatin1().constData(), IFNAMSIZ);
 
         QFileInfo phyDir(m_device->deviceName() + "/phy80211");
         
@@ -85,7 +85,7 @@ QString NetworkInterface::hwAddress() const
             if (addrFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
                 QByteArray addr = addrFile.readAll().trimmed();
                 if (!addr.isEmpty()) {
-                    return QString::fromAscii(addr);
+                    return QString::fromLatin1(addr);
                 }
             }
         }
@@ -101,7 +101,7 @@ qulonglong NetworkInterface::macAddress() const
     if (hwAddr != QLatin1String("00:00:00:00:00:00")) {
         unsigned int a5, a4, a3, a2, a1, a0;
 
-        if (sscanf (hwAddr.toAscii().constData(), "%x:%x:%x:%x:%x:%x",
+        if (sscanf (hwAddr.toLatin1().constData(), "%x:%x:%x:%x:%x:%x",
                 &a5, &a4, &a3, &a2, &a1, &a0) == 6) {
             mac_address =
                 ((qulonglong)a5<<40) |

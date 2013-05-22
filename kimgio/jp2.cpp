@@ -242,26 +242,53 @@ render_view( gs_t& gs, QImage* outImage )
             return false;
     } // for
 
+    jas_matrix_t *cmptmatrix[3];
+    jas_seqent_t *buf[3];
+    int prec[3];
+
+    for (int k = 0; k < 3; ++k ) {
+        prec[k] = jas_image_cmptprec(gs.altimage, cmptlut[k]);
+        if (!(cmptmatrix[k] = jas_matrix_create(1, width))) {
+            return false;
+        }
+    }
+
     qti = QImage( jas_image_width( gs.altimage ), jas_image_height( gs.altimage ),
                   QImage::Format_RGB32 );
-
+    if (qti.isNull()) {
+        return false;
+    }
     uint32_t* data = (uint32_t*)qti.bits();
 
     for( int y = 0; y < height; ++y ) {
+        for( int k = 0; k < 3; ++k ) {
+            if (jas_image_readcmpt(gs.altimage, cmptlut[k], 0, y, width, 1, cmptmatrix[k])) {
+                return false;
+            }
+            buf[k] = jas_matrix_getref(cmptmatrix[k], 0, 0);
+        }
         for( int x = 0; x < width; ++x ) {
             for( int k = 0; k < 3; ++k ) {
-                v[k] = jas_image_readcmptsample( gs.altimage, cmptlut[k], x, y );
+                v[k] = *buf[k];
                 // if the precision of the component is too small, increase
                 // it to use the complete value range.
-                v[k] <<= 8 - jas_image_cmptprec( gs.altimage, cmptlut[k] );
+                v[k] <<= 8 - prec[k];
 
                 if( v[k] < 0 ) v[k] = 0;
                 else if( v[k] > 255 ) v[k] = 255;
+                ++buf[k];
             } // for k
 
             *data++ = qRgb( v[0], v[1], v[2] );
         } // for x
     } // for y
+
+    for (int k = 0; k < 3; ++k ) {
+        if (cmptmatrix[k]) {
+            jas_matrix_destroy(cmptmatrix[k]);
+        }
+    }
+
     *outImage = qti;
     return true;
 } // render_view

@@ -30,6 +30,7 @@
 #include "udevaudiointerface.h"
 #include "udevserialinterface.h"
 #include "udevnetworkinterface.h"
+#include "udevbutton.h"
 #include "cpuinfo.h"
 
 #include <sys/socket.h>
@@ -231,6 +232,9 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
     case Solid::DeviceInterface::SerialInterface:
         return m_device.subsystem() == QLatin1String("tty");
 
+    case Solid::DeviceInterface::Button:
+        return m_device.subsystem() == QLatin1String("input");
+
     default:
         return false;
     }
@@ -272,6 +276,9 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     case Solid::DeviceInterface::SerialInterface:
         return new SerialInterface(this);
+
+    case Solid::DeviceInterface::Button:
+        return new Button(this);
 
     default:
         qFatal("Shouldn't happen");

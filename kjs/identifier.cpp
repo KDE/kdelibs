@@ -20,7 +20,7 @@
  */
 
 #include "identifier.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include <wtf/FastMalloc.h>
 #include <wtf/HashSet.h>

@@ -21,6 +21,10 @@
 #include <QtCore/QMap>
 #include <QtCore/QDebug>
 
+
+// Let the interpreter create its own global Object instead of using our selfcreated
+#define USE_KJS_GLOBAL 1
+
 // from khtml/ecma/kjs_binding.cpp"
 KJS::UString::UString(const QString &d)
 {
@@ -131,12 +135,14 @@ static QString exceptionToString(KJS::ExecState* exec, KJS::JSValue* exceptionOb
     return exceptionMsg;
 }
 
+#ifndef USE_KJS_GLOBAL
 class GlobalImp : public KJS::JSGlobalObject {
 public:
   virtual KJS::UString className() const { return "global"; }
 };
 
 static GlobalImp* global;
+#endif
 static QString basedir( "" );
 static QByteArray testrunner;
 static QMap<QByteArray, QByteArray> includes;
@@ -151,7 +157,7 @@ static QStringList expectedBroken;	// list of tests we know that will fail
  */
 static bool loadInclude( const QByteArray &fn )
 {
-    QFile runnerfile( basedir + QLatin1String( "test/harness/" ) + QString::fromAscii( fn ) );
+    QFile runnerfile( basedir + QLatin1String( "test/harness/" ) + QString::fromLatin1( fn ) );
 
     if ( !runnerfile.open( QIODevice::ReadOnly ) )
         return false;
@@ -178,17 +184,20 @@ void ECMAscriptTest::initTestCase()
 
     testrunner = includes[ "sta.js" ] + includes[ "ed.js" ] + '\n';
 
-    const QString brokenFn = QString::fromAscii( qgetenv( "ECMATEST_BROKEN" ) );
+    const QString brokenFn = QString::fromLatin1( qgetenv( "ECMATEST_BROKEN" ) );
     if ( !brokenFn.isEmpty() ) {
         QFile brokenF( brokenFn );
         if ( !brokenF.open( QIODevice::ReadOnly ) ) {
-            const QString errmsg = QString::fromAscii( "cannot open " ) + brokenFn;
-            QWARN( errmsg.toAscii() );
+            const QString errmsg = QString::fromLatin1( "cannot open " ) + brokenFn;
+            QWARN( errmsg.toLatin1() );
         } else {
-            expectedBroken = QString::fromAscii( brokenF.readAll() ).split( QLatin1Char( '\n' ) )
+            expectedBroken = QString::fromLatin1( brokenF.readAll() ).split( QLatin1Char( '\n' ) )
                                                .filter( QRegExp( "^[^#].*" ) );
         }
     }
+
+    m_passed = 0;
+    m_failed = 0;
 }
 
 static QByteArray getTextProperty( const QByteArray &property, const QByteArray &code )
@@ -207,6 +216,18 @@ static QByteArray getTextProperty( const QByteArray &property, const QByteArray 
     // poor mans escaping
     return code.mid( from, to - from ).replace( "\\", "\\\\" ).replace( "\"", "\\\"" );
 }
+
+#define ECMATEST_VERIFY( expr ) \
+    do { \
+        const bool tmp_result = ( expr ); \
+        if ( tmp_result ) \
+            m_passed++; \
+        else \
+            m_failed++; \
+        if ( knownBroken ) \
+            QEXPECT_FAIL(QTest::currentDataTag(), "It is known that KJS doesn't pass this test", Abort); \
+        QVERIFY( tmp_result ); \
+    } while (0)
 
 static QMap< QByteArray, QByteArray > skips;
 
@@ -230,7 +251,11 @@ void ECMAscriptTest::runAllTests()
 
     QVERIFY( ! testdata.isEmpty() );
 
+#ifdef USE_KJS_GLOBAL
+    RefPtr<KJS::Interpreter> interp = new KJS::Interpreter();
+#else
     RefPtr<KJS::Interpreter> interp = new KJS::Interpreter(global);
+#endif
 
     KJS::Interpreter::setShouldPrintExceptions(true);
 
@@ -265,69 +290,78 @@ void ECMAscriptTest::runAllTests()
 
     const QString scriptutf = QString::fromUtf8( testscript.constData() );
 
-    KJS::Completion completion = interp->evaluate(info.fileName().toAscii().constData(), 0, scriptutf);
+//     QWARN(filename.toAscii().data());
+    KJS::Completion completion = interp->evaluate(info.fileName().toLatin1().constData(), 0, scriptutf);
 
-    const bool knownBroken = expectedBroken.contains( QString::fromAscii( QTest::currentDataTag() ) );
+    const bool knownBroken = expectedBroken.contains( QString::fromLatin1( QTest::currentDataTag() ) );
 
     if ( expectedError.isEmpty() ) {
-        if ( knownBroken ) {
-            QWARN( "It is known that KJS doesn't pass this test" );
-            QVERIFY2( completion.complType() == KJS::Throw, "test expected to be broken now works!" );
-        } else {
-            QVERIFY( completion.complType() != KJS::Throw );
-        }
+        ECMATEST_VERIFY( completion.complType() != KJS::Throw );
     } else {
         if ( knownBroken && completion.complType() != KJS::Throw ) {
-            QWARN( "It is known that KJS doesn't pass this test" );
+            QEXPECT_FAIL(QTest::currentDataTag(), "It is known that KJS doesn't pass this test", Abort);
+            m_failed++;
+        }
+
+        QCOMPARE( completion.complType(), KJS::Throw );
+        QVERIFY( completion.value() != NULL );
+
+        const QString eMsg = exceptionToString( interp->execState(), completion.value() );
+
+        if ( expectedError == "^((?!NotEarlyError).)*$" ) {
+            ECMATEST_VERIFY( eMsg.indexOf( "NotEarlyError" ) == -1 );
+        } else if ( expectedError == "." ) {
+            // means "every exception passes
         } else {
-            QVERIFY( completion.complType() == KJS::Throw );
-            QVERIFY( completion.value() != NULL );
-
-            const QString eMsg = exceptionToString( interp->execState(), completion.value() );
-
-            if ( expectedError == "^((?!NotEarlyError).)*$" ) {
-                if ( knownBroken ) {
-                    QWARN( "It is known that KJS doesn't pass this test" );
-                    QVERIFY2( eMsg.indexOf( "NotEarlyError" ) >= 0, "test expected to be broken now works!" );
-                } else {
-                    QVERIFY( eMsg.indexOf( "NotEarlyError" ) == -1 );
-                }
-            } else if ( expectedError == "." ) {
-                // means "every exception passes
-            } else {
-                if ( knownBroken ) {
-                    QWARN( "It is known that KJS doesn't pass this test" );
-                    QVERIFY2( eMsg.indexOf( expectedError ) == -1, "test expected to be broken now works!" );
-                } else {
-                    QVERIFY( eMsg.indexOf( expectedError ) >= 0 );
-                }
-            }
+            ECMATEST_VERIFY( eMsg.indexOf( expectedError ) >= 0 );
         }
     }
 }
 
 void ECMAscriptTest::runAllTests_data()
 {
+#ifndef USE_KJS_GLOBAL
     global = new GlobalImp();
+#endif
 
     QTest::addColumn<QString>( "filename" );
 
     const QStringList js( QLatin1String( "*.js" ) );
     const QStringList all( QLatin1String( "*" ) );
-    const QString chapter = QString::fromAscii( qgetenv( "ECMATEST_CHAPTER" ) );
+    const QString chapter = QString::fromLatin1( qgetenv( "ECMATEST_CHAPTER" ) );
 
     if ( !chapter.isEmpty() )
-        QWARN( "===> Testing chapter " + chapter.toAscii() );
+        QWARN( "===> Testing chapter " + chapter.toLatin1() );
 
+    if ( chapter.isEmpty() || chapter.startsWith("ch15")) {
+        const QByteArray timeZoneDepend = "this test depends on the timezone and may or may not fail, avoid it for the moment";
+        // The tests are timezone dependent because of the Date implementation in kjs.
+        // It only affects the limit by +/- 24h (or less, depending on your timezone),
+        // the "normal" use is not affected.
+        // It requieres a complete Date rewrite to fix this, see ECMA Edition 5.1r6 15.9.1.1
+        skips[ "15.9.5.43-0-8" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-9" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-10" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-11" ] = timeZoneDepend;
+        skips[ "15.9.5.43-0-12" ] = timeZoneDepend;
+    }
+
+#ifndef USE_KJS_GLOBAL
     // some tests fail when the suite is run as a whole
-    if ( chapter.isEmpty() || chapter == "ch15" ) {
+    if ( chapter.isEmpty() || chapter.startsWith("ch15") || chapter.startsWith("ch12")) {
         const QByteArray endlessLoop = "this test causes an endless loop, avoid it for the moment";
+        const QByteArray crashTest = "this test causes a crash when run as part of the whole suite";
+        skips[ "S12.7_A9_T1" ] = endlessLoop;
+        skips[ "S12.7_A9_T2" ] = endlessLoop;
         skips[ "S15.1.2.3_A6" ] = endlessLoop;
         skips[ "S15.1.3.1_A2.5_T1" ] = endlessLoop;
         skips[ "S15.1.3.2_A2.4_T1" ] = endlessLoop;
         skips[ "S15.1.3.2_A2.5_T1" ] = endlessLoop;
-        skips[ "15.2.3.4-4-1" ] = "this test causes a crash when run as part of the whole suite";
+        skips[ "15.2.3.4-4-1" ] = crashTest;
+        skips[ "15.2.3.11-4-1" ] = crashTest;
+        skips[ "15.2.3.12-3-1" ] = crashTest;
     }
+#endif
 
     QDirIterator it( basedir + QLatin1String("test/suite/") + chapter, QDirIterator::Subdirectories);
     while ( it.hasNext() ) {
@@ -342,13 +376,20 @@ void ECMAscriptTest::runAllTests_data()
 
         filename.chop(3); // .js
 
-        QTest::newRow( filename.toAscii() ) << info.absoluteFilePath();
+        QTest::newRow( filename.toLatin1() ) << info.absoluteFilePath();
     }
 }
 
 void ECMAscriptTest::cleanup()
 {
+#ifndef USE_KJS_GLOBAL
     global->clearProperties();
+#endif
+}
+
+void ECMAscriptTest::cleanupTestCase()
+{
+    qDebug() << "passed testcases:" << m_passed << "failed testcases:" << m_failed;
 }
 
 #include "ecmatest.moc"

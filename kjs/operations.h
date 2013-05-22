@@ -81,6 +81,10 @@ namespace KJS {
 
   bool equal(ExecState *exec, JSValue *v1, JSValue *v2);
   bool strictEqual(ExecState *exec, JSValue *v1, JSValue *v2);
+  // Same as strictEqual, except for "-0" and "0" difference.
+  // Used in PropertyDescriptor::equalTo and Object::defineOwnProperty to check
+  // if the value changed and we need to update.
+  bool sameValue(ExecState *exec, JSValue *v1, JSValue *v2);
   /**
    * This operator performs an abstract relational comparison of the two
    * arguments that can be of arbitrary type. If possible, conversions to the

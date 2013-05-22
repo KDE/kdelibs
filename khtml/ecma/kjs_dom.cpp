@@ -49,6 +49,7 @@
 #include "kjs_views.h"
 #include "kjs_window.h"
 #include "kjs_xpath.h"
+#include "kjs_clientrect.h"
 #include "xmlhttprequest.h"
 #include <kjs/PropertyNameArray.h>
 #include <dom/dom_exception.h>
@@ -1252,6 +1253,8 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   focus         DOMElement::Focus   DontDelete|Function 0
   querySelector          DOMElement::QuerySelector            DontDelete|Function 1
   querySelectorAll       DOMElement::QuerySelectorAll         DontDelete|Function 1
+  getClientRects         DOMElement::GetClientRects           DontDelete|Function 0
+  getBoundingClientRect  DOMElement::GetBoundingClientRect    DontDelete|Function 0
 @end
 */
 KJS_IMPLEMENT_PROTOFUNC(DOMElementProtoFunc)
@@ -1379,7 +1382,48 @@ JSValue* DOMElementProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj,
       RefPtr<DOM::NodeListImpl> l = element.querySelectorAll(args[0]->toString(exec).domString(), exception);
       return getDOMNodeList(exec, l.get());
     }
-      
+    case DOMElement::GetClientRects: {
+      DOM::DocumentImpl* docimpl = node.document();
+      if (docimpl) {
+        docimpl->updateLayout();
+      }
+
+      khtml::RenderObject *rend = node.renderer();
+
+      if (!rend)
+        return new ClientRectList(exec);
+
+      //In quirks mode, may need to forward it to body.
+      rend = handleBodyRootQuirk(static_cast<DOMNode *>( thisObj )->impl(), rend, DOMNode::ClientTop);
+
+      return new ClientRectList(exec, rend->getClientRects());
+    }
+    case DOMElement::GetBoundingClientRect: {
+      DOM::DocumentImpl* docimpl = node.document();
+      if (docimpl) {
+        docimpl->updateLayout();
+      }
+
+      khtml::RenderObject *rend = node.renderer();
+
+      //In quirks mode, may need to forward it to body.
+      rend = handleBodyRootQuirk(static_cast<DOMNode *>( thisObj )->impl(), rend, DOMNode::ClientTop);
+
+      if (!rend)
+        return new ClientRect(exec, 0, 0, 0, 0);
+
+      QList<QRectF> list = rend->getClientRects();
+      if (list.isEmpty()) {
+        return new ClientRect(exec, 0, 0, 0, 0);
+      } else {
+        QRectF rect = list.first();
+        for (int i = 1; i < list.length(); ++i) {
+          rect = rect.united(list.at(i));
+        }
+        return new ClientRect(exec, rect);
+      }
+    }
+
     default:
 
       // Make sure our layout is up to date before we call these

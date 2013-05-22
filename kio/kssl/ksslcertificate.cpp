@@ -672,7 +672,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
     for (QStringList::ConstIterator j = qsl.begin(); j != qsl.end(); ++j) {
         KDE_struct_stat sb;
         QString _j = (*j) + "ca-bundle.crt";
-        if (-1 == KDE_stat(_j.toAscii().constData(), &sb)) {
+        if (-1 == KDE_stat(_j.toLatin1().constData(), &sb)) {
             continue;
         }
 
@@ -691,7 +691,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
             continue;
         }
 
-        if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.toAscii().constData(), X509_FILETYPE_PEM)) {
+        if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.toLatin1().constData(), X509_FILETYPE_PEM)) {
             // error accessing directory and loading pems
             kDebug(7029) << "KSSL couldn't read CA root: "
                     << _j << endl;
@@ -1215,7 +1215,7 @@ QByteArray KSSLCertificate::toNetscape() {
     ASN1_OCTET_STRING hdr;
     KTemporaryFile ktf;
     ktf.open();
-    FILE *ktf_fs = fopen(ktf.fileName().toAscii(), "r+");
+    FILE *ktf_fs = fopen(ktf.fileName().toLatin1(), "r+");
 
     hdr.data = (unsigned char *)NETSCAPE_CERT_HDR;
     hdr.length = strlen(NETSCAPE_CERT_HDR);
@@ -1226,13 +1226,9 @@ QByteArray KSSLCertificate::toNetscape() {
     fclose(ktf_fs);
 
     QFile qf(ktf.fileName());
-    qf.open(QIODevice::ReadOnly);
-    char *buf = new char[qf.size()];
-    qf.read(buf, qf.size());
-    qba = QByteArray(buf, qf.size());
-    qf.close();
-    delete[] buf;
-
+    if (qf.open(QIODevice::ReadOnly)) {
+        qba = qf.readAll();
+    }
 #endif
 return qba;
 }
@@ -1244,13 +1240,14 @@ QString KSSLCertificate::toText() {
 #ifdef KSSL_HAVE_SSL
     KTemporaryFile ktf;
     ktf.open();
-    FILE *ktf_fs = fopen(ktf.fileName().toAscii(), "r+");
+    FILE *ktf_fs = fopen(ktf.fileName().toLatin1(), "r+");
 
     d->kossl->X509_print(ktf_fs, getCert());
     fclose(ktf_fs);
 
     QFile qf(ktf.fileName());
-    qf.open(QIODevice::ReadOnly);
+    if (!qf.open(QIODevice::ReadOnly) )
+       return text;
     char *buf = new char[qf.size()+1];
     qf.read(buf, qf.size());
     buf[qf.size()] = 0;
@@ -1305,7 +1302,9 @@ QStringList KSSLCertificate::subjAltNames() const {
         }
 
         QString s = (const char *)d->kossl->ASN1_STRING_data(val->d.ia5);
-        if (!s.isEmpty()) {
+        if (!s.isEmpty()  &&
+                /* skip subjectAltNames with embedded NULs */
+                s.length() == d->kossl->ASN1_STRING_length(val->d.ia5)) {
             rc += s;
         }
     }

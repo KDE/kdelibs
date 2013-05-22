@@ -190,7 +190,8 @@ namespace KJS {
            SetAttributeNode, RemoveAttributeNode, GetElementsByTagName,
            GetAttributeNS, SetAttributeNS, RemoveAttributeNS, GetAttributeNodeNS,
            SetAttributeNodeNS, GetElementsByTagNameNS, HasAttribute, HasAttributeNS,
-           GetElementsByClassName, Blur, Focus, QuerySelector, QuerySelectorAll };
+           GetElementsByClassName, Blur, Focus, QuerySelector, QuerySelectorAll,
+           GetClientRects, GetBoundingClientRect };
   private:
 #if 0
     static JSValue *attributeGetter(ExecState *exec, JSObject*, const Identifier&, const PropertySlot& slot);

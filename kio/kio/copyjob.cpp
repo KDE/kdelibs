@@ -221,6 +221,7 @@ public:
 
     void slotStart();
     void slotEntries( KIO::Job*, const KIO::UDSEntryList& list );
+    void slotSubError(KIO::ListJob* job, KIO::ListJob *subJob);
     void addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest);
     /**
      * Forward signal from subjob
@@ -256,6 +257,7 @@ CopyJob::CopyJob(CopyJobPrivate &dd)
 {
     setProperty("destUrl", d_func()->m_dest.url());
     QTimer::singleShot(0, this, SLOT(slotStart()));
+    qRegisterMetaType<KIO::UDSEntry>("KIO::UDSEntry");
 }
 
 CopyJob::~CopyJob()
@@ -564,6 +566,18 @@ void CopyJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
     }
 }
 
+void CopyJobPrivate::slotSubError(ListJob* job, ListJob* subJob)
+{
+	const KUrl url = subJob->url();
+	kWarning() << url << subJob->errorString();
+
+	Q_Q(CopyJob);
+
+	emit q->warning(job, subJob->errorString(), QString());
+	skip(url, true);
+}
+
+
 void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const KUrl& srcUrl, bool srcIsDir, const KUrl& currentDest)
 {
     struct CopyInfo info;
@@ -771,7 +785,8 @@ void CopyJobPrivate::statCurrentSrc()
         // entries for UDS_USER and UDS_GROUP even on initially empty UDSEntries (#192185)
         if (entry.contains(KIO::UDSEntry::UDS_NAME)) {
             kDebug(7007) << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
-            sourceStated(entry, m_currentSrcURL);
+            // sourceStated(entry, m_currentSrcURL); // don't recurse, see #319747, use queued invokeMethod instead
+            QMetaObject::invokeMethod(q, "sourceStated", Qt::QueuedConnection, Q_ARG(KIO::UDSEntry, entry), Q_ARG(KUrl, m_currentSrcURL));
             return;
         }
 
@@ -855,6 +870,8 @@ void CopyJobPrivate::startListing( const KUrl & src )
     newjob->setUnrestricted(true);
     q->connect(newjob, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
                SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
+    q->connect(newjob, SIGNAL(subError(KIO::ListJob*,KIO::ListJob*)),
+	       SLOT(slotSubError(KIO::ListJob*,KIO::ListJob*)));
     q->addSubjob( newjob );
 }
 
@@ -1731,6 +1748,7 @@ void CopyJob::emitResult()
     // Even if some error made us abort midway, we might still have done
     // part of the job so we better update the views! (#118583)
     if (!d->m_bOnlyRenames) {
+        // If only renaming happened, KDirNotify::FileRenamed was emitted by the rename jobs
         KUrl url(d->m_globalDest);
         if (d->m_globalDestinationState != DEST_IS_DIR || d->m_asMethod)
             url.setPath(url.directory());
@@ -1741,12 +1759,12 @@ void CopyJob::emitResult()
             kDebug(7007) << "KDirNotify'ing FilesRemoved" << d->m_successSrcList.toStringList();
             org::kde::KDirNotify::emitFilesRemoved(d->m_successSrcList.toStringList());
         }
+    }
 
-        // Re-enable watching on the dirs that held the deleted files
-        if (d->m_mode == CopyJob::Move) {
-            for (QSet<QString>::const_iterator it = d->m_parentDirs.constBegin() ; it != d->m_parentDirs.constEnd() ; ++it)
-                KDirWatch::self()->restartDirScan( *it );
-        }
+    // Re-enable watching on the dirs that held the deleted/moved files
+    if (d->m_mode == CopyJob::Move) {
+        for (QSet<QString>::const_iterator it = d->m_parentDirs.constBegin() ; it != d->m_parentDirs.constEnd() ; ++it)
+            KDirWatch::self()->restartDirScan( *it );
     }
     Job::emitResult();
 }

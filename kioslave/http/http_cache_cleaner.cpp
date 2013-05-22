@@ -96,7 +96,7 @@ struct MiniCacheFileInfo {
     qint32 useCount;
 // from filesystem
     qint64 lastUsedDate;
-    qint32 sizeOnDisk;
+    qint64 sizeOnDisk;
     // we want to delete the least "useful" files and we'll have to sort a list for that...
     bool operator<(const MiniCacheFileInfo &other) const;
     void debugPrint() const
@@ -271,8 +271,7 @@ enum CacheCleanerCommand {
 static bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationMode mode)
 {
     QFile file(filePath(baseName));
-    file.open(QIODevice::ReadOnly);
-    if (file.openMode() != QIODevice::ReadOnly) {
+    if (!file.open(QIODevice::ReadOnly)) {
         return false;
     }
     fi->baseName = baseName;
@@ -438,7 +437,9 @@ public:
     {
         // write out the scoreboard
         QFile sboard(filePath(QLatin1String("scoreboard")));
-        sboard.open(QIODevice::WriteOnly | QIODevice::Truncate);
+        if (!sboard.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            return;
+        }
         QDataStream stream(&sboard);
 
         QHash<CacheIndex, MiniCacheFileInfo>::ConstIterator it = m_scoreboard.constBegin();
@@ -463,7 +464,7 @@ public:
         return true;
     }
 
-    int runCommand(const QByteArray &cmd)
+    qint64 runCommand(const QByteArray &cmd)
     {
         // execute the command; return number of bytes if a new file was created, zero otherwise.
         Q_ASSERT(cmd.size() == 80);
@@ -578,7 +579,9 @@ private:
             // note that avoiding to open the file is the whole purpose of the scoreboard - we only
             // open the file if we really have to.
             QFile entryFile(fileInfo.absoluteFilePath());
-            entryFile.open(QIODevice::ReadOnly);
+            if (!entryFile.open(QIODevice::ReadOnly)) {
+                return false;
+            }
             if (entryFile.size() < SerializedCacheFileInfo::size) {
                 return false;
             }
@@ -801,7 +804,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
     QFile::remove(socketFileName);
     lServer.listen(socketFileName);
     QList<QLocalSocket *> sockets;
-    int newBytesCounter = INT_MAX;  // force cleaner run on startup
+    qint64 newBytesCounter = LLONG_MAX;  // force cleaner run on startup
 
     Scoreboard scoreboard;
     CacheCleaner *cleaner = 0;
@@ -854,7 +857,7 @@ extern "C" KDE_EXPORT int kdemain(int argc, char **argv)
                 delete cleaner;
                 cleaner = 0;
             }
-        } else if (newBytesCounter > g_maxCacheSize / 8) {
+        } else if (newBytesCounter > (g_maxCacheSize / 8)) {
             cacheDir.refresh();
             cleaner = new CacheCleaner(cacheDir);
             newBytesCounter = 0;

@@ -101,7 +101,7 @@ QString unescapeString(const QString &src, bool *ok, QString *error)
                 if (pos + 2 < length) {
                     char value = src.mid(pos + 1, 2).toInt(ok, 16);
                     if (*ok) {
-                        dst += QChar::fromAscii(value);
+                        dst += QChar::fromLatin1(value);
                         pos += 2;
                     } else {
                         *error = QString("Invalid hex escape sequence at column %1 in %2").arg(pos).arg(src);

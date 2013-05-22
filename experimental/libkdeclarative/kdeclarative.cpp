@@ -27,10 +27,12 @@
 #include <QtDeclarative/QDeclarativeContext>
 #include <QtDeclarative/QDeclarativeEngine>
 #include <QtDeclarative/QDeclarativeExpression>
+#include <QtDeclarative/qdeclarativedebug.h>
 #include <QtScript/QScriptEngine>
 #include <QtScript/QScriptValueIterator>
 #include <QtCore/QWeakPointer>
 
+#include <kcmdlineargs.h>
 #include <kdebug.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
@@ -151,17 +153,14 @@ void KDeclarative::setupBindings()
         d->declarativeEngine.data()->addImportPath(importPathIterator.previous());
     }
 
-    QString componentsPlatform = getenv("KDE_PLASMA_COMPONENTS_PLATFORM");
-    if (componentsPlatform.isEmpty()) {
-        KConfigGroup cg(KSharedConfig::openConfig("kdeclarativerc"), "Components-platform");
-        componentsPlatform = cg.readEntry("name", "desktop");
-    }
-
-    const QStringList platformImportPathList = KGlobal::dirs()->findDirs("module", "platformimports/" % componentsPlatform);
-    QStringListIterator platformImportPathIterator(platformImportPathList);
-    platformImportPathIterator.toBack();
-    while (platformImportPathIterator.hasPrevious()) {
-        d->declarativeEngine.data()->addImportPath(platformImportPathIterator.previous());
+    const QString target = componentsTarget();
+    if (target != defaultComponentsTarget()) {
+        const QStringList paths = KGlobal::dirs()->findDirs("module", "platformimports/" % target);
+        QStringListIterator it(paths);
+        it.toBack();
+        while (it.hasPrevious()) {
+            d->declarativeEngine.data()->addImportPath(it.previous());
+        }
     }
 
     QScriptValue global = engine->globalObject();
@@ -185,3 +184,41 @@ QScriptEngine *KDeclarative::scriptEngine() const
 {
     return d->scriptEngine.data();
 }
+
+void KDeclarative::setupQmlJsDebugger()
+{
+    if (KCmdLineArgs::parsedArgs("qt")->isSet("qmljsdebugger")) {
+        QDeclarativeDebuggingEnabler enabler;
+    }
+}
+
+QString KDeclarative::defaultComponentsTarget()
+{
+    return QLatin1String("desktop");
+}
+
+QString KDeclarative::componentsTarget()
+{
+    const QStringList platform = runtimePlatform();
+    if (platform.isEmpty()) {
+        return defaultComponentsTarget();
+    }
+
+    return platform.last();
+}
+
+QStringList KDeclarative::runtimePlatform()
+{
+    static QStringList *runtimePlatform = 0;
+    if (!runtimePlatform) {
+        const QString env = getenv("PLASMA_PLATFORM");
+        runtimePlatform = new QStringList(env.split(":", QString::SkipEmptyParts));
+        if (runtimePlatform->isEmpty()) {
+            KConfigGroup cg(KGlobal::config(), "General");
+            *runtimePlatform = cg.readEntry("runtimePlatform", *runtimePlatform);
+        }
+    }
+
+    return *runtimePlatform;
+}
+

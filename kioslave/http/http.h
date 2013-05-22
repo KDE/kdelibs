@@ -132,7 +132,8 @@ public:
       endoffset = 0;
       allowTransferCompression = false;
       disablePassDialog = false;
-      doNotAuthenticate = false;
+      doNotWWWAuthenticate = false;
+      doNotProxyAuthenticate = false;
       preferErrorPage = false;
       useCookieJar = false;
     }
@@ -168,7 +169,8 @@ public:
     bool isPersistentProxyConnection;
     bool allowTransferCompression;
     bool disablePassDialog;
-    bool doNotAuthenticate;
+    bool doNotWWWAuthenticate;
+    bool doNotProxyAuthenticate;
     // Indicates whether an error page or error message is preferred.
     bool preferErrorPage;
 

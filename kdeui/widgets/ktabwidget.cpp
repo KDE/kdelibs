@@ -230,7 +230,7 @@ void KTabWidget::Private::slotTabMoved(int from, int to)
     }
 }
 
-KTabWidget::KTabWidget( QWidget *parent, Qt::WFlags flags )
+KTabWidget::KTabWidget( QWidget *parent, Qt::WindowFlags flags )
   : QTabWidget( parent ),
     d( new Private( this ) )
 {

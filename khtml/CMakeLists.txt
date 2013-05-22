@@ -13,13 +13,25 @@ add_definitions(-DWTF_PLATFORM_QT)
 add_subdirectory( tests )
 
 find_package(JPEG)
-macro_log_feature(JPEG_FOUND "libjpeg" "JPEG image format support" "http://www.ijg.org" TRUE "" "Required by khtml.")
+set_package_properties(JPEG PROPERTIES DESCRIPTION "JPEG image format support"
+                       URL "http://www.ijg.org"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
 
 find_package(GIF)
-macro_log_feature(GIF_FOUND "giflib" "GIF image format support" "http://sourceforge.net/projects/giflib" TRUE "" "Required by khtml.")
+set_package_properties(GIF PROPERTIES DESCRIPTION "GIF image format support"
+                       URL "http://sourceforge.net/projects/giflib"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
 
 find_package(PNG)
-macro_log_feature(PNG_FOUND "libpng" "PNG image format support" "http://www.libpng.org/pub/png" TRUE "" "Required by khtml.")
+set_package_properties(PNG PROPERTIES DESCRIPTION "PNG image format support"
+                       URL "http://www.libpng.org/pub/png"
+                       TYPE REQUIRED
+                       PURPOSE "Required by khtml"
+                      )
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
@@ -300,6 +312,10 @@ set(kjs_html_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_xpath.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_scriptable.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_data.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybuffer.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraybufferview.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_arraytyped.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/ecma/kjs_clientrect.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugwindow.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/debugdocument.cpp
   ${CMAKE_SOURCE_DIR}/khtml/ecma/debugger/consoledock.cpp
@@ -573,8 +589,10 @@ create_lut(ecma/xmlhttprequest.cpp xmlhttprequest.lut.h)
 create_lut(ecma/xmlserializer.cpp xmlserializer.lut.h)
 create_lut(ecma/domparser.cpp domparser.lut.h)
 create_lut(ecma/kjs_context2d.cpp kjs_context2d.lut.h)
-create_lut(ecma/kjs_audio.cpp kjs_audio.lut.h)
 create_lut(ecma/kjs_xpath.cpp kjs_xpath.lut.h)
+create_lut(ecma/kjs_arraybuffer.cpp kjs_arraybuffer.lut.h)
+create_lut(ecma/kjs_arraybufferview.cpp kjs_arraybufferview.lut.h)
+create_lut(ecma/kjs_clientrect.cpp kjs_clientrect.lut.h)
 
 macro(create_js_binding _in_FILE)
    get_filename_component(_in_filename ${_in_FILE} NAME_WE)

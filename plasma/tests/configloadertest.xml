@@ -12,6 +12,9 @@
                 <entry name="DefaultColorItem" type="Color">
                         <default>#00FF00</default>
                 </entry>
+                <entry name="DefaultColorWithAlphaItem" type="Color">
+                        <default>100,100,100,100</default>
+                </entry>
                 <entry name="DefaultDateTimeItem" type="DateTime">
                         <default>Thu Sep 09 2010</default>
                 </entry>

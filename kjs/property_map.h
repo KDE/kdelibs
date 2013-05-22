@@ -117,6 +117,9 @@ namespace KJS {
         bool hasGetterSetterProperties() const { return m_getterSetterFlag; }
         void setHasGetterSetterProperties(bool f) { m_getterSetterFlag = f; }
 
+        void setExtensible(bool extensible) { m_extensible = extensible; }
+        bool isExtensible() const { return m_extensible; }
+
         // This /computes/ whether the table has getters or setters, while the above is
         // used to cache the result. In other words, one usually does
         // setHasGetterSetterProperties(containsGettersOrSetters()) whenver
@@ -147,6 +150,7 @@ namespace KJS {
 
         bool m_getterSetterFlag : 1;
         bool m_usingTable       : 1;
+        bool m_extensible       : 1;
 
         // We also stick some of the object's
         // bitflags here. Kind of ugly, but saves memory...
@@ -157,6 +161,7 @@ namespace KJS {
           m_singleEntryKey(0),
           m_getterSetterFlag(false),
           m_usingTable(false),
+          m_extensible(true),
           m_objLocalInjected(false)
     {}
 } // namespace

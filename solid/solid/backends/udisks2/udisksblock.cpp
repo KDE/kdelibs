@@ -23,9 +23,9 @@
 #include <QFile>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusPendingReply>
+#include <QtXml/QDomDocument>
 
 #include "udisksblock.h"
-#include "dbus/manager.h"
 
 using namespace Solid::Backends::UDisks2;
 
@@ -37,28 +37,32 @@ Block::Block(Device *dev)
 
     // we have a drive (non-block device for udisks), so let's find the corresponding (real) block device
     if (m_devNum == 0 || m_devFile.isEmpty()) {
-        org::freedesktop::DBus::ObjectManager manager(UD2_DBUS_SERVICE, UD2_DBUS_PATH, QDBusConnection::systemBus());
-        QDBusPendingReply<DBUSManagerStruct> reply = manager.GetManagedObjects();
+        const QString path = "/org/freedesktop/UDisks2/block_devices";
+        QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path,
+                                                           DBUS_INTERFACE_INTROSPECT, "Introspect");
+        QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
         reply.waitForFinished();
-        if (!reply.isError()) {  // enum devices
-            Q_FOREACH(const QDBusObjectPath &path, reply.value().keys()) {
-                const QString udi = path.path();
 
-                if (udi == UD2_DBUS_PATH_MANAGER || udi == UD2_UDI_DISKS_PREFIX || udi.startsWith(UD2_DBUS_PATH_JOBS))
-                    continue;
+        if (reply.isValid()) {
+            QDomDocument dom;
+            dom.setContent(reply.value());
+            QDomNodeList nodeList = dom.documentElement().elementsByTagName("node");
+            for (int i = 0; i < nodeList.count(); i++) {
+                QDomElement nodeElem = nodeList.item(i).toElement();
+                if (!nodeElem.isNull() && nodeElem.hasAttribute("name")) {
+                    const QString udi = path + "/" + nodeElem.attribute("name");
 
-                Device device(udi);
-                if (device.drivePath() == dev->udi()) {
-                    m_devNum = device.prop("DeviceNumber").toULongLong();
-                    m_devFile = QFile::decodeName(device.prop("Device").toByteArray());
-                    break;
+                    Device device(udi);
+                    if (device.drivePath() == dev->udi()) {
+                        m_devNum = device.prop("DeviceNumber").toULongLong();
+                        m_devFile = QFile::decodeName(device.prop("Device").toByteArray());
+                        break;
+                    }
                 }
             }
         }
-        else  // show error
-        {
+        else
             qWarning() << "Failed enumerating UDisks2 objects:" << reply.error().name() << "\n" << reply.error().message();
-        }
     }
 
     //qDebug() << "devnum:" << m_devNum << "dev file:" << m_devFile;

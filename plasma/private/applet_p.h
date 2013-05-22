@@ -125,7 +125,6 @@ public:
     void positionMessageOverlay();
     void destroyMessageOverlay();
     void addGlobalShortcutsPage(KConfigDialog *dialog);
-    void addPublishPage(KConfigDialog *dialog);
     void configDialogFinished();
     KConfigDialog *generateGenericConfigDialog();
     void addStandardConfigurationPages(KConfigDialog *dialog);

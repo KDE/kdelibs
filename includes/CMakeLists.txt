@@ -75,6 +75,7 @@ install( FILES
   KAuthorized
   KAutoMount
   KAutoUnmount
+  KAutoSaveFile
   KAutostart
   KBookmark
   KBookmarkAction
@@ -89,9 +90,11 @@ install( FILES
   KBookmarkManager
   KBookmarkMenu
   KBookmarkOwner
+  KBreadcrumbSelectionModel
   KBugReport
   KBuildSycocaProgressDialog
   KButtonGroup
+  KCapacityBar
   KCModule
   KCModuleContainer
   KCModuleInfo
@@ -143,7 +146,9 @@ install( FILES
   KCursor
   KDBusServiceStarter
   KDebug
+  KDeviceListModel
   KDEDModule
+  KDEPrintDialog
   KDataTool
   KDataToolAction
   KDataToolInfo
@@ -159,6 +164,7 @@ install( FILES
   KDesktopFile
   KDialog
   KDialogButtonBox
+  KDialogJobUiDelegate
   KDirLister
   KDirModel
   KDirNotify
@@ -170,6 +176,7 @@ install( FILES
   KFilePreviewGenerator
   KFilePlacesView
   KFileWidget
+  KFileWritePlugin
   KDiskFreeSpaceInfo
   KDoubleNumInput
   KDoubleValidator
@@ -214,6 +221,7 @@ install( FILES
   KGlobal
   KGlobalAccel
   KGlobalSettings
+  KGlobalShortcutInfo
   KGradientSelector
   KGuiItem
   KHBox
@@ -234,6 +242,7 @@ install( FILES
   KIconEffect
   KIconLoader
   KIconTheme
+  KIdentityProxyModel
   KImageCache
   KImageFilePreview
   KImageIO
@@ -243,6 +252,7 @@ install( FILES
   KIntSpinBox
   KIntValidator
   KJob
+  KJobTrackerInterface
   KJobUiDelegate
   KKeySequenceWidget
   KLanguageButton
@@ -251,9 +261,11 @@ install( FILES
   KLibLoader
   KLibrary
   KLineEdit
+  KLinkItemSelectionModel
   KListWidget
   KListWidgetSearchLine
   KLocale
+  KLocalizedDate
   KLocalizedString
   KLockFile
   KMD5
@@ -272,11 +284,14 @@ install( FILES
   KMimeTypeChooserDialog
   KMimeTypeTrader
   KMimeTypeValidator
+  KModelIndexProxyMapper
   KMozillaBookmarkImporterImpl
   KModifierKeyInfo
+  KMountPoint
   KMultiTabBar
   KMultiTabBarButton
   KMultiTabBarTab
+  KNameAndUrlInputDialog
   KNFSShare
   KNSBookmarkExporter
   KNSBookmarkExporterImpl
@@ -284,6 +299,7 @@ install( FILES
   KNSBookmarkImporterImpl
   KNTLM
   KNewFileMenu
+  KNewPasswordDialog
   KNotification
   KNotificationRestrictions
   KNotifyConfigWidget
@@ -326,10 +342,12 @@ install( FILES
   KPushButton
   KRandom
   KRandomSequence
+  KRatingPainter
   KRatingWidget
   KRecentDocument
   KRecentFilesAction
   KRecursiveFilterProxyModel
+  KRegExpEditorInterface
   KRemoteEncoding
   KReplace
   KReplaceDialog
@@ -349,6 +367,7 @@ install( FILES
   KSelector
   KSeparator
   KService
+  KServiceAction
   KServiceGroup
   KServiceType
   KServiceTypeProfile
@@ -377,6 +396,8 @@ install( FILES
   KStartupInfoData
   KStartupInfoId
   KStatusBar
+  KStatusBarJobTracker
+  KStatusBarOfflineIndicator
   KStatusNotifierItem
   KStringHandler
   KStringListValidator
@@ -439,6 +460,7 @@ install( FILES
   KUserGroup
   KVBox
   KViewStateMaintainer
+  KViewStateSaver
   KWindowInfo
   KWindowSystem
   KWordMacroExpander
@@ -472,6 +494,7 @@ install( FILES
   KEmoticonsTheme
   KFilterProxySearchLine
   KWidgetItemDelegate
+  KWidgetJobTracker
   KPixmapSequence
   KPixmapSequenceWidget
   KPixmapSequenceOverlayPainter
@@ -778,6 +801,7 @@ install( FILES
   KParts/HistoryProvider
   KParts/HtmlExtension
   KParts/LiveConnectExtension
+  KParts/ListingExtension
   KParts/MainWindow
   KParts/OpenUrlEvent
   KParts/Part

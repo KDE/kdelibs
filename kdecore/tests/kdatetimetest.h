@@ -50,7 +50,9 @@ private Q_SLOTS:
     void strings_rfc3339();
     void strings_qttextdate();
     void strings_format();
+#ifdef COMPILING_TESTS
     void cache();
+#endif
     void stream();
     void misc();
 private:

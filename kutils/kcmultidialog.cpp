@@ -230,13 +230,13 @@ KCMultiDialog::KCMultiDialog( QWidget *parent )
     d_func()->init();
 }
 
-KCMultiDialog::KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WFlags flags)
+KCMultiDialog::KCMultiDialog(KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags)
     : KPageDialog(*new KCMultiDialogPrivate, pageWidget, parent, flags)
 {
     d_func()->init();
 }
 
-KCMultiDialog::KCMultiDialog(KCMultiDialogPrivate &dd, KPageWidget *pageWidget, QWidget *parent, Qt::WFlags flags)
+KCMultiDialog::KCMultiDialog(KCMultiDialogPrivate &dd, KPageWidget *pageWidget, QWidget *parent, Qt::WindowFlags flags)
     : KPageDialog(dd, pageWidget, parent, flags)
 {
     d_func()->init();

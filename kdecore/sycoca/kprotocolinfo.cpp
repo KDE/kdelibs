@@ -257,14 +257,44 @@ bool KProtocolInfo::isFilterProtocol( const QString& _protocol )
   return !prot->m_isSourceProtocol;
 }
 
-QString KProtocolInfo::icon( const QString& _protocol )
+void KProtocolInfo::selectServiceOrHelper(const QString& protocol, KProtocolInfo::Ptr& returnProtocol, KService::Ptr& returnService)
 {
-  // We call the findProtocol directly (not via KProtocolManager) to bypass any proxy settings.
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(_protocol);
-  if ( !prot )
-    return QString();
+  // We have up to two sources of data:
+  // 1) the exec line of the .protocol file, if there's one (could be a kioslave or a helper app)
+  // 2) the application associated with x-scheme-handler/<protocol> if there's one
 
-  return prot->m_icon;
+  // If both exist, then:
+  //  A) if the .protocol file says "launch an application", then the new-style handler-app has priority
+  //  B) but if the .protocol file is for a kioslave (e.g. kio_http) then this has priority over
+  //     firefox or chromium saying x-scheme-handler/http. Gnome people want to send all HTTP urls
+  //     to a webbrowser, but we want mimetype-determination-in-calling-application by default
+  //     (the user can configure a BrowserApplication though)
+
+    const KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
+    const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
+    if (service && prot && prot->m_isHelperProtocol) { // for helper protocols, the handler app has priority over the hardcoded one (see A above)
+        returnService = service;
+        return;
+    }
+    if (prot) {
+        returnProtocol = prot;
+    } else {
+        // No protocol file, use handler app if any.
+        returnService = service;
+    }
+}
+
+QString KProtocolInfo::icon(const QString& protocol)
+{
+    KProtocolInfo::Ptr prot;
+    KService::Ptr service;
+    selectServiceOrHelper(protocol, prot, service);
+    if (service) {
+        return service->icon();
+    } else if (prot) {
+        return prot->m_icon;
+    }
+    return QString();
 }
 
 QString KProtocolInfo::config( const QString& _protocol )
@@ -306,17 +336,15 @@ bool KProtocolInfo::determineMimetypeFromExtension( const QString &_protocol )
 
 QString KProtocolInfo::exec(const QString& protocol)
 {
-  KProtocolInfo::Ptr prot = KProtocolInfoFactory::self()->findProtocol(protocol);
-  if ( prot ) {
-      return prot->m_exec;
-  }
-
-  // Maybe it's "helper protocol", i.e. launches an app?
-  const KService::Ptr service = KMimeTypeTrader::self()->preferredService(QString::fromLatin1("x-scheme-handler/") + protocol);
-  if (service)
-      return service->exec();
-
-  return QString();
+    KProtocolInfo::Ptr prot;
+    KService::Ptr service;
+    selectServiceOrHelper(protocol, prot, service);
+    if (service) {
+        return service->exec();
+    } else if (prot) {
+        return prot->m_exec;
+    }
+    return QString();
 }
 
 KProtocolInfo::ExtraFieldList KProtocolInfo::extraFields( const KUrl &url )

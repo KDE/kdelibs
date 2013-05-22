@@ -92,6 +92,7 @@
     <entry name="DefaultReminderUnits" key="RemindUnits" type="Enum">
       <label context="@label">Reminder units</label>
       <whatsthis context="@info:whatsthis">Default reminder time units in the alarm edit dialog.</whatsthis>
+      <tooltip context="@info:tooltip">Default reminder time units in the alarm edit dialog.</tooltip>
        <choices name="TimePeriod::Units">
         <choice name="Minutes"></choice>
         <choice name="HoursMinutes"><label context="@option">Hours/Minutes</label></choice>

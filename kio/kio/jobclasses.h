@@ -963,6 +963,16 @@ namespace KIO {
          */
         void entries( KIO::Job *job, const KIO::UDSEntryList& list); // TODO KDE5: use KIO::ListJob* argument to avoid casting
 
+	/**
+	 * This signal is emitted when a sub-directory could not be listed.
+	 * The job keeps going, thus doesn't result in an overall error.
+	 * @param job the job that emitted the signal
+	 * @param subJob the job listing a sub-directory, which failed. Use
+	 *		 url(), error() and errorText() on that job to find
+	 *		 out more.
+	 */
+	void subError( KIO::ListJob *job, KIO::ListJob *subJob );
+
         /**
          * Signals a redirection.
          * Use to update the URL shown to the user.

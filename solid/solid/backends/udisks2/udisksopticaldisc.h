@@ -24,7 +24,7 @@
 
 #include <solid/ifaces/opticaldisc.h>
 
-#include "../shared/udevqtdevice.h"
+#include "../shared/udevqt.h"
 
 #include "udisksstoragevolume.h"
 #include "udisksdevice.h"

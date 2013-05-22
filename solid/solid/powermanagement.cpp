@@ -1,5 +1,6 @@
 /*
     Copyright 2006-2007 Kevin Ottens <ervin@kde.org>
+    Copyright 2013 Lukas Tinkl <ltinkl@redhat.com>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Lesser General Public
@@ -28,16 +29,16 @@
 SOLID_GLOBAL_STATIC(Solid::PowerManagementPrivate, globalPowerManager)
 
 Solid::PowerManagementPrivate::PowerManagementPrivate()
-    : managerIface("org.freedesktop.PowerManagement",
-                   "/org/freedesktop/PowerManagement",
+    : managerIface(QLatin1String("org.freedesktop.PowerManagement"),
+                   QLatin1String("/org/freedesktop/PowerManagement"),
                    QDBusConnection::sessionBus()),
-      policyAgentIface("org.kde.Solid.PowerManagement.PolicyAgent",
-                       "/org/kde/Solid/PowerManagement/PolicyAgent",
+      policyAgentIface(QLatin1String("org.kde.Solid.PowerManagement.PolicyAgent"),
+                       QLatin1String("/org/kde/Solid/PowerManagement/PolicyAgent"),
                        QDBusConnection::sessionBus()),
-      inhibitIface("org.freedesktop.PowerManagement.Inhibit",
-                   "/org/freedesktop/PowerManagement/Inhibit",
+      inhibitIface(QLatin1String("org.freedesktop.PowerManagement.Inhibit"),
+                   QLatin1String("/org/freedesktop/PowerManagement/Inhibit"),
                    QDBusConnection::sessionBus()),
-      serviceWatcher("org.kde.Solid.PowerManagement",
+      serviceWatcher(QLatin1String("org.kde.Solid.PowerManagement"),
                      QDBusConnection::sessionBus(),
                      QDBusServiceWatcher::WatchForRegistration | QDBusServiceWatcher::WatchForUnregistration),
       powerSaveStatus(false)
@@ -48,6 +49,8 @@ Solid::PowerManagementPrivate::PowerManagementPrivate()
             this, SLOT(slotCanSuspendChanged(bool)));
     connect(&managerIface, SIGNAL(CanHibernateChanged(bool)),
             this, SLOT(slotCanHibernateChanged(bool)));
+    connect(&managerIface, SIGNAL(CanHybridSuspendChanged(bool)),
+            this, SLOT(slotCanHybridSuspendChanged(bool)));
     connect(&managerIface, SIGNAL(PowerSaveStatusChanged(bool)),
             this, SLOT(slotPowerSaveStatusChanged(bool)));
     connect(&serviceWatcher, SIGNAL(serviceRegistered(QString)),
@@ -56,8 +59,8 @@ Solid::PowerManagementPrivate::PowerManagementPrivate()
             this, SLOT(slotServiceUnregistered(QString)));
 
     // If the service is registered, trigger the connection immediately
-    if (QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.Solid.PowerManagement")) {
-        slotServiceRegistered("org.kde.Solid.PowerManagement");
+    if (QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.Solid.PowerManagement"))) {
+        slotServiceRegistered(QLatin1String("org.kde.Solid.PowerManagement"));
     }
     if (QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.freedesktop.PowerManagement"))) {
         slotServiceRegistered(QLatin1String("org.freedesktop.PowerManagement"));
@@ -74,7 +77,7 @@ Solid::PowerManagement::Notifier::Notifier()
 
 bool Solid::PowerManagement::appShouldConserveResources()
 {
-    return globalPowerManager->managerIface.GetPowerSaveStatus();
+    return globalPowerManager->powerSaveStatus;
 }
 
 QSet<Solid::PowerManagement::SleepState> Solid::PowerManagement::supportedSleepStates()
@@ -94,7 +97,6 @@ void Solid::PowerManagement::requestSleep(SleepState state, QObject *receiver, c
     switch (state)
     {
     case StandbyState:
-        break;
     case SuspendState:
         globalPowerManager->managerIface.Suspend();
         break;
@@ -140,8 +142,10 @@ int Solid::PowerManagement::beginSuppressingScreenPowerManagement(const QString&
             QCoreApplication::applicationName(), reason);
 
         if (reply.isValid()) {
-            QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.ScreenSaver", "/ScreenSaver",
-                                                                  "org.freedesktop.ScreenSaver", "Inhibit");
+            QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.ScreenSaver"),
+                                                                  QLatin1String("/ScreenSaver"),
+                                                                  QLatin1String("org.freedesktop.ScreenSaver"),
+                                                                  QLatin1String("Inhibit"));
             message << QCoreApplication::applicationName();
             message << reason;
 
@@ -167,8 +171,10 @@ bool Solid::PowerManagement::stopSuppressingScreenPowerManagement(int cookie)
         bool result = globalPowerManager->policyAgentIface.ReleaseInhibition(cookie).isValid();
 
         if (globalPowerManager->screensaverCookiesForPowerDevilCookies.contains(cookie)) {
-            QDBusMessage message = QDBusMessage::createMethodCall("org.freedesktop.ScreenSaver", "/ScreenSaver",
-                                                                  "org.freedesktop.ScreenSaver", "UnInhibit");
+            QDBusMessage message = QDBusMessage::createMethodCall(QLatin1String("org.freedesktop.ScreenSaver"),
+                                                                  QLatin1String("/ScreenSaver"),
+                                                                  QLatin1String("org.freedesktop.ScreenSaver"),
+                                                                  QLatin1String("UnInhibit"));
             message << globalPowerManager->screensaverCookiesForPowerDevilCookies.take(cookie);
             QDBusConnection::sessionBus().asyncCall(message);
         }
@@ -211,6 +217,19 @@ void Solid::PowerManagementPrivate::slotCanHibernateChanged(bool newState)
     }
 }
 
+void Solid::PowerManagementPrivate::slotCanHybridSuspendChanged(bool newState)
+{
+    if (supportedSleepStates.contains(Solid::PowerManagement::HybridSuspendState) == newState) {
+        return;
+    }
+
+    if (newState) {
+        supportedSleepStates+= Solid::PowerManagement::HybridSuspendState;
+    } else {
+        supportedSleepStates-= Solid::PowerManagement::HybridSuspendState;
+    }
+}
+
 void Solid::PowerManagementPrivate::slotPowerSaveStatusChanged(bool newState)
 {
     if (powerSaveStatus == newState) {
@@ -233,24 +252,28 @@ void Solid::PowerManagementPrivate::slotServiceRegistered(const QString &service
         hibernateReply.waitForFinished();
         slotCanHibernateChanged(hibernateReply.isValid() ? hibernateReply.value() : false);
 
+        QDBusPendingReply<bool> hybridSuspendReply = managerIface.CanHybridSuspend();
+        hybridSuspendReply.waitForFinished();
+        slotCanHybridSuspendChanged(hybridSuspendReply.isValid() ? hybridSuspendReply.value() : false);
+
         QDBusPendingReply<bool> saveStatusReply = managerIface.GetPowerSaveStatus();
         saveStatusReply.waitForFinished();
         slotPowerSaveStatusChanged(saveStatusReply.isValid() ? saveStatusReply.value() : false);
     } else {
         // Is the resume signal available?
-        QDBusMessage call = QDBusMessage::createMethodCall("org.kde.Solid.PowerManagement",
-                                                           "/org/kde/Solid/PowerManagement",
-                                                           "org.kde.Solid.PowerManagement",
-                                                           "backendCapabilities");
+        QDBusMessage call = QDBusMessage::createMethodCall(QLatin1String("org.kde.Solid.PowerManagement"),
+                                                           QLatin1String("/org/kde/Solid/PowerManagement"),
+                                                           QLatin1String("org.kde.Solid.PowerManagement"),
+                                                           QLatin1String("backendCapabilities"));
         QDBusPendingReply< uint > reply = QDBusConnection::sessionBus().asyncCall(call);
         reply.waitForFinished();
 
         if (reply.isValid() && reply.value() > 0) {
                 // Connect the signal
-                QDBusConnection::sessionBus().connect("org.kde.Solid.PowerManagement",
-                                                      "/org/kde/Solid/PowerManagement",
-                                                      "org.kde.Solid.PowerManagement",
-                                                      "resumingFromSuspend",
+                QDBusConnection::sessionBus().connect(QLatin1String("org.kde.Solid.PowerManagement"),
+                                                      QLatin1String("/org/kde/Solid/PowerManagement/Actions/SuspendSession"),
+                                                      QLatin1String("org.kde.Solid.PowerManagement.Actions.SuspendSession"),
+                                                      QLatin1String("resumingFromSuspend"),
                                                       this,
                                                       SIGNAL(resumingFromSuspend()));
         }
@@ -263,6 +286,7 @@ void Solid::PowerManagementPrivate::slotServiceUnregistered(const QString &servi
         // Reset the values
         slotCanSuspendChanged(false);
         slotCanHibernateChanged(false);
+        slotCanHybridSuspendChanged(false);
         slotPowerSaveStatusChanged(false);
     } else {
         // Disconnect the signal

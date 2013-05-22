@@ -216,7 +216,7 @@ qint64 KTar::KTarPrivate::readRawHeader( char *buffer ) {
 
 bool KTar::KTarPrivate::readLonglink(char *buffer,QByteArray &longlink) {
   qint64 n = 0;
-  //kDebug() << "reading longlink from pos " << device()->pos();
+  //kDebug() << "reading longlink from pos " << q->device()->pos();
   QIODevice *dev = q->device();
   // read size of longlink from size field in header
   // size is in bytes including the trailing null (which we ignore)
@@ -362,7 +362,6 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
         if (n == 0x200)
         {
             bool isdir = false;
-            bool isGlobalHeader = false;
 
             if ( name.endsWith( QLatin1Char( '/' ) ) )
             {
@@ -401,8 +400,6 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             // (and 'L' for longlink fileNames, 'K' for longlink symlink targets)
             // 'D' for GNU tar extension DUMPDIR, 'x' for Extended header referring
             // to the next file in the archive and 'g' for Global extended header
-            if ( typeflag == 'g' )
-                isGlobalHeader = true;
 
             if ( typeflag == '5' )
                 isdir = true;
@@ -413,7 +410,13 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 isdir = false;
                 isDumpDir = true;
             }
-            //kDebug(7041) << "typeflag=" << typeflag << " islink=" << ( typeflag == '1' || typeflag == '2' );
+            //kDebug(7041) << nm << "isdir=" << isdir << "pos=" << dev->pos() << "typeflag=" << typeflag << " islink=" << ( typeflag == '1' || typeflag == '2' );
+
+            if (typeflag == 'x' || typeflag == 'g') { // pax extended header, or pax global extended header
+                // Skip it for now. TODO: implement reading of extended header, as per http://pubs.opengroup.org/onlinepubs/009695399/utilities/pax.html
+                (void)dev->read( buffer, 0x200 );
+                continue;
+            }
 
             if (isdir)
                 access |= S_IFDIR; // f*cking broken tar files
@@ -460,18 +463,16 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                     kWarning(7041) << "skipping" << skip << "failed";
             }
 
-            if (isGlobalHeader)
-                continue;
-
             if ( pos == -1 )
             {
                 if (nm == QLatin1String(".")) { // special case
                     Q_ASSERT( isdir );
-                    if ( isdir )
+                    if (isdir) {
                         setRootDir( static_cast<KArchiveDirectory *>( e ) );
-                }
-                else
+                    }
+                } else {
                     rootDir()->addEntry( e );
+                }
             }
             else
             {

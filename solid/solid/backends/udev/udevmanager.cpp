@@ -19,6 +19,7 @@
 */
 
 #include "udevmanager.h"
+#include "utils.h"
 
 #include "udev.h"
 #include "udevdevice.h"
@@ -27,8 +28,6 @@
 #include <QtCore/QSet>
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
-
-#define DETAILED_OUTPUT 0
 
 using namespace Solid::Backends::UDev;
 using namespace Solid::Backends::Shared;
@@ -40,6 +39,8 @@ public:
     ~Private();
 
     bool isOfInterest(const UdevQt::Device &device);
+    bool isPowerBubtton(const UdevQt::Device &device);
+    bool isLidBubtton(const UdevQt::Device &device);
 
     UdevQt::Client *m_client;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
@@ -55,6 +56,7 @@ UDevManager::Private::Private()
     subsystems << "video4linux";
     subsystems << "net";
     subsystems << "usb";
+    subsystems << "input";
     m_client = new UdevQt::Client(subsystems);
 }
 
@@ -65,7 +67,7 @@ UDevManager::Private::~Private()
 
 bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 {
-#if DETAILED_OUTPUT
+#ifdef UDEV_DETAILED_OUTPUT
     qDebug() << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
     qDebug() << "Path:" << device.sysfsPath();
     qDebug() << "Properties:" << device.deviceProperties();
@@ -90,17 +92,55 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         QString path = device.deviceProperty("DEVPATH").toString();
 
         int lastSlash = path.length() - path.lastIndexOf(QLatin1String("/")) -1;
-        QByteArray lastElement = path.right(lastSlash).toAscii();
+        QByteArray lastElement = path.right(lastSlash).toLatin1();
 
         if (lastElement.startsWith("tty") && !path.startsWith("/devices/virtual")) {
             return true;
         }
     }
+
+    if (device.subsystem() == QLatin1String("input")) {
+        if (device.deviceProperties().contains("KEY")) {
+            return isPowerBubtton(device);
+        }
+        if (device.deviceProperties().contains("SW")) {
+            return isLidBubtton(device);
+        }
+    }
+
     return device.subsystem() == QLatin1String("dvb") ||
            device.subsystem() == QLatin1String("video4linux") ||
            device.subsystem() == QLatin1String("net") ||
            device.deviceProperty("ID_MEDIA_PLAYER").toString().isEmpty() == false || // media-player-info recognized devices
            device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
+}
+
+bool UDevManager::Private::isLidBubtton(const UdevQt::Device& device)
+{
+    long bitmask[NBITS(SW_MAX)];
+    int nbits = input_str_to_bitmask(device.deviceProperty("SW").toByteArray(), bitmask, sizeof(bitmask));
+    if (nbits == 1) {
+        if (test_bit (SW_LID, bitmask)) {
+            qDebug() << "Lid button detected";
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool UDevManager::Private::isPowerBubtton(const UdevQt::Device& device)
+{
+    long bitmask[NBITS(KEY_MAX)];
+    int nbits = input_str_to_bitmask(device.deviceProperty("KEY").toByteArray(), bitmask, sizeof(bitmask));
+    if (nbits == 1) {
+        if (test_bit (KEY_POWER, bitmask)) {
+            qDebug() << "Power button detected";
+            return true;
+        }
+    }
+
+    return false;
 }
 
 UDevManager::UDevManager(QObject *parent)
@@ -119,7 +159,8 @@ UDevManager::UDevManager(QObject *parent)
                              << Solid::DeviceInterface::PortableMediaPlayer
                              << Solid::DeviceInterface::DvbInterface
                              << Solid::DeviceInterface::Block
-                             << Solid::DeviceInterface::Video;
+                             << Solid::DeviceInterface::Video
+                             << Solid::DeviceInterface::Button;
 }
 
 UDevManager::~UDevManager()

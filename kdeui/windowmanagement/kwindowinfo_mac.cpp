@@ -71,7 +71,7 @@ void KWindowInfo::Private::updateData()
     pinfo.processAppRef = &ref;
 #endif
     GetProcessInformation(&m_psn, &pinfo);
-    name = QString::fromAscii(processName+1, processName[0]);
+    name = QString::fromLatin1(processName+1, processName[0]);
 
     if (m_axWin) {
         CFStringRef title;

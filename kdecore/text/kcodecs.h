@@ -383,7 +383,7 @@ public:
    *
    * NOTE that the file must be open for reading.
    *
-   * @param file       a pointer to FILE as returned by calls like f{d,re}open
+   * @param file       a QIODevice opened for reading
    *
    * @returns false if an error occurred during reading.
    */

@@ -38,7 +38,11 @@
 using namespace Solid::Backends::UDisks2;
 
 OpticalDrive::OpticalDrive(Device *device)
-    : StorageDrive(device), m_ejectInProgress(false), m_readSpeed(0), m_writeSpeed(0), m_speedsInit(false)
+    : StorageDrive(device)
+    , m_ejectInProgress(false)
+    , m_readSpeed(0)
+    , m_writeSpeed(0)
+    , m_speedsInit(false)
 {
     m_device->registerAction("eject", this,
                              SLOT(slotEjectRequested()),
@@ -59,7 +63,7 @@ bool OpticalDrive::eject()
     m_device->broadcastActionRequested("eject");
 
     const QString path = m_device->udi();
-    QDBusConnection c = QDBusConnection::systemBus();
+    QDBusConnection c = QDBusConnection::connectToBus(QDBusConnection::SystemBus, "Solid::Udisks2::OpticalDrive::" + path);
 
     // if the device is mounted, unmount first
     QString blockPath;

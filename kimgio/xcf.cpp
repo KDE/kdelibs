@@ -501,7 +501,7 @@ bool XCFImageFormat::composeTiles(XCFImage& xcf_image)
         
         // SANITY CHECK: Catch corrupted XCF image file where the width or height
         // of a tile is reported are bogus. See Bug# 234030.
-        if (layer.height > xcf_image.height || layer.width > xcf_image.width)
+        if (layer.width > 32767 || layer.height > 32767 || layer.width * layer.height > 16384 * 16384)
               return false;
        
 	layer.image_tiles.resize(layer.nrows);

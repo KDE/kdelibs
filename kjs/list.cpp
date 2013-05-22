@@ -19,7 +19,7 @@
  */
 
 #include "list.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "internal.h"
 #include <algorithm>

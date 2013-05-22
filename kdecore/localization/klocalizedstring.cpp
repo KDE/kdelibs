@@ -70,7 +70,7 @@ class KLocalizedStringPrivate
     QByteArray msg;
     QByteArray plural;
 
-    QString toString (const KLocale *locale, const QString &catalogName) const;
+    QString toString (const KLocale *locale, const QString *catalogName) const;
     QString selectForEnglish () const;
     QString substituteSimple (const QString &trans,
                               const QChar &plchar = QLatin1Char('%'),
@@ -191,27 +191,27 @@ bool KLocalizedString::isEmpty () const
 
 QString KLocalizedString::toString () const
 {
-    return d->toString(KGlobal::locale(), QString());
+    return d->toString(KGlobal::locale(), NULL);
 }
 
 QString KLocalizedString::toString (const QString &catalogName) const
 {
-    return d->toString(KGlobal::locale(), catalogName);
+    return d->toString(KGlobal::locale(), &catalogName);
 }
 
 QString KLocalizedString::toString (const KLocale *locale) const
 {
-    return d->toString(locale, QString());
+    return d->toString(locale, NULL);
 }
 
 QString KLocalizedString::toString (const KLocale *locale,
                                     const QString &catalogName) const
 {
-    return d->toString(locale, catalogName);
+    return d->toString(locale, &catalogName);
 }
 
 QString KLocalizedStringPrivate::toString (const KLocale *locale,
-                                           const QString &catalogName) const
+                                           const QString *catalogName) const
 {
     const KLocalizedStringPrivateStatics *s = staticsKLSP;
 
@@ -235,7 +235,10 @@ QString KLocalizedStringPrivate::toString (const KLocale *locale,
 
     // Get raw translation.
     QString rawtrans, lang, ctry;
-    const char *catname = catalogName.toUtf8();
+    QByteArray catname;
+    if (catalogName != NULL) {
+        catname = catalogName->toUtf8();
+    }
     if (locale != NULL) {
         if (!ctxt.isEmpty() && !plural.isEmpty()) {
             locale->translateRawFrom(catname, ctxt, msg, plural, number,

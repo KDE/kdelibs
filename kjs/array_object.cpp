@@ -24,7 +24,7 @@
  */
 
 #include "array_object.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "array_object.lut.h"
 
 #include "error_object.h"
@@ -172,18 +172,10 @@ JSValue* ArrayProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, cons
         }
 
         if (id == ToString || id == Join || fallback) {
-            if (element->isObject()) {
-                JSObject *o = static_cast<JSObject *>(element);
-                JSValue *conversionFunction = o->get(exec, exec->propertyNames().toString);
-                if (conversionFunction->isObject() && static_cast<JSObject *>(conversionFunction)->implementsCall()) {
-                    str += static_cast<JSObject *>(conversionFunction)->call(exec, o, List())->toString(exec);
-                } else {
-                    visitedElems.remove(thisObj);
-                    return throwError(exec, RangeError, "Cannot convert " + o->className() + " object to string");
-                }
-            } else {
-                str += element->toString(exec);
-            }
+            str += element->toString(exec);
+            if (exec->hadException())
+                break;
+
             if (str.isNull()) {
                 JSObject* error = Error::create(exec, GeneralError, "Out of memory");
                 exec->setException(error);

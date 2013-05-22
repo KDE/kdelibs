@@ -169,7 +169,12 @@ void KRecentFilesAction::addUrl( const KUrl& _url, const QString& name )
     // remove file if already in list
     foreach (QAction* action, selectableActionGroup()->actions())
     {
+#ifdef Q_OS_WIN
+      const QString tmpFileName = url.isLocalFile() ? QDir::toNativeSeparators( d->m_urls[action].pathOrUrl() ) : d->m_urls[action].pathOrUrl();
+      if ( tmpFileName.endsWith(file) )
+#else
       if ( d->m_urls[action].pathOrUrl().endsWith(file) )
+#endif
       {
         removeAction(action)->deleteLater();
         break;

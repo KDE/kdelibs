@@ -21,7 +21,7 @@
  */
 
 #include "operations.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "object.h"
 #include "internal.h"
@@ -224,6 +224,38 @@ int relation(ExecState *exec, JSValue *v1, JSValue *v2, bool leftFirst)
 
     assert(p1->isString() && p2->isString());
     return static_cast<const StringImp*>(p1)->value() < static_cast<const StringImp*>(p2)->value() ? 1 : 0;
+}
+
+//EMCA 9.12
+bool sameValue(ExecState *exec, JSValue *v1, JSValue *v2)
+{
+    JSType t1 = v1->type();
+    JSType t2 = v2->type();
+
+    if (t1 != t2)
+        return false;
+    if (t1 == UndefinedType || t1 == NullType)
+        return true;
+    if (t1 == NumberType) {
+        double n1 = v1->toNumber(exec);
+        double n2 = v2->toNumber(exec);
+        if (isNaN(n1) && isNaN(n2))
+            return true;
+        if (signbit(n1) != signbit(n2))
+            return false;
+        if (n1 == n2)
+            return true;
+        return false;
+    } else if (t1 == StringType)
+        return v1->toString(exec) == v2->toString(exec);
+    else if (t2 == BooleanType)
+        return v1->toBoolean(exec) == v2->toBoolean(exec);
+
+    if (v1 == v2)
+        return true;
+    /* TODO: joined objects */
+
+    return false;
 }
 
 int relation(ExecState *exec, JSValue *v1, double n2)

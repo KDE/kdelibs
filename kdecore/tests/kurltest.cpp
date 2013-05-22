@@ -39,6 +39,7 @@ QTEST_KDEMAIN_CORE( KUrlTest )
 #include <QtCore/QMap>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h> // gethostname
 
 //QCOMPARE cannot be used to strictly check for empty or null QString as it treats QString("") == QString()
 #define QSTREMPTY(_str) QVERIFY(!_str.isNull() && _str.isEmpty())
@@ -198,8 +199,17 @@ void KUrlTest::testIsLocalFile()
   KUrl local_file_2("file://www.kde.org/my/file");
   QVERIFY( !local_file_2.isLocalFile() );
 
+  // exactly like in kurl.cpp, getenv("HOSTNAME") can be different...
+  char hostname[ 256 ];
+  hostname[ 0 ] = '\0';
+  if (!gethostname( hostname, 255 ))
+     hostname[sizeof(hostname)-1] = '\0';
+
+  for(char *p = hostname; *p; p++)
+     *p = tolower(*p);
+
   KUrl local_file_3;
-  local_file_3.setHost(getenv("HOSTNAME"));
+  local_file_3.setHost(QString::fromLatin1(hostname));
   local_file_3.setPath("/my/file");
   //qDebug("URL=%s\n", qPrintable( local_file_3.url() ));
   QVERIFY( local_file_3.isLocalFile() );
@@ -889,6 +899,15 @@ void KUrlTest::testAdjustPath()
     ftpurl1.adjustPath(KUrl::RemoveTrailingSlash);
     QCOMPARE(  ftpurl1.path(), QString("/" ) );
 
+    KUrl ftpurlNoPath("ftp://ftp.kde.org"); // #312060
+    QCOMPARE(ftpurlNoPath.path(), QString());
+    ftpurlNoPath.adjustPath(KUrl::LeaveTrailingSlash);
+    QCOMPARE(ftpurlNoPath.path(), QString());
+    ftpurlNoPath.adjustPath(KUrl::AddTrailingSlash);
+    QCOMPARE(ftpurlNoPath.path(), QString());
+    ftpurlNoPath.adjustPath(KUrl::RemoveTrailingSlash);
+    QCOMPARE(ftpurlNoPath.path(), QString());
+
     KUrl ftpurl2("ftp://ftp.kde.org///");
     ftpurl2.adjustPath(KUrl::LeaveTrailingSlash);
     QCOMPARE(  ftpurl2.path(), QString("///" ) );
@@ -924,9 +943,13 @@ void KUrlTest::testAdjustPath()
 
     {
     KUrl remote2("remote://");
-    QCOMPARE( remote2.url(), QString("remote:") ); // QUrl bug, fixed in Qt5
-    QCOMPARE( remote2.prettyUrl(), QString("remote://") );
+#if QT_VERSION < 0x040805
+    QCOMPARE( remote2.url(), QString("remote:") ); // QUrl bug, fixed in Qt 4.8.5 and Qt5
+#else
+    QCOMPARE( remote2.url(), QString("remote://") );
+#endif
     QCOMPARE( remote2.url(KUrl::RemoveTrailingSlash ), QString("remote:") ); // QUrl bug, fixed in Qt5
+    QCOMPARE( remote2.prettyUrl(), QString("remote://") );
     }
 }
 
@@ -1718,7 +1741,11 @@ void KUrlTest::testSmb()
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
   smb = "smb://"; // KDE3: kurl.cpp rev 1.106 made it invalid. Valid again with QUrl.
   QVERIFY( smb.isValid() );
-  QCOMPARE(smb.url(), QString::fromLatin1("smb:")); // QUrl bug, fixed in Qt5
+#if QT_VERSION < 0x040805
+  QCOMPARE(smb.url(), QString::fromLatin1("smb:")); // QUrl bug, fixed in Qt 4.8.5 and Qt5
+#else
+  QCOMPARE(smb.url(), QString::fromLatin1("smb://"));
+#endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://"));
   smb = "smb://host";
   QVERIFY( smb.isValid() );
@@ -1726,7 +1753,11 @@ void KUrlTest::testSmb()
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb://host"));
   smb = "smb:///";
   QVERIFY( smb.isValid() );
-  QCOMPARE(smb.url(), QString::fromLatin1("smb:/")); // QUrl bug, fixed in Qt5
+#if QT_VERSION < 0x040805
+  QCOMPARE(smb.url(), QString::fromLatin1("smb:/")); // QUrl bug, fixed in Qt 4.8.5 and Qt5
+#else
+  QCOMPARE(smb.url(), QString::fromLatin1("smb:///"));
+#endif
   QCOMPARE(smb.prettyUrl(), QString::fromLatin1("smb:/"));
 
   KUrl implicitSmb("file://host/path");

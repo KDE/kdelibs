@@ -174,7 +174,7 @@ void mac_initialize_dbus()
                     return;
                 }
 
-                QString line = QString::fromAscii(qp.readLine()).trimmed(); // read the first line
+                QString line = QString::fromLatin1(qp.readLine()).trimmed(); // read the first line
                 if (mac_set_dbus_address(line))
                     dbus_initialized = true; // hooray
 	}

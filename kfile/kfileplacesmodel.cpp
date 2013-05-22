@@ -47,6 +47,7 @@
 #include <kbookmark.h>
 
 #include <kio/netaccess.h>
+#include <kprotocolinfo.h>
 
 #include <solid/devicenotifier.h>
 #include <solid/storageaccess.h>
@@ -54,6 +55,7 @@
 #include <solid/storagevolume.h>
 #include <solid/opticaldrive.h>
 #include <solid/opticaldisc.h>
+#include <solid/portablemediaplayer.h>
 #include <solid/predicate.h>
 
 class KFilePlacesModel::Private
@@ -147,14 +149,21 @@ KFilePlacesModel::KFilePlacesModel(QObject *parent)
     // create after, so if we have own places, they are added afterwards, in case of equal priorities
     d->sharedBookmarks = new KFilePlacesSharedBookmarks(d->bookmarkManager);
 
-    d->predicate = Solid::Predicate::fromString(
-        "[[[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
+    QString predicate("[[[[ StorageVolume.ignored == false AND [ StorageVolume.usage == 'FileSystem' OR StorageVolume.usage == 'Encrypted' ]]"
         " OR "
         "[ IS StorageAccess AND StorageDrive.driveType == 'Floppy' ]]"
         " OR "
         "OpticalDisc.availableContent & 'Audio' ]"
         " OR "
         "StorageAccess.ignored == false ]");
+
+    if (KProtocolInfo::isKnownProtocol("mtp")) {
+        predicate.prepend("[");
+        predicate.append(" OR PortableMediaPlayer.supportedProtocols == 'mtp']");
+    }
+
+    d->predicate = Solid::Predicate::fromString(predicate);
+
     Q_ASSERT(d->predicate.isValid());
 
     connect(d->bookmarkManager, SIGNAL(changed(QString,QString)),
@@ -573,8 +582,18 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         KFilePlacesItem *item = d->items[itemRow];
         KBookmark bookmark = item->bookmark();
 
+        int destRow = row == -1 ? d->items.count() : row;
+        beginMoveRows(QModelIndex(), itemRow, itemRow, QModelIndex(), destRow);
         d->bookmarkManager->root().moveBookmark(bookmark, afterBookmark);
-
+        // Move item ourselves so that _k_reloadBookmarks() does not consider
+        // the move as a remove + insert.
+        //
+        // 2nd argument of QList::move() expects the final destination index,
+        // but 'row' is the value of the destination index before the moved
+        // item has been removed from its original position. That is why we
+        // adjust if necessary.
+        d->items.move(itemRow, itemRow < destRow ? (destRow - 1) : destRow);
+        endMoveRows();
     } else if (data->hasFormat("text/uri-list")) {
         // The operation is an add
         KUrl::List urls = KUrl::List::fromMimeData(data);

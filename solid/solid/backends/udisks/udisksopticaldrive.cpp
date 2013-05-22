@@ -62,16 +62,8 @@ bool UDisksOpticalDrive::eject()
 
     QString path = m_device->udi();
 
-    // check if the device is mounted and call umount if needed
-    if (m_device->prop("DeviceIsMounted").toBool())
-    {
-        QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "FilesystemUnmount");
-        msg << QStringList();   // options, unused now
-        c.call(msg, QDBus::NoBlock);
-    }
-
     QDBusMessage msg = QDBusMessage::createMethodCall(UD_DBUS_SERVICE, path, UD_DBUS_INTERFACE_DISKS_DEVICE, "DriveEject");
-    msg << QStringList();
+    msg << (QStringList() << "unmount"); // unmount parameter
     return c.callWithCallback(msg, this, SLOT(slotDBusReply(QDBusMessage)), SLOT(slotDBusError(QDBusError)));
 }
 

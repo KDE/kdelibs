@@ -646,7 +646,7 @@ public:
      * On the other hand network transmission rates are typically in metric so
      * Default, Metric, or IEC (which is unambiguous) should be chosen.
      *
-     * Normally choosing DefaultBinaryUnits is the best option as that uses
+     * Normally choosing DefaultBinaryDialect is the best option as that uses
      * the user's selection for units.
      *
      * @since 4.4
@@ -683,19 +683,19 @@ public:
      * using the binary unit dialect @p dialect and the specific units @p specificUnit.
      *
      * Example:
-     * formatByteSize(1000, unit, KLocale::BinaryUnitKilo) returns:
-     *   for KLocale::MetricBinaryUnits, "1.0 kB",
-     *   for KLocale::IECBinaryUnits,    "0.9 KiB",
-     *   for KLocale::JEDECBinaryUnits,  "0.9 KB".
+     * formatByteSize(1000, unit, KLocale::UnitKiloByte) returns:
+     *   for KLocale::MetricBinaryDialect, "1.0 kB",
+     *   for KLocale::IECBinaryDialect,    "0.9 KiB",
+     *   for KLocale::JEDECBinaryDialect,  "0.9 KB".
      *
      * @param size size in bytes
      * @param precision number of places after the decimal point to use.  KDE uses
      *        1 by default so when in doubt use 1.
-     * @param dialect binary unit standard to use.  Use DefaultBinaryUnits to
+     * @param dialect binary unit standard to use.  Use DefaultBinaryDialect to
      *        use the localized user selection unless you need to use a specific
      *        unit type (such as displaying a flash memory size in JEDEC).
      * @param specificUnit specific unit size to use in result.  Use
-     *        DefaultBinarySize to automatically select a unit that will return
+     *        DefaultBinaryUnits to automatically select a unit that will return
      *        a sanely-sized number.
      * @return converted size as a translated string including the units.
      *         E.g. "1.23 KiB", "2 GB" (JEDEC), "4.2 kB" (Metric).
@@ -1762,14 +1762,14 @@ public:
     /**
      * Returns the preferred page size for printing.
      *
-     * @return The preferred page size, cast it to QPrinter::PageSize
+     * @return The preferred page size, cast it to QPrinter::PaperSize
      */
     int pageSize() const;
 
     /**
      * Changes the preferred page size when printing.
      *
-     * @param paperFormat the new preferred page size in the format QPrinter::PageSize
+     * @param paperFormat the new preferred page size in the format QPrinter::PaperSize
      */
     void setPageSize(int paperFormat);
 

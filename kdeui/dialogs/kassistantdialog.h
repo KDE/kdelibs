@@ -61,7 +61,7 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          * @flags the window flags to give to the assistant dialog. The
          * default of zero is usually what you want.
          */
-        explicit KAssistantDialog(QWidget *parent=0, Qt::WFlags flags=0);
+        explicit KAssistantDialog(QWidget *parent=0, Qt::WindowFlags flags=0);
         virtual ~KAssistantDialog();
 
         /**
@@ -131,9 +131,9 @@ class KDEUI_EXPORT KAssistantDialog : public KPageDialog
          * @flags the window flags to use when creating the widget. The default
          * of zero is usually fine.
          *
-         * Calls the KPageDialog(KPageWidget *widget, QWidget *parent, Qt::WFlags flags) constructor
+         * Calls the KPageDialog(KPageWidget *widget, QWidget *parent, Qt::WindowFlags flags) constructor
          */
-        explicit KAssistantDialog(KPageWidget *widget, QWidget *parent=0, Qt::WFlags flags=0);
+        explicit KAssistantDialog(KPageWidget *widget, QWidget *parent=0, Qt::WindowFlags flags=0);
 
         virtual void showEvent(QShowEvent * event);
 

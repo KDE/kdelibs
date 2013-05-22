@@ -6,33 +6,15 @@ scripting functionality in a interpreter-independent
 way. The application that uses %Kross should not need to know
 anything about the scripting language being used.
 
-<!--
-The referenced anchors (core, modules etc) should probably
-refer to pages (see eg: Mainpage.dox in the parent directory).
-
-If you have content for these sections and want
-help writing the doxygen bits for them, get in touch with me:
-Alex Merry <kde@randomguy3.me.uk>
-
-If there is no more to put, then remove the @ref, the following
-word (eg: core) and the quotation marks.  Also, putting % before
-each occurrent of Kross will prevent Doxygen linking it to the
-Kross namespace.  So the first line will end up as:
-- The core of %Kross
-
-Then you can get rid of this comment as well.
--->
-
 The main parts of %Kross:
 - @ref core "The core of Kross"
 - @ref modules "The optional Kross modules"
 - @ref console "The Kross console application"
-- @ref test "The unit- and regression tests"
+- @ref test "The unit and regression tests"
 
 The interpreter backends supported by %Kross:
-- @ref python "The Python interpreter backend"
-- @ref ruby "The Ruby interpreter backend"
 - @ref kjs "The KDE JavaScript interpreter backend"
+- @ref qts "The QtScript interpreter backend"
 
 Links:
 - <a href="http://kross.dipe.org">Kross website</a>
@@ -51,6 +33,98 @@ Cyrille Berger \<cberger AT cberger DOT net\>
 @lgpl
 
 */
+
+/** @page components Components
+
+These are the core components of %Kross
+
+@section core The core of Kross
+
+The core of %Kross provides the framework to deal transparently
+with interpreter-backends and offers abstract functionality
+to deal with scripts.
+
+The Kross::Manager class is a singleton that provides the
+main entry point to deal with the %Kross Scripting Framework.
+
+The Kross::Interpreter class is the base for interpreter
+implementations. Each scripting backend needs to inheritate
+its own interpreter and implement it.
+The Kross::InterpreterInfo class provides abstract information
+about a Interpreter before the interpreter-backend itself is
+loaded.
+
+The Kross::Action class is an abstract container to deal with
+scripts like a single standalone scriptfile. Each action holds
+a reference to by the matching Kross::Interpreter created
+Kross::Script instance.
+
+The Kross::ActionCollectionProxyModel class implements a
+QSortFilterProxyModel for a Kross::ActionCollectionModel instance
+which implements QAbstractItemModel to provide a model for views
+on a Kross::ActionCollection instance.
+
+The Kross::ActionCollection class manages collections of
+Kross::Action instances.
+
+
+
+
+@section modules The optional Kross modules
+
+%Kross is able to optional dynamic load modules which provide then
+additional functionality for scripts.
+
+@subsection forms The Forms module
+
+Kross::FormModule provides access to UI functionality like dialogs
+or widgets.
+
+@subsection kdetranslation The KDE Translation module
+
+Kross::TranslationModule provides access to the
+KDE internationalization and translation facilities.
+
+
+
+
+@section console The Kross console application
+
+The %Kross console application provides an executable application
+to run by %Kross supported scripts from within the commandline:
+@code
+kross myscript.js
+@endcode
+
+
+
+@section test The unit and regression tests
+
+Some internal testcases used to prevent regressions. To build
+and run them compile with;
+@code
+cmake -DKDE4_BUILD_TESTS=1 ...
+@endcode
+*/
+
+
+/** @page backends Backends
+
+These are the interpreter backends provided by %Kross.
+
+@section kjs The KDE JavaScript interpreter backend
+
+The KDE JavaScript interpreter backend uses the kjs and kjsembed libraries
+(part of kdelibs) to provide a JavaScript backend.
+
+
+@section qts The QtScript interpreter backend
+
+The QtScript interpreter backend uses the QtScript library
+(part of Qt) to provide a JavaScript backend.
+
+*/
+
 
 // DOXYGEN_REFERENCES = kdecore kdeui
 // DOXYGEN_SET_PROJECT_NAME = Kross

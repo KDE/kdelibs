@@ -294,6 +294,31 @@ void RenderTable::calcWidth()
     calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),availableWidth);
 }
 
+QList< QRectF > RenderTable::getClientRects()
+{
+    RenderFlow* cap = caption();
+    if (cap) {
+        // tables with caption report y&height inclusive caption, but we need them
+        // exclusive and a extra rect for the caption
+        // NOTE: first table, then caption
+        QList<QRectF> list;
+
+        int x = 0;
+        int y = 0;
+        absolutePosition(x, y);
+
+        QRectF tableRect(x, y + cap->height(), width(), height() - cap->height());
+        list.append(clientRectToViewport(tableRect));
+
+        QRectF captionRect(x, y, cap->width(), cap->height());
+        list.append(clientRectToViewport(captionRect));
+
+        return list;
+    } else {
+        return RenderObject::getClientRects();
+    }
+}
+
 void RenderTable::layout()
 {
     KHTMLAssert( needsLayout() );
@@ -523,7 +548,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
 
     pI.phase = oldphase;
 #ifdef BOX_DEBUG
-    outlineBox(p, _tx, _ty, "blue");
+    outlineBox(pI.p, _tx, _ty, "blue");
 #endif
 }
 
@@ -2997,7 +3022,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
         RenderBlock::paintObject(pI, _tx, _ty + _topExtra, false);
 
 #ifdef BOX_DEBUG
-    ::outlineBox( p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
+    ::outlineBox(pI.p, _tx, _ty - _topExtra, width(), height() + borderTopExtra() + borderBottomExtra());
 #endif
 }
 

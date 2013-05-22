@@ -60,6 +60,43 @@ namespace KJS {
   };
 
   /**
+   * A minimal object that just throws an exception if executed.
+   */
+  class Thrower : public JSObject {
+  public:
+    Thrower(ErrorType type);
+
+    virtual JSValue *callAsFunction(ExecState* exec, JSObject*, const List& args);
+    virtual bool implementsCall() const { return true; };
+  private:
+    ErrorType m_type;
+  };
+
+  class BoundFunction : public InternalFunctionImp {
+  public:
+    explicit BoundFunction(ExecState* exec, JSObject* targetFunction, JSObject* boundThis, List boundArgs);
+
+    void setTargetFunction(JSObject* targetFunction);
+    void setBoundThis(JSObject* boundThis);
+    void setBoundArgs(const List& boundArgs);
+
+    virtual JSValue *callAsFunction(ExecState* exec, JSObject* thisObj, const List& extraArgs);
+    virtual bool implementsCall() const { return true; };
+
+    using KJS::JSObject::construct;
+    virtual JSObject* construct(ExecState* exec, const List& extraArgs);
+    virtual bool implementsConstruct() const { return true; };
+
+    virtual bool hasInstance(ExecState *exec, JSValue *value);
+    virtual bool implementsHasInstance() const { return true; };
+
+  private:
+    ProtectedPtr<JSObject> m_targetFunction;
+    ProtectedPtr<JSObject> m_boundThis;
+    List m_boundArgs;
+  };
+
+  /**
    * @internal
    *
    * The initial value of Function.prototype (and thus all objects created
@@ -102,6 +139,8 @@ namespace KJS {
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
     virtual void getOwnPropertyNames(ExecState*, PropertyNameArray&, PropertyMap::PropertyMode mode);
 
+    virtual bool defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow);
+
     virtual const ClassInfo *classInfo() const { return &info; }
     static const ClassInfo info;
   private:
@@ -132,6 +171,11 @@ namespace KJS {
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     using KJS::JSObject::deleteProperty;
     virtual bool deleteProperty(ExecState *exec, const Identifier &propertyName);
+
+    virtual void putDirect(const Identifier &propertyName, JSValue *value, int attr = 0);
+    using JSObject::putDirect;
+    virtual JSValue *getDirect(const Identifier& propertyName) const;
+    virtual bool getPropertyAttributes(const Identifier& propertyName, unsigned& attributes) const;
 
     bool isLocalReadOnly(int propertyID) const {
       return (localStorage[propertyID].attributes & ReadOnly) == ReadOnly;

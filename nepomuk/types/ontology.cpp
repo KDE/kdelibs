@@ -60,7 +60,7 @@ bool Nepomuk::Types::OntologyPrivate::loadEntities()
                                                                           "FILTER(STR(?ns) = \"%3\") . }" )
                                                                   .arg( Soprano::Vocabulary::RDFS::Class().toString() )
                                                                   .arg( Soprano::Vocabulary::NAO::hasDefaultNamespace().toString() )
-                                                                  .arg( QString::fromAscii( uri.toEncoded() ) ),
+                                                                  .arg( QString::fromLatin1( uri.toEncoded() ) ),
                                                                   Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
         classes.append( Class( it.binding( "c" ).uri() ) );
@@ -74,7 +74,7 @@ bool Nepomuk::Types::OntologyPrivate::loadEntities()
                                                                          "FILTER(STR(?ns) = \"%3\") . }" )
                                                                  .arg( Soprano::Vocabulary::RDF::Property().toString() )
                                                                  .arg( Soprano::Vocabulary::NAO::hasDefaultNamespace().toString() )
-                                                                 .arg( QString::fromAscii( uri.toEncoded() ) ),
+                                                                 .arg( QString::fromLatin1( uri.toEncoded() ) ),
                                                                  Soprano::Query::QueryLanguageSparql );
     while ( it.next() ) {
         properties.append( Property( it.binding( "p" ).uri() ) );

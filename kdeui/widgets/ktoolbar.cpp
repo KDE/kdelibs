@@ -1099,7 +1099,7 @@ void KToolBar::dragEnterEvent(QDragEnterEvent *event)
 
     foreach (const QString& actionName, actionNames) {
       foreach (KActionCollection* ac, KActionCollection::allCollections()) {
-        QAction* newAction = ac->action(actionName.toAscii().constData());
+        QAction* newAction = ac->action(actionName.toLatin1().constData());
         if (newAction) {
           d->actionsBeingDragged.append(newAction);
           break;

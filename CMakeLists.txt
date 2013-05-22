@@ -9,8 +9,8 @@ include(CPack)
 ################# set KDE specific information #################
 
 set (KDE_VERSION_MAJOR 4)
-set (KDE_VERSION_MINOR 9)
-set (KDE_VERSION_RELEASE 80)
+set (KDE_VERSION_MINOR 10)
+set (KDE_VERSION_RELEASE 60)
 set (KDE_VERSION "${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}.${KDE_VERSION_RELEASE}" )
 set (KDE_VERSION_STRING "${KDE_VERSION}")
 
@@ -38,6 +38,9 @@ if(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
    set(KDE_NO_DEPRECATED TRUE)
 endif(KDE_PLATFORM_FEATURE_DISABLE_DEPRECATED)
 
+############### Give the user the option to build the udisks2 solid backend instead of the udisks backend ###############
+option(WITH_SOLID_UDISKS2 "Enable the udisks2 solid backend instead")
+
 ############### Load the CTest options ###############
 # CTestCustom.cmake has to be in the CTEST_BINARY_DIR.
 # in the KDE build system, this is the same as CMAKE_BINARY_DIR.
@@ -45,7 +48,7 @@ configure_file(${CMAKE_SOURCE_DIR}/CTestCustom.cmake ${CMAKE_BINARY_DIR}/CTestCu
 
 ################# now find all used packages #################
 
-set (QT_MIN_VERSION "4.7.0")
+set (QT_MIN_VERSION "4.8.0")
 
 find_package(KDE4Internal REQUIRED)
 include(KDE4Defaults)
@@ -65,62 +68,86 @@ endif(UNIX AND Q_WS_X11)
 #required features:
 # Perl is used e.g. in khtml, kjs, kjsembed and others
 find_package(Perl)
-macro_log_feature(PERL_FOUND "Perl" "Needed for building kdelibs" "http://www.perl.org" TRUE "" "")
+set_package_properties(Perl PROPERTIES URL "http://www.perl.org" TYPE REQUIRED PURPOSE "Needed for building kdelibs")
 
 find_package(ZLIB)
-macro_log_feature(ZLIB_FOUND "ZLib" "Support for gzip compressed files and data streams" "http://www.zlib.net" TRUE "" "Required by the core KDE libraries and some critical kioslaves")
+set_package_properties(ZLIB PROPERTIES DESCRIPTION "Support for gzip compressed files and data streams"
+                       URL "http://www.zlib.net"
+                       TYPE REQUIRED
+                       PURPOSE "Required by the core KDE libraries and some critical kioslaves"
+                      )
 
-set(STRIGI_MIN_VERSION 0.6.3)
-find_package(Strigi)
+find_package(Strigi 0.6.3)
 if (WIN32)
-    set (STRIGI_REQUIRED FALSE)
+    set (STRIGI_TYPE "OPTIONAL")
     set (STRIGI_EXTRA_TEXT "")
 else (WIN32)
-    set (STRIGI_REQUIRED TRUE)
+    set (STRIGI_TYPE "REQUIRED")
     set (STRIGI_EXTRA_TEXT "Required by some critical kioslaves")
 endif (WIN32)
-macro_log_feature(STRIGI_FOUND "Strigi" "Desktop indexing and search support" "http://strigi.sourceforge.net" ${STRIGI_REQUIRED} "${STRIGI_MIN_VERSION}" "${STRIGI_EXTRA_TEXT}")
+set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
+                       URL "http://strigi.sourceforge.net"
+                       TYPE ${STRIGI_TYPE}
+                       PURPOSE ${STRIGI_EXTRA_TEXT}
+                      )
 
-set(LIBATTICA_MIN_VERSION "0.1.90")
-find_package(LibAttica)
-macro_log_feature(LIBATTICA_FOUND "libattica" "Support for Get Hot New Stuff" "git://anongit.kde.org/attica" TRUE "${LIBATTICA_MIN_VERSION}" "")
+find_package(LibAttica 0.4.2)
+set_package_properties(LibAttica PROPERTIES DESCRIPTION "Support for Get Hot New Stuff"
+                       URL "https://projects.kde.org/attica"
+                       TYPE REQUIRED
+                      )
 
 #optional features
 if(X11_FOUND)
   #X11_Xrender discovery is done by FindX11
-  macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
+  add_feature_info("X Rendering Extension (libXrender)" X11_Xrender_FOUND "Support for compositing, rendering operations, and alpha-blending. STRONGLY RECOMMENDED")
   macro_bool_to_01(X11_Xscreensaver_FOUND HAVE_XSCREENSAVER)
   macro_bool_to_01(X11_XSync_FOUND HAVE_XSYNC)
-  macro_log_feature(HAVE_XSCREENSAVER "X Screensaver Extension (libXss)" "Support for KIdleTime (fallback mode)" "http://www.x.org/" FALSE "" "")
-  macro_log_feature(HAVE_XSYNC "X Sync Extension (libXext)" "Efficient operation of KIdleTime" "http://www.x.org/" FALSE "" "STRONGLY RECOMMENDED")
+  add_feature_info("X Screensaver Extension (libXss)" HAVE_XSCREENSAVER "Support for KIdleTime (fallback mode)")
+  add_feature_info("X Sync Extension (libXext)" HAVE_XSYNC "Efficient operation of KIdleTime. STRONGLY RECOMMENDED")
 
   if(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
     message(FATAL_ERROR "\nNeither the XSync (libXext) nor XScreensaver (libXss) development package was found.\nPlease install one of them (XSync is recommended)\n")
   endif(NOT HAVE_XSYNC AND NOT HAVE_XSCREENSAVER)
 endif(X11_FOUND)
 
-
 macro_optional_find_package(OpenSSL)
-macro_log_feature(OPENSSL_FOUND "OpenSSL" "Support for secure network communications (SSL and TLS)" "http://openssl.org" FALSE "" "STRONGLY RECOMMENDED: KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS")
+set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
+                       URL "http://openssl.org"
+                       TYPE RECOMMENDED
+                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
+                      )
 
 macro_optional_find_package(Libintl)
-macro_log_feature(LIBINTL_FOUND "Libintl" "Support for multiple languages" "http://www.gnu.org/software/gettext" FALSE "" "STRONGLY RECOMMENDED: Enables KDE to be available in many different languages")
+set_package_properties(Libintl PROPERTIES DESCRIPTION "Support for multiple languages"
+                       URL "http://www.gnu.org/software/gettext"
+                       TYPE RECOMMENDED
+                       PURPOSE "Enables KDE to be available in many different languages"
+                      )
 
-set(SOPRANO_MIN_VERSION "2.7.56")
-macro_optional_find_package(Soprano ${SOPRANO_MIN_VERSION} COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
-macro_log_feature(SOPRANO_FOUND "Soprano" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "${SOPRANO_MIN_VERSION}" "")
-macro_log_feature(SOPRANO_PLUGIN_RAPTORPARSER_FOUND "Soprano Raptor Parser" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
-macro_log_feature(SOPRANO_PLUGIN_REDLANDBACKEND_FOUND "Soprano Redland Backend" "Support for the Nepomuk semantic desktop system" "http://soprano.sourceforge.net" FALSE "" "")
+macro_optional_find_package(Soprano 2.7.56 COMPONENTS PLUGIN_RAPTORPARSER PLUGIN_REDLANDBACKEND)
+set_package_properties(Soprano PROPERTIES DESCRIPTION "Support for the Nepomuk semantic desktop system"
+                       URL "http://soprano.sourceforge.net"
+                       TYPE OPTIONAL
+                      )
 
-set(SHAREDDESKTOPONTOLOGIES_MIN_VERSION 0.10)
-macro_optional_find_package(SharedDesktopOntologies ${SHAREDDESKTOPONTOLOGIES_MIN_VERSION})
-macro_log_feature(SHAREDDESKTOPONTOLOGIES_FOUND "Shared desktop ontologies" "Support for the Nepomuk semantic desktop system" "http://oscaf.sourceforge.net" FALSE "${SHAREDDESKTOPONTOLOGIES_MIN_VERSION}" "")
+macro_optional_find_package(SharedDesktopOntologies 0.10)
+set_package_properties(SharedDesktopOntologies PROPERTIES DESCRIPTION "Support for the Nepomuk semantic desktop system"
+                       URL "http://oscaf.sourceforge.net"
+                       TYPE OPTIONAL
+                      )
 
-macro_optional_find_package(QCA2)
-macro_log_feature(QCA2_FOUND "QCA2" "Support for remote plasma widgets" "http://delta.affinix.com/qca" FALSE "2.0.0" "")
+macro_optional_find_package(QCA2 2.0.0)
+set_package_properties(QCA2 PROPERTIES DESCRIPTION "Support for remote plasma widgets"
+                       URL "http://delta.affinix.com/qca"
+                       TYPE OPTIONAL
+                      )
 
 find_package(DBusMenuQt)
-macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "https://launchpad.net/libdbusmenu-qt" TRUE "" "")
+set_package_properties(DBusMenuQt PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
+                       URL "https://launchpad.net/libdbusmenu-qt"
+                       TYPE REQUIRED
+                      )
 
 ################# Disallow in-source build #################
 
@@ -248,8 +275,13 @@ endif(STATIC_LIBRARY)
 
 # ACL stuff (used in kio/ and kioslaves/)
 macro_optional_find_package(ACL)
+set_package_properties(ACL PROPERTIES DESCRIPTION "Support for manipulating access control lists"
+                       URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
+                       TYPE RECOMMENDED
+                       PURPOSE "STRONGLY RECOMMENDED"
+                      )
+
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
-macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control lists" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED")
 configure_file(config-acl.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-acl.h )
 
 include(ConfigureChecks.cmake)
@@ -359,4 +391,4 @@ install( EXPORT kdelibsToolsTargets   DESTINATION ${DATA_INSTALL_DIR}/cmake/modu
 # the following will be the correct locations once cmake has the improved FIND_PACKAGE()
 # install( FILES ${CMAKE_CURRENT_BINARY_DIR}/KDELibsDependencies.cmake DESTINATION ${PLUGIN_INSTALL_DIR}/cmake RENAME KDE4Config.cmake)
 
-macro_display_feature_log()
+feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)

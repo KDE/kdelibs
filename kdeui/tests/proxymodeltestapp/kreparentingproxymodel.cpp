@@ -28,7 +28,7 @@
 class KReparentingProxyModelPrivate
 {
   KReparentingProxyModelPrivate(KReparentingProxyModel *proxyModel)
-  : q_ptr(proxyModel), m_nextId(0)
+  : m_nextId(0), q_ptr(proxyModel)
   {
 
   }
@@ -103,7 +103,7 @@ class KReparentingProxyModelPrivate
   struct PendingInsertion
   {
     PendingInsertion()
-      : start(-1), end(-1), parentId(-1)
+      : parentId(-1), start(-1), end(-1)
     { }
 
     PendingInsertion(const QModelIndex &_index, int _start, int _end)

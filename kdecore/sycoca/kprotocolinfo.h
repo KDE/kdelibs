@@ -24,6 +24,7 @@
 #include <kurl.h>
 #include <ksycocaentry.h>
 #include <ksycocatype.h>
+#include <kservice.h>
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 
@@ -370,6 +371,8 @@ private:
     Q_DECLARE_PRIVATE(KProtocolInfo)
 
     void load(QDataStream &s);
+    static void selectServiceOrHelper(const QString& protocol, KProtocolInfo::Ptr& returnProtocol, KService::Ptr& returnService);
+
 };
 
 KDECORE_EXPORT QDataStream& operator>>( QDataStream& s, KProtocolInfo::ExtraField& field );

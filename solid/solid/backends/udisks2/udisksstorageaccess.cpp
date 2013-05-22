@@ -22,10 +22,10 @@
 #include "udisksstorageaccess.h"
 #include "udisks2.h"
 
-#include <QtCore/QProcess>
 #include <QtDBus/QtDBus>
 #include <QtGui/QApplication>
 #include <QtGui/QWidget>
+#include <QtXml/QDomDocument>
 
 using namespace Solid::Backends::UDisks2;
 
@@ -63,9 +63,11 @@ bool StorageAccess::isLuksDevice() const
 bool StorageAccess::isAccessible() const
 {
     if (isLuksDevice()) { // check if the cleartext slave is mounted
-        if (m_clearTextPath.isEmpty() || m_clearTextPath == "/")
+        const QString path = clearTextPath();
+        //qDebug() << Q_FUNC_INFO << "CLEARTEXT device path: " << path;
+        if (path.isEmpty() || path == "/")
             return false;
-        Device holderDevice(m_clearTextPath);
+        Device holderDevice(path);
         return holderDevice.isMounted();
     }
 
@@ -74,15 +76,13 @@ bool StorageAccess::isAccessible() const
 
 QString StorageAccess::filePath() const
 {
-    if (!isAccessible())
-        return QString();
-
     QByteArrayList mntPoints;
 
     if (isLuksDevice()) {  // encrypted (and unlocked) device
-        if (m_clearTextPath.isEmpty() || m_clearTextPath == "/")
+        const QString path = clearTextPath();
+        if (path.isEmpty() || path == "/")
             return QString();
-        Device holderDevice(m_clearTextPath);
+        Device holderDevice(path);
         mntPoints = qdbus_cast<QByteArrayList>(holderDevice.prop("MountPoints"));
         if (!mntPoints.isEmpty())
             return QFile::decodeName(mntPoints.first()); // FIXME Solid doesn't support multiple mount points
@@ -100,7 +100,7 @@ QString StorageAccess::filePath() const
 
 bool StorageAccess::isIgnored() const
 {
-    return m_device->prop("HintIgnore").toBool(); // FIXME tune
+    return m_device->prop("HintIgnore").toBool();
 }
 
 bool StorageAccess::setup()
@@ -110,7 +110,7 @@ bool StorageAccess::setup()
     m_setupInProgress = true;
     m_device->broadcastActionRequested("setup");
 
-    if (m_device->isEncryptedContainer())
+    if (m_device->isEncryptedContainer() && clearTextPath().isEmpty())
         return requestPassphrase();
     else
         return mount();
@@ -137,17 +137,16 @@ void StorageAccess::checkAccessibility()
     updateCache();
 
     if (old_isAccessible != m_isAccessible) {
-        Q_EMIT accessibilityChanged(m_isAccessible, isLuksDevice() ? m_clearTextPath : m_device->udi());
+        Q_EMIT accessibilityChanged(m_isAccessible, m_device->udi());
     }
 }
 
-void StorageAccess::slotDBusReply( const QDBusMessage & reply )
+void StorageAccess::slotDBusReply( const QDBusMessage & /*reply*/ )
 {
+    const QString ctPath = clearTextPath();
     if (m_setupInProgress)
     {
         if (isLuksDevice() && !isAccessible()) { // unlocked device, now mount it
-            if (reply.type() == QDBusMessage::ReplyMessage)  // we've got a response from Unlock
-                m_clearTextPath = reply.arguments().value(0).value<QDBusObjectPath>().path();
             mount();
         }
         else // Don't broadcast setupDone unless the setup is really done. (Fix kde#271156)
@@ -160,17 +159,17 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
     }
     else if (m_teardownInProgress)  // FIXME
     {
-        if (isLuksDevice() && !m_clearTextPath.isEmpty() && m_clearTextPath != "/") // unlocked device, lock it
+        if (isLuksDevice() && !ctPath.isEmpty() && ctPath != "/") // unlocked device, lock it
         {
             callCryptoTeardown();
         }
-        else if (!m_clearTextPath.isEmpty() && m_clearTextPath != "/") {
+        else if (!ctPath.isEmpty() && ctPath != "/") {
             callCryptoTeardown(true); // Lock crypted parent
         }
         else
         {
             // try to "eject" (aka safely remove) from the (parent) drive, e.g. SD card from a reader
-            QString drivePath = m_device->prop("Drive").value<QDBusObjectPath>().path();
+            QString drivePath = m_device->drivePath();
             if (!drivePath.isEmpty() || drivePath != "/")
             {
                 Device drive(drivePath);
@@ -195,6 +194,8 @@ void StorageAccess::slotDBusReply( const QDBusMessage & reply )
 
 void StorageAccess::slotDBusError( const QDBusError & error )
 {
+    //qDebug() << Q_FUNC_INFO << "DBUS ERROR:" << error.name() << error.message();
+
     if (m_setupInProgress)
     {
         m_setupInProgress = false;
@@ -206,7 +207,6 @@ void StorageAccess::slotDBusError( const QDBusError & error )
     else if (m_teardownInProgress)
     {
         m_teardownInProgress = false;
-        m_clearTextPath.clear();
         m_device->broadcastActionDone("teardown", m_device->errorToSolidError(error.name()),
                                       m_device->errorToString(error.name()) + ": " + error.message());
         checkAccessibility();
@@ -238,7 +238,6 @@ void StorageAccess::slotTeardownRequested()
 void StorageAccess::slotTeardownDone(int error, const QString &errorString)
 {
     m_teardownInProgress = false;
-    m_clearTextPath.clear();
     Q_EMIT teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 
     checkAccessibility();
@@ -247,9 +246,10 @@ void StorageAccess::slotTeardownDone(int error, const QString &errorString)
 bool StorageAccess::mount()
 {
     QString path = m_device->udi();
+    const QString ctPath = clearTextPath();
 
-    if (isLuksDevice()) { // mount options for the cleartext volume
-        path = m_clearTextPath;
+    if (isLuksDevice() && !ctPath.isEmpty()) { // mount options for the cleartext volume
+        path = ctPath;
     }
 
     QDBusConnection c = QDBusConnection::systemBus();
@@ -269,9 +269,10 @@ bool StorageAccess::mount()
 bool StorageAccess::unmount()
 {
     QString path = m_device->udi();
+    const QString ctPath = clearTextPath();
 
-    if (isLuksDevice()) { // unmount options for the cleartext volume
-        path = m_clearTextPath;
+    if (isLuksDevice() && !ctPath.isEmpty()) { // unmount options for the cleartext volume
+        path = ctPath;
     }
 
     QDBusConnection c = QDBusConnection::systemBus();
@@ -290,6 +291,35 @@ QString StorageAccess::generateReturnObjectPath()
     static int number = 1;
 
     return "/org/kde/solid/UDisks2StorageAccess_"+QString::number(number++);
+}
+
+QString StorageAccess::clearTextPath() const
+{
+    const QString prefix = "/org/freedesktop/UDisks2/block_devices";
+    QDBusMessage call = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, prefix,
+                                                       DBUS_INTERFACE_INTROSPECT, "Introspect");
+    QDBusPendingReply<QString> reply = QDBusConnection::systemBus().asyncCall(call);
+    reply.waitForFinished();
+
+    if (reply.isValid()) {
+        QDomDocument dom;
+        dom.setContent(reply.value());
+        QDomNodeList nodeList = dom.documentElement().elementsByTagName("node");
+        for (int i = 0; i < nodeList.count(); i++) {
+            QDomElement nodeElem = nodeList.item(i).toElement();
+            if (!nodeElem.isNull() && nodeElem.hasAttribute("name")) {
+                const QString udi = prefix + "/" + nodeElem.attribute("name");
+                Device holderDevice(udi);
+
+                if (m_device->udi() == holderDevice.prop("CryptoBackingDevice").value<QDBusObjectPath>().path()) {
+                    //qDebug() << Q_FUNC_INFO << "CLEARTEXT device path: " << udi;
+                    return udi;
+                }
+            }
+        }
+    }
+
+    return QString();
 }
 
 bool StorageAccess::requestPassphrase()
@@ -353,8 +383,6 @@ bool StorageAccess::callCryptoTeardown(bool actOnParent)
                                                       actOnParent ? (m_device->prop("CryptoBackingDevice").value<QDBusObjectPath>().path()) : m_device->udi(),
                                                       UD2_DBUS_INTERFACE_ENCRYPTED, "Lock");
     msg << QVariantMap();   // options, unused now
-
-    m_clearTextPath.clear();
 
     return c.callWithCallback(msg, this,
                               SLOT(slotDBusReply(const QDBusMessage &)),

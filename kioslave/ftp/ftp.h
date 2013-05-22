@@ -244,7 +244,7 @@ private:
   /**
     * Helper to fill an UDSEntry
     */
-  void ftpCreateUDSEntry( const QString & filename, FtpEntry& ftpEnt, KIO::UDSEntry& entry, bool isDir );
+  void ftpCreateUDSEntry( const QString & filename, const FtpEntry& ftpEnt, KIO::UDSEntry& entry, bool isDir );
 
   void ftpShortStatAnswer( const QString& filename, bool isDir );
 
@@ -332,6 +332,17 @@ private:
    * @return 0 for success, -1 for server error, -2 for client error
    */
   StatusCode ftpSendMimeType(int& iError, const KUrl& url);
+
+  /**
+   * Fixes up an entry name so that extraneous whitespaces do not cause
+   * problems. See bug# 88575 and bug# 300988.
+   */
+  void fixupEntryName(FtpEntry* ftpEnt);
+
+  /**
+   * Calls @ref statEntry.
+   */
+  bool maybeEmitStatEntry(FtpEntry& ftpEnt, const QString& search, const QString& filename, bool isDir);
 
 private Q_SLOTS:
   void proxyAuthentication(const QNetworkProxy&, QAuthenticator*);

@@ -133,8 +133,8 @@ private Q_SLOTS:
         KMimeGlobsFileParser::AllGlobs globs = parser.parseGlobs(QStringList() << fileName1 << fileName2);
 
         const QStringList textPlainPatterns = globs.patternsMap().value("text/plain");
-        //kDebug() << textPlainPatterns;
-        QCOMPARE(textPlainPatterns.count(ext1), 2); // TODO: was 1. does it matter?
+        kDebug() << textPlainPatterns;
+        QCOMPARE(textPlainPatterns.count(ext1), 1);
         QCOMPARE(textPlainPatterns.count(ext2), 1);
         QCOMPARE(textPlainPatterns.count(globalext), 1);
     }

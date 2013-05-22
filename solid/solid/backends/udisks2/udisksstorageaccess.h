@@ -86,6 +86,7 @@ private:
     bool callCryptoTeardown( bool actOnParent=false );
 
     QString generateReturnObjectPath();
+    QString clearTextPath() const;
 
 private:
     bool m_isAccessible;
@@ -93,7 +94,6 @@ private:
     bool m_teardownInProgress;
     bool m_passphraseRequested;
     QString m_lastReturnObject;
-    QString m_clearTextPath;  // path to the unlocked cleartext device
 
     static const int s_unmountTimeout = 0x7fffffff;
 };

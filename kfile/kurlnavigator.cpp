@@ -231,6 +231,7 @@ KUrlNavigator::Private::Private(KUrlNavigator* q, KFilePlacesModel* placesModel)
 
     // create drop down button for accessing all paths of the URL
     m_dropDownButton = new KUrlNavigatorDropDownButton(q);
+    m_dropDownButton->setForegroundRole(QPalette::WindowText);
     m_dropDownButton->installEventFilter(q);
     connect(m_dropDownButton, SIGNAL(clicked()),
             q, SLOT(openPathSelectorMenu()));

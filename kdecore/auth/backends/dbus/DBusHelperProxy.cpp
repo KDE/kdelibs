@@ -303,7 +303,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
         slotname.replace(QLatin1Char('.'), QLatin1Char('_'));
 
-        bool success = QMetaObject::invokeMethod(responder, slotname.toAscii(), Qt::DirectConnection,
+        bool success = QMetaObject::invokeMethod(responder, slotname.toLatin1(), Qt::DirectConnection,
                                                  Q_RETURN_ARG(ActionReply, retVal), Q_ARG(QVariantMap, args));
 
         if (!success) {
@@ -386,16 +386,16 @@ void debugMessageReceived(int t, const QString &message)
     QtMsgType type = (QtMsgType)t;
     switch (type) {
     case QtDebugMsg:
-        qDebug("Debug message from helper: %s", message.toAscii().data());
+        qDebug("Debug message from helper: %s", message.toLatin1().data());
         break;
     case QtWarningMsg:
-        qWarning("Warning from helper: %s", message.toAscii().data());
+        qWarning("Warning from helper: %s", message.toLatin1().data());
         break;
     case QtCriticalMsg:
-        qCritical("Critical warning from helper: %s", message.toAscii().data());
+        qCritical("Critical warning from helper: %s", message.toLatin1().data());
         break;
     case QtFatalMsg:
-        qFatal("Fatal error from helper: %s", message.toAscii().data());
+        qFatal("Fatal error from helper: %s", message.toLatin1().data());
         break;
     }
 }

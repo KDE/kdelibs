@@ -22,7 +22,7 @@
 #include "kmodifierkeyinfoprovider_p.h"
 
 KModifierKeyInfoProvider::KModifierKeyInfoProvider()
-    : QWidget(0)
+    : QObject(0)
 {
 }
 

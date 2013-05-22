@@ -165,7 +165,7 @@ void PublicService::publishAsync()
 	DNSServiceRef ref;
 	QString fullType=d->m_type;
 	Q_FOREACH(const QString &subtype, d->m_subtypes) fullType+=','+subtype;
-	if (DNSServiceRegister(&ref,0,0,d->m_serviceName.toUtf8(),fullType.toAscii().constData(),domainToDNS(d->m_domain),NULL,
+	if (DNSServiceRegister(&ref,0,0,d->m_serviceName.toUtf8(),fullType.toLatin1().constData(),domainToDNS(d->m_domain),NULL,
 	    htons(d->m_port),TXTRecordGetLength(&txt),TXTRecordGetBytesPtr(&txt),publish_callback,
 	    reinterpret_cast<void*>(d)) == kDNSServiceErr_NoError) d->setRef(ref);
 	TXTRecordDeallocate(&txt);

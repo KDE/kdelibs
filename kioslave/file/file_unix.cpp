@@ -31,6 +31,7 @@
 #include <config-kioslave-file.h>
 
 #include <QtCore/QFile>
+#include <QtCore/QDir>
 
 #include <kde_file.h>
 #include <kdebug.h>
@@ -57,18 +58,6 @@
 #ifdef USE_SENDFILE
 #include <sys/sendfile.h>
 #endif
-
-namespace KDEPrivate
-{
-
-struct CharArrayDeleter
-{
-    CharArrayDeleter(char *b) : buf(b) {}
-    ~CharArrayDeleter() { free(buf); }
-    char *buf;
-};
-
-}
 
 using namespace KIO;
 
@@ -321,16 +310,16 @@ void FileProtocol::listDir( const KUrl& url)
 {
     if (!url.isLocalFile()) {
         KUrl redir(url);
-	redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
-	redirection(redir);
-	kDebug(7101) << "redirecting to " << redir.url();
-	finished();
-	return;
+        redir.setProtocol(config()->readEntry("DefaultRemoteProtocol", "smb"));
+        redirection(redir);
+        kDebug(7101) << "redirecting to " << redir.url();
+        finished();
+        return;
     }
     const QString path(url.toLocalFile());
     const QByteArray _path(QFile::encodeName(path));
     DIR* dp = opendir(_path.data());
-    if ( dp == 0 ) {
+    if (dp == 0) {
         switch (errno) {
         case ENOENT:
             error(KIO::ERR_DOES_NOT_EXIST, path);
@@ -351,6 +340,20 @@ void FileProtocol::listDir( const KUrl& url)
 	return;
     }
 
+    /* set the current dir to the path to speed up
+       in not having to pass an absolute path.
+       We restore the path later to get out of the
+       path - the kernel wouldn't unmount or delete
+       directories we keep as active directory. And
+       as the slave runs in the background, it's hard
+       to see for the user what the problem would be */
+    const QString pathBuffer(QDir::currentPath());
+    if (!QDir::setCurrent(path)) {
+        closedir(dp);
+        error(ERR_CANNOT_ENTER_DIRECTORY, path);
+        return;
+    }
+
     const QString sDetails = metaData(QLatin1String("details"));
     const int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
     //kDebug(7101) << "========= LIST " << url << "details=" << details << " =========";
@@ -359,17 +362,24 @@ void FileProtocol::listDir( const KUrl& url)
 #ifndef HAVE_DIRENT_D_TYPE
     KDE_struct_stat st;
 #endif
-    // Don't make this a QStringList. The locale file name we get here
-    // should be passed intact to createUDSEntry to avoid problems with
-    // files where QFile::encodeName(QFile::decodeName(a)) != a.
-    QList<QByteArray> entryNames;
     KDE_struct_dirent *ep;
-    if (details == 0) {
-        // Fast path (for recursive deletion, mostly)
-        // Simply emit the name and file type, nothing else.
-        while ( ( ep = KDE_readdir( dp ) ) != 0 ) {
-            entry.clear();
-            entry.insert(KIO::UDSEntry::UDS_NAME, QFile::decodeName(ep->d_name));
+    while ((ep = KDE_readdir(dp)) != 0 ) {
+        entry.clear();
+
+        const QString filename = QFile::decodeName(ep->d_name);
+
+        /*
+         * details == 0 (if statement) is the fast code path.
+         * We only get the file name and type. After that we emit
+         * the result.
+         *
+         * The else statement is the slow path that requests all
+         * file information in file.cpp. It executes a stat call
+         * for every entry thus becoming slower.
+         *
+         */
+        if (details == 0) {
+            entry.insert(KIO::UDSEntry::UDS_NAME, filename);
 #ifdef HAVE_DIRENT_D_TYPE
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
                          (ep->d_type & DT_DIR) ? S_IFDIR : S_IFREG );
@@ -389,63 +399,20 @@ void FileProtocol::listDir( const KUrl& url)
                 entry.insert(KIO::UDSEntry::UDS_LINK_DEST, QLatin1String("Dummy Link Target"));
             }
             listEntry(entry, false);
-        }
-        closedir( dp );
-        listEntry( entry, true ); // ready
-    } else {
-        while ( ( ep = KDE_readdir( dp ) ) != 0 ) {
-            entryNames.append( ep->d_name );
-        }
 
-        closedir( dp );
-        totalSize( entryNames.count() );
-
-        /* set the current dir to the path to speed up
-           in not having to pass an absolute path.
-           We restore the path later to get out of the
-           path - the kernel wouldn't unmount or delete
-           directories we keep as active directory. And
-           as the slave runs in the background, it's hard
-           to see for the user what the problem would be */
-#if !defined(PATH_MAX) && defined(__GLIBC__)
-        char *path_buffer = ::get_current_dir_name();
-        const KDEPrivate::CharArrayDeleter path_buffer_deleter(path_buffer);
-#else
-        char path_buffer[PATH_MAX];
-        path_buffer[0] = '\0';
-        (void) getcwd(path_buffer, PATH_MAX - 1);
-#endif
-        if ( chdir( _path.data() ) )  {
-            if (errno == EACCES)
-                error(ERR_ACCESS_DENIED, path);
-            else
-                error(ERR_CANNOT_ENTER_DIRECTORY, path);
-            finished();
-        }
-
-        QList<QByteArray>::ConstIterator it = entryNames.constBegin();
-        QList<QByteArray>::ConstIterator end = entryNames.constEnd();
-        for (; it != end; ++it) {
-            entry.clear();
-            if ( createUDSEntry( QFile::decodeName(*it),
-                                 *it /* we can use the filename as relative path*/,
-                                 entry, details, true ) )
-                listEntry( entry, false);
-        }
-
-        listEntry( entry, true ); // ready
-
-        //kDebug(7101) << "============= COMPLETED LIST ============";
-
-#if !defined(PATH_MAX) && defined(__GLIBC__)
-        if (path_buffer)
-#else
-        if (*path_buffer)
-#endif
-        {
-            chdir(path_buffer);
+        } else {
+            if (createUDSEntry(filename, QByteArray(ep->d_name), entry, details, true)) {
+                listEntry(entry, false);
+            }
         }
     }
+
+    closedir(dp);
+    listEntry(entry, true); // ready
+
+    // Restore the path
+    QDir::setCurrent(pathBuffer);
+
     finished();
 }
 
@@ -534,8 +501,7 @@ void FileProtocol::symlink( const QString &target, const KUrl &destUrl, KIO::Job
             else
             {
                 KDE_struct_stat buff_dest;
-                KDE_lstat( QFile::encodeName(dest), &buff_dest );
-                if (S_ISDIR(buff_dest.st_mode))
+                if (KDE_lstat(QFile::encodeName(dest), &buff_dest) == 0 && S_ISDIR(buff_dest.st_mode))
                     error(KIO::ERR_DIR_ALREADY_EXIST, dest);
                 else
                     error(KIO::ERR_FILE_ALREADY_EXIST, dest);
@@ -606,7 +572,7 @@ void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& 
 
     // get uid from given owner
     {
-        struct passwd *p = ::getpwnam(owner.toAscii());
+        struct passwd *p = ::getpwnam(owner.toLatin1());
 
         if ( ! p ) {
             error( KIO::ERR_SLAVE_DEFINED,
@@ -619,7 +585,7 @@ void FileProtocol::chown( const KUrl& url, const QString& owner, const QString& 
 
     // get gid from given group
     {
-        struct group *p = ::getgrnam(group.toAscii());
+        struct group *p = ::getgrnam(group.toLatin1());
 
         if ( ! p ) {
             error( KIO::ERR_SLAVE_DEFINED,

@@ -470,7 +470,7 @@ void KFilePlacesView::setUrl(const KUrl &url)
 
     if (index.isValid()) {
         if (current!=index && placesModel->isHidden(current) && !d->showAll) {
-            KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
+            KFilePlacesViewDelegate *delegate = static_cast<KFilePlacesViewDelegate*>(itemDelegate());
             delegate->addDisappearingItem(current);
 
             if (d->itemDisappearTimeline.state()!=QTimeLine::Running) {
@@ -480,7 +480,7 @@ void KFilePlacesView::setUrl(const KUrl &url)
         }
 
         if (current!=index && placesModel->isHidden(index) && !d->showAll) {
-            KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
+            KFilePlacesViewDelegate *delegate = static_cast<KFilePlacesViewDelegate*>(itemDelegate());
             delegate->addAppearingItem(index);
 
             if (d->itemAppearTimeline.state()!=QTimeLine::Running) {
@@ -511,7 +511,7 @@ void KFilePlacesView::setShowAll(bool showAll)
 
     d->showAll = showAll;
 
-    KFilePlacesViewDelegate *delegate = dynamic_cast<KFilePlacesViewDelegate*>(itemDelegate());
+    KFilePlacesViewDelegate *delegate = static_cast<KFilePlacesViewDelegate*>(itemDelegate());
 
     int rowCount = placesModel->rowCount();
     QModelIndex current = placesModel->closestItem(d->currentUrl);
@@ -892,7 +892,7 @@ QSize KFilePlacesView::sizeHint() const
            textWidth = qMax(textWidth,fm.width(index.data(Qt::DisplayRole).toString()));
     }
 
-    const int iconSize = KIconLoader::global()->currentSize(KIconLoader::Dialog);
+    const int iconSize = KIconLoader::global()->currentSize(KIconLoader::Small) + 3 * LATERAL_MARGIN;
     return QSize(iconSize + textWidth + fm.height() / 2, height);
 }
 
@@ -946,7 +946,7 @@ void KFilePlacesView::Private::adaptItemSize()
 
     if (rowCount==0) return; // We've nothing to display anyway
 
-    const int minSize = 16;
+    const int minSize = IconSize(KIconLoader::Small);
     const int maxSize = 64;
 
     int textWidth = 0;

@@ -184,6 +184,7 @@ void KCookieServer::checkCookies(KHttpCookieList *cookieList, qlonglong windowId
         const KCookieAdvice advice = mCookieJar->cookieAdvice(cookie);
         switch(advice) {
         case KCookieAccept:
+        case KCookieAcceptForSession:
             mCookieJar->addCookie(cookie);
             cookieIterator.remove();
             break;
@@ -245,6 +246,11 @@ void KCookieServer::checkCookies(KHttpCookieList *cookieList, qlonglong windowId
         }
         switch(userAdvice) {
            case KCookieAccept:
+           case KCookieAcceptForSession:
+               // Store the user's choice for the cookie.
+               // This is only used to check later if the cookie should expire
+               // at the end of the session. The choice is not saved on disk.
+               cookie.setUserSelectedAdvice(userAdvice);
                mCookieJar->addCookie(cookie);
                cookieIterator2.remove();
                break;

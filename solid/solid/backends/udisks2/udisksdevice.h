@@ -39,6 +39,8 @@ namespace Backends
 namespace UDisks2
 {
 
+class DeviceBackend;
+
 class Device: public Solid::Ifaces::Device
 {
     Q_OBJECT
@@ -79,6 +81,7 @@ public:
     bool isEncryptedContainer() const;
     bool isEncryptedCleartext() const;
     bool isSwap() const;
+    bool isLoop() const;
 
     QString drivePath() const;
 
@@ -86,23 +89,12 @@ Q_SIGNALS:
     void changed();
     void propertyChanged(const QMap<QString,int> &changes);
 
-private Q_SLOTS:
-    void slotPropertiesChanged(const QString & ifaceName, const QVariantMap & changedProps, const QStringList & invalidatedProps);
-    void slotInterfacesAdded(const QDBusObjectPath &object_path, const QVariantMapMap &interfaces_and_properties);
-    void slotInterfacesRemoved(const QDBusObjectPath &object_path, const QStringList &interfaces);
+protected:
+    QPointer<DeviceBackend> m_backend;
 
 private:
     QString storageDescription() const;
     QString volumeDescription() const;
-    mutable QDBusInterface *m_device;
-    QString m_udi;
-    mutable QVariantMap m_cache;
-
-    void initInterfaces();
-    QStringList m_interfaces;
-
-    void checkCache(const QString &key) const;
-    QString introspect() const;
 };
 
 }

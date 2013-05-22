@@ -1,12 +1,22 @@
 project(kdoctools)
 
 find_package(LibXslt)
-macro_log_feature(LIBXSLT_FOUND "LibXSLT" "Required by the KDE help system to process DocBook XML" "http://xmlsoft.org/XSLT" TRUE "" "")
+set_package_properties(LibXslt PROPERTIES
+                       URL "http://xmlsoft.org/XSLT"
+                       TYPE REQUIRED
+                       PURPOSE "Required by the KDE help system to process DocBook XML"
+                      )
 
 find_package(LibXml2)
-macro_log_feature(LIBXML2_FOUND "LibXML2" "Required by the KDE help system to process DocBook XML" "http://xmlsoft.org" TRUE "" "")
+set_package_properties(LibXml2 PROPERTIES
+                       URL "http://xmlsoft.org"
+                       TYPE REQUIRED
+                       PURPOSE "Required by the KDE help system to process DocBook XML"
+                      )
 
-macro_log_feature(LIBXML2_XMLLINT_EXECUTABLE "xmllint" "Required by the KDE help system to process DocBook XML" "http://xmlsoft.org" TRUE "" "")
+if(NOT LIBXML2_XMLLINT_EXECUTABLE)
+  message(FATAL_ERROR "xmllint is required by the KDE help system to process DocBook XML")
+endif()
 
 include_directories( ${KDE4_KIO_INCLUDES} )
 #include_directories( ${CMAKE_SOURCE_DIR}/kioslave ${CMAKE_SOURCE_DIR}/kioslave/bzip2 )
@@ -21,15 +31,33 @@ set (DOCBOOKXML_VERSIONS "${DOCBOOKXML_CURRENTDTD_VERSION}")
 if (DOCBOOKXML_OLDDTD_VERSION)
    set (DOCBOOKXML_VERSIONS "${DOCBOOKXML_VERSIONS} and ${DOCBOOKXML_OLDDTD_VERSION}")
 endif (DOCBOOKXML_OLDDTD_VERSION)
-macro_log_feature(DOCBOOKXML_FOUND "DocBook XML" "Required by the KDE help system to process DocBook XML" "http://www.oasis-open.org/docbook/xml/${DOCBOOKXML_CURRENTDTD_VERSION}" TRUE "" "XML DTDs for DocBook ${DOCBOOKXML_VERSIONS} are needed")
+set_package_properties(DocBookXML PROPERTIES DESCRIPTION "DocBook XML"
+                       URL "http://www.oasis-open.org/docbook/xml/${DOCBOOKXML_CURRENTDTD_VERSION}"
+                       TYPE REQUIRED
+                       PURPOSE "Required by the KDE help system to process DocBook XML"
+                      )
 
 find_package(DocBookXSL)
-macro_log_feature(DOCBOOKXSL_FOUND "DocBook XSL" "Required by the KDE help system to process DocBook XML" "http://docbook.sourceforge.net/release/xsl/current/" TRUE "" "")
+set_package_properties(DocBookXSL PROPERTIES DESCRIPTION "DocBook XSL"
+                       URL "http://docbook.sourceforge.net/release/xsl/current/"
+                       TYPE REQUIRED
+                       PURPOSE "Required by the KDE help system to process DocBook XML"
+                      )
 
 set (_custom_dtd_kdex "customization/dtd/kdex.dtd")
 configure_file(${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex} )
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}
-        DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd )
+# WARNING: this is due to severe limitations on the windows platform to keep the dtd relocateable
+# see the .xsl.cmake files for a more verbose explanation below
+if(NOT WIN32)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}
+            DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd )
+else(NOT WIN32)
+    install(CODE
+ "FILE(RELATIVE_PATH DOCBOOKXML_CURRENTDTD_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd ${DOCBOOKXML_CURRENTDTD_DIR})
+  CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install)")
+    get_filename_component(_custom_dtd_kdex_name ${_custom_dtd_kdex} NAME)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex}.install DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/dtd RENAME ${_custom_dtd_kdex_name})
+endif(NOT WIN32)
 
 configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoctools.h )
 
@@ -127,6 +155,11 @@ target_link_libraries(genshortcutents ${KDE4_KDECORE_LIBS} ${KDE4_KDEUI_LIBS})
 
 
 ########### customize includes for xslt ###############
+# WARNING: this has severe limitations on the windows platform since the .xsl
+# & docbook files need to be relocatable. We cannot just replace the paths in
+# the .xsl with relative paths because these files are not installed while
+# building kdelibs. Instead, we will reconfigure those files at install time
+# with relative paths.
 
 file( GLOB _kdeincludexslt_ALL "customization/kde-include*.xsl.cmake" )
 foreach( _kdeincludexslt ${_kdeincludexslt_ALL} )
@@ -134,8 +167,15 @@ foreach( _kdeincludexslt ${_kdeincludexslt_ALL} )
     string( REGEX REPLACE ".cmake$" "" _kdeincludexslt_out "${_kdeincludexslt_name}" )
     set( _kdeincludexslt_binarypath "${CMAKE_CURRENT_BINARY_DIR}/customization/${_kdeincludexslt_out}" )
     configure_file( ${_kdeincludexslt} ${_kdeincludexslt_binarypath} )
-    install(FILES ${_kdeincludexslt_binarypath}
-            DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization )
+    if(NOT WIN32)
+        install(FILES ${_kdeincludexslt_binarypath}
+                DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization )
+    else(NOT WIN32)
+        install(CODE 
+ "FILE(RELATIVE_PATH DOCBOOKXSL_DIR \${CMAKE_INSTALL_PREFIX}/${DATA_INSTALL_DIR}/ksgmltools2/customization ${DOCBOOKXSL_DIR})
+  CONFIGURE_FILE( ${_kdeincludexslt} ${_kdeincludexslt_binarypath}.install )")
+        install(FILES ${_kdeincludexslt_binarypath}.install DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization RENAME ${_kdeincludexslt_out})
+    endif(NOT WIN32)
 endforeach( _kdeincludexslt ${_kdeincludexslt_ALL} )
 
 

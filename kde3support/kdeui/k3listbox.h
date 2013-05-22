@@ -41,7 +41,7 @@ class KDE3SUPPORT_EXPORT K3ListBox : public Q3ListBox
     Q_OBJECT
 
 public:
-  explicit K3ListBox( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+  explicit K3ListBox( QWidget *parent = 0, const char *name = 0, Qt::WindowFlags f = 0 );
 
 Q_SIGNALS:
 

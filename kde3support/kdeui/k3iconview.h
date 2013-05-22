@@ -46,7 +46,7 @@ class KDE3SUPPORT_EXPORT K3IconView : public Q3IconView
   Q_PROPERTY( Mode mode READ mode WRITE setMode )
 
 public:
-  K3IconView( QWidget *parent = 0, const char *name = 0, Qt::WFlags f = 0 );
+  K3IconView( QWidget *parent = 0, const char *name = 0, Qt::WindowFlags f = 0 );
 
   ~K3IconView();
 

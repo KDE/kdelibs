@@ -172,14 +172,14 @@ KLocale *KGlobal::locale()
     if (d->locale == 0 || (d->localeIsFromFakeComponent && d->mainComponent.isValid() && d->mainComponent.config())) {
         // If you hit the warning below, here's how to debug it in gdb:
         // (gdb) set auto-solib-add on
-        // (gdb) b qt_message_output
+        // (gdb) b i18n
+        // (gdb) b KLocale::KLocale
+        // Function "KLocale::KLocale" not defined.
+        // Make breakpoint pending on future shared library load? (y or [n]) y
         // (gdb) run
-        // It will stop at the "-nograb" information.
-        // (gdb) b KLocalePrivate::KLocalePrivate
-        // (gdb) c
-        // And now it will stop at the first construction of the KLocale object, type bt or go up to find the
-        // guilty i18n call.
-        if (d->locale != 0) qDebug() << "KGlobal::locale::Warning your global KLocale is being recreated with a valid main component instead of a fake component, this usually means you tried to call i18n related functions before your main component was created. You should not do that since it most likely will not work";
+        // And now it will stop at the first i18n call or more generally at the first construction of the KLocale object,
+        // type bt or go up to find the guilty i18n call.
+        if (d->locale != 0) qWarning("KGlobal::locale(): Warning your global KLocale is being recreated with a valid main component instead of a fake component, this usually means you tried to call i18n related functions before your main component was created. You should not do that since it most likely will not work");
         delete d->locale;
         d->locale = 0;
         d->locale = new KLocale(mainComponent().catalogName());

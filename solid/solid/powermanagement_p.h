@@ -48,6 +48,7 @@ namespace Solid
     public Q_SLOTS:
         void slotCanSuspendChanged(bool newState);
         void slotCanHibernateChanged(bool newState);
+        void slotCanHybridSuspendChanged(bool newState);
         void slotPowerSaveStatusChanged(bool newState);
         void slotServiceRegistered(const QString &serviceName);
         void slotServiceUnregistered(const QString &serviceName);

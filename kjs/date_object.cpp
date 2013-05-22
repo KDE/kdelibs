@@ -20,7 +20,7 @@
  */
 
 #include "date_object.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "date_object.lut.h"
 #include "internal.h"
 
@@ -224,6 +224,24 @@ static UString formatDateUTCVariant(const tm &t)
     return UString(buffer, len);
 }
 
+static UString formatDateISOVariant(const tm &t, bool utc, double absoluteMS)
+{
+    char buffer[100];
+    // YYYY-MM-DD
+    int len;
+    if (utc) {
+        len = snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d",
+            t.tm_year + 1900, t.tm_mon+1, t.tm_mday);
+    } else {
+        int offset = gmtoffset(t);
+        tm t_fixed;
+        millisecondsToTM(absoluteMS - offset*1000, true, &t_fixed);
+        len = snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d",
+            t_fixed.tm_year + 1900, t_fixed.tm_mon+1, t_fixed.tm_mday);
+    }
+    return UString(buffer, len);
+}
+
 static UString formatTime(const tm &t, bool utc)
 {
     char buffer[100];
@@ -239,6 +257,24 @@ static UString formatTime(const tm &t, bool utc)
         len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
             t.tm_hour, t.tm_min, t.tm_sec,
             gmtoffset(t) < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
+    }
+    return UString(buffer, len);
+}
+
+static UString formatTimeISOVariant(const tm &t, bool utc, double absoluteMS, double ms)
+{
+    char buffer[100];
+    // HH:mm:ss.sss
+    int len;
+    if (utc) {
+        len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d.%03d",
+                       t.tm_hour, t.tm_min, t.tm_sec, int(ms));
+    } else {
+        int offset = gmtoffset(t);
+        tm t_fixed;
+        millisecondsToTM(absoluteMS - offset*1000, true, &t_fixed);
+        len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d.%03d",
+            t_fixed.tm_hour, t_fixed.tm_min, t_fixed.tm_sec, int(ms));
     }
     return UString(buffer, len);
 }
@@ -494,6 +530,10 @@ static void millisecondsToTM(double milli, bool utc, tm *t)
   }
 }
 
+static bool isNaNorInf(double value)
+{
+    return isNaN(value) || isInf(value);
+}
 
 // ------------------------------ DatePrototype -----------------------------
 
@@ -506,6 +546,8 @@ const ClassInfo DatePrototype::info = {"Date", &DateInstance::info, &dateTable, 
   toUTCString		-DateProtoFunc::ToUTCString		DontEnum|Function	0
   toDateString		DateProtoFunc::ToDateString		DontEnum|Function	0
   toTimeString		DateProtoFunc::ToTimeString		DontEnum|Function	0
+  toISOString       DateProtoFunc::ToISOString      DontEnum|Function   0
+  toJSON            DateProtoFunc::ToJSON           DontEnum|Function   1
   toLocaleString	DateProtoFunc::ToLocaleString	DontEnum|Function	0
   toLocaleDateString	DateProtoFunc::ToLocaleDateString	DontEnum|Function	0
   toLocaleTimeString	DateProtoFunc::ToLocaleTimeString	DontEnum|Function	0
@@ -575,6 +617,23 @@ DateProtoFunc::DateProtoFunc(ExecState *exec, int i, int len, const Identifier& 
 
 JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
+  if (id == ToJSON) {
+    JSValue* tv = thisObj->toPrimitive(exec, NumberType);
+    if (tv->isNumber()) {
+      double ms = tv->toNumber(exec);
+      if (isNaN(ms))
+        return jsNull();
+    }
+
+    JSValue *toISO = thisObj->get(exec, exec->propertyNames().toISOString);
+    if (!toISO->implementsCall())
+      return throwError(exec, TypeError, "toISOString is not callable");
+    JSObject* toISOobj = toISO->toObject(exec);
+    if (!toISOobj)
+      return throwError(exec, TypeError, "toISOString is not callable");
+    return toISOobj->call(exec, thisObj, List::empty());
+  }
+
   if (!thisObj->inherits(&DateInstance::info))
     return throwError(exec, TypeError);
 
@@ -622,6 +681,8 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
       case SetMonth:
       case SetFullYear:
         return jsNaN();
+      case ToISOString:
+        return throwError(exec, RangeError, "Invalid Date");
     }
   }
 
@@ -651,6 +712,8 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   case ToGMTString:
   case ToUTCString:
     return jsString(formatDateUTCVariant(t).append(' ').append(formatTime(t, utc)));
+  case ToISOString:
+    return jsString(formatDateISOVariant(t, utc, milli).append('T').append(formatTimeISOVariant(t, utc, milli, ms)).append('Z'));
 
 #if PLATFORM(MAC)
   case ToLocaleString:
@@ -775,6 +838,34 @@ static double getCurrentUTCTime()
     return utc;
 }
 
+static double makeTimeFromList(ExecState *exec, const List &args, bool utc)
+{
+    const int numArgs = args.size();
+    if (isNaNorInf(args[0]->toNumber(exec))
+        || isNaNorInf(args[1]->toNumber(exec))
+        || (numArgs >= 3 && isNaNorInf(args[2]->toNumber(exec)))
+        || (numArgs >= 4 && isNaNorInf(args[3]->toNumber(exec)))
+        || (numArgs >= 5 && isNaNorInf(args[4]->toNumber(exec)))
+        || (numArgs >= 6 && isNaNorInf(args[5]->toNumber(exec)))
+        || (numArgs >= 7 && isNaNorInf(args[6]->toNumber(exec)))) {
+      return NaN;
+    }
+
+    tm t;
+    memset(&t, 0, sizeof(t));
+    int year = args[0]->toInt32(exec);
+    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
+    t.tm_mon = args[1]->toInt32(exec);
+    t.tm_mday = (numArgs >= 3) ? args[2]->toInt32(exec) : 1;
+    t.tm_hour = (numArgs >= 4) ? args[3]->toInt32(exec) : 0;
+    t.tm_min = (numArgs >= 5) ? args[4]->toInt32(exec) : 0;
+    t.tm_sec = (numArgs >= 6) ? args[5]->toInt32(exec) : 0;
+    if (!utc)
+        t.tm_isdst = -1;
+    double ms = (numArgs >= 7) ? roundValue(exec, args[6]) : 0;
+    return makeTime(&t, ms, true);
+}
+
 // ECMA 15.9.3
 JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
 {
@@ -795,29 +886,7 @@ JSObject *DateObjectImp::construct(ExecState *exec, const List &args)
         value = primitive->toNumber(exec);
     }
   } else {
-    JSValue* arg0 = args[0];
-    if (isNaN(arg0->toNumber(exec))
-        || isNaN(args[1]->toNumber(exec))
-        || (numArgs >= 3 && isNaN(args[2]->toNumber(exec)))
-        || (numArgs >= 4 && isNaN(args[3]->toNumber(exec)))
-        || (numArgs >= 5 && isNaN(args[4]->toNumber(exec)))
-        || (numArgs >= 6 && isNaN(args[5]->toNumber(exec)))
-        || (numArgs >= 7 && isNaN(args[6]->toNumber(exec)))) {
-      value = NaN;
-    } else {
-      tm t;
-      memset(&t, 0, sizeof(t));
-      int year = arg0->toInt32(exec);
-      t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
-      t.tm_mon = args[1]->toInt32(exec);
-      t.tm_mday = (numArgs >= 3) ? args[2]->toInt32(exec) : 1;
-      t.tm_hour = (numArgs >= 4) ? args[3]->toInt32(exec) : 0;
-      t.tm_min = (numArgs >= 5) ? args[4]->toInt32(exec) : 0;
-      t.tm_sec = (numArgs >= 6) ? args[5]->toInt32(exec) : 0;
-      t.tm_isdst = -1;
-      double ms = (numArgs >= 7) ? roundValue(exec, args[6]) : 0;
-      value = makeTime(&t, ms, false);
-    }
+    value = makeTimeFromList(exec, args, false);
   }
 
   DateInstance *ret = new DateInstance(exec->lexicalInterpreter()->builtinDatePrototype());
@@ -849,28 +918,7 @@ JSValue *DateObjectFuncImp::callAsFunction(ExecState* exec, JSObject*, const Lis
   } else if (id == Now) {
     return jsNumber(getCurrentUTCTime());
   } else { // UTC
-    int n = args.size();
-    if (isNaN(args[0]->toNumber(exec))
-        || isNaN(args[1]->toNumber(exec))
-        || (n >= 3 && isNaN(args[2]->toNumber(exec)))
-        || (n >= 4 && isNaN(args[3]->toNumber(exec)))
-        || (n >= 5 && isNaN(args[4]->toNumber(exec)))
-        || (n >= 6 && isNaN(args[5]->toNumber(exec)))
-        || (n >= 7 && isNaN(args[6]->toNumber(exec)))) {
-      return jsNaN();
-    }
-
-    tm t;
-    memset(&t, 0, sizeof(t));
-    int year = args[0]->toInt32(exec);
-    t.tm_year = (year >= 0 && year <= 99) ? year : year - 1900;
-    t.tm_mon = args[1]->toInt32(exec);
-    t.tm_mday = (n >= 3) ? args[2]->toInt32(exec) : 1;
-    t.tm_hour = (n >= 4) ? args[3]->toInt32(exec) : 0;
-    t.tm_min = (n >= 5) ? args[4]->toInt32(exec) : 0;
-    t.tm_sec = (n >= 6) ? args[5]->toInt32(exec) : 0;
-    double ms = (n >= 7) ? roundValue(exec, args[6]) : 0;
-    return jsNumber(makeTime(&t, ms, true));
+    return jsNumber(makeTimeFromList(exec, args, true));
   }
 }
 

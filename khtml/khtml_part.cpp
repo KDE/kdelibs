@@ -3988,7 +3988,7 @@ void KHTMLPart::slotSecurity()
   bool certChainOk = d->m_ssl_in_use;
   if (certChainOk) {
     foreach (const QString &s, sl) {
-      certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+      certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
       if (certChain.last().isNull()) {
         certChainOk = false;
         break;
@@ -4016,7 +4016,7 @@ void KHTMLPart::slotSecurity()
     QList<QSslCertificate> certChain;
     bool decodedOk = true;
     foreach (const QString &s, sl) {
-        certChain.append(QSslCertificate(s.toAscii())); //or is it toLocal8Bit or whatever?
+        certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
         if (certChain.last().isNull()) {
             decodedOk = false;
             break;
@@ -4400,6 +4400,11 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const KUrl &_url
                 if (mime->is("text/html")
                     || mime->is("application/xml")) { // this includes xhtml and svg
                     child->m_serviceName = "khtml";
+                } else {
+                    if (!pluginsEnabled()) {
+                        childLoadFailure(child);
+                        return false;
+                    }
                 }
             }
 
@@ -5195,7 +5200,10 @@ KHTMLPart* KHTMLPartPrivate::findFrameParent(KParts::ReadOnlyPart* callingPart,
     kDebug(6050) << q << "URL =" << q->url() << "name =" << q->objectName() << "findFrameParent(" << f << ")";
 #endif
     // Check access
-    KHTMLPart* const callingHtmlPart = dynamic_cast<KHTMLPart *>(callingPart);
+    KHTMLPart* const callingHtmlPart = qobject_cast<KHTMLPart *>(callingPart);
+
+    if (!callingHtmlPart)
+        return 0;
 
     if (!checkForNavigation && !q->checkFrameAccess(callingHtmlPart))
         return 0;
@@ -5242,8 +5250,12 @@ KHTMLPart* KHTMLPartPrivate::top()
 
 bool KHTMLPartPrivate::canNavigate(KParts::ReadOnlyPart* bCand)
 {
+    if (!bCand) // No part here (e.g. invalid url), reuse that frame
+        return true;
+
     KHTMLPart* b = qobject_cast<KHTMLPart*>(bCand);
-    assert(b);
+    if (!b) // Another kind of part? Not sure what to do...
+        return false;
 
     // HTML5 gives conditions for this (a) being able to navigate b
     

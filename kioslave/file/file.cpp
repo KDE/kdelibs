@@ -93,7 +93,7 @@ using namespace KIO;
 
 #define MAX_IPC_SIZE (1024*32)
 
-static QString testLogFile( const QByteArray&_filename );
+static QString readLogFile( const QByteArray&_filename );
 #ifdef HAVE_POSIX_ACL
 static void appendACLAtoms( const QByteArray & path, UDSEntry& entry,
                             mode_t type, bool withACL );
@@ -614,7 +614,9 @@ void FileProtocol::put( const KUrl& url, int _mode, KIO::JobFlags _flags )
                 if ( (_flags & KIO::Resume) )
                 {
                     fd = KDE::open( dest, O_RDWR );  // append if resuming
-                    KDE_lseek(fd, 0, SEEK_END); // Seek to end
+                    if (fd != -1) {
+                        KDE_lseek(fd, 0, SEEK_END); // Seek to end
+                    }
                 }
                 else
                 {
@@ -875,7 +877,7 @@ void FileProtocol::special( const QByteArray &data)
 	if (ok)
 	    finished();
 	else
-	    mount( ro, fstype.toAscii(), dev, point );
+	    mount( ro, fstype.toLatin1(), dev, point );
 
       }
       break;
@@ -990,7 +992,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 
         int mount_ret = system( buffer.constData() );
 
-        QString err = testLogFile( tmpFileName );
+        QString err = readLogFile( tmpFileName );
         if ( err.isEmpty() && mount_ret == 0)
         {
             finished();
@@ -1117,7 +1119,7 @@ void FileProtocol::unmount( const QString& _point )
 		 */
 		if( WEXITSTATUS( system( buffer.constData() )) == 4 ) {
 			/*
-			 *  this is not an error, so skip "testLogFile()"
+			 *  this is not an error, so skip "readLogFile()"
 			 *  to avoid wrong/confusing error popup. The
 			 *  temporary file is removed by KTemporaryFile's
 			 *  destructor, so don't do that manually.
@@ -1152,7 +1154,7 @@ void FileProtocol::unmount( const QString& _point )
     system( buffer.constData() );
 #endif /* HAVE_VOLMGT */
 
-    err = testLogFile( tmpFileName );
+    err = readLogFile( tmpFileName );
     if ( err.isEmpty() )
         finished();
     else
@@ -1229,39 +1231,14 @@ bool FileProtocol::pumount(const QString &point)
  *
  *************************************/
 
-static QString testLogFile( const QByteArray& _filename )
+static QString readLogFile( const QByteArray& _filename )
 {
-    char buffer[ 1024 ];
-    KDE_struct_stat buff;
-
     QString result;
-
-    KDE_stat( _filename, &buff );
-    int size = buff.st_size;
-    if ( size == 0 ) {
-	unlink( _filename );
-	return result;
+    QFile file(QFile::decodeName(_filename));
+    if (file.open(QIODevice::ReadOnly)) {
+        result = QString::fromLocal8Bit(file.readAll());
     }
-
-    FILE * f = KDE_fopen( _filename, "rb" );
-    if ( f == 0L ) {
-	unlink( _filename );
-	result = i18n("Could not read %1", QFile::decodeName(_filename));
-	return result;
-    }
-
-    result.clear();
-    const char *p = "";
-    while ( p != 0L ) {
-	p = fgets( buffer, sizeof(buffer)-1, f );
-	if ( p != 0L )
-	    result += QString::fromLocal8Bit(buffer);
-    }
-
-    fclose( f );
-
-    unlink( _filename );
-
+    (void)file.remove();
     return result;
 }
 

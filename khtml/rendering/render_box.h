@@ -129,9 +129,9 @@ public:
 
     int calcBoxWidth(int w) const;
     int calcBoxHeight(int h) const;
-    int calcContentWidth(int w) const;
-    int calcContentHeight(int h) const;
-    
+    virtual int calcContentWidth(int w) const;
+    virtual int calcContentHeight(int h) const;
+
     InlineBox *placeHolderBox() { return m_placeHolderBox; }
     void setPlaceHolderBox(InlineBox* placeHolder) { m_placeHolderBox = placeHolder; /* assert !m_placeHolderBox */ }
     QRect getFixedBackgroundImageRect( const BackgroundLayer* bglayer, int& sx, int& sy, int& scaledImageWidth, int& scaledImageHeight );

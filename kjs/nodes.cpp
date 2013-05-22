@@ -23,7 +23,7 @@
  */
 
 #include "nodes.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "scriptfunction.h"
 #include "CompileState.h"
 
@@ -998,7 +998,8 @@ FunctionImp* FuncDeclNode::makeFunctionObject(ExecState *exec)
 
   JSObject *proto = exec->lexicalInterpreter()->builtinObject()->construct(exec, List::empty());
   proto->put(exec, exec->propertyNames().constructor, func, DontEnum);
-  func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete);
+  // ECMA Edition 5.1r6 - 15.3.5.2 - [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: false
+  func->put(exec, exec->propertyNames().prototype, proto, Internal|DontDelete|DontEnum);
 
   func->put(exec, exec->propertyNames().length, jsNumber(body->numParams()), ReadOnly|DontDelete|DontEnum);
 

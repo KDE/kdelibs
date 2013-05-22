@@ -26,7 +26,7 @@
 
 #include "global.h"
 
-#include <config.h>
+#include <config-kjs.h>
 
 #ifdef HAVE_PCREPOSIX
 #include <pcre.h>
@@ -35,6 +35,13 @@ extern "C" { // bug with some libc5 distributions
 #include <regex.h>
 }
 #endif //HAVE_PCREPOSIX
+
+#if defined _WIN32 || defined _WIN64
+#undef HAVE_SYS_TIME_H
+#endif
+#if HAVE(SYS_TIME_H)
+#include <sys/resource.h>
+#endif
 
 #include "ustring.h"
 
@@ -81,7 +88,11 @@ namespace KJS {
 
     static bool tryGrowingMaxStackSize;
     static bool didIncreaseMaxStackSize;
+#if HAVE(SYS_TIME_H)
+    static rlim_t availableStackSize;
+#else
     static int availableStackSize;
+#endif
   private:
 #ifdef HAVE_PCREPOSIX
     pcre *_regex;

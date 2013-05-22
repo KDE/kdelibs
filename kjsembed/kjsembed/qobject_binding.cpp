@@ -129,12 +129,12 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         }
         QObject* receiver = 0;
         QObject* sender = senderImp->object<QObject>();
-        char *signal = qstrdup( createSignal(args[1]->toString(exec).ascii()).data() );
-        char *slot = 0;
+        QByteArray signal = createSignal(args[1]->toString(exec).ascii());
+        QByteArray slot;
         KJSEmbed::QObjectBinding *receiverImp = 0;
         if( args.size() >= 4)
         {
-            slot = qstrdup( createSlot(args[3]->toString(exec).ascii()).data() );
+            slot = createSlot(args[3]->toString(exec).ascii());
             receiverImp = KJSEmbed::extractBindingImp<KJSEmbed::QObjectBinding>(exec, args[2] );
             if( !receiverImp )
                 receiver = new SlotProxy(args[2]->toObject(exec), exec->dynamicInterpreter(), sender, args[3]->toString(exec).ascii() );
@@ -145,18 +145,18 @@ KJS::JSValue *callConnect( KJS::ExecState *exec, KJS::JSObject *self, const KJS:
         {
             receiverImp = imp;
             receiver = imp->object<QObject>();
-            slot = qstrdup( createSlot(args[2]->toString(exec).ascii()).data() );
+            slot = createSlot(args[2]->toString(exec).ascii());
         }
 
         const QMetaObject *senderMetaObject = sender->metaObject();
-        QMetaMethod senderMetaMethod = senderMetaObject->method( senderMetaObject->indexOfSignal(signal) );
+        QMetaMethod senderMetaMethod = senderMetaObject->method( senderMetaObject->indexOfSignal(signal.constData()) );
 
         const QMetaObject *receiverMetaObject = receiver->metaObject();
-        QMetaMethod receiverMetaMethod = receiverMetaObject->method( receiverMetaObject->indexOfSlot(slot) );
+        QMetaMethod receiverMetaMethod = receiverMetaObject->method( receiverMetaObject->indexOfSlot(slot.constData()) );
 
         if( validSignal(senderMetaMethod, senderImp->access()) && ( !receiverImp || validSlot(receiverMetaMethod, receiverImp->access()) ) )
         {
-            return KJS::jsBoolean(QObject::connect(sender, signal, receiver, slot));
+            return KJS::jsBoolean(QObject::connect(sender, signal.constData(), receiver, slot.constData()));
         }
 
         return KJS::jsBoolean(false);

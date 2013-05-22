@@ -47,16 +47,15 @@ endif()
 
 # Grantlee is used for generating compilable code by the ModelEventLogger.
 # If Grantlee is not found, the logger does nothing.
-find_package(Grantlee ${GRANTLEE_FIND_ARG})
+find_package(Grantlee 0.1.0 ${GRANTLEE_FIND_ARG})
 
 if(NOT proxymodeltestsuite_standalone)
-  macro_log_feature(Grantlee_FOUND
-    "Grantlee"
-    "ModelEventLogger code generation (part of the ProxyModel test suite)"
-    "http://www.grantlee.org" FALSE
-    "0.1.0"
-    "Grantlee is used for generating compilable code by the ModelEventLogger. Without Grantlee, the logger will do nothing."
-  )
+  set_package_properties(Grantlee PROPERTIES DESCRIPTION "ModelEventLogger code generation (part of the ProxyModel test suite)"
+                         URL "http://www.grantlee.org"
+                         TYPE OPTIONAL
+                         PURPOSE "Grantlee is used for generating compilable code by the ModelEventLogger.
+                         Without Grantlee, the logger will do nothing."
+                        )
 endif()
 
 if (Grantlee_FOUND)

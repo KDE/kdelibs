@@ -33,6 +33,7 @@
 
 #include <QtCore/QFile>
 #include <QtDBus/QtDBus>
+#include <QtCore/QHash>
 #include <QBuffer>
 
 extern int servicesDebugArea();
@@ -484,15 +485,38 @@ QString KMimeType::iconNameForUrl( const KUrl & _url, mode_t mode )
 
 QString KMimeType::favIconForUrl( const KUrl& url )
 {
+    /* The kded module also caches favicons, for one week, without any way
+     * to clean up the cache meanwhile.
+     * On the other hand, this QHash will get cleaned up after 5000 request
+     * (a selection in konsole of 80 chars generates around 500 requests)
+     * or by simply restarting the application (or the whole desktop,
+     * more likely, for the case of konqueror or konsole).
+     */
+    static QHash<QUrl, QString> iconNameCache;
+    static int autoClearCache = 0;
+    const QString notFound = QLatin1String("NOTFOUND");
+
     if (url.isLocalFile()
         || !url.protocol().startsWith(QLatin1String("http"))
         || !KMimeTypeRepository::self()->useFavIcons())
         return QString();
 
+    QString iconNameFromCache = iconNameCache.value(url, notFound);
+    if ( iconNameFromCache != notFound ) {
+        if ( (++autoClearCache) < 5000 ) {
+            return iconNameFromCache;
+        }
+        else {
+            iconNameCache.clear();
+            autoClearCache = 0;
+        }
+    }
+
     QDBusInterface kded( QString::fromLatin1("org.kde.kded"),
                          QString::fromLatin1("/modules/favicons"),
                          QString::fromLatin1("org.kde.FavIcon") );
     QDBusReply<QString> result = kded.call( QString::fromLatin1("iconForUrl"), url.url() );
+    iconNameCache.insert(url, result.value());
     return result;              // default is QString()
 }
 
@@ -755,4 +779,30 @@ bool KMimeType::matchFileName( const QString &filename, const QString &pattern )
 int KMimeTypePrivate::serviceOffersOffset() const
 {
     return KMimeTypeFactory::self()->serviceOffersOffset(name());
+}
+
+QString KMimeTypePrivate::iconName(const KUrl &) const
+{
+    static QHash<QUrl, QString> iconNameCache;
+    QString iconNameFromCache = iconNameCache.value(m_strName);
+    if (!iconNameFromCache.isEmpty())
+        return iconNameFromCache;
+
+    ensureXmlDataLoaded();
+    QString result;
+    if (!m_iconName.isEmpty()) {
+        result = m_iconName;
+    } else {
+        // Make default icon name from the mimetype name
+        // Don't store this in m_iconName, it would make the filetype editor
+        // write out icon names in every local mimetype definition file.
+        QString icon = m_strName;
+        const int slashindex = icon.indexOf(QLatin1Char('/'));
+        if (slashindex != -1) {
+            icon[slashindex] = QLatin1Char('-');
+        }
+        result = icon;
+    }
+    iconNameCache.insert(m_strName, result);
+    return result;
 }

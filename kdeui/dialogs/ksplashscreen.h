@@ -48,7 +48,7 @@ public:
   /**
    *  Constructs a splash screen.
    */
-  explicit KSplashScreen(const QPixmap &pixmap, Qt::WFlags f = 0);
+  explicit KSplashScreen(const QPixmap &pixmap, Qt::WindowFlags f = 0);
 
   /**
    *  Destructor.

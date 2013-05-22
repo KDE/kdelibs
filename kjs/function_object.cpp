@@ -22,7 +22,7 @@
  */
 
 #include "function_object.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "internal.h"
 #include "function.h"
 #include "scriptfunction.h"
@@ -44,11 +44,13 @@ FunctionPrototype::FunctionPrototype(ExecState *exec)
 {
   static const Identifier* applyPropertyName = new Identifier("apply");
   static const Identifier* callPropertyName = new Identifier("call");
+  static const Identifier* bindPropertyName = new Identifier("bind");
 
   putDirect(exec->propertyNames().length, jsNumber(0), DontDelete | ReadOnly | DontEnum);
   putDirectFunction(new FunctionProtoFunc(exec, this, FunctionProtoFunc::ToString, 0, exec->propertyNames().toString), DontEnum);
   putDirectFunction(new FunctionProtoFunc(exec, this, FunctionProtoFunc::Apply, 2, *applyPropertyName), DontEnum);
   putDirectFunction(new FunctionProtoFunc(exec, this, FunctionProtoFunc::Call, 1, *callPropertyName), DontEnum);
+  putDirectFunction(new FunctionProtoFunc(exec, this, FunctionProtoFunc::Bind, 1, *bindPropertyName), DontEnum);
 }
 
 FunctionPrototype::~FunctionPrototype()
@@ -137,6 +139,52 @@ JSValue* FunctionProtoFunc::callAsFunction(ExecState* exec, JSObject* thisObj, c
       callThis = thisArg->toObject(exec);
 
     result = func->call(exec,callThis,args.copyTail());
+    }
+    break;
+  case Bind: { //ECMA Edition 5.1r6 - 15.3.4.5
+    JSObject* target(thisObj);
+    if (!target->implementsCall())
+      return throwError(exec, TypeError, "object is not callable");
+
+    List newArgs;
+    for (int i = 1; i < args.size(); ++i)
+      newArgs.append(args[i]);
+
+    JSObject* boundThis = 0;
+
+    // As call does not accept JSValue(undefined/null),
+    // do it like in call and use the global object
+    if (args[0]->isUndefinedOrNull())
+      boundThis = exec->dynamicInterpreter()->globalObject();
+    else
+      boundThis = args[0]->toObject(exec);
+
+    BoundFunction* bfunc = new BoundFunction(exec, target, boundThis, newArgs);
+
+    unsigned length;
+    if (target->inherits(&FunctionImp::info)) {
+      double L = target->get(exec, exec->propertyNames().length)->getNumber() - newArgs.size();
+      length = (unsigned)std::max<int>((int)L, 0);
+    } else {
+      length = 0;
+    }
+    bfunc->put(exec, exec->propertyNames().length, jsNumber(length), ReadOnly|DontEnum|DontDelete);
+
+    JSObject *thrower = new Thrower(TypeError);
+    PropertyDescriptor callerDesc;
+
+    GetterSetterImp* gs = new GetterSetterImp();
+    gs->setGetter(thrower);
+    gs->setSetter(thrower);
+
+    callerDesc.setPropertyDescriptorValues(exec, gs, DontEnum|DontDelete);
+    bfunc->defineOwnProperty(exec, exec->propertyNames().caller, callerDesc, false);
+
+    PropertyDescriptor argumentsDesc;
+    argumentsDesc.setPropertyDescriptorValues(exec, gs, DontEnum|DontDelete);
+    bfunc->defineOwnProperty(exec, exec->propertyNames().arguments, argumentsDesc, false);
+
+    return bfunc;
     }
     break;
   }
@@ -241,7 +289,8 @@ JSObject* FunctionObjectImp::construct(ExecState* exec, const List& args, const 
   JSObject* objCons = exec->lexicalInterpreter()->builtinObject();
   JSObject* prototype = objCons->construct(exec,List::empty());
   prototype->put(exec, exec->propertyNames().constructor, fimp, DontEnum|DontDelete|ReadOnly);
-  fimp->put(exec, exec->propertyNames().prototype, prototype, Internal|DontDelete);
+  // ECMA Edition 5.1r6 - 15.3.5.2 - [[Writable]]: true, [[Enumerable]]: false, [[Configurable]]: false
+  fimp->put(exec, exec->propertyNames().prototype, prototype, Internal|DontDelete|DontEnum);
   return fimp;
 }
 

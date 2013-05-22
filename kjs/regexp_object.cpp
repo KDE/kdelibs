@@ -22,7 +22,7 @@
  */
 
 #include "regexp_object.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "regexp_object.lut.h"
 

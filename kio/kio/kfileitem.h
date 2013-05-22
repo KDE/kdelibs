@@ -370,6 +370,12 @@ public:
     KMimeType::Ptr mimeTypePtr() const;
 
     /**
+     * @return true if we have determined the final icon of this file already.
+     * @since 4.10.2
+     */
+    bool isFinalIconKnown() const;
+
+    /**
      * @return true if we have determined the mimetype of this file already,
      * i.e. if determineMimeType() will be fast. Otherwise it will have to
      * find what the mimetype is, which is a possibly slow operation; usually
@@ -490,16 +496,22 @@ public:
 
     /**
      * Somewhat like a comparison operator, but more explicit,
-     * and it can detect that two kfileitems are equal even when they do
-     * not share the same internal pointer - e.g. when KDirLister compares
-     * fileitems after listing a directory again, to detect changes.
+     * and it can detect that two fileitems differ if any property of the file item
+     * has changed (file size, modification date, etc.). Two items are equal if
+     * all properties are equal. In contrast, operator== only compares URLs.
      * @param item the item to compare
      * @return true if all values are equal
      */
     bool cmp( const KFileItem & item ) const;
 
+    /**
+     * Returns true if both items share the same URL.
+     */
     bool operator==(const KFileItem& other) const;
 
+    /**
+     * Returns true if both items do not share the same URL.
+     */
     bool operator!=(const KFileItem& other) const;
 
 
@@ -646,6 +658,8 @@ private:
 private:
     KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
     KIO_EXPORT friend QDataStream & operator>> ( QDataStream & s, KFileItem & a );
+
+    friend class KFileItemTest;
 };
 
 Q_DECLARE_METATYPE(KFileItem)

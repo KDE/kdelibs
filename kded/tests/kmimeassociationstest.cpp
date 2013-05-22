@@ -84,13 +84,14 @@ static bool offerListHasService( const KService::List& offers,
     return found;
 }
 
-static void writeAppDesktopFile(const QString& path, const QStringList& mimeTypes)
+static void writeAppDesktopFile(const QString& path, const QStringList& mimeTypes, int initialPreference = 1)
 {
     KDesktopFile file(path);
     KConfigGroup group = file.desktopGroup();
     group.writeEntry("Name", "FakeApplication");
     group.writeEntry("Type", "Application");
     group.writeEntry("Exec", "ls");
+    group.writeEntry("InitialPreference", initialPreference);
     group.writeXdgListEntry("MimeType", mimeTypes);
 }
 
@@ -121,11 +122,28 @@ private Q_SLOTS:
             mustUpdateKSycoca = true;
         }
 
-        // Create fake application for some tests below.
+        // Create fake application (associated with text/plain in mimeapps.list)
         fakeTextApplication = m_localApps + "faketextapplication.desktop";
         if (!QFile::exists(fakeTextApplication)) {
             mustUpdateKSycoca = true;
             writeAppDesktopFile(fakeTextApplication, QStringList() << "text/plain");
+        }
+
+        // A fake "default" application for text/plain (high initial preference, but not in mimeapps.list)
+        fakeDefaultTextApplication = m_localApps + "fakedefaulttextapplication.desktop";
+        if (!QFile::exists(fakeDefaultTextApplication)) {
+            mustUpdateKSycoca = true;
+            writeAppDesktopFile(fakeDefaultTextApplication, QStringList() << "text/plain", 9);
+        }
+
+        // An app (like emacs) listing explicitely the derived mimetype (c-src); not in mimeapps.list
+        // This interacted badly with mimeapps.list listing another app for text/plain, but the
+        // lookup found this app first, due to c-src. The fix: ignoring derived mimetypes when
+        // the base mimetype is already listed.
+        fakeCSrcApplication = m_localApps + "fakecsrcapplication.desktop";
+        if (!QFile::exists(fakeCSrcApplication)) {
+            mustUpdateKSycoca = true;
+            writeAppDesktopFile(fakeCSrcApplication, QStringList() << "text/plain" << "text/c-src", 8);
         }
 
         fakeJpegApplication = m_localApps + "fakejpegapplication.desktop";
@@ -138,6 +156,12 @@ private Q_SLOTS:
         if (!QFile::exists(fakeArkApplication)) {
             mustUpdateKSycoca = true;
             writeAppDesktopFile(fakeArkApplication, QStringList() << "application/zip");
+        }
+
+        fakeHtmlApplication = m_localApps + "fakehtmlapplication.desktop";
+        if (!QFile::exists(fakeHtmlApplication)) {
+            mustUpdateKSycoca = true;
+            writeAppDesktopFile(fakeHtmlApplication, QStringList() << "text/html");
         }
 
 
@@ -160,9 +184,9 @@ private Q_SLOTS:
 
         m_mimeAppsFileContents = "[Added Associations]\n"
                                "image/jpeg=fakejpegapplication.desktop;\n"
-                               "text/html=kde4-kfmclient_html.desktop;\n"
+                               "text/html=fakehtmlapplication.desktop;\n"
                                // konsole.desktop is without kde4- to test fallback lookup
-                               "text/plain=kde4-kate.desktop;kde4-kwrite.desktop;konsole.desktop;idontexist.desktop;\n"
+                               "text/plain=faketextapplication.desktop;kde4-kwrite.desktop;konsole.desktop;idontexist.desktop;\n"
                                // test alias resolution
                                "application/x-pdf=fakejpegapplication.desktop;\n"
                                "[Added KParts/ReadOnlyPart Associations]\n"
@@ -173,8 +197,9 @@ private Q_SLOTS:
         // Expected results
         preferredApps["image/jpeg"] << "fakejpegapplication.desktop";
         preferredApps["application/pdf"] << "fakejpegapplication.desktop";
-        preferredApps["text/plain"] << "kde4-kate.desktop" << "kde4-kwrite.desktop";
-        preferredApps["text/html"] << "kde4-kfmclient_html.desktop";
+        preferredApps["text/plain"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
+        preferredApps["text/x-csrc"] << "faketextapplication.desktop" << "kde4-kwrite.desktop";
+        preferredApps["text/html"] << "fakehtmlapplication.desktop";
         removedApps["image/jpeg"] << "firefox.desktop";
         removedApps["text/html"] << "kde4-dolphin.desktop" << "kde4-kwrite.desktop";
 
@@ -206,6 +231,9 @@ private Q_SLOTS:
         for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(),
                                                end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
+            // Derived mimetypes are handled outside KMimeAssociations
+            if (mime == QLatin1String("text/x-csrc"))
+                continue;
             const QList<KServiceOffer> offers = offerHash.offersFor(mime);
             Q_FOREACH(const QString& service, it.value()) {
                 KService::Ptr serv = KService::serviceByStorageId(service);
@@ -291,11 +319,13 @@ private Q_SLOTS:
         // for each mimetype, check that the preferred apps are as specified
         for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(), end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
+            kDebug() << "offers for" << mime << ":";
             const KService::List offers = KMimeTypeTrader::self()->query(mime);
             for (int i = 0; i < offers.count(); ++i) {
-                kDebug() << "offers for" << mime << ":" << i << offers[i]->storageId();
+                kDebug() << "   " << i << ":" << offers[i]->storageId();
             }
-            QStringList offerIds = assembleServices(offers, it.value().count());
+            const QStringList offerIds = assembleServices(offers, it.value().count());
+            kDebug() << " Expected:" << it.value();
             QCOMPARE(offerIds, it.value());
             //const QStringList expectedPreferredServices = it.value();
             //for (int i = 0; i < expectedPreferredServices.count(); ++i) {
@@ -455,7 +485,10 @@ private:
     QString m_localApps;
     QByteArray m_mimeAppsFileContents;
     QString fakeTextApplication;
+    QString fakeDefaultTextApplication;
+    QString fakeCSrcApplication;
     QString fakeJpegApplication;
+    QString fakeHtmlApplication;
     QString fakeArkApplication;
 
     ExpectedResultsMap preferredApps;

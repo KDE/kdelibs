@@ -3,10 +3,10 @@
 This file declares the Job class.
 
 $ Author: Mirko Boehm $
-$ Copyright: (C) 2004, 2005, 2006 Mirko Boehm $
+$ Copyright: (C) 2004-2013 Mirko Boehm $
 $ Contact: mirko@kde.org
 http://www.kde.org
-http://www.hackerbuero.org $
+http://creative-destruction.me $
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -128,10 +128,9 @@ namespace ThreadWeaver {
             action.
             The method is not pure virtual because users are not supposed to
             be forced to always implement requestAbort().
-            Also, this method is supposed to return immidiately, not after the
+            Also, this method is supposed to return immediately, not after the
             abort has completed. It requests the abort, the Job has to act on
             the request. */
-        // FIXME (Mirko) this should be private, I guess?
         virtual void requestAbort () {}
 
         /** The job is about to be added to the weaver's job queue.
@@ -237,4 +236,3 @@ namespace ThreadWeaver {
 }
 
 #endif // THREADWEAVER_JOB_H
-

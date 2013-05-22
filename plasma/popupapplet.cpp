@@ -27,6 +27,7 @@
 #include <QGraphicsLinearLayout>
 #include <QTimer>
 #include <QVBoxLayout>
+#include <QDeclarativeItem>
 
 #ifdef Q_WS_X11
 #include <QX11Info>
@@ -242,10 +243,13 @@ void PopupAppletPrivate::popupConstraintsEvent(Plasma::Constraints constraints)
 
         //99% of the times q->parentWidget() is the containment, but using it  we can also manage the applet-in-applet case (i.e. systray)
         //there are also cases where the parentlayoutitem is bigger than the containment (e.g. newspaper)
+        QDeclarativeItem *di = qobject_cast<QDeclarativeItem *>(q->parentObject());
         if (q->parentLayoutItem()) {
             parentSize = q->parentLayoutItem()->geometry().size();
         } else if (q->parentWidget()) {
             parentSize = q->parentWidget()->size();
+        } else if (di) {
+            parentSize = QSizeF(di->width(), di->height());
         }
 
         //check if someone did the nasty trick of applets in applets, in this case we always want to be collapsed
@@ -260,10 +264,29 @@ void PopupAppletPrivate::popupConstraintsEvent(Plasma::Constraints constraints)
             }
         }
 
+        //If the popup is more than two times larger than the applet
+        //center it (or taller in case of vertical panels
+        if (f == Plasma::Vertical) {
+            if ((gWidget && gWidget->size().height() > q->size().height() / 2) ||
+                (qWidget && qWidget->size().height() > q->size().height() / 2)) {
+                popupAlignment = Qt::AlignCenter;
+            } else {
+                popupAlignment = Qt::AlignLeft;
+            }
+        } else {
+            if ((gWidget && gWidget->size().width() > q->size().width() / 2) ||
+                (qWidget && qWidget->size().width() > q->size().width() / 2)) {
+                popupAlignment = Qt::AlignCenter;
+            } else {
+                popupAlignment = Qt::AlignLeft;
+            }
+        }
+
         //Applet on desktop
-        if ((!parentApplet || parentApplet->isContainment() ) && icon && (!icon->svg().isEmpty() || !icon->icon().isNull()) && ((f != Plasma::Vertical && f != Plasma::Horizontal) ||
-            ((f == Plasma::Vertical && parentSize.width() >= minimum.width()) ||
-             (f == Plasma::Horizontal && parentSize.height() >= minimum.height())))) {
+        if (((!parentApplet || parentApplet->isContainment() ) && icon && (!icon->svg().isEmpty() || !icon->icon().isNull()) && ((f != Plasma::Vertical && f != Plasma::Horizontal)) ||
+            (((f == Plasma::Vertical && parentSize.width() >= minimum.width()) ||
+             (f == Plasma::Horizontal && parentSize.height() >= minimum.height())) &&
+             (!q->parentWidget() || (q->parentWidget()->size().width() >= minimum.width() && q->parentWidget()->size().height() >= minimum.height()))))) {
             //kDebug() << "we are expanding the popupapplet";
 
 

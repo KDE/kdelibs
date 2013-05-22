@@ -264,6 +264,49 @@ QList<TestObject*> TestObject::func_testobjectlist_testobjectlist(QList<TestObje
     return l;
 }
 
+void TestObject::connectCallTestFunction(Kross::Action* krossAction, QObject* sender, const QString& signal)
+{
+    m_krossAction = krossAction;
+
+    QString signalName = signal;
+    if (!signalName.startsWith('2')) {
+        signalName = QString("2%1").arg(signal);
+    }
+
+    connect(sender, signalName.toLatin1(), this, SLOT(callTestFunction()));
+}
+
+void TestObject::callTestFunction()
+{
+    QVariantList arguments;
+    arguments << 42;
+    m_testFunctionReturnedValue = m_krossAction->callFunction("testFunction", arguments);
+}
+
+void TestObject::connectCallTestFunctionException(Kross::Action* krossAction, QObject* sender, const QString& signal)
+{
+    m_krossAction = krossAction;
+
+    QString signalName = signal;
+    if (!signalName.startsWith('2')) {
+        signalName = QString("2%1").arg(signal);
+    }
+
+    connect(sender, signalName.toLatin1(), this, SLOT(callTestFunctionException()));
+}
+
+void TestObject::callTestFunctionException()
+{
+    QVariantList arguments;
+    arguments << 42;
+    m_testFunctionReturnedValue = m_krossAction->callFunction("testFunctionException", arguments);
+}
+
+QVariant TestObject::testFunctionReturnedValue()
+{
+    return m_testFunctionReturnedValue;
+}
+
 /*****************************************************************************************
  * OtherObject
  */

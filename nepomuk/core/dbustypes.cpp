@@ -119,7 +119,7 @@ void Nepomuk::DBus::registerDBusTypes()
 QDBusArgument& operator<<( QDBusArgument& arg, const QUrl& url )
 {
     arg.beginStructure();
-    arg << QString::fromAscii(url.toEncoded());
+    arg << QString::fromLatin1(url.toEncoded());
     arg.endStructure();
     return arg;
 }
@@ -130,7 +130,7 @@ const QDBusArgument& operator>>( const QDBusArgument& arg, QUrl& url )
     arg.beginStructure();
     QString uriString;
     arg >> uriString;
-    url = QUrl::fromEncoded(uriString.toAscii());
+    url = QUrl::fromEncoded(uriString.toLatin1());
     arg.endStructure();
     return arg;
 }
