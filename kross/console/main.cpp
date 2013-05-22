@@ -27,8 +27,9 @@
 #include <QUrl>
 
 // KDE
-#include <kcmdlineargs.h>
-#include <k4aboutdata.h>
+#include <klocalizedstring.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 // Kross
 #include "../core/manager.h"
@@ -87,8 +88,14 @@ int runScriptFile(const QString& scriptfile)
 
 int main(int argc, char **argv)
 {
+    app = new QApplication(argc, argv);
+    app->setApplicationName("kross");
+    app->setApplicationVersion("0.1");
+    app->setOrganizationDomain("dipe.org");
+
     int result = ERROR_OK;
 
+    /*
     K4AboutData about("kross",
                      "kdelibs4",
                      ki18n("Kross"),
@@ -98,34 +105,34 @@ int main(int argc, char **argv)
                      ki18n("(C) 2006 Sebastian Sauer"),
                      ki18n("Run Kross scripts."),
                      "http://kross.dipe.org",
-                     "kross@dipe.org");
-    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
+                     "kross@dipe.org");*/
+    //about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
+
+    KLocalizedString::setApplicationCatalog("kdelibs4");
 
     // Initialize command line args
-    KCmdLineArgs::init(argc, argv, &about);
     // Tell which options are supported and parse them.
-    KCmdLineOptions options;
-    options.add("+file", ki18n("Scriptfile"));
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addHelpOption(QCoreApplication::translate("main", "KDE application to run Kross scripts."));
+    // TODO parser->addOption(QCommandLineOption(QStringList() << "+file", QCoreApplication::translate("main", "Scriptfile")));
 
-    KCmdLineArgs::addCmdLineOptions(options);
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
 
+    const QStringList args = parser->remainingArguments();
     // If no options are defined.
-    if(args->count() < 1) {
-        std::cout << "Syntax: " << KCmdLineArgs::appName().toLocal8Bit().constData() << " scriptfile1 [scriptfile2] [scriptfile3] ..." << std::endl;
+    if (args.count() < 1) {
+        parser->showHelp();
+        //std::cout << "Syntax: " << "kross" << " scriptfile1 [scriptfile2] [scriptfile3] ..." << std::endl;
         return ERROR_HELP;
     }
 
-    app = new QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), true);
-
     // Each argument is a scriptfile to open
-    for(int i = 0; i < args->count(); i++) {
-        result = runScriptFile(args->arg(i));
+    for (int i = 0; i < args.count(); i++) {
+        result = runScriptFile(args.at(i));
         if(result != ERROR_OK)
             break;
     }
 
-    // Free the KApplication instance and exit the program.
+    // Free the QApplication instance and exit the program.
     delete app;
     Kross::Manager::self().deleteModules();
     return result;

@@ -24,10 +24,8 @@
 #include <QDebug>
 #include <QApplication>
 
-#include <kcmdlineargs.h>
-#include <k4aboutdata.h>
-
-QApplication* app = 0;
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 bool runScriptFile(QScriptEngine* engine, const QString& scriptfile)
 {
@@ -54,42 +52,42 @@ bool runScriptFile(QScriptEngine* engine, const QString& scriptfile)
 
 int main(int argc, char **argv)
 {
-    K4AboutData about("kross",0,ki18n("Kross"),"0.1",
+    QApplication *app = new QApplication(argc, argv);
+    app->setApplicationName("kross");
+    app->setApplicationVersion("0.1");
+    app->setOrganizationDomain("dipe.org");
+
+    QScriptEngine* engine = new QScriptEngine();
+
+    /*K4AboutData about("kross",0,ki18n("Kross"),"0.1",
                      ki18n("KDE application to run Kross scripts."),
                      K4AboutData::License_LGPL,
                      ki18n("(C) 2006 Sebastian Sauer"),
                      ki18n("Run Kross scripts."),
-                     "http://kross.dipe.org","kross@dipe.org");
-    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
+                     "http://kross.dipe.org","kross@dipe.org");*/
+    //about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
     // Initialize command line args
-    KCmdLineArgs::init(argc, argv, &about);
     // Tell which options are supported and parse them.
-    KCmdLineOptions options;
-    options.add("+file", ki18n("Scriptfile"));
-    KCmdLineArgs::addCmdLineOptions(options);
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addHelpOption(QCoreApplication::translate("main", "KDE application to run Kross scripts."));
+    parser->addOption(QCommandLineOption(QStringList() << "+file", QCoreApplication::translate("main", "Scriptfile")));
 
-    QStringList files;
-    for(int i = 0; i < args->count(); ++i)
-        files << args->arg(i);
-
+    const QStringList args = parser->remainingArguments();
     // If no options are defined.
-    if(files.count() < 1) {
-        qWarning() << "Syntax:" << KCmdLineArgs::appName() << "scriptfile1 [scriptfile2] [scriptfile3] ...";
+    if (args.count() < 1) {
+        parser->showHelp();
+        //std::cout << "Syntax: " << "kross" << " scriptfile1 [scriptfile2] [scriptfile3] ..." << std::endl;
         return -1;
     }
 
-
-    app = new QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), true);
-    QScriptEngine* engine = new QScriptEngine();
     QScriptValue global = engine->globalObject();
 
     //qDebug()<<"QLibraryInfo::PluginsPath="<<QLibraryInfo::location(QLibraryInfo::PluginsPath);
 
     engine->importExtension("kross").toString();
 
-    foreach(const QString &file, files)
+    foreach(const QString &file, args)
         runScriptFile(engine, file);
 
     delete engine;

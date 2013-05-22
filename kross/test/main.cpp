@@ -35,12 +35,12 @@
 
 // KDE
 #include <kdebug.h>
-#include <kcmdlineargs.h>
-#include <k4aboutdata.h>
 
 // for std namespace
 #include <string>
 #include <iostream>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #define ERROR_OK 0
 #define ERROR_HELP -1
@@ -133,9 +133,12 @@ QVariant OtherObjectHandler(void* ptr)
 
 int main(int argc, char **argv)
 {
-    int result = 0;
+    app = new QApplication(argc, argv);
+    app->setApplicationName("krosstest");
+    app->setApplicationVersion("0.1");
+    app->setOrganizationDomain("dipe.org");
 
-    K4AboutData about("krosstest",
+    /*K4AboutData about("krosstest",
                      0,
                      ki18n("KrossTest"),
                      "0.1",
@@ -144,30 +147,25 @@ int main(int argc, char **argv)
                      ki18n("(C) 2005-2007 Sebastian Sauer"),
                      ki18n("Test the Kross framework!"),
                      "http://kross.dipe.org",
-                     "kross@dipe.org");
-    about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
+                     "kross@dipe.org");*/
+    //about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
-    KCmdLineOptions options;
-    options.add("+file", ki18n("Scriptfile"));
-    //options.add("functionname <functioname>", ki18n("Execute the function in the defined script file."));
-    //options.add("functionargs <functioarguments>", ki18n("List of arguments to pass to the function on execution."));
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addHelpOption(QCoreApplication::translate("main", "KDE application to test the Kross framework."));
+    // TODO parser->addOption(QCommandLineOption(QStringList() << "+file", QCoreApplication::translate("main", "Scriptfile")));
 
-    KCmdLineArgs::init(argc, argv, &about);
-    KCmdLineArgs::addCmdLineOptions(options);
-
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    const QStringList args = parser->remainingArguments();
+    if (args.count() < 1) {
+        std::cerr << "No scriptfile to execute defined. See --help" << std::endl;
+        return ERROR_HELP;
+    }
 
     QStringList scriptfiles;
-    for(int i = 0; i < args->count(); i++)
-        scriptfiles.append( args->arg(i) );
-
-    if(scriptfiles.count() < 1) {
-        std::cerr << "No scriptfile to execute defined. See --help" << std::endl;
-        return ERROR_NOSUCHFILE;
+    for (int i = 0; i < args.count(); i++) {
+        scriptfiles.append(args.at(i));
     }
 
     // init
-    app = new QApplication(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv(), true);
     TestObject* testobj1 = new TestObject(0, "TestObject1");
     TestObject* testobj2 = new TestObject(0, "TestObject2");
     Kross::Manager::self().addObject( testobj1 );
@@ -175,6 +173,7 @@ int main(int argc, char **argv)
 
     Kross::Manager::self().registerMetaTypeHandler("OtherObject*", OtherObjectHandler);
 
+    int result = 0;
     foreach(const QString &file, scriptfiles) {
         result = runScriptFile(file);
         if(result != ERROR_OK)
