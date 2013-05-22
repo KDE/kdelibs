@@ -26,9 +26,8 @@
 #include <QMenu>
 #include <QMovie>
 #include <QApplication>
-
-#include <kcmdlineargs.h>
-#include <k4aboutdata.h>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
 
 #include <kiconloader.h>
 #include <kdebug.h>
@@ -73,26 +72,24 @@ void KStatusNotifierItemTest::setPassive()
 
 int main(int argc, char **argv)
 {
-    K4AboutData aboutData( "kstatusnotifieritemtest", 0 , ki18n("KStatusNotifierItemtest"), "1.0" );
-    KCmdLineArgs::init(argc, argv, &aboutData);
-    KCmdLineOptions options;
-    options.add("active-icon <name>", ki18n("Name of active icon"), "konqueror");
-    options.add("ksni-count <count>", ki18n("How many instances of KStatusNotifierItem to create"), "1");
-    KCmdLineArgs::addCmdLineOptions(options);
+    QCommandLineParser *parser = new QCommandLineParser;
+    parser->addVersionOption();
+    parser->addHelpOption(QCoreApplication::translate("main", "KStatusNotifierItemtest"));
+    parser->addOption(QCommandLineOption(QStringList() << "icon", QCoreApplication::translate("main", "Name of active icon"), "name", false, QStringList() << "konqueror"));
+    parser->addOption(QCommandLineOption(QStringList() << "count", QCoreApplication::translate("main", "How many instances of KStatusNotifierItem to create"), "count", false, QStringList() << "1"));
 
-    QApplication app(KCmdLineArgs::qtArgc(), KCmdLineArgs::qtArgv());
-    KCmdLineArgs *args = KCmdLineArgs::parsedArgs();
+    QApplication app(argc, argv);
 
     QLabel *l = new QLabel("System Tray Main Window", 0L);
 
-    int ksniCount = args->getOption("ksni-count").toInt();
+    int ksniCount = parser->argument("ksni-count").toInt();
     for (int x=0; x < ksniCount; ++x) {
         KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
         new KStatusNotifierItemTest(0, tray);
 
         tray->setTitle("DBus System tray test");
-        tray->setIconByName(args->getOption("active-icon"));
+        tray->setIconByName(parser->argument("active-icon"));
         //tray->setImage(QIcon::fromTheme("konqueror"));
         //tray->setAttentionIconByName("kmail");
         tray->setOverlayIconByName("emblem-important");
@@ -112,3 +109,5 @@ int main(int argc, char **argv)
 }
 
 #include <kstatusnotifieritemtest.moc>
+#include <qcommandlineparser.h>
+#include <qcommandlineoption.h>
