@@ -23,7 +23,6 @@
 #include <kdebug.h>
 #include <kglobalsettings.h>
 #include <kstandardaction.h>
-#include <kiconloader.h>
 
 #include <QAction>
 #include <QEvent>
@@ -442,7 +441,7 @@ void KMessageWidget::setIcon(const QIcon& icon)
     if (d->icon.isNull()) {
         d->iconLabel->hide();
     } else {
-        const int size = KIconLoader::global()->currentSize(KIconLoader::MainToolbar);
+        const int size = style()->pixelMetric(QStyle::PM_ToolBarIconSize);
         d->iconLabel->setPixmap(d->icon.pixmap(size));
         d->iconLabel->show();
     }
