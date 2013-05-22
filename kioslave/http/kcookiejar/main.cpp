@@ -32,12 +32,13 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
+    app.setApplicationVersion("1.0");
     KLocalizedString::setApplicationCatalog("kio5");
 
     QString description = QCoreApplication::translate("main", "HTTP Cookie Daemon");
 
     QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption("1.0");
+    parser->addVersionOption();
     parser->addHelpOption(description);
     parser->addOption(QCommandLineOption(QStringList() << "shutdown", QCoreApplication::translate("main", "Shut down cookie jar")));
     parser->addOption(QCommandLineOption(QStringList() << "remove", QCoreApplication::translate("main", "Remove cookies for domain"), "domain"));

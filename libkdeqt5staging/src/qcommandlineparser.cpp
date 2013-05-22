@@ -60,7 +60,8 @@ class QCommandLineParserPrivate
 {
 public:
     inline QCommandLineParserPrivate()
-        : parseAfterDoubleDash(true),
+        : builtinVersionOption(false),
+          parseAfterDoubleDash(true),
           needsParsing(true),
           abortOnUnknownOptions(true)
     { }
@@ -89,8 +90,8 @@ public:
     //! Names of options which were unknown.
     QStringList unknownOptionNames;
 
-    //! Application version
-    QString version;
+    //! Whether addVersionOption was called
+    bool builtinVersionOption;
 
     //! Application description
     QString description;
@@ -257,21 +258,14 @@ bool QCommandLineParser::addOption(const QCommandLineOption &option)
 }
 
 /*!
-    Sets the application \a version and adds the -v / --version option.
+    Adds the -v / --version option.
     This option is handled automatically by QCommandLineParser.
+    You can set the actual version string using QCoreApplication::setApplicationVersion()
 */
-void QCommandLineParser::addVersionOption(const QString &version)
+void QCommandLineParser::addVersionOption()
 {
-    d->version = version;
+    d->builtinVersionOption = true;
     addOption(QCommandLineOption(QStringList() << QLatin1String("v") << QLatin1String("version"), tr("Displays version information.")));
-}
-
-/*!
-    Returns the application version set in addVersionOption().
-*/
-QString QCommandLineParser::applicationVersion() const
-{
-    return d->version;
 }
 
 /*!
@@ -434,8 +428,8 @@ bool QCommandLineParserPrivate::parse(const QStringList &arguments)
         }
     }
 
-    if (!version.isEmpty() && isSet(QStringLiteral("version"))) {
-        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()), qPrintable(version));
+    if (builtinVersionOption && isSet(QStringLiteral("version"))) {
+        printf("%s %s\n", qPrintable(QCoreApplication::applicationName()), qPrintable(QCoreApplication::applicationVersion()));
         ::exit(0);
     }
 

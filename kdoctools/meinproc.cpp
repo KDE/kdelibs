@@ -95,11 +95,12 @@ int main(int argc, char **argv) {
 
     QCoreApplication app( argc, argv );
     app.setApplicationName("meinproc");
+    app.setApplicationVersion("5.0");
     KLocalizedString::setApplicationCatalog("kio_help4");
 
     QCommandLineParser* parser = new QCommandLineParser;
     parser->addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));
-    parser->addVersionOption("5.0");
+    parser->addVersionOption();
     parser->addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), "xsl"));
     parser->addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
     parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), "file"));

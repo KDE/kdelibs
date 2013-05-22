@@ -616,7 +616,6 @@ int main(int argc, char *argv[])
     QApplication::setColorSpec( QApplication::ManyColor );
 
     QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption("1.0");
     parser->addHelpOption(QCoreApplication::translate("main", "Regression tester for khtml"));
     parser->addOption(QCommandLineOption(QStringList() << "b" << "base", QCoreApplication::translate("main", "Directory containing tests, basedir and output directories."), "base_dir"));
     parser->addOption(QCommandLineOption(QStringList() << "d" << "debug", QCoreApplication::translate("main", "Do not suppress debug output")));

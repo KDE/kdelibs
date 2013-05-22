@@ -83,9 +83,10 @@ int main( int argc, char **argv ) {
 
     QString description = QCoreApplication::translate("main", "Builds Qt widget plugins from an ini style description file.");
     const char version[] = "0.5";
+    app.setApplicationVersion(version);
 
     QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption(version);
+    parser->addVersionOption();
     parser->addHelpOption(description);
     //options.add("+file", ki18n( "Input file" ) );
     parser->addOption(QCommandLineOption(QStringList() << "o", QCoreApplication::translate("main", "Output file"), "file"));

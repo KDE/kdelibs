@@ -948,9 +948,10 @@ void KonfUpdate::resetOptions()
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+    app.setApplicationVersion("1.1");
 
     QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption("1.1");
+    parser->addVersionOption();
     parser->addHelpOption(QCoreApplication::translate("main", "KDE Tool for updating user configuration files"));
     parser->addOption(QCommandLineOption(QStringList() << "debug", QCoreApplication::translate("main", "Keep output results from scripts")));
     parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check whether config file itself requires updating"), "update-file"));

@@ -74,13 +74,14 @@ int main(int argc, char **argv) {
 
     QCoreApplication a(argc, argv);
     a.setApplicationName("ksendbugmail");
+    a.setApplicationVersion("1.0");
 
     KLocalizedString::setApplicationCatalog("kdelibs4");
 
     //d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
 
     QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption("1.0");
+    parser->addVersionOption();
     parser->addHelpOption(QCoreApplication::translate("main", "Sends a bug report by email"));
     parser->addOption(QCommandLineOption(QStringList() << "subject", QCoreApplication::translate("main", "Subject line"), "argument"));
     parser->addOption(QCommandLineOption(QStringList() << "recipient", QCoreApplication::translate("main", "Recipient"), "argument", false, QStringList() << "submit@bugs.kde.org"));

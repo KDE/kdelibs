@@ -629,9 +629,10 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    //d.addAuthor(ki18n("Waldo Bastian"), ki18n("Author"), "bastian@kde.org");
 
    QCoreApplication app(argc, argv);
+   app.setApplicationVersion(appVersion);
 
    QCommandLineParser *parser = new QCommandLineParser;
-   parser->addVersionOption(appVersion);
+   parser->addVersionOption();
    parser->addHelpOption(QCoreApplication::translate("main", "Rebuilds the system configuration cache."));
    parser->addOption(QCommandLineOption(QStringList() << "nosignal", QCoreApplication::translate("main", "Do not signal applications to update")));
    parser->addOption(QCommandLineOption(QStringList() << "noincremental", QCoreApplication::translate("main", "Disable incremental update, re-read everything")));

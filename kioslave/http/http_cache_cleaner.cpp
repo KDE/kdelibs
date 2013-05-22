@@ -729,11 +729,12 @@ private:
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
+    app.setApplicationVersion("5.0");
 
     KLocalizedString::setApplicationCatalog("kio5");
 
     QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption("5.0");
+    parser->addVersionOption();
     parser->addHelpOption(QCoreApplication::translate("main", "KDE HTTP cache maintenance tool"));
     parser->addOption(QCommandLineOption(QStringList() << "clear-all", QCoreApplication::translate("main", "Empty the cache")));
     parser->addOption(QCommandLineOption(QStringList() << "info", QCoreApplication::translate("main", "Display information about cache file"), "filename"));

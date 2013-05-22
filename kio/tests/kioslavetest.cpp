@@ -481,9 +481,10 @@ int main(int argc, char **argv) {
   const char version[] = "v0.0.0 0000";   // :-)
 
   QApplication app(argc, argv);
+  app.setApplicationVersion(version);
 
   QCommandLineParser *parser = new QCommandLineParser;
-  parser->addVersionOption(version);
+  parser->addVersionOption();
   parser->addHelpOption("Test for kioslaves");
   parser->addOption(QCommandLineOption(QStringList() << "s" << "src", "Source URL", "url"));
   parser->addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", "url"));

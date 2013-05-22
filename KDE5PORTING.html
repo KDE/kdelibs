@@ -269,6 +269,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KApplication/KUniqueApplication: use QApplication instead, but make sure to:
    <ul>
    <li>Call QCoreApplication::setApplicationName("...")</li>
+   <li>Call QCoreApplication::setApplicationVersion("...") (from the old KAboutData object)</li>
    <li>Call QCoreApplication::setOrganizationDomain("kde.org")</li>
    <li>Call QApplication::setApplicationDisplayName(i18n("...")) for GUI programs</li>
    <li>Use KDBusService for DBus registration, and optional "unique" behavior</li>

@@ -43,8 +43,8 @@
 #define QCOMMANDLINEPARSER_H
 
 #include <qstringlist.h>
-#include <qcommandlineoption.h>
 #include <qcoreapplication.h>
+#include <qcommandlineoption.h>
 
 QT_BEGIN_HEADER
 
@@ -58,8 +58,7 @@ class KDEQT5STAGING_EXPORT QCommandLineParser
 public:
     bool addOption(const QCommandLineOption &commandLineOption);
 
-    void addVersionOption(const QString &version);
-    QString applicationVersion() const;
+    void addVersionOption();
 
     void addHelpOption(const QString &description);
     QString applicationDescription() const;
