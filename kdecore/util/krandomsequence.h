@@ -101,19 +101,20 @@ public:
   bool getBool();
 
   /**
-   * Put a list in random order.
+   * Put a list in random order. Since KDE 4.11, this function uses a more
+   * efficient algorithm (Fisher-Yates). Therefore, the order of the items
+   * in the randomized list is different from the one in earlier versions
+   * if the same seed value is used for the random sequence.
    *
    * @param list the list whose order will be modified
    * @note modifies the list in place
    */
   template<typename T> void randomize(QList<T>& list) {
-        if (!list.isEmpty()) {
-            QList<T> l;
-            l.append(list.takeFirst());
-            while (list.count())
-                    l.insert(int(getLong(l.count()+1)), list.takeFirst());
-            list = l;
-        }
+      // Fisher-Yates algorithm
+      for (int index = list.count() - 1; index > 0; --index) {
+          const int swapIndex = getLong(index + 1);
+          qSwap(list[index], list[swapIndex]);
+      }
   }
 
 
