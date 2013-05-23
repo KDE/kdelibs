@@ -52,6 +52,9 @@ void KStandarddirsTest::initTestCase()
     m_dataHome = QDir::homePath() + QLatin1String("/.kde-unit-test/xdg/local");
     qputenv("XDG_DATA_HOME", QFile::encodeName(m_dataHome));
 
+    const QString configDirs = QDir::currentPath() + "/xdg";
+    qputenv("XDG_CONFIG_DIRS", QFile::encodeName(configDirs));
+
     QFile::remove(KGlobal::dirs()->saveLocation("config") + "kstandarddirstestrc");
 
     // Create a main component data so that testAppData doesn't suddenly change the main component
