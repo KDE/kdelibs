@@ -186,11 +186,7 @@ public:
     KComboBox *combo;
     KFile::Modes fileDialogMode;
     QString fileDialogFilter;
-#ifndef KDE_NO_DEPRECATED
-    KEditListBox::CustomEditor editor;
-#else
     KEditListWidget::CustomEditor editor;
-#endif
     KUrlDragPushButton *myButton;
     KFileDialog *myFileDialog;
     KUrlCompletion *myCompletion;
@@ -528,11 +524,7 @@ void KUrlRequester::setFileDialogModality(Qt::WindowModality modality)
     d->fileDialogModality = modality;
 }
 
-#ifndef KDE_NO_DEPRECATED
-const KEditListBox::CustomEditor &KUrlRequester::customEditor()
-#else
 const KEditListWidget::CustomEditor &KUrlRequester::customEditor()
-#endif
 {
     setSizePolicy(QSizePolicy( QSizePolicy::Preferred,
                                QSizePolicy::Fixed));
