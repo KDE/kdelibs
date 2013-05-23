@@ -232,11 +232,11 @@ QString splitOut(const QString &parsed, int index)
         int endindex = parsed.indexOf("</FILENAME>", index);
         int startindex = parsed.indexOf("<FILENAME ", index) + 1;
 
-//        kDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length();
+//        //qDebug() << "FILENAME " << startindex << " " << endindex << " " << inside << " " << parsed.mid(startindex + 18, 15)<< " " << parsed.length();
 
         if (startindex > 0) {
             if (startindex < endindex) {
-                //              kDebug() << "finding another";
+                //              //qDebug() << "finding another";
                 index = startindex + 8;
                 inside++;
             } else {

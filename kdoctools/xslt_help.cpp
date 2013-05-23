@@ -14,19 +14,19 @@
 #include <QtCore/QRegExp>
 #include <QtCore/QStandardPaths>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kfilterdev.h>
 
 static bool readCache( const QString &filename,
                        const QString &cache, QString &output)
 {
-    kDebug(7119) << filename << cache;
+    //qDebug() << filename << cache;
     if ( !compareTimeStamps( filename, cache ) )
         return false;
     if ( !compareTimeStamps(locateFileInDtdResource("customization/kde-chunk.xsl"), cache))
         return false;
 
-    kDebug( 7119 ) << "create filter";
+    //qDebug() << "create filter";
     KFilterDev fd(cache);
 
     if (!fd.open(QIODevice::ReadOnly))
@@ -35,7 +35,7 @@ static bool readCache( const QString &filename,
        return false;
     }
 
-    kDebug( 7119 ) << "reading";
+    //qDebug() << "reading";
 
     char buffer[32000];
     int n;
@@ -46,7 +46,7 @@ static bool readCache( const QString &filename,
         buffer[n] = 0;
         text += buffer;
     }
-    kDebug( 7119 ) << "read " << text.length();
+    //qDebug() << "read " << text.length();
     fd.close();
 
     output = QString::fromUtf8( text );
@@ -54,14 +54,14 @@ static bool readCache( const QString &filename,
     if (n == -1)
         return false;
 
-    kDebug( 7119 ) << "finished ";
+    //qDebug() << "finished ";
 
     return true;
 }
 
 QString lookForCache( const QString &filename )
 {
-    kDebug() << "lookForCache" << filename;
+    //qDebug() << "lookForCache" << filename;
     Q_ASSERT( filename.endsWith( QLatin1String(".docbook") ) );
     Q_ASSERT( QDir::isAbsolutePath(filename));
     QString cache = filename.left( filename.length() - 7 );

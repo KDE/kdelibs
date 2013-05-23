@@ -8,7 +8,7 @@ extern "C" int xmlLoadExtDtdDefaultValue;
 #include "xslt.h"
 
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QString>
 
@@ -36,7 +36,7 @@ extern "C"
     {
         setupStandardDirs();
 
-        kDebug(7101) << "Starting " << getpid();
+        //qDebug() << "Starting " << getpid();
 
         if (argc != 4)
         {
@@ -52,7 +52,7 @@ extern "C"
         HelpProtocol slave(false, argv[2], argv[3]);
         slave.dispatchLoop();
 
-        kDebug(7101) << "Done";
+        //qDebug() << "Done";
         return 0;
     }
 }
