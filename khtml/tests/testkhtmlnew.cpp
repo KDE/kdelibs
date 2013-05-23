@@ -17,13 +17,10 @@
 
 #include <kxmlguifactory.h>
 #include <kxmlguiwindow.h>
-
 #include <ktoggleaction.h>
 #include <kcombobox.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
-#include <qcommandlineparser.h>
-#include <qcommandlineoption.h>
 
 #include "css/cssstyleselector.h"
 
