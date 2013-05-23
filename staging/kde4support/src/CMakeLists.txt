@@ -77,6 +77,7 @@ set(libkde4support_SRCS
     kdeui/krestrictedline.cpp
     kdeui/klistwidget.cpp
     kdeui/ktextbrowser.cpp
+    kdeui/keditlistbox.cpp
 
     kio/metainfojob.cpp
 
@@ -182,6 +183,7 @@ install(FILES
     kdeui/krestrictedline.h
     kdeui/klistwidget.h
     kdeui/ktextbrowser.h
+    kdeui/keditlistbox.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

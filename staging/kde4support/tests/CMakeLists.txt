@@ -24,5 +24,6 @@ kde4support_examples(
   ktabwidgettest
   kfontdialogtest
   ktextbrowsertest
+  keditlistboxtest
 )
 

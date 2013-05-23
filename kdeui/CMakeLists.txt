@@ -199,13 +199,6 @@ set(kdeui_LIB_SRCS
  xmlgui/ktoolbar.cpp
 )
 
-if(NOT KDE_NO_DEPRECATED)
-set(kdeui_LIB_SRCS
- ${kdeui_LIB_SRCS}
- widgets/keditlistbox.cpp
-)
-endif(NOT KDE_NO_DEPRECATED)
-
 option(MAC_USE_OSXKEYCHAIN "On OS X, use the keychain as backend for kwallet, instead of kwalletd.")
 
 if (APPLE AND MAC_USE_OSXKEYCHAIN)
@@ -495,12 +488,6 @@ install( FILES
  xmlgui/kmainwindow.h
  xmlgui/ktoolbar.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
-
-if(NOT KDE_NO_DEPRECATED)
-install(FILES
- widgets/keditlistbox.h
- DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
-endif(NOT KDE_NO_DEPRECATED)
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 

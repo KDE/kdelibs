@@ -79,12 +79,6 @@ KDEUI_EXECUTABLE_TESTS(
   kpixmapsequenceoverlaypaintertest
 )
 
-if (NOT KDE_NO_DEPRECATED)
-KDEUI_EXECUTABLE_TESTS(
-  keditlistboxtest
-)
-endif (NOT KDE_NO_DEPRECATED)
-
 if (X11_FOUND)
 find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
 KDEUI_EXECUTABLE_TESTS(
