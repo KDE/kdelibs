@@ -20,7 +20,7 @@
 #ifndef KTIMECOMBOBOX_H
 #define KTIMECOMBOBOX_H
 
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 
 #include <QWidget>
 
@@ -29,7 +29,7 @@
 
 class KTimeComboBoxPrivate;
 
-class KDEUI_EXPORT KTimeComboBox : public KComboBox
+class KDE4ATTIC_EXPORT KTimeComboBox : public KComboBox
 {
     Q_OBJECT
 

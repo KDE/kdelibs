@@ -15,4 +15,5 @@ endmacro()
 kde4attic_tests(
   kdatecomboboxtest
   ktimezonewidget_unittest
+  ktimecomboboxtest
 )
