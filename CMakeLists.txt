@@ -208,15 +208,6 @@ endif(${generatedFileInSourceDir})
 
 add_definitions(${KDE4_DEFINITIONS})
 
-################# setup the include directories #################
-
-if(QCA2_FOUND)
-    include_directories(
-        ${QCA2_INCLUDE_DIR}
-    )
-endif(QCA2_FOUND)
-
-
 ################# configure checks and create the configured files #################
 
 # now create config headers
