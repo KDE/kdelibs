@@ -800,7 +800,7 @@ void KMimeTypeTest::testPatterns()
     KMimeType::Ptr mime = KMimeType::mimeType( mimeType );
     QVERIFY(mime);
     // Sort both lists; order is unreliable since shared-mime-info uses hashes internally.
-    QStringList expectedPatterns = patterns.split(';');
+    QStringList expectedPatterns = patterns.split(';', QString::SkipEmptyParts);
     expectedPatterns.sort();
     QStringList mimePatterns = mime->patterns();
 
@@ -817,7 +817,11 @@ void KMimeTypeTest::testPatterns()
     if (mimeType == "text/plain" && !mimePatterns.contains("*,v"))
         mimePatterns.append("*,v");
     mimePatterns.sort();
-    QCOMPARE(mimePatterns.join(";"), expectedPatterns.join(";"));
+    // Not robust enough, other packages can add additional patterns, like libfm.xml adds *.inf to text/plain
+    //QCOMPARE(mimePatterns.join(";"), expectedPatterns.join(";"));
+    Q_FOREACH (const QString &expected, expectedPatterns) {
+        QVERIFY2(mimePatterns.contains(expected), qPrintable(mimeType + " did not have pattern " + expected));
+    }
 
     QCOMPARE(mime->mainExtension(), mainExtension);
 }
