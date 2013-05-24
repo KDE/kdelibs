@@ -375,7 +375,12 @@ endif(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
 # we get the FindQt4.cmake located next to us and not a different one.
 # The original CMAKE_MODULE_PATH is restored later on.
 set(_kde_cmake_module_path_back ${CMAKE_MODULE_PATH})
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/../../../share/cmake/modules ${CMAKE_MODULE_PATH} )
+set(CMAKE_MODULE_PATH
+  ${CMAKE_CURRENT_LIST_DIR}
+  ${CMAKE_CURRENT_LIST_DIR}/../../../share/cmake/modules
+  ${CMAKE_CURRENT_LIST_DIR}/../../../../share/cmake/modules
+  ${CMAKE_MODULE_PATH}
+)
 
 find_package(ECM 0.0.6 NO_MODULE REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ECM_MODULE_PATH})
