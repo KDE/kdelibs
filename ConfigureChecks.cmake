@@ -243,8 +243,6 @@ check_cxx_source_compiles("
   }
 " GETMNTINFO_USES_STATVFS )
 
-check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE) # kdecore, kioslave/file
-
 # TODO: for the more capable cmake authors: we need at least gcc's and MSVC's version in here
 set (KDE_COMPILER_VERSION ${CMAKE_C_COMPILER})
 string(REGEX REPLACE ^.*/ "" KDE_COMPILER_VERSION ${KDE_COMPILER_VERSION})

@@ -126,7 +126,4 @@ int snprintf(char *str, size_t n, char const *fmt, ...);
 
 #cmakedefine01 GETMNTINFO_USES_STATVFS
 
-/* Defined to if you have a d_type member in struct dirent */
-#cmakedefine01 HAVE_DIRENT_D_TYPE
-
 #include "kdecore/kdefakes.h"
