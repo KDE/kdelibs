@@ -78,7 +78,6 @@ set(cmakeFiles
                FindPostgreSQL.cmake
                FindPulseAudio.cmake
                FindPythonLibrary.cmake
-               FindQCA2.cmake
                FindQImageBlitz.cmake
                FindRUBY.cmake
                FindSIP.cmake
