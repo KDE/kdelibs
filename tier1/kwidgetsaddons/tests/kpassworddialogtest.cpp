@@ -19,14 +19,15 @@
 
 #include <QApplication>
 #include <QMap>
+
 #include <kpassworddialog.h>
-#include <klocalizedstring.h>
+
 #include <iostream>
 
 int main( int argc, char *argv[] )
 {
-	QApplication::setColorSpec( QApplication::CustomColor );
-	QApplication::setApplicationName("KNewPasswordDialogTest");
+    QApplication::setColorSpec( QApplication::CustomColor );
+    QApplication::setApplicationName( QStringLiteral("KNewPasswordDialogTest"));
 
     QApplication a(argc, argv);
 
@@ -38,7 +39,7 @@ int main( int argc, char *argv[] )
 
         if( dlg.exec() )
         {
-            std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << std::endl;
+            std::cout << "Entered password: " << qPrintable(dlg.password()) << std::endl;
         }
         else
         {
@@ -51,12 +52,12 @@ int main( int argc, char *argv[] )
     {
         KPasswordDialog dlg(0, KPasswordDialog::ShowUsernameLine | KPasswordDialog::UsernameReadOnly);
         dlg.setPrompt(i18n("Enter a password for the test"));
-        dlg.setUsername("konqui");
-        dlg.addCommentLine( i18n("Site") , i18n("http://www.kde.org") );
+        dlg.setUsername(QStringLiteral("konqui"));
+        dlg.addCommentLine(i18n("Site") , i18n("http://www.kde.org"));
 
         if( dlg.exec() )
         {
-            std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << std::endl;
+            std::cout << "Entered password: " << qPrintable(dlg.password()) << std::endl;
         }
         else
         {
@@ -71,15 +72,15 @@ int main( int argc, char *argv[] )
         KPasswordDialog dlg(0, KPasswordDialog::ShowUsernameLine);
         dlg.setPrompt(i18n("Enter a password for the test"));
         QMap<QString,QString> logins;
-        logins.insert("konqui" , "foo");
-        logins.insert("watson" , "bar");
-        logins.insert("ogoffart" , "");
+        logins.insert(QStringLiteral("konqui"), QStringLiteral("foo"));
+        logins.insert(QStringLiteral("watson"), QStringLiteral("bar"));
+        logins.insert(QStringLiteral("ogoffart"), QString());
 
         dlg.setKnownLogins(logins);
 
         if( dlg.exec() )
         {
-            std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << " for username " <<  (const  char*)dlg.username().toLatin1() <<std::endl;
+            std::cout << "Entered password: " << qPrintable(dlg.password()) << " for username " <<  qPrintable(dlg.username()) << std::endl;
         }
         else
         {

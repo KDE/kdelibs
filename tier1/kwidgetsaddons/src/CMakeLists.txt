@@ -7,6 +7,7 @@ set(kwidgetsaddons_SRCS
   kled.cpp
   kcapacitybar.cpp
   kfontrequester.cpp
+  kpassworddialog.cpp
   kruler.cpp
   kselector.cpp
   kxyselector.cpp
@@ -18,6 +19,12 @@ set(kwidgetsaddons_SRCS
   kviewstateserializer.cpp
   kviewstatemaintainerbase.cpp
 )
+
+set(kwidgetsaddon_UI
+   kpassworddialog.ui
+)
+
+qt5_wrap_ui(kwidgetsaddons_SRCS ${kwidgetsaddon_UI} )
 
 add_library(KWidgetsAddons ${kwidgetsaddons_SRCS})
 generate_export_header(KWidgetsAddons)
@@ -37,6 +44,7 @@ install(FILES
   kled.h
   kcapacitybar.h
   kfontrequester.h
+  kpasswordialog.h
   kruler.h
   kselector.h
   ktitlewidget.h

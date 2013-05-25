@@ -25,7 +25,7 @@
 #include <QDialogButtonBox>
 #include <QFlags>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 /**
  * A dialog for requesting a password and optionaly a login from the end user.
@@ -56,7 +56,7 @@
  *
  * @short dialog for requesting login and password from the end user
  */
-class KDEUI_EXPORT KPasswordDialog : public QDialog
+class KWIDGETSADDONS_EXPORT KPasswordDialog : public QDialog
 {
     Q_OBJECT
 

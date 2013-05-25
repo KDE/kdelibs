@@ -19,6 +19,7 @@
 #include "kpassworddialog.h"
 
 #include <QCheckBox>
+#include <QComboBox>
 #include <QLabel>
 #include <QLayout>
 #include <QDesktopWidget>
@@ -26,10 +27,6 @@
 #include <QTextDocument>
 #include <QTimer>
 
-#include <kcombobox.h>
-#include <kconfig.h>
-#include <klineedit.h>
-#include <klocalizedstring.h>
 #include <ktitlewidget.h>
 
 #include "ui_kpassworddialog.h"
@@ -55,7 +52,7 @@ public:
     KPasswordDialogFlags m_flags;
     Ui_KPasswordDialog ui;
     QMap<QString,QString> knownLogins;
-    KComboBox* userEditCombo;
+    QComboBox* userEditCombo;
     QLabel* pixmapLabel;
     unsigned int commentRow;
 };
@@ -64,8 +61,8 @@ KPasswordDialog::KPasswordDialog(QWidget* parent ,
                                  const KPasswordDialogFlags& flags)
    : QDialog( parent ), d(new KPasswordDialogPrivate(this))
 {
-    setWindowTitle(i18n("Password"));
-    setWindowIcon(QIcon::fromTheme("dialog-password"));
+    setWindowTitle(tr("Password"));
+    setWindowIcon(QIcon::fromTheme(QStringLiteral("dialog-password")));
     d->m_flags = flags;
     d->init ();
 }
@@ -95,6 +92,8 @@ void KPasswordDialog::KPasswordDialogPrivate::updateFields()
 
 void KPasswordDialog::KPasswordDialogPrivate::init()
 {
+#pragma message("KF5 TODO: enable clear button in QLineEdits in UI file once available")
+
     ui.setupUi(q);
     ui.buttonBox->setStandardButtons(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
     ui.errorMessage->setHidden(true);
@@ -135,7 +134,7 @@ void KPasswordDialog::KPasswordDialogPrivate::init()
 
     QRect desktop = QApplication::desktop()->screenGeometry(q->topLevelWidget());
     q->setMinimumWidth(qMin(1000, qMax(q->sizeHint().width(), desktop.width() / 4)));
-    q->setPixmap(QIcon::fromTheme("dialog-password").pixmap(128));
+    q->setPixmap(QIcon::fromTheme(QStringLiteral("dialog-password")).pixmap(128));
 }
 
 void KPasswordDialog::setPixmap(const QPixmap &pixmap)
@@ -342,7 +341,8 @@ void KPasswordDialog::setKnownLogins( const QMap<QString, QString>& knownLogins 
     if ( !d->userEditCombo ) {
         d->ui.formLayout->removeWidget(d->ui.userEdit);
         delete d->ui.userEdit;
-        d->userEditCombo = new KComboBox( true, this );
+        d->userEditCombo = new QComboBox(this);
+        d->userEditCombo->setEditable(true);
         d->ui.userEdit = d->userEditCombo->lineEdit();
 //        QSize s = d->userEditCombo->sizeHint();
 //        d->ui.userEditCombo->setFixedHeight( s.height() );
@@ -395,10 +395,10 @@ void KPasswordDialog::KPasswordDialogPrivate::actuallyAccept()
     }
 
     bool keep = ui.keepCheckBox->isVisibleTo( q ) && ui.keepCheckBox->isChecked();
-    emit q->gotPassword( q->password(), keep);
+    Q_EMIT q->gotPassword(q->password(), keep);
 
     if ( ui.userEdit->isVisibleTo( q ) ) {
-        emit q->gotUsernameAndPassword( q->username(), q->password() , keep);
+        Q_EMIT q->gotUsernameAndPassword(q->username(), q->password(), keep);
     }
 
     q->QDialog::accept();

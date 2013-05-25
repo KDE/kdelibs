@@ -61,7 +61,6 @@ KDEUI_EXECUTABLE_TESTS(
   kpagedialogtest
   kpagewidgettest
   kpassivepopuptest
-  kpassworddialogtest
   kpopuptest
   kratingwidgettest
   krulertest

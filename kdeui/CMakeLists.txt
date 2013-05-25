@@ -94,7 +94,6 @@ set(kdeui_LIB_SRCS
  dialogs/kaboutapplicationpersonlistdelegate_p.cpp
  dialogs/kaboutapplicationpersonlistview_p.cpp
  dialogs/knewpassworddialog.cpp
- dialogs/kpassworddialog.cpp
  dialogs/kpixmapregionselectordialog.cpp
  dialogs/kshortcuteditwidget.cpp
  dialogs/kshortcutseditordelegate.cpp
@@ -242,7 +241,6 @@ message("Port to Qt5 native filter")
 #endif (X11_FOUND AND X11_Xkb_FOUND)
 
 set( kdeui_UI
-   dialogs/kpassworddialog.ui
    dialogs/knewpassworddialog.ui
    dialogs/kshortcutsdialog.ui
    widgets/kshortcutwidget.ui
@@ -397,7 +395,6 @@ install( FILES
  dialogs/kedittoolbar.h
  dialogs/kinputdialog.h
  dialogs/knewpassworddialog.h
- dialogs/kpassworddialog.h
  dialogs/kpixmapregionselectordialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
