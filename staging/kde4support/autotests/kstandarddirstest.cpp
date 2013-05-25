@@ -288,7 +288,7 @@ void KStandarddirsTest::testFindExe()
     // findExe with a result in libexec
     const QString kioslave = KGlobal::dirs()->findExe( "kioslave" );
     QVERIFY( !kioslave.isEmpty() );
-    QVERIFY( kioslave.endsWith( "lib" KDELIBSUFF "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY ) );
+    QVERIFY( kioslave.endsWith( LIB_INSTALL_DIR "/kde5/libexec/kioslave" EXT, PATH_SENSITIVITY ) );
 #endif
 
 #ifndef Q_OS_MAC // kdeinit5 is a bundle on Mac, so the below doesn't work

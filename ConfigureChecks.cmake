@@ -18,8 +18,6 @@ include(CheckCXXSourceCompiles)
 # definitions like _GNU_SOURCE that are needed on each platform.
 set(CMAKE_REQUIRED_DEFINITIONS ${_KDE4_PLATFORM_DEFINITIONS})
 
-set( KDELIBSUFF ${LIB_SUFFIX} )
-
 # FIXME: Make this changeable!
 # khtml svg support
 set(SVG_SUPPORT 1)              # unused yet, but for the future

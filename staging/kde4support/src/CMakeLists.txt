@@ -6,10 +6,6 @@ else ()
    set (HAVE_X11 0)
 endif ()
 
-# Generate config-kstandarddirs.h
-set( KDELIBSUFF ${LIB_SUFFIX} )
-configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
-
 set(libkde4support_SRCS
     kdecore/klibloader.cpp
     kdecore/ktemporaryfile.cpp
@@ -97,6 +93,8 @@ configure_file(config-kde4support.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde
 check_include_files(sys/stat.h HAVE_SYS_STAT_H)
 check_include_files(sys/time.h HAVE_SYS_TIME_H)
 configure_file(kdecore/config-klockfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-klockfile.h)
+# Generate config-kstandarddirs.h
+configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kstandarddirs.h )
 
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 

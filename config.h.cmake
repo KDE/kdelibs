@@ -8,8 +8,6 @@
 
 #define kde_socklen_t socklen_t
 
-#define KDELIBSUFF "${KDELIBSUFF}"
-
 /****************************/
 
 /* Define to 1 if you have stdlib.h */

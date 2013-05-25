@@ -98,6 +98,7 @@ int main(int argc, char **argv)
         return 0;
     }
 
+#if 0
     if (args->isSet("libsuffix"))
     {
         QString tmp(QFile::decodeName(KDELIBSUFF));
@@ -105,6 +106,7 @@ int main(int argc, char **argv)
         printResult(tmp);
         return 0;
     }
+#endif
 
 #if 0
     if (args->isSet("localprefix"))

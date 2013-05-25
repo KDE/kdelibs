@@ -287,7 +287,7 @@ static QString relativeInstallPath(const char *type)
             if (strcmp("lib", type) == 0)
                 return QFile::decodeName(LIB_INSTALL_DIR "/");
             if (strcmp("libexec", type) == 0)
-                return QFile::decodeName("lib" KDELIBSUFF "/kde5/libexec/");
+                return QFile::decodeName(LIB_INSTALL_DIR "/kde5/libexec/");
             if (strcmp("locale", type) == 0)
                 return QFile::decodeName(LOCALE_INSTALL_DIR "/");
             break;
@@ -1872,7 +1872,7 @@ void KStandardDirs::addKDEDefaults()
     // end XDG_DATA_XXX
 
 
-    addResourceType("lib", 0, "lib" KDELIBSUFF "/");
+    addResourceType("lib", 0, LIB_INSTALL_DIR "/");
 
     addResourceType("qtplugins", "lib", "plugins");
 
