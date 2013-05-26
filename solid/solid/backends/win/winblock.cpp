@@ -20,6 +20,7 @@
 
 #include "winblock.h"
 
+#include <QSettings>
 #include <QDebug>
 
 using namespace Solid::Backends::Win;
@@ -31,6 +32,7 @@ using namespace Solid::Backends::Win;
 
 QMap<QString,QString> WinBlock::m_driveLetters = QMap<QString,QString>();
 QMap<QString,QSet<QString> > WinBlock::m_driveUDIS = QMap<QString,QSet<QString> >();
+QMap<QString,QString> WinBlock::m_virtualDrives = QMap<QString,QString>();
 
 WinBlock::WinBlock(WinDevice *device):
     WinInterface(device),
@@ -103,46 +105,92 @@ QString WinBlock::driveLetterFromUdi(const QString &udi)
     return m_driveLetters[udi];
 }
 
+QString WinBlock::udiFromDriveLetter(const QString &drive)
+{
+    QString out;
+    for(QMap<QString,QString>::const_iterator it = m_driveLetters.begin();it != m_driveLetters.end();++it)
+    {
+        if(it.value() == drive)
+        {
+            out = it.key();
+            break;
+        }
+    }
+    return out;
+}
+
+QString WinBlock::resolveVirtualDrive(const QString &drive)
+{
+    return m_virtualDrives[drive];
+}
+
 QSet<QString> WinBlock::updateUdiFromBitMask(const DWORD unitmask)
 {
     QStringList drives = drivesFromMask(unitmask);
     QSet<QString> list;
+    wchar_t buffer[MAX_PATH];
+    wchar_t bufferOut[MAX_PATH];
+    QString dosPath;
     foreach(const QString &drive,drives)
     {
         QSet<QString> udis;
-        STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
-
-        switch(info.DeviceType)
+        buffer[drive.toWCharArray(buffer)] = 0;
+        if(GetDriveType(buffer) == DRIVE_REMOTE)//network drive
         {
-        case FILE_DEVICE_DISK:
-        {
-            udis << QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
-            udis << QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
-
-        }
-            break;
-        case FILE_DEVICE_CD_ROM:
-        case FILE_DEVICE_DVD:
-        {
-            udis << QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
-#ifdef HEAVE_DRIVER_KIT
-            DISK_GEOMETRY_EX out = WinDeviceManager::getDeviceInfo<DISK_GEOMETRY_EX>(drive,IOCTL_DISK_GET_DRIVE_GEOMETRY_EX);
-            if(out.DiskSize.QuadPart != 0)
+            QSettings settings(QLatin1String("HKEY_CURRENT_USER\\Network\\") + drive.at(0),QSettings::NativeFormat);
+            QString path = settings.value("RemotePath").toString();
+            if(!path.isEmpty())
             {
-                udis << QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
+                QString key = QLatin1String("/org/kde/solid/win/volume.virtual/") + drive.at(0);
+                m_virtualDrives[key] = QLatin1String("smb:")+path.replace("\\","/");
+                udis << key;
             }
-#else
-            udis << QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
-#endif
+
         }
-            break;
-        case 0:
+        else
         {
-            //subst drive
-        }
-            break;
-        default:
-            qDebug() << "unknown device" << drive << info.DeviceType << info.DeviceNumber << info.PartitionNumber;
+            QueryDosDeviceW(buffer,bufferOut,MAX_PATH);
+            dosPath = QString::fromWCharArray(bufferOut);
+
+            if(dosPath.startsWith("\\??\\"))//subst junction
+            {
+                dosPath = dosPath.remove("\\??\\");
+                QString key = QLatin1String("/org/kde/solid/win/volume.virtual/") + drive.at(0);
+                m_virtualDrives[key] = dosPath.replace("\\","/");
+                udis << key;
+            }
+            else
+            {
+                STORAGE_DEVICE_NUMBER info = WinDeviceManager::getDeviceInfo<STORAGE_DEVICE_NUMBER>(drive,IOCTL_STORAGE_GET_DEVICE_NUMBER);
+
+                switch(info.DeviceType)
+                {
+                case FILE_DEVICE_DISK:
+                {
+                    udis << QString("/org/kde/solid/win/volume/disk#%1,partition#%2").arg(info.DeviceNumber).arg(info.PartitionNumber);
+                    udis << QString("/org/kde/solid/win/storage/disk#%1").arg(info.DeviceNumber);
+
+                }
+                    break;
+                case FILE_DEVICE_CD_ROM:
+                case FILE_DEVICE_DVD:
+                {
+                    udis << QString("/org/kde/solid/win/storage.cdrom/disk#%1").arg(info.DeviceNumber);
+#ifdef HEAVE_DRIVER_KIT
+                    DISK_GEOMETRY_EX out = WinDeviceManager::getDeviceInfo<DISK_GEOMETRY_EX>(drive,IOCTL_DISK_GET_DRIVE_GEOMETRY_EX);
+                    if(out.DiskSize.QuadPart != 0)
+                    {
+                        udis << QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
+                    }
+#else
+                    udis << QString("/org/kde/solid/win/volume.cdrom/disk#%1").arg(info.DeviceNumber);
+#endif
+                }
+                    break;
+                default:
+                    qDebug() << "unknown device" << drive << info.DeviceType << info.DeviceNumber << info.PartitionNumber;
+                }
+            }
         }
         m_driveUDIS[drive] = udis;
         foreach(const QString&s,udis)

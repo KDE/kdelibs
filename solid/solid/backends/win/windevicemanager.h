@@ -132,13 +132,13 @@ private:
         QString dev = devName;
         if(!dev.startsWith("\\"))
         {
-            dev = QLatin1String("\\\\.\\") + dev;
+            dev = QLatin1String("\\\\?\\") + dev;
         }
         deviceNameBuffer[dev.toWCharArray(deviceNameBuffer)] = 0;
         DWORD bytesReturned =  0;
 
         ulong err = NO_ERROR;
-        HANDLE handle = ::CreateFile(deviceNameBuffer, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+        HANDLE handle = ::CreateFileW(deviceNameBuffer, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
         if(handle == INVALID_HANDLE_VALUE)
         {
 
@@ -146,7 +146,7 @@ private:
             if(err == ERROR_ACCESS_DENIED)
             {
                 //we would need admin rights for GENERIC_READ on systenm drives and volumes
-                handle = ::CreateFile(deviceNameBuffer, 0, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
+                handle = ::CreateFileW(deviceNameBuffer, 0, FILE_SHARE_READ|FILE_SHARE_WRITE, NULL  , OPEN_EXISTING , 0, NULL);
                 err = GetLastError();
             }
             if(handle == INVALID_HANDLE_VALUE)

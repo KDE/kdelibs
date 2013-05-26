@@ -48,11 +48,14 @@ public:
     static QSet<QString> getUdis();
 
     static QString driveLetterFromUdi(const QString &udi);
+    static QString udiFromDriveLetter(const QString &drive);
+    static QString resolveVirtualDrive(const QString &drive);
     static QSet<QString> updateUdiFromBitMask(const DWORD unitmask);
     static QSet<QString> getFromBitMask(const DWORD unitmask);
 private:
     static QMap<QString,QString> m_driveLetters;
     static QMap<QString,QSet<QString> > m_driveUDIS;
+    static QMap<QString,QString> m_virtualDrives;
 
     int m_major;
     int m_minor;

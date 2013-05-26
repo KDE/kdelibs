@@ -64,6 +64,10 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::Battery;
     else if(type == "power")
         m_type = Solid::DeviceInterface::AcAdapter;
+    else if(type == "volume.virtual")
+    {
+        m_type = Solid::DeviceInterface::NetworkShare;
+    }
 
 
 
@@ -77,6 +81,15 @@ WinDevice::WinDevice(const QString &udi) :
     case Solid::DeviceInterface::OpticalDisc:
     {
         m_parentUdi = QLatin1String("/org/kde/solid/win/storage.cdrom/") + parentName;
+    }
+        break;
+    case Solid::DeviceInterface::NetworkShare:
+    {
+        m_parentUdi = WinBlock::udiFromDriveLetter( WinBlock::resolveVirtualDrive(udi).mid(0,2));
+        if(m_parentUdi.isEmpty())
+        {
+            m_parentUdi = QLatin1String("/org/kde/solid/win/")+ type;
+        }
     }
         break;
     default:
@@ -134,6 +147,11 @@ WinDevice::WinDevice(const QString &udi) :
     else if(m_type == Solid::DeviceInterface::StorageDrive )
     {
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
+    }
+    else if(m_type == Solid::DeviceInterface::NetworkShare)
+    {
+        m_product = parentName + ":";
+        m_description = QString("Virtual drive %1:").arg(parentName);
     }
     else if(queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
     {
@@ -208,7 +226,7 @@ QString WinDevice::icon() const
     case Solid::DeviceInterface::OpticalDisc:
     {
         WinOpticalDisc disk(const_cast<WinDevice*>(this));
-        if(disk.availableContent() | Solid::OpticalDisc::Audio)
+        if(disk.availableContent() & Solid::OpticalDisc::Audio)
         {
             icon =  QLatin1String("media-optical-audio");
         }
@@ -238,6 +256,9 @@ QString WinDevice::icon() const
     case Solid::DeviceInterface::AcAdapter:
         icon = QLatin1String("preferences-system-power-management");
         break;
+    case Solid::DeviceInterface::NetworkShare:
+        icon = QLatin1String("drive-harddisk");
+        break;
     default:
         break;
     }
@@ -246,8 +267,15 @@ QString WinDevice::icon() const
 
 QStringList WinDevice::emblems() const
 {
-    //TODO:implement
-    return QStringList();
+    QStringList icons;
+    switch(type()){
+    case Solid::DeviceInterface::NetworkShare:
+        icons << QLatin1String("emblem-symbolic-link");
+        break;
+    default:
+        break;
+    }
+    return icons;
 }
 
 bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryType) const
@@ -272,8 +300,11 @@ bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryTy
     case Solid::DeviceInterface::OpticalDrive:
         interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageDrive;
         break;
+    case Solid::DeviceInterface::NetworkShare:
+        interfaceList << Solid::DeviceInterface::StorageAccess;
+        break;
     case Solid::DeviceInterface::StorageVolume:
-        interfaceList <<Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageAccess;
+        interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageAccess;
         break;
     case Solid::DeviceInterface::OpticalDisc:
         interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageVolume << Solid::DeviceInterface::StorageAccess;
