@@ -248,18 +248,6 @@ void RenderFormElement::setStyle(RenderStyle *_style)
     }
 }
 
-void RenderFormElement::calcMinMaxWidth()
-{
-    // Some form widgets apply the padding internally (i.e. as if they were
-    // some kind of inline-block). Thus we only want to expose that padding
-    // while layouting (so that width/height calculations are correct), and
-    // then pretend it does not exist, as it is beyond the replaced edge and
-    // thus should not affect other calculations.
-    m_exposeInternalPadding = true;
-    RenderWidget::calcMinMaxWidth();
-    m_exposeInternalPadding = false;
-}
-
 int RenderFormElement::paddingTop() const
 {
     return (!includesPadding() || m_exposeInternalPadding) ? RenderWidget::paddingTop() : 0;
@@ -336,6 +324,33 @@ void RenderFormElement::updateFromElement()
     RenderWidget::updateFromElement();
 }
 
+// Some form widgets apply the padding internally (i.e. as if they were
+// some kind of inline-block). Thus we only want to expose that padding
+// while layouting (so that width/height calculations are correct), and
+// then pretend it does not exist, as it is beyond the replaced edge and
+// thus should not affect other calculations.
+
+void RenderFormElement::calcMinMaxWidth()
+{
+    m_exposeInternalPadding = true;
+    RenderWidget::calcMinMaxWidth();
+    m_exposeInternalPadding = false;
+}
+
+void RenderFormElement::calcWidth()
+{
+    m_exposeInternalPadding = true;
+    RenderWidget::calcWidth();
+    m_exposeInternalPadding = false;
+}
+
+void RenderFormElement::calcHeight()
+{
+    m_exposeInternalPadding = true;
+    RenderWidget::calcHeight();
+    m_exposeInternalPadding = false;
+}
+
 void RenderFormElement::layout()
 {
     KHTMLAssert( needsLayout() );
@@ -343,10 +358,8 @@ void RenderFormElement::layout()
 
     // minimum height
     m_height = 0;
-    m_exposeInternalPadding = true;
     calcWidth();
     calcHeight();
-    m_exposeInternalPadding = false;
 
     if ( m_widget )
         resizeWidget(m_width-borderLeft()-borderRight()-paddingLeft()-paddingRight(),
@@ -1912,7 +1925,6 @@ void RenderSelect::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 
-    m_exposeInternalPadding = true;
     if (m_optionsChanged)
         updateFromElement();
 
@@ -1923,7 +1935,6 @@ void RenderSelect::calcMinMaxWidth()
     // ### end FIXME
 
     RenderFormElement::calcMinMaxWidth();
-    m_exposeInternalPadding = false;
 }
 
 void RenderSelect::layout( )
