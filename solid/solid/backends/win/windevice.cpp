@@ -155,8 +155,9 @@ WinDevice::WinDevice(const QString &udi) :
     }
     else if(queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
     {
-        m_description = WinStorageVolume(this).label();
         dev = WinBlock::driveLetterFromUdi(udi);
+        m_description = QString("%1 (%2)").arg(dev, WinStorageVolume(this).label());
+
     }
     if(!dev.isNull())
     {
