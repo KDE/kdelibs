@@ -128,35 +128,34 @@ QSet<QString> WinBlock::updateUdiFromBitMask(const DWORD unitmask)
 {
     QStringList drives = drivesFromMask(unitmask);
     QSet<QString> list;
-    wchar_t buffer[MAX_PATH];
+    wchar_t driveWCHAR[MAX_PATH];
     wchar_t bufferOut[MAX_PATH];
     QString dosPath;
     foreach(const QString &drive,drives)
     {
         QSet<QString> udis;
-        buffer[drive.toWCharArray(buffer)] = 0;
-        if(GetDriveType(buffer) == DRIVE_REMOTE)//network drive
+        driveWCHAR[drive.toWCharArray(driveWCHAR)] = 0;
+        if(GetDriveType(driveWCHAR) == DRIVE_REMOTE)//network drive
         {
             QSettings settings(QLatin1String("HKEY_CURRENT_USER\\Network\\") + drive.at(0),QSettings::NativeFormat);
             QString path = settings.value("RemotePath").toString();
             if(!path.isEmpty())
             {
                 QString key = QLatin1String("/org/kde/solid/win/volume.virtual/") + drive.at(0);
-                m_virtualDrives[key] = QLatin1String("smb:")+path.replace("\\","/");
+                m_virtualDrives[key] = path;
                 udis << key;
             }
 
         }
         else
         {
-            QueryDosDeviceW(buffer,bufferOut,MAX_PATH);
+            QueryDosDeviceW(driveWCHAR,bufferOut,MAX_PATH);
             dosPath = QString::fromWCharArray(bufferOut);
-
             if(dosPath.startsWith("\\??\\"))//subst junction
             {
-                dosPath = dosPath.remove("\\??\\");
+                dosPath = dosPath.mid(4);
                 QString key = QLatin1String("/org/kde/solid/win/volume.virtual/") + drive.at(0);
-                m_virtualDrives[key] = dosPath.replace("\\","/");
+                m_virtualDrives[key] = dosPath;
                 udis << key;
             }
             else

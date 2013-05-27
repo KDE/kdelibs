@@ -150,8 +150,8 @@ WinDevice::WinDevice(const QString &udi) :
     }
     else if(m_type == Solid::DeviceInterface::NetworkShare)
     {
-        m_product = parentName + ":";
-        m_description = QString("Virtual drive %1:").arg(parentName);
+        m_product = QString("Virtual drive %1:").arg(parentName);
+        m_description = QString("%1: (%2)").arg(parentName, WinBlock::resolveVirtualDrive(udi));
     }
     else if(queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
     {

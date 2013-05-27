@@ -41,16 +41,7 @@ bool WinStorageAccess::isAccessible() const
 
 QString WinStorageAccess::filePath() const
 {
-    QString out;
-    if(m_device->type() == Solid::DeviceInterface::NetworkShare)
-    {
-        out = WinBlock::resolveVirtualDrive(m_device->udi());
-    }
-    else
-    {
-        out = WinBlock::driveLetterFromUdi(m_device->udi()).append("/");
-    }
-    return out;
+    return WinBlock::driveLetterFromUdi(m_device->udi()).append("/");
 }
 
 bool WinStorageAccess::isIgnored() const
