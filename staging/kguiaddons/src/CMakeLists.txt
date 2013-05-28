@@ -6,6 +6,7 @@ set(kguiaddons_LIB_SRCS
  colors/kcolorcollection.cpp
  colors/kcolormimedata.cpp
  text/kwordwrap.cpp
+ fonts/kfontutils.cpp
 )
 
 add_library(kguiaddons ${kguiaddons_LIB_SRCS})
@@ -31,6 +32,7 @@ install( FILES
  colors/kcolorcollection.h
  colors/kcolormimedata.h
  text/kwordwrap.h
+ fonts/kfontutils.h
 
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

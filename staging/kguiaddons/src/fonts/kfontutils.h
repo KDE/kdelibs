@@ -23,7 +23,7 @@
 #ifndef KFONTMETRICS_H
 #define KFONTMETRICS_H
 
-#include "kdeui_export.h"
+#include <kguiaddons_export.h>
 
 #include <qglobal.h>
 
@@ -57,7 +57,7 @@ namespace KFontUtils
                 return -1 on error
         @since KDE 4.7
     */
-    qreal KDEUI_EXPORT adaptFontSize(QPainter &painter,
+    qreal KGUIADDONS_EXPORT adaptFontSize(QPainter &painter,
                                      const QString &text,
                                      qreal width,
                                      qreal height,
@@ -68,7 +68,7 @@ namespace KFontUtils
     /** Convenience function for adaptFontSize that accepts a QSizeF instead two qreals
         @since KDE 4.7
     */
-    qreal KDEUI_EXPORT adaptFontSize(QPainter &painter,
+    qreal KGUIADDONS_EXPORT adaptFontSize(QPainter &painter,
                                      const QString &text,
                                      const QSizeF &availableSize,
                                      qreal maxFontSize = 28.0,
