@@ -96,96 +96,115 @@ WinDevice::WinDevice(const QString &udi) :
         m_parentUdi = QLatin1String("/org/kde/solid/win/")+ type;
     }
 
-    QString dev;
 
-    if(m_type == Solid::DeviceInterface::Processor)
+
+    switch(m_type)
     {
-        WinProcessor cpu(this);
-        WinProcessor::ProcessorInfo info = WinProcessor::updateCache()[cpu.number()];
-        m_vendor = info.vendor;
-        m_product = info.produuct;
-        m_description = info.name;
-    }
-    else if(m_type == Solid::DeviceInterface::Battery)
-    {
-        WinBattery::Battery battery = WinBattery::batteryInfoFromUdi(m_udi);
-        BATTERY_QUERY_INFORMATION query;
-        ZeroMemory(&query,sizeof(query));
-        query.BatteryTag = battery.second;
-
-
-        size_t size = 1024;
-        wchar_t buff[size];
-
-        query.InformationLevel = BatteryDeviceName;
-        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
-        m_product = QString::fromWCharArray(buff);
-
-        query.InformationLevel = BatteryManufactureName;
-        WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
-        m_vendor = QString::fromWCharArray(buff);
-
-        query.InformationLevel = BatteryInformation;
-        BATTERY_INFORMATION info = WinDeviceManager::getDeviceInfo<BATTERY_INFORMATION,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,&query);
-
-        if(info.Chemistry != 0)
-        {
-            QString tech = QString::fromUtf8((const char*)info.Chemistry,4);
-
-            m_description = QObject::tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology(tech.toUpper()));
-        }
-
-    }
-    else if(m_type ==Solid::DeviceInterface::AcAdapter )
-    {
+    case Solid::DeviceInterface::Processor:
+        initCpuDevice();
+        break;
+    case Solid::DeviceInterface::Battery:
+        initBatteryDevice();
+        break;
+    case Solid::DeviceInterface::AcAdapter:
         m_description = QObject::tr("A/C Adapter");
+        break;
+    default:
+        if(queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
+        {
+            initStorageDevice();
+        }
+        else
+        {
+            qWarning()<<"Unknown device"<<udi;
+        }
     }
-    else if(m_type == Solid::DeviceInterface::OpticalDrive)
+
+
+}
+
+void WinDevice::initStorageDevice()
+{
+    QString dev;
+    switch(m_type)
     {
-        dev = WinBlock::driveLetterFromUdi(udi);
-    }
-    else if(m_type == Solid::DeviceInterface::StorageDrive )
-    {
+    case Solid::DeviceInterface::StorageAccess:
+        dev = WinBlock::driveLetterFromUdi(udi());
+        m_product = QString("Virtual drive %1").arg(dev);
+        m_description = QString("%1 (%2)").arg(dev, WinBlock::resolveVirtualDrive(udi()));
+        return;
+    case  Solid::DeviceInterface::OpticalDrive:
+        dev = WinBlock::driveLetterFromUdi(udi());
+        break;
+    case Solid::DeviceInterface::StorageDrive:
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
-    }
-    else if(m_type == Solid::DeviceInterface::StorageAccess)
-    {
-        m_product = QString("Virtual drive %1:").arg(parentName);
-        m_description = QString("%1: (%2)").arg(parentName, WinBlock::resolveVirtualDrive(udi));
-    }
-    else if(queryDeviceInterface(Solid::DeviceInterface::StorageVolume))
-    {
-        dev = WinBlock::driveLetterFromUdi(udi);
+        break;
+    default:
+        dev = WinBlock::driveLetterFromUdi(udi());
         m_description = QString("%1 (%2)").arg(dev, WinStorageVolume(this).label());
-
     }
-    if(!dev.isNull())
+
+    STORAGE_PROPERTY_QUERY query;
+    ZeroMemory(&query,sizeof(STORAGE_PROPERTY_QUERY));
+    query.PropertyId = StorageDeviceProperty;
+    query.QueryType =  PropertyStandardQuery;
+
+    char buff[1024];
+    WinDeviceManager::getDeviceInfo<char,STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
+    STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
+    if(info->VendorIdOffset != 0)
     {
-        STORAGE_PROPERTY_QUERY query;
-        ZeroMemory(&query,sizeof(STORAGE_PROPERTY_QUERY));
-        query.PropertyId = StorageDeviceProperty;
-        query.QueryType =  PropertyStandardQuery;
-
-        char buff[1024];
-        WinDeviceManager::getDeviceInfo<char,STORAGE_PROPERTY_QUERY>(dev,IOCTL_STORAGE_QUERY_PROPERTY,buff,1024,&query);
-        STORAGE_DEVICE_DESCRIPTOR *info = ((STORAGE_DEVICE_DESCRIPTOR*)buff);
-        if(info->VendorIdOffset != 0)
+        m_vendor = QString((char*)buff+ info->VendorIdOffset).trimmed();
+        if(info->ProductIdOffset != 0)
         {
-            m_vendor = QString((char*)buff+ info->VendorIdOffset).trimmed();
-            if(info->ProductIdOffset != 0)
-            {
-                m_product = QString((char*)buff+ info->ProductIdOffset).trimmed();
-            }
-        }
-        else if(info->ProductIdOffset != 0)//fallback doesnt work for all devices
-        {
-            QStringList tmp = QString((char*)buff+ info->ProductIdOffset).trimmed().split(" ");
-            m_vendor = tmp.takeFirst();
-            m_product = tmp.join(" ");
+            m_product = QString((char*)buff+ info->ProductIdOffset).trimmed();
         }
     }
+    else if(info->ProductIdOffset != 0)//fallback doesnt work for all devices
+    {
+        QStringList tmp = QString((char*)buff+ info->ProductIdOffset).trimmed().split(" ");
+        m_vendor = tmp.takeFirst();
+        m_product = tmp.join(" ");
+    }
+}
+
+void WinDevice::initBatteryDevice()
+{
+    WinBattery::Battery battery = WinBattery::batteryInfoFromUdi(m_udi);
+    BATTERY_QUERY_INFORMATION query;
+    ZeroMemory(&query,sizeof(query));
+    query.BatteryTag = battery.second;
 
 
+    size_t size = 1024;
+    wchar_t buff[size];
+
+    query.InformationLevel = BatteryDeviceName;
+    WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
+    m_product = QString::fromWCharArray(buff);
+
+    query.InformationLevel = BatteryManufactureName;
+    WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
+    m_vendor = QString::fromWCharArray(buff);
+
+    query.InformationLevel = BatteryInformation;
+    BATTERY_INFORMATION info = WinDeviceManager::getDeviceInfo<BATTERY_INFORMATION,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,&query);
+
+    if(info.Chemistry != 0)
+    {
+        QString tech = QString::fromUtf8((const char*)info.Chemistry,4);
+
+        m_description = QObject::tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology(tech.toUpper()));
+    }
+}
+
+void WinDevice::initCpuDevice()
+{
+    WinProcessor cpu(this);
+    WinProcessor::ProcessorInfo info = WinProcessor::updateCache()[cpu.number()];
+    m_vendor = info.vendor;
+    m_product = info.produuct;
+    m_description = info.name;
 }
 
 QString WinDevice::udi() const

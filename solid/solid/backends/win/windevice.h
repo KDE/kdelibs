@@ -62,6 +62,9 @@ private:
     QString m_description;
     Solid::DeviceInterface::Type m_type;
 
+    void initStorageDevice();
+    void initBatteryDevice();
+    void initCpuDevice();
     QString batteryTechnology(QString tech) const;
 
 
