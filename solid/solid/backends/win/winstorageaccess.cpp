@@ -58,7 +58,7 @@ bool WinStorageAccess::teardown()
 {
     //only allow eject if we are an usb stick
     //else we get "The request could not be performed because of an I/O device error. 1117"
-    if(WinStorageDrive(m_device).driveType() == Solid::StorageDrive::MemoryStick)
+    if(m_device->queryDeviceInterface(Solid::DeviceInterface::StorageVolume) && WinStorageDrive(m_device).driveType() == Solid::StorageDrive::MemoryStick)
     {
         WinDeviceManager::deviceAction(WinBlock::driveLetterFromUdi(m_device->udi()),IOCTL_STORAGE_EJECT_MEDIA);
     }

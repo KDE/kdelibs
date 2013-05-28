@@ -66,7 +66,7 @@ WinDevice::WinDevice(const QString &udi) :
         m_type = Solid::DeviceInterface::AcAdapter;
     else if(type == "volume.virtual")
     {
-        m_type = Solid::DeviceInterface::NetworkShare;
+        m_type = Solid::DeviceInterface::StorageAccess;
     }
 
 
@@ -83,7 +83,7 @@ WinDevice::WinDevice(const QString &udi) :
         m_parentUdi = QLatin1String("/org/kde/solid/win/storage.cdrom/") + parentName;
     }
         break;
-    case Solid::DeviceInterface::NetworkShare:
+    case Solid::DeviceInterface::StorageAccess:
     {
         m_parentUdi = WinBlock::udiFromDriveLetter( WinBlock::resolveVirtualDrive(udi).mid(0,2));
         if(m_parentUdi.isEmpty())
@@ -148,7 +148,7 @@ WinDevice::WinDevice(const QString &udi) :
     {
         dev = QString("PhysicalDrive%1").arg(WinBlock(this).deviceMajor());
     }
-    else if(m_type == Solid::DeviceInterface::NetworkShare)
+    else if(m_type == Solid::DeviceInterface::StorageAccess)
     {
         m_product = QString("Virtual drive %1:").arg(parentName);
         m_description = QString("%1: (%2)").arg(parentName, WinBlock::resolveVirtualDrive(udi));
@@ -238,7 +238,6 @@ QString WinDevice::icon() const
         break;
     }
     case Solid::DeviceInterface::StorageDrive:
-    case Solid::DeviceInterface::StorageAccess:
     case Solid::DeviceInterface::StorageVolume:
     {
         WinStorageDrive storage(const_cast<WinDevice*>(this));
@@ -257,7 +256,7 @@ QString WinDevice::icon() const
     case Solid::DeviceInterface::AcAdapter:
         icon = QLatin1String("preferences-system-power-management");
         break;
-    case Solid::DeviceInterface::NetworkShare:
+    case Solid::DeviceInterface::StorageAccess:
         icon = QLatin1String("drive-harddisk");
         break;
     default:
@@ -270,7 +269,7 @@ QStringList WinDevice::emblems() const
 {
     QStringList icons;
     switch(type()){
-    case Solid::DeviceInterface::NetworkShare:
+    case Solid::DeviceInterface::StorageAccess:
         icons << QLatin1String("emblem-symbolic-link");
         break;
     default:
@@ -300,9 +299,6 @@ bool WinDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &queryTy
         break;
     case Solid::DeviceInterface::OpticalDrive:
         interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageDrive;
-        break;
-    case Solid::DeviceInterface::NetworkShare:
-        interfaceList << Solid::DeviceInterface::StorageAccess;
         break;
     case Solid::DeviceInterface::StorageVolume:
         interfaceList << Solid::DeviceInterface::Block << Solid::DeviceInterface::StorageAccess;
