@@ -20,7 +20,7 @@
 #ifndef KDELIBS_KNOTIFICATIONRESTRICTIONS_H
 #define KDELIBS_KNOTIFICATIONRESTRICTIONS_H
 
-#include <kdeui_export.h>
+#include <knotifications_export.h>
 
 #include <QtCore/QObject>
 
@@ -44,7 +44,7 @@
  * }
  * @endcode
  */
-class KDEUI_EXPORT KNotificationRestrictions : public QObject
+class KNOTIFICATIONS_EXPORT KNotificationRestrictions : public QObject
 {
     Q_OBJECT
 

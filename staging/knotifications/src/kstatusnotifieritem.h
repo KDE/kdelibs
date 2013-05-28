@@ -26,7 +26,7 @@
 #include <QtDBus/QDBusArgument>
 #include <QtCore/QPoint>
 
-#include "kdeui_export.h"
+#include <knotifications_export.h>
 
 class QAction;
 class QMenu;
@@ -67,7 +67,7 @@ class KStatusNotifierItemPrivate;
  * @author Marco Martin <notmart@gmail.com>
  * @since 4.4
  */
-class KDEUI_EXPORT KStatusNotifierItem : public QObject
+class KNOTIFICATIONS_EXPORT KStatusNotifierItem : public QObject
 {
     Q_OBJECT
 
