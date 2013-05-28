@@ -110,7 +110,7 @@ WinDevice::WinDevice(const QString &udi) :
         m_description = QObject::tr("A/C Adapter");
         break;
     default:
-        if(queryDeviceInterface(Solid::DeviceInterface::StorageAccess))
+        if(queryDeviceInterface(Solid::DeviceInterface::StorageAccess) || queryDeviceInterface(Solid::DeviceInterface::StorageDrive))
         {
             initStorageDevice();
         }
