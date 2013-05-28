@@ -1,5 +1,4 @@
 #include "kdatetimewidget.h"
-#include <klocalizedstring.h>
 #include <QApplication>
 
 int main(int argc, char** argv)
