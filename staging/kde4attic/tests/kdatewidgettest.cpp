@@ -1,8 +1,5 @@
 #include "kdatewidget.h"
 #include <QApplication>
-#include <QLineEdit>
-#include <kaboutdata.h>
-#include <klocalizedstring.h>
 
 int main(int argc, char** argv)
 {

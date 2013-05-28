@@ -164,7 +164,6 @@ set(kdeui_LIB_SRCS
  widgets/kcompletionbox.cpp
  widgets/kdatepicker.cpp
  widgets/kdatetable.cpp
- widgets/kdatewidget.cpp
  widgets/keditlistwidget.cpp
  widgets/khelpmenu.cpp
  widgets/khistorycombobox.cpp
@@ -459,7 +458,6 @@ install( FILES
  widgets/kbuttongroup.h
  widgets/kcharselect.h
  widgets/kdatetable.h
- widgets/kdatewidget.h
  widgets/keditlistwidget.h
  widgets/khelpmenu.h
  widgets/khistorycombobox.h
