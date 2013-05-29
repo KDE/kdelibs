@@ -86,7 +86,6 @@ set(cmakeFiles
                FindSasl2.cmake
                FindSharedMimeInfo.cmake
                FindSharedDesktopOntologies.cmake
-               FindSoprano.cmake
                FindSqlite.cmake
                FindStrigi.cmake
                FindTaglib.cmake
