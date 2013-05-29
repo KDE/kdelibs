@@ -30,6 +30,7 @@
 class QPushButton;
 class QLabel;
 class KBlockLayout;
+class KEditTagsDialog;
 
 namespace Nepomuk {
 
@@ -64,6 +65,8 @@ public:
     QLabel* m_showAllLinkLabel;
     KBlockLayout* m_flowLayout;
     TagWidget* q;
+
+    KEditTagsDialog* m_editTagsDialog;
 };
 }
 

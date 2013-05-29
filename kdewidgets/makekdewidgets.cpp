@@ -57,7 +57,7 @@ static const char classDef[] =  "class %PluginName : public QObject, public QDes
                                 "	\n"
                                 "	bool isContainer() const { return %IsContainer; }\n"
                                 "	bool isInitialized() const { return mInitialized; }\n"
-                                "	QIcon icon() const { return QIcon(\"%IconName\"); }\n"
+                                "	QIcon icon() const { return QIcon(QLatin1String(\"%IconName\")); }\n"
                                 "	QString codeTemplate() const { return QLatin1String(\"%CodeTemplate\");}\n"
                                 "	QString domXml() const { return %DomXml; }\n"
                                 "	QString group() const { return QLatin1String(\"%Group\"); }\n"
@@ -190,7 +190,7 @@ QString buildWidgetClass( const QString &name, KConfig &_input, const QString &g
     defMap.insert( "ToolTip", input.readEntry( "ToolTip", QString(name + " Widget") ).replace( '\"', "\\\"" ) );
     defMap.insert( "WhatsThis", input.readEntry( "WhatsThis", QString(name + " Widget") ).replace( '\"', "\\\"" ) );
     defMap.insert( "IsContainer", input.readEntry( "IsContainer", "false" ) );
-    defMap.insert( "IconName", input.readEntry( "IconName", QString(":/pics/%1.png").arg( denamespace( name ).toLower() ) ) );
+    defMap.insert( "IconName", input.readEntry( "IconName", QString::fromLatin1(":/pics/%1.png").arg( denamespace( name ).toLower() ) ) );
     defMap.insert( "Class", name );
     defMap.insert( "PluginName", denamespace( name ) + QLatin1String( "Plugin" ) );
 

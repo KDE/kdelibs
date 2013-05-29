@@ -652,8 +652,14 @@ void KDirListerCache::updateDirectory( const KUrl& _dir )
     kDebug(7004) << _dir;
 
     QString urlStr = _dir.url(KUrl::RemoveTrailingSlash);
-    if ( !checkUpdate( urlStr ) )
+    if (!checkUpdate(urlStr)) {
+        if (_dir.isLocalFile() && findByUrl(0, _dir)) {
+            pendingUpdates.insert(_dir.toLocalFile());
+            if (!pendingUpdateTimer.isActive())
+                pendingUpdateTimer.start(500);
+        }
         return;
+    }
 
     // A job can be running to
     //   - only list a new directory: the listers are in listersCurrentlyListing

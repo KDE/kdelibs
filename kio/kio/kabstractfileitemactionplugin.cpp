@@ -20,6 +20,8 @@
 
 #include "kabstractfileitemactionplugin.h"
 
+#include <QVariant>
+
 KAbstractFileItemActionPlugin::KAbstractFileItemActionPlugin(QObject *parent)
     : QObject(parent)
 {
@@ -27,6 +29,21 @@ KAbstractFileItemActionPlugin::KAbstractFileItemActionPlugin(QObject *parent)
 
 KAbstractFileItemActionPlugin::~KAbstractFileItemActionPlugin()
 {
+}
+
+void KAbstractFileItemActionPlugin::setEnabledByDefault(bool enabled)
+{
+    // TODO: add a d-pointer and remove this hack.
+    if (enabled) {
+        setProperty("disabledByDefault", QVariant());
+    } else {
+        setProperty("disabledByDefault", QVariant(true));
+    }
+}
+
+bool KAbstractFileItemActionPlugin::enabledByDefault() const
+{
+    return !property("disabledByDefault").toBool();
 }
 
 #include "kabstractfileitemactionplugin.moc"

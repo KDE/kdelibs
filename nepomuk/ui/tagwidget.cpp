@@ -54,6 +54,7 @@ void Nepomuk::TagWidgetPrivate::init( TagWidget* parent )
     m_flags = TagWidget::StandardMode;
     m_blockSelectionChangedSignal = false;
     m_showAllLinkLabel = 0;
+    m_editTagsDialog = 0;
 
     QGridLayout* mainLayout = new QGridLayout( q );
     mainLayout->setMargin(0);
@@ -379,11 +380,21 @@ void Nepomuk::TagWidget::slotTagUpdateDone()
 
 void Nepomuk::TagWidget::slotShowAll()
 {
-    KEditTagsDialog dlg( selectedTags(), this );
-    if( dlg.exec() ) {
-        setSelectedTags( dlg.tags() );
+    d->m_editTagsDialog = new KEditTagsDialog( selectedTags(), this );
+    d->m_editTagsDialog->setWindowModality( Qt::ApplicationModal );
+    connect( d->m_editTagsDialog, SIGNAL(finished(int)), this, SLOT(slotKEditTagDialogFinished(int)) );
+    d->m_editTagsDialog->open();
+}
+
+void Nepomuk::TagWidget::slotKEditTagDialogFinished(int result)
+{
+    if( result == QDialog::Accepted ) {
+        setSelectedTags( d->m_editTagsDialog->tags() );
         emit selectionChanged( selectedTags() );
     }
+
+    d->m_editTagsDialog->deleteLater();
+    d->m_editTagsDialog = 0;
 }
 
 

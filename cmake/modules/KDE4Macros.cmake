@@ -1096,7 +1096,7 @@ macro (KDE4_ADD_WIDGET_FILES _sources)
       add_custom_command(OUTPUT ${_source}
         COMMAND ${KDE4_MAKEKDEWIDGETS_EXECUTABLE}
         ARGS -o ${_source} ${_input}
-        MAIN_DEPENDENCY ${_input} DEPENDS ${_KDE4_MAKEKDEWIDGETS_DEP})
+        MAIN_DEPENDENCY ${_input} DEPENDS ${_KDE4_MAKEKDEWIDGETS_DEP} ${KDE4_MAKEKDEWIDGETS_EXECUTABLE})
 
       # create moc file
       qt4_generate_moc(${_source} ${_moc} )

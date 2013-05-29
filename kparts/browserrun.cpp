@@ -141,7 +141,7 @@ void BrowserRun::scanFile()
 
     QMap<QString, QString>& metaData = d->m_args.metaData();
     if ( d->m_part ) {
-        const QString proto = d->m_part->url().protocol().toLower();
+        const QString proto = d->m_part->url().protocol();
 
       if (proto == "https" || proto == "webdavs") {
             metaData.insert("main_frame_request", "TRUE" );

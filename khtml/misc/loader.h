@@ -494,8 +494,8 @@ namespace khtml
 
     protected:
         void scheduleRequest(Request* req);
-
-	QHash<KIO::Job*,Request*> m_requestsLoading;
+        QHash<KIO::Job*,Request*> m_requestsLoading;
+        QStringList m_supportedImageTypes;
     };
 
         /**
