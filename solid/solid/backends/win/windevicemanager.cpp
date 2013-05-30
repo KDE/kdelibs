@@ -52,7 +52,8 @@ WinDeviceManager::WinDeviceManager(QObject *parent)
                           << Solid::DeviceInterface::StorageVolume
                           << Solid::DeviceInterface::OpticalDisc
                           << Solid::DeviceInterface::Processor
-                          << Solid::DeviceInterface::Battery;
+                          << Solid::DeviceInterface::Battery
+                          << Solid::DeviceInterface::AcAdapter;
 
 
     updateDeviceList();

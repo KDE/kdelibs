@@ -26,7 +26,6 @@
 
 #include <QSet>
 #include <QDebug>
-#include <QMutex>
 
 #include <windows.h>
 #include <winioctl.h>
@@ -125,8 +124,6 @@ private:
     template< class INFO, class QUERY>
     static void getDeviceInfoPrivate(const QString &devName, int code,INFO *info,size_t size, QUERY *query = NULL)
     {
-        static QMutex mutex;
-        QMutexLocker lock(&mutex);
         Q_ASSERT(!devName.isNull());
         wchar_t deviceNameBuffer[MAX_PATH];
         QString dev = devName;
