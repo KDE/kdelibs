@@ -14,4 +14,5 @@ endmacro()
 kiconthemes_executable_tests(
   kiconloadertest
   kiconeffecttest
+  kpixmapsequenceoverlaypaintertest
 )

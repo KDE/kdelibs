@@ -24,7 +24,7 @@
 #include <QtCore/QSharedDataPointer>
 #include <QtCore/QSize>
 
-#include "kdeui_export.h"
+#include "kiconthemes_export.h"
 #include <kiconloader.h>
 
 class QPixmap;
@@ -42,7 +42,7 @@ class QPixmap;
  *
  * \since 4.4
  */
-class KDEUI_EXPORT KPixmapSequence
+class KICONTHEMES_EXPORT KPixmapSequence
 {
 public:
     /**

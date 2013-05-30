@@ -74,7 +74,6 @@ KDEUI_EXECUTABLE_TESTS(
   kwindowtest
   kxmlguitest
   kxmlguiwindowtest
-  kpixmapsequenceoverlaypaintertest
 )
 
 if (X11_FOUND)

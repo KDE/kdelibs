@@ -22,7 +22,7 @@
 
 #include <QWidget>
 
-#include "kdeui_export.h"
+#include "kiconthemes_export.h"
 
 class KPixmapSequence;
 
@@ -40,7 +40,7 @@ class KPixmapSequence;
  *
  * \since 4.4
  */
-class KDEUI_EXPORT KPixmapSequenceWidget : public QWidget
+class KICONTHEMES_EXPORT KPixmapSequenceWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(int interval READ interval WRITE setInterval)

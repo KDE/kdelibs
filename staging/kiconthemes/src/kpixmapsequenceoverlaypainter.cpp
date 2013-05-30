@@ -29,8 +29,6 @@
 #include <QtCore/QPointer>
 #include <QtCore/QCoreApplication>
 
-#include <kdebug.h>
-
 
 class KPixmapSequenceOverlayPainter::Private
 {

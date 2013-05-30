@@ -5,6 +5,9 @@ set(kiconthemes_SRCS
   kiconengine.cpp
   kiconloader.cpp
   kicontheme.cpp
+  kpixmapsequence.cpp
+  kpixmapsequenceoverlaypainter.cpp
+  kpixmapsequencewidget.cpp
 )
 
 add_library(KIconThemes ${kiconthemes_SRCS})
@@ -22,6 +25,9 @@ install(FILES
   kiconeffect.h
   kiconloader.h
   kicontheme.h
+  kpixmapsequence.h
+  kpixmapsequenceoverlaypainter.h
+  kpixmapsequencewidget.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiconthemes_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

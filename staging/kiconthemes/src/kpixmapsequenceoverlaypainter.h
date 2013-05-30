@@ -23,7 +23,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QPoint>
 
-#include "kdeui_export.h"
+#include "kiconthemes_export.h"
 
 class KPixmapSequence;
 class QWidget;
@@ -43,7 +43,7 @@ class QRect;
  *
  * \since 4.4
  */
-class KDEUI_EXPORT KPixmapSequenceOverlayPainter : public QObject
+class KICONTHEMES_EXPORT KPixmapSequenceOverlayPainter : public QObject
 {
     Q_OBJECT
 

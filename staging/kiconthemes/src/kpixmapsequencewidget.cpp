@@ -21,9 +21,6 @@
 #include "kpixmapsequenceoverlaypainter.h"
 #include "kpixmapsequence.h"
 
-#include <kdebug.h>
-
-
 class KPixmapSequenceWidget::Private
 {
 public:

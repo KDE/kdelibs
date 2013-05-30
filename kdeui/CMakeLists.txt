@@ -152,9 +152,6 @@ set(kdeui_LIB_SRCS
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
- util/kpixmapsequence.cpp
- util/kpixmapsequenceoverlaypainter.cpp
- util/kpixmapsequencewidget.cpp
  widgets/kactionselector.cpp
  widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
@@ -447,9 +444,6 @@ install( FILES
  util/kwallet.h
  util/kxerrorhandler.h
  util/kundoactions.h
- util/kpixmapsequence.h
- util/kpixmapsequenceoverlaypainter.h
- util/kpixmapsequencewidget.h
  widgets/kactionselector.h
  widgets/kdatepicker.h
  widgets/kcmodule.h

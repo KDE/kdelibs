@@ -23,9 +23,9 @@
 #include <QPixmap>
 #include <QPainter>
 #include <QtCore/QVector>
+#include <QtCore/QtDebug>
 
 #include <kiconloader.h>
-#include <kdebug.h>
 
 
 class KPixmapSequence::Private : public QSharedData
@@ -40,7 +40,7 @@ public:
 void KPixmapSequence::Private::loadSequence(const QPixmap& bigPixmap, const QSize &frameSize)
 {
     if(bigPixmap.isNull()) {
-        kWarning() << "Invalid pixmap specified.";
+        qWarning() << "Invalid pixmap specified.";
         return;
     }
 
@@ -50,7 +50,7 @@ void KPixmapSequence::Private::loadSequence(const QPixmap& bigPixmap, const QSiz
     }
     if(bigPixmap.width() % size.width() ||
        bigPixmap.height() % size.height()) {
-        kWarning() << "Invalid framesize.";
+        qWarning() << "Invalid framesize.";
         return;
     }
 
@@ -121,7 +121,7 @@ bool KPixmapSequence::isEmpty() const
 QSize KPixmapSequence::frameSize() const
 {
     if (isEmpty()) {
-        kWarning() << "No frame loaded";
+        qWarning() << "No frame loaded";
         return QSize();
     }
     return d->mFrames[0].size();
@@ -137,7 +137,7 @@ int KPixmapSequence::frameCount() const
 QPixmap KPixmapSequence::frameAt(int index) const
 {
     if (isEmpty()) {
-        kWarning() << "No frame loaded";
+        qWarning() << "No frame loaded";
         return QPixmap();
     }
     return d->mFrames.at(index);
