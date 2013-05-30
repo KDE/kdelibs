@@ -21,7 +21,7 @@
 
 #include "qtest.h"
 
-QTEST_MAIN(KStandarddirsTest)
+QTEST_GUILESS_MAIN(KStandarddirsTest)
 
 #include <config-kstandarddirs.h>
 #include <kdebug.h>
@@ -139,9 +139,9 @@ void KStandarddirsTest::testFindResource()
     QVERIFY( bin.endsWith( KIOSLAVE ) );
     QVERIFY( !QDir::isRelativePath(bin) );
 
-    const QString data = KGlobal::dirs()->findResource( "data", "cmake/modules/FindSoprano.cmake" );
+    const QString data = KGlobal::dirs()->findResource( "data", "cmake/modules/FindKF5Transitional.cmake" );
     QVERIFY( !data.isEmpty() );
-    QVERIFY( data.endsWith( QLatin1String("share/cmake/modules/FindSoprano.cmake") ) );
+    QVERIFY( data.endsWith( QLatin1String("share/cmake/modules/FindKF5Transitional.cmake") ) );
     QVERIFY( !QDir::isRelativePath(data) );
 }
 
