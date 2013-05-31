@@ -24,8 +24,7 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QCache>
 #include <QtCore/QCoreApplication>
-
-#include <time.h>
+#include <QtCore/QDateTime>
 
 /**
  * This is a QObject subclass so we can catch the signal that the application is about
@@ -38,7 +37,7 @@ class KImageCache::Private : public QObject
     public:
     Private(QObject *parent = 0)
         : QObject(parent)
-        , timestamp(::time(0))
+        , timestamp(QDateTime::currentDateTime())
         , enablePixmapCaching(true)
     {
         QObject::connect(QCoreApplication::instance(), SIGNAL(aboutToQuit()),
@@ -68,7 +67,7 @@ class KImageCache::Private : public QObject
     }
 
     public:
-    time_t timestamp;
+    QDateTime timestamp;
 
     /**
      * This is used to cache pixmaps as they are inserted, instead of always
@@ -101,7 +100,7 @@ bool KImageCache::insertImage(const QString &key, const QImage &image)
     image.save(&buffer, "PNG");
 
     if (this->insert(key, buffer.buffer())) {
-        d->timestamp = ::time(0);
+        d->timestamp = QDateTime::currentDateTime();
         return true;
     }
 
@@ -167,7 +166,7 @@ void KImageCache::clear()
     KSharedDataCache::clear();
 }
 
-time_t KImageCache::lastModifiedTime() const
+QDateTime KImageCache::lastModifiedTime() const
 {
     return d->timestamp;
 }

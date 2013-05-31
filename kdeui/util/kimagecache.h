@@ -23,10 +23,9 @@
 #include <kdeui_export.h>
 #include <kshareddatacache.h>
 
-#include <time.h>
-
 class QImage;
 class QPixmap;
+class QDateTime;
 
 /**
  * @brief A simple wrapping layer over KSharedDataCache to support caching
@@ -134,7 +133,7 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
     /**
      * @return The time that an image or pixmap was last inserted into a cache.
      */
-    time_t lastModifiedTime() const;
+    QDateTime lastModifiedTime() const;
 
     /**
      * @return if QPixmaps added with insertPixmap() will be stored in a local
