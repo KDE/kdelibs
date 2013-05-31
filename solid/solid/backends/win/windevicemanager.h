@@ -153,7 +153,7 @@ private:
             }
 
         }
-        if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL) == TRUE)
+        if(::DeviceIoControl(handle, code, query, sizeof(QUERY), info, size, &bytesReturned, NULL))
         {
             ::CloseHandle(handle);
             return;

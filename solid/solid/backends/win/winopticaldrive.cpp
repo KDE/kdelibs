@@ -121,7 +121,7 @@ QMap<ulong,MediaProfiles> MediaProfiles::profiles(const QString &drive)
 
     QMap<ulong,MediaProfiles> out;
     size_t buffSize = 1024;
-    char buffer[buffSize];
+    char buffer[1024];
     GET_CONFIGURATION_IOCTL_INPUT input;
     ZeroMemory(&input,sizeof(GET_CONFIGURATION_IOCTL_INPUT));
     input.Feature = FeatureProfileList;

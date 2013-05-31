@@ -101,7 +101,7 @@ bool WinOpticalDisc::isBlank() const
 
     ULARGE_INTEGER sizeTotal;
     ULARGE_INTEGER sizeFree;
-    if(GetDiskFreeSpaceEx(dLetter,&sizeFree,&sizeTotal,NULL) == TRUE)
+    if(GetDiskFreeSpaceEx(dLetter,&sizeFree,&sizeTotal,NULL))
     {
         return sizeFree.QuadPart>0 && sizeTotal.QuadPart == 0;
     }

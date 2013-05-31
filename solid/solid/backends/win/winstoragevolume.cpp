@@ -62,7 +62,7 @@ void WinStorageVolume::updateCache()
     dLetter[dLetterSize] = (wchar_t)'\\';
     dLetter[dLetterSize+1] = 0;
 
-    if(GetVolumeInformation(dLetter,label,MAX_PATH,&serial,NULL,&flags,fs,MAX_PATH) == TRUE)
+    if(GetVolumeInformation(dLetter,label,MAX_PATH,&serial,NULL,&flags,fs,MAX_PATH))
     {
         m_label = QString::fromWCharArray(label);
         m_fs = QString::fromWCharArray(fs);
@@ -70,7 +70,7 @@ void WinStorageVolume::updateCache()
     }
 
     ULARGE_INTEGER size;
-    if(GetDiskFreeSpaceEx(dLetter,NULL,&size,NULL) == TRUE)
+    if(GetDiskFreeSpaceEx(dLetter,NULL,&size,NULL))
     {
         m_size = size.QuadPart;
     }

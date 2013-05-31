@@ -177,7 +177,7 @@ void WinDevice::initBatteryDevice()
 
 
     size_t size = 1024;
-    wchar_t buff[size];
+    wchar_t buff[1024];
 
     query.InformationLevel = BatteryDeviceName;
     WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
