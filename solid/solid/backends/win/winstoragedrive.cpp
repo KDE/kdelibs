@@ -22,6 +22,10 @@
 #include <windows.h>
 #include <winioctl.h>
 
+#if defined(__MINGW32__) && !defined(IOCTL_STORAGE_QUERY_PROPERTY)
+#include <winioctl_backport.h>
+#endif
+
 using namespace Solid::Backends::Win;
 
 WinStorageDrive::WinStorageDrive(WinDevice *device):
