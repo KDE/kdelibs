@@ -1113,7 +1113,7 @@ void KDirListerTest::testDirPermissionChange()
     QCOMPARE(list.count(), 1);
     QCOMPARE(mylister.rootItem().url().toLocalFile(KUrl::AddTrailingSlash), path);
 
-    const quint32 permissions = (S_IRUSR | S_IWUSR | S_IXUSR);
+    const mode_t permissions = (S_IRUSR | S_IWUSR | S_IXUSR);
     KIO::SimpleJob* job = KIO::chmod(list.first().url(), permissions);
     QVERIFY(job->exec());
 
