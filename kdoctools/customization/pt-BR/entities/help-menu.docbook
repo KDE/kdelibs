@@ -21,7 +21,7 @@
 <guimenuitem>O que é isto?</guimenuitem>
 </menuchoice>
 </term>
-<listitem><para><action>Muda o cursor do mouse para uma mistura de seta 
+<listitem><para><action>Muda o cursor do mouse para uma combinação de seta 
 com um ponto de interrogação.</action>  Ao clicar nos itens do &kappname; 
 uma janela de ajuda será aberta (se existir alguma para o item) explicando 
 a função do item.</para></listitem>
@@ -42,7 +42,7 @@ você pode comunicar um erro ou <quote>sugerir</quote> uma funcionalidade.</para
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Mudar o idioma do aplicativo...</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Abre o diálogo</action> onde você pode escolher o 
+<listitem><para><action>Abre uma caixa de diálogo</action> onde você pode escolher o 
 <guilabel>Idioma primário</guilabel> e o <guilabel>Idioma secundário</guilabel>
 para este aplicativo.</para></listitem>
 </varlistentry>
@@ -52,7 +52,7 @@ para este aplicativo.</para></listitem>
 <guimenu>Ajuda</guimenu>
 <guimenuitem>Sobre o &kappname;</guimenuitem>
 </menuchoice></term>
-<listitem><para><action>Isto irá mostrar a versão e as informações 
+<listitem><para><action>Mostra a versão e as informações 
 do autor.</action></para></listitem>
 </varlistentry>
 
