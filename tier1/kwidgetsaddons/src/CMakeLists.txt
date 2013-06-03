@@ -44,7 +44,7 @@ install(FILES
   kled.h
   kcapacitybar.h
   kfontrequester.h
-  kpasswordialog.h
+  kpassworddialog.h
   kruler.h
   kselector.h
   ktitlewidget.h
