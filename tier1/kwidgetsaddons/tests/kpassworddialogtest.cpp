@@ -24,6 +24,9 @@
 
 #include <iostream>
 
+// We can't depend on i18n in this test, but still -- show good practice (other than the line below) :-)
+#define i18n QString::fromLatin1
+
 int main( int argc, char *argv[] )
 {
     QApplication::setColorSpec( QApplication::CustomColor );
