@@ -30,7 +30,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
-#include <sys/time.h>
 
 #if HAVE_X11
 #include <kstartupinfo.h>
@@ -70,7 +69,7 @@ IdleSlave::IdleSlave(QObject *parent)
    // Send it a SLAVE_STATUS command.
    mConn.send( CMD_SLAVE_STATUS );
    mPid = 0;
-   mBirthDate = time(0);
+   mBirthDate = QDateTime::currentDateTime();
    mOnHold = false;
 }
 
@@ -160,10 +159,9 @@ IdleSlave::onHold(const QUrl &url) const
    return (url == mUrl);
 }
 
-int
-IdleSlave::age(time_t now) const
+int IdleSlave::age(const QDateTime &now) const
 {
-   return (int) difftime(now, mBirthDate);
+    return mBirthDate.secsTo(now);
 }
 
 static KLauncher* g_klauncher_self;
@@ -1271,7 +1269,7 @@ void
 KLauncher::idleTimeout()
 {
     bool keepOneFileSlave=true;
-    time_t now = time(0);
+    QDateTime now = QDateTime::currentDateTime();
     foreach (IdleSlave *slave, mSlaveList)
     {
         if ((slave->protocol()==QLatin1String("file")) && (keepOneFileSlave))

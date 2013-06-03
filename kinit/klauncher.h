@@ -24,7 +24,6 @@
 
 #include <sys/types.h>
 #include <unistd.h>
-#include <time.h>
 
 #include <config-kdeinit.h> // HAVE_X11
 
@@ -43,6 +42,7 @@
 #include <QtCore/QList>
 #include <QtCore/QObject>
 #include <QtCore/QProcess>
+#include <QtCore/QDateTime>
 #include <QtDBus/QtDBus>
 
 #include <kservice.h>
@@ -57,7 +57,7 @@ public:
    bool match( const QString &protocol, const QString &host, bool connected) const;
    void connect( const QString &app_socket);
    pid_t pid() const { return mPid;}
-   int age(time_t now) const;
+   int age(const QDateTime &now) const;
    void reparseConfiguration();
    bool onHold(const QUrl &url) const;
    QString protocol() const   {return mProtocol;}
@@ -75,7 +75,7 @@ protected:
    QString mHost;
    bool mConnected;
    pid_t mPid;
-   time_t mBirthDate;
+   QDateTime mBirthDate;
    bool mOnHold;
    KUrl mUrl;
 };
