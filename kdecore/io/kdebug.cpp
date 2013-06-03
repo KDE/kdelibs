@@ -527,7 +527,7 @@ struct KDebugPrivate
         return QDebug(&lineendstrippingwriter);
     }
 
-    QDebug printHeader(QDebug s, bool colored)
+    QDebug printHeader(QDebug s)
     {
 #ifdef KDE_EXTENDED_DEBUG_OUTPUT
         static int printTimeStamp = qgetenv("KDE_DEBUG_TIMESTAMP").toInt();
@@ -633,8 +633,6 @@ struct KDebugPrivate
         //if (areaName.isEmpty())
         //    areaName = cache.value(0).name;
 
-        bool colored=false;
-
         QDebug s(&devnull);
         switch (mode) {
         case FileOutput:
@@ -655,14 +653,10 @@ struct KDebugPrivate
         default:                // QtOutput
             lineendstrippingwriter.setContext(debugFile, line, funcinfo, areaName);
             s = setupQtWriter(type);
-#ifndef Q_OS_WIN
-            //only color if the debug goes to a tty, unless env_colors_on_any_fd is set too.
-            colored = env_colored && (env_colors_on_any_fd || isatty(fileno(stderr)));
-#endif
             break;
         }
 
-        return printHeader(s, colored);
+        return printHeader(s);
     }
 
     void writeGroupForNamedArea(const QByteArray& areaName, bool enabled)

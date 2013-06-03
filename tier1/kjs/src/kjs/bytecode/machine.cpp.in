@@ -246,7 +246,6 @@ Machine::runBlock(ExecState* exec, const CodeBlock& codeBlock, ExecState* parent
     JSObject* globalObject = exec->dynamicInterpreter()->globalObject();
 
     while (true) {
-    begin:
 #ifdef COUNT_INSTRS
         OpByteCode opCodeLog = *reinterpret_cast<const OpByteCode*>(pc);
         ++instrCounts[opCodeLog];

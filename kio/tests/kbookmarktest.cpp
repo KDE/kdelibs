@@ -34,7 +34,7 @@ static void compareBookmarks( const KBookmark& initialBookmark, const KBookmark&
     QDomNamedNodeMap decodedAttribs = decodedBookmark.internalElement().attributes();
     QDomNamedNodeMap initialAttribs = initialBookmark.internalElement().attributes();
     QCOMPARE( decodedAttribs.count(), initialAttribs.count() );
-    for ( uint i = 0; i < decodedAttribs.length(); ++i ) {
+    for ( int i = 0; i < decodedAttribs.length(); ++i ) {
         QDomAttr decodedAttr = decodedAttribs.item( i ).toAttr();
         QDomAttr initialAttr = initialAttribs.item( i ).toAttr();
         QCOMPARE( decodedAttr.name(), initialAttr.name() );

@@ -422,7 +422,7 @@ bool KSambaSharePrivate::sync()
     return true;
 }
 
-void KSambaSharePrivate::_k_slotFileChange(const QString &path)
+void KSambaSharePrivate::_k_slotFileChange(const QString &/*path*/)
 {
     sync();
     //qDebug() << "path changed:" << path;

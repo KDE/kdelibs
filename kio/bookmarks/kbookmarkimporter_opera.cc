@@ -46,7 +46,7 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
       return;
 
    QString url, name, type;
-   int lineno = 0, version = 0;
+   int lineno = 0;
    QTextStream stream(&file);
    stream.setCodec(codec);
    while(! stream.atEnd()) {
@@ -62,8 +62,6 @@ void KOperaBookmarkImporter::parseOperaBookmarks( )
                         continue;
                     const QString key = ba.left(pos).trimmed().toLower();
                     const QString value = ba.mid(pos+1).trimmed();
-                    if (key == "version")
-                        version = value.toInt();
                 }
             }
             continue;

@@ -1345,8 +1345,8 @@ void KLocalizedStringPrivate::loadTranscript ()
 
 QString KLocalizedString::translateQt (const char *context,
                                        const char *sourceText,
-                                       const char *comment
-                                       , int n
+                                       const char *comment,
+                                       int n
                                        )
 {
     // NOTE: Qt message semantics.

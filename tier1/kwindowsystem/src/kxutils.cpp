@@ -36,7 +36,7 @@ namespace KXUtils
 {
 
 // Create QPixmap from X pixmap. Take care of different depths if needed.
-QPixmap createPixmapFromHandle( WId pixmap, WId pixmap_mask )
+QPixmap createPixmapFromHandle( WId pixmap, WId /*pixmap_mask*/ )
 {
     Display* dpy = QX11Info::display();
     KXErrorHandler handler;

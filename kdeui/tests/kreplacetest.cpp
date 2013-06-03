@@ -99,6 +99,9 @@ void KReplaceTest::slotHighlight( const QString &str, int matchingIndex, int mat
 
 void KReplaceTest::slotReplace(const QString &text, int replacementIndex, int replacedLength, int matchedLength)
 {
+    Q_UNUSED(replacementIndex);
+    Q_UNUSED(replacedLength);
+    Q_UNUSED(matchedLength);
     //kDebug() << "index=" << replacementIndex << " replacedLength=" << replacedLength << " matchedLength=" << matchedLength << " text=" << text.left( 50 );
     *m_currentPos = text; // KReplace hacked the replacement into 'text' in already.
 }

@@ -774,9 +774,6 @@ QString FileProtocol::getGroupName( gid_t gid ) const
 bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & path, UDSEntry & entry,
                                    short int details, bool withACL )
 {
-#ifndef HAVE_POSIX_ACL
-    Q_UNUSED(withACL);
-#endif
     assert(entry.count() == 0); // by contract :-)
     // entry.reserve( 8 ); // speed up QHash insertion
 
@@ -836,6 +833,8 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
          * and it has a default ACL, also append that. */
         appendACLAtoms( path, entry, type, withACL );
     }
+#else
+    Q_UNUSED(withACL);
 #endif
 
  notype:

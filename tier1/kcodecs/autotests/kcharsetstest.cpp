@@ -132,9 +132,7 @@ void KCharsetsTest::testFromEntity()
 
 void KCharsetsTest::testToEntity()
 {
-    KCharsets *singleton = KCharsets::charsets();
-
-    // Fix KCharsets::toEntity() first
+  QSKIP("KCharsets::toEntity test not implemented.");
 }
 
 void KCharsetsTest::testResolveEntities()

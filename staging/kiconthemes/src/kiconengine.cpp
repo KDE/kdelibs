@@ -110,6 +110,8 @@ QString KIconEngine::iconName() const
 
 QList<QSize> KIconEngine::availableSizes(QIcon::Mode mode, QIcon::State state) const
 {
+    Q_UNUSED(mode);
+    Q_UNUSED(state);
     return QList<QSize>() << QSize(16, 16)
                           << QSize(22, 22)
                           << QSize(32, 32)

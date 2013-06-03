@@ -232,8 +232,6 @@ void KShortcutsEditorDelegate::itemCollapsed(QModelIndex index)
 
     const QAbstractItemModel *model = index.model();
     for (int row = 0; row < model->rowCount(index); ++row) {
-        QModelIndex rowIndex = model->index(row, 0, index);
-
         for (int col = 0; col < index.model()->columnCount(index); ++col) {
             QModelIndex colIndex = model->index(row, col, index);
 

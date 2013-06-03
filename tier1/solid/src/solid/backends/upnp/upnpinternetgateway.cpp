@@ -376,10 +376,9 @@ void UPnPInternetGateway::requestCurrentConnections()
 
 void UPnPInternetGateway::getActiveConnectionActionInvokeCallback(Herqq::Upnp::HClientAction *action, const Herqq::Upnp::HClientActionOp &invocationID)
 {
+    Q_UNUSED(action);
     qDebug() << "getActiveConnectionAction callback";
     Herqq::Upnp::HActionArguments outArgs = invocationID.outputArguments();
-
-    Herqq::Upnp::HClientAction* getActiveConnectionAction = action;
 
     if (invocationID.returnValue() == Herqq::Upnp::UpnpSuccess) {
         qDebug() << "getActiveConnection Action invocation successful" << invocationID.returnValue();

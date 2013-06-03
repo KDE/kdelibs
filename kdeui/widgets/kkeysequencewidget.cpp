@@ -496,7 +496,7 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
     // Global shortcuts are on key+modifier shortcuts. They can clash with
     // each of the keys of a multi key shortcut.
     QHash<QKeySequence, QList<KGlobalShortcutInfo> > others;
-    for (uint i=0; i<keySequence.count(); ++i) {
+    for (int i=0; i<keySequence.count(); ++i) {
         QKeySequence tmp(keySequence[i]);
 
         if (!KGlobalAccel::isGlobalShortcutAvailable(tmp, componentName)) {
@@ -515,7 +515,7 @@ bool KKeySequenceWidgetPrivate::conflictWithGlobalShortcuts(const QKeySequence &
     // error it just silently fails. So be nice because this is
     // most likely the first action that is done in the slot
     // listening to keySequenceChanged().
-    for (uint i=0; i<keySequence.count(); ++i) {
+    for (int i=0; i<keySequence.count(); ++i) {
         KGlobalAccel::stealShortcutSystemwide(keySequence[i]);
     }
     return false;

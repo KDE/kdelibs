@@ -32,10 +32,14 @@ KModifierKeyInfoProvider::~KModifierKeyInfoProvider()
 
 bool KModifierKeyInfoProvider::setKeyLatched(Qt::Key key, bool latched)
 {
+    Q_UNUSED(key);
+    Q_UNUSED(latched);
     return false;
 }
 
 bool KModifierKeyInfoProvider::setKeyLocked(Qt::Key key, bool locked)
 {
+    Q_UNUSED(key);
+    Q_UNUSED(locked);
     return false;
 }

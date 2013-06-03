@@ -816,11 +816,9 @@ void KSelectionProxyModelPrivate::resetInternalData()
 
 void KSelectionProxyModelPrivate::sourceModelDestroyed()
 {
-    Q_Q(KSelectionProxyModel);
     // There is very little we can do here.
     resetInternalData();
     m_resetting = false;
-  //  q->endResetModel();
 }
 
 void KSelectionProxyModelPrivate::sourceModelAboutToBeReset()
@@ -1646,7 +1644,6 @@ void KSelectionProxyModelPrivate::removeRangeFromProxy(const QItemSelectionRange
     const QModelIndex sourceTopLeft = range.topLeft();
     const QModelIndex proxyTopLeft = mapFromSource(sourceTopLeft);
     const QModelIndex sourceBottomLeft = range.bottomRight().sibling(range.bottom(), 0);
-    const QModelIndex proxyBottomLeft = mapFromSource(sourceBottomLeft);
     const QModelIndex proxyParent = proxyTopLeft.parent();
     const QModelIndex sourceParent = sourceTopLeft.parent();
 
@@ -2145,7 +2142,6 @@ QModelIndex KSelectionProxyModel::mapToSource(const QModelIndex &proxyIndex) con
     if (!proxyIndex.isValid() || !sourceModel() || d->m_rootIndexList.isEmpty())
         return QModelIndex();
 
-    Q_ASSERT(proxyIndex.internalPointer() >= 0);
     Q_ASSERT(proxyIndex.model() == this);
 
     if (proxyIndex.internalPointer() == 0)

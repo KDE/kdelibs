@@ -441,8 +441,8 @@ QPalette KStyle::standardPalette() const
         KSharedConfig::openConfig());
 }
 
-QIcon KStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption *option,
-                                         const QWidget *widget) const
+QIcon KStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption */*option*/,
+                                         const QWidget */*widget*/) const
 {
     switch (standardIcon) {
         case QStyle::SP_DesktopIcon:

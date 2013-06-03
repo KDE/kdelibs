@@ -89,7 +89,6 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
     }
     
     EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
-    int elementXPos = ItemMargin;
     int elementYPos = PreviewHeight + ItemMargin + FrameThickness*2;
     
     //setup rating widget
@@ -225,7 +224,6 @@ void ItemsGridViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem
     const ItemsModel * realmodel = qobject_cast<const ItemsModel*>(index.model());
 
     if (realmodel->hasPreviewImages()) {
-        int height = option.rect.height();
         int width = option.rect.width();
 
         KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();

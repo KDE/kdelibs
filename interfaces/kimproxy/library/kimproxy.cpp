@@ -288,7 +288,6 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 
 	// reregister...
 	if ( !newOwner.isEmpty() ) { // application registered
-		bool newApp = false;
 		// get an up to date list of offers in case a new app was installed
 		// and check each of the offers that implement the service type we're looking for,
 		// to see if any of them are the app that just registered
@@ -302,7 +301,6 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 				// if it's not already known, insert it
 				if ( !m_im_client_stubs.contains( appId ) )
 				{
-					newApp = true;
 					kDebug( debugArea() ) << "App: " << appId << ", dbusService: " << dbusService << " started, using it for presence info.";
 					m_im_client_stubs.insert( appId, findInterface( appId ) );
 				}
@@ -310,8 +308,6 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 			//else
 			//	kDebug( debugArea() ) << "App doesn't implement our ServiceType";
 		}
-		//if ( newApp )
-		//	emit sigPresenceInfoExpired();
 	}
 }
 
@@ -550,17 +546,11 @@ bool KIMProxy::imAppsAvailable()
 
 bool KIMProxy::startPreferredApp()
 {
-#ifdef __GNUC__
-# warning "unused variable: preferences"
-#endif
-	QString preferences = QString("[X-DBUS-ServiceName] = '%1'").arg( preferredApp() );
 	// start/find an instance of DBUS/InstantMessenger
 	QString error;
 	QString dbusService;
 	// Get a preferred IM client.
 	// The app will notify itself to us using nameOwnerChanged, so we don't need to record a stub for it here
-	// FIXME: error in preferences, see debug output
-	preferences.clear();
 	int result = KDBusServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString("Application"), &error, &dbusService );
 
 	kDebug( debugArea() ) << "error was: " << error << ", dbusService: " << dbusService;

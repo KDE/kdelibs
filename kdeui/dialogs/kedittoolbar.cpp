@@ -856,7 +856,7 @@ bool KEditToolBarWidget::save()
 
     // Add noMerge="1" to all the menus since we are saving the merged data
     QDomNodeList menuNodes = (*it).domDocument().elementsByTagName( "Menu" );
-    for (uint i = 0; i < menuNodes.length(); ++i)
+    for (int i = 0; i < menuNodes.length(); ++i)
     {
         QDomNode menuNode = menuNodes.item(i);
         QDomElement menuElement = menuNode.toElement();
