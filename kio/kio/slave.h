@@ -24,11 +24,10 @@
 
 #define KIO_SLAVE_EXPORT KIO_EXPORT
 
-#include <time.h>
 #include <unistd.h>
 
 #include <QtCore/QObject>
-
+#include <QtCore/QDateTime>
 #include "kio/slaveinterface.h"
 
 namespace KIO {
@@ -211,9 +210,9 @@ private:
   virtual void hold(const QUrl &url);
 
   /**
-   * @return The time this slave has been idle.
+   * @return The number of seconds this slave has been idle.
    */
-  time_t idleTime();
+  int idleTime();
 
   /**
    * Marks this slave as idle.

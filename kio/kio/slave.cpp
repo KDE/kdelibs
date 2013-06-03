@@ -20,7 +20,6 @@
 
 #include "slave.h"
 
-#include <time.h>
 #include <errno.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -79,10 +78,10 @@ namespace KIO {
             m_port(0),
             contacted(false),
             dead(false),
-            contact_started(time(0)),
-            m_idleSince(0),
             m_refCount(1)
         {
+            contact_started = QDateTime::currentDateTime();
+            m_idleSince = QDateTime();
             slaveconnserver->listenForRemote();
             if ( !slaveconnserver->isListening() )
                 qWarning() << "Connection server not listening, could not connect";
@@ -103,8 +102,8 @@ namespace KIO {
         quint16 m_port;
         bool contacted;
         bool dead;
-        time_t contact_started;
-        time_t m_idleSince;
+        QDateTime contact_started;
+        QDateTime m_idleSince;
         int m_refCount;
   };
 }
@@ -131,7 +130,7 @@ void Slave::timeout()
                 << " protocol=" << d->m_protocol;*/
    if (d->m_pid && (::kill(d->m_pid, 0) == 0))
    {
-      int delta_t = (int) difftime(time(0), d->contact_started);
+      int delta_t = d->contact_started.secsTo(QDateTime::currentDateTime());
       //qDebug() << "slave is slow... pid=" << d->m_pid << " t=" << delta_t;
       if (delta_t < SLAVE_CONNECTION_TIMEOUT_MAX)
       {
@@ -216,7 +215,7 @@ QString Slave::passwd()
 void Slave::setIdle()
 {
     Q_D(Slave);
-    d->m_idleSince = time(0);
+    d->m_idleSince = QDateTime::currentDateTime();
 }
 
 bool Slave::isConnected()
@@ -248,13 +247,13 @@ void Slave::deref()
     }
 }
 
-time_t Slave::idleTime()
+int Slave::idleTime()
 {
     Q_D(Slave);
-    if (!d->m_idleSince) {
-        return time_t(0);
+    if (d->m_idleSince.isNull()) {
+        return 0;
     }
-    return time_t(difftime(time(0), d->m_idleSince));
+    return d->m_idleSince.secsTo(QDateTime::currentDateTime());
 }
 
 void Slave::setPID(pid_t pid)
