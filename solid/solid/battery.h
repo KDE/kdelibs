@@ -41,6 +41,7 @@ namespace Solid
         Q_PROPERTY(bool powerSupply READ isPowerSupply)
         Q_PROPERTY(BatteryType type READ type)
         Q_PROPERTY(int chargePercent READ chargePercent)
+        Q_PROPERTY(int capacity READ capacity)
         Q_PROPERTY(bool rechargeable READ isRechargeable)
         Q_PROPERTY(ChargeState chargeState READ chargeState)
         Q_DECLARE_PRIVATE(Battery)
@@ -136,6 +137,14 @@ namespace Solid
          */
         int chargePercent() const;
 
+        /**
+         * Retrieves the battery capacity normalised to percent,
+         * meaning how much energy can it hold compared to what it is designed to.
+         *
+         * @since 4.11
+         * @return the battery capacity normalised to percent
+         */
+        int capacity() const;
 
 
         /**

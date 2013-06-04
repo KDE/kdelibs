@@ -44,6 +44,7 @@ public Q_SLOTS:
     virtual Solid::Battery::BatteryType type() const;
 
     virtual int chargePercent() const;
+    virtual int capacity() const;
 
     virtual bool isRechargeable() const;
     virtual bool isPowerSupply() const;

@@ -66,6 +66,15 @@ namespace Ifaces
          */
         virtual int chargePercent() const = 0;
 
+        /**
+         * Retrieves the battery capacity normalised to percent,
+         * meaning how much energy can it hold compared to what it is designed to.
+         *
+         * @since 4.11
+         * @return the battery capacity normalised to percent
+         */
+        virtual int capacity() const = 0;
+
 
         /**
          * Indicates if the battery is rechargeable.
