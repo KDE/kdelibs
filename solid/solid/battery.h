@@ -38,6 +38,7 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS(BatteryType ChargeState)
         Q_PROPERTY(bool plugged READ isPlugged)
+        Q_PROPERTY(bool powerSupply READ isPowerSupply)
         Q_PROPERTY(BatteryType type READ type)
         Q_PROPERTY(int chargePercent READ chargePercent)
         Q_PROPERTY(bool rechargeable READ isRechargeable)
