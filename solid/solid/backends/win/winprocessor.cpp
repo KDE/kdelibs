@@ -27,15 +27,12 @@
 using namespace Solid::Backends::Win;
 
 typedef BOOL (WINAPI *GLPI_fn)(SYSTEM_LOGICAL_PROCESSOR_INFORMATION* Buffer, DWORD* ReturnLength);
-GLPI_fn pGetLogicalProcessorInformation = 0;
+GLPI_fn pGetLogicalProcessorInformation = (GLPI_fn)GetProcAddress(LoadLibraryA("kernel32.dll"), "GetLogicalProcessorInformation");
+
 
 WinProcessor::WinProcessor(WinDevice *device):
     WinInterface(device)
 {
-    if(pGetLogicalProcessorInformation == 0) {
-        HMODULE hKernel32 = LoadLibraryA("kernel32.dll");
-        pGetLogicalProcessorInformation = (GLPI_fn)GetProcAddress(hKernel32, "GetLogicalProcessorInformation");
-    }
     m_number = m_device->udi().mid(m_device->udi().length()-1).toInt();
 }
 
@@ -100,6 +97,7 @@ DWORD WinProcessor::countSetBits(ULONG_PTR bitMask)
 const QMap<int,WinProcessor::ProcessorInfo> &WinProcessor::updateCache()
 {
     static QMap<int,ProcessorInfo> p;
+
     if(p.isEmpty())
     {
         DWORD size = 0;
