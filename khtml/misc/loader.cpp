@@ -46,8 +46,8 @@
 #include "loader.h"
 #include "seed.h"
 #include "woff.h"
-#include <imload/image.h>
 #include <imload/imagepainter.h>
+#include <imload/imagemanager.h>
 #include <kfilterdev.h>
 
 #include <assert.h>
@@ -1174,6 +1174,7 @@ void DocLoader::setShowAnimations( KHTMLSettings::KAnimationAdvice showAnimation
 
 Loader::Loader() : QObject()
 {
+    m_supportedImageTypes = khtmlImLoad::ImageManager::loaderDatabase()->supportedMimeTypes();
 }
 
 Loader::~Loader()
@@ -1245,16 +1246,28 @@ void Loader::slotFinished( KJob* job )
   if ( !r )
     return;
 
-  if (j->error() || j->isErrorPage())
-  {
+  bool reqFailed = false;
+  if (j->error()) {
+      reqFailed = true;
+  }
+  else if (j->isErrorPage()) {
+      if (r->object->type() == CachedObject::Image && m_supportedImageTypes.contains(r->object->m_mimetype)) {
+          // Do not set the request as a failed, we asked for an image and got it
+          // as the content of the error response (e.g. 404)
+      }
+      else {
+          reqFailed = true;
+      }
+  }
+
+  if (reqFailed) {
 #ifdef LOADER_DEBUG
       kDebug(6060) << "ERROR: job->error() =" << j->error() << ", job->isErrorPage() =" << j->isErrorPage();
 #endif
       r->object->error( job->error(), job->errorText().toLatin1().constData() );
       emit requestFailed( r->m_docLoader, r->object );
   }
-  else
-  {
+  else {
       QString cs = j->queryMetaData("charset");
       if (!cs.isEmpty()) r->object->setCharset(cs);
       r->object->data(r->m_buffer, true);

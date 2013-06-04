@@ -520,7 +520,7 @@ int main(int argc, char **argv) {
   } else if ( operation == "mkdir") {
     op = KioslaveTest::Mkdir;
   } else if (!operation.isEmpty()) {
-    KCmdLineArgs::usage(QByteArray("unknown operation"));
+    KCmdLineArgs::usageError("unknown operation");
   }
 
   QString progress = args->getOption("progress");
@@ -530,7 +530,7 @@ int main(int argc, char **argv) {
     pr = KioslaveTest::ProgressDefault;
   } else if ( progress == "status") {
     pr = KioslaveTest::ProgressStatus;
-  } else KCmdLineArgs::usage(QByteArray("unknown progress mode"));
+  } else KCmdLineArgs::usageError("unknown progress mode");
 
   args->clear(); // Free up memory
 

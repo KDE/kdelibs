@@ -230,6 +230,7 @@ namespace Nepomuk {
         void slotShowAll();
         void slotTagUpdateDone();
         void slotTagStateChanged( const Nepomuk::Tag&, int );
+        void slotKEditTagDialogFinished( int result );
 
     private:
         TagWidgetPrivate* const d;
