@@ -23,6 +23,7 @@
 #include "kstatusnotifieritemdbus_p.h"
 
 #include <QDBusConnection>
+#include <QtEndian>
 #include <QMessageBox>
 #include <QDebug>
 #include <QPixmap>
@@ -33,17 +34,16 @@
 #include <QPainter>
 #include <qstandardpaths.h>
 
-#include <kaboutdata.h>
 #include <kiconloader.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>
 #include <kactioncollection.h>
 
-#include <netinet/in.h>
+#include <cstdlib>
 
 #include <config-knotifications.h>
 
-static const QString s_statusNotifierWatcherServiceName("org.kde.StatusNotifierWatcher");
+static const char s_statusNotifierWatcherServiceName[] = "org.kde.StatusNotifierWatcher";
 
 #if HAVE_DBUSMENUQT
 #include <dbusmenuexporter.h>
@@ -1013,7 +1013,7 @@ KDbusImageStruct KStatusNotifierItemPrivate::imageToStruct(const QImage &image)
     if (QSysInfo::ByteOrder == QSysInfo::LittleEndian) {
         quint32 *uintBuf = (quint32 *) icon.data.data();
         for (uint i = 0; i < icon.data.size()/sizeof(quint32); ++i) {
-            *uintBuf = htonl(*uintBuf);
+            *uintBuf = qToBigEndian(*uintBuf);
             ++uintBuf;
         }
     }

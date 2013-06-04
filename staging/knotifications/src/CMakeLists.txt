@@ -18,10 +18,10 @@ macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
 
 qt5_add_dbus_interface(knotifications_SRCS org.kde.KNotify.xml knotify_interface)
 
-if(NOT WINCE)
+
 qt5_add_dbus_adaptor(knotifications_SRCS     org.kde.StatusNotifierItem.xml
                      kstatusnotifieritemdbus_p.h KStatusNotifierItemDBus)
-endif(NOT WINCE)
+
 
 set(statusnotifierwatcher_xml org.kde.StatusNotifierWatcher.xml)
 qt5_add_dbus_interface(knotifications_SRCS ${statusnotifierwatcher_xml} statusnotifierwatcher_interface)

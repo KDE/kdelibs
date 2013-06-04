@@ -27,10 +27,10 @@
 #include <QMovie>
 #include <QApplication>
 
-#include <kdeqt5staging/qcommandlineparser.h>
+#include <qcommandlineparser.h>
 
 #include <kiconloader.h>
-#include <kdebug.h>
+#include <qdebug.h>
 
 KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifierItem *tray)
   : QObject(parent)
