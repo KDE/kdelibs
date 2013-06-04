@@ -35,6 +35,9 @@ Solid::Battery::Battery(QObject *backendObject)
 
     connect(backendObject, SIGNAL(plugStateChanged(bool,QString)),
              this, SIGNAL(plugStateChanged(bool,QString)));
+
+    connect(backendObject, SIGNAL(powerSupplyStateChanged(bool,QString)),
+             this, SIGNAL(powerSupplyStateChanged(bool,QString)));
 }
 
 Solid::Battery::~Battery()
