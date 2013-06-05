@@ -30,6 +30,7 @@
 #include <QPushButton>
 #include <QApplication>
 #include <QComboBox>
+#include <QStringListModel>
 
 class KEditListWidgetPrivate
 {
