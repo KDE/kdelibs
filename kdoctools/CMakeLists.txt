@@ -63,6 +63,10 @@ configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoct
 
 ########### next target ###############
 
+# TODO: in kdoctools, compile xslt.cpp and xslt_kde.cpp into a static library (with -fPIC), which kio_help
+# will link to (from a different source dir, to extract the dependency on KIO).
+# It can't be a shared lib because of cross-compiling: meinproc is a host tool while kio_help is a target tool.
+
 set(kio_help_PART_SRCS
    kio_help.cpp
    main.cpp
