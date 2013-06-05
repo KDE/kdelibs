@@ -21,4 +21,5 @@ kwidgetsaddons_executable_tests(
   keditlistwidgettest
   kratingwidgettest
   kactionselectortest
+  kcolorcombotest
 )

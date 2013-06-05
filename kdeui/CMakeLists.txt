@@ -80,7 +80,6 @@ set(kdeui_LIB_SRCS
  actions/ktoolbarpopupaction.cpp
  actions/ktoolbarspaceraction.cpp
  colors/kcolorbutton.cpp
- colors/kcolorcombo.cpp
  dialogs/kaboutkdedialog_p.cpp
  dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
@@ -380,7 +379,6 @@ install( FILES
  actions/ktoolbarpopupaction.h
  actions/ktoolbarspaceraction.h
  colors/kcolorbutton.h
- colors/kcolorcombo.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kassistantdialog.h
  dialogs/kbugreport.h

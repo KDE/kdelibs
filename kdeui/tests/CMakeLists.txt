@@ -39,7 +39,6 @@ KDEUI_EXECUTABLE_TESTS(
   kbugreporttest
   kcategorizedviewtest
   kcolorcollectiontest
-  kcolorcombotest
   kcomboboxtest
   kdatepicktest
   kdatetabletest

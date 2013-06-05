@@ -23,6 +23,7 @@ set(kwidgetsaddons_SRCS
   kratingwidget.cpp
   kratingpainter.cpp
   kactionselector.cpp
+  kcolorcombo.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -65,6 +66,7 @@ install(FILES
   kratingpainter.h
   kratingwidget.h
   kactionselector.h
+  kcolorcombo.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
