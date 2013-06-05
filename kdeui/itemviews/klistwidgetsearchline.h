@@ -21,7 +21,9 @@
 #ifndef KLISTWIDGETSEARCHLINE_H
 #define KLISTWIDGETSEARCHLINE_H
 
-#include <klineedit.h>
+#include <QLineEdit>
+
+#include <kdeui_export.h>
 
 class QListWidget;
 class QListWidgetItem;
@@ -34,7 +36,7 @@ class QModelIndex;
  * No changes to the application other than instantiating this class with an
  * appropriate QListWidget should be needed.
  */
-class KDEUI_EXPORT KListWidgetSearchLine : public KLineEdit
+class KDEUI_EXPORT KListWidgetSearchLine : public QLineEdit
 {
     Q_OBJECT
 
@@ -68,7 +70,6 @@ public:
      * @see setListWidget()
      */
     QListWidget *listWidget() const;
-
 
 public Q_SLOTS:
     /**

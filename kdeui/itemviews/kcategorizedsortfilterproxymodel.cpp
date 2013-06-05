@@ -22,8 +22,6 @@
 #include "kcategorizedsortfilterproxymodel.h"
 #include "kcategorizedsortfilterproxymodel_p.h"
 
-#include <limits.h>
-
 #include <QItemSelection>
 #include <QStringList>
 #include <QSize>

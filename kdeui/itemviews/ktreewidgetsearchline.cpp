@@ -27,12 +27,10 @@
 #include <QHBoxLayout>
 #include <QHeaderView>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMenu>
 #include <QToolButton>
 #include <QTreeWidget>
-
-#include <kdebug.h>
-#include <klocalizedstring.h>
 
 class KTreeWidgetSearchLine::Private
 {
@@ -216,12 +214,13 @@ bool KTreeWidgetSearchLine::Private::checkItemParentsVisible(QTreeWidgetItem *it
 ////////////////////////////////////////////////////////////////////////////////
 
 KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *q, QTreeWidget *treeWidget )
-  : KLineEdit( q ), d( new Private( this ) )
+  : QLineEdit( q ), d( new Private( this ) )
 {
   connect( this, SIGNAL(textChanged(QString)),
            this, SLOT(_k_queueSearch(QString)) );
 
-  setClearButtonShown( true );
+  #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
+  //setClearButtonShown( true );
   setTreeWidget( treeWidget );
 
   if ( !treeWidget ) {
@@ -231,12 +230,13 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *q, QTreeWidget *treeWidge
 
 KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *q,
                                               const QList<QTreeWidget *> &treeWidgets )
-  : KLineEdit( q ), d( new Private( this ) )
+  : QLineEdit( q ), d( new Private( this ) )
 {
   connect( this, SIGNAL(textChanged(QString)),
            this, SLOT(_k_queueSearch(QString)) );
 
-  setClearButtonShown( true );
+  #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
+  //setClearButtonShown( true );
   setTreeWidgets( treeWidgets );
 }
 
@@ -415,13 +415,13 @@ bool KTreeWidgetSearchLine::itemMatches( const QTreeWidgetItem *item, const QStr
 
 void KTreeWidgetSearchLine::contextMenuEvent( QContextMenuEvent *event )
 {
-  QMenu *popup = KLineEdit::createStandardContextMenu();
+  QMenu *popup = QLineEdit::createStandardContextMenu();
 
   if ( d->canChooseColumns ) {
     popup->addSeparator();
-    QMenu *subMenu = popup->addMenu( i18n("Search Columns") );
+    QMenu *subMenu = popup->addMenu( tr("Search Columns") );
 
-    QAction* allVisibleColumnsAction = subMenu->addAction( i18n("All Visible Columns"),
+    QAction* allVisibleColumnsAction = subMenu->addAction( tr("All Visible Columns"),
                                                            this, SLOT(_k_slotAllVisibleColumns()) );
     allVisibleColumnsAction->setCheckable( true );
     allVisibleColumnsAction->setChecked( !d->searchColumns.count() );
@@ -538,7 +538,7 @@ bool KTreeWidgetSearchLine::event(QEvent *event) {
 			}
 		}
 	}
-	return KLineEdit::event(event);
+	return QLineEdit::event(event);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -600,7 +600,7 @@ KTreeWidgetSearchLine *KTreeWidgetSearchLineWidget::createSearchLine( QTreeWidge
 
 void KTreeWidgetSearchLineWidget::createWidgets()
 {
-  QLabel *label = new QLabel( i18n("S&earch:"), this );
+  QLabel *label = new QLabel( tr("S&earch:"), this );
 
   searchLine()->show();
 

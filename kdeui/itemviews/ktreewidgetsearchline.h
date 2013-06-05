@@ -21,7 +21,8 @@
 #ifndef KTREEWIDGETSEARCHLINE_H
 #define KTREEWIDGETSEARCHLINE_H
 
-#include <klineedit.h>
+#include <QLineEdit>
+#include <kdeui_export.h>
 
 class QModelIndex;
 class QTreeWidget;
@@ -35,13 +36,12 @@ class QTreeWidgetItem;
  * appropriate QTreeWidgets should be needed.
  */
 
-class KDEUI_EXPORT KTreeWidgetSearchLine : public KLineEdit
+class KDEUI_EXPORT KTreeWidgetSearchLine : public QLineEdit
 {
     Q_OBJECT
 
     Q_PROPERTY( Qt::CaseSensitivity caseSensitity READ caseSensitivity WRITE setCaseSensitivity )
     Q_PROPERTY( bool keepParentsVisible READ keepParentsVisible WRITE setKeepParentsVisible )
-
 
   public:
     /**

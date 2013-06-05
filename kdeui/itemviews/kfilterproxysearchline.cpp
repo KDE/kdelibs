@@ -20,11 +20,9 @@
 #include "kfilterproxysearchline.h"
 
 #include <QHBoxLayout>
+#include <QLineEdit>
 #include <QTimer>
 #include <QSortFilterProxyModel>
-
-#include <klineedit.h>
-#include <klocalizedstring.h>
 
 /**
  * Private class that helps to provide binary compatibility between releases.
@@ -43,7 +41,7 @@ public:
     QTimer* timer;
     KFilterProxySearchLine* q;
     QSortFilterProxyModel* proxy;
-    KLineEdit* searchLine;
+    QLineEdit* searchLine;
 
     void slotSearchLineChange( const QString& newText );
     void slotSearchLineActivate();
@@ -68,9 +66,10 @@ void KFilterProxySearchLine::Private::slotSearchLineActivate()
 KFilterProxySearchLine::KFilterProxySearchLine( QWidget* parent )
         : QWidget( parent ), d( new Private( this ) )
 {
-    d->searchLine = new KLineEdit( this );
-    d->searchLine->setClearButtonShown( true );
-    d->searchLine->setPlaceholderText(i18n("Search"));
+    d->searchLine = new QLineEdit( this );
+    #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
+    //d->searchLine->setClearButtonShown( true );
+    d->searchLine->setPlaceholderText(tr("Search"));
 
     QHBoxLayout* layout = new QHBoxLayout( this );
     layout->setMargin( 0 );
@@ -95,7 +94,7 @@ void KFilterProxySearchLine::setProxy( QSortFilterProxyModel* proxy )
     d->proxy = proxy;
 }
 
-KLineEdit* KFilterProxySearchLine::lineEdit() const
+QLineEdit* KFilterProxySearchLine::lineEdit() const
 {
     return d->searchLine;
 }

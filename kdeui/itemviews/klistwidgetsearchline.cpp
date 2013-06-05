@@ -19,15 +19,13 @@
 
 #include "klistwidgetsearchline.h"
 
+#include <QLineEdit>
 #include <QListWidget>
 #include <QApplication>
 #include <QKeyEvent>
 #include <QtCore/QEvent>
-
 #include <QtCore/QTimer>
-#include <kdebug.h>
 
-#define DEFAULT_CASESENSITIVE Qt::CaseInsensitive
 
 class KListWidgetSearchLine::KListWidgetSearchLinePrivate
 {
@@ -35,7 +33,7 @@ public:
     KListWidgetSearchLinePrivate(KListWidgetSearchLine *parent) :
             q( parent ),
             listWidget( 0 ),
-            caseSensitivity( DEFAULT_CASESENSITIVE ),
+            caseSensitivity( Qt::CaseInsensitive ),
             activeSearch( false ),
             queuedSearches( 0 )
     {}
@@ -61,7 +59,7 @@ public:
  * Public Methods                                                             *
  *****************************************************************************/
 KListWidgetSearchLine::KListWidgetSearchLine( QWidget *parent, QListWidget *listWidget ) :
-        KLineEdit( parent ),
+        QLineEdit( parent ),
         d( new KListWidgetSearchLinePrivate(this) )
 
 {
@@ -106,7 +104,7 @@ void KListWidgetSearchLine::clear()
 
     d->search = "";
     d->queuedSearches = 0;
-    KLineEdit::clear();
+    QLineEdit::clear();
 }
 
 void KListWidgetSearchLine::setCaseSensitivity( Qt::CaseSensitivity cs )
@@ -170,8 +168,8 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::init( QListWidget *_li
     } else {
         q->setEnabled( false );
     }
-
-    q->setClearButtonShown(true);
+    #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
+    //q->setClearButtonShown(true);
 }
 
 void KListWidgetSearchLine::KListWidgetSearchLinePrivate::updateHiddenState( int start, int end ) {
@@ -220,15 +218,14 @@ bool KListWidgetSearchLine::event(QEvent *event) {
 			}
 		}
 		else if(keyEvent->key() == Qt::Key_Enter || keyEvent->key() == Qt::Key_Return ) {
-			if(!trapReturnKey() ) {
-                                if(d->listWidget) {
-                                        QApplication::sendEvent(d->listWidget, event);
-                                        return true;
-                                }
-			}
+
+                     if(d->listWidget) {
+                            QApplication::sendEvent(d->listWidget, event);
+                            return true;
+                     }
 		}
 	}
-	return KLineEdit::event(event);
+	return QLineEdit::event(event);
 }
 /******************************************************************************
  * Protected Slots                                                            *

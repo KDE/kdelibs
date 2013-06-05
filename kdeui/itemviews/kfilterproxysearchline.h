@@ -24,7 +24,7 @@
 
 #include <QWidget>
 
-class KLineEdit;
+class QLineEdit;
 class QSortFilterProxyModel;
 
 /**
@@ -69,7 +69,7 @@ public:
     /**
      * Returns the pointer of the lineedit..
      */
-    KLineEdit* lineEdit() const;
+    QLineEdit* lineEdit() const;
 
 private:
     class Private;
