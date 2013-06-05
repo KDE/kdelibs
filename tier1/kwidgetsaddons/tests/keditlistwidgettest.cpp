@@ -4,7 +4,6 @@
 #include <QVBoxLayout>
 
 #include <keditlistwidget.h>
-#include <kcombobox.h>
 #include <QDebug>
 
 int main( int argc, char **argv )
