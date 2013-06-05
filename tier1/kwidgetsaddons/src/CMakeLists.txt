@@ -20,6 +20,8 @@ set(kwidgetsaddons_SRCS
   kviewstatemaintainerbase.cpp
   keditlistwidget.cpp
   kcursor.cpp
+  kratingwidget.cpp
+  kratingpainter.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -59,6 +61,8 @@ install(FILES
   kviewstatemaintainerbase.h
   keditlistwidget.h
   kcursor.h
+  kratingpainter.h
+  kratingwidget.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

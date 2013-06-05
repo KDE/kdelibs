@@ -1,5 +1,5 @@
 /*
-   This file is part of the Nepomuk KDE project.
+   This file is part of the KDE libraries
    Copyright (C) 2007-2008 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -18,10 +18,10 @@
    Boston, MA 02110-1301, USA.
  */
 
-#ifndef _NEPOMUK_RATING_PAINTER_H_
-#define _NEPOMUK_RATING_PAINTER_H_
+#ifndef KRATINGPAINTER_H
+#define KRATINGPAINTER_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QtCore/Qt>
 
@@ -33,8 +33,6 @@ class QRect;
 
 
 /**
- * \class KRatingPainter kratingpainter.h Nepomuk/KRatingPainter
- *
  * \brief Utility class that draws a row of stars for a rating value.
  *
  * The KRatingPainter also allows to determine a rating value from
@@ -47,7 +45,7 @@ class QRect;
  *
  * \since 4.1
  */
-class KDEUI_EXPORT KRatingPainter
+class KWIDGETSADDONS_EXPORT KRatingPainter
 {
 public:
     /**

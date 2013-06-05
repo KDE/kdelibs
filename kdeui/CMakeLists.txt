@@ -168,8 +168,6 @@ set(kdeui_LIB_SRCS
  widgets/kmultitabbar.cpp
  widgets/knuminput.cpp
  widgets/kpixmapregionselectorwidget.cpp
- widgets/kratingpainter.cpp
- widgets/kratingwidget.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
@@ -455,8 +453,6 @@ install( FILES
  widgets/kmultitabbar.h
  widgets/knuminput.h
  widgets/kpixmapregionselectorwidget.h
- widgets/kratingpainter.h
- widgets/kratingwidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
  widgets/kstringvalidator.h

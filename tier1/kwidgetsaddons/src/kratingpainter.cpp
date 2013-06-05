@@ -1,5 +1,5 @@
 /*
-   This file is part of the Nepomuk KDE project.
+   This file is part of the KDE libraries
    Copyright (C) 2007-2008 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
@@ -61,7 +61,7 @@ QPixmap KRatingPainter::Private::getPixmap( int size )
     else {
         QIcon _icon( icon );
         if ( _icon.isNull() ) {
-            _icon = QIcon::fromTheme( "rating" );
+            _icon = QIcon::fromTheme( QLatin1String("rating") );
         }
         return _icon.pixmap( size );
     }

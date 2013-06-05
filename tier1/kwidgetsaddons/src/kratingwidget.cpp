@@ -1,5 +1,5 @@
 /*
- * This file is part of the Nepomuk KDE project.
+ * This file is part of the KDE libraries
  * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -164,8 +164,8 @@ void KRatingWidget::setRating( int rating )
     if ( rating != d->rating ) {
         d->rating = rating;
         d->hoverRating = rating;
-        emit ratingChanged( rating );
-        emit ratingChanged( (unsigned int)rating );
+        Q_EMIT ratingChanged( rating );
+        Q_EMIT ratingChanged( (unsigned int)rating );
         update();
     }
 }
@@ -296,3 +296,4 @@ void KRatingWidget::resizeEvent( QResizeEvent* e )
     QFrame::resizeEvent( e );
 }
 
+#include "moc_kratingwidget.cpp"

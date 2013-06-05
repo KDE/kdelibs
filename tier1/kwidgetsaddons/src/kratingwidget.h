@@ -1,5 +1,5 @@
 /*
- * This file is part of the Nepomuk KDE project.
+ * This file is part of the KDE libraries
  * Copyright (C) 2006-2007 Sebastian Trueg <trueg@kde.org>
  *
  * This library is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@
 
 #include <QFrame>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 /**
  * \class KRatingWidget kratingwidget.h KDE/KRatingWidget
@@ -37,7 +37,7 @@
  *
  * \author Sebastian Trueg <trueg@kde.org>
  */
-class KDEUI_EXPORT KRatingWidget : public QFrame
+class KWIDGETSADDONS_EXPORT KRatingWidget : public QFrame
 {
     Q_OBJECT
     Q_PROPERTY( int rating READ rating WRITE setRating )
@@ -128,7 +128,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated use setRating( int rating )
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setRating( unsigned int rating );
+    KWIDGETSADDONS_DEPRECATED void setRating( unsigned int rating );
 #endif
 
     /**
@@ -142,7 +142,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated use setMaxRating( int max )
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setMaxRating( unsigned int max );
+    KWIDGETSADDONS_DEPRECATED void setMaxRating( unsigned int max );
 #endif
 
     /**
@@ -155,7 +155,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated Use setHalfStepsEnabled
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setOnlyPaintFullSteps( bool );
+    KWIDGETSADDONS_DEPRECATED void setOnlyPaintFullSteps( bool );
 #endif
 
     /**
@@ -191,7 +191,7 @@ class KDEUI_EXPORT KRatingWidget : public QFrame
      * \deprecated use setCustomPixmap
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setPixmap( const QPixmap& );
+    KWIDGETSADDONS_DEPRECATED void setPixmap( const QPixmap& );
 #endif
 
     /**
