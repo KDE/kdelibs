@@ -18,4 +18,5 @@ kwidgetsaddons_executable_tests(
   ktitlewidgettest
   kfontrequestertest
   kpassworddialogtest
+  keditlistwidgettest
 )

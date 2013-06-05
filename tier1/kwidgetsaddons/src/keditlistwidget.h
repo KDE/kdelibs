@@ -21,13 +21,12 @@
 #ifndef KEDITLISTWIDGET_H
 #define KEDITLISTWIDGET_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QWidget>
-#include <QStringListModel>
 
-class KLineEdit;
-class KComboBox;
+class QLineEdit;
+class QComboBox;
 class QListView;
 class QPushButton;
 class QItemSelection;
@@ -43,10 +42,9 @@ class KEditListWidgetPrivate;
  *
  * \image html keditlistbox.png "KDE Edit List Box Widget"
  *
- *
  * @since 4.6
  */
-class KDEUI_EXPORT KEditListWidget : public QWidget
+class KWIDGETSADDONS_EXPORT KEditListWidget : public QWidget
 {
    Q_OBJECT
 
@@ -61,19 +59,19 @@ public:
     /**
      * Custom editor class
      **/
-    class KDEUI_EXPORT CustomEditor
+    class KWIDGETSADDONS_EXPORT CustomEditor
     {
     public:
         CustomEditor();
-        CustomEditor( QWidget *repWidget, KLineEdit *edit );
-        CustomEditor( KComboBox *combo );
+        CustomEditor( QWidget *repWidget, QLineEdit *edit );
+        CustomEditor( QComboBox *combo );
         virtual ~CustomEditor();
 
         void setRepresentationWidget( QWidget *repWidget );
-        void setLineEdit( KLineEdit *edit );
+        void setLineEdit( QLineEdit *edit );
 
         virtual QWidget *representationWidget() const;
-        virtual KLineEdit *lineEdit() const;
+        virtual QLineEdit *lineEdit() const;
 
     private:
         friend class CustomEditorPrivate;
@@ -104,11 +102,11 @@ public:
 
       /**
        * Constructor which allows to use a custom editing widget
-       * instead of the standard KLineEdit widget. E.g. you can use a
-       * KUrlRequester or a KComboBox as input widget. The custom
+       * instead of the standard QLineEdit widget. E.g. you can use a
+       * KUrlRequester or a QComboBox as input widget. The custom
        * editor must consist of a lineedit and optionally another widget that
-       * is used as representation. A KComboBox or a KUrlRequester have a
-       * KLineEdit as child-widget for example, so the KComboBox is used as
+       * is used as representation. A QComboBox or a KUrlRequester have a
+       * QLineEdit as child-widget for example, so the QComboBox is used as
        * the representation widget.
        *
        * @see KUrlRequester::customEditor(), setCustomEditor
@@ -121,61 +119,69 @@ public:
       virtual ~KEditListWidget();
 
       /**
-       * Return a pointer to the embedded QListView.
+       * @returns a pointer to the embedded QListView.
        */
       QListView* listView() const;
       /**
-       * Return a pointer to the embedded KLineEdit.
+       * @returns a pointer to the embedded QLineEdit.
        */
-      KLineEdit* lineEdit() const;
+      QLineEdit* lineEdit() const;
       /**
-       * Return a pointer to the Add button
+       * @returns a pointer to the Add button
        */
       QPushButton* addButton() const;
       /**
-       * Return a pointer to the Remove button
+       * @returns a pointer to the Remove button
        */
       QPushButton* removeButton() const;
       /**
-       * Return a pointer to the Up button
+       * @returns a pointer to the Up button
        */
       QPushButton* upButton() const;
       /**
-       * Return a pointer to the Down button
+       * @returns a pointer to the Down button
        */
       QPushButton* downButton() const;
 
       /**
-       * See Q3ListBox::count()
+       * @returns the count of elements in the list
        */
       int count() const;
+
       /**
-       * See Q3ListBox::insertStringList()
+       * Inserts a @p list of elements from the @p index element
+       * If @p index is negative, the elements will be appended
        */
       void insertStringList(const QStringList& list, int index=-1);
+
       /**
-       * See Q3ListBox::insertItem()
+       * Inserts a @p text element at the @p index position
+       * If @p index is negative, the element will be appended
        */
       void insertItem(const QString& text, int index=-1);
+
       /**
        * Clears both the listbox and the line edit.
        */
       void clear();
+
       /**
-       * See Q3ListBox::text()
+       * @returns the text at the @p index position
        */
       QString text(int index) const;
+
       /**
-       * See Q3ListBox::currentItem()
+       * @returns the currently selected item
        */
       int currentItem() const;
+      
       /**
-       * See Q3ListBox::currentText()
+       * @returns the currently selected item's text
        */
       QString currentText() const;
 
       /**
-       * @returns a stringlist of all items in the listbox
+       * @returns a list with the text of all items in the listbox
        */
       QStringList items() const;
 
@@ -185,12 +191,12 @@ public:
       void setItems(const QStringList& items);
 
       /**
-       * Returns which buttons are visible
+       * @returns which buttons are visible
        */
       Buttons buttons() const;
 
       /**
-       * Specifies which buttons should be visible
+       * Specifies which @p buttons are visible
        */
       void setButtons( Buttons buttons );
 
@@ -208,17 +214,17 @@ public:
       void setCheckAtEntering(bool check);
 
       /**
-       * Returns true if check at entering is enabled.
+       * @returns true if check at entering is enabled.
        */
       bool checkAtEntering();
 
       /**
        * Allows to use a custom editing widget
-       * instead of the standard KLineEdit widget. E.g. you can use a
-       * KUrlRequester or a KComboBox as input widget. The custom
+       * instead of the standard QLineEdit widget. E.g. you can use a
+       * KUrlRequester or a QComboBox as input widget. The custom
        * editor must consist of a lineedit and optionally another widget that
-       * is used as representation. A KComboBox or a KUrlRequester have a
-       * KLineEdit as child-widget for example, so the KComboBox is used as
+       * is used as representation. A QComboBox or a KUrlRequester have a
+       * QLineEdit as child-widget for example, so the QComboBox is used as
        * the representation widget.
        */
       void setCustomEditor( const CustomEditor& editor );

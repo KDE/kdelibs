@@ -18,6 +18,7 @@ set(kwidgetsaddons_SRCS
   ktogglefullscreenaction.cpp
   kviewstateserializer.cpp
   kviewstatemaintainerbase.cpp
+  keditlistwidget.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -55,6 +56,7 @@ install(FILES
   ktogglefullscreenaction.h
   kviewstateserializer.h
   kviewstatemaintainerbase.h
+  keditlistwidget.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

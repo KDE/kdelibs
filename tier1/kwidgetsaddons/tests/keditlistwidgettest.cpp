@@ -15,24 +15,24 @@ int main( int argc, char **argv )
     KEditListWidget::CustomEditor editor( new KComboBox( true, 0 ) );
     KEditListWidget *box = new KEditListWidget( editor );
 
-    box->insertItem( QLatin1String("Test") );
-    box->insertItem( QLatin1String("for") );
-    box->insertItem( QLatin1String("this") );
-    box->insertItem( QLatin1String("KEditListWidget") );
-    box->insertItem( QLatin1String("Widget") );
+    box->insertItem( QStringLiteral("Test") );
+    box->insertItem( QStringLiteral("for") );
+    box->insertItem( QStringLiteral("this") );
+    box->insertItem( QStringLiteral("KEditListWidget") );
+    box->insertItem( QStringLiteral("Widget") );
     box->show();
 
 #else
 
     // code from kexi
-    QStringList list; list << "one" << "two";
+    QStringList list; list << QStringLiteral("one") << QStringLiteral("two");
     QDialog dialog;
-    dialog.setObjectName("stringlist_dialog");
+    dialog.setObjectName(QStringLiteral("stringlist_dialog"));
     dialog.setModal(true);
-    dialog.setWindowTitle("Edit List of Items");
+    dialog.setWindowTitle(QStringLiteral("Edit List of Items"));
 
     KEditListWidget *edit = new KEditListWidget(&dialog);
-    edit->setObjectName("editlist");
+    edit->setObjectName(QStringLiteral("editlist"));
     edit->insertStringList(list);
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(&dialog);
