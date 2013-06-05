@@ -78,7 +78,6 @@ set(kdeui_LIB_SRCS
  actions/ktoggletoolbaraction.cpp
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
- actions/ktoolbarspaceraction.cpp
  colors/kcolorbutton.cpp
  dialogs/kaboutkdedialog_p.cpp
  dialogs/kassistantdialog.cpp

@@ -24,6 +24,7 @@ set(kwidgetsaddons_SRCS
   kratingpainter.cpp
   kactionselector.cpp
   kcolorcombo.cpp
+  ktoolbarspaceraction.cpp
 )
 
 set(kwidgetsaddon_UI

@@ -21,22 +21,20 @@
 
 #include <QWidgetAction>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 /**
  * An extension to KAction which allows for adding a spacer item into a
  * QToolBar / KToolBar.
  *
- * Use this as the replacement for the old KToolBar::alignItemRight().
+ * This is useful if you want to align at the right (or left if RTL) and
+ * need something that pushes the element to the end of the tool bar.
  *
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDEUI_EXPORT KToolBarSpacerAction : public QWidgetAction
+class KWIDGETSADDONS_EXPORT KToolBarSpacerAction : public QWidgetAction
 {
   Q_OBJECT
-  Q_PROPERTY( int width READ width WRITE setWidth )
-  Q_PROPERTY( int minimumWidth READ minimumWidth WRITE setMinimumWidth )
-  Q_PROPERTY( int maximumWidth READ maximumWidth WRITE setMaximumWidth )
 
   public:
     /**
@@ -46,54 +44,16 @@ class KDEUI_EXPORT KToolBarSpacerAction : public QWidgetAction
      */
     explicit KToolBarSpacerAction(QObject *parent);
 
-    ~KToolBarSpacerAction();
+    virtual ~KToolBarSpacerAction();
 
     /**
-     * Returns the width of the spacer item.
+     * Reimplemented from @see QActionWidget.
      */
-    int width() const;
-
-    /**
-     * Sets the @param width of the spacer item.
-     */
-    void setWidth( int width );
-
-    /**
-     * Returns the minimum width of the spacer item.
-     */
-    int minimumWidth() const;
-
-    /**
-     * Sets the minimum @param width of the spacer item.
-     */
-    void setMinimumWidth( int width );
-
-    /**
-     * Returns the maximum width of the spacer item.
-     */
-    int maximumWidth() const;
-
-    /**
-     * Sets the maximum @param width of the spacer item.
-     */
-    void setMaximumWidth( int width );
-
-    /**
-     * Reimplemented from @see QActionWidgetFactory.
-     */
-    virtual QWidget* createWidget( QWidget* parent );
-
-    /**
-     * Reimplemented from @see QWidgetAction.
-     */
-    virtual void deleteWidget(QWidget *widget);
-
+    QWidget* createWidget( QWidget* parent ) Q_DECL_OVERRIDE;
 
   private:
     class Private;
     Private* const d;
-
-    Q_PRIVATE_SLOT( d, void _k_spacerDestroyed( QObject* ) )
 };
 
 #endif
