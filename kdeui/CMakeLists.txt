@@ -87,8 +87,6 @@ set(kdeui_LIB_SRCS
  dialogs/kshortcutschemeseditor.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/kswitchlanguagedialog_p.cpp
- fonts/fonthelpers.cpp
- fonts/kfontcombobox.cpp
  kernel/kstyle.cpp
  shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kacceleratormanager.cpp
@@ -143,7 +141,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/colors
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
- ${CMAKE_CURRENT_SOURCE_DIR}/fonts
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
@@ -260,7 +257,6 @@ install( FILES
  dialogs/knewpassworddialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
- fonts/kfontcombobox.h
  kernel/kstyle.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h

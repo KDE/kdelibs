@@ -20,7 +20,7 @@
 #ifndef KFONTCOMBOBOX_P_H
 #define KFONTCOMBOBOX_P_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <kcombobox.h>
 
@@ -45,8 +45,10 @@ class KFontComboBoxPrivate;
  * @see KFontChooser
  *
  * @since 4.1
+ *
+ * @deprecated Since KF 5.0, use QFontComboBox instead
  */
-class KDEUI_EXPORT KFontComboBox : public KComboBox
+class KDE4SUPPORT_DEPRECATED_EXPORT KFontComboBox : public KComboBox
 {
     Q_OBJECT
 
@@ -66,6 +68,8 @@ public:
      *
      * @param onlyFixed only fixed width fonts when @p true,
      *                  all fonts when @p false
+     *
+     * @deprecated use QFontComboBox::setFontFilters(QFontComboBox::MonospacedFonts)
      */
     void setOnlyFixed (bool onlyFixed);
 

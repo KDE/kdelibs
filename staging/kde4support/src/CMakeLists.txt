@@ -47,6 +47,8 @@ set(libkde4support_SRCS
     kdeui/kcolorvalueselector.cpp
     kdeui/kdialog.cpp
     kdeui/kdialogqueue.cpp
+    kdeui/kfontcombobox.cpp
+    kdeui/fonthelpers.cpp
     kdeui/kfontdialog.cpp
     kdeui/khuesaturationselect.cpp
     kdeui/ksessionmanager.cpp

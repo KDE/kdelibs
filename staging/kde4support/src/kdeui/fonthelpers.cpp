@@ -1,7 +1,4 @@
 /*
-    Requires the Qt widget libraries, available at no cost at
-    http://www.troll.no
-
     Copyright (C) 2008 Chusslove Illich <caslav.ilic@gmx.net>
 
     This library is free software; you can redistribute it and/or
