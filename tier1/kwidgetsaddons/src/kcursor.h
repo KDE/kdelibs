@@ -20,7 +20,7 @@
 #ifndef KCURSOR_H
 #define KCURSOR_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QEvent;
 class QObject;
@@ -30,7 +30,7 @@ class QWidget;
  * The KCursor class provides a set of static
  * convenience methods for auto-hiding cursors on widgets.
  */
-class KDEUI_EXPORT KCursor
+class KWIDGETSADDONS_EXPORT KCursor
 {
 public:
     /**

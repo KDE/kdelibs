@@ -142,7 +142,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kgesturemap.cpp
  util/strlcpy-fake.c
  util/kcrash.cpp
- util/kcursor.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
  util/kkeyserver.cpp
@@ -430,7 +429,6 @@ install( FILES
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/kcrash.h
- util/kcursor.h
  util/khelpclient.h
  util/kkeyserver.h
  util/kmodifierkeyinfo.h

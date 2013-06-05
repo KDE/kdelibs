@@ -19,6 +19,7 @@ set(kwidgetsaddons_SRCS
   kviewstateserializer.cpp
   kviewstatemaintainerbase.cpp
   keditlistwidget.cpp
+  kcursor.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -57,6 +58,7 @@ install(FILES
   kviewstateserializer.h
   kviewstatemaintainerbase.h
   keditlistwidget.h
+  kcursor.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
