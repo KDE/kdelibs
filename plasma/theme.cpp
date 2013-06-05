@@ -229,7 +229,7 @@ bool ThemePrivate::useCache()
             const KPluginInfo pluginInfo(path);
 
             // now we check for, and remove if necessary, old caches
-            QString cacheFileBase = cacheFile + "*.kcache";
+            const QString cacheFileBase = cacheFile + "*.kcache";
             cacheFile += "_v" + pluginInfo.version();
             const QString currentCacheFileName = cacheFile + ".kcache";
             foreach (const QString &file, KGlobal::dirs()->findAllResources("cache", cacheFileBase)) {
