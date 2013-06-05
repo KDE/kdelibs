@@ -19,7 +19,7 @@
 #ifndef _KACTION_SELECTOR_H_
 #define _KACTION_SELECTOR_H_
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 #include <QWidget>
 
 class QListWidget;
@@ -77,7 +77,7 @@ class KActionSelectorPrivate;
     @author Anders Lund <anders@alweb.dk>
 */
 
-class KDEUI_EXPORT KActionSelector : public QWidget {
+class KWIDGETSADDONS_EXPORT KActionSelector : public QWidget {
   Q_OBJECT
   Q_ENUMS( InsertionPolicy MoveButton )
   Q_PROPERTY( bool moveOnDoubleClick READ moveOnDoubleClick WRITE setMoveOnDoubleClick )
@@ -260,15 +260,6 @@ public:
   */
   void setButtonWhatsThis( const QString &text, MoveButton button );
 
-  /**
-     Sets the enabled state of all moving buttons to reflect the current
-     options.
-
-     Be sure to call this if you add or removes items to either listbox after the
-     widget is show()n
-  */
-  void setButtonsEnabled();
-
 Q_SIGNALS:
   /**
     Emitted when an item is moved to the "selected" listbox.
@@ -297,10 +288,13 @@ Q_SIGNALS:
 
 public Q_SLOTS:
   /**
-    Reimplemented for internal reasons.
-    (calls setButtonsEnabled())
+     Sets the enabled state of all moving buttons to reflect the current
+     options.
+
+     Be sure to call this if you add or removes items to either listbox after the
+     widget is shown
   */
-  void polish();
+  void setButtonsEnabled();
 
 protected:
   /**

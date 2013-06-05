@@ -19,8 +19,6 @@
 
 #include "kactionselector.h"
 
-#include <klocalizedstring.h>
-#include <kdebug.h>
 #include <QApplication>
 #include <QToolButton>
 #include <QLabel>
@@ -84,10 +82,10 @@ KActionSelector::KActionSelector( QWidget *parent )
 {
   d->moveOnDoubleClick = true;
   d->keyboardEnabled = true;
-  d->addIcon = QApplication::isRightToLeft()? "go-previous" : "go-next";
-  d->removeIcon = QApplication::isRightToLeft()? "go-next" : "go-previous";
-  d->upIcon = "go-up";
-  d->downIcon = "go-down";
+  d->addIcon = QLatin1String(QApplication::isRightToLeft()? "go-previous" : "go-next");
+  d->removeIcon = QLatin1String(QApplication::isRightToLeft()? "go-next" : "go-previous");
+  d->upIcon = QLatin1String("go-up");
+  d->downIcon = QLatin1String("go-down");
   d->availableInsertionPolicy = Sorted;
   d->selectedInsertionPolicy = BelowCurrent;
   d->showUpDownButtons = true;
@@ -97,7 +95,7 @@ KActionSelector::KActionSelector( QWidget *parent )
 
   QVBoxLayout *loAv = new QVBoxLayout();
   lo->addLayout( loAv );
-  d->lAvailable = new QLabel( i18n("&Available:"), this );
+  d->lAvailable = new QLabel( tr("&Available:"), this );
   loAv->addWidget( d->lAvailable );
   d->availableListWidget = new QListWidget( this );
   loAv->addWidget( d->availableListWidget );
@@ -114,7 +112,7 @@ KActionSelector::KActionSelector( QWidget *parent )
 
   QVBoxLayout *loS = new QVBoxLayout();
   lo->addLayout( loS );
-  d->lSelected = new QLabel( i18n("&Selected:"), this );
+  d->lSelected = new QLabel( tr("&Selected:"), this );
   loS->addWidget( d->lSelected );
   d->selectedListWidget = new QListWidget( this );
   loS->addWidget( d->selectedListWidget );
@@ -141,8 +139,8 @@ KActionSelector::KActionSelector( QWidget *parent )
            this, SLOT(itemDoubleClicked(QListWidgetItem*)) );
   connect( d->selectedListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)),
            this, SLOT(itemDoubleClicked(QListWidgetItem*)) );
-  connect( d->availableListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(polish()) );
-  connect( d->selectedListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(polish()) );
+  connect( d->availableListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(setButtonsEnabled()) );
+  connect( d->selectedListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(setButtonsEnabled()) );
 
   d->availableListWidget->installEventFilter( this );
   d->selectedListWidget->installEventFilter( this );
@@ -189,7 +187,8 @@ void KActionSelector::setButtonIcon( const QString &icon, MoveButton button )
     d->btnDown->setIcon( QIcon::fromTheme( icon ) );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!";
+//     kDebug(13001)<<"KActionSelector::setButtonIcon: DAINBREAD!";
+    break;
   }
 }
 
@@ -210,7 +209,8 @@ void KActionSelector::setButtonIconSet( const QIcon &iconset, MoveButton button 
     d->btnDown->setIcon( iconset );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonIconSet: DAINBREAD!";
+//     kDebug(13001)<<"KActionSelector::setButtonIconSet: DAINBREAD!";
+    break;
   }
 }
 
@@ -228,15 +228,16 @@ void KActionSelector::setButtonTooltip( const QString &tip, MoveButton button )
     break;
     case ButtonUp:
     d->btnUp->setText( tip );
- 	d->btnUp->setToolTip( tip );
+    d->btnUp->setToolTip( tip );
     break;
     case ButtonDown:
     d->btnDown->setText( tip );
-	d->btnDown->setToolTip( tip );
+    d->btnDown->setToolTip( tip );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonToolTip: DAINBREAD!";
-  }
+//     kDebug(13001)<<"KActionSelector::setButtonToolTip: DAINBREAD!";
+    break;
+}
 }
 
 void KActionSelector::setButtonWhatsThis( const QString &text, MoveButton button )
@@ -256,17 +257,9 @@ void KActionSelector::setButtonWhatsThis( const QString &text, MoveButton button
     d->btnDown->setWhatsThis(text );
     break;
     default:
-    kDebug(13001)<<"KActionSelector::setButtonWhatsThis: DAINBREAD!";
+//     kDebug(13001)<<"KActionSelector::setButtonWhatsThis: DAINBREAD!";
+    break;
   }
-}
-
-void KActionSelector::setButtonsEnabled()
-{
-  d->btnAdd->setEnabled( d->selectedRowIndex(d->availableListWidget) > -1 );
-  d->btnRemove->setEnabled( d->selectedRowIndex(d->selectedListWidget) > -1 );
-  d->btnUp->setEnabled( d->selectedRowIndex(d->selectedListWidget) > 0 );
-  d->btnDown->setEnabled( d->selectedRowIndex(d->selectedListWidget) > -1 &&
-                          d->selectedRowIndex(d->selectedListWidget) < d->selectedListWidget->count() - 1 );
 }
 
 //END Public Methods
@@ -357,9 +350,13 @@ void KActionSelector::setShowUpDownButtons( bool show )
 
 //BEGIN Public Slots
 
-void KActionSelector::polish()
+void KActionSelector::setButtonsEnabled()
 {
-  setButtonsEnabled();
+  d->btnAdd->setEnabled( d->selectedRowIndex(d->availableListWidget) > -1 );
+  d->btnRemove->setEnabled( d->selectedRowIndex(d->selectedListWidget) > -1 );
+  d->btnUp->setEnabled( d->selectedRowIndex(d->selectedListWidget) > 0 );
+  d->btnDown->setEnabled( d->selectedRowIndex(d->selectedListWidget) > -1 &&
+                          d->selectedRowIndex(d->selectedListWidget) < d->selectedListWidget->count() - 1 );
 }
 
 //END Public Slots
@@ -441,11 +438,11 @@ void KActionSelectorPrivate::buttonAddClicked()
 {
   // move all selected items from available to selected listbox
   QList<QListWidgetItem *> list = availableListWidget->selectedItems();
-  foreach (QListWidgetItem* item, list) {
+  Q_FOREACH (QListWidgetItem* item, list) {
     availableListWidget->takeItem( availableListWidget->row( item ) );
     selectedListWidget->insertItem( insertionIndex( selectedListWidget, selectedInsertionPolicy ), item );
     selectedListWidget->setCurrentItem( item );
-    emit q->added( item );
+    Q_EMIT q->added( item );
   }
   if ( selectedInsertionPolicy == KActionSelector::Sorted )
     selectedListWidget->sortItems();
@@ -456,11 +453,11 @@ void KActionSelectorPrivate::buttonRemoveClicked()
 {
   // move all selected items from selected to available listbox
   QList<QListWidgetItem *> list = selectedListWidget->selectedItems();
-  foreach (QListWidgetItem* item, list) {
+  Q_FOREACH (QListWidgetItem* item, list) {
     selectedListWidget->takeItem( selectedListWidget->row( item ) );
     availableListWidget->insertItem( insertionIndex( availableListWidget, availableInsertionPolicy ), item );
     availableListWidget->setCurrentItem( item );
-    emit q->removed( item );
+    Q_EMIT q->removed( item );
   }
   if ( availableInsertionPolicy == KActionSelector::Sorted )
     availableListWidget->sortItems();
@@ -475,7 +472,7 @@ void KActionSelectorPrivate::buttonUpClicked()
   selectedListWidget->takeItem( c );
   selectedListWidget->insertItem( c-1, item );
   selectedListWidget->setCurrentItem( item );
-  emit q->movedUp( item );
+  Q_EMIT q->movedUp( item );
 }
 
 void KActionSelectorPrivate::buttonDownClicked()
@@ -486,7 +483,7 @@ void KActionSelectorPrivate::buttonDownClicked()
   selectedListWidget->takeItem( c );
   selectedListWidget->insertItem( c+1, item );
   selectedListWidget->setCurrentItem( item );
-  emit q->movedDown( item );
+  Q_EMIT q->movedDown( item );
 }
 
 void KActionSelectorPrivate::itemDoubleClicked( QListWidgetItem *item )
@@ -529,9 +526,9 @@ void KActionSelectorPrivate::moveItem( QListWidgetItem *item )
   if ( p == KActionSelector::Sorted )
     lbTo->sortItems();
   if ( lbTo == selectedListWidget )
-    emit q->added( item );
+    Q_EMIT q->added( item );
   else
-    emit q->removed( item );
+    Q_EMIT q->removed( item );
 }
 
 int KActionSelectorPrivate::insertionIndex( QListWidget *lb, KActionSelector::InsertionPolicy policy )

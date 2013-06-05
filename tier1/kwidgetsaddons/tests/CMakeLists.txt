@@ -20,4 +20,5 @@ kwidgetsaddons_executable_tests(
   kpassworddialogtest
   keditlistwidgettest
   kratingwidgettest
+  kactionselectortest
 )
