@@ -221,17 +221,39 @@ EffectWatcher *ThemePrivate::s_blurEffectWatcher = 0;
 bool ThemePrivate::useCache()
 {
     if (cacheTheme && !pixmapCache) {
+        const bool isRegularTheme = themeName != systemColorsTheme;
+        QString cacheFile = "plasma_theme_" + themeName;
+
+        if (isRegularTheme) {
+            const QString path = KStandardDirs::locate("data", "desktoptheme/" + themeName + "/metadata.desktop");
+            const KPluginInfo pluginInfo(path);
+
+            // now we check for, and remove if necessary, old caches
+            QString cacheFileBase = cacheFile + "*.kcache";
+            cacheFile += "_v" + pluginInfo.version();
+            const QString currentCacheFileName = cacheFile + ".kcache";
+            foreach (const QString &file, KGlobal::dirs()->findAllResources("cache", cacheFileBase)) {
+                if (!file.endsWith(currentCacheFileName)) {
+                    QFile::remove(file);
+                }
+            }
+
+        }
+
         ThemeConfig config;
-        pixmapCache = new KImageCache("plasma_theme_" + themeName, config.themeCacheKb() * 1024);
-        if (themeName != systemColorsTheme) {
+        pixmapCache = new KImageCache(cacheFile, config.themeCacheKb() * 1024);
+
+        // now we do a sanity check: if the metadata.desktop file is newer than the cache, drop
+        // the cache
+        if (isRegularTheme) {
             //check for expired cache
             // FIXME: when using the system colors, if they change while the application is not running
             // the cache should be dropped; we need a way to detect system color change when the
             // application is not running.
-            QFile f(KStandardDirs::locate("data", "desktoptheme/" + themeName + "/metadata.desktop"));
-            QFileInfo info(f);
-            if (info.lastModified().toTime_t() > uint(pixmapCache->lastModifiedTime())) {
-                pixmapCache->clear();
+            const QFile f(cacheFile);
+            const QFileInfo fileInfo(f);
+            if (fileInfo.lastModified().toTime_t() > uint(pixmapCache->lastModifiedTime())) {
+                discardCache(PixmapCache | SvgElementsCache);
             }
         }
     }
