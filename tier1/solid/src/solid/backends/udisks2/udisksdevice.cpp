@@ -61,31 +61,31 @@ static QString formatByteSize(double size)
     {
         size /= 1073741824.0;
         if ( size > 1024 ) // Tebi-byte
-            s = tr("%1 TiB").arg(QLocale().toString(size / 1024.0, 'f', 1));
+            s = QObject::tr("%1 TiB").arg(QLocale().toString(size / 1024.0, 'f', 1));
         else
-            s = tr("%1 GiB").arg(QLocale().toString(size, 'f', 1));
+            s = QObject::tr("%1 GiB").arg(QLocale().toString(size, 'f', 1));
     }
     // Mebi-byte
     else if ( size >= 1048576.0 )
     {
         size /= 1048576.0;
-        s = tr("%1 MiB").arg(QLocale().toString(size, 'f', 1));
+        s = QObject::tr("%1 MiB").arg(QLocale().toString(size, 'f', 1));
     }
     // Kibi-byte
     else if ( size >= 1024.0 )
     {
         size /= 1024.0;
-        s = tr("%1 KiB").arg(QLocale().toString(size, 'f', 1));
+        s = QObject::tr("%1 KiB").arg(QLocale().toString(size, 'f', 1));
     }
     // Just byte
     else if ( size > 0 )
     {
-        s = tr("%1 B").arg(QLocale().toString(size, 'f', 1));
+        s = QObject::tr("%1 B").arg(QLocale().toString(size, 'f', 1));
     }
     // Nothing
     else
     {
-        s = tr("0 B");
+        s = QObject::tr("0 B");
     }
     return s;
 }
