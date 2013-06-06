@@ -26,9 +26,6 @@
 #include <QColorDialog>
 #include <QStylePainter>
 
-#include <klocalizedstring.h>
-
-
 class KColorComboDelegate : public QAbstractItemDelegate
 {
 public:
