@@ -105,7 +105,10 @@ public:
 
     void paintEvent(QPaintEvent *event)
     {
+        Q_UNUSED(event);
         QPainter p(this);
+        //p.setBrush(Qt::red);
+        //p.drawRect(rect());
         m_document->drawContents(&p, event->rect());
     }
 
@@ -181,19 +184,12 @@ ToolTip::ToolTip(QWidget *parent)
     connect(d->preview, SIGNAL(windowPreviewClicked(WId,Qt::MouseButtons,Qt::KeyboardModifiers,QPoint)),
             this, SIGNAL(activateWindowByWId(WId,Qt::MouseButtons,Qt::KeyboardModifiers,QPoint)));
 
-    QHBoxLayout *previewHBoxLayout = new QHBoxLayout;
-    previewHBoxLayout->addWidget(d->preview);
+    QGridLayout *mainLayout = new QGridLayout();//2, 2);
+    mainLayout->addWidget(d->preview, 0, 0, 1, -1, Qt::AlignCenter);
 
-    QHBoxLayout *iconTextHBoxLayout = new QHBoxLayout;
-    iconTextHBoxLayout->addWidget(d->imageLabel);
-    iconTextHBoxLayout->setAlignment(d->imageLabel, Qt::AlignTop | Qt::AlignHCenter);
-    iconTextHBoxLayout->addWidget(d->text);
-    iconTextHBoxLayout->setAlignment(d->text, Qt::AlignLeft | Qt::AlignVCenter);
-    iconTextHBoxLayout->setStretchFactor(d->text, 1);
-
-    QVBoxLayout *mainLayout = new QVBoxLayout;
-    mainLayout->addLayout(previewHBoxLayout);
-    mainLayout->addLayout(iconTextHBoxLayout);
+    mainLayout->addWidget(d->imageLabel, 1, 0, Qt::AlignTop | Qt::AlignHCenter);
+    mainLayout->addWidget(d->text, 1, 1, Qt::AlignCenter | Qt::AlignVCenter);
+    mainLayout->setColumnStretch(1, 10);
 
     setLayout(mainLayout);
 }
@@ -249,7 +245,6 @@ void ToolTip::checkSize()
     d->text->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
     d->text->setMinimumSize(d->text->minimumSizeHint());
     d->text->setMaximumSize(d->text->maximumSizeHint());
-
     adjustSize();
 }
 
