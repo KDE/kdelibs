@@ -21,8 +21,6 @@
 #ifndef KSTATUSNOTIFIERITEMDBUS_H
 #define KSTATUSNOTIFIERITEMDBUS_H
 
-#include <kdedmodule.h>
-
 #include <QObject>
 #include <QString>
 #include <QDBusArgument>
