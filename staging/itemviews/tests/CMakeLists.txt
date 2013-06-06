@@ -1,3 +1,5 @@
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
 include(ECMMarkAsTest)
 
@@ -12,4 +14,6 @@ macro(itemviews_executable_tests)
 endmacro()
 
 itemviews_executable_tests(
+  kwidgetitemdelegatetest
+  ktreewidgetsearchlinetest
 )

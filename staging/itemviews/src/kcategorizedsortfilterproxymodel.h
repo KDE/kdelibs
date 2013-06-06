@@ -24,7 +24,7 @@
 
 #include <QSortFilterProxyModel>
 
-#include <kdeui_export.h>
+#include <itemviews_export.h>
 
 class QItemSelection;
 
@@ -42,7 +42,7 @@ class QItemSelection;
   *
   * @author Rafael Fernández López <ereslibre@kde.org>
   */
-class KDEUI_EXPORT KCategorizedSortFilterProxyModel
+class ITEMVIEWS_EXPORT KCategorizedSortFilterProxyModel
     : public QSortFilterProxyModel
 {
 public:
@@ -112,7 +112,7 @@ public:
       * Use KStringHandler::naturalCompare() instead.
       */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED static int naturalCompare(const QString &a, const QString &b);
+    ITEMVIEWS_DEPRECATED static int naturalCompare(const QString &a, const QString &b);
 #endif
 
 protected:

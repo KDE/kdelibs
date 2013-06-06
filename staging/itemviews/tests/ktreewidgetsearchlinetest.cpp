@@ -6,6 +6,7 @@
 #include <QBoxLayout>
 #include <QPushButton>
 #include <QHeaderView>
+#include <QString>
 
 #include <ktreewidgetsearchline.h>
 

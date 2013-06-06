@@ -102,7 +102,7 @@ void KListWidgetSearchLine::clear()
         }
     }
 
-    d->search = "";
+    d->search = QString();
     d->queuedSearches = 0;
     QLineEdit::clear();
 }

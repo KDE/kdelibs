@@ -23,7 +23,7 @@
 
 #include <QLineEdit>
 
-#include <kdeui_export.h>
+#include <itemviews_export.h>
 
 class QListWidget;
 class QListWidgetItem;
@@ -36,7 +36,7 @@ class QModelIndex;
  * No changes to the application other than instantiating this class with an
  * appropriate QListWidget should be needed.
  */
-class KDEUI_EXPORT KListWidgetSearchLine : public QLineEdit
+class ITEMVIEWS_EXPORT KListWidgetSearchLine : public QLineEdit
 {
     Q_OBJECT
 

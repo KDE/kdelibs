@@ -20,7 +20,7 @@
 #ifndef KFILTERPROXYSEARCHLINE_H
 #define KFILTERPROXYSEARCHLINE_H
 
-#include <kdeui_export.h>
+#include <itemviews_export.h>
 
 #include <QWidget>
 
@@ -39,7 +39,7 @@ class QSortFilterProxyModel;
  * @since 4.2
  */
 
-class KDEUI_EXPORT KFilterProxySearchLine
+class ITEMVIEWS_EXPORT KFilterProxySearchLine
     : public QWidget
 {
     Q_OBJECT

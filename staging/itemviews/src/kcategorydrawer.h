@@ -21,7 +21,7 @@
 #ifndef KCATEGORYDRAWER_H
 #define KCATEGORYDRAWER_H
 
-#include <kdeui_export.h>
+#include <itemviews_export.h>
 
 #include <QtCore/QObject>
 #include <QMouseEvent>
@@ -40,10 +40,10 @@ class KCategorizedView;
   *
   * @warning Please use KCategoryDrawerV3 instead
   */
-class KDEUI_EXPORT KCategoryDrawer
+class ITEMVIEWS_EXPORT KCategoryDrawer
 {
 public:
-    KDEUI_DEPRECATED KCategoryDrawer();
+    ITEMVIEWS_DEPRECATED KCategoryDrawer();
 
     virtual ~KCategoryDrawer();
 
@@ -110,23 +110,23 @@ private:
   *
   * @warning Please use KCategoryDrawerV3 instead
   */
-class KDEUI_EXPORT KCategoryDrawerV2
+class ITEMVIEWS_EXPORT KCategoryDrawerV2
     : public QObject
     , public KCategoryDrawer
 {
     Q_OBJECT
 
 public:
-    KDEUI_DEPRECATED KCategoryDrawerV2(QObject *parent = 0);
+    ITEMVIEWS_DEPRECATED KCategoryDrawerV2(QObject *parent = 0);
     virtual ~KCategoryDrawerV2();
 
-    KDEUI_DEPRECATED virtual void mouseButtonPressed(const QModelIndex &index, QMouseEvent *event);
+    ITEMVIEWS_DEPRECATED virtual void mouseButtonPressed(const QModelIndex &index, QMouseEvent *event);
 
-    KDEUI_DEPRECATED virtual void mouseButtonReleased(const QModelIndex &index, QMouseEvent *event);
+    ITEMVIEWS_DEPRECATED virtual void mouseButtonReleased(const QModelIndex &index, QMouseEvent *event);
 
-    KDEUI_DEPRECATED virtual void mouseButtonMoved(const QModelIndex &index, QMouseEvent *event);
+    ITEMVIEWS_DEPRECATED virtual void mouseButtonMoved(const QModelIndex &index, QMouseEvent *event);
 
-    KDEUI_DEPRECATED virtual void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
+    ITEMVIEWS_DEPRECATED virtual void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
 
 Q_SIGNALS:
     /**
@@ -147,7 +147,7 @@ Q_SIGNALS:
 /**
   * @since 4.5
   */
-class KDEUI_EXPORT KCategoryDrawerV3
+class ITEMVIEWS_EXPORT KCategoryDrawerV3
     : public KCategoryDrawerV2
 {
     friend class KCategorizedView;

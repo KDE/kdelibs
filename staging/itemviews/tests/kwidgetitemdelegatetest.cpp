@@ -22,19 +22,17 @@
 #include <QApplication>
 #include <QAbstractItemView>
 #include <QListView>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QStringListModel>
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QPainter>
 #include <QRadialGradient>
 #include <QPaintEvent>
 #include <QtCore/QDebug>
 #include <QToolButton>
 #include <QMenu>
-
-#include <kmessagebox.h>
-
-#include <klineedit.h>
 
 #include <kwidgetitemdelegate.h>
 
@@ -181,7 +179,7 @@ public:
         return QList<QWidget*>()
             << button
             << new TestWidget()
-            << new KLineEdit()
+            << new QLineEdit()
             << toolButton;
     }
 
@@ -204,9 +202,9 @@ public:
         // Hide the test widget when row can be divided by three
         testWidget->setVisible( (index.row() % 3) != 0 );
 
-        KLineEdit *lineEdit = static_cast<KLineEdit*>(widgets[2]);
+        QLineEdit *lineEdit = static_cast<QLineEdit*>(widgets[2]);
 
-        lineEdit->setClearButtonShown(true);
+        //lineEdit->setClearButtonShown(true);
         lineEdit->resize(lineEdit->sizeHint());
         lineEdit->move(3 * HARDCODED_BORDER
                      + button->sizeHint().width()
@@ -269,12 +267,12 @@ public:
 private Q_SLOTS:
     void mySlot()
     {
-        KMessageBox::information(0, QString("The button in row %1 was clicked").arg(focusedIndex().row()), "Button clicked");
+        QMessageBox::information(0, "Button clicked", QString("The button in row %1 was clicked").arg(focusedIndex().row()));
     }
 
     void mySlot2()
     {
-        KMessageBox::information(0, QString("A menu item was triggered in row %1").arg(focusedIndex().row()), "Toolbutton menu item clicked");
+        QMessageBox::information(0, "Toolbutton menu item clicked", QString("A menu item was triggered in row %1").arg(focusedIndex().row()));
     }
 
     void mySlot3()

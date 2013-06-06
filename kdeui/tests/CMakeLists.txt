@@ -28,7 +28,6 @@ KDEUI_UNIT_TESTS(
   kxmlgui_unittest
   ktoolbar_unittest
   krichtextedittest
-  klistwidgetsearchlinetest
   kconfigdialog_unittest
   kcolorbuttontest
 )
@@ -63,9 +62,7 @@ KDEUI_EXECUTABLE_TESTS(
   ktextedittest
   ktoolbartest
   ktoolbarlabelactiontest
-  ktreewidgetsearchlinetest
   kwallettest
-  kwidgetitemdelegatetest
   kwindowtest
   kxmlguitest
   kxmlguiwindowtest

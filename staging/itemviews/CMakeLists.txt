@@ -21,6 +21,7 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX ITEMVIEWS
 remove_definitions(-DQT_NO_KEYWORDS)
 
 add_subdirectory(src)
+add_subdirectory(autotests)
 add_subdirectory(tests)
 
 

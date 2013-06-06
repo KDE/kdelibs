@@ -109,15 +109,7 @@ set(kdeui_LIB_SRCS
  fonts/kfontcombobox.cpp
  icons/kiconbutton.cpp
  icons/kicondialog.cpp
- itemviews/klistwidgetsearchline.cpp
- itemviews/ktreewidgetsearchline.cpp
  itemviews/kviewstatemaintainer.cpp
- itemviews/kfilterproxysearchline.cpp
- itemviews/kcategorizedsortfilterproxymodel.cpp
- itemviews/kcategorizedview.cpp
- itemviews/kcategorydrawer.cpp
- itemviews/kwidgetitemdelegate.cpp
- itemviews/kwidgetitemdelegatepool.cpp
  # This requires patches which are not yet in Qt. Disabled for now.
 #  itemviews/kreparentingproxymodel.cpp
  jobs/kdialogjobuidelegate.cpp
@@ -399,13 +391,6 @@ install( FILES
  icons/kicondialog.h
  itemviews/kviewstatesaver.h
  itemviews/kviewstatemaintainer.h
- itemviews/klistwidgetsearchline.h
- itemviews/ktreewidgetsearchline.h
- itemviews/kfilterproxysearchline.h
- itemviews/kcategorizedsortfilterproxymodel.h
- itemviews/kcategorizedview.h
- itemviews/kcategorydrawer.h
- itemviews/kwidgetitemdelegate.h
 #  itemviews/kreparentingproxymodel.h
  jobs/kdialogjobuidelegate.h
  jobs/kabstractwidgetjobtracker.h

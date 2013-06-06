@@ -22,7 +22,7 @@
 #define KTREEWIDGETSEARCHLINE_H
 
 #include <QLineEdit>
-#include <kdeui_export.h>
+#include <itemviews_export.h>
 
 class QModelIndex;
 class QTreeWidget;
@@ -36,7 +36,7 @@ class QTreeWidgetItem;
  * appropriate QTreeWidgets should be needed.
  */
 
-class KDEUI_EXPORT KTreeWidgetSearchLine : public QLineEdit
+class ITEMVIEWS_EXPORT KTreeWidgetSearchLine : public QLineEdit
 {
     Q_OBJECT
 
@@ -265,7 +265,7 @@ Q_SIGNALS:
  * Creates a widget featuring a KTreeWidgetSearchLine, a label with the text
  * "Search" and a button to clear the search.
  */
-class KDEUI_EXPORT KTreeWidgetSearchLineWidget : public QWidget
+class ITEMVIEWS_EXPORT KTreeWidgetSearchLineWidget : public QWidget
 {
     Q_OBJECT
 
