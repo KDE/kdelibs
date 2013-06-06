@@ -37,7 +37,6 @@
 #include <kiconloader.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>
-#include <kactioncollection.h>
 
 #include <cstdlib>
 
