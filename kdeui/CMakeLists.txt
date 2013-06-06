@@ -376,7 +376,6 @@ install( FILES
  actions/ktoggletoolbaraction.h
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h
- actions/ktoolbarspaceraction.h
  colors/kcolorbutton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kassistantdialog.h
