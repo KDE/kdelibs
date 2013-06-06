@@ -19,15 +19,13 @@
 
 #include "knotificationrestrictions.h"
 
-#include <kdebug.h>
-#include <klocalizedstring.h>
-
 #include <QApplication>
+#include <QDebug>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>
 
-#include <config-kdeui.h>
+#include <config-knotifications.h>
 
 #if HAVE_XTEST
 #include <QTimer>
@@ -90,9 +88,9 @@ KNotificationRestrictions::~KNotificationRestrictions()
 
 void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 {
-    kDebug(297);
+    qDebug();
 #if HAVE_XTEST
-    kDebug(297) << "---- using XTestFakeKeyEvent";
+    qDebug() << "---- using XTestFakeKeyEvent";
     Display* display = QX11Info::display();
     XTestFakeKeyEvent(display, XTestKeyCode, true, CurrentTime);
     XTestFakeKeyEvent(display, XTestKeyCode, false, CurrentTime);
@@ -102,7 +100,7 @@ void KNotificationRestrictions::Private::screensaverFakeKeyEvent()
 
 void KNotificationRestrictions::Private::startScreenSaverPrevention()
 {
-    kDebug(297);
+    qDebug();
 
     QDBusMessage message = QDBusMessage::createMethodCall(
             "org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", "Inhibit");
@@ -119,7 +117,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
         haveXTest = XTestQueryExtension(QX11Info::display(), &a, &b, &c, &e);
 
         if ( !haveXTest ) {
-            kDebug(297) << "--- No XTEST!";
+            qDebug() << "--- No XTEST!";
             return;
         }
     }
@@ -128,7 +126,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
         XTestKeyCode = XKeysymToKeycode(QX11Info::display(), XK_Shift_L);
 
         if ( !XTestKeyCode ) {
-            kDebug(297) << "--- No XKeyCode for XK_Shift_L!";
+            qDebug() << "--- No XKeyCode for XK_Shift_L!";
             return;
         }
     }
@@ -139,7 +137,7 @@ void KNotificationRestrictions::Private::startScreenSaverPrevention()
                  q, SLOT(screensaverFakeKeyEvent()) );
     }
 
-    kDebug(297) << "---- using XTest";
+    qDebug() << "---- using XTest";
     // send a fake event right away in case this got started after a period of
     // innactivity leading to the screensaver set to activate in <55s
     screensaverFakeKeyEvent();
@@ -172,7 +170,7 @@ QString KNotificationRestrictions::Private::determineProgramName()
         appName = QCoreApplication::applicationName();
     }
     if (appName.isEmpty()) {
-        appName = i18n("Unknown Application");
+        appName = tr("Unknown Application");
     }
     return appName;
 }

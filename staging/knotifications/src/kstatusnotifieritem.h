@@ -26,9 +26,9 @@
 #include <QtDBus/QDBusArgument>
 #include <QtCore/QPoint>
 
-#include "kdeui_export.h"
+#include <knotifications_export.h>
 
-class KActionCollection;
+class QAction;
 class QMenu;
 
 class KStatusNotifierItemPrivate;
@@ -67,7 +67,7 @@ class KStatusNotifierItemPrivate;
  * @author Marco Martin <notmart@gmail.com>
  * @since 4.4
  */
-class KDEUI_EXPORT KStatusNotifierItem : public QObject
+class KNOTIFICATIONS_EXPORT KStatusNotifierItem : public QObject
 {
     Q_OBJECT
 
@@ -386,7 +386,22 @@ public:
     /**
      * All the actions present in the menu
      */
-    KActionCollection *actionCollection() const;
+    QList<QAction *> actionCollection() const;
+
+    /**
+     * Adds an action to the actionCollection()
+     *
+     * @param name the name of the action
+     * @param action the action we want to add
+     */
+    void addAction(const QString &name, QAction *action);
+
+    /**
+     * Removes an action to the collection
+     *
+     * @param name the name of the action
+     */
+    void removeAction(const QString &name);
 
     /**
      * Sets whether to show the standard items in the menu, such as Quit
