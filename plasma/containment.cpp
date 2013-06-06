@@ -1146,11 +1146,11 @@ QStringList Containment::listContainmentTypes()
 
 void Containment::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
 {
-    //kDebug() << immutability() << Mutable << (immutability() == Mutable);
     event->setAccepted(immutability() == Mutable &&
                        (event->mimeData()->hasFormat(static_cast<Corona*>(scene())->appletMimeType()) ||
                         KUrl::List::canDecode(event->mimeData()) ||
                         event->mimeData()->hasFormat(ExtenderItemMimeData::mimeType())));
+    //kDebug() << immutability() << Mutable << (immutability() == Mutable) << event->isAccepted();
 
     if (!event->isAccepted()) {
         // check to see if we have an applet that accepts the format.
@@ -1181,26 +1181,24 @@ void Containment::dragEnterEvent(QGraphicsSceneDragDropEvent *event)
         } else {
             if (!d->showDropZoneDelayTimer) {
                 d->showDropZoneDelayTimer = new QTimer(this);
-                d->showDropZoneDelayTimer->setInterval(300);
                 d->showDropZoneDelayTimer->setSingleShot(true);
                 connect(d->showDropZoneDelayTimer, SIGNAL(timeout()), this, SLOT(showDropZoneDelayed()));
             }
 
             d->dropPoints.insert(0, event->pos());
-            d->showDropZoneDelayTimer->start();
+            d->showDropZoneDelayTimer->start(300);
         }
     }
 }
 
 void Containment::dragLeaveEvent(QGraphicsSceneDragDropEvent *event)
 {
-    //kDebug() << event->pos() << size().height() << size().width();
-    if (d->showDropZoneDelayTimer) {
-        d->showDropZoneDelayTimer->stop();
-    }
-
     if (event->pos().y() < 1 || event->pos().y() > size().height() ||
         event->pos().x() < 1 || event->pos().x() > size().width()) {
+        if (d->showDropZoneDelayTimer) {
+            d->showDropZoneDelayTimer->stop();
+        }
+
         showDropZone(QPoint());
         d->dropZoneStarted = false;
     }
@@ -1216,19 +1214,21 @@ void ContainmentPrivate::showDropZoneDelayed()
 void Containment::dragMoveEvent(QGraphicsSceneDragDropEvent *event)
 {
     QGraphicsItem *item = scene()->itemAt(event->scenePos());
-    event->setAccepted(item == this || item == d->toolBox.data() || !item);
+    //event->setAccepted(item == this || item == d->toolBox.data() || !item);
     //kDebug() << event->isAccepted() << d->showDropZoneDelayTimer->isActive();
     if (!event->isAccepted()) {
         if (d->showDropZoneDelayTimer) {
             d->showDropZoneDelayTimer->stop();
         }
-    } else if (!d->showDropZoneDelayTimer->isActive() && immutability() == Plasma::Mutable) {
+    } else if ((!d->showDropZoneDelayTimer || !d->showDropZoneDelayTimer->isActive()) && immutability() == Plasma::Mutable) {
         showDropZone(event->pos().toPoint());
     }
 }
 
 void Containment::dropEvent(QGraphicsSceneDragDropEvent *event)
 {
+    showDropZone(QPoint());
+    d->dropZoneStarted = false;
     if (isContainment()) {
         d->dropData(event->scenePos(), event->screenPos(), event);
     } else {
