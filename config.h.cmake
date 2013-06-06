@@ -95,27 +95,6 @@
 #define S_ISSOCK(mode) (1==0)
 #endif
 
-/*
- * On HP-UX, the declaration of vsnprintf() is needed every time !
- */
-
-#if !HAVE_VSNPRINTF || defined(hpux)
-#if __STDC__
-#include <stdarg.h>
-#include <stdlib.h>
-#else
-#include <varargs.h>
-#endif
-#ifdef __cplusplus
-extern "C"
-#endif
-int vsnprintf(char *str, size_t n, char const *fmt, va_list ap);
-#ifdef __cplusplus
-extern "C"
-#endif
-int snprintf(char *str, size_t n, char const *fmt, ...);
-#endif
-
 #if HAVE_NSGETENVIRON && HAVE_CRT_EXTERNS_H
 # include <sys/time.h>
 # include <crt_externs.h>

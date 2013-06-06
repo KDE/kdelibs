@@ -208,7 +208,7 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
             { // or it has a bug that causes not finding all errors, check ourselves
             if( index != -1 )
                 {
-                snprintf( num, 255, "%s.%d", extensions[ index ], event.error_code - base );
+                qsnprintf( num, 255, "%s.%d", extensions[ index ], event.error_code - base );
                 XGetErrorDatabaseText( dpy, "XProtoError", num, "<unknown>", tmp, 255 );
                 }
             else
@@ -227,7 +227,7 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
              ++i )
             if( majors[ i ] == event.request_code )
                 {
-                snprintf( num, 255, "%s.%d", extensions[ i ], event.minor_code );
+                qsnprintf( num, 255, "%s.%d", extensions[ i ], event.minor_code );
                 XGetErrorDatabaseText( dpy, "XRequest", num, "<unknown>", tmp, 255 );
                 ret += QByteArray( ", request: " ) + (const char*)tmp + '[' + (const char*)extensions[ i ] + '+'
                     + QByteArray::number( event.minor_code ) + ']';

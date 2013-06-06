@@ -329,7 +329,7 @@ DOMString DOMString::format(const char *format, ...)
     int result = _vscprintf(format, args);
 #else
     char ch;
-    int result = vsnprintf(&ch, 1, format, args);
+    int result = qvsnprintf(&ch, 1, format, args);
     // We need to call va_end() and then va_start() again here, as the
     // contents of args is undefined after the call to vsnprintf
     // according to http://man.cx/snprintf(3)
@@ -352,7 +352,7 @@ DOMString DOMString::format(const char *format, ...)
     buffer.grow(len + 1);
     
     // Now do the formatting again, guaranteed to fit.
-    vsnprintf(buffer.data(), buffer.size(), format, args);
+    qvsnprintf(buffer.data(), buffer.size(), format, args);
 
     va_end(args);
 

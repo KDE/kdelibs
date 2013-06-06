@@ -76,7 +76,6 @@ check_symbol_exists(strcmp          "string.h"                 HAVE_STRCMP)     
 check_symbol_exists(strrchr         "string.h"                 HAVE_STRRCHR)     # libltdl
 check_symbol_exists(strtoll         "stdlib.h"                 HAVE_STRTOLL)     # kioslave
 check_symbol_exists(S_ISSOCK        "sys/stat.h"               HAVE_S_ISSOCK)    # config.h
-check_symbol_exists(vsnprintf       "stdio.h"                  HAVE_VSNPRINTF)   # config.h
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)     # kdecore, kdeui
 check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)# kdecore/fakes.c
 

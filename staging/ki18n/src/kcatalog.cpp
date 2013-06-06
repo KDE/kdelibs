@@ -25,6 +25,7 @@
 #include <QFileInfo>
 #include <QMutexLocker>
 #include <QDebug>
+#include <QByteArray>
 
 #include <stdlib.h>
 #include <locale.h>
@@ -97,7 +98,7 @@ KCatalog::KCatalog (const QString &name, const QString &language)
         // Later only change langenv to what is currently needed.
         langenv = new char[langenvMaxlen];
         QByteArray lang = qgetenv("LANGUAGE");
-        snprintf(langenv, langenvMaxlen, "LANGUAGE=%s", lang.constData());
+        qsnprintf(langenv, langenvMaxlen, "LANGUAGE=%s", lang.constData());
         putenv(langenv);
     }
 }
@@ -147,7 +148,7 @@ void KCatalogPrivate::setupGettextEnv ()
     if (systemLanguage != language) {
         // putenv has been called in the constructor,
         // it is enough to change the string set there.
-        snprintf(langenv, langenvMaxlen, "LANGUAGE=%s", language.constData());
+        qsnprintf(langenv, langenvMaxlen, "LANGUAGE=%s", language.constData());
     }
 
     // Rebind text domain if language actually changed from the last time,
@@ -172,7 +173,7 @@ void KCatalogPrivate::setupGettextEnv ()
 void KCatalogPrivate::resetSystemLanguage ()
 {
     if (language != systemLanguage) {
-        snprintf(langenv, langenvMaxlen, "LANGUAGE=%s", systemLanguage.constData());
+        qsnprintf(langenv, langenvMaxlen, "LANGUAGE=%s", systemLanguage.constData());
     }
 }
 

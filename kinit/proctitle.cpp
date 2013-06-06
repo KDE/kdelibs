@@ -22,6 +22,8 @@
 #include "proctitle.h"
 #include <config-kdeinit.h>
 
+#include <QByteArray>
+
 #include <string.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -161,12 +163,12 @@ void proctitle_set(const char *fmt, ...) {
 #if HAVE_SETPROCTITLE
 # if __FreeBSD__ >= 4 && !defined(FREEBSD4_0) && !defined(FREEBSD4_1)
     /* FreeBSD's setproctitle() automatically prepends the process name. */
-    vsnprintf(statbuf, sizeof(statbuf), fmt, msg);
+    qvsnprintf(statbuf, sizeof(statbuf), fmt, msg);
 
 # else /* FREEBSD4 */
     /* Manually append the process name for non-FreeBSD platforms. */
-    snprintf(statbuf, sizeof(statbuf), "%s", "kdeinit5: ");
-    vsnprintf(statbuf + strlen(statbuf),
+    qsnprintf(statbuf, sizeof(statbuf), "%s", "kdeinit5: ");
+    qvsnprintf(statbuf + strlen(statbuf),
               sizeof(statbuf) - strlen(statbuf),
               fmt,
               msg);
@@ -176,8 +178,8 @@ void proctitle_set(const char *fmt, ...) {
 
 #else /* HAVE_SETPROCTITLE */
     /* Manually append the process name for non-setproctitle() platforms. */
-    snprintf(statbuf, sizeof(statbuf), "%s", "kdeinit5: ");
-    vsnprintf(statbuf + strlen(statbuf),
+    qsnprintf(statbuf, sizeof(statbuf), "%s", "kdeinit5: ");
+    qvsnprintf(statbuf + strlen(statbuf),
               sizeof(statbuf) - strlen(statbuf),
               fmt,
               msg);
@@ -200,7 +202,7 @@ void proctitle_set(const char *fmt, ...) {
 # if PF_ARGV_TYPE == PF_ARGV_WRITEABLE
     const int maxlen = (LastArgv - Argv[0]) - 1;
     /* We can overwrite individual argv[] arguments.  Semi-nice. */
-    snprintf(Argv[0], maxlen, "%s", statbuf);
+    qsnprintf(Argv[0], maxlen, "%s", statbuf);
     p = &Argv[0][i];
     /* Clear the rest used by arguments, but don't clear the memory
        that is usually used for environment variables. Some
