@@ -283,7 +283,9 @@ void ToolTip::setContent(QObject *tipper, const ToolTipContent &data)
 {
     //reset our size
     d->text->setContent(data);
-    if (data.image().isNull()) {
+    if (data.image().isNull() ||
+        (WindowEffects::isEffectAvailable(WindowEffects::WindowPreview) &&
+         !data.windowsToPreview().isEmpty())) {
         d->imageLabel->hide();
     } else {
         d->imageLabel->show();
