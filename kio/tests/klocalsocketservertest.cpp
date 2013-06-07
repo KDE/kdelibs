@@ -48,7 +48,7 @@ protected:
     void run()
     {
         KLocalSocket socket;
-        usleep(200);
+        QThread::usleep(200);
         socket.connectToPath(asocket);
         socket.waitForConnected();
     }

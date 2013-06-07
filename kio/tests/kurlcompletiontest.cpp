@@ -24,6 +24,7 @@
 #include <QtCore/QFile>
 #include <qtemporarydir.h>
 #include <unistd.h>
+#include <QThread>
 
 class KUrlCompletionTest : public QObject
 {
@@ -91,7 +92,7 @@ void KUrlCompletionTest::waitForCompletion()
 {
     while ( m_completion->isRunning() ) {
         kDebug() << "waiting for thread...";
-        usleep( 10 );
+        QThread::usleep( 10 );
     }
 }
 

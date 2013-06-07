@@ -54,10 +54,10 @@ public:
 
     void run()
     {
-        usleep(100000);
+        QThread::usleep(100000);
         socket->write("Hello, World!", 13);
         socket->waitForBytesWritten();
-        usleep(100000);
+        QThread::usleep(100000);
         socket->close();
         delete socket;
     }

@@ -42,40 +42,6 @@
 #define KDE_mkdir mkdir
 
 
-#if ! HAVE_USLEEP
-
-#if TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
-#endif
-
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
-#ifdef __cplusplus  /* this is supposed to be a C source file but still.. */
-extern "C" {
-#endif
-
-void usleep(unsigned int usec) {
-        struct timeval _usleep_tv;
-        _usleep_tv.tv_sec = usec/1000000;
-        _usleep_tv.tv_usec = usec%1000000;
-        select(0,0,0,0,&_usleep_tv);
-}
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* !HAVE_USLEEP */
-
 #if ! HAVE_RANDOM
 long int random()
 {
