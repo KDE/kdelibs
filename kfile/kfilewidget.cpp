@@ -1129,12 +1129,7 @@ void KFileWidgetPrivate::multiSelectionChanged()
         return;
     }
 
-    KUrl::List urlList;
-    foreach (const KFileItem &fileItem, list) {
-        urlList << fileItem.url();
-    }
-
-    setLocationText(urlList);
+    setLocationText(list.urlList());
 }
 
 void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixmap& icon,
