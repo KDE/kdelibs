@@ -85,7 +85,6 @@ set(kdeui_LIB_SRCS
  dialogs/kconfigdialogmanager.cpp
  dialogs/kbugreport.cpp
  dialogs/kedittoolbar.cpp
- dialogs/kinputdialog.cpp
  dialogs/klinkdialog.cpp
  dialogs/kaboutapplicationdialog.cpp
  dialogs/kaboutapplicationpersonmodel_p.cpp
@@ -358,7 +357,6 @@ install( FILES
  dialogs/kconfigdialogmanager.h
  dialogs/kdeprintdialog.h
  dialogs/kedittoolbar.h
- dialogs/kinputdialog.h
  dialogs/knewpassworddialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h

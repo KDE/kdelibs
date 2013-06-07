@@ -42,7 +42,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdatetabletest
   kdebugtest_gui
   kicondialogtest
-  kinputdialogtest
   kjobtrackerstest
   klineedittest
   kmainwindowtest

@@ -51,6 +51,7 @@ set(libkde4support_SRCS
     kdeui/ksessionmanager.cpp
     kdeui/kfadewidgeteffect.cpp
     kdeui/kicon.cpp
+    kdeui/kinputdialog.cpp
     kdeui/knumvalidator.cpp
     kdeui/karrowbutton.cpp
     kdeui/ksplashscreen.cpp
@@ -161,6 +162,7 @@ install(FILES
     kdeui/kfadewidgeteffect.h
     kdeui/kfontdialog.h
     kdeui/kicon.h
+    kdeui/kinputdialog.h
     kdeui/knumvalidator.h
     kdeui/karrowbutton.h
     kdeui/ksplashscreen.h

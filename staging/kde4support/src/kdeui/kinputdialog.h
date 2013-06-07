@@ -22,7 +22,7 @@
 
 #include <QtCore/QStringList>
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <limits.h>
 #include <float.h>
@@ -35,6 +35,7 @@ class QValidator;
  * a float) or an item from a list.
  *
  * @author Nadeem Hasan <nhasan@kde.org>
+ * @deprecated since 5.0 in favor of QInputDialog
  */
 namespace KInputDialog
 {
@@ -64,13 +65,17 @@ namespace KInputDialog
      * @param whatsThis a QWhatsThis text for the input widget.
      * @param completionList a list of items which should be used for input completion
      * @return String user entered if Ok was pressed, else a null string
+     *
+     * @deprecated since 5.0, use QInputDialog::getText() instead
      */
-    KDEUI_EXPORT QString getText( const QString &caption, const QString &label,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT QString getText( const QString &caption, const QString &label,
                                   const QString &value=QString(), bool *ok=0, QWidget *parent=0,
                                   QValidator *validator=0,
                                   const QString &mask=QString(),
                                   const QString& whatsThis=QString(),
                                   const QStringList &completionList=QStringList()  );
+#endif
 
     /**
      * Static convenience function to get a multiline string from the user.
@@ -87,10 +92,13 @@ namespace KInputDialog
      * @param parent    Parent of the dialog widget
      *
      * @return String user entered if Ok was pressed, else a null string
+     * @deprecated since 5.0, use QInputDialog::getMultiLineText() instead
      */
-    KDEUI_EXPORT QString getMultiLineText( const QString &caption,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT QString getMultiLineText( const QString &caption,
                                            const QString &label, const QString &value=QString(),
                                            bool *ok=0, QWidget *parent=0 );
+#endif
 
     /**
      * Static convenience function to get an integer from the user.
@@ -113,19 +121,24 @@ namespace KInputDialog
      * @param parent   Parent of the dialog widget
      *
      * @return Number user entered if Ok was pressed, else 0
+     * @deprecated since 5.0, use QInputDialog::getInt() instead
      */
-
-    KDEUI_EXPORT int getInteger( const QString &caption, const QString &label,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT int getInteger( const QString &caption, const QString &label,
                                  int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
                                  int step=1, int base=10, bool *ok=0, QWidget *parent=0 );
+#endif
 
     /**
      * This is an overloaded convenience function. It behaves exactly same as
      * above except it assumes base to be 10, i.e. accepts decimal numbers.
+     * @deprecated since 5.0, use QInputDialog::getInt() instead
      */
-    KDEUI_EXPORT int getInteger( const QString &caption, const QString &label,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT int getInteger( const QString &caption, const QString &label,
                                  int value=0, int minValue=INT_MIN, int maxValue=INT_MAX,
                                  int step=1, bool *ok=0, QWidget *parent=0 );
+#endif
 
     /**
      * Static convenience function to get a floating point number from the user.
@@ -148,20 +161,26 @@ namespace KInputDialog
      * @param parent   Parent of the dialog widget
      *
      * @return Number user entered if Ok was pressed, else 0
+     * @deprecated since 5.0, use QInputDialog::getDouble() instead
      */
-    KDEUI_EXPORT double getDouble( const QString &caption, const QString &label,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT double getDouble( const QString &caption, const QString &label,
                                    double value=0, double minValue=-DBL_MAX,
                                    double maxValue=DBL_MAX, double step=0.1, int decimals=1,
                                    bool *ok=0, QWidget *parent=0 );
+#endif
 
     /**
      * This is an overloaded convenience function. It behaves exctly like
      * the above function.
+     * @deprecated since 5.0, use QInputDialog::getDouble() instead
      */
-    KDEUI_EXPORT double getDouble( const QString &caption, const QString &label,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT double getDouble( const QString &caption, const QString &label,
                                    double value=0, double minValue=-DBL_MAX,
                                    double maxValue=DBL_MAX, int decimals=1, bool *ok=0,
                                    QWidget *parent=0 );
+#endif
 
     /**
      * Static convenience function to let the user select an item from a
@@ -181,10 +200,13 @@ namespace KInputDialog
      *
      * @return Text of the selected item. If @p editable is true this can be
      *         a text entered by the user.
+     * @deprecated since 5.0, use QInputDialog::getItem() instead
      */
-    KDEUI_EXPORT QString getItem( const QString &caption, const QString &label,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT QString getItem( const QString &caption, const QString &label,
                                   const QStringList &list, int current=0, bool editable=false,
                                   bool *ok=0, QWidget *parent=0 );
+#endif
 
     /**
      * Static convenience function to let the user select one or more
@@ -204,11 +226,15 @@ namespace KInputDialog
      *
      * @return List of selected items if multiple is true, else currently
      *         selected item as a QStringList
+     * @deprecated since 5.0, use QInputDialog with the option UseListViewForComboBoxItems instead
+     *         (yet only one item allowed)
      */
-    KDEUI_EXPORT QStringList getItemList( const QString &caption,
+#ifndef KDE_NO_DEPRECATED
+    KDE4SUPPORT_DEPRECATED_EXPORT QStringList getItemList( const QString &caption,
                                           const QString &label, const QStringList &list=QStringList(),
                                           const QStringList &select=QStringList(), bool multiple=false,
                                           bool *ok=0, QWidget *parent=0 );
+#endif
 }
 
 #endif // KINPUTDIALOG_H
