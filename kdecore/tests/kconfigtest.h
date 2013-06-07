@@ -51,6 +51,7 @@ private Q_SLOTS:
     void testDeleteWhenLocalized();
     void testDefaultGroup();
     void testEmptyGroup();
+    void testCascadingWithLocale();
     void testMerge();
     void testImmutable();
     void testGroupEscape();

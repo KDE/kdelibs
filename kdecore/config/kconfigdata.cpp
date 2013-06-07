@@ -160,15 +160,16 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
             it.value() = e;
             if(k.bDefault)
             {
-                k.bDefault = false;
-                insert(k, e);
+                KEntryKey nonDefaultKey(k);
+                nonDefaultKey.bDefault = false;
+                insert(nonDefaultKey, e);
             }
             if (!(options & EntryLocalized)) {
                 KEntryKey theKey(group, key, true, false);
                 //qDebug() << "non-localized entry, remove localized one:" << theKey;
                 remove(theKey);
                 if (k.bDefault) {
-                    theKey.bDefault = false;
+                    theKey.bDefault = true;
                     remove(theKey);
                 }
             }
@@ -185,7 +186,7 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
                     ret = true;
                 }
                 if (k.bDefault) {
-                    theKey.bDefault = false;
+                    theKey.bDefault = true;
                     Iterator cit = find(theKey);
                     if (cit != end()) {
                         erase(cit);
