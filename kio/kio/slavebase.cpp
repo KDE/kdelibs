@@ -25,13 +25,10 @@
 
 #include <config-kio.h>
 
-#include <sys/time.h>
-
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
-#include <time.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QList>
@@ -95,11 +92,11 @@ public:
     KConfigGroup *configGroup;
     QUrl onHoldUrl;
 
-    struct timeval last_tv;
+    QDateTime lastTimeout;
+    QDateTime nextTimeout;
     KIO::filesize_t totalSize;
     KIO::filesize_t sentListEntries;
     KRemoteEncoding *remotefile;
-    time_t timeout;
     enum { Idle, InsideMethod, FinishedCalled, ErrorCalled } m_state;
     QByteArray timeoutData;
 
@@ -235,12 +232,9 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
     d->configGroup = new KConfigGroup(d->config, QString());
     d->onHold = false;
     d->wasKilled=false;
-    d->last_tv.tv_sec = 0;
-    d->last_tv.tv_usec = 0;
 //    d->processed_size = 0;
     d->totalSize=0;
     d->sentListEntries=0;
-    d->timeout = 0;
     connectSlave(QFile::decodeName(app_socket));
 
     d->remotefile = 0;
@@ -260,9 +254,9 @@ SlaveBase::~SlaveBase()
 void SlaveBase::dispatchLoop()
 {
     while (!d->exit_loop) {
-        if (d->timeout && (d->timeout < time(0))) {
+        if (d->nextTimeout.isValid() && (d->nextTimeout < QDateTime::currentDateTime())) {
             QByteArray data = d->timeoutData;
-            d->timeout = 0;
+            d->nextTimeout = QDateTime();
             d->timeoutData = QByteArray();
             special(data);
         }
@@ -270,8 +264,8 @@ void SlaveBase::dispatchLoop()
         Q_ASSERT(d->appConnection.inited());
 
         int ms = -1;
-        if (d->timeout)
-            ms = 1000 * qMax<time_t>(d->timeout - time(0), 1);
+        if (d->nextTimeout.isValid())
+            ms = qMax<int>(QDateTime::currentDateTime().msecsTo(d->nextTimeout), 1);
 
         int ret = -1;
         if (d->appConnection.hasTaskAvailable() || d->appConnection.waitForIncomingTask(ms)) {
@@ -502,38 +496,28 @@ void SlaveBase::totalSize( KIO::filesize_t _bytes )
     d->sentListEntries=0;
 }
 
-void SlaveBase::processedSize( KIO::filesize_t _bytes )
+void SlaveBase::processedSize(KIO::filesize_t _bytes)
 {
-    bool           emitSignal=false;
-    struct timeval tv;
-    int            gettimeofday_res=gettimeofday( &tv, 0L );
+    bool emitSignal = false;
 
-    if( _bytes == d->totalSize )
+    QDateTime now = QDateTime::currentDateTime();
+
+    if (_bytes == d->totalSize)
         emitSignal=true;
-    else if ( gettimeofday_res == 0 ) {
-        time_t msecdiff = 2000;
-        if (d->last_tv.tv_sec) {
-            // Compute difference, in ms
-            msecdiff = 1000 * ( tv.tv_sec - d->last_tv.tv_sec );
-            time_t usecdiff = tv.tv_usec - d->last_tv.tv_usec;
-            if ( usecdiff < 0 ) {
-                msecdiff--;
-                msecdiff += 1000;
-            }
-            msecdiff += usecdiff / 1000;
-        }
-        emitSignal=msecdiff >= 100; // emit size 10 times a second
+    else {
+        if (d->lastTimeout.isValid())
+            emitSignal = d->lastTimeout.msecsTo(now); // emit size 10 times a second
+        else
+            emitSignal = true;
     }
 
-    if( emitSignal ) {
+    if (emitSignal) {
         KIO_DATA << KIO_FILESIZE_T(_bytes);
-        send( INF_PROCESSED_SIZE, data );
-        if ( gettimeofday_res == 0 ) {
-            d->last_tv.tv_sec = tv.tv_sec;
-            d->last_tv.tv_usec = tv.tv_usec;
-        }
+        send(INF_PROCESSED_SIZE, data);
+        d->lastTimeout = now;
     }
-//    d->processed_size = _bytes;
+
+    //    d->processed_size = _bytes;
 }
 
 void SlaveBase::written( KIO::filesize_t _bytes )
@@ -975,11 +959,11 @@ int SlaveBase::readData( QByteArray &buffer)
 void SlaveBase::setTimeoutSpecialCommand(int timeout, const QByteArray &data)
 {
    if (timeout > 0)
-      d->timeout = time(0)+(time_t)timeout;
+      d->nextTimeout = QDateTime::currentDateTime().addSecs(timeout);
    else if (timeout == 0)
-      d->timeout = 1; // Immediate timeout
+      d->nextTimeout = QDateTime::currentDateTime().addSecs(1); // Immediate timeout
    else
-      d->timeout = 0; // Canceled
+      d->nextTimeout = QDateTime(); // Canceled
 
    d->timeoutData = data;
 }
