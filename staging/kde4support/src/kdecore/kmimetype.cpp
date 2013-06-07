@@ -34,6 +34,10 @@
 #include <QtDBus/QtDBus>
 #include <QBuffer>
 
+#ifndef S_ISSOCK
+#define S_ISSOCK(x) false
+#endif
+
 extern int servicesDebugArea();
 
 template class KSharedPtr<KMimeType>;

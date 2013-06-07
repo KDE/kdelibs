@@ -56,6 +56,10 @@
 #endif
 #include <kfilesystemtype_p.h>
 
+#ifndef S_ISSOCK
+#define S_ISSOCK(x) false
+#endif
+
 class KFileItemPrivate : public QSharedData
 {
 public:

@@ -84,16 +84,9 @@
 #cmakedefine01   HAVE_GETTIMEOFDAY
 #cmakedefine01   HAVE_GETGROUPLIST
 
-#cmakedefine01 HAVE_S_ISSOCK
-
 #cmakedefine01 TIME_WITH_SYS_TIME
 
 /*********************/
-
-#ifndef HAVE_S_ISSOCK
-#define HAVE_S_ISSOCK
-#define S_ISSOCK(mode) (1==0)
-#endif
 
 #if HAVE_NSGETENVIRON && HAVE_CRT_EXTERNS_H
 # include <sys/time.h>
