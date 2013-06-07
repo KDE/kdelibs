@@ -70,7 +70,7 @@ namespace KIO
 
         QHash<QString, Query*> openQueries;
         QCache<QString, QPair<QHostInfo, QTime> > dnsCache;
-        time_t resolvConfMTime;
+        QDateTime resolvConfMTime;
         int ttl;
     };
 
@@ -305,10 +305,9 @@ void HostInfo::setTTL(int ttl)
 HostInfoAgentPrivate::HostInfoAgentPrivate(int cacheSize)
     : openQueries(),
       dnsCache(cacheSize),
-      resolvConfMTime(0),
       ttl(TTL)
 {
-      qRegisterMetaType<QHostInfo>();
+    qRegisterMetaType<QHostInfo>();
 }
 
 void HostInfoAgentPrivate::lookupHost(const QString& hostName,
@@ -316,7 +315,7 @@ void HostInfoAgentPrivate::lookupHost(const QString& hostName,
 {
 #ifdef _PATH_RESCONF
     QFileInfo resolvConf(QFile::decodeName(_PATH_RESCONF));
-    time_t currentMTime = resolvConf.lastModified().toTime_t();
+    QDateTime currentMTime = resolvConf.lastModified();
     if (resolvConf.exists() && currentMTime != resolvConfMTime) {
         // /etc/resolv.conf has been modified
         // clear our cache
