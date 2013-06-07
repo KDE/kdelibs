@@ -40,13 +40,7 @@ QDebug operator<<(QDebug dbg, const KEntry& entry)
 
 QMap< KEntryKey, KEntry >::Iterator KEntryMap::findExactEntry(const QByteArray& group, const QByteArray& key, KEntryMap::SearchFlags flags)
 {
-    KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
-
-    // try the localized key first
-    if (flags&SearchLocalized) {
-        theKey.bLocal = true;
-        return find(theKey);
-    }
+    KEntryKey theKey(group, key, bool(flags&SearchLocalized), bool(flags&SearchDefaults));
     return find(theKey);
 }
 
