@@ -134,6 +134,10 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
     return (!k1.bDefault && k2.bDefault);
 }
 
+
+QDebug operator<<(QDebug dbg, const KEntryKey& key);
+QDebug operator<<(QDebug dbg, const KEntry& entry);
+
 /**
  * \relates KEntry
  * type specifying a map of entries (key,value pairs).

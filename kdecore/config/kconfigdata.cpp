@@ -22,6 +22,22 @@
 
 #include <kconfigdata.h>
 
+QDebug operator<<(QDebug dbg, const KEntryKey& key)
+{
+   dbg.nospace() << "[" << key.mGroup << ", " << key.mKey << (key.bLocal?" localized":"") <<
+       (key.bDefault?" default":"") << (key.bRaw?" raw":"") << "]";
+   return dbg.space();
+}
+
+QDebug operator<<(QDebug dbg, const KEntry& entry)
+{
+   dbg.nospace() << "[" << entry.mValue << (entry.bDirty?" dirty":"") <<
+       (entry.bGlobal?" global":"") << (entry.bImmutable?" immutable":"") <<
+       (entry.bDeleted?" deleted":"") << (entry.bExpand?" expand":"") << "]";
+
+   return dbg.space();
+}
+
 QMap< KEntryKey, KEntry >::Iterator KEntryMap::findExactEntry(const QByteArray& group, const QByteArray& key, KEntryMap::SearchFlags flags)
 {
     KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
@@ -99,6 +115,7 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
             return false; // we cannot change this entry. Inherits group immutability.
         k = it.key();
         e = *it;
+        //qDebug() << "found existing entry for key" << k;
     } else {
         // make sure the group marker is in the map
         KEntryMap const *that = this;
@@ -117,7 +134,6 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
     k.bDefault = (options&EntryDefault);
     k.bRaw = (options&EntryRawKey);
 
-    //qDebug() << "changing [" << group << "," << key << "] =" << e.mValue;
     e.mValue = value;
     e.bDirty = e.bDirty || (options&EntryDirty);
     e.bGlobal = (options&EntryGlobal);  //we can't use || here, because changes to entries in
@@ -130,13 +146,14 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
         e.bDeleted = false; // setting a value to a previously deleted entry
     e.bExpand = (options&EntryExpansion);
 
-    //qDebug() << "to [" << group << "," << key << "] =" << e.mValue << "newKey=" << newKey;
     if(newKey)
     {
+        //qDebug() << "inserting" << k << "=" << value;
         insert(k, e);
         if(k.bDefault)
         {
             k.bDefault = false;
+            //qDebug() << "also inserting" << k << "=" << value;
             insert(k, e);
         }
         // TODO check for presence of unlocalized key
@@ -145,6 +162,7 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
 //                KEntry e2 = it.value();
         if(it.value() != e)
         {
+            //qDebug() << "changing" << k << "from" << e.mValue << "to" << value;
             it.value() = e;
             if(k.bDefault)
             {
@@ -153,6 +171,7 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
             }
             if (!(options & EntryLocalized)) {
                 KEntryKey theKey(group, key, true, false);
+                //qDebug() << "non-localized entry, remove localized one:" << theKey;
                 remove(theKey);
                 if (k.bDefault) {
                     theKey.bDefault = false;
@@ -161,7 +180,9 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
             }
             return true;
         } else {
+            //qDebug() << k << "was already set to" << e.mValue;
             if (!(options & EntryLocalized)) {
+                //qDebug() << "unchanged non-localized entry, remove localized one.";
                 KEntryKey theKey(group, key, true, false);
                 bool ret = false;
                 Iterator cit = find(theKey);
@@ -179,6 +200,7 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
                 }
                 return ret;
             }
+            //qDebug() << "localized entry, unchanged, return false";
             // When we are writing a default, we know that the non-
             // default is the same as the default, so we can simply
             // use the same branch.
