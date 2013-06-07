@@ -72,6 +72,7 @@ private Q_SLOTS:
     void testSharedConfig();
     void testOptionOrder();
     void testLocaleConfig();
+    void testDirtyAfterRevert();
     void testKdeGlobals();
     void testNoKdeHome();
 
@@ -83,7 +84,6 @@ private Q_SLOTS:
     // should be last
     void testSyncOnExit();
 private:
-    void revertEntries();
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigTest::Flags)
 

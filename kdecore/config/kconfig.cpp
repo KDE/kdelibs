@@ -492,6 +492,12 @@ void KConfig::markAsClean()
         it->bDirty = false;
 }
 
+bool KConfig::isDirty() const // only exists for the unittest
+{
+    Q_D(const KConfig);
+    return d->bDirty;
+}
+
 void KConfig::checkUpdate(const QString &id, const QString &updateFile)
 {
     const KConfigGroup cg(this, "$Version");
@@ -860,6 +866,13 @@ void KConfigPrivate::putData( const QByteArray& group, const char* key,
 
     bool dirtied = entryMap.setEntry(group, key, value, options);
     if (dirtied && (flags & KConfigBase::Persistent))
+        bDirty = true;
+}
+
+void KConfigPrivate::revertEntry(const QByteArray& group, const char* key)
+{
+    bool dirtied = entryMap.revertEntry(group, key);
+    if (dirtied)
         bDirty = true;
 }
 
