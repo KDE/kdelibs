@@ -192,6 +192,7 @@ set(kdecore_LIB_SRCS
    compression/kfilterdev.cpp
    config/kconfig.cpp
    config/kconfigbase.cpp
+   config/kconfigdata.cpp
    config/kconfiggroup.cpp
    config/kconfigbackend.cpp
    config/kconfigini.cpp
