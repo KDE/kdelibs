@@ -29,7 +29,6 @@
      strlcat, 
      usleep, initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
-     mkstemp, mkstemps (prefer to use QTemporaryfile instead)
      getgrouplist
 */
 
@@ -84,28 +83,6 @@ int usleep (unsigned int);
 extern "C" {
 #endif
 int initgroups(const char *, gid_t);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#cmakedefine01 HAVE_MKSTEMPS_PROTO
-#if ! HAVE_MKSTEMPS_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-int mkstemps(char *, int);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#cmakedefine01 HAVE_MKSTEMP_PROTO
-#if ! HAVE_MKSTEMP_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-int mkstemp(char *);
 #ifdef __cplusplus
 }
 #endif
