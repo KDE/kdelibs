@@ -175,7 +175,8 @@ public:
         SocketResourceError,
         SocketTimeoutError,
         NetworkError,
-        UnsupportedSocketOperationError
+        UnsupportedSocketOperationError,
+        SslHandshakeFailedError
     };
 /*
 The following is based on reading the OpenSSL interface code of both QSslSocket

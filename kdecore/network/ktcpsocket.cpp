@@ -321,6 +321,8 @@ public:
             return KTcpSocket::NetworkError;
         case QAbstractSocket::UnsupportedSocketOperationError:
             return KTcpSocket::UnsupportedSocketOperationError;
+        case QAbstractSocket::SslHandshakeFailedError:
+            return KTcpSocket::SslHandshakeFailedError;
         case QAbstractSocket::DatagramTooLargeError:
             //we don't do UDP
         case QAbstractSocket::AddressInUseError:
