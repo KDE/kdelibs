@@ -30,8 +30,6 @@
 #include <QMenu>
 #include <QMovie>
 
-
-#include <kaboutdata.h>
 #include <kwindowinfo.h>
 #include <kwindowsystem.h>
 
