@@ -26,22 +26,10 @@
 
    You should include this file in any .cpp file that uses any one of these 
    functions:
-     strlcat, 
      initgroups, 
      random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
      getgrouplist
 */
-
-#cmakedefine01 HAVE_STRLCAT_PROTO
-#if ! HAVE_STRLCAT_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-unsigned long strlcat(char*, const char*, unsigned long);
-#ifdef __cplusplus
-}
-#endif
-#endif
 
 #cmakedefine01 HAVE_RANDOM_PROTO 
 #if ! HAVE_RANDOM_PROTO

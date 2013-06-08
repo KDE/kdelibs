@@ -47,7 +47,6 @@ check_cxx_source_compiles("
 	}
 " GETMNTINFO_USES_STATVFS )
 
-check_prototype_exists(strlcat string.h             HAVE_STRLCAT_PROTO)
 check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
 check_prototype_exists(random stdlib.h              HAVE_RANDOM_PROTO)
 check_prototype_exists(setenv stdlib.h              HAVE_SETENV_PROTO)
