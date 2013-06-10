@@ -588,9 +588,8 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
 
     // read our configuration
     KSharedConfig::Ptr config = KGlobal::config();
-    d->configGroup = KConfigGroup(config, ConfigGroup);
-    d->readViewConfig();
-    d->readRecentFiles();
+    KConfigGroup group(config, ConfigGroup);
+    readConfig(group);
 
     coll->action("inline preview")->setChecked(d->ops->isInlinePreviewShown());
     d->iconSizeSlider->setValue(d->ops->iconsZoom());
