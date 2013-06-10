@@ -14,7 +14,6 @@ karrowbutton.cpp	Frerich Raabe <raabe@kde.org>
 kauthicon.cpp
 kbugreport.cpp
 kbuttonbox.cpp
-kcharselect.cpp
 kcmenumngr.cpp
 kcmodule.cpp
 kcolorbutton.cpp

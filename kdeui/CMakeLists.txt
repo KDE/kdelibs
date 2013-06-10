@@ -120,8 +120,6 @@ set(kdeui_LIB_SRCS
  util/kmodifierkeyinfoprovider.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
- widgets/kcharselect.cpp
- widgets/kcharselectdata.cpp
  widgets/kcmodule.cpp
  widgets/kcombobox.cpp
  widgets/kcompletionbox.cpp
@@ -318,8 +316,6 @@ install( FILES
  dialogs/thumb_frame.png
  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 
-install( FILES widgets/kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect )
-
 install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
 
 install( FILES
@@ -363,7 +359,6 @@ install( FILES
  widgets/kcmodule.h
  widgets/kcombobox.h
  widgets/kcompletionbox.h
- widgets/kcharselect.h
  widgets/kdatetable.h
  widgets/khelpmenu.h
  widgets/khistorycombobox.h

@@ -2,6 +2,8 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 set(kde4attic_SRCS
   kanimatedbutton.cpp
+  kcharselect.cpp
+  kcharselectdata.cpp
   kdatecombobox.cpp
   kdatetimeedit.cpp
   kdatetimewidget.cpp
@@ -30,6 +32,7 @@ install(TARGETS KDE4Attic EXPORT KDE4AtticTargets ${INSTALL_TARGETS_DEFAULT_ARGS
 
 install(FILES
   kanimatedbutton.h
+  kcharselect.h
   kdatecombobox.h
   kdatetimeedit.h
   kdatetimewidget.h
@@ -40,3 +43,5 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kde4attic_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+install(FILES kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect)

@@ -24,7 +24,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QWidget>
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 
 class KActionCollection;
 
@@ -57,7 +57,7 @@ class QUrl;
  * @author Daniel Laidig <d.laidig@gmx.de>
  */
 
-class KDEUI_EXPORT KCharSelect : public QWidget
+class KDE4ATTIC_EXPORT KCharSelect : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QFont currentFont READ currentFont WRITE setCurrentFont)
@@ -107,7 +107,7 @@ public:
 
     /** @deprecated */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED explicit KCharSelect(
+    KDE4ATTIC_DEPRECATED explicit KCharSelect(
             QWidget *parent,
             const Controls controls = AllGuiElements);
 #endif
