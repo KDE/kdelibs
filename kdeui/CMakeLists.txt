@@ -152,7 +152,6 @@ set(kdeui_LIB_SRCS
  widgets/klanguagebutton.cpp
  widgets/klineedit.cpp
  widgets/kmessagewidget.cpp
- widgets/kmultitabbar.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
@@ -411,7 +410,6 @@ install( FILES
  widgets/klanguagebutton.h
  widgets/klineedit.h
  widgets/kmessagewidget.h
- widgets/kmultitabbar.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
  widgets/kstringvalidator.h
