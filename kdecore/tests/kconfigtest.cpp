@@ -321,8 +321,8 @@ void KConfigTest::testSimple()
 void KConfigTest::testDefaults()
 {
     KConfig config("defaulttest", KConfig::NoGlobals);
-#define DEFAULTS "defaulttest.defaults"
-    KConfig defaults(DEFAULTS, KConfig::SimpleConfig);
+    const QString defaultsFile = "defaulttest.defaults";
+    KConfig defaults(defaultsFile, KConfig::SimpleConfig);
 
     const QString Default("Default");
     const QString NotDefault("Not Default");
@@ -338,7 +338,7 @@ void KConfigTest::testDefaults()
     group.writeEntry("entry2", Value2);
     group.sync();
 
-    config.addConfigSources(QStringList() << KStandardDirs::locateLocal("config", DEFAULTS));
+    config.addConfigSources(QStringList() << KStandardDirs::locateLocal("config", defaultsFile));
 
     config.setReadDefaults(true);
     QCOMPARE(group.readEntry("entry1", QString()), Default);
@@ -352,7 +352,6 @@ void KConfigTest::testDefaults()
     QCOMPARE(group.readEntry("entry1", QString()), Default);
     group.revertToDefault("entry2");
     QCOMPARE(group.readEntry("entry2", QString()), QString());
-#undef DEFAULTS
 }
 
 void KConfigTest::testLocale()

@@ -42,7 +42,6 @@ KDECORE_UNIT_TESTS(
  kshelltest
  kasciitest
  ktimezonestest
- kentrymaptest
  kconfigtest
  kurlmimetest
  klockfiletest
@@ -100,6 +99,13 @@ KDECORE_EXECUTABLE_TESTS(
  startserviceby
  klockfile_testlock # helper for klockfiletest
 )
+
+########### kentrymaptest ###############
+
+# compile KEntryMap into the test since it's not exported
+set(kentrymaptest_SRCS kentrymaptest.cpp ../config/kconfigdata.cpp)
+kde4_add_unit_test(kentrymaptest ${kentrymaptest_SRCS})
+target_link_libraries(kentrymaptest ${KDE4_KDECORE_LIBS} ${QT_QTTEST_LIBRARY} )
 
 ########### klocaletest ###############
 
