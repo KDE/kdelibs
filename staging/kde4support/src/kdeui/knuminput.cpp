@@ -36,6 +36,7 @@
 #include <QSlider>
 #include <QStyle>
 
+#include <kconfigdialogmanager.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 
@@ -93,6 +94,9 @@ KNumInput::KNumInput(QWidget* parent)
 {
     setSizePolicy(QSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed));
     setFocusPolicy(Qt::StrongFocus);
+    KConfigDialogManager::changedMap()->insert("KIntNumInput", SIGNAL(valueChanged(int)));
+    KConfigDialogManager::changedMap()->insert("KIntSpinBox", SIGNAL(valueChanged(int)));
+    KConfigDialogManager::changedMap()->insert("KDoubleSpinBox", SIGNAL(valueChanged(double)));
 }
 
 #ifndef KDE_NO_DEPRECATED

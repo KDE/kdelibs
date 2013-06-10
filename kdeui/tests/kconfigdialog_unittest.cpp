@@ -28,6 +28,7 @@
 #include <kconfigskeleton.h>
 #include <kcombobox.h>
 #include <kcolorcombo.h>
+#include <knuminput.h>
 
 class ComboBoxPage : public QWidget
 {
@@ -46,11 +47,15 @@ public:
         textCombo->setObjectName("kcfg_Text");
         textCombo->setEditable(true);
         textCombo->addItems(QStringList() << "A" << "B" << "C");
+
+        numInput = new KIntNumInput(1, this);
+        numInput->setObjectName("kcfg_IntNumInput");
     }
 
     KColorCombo *colorCombo;
     KComboBox *enumCombo;
     KComboBox *textCombo;
+    KIntNumInput *numInput;
 };
 
 class ComboSettings : public KConfigSkeleton
@@ -82,6 +87,9 @@ public:
 
         stringItem = new ItemString( currentGroup(), QLatin1String( "Text" ), string, QLatin1String( "hh:mm" ) );
         addItem( stringItem, QLatin1String( "Text" ) );
+
+        intValueItem = new ItemInt( currentGroup(), QLatin1String( "IntNumInput" ), intValue, 42 );
+        addItem( intValueItem, QLatin1String( "IntNumInput" ) );
     }
 
     ItemColor *colorItem;
@@ -92,6 +100,9 @@ public:
 
     ItemString *stringItem;
     QString string;
+
+    ItemInt *intValueItem;
+    int intValue;
 };
 
 class KConfigDialog_UnitTest : public QObject
@@ -108,7 +119,7 @@ private Q_SLOTS:
             QFile::remove(configFile);
     }
 
-    void combosTest()
+    void test()
     {
         ComboSettings *skeleton = new ComboSettings();
         KConfigDialog *dialog = new KConfigDialog(0, "settings", skeleton);
@@ -117,16 +128,19 @@ private Q_SLOTS:
         QCOMPARE(page->colorCombo->color(), QColor(Qt::red));
         QCOMPARE(page->enumCombo->currentIndex(), 0);
         QCOMPARE(page->textCombo->currentText(), QString("A"));
+        QCOMPARE(page->numInput->value(), 1);
 
         dialog->addPage(page, "General");
 
         QCOMPARE(page->colorCombo->color(), QColor(Qt::white));
         QCOMPARE(page->enumCombo->currentIndex(), 1);
         QCOMPARE(page->textCombo->currentText(), QLatin1String( "hh:mm" ));
+        QCOMPARE(page->numInput->value(), 42);
 
         page->colorCombo->setColor(Qt::blue);
         page->enumCombo->setCurrentIndex(2);
         page->textCombo->setCurrentIndex(2);
+        page->numInput->setValue(2);
 
         QDialogButtonBox *buttonBox = dialog->findChild<QDialogButtonBox*>();
         QVERIFY(buttonBox!=0);
@@ -134,6 +148,7 @@ private Q_SLOTS:
         QCOMPARE(skeleton->colorItem->property().value<QColor>(), QColor(Qt::blue));
         QCOMPARE(skeleton->enumItem->property().toInt(), 2);
         QCOMPARE(skeleton->stringItem->property().toString(), QLatin1String("C"));
+        QCOMPARE(skeleton->intValueItem->property().toInt(), 2);
 
         delete dialog;
         delete skeleton;
