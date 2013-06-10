@@ -29,7 +29,6 @@
 
 #include <qcommandlineparser.h>
 
-#include <kiconloader.h>
 #include <qdebug.h>
 
 KStatusNotifierItemTest::KStatusNotifierItemTest(QObject *parent, KStatusNotifierItem *tray)
