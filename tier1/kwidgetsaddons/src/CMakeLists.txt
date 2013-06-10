@@ -25,6 +25,8 @@ set(kwidgetsaddons_SRCS
   kactionselector.cpp
   kcolorcombo.cpp
   ktoolbarspaceraction.cpp
+  kpixmapregionselectordialog.cpp
+  kpixmapregionselectorwidget.cpp
 )
 
 set(kwidgetsaddon_UI

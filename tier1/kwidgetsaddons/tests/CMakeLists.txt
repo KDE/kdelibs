@@ -22,4 +22,5 @@ kwidgetsaddons_executable_tests(
   kratingwidgettest
   kactionselectortest
   kcolorcombotest
+  kpixmapregionselectordialogtest
 )

@@ -20,7 +20,7 @@
 #ifndef KPIXMAPREGIONSELECTORWIDGET_H
 #define KPIXMAPREGIONSELECTORWIDGET_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QPixmap>
 #include <QWidget>
@@ -41,11 +41,11 @@ class QMenu;
  *
  * @author Antonio Larrosa <larrosa@kde.org>
  */
-class KDEUI_EXPORT KPixmapRegionSelectorWidget : public QWidget
+class KWIDGETSADDONS_EXPORT KPixmapRegionSelectorWidget : public QWidget
 {
-   Q_OBJECT
+    Q_OBJECT
     Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap)
-   
+
 public:
     /**
      * This enum provides a rotation direction.
@@ -155,13 +155,12 @@ protected:
 
 private:
    bool eventFilter(QObject *obj, QEvent *ev);
-   
+
    class Private;
    friend class Private;
    Private* const d;
-   
+
    Q_DISABLE_COPY(KPixmapRegionSelectorWidget)
 };
 
 #endif
-

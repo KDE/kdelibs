@@ -92,7 +92,6 @@ set(kdeui_LIB_SRCS
  dialogs/kaboutapplicationpersonlistdelegate_p.cpp
  dialogs/kaboutapplicationpersonlistview_p.cpp
  dialogs/knewpassworddialog.cpp
- dialogs/kpixmapregionselectordialog.cpp
  dialogs/kshortcuteditwidget.cpp
  dialogs/kshortcutseditordelegate.cpp
  dialogs/kshortcutseditoritem.cpp
@@ -155,7 +154,6 @@ set(kdeui_LIB_SRCS
  widgets/kmessagewidget.cpp
  widgets/kmultitabbar.cpp
  widgets/knuminput.cpp
- widgets/kpixmapregionselectorwidget.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
@@ -366,7 +364,6 @@ install( FILES
  dialogs/kedittoolbar.h
  dialogs/kinputdialog.h
  dialogs/knewpassworddialog.h
- dialogs/kpixmapregionselectordialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
  dialogs/ktip.h
@@ -417,7 +414,6 @@ install( FILES
  widgets/kmessagewidget.h
  widgets/kmultitabbar.h
  widgets/knuminput.h
- widgets/kpixmapregionselectorwidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
  widgets/kstringvalidator.h
