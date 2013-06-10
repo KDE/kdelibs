@@ -174,6 +174,15 @@ namespace Solid
         void chargePercentChanged(int value, const QString &udi);
 
         /**
+         * This signal is emitted when the capacity of this battery has changed.
+         *
+         * @param value the new capacity of the battery
+         * @param udi the UDI of the battery with the new capacity
+         * @since 4.11
+         */
+        virtual void capacityChanged(int value, const QString &udi);
+
+        /**
          * This signal is emitted when the charge state of this battery
          * has changed.
          *
@@ -192,6 +201,16 @@ namespace Solid
          * @param udi the UDI of the battery with the new plugging state
          */
         void plugStateChanged(bool newState, const QString &udi);
+
+        /**
+         * This signal is emitted when the power supply state of the battery
+         * changes.
+         *
+         * @param newState the new power supply state, type is boolean
+         * @param udi the UDI of the battery with the new power supply state
+         * @since 4.11
+         */
+        virtual void powerSupplyStateChanged(bool newState, const QString &udi);
     };
 }
 
