@@ -280,8 +280,10 @@ public:
     KFilePreviewGenerator *previewGenerator;
     QSlider *iconSizeSlider;
 
-    KConfigGroup configGroup;
-};
+    // The group which stores app-specific settings. These settings are recent
+    // files and urls. Visual settings (view mode, sorting criteria...) are not
+    // app-specific and are stored in kdeglobals
+    KConfigGroup configGroup; };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
 
