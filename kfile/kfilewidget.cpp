@@ -112,8 +112,8 @@ public:
     void updateAutoSelectExtension();
     void initSpeedbar();
     void initGUI();
-    void readConfig(KConfigGroup &configGroup);
-    void writeConfig(KConfigGroup &configGroup);
+    void readViewConfig();
+    void writeViewConfig();
     void setNonExtSelection();
     void setLocationText(const KUrl&);
     void setLocationText(const KUrl::List&);
@@ -131,11 +131,11 @@ public:
     /**
      * Reads the recent used files and inserts them into the location combobox
      */
-    void readRecentFiles(KConfigGroup &cg);
+    void readRecentFiles();
     /**
      * Saves the entries from the location combobox.
      */
-    void saveRecentFiles(KConfigGroup &cg);
+    void saveRecentFiles();
     /**
      * called when an item is highlighted/selected in multiselection mode.
      * handles setting the locationEdit.
@@ -279,7 +279,11 @@ public:
 
     KFilePreviewGenerator *previewGenerator;
     QSlider *iconSizeSlider;
-};
+
+    // The group which stores app-specific settings. These settings are recent
+    // files and urls. Visual settings (view mode, sorting criteria...) are not
+    // app-specific and are stored in kdeglobals
+    KConfigGroup configGroup; };
 
 K_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
 
@@ -586,8 +590,8 @@ KFileWidget::KFileWidget( const KUrl& _startDir, QWidget *parent )
 
     // read our configuration
     KSharedConfig::Ptr config = KGlobal::config();
-    KConfigGroup viewConfigGroup(config, ConfigGroup);
-    d->readConfig(viewConfigGroup);
+    KConfigGroup group(config, ConfigGroup);
+    readConfig(group);
 
     coll->action("inline preview")->setChecked(d->ops->isInlinePreviewShown());
     d->iconSizeSlider->setValue(d->ops->iconsZoom());
@@ -1038,10 +1042,8 @@ void KFileWidget::accept()
         atmost--;
     }
 
-    KSharedConfig::Ptr config = KGlobal::config();
-    KConfigGroup grp(config,ConfigGroup);
-    d->writeConfig(grp);
-    d->saveRecentFiles(grp);
+    d->writeViewConfig();
+    d->saveRecentFiles();
 
     d->addToRecentDocuments();
 
@@ -1310,7 +1312,6 @@ void KFileWidgetPrivate::initSpeedbar()
     placesViewSplitter->insertWidget(0, placesDock);
 
     // initialize the size of the splitter
-    KConfigGroup configGroup(KGlobal::config(), ConfigGroup);
     placesViewWidth = configGroup.readEntry(SpeedbarWidth, placesView->sizeHint().width());
 
     QList<int> sizes = placesViewSplitter->sizes();
@@ -1811,20 +1812,12 @@ KFile::Modes KFileWidget::mode() const
 }
 
 
-void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
+void KFileWidgetPrivate::readViewConfig()
 {
-//     kDebug(kfile_area);
-
-    readRecentFiles(configGroup);
-
     ops->setViewConfig(configGroup);
     ops->readConfig(configGroup);
-
     KUrlComboBox *combo = urlNavigator->editor();
-    combo->setUrls( configGroup.readPathEntry( RecentURLs, QStringList() ), KUrlComboBox::RemoveTop );
-    combo->setMaxItems( configGroup.readEntry( RecentURLsNumber,
-                                       DefaultRecentURLsNumber ) );
-    combo->setUrl( ops->url() );
+
     autoDirectoryFollowing = configGroup.readEntry(AutoDirectoryFollowing,
                                                    DefaultDirectoryFollowing);
 
@@ -1839,13 +1832,6 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
                         static_cast<int>( KGlobalSettings::completionMode() ) );
     if ( cm != KGlobalSettings::completionMode() )
         locationEdit->setCompletionMode( cm );
-
-    // since we delayed this moment, initialize the directory of the completion object to
-    // our current directory (that was very probably set on the constructor)
-    KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());
-    if (completion) {
-        completion->setDir(ops->url().url());
-    }
 
     // show or don't show the speedbar
     _k_toggleSpeedbar( configGroup.readEntry( ShowSpeedbar, true ) );
@@ -1869,58 +1855,76 @@ void KFileWidgetPrivate::readConfig(KConfigGroup &configGroup)
         q->setMinimumWidth(w2);
 }
 
-void KFileWidgetPrivate::writeConfig(KConfigGroup &configGroup)
+void KFileWidgetPrivate::writeViewConfig()
 {
-//     kDebug(kfile_area);
-
     // these settings are global settings; ALL instances of the file dialog
-    // should reflect them
-    KConfig config("kdeglobals");
-    KConfigGroup group(&config, configGroup.name());
+    // should reflect them.
+    // There is no way to tell KFileOperator::writeConfig() to write to
+    // kdeglobals so we write settings to a temporary config group then copy
+    // them all to kdeglobals
+    KConfig tmp( QString(), KConfig::SimpleConfig );
+    KConfigGroup tmpGroup( &tmp, ConfigGroup );
 
     KUrlComboBox *pathCombo = urlNavigator->editor();
-    group.writePathEntry( RecentURLs, pathCombo->urls() );
-    //saveDialogSize( group, KConfigGroup::Persistent | KConfigGroup::Global );
-    group.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
-    group.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
+    //saveDialogSize( tmpGroup, KConfigGroup::Persistent | KConfigGroup::Global );
+    tmpGroup.writeEntry( PathComboCompletionMode, static_cast<int>(pathCombo->completionMode()) );
+    tmpGroup.writeEntry( LocationComboCompletionMode, static_cast<int>(locationEdit->completionMode()) );
 
     const bool showSpeedbar = placesDock && !placesDock->isHidden();
-    group.writeEntry( ShowSpeedbar, showSpeedbar );
+    tmpGroup.writeEntry( ShowSpeedbar, showSpeedbar );
     if (showSpeedbar) {
         const QList<int> sizes = placesViewSplitter->sizes();
         Q_ASSERT( sizes.count() > 0 );
-        group.writeEntry( SpeedbarWidth, sizes[0] );
+        tmpGroup.writeEntry( SpeedbarWidth, sizes[0] );
     }
 
-    group.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
-    group.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
-    group.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
-    group.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
+    tmpGroup.writeEntry( ShowBookmarks, bookmarkHandler != 0 );
+    tmpGroup.writeEntry( AutoSelectExtChecked, autoSelectExtChecked );
+    tmpGroup.writeEntry( BreadcrumbNavigation, !urlNavigator->isUrlEditable() );
+    tmpGroup.writeEntry( ShowFullPath, urlNavigator->showFullPath() );
 
-    ops->writeConfig(group);
+    ops->writeConfig( tmpGroup );
+
+    // Copy saved settings to kdeglobals
+    tmpGroup.copyTo( &configGroup, KConfigGroup::Persistent | KConfigGroup::Global );
 }
 
 
-void KFileWidgetPrivate::readRecentFiles(KConfigGroup &cg)
+void KFileWidgetPrivate::readRecentFiles()
 {
 //     kDebug(kfile_area);
 
     QObject::disconnect(locationEdit, SIGNAL(editTextChanged(QString)),
                         q, SLOT(_k_slotLocationChanged(QString)));
 
-    locationEdit->setMaxItems(cg.readEntry(RecentFilesNumber, DefaultRecentURLsNumber));
-    locationEdit->setUrls(cg.readPathEntry(RecentFiles, QStringList()),
+    locationEdit->setMaxItems(configGroup.readEntry(RecentFilesNumber, DefaultRecentURLsNumber));
+    locationEdit->setUrls(configGroup.readPathEntry(RecentFiles, QStringList()),
                           KUrlComboBox::RemoveBottom);
     locationEdit->setCurrentIndex(-1);
 
     QObject::connect(locationEdit, SIGNAL(editTextChanged(QString)),
                      q, SLOT(_k_slotLocationChanged(QString)));
+
+    KUrlComboBox *combo = urlNavigator->editor();
+    combo->setUrls(configGroup.readPathEntry(RecentURLs, QStringList()), KUrlComboBox::RemoveTop);
+    combo->setMaxItems(configGroup.readEntry(RecentURLsNumber, DefaultRecentURLsNumber));
+    combo->setUrl(ops->url());
+    // since we delayed this moment, initialize the directory of the completion object to
+    // our current directory (that was very probably set on the constructor)
+    KUrlCompletion *completion = dynamic_cast<KUrlCompletion*>(locationEdit->completionObject());
+    if (completion) {
+        completion->setDir(ops->url().url());
+    }
+
 }
 
-void KFileWidgetPrivate::saveRecentFiles(KConfigGroup &cg)
+void KFileWidgetPrivate::saveRecentFiles()
 {
 //     kDebug(kfile_area);
-    cg.writePathEntry(RecentFiles, locationEdit->urls());
+    configGroup.writePathEntry(RecentFiles, locationEdit->urls());
+
+    KUrlComboBox *pathCombo = urlNavigator->editor();
+    configGroup.writePathEntry(RecentURLs, pathCombo->urls());
 }
 
 KPushButton * KFileWidget::okButton() const
@@ -1940,8 +1944,7 @@ void KFileWidget::slotCancel()
 
     d->ops->close();
 
-    KConfigGroup grp(KGlobal::config(), ConfigGroup);
-    d->writeConfig(grp);
+    d->writeViewConfig();
 }
 
 void KFileWidget::setKeepLocation( bool keep )
@@ -2730,7 +2733,9 @@ KDirOperator* KFileWidget::dirOperator()
 
 void KFileWidget::readConfig( KConfigGroup& group )
 {
-    d->readConfig(group);
+    d->configGroup = group;
+    d->readViewConfig();
+    d->readRecentFiles();
 }
 
 QString KFileWidgetPrivate::locationEditCurrentText() const
