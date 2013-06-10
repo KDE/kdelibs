@@ -139,17 +139,6 @@ ToolTip=A widget that provides a image preview of a URL
 Group=Display (KDE)
 ConstructorArgs=(parent)
 
-[KIntNumInput]
-ToolTip=Integer Input Widget (KDE)
-WhatsThis=An input widget for integer numbers, consisting of a spinbox and a slider.
-IncludeFile=knuminput.h
-Group=Input (KDE)
-
-[KIntSpinBox]
-IncludeFile=knuminput.h
-ToolTip=Enhanced Spinbox for Integer Values (KDE)
-Group=Input (KDE)
-
 [KKeySequenceWidget]
 ToolTip=QKeySequence picker widget. (KDE)
 WhatsThis=A widget to pick a QKeySequence.

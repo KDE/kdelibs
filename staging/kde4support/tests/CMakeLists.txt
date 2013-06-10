@@ -25,5 +25,6 @@ kde4support_examples(
   kfontdialogtest
   ktextbrowsertest
   keditlistboxtest
+  knuminputtest
 )
 

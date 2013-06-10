@@ -22,7 +22,7 @@
 #ifndef K_NUMINPUT_H
 #define K_NUMINPUT_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QWidget>
 #include <QSpinBox>
@@ -40,7 +40,7 @@ class KLocalizedString;
  * for a different variable type
  *
  */
-class KDEUI_EXPORT KNumInput : public QWidget
+class KDE4SUPPORT_EXPORT KNumInput : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QString label READ label WRITE setLabel )
@@ -59,7 +59,7 @@ public:
      * \deprecated - use the version without the below parameter instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED KNumInput(QWidget *parent, KNumInput* below);
+    KDE4SUPPORT_DEPRECATED KNumInput(QWidget *parent, KNumInput* below);
 #endif
 
     /**
@@ -169,7 +169,7 @@ private:
  * \image html kintnuminput.png "KDE Int Number Input Spinbox"
  */
 
-class KDEUI_EXPORT KIntNumInput : public KNumInput
+class KDE4SUPPORT_EXPORT KIntNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( int value READ value WRITE setValue NOTIFY valueChanged USER true )
@@ -221,7 +221,7 @@ public:
      * \deprecated use the version without the below parameter instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED KIntNumInput(KNumInput* below, int value, QWidget *parent, int base = 10);
+    KDE4SUPPORT_DEPRECATED KIntNumInput(KNumInput* below, int value, QWidget *parent, int base = 10);
 #endif
 
     /**
@@ -276,7 +276,7 @@ public:
      * @deprecated Use the other setRange function and setSliderEnabled instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setRange(int min, int max, int singleStep, bool slider);
+    KDE4SUPPORT_DEPRECATED void setRange(int min, int max, int singleStep, bool slider);
 #endif
 
     /**
@@ -447,7 +447,7 @@ class KDoubleLine;
  * @see KIntNumInput
  */
 
-class KDEUI_EXPORT KDoubleNumInput : public KNumInput
+class KDE4SUPPORT_EXPORT KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( double value READ value WRITE setValue NOTIFY valueChanged USER true )
@@ -511,7 +511,7 @@ public:
      * \deprecated use the version without below instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED KDoubleNumInput(KNumInput* below,
+    KDE4SUPPORT_DEPRECATED KDoubleNumInput(KNumInput* below,
 		    double lower, double upper, double value, QWidget *parent=0,double singleStep=0.02,
 		    int precision=2);
 #endif
@@ -592,7 +592,7 @@ public:
     void setDecimals(int decimals);
 
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setPrecision(int precision) { setDecimals(precision); }
+    KDE4SUPPORT_DEPRECATED void setPrecision(int precision) { setDecimals(precision); }
 #endif
 
     /**
@@ -714,7 +714,7 @@ private:
  *
  * \image html kintspinbox.png "KDE Integer Input Spinboxes with hexadecimal and binary input"
  */
-class KDEUI_EXPORT KIntSpinBox : public QSpinBox
+class KDE4SUPPORT_EXPORT KIntSpinBox : public QSpinBox
 {
     Q_OBJECT
     Q_PROPERTY( int base READ base WRITE setBase )

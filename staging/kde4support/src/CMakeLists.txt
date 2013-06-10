@@ -74,6 +74,7 @@ set(libkde4support_SRCS
     kdeui/klistwidget.cpp
     kdeui/ktextbrowser.cpp
     kdeui/keditlistbox.cpp
+    kdeui/knuminput.cpp
 
     kio/metainfojob.cpp
 
@@ -182,6 +183,7 @@ install(FILES
     kdeui/klistwidget.h
     kdeui/ktextbrowser.h
     kdeui/keditlistbox.h
+    kdeui/knuminput.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

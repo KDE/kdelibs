@@ -44,6 +44,17 @@ IncludeFile=kcolorvalueselector.h
 ToolTip=Color Value Selector (KDE)
 Group=Input (KDE)
 
+[KIntNumInput]
+ToolTip=Integer Input Widget (KDE)
+WhatsThis=An input widget for integer numbers, consisting of a spinbox and a slider.
+IncludeFile=knuminput.h
+Group=Input (KDE)
+
+[KIntSpinBox]
+IncludeFile=knuminput.h
+ToolTip=Enhanced Spinbox for Integer Values (KDE)
+Group=Input (KDE)
+
 [KPushButton]
 ToolTip=Improved QPushButton (KDE)
 WhatsThis=An improved QPushButton to follow KDE settings
