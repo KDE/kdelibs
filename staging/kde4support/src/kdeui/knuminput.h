@@ -36,6 +36,8 @@ class KNumInputPrivate;
 class KLocalizedString;
 
 /**
+ * @deprecated since 5.0, use QSpinBox instead
+ *
  * You need to inherit from this class if you want to implement K*NumInput
  * for a different variable type
  *
@@ -145,6 +147,8 @@ private:
 /* ------------------------------------------------------------------------ */
 
 /**
+ * @deprecated since 5.0, use QSpinBox instead
+ *
  * @short An input widget for integer numbers, consisting of a spinbox and a slider.
  *
  * KIntNumInput combines a QSpinBox and optionally a QSlider
@@ -425,6 +429,8 @@ private:
 class KDoubleLine;
 
 /**
+ * @deprecated since 5.0, use QSpinBox instead
+ *
  * @short An input control for real numbers, consisting of a spinbox and a slider.
  *
  * KDoubleNumInput combines a QSpinBox and optionally a QSlider
@@ -704,6 +710,8 @@ private:
 /* ------------------------------------------------------------------------ */
 
 /**
+ * @deprecated since 5.0, use QSpinBox instead
+ *
  *  @short A QSpinBox with support for arbitrary base numbers.
  *
  *  A QSpinBox with support for arbitrary base numbers
