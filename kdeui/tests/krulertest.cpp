@@ -8,6 +8,8 @@
 #include <QKeyEvent>
 #include <QGroupBox>
 #include <QButtonGroup>
+#include <QSpinBox>
+#include <QDoubleSpinBox>
 
 /*
 void
@@ -139,27 +141,27 @@ KRulerTest::KRulerTest()
   lineEdit = new QGroupBox("Value of begin/end", bigwidget);
   lineEdit->setFixedSize(140, 80);
   lineEdit->move(330,4+160);
-  beginMark = new KIntNumInput(0, lineEdit);
+  beginMark = new QSpinBox(lineEdit);
+  beginMark->setValue(0);
   beginMark->setRange(-1000, 1000);
-  beginMark->setSliderEnabled(false);
   beginMark->move(5, 15);
   beginMark->setFixedSize(beginMark->sizeHint());
   connect(beginMark, SIGNAL(valueChanged(int)),
 	  hruler, SLOT(slotNewOffset(int)) );
   connect(beginMark, SIGNAL(valueChanged(int)),
 	  vruler, SLOT(slotNewOffset(int)) );
-  endMark = new KIntNumInput(0, lineEdit);
+  endMark = new QSpinBox(lineEdit);
+  endMark->setValue(0);
   endMark->setRange(-1000, 1000);
-  endMark->setSliderEnabled(false);
   endMark->move(5, 35);
   endMark->setFixedSize(endMark->sizeHint());
   connect(endMark, SIGNAL(valueChanged(int)),
 	  hruler, SLOT(slotEndOffset(int)) );
   connect(endMark, SIGNAL(valueChanged(int)),
 	  vruler, SLOT(slotEndOffset(int)) );
-  lengthInput = new KIntNumInput(0, lineEdit);
+  lengthInput = new QSpinBox(lineEdit);
+  lengthInput->setValue(0);
   lengthInput->setRange(-1000, 1000);
-  lengthInput->setSliderEnabled(false);
   lengthInput->move(5, 55);
   lengthInput->setFixedSize(lengthInput->sizeHint());
   connect(lengthInput, SIGNAL(valueChanged(int)),
@@ -171,25 +173,28 @@ KRulerTest::KRulerTest()
   vertrot = new QGroupBox("Value of rotate translate for Vert.", bigwidget);
   vertrot->setFixedSize(140, 80);
   vertrot->move(330,4+160+80+4);
-  transX = new KDoubleNumInput(vertrot);
+  transX = new QDoubleSpinBox(vertrot);
   transX->setValue(0.0);
-  transX->setRange(-1000, 1000, 1, false);
+  transX->setRange(-1000, 1000);
+  transX->setSingleStep(1);
   transX->move(5, 15);
   transX->setFixedSize(transX->sizeHint());
   //transX->setLabel("transx", AlignLeft);
   connect(transX, SIGNAL(valueChanged(double)),
 	  SLOT(slotSetXTrans(double)) );
-  transY = new KDoubleNumInput(vertrot);
+  transY = new QDoubleSpinBox(vertrot);
   transY->setValue(-12.0);
-  transY->setRange(-1000, 1000, 1, false);
+  transY->setRange(-1000, 1000);
+  transY->setSingleStep(1);
   transY->move(5, 35);
   transY->setFixedSize(transY->sizeHint());
   //transY->setLabel("transy", AlignLeft);
   connect(transY, SIGNAL(valueChanged(double)),
 	  SLOT(slotSetYTrans(double)) );
-  rotV = new KDoubleNumInput(vertrot);
+  rotV = new QDoubleSpinBox(vertrot);
   rotV->setValue(90.0);
-  rotV->setRange(-1000, 1000, 1, false);
+  rotV->setRange(-1000, 1000);
+  rotV->setSingleStep(1);
   rotV->move(5, 55);
   rotV->setFixedSize(rotV->sizeHint());
   //rotV->setLabel("rot", AlignLeft);

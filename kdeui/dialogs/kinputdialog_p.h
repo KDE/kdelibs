@@ -25,9 +25,9 @@ class QValidator;
 class QDialogButtonBox;
 class QDoubleSpinBox;
 class QListWidget;
+class QSpinBox;
 
 class KComboBox;
-class KIntSpinBox;
 class KLineEdit;
 class KTextEdit;
 
@@ -61,7 +61,7 @@ class KInputDialogHelper : public QDialog
     ~KInputDialogHelper();
 
     KLineEdit *lineEdit() const;
-    KIntSpinBox *intSpinBox() const;
+    QSpinBox *intSpinBox() const;
     QDoubleSpinBox *doubleSpinBox() const;
     KComboBox *comboBox() const;
     QListWidget *listBox() const;
@@ -74,7 +74,7 @@ class KInputDialogHelper : public QDialog
   private:
     QLabel *m_label;
     KLineEdit *m_lineEdit;
-    KIntSpinBox *m_intSpinBox;
+    QSpinBox *m_intSpinBox;
     QDoubleSpinBox *m_doubleSpinBox;
     KComboBox *m_comboBox;
     QListWidget *m_listBox;

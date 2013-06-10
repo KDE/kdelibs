@@ -58,13 +58,13 @@
 #include <QtCore/QTimer>
 #include <QListWidget>
 #include <QApplication>
+#include <QSpinBox>
 
 #include <kcombobox.h>
 #include <kconfig.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <knuminput.h>
 #include <kseparator.h>
 #include <qstandardpaths.h>
 #include <kcolorcollection.h>
@@ -964,14 +964,14 @@ public:
     bool bAlphaEnabled;
     QLabel *colorName;
     KLineEdit *htmlName;
-    KIntSpinBox *hedit;
-    KIntSpinBox *sedit;
-    KIntSpinBox *vedit;
-    KIntSpinBox *redit;
-    KIntSpinBox *gedit;
-    KIntSpinBox *bedit;
+    QSpinBox *hedit;
+    QSpinBox *sedit;
+    QSpinBox *vedit;
+    QSpinBox *redit;
+    QSpinBox *gedit;
+    QSpinBox *bedit;
     QWidget *alphaLabel;
-    KIntSpinBox *aedit;
+    QSpinBox *aedit;
 
     KColorPatch *patch;
     KColorPatch *comparePatch;
@@ -1077,7 +1077,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_lbot->addWidget(modeButton, 0, 0);
     d->modeGroup->addButton(modeButton, ChooserHue);
 
-    d->hedit = new KIntSpinBox(page);
+    d->hedit = new QSpinBox(page);
     d->hedit->setMaximum(359);
     d->hedit->setSuffix(i18nc("The angular degree unit (for hue)", "\302\260")); //  U+00B0 DEGREE SIGN
     l_lbot->addWidget(d->hedit, 0, 1);
@@ -1088,7 +1088,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_lbot->addWidget(modeButton, 1, 0);
     d->modeGroup->addButton(modeButton, ChooserSaturation);
 
-    d->sedit = new KIntSpinBox(page);
+    d->sedit = new QSpinBox(page);
     d->sedit->setMaximum(255);
     l_lbot->addWidget(d->sedit, 1, 1);
     connect(d->sedit, SIGNAL(valueChanged(int)),
@@ -1098,7 +1098,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_lbot->addWidget(modeButton, 2, 0);
     d->modeGroup->addButton(modeButton, ChooserValue);
 
-    d->vedit = new KIntSpinBox(page);
+    d->vedit = new QSpinBox(page);
     d->vedit->setMaximum(255);
     l_lbot->addWidget(d->vedit, 2, 1);
     connect(d->vedit, SIGNAL(valueChanged(int)),
@@ -1112,7 +1112,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_lbot->addWidget(modeButton, 0, 3);
     d->modeGroup->addButton(modeButton, ChooserRed);
 
-    d->redit = new KIntSpinBox(page);
+    d->redit = new QSpinBox(page);
     d->redit->setMaximum(255);
     l_lbot->addWidget(d->redit, 0, 4);
     connect(d->redit, SIGNAL(valueChanged(int)),
@@ -1122,7 +1122,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_lbot->addWidget(modeButton, 1, 3);
     d->modeGroup->addButton(modeButton, ChooserGreen);
 
-    d->gedit = new KIntSpinBox(page);
+    d->gedit = new QSpinBox(page);
     d->gedit->setMaximum(255);
     l_lbot->addWidget(d->gedit, 1, 4);
     connect(d->gedit, SIGNAL(valueChanged(int)),
@@ -1132,7 +1132,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     l_lbot->addWidget(modeButton, 2, 3);
     d->modeGroup->addButton(modeButton, ChooserBlue);
 
-    d->bedit = new KIntSpinBox(page);
+    d->bedit = new QSpinBox(page);
     d->bedit->setMaximum(255);
     l_lbot->addWidget(d->bedit, 2, 4);
     connect(d->bedit, SIGNAL(valueChanged(int)),
@@ -1157,7 +1157,7 @@ KColorDialog::KColorDialog(QWidget *parent, bool modal)
     spacer->setFixedWidth(indent);
     l_lbot->addWidget(d->alphaLabel, 3, 3);
 
-    d->aedit = new KIntSpinBox(page);
+    d->aedit = new QSpinBox(page);
     d->aedit->setMaximum(255);
     label->setBuddy(d->aedit);
     l_lbot->addWidget(d->aedit, 3, 4);

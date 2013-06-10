@@ -8,7 +8,6 @@
 #include <QFrame>
 
 #include <kmainwindow.h>
-#include <knuminput.h>
 
 class KRuler;
 class QWidget;
@@ -16,6 +15,8 @@ class QGridLayout;
 class QCheckBox;
 class QGroupBox;
 class QLabel;
+class QSpinBox;
+class QDoubleSpinBox;
 
 class MouseWidget : public QFrame
 {
@@ -77,8 +78,8 @@ private:
   QLabel *mouse_message;
   QGroupBox *showMarks, *lineEdit, *vertrot;
   QCheckBox *showTM, *showLM, *showMM, *showBM, *showEM, *showPT, *fixLen;
-  KIntNumInput *beginMark, *endMark, *lengthInput;
-  KDoubleNumInput *transX, *transY, *rotV;
+  QSpinBox *beginMark, *endMark, *lengthInput;
+  QDoubleSpinBox *transX, *transY, *rotV;
   QGroupBox *metricstyle;
   QRadioButton *pixelmetric, *inchmetric, *mmmetric, *cmmetric, *mmetric;
 

@@ -26,12 +26,12 @@
 #include <QLayout>
 #include <QPushButton>
 #include <QListWidget>
+#include <QSpinBox>
 
 #include <kcombobox.h>
 #include <kcompletion.h>
 #include <kguiitem.h>
 #include <klineedit.h>
-#include <knuminput.h>
 #include <kstandardguiitem.h>
 #include <ktextedit.h>
 
@@ -133,7 +133,13 @@ KInputDialogHelper::KInputDialogHelper( const QString &caption, const QString &l
     m_label->setWordWrap(true);
     layout->addWidget(m_label);
 
-    m_intSpinBox = new KIntSpinBox(minValue, maxValue, step, value, this, base);
+    m_intSpinBox = new QSpinBox(this);
+    m_intSpinBox->setMinimum(minValue);
+    m_intSpinBox->setMaximum(maxValue);
+    m_intSpinBox->setSingleStep(step);
+    m_intSpinBox->setValue(value);
+    m_intSpinBox->setDisplayIntegerBase(base);
+
     layout->addWidget(m_intSpinBox);
 
     layout->addStretch();
@@ -320,7 +326,7 @@ KLineEdit *KInputDialogHelper::lineEdit() const
     return m_lineEdit;
 }
 
-KIntSpinBox *KInputDialogHelper::intSpinBox() const
+QSpinBox *KInputDialogHelper::intSpinBox() const
 {
     return m_intSpinBox;
 }
