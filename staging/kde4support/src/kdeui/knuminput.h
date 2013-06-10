@@ -760,10 +760,14 @@ public:
 
     /**
      * Sets the base in which the numbers in the spin box are represented.
+     *
+     * @deprecated since 5.0, use QSpinBox::setDisplayIntegerBase(base) instead.
      */
     void setBase(int base);
     /**
      * @return the base in which numbers in the spin box are represented.
+     *
+     * @deprecated since 5.0, use int displayIntegerBase()
      */
     int base() const;
     /**
