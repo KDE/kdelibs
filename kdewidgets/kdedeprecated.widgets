@@ -9,6 +9,12 @@ ToolTip=Draws a button which shows an arrow pointing into a certain direction.
 Group=Buttons (KDE)
 ConstructorArgs=(parent,Qt::UpArrow)
 
+[KButtonGroup]
+IncludeFile=kbuttongroup.h
+ToolTip=Group of radio buttons with index selection.
+IsContainer=true
+Group=Container (KDE)
+
 [KEditListBox]
 ToolTip=Fullfeatured edit box with buttons (KDE)
 Group=Views (KDE)

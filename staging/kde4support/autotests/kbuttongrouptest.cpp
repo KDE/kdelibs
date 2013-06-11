@@ -53,7 +53,7 @@ void KButtonGroupTest::initTestCase()
 
 void KButtonGroupTest::directSelectionTestCase()
 {
-  // test where setSelected is called before the 
+  // test where setSelected is called before the
   // ensurePolished() is called.
   KButtonGroup* kbuttongroup2 = new KButtonGroup();
   kbuttongroup2->setSelected( 3 );

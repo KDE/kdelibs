@@ -69,7 +69,7 @@ void KButtonGroup::setSelected( int id )
     ensurePolished();
     return;
   }
-  
+
   QHash<QObject*, int>::Iterator it = d->btnMap.begin();
   QHash<QObject*, int>::Iterator itEnd = d->btnMap.end();
   QAbstractButton* button = 0;
@@ -84,7 +84,7 @@ void KButtonGroup::setSelected( int id )
       return;
     }
   }
-  // button not found, it might still show up though, eg. because of premature polishing above 
+  // button not found, it might still show up though, eg. because of premature polishing above
   d->wantToBeId = id;
 }
 
@@ -110,7 +110,7 @@ void KButtonGroup::childEvent( QChildEvent* event )
       d->releasedMapper.setMapping( button, d->nextId );
 
       d->btnMap[ button ] = d->nextId;
-     
+
       if ( d->nextId == d->wantToBeId )
       {
         d->currentId = d->wantToBeId;

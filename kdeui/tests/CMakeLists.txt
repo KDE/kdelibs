@@ -18,7 +18,6 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 KDEUI_UNIT_TESTS(
   kactioncollectiontest
   kactioncategorytest
-  kbuttongrouptest
   kfindtest
   kmainwindow_unittest
   klineedit_unittest

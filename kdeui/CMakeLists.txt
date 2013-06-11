@@ -138,7 +138,6 @@ set(kdeui_LIB_SRCS
  util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
- widgets/kbuttongroup.cpp
  widgets/kcharselect.cpp
  widgets/kcharselectdata.cpp
  widgets/kcmodule.cpp
@@ -401,7 +400,6 @@ install( FILES
  widgets/kcmodule.h
  widgets/kcombobox.h
  widgets/kcompletionbox.h
- widgets/kbuttongroup.h
  widgets/kcharselect.h
  widgets/kdatetable.h
  widgets/khelpmenu.h

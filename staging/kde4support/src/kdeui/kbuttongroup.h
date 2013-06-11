@@ -22,12 +22,14 @@
 #ifndef KBUTTONGROUP_H
 #define KBUTTONGROUP_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 #include <QGroupBox>
 
 class QAbstractButton;
 
 /**
+ * @deprecated since 5.0, use QGroupBox and QButtonGroup instead
+ *
  * @short Group box with index of the selected button
  * KButtonGroup is a simple group box that can keep track of the current selected
  * button of the ones added to it.
@@ -38,7 +40,7 @@ class QAbstractButton;
  *
  * @author Pino Toscano <toscano.pino@tiscali.it>
  */
-class KDEUI_EXPORT KButtonGroup
+class KDE4SUPPORT_EXPORT KButtonGroup
   : public QGroupBox
 {
   Q_OBJECT

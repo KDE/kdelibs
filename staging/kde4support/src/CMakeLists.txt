@@ -39,6 +39,7 @@ set(libkde4support_SRCS
     kdeui/k3icon.cpp
     kdeui/kaction.cpp
     kdeui/kapplication.cpp
+    kdeui/kbuttongroup.cpp
     kdeui/kcolorchoosermode.cpp
     kdeui/kcolordialog.cpp
     kdeui/kcolorhelpers.cpp
@@ -150,6 +151,7 @@ install(FILES
     kdeui/kaccelgen.h
     kdeui/kaction.h
     kdeui/kapplication.h
+    kdeui/kbuttongroup.h
     kdeui/kcolorchoosermode.h
     kdeui/kcolordialog.h
     kdeui/kcolorvalueselector.h

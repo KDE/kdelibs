@@ -24,6 +24,7 @@ kde4support_unit_tests(
   globalcleanuptest
   kaccelgentest
   kdebugtest
+  kbuttongrouptest
   kdialog_unittest
   kfadewidgeteffecttest
   kconfigafterkglobaltest1
