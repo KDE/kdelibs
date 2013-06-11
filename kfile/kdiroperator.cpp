@@ -945,14 +945,6 @@ void KDirOperator::setIconsZoom(int _value)
 
     d->iconsZoom = value;
 
-    if (d->configGroup && d->inlinePreviewState == Private::NotForced) {
-        if (qobject_cast<QListView*>(d->itemView)) {
-            d->configGroup->writeEntry("listViewIconSize", d->iconsZoom);
-        } else {
-            d->configGroup->writeEntry("detailedViewIconSize", d->iconsZoom);
-        }
-    }
-
     if (!d->previewGenerator) {
         return;
     }
@@ -2210,6 +2202,11 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
 
     if (d->inlinePreviewState == Private::NotForced) {
         configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
+        if (qobject_cast<QListView*>(d->itemView)) {
+            configGroup.writeEntry(QLatin1String("listViewIconSize"), d->iconsZoom);
+        } else {
+            configGroup.writeEntry(QLatin1String("detailedViewIconSize"), d->iconsZoom);
+        }
     }
 
     configGroup.writeEntry(QLatin1String("Decoration position"), (int) d->decorationPosition);
