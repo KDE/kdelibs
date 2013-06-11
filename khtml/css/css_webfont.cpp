@@ -564,7 +564,6 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
         } else if (item->primitiveType() == CSSPrimitiveValue::CSS_IDENT) {
             // We need to use the raw text for all the generic family types, since @font-face is a way of actually
             // defining what font to use for those types.
-            DOMString familyName;
             switch (item->getIdent()) {
                 case CSS_VAL_SERIF:
                     familyName = "-khtml-serif";
