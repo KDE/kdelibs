@@ -631,14 +631,15 @@ void CSSFontSelector::addFontFaceRule(const CSSFontFaceRuleImpl* fontFaceRule)
     }
 }
 
-bool CSSFontSelector::requestFamilyName( const DOMString& familyName )
+void CSSFontSelector::requestFamilyName( const DOMString& familyName )
 {
-    QHash<DOMString, CSSFontFace*>::const_iterator it = m_locallyInstalledFontFaces.constFind( familyName.lower() );
-    if (it != m_locallyInstalledFontFaces.constEnd()) {
-        it.value()->refLoaders();
-        return true;
-    }
-    return false;
+    QHash<DOMString, CSSFontFace*>::const_iterator it = m_locallyInstalledFontFaces.constBegin();
+    QHash<DOMString, CSSFontFace*>::const_iterator end = m_locallyInstalledFontFaces.constEnd();
+    for ( ; it != end; ++it) {
+        if (it.key() == familyName.lower()) {
+            it.value()->refLoaders();
+        }
+     }
 }
 
 void CSSFontSelector::fontLoaded()
