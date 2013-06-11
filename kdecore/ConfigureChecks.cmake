@@ -30,7 +30,6 @@ check_include_files(time.h        HAVE_TIME_H)
 
 check_function_exists(setmntent   HAVE_SETMNTENT)
 check_function_exists(getmntinfo  HAVE_GETMNTINFO)
-check_function_exists(random      HAVE_RANDOM)
 check_function_exists(seteuid     HAVE_SETEUID)
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
@@ -48,7 +47,6 @@ check_cxx_source_compiles("
 " GETMNTINFO_USES_STATVFS )
 
 check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
-check_prototype_exists(random stdlib.h              HAVE_RANDOM_PROTO)
 check_prototype_exists(setenv stdlib.h              HAVE_SETENV_PROTO)
 check_prototype_exists(initgroups "unistd.h;sys/types.h;unistd.h;grp.h" HAVE_INITGROUPS_PROTO)
 check_symbol_exists(getgrouplist    "unistd.h;grp.h"           HAVE_GETGROUPLIST)

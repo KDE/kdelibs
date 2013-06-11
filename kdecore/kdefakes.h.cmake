@@ -27,31 +27,8 @@
    You should include this file in any .cpp file that uses any one of these 
    functions:
      initgroups, 
-     random, srandom  (this is for KRandom itself, prefer using KRandom in any other code)
      getgrouplist
 */
-
-#cmakedefine01 HAVE_RANDOM_PROTO 
-#if ! HAVE_RANDOM_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-long int random(void);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-#cmakedefine01 HAVE_SRANDOM_PROTO 
-#if ! HAVE_SRANDOM_PROTO
-#ifdef __cplusplus
-extern "C" {
-#endif
-void srandom(unsigned int);
-#ifdef __cplusplus
-}
-#endif
-#endif
 
 #cmakedefine01 HAVE_INITGROUPS_PROTO
 #if ! HAVE_INITGROUPS_PROTO
@@ -84,7 +61,6 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #cmakedefine01 HAVE_UNISTD_H
 #cmakedefine01 TIME_WITH_SYS_TIME
 #cmakedefine01 HAVE_SYS_SELECT_H
-#cmakedefine01 HAVE_RANDOM
 #cmakedefine01 HAVE_SETEUID
 #cmakedefine01 HAVE_SYS_TYPES_H
 #cmakedefine01 HAVE_SYS_STAT_H

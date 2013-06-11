@@ -42,18 +42,6 @@
 #define KDE_mkdir mkdir
 
 
-#if ! HAVE_RANDOM
-long int random()
-{
-    return lrand48();
-}
-
-void srandom(unsigned int seed)
-{
-    srand48(seed);
-}
-#endif /* !HAVE_RANDOM */
-
 #if ! HAVE_SETEUID
 int seteuid(uid_t euid)
 {
