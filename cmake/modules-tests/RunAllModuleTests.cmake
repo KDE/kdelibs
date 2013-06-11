@@ -41,7 +41,6 @@ else(DEFINED MODULE)
                      GStreamer
                      LCMS 
                      LibArt 
-                     LibXslt 
                      OpenEXR 
                      PCRE 
                      QCA2 
