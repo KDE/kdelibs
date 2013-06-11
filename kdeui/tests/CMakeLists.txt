@@ -53,7 +53,6 @@ KDEUI_EXECUTABLE_TESTS(
   knotificationrestrictionstest
   kpagedialogtest
   kpagewidgettest
-  kpassivepopuptest
   kpopuptest
   krulertest
   ktextedittest

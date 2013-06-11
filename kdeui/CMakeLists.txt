@@ -135,7 +135,6 @@ set(kdeui_LIB_SRCS
  util/kkeyserver.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
- util/kpassivepopup.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
  widgets/kcharselect.cpp
@@ -390,7 +389,6 @@ install( FILES
  util/khelpclient.h
  util/kkeyserver.h
  util/kmodifierkeyinfo.h
- util/kpassivepopup.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
  util/kwallet.h

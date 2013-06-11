@@ -36,7 +36,6 @@
 #include <QToolTip>
 #include <QSystemTrayIcon>
 
-#include <config-kdeui.h>
 #if HAVE_X11
 #include <qx11info_x11.h>
 #include <netwm.h>
@@ -266,8 +265,8 @@ void KPassivePopup::setAutoDelete( bool autoDelete )
 
 void KPassivePopup::mouseReleaseEvent( QMouseEvent *e )
 {
-    emit clicked();
-    emit clicked( e->pos() );
+    Q_EMIT clicked();
+    Q_EMIT clicked( e->pos() );
 }
 
 //
@@ -533,39 +532,37 @@ void KPassivePopup::updateMask()
 //
 
 KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
-				       const QPixmap &icon,
-				       QWidget *parent, int timeout )
+                        const QPixmap &icon, QWidget *parent, int timeout, const QPoint &p )
 {
-    return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, timeout );
+    return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, timeout, p );
 }
 
-KPassivePopup *KPassivePopup::message( const QString &text, QWidget *parent )
+KPassivePopup *KPassivePopup::message( const QString &text, QWidget *parent, const QPoint &p )
 {
-    return message( DEFAULT_POPUP_TYPE, QString(), text, QPixmap(), parent );
-}
-
-KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
-				       QWidget *parent )
-{
-    return message( DEFAULT_POPUP_TYPE, caption, text, QPixmap(), parent );
+    return message( DEFAULT_POPUP_TYPE, QString(), text, QPixmap(), parent, -1, p );
 }
 
 KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
-				       const QPixmap &icon, WId parent, int timeout )
+				       QWidget *parent, const QPoint &p )
 {
-    return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, timeout );
+    return message( DEFAULT_POPUP_TYPE, caption, text, QPixmap(), parent, -1, p );
 }
 
 KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
-                       const QPixmap &icon,
-                       QSystemTrayIcon *parent, int timeout )
+				       const QPixmap &icon, WId parent, int timeout, const QPoint &p )
+{
+    return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, timeout, p );
+}
+
+KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
+                       const QPixmap &icon, QSystemTrayIcon *parent, int timeout )
 {
     return message( DEFAULT_POPUP_TYPE, caption, text, icon, parent, timeout );
 }
 
 KPassivePopup *KPassivePopup::message( const QString &text, QSystemTrayIcon *parent )
 {
-    return message( DEFAULT_POPUP_TYPE, QString(), text, QPixmap(), parent );
+    return message( DEFAULT_POPUP_TYPE, QString(), text, QPixmap(), parent);
 }
 
 KPassivePopup *KPassivePopup::message( const QString &caption, const QString &text,
@@ -576,46 +573,50 @@ KPassivePopup *KPassivePopup::message( const QString &caption, const QString &te
 
 
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
-				       const QPixmap &icon,
-				       QWidget *parent, int timeout )
+                        const QPixmap &icon, QWidget *parent, int timeout, const QPoint &p )
 {
     KPassivePopup *pop = new KPassivePopup( parent );
     pop->setPopupStyle( popupStyle );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
     pop->d->hideDelay = timeout;
-    pop->show();
+    if(p.isNull())
+        pop->show();
+    else
+        pop->show(p);
 
     return pop;
 }
 
-KPassivePopup *KPassivePopup::message( int popupStyle, const QString &text, QWidget *parent )
+KPassivePopup *KPassivePopup::message( int popupStyle, const QString &text, QWidget *parent, const QPoint& p )
 {
-    return message( popupStyle, QString(), text, QPixmap(), parent );
+    return message( popupStyle, QString(), text, QPixmap(), parent, -1, p );
 }
 
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
-				       QWidget *parent )
+                            QWidget *parent, const QPoint& p )
 {
-    return message( popupStyle, caption, text, QPixmap(), parent );
+    return message( popupStyle, caption, text, QPixmap(), parent, -1, p );
 }
 
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
-				       const QPixmap &icon, WId parent, int timeout )
+                                       const QPixmap &icon, WId parent, int timeout, const QPoint &p )
 {
     KPassivePopup *pop = new KPassivePopup( parent );
     pop->setPopupStyle( popupStyle );
     pop->setAutoDelete( true );
     pop->setView( caption, text, icon );
     pop->d->hideDelay = timeout;
-    pop->show();
+    if(p.isNull())
+        pop->show();
+    else
+        pop->show(p);
 
     return pop;
 }
 
 KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, const QString &text,
-                       const QPixmap &icon,
-                       QSystemTrayIcon *parent, int timeout )
+                       const QPixmap &icon, QSystemTrayIcon *parent, int timeout )
 {
     KPassivePopup *pop = new KPassivePopup( );
     pop->setPopupStyle( popupStyle );
@@ -644,3 +645,4 @@ KPassivePopup *KPassivePopup::message( int popupStyle, const QString &caption, c
 // Local Variables:
 // c-basic-offset: 4
 // End:
+

@@ -23,4 +23,5 @@ kwidgetsaddons_executable_tests(
   kactionselectortest
   kcolorcombotest
   kpixmapregionselectordialogtest
+  kpassivepopuptest
 )
