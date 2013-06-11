@@ -74,7 +74,6 @@ set(kdeui_LIB_SRCS
  actions/kactioncollection.cpp
  actions/kactionconflictdetector.cpp
  actions/kactioncategory.cpp
- actions/kactionmenu.cpp
  actions/ktoggletoolbaraction.cpp
  actions/ktoolbarlabelaction.cpp
  actions/ktoolbarpopupaction.cpp
@@ -345,7 +344,6 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  actions/kactioncollection.h
  actions/kactioncategory.h
- actions/kactionmenu.h
  actions/ktoggletoolbaraction.h
  actions/ktoolbarlabelaction.h
  actions/ktoolbarpopupaction.h

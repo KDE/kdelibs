@@ -28,6 +28,7 @@ set(kwidgetsaddons_SRCS
   kpixmapregionselectordialog.cpp
   kpixmapregionselectorwidget.cpp
   kpassivepopup.cpp
+  kactionmenu.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -72,6 +73,7 @@ install(FILES
   kactionselector.h
   kcolorcombo.h
   kpassivepopup.h
+  kactionmenu.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
