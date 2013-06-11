@@ -52,7 +52,7 @@ void KColorButtonTest::testChangeAndCancel()
     QColorDialog *dialog = colorButton.findChild<QColorDialog*>();
     QVERIFY(dialog != NULL);
     QVERIFY(QTest::qWaitForWindowExposed(dialog));
-#pragma message port to QColorDialog
+#pragma message("port to QColorDialog")
 #if 0
     KColorCells *cells = dialog->findChild<KColorCells*>();
     QVERIFY(cells != NULL);
@@ -72,7 +72,7 @@ void KColorButtonTest::testDoubleClickChange()
     QColorDialog *dialog = colorButton.findChild<QColorDialog*>();
     QVERIFY(dialog != NULL);
     QVERIFY(QTest::qWaitForWindowExposed(dialog));
-#pragma message port to QColorDialog
+#pragma message("port to QColorDialog")
 #if 0
     KColorCells *cells = dialog->findChild<KColorCells*>();
     QVERIFY(cells != NULL);
@@ -90,7 +90,7 @@ void KColorButtonTest::testOkChange()
     QColorDialog *dialog = colorButton.findChild<QColorDialog*>();
     QVERIFY(dialog != NULL);
     QVERIFY(QTest::qWaitForWindowExposed(dialog));
-#pragma message port to QColorDialog
+#pragma message("port to QColorDialog")
 #if 0
     KColorCells *cells = dialog->findChild<KColorCells*>();
     QVERIFY(cells != NULL);
@@ -122,7 +122,7 @@ void KColorButtonTest::testRecentColorsPick()
     QVERIFY(dialog != NULL);
     QVERIFY(QTest::qWaitForWindowExposed(dialog));
 
-#pragma message port to QColorDialog
+#pragma message("port to QColorDialog")
 #if 0
     QComboBox *combo = dialog->findChild<QComboBox*>();
     combo->setFocus();

@@ -43,8 +43,9 @@ public:
     }
 
     explicit KGenericFactoryBase( const KAboutData *data )
-        : KPluginFactory(data)
+        : KPluginFactory(data->componentName().toUtf8().constData(), data->catalogName().toUtf8().constData())
     {
+        KAboutData::registerPluginData(*data);
         s_self = this;
         s_createComponentDataCalled = false;
     }

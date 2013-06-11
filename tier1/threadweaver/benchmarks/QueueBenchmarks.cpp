@@ -18,6 +18,11 @@ public:
         , m_result(0)
     {
     }
+    AccumulateJob(const AccumulateJob& a)
+        : m_count(a.m_count)
+        , m_result(a.m_result)
+    {
+    }
 
     void setCount(quint64 count) {
         m_count = count;
@@ -95,7 +100,7 @@ void QueueBenchmarksTest::BaselineBenchmark()
     const int n = c*b;
     Q_UNUSED(t); // in this case
 
-    AccumulateJob jobs[n];
+    QVector<AccumulateJob> jobs(n);
     for(int i = 0; i < n; ++i) {
         jobs[i].setCount(m);
     }
@@ -126,7 +131,7 @@ void QueueBenchmarksTest::BaselineAsJobsBenchmark()
     const int n = c*b;
     Q_UNUSED(t); // in this case
 
-    AccumulateJob jobs[n];
+    QVector<AccumulateJob> jobs(n);
     for(int i = 0; i < n; ++i) {
         jobs[i].setCount(m);
     }
@@ -154,7 +159,7 @@ void QueueBenchmarksTest::IndividualJobsBenchmark()
     ThreadWeaver::Weaver weaver;
     weaver.setMaximumNumberOfThreads(t);
     weaver.suspend();
-    AccumulateJob jobs[n];
+    QVector<AccumulateJob> jobs(n);
     for(int i = 0; i < n; ++i) {
         jobs[i].setCount(m);
         weaver.enqueue(&jobs[i]);
@@ -182,8 +187,7 @@ void QueueBenchmarksTest::CollectionsBenchmark()
     ThreadWeaver::Weaver weaver;
     weaver.setMaximumNumberOfThreads(t);
     weaver.suspend();
-    AccumulateJob jobs[n];
-
+    QVector<AccumulateJob> jobs(n);
 
     QObject parent;
     qDebug() << b << "blocks" << c << "operations, queueing...";
@@ -221,8 +225,7 @@ void QueueBenchmarksTest::SequencesBenchmark()
     ThreadWeaver::Weaver weaver;
     weaver.setMaximumNumberOfThreads(t);
     weaver.suspend();
-    AccumulateJob jobs[n];
-
+    QVector<AccumulateJob> jobs(n);
 
     QObject parent;
     qDebug() << b << "blocks" << c << "operations, queueing...";
