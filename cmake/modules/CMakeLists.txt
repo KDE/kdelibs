@@ -62,7 +62,6 @@ set(cmakeFiles
                FindLibAttica.cmake
                FindLibKonq.cmake
                FindLibLZMA.cmake
-               FindLibXslt.cmake
                FindLibintl.cmake
                FindLibraryWithDebug.cmake
                FindLinuxWirelesstools.cmake
