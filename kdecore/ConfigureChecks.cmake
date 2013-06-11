@@ -30,7 +30,6 @@ check_include_files(time.h        HAVE_TIME_H)
 
 check_function_exists(setmntent   HAVE_SETMNTENT)
 check_function_exists(getmntinfo  HAVE_GETMNTINFO)
-check_function_exists(seteuid     HAVE_SETEUID)
 
 check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
 

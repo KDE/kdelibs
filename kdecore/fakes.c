@@ -42,13 +42,6 @@
 #define KDE_mkdir mkdir
 
 
-#if ! HAVE_SETEUID
-int seteuid(uid_t euid)
-{
-    return setreuid(-1, euid); /* Well, if you have neither you are in trouble :) */
-}
-#endif /* !HAVE_SETEUID */
-
 #ifndef HAVE_GETGROUPLIST
 /* Although this full license text is 4-clause BSD, it is taken directly
    from the FreeBSD source tree; the Regents of the University of

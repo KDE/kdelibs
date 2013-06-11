@@ -61,7 +61,6 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #cmakedefine01 HAVE_UNISTD_H
 #cmakedefine01 TIME_WITH_SYS_TIME
 #cmakedefine01 HAVE_SYS_SELECT_H
-#cmakedefine01 HAVE_SETEUID
 #cmakedefine01 HAVE_SYS_TYPES_H
 #cmakedefine01 HAVE_SYS_STAT_H
 #cmakedefine01 HAVE_STRINGS_H
