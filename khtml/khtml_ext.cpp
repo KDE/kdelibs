@@ -39,6 +39,7 @@
 #include "xml/dom_elementimpl.h"
 #include <QClipboard>
 #include <QtCore/QFileInfo>
+#include <QFileDialog>
 #include <QMenu>
 #include <QtCore/QUrl>
 #include <QtCore/QMetaEnum>
@@ -50,7 +51,6 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kfiledialog.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
 #include <kshell.h>
@@ -868,7 +868,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
   do {
     query = KMessageBox::Yes;
     // convert filename to URL using fromLocalFile to avoid trouble with ':' in filenames (#184202)
-    destURL = KFileDialog::getSaveUrl( QUrl::fromLocalFile(name), filter, parent, caption );
+    destURL = QFileDialog::getSaveFileUrl( parent, caption, QUrl::fromLocalFile(name), filter );
       if( destURL.isLocalFile() )
       {
         QFileInfo info( destURL.toLocalFile() );

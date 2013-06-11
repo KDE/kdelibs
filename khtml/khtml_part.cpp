@@ -91,7 +91,6 @@ using namespace DOM;
 #include <kstandardaction.h>
 #include <kstandardguiitem.h>
 #include <kactioncollection.h>
-#include <kfiledialog.h>
 #include <kmimetypetrader.h>
 #include <qtemporaryfile.h>
 #include <ktoolinvocation.h>

@@ -20,9 +20,9 @@
 
 #include "certexport.h"
 
+#include <QFileDialog>
 #include <QPushButton>
 #include <klineedit.h>
-#include <kfiledialog.h>
 #include <QRadioButton>
 #include <QLayout>
 #include <QLabel>
@@ -135,8 +135,8 @@ accept();
 
 
 void KCertExport::slotChoose() {
-  //QString newFile = KFileDialog::getSaveFileName("::x509save", i18n("*.pem|Privacy Enhanced Mail Format\n*.der|DER/ASN1 Format"));
-  QString newFile = KFileDialog::getSaveFileName(QString(), "application/x-x509-ca-cert");
+  //QString newFile = QFileDialog::getSaveFileName("::x509save", i18n("*.pem|Privacy Enhanced Mail Format\n*.der|DER/ASN1 Format"));
+  QString newFile = QFileDialog::getSaveFileName(0, QString(), QString(), i18n("DER/PEM/Netscape-encoded X.509 certificate (*.der *.crt *.cert *.pem)"));
 
    //  Dunno about this one yet
    // \n*.ncert|Netscape certificate files");

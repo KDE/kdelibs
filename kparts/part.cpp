@@ -27,6 +27,7 @@
 #include "browserextension.h"
 
 #include <QApplication>
+#include <QFileDialog>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <qtemporaryfile.h>
@@ -34,7 +35,6 @@
 #include <qmimedatabase.h>
 
 #include <kdirnotify.h>
-#include <kfiledialog.h>
 #include <kaboutdata.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
@@ -839,7 +839,7 @@ bool ReadWritePart::queryClose()
         {
             if (d->m_url.isEmpty())
             {
-                QUrl url = KFileDialog::getSaveUrl(QUrl(), QString(), parentWidget);
+                QUrl url = QFileDialog::getSaveFileUrl(parentWidget);
                 if (url.isEmpty())
                     return false;
 

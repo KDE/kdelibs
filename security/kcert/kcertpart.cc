@@ -22,6 +22,7 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <kaboutdata.h>
+#include <QFileDialog>
 #include <QFrame>
 #include <klocalizedstring.h>
 #include <kdebug.h>
@@ -35,7 +36,6 @@
 #include <kopenssl.h>
 #include <ksslcertificatebox.h>
 #include <ksslpemcallback.h>
-#include <kfiledialog.h>
 #include <QtCore/Q_PID>
 #include <kseparator.h>
 #include <QTreeWidget>
@@ -421,7 +421,7 @@ void KCertPart::setReadWrite(bool rw) {
 
 bool KCertPart::saveFile() {
 	if (_p12) {
-		QString certFile = KFileDialog::getSaveFileName(QString(), "application/x-pkcs12");
+                QString certFile = QFileDialog::getSaveFileName(0, QString(), QString(), i18n("PKCS#12 Personal Key and Certificates (*.p12 *.pfx)"));
 		if (certFile.isEmpty())
 			return false;
 
@@ -432,7 +432,7 @@ bool KCertPart::saveFile() {
 
 		return true;
 	} else if (_ca) {
-		QString certFile = KFileDialog::getSaveFileName(QString(), "application/x-x509-ca-cert");
+                QString certFile = QFileDialog::getSaveFileName(0, QString(), QString(), i18n("DER/PEM/Netscape-encoded X.509 certificate (*.der *.crt *.cert *.pem)"));
 		if (certFile.isEmpty())
 			return false;
 

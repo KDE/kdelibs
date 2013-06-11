@@ -31,7 +31,6 @@
 #include <kcompletionbox.h>
 #include <kcursor.h>
 #include <kdebug.h>
-#include <kfiledialog.h>
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <klocalizedstring.h>

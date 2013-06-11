@@ -36,6 +36,7 @@
 #include <QButtonGroup>
 #include <QCheckBox>
 #include <QFile>
+#include <QFileDialog>
 #include <QFileInfo>
 #include <QFrame>
 #include <QLabel>
@@ -52,7 +53,6 @@
 #include <kdatepicker.h>
 #include <kdebug.h>
 #include <kdialog.h>
-#include <kfiledialog.h>
 #include <kpluginfactory.h>
 #include <klineedit.h>
 #include <klocale.h>
@@ -1508,7 +1508,7 @@ void KCryptoConfig::slotOtherCertSelect() {
 
 void KCryptoConfig::slotYourImport() {
 
-   QString certFile = KFileDialog::getOpenFileName(QString(), "application/x-pkcs12", this);
+   QString certFile = QFileDialog::getOpenFileName(this, QString(), QString(), i18n("PKCS#12 Personal Key and Certificates (*.p12 *.pfx)"));
    if (certFile.isEmpty())
       return;
 
@@ -1593,9 +1593,7 @@ YourCertItem *x = static_cast<YourCertItem *>(yourSSLBox->currentItem());
    }
 
    // For now, we will only export to PKCS#12
-   QString certFile = KFileDialog::getSaveFileName(QString(),
-		                                   "application/x-pkcs12",
-                                                   this);
+   QString certFile = QFileDialog::getSaveFileName(this, QString(), QString(), i18n("PKCS#12 Personal Key and Certificates (*.p12 *.pfx)"));
    if (!certFile.isEmpty() && !pkcs->toFile(certFile))
       KMessageBox::sorry(this, i18n("Export failed."), i18n("SSL"));
 
@@ -1811,7 +1809,7 @@ void KCryptoConfig::slotYourPass() {
 
 
 void KCryptoConfig::slotCAImport() {
-    QString certFile = KFileDialog::getOpenFileName(QString(), "application/x-x509-ca-cert", this);
+    QString certFile = QFileDialog::getOpenFileName(this, QString(), QString(), i18n("DER/PEM/Netscape-encoded X.509 certificate (*.der *.crt *.cert *.pem)"));
 
     if (certFile.isEmpty())
         return;

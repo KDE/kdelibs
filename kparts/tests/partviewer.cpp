@@ -21,11 +21,11 @@
 
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
-#include <kfiledialog.h>
 #include <qmimedatabase.h>
 
 #include <QAction>
 #include <QApplication>
+#include <QFileDialog>
 #include <QWidget>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
@@ -80,7 +80,7 @@ void PartViewer::openUrl( const QUrl & url )
 
 void PartViewer::slotFileOpen()
 {
-    QUrl url = KFileDialog::getOpenUrl();
+    QUrl url = QFileDialog::getOpenFileUrl();
     if( !url.isEmpty() )
         openUrl( url );
 }

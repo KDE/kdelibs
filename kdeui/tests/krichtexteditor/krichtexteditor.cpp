@@ -21,11 +21,11 @@
 
 #include "krichtexteditor.h"
 
+#include <QFileDialog>
 #include <QtCore/QTextStream>
 
 #include <kactioncollection.h>
 #include <kstandardaction.h>
-#include <kfiledialog.h>
 #include <KRichTextWidget>
 #include <kmessagebox.h>
 #include <kio/netaccess.h>
@@ -110,7 +110,7 @@ void KRichTextEditor::saveFileAs(const QString &outputFileName)
 
 void KRichTextEditor::saveFileAs()
 {
-    saveFileAs(KFileDialog::getSaveFileName());
+    saveFileAs(QFileDialog::getSaveFileName());
 }
 
 void KRichTextEditor::saveFile()
@@ -124,7 +124,7 @@ void KRichTextEditor::saveFile()
 
 void KRichTextEditor::openFile()
 {
-    QString fileNameFromDialog = KFileDialog::getOpenFileName();
+    QString fileNameFromDialog = QFileDialog::getOpenFileName();
     if (fileNameFromDialog.isEmpty()) {
         return;
     }

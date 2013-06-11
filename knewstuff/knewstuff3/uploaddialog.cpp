@@ -22,6 +22,7 @@
 #include "uploaddialog_p.h"
 
 #include <QDialogButtonBox>
+#include <QFileDialog>
 #include <QLabel>
 #include <QLayout>
 #include <QDoubleSpinBox>
@@ -29,7 +30,6 @@
 #include <QtCore/QSignalMapper>
 #include <QCoreApplication>
 
-#include <kfiledialog.h>
 #include <kmessagebox.h>
 
 #include <kpixmapsequence.h>
@@ -39,6 +39,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
+#include <kimageio.h>
 #include <qstandardpaths.h>
 
 using namespace KNS3;
@@ -655,7 +656,8 @@ void UploadDialog::Private::_k_startUpload()
 
 void UploadDialog::Private::_k_changePreview1()
 {
-    KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
+    const QString filter = KImageIO::pattern( KImageIO::Reading ).replace( '\n', ";;" );
+    KUrl url = QFileDialog::getOpenFileUrl(q, i18n("Select preview image"), QUrl(), filter);
     previewFile1 = url;
     kDebug() << "preview is: " << url.url();
     QPixmap preview(url.toLocalFile());
@@ -664,7 +666,8 @@ void UploadDialog::Private::_k_changePreview1()
 
 void UploadDialog::Private::_k_changePreview2()
 {
-    KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
+    const QString filter = KImageIO::pattern( KImageIO::Reading ).replace( '\n', ";;" );
+    KUrl url = QFileDialog::getOpenFileUrl(q, i18n("Select preview image"), QUrl(), filter);
     previewFile2 = url;
     QPixmap preview(url.toLocalFile());
     ui.previewImage2->setPixmap(preview.scaled(ui.previewImage1->size()));
@@ -672,7 +675,8 @@ void UploadDialog::Private::_k_changePreview2()
 
 void UploadDialog::Private::_k_changePreview3()
 {
-    KUrl url = KFileDialog::getImageOpenUrl(KUrl(), q, i18n("Select preview image"));
+    const QString filter = KImageIO::pattern( KImageIO::Reading ).replace( '\n', ";;" );
+    KUrl url = QFileDialog::getOpenFileUrl(q, i18n("Select preview image"), QUrl(), filter);
     previewFile3 = url;
     QPixmap preview(url.toLocalFile());
     ui.previewImage3->setPixmap(preview.scaled(ui.previewImage1->size()));

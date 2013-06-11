@@ -16,6 +16,7 @@
 #include <QAction>
 #include <QCursor>
 #include <QDomDocument>
+#include <QFileDialog>
 #include <dom_string.h>
 #include "dom/dom2_range.h"
 #include "dom/html_document.h"
@@ -30,7 +31,6 @@
 #include <ktoggleaction.h>
 #include <kactioncollection.h>
 #include "kxmlguifactory.h"
-#include <kfiledialog.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
 
@@ -140,8 +140,9 @@ void Dummy::doBenchmark()
     results.clear();
 
     const QString startDir = settings.readPathEntry("path", QString());
-    QString directory = KFileDialog::getExistingDirectory(QUrl::fromLocalFile(startDir), m_part->view(),
-            QString::fromLatin1("Please select directory with tests"));
+    QString directory = QFileDialog::getExistingDirectory(m_part->view(),
+            QString::fromLatin1("Please select directory with tests"),
+            startDir);
 
     if (!directory.isEmpty()) {
         settings.writePathEntry("path", directory);

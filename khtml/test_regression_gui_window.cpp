@@ -28,12 +28,12 @@
 #include <QtCore/QProcess>
 #include <QtCore/QFileInfo>
 #include <QtCore/QTextStream>
+#include <QFileDialog>
 #include <QMainWindow>
 
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kconfig.h>
-#include <kfiledialog.h>
 
 
 // Taken from QUrl
@@ -154,7 +154,7 @@ void TestRegressionWindow::toggleNoXvfbUse(bool checked)
 
 void TestRegressionWindow::setTestsDirectory()
 {
-	m_testsUrl = KFileDialog::getExistingDirectory();
+	m_testsUrl = QFileDialog::getExistingDirectory();
 
 	initTestsDirectory();
 	loadOutputHTML();
@@ -162,7 +162,7 @@ void TestRegressionWindow::setTestsDirectory()
 
 void TestRegressionWindow::setOutputDirectory()
 {
-	m_outputUrl = KFileDialog::getExistingDirectory();
+	m_outputUrl = QFileDialog::getExistingDirectory();
 	loadOutputHTML();
 }
 
@@ -236,7 +236,7 @@ void TestRegressionWindow::initTestsDirectory()
 
 void TestRegressionWindow::setKHTMLDirectory()
 {
-	m_khtmlUrl = KFileDialog::getExistingDirectory();
+	m_khtmlUrl = QFileDialog::getExistingDirectory();
 
 	if(!m_khtmlUrl.isEmpty())
 	{
@@ -574,7 +574,7 @@ void TestRegressionWindow::pauseContinueButtonClicked()
 void TestRegressionWindow::saveLogButtonClicked()
 {
 	assert(m_activeProcess == 0);
-	m_saveLogUrl = KFileDialog::getExistingDirectory();
+	m_saveLogUrl = QFileDialog::getExistingDirectory();
 
 	QString fileName = m_saveLogUrl.path() + "/logOutput.html";
 	if(QFileInfo(fileName).exists())

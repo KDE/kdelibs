@@ -31,7 +31,6 @@
 #include "kwebpluginfactory.h"
 
 // KDE
-#include <kfiledialog.h>
 #include <kprotocolmanager.h>
 #include <kjobuidelegate.h>
 #include <krun.h>
@@ -55,6 +54,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QCoreApplication>
 #include <QAction>
+#include <QFileDialog>
 #include <QWebFrame>
 #include <QtNetwork/QNetworkReply>
 #include <qtemporaryfile.h>
@@ -117,7 +117,7 @@ static bool downloadResource (const KUrl& srcUrl, const QString& suggestedName =
 {
     const QString fileName = suggestedName.isEmpty() ? srcUrl.fileName() : suggestedName;
     // convert filename to URL using fromPath to avoid trouble with ':' in filenames (#184202)
-    KUrl destUrl = KFileDialog::getSaveFileName(KUrl::fromPath(fileName), QString(), parent);
+    KUrl destUrl = QUrl::fromLocalFile(QFileDialog::getSaveFileName(parent, QString(), fileName));
     if (!destUrl.isValid())
         return false;
 
