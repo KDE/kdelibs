@@ -16,32 +16,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef KDEFAKES_H
-#define KDEFAKES_H
-
-/* This file defines the prototypes for a few (C library) functions for 
-   platforms which either
-   1) have those functions, but lack the prototypes in their header files.
-   2) don't have those functions, in which case kdecore provides them
-
-   You should include this file in any .cpp file that uses any one of these 
-   functions:
-     initgroups, 
-     getgrouplist
-*/
-
-#cmakedefine01 HAVE_INITGROUPS_PROTO
-#if ! HAVE_INITGROUPS_PROTO
-#include <unistd.h>
-#ifdef __cplusplus
-extern "C" {
-#endif
-int initgroups(const char *, gid_t);
-#ifdef __cplusplus
-}
-#endif
-#endif
-
 #cmakedefine01 HAVE_GETGROUPLIST
 #if ! HAVE_GETGROUPLIST
 #include <sys/types.h> /* for gid_t */
@@ -53,16 +27,5 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 }
 #endif
 #endif
-
-#cmakedefine01 HAVE_ALLOCA_H
-#cmakedefine01 HAVE_STRING_H
-#cmakedefine01 HAVE_STDLIB_H
-#cmakedefine01 HAVE_ERRNO_H
-#cmakedefine01 HAVE_UNISTD_H
-#cmakedefine01 TIME_WITH_SYS_TIME
-#cmakedefine01 HAVE_SYS_SELECT_H
-#cmakedefine01 HAVE_SYS_TYPES_H
-#cmakedefine01 HAVE_SYS_STAT_H
-#cmakedefine01 HAVE_STRINGS_H
 
 #endif /* KDEFAKES_H */

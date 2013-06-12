@@ -12,9 +12,7 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
 
-# Generate kdefakes.h
 include(ConfigureChecks.cmake)
-configure_file(kdefakes.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h )
 
 # Generate kdeversion.h
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
@@ -100,7 +98,6 @@ if (UNIX)
       localization/klocale_unix.cpp
       util/kshell_unix.cpp
       util/kuser_unix.cpp
-      fakes.c
    )
 endif (UNIX)
 
@@ -108,18 +105,6 @@ add_subdirectory( tests )
 if ( NOT WINCE )
     add_subdirectory( network/kssld )
 endif ( NOT WINCE )
-
-########### next target ###############
-
-if (UNIX)
-
-   kde4_add_library(kdefakes ${LIBRARY_TYPE} fakes.c)
-   set_target_properties(kdefakes PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
-   install(TARGETS kdefakes EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS} )
-
-endif (UNIX)
-
-
 
 ########### next target ###############
 

@@ -63,6 +63,8 @@ include(ConfigureChecks.cmake)
 
 configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio.h )
 
+configure_file(kfile/config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kfile/config-kfile.h )
+
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 #macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
@@ -212,6 +214,7 @@ set(kfile_STAT_SRCS
   kfile/kurlcombobox.cpp
   kfile/kurlrequester.cpp
   kfile/kurlrequesterdialog.cpp
+  kfile/getgrouplist-fake.c
 )
 
 if(NOT KIO_NO_SOLID)
@@ -292,6 +295,7 @@ set(kio_INCLUDES
 
    ${CMAKE_CURRENT_BINARY_DIR}/kio
    ${CMAKE_CURRENT_BINARY_DIR}/kssl
+   ${CMAKE_CURRENT_BINARY_DIR}/kfile
    ${CMAKE_CURRENT_BINARY_DIR}      # e.g. for observer_stub.h
    ${CMAKE_SOURCE_DIR}/interfaces
 )

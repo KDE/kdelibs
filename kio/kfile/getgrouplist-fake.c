@@ -1,48 +1,3 @@
-/* This file is part of the KDE libraries
-   Copyright (c) 2000 Stephan Kulow <coolo@kde.org>
-   Copyright (c) 2002 Dirk Mueller <mueller@kde.org>
-   Copyright (c) 2002 Oswald Buddenhagen <ossi@kde.org>
-   Copyright (c) 2003 Joseph Wenninger <kde@jowenn.at>
-   Copyright (c) 2005 Jarosław Staniek <staniek@kde.org>
-   Copyright (c) 2007 Rafael Fernández López <ereslibre@kde.org>
-
-   unsetenv() taken from the GNU C Library.
-   Copyright (C) 1992,1995-1999,2000-2002 Free Software Foundation, Inc. <gnu@gnu.org>
-
-   getgrouplist() taken from the FreeBSD libc. The copyright notice
-   in the file /usr/src/lib/libc/gen/getgrouplist.c on FreeBSD is out
-   of date, as it has incorrect copyright years and still names the
-   4-clause BSD license -- however, the Regents of the University of
-   California at Berkeley have declared that clause 3 is void; only
-   clauses 1,2 and 4 apply. See the full license text below.
-   Copyright (c) 1991, 1993
-        The Regents of the University of California.  All rights reserved.
-
-
-
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License version 2 as published by the Free Software Foundation.
-
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
-
-   You should have received a copy of the GNU Library General Public License
-   along with this library; see the file COPYING.LIB.  If not, write to
-   the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-   Boston, MA 02110-1301, USA.
-*/
-
-#include <kdecore_export.h>
-#include <kdefakes.h>
-
-#define KDE_open open
-#define KDE_mkdir mkdir
-
-
-#ifndef HAVE_GETGROUPLIST
 /* Although this full license text is 4-clause BSD, it is taken directly
    from the FreeBSD source tree; the Regents of the University of
    California have deleted clause 3. See
@@ -86,6 +41,7 @@
  * SUCH DAMAGE.
  */
 
+#ifndef HAVE_GETGROUPLIST
 #if 0
 #if defined(LIBC_SCCS) && !defined(lint)
 static char sccsid[] = "@(#)getgrouplist.c	8.2 (Berkeley) 12/8/94";
@@ -93,6 +49,8 @@ static char sccsid[] = "@(#)getgrouplist.c	8.2 (Berkeley) 12/8/94";
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: src/lib/libc/gen/getgrouplist.c,v 1.14 2005/05/03 16:20:03 delphij Exp $");
 #endif
+
+#include "config-kfile.h"
 
 /*
  * get credential
