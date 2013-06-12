@@ -51,8 +51,7 @@
 #include "kdepackages.h"
 #include "kdeversion.h"
 
-#include <config-compiler.h>
-#include <config-prefix.h>
+#include <config-kdeui.h>
 
 class KBugReportPrivate {
 public:

@@ -23,7 +23,6 @@
 #include "klauncher_cmds.h"
 #include "klauncher_adaptor.h"
 
-#include <config-prefix.h>
 
 #include <stdio.h>
 #include <unistd.h>

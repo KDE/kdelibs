@@ -3,6 +3,7 @@
 #define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 #define LIB_INSTALL_DIR "${LIB_INSTALL_DIR}"
 #define LIBEXEC_INSTALL_DIR "${LIBEXEC_INSTALL_DIR}"
+#define BIN_INSTALL_DIR "${BIN_INSTALL_DIR}"
 
 /* These are for proctitle.cpp: */
 #cmakedefine01 HAVE___PROGNAME

@@ -21,8 +21,7 @@
 
 #include "krun.h"
 #include "krun_p.h"
-
-#include <config-prefix.h>
+#include <config-kio.h>
 
 #include <assert.h>
 #include <stdlib.h>

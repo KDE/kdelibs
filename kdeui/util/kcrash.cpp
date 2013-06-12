@@ -23,7 +23,6 @@
  */
 
 #include "kcrash.h"
-#include <config-prefix.h>
 
 #include <config-kdeui.h>
 #include <config-strlcpy.h>
@@ -57,7 +56,6 @@
 #include <QtCore/QDir>
 #include <QStandardPaths>
 
-#include <config-kdeui.h>
 #if HAVE_X11
 #include <qx11info_x11.h>
 #include <X11/Xlib.h>

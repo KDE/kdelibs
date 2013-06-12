@@ -24,8 +24,6 @@
 
 #include "kpty_p.h"
 
-#include <config-prefix.h>
-
 #ifdef __sgi
 #define __svr4__
 #endif

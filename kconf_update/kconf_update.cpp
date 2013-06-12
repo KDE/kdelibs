@@ -18,7 +18,7 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include <config-prefix.h> // CMAKE_INSTALL_PREFIX
+#include <config-kconf.h> // CMAKE_INSTALL_PREFIX
 
 #include <QtCore/QDate>
 #include <QtCore/QFile>

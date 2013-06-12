@@ -30,7 +30,6 @@
 
 #include "http.h"
 
-#include <config-prefix.h>
 #include <config-kioslave-http.h>
 
 #include <fcntl.h>

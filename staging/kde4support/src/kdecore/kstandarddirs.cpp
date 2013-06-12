@@ -37,7 +37,6 @@
 #include "klocalizedstring.h"
 #include <kservice_export.h>
 
-#include <config-prefix.h>
 #include <config-kstandarddirs.h>
 #include <config-kde4support.h>
 #include <stdlib.h>

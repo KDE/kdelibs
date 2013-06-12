@@ -13,7 +13,6 @@
 #include "client.h"
 
 #include <config-kdesu.h>
-#include <config-prefix.h>
 
 #include <stdio.h>
 #include <unistd.h>

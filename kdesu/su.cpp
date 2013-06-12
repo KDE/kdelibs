@@ -16,8 +16,6 @@
 #include "su.h"
 #include "kcookie.h"
 
-#include <config-prefix.h> // for LIBEXEC_INSTALL_DIR
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

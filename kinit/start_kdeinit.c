@@ -17,7 +17,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <config-prefix.h>
 #include <config-kdeinit.h>
 
 #include <errno.h>

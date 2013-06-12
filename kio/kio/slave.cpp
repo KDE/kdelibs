@@ -43,7 +43,7 @@
 #include <kio/global.h>
 #include "connection_p.h"
 #include <kprotocolinfo.h>
-#include <config-prefix.h>
+#include <config-kio.h>
 
 #include "slaveinterface_p.h"
 

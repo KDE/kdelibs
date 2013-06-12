@@ -1,6 +1,8 @@
 
 project(kconf_update)
 
+configure_file(config-kconf.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kconf.h )
+
 ########### next target ###############
 
 set(kconf_update_KDEINIT_SRCS

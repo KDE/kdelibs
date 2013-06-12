@@ -22,7 +22,8 @@
 #undef QT_USE_FAST_CONCATENATION
 
 #include "krununittest.h"
-#include <config-prefix.h>
+
+#include <config-kdeui.h>
 
 #include <QtTest/QtTest>
 

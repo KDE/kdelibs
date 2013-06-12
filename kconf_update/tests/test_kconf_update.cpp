@@ -27,7 +27,7 @@
 #include <QtCore/QProcess>
 #include <qtemporaryfile.h>
 #include <qstandardpaths.h>
-#include "config-prefix.h"
+#include "config-kconf.h"
 
 #include <qtest.h>
 

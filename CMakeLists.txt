@@ -210,10 +210,6 @@ add_definitions(${KDE4_DEFINITIONS})
 
 ################# configure checks and create the configured files #################
 
-# now create config headers
-configure_file(config-prefix.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-prefix.h )
-configure_file(config-compiler.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-compiler.h )
-
 # Needed for the calls to kconfig_add_kcfg_files in some modules
 set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
