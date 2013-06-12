@@ -165,20 +165,6 @@ namespace KIO {
                                          int method = -1) const;
 
         /**
-         * Display a dialog box to inform the user of the error given by
-         * this job.
-         * Only call if error is not 0, and only in the slot connected
-         * to result.
-         * @param parent the parent widget for the dialog box, can be 0 for
-         *        top-level
-         * @deprecated you should use job->ui()->setWindow(parent)
-         *             and job->ui()->showErrorMessage() instead
-         */
-#ifndef KDE_NO_DEPRECATED
-        KIO_DEPRECATED void showErrorDialog( QWidget *parent = 0 );
-#endif
-
-        /**
          * Returns whether the user should be asked about things when the job
          * is unsure, like whether to overwrite existing files etc.
          * @return true if user interactions are enabled (true by default),

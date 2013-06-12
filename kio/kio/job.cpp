@@ -191,21 +191,6 @@ void JobPrivate::slotSpeed( KJob*, unsigned long speed )
 
 //Job::errorString is implemented in job_error.cpp
 
-#ifndef KDE_NO_DEPRECATED
-void Job::showErrorDialog( QWidget *parent )
-{
-    if ( ui() )
-    {
-        ui()->setWindow( parent );
-        ui()->showErrorMessage();
-    }
-    else
-    {
-        qWarning() << errorString();
-    }
-}
-#endif
-
 bool Job::isInteractive() const
 {
   return uiDelegate() != 0;

@@ -326,6 +326,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <h3><a name="kio">Changes in kio</a></h3>
 
 <ul>
+  <li>The deprecated KIO::Job::showErrorDialog() has been removed, use KJobWidgets::setWindow(job, parent) and job-&gt;ui()-&gt;showErrorMessage()
   <li>The KFileItem API has been ported to QMimeType. As a consequence, mimeTypePtr() is now currentMimeType().</li>
   <li>KIO::pixmapForUrl has moved from kio/global.h to kio/pixmaploader.h (so that global.h is core only)</li>
   <li>KProtocolInfo::isHelperProtocol() and exec() no longer detect apps associated with x-scheme-handler/*. This has moved up to KRun. Therefore KProtocolInfo is again about .protocol files only.</li>
