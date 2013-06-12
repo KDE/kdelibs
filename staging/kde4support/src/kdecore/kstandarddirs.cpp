@@ -40,7 +40,6 @@
 #include <config-prefix.h>
 #include <config-kstandarddirs.h>
 #include <config-kde4support.h>
-#include <kdefakes.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <errno.h>
