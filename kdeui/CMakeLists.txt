@@ -75,7 +75,6 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  actions/kactioncategory.cpp
  actions/ktoggletoolbaraction.cpp
- actions/ktoolbarpopupaction.cpp
  colors/kcolorbutton.cpp
  dialogs/kaboutkdedialog_p.cpp
  dialogs/kassistantdialog.cpp
@@ -345,7 +344,6 @@ install( FILES
  actions/kactioncollection.h
  actions/kactioncategory.h
  actions/ktoggletoolbaraction.h
- actions/ktoolbarpopupaction.h
  colors/kcolorbutton.h
  dialogs/kaboutapplicationdialog.h
  dialogs/kassistantdialog.h

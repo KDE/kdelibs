@@ -29,9 +29,9 @@
 
 #include <QWidgetAction>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
-class KMenu;
+class QMenu;
 
 /**
  * This action is a normal action everywhere, except in a toolbar
@@ -47,7 +47,7 @@ class KMenu;
  * used, and enough for menus, but in toolbars there is \e also an optional popup
  * to go back N steps or undo N steps.
  */
-class KDEUI_EXPORT KToolBarPopupAction : public QWidgetAction
+class KWIDGETSADDONS_EXPORT KToolBarPopupAction : public QWidgetAction
 {
   Q_OBJECT
   Q_PROPERTY( bool delayed READ delayed WRITE setDelayed )
@@ -79,7 +79,7 @@ class KDEUI_EXPORT KToolBarPopupAction : public QWidgetAction
      * \deprecated use menu() instead
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED QMenu *popupMenu() const;
+    KWIDGETSADDONS_DEPRECATED QMenu *popupMenu() const;
 #endif
 
     /**

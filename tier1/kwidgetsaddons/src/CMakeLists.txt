@@ -30,6 +30,7 @@ set(kwidgetsaddons_SRCS
   kpassivepopup.cpp
   kactionmenu.cpp
   ktoolbarlabelaction.cpp
+  ktoolbarpopupaction.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -76,6 +77,7 @@ install(FILES
   kpassivepopup.h
   kactionmenu.h
   ktoolbarlabelaction.h
+  ktoolbarpopupaction.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
