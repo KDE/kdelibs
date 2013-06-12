@@ -16,9 +16,6 @@
    Boston, MA 02110-1301, USA.
 */
 
-#ifndef CONFIG_KFILE_H
-#define CONFIG_KFILE_H
-
 #cmakedefine01 HAVE_GETGROUPLIST
 #if ! HAVE_GETGROUPLIST
 #include <sys/types.h> /* for gid_t */
