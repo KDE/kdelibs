@@ -28,4 +28,3 @@ int getgrouplist(const char *, gid_t , gid_t *, int *);
 #endif
 #endif
 
-#endif /* KDEFAKES_H */
