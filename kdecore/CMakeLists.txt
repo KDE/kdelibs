@@ -278,7 +278,6 @@ install(FILES
    util/klauncher_iface.h
    util/kshell.h
    util/kuser.h
-   ${CMAKE_CURRENT_BINARY_DIR}/kdefakes.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

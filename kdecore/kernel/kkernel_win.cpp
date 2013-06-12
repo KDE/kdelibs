@@ -21,7 +21,6 @@
 */
 
 #include "kkernel_win.h"
-#include <kdefakes.h>
 
 #include <QtCore/QTextCodec>
 

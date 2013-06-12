@@ -21,7 +21,6 @@
 
 #include "ktimezone.h"
 
-#include <kdefakes.h>
 #include <config-date.h> // SIZEOF_TIME_T
 
 #if HAVE_SYS_TIME_H
