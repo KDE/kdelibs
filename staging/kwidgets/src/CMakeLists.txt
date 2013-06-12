@@ -56,6 +56,7 @@ target_link_libraries(kwidgets
   kservice
   ki18n
   KCodecs
+  KIconThemes
 )
 
 if(X11_FOUND)

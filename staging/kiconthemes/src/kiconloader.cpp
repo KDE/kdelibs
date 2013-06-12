@@ -49,8 +49,10 @@
 // kdecore
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kglobalsettings.h>
 #include <kshareddatacache.h>
+#include <ksharedconfig.h>
+#include <QtDBus/QDBusConnection>
+#include <QDBusMessage>
 
 // kdeui
 #include "kicontheme.h"
@@ -303,8 +305,10 @@ public:
     void drawOverlays(const KIconLoader *loader, KIconLoader::Group group, int state, QPixmap& pix, const QStringList& overlays);
 };
 
-class KIconLoaderGlobalData
+class KIconLoaderGlobalData : public QObject
 {
+    Q_OBJECT
+
 public:
     KIconLoaderGlobalData() {
         const QStringList genericIconsFiles = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "mime/generic-icons");
@@ -312,11 +316,23 @@ public:
         Q_FOREACH(const QString& file, genericIconsFiles) {
             parseGenericIconsFiles(file);
         }
+
+        QDBusConnection::sessionBus().connect( QString(), "/KIconLoader", "org.kde.KIconLoader",
+                                                   "iconChanged", this, SIGNAL(iconChanged(int)) );
+    }
+
+    void emitChange(KIconLoader::Group group) {
+        QDBusMessage message = QDBusMessage::createSignal("/KIconLoader", "org.kde.KIconLoader", "iconChanged" );
+        message.setArguments(QList<QVariant>() << int(group));
+        QDBusConnection::sessionBus().send(message);
     }
 
     QString genericIconFor(const QString& icon) const {
         return m_genericIcons.value(icon);
     }
+
+signals:
+    void iconChanged(int group);
 
 private:
     void parseGenericIconsFiles(const QString& fileName);
@@ -431,8 +447,7 @@ KIconLoader::KIconLoader(const QString& _appname, const QStringList& extraSearch
     setObjectName(_appname);
     d = new KIconLoaderPrivate(this);
 
-    connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
-            this, SLOT(newIconLoader()));
+    connect(s_globalData, SIGNAL(iconChanged(int)), SLOT(newIconLoader()));
     d->init(_appname, extraSearchPaths);
 }
 
@@ -1600,6 +1615,11 @@ void KIconLoader::newIconLoader()
     emit iconLoaderSettingsChanged();
 }
 
+void KIconLoader::emitChange(KIconLoader::Group g)
+{
+    s_globalData->emitChange(g);
+}
+
 #include <kiconengine_p.h>
 QIcon KDE::icon(const QString& iconName, KIconLoader* iconLoader)
 {
@@ -1611,4 +1631,4 @@ QIcon KDE::icon(const QString& iconName, const QStringList& overlays, KIconLoade
     return QIcon(new KIconEngine(iconName, iconLoader ? iconLoader : KIconLoader::global(), overlays));
 }
 
-
+#include "kiconloader.moc"

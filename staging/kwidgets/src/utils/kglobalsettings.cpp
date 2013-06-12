@@ -66,6 +66,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 
 #include <stdlib.h>
 #include <kconfiggroup.h>
+#include <kiconloader.h>
 
 
 //static QColor *_buttonBackground = 0;
@@ -151,6 +152,7 @@ class KGlobalSettings::Private
         QPalette createApplicationPalette(const KSharedConfigPtr &config);
         QPalette createNewApplicationPalette(const KSharedConfigPtr &config);
         void _k_slotNotifyChange(int, int);
+        void _k_slotIconChange(int);
 
         void propagateQtSettings();
         void kdisplaySetPalette();
@@ -217,6 +219,8 @@ void KGlobalSettings::activate(ActivateOptions options)
         if (options & ListenForChanges) {
             QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
                                                    "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
+            QDBusConnection::sessionBus().connect( QString(), "/KIconLoader", "org.kde.KIconLoader",
+                                                   "iconChanged", this, SIGNAL(_k_slotIconChange(int)) );
         }
 
         if (options & ApplySettings) {
@@ -749,18 +753,27 @@ static void x11_apply_settings_in_all_apps()
 
 void KGlobalSettings::emitChange(ChangeType changeType, int arg)
 {
-    QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
-    QList<QVariant> args;
-    args.append(static_cast<int>(changeType));
-    args.append(arg);
-    message.setArguments(args);
-    QDBusConnection::sessionBus().send(message);
+    if(changeType == IconChanged) {
+        KIconLoader::emitChange(KIconLoader::Group(arg));
+    } else {
+        QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
+        QList<QVariant> args;
+        args.append(static_cast<int>(changeType));
+        args.append(arg);
+        message.setArguments(args);
+        QDBusConnection::sessionBus().send(message);
+    }
 #if 0 // none of this exists in Qt5 anymore
     if (qApp && qApp->type() != QApplication::Tty) {
         //notify non-kde qt applications of the change
         //x11_apply_settings_in_all_apps();
     }
 #endif
+}
+
+void KGlobalSettings::Private::_k_slotIconChange(int arg)
+{
+    _k_slotNotifyChange(IconChanged, arg);
 }
 
 void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)

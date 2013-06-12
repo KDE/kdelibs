@@ -441,14 +441,34 @@ public:
  public Q_SLOTS:
    /**
     * Re-initialize the global icon loader
+    *
+    * @deprecated since 5.0, use emitChange(Group)
     */
-    void newIconLoader();
+    KICONTHEMES_DEPRECATED void newIconLoader();
+
+    /**
+     * Emits an iconChanged() signal on all the KIconLoader instances in the system
+     * indicating that a system's icon group has changed in some way. It will also trigger
+     * a reload in all of them to update to the new theme.
+     *
+     * @p group indicates the group that has changed
+     *
+     * @since 5.0
+     */
+    static void emitChange(Group group);
 
 Q_SIGNALS:
     /**
      * Emitted by newIconLoader once the new settings have been loaded
      */
     void iconLoaderSettingsChanged();
+
+    /**
+     * Emitted when the system icon theme changes
+     *
+     * @since 5.0
+     */
+    void iconChanged(int group);
 
  private:
     // @internal the data object

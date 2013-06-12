@@ -635,8 +635,10 @@ Q_SIGNALS:
     /**
      * Emitted when the global icon settings have been changed.
      * @param group the new group
+     *
+     * @deprecated since 5.0, use KIconLoader::iconChanged(int)
      */
-    void iconChanged(int group);
+    KWIDGETS_DEPRECATED void iconChanged(int group);
 
     /**
      * Emitted when the cursor theme has been changed.
@@ -664,6 +666,7 @@ private:
     Private* const d;
 
     Q_PRIVATE_SLOT(d, void _k_slotNotifyChange(int, int))
+    Q_PRIVATE_SLOT(d, void _k_slotIconChange(int))
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KGlobalSettings::GraphicEffects)
