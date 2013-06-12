@@ -66,7 +66,7 @@ protected:
      * @return current job this UI delegate is attached to, or 0 if
      * this UI delegate is not tracking any job
      */
-    KJob *job();
+    KJob *job() const;
 
     friend class KJob;
 

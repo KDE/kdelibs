@@ -64,7 +64,7 @@ bool KJobUiDelegate::setJob( KJob *job )
     return true;
 }
 
-KJob *KJobUiDelegate::job()
+KJob *KJobUiDelegate::job() const
 {
     return d->job;
 }
