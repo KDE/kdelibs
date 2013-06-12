@@ -26,17 +26,49 @@
 
 void KJobWidgets::setWindow(KJob *job, QWidget *widget)
 {
+    job->setProperty("widget", QVariant::fromValue(widget));
     QWindow *window = widget->windowHandle();
     job->setProperty("window", QVariant::fromValue(window));
+    job->setProperty("window-id", QVariant::fromValue(qptrdiff(window->winId())));
 }
 
+QWidget* KJobWidgets::window(KJob *job)
+{
+    return job->property("widget").value<QWidget *>();
+}
+
+#if 0
 void KJobWidgets::setWindow(KJob *job, QWindow *window)
 {
     job->setProperty("window", QVariant::fromValue(window));
 }
 
-QWindow* KJobWidgets::window(KJob *job)
+QWindow* KJobWidgets::window(KJob *job) // ### will have to be in a different namespace
 {
     return job->property("window").value<QWindow *>();
+}
+#endif
+
+// duplicated from kwindowsystem
+static int timestampCompare( unsigned long time1_, unsigned long time2_ ) // like strcmp()
+{
+    quint32 time1 = time1_;
+    quint32 time2 = time2_;
+    if (time1 == time2)
+        return 0;
+    return quint32(time1 - time2) < 0x7fffffffU ? 1 : -1; // time1 > time2 -> 1, handle wrapping
+}
+
+void KJobWidgets::updateUserTimestamp(KJob *job, unsigned long time)
+{
+    unsigned long currentTimestamp = userTimestamp(job);
+    if (currentTimestamp == 0 || timestampCompare(time, currentTimestamp) > 0) {
+        job->setProperty("userTimestamp", qulonglong(time));
+    }
+}
+
+unsigned long KJobWidgets::userTimestamp(KJob *job)
+{
+    return job->property("userTimestamp").toULongLong();
 }
 

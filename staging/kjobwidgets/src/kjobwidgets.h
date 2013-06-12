@@ -46,13 +46,13 @@ namespace KJobWidgets
    * Overload that takes a QWindow.
    * @since 5.0
    */
-  KJOBWIDGETS_EXPORT void setWindow(KJob *job, QWindow *window);
+  //KJOBWIDGETS_EXPORT void setWindow(KJob *job, QWindow *window);
 
   /**
    * Return the window associated with this job.
    * @since 5.0
    */
-  KJOBWIDGETS_EXPORT QWindow* window(KJob *job);
+  KJOBWIDGETS_EXPORT QWidget* window(KJob *job);
 
   /**
    * Updates the last user action timestamp to the given time.
