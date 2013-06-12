@@ -301,7 +301,11 @@ void tst_KToolBar::changeGlobalIconSizeSetting(int mainToolbarIconSize, int icon
     //globals.writeEntry("Size", iconSize, KConfig::Normal|KConfig::Global);
     globals.writeEntry("Size", iconSize);
     KSharedConfig::openConfig()->sync();
-    QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::IconChanged), Q_ARG(int, 0));
+
+    KIconLoader l;
+    QSignalSpy spy(&l, SIGNAL(iconChanged(int)));
+    l.emitChange(KIconLoader::Desktop);
+    spy.wait(200);
 }
 
 void tst_KToolBar::deleteGlobalIconSizeSetting()
@@ -311,7 +315,11 @@ void tst_KToolBar::deleteGlobalIconSizeSetting()
     KConfigGroup globals(KSharedConfig::openConfig(), "ToolbarIcons");
     globals.deleteEntry("Size");
     KSharedConfig::openConfig()->sync();
-    QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::IconChanged), Q_ARG(int, 0));
+
+    KIconLoader l;
+    QSignalSpy spy(&l, SIGNAL(iconChanged(int)));
+    l.emitChange(KIconLoader::Desktop);
+    spy.wait(200);
 }
 
 Q_DECLARE_METATYPE(Qt::ToolButtonStyle)
