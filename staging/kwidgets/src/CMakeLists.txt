@@ -20,6 +20,7 @@ set(kwidgets_LIB_SRCS
   actions/kselectaction.cpp
   actions/kstandardaction.cpp
   dialogs/kmessagebox.cpp
+  utils/kcolorscheme.cpp
   utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
   widgets/kdragwidgetdecorator.cpp
@@ -55,7 +56,6 @@ target_link_libraries(kwidgets
   kservice
   ki18n
   KCodecs
-  KIconThemes
 )
 
 if(X11_FOUND)
@@ -78,6 +78,7 @@ install(FILES
   actions/kselectaction.h
   actions/kstandardaction.h
   dialogs/kmessagebox.h
+  utils/kcolorscheme.h
   utils/kstandardguiitem.h
   utils/kstandardshortcut.h
   widgets/kdragwidgetdecorator.h
