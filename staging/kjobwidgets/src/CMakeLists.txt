@@ -2,6 +2,7 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 set(kjobwidgets_SRCS
   kuiserverjobtracker.cpp
+  kjobwidgets.cpp
 )
 
 qt5_add_dbus_interfaces(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.JobViewServer.xml )
@@ -28,6 +29,7 @@ install( FILES
 
 install(FILES
   kuiserverjobtracker.h
+  kjobwidgets.h
   ${CMAKE_CURRENT_BINARY_DIR}/kjobwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
