@@ -58,15 +58,15 @@ void KToolBarLabelAction::setBuddy( QAction* buddy )
   d->buddy = buddy;
 
   QList<QLabel*> labels;
-  foreach ( QWidget* widget, associatedWidgets() )
+  Q_FOREACH ( QWidget* widget, associatedWidgets() )
     if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) )
       if ( QLabel* label = qobject_cast<QLabel*>( toolBar->widgetForAction( this ) ) )
         labels.append( label );
 
-  foreach ( QWidget* widget, buddy->associatedWidgets() )
+  Q_FOREACH ( QWidget* widget, buddy->associatedWidgets() )
     if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
       QWidget* newBuddy = toolBar->widgetForAction( buddy );
-      foreach ( QLabel* label, labels )
+      Q_FOREACH ( QLabel* label, labels )
         label->setBuddy( newBuddy );
       return;
     }
@@ -81,7 +81,7 @@ bool KToolBarLabelAction::event( QEvent *event )
 {
   if ( event->type() == QEvent::ActionChanged ) {
     if ( d->label && text() != d->label->text() ) {
-      emit textChanged( text() );
+      Q_EMIT textChanged( text() );
       d->label->setText(text());
     }
   }
@@ -92,7 +92,7 @@ bool KToolBarLabelAction::event( QEvent *event )
 bool KToolBarLabelAction::eventFilter( QObject *watched, QEvent *event )
 {
   if ( d->label && d->buddy && event->type() == QEvent::PolishRequest && watched == d->label) {
-    foreach ( QWidget* widget, d->buddy->associatedWidgets() ) {
+    Q_FOREACH ( QWidget* widget, d->buddy->associatedWidgets() ) {
       if ( QToolBar* toolBar = qobject_cast<QToolBar*>( widget ) ) {
         QWidget* newBuddy = toolBar->widgetForAction( d->buddy );
         d->label->setBuddy( newBuddy );

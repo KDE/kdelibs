@@ -1,8 +1,0 @@
-<!DOCTYPE kpartgui>
-<kpartgui name="ktoolbarlabelactiontest" version="0.1">
-<ToolBar name="mytoolbar">
-<Action name="label1"/>
-<Action name="lineEdit"/>
-<Action name="label2"/>
-</ToolBar>
-</kpartgui>

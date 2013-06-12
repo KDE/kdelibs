@@ -21,7 +21,7 @@
 
 #include <QWidgetAction>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 /**
  * @short Class to display a label in a toolbar.
@@ -48,7 +48,7 @@
  *
  * @author Felix Berger <felixberger@beldesign.de>
  */
-class KDEUI_EXPORT KToolBarLabelAction : public QWidgetAction
+class KWIDGETSADDONS_EXPORT KToolBarLabelAction : public QWidgetAction
 {
   Q_OBJECT
 

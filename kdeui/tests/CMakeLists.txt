@@ -58,7 +58,6 @@ KDEUI_EXECUTABLE_TESTS(
   krulertest
   ktextedittest
   ktoolbartest
-  ktoolbarlabelactiontest
   kwallettest
   kwindowtest
   kxmlguitest
