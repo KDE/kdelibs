@@ -20,7 +20,6 @@ set(kwidgets_LIB_SRCS
   actions/kselectaction.cpp
   actions/kstandardaction.cpp
   dialogs/kmessagebox.cpp
-  utils/kglobalsettings.cpp
   utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
   widgets/kdragwidgetdecorator.cpp
@@ -79,7 +78,6 @@ install(FILES
   actions/kselectaction.h
   actions/kstandardaction.h
   dialogs/kmessagebox.h
-  utils/kglobalsettings.h
   utils/kstandardguiitem.h
   utils/kstandardshortcut.h
   widgets/kdragwidgetdecorator.h

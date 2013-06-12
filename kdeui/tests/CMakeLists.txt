@@ -19,6 +19,7 @@ KDEUI_UNIT_TESTS(
   kactioncollectiontest
   kactioncategorytest
   kfindtest
+  kglobalsettingstest
   kmainwindow_unittest
   klineedit_unittest
   ktextedit_unittest
@@ -41,6 +42,7 @@ KDEUI_EXECUTABLE_TESTS(
   kdatepicktest
   kdatetabletest
   kdebugtest_gui
+  kglobalsettingsclient # helper program for kglobalsettingstest
   kicondialogtest
   kjobtrackerstest
   klineedittest

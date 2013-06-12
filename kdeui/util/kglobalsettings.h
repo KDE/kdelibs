@@ -18,7 +18,7 @@
 #ifndef _KGLOBALSETTINGS_H
 #define _KGLOBALSETTINGS_H
 
-#include <kwidgets_export.h>
+#include <kdeui_export.h>
 #include <ksharedconfig.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -48,7 +48,7 @@ class QWidget;
  *
  * @author David Faure \<faure@kde.org\>
  */
-class KWIDGETS_EXPORT KGlobalSettings : public QObject
+class KDEUI_EXPORT KGlobalSettings : public QObject
 {
     Q_OBJECT
 
@@ -99,7 +99,7 @@ public:
      * @deprecated since 5.0, use QApplication::startDragDistance() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    static KWIDGETS_DEPRECATED int dndEventDelay();
+    static KDEUI_DEPRECATED int dndEventDelay();
 #endif
 
     /**
@@ -110,7 +110,7 @@ public:
      * @deprecated since 5.0, use style->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, widget)
      **/
 #ifndef KDE_NO_DEPRECATED
-    static KWIDGETS_DEPRECATED bool singleClick();
+    static KDEUI_DEPRECATED bool singleClick();
 #endif
 
     /**
@@ -195,7 +195,7 @@ public:
      * @return the user's desktop directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DesktopLocation).
      */
-    static KWIDGETS_DEPRECATED QString desktopPath();
+    static KDEUI_DEPRECATED QString desktopPath();
 
     /**
      * The path to the autostart directory of the current user.
@@ -208,35 +208,35 @@ public:
      * @return the path of the document directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).
      */
-    static KWIDGETS_DEPRECATED QString documentPath();
+    static KDEUI_DEPRECATED QString documentPath();
 
     /**
      * The path where music are stored of the current user.
      * @return the path of the music directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MusicLocation).
      */
-    static KWIDGETS_DEPRECATED QString musicPath();
+    static KDEUI_DEPRECATED QString musicPath();
 
     /**
      * The path where videos are stored of the current user.
      * @return the path of the video directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).
      */
-    static KWIDGETS_DEPRECATED QString videosPath();
+    static KDEUI_DEPRECATED QString videosPath();
 
     /**
      * The path where download are stored of the current user.
      * @return the path of the download directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DownloadLocation).
      */
-    static KWIDGETS_DEPRECATED QString downloadPath();
+    static KDEUI_DEPRECATED QString downloadPath();
 
     /**
      * The path where pictures are stored of the current user.
      * @return the path of the pictures directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::PicturesLocation).
      */
-    static KWIDGETS_DEPRECATED QString picturesPath();
+    static KDEUI_DEPRECATED QString picturesPath();
 
     /**
      * The default color to use for inactive titles.
@@ -268,7 +268,7 @@ public:
      *         contrast)
      * @deprecated since 5.0, use KColorScheme::contrast()
      */
-    static KWIDGETS_DEPRECATED int contrast();
+    static KDEUI_DEPRECATED int contrast();
 
     /**
      * Returns the contrast for borders as a floating point value.
@@ -278,7 +278,7 @@ public:
      *         contrast)
      * @deprecated since 5.0, use KColorScheme::contrastF(config)
      */
-    static KWIDGETS_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KDEUI_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Returns if the sorted column in a K3ListView shall be drawn with a
@@ -376,7 +376,7 @@ public:
      *         start at (0,0).
      * @deprecated use QApplication::desktop()->screenGeometry(QCursor::pos())
      */
-    static KWIDGETS_DEPRECATED QRect splashScreenDesktopGeometry();
+    static KDEUI_DEPRECATED QRect splashScreenDesktopGeometry();
 
     /**
      * This function returns the desktop geometry for an application that needs
@@ -394,7 +394,7 @@ public:
      *         start at (0,0).
      * @deprecated use QApplication::desktop()->screenGeometry(point)
      */
-    static KWIDGETS_DEPRECATED QRect desktopGeometry(const QPoint& point);
+    static KDEUI_DEPRECATED QRect desktopGeometry(const QPoint& point);
 
     /**
      * This function returns the desktop geometry for an application that needs
@@ -409,7 +409,7 @@ public:
      *         start at (0,0).
      * @deprecated use QApplication::desktop()->screenGeometry(w)
      */
-    static KWIDGETS_DEPRECATED QRect desktopGeometry(const QWidget* w);
+    static KDEUI_DEPRECATED QRect desktopGeometry(const QWidget* w);
 
     /**
      * This function determines if the user wishes to see icons on the
@@ -418,7 +418,7 @@ public:
      * @return Returns true if user wants to show icons.
      * @deprecated since 5.0, use style->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, widget);
      */
-    static KWIDGETS_DEPRECATED bool showIconsOnPushButtons();
+    static KDEUI_DEPRECATED bool showIconsOnPushButtons();
 
     /**
      * Returns true, if user visible strings should be sorted in a natural way:
@@ -469,7 +469,7 @@ public:
      * @deprecated since 5.0, use KProtocolInfo::showFilePreview
      */
 #ifndef KDE_NO_DEPRECATED
-    static KWIDGETS_DEPRECATED bool showFilePreview(const QUrl &);
+    static KDEUI_DEPRECATED bool showFilePreview(const QUrl &);
 #endif
 
     /**
@@ -638,7 +638,7 @@ Q_SIGNALS:
      *
      * @deprecated since 5.0, use KIconLoader::iconChanged(int)
      */
-    KWIDGETS_DEPRECATED void iconChanged(int group);
+    KDEUI_DEPRECATED void iconChanged(int group);
 
     /**
      * Emitted when the cursor theme has been changed.
