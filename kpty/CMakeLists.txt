@@ -35,7 +35,7 @@ install( FILES
 
 if (NOT HAVE_OPENPTY)
    kde4_add_executable(kgrantpty NOGUI kgrantpty.c)
-   target_link_libraries(kgrantpty kdefakes)
+   target_link_libraries(kgrantpty )
    install(TARGETS kgrantpty DESTINATION ${LIBEXEC_INSTALL_DIR})
 endif (NOT HAVE_OPENPTY)
 

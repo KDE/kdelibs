@@ -29,7 +29,6 @@
 #include "kglobal.h"
 #include <QThread>
 
-#include <kdefakes.h>
 #include <config-kde4support.h>
 
 #if HAVE_SYS_STAT_H

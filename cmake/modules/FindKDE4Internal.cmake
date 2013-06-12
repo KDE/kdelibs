@@ -462,7 +462,6 @@ set(KDE4_KDEUI_LIBS    ${KDE4_KDEUI_LIBRARY} )
 set(KDE4_KDECORE_LIBS  ${INQT5_LIBRARY} ${KDE4_KDECORE_UNPORTED_LIBRARY} )
 
 if (UNIX)
-   _kde4_set_lib_variables(KDEFAKES kdefakes "${KDE4_TARGET_PREFIX}")
    _kde4_set_lib_variables(KDESU kdesu       "${KDE4_TARGET_PREFIX}")
    _kde4_set_lib_variables(KPTY kpty         "${KDE4_TARGET_PREFIX}")
 endif (UNIX)

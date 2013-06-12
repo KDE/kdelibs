@@ -43,7 +43,6 @@
 #include <QtSvg/QSvgRenderer>
 #endif
 #include <kdebug.h>
-#include <kdefakes.h>
 
 #include <config-kdeui.h>
 #include <config-ksycoca.h>
