@@ -54,6 +54,7 @@ check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 check_include_files(sys/filio.h  HAVE_SYS_FILIO_H)
 check_include_file( "stropts.h" HAVE_STROPTS_H )
 check_include_files(limits.h   HAVE_LIMITS_H) # for kcmdlineargs
+check_include_files(unistd.h      HAVE_UNISTD_H)
 
 # This is broken on OSX 10.6 (succeeds but shouldn't do) and doesn't exist
 # on previous versions so don't do the check on APPLE.
