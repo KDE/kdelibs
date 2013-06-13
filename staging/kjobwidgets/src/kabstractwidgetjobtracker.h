@@ -22,7 +22,7 @@
 #ifndef KABSTRACTWIDGETJOBTRACKER_H
 #define KABSTRACTWIDGETJOBTRACKER_H
 
-#include <kdeui_export.h>
+#include <kjobwidgets_export.h>
 #include <kjobtrackerinterface.h>
 
 class KJob;
@@ -31,7 +31,7 @@ class QWidget;
 /**
  * The base class for widget based job trackers.
  */
-class KDEUI_EXPORT KAbstractWidgetJobTracker : public KJobTrackerInterface
+class KJOBWIDGETS_EXPORT KAbstractWidgetJobTracker : public KJobTrackerInterface
 {
     Q_OBJECT
 

@@ -12,4 +12,5 @@ macro(kjobwidgets_executable_tests)
 endmacro()
 
 kjobwidgets_executable_tests(
+   kjobtrackerstest
 )

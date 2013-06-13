@@ -24,12 +24,12 @@
 
 #include <kjobuidelegate.h>
 
-#include <kdeui_export.h>
+#include <kjobwidgets_export.h>
 
 /**
  * A UI delegate using KMessageBox for interaction (showing errors and warnings).
  */
-class KDEUI_EXPORT KDialogJobUiDelegate : public KJobUiDelegate
+class KJOBWIDGETS_EXPORT KDialogJobUiDelegate : public KJobUiDelegate
 {
     Q_OBJECT
 

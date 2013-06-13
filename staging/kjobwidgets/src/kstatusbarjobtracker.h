@@ -27,7 +27,7 @@
  * This class implements a job tracker with a widget suited for embedding in a
  * status bar.
  */
-class KDEUI_EXPORT KStatusBarJobTracker : public KAbstractWidgetJobTracker
+class KJOBWIDGETS_EXPORT KStatusBarJobTracker : public KAbstractWidgetJobTracker
 {
     Q_OBJECT
 

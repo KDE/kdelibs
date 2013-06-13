@@ -25,10 +25,9 @@
 #include <QPointer>
 #include <QWidget>
 
-#include <config-kdeui.h>
+#include <config-kjobwidgets.h>
 #if HAVE_X11
 #include <QX11Info>
-#include <netwm.h>
 #endif
 
 class KDialogJobUiDelegate::Private
@@ -67,8 +66,19 @@ QWidget *KDialogJobUiDelegate::window() const
 void KDialogJobUiDelegate::updateUserTimestamp( unsigned long time )
 {
 #if HAVE_X11
-  if( d->userTimestamp == 0 || NET::timestampCompare( time, d->userTimestamp ) > 0 )
-      d->userTimestamp = time;
+
+    if( d->userTimestamp == 0 ){
+        d->userTimestamp = time;
+    } else if ( d->userTimestamp != time ) {
+        // on 64bit architectures time is 64bit unsigned long,
+        // so there special care needs to be taken to always use only the lower 32bits
+        quint32 time1 = d->userTimestamp;
+        quint32 time2 = time;
+	 if( quint32( time1 - time2 ) < 0x7fffffffU ){ // time1 > time2 -> 1, handle wrapping
+            d->userTimestamp = time;
+        }
+    }
+
 #endif
 }
 

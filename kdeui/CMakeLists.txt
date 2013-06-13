@@ -107,11 +107,6 @@ set(kdeui_LIB_SRCS
  itemviews/kviewstatemaintainer.cpp
  # This requires patches which are not yet in Qt. Disabled for now.
 #  itemviews/kreparentingproxymodel.cpp
- jobs/kdialogjobuidelegate.cpp
- jobs/kabstractwidgetjobtracker.cpp
- jobs/kwidgetjobtracker.cpp
- jobs/kstatusbarjobtracker.cpp
- jobs/kjobtrackerformatters.cpp
  kernel/kstyle.cpp
  paged/kpagedialog.cpp
  paged/kpagemodel.cpp
@@ -247,7 +242,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/fonts
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
- ${CMAKE_CURRENT_SOURCE_DIR}/jobs
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
@@ -366,10 +360,6 @@ install( FILES
  itemviews/kviewstatesaver.h
  itemviews/kviewstatemaintainer.h
 #  itemviews/kreparentingproxymodel.h
- jobs/kdialogjobuidelegate.h
- jobs/kabstractwidgetjobtracker.h
- jobs/kwidgetjobtracker.h
- jobs/kstatusbarjobtracker.h
  kernel/kstyle.h
  paged/kpagedialog.h
  paged/kpagemodel.h

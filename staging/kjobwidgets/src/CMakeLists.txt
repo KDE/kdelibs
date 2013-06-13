@@ -1,8 +1,23 @@
+find_package(X11)
+
+if (X11_FOUND)
+   set (HAVE_X11 1)
+else ()
+   set (HAVE_X11 0)
+endif ()
+
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
+configure_file(config-kjobwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kjobwidgets.h )
+
 set(kjobwidgets_SRCS
+  kabstractwidgetjobtracker.cpp
+  kdialogjobuidelegate.cpp
+  kjobtrackerformatters.cpp
   kuiserverjobtracker.cpp
   kjobwidgets.cpp
+  kstatusbarjobtracker.cpp
+  kwidgetjobtracker.cpp
 )
 
 qt5_add_dbus_interfaces(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.JobViewServer.xml )
@@ -10,9 +25,15 @@ qt5_add_dbus_interface(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.JobV
 qt5_add_dbus_interface(kjobwidgets_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.JobViewV2.xml jobviewifacev2 )
 
 add_library(KJobWidgets ${kjobwidgets_SRCS})
+
 generate_export_header(KJobWidgets)
 
-target_link_libraries(KJobWidgets LINK_PUBLIC Qt5::Widgets Qt5::DBus KCoreAddons ki18n)
+target_link_libraries(KJobWidgets LINK_PUBLIC Qt5::Widgets Qt5::DBus KCoreAddons KWidgetsAddons ${kdeqt5staging_LIBRARIES})
+
+if (HAVE_X11)
+  find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+  target_link_libraries(KJobWidgets Qt5::X11Extras)
+endif ()
 
 set_target_properties(KJobWidgets PROPERTIES VERSION   ${KJOBWIDGETS_VERSION_STRING}
                                              SOVERSION ${KJOBWIDGETS_SOVERSION}
@@ -28,8 +49,12 @@ install( FILES
   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install(FILES
+  kabstractwidgetjobtracker.h
+  kdialogjobuidelegate.h
   kuiserverjobtracker.h
   kjobwidgets.h
+  kstatusbarjobtracker.h
+  kwidgetjobtracker.h
   ${CMAKE_CURRENT_BINARY_DIR}/kjobwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

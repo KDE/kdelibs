@@ -22,8 +22,7 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QStatusBar>
-
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kwidgetjobtracker.h>
 #include <kstatusbarjobtracker.h>
@@ -66,7 +65,7 @@ void KTestJob::nextStep()
         copyNextFile();
         break;
     case Stopped:
-        kDebug() << "Do nothing, we stopped";
+        qDebug() << "Do nothing, we stopped";
     }
 }
 
@@ -79,7 +78,7 @@ void KTestJob::stateNextDir()
 
     QString directory_name = "dir"+QString::number(totalAmount(KJob::Directories));
 
-    kDebug() << "Stating " << directory_name;
+    qDebug() << "Stating " << directory_name;
     setTotalAmount(KJob::Directories, totalAmount(KJob::Directories)+1);
     setTotalAmount(KJob::Files, totalAmount(KJob::Directories)*10);
     setTotalAmount(KJob::Bytes, totalAmount(KJob::Files)*1000);
@@ -96,7 +95,7 @@ void KTestJob::createNextDir()
 
     QString directory_name = "dir"+QString::number(processedAmount(KJob::Directories));
 
-    kDebug() << "Creating " << directory_name;
+    qDebug() << "Creating " << directory_name;
     setProcessedAmount(KJob::Directories, processedAmount(KJob::Directories)+1);
 
     emit description(this, QString("Creating Dir"), qMakePair(QString("Creating"), QString("file:/dest/"+directory_name)));
@@ -114,7 +113,7 @@ void KTestJob::copyNextFile()
     QString file_name = "dir"+QString::number(processedAmount(KJob::Files)/10)
                         +"/file"+QString::number(processedAmount(KJob::Files)%10);
 
-    kDebug() << "Copying " << file_name;
+    qDebug() << "Copying " << file_name;
     setProcessedAmount(KJob::Files, processedAmount(KJob::Files)+1);
     setProcessedAmount(KJob::Bytes, processedAmount(KJob::Bytes)+1000);
 

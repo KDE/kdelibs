@@ -44,7 +44,6 @@ KDEUI_EXECUTABLE_TESTS(
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
   kicondialogtest
-  kjobtrackerstest
   klineedittest
   kmainwindowtest
   kmainwindowrestoretest

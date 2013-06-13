@@ -24,7 +24,6 @@
 #include "jobviewiface.h"
 #include "jobviewifacev2.h"
 
-#include <klocalizedstring.h>
 #include <kjob.h>
 
 #include <QDebug>

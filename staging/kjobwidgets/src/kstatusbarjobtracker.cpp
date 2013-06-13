@@ -23,6 +23,7 @@
 #include "kstatusbarjobtracker_p.h"
 #include "kjobtrackerformatters_p.h"
 
+#include <QObject>
 #include <QWidget>
 #include <QPushButton>
 #include <QProgressBar>
@@ -30,8 +31,6 @@
 #include <QBoxLayout>
 #include <QStackedWidget>
 #include <QMouseEvent>
-
-#include <klocalizedstring.h>
 
 KStatusBarJobTracker::KStatusBarJobTracker(QWidget *parent, bool button)
     : KAbstractWidgetJobTracker(parent), d(new Private(parent, button))
@@ -157,7 +156,7 @@ void KStatusBarJobTracker::Private::ProgressWidget::init(KJob *job, QWidget *par
     box->addWidget(stack);
 
     if (q->d->showStopButton) {
-        button = new QPushButton(i18n("Stop"), widget);
+        button = new QPushButton(tr("Stop"), widget);
         box->addWidget(button);
         connect(button, SIGNAL(clicked(bool)),
                 this, SLOT(killJob()));
@@ -241,9 +240,9 @@ void KStatusBarJobTracker::Private::ProgressWidget::percent(unsigned long percen
 void KStatusBarJobTracker::Private::ProgressWidget::speed(unsigned long value)
 {
     if (value == 0 ) { // speed is measured in bytes-per-second
-        label->setText(i18n(" Stalled "));
+        label->setText(tr(" Stalled "));
     } else {
-        label->setText(i18n(" %1/s ", KJobTrackerFormatters::byteSize(value)));
+        label->setText(tr(" %1/s ").arg(KJobTrackerFormatters::byteSize(value)));
     }
 }
 

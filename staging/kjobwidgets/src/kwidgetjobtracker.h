@@ -22,13 +22,14 @@
 #ifndef KWIDGETJOBTRACKER_H
 #define KWIDGETJOBTRACKER_H
 
+#include <kjobwidgets_export.h>
 #include <kabstractwidgetjobtracker.h>
 
 /**
  * This class implements a job tracker with a widget suited for use as a
  * progress dialog.
  */
-class KDEUI_EXPORT KWidgetJobTracker : public KAbstractWidgetJobTracker
+class KJOBWIDGETS_EXPORT KWidgetJobTracker : public KAbstractWidgetJobTracker
 {
     Q_OBJECT
 

@@ -29,7 +29,6 @@
 
 class QPushButton;
 class QCheckBox;
-class KLineEdit;
 class QLabel;
 class QProgressBar;
 
