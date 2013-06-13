@@ -220,7 +220,7 @@ void KGlobalSettings::activate(ActivateOptions options)
             QDBusConnection::sessionBus().connect( QString(), "/KGlobalSettings", "org.kde.KGlobalSettings",
                                                    "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
             QDBusConnection::sessionBus().connect( QString(), "/KIconLoader", "org.kde.KIconLoader",
-                                                   "iconChanged", this, SIGNAL(_k_slotIconChange(int)) );
+                                                   "iconChanged", this, SLOT(_k_slotIconChange(int)) );
         }
 
         if (options & ApplySettings) {
