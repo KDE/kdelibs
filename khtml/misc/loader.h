@@ -26,8 +26,6 @@
 #ifndef _khtml_loader_h
 #define _khtml_loader_h
 
-#include <time.h>
-
 #include "loader_client.h"
 
 #include <stdlib.h>
@@ -38,6 +36,7 @@
 #include <QtCore/QTextCodec>
 #include <QtCore/QTimer>
 #include <QtCore/QSet>
+#include <QtCore/QDateTime>
 #include <QLinkedList>
 
 #include <kurl.h>
@@ -105,9 +104,9 @@ namespace khtml
 
 	CachedObject(const DOM::DOMString &url, Type type, KIO::CacheControl _cachePolicy, int size)
             : m_url(url), m_type(type), m_cachePolicy(_cachePolicy),
-              m_expireDate(0), m_size(size)
-	{
-	    m_status = Pending;
+             m_size(size)
+    {
+        m_status = Pending;
             m_accessCount = 0;
 	    m_cachePolicy = _cachePolicy;
 	    m_request = 0;
@@ -158,7 +157,7 @@ namespace khtml
 
         bool canDelete() const { return (m_clients.count() == 0 && !m_request && !m_preloadCount); }
 
-	void setExpireDate(time_t _expireDate) {  m_expireDate = _expireDate; }
+       void setExpireDate(const QDateTime &_expireDate) {  m_expireDate = _expireDate; }
 
 	bool isExpired() const;
 
@@ -184,9 +183,9 @@ namespace khtml
 	Type m_type;
 	Status m_status;
         int m_accessCount;
-	KIO::CacheControl m_cachePolicy;
-	time_t m_expireDate;
-	int m_size;
+       KIO::CacheControl m_cachePolicy;
+       QDateTime m_expireDate;
+       int m_size;
         unsigned m_preloadCount;
         PreloadResult m_preloadResult: 3;
         bool m_deleted : 1;
@@ -412,12 +411,13 @@ namespace khtml
 	bool autoloadImages() const { return m_bautoloadImages; }
         KIO::CacheControl cachePolicy() const { return m_cachePolicy; }
         KHTMLSettings::KAnimationAdvice showAnimations() const { return m_showAnimations; }
-        time_t expireDate() const { return m_expireDate; }
+        QDateTime expireDate() const { return m_expireDate; }
         KHTMLPart* part() const { return m_part; }
         DOM::DocumentImpl* doc() const { return m_doc; }
 
-        void setCacheCreationDate( time_t );
-        void setExpireDate( time_t, bool relative );
+        void setCacheCreationDate(const QDateTime &);
+        void setExpireDate(const QDateTime &);
+        void setRelativeExpireDate(qint64 seconds);
         void setAutoloadImages( bool );
         void setCachePolicy( KIO::CacheControl cachePolicy ) { m_cachePolicy = cachePolicy; }
         void setShowAnimations( KHTMLSettings::KAnimationAdvice );
@@ -437,9 +437,9 @@ namespace khtml
         QStringList m_reloadedURLs;
         mutable QSet<CachedObject*> m_docObjects;
         QSet<CachedObject*> m_preloads;
-	time_t m_expireDate;
-	time_t m_creationDate;
-	KIO::CacheControl m_cachePolicy;
+    QDateTime m_expireDate;
+    QDateTime m_creationDate;
+    KIO::CacheControl m_cachePolicy;
         bool m_bautoloadImages : 1;
         KHTMLSettings::KAnimationAdvice m_showAnimations : 2;
         KHTMLPart* m_part;

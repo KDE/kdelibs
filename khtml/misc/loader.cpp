@@ -121,9 +121,9 @@ void CachedObject::finish()
 
 bool CachedObject::isExpired() const
 {
-    if (!m_expireDate) return false;
-    time_t now = time(0);
-    return (difftime(now, m_expireDate) >= 0);
+    if (!m_expireDate.isValid()) return false;
+    QDateTime now = QDateTime::currentDateTime();
+    return (now >= m_expireDate);
 }
 
 void CachedObject::setRequest(Request *_request)
@@ -900,8 +900,7 @@ Request::~Request()
 DocLoader::DocLoader(KHTMLPart* part, DocumentImpl* doc)
 {
     m_cachePolicy = KIO::CC_Verify;
-    m_expireDate = 0;
-    m_creationDate = time(0);
+    m_creationDate = QDateTime::currentDateTime();
     m_bautoloadImages = true;
     m_showAnimations = KHTMLSettings::KAnimationEnabled;
     m_part = part;
@@ -917,23 +916,26 @@ DocLoader::~DocLoader()
     Cache::docloader->removeAll( this );
 }
 
-void DocLoader::setCacheCreationDate(time_t _creationDate)
+void DocLoader::setCacheCreationDate(const QDateTime &_creationDate)
 {
-    if (_creationDate)
-       m_creationDate = _creationDate;
+    if (_creationDate.isValid())
+        m_creationDate = _creationDate;
     else
-       m_creationDate = time(0); // Now
+        m_creationDate = QDateTime::currentDateTime();
 }
 
-void DocLoader::setExpireDate(time_t _expireDate, bool relative)
+void DocLoader::setExpireDate(const QDateTime &_expireDate)
 {
-    if (relative)
-       m_expireDate = _expireDate + m_creationDate; // Relative date
-    else
-       m_expireDate = _expireDate; // Absolute date
+    m_expireDate = _expireDate;
+
 #ifdef CACHE_DEBUG
-    kDebug(6061) << m_expireDate - time(0) << "seconds left until reload required.";
+    kDebug(6061) << QDateTime::currentDateTime().secsTo(m_expireDate) << "seconds left until reload required.";
 #endif
+}
+
+void DocLoader::setRelativeExpireDate(qint64 seconds)
+{
+    m_expireDate = m_creationDate.addSecs(seconds);
 }
 
 void DocLoader::insertCachedObject( CachedObject* o ) const
@@ -1256,11 +1258,11 @@ void Loader::slotFinished( KJob* job )
       if (!cs.isEmpty()) r->object->setCharset(cs);
       r->object->data(r->m_buffer, true);
       emit requestDone( r->m_docLoader, r->object );
-      time_t expireDate = j->queryMetaData("expire-date").toLong();
+      QDateTime expireDate = QDateTime::fromTime_t(j->queryMetaData("expire-date").toLong());
 #ifdef LOADER_DEBUG
       kDebug(6060) << "url =" << j->url().url();
 #endif
-      r->object->setExpireDate( expireDate );
+      r->object->setExpireDate(expireDate);
 
       if ( r->object->type() == CachedObject::Image ) {
           QString fn = j->queryMetaData("content-disposition-filename");

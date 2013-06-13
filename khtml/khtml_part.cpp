@@ -1715,7 +1715,7 @@ void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
 
     // When the first data arrives, the metadata has just been made available
     d->m_httpHeaders = d->m_job->queryMetaData("HTTP-Headers");
-    time_t cacheCreationDate =  d->m_job->queryMetaData("cache-creation-date").toLong();
+    QDateTime cacheCreationDate =  QDateTime::fromTime_t(d->m_job->queryMetaData("cache-creation-date").toLong());
     d->m_doc->docLoader()->setCacheCreationDate(cacheCreationDate);
 
     d->m_pageServices = d->m_job->queryMetaData("PageServices");
@@ -1971,8 +1971,8 @@ void KHTMLPart::slotFinished( KJob * job )
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
-  if ( d->m_doc && d->m_doc->docLoader()->expireDate() && url().scheme().toLower().startsWith("http"))
-      KIO::http_update_cache(url(), false, QDateTime::fromMSecsSinceEpoch(1000 * d->m_doc->docLoader()->expireDate()));
+  if ( d->m_doc && d->m_doc->docLoader()->expireDate().isValid() && url().scheme().toLower().startsWith("http"))
+      KIO::http_update_cache(url(), false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KUrl();
 

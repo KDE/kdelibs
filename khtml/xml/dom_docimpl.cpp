@@ -1999,18 +1999,21 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     }
     else if(strcasecmp(equiv, "expires") == 0)
     {
-        bool relative = false;
-        QString str = content.string().trimmed();
-        time_t expire_date = KDateTime::fromString(str, KDateTime::RFCDate).toTime_t();
-        if (!expire_date)
-        {
-            expire_date = str.toULong();
-            relative = true;
+        if (m_docLoader) {
+            QString str = content.string().trimmed();
+            //QDateTime can't convert from a RFCDate format string
+            QDateTime expire_date = KDateTime::fromString(str, KDateTime::RFCDate).dateTime();
+
+            if (!expire_date.isValid()) {
+                qint64 seconds = str.toLongLong();
+                if (seconds != 0) {
+                    m_docLoader->setRelativeExpireDate(seconds);
+                } else {
+                    expire_date = QDateTime::currentDateTime(); // expire now
+                    m_docLoader->setExpireDate(expire_date);
+                }
+            }
         }
-        if (!expire_date)
-            expire_date = 1; // expire now
-        if (m_docLoader)
-            m_docLoader->setExpireDate(expire_date, relative);
     }
     else if(v && (strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0))
     {
