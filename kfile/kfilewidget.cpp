@@ -1129,12 +1129,7 @@ void KFileWidgetPrivate::multiSelectionChanged()
         return;
     }
 
-    KUrl::List urlList;
-    foreach (const KFileItem &fileItem, list) {
-        urlList << fileItem.url();
-    }
-
-    setLocationText(urlList);
+    setLocationText(list.urlList());
 }
 
 void KFileWidgetPrivate::setDummyHistoryEntry( const QString& text, const QPixmap& icon,
@@ -1234,6 +1229,24 @@ void KFileWidgetPrivate::setLocationText(const KUrl& url)
     }
 }
 
+static bool isRelativeUrl(const KUrl &baseUrl, const KUrl& url)
+{
+    return KUrl::relativeUrl(baseUrl, url) != url.url();
+}
+
+static QString relativePathOrUrl(const KUrl &baseUrl, const KUrl& url)
+{
+    if (isRelativeUrl(baseUrl, url)) {
+        QString relPath = KUrl::relativePath(baseUrl.path(), url.path());
+        if (relPath.startsWith("./")) {
+            relPath = relPath.mid(2);
+        }
+        return relPath;
+    } else {
+        return url.prettyUrl();
+    }
+}
+
 void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
 {
     const KUrl currUrl = ops->url();
@@ -1241,14 +1254,14 @@ void KFileWidgetPrivate::setLocationText( const KUrl::List& urlList )
     if ( urlList.count() > 1 ) {
         QString urls;
         foreach (const KUrl &url, urlList) {
-            urls += QString( "\"%1\"" ).arg( KUrl::relativeUrl(currUrl, url) ) + ' ';
+            urls += QString("\"%1\"").arg(relativePathOrUrl(currUrl, url));
         }
         urls = urls.left( urls.size() - 1 );
 
         setDummyHistoryEntry( urls, QPixmap(), false );
-    } else if ( urlList.count() ) {
+    } else if ( urlList.count() == 1 ) {
         const QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KMimeType::iconNameForUrl( urlList[0] ),  KIconLoader::Small );
-        setDummyHistoryEntry( KUrl::relativeUrl(currUrl, urlList[0]), mimeTypeIcon );
+        setDummyHistoryEntry( relativePathOrUrl(currUrl, urlList[0]), mimeTypeIcon );
     } else {
         removeDummyHistoryEntry();
     }
