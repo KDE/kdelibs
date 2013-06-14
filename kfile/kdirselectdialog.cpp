@@ -38,6 +38,7 @@
 #include <kfiledialog.h>
 #include <kfiletreeview.h>
 #include <kfileitemdelegate.h>
+#include <kjobwidgets.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
@@ -153,7 +154,7 @@ void KDirSelectDialog::Private::slotMkdir()
         exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, m_parent );
         if (!exists) {
             KIO::MkdirJob* job = KIO::mkdir(folderurl);
-            job->ui()->setWindow(m_parent);
+            KJobWidgets::setWindow(job, m_parent);
             writeOk = job->exec();
         }
     }
@@ -244,7 +245,7 @@ void KDirSelectDialog::Private::slotMoveToTrash()
     KIO::JobUiDelegate job;
     if (job.askDeleteConfirmation(QList<QUrl>() << url, KIO::JobUiDelegate::Trash, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::CopyJob* copyJob = KIO::trash(url);
-        copyJob->ui()->setWindow(m_parent);
+        KJobWidgets::setWindow(copyJob, m_parent);
         copyJob->ui()->setAutoErrorHandlingEnabled(true);
     }
 }
@@ -255,7 +256,7 @@ void KDirSelectDialog::Private::slotDelete()
     KIO::JobUiDelegate job;
     if (job.askDeleteConfirmation(QList<QUrl>() << url, KIO::JobUiDelegate::Delete, KIO::JobUiDelegate::DefaultConfirmation)) {
         KIO::DeleteJob* deleteJob = KIO::del(url);
-        deleteJob->ui()->setWindow(m_parent);
+        KJobWidgets::setWindow(deleteJob, m_parent);
         deleteJob->ui()->setAutoErrorHandlingEnabled(true);
     }
 }

@@ -87,6 +87,7 @@ using namespace DOM;
 #include <kprotocolmanager.h>
 #include <kdebug.h>
 #include <klocale.h>
+#include <kjobwidgets.h>
 #include <kmessagebox.h>
 #include <kstandardaction.h>
 #include <kstandardguiitem.h>
@@ -886,7 +887,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
   }
 
   if (widget())
-     d->m_job->ui()->setWindow(widget()->topLevelWidget());
+     KJobWidgets::setWindow(d->m_job, widget()->topLevelWidget());
   d->m_job->addMetaData(metaData);
 
   connect( d->m_job, SIGNAL(result(KJob*)),

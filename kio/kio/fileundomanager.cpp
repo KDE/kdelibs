@@ -27,6 +27,7 @@
 #include <kio/copyjob.h>
 #include <kio/job.h>
 #include <kio/mkdirjob.h>
+#include <kjobwidgets.h>
 #include <kio/jobuidelegate.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
@@ -473,7 +474,7 @@ void FileUndoManagerPrivate::undoStep()
 
     if (m_currentJob) {
         if (m_uiInterface)
-            m_currentJob->ui()->setWindow(m_uiInterface->parentWidget());
+            KJobWidgets::setWindow(m_currentJob, m_uiInterface->parentWidget());
         QObject::connect(m_currentJob, SIGNAL(result(KJob*)),
                          this, SLOT(slotResult(KJob*)));
     }

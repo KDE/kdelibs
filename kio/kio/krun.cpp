@@ -63,6 +63,7 @@
 #include <kprotocolmanager.h>
 #include <kprocess.h>
 #include <kiconloader.h>
+#include <kjobwidgets.h>
 #include <ksharedconfig.h>
 
 #include <QtCore/QFile>
@@ -1259,7 +1260,7 @@ void KRun::init()
     // It may be a directory or a file, let's stat
     KIO::JobFlags flags = d->m_bProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
     KIO::StatJob *job = KIO::stat(d->m_strURL, KIO::StatJob::SourceSide, 0 /* no details */, flags);
-    job->ui()->setWindow(d->m_window);
+    KJobWidgets::setWindow(job, d->m_window);
     connect(job, SIGNAL(result(KJob*)),
             this, SLOT(slotStatResult(KJob*)));
     d->m_job = job;
@@ -1329,7 +1330,7 @@ void KRun::scanFile()
 
     KIO::JobFlags flags = d->m_bProgressInfo ? KIO::DefaultFlags : KIO::HideProgressInfo;
     KIO::TransferJob *job = KIO::get(d->m_strURL, KIO::NoReload /*reload*/, flags);
-    job->ui()->setWindow(d->m_window);
+    KJobWidgets::setWindow(job, d->m_window);
     connect(job, SIGNAL(result(KJob*)),
             this, SLOT(slotScanFinished(KJob*)));
     connect(job, SIGNAL(mimetype(KIO::Job*,QString)),

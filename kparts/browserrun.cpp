@@ -26,6 +26,7 @@
 #include <kio/jobuidelegate.h>
 #include <kio/scheduler.h>
 #include <kio/copyjob.h>
+#include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <kshell.h>
 #include <kmimetypetrader.h>
@@ -167,7 +168,7 @@ void BrowserRun::scanFile()
         metaData.remove("referrer");
 
     job->addMetaData( metaData );
-    job->ui()->setWindow( d->m_window );
+    KJobWidgets::setWindow(job, d->m_window);
   connect( job, SIGNAL(result(KJob*)),
            this, SLOT(slotBrowserScanFinished(KJob*)));
   connect( job, SIGNAL(mimetype(KIO::Job*,QString)),
@@ -310,7 +311,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 tempFile.open();
                 QUrl destURL = QUrl::fromLocalFile(tempFile.fileName());
                 KIO::Job *job = KIO::file_copy( KRun::url(), destURL, 0600, KIO::Overwrite );
-                job->ui()->setWindow(d->m_window);
+                KJobWidgets::setWindow(job, d->m_window);
                 connect( job, SIGNAL(result(KJob*)),
                          this, SLOT(slotCopyToTempFileResult(KJob*)) );
                 return Delayed; // We'll continue after the job has finished
@@ -468,7 +469,7 @@ void BrowserRun::saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
     job->setMetaData(metaData);
     job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.
     job->addMetaData("cache", "cache"); // Use entry from cache if available.
-    job->ui()->setWindow(window);
+    KJobWidgets::setWindow(job, window);
     job->ui()->setAutoErrorHandlingEnabled( true );
     new DownloadJobWatcher(job, metaData);
 }

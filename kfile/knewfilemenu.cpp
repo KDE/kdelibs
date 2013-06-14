@@ -36,6 +36,7 @@
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
+#include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kmessagebox.h>
@@ -569,7 +570,7 @@ void KNewFileMenuPrivate::executeStrategy()
             kjob = job;
             KIO::FileUndoManager::self()->recordJob(KIO::FileUndoManager::Copy, lstSrc, dest, job);
         }
-        kjob->ui()->setWindow(m_parentWidget);
+        KJobWidgets::setWindow(kjob, m_parentWidget);
         QObject::connect(kjob, SIGNAL(result(KJob*)), q, SLOT(slotResult(KJob*)));
     }
 }
@@ -784,7 +785,7 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
     if (!askAgain) {
       KIO::SimpleJob * job = KIO::mkdir(url);
       job->setProperty("isMkdirJob", true); // KDE5: cast to MkdirJob in slotResult instead
-      job->ui()->setWindow(m_parentWidget);
+      KJobWidgets::setWindow(job, m_parentWidget);
       job->ui()->setAutoErrorHandlingEnabled(true);
       KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Mkdir, QList<QUrl>(), url, job );
 

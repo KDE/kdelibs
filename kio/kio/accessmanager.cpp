@@ -26,6 +26,7 @@
 
 #include "accessmanagerreply_p.h"
 #include "job.h"
+#include "kjobwidgets.h"
 #include "scheduler.h"
 #include "jobuidelegate.h"
 #include "netaccess.h"
@@ -337,7 +338,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
     } else {
         // Set the window on the the KIO ui delegate
         if (d->window) {
-            kioJob->ui()->setWindow(d->window);
+            KJobWidgets::setWindow(kioJob, d->window);
         }
 
         // Disable internal automatic redirection handling

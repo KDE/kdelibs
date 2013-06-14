@@ -60,6 +60,7 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kstandardaction.h>
+#include <kjobwidgets.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
@@ -758,7 +759,7 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
         exists = KIO::NetAccess::exists(urlInfo.url(), KIO::NetAccess::DestinationSide, this);
         if (!exists) {
             KIO::MkdirJob *job = KIO::mkdir(urlInfo.url());
-            job->ui()->setWindow(this);
+            KJobWidgets::setWindow(job, this);
             writeOk = job->exec();
         }
     }
@@ -822,7 +823,7 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
     if (doIt) {
         KIO::JobFlags flags = showProgress ? KIO::DefaultFlags : KIO::HideProgressInfo;
         KIO::DeleteJob *job = KIO::del(urls, flags);
-        job->ui()->setWindow(this);
+        KJobWidgets::setWindow(job, this);
         job->ui()->setAutoErrorHandlingEnabled(true);
         return job;
     }
@@ -880,7 +881,7 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
     if (doIt) {
         KIO::JobFlags flags = showProgress ? KIO::DefaultFlags : KIO::HideProgressInfo;
         KIO::CopyJob *job = KIO::trash(urls, flags);
-        job->ui()->setWindow(this);
+        KJobWidgets::setWindow(job, this);
         job->ui()->setAutoErrorHandlingEnabled(true);
         return job;
     }

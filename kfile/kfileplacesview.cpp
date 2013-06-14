@@ -41,6 +41,7 @@
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kjob.h>
+#include <kjobwidgets.h>
 #include <kcapacitybar.h>
 #include <kdiskfreespaceinfo.h>
 #include <solid/storageaccess.h>
@@ -649,7 +650,7 @@ void KFilePlacesView::contextMenuEvent(QContextMenuEvent *event)
             stream << int(1);
             KIO::Job *job = KIO::special(QUrl("trash:/"), packedArgs);
             KNotification::event("Trash: emptied", QString() , QPixmap() , 0, KNotification::DefaultEvent);
-            job->ui()->setWindow(parentWidget());
+            KJobWidgets::setWindow(job, parentWidget());
             connect(job, SIGNAL(result(KJob*)), SLOT(_k_trashUpdated(KJob*)));
         }
     } else if (edit != 0 && result == edit) {

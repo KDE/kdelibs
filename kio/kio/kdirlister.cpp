@@ -25,6 +25,7 @@
 
 #include <QtCore/QRegExp>
 
+#include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
@@ -226,7 +227,7 @@ bool KDirListerCache::listDir( KDirLister *lister, const QUrl& _u,
                 lister->d->connectJob(job);
 
                 if (lister->d->window)
-                    job->ui()->setWindow(lister->d->window);
+                    KJobWidgets::setWindow(job, lister->d->window);
 
                 connect(job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
                         this, SLOT(slotEntries(KIO::Job*,KIO::UDSEntryList)));
@@ -676,7 +677,7 @@ void KDirListerCache::updateDirectory( const QUrl& _dir )
     QWidget *window = 0;
     KIO::ListJob *job = jobForUrl( urlStr );
     if (job) {
-        window = job->ui()->window();
+        window = KJobWidgets::window(job);
 
         killJob( job );
         killed = true;
@@ -738,12 +739,12 @@ void KDirListerCache::updateDirectory( const QUrl& _dir )
                 kdl->d->jobStarted( job );
                 if ( first && kdl->d->window ) {
                     first = false;
-                    job->ui()->setWindow( kdl->d->window );
+                    KJobWidgets::setWindow(job, kdl->d->window);
                 }
                 emit kdl->started( _dir );
             }
         } else {
-            job->ui()->setWindow( window );
+            KJobWidgets::setWindow(job, window);
 
             foreach ( KDirLister *kdl, holders ) {
                 kdl->d->jobStarted( job );

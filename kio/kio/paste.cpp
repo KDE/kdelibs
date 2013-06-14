@@ -28,6 +28,7 @@
 #include "kio/kprotocolmanager.h"
 #include "jobuidelegate.h"
 
+#include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kurlmimedata.h>
@@ -166,7 +167,7 @@ static QUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
     static KIO::Job* putDataAsyncTo(const QUrl& url, const QByteArray& data, QWidget* widget, KIO::JobFlags flags)
     {
         KIO::Job* job = KIO::storedPut(data, url, -1, flags);
-        job->ui()->setWindow(widget);
+        KJobWidgets::setWindow(job, widget);
         return job;
     }
 
@@ -269,7 +270,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const QUrl& destU
           QUrl newUrl;
           ba = chooseFormatAndUrl(destUrl, mimeData, formats, dialogText, suggestedFilename, widget, clipboard, &newUrl);
           KIO::CopyJob* job = pasteDataAsyncTo(newUrl, ba);
-          job->ui()->setWindow(widget);
+          KJobWidgets::setWindow(job, widget);
           return job;
       }
       ba = mimeData->data( formats.first() );
@@ -285,7 +286,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const QUrl& destU
         return 0;
 
     KIO::CopyJob* job = pasteDataAsyncTo(newUrl, ba);
-    job->ui()->setWindow(widget);
+    KJobWidgets::setWindow(job, widget);
     return job;
 }
 
@@ -349,7 +350,7 @@ KIO_EXPORT KIO::Job *KIO::pasteClipboard( const QUrl& destUrl, QWidget* widget, 
       // We can ignore the bool move, KIO::paste decodes it
       KIO::Job* job = pasteClipboardUrls(mimeData, destUrl);
       if (job) {
-          job->ui()->setWindow(widget);
+          KJobWidgets::setWindow(job, widget);
           return job;
       }
   }
@@ -377,7 +378,7 @@ KIO_EXPORT KIO::CopyJob* KIO::pasteDataAsync( const QUrl& u, const QByteArray& _
        return 0;
 
     KIO::CopyJob* job = pasteDataAsyncTo( newUrl, _data );
-    job->ui()->setWindow(widget);
+    KJobWidgets::setWindow(job, widget);
     return job;
 }
 

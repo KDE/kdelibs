@@ -72,6 +72,7 @@
 #include <kiconloader.h>
 #include <scheduler.h>
 #include <kdebug.h>
+#include <kjobwidgets.h>
 
 #include <khtml_global.h>
 #include <khtml_part.h>
@@ -1207,7 +1208,7 @@ void Loader::scheduleRequest(Request* req)
         {
             job->addMetaData( "cross-domain", part->toplevelURL().url() );
             if (part->widget())
-                job->ui()->setWindow (part->widget()->topLevelWidget());
+                KJobWidgets::setWindow(job, part->widget()->topLevelWidget());
         }
     }
 

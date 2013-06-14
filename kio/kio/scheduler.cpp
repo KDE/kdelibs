@@ -29,7 +29,7 @@
 
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
-#include <assert.h>
+#include <kjobwidgets.h>
 
 #include <QtCore/QHash>
 #include <QtDBus/QtDBus>
@@ -532,8 +532,8 @@ Slave *ProtoQueue::createSlave(const QString &protocol, SimpleJob *job, const QU
     Slave *slave = Slave::createSlave(protocol, url, error, errortext);
     if (slave) {
         // Set the parent widget the slave should use to display message boxes.
-        if (job && job->ui()) {
-            slave->setWindow(job->ui()->window());
+        if (job) {
+            slave->setWindow(KJobWidgets::window(job));
         }
         scheduler()->connect(slave, SIGNAL(slaveDied(KIO::Slave*)),
                              SLOT(slotSlaveDied(KIO::Slave*)));
@@ -1210,7 +1210,7 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
     // Reset the parent widget the ioslave should use when displaying message
     // boxes after being put on hold.
     if (slave && job->ui()) {
-        slave->setWindow(job->ui()->window());
+        slave->setWindow(KJobWidgets::window(job));
     }
 
     return slave;
