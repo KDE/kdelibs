@@ -2531,6 +2531,21 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
         QFile::remove(sPart);
     }
   }
+
+  if (iRes == statusSuccess) {
+      const QString mtimeStr = metaData("modified");
+      if (!mtimeStr.isEmpty()) {
+        QDateTime dt = QDateTime::fromString(mtimeStr, Qt::ISODate);
+        if (dt.isValid()) {
+          kDebug(7102) << "Updating modified timestamp to" << mtimeStr;
+          struct utimbuf utbuf;
+          utbuf.actime = buff.st_atime; // access time, unchanged
+          utbuf.modtime = dt.toTime_t(); // modification time
+          KDE::utime(sCopyFile, &utbuf);
+        }
+      }
+  }
+
   return iRes;
 }
 
