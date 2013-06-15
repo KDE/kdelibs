@@ -184,8 +184,8 @@ void WindowPreview::paintEvent(QPaintEvent *e)
 
     qreal left, top, right, bottom;
     m_background->getMargins(left, top, right, bottom);
-    const QSize delta(left + right, top + bottom);
-    const QPoint topLeft(left, top);
+    const QSize delta(left + right - 2, top + bottom - 2);
+    const QPoint topLeft(left -1 , top - 1);
 
     foreach (const QRect &r, m_thumbnailRects) {
         //kWarning()<<r;

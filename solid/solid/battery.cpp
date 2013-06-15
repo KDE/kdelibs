@@ -30,11 +30,17 @@ Solid::Battery::Battery(QObject *backendObject)
     connect(backendObject, SIGNAL(chargePercentChanged(int,QString)),
              this, SIGNAL(chargePercentChanged(int,QString)));
 
+    connect(backendObject, SIGNAL(capacityChanged(int,QString)),
+             this, SIGNAL(capacityChanged(int,QString)));
+
     connect(backendObject, SIGNAL(chargeStateChanged(int,QString)),
              this, SIGNAL(chargeStateChanged(int,QString)));
 
     connect(backendObject, SIGNAL(plugStateChanged(bool,QString)),
              this, SIGNAL(plugStateChanged(bool,QString)));
+
+    connect(backendObject, SIGNAL(powerSupplyStateChanged(bool,QString)),
+             this, SIGNAL(powerSupplyStateChanged(bool,QString)));
 }
 
 Solid::Battery::~Battery()
@@ -64,6 +70,12 @@ int Solid::Battery::chargePercent() const
 {
     Q_D(const Battery);
     return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 0, chargePercent());
+}
+
+int Solid::Battery::capacity() const
+{
+    Q_D(const Battery);
+    return_SOLID_CALL(Ifaces::Battery *, d->backendObject(), 100, capacity());
 }
 
 bool Solid::Battery::isRechargeable() const

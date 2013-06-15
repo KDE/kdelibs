@@ -1083,13 +1083,23 @@ QStringList KDirListerCache::directoriesForCanonicalPath(const QString& dir) con
 void KDirListerCache::slotFileDirty( const QString& path )
 {
     kDebug(7004) << path;
-    // File or dir?
-    KDE_struct_stat buff;
-    if ( KDE::stat( path, &buff ) != 0 )
-        return; // error
-    const bool isDir = S_ISDIR(buff.st_mode);
+
     KUrl url(path);
     url.adjustPath(KUrl::RemoveTrailingSlash);
+
+    bool isDir;
+    const KFileItem item = itemForUrl(url);
+
+    if (!item.isNull()) {
+      isDir = item.isDir();
+    } else {
+      KDE_struct_stat buff;
+      kDebug(7004) << "Doing stat on:" << path;
+      if ( KDE::stat( path, &buff ) != 0 )
+          return; // error
+      isDir = S_ISDIR(buff.st_mode);
+    }
+
     if (isDir) {
         Q_FOREACH(const QString& dir, directoriesForCanonicalPath(url.toLocalFile())) {
             handleDirDirty(dir);
