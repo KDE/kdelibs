@@ -50,6 +50,8 @@ public:
     
     QString batteryTechnology() const;
 
+    virtual bool isPowerSupply() const;
+
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);

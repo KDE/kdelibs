@@ -97,6 +97,11 @@ QString Battery::batteryTechnology() const
     }
 }
 
+bool Battery::isPowerSupply() const
+{
+    return chargeState() == Solid::Battery::Charging;
+}
+
 void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
 {
 //     if (changes.contains("battery.charge_level.percentage"))
