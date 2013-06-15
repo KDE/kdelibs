@@ -987,7 +987,7 @@ if (WIN32)
    set(CMAKE_DEBUG_POSTFIX "")
 
    # windows, microsoft compiler
-   if(MSVC)
+   if(MSVC OR (WIN32 AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
       set( _KDE4_PLATFORM_DEFINITIONS -DKDE_FULL_TEMPLATE_EXPORT_INSTANTIATION -DWIN32_LEAN_AND_MEAN )
 
       # C4250: 'class1' : inherits 'class2::member' via dominance
@@ -1004,7 +1004,7 @@ if (WIN32)
                        )
       # 'identifier' : no suitable definition provided for explicit template instantiation request
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd4661" )
-   endif(MSVC)
+   endif(MSVC OR (WIN32 AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
 
 
    # for visual studio IDE set the path correctly for custom commands
@@ -1148,7 +1148,7 @@ macro(KDE_CHECK_FLAG_EXISTS FLAG VAR DOC)
    endif(NOT ${VAR} MATCHES "${FLAG}")
 endmacro(KDE_CHECK_FLAG_EXISTS FLAG VAR)
 
-if (MSVC)
+if (MSVC OR (WIN32 AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
    set (KDE4_ENABLE_EXCEPTIONS -EHsc)
 
    # Qt disables the native wchar_t type, do it too to avoid linking issues
@@ -1159,7 +1159,7 @@ if (MSVC)
    kde_check_flag_exists("/NODEFAULTLIB:libcmt /DEFAULTLIB:msvcrt" CMAKE_EXE_LINKER_FLAGS_RELEASE "release")
    kde_check_flag_exists("/NODEFAULTLIB:libcmt /DEFAULTLIB:msvcrt" CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "release minsize")
    kde_check_flag_exists("/NODEFAULTLIB:libcmtd /DEFAULTLIB:msvcrtd" CMAKE_EXE_LINKER_FLAGS_DEBUG "debug")
-endif(MSVC)
+endif(MSVC OR (WIN32 AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
 
 # This macro is for internal use only
 # Return the directories present in gcc's include path.

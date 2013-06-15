@@ -132,11 +132,11 @@ if (WIN32)
           util/kuser_wince.cpp
        )
    endif(NOT WINCE)
-   if(NOT MSVC)
+   if(NOT MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
       LIST(APPEND kdecore_OPTIONAL_SRCS
          network/netsupp.cpp
       )
-   endif(NOT MSVC)
+   endif(NOT MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
 endif (WIN32)
 
 
