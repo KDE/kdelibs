@@ -17,6 +17,7 @@ install(TARGETS KConfigWidgets EXPORT KConfigWidgetsTargets ${INSTALL_TARGETS_DE
 
 install(FILES
   kconfigviewstatesaver.h
+  kviewstatemaintainer.h
   ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

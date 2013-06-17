@@ -22,15 +22,12 @@
 #ifndef KVIEWSTATEMAINTAINER_H
 #define KVIEWSTATEMAINTAINER_H
 
-#include "kdeui_export.h"
-
 #include "kviewstatemaintainerbase.h"
 
 #include <QItemSelectionModel>
 #include <QAbstractItemView>
 
 #include "kconfiggroup.h"
-#include "ksharedconfig.h"
 
 /**
  * @brief Encapsulates the maintenance of state between resets of QAbstractItemModel

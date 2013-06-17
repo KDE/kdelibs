@@ -104,9 +104,6 @@ set(kdeui_LIB_SRCS
  fonts/kfontcombobox.cpp
  icons/kiconbutton.cpp
  icons/kicondialog.cpp
- itemviews/kviewstatemaintainer.cpp
- # This requires patches which are not yet in Qt. Disabled for now.
-#  itemviews/kreparentingproxymodel.cpp
  kernel/kstyle.cpp
  paged/kpagedialog.cpp
  paged/kpagemodel.cpp
@@ -241,7 +238,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/fonts
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
- ${CMAKE_CURRENT_SOURCE_DIR}/itemviews
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/paged
@@ -357,9 +353,6 @@ install( FILES
  fonts/kfontcombobox.h
  icons/kiconbutton.h
  icons/kicondialog.h
- itemviews/kviewstatesaver.h
- itemviews/kviewstatemaintainer.h
-#  itemviews/kreparentingproxymodel.h
  kernel/kstyle.h
  paged/kpagedialog.h
  paged/kpagemodel.h

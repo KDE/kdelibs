@@ -188,6 +188,7 @@ install(FILES
     kdeui/ktextbrowser.h
     kdeui/keditlistbox.h
     kdeui/knuminput.h
+    kdeui/kviewstatesaver.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
