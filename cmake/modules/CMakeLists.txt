@@ -38,7 +38,6 @@ set(cmakeFiles
                FindExiv2.cmake
                FindFFmpeg.cmake
                FindFlac.cmake
-               FindFlex.cmake
                FindFontconfig.cmake
                FindGLIB2.cmake
                FindGMP.cmake

@@ -36,7 +36,6 @@ else(DEFINED MODULE)
                      Eigen2 
                      FFmpeg
                      Flac 
-                     Flex 
                      GObject 
                      GStreamer
                      LCMS 
