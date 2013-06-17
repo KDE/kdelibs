@@ -77,7 +77,6 @@ set(cmakeFiles
                FindPulseAudio.cmake
                FindPythonLibrary.cmake
                FindQImageBlitz.cmake
-               FindRUBY.cmake
                FindSIP.cmake
                FindSamba.cmake
                FindSane.cmake
