@@ -239,7 +239,7 @@ void KPageViewPrivate::_k_pageSelected(const QItemSelection &index, const QItemS
   }
 
   Q_Q(KPageView);
-  emit q->currentPageChanged(currentIndex, previousIndex);
+  Q_EMIT q->currentPageChanged(currentIndex, previousIndex);
 }
 
 void KPageViewPrivate::updateTitleWidget(const QModelIndex& index)

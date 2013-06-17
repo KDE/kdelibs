@@ -90,7 +90,7 @@ void KPageWidgetItem::setEnabled(bool enabled)
     if (d->widget) {
         d->widget->setEnabled(enabled);
     }
-    emit changed();
+    Q_EMIT changed();
 }
 
 bool KPageWidgetItem::isEnabled() const
@@ -107,7 +107,7 @@ void KPageWidgetItem::setName( const QString &name )
 {
   d->name = name;
 
-  emit changed();
+  Q_EMIT changed();
 }
 
 QString KPageWidgetItem::name() const
@@ -119,7 +119,7 @@ void KPageWidgetItem::setHeader( const QString &header )
 {
   d->header = header;
 
-  emit changed();
+  Q_EMIT changed();
 }
 
 QString KPageWidgetItem::header() const
@@ -131,7 +131,7 @@ void KPageWidgetItem::setIcon( const QIcon &icon )
 {
   d->icon = icon;
 
-  emit changed();
+  Q_EMIT changed();
 }
 
 QIcon KPageWidgetItem::icon() const
@@ -143,7 +143,7 @@ void KPageWidgetItem::setCheckable( bool checkable )
 {
   d->checkable = checkable;
 
-  emit changed();
+  Q_EMIT changed();
 }
 
 bool KPageWidgetItem::isCheckable() const
@@ -155,8 +155,8 @@ void KPageWidgetItem::setChecked( bool checked )
 {
   d->checked = checked;
 
-  emit toggled( checked );
-  emit changed();
+  Q_EMIT toggled( checked );
+  Q_EMIT changed();
 }
 
 bool KPageWidgetItem::isChecked() const
@@ -243,10 +243,10 @@ void PageItem::dump( int indent )
 {
   QString prefix;
   for ( int i = 0; i < indent; ++i )
-    prefix.append( " " );
+    prefix.append( QStringLiteral(" ") );
 
-  const QString name = ( mPageWidgetItem ? mPageWidgetItem->name() : "root" );
-  qDebug( "%s (%p)", qPrintable( QString( "%1%2" ).arg( prefix, name ) ), (void*)this );
+  const QString name = ( mPageWidgetItem ? mPageWidgetItem->name() : QStringLiteral("root") );
+  qDebug( "%s (%p)", qPrintable( QString( QStringLiteral("%1%2") ).arg( prefix, name ) ), (void*)this );
   for ( int i = 0; i < mChildItems.count(); ++i )
     mChildItems[ i ]->dump( indent + 2 );
 }
@@ -382,7 +382,7 @@ KPageWidgetItem* KPageWidgetModel::addPage( QWidget *widget, const QString &name
 
 void KPageWidgetModel::addPage( KPageWidgetItem *item )
 {
-  emit layoutAboutToBeChanged();
+  Q_EMIT layoutAboutToBeChanged();
 
     Q_D(KPageWidgetModel);
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
@@ -398,7 +398,7 @@ void KPageWidgetModel::addPage( KPageWidgetItem *item )
 
   endInsertRows();
 
-  emit layoutChanged();
+  Q_EMIT layoutChanged();
 }
 
 KPageWidgetItem* KPageWidgetModel::insertPage( KPageWidgetItem *before, QWidget *widget, const QString &name )
@@ -418,7 +418,7 @@ void KPageWidgetModel::insertPage( KPageWidgetItem *before, KPageWidgetItem *ite
     return;
   }
 
-  emit layoutAboutToBeChanged();
+  Q_EMIT layoutAboutToBeChanged();
 
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
@@ -439,7 +439,7 @@ void KPageWidgetModel::insertPage( KPageWidgetItem *before, KPageWidgetItem *ite
 
   endInsertRows();
 
-  emit layoutChanged();
+  Q_EMIT layoutChanged();
 }
 
 KPageWidgetItem* KPageWidgetModel::addSubPage( KPageWidgetItem *parent, QWidget *widget, const QString &name )
@@ -459,7 +459,7 @@ void KPageWidgetModel::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *ite
     return;
   }
 
-  emit layoutAboutToBeChanged();
+  Q_EMIT layoutAboutToBeChanged();
 
     connect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     connect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
@@ -479,7 +479,7 @@ void KPageWidgetModel::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *ite
 
   endInsertRows();
 
-  emit layoutChanged();
+  Q_EMIT layoutChanged();
 }
 
 void KPageWidgetModel::removePage( KPageWidgetItem *item )
@@ -495,7 +495,7 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
     return;
   }
 
-  emit layoutAboutToBeChanged();
+  Q_EMIT layoutAboutToBeChanged();
 
     disconnect(item, SIGNAL(changed()), this, SLOT(_k_itemChanged()));
     disconnect(item, SIGNAL(toggled(bool)), this, SLOT(_k_itemToggled(bool)));
@@ -514,7 +514,7 @@ void KPageWidgetModel::removePage( KPageWidgetItem *item )
 
   endRemoveRows();
 
-  emit layoutChanged();
+  Q_EMIT layoutChanged();
 }
 
 KPageWidgetItem *KPageWidgetModel::item(const QModelIndex &index) const

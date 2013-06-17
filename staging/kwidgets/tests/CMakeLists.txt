@@ -14,4 +14,6 @@ kwidgets_executable_tests(
     kmessagetest
     kmessageboxtest
     kselectactiontest
+    kpagewidgettest
+    kpagedialogtest
 )

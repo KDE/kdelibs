@@ -20,11 +20,11 @@
 #ifndef PAGED_KPAGEDIALOG_P_H
 #define PAGED_KPAGEDIALOG_P_H
 
-#include "paged/kpagedialog.h"
+#include "kpagedialog.h"
 #include <QDialogButtonBox>
 #include <QLayout>
 
-class KDEUI_EXPORT KPageDialogPrivate
+class KPageDialogPrivate
 {
     Q_DECLARE_PUBLIC(KPageDialog)
     protected:

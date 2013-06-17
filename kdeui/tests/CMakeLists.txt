@@ -51,8 +51,6 @@ KDEUI_EXECUTABLE_TESTS(
   kmodifierkeyinfotest
   knewpassworddialogtest
   knotificationrestrictionstest
-  kpagedialogtest
-  kpagewidgettest
   kpopuptest
   krulertest
   ktextedittest

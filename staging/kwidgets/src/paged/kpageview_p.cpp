@@ -28,9 +28,6 @@
 #include <QTextLayout>
 #include <QVBoxLayout>
 
-#include <kiconloader.h>
-#include <kglobalsettings.h>
-
 #include "kpagemodel.h"
 
 using namespace KDEPrivate;
@@ -359,22 +356,8 @@ void KPageTabbedView::dataChanged( const QModelIndex &index, const QModelIndex& 
  */
 
 KPageListViewDelegate::KPageListViewDelegate( QObject *parent )
- : QAbstractItemDelegate( parent )
+    : QAbstractItemDelegate( parent )
 {
-    mIconSize = KIconLoader::global()->currentSize( KIconLoader::Dialog );
-
-    connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)), this, SLOT(iconSettingsChanged(int)) );
-}
-
-void KPageListViewDelegate::iconSettingsChanged( int group )
-{
-    if ( group == KIconLoader::Dialog ) {
-        const int iconSize = KIconLoader::global()->currentSize( KIconLoader::Dialog );
-        if ( mIconSize != iconSize ) {
-            mIconSize = iconSize;
-            emit sizeHintChanged( QModelIndex() );
-        }
-    }
 }
 
 static int layoutText(QTextLayout *layout, int maxWidth)
@@ -401,9 +384,14 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   if ( !index.isValid() )
     return;
 
+  QStyleOptionViewItemV4 opt(option);
+  opt.showDecorationSelected = true;
+  QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+
+  int iconSize = style->pixelMetric(QStyle::PM_IconViewIconSize);
   const QString text = index.model()->data( index, Qt::DisplayRole ).toString();
   const QIcon icon = index.model()->data( index, Qt::DecorationRole ).value<QIcon>();
-  const QPixmap pixmap = icon.pixmap( mIconSize, mIconSize );
+  const QPixmap pixmap = icon.pixmap( iconSize, iconSize );
 
   QFontMetrics fm = painter->fontMetrics();
   int wp = pixmap.width();
@@ -421,9 +409,6 @@ void KPageListViewDelegate::paint( QPainter *painter, const QStyleOptionViewItem
   if ( cg == QPalette::Normal && !(option.state & QStyle::State_Active) )
     cg = QPalette::Inactive;
 
-  QStyleOptionViewItemV4 opt(option);
-  opt.showDecorationSelected = true;
-  QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
   style->drawPrimitive(QStyle::PE_PanelItemViewItem, &opt, painter, opt.widget);
   if ( option.state & QStyle::State_Selected ) {
     painter->setPen( option.palette.color( cg, QPalette::HighlightedText ) );
@@ -445,9 +430,14 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
   if ( !index.isValid() )
     return QSize( 0, 0 );
 
+  QStyleOptionViewItemV4 opt(option);
+  opt.showDecorationSelected = true;
+  QStyle *style = opt.widget ? opt.widget->style() : QApplication::style();
+
+  int iconSize = style->pixelMetric(QStyle::PM_IconViewIconSize);
   const QString text = index.model()->data( index, Qt::DisplayRole ).toString();
   const QIcon icon = index.model()->data( index, Qt::DecorationRole ).value<QIcon>();
-  const QPixmap pixmap = icon.pixmap( mIconSize, mIconSize );
+  const QPixmap pixmap = icon.pixmap( iconSize, iconSize );
 
   QFontMetrics fm = option.fontMetrics;
   int gap = fm.height();
@@ -458,8 +448,8 @@ QSize KPageListViewDelegate::sizeHint( const QStyleOptionViewItem &option, const
     /**
      * No pixmap loaded yet, we'll use the default icon size in this case.
      */
-    hp = mIconSize;
-    wp = mIconSize;
+    hp = iconSize;
+    wp = iconSize;
   }
 
   QTextLayout iconTextLayout( text, option.font );
@@ -576,7 +566,7 @@ void KPageListViewProxy::rebuildMap()
   for ( int i = 0; i < mList.count(); ++i )
     qDebug( "%d:0 -> %d:%d", i, mList[ i ].row(), mList[ i ].column() );
 
-  emit layoutChanged();
+  Q_EMIT layoutChanged();
 }
 
 void KPageListViewProxy::addMapEntry( const QModelIndex &index )

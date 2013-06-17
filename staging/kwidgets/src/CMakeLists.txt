@@ -25,6 +25,12 @@ set(kwidgets_LIB_SRCS
   utils/kstandardshortcut.cpp
   widgets/kdragwidgetdecorator.cpp
   widgets/kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
+  paged/kpagedialog.cpp
+  paged/kpagemodel.cpp
+  paged/kpageview.cpp
+  paged/kpageview_p.cpp
+  paged/kpagewidget.cpp
+  paged/kpagewidgetmodel.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -35,6 +41,7 @@ set(kwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/utils
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
   ${CMAKE_CURRENT_SOURCE_DIR}/widgets
+  ${CMAKE_CURRENT_SOURCE_DIR}/paged
 )
 target_include_directories(kwidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDES}>"
 )
@@ -83,6 +90,12 @@ install(FILES
   utils/kstandardshortcut.h
   widgets/kdragwidgetdecorator.h
   widgets/kurllabel.h
+  paged/kpagedialog.h
+  paged/kpagedialog_p.h
+  paged/kpagemodel.h
+  paged/kpageview.h
+  paged/kpagewidget.h
+  paged/kpagewidgetmodel.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

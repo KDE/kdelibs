@@ -105,12 +105,6 @@ set(kdeui_LIB_SRCS
  icons/kiconbutton.cpp
  icons/kicondialog.cpp
  kernel/kstyle.cpp
- paged/kpagedialog.cpp
- paged/kpagemodel.cpp
- paged/kpageview.cpp
- paged/kpageview_p.cpp
- paged/kpagewidget.cpp
- paged/kpagewidgetmodel.cpp
  shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kacceleratormanager.cpp
  shortcuts/kcheckaccelerators.cpp
@@ -240,7 +234,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
- ${CMAKE_CURRENT_SOURCE_DIR}/paged
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
@@ -354,11 +347,6 @@ install( FILES
  icons/kiconbutton.h
  icons/kicondialog.h
  kernel/kstyle.h
- paged/kpagedialog.h
- paged/kpagemodel.h
- paged/kpageview.h
- paged/kpagewidget.h
- paged/kpagewidgetmodel.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/kcrash.h

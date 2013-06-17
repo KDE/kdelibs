@@ -22,6 +22,8 @@
 
 #include <kpagedialog.h>
 
+#include "kdeui_export.h"
+
 /**
  * This class provides a framework for assistant dialogs.
  *

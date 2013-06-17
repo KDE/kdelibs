@@ -23,6 +23,8 @@
 
 #include <kpagedialog.h>
 
+#include "kdeui_export.h"
+
 class KConfig;
 class KCoreConfigSkeleton;
 class KConfigDialogManager;

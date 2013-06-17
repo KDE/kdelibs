@@ -33,7 +33,7 @@ class KPageWidgetPrivate;
  *
  * @author Tobias Koenig (tokoe@kde.org)
  */
-class KDEUI_EXPORT KPageWidget : public KPageView
+class KWIDGETS_EXPORT KPageWidget : public KPageView
 {
   Q_OBJECT
     Q_DECLARE_PRIVATE(KPageWidget)
