@@ -792,7 +792,7 @@ KMimeType::Ptr KFileItem::determineMimeType() const
         d->m_bMimeTypeKnown = true;
     }
 
-    if (isSlow() && d->m_delayedMimeTypes) { // if we delayed getting the iconName up till now, this is the right point in time to do so
+    if (d->m_delayedMimeTypes) { // if we delayed getting the iconName up till now, this is the right point in time to do so
         d->m_delayedMimeTypes = false;
         d->m_useIconNameCache = false;
         (void)iconName();
@@ -817,7 +817,7 @@ bool KFileItem::isFinalIconKnown() const
     if (!d) {
         return false;
     }
-    return d->m_bMimeTypeKnown && (!d->m_delayedMimeTypes || !isSlow());
+    return d->m_bMimeTypeKnown && (!d->m_delayedMimeTypes);
 }
 
 QString KFileItem::mimeComment() const
@@ -902,7 +902,7 @@ QString KFileItem::iconName() const
         mime = mimeTypePtr();
     }
 
-    const bool delaySlowOperations = isSlow() && d->m_delayedMimeTypes;
+    const bool delaySlowOperations = d->m_delayedMimeTypes;
 
     if (isLocalUrl && !delaySlowOperations && mime->is("application/x-desktop")) {
         d->m_iconName = iconFromDesktopFile(url.toLocalFile());
