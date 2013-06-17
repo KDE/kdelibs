@@ -20,6 +20,7 @@ set(kiocore_SRCS
   kprotocolinfo.cpp
   kprotocolinfofactory.cpp
   jobtracker.cpp
+  abstractjobinteractioninterface.cpp
 )
 
 if (UNIX)
@@ -72,10 +73,11 @@ install( FILES
   ioslave_defaults.h
   hostinfo.h
   jobtracker.h
-  klocalsocket.h
+  klocalsocket.h # TODO stop installing this once kiocore is done -- should not be public
   kprotocolinfo.h
   metadata.h
   udsentry.h
+  abstractjobinteractioninterface.h
 
    ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)

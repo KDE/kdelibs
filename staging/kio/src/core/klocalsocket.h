@@ -47,8 +47,9 @@ class KLocalSocketPrivate;
  *   thus, aren't restricted by its permissions
  *
  * @author Thiago Macieira <thiago@kde.org>
+ * @internal DO NOT USE. Only for KIO.
  */
-class KIOCORE_EXPORT KLocalSocket : public QTcpSocket
+class KIOCORE_EXPORT KLocalSocket : public QTcpSocket // TODO 5.0: remove export macro
 {
     Q_OBJECT
 public:
