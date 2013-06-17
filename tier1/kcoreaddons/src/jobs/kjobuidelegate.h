@@ -51,13 +51,13 @@ public:
      */
     virtual ~KJobUiDelegate();
 
-private:
+protected:
     /**
      * Attach this UI delegate to a job. Once attached it'll track the job events.
      *
      * @return true if the job we're correctly attached to the job, false otherwise.
      */
-    bool setJob( KJob *job );
+    virtual bool setJob( KJob *job );
 
 protected:
     /**
