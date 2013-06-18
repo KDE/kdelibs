@@ -38,7 +38,6 @@
 
 #include <kurl.h>
 #include <kdatetime.h>
-#include <ksystemtimezone.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <qsavefile.h>
