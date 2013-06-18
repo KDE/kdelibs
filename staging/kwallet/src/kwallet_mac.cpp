@@ -22,16 +22,12 @@
 
 #include "kwallet.h"
 #include <ksharedconfig.h>
-#include <kdebug.h>
-#include <kdeversion.h>
+#include <kconfiggroup.h>
+
 #include <QApplication>
 #include <QtCore/QPointer>
 #include <QWidget>
-
-#include <kaboutdata.h>
-#include <kconfiggroup.h>
-
-#include <cassert>
+#include <QDebug>
 
 #include <Carbon/Carbon.h>
 #include <Security/Security.h>
@@ -167,7 +163,7 @@ QStringList Wallet::walletList() {
 void Wallet::changePassword(const QString& name, WId w) {
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if( w == 0 )
-        kDebug(285) << "Pass a valid window to KWallet::Wallet::changePassword().";
+        qDebug() << "Pass a valid window to KWallet::Wallet::changePassword().";
     walletLauncher->getInterface().changePassword(name, (qlonglong)w, appid());
 #endif
 }
@@ -282,7 +278,7 @@ bool Wallet::isOpen() const {
 void Wallet::requestChangePassword(WId w) {
 #ifdef OSX_KEYCHAIN_PORT_DISABLED
     if( w == 0 )
-        kDebug(285) << "Pass a valid window to KWallet::Wallet::requestChangePassword().";
+        qDebug() << "Pass a valid window to KWallet::Wallet::requestChangePassword().";
     if (d->handle == -1) {
         return;
     }
@@ -545,12 +541,12 @@ static OSStatus writeEntryImplementation( const QString& walletName, const QStri
     if (err == errSecDuplicateItem) {
         err = removeEntryImplementation( walletName, key );
         if ( isError( err, &errMsg ) ) {
-            kWarning() << "Could not delete old key in keychain for replacing: " << qPrintable(errMsg);
+            qWarning() << "Could not delete old key in keychain for replacing: " << qPrintable(errMsg);
             return err;
         }
     }
     if ( isError( err, &errMsg ) ) {
-        kWarning() << "Could not store password in keychain: " << qPrintable(errMsg);
+        qWarning() << "Could not store password in keychain: " << qPrintable(errMsg);
         return err;
     }
     kDebug() << "Succesfully written out key:" << key;

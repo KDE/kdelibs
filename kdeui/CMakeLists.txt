@@ -54,12 +54,6 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/dialogs/kaboutapplicationconfigattica_p.h
 )
 
-set(HAVE_KSECRETSSERVICE 0)
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/config-kwallet.h.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/util/config-kwallet.h
-)
-
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/util/config-strlcpy.h.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/util/config-strlcpy.h
@@ -150,16 +144,6 @@ set(kdeui_LIB_SRCS
  xmlgui/ktoolbar.cpp
 )
 
-option(MAC_USE_OSXKEYCHAIN "On OS X, use the keychain as backend for kwallet, instead of kwalletd.")
-
-if (APPLE AND MAC_USE_OSXKEYCHAIN)
-    FIND_LIBRARY(SECURITY_LIBRARY Security)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet_mac.cpp)
-else(APPLE AND MAC_USE_OSXKEYCHAIN)
-     set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
-else(APPLE AND MAC_USE_OSXKEYCHAIN)
-  set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kwallet.cpp)
-endif(APPLE AND MAC_USE_OSXKEYCHAIN)
 
 if(NOT WINCE)
 set(kdeui_LIB_SRCS
@@ -167,7 +151,6 @@ set(kdeui_LIB_SRCS
  dialogs/kdeprintdialog.cpp
 )
 endif(NOT WINCE)
-
 
 
 if (X11_FOUND)
@@ -201,12 +184,6 @@ if (X11_FOUND)
 endif (X11_FOUND)
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
-
-
-set(kwallet_xml util/org.kde.KWallet.xml)
-install(FILES ${kwallet_xml} DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-qt5_add_dbus_interface( kdeui_LIB_SRCS ${kwallet_xml} kwallet_interface )
 
 
 kde4_add_library(kdeui ${LIBRARY_TYPE} ${kdeui_LIB_SRCS})
@@ -255,9 +232,6 @@ endif(MINGW)
 
 if(APPLE)
    target_link_libraries(kdeui ${CARBON_LIBRARY})
-   if (MAC_USE_OSXKEYCHAIN)
-     target_link_libraries(kdeui ${SECURITY_LIBRARY})
-   endif (MAC_USE_OSXKEYCHAIN)
 endif(APPLE)
 
 if(X11_XTest_FOUND)
@@ -335,7 +309,6 @@ install( FILES
  util/kmodifierkeyinfo.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
- util/kwallet.h
  util/kundoactions.h
  widgets/kdatepicker.h
  widgets/kcmodule.h

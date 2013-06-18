@@ -26,7 +26,7 @@
 #include <QtCore/QObject>
 #include <qwindowdefs.h> // krazy:exclude=includes (for WId)
 
-#include <kdeui_export.h>
+#include <kwallet_export.h>
 
 /**
  * NOTE: KSecretsService folder semantics
@@ -46,7 +46,6 @@
 #define KSS_ATTR_ENTRYFOLDER "kwallet.folderName"
 #define KSS_ATTR_WALLETTYPE "kwallet.type"
 
-class QDBusError;
 
 namespace KWallet {
 
@@ -59,7 +58,7 @@ namespace KWallet {
  * @author George Staikos <staikos@kde.org>
  * @short KDE Wallet Class
  */
-class KDEUI_EXPORT Wallet : public QObject
+class KWALLET_EXPORT Wallet : public QObject
 {
 	Q_OBJECT
 	protected:

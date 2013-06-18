@@ -24,7 +24,6 @@
 #include <QWidget>
 
 #include <kwallet.h>
-#include <kdebug.h>
 
 using namespace KWallet;
 
@@ -44,7 +43,7 @@ void KWalletTest::testWallet()
   // open
   Wallet *wallet = Wallet::openWallet( testWallet, w->winId(), Wallet::Synchronous );
   if ( wallet == 0 )
-    kDebug() << "Couldn't open the wallet. Maybe the wallet daemon is not running?";
+    qDebug() << "Couldn't open the wallet. Maybe the wallet daemon is not running?";
   QVERIFY( wallet != 0 );
   QVERIFY( Wallet::isOpen( testWallet ) );
 
