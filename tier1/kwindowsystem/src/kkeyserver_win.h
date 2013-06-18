@@ -20,7 +20,7 @@
 #ifndef _KKEYSERVER_WIN_H
 #define _KKEYSERVER_WIN_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 
 namespace KKeyServer
 {
@@ -31,9 +31,9 @@ namespace KKeyServer
     * @param mod if successful, the modifiers will be written here
     * @return true if successful, false otherwise
     */
-    KDEUI_EXPORT bool keyQtToModWin( int keyQt, uint* mod );
+    KWINDOWSYSTEM_EXPORT bool keyQtToModWin( int keyQt, uint* mod );
 
-    KDEUI_EXPORT bool modWinToKeyQt( uint mod, int *keyQt );
+    KWINDOWSYSTEM_EXPORT bool modWinToKeyQt( uint mod, int *keyQt );
 
    /**
     * Extracts the symbol from the given Qt key and
@@ -42,9 +42,9 @@ namespace KKeyServer
     * @param sym if successful, the symbol will be written here
     * @return true if successful, false otherwise
     */
-    KDEUI_EXPORT bool keyQtToCodeWin( int keyQt, uint* sym );
+    KWINDOWSYSTEM_EXPORT bool keyQtToCodeWin( int keyQt, uint* sym );
 
-    KDEUI_EXPORT bool codeWinToKeyQt( uint sym, int* keyQt );    
+    KWINDOWSYSTEM_EXPORT bool codeWinToKeyQt( uint sym, int* keyQt );
 }
 
 #endif

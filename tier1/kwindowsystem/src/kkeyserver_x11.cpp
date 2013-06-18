@@ -22,8 +22,7 @@
 
 #include "kkeyserver_x11.h"
 
-#include "kdebug.h"
-#include "klocalizedstring.h"
+#include <QDebug>
 
 #include <QX11Info>
 # define XK_MISCELLANY
@@ -92,25 +91,25 @@ static X11ModInfo g_rgX11ModInfo[4] =
 // Special Names List
 static const SymName g_rgSymNames[] = {
     { XK_ISO_Left_Tab, "Backtab" },
-    { XK_BackSpace,    I18N_NOOP("Backspace") },
-    { XK_Sys_Req,      I18N_NOOP("SysReq") },
-    { XK_Caps_Lock,    I18N_NOOP("CapsLock") },
-    { XK_Num_Lock,     I18N_NOOP("NumLock") },
-    { XK_Scroll_Lock,  I18N_NOOP("ScrollLock") },
-    { XK_Prior,        I18N_NOOP("PageUp") },
-    { XK_Next,         I18N_NOOP("PageDown") },
+    { XK_BackSpace,    QT_TR_NOOP("Backspace") },
+    { XK_Sys_Req,      QT_TR_NOOP("SysReq") },
+    { XK_Caps_Lock,    QT_TR_NOOP("CapsLock") },
+    { XK_Num_Lock,     QT_TR_NOOP("NumLock") },
+    { XK_Scroll_Lock,  QT_TR_NOOP("ScrollLock") },
+    { XK_Prior,        QT_TR_NOOP("PageUp") },
+    { XK_Next,         QT_TR_NOOP("PageDown") },
 #ifdef sun
-    { XK_F11,          I18N_NOOP("Stop") },
-    { XK_F12,          I18N_NOOP("Again") },
-    { XK_F13,          I18N_NOOP("Props") },
-    { XK_F14,          I18N_NOOP("Undo") },
-    { XK_F15,          I18N_NOOP("Front") },
-    { XK_F16,          I18N_NOOP("Copy") },
-    { XK_F17,          I18N_NOOP("Open") },
-    { XK_F18,          I18N_NOOP("Paste") },
-    { XK_F19,          I18N_NOOP("Find") },
-    { XK_F20,          I18N_NOOP("Cut") },
-    { XK_F22,          I18N_NOOP("Print") },
+    { XK_F11,          QT_TR_NOOP("Stop") },
+    { XK_F12,          QT_TR_NOOP("Again") },
+    { XK_F13,          QT_TR_NOOP("Props") },
+    { XK_F14,          QT_TR_NOOP("Undo") },
+    { XK_F15,          QT_TR_NOOP("Front") },
+    { XK_F16,          QT_TR_NOOP("Copy") },
+    { XK_F17,          QT_TR_NOOP("Open") },
+    { XK_F18,          QT_TR_NOOP("Paste") },
+    { XK_F19,          QT_TR_NOOP("Find") },
+    { XK_F20,          QT_TR_NOOP("Cut") },
+    { XK_F22,          QT_TR_NOOP("Print") },
 #endif
     { 0, 0 }
 };
@@ -479,8 +478,8 @@ inline void checkDisplay()
 {
     // Some non-GUI apps might try to use us.
     if ( !QX11Info::display() ) {
-        kError() << "QX11Info::display() returns 0.  I'm probably going to crash now." << endl;
-        kError() << "If this is a KApplication initialized without GUI stuff, change it to be "
+        qCritical() << "QX11Info::display() returns 0.  I'm probably going to crash now." << endl;
+        qCritical() << "If this is a KApplication initialized without GUI stuff, change it to be "
                     "initialized with GUI stuff." << endl;
     }
 }
@@ -551,19 +550,19 @@ bool initializeMods()
     }
 
 #ifdef KKEYSERVER_DEBUG
-    kDebug() << "Alt:" << g_alt_mask;
-    kDebug() << "Meta:" << g_meta_mask;
-    kDebug() << "Super:" << g_super_mask;
-    kDebug() << "Hyper:" << g_hyper_mask;
-    kDebug() << "NumLock:" << g_modXNumLock;
-    kDebug() << "ScrollLock:" << g_modXScrollLock;
-    kDebug() << "ModeSwitch:" << g_modXModeSwitch;
+    qDebug() << "Alt:" << g_alt_mask;
+    qDebug() << "Meta:" << g_meta_mask;
+    qDebug() << "Super:" << g_super_mask;
+    qDebug() << "Hyper:" << g_hyper_mask;
+    qDebug() << "NumLock:" << g_modXNumLock;
+    qDebug() << "ScrollLock:" << g_modXScrollLock;
+    qDebug() << "ModeSwitch:" << g_modXModeSwitch;
 #endif
 
     // Check if hyper overlaps with super or meta or alt
     if (g_hyper_mask&(g_super_mask|g_meta_mask|g_alt_mask)) {
 #ifdef KKEYSERVER_DEBUG
-        kDebug() << "Hyper conflicts with super, meta or alt.";
+        qDebug() << "Hyper conflicts with super, meta or alt.";
 #endif
         // Remove the conflicting masks
         g_hyper_mask &= ~(g_super_mask|g_meta_mask|g_alt_mask);
@@ -572,7 +571,7 @@ bool initializeMods()
     // Check if super overlaps with meta or alt
     if (g_super_mask&(g_meta_mask|g_alt_mask)) {
 #ifdef KKEYSERVER_DEBUG
-        kDebug() << "Super conflicts with meta or alt.";
+        qDebug() << "Super conflicts with meta or alt.";
 #endif
         // Remove the conflicting masks
         g_super_mask &= ~(g_meta_mask|g_alt_mask);
@@ -582,7 +581,7 @@ bool initializeMods()
     // Check if meta overlaps with alt
     if (g_meta_mask|g_alt_mask) {
 #ifdef KKEYSERVER_DEBUG
-        kDebug() << "Meta conflicts with alt.";
+        qDebug() << "Meta conflicts with alt.";
 #endif
         // Remove the conflicting masks
         g_meta_mask &= ~(g_alt_mask);
@@ -590,17 +589,17 @@ bool initializeMods()
 
     if (!g_meta_mask) {
 #ifdef KKEYSERVER_DEBUG
-        kDebug() << "Meta is not set or conflicted with alt.";
+        qDebug() << "Meta is not set or conflicted with alt.";
 #endif
         if (g_super_mask) {
 #ifdef KKEYSERVER_DEBUG
-            kDebug() << "Using super for meta";
+            qDebug() << "Using super for meta";
 #endif
             // Use Super
             g_meta_mask = g_super_mask;
         } else if (g_hyper_mask) {
 #ifdef KKEYSERVER_DEBUG
-            kDebug() << "Using hyper for meta";
+            qDebug() << "Using hyper for meta";
 #endif
             // User Hyper
             g_meta_mask = g_hyper_mask;
@@ -611,17 +610,17 @@ bool initializeMods()
     }
 
 #ifdef KKEYSERVER_DEBUG
-    kDebug() << "Alt:" << g_alt_mask;
-    kDebug() << "Meta:" << g_meta_mask;
-    kDebug() << "Super:" << g_super_mask;
-    kDebug() << "Hyper:" << g_hyper_mask;
-    kDebug() << "NumLock:" << g_modXNumLock;
-    kDebug() << "ScrollLock:" << g_modXScrollLock;
-    kDebug() << "ModeSwitch:" << g_modXModeSwitch;
+    qDebug() << "Alt:" << g_alt_mask;
+    qDebug() << "Meta:" << g_meta_mask;
+    qDebug() << "Super:" << g_super_mask;
+    qDebug() << "Hyper:" << g_hyper_mask;
+    qDebug() << "NumLock:" << g_modXNumLock;
+    qDebug() << "ScrollLock:" << g_modXScrollLock;
+    qDebug() << "ModeSwitch:" << g_modXModeSwitch;
 #endif
 
     if (!g_meta_mask) {
-        kWarning() << "Your keyboard setup doesn't provide a key to use for meta. See 'xmodmap -pm' or 'xkbcomp $DISPLAY'";
+        qWarning() << "Your keyboard setup doesn't provide a key to use for meta. See 'xmodmap -pm' or 'xkbcomp $DISPLAY'";
     }
 
     g_rgX11ModInfo[2].modX = g_alt_mask;
@@ -722,8 +721,9 @@ bool keyQtToSymX( int keyQt, int* keySym )
 
     *keySym = 0;
     if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt &&
-        symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
-        kDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key.";
+        symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R ) {
+        // qDebug() << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key.";
+    }
     return false;
 }
 

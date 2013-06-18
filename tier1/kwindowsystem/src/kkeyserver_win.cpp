@@ -19,8 +19,9 @@
 
 #include "kkeyserver_win.h"
 
-#include <kdebug.h>
 #include <windows.h>
+
+#include <QDebug>
 
 namespace KKeyServer
 {
@@ -253,8 +254,9 @@ namespace KKeyServer
 
     	*sym = 0;
     	if( symQt != Qt::Key_Shift && symQt != Qt::Key_Control && symQt != Qt::Key_Alt &&
-    	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R )
-    		kDebug(125) << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key.";
+    	    symQt != Qt::Key_Meta && symQt != Qt::Key_Direction_L && symQt != Qt::Key_Direction_R ) {
+    		// qDebug() << "Sym::initQt( " << QString::number(keyQt,16) << " ): failed to convert key.";
+        }
     	return false;
     }
 

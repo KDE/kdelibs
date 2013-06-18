@@ -23,6 +23,7 @@ endif ()
 configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwindowsystem.h )
 
 set(kwindowsystem_SRCS
+    kkeyserver.cpp
     kstartupinfo.cpp
     kwindoweffects.cpp
     kxerrorhandler.cpp
@@ -43,19 +44,22 @@ set(platformLinkLibraries)
 
 if (HAVE_X11)
    set(platformLinkLibraries Qt5::X11Extras ${X11_LIBRARIES} ${X11_Xfixes_LIB} ${X11_Xrender_LIB} ${XCB_XCB_LIBRARIES})
-   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_x11.cpp
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kkeyserver_x11.cpp
+                                                kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
                                                 kxmessages.cpp
                                                 netwm.cpp )
 endif ()
 
 if (APPLE)
-   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_mac.cpp
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kkeyserver_mac.cpp
+                                                kwindowsystem_mac.cpp
                                                 kwindowinfo_mac.cpp)
 endif ()
 
 if (WIN32)
-   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kwindowsystem_win.cpp
+   set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kkeyserver_win.cpp
+                                                kwindowsystem_win.cpp
                                                 kwindowinfo_win.cpp)
 endif ()
 
@@ -71,6 +75,7 @@ install(TARGETS KWindowSystem EXPORT KWindowSystemTargets ${INSTALL_TARGETS_DEFA
 
 install( FILES
    fixx11h.h
+   kkeyserver.h
    kstartupinfo.h
    kwindoweffects.h
    kwindowinfo.h
@@ -86,3 +91,11 @@ install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kwindowsystem_export.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+if (APPLE)
+   install( FILES kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+elseif (WIN32)
+    install( FILES kkeyserver_win.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+else(WIN32)
+   install( FILES kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
+endif (APPLE)

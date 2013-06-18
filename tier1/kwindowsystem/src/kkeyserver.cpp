@@ -22,7 +22,7 @@
 
 #include "kkeyserver.h"
 
-#include <klocalizedstring.h>
+#include <QApplication>
 
 namespace KKeyServer {
 //---------------------------------------------------------------------
@@ -59,11 +59,11 @@ static bool g_bMacLabels;
 
 static void intializeKKeyLabels()
 {
-	g_rgModInfo[0].sLabel = new QString( i18nc(KEYCTXT, g_rgModInfo[0].psName) );
-	g_rgModInfo[1].sLabel = new QString( i18nc(KEYCTXT, g_rgModInfo[1].psName) );
-	g_rgModInfo[2].sLabel = new QString( i18nc(KEYCTXT, g_rgModInfo[2].psName) );
-	g_rgModInfo[3].sLabel = new QString( i18nc(KEYCTXT, g_rgModInfo[3].psName) );
-	g_bMacLabels = (*g_rgModInfo[2].sLabel == "Command");
+	g_rgModInfo[0].sLabel = new QString(QApplication::translate("KKeyServer", (g_rgModInfo[0].psName), KEYCTXT));
+	g_rgModInfo[1].sLabel = new QString(QApplication::translate("KKeyServer", (g_rgModInfo[1].psName), KEYCTXT));
+	g_rgModInfo[2].sLabel = new QString(QApplication::translate("KKeyServer", (g_rgModInfo[2].psName), KEYCTXT));
+	g_rgModInfo[3].sLabel = new QString(QApplication::translate("KKeyServer", (g_rgModInfo[3].psName), KEYCTXT));
+	g_bMacLabels = (*g_rgModInfo[2].sLabel == QLatin1String("Command"));
 	g_bInitializedKKeyLabels = true;
     
 }
@@ -81,10 +81,10 @@ static QString modToString( uint mod, bool bUserSpace )
 	for( int i = 3; i >= 0; i-- ) {
 		if( mod & g_rgModInfo[i].modQt ) {
 			if( !s.isEmpty() )
-				s += '+';
+				s += QLatin1Char('+');
 			s += (bUserSpace)
                 ? *g_rgModInfo[i].sLabel
-                : QString(g_rgModInfo[i].psName);
+                : QLatin1String(g_rgModInfo[i].psName);
 		}
 	}
 	return s;
@@ -97,7 +97,6 @@ QString modToStringUser( uint mod )
 
 uint stringUserToMod( const QString& mod )
 {
-	QString s;
 	for( int i = 3; i >= 0; i-- ) {
 		if( mod.toLower() == g_rgModInfo[i].sLabel->toLower())
 			return g_rgModInfo[i].modQt;

@@ -23,11 +23,11 @@
 #ifndef _KKEYSERVER_H
 #define _KKEYSERVER_H
 
-#include <kdeui_export.h>
+#include <kwindowsystem_export.h>
 
 #include <qglobal.h>
 
-#include <config-kdeui.h>
+#include <config-kwindowsystem.h>
 #if HAVE_X11 /*or defined Q_OS_WIN*/
 #include "kkeyserver_x11.h"
 #elif defined Q_OS_MAC
@@ -50,14 +50,14 @@ namespace KKeyServer {
 	 * @param mod the mask of ORed KKey::ModFlag modifiers
 	 * @return the user-readable string
 	 */
-	KDEUI_EXPORT QString modToStringUser( uint mod );
+	KWINDOWSYSTEM_EXPORT QString modToStringUser( uint mod );
 
 	/**
      * Converts the modifier given as user-readable string
      * to KKey::ModFlag modifier, or 0.
      * @internal
 	 */
-	KDEUI_EXPORT uint stringUserToMod( const QString& mod );
+	KWINDOWSYSTEM_EXPORT uint stringUserToMod( const QString& mod );
 
 	/**
 	* Test if the shift modifier should be recorded for a given key.
@@ -67,7 +67,7 @@ namespace KKeyServer {
 	*
 	* @since 4.7.1
 	*/
-	KDEUI_EXPORT bool isShiftAsModifierAllowed( int keyQt );
+	KWINDOWSYSTEM_EXPORT bool isShiftAsModifierAllowed( int keyQt );
 
 } // namespace KKeyServer
 

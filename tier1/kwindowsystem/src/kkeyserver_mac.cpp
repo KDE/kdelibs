@@ -23,7 +23,7 @@
 
 #ifdef Q_OS_MAC // Only compile this module if we're compiling for Mac OS X
 
-#include <kdebug.h>
+#include <QDebug>
 #include <QKeySequence>
 #include <QMultiMap>
 #include <Carbon/Carbon.h>
@@ -73,7 +73,7 @@ namespace KKeyServer {
 #ifdef QT_MAC_USE_COCOA
         TISInputSourceRef layout = TISCopyCurrentKeyboardLayoutInputSource();
         if (!layout) {
-            kWarning() << "Error retrieving current layout";
+            qWarning() << "Error retrieving current layout";
             return;
         }
         if (layout == lastLayout) {
@@ -82,7 +82,7 @@ namespace KKeyServer {
             // keyboard layout changed
 #ifndef NDEBUG
             const void *name = TISGetInputSourceProperty(layout, kTISPropertyLocalizedName);
-            kDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef)name, 0);
+            qDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef)name, 0);
 #endif
             lastLayout = layout;
             scancodes.clear();
@@ -92,7 +92,7 @@ namespace KKeyServer {
             const UCKeyboardLayout *ucData = data ? reinterpret_cast<const UCKeyboardLayout *>(CFDataGetBytePtr(data)) : 0;
 
             if (!ucData) {
-                kWarning() << "Error retrieving current layout character data";
+                qWarning() << "Error retrieving current layout character data";
                 return;
             }
 
@@ -103,7 +103,7 @@ namespace KKeyServer {
                 OSStatus err = UCKeyTranslate(ucData, i, kUCKeyActionDown, 0, LMGetKbdType(),
                     kUCKeyTranslateNoDeadKeysMask, &tmpState, 4, &actualLength, str);
                 if (err != noErr) {
-                    kWarning() << "Error translating unicode key" << err;
+                    qWarning() << "Error translating unicode key" << err;
                 } else {
                     if (str[0] && str[0] != kFunctionKeyCharCode)
                         scancodes.insert(str[0], i);
@@ -113,19 +113,19 @@ namespace KKeyServer {
 #else
         KeyboardLayoutRef layout;
         if (KLGetCurrentKeyboardLayout(&layout) != noErr) {
-            kWarning() << "Error retrieving current layout";
+            qWarning() << "Error retrieving current layout";
         }
         if (layout != lastLayout) {
 #ifndef NDEBUG
             void *name;
             KLGetKeyboardLayoutProperty(layout, kKLName, const_cast<const void**>(&name));
-            kDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef) name, 0);
+            qDebug() << "Layout changed to: " << CFStringGetCStringPtr((CFStringRef) name, 0);
 #endif
             lastLayout = layout;
             scancodes.clear();
             void *kchr;
             if (KLGetKeyboardLayoutProperty(layout, kKLKCHRData, const_cast<const void**>(&kchr)) != noErr) {
-                kWarning() << "Couldn't load active keyboard layout";
+                qWarning() << "Couldn't load active keyboard layout";
             } else {
                 for (int i = 0; i < 128; i++) {
                     UInt32 tmpState = 0;

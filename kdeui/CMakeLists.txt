@@ -115,7 +115,6 @@ set(kdeui_LIB_SRCS
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
- util/kkeyserver.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
  util/kpassivepopupmessagehandler.cpp
@@ -172,18 +171,11 @@ endif(NOT WINCE)
 
 
 if (X11_FOUND)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_x11.cpp
-                                         dialogs/kcupsoptionswidget_p.cpp
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} dialogs/kcupsoptionswidget_p.cpp
                                          dialogs/kcupsoptionsjobwidget_p.cpp
                                          dialogs/kcupsoptionspageswidget_p.cpp
                                          dialogs/kcupsoptionssettingswidget_p.cpp )
 endif (X11_FOUND)
-if (APPLE)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_mac.cpp )
-endif (APPLE)
-if (WIN32)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kkeyserver_win.cpp )
-endif (WIN32)
 
 message("Port to Qt5 native filter")
 #if (X11_FOUND AND X11_Xkb_FOUND)
@@ -297,13 +289,6 @@ set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
 install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 ########### install files ###############
 
-if (APPLE)
-   install( FILES util/kkeyserver_mac.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-elseif (WIN32)
-    install( FILES util/kkeyserver_win.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
-else(WIN32)
-   install( FILES util/kkeyserver_x11.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-endif (APPLE)
 
 install( FILES
  dialogs/aboutkde.png
@@ -347,7 +332,6 @@ install( FILES
  util/kcrash.h
  util/kglobalsettings.h
  util/khelpclient.h
- util/kkeyserver.h
  util/kmodifierkeyinfo.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
