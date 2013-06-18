@@ -25,16 +25,9 @@
 #ifndef HTTP_H
 #define HTTP_H
 
-
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <string.h>
-#include <stdio.h>
-#include <time.h>
-
 #include <QtCore/QList>
 #include <QtCore/QStringList>
+#include <QtCore/QDateTime>
 #include <QtNetwork/QLocalSocket>
 
 #include <kurl.h> // many setQuery calls, port when using qt5
@@ -95,8 +88,6 @@ public:
       ioMode = NoCache;
       bytesCached = 0;
       file = 0;
-      expireDate = 0;
-      servedDate = 0;
     }
 
     enum CachePlan {
@@ -104,7 +95,8 @@ public:
       ValidateCached,
       IgnoreCached
     };
-    CachePlan plan(time_t maxCacheAge) const;
+    // int maxCacheAge refers to seconds
+    CachePlan plan(int maxCacheAge) const;
 
     QByteArray serialize() const;
     bool deserialize(const QByteArray &);
@@ -116,9 +108,9 @@ public:
     quint32 bytesCached;
     QString etag; // entity tag header as described in the HTTP standard.
     QFile *file; // file on disk - either a QTemporaryFile (write) or QFile (read)
-    time_t servedDate; // Date when the resource was served by the origin server
-    time_t lastModifiedDate; // Last modified.
-    time_t expireDate; // Date when the cache entry will expire
+    QDateTime servedDate; // Date when the resource was served by the origin server
+    QDateTime lastModifiedDate; // Last modified.
+    QDateTime expireDate; // Date when the cache entry will expire
     QString charset;
   };
 
@@ -403,7 +395,7 @@ protected:
   /**
    * Parses a date & time string
    */
-  long parseDateTime( const QString& input, const QString& type );
+  QDateTime parseDateTime(const QString &input, const QString &type);
 
   /**
    * Returns the error code from a "HTTP/1.1 code Code Name" string

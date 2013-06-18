@@ -32,25 +32,19 @@
 
 #include <config-kioslave-http.h>
 
-#include <fcntl.h>
-#include <utime.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/stat.h>
-#include <sys/time.h>
 #include <unistd.h> // must be explicitly included for MacOSX
 
 #include <QtXml/qdom.h>
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
-#include <QtCore/QDate>
+#include <QtCore/QDateTime>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
 #include <QtDBus/QtDBus>
+#include <QtCore/QMimeDatabase>
 #include <QtNetwork/QAuthenticator>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
-#include <qmimedatabase.h>
 #include <qurlpathinfo.h>
 
 #include <kurl.h>
@@ -345,10 +339,9 @@ QByteArray HTTPProtocol::HTTPRequest::methodString() const
     }
 }
 
-static QString formatHttpDate(qint64 date)
+static QString formatHttpDate(const QDateTime &date)
 {
-    KDateTime dt;
-    dt.setTime_t(date);
+    KDateTime dt(date);
     QString ret = dt.toString(KDateTime::RFCDateDay);
     ret.chop(6);    // remove " +0000"
     // RFCDate[Day] omits the second if zero, but HTTP requires it; see bug 240585.
@@ -529,11 +522,6 @@ void HTTPProtocol::resetSessionSettings()
   }
 
   m_request.cacheTag.etag.clear();
-  // -1 is also the value returned by KDateTime::toTime_t() from an invalid instance.
-  m_request.cacheTag.servedDate = -1;
-  m_request.cacheTag.lastModifiedDate = -1;
-  m_request.cacheTag.expireDate = -1;
-
   m_request.responseCode = 0;
   m_request.prevResponseCode = 0;
 
@@ -960,7 +948,8 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       if ( property.tagName() == QLatin1String("creationdate") )
       {
         // Resource creation date. Should be is ISO 8601 format.
-        entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, parseDateTime( property.text(), property.attribute(QLatin1String("dt")) ) );
+        entry.insert(KIO::UDSEntry::UDS_CREATION_TIME,
+                      parseDateTime(property.text(), property.attribute(QStringLiteral("dt"))).toTime_t());
       }
       else if ( property.tagName() == QLatin1String("getcontentlength") )
       {
@@ -1009,7 +998,8 @@ void HTTPProtocol::davParsePropstats( const QDomNodeList& propstats, UDSEntry& e
       else if ( property.tagName() == QLatin1String("getlastmodified") )
       {
         // Last modification date
-        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, parseDateTime( property.text(), property.attribute(QLatin1String("dt")) ) );
+        entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME,
+                      parseDateTime(property.text(), property.attribute(QStringLiteral("dt"))).toTime_t());
       }
       else if ( property.tagName() == QLatin1String("getetag") )
       {
@@ -1128,23 +1118,23 @@ void HTTPProtocol::davParseActiveLocks( const QDomNodeList& activeLocks,
   }
 }
 
-long HTTPProtocol::parseDateTime( const QString& input, const QString& type )
+QDateTime HTTPProtocol::parseDateTime(const QString &input, const QString &type)
 {
   if ( type == QLatin1String("dateTime.tz") )
   {
-    return KDateTime::fromString( input, KDateTime::ISODate ).toTime_t();
+    return KDateTime::fromString(input, KDateTime::ISODate).dateTime();
   }
   else if ( type == QLatin1String("dateTime.rfc1123") )
   {
-    return KDateTime::fromString( input, KDateTime::RFCDate ).toTime_t();
+    return KDateTime::fromString(input, KDateTime::RFCDate).dateTime();
   }
 
   // format not advertised... try to parse anyway
-  time_t time = KDateTime::fromString( input, KDateTime::RFCDate ).toTime_t();
-  if ( time != 0 )
+  QDateTime time = KDateTime::fromString(input, KDateTime::RFCDate).dateTime();
+  if (time.isValid())
     return time;
 
-  return KDateTime::fromString( input, KDateTime::ISODate ).toTime_t();
+  return KDateTime::fromString(input, KDateTime::ISODate).dateTime();
 }
 
 QString HTTPProtocol::davProcessLocks()
@@ -2386,12 +2376,7 @@ bool HTTPProtocol::sendQuery()
   }
 
   m_request.cacheTag.ioMode = NoCache;
-  m_request.cacheTag.servedDate = -1;
-  m_request.cacheTag.lastModifiedDate = -1;
-  m_request.cacheTag.expireDate = -1;
-
   QString header;
-
   bool hasBodyData = false;
   bool hasDavData = false;
 
@@ -2554,10 +2539,10 @@ bool HTTPProtocol::sendQuery()
       if (!m_request.cacheTag.etag.isEmpty())
         header += QLatin1String("If-None-Match: ") + m_request.cacheTag.etag + QLatin1String("\r\n");
 
-      if (m_request.cacheTag.lastModifiedDate != -1) {
+      if (m_request.cacheTag.lastModifiedDate.isValid()) {
         const QString httpDate = formatHttpDate(m_request.cacheTag.lastModifiedDate);
-        header += QLatin1String("If-Modified-Since: ") + httpDate + QLatin1String("\r\n");
-        setMetaData(QLatin1String("modified"), httpDate);
+        header += QStringLiteral("If-Modified-Since: ") + httpDate + QStringLiteral("\r\n");
+        setMetaData(QStringLiteral("modified"), httpDate);
       }
     }
 
@@ -2729,8 +2714,8 @@ bool HTTPProtocol::parseHeaderFromCache()
         }
     }
 
-    if (m_request.cacheTag.lastModifiedDate != -1) {
-        setMetaData(QLatin1String("modified"), formatHttpDate(m_request.cacheTag.lastModifiedDate));
+    if (m_request.cacheTag.lastModifiedDate.isValid()) {
+        setMetaData(QStringLiteral("modified"), formatHttpDate(m_request.cacheTag.lastModifiedDate));
     }
 
     // this header comes from the cache, so the response must have been cacheable :)
@@ -3618,31 +3603,26 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         return;
     }
 
-    // -1 is also the value returned by KDateTime::toTime_t() from an invalid instance.
-    m_request.cacheTag.servedDate = -1;
-    m_request.cacheTag.lastModifiedDate = -1;
-    m_request.cacheTag.expireDate = -1;
-
-    const qint64 currentDate = time(0);
+    const QDateTime currentDate = QDateTime::currentDateTime();
     bool mayCache = m_request.cacheTag.ioMode != NoCache;
 
     TokenIterator tIt = tokenizer.iterator("last-modified");
     if (tIt.hasNext()) {
         m_request.cacheTag.lastModifiedDate =
-              KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).toTime_t();
+              KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).dateTime();
 
         //### might be good to canonicalize the date by using KDateTime::toString()
-        if (m_request.cacheTag.lastModifiedDate != -1) {
+        if (m_request.cacheTag.lastModifiedDate.isValid()) {
             setMetaData(QLatin1String("modified"), toQString(tIt.current()));
         }
     }
 
     // determine from available information when the response was served by the origin server
     {
-        qint64 dateHeader = -1;
+        QDateTime dateHeader;
         tIt = tokenizer.iterator("date");
         if (tIt.hasNext()) {
-            dateHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).toTime_t();
+            dateHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).dateTime();
             // -1 on error
         }
 
@@ -3653,10 +3633,10 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
             // 0 on error
         }
 
-        if (dateHeader != -1) {
+        if (dateHeader.isValid()) {
             m_request.cacheTag.servedDate = dateHeader;
         } else if (ageHeader) {
-            m_request.cacheTag.servedDate = currentDate - ageHeader;
+            m_request.cacheTag.servedDate = currentDate.addSecs(-ageHeader);
         } else {
             m_request.cacheTag.servedDate = currentDate;
         }
@@ -3684,34 +3664,33 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
             }
         }
 
-        qint64 expiresHeader = -1;
+        QDateTime expiresHeader;
         tIt = tokenizer.iterator("expires");
         if (tIt.hasNext()) {
-            expiresHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).toTime_t();
+            expiresHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).dateTime();
             kDebug(7113) << "parsed expire date from 'expires' header:" << tIt.current();
         }
 
         if (maxAgeHeader) {
-            m_request.cacheTag.expireDate = m_request.cacheTag.servedDate + maxAgeHeader;
-        } else if (expiresHeader != -1) {
+            m_request.cacheTag.expireDate = m_request.cacheTag.servedDate.addSecs(maxAgeHeader);
+        } else if (expiresHeader.isValid()) {
             m_request.cacheTag.expireDate = expiresHeader;
         } else {
             // heuristic expiration date
-            if (m_request.cacheTag.lastModifiedDate != -1) {
+            if (m_request.cacheTag.lastModifiedDate.isValid()) {
                 // expAge is following the RFC 2616 suggestion for heuristic expiration
-                qint64 expAge = (m_request.cacheTag.servedDate -
-                                 m_request.cacheTag.lastModifiedDate) / 10;
+                qint64 expAge =
+                        (m_request.cacheTag.lastModifiedDate.secsTo(m_request.cacheTag.servedDate)) / 10;
                 // not in the RFC: make sure not to have a huge heuristic cache lifetime
                 expAge = qMin(expAge, qint64(3600 * 24));
-                m_request.cacheTag.expireDate = m_request.cacheTag.servedDate + expAge;
+                m_request.cacheTag.expireDate = m_request.cacheTag.servedDate.addSecs(expAge);
             } else {
-                m_request.cacheTag.expireDate = m_request.cacheTag.servedDate +
-                                                DEFAULT_CACHE_EXPIRE;
+                m_request.cacheTag.expireDate = m_request.cacheTag.servedDate.addSecs(DEFAULT_CACHE_EXPIRE);
             }
         }
         // make sure that no future clock monkey business causes the cache entry to un-expire
         if (m_request.cacheTag.expireDate < currentDate) {
-            m_request.cacheTag.expireDate = 0;  // January 1, 1970 :)
+            m_request.cacheTag.expireDate.setMSecsSinceEpoch(0);  // January 1, 1970 :)
         }
     }
 
@@ -3765,7 +3744,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         if (m_request.responseCode == 304) {
             kDebug(7113) << "...was revalidated by response code but not by updated expire times. "
                             "We're going to set the expire date to 60 seconds in the future...";
-            m_request.cacheTag.expireDate = currentDate + 60;
+            m_request.cacheTag.expireDate = currentDate.addSecs(60);
             if (m_request.cacheTag.policy == CC_Verify &&
                 m_request.cacheTag.plan(m_maxCacheAge) != CacheTag::UseCached) {
                 // "apparently" because we /could/ have made an error ourselves, but the errors I
@@ -3806,10 +3785,10 @@ void HTTPProtocol::setCacheabilityMetadata(bool cachingAllowed)
         setMetaData(QLatin1String("expire-date"), QLatin1String("1")); // Expired
     } else {
         QString tmp;
-        tmp.setNum(m_request.cacheTag.expireDate);
+        tmp.setNum(m_request.cacheTag.expireDate.toTime_t());
         setMetaData(QLatin1String("expire-date"), tmp);
         // slightly changed semantics from old creationDate, probably more correct now
-        tmp.setNum(m_request.cacheTag.servedDate);
+        tmp.setNum(m_request.cacheTag.servedDate.toTime_t());
         setMetaData(QLatin1String("cache-creation-date"), tmp);
     }
 }
@@ -4054,7 +4033,7 @@ void HTTPProtocol::special( const QByteArray &data )
 
         m_request.url = url;
         if (cacheFileOpenRead()) {
-            m_request.cacheTag.expireDate = expireDate;
+            m_request.cacheTag.expireDate.setTime_t(expireDate);
             cacheFileClose(); // this sends an update command to the cache cleaner process
         }
 
@@ -4587,14 +4566,14 @@ QString HTTPProtocol::findCookies( const QString &url)
 
 /******************************* CACHING CODE ****************************/
 
-HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(time_t maxCacheAge) const
+HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(int maxCacheAge) const
 {
     //notable omission: we're not checking cache file presence or integrity
     switch (policy) {
     case KIO::CC_Refresh:
         // Conditional GET requires the presence of either an ETag or
         // last modified date.
-        if (lastModifiedDate != -1 || !etag.isEmpty()) {
+        if (lastModifiedDate.isValid() || !etag.isEmpty()) {
             return ValidateCached;
         }
         break;
@@ -4608,9 +4587,9 @@ HTTPProtocol::CacheTag::CachePlan HTTPProtocol::CacheTag::plan(time_t maxCacheAg
     }
 
     Q_ASSERT((policy == CC_Verify || policy == CC_Refresh));
-    time_t currentDate = time(0);
-    if ((servedDate != -1 && currentDate > (servedDate + maxCacheAge)) ||
-        (expireDate != -1 && currentDate > expireDate)) {
+    QDateTime currentDate = QDateTime::currentDateTime();
+    if ((servedDate.isValid() && (currentDate > servedDate.addSecs(maxCacheAge))) ||
+        (expireDate.isValid() && (currentDate > expireDate))) {
         return ValidateCached;
     }
     return UseCached;
@@ -4662,10 +4641,9 @@ QByteArray HTTPProtocol::CacheTag::serialize() const
 
     stream << fileUseCount;
 
-    // time_t overflow will only be checked when reading; we have no way to tell here.
-    stream << qint64(servedDate);
-    stream << qint64(lastModifiedDate);
-    stream << qint64(expireDate);
+    stream << servedDate;
+    stream << lastModifiedDate;
+    stream << expireDate;
 
     stream << bytesCached;
     Q_ASSERT(ret.size() == BinaryCacheFileHeader::size);
@@ -4678,16 +4656,6 @@ static bool compareByte(QDataStream *stream, quint8 value)
     quint8 byte;
     *stream >> byte;
     return byte == value;
-}
-
-static bool readTime(QDataStream *stream, time_t *time)
-{
-    qint64 intTime = 0;
-    *stream >> intTime;
-    *time = static_cast<time_t>(intTime);
-
-    qint64 check = static_cast<qint64>(*time);
-    return check == intTime;
 }
 
 // If starting a new file cacheFileWriteVariableSizeHeader() must have been called *before*
@@ -4713,13 +4681,9 @@ bool HTTPProtocol::CacheTag::deserialize(const QByteArray &d)
 
     stream >> fileUseCount;
 
-    // read and check for time_t overflow
-    ok = ok && readTime(&stream, &servedDate);
-    ok = ok && readTime(&stream, &lastModifiedDate);
-    ok = ok && readTime(&stream, &expireDate);
-    if (!ok) {
-        return false;
-    }
+    stream >> servedDate;
+    stream >> lastModifiedDate;
+    stream >> expireDate;
 
     stream >> bytesCached;
 
