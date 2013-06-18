@@ -55,7 +55,6 @@
 #include <kdialog.h>
 #include <kpluginfactory.h>
 #include <klineedit.h>
-#include <klocale.h>
 #include <kcodecs.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>
@@ -1399,7 +1398,7 @@ QDateTime qdt = x->getExpires();
    int rc = kdtd.exec();
    if (rc == KDialog::Accepted) {
       x->setExpires(kdtd.getDateTime());
-      untilDate->setText(KLocale::global()->formatDateTime(x->getExpires()));
+      untilDate->setText(x->getExpires().toString());
       configChanged();
    }
 }
@@ -1445,8 +1444,8 @@ void KCryptoConfig::slotOtherCertSelect() {
 
          validFrom->setText(cert->getNotBefore());
          validUntil->setText(cert->getNotAfter());
-         untilDate->setText(x ? KLocale::global()->formatDateTime(x->getExpires())
-                              : KLocale::global()->formatDateTime(QDateTime::currentDateTime()));
+         untilDate->setText(x ? x->getExpires().toString()
+                              : QDateTime::currentDateTime().toString());
          untilDate->setEnabled(x && !x->isPermanent());
          pHash->setText(cert->getMD5DigestText());
          oSubject->setCertificate(QSslCertificate(cert->toPem()), KSslCertificateBox::Subject);

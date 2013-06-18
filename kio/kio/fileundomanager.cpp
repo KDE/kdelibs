@@ -28,7 +28,6 @@
 #include <kio/mkdirjob.h>
 #include <kjobwidgets.h>
 #include <kio/jobuidelegate.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kjobtrackerinterface.h>
@@ -766,7 +765,7 @@ bool FileUndoManager::UiInterface::copiedFileWasModified(const QUrl& src, const 
 {
     Q_UNUSED(srcTime); // not sure it should appear in the msgbox
     // Possible improvement: only show the time if date is today
-    const QString timeStr = KLocale::global()->formatDateTime(destTime, KLocale::ShortDate);
+    const QString timeStr = destTime.toString(Qt::DefaultLocaleShortDate);
     return KMessageBox::warningContinueCancel(
         d->m_parentWidget,
         i18n("The file %1 was copied from %2, but since then it has apparently been modified at %3.\n"

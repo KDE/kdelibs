@@ -70,7 +70,6 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
 #include <limits.h>
 #include <kshell.h>
 #include <kmountpoint.h>
@@ -98,7 +97,6 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app( argc, argv ); // needed for QSocketNotifier
   app.setApplicationName(QLatin1String("kio_file"));
-  ( void ) KLocale::global();
 
   kDebug(7101) << "Starting" << getpid();
 

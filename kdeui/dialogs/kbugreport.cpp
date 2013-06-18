@@ -26,6 +26,7 @@
 #include <QLayout>
 #include <QRadioButton>
 #include <QGroupBox>
+#include <QLocale>
 #include <QCloseEvent>
 #include <QLabel>
 #include <QUrl>
@@ -33,10 +34,10 @@
 
 #include <kaboutdata.h>
 #include <kcombobox.h>
+#include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <klineedit.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <qstandardpaths.h>
@@ -507,9 +508,9 @@ QString KBugReport::text() const
   bodyText=d->m_lineedit->toPlainText();
   if (bodyText.length()>0)
         if (bodyText[bodyText.length()-1]!='\n') bodyText+='\n';
-  if (severity == QLatin1String("i18n") && KLocale::global()->language() != KLocale::defaultLanguage()) {
+  if (severity == QLatin1String("i18n") && QLocale().language() != QLocale::system().language()) {
       // Case 1 : i18n bug
-      QString package = QString::fromLatin1("i18n_%1").arg(KLocale::global()->language());
+      QString package = QString::fromLatin1("i18n_%1").arg(QLocale::languageToString(QLocale().language()));
       package = package.replace('_', '-');
       return QString::fromLatin1("Package: %1").arg(package) +
           QString::fromLatin1("\n"

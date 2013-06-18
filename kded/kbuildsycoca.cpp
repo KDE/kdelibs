@@ -34,6 +34,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QEventLoop>
 #include <QtCore/QFile>
+#include <QtCore/QLocale>
 #include <QtCore/QTimer>
 #include <QtCore/QDebug>
 #include <QtDBus/QtDBus>
@@ -42,7 +43,6 @@
 
 #include <assert.h>
 #include <kdirwatch.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 
 #if !KBUILDSYCOCA_NO_KCRASH
@@ -498,7 +498,7 @@ void KBuildSycoca::save(QDataStream* str)
    // Write XDG_DATA_DIRS
    (*str) << QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).join(QString(QLatin1Char(':')));
    (*str) << newTimestamp;
-   (*str) << KLocale::global()->language();
+   (*str) << QLocale().language();
    // This makes it possible to trigger a ksycoca update for all users (KIOSK feature)
    (*str) << calcResourceHash("kde5/services", "update_ksycoca");
    (*str) << (*g_allResourceDirs);
@@ -664,7 +664,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    KLocalizedString::setApplicationCatalog("kdelibs5");
    // force generating of KLocale object. if not, the database will get
    // be translated
-   KLocale::global();
+   QLocale::setDefault(QLocale::C);
 
    while(QDBusConnection::sessionBus().isConnected())
    {
@@ -690,7 +690,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    if (incremental || !checkfiles)
    {
      KSycoca::disableAutoRebuild(); // Prevent deadlock
-     QString current_language = KLocale::global()->language();
+     QString current_language = QLocale::languageToString(QLocale().language());
      QString ksycoca_language = KSycoca::self()->language();
      quint32 current_update_sig = KBuildSycoca::calcResourceHash("kde5/services", "update_ksycoca");
      quint32 ksycoca_update_sig = KSycoca::self()->updateSignature();

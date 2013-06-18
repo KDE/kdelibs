@@ -22,7 +22,6 @@
 #include "ksslutils.h"
 
 #include <QtCore/QString>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <QtCore/QDate>
 
@@ -72,7 +71,7 @@ QString ASN1_UTCTIME_QString(ASN1_UTCTIME *tm) {
   QString qstr;
   int gmt;
   QDateTime qdt = ASN1_UTCTIME_QDateTime(tm, &gmt);
-  qstr = KLocale::global()->formatDateTime(qdt, KLocale::LongDate, true);
+  qstr = qdt.toString(Qt::DefaultLocaleLongDate);
   if (gmt) { 
     qstr += ' ';
     qstr += i18n("GMT");

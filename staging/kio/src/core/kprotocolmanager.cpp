@@ -36,6 +36,7 @@
 #include <QtNetwork/QHostInfo>
 #include <QtDBus/QtDBus>
 #include <QtCore/QCache>
+#include <QLocale>
 #include <qstandardpaths.h>
 #include <qmimedatabase.h>
 
@@ -45,7 +46,6 @@
 #endif
 
 #include <kio_version.h>
-#include <klocale.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 
@@ -748,7 +748,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
       if (modifiers.contains('l'))
       {
         supp += QL1S("; ");
-        supp += KLocale::global()->language();
+        supp += QLocale::languageToString(QLocale().language());
       }
     }
 
@@ -822,7 +822,7 @@ QString KProtocolManager::defaultUserAgent( const QString &_modifiers )
 
       // Language (e.g. en_US)
       if (modifiers.contains('l'))
-        agentStr.replace(QL1S("%language%"), KLocale::global()->language(), Qt::CaseInsensitive);
+        agentStr.replace(QL1S("%language%"), QLocale::languageToString(QLocale().language()), Qt::CaseInsensitive);
       else
         agentStr.remove(QL1S("%language%"), Qt::CaseInsensitive);
 
@@ -917,7 +917,7 @@ QString KProtocolManager::acceptLanguagesHeader()
   const QLatin1String english("en");
 
   // User's desktop language preference.
-  QStringList languageList = KLocale::global()->languageList();
+  QStringList languageList = QLocale().uiLanguages();
 
   // Replace possible "C" in the language list with "en", unless "en" is
   // already pressent. This is to keep user's priorities in order.

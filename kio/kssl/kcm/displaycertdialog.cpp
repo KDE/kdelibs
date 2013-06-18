@@ -22,7 +22,6 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <kstandardguiitem.h>
-#include <klocale.h>
 
 
 DisplayCertDialog::DisplayCertDialog(QWidget *parent)
@@ -71,8 +70,8 @@ void DisplayCertDialog::showCertificate(int index)
     m_ui.issuerCertBox->setCertificate(cert, KSslCertificateBox::Issuer);
     
     QString vp = i18nc("%1 is the effective date of the certificate, %2 is the expiry date", "%1 to %2",
-                       KLocale::global()->formatDateTime(cert.effectiveDate()),
-                       KLocale::global()->formatDateTime(cert.expiryDate()));
+                       cert.effectiveDate().toString(),
+                       cert.expiryDate().toString());
     m_ui.validityPeriod->setText(vp);
 
     m_ui.serialNumber->setText(cert.serialNumber());

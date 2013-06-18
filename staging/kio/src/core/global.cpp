@@ -19,9 +19,10 @@
 #include "global.h"
 
 #include <kprotocolinfo.h>
+#include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
+#include <ksharedconfig.h>
 #include <qmimedatabase.h>
 #include <QtDBus/QtDBus>
 #include <QHash>
@@ -186,7 +187,7 @@ KIOCORE_EXPORT QString KIO::convertSeconds( unsigned int seconds )
   seconds            = (seconds - (days * 86400) - (hours * 3600) - (mins * 60));
 
   const QTime time(hours, mins, seconds);
-  const QString timeStr( KLocale::global()->formatTime(time, true /*with seconds*/, true /*duration*/) );
+  const QString timeStr( time.toString("hh:mm:ss") );
   if ( days > 0 )
     return i18np("1 day %2", "%1 days %2", days, timeStr);
   else

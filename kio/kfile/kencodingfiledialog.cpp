@@ -25,7 +25,6 @@
 
 #include <kabstractfilewidget.h>
 #include <kcombobox.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kcharsets.h>
 #include <QtCore/QTextCodec>
@@ -50,7 +49,7 @@ KEncodingFileDialog::KEncodingFileDialog(const QUrl& startDir, const QString& en
 
   d->encoding->clear ();
   QString sEncoding = encoding;
-  QString systemEncoding = QLatin1String(KLocale::global()->encoding());
+  QString systemEncoding = QTextCodec::codecForLocale()->name();
   if (sEncoding.isEmpty() || sEncoding == "System")
      sEncoding = systemEncoding;
 

@@ -22,13 +22,13 @@
 #include "config-kunitconversion.h"
 
 #include "converter.h"
+#include <QLocale>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDateTime>
 #include <QtCore/QMutex>
 #include <QtCore/QProcess>
 #include <QtXml/QDomDocument>
 #include <kdebug.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 
 
@@ -69,7 +69,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "ATS",
       KCurrencyCode::currencyCodeToName("ATS"),
       i18nc("ATS Austrian Schilling - unit synonyms for matching user input",
-          "schilling;schillings") + ";ATS;" + KLocale::global()->countryCodeToName("at") +';' +
+          "schilling;schillings") + ";ATS;" + QLocale::countryToString(QLocale::Austria) +';' +
           KCurrencyCode::currencyCodeToName("ATS"),
       ki18nc("amount in units (real)", "%1 schillings"),
       ki18ncp("amount in units (integer)", "%1 schilling", "%1 schillings")
@@ -78,7 +78,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "BEF",
       KCurrencyCode::currencyCodeToName("BEF"),
       i18nc("BEF Belgian Franc - unit synonyms for matching user input", "franc;francs") +
-          ";BEF;" + KLocale::global()->countryCodeToName("be") + ';' +
+          ";BEF;" + QLocale::countryToString(QLocale::Belgium) + ';' +
           KCurrencyCode::currencyCodeToName("BEF"),
       ki18nc("amount in units (real)", "%1 Belgian francs"),
       ki18ncp("amount in units (integer)", "%1 Belgian franc", "%1 Belgian francs")
@@ -87,7 +87,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "NLG",
       KCurrencyCode::currencyCodeToName("NLG"),
       i18nc("NLG Netherlands Guilder - unit synonyms for matching user input", "guilder;guilders") +
-          ";NLG;" + KLocale::global()->countryCodeToName("nl") + ';' +
+          ";NLG;" + QLocale::countryToString(QLocale::Netherlands) + ';' +
           KCurrencyCode::currencyCodeToName("NLG"),
       ki18nc("amount in units (real)", "%1 guilders"),
       ki18ncp("amount in units (integer)", "%1 guilder", "%1 guilders")
@@ -97,7 +97,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("FIM"),
       i18nc("FIM Finnish Markka - unit synonyms for matching user input",
             "markka;markkas;markkaa") + ";FIM;" +
-            KLocale::global()->countryCodeToName("fi") + ';' +
+            QLocale::countryToString(QLocale::Finland) + ';' +
             KCurrencyCode::currencyCodeToName("FIM"),
       ki18nc("amount in units (real)", "%1 markkas"),
       ki18ncp("amount in units (integer)", "%1 markka", "%1 markkas")  // Alternative = markkaa
@@ -106,7 +106,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "FRF",
       KCurrencyCode::currencyCodeToName("FRF"),
       i18nc("FRF French Franc - unit synonyms for matching user input", "franc;francs") + ";FRF;" +
-          KLocale::global()->countryCodeToName("fr") + ';' +
+          QLocale::countryToString(QLocale::France) + ';' +
           KCurrencyCode::currencyCodeToName("FRF"),
       ki18nc("amount in units (real)", "%1 French francs"),
       ki18ncp("amount in units (integer)", "%1 French franc", "%1 French francs")
@@ -115,7 +115,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "DEM",
       KCurrencyCode::currencyCodeToName("DEM"),
       i18nc("DEM German Mark - unit synonyms for matching user input", "mark;marks") + ";DEM;" +
-          KLocale::global()->countryCodeToName("de") + ';' +
+          QLocale::countryToString(QLocale::Germany) + ';' +
           KCurrencyCode::currencyCodeToName("DEM"),
       ki18nc("amount in units (real)", "%1 marks"),
       ki18ncp("amount in units (integer)", "%1 mark", "%1 marks")
@@ -124,7 +124,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "IEP",
       KCurrencyCode::currencyCodeToName("IEP"),
       i18nc("IEP Irish Pound - unit synonyms for matching user input", "Irish pound;Irish pounds") +
-          ";IEP;" + KLocale::global()->countryCodeToName("ie") + ';' +
+          ";IEP;" + QLocale::countryToString(QLocale::Ireland) + ';' +
           KCurrencyCode::currencyCodeToName("IEP"),
       ki18nc("amount in units (real)", "%1 Irish pounds"),
       ki18ncp("amount in units (integer)", "%1 Irish pound", "%1 Irish pounds")
@@ -133,7 +133,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "ITL",
       KCurrencyCode::currencyCodeToName("ITL"),
       i18nc("ITL Italian Lira - unit synonyms for matching user input", "lira;liras") + ";ITL;" +
-          KLocale::global()->countryCodeToName("it") + ';' +
+          QLocale::countryToString(QLocale::Italy) + ';' +
           KCurrencyCode::currencyCodeToName("ITL"),
       ki18nc("amount in units (real)", "%1 Italian lira"),
       ki18ncp("amount in units (integer)", "%1 Italian lira", "%1 Italian lira")
@@ -142,7 +142,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "LUF",
       KCurrencyCode::currencyCodeToName("LUF"),
       i18nc("LUF Luxembourgish Franc - unit synonyms for matching user input", "franc;francs") +
-          ";LUF;" + KLocale::global()->countryCodeToName("lu") + ';' +
+          ";LUF;" + QLocale::countryToString(QLocale::Luxembourg) + ';' +
           KCurrencyCode::currencyCodeToName("LUF"),
       ki18nc("amount in units (real)", "%1 Luxembourgish francs"),
       ki18ncp("amount in units (integer)", "%1 Luxembourgish franc", "%1 Luxembourgish francs")
@@ -151,7 +151,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "PTE",
       KCurrencyCode::currencyCodeToName("PTE"),
       i18nc("PTE Portugeuse Escudo - unit synonyms for matching user input", "escudo;escudos") +
-          ";PTE;" + KLocale::global()->countryCodeToName("pt") + ';' +
+          ";PTE;" + QLocale::countryToString(QLocale::Portugal) + ';' +
           KCurrencyCode::currencyCodeToName("PTE"),
       ki18nc("amount in units (real)", "%1 escudos"),
       ki18ncp("amount in units (integer)", "%1 escudo", "%1 escudos")
@@ -160,7 +160,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "ESP",
       KCurrencyCode::currencyCodeToName("ESP"),
       i18nc("ESP Spanish Pesetas - unit synonyms for matching user input", "peseta;pesetas") +
-          ";ESP;" + KLocale::global()->countryCodeToName("es") + ';' +
+          ";ESP;" + QLocale::countryToString(QLocale::Spain) + ';' +
           KCurrencyCode::currencyCodeToName("ESP"),
       ki18nc("amount in units (real)", "%1 pesetas"),
       ki18ncp("amount in units (integer)", "%1 peseta", "%1 pesetas")
@@ -169,7 +169,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "GRD",
       KCurrencyCode::currencyCodeToName("GRD"),
       i18nc("GRD Greek Drachma - unit synonyms for matching user input", "drachma;drachmas") +
-          ";GRD;" + KLocale::global()->countryCodeToName("gr") + ';' +
+          ";GRD;" + QLocale::countryToString(QLocale::Greece) + ';' +
           KCurrencyCode::currencyCodeToName("GRD"),
       ki18nc("amount in units (real)", "%1 drachmas"),
       ki18ncp("amount in units (integer)", "%1 drachma", "%1 drachmas")
@@ -178,7 +178,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "SIT",
       KCurrencyCode::currencyCodeToName("SIT"),
       i18nc("SIT Slovenian Tolar - unit synonyms for matching user input", "tolar;tolars;tolarjev") + ";SIT;" +
-      KLocale::global()->countryCodeToName("si") + ';' + KCurrencyCode::currencyCodeToName("SIT"),
+      QLocale::countryToString(QLocale::Slovenia) + ';' + KCurrencyCode::currencyCodeToName("SIT"),
       ki18nc("amount in units (real)", "%1 tolars"),
       ki18ncp("amount in units (integer)", "%1 tolar", "%1 tolars")  //Alt: tolarjev/tolarja/tolarji
     );
@@ -187,7 +187,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("CYP"),
       i18nc("CYP Cypriot Pound - unit synonyms for matching user input",
           "Cypriot pound;Cypriot pounds") + ";CYP;" +
-          KLocale::global()->countryCodeToName("cy") + ';' +
+          QLocale::countryToString(QLocale::Cyprus) + ';' +
           KCurrencyCode::currencyCodeToName("CYP"),
       ki18nc("amount in units (real)", "%1 Cypriot pounds"),
       ki18ncp("amount in units (integer)", "%1 Cypriot pound", "%1 Cypriot pounds")
@@ -196,7 +196,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "MTL",
       KCurrencyCode::currencyCodeToName("MTL"),
       i18nc("MTL Maltese Lira - unit synonyms for matching user input", "Maltese lira") + ";MTL;" +
-      KLocale::global()->countryCodeToName("mt") + ';' + KCurrencyCode::currencyCodeToName("MTL"),
+      QLocale::countryToString(QLocale::Malta) + ';' + KCurrencyCode::currencyCodeToName("MTL"),
       ki18nc("amount in units (real)", "%1 Maltese lira"),
       ki18ncp("amount in units (integer)", "%1 Maltese lira", "%1 Maltese lira")
     );
@@ -205,7 +205,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("SKK"),
       i18nc("SKK Slovak Koruna - unit synonyms for matching user input",
           "koruna;korunas;koruny;korun") + ";SKK;" +
-          KLocale::global()->countryCodeToName("sk") + ';' +
+          QLocale::countryToString(QLocale::Slovakia) + ';' +
           KCurrencyCode::currencyCodeToName("SKK"),
       ki18nc("amount in units (real)", "%1 Slovak korunas"),
       ki18ncp("amount in units (integer)", "%1 Slovak koruna", "%1 Slovak korunas") // Alt: koruny, korun
@@ -216,7 +216,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "USD",
       KCurrencyCode::currencyCodeToName("USD"),
       i18nc("USD United States Dollars - unit synonyms for matching user input", "dollar;dollars") +
-          ";USD;$;" + KLocale::global()->countryCodeToName("us") + ';' +
+          ";USD;$;" + QLocale::countryToString(QLocale::UnitedStates) + ';' +
           KCurrencyCode::currencyCodeToName("USD"),
       ki18nc("amount in units (real)", "%1 United States dollars"),
       ki18ncp("amount in units (integer)", "%1 United States dollar", "%1 United States dollars")
@@ -226,7 +226,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("JPY"),
       i18nc("JPY Japanese Yen - unit synonyms for matching user input", "yen") +
       ";JPY;" + QString::fromUtf8("¥") + ';' +
-      KLocale::global()->countryCodeToName("jp") + ';' + KCurrencyCode::currencyCodeToName("JPY"),
+      QLocale::countryToString(QLocale::Japan) + ';' + KCurrencyCode::currencyCodeToName("JPY"),
       ki18nc("amount in units (real)", "%1 yen"),
       ki18ncp("amount in units (integer)", "%1 yen", "%1 yen")
     );
@@ -234,7 +234,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "BGN",
       KCurrencyCode::currencyCodeToName("BGN"),
       i18nc("BGN Bulgarian Lev - unit synonyms for matching user input", "lev;leva") + ";BGN;" +
-      KLocale::global()->countryCodeToName("bg") + ';' + KCurrencyCode::currencyCodeToName("BGN"),
+      QLocale::countryToString(QLocale::Bulgaria) + ';' + KCurrencyCode::currencyCodeToName("BGN"),
       ki18nc("amount in units (real)", "%1 leva"),
       ki18ncp("amount in units (integer)", "%1 lev", "%1 leva")
     );
@@ -242,7 +242,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "CZK",
       KCurrencyCode::currencyCodeToName("CZK"),
       i18nc("CZK Czech Koruna - unit synonyms for matching user input", "koruna;korunas") +
-          ";CZK;" + KLocale::global()->countryCodeToName("cz") + ';' +
+          ";CZK;" + QLocale::countryToString(QLocale::CzechRepublic) + ';' +
           KCurrencyCode::currencyCodeToName("CZK"),
       ki18nc("amount in units (real)", "%1 Czech korunas"),
       // Alt: koruny, korun
@@ -253,7 +253,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("DKK"),
       i18nc("DKK Danish Krone - unit synonyms for matching user input",
           "Danish krone;Danish kroner") + ";DKK;" +
-          KLocale::global()->countryCodeToName("dk") + ';' +
+          QLocale::countryToString(QLocale::Denmark) + ';' +
           KCurrencyCode::currencyCodeToName("DKK"),
       ki18nc("amount in units (real)", "%1 Danish kroner"),
       ki18ncp("amount in units (integer)", "%1 Danish krone", "%1 Danish kroner")
@@ -262,7 +262,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "EEK",
       KCurrencyCode::currencyCodeToName("EEK"),
       i18nc("EEK Estonian Kroon - unit synonyms for matching user input", "kroon;kroons;krooni") +
-          ";EEK;" + KLocale::global()->countryCodeToName("ee") + ';' +
+          ";EEK;" + QLocale::countryToString(QLocale::Estonia) + ';' +
           KCurrencyCode::currencyCodeToName("EEK"),
       ki18nc("amount in units (real)", "%1 kroons"),
       ki18ncp("amount in units (integer)", "%1 kroon", "%1 kroons") // Alt: krooni
@@ -273,7 +273,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       i18nc("GBP British Pound - unit synonyms for matching user input",
           "pound;pounds;pound sterling;pounds sterling") +
           ";GBP;" + QString::fromUtf8("£") + ';' +
-          KLocale::global()->countryCodeToName("gb") + ';' +
+          QLocale::countryToString(QLocale::UnitedKingdom) + ';' +
           KCurrencyCode::currencyCodeToName("GBP"),
       ki18nc("amount in units (real)", "%1 pounds sterling"),
       ki18ncp("amount in units (integer)", "%1 pound sterling", "%1 pounds sterling")
@@ -282,7 +282,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "HUF",
       KCurrencyCode::currencyCodeToName("HUF"),
       i18nc("HUF hungarian Forint - unit synonyms for matching user input", "forint") + ";HUF;" +
-          KLocale::global()->countryCodeToName("hu") + ';' +
+          QLocale::countryToString(QLocale::Hungary) + ';' +
           KCurrencyCode::currencyCodeToName("HUF"),
       ki18nc("amount in units (real)", "%1 forint"),
       ki18ncp("amount in units (integer)", "%1 forint", "%1 forint")
@@ -291,7 +291,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "LTL",
       KCurrencyCode::currencyCodeToName("LTL"),
       i18nc("LTL Lithuanian Litas - unit synonyms for matching user input", "litas;litai;litu") +
-          ";LTL;" + KLocale::global()->countryCodeToName("lt") + ';' +
+          ";LTL;" + QLocale::countryToString(QLocale::Lithuania) + ';' +
           KCurrencyCode::currencyCodeToName("LTL"),
       ki18nc("amount in units (real)", "%1 litas"),
       ki18ncp("amount in units (integer)", "%1 litas", "%1 litai") // Alt: litu
@@ -300,7 +300,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "LVL",
       KCurrencyCode::currencyCodeToName("LVL"),
       i18nc("LVL Latvian Lats - unit synonyms for matching user input", "lats;lati") + ";LVL;" +
-      KLocale::global()->countryCodeToName("lv") + ';' + KCurrencyCode::currencyCodeToName("LVL"),
+      QLocale::countryToString(QLocale::Latvia) + ';' + KCurrencyCode::currencyCodeToName("LVL"),
       ki18nc("amount in units (real)", "%1 lati"),
       ki18ncp("amount in units (integer)", "%1 lats", "%1 lati")
     );
@@ -308,7 +308,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "PLN",
       KCurrencyCode::currencyCodeToName("PLN"),
       i18nc("PLN Polish Zloty - unit synonyms for matching user input", "zloty;zlotys;zloties") +
-          ";PLN;" + KLocale::global()->countryCodeToName("pl") + ';' +
+          ";PLN;" + QLocale::countryToString(QLocale::Poland) + ';' +
           KCurrencyCode::currencyCodeToName("PLN"),
       ki18nc("amount in units (real)", "%1 zlotys"),
       ki18ncp("amount in units (integer)", "%1 zloty", "%1 zlotys") // Alt: zloty, zlote, zlotych
@@ -317,7 +317,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "RON",
       KCurrencyCode::currencyCodeToName("RON"),
       i18nc("RON Roumanian Leu - unit synonyms for matching user input", "leu;lei") + ";RON;" +
-          KLocale::global()->countryCodeToName("ro") + ';' +
+          QLocale::countryToString(QLocale::Romania) + ';' +
           KCurrencyCode::currencyCodeToName("RON"),
       ki18nc("amount in units (real)", "%1 lei"),
       ki18ncp("amount in units (integer)", "%1 leu", "%1 lei")
@@ -326,7 +326,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "SEK",
       KCurrencyCode::currencyCodeToName("SEK"),
       i18nc("SEK Swedish Krona - unit synonyms for matching user input", "krona;kronor") + ";SEK;" +
-          KLocale::global()->countryCodeToName("se") + ';' +
+          QLocale::countryToString(QLocale::Sweden) + ';' +
           KCurrencyCode::currencyCodeToName("SEK"),
       ki18nc("amount in units (real)", "%1 kronor"),
       ki18ncp("amount in units (integer)", "%1 krona", "%1 kronor")
@@ -335,7 +335,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "CHF",
       KCurrencyCode::currencyCodeToName("CHF"),
       i18nc("CHF Swiss Francs - unit synonyms for matching user input", "franc;francs") + ";CHF;" +
-          KLocale::global()->countryCodeToName("ch") + ';' +
+          QLocale::countryToString(QLocale::Switzerland) + ';' +
           KCurrencyCode::currencyCodeToName("CHF"),
       ki18nc("amount in units (real)", "%1 Swiss francs"),
       ki18ncp("amount in units (integer)", "%1 Swiss franc", "%1 Swiss francs")
@@ -345,7 +345,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("NOK"),
       i18nc("Norwegian Krone - unit synonyms for matching user input",
           "Norwegian krone;Norwegian kroner") + ";NOK;" +
-          KLocale::global()->countryCodeToName("no") + ';' +
+          QLocale::countryToString(QLocale::Norway) + ';' +
           KCurrencyCode::currencyCodeToName("NOK"),
       ki18nc("amount in units (real)", "%1 Norwegian kroner"),
       ki18ncp("amount in units (integer)", "%1 Norwegian krone", "%1 Norwegian kroner")
@@ -354,7 +354,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "HRK",
       KCurrencyCode::currencyCodeToName("HRK"),
       i18nc("HRK Croatian Kuna - unit synonyms for matching user input", "kuna;kune") + ";HRK;" +
-          KLocale::global()->countryCodeToName("hr") + ';' +
+          QLocale::countryToString(QLocale::Croatia) + ';' +
           KCurrencyCode::currencyCodeToName("HRK"),
       ki18nc("amount in units (real)", "%1 kune"),
       ki18ncp("amount in units (integer)", "%1 kuna", "%1 kune")
@@ -364,7 +364,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("RUB"),
       i18nc("RUB Russsian Ruble - unit synonyms for matching user input",
           "ruble;rubles;rouble;roubles") + ";RUB;" +
-          KLocale::global()->countryCodeToName("ru") + ';' +
+          QLocale::countryToString(QLocale::Russia) + ';' +
           KCurrencyCode::currencyCodeToName("RUB"),
       ki18nc("amount in units (real)", "%1 rubles"),
       ki18ncp("amount in units (integer)", "%1 ruble", "%1 rubles") //Alt: rouble/roubles
@@ -373,7 +373,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "TRY",
       KCurrencyCode::currencyCodeToName("TRY"),
       i18nc("TRY Turkish Lira - unit synonyms for matching user input", "lira") + ";TRY;" +
-          KLocale::global()->countryCodeToName("tr") + ';' +
+          QLocale::countryToString(QLocale::Turkey) + ';' +
           KCurrencyCode::currencyCodeToName("TRY"),
       ki18nc("amount in units (real)", "%1 Turkish lira"),
       ki18ncp("amount in units (integer)", "%1 Turkish lira", "%1 Turkish lira")
@@ -383,7 +383,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("AUD"),
       i18nc("AUD Australian Dollar - unit synonyms for matching user input",
           "Australian dollar;Australian dollars") + ";AUD;" +
-          KLocale::global()->countryCodeToName("au") + ';' +
+          QLocale::countryToString(QLocale::Australia) + ';' +
           KCurrencyCode::currencyCodeToName("AUD"),
       ki18nc("amount in units (real)", "%1 Australian dollars"),
       ki18ncp("amount in units (integer)", "%1 Australian dollar", "%1 Australian dollars")
@@ -392,7 +392,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "BRL",
       KCurrencyCode::currencyCodeToName("BRL"),
       i18nc("BRL Brazillian Real - unit synonyms for matching user input", "real;reais") +
-          ";BRL;" + KLocale::global()->countryCodeToName("br") + ';' +
+          ";BRL;" + QLocale::countryToString(QLocale::Brazil) + ';' +
           KCurrencyCode::currencyCodeToName("BRL"),
       ki18nc("amount in units (real)", "%1 reais"),
       ki18ncp("amount in units (integer)", "%1 real", "%1 reais")
@@ -402,7 +402,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("CAD"),
       i18nc("Canadian Dollar - unit synonyms for matching user input",
           "Canadian dollar;Canadian dollars") + ";CAD;" +
-          KLocale::global()->countryCodeToName("ca") + ';' +
+          QLocale::countryToString(QLocale::Canada) + ';' +
           KCurrencyCode::currencyCodeToName("CAD"),
       ki18nc("amount in units (real)", "%1 Canadian dollars"),
       ki18ncp("amount in units (integer)", "%1 Canadian dollar", "%1 Canadian dollars")
@@ -411,7 +411,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "CNY",
       KCurrencyCode::currencyCodeToName("CNY"),
       i18nc("Chinese Yuan - unit synonyms for matching user input", "yuan") + ";CNY;" +
-          KLocale::global()->countryCodeToName("cn") + ';' +
+          QLocale::countryToString(QLocale::China) + ';' +
           KCurrencyCode::currencyCodeToName("CNY"),
       ki18nc("amount in units (real)", "%1 yuan"),
       ki18ncp("amount in units (integer)", "%1 yuan", "%1 yuan")
@@ -421,7 +421,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("HKD"),
       i18nc("Hong Kong Dollar - unit synonyms for matching user input",
           "Hong Kong dollar;Hong Kong dollars") + ";HKD;" +
-          KLocale::global()->countryCodeToName("hk") + ';' +
+          QLocale::countryToString(QLocale::HongKong) + ';' +
           KCurrencyCode::currencyCodeToName("HKD"),
       ki18nc("amount in units (real)", "%1 Hong Kong dollars"),
       ki18ncp("amount in units (integer)", "%1 Hong Kong dollar", "%1 Hong Kong dollars")
@@ -430,7 +430,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "IDR",
       KCurrencyCode::currencyCodeToName("IDR"),
       i18nc("IDR Indonesian Rupiah - unit synonyms for matching user input", "rupiah;rupiahs") +
-          ";IDR;" + KLocale::global()->countryCodeToName("id") + ';' +
+          ";IDR;" + QLocale::countryToString(QLocale::Indonesia) + ';' +
           KCurrencyCode::currencyCodeToName("IDR"),
       ki18nc("amount in units (real)", "%1 rupiahs"),
       ki18ncp("amount in units (integer)", "%1 rupiah", "%1 rupiahs") // Alt: rupiah
@@ -439,7 +439,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "INR",
       KCurrencyCode::currencyCodeToName("INR"),
       i18nc("INR Indian Rupee - unit synonyms for matching user input", "rupee;rupees") + ";INR;" +
-          KLocale::global()->countryCodeToName("in") + ';' +
+          QLocale::countryToString(QLocale::India) + ';' +
           KCurrencyCode::currencyCodeToName("INR"),
       ki18nc("amount in units (real)", "%1 rupees"),
       ki18ncp("amount in units (integer)", "%1 rupee", "%1 rupees") // Alt: rupee
@@ -448,7 +448,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "KRW",
       KCurrencyCode::currencyCodeToName("KRW"),
       i18nc("KRW Korean Won - unit synonyms for matching user input", "won") + ";KRW;" +
-          KLocale::global()->countryCodeToName("kr") + ';' +
+          QLocale::countryToString(QLocale::SouthKorea) + ';' +
           KCurrencyCode::currencyCodeToName("KRW"),
       ki18nc("amount in units (real)", "%1 won"),
       ki18ncp("amount in units (integer)", "%1 won", "%1 won")
@@ -458,7 +458,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("MXN"),
       i18nc("MXN Mexican Peso - unit synonyms for matching user input",
           "Mexican peso;Mexican pesos") + ";MXN;" +
-          KLocale::global()->countryCodeToName("mx") + ';' +
+          QLocale::countryToString(QLocale::Mexico) + ';' +
           KCurrencyCode::currencyCodeToName("MXN"),
       ki18nc("amount in units (real)", "%1 Mexican pesos"),
       ki18ncp("amount in units (integer)", "%1 Mexican peso", "%1 Mexican pesos")
@@ -467,7 +467,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "MYR",
       KCurrencyCode::currencyCodeToName("MYR"),
       i18nc("MYR Malasian Ringgit - unit synonyms for matching user input", "ringgit;ringgits") +
-          ";MYR;" + KLocale::global()->countryCodeToName("my") + ';' +
+          ";MYR;" + QLocale::countryToString(QLocale::Malaysia) + ';' +
           KCurrencyCode::currencyCodeToName("MYR"),
       ki18nc("amount in units (real)", "%1 ringgit"),
       ki18ncp("amount in units (integer)", "%1 ringgit", "%1 ringgit") // Alt: ringgits
@@ -477,7 +477,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("NZD"),
       i18nc("NZD New Zealand Dollar - unit synonyms for matching user input",
           "New Zealand dollar;New Zealand dollars") + ";NZD;" +
-          KLocale::global()->countryCodeToName("nz") + ';' +
+          QLocale::countryToString(QLocale::NewZealand) + ';' +
           KCurrencyCode::currencyCodeToName("NZD"),
       ki18nc("amount in units (real)", "%1 New Zealand dollars"),
       ki18ncp("amount in units (integer)", "%1 New Zealand dollar", "%1 New Zealand dollars")
@@ -487,7 +487,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("PHP"),
       i18nc("PHP Philippine Peso - unit synonyms for matching user input",
           "Philippine peso;Philippine pesos") + ";PHP;" +
-          KLocale::global()->countryCodeToName("ph") + ';' +
+          QLocale::countryToString(QLocale::Philippines) + ';' +
           KCurrencyCode::currencyCodeToName("PHP"),
       ki18nc("amount in units (real)", "%1 Philippine pesos"),
       ki18ncp("amount in units (integer)", "%1 Philippine peso", "%1 Philippine pesos")
@@ -497,7 +497,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       KCurrencyCode::currencyCodeToName("SGD"),
       i18nc("SGD Singapore Dollar - unit synonyms for matching user input",
           "Singapore dollar;Singapore dollars") + ";SGD;" +
-          KLocale::global()->countryCodeToName("sg") + ';' +
+          QLocale::countryToString(QLocale::Singapore) + ';' +
           KCurrencyCode::currencyCodeToName("SGD"),
       ki18nc("amount in units (real)", "%1 Singapore dollars"),
       ki18ncp("amount in units (integer)", "%1 Singapore dollar", "%1 Singapore dollars")
@@ -506,7 +506,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "THB",
       KCurrencyCode::currencyCodeToName("THB"),
       i18nc("THB Thai Baht - unit synonyms for matching user input", "baht") + ";THB;" +
-          KLocale::global()->countryCodeToName("th") + ';' +
+          QLocale::countryToString(QLocale::Thailand) + ';' +
           KCurrencyCode::currencyCodeToName("THB"),
       ki18nc("amount in units (real)", "%1 baht"),
       ki18ncp("amount in units (integer)", "%1 baht", "%1 baht")
@@ -515,7 +515,7 @@ Currency::Currency() : UnitCategory(CurrencyCategory)
       "ZAR",
       KCurrencyCode::currencyCodeToName("ZAR"),
       i18nc("South African Rand - unit synonyms for matching user input", "rand") + ";ZAR;" +
-          KLocale::global()->countryCodeToName("za") + ';' +
+          QLocale::countryToString(QLocale::SouthAfrica) + ';' +
           KCurrencyCode::currencyCodeToName("ZAR"),
       ki18nc("amount in units (real)", "%1 rand"),
       ki18ncp("amount in units (integer)", "%1 rand", "%1 rand")

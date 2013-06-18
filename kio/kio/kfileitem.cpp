@@ -44,7 +44,6 @@
 
 #include <kfilemetainfo.h>
 #include <kiconloader.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <krun.h>
 #include <kdesktopfile.h>
@@ -1475,7 +1474,7 @@ QString KFileItem::timeString( FileTimes which ) const
     if (!d)
         return QString();
 
-    return KLocale::global()->formatDateTime( d->time(which) );
+    return d->time(which).toString();
 }
 
 #ifndef KDE_NO_DEPRECATED

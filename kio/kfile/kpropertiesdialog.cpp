@@ -64,6 +64,7 @@ extern "C" {
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QLocale>
 #include <QPushButton>
 #include <QCheckBox>
 #include <QtCore/QMutableStringListIterator>
@@ -91,7 +92,6 @@ extern "C" {
 #include <kiconbutton.h>
 #include <kurl.h>
 #include <kurlrequester.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kglobalsettings.h>
 #include <kjobuidelegate.h>
@@ -1003,7 +1003,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     if ( !hasDirs ) // Only files [and symlinks]
     {
         d->m_sizeLabel->setText(QString::fromLatin1("%1 (%2)").arg(KIO::convertSize(totalSize))
-                                .arg(KLocale::global()->formatNumber(totalSize, 0)));
+                                .arg(QLocale().toString(totalSize)));
         d->m_sizeDetermineButton = 0L;
         d->m_sizeStopButton = 0L;
     }
@@ -1048,7 +1048,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             l = new QLabel(i18n("Created:"), d->m_frame );
             grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
-            l = new QLabel(KLocale::global()->formatDateTime(dt), d->m_frame );
+            l = new QLabel(dt.toString(), d->m_frame );
             grid->addWidget(l, curRow++, 2);
         }
 
@@ -1058,7 +1058,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             l = new QLabel(i18n("Modified:"), d->m_frame );
             grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
-            l = new QLabel(KLocale::global()->formatDateTime(dt), d->m_frame );
+            l = new QLabel(dt.toString(), d->m_frame );
             grid->addWidget(l, curRow++, 2);
         }
 
@@ -1068,7 +1068,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             l = new QLabel(i18n("Accessed:"), d->m_frame );
             grid->addWidget(l, curRow, 0, Qt::AlignRight);
 
-            l = new QLabel(KLocale::global()->formatDateTime(dt), d->m_frame );
+            l = new QLabel(dt.toString(), d->m_frame );
             grid->addWidget(l, curRow++, 2);
         }
     }
@@ -1227,7 +1227,7 @@ void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
         KIO::filesize_t totalSubdirs = d->dirSizeJob->totalSubdirs();
         d->m_sizeLabel->setText( QString::fromLatin1("%1 (%2)\n%3, %4")
                                  .arg(KIO::convertSize(totalSize))
-                                 .arg(KLocale::global()->formatNumber(totalSize, 0))
+                                 .arg(QLocale().toString(totalSize))
                                  .arg(i18np("1 file","%1 files",totalFiles))
                                  .arg(i18np("1 sub-folder","%1 sub-folders",totalSubdirs)));
     }

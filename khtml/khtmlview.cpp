@@ -66,7 +66,6 @@
 #include <kcursor.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-#include <klocale.h>
 #include <knotification.h>
 #include <kdeprintdialog.h>
 #include <kconfig.h>
@@ -3092,7 +3091,7 @@ void KHTMLView::print(bool quick)
         int headerHeight = 0;
         QFont headerFont("Sans Serif", 8);
 
-        QString headerLeft = KLocale::global()->formatDate(QDate::currentDate(),KLocale::ShortDate);
+        QString headerLeft = QDate::currentDate().toString(Qt::DefaultLocaleShortDate);
         QString headerMid = docname;
         QString headerRight;
 

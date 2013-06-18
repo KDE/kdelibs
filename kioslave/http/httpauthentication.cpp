@@ -36,7 +36,6 @@
 
 #include <krandom.h>
 #include <kdebug.h>
-#include <klocale.h>
 #include <kconfiggroup.h>
 #include <kio/authinfo.h>
 #include <misc/kntlm/kntlm.h>
@@ -334,7 +333,7 @@ QString KAbstractHttpAuthentication::realm() const
 {
     const QByteArray realm = valueForKey(m_challenge, "realm");
     // TODO: Find out what this is supposed to address. The site mentioned below does not exist.
-    if (KLocale::global()->language().contains(QLatin1String("ru"))) {
+    if (QLocale().uiLanguages().contains(QLatin1String("ru"))) {
         //for sites like lib.homelinux.org
         return QTextCodec::codecForName("CP1251")->toUnicode(realm);
     }

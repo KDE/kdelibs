@@ -21,7 +21,6 @@
 #include "kdirlister.h"
 #include "kfileitem.h"
 #include <kiconloader.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kio/copyjob.h>
 #include <kio/fileundomanager.h>
@@ -34,6 +33,7 @@
 #include <QFileInfo>
 #include <QDir>
 #include <QIcon>
+#include <QLocale>
 #include <qurlpathinfo.h>
 #include <sys/types.h>
 #include <dirent.h>
@@ -665,10 +665,10 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 //
                 //return KIO::convertSize(item->size());
                 // Default to "file size in bytes" like in kde3's filedialog
-                return KLocale::global()->formatNumber(item.size(), 0);
+                return QLocale().toString(item.size());
             case ModifiedTime: {
                 QDateTime dt = item.time(KFileItem::ModificationTime);
-                return KLocale::global()->formatDateTime(dt);
+                return dt.toString();
             }
             case Permissions:
                 return item.permissionsString();

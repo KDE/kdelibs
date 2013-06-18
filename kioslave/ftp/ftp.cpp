@@ -56,7 +56,6 @@
 #include <qurlpathinfo.h>
 
 #include <kdebug.h>
-#include <klocale.h>
 #include <kio/ioslave_defaults.h>
 #include <kremoteencoding.h>
 #include <ksocketfactory.h>
@@ -171,7 +170,6 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
   QCoreApplication app(argc, argv);
   app.setApplicationName(QLatin1String("kio_ftp"));
-  ( void ) KLocale::global();
 
   kDebug(7102) << "Starting " << getpid();
 

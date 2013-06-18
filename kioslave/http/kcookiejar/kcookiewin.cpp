@@ -49,7 +49,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QUrl>
 
 #include <kwindowsystem.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kusertimestamp.h>
@@ -342,7 +341,7 @@ void KCookieDetail::displayCookieDetails()
     QDateTime cookiedate;
     cookiedate.setTime_t(cookie.expireDate());
     if (cookie.expireDate())
-        m_expires->setText(KLocale::global()->formatDateTime(cookiedate));
+        m_expires->setText(cookiedate.toString());
     else
         m_expires->setText(i18n("End of Session"));
     QString sec;

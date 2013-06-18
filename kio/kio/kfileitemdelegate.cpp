@@ -31,6 +31,7 @@
 #include <QPainter>
 #include <QCache>
 #include <QImage>
+#include <QLocale>
 #include <QPainterPath>
 #include <QTextLayout>
 #include <QListView>
@@ -992,11 +993,11 @@ QString KFileItemDelegate::Private::display(const QModelIndex &index) const
         }
 
         case QVariant::Double:
-            return KLocale::global()->formatNumber(value.toDouble());
+            return QLocale().toString(value.toDouble(), 'f');
 
         case QVariant::Int:
         case QVariant::UInt:
-            return KLocale::global()->formatLong(value.toInt());
+            return QLocale().toString(value.toInt());
 
         default:
             return QString();

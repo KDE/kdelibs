@@ -118,7 +118,6 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 {
     QCoreApplication app( argc, argv ); // needed for QSocketNotifier
     app.setApplicationName(QLatin1String("kio_http"));
-    (void) KLocale::global();
 
     if (argc != 4)
     {

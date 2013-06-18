@@ -27,13 +27,14 @@
 #include "xslt_help.h"
 
 #include <QDebug>
-#include <klocale.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
+#include <QtCore/QLocale>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextCodec>
+#include <QStandardPaths>
 #include <QTextDocument>
 #include <QUrl>
 
@@ -49,7 +50,7 @@ QString HelpProtocol::langLookup(const QString &fname)
     // assemble the local search paths
     const QStringList localDoc = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "doc/HTML", QStandardPaths::LocateDirectory);
 
-    QStringList langs = KLocale::global()->languageList();
+    QStringList langs = QLocale().uiLanguages();
     langs.append( "en" );
     langs.removeAll( "C" );
 

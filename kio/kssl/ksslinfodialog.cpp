@@ -34,7 +34,6 @@
 #include <QtCore/Q_PID>
 #include <QtNetwork/QSslCertificate>
 
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>
 
@@ -228,8 +227,8 @@ void KSslInfoDialog::displayFromChain(int i)
     d->ui.trusted->setText(trusted);
 
     QString vp = i18nc("%1 is the effective date of the certificate, %2 is the expiry date", "%1 to %2",
-                KLocale::global()->formatDateTime(cert.effectiveDate()),
-                KLocale::global()->formatDateTime(cert.expiryDate()));
+                cert.effectiveDate().toString(),
+                cert.expiryDate().toString());
     d->ui.validityPeriod->setText(vp);
 
     d->ui.serial->setText(cert.serialNumber());

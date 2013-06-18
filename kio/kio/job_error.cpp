@@ -18,7 +18,6 @@
 
 #include "job.h"
 #include <kprotocolmanager.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <qurlpathinfo.h>
 #include <QTextDocument> // Qt::escape
@@ -263,8 +262,7 @@ QStringList KIO::Job::detailedErrorStrings(const QUrl *reqUrl /*= 0*/,
     url = i18nc("@info url", "(unknown)" );
   }
 
-  datetime = KLocale::global()->formatDateTime( QDateTime::currentDateTime(),
-                                                KLocale::LongDate );
+  datetime = QDateTime::currentDateTime().toString(Qt::DefaultLocaleLongDate);
 
   ret << errorName;
   ret << i18nc( "@info %1 error name, %2 description",
@@ -325,8 +323,7 @@ KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorTex
     protocol = i18nc("@info protocol", "(unknown)" );
   }
 
-  datetime = KLocale::global()->formatDateTime( QDateTime::currentDateTime(),
-                                                KLocale::LongDate );
+  datetime = QDateTime::currentDateTime().toString(Qt::DefaultLocaleLongDate);
 
   QString errorName, techName, description;
   QStringList causes, solutions;

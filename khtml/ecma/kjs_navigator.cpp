@@ -24,7 +24,7 @@
 #include "kjs_navigator.h"
 #include "kjs_navigator.lut.h"
 
-#include <klocale.h>
+#include <QLocale>
 
 
 #include <kconfig.h>
@@ -262,7 +262,7 @@ JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
   case BrowserLanguage:
   case Language:
   case UserLanguage:
-    return jsString(KLocale::global()->language());
+    return jsString(QLocale::languageToString(QLocale().language()));
   case UserAgent:
     return jsString(userAgent);
   case Platform:
