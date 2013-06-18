@@ -27,7 +27,7 @@
 #include <QTimer>
 #include <QPointer>
 
-#include <kdebug.h>
+#include <qdebug.h>
 #include <kdeclarative.h>
 
 
@@ -82,14 +82,14 @@ void QmlObjectPrivate::errorPrint(QQmlComponent *component)
                 + error.description() + '\n';
         }
     }
-    kWarning() << component->url().toString() + '\n' + errorStr;
+    qWarning() << component->url().toString() + '\n' + errorStr;
 }
 
 void QmlObjectPrivate::execute(const QUrl &source)
 {
     if (source.isEmpty()) {
 #ifndef NDEBUG
-        kDebug() << "File name empty!";
+        qDebug() << "File name empty!";
 #endif
         return;
     }
@@ -200,7 +200,7 @@ void QmlObject::completeInitialization()
     }
 
 #ifndef NDEBUG
-    kDebug() << "Execution of QML done!";
+    qDebug() << "Execution of QML done!";
 #endif
 
     emit finished();
