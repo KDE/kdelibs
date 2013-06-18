@@ -22,7 +22,7 @@
 
 */
 
-#include "kxerrorhandler_p.h"
+#include "kxerrorhandler.h"
 #include <config-kwindowsystem.h>
 
 #if HAVE_X11 //FIXME

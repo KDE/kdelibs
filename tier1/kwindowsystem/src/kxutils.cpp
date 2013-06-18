@@ -24,7 +24,7 @@
 
 #if HAVE_X11
 
-#include <kxerrorhandler_p.h>
+#include <kxerrorhandler.h>
 #include <qbitmap.h>
 #include <qpixmap.h>
 

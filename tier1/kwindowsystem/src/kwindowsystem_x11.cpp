@@ -23,7 +23,7 @@
 
 #include <QDebug>
 #include <ksystemeventfilter_p.h>
-#include <kxerrorhandler_p.h>
+#include <kxerrorhandler.h>
 #include <kxutils_p.h>
 #include <netwm.h>
 #include <fixx11h.h>

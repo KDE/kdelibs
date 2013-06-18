@@ -28,6 +28,7 @@
 #include <QWidget>
 #include <QWidgetList>
 #include <config-kwindowsystem.h>
+#include <kwindowsystem_export.h>
 
 #if HAVE_X11
 
@@ -59,7 +60,7 @@ class KXErrorHandlerPrivate;
  * @author Lubos Lunak <l.lunak@kde.org>
  * @short Handler for X errors
  */
-class KXErrorHandler
+class KWINDOWSYSTEM_EXPORT KXErrorHandler
     {
     public:
         /**
