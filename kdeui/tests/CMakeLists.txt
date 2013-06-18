@@ -38,8 +38,6 @@ KDEUI_EXECUTABLE_TESTS(
   kcategorizedviewtest
   kcolorcollectiontest
   kcomboboxtest
-  kdatepicktest
-  kdatetabletest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
   kicondialogtest

@@ -22,7 +22,7 @@
 #ifndef KDATEPICKER_H
 #define KDATEPICKER_H
 
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 
 #include <QtCore/QDateTime>
 #include <QFrame>
@@ -52,7 +52,7 @@ class KCalendarSystem;
  *     @author Tim Gilman, Mirko Boehm
  *
  **/
-class KDEUI_EXPORT KDatePicker: public QFrame
+class KDE4ATTIC_EXPORT KDatePicker: public QFrame
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ date WRITE setDate NOTIFY dateChanged USER true )

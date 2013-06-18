@@ -5,6 +5,8 @@ set(kde4attic_SRCS
   kcharselect.cpp
   kcharselectdata.cpp
   kdatecombobox.cpp
+  kdatepicker.cpp
+  kdatetable.cpp
   kdatetimeedit.cpp
   kdatetimewidget.cpp
   kdatewidget.cpp
@@ -34,6 +36,8 @@ install(FILES
   kanimatedbutton.h
   kcharselect.h
   kdatecombobox.h
+  kdatepicker.h
+  kdatetable.h
   kdatetimeedit.h
   kdatetimewidget.h
   kdatewidget.h

@@ -116,8 +116,6 @@ set(kdeui_LIB_SRCS
  widgets/kcmodule.cpp
  widgets/kcombobox.cpp
  widgets/kcompletionbox.cpp
- widgets/kdatepicker.cpp
- widgets/kdatetable.cpp
  widgets/khelpmenu.cpp
  widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
@@ -310,11 +308,9 @@ install( FILES
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
  util/kundoactions.h
- widgets/kdatepicker.h
  widgets/kcmodule.h
  widgets/kcombobox.h
  widgets/kcompletionbox.h
- widgets/kdatetable.h
  widgets/khelpmenu.h
  widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h

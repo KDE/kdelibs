@@ -22,7 +22,7 @@
 #ifndef KDATETABLE_H
 #define KDATETABLE_H
 
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 
 #include <QValidator>
 #include <QLineEdit>
@@ -38,7 +38,7 @@ class KColorScheme;
  * Frame with popup menu behavior.
  * @author Tim Gilman, Mirko Boehm
  */
-class KDEUI_EXPORT KPopupFrame : public QFrame
+class KDE4ATTIC_EXPORT KPopupFrame : public QFrame
 {
     Q_OBJECT
 protected:
@@ -109,7 +109,7 @@ private:
 /**
 * Validates user-entered dates.
 */
-class KDEUI_EXPORT KDateValidator : public QValidator
+class KDE4ATTIC_EXPORT KDateValidator : public QValidator
 {
 public:
     KDateValidator( QWidget *parent = 0 );
@@ -136,7 +136,7 @@ private:
  * @internal
  * @author Tim Gilman, Mirko Boehm
  */
-class KDEUI_EXPORT KDateTable : public QWidget
+class KDE4ATTIC_EXPORT KDateTable : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QDate date READ date WRITE setDate )

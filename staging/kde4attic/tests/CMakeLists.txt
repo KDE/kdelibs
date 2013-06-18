@@ -14,6 +14,8 @@ endmacro()
 kde4attic_executable_tests(
   kanimatedbuttontest
   kcharselecttest
+  kdatepicktest
+  kdatetabletest
   kdatetimeedittest
   kdatetimewidgettest
   kdatewidgettest
