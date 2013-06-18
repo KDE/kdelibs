@@ -22,7 +22,7 @@
 
 
 #ifndef ALWAYS_INLINE
-#if !defined(_WIN32) && COMPILER(GCC) && defined(NDEBUG) &&  __GNUC__ > 3
+#if COMPILER(GCC) && defined(NDEBUG) &&  __GNUC__ > 3
 #define ALWAYS_INLINE inline __attribute__ ((__always_inline__))
 #elif COMPILER(MSVC) && defined(NDEBUG)
 #define ALWAYS_INLINE __forceinline
