@@ -30,6 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stdlib.h>
 #include <zlib.h>
 
+#include <QtCore/QDateTime>
 #include <QtCore/QDir>
 #include <QtCore/QString>
 #include <QtCore/QTime>
@@ -38,7 +39,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtNetwork/QLocalSocket>
 
 
-#include <kdatetime.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
@@ -87,9 +87,9 @@ struct SerializedCacheFileInfo {
 
 static QString dateString(qint64 date)
 {
-    KDateTime dt;
+    QDateTime dt;
     dt.setTime_t(date);
-    return dt.toString(KDateTime::ISODate);
+    return dt.toString(Qt::ISODate);
 }
 
 struct MiniCacheFileInfo {

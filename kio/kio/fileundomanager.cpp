@@ -22,7 +22,6 @@
 #include "fileundomanager_p.h"
 #include "fileundomanager_adaptor.h"
 
-#include <kdatetime.h>
 #include <kdirnotify.h>
 #include <kio/copyjob.h>
 #include <kio/job.h>
@@ -35,6 +34,7 @@
 #include <kjobtrackerinterface.h>
 #include <qurlpathinfo.h>
 
+#include <QDateTime>
 #include <QtDBus/QtDBus>
 
 #include <assert.h>
@@ -438,8 +438,8 @@ void FileUndoManagerPrivate::slotResult(KJob *job)
         const QDateTime mtime = QDateTime::fromMSecsSinceEpoch(1000*statJob->statResult().numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1));
         if (mtime != op.m_mtime) {
             //qDebug() << op.m_dst << " was modified after being copied!";
-            KDateTime srcTime(op.m_mtime); srcTime = srcTime.toLocalZone();
-            KDateTime destTime(mtime); destTime = destTime.toLocalZone();
+            QDateTime srcTime = op.m_mtime.toLocalTime();
+            QDateTime destTime = mtime.toLocalTime();
             if (!m_uiInterface->copiedFileWasModified(op.m_src, op.m_dst, srcTime, destTime)) {
                 stopUndo(false);
             }
@@ -762,7 +762,7 @@ void FileUndoManager::UiInterface::jobError(KIO::Job* job)
     job->ui()->showErrorMessage();
 }
 
-bool FileUndoManager::UiInterface::copiedFileWasModified(const QUrl& src, const QUrl& dest, const KDateTime& srcTime, const KDateTime& destTime)
+bool FileUndoManager::UiInterface::copiedFileWasModified(const QUrl& src, const QUrl& dest, const QDateTime& srcTime, const QDateTime& destTime)
 {
     Q_UNUSED(srcTime); // not sure it should appear in the msgbox
     // Possible improvement: only show the time if date is today

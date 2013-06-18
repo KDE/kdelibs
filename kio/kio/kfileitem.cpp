@@ -112,7 +112,7 @@ public:
 
     QString localPath() const;
     KIO::filesize_t size() const;
-    KDateTime time( KFileItem::FileTimes which ) const;
+    QDateTime time( KFileItem::FileTimes which ) const;
     void setTime(KFileItem::FileTimes which, const QDateTime &val) const;
     bool cmp( const KFileItemPrivate & item ) const;
     QString user() const;
@@ -211,7 +211,7 @@ public:
     mutable KFileMetaInfo m_metaInfo;
 
     enum { NumFlags = KFileItem::CreationTime + 1 };
-    mutable KDateTime m_time[3];
+    mutable QDateTime m_time[3];
 };
 
 
@@ -364,10 +364,10 @@ KIO::filesize_t KFileItemPrivate::size() const
 
 void KFileItemPrivate::setTime(KFileItem::FileTimes mappedWhich, const QDateTime &val) const
 {
-    m_time[mappedWhich] = KDateTime(val).toLocalZone(); // #160979
+    m_time[mappedWhich] = val.toLocalTime(); // #160979
 }
 
-KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
+QDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
 {
     if ( !m_time[mappedWhich].isNull() )
         return m_time[mappedWhich];
@@ -398,7 +398,7 @@ KDateTime KFileItemPrivate::time( KFileItem::FileTimes mappedWhich ) const
         setTime(KFileItem::CreationTime, info.created());
         return m_time[mappedWhich];
     }
-    return KDateTime();
+    return QDateTime();
 }
 
 inline //because it is used only in one place
@@ -709,10 +709,10 @@ KACL KFileItem::defaultACL() const
         return KACL();
 }
 
-KDateTime KFileItem::time( FileTimes which ) const
+QDateTime KFileItem::time( FileTimes which ) const
 {
     if (!d)
-        return KDateTime();
+        return QDateTime();
 
     return d->time(which);
 }

@@ -1042,7 +1042,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
 
     if (!d->bMultiple) // Dates for multiple don't make much sense...
     {
-        KDateTime dt = item.time(KFileItem::CreationTime);
+        QDateTime dt = item.time(KFileItem::CreationTime);
         if ( !dt.isNull() )
         {
             l = new QLabel(i18n("Created:"), d->m_frame );

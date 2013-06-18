@@ -25,12 +25,12 @@
 #include <kio/global.h>
 #include <kio/kacl.h>
 #include <kio/udsentry.h>
+#include <QDateTime>
 #include <QUrl>
 #include <QFile>
 
 #include <qmimetype.h>
 #include <kfilemetainfo.h>
-#include <kdatetime.h>
 #include <QtCore/QList>
 
 class KFileItemPrivate;
@@ -321,10 +321,10 @@ public:
     /**
      * Requests the modification, access or creation time, depending on @p which.
      * @param which the timestamp
-     * @return the time asked for, KDateTime() if not available
+     * @return the time asked for, QDateTime() if not available
      * @see timeString()
      */
-    KDateTime time( FileTimes which ) const;
+    QDateTime time( FileTimes which ) const;
 
     /**
      * Requests the modification, access or creation time as a string, depending

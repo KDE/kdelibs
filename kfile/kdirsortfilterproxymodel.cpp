@@ -22,7 +22,6 @@
 
 #include "kdirsortfilterproxymodel.h"
 
-#include <kdatetime.h>
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <kglobalsettings.h>
@@ -233,8 +232,8 @@ bool KDirSortFilterProxyModel::subSortLessThan(const QModelIndex& left,
     }
 
     case KDirModel::ModifiedTime: {
-        KDateTime leftModifiedTime = leftFileItem.time(KFileItem::ModificationTime).toLocalZone();
-        KDateTime rightModifiedTime = rightFileItem.time(KFileItem::ModificationTime).toLocalZone();
+        QDateTime leftModifiedTime = leftFileItem.time(KFileItem::ModificationTime).toLocalTime();
+        QDateTime rightModifiedTime = rightFileItem.time(KFileItem::ModificationTime).toLocalTime();
 
         if (leftModifiedTime == rightModifiedTime) {
             return d->compare(leftFileItem.text(), rightFileItem.text(), sortCaseSensitivity()) < 0;

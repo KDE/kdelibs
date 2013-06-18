@@ -25,7 +25,7 @@
 
 #include <kio/kio_export.h>
 
-class KDateTime;
+class QDateTime;
 
 namespace KIO
 {
@@ -101,7 +101,7 @@ public:
          * Note that this is called after confirmDeletion.
          * Return true if we should proceed with deleting dest.
          */
-        virtual bool copiedFileWasModified(const QUrl& src, const QUrl& dest, const KDateTime& srcTime, const KDateTime& destTime);
+        virtual bool copiedFileWasModified(const QUrl& src, const QUrl& dest, const QDateTime& srcTime, const QDateTime& destTime);
 
         /**
          * \internal, for future extensions

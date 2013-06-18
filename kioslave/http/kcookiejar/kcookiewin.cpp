@@ -37,6 +37,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "kcookiewin.h"
 #include "kcookiejar.h"
 
+#include <QDateTime>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
@@ -51,7 +52,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
-#include <kdatetime.h>
 #include <kusertimestamp.h>
 
 enum {
@@ -339,7 +339,7 @@ void KCookieDetail::displayCookieDetails()
     else
         m_domain->setText(cookie.domain());
     m_path->setText(cookie.path());
-    KDateTime cookiedate;
+    QDateTime cookiedate;
     cookiedate.setTime_t(cookie.expireDate());
     if (cookie.expireDate())
         m_expires->setText(KLocale::global()->formatDateTime(cookiedate));

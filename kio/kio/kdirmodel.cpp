@@ -20,7 +20,6 @@
 #include "kdirmodel.h"
 #include "kdirlister.h"
 #include "kfileitem.h"
-#include <kdatetime.h>
 #include <kiconloader.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
@@ -668,7 +667,7 @@ QVariant KDirModel::data( const QModelIndex & index, int role ) const
                 // Default to "file size in bytes" like in kde3's filedialog
                 return KLocale::global()->formatNumber(item.size(), 0);
             case ModifiedTime: {
-                KDateTime dt = item.time(KFileItem::ModificationTime);
+                QDateTime dt = item.time(KFileItem::ModificationTime);
                 return KLocale::global()->formatDateTime(dt);
             }
             case Permissions:

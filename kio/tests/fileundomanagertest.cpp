@@ -21,6 +21,7 @@
 
 #include "fileundomanagertest.h"
 #include <QSignalSpy>
+#include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
 #include <kio/fileundomanager.h>
@@ -30,7 +31,6 @@
 #include <kio/deletejob.h>
 #include <kio/netaccess.h>
 #include <kprotocolinfo.h>
-#include <kdatetime.h>
 
 #include <kde_file.h>
 #include <kdebug.h>
@@ -134,7 +134,7 @@ public:
     virtual void jobError( KIO::Job* job ) {
         kFatal() << job->errorString() ;
     }
-    virtual bool copiedFileWasModified( const QUrl& src, const QUrl& dest, const KDateTime& srcTime, const KDateTime& destTime ) {
+    virtual bool copiedFileWasModified( const QUrl& src, const QUrl& dest, const QDateTime& srcTime, const QDateTime& destTime ) {
         Q_UNUSED( src );
         m_dest = dest;
         Q_UNUSED( srcTime );

@@ -21,6 +21,7 @@
 #include "kcupsoptionsjobwidget_p.h"
 
 #include <QCheckBox>
+#include <QDateTime>
 #include <QLabel>
 #include <QLayout>
 #include <QTime>
@@ -34,7 +35,6 @@
 #include <kglobalsettings.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
-#include <kdatetime.h>
 //#include <kdebug.h>
 
 /** @internal */
@@ -67,11 +67,11 @@ void KCupsOptionsJobWidget::setupCupsOptions( QStringList &cupsOptions )
         case ThirdShift   : setCupsOption( cupsOptions, "job-hold-until", "third-shift"  ); break;
         case Weekend      : setCupsOption( cupsOptions, "job-hold-until", "weekend"      ); break;
         case SpecificTime : //CUPS expects the time in UTC, user has entered in local time, so get the UTS equivalent
-                            KDateTime localDateTime = KDateTime::currentLocalDateTime();
+                            QDateTime localDateTime = QDateTime::currentDateTime();
                             //Check if time is for tomorrow in case of DST change overnight
                             if ( jobHoldTime() < localDateTime.time() ) localDateTime.addDays(1);
                             localDateTime.setTime( jobHoldTime() );
-                            setCupsOption( cupsOptions, "job-hold-until", localDateTime.toUtc().time().toString("HH:mm") );
+                            setCupsOption( cupsOptions, "job-hold-until", localDateTime.toUTC().time().toString("HH:mm") );
                             break;
     }
 
