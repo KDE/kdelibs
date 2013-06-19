@@ -22,7 +22,6 @@
 #include <kfileitem.h>
 #include <kfilemetadatareader_p.h>
 #include "knfotranslator_p.h"
-#include <klocale.h>
 
 #include <kurl.h>
 
@@ -45,6 +44,7 @@
 
 #include <QEvent>
 #include <QLabel>
+#include <QLocale>
 
 // Required includes for subDirectoriesCount():
 #ifdef Q_OS_WIN
@@ -188,6 +188,30 @@ KFileMetaDataProvider::Private::~Private()
 #endif
 }
 
+QString _k_fancyFormatDateTime(const QDateTime &dateTime)
+{
+    QString dateStr;
+
+    // Only do Fancy if less than an hour into the future or less than a week in the past
+    if ((daysTo == 0 && secsTo > 3600) ||  daysTo < 0 || daysTo > 6) {
+        dateStr = dateTime.date().toString(Qt::DefaultLocaleLongDate);
+    } else {
+        switch (daysTo) {
+        case 0:
+            dateStr = i18n("Today");
+            break;
+        case 1:
+            dateStr = i18n("Yesterday");
+            break;
+        default:
+            dateStr = QLocale().dayName(dateTime.date().dayOfWeek());
+        }
+    }
+
+    return i18nc("concatenation of dates and time", "%1 %2", dateStr,
+                 dateTime.time().toString(Qt::DefaultLocaleShortDate));
+}
+
 void KFileMetaDataProvider::Private::slotLoadingFinished()
 {
 #if ! KIO_NO_NEPOMUK
@@ -227,7 +251,7 @@ void KFileMetaDataProvider::Private::slotLoadingFinished()
             m_data.insert(QUrl("kfileitem#size"), KIO::convertSize(item.size()));
         }
         m_data.insert(QUrl("kfileitem#type"), item.mimeComment());
-        m_data.insert(QUrl("kfileitem#modified"), KLocale::global()->formatDateTime(item.time(KFileItem::ModificationTime), KLocale::FancyLongDate));
+        m_data.insert(QUrl("kfileitem#modified"), _k_fancyFormatDateTime(item.time(KFileItem::ModificationTime)));
         m_data.insert(QUrl("kfileitem#owner"), item.user());
         m_data.insert(QUrl("kfileitem#permissions"), item.permissionsString());
     } else if (m_fileItems.count() > 1) {
