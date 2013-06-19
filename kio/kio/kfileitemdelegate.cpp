@@ -38,7 +38,6 @@
 #include <qmath.h>
 #include <qmimedatabase.h>
 
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
@@ -220,7 +219,7 @@ QString KFileItemDelegate::Private::itemSize(const QModelIndex &index, const KFi
 {
     // Return a formatted string containing the file size, if the item is a file
     if (item.isFile())
-        return KLocale::global()->formatByteSize(item.size());
+        return KIO::convertSize(item.size());
 
     // Return the number of items in the directory
     const QVariant value = index.data(KDirModel::ChildCountRole);
