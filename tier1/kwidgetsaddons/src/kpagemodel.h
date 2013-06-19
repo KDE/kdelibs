@@ -22,7 +22,7 @@
 #ifndef KPAGEMODEL_H
 #define KPAGEMODEL_H
 
-#include <kwidgets_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QtCore/QAbstractItemModel>
 
@@ -53,7 +53,7 @@ class KPageModelPrivate;
  *  @see KPageView
  *  @author Tobias Koenig <tokoe@kde.org>
  */
-class KWIDGETS_EXPORT KPageModel : public QAbstractItemModel
+class KWIDGETSADDONS_EXPORT KPageModel : public QAbstractItemModel
 {
   Q_OBJECT
     Q_DECLARE_PRIVATE(KPageModel)

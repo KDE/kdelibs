@@ -22,7 +22,7 @@
 #ifndef KPAGEVIEW_H
 #define KPAGEVIEW_H
 
-#include <kwidgets_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QWidget>
 
@@ -57,7 +57,7 @@ class QAbstractItemModel;
  *
  * @author Tobias Koenig (tokoe@kde.org)
  */
-class KWIDGETS_EXPORT KPageView : public QWidget
+class KWIDGETSADDONS_EXPORT KPageView : public QWidget
 {
   Q_OBJECT
   Q_ENUMS( FaceType )

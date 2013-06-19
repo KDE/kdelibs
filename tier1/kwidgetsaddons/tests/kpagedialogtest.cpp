@@ -33,19 +33,19 @@ KPageDialogTest::KPageDialogTest( QWidget *parent )
   QWidget *page = new QWidget( this );
   QHBoxLayout *layout = new QHBoxLayout( page );
 
-  QLabel *label = new QLabel( "first page" );
+  QLabel *label = new QLabel( QStringLiteral("first page") );
   layout->addWidget( label );
 
-  addPage( page, "First" );
+  addPage( page, QStringLiteral("First") );
 
   page = new QWidget( this );
   layout = new QHBoxLayout( page );
 
-  label = new QLabel( "second page" );
+  label = new QLabel( QStringLiteral("second page") );
   label->setMinimumSize( 300, 200 );
   layout->addWidget( label );
 
-  addPage( page, "Second" );
+  addPage( page, QStringLiteral("Second") );
 }
 
 KPageDialogTest::~KPageDialogTest()
@@ -54,7 +54,7 @@ KPageDialogTest::~KPageDialogTest()
 
 int main( int argc, char **argv )
 {
-  QApplication::setApplicationName("KPageDialogTest");
+  QApplication::setApplicationName(QStringLiteral("KPageDialogTest"));
 
   QApplication app(argc, argv);
 

@@ -47,7 +47,7 @@ class QWidget;
  *
  * @author Tobias Koenig (tokoe@kde.org)
  */
-class KWIDGETS_EXPORT KPageWidgetItem : public QObject
+class KWIDGETSADDONS_EXPORT KPageWidgetItem : public QObject
 {
   Q_OBJECT
   Q_PROPERTY( QString name READ name WRITE setName )
@@ -185,7 +185,7 @@ class KPageWidgetModelPrivate;
  * This page model is used by @see KPageWidget to provide
  * a hierarchical layout of pages.
  */
-class KWIDGETS_EXPORT KPageWidgetModel : public KPageModel
+class KWIDGETSADDONS_EXPORT KPageWidgetModel : public KPageModel
 {
   Q_OBJECT
     Q_DECLARE_PRIVATE(KPageWidgetModel)

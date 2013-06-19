@@ -42,57 +42,57 @@ KPageWidgetTest::KPageWidgetTest( QWidget *parent )
            this, SLOT(pageToggled(KPageWidgetItem*,bool)) );
 
   int rowCount = 0;
-  QPushButton *button = new QPushButton( "Auto", this );
+  QPushButton *button = new QPushButton( QStringLiteral("Auto"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(setAutoFace()) );
   rowCount++;
 
-  button = new QPushButton( "Plain", this );
+  button = new QPushButton( QStringLiteral( "Plain"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(setPlainFace()) );
   rowCount++;
 
-  button = new QPushButton( "List", this );
+  button = new QPushButton( QStringLiteral( "List"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(setListFace()) );
   rowCount++;
 
-  button = new QPushButton( "Tree", this );
+  button = new QPushButton( QStringLiteral( "Tree"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(setTreeFace()) );
   rowCount++;
 
-  button = new QPushButton( "Tabbed", this );
+  button = new QPushButton( QStringLiteral( "Tabbed"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(setTabbedFace()) );
   rowCount++;
 
-  button = new QPushButton( "Add Page", this );
+  button = new QPushButton( QStringLiteral( "Add Page"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(addPage()) );
   rowCount++;
 
-  button = new QPushButton( "Add Sub Page", this );
+  button = new QPushButton( QStringLiteral( "Add Sub Page"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(addSubPage()) );
   rowCount++;
 
-  button = new QPushButton( "Insert Page", this );
+  button = new QPushButton( QStringLiteral( "Insert Page"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(insertPage()) );
   rowCount++;
 
-  button = new QPushButton( "Delete Page", this );
+  button = new QPushButton( QStringLiteral( "Delete Page"), this );
   layout->addWidget( button, rowCount, 1 );
   connect( button, SIGNAL(clicked()), this, SLOT(deletePage()) );
   rowCount++;
 
-  KPageWidgetItem *item = mWidget->addPage( new QPushButton( "folder" ), "folder" );
-  item->setIcon( QIcon::fromTheme( "folder" ) );
-  item = mWidget->addSubPage( item, new QPushButton( "subfolder" ), "subfolder" );
-  item->setIcon( QIcon::fromTheme( "folder" ) );
-  item = mWidget->addPage( new QLabel( "second folder" ), "second folder" );
-  item->setIcon( QIcon::fromTheme( "folder" ) );
+  KPageWidgetItem *item = mWidget->addPage( new QPushButton( QStringLiteral( "folder" )), QStringLiteral("folder") );
+  item->setIcon( QIcon::fromTheme( QStringLiteral("folder") ) );
+  item = mWidget->addSubPage( item, new QPushButton( QStringLiteral( "subfolder" ) ), QStringLiteral("subfolder") );
+  item->setIcon( QIcon::fromTheme( QStringLiteral("folder") ) );
+  item = mWidget->addPage( new QLabel( QStringLiteral("second folder") ), QStringLiteral("second folder") );
+  item->setIcon( QIcon::fromTheme( QStringLiteral("folder") ) );
 }
 
 KPageWidgetTest::~KPageWidgetTest()
@@ -128,10 +128,10 @@ void KPageWidgetTest::addPage()
 {
   static int counter = 0;
 
-  const QString title = QString( "dynamic folder %1" ).arg( QString::number( counter ) );
+  const QString title = QString( QStringLiteral( "dynamic folder %1") ).arg( QString::number( counter ) );
   KPageWidgetItem *item = mWidget->addPage( new QPushButton( title ) , title );
-  item->setIcon( QIcon::fromTheme( "folder" ) );
-  item->setHeader( QString( "Header Test No. %1" ).arg( QString::number( counter ) ) );
+  item->setIcon( QIcon::fromTheme( QStringLiteral("folder") ) );
+  item->setHeader( QString( QStringLiteral( "Header Test No. %1") ).arg( QString::number( counter ) ) );
   item->setCheckable( true );
 
   counter++;
@@ -145,9 +145,9 @@ void KPageWidgetTest::addSubPage()
   if ( !item )
     return;
 
-  const QString title = QString( "subfolder %1" ).arg( QString::number( counter ) );
+  const QString title = QString( QStringLiteral( "subfolder %1") ).arg( QString::number( counter ) );
   item = mWidget->addSubPage( item, new QLabel( title ) , title );
-  item->setIcon( QIcon::fromTheme( "folder" ) );
+  item->setIcon( QIcon::fromTheme( QStringLiteral( "folder" ) ) );
 
   counter++;
 }
@@ -160,9 +160,9 @@ void KPageWidgetTest::insertPage()
   if ( !item )
     return;
 
-  const QString title = QString( "before folder %1" ).arg( QString::number( counter ) );
+  const QString title = QString( QStringLiteral( "before folder %1") ).arg( QString::number( counter ) );
   item = mWidget->insertPage( item, new QLabel( title ) , title );
-  item->setIcon( QIcon::fromTheme( "folder" ) );
+  item->setIcon( QIcon::fromTheme( QStringLiteral( "folder" ) ) );
 
   counter++;
 }
@@ -194,7 +194,7 @@ void KPageWidgetTest::pageToggled( KPageWidgetItem *item, bool checked )
 
 int main( int argc, char **argv )
 {
-  QApplication::setApplicationName("KPageWidgetTest");
+  QApplication::setApplicationName( QStringLiteral("KPageWidgetTest") );
 
   QApplication app(argc, argv);
 

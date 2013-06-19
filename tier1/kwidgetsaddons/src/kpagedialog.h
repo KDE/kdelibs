@@ -63,7 +63,7 @@ class KPageDialogPrivate;
  *
  * @author Tobias Koenig (tokoe@kde.org)
  */
-class KWIDGETS_EXPORT KPageDialog : public QDialog
+class KWIDGETSADDONS_EXPORT KPageDialog : public QDialog
 {
   Q_OBJECT
     Q_DECLARE_PRIVATE(KPageDialog)

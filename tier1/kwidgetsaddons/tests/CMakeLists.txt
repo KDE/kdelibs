@@ -25,4 +25,6 @@ kwidgetsaddons_executable_tests(
   kpixmapregionselectordialogtest
   kpassivepopuptest
   ktoolbarlabelactiontest
+  kpagedialogtest
+  kpagewidgettest
 )

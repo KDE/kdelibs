@@ -31,6 +31,12 @@ set(kwidgetsaddons_SRCS
   kactionmenu.cpp
   ktoolbarlabelaction.cpp
   ktoolbarpopupaction.cpp
+  kpagedialog.cpp
+  kpagemodel.cpp
+  kpageview.cpp
+  kpageview_p.cpp
+  kpagewidget.cpp
+  kpagewidgetmodel.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -78,6 +84,12 @@ install(FILES
   kactionmenu.h
   ktoolbarlabelaction.h
   ktoolbarpopupaction.h
+  kpagedialog.h
+  kpagedialog_p.h
+  kpagemodel.h
+  kpageview.h
+  kpagewidget.h
+  kpagewidgetmodel.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
