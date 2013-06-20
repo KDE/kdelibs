@@ -21,14 +21,9 @@
 #include "khelpclient.h"
 
 #include "kdesktopfile.h"
-#include <ktoolinvocation.h>
-#include <klocalizedstring.h>
 
-#include <QApplication>
-#include <QDBusInterface>
-#include <QDBusConnectionInterface>
+#include <QCoreApplication>
 #include <QUrl>
-#include <QMessageBox>
 #include <QDirIterator>
 #include <QDesktopServices>
 
@@ -76,33 +71,7 @@ void KHelpClient::invokeHelp(const QString& anchor,
         url.addQueryItem(QString::fromLatin1("anchor"), anchor);
     }
 
-    // launch a browser for URIs not handled by khelpcenter
-    // (following KCMultiDialog::slotHelpClicked())
-    if (!(url.scheme() == QLatin1String("help") || url.scheme() == QLatin1String("man") || url.scheme() == QLatin1String("info"))) {
-        QDesktopServices::openUrl(url);
-        return;
-    }
-
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QLatin1String("org.kde.khelpcenter"))) {
-        QString error;
-#ifdef Q_OS_WIN
-        // startServiceByDesktopName() does not work yet; KRun:processDesktopExec returned 'KRun: syntax error in command "khelpcenter %u" , service "KHelpCenter" '
-        if (KToolInvocation::kdeinitExec(QLatin1String("khelpcenter"), QStringList() << url.toString(), &error, 0, startup_id))
-#else
-            if (KToolInvocation::startServiceByDesktopName(QLatin1String("khelpcenter"), url.toString(), &error, 0, 0, startup_id, false))
-#endif
-            {
-                QMessageBox::warning(QApplication::activeWindow(),
-                                     i18n("Could not Launch Help Center"),
-                                     i18n("Could not launch the KDE Help Center:\n\n%1", error));
-                return;
-            }
-    }
-    QDBusInterface iface(QLatin1String("org.kde.khelpcenter"),
-                         QLatin1String("/KHelpCenter"),
-                         QLatin1String("org.kde.khelpcenter.khelpcenter"),
-                         QDBusConnection::sessionBus());
-
-    iface.call(QString::fromLatin1("openUrl"), url.toString(), startup_id );
+    // launch khelpcenter, or a browser for URIs not handled by khelpcenter
+    QDesktopServices::openUrl(url);
 }
 
