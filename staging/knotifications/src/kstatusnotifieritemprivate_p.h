@@ -167,6 +167,8 @@ public:
     // if a system tray icon is still present.
     QEventLoopLocker eventLoopLocker;
 
+    static const int s_legacyTrayIconSize;
+
     bool hasQuit : 1;
     bool onAllDesktops : 1;
     bool standardActionsEnabled : 1;

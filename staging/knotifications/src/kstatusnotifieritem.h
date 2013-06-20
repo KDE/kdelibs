@@ -196,7 +196,7 @@ public:
     /**
      * Sets a new main icon for the system tray
      *
-     * @param name it must be a KIconLoader compatible name, this is
+     * @param name it must be a QIcon::fromTheme compatible name, this is
      * the preferred way to set an icon
      */
     void setIconByName(const QString &name);
@@ -252,7 +252,7 @@ public:
      * wants to request attention (usually the systemtray
      * will blink between this icon and the main one)
      *
-     * @param name KIconLoader-compatible name of icon to use
+     * @param name QIcon::fromTheme compatible name of icon to use
      */
     void setAttentionIconByName(const QString &name);
 
@@ -294,7 +294,7 @@ public:
      * Sets a new toolTip or this icon, a toolTip is composed of an icon,
      * a title ad a text, all fields are optional.
      *
-     * @param iconName a KIconLoader compatible name for the tootip icon
+     * @param iconName a QIcon::fromTheme compatible name for the tootip icon
      * @param title tootip title
      * @param subTitle subtitle for the toolTip
      */

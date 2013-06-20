@@ -93,10 +93,9 @@ int main(int argc, char **argv)
 
         tray->setTitle("DBus System tray test");
         tray->setIconByName(parser->argument("active-icon"));
-        //tray->setImage(QIcon::fromTheme("konqueror"));
+        //tray->setIconByPixmap(QIcon::fromTheme("konqueror"));
         //tray->setAttentionIconByName("kmail");
         tray->setOverlayIconByName("emblem-important");
-        //tray->setAttentionMovieByName(KIconLoader::global()->moviePath( QLatin1String( "newmessage" ), KIconLoader::Panel ));
 
         tray->setToolTipIconByName("konqueror");
         tray->setToolTipTitle("DBus System tray test");

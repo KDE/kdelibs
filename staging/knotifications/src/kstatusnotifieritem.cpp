@@ -48,19 +48,7 @@ static const char s_statusNotifierWatcherServiceName[] = "org.kde.StatusNotifier
 
 #include "statusnotifieritemadaptor.h"
 
-// HACK duplicated from kiconloader.h TODO ?
-enum StdSizes {
-        /// small icons for menu entries
-        SizeSmall=16,
-        /// slightly larger small icons for toolbars, panels, etc
-        SizeSmallMedium=22,
-        /// medium sized icons for the desktop
-        SizeMedium=32,
-        /// large sized icons for the panel
-        SizeLarge=48,
-        /// huge sized icons for iconviews
-        SizeHuge=64
-};
+const int KStatusNotifierItemPrivate::s_legacyTrayIconSize = 24;
 
 /**
  * Specialization to provide access to KDE icon names
@@ -229,9 +217,9 @@ void KStatusNotifierItem::setOverlayIconByName(const QString &name)
     d->overlayIconName = name;
     emit d->statusNotifierItemDBus->NewOverlayIcon();
     if (d->systemTrayIcon) {
-        QPixmap iconPixmap = QIcon::fromTheme(d->iconName).pixmap(SizeSmallMedium, SizeSmallMedium);
+        QPixmap iconPixmap = QIcon::fromTheme(d->iconName).pixmap(d->s_legacyTrayIconSize, d->s_legacyTrayIconSize);
         if (!name.isEmpty()) {
-            QPixmap overlayPixmap = QIcon::fromTheme(d->overlayIconName).pixmap(SizeSmallMedium/2, SizeSmallMedium/2);
+            QPixmap overlayPixmap = QIcon::fromTheme(d->overlayIconName).pixmap(d->s_legacyTrayIconSize/2, d->s_legacyTrayIconSize/2);
             QPainter p(&iconPixmap);
             p.drawPixmap(iconPixmap.width()-overlayPixmap.width(), iconPixmap.height()-overlayPixmap.height(), overlayPixmap);
             p.end();
@@ -257,8 +245,8 @@ void KStatusNotifierItem::setOverlayIconByPixmap(const QIcon &icon)
 
     d->overlayIcon = icon;
     if (d->systemTrayIcon) {
-        QPixmap iconPixmap = d->icon.pixmap(SizeSmallMedium, SizeSmallMedium);
-        QPixmap overlayPixmap = d->overlayIcon.pixmap(SizeSmallMedium/2, SizeSmallMedium/2);
+        QPixmap iconPixmap = d->icon.pixmap(d->s_legacyTrayIconSize, d->s_legacyTrayIconSize);
+        QPixmap overlayPixmap = d->overlayIcon.pixmap(d->s_legacyTrayIconSize/2, d->s_legacyTrayIconSize/2);
 
         QPainter p(&iconPixmap);
         p.drawPixmap(iconPixmap.width()-overlayPixmap.width(), iconPixmap.height()-overlayPixmap.height(), overlayPixmap);
@@ -1039,20 +1027,10 @@ KDbusImageVector KStatusNotifierItemPrivate::iconToVector(const QIcon &icon)
 
     QPixmap iconPixmap;
 
-    //availableSizes() won't work on KDE::icon
-    QList<QSize> allSizes;
-    allSizes << QSize(SizeSmall, SizeSmall)
-             << QSize(SizeSmallMedium, SizeSmallMedium)
-             << QSize(SizeMedium, SizeMedium)
-             << QSize(SizeLarge, SizeLarge);
-
     //if an icon exactly that size wasn't found don't add it to the vector
-    foreach (const QSize &size, allSizes) {
-        //hopefully huge and enormous not necessary right now, since it's quite costly
-        if (size.width() <= SizeLarge) {
-            iconPixmap = icon.pixmap(size);
-            iconVector.append(imageToStruct(iconPixmap.toImage()));
-        }
+    foreach (const QSize &size, icon.availableSizes()) {
+        iconPixmap = icon.pixmap(size);
+        iconVector.append(imageToStruct(iconPixmap.toImage()));
     }
 
     return iconVector;
