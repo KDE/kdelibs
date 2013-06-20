@@ -19,7 +19,7 @@
 #ifndef KCMDLINEARGS_H
 #define KCMDLINEARGS_H
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 #include <klocalizedstring.h>
 
 template <class T> class QList;
@@ -43,7 +43,7 @@ class KCmdLineOptionsPrivate;
  *
  * @see KCmdLineArgs for additional usage information
  */
-class KDECORE_EXPORT KCmdLineOptions
+class KDE4SUPPORT_DEPRECATED_EXPORT KCmdLineOptions
 {
     friend class KCmdLineArgs;
     friend class KCmdLineArgsStatic;
@@ -276,7 +276,7 @@ class K4AboutData;
  *  @author Waldo Bastian
  *  @version 0.0.4
  */
-class KDECORE_EXPORT KCmdLineArgs
+class KDE4SUPPORT_DEPRECATED_EXPORT KCmdLineArgs
 {
   friend class KApplication;
   friend class KCmdLineArgsList;

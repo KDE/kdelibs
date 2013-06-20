@@ -45,7 +45,7 @@ class KRestrictedLinePrivate;
  *
  * @author Michael Wiedmann <mw@miwie.in-berlin.de>
  */
-class KDE4SUPPORT_EXPORT KRestrictedLine : public KLineEdit
+class KDE4SUPPORT_DEPRECATED_EXPORT KRestrictedLine : public KLineEdit
 {
   Q_OBJECT
   Q_PROPERTY( QString validChars READ validChars WRITE setValidChars )

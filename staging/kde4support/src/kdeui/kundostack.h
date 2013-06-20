@@ -20,7 +20,7 @@
 #ifndef KUNDOSTACK_H
 #define KUNDOSTACK_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QUndoStack>
 
@@ -30,7 +30,7 @@ class KActionCollection;
  * Extends QUndoStack with functions that creates actions with KDE's default icons and shortcuts.
  * See QUndoStack for more information.
  */
-class KDEUI_EXPORT KUndoStack : public QUndoStack
+class KDE4SUPPORT_DEPRECATED_EXPORT KUndoStack : public QUndoStack
 {
     Q_OBJECT
     public:

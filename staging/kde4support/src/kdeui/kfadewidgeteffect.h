@@ -45,7 +45,7 @@ class KFadeWidgetEffectPrivate;
  * \author Matthias Kretz <kretz@kde.org>
  * \since 4.1
  */
-class KDE4SUPPORT_EXPORT KFadeWidgetEffect : public QWidget
+class KDE4SUPPORT_DEPRECATED_EXPORT KFadeWidgetEffect : public QWidget
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KFadeWidgetEffect)

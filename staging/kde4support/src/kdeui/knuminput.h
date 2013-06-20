@@ -42,7 +42,7 @@ class KLocalizedString;
  * for a different variable type
  *
  */
-class KDE4SUPPORT_EXPORT KNumInput : public QWidget
+class KDE4SUPPORT_DEPRECATED_EXPORT KNumInput : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QString label READ label WRITE setLabel )
@@ -173,7 +173,7 @@ private:
  * \image html kintnuminput.png "KDE Int Number Input Spinbox"
  */
 
-class KDE4SUPPORT_EXPORT KIntNumInput : public KNumInput
+class KDE4SUPPORT_DEPRECATED_EXPORT KIntNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( int value READ value WRITE setValue NOTIFY valueChanged USER true )
@@ -453,7 +453,7 @@ class KDoubleLine;
  * @see KIntNumInput
  */
 
-class KDE4SUPPORT_EXPORT KDoubleNumInput : public KNumInput
+class KDE4SUPPORT_DEPRECATED_EXPORT KDoubleNumInput : public KNumInput
 {
     Q_OBJECT
     Q_PROPERTY( double value READ value WRITE setValue NOTIFY valueChanged USER true )
@@ -722,7 +722,7 @@ private:
  *
  * \image html kintspinbox.png "KDE Integer Input Spinboxes with hexadecimal and binary input"
  */
-class KDE4SUPPORT_EXPORT KIntSpinBox : public QSpinBox
+class KDE4SUPPORT_DEPRECATED_EXPORT KIntSpinBox : public QSpinBox
 {
     Q_OBJECT
     Q_PROPERTY( int base READ base WRITE setBase )

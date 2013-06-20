@@ -43,7 +43,7 @@ class QMenu;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDE4SUPPORT_EXPORT KPushButton : public QPushButton
+class KDE4SUPPORT_DEPRECATED_EXPORT KPushButton : public QPushButton
 {
     Q_OBJECT
     Q_PROPERTY(bool isDragEnabled READ isDragEnabled WRITE setDragEnabled)

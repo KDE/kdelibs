@@ -54,7 +54,7 @@ class QStringList;
  *
  * @author Preston Brown <pbrown@kde.org>, Bernd Wuebben <wuebben@kde.org>
  */
-class KDE4SUPPORT_EXPORT KFontDialog : public QDialog  {
+class KDE4SUPPORT_DEPRECATED_EXPORT KFontDialog : public QDialog  {
     Q_OBJECT
 
 public:

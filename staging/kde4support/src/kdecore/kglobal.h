@@ -326,7 +326,7 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
  * static const KCatalogLoader loader("libkdepim");
  * @endcode
  */
-class KDE4SUPPORT_EXPORT KCatalogLoader
+class KDE4SUPPORT_DEPRECATED_EXPORT KCatalogLoader
 {
     public:
         KCatalogLoader(const QString &catalogName);
@@ -364,7 +364,7 @@ namespace KGlobal
      * Returns the application standard dirs object.
      * @return the global standard dir object
      */
-    KDE4SUPPORT_EXPORT KStandardDirs *dirs();
+    KDE4SUPPORT_DEPRECATED_EXPORT KStandardDirs *dirs();
 
     /**
      * Returns the general config object.
@@ -412,7 +412,7 @@ namespace KGlobal
      * Returns the umask of the process.
      * @return the umask of the process
      */
-    KDE4SUPPORT_EXPORT mode_t umask();
+    KDE4SUPPORT_DEPRECATED_EXPORT mode_t umask();
 
     /**
      * Creates a static QString.
@@ -475,13 +475,13 @@ namespace KGlobal
      * Note that for this to happen you must call qApp->setQuitOnLastWindowClosed(false),
      * in main() for instance.
      */
-    KDE4SUPPORT_EXPORT void ref();
+    KDE4SUPPORT_DEPRECATED_EXPORT void ref();
 
     /**
      * Tells KGlobal that one operation such as those described in ref() just finished.
      * This call makes the QApplication quit if the counter is back to 0.
      */
-    KDE4SUPPORT_EXPORT void deref();
+    KDE4SUPPORT_DEPRECATED_EXPORT void deref();
 
     /**
      * If refcounting reaches 0 (or less), and @p allowQuit is true, the instance of the application
@@ -498,7 +498,7 @@ namespace KGlobal
      *
      * @since 4.1.1
      */
-    KDE4SUPPORT_EXPORT void setAllowQuit(bool allowQuit);
+    KDE4SUPPORT_DEPRECATED_EXPORT void setAllowQuit(bool allowQuit);
 
     /**
      * The component currently active (useful in a multi-component
@@ -531,7 +531,7 @@ namespace KGlobal
     KDE4SUPPORT_DEPRECATED_EXPORT QString caption();
 
     /// @internal
-    KDE4SUPPORT_EXPORT QObject* findDirectChild_helper(const QObject* parent, const QMetaObject& mo);
+    KDE4SUPPORT_DEPRECATED_EXPORT QObject* findDirectChild_helper(const QObject* parent, const QMetaObject& mo);
 
     /**
      * Returns the child of the given object that can be cast into type T, or 0 if there is no such object.

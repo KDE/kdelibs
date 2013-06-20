@@ -40,7 +40,7 @@ class QAbstractButton;
  *
  * @author Pino Toscano <toscano.pino@tiscali.it>
  */
-class KDE4SUPPORT_EXPORT KButtonGroup
+class KDE4SUPPORT_DEPRECATED_EXPORT KButtonGroup
   : public QGroupBox
 {
   Q_OBJECT

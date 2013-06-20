@@ -31,7 +31,7 @@
  *
  * \image html ktabbar.png "KDE Tab Bar"
  */
-class KDE4SUPPORT_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
+class KDE4SUPPORT_DEPRECATED_EXPORT KTabBar: public QTabBar //krazy:exclude=qclasses
 {
     Q_OBJECT
 

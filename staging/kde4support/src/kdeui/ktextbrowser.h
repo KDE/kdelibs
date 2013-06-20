@@ -50,7 +50,7 @@
  * @see QTextBrowser
  */
 
-class KDE4SUPPORT_EXPORT KTextBrowser : public QTextBrowser
+class KDE4SUPPORT_DEPRECATED_EXPORT KTextBrowser : public QTextBrowser
 {
   Q_OBJECT
   Q_PROPERTY( bool notifyClick READ isNotifyClick WRITE setNotifyClick )

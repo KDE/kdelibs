@@ -56,7 +56,7 @@ class KStatusBarPrivate;
 
  *  @see KActionCollection
  */
-class KDE4SUPPORT_EXPORT KStatusBar : public QStatusBar
+class KDE4SUPPORT_DEPRECATED_EXPORT KStatusBar : public QStatusBar
 {
   Q_OBJECT
 

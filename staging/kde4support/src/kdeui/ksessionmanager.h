@@ -45,7 +45,7 @@
   @see QApplication::saveStateRequest
   @see QApplication::commitDataRequest
  */
-class KDE4SUPPORT_EXPORT KSessionManager
+class KDE4SUPPORT_DEPRECATED_EXPORT KSessionManager
 {
 public:
   KSessionManager();

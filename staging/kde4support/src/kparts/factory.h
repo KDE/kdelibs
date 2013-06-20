@@ -39,7 +39,7 @@ class Part;
  *
  * @see KPluginFactory.
  */
-class KDE4SUPPORT_EXPORT Factory : public KPluginFactory
+class KDE4SUPPORT_DEPRECATED_EXPORT Factory : public KPluginFactory
 {
   Q_OBJECT
 public:

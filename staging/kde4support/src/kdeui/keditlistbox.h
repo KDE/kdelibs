@@ -37,7 +37,7 @@ class KEditListBoxPrivate;
  *
  * @deprecated since 5.0 in favor of KEditListWidget embedded in a QGroupBox.
  */
-class KDE4SUPPORT_EXPORT KEditListBox : public QGroupBox
+class KDE4SUPPORT_DEPRECATED_EXPORT KEditListBox : public QGroupBox
 {
    Q_OBJECT
 

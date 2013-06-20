@@ -42,7 +42,7 @@ class KDialogButtonBoxPrivate;
  * @author Olivier Goffart <ogoffart@kde.org>
  **/
 
-class KDE4SUPPORT_EXPORT KDialogButtonBox : public QDialogButtonBox
+class KDE4SUPPORT_DEPRECATED_EXPORT KDialogButtonBox : public QDialogButtonBox
 {
   Q_OBJECT
 

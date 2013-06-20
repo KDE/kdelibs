@@ -107,7 +107,7 @@ namespace KParts
      * yourlibrary is the library name that you compiled your KPart into.
      */
     template <class T>
-    class KDE_DEPRECATED GenericFactory : public GenericFactoryBase<T>
+    class KDE4SUPPORT_DEPRECATED GenericFactory : public GenericFactoryBase<T>
     {
     public:
         GenericFactory() { }

@@ -55,7 +55,7 @@ class KShortcutPrivate;
 *  closeAction->setShortcut(closeShortcut);
 * \endcode
 */
-class KDE4SUPPORT_EXPORT KShortcut
+class KDE4SUPPORT_DEPRECATED_EXPORT KShortcut
 {
 public:
     /**

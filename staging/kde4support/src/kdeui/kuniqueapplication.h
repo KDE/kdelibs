@@ -53,7 +53,7 @@
  * @see KApplication
  * @author Preston Brown <pbrown@kde.org>
  */
-class KDE4SUPPORT_EXPORT KUniqueApplication : public KApplication
+class KDE4SUPPORT_DEPRECATED_EXPORT KUniqueApplication : public KApplication
 {
   Q_OBJECT
 public:

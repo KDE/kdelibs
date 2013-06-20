@@ -39,7 +39,7 @@
  * @author Daniel M. Duley <mosfet@kde.org>
  * @author Hamish Rodda <rodda@kde.org>
  */
-class KDE4SUPPORT_EXPORT KMenu : public QMenu {
+class KDE4SUPPORT_DEPRECATED_EXPORT KMenu : public QMenu {
     Q_OBJECT
 public:
     /**

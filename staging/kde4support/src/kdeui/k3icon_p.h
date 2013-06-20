@@ -34,7 +34,7 @@
  * @warning You should not use this class externally. This class is exported because
  *          the KCM needs it.
  */
-class KDE4SUPPORT_EXPORT K3Icon
+class KDE4SUPPORT_DEPRECATED_EXPORT K3Icon
 {
 public:
     K3Icon();

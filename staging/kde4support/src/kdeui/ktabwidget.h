@@ -41,7 +41,7 @@ class QTab;
  *
  * \image html ktabwidget.png "KDE Tab Widget"
  */
-class KDE4SUPPORT_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
+class KDE4SUPPORT_DEPRECATED_EXPORT KTabWidget : public QTabWidget //krazy:exclude=qclasses
 {
     Q_OBJECT
 #ifndef KDE_NO_DEPRECATED

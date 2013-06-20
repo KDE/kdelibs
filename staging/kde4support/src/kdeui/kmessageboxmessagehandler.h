@@ -31,7 +31,7 @@ class KMessageBoxMessageHandlerPrivate;
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
 */
-class KDE4SUPPORT_EXPORT KMessageBoxMessageHandler : public QObject, public KMessageHandler
+class KDE4SUPPORT_DEPRECATED_EXPORT KMessageBoxMessageHandler : public QObject, public KMessageHandler
 {
     Q_OBJECT
 public:

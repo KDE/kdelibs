@@ -82,7 +82,7 @@ class QPixmap;
  *
  * @author Rivo Laks
  */
-class KDE4SUPPORT_EXPORT KPixmapCache
+class KDE4SUPPORT_DEPRECATED_EXPORT KPixmapCache
 {
 public:
     /**

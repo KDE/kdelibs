@@ -69,7 +69,7 @@ class KApplicationPrivate;
 * @short Controls and provides information to all KDE applications.
 * @author Matthias Kalle Dalheimer <kalle@kde.org>
 */
-class KDE4SUPPORT_EXPORT KApplication : public QApplication
+class KDE4SUPPORT_DEPRECATED_EXPORT KApplication : public QApplication
 {
   Q_OBJECT
   Q_CLASSINFO("D-Bus Interface", "org.kde.KApplication")

@@ -45,7 +45,7 @@
  * @author Aaron J. Seigo
  * @author Urs Wolfer uwolfer @ kde.org
  */
-class KDE4SUPPORT_EXPORT KProgressDialog : public KDialog
+class KDE4SUPPORT_DEPRECATED_EXPORT KProgressDialog : public KDialog
 {
     Q_OBJECT
 

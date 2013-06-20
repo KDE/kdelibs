@@ -25,7 +25,7 @@
 
 #include "kcolorchoosermode.h"
 
-class KDE4SUPPORT_EXPORT KHueSaturationSelector : public KXYSelector
+class KDE4SUPPORT_DEPRECATED_EXPORT KHueSaturationSelector : public KXYSelector
 {
     Q_OBJECT
 public:

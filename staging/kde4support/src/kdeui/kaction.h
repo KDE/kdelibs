@@ -209,7 +209,7 @@ class KShortcut;
  *
  * @see KStandardAction
  */
-class KDE4SUPPORT_EXPORT KAction : public QWidgetAction
+class KDE4SUPPORT_DEPRECATED_EXPORT KAction : public QWidgetAction
 {
   Q_OBJECT
 
