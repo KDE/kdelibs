@@ -42,7 +42,8 @@ KAboutApplicationPersonModel::KAboutApplicationPersonModel( const QList< KAboutP
         m_providerUrl = QString( "https://api.opendesktop.org/v1/" );
 
     bool hasOcsUsernames = false;
-    for( QList< KAboutPerson >::const_iterator it = personList.begin(); it != personList.end(); ++it )
+    QList< KAboutPerson >::const_iterator end(personList.constEnd());
+    for( QList< KAboutPerson >::const_iterator it = personList.begin(); it != end; ++it )
     {
         KAboutPerson person = *it;
 
@@ -124,7 +125,6 @@ void KAboutApplicationPersonModel::onProvidersLoaded()   //SLOT
                 Attica::ItemJob< Attica::Person > *job = m_provider.requestPerson( profile.ocsUsername() );
                 connect( job, SIGNAL(finished(Attica::BaseJob*)),
                          this, SLOT(onPersonJobFinished(Attica::BaseJob*)) );
-
                 job->setProperty( "personProfile", i );
                 job->start();
             }
@@ -354,7 +354,6 @@ KAboutApplicationPersonIconsJob::KAboutApplicationPersonIconsJob( KAboutApplicat
     m_manager = new QNetworkAccessManager( this );
     connect( m_manager, SIGNAL(finished(QNetworkReply*)),
              this, SLOT(onJobFinished(QNetworkReply*)) );
-
     m_ocsLinks = model->m_profileList.value( personProfileListIndex ).ocsLinks();
 }
 
