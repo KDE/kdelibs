@@ -44,7 +44,6 @@
 #include "kactioncategory.h"
 #include "kconfiggroup.h"
 #include "kdebug.h"
-#include "kdeprintdialog.h"
 #include "kglobalaccel.h"
 #include "kglobalsettings.h"
 #include "kmessagebox.h"
@@ -721,7 +720,7 @@ void KShortcutsEditorPrivate::printShortcuts() const
     cursor.endEditBlock();
 
     QPrinter printer;
-    QPrintDialog *dlg = KdePrint::createPrintDialog(&printer, q);
+    QPrintDialog *dlg = new QPrintDialog(&printer, q);
     if (dlg->exec() == QDialog::Accepted) {
         doc.print(&printer);
     }
