@@ -143,21 +143,6 @@ set(kdeui_LIB_SRCS
 )
 
 
-if(NOT WINCE)
-set(kdeui_LIB_SRCS
- ${kdeui_LIB_SRCS}
- dialogs/kdeprintdialog.cpp
-)
-endif(NOT WINCE)
-
-
-if (X11_FOUND)
-    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} dialogs/kcupsoptionswidget_p.cpp
-                                         dialogs/kcupsoptionsjobwidget_p.cpp
-                                         dialogs/kcupsoptionspageswidget_p.cpp
-                                         dialogs/kcupsoptionssettingswidget_p.cpp )
-endif (X11_FOUND)
-
 message("Port to Qt5 native filter")
 #if (X11_FOUND AND X11_Xkb_FOUND)
 #    include_directories (
@@ -174,12 +159,6 @@ set( kdeui_UI
    dialogs/kshortcutsdialog.ui
    widgets/kshortcutwidget.ui
    )
-
-if (X11_FOUND)
-    set( kdeui_UI ${kdeui_UI} dialogs/kcupsoptionspageswidget.ui
-                              dialogs/kcupsoptionsjobwidget.ui
-    )
-endif (X11_FOUND)
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
@@ -264,10 +243,6 @@ install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 
 install( FILES
  dialogs/aboutkde.png
- dialogs/kdeprint_nup1.png
- dialogs/kdeprint_nup2.png
- dialogs/kdeprint_nup4.png
- dialogs/kdeprint_nupother.png
  dialogs/ktip-bulb.png
  dialogs/thumb_frame.png
  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
@@ -285,7 +260,6 @@ install( FILES
  dialogs/kbugreport.h
  dialogs/kconfigdialog.h
  dialogs/kconfigdialogmanager.h
- dialogs/kdeprintdialog.h
  dialogs/kedittoolbar.h
  dialogs/knewpassworddialog.h
  dialogs/kshortcutsdialog.h

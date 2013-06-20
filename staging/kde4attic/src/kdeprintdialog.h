@@ -21,7 +21,7 @@
 #ifndef KDEPRINTDIALOG_H
 #define KDEPRINTDIALOG_H
 
-#include <kdeui_export.h>
+#include <kde4attic_export.h>
 
 #include <QtCore/QList>
 
@@ -81,7 +81,7 @@ namespace KdePrint
      * @see QWidget::setWindowTitle()
      * @see QAbstractPrintDialog::setOptionTabs()
      */
-    KDEUI_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
                                                  PageSelectPolicy pageSelectPolicy,
                                                  const QList<QWidget*> &customTabs,
                                                  QWidget *parent = 0);
@@ -100,7 +100,7 @@ namespace KdePrint
      * @param customTabs a list of custom widgets to show as tabs, the name printed on the tab will
      *      be taken from the widgets windowTitle().
      */
-    KDEUI_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
                                                 const QList<QWidget*> &customTabs,
                                                 QWidget *parent = 0);
 
@@ -118,7 +118,7 @@ namespace KdePrint
      * @param pageSelectPolicy whether the Application or the System does the page selection
      * @param parent the parent for the dialog
      */
-    KDEUI_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
                                                  PageSelectPolicy pageSelectPolicy,
                                                  QWidget *parent = 0);
 
@@ -134,7 +134,7 @@ namespace KdePrint
      * @param printer the QPrinter to apply settings to
      * @param parent the parent for the dialog
      */
-    KDEUI_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
+    KDE4ATTIC_EXPORT QPrintDialog *createPrintDialog(QPrinter *printer,
                                                  QWidget *parent = 0);
 }
 
