@@ -482,7 +482,8 @@ void KDirListerTest::testRenameItem()
     KIO::SimpleJob* job = KIO::rename(QUrl::fromLocalFile(path), QUrl::fromLocalFile(newPath), KIO::HideProgressInfo);
     QVERIFY(job->exec());
 
-    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)), 2000));
+    QSignalSpy spyRefreshItems(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)));
+    QVERIFY(spyRefreshItems.wait(2000));
 
     QCOMPARE(m_refreshedItems2.count(), 1);
     QPair<KFileItem, KFileItem> entry = m_refreshedItems2.first();
@@ -1109,27 +1110,28 @@ void KDirListerTest::testRemoveWatchedDirectory()
 
 void KDirListerTest::testDirPermissionChange()
 {
-    KTempDir tempDir;
-    tempDir.setAutoRemove(false);
+    QTemporaryDir tempDir;
 
-    const QString path = tempDir.name();
+    const QString path = tempDir.path() + '/';
     const QString subdir = path + QLatin1String("subdir");
     QVERIFY(QDir().mkdir(subdir));
 
     MyDirLister mylister;
-    mylister.openUrl(KUrl::fromPath(tempDir.name()));
-    QVERIFY(QTest::kWaitForSignal(&mylister, SIGNAL(completed()), 1000));
+    mylister.openUrl(QUrl::fromLocalFile(tempDir.path()));
+    QSignalSpy spyCompleted(&mylister, SIGNAL(completed()));
+    QVERIFY(spyCompleted.wait(1000));
 
     KFileItemList list = mylister.items();
     QVERIFY(mylister.isFinished());
     QCOMPARE(list.count(), 1);
-    QCOMPARE(mylister.rootItem().url().toLocalFile(KUrl::AddTrailingSlash), path);
+    QCOMPARE(mylister.rootItem().url().toLocalFile(), tempDir.path());
 
     const mode_t permissions = (S_IRUSR | S_IWUSR | S_IXUSR);
     KIO::SimpleJob* job = KIO::chmod(list.first().url(), permissions);
     QVERIFY(job->exec());
 
-    QVERIFY(QTest::kWaitForSignal(&mylister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)), 2000));
+    QSignalSpy spyRefreshItems(&mylister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)));
+    QVERIFY(spyRefreshItems.wait(2000));
 
     list = mylister.items();
     QCOMPARE(list.first().permissions(), permissions);
