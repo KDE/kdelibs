@@ -23,13 +23,15 @@
 #include <QWidget>
 #include <QtCore/QVariant>
 #include <kfilemetainfo.h>
+#include <kde4support_export.h>
 
 class KFileMetaInfoWidgetPrivate;
 
 /*!
+ * @deprecated since 5.0
  * A widget to display file meta information (like id3 for mp3)
  */
-class KIO_EXPORT KFileMetaInfoWidget: public QWidget
+class KDE4SUPPORT_DEPRECATED_EXPORT KFileMetaInfoWidget: public QWidget
 {
     Q_OBJECT
 public:

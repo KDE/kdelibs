@@ -125,7 +125,6 @@ set(kdeui_LIB_SRCS
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
- widgets/kstringvalidator.cpp
  widgets/ktextedit.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
@@ -293,7 +292,6 @@ install( FILES
  widgets/kmessagewidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
- widgets/kstringvalidator.h
  widgets/ktextedit.h
  widgets/kshortcutwidget.h
  xmlgui/kxmlguiwindow.h

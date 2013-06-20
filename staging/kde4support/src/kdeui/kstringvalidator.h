@@ -22,12 +22,13 @@
 #ifndef KSTRINGVALIDATOR_H
 #define KSTRINGVALIDATOR_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QtCore/QStringList>
 #include <QValidator>
 
 /**
+ * @deprecated since 5.0
  * @short A QValidator to (dis)allow certain strings
  *
  * This validator allows you to accept only certain or to accept all
@@ -57,7 +58,7 @@
  *
  * @author Marc Mutz <mutz@kde.org>
  **/
-class KDEUI_EXPORT KStringListValidator : public QValidator
+class KDE4SUPPORT_DEPRECATED_EXPORT KStringListValidator : public QValidator
 {
   Q_OBJECT
   Q_PROPERTY( QStringList stringList READ stringList WRITE setStringList )

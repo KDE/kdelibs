@@ -55,6 +55,7 @@ set(libkde4support_SRCS
     kdeui/knumvalidator.cpp
     kdeui/karrowbutton.cpp
     kdeui/ksplashscreen.cpp
+    kdeui/kstringvalidator.cpp
     kdeui/kdialogbuttonbox.cpp
     kdeui/kpixmapcache.cpp
     kdeui/kprogressdialog.cpp
@@ -78,6 +79,7 @@ set(libkde4support_SRCS
     kdeui/keditlistbox.cpp
     kdeui/knuminput.cpp
 
+    kio/kfilemetainfowidget.cpp
     kio/metainfojob.cpp
 
     kparts/factory.cpp
@@ -175,6 +177,7 @@ install(FILES
     kdeui/kmenubar.h
     kdeui/kshortcut.h
     kdeui/kstatusbar.h
+    kdeui/kstringvalidator.h
     kdeui/ksystemtrayicon.h
     kdeui/kuniqueapplication.h
     kdeui/khbox.h
@@ -204,6 +207,7 @@ endif (NOT X11_FOUND)
 
 # kio/*.h
 install(FILES
+    kio/kfilemetainfowidget.h
     kio/metainfojob.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
 )

@@ -200,7 +200,6 @@ set(kfile_STAT_SRCS
   kfile/kfiledialog.cpp
   kfile/kfilemetadataconfigurationwidget.cpp
   kfile/kfilemetadatawidget.cpp
-  kfile/kfilemetainfowidget.cpp
   kfile/kfilemetapreview.cpp
   kfile/kimagefilepreview.cpp
   kfile/kmetaprops.cpp
