@@ -152,12 +152,14 @@ namespace Solid
         int chargePercent() const;
 
         /**
-          * The capacity of the power source expressed as a percentage between 0 and 100.
-          * The capacity of the battery will reduce with age.
-          * A capacity value less than 75% is usually a sign that you should renew your battery.
-          *
-          * @return the current capacity normalized to percent
-          */
+         * Retrieves the battery capacity normalised to percent,
+         * meaning how much energy can it hold compared to what it is designed to.
+         * The capacity of the battery will reduce with age.
+         * A capacity value less than 75% is usually a sign that you should renew your battery.
+         *
+         * @since 4.11
+         * @return the battery capacity normalised to percent
+         */
         int capacity() const;
 
 

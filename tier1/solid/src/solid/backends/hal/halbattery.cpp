@@ -89,7 +89,7 @@ int Battery::capacity() const
     const qreal lastFull = m_device->prop("battery.charge_level.last_full").toDouble();
     const qreal designFull = m_device->prop("battery.charge_level.design").toDouble();
 
-    return lastFull / designFull;
+    return lastFull / designFull * 100;
 }
 
 bool Battery::isRechargeable() const
