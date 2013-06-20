@@ -78,7 +78,10 @@ int main(int argc, char **argv)
         QUrl url = KFileDialog::getOpenUrl(startDir);
         qDebug() << "url=" << url;
     }
-
+    else if (argv1 == QLatin1String("multipleurls")) {
+        KUrl::List urls = KFileDialog::getOpenUrls(startDir);
+        qDebug() << "urls=" << urls.toStringList();
+    }
     else if (argv1 == QLatin1String("existingDirectoryUrl")) {
         QUrl url = KFileDialog::getExistingDirectoryUrl();
         qDebug("URL=%s",url.toString().toLatin1().constData());

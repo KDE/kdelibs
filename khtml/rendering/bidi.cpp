@@ -734,7 +734,7 @@ void RenderBlock::computeHorizontalPositionsForLine(InlineFlowBox* lineBox, Bidi
         if (r->obj->isText())
             r->box->setWidth(static_cast<RenderText *>(r->obj)->width(r->start, r->stop-r->start, m_firstLine));
         else if (!r->obj->isInlineFlow()) {
-            r->obj->calcWidth();
+            r->obj->calcWidth(); // Is this really needed or the object width is already correct here ?
             r->box->setWidth(r->obj->width());
             totWidth += r->obj->marginLeft() + r->obj->marginRight();
         }

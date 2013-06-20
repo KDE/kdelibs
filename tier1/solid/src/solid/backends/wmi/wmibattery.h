@@ -57,12 +57,16 @@ public:
     double energyRate() const;
     double voltage() const;
 
+    virtual bool isPowerSupply() const;
+
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
     void energyChanged(double energy, const QString &udi);
     void energyRateChanged(double energyRate, const QString &udi);
+    void capacityChanged(int value, const QString &udi);
+    void powerSupplyStateChanged(bool newState, const QString &udi);
 
 private Q_SLOTS:
     void slotPropertyChanged(const QMap<QString,int> &changes);

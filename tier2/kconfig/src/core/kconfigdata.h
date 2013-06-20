@@ -134,6 +134,10 @@ inline bool operator <(const KEntryKey &k1, const KEntryKey &k2)
     return (!k1.bDefault && k2.bDefault);
 }
 
+
+QDebug operator<<(QDebug dbg, const KEntryKey& key);
+QDebug operator<<(QDebug dbg, const KEntry& entry);
+
 /**
  * \relates KEntry
  * type specifying a map of entries (key,value pairs).
@@ -163,175 +167,20 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
         Q_DECLARE_FLAGS(EntryOptions, EntryOption)
 
         Iterator findExactEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
-                           SearchFlags flags = SearchFlags())
-        {
-            KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
-
-            // try the localized key first
-            if (flags&SearchLocalized) {
-                theKey.bLocal = true;
-                return find(theKey);
-            }
-            return find(theKey);
-        }
+                           SearchFlags flags = SearchFlags());
 
         Iterator findEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
-                           SearchFlags flags = SearchFlags())
-        {
-            KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
-
-            // try the localized key first
-            if (flags&SearchLocalized) {
-                theKey.bLocal = true;
-
-                Iterator it = find(theKey);
-                if (it != end())
-                    return it;
-
-                theKey.bLocal = false;
-            }
-            return find(theKey);
-        }
+                           SearchFlags flags = SearchFlags());
 
         ConstIterator findEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
-                                SearchFlags flags = SearchFlags()) const
-        {
-            KEntryKey theKey(group, key, false, bool(flags&SearchDefaults));
+                                SearchFlags flags = SearchFlags()) const;
 
-            // try the localized key first
-            if (flags&SearchLocalized) {
-                theKey.bLocal = true;
-
-                ConstIterator it = find(theKey);
-                if (it != constEnd())
-                    return it;
-
-                theKey.bLocal = false;
-            }
-            return find(theKey);
-        }
-        
         /**
          * Returns true if the entry gets dirtied or false in other case
          */
         bool setEntry(const QByteArray& group, const QByteArray& key,
-                      const QByteArray& value, EntryOptions options)
-        {
-            KEntryKey k;
-            KEntry e;
-            bool newKey = false;
+                      const QByteArray& value, EntryOptions options);
 
-            const Iterator it = findExactEntry(group, key, SearchFlags(options>>16));
-            
-            if (key.isEmpty()) { // inserting a group marker
-                k.mGroup = group;
-                e.bImmutable = (options&EntryImmutable);
-                if (options&EntryDeleted) { qWarning("Internal KConfig error: cannot mark groups as deleted"); }
-                if(it == end()) {
-                    insert(k, e);
-                    return true;
-                } else if(it.value() == e) {
-                    return false;
-                }
-                
-                it.value() = e;
-                return true;
-            }
-
-
-            if (it != end()) {
-                if (it->bImmutable)
-                    return false; // we cannot change this entry. Inherits group immutability.
-                k = it.key();
-                e = *it;
-            } else {
-                // make sure the group marker is in the map
-                KEntryMap const *that = this;
-                ConstIterator cit = that->findEntry(group);
-                if (cit == constEnd())
-                    insert(KEntryKey(group), KEntry());
-                else if (cit->bImmutable)
-                    return false; // this group is immutable, so we cannot change this entry.
-
-                k = KEntryKey(group, key);
-                newKey = true;
-            }
-
-            // set these here, since we may be changing the type of key from the one we found
-            k.bLocal = (options&EntryLocalized);
-            k.bDefault = (options&EntryDefault);
-            k.bRaw = (options&EntryRawKey);
-
-            //qDebug() << "changing [" << group << "," << key << "] =" << value;
-            e.mValue = value;
-            e.bDirty = e.bDirty || (options&EntryDirty);
-            e.bGlobal = (options&EntryGlobal);  //we can't use || here, because changes to entries in
-                                                //kdeglobals would be written to kdeglobals instead
-                                                //of the local config file, regardless of the globals flag
-            e.bImmutable = e.bImmutable || (options&EntryImmutable);
-            if (value.isNull())
-                e.bDeleted = e.bDeleted || (options&EntryDeleted);
-            else
-                e.bDeleted = false; // setting a value to a previously deleted entry
-            e.bExpand = (options&EntryExpansion);
-
-            //qDebug() << "to [" << group << "," << key << "] =" << e.mValue << "newKey=" << newKey;
-            if(newKey)
-            {
-                insert(k, e);
-                if(k.bDefault)
-                {
-                    k.bDefault = false;
-                    insert(k, e);
-                }
-                // TODO check for presence of unlocalized key
-                return true;
-            } else {
-//                KEntry e2 = it.value();
-                if(it.value() != e)
-                {
-                    it.value() = e;
-                    if(k.bDefault)
-                    {
-                        k.bDefault = false;
-                        insert(k, e);
-                    }
-                    if (!(options & EntryLocalized)) {
-                        KEntryKey theKey(group, key, true, false);
-                        remove(theKey);
-                        if (k.bDefault) {
-                            theKey.bDefault = false;
-                            remove(theKey);
-                        }
-                    }
-                    return true;
-                } else {
-                    if (!(options & EntryLocalized)) {
-                        KEntryKey theKey(group, key, true, false);
-                        bool ret = false;
-                        Iterator cit = find(theKey);
-                        if (cit != end()) {
-                            erase(cit);
-                            ret = true;
-                        }
-                        if (k.bDefault) {
-                            theKey.bDefault = false;
-                            Iterator cit = find(theKey);
-                            if (cit != end()) {
-                                erase(cit);
-                                return true;
-                            }
-                        }
-                        return ret;
-                    }
-                    // When we are writing a default, we know that the non-
-                    // default is the same as the default, so we can simply
-                    // use the same branch.
-                    return false;
-                }
-            }
-        }
-        
         void setEntry(const QByteArray& group, const QByteArray& key,
                       const QString & value, EntryOptions options)
         {
@@ -341,115 +190,26 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
         QString getEntry(const QByteArray& group, const QByteArray& key,
                          const QString & defaultValue = QString(),
                          SearchFlags flags = SearchFlags(),
-                         bool * expand=0) const
-        {
-            const ConstIterator it = findEntry(group, key, flags);
-            QString theValue = defaultValue;
-
-            if (it != constEnd() && !it->bDeleted) {
-                if (!it->mValue.isNull()) {
-                    const QByteArray data=it->mValue;
-                    theValue = QString::fromUtf8(data.constData(), data.length());
-                    if (expand)
-                        *expand = it->bExpand;
-                }
-            }
-
-            return theValue;
-        }
-        
-        
+                         bool * expand=0) const;
 
         bool hasEntry(const QByteArray& group, const QByteArray& key = QByteArray(),
-                      SearchFlags flags = SearchFlags()) const
-        {
-            const ConstIterator it = findEntry(group, key, flags);
-            if (it == constEnd())
-                return false;
-            if (it->bDeleted)
-                return false;
-            if (key.isNull()) { // looking for group marker
-                return it->mValue.isNull();
-            }
-            return true;
-        }
+                      SearchFlags flags = SearchFlags()) const;
 
-        bool getEntryOption(const ConstIterator& it, EntryOption option) const
-        {
-            if (it != constEnd()) {
-                switch (option) {
-                    case EntryDirty:
-                        return it->bDirty;
-                    case EntryLocalized:
-                        return it.key().bLocal;
-                    case EntryGlobal:
-                        return it->bGlobal;
-                    case EntryImmutable:
-                        return it->bImmutable;
-                    case EntryDeleted:
-                        return it->bDeleted;
-                    case EntryExpansion:
-                        return it->bExpand;
-                    default:
-                        break; // fall through
-                }
-            }
-
-            return false;
-        }
+        bool getEntryOption(const ConstIterator& it, EntryOption option) const;
         bool getEntryOption(const QByteArray& group, const QByteArray& key,
                             SearchFlags flags, EntryOption option) const
         {
             return getEntryOption(findEntry(group, key, flags), option);
         }
 
-        void setEntryOption(Iterator it, EntryOption option, bool bf)
-        {
-            if (it != end()) {
-                switch (option) {
-                    case EntryDirty:
-                        it->bDirty = bf;
-                        break;
-                    case EntryGlobal:
-                        it->bGlobal = bf;
-                        break;
-                    case EntryImmutable:
-                        it->bImmutable = bf;
-                        break;
-                    case EntryDeleted:
-                        it->bDeleted = bf;
-                        break;
-                    case EntryExpansion:
-                        it->bExpand = bf;
-                        break;
-                    default:
-                        break; // fall through
-                }
-            }
-        }
+        void setEntryOption(Iterator it, EntryOption option, bool bf);
         void setEntryOption(const QByteArray& group, const QByteArray& key, SearchFlags flags,
                             EntryOption option, bool bf)
         {
             setEntryOption(findEntry(group, key, flags), option, bf);
         }
 
-        void revertEntry(const QByteArray& group, const QByteArray& key, SearchFlags flags=SearchFlags())
-        {
-            Iterator entry = findEntry(group, key, flags);
-            if (entry != end()) {
-                //qDebug() << "reverting [" << group << "," << key << "] = " << entry->mValue;
-                const ConstIterator defaultEntry(entry+1);
-                if (defaultEntry != constEnd() && defaultEntry.key().bDefault) {
-                    *entry = *defaultEntry;
-                    entry->bDirty = true;
-                } else if (!entry->mValue.isNull()){
-                    entry->mValue = QByteArray();
-                    entry->bDirty = true;
-                    entry->bDeleted = true;
-                }
-                //qDebug() << "to [" << group << "," << key << "] =" << entry->mValue;
-            }
-        }
+        void revertEntry(const QByteArray& group, const QByteArray& key, SearchFlags flags=SearchFlags());
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KEntryMap::SearchFlags)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KEntryMap::EntryOptions)

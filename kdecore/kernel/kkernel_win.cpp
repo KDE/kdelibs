@@ -329,11 +329,18 @@ static attachConsolePtr attachConsole = 0;
 static bool attachConsoleResolved = false;
 static bool attachToConsole()
 {
+    bool out = true;
     if(!attachConsoleResolved) {
       attachConsoleResolved = true;
       attachConsole = (attachConsolePtr)QLibrary::resolve(QLatin1String("kernel32"), "AttachConsole");
     }
-    return attachConsole ? attachConsole(~0U) != 0 : false;
+    out = attachConsole ? attachConsole(~0U) != 0 : false;
+    if(GetLastError() == ERROR_ACCESS_DENIED)
+    {
+        //we are already atatched to a console
+        out  = true;
+    }
+    return out;
 }
 
 /**

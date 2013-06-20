@@ -28,8 +28,14 @@ kconfigcore_unit_tests(
    kconfigtest
    kdesktopfiletest
    ksharedconfigtest
-   kentrymaptest
 )
+
+# compile KEntryMap into the test since it's not exported
+set(kentrymaptest_SRCS kentrymaptest.cpp ../src/core/kconfigdata.cpp)
+add_executable(kentrymaptest ${kentrymaptest_SRCS})
+add_test(kconfigcore-kentrymaptest kentrymaptest)
+target_link_libraries(kentrymaptest KConfigCore Qt5::Test)
+ecm_mark_as_test(kentrymaptest)
 
 kconfiggui_unit_tests(
    kconfigguitest

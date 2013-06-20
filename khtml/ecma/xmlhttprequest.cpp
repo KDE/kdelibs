@@ -391,12 +391,12 @@ bool XMLHttpRequest::urlMatchesDocumentDomain(const KUrl& _url) const
   KUrl documentURL(doc->URL());
 
   // a local file can load anything
-  if (documentURL.scheme().toLower() == "file") {
+  if (documentURL.isLocalFile()) {
     return true;
   }
 
   // but a remote document can only load from the same port on the server
-  if (documentURL.scheme().toLower() == _url.scheme().toLower() &&
+  if (documentURL.scheme() == _url.scheme() &&
       documentURL.host().toLower() == _url.host().toLower() &&
       documentURL.port() == _url.port()) {
     return true;
@@ -472,7 +472,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
       return;
   }
 
-  const QString protocol = url.scheme().toLower();
+  const QString protocol = url.scheme();
   // Abandon the request when the protocol is other than "http",
   // instead of blindly doing a KIO::get on other protocols like file:/.
   if (!protocol.startsWith(QLatin1String("http")) &&

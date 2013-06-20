@@ -1971,7 +1971,7 @@ void KHTMLPart::slotFinished( KJob * job )
 
   KHTMLPageCache::self()->endData(d->m_cacheId);
 
-  if ( d->m_doc && d->m_doc->docLoader()->expireDate().isValid() && url().scheme().toLower().startsWith("http"))
+  if ( d->m_doc && d->m_doc->docLoader()->expireDate().isValid() && url().scheme().startsWith("http"))
       KIO::http_update_cache(url(), false, d->m_doc->docLoader()->expireDate());
 
   d->m_workingURL = KUrl();
@@ -2057,8 +2057,7 @@ void KHTMLPart::begin( const KUrl &url, int xOffset, int yOffset )
 
   d->m_pageReferrer.clear();
 
-  KUrl ref(url);
-  d->m_referrer = ref.scheme().startsWith("http") ? ref.toString() : "";
+  d->m_referrer = url.scheme().startsWith("http") ? url.toString() : "";
 
   setUrl(url);
 

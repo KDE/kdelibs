@@ -84,6 +84,8 @@ public:
     virtual void updateFromElement();
 
     virtual void layout();
+    virtual void calcWidth();
+    virtual void calcHeight();
     virtual void calcMinMaxWidth();
     virtual short baselinePosition( bool ) const;
     virtual int calcContentWidth(int w) const;

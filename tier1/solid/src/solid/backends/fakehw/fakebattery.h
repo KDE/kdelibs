@@ -45,7 +45,6 @@ public Q_SLOTS:
     virtual Solid::Battery::BatteryType type() const;
 
     virtual int chargePercent() const;
-
     virtual int capacity() const;
 
     virtual bool isRechargeable() const;
@@ -65,10 +64,12 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
+    void capacityChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
     void energyChanged(double energy, const QString &udi);
     void energyRateChanged(double energyRate, const QString &udi);
+    void powerSupplyStateChanged(bool newState, const QString &udi);
 };
 }
 }

@@ -864,6 +864,10 @@ void KUrlTest::testRelativeURL()
 
   baseURL = "http://www.kde.org/info/index.html";
   QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("http://www.kde.org/bugs/contact.html") ), QString( "../bugs/contact.html") );
+
+  baseURL = "ftp://ftp.kde.org/info/";
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("ftp://ftp.kde.org/info/contact.html") ), QString( "contact.html") );
+  QCOMPARE( KUrl::relativeUrl(baseURL, KUrl("ftp://ftp.kde.org/info/A%20%20B.txt") ), QString( "A%20%20B.txt") );
 }
 
 void KUrlTest::testAdjustPath()

@@ -597,7 +597,6 @@ macro(KDE_CHECK_FLAG_EXISTS FLAG VAR DOC)
    endif(NOT ${VAR} MATCHES "${FLAG}")
 endmacro(KDE_CHECK_FLAG_EXISTS FLAG VAR)
 
-
 # This macro is for internal use only
 # Return the directories present in gcc's include path.
 macro(_DETERMINE_GCC_SYSTEM_INCLUDE_DIRS _lang _result)

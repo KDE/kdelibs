@@ -15,8 +15,8 @@
 <!ENTITY pex 	"por exemplo"> <!-- English: &eg; -->
 <!ENTITY Enter	"<keycap>Enter</keycap>">
 <!ENTITY Esc	"<keycap>Esc</keycap>">
-<!ENTITY etc    "<abbrev>etc</abbrev>">
-<!ENTITY FAQ	"Perguntas mais frequentes (do inglês <acronym>FAQ</acronym>)">
+<!ENTITY etc    "<abbrev>etc.</abbrev>">
+<!ENTITY FAQ	"Perguntas frequentes (do inglês <acronym>FAQ</acronym>)">
 <!ENTITY ie 	"isto é">
 <!ENTITY infocenter	"<application>Centro de informação</application>">
 <!ENTITY kcontrolcenter	"<application>Centro de Controle do &kde;</application>">

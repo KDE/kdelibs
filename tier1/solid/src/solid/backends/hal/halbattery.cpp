@@ -86,7 +86,10 @@ int Battery::chargePercent() const
 
 int Battery::capacity() const
 {
-    return qRound(m_device->prop("battery.charge_level.last_full").toInt() / (m_device->prop("battery.charge_level.design").toInt() * 100.0));
+    const qreal lastFull = m_device->prop("battery.charge_level.last_full").toDouble();
+    const qreal designFull = m_device->prop("battery.charge_level.design").toDouble();
+
+    return lastFull / designFull;
 }
 
 bool Battery::isRechargeable() const
@@ -162,6 +165,12 @@ void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
     if (changes.contains("battery.charge_level.percentage"))
     {
         Q_EMIT chargePercentChanged(chargePercent(), m_device->udi());
+    }
+
+    if (changes.contains("battery.charge_level.last_full")
+           || changes.contains("battery.charge_level.design"))
+    {
+        emit capacityChanged(capacity(), m_device->udi());
     }
 
     if (changes.contains("battery.rechargeable.is_charging")

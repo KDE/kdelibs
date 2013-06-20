@@ -472,23 +472,20 @@ void KDirListerTest::testDeleteItem()
 
 void KDirListerTest::testRenameItem()
 {
-    m_refreshedItems.clear();
+    m_refreshedItems2.clear();
     const QString dirPath = m_tempDir.path() + '/';
     connect(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)),
-            this, SLOT(slotRefreshItems(QList<QPair<KFileItem,KFileItem> >)));
+            this, SLOT(slotRefreshItems2(QList<QPair<KFileItem,KFileItem> >)));
     const QString path = dirPath+"toplevelfile_2";
     const QString newPath = dirPath+"toplevelfile_2.renamed.html";
 
     KIO::SimpleJob* job = KIO::rename(QUrl::fromLocalFile(path), QUrl::fromLocalFile(newPath), KIO::HideProgressInfo);
-    bool ok = job->exec();
-    QVERIFY(ok);
+    QVERIFY(job->exec());
 
-    if (m_refreshedItems.isEmpty()) {
-        waitForRefreshedItems(); // refreshItems could come from KDirWatch or KDirNotify.
-    }
+    QVERIFY(QTest::kWaitForSignal(&m_dirLister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)), 2000));
 
-    QCOMPARE(m_refreshedItems.count(), 1);
-    QPair<KFileItem, KFileItem> entry = m_refreshedItems.first();
+    QCOMPARE(m_refreshedItems2.count(), 1);
+    QPair<KFileItem, KFileItem> entry = m_refreshedItems2.first();
     QCOMPARE(entry.first.url().toLocalFile(), path);
     QCOMPARE(entry.first.mimetype(), QString("application/octet-stream"));
     QCOMPARE(entry.second.url().toLocalFile(), newPath);
@@ -501,7 +498,7 @@ void KDirListerTest::testRenameItem()
     QCOMPARE(cachedItem.url().toLocalFile(), newPath);
     KFileItem oldCachedItem = m_dirLister.findByUrl(QUrl::fromLocalFile(path));
     QVERIFY(oldCachedItem.isNull());
-    m_refreshedItems.clear();
+    m_refreshedItems2.clear();
 }
 
 void KDirListerTest::testRenameAndOverwrite() // has to be run after testRenameItem
@@ -1108,6 +1105,35 @@ void KDirListerTest::testRemoveWatchedDirectory()
     QCOMPARE(m_dirLister.spyItemsDeleted.count(), 1);
     const KFileItem deletedItem = m_dirLister.spyItemsDeleted.at(0).at(0).value<KFileItemList>().at(0);
     QCOMPARE(item, deletedItem);
+}
+
+void KDirListerTest::testDirPermissionChange()
+{
+    KTempDir tempDir;
+    tempDir.setAutoRemove(false);
+
+    const QString path = tempDir.name();
+    const QString subdir = path + QLatin1String("subdir");
+    QVERIFY(QDir().mkdir(subdir));
+
+    MyDirLister mylister;
+    mylister.openUrl(KUrl::fromPath(tempDir.name()));
+    QVERIFY(QTest::kWaitForSignal(&mylister, SIGNAL(completed()), 1000));
+
+    KFileItemList list = mylister.items();
+    QVERIFY(mylister.isFinished());
+    QCOMPARE(list.count(), 1);
+    QCOMPARE(mylister.rootItem().url().toLocalFile(KUrl::AddTrailingSlash), path);
+
+    const mode_t permissions = (S_IRUSR | S_IWUSR | S_IXUSR);
+    KIO::SimpleJob* job = KIO::chmod(list.first().url(), permissions);
+    QVERIFY(job->exec());
+
+    QVERIFY(QTest::kWaitForSignal(&mylister, SIGNAL(refreshItems(QList<QPair<KFileItem,KFileItem> >)), 2000));
+
+    list = mylister.items();
+    QCOMPARE(list.first().permissions(), permissions);
+    QVERIFY(QDir().rmdir(subdir));
 }
 
 void KDirListerTest::enterLoop(int exitCount)

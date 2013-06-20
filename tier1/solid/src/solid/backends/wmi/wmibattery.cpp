@@ -122,6 +122,23 @@ double Battery::voltage() const
     return 0.0;
 }
 
+bool Battery::isPowerSupply() const
+{
+    return chargeState() == Solid::Battery::Charging;
+}
+
+int Battery::capacity() const
+{
+    const unsigned int fullChargeCapacity = m_device->property("FullChargeCapacity").toUInt();
+    const unsigned int designCapacity = m_device->property("DesignCapacity").toUInt();
+    
+    if ( designCapacity == 0 )
+    {
+        return 0;
+    }
+    return ( (int) (100.0 * fullChargeCapacity / designCapacity) );
+}
+
 void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
 {
 //     if (changes.contains("battery.charge_level.percentage"))

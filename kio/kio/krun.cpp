@@ -83,6 +83,8 @@
 
 #if HAVE_X11
 #include <kwindowsystem.h>
+#elif defined(Q_WS_WIN)
+#include <QDesktopServices>
 #endif
 #include <qstandardpaths.h>
 
@@ -209,10 +211,16 @@ bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool
     KService::Ptr offer = KMimeTypeTrader::self()->preferredService(_mimetype);
 
     if (!offer) {
+#ifdef Q_WS_WIN
+        // As KDE on windows doesnt know about the windows default applications offers will be empty in nearly all cases.
+        // So we use QDesktopServices::openUrl to let windows decide how to open the file
+        return QDesktopServices::openUrl(u);
+#else
         // Open-with dialog
         // TODO : pass the mimetype as a parameter, to show it (comment field) in the dialog !
         // Hmm, in fact KOpenWithDialog::setServiceType already guesses the mimetype from the first URL of the list...
         return displayOpenWithDialog(lst, window, tempFile, suggestedFileName, asn);
+#endif
     }
 
     return KRun::run(*offer, lst, window, tempFile, suggestedFileName, asn);

@@ -80,7 +80,7 @@ int Battery::chargePercent() const
 
 int Battery::capacity() const
 {
-    return qRound(m_device.data()->prop("Capacity").toDouble());
+    return m_device.data()->prop("Capacity").toDouble();
 }
 
 bool Battery::isRechargeable() const
@@ -160,11 +160,12 @@ double Battery::voltage() const
 void Battery::slotChanged()
 {
     if (m_device) {
-        const bool old_isPlugged = m_isPlugged;
         const int old_chargePercent = m_chargePercent;
+        const int old_capacity = m_capacity;
         const Solid::Battery::ChargeState old_chargeState = m_chargeState;
         const double old_energy = m_energy;
         const double old_energyRate = m_energyRate;
+        const bool old_isPlugged = m_isPlugged;
         const bool old_isPowerSupply = m_isPowerSupply;
         updateCache();
 
@@ -173,6 +174,15 @@ void Battery::slotChanged()
         }
 
         if (old_chargeState != m_chargeState) {
+            Q_EMIT chargeStateChanged(m_chargeState, m_device.data()->udi());
+        }
+
+        if (old_capacity != m_capacity) {
+            Q_EMIT capacityChanged(m_capacity, m_device.data()->udi());
+        }
+
+        if (old_chargeState != m_chargeState)
+        {
             Q_EMIT chargeStateChanged(m_chargeState, m_device.data()->udi());
         }
 
@@ -190,7 +200,7 @@ void Battery::slotChanged()
 
         if (old_isPowerSupply != m_isPowerSupply)
         {
-            emit powerSupplyStateChanged(m_isPowerSupply, m_device.data()->udi());
+            Q_EMIT powerSupplyStateChanged(m_isPowerSupply, m_device.data()->udi());
         }
     }
 }
@@ -199,6 +209,7 @@ void Battery::updateCache()
 {
     m_isPlugged = isPlugged();
     m_chargePercent = chargePercent();
+    m_capacity = capacity();
     m_chargeState = chargeState();
     m_energy = energy();
     m_energyRate = energyRate();

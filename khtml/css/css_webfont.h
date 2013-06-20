@@ -219,7 +219,7 @@ public:
     virtual ~CSSFontSelector();
 
 //    virtual FontData* getFontData(const FontDef& fontDescription, const DOMString& familyName);
-    bool requestFamilyName( const DOMString& familyName );
+    void requestFamilyName( const DOMString& familyName );
     void clearDocument() { m_document = 0; }
     void addFontFaceRule(const CSSFontFaceRuleImpl*);
     void fontLoaded();

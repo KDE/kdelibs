@@ -62,8 +62,11 @@ public:
 
     virtual double voltage() const;
 
+    // TODO report stuff like time-to-full, vendor, etc.
+
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
+    void capacityChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
     void energyChanged(double energy, const QString &udi);
@@ -78,6 +81,7 @@ private:
 
     bool m_isPlugged;
     int m_chargePercent;
+    int m_capacity;
     Solid::Battery::ChargeState m_chargeState;
     double m_energy;
     double m_energyRate;

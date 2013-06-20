@@ -41,7 +41,7 @@ static bool isDefaultPortForProtocol(unsigned short port, const QString& proto)
 }
 
 SecurityOrigin::SecurityOrigin(const KUrl& url) :
-      m_protocol(url.scheme().toLower())
+      m_protocol(url.scheme())
     , m_host(url.host().toLower())
     , m_port(url.port())
     , m_domainWasSetInDOM(false)
@@ -161,7 +161,7 @@ bool SecurityOrigin::taintsCanvas(const KUrl& url) const
     // we special case data URLs below. If we change to match HTML5 w.r.t.
     // data URL security, then we can remove this function in favor of
     // !canRequest.
-    if (url.scheme().toLower() == QLatin1String("data"))
+    if (url.scheme() == QLatin1String("data"))
         return false;
 
     return true;

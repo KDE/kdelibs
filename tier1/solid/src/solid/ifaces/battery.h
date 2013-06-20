@@ -72,6 +72,7 @@ namespace Ifaces
           * The capacity of the battery will reduce with age.
           * A capacity value less than 75% is usually a sign that you should renew your battery.
           *
+          * @since 4.11
           * @return the current capacity normalized to percent
           */
         virtual int capacity() const = 0;
@@ -143,6 +144,15 @@ namespace Ifaces
         virtual void chargePercentChanged(int value, const QString &udi) = 0;
 
         /**
+         * This signal is emitted when the capacity of this battery has changed.
+         *
+         * @param value the new capacity of the battery
+         * @param udi the UDI of the battery with the new capacity
+         * @since 4.11
+         */
+        virtual void capacityChanged(int value, const QString &udi) = 0;
+
+        /**
          * This signal is emitted when the charge state of this battery
          * has changed.
          *
@@ -181,6 +191,16 @@ namespace Ifaces
          * @param udi the UDI of the battery with the new charge percent
          */
         virtual void energyRateChanged(double energyRate, const QString &udi) = 0;
+
+        /**
+         * This signal is emitted when the power supply state of the battery
+         * changes.
+         *
+         * @param newState the new power supply state, type is boolean
+         * @param udi the UDI of the battery with the new power supply state
+         * @since 4.11
+         */
+        virtual void powerSupplyStateChanged(bool newState, const QString &udi) = 0;
     };
 }
 }

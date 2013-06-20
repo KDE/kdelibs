@@ -657,8 +657,14 @@ void KDirListerCache::updateDirectory( const QUrl& _dir )
 
     QUrlPathInfo dirInfo(_dir);
     dirInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    if (!checkUpdate(dirInfo.url()))
+    if (!checkUpdate(dirInfo.url())) {
+        if (_dir.isLocalFile() && findByUrl(0, _dir)) {
+            pendingUpdates.insert(_dir.toLocalFile());
+            if (!pendingUpdateTimer.isActive())
+                pendingUpdateTimer.start(500);
+        }
         return;
+    }
 
     // A job can be running to
     //   - only list a new directory: the listers are in listersCurrentlyListing
@@ -1075,13 +1081,22 @@ QList<QUrl> KDirListerCache::directoriesForCanonicalPath(const QUrl& dir) const
 void KDirListerCache::slotFileDirty( const QString& path )
 {
     //qDebug() << path;
-    // File or dir?
-    QFileInfo info(path);
-    if (!info.exists())
-        return; // error
     QUrlPathInfo urlInfo(QUrl::fromLocalFile(path));
     urlInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    if (info.isDir()) {
+    // File or dir?
+    bool isDir;
+    const KFileItem item = itemForUrl(urlInfo.url());
+
+    if (!item.isNull()) {
+        isDir = item.isDir();
+    } else {
+        QFileInfo info(path);
+        if (!info.exists())
+            return; // error
+        isDir = info.isDir();
+    }
+
+    if (isDir) {
         Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(urlInfo.url())) {
             handleDirDirty(dir);
         }

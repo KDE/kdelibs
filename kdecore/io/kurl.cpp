@@ -1583,7 +1583,8 @@ QString KUrl::relativeUrl(const KUrl &base_url, const KUrl &url)
    {
       bool dummy;
       QString basePath = base_url.directory(KUrl::ObeyTrailingSlash);
-      relURL = _relativePath(basePath, url.path(), dummy); // was QUrl::toPercentEncoding() but why?
+      static const char s_pathExcludeChars[] = "!$&'()*+,;=:@/";
+      relURL = QString::fromLatin1(QUrl::toPercentEncoding(_relativePath(basePath, url.path(), dummy), s_pathExcludeChars));
       relURL += url.query();
    }
 
