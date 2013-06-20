@@ -30,10 +30,6 @@ DEALINGS IN THE SOFTWARE.
 #endif
 #endif
 
-#ifdef QT_NO_KEYWORDS
-#undef QT_NO_KEYWORDS
-#endif
-
 #ifdef QT_NO_CAST_FROM_ASCII
 #undef QT_NO_CAST_FROM_ASCII
 #endif

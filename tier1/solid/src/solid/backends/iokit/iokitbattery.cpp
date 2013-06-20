@@ -23,7 +23,7 @@
 
 #include <QtCore/qdebug.h>
 
-// TODO - Q_EMIT the signals
+// TODO - emit the signals
 
 using namespace Solid::Backends::IOKit;
 

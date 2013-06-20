@@ -27,7 +27,7 @@ class tst_KStandardAction : public QObject
 {
     Q_OBJECT
 
-private slots:
+private Q_SLOTS:
     void implicitInsertionUsingCreate();
     void implicitInsertionUsingCut();
     void shortcutForActionId();

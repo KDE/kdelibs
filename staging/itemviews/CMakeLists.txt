@@ -19,6 +19,7 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX ITEMVIEWS
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ItemViewsConfigVersion.cmake")
 
 remove_definitions(-DQT_NO_KEYWORDS)
+remove_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 add_subdirectory(src)
 add_subdirectory(autotests)

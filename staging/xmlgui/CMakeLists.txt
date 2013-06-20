@@ -20,8 +20,6 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX XMLGUI
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/xmlgui_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/XmlGuiConfigVersion.cmake")
 
-remove_definitions(-DQT_NO_KEYWORDS)
-
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(autotests)

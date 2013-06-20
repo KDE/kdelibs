@@ -23,6 +23,7 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
+remove_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/kde4support_version.h)
 

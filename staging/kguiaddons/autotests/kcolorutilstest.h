@@ -6,7 +6,7 @@
 class tst_KColorUtils : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void testOverlay();
     void testMix();
     void testHCY();

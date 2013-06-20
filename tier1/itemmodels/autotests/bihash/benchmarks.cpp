@@ -113,7 +113,7 @@ private:
   }
   void getTestData();
 
-private slots:
+private Q_SLOTS:
 
   void testInsert();
   void testLookup();

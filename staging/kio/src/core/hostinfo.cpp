@@ -62,7 +62,7 @@ namespace KIO
         void cacheLookup(const QHostInfo&);
         void setCacheSize(int s) { dnsCache.setMaxCost(s); }
         void setTTL(int _ttl) { ttl = _ttl; }
-    private slots:
+    private Q_SLOTS:
         void queryFinished(const QHostInfo&);
     private:
         class Result;
@@ -77,7 +77,7 @@ namespace KIO
     class HostInfoAgentPrivate::Result : public QObject
     {
         Q_OBJECT
-    signals:
+    Q_SIGNALS:
         void result(QHostInfo);
     private:
         friend class HostInfoAgentPrivate;
@@ -101,9 +101,9 @@ namespace KIO
         {
             return m_hostName;
         }
-    signals:
+    Q_SIGNALS:
         void result(QHostInfo);
-    private slots:
+    private Q_SLOTS:
         void relayFinished()
         {
             emit result(m_watcher.result());
@@ -161,7 +161,7 @@ namespace KIO
     class NameLookUpThreadWorker : public QObject
     {
         Q_OBJECT
-    public slots:
+    public Q_SLOTS:
         void lookupHost(const QSharedPointer<NameLookupThreadRequest>& request)
         {
             const QString hostName = request->hostName();

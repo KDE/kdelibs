@@ -16,9 +16,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kemoticons_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 
-# allow the usage of foreach QT keyword
-remove_definitions(-DQT_NO_KEYWORDS)
-
 # the strings throughout this library are used to search ressources
 # so they don't need translations
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)

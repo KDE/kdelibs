@@ -60,7 +60,7 @@ class WorkerObject : public QObject
 public:
     WorkerObject() : QObject() {}
 
-public slots:
+public Q_SLOTS:
     void work() {
         qDebug() << QThread::currentThread() << "working...";
 
@@ -159,7 +159,7 @@ public:
     KSycocaThreadTest() {}
     void launch();
 
-private slots:
+private Q_SLOTS:
     // Note that this isn't a QTest based test.
     // All these methods are called manually.
     void cleanupTestCase();

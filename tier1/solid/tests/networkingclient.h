@@ -50,7 +50,7 @@ public:
      */
     virtual ~TestClient();
 
-private slots:
+private Q_SLOTS:
     void networkStatusChanged( Solid::Networking::Status status );
     void connectButtonClicked();
     void doConnect();

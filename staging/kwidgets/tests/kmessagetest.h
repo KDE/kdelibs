@@ -27,7 +27,7 @@ class KMessage_Test : public QWidget
 public:
     KMessage_Test(QWidget *parent = 0);
 
-private slots:
+private Q_SLOTS:
     void showError();
     void showFatal();
     void showInformation();

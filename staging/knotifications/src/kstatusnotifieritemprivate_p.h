@@ -83,7 +83,7 @@ public:
         connect(movie, SIGNAL(frameChanged(int)), this, SLOT(slotNewFrame()));
     }
 
-signals:
+Q_SIGNALS:
     void wheel(int);
 
 private Q_SLOTS:

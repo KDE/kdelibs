@@ -331,7 +331,7 @@ public:
         return m_genericIcons.value(icon);
     }
 
-signals:
+Q_SIGNALS:
     void iconChanged(int group);
 
 private:

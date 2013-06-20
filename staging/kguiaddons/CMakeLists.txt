@@ -24,7 +24,6 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KGUIADDONS
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-remove_definitions(-DQT_NO_KEYWORDS)
 
 add_subdirectory(src)
 add_subdirectory(autotests)

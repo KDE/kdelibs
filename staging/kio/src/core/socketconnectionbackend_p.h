@@ -86,7 +86,7 @@ namespace KIO {
         bool waitForIncomingTask(int ms);
         bool sendCommand(const Task &task);
         AbstractConnectionBackend *nextPendingConnection();
-    public slots:
+    public Q_SLOTS:
         void socketReadyRead();
         void socketDisconnected();
     };

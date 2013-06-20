@@ -33,7 +33,7 @@ class KEmoTest : public QWidget
     public:
         KEmoTest();
         
-    public slots:
+    public Q_SLOTS:
         void changed();
         void changeTheme(const QString&theme);
     
