@@ -17,28 +17,28 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <abstractjobinteractioninterface.h>
+#include <jobuidelegateextension.h>
 
 using namespace KIO;
 
-AbstractJobInteractionInterface::AbstractJobInteractionInterface()
+JobUiDelegateExtension::JobUiDelegateExtension()
     : d(0)
 {
 }
 
-AbstractJobInteractionInterface::~AbstractJobInteractionInterface()
+JobUiDelegateExtension::~JobUiDelegateExtension()
 {
 }
 
-static AbstractJobInteractionInterface *s_interaction = 0;
+static JobUiDelegateExtension *s_extension = 0;
 
-AbstractJobInteractionInterface *KIO::defaultJobInteractionInterface()
+JobUiDelegateExtension *KIO::defaultJobUiDelegateExtension()
 {
-    return s_interaction;
+    return s_extension;
 }
 
-void KIO::setDefaultJobInteractionInterface(AbstractJobInteractionInterface* interf)
+void KIO::setDefaultJobUiDelegateExtension(JobUiDelegateExtension* extension)
 {
-    s_interaction = interf;
+    s_extension = extension;
 }
 

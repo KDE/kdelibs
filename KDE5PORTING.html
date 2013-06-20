@@ -326,11 +326,14 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <h3><a name="kio">Changes in kio</a></h3>
 
 <ul>
+  <li>The very common job-&gt;ui()-&gt;setWindow(widget) has to be ported to KJobWidgets::setWindow(job, widget), because job-&gt;ui() is now only a KJobUiDelegate.</li>
   <li>The deprecated KIO::Job::showErrorDialog() has been removed, use KJobWidgets::setWindow(job, parent) and job-&gt;ui()-&gt;showErrorMessage()
   <li>The KFileItem API has been ported to QMimeType. As a consequence, mimeTypePtr() is now currentMimeType().</li>
   <li>KIO::pixmapForUrl has moved from kio/global.h to kio/pixmaploader.h (so that global.h is core only)</li>
   <li>KProtocolInfo::isHelperProtocol() and exec() no longer detect apps associated with x-scheme-handler/*. This has moved up to KRun. Therefore KProtocolInfo is again about .protocol files only.</li>
   <li>KIO::RenameDialogPlugin was removed, it was unused for a long time anyway. The rename dialog uses KFileMetaDataWidget and PreviewJob instead.</li>
+  <li>When Job::setUiDelegate(0) is used on a CopyJob (KIO::copy or KIO::move), an extra call to setUiDelegateExtension(0) is probably necessary, to disable skip and rename dialogs.</li>
+  <li>KIO::Job::isInteractive() has been removed, use uiDelegate() or uiDelegateExtension() depending on what is meant (error messages, or rename/skip dialog).</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

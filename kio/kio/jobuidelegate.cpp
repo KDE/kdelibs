@@ -23,6 +23,7 @@
 
 #include <kconfiggroup.h>
 #include <kjob.h>
+#include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
@@ -136,14 +137,13 @@ KIO::RenameDialog_Result KIO::JobUiDelegate::askFileRename(KJob * job,
                                                            const QDateTime &mtimeSrc,
                                                            const QDateTime &mtimeDest)
 {
-    Q_UNUSED(job);
     //qDebug() << "job=" << job;
     // We now do it in process, so that opening the rename dialog
     // doesn't start uiserver for nothing if progressId=0 (e.g. F2 in konq)
-    KIO::RenameDialog dlg( window(), caption, src, dest, mode,
-                           sizeSrc, sizeDest,
-                           ctimeSrc, ctimeDest, mtimeSrc,
-                           mtimeDest);
+    KIO::RenameDialog dlg(KJobWidgets::window(job), caption, src, dest, mode,
+                          sizeSrc, sizeDest,
+                          ctimeSrc, ctimeDest, mtimeSrc,
+                          mtimeDest);
     connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     KIO::RenameDialog_Result res = static_cast<RenameDialog_Result>(dlg.exec());
     if (res == R_AUTO_RENAME) {
@@ -160,7 +160,7 @@ KIO::SkipDialog_Result KIO::JobUiDelegate::askSkip(KJob *job,
                                               const QString & error_text)
 {
     // We now do it in process. So this method is a useless wrapper around KIO::open_RenameDialog.
-    KIO::SkipDialog dlg( window(), multi, error_text );
+    KIO::SkipDialog dlg(KJobWidgets::window(job), multi, error_text);
     connect(job, SIGNAL(finished(KJob*)), &dlg, SLOT(reject())); // #192976
     return static_cast<KIO::SkipDialog_Result>(dlg.exec());
 }
@@ -205,7 +205,7 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
             }
         }
 
-        QWidget* widget = window();
+        QWidget* widget = job() ? window() : NULL; // ### job is NULL here, most of the time, right?
         int result;
         switch(deletionType) {
         case Delete:
@@ -255,5 +255,15 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
     }
     return true;
 }
+
+Q_GLOBAL_STATIC(KIO::JobUiDelegate, globalUiDelegate)
+
+// Simply linking to this library, creates a GUI job delegate and delegate extension for all KIO jobs
+static void registerJobUiDelegate()
+{
+    KIO::setDefaultJobUiDelegateExtension(globalUiDelegate());
+}
+
+Q_CONSTRUCTOR_FUNCTION(registerJobUiDelegate)
 
 #include "jobuidelegate.moc"

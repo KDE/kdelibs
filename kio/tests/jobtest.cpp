@@ -261,6 +261,7 @@ void JobTest::copyLocalFile( const QString& src, const QString& dest )
     job = KIO::copy(u, d, KIO::HideProgressInfo );
     QSignalSpy spyCopyingDone(job, SIGNAL(copyingDone(KIO::Job*,QUrl,QUrl,QDateTime,bool,bool)));
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY( QFile::exists( dest ) );
@@ -296,6 +297,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
 
     KIO::Job* job = KIO::copy(u, d, KIO::HideProgressInfo);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY( QFile::exists( dest ) );
@@ -322,12 +324,14 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
     // Use copyAs, we don't want a subdir inside d.
     job = KIO::copyAs(u, d, KIO::HideProgressInfo | KIO::Overwrite);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
 
     // Do it again, without Overwrite (should fail).
     job = KIO::copyAs(u, d, KIO::HideProgressInfo);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( !ok );
 }
@@ -399,6 +403,7 @@ void JobTest::moveLocalFile( const QString& src, const QString& dest )
     // move it back with KIO::move()
     job = KIO::move( d, u, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
+    job->setUiDelegateExtension(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY( !QFile::exists( dest ) );
@@ -417,6 +422,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     // move the symlink with move, NOT with file_move
     KIO::Job* job = KIO::move( u, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
+    job->setUiDelegateExtension(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     if ( !ok )
         kWarning() << KIO::NetAccess::lastError();
@@ -427,6 +433,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     // move it back with KIO::move()
     job = KIO::move( d, u, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
+    job->setUiDelegateExtension(0);
     ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) != 0 ); // doesn't exist anymore
@@ -449,6 +456,7 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 
     KIO::Job* job = KIO::move( u, d, KIO::HideProgressInfo );
     job->setUiDelegate( 0 );
+    job->setUiDelegateExtension(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY( ok );
     QVERIFY( QFile::exists( dest ) );
@@ -525,7 +533,8 @@ void JobTest::moveFileNoPermissions()
     d.setPath( dest );
 
     KIO::CopyJob* job = KIO::move( u, d, KIO::HideProgressInfo );
-    job->setUiDelegate( 0 ); // no skip dialog, thanks
+    job->setUiDelegate( 0 );
+    job->setUiDelegateExtension(0); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
     QVERIFY( !ok );
@@ -560,7 +569,8 @@ void JobTest::moveDirectoryNoPermissions()
     d.setPath( dest );
 
     KIO::CopyJob* job = KIO::move( u, d, KIO::HideProgressInfo );
-    job->setUiDelegate( 0 ); // no skip dialog, thanks
+    job->setUiDelegate( 0 );
+    job->setUiDelegateExtension(0); // no skip dialog, thanks
     QMap<QString, QString> metaData;
     bool ok = KIO::NetAccess::synchronousRun( job, 0, 0, 0, &metaData );
     QVERIFY( !ok );
@@ -1422,6 +1432,7 @@ void JobTest::moveFileDestAlreadyExists() // #157601
     QList<QUrl> urls; urls << QUrl::fromLocalFile(file1) << QUrl::fromLocalFile(file2);
     KIO::CopyJob* job = KIO::move(urls, QUrl::fromLocalFile(otherTmpDir()), KIO::HideProgressInfo);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     job->setAutoSkip(true);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
@@ -1481,6 +1492,7 @@ void JobTest::moveDestAlreadyExistsAutoRename(const QString& destDir, bool moveD
     QList<QUrl> urls; urls << QUrl::fromLocalFile(file1) << QUrl::fromLocalFile(file2);
     KIO::CopyJob* job = KIO::move(urls, QUrl::fromLocalFile(destDir), KIO::HideProgressInfo);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     job->setAutoRename(true);
 
     //kDebug() << QDir(destDir).entryList();
@@ -1568,6 +1580,7 @@ void JobTest::moveOverSymlinkToSelf() // #169547
 
     KIO::CopyJob* job = KIO::move(KUrl(sourceFile), KUrl(existingDest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(!ok);
     QCOMPARE(job->error(), (int)KIO::ERR_FILE_ALREADY_EXIST); // and not ERR_IDENTICAL_FILES!

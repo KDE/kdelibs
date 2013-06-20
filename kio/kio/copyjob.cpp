@@ -35,7 +35,8 @@
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
 
-#include "jobuidelegate.h"
+#include "jobuidelegate.h" // GUI!!!
+#include <jobuidelegateextension.h>
 
 #include <kdirnotify.h>
 
@@ -995,7 +996,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                         renameDirectory(it, newUrl.url());
                     }
                     else {
-                        if (!q->isInteractive()) {
+                        if (!q->uiDelegateExtension()) {
                             q->Job::slotResult(job); // will set the error and emit result(this)
                             return;
                         }
@@ -1078,7 +1079,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     QString newPath;
     if (m_reportTimer)
         m_reportTimer->stop();
-    RenameDialog_Result r = q->ui()->askFileRename( q, i18n("Folder Already Exists"),
+    RenameDialog_Result r = q->uiDelegateExtension()->askFileRename( q, i18n("Folder Already Exists"),
                                          (*it).uSource,
                                          (*it).uDest,
                                          mode, newPath,
@@ -1226,7 +1227,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     emit q->aboutToCreate(q, files);
                 }
                 else {
-                    if ( !q->isInteractive() ) {
+                    if ( !q->uiDelegateExtension() ) {
                         q->Job::slotResult( job ); // will set the error and emit result(this)
                         return;
                     }
@@ -1252,7 +1253,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     m_fileProcessedSize = (*it).size;
                     files.erase( it );
                 } else {
-                    if ( !q->isInteractive() ) {
+                    if ( !q->uiDelegateExtension() ) {
                         q->Job::slotResult( job ); // will set the error and emit result(this)
                         return;
                     }
@@ -1364,7 +1365,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         if ( !m_bSingleFileCopy )
             mode = (RenameDialog_Mode) ( mode | M_MULTI | M_SKIP );
 
-        res = q->ui()->askFileRename( q, !isDir ?
+        res = q->uiDelegateExtension()->askFileRename( q, !isDir ?
                                    i18n("File Already Exists") : i18n("Already Exists as Folder"),
                                    (*it).uSource,
                                    (*it).uDest,
@@ -1378,14 +1379,14 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
     {
         if ( job->error() == ERR_USER_CANCELED )
             res = R_CANCEL;
-        else if ( !q->isInteractive() ) {
+        else if ( !q->uiDelegateExtension() ) {
             q->Job::slotResult( job ); // will set the error and emit result(this)
             return;
         }
         else
         {
-            SkipDialog_Result skipResult = q->ui()->askSkip( q, files.count() > 1,
-                                                          job->errorString() );
+            SkipDialog_Result skipResult = q->uiDelegateExtension()->askSkip(q, files.count() > 1,
+                                                                              job->errorString());
 
             // Convert the return code from SkipDialog into a RenameDialog code
             res = ( skipResult == S_SKIP ) ? R_SKIP :
@@ -1893,7 +1894,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 destinationState = DEST_NOT_STATED;
                 q->addSubjob(job);
                 return;
-            } else if ( q->isInteractive() ) {
+            } else if ( q->uiDelegateExtension() ) {
                 QString newPath;
                 // we lack mtime info for both the src (not stated)
                 // and the dest (stated but this info wasn't stored)
@@ -1944,7 +1945,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 if (m_reportTimer)
                     m_reportTimer->stop();
 
-                RenameDialog_Result r = q->ui()->askFileRename(
+                RenameDialog_Result r = q->uiDelegateExtension()->askFileRename(
                     q,
                     err != ERR_DIR_ALREADY_EXIST ? i18n("File Already Exists") : i18n("Already Exists as Folder"),
                     m_currentSrcURL,

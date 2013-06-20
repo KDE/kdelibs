@@ -28,6 +28,7 @@
 #include <QLabel>
 
 #include <klocalizedstring.h>
+#include <kio/jobuidelegateextension.h>
 
 using namespace KIO;
 
@@ -66,16 +67,16 @@ SkipDialog::~SkipDialog()
 
 void SkipDialog::cancelPressed()
 {
-  done(S_CANCEL);
+  done(KIO::S_CANCEL);
 }
 
 void SkipDialog::skipPressed()
 {
-  done(S_SKIP);
+  done(KIO::S_SKIP);
 }
 
 void SkipDialog::autoSkipPressed()
 {
-  done(S_AUTO_SKIP);
+  done(KIO::S_AUTO_SKIP);
 }
 

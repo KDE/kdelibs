@@ -70,6 +70,7 @@ namespace KIO {
     Q_DECLARE_OPERATORS_FOR_FLAGS(JobFlags)
 
     class JobUiDelegate;
+    class JobUiDelegateExtension;
 
     class JobPrivate;
     /**
@@ -105,11 +106,23 @@ namespace KIO {
         /**
          * Retrieves the UI delegate of this job.
          *
-         * This method is basically a convenience for static_cast<KIO::JobUiDelegate*>(uiDelegate()).
+         * @deprecated since 5.0, can now be replaced with uiDelegate()
          *
          * @return the delegate used by the job to communicate with the UI
          */
-        JobUiDelegate *ui() const;
+        KJobUiDelegate *ui() const;
+
+        /**
+         * Retrieves the UI delegate extension used by this job.
+         * @since 5.0
+         */
+        JobUiDelegateExtension *uiDelegateExtension() const;
+
+        /**
+         * Sets the UI delegate extension to be used by this job.
+         * The default UI delegate extension is KIO::defaultJobUiDelegateExtension()
+         */
+        void setUiDelegateExtension(JobUiDelegateExtension *extension);
 
     protected:
         /**
@@ -163,15 +176,6 @@ namespace KIO {
          */
         QStringList detailedErrorStrings(const QUrl *reqUrl = 0L,
                                          int method = -1) const;
-
-        /**
-         * Returns whether the user should be asked about things when the job
-         * is unsure, like whether to overwrite existing files etc.
-         * @return true if user interactions are enabled (true by default),
-         *         false if setUiDelegate(0) was called.
-         * @see setUiDelegate()
-         */
-        bool isInteractive() const;
 
         /**
          * Set the parent Job.

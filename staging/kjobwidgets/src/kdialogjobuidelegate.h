@@ -45,6 +45,10 @@ public:
     virtual ~KDialogJobUiDelegate();
 
 public:
+    /**
+     * @reimp
+     */
+    bool setJob( KJob *job ) Q_DECL_OVERRIDE;
 
     /**
      * Associate this job with a window given by @p window.

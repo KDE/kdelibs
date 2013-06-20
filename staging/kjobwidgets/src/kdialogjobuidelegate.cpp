@@ -22,7 +22,7 @@
 #include "kdialogjobuidelegate.h"
 
 #include <kjob.h>
-#include <QPointer>
+#include <kjobwidgets.h>
 #include <QWidget>
 
 #include <config-kjobwidgets.h>
@@ -30,61 +30,48 @@
 #include <QX11Info>
 #endif
 
-class KDialogJobUiDelegate::Private
-{
-public:
-    Private() : userTimestamp(0) { }
-
-    QPointer<QWidget> errorParentWidget;
-    unsigned long userTimestamp;
-};
-
 KDialogJobUiDelegate::KDialogJobUiDelegate()
-    : d(new Private())
+    : d(0)
 {
-    d->errorParentWidget = 0L;
-#if HAVE_X11
-    d->userTimestamp = QX11Info::appUserTime();
-#endif
 }
 
 KDialogJobUiDelegate::~KDialogJobUiDelegate()
 {
-    delete d;
+    //delete d;
+}
+
+bool KDialogJobUiDelegate::setJob(KJob *job)
+{
+    bool ret = KJobUiDelegate::setJob(job);
+#if HAVE_X11
+    if (ret) {
+        unsigned long time = QX11Info::appUserTime();
+        KJobWidgets::updateUserTimestamp(job, time);
+    }
+#endif
+    return ret;
 }
 
 void KDialogJobUiDelegate::setWindow(QWidget *window)
 {
-    d->errorParentWidget = window;
+    Q_ASSERT(job());
+    KJobWidgets::setWindow(job(), window);
 }
 
 QWidget *KDialogJobUiDelegate::window() const
 {
-    return d->errorParentWidget;
+    Q_ASSERT(job());
+    return KJobWidgets::window(job());
 }
 
 void KDialogJobUiDelegate::updateUserTimestamp( unsigned long time )
 {
-#if HAVE_X11
-
-    if( d->userTimestamp == 0 ){
-        d->userTimestamp = time;
-    } else if ( d->userTimestamp != time ) {
-        // on 64bit architectures time is 64bit unsigned long,
-        // so there special care needs to be taken to always use only the lower 32bits
-        quint32 time1 = d->userTimestamp;
-        quint32 time2 = time;
-	 if( quint32( time1 - time2 ) < 0x7fffffffU ){ // time1 > time2 -> 1, handle wrapping
-            d->userTimestamp = time;
-        }
-    }
-
-#endif
+    KJobWidgets::updateUserTimestamp(job(), time);
 }
 
 unsigned long KDialogJobUiDelegate::userTimestamp() const
 {
-    return d->userTimestamp;
+    return KJobWidgets::userTimestamp(job());
 }
 
 void KDialogJobUiDelegate::showErrorMessage()
@@ -92,7 +79,7 @@ void KDialogJobUiDelegate::showErrorMessage()
     if ( job()->error() != KJob::KilledJobError )
     {
 #pragma message("KDE5 TODO: Implement queueing here when jobs will get splitted from kdeui")
-//         KMessageBox::queuedMessageBox( d->errorParentWidget, KMessageBox::Error, job()->errorString() );
+//         KMessageBox::queuedMessageBox(window(), KMessageBox::Error, job()->errorString());
     }
 }
 
@@ -101,6 +88,6 @@ void KDialogJobUiDelegate::slotWarning(KJob* /*job*/, const QString &plain, cons
     if (isAutoWarningHandlingEnabled())
     {
 #pragma message("KDE5 TODO: Implement queueing here when jobs will get splitted from kdeui")
-// 	KMessageBox::queuedMessageBox(d->errorParentWidget, KMessageBox::Information, plain);
+// 	KMessageBox::queuedMessageBox(window(), KMessageBox::Information, plain);
     }
 }

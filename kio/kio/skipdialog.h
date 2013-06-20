@@ -26,8 +26,6 @@ class QWidget;
 
 namespace KIO {
 
-  enum SkipDialog_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
-
 class SkipDialogPrivate;
 /**
  * @internal

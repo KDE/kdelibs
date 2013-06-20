@@ -494,6 +494,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     kDebug() << "Moving" << srcdir << "to" << dest;
     KIO::CopyJob* job = KIO::move(KUrl(srcdir), KUrl(dest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
 
     // wait for kdirnotify
@@ -512,6 +513,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     kDebug() << "Moving" << dest+dir << "back to" << srcdir;
     job = KIO::move(KUrl(dest + dir), KUrl(srcdir), KIO::HideProgressInfo);
     job->setUiDelegate(0);
+    job->setUiDelegateExtension(0);
     QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
 
     enterLoop();
@@ -1196,6 +1198,7 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     PredefinedAnswerJobUiDelegate* delegate = new PredefinedAnswerJobUiDelegate;
     delegate->m_renameResult = KIO::R_OVERWRITE;
     job->setUiDelegate(delegate);
+    job->setUiDelegateExtension(delegate);
     QVERIFY(job->exec());
 
     QCOMPARE(delegate->m_askFileRenameCalled, 1);

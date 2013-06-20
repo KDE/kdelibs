@@ -119,18 +119,18 @@ public:
     {
     }
 
-    virtual KIO::RenameDialog_Result askFileRename(KJob * job,
-                                              const QString & caption,
-                                              const QUrl & src,
-                                              const QUrl & dest,
-                                              KIO::RenameDialog_Mode mode,
-                                              QString& newDest,
-                                              KIO::filesize_t = (KIO::filesize_t) -1,
-                                              KIO::filesize_t = (KIO::filesize_t) -1,
-                                              const QDateTime &  = QDateTime(),
-                                              const QDateTime &  = QDateTime(),
-                                              const QDateTime &  = QDateTime(),
-                                              const QDateTime &  = QDateTime()) Q_DECL_OVERRIDE {
+    KIO::RenameDialog_Result askFileRename(KJob * job,
+                                           const QString & caption,
+                                           const QUrl & src,
+                                           const QUrl & dest,
+                                           KIO::RenameDialog_Mode mode,
+                                           QString& newDest,
+                                           KIO::filesize_t = (KIO::filesize_t) -1,
+                                           KIO::filesize_t = (KIO::filesize_t) -1,
+                                           const QDateTime &  = QDateTime(),
+                                           const QDateTime &  = QDateTime(),
+                                           const QDateTime &  = QDateTime(),
+                                           const QDateTime &  = QDateTime()) Q_DECL_OVERRIDE {
         Q_UNUSED(job)
         Q_UNUSED(caption)
         Q_UNUSED(src)
@@ -141,9 +141,9 @@ public:
         return m_renameResult;
     }
 
-    virtual KIO::SkipDialog_Result askSkip(KJob * job,
-                                      bool multi,
-                                      const QString & error_text)
+    KIO::SkipDialog_Result askSkip(KJob * job,
+                                   bool multi,
+                                   const QString & error_text) Q_DECL_OVERRIDE
     {
         Q_UNUSED(job)
         Q_UNUSED(multi)

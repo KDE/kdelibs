@@ -23,6 +23,7 @@
 #define KIO_JOBUIDELEGATE_H
 
 #include <kdialogjobuidelegate.h>
+#include <kio/jobuidelegateextension.h>
 #include <kio/skipdialog.h>
 #include <kio/renamedialog.h>
 
@@ -34,7 +35,7 @@ class Job;
 /**
  * A UI delegate tuned to be used with KIO Jobs.
  */
-class KIO_EXPORT JobUiDelegate : public KDialogJobUiDelegate
+class KIO_EXPORT JobUiDelegate : public KDialogJobUiDelegate, public JobUiDelegateExtension
 {
     Q_OBJECT
 
@@ -56,7 +57,7 @@ public:
      * @param window the window to associate to
      * @see window()
      */
-    virtual void setWindow(QWidget *window);
+    void setWindow(QWidget *window) Q_DECL_OVERRIDE;
 
     /**
      * \relates KIO::RenameDialog
@@ -78,40 +79,27 @@ public:
      * @param mtimeDest modification time of destination file
      * @return the result
      */
-    virtual RenameDialog_Result askFileRename(KJob * job,
-                                              const QString & caption,
-                                              const QUrl & src,
-                                              const QUrl & dest,
-                                              KIO::RenameDialog_Mode mode,
-                                              QString& newDest,
-                                              KIO::filesize_t sizeSrc = KIO::filesize_t(-1),
-                                              KIO::filesize_t sizeDest = KIO::filesize_t(-1),
-                                              const QDateTime &ctimeSrc = QDateTime(),
-                                              const QDateTime &ctimeDest = QDateTime(),
-                                              const QDateTime &mtimeSrc = QDateTime(),
-                                              const QDateTime &mtimeDest = QDateTime());
+    RenameDialog_Result askFileRename(KJob * job,
+                                      const QString & caption,
+                                      const QUrl & src,
+                                      const QUrl & dest,
+                                      KIO::RenameDialog_Mode mode,
+                                      QString& newDest,
+                                      KIO::filesize_t sizeSrc = KIO::filesize_t(-1),
+                                      KIO::filesize_t sizeDest = KIO::filesize_t(-1),
+                                      const QDateTime &ctimeSrc = QDateTime(),
+                                      const QDateTime &ctimeDest = QDateTime(),
+                                      const QDateTime &mtimeSrc = QDateTime(),
+                                      const QDateTime &mtimeDest = QDateTime()) Q_DECL_OVERRIDE;
 
     /**
      * @internal
      * See skipdialog.h
      */
-    virtual SkipDialog_Result askSkip(KJob * job,
-                                      bool multi,
-                                      const QString & error_text);
+    SkipDialog_Result askSkip(KJob * job,
+                              bool multi,
+                              const QString & error_text) Q_DECL_OVERRIDE;
 
-    /**
-     * The type of deletion: real deletion, moving the files to the trash
-     * or emptying the trash
-     * Used by askDeleteConfirmation.
-     */
-    enum DeletionType { Delete, Trash, EmptyTrash };
-    /**
-     * ForceConfirmation: always ask the user for confirmation
-     * DefaultConfirmation: don't ask the user if he/she said "don't ask again".
-     *
-     * Used by askDeleteConfirmation.
-     */
-    enum ConfirmationType { DefaultConfirmation, ForceConfirmation };
     /**
      * Ask for confirmation before deleting/trashing @p urls.
      *
@@ -125,7 +113,7 @@ public:
      * @return true if confirmed
      */
     bool askDeleteConfirmation(const QList<QUrl>& urls, DeletionType deletionType,
-                               ConfirmationType confirmationType);
+                               ConfirmationType confirmationType) Q_DECL_OVERRIDE;
 
 private:
     class Private;

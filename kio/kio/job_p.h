@@ -27,6 +27,7 @@
 #include "kcompositejob_p.h"
 #include "jobuidelegate.h"
 #include "kjobtrackerinterface.h"
+#include <kio/jobuidelegateextension.h>
 #include <QUrl>
 #include <QPointer>
 
@@ -39,8 +40,10 @@ namespace KIO {
     {
     public:
         JobPrivate()
-            : m_parentJob( 0L ), m_extraFlags(0)
-            {}
+            : m_parentJob( 0L ), m_extraFlags(0),
+            m_uiDelegateExtension(KIO::defaultJobUiDelegateExtension())
+            {
+            }
 
         /**
          * Some extra storage space for jobs that don't have their own
@@ -59,6 +62,7 @@ namespace KIO {
         MetaData m_incomingMetaData;
         MetaData m_internalMetaData;
         MetaData m_outgoingMetaData;
+        JobUiDelegateExtension *m_uiDelegateExtension;
 
         inline KIO::JobUiDelegate *ui() const
             { return static_cast<KIO::JobUiDelegate *>(uiDelegate); }

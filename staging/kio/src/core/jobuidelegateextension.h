@@ -19,8 +19,8 @@
     Boston, MA 02110-1301, USA.
 */
 
-#ifndef KIO_ABSTRACTJOBINTERACTIONINTERFACE_H
-#define KIO_ABSTRACTJOBINTERACTIONINTERFACE_H
+#ifndef KIO_JOBUIDELEGATEEXTENSION_H
+#define KIO_JOBUIDELEGATEEXTENSION_H
 
 #include <kiocore_export.h>
 #include <kio/global.h>
@@ -64,18 +64,18 @@ enum SkipDialog_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
  * \li asking for confirmation before deleting files or directories
  * since 5.0
  */
-class KIOCORE_EXPORT AbstractJobInteractionInterface
+class KIOCORE_EXPORT JobUiDelegateExtension
 {
 protected:
     /**
      * Constructor
      */
-    AbstractJobInteractionInterface();
+    JobUiDelegateExtension();
 
     /**
      * Destructor
      */
-    virtual ~AbstractJobInteractionInterface();
+    virtual ~JobUiDelegateExtension();
 
 public:
 
@@ -154,18 +154,18 @@ private:
 };
 
 /**
- * Returns the default job interaction interface to be used by all KIO jobs (in which HideProgressInfo is not set)
+ * Returns the default job UI delegate extension to be used by all KIO jobs (in which HideProgressInfo is not set)
  * Can return NULL, if no kio GUI library is loaded.
  * @since 5.0
  */
-KIOCORE_EXPORT AbstractJobInteractionInterface *defaultJobInteractionInterface();
+KIOCORE_EXPORT JobUiDelegateExtension *defaultJobUiDelegateExtension();
 
 /**
- * Internal. Allows the KIO widgets library to register its widget-based job interaction interface
+ * Internal. Allows the KIO widgets library to register its widget-based job UI delegate extension
  * automatically.
  * @since 5.0
  */
-KIOCORE_EXPORT void setDefaultJobInteractionInterface(AbstractJobInteractionInterface* interf);
+KIOCORE_EXPORT void setDefaultJobUiDelegateExtension(JobUiDelegateExtension* extension);
 
 } // namespace KIO
 

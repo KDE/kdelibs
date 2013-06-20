@@ -36,7 +36,7 @@
 #include <kdirnotify.h>
 #include "kprotocolmanager.h"
 
-#include "jobuidelegate.h" // GUI!!!
+#include <kio/jobuidelegateextension.h>
 #include "slave.h"
 #include "scheduler.h"
 
@@ -66,9 +66,22 @@ Job::~Job()
 {
 }
 
-JobUiDelegate *Job::ui() const
+// Exists for historical reasons only
+KJobUiDelegate *Job::ui() const
 {
-    return static_cast<JobUiDelegate*>( uiDelegate() );
+    return uiDelegate();
+}
+
+JobUiDelegateExtension *Job::uiDelegateExtension() const
+{
+    Q_D(const Job);
+    return d->m_uiDelegateExtension;
+}
+
+void Job::setUiDelegateExtension(JobUiDelegateExtension *extension)
+{
+    Q_D(Job);
+    d->m_uiDelegateExtension = extension;
 }
 
 bool Job::addSubjob(KJob *jobBase)
@@ -87,8 +100,8 @@ bool Job::addSubjob(KJob *jobBase)
                 SLOT(slotSpeed(KJob*,ulong)));
 
         if (ui() && job->ui()) {
-            job->ui()->setWindow( ui()->window() );
-            job->ui()->updateUserTimestamp( ui()->userTimestamp() );
+            job->setProperty("window", property("window")); // see KJobWidgets
+            job->setProperty("userTimestamp", property("userTimestamp")); // see KJobWidgets
         }
     }
     return ok;
@@ -190,11 +203,6 @@ void JobPrivate::slotSpeed( KJob*, unsigned long speed )
 }
 
 //Job::errorString is implemented in job_error.cpp
-
-bool Job::isInteractive() const
-{
-  return uiDelegate() != 0;
-}
 
 void Job::setParentJob(Job* job)
 {
@@ -386,7 +394,7 @@ void SimpleJobPrivate::start(Slave *slave)
 
     if (ui() && ui()->window())
     {
-        m_outgoingMetaData.insert("window-id", QString::number((qptrdiff)ui()->window()->winId()));
+        m_outgoingMetaData.insert("window-id", QString::number(q->property("window-id").toULongLong())); // see KJobWidgets::setWindow
     }
 
     if (ui() && ui()->userTimestamp())
@@ -2076,7 +2084,7 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
                 QString newPath;
                 KIO::Job* job = ( q->parentJob() ) ? q->parentJob() : q;
                 // Ask confirmation about resuming previous transfer
-                res = ui()->askFileRename(
+                res = q->uiDelegateExtension()->askFileRename(
                       job, i18n("File Already Exists"),
                       m_src,
                       m_dest,
