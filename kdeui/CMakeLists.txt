@@ -141,6 +141,9 @@ set(kdeui_LIB_SRCS
  xmlgui/ktoolbar.cpp
 )
 
+if (X11_FOUND)
+    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kxerrorhandler.cpp )
+endif (X11_FOUND)
 
 message("Port to Qt5 native filter")
 #if (X11_FOUND AND X11_Xkb_FOUND)
@@ -280,6 +283,7 @@ install( FILES
  util/kmodifierkeyinfo.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
+ util/kxerrorhandler.h
  util/kundoactions.h
  widgets/kcmodule.h
  widgets/kcombobox.h

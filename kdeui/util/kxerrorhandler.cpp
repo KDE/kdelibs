@@ -22,10 +22,7 @@
 
 */
 
-#include "kxerrorhandler_p.h"
-#include <config-kwindowsystem.h>
-
-#if HAVE_X11 //FIXME
+#include "kxerrorhandler.h"
 
 #include "netwm_def.h"
 
@@ -59,6 +56,17 @@ KXErrorHandler::KXErrorHandler( Display* dpy )
     addHandler();
     }
 
+#ifndef KDE_NO_DEPRECATED
+KXErrorHandler::KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy )
+    :   user_handler1( handler ),
+        user_handler2( NULL ),
+        old_handler( XSetErrorHandler( handler_wrapper )),
+        d( new KXErrorHandlerPrivate(dpy) )
+    {
+    addHandler();
+    }
+#endif
+
 KXErrorHandler::KXErrorHandler( int (*handler)( Display*, XErrorEvent* ), Display* dpy )
     :   user_handler1( NULL ),
         user_handler2( handler ),
@@ -81,7 +89,7 @@ void KXErrorHandler::addHandler()
     if( size == pos )
         {
         size += 16;
-        handlers = static_cast< KXErrorHandler** >( realloc( handlers, size * sizeof( KXErrorHandler* )));
+        handlers = static_cast< KXErrorHandler** >( qRealloc( handlers, size * sizeof( KXErrorHandler* )));
         }
     handlers[ pos++ ] = this;
     }
@@ -246,5 +254,3 @@ QByteArray KXErrorHandler::errorMessage( const XErrorEvent& event, Display* dpy 
 #endif
     return ret;
     }
-
-#endif

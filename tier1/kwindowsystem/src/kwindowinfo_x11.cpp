@@ -23,7 +23,7 @@
 #include "kwindowsystem.h"
 
 #include <QDebug>
-#include <kxerrorhandler.h>
+#include <kxerrorhandler_p.h>
 #include <netwm.h>
 #include <QBitmap>
 #include <QDesktopWidget>

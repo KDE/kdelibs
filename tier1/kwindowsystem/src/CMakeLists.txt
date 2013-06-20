@@ -81,7 +81,6 @@ install( FILES
    kwindowinfo.h
    kwindowsystem.h
    kxmessages.h
-   kxerrorhandler.h
    kmanagerselection.h
    netwm_def.h
    netwm.h
