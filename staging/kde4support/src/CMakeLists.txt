@@ -85,6 +85,10 @@ set(libkde4support_SRCS
     kparts/factory.cpp
 )
 
+if (X11_FOUND)
+   set(libkde4support_SRCS ${libkde4support_SRCS} kdeui/kxerrorhandler.cpp )
+endif (X11_FOUND)
+
 if (WIN32)
     set(libkde4support_SRCS ${libkde4support_SRCS} kernel/kapplication_win.cpp kdecore/klockfile_win.cpp)
 else()
@@ -192,6 +196,7 @@ install(FILES
     kdeui/keditlistbox.h
     kdeui/knuminput.h
     kdeui/kviewstatesaver.h
+    kdeui/kxerrorhandler.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

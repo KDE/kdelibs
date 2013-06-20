@@ -28,7 +28,7 @@
 #include <QWidget>
 #include <QWidgetList>
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 #include <QX11Info>
 #include <X11/Xlib.h>
 
@@ -57,7 +57,7 @@ class KXErrorHandlerPrivate;
  * @author Lubos Lunak <l.lunak@kde.org>
  * @short Handler for X errors
  */
-class KDEUI_EXPORT KXErrorHandler
+class KDE4SUPPORT_DEPRECATED_EXPORT KXErrorHandler
     {
     public:
         /**
@@ -79,7 +79,7 @@ class KDEUI_EXPORT KXErrorHandler
          * @deprecated Use the variant with XErrorEvent.
          */
 #ifndef KDE_NO_DEPRECATED
-        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display()) KDEUI_DEPRECATED;
+        explicit KXErrorHandler( bool (*handler)( int request, int error_code, unsigned long resource_id ), Display* dpy = QX11Info::display()) KDE4SUPPORT_DEPRECATED;
 #endif
         /**
          * This function returns true if the error flag is set (i.e. no custom handler

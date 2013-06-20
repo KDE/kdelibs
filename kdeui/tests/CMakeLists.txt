@@ -59,16 +59,12 @@ KDEUI_EXECUTABLE_TESTS(
 
 if (X11_FOUND)
 find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-KDEUI_EXECUTABLE_TESTS(
- kxerrorhandlertest
-)
 
 # TODO! PORT TO NEW KManagerSelection API!
 #KDEUI_UNIT_TESTS(
 #kmanagerselectiontest
 #)
 #target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
-target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
 endif (X11_FOUND)
 
 ## kcolorutilsdemo

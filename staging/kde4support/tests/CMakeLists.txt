@@ -29,3 +29,12 @@ kde4support_examples(
   kinputdialogtest
 )
 
+if (X11_FOUND)
+find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+kde4support_examples(
+ kxerrorhandlertest
+)
+
+target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
+endif (X11_FOUND)
+
