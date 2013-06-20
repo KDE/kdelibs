@@ -34,6 +34,7 @@
 #include <kprotocolmanager.h>
 #include <kjobuidelegate.h>
 #include <krun.h>
+#include <kjobwidgets.h>
 
 #include <kstandardshortcut.h>
 #include <kurl.h>
@@ -129,7 +130,7 @@ static bool downloadResource (const KUrl& srcUrl, const QString& suggestedName =
 
     job->addMetaData(QL1S("MaxCacheSize"), QL1S("0")); // Don't store in http cache.
     job->addMetaData(QL1S("cache"), QL1S("cache")); // Use entry from cache if available.
-    job->ui()->setWindow((parent ? parent->window() : 0));
+    KJobWidgets::setWindow(job, parent ? parent->window() : 0);
     job->ui()->setAutoErrorHandlingEnabled(true);
     return true;
 }
@@ -329,7 +330,7 @@ void KWebPage::downloadRequest(const QNetworkRequest& request)
     job->setMetaData(request.attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData)).toMap());
     job->addMetaData(QL1S("MaxCacheSize"), QL1S("0")); // Don't store in http cache.
     job->addMetaData(QL1S("cache"), QL1S("cache")); // Use entry from cache if available.
-    job->ui()->setWindow(d->windowWidget());
+    KJobWidgets::setWindow(job, d->windowWidget());
 }
 
 void KWebPage::downloadUrl(const QUrl &url)
@@ -525,7 +526,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                     tempFile.open();
                     const QUrl destUrl = QUrl::fromLocalFile(tempFile.fileName());
                     KIO::Job *job = KIO::file_copy(replyUrl, destUrl, 0600, KIO::Overwrite);
-                    job->ui()->setWindow(d->windowWidget());
+                    KJobWidgets::setWindow(job, d->windowWidget());
                     job->ui()->setAutoErrorHandlingEnabled(true);
                     connect(job, SIGNAL(result(KJob*)),
                             this, SLOT(_k_copyResultToTempFile(KJob*)));
