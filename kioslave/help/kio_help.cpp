@@ -20,7 +20,7 @@
 */
 
 
-#include <config-kdoctools.h>
+#include <config-help.h>
 
 #include "kio_help.h"
 #include "xslt.h"

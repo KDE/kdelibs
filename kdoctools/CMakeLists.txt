@@ -76,32 +76,6 @@ ADD_LIBRARY( xslt_kde STATIC
 
 target_link_libraries(xslt_kde Qt5::Core ${KArchive_LIBRARIES})
 
-set(kio_help_PART_SRCS
-    kio_help.cpp
-    main.cpp
-    xslt_help.cpp
-)
-
-
-kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
-
-target_link_libraries(kio_help ki18n ${KArchive_LIBRARIES} kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
-
-install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
-########### next target ###############
-
-set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt.cpp xslt_help.cpp xslt_kde.cpp )
-
-
-kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
-
-target_link_libraries(kio_ghelp ki18n ${KArchive_LIBRARIES} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
-
-install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
-
-
 ########### next target ###############
 
 set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
@@ -185,8 +159,6 @@ endforeach( _kdeincludexslt ${_kdeincludexslt_ALL} )
 
 ########### install files ###############
 
-install( FILES help.protocol ghelp.protocol  DESTINATION  ${SERVICES_INSTALL_DIR} )
-
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
 
 macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
@@ -243,8 +215,6 @@ foreach (_currentcustomizedir ${customizedir})
 	install_customize_l_dir(${expr} customization/${_currentcustomizedir}/)
 
 endforeach(_currentcustomizedir ${customizedir})
-
-
 
 ########### l10n xml helper ###############
 
