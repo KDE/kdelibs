@@ -44,6 +44,8 @@ set_package_properties(DocBookXSL PROPERTIES DESCRIPTION "DocBook XSL"
                        PURPOSE "Required by the KDE help system to process DocBook XML"
                       )
 
+find_package(Qt5Core 5.2.0 REQUIRED NO_MODULE)
+
 set (_custom_dtd_kdex "customization/dtd/kdex.dtd")
 configure_file(${_custom_dtd_kdex}.cmake ${CMAKE_CURRENT_BINARY_DIR}/${_custom_dtd_kdex} )
 # WARNING: this is due to severe limitations on the windows platform to keep the dtd relocateable
@@ -63,22 +65,27 @@ configure_file(config-kdoctools.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdoct
 
 ########### next target ###############
 
-# TODO: in kdoctools, compile xslt.cpp and xslt_kde.cpp into a static library (with -fPIC), which kio_help
-# will link to (from a different source dir, to extract the dependency on KIO).
-# It can't be a shared lib because of cross-compiling: meinproc is a host tool while kio_help is a target tool.
+set(xslt_PART_SRCS
+    xslt.cpp
+    xslt_kde.cpp
+)
+
+ADD_LIBRARY( xslt_kde STATIC
+    ${xslt_PART_SRCS}
+)
+
+target_link_libraries(xslt_kde Qt5::Core ${KArchive_LIBRARIES})
 
 set(kio_help_PART_SRCS
-   kio_help.cpp
-   main.cpp
-   xslt.cpp
-   xslt_help.cpp
-   xslt_kde.cpp
+    kio_help.cpp
+    main.cpp
+    xslt_help.cpp
 )
 
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
-target_link_libraries(kio_help ki18n ${KArchive_LIBRARIES} kio ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
+target_link_libraries(kio_help ki18n ${KArchive_LIBRARIES} kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
 install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
