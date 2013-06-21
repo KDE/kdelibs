@@ -825,6 +825,52 @@ void KConfigTest::testEmptyGroup()
     QVERIFY(lines.first() != QByteArray("TestKey=defaultGroup\n"));
 }
 
+void KConfigTest::testCascadingWithLocale()
+{
+    KTempDir middleDir;
+    KGlobal::dirs()->addPrefix(middleDir.name());
+    KTempDir globalDir;
+    KGlobal::dirs()->addPrefix(globalDir.name());
+
+    const QString globalConfigDir = globalDir.name() + "/share/config";
+    QVERIFY(QDir().mkpath(globalConfigDir));
+    QFile global(globalConfigDir + "/foo.desktop");
+    QVERIFY(global.open(QIODevice::WriteOnly|QIODevice::Text));
+    QTextStream globalOut(&global);
+    globalOut << "[Group]" << endl
+              << "FromGlobal=true" << endl
+              << "FromGlobal[fr]=vrai" << endl
+              << "Name=Testing" << endl
+              << "Name[fr]=FR" << endl
+              << "Other=Global" << endl
+              << "Other[fr]=Global_FR" << endl;
+    global.close();
+
+    const QString middleConfigDir = middleDir.name() + "/share/config";
+    QVERIFY(QDir().mkpath(middleConfigDir));
+    QFile local(middleConfigDir + "/foo.desktop");
+    QVERIFY(local.open(QIODevice::WriteOnly|QIODevice::Text));
+    QTextStream out(&local);
+    out << "[Group]" << endl
+        << "FromLocal=true" << endl
+        << "FromLocal[fr]=vrai" << endl
+        << "Name=Local Testing" << endl
+        << "Name[fr]=FR" << endl
+        << "Other=English Only" << endl;
+    local.close();
+
+    KConfig config("foo.desktop");
+    KConfigGroup group = config.group("Group");
+    QCOMPARE(group.readEntry("FromGlobal"), QString("true"));
+    QCOMPARE(group.readEntry("FromLocal"), QString("true"));
+    QCOMPARE(group.readEntry("Name"), QString("Local Testing"));
+    config.setLocale("fr");
+    QCOMPARE(group.readEntry("FromGlobal"), QString("vrai"));
+    QCOMPARE(group.readEntry("FromLocal"), QString("vrai"));
+    QCOMPARE(group.readEntry("Name"), QString("FR"));
+    QCOMPARE(group.readEntry("Other"), QString("English Only")); // Global_FR is locally overriden
+}
+
 void KConfigTest::testMerge()
 {
     KConfig config("mergetest", KConfig::SimpleConfig);
