@@ -99,25 +99,6 @@ public:
      */
     virtual QList<QAction*> actions(const KFileItemListProperties &fileItemInfos,
                                     QWidget *parentWidget) = 0;
-
-    /**
-     * Determine if the plugin's actions should be added to the context menu
-     * by default, i.e., even if the user did not enable the plugin explicity.
-     * The default value is true. You might want to change this setting to
-     * false if the the overridden function \a actions does things that might
-     * not be desirable for users who did not enable the plugin explicitly.
-     *
-     * @since 4.11
-     */
-    void setEnabledByDefault(bool enabled);
-
-    /**
-     * Returns if the plugin's action should be added to the context menu by
-     * default, i.e., even if the user did not enable the plugin explicitly.
-     *
-     * @since 4.11
-     */
-    bool enabledByDefault() const;
 };
 
 #endif
