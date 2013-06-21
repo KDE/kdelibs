@@ -59,7 +59,7 @@ protected:
         return QObject::event(e);
     }
 
-public slots:
+public Q_SLOTS:
     void incubate()
     {
         if (incubatingObjectCount()) {
