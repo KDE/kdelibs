@@ -30,7 +30,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QVariant>
 #include <QtDBus/QtDBus>
-#include <kiocore_export.h>
+#include <kio/kiocore_export.h>
 
 /**
  * \class OrgKdeKDirNotifyInterface kdirnotify.h KDirNotify
