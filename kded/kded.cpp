@@ -574,6 +574,8 @@ void Kded::recreateDone()
    {
       m_pTimer->start(2000);
       m_recreateCount = m_recreateRequests.count();
+   } else {
+       initModules();
    }
 }
 
@@ -843,8 +845,6 @@ public:
 
 //          if (bCheckHostname)
 //             (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
-
-          kded->initModules();
        } else
           runBuildSycoca();
 
