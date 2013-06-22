@@ -724,17 +724,17 @@ void KACLListView::fillItemsFromACL( const KACL &pACL, bool defaults )
         if ( item->isDefault == defaults )
             delete item;
     }
-    KACLListViewItem *item =
-        new KACLListViewItem( this, User, pACL.ownerPermissions(), defaults );
 
-    item = new KACLListViewItem( this, Group, pACL.owningGroupPermissions(), defaults );
+    new KACLListViewItem( this, User, pACL.ownerPermissions(), defaults );
 
-    item = new KACLListViewItem( this, Others, pACL.othersPermissions(), defaults );
+    new KACLListViewItem( this, Group, pACL.owningGroupPermissions(), defaults );
+
+    new KACLListViewItem( this, Others, pACL.othersPermissions(), defaults );
 
     bool hasMask = false;
     unsigned short mask = pACL.maskPermissions( hasMask );
     if ( hasMask ) {
-        item = new KACLListViewItem( this, Mask, mask, defaults );
+        new KACLListViewItem( this, Mask, mask, defaults );
     }
 
     // read all named user entries
