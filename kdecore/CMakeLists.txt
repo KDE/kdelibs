@@ -245,6 +245,7 @@ set(kdecore_LIB_SRCS
    kernel/kauthorized.cpp
    kernel/kaboutdata.cpp
    kernel/kcmdlineargs.cpp
+   kernel/kdbusconnectionpool.cpp
    kernel/kglobal.cpp
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
@@ -594,6 +595,7 @@ install( FILES
    kernel/kaboutdata.h
    kernel/kauthorized.h
    kernel/kcmdlineargs.h
+   kernel/kdbusconnectionpool.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
    kernel/kstandarddirs.h
