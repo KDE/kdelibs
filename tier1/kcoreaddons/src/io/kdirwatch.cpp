@@ -1747,9 +1747,7 @@ KDirWatch* KDirWatch::self()
 // <dfaure> yes, see kio/kdirlister_p.h:328
 bool KDirWatch::exists()
 {
-#pragma message("Qt5 TODO: use new Q_GLOBAL_STATIC isDestroyed")
-//  return s_pKDirWatchSelf.exists();
-    return true;
+  return s_pKDirWatchSelf.exists();
 }
 
 static void cleanupQFSWatcher()

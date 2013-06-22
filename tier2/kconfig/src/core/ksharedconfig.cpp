@@ -87,14 +87,7 @@ KSharedConfig::KSharedConfig(const QString &fileName,
 
 KSharedConfig::~KSharedConfig()
 {
-#ifdef __GNUC__
-#warning Qt5: re-enable once the new Q_GLOBAL_STATIC is in
-#endif
-#if 0
     if (!globalSharedConfigList.isDestroyed())
-#else
-    if (globalSharedConfigList())
-#endif
         globalSharedConfigList()->removeAll(this);
 }
 

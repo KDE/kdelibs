@@ -1330,8 +1330,7 @@ KCmdLineArgs::KCmdLineArgs( const KCmdLineOptions &_options,
  */
 KCmdLineArgs::~KCmdLineArgs()
 {
-#pragma message("Qt5 TODO: use new Q_GLOBAL_STATIC isDestroyed")
-  if (/* Qt5 TODO !staticObj()->isDestroyed() &&*/ staticObj()->argsList)
+  if (!staticObj.isDestroyed() && staticObj()->argsList)
      staticObj()->argsList->removeAll(this);
   delete d;
 }
