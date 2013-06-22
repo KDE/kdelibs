@@ -48,7 +48,7 @@ static const char s_statusNotifierWatcherServiceName[] = "org.kde.StatusNotifier
 
 #include "statusnotifieritemadaptor.h"
 
-const int KStatusNotifierItemPrivate::s_legacyTrayIconSize = 24;
+static const int s_legacyTrayIconSize = 24;
 
 /**
  * Specialization to provide access to KDE icon names
@@ -217,9 +217,9 @@ void KStatusNotifierItem::setOverlayIconByName(const QString &name)
     d->overlayIconName = name;
     emit d->statusNotifierItemDBus->NewOverlayIcon();
     if (d->systemTrayIcon) {
-        QPixmap iconPixmap = QIcon::fromTheme(d->iconName).pixmap(d->s_legacyTrayIconSize, d->s_legacyTrayIconSize);
+        QPixmap iconPixmap = QIcon::fromTheme(d->iconName).pixmap(s_legacyTrayIconSize, s_legacyTrayIconSize);
         if (!name.isEmpty()) {
-            QPixmap overlayPixmap = QIcon::fromTheme(d->overlayIconName).pixmap(d->s_legacyTrayIconSize/2, d->s_legacyTrayIconSize/2);
+            QPixmap overlayPixmap = QIcon::fromTheme(d->overlayIconName).pixmap(s_legacyTrayIconSize/2, s_legacyTrayIconSize/2);
             QPainter p(&iconPixmap);
             p.drawPixmap(iconPixmap.width()-overlayPixmap.width(), iconPixmap.height()-overlayPixmap.height(), overlayPixmap);
             p.end();
@@ -245,8 +245,8 @@ void KStatusNotifierItem::setOverlayIconByPixmap(const QIcon &icon)
 
     d->overlayIcon = icon;
     if (d->systemTrayIcon) {
-        QPixmap iconPixmap = d->icon.pixmap(d->s_legacyTrayIconSize, d->s_legacyTrayIconSize);
-        QPixmap overlayPixmap = d->overlayIcon.pixmap(d->s_legacyTrayIconSize/2, d->s_legacyTrayIconSize/2);
+        QPixmap iconPixmap = d->icon.pixmap(s_legacyTrayIconSize, s_legacyTrayIconSize);
+        QPixmap overlayPixmap = d->overlayIcon.pixmap(s_legacyTrayIconSize/2, s_legacyTrayIconSize/2);
 
         QPainter p(&iconPixmap);
         p.drawPixmap(iconPixmap.width()-overlayPixmap.width(), iconPixmap.height()-overlayPixmap.height(), overlayPixmap);
