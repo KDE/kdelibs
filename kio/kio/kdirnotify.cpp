@@ -10,6 +10,7 @@
  */
 
 #include "kdirnotify.h"
+#include <kdbusconnectionpool.h> // HAND-EDIT
 
 /*
  * Implementation of interface class OrgKdeKDirNotifyInterface
@@ -29,7 +30,8 @@ static void emitSignal(const QString &signalName, const QVariantList &args)
     QDBusMessage message =
         QDBusMessage::createSignal("/", QLatin1String(org::kde::KDirNotify::staticInterfaceName()), signalName);
     message.setArguments(args);
-    QDBusConnection::sessionBus().send(message);
+    // HAND-EDIT
+    KDBusConnectionPool::threadConnection().send(message);
 }
 
 void OrgKdeKDirNotifyInterface::emitFileRenamed(const QString &src, const QString &dst)
