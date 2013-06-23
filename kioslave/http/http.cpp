@@ -394,6 +394,7 @@ HTTPProtocol::HTTPProtocol( const QByteArray &protocol, const QByteArray &pool,
     , m_iError(0)
     , m_isLoadingErrorPage(false)
     , m_remoteRespTimeout(DEFAULT_RESPONSE_TIMEOUT)
+    , m_iEOFRetryCount(0)
 {
     reparseConfiguration();
     setBlocking(true);
@@ -552,6 +553,9 @@ void HTTPProtocol::resetSessionSettings()
 
   // Reset the post data size
   m_iPostDataSize = NO_SIZE;
+
+  // Reset the EOF retry counter
+  m_iEOFRetryCount = 0;
 }
 
 void HTTPProtocol::setHost( const QString& host, quint16 port,
@@ -2934,9 +2938,9 @@ try_again:
     bool foundDelimiter = readDelimitedText(buffer, &bufPos, maxHeaderSize, 1);
     if (!foundDelimiter && bufPos < maxHeaderSize) {
         kDebug(7113) << "EOF while waiting for header start.";
-        if (m_request.isKeepAlive) {
-            // Try to reestablish connection.
-            httpCloseConnection();
+        if (m_request.isKeepAlive && m_iEOFRetryCount < 2) {
+            m_iEOFRetryCount++;
+            httpCloseConnection(); // Try to reestablish connection.
             return false; // Reestablish connection and try again.
         }
 
