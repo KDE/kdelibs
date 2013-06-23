@@ -582,6 +582,9 @@ protected:
   // Values that determine the remote connection timeouts.
   int m_remoteRespTimeout;
 
+  // EOF Retry count
+  quint8 m_iEOFRetryCount;
+
   QByteArray m_unreadBuf;
   void clearUnreadBuffer();
   void unread(char *buf, size_t size);
