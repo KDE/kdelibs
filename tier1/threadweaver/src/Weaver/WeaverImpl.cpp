@@ -36,6 +36,7 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 #include <QtCore/QDebug>
 
 #include "Job.h"
+#include "ManagedJobPointer.h"
 #include "State.h"
 #include "Thread.h"
 #include "ThreadWeaver.h"
@@ -222,6 +223,11 @@ void WeaverImpl::enqueue(JobPointer job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     state()->enqueue(job);
+}
+
+void WeaverImpl::enqueueJob(Job *job)
+{
+    enqueue(ManagedJobPointer(job));
 }
 
 void WeaverImpl::enqueue_p(JobPointer job)

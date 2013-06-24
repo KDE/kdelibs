@@ -81,6 +81,9 @@ protected:
     /** Provide correct return type for WeaverImpl states. */
     WeaverImpl* weaver();
     const WeaverImpl* weaver() const;
+private:
+    /** Enqueue a naked job. Not implemented. */
+    void enqueueJob(Job* job);
 };
 
 }

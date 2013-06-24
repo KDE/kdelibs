@@ -8,6 +8,7 @@ set(ThreadWeaver_LIB_SRCS
     DebuggingAids.cpp
     Thread.cpp
     Job.cpp
+    ManagedJobPointer.cpp
     Executor.cpp
     ExecuteWrapper.cpp
     State.cpp

@@ -30,6 +30,7 @@
 #define JOBCOLLECTION_H
 
 #include "Job.h"
+#include "JobPointer.h"
 
 namespace ThreadWeaver {
 
@@ -58,13 +59,19 @@ public:
      * the collection has been queued, no further Jobs are supposed to be added.
      *
      * @note Once the job has been added, execute wrappers ca no more be set on it */
-    virtual void addJob ( Job* );
+    virtual void addJob(JobPointer);
+    /** Append an naked job pointer to the collection.
+     *
+     * Use this overloaded method to queue jobs that are memory-managed by the caller, instead of being
+     * QSharedPointers. */
+    //TODO naming
+    virtual void addNakedJob(Job* job);
 
 public Q_SLOTS:
     /** Stop processing, dequeue all remaining Jobs.
      * job is supposed to be an element of the collection.
      */
-    void stop ( ThreadWeaver::Job *job );
+    void stop(ThreadWeaver::JobPointer job);
 
 protected:
     /** Overload to queue the collection. */
@@ -74,7 +81,7 @@ protected:
     void aboutToBeDequeued_locked ( QueueAPI *api );
 
     /** Return a reference to the job in the job list at position i. */
-    Job* jobAt( int i );
+    JobPointer jobAt(int i);
 
     /** Return the number of jobs in the joblist. */
     int jobListLength() const;

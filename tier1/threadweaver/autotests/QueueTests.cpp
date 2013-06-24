@@ -58,7 +58,7 @@ void SecondThreadThatQueues::run ()
     QString sequence;
     AppendCharacterJob a( 'a', &sequence );
 
-    ThreadWeaver::Weaver::instance()->enqueue ( &a );
+    ThreadWeaver::Weaver::instance()->enqueueJob(&a);
     ThreadWeaver::Weaver::instance()->finish();
     QCOMPARE( sequence, QString("a" ) );
 }
@@ -87,9 +87,9 @@ void QueueTests::SimpleQueuePrioritiesTest() {
 
     weaver.suspend();
 
-    weaver.enqueue ( & jobA );
-    weaver.enqueue ( & jobB );
-    weaver.enqueue ( & jobC );
+    weaver.enqueueJob( & jobA );
+    weaver.enqueueJob( & jobB );
+    weaver.enqueueJob( & jobC );
 
     weaver.resume();
     weaver.finish();
@@ -131,14 +131,14 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
     AppendCharacterJob b( QChar( 'b' ), &sequence );
     AppendCharacterJob c( QChar( 'c' ), &sequence );
     ThreadWeaver::JobCollection jobCollection( this );
-    jobCollection.addJob ( autoDeleteJob );
-    jobCollection.addJob ( &b );
-    jobCollection.addJob ( &c);
+    jobCollection.addNakedJob(autoDeleteJob);
+    jobCollection.addNakedJob(&b);
+    jobCollection.addNakedJob(&c);
 
     QVERIFY( autoDeleteJob != 0 );
     connect( autoDeleteJob, SIGNAL(done(ThreadWeaver::Job*)),
              SLOT(deleteJob(ThreadWeaver::Job*)) );
-    ThreadWeaver::Weaver::instance()->enqueue ( &jobCollection );
+    ThreadWeaver::Weaver::instance()->enqueueJob(&jobCollection);
     QTest::qWait(100); // return to event queue to make sure signals are delivered
     ThreadWeaver::Weaver::instance()->finish();
     QTest::qWait(100); // return to event queue to make sure signals are delivered
@@ -163,10 +163,10 @@ void QueueTests::DeleteCollectionOnDoneTest()
 
     AppendCharacterJob a( QChar( 'a' ), &sequence );
     AppendCharacterJob b( QChar( 'b' ), &sequence );
-    autoDeleteCollection->addJob( &a );
-    autoDeleteCollection->addJob( &b );
+    autoDeleteCollection->addNakedJob(&a);
+    autoDeleteCollection->addNakedJob(&b);
 
-    ThreadWeaver::Weaver::instance()->enqueue( autoDeleteCollection );
+    ThreadWeaver::Weaver::instance()->enqueueJob(autoDeleteCollection);
     // return to event queue to make sure signals are delivered
     // (otherwise, no slot calls would happen before the end of this function)
     // I assume the amount of time that we wait does not matter

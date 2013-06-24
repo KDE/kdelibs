@@ -28,6 +28,7 @@ http://creative-destruction.me $
 
 #include "QueueAPI.h"
 #include "DebuggingAids.h"
+#include "ManagedJobPointer.h"
 
 #include <QtCore/QList>
 #include <QtCore/QObject>
@@ -78,7 +79,7 @@ public:
 class JobCollection::Private
 {
 public:
-    typedef QList<Job*> JobList;
+    typedef QList<JobPointer> JobList;
 
     Private()
         : api ( 0 )
@@ -126,7 +127,7 @@ JobCollection::~JobCollection()
     delete d;
 }
 
-void JobCollection::addJob ( Job *job )
+void JobCollection::addJob(JobPointer job)
 {
     QMutexLocker l(mutex()); Q_UNUSED(l);
     REQUIRE( d->api == 0 ); // not queued yet
@@ -138,13 +139,18 @@ void JobCollection::addJob ( Job *job )
     d->elements.append(job);
 }
 
-void JobCollection::stop(Job *job)
+void JobCollection::addNakedJob(Job *job)
+{
+    addJob(ManagedJobPointer(job));
+}
+
+void JobCollection::stop(JobPointer job)
 {
     Q_UNUSED( job );
     QMutexLocker l(mutex()); Q_UNUSED(l);
     if ( d->api != 0 ) {
         debug( 4, "JobCollection::stop: dequeueing %p.\n", (void*)this);
-        if (!d->api->dequeue(this)) {
+        if (!d->api->dequeue(JobPointer(this))) {
             dequeueElements(false);
         }
     }
@@ -172,7 +178,7 @@ void JobCollection::execute(Thread *thread)
     {
         QMutexLocker l(mutex()); Q_UNUSED(l);
         d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
-        Q_FOREACH(Job* child, d->elements) {
+        Q_FOREACH(JobPointer child, d->elements) {
             d->api->enqueue(child);
         }
     }
@@ -202,7 +208,7 @@ void JobCollection::elementFinished(Job*, Thread *thread)
     }
 }
 
-Job* JobCollection::jobAt( int i )
+JobPointer JobCollection::jobAt(int i)
 {
     Q_ASSERT(!mutex()->tryLock());
     Q_ASSERT(i >= 0 && i < d->elements.size() );
@@ -234,7 +240,7 @@ void JobCollection::dequeueElements(bool queueApiIsLocked)
     if ( d->api == 0 ) return; //not queued
 
     for ( int index = 0; index < d->elements.size(); ++index ) {
-        debug(4, "JobCollection::dequeueElements: dequeueing %p.\n", (void*)d->elements.at(index));
+        debug(4, "JobCollection::dequeueElements: dequeueing %p.\n", (void*)d->elements.at(index).data());
         if (queueApiIsLocked) {
             d->api->dequeue_p(d->elements.at(index));
         } else {
