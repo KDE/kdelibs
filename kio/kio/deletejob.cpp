@@ -25,7 +25,6 @@
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
-#include "jobuidelegate.h"
 #include <kdirnotify.h>
 
 #include <klocalizedstring.h>

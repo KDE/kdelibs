@@ -34,8 +34,8 @@
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
+#include <kio/renamedialog.h>
 
-#include "jobuidelegate.h" // GUI!!!
 #include <jobuidelegateextension.h>
 #include <kio/jobuidelegatefactory.h>
 

@@ -31,6 +31,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QImage>
+#include <QPixmap>
 #include <QtCore/QTimer>
 #include <QtCore/QRegExp>
 #include <qtemporaryfile.h>
@@ -49,7 +50,6 @@
 #include <qurlpathinfo.h>
 #include <qstandardpaths.h>
 
-#include "jobuidelegate.h"
 #include "job_p.h"
 
 namespace KIO { struct PreviewItem; }

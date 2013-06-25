@@ -27,10 +27,10 @@
 #include <kio/job.h>
 #include <kio/mkdirjob.h>
 #include <kjobwidgets.h>
-#include <kio/jobuidelegate.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kjobtrackerinterface.h>
+#include <kio/jobuidelegate.h>
 #include <qurlpathinfo.h>
 
 #include <QDateTime>

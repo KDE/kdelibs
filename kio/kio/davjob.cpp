@@ -29,7 +29,6 @@
 #include "job.h"
 #include "job_p.h"
 
-#include "jobuidelegate.h"
 
 using namespace KIO;
 

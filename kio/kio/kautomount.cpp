@@ -20,8 +20,8 @@
 #include "krun.h"
 #include "kdirwatch.h"
 #include "kio/job.h"
-#include "kio/jobuidelegate.h"
 #include <kdirnotify.h>
+#include <kjobuidelegate.h>
 #include <kmountpoint.h>
 
 /***********************************************************************

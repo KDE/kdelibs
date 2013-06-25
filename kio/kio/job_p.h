@@ -25,7 +25,6 @@
 
 #include "job.h"
 #include "kcompositejob_p.h"
-#include "jobuidelegate.h"
 #include "kjobtrackerinterface.h"
 #include <kio/jobuidelegateextension.h>
 #include <kio/jobuidelegatefactory.h>

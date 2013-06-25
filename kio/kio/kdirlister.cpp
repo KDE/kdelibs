@@ -25,10 +25,10 @@
 
 #include <QtCore/QRegExp>
 
+#include <kjobuidelegate.h>
 #include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <kio/job.h>
-#include <kio/jobuidelegate.h>
 #include <kmessagebox.h>
 #include "kprotocolmanager.h"
 #include "kmountpoint.h"

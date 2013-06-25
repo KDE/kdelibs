@@ -45,10 +45,10 @@
 #include <QDebug>
 
 #include <kiconloader.h>
+#include <kjobuidelegate.h>
 #include <kmimetypetrader.h>
 #include "kio/jobclasses.h" // for KIO::JobFlags
 #include "kio/job.h"
-#include "kio/jobuidelegate.h"
 #include "kio/global.h"
 #include "kio/scheduler.h"
 #include "kio/netaccess.h"

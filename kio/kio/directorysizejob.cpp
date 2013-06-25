@@ -22,7 +22,6 @@
 #include <qdebug.h>
 #include <QtCore/QTimer>
 
-#include "jobuidelegate.h"
 #include "job_p.h"
 
 namespace KIO

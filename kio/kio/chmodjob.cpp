@@ -22,7 +22,6 @@
 #include "chmodjob.h"
 
 #include "job.h"
-#include "jobuidelegate.h"
 
 #include <klocalizedstring.h>
 #include <kio/jobuidelegatefactory.h>
