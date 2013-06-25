@@ -177,9 +177,9 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
 endmacro (KDOCTOOLS_CREATE_MANPAGE)
 
 macro (KDE4_CREATE_HTML_HANDBOOK _docbook)
-   message(STATUS "KDOCTOOLS_CREATE_HTML_HANDBOOK() is deprecated. Enable the option KDE4_ENABLE_HTMLHANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
+    message(STATUS "KDE4_CREATE_HTML_HANDBOOK() is deprecated. Enable the option KDE4_ENABLE_HTMLHANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
 endmacro (KDE4_CREATE_HTML_HANDBOOK)
 
-macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
-    message(STATUS "KDOCTOOLS_CREATE_HANDBOOK() is deprecated. Call the macro KDOCTOOLS_CREATE_HANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
-endmacro (KDOCTOOLS_CREATE_HANDBOOK)
+macro (KDE4_CREATE_HANDBOOK _docbook)
+    message(STATUS "KDE4_CREATE_HANDBOOK() is deprecated. Call the macro KDOCTOOLS_CREATE_HANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
+endmacro (KDE4_CREATE_HANDBOOK)
