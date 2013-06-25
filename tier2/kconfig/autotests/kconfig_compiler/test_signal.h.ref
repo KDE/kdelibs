@@ -135,7 +135,7 @@ class TestSignal : public KConfigSkeleton
     TestSignal();
     friend class TestSignalHelper;
 
-    virtual void usrWriteConfig();
+    virtual bool usrWriteConfig();
 
     // Appearance
     QString mEmoticonTheme;

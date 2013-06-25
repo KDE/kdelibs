@@ -1842,7 +1842,7 @@ int main( int argc, char **argv )
   }
 
   if ( hasSignals ) {
-    h << "    virtual void usrWriteConfig();" << endl;
+    h << "    virtual bool usrWriteConfig();" << endl;
   }
 
   // Member variables
@@ -2289,9 +2289,10 @@ int main( int argc, char **argv )
   cpp << "}" << endl << endl;
 
   if ( hasSignals ) {
-    cpp << "void " << cfg.className << "::" << "usrWriteConfig()" << endl;
+    cpp << "bool " << cfg.className << "::" << "usrWriteConfig()" << endl;
     cpp << "{" << endl;
-    cpp << "  " << cfg.inherits << "::usrWriteConfig();" << endl << endl;
+    cpp << "  const bool res = " << cfg.inherits << "::usrWriteConfig();" << endl;
+    cpp << "  if (!res) return false;" << endl << endl;
     foreach(const Signal &signal, signalList) {
       cpp << "  if ( " << varPath("settingsChanged", cfg) << " & " << signalEnumName(signal.name) << " ) " << endl;
       cpp << "    emit " << signal.name << "(";
@@ -2317,6 +2318,7 @@ int main( int argc, char **argv )
       cpp << ");" << endl << endl;
     }
     cpp << "  " << varPath("settingsChanged", cfg) << " = 0;" << endl;
+    cpp << "  return true;" << endl;
     cpp << "}" << endl;
   }
 

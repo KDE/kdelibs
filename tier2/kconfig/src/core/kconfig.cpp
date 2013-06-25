@@ -392,14 +392,13 @@ QMap<QString,QString> KConfig::entryMap(const QString& aGroup) const
     return theMap;
 }
 
-// TODO KDE5: return a bool value
-void KConfig::sync()
+bool KConfig::sync()
 {
     Q_D(KConfig);
 
     if (isImmutable() || name().isEmpty()) {
         // can't write to an immutable or anonymous file.
-        return;
+        return false;
     }
 
     if (d->bDirty && d->mBackend) {
@@ -411,7 +410,7 @@ void KConfig::sync()
         // lock the local file
         if (d->configState == ReadWrite && !d->lockLocal()) {
             qWarning() << "couldn't lock local file";
-            return;
+            return false;
         }
 
         // Rewrite global/local config only if there is a dirty entry in it.
@@ -438,12 +437,10 @@ void KConfig::sync()
             if (d->configState == ReadWrite && !tmp->lock()) {
                 qWarning() << "couldn't lock global file";
                 d->bDirty = true;
-                return;
+                return false;
             }
             if (!tmp->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteGlobal)) {
                 d->bDirty = true;
-                // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
-                // config file is immutable or disk full)
             }
             if (tmp->isLocked()) {
                 tmp->unlock();
@@ -453,14 +450,13 @@ void KConfig::sync()
         if (writeLocals) {
             if (!d->mBackend->writeConfig(utf8Locale, d->entryMap, KConfigBackend::WriteOptions())) {
                 d->bDirty = true;
-                // TODO KDE5: return false? (to tell the app that writing wasn't possible, e.g.
-                // config file is immutable or disk full)
             }
         }
         if (d->mBackend->isLocked()) {
             d->mBackend->unlock();
         }
     }
+    return !d->bDirty;
 }
 
 void KConfig::markAsClean()

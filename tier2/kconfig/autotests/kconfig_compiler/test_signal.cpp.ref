@@ -54,9 +54,10 @@ TestSignal::~TestSignal()
   s_globalTestSignal()->q = 0;
 }
 
-void TestSignal::usrWriteConfig()
+bool TestSignal::usrWriteConfig()
 {
-  KConfigSkeleton::usrWriteConfig();
+  const bool res = KConfigSkeleton::usrWriteConfig();
+  if (!res) return false;
 
   if ( mSettingsChanged & signalEmoticonSettingsChanged ) 
     emit emoticonSettingsChanged();
@@ -65,6 +66,7 @@ void TestSignal::usrWriteConfig()
     emit styleChanged(mStylePath, mStyleCSSVariant);
 
   mSettingsChanged = 0;
+  return true;
 }
 
 #include "test_signal.moc"
