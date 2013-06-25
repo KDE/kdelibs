@@ -225,7 +225,7 @@ kde4_add_executable( docbookl10nhelper NOGUI ${docbookl10nhelper_SRCS} )
 target_link_libraries( docbookl10nhelper Qt5::Core )
 
 add_custom_command( TARGET docbookl10nhelper POST_BUILD
-  COMMAND ${EXECUTABLE_OUTPUT_PATH}/docbookl10nhelper
+  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/docbookl10nhelper
   ${DOCBOOKXSL_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/customization/xsl
   ${CMAKE_CURRENT_BINARY_DIR}/customization/xsl
 )
