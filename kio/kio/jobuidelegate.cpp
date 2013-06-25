@@ -20,6 +20,7 @@
 */
 
 #include "jobuidelegate.h"
+#include <kio/jobuidelegatefactory.h>
 
 #include <kconfiggroup.h>
 #include <kjob.h>
@@ -256,11 +257,21 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
     return true;
 }
 
+class KIOWidgetJobUiDelegateFactory : public KIO::JobUiDelegateFactory
+{
+public:
+    KJobUiDelegate *createDelegate() const Q_DECL_OVERRIDE {
+        return new KIO::JobUiDelegate;
+    }
+};
+
+Q_GLOBAL_STATIC(KIOWidgetJobUiDelegateFactory, globalUiDelegateFactory)
 Q_GLOBAL_STATIC(KIO::JobUiDelegate, globalUiDelegate)
 
 // Simply linking to this library, creates a GUI job delegate and delegate extension for all KIO jobs
 static void registerJobUiDelegate()
 {
+    KIO::setDefaultJobUiDelegateFactory(globalUiDelegateFactory());
     KIO::setDefaultJobUiDelegateExtension(globalUiDelegate());
 }
 

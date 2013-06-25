@@ -18,6 +18,7 @@
 */
 
 #include "directorysizejob.h"
+#include <kio/jobuidelegatefactory.h>
 #include <qdebug.h>
 #include <QtCore/QTimer>
 
@@ -61,7 +62,7 @@ namespace KIO
         {
             DirectorySizeJobPrivate *d = new DirectorySizeJobPrivate;
             DirectorySizeJob *job = new DirectorySizeJob(*d);
-            job->setUiDelegate(new JobUiDelegate);
+            job->setUiDelegate(KIO::createDefaultJobUiDelegate());
             d->startNextJob(directory);
             return job;
         }
@@ -70,7 +71,7 @@ namespace KIO
         {
             DirectorySizeJobPrivate *d = new DirectorySizeJobPrivate(lstItems);
             DirectorySizeJob *job = new DirectorySizeJob(*d);
-            job->setUiDelegate(new JobUiDelegate);
+            job->setUiDelegate(KIO::createDefaultJobUiDelegate());
             QTimer::singleShot( 0, job, SLOT(processNextItem()) );
             return job;
         }

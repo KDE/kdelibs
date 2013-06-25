@@ -29,6 +29,7 @@
 #include <kdirnotify.h>
 
 #include <klocalizedstring.h>
+#include <kio/jobuidelegatefactory.h>
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
@@ -101,7 +102,7 @@ namespace KIO
         static inline DeleteJob *newJob(const QList<QUrl> &src, JobFlags flags)
         {
             DeleteJob *job = new DeleteJob(*new DeleteJobPrivate(src));
-            job->setUiDelegate(new JobUiDelegate);
+            job->setUiDelegate(KIO::createDefaultJobUiDelegate());
             if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;

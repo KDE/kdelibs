@@ -69,7 +69,6 @@ namespace KIO {
     Q_DECLARE_FLAGS(JobFlags, JobFlag)
     Q_DECLARE_OPERATORS_FOR_FLAGS(JobFlags)
 
-    class JobUiDelegate;
     class JobUiDelegateExtension;
 
     class JobPrivate;

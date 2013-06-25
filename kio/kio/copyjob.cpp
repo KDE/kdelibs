@@ -37,6 +37,7 @@
 
 #include "jobuidelegate.h" // GUI!!!
 #include <jobuidelegateextension.h>
+#include <kio/jobuidelegatefactory.h>
 
 #include <kdirnotify.h>
 
@@ -244,7 +245,7 @@ public:
                                   CopyJob::CopyMode mode, bool asMethod, JobFlags flags)
     {
         CopyJob *job = new CopyJob(*new CopyJobPrivate(src,dest,mode,asMethod));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         if (flags & KIO::Overwrite) {
