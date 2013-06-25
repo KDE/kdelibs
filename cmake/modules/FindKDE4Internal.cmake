@@ -39,7 +39,6 @@
 # compile KDE software:
 #
 #  KDE4_KCFGC_EXECUTABLE    - the kconfig_compiler executable
-#  KDE4_MEINPROC_EXECUTABLE - the meinproc4 executable
 #  KDE4_MAKEKDEWIDGETS_EXECUTABLE - the makekdewidgets executable
 #
 # The following variables point to the location of the KDE libraries,
@@ -168,8 +167,6 @@
 #  KDE4_USE_COMMON_CMAKE_PACKAGE_CONFIG_DIR - only present for CMake >= 2.6.3, defaults to TRUE
 #                      If enabled, the package should install its <package>Config.cmake file to
 #                      lib/cmake/<package>/ instead to lib/<package>/cmake
-#  KDE4_SERIALIZE_TOOL - wrapper to serialize potentially resource-intensive commands during
-#                      parallel builds (set to 'icecc' when using icecream)
 #
 # It also adds the following macros and functions (from KDE4Macros.cmake)
 #  KDE4_ADD_UI_FILES (SRCS_VAR file1.ui ... fileN.ui)
@@ -251,18 +248,6 @@
 #  KDE4_INSTALL_ICONS( path theme)
 #    Installs all png and svgz files in the current directory to the icon
 #    directory given in path, in the subdirectory for the given icon theme.
-#
-#  KDE4_CREATE_HANDBOOK( docbookfile [INSTALL_DESTINATION installdest] [SUBDIR subdir])
-#   Create the handbook from the docbookfile (using meinproc4)
-#   The resulting handbook will be installed to <installdest> when using
-#   INSTALL_DESTINATION <installdest>, or to <installdest>/<subdir> if
-#   SUBDIR <subdir> is specified.
-#
-#  KDE4_CREATE_MANPAGE( docbookfile section )
-#   Create the manpage for the specified section from the docbookfile (using meinproc4)
-#   The resulting manpage will be installed to <installdest> when using
-#   INSTALL_DESTINATION <installdest>, or to <installdest>/<subdir> if
-#   SUBDIR <subdir> is specified.
 #
 #  KDE4_INSTALL_AUTH_ACTIONS( HELPER_ID ACTIONS_FILE )
 #   This macro generates an action file, depending on the backend used, for applications using KAuth.
@@ -372,7 +357,6 @@ set(_REQ_STRING_KDE4 "REQUIRED")
 set(_REQ_STRING_KDE4_MESSAGE "FATAL_ERROR")
 
 # now we are sure we have everything we need
-
 include (MacroLibrary)
 include (CheckCXXCompilerFlag)
 include (CheckCXXSourceCompiles)
@@ -396,20 +380,16 @@ if (WIN32)
    # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
    if (NOT WINCE)
      set(KDE4_KCFGC_EXECUTABLE             ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
-     set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
    else (NOT WINCE)
      set(KDE4_KCFGC_EXECUTABLE             ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/kconfig_compiler )
-     set(KDE4_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc4 )
    endif(NOT WINCE)
 
-   set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
    set(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kauth-policy-gen )
    set(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets )
 else (WIN32)
    set(LIBRARY_OUTPUT_PATH               ${CMAKE_BINARY_DIR}/lib )
    set(KDE4_KCFGC_EXECUTABLE             ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kconfig_compiler${CMAKE_EXECUTABLE_SUFFIX}.shell )
    set(KDE4_KAUTH_POLICY_GEN_EXECUTABLE  ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/kauth-policy-gen${CMAKE_EXECUTABLE_SUFFIX}.shell )
-   set(KDE4_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../staging/kdoctools/meinproc4${CMAKE_EXECUTABLE_SUFFIX}.shell )
    set(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/makekdewidgets${CMAKE_EXECUTABLE_SUFFIX}.shell )
 endif (WIN32)
 
@@ -420,7 +400,6 @@ set(KDE4_LIB_DIR ${LIBRARY_OUTPUT_PATH}/${CMAKE_CFG_INTDIR})
 set( _KDE4_KCONFIG_COMPILER_DEP kconfig_compiler)
 set( _KDE4_KAUTH_POLICY_GEN_EXECUTABLE_DEP kauth-policy-gen)
 set( _KDE4_MAKEKDEWIDGETS_DEP makekdewidgets)
-set( _KDE4_MEINPROC_EXECUTABLE_DEP meinproc4)
 
 set(KDE4_INSTALLED_VERSION_OK TRUE)
 
@@ -502,14 +481,6 @@ if (WIN32)
       endif (KDE4_MT_EXECUTABLE)
    endif (KDE4_ENABLE_UAC_MANIFEST)
 endif (WIN32)
-
-#####################  some more settings   ##########################################
-
-if(KDE4_SERIALIZE_TOOL)
-   # parallel build with many meinproc invocations can consume a huge amount of memory
-   set(KDE4_MEINPROC_EXECUTABLE ${KDE4_SERIALIZE_TOOL} ${KDE4_MEINPROC_EXECUTABLE})
-endif(KDE4_SERIALIZE_TOOL)
-
 
 ##############  add some more default search paths  ###############
 #

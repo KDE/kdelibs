@@ -4,7 +4,46 @@
 #
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
+#  KDOCTOOLS_CREATE_HANDBOOK( docbookfile [INSTALL_DESTINATION installdest] [SUBDIR subdir])
+#   Create the handbook from the docbookfile (using meinproc4)
+#   The resulting handbook will be installed to <installdest> when using
+#   INSTALL_DESTINATION <installdest>, or to <installdest>/<subdir> if
+#   SUBDIR <subdir> is specified.
+#
+#  KDOCTOOLS_CREATE_MANPAGE( docbookfile section )
+#   Create the manpage for the specified section from the docbookfile (using meinproc4)
+#   The resulting manpage will be installed to <installdest> when using
+#   INSTALL_DESTINATION <installdest>, or to <installdest>/<subdir> if
+#   SUBDIR <subdir> is specified.
+#
+#  KDOCTOOLS_MEINPROC_EXECUTABLE - the meinproc4 executable
+#
+#  KDE4_SERIALIZE_TOOL - wrapper to serialize potentially resource-intensive commands during
+#                      parallel builds (set to 'icecc' when using icecream)
+#
 
+set(EXECUTABLE_OUTPUT_PATH ${kdelibs_BINARY_DIR}/bin )
+
+if (WIN32)
+    set(LIBRARY_OUTPUT_PATH               ${EXECUTABLE_OUTPUT_PATH} )
+    # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
+    if (NOT WINCE)
+        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
+    else (NOT WINCE)
+        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc4 )
+    endif(NOT WINCE)
+
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
+else (WIN32)
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../staging/kdoctools/meinproc4${CMAKE_EXECUTABLE_SUFFIX}.shell )
+endif (WIN32)
+
+set( _KDOCTOOLS_MEINPROC_EXECUTABLE_DEP meinproc4)
+
+if(KDE4_SERIALIZE_TOOL)
+    # parallel build with many meinproc invocations can consume a huge amount of memory
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE ${KDE4_SERIALIZE_TOOL} ${KDE4_MEINPROC_EXECUTABLE})
+endif(KDE4_SERIALIZE_TOOL)
 
 macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
    get_filename_component(_input ${_docbook} ABSOLUTE)
@@ -15,7 +54,7 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
       set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/customization/kde-chunk.xsl")
       set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/")
    else (_kdeBootStrapping)
-      set(_ssheet "${KDE4_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-chunk.xsl")
+       set(_ssheet "${KDE4_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-chunk.xsl")
       set(_bootstrapOption)
    endif (_kdeBootStrapping)
 
@@ -24,27 +63,27 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
 #   if (CMAKE_CROSSCOMPILING)
 #      set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
 #      include(${IMPORT_MEINPROC4_EXECUTABLE})
-#      set(KDE4_MEINPROC_EXECUTABLE meinproc4)
+#      set(KDOCTOOLS_MEINPROC_EXECUTABLE meinproc4)
 #   endif (CMAKE_CROSSCOMPILING)
 
    add_custom_command(OUTPUT ${_doc}
-      COMMAND ${KDE4_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} --cache ${_doc} ${_input}
-      DEPENDS ${_docs} ${_KDE4_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
+      COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} --cache ${_doc} ${_input}
+      DEPENDS ${_docs} ${_KDOCTOOLS_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
    )
    get_filename_component(_targ ${CMAKE_CURRENT_SOURCE_DIR} NAME)
    set(_targ "${_targ}-handbook")
    add_custom_target(${_targ} ALL DEPENDS ${_doc})
 
-   if(KDE4_ENABLE_HTMLHANDBOOK)
+   if(KDOCTOOLS_ENABLE_HTMLHANDBOOK)
       set(_htmlDoc ${CMAKE_CURRENT_SOURCE_DIR}/index.html)
       add_custom_command(OUTPUT ${_htmlDoc}
-         COMMAND ${KDE4_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} -o ${_htmlDoc} ${_input}
-         DEPENDS ${_input} ${_KDE4_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
+         COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --check ${_bootstrapOption} -o ${_htmlDoc} ${_input}
+         DEPENDS ${_input} ${_KDOCTOOLS_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
          WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       )
       add_custom_target(htmlhandbook DEPENDS ${_htmlDoc})
-   endif(KDE4_ENABLE_HTMLHANDBOOK)
+   endif(KDOCTOOLS_ENABLE_HTMLHANDBOOK)
 
    set(_args ${ARGN})
 
@@ -76,7 +115,7 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
       endif (UNIX)
    endif(_installDest)
 
-endmacro (KDE4_CREATE_HANDBOOK)
+endmacro (KDOCTOOLS_CREATE_HANDBOOK)
 
 
 macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
@@ -94,19 +133,19 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
       set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/customization/kde-include-man.xsl")
       set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/")
    else (_kdeBootStrapping)
-      set(_ssheet "${KDE4_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-include-man.xsl")
+      set(_ssheet "${KDOCTOOLS_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-include-man.xsl")
       set(_bootstrapOption)
    endif (_kdeBootStrapping)
 
 #   if (CMAKE_CROSSCOMPILING)
 #      set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
 #      include(${IMPORT_MEINPROC4_EXECUTABLE})
-#      set(KDE4_MEINPROC_EXECUTABLE meinproc4)
+#      set(KDOCTOOLS_MEINPROC_EXECUTABLE meinproc4)
 #   endif (CMAKE_CROSSCOMPILING)
 
    add_custom_command(OUTPUT ${_outdoc}
-      COMMAND ${KDE4_MEINPROC_EXECUTABLE} --stylesheet ${_ssheet} --check ${_bootstrapOption} ${_input}
-      DEPENDS ${_input} ${_KDE4_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
+      COMMAND ${KDOCTOOLS_MEINPROC_EXECUTABLE} --stylesheet ${_ssheet} --check ${_bootstrapOption} ${_input}
+      DEPENDS ${_input} ${_KDOCTOOLS_MEINPROC_EXECUTABLE_DEP} ${_ssheet}
    )
    get_filename_component(_targ ${CMAKE_CURRENT_SOURCE_DIR} NAME)
    set(_targ "${_targ}-manpage-${_base}")
@@ -135,12 +174,12 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
    if(_installDest)
       install(FILES ${_outdoc} DESTINATION ${_installDest}/man${_section})
    endif(_installDest)
-endmacro (KDE4_CREATE_MANPAGE)
+endmacro (KDOCTOOLS_CREATE_MANPAGE)
 
 macro (KDE4_CREATE_HTML_HANDBOOK _docbook)
-   message(STATUS "KDE4_CREATE_HTML_HANDBOOK() is deprecated. Enable the option KDE4_ENABLE_HTMLHANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
+   message(STATUS "KDOCTOOLS_CREATE_HTML_HANDBOOK() is deprecated. Enable the option KDE4_ENABLE_HTMLHANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
 endmacro (KDE4_CREATE_HTML_HANDBOOK)
 
-macro (KDE4_CREATE_HANDBOOK _docbook)
-    message(STATUS "KDE4_CREATE_HANDBOOK() is deprecated. Enable the option KDOCTOOLS_CREATE_HANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
-endmacro (KDE4_CREATE_HANDBOOK)
+macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
+    message(STATUS "KDOCTOOLS_CREATE_HANDBOOK() is deprecated. Call the macro KDOCTOOLS_CREATE_HANDBOOK instead, this will give you targets htmlhandbook for creating the html help.")
+endmacro (KDOCTOOLS_CREATE_HANDBOOK)
