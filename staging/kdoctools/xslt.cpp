@@ -157,7 +157,7 @@ QString transform( const QString &pat, const QString& tss,
 
     INFO(i18n("Parsing document"));
 
-    xmlDocPtr doc = xmlParseFile( pat.toLatin1() );
+    xmlDocPtr doc = xmlParseFile( pat.toLatin1().constData() );
     xsltTransformContextPtr ctxt;
 
     ctxt = xsltNewTransformContext(style_sheet, doc);

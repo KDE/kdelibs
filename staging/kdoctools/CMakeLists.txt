@@ -1,5 +1,7 @@
 project(kdoctools)
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+
 find_package(LibXslt)
 set_package_properties(LibXslt PROPERTIES
                        URL "http://xmlsoft.org/XSLT"

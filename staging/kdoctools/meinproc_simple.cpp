@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
     const QString tss = srcDir + "/customization/kde-chunk.xsl";
     QString output = transform(checkFilename , tss, params);
     if (output.isEmpty()) {
-        fprintf(stderr, "unable to parse %s\n", checkFilename.toLocal8Bit().data());
+        fprintf(stderr, "unable to parse %s\n", checkFilename.toLocal8Bit().constData());
         return(4);
     }
 

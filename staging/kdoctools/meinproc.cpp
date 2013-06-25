@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
     // and is not supported on windows yet
     if (parser->isSet("output")) {
         params.append(qstrdup("outputFile"));
-        params.append(qstrdup(parser->argument("output").toLocal8Bit()));
+        params.append(qstrdup(parser->argument("output").toLocal8Bit().constData()));
     }
 #endif
     {
@@ -182,8 +182,8 @@ int main(int argc, char **argv) {
                 qWarning() << "Key-Value tuple '" << tuple << "' lacks a '='!";
                 return( 2 );
             }
-            params.append( qstrdup( tuple.left( ch ).toUtf8() ) );
-            params.append( qstrdup( tuple.mid( ch + 1 ).toUtf8() )  );
+            params.append( qstrdup( tuple.left( ch ).toUtf8().constData() ) );
+            params.append( qstrdup( tuple.mid( ch + 1 ).toUtf8().constData() )  );
         }
     }
     params.append( NULL );
