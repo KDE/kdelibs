@@ -95,8 +95,6 @@ set(kdeui_LIB_SRCS
  findreplace/kreplacedialog.cpp
  fonts/fonthelpers.cpp
  fonts/kfontcombobox.cpp
- icons/kiconbutton.cpp
- icons/kicondialog.cpp
  kernel/kstyle.cpp
  shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kacceleratormanager.cpp
@@ -171,7 +169,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/fonts
- ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
@@ -266,8 +263,6 @@ install( FILES
  findreplace/kfinddialog.h
  findreplace/kreplacedialog.h
  fonts/kfontcombobox.h
- icons/kiconbutton.h
- icons/kicondialog.h
  kernel/kstyle.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h

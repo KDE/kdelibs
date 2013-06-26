@@ -14,7 +14,7 @@
 #ifndef KICONBUTTON_H
 #define KICONBUTTON_H
 
-#include <kdeui_export.h>
+#include "kiconthemes_export.h"
 
 #include <QPushButton>
 
@@ -28,7 +28,7 @@
  * @see KIconDialog
  * @short A push button that allows selection of an icon.
  */
-class KDEUI_EXPORT KIconButton: public QPushButton
+class KICONTHEMES_EXPORT KIconButton: public QPushButton
 {
     Q_OBJECT
     Q_PROPERTY( QString icon READ icon WRITE setIcon RESET resetIcon )

@@ -14,7 +14,6 @@
 #include "kicondialog.h"
 #include "kicondialog_p.h"
 
-#include <kcombobox.h>
 #include <klistwidgetsearchline.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>
@@ -23,6 +22,7 @@
 #endif
 
 #include <QApplication>
+#include <QComboBox>
 #include <QDebug>
 #include <QDialogButtonBox>
 #include <QGroupBox>
@@ -34,7 +34,7 @@
 #include <QProgressBar>
 #include <QPainter>
 #include <QScrollBar>
-#include <qstandardpaths.h>
+#include <QStandardPaths>
 
 
 /**
@@ -276,7 +276,7 @@ void KIconDialog::KIconDialogPrivate::init()
     mpSystemIcons = new QRadioButton(i18n("S&ystem icons:"), bgroup);
     connect(mpSystemIcons, SIGNAL(clicked()), q, SLOT(_k_slotSystemIconClicked()));
     grid->addWidget(mpSystemIcons, 1, 0);
-    mpCombo = new KComboBox(bgroup);
+    mpCombo = new QComboBox(bgroup);
     mpCombo->setMaxVisibleItems(12);
     connect(mpCombo, SIGNAL(activated(int)), q, SLOT(_k_slotContext(int)));
     grid->addWidget(mpCombo, 1, 1);

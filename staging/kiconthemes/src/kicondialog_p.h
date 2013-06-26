@@ -22,10 +22,10 @@
 
 #include <kiconloader.h>
 
+class QComboBox;
 class QProgressBar;
 class QRadioButton;
 
-class KComboBox;
 class KIconCanvasDelegate;
 class KListWidgetSearchLine;
 
@@ -136,7 +136,7 @@ class KIconDialog::KIconDialogPrivate
     int mGroupOrSize;
     KIconLoader::Context mContext;
 
-    KComboBox *mpCombo;
+    QComboBox *mpCombo;
     QPushButton *mpBrowseBut;
     QRadioButton *mpSystemIcons, *mpOtherIcons;
     QProgressBar *mpProgress;

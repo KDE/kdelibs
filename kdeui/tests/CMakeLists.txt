@@ -39,7 +39,6 @@ KDEUI_EXECUTABLE_TESTS(
   kcomboboxtest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
-  kicondialogtest
   klineedittest
   kmainwindowtest
   kmainwindowrestoretest
