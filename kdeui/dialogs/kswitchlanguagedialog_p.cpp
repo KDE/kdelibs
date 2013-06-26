@@ -19,8 +19,6 @@
  *
  */
 
-#include "moc_kswitchlanguagedialog_p.cpp"
-
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QLayout>
@@ -28,14 +26,31 @@
 #include <QPushButton>
 #include <QtCore/QEvent>
 #include <QtCore/QMap>
+#include <ksharedconfig.h>
 
 #include <klanguagebutton.h>
+#include "kswitchlanguagedialog_p.h"
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocale.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
+
+static void initializeLanguages()
+{
+    KConfigGroup group(KSharedConfig::openConfig(), "Locale");
+    const QByteArray languageCode = group.readEntry("Language", QByteArray());
+
+    if(!languageCode.isEmpty()) {
+        QByteArray languages = qgetenv("LANGUAGE");
+        if(languages.isEmpty())
+            qputenv("LANGUAGE", languageCode);
+        else
+            qputenv("LANGUAGE", languageCode+":"+languages);
+    }
+}
+
+Q_COREAPP_STARTUP_FUNCTION(initializeLanguages)
 
 namespace KDEPrivate {
 
@@ -44,8 +59,8 @@ struct LanguageRowData
     LanguageRowData()
     {
         label = 0;
-	languageButton = 0;
-	removeButton = 0;
+        languageButton = 0;
+        removeButton = 0;
     }
     QLabel *label;
     KLanguageButton *languageButton;
@@ -124,7 +139,8 @@ KSwitchLanguageDialog::KSwitchLanguageDialog( QWidget *parent )
 
     if (!count)
     {
-        d->addLanguageButton(KLocale::global()->defaultLanguage(), true);
+        QLocale l;
+        d->addLanguageButton(l.name(), true);
     }
 
     QHBoxLayout *addButtonHorizontalLayout = new QHBoxLayout();
@@ -219,7 +235,7 @@ void KSwitchLanguageDialog::slotOk()
     for ( int i = 0, count = d->languageButtons.count(); i < count; ++i )
     {
         KLanguageButton *languageButton = d->languageButtons[i];
-	languages << languageButton->current();
+        languages << languageButton->current();
     }
 
     if (d->applicationLanguageList() != languages)
@@ -237,10 +253,6 @@ void KSwitchLanguageDialog::slotOk()
             i18n("Application Language Changed"), //caption
             "ApplicationLanguageChangedWarning" //dontShowAgainName
             );
-
-	KLocale::global()->setLanguage(d->applicationLanguageList());
-        QEvent ev(QEvent::LanguageChange);
-        QApplication::sendEvent(qApp, &ev);
     }
 
     accept();
@@ -265,10 +277,6 @@ void KSwitchLanguageDialog::slotDefault()
             i18n("Application Language Changed"), //caption
             "ApplicationLanguageChangedWarning" //dontShowAgainName
             );
-
-        KLocale::global()->setLanguage(QStringList() << language);
-        QEvent ev(QEvent::LanguageChange);
-        QApplication::sendEvent(qApp, &ev);
     }
 
     accept();
@@ -285,10 +293,11 @@ KSwitchLanguageDialogPrivate::KSwitchLanguageDialogPrivate(
 
 void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *button)
 {
-    const QStringList allLanguages = KLocale::global()->allLanguagesList();
-    for ( int i = 0, count = allLanguages.count(); i < count; ++i )
+    //we start with 2, because the 0 is AnyLanguage and 1 is C
+    for ( int i = 2; i <= QLocale::LastLanguage; ++i )
     {
-        QString languageCode = allLanguages[i];
+        QLocale l(static_cast<QLocale::Language>(i));
+        QString languageCode = l.name();
         if (KLocalizedString::isApplicationTranslatedInto(languageCode))
         {
             button->insertLanguage(languageCode);
@@ -311,15 +320,16 @@ QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
     }
     if (languagesList.isEmpty())
     {
-      languagesList = KLocale::global()->languageList();
+        QLocale l;
+        languagesList = l.uiLanguages();
     }
 
     for (int i = 0; i < languagesList.count();)
     {
-      if (!KLocalizedString::isApplicationTranslatedInto(languagesList[i]))
-        languagesList.removeAt(i);
-      else
-        ++i;
+        if (!KLocalizedString::isApplicationTranslatedInto(languagesList[i]))
+            languagesList.removeAt(i);
+        else
+            ++i;
     }
 
     return languagesList;
