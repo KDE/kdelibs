@@ -138,8 +138,6 @@ endforeach( _kdeincludexslt ${_kdeincludexslt_ALL} )
 
 ########### install files ###############
 
-install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/checkXML DESTINATION ${BIN_INSTALL_DIR} )
-
 macro(INSTALL_CUSTOMIZE_DIR _expr _directory)
     FILE(GLOB _file_CUST "${_expr}" )
     foreach(_curentfile ${_file_CUST})
