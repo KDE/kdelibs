@@ -71,7 +71,6 @@ set(kdeui_LIB_SRCS
  actions/ktoggletoolbaraction.cpp
  colors/kcolorbutton.cpp
  dialogs/kaboutkdedialog_p.cpp
- dialogs/kassistantdialog.cpp
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
  dialogs/kbugreport.cpp
@@ -254,7 +253,6 @@ install( FILES
  actions/ktoggletoolbaraction.h
  colors/kcolorbutton.h
  dialogs/kaboutapplicationdialog.h
- dialogs/kassistantdialog.h
  dialogs/kbugreport.h
  dialogs/kconfigdialog.h
  dialogs/kconfigdialogmanager.h

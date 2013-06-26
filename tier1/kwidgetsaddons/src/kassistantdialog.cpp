@@ -18,12 +18,10 @@
 
 #include "kassistantdialog.h"
 
-#include <kstandardguiitem.h>
-#include <klocalizedstring.h>
-#include <kdebug.h>
 #include <QDialogButtonBox>
 #include <QIcon>
 #include <QPushButton>
+#include <QApplication>
 
 #include <QHash>
 
@@ -98,20 +96,25 @@ void KAssistantDialog::Private::init()
     QDialogButtonBox *buttonBox = q->buttonBox();
 
     backButton = new QPushButton;
-    KGuiItem::assign(backButton, KStandardGuiItem::back(KStandardGuiItem::UseRTL));
+
+    const QString iconBack = QApplication::isRightToLeft() ? QStringLiteral("go-next") : QStringLiteral("go-previous");
+    const QString iconNext = QApplication::isRightToLeft() ? QStringLiteral("go-previous") : QStringLiteral("go-next");
+    backButton->setText(tr("&Back", "go back"));
+    backButton->setIcon(QIcon::fromTheme(iconBack));
+    backButton->setToolTip(tr("Go back one step" ));
     q->connect(backButton, SIGNAL(clicked()), q, SLOT(back()));
     buttonBox->addButton(backButton, QDialogButtonBox::ActionRole);
 
     nextButton = new QPushButton;
-    nextButton->setText(i18nc("Opposite to Back", "Next"));
-    nextButton->setIcon(KStandardGuiItem::forward(KStandardGuiItem::UseRTL).icon());
+    nextButton->setText(tr("Next", "Opposite to Back"));
+    nextButton->setIcon(QIcon::fromTheme(iconNext));
     nextButton->setDefault(true);
     q->connect(nextButton, SIGNAL(clicked()), q, SLOT(next()));
     buttonBox->addButton(nextButton, QDialogButtonBox::ActionRole);
 
     finishButton = new QPushButton;
-    finishButton->setText(i18n("Finish"));
-    finishButton->setIcon(QIcon::fromTheme("dialog-ok-apply"));
+    finishButton->setText(tr("Finish"));
+    finishButton->setIcon(QIcon::fromTheme(QStringLiteral("dialog-ok-apply")));
     buttonBox->addButton(finishButton, QDialogButtonBox::AcceptRole);
 
     buttonBox->addButton(QDialogButtonBox::Cancel);

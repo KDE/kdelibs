@@ -22,7 +22,7 @@
 
 #include <kpagedialog.h>
 
-#include "kdeui_export.h"
+#include <kwidgetsaddons_export.h>
 
 /**
  * This class provides a framework for assistant dialogs.
@@ -53,7 +53,7 @@
  *
  * @author Olivier Goffart <ogoffart at kde.org>
  */
-class KDEUI_EXPORT KAssistantDialog : public KPageDialog
+class KWIDGETSADDONS_EXPORT KAssistantDialog : public KPageDialog
 {
     Q_OBJECT
     public:

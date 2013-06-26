@@ -27,26 +27,23 @@
 
 int main(int argc, char **argv)
 {
-  QApplication::setApplicationName("test");
+  QApplication::setApplicationName(QStringLiteral("test"));
   QApplication a(argc, argv);
   KAssistantDialog *dlg = new KAssistantDialog();
   QObject::connect(dlg, SIGNAL(finished(int)),  &a, SLOT(quit()));
   for(int i = 1; i < 11; i++)
   {
     QWidget *p = new QWidget;
-    QString msg = QString("This is page %1 out of 10").arg(i);
+    QString msg = QStringLiteral("This is page %1 out of 10").arg(i);
     QLabel *label = new QLabel(msg, p);
     QHBoxLayout *layout = new QHBoxLayout(p);
     label->setAlignment(Qt::AlignCenter);
     label->setFixedSize(300, 200);
     layout->addWidget(label);
-    QString title = QString("%1. page").arg(i);
+    QString title = QStringLiteral("%1. page").arg(i);
     dlg->addPage(p, title);
   }
 
   dlg->show();
   return a.exec();
 }
-
-
-

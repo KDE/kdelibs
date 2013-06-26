@@ -27,4 +27,5 @@ kwidgetsaddons_executable_tests(
   ktoolbarlabelactiontest
   kpagedialogtest
   kpagewidgettest
+  kassistantdialogtest
 )

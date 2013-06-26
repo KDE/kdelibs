@@ -33,7 +33,6 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  kassistantdialogtest
   kbugreporttest
   kcategorizedviewtest
   kcolorcollectiontest
