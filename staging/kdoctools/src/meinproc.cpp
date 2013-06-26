@@ -1,5 +1,5 @@
 
-#include <config-kdoctools.h>
+#include "../config-kdoctools.h"
 #include "xslt.h"
 #include "meinproc_common.h"
 
