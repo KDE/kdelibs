@@ -111,17 +111,6 @@ if (NOT CMAKE_CROSSCOMPILING)
 
 endif (NOT CMAKE_CROSSCOMPILING)
 
-########### next target ###############
-
-set(genshortcutents_SRCS genshortcutents.cpp )
-
-
-kde4_add_executable(genshortcutents NOGUI ${genshortcutents_SRCS})
-
-# kdeui for kstandardshortcut
-target_link_libraries(genshortcutents kdeqt5staging ${KDE4_KDEUI_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
-
-
 ########### customize includes for xslt ###############
 # WARNING: this has severe limitations on the windows platform since the .xsl
 # & docbook files need to be relocatable. We cannot just replace the paths in
