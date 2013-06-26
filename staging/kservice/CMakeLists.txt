@@ -49,4 +49,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kservice_version.h
 
 add_subdirectory(src)
 add_subdirectory(autotests)
-#add_subdirectory(tests)
+add_subdirectory(tests)
