@@ -30,7 +30,7 @@ set(kservice_SRCS
    plugin/klibrary.cpp
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
-   plugin/kqpluginfactory.cpp
+   #plugin/kqpluginfactory.cpp
 )
 
 add_library(kservice ${kservice_SRCS})
@@ -75,7 +75,7 @@ install(FILES
    sycoca/ksycocatype.h
    plugin/klibrary.h
    plugin/kpluginfactory.h
-   plugin/kqpluginfactory.h
+   #plugin/kqpluginfactory.h
    plugin/kpluginloader.h
    plugin/kexportplugin.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
@@ -85,3 +85,21 @@ install(FILES
    services/kplugininfo.desktop
    DESTINATION ${SERVICETYPES_INSTALL_DIR}
 )
+
+
+set(kqpluginfactory_SRCS
+    plugin/kqpluginfactory.cpp
+    )
+
+add_library(kqpluginfactory SHARED ${kqpluginfactory_SRCS})
+
+target_link_libraries(kqpluginfactory
+    kservice
+    KConfigCore
+    KCoreAddons
+    ki18n)
+
+install(TARGETS kqpluginfactory DESTINATION ${LIB_INSTALL_DIR}/kplugins)
+
+
+
