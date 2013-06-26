@@ -385,9 +385,7 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();
         strPath.append(QChar('/'));
-        d->currUrl = KUrl();
-        d->currUrl.setProtocol(QLatin1String("file"));
-        d->currUrl.setPath(strPath);
+        d->currUrl = QUrl::fromLocalFile(strPath);
     } else {
         d->currUrl = _url;
         if (d->currUrl.protocol().isEmpty())
@@ -1034,17 +1032,11 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
     KUrl newurl;
 
     if (!_newurl.isValid())
-        newurl.setPath(QDir::homePath());
+        newurl = QUrl::fromLocalFile(QDir::homePath());
     else
         newurl = _newurl;
 
     newurl.adjustPath( KUrl::AddTrailingSlash );
-#ifdef Q_WS_WIN
-    QString pathstr = (newurl.isLocalFile()) ? QDir::fromNativeSeparators(newurl.toLocalFile()) : newurl.path();
-#else
-    QString pathstr = newurl.path();
-#endif
-    newurl.setPath(pathstr);
 
     // already set
     if (newurl.equals(d->currUrl, KUrl::CompareWithoutTrailingSlash))
@@ -1258,8 +1250,7 @@ void KDirOperator::cdUp()
 
 void KDirOperator::home()
 {
-    KUrl u;
-    u.setPath(QDir::homePath());
+    KUrl u = QUrl::fromLocalFile(QDir::homePath());
     setUrl(u, true);
 }
 
