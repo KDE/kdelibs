@@ -668,7 +668,6 @@ private:
     friend class KLineEditPrivate;
     KLineEditPrivate *const d;
 
-    Q_PRIVATE_SLOT( d, void _k_slotSettingsChanged( int category ) )
     Q_PRIVATE_SLOT( d, void _k_textChanged(const QString&) )
 };
 

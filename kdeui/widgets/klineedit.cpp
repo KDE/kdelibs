@@ -29,16 +29,15 @@
 #include "klineedit_p.h"
 
 #include <kcoreauthorized.h>
-#include <kconfig.h>
+#include <ksharedconfig.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>
-#include <kdebug.h>
 #include <kcompletionbox.h>
-#include <kicontheme.h>
 #include <klocalizedstring.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
 #include <kurlmimedata.h>
+#include <kiconloader.h>
 
 #include <QtCore/QTimer>
 #include <QAction>
@@ -92,15 +91,6 @@ public:
 // causes a weird crash in KWord at least, so let Qt delete it for us.
 //        delete completionBox;
         delete style.data();
-    }
-
-    void _k_slotSettingsChanged(int category)
-    {
-        Q_UNUSED(category);
-
-        if (clearButton) {
-            clearButton->setAnimationsEnabled(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
-        }
     }
 
     void _k_textChanged(const QString &txt)
@@ -195,7 +185,7 @@ QStyle *KLineEditStyle::style() const
         return m_subStyle.data();
     }
 
-    return KdeUiProxyStyle::style();
+    return QProxyStyle::baseStyle();
 }
 
 QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
@@ -220,7 +210,7 @@ QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *opt
     }
   }
 
-  return KdeUiProxyStyle::subElementRect(element, option, widget);
+  return QProxyStyle::subElementRect(element, option, widget);
 }
 
 bool KLineEditPrivate::s_backspacePerformsCompletion = false;
@@ -259,8 +249,6 @@ void KLineEdit::initWidget()
                       mode == KCompletion::CompletionPopupAuto ||
                       mode == KCompletion::CompletionAuto);
     connect( this, SIGNAL(selectionChanged()), this, SLOT(slotRestoreSelectionColors()));
-
-    connect(KGlobalSettings::self(), SIGNAL(settingsChanged(int)), this, SLOT(_k_slotSettingsChanged(int)));
 
     const QPalette p = palette();
     if ( !d->previousHighlightedTextColor.isValid() )
@@ -1195,8 +1183,6 @@ QMenu* KLineEdit::createStandardContextMenu()
             popup->insertAction( separatorAction, clearAllAction );
         }
     }
-
-    KIconTheme::assignIconsToContextMenu( KIconTheme::TextEditor, popup->actions () );
 
     // If a completion object is present and the input
     // widget is not read-only, show the Text Completion
