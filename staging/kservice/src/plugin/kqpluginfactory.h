@@ -30,6 +30,8 @@ class KQPluginFactory
         virtual ~KQPluginFactory() {}
 
         virtual QObject* createPlugin(const QString &name) = 0;
+        virtual QObject* create(QObject* parent, const QVariantList& args) = 0;
+
 };
 
 #define KQPluginFactory_iid "org.kde.KQPluginFactory"
@@ -45,6 +47,7 @@ class name : public QObject, public KQPluginFactory \
 \
     public: \
         QObject* createPlugin(const QString &name); \
+        QObject* create(QObject* parent = 0, const QVariantList& args = QVariantList()); \
 \
 }; \
 \
@@ -53,6 +56,13 @@ inline QObject* name::createPlugin(const QString& plugin) \
     QVariantList args; \
     args << plugin; \
     QObject *time_engine = new baseclass(0, args); \
+    return time_engine; \
+} \
+\
+inline QObject* name::create(QObject* parent, const QVariantList& args) \
+{ \
+    qDebug() << "name::create" << args; \
+    QObject *time_engine = new baseclass(parent, args); \
     return time_engine; \
 } \
 
