@@ -39,7 +39,6 @@ KDEUI_EXECUTABLE_TESTS(
   kmainwindowtest
   kmainwindowrestoretest
   kmessagewidgettest
-  kmodifierkeyinfotest
   knewpassworddialogtest
   knotificationrestrictionstest
   kpopuptest

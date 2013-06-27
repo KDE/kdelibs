@@ -21,7 +21,7 @@
 #ifndef KMODIFIERKEYINFO_H
 #define KMODIFIERKEYINFO_H
 
-#include <kdeui_export.h>
+#include <kguiaddons_export.h>
 
 #include <QtCore/QObject>
 
@@ -43,7 +43,7 @@ class KModifierKeyInfoProvider;
  * @see isKeyLocked) or connect to KModifierKeyInfo's signals to be notified about
  * changes (@see keyLatched, @see keyLocked).
  */
-class KDEUI_EXPORT KModifierKeyInfo : public QObject
+class KGUIADDONS_EXPORT KModifierKeyInfo : public QObject
 {
     Q_OBJECT
 

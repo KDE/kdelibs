@@ -105,8 +105,6 @@ set(kdeui_LIB_SRCS
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
- util/kmodifierkeyinfo.cpp
- util/kmodifierkeyinfoprovider.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
  widgets/kcmodule.cpp
@@ -133,16 +131,6 @@ set(kdeui_LIB_SRCS
  xmlgui/ktoolbar.cpp
 )
 
-message("Port to Qt5 native filter")
-#if (X11_FOUND AND X11_Xkb_FOUND)
-#    include_directories (
-#        ${X11_Xkb_INCLUDE_PATH}
-#        ${X11_Xlib_INCLUDE_PATH}
-#    )
-#    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
-#else (X11_FOUND AND X11_Xkb_FOUND)
-    set (kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
-#endif (X11_FOUND AND X11_Xkb_FOUND)
 
 set( kdeui_UI
    dialogs/knewpassworddialog.ui
@@ -262,7 +250,6 @@ install( FILES
  util/kcrash.h
  util/kglobalsettings.h
  util/khelpclient.h
- util/kmodifierkeyinfo.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
  util/kundoactions.h

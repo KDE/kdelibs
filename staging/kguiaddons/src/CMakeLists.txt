@@ -6,7 +6,20 @@ set(kguiaddons_LIB_SRCS
  colors/kcolormimedata.cpp
  text/kwordwrap.cpp
  fonts/kfontutils.cpp
+ util/kmodifierkeyinfo.cpp
+ util/kmodifierkeyinfoprovider.cpp
 )
+
+message("Port to Qt5 native filter")
+#if (X11_FOUND AND X11_Xkb_FOUND)
+#    include_directories (
+#        ${X11_Xkb_INCLUDE_PATH}
+#        ${X11_Xlib_INCLUDE_PATH}
+#    )
+#    set(kguiaddons_LIB_SRCS ${kguiaddons_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
+#else (X11_FOUND AND X11_Xkb_FOUND)
+    set (kguiaddons_LIB_SRCS ${kguiaddons_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
+#endif (X11_FOUND AND X11_Xkb_FOUND)
 
 add_library(kguiaddons ${kguiaddons_LIB_SRCS})
 
@@ -31,6 +44,6 @@ install( FILES
  colors/kcolormimedata.h
  text/kwordwrap.h
  fonts/kfontutils.h
-
+ util/kmodifierkeyinfo.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

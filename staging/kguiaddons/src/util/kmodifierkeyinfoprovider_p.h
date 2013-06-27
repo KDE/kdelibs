@@ -22,8 +22,8 @@
 #define KMODIFIERKEYINFOPROVIDER_P_H
 
 #include <QHash>
-#include <QWidget>
 #include <QSet>
+#include <QObject>
 
 #pragma message ("Port to Qt5 native filter")
 #if 0
