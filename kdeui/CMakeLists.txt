@@ -110,9 +110,7 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
  widgets/kcmodule.cpp
- widgets/kcombobox.cpp
  widgets/khelpmenu.cpp
- widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
  widgets/klanguagebutton.cpp
  widgets/kmessagewidget.cpp
@@ -269,9 +267,7 @@ install( FILES
  util/kimagecache.h
  util/kundoactions.h
  widgets/kcmodule.h
- widgets/kcombobox.h
  widgets/khelpmenu.h
- widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
  widgets/klanguagebutton.h
  widgets/kmessagewidget.h

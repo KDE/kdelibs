@@ -14,10 +14,12 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 configure_file(config-kcompletion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kcompletion.h )
 
 set(kcompletion_SRCS
+  kcombobox.cpp
   kcompletion.cpp
   kcompletionbase.cpp
   kcompletionbox.cpp
   klineedit.cpp
+  khistorycombobox.cpp
   kpixmapprovider.cpp
   kzoneallocator.cpp
 )
@@ -35,9 +37,11 @@ set_target_properties(KCompletion PROPERTIES VERSION   ${KCOMPLETION_VERSION_STR
 install(TARGETS KCompletion EXPORT KCompletionTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  kcombobox.h
   kcompletion.h
   kcompletionbox.h
   klineedit.h
+  khistorycombobox.h
   kpixmapprovider.h
   ksortablelist.h
   ${CMAKE_CURRENT_BINARY_DIR}/kcompletion_export.h

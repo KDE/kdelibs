@@ -28,13 +28,11 @@
 #include <QActionEvent>
 #include <QUrl>
 
-#include <kselectaction.h>
 #include <kcompletionbox.h>
 #include <kcursor.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 
-#include <kdebug.h>
 
 class KComboBox::KComboBoxPrivate
 {

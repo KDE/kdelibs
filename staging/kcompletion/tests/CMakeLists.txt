@@ -15,6 +15,7 @@ macro(kcompletion_executable_tests)
 endmacro()
 
 kcompletion_executable_tests(
+   kcomboboxtest
    kcompletionuitest
    klineedittest
 )

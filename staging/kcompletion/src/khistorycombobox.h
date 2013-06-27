@@ -45,7 +45,7 @@ class KPixmapProvider;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KHistoryComboBox : public KComboBox
+class KCOMPLETION_EXPORT KHistoryComboBox : public KComboBox
 {
     Q_OBJECT
     Q_PROPERTY( QStringList historyItems READ historyItems WRITE setHistoryItems )
