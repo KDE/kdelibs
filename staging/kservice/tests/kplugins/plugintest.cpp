@@ -20,7 +20,6 @@
 #include "plugintest.h"
 
 #include <kqpluginfactory.h>
-#include <kqpluginfactoryinterface.h>
 #include <klocalizedstring.h>
 
 
@@ -70,7 +69,7 @@ void PluginTest::loadKQPlugin()
     QString pluginPath = "/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/";
     QCoreApplication::addLibraryPath(pluginPath);
     QPluginLoader loader("/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/libkqpluginfactory.so", this);
-    KQPluginFactoryInterface *factory = qobject_cast<KQPluginFactoryInterface*>(loader.instance());
+    KQPluginFactory *factory = qobject_cast<KQPluginFactory*>(loader.instance());
     //QObject *factory = loader.instance();
     if (factory) {
         qDebug() << "loaded successfully and cast";

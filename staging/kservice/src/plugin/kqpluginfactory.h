@@ -19,24 +19,24 @@
  *
  */
 
-#ifndef KQPLUGINFACTORYINTERFACE_H
-#define KQPLUGINFACTORYINTERFACE_H
+#ifndef KQPLUGINFACTORY_H
+#define KQPLUGINFACTORY_H
 
 #include <QObject>
 
-class KQPluginFactoryInterface
+class KQPluginFactory
 {
     public:
-        //virtual KQPluginFactoryInterface();
-        //virtual ~KQPluginFactoryInterface();
-        virtual ~KQPluginFactoryInterface() {}
+        //virtual KQPluginFactory();
+        //virtual ~KQPluginFactory();
+        virtual ~KQPluginFactory() {}
         template<typename T>T *create(QObject *parent = 0, const QVariantList &args = QVariantList());
 
         virtual QObject* createPlugin(const QString &name) = 0;
 };
 
 template<typename T>
-inline T *KQPluginFactoryInterface::create(QObject *parent, const QVariantList &args)
+inline T *KQPluginFactory::create(QObject *parent, const QVariantList &args)
 {
     QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, QString());
 
@@ -47,8 +47,8 @@ inline T *KQPluginFactoryInterface::create(QObject *parent, const QVariantList &
     return t;
 }
 
-#define KQPluginFactoryInterface_iid "org.kde.KQPluginFactoryInterface"
+#define KQPluginFactory_iid "org.kde.KQPluginFactory"
 
-Q_DECLARE_INTERFACE(KQPluginFactoryInterface, KQPluginFactoryInterface_iid)
+Q_DECLARE_INTERFACE(KQPluginFactory, KQPluginFactory_iid)
 
 #endif // KQPLUGINFACTORYINTERFACE_H
