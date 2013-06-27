@@ -314,5 +314,14 @@ namespace KIO
    */
   KIOCORE_EXPORT QString iconNameForUrl(const QUrl& url);
 
+  /**
+   * This function is useful to implement the "Up" button in a file manager for example.
+   *
+   * @return a URL that is a level higher
+   *
+   * @since 5.0
+   */
+  KIOCORE_EXPORT QUrl upUrl(const QUrl &url);
+
 }
 #endif
