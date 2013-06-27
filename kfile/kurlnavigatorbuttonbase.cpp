@@ -21,7 +21,6 @@
 #include "kurlnavigatorbuttonbase_p.h"
 
 #include <klocalizedstring.h>
-#include <kurl.h>
 
 #include <QApplication>
 #include <QClipboard>

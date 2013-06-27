@@ -46,6 +46,7 @@
 #include <QtCore/QMimeData>
 #include <qstandardpaths.h>
 #include <qinputdialog.h>
+#include <qurlpathinfo.h>
 #include <assert.h>
 
 #include <kconfiggroup.h>
@@ -264,7 +265,7 @@ void KHTMLPartBrowserExtension::searchProvider()
 {
     QAction *action = qobject_cast<QAction*>(sender());
     if (action) {
-        KUrl url = action->data().toUrl();
+        QUrl url = action->data().toUrl();
         if (url.host().isEmpty()) {
             KUriFilterData data(action->data().toString());
             if (KUriFilter::self()->filterSearchUri(data, KUriFilter::WebShortcutFilter))
@@ -376,8 +377,8 @@ class KHTMLPopupGUIClient::KHTMLPopupGUIClientPrivate
 {
 public:
   KHTMLPart *m_khtml;
-  KUrl m_url;
-  KUrl m_imageURL;
+  QUrl m_url;
+  QUrl m_imageURL;
   QPixmap m_pixmap;
   QString m_suggestedFilename;
     KActionCollection* m_actionCollection;
@@ -385,7 +386,7 @@ public:
 };
 
 
-KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
+KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QUrl &url )
     : QObject( khtml ), d(new KHTMLPopupGUIClientPrivate)
 {
     d->m_khtml = khtml;
@@ -423,7 +424,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         addSearchActions(editActions);
 
         QString selectedTextURL = selectedTextAsOneLine(d->m_khtml);
-        if ( selectedTextURL.contains("://") && KUrl(selectedTextURL).isValid() ) {
+        if ( selectedTextURL.contains("://") && QUrl(selectedTextURL).isValid() ) {
             if (selectedTextURL.length() > 18) {
                 selectedTextURL.truncate(15);
                 selectedTextURL += "...";
@@ -533,7 +534,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
 
     if (isImage) {
         if ( e.elementId() == ID_IMG ) {
-            d->m_imageURL = KUrl( static_cast<DOM::HTMLImageElement>( e ).src().string() );
+            d->m_imageURL = QUrl( static_cast<DOM::HTMLImageElement>( e ).src().string() );
             DOM::HTMLImageElementImpl *imageimpl = static_cast<DOM::HTMLImageElementImpl *>( e.handle() );
             Q_ASSERT(imageimpl);
             if(imageimpl) // should be true always.  right?
@@ -544,7 +545,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
             }
         }
         else
-            d->m_imageURL = KUrl( static_cast<DOM::HTMLInputElement>( e ).src().string() );
+            d->m_imageURL = QUrl( static_cast<DOM::HTMLInputElement>( e ).src().string() );
         QAction *action = new QAction( i18n( "Save Image As..." ), this );
         d->m_actionCollection->addAction( "saveimageas", action );
         connect( action, SIGNAL(triggered(bool)), this, SLOT(slotSaveImageAs()) );
@@ -571,7 +572,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url )
         }
 
         QString actionText = d->m_suggestedFilename.isEmpty() ?
-                                   KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25)
+                                   KStringHandler::csqueeze(QUrlPathInfo(d->m_imageURL).fileName()+d->m_imageURL.query(), 25)
                                    : d->m_suggestedFilename;
         action = new QAction( i18n("View Image (%1)", actionText.replace("&", "&&")), this );
         d->m_actionCollection->addAction( "viewimage", action );
@@ -748,8 +749,8 @@ void KHTMLPopupGUIClient::slotBlockIFrame()
 
 void KHTMLPopupGUIClient::slotCopyLinkLocation()
 {
-  KUrl safeURL(d->m_url);
-  safeURL.setPass(QString());
+  QUrl safeURL(d->m_url);
+  safeURL.setPassword(QString());
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
@@ -773,8 +774,8 @@ void KHTMLPopupGUIClient::slotStopAnimations()
 void KHTMLPopupGUIClient::slotCopyImage()
 {
 #ifndef QT_NO_MIMECLIPBOARD
-  KUrl safeURL(d->m_imageURL);
-  safeURL.setPass(QString());
+  QUrl safeURL(d->m_imageURL);
+  safeURL.setPassword(QString());
 
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
@@ -793,8 +794,8 @@ void KHTMLPopupGUIClient::slotCopyImage()
 
 void KHTMLPopupGUIClient::slotCopyImageLocation()
 {
-  KUrl safeURL(d->m_imageURL);
-  safeURL.setPass(QString());
+  QUrl safeURL(d->m_imageURL);
+  safeURL.setPassword(QString());
 #ifndef QT_NO_MIMECLIPBOARD
   // Set it in both the mouse selection and in the clipboard
   QMimeData* mimeData = new QMimeData;
@@ -852,18 +853,19 @@ void KHTMLPopupGUIClient::slotFrameInTab()
 }
 
 void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
-                                   const KUrl &url,
+                                   const QUrl &url,
                                    const QMap<QString, QString> &metadata,
                                    const QString &filter, long cacheId,
                                    const QString & suggestedFilename )
 {
+  QUrlPathInfo pathInfo(url);
   QString name = QLatin1String( "index.html" );
   if ( !suggestedFilename.isEmpty() )
     name = suggestedFilename;
-  else if ( !url.fileName(KUrl::ObeyTrailingSlash).isEmpty() )
-    name = url.fileName(KUrl::ObeyTrailingSlash);
+  else if ( !pathInfo.fileName().isEmpty() )
+    name = pathInfo.fileName();
 
-  KUrl destURL;
+  QUrl destURL;
   int query;
   do {
     query = KMessageBox::Yes;
@@ -883,7 +885,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
     saveURL(parent, url, destURL, metadata, cacheId);
 }
 
-void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl &destURL,
+void KHTMLPopupGUIClient::saveURL( QWidget* parent, const QUrl &url, const QUrl &destURL,
                                    const QMap<QString, QString> &metadata,
                                    long cacheId )
 {
@@ -910,7 +912,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
                 {
                     QDataStream stream ( &destFile );
                     KHTMLPageCache::self()->saveData(cacheId, &stream);
-                    KUrl url2 = KUrl();
+                    QUrl url2 = QUrl();
                     url2.setPath(destFile.fileName());
                     KIO::file_move(url2, destURL, -1, KIO::Overwrite);
                     saved = true;
@@ -944,8 +946,8 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const KUrl &url, const KUrl 
                 else
                 {
                     downloadViaKIO = false;
-                    KUrl cleanDest = destURL;
-                    cleanDest.setPass( QString() ); // don't put password into commandline
+                    QUrl cleanDest = destURL;
+                    cleanDest.setPassword( QString() ); // don't put password into commandline
                     cmd += ' ' + KShell::quoteArg(url.url()) + ' ' +
                            KShell::quoteArg(cleanDest.url());
                     kDebug(1000) << "Calling command  "<<cmd;
@@ -1252,9 +1254,9 @@ bool KHTMLHtmlExtension::setHtmlSettingsProperty(HtmlSettingsInterface::HtmlSett
             p->setPluginsEnabled(value.toBool());
             return true;
         case KParts::HtmlSettingsInterface::UserDefinedStyleSheetURL: {
-            const KUrl url (value.toUrl());
-            if (url.protocol() == QLatin1String("data")) {
-                const QByteArray data (url.encodedPath());
+            const QUrl url (value.toUrl());
+            if (url.scheme() == QLatin1String("data")) {
+                const QByteArray data (url.path(QUrl::FullyEncoded).toLatin1());
                 if (!data.isEmpty()) {
                     const int index = data.indexOf(',');
                     const QByteArray decodedData ((index > -1 ? QByteArray::fromBase64(data.mid(index)) : QByteArray()));

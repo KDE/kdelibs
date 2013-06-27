@@ -78,7 +78,7 @@ public:
     void slotShowOverview();
 
     void slotPayloadFailed(const EntryInternal& entry);
-    void slotPayloadLoaded(KUrl url);
+    void slotPayloadLoaded(QUrl url);
 
     void slotResetMessage();
     void slotNetworkTimeout();

@@ -140,8 +140,8 @@ void KNewStuff2Test::engineTest()
                 SIGNAL(signalEntriesFailed()),
                 SLOT(slotEntriesFailed()));
         connect(m_engine,
-                SIGNAL(signalPayloadLoaded(KUrl)),
-                SLOT(slotPayloadLoaded(KUrl)));
+                SIGNAL(signalPayloadLoaded(QUrl)),
+                SLOT(slotPayloadLoaded(QUrl)));
         connect(m_engine,
                 SIGNAL(signalPayloadFailed()),
                 SLOT(slotPayloadFailed()));
@@ -194,7 +194,7 @@ void KNewStuff2Test::slotEntriesFinished()
     }
 }
 
-void KNewStuff2Test::slotPayloadLoaded(KUrl payload)
+void KNewStuff2Test::slotPayloadLoaded(QUrl payload)
 {
     kDebug() << "-- entry downloaded successfully";
     kDebug() << "-- downloaded to " << payload.prettyUrl();

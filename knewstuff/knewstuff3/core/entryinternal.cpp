@@ -51,7 +51,7 @@ class EntryInternal::Private : public QSharedData
 
         QString mUniqueId;
         QString mName;
-        KUrl mHomepage;
+        QUrl mHomepage;
         QString mCategory;
         QString mLicense;
         QString mVersion;
@@ -161,7 +161,7 @@ void EntryInternal::setCategory(const QString& category)
     d->mCategory = category;
 }
 
-KUrl EntryInternal::homepage() const
+QUrl EntryInternal::homepage() const
 {
     return d->mHomepage;
 }
@@ -440,7 +440,7 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "providerid") {
             d->mProviderId = e.text();
         } else if (e.tagName() == "homepage") {
-            d->mHomepage = e.text();
+            d->mHomepage = QUrl(e.text());
         } else if (e.tagName() == "licence") { // krazy:exclude=spelling
             d->mLicense = e.text().trimmed();
         } else if (e.tagName() == "summary") {

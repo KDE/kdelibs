@@ -48,33 +48,33 @@ bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
     if (xmldata.tagName() != "provider")
         return false;
 
-    mUploadUrl = xmldata.attribute("uploadurl");
-    mNoUploadUrl = xmldata.attribute("nouploadurl");
+    mUploadUrl = QUrl(xmldata.attribute("uploadurl"));
+    mNoUploadUrl = QUrl(xmldata.attribute("nouploadurl"));
 
     QString url = xmldata.attribute("downloadurl");
     if (!url.isEmpty()) {
-        mDownloadUrls.insert(QString(), KUrl(url));
+        mDownloadUrls.insert(QString(), QUrl(url));
     }
 
     url = xmldata.attribute("downloadurl-latest");
     if (!url.isEmpty()) {
-        mDownloadUrls.insert("latest", KUrl(url));
+        mDownloadUrls.insert("latest", QUrl(url));
     }
 
     url = xmldata.attribute("downloadurl-score");
     if (!url.isEmpty()) {
-        mDownloadUrls.insert("score", KUrl(url));
+        mDownloadUrls.insert("score", QUrl(url));
     }
 
     url = xmldata.attribute("downloadurl-downloads");
     if (!url.isEmpty()) {
-        mDownloadUrls.insert("downloads", KUrl(url));
+        mDownloadUrls.insert("downloads", QUrl(url));
     }
 
     // FIXME: what exactly is the following condition supposed to do?
-    // FIXME: make sure new KUrl in KDE 4 handles this right
+    // FIXME: make sure new QUrl in KDE 4 handles this right
     // FIXME: this depends on freedesktop.org icon naming... introduce 'desktopicon'?
-    KUrl iconurl(xmldata.attribute("icon"));
+    QUrl iconurl(xmldata.attribute("icon"));
     if (!iconurl.isValid())
         iconurl.setPath(xmldata.attribute("icon"));
     mIcon = iconurl;
@@ -143,7 +143,7 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
         return;
     }
 
-    KUrl url = downloadUrl(request.sortMode);
+    QUrl url = downloadUrl(request.sortMode);
     if (!url.isEmpty()) {
         // TODO first get the entries, then filter with searchString, finally emit the finished signal...
         // FIXME: don't creat an endless number of xmlloaders!
@@ -159,9 +159,9 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
     }
 }
 
-KUrl StaticXmlProvider::downloadUrl(SortMode mode) const
+QUrl StaticXmlProvider::downloadUrl(SortMode mode) const
 {
-    KUrl url;
+    QUrl url;
     switch (mode) {
         case Installed: // should just query the registry and not end up here
         case Rating:

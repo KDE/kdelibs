@@ -44,11 +44,11 @@ public:
     MyDirLister()
         : spyStarted(this, SIGNAL(started(QUrl))),
           spyClear(this, SIGNAL(clear())),
-          spyClearKUrl(this, SIGNAL(clear(QUrl))),
+          spyClearQUrl(this, SIGNAL(clear(QUrl))),
           spyCompleted(this, SIGNAL(completed())),
-          spyCompletedKUrl(this, SIGNAL(completed(QUrl))),
+          spyCompletedQUrl(this, SIGNAL(completed(QUrl))),
           spyCanceled(this, SIGNAL(canceled())),
-          spyCanceledKUrl(this, SIGNAL(canceled(QUrl))),
+          spyCanceledQUrl(this, SIGNAL(canceled(QUrl))),
           spyRedirection(this, SIGNAL(redirection(QUrl))),
           spyDeleteItem(this, SIGNAL(deleteItem(KFileItem))),
           spyItemsDeleted(this, SIGNAL(itemsDeleted(KFileItemList)))
@@ -58,11 +58,11 @@ public:
     {
         spyStarted.clear();
         spyClear.clear();
-        spyClearKUrl.clear();
+        spyClearQUrl.clear();
         spyCompleted.clear();
-        spyCompletedKUrl.clear();
+        spyCompletedQUrl.clear();
         spyCanceled.clear();
-        spyCanceledKUrl.clear();
+        spyCanceledQUrl.clear();
         spyRedirection.clear();
         spyDeleteItem.clear();
         spyItemsDeleted.clear();
@@ -70,11 +70,11 @@ public:
 
     QSignalSpy spyStarted;
     QSignalSpy spyClear;
-    QSignalSpy spyClearKUrl;
+    QSignalSpy spyClearQUrl;
     QSignalSpy spyCompleted;
-    QSignalSpy spyCompletedKUrl;
+    QSignalSpy spyCompletedQUrl;
     QSignalSpy spyCanceled;
-    QSignalSpy spyCanceledKUrl;
+    QSignalSpy spyCanceledQUrl;
     QSignalSpy spyRedirection;
     QSignalSpy spyDeleteItem;
     QSignalSpy spyItemsDeleted;

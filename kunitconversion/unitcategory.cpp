@@ -19,6 +19,7 @@
 
 #include "unitcategory.h"
 #include <klocalizedstring.h>
+#include <QMap>
 
 namespace KUnitConversion
 {

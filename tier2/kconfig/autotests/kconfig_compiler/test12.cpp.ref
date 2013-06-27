@@ -8,8 +8,8 @@ Test12::Test12(  )
 {
   setCurrentGroup( QLatin1String( "muon" ) );
 
-  KUrl::List defaultRnRSource;
-  defaultRnRSource.append( KUrl(QString::fromUtf8( "http://kde.org" ) ) );
+  QList<QUrl> defaultRnRSource;
+  defaultRnRSource.append( QUrl(QString::fromUtf8( "http://kde.org" ) ) );
 
   KConfigSkeleton::ItemUrlList  *itemRnRSource;
   itemRnRSource = new KConfigSkeleton::ItemUrlList( currentGroup(), QLatin1String( "RnRSource" ), mRnRSource, defaultRnRSource );

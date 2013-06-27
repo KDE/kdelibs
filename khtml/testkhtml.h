@@ -17,7 +17,7 @@ public:
   Dummy( KHTMLPart *part ) : QObject( part ) { m_part = part; }
 
 private Q_SLOTS:
-  void slotOpenURL( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs )
+  void slotOpenURL( const QUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs )
   {
       m_part->setArguments( args );
       m_part->browserExtension()->setBrowserArguments( browserArgs );

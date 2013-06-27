@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <kdirselectdialog.h>
 #include <kmessagebox.h>
-#include <kurl.h>
+#include <QUrl>
 
 int main( int argc, char **argv )
 {

@@ -40,7 +40,6 @@
 #include <QScriptValueIterator>
 #include <QDebug>
 
-#include <kurl.h>
 #include <klocalizedstring.h>
 
 using namespace Kross;
@@ -103,13 +102,6 @@ namespace Kross {
         return e->newVariant( url.toString() );
     }
     void fromUrl(const QScriptValue &v, QUrl &url) {
-        url.setUrl( v.toString() );
-    }
-
-    QScriptValue toKUrl(QScriptEngine *e, const KUrl &url) {
-        return e->newVariant( url.url() );
-    }
-    void fromKUrl(const QScriptValue &v, KUrl &url) {
         url.setUrl( v.toString() );
     }
 
@@ -258,7 +250,6 @@ namespace Kross {
         // register common used types
         qScriptRegisterMetaType< QByteArray         >(engine, toByteArray,   fromByteArray);
         qScriptRegisterMetaType< QUrl               >(engine, toUrl,         fromUrl);
-        qScriptRegisterMetaType< KUrl               >(engine, toKUrl,        fromKUrl);
         qScriptRegisterMetaType< QColor             >(engine, toColor,       fromColor);
         qScriptRegisterMetaType< QRect              >(engine, toRect,        fromRect);
         qScriptRegisterMetaType< QRectF             >(engine, toRectF,       fromRectF);

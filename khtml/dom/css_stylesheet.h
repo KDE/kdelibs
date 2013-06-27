@@ -158,7 +158,7 @@ public:
     /**
      * @internal
      */
-    KUrl baseUrl();
+    QUrl baseUrl();
     bool isCSSStyleSheet() const;
     StyleSheetImpl *handle() const { return impl; }
     bool isNull() const { return !impl; }

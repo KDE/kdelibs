@@ -23,7 +23,7 @@
 
 #include <QListView>
 
-#include <kurl.h>
+#include <QUrl>
 
 class QResizeEvent;
 class QContextMenuEvent;

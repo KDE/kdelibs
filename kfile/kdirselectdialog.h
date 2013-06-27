@@ -24,7 +24,7 @@
 #include <kfile_export.h>
 
 #include <QDialog>
-#include <kurl.h>
+#include <QUrl>
 
 class QAbstractItemView;
 

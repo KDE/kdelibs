@@ -30,7 +30,7 @@
 
 #include <QWebView>
 
-class KUrl;
+class QUrl;
 template<class T> class KWebViewPrivate;
 
 /**
@@ -115,7 +115,7 @@ Q_SIGNALS:
      *
      * @param url   url generated from the selection clipboard content
      *
-     * @deprecated  use selectionClipboardUrlPasted(KUrl, bool) instead
+     * @deprecated  use selectionClipboardUrlPasted(QUrl, bool) instead
      * @see QClipboard
      */
 #ifndef KDE_NO_DEPRECATED

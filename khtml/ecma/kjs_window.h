@@ -141,7 +141,7 @@ namespace KJS {
 
     static bool targetIsExistingWindow(KHTMLPart* part, const QString& frameName);
     JSValue* openWindow(ExecState *exec, const List &args);
-    JSValue* executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features);
+    JSValue* executeOpenWindow(ExecState *exec, const QUrl& url, const QString& frameName, const QString& features);
     void resizeTo(QWidget* tl, int width, int height);
     void afterScriptExecution();
     bool isSafeScript(ExecState *exec) const {
@@ -239,8 +239,8 @@ namespace KJS {
 
     struct SuppressedWindowInfo {
        SuppressedWindowInfo() {}  // for QValueList
-       SuppressedWindowInfo( KUrl u, QString fr, QString fe ) : url(u), frameName(fr), features(fe) {}
-       KUrl url;
+       SuppressedWindowInfo( QUrl u, QString fr, QString fe ) : url(u), frameName(fr), features(fe) {}
+       QUrl url;
        QString frameName;
        QString features;
      };

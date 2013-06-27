@@ -25,7 +25,7 @@ QTEST_MAIN(KUrlNavigatorTest)
 
 void KUrlNavigatorTest::initTestCase()
 {
-    m_navigator = new KUrlNavigator(0, KUrl("A"), 0);
+    m_navigator = new KUrlNavigator(0, QUrl("A"), 0);
 }
 
 void KUrlNavigatorTest::cleanupTestCase()
@@ -39,17 +39,17 @@ void KUrlNavigatorTest::testHistorySizeAndIndex()
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 1);
 
-    m_navigator->setLocationUrl(KUrl("A"));
+    m_navigator->setLocationUrl(QUrl("A"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 1);
 
-    m_navigator->setLocationUrl(KUrl("B"));
+    m_navigator->setLocationUrl(QUrl("B"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 2);
 
-    m_navigator->setLocationUrl(KUrl("C"));
+    m_navigator->setLocationUrl(QUrl("C"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 3);
@@ -108,7 +108,7 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 3);
 
-    m_navigator->setLocationUrl(KUrl("D"));
+    m_navigator->setLocationUrl(QUrl("D"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
@@ -118,11 +118,11 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 1);
     QCOMPARE(m_navigator->historySize(), 4);
 
-    m_navigator->setLocationUrl(KUrl("E"));
+    m_navigator->setLocationUrl(QUrl("E"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
-    m_navigator->setLocationUrl(KUrl("F"));
+    m_navigator->setLocationUrl(QUrl("F"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 5);
 
@@ -133,18 +133,18 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 2);
     QCOMPARE(m_navigator->historySize(), 5);
 
-    m_navigator->setLocationUrl(KUrl("G"));
+    m_navigator->setLocationUrl(QUrl("G"));
 
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
     // insert same URL as the current history index
-    m_navigator->setLocationUrl(KUrl("G"));
+    m_navigator->setLocationUrl(QUrl("G"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
     // insert same URL with a trailing slash as the current history index
-    m_navigator->setLocationUrl(KUrl("G/"));
+    m_navigator->setLocationUrl(QUrl("G/"));
     QCOMPARE(m_navigator->historyIndex(), 0);
     QCOMPARE(m_navigator->historySize(), 4);
 
@@ -154,7 +154,7 @@ void KUrlNavigatorTest::testHistoryInsert()
     QCOMPARE(m_navigator->historyIndex(), 1);
     QCOMPARE(m_navigator->historySize(), 4);
 
-    m_navigator->setLocationUrl(KUrl("C"));
+    m_navigator->setLocationUrl(QUrl("C"));
     QCOMPARE(m_navigator->historyIndex(), 1);
     QCOMPARE(m_navigator->historySize(), 4);
 }
@@ -170,7 +170,7 @@ void KUrlNavigatorTest::testHistoryInsert()
 
 void KUrlNavigatorTest::bug251553_goUpFromArchive()
 {
-    m_navigator->setLocationUrl(KUrl("zip:/test/archive.zip"));
+    m_navigator->setLocationUrl(QUrl("zip:/test/archive.zip"));
     QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test/archive.zip"));
     QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("zip"));
 
@@ -179,7 +179,7 @@ void KUrlNavigatorTest::bug251553_goUpFromArchive()
     QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test/"));
     QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("file"));
 
-    m_navigator->setLocationUrl(KUrl("tar:/test/archive.tar.gz"));
+    m_navigator->setLocationUrl(QUrl("tar:/test/archive.tar.gz"));
     QCOMPARE(m_navigator->locationUrl().path(), QLatin1String("/test/archive.tar.gz"));
     QCOMPARE(m_navigator->locationUrl().scheme(), QLatin1String("tar"));
 

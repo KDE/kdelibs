@@ -33,7 +33,6 @@
 #include <QWebFrame>
 #include <QWebElement>
 
-#include <kurl.h>
 #include <kurifilter.h>
 
 #include "kwebpage.h"

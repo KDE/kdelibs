@@ -134,7 +134,7 @@ QStringList KFilePlacesModelTest::placesUrls() const
                                                                              \
         index = m_places2->index(row, 0);                                    \
                                                                              \
-        QCOMPARE(m_places2->url(index).toString(), KUrl(urls[row]).toString()); \
+        QCOMPARE(m_places2->url(index).toString(), QUrl::fromUserInput(urls[row]).toString()); \
         QCOMPARE(m_places2->data(index, KFilePlacesModel::UrlRole).toUrl(),  \
                  QUrl(m_places2->url(index)));                               \
     }                                                                        \
@@ -182,7 +182,7 @@ void KFilePlacesModelTest::testReparse()
 
     // add item
 
-    m_places->addPlace("foo", KUrl("/foo"),
+    m_places->addPlace("foo", QUrl::fromLocalFile("/foo"),
                                     QString(), QString());
 
     urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
@@ -236,7 +236,7 @@ void KFilePlacesModelTest::testInternalBookmarksHaveIds()
     // It induces a small race condition which means several ids will be
     // successively set on the same bookmark but no big deal since it won't
     // break the system
-    KBookmark foo = root.addBookmark("Foo", KUrl("file:/foo"), "red-folder");
+    KBookmark foo = root.addBookmark("Foo", QUrl("file:/foo"), "red-folder");
     QCOMPARE(foo.text(), QString("Foo"));
     QVERIFY(foo.metaDataItem("ID").isEmpty());
     bookmarkManager->emitChanged(root);
@@ -476,7 +476,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     QSignalSpy spy_removed(m_places, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     QSignalSpy spy_changed(m_places, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
 
-    m_places->addPlace("Foo", KUrl("/home/foo"));
+    m_places->addPlace("Foo", QUrl::fromLocalFile("/home/foo"));
 
     QStringList urls;
     urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "trash:/"
@@ -516,7 +516,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     QCOMPARE(args.at(1).toInt(), 10);
     QCOMPARE(args.at(2).toInt(), 10);
 
-    m_places->editPlace(m_places->index(3, 0), "Foo", KUrl("/mnt/foo"));
+    m_places->editPlace(m_places->index(3, 0), "Foo", QUrl::fromLocalFile("/mnt/foo"));
 
     urls.clear();
     urls << QDir::homePath() << "remote:/" << KDE_ROOT_PATH << "/mnt/foo"
@@ -558,7 +558,7 @@ void KFilePlacesModelTest::testPlacesLifecycle()
     QCOMPARE(args.at(1).toInt(), 3);
     QCOMPARE(args.at(2).toInt(), 3);
 
-    m_places->addPlace("Foo", KUrl("/home/foo"), QString(), QString(), m_places->index(1, 0));
+    m_places->addPlace("Foo", QUrl::fromLocalFile("/home/foo"), QString(), QString(), m_places->index(1, 0));
 
     urls.clear();
     urls << QDir::homePath() << "remote:/" << "/home/foo" << KDE_ROOT_PATH

@@ -77,6 +77,7 @@ extern "C" {
 #include <QFileInfo>
 #include <qurlpathinfo.h>
 #include <qmimedatabase.h>
+#include <QUrl>
 
 #if HAVE_POSIX_ACL
 extern "C" {
@@ -90,7 +91,6 @@ extern "C" {
 #include <kdebug.h>
 #include <kdesktopfile.h>
 #include <kiconbutton.h>
-#include <kurl.h>
 #include <kurlrequester.h>
 #include <klocalizedstring.h>
 #include <kglobalsettings.h>
@@ -187,7 +187,7 @@ public:
     /**
      * The URL of the props dialog (when shown for only one file)
      */
-    KUrl m_singleUrl;
+    QUrl m_singleUrl;
     /**
      * List of items this props dialog is shown for
      */
@@ -196,7 +196,7 @@ public:
      * For templates
      */
     QString m_defaultName;
-    KUrl m_currentDir;
+    QUrl m_currentDir;
     /**
      * List of all plugins inserted ( first one first )
      */
@@ -555,7 +555,7 @@ void KPropertiesDialog::updateUrl(const QUrl& _newUrl)
 {
     Q_ASSERT(d->m_items.count() == 1);
     kDebug(250) << "KPropertiesDialog::updateUrl (pre)" << _newUrl;
-    KUrl newUrl = _newUrl;
+    QUrl newUrl = _newUrl;
     emit saveAs(d->m_singleUrl, newUrl);
     kDebug(250) << "KPropertiesDialog::updateUrl (post)" << newUrl;
 
@@ -579,11 +579,13 @@ void KPropertiesDialog::rename( const QString& _name )
 {
     Q_ASSERT(d->m_items.count() == 1);
     kDebug(250) << "KPropertiesDialog::rename " << _name;
-    KUrl newUrl;
+    QUrl newUrl;
     // if we're creating from a template : use currentdir
     if (!d->m_currentDir.isEmpty()) {
         newUrl = d->m_currentDir;
-        newUrl.addPath(_name);
+        QUrlPathInfo pathInfo(newUrl);
+        pathInfo.addPath(_name);
+        newUrl = pathInfo.url();
     } else {
         QString tmpurl = d->m_singleUrl.url();
         if (!tmpurl.isEmpty() && tmpurl.at(tmpurl.length() - 1) == '/') {
@@ -591,8 +593,11 @@ void KPropertiesDialog::rename( const QString& _name )
             tmpurl.truncate(tmpurl.length() - 1);
         }
 
-        newUrl = tmpurl;
-        newUrl.setFileName(_name);
+        QUrlPathInfo pathInfo;
+        pathInfo.setUrl(QUrl(tmpurl));
+        pathInfo.setFileName(_name);
+
+        newUrl = pathInfo.url();
     }
     updateUrl(newUrl);
 }
@@ -721,7 +726,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     // check that the other items match against it, resetting when not.
     bool isLocal;
     const KFileItem item = properties->item();
-    KUrl url = item.mostLocalUrl( isLocal );
+    QUrl url = item.mostLocalUrl( isLocal );
     bool isReallyLocal = item.url().isLocalFile();
     bool bDesktopFile = item.isDesktopFile();
     mode_t mode = item.mode();
@@ -820,8 +825,9 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         const KFileItemList::const_iterator kend = items.end();
         for ( ++kit /*no need to check the first one again*/ ; kit != kend; ++kit )
         {
-            const KUrl url = (*kit).url();
-            kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.prettyUrl();
+            const QUrl url = (*kit).url();
+            const QUrlPathInfo info(url);
+            kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.toDisplayString();
             // The list of things we check here should match the variables defined
             // at the beginning of this method.
             if ( url.isLocalFile() != isLocal )
@@ -832,7 +838,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                 mode = (mode_t)0;
             if ( KIO::iconNameForUrl(url) != iconStr )
                 iconStr = "document-multiple";
-            if ( url.directory() != directory )
+            if ( info.directory() != directory )
                 directory.clear();
             if ( url.scheme() != protocol )
                 protocol.clear();
@@ -1260,7 +1266,7 @@ void KFilePropsPlugin::slotSizeDetermine()
     {
         bool isLocal;
         const KFileItem item = properties->item();
-        KUrl url = item.mostLocalUrl( isLocal );
+        QUrl url = item.mostLocalUrl( isLocal );
         if (isLocal) {
             KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(url.toLocalFile());
             if (mp) {
@@ -1323,7 +1329,7 @@ void KFilePropsPlugin::applyChanges()
         kDebug(250) << "newname = " << n;
         if ( d->oldName != n || d->m_bFromTemplate ) { // true for any from-template file
             KIO::Job * job = 0L;
-            KUrl oldurl = properties->url();
+            QUrl oldurl = properties->url();
 
             QString newFileName = KIO::encodeFileName(n);
             if (d->bDesktopFile && !newFileName.endsWith(QLatin1String(".desktop")) &&
@@ -1453,14 +1459,14 @@ void KFilePropsPlugin::applyIconChanges()
         return;
     // handle icon changes - only local files (or pseudo-local) for now
     // TODO: Use KTempFile and KIO::file_copy with overwrite = true
-    KUrl url = properties->url();
+    QUrl url = properties->url();
     url = KIO::NetAccess::mostLocalUrl( url, properties );
     if ( url.isLocalFile()) {
         QString path;
 
         if (S_ISDIR(properties->item().mode()))
         {
-            path = url.toLocalFile(KUrl::AddTrailingSlash) + QString::fromLatin1(".directory");
+            path = url.toLocalFile() + QString::fromLatin1("/.directory");
             // don't call updateUrl because the other tabs (i.e. permissions)
             // apply to the directory, not the .directory file.
         }
@@ -1615,7 +1621,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         const KFileItemList::const_iterator kend = items.end();
         for ( ++it /*no need to check the first one again*/ ; it != kend; ++it )
         {
-            const KUrl url = (*it).url();
+            const QUrl url = (*it).url();
             if (!d->isIrregular)
                 d->isIrregular |= isIrregular((*it).permissions(),
                                               (*it).isDir() == isDir,
@@ -2601,7 +2607,7 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
     d->URLEdit = new KUrlRequester( d->m_frame );
     layout->addWidget(d->URLEdit);
 
-    KUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
+    QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
     if (url.isLocalFile()) {
         QString path = url.toLocalFile();
 
@@ -2616,7 +2622,7 @@ KUrlPropsPlugin::KUrlPropsPlugin( KPropertiesDialog *_props )
         d->URLStr = dg.readPathEntry( "URL", QString() );
 
         if (!d->URLStr.isEmpty()) {
-            d->URLEdit->setUrl( KUrl(d->URLStr) );
+            d->URLEdit->setUrl( QUrl(d->URLStr) );
         }
     }
 
@@ -2647,7 +2653,7 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
 
     // open file and check type
     bool isLocal;
-    KUrl url = item.mostLocalUrl(isLocal);
+    QUrl url = item.mostLocalUrl(isLocal);
     if (!isLocal) {
         return false;
     }
@@ -2658,7 +2664,7 @@ bool KUrlPropsPlugin::supports( const KFileItemList& _items )
 
 void KUrlPropsPlugin::applyChanges()
 {
-    const KUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
+    const QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
     if (!url.isLocalFile()) {
         //FIXME: 4.2 add this: KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
         return;
@@ -2814,7 +2820,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
 
     layout->setRowStretch(7, 1);
 
-    KUrl url = KIO::NetAccess::mostLocalUrl(_props->url(), _props);
+    QUrl url = KIO::NetAccess::mostLocalUrl(_props->url(), _props);
     if (!url.isLocalFile()) {
         return;
     }
@@ -2943,7 +2949,7 @@ bool KDevicePropsPlugin::supports( const KFileItemList& _items )
 
     // open file and check type
     bool isLocal;
-    KUrl url = item.mostLocalUrl(isLocal);
+    QUrl url = item.mostLocalUrl(isLocal);
     if (!isLocal) {
         return false;
     }
@@ -3205,7 +3211,7 @@ void KDesktopPropsPlugin::applyChanges()
 {
     kDebug(250);
 
-    const KUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
+    const QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
     if (!url.isLocalFile()) {
         KMessageBox::sorry(0, i18n("Could not save properties. Only entries on local file systems are supported."));
         return;
@@ -3278,7 +3284,7 @@ void KDesktopPropsPlugin::applyChanges()
 
 void KDesktopPropsPlugin::slotBrowseExec()
 {
-    KUrl f = KFileDialog::getOpenUrl(QUrl(), QString(), d->m_frame);
+    QUrl f = KFileDialog::getOpenUrl(QUrl(), QString(), d->m_frame);
     if ( f.isEmpty() )
         return;
 
@@ -3436,7 +3442,7 @@ bool KDesktopPropsPlugin::supports( const KFileItemList& _items )
 
     // open file and check type
     bool isLocal;
-    KUrl url = item.mostLocalUrl( isLocal );
+    QUrl url = item.mostLocalUrl( isLocal );
     if (!isLocal) {
         return false;
     }

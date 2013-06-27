@@ -37,6 +37,7 @@
 #endif
 
 #include <QtCore/QFileSystemWatcher>
+#include <qurlpathinfo.h>
 
 #include <cstdlib>
 #include <ctime>
@@ -96,7 +97,7 @@ namespace KPAC
 
     QStringList ProxyScout::proxiesForUrl( const QString& checkUrl, const QDBusMessage &msg )
     {
-        KUrl url(checkUrl);
+        QUrl url(checkUrl);
 
         if (m_suspendTime) {
             if ( std::time( 0 ) - m_suspendTime < 300 ) {
@@ -106,7 +107,7 @@ namespace KPAC
         }
 
         // Never use a proxy for the script itself
-        if (m_downloader && url.equals(m_downloader->scriptUrl(), KUrl::CompareWithoutTrailingSlash)) {
+        if (m_downloader && QUrlPathInfo(url).equals(m_downloader->scriptUrl(), QUrlPathInfo::CompareWithoutTrailingSlash)) {
             return QStringList (QLatin1String("DIRECT"));
         }
 
@@ -125,7 +126,7 @@ namespace KPAC
 
     QString ProxyScout::proxyForUrl( const QString& checkUrl, const QDBusMessage &msg )
     {
-        KUrl url(checkUrl);
+        QUrl url(checkUrl);
 
         if (m_suspendTime) {
             if ( std::time( 0 ) - m_suspendTime < 300 ) {
@@ -135,7 +136,7 @@ namespace KPAC
         }
 
         // Never use a proxy for the script itself
-        if (m_downloader && url.equals(m_downloader->scriptUrl(), KUrl::CompareWithoutTrailingSlash)) {
+        if (m_downloader && QUrlPathInfo(url).equals(m_downloader->scriptUrl(), QUrlPathInfo::CompareWithoutTrailingSlash)) {
             return QLatin1String("DIRECT");
         }
 
@@ -194,7 +195,7 @@ namespace KPAC
                     connect(m_downloader, SIGNAL(result(bool)), this, SLOT(downloadResult(bool)));
                 }
 
-                const KUrl url (KProtocolManager::proxyConfigScript());
+                const QUrl url (KProtocolManager::proxyConfigScript());
                 if (url.isLocalFile()) {
                     if (!m_watcher) {
                         m_watcher = new QFileSystemWatcher(this);

@@ -27,8 +27,8 @@
 #include <kparts/browserextension.h>
 #include <kparts/statusbarextension.h>
 #include <kpluginfactory.h>
-#include <kurl.h>
 #include <QDialog>
+#include <QUrl>
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QPointer>

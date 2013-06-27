@@ -31,14 +31,14 @@
 
 #include <misc/shared.h>
 
-#include <kurl.h>
+#include <QUrl>
 
 namespace khtml {
 
 class SecurityOrigin : public Shared<SecurityOrigin> {
 public:
     static SecurityOrigin* createFromString(const QString&);
-    static SecurityOrigin* create(const KUrl&);
+    static SecurityOrigin* create(const QUrl&);
     static SecurityOrigin* createEmpty();
 
     // Set the domain property of this security origin to newDomain. This
@@ -61,12 +61,12 @@ public:
     // Returns true if this SecurityOrigin can read content retrieved from
     // the given URL. For example, call this function before issuing
     // XMLHttpRequests.
-    bool canRequest(const KUrl&) const;
+    bool canRequest(const QUrl&) const;
 
     // Returns true if drawing an image from this URL taints a canvas from
     // this security origin. For example, call this function before
     // drawing an image onto an HTML canvas element with the drawImage API.
-    bool taintsCanvas(const KUrl&) const;
+    bool taintsCanvas(const QUrl&) const;
 
     // The local SecurityOrigin is the most privileged SecurityOrigin.
     // The local SecurityOrigin can script any document, navigate to local
@@ -100,7 +100,7 @@ public:
     bool isSameSchemeHostPort(const SecurityOrigin*) const;
 
 private:
-    SecurityOrigin(const KUrl&);
+    SecurityOrigin(const QUrl&);
     explicit SecurityOrigin(const SecurityOrigin*);
 
     QString m_protocol;

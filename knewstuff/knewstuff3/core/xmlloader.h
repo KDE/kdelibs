@@ -24,8 +24,7 @@
 #include <QtXml/qdom.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
-
-#include <kurl.h>
+#include <QUrl>
 
 class KJob;
 

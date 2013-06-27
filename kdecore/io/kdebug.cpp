@@ -63,13 +63,13 @@
 #include <kmessage.h>
 #include <klocalizedstring.h>
 #include <kconfiggroup.h>
-#include <kurl.h>
 
 #include <QtCore/QFile>
 #include <QtCore/QHash>
 #include <QtCore/QObject>
 #include <QtCore/QChar>
 #include <QtCore/QCoreApplication>
+#include <QUrl>
 #include <qstandardpaths.h>
 
 #include <stdlib.h>	// abort
@@ -778,9 +778,9 @@ QDebug operator<<(QDebug s, const KDateTime &time)
     return s.space();
 }
 
-QDebug operator<<(QDebug s, const KUrl &url)
+QDebug operator<<(QDebug s, const QUrl &url)
 {
-    s.nospace() << "KUrl(" << url.prettyUrl() << ")";
+    s.nospace() << "QUrl(" << url.toDisplayString() << ")";
     return s.space();
 }
 

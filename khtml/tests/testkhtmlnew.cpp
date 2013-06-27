@@ -52,8 +52,8 @@ TestKHTML::TestKHTML()
     m_indicator->setMovie(m_movie);
 
     m_part = new KHTMLPart( this, this, KHTMLPart::BrowserViewGUI );
-    connect( m_part->browserExtension(), SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
-             this, SLOT(openUrl(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
+    connect( m_part->browserExtension(), SIGNAL(openUrlRequest(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+             this, SLOT(openUrl(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
 
     m_combo = new KComboBox;
     m_combo->setEditable(true);
@@ -184,14 +184,14 @@ KHTMLPart *TestKHTML::doc() const
     return 0;
 }
 
-void TestKHTML::openUrl( const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
+void TestKHTML::openUrl( const QUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
 {
     m_part->setArguments(args);
     m_part->browserExtension()->setBrowserArguments(browserArgs);
     m_part->openUrl( url );
 }
 
-void TestKHTML::openUrl(const KUrl &url)
+void TestKHTML::openUrl(const QUrl &url)
 {
     m_part->openUrl(url);
 }
@@ -199,7 +199,7 @@ void TestKHTML::openUrl(const KUrl &url)
 void TestKHTML::openUrl(const QString &url)
 {
     kDebug() << "url: " << url;
-    KUrl parsedUrl(url);
+    QUrl parsedUrl(url);
     m_part->openUrl(parsedUrl);
 }
 
@@ -210,7 +210,7 @@ void TestKHTML::openUrl()
         return;
 
     QString url = edit->text();
-    KUrl parsedUrl(url);
+    QUrl parsedUrl(url);
     m_part->openUrl(parsedUrl);
 }
 

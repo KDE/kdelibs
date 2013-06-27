@@ -403,7 +403,7 @@ void KUrlNavigatorButton::startSubDirsJob()
         return;
     }
 
-    const QUrl url = m_replaceButton ? KUrl(m_url).upUrl() : m_url;
+    const QUrl url = m_replaceButton ? KIO::upUrl(m_url) : m_url;
     m_subDirsJob = KIO::listDir(url, KIO::HideProgressInfo, false /*no hidden files*/);
     m_subDirs.clear(); // just to be ++safe
 
@@ -506,9 +506,9 @@ void KUrlNavigatorButton::openSubDirsMenu(KJob* job)
     const QAction* action = m_subDirsMenu->exec(popupPos);
     if (action != 0) {
         const int result = action->data().toInt();
-        KUrl url = m_url;
+        QUrlPathInfo url(m_url);
         url.addPath(m_subDirs[result].first);
-        emit clicked(url, Qt::LeftButton);
+        emit clicked(url.url(), Qt::LeftButton);
     }
 
     m_subDirs.clear();
@@ -550,7 +550,7 @@ void KUrlNavigatorButton::replaceButton(KJob* job)
         targetIndex = subDirsCount - 1;
     }
 
-    QUrlPathInfo urlInfo(KUrl(m_url).upUrl());
+    QUrlPathInfo urlInfo(KIO::upUrl(m_url));
     urlInfo.addPath(m_subDirs[targetIndex].first);
     emit clicked(urlInfo.url(), Qt::LeftButton);
 

@@ -199,7 +199,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
             "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">p, li { white-space: pre-wrap; margin:0 0 0 0;}\n"
             "</style></head><body><p><b>";
 
-        KUrl link = qvariant_cast<KUrl>(entry.homepage());
+        QUrl link = qvariant_cast<QUrl>(entry.homepage());
         if (!link.isEmpty()) {
             text += "<p><a href=\"" + link.url() + "\">" + entry.name() + "</a></p>\n";
         } else {

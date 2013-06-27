@@ -192,7 +192,7 @@ bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
 
 JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
 {
-  KUrl url = m_part->url();
+  QUrl url = m_part->url();
   QString host = url.host();
   if (host.isEmpty())
      host = "localhost";

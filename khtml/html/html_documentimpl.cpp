@@ -43,7 +43,6 @@
 #include "dom/dom_exception.h"
 
 #include <kdebug.h>
-#include <kurl.h>
 #include <QtDBus/QtDBus>
 #include <kcookiejar_interface.h>
 

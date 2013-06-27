@@ -49,8 +49,8 @@ int main(int argc, char *argv[])
     KHTMLPart *doc = new KHTMLPart( toplevel, toplevel, KHTMLPart::BrowserViewGUI );
 
     Dummy *dummy = new Dummy( doc );
-    QObject::connect( doc->browserExtension(), SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
-		      dummy, SLOT(slotOpenURL(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
+    QObject::connect( doc->browserExtension(), SIGNAL(openUrlRequest(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+		      dummy, SLOT(slotOpenURL(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
 
     QObject::connect( doc, SIGNAL(completed()), dummy, SLOT(handleDone()) );
 

@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QTemporaryFile>
 #include <QtCore/QProcess>
+#include <qurlpathinfo.h>
 
 #include "qmimedatabase.h"
 #include "karchive.h"
@@ -164,7 +165,7 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
         emit signalInstallationFailed(i18n("Invalid item."));
         return;
     }
-    KUrl source = KUrl(entry.payload());
+    QUrl source = QUrl(entry.payload());
 
     if (!source.isValid()) {
         kError() << "The entry doesn't have a payload." << endl;
@@ -176,13 +177,13 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
     if (isRemote()) {
         // Remote resource
         //kDebug() << "Relaying remote payload '" << source << "'";
-        install(entry, source.pathOrUrl());
+        install(entry, source.toDisplayString(QUrl::PreferLocalFile));
         emit signalPayloadLoaded(source);
         // FIXME: we still need registration for eventual deletion
         return;
     }
 
-    QString fileName(source.fileName());
+    QString fileName(QUrlPathInfo(source).fileName());
     QTemporaryFile tempFile(QDir::tempPath() + "/XXXXXX-" + fileName);
     if (!tempFile.open())
         return; // ERROR
@@ -463,10 +464,10 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
 
             /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
             // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
-            KUrl source = KUrl(entry.payload());
+            QUrl source = QUrl(entry.payload());
             kDebug() << "installing non-archive from " << source.url();
             QString installfile;
-            QString ext = source.fileName().section('.', -1);
+            QString ext = QUrlPathInfo(source).fileName().section('.', -1);
             if (customName) {
                 installfile = entry.name();
                 installfile += '-' + entry.version();
@@ -482,7 +483,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                         installfile = installfile.mid(lastSlash);
                 }
                 if (installfile.isEmpty()) {
-                    installfile = source.fileName();
+                    installfile = QUrlPathInfo(source).fileName();
                 }
             }
             installpath = installdir + '/' + installfile;
@@ -506,7 +507,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                 success = QFile::remove(installpath);
             }
             if (success) {
-                success = file.rename(KUrl(installpath).toLocalFile());
+                success = file.rename(QUrl(installpath).toLocalFile());
                 kDebug() << "move: " << file.fileName() << " to " << installpath;
             }
             if (!success) {

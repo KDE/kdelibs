@@ -122,7 +122,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
         titleLabel->move((ItemGridWidth-titleLabel->width())/2, elementYPos);
         
         QString title;
-        KUrl link = qvariant_cast<KUrl>(entry.homepage());
+        QUrl link = qvariant_cast<QUrl>(entry.homepage());
         if (!link.isEmpty()) {
             title += "<b><a href=\"" + link.url() + "\">" + entry.name() + "</a></b>\n";
         } else {

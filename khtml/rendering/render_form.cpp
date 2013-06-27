@@ -44,7 +44,6 @@
 #include <kstandardaction.h>
 #include <kactioncollection.h>
 #include <kdeuiwidgetsproxystyle_p.h>
-#include <kurl.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 #include <kbuildsycocaprogressdialog.h>
@@ -990,12 +989,12 @@ void LineEditWidget::slotCreateWebShortcut()
 {
     QString queryName( m_input->name().string() );
     HTMLFormElementImpl *form = m_input->form();
-    KUrl url( form->action().string() );
-    KUrl baseUrl( m_view->part()->baseURL().url() + '?' );
-    if ( !url.hasPath() ) {
+    QUrl url( form->action().string() );
+    QUrl baseUrl( m_view->part()->baseURL().url() + '?' );
+    if ( url.path().isEmpty() ) {
         url.setPath( baseUrl.path() );
     }
-    if ( !url.hasHost() ) {
+    if ( url.host().isEmpty() ) {
         url.setScheme( baseUrl.scheme() );
         url.setHost( baseUrl.host() );
     }
@@ -1592,7 +1591,7 @@ void RenderFileButton::slotReturnPressed()
 
 void RenderFileButton::slotTextChanged(const QString &/*string*/)
 {
-   element()->m_value = KUrl( widget()->url() ).pathOrUrl();
+   element()->m_value = QUrl( widget()->url() ).toDisplayString(QUrl::PreferLocalFile);
 }
 
 void RenderFileButton::slotUrlSelected()

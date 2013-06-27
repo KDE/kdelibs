@@ -117,17 +117,17 @@ class KHTMLPopupGUIClient : public QObject
 {
   Q_OBJECT
 public:
-  KHTMLPopupGUIClient( KHTMLPart *khtml, const KUrl &url );
+  KHTMLPopupGUIClient( KHTMLPart *khtml, const QUrl &url );
   virtual ~KHTMLPopupGUIClient();
 
     KParts::BrowserExtension::ActionGroupMap actionGroups() const;
 
-  static void saveURL( QWidget *parent, const QString &caption, const KUrl &url,
+  static void saveURL( QWidget *parent, const QString &caption, const QUrl &url,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
                        const QString &filter = QString(), long cacheId = 0,
                        const QString &suggestedFilename = QString() );
 
-  static void saveURL( QWidget* parent, const KUrl &url, const KUrl &destination,
+  static void saveURL( QWidget* parent, const QUrl &url, const QUrl &destination,
                        const QMap<QString, QString> &metaData = KIO::MetaData(),
                        long cacheId = 0 );
 

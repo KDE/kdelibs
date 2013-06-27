@@ -23,8 +23,8 @@
 
 #include <QWidget>
 #include <QtCore/QString>
+#include <QUrl>
 
-#include <kurl.h>
 #include <kfileitem.h>
 
 #include <iostream>
@@ -38,28 +38,28 @@ public:
    PrintSignals() : QObject() { }
 
 public Q_SLOTS:
-   void started( const KUrl &url )
+   void started( const QUrl &url )
    {
       cout << "*** started( " << url.url().toLocal8Bit().data() << " )" << endl;
    }
    void canceled() { cout << "canceled()" << endl; }
-   void canceled( const KUrl& url )
+   void canceled( const QUrl& url )
    {
-      cout << "*** canceled( " << url.prettyUrl().toLocal8Bit().data() << " )" << endl;
+      cout << "*** canceled( " << url.toDisplayString().toLocal8Bit().data() << " )" << endl;
    }
    void completed() { cout << "*** completed()" << endl; }
-   void completed( const KUrl& url )
+   void completed( const QUrl& url )
    {
-      cout << "*** completed( " << url.prettyUrl().toLocal8Bit().data() << " )" << endl;
+      cout << "*** completed( " << url.toDisplayString().toLocal8Bit().data() << " )" << endl;
    }
-   void redirection( const KUrl& url )
+   void redirection( const QUrl& url )
    {
-      cout << "*** redirection( " << url.prettyUrl().toLocal8Bit().data() << " )" << endl;
+      cout << "*** redirection( " << url.toDisplayString().toLocal8Bit().data() << " )" << endl;
    }
-   void redirection( const KUrl& src, const KUrl& dest )
+   void redirection( const QUrl& src, const QUrl& dest )
    {
-      cout << "*** redirection( " << src.prettyUrl().toLocal8Bit().data() << ", "
-           << dest.prettyUrl().toLocal8Bit().data() << " )" << endl;
+      cout << "*** redirection( " << src.toDisplayString().toLocal8Bit().data() << ", "
+           << dest.toDisplayString().toLocal8Bit().data() << " )" << endl;
    }
    void clear() { cout << "*** clear()" << endl; }
    void newItems( const KFileItemList& items )

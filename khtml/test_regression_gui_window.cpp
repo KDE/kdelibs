@@ -30,6 +30,7 @@
 #include <QtCore/QTextStream>
 #include <QFileDialog>
 #include <QMainWindow>
+#include <qurlpathinfo.h>
 
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -78,8 +79,8 @@ TestRegressionWindow::TestRegressionWindow(QWidget *parent)
 	KConfig config("testregressiongui", KConfig::SimpleConfig);
 	KConfigGroup grp = config.group("<default>");
 
-	m_testsUrl = KUrl::fromPath(grp.readPathEntry("TestsDirectory", QString()));
-	m_khtmlUrl = KUrl::fromPath(grp.readPathEntry("KHTMLDirectory", QString()));
+	m_testsUrl = QUrl::fromLocalFile(grp.readPathEntry("TestsDirectory", QString()));
+	m_khtmlUrl = QUrl::fromLocalFile(grp.readPathEntry("KHTMLDirectory", QString()));
 
 	initTestsDirectory();
 
@@ -180,7 +181,7 @@ void TestRegressionWindow::initTestsDirectory()
 				KMessageBox::error(0, i18n("Please choose a valid 'khtmltests/regression/' directory."));
 
 				okay = false;
-				m_testsUrl = KUrl();
+				m_testsUrl = QUrl();
 				break;
 			}
 		}
@@ -224,8 +225,8 @@ void TestRegressionWindow::initTestsDirectory()
 		grp.writePathEntry("TestsDirectory", m_testsUrl.path());
 
 		// Start listing directory...
-		KUrl listUrl = m_testsUrl; listUrl.addPath("tests");
-		KIO::ListJob *job = KIO::listRecursive(listUrl, KIO::HideProgressInfo, false /* no hidden files */);
+		QUrlPathInfo listUrl(m_testsUrl); listUrl.addPath("tests");
+		KIO::ListJob *job = KIO::listRecursive(listUrl.url(), KIO::HideProgressInfo, false /* no hidden files */);
 
 		connect(job, SIGNAL(result(KJob*)), SLOT(directoryListingFinished(KJob*)));
 
@@ -248,7 +249,7 @@ void TestRegressionWindow::setKHTMLDirectory()
 			{
 				KMessageBox::error(0, i18n("Please choose a valid 'khtml/' build directory."));
 
-				m_khtmlUrl = KUrl();
+				m_khtmlUrl = QUrl();
 				break;
 			}
 		}
@@ -377,7 +378,7 @@ void TestRegressionWindow::directoryListingFinished(KJob *)
 			QString test = (*it2);
 			QString cacheName = directory + "/" + test;	//krazy:exclude=duoblequote_chars DOM demands chars
 
-			QTreeWidgetItem *testItem = new QTreeWidgetItem(parent, QStringList(KUrl(test).path()));
+			QTreeWidgetItem *testItem = new QTreeWidgetItem(parent, QStringList(QUrl(test).path()));
 
 			// Remember name <-> item pair...
 			assert(m_itemMap.contains(cacheName));
@@ -705,7 +706,7 @@ void TestRegressionWindow::loadOutputHTML() const
 	QFileInfo indexHtml(fileName);
 	if(indexHtml.exists())
 	{
-		m_browserPart->openUrl(KUrl::fromPath(fileName));
+		m_browserPart->openUrl(QUrl::fromLocalFile(fileName));
 		m_ui.tabWidget->setTabEnabled(1, true);
 	}
 	else
@@ -1155,7 +1156,7 @@ void TestRegressionWindow::updateLogOutput(const QString &data)
 
 		// Reset save log url, if we reached the end...
 		if(data.contains("</body>\n</html>"))
-			m_saveLogUrl = KUrl();
+			m_saveLogUrl = QUrl();
 	}
 }
 

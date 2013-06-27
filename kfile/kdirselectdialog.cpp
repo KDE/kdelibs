@@ -89,15 +89,15 @@ public:
     KDirSelectDialog *m_parent;
     bool m_localOnly : 1;
     bool m_comboLocked : 1;
-    KUrl m_rootUrl;
-    KUrl m_startDir;
+    QUrl m_rootUrl;
+    QUrl m_startDir;
     KFileTreeView *m_treeView;
     QMenu *m_contextMenu;
     KActionCollection *m_actions;
     KFilePlacesView *m_placesView;
     KHistoryComboBox *m_urlCombo;
     QString m_recentDirClass;
-    KUrl m_startURL;
+    QUrl m_startURL;
     QAction* moveToTrash;
     QAction* deleteAction;
     QAction* showHiddenFoldersAction;
@@ -143,14 +143,14 @@ void KDirSelectDialog::Private::slotMkdir()
     bool selectDirectory = true;
     bool writeOk = false;
     bool exists = false;
-    KUrl folderurl( m_parent->url() );
+    QUrl folderurl( m_parent->url() );
 
     const QStringList dirs = directory.split( '/', QString::SkipEmptyParts );
     QStringList::ConstIterator it = dirs.begin();
 
     for ( ; it != dirs.end(); ++it )
     {
-        folderurl.addPath( *it );
+        folderurl = QUrlPathInfo::addPathToUrl( folderurl, *it );
         exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, m_parent );
         if (!exists) {
             KIO::MkdirJob* job = KIO::mkdir(folderurl);
@@ -198,7 +198,7 @@ void KDirSelectDialog::Private::slotUrlActivated( const QString& text )
     if ( m_parent->localOnly() && !url.isLocalFile() )
         return; //FIXME: messagebox for the user
 
-    KUrl oldUrl = m_treeView->currentUrl();
+    QUrl oldUrl = m_treeView->currentUrl();
     if ( oldUrl.isEmpty() )
         oldUrl = m_startDir;
 
@@ -208,14 +208,14 @@ void KDirSelectDialog::Private::slotUrlActivated( const QString& text )
 void KDirSelectDialog::Private::slotComboTextChanged( const QString& text )
 {
     m_treeView->blockSignals(true);
-    KUrl url = QUrl::fromUserInput(text);
+    QUrl url = QUrl::fromUserInput(text);
 #ifdef Q_OS_WIN
     QUrlPathInfo rootUrlInfo(m_treeView->rootUrl());
     if(url.isLocalFile() && !rootUrlInfo.isParentOfOrEqual(url)) {
-        KUrl tmp = url.upUrl();
+        QUrl tmp = KIO::upUrl(url);
         while(tmp.path().length() > 1) {
             url = tmp;
-            tmp = url.upUrl();
+            tmp = KIO::upUrl(url);
         }
         m_treeView->setRootUrl( url );
     }

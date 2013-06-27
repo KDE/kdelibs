@@ -29,7 +29,7 @@
 #include <attica/license.h>
 #include <attica/postjob.h>
 
-#include <kurl.h>
+#include <QUrl>
 
 class QDialogButtonBox;
 class QPushButton;
@@ -74,10 +74,10 @@ namespace KNS3 {
 
         AtticaHelper* atticaHelper;
 
-        KUrl uploadFile;
-        KUrl previewFile1;
-        KUrl previewFile2;
-        KUrl previewFile3;
+        QUrl uploadFile;
+        QUrl previewFile1;
+        QUrl previewFile2;
+        QUrl previewFile3;
         QStringList categoryNames;
         Attica::Category::List categories;
         QString contentId;

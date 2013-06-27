@@ -30,7 +30,6 @@
 #include <QWebPage>
 
 class KWebWallet;
-class KUrl;
 class KJob;
 
 namespace KIO {

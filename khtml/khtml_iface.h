@@ -20,7 +20,6 @@
 #ifndef __khtml_Iface_h__
 #define __khtml_Iface_h__
 
-#include <kurl.h>
 #include <khtml_part.h>
 #include <QtDBus/QtDBus>
 

@@ -25,8 +25,7 @@
 #include <QtCore/QDate>
 #include <QtXml/QDomElement>
 #include <QtCore/QString>
-
-#include <kurl.h>
+#include <QUrl>
 
 #include <knewstuff3/core/author.h>
 #include <knewstuff3/entry.h>
@@ -131,7 +130,7 @@ public:
     QString category() const;
 
     void setHomepage(const QUrl & page);
-    KUrl homepage() const;
+    QUrl homepage() const;
 
     /**
      * Sets the author of the object.

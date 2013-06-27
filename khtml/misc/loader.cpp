@@ -1043,7 +1043,7 @@ void DocLoader::printPreloadStats()
 #endif
 }
 
-static inline bool securityCheckUrl(const KUrl& fullURL, KHTMLPart* part, DOM::DocumentImpl* doc,
+static inline bool securityCheckUrl(const QUrl& fullURL, KHTMLPart* part, DOM::DocumentImpl* doc,
                                     bool doRedirectCheck, bool isImg)
 {
     if (!fullURL.isValid())
@@ -1061,7 +1061,7 @@ static inline bool securityCheckUrl(const KUrl& fullURL, KHTMLPart* part, DOM::D
 }
 
 #define DOCLOADER_SECCHECK_IMP(doRedirectCheck,isImg) \
-    KUrl fullURL(m_doc->completeURL(url.string())); \
+    QUrl fullURL(m_doc->completeURL(url.string())); \
     if (!securityCheckUrl(fullURL, m_part, m_doc, doRedirectCheck, isImg)) \
          return 0L;
 
@@ -1195,7 +1195,7 @@ void Loader::scheduleRequest(Request* req)
   kDebug( 6060 ) << "starting Loader url =" << req->object->url().string();
 #endif
 
-    KUrl u(req->object->url().string());
+    QUrl u(req->object->url().string());
     KIO::TransferJob* job = KIO::get( u, KIO::NoReload, KIO::HideProgressInfo /*no GUI*/);
 
     job->addMetaData("cache", KIO::getCacheControlString(req->object->cachePolicy()));
@@ -1461,7 +1461,7 @@ void Cache::clear()
 }
 
 template<typename CachedObjectType, enum CachedObject::Type CachedType>
-CachedObjectType* Cache::requestObject( DocLoader* dl, const KUrl& kurl, const char* accept )
+CachedObjectType* Cache::requestObject( DocLoader* dl, const QUrl& kurl, const char* accept )
 {
     KIO::CacheControl cachePolicy = dl->cachePolicy();
 

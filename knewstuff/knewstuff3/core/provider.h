@@ -22,8 +22,7 @@
 
 #include <QtCore/QList>
 #include <QtCore/QString>
-
-#include <kurl.h>
+#include <QUrl>
 
 #include "entryinternal.h"
 
@@ -112,7 +111,7 @@ namespace KNS3
          *
          * @return icon URL
          */
-        virtual KUrl icon() const; // FIXME use QIcon::fromTheme or pixmap?
+        virtual QUrl icon() const; // FIXME use QIcon::fromTheme or pixmap?
 
         /**
          * load the given search and return given page
@@ -146,7 +145,7 @@ namespace KNS3
 
     protected:
         QString mName;
-        KUrl mIcon;
+        QUrl mIcon;
         
     private:
         Q_DISABLE_COPY(Provider)

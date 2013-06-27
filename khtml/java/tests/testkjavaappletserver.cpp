@@ -3,6 +3,7 @@
 #include <klocalizedstring.h>
 
 #include <QtCore/QString>
+#include <QUrl>
 
 #include "java/kjavaappletserver.h"
 #include "java/kjavaapplet.h"

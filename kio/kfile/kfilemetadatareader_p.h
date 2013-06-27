@@ -20,8 +20,6 @@
 #ifndef KFILEMETADATAREADER_H
 #define KFILEMETADATAREADER_H
 
-#include <kurl.h>
-
 #include <nepomuk/core/variant.h>
 
 #include <QtCore/QHash>
@@ -29,6 +27,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QProcess>
 #include <QtCore/QString>
+#include <QUrl>
 
 /**
  * @brief Provides metadata extracted from files.

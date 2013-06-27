@@ -36,7 +36,6 @@
 
 #include "kcookiejar.h"
 
-#include <kurl.h>
 #include <kdatetime.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -48,6 +47,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QRegExp>
 #include <QtCore/QTextStream>
+#include <QUrl>
 
 // BR87227
 // Waba: Should the number of cookies be limited?
@@ -567,7 +567,7 @@ QString KCookieJar::stripDomain(const KHttpCookie& cookie) const
 
 bool KCookieJar::parseUrl(const QString &_url, QString &_fqdn, QString &_path, int *port)
 {
-    KUrl kurl(_url);
+    QUrl kurl(_url);
     if (!kurl.isValid() || kurl.scheme().isEmpty())
        return false;
 

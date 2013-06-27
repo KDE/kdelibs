@@ -28,7 +28,6 @@
 #include <kmessagebox.h>
 #include <khtml_filter_p.h>
 
-#include <kurl.h>
 #include <kjob.h>
 #include <kio/job.h>
 
@@ -36,6 +35,7 @@
 #include <QFileInfo>
 #include <QFontDatabase>
 #include <QByteArray>
+#include <QUrl>
 #include <qstandardpaths.h>
 
 /**
@@ -403,7 +403,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
                   bool filterEnabled = cgFilter.readEntry(QString("HTMLFilterListEnabled-").append(QString::number(id))) != QLatin1String("false");
 
                   /** get url for HTMLFilterList */
-                  KUrl url(cgFilter.readEntry(QString("HTMLFilterListURL-").append(QString::number(id))));
+                  QUrl url(cgFilter.readEntry(QString("HTMLFilterListURL-").append(QString::number(id))));
 
                   if (filterEnabled && url.isValid()) {
                       /** determine where to cache HTMLFilterList file */

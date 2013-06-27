@@ -29,8 +29,8 @@
 
 #include <QDialog>
 #include <kfile.h>
-#include <kurl.h>
 #include <qmimetype.h>
+#include <QUrl>
 
 class KAbstractFileWidget;
 class KFileWidget;

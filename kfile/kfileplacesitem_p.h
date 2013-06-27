@@ -25,9 +25,9 @@
 #include <QtCore/QPointer>
 #include <QtCore/QModelIndex>
 #include <QtCore/QStringList>
+#include <QUrl>
 #include <kbookmark.h>
 #include <solid/device.h>
-#include <kurl.h>
 
 class KDirLister;
 namespace Solid

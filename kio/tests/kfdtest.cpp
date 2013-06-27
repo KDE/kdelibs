@@ -5,7 +5,7 @@
 #include <kmessagebox.h>
 #include <QtCore/QTimer>
 
-KFDTest::KFDTest( const KUrl& startDir, QObject *parent, const char *name )
+KFDTest::KFDTest( const QUrl& startDir, QObject *parent, const char *name )
     : QObject( parent ),
       m_startDir( startDir )
 {

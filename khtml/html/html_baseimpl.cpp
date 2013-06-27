@@ -42,7 +42,7 @@
 #include "dom/dom_doc.h"
 #include "xml/dom2_eventsimpl.h"
 
-#include <kurl.h>
+#include <QUrl>
 #include <kdebug.h>
 
 using namespace DOM;
@@ -451,7 +451,7 @@ void HTMLFrameElementImpl::setLocation( const DOMString& str )
     // if we already have a child part, ask it to go there..
     KHTMLPart* childPart = contentPart();
     if ( childPart )
-        childPart->openUrl( KUrl( document()->completeURL( url.string() ) ) );
+        childPart->openUrl( QUrl( document()->completeURL( url.string() ) ) );
     else
         setNeedComputeContent(); // otherwise, request it.. 
 }

@@ -218,7 +218,7 @@ void HTTPAuthenticationTest::testAuthentication()
     QVERIFY(authObj);
     if (!cnonce.isEmpty())
         authObj->setDigestNonceValue(cnonce);
-    authObj->setChallenge(bestOffer, KUrl(url), "GET");
+    authObj->setChallenge(bestOffer, QUrl(url), "GET");
     authObj->generateResponse(QString(user), QString(pass));
     QCOMPARE(authObj->headerFragment().trimmed().constData(), expectedResponse.constData());
     delete authObj;

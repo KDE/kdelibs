@@ -25,7 +25,6 @@
 #include <khtml_export.h>
 
 #include <kparts/historyprovider.h>
-#include <kurl.h>
 
 class KComponentData;
 class KIconLoader;

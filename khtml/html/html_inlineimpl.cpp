@@ -181,8 +181,8 @@ void HTMLAnchorElementImpl::parseAttribute(AttributeImpl *attr)
         if (hadAnchor != m_hasAnchor)
             setChanged();
         if (m_hasAnchor && document()->part() && document()->part()->dnsPrefetch()) {
-            KUrl url( attr->value().string() );
-            if (url.hasHost())
+            QUrl url( attr->value().string() );
+            if (!url.host().isEmpty())
                 document()->part()->mayPrefetchHostname( url.host() );
         }
     }

@@ -111,7 +111,7 @@ void KDXSView::slotProvidersLoaded(KNS::Provider::List providers)
         // FIXME: unless we want to keep this a DXS-only test program
     }
 
-    KUrl endpoint;
+    QUrl endpoint;
     for (Provider::List::Iterator it = providers.begin(); it != providers.end(); ++it) {
         Provider *provider = (*it);
         if (provider->webService().isValid()) {

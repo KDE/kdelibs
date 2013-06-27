@@ -23,7 +23,7 @@
 
 #include <QtCore/QObject>
 
-#include <kurl.h>
+#include <QUrl>
 
 class KJob;
 namespace KIO { class Job; }
@@ -55,7 +55,7 @@ namespace KPAC
 
     private:
         QByteArray m_data;
-        KUrl m_scriptURL;
+        QUrl m_scriptURL;
         QString m_script;
         QString m_error;
     };

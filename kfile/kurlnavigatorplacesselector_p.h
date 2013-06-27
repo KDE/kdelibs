@@ -22,7 +22,7 @@
 #define KURLNAVIGATORPLACESSELECTOR_P_H
 
 #include "kurlnavigatorbuttonbase_p.h"
-#include <kurl.h>
+#include <QUrl>
 
 #include <QtCore/QPersistentModelIndex>
 

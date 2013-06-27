@@ -22,7 +22,7 @@
 
 #include <kio/kio_export.h>
 #include <QtCore/QObject>
-#include <kurl.h>
+#include <QUrl>
 class QWidget;
 
 /**

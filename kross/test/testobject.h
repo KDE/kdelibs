@@ -42,7 +42,6 @@ class QDate;
 class QTime;
 class QDateTime;
 
-#include <kurl.h>
 #include <kdebug.h>
 
 #include "../core/action.h"
@@ -153,13 +152,11 @@ class TestObject : public QObject
         QRect func_qrect_qrect(const QRect&);
         QRectF func_qrectf_qrectf(const QRectF&);
         QUrl func_qurl_qurl(const QUrl&);
-        QUrl func_qurl_kurl(const KUrl&);
-        KUrl func_kurl_kurl(const KUrl&);
 
         // following is returned by reference which is a big nono
         // cause it may lead to crashes. So, the backends should
         // set such things to None/nil/NULL/etc.
-        const KUrl& func_kurl_qstring(const QString&);
+        const QUrl& func_qurl_qstring(const QString&);
 
         QColor func_qcolor_qcolor(const QColor&);
         QFont func_qfont_qfont(const QFont&);

@@ -20,11 +20,12 @@
 #ifndef KFILEAUDIOPREVIEW_H
 #define KFILEAUDIOPREVIEW_H
 
-#include <kurl.h>
 #include <kpreviewwidgetbase.h>
 #include <phonon/phononnamespace.h>
+#include <QVariantList>
 
 class QCheckBox;
+class QUrl;
 
 
 /**

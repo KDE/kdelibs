@@ -24,9 +24,10 @@
 #define __khtml_run_h__
 
 #include <kparts/browserrun.h>
-#include <kurl.h>
 #include <kservice.h>
 #include <kparts/browserextension.h>
+
+#include <QUrl>
 
 class KHTMLPart;
 
@@ -39,7 +40,7 @@ class KHTMLRun : public KParts::BrowserRun
 {
   Q_OBJECT
 public:
-  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
+  KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const QUrl &url,
             const KParts::OpenUrlArguments& args,
             const KParts::BrowserArguments &browserArgs,
             bool hideErrorDialog );

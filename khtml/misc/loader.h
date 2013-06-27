@@ -38,8 +38,8 @@
 #include <QtCore/QSet>
 #include <QtCore/QDateTime>
 #include <QLinkedList>
+#include <QUrl>
 
-#include <kurl.h>
 #include <kio/global.h>
 
 #include <khtml_settings.h>
@@ -508,7 +508,7 @@ namespace khtml
 	friend class DocLoader;
 
         template<typename CachedObjectType, enum CachedObject::Type CachedType>
-        static CachedObjectType* requestObject( DocLoader* dl, const KUrl& kurl, const char* accept );
+        static CachedObjectType* requestObject( DocLoader* dl, const QUrl& kurl, const char* accept );
 
     public:
 	/**
@@ -523,7 +523,7 @@ namespace khtml
          * if the DocLoader is zero, the url must be full-qualified.
          * Otherwise, it is automatically base-url expanded
 	 */
-// 	static CachedImage *requestImage(const KUrl& url)
+// 	static CachedImage *requestImage(const QUrl& url)
 //         { return Cache::requestObject<CachedImage, CachedObject::Image>( 0, url, 0 ); }
 
         /**

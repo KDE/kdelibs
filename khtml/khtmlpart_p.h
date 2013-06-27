@@ -304,7 +304,7 @@ public:
   bool m_forcePermitLocalImages;
   bool m_redirectLockHistory;
 
-  KUrl m_workingURL;
+  QUrl m_workingURL;
 
   KIO::CacheControl m_cachePolicy;
   QTimer m_redirectionTimer;
@@ -427,19 +427,19 @@ public:
 
   void clearRedirection();
 
-  bool isLocalAnchorJump(const KUrl& url);
-  void executeAnchorJump(const KUrl& url, bool lockHistory);
+  bool isLocalAnchorJump(const QUrl& url);
+  void executeAnchorJump(const QUrl& url, bool lockHistory);
 
   static bool isJavaScriptURL(const QString& url);
   static QString codeForJavaScriptURL(const QString& url);
   void executeJavascriptURL(const QString &u);
 
   bool isInPageURL(const QString& url) {
-    return isLocalAnchorJump(KUrl(url)) || isJavaScriptURL(url);
+    return isLocalAnchorJump(QUrl(url)) || isJavaScriptURL(url);
   }
 
   void executeInPageURL(const QString& url, bool lockHistory) {
-    KUrl kurl(url);
+    QUrl kurl(url);
     if (isLocalAnchorJump(kurl))
       executeAnchorJump(kurl, lockHistory);
     else

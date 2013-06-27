@@ -25,7 +25,6 @@
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kurl.h>
 
 #include "debugdocument.h"
 #include "interpreter_ctx.h"

@@ -54,20 +54,20 @@ KDirListerTest::KDirListerTest( QWidget *parent )
   connect( startT, SIGNAL(clicked()), SLOT(startTar()) );
   connect( test, SIGNAL(clicked()), SLOT(test()) );
 
-  connect( lister, SIGNAL(started(KUrl)),
-           debug,  SLOT(started(KUrl)) );
+  connect( lister, SIGNAL(started(QUrl)),
+           debug,  SLOT(started(QUrl)) );
   connect( lister, SIGNAL(completed()),
            debug,  SLOT(completed()) );
-  connect( lister, SIGNAL(completed(KUrl)),
-           debug,  SLOT(completed(KUrl)) );
+  connect( lister, SIGNAL(completed(QUrl)),
+           debug,  SLOT(completed(QUrl)) );
   connect( lister, SIGNAL(canceled()),
            debug,  SLOT(canceled()) );
-  connect( lister, SIGNAL(canceled(KUrl)),
-           debug,  SLOT(canceled(KUrl)) );
-  connect( lister, SIGNAL(redirection(KUrl)),
-           debug,  SLOT(redirection(KUrl)) );
-  connect( lister, SIGNAL(redirection(KUrl,KUrl)),
-           debug,  SLOT(redirection(KUrl,KUrl)) );
+  connect( lister, SIGNAL(canceled(QUrl)),
+           debug,  SLOT(canceled(QUrl)) );
+  connect( lister, SIGNAL(redirection(QUrl)),
+           debug,  SLOT(redirection(QUrl)) );
+  connect( lister, SIGNAL(redirection(QUrl,QUrl)),
+           debug,  SLOT(redirection(QUrl,QUrl)) );
   connect( lister, SIGNAL(clear()),
            debug,  SLOT(clear()) );
   connect( lister, SIGNAL(newItems(KFileItemList)),
@@ -99,45 +99,45 @@ KDirListerTest::~KDirListerTest()
 
 void KDirListerTest::startHome()
 {
-  KUrl home( QDir::homePath() );
+  QUrl home = QUrl::fromLocalFile( QDir::homePath() );
   lister->openUrl( home, KDirLister::NoFlags );
 //  lister->stop();
 }
 
 void KDirListerTest::startRoot()
 {
-  KUrl root( QDir::rootPath() );
+  QUrl root = QUrl::fromLocalFile( QDir::rootPath() );
   lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
 // lister->stop( root );
 }
 
 void KDirListerTest::startTar()
 {
-  KUrl root( QDir::homePath()+"/aclocal_1.tgz" );
+  QUrl root = QUrl::fromLocalFile( QDir::homePath()+"/aclocal_1.tgz" );
   lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
 // lister->stop( root );
 }
 
 void KDirListerTest::test()
 {
-  KUrl home( QDir::homePath() );
-  KUrl root( QDir::rootPath() );
+  QUrl home = QUrl::fromLocalFile( QDir::homePath() );
+  QUrl root = QUrl::fromLocalFile( QDir::rootPath() );
 #ifdef Q_OS_WIN
   lister->openUrl( home, KDirLister::Keep );
   lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
 #else
 /*  lister->openUrl( home, KDirLister::Keep );
   lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
-  lister->openUrl( KUrl("file:/etc"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( QUrl::fromLocalFile("file:/etc"), KDirLister::Keep | KDirLister::Reload );
   lister->openUrl( root, KDirLister::Keep | KDirLister::Reload );
-  lister->openUrl( KUrl("file:/dev"), KDirLister::Keep | KDirLister::Reload );
-  lister->openUrl( KUrl("file:/tmp"), KDirLister::Keep | KDirLister::Reload );
-  lister->openUrl( KUrl("file:/usr/include"), KDirLister::Keep | KDirLister::Reload );
-  lister->updateDirectory( KUrl("file:/usr/include") );
-  lister->updateDirectory( KUrl("file:/usr/include") );
-  lister->openUrl( KUrl("file:/usr/"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( QUrl::fromLocalFile("file:/dev"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( QUrl::fromLocalFile("file:/tmp"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( QUrl::fromLocalFile("file:/usr/include"), KDirLister::Keep | KDirLister::Reload );
+  lister->updateDirectory( QUrl::fromLocalFile("file:/usr/include") );
+  lister->updateDirectory( QUrl::fromLocalFile("file:/usr/include") );
+  lister->openUrl( QUrl::fromLocalFile("file:/usr/"), KDirLister::Keep | KDirLister::Reload );
 */
-  lister->openUrl( KUrl("file:/dev"), KDirLister::Keep | KDirLister::Reload );
+  lister->openUrl( QUrl::fromLocalFile("file:/dev"), KDirLister::Keep | KDirLister::Reload );
 #endif
 }
 
@@ -145,7 +145,7 @@ void KDirListerTest::completed()
 {
     if ( lister->url().toLocalFile() == QDir::rootPath() )
     {
-        const KFileItem item = lister->findByUrl( KUrl( QDir::tempPath() ) );
+        const KFileItem item = lister->findByUrl( QUrl::fromLocalFile( QDir::tempPath() ) );
         if ( !item.isNull() )
             kDebug() << "Found " << QDir::tempPath() << ": " << item.name();
         else

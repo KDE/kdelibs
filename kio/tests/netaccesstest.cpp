@@ -17,8 +17,8 @@
  */
 
 #include <QApplication>
+#include <QUrl>
 #include <kdebug.h>
-#include <kurl.h>
 #include <kio/netaccess.h>
 #include <kio/job.h>
 #include <QtCore/QFile>
@@ -30,11 +30,11 @@ int main(int argc, char **argv)
 {
   QApplication::setApplicationName("netaccesstest");
   QApplication app(argc, argv);
-  KUrl srcURL( "ftp://ftp.kde.org/pub/kde/README" );
+  QUrl srcURL( "ftp://ftp.kde.org/pub/kde/README" );
 #ifdef Q_OS_WIN
-  KUrl tmpURL( "file://" + QDir::tempPath() + "/netaccesstest_README" );
+  QUrl tmpURL( "file://" + QDir::tempPath() + "/netaccesstest_README" );
 #else
-  KUrl tmpURL( "file:/tmp/netaccesstest_README" );
+  QUrl tmpURL( "file:/tmp/netaccesstest_README" );
 #endif
 
   for ( uint i = 0; i < 4 ; ++i ) {

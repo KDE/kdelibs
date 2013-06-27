@@ -1377,7 +1377,7 @@ CSSImageValueImpl::CSSImageValueImpl(const DOMString &url, StyleBaseImpl* style)
     if (root->isCSSStyleSheet())
 	docLoader = static_cast<const CSSStyleSheetImpl*>(root)->docLoader();
     if (docLoader) {
-    KUrl fullURL( style->baseURL(), khtml::parseURL(url).string() );
+    QUrl fullURL( style->baseURL().resolved(QUrl(khtml::parseURL(url).string())) );
     m_image = docLoader->requestImage( fullURL.url() );
     if(m_image) m_image->ref(this);
 }

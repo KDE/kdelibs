@@ -23,8 +23,6 @@
 #include <kfilemetadatareader_p.h>
 #include "knfotranslator_p.h"
 
-#include <kurl.h>
-
 #if ! KIO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include "nepomukmassupdatejob.h"
@@ -45,6 +43,7 @@
 #include <QEvent>
 #include <QLabel>
 #include <QLocale>
+#include <QUrl>
 
 // Required includes for subDirectoriesCount():
 #ifdef Q_OS_WIN

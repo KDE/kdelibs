@@ -66,6 +66,7 @@
 #include <kdebug.h>
 #include <QtCore/QList>
 #include <QtCore/QHash>
+#include <qurlpathinfo.h>
 
 using namespace DOM;
 
@@ -1847,25 +1848,25 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
     QString href = getURLArg(ATTR_HREF);
     switch (token) {
-    case AnchorHash:            return jsString('#'+KUrl(href).ref());
-    case AnchorHost:            return jsString(KUrl(href).host());
+    case AnchorHash:            return jsString('#'+QUrl(href).fragment());
+    case AnchorHost:            return jsString(QUrl(href).host());
     case AnchorHostname: {
-      KUrl url(href);
-      kDebug(6070) << "anchor::hostname uses:" <<url.url();
+      QUrl url(href);
+      kDebug(6070) << "anchor::hostname uses:" <<url.toString();
       if (url.port()<=0)
         return jsString(url.host());
       else
         return jsString(url.host() + ":" + QString::number(url.port()));
     }
-    case AnchorPathName:        return jsString(KUrl(href).path());
+    case AnchorPathName:        return jsString(QUrl(href).path());
     case AnchorPort: {
-        int port = KUrl(href).port();
+        int port = QUrl(href).port();
         if (port > 0)
             return jsString(QString::number(port));
         return jsString("");
     }
-    case AnchorProtocol:        return jsString(KUrl(href).scheme()+":");
-    case AnchorSearch:          { KUrl u(href);
+    case AnchorProtocol:        return jsString(QUrl(href).scheme()+":");
+    case AnchorSearch:          { QUrl u(href);
                                   QString q = u.query();
                                   if (q.length() == 1)
                                     return jsString("");
@@ -1909,16 +1910,19 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     // Everything here needs href
     DOM::Document doc = area.ownerDocument();
     DOM::DOMString href = getURLArg(ATTR_HREF);
-    KUrl url;
+    QUrl url;
     if ( !href.isNull() ) {
-      url = href.string();
-      if ( href.isEmpty() )
-        url.setFileName( QString() ); // href="" clears the filename (in IE)
+      url = QUrl(href.string());
+      if ( href.isEmpty() ) {
+        QUrlPathInfo path(url);
+        path.setFileName( QString() ); // href="" clears the filename (in IE)
+        url = path.url();
+      }
     }
     switch(token) {
       case AreaHref:
         return jsString(url.url());
-      case AreaHash:            return jsString(url.isEmpty() ? "" : QString('#'+url.ref()));
+      case AreaHash:            return jsString(url.isEmpty() ? "" : QString('#'+url.fragment()));
       case AreaHost:            return jsString(url.host());
       case AreaHostName: {
         if (url.port()<=0)
@@ -2601,7 +2605,7 @@ void KJS::HTMLElement::putValueProperty(ExecState *exec, int token, JSValue *val
         DOM::HTMLAnchorElementImpl& anchor = static_cast<DOM::HTMLAnchorElementImpl&>(element);
         switch (token) {
         case AnchorSearch:         { QString href = getURLArg(ATTR_HREF);
-                                     KUrl u(href);
+                                     QUrl u(href);
                                      QString q = str.isEmpty() ? QString() : str.string();
                                      u.setQuery(q);
                                      anchor.setAttribute(ATTR_HREF, u.url());

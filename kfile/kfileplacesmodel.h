@@ -23,7 +23,7 @@
 #include <kfile_export.h>
 
 #include <QtCore/QAbstractItemModel>
-#include <kurl.h>
+#include <QUrl>
 #include <kbookmark.h>
 
 #include <solid/device.h>
