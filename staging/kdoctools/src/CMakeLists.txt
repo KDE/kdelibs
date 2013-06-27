@@ -208,7 +208,3 @@ add_custom_command( TARGET docbookl10nhelper POST_BUILD
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/customization/xsl/all-l10n.xml
   DESTINATION ${DATA_INSTALL_DIR}/ksgmltools2/customization/xsl/ )
 
-install( FILES
-    KDocToolsMacros.cmake
-    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
-
