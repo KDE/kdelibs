@@ -19,6 +19,9 @@ include(ECMWriteVersionHeader)
 
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras Network)
 
+# QUrl
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
+
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
