@@ -88,7 +88,6 @@ set(kdeui_LIB_SRCS
  dialogs/kshortcutschemeseditor.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/kswitchlanguagedialog_p.cpp
- dialogs/ktip.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
@@ -237,7 +236,6 @@ install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 
 install( FILES
  dialogs/aboutkde.png
- dialogs/ktip-bulb.png
  dialogs/thumb_frame.png
  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 
@@ -257,7 +255,6 @@ install( FILES
  dialogs/knewpassworddialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
- dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h
  findreplace/kfinddialog.h

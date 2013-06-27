@@ -20,6 +20,7 @@ set(kwidgets_LIB_SRCS
   actions/kselectaction.cpp
   actions/kstandardaction.cpp
   dialogs/kmessagebox.cpp
+  dialogs/ktip.cpp
   utils/kcolorscheme.cpp
   utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
@@ -78,6 +79,7 @@ install(FILES
   actions/kselectaction.h
   actions/kstandardaction.h
   dialogs/kmessagebox.h
+  dialogs/ktip.h
   utils/kcolorscheme.h
   utils/kstandardguiitem.h
   utils/kstandardshortcut.h
@@ -85,4 +87,9 @@ install(FILES
   widgets/kurllabel.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+
+install( FILES
+ dialogs/ktip-bulb.png
+ DESTINATION  ${DATA_INSTALL_DIR}/kwidgets/pics
 )
