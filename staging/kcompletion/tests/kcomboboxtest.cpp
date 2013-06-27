@@ -2,7 +2,6 @@
 
 #include <assert.h>
 
-#include <kdebug.h>
 #include <kconfiggroup.h>
 #include <kiconloader.h>
 #include <kconfig.h>
@@ -14,6 +13,7 @@
 #include <QLabel>
 #include <QtCore/QTimer>
 #include <QBoxLayout>
+#include <QDebug>
 
 #include <kcombobox.h>
 #include <khistorycombobox.h>
@@ -196,32 +196,32 @@ void KComboBoxTest::slotTimeout ()
 
 void KComboBoxTest::slotCurrentIndexChanged(int index)
 {
-  kDebug() << qPrintable(sender()->objectName()) << ", index:" << index;
+  qDebug() << qPrintable(sender()->objectName()) << ", index:" << index;
 }
 
 void KComboBoxTest::slotCurrentIndexChanged(const QString& item)
 {
-  kDebug() << qPrintable(sender()->objectName()) << ", item:" << item;
+  qDebug() << qPrintable(sender()->objectName()) << ", item:" << item;
 }
 
 void KComboBoxTest::slotActivated( int index )
 {
-  kDebug() << "Activated Combo:" << qPrintable(sender()->objectName()) << ", index:" << index;
+  qDebug() << "Activated Combo:" << qPrintable(sender()->objectName()) << ", index:" << index;
 }
 
 void KComboBoxTest::slotActivated (const QString& item)
 {
-  kDebug() << "Activated Combo:" << qPrintable(sender()->objectName()) << ", item:" << item;
+  qDebug() << "Activated Combo:" << qPrintable(sender()->objectName()) << ", item:" << item;
 }
 
 void KComboBoxTest::slotReturnPressed ()
 {
-  kDebug() << "Return Pressed:" << qPrintable(sender()->objectName());
+  qDebug() << "Return Pressed:" << qPrintable(sender()->objectName());
 }
 
 void KComboBoxTest::slotReturnPressed(const QString& item)
 {
-  kDebug() << "Return Pressed:" << qPrintable(sender()->objectName()) << ", value =" << item;
+  qDebug() << "Return Pressed:" << qPrintable(sender()->objectName()) << ", value =" << item;
 }
 
 void KComboBoxTest::quitApp()
