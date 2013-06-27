@@ -20,6 +20,7 @@
 #include "plugintest.h"
 
 #include <kqpluginfactory.h>
+#include <kqpluginfactoryinterface.h>
 #include <klocalizedstring.h>
 
 
@@ -57,12 +58,10 @@ PluginTest::~PluginTest()
 
 void PluginTest::runMain()
 {
+    qDebug() << " libs are in: " << QCoreApplication::libraryPaths();
     qDebug() << "plugin test runs: ";
-    //loadDataEngine();
-    qDebug() << " - - - -- - - - - ------------------------------------\n";
     loadKQPlugin();
     exit(0);
-    return;
 }
 
 void PluginTest::loadKQPlugin()
@@ -71,11 +70,14 @@ void PluginTest::loadKQPlugin()
     QString pluginPath = "/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/";
     QCoreApplication::addLibraryPath(pluginPath);
     QPluginLoader loader("/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/libkqpluginfactory.so", this);
-    //KQPluginFactory *factory = qobject_cast<KQPluginFactory*>(loader.instance());
-    QObject *factory = loader.instance();
+    KQPluginFactoryInterface *factory = qobject_cast<KQPluginFactoryInterface*>(loader.instance());
+    //QObject *factory = loader.instance();
     if (factory) {
         qDebug() << "loaded successfully and cast";
         qDebug() << "metadata: " << loader.metaData();
+        QObject *o = factory->createPlugin("Peter");
+        qDebug() << " objec name:" << o->objectName();
+
     } else {
         qDebug() << "loading failed somehow";
     }
