@@ -40,12 +40,12 @@ class QWidget;
 #include <QRadioButton>
 #include <QPushButton>
 #include <QListWidget>
+#include <QProxyStyle>
 #include <kcombobox.h>
 #include "dom/dom_misc.h"
 
 class QAction;
 class KUrlRequester;
-class KdeUiProxyStyle;
 
 namespace DOM {
     class HTMLInputElementImpl;
@@ -104,8 +104,8 @@ protected:
     virtual void paintOneBackground(QPainter *p, const QColor& c, const BackgroundLayer* bgLayer, QRect clipr, int _tx, int _ty, int w, int height);
 
     Qt::Alignment textAlignment() const;
-    KdeUiProxyStyle* getProxyStyle();
-    KdeUiProxyStyle *m_proxyStyle;
+    QProxyStyle* getProxyStyle();
+    QProxyStyle *m_proxyStyle;
     bool m_exposeInternalPadding;
     bool m_isOxygenStyle;
 };

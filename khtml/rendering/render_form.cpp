@@ -43,7 +43,6 @@
 #include <kwindowsystem.h>
 #include <kstandardaction.h>
 #include <kactioncollection.h>
-#include <kdeuiwidgetsproxystyle_p.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
 #include <kbuildsycocaprogressdialog.h>
@@ -61,6 +60,7 @@
 #include <QStyleOptionFrameV3>
 #include <QStandardItemModel>
 #include <QListWidget>
+#include <QProxyStyle>
 
 #include <misc/helper.h>
 #include <xml/dom2_eventsimpl.h>
@@ -83,20 +83,19 @@ using namespace DOM;
 
 // ----------------- proxy style used to apply some CSS properties to native Qt widgets -----------------
 
-    struct KHTMLProxyStyle : public KdeUiProxyStyle
+    struct KHTMLProxyStyle : public QProxyStyle
     {
-        KHTMLProxyStyle(QWidget *parent)
-            : KdeUiProxyStyle(parent)
+        KHTMLProxyStyle(QStyle *parent)
+            : QProxyStyle(parent)
         {
             noBorder = false;
             left = right = top = bottom = 0;
             clearButtonOverlay = 0;
-            setParent(parent);
         }
 
         QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
         {
-            QRect r = style()->subElementRect(element, option, widget);
+            QRect r = QProxyStyle::subElementRect(element, option, widget);
             switch (element) {
               case QStyle::SE_PushButtonContents:
               case QStyle::SE_LineEditContents:
@@ -123,11 +122,11 @@ using namespace DOM;
                         comboOpt.rect.adjust(-1, -2, 1, 2);
                         comboOpt.state &= ~State_On;
                     }
-                    return style()->drawControl(element, &comboOpt, painter, widget);
+                    return QProxyStyle::drawControl(element, &comboOpt, painter, widget);
                 }
             }
 
-            style()->drawControl(element, option, painter, widget);
+            QProxyStyle::drawControl(element, option, painter, widget);
         }
 
         void drawComplexControl(ComplexControl cc, const QStyleOptionComplex *opt, QPainter *painter, const QWidget *widget) const
@@ -141,7 +140,7 @@ using namespace DOM;
                     painter->setPen(color);
                     painter->setRenderHint(QPainter::Antialiasing);
                     // Drop down indicator
-                    QRect arrowRect = style()->subControlRect(cc, opt, SC_ComboBoxArrow, widget);
+                    QRect arrowRect = QProxyStyle::subControlRect(cc, opt, SC_ComboBoxArrow, widget);
                     arrowRect.setTop(cbOpt->rect.top());
                     arrowRect.setBottom(cbOpt->rect.bottom());
                     arrowRect.setRight(cbOpt->rect.right() - 1);
@@ -155,7 +154,7 @@ using namespace DOM;
                     painter->drawPolygon(cbArrowDown);
                     // Focus rect (from qcleanlooksstyle)
                     if (enabled && (cbOpt->state & State_HasFocus)) {
-                        QRect focusRect = style()->subElementRect(SE_ComboBoxFocusRect, cbOpt, widget);
+                        QRect focusRect = QProxyStyle::subElementRect(SE_ComboBoxFocusRect, cbOpt, widget);
                         focusRect.adjust(0, -2, 0, 2);
                         painter->setBrush(QBrush(color, Qt::Dense4Pattern));
                         painter->setBrushOrigin(focusRect.topLeft());
@@ -174,7 +173,7 @@ using namespace DOM;
                 }
             }
 
-            style()->drawComplexControl(cc, opt, painter, widget);
+            QProxyStyle::drawComplexControl(cc, opt, painter, widget);
         }
 
         QRect subControlRect(ComplexControl cc, const QStyleOptionComplex* opt, SubControl sc, const QWidget* widget) const
@@ -198,18 +197,18 @@ using namespace DOM;
                     }
 
                     // Now let sizeFromContent add in extra stuff.
-                    maxW = style()->sizeFromContents(QStyle::CT_ComboBox, opt, QSize(maxW, 1), widget).width();
+                    maxW = QProxyStyle::sizeFromContents(QStyle::CT_ComboBox, opt, QSize(maxW, 1), widget).width();
 
                     // How much more room do we need for the text?
                     int extraW = maxW > cbOpt->rect.width() ? maxW - cbOpt->rect.width() : 0;
 
-                    QRect r = style()->subControlRect(cc, opt, sc, widget);
+                    QRect r = QProxyStyle::subControlRect(cc, opt, sc, widget);
                     r.setWidth(r.width() + extraW);
                     return r;
                 }
             }
 
-            return style()->subControlRect(cc, opt, sc, widget);
+            return QProxyStyle::subControlRect(cc, opt, sc, widget);
         }
 
         int left, right, top, bottom;
@@ -281,12 +280,12 @@ void RenderFormElement::setPadding()
     style->bottom = RenderWidget::paddingBottom();
 }
 
-KdeUiProxyStyle* RenderFormElement::getProxyStyle()
+QProxyStyle* RenderFormElement::getProxyStyle()
 {
     assert(widget());
     if (m_proxyStyle)
         return m_proxyStyle;
-    m_proxyStyle = new KHTMLProxyStyle(widget());
+    m_proxyStyle = new KHTMLProxyStyle(widget()->style());
     widget()->setStyle( m_proxyStyle );
     return m_proxyStyle;
 }
