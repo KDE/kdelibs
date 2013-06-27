@@ -22,6 +22,7 @@
 #include "kqpluginfactory.h"
 
 #include <QDebug>
+
 /*
 KQPluginFactory::KQPluginFactory(const KPluginInfo& plugin, QObject* parent)
     : QObject(parent)
@@ -30,22 +31,27 @@ KQPluginFactory::KQPluginFactory(const KPluginInfo& plugin, QObject* parent)
 
 }
 */
-// KQPluginFactory::KQPluginFactory()
-//     : QObject()
-// {
-//     qDebug() << "empty args kqpluginfactory :)";
-//
-// }
-//
+KQPluginFactory::KQPluginFactory()
+    : QObject()
+{
+    qDebug() << "empty args kqpluginfactory :)";
+
+}
+
 // KQPluginFactory::~KQPluginFactory()
 // {
 //     qDebug() << "KQPluginFactory destroyed";
 // }
 
 
-void KQPluginFactory::createPlugin(const QString& name)
+QObject* KQPluginFactory::createPlugin(const QString& name)
 {
-    qDebug() << "Create Plugin implementation";
+    qDebug() << "Create Plugin implementation" << name;
+    QObject *o = new QObject(); // getter is expected to take ownership
+    o->setObjectName(name);
+
+    return o;
+
 }
 
-//#include "kqpluginfactory.moc"
+#include "kqpluginfactory.moc"

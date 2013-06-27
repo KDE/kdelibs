@@ -36,11 +36,11 @@ class KSERVICE_EXPORT KQPluginFactory : public QObject, public KQPluginFactoryIn
 
     public:
 //         explicit KQPluginFactory(const KPluginInfo &plugin, QObject *parent = 0);
-//         explicit KQPluginFactory();
+        explicit KQPluginFactory();
 //
 //         virtual ~KQPluginFactory();
 
-        void createPlugin(const QString &name);
+        QObject* createPlugin(const QString &name);
 
 private:
 
