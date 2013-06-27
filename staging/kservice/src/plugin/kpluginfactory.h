@@ -36,7 +36,6 @@ namespace KParts { class Part; }
 #define K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
 class name : public baseFactory \
 { \
-    Q_PLUGIN_METADATA(IID "org.kde.name") \
     public: \
         explicit name(const char * = 0, const char * = 0, QObject * = 0); \
         ~name(); \
@@ -200,7 +199,6 @@ name::~name() {}
  */
 class KSERVICE_EXPORT KPluginFactory : public QObject
 {
-    Q_PLUGIN_METADATA(IID "org.kde.PluginFactory")
     Q_OBJECT
     Q_DECLARE_PRIVATE(KPluginFactory)
 public:
