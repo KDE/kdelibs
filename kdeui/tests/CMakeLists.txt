@@ -21,7 +21,6 @@ KDEUI_UNIT_TESTS(
   kfindtest
   kglobalsettingstest
   kmainwindow_unittest
-  klineedit_unittest
   ktextedit_unittest
   kcombobox_unittest
   kreplacetest
@@ -39,7 +38,6 @@ KDEUI_EXECUTABLE_TESTS(
   kcomboboxtest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
-  klineedittest
   kmainwindowtest
   kmainwindowrestoretest
   kmessagewidgettest

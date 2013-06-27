@@ -56,7 +56,7 @@ if(X11_Xrender_FOUND)
   target_link_libraries(kfile ${X11_Xrender_LIB} )
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore Qt5::Widgets ${KCoreAddons_LIBRARIES})
+target_link_libraries(kfile LINK_INTERFACE_LIBRARIES kio kdeui kdecore Qt5::Widgets ${KCoreAddons_LIBRARIES} KCompletion)
 
 set_target_properties(kfile PROPERTIES VERSION ${GENERIC_LIB_VERSION}
                                        SOVERSION ${GENERIC_LIB_SOVERSION}

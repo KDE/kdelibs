@@ -24,7 +24,7 @@
 #define KCOMPLETIONBOX_H
 
 #include <QListWidget>
-#include "kdeui_export.h"
+#include "kcompletion_export.h"
 
 class QEvent;
 
@@ -41,7 +41,7 @@ class QEvent;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KCompletionBox : public QListWidget
+class KCOMPLETION_EXPORT KCompletionBox : public QListWidget
 {
     Q_OBJECT
     Q_PROPERTY( bool isTabHandling READ isTabHandling WRITE setTabHandling )
