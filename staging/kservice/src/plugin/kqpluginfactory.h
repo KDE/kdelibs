@@ -27,28 +27,34 @@
 class KQPluginFactory
 {
     public:
-        //virtual KQPluginFactory();
-        //virtual ~KQPluginFactory();
         virtual ~KQPluginFactory() {}
-        template<typename T>T *create(QObject *parent = 0, const QVariantList &args = QVariantList());
 
         virtual QObject* createPlugin(const QString &name) = 0;
 };
 
-template<typename T>
-inline T *KQPluginFactory::create(QObject *parent, const QVariantList &args)
-{
-    QObject *o = create(T::staticMetaObject.className(), parent && parent->isWidgetType() ? reinterpret_cast<QWidget *>(parent): 0, parent, args, QString());
-
-    T *t = qobject_cast<T *>(o);
-    if (!t) {
-        delete o;
-    }
-    return t;
-}
-
 #define KQPluginFactory_iid "org.kde.KQPluginFactory"
 
 Q_DECLARE_INTERFACE(KQPluginFactory, KQPluginFactory_iid)
+
+#define K_PLUGIN_HEADER(name, baseclass, jsonfile) \
+class name : public QObject, public KQPluginFactory \
+{ \
+    Q_OBJECT \
+    Q_PLUGIN_METADATA(IID "KQPluginFactory_iid" FILE jsonfile) \
+    Q_INTERFACES(KQPluginFactory) \
+\
+    public: \
+        QObject* createPlugin(const QString &name); \
+\
+}; \
+\
+inline QObject* name::createPlugin(const QString& plugin) \
+{ \
+    QVariantList args; \
+    args << plugin; \
+    QObject *time_engine = new baseclass(0, args); \
+    return time_engine; \
+} \
+
 
 #endif // KQPLUGINFACTORYINTERFACE_H
