@@ -24,7 +24,7 @@
  */
 
 #include "object.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "error_object.h"
 #include "lookup.h"
@@ -121,6 +121,19 @@ bool JSObject::getPropertySlot(ExecState *exec, unsigned propertyName, PropertyS
   return false;
 }
 
+bool JSObject::getPropertyDescriptor(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc)
+{
+    JSObject* object = this;
+    while (true) {
+        if (object->getOwnPropertyDescriptor(exec, propertyName, desc))
+            return true;
+        JSValue *prototype = object->prototype();
+        if (!prototype->isObject())
+            return false;
+        object = prototype->toObject(exec);
+    }
+}
+
 bool JSObject::getOwnPropertySlot(ExecState *exec, unsigned propertyName, PropertySlot& slot)
 {
   return getOwnPropertySlot(exec, Identifier::from(propertyName), slot);
@@ -148,6 +161,25 @@ bool JSObject::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNam
     return false;
 }
 
+bool JSObject::getOwnPropertyDescriptor(ExecState* exec, const Identifier& identifier, PropertyDescriptor& desc)
+{
+    JSValue* jsVal = getDirect(identifier);
+
+    // for classes that do not implement getDirect, like the prototypes,
+    // we have to check if they still do own the property and use the propertyslot
+    if (!jsVal) {
+        PropertySlot slot;
+        if (getOwnPropertySlot(exec, identifier, slot))
+            jsVal = slot.getValue(exec, this, identifier);
+    }
+
+    if (jsVal) {
+        unsigned attr = 0;
+        getPropertyAttributes(identifier, attr);
+        return desc.setPropertyDescriptorValues(exec, jsVal, attr);
+    }
+    return false;
+}
 
 static void throwSetterError(ExecState *exec)
 {
@@ -219,7 +251,8 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
           JSObject *setterFunc = static_cast<GetterSetterImp *>(gs)->getSetter();
 
           if (!setterFunc) {
-            throwSetterError(exec);
+            if (false) //only throw if strict is set
+              throwSetterError(exec);
             return;
           }
 
@@ -242,6 +275,8 @@ void JSObject::put(ExecState *exec, const Identifier &propertyName, JSValue *val
     }
   }
 
+  if (!isExtensible() && !_prop.get(propertyName))
+      return;
   _prop.put(propertyName,value,attr,checkRO);
 }
 
@@ -394,6 +429,169 @@ void JSObject::defineSetter(ExecState*, const Identifier& propertyName, JSObject
 
     _prop.setHasGetterSetterProperties(true);
     gs->setSetter(setterFunc);
+}
+
+//ECMA Edition 5.1r6 - 8.12.9
+bool JSObject::defineOwnProperty(ExecState* exec, const Identifier& propertyName, PropertyDescriptor& desc, bool shouldThrow)
+{
+    PropertyDescriptor current;
+
+    // if Object does not have propertyName as OwnProperty just push it.
+    if (!getOwnPropertyDescriptor(exec, propertyName, current)) {
+        if (!isExtensible()) {
+            if (shouldThrow)
+                throwError(exec, TypeError, "Object is not extensible \'" + propertyName.ustring() + "\'");
+            return false;
+        }
+        if (desc.isGenericDescriptor() || desc.isDataDescriptor()) {
+            putDirect(propertyName, desc.value() ? desc.value() : jsUndefined(), desc.attributes());
+        } else if (desc.isAccessorDescriptor()) {
+            GetterSetterImp *gs = new GetterSetterImp();
+            putDirect(propertyName, gs, desc.attributes() | GetterSetter);
+            _prop.setHasGetterSetterProperties(true);
+            if (desc.getter() && !desc.getter()->isUndefined())
+                gs->setGetter(desc.getter()->toObject(exec));
+            if (desc.setter() && !desc.setter()->isUndefined())
+                gs->setSetter(desc.setter()->toObject(exec));
+        }
+        return true;
+    }
+
+    //Step 5
+    if (desc.isEmpty())
+        return true;
+
+    //Step 6
+    if (desc.equalTo(exec, current))
+        return true;
+
+    //Step 7
+    // Filter out invalid unconfigurable configurations
+    if (!current.configurable()) {
+        if (desc.configurable()) {
+            if (shouldThrow)
+                throwError(exec, TypeError, "can not redefine non-configurable property \'" + propertyName.ustring() + "\'");
+            return false;
+        }
+        if (desc.enumerableSet() && desc.enumerable() != current.enumerable()) {
+            if (shouldThrow)
+                throwError(exec, TypeError, "can not change enumerable attribute of unconfigurable property \'" + propertyName.ustring() + "\'");
+            return false;
+        }
+    }
+
+    //Step 8.
+    if (!desc.isGenericDescriptor()) {
+        if (current.isDataDescriptor() != desc.isDataDescriptor()) { // Step 9
+            // DataDescriptor updating to AccessorDescriptor, or the other way.
+            if (!current.configurable()) {
+                if (shouldThrow)
+                    throwError(exec, TypeError, "can not change access mechanism for an unconfigurable property \'" + propertyName.ustring() + "\'");
+                return false;
+            }
+
+            deleteProperty(exec, propertyName);
+
+            if (current.isDataDescriptor()) {
+                // Updating from DataDescriptor to AccessorDescriptor
+                GetterSetterImp *gs = new GetterSetterImp();
+                putDirect(propertyName, gs, current.attributesWithOverride(desc) | GetterSetter);
+                _prop.setHasGetterSetterProperties(true);
+
+                if (desc.getter()) {
+                    if (desc.getter()->isUndefined())
+                        gs->setGetter(0);
+                    else
+                        gs->setGetter(desc.getter()->toObject(exec));
+                }
+                if (desc.setter()) {
+                    if (desc.setter()->isUndefined())
+                        gs->setSetter(0);
+                    else
+                        gs->setSetter(desc.setter()->toObject(exec));
+                }
+            } else {
+                // Updating from AccessorDescriptor to DataDescriptor
+                unsigned int newAttr = current.attributesWithOverride(desc);
+                if (!desc.writable())
+                    newAttr |= ReadOnly;
+                putDirect(propertyName, desc.value() ? desc.value() : jsUndefined(), newAttr);
+            }
+            return true;
+        } else if (current.isDataDescriptor() && desc.isDataDescriptor()) { //Step 10
+            // Just updating the value here
+            if (!current.configurable()) {
+                if (!current.writable() && desc.writable()) {
+                    if (shouldThrow)
+                        throwError(exec, TypeError, "can not change writable attribute of unconfigurable property \'" + propertyName.ustring() + "\'");
+                    return false;
+                }
+                if (!current.writable()) {
+                    if (desc.value() && !(current.value() && sameValue(exec, current.value(), desc.value()))) {
+                        if (shouldThrow)
+                            throwError(exec, TypeError, "can not change value of a readonly property \'" + propertyName.ustring() + "\'");
+                        return false;
+                    }
+                }
+            } else {
+                if (!deleteProperty(exec, propertyName))
+                    removeDirect(propertyName);
+
+                putDirect(propertyName, desc.value() ? desc.value() : current.value(), current.attributesWithOverride(desc));
+                return true;
+            }
+        } else if (current.isAccessorDescriptor() && desc.isAccessorDescriptor()) { // Step 11
+            // Filter out unconfigurable combinations
+            if (!current.configurable()) {
+                if (desc.setter() && !sameValue(exec, desc.setter(), current.setter() ? current.setter() : jsUndefined())) {
+                    if (shouldThrow)
+                        throwError(exec, TypeError, "can not change the setter of an unconfigurable property \'" + propertyName.ustring() + "\'");
+                    return false;
+                }
+                if (desc.getter() && !sameValue(exec, desc.getter(), current.getter() ? current.getter() : jsUndefined())) {
+                    if (shouldThrow)
+                        throwError(exec, TypeError, "can not change the getter of an unconfigurable property \'" + propertyName.ustring() + "\'");
+                    return false;
+                }
+            }
+        }
+    }
+
+    //Step 12
+    // Everything is allowed here, updating GetterSetter, storing new value
+    JSValue* jsval = getDirect(propertyName);
+    unsigned int newAttr = current.attributesWithOverride(desc);
+    if (jsval && jsval->type() == GetterSetterType) {
+        GetterSetterImp *gs = static_cast<GetterSetterImp*>(jsval);
+        if (desc.getter()) {
+            if (desc.getter()->isUndefined())
+                gs->setGetter(0);
+            else
+                gs->setGetter(desc.getter()->toObject(exec));
+        }
+        if (desc.setter()) {
+            if (desc.setter()->isUndefined())
+                gs->setSetter(0);
+            else
+                gs->setSetter(desc.setter()->toObject(exec));
+        }
+    } else
+        jsval = desc.value() ? desc.value() : current.value();
+
+    deleteProperty(exec, propertyName);
+    if (jsval->type() == GetterSetterType) {
+        putDirect(propertyName, jsval, newAttr | GetterSetter);
+        _prop.setHasGetterSetterProperties(true);
+    } else
+        put(exec, propertyName, jsval, newAttr);
+
+    return true; //Step 13
+}
+
+void JSObject::preventExtensions()
+{
+    if (isExtensible())
+        _prop.setExtensible(false);
 }
 
 bool JSObject::implementsConstruct() const

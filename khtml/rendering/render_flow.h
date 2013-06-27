@@ -73,6 +73,8 @@ public:
     InlineFlowBox* firstLineBox() const { return m_firstLineBox; }
     InlineFlowBox* lastLineBox() const { return m_lastLineBox; }
 
+    virtual QList< QRectF > getClientRects();
+
     virtual InlineBox* createInlineBox(bool makePlaceHolderBox, bool isRootLineBox);
 
     void paintLines(PaintInfo& i, int _tx, int _ty);

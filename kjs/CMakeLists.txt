@@ -31,17 +31,22 @@ macro_pop_required_vars()
 #Do not make PCRE optional here. PCRE is a hard requirement for modern systems
 #but we give old systems some slack... that's why we don't specify "REQUIRED".
 find_package(PCRE)
+set_package_properties(PCRE PROPERTIES DESCRIPTION "Perl-compatible regular expressions in KJS"
+                       URL "http://www.pcre.org"
+                       TYPE OPTIONAL
+                       PURPOSE "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages."
+                      )
+
 macro_bool_to_01(PCRE_FOUND HAVE_PCREPOSIX)
 
 option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this will result in many webpage working incorrectly, due to extremely poor regular expression support")
 
 # Generate global.h
 configure_file(global.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/global.h )
-configure_file(config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h )
+configure_file(config-kjs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kjs.h )
 
 include_directories(${KDE4_KDECORE_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/wtf ${KDEWIN_INCLUDES} )
 
-macro_log_feature(PCRE_FOUND "PCRE" "Perl-compatible regular expressions in KJS" "http://www.pcre.org" FALSE "" "Without PCRE, KJS will have extremely poor regular expression support, breaking many webpages.")
 
 # the check for pcre is in kdelibs/CMakeLists.txt
 if(PCRE_FOUND  AND NOT  KJS_FORCE_DISABLE_PCRE)
@@ -194,6 +199,7 @@ set(kjs_LIB_SRCS
    jsonlexer.cpp
    json_object.cpp
    jsonstringify.cpp
+   propertydescriptor.cpp
    )
 
 if (NOT DEFINED QT_ONLY)

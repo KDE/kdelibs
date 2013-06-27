@@ -23,7 +23,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
-#include <config.h>
+#include <config-kjs.h>
 
 #include "nodes.h"
 #include "function.h"

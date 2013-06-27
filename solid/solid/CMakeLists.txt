@@ -184,13 +184,18 @@ if(NOT WIN32 AND NOT APPLE)
 #   )
 
    macro_optional_find_package( UDev )
-   macro_log_feature( UDEV_FOUND "UDev" "UDev support for Solid" "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html" FALSE "" "Allows Solid to use UDev to provide information about devices on Linux" )
+   set_package_properties(UDev PROPERTIES DESCRIPTION "UDev support for Solid"
+                          URL "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
+                          TYPE OPTIONAL
+                          PURPOSE "Allows Solid to use UDev to provide information about devices on Linux"
+                         )
    configure_file( config-solid.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-solid.h )
 
 
    if ( UDEV_FOUND )
       message(STATUS "Building Solid UDev backend." )
       set(solid_LIB_SRCS ${solid_LIB_SRCS}
+      backends/udev/utils.cpp
       backends/udev/udevdevice.cpp
       backends/udev/udevmanager.cpp
       backends/udev/udevdeviceinterface.cpp
@@ -206,6 +211,7 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevportablemediaplayer.cpp
       backends/udev/udevdvbinterface.cpp
       backends/udev/udevblock.cpp
+      backends/udev/udevbutton.cpp
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
       )
@@ -230,14 +236,11 @@ if(NOT WIN32 AND NOT APPLE)
          )
       endif(XDG_DATA_DIRS_ENV)
 
-      macro_log_feature(MEDIAPLAYERINFO_PATH
-         "media-player-info"
-         "Enables identification and querying of portable media players"
-         "http://www.freedesktop.org/wiki/Software/media-player-info"
-         FALSE
-         ""
-         "Runtime-only dependency of the udev solid backend. Support for m-p-i is included even if not found during build"
-      )
+      add_feature_info("media-player-info" MEDIAPLAYERINFO_PATH
+                       "Enables identification and querying of portable media players.
+                       Runtime-only dependency of the udev solid backend.
+                       Support for m-p-i is included even if not found during build"
+                      )
    endif( UDEV_FOUND )
 
 
@@ -485,26 +488,21 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
 set(lexer_FILE predicate_lexer)
 set(parser_FILE predicate_parser)
 
-find_package(Flex)
-macro_log_feature(FLEX_FOUND
-   "Flex"
-   "Allows the Solid predicate parser to be updated"
-   "http://flex.sourceforge.net"
-   FALSE
-   ""
-   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
+find_package(FLEX)
+set_package_properties(FLEX PROPERTIES DESCRIPTION "Allows the Solid predicate parser to be updated"
+                       URL "http://flex.sourceforge.net"
+                       TYPE OPTIONAL
+                       PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
+                      )
 
-find_program(BISON_EXECUTABLE bison)
-macro_log_feature(BISON_EXECUTABLE
-   "Bison"
-   "Allows the Solid predicate parser to be updated"
-   "http://www.gnu.org/software/bison"
-   FALSE
-   ""
-   "Required by the UpdateSolidPredicateParser target (mainly useful for developers)")
-mark_as_advanced(BISON_EXECUTABLE)      # don't show it in the simple view in cmake-gui/ccmake
+find_package(BISON)
+set_package_properties(BISON PROPERTIES DESCRIPTION "Allows the Solid predicate parser to be updated"
+                       URL "http://www.gnu.org/software/bison"
+                       TYPE OPTIONAL
+                       PURPOSE "Required by the UpdateSolidPredicateParser target (mainly useful for developers)"
+                      )
 
-if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+if (FLEX_FOUND AND BISON_FOUND)
 
    add_custom_target(UpdateSolidPredicateParser
                      COMMAND ${FLEX_EXECUTABLE} -P Solid -o${lexer_FILE}.c ${lexer_FILE}.l
@@ -514,8 +512,8 @@ if (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
                      COMMAND ${CMAKE_COMMAND} -E remove ${parser_FILE}.tab.c ${parser_FILE}.tab.h
                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
-else (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+else ()
    add_custom_target(UpdateSolidPredicateParser
                      COMMAND echo "flex and/or bison not found, so target UpdateSolidPredicateParser inactive")
-endif (FLEX_EXECUTABLE AND BISON_EXECUTABLE)
+endif ()
 

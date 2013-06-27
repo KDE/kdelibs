@@ -261,6 +261,7 @@ void CanvasContext2DImpl::resetContext(int width, int height)
 
     dirty = DrtAll;
     needRendererUpdate();
+    emptyPath = true;
 }
 
 void CanvasContext2DImpl::save()
@@ -581,6 +582,11 @@ void CanvasGradientImpl::addColorStop(float offset, const DOM::DOMString& color,
     // ### we may have to handle the "currentColor" KW here. ouch.
 
     exceptionCode = 0;
+    if (isInfArg(offset)) {
+        exceptionCode = DOMException::INDEX_SIZE_ERR;
+        return;
+    }
+
     //### fuzzy compare (also for alpha)
     if (offset < 0 || offset > 1) {
         exceptionCode = DOMException::INDEX_SIZE_ERR;
@@ -650,7 +656,7 @@ QRectF CanvasPatternImpl::clipForRepeat(const QPointF &origin, const QRectF &fil
 
 //-------
 
-CanvasImageDataImpl::CanvasImageDataImpl(unsigned width, unsigned height) : data(width, height, QImage::Format_ARGB32_Premultiplied)
+CanvasImageDataImpl::CanvasImageDataImpl(unsigned width, unsigned height) : data(width, height, QImage::Format_ARGB32)
 {}
 
 CanvasImageDataImpl::CanvasImageDataImpl(const QImage& _data): data(_data)
@@ -671,34 +677,33 @@ unsigned CanvasImageDataImpl::height() const
     return data.height();
 }
 
+#if 0
 static inline unsigned char unpremulComponent(unsigned original, unsigned alpha)
 {
     unsigned char val =  alpha ? (unsigned char)(original * 255 / alpha) : 0;
     return val;
 }
+#endif
 
 QColor CanvasImageDataImpl::pixel(unsigned pixelNum) const
 {
     int w = data.width();
     QRgb code = data.pixel(pixelNum % w, pixelNum / w);
-    unsigned char  a = qAlpha(code);
-    return QColor(unpremulComponent(qRed(code),  a), unpremulComponent(qGreen(code), a),
-                  unpremulComponent(qBlue(code), a), a);
+    return code;
 }
 
+#if 0
 static inline unsigned char premulComponent(unsigned original, unsigned alpha)
 {
     unsigned product = original * alpha; // this is conceptually 255 * intended value.
     return (unsigned char)((product + product/256 + 128)/256);
 }
+#endif
 
 void CanvasImageDataImpl::setPixel(unsigned pixelNum, const QColor& val)
 {
-    unsigned char a = val.alpha();
-    QRgb code = qRgba(premulComponent(val.red(), a), premulComponent(val.green(), a),
-                      premulComponent(val.blue(),a), a);
     int w = data.width();
-    data.setPixel(pixelNum % w, pixelNum / w, code);
+    data.setPixel(pixelNum % w, pixelNum / w, val.rgba());
 }
 
 void CanvasImageDataImpl::setComponent(unsigned pixelNum, int component,
@@ -709,22 +714,20 @@ void CanvasImageDataImpl::setComponent(unsigned pixelNum, int component,
     int y = pixelNum / w;
     // ### could avoid inherent QImage::detach() by a const cast
     QRgb *rgb = reinterpret_cast<QRgb*>(data.scanLine(y) + 4 * x);
-    unsigned char a = qAlpha(*rgb);
+
     switch (component) {
-    case 0:
-      *rgb = qRgba(premulComponent(value, a), qGreen(*rgb), qBlue(*rgb), a);
+    case 0: //Red
+      *rgb = qRgba(value, qGreen(*rgb), qBlue(*rgb), qAlpha(*rgb));
       break;
-    case 1:
-      *rgb = qRgba(qRed(*rgb), premulComponent(value, a), qBlue(*rgb), a);
+    case 1: //Green
+      *rgb = qRgba(qRed(*rgb), value, qBlue(*rgb), qAlpha(*rgb));
       break;
-    case 2:
-      *rgb = qRgba(qRed(*rgb), qGreen(*rgb), premulComponent(value, a), a);
+    case 2: //Blue
+      *rgb = qRgba(qRed(*rgb), qGreen(*rgb), value, qAlpha(*rgb));
       break;
+    case 3: //Alpha
     default:
-      *rgb = qRgba(premulComponent(unpremulComponent(qRed(*rgb), a), value),
-                   premulComponent(unpremulComponent(qGreen(*rgb), a), value),
-                   premulComponent(unpremulComponent(qBlue(*rgb), a), value),
-                   value);
+      *rgb = qRgba(qRed(*rgb), qGreen(*rgb), qBlue(*rgb), value);
       break;
     }
 }
@@ -969,8 +972,7 @@ void CanvasContext2DImpl::setShadowColor(const DOMString& newColor)
 void CanvasContext2DImpl::clearRect (float x, float y, float w, float h, int& exceptionCode)
 {
     exceptionCode = 0;
-    if (w < 0.0f || h < 0.0f) {
-        exceptionCode = DOMException::INDEX_SIZE_ERR;
+    if (w == 0.0f || h == 0.0f) {
         return;
     }
 
@@ -984,8 +986,7 @@ void CanvasContext2DImpl::clearRect (float x, float y, float w, float h, int& ex
 void CanvasContext2DImpl::fillRect (float x, float y, float w, float h, int& exceptionCode)
 {
     exceptionCode = 0;
-    if (w < 0.0f || h < 0.0f) {
-        exceptionCode = DOMException::INDEX_SIZE_ERR;
+    if (w == 0.0f || h == 0.0f) {
         return;
     }
 
@@ -1001,8 +1002,7 @@ void CanvasContext2DImpl::fillRect (float x, float y, float w, float h, int& exc
 void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& exceptionCode)
 {
     exceptionCode = 0;
-    if (w < 0.0f || h < 0.0f) {
-        exceptionCode = DOMException::INDEX_SIZE_ERR;
+    if (w == 0.0f && h == 0.0f) {
         return;
     }
 
@@ -1018,8 +1018,7 @@ void CanvasContext2DImpl::strokeRect (float x, float y, float w, float h, int& e
 inline bool CanvasContext2DImpl::isPathEmpty() const
 {
     // For an explanation of this, see the comment in beginPath()
-    const QPointF pos = path.currentPosition();
-    return KJS::isInf(pos.x()) && KJS::isInf(pos.y());
+    return emptyPath;
 }
 
 // Path ops
@@ -1030,14 +1029,12 @@ void CanvasContext2DImpl::beginPath()
     path.setFillRule(Qt::WindingFill);
 
     // QPainterPath always contains an initial MoveTo element to (0, 0), and there is
-    // no way to tell that apart from an explicitly inserted MoveTo to that position.
-    // This means that we have no reliable way of checking if the path is empty.
-    // To work around this, we insert a MoveTo to (infinity, infinity) each time the
-    // path is reset, and check the current position for this value in all functions
-    // that are supposed to do nothing when the path is empty.
-    QPointF point(std::numeric_limits<qreal>::infinity(),
-                  std::numeric_limits<qreal>::infinity());
-    path.moveTo(point);
+    // no way to tell.
+    // We used to insert a Inf/Inf element to tell if its empty. But that no longer
+    // works with Qt newer than 2011-01-21
+    // http://qt.gitorious.org/qt/qt/commit/972fcb6de69fb7ed3ae8147498ceb5d2ac79f057
+    // Now go with a extra bool to check if its really empty.
+    emptyPath = true;
 }
 
 void CanvasContext2DImpl::closePath()
@@ -1048,6 +1045,7 @@ void CanvasContext2DImpl::closePath()
 void CanvasContext2DImpl::moveTo(float x, float y)
 {
     path.moveTo(mapToDevice(x, y));
+    emptyPath = false;
 }
 
 void CanvasContext2DImpl::lineTo(float x, float y)
@@ -1056,6 +1054,7 @@ void CanvasContext2DImpl::lineTo(float x, float y)
         return;
 
     path.lineTo(mapToDevice(x, y));
+    emptyPath = false;
 }
 
 void CanvasContext2DImpl::quadraticCurveTo(float cpx, float cpy, float x, float y)
@@ -1064,6 +1063,7 @@ void CanvasContext2DImpl::quadraticCurveTo(float cpx, float cpy, float x, float 
         return;
 
     path.quadTo(mapToDevice(cpx, cpy), mapToDevice(x, y));
+    emptyPath = false;
 }
 
 void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, float cp2y, float x, float y)
@@ -1072,15 +1072,12 @@ void CanvasContext2DImpl::bezierCurveTo(float cp1x, float cp1y, float cp2x, floa
         return;
 
     path.cubicTo(mapToDevice(cp1x, cp1y), mapToDevice(cp2x, cp2y), mapToDevice(x, y));
+    emptyPath = false;
 }
 
 void CanvasContext2DImpl::rect(float x, float y, float w, float h, int& exceptionCode)
 {
     exceptionCode = 0;
-    if (w < 0 || h < 0) {
-        exceptionCode = DOMException::INDEX_SIZE_ERR;
-        return;
-    }
 
     path.addPolygon(QRectF(x, y, w, h) * activeState().transform);
     path.closeSubpath();
@@ -1281,8 +1278,10 @@ void CanvasContext2DImpl::arcTo(float x1, float y1, float x2, float y2, float ra
         return;
     }
 
-    if (isPathEmpty())
-        return;
+    if (isPathEmpty()) {
+        moveTo(x1,y1);
+    }
+    emptyPath = false;
 
     QLineF line1(QPointF(x1, y1), mapToUser(path.currentPosition()));
     QLineF line2(QPointF(x1, y1), QPointF(x2, y2));
@@ -1417,6 +1416,7 @@ void CanvasContext2DImpl::arc(float x, float y, float radius, float startAngle, 
                                  arcPath.elementAt(i+2));
         }
     }
+    emptyPath = false;
 }
 
 void CanvasContext2DImpl::drawImage(QPainter *p, const QRectF &dstRect, const QImage &image, const QRectF &srcRect) const

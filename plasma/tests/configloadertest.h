@@ -40,6 +40,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void boolDefaultValue();
     void colorDefaultValue();
+    void colorWithAlphaDefaultValue();
     void dateTimeDefaultValue();
     void enumDefaultValue();
     void fontDefaultValue();

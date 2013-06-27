@@ -38,8 +38,10 @@ namespace Solid
         Q_OBJECT
         Q_ENUMS(BatteryType ChargeState)
         Q_PROPERTY(bool plugged READ isPlugged)
+        Q_PROPERTY(bool powerSupply READ isPowerSupply)
         Q_PROPERTY(BatteryType type READ type)
         Q_PROPERTY(int chargePercent READ chargePercent)
+        Q_PROPERTY(int capacity READ capacity)
         Q_PROPERTY(bool rechargeable READ isRechargeable)
         Q_PROPERTY(ChargeState chargeState READ chargeState)
         Q_DECLARE_PRIVATE(Battery)
@@ -110,6 +112,14 @@ namespace Solid
         bool isPlugged() const;
 
         /**
+         * Indicates if this battery is powering the machine or from an attached deviced.
+         *
+         * @since 4.11
+         * @return true the battery is a powersupply, false otherwise
+         */
+        bool isPowerSupply() const;
+
+        /**
          * Retrieves the type of device holding this battery.
          *
          * @return the type of device holding this battery
@@ -127,6 +137,16 @@ namespace Solid
          */
         int chargePercent() const;
 
+        /**
+         * Retrieves the battery capacity normalised to percent,
+         * meaning how much energy can it hold compared to what it is designed to.
+         * The capacity of the battery will reduce with age.
+         * A capacity value less than 75% is usually a sign that you should renew your battery.
+         *
+         * @since 4.11
+         * @return the battery capacity normalised to percent
+         */
+        int capacity() const;
 
 
         /**
@@ -156,6 +176,15 @@ namespace Solid
         void chargePercentChanged(int value, const QString &udi);
 
         /**
+         * This signal is emitted when the capacity of this battery has changed.
+         *
+         * @param value the new capacity of the battery
+         * @param udi the UDI of the battery with the new capacity
+         * @since 4.11
+         */
+        void capacityChanged(int value, const QString &udi);
+
+        /**
          * This signal is emitted when the charge state of this battery
          * has changed.
          *
@@ -174,6 +203,16 @@ namespace Solid
          * @param udi the UDI of the battery with the new plugging state
          */
         void plugStateChanged(bool newState, const QString &udi);
+
+        /**
+         * This signal is emitted when the power supply state of the battery
+         * changes.
+         *
+         * @param newState the new power supply state, type is boolean
+         * @param udi the UDI of the battery with the new power supply state
+         * @since 4.11
+         */
+        void powerSupplyStateChanged(bool newState, const QString &udi);
     };
 }
 

@@ -24,7 +24,7 @@
 #include "object.h"
 #include "JSVariableObject.h"
 
-#include <config.h>
+#include <config-kjs.h>
 
 #include <stdio.h>
 

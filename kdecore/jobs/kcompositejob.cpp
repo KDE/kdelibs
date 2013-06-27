@@ -26,7 +26,6 @@ KCompositeJobPrivate::KCompositeJobPrivate()
 
 KCompositeJobPrivate::~KCompositeJobPrivate()
 {
-    qDeleteAll(subjobs);
 }
 
 KCompositeJob::KCompositeJob( QObject *parent )
@@ -51,8 +50,8 @@ bool KCompositeJob::addSubjob( KJob *job )
         return false;
     }
 
+    job->setParent(this);
     d->subjobs.append(job);
-
     connect( job, SIGNAL(result(KJob*)),
              SLOT(slotResult(KJob*)) );
 
@@ -71,6 +70,7 @@ bool KCompositeJob::removeSubjob( KJob *job )
         return false;
     }
 
+    job->setParent(0);
     d->subjobs.removeAll( job );
 
     return true;
@@ -90,6 +90,9 @@ const QList<KJob*> &KCompositeJob::subjobs() const
 void KCompositeJob::clearSubjobs()
 {
     Q_D(KCompositeJob);
+    Q_FOREACH(KJob *job, d->subjobs) {
+        job->setParent(0);
+    }
     d->subjobs.clear();
 }
 

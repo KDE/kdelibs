@@ -49,7 +49,14 @@
     macro(toPrecision) \
     macro(toString) \
     macro(valueOf) \
-    macro(toJSON)
+    macro(toJSON) \
+    macro(configurable) \
+    macro(value) \
+    macro(writable) \
+    macro(enumerable) \
+    macro(get) \
+    macro(set) \
+    macro(toISOString)
 
 namespace KJS {
 

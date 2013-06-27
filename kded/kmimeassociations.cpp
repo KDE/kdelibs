@@ -137,6 +137,31 @@ void KOfferHash::addServiceOffer(const QString& serviceType, const KServiceOffer
     }
 }
 
+void KOfferHash::addInheritedServiceOffer(const QString& serviceType, const KServiceOffer& offer)
+{
+    KService::Ptr service = offer.service();
+    //kDebug(7021) << "Adding" << service->entryPath() << "to" << serviceType << offer.preference();
+    ServiceTypeOffersData& data = m_serviceTypeData[serviceType]; // find or create
+    QList<KServiceOffer>& offers = data.offers;
+    QSet<KService::Ptr>& offerSet = data.offerSet;
+    if ( !offerSet.contains( service ) ) {
+        offers.append( offer );
+        offerSet.insert( service );
+    } else {
+        // This happens when a desktop file mentions both a base mimetype and a derived one.
+        // Example: emacs.desktop: MimeType=text/plain;text/x-csrc;
+        // We want to ignore the derived mimetype, and only keep the base one, so that
+        // the user can choose another text/plain editor in mimeapps.list (cf xdg-list, jan 2013).
+        QMutableListIterator<KServiceOffer> sfit(data.offers);
+        while (sfit.hasNext()) {
+            if (sfit.next().service() == service) { // we can compare KService::Ptrs because they are from the memory hash
+                sfit.remove();
+                sfit.insert( offer );
+            }
+        }
+    }
+}
+
 void KOfferHash::removeServiceOffer(const QString& serviceType, KService::Ptr service)
 {
     ServiceTypeOffersData& data = m_serviceTypeData[serviceType]; // find or create

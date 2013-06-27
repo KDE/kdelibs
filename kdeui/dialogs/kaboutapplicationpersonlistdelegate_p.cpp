@@ -94,7 +94,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
                                                              const QStyleOptionViewItem &option,
                                                              const QPersistentModelIndex &index ) const
 {
-    int margin = option.fontMetrics.height() / 2;
+    const int margin = option.fontMetrics.height() / 2;
 
     KAboutApplicationPersonProfile profile = index.data().value< KAboutApplicationPersonProfile >();
 
@@ -153,7 +153,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
     socialLinks->setSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed );
 
     int currentSocialLinkAction = 0;
-    foreach( KAboutApplicationPersonProfileOcsLink link, profile.ocsLinks() ) {
+    foreach( const KAboutApplicationPersonProfileOcsLink &link, profile.ocsLinks() ) {
         if( !profile.homepage().isEmpty() && profile.homepage() == link.url() )
             continue;   //We skip it if it's the same as the homepage from KAboutData
 
@@ -179,7 +179,7 @@ void KAboutApplicationPersonListDelegate::updateItemWidgets( const QList<QWidget
         action->setData( link.url().url() );
         action->setVisible( true );
 
-        currentSocialLinkAction++;
+        ++currentSocialLinkAction;
         if( currentSocialLinkAction > MAX_SOCIAL_LINKS - 1 )
             break;
     }

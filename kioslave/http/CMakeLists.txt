@@ -3,7 +3,11 @@ project(kioslave-http)
 
 
 macro_optional_find_package(GSSAPI)
-macro_log_feature(GSSAPI_FOUND "GSSAPI" "Allows KIO to make use of certain HTTP authentication services" "http://web.mit.edu/kerberos/www" FALSE "" "A MIT or HEIMDAL flavor of GSSAPI can be used")
+set_package_properties(GSSAPI PROPERTIES DESCRIPTION "Allows KIO to make use of certain HTTP authentication services"
+                       URL "http://web.mit.edu/kerberos/www"
+                       TYPE OPTIONAL
+                       PURPOSE "A MIT or HEIMDAL flavor of GSSAPI can be used"
+                      )
 
 if(GSSAPI_FOUND)
     set(HAVE_LIBGSSAPI 1)

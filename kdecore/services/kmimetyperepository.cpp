@@ -28,6 +28,7 @@
 #include "kfoldermimetype.h"
 #include <QFile>
 #include <QProcess>
+#include <QtEndian>
 
 extern int servicesDebugArea();
 
@@ -446,10 +447,10 @@ QList<KMimeMagicRule> KMimeTypeRepository::parseMagicFile(QIODevice* file, const
                 break;
             }
 
-            char lengthBuffer[2];
-            if (file->read(lengthBuffer, 2) != 2)
+            qint16 lengthBuffer;
+            if (file->read(reinterpret_cast<char*>(&lengthBuffer), 2) != 2)
                 break;
-            const short valueLength = ntohs(*(short*)lengthBuffer);
+            const qint16 valueLength = qFromBigEndian(lengthBuffer);
             //kDebug() << "indent=" << indent << " rangeStart=" << match.m_rangeStart
             //         << " valueLength=" << valueLength << endl;
 

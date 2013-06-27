@@ -22,7 +22,7 @@
  */
 
 #include "internal.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "array_object.h"
 #include "bool_object.h"

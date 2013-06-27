@@ -3,10 +3,10 @@
 This file implements the WorkingHardState class.
 
 $ Author: Mirko Boehm $
-$ Copyright: (C) 2005, 2006 Mirko Boehm $
+$ Copyright: (C) 2005-2013 Mirko Boehm $
 $ Contact: mirko@kde.org
 http://www.kde.org
-http://www.hackerbuero.org $
+http://creative-destruction.me $
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -53,24 +53,21 @@ void WorkingHardState::resume()
 {
 }
 
-Job* WorkingHardState::applyForWork ( Thread *th,  Job* )
+Job* WorkingHardState::applyForWork(Thread *th,  Job* previous)
 {   // beware: this code is executed in the applying thread!
     debug ( 2, "WorkingHardState::applyForWork: thread %i applies for work "
             "in %s state.\n", th->id(),
             qPrintable ( weaver()->state().stateName() ) );
 
-    Job *next = weaver()->takeFirstAvailableJob();
-
-    if ( next )
-    {
-        weaver()->incActiveThreadCount();
+    Job *next = weaver()->takeFirstAvailableJob(previous);
+    if ( next ) {
         return next;
     } else {
         debug ( 2, "WorkingHardState::applyForWork: no work for thread %i, "
                 "blocking it.\n", th->id() );
         weaver()->waitForAvailableJob( th );
         // this is no infinite recursion: the state may have changed
-        // meanwhile, or jobs may have come available:
+        // meanwhile, or jobs may have become available:
         return weaver()->applyForWork( th,  0 );
     }
 }

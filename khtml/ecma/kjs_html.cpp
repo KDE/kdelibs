@@ -3243,6 +3243,7 @@ JSValue* KJS::HTMLCollectionProtoFunc::callAsFunction(ExecState *exec, JSObject 
 /* Source for HTMLSelectCollectionProtoTable.
 @begin HTMLSelectCollectionProtoTable 1
   add		HTMLSelectCollection::Add		DontDelete|Function 2
+  remove    HTMLSelectCollection::Remove        DontDelete|Function 1
 @end
 */
 KJS_DEFINE_PROTOTYPE(HTMLSelectCollectionProto)
@@ -3402,6 +3403,19 @@ JSValue* KJS::HTMLSelectCollectionProtoFunc::callAsFunction(ExecState *exec, JSO
       int dummy;
       element->insertBefore(option, items.at(pos), dummy);
     }
+    return jsUndefined();
+    break;
+  }
+  case KJS::HTMLSelectCollection::Remove:
+  {
+    double index;
+    if (!args[0]->getNumber(index))
+      index = 0;
+    else {
+      if (static_cast<long int>(index) >= element->length())
+        index = 0;
+    }
+    element->remove(static_cast<long int>(index));
     return jsUndefined();
     break;
   }

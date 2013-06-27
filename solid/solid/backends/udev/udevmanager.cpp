@@ -19,6 +19,7 @@
 */
 
 #include "udevmanager.h"
+#include "utils.h"
 
 #include "udev.h"
 #include "udevdevice.h"
@@ -38,6 +39,8 @@ public:
     ~Private();
 
     bool isOfInterest(const UdevQt::Device &device);
+    bool isPowerBubtton(const UdevQt::Device &device);
+    bool isLidBubtton(const UdevQt::Device &device);
 
     UdevQt::Client *m_client;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
@@ -53,6 +56,7 @@ UDevManager::Private::Private()
     subsystems << "video4linux";
     subsystems << "net";
     subsystems << "usb";
+    subsystems << "input";
     m_client = new UdevQt::Client(subsystems);
 }
 
@@ -94,11 +98,49 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
             return true;
         }
     }
+
+    if (device.subsystem() == QLatin1String("input")) {
+        if (device.deviceProperties().contains("KEY")) {
+            return isPowerBubtton(device);
+        }
+        if (device.deviceProperties().contains("SW")) {
+            return isLidBubtton(device);
+        }
+    }
+
     return device.subsystem() == QLatin1String("dvb") ||
            device.subsystem() == QLatin1String("video4linux") ||
            device.subsystem() == QLatin1String("net") ||
            device.deviceProperty("ID_MEDIA_PLAYER").toString().isEmpty() == false || // media-player-info recognized devices
            device.deviceProperty("ID_GPHOTO2").toInt() == 1; // GPhoto2 cameras
+}
+
+bool UDevManager::Private::isLidBubtton(const UdevQt::Device& device)
+{
+    long bitmask[NBITS(SW_MAX)];
+    int nbits = input_str_to_bitmask(device.deviceProperty("SW").toByteArray(), bitmask, sizeof(bitmask));
+    if (nbits == 1) {
+        if (test_bit (SW_LID, bitmask)) {
+            qDebug() << "Lid button detected";
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool UDevManager::Private::isPowerBubtton(const UdevQt::Device& device)
+{
+    long bitmask[NBITS(KEY_MAX)];
+    int nbits = input_str_to_bitmask(device.deviceProperty("KEY").toByteArray(), bitmask, sizeof(bitmask));
+    if (nbits == 1) {
+        if (test_bit (KEY_POWER, bitmask)) {
+            qDebug() << "Power button detected";
+            return true;
+        }
+    }
+
+    return false;
 }
 
 UDevManager::UDevManager(QObject *parent)
@@ -117,7 +159,8 @@ UDevManager::UDevManager(QObject *parent)
                              << Solid::DeviceInterface::PortableMediaPlayer
                              << Solid::DeviceInterface::DvbInterface
                              << Solid::DeviceInterface::Block
-                             << Solid::DeviceInterface::Video;
+                             << Solid::DeviceInterface::Video
+                             << Solid::DeviceInterface::Button;
 }
 
 UDevManager::~UDevManager()

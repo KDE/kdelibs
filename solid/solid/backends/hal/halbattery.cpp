@@ -83,9 +83,28 @@ int Battery::chargePercent() const
     return m_device->prop("battery.charge_level.percentage").toInt();
 }
 
+int Battery::capacity() const
+{
+    const qreal lastFull = m_device->prop("battery.charge_level.last_full").toDouble();
+    const qreal designFull = m_device->prop("battery.charge_level.design").toDouble();
+
+    return lastFull / designFull * 100;
+}
+
 bool Battery::isRechargeable() const
 {
     return m_device->prop("battery.is_rechargeable").toBool();
+}
+
+bool Battery::isPowerSupply() const
+{
+    // NOTE Hal doesn't support the is power supply property, so we're assuming that primary
+    // and UPS batteries are power supply and all the others are not
+    if (type() == Solid::Battery::PrimaryBattery || type() == Solid::Battery::UpsBattery) {
+      return true;
+    }
+
+    return false;
 }
 
 Solid::Battery::ChargeState Battery::chargeState() const
@@ -112,6 +131,12 @@ void Battery::slotPropertyChanged(const QMap<QString,int> &changes)
     if (changes.contains("battery.charge_level.percentage"))
     {
         emit chargePercentChanged(chargePercent(), m_device->udi());
+    }
+
+    if (changes.contains("battery.charge_level.last_full")
+           || changes.contains("battery.charge_level.design"))
+    {
+        emit capacityChanged(capacity(), m_device->udi());
     }
 
     if (changes.contains("battery.rechargeable.is_charging")

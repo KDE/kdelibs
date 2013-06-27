@@ -43,6 +43,7 @@ namespace KJS {
 
     using KJS::JSObject::getOwnPropertySlot;
     virtual bool getOwnPropertySlot(ExecState *, const Identifier &, PropertySlot&);
+    virtual bool getOwnPropertyDescriptor(ExecState*, const Identifier&, PropertyDescriptor&);
     using KJS::JSObject::put;
     virtual void put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr = None);
     using KJS::JSObject::deleteProperty;

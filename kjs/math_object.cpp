@@ -20,7 +20,7 @@
  */
 
 #include "math_object.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "math_object.lut.h"
 #include "wtf/MathExtras.h"
 

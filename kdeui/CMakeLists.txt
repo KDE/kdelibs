@@ -204,7 +204,6 @@ set(kdeui_LIB_SRCS
  sonnet/highlighter.cpp
  sonnet/configdialog.cpp
  sonnet/dictionarycombobox.cpp
- util/kckey.cpp
  util/kcompletion.cpp
  util/kcompletionbase.cpp
  util/kcrash.cpp

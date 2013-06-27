@@ -197,7 +197,17 @@ void ConfigLoaderHandler::addItem()
         bool defaultValue = m_default.toLower() == "true";
         item = m_config->addItemBool(m_name, *d->newBool(), defaultValue, m_key);
     } else if (m_type == "color") {
-        item = m_config->addItemColor(m_name, *d->newColor(), QColor(m_default), m_key);
+        QColor color;
+
+        if (m_default.count(',') == 3) {
+            const QStringList values = m_default.split(',');
+
+            color = QColor(values.at(0).toInt(), values.at(1).toInt(), values.at(2).toInt(), values.at(3).toInt());
+        } else {
+            color = QColor(m_default);
+        }
+
+        item = m_config->addItemColor(m_name, *d->newColor(), color, m_key);
     } else if (m_type == "datetime") {
         item = m_config->addItemDateTime(m_name, *d->newDateTime(),
                                          QDateTime::fromString(m_default), m_key);

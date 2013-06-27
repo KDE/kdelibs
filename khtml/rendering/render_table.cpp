@@ -294,6 +294,31 @@ void RenderTable::calcWidth()
     calcHorizontalMargins(style()->marginLeft(),style()->marginRight(),availableWidth);
 }
 
+QList< QRectF > RenderTable::getClientRects()
+{
+    RenderFlow* cap = caption();
+    if (cap) {
+        // tables with caption report y&height inclusive caption, but we need them
+        // exclusive and a extra rect for the caption
+        // NOTE: first table, then caption
+        QList<QRectF> list;
+
+        int x = 0;
+        int y = 0;
+        absolutePosition(x, y);
+
+        QRectF tableRect(x, y + cap->height(), width(), height() - cap->height());
+        list.append(clientRectToViewport(tableRect));
+
+        QRectF captionRect(x, y, cap->width(), cap->height());
+        list.append(clientRectToViewport(captionRect));
+
+        return list;
+    } else {
+        return RenderObject::getClientRects();
+    }
+}
+
 void RenderTable::layout()
 {
     KHTMLAssert( needsLayout() );

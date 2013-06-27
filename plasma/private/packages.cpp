@@ -56,9 +56,11 @@ PlasmoidPackage::PlasmoidPackage(QObject *parent)
     }
 
     addDirectoryDefinition("images", "images", i18n("Images"));
+    addDirectoryDefinition("theme",  "theme",  i18n("Themed Images"));
     QStringList mimetypes;
     mimetypes << "image/svg+xml" << "image/png" << "image/jpeg";
     setMimetypes("images", mimetypes);
+    setMimetypes("theme",  mimetypes);
 
     addDirectoryDefinition("config", "config", i18n("Configuration Definitions"));
     mimetypes.clear();

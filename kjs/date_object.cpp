@@ -20,7 +20,7 @@
  */
 
 #include "date_object.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "date_object.lut.h"
 #include "internal.h"
 
@@ -224,6 +224,24 @@ static UString formatDateUTCVariant(const tm &t)
     return UString(buffer, len);
 }
 
+static UString formatDateISOVariant(const tm &t, bool utc, double absoluteMS)
+{
+    char buffer[100];
+    // YYYY-MM-DD
+    int len;
+    if (utc) {
+        len = snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d",
+            t.tm_year + 1900, t.tm_mon+1, t.tm_mday);
+    } else {
+        int offset = gmtoffset(t);
+        tm t_fixed;
+        millisecondsToTM(absoluteMS - offset*1000, true, &t_fixed);
+        len = snprintf(buffer, sizeof(buffer), "%04d-%02d-%02d",
+            t_fixed.tm_year + 1900, t_fixed.tm_mon+1, t_fixed.tm_mday);
+    }
+    return UString(buffer, len);
+}
+
 static UString formatTime(const tm &t, bool utc)
 {
     char buffer[100];
@@ -239,6 +257,24 @@ static UString formatTime(const tm &t, bool utc)
         len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d GMT%c%02d%02d",
             t.tm_hour, t.tm_min, t.tm_sec,
             gmtoffset(t) < 0 ? '-' : '+', offset / (60*60), (offset / 60) % 60);
+    }
+    return UString(buffer, len);
+}
+
+static UString formatTimeISOVariant(const tm &t, bool utc, double absoluteMS, double ms)
+{
+    char buffer[100];
+    // HH:mm:ss.sss
+    int len;
+    if (utc) {
+        len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d.%03d",
+                       t.tm_hour, t.tm_min, t.tm_sec, int(ms));
+    } else {
+        int offset = gmtoffset(t);
+        tm t_fixed;
+        millisecondsToTM(absoluteMS - offset*1000, true, &t_fixed);
+        len = snprintf(buffer, sizeof(buffer), "%02d:%02d:%02d.%03d",
+            t_fixed.tm_hour, t_fixed.tm_min, t_fixed.tm_sec, int(ms));
     }
     return UString(buffer, len);
 }
@@ -494,6 +530,10 @@ static void millisecondsToTM(double milli, bool utc, tm *t)
   }
 }
 
+static bool isNaNorInf(double value)
+{
+    return isNaN(value) || isInf(value);
+}
 
 // ------------------------------ DatePrototype -----------------------------
 
@@ -506,6 +546,8 @@ const ClassInfo DatePrototype::info = {"Date", &DateInstance::info, &dateTable, 
   toUTCString		-DateProtoFunc::ToUTCString		DontEnum|Function	0
   toDateString		DateProtoFunc::ToDateString		DontEnum|Function	0
   toTimeString		DateProtoFunc::ToTimeString		DontEnum|Function	0
+  toISOString       DateProtoFunc::ToISOString      DontEnum|Function   0
+  toJSON            DateProtoFunc::ToJSON           DontEnum|Function   1
   toLocaleString	DateProtoFunc::ToLocaleString	DontEnum|Function	0
   toLocaleDateString	DateProtoFunc::ToLocaleDateString	DontEnum|Function	0
   toLocaleTimeString	DateProtoFunc::ToLocaleTimeString	DontEnum|Function	0
@@ -575,6 +617,23 @@ DateProtoFunc::DateProtoFunc(ExecState *exec, int i, int len, const Identifier& 
 
 JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const List &args)
 {
+  if (id == ToJSON) {
+    JSValue* tv = thisObj->toPrimitive(exec, NumberType);
+    if (tv->isNumber()) {
+      double ms = tv->toNumber(exec);
+      if (isNaN(ms))
+        return jsNull();
+    }
+
+    JSValue *toISO = thisObj->get(exec, exec->propertyNames().toISOString);
+    if (!toISO->implementsCall())
+      return throwError(exec, TypeError, "toISOString is not callable");
+    JSObject* toISOobj = toISO->toObject(exec);
+    if (!toISOobj)
+      return throwError(exec, TypeError, "toISOString is not callable");
+    return toISOobj->call(exec, thisObj, List::empty());
+  }
+
   if (!thisObj->inherits(&DateInstance::info))
     return throwError(exec, TypeError);
 
@@ -622,6 +681,8 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
       case SetMonth:
       case SetFullYear:
         return jsNaN();
+      case ToISOString:
+        return throwError(exec, RangeError, "Invalid Date");
     }
   }
 
@@ -651,6 +712,8 @@ JSValue *DateProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
   case ToGMTString:
   case ToUTCString:
     return jsString(formatDateUTCVariant(t).append(' ').append(formatTime(t, utc)));
+  case ToISOString:
+    return jsString(formatDateISOVariant(t, utc, milli).append('T').append(formatTimeISOVariant(t, utc, milli, ms)).append('Z'));
 
 #if PLATFORM(MAC)
   case ToLocaleString:
@@ -773,11 +836,6 @@ static double getCurrentUTCTime()
     double utc = floor(tv.tv_sec * msPerSecond + tv.tv_usec / 1000);
 #endif
     return utc;
-}
-
-static bool isNaNorInf(double value)
-{
-    return isNaN(value) || isInf(value);
 }
 
 static double makeTimeFromList(ExecState *exec, const List &args, bool utc)

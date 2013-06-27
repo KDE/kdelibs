@@ -85,9 +85,24 @@ int FakeBattery::chargePercent() const
     return percent;
 }
 
+int FakeBattery::capacity() const
+{
+    int last_full = fakeDevice()->property("lastFullLevel").toInt();
+    int max = fakeDevice()->property("maxLevel").toInt();
+
+    int percent = (100 * last_full) / max;
+
+    return percent;
+}
+
 bool FakeBattery::isRechargeable() const
 {
     return fakeDevice()->property("isRechargeable").toBool();
+}
+
+bool FakeBattery::isPowerSupply() const
+{
+    return fakeDevice()->property("isPowerSupply").toBool();
 }
 
 Solid::Battery::ChargeState FakeBattery::chargeState() const

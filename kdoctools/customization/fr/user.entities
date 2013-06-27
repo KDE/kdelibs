@@ -257,7 +257,7 @@
 <!ENTITY relecteurMathieuSchopfer    '<othercredit role="reviewer"><firstname>Mathieu</firstname><surname>Schopfer</surname><affiliation><address><email>mat.schopfer@bluewin.ch</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
 
-<!ENTITY traducteurPenelopeSorveyron   '<othercredit role="translator"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email></email>goneri@free.fr</address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
+<!ENTITY traducteurPenelopeSorveyron   '<othercredit role="translator"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email>goneri@free.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>
 <!ENTITY relecteurPenelopeSorveyron    '<othercredit role="reviewer"><firstname>Pénélope</firstname><surname>Sorveyron</surname><affiliation><address><email>goneri@free.fr</email></address></affiliation><contrib>Relecture de la documentation française&nbsp;</contrib></othercredit>'>
 
 <!ENTITY traducteurNicolasTernisien  '<othercredit role="translator"><firstname>Nicolas</firstname><surname>Ternisien</surname><affiliation><address><email>nicolast@libertysurf.fr</email></address></affiliation><contrib>Traduction française&nbsp;</contrib></othercredit>'>

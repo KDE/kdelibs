@@ -83,7 +83,21 @@ void KLinkItemSelectionModel::select(const QModelIndex &index, QItemSelectionMod
     if (d->m_ignoreCurrentChanged) {
         return;
     }
-    QItemSelectionModel::select(index, command);
+    // Do *not* replace next line with: QItemSelectionModel::select(index, command)
+    //
+    // Doing so would end up calling KLinkItemSelectionModel::select(QItemSelection, QItemSelectionModel::SelectionFlags)
+    //
+    // This is because the code for QItemSelectionModel::select(QModelIndex, QItemSelectionModel::SelectionFlags) looks like this:
+    // {
+    //     QItemSelection selection(index, index);
+    //     select(selection, command);
+    // }
+    // So it calls KLinkItemSelectionModel overload of
+    // select(QItemSelection, QItemSelectionModel::SelectionFlags)
+    //
+    // When this happens and the selection flags include Toggle, it causes the
+    // selection to be toggled twice.
+    QItemSelectionModel::select(QItemSelection(index, index), command);
     if (index.isValid())
         d->m_linkedItemSelectionModel->select(d->m_indexMapper->mapSelectionLeftToRight(QItemSelection(index, index)), command);
     else {

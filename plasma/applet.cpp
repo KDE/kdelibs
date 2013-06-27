@@ -1983,7 +1983,6 @@ void Applet::showConfigurationInterface()
 
             if (hasPages) {
                 d->addGlobalShortcutsPage(dialog);
-                d->addPublishPage(dialog);
                 dialog->show();
             } else {
                 delete dialog;
@@ -2073,7 +2072,6 @@ KConfigDialog *AppletPrivate::generateGenericConfigDialog()
 void AppletPrivate::addStandardConfigurationPages(KConfigDialog *dialog)
 {
     addGlobalShortcutsPage(dialog);
-    addPublishPage(dialog);
 }
 
 void AppletPrivate::addGlobalShortcutsPage(KConfigDialog *dialog)
@@ -2098,31 +2096,6 @@ void AppletPrivate::addGlobalShortcutsPage(KConfigDialog *dialog)
 
     QObject::connect(dialog, SIGNAL(applyClicked()), q, SLOT(configDialogFinished()), Qt::UniqueConnection);
     QObject::connect(dialog, SIGNAL(okClicked()), q, SLOT(configDialogFinished()), Qt::UniqueConnection);
-#endif
-}
-
-void AppletPrivate::addPublishPage(KConfigDialog *dialog)
-{
-#ifdef ENABLE_REMOTE_WIDGETS
-    QWidget *page = new QWidget;
-    publishUI.setupUi(page);
-    publishUI.publishCheckbox->setChecked(q->isPublished());
-    QObject::connect(publishUI.publishCheckbox, SIGNAL(clicked(bool)), dialog, SLOT(settingsModified()));
-    publishUI.allUsersCheckbox->setEnabled(q->isPublished());
-    QObject::connect(publishUI.allUsersCheckbox, SIGNAL(clicked(bool)), dialog, SLOT(settingsModified()));
-
-    QString resourceName =
-    i18nc("%1 is the name of a plasmoid, %2 the name of the machine that plasmoid is published on",
-          "%1 on %2", q->name(), QHostInfo::localHostName());
-    if (AuthorizationManager::self()->d->matchingRule(resourceName, Credentials())) {
-        publishUI.allUsersCheckbox->setChecked(true);
-    } else {
-        publishUI.allUsersCheckbox->setChecked(false);
-    }
-
-    q->connect(publishUI.publishCheckbox, SIGNAL(stateChanged(int)),
-               q, SLOT(publishCheckboxStateChanged(int)));
-    dialog->addPage(page, i18n("Share"), "applications-internet");
 #endif
 }
 

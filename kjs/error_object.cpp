@@ -21,7 +21,7 @@
  */
 
 #include "error_object.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "value.h"
 #include "object.h"

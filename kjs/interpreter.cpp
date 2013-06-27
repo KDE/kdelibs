@@ -24,7 +24,7 @@
  */
 
 #include "interpreter.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "SavedBuiltins.h"
 #include "array_object.h"

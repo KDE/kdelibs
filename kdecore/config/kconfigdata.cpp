@@ -33,7 +33,8 @@ QDebug operator<<(QDebug dbg, const KEntry& entry)
 {
    dbg.nospace() << "[" << entry.mValue << (entry.bDirty?" dirty":"") <<
        (entry.bGlobal?" global":"") << (entry.bImmutable?" immutable":"") <<
-       (entry.bDeleted?" deleted":"") << (entry.bExpand?" expand":"") << "]";
+       (entry.bDeleted?" deleted":"") << (entry.bReverted?" reverted":"") <<
+       (entry.bExpand?" expand":"") << "]";
 
    return dbg.space();
 }
@@ -139,6 +140,7 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
     else
         e.bDeleted = false; // setting a value to a previously deleted entry
     e.bExpand = (options&EntryExpansion);
+    e.bReverted = false;
 
     if(newKey)
     {
@@ -160,15 +162,16 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
             it.value() = e;
             if(k.bDefault)
             {
-                k.bDefault = false;
-                insert(k, e);
+                KEntryKey nonDefaultKey(k);
+                nonDefaultKey.bDefault = false;
+                insert(nonDefaultKey, e);
             }
             if (!(options & EntryLocalized)) {
                 KEntryKey theKey(group, key, true, false);
                 //qDebug() << "non-localized entry, remove localized one:" << theKey;
                 remove(theKey);
                 if (k.bDefault) {
-                    theKey.bDefault = false;
+                    theKey.bDefault = true;
                     remove(theKey);
                 }
             }
@@ -185,7 +188,7 @@ bool KEntryMap::setEntry(const QByteArray& group, const QByteArray& key, const Q
                     ret = true;
                 }
                 if (k.bDefault) {
-                    theKey.bDefault = false;
+                    theKey.bDefault = true;
                     Iterator cit = find(theKey);
                     if (cit != end()) {
                         erase(cit);
@@ -230,6 +233,7 @@ bool KEntryMap::hasEntry(const QByteArray& group, const QByteArray& key, KEntryM
     if (key.isNull()) { // looking for group marker
         return it->mValue.isNull();
     }
+    // if it->bReverted, we'll just return true; the real answer depends on lookup up with SearchDefaults, though.
     return true;
 }
 
@@ -282,20 +286,32 @@ void KEntryMap::setEntryOption(QMap< KEntryKey, KEntry >::Iterator it, KEntryMap
     }
 }
 
-void KEntryMap::revertEntry(const QByteArray& group, const QByteArray& key, KEntryMap::SearchFlags flags)
+bool KEntryMap::revertEntry(const QByteArray& group, const QByteArray& key, KEntryMap::SearchFlags flags)
 {
+    Q_ASSERT((flags & KEntryMap::SearchDefaults) == 0);
     Iterator entry = findEntry(group, key, flags);
     if (entry != end()) {
-        //qDebug() << "reverting [" << group << "," << key << "] = " << entry->mValue;
-        const ConstIterator defaultEntry(entry+1);
-        if (defaultEntry != constEnd() && defaultEntry.key().bDefault) {
-            *entry = *defaultEntry;
-            entry->bDirty = true;
-        } else if (!entry->mValue.isNull()) {
-            entry->mValue = QByteArray();
-            entry->bDirty = true;
-            entry->bDeleted = true;
+        //qDebug() << "reverting" << entry.key() << " = " << entry->mValue;
+        if (entry->bReverted) { // already done before
+            return false;
         }
-        //qDebug() << "to [" << group << "," << key << "] =" << entry->mValue;
+
+        KEntryKey defaultKey(entry.key());
+        defaultKey.bDefault = true;
+        //qDebug() << "looking up default entry with key=" << defaultKey;
+        const ConstIterator defaultEntry = constFind(defaultKey);
+        if (defaultEntry != constEnd()) {
+            Q_ASSERT(defaultEntry.key().bDefault);
+            //qDebug() << "found, update entry";
+            *entry = *defaultEntry; // copy default value, for subsequent lookups
+        } else {
+            entry->mValue = QByteArray();
+        }
+        entry->bDirty = true;
+        entry->bReverted = true; // skip it when writing out to disk
+
+        //qDebug() << "Here's what we have now:" << *this;
+        return true;
     }
+    return false;
 }

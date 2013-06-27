@@ -75,7 +75,7 @@ void QueueTests::initTestCase ()
 }
 
 void QueueTests::SimpleQueuePrioritiesTest() {
-    ThreadWeaver::Weaver weaver ( 0 );
+    ThreadWeaver::Weaver weaver;
     weaver.setMaximumNumberOfThreads ( 1 ); // just one thread
     QString sequence;
     LowPriorityAppendCharacterJob jobA ( QChar( 'a' ), &sequence );

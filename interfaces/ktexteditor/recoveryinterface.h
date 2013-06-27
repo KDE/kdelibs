@@ -27,7 +27,7 @@ namespace KTextEditor
 /**
  * \brief Document extension interface to control crash recovery.
  *
- * \ingroup kte_group_document_extensions
+ * \ingroup kte_group_doc_extensions
  *
  * When the system or the application using the editor component crashed
  * with unsaved changes in the Document, the View notifies the user about
@@ -81,6 +81,14 @@ class KTEXTEDITOR_EXPORT RecoveryInterface
      * \see isDataRecoveryAvailable(), recoverData()
      */
     virtual void discardDataRecovery() = 0;
+
+    /**
+     * TODO KDE5 (see SwapFile::setTrackingEnabled())
+     * Enables or disables the writing of swap files.
+     * @note Enabling/disabling only works when the document is \e not modified!
+     */
+    // void setDataRecoveryEnabled(bool enable);
+    // bool dataRecoveryEnabled() const;
 
   private:
     class RecoveryInterfacePrivate* const d;

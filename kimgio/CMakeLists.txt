@@ -2,8 +2,16 @@
 project(kimgio)
 
 macro_optional_find_package(Jasper)
+set_package_properties(Jasper PROPERTIES DESCRIPTION "Support for JPEG-2000 images"
+                       URL "http://www.ece.uvic.ca/~mdadams/jasper"
+                       TYPE OPTIONAL
+                      )
 
 macro_optional_find_package(OpenEXR)
+set_package_properties(OpenEXR PROPERTIES DESCRIPTION "Support for OpenEXR images"
+                       URL "http://www.openexr.com"
+                       TYPE OPTIONAL
+                      )
 
 include_directories( ${KDE4_KDEUI_INCLUDES} )
 
@@ -16,12 +24,11 @@ if(JASPER_FOUND)
     set(kimg_jp2_LIB_SRCS jp2.cpp)
     kde4_add_plugin(kimg_jp2 ${kimg_jp2_LIB_SRCS})
     target_link_libraries(kimg_jp2  ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY} ${JASPER_LIBRARIES} )
-    
+
     install(TARGETS kimg_jp2  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
     install( FILES jp2.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 
 endif(JASPER_FOUND)
-macro_log_feature(JASPER_FOUND "JasPer" "Support for JPEG-2000 images" "http://www.ece.uvic.ca/~mdadams/jasper" FALSE "" "")
 
 ##################################
 
@@ -109,10 +116,9 @@ if(OPENEXR_FOUND)
 install(TARGETS kimg_exr  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/imageformats/ )
 install( FILES exr.desktop DESTINATION  ${SERVICES_INSTALL_DIR}/qimageioplugins/ )
 endif(OPENEXR_FOUND)
-macro_log_feature(OPENEXR_FOUND "OpenEXR" "Support for OpenEXR images" "http://www.openexr.com" FALSE "" "")
 
 ##################################
-                                              
+
 set(kimg_pic_LIB_SRCS pic_read.cpp pic_write.cpp pic_io_plugin.cpp pic_io_handler.cpp)
 kde4_add_plugin(kimg_pic ${kimg_pic_LIB_SRCS})
 target_link_libraries(kimg_pic ${KDE4_KDECORE_LIBS} ${QT_QTGUI_LIBRARY})

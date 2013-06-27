@@ -132,11 +132,11 @@ if (WIN32)
           util/kuser_wince.cpp
        )
    endif(NOT WINCE)
-   if(NOT MSVC)
+   if(NOT MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
       LIST(APPEND kdecore_OPTIONAL_SRCS
          network/netsupp.cpp
       )
-   endif(NOT MSVC)
+   endif(NOT MSVC AND NOT ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
 endif (WIN32)
 
 
@@ -245,6 +245,7 @@ set(kdecore_LIB_SRCS
    kernel/kauthorized.cpp
    kernel/kaboutdata.cpp
    kernel/kcmdlineargs.cpp
+   kernel/kdbusconnectionpool.cpp
    kernel/kglobal.cpp
    kernel/kcomponentdata.cpp
    kernel/kstandarddirs.cpp
@@ -418,9 +419,17 @@ endif(WINCE)
 
 set(SYS_INOTIFY_H_FOUND 0)
 if(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS.")
+   set_package_properties(FAM PROPERTIES DESCRIPTION "File alteration notification support via a separate service"
+                          URL "http://oss.sgi.com/projects/fam"
+                          TYPE OPTIONAL
+                          PURPOSE "You have file alteration notification support built into your kernel, however you might consider installing FAM as it also supports NFS."
+                         )
 else(SYS_INOTIFY_H_FOUND)
-   macro_log_feature(FAM_FOUND "FAM" "File alteration notification support via a separate service" "http://oss.sgi.com/projects/fam" FALSE "" "Provides file alteration notification facilities using a separate service.")
+   set_package_properties(FAM PROPERTIES DESCRIPTION "File alteration notification support via a separate service"
+                          URL "http://oss.sgi.com/projects/fam"
+                          TYPE OPTIONAL
+                          PURPOSE "Provides file alteration notification facilities using a separate service."
+                         )
 endif(SYS_INOTIFY_H_FOUND)
 
 if(FAM_FOUND)
@@ -586,6 +595,7 @@ install( FILES
    kernel/kaboutdata.h
    kernel/kauthorized.h
    kernel/kcmdlineargs.h
+   kernel/kdbusconnectionpool.h
    kernel/kglobal.h
    kernel/kcomponentdata.h
    kernel/kstandarddirs.h

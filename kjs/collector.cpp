@@ -22,7 +22,7 @@
  */
 
 #include "collector.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include <wtf/FastMalloc.h>
 #include <wtf/HashCountedSet.h>

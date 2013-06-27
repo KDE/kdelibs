@@ -20,7 +20,7 @@
  */
 
 #include "property_map.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "object.h"
 #include "protect.h"

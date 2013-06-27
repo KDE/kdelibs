@@ -66,6 +66,17 @@ namespace Ifaces
          */
         virtual int chargePercent() const = 0;
 
+        /**
+         * Retrieves the battery capacity normalised to percent,
+         * meaning how much energy can it hold compared to what it is designed to.
+         * The capacity of the battery will reduce with age.
+         * A capacity value less than 75% is usually a sign that you should renew your battery.
+         *
+         * @since 4.11
+         * @return the battery capacity normalised to percent
+         */
+        virtual int capacity() const = 0;
+
 
         /**
          * Indicates if the battery is rechargeable.
@@ -73,6 +84,13 @@ namespace Ifaces
          * @return true if the battery is rechargeable, false otherwise (one time usage)
          */
         virtual bool isRechargeable() const = 0;
+
+        /**
+         * Indicates if the battery is powering the machine.
+         *
+         * @return true if the battery is powersupply, false otherwise
+         */
+        virtual bool isPowerSupply() const = 0;
 
         /**
          * Retrieves the current charge state of the battery. It can be in a stable
@@ -95,6 +113,15 @@ namespace Ifaces
         virtual void chargePercentChanged(int value, const QString &udi) = 0;
 
         /**
+         * This signal is emitted when the capacity of this battery has changed.
+         *
+         * @param value the new capacity of the battery
+         * @param udi the UDI of the battery with the new capacity
+         * @since 4.11
+         */
+        virtual void capacityChanged(int value, const QString &udi) = 0;
+
+        /**
          * This signal is emitted when the charge state of this battery
          * has changed.
          *
@@ -114,6 +141,15 @@ namespace Ifaces
          */
         virtual void plugStateChanged(bool newState, const QString &udi) = 0;
 
+        /**
+         * This signal is emitted when the power supply state of the battery
+         * changes.
+         *
+         * @param newState the new power supply state, type is boolean
+         * @param udi the UDI of the battery with the new power supply state
+         * @since 4.11
+         */
+        virtual void powerSupplyStateChanged(bool newState, const QString &udi) = 0;
     };
 }
 }

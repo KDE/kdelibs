@@ -2,11 +2,6 @@ bugs
 ====
 
 - make expandString stuff consistent
-- KConfigGroup::revertToDefault
-  - does not match apidoc re. reverting to kdeglobals 1)
-  - should use entryMap.revertEntry()
-  - map has no bRevert flag that could be set along with bDirty, so it
-    is impossible to get rid of a once set key
 - KConfigGroup::exists() should return true only if the group contains
   any non-deleted entries (?)
 - immutable groups with no entries are not written out and thus lose
@@ -14,42 +9,6 @@ bugs
 - "C" & "en_US" should be detected early and converted to a null string
   (but also save the original string, so locale() semantics don't change
   at that point).
-
-1)
-> > > > > > > I think the apidoc is wrong, it probably shouldn't have the extra
-> > > > > > > paragraph about opening kdeglobals explicitely
-> > > > > > >
-> > > > > > not necessarily. you are assuming a certain model: that kdeglobals
-> > > > > > blends into the config and is on the same level as the master file.
-> > > > > > however, that's not the case - kdeglobals is also a defaults file
-> > > > > > for the master file - which also happens to be writeable. in that, it
-> > > > > > already is an instance of the "master diversion" idea i want to
-> > > > > > generalize.
-> > > > >
-> > > > > no, I'm assuming that any entry read from kdeglobals if reverted will
-> > > > > revert back to the value from kdeglobals, since the default should
-> > > > > have bGlobal set.
-> > > > >
-> > > > yes. and now imagine that you want to revert the entries in kdeglobals
-> > > > to the system wide kdeglobals. this is what this comment is about.
-> > >
-> > > this is what happens, look at KConfig::parseGlobalFiles(). all the
-> > > files are parsed with ParseDefaults *except* the local one.
-> > >
-> > that is right, but makes no sense argumentation-wise.
-> > suppose we have default-foorc, kdeglobals and local-foorc; we opened the
-> > latter explicitly. now i revert key bar. it can only revert from
-> > local-foorc to kdeglobals or from kdeglobals to default-foorc.
-> >
-> no, you will revert from local-foorc to either default-foorc or
-> kdeglobals depending on whether bGlobal is set on the default.
-> $KDEHOME/share/config/kdeglobals can revert from any of
-> $KDEDIRS/share/config/[system.]kdeglobals
->
-ok - but in either case the key in the master file is reverted.
-to revert the values in kdeglobals itself, you have to open kdeglobals
-as the master file. that's all that the comment says.
-
 
 wishes
 ======

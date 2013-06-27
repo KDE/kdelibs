@@ -54,6 +54,7 @@ KCompletionBox::KCompletionBox( QWidget *parent )
     d->emitSelected    = true;
 
     setWindowFlags( Qt::ToolTip ); // calls setVisible, so must be done after initializations
+    setUniformItemSizes(true);
 
     setLineWidth( 1 );
     setFrameStyle( QFrame::Box | QFrame::Plain );

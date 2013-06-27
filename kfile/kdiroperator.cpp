@@ -385,9 +385,7 @@ KDirOperator::KDirOperator(const KUrl& _url, QWidget *parent) :
     if (_url.isEmpty()) { // no dir specified -> current dir
         QString strPath = QDir::currentPath();
         strPath.append(QChar('/'));
-        d->currUrl = KUrl();
-        d->currUrl.setProtocol(QLatin1String("file"));
-        d->currUrl.setPath(strPath);
+        d->currUrl = QUrl::fromLocalFile(strPath);
     } else {
         d->currUrl = _url;
         if (d->currUrl.protocol().isEmpty())
@@ -945,14 +943,6 @@ void KDirOperator::setIconsZoom(int _value)
 
     d->iconsZoom = value;
 
-    if (d->configGroup && d->inlinePreviewState == Private::NotForced) {
-        if (qobject_cast<QListView*>(d->itemView)) {
-            d->configGroup->writeEntry("listViewIconSize", d->iconsZoom);
-        } else {
-            d->configGroup->writeEntry("detailedViewIconSize", d->iconsZoom);
-        }
-    }
-
     if (!d->previewGenerator) {
         return;
     }
@@ -1034,17 +1024,11 @@ void KDirOperator::setUrl(const KUrl& _newurl, bool clearforward)
     KUrl newurl;
 
     if (!_newurl.isValid())
-        newurl.setPath(QDir::homePath());
+        newurl = QUrl::fromLocalFile(QDir::homePath());
     else
         newurl = _newurl;
 
     newurl.adjustPath( KUrl::AddTrailingSlash );
-#ifdef Q_WS_WIN
-    QString pathstr = (newurl.isLocalFile()) ? QDir::fromNativeSeparators(newurl.toLocalFile()) : newurl.path();
-#else
-    QString pathstr = newurl.path();
-#endif
-    newurl.setPath(pathstr);
 
     // already set
     if (newurl.equals(d->currUrl, KUrl::CompareWithoutTrailingSlash))
@@ -1258,8 +1242,7 @@ void KDirOperator::cdUp()
 
 void KDirOperator::home()
 {
-    KUrl u;
-    u.setPath(QDir::homePath());
+    KUrl u = QUrl::fromLocalFile(QDir::homePath());
     setUrl(u, true);
 }
 
@@ -2210,6 +2193,11 @@ void KDirOperator::writeConfig(KConfigGroup& configGroup)
 
     if (d->inlinePreviewState == Private::NotForced) {
         configGroup.writeEntry(QLatin1String("Previews"), d->showPreviews);
+        if (qobject_cast<QListView*>(d->itemView)) {
+            configGroup.writeEntry(QLatin1String("listViewIconSize"), d->iconsZoom);
+        } else {
+            configGroup.writeEntry(QLatin1String("detailedViewIconSize"), d->iconsZoom);
+        }
     }
 
     configGroup.writeEntry(QLatin1String("Decoration position"), (int) d->decorationPosition);

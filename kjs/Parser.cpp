@@ -23,7 +23,7 @@
  */
 
 #include "Parser.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include "lexer.h"
 #include "nodes.h"

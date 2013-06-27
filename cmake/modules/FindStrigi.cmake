@@ -16,9 +16,14 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
-if(NOT STRIGI_MIN_VERSION)
-    set(STRIGI_MIN_VERSION "0.5.9")
-endif(NOT STRIGI_MIN_VERSION)
+# Compat
+if(DEFINED STRIGI_MIN_VERSION)
+  set(Strigi_FIND_VERSION ${STRIGI_MIN_VERSION})
+endif()
+
+if(NOT Strigi_FIND_VERSION)
+    set(Strigi_FIND_VERSION "0.5.9")
+endif()
 
 file(TO_CMAKE_PATH "$ENV{STRIGI_HOME}" strigi_home)
 
@@ -32,12 +37,13 @@ set(Strigi_FIND_QUIETLY ${_Strigi_FIND_QUIETLY})
 # included there, otherwise search it in the same way as any non-cmake project.
 # This variable is set by StrigiConfig.cmake.  Alex
 if (STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
-   set (_strigiErrorMessage "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_PREFIX_PATH) to the strigi install dir.")
-   set(STRIGI_VERSION_OK TRUE)
-   if(STRIGI_VERSION VERSION_LESS ${STRIGI_MIN_VERSION})
-      set(_strigiErrorMessage "Strigi version ${STRIGI_VERSION} found, but at least version ${STRIGI_MIN_VERSION} is required")
-      set(STRIGI_VERSION_OK FALSE)
-   endif(STRIGI_VERSION VERSION_LESS ${STRIGI_MIN_VERSION})
+
+   if(NOT STRIGI_VERSION VERSION_LESS ${Strigi_FIND_VERSION})
+     set(STRIGI_VERSION_OK TRUE)
+     set (_strigiErrorMessage "Couldn't find Strigi streams and streamanalyzer libraries. Set the environment variable STRIGI_HOME (or CMAKE_PREFIX_PATH) to the strigi install dir.")
+   else()
+     set(_strigiErrorMessage "Strigi version ${STRIGI_VERSION} found, but at least version ${Strigi_FIND_VERSION} is required")
+   endif()
 
    include(FindPackageHandleStandardArgs)
 
@@ -46,7 +52,6 @@ if (STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
   if(DEFINED STRIGI_INCLUDE_DIRS)
     set(STRIGI_INCLUDE_DIR ${STRIGI_INCLUDE_DIRS})
   endif()
-
    find_package_handle_standard_args(Strigi "${_strigiErrorMessage}"
        STRIGI_STREAMS_LIBRARY STRIGI_STREAMANALYZER_LIBRARY STRIGI_INCLUDE_DIR STRIGI_VERSION_OK)
 
@@ -63,7 +68,7 @@ else(STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
        if(NOT strigi_home)
            find_package(PkgConfig)
            if(PKG_CONFIG_EXECUTABLE)
-               pkg_check_modules(STRIGI QUIET libstreamanalyzer>=${STRIGI_MIN_VERSION})
+               pkg_check_modules(STRIGI QUIET libstreamanalyzer>=${Strigi_FIND_VERSION})
            endif(PKG_CONFIG_EXECUTABLE)
        endif(NOT strigi_home)
    endif(NOT WIN32)

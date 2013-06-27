@@ -574,6 +574,8 @@ void Kded::recreateDone()
    {
       m_pTimer->start(2000);
       m_recreateCount = m_recreateRequests.count();
+   } else {
+       initModules();
    }
 }
 
@@ -841,10 +843,8 @@ public:
           XSendEvent( QX11Info::display(), QX11Info::appRootWindow(), False, SubstructureNotifyMask, &e );
 #endif
 
-          if (bCheckHostname)
-            (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
-
-          kded->initModules();
+//          if (bCheckHostname)
+//             (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
        } else
           runBuildSycoca();
 

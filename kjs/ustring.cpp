@@ -23,7 +23,7 @@
  */
 
 #include "ustring.h"
-#include <config.h>
+#include <config-kjs.h>
 
 #include <assert.h>
 #include <stdlib.h>

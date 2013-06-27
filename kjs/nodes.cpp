@@ -23,7 +23,7 @@
  */
 
 #include "nodes.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "scriptfunction.h"
 #include "CompileState.h"
 

@@ -22,7 +22,7 @@
 
 #include "debugger.h"
 #include "nodes.h"
-#include <config.h>
+#include <config-kjs.h>
 #include "ustring.h"
 
 #include "internal.h"

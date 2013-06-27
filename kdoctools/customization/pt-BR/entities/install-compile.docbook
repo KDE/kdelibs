@@ -1,7 +1,7 @@
 <para>Para informações detalhadas de como compilar e instalar os aplicativos 
-do &kde; veja em <ulink url="http://techbase.kde.org/Getting_Started">
-Construindo o KDE4 a partir do código-fonte</ulink></para>
+do &kde;, veja em <ulink url="http://techbase.kde.org/Getting_Started#Building_and_Running_KDE_Software_From_Source">
+Compilando e executando o software do KDE a partir do código-fonte</ulink></para>
 
-<para>Uma vez que o &kde; usa o <command>cmake</command>, você não deve ter  
-ao compilá-lo. Se tiver problemas, por favor, relate-os nas listas de 
+<para>Uma vez que o &kde; usa o <command>cmake</command>, você não deve ter dificuldade 
+em compilá-lo. Caso tenha algum problema, por favor, relate-o nas listas de 
 discussão do &kde;.</para>
