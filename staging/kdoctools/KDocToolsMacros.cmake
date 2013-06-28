@@ -22,8 +22,6 @@
 #                      parallel builds (set to 'icecc' when using icecream)
 #
 
-set(EXECUTABLE_OUTPUT_PATH ${kdelibs_BINARY_DIR}/bin )
-
 if (WIN32)
     set(LIBRARY_OUTPUT_PATH               ${EXECUTABLE_OUTPUT_PATH} )
     # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
