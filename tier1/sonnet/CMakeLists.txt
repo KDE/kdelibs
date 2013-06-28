@@ -28,6 +28,8 @@ remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS DBus Widgets Test)
 
+include(FeatureSummary)
+
 ecm_write_version_header(${CMAKE_CURRENT_BINARY_DIR}/sonnet_version.h)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sonnet_version.h
@@ -36,3 +38,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sonnet_version.h
 add_subdirectory(src)
 add_subdirectory(autotests)
 add_subdirectory(tests)
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()
