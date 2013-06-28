@@ -56,6 +56,24 @@ name::~name() {}
     K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
     K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations)
 
+#define KPluginFactory_iid "org.kde.KPluginFactory"
+
+#define K_PLUGIN_HEADER(name, baseclass, jsonfile) \
+class name : public KPluginFactory \
+{ \
+    Q_OBJECT \
+    Q_PLUGIN_METADATA(IID "KPluginFactory_iid" FILE jsonfile) \
+    Q_INTERFACES(KPluginFactory) \
+\
+    public: \
+        QObject* create(QObject* parent = 0, const QVariantList& args = QVariantList()) \
+        { \
+            return new baseclass(parent, args); \
+        } \
+\
+}; \
+\
+
 /**
  * \relates KPluginFactory
  * Defines a KPluginFactory subclass with two constructors and a static componentData function.
@@ -461,5 +479,8 @@ inline T *KPluginFactory::create(QWidget *parentWidget, QObject *parent, const Q
     }
     return t;
 }
+
+
+Q_DECLARE_INTERFACE(KPluginFactory, KPluginFactory_iid)
 
 #endif // KPLUGINFACTORY_H
