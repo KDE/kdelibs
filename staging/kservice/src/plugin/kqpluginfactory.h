@@ -29,8 +29,15 @@ class KQPluginFactory
     public:
         virtual ~KQPluginFactory() {}
 
-        virtual QObject* createPlugin(const QString &name) = 0;
         virtual QObject* create(QObject* parent, const QVariantList& args) = 0;
+
+        template<class impl>
+        impl *createInstance(QObject *parent, const QVariantList &args = QVariantList())
+        {
+            return qobject_cast<impl*>(create(parent, args));
+            //return new impl(parent, args);
+        }
+
 
 };
 
@@ -46,18 +53,9 @@ class name : public QObject, public KQPluginFactory \
     Q_INTERFACES(KQPluginFactory) \
 \
     public: \
-        QObject* createPlugin(const QString &name); \
         QObject* create(QObject* parent = 0, const QVariantList& args = QVariantList()); \
 \
 }; \
-\
-inline QObject* name::createPlugin(const QString& plugin) \
-{ \
-    QVariantList args; \
-    args << plugin; \
-    QObject *time_engine = new baseclass(0, args); \
-    return time_engine; \
-} \
 \
 inline QObject* name::create(QObject* parent, const QVariantList& args) \
 { \
@@ -65,6 +63,7 @@ inline QObject* name::create(QObject* parent, const QVariantList& args) \
     QObject *time_engine = new baseclass(parent, args); \
     return time_engine; \
 } \
+\
 
 
 #endif // KQPLUGINFACTORYINTERFACE_H
