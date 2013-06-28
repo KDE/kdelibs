@@ -202,7 +202,7 @@ void WinBattery::powerChanged()
 
     m_rechargabel = info.Technology == 1;
 
-    if(m_charge =! old_charge)
+    if(m_charge != old_charge)
     {
         emit chargePercentChanged(m_charge,m_device->udi());
     }
