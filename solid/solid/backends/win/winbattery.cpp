@@ -50,9 +50,19 @@ int WinBattery::chargePercent() const
     return m_charge;
 }
 
+int WinBattery::capacity() const
+{
+    return m_capacity;
+}
+
 bool WinBattery::isRechargeable() const
 {
     return m_rechargabel;
+}
+
+bool WinBattery::isPowerSupply() const
+{
+    return m_isPowerSupply;
 }
 
 Solid::Battery::ChargeState WinBattery::chargeState() const
@@ -87,11 +97,11 @@ QSet<QString> WinBattery::getUdis()
                 DWORD cbRequired = 0;
 
                 SetupDiGetDeviceInterfaceDetailW(hdev,
-                                                &did,
-                                                0,
-                                                0,
-                                                &cbRequired,
-                                                0);
+                                                 &did,
+                                                 0,
+                                                 0,
+                                                 &cbRequired,
+                                                 0);
                 if (ERROR_INSUFFICIENT_BUFFER == GetLastError())
                 {
                     char *buffer = new char[cbRequired];
@@ -130,22 +140,38 @@ const WinBattery::Battery WinBattery::batteryInfoFromUdi(const QString &udi)
 void WinBattery::powerChanged()
 {
 
-    BATTERY_WAIT_STATUS query;
-    ZeroMemory(&query,sizeof(query));
-    Battery b =  m_udiToGDI[m_device->udi()];
-    query.BatteryTag = b.second;
-    BATTERY_STATUS status = WinDeviceManager::getDeviceInfo<BATTERY_STATUS,BATTERY_WAIT_STATUS>(b.first,IOCTL_BATTERY_QUERY_STATUS,&query);
+     const int old_charge  = m_charge;
+     const int old_capacity = m_capacity;
+     const Solid::Battery::ChargeState old_state = m_state;
+     const bool old_pluggedIn = m_pluggedIn;
+     const bool old_isPowerSupply = m_isPowerSupply;
 
-    BATTERY_QUERY_INFORMATION query2;
-    ZeroMemory(&query2,sizeof(query2));
-    query2.BatteryTag = b.second;
-    query2.InformationLevel = BatteryInformation;
-    BATTERY_INFORMATION info = WinDeviceManager::getDeviceInfo<BATTERY_INFORMATION,BATTERY_QUERY_INFORMATION>(b.first,IOCTL_BATTERY_QUERY_INFORMATION,&query2);
+    BATTERY_WAIT_STATUS batteryStatusQuery;
+    ZeroMemory(&batteryStatusQuery,sizeof(batteryStatusQuery));
+    Battery b =  m_udiToGDI[m_device->udi()];
+    batteryStatusQuery.BatteryTag = b.second;
+    BATTERY_STATUS status = WinDeviceManager::getDeviceInfo<BATTERY_STATUS,BATTERY_WAIT_STATUS>(b.first,IOCTL_BATTERY_QUERY_STATUS,&batteryStatusQuery);
+
+    BATTERY_QUERY_INFORMATION batteryInformationQuery;
+    ZeroMemory(&batteryInformationQuery,sizeof(batteryInformationQuery));
+    batteryInformationQuery.BatteryTag = b.second;
+    batteryInformationQuery.InformationLevel = BatteryInformation;
+    BATTERY_INFORMATION info = WinDeviceManager::getDeviceInfo<BATTERY_INFORMATION,BATTERY_QUERY_INFORMATION>(b.first,IOCTL_BATTERY_QUERY_INFORMATION,&batteryInformationQuery);
+
 
     m_pluggedIn = status.PowerState & BATTERY_POWER_ON_LINE;
+
+    m_isPowerSupply = true;//TODO: is there a wy to implement this
+
+
     if(info.FullChargedCapacity!=0)
     {
         m_charge = (float)status.Capacity/info.FullChargedCapacity*100.0;
+    }
+
+    if(info.DesignedCapacity != 0)
+    {
+        m_capacity = (float)info.FullChargedCapacity/info.DesignedCapacity*100.0;
     }
 
     if(status.PowerState == 0)
@@ -175,6 +201,31 @@ void WinBattery::powerChanged()
     }
 
     m_rechargabel = info.Technology == 1;
+
+    if(m_charge =! old_charge)
+    {
+        emit chargePercentChanged(m_charge,m_device->udi());
+    }
+
+    if(m_capacity != old_capacity)
+    {
+        emit capacityChanged(m_capacity,m_device->udi());
+    }
+
+    if(old_state != m_state)
+    {
+        emit chargeStateChanged(m_state,m_device->udi());
+    }
+
+    if(old_pluggedIn != m_pluggedIn)
+    {
+        emit plugStateChanged(m_pluggedIn,m_device->udi());
+    }
+
+    if(old_isPowerSupply != m_isPowerSupply)
+    {
+        emit powerSupplyStateChanged(m_isPowerSupply,m_device->udi());
+    }
 }
 
 #include "winbattery.moc"

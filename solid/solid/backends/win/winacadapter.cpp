@@ -42,15 +42,17 @@ QSet<QString> WinAcadapter::getUdis()
 
 void WinAcadapter::powerChanged()
 {
+    bool old_pluggedIn = m_pluggedIn;
     SYSTEM_POWER_STATUS status;
     ZeroMemory(&status,sizeof(SYSTEM_POWER_STATUS));
     GetSystemPowerStatus(&status);
-    if(status.ACLineStatus != m_pluggedIn)
-    {
-        emit plugStateChanged(status.ACLineStatus == 1,m_device->udi());
-    }
-    m_pluggedIn = status.ACLineStatus;
 
+    m_pluggedIn = status.ACLineStatus == 1;
+
+    if(m_pluggedIn != old_pluggedIn)
+    {
+        emit plugStateChanged(m_pluggedIn,m_device->udi());
+    }
 }
 
 #include "winacadapter.moc"

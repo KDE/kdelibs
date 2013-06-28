@@ -48,7 +48,11 @@ public:
 
     virtual int chargePercent() const;
 
+    virtual int capacity() const;
+
     virtual bool isRechargeable() const;
+
+    virtual bool isPowerSupply() const;
 
     virtual Solid::Battery::ChargeState chargeState() const;
 
@@ -58,8 +62,10 @@ public:
 
 signals:
     void chargePercentChanged(int value, const QString &udi) ;
+    void capacityChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
+    void powerSupplyStateChanged(bool newState, const QString &udi);
 
 private slots:
     void powerChanged();
@@ -70,7 +76,9 @@ private:
     bool m_pluggedIn;
     Solid::Battery::BatteryType m_type;
     int m_charge;
+    int m_capacity;
     bool m_rechargabel;
+    bool m_isPowerSupply;
     Solid::Battery::ChargeState m_state;
 };
 }
