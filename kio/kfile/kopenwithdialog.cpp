@@ -804,7 +804,8 @@ bool KOpenWithDialogPrivate::checkAccept()
     QString serviceName;
     QString initialServiceName;
     QString preferredTerminal;
-    QString binaryName;
+    QString configPath;
+    QString serviceExec;
     m_pService = curService;
     if (!m_pService) {
         // No service selected - check the command line
@@ -818,8 +819,7 @@ bool KOpenWithDialogPrivate::checkAccept()
         initialServiceName = serviceName;
         // Also remember the binaryName with a path, if any, for the
         // check that the binary exists.
-        binaryName = KRun::binaryName(typedExec, false);
-        kDebug(250) << "initialServiceName=" << initialServiceName << "binaryName=" << binaryName;
+        kDebug(250) << "initialServiceName=" << initialServiceName;
         int i = 1; // We have app, app-2, app-3... Looks better for the user.
         bool ok = false;
         // Check if there's already a service by that name, with the same Exec line
@@ -833,12 +833,15 @@ bool KOpenWithDialogPrivate::checkAccept()
                     /*kDebug(250) << "typedExec=" << typedExec
                       << "serv->exec=" << serv->exec()
                       << "simplifiedExecLineFromService=" << simplifiedExecLineFromService(fullExec);*/
-                    if (typedExec == simplifiedExecLineFromService(serv->exec())) {
+                    serviceExec = simplifiedExecLineFromService(serv->exec());
+                    if (typedExec == serviceExec){
                         ok = true;
                         m_pService = serv;
                         kDebug(250) << "OK, found identical service: " << serv->entryPath();
                     } else {
-                        kDebug(250) << "Exec line differs, service says:" << simplifiedExecLineFromService(fullExec);
+                        kDebug(250) << "Exec line differs, service says:" << serviceExec;
+                        configPath = serv->entryPath();
+                        serviceExec = serv->exec();
                     }
                 } else {
                     kDebug(250) << "Found, but not an application:" << serv->entryPath();
@@ -856,6 +859,8 @@ bool KOpenWithDialogPrivate::checkAccept()
         initialServiceName = serviceName;
         fullExec = m_pService->exec();
     } else {
+        const QString binaryName = KRun::binaryName(typedExec, false);
+        kDebug(250) << "binaryName=" << binaryName;
         // Ensure that the typed binary name actually exists (#81190)
         if (KStandardDirs::findExe(binaryName).isEmpty()) {
             KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", binaryName));
@@ -890,7 +895,24 @@ bool KOpenWithDialogPrivate::checkAccept()
         const bool createDesktopFile = bRemember || saveNewApps;
         if (!createDesktopFile) {
             // Create temp service
-            m_pService = new KService(initialServiceName, fullExec, QString());
+            if (configPath.isEmpty())
+                m_pService = new KService(initialServiceName, fullExec, QString());
+            else {
+                if (!typedExec.contains(QLatin1String("%u"), Qt::CaseInsensitive) &&
+                    !typedExec.contains(QLatin1String("%f"), Qt::CaseInsensitive)) {
+                    int index = serviceExec.indexOf(QLatin1String("%u"), 0, Qt::CaseInsensitive);
+                    if (index == -1) {
+                      index = serviceExec.indexOf(QLatin1String("%f"), 0, Qt::CaseInsensitive);
+                    }
+                    if (index > -1) {
+                      fullExec += QLatin1Char(' ');
+                      fullExec += serviceExec.mid(index, 2);
+                    }
+                }
+                kDebug(250) << "Creating service with Exec=" << fullExec;
+                m_pService = new KService(configPath);
+                m_pService->setExec(fullExec);
+            }
             if (terminal->isChecked()) {
                 m_pService->setTerminal(true);
                 // only add --noclose when we are sure it is konsole we're using

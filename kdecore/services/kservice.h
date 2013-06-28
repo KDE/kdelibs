@@ -426,6 +426,20 @@ public:
     void setTerminalOptions(const QString &options);
 
     /**
+     * Overrides the "Exec=" line of the service.
+     *
+     * If @ref exec is not empty, its value will override the one
+     * the one set when this service was created.
+     *
+     * Please note that @ref entryPath is also cleared so the service
+     * will no longer be associated with a specific config file.
+     *
+     * @internal
+     * @since 4.11
+     */
+    void setExec(const QString& exec);
+
+    /**
      * Find a service by name, i.e. the translated Name field. Don't use this.
      * Use serviceByDesktopPath or serviceByStorageId instead.
      *
