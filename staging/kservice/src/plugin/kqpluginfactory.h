@@ -23,6 +23,7 @@
 #define KQPLUGINFACTORY_H
 
 #include <QObject>
+#include <QVariantList>
 
 class KQPluginFactory
 {
@@ -35,10 +36,7 @@ class KQPluginFactory
         impl *createInstance(QObject *parent, const QVariantList &args = QVariantList())
         {
             return qobject_cast<impl*>(create(parent, args));
-            //return new impl(parent, args);
         }
-
-
 };
 
 #define KQPluginFactory_iid "org.kde.KQPluginFactory"
@@ -53,16 +51,12 @@ class name : public QObject, public KQPluginFactory \
     Q_INTERFACES(KQPluginFactory) \
 \
     public: \
-        QObject* create(QObject* parent = 0, const QVariantList& args = QVariantList()); \
+        QObject* create(QObject* parent = 0, const QVariantList& args = QVariantList()) \
+        { \
+            return new baseclass(parent, args); \
+        } \
 \
 }; \
-\
-inline QObject* name::create(QObject* parent, const QVariantList& args) \
-{ \
-    qDebug() << "name::create" << args; \
-    QObject *time_engine = new baseclass(parent, args); \
-    return time_engine; \
-} \
 \
 
 
