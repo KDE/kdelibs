@@ -33,7 +33,7 @@ namespace Backends
 namespace Win
 {
 class WinBattery : public WinInterface, virtual public Solid::Ifaces::Battery
-{    
+{
     Q_OBJECT
     Q_INTERFACES(Solid::Ifaces::Battery)
 
