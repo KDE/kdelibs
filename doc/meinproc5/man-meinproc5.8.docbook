@@ -40,12 +40,12 @@ Also, based on the information from http://olympus.het.brown.edu/cgi-bin/man/man
 </refentryinfo>
 
 <refmeta>
-<refentrytitle><command>meinproc4</command></refentrytitle>
+<refentrytitle><command>meinproc5</command></refentrytitle>
 <manvolnum>8</manvolnum>
 </refmeta>
 
 <refnamediv>
-<refname><command>meinproc4</command></refname>
+<refname><command>meinproc5</command></refname>
 <refpurpose>&kde; translator for XML</refpurpose>
 </refnamediv>
 
@@ -53,7 +53,7 @@ Also, based on the information from http://olympus.het.brown.edu/cgi-bin/man/man
 <title>Synopsis</title>
 
 <cmdsynopsis>
-<command>meinproc4</command>
+<command>meinproc5</command>
 
 <arg choice="opt">--help</arg>
 <arg choice="opt">Generic-options</arg>
@@ -81,7 +81,7 @@ Also, based on the information from http://olympus.het.brown.edu/cgi-bin/man/man
 <refsect1>
 <title>Description</title>
 
-<para><command>meinproc4</command> converts DocBook files to HTML.
+<para><command>meinproc5</command> converts DocBook files to HTML.
 </para>
 </refsect1>
 
@@ -177,7 +177,7 @@ Create a cache file for the document
 <listitem>
 <para>Check the document for validity</para>
 <screen>The output can be a bit daunting, since one small mistake can cause a cascade of errors. 
-The trick is to look at the first error, fix that error, save the file, and run <command>meinproc4</command> again.
+The trick is to look at the first error, fix that error, save the file, and run <command>meinproc5</command> again.
 </screen>
 </listitem>
 </varlistentry>
@@ -241,9 +241,9 @@ Set parameters to pass to the stylesheet.
 <refsect1>
 <title>Usage</title>
 <para>
-The most common way to run <command>meinproc4</command> is simply as
+The most common way to run <command>meinproc5</command> is simply as
 <literallayout>
-<userinput><command>meinproc4</command> <replaceable>docbook-file</replaceable>
+<userinput><command>meinproc5</command> <replaceable>docbook-file</replaceable>
 </userinput>
 </literallayout>
 where <replaceable>docbook-file</replaceable> is usually index.docbook. 
@@ -253,7 +253,7 @@ Note that these pages are only viewable in KDE-based browsers (like Konqueror).
 <para>
 If you need to view the HTML output in another browser (for example, if you're placing it on line), use
 <literallayout>
-<userinput><command>meinproc4</command> --stylesheet <replaceable>stylesheet-name</replaceable> <replaceable>docbook-file</replaceable>
+<userinput><command>meinproc5</command> --stylesheet <replaceable>stylesheet-name</replaceable> <replaceable>docbook-file</replaceable>
 </userinput>
 </literallayout>
 where <replaceable>stylesheet-name</replaceable> is the full path to one of the XSL 

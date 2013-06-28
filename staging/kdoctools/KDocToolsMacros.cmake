@@ -5,18 +5,18 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 #  KDOCTOOLS_CREATE_HANDBOOK( docbookfile [INSTALL_DESTINATION installdest] [SUBDIR subdir])
-#   Create the handbook from the docbookfile (using meinproc4)
+#   Create the handbook from the docbookfile (using meinproc5)
 #   The resulting handbook will be installed to <installdest> when using
 #   INSTALL_DESTINATION <installdest>, or to <installdest>/<subdir> if
 #   SUBDIR <subdir> is specified.
 #
 #  KDOCTOOLS_CREATE_MANPAGE( docbookfile section )
-#   Create the manpage for the specified section from the docbookfile (using meinproc4)
+#   Create the manpage for the specified section from the docbookfile (using meinproc5)
 #   The resulting manpage will be installed to <installdest> when using
 #   INSTALL_DESTINATION <installdest>, or to <installdest>/<subdir> if
 #   SUBDIR <subdir> is specified.
 #
-#  KDOCTOOLS_MEINPROC_EXECUTABLE - the meinproc4 executable
+#  KDOCTOOLS_MEINPROC_EXECUTABLE - the meinproc5 executable
 #
 #  KDE4_SERIALIZE_TOOL - wrapper to serialize potentially resource-intensive commands during
 #                      parallel builds (set to 'icecc' when using icecream)
@@ -25,17 +25,17 @@
 if (WIN32)
     # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
     if (NOT WINCE)
-        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
+        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc5 )
     else (NOT WINCE)
-        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc4 )
+        set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${HOST_BINDIR}/${CMAKE_CFG_INTDIR}/meinproc5 )
     endif(NOT WINCE)
 
-    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc5 )
 else (WIN32)
-    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../staging/kdoctools/src/meinproc4${CMAKE_EXECUTABLE_SUFFIX}.shell )
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../staging/kdoctools/src/meinproc5${CMAKE_EXECUTABLE_SUFFIX}.shell )
 endif (WIN32)
 
-set( _KDOCTOOLS_MEINPROC_EXECUTABLE_DEP meinproc4)
+set( _KDOCTOOLS_MEINPROC_EXECUTABLE_DEP meinproc5)
 
 if(KDE4_SERIALIZE_TOOL)
     # parallel build with many meinproc invocations can consume a huge amount of memory
@@ -58,9 +58,9 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
    file(GLOB _docs *.docbook)
 
 #   if (CMAKE_CROSSCOMPILING)
-#      set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
+#      set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc5 from a native build")
 #      include(${IMPORT_MEINPROC4_EXECUTABLE})
-#      set(KDOCTOOLS_MEINPROC_EXECUTABLE meinproc4)
+#      set(KDOCTOOLS_MEINPROC_EXECUTABLE meinproc5)
 #   endif (CMAKE_CROSSCOMPILING)
 
    add_custom_command(OUTPUT ${_doc}
@@ -135,9 +135,9 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
    endif (_kdeBootStrapping)
 
 #   if (CMAKE_CROSSCOMPILING)
-#      set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
+#      set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc5 from a native build")
 #      include(${IMPORT_MEINPROC4_EXECUTABLE})
-#      set(KDOCTOOLS_MEINPROC_EXECUTABLE meinproc4)
+#      set(KDOCTOOLS_MEINPROC_EXECUTABLE meinproc5)
 #   endif (CMAKE_CROSSCOMPILING)
 
    add_custom_command(OUTPUT ${_outdoc}
