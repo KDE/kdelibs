@@ -77,6 +77,7 @@ void KConfigToJson::runMain()
         exit(0);
 
     } else {
+        // Let the event loop run once more to show help
         QTimer::singleShot(50, this, SLOT(quit()));
     }
 }
@@ -84,11 +85,13 @@ void KConfigToJson::runMain()
 bool KConfigToJson::resolveFiles()
 {
     if (d->parser->isSet("input")) {
-        QFile _in(d->parser->argument("input"));
-        if (_in.exists()) {
-            d->inFile = QDir::currentPath() + '/' + _in.fileName();
+        d->inFile = d->parser->argument("input");
+        if (QFile::exists(d->inFile)) {
+            if (!d->inFile.startsWith('/')) {
+                d->inFile = QDir::currentPath() + '/' + d->inFile;
+            }
         } else {
-            coutput("File not found: " + _in.fileName());
+            coutput("File not found: " + d->inFile);
             return false;
         }
     }
