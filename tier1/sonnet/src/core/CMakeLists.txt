@@ -24,11 +24,11 @@ generate_export_header(sonnetcore)
 
 target_link_libraries(sonnetcore LINK_PUBLIC Qt5::Core)
 
-set_target_properties(sonnetcore PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                          SOVERSION ${ECM_SOVERSION}
+set_target_properties(sonnetcore PROPERTIES VERSION ${SONNET_VERSION_STRING}
+                                          SOVERSION ${SONNET_SOVERSION}
 )
 
-install(TARGETS sonnetcore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS sonnetcore EXPORT SonnetTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 install( FILES ${sonnetcore_HEADERS}

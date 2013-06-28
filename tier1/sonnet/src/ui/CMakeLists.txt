@@ -40,11 +40,11 @@ generate_export_header(sonnetui)
 
 target_link_libraries(sonnetui Qt5::Widgets sonnetcore)
 
-set_target_properties(sonnetui PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                          SOVERSION ${ECM_SOVERSION}
+set_target_properties(sonnetui PROPERTIES VERSION ${SONNET_VERSION_STRING}
+                                          SOVERSION ${SONNET_SOVERSION}
 )
 
-install(TARGETS sonnetui EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS sonnetui EXPORT SonnetTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES ${sonnetui_HDRS} ${CMAKE_CURRENT_BINARY_DIR}/sonnetui_export.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
