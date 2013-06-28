@@ -74,7 +74,7 @@ void PluginTest::loadKQPlugin()
     if (factory) {
         qDebug() << "loaded successfully and cast";
         qDebug() << "metadata: " << loader.metaData();
-        QObject *o = factory->createPlugin("Peter");
+        QObject *o = factory->createInstance<QObject>(this, QVariantList() << "Peter");
         qDebug() << " objec name:" << o->objectName();
 
     } else {
