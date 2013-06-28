@@ -23,7 +23,6 @@
 #
 
 if (WIN32)
-    set(LIBRARY_OUTPUT_PATH               ${EXECUTABLE_OUTPUT_PATH} )
     # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
     if (NOT WINCE)
         set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
