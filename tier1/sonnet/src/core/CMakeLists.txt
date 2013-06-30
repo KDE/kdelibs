@@ -19,16 +19,16 @@ set(sonnetcore_HEADERS
 )
 
 
-add_library(sonnetcore ${sonnetcore_SRCS})
-generate_export_header(sonnetcore)
+add_library(SonnetCore ${sonnetcore_SRCS})
+generate_export_header(SonnetCore)
 
-target_link_libraries(sonnetcore LINK_PUBLIC Qt5::Core)
+target_link_libraries(SonnetCore LINK_PUBLIC Qt5::Core)
 
-set_target_properties(sonnetcore PROPERTIES VERSION ${SONNET_VERSION_STRING}
+set_target_properties(SonnetCore PROPERTIES VERSION ${SONNET_VERSION_STRING}
                                           SOVERSION ${SONNET_SOVERSION}
 )
 
-install(TARGETS sonnetcore EXPORT SonnetTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS SonnetCore EXPORT SonnetTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 
 install( FILES ${sonnetcore_HEADERS}

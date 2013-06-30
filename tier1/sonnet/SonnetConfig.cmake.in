@@ -5,7 +5,7 @@ set_and_check(Sonnet_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 
 include("${CMAKE_CURRENT_LIST_DIR}/SonnetTargets.cmake")
 
-set(Sonnet_SonnetCore_LIBRARY KF5::sonnetcore)
-set(Sonnet_SonnetUi_LIBRARY KF5::sonnetui)
+set(Sonnet_SonnetCore_LIBRARY KF5::SonnetCore)
+set(Sonnet_SonnetUi_LIBRARY KF5::SonnetUi)
 set(Sonnet_LIBRARIES ${Sonnet_SonnetUi_LIBRARY} ${Sonnet_SonnetCore_LIBRARY} )
 set(Sonnet_INCLUDE_DIRS ${Sonnet_INCLUDE_DIR} )

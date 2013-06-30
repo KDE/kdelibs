@@ -81,8 +81,8 @@ set(KPlotting_LIBRARIES KPlotting)
 
 set(Solid_LIBRARIES Solid)
 
-set(Sonnet_SonnetCore_LIBRARY sonnetcore)
-set(Sonnet_SonnetUi_LIBRARY sonnetui)
+set(Sonnet_SonnetCore_LIBRARY SonnetCore)
+set(Sonnet_SonnetUi_LIBRARY SonnetUi)
 set(Sonnet_LIBRARIES ${Sonnet_SonnetUi_LIBRARY} ${Sonnet_SonnetCore_LIBRARY} )
 
 
