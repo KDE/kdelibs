@@ -21,6 +21,11 @@
 #  KDE4_SERIALIZE_TOOL - wrapper to serialize potentially resource-intensive commands during
 #                      parallel builds (set to 'icecc' when using icecream)
 #
+# The following variables are defined for the various tools required to
+# compile KDE software:
+#
+#  KDE4_MEINPROC_EXECUTABLE - the meinproc5 executable
+#
 
 if (WIN32)
     # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC

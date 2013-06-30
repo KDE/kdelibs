@@ -38,7 +38,6 @@
 # The following variables are defined for the various tools required to
 # compile KDE software:
 #
-#  KDE4_MEINPROC_EXECUTABLE - the meinproc5 executable
 #  KDE4_MAKEKDEWIDGETS_EXECUTABLE - the makekdewidgets executable
 #
 # The following variables point to the location of the KDE libraries,
@@ -169,8 +168,6 @@
 #  KDE4_USE_COMMON_CMAKE_PACKAGE_CONFIG_DIR - only present for CMake >= 2.6.3, defaults to TRUE
 #                      If enabled, the package should install its <package>Config.cmake file to
 #                      lib/cmake/<package>/ instead to lib/<package>/cmake
-#  KDE4_SERIALIZE_TOOL - wrapper to serialize potentially resource-intensive commands during
-#                      parallel builds (set to 'icecc' when using icecream)
 #
 # It also adds the following macros and functions (from KDE4Macros.cmake)
 #  KDE4_ADD_UI_FILES (SRCS_VAR file1.ui ... fileN.ui)
@@ -569,12 +566,6 @@ endif (WIN32)
 
 #####################  some more settings   ##########################################
 
-if(KDE4_SERIALIZE_TOOL)
-   # parallel build with many meinproc invocations can consume a huge amount of memory
-   set(KDE4_MEINPROC_EXECUTABLE ${KDE4_SERIALIZE_TOOL} ${KDE4_MEINPROC_EXECUTABLE})
-endif(KDE4_SERIALIZE_TOOL)
-
-# If we are building ! kdelibs, check where kdelibs are installed.
 # If they are installed in a directory which contains "lib64", we default to "64" for LIB_SUFFIX,
 # so the current project will by default also go into lib64.
 # The same for lib32. Alex
