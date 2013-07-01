@@ -275,7 +275,7 @@ void KSwitchLanguageDialog::slotOk()
     {
         QString languageString = languages.join(":");
         //list is different from defaults or saved languages list
-        setApplicationSpecificLanguage(languageString.toAscii());
+        setApplicationSpecificLanguage(languageString.toLatin1());
 
         KMessageBox::information(
             this,
@@ -295,7 +295,7 @@ void KSwitchLanguageDialog::slotDefault()
     setApplicationSpecificLanguage(QByteArray());
 
     // read back the new default
-    QString language = QString::fromAscii(getApplicationSpecificLanguage("en_US"));
+    QString language = QString::fromLatin1(getApplicationSpecificLanguage("en_US"));
 
     if (defaultLanguages != (QStringList() << language)) {
 
@@ -339,7 +339,7 @@ QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
 
     QByteArray languageCode = getApplicationSpecificLanguage();
     if (!languageCode.isEmpty()) {
-        languagesList = QString::fromAscii(languageCode).split(':');
+        languagesList = QString::fromLatin1(languageCode).split(':');
     }
     if (languagesList.isEmpty())
     {
