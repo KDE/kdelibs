@@ -121,7 +121,7 @@ bool UDevManager::Private::isLidBubtton(const UdevQt::Device& device)
     int nbits = input_str_to_bitmask(device.deviceProperty("SW").toByteArray(), bitmask, sizeof(bitmask));
     if (nbits == 1) {
         if (test_bit (SW_LID, bitmask)) {
-            qDebug() << "Lid button detected";
+//             qDebug() << "Lid button detected";
             return true;
         }
     }
@@ -135,7 +135,7 @@ bool UDevManager::Private::isPowerBubtton(const UdevQt::Device& device)
     int nbits = input_str_to_bitmask(device.deviceProperty("KEY").toByteArray(), bitmask, sizeof(bitmask));
     if (nbits == 1) {
         if (test_bit (KEY_POWER, bitmask)) {
-            qDebug() << "Power button detected";
+//             qDebug() << "Power button detected";
             return true;
         }
     }
