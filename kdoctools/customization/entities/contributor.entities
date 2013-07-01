@@ -87,6 +87,8 @@
 <!ENTITY Robert.Cimrman.mail '<email>cimrman3@students.zcu.cz</email>'>
 <!ENTITY John.Cirillo '<personname><firstname>John</firstname><surname>Cirillo</surname></personname>'>
 <!ENTITY John.Cirillo.mail '<email><!-- FIXME --></email>'>
+<!ENTITY Scarlett.Clark '<personname><firstname>Scarlett</firstname><surname>Clark</surname></personname>'>
+<!ENTITY Scarlett.Clark.mail '<email>scarlett@scarlettgatelyclark.com</email>'>
 <!ENTITY Raphael.Kubo.da.Costa '<personname><firstname>Raphael</firstname><othername>Kubo da</othername><surname>Costa</surname></personname>'>
 <!ENTITY Raphael.Kubo.da.Costa.mail '<email>kubito@gmail.com</email>'>
 <!ENTITY Claudiu.Costin '<personname><firstname>Claudiu</firstname><surname>Costin</surname></personname>'>
@@ -316,6 +318,8 @@
 <!ENTITY Daniel.Molkentin.mail '<email>molkentin@kde.org</email>'>
 <!ENTITY Mehrdad.Momeny '<personname><firstname>Mehrdad</firstname><surname>Momeny</surname></personname>'>
 <!ENTITY Mehrdad.Momeny.mail '<email>mehrdad.momeny@gmail.com</email>'>
+<!ENTITY Laurent.Montel '<personname><firstname>Laurent</firstname><surname>Montel</surname></personname>'>
+<!ENTITY Laurent.Montel.mail '<email>montel@kde.org</email>'>
 <!ENTITY Richard.J.Moore '<personname><firstname>Richard</firstname><othername>J.</othername><surname>Moore</surname></personname>'>
 <!ENTITY Richard.J.Moore.mail '<email>rich@kde.org</email>'>
 <!ENTITY Dirk.Mueller.mail '<email>mueller@kde.org</email>'>
