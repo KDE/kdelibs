@@ -66,11 +66,21 @@ class name : public KPluginFactory \
     Q_INTERFACES(KPluginFactory) \
 \
     public: \
+        explicit name(const char * = 0, const char * = 0, QObject * = 0) \
+        { \
+            init(); \
+        } \
+\
         virtual QObject *create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword) \
         { \
             return new baseclass(parent, args); \
         } \
 \
+    private: \
+        void init() \
+        { \
+            registerPlugin<baseclass>(); \
+        } \
 }; \
 \
 
