@@ -186,17 +186,13 @@ class KLineEditStyle : public QProxyStyle
 {
     Q_OBJECT
 public:
-  KLineEditStyle(KLineEdit *parent)
+  KLineEditStyle(QStyle *style)
     : QProxyStyle(),
       m_overlap(0),
       m_sentinel(false)
   {
-      if(parent && parent->parentWidget()) {
-          QProxyStyle::setBaseStyle(parent->parentWidget()->style());
-      }
   }
 
-  QStyle *style() const;
   QRect subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const;
 
   int m_overlap;
