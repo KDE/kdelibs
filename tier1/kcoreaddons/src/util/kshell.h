@@ -21,7 +21,7 @@
 #ifndef KSHELL_H
 #define KSHELL_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 #include <qglobal.h>
 
 class QStringList;
@@ -143,7 +143,7 @@ namespace KShell {
      *  target, see \ref Errors
      * @return a list of unquoted words or an empty list if an error occurred
      */
-    KDECORE_EXPORT QStringList splitArgs( const QString &cmd, Options flags = NoOptions, Errors *err = 0 );
+    KCOREADDONS_EXPORT QStringList splitArgs( const QString &cmd, Options flags = NoOptions, Errors *err = 0 );
 
     /**
      * Quotes and joins @p args together according to system shell rules.
@@ -156,7 +156,7 @@ namespace KShell {
      * @param args a list of strings to quote and join
      * @return a command suitable for shell execution
      */
-    KDECORE_EXPORT QString joinArgs( const QStringList &args );
+    KCOREADDONS_EXPORT QString joinArgs( const QStringList &args );
 
     /**
      * Quotes @p arg according to system shell rules.
@@ -176,7 +176,7 @@ namespace KShell {
      * @param arg the argument to quote
      * @return the quoted argument
      */
-    KDECORE_EXPORT QString quoteArg( const QString &arg );
+    KCOREADDONS_EXPORT QString quoteArg( const QString &arg );
 
     /**
      * Performs tilde expansion on @p path. Interprets "~/path" and
@@ -190,7 +190,7 @@ namespace KShell {
      * @param path the path to tilde-expand
      * @return the expanded path
      */
-    KDECORE_EXPORT QString tildeExpand( const QString &path );
+    KCOREADDONS_EXPORT QString tildeExpand( const QString &path );
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KShell::Options)

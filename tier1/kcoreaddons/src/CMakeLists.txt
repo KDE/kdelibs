@@ -29,6 +29,7 @@ if (WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
         ${kcoreaddons_OPTIONAL_SRCS}
         text/kmacroexpander_win.cpp
+        util/kshell_win.cpp
     )
     if(NOT WINCE)
         LIST(APPEND kcoreaddons_OPTIONAL_SRCS
@@ -46,6 +47,7 @@ if (UNIX)
         ${kcoreaddons_OPTIONAL_SRCS}
         text/kmacroexpander_unix.cpp
         util/kuser_unix.cpp
+        util/kshell_unix.cpp
     )
 endif ()
 
@@ -64,6 +66,7 @@ set(libkcoreaddons_SRCS
     randomness/krandomsequence.cpp
     text/kmacroexpander.cpp
     text/kstringhandler.cpp
+    util/kshell.cpp
     ${kcoreaddons_OPTIONAL_SRCS}
 )
 
@@ -115,6 +118,7 @@ install(FILES
     text/kmacroexpander.h
     text/kstringhandler.h
     util/kuser.h
+    util/kshell.h
     ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
