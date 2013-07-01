@@ -200,7 +200,6 @@ public:
     m_statusBarWalletLabel = 0L;
     m_statusBarUALabel = 0L;
     m_statusBarJSErrorLabel = 0L;
-    m_userStyleSheetLastModified = 0;
 #ifndef KHTML_NO_WALLET
     m_wq = 0;
 #endif
@@ -413,7 +412,7 @@ public:
 
   void setFlagRecursively(bool KHTMLPartPrivate::*flag, bool value);
 
-  time_t m_userStyleSheetLastModified;
+  QDateTime m_userStyleSheetLastModified;
 
   QSet<QString> m_lookedupHosts;
   static bool s_dnsInitialised;
