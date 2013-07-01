@@ -30,9 +30,6 @@
 #include <ksharedconfig.h> // for source compat
 #include <kexportplugin.h>
 
-#include <iostream>
-using namespace std;
-
 class KPluginFactoryPrivate;
 namespace KParts { class Part; }
 
@@ -311,7 +308,6 @@ public:
 #ifndef KDE_NO_DEPRECATED
     KSERVICE_DEPRECATED QObject *create(QObject *parent = 0, const char *classname = "QObject", const QStringList &args = QStringList())
     {
-        cout << " kpf deprecated create" << endl;
         return create(classname, 0, parent, stringListToVariantList(args), QString());
     }
 #endif
@@ -421,14 +417,12 @@ protected:
             p = qobject_cast<ParentType *>(parent);
             Q_ASSERT(p);
         }
-        cout << " KPluginFactory::createInstance :" << endl;
         return new impl(p, args);
     }
 
     template<class impl>
     static QObject *createPartInstance(QWidget *parentWidget, QObject *parent, const QVariantList &args)
     {
-        cout << " KPluginFactory::createPartInstance :" << endl;
         return new impl(parentWidget, parent, args);
     }
 
@@ -482,11 +476,6 @@ inline T *KPluginFactory::create(QWidget *parentWidget, QObject *parent, const Q
     T *t = qobject_cast<T *>(o);
     if (!t) {
         delete o;
-    }
-    if (!o) {
-        cout << " kpf o is invalid, som is:" << o->staticMetaObject.className() << endl;
-    } else {
-        cout << " kpf o is VALID :) som is:" << o->staticMetaObject.className() << endl;
     }
     return t;
 }
