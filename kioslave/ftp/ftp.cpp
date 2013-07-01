@@ -33,14 +33,6 @@
 #define  KIO_FTP_PRIVATE_INCLUDE
 #include "ftp.h"
 
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-
-#if TIME_WITH_SYS_TIME
-#include <ctime>
-#endif
-
 #include <cctype>
 #include <cerrno>
 #include <cstdlib>
@@ -1296,7 +1288,7 @@ void Ftp::ftpCreateUDSEntry( const QString & filename, const FtpEntry& ftpEnt, U
 
   entry.insert( KIO::UDSEntry::UDS_NAME, filename );
   entry.insert( KIO::UDSEntry::UDS_SIZE, ftpEnt.size );
-  entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, ftpEnt.date );
+  entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, ftpEnt.date.toTime_t());
   entry.insert( KIO::UDSEntry::UDS_ACCESS, ftpEnt.access );
   entry.insert( KIO::UDSEntry::UDS_USER, ftpEnt.owner );
   if ( !ftpEnt.group.isEmpty() )
@@ -1778,18 +1770,20 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       // Examples : "Oct  6 22:49", "May 13  1999"
 
       // First get current time - we need the current month and year
-      time_t currentTime = time( 0L );
-      struct tm * tmptr = gmtime( &currentTime );
-      int currentMonth = tmptr->tm_mon;
+      QDateTime currentTime(QDateTime::currentDateTime());
+      int currentMonth = currentTime.date().month();
       //kDebug(7102) << "Current time :" << asctime( tmptr );
       // Reset time fields
-      tmptr->tm_isdst = -1; // We do not anything about day saving time
-      tmptr->tm_sec = 0;
-      tmptr->tm_min = 0;
-      tmptr->tm_hour = 0;
+      currentTime.setTime(QTime(0, 0, 0));
       // Get day number (always second field)
-      if (p_date_2)
-        tmptr->tm_mday = atoi( p_date_2 );
+      int day = 0;
+      int month = 0;
+      int year = 0;
+      int minute = 0;
+      int hour = 0;
+      if (p_date_2) {
+        day = atoi(p_date_2);
+      }
       // Get month from first field
       // NOTE : no, we don't want to use KLocale here
       // It seems all FTP servers use the English way
@@ -1797,41 +1791,39 @@ bool Ftp::ftpReadDir(FtpEntry& de)
       static const char * const s_months[12] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
                                                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
       for ( int c = 0 ; c < 12 ; c ++ )
-        if ( !qstrcmp( p_date_1, s_months[c]) )
-        {
+        if (!qstrcmp(p_date_1, s_months[c])) {
           //kDebug(7102) << "Found month " << c << " for " << p_date_1;
-          tmptr->tm_mon = c;
+          month = c + 1;
           break;
         }
 
       // Parse third field
-      if ( qstrlen( p_date_3 ) == 4 ) // 4 digits, looks like a year
-        tmptr->tm_year = atoi( p_date_3 ) - 1900;
-      else
-      {
+      if (qstrlen(p_date_3) == 4) { // 4 digits, looks like a year
+        year = atoi(p_date_3) - 1900;
+      } else {
         // otherwise, the year is implicit
         // according to man ls, this happens when it is between than 6 months
         // old and 1 hour in the future.
         // So the year is : current year if tm_mon <= currentMonth+1
         // otherwise current year minus one
         // (The +1 is a security for the "+1 hour" at the end of the month issue)
-        if ( tmptr->tm_mon > currentMonth + 1 )
-          tmptr->tm_year--;
+        if (month > currentMonth + 1) {
+          year--;
+        }
 
         // and p_date_3 contains probably a time
         char * semicolon;
-        if ( p_date_3 && ( semicolon = (char*)strchr( p_date_3, ':' ) ) )
-        {
+        if (p_date_3 && (semicolon = (char*)strchr(p_date_3, ':'))) {
           *semicolon = '\0';
-          tmptr->tm_min = atoi( semicolon + 1 );
-          tmptr->tm_hour = atoi( p_date_3 );
-        }
-        else
+          minute = atoi(semicolon + 1);
+          hour = atoi(p_date_3);
+        } else {
           kWarning(7102) << "Can't parse third field " << p_date_3;
+        }
       }
 
       //kDebug(7102) << asctime( tmptr );
-      de.date = mktime( tmptr );
+      de.date = QDateTime(QDate(year, month, day), QTime(hour, minute));
       return true;
     }
   } // line invalid, loop to get another line

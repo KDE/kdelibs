@@ -24,6 +24,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#include <QtCore/QDateTime>
+
 #include <kio/slavebase.h>
 
 class QTcpServer;
@@ -41,7 +43,7 @@ struct FtpEntry
   KIO::filesize_t size;
   mode_t type;
   mode_t access;
-  time_t date;
+  QDateTime date;
 };
 
 //===============================================================================
