@@ -82,11 +82,9 @@ if (WIN32)
    )
    if(NOT WINCE)
        LIST(APPEND kdecore_OPTIONAL_SRCS
-          util/kuser_win.cpp
        )
    else(NOT WINCE)
        LIST(APPEND kdecore_OPTIONAL_SRCS
-          util/kuser_wince.cpp
        )
    endif(NOT WINCE)
 endif (WIN32)
@@ -97,7 +95,6 @@ if (UNIX)
       kernel/ktoolinvocation_x11.cpp
       localization/klocale_unix.cpp
       util/kshell_unix.cpp
-      util/kuser_unix.cpp
    )
 endif (UNIX)
 
@@ -275,7 +272,6 @@ install(FILES
    util/kdedmodule.h
    util/klauncher_iface.h
    util/kshell.h
-   util/kuser.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

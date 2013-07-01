@@ -22,7 +22,7 @@
 #ifndef KUSER_H
 #define KUSER_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 #include <QSharedDataPointer>
 #include <QtCore/QVariant>
@@ -56,7 +56,7 @@ struct group;
  *
  * @author Tim Jansen <tim@tjansen.de>
  */
-class KDECORE_EXPORT KUser {
+class KCOREADDONS_EXPORT KUser {
 
 public:
 
@@ -177,7 +177,7 @@ public:
    * @deprecated use property(KUser::FullName) instead
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED QString fullName() const;
+  KCOREADDONS_DEPRECATED QString fullName() const;
 #endif
 
   /**
@@ -259,7 +259,7 @@ private:
  *
  * @author Jan Schaefer <j_schaef@informatik.uni-kl.de>
  */
-class KDECORE_EXPORT KUserGroup {
+class KCOREADDONS_EXPORT KUserGroup {
 
 public:
 
