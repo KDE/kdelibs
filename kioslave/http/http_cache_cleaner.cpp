@@ -26,7 +26,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 // KDE HTTP Cache cleanup tool
 
 #include <cstring>
-#include <time.h>
 #include <stdlib.h>
 #include <zlib.h>
 
@@ -49,7 +48,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
 
-time_t g_currentDate;
+QDateTime g_currentDate;
 int g_maxCacheAge;
 qint64 g_maxCacheSize;
 
@@ -85,25 +84,18 @@ struct SerializedCacheFileInfo {
     QStringList responseHeaders; // including status response like "HTTP 200 OK"
 };
 
-static QString dateString(qint64 date)
-{
-    QDateTime dt;
-    dt.setTime_t(date);
-    return dt.toString(Qt::ISODate);
-}
-
 struct MiniCacheFileInfo {
 // data from cache entry file, or from scoreboard file
     qint32 useCount;
 // from filesystem
-    qint64 lastUsedDate;
+    QDateTime lastUsedDate;
     qint64 sizeOnDisk;
     // we want to delete the least "useful" files and we'll have to sort a list for that...
     bool operator<(const MiniCacheFileInfo &other) const;
     void debugPrint() const
     {
         kDebug(7113) << "useCount:" << useCount
-                     << "\nlastUsedDate:" << lastUsedDate
+                     << "\nlastUsedDate:" << lastUsedDate.toString(Qt::ISODate)
                      << "\nsizeOnDisk:" << sizeOnDisk << '\n';
     }
 };
@@ -114,9 +106,9 @@ struct CacheFileInfo : MiniCacheFileInfo {
     quint8 reserved;    // for now; also alignment
 
 
-    qint64 servedDate;
-    qint64 lastModifiedDate;
-    qint64 expireDate;
+    QDateTime servedDate;
+    QDateTime lastModifiedDate;
+    QDateTime expireDate;
     qint32 bytesCached;
 
     QString baseName;
@@ -130,9 +122,9 @@ struct CacheFileInfo : MiniCacheFileInfo {
         QTextStream out(stdout, QIODevice::WriteOnly);
         out << "File " << baseName << " version " << version[0] << version[1];
         out << "\n cached bytes     " << bytesCached << " useCount " << useCount;
-        out << "\n servedDate       " << dateString(servedDate);
-        out << "\n lastModifiedDate " << dateString(lastModifiedDate);
-        out << "\n expireDate       " << dateString(expireDate);
+        out << "\n servedDate       " << servedDate.toString(Qt::ISODate);
+        out << "\n lastModifiedDate " << lastModifiedDate.toString(Qt::ISODate);
+        out << "\n expireDate       " << expireDate.toString(Qt::ISODate);
         out << "\n entity tag       " << etag;
         out << "\n encoded URL      " << url;
         out << "\n mimetype         " << mimeType;
@@ -146,8 +138,8 @@ struct CacheFileInfo : MiniCacheFileInfo {
 
 bool MiniCacheFileInfo::operator<(const MiniCacheFileInfo &other) const
 {
-    const int thisUseful = useCount / qMax(g_currentDate - lastUsedDate, qint64(1));
-    const int otherUseful = other.useCount / qMax(g_currentDate - other.lastUsedDate, qint64(1));
+    const int thisUseful = useCount / qMax(lastUsedDate.secsTo(g_currentDate), qint64(1));
+    const int otherUseful = other.useCount / qMax(other.lastUsedDate.secsTo(g_currentDate), qint64(1));
     return thisUseful < otherUseful;
 }
 
@@ -161,13 +153,6 @@ enum OperationMode {
     DeleteCache,
     FileInfo
 };
-
-static bool timeSizeFits(qint64 intTime)
-{
-    time_t tTime = static_cast<time_t>(intTime);
-    qint64 check = static_cast<qint64>(tTime);
-    return check == intTime;
-}
 
 static bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
 {
@@ -192,11 +177,9 @@ static bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
     stream >> fi->servedDate;
     stream >> fi->lastModifiedDate;
     stream >> fi->expireDate;
-    bool timeSizeOk = timeSizeFits(fi->servedDate) && timeSizeFits(fi->lastModifiedDate) &&
-                      timeSizeFits(fi->expireDate);
 
     stream >> fi->bytesCached;
-    return timeSizeOk;
+    return true;
 }
 
 static QString filenameFromUrl(const QByteArray &url)
@@ -286,7 +269,7 @@ static bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationM
     }
     // get meta-information from the filesystem
     QFileInfo fileInfo(file);
-    fi->lastUsedDate = fileInfo.lastModified().toTime_t();
+    fi->lastUsedDate = fileInfo.lastModified();
     fi->sizeOnDisk = fileInfo.size();
     return true;
 }
@@ -518,7 +501,7 @@ public:
         }
 
         QFileInfo fileInfo(fileName);
-        fi.lastUsedDate = fileInfo.lastModified().toTime_t();
+        fi.lastUsedDate = fileInfo.lastModified();
         fi.sizeOnDisk = fileInfo.size();
         fi.debugPrint();
         // a CacheFileInfo is-a MiniCacheFileInfo which enables the following assignment...
@@ -573,7 +556,7 @@ private:
             return false;
         }
         bool ok = true;
-        ok = ok && fileInfo.lastModified().toTime_t() == mcfi->lastUsedDate;
+        ok = ok && fileInfo.lastModified() == mcfi->lastUsedDate;
         ok = ok && fileInfo.size() == mcfi->sizeOnDisk;
         if (!ok) {
             // size or last-modified date not consistent with entry file; reload useCount
@@ -590,7 +573,7 @@ private:
             stream.skipRawData(SerializedCacheFileInfo::useCountOffset);
 
             stream >> mcfi->useCount;
-            mcfi->lastUsedDate = fileInfo.lastModified().toTime_t();
+            mcfi->lastUsedDate = fileInfo.lastModified();
             mcfi->sizeOnDisk = fileInfo.size();
             ok = true;
         }
@@ -655,7 +638,7 @@ public:
                     continue;
                 }
                 if (baseName.length() > s_hashedUrlNibbles) {
-                    if (g_currentDate - QFileInfo(filePath(baseName)).lastModified().toTime_t() > 15*60) {
+                    if (QFileInfo(filePath(baseName)).lastModified().secsTo(g_currentDate) > 15*60) {
                         // it looks like a temporary file that hasn't been touched in > 15 minutes...
                         QFile::remove(filePath(baseName));
                     }
@@ -772,7 +755,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     }
 
 
-    g_currentDate = time(0);
+    g_currentDate = QDateTime::currentDateTime();
     g_maxCacheAge = KProtocolManager::maxCacheAge();
     g_maxCacheSize = mode == DeleteCache ? -1 : KProtocolManager::maxCacheSize() * 1024;
 
@@ -806,7 +789,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     Scoreboard scoreboard;
     CacheCleaner *cleaner = 0;
     while (true) {
-        g_currentDate = time(0);
+        g_currentDate = QDateTime::currentDateTime();
         if (cleaner) {
             QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
         } else {
