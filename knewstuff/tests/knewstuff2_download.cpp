@@ -75,7 +75,7 @@ public:
         m_entries++;
     }
 
-    void addPreview(KUrl previewfile) {
+    void addPreview(QUrl previewfile) {
         QTableWidgetItem *previewitem = new QTableWidgetItem();
         previewitem->setSizeHint(QSize(64, 64));
         previewitem->setIcon(QIcon(previewfile.path()));
@@ -214,14 +214,14 @@ void KNewStuff2Download::run()
                 SIGNAL(signalEntriesFailed()),
                 SLOT(slotEntriesFailed()));
         connect(m_engine,
-                SIGNAL(signalPayloadLoaded(KUrl)),
-                SLOT(slotPayloadLoaded(KUrl)));
+                SIGNAL(signalPayloadLoaded(QUrl)),
+                SLOT(slotPayloadLoaded(QUrl)));
         connect(m_engine,
                 SIGNAL(signalPayloadFailed()),
                 SLOT(slotPayloadFailed()));
         connect(m_engine,
-                SIGNAL(signalPreviewLoaded(KUrl)),
-                SLOT(slotPreviewLoaded(KUrl)));
+                SIGNAL(signalPreviewLoaded(QUrl)),
+                SLOT(slotPreviewLoaded(QUrl)));
         connect(m_engine,
                 SIGNAL(signalPreviewFailed()),
                 SLOT(slotPreviewFailed()));
@@ -284,7 +284,7 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *fee
     FeedWidget *fw = static_cast<FeedWidget*>(m_activefeed);
     fw->addEntry(entry);
 
-    KUrl source = KUrl(entry->preview().representation());
+    QUrl source = QUrl(entry->preview().representation());
     if (source.isValid()) {
         m_engine->downloadPreview(entry);
     }
@@ -292,7 +292,7 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *fee
     m_activeentry = entry;
 }
 
-void KNewStuff2Download::slotPreviewLoaded(KUrl preview)
+void KNewStuff2Download::slotPreviewLoaded(QUrl preview)
 {
     kDebug() << "-- preview downloaded successfully";
     kDebug() << "-- downloaded to " << preview.prettyUrl();
@@ -306,7 +306,7 @@ void KNewStuff2Download::slotPreviewFailed()
     kDebug() << "SLOT: slotPreviewFailed";
 }
 
-void KNewStuff2Download::slotPayloadLoaded(KUrl payload)
+void KNewStuff2Download::slotPayloadLoaded(QUrl payload)
 {
     kDebug() << "-- entry downloaded successfully";
     kDebug() << "-- downloaded to " << payload.prettyUrl();

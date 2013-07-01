@@ -250,13 +250,13 @@ public:
 
     // private members
     KDirOperator *parent;
-    QStack<KUrl*> backStack;    ///< Contains all URLs you can reach with the back button.
-    QStack<KUrl*> forwardStack; ///< Contains all URLs you can reach with the forward button.
+    QStack<QUrl*> backStack;    ///< Contains all URLs you can reach with the back button.
+    QStack<QUrl*> forwardStack; ///< Contains all URLs you can reach with the forward button.
 
     QModelIndex lastHoveredIndex;
 
     KDirLister *dirLister;
-    KUrl currUrl;
+    QUrl currUrl;
 
     KCompletion completion;
     KCompletion dirCompletion;
@@ -280,7 +280,7 @@ public:
     QProgressBar *progressBar;
 
     KPreviewWidgetBase *preview;
-    KUrl previewUrl;
+    QUrl previewUrl;
     int previewWidth;
 
     bool dirHighlighting;
@@ -305,7 +305,7 @@ public:
 
     KActionMenu *decorationMenu;
     KToggleAction *leftAction;
-    QList<KUrl> itemsToBeSetAsCurrent;
+    QList<QUrl> itemsToBeSetAsCurrent;
     bool shouldFetchForItems;
     InlinePreviewState inlinePreviewState;
 };
@@ -389,9 +389,9 @@ KDirOperator::KDirOperator(const QUrl& _url, QWidget *parent) :
     } else {
         d->currUrl = _url;
         if (d->currUrl.scheme().isEmpty())
-            d->currUrl.setProtocol(QLatin1String("file"));
+            d->currUrl.setScheme(QLatin1String("file"));
 
-        d->currUrl.addPath("/"); // make sure we have a trailing slash!
+        d->currUrl.setPath(d->currUrl.path() + "/"); // make sure we have a trailing slash!
     }
 
     // We set the direction of this widget to LTR, since even on RTL desktops
@@ -795,9 +795,9 @@ KIO::DeleteJob * KDirOperator::del(const KFileItemList& items,
     QList<QUrl> urls;
     QStringList files;
     foreach (const KFileItem &item, items) {
-        const KUrl url = item.url();
+        const QUrl url = item.url();
         urls.append(url);
-        files.append(url.pathOrUrl());
+        files.append(url.toDisplayString(QUrl::PreferLocalFile));
     }
 
     bool doIt = !ask;
@@ -853,9 +853,9 @@ KIO::CopyJob * KDirOperator::trash(const KFileItemList& items,
     QList<QUrl> urls;
     QStringList files;
     foreach (const KFileItem &item, items) {
-        const KUrl url = item.url();
+        const QUrl url = item.url();
         urls.append(url);
-        files.append(url.pathOrUrl());
+        files.append(url.toDisplayString(QUrl::PreferLocalFile));
     }
 
     bool doIt = !ask;
@@ -994,7 +994,7 @@ void KDirOperator::Private::checkPath(const QString &, bool /*takeFiles*/) // SL
             selection.clear();
     }
 
-    KUrl u(text); // I have to take care of entered URLs
+    QUrl u(text); // I have to take care of entered URLs
     bool filenameEntered = false;
 
     if (u.isLocalFile()) {
@@ -1026,14 +1026,17 @@ void KDirOperator::Private::checkPath(const QString &, bool /*takeFiles*/) // SL
 
 void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
 {
-    KUrl newurl;
+    QUrl newurl;
 
     if (!_newurl.isValid())
         newurl = QUrl::fromLocalFile(QDir::homePath());
     else
         newurl = _newurl;
 
-    newurl.adjustPath( KUrl::AddTrailingSlash );
+    QUrlPathInfo info(newurl);
+    info.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+
+    newurl = info.url();
 #ifdef Q_OS_WIN
     QString pathstr = (newurl.isLocalFile()) ? QDir::fromNativeSeparators(newurl.toLocalFile()) : newurl.path();
 #else
@@ -1041,14 +1044,17 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
 #endif
     newurl.setPath(pathstr);
 
+    info.setUrl(newurl);
+
     // already set
-    if (newurl.equals(d->currUrl, KUrl::CompareWithoutTrailingSlash))
+    if (info.equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
         return;
 
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
-        newurl.setPath(newurl.directory(KUrl::ObeyTrailingSlash));
-        if (newurl.equals(d->currUrl, KUrl::CompareWithoutTrailingSlash))
+        newurl.setPath(info.directory());
+        info.setUrl(newurl);
+        if (info.equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
             return; // parent is current dir, nothing to do (fixes #173454, too)
         KIO::UDSEntry entry;
         bool res = KIO::NetAccess::stat(newurl, entry, this);
@@ -1066,12 +1072,13 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
 
     if (clearforward) {
         // autodelete should remove this one
-        d->backStack.push(new KUrl(d->currUrl));
+        d->backStack.push(new QUrl(d->currUrl));
         qDeleteAll(d->forwardStack);
         d->forwardStack.clear();
     }
 
-    d->lastURL = d->currUrl.url(KUrl::RemoveTrailingSlash);
+
+    d->lastURL = d->currUrl.toString(QUrl::StripTrailingSlash);
     d->currUrl = newurl;
 
     pathChanged();
@@ -1218,9 +1225,9 @@ void KDirOperator::back()
     if (d->backStack.isEmpty())
         return;
 
-    d->forwardStack.push(new KUrl(d->currUrl));
+    d->forwardStack.push(new QUrl(d->currUrl));
 
-    KUrl *s = d->backStack.pop();
+    QUrl *s = d->backStack.pop();
 
     setUrl(*s, false);
     delete s;
@@ -1232,9 +1239,9 @@ void KDirOperator::forward()
     if (d->forwardStack.isEmpty())
         return;
 
-    d->backStack.push(new KUrl(d->currUrl));
+    d->backStack.push(new QUrl(d->currUrl));
 
-    KUrl *s = d->forwardStack.pop();
+    QUrl *s = d->forwardStack.pop();
     setUrl(*s, false);
     delete s;
 }
@@ -1246,9 +1253,8 @@ QUrl KDirOperator::url() const
 
 void KDirOperator::cdUp()
 {
-    KUrl tmp(d->currUrl);
-    tmp.cd(QLatin1String(".."));
-    setUrl(tmp, true);
+    QUrl tmp(d->currUrl);
+    setUrl(tmp.resolved(QUrl("..")), true);
 }
 
 void KDirOperator::home()
@@ -1679,7 +1685,7 @@ void KDirOperator::setDirLister(KDirLister *lister)
 
     connect(d->dirLister, SIGNAL(percent(int)),
             SLOT(_k_slotProgress(int)));
-    connect(d->dirLister, SIGNAL(started(KUrl)), SLOT(_k_slotStarted()));
+    connect(d->dirLister, SIGNAL(started(QUrl)), SLOT(_k_slotStarted()));
     connect(d->dirLister, SIGNAL(completed()), SLOT(_k_slotIOFinished()));
     connect(d->dirLister, SIGNAL(canceled()), SLOT(_k_slotCanceled()));
     connect(d->dirLister, SIGNAL(redirection(QUrl)),
@@ -2523,7 +2529,7 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
     if (!item.isDir()) {
         const QModelIndex proxyIndex = proxyModel->mapFromSource(index);
 
-        QList<KUrl>::Iterator it = itemsToBeSetAsCurrent.begin();
+        QList<QUrl>::Iterator it = itemsToBeSetAsCurrent.begin();
         while (it != itemsToBeSetAsCurrent.end()) {
             const QUrl url = *it;
             const QUrlPathInfo urlInfo(url);

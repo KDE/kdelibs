@@ -33,7 +33,6 @@
 #include <kpixmapprovider.h>
 #include <kstandardshortcut.h>
 
-#include <kdebug.h>
 
 class KHistoryComboBox::Private
 {

@@ -1,3 +1,5 @@
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
 include(ECMMarkAsTest)
 
@@ -13,5 +15,7 @@ macro(kcompletion_executable_tests)
 endmacro()
 
 kcompletion_executable_tests(
+   kcomboboxtest
    kcompletionuitest
+   klineedittest
 )

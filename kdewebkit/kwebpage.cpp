@@ -37,7 +37,6 @@
 #include <kjobwidgets.h>
 
 #include <kstandardshortcut.h>
-#include <kurl.h>
 #include <kdebug.h>
 #include <kshell.h>
 #include <kmimetypetrader.h>
@@ -59,6 +58,7 @@
 #include <QWebFrame>
 #include <QtNetwork/QNetworkReply>
 #include <qtemporaryfile.h>
+#include <qurlpathinfo.h>
 
 
 #define QL1S(x)  QLatin1String(x)
@@ -113,12 +113,12 @@ static void extractMimeType(const QNetworkReply* reply, QString& mimeType)
     mimeType = ((index == -1) ? value : value.left(index));
 }
 
-static bool downloadResource (const KUrl& srcUrl, const QString& suggestedName = QString(),
+static bool downloadResource (const QUrl& srcUrl, const QString& suggestedName = QString(),
                               QWidget* parent = 0, const KIO::MetaData& metaData = KIO::MetaData())
 {
-    const QString fileName = suggestedName.isEmpty() ? srcUrl.fileName() : suggestedName;
+    const QString fileName = suggestedName.isEmpty() ? QUrlPathInfo(srcUrl).fileName() : suggestedName;
     // convert filename to URL using fromPath to avoid trouble with ':' in filenames (#184202)
-    KUrl destUrl = QUrl::fromLocalFile(QFileDialog::getSaveFileName(parent, QString(), fileName));
+    QUrl destUrl = QUrl::fromLocalFile(QFileDialog::getSaveFileName(parent, QString(), fileName));
     if (!destUrl.isValid())
         return false;
 
@@ -355,7 +355,7 @@ void KWebPage::downloadResponse(QNetworkReply *reply)
         return;
     }
 
-    const KUrl replyUrl (reply->url());
+    const QUrl replyUrl (reply->url());
 
     // Ask KRun to handle the response when mimetype is unknown
     if (mimeType.isEmpty()) {
@@ -423,7 +423,7 @@ void KWebPage::removeRequestMetaData(const QString &key)
 
 QString KWebPage::userAgentForUrl(const QUrl& _url) const
 {
-    const KUrl url(_url);
+    const QUrl url(_url);
     const QString userAgent = KProtocolManager::userAgentForHost((url.isLocalFile() ? QL1S("localhost") : url.host()));
 
     if (userAgent == KProtocolManager::defaultUserAgent())
@@ -478,7 +478,7 @@ bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &
 bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::MetaData* metaData)
 {
     // Reply url...
-    const KUrl replyUrl (reply->url());
+    const QUrl replyUrl (reply->url());
 
     // Get suggested file name...
     const KIO::MetaData& data = reply->attribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::MetaData)).toMap();
@@ -520,7 +520,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 // Handle Post operations that return content...
                 if (reply->operation() == QNetworkAccessManager::PostOperation) {
                     d->mimeType = mimeType;
-                    QFileInfo finfo (suggestedFileName.isEmpty() ? replyUrl.fileName() : suggestedFileName);
+                    QFileInfo finfo (suggestedFileName.isEmpty() ? QUrlPathInfo(replyUrl).fileName() : suggestedFileName);
                     QTemporaryFile tempFile(QDir::tempPath() + QLatin1String("/kwebpage_XXXXXX.") + finfo.suffix());
                     tempFile.setAutoRemove(false);
                     tempFile.open();
@@ -544,7 +544,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                     if (isMimeTypeAssociatedWithSelf(offer)) {
                         reloadRequestWithoutDisposition(reply);
                     } else {
-                        KUrl::List list;
+                        QList<QUrl> list;
                         list.append(replyUrl);
                         bool success = false;
                         // kDebug(800) << "Suggested file name:" << suggestedFileName;

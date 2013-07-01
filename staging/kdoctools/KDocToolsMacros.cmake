@@ -22,10 +22,7 @@
 #                      parallel builds (set to 'icecc' when using icecream)
 #
 
-set(EXECUTABLE_OUTPUT_PATH ${kdelibs_BINARY_DIR}/bin )
-
 if (WIN32)
-    set(LIBRARY_OUTPUT_PATH               ${EXECUTABLE_OUTPUT_PATH} )
     # CMAKE_CFG_INTDIR is the output subdirectory created e.g. by XCode and MSVC
     if (NOT WINCE)
         set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
@@ -35,7 +32,7 @@ if (WIN32)
 
     set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/${CMAKE_CFG_INTDIR}/meinproc4 )
 else (WIN32)
-    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../staging/kdoctools/meinproc4${CMAKE_EXECUTABLE_SUFFIX}.shell )
+    set(KDOCTOOLS_MEINPROC_EXECUTABLE          ${EXECUTABLE_OUTPUT_PATH}/../staging/kdoctools/src/meinproc4${CMAKE_EXECUTABLE_SUFFIX}.shell )
 endif (WIN32)
 
 set( _KDOCTOOLS_MEINPROC_EXECUTABLE_DEP meinproc4)
@@ -51,8 +48,8 @@ macro (KDOCTOOLS_CREATE_HANDBOOK _docbook)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/customization/kde-chunk.xsl")
-      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/")
+      set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/src/customization/kde-chunk.xsl")
+      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/src")
    else (_kdeBootStrapping)
        set(_ssheet "${KDE4_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-chunk.xsl")
       set(_bootstrapOption)
@@ -130,8 +127,8 @@ macro (KDOCTOOLS_CREATE_MANPAGE _docbook _section)
 
    #Bootstrap
    if (_kdeBootStrapping)
-      set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/customization/kde-include-man.xsl")
-      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/")
+      set(_ssheet "${CMAKE_BINARY_DIR}/staging/kdoctools/src/customization/kde-include-man.xsl")
+      set(_bootstrapOption "--srcdir=${CMAKE_BINARY_DIR}/staging/kdoctools/src/")
    else (_kdeBootStrapping)
       set(_ssheet "${KDOCTOOLS_DATA_INSTALL_DIR}/ksgmltools2/customization/kde-include-man.xsl")
       set(_bootstrapOption)

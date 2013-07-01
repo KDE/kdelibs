@@ -25,6 +25,7 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QTimer>
 #include <QtCore/QEventLoop>
+#include <QUrl>
 
 #include <QtNetwork/QHostInfo>
 #include <QtNetwork/QHostAddress>
@@ -35,7 +36,6 @@
 #include <QtScript/QScriptProgram>
 #include <QtScript/QScriptContextInfo>
 
-#include <kurl.h>
 #include <klocalizedstring.h>
 #include <kio/hostinfo.h>
 
@@ -742,7 +742,7 @@ namespace KPAC
         delete m_engine;
     }
 
-    QString Script::evaluate(const KUrl& url)
+    QString Script::evaluate(const QUrl& url)
     {
         QScriptValue func = m_engine->globalObject().property(QL1S("FindProxyForURL"));
 

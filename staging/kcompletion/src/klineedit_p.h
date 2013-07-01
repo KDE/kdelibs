@@ -22,15 +22,12 @@
 #ifndef KLINEEDIT_P_H
 #define KLINEEDIT_P_H
 
-#include <QLabel>
 #include <QPainter>
 #include <QPaintEvent>
 #include <QPropertyAnimation>
 #include <QIcon>
+#include <QProxyStyle>
 
-#include <kglobalsettings.h>
-
-#include "kdeuiwidgetsproxystyle_p.h"
 
 class KLineEditButton : public QWidget
 {
@@ -71,13 +68,17 @@ public:
             m_animation->setDirection(QPropertyAnimation::Backward);
             m_animation->setDuration(250);
         }
-
+#pragma message("remove ifdef and use QStyle::SH_Widget_Animate once the patch in Qt hits qt5.git")
+#if 0
         if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
             if (m_animation->state() != QPropertyAnimation::Running)
                 m_animation->start();
         } else {
+#endif
             setVisible(m_animation->direction() == QPropertyAnimation::Forward);
+#if 0
         }
+#endif
     }
 
     void setPixmap(const QPixmap& p)
@@ -123,7 +124,8 @@ protected:
         if (m_pixmap.isNull()) {
             return;
         }
-
+#pragma message("remove ifdef and use QStyle::SH_Widget_Animate once the patch in Qt hits qt5.git")
+#if 0
         if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
 
             if (m_opacity == 0) {
@@ -154,11 +156,14 @@ protected:
                              m_pixmap);
             }
         } else {
+#endif
             QPainter p(this);
             p.drawPixmap((width() - m_pixmap.width()) / 2,
                         (height() - m_pixmap.height()) / 2,
                         m_pixmap);
+#if 0
         }
+#endif
     }
 
 protected:
@@ -177,16 +182,18 @@ private:
     QIcon m_icon;
 };
 
-class KLineEditStyle : public KdeUiProxyStyle
+class KLineEditStyle : public QProxyStyle
 {
     Q_OBJECT
 public:
   KLineEditStyle(KLineEdit *parent)
-    : KdeUiProxyStyle(parent),
+    : QProxyStyle(),
       m_overlap(0),
       m_sentinel(false)
   {
-      setParent(parent);
+      if(parent && parent->parentWidget()) {
+          QProxyStyle::setBaseStyle(parent->parentWidget()->style());
+      }
   }
 
   QStyle *style() const;

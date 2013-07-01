@@ -544,7 +544,7 @@ JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/
 		file.close();
 		QString contents(fileData);
 		PartMonitor pm(m_part);
-		m_part->begin(KUrl( url ));
+		m_part->begin(QUrl( url ));
 		m_part->write(contents);
 		m_part->end();
 		pm.waitForCompletion();
@@ -554,7 +554,7 @@ JSValue* KHTMLPartFunction::callAsFunction(ExecState *exec, JSObject*/*thisObj*/
 	}
 	case Begin: {
             QString url = args[0]->toString(exec).qstring();
-            m_part->begin(KUrl( url ));
+            m_part->begin(QUrl( url ));
             break;
         }
         case Write: {
@@ -791,8 +791,8 @@ int main(int argc, char *argv[])
                                                         parser->isSet("genoutput"),
                                                         !parser->isSet( "html" ),
                                                         !parser->isSet( "js" ));
-    QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
-		     regressionTest, SLOT(slotOpenURL(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
+    QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+		     regressionTest, SLOT(slotOpenURL(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget(int,int)),
 		     regressionTest, SLOT(resizeTopLevelWidget(int,int)));
 
@@ -1833,7 +1833,7 @@ void RegressionTest::createMissingDirs(const QString & filename)
     }
 }
 
-void RegressionTest::slotOpenURL(const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs)
+void RegressionTest::slotOpenURL(const QUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs)
 {
     m_part->setArguments(args);
     m_part->browserExtension()->setBrowserArguments(browserArgs);

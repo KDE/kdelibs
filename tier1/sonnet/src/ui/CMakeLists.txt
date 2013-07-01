@@ -35,16 +35,16 @@ set(sonnetui_HDRS
 
 qt5_wrap_ui(sonnetui_SRCS ${sonnetui_UI})
 
-add_library(sonnetui ${sonnetui_SRCS})
-generate_export_header(sonnetui)
+add_library(SonnetUi ${sonnetui_SRCS})
+generate_export_header(SonnetUi)
 
-target_link_libraries(sonnetui Qt5::Widgets sonnetcore)
+target_link_libraries(SonnetUi Qt5::Widgets SonnetCore)
 
-set_target_properties(sonnetui PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                          SOVERSION ${ECM_SOVERSION}
+set_target_properties(SonnetUi PROPERTIES VERSION ${SONNET_VERSION_STRING}
+                                          SOVERSION ${SONNET_SOVERSION}
 )
 
-install(TARGETS sonnetui EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS SonnetUi EXPORT SonnetTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES ${sonnetui_HDRS} ${CMAKE_CURRENT_BINARY_DIR}/sonnetui_export.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)

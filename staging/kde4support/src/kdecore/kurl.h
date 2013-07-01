@@ -22,7 +22,7 @@
 #ifndef kurl_h
 #define kurl_h
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 
 #include <QtCore/QVariant>
 #include <QtCore/QUrl>
@@ -102,7 +102,7 @@ class KUrlPrivate;
  * context.
  *
  */
-class KDECORE_EXPORT KUrl : public QUrl // krazy:exclude=dpointer,qclasses (krazy can't deal with embedded classes)
+class KDE4SUPPORT_DEPRECATED_EXPORT KUrl : public QUrl // krazy:exclude=dpointer,qclasses (krazy can't deal with embedded classes)
 {
 public:
   typedef QMap<QString, QString> MetaDataMap;
@@ -137,7 +137,7 @@ public:
    * @see KUrl
    * @see QList
    */
-  class KDECORE_EXPORT List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
+  class KDE4SUPPORT_DEPRECATED_EXPORT List : public QList<KUrl> //krazy:exclude=dpointer (just some convenience methods)
   {
   public:
     /**
@@ -215,7 +215,7 @@ public:
        * @deprecated use QMimeData::setUrls, followed by KUrlMimeData::setMetaData if you have metadata.
        */
 #ifndef KDE_NO_DEPRECATED
-      KDECORE_DEPRECATED void populateMimeData( QMimeData* mimeData,
+      KDE4SUPPORT_DEPRECATED void populateMimeData( QMimeData* mimeData,
                              const KUrl::MetaDataMap& metaData = MetaDataMap(),
                              MimeDataFlags flags = DefaultMimeDataFlags ) const;
 #endif
@@ -255,7 +255,7 @@ public:
        * @deprecated use KUrlMimeData::setUrls, followed by KUrlMimeData::setMetaData if you have metadata.
        */
 #ifndef KDE_NO_DEPRECATED
-      KDECORE_DEPRECATED void populateMimeData(const KUrl::List& mostLocalUrls,
+      KDE4SUPPORT_DEPRECATED void populateMimeData(const KUrl::List& mostLocalUrls,
                             QMimeData* mimeData,
                             const KUrl::MetaDataMap& metaData = MetaDataMap(),
                             MimeDataFlags flags = DefaultMimeDataFlags) const;
@@ -266,7 +266,7 @@ public:
        * @deprecated use QMimeData::hasUrls
        */
 #ifndef KDE_NO_DEPRECATED
-      KDECORE_DEPRECATED static bool canDecode( const QMimeData *mimeData );
+      KDE4SUPPORT_DEPRECATED static bool canDecode( const QMimeData *mimeData );
 #endif
 
       /**
@@ -274,7 +274,7 @@ public:
        * @deprecated use KUrlMimeData::mimeDataTypes
        */
 #ifndef KDE_NO_DEPRECATED
-      KDECORE_DEPRECATED static QStringList mimeDataTypes();
+      KDE4SUPPORT_DEPRECATED static QStringList mimeDataTypes();
 #endif
 
       /**
@@ -311,7 +311,7 @@ public:
        * @deprecated use KUrlMimeData::urlsFromMimeData
        */
 #ifndef KDE_NO_DEPRECATED
-      KDECORE_DEPRECATED static KUrl::List fromMimeData( const QMimeData *mimeData,
+      KDE4SUPPORT_DEPRECATED static KUrl::List fromMimeData( const QMimeData *mimeData,
                                       DecodeOptions decodeOptions = PreferKdeUrls,
                                       KUrl::MetaDataMap* metaData = 0 );
 #endif
@@ -924,7 +924,7 @@ public:
    * @deprecated Use equals() instead.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
+  KDE4SUPPORT_DEPRECATED bool cmp( const KUrl &u, bool ignore_trailing = false ) const;
 #endif
 
 
@@ -1036,7 +1036,7 @@ public:
    * @deprecated use QUrl::fromLocalFile
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDECORE_DEPRECATED KUrl fromPath(const QString& text) { return fromLocalFile(text); }
+  static KDE4SUPPORT_DEPRECATED KUrl fromPath(const QString& text) { return fromLocalFile(text); }
 #endif
 
   /**
@@ -1045,7 +1045,7 @@ public:
    * Use KUrl(text) instead.
    */
 #ifndef KDE_NO_DEPRECATED
-  static KDECORE_DEPRECATED KUrl fromPathOrUrl( const QString& text );
+  static KDE4SUPPORT_DEPRECATED KUrl fromPathOrUrl( const QString& text );
 #endif
 
   /**
@@ -1067,7 +1067,7 @@ public:
    *      followed by KUrlMimeData::setMetaData if you have metadata.
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED void populateMimeData( QMimeData* mimeData,
+  KDE4SUPPORT_DEPRECATED void populateMimeData( QMimeData* mimeData,
                          const MetaDataMap& metaData = MetaDataMap(),
                          MimeDataFlags flags = DefaultMimeDataFlags ) const;
 #endif
@@ -1145,7 +1145,7 @@ Q_DECLARE_METATYPE(KUrl::List)
  * @deprecated use KUrl(_url1).equals(KUrl(_url2)) instead.
  */
 #ifndef KDE_NO_DEPRECATED
-KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
+KDE4SUPPORT_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2 ); // KDE5: remove, KUrl::equals is better API
 #endif
 
 /**
@@ -1161,7 +1161,7 @@ KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url
  * @deprecated use KUrl(_url1).equals(KUrl(_url2), options) instead.
  */
 #ifndef KDE_NO_DEPRECATED
-KDECORE_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
+KDE4SUPPORT_DEPRECATED_EXPORT bool urlcmp( const QString& _url1, const QString& _url2, const KUrl::EqualsOptions& options ); // KDE5: remove, KUrl::equals is better API
 #endif
 
 #endif

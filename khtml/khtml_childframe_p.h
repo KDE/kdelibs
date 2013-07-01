@@ -63,7 +63,7 @@ public:
     KParts::OpenUrlArguments m_args;
     KParts::BrowserArguments m_browserArgs;
     QWeakPointer<KHTMLRun> m_run;
-    KUrl m_workingURL;
+    QUrl m_workingURL;
     Type m_type;
     QStringList m_params;
     bool m_bPreloaded;

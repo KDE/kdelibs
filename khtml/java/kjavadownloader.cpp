@@ -22,11 +22,11 @@
 #include "kjavadownloader.h"
 #include "kjavaappletserver.h"
 
-#include <kurl.h>
 #include <kio/job.h>
 #include <kio/jobclasses.h>
 #include <kdebug.h>
 #include <QtCore/QFile>
+#include <QUrl>
 
 static const int DATA = 0;
 static const int FINISHED = 1;
@@ -62,7 +62,7 @@ public:
     }
 private:
     int               loaderID;
-    KUrl*             url;
+    QUrl*             url;
     QByteArray        file;
     KIO::TransferJob* job;
     int               responseCode;
@@ -77,7 +77,7 @@ KJavaDownloader::KJavaDownloader( int ID, const QString& url )
 
 
     d->loaderID = ID;
-    d->url = new KUrl( url );
+    d->url = new QUrl( url );
 
     d->job = KIO::get( *d->url, KIO::NoReload, KIO::HideProgressInfo );
     d->job->addMetaData("PropagateHttpHeader", "true");
@@ -190,7 +190,7 @@ public:
         if (job) job->kill(); // KIO::Job::kill deletes itself
     }
     int               loaderID;
-    KUrl*             url;
+    QUrl*             url;
     QByteArray        file;
     KIO::TransferJob* job;
     bool              finished;
@@ -203,7 +203,7 @@ KJavaUploader::KJavaUploader( int ID, const QString& url )
 
 
     d->loaderID = ID;
-    d->url = new KUrl( url );
+    d->url = new QUrl( url );
     d->job = 0L;
     d->finished = false;
 }

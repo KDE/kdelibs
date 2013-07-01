@@ -22,7 +22,6 @@
 
 #include "jobremotetest.h"
 
-#include <kurl.h>
 #include <kio/netaccess.h>
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -31,6 +30,7 @@
 #include <QtCore/QEventLoop>
 #include <QtCore/QDir>
 #include <QtCore/QVariant>
+#include <QUrl>
 
 #include <stdio.h>
 #include <stdlib.h>

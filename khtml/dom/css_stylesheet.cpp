@@ -121,8 +121,8 @@ bool StyleSheet::isCSSStyleSheet() const
     return ((StyleSheetImpl *)impl)->isCSSStyleSheet();
 }
 
-KUrl StyleSheet::baseUrl() {
-    if(!impl) return KUrl();
+QUrl StyleSheet::baseUrl() {
+    if(!impl) return QUrl();
     return ((StyleSheetImpl *)impl)->baseURL();
 }
 

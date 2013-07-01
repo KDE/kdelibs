@@ -24,9 +24,9 @@
 #define TEST_REGRESSION_H
 
 #include <khtml_part.h>
-#include <kurl.h>
 #include <QtCore/QObject>
 #include <QtCore/QStack>
+#include <QUrl>
 #include <kjs/ustring.h>
 #include <kjs/object.h>
 #include <kjs/interpreter.h>
@@ -194,7 +194,7 @@ private:
     void evalJS( KJS::ScriptInterpreter &interp, const QString &filename, bool report ); // used by testJS
 
 private Q_SLOTS:
-    void slotOpenURL(const KUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs);
+    void slotOpenURL(const QUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments& browserArgs);
     void resizeTopLevelWidget( int, int );
 
 };

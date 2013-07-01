@@ -40,7 +40,7 @@ static bool isDefaultPortForProtocol(unsigned short port, const QString& proto)
            (port == 443 && proto == QLatin1String("https"));
 }
 
-SecurityOrigin::SecurityOrigin(const KUrl& url) :
+SecurityOrigin::SecurityOrigin(const QUrl& url) :
       m_protocol(url.scheme())
     , m_host(url.host().toLower())
     , m_port(url.port())
@@ -77,16 +77,16 @@ bool SecurityOrigin::isEmpty() const
     return m_protocol.isEmpty();
 }
 
-SecurityOrigin* SecurityOrigin::create(const KUrl& url)
+SecurityOrigin* SecurityOrigin::create(const QUrl& url)
 {
     if (!url.isValid())
-        return new SecurityOrigin(KUrl());
+        return new SecurityOrigin(QUrl());
     return new SecurityOrigin(url);
 }
 
 SecurityOrigin* SecurityOrigin::createEmpty()
 {
-    return create(KUrl());
+    return create(QUrl());
 }
 
 void SecurityOrigin::setDomainFromDOM(const QString& newDomain)
@@ -133,7 +133,7 @@ bool SecurityOrigin::canAccess(const SecurityOrigin* other) const
     return false;
 }
 
-bool SecurityOrigin::canRequest(const KUrl& url) const
+bool SecurityOrigin::canRequest(const QUrl& url) const
 {
     if (isUnique())
         return false;
@@ -150,7 +150,7 @@ bool SecurityOrigin::canRequest(const KUrl& url) const
     return false;
 }
 
-bool SecurityOrigin::taintsCanvas(const KUrl& url) const
+bool SecurityOrigin::taintsCanvas(const QUrl& url) const
 {
     if (canRequest(url))
         return false;
@@ -198,7 +198,7 @@ QString SecurityOrigin::toString() const
 
 SecurityOrigin* SecurityOrigin::createFromString(const QString& originString)
 {
-    return SecurityOrigin::create(KUrl(originString));
+    return SecurityOrigin::create(QUrl(originString));
 }
 
 bool SecurityOrigin::isSameSchemeHostPort(const SecurityOrigin* other) const 

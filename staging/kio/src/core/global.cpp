@@ -27,6 +27,7 @@
 #include <QtDBus/QtDBus>
 #include <QHash>
 #include <QLocale>
+#include <qurlpathinfo.h>
 
 
 enum BinaryUnitDialect {
@@ -373,4 +374,20 @@ QString KIO::iconNameForUrl(const QUrl& url)
             i = mimeTypeIcon;
     }
     return !i.isEmpty() ? i : unknown;
+}
+
+QUrl KIO::upUrl(const QUrl &url)
+{
+    if (!url.isValid() || url.isRelative())
+        return QUrl();
+
+    if (url.hasQuery()) {
+        QUrl u(url);
+        u.setQuery(QString());
+        return u;
+    }
+
+    QUrlPathInfo pathInfo(url.resolved(QUrl("../")));
+    pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+    return pathInfo.url();
 }

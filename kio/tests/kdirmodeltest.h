@@ -72,7 +72,7 @@ private Q_SLOTS:
     void testDeleteCurrentDirectory();
 
     // Somewhat unrelated
-    void testKUrlHash();
+    void testQUrlHash();
 
 protected Q_SLOTS: // 'more private than private slots' - i.e. not seen by qtestlib
     void slotListingCompleted();

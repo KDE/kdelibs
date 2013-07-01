@@ -41,11 +41,10 @@
 #include <QtCore/QList>
 #include <QtCore/QHash>
 #include <QtCore/QMap>
+#include <QUrl>
 
 //Added by qt3to4:
 #include <QTimerEvent>
-
-#include <kurl.h>
 
 class QPaintDevice;
 class QTextCodec;
@@ -364,11 +363,11 @@ public:
     void writeln ( const DOMString &text );
     void finishParsing (  );
 
-    KUrl URL() const { return m_url; }
-    void setURL(const QString& url) { m_url = url; }
+    QUrl URL() const { return m_url; }
+    void setURL(const QString& url) { m_url = QUrl(url); }
 
-    KUrl baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
-    void setBaseURL(const KUrl& baseURL);
+    QUrl baseURL() const { return m_baseURL.isEmpty() ? m_url : m_baseURL; }
+    void setBaseURL(const QUrl& baseURL);
 
     QString baseTarget() const { return m_baseTarget; }
     void setBaseTarget(const QString& baseTarget) { m_baseTarget = baseTarget; }
@@ -638,8 +637,8 @@ protected:
     khtml::DocLoader *m_docLoader;
     khtml::Tokenizer *m_tokenizer;
     KEncodingDetector *m_decoder;
-    KUrl m_url;
-    KUrl m_baseURL;
+    QUrl m_url;
+    QUrl m_baseURL;
     QString m_baseTarget;
 
     mutable DocumentTypeImpl *m_doctype;

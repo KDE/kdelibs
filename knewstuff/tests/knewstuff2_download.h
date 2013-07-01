@@ -45,9 +45,9 @@ public slots:
     void slotProvidersFailed();
     void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
     void slotEntriesFailed();
-    void slotPreviewLoaded(KUrl payload);
+    void slotPreviewLoaded(QUrl payload);
     void slotPreviewFailed();
-    void slotPayloadLoaded(KUrl payload);
+    void slotPayloadLoaded(QUrl payload);
     void slotPayloadFailed();
     void slotInstall();
 private:

@@ -36,6 +36,7 @@
 #endif
 
 #include <QtCore/QFile>
+#include <QUrl>
 
 #include <kconfig.h>
 #include <kdebug.h>
@@ -46,7 +47,6 @@
 #include <kprotocolinfo.h>
 #include <krun.h>
 #include <kdesktopfile.h>
-#include <kurl.h>
 
 #include <kio/global.h>
 #include <kio/slaveinterface.h>
@@ -106,10 +106,10 @@ IdleSlave::gotInput()
       qint8 b;
       stream >> stream_pid >> protocol >> host >> b;
       pid = stream_pid;
-// Overload with (bool) onHold, (KUrl) url.
+// Overload with (bool) onHold, (QUrl) url.
       if (!stream.atEnd())
       {
-         KUrl url;
+         QUrl url;
          stream >> url;
          mOnHold = true;
          mUrl = url;

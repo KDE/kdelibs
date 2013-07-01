@@ -7,7 +7,7 @@ class KHTMLPart;
 class KComboBox;
 class QToolButton;
 class QLineEdit;
-class KUrl;
+class QUrl;
 class KHTMLGlobal;
 class QLabel;
 class QMovie;
@@ -31,8 +31,8 @@ public:
     KHTMLPart *doc() const;
 
 public Q_SLOTS:
-    void openUrl(const KUrl &url, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &args);
-    void openUrl(const KUrl &url);
+    void openUrl(const QUrl &url, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &args);
+    void openUrl(const QUrl &url);
     void openUrl(const QString &url);
     void openUrl();
 

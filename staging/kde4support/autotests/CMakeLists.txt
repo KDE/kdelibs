@@ -47,6 +47,7 @@ kde4support_unit_tests(
   kasciitest
   kglobaltest
   klockfiletest
+  kurltest
 )
 
 

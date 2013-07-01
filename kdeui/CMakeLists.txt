@@ -88,15 +88,12 @@ set(kdeui_LIB_SRCS
  dialogs/kshortcutschemeseditor.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/kswitchlanguagedialog_p.cpp
- dialogs/ktip.cpp
  findreplace/kfind.cpp
  findreplace/kreplace.cpp
  findreplace/kfinddialog.cpp
  findreplace/kreplacedialog.cpp
  fonts/fonthelpers.cpp
  fonts/kfontcombobox.cpp
- icons/kiconbutton.cpp
- icons/kicondialog.cpp
  kernel/kstyle.cpp
  shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kacceleratormanager.cpp
@@ -113,13 +110,9 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
  widgets/kcmodule.cpp
- widgets/kcombobox.cpp
- widgets/kcompletionbox.cpp
  widgets/khelpmenu.cpp
- widgets/khistorycombobox.cpp
  widgets/kkeysequencewidget.cpp
  widgets/klanguagebutton.cpp
- widgets/klineedit.cpp
  widgets/kmessagewidget.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
@@ -171,7 +164,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
  ${CMAKE_CURRENT_SOURCE_DIR}/fonts
- ${CMAKE_CURRENT_SOURCE_DIR}/icons
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
@@ -184,8 +176,8 @@ target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 
 find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} sonnetcore sonnetui ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n XmlGui ItemViews KCompletion KNotifications KJobWidgets KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} Qt5::Concurrent)
+target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} ${Sonnet_LIBRARIES} ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n XmlGui ItemViews KCompletion KNotifications KJobWidgets KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
+                            Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} KCompletion Qt5::Concurrent)
 
 if(X11_FOUND)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
@@ -240,7 +232,6 @@ install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 
 install( FILES
  dialogs/aboutkde.png
- dialogs/ktip-bulb.png
  dialogs/thumb_frame.png
  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 
@@ -260,14 +251,11 @@ install( FILES
  dialogs/knewpassworddialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
- dialogs/ktip.h
  findreplace/kfind.h
  findreplace/kreplace.h
  findreplace/kfinddialog.h
  findreplace/kreplacedialog.h
  fonts/kfontcombobox.h
- icons/kiconbutton.h
- icons/kicondialog.h
  kernel/kstyle.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
@@ -279,13 +267,9 @@ install( FILES
  util/kimagecache.h
  util/kundoactions.h
  widgets/kcmodule.h
- widgets/kcombobox.h
- widgets/kcompletionbox.h
  widgets/khelpmenu.h
- widgets/khistorycombobox.h
  widgets/kkeysequencewidget.h
  widgets/klanguagebutton.h
- widgets/klineedit.h
  widgets/kmessagewidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h

@@ -172,7 +172,7 @@ void Engine::loadProviders()
         connect(loader, SIGNAL(signalLoaded(QDomDocument)), SLOT(slotProviderFileLoaded(QDomDocument)));
         connect(loader, SIGNAL(signalFailed()), SLOT(slotProvidersFailed()));
 
-        loader->load(KUrl(m_providerFileUrl));
+        loader->load(QUrl(m_providerFileUrl));
     }
 }
 

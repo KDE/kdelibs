@@ -50,7 +50,7 @@ QString Provider::name() const
     return mName;
 }
 
-KUrl Provider::icon() const
+QUrl Provider::icon() const
 {
     return mIcon;
 }

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.10.20130309)
+cmake_minimum_required(VERSION 2.8.11)
 
 project(kde4support)
 
@@ -18,6 +18,9 @@ include(ECMQtFramework)
 include(ECMWriteVersionHeader)
 
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras Network)
+
+# QUrl
+add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)

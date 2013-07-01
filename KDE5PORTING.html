@@ -82,6 +82,7 @@ KDE 4.x when you want to port them to KDE Frameworks 5.<br>
 Do not just do a global search and replace, KUrl(QString) means "absolute local file or absolute url" while
 QUrl(QString) means "relative url or absolute url". And KUrl::path() is not exactly the same as QUrl::path(), etc.
 And in particular KUrl::isParentOf means "parent or equal" while QUrl::isParentOf is strictly "parent" (use QUrlPathInfo::isParentOfOrEqual instead).
+<li>KUrl::upUrl is now the static method KIO::upUrl</li>
 <li>For the reason above, many signals with a KUrl have been replaced with a QUrl:
 <pre>
     KUrlRequester: urlSelected(const KUrl&amp;) &gt; urlSelected(const QUrl&amp;)

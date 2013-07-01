@@ -107,11 +107,11 @@ KHTMLImage::KHTMLImage( QWidget *parentWidget,
     // forward opening requests to parent frame (if existing)
     KHTMLPart *p = qobject_cast<KHTMLPart*>(parent);
     KParts::BrowserExtension *be = p ? p->browserExtension() : m_ext;
-    connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
-               be, SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
+    connect(m_khtml->browserExtension(), SIGNAL(openUrlRequestDelayed(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+               be, SIGNAL(openUrlRequestDelayed(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
 
-    connect(m_khtml->browserExtension(), SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
-            this, SLOT(slotPopupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)));
+    connect(m_khtml->browserExtension(), SIGNAL(popupMenu(QPoint,QUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
+            this, SLOT(slotPopupMenu(QPoint,QUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)));
 
     connect( m_khtml->browserExtension(), SIGNAL(enableAction(const char*,bool)),
              m_ext, SIGNAL(enableAction(const char*,bool)) );
@@ -150,8 +150,8 @@ bool KHTMLImage::openUrl(const QUrl &url)
     KParts::OpenUrlArguments args = arguments();
     m_mimeType = args.mimeType();
 
-    KUrl kurl(url);
-    emit setWindowCaption(kurl.prettyUrl());
+    QUrl kurl(url);
+    emit setWindowCaption(kurl.toDisplayString());
 
     // Need to keep a copy of the offsets since they are cleared when emitting completed
     m_xOffset = args.xOffset();
@@ -336,7 +336,7 @@ void KHTMLImageBrowserExtension::disableScrolling()
     static_cast<KHTMLPartBrowserExtension *>( m_imgPart->doc()->browserExtension() )->disableScrolling();
 }
 
-void KHTMLImage::slotPopupMenu( const QPoint &global, const KUrl &url, mode_t mode,
+void KHTMLImage::slotPopupMenu( const QPoint &global, const QUrl &url, mode_t mode,
                                 const KParts::OpenUrlArguments &origArgs,
                                 const KParts::BrowserArguments &browserArgs,
                                 KParts::BrowserExtension::PopupFlags flags,

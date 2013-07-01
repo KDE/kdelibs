@@ -23,11 +23,11 @@
 #ifndef TEST_REGRESSION_WINDOW_H
 #define TEST_REGRESSION_WINDOW_H
 
-#include <kurl.h>
 #include <kio/job.h>
 
 #include <QtCore/QQueue>
 #include <QtCore/QProcess>
+#include <QUrl>
 
 #include "khtml_part.h"
 #include "ui_test_regression_gui.h"
@@ -123,10 +123,10 @@ private:
 	unsigned long m_totalTestsJS;
 	unsigned long m_totalTestsDOMTS;
 
-	KUrl m_khtmlUrl;
-	KUrl m_testsUrl;
-	KUrl m_outputUrl;
-	KUrl m_saveLogUrl;
+	QUrl m_khtmlUrl;
+	QUrl m_testsUrl;
+	QUrl m_outputUrl;
+	QUrl m_saveLogUrl;
 
 	// Temporary variables
 	TestResult m_lastResult;

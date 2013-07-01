@@ -50,7 +50,7 @@ kde4_add_ui_files(kde4attic_SRCS ${kde4attic_UI} )
 add_library(KDE4Attic ${kde4attic_SRCS})
 generate_export_header(KDE4Attic)
 
-target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::Widgets Qt5::PrintSupport kde4support kdeui kdecore)
+target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::Widgets Qt5::PrintSupport kde4support kdeui kdecore KCompletion)
 
 set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
                                            SOVERSION ${KDE4ATTIC_SOVERSION}

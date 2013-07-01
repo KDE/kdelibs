@@ -24,6 +24,7 @@
 #include <QtCore/QDir>
 #include <QContextMenuEvent>
 #include <QMenu>
+#include <QUrl>
 
 #include <kdirlister.h>
 #include <kdirmodel.h>
@@ -31,7 +32,6 @@
 #include <kfileitemdelegate.h>
 #include <klocalizedstring.h>
 #include <ktoggleaction.h>
-#include <kurl.h>
 
 class KFileTreeView::Private
 {

@@ -50,6 +50,7 @@
 #include <QStyleOption>
 #include <qmimedatabase.h>
 #include <QMimeData>
+#include <qurlpathinfo.h>
 
 using namespace KDEPrivate;
 
@@ -663,9 +664,10 @@ void KUrlNavigator::Private::updateButtonVisibility()
         m_dropDownButton->show();
     } else {
         // Check whether going upwards is possible. If this is the case, show the drop-down button.
-        KUrl url = m_navButtons.front()->url();
-        url.adjustPath(KUrl::AddTrailingSlash);
-        const bool visible = !url.equals(url.upUrl()) && (url.scheme() != "nepomuksearch");
+        QUrlPathInfo pathInfo(m_navButtons.front()->url());
+        pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+        QUrl url(pathInfo.url());
+        const bool visible = !QUrlPathInfo(url).equals(KIO::upUrl(url)) && (url.scheme() != "nepomuksearch");
         m_dropDownButton->setVisible(visible);
     }
 }
@@ -763,7 +765,7 @@ QString KUrlNavigator::Private::retrievePlacePath() const
 bool KUrlNavigator::Private::isCompressedPath(const QUrl& url) const
 {
     QMimeDatabase db;
-    const QMimeType mime = db.mimeTypeForUrl(url);
+    const QMimeType mime = db.mimeTypeForUrl(QUrl(url.toString(QUrl::StripTrailingSlash)));
     // Note: this list of MIME types depends on the protocols implemented by kio_archive
     return  mime.inherits("application/x-compressed-tar") ||
             mime.inherits("application/x-bzip-compressed-tar") ||
@@ -872,8 +874,11 @@ bool KUrlNavigator::goForward()
 
 bool KUrlNavigator::goUp()
 {
-    const KUrl currentUrl = locationUrl();
-    const QUrl upUrl = currentUrl.upUrl();
+    QUrlPathInfo path(locationUrl());
+    path.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+
+    const QUrl currentUrl = path.url();
+    const QUrl upUrl = KIO::upUrl(currentUrl);
     if (upUrl != currentUrl) {
         setLocationUrl(upUrl);
         return true;
@@ -988,8 +993,10 @@ void KUrlNavigator::setLocationUrl(const QUrl& newUrl)
         return;
     }
 
-    KUrl url = newUrl;
-    url.cleanPath();
+    QUrl url = newUrl;
+    url.setPath(QDir::cleanPath(url.path()));
+    if (newUrl.path().endsWith('/'))
+        url.setPath(url.path() + '/');
 
     if ((url.scheme() == QLatin1String("tar")) || (url.scheme() == QLatin1String("zip"))) {
         // The URL represents a tar- or zip-file. Check whether
@@ -997,15 +1004,15 @@ void KUrlNavigator::setLocationUrl(const QUrl& newUrl)
         // replace it by the local path again.
         bool insideCompressedPath = d->isCompressedPath(url);
         if (!insideCompressedPath) {
-            KUrl prevUrl = url;
-            KUrl parentUrl = url.upUrl();
+            QUrl prevUrl = url;
+            QUrl parentUrl = KIO::upUrl(url);
             while (parentUrl != prevUrl) {
                 if (d->isCompressedPath(parentUrl)) {
                     insideCompressedPath = true;
                     break;
                 }
                 prevUrl = parentUrl;
-                parentUrl = parentUrl.upUrl();
+                parentUrl = KIO::upUrl(parentUrl);
             }
         }
         if (!insideCompressedPath) {
@@ -1018,8 +1025,9 @@ void KUrlNavigator::setLocationUrl(const QUrl& newUrl)
     // Check whether current history element has the same URL.
     // If this is the case, just ignore setting the URL.
     const LocationData& data = d->m_history[d->m_historyIndex];
-    const bool isUrlEqual = url.equals(locationUrl(), KUrl::CompareWithoutTrailingSlash) ||
-                            (!url.isValid() && url.equals(data.url, KUrl::CompareWithoutTrailingSlash));
+    QUrlPathInfo pathInfo(url);
+    const bool isUrlEqual = pathInfo.equals(locationUrl(), QUrlPathInfo::CompareWithoutTrailingSlash) ||
+                            (!url.isValid() && pathInfo.equals(data.url, QUrlPathInfo::CompareWithoutTrailingSlash));
     if (isUrlEqual) {
         return;
     }

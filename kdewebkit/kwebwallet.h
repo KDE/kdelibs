@@ -24,12 +24,11 @@
 
 #include <kdewebkit_export.h>
 
-#include <kurl.h>
-
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QList>
 #include <QtCore/QPair>
+#include <QUrl>
 #include <QWidget>
 #include <QtCore/QtGlobal>
 

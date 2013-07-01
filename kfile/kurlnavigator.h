@@ -25,7 +25,7 @@
 
 #include <kfile_export.h>
 
-#include <kurl.h>
+#include <QUrl>
 #include <QWidget>
 #include <QtCore/QByteArray>
 

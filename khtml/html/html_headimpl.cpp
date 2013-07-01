@@ -41,7 +41,7 @@
 
 #include "ecma/kjs_proxy.h"
 
-#include <kurl.h>
+#include <QUrl>
 #include <kdebug.h>
 
 using namespace khtml;
@@ -81,7 +81,7 @@ void HTMLBaseElementImpl::removedFromDocument()
 
     // Since the document doesn't have a base element...
     // (This will break in the case of multiple base elements, but that's not valid anyway (?))
-    document()->setBaseURL( KUrl() );
+    document()->setBaseURL( QUrl() );
     document()->setBaseTarget( QString() );
 }
 
@@ -91,7 +91,7 @@ void HTMLBaseElementImpl::process()
 	return;
 
     if(!m_href.isEmpty() && document()->part())
-	document()->setBaseURL( KUrl( document()->part()->url(), m_href.string() ) );
+	document()->setBaseURL( QUrl(document()->part()->url()).resolved(QUrl(m_href.string())) );
 
     if(!m_target.isEmpty())
 	document()->setBaseTarget( m_target.string() );
@@ -184,7 +184,7 @@ void HTMLLinkElementImpl::process()
     // IE extension: location of small icon for locationbar / bookmarks
     // Uses both "shortcut icon" and "icon"
     if ( part && rel.contains("icon") && !m_url.isEmpty() && !part->parentPart())
-        part->browserExtension()->setIconUrl( KUrl(m_url.string()) );
+        part->browserExtension()->setIconUrl( QUrl(m_url.string()) );
 
     // Stylesheet
     else if (!m_isDisabled && rel.contains("stylesheet")) {

@@ -24,7 +24,7 @@
 
 #include <QTreeView>
 
-#include <kurl.h>
+#include <QUrl>
 
 #include <kfile_export.h>
 

@@ -1,7 +1,5 @@
 @PACKAGE_INIT@
 
-# Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
-
 set(KArchive_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
 set_and_check(KArchive_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 

@@ -24,7 +24,7 @@
 
 #include <QtCore/QString>
 
-class KUrl;
+class QUrl;
 class QScriptEngine;
 
 namespace KPAC
@@ -45,7 +45,7 @@ namespace KPAC
 
         Script( const QString& code );
         ~Script();
-        QString evaluate( const KUrl& );
+        QString evaluate( const QUrl& );
 
     private:
         QScriptEngine* m_engine;

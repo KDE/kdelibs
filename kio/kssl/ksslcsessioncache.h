@@ -23,7 +23,7 @@
 
 #include <kio/kio_export.h>
 
-class KUrl;
+class QUrl;
 class QString;
 
 class KIO_EXPORT KSSLCSessionCache {

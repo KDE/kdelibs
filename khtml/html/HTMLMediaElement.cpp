@@ -182,7 +182,7 @@ void HTMLMediaElement::load(ExceptionCode&)
 
 void HTMLMediaElement::loadResource(String &url)
 {
-    KUrl kurl(url.string());
+    QUrl kurl(url.string());
     if (!m_player)
         return;
     if (autoplay())

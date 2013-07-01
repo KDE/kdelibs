@@ -85,7 +85,7 @@ protected:
 private Q_SLOTS:
     void restoreScrollPosition();
 
-    void slotPopupMenu( const QPoint &global, const KUrl &url, mode_t mode,
+    void slotPopupMenu( const QPoint &global, const QUrl &url, mode_t mode,
                         const KParts::OpenUrlArguments &args,
                         const KParts::BrowserArguments &browserArgs,
                         KParts::BrowserExtension::PopupFlags flags,

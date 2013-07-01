@@ -6,12 +6,12 @@ include(ECMMarkAsTest)
 # TODO automate and merge with test_filter?
 set(test_suggest_SRCS test.cpp)
 add_executable(test_suggest ${test_suggest_SRCS})
-target_link_libraries(test_suggest sonnetcore)
+target_link_libraries(test_suggest SonnetCore)
 ecm_mark_as_test(test_suggest)
 
 ########### test_dialog ###############
 
 set(test_dialog_SRCS test_dialog.cpp)
 add_executable(test_dialog ${test_dialog_SRCS})
-target_link_libraries(test_dialog Qt5::Widgets sonnetcore sonnetui)
+target_link_libraries(test_dialog Qt5::Widgets SonnetCore SonnetUi)
 ecm_mark_as_test(test_dialog)

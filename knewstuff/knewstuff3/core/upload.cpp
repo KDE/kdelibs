@@ -41,8 +41,8 @@ bool Engine::uploadEntry(Provider *provider, const Entry& entry)
     //d->uploadprovider = provider;
     //d->uploadedentry = entry;
 
-    //KUrl sourcepayload = KUrl(entry.payload().representation());
-    //KUrl destfolder = provider->uploadUrl();
+    //QUrl sourcepayload = QUrl(entry.payload().representation());
+    //QUrl destfolder = provider->uploadUrl();
 
     //destfolder.setFileName(sourcepayload.fileName());
 
@@ -74,8 +74,8 @@ void Engine::slotUploadPayloadResult(KJob *job)
     //    return;
     //}
 
-    //KUrl sourcepreview = KUrl(d->uploadedentry.preview().representation());
-    //KUrl destfolder = d->uploadprovider->uploadUrl();
+    //QUrl sourcepreview = QUrl(d->uploadedentry.preview().representation());
+    //QUrl destfolder = d->uploadprovider->uploadUrl();
 
     //destfolder.setFileName(sourcepreview.fileName());
 
@@ -102,8 +102,8 @@ void Engine::slotUploadPreviewResult(KJob *job)
     //// when we upload, the entry should probably be cached!
 
     //// FIXME: adhere to meta naming rules as discussed
-    //KUrl sourcemeta = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta");
-    //KUrl destfolder = d->uploadprovider->uploadUrl();
+    //QUrl sourcemeta = QString(KGlobal::dirs()->saveLocation("tmp") + KRandom::randomString(10) + ".meta");
+    //QUrl destfolder = d->uploadprovider->uploadUrl();
 
     //destfolder.setFileName(sourcemeta.fileName());
 

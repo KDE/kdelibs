@@ -34,12 +34,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QLayout>
 #include <QDesktopWidget>
 #include <QPushButton>
-#include <qstandardpaths.h>
+#include <QStandardPaths>
 #include <QTextBrowser>
+#include <QDebug>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <ksharedconfig.h>
 #include <krandom.h>
@@ -72,13 +72,13 @@ void KTipDatabase::Private::addTips( const QString &tipFile )
     const QString fileName = QStandardPaths::locate(QStandardPaths::GenericDataLocation, tipFile);
 
   if ( fileName.isEmpty() ) {
-    kDebug() << "KTipDatabase::addTips: can't find '" << tipFile << "' in standard dirs";
+    qDebug() << "KTipDatabase::addTips: can't find '" << tipFile << "' in standard dirs";
     return;
   }
 
   QFile file( fileName );
   if ( !file.open( QIODevice::ReadOnly ) ) {
-    kDebug() << "KTipDatabase::addTips: can't open '" << fileName << "' for reading";
+    qDebug() << "KTipDatabase::addTips: can't open '" << fileName << "' for reading";
     return;
   }
 
@@ -103,7 +103,7 @@ void KTipDatabase::Private::addTips( const QString &tipFile )
       tip = tip.mid( 1 );
 
     if ( tip.isEmpty() ) {
-      kDebug() << "Empty tip found! Skipping! " << pos;
+      qDebug() << "Empty tip found! Skipping! " << pos;
       continue;
     }
 
@@ -276,7 +276,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   browserLayout->addWidget( d->tipText );
 
   QLabel *label = new QLabel( this );
-  label->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kdeui/pics/ktip-bulb.png"));
+  label->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kwidgets/pics/ktip-bulb.png"));
   label->setAlignment( Qt::AlignRight | Qt::AlignVCenter );
   browserLayout->addWidget( label );
 

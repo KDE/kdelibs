@@ -29,7 +29,7 @@
 #include "cssparser.h"
 
 #include <kdebug.h>
-#include <kurl.h>
+#include <QUrl>
 
 #include "css_valueimpl.h"
 #include "css_ruleimpl.h"
@@ -2263,7 +2263,7 @@ bool CSSParser::parseFontFaceSrc()
         if (val->unit == CSSPrimitiveValue::CSS_URI && !expectComma && styleElement) {
             DOMString uri = khtml::parseURL( domString( val->string ) );
             parsedValue = new CSSFontFaceSrcValueImpl(
-                              DOMString(KUrl( styleElement->baseURL(), uri.string()).url()), false /*local*/);
+                              DOMString(QUrl(styleElement->baseURL()).resolved(QUrl(uri.string())).toString()), false /*local*/);
             uriValue = parsedValue;
             allowFormat = true;
             expectComma = true;

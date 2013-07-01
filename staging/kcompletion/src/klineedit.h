@@ -34,7 +34,7 @@
 
 #include <kcompletion.h>
 
-#include <kdeui_export.h>
+#include <kcompletion_export.h>
 
 class QAction;
 class QMenu;
@@ -148,7 +148,7 @@ class KLineEditPrivate;
  * @author Dawit Alemayehu <adawit@kde.org>
  */
 
-class KDEUI_EXPORT KLineEdit : public QLineEdit, public KCompletionBase //krazy:exclude=qclasses
+class KCOMPLETION_EXPORT KLineEdit : public QLineEdit, public KCompletionBase //krazy:exclude=qclasses
 {
     friend class KComboBox;
     friend class KLineEditStyle;
@@ -227,7 +227,7 @@ public:
     * @deprecated use setContextMenuPolicy
     */
 #ifndef KDE_NO_DEPRECATED
-    virtual KDEUI_DEPRECATED void setContextMenuEnabled( bool showMenu );
+    virtual KCOMPLETION_DEPRECATED void setContextMenuEnabled( bool showMenu );
 #endif
 
     /**
@@ -235,7 +235,7 @@ public:
      * @deprecated use contextMenuPolicy
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED bool isContextMenuEnabled() const;
+    KCOMPLETION_DEPRECATED bool isContextMenuEnabled() const;
 #endif
 
     /**
@@ -343,7 +343,7 @@ public:
      * @deprecated Use QLineEdit::setPlaceholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED void setClickMessage( const QString &msg );
+    KCOMPLETION_DEPRECATED void setClickMessage( const QString &msg );
 #endif
 
     /**
@@ -351,7 +351,7 @@ public:
      * @deprecated Use QLineEdit::placeholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KDEUI_DEPRECATED QString clickMessage() const;
+    KCOMPLETION_DEPRECATED QString clickMessage() const;
 #endif
 
     /**
@@ -668,7 +668,6 @@ private:
     friend class KLineEditPrivate;
     KLineEditPrivate *const d;
 
-    Q_PRIVATE_SLOT( d, void _k_slotSettingsChanged( int category ) )
     Q_PRIVATE_SLOT( d, void _k_textChanged(const QString&) )
 };
 

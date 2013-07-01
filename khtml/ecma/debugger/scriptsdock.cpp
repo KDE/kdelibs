@@ -25,9 +25,9 @@
 #include <QTreeWidgetItem>
 #include <QStandardItemModel>
 #include <QHeaderView>
+#include <QUrl>
 
 #include <kdebug.h>
-#include <kurl.h>
 
 #include "debugwindow.h"
 #include "debugdocument.h"
@@ -94,8 +94,8 @@ void ScriptsDock::addDocument(DebugDocument *document)
 
     else
     {
-        KUrl kurl(document->url());
-        if (kurl.hasHost())
+        QUrl kurl(document->url());
+        if (!kurl.host().isEmpty())
             domain = kurl.host();
         else
             domain = "localhost";

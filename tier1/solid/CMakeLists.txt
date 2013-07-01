@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 2.8.10.20130309)
+cmake_minimum_required(VERSION 2.8.11)
 
 project(Solid)
 
@@ -27,6 +27,11 @@ endif()
 
 if(NOT WIN32 AND NOT APPLE)
   find_package( UDev )
+  if (NOT UDEV_HAVE_GET_SYSATTR_LIST_ENTRY) # udev_device_get_sysattr_list_entry() is used in udevqtdevice.cpp
+    message(STATUS "Not building Solid UDev backend, version 167 or newer is needed." )
+    set(UDEV_FOUND FALSE)
+  endif()
+
   set_package_properties(UDev PROPERTIES  URL "http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html"
                                           DESCRIPTION "UDev support for Solid"
                                           TYPE OPTIONAL

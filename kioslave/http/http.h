@@ -29,8 +29,8 @@
 #include <QtCore/QStringList>
 #include <QtCore/QDateTime>
 #include <QtNetwork/QLocalSocket>
+#include <QUrl>
 
-#include <kurl.h> // many setQuery calls, port when using qt5
 #include "kio/tcpslavebase.h"
 #include "kio/http.h"
 
@@ -132,7 +132,7 @@ public:
 
     QByteArray methodString() const;
 
-    KUrl url;
+    QUrl url;
     QString encoded_hostname; //### can be calculated on-the-fly
     // Persistent connections
     bool isKeepAlive;

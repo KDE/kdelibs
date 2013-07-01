@@ -20,8 +20,6 @@
 #ifndef KFILEMETADATAMODEL_H
 #define KFILEMETADATAMODEL_H
 
-#include <kurl.h>
-
 #include <QtCore/QHash>
 #include <QtCore/QObject>
 #include <QtCore/QString>

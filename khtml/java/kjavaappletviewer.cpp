@@ -35,6 +35,7 @@
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QtDBus/QtDBus>
+#include <qurlpathinfo.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>
@@ -44,6 +45,7 @@
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kio/authinfo.h>
+#include <kio/global.h>
 #include <kusertimestamp.h>
 
 
@@ -268,7 +270,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
                 const QString name_lower = name.toLower ();
                 if (name == "__KHTML__PLUGINBASEURL" ||
                     name == "BASEURL") {
-                    baseurl = KUrl (KUrl (value), QString (".")).url ();
+                    baseurl = QUrl (QUrl(value).resolved(QUrl("."))).toString();
                 } else if (name == "__KHTML__CODEBASE")
                     khtml_codebase = value;
                 else if (name_lower == QLatin1String("codebase") ||
@@ -319,7 +321,7 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
         QString pwd = QDir().absolutePath ();
         if (!pwd.endsWith ( QString(QDir::separator ())))
             pwd += QDir::separator ();
-        baseurl = KUrl (KUrl (pwd), codebase).url ();
+        baseurl = QUrl(QUrl(pwd).resolved(QUrl(codebase))).toString();
     }
     if (width > 0 && height > 0) {
         m_view->resize (width, height);
@@ -330,10 +332,10 @@ KJavaAppletViewer::KJavaAppletViewer (QWidget * wparent,
     applet->setAppletName (appletname);
     applet->setBaseURL (baseurl);
     // check codebase first
-    const KUrl kbaseURL( baseurl );
-    const KUrl newURL(kbaseURL, codebase);
-    if (KAuthorized::authorizeUrlAction("redirect", KUrl(baseurl), newURL))
-        applet->setCodeBase (newURL.url());
+    const QUrl kbaseURL( baseurl );
+    const QUrl newURL(kbaseURL.resolved(QUrl(codebase)));
+    if (KAuthorized::authorizeUrlAction("redirect", QUrl(baseurl), newURL))
+        applet->setCodeBase (newURL.toString());
     applet->setAppletClass (classname);
     KJavaAppletContext* const cxt = serverMaintainer()->getContext (parent, baseurl);
     applet->setAppletContext (cxt);
@@ -418,9 +420,9 @@ bool KJavaAppletViewer::openUrl (const QUrl & url) {
     if (applet->appletClass ().isEmpty ()) {
         // preview without setting a class?
         if (applet->baseURL ().isEmpty ()) {
-            KUrl urlInfo(url);
-            applet->setAppletClass(urlInfo.fileName());
-            applet->setBaseURL(urlInfo.upUrl().url());
+            QUrl urlInfo(url);
+            applet->setAppletClass(QUrlPathInfo(urlInfo).fileName());
+            applet->setBaseURL(KIO::upUrl(urlInfo).toString());
         } else
             applet->setAppletClass(url.toString());
         AppletParameterDialog (w).exec ();
@@ -542,7 +544,7 @@ void KJavaAppletViewerBrowserExtension::restoreState (QDataStream & stream) {
 
 void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
                                                       const QString & frame) {
-    const KUrl url (doc);
+    const QUrl url (doc);
     KParts::BrowserArguments browserArgs;
     browserArgs.frameName = frame;
     emit openUrlRequest(url, KParts::OpenUrlArguments(), browserArgs);

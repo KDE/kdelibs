@@ -42,6 +42,7 @@
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QCryptographicHash>
+#include <qurlpathinfo.h>
 
 
 static bool isWhiteSpace(char ch)
@@ -438,14 +439,14 @@ struct DigestAuthInfo
     QByteArray cnonce;
     QByteArray username;
     QByteArray password;
-    QList<KUrl> digestURIs;
+    QList<QUrl> digestURIs;
     QByteArray algorithm;
     QByteArray entityBody;
 };
 
 
 //calculateResponse() from the original HTTPProtocol
-static QByteArray calculateResponse(const DigestAuthInfo &info, const KUrl &resource)
+static QByteArray calculateResponse(const DigestAuthInfo &info, const QUrl &resource)
 {
   QCryptographicHash md(QCryptographicHash::Md5);
   QByteArray HA1;
@@ -476,7 +477,9 @@ static QByteArray calculateResponse(const DigestAuthInfo &info, const KUrl &reso
   // Calcualte H(A2)
   authStr = info.method;
   authStr += ':';
-  authStr += resource.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath).toLatin1();
+  authStr += resource.path(QUrl::FullyEncoded).toLatin1();
+  if (resource.hasQuery())
+      authStr += '?' + resource.query(QUrl::FullyEncoded).toLatin1();
   if ( info.qop == "auth-int" )
   {
     authStr += ':';
@@ -558,7 +561,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     }
 
     Q_FOREACH (const QByteArray &path, valueForKey(m_challenge, "domain").split(' ')) {
-        KUrl u(m_resource, QString::fromLatin1(path));
+        QUrl u = m_resource,resolved(QUrl(path));
         if (u.isValid()) {
             info.digestURIs.append(u);
         }
@@ -604,11 +607,12 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
         bool send = true;
 
         // Determine the path of the request url...
-        QString requestPath = m_resource.directory(KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
+        QUrlPathInfo pathInfo(m_resource);
+        QString requestPath = pathInfo.directory(QUrlPathInfo::AppendTrailingSlash);
         if (requestPath.isEmpty())
           requestPath = QLatin1Char('/');
 
-        Q_FOREACH (const KUrl &u, info.digestURIs)
+        Q_FOREACH (const QUrl &u, info.digestURIs)
         {
           send &= (m_resource.scheme().toLower() == u.scheme().toLower());
           send &= (m_resource.host().toLower() == u.host().toLower());
@@ -616,7 +620,8 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
           if (m_resource.port() > 0 && u.port() > 0)
             send &= (m_resource.port() == u.port());
 
-          QString digestPath = u.directory (KUrl::AppendTrailingSlash | KUrl::ObeyTrailingSlash);
+          pathInfo.setUrl(u);
+          QString digestPath = pathInfo.directory(QUrlPathInfo::AppendTrailingSlash);
           if (digestPath.isEmpty())
             digestPath = QLatin1Char('/');
 
@@ -653,7 +658,9 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
     auth += info.nonce;
 
     auth += "\", uri=\"";
-    auth += m_resource.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath).toLatin1();
+    auth += m_resource.path(QUrl::FullyEncoded).toLatin1();
+    if (m_resource.hasQuery())
+      auth += '?' + m_resource.query(QUrl::FullyEncoded).toLatin1();
 
     if (!info.algorithm.isEmpty()) {
       auth += "\", algorithm=";

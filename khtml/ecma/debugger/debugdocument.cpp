@@ -31,7 +31,7 @@ DebugDocument::DebugDocument(KJS::Interpreter* intp, const QString& url,
     m_sourceId  = sourceId;
     m_sourceLines = source.split('\n');
 
-    KUrl kurl(url);
+    QUrl kurl(url);
     m_name = kurl.fileName();
 
     // Might have to fall back in case of query-like things;

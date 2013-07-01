@@ -51,6 +51,7 @@ target_link_libraries(kiocore
  Qt5::Network
  Qt5::DBus
  Qt5::Concurrent
+ ${kdeqt5staging_LIBRARIES} # Needed QUrlPathInfo
 )
 
 if(ACL_FOUND)

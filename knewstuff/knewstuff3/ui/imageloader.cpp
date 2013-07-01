@@ -35,7 +35,7 @@ ImageLoader::ImageLoader(const EntryInternal& entry, EntryInternal::PreviewType 
 
 void ImageLoader::start()
 {
-    KUrl url(m_entry.previewUrl(m_previewType));
+    QUrl url(m_entry.previewUrl(m_previewType));
     if (!url.isEmpty()) {
         m_job = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
         connect(m_job, SIGNAL(result(KJob*)), SLOT(slotDownload(KJob*)));

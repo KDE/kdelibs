@@ -60,6 +60,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QTextCodec>
 #include <QStandardPaths>
+#include <qurlpathinfo.h>
 
 // for keygen
 #include <ksslkeygen.h>
@@ -372,19 +373,19 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                     if (current->id() == ID_INPUT &&
                         static_cast<HTMLInputElementImpl*>(current)->inputType() == HTMLInputElementImpl::FILE)
                     {
-                        KUrl path;
+                        QUrl path;
                         QString val = static_cast<HTMLInputElementImpl*>(current)->value().string().trimmed();
                         if (!val.isEmpty() &&
                             QDir::isRelativePath(val) &&
                             QFile::exists(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val)) {
                             path.setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val);
                         } else {
-                            path = KUrl(val);
+                            path = QUrl(val);
                         }
 
-                        hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
+                        hstr += fixUpfromUnicode(codec, "; filename=\"" + QUrlPathInfo(path).fileName() + "\"");
                         if (path.isValid()) {
-                            fileUploads << path.pathOrUrl();
+                            fileUploads << path.toDisplayString(QUrl::PreferLocalFile);
                             QMimeDatabase db;
                             const QMimeType mime = db.mimeTypeForUrl(path);
                             if (!mime.name().isEmpty()) {
@@ -392,7 +393,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                                 hstr += mime.name().toLatin1().constData();
                             }
                         } else if (!val.isEmpty()) {
-                            fileNotUploads << path.pathOrUrl();
+                            fileNotUploads << path.toDisplayString(QUrl::PreferLocalFile);
                         }
                     }
 
@@ -479,8 +480,8 @@ void HTMLFormElementImpl::setEnctype( const DOMString& type )
 
 static QString calculateAutoFillKey(const HTMLFormElementImpl& e)
 {
-    KUrl k(e.document()->URL());
-    k.setRef(QString());
+    QUrl k(e.document()->URL());
+    k.setFragment(QString());
     k.setQuery(QString());
     // ensure that we have the user / password inside the url
     // otherwise we might have a potential security problem
@@ -585,7 +586,7 @@ void HTMLFormElementImpl::gatherWalletData()
     m_walletMap.clear();
     m_havePassword = false;
     m_haveTextarea = false;
-    const KUrl formUrl(document()->URL());
+    const QUrl formUrl(document()->URL());
     if (view && !view->nonPasswordStorableSite(formUrl.host())) {
         for (QListIterator<HTMLGenericFormElementImpl*> it(formElements); it.hasNext();) {
             HTMLGenericFormElementImpl* const cur = it.next();
@@ -646,7 +647,7 @@ void HTMLFormElementImpl::submit(  )
     bool ok;
     KHTMLView* const view = document()->view();
     const QByteArray form_data = formData(ok);
-    const KUrl formUrl(document()->URL());
+    const QUrl formUrl(document()->URL());
 
     if (ok && view) {
         if (m_walletMap.isEmpty()) {
@@ -1715,14 +1716,14 @@ bool HTMLInputElementImpl::encoding(const QTextCodec* codec, khtml::encodingList
 	case FILE: // hmm, we have the type FILE also.  bad choice here...
         {
             QString local;
-            KUrl fileurl;
+            QUrl fileurl;
             QString val = value().string();
             if (!val.isEmpty() &&
                 QDir::isRelativePath(val) &&
                 QFile::exists(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val)) {
                 fileurl.setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation) + val);
             } else {
-                fileurl = KUrl(val);
+                fileurl = QUrl(val);
             }
 
             KIO::UDSEntry filestat;

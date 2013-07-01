@@ -125,7 +125,7 @@ private:
     Q_PRIVATE_SLOT( d, void slotShowOverview() )
 
     Q_PRIVATE_SLOT( d, void slotPayloadFailed(const EntryInternal& entry) )
-    Q_PRIVATE_SLOT( d, void slotPayloadLoaded(KUrl url) )
+    Q_PRIVATE_SLOT( d, void slotPayloadLoaded(QUrl url) )
 
     Q_PRIVATE_SLOT( d, void slotResetMessage() )
     Q_PRIVATE_SLOT( d, void slotNetworkTimeout() )

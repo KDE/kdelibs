@@ -43,10 +43,10 @@
 #include <QtCore/QObject>
 #include <QtCore/QProcess>
 #include <QtCore/QDateTime>
+#include <QUrl>
 #include <QtDBus/QtDBus>
 
 #include <kservice.h>
-#include <kurl.h>
 #include <connection_p.h> // from KIO
 
 class IdleSlave : public QObject
@@ -77,7 +77,7 @@ protected:
    pid_t mPid;
    QDateTime mBirthDate;
    bool mOnHold;
-   KUrl mUrl;
+   QUrl mUrl;
 };
 
 class SlaveWaitRequest

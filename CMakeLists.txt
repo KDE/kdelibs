@@ -81,6 +81,10 @@ set(KPlotting_LIBRARIES KPlotting)
 
 set(Solid_LIBRARIES Solid)
 
+set(Sonnet_SonnetCore_LIBRARY SonnetCore)
+set(Sonnet_SonnetUi_LIBRARY SonnetUi)
+set(Sonnet_LIBRARIES ${Sonnet_SonnetUi_LIBRARY} ${Sonnet_SonnetCore_LIBRARY} )
+
 
 # tier1/ already builds standalone, so it should not get any include dirs from here.
 

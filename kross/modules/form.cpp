@@ -42,10 +42,10 @@
 #include <QTextCursor>
 #include <QTextBlock>
 #include <QTime>
+#include <QUrl>
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
-#include <kurl.h>
 //#include <kurlcombobox.h>
 //#include <kdiroperator.h>
 #include <kmessagebox.h>
@@ -111,7 +111,7 @@ FormFileWidget::FormFileWidget(QWidget* parent, const QString& startDirOrVariabl
     layout->setMargin(0);
     setLayout(layout);
 
-    d->filewidget = new KFileWidget(KUrl(startDirOrVariable), this);
+    d->filewidget = new KFileWidget(QUrl(startDirOrVariable), this);
     layout->addWidget( d->filewidget );
     //QMetaObject::invokeMethod(d->filewidget, "toggleSpeedbar", Q_ARG(bool,false));
     //KFileDialog::setMode( KFile::File | KFile::LocalOnly );
@@ -193,7 +193,7 @@ QString FormFileWidget::selectedFile() const
       }
     }
     //kDebug()<<d->filename;
-    KUrl url( d->filename );
+    QUrl url = QUrl::fromLocalFile( d->filename );
     return url.path(); // strip file:// at least python chokes on it
 }
 

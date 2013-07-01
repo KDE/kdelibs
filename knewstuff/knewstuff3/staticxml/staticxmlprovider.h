@@ -21,6 +21,7 @@
 #define KNEWSTUFF3_STATICXML_PROVIDER_H
 
 #include "core/provider.h"
+#include <QMap>
 
 namespace KNS3
 {
@@ -69,13 +70,13 @@ namespace KNS3
 
     private:
         bool searchIncludesEntry(const EntryInternal& entry) const;
-        KUrl downloadUrl(SortMode mode) const;
+        QUrl downloadUrl(SortMode mode) const;
         EntryInternal::List installedEntries() const;
         
         // map of download urls to their feed name
-        QMap<QString, KUrl> mDownloadUrls;
-        KUrl mUploadUrl;
-        KUrl mNoUploadUrl;
+        QMap<QString, QUrl> mDownloadUrls;
+        QUrl mUploadUrl;
+        QUrl mNoUploadUrl;
         
         // cache of all entries known from this provider so far, mapped by their id
         EntryInternal::List mCachedEntries;

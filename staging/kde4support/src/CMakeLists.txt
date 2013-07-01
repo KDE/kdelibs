@@ -35,6 +35,7 @@ set(libkde4support_SRCS
     kdecore/kstandarddirs.cpp
     kdecore/kglobal.cpp
     kdecore/kcmdlineargs.cpp
+    kdecore/kurl.cpp
 
     kdeui/k3icon.cpp
     kdeui/kaction.cpp
@@ -121,7 +122,7 @@ set(kde4support_INCLUDES
 )
 target_include_directories(kde4support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
-target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES})
+target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES} KCompletion)
 set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
 
 install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
@@ -154,6 +155,7 @@ install(FILES
     kdecore/kglobal.h
     kdecore/kcmdlineargs.h
     kdecore/klockfile.h
+    kdecore/kurl.h
 
     kdeui/kaccelgen.h
     kdeui/kaction.h

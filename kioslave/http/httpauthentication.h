@@ -22,11 +22,10 @@
 
 #include <config-gssapi.h>
 
-#include <kurl.h>
-
 #include <QtCore/QByteArray>
 #include <QtCore/QString>
 #include <QtCore/QList>
+#include <QUrl>
 
 namespace KIO {
 class AuthInfo;
@@ -163,7 +162,7 @@ protected:
     QByteArray m_scheme;    ///< this is parsed from the header and not necessarily == scheme().
     QByteArray m_challengeText;
     QList<QByteArray> m_challenge;
-    KUrl m_resource;
+    QUrl m_resource;
     QByteArray m_httpMethod;
 
     bool m_isError;

@@ -899,7 +899,7 @@ void KCryptoConfig::load()
     mUseEFile->setChecked(true);
     slotUseEFile();
   }
-  mEGDPath->setUrl(KUrl(cgEGD.readPathEntry("EGDPath", QString())));
+  mEGDPath->setUrl(QUrl(cgEGD.readPathEntry("EGDPath", QString())));
 
 
 #if KSSL_HAVE_SSL

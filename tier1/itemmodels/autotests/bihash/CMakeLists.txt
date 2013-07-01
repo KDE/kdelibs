@@ -1,6 +1,6 @@
 project(bihash_test)
 
-cmake_minimum_required(VERSION 2.8.10.20130309)
+cmake_minimum_required(VERSION 2.8.11)
 
 find_package(Qt4)
 

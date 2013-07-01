@@ -31,13 +31,13 @@
 
 #include <kparts/part.h>
 #include <kparts/browserextension.h>
-#include <kurl.h>
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <klocalizedstring.h>
 #include <kencodingdetector.h>
 #include <kencodingprober.h>
 #include <QtCore/QRegExp>
+#include <QUrl>
 
 class KHTMLPartPrivate;
 class KHTMLPartBrowserExtension;
@@ -142,7 +142,7 @@ namespace KWallet
  * page at some URL) is the following:
  *
  * \code
- * KUrl url = "http://www.kde.org";
+ * QUrl url = "http://www.kde.org";
  * KHTMLPart *w = new KHTMLPart();
  * w->openUrl(url);
  * w->view()->resize(500, 400);
@@ -195,7 +195,7 @@ namespace KWallet
  *
  * \code
  * KHTMLPart *doc = new KHTMLPart();
- * doc->openStream( "text/html", KUrl() );
+ * doc->openStream( "text/html", QUrl() );
  * doc->writeStream( QCString( "<html><body><p>KHTML Rocks!</p></body></html>" ) );
  * doc->closeStream();
  * \endcode
@@ -398,7 +398,7 @@ public:
    * One thing people using this method to add things to the interpreter must
    * consider, is that when you start writing new content to the part, the
    * interpreter is cleared. This includes both use of the
-   * begin( const KUrl &, int, int ) method, and the openUrl( const KUrl & )
+   * begin( const QUrl &, int, int ) method, and the openUrl( const QUrl & )
    * method. If you want your objects to have a longer lifespan, then you must
    * retain a KJS::Object yourself to ensure that the reference count of your
    * custom objects never reaches 0. You will also need to re-add your
@@ -607,13 +607,13 @@ public:
   void setCaretDisplayPolicyNonFocused(CaretDisplayPolicy policy);
 
 #ifndef KDE_NO_COMPAT
-  KUrl baseURL() const;
+  QUrl baseURL() const;
 #endif
 
   /**
    * Returns the URL for the background Image (used by save background)
    */
-  KUrl backgroundURL() const;
+  QUrl backgroundURL() const;
 
   /**
    * Schedules a redirection after @p delay seconds.
@@ -626,7 +626,7 @@ public:
    * If you want url() to return
    * for example "file:/tmp/test.html", you can use the following code:
    * \code
-   * view->begin( KUrl("file:/tmp/test.html" ) );
+   * view->begin( QUrl("file:/tmp/test.html" ) );
    * \endcode
    *
    * @param url is the url of the document to be displayed.  Even if you
@@ -642,7 +642,7 @@ public:
    * All child frames and the old document are removed if you call
    * this method.
    */
-  virtual void begin( const KUrl &url = KUrl(), int xOffset = 0, int yOffset = 0 );
+  virtual void begin( const QUrl &url = QUrl(), int xOffset = 0, int yOffset = 0 );
 
   /**
    * Writes another part of the HTML code to the widget.
@@ -721,7 +721,7 @@ public:
    *
    * To have an effect this function has to be called after calling begin().
    */
-  void setUserStyleSheet( const KUrl &url );
+  void setUserStyleSheet( const QUrl &url );
 
   /**
    * Sets a user defined style sheet to be used on top of the HTML 4
@@ -1125,7 +1125,7 @@ public:
    *
    * @return the actual original url.
    */
-  KUrl toplevelURL();
+  QUrl toplevelURL();
 
   /**
    * Checks whether the page contains unsubmitted form changes.
@@ -1206,10 +1206,10 @@ Q_SIGNALS:
 protected:
 
   /**
-   * returns a KUrl object for the given url. Use when
+   * returns a QUrl object for the given url. Use when
    * you know what you're doing.
    */
-  KUrl completeURL( const QString &url );
+  QUrl completeURL( const QString &url );
 
   /**
    * presents a detailed error message to the user.
@@ -1217,7 +1217,7 @@ protected:
    * @p text kio additional information text.
    * @p url the url that triggered the error.
    */
-  void htmlError( int errorCode, const QString& text, const KUrl& reqUrl );
+  void htmlError( int errorCode, const QString& text, const QUrl& reqUrl );
 
   virtual void customEvent( QEvent *event );
 
@@ -1434,7 +1434,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  void slotRedirection( KIO::Job*, const KUrl& );
+  void slotRedirection( KIO::Job*, const QUrl& );
   /**
    * @internal
    */
@@ -1554,7 +1554,7 @@ private Q_SLOTS:
   /**
    * @internal
    */
-  void slotChildURLRequest( const KUrl &url, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &args );
+  void slotChildURLRequest( const QUrl &url, const KParts::OpenUrlArguments&, const KParts::BrowserArguments &args );
   /**
    * @internal
    */
@@ -1677,7 +1677,7 @@ private:
   enum StatusBarPriority { BarDefaultText, BarHoverText, BarOverrideText };
   void setStatusBarText( const QString& text, StatusBarPriority p);
 
-  bool restoreURL( const KUrl &url );
+  bool restoreURL( const QUrl &url );
   void clearCaretRectIfNeeded();
   void setFocusNodeIfNeeded(const DOM::Selection &);
   void selectionLayoutChanged();
@@ -1687,7 +1687,7 @@ private:
   void onFirstData();
   // Returns whether callingHtmlPart may access this part
   bool checkFrameAccess(KHTMLPart *callingHtmlPart);
-  bool openUrlInFrame(const KUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments);
+  bool openUrlInFrame(const QUrl &url, const KParts::OpenUrlArguments& arguments, const KParts::BrowserArguments &browserArguments);
   void startAutoScroll();
   void stopAutoScroll();
   void overURL( const QString &url, const QString &target, bool shiftPressed = false );
@@ -1766,13 +1766,13 @@ private:
   // Returns true if it's done -- which excludes the case when it's still resolving
   // the mimetype.
   // ### refine comment wrt to error case
-  bool requestObject( khtml::ChildFrame *child, const KUrl &url,
+  bool requestObject( khtml::ChildFrame *child, const QUrl &url,
                       const KParts::OpenUrlArguments &args = KParts::OpenUrlArguments(),
                       const KParts::BrowserArguments& browserArgs = KParts::BrowserArguments() );
 
   // This method does the loading inside a ChildFrame once we know what mimetype to
   // load it as
-  bool processObjectRequest( khtml::ChildFrame *child, const KUrl &url, const QString &mimetype );
+  bool processObjectRequest( khtml::ChildFrame *child, const QUrl &url, const QString &mimetype );
 
   // helper for reporting ChildFrame load failure
   void childLoadFailure( khtml::ChildFrame *child );
@@ -1787,11 +1787,11 @@ private:
   // filed in with things like the mimetype and so on
   //
   // Returns if successful or not
-  bool navigateChild( khtml::ChildFrame *child, const KUrl& url );
+  bool navigateChild( khtml::ChildFrame *child, const QUrl& url );
 
   // Helper for executing javascript: or about: protocols
   bool navigateLocalProtocol( khtml::ChildFrame *child, KParts::ReadOnlyPart *part,
-                              const KUrl& url );
+                              const QUrl& url );
 
 
   DOM::EventListener *createHTMLEventListener( QString code, QString name, DOM::NodeImpl *node, bool svg = false );
@@ -1800,11 +1800,11 @@ private:
   DOM::DocumentImpl *xmlDocImpl() const;
   khtml::ChildFrame *frame( const QObject *obj );
 
-  khtml::ChildFrame *recursiveFrameRequest( KHTMLPart *callingHtmlPart, const KUrl &url,
+  khtml::ChildFrame *recursiveFrameRequest( KHTMLPart *callingHtmlPart, const QUrl &url,
                                             const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs,
                                             bool callParent = true );
 
-  bool checkLinkSecurity( const KUrl &linkURL,const KLocalizedString &message = KLocalizedString(), const QString &button = QString() );
+  bool checkLinkSecurity( const QUrl &linkURL,const KLocalizedString &message = KLocalizedString(), const QString &button = QString() );
   QVariant executeScript( const QString& filename, int baseLine, const DOM::Node &n, const QString& script );
 
   KJSProxy *jScript();

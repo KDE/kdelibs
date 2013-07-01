@@ -187,7 +187,7 @@ void DownloadWidgetPrivate::slotPayloadFailed(const EntryInternal& entry)
                        i18n("Get Hot New Stuff!"));
 }
 
-void DownloadWidgetPrivate::slotPayloadLoaded(KUrl url)
+void DownloadWidgetPrivate::slotPayloadLoaded(QUrl url)
 {
     Q_UNUSED(url)
 }

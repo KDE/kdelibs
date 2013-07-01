@@ -90,7 +90,7 @@ private Q_SLOTS:
         KNameAndUrlInputDialog* nauiDialog = qobject_cast<KNameAndUrlInputDialog *>(dialog);
         if (nauiDialog) {
             nauiDialog->setSuggestedName(typedFilename);
-            nauiDialog->setSuggestedUrl(KUrl("file:///etc"));
+            nauiDialog->setSuggestedUrl(QUrl("file:///etc"));
         } else {
             QLineEdit* lineEdit = dialog->findChild<QLineEdit *>();
             QVERIFY(lineEdit);

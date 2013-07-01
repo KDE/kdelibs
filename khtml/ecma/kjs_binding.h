@@ -32,7 +32,6 @@
 #include <QtCore/QVariant>
 #include <QtCore/QHash>
 #include <QtCore/QString>
-#include <kurl.h>
 #include <kjs/lookup.h>
 #include <kjs/function.h>
 #include <kjs/JSVariableObject.h>

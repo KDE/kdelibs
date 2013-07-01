@@ -126,7 +126,7 @@ public:
      *
      * Syncs the parent config.
      */
-    Q_DECL_OVERRIDE bool sync();
+    bool sync() Q_DECL_OVERRIDE;
 
     /// @reimp
     void markAsClean();

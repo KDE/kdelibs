@@ -27,7 +27,7 @@
 #include <QPushButton>
 
 #include <klocalizedstring.h>
-#include <kurl.h>
+#include <QUrl>
 
 #include <kfiletreeview.h>
 
@@ -62,12 +62,12 @@ Window::Window()
 
 void Window::showHome()
 {
-    mTreeView->setCurrentUrl( KUrl( QDir::home().absolutePath() ) );
+    mTreeView->setCurrentUrl( QUrl::fromLocalFile( QDir::home().absolutePath() ) );
 }
 
 void Window::showRoot()
 {
-    mTreeView->setCurrentUrl( KUrl( QDir::root().absolutePath() ) );
+    mTreeView->setCurrentUrl( QUrl::fromLocalFile( QDir::root().absolutePath() ) );
 }
 
 int main(int argc, char **argv)

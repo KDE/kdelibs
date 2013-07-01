@@ -24,7 +24,6 @@
 #include <kprotocolinfo.h>
 #include <kdirmodel.h>
 #include <kdirlister.h>
-#include <kurl.h>
 //TODO #include "../../kdeui/tests/proxymodeltestsuite/modelspy.h"
 
 #include <qtest.h>
@@ -39,6 +38,7 @@
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
 #include <qurlpathinfo.h>
+#include <QUrl>
 
 QTEST_MAIN(KDirModelTest)
 
@@ -131,7 +131,7 @@ void KDirModelTest::fillModel(bool reload, bool expectAllIndexes)
     const QString path = m_tempDir->path() + '/';
     KDirLister* dirLister = m_dirModel->dirLister();
     kDebug() << "Calling openUrl";
-    dirLister->openUrl(KUrl(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
+    dirLister->openUrl(QUrl::fromLocalFile(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     kDebug() << "enterLoop, waiting for completed()";
     enterLoop();
@@ -395,7 +395,7 @@ Q_DECLARE_METATYPE(QModelIndex) // needed for .value<QModelIndex>()
 void KDirModelTest::testModifyFile()
 {
     const QString file = m_tempDir->path() + "/toplevelfile_2";
-    const KUrl url(file);
+    const QUrl url = QUrl::fromLocalFile(file);
 
 #if 1
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
@@ -492,7 +492,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
 
     // Move
     kDebug() << "Moving" << srcdir << "to" << dest;
-    KIO::CopyJob* job = KIO::move(KUrl(srcdir), KUrl(dest), KIO::HideProgressInfo);
+    KIO::CopyJob* job = KIO::move(QUrl::fromLocalFile(srcdir), QUrl::fromLocalFile(dest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setUiDelegateExtension(0);
     QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
@@ -503,15 +503,15 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     disconnect(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                &m_eventLoop, SLOT(exitLoop()));
 
-    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir")).isValid());
-    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed")).isValid());
 
     connect(m_dirModel, SIGNAL(rowsInserted(QModelIndex,int,int)),
             &m_eventLoop, SLOT(exitLoop()));
 
     // Move back
     kDebug() << "Moving" << dest+dir << "back to" << srcdir;
-    job = KIO::move(KUrl(dest + dir), KUrl(srcdir), KIO::HideProgressInfo);
+    job = KIO::move(QUrl::fromLocalFile(dest + dir), QUrl::fromLocalFile(srcdir), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setUiDelegateExtension(0);
     QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
@@ -529,8 +529,8 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
 void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 {
     const QString path = m_tempDir->path() + '/';
-    const KUrl url(path + "subdir");
-    const KUrl newUrl(path + "subdir_renamed");
+    const QUrl url = QUrl::fromLocalFile(path + "subdir");
+    const QUrl newUrl = QUrl::fromLocalFile(path + "subdir_renamed");
 
     // For #180156 we need a second kdirmodel, viewing the subdir being renamed.
     // I'm abusing m_dirModelForExpand for that purpose.
@@ -561,10 +561,10 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().toString(), newUrl.toString());
     kDebug() << newUrl << "indexForUrl=" << m_dirModel->indexForUrl(newUrl) << "m_dirIndex=" << m_dirIndex;
     QCOMPARE(m_dirModel->indexForUrl(newUrl), m_dirIndex);
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/testfile")).isValid());
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir")).isValid());
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir/testfile")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed/testfile")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed/subsubdir")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed/subsubdir/testfile")).isValid());
 
     // Check the other kdirmodel got redirected
     QCOMPARE(dirListerForExpand->url().toLocalFile(), QString(path+"subdir_renamed"));
@@ -587,14 +587,14 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().toString(), url.toString());
     QCOMPARE(m_dirModel->indexForUrl(url), m_dirIndex);
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir")).isValid());
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir/testfile")).isValid());
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir/subsubdir")).isValid());
-    QVERIFY(m_dirModel->indexForUrl(KUrl(path + "subdir/subsubdir/testfile")).isValid());
-    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed")).isValid());
-    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/testfile")).isValid());
-    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir")).isValid());
-    QVERIFY(!m_dirModel->indexForUrl(KUrl(path + "subdir_renamed/subsubdir/testfile")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir/testfile")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir/subsubdir")).isValid());
+    QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir/subsubdir/testfile")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed/testfile")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed/subsubdir")).isValid());
+    QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed/subsubdir/testfile")).isValid());
 
     // TODO INVESTIGATE
     // QCOMPARE(dirListerForExpand->url().toLocalFile(), path+"subdir");
@@ -615,10 +615,11 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     m_dirModel = 0;
 
     // Now let's rename a directory that is in KDirListerCache
-    const KUrl url(path);
-    KUrl newUrl(path);
-    newUrl.adjustPath(KUrl::RemoveTrailingSlash);
-    newUrl.setPath(newUrl.toLocalFile() + "_renamed");
+    const QUrl url = QUrl::fromLocalFile(path);
+    QUrlPathInfo pathInfo(url);
+    pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
+    QUrl newUrl = pathInfo.url();
+    newUrl.setPath(newUrl.path() + "_renamed");
     kDebug() << newUrl;
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
     QVERIFY(job->exec());
@@ -749,13 +750,13 @@ void KDirModelTest::testExpandToUrl()
     const QString path = m_tempDir->path() + '/';
     if (flags & CacheSubdir) {
         // This way, the listDir for subdir will find items in cache, and will schedule a CachedItemsJob
-        m_dirModel->dirLister()->openUrl(KUrl(path + "subdir"));
+        m_dirModel->dirLister()->openUrl(QUrl::fromLocalFile(path + "subdir"));
         QSignalSpy completedSpy(m_dirModel->dirLister(), SIGNAL(completed()));
         QVERIFY(completedSpy.wait(2000));
     }
     if (flags & ListFinalDir) {
         // This way, the last listDir will find items in cache, and will schedule a CachedItemsJob
-        m_dirModel->dirLister()->openUrl(KUrl(path + "subdir/subsubdir"));
+        m_dirModel->dirLister()->openUrl(QUrl::fromLocalFile(path + "subdir/subsubdir"));
         QSignalSpy completedSpy(m_dirModel->dirLister(), SIGNAL(completed()));
         QVERIFY(completedSpy.wait(2000));
     }
@@ -768,7 +769,7 @@ void KDirModelTest::testExpandToUrl()
         connect(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)),
                 this, SLOT(slotRowsInserted(QModelIndex,int,int)));
         KDirLister* dirListerForExpand = m_dirModelForExpand->dirLister();
-        dirListerForExpand->openUrl(KUrl(path), KDirLister::NoFlags); // async
+        dirListerForExpand->openUrl(QUrl::fromLocalFile(path), KDirLister::NoFlags); // async
     }
     m_rowsInsertedEmitted = false;
     m_expectedExpandSignals = expectedExpandSignals;
@@ -974,13 +975,13 @@ void KDirModelTest::testMultipleSlashes()
 {
     const QString path = m_tempDir->path() + '/';
 
-    QModelIndex index = m_dirModel->indexForUrl(KUrl(path+"subdir//testfile"));
+    QModelIndex index = m_dirModel->indexForUrl(QUrl::fromLocalFile(path+"subdir//testfile"));
     QVERIFY(index.isValid());
 
-    index = m_dirModel->indexForUrl(KUrl(path+"subdir//subsubdir//"));
+    index = m_dirModel->indexForUrl(QUrl::fromLocalFile(path+"subdir//subsubdir//"));
     QVERIFY(index.isValid());
 
-    index = m_dirModel->indexForUrl(KUrl(path+"subdir///subsubdir////testfile"));
+    index = m_dirModel->indexForUrl(QUrl::fromLocalFile(path+"subdir///subsubdir////testfile"));
     QVERIFY(index.isValid());
 }
 
@@ -988,14 +989,14 @@ void KDirModelTest::testUrlWithRef() // #171117
 {
     const QString path = m_tempDir->path() + '/';
     KDirLister* dirLister = m_dirModel->dirLister();
-    KUrl url(path);
-    url.setRef("ref");
+    QUrl url = QUrl::fromLocalFile(path);
+    url.setFragment("ref");
     QVERIFY(url.url().endsWith("#ref"));
     dirLister->openUrl(url, KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
 
-    QCOMPARE(dirLister->url().toString(), url.url(KUrl::RemoveTrailingSlash));
+    QCOMPARE(dirLister->url().toString(), url.toString(QUrl::StripTrailingSlash));
     collectKnownIndexes();
     disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 }
@@ -1005,7 +1006,7 @@ void KDirModelTest::testFontUrlWithHost() // #160057
     if (!KProtocolInfo::isKnownProtocol("fonts")) {
         QSKIP("kio_fonts not installed");
     }
-    KUrl url("fonts://foo/System");
+    QUrl url("fonts://foo/System");
     KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(url, KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
@@ -1019,7 +1020,7 @@ void KDirModelTest::testRemoteUrlWithHost() // #178416
     if (!KProtocolInfo::isKnownProtocol("remote")) {
         QSKIP("kio_remote not installed");
     }
-    KUrl url("remote://foo");
+    QUrl url("remote://foo");
     KDirLister* dirLister = m_dirModel->dirLister();
     dirLister->openUrl(url, KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
@@ -1032,13 +1033,16 @@ void KDirModelTest::testZipFile() // # 171721
 {
     const QString path = QFileInfo(QFINDTESTDATA("wronglocalsizes.zip")).absolutePath();
     KDirLister* dirLister = m_dirModel->dirLister();
-    dirLister->openUrl(KUrl(path), KDirLister::NoFlags);
+    dirLister->openUrl(QUrl::fromLocalFile(path), KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
     enterLoop();
     disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 
-    KUrl zipUrl(path);
-    zipUrl.addPath("wronglocalsizes.zip"); // just a zip file lying here for other reasons
+    QUrlPathInfo zipPath;
+    zipPath.setUrl(QUrl::fromLocalFile(path));
+    zipPath.addPath("wronglocalsizes.zip"); // just a zip file lying here for other reasons
+
+    QUrl zipUrl = zipPath.url();
     QVERIFY(QFile::exists(zipUrl.toLocalFile()));
     zipUrl.setScheme("zip");
     QModelIndex index = m_dirModel->indexForUrl(zipUrl);
@@ -1050,7 +1054,7 @@ void KDirModelTest::testZipFile() // # 171721
 
 void KDirModelTest::testSmb()
 {
-    const KUrl smbUrl("smb:/");
+    const QUrl smbUrl("smb:/");
     // TODO: feed a KDirModel without using a KDirLister.
     // Calling the slots directly.
     // This requires that KDirModel does not ask the KDirLister for its rootItem anymore,
@@ -1086,8 +1090,8 @@ public:
 
 void KDirModelTest::testBug196695()
 {
-    KFileItem rootItem(KUrl(m_tempDir->path() ), QString(), KFileItem::Unknown);
-    KFileItem childItem(KUrl(QString(m_tempDir->path() + "/toplevelfile_1")), QString(), KFileItem::Unknown);
+    KFileItem rootItem(QUrl::fromLocalFile(m_tempDir->path() ), QString(), KFileItem::Unknown);
+    KFileItem childItem(QUrl::fromLocalFile(QString(m_tempDir->path() + "/toplevelfile_1")), QString(), KFileItem::Unknown);
 
     KFileItemList list;
     // Important: the root item must not be first in the list to trigger bug 196695
@@ -1107,7 +1111,7 @@ void KDirModelTest::testDeleteFile()
     const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString path = m_tempDir->path() + '/';
     const QString file = path + "toplevelfile_1";
-    const KUrl url(file);
+    const QUrl url = QUrl::fromLocalFile(file);
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
@@ -1128,7 +1132,7 @@ void KDirModelTest::testDeleteFile()
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(exitLoop()) );
 
-    QModelIndex fileIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
+    QModelIndex fileIndex = m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "toplevelfile_1"));
     QVERIFY(!fileIndex.isValid());
 
     // Recreate the file, for consistency in the next tests
@@ -1148,12 +1152,12 @@ void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet
     const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString path = m_tempDir->path() + '/';
     const QString file = path + "toplevelfile_1";
-    const KUrl url(file);
+    const QUrl url = QUrl::fromLocalFile(file);
 
     KDirLister* dirLister = m_dirModel->dirLister();
     QSignalSpy spyCompleted(dirLister, SIGNAL(completed()));
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
-    dirLister->openUrl(KUrl(path), KDirLister::NoFlags);
+    dirLister->openUrl(QUrl::fromLocalFile(path), KDirLister::NoFlags);
     if (!spyCompleted.isEmpty())
         QSKIP("listing completed too early");
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
@@ -1170,7 +1174,7 @@ void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet
     QCOMPARE(spyRowsRemoved[0][1].toInt(), m_fileIndex.row());
     QCOMPARE(spyRowsRemoved[0][2].toInt(), m_fileIndex.row());
 
-    QModelIndex fileIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
+    QModelIndex fileIndex = m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "toplevelfile_1"));
     QVERIFY(!fileIndex.isValid());
 
     kDebug() << "Test done, recreating file";
@@ -1214,7 +1218,7 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 1); // one less than before
 
     QVERIFY(!m_dirModel->indexForUrl(QUrl::fromLocalFile(dir)).isValid());
-    QModelIndex newIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
+    QModelIndex newIndex = m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "toplevelfile_1"));
     QVERIFY(newIndex.isValid());
     KFileItem newItem = m_dirModel->itemForIndex(newIndex);
     QVERIFY(newItem.isDir()); // yes, the file is a dir now ;-)
@@ -1260,8 +1264,8 @@ void KDirModelTest::testDeleteFiles()
 // A renaming that looks more like a deletion to the model
 void KDirModelTest::testRenameFileToHidden() // #174721
 {
-    const KUrl url(m_tempDir->path() + "/toplevelfile_2");
-    const KUrl newUrl(m_tempDir->path() + "/.toplevelfile_2");
+    const QUrl url = QUrl::fromLocalFile(m_tempDir->path() + "/toplevelfile_2");
+    const QUrl newUrl = QUrl::fromLocalFile(m_tempDir->path() + "/.toplevelfile_2");
 
     QSignalSpy spyDataChanged(m_dirModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)));
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
@@ -1306,7 +1310,7 @@ void KDirModelTest::testRenameFileToHidden() // #174721
 void KDirModelTest::testDeleteDirectory()
 {
     const QString path = m_tempDir->path() + '/';
-    const KUrl url(path + "subdir/subsubdir");
+    const QUrl url = QUrl::fromLocalFile(path + "subdir/subsubdir");
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
@@ -1325,9 +1329,9 @@ void KDirModelTest::testDeleteDirectory()
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(exitLoop()) );
 
-    QModelIndex deletedDirIndex = m_dirModel->indexForUrl(KUrl(path + "subdir/subsubdir"));
+    QModelIndex deletedDirIndex = m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir/subsubdir"));
     QVERIFY(!deletedDirIndex.isValid());
-    QModelIndex dirIndex = m_dirModel->indexForUrl(KUrl(path + "subdir"));
+    QModelIndex dirIndex = m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir"));
     QVERIFY(dirIndex.isValid());
 
     // TODO!!! Bug in KDirWatch? ###
@@ -1338,7 +1342,7 @@ void KDirModelTest::testDeleteCurrentDirectory()
 {
     const int oldTopLevelRowCount = m_dirModel->rowCount();
     const QString path = m_tempDir->path() + '/';
-    const KUrl url(path);
+    const QUrl url = QUrl::fromLocalFile(path);
 
     QSignalSpy spyRowsRemoved(m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)));
     connect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
@@ -1376,19 +1380,11 @@ void KDirModelTest::testDeleteCurrentDirectory()
     disconnect( m_dirModel, SIGNAL(rowsRemoved(QModelIndex,int,int)),
                 &m_eventLoop, SLOT(exitLoop()) );
 
-    QModelIndex fileIndex = m_dirModel->indexForUrl(KUrl(path + "toplevelfile_1"));
+    QModelIndex fileIndex = m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "toplevelfile_1"));
     QVERIFY(!fileIndex.isValid());
 }
 
-#if QT_VERSION < 0x040700
-// The old slow way. (this isn't QUrl's fault, I'm just using QUrl in order
-// to be able to test a different hashing function than the KUrl one).
-inline uint qHash(const QUrl& qurl) {
-    return qHash(qurl.toEncoded());
-}
-#endif
-
-void KDirModelTest::testKUrlHash()
+void KDirModelTest::testQUrlHash()
 {
     const int count = 3000;
     // Prepare an array of QUrls so that url constructing isn't part of the timing
@@ -1398,7 +1394,7 @@ void KDirModelTest::testKUrlHash()
         urls[i] = QUrl("http://www.kde.org/path/"+QString::number(i));
     }
     QHash<QUrl, int> qurlHash;
-    QHash<KUrl, int> kurlHash;
+    QHash<QUrl, int> kurlHash;
     QTime dt; dt.start();
     for (int i = 0; i < count; ++i) {
         qurlHash.insert(urls[i], i);

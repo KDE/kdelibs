@@ -29,7 +29,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QDialog>
 #include <QtCore/QStringList>
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 
 /**
  * A database for tips-of-the-day.
@@ -51,7 +51,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  * @author Matthias Hoelzer-Kluepfel <mhk@kde.org>
  *
  */
-class KDEUI_EXPORT KTipDatabase
+class KWIDGETS_EXPORT KTipDatabase
 {
   public:
     /**
@@ -101,7 +101,7 @@ class KDEUI_EXPORT KTipDatabase
  *
  * @author Matthias Hoelzer-Kluepfel <mhk@caldera.de>
  */
-class KDEUI_EXPORT KTipDialog : public QDialog
+class KWIDGETS_EXPORT KTipDialog : public QDialog
 {
   Q_OBJECT
 

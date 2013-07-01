@@ -171,7 +171,7 @@ void KFilePlacesViewDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
     QRect rectText;
 
-    const KUrl url = placesModel->url(index);
+    const QUrl url = placesModel->url(index);
     bool drawCapacityBar = false;
     if (url.isLocalFile()) {
         const QString mountPointPath = placesModel->url(index).toLocalFile();

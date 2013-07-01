@@ -45,9 +45,9 @@
 #include <QtNetwork/QAuthenticator>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
+#include <QUrl>
 #include <qurlpathinfo.h>
 
-#include <kurl.h>
 #include <kdebug.h>
 #include <klocale.h>
 #include <kconfig.h>
@@ -143,7 +143,7 @@ static bool isCrossDomainRequest( const QString& fqdn, const QString& originURL 
   if (originURL == QLatin1String("true")) // Backwards compatibility
      return true;
 
-  KUrl url ( originURL );
+  QUrl url ( originURL );
 
   // Document Origin domain
   QString a = url.host();
@@ -264,12 +264,12 @@ static bool isEncryptedHttpVariety(const QByteArray &p)
     return p == "https" || p == "webdavs";
 }
 
-static bool isValidProxy(const KUrl &u)
+static bool isValidProxy(const QUrl &u)
 {
-    return u.isValid() && u.hasHost();
+    return u.isValid() && !u.host().isEmpty();
 }
 
-static bool isHttpProxy(const KUrl &u)
+static bool isHttpProxy(const QUrl &u)
 {
     return isValidProxy(u) && u.scheme() == QLatin1String("http");
 }
@@ -446,7 +446,7 @@ void HTTPProtocol::resetSessionSettings()
   m_request.isKeepAlive = true;
   m_request.keepAliveTimeout = 0;
 
-  m_request.redirectUrl = KUrl();
+  m_request.redirectUrl = QUrl();
   m_request.useCookieJar = config()->readEntry("Cookies", false);
   m_request.cacheTag.useCache = config()->readEntry("UseCache", true);
   m_request.preferErrorPage = config()->readEntry("errorPage", true);
@@ -468,7 +468,7 @@ void HTTPProtocol::resetSessionSettings()
   if ( config()->readEntry("SendReferrer", true) &&
        (isEncryptedHttpVariety(m_protocol) || metaData(QLatin1String("ssl_was_in_use")) != QLatin1String("TRUE") ) )
   {
-     KUrl refUrl(metaData(QLatin1String("referrer")));
+     QUrl refUrl(metaData(QLatin1String("referrer")));
      if (refUrl.isValid()) {
         // Sanitize
         QString protocol = refUrl.scheme();
@@ -584,7 +584,7 @@ bool HTTPProtocol::maybeSetRequestUrl(const QUrl &u)
   }
 
   if (u.path().isEmpty()) {
-     KUrl newUrl(u);
+     QUrl newUrl(u);
      newUrl.setPath(QLatin1String("/"));
      redirection(newUrl);
      finished();
@@ -1350,7 +1350,7 @@ void HTTPProtocol::copy( const QUrl& src, const QUrl& dest, int, KIO::JobFlags f
   resetSessionSettings();
 
   // destination has to be "http(s)://..."
-  KUrl newDest = dest;
+  QUrl newDest = dest;
   if (newDest.scheme() == QLatin1String("webdavs"))
     newDest.setScheme(QLatin1String("https"));
   else if (newDest.scheme() == QLatin1String("webdav"))
@@ -1380,7 +1380,7 @@ void HTTPProtocol::rename( const QUrl& src, const QUrl& dest, KIO::JobFlags flag
   resetSessionSettings();
 
   // destination has to be "http://..."
-  KUrl newDest = dest;
+  QUrl newDest = dest;
   if (newDest.scheme() == QLatin1String("webdavs"))
     newDest.setScheme(QLatin1String("https"));
   else if (newDest.scheme() == QLatin1String("webdav"))
@@ -1931,7 +1931,7 @@ void HTTPProtocol::multiGet(const QByteArray &data)
     resetSessionSettings();
 
     for (unsigned i = 0; i < n; ++i) {
-        KUrl url;
+        QUrl url;
         stream >> url >> mIncomingMetaData;
 
         if (!maybeSetRequestUrl(url))
@@ -2123,7 +2123,7 @@ bool HTTPProtocol::readDelimitedText(char *buf, int *idx, int end, int numNewlin
     return false;
 }
 
-static bool isCompatibleNextUrl(const KUrl &previous, const KUrl &now)
+static bool isCompatibleNextUrl(const QUrl &previous, const QUrl &now)
 {
     if (previous.host() != now.host() || previous.port() != now.port()) {
         return false;
@@ -2145,7 +2145,7 @@ bool HTTPProtocol::httpShouldCloseConnection()
     if (!m_request.proxyUrls.isEmpty() && !isAutoSsl()) {
         Q_FOREACH(const QString& url, m_request.proxyUrls) {
             if (url != QLatin1String("DIRECT")) {
-                if (isCompatibleNextUrl(m_server.proxyUrl, KUrl(url))) {
+                if (isCompatibleNextUrl(m_server.proxyUrl, QUrl(url))) {
                     return false;
                 }
             }
@@ -2180,9 +2180,9 @@ bool HTTPProtocol::httpOpenConnection()
     if (m_request.proxyUrls.isEmpty()) {
         connectError = connectToHost(m_request.url.host(), m_request.url.port(defaultPort()), &errorString);
     } else {
-        QList<KUrl> badProxyUrls;
+        QList<QUrl> badProxyUrls;
         Q_FOREACH(const QString& proxyUrl, m_request.proxyUrls) {
-            const KUrl url (proxyUrl);
+            const QUrl url (proxyUrl);
             const QString scheme (url.scheme());
 
             if (!supportedProxyScheme(scheme)) {
@@ -2308,7 +2308,7 @@ QString HTTPProtocol::formatRequestUri() const
     // we handle HTTP proxying ourself and the proxy server needs to know them.
     // Sending protocol/host/port in other cases confuses some servers, and it's not their fault.
     if (isHttpProxy(m_request.proxyUrl) && !isAutoSsl()) {
-        KUrl u;
+        QUrl u;
 
         QString protocol = m_request.url.scheme();
         if (protocol.startsWith(QLatin1String("webdav"))) {
@@ -2320,11 +2320,14 @@ QString HTTPProtocol::formatRequestUri() const
         // if the URL contained the default port it should have been stripped earlier
         Q_ASSERT(m_request.url.port() != defaultPort());
         u.setPort(m_request.url.port());
-        u.setEncodedPathAndQuery(m_request.url.encodedPathAndQuery(
-                                    KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath));
+        u.setPath(m_request.url.path(QUrl::FullyEncoded));
+        u.setQuery(m_request.url.query(QUrl::FullyEncoded));
         return u.toString();
     } else {
-        return m_request.url.encodedPathAndQuery(KUrl::LeaveTrailingSlash, KUrl::AvoidEmptyPath);
+        QString result = m_request.url.path(QUrl::FullyEncoded);
+        if (m_request.url.hasQuery())
+            result += QLatin1Char('?') + m_request.url.query(QUrl::FullyEncoded);
+        return result;
     }
 }
 
@@ -3435,7 +3438,7 @@ endParsing:
         // We need to do a redirect
         if (!locationStr.isEmpty())
         {
-            KUrl u(m_request.url, locationStr);
+            QUrl u = m_request.url.resolved(QUrl(locationStr));
             if(!u.isValid())
             {
                 error(ERR_MALFORMED_URL, u.toDisplayString());
@@ -3446,10 +3449,10 @@ endParsing:
             // if we were at http://host/resource1#ref, we sent a GET for "/resource1"
             // if we got redirected to http://host/resource2, then we have to re-add
             // the fragment:
-            if (m_request.url.hasRef() && !u.hasRef() &&
+            if (m_request.url.hasFragment() && !u.hasFragment() &&
                 (m_request.url.host() == u.host()) &&
                 (m_request.url.scheme() == u.scheme()))
-                u.setRef(m_request.url.ref());
+                u.setFragment(m_request.url.fragment());
 
             m_isRedirection = true;
 
@@ -4006,7 +4009,7 @@ void HTTPProtocol::special( const QByteArray &data )
   switch (tmp) {
     case 1: // HTTP POST
     {
-      KUrl url;
+      QUrl url;
       qint64 size;
       stream >> url >> size;
       post( url, size );
@@ -4014,7 +4017,7 @@ void HTTPProtocol::special( const QByteArray &data )
     }
     case 2: // cache_update
     {
-        KUrl url;
+        QUrl url;
         bool no_cache;
         qint64 expireDate;
         stream >> url >> no_cache >> expireDate;
@@ -4042,7 +4045,7 @@ void HTTPProtocol::special( const QByteArray &data )
     }
     case 5: // WebDAV lock
     {
-      KUrl url;
+      QUrl url;
       QString scope, type, owner;
       stream >> url >> scope >> type >> owner;
       davLock( url, scope, type, owner );
@@ -4050,14 +4053,14 @@ void HTTPProtocol::special( const QByteArray &data )
     }
     case 6: // WebDAV unlock
     {
-      KUrl url;
+      QUrl url;
       stream >> url;
       davUnlock( url );
       break;
     }
     case 7: // Generic WebDAV
     {
-      KUrl url;
+      QUrl url;
       int method;
       qint64 size;
       stream >> url >> method >> size;
@@ -4699,9 +4702,9 @@ header line\n
 \n
 */
 
-static KUrl storableUrl(const KUrl &url)
+static QUrl storableUrl(const QUrl &url)
 {
-    KUrl ret(url);
+    QUrl ret(url);
     ret.setPassword(QString());
     ret.setFragment(QString());
     return ret;
@@ -4793,7 +4796,7 @@ bool HTTPProtocol::cacheFileReadTextHeader2()
     return ok; // it may still be false ;)
 }
 
-static QString filenameFromUrl(const KUrl &url)
+static QString filenameFromUrl(const QUrl &url)
 {
     QCryptographicHash hash(QCryptographicHash::Sha1);
     hash.addData(storableUrl(url).toEncoded());
@@ -5403,7 +5406,7 @@ try_next_auth_scheme:
                     // Save the current authinfo url because it can be modified by the call to
                     // checkCachedAuthentication. That way we can restore it if the call
                     // modified it.
-                    const KUrl reqUrl = authinfo.url;
+                    const QUrl reqUrl = authinfo.url;
                     if (!errorMsg.isEmpty() || !checkCachedAuthentication(authinfo)) {
                         // Reset url to the saved url...
                         authinfo.url = reqUrl;

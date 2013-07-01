@@ -862,10 +862,10 @@ void DocumentImpl::setTitle(const DOMString& _title)
     if ( view() && !view()->part()->parentPart() ) {
 	if (titleStr.isEmpty()) {
 	    // empty title... set window caption as the URL
-	    KUrl url = m_url;
-	    url.setRef(QString());
+	    QUrl url = m_url;
+	    url.setFragment(QString());
 	    url.setQuery(QString());
-	    titleStr = url.prettyUrl();
+	    titleStr = url.toDisplayString();
 	}
 
 	emit view()->part()->setWindowCaption( titleStr );
@@ -1700,7 +1700,7 @@ void DocumentImpl::finishParsing (  )
 
 QString DocumentImpl::completeURL(const QString& url) const
 {
-    return KUrl(baseURL(),url /*,m_decoderMibEnum*/).url();
+    return baseURL().resolved(QUrl(url)).toString();
 }
 
 void DocumentImpl::setUserStyleSheet( const QString& sheet )
@@ -2018,7 +2018,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
     else if(v && (strcasecmp(equiv, "pragma") == 0 || strcasecmp(equiv, "cache-control") == 0))
     {
         QString str = content.string().toLower().trimmed();
-        KUrl url = v->part()->url();
+        QUrl url = v->part()->url();
         if ((str == "no-cache") && url.scheme().startsWith(QLatin1String("http")))
         {
             KIO::http_update_cache(url, true, QDateTime::fromTime_t(0));
@@ -2407,11 +2407,11 @@ void DocumentImpl::rebuildStyleSelector()
     m_styleSelectorDirty = false;
 }
 
-void DocumentImpl::setBaseURL(const KUrl& _baseURL)
+void DocumentImpl::setBaseURL(const QUrl& _baseURL)
 {
     m_baseURL = _baseURL;
     if (m_elemSheet)
-        m_elemSheet->setHref( baseURL().url() );
+        m_elemSheet->setHref( baseURL().toString() );
 }
 
 void DocumentImpl::setHoverNode(NodeImpl *newHoverNode)
@@ -2567,8 +2567,8 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
 {
     KHTMLPart *thisPart = part();
 
-    KUrl newURL(completeURL(url));
-    newURL.setRef(QString());
+    QUrl newURL(completeURL(url));
+    newURL.setFragment(QString());
 
     if (KHTMLGlobal::defaultHTMLSettings()->isAdFiltered( newURL.url() ))
         return false;
@@ -2585,8 +2585,8 @@ bool DocumentImpl::isURLAllowed(const QString& url) const
     // But we don't allow more than one.
     bool foundSelfReference = false;
     for (KHTMLPart *part = thisPart; part; part = part->parentPart()) {
-        KUrl partURL = part->url();
-        partURL.setRef(QString());
+        QUrl partURL = part->url();
+        partURL.setFragment(QString());
         if (partURL == newURL) {
             if (foundSelfReference)
                 return false;
@@ -2697,7 +2697,7 @@ void DocumentImpl::loadXML(const DOMString &source)
 void DocumentImpl::setStyleSheet(const DOM::DOMString &url, const DOM::DOMString &sheet, const DOM::DOMString &/*charset*/, const DOM::DOMString &mimetype)
 {
     if (!m_hadLoadError) {
-	m_url = url.string();
+	m_url = QUrl(url.string());
 	loadXML(khtml::isAcceptableCSSMimetype(mimetype) ? sheet : "");
     }
 

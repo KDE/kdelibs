@@ -19,7 +19,6 @@
  */
 
 #include "interpreter_ctx.h"
-#include <kurl.h>
 
 namespace KJSDebugger {
 

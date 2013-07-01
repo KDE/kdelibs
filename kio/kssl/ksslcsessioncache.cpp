@@ -23,9 +23,9 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QPair>
 #include <QtCore/QString>
+#include <QUrl>
 
 #include <kdebug.h>
-#include <kurl.h>
 
 #include <ksslconfig.h>
 

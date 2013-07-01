@@ -329,7 +329,7 @@
 
 
 # this is required now by cmake 2.6 and so must not be skipped by if(KDE4_FOUND) below
-cmake_minimum_required(VERSION 2.8.9 FATAL_ERROR)
+cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
 # set the cmake policies to the 2.4.x compatibility settings (may change for KDE 4.3)
 cmake_policy(VERSION 2.4.5)
 
@@ -469,6 +469,10 @@ list(GET _importedConfigurations 0 _firstConfig)
 get_target_property(KDE4_MEINPROC_EXECUTABLE          ${KDE4_TARGET_PREFIX}meinproc4           LOCATION_${_firstConfig})
 get_target_property(KDE4_MAKEKDEWIDGETS_EXECUTABLE    ${KDE4_TARGET_PREFIX}makekdewidgets      LOCATION_${_firstConfig})
 
+# Include the Sonnet targets, they are needed by the imported kdeui target (included via KDELibs4LibraryTargets.cmake)
+if(NOT TARGET KF5::SonnetCore)
+   include(${KDE4_LIB_INSTALL_DIR}/cmake/Sonnet/SonnetTargets.cmake)
+endif()
 
 # This file contains the exported library target from kdelibs (new with cmake 2.6.x), e.g.
 # the library target "kdeui" is exported as "KDE4__kdeui". The "KDE4__" is used as

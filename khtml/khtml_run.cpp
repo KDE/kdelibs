@@ -28,7 +28,7 @@
 #include "khtml_ext.h"
 #include <QImage>
 
-KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const KUrl &url,
+KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const QUrl &url,
                     const KParts::OpenUrlArguments& args,
                     const KParts::BrowserArguments &browserArgs,
                     bool hideErrorDialog )
@@ -95,7 +95,7 @@ void KHTMLRun::foundMimeType( const QString &_type )
 void KHTMLRun::handleError(KJob*)
 {
     // Tell KHTML that loading failed.
-    static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, KUrl(), QString() );
+    static_cast<KHTMLPart *>(part())->processObjectRequest( m_child, QUrl(), QString() );
     setJob(0);
 }
 

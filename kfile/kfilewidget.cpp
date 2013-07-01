@@ -209,7 +209,7 @@ public:
     KFileWidget* q;
 
     // the last selected url
-    KUrl url;
+    QUrl url;
 
     // the selected filenames in multiselection mode -- FIXME
     QString filenames;
@@ -290,7 +290,7 @@ public:
     // app-specific and are stored in kdeglobals
     KConfigGroup configGroup; };
 
-Q_GLOBAL_STATIC(KUrl, lastDirectory) // to set the start path
+Q_GLOBAL_STATIC(QUrl, lastDirectory) // to set the start path
 
 static const char autocompletionWhatsThisText[] = I18N_NOOP("<qt>While typing in the text area, you may be presented "
                                                   "with possible matches. "
@@ -776,6 +776,8 @@ QUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
     return u;
 }
 
+static QString relativePathOrUrl(const QUrl &baseUrl, const QUrl& url);
+
 // Called by KFileDialog
 void KFileWidget::slotOk()
 {
@@ -831,7 +833,7 @@ void KFileWidget::slotOk()
         if (!d->differentHierarchyLevelItemsEntered) {     // avoid infinite recursion. running this
             QList<QUrl> urlList;                            // one time is always enough.
             int start = 0;
-            KUrl topMostUrl;
+            QUrl topMostUrl;
             KIO::StatJob *statJob = 0;
             bool res = false;
 
@@ -851,38 +853,42 @@ void KFileWidget::slotOk()
             // if this is not a dir, strip the filename. after this we have an existent and valid
             // dir (if we stated correctly the file, setting a null filename won't make any bad).
             if (!statJob->statResult().isDir()) {
-                topMostUrl.setFileName(QString());
+                QUrlPathInfo pathInfo(topMostUrl);
+                pathInfo.setFileName(QString());
+                topMostUrl = pathInfo.url();
             }
 
             // now the funny part. for the rest of filenames, go and look for the closest ancestor
             // of all them.
             for (int i = start; i < locationEditCurrentTextList.count(); ++i) {
-                KUrl currUrl = locationEditCurrentTextList.at(i);
+                QUrl currUrl = locationEditCurrentTextList.at(i);
                 KIO::StatJob *statJob = KIO::stat(currUrl, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     // again, we don't care about filenames
                     if (!statJob->statResult().isDir()) {
-                        currUrl.setFileName(QString());
+                        QUrlPathInfo pathInfo(currUrl);
+                        pathInfo.setFileName(QString());
+                        currUrl = pathInfo.url();
                     }
 
                     // iterate while this item is contained on the top most url
                     while (!QUrlPathInfo(topMostUrl).isParentOfOrEqual(currUrl)) {
-                        topMostUrl = topMostUrl.upUrl();
+                        topMostUrl = KIO::upUrl(topMostUrl);
                     }
                 }
             }
 
             // now recalculate all paths for them being relative in base of the top most url
             for (int i = 0; i < locationEditCurrentTextList.count(); ++i) {
-                locationEditCurrentTextList[i] = QUrl(KUrl::relativeUrl(topMostUrl, locationEditCurrentTextList[i]));
+                locationEditCurrentTextList[i] = QUrl(relativePathOrUrl(topMostUrl, locationEditCurrentTextList[i]));
             }
 
             d->ops->setUrl(topMostUrl, true);
             const bool signalsBlocked = d->locationEdit->lineEdit()->blockSignals(true);
             QStringList stringList;
-            foreach (const KUrl &url, locationEditCurrentTextList) {
-                stringList << url.prettyUrl();
+            foreach (const QUrl &url, locationEditCurrentTextList) {
+                stringList << url.toDisplayString();
             }
             d->locationEdit->lineEdit()->setText(QString("\"%1\"").arg(stringList.join("\" \"")));
             d->locationEdit->lineEdit()->blockSignals(signalsBlocked);
@@ -902,30 +908,36 @@ void KFileWidget::slotOk()
              containsProtocolSection(locationEditCurrentText))) {
 
             QString fileName;
-            KUrl url(locationEditCurrentText);
+            QUrl url(locationEditCurrentText);
             if (d->operationMode == Opening) {
                 KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     if (!statJob->statResult().isDir()) {
-                        url.adjustPath(KUrl::RemoveTrailingSlash);
-                        fileName = url.fileName();
-                        url.setFileName(QString());
+                        QUrlPathInfo pathInfo(url);
+                        pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
+                        fileName = pathInfo.fileName();
+                        pathInfo.setFileName(QString());
+                        url = pathInfo.url();
                     } else {
-                        url.adjustPath(KUrl::AddTrailingSlash);
+                        QUrlPathInfo pathInfo(url);
+                        pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+                        url = pathInfo.url();
                     }
                 }
             } else {
-                KUrl directory = url;
-                directory.setFileName(QString());
+                QUrlPathInfo pathInfo(url);
+                pathInfo.setFileName(QString());
+                QUrl directory = pathInfo.url();
                 //Check if the folder exists
                 KIO::StatJob * statJob = KIO::stat(directory, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     if (statJob->statResult().isDir()) {
-                        url.adjustPath(KUrl::RemoveTrailingSlash);
-                        fileName = url.fileName();
-                        url.setFileName(QString());
+                        pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
+                        fileName = pathInfo.fileName();
+                        pathInfo.setFileName(QString());
+                        url = pathInfo.url();
                     }
                 }
             }
@@ -949,7 +961,7 @@ void KFileWidget::slotOk()
     QList<QUrl>::ConstIterator it = locationEditCurrentTextList.constBegin();
     bool filesInList = false;
     while (it != locationEditCurrentTextList.constEnd()) {
-        KUrl url(*it);
+        QUrl url(*it);
 
         if (d->operationMode == Saving && !directoryMode) {
             d->appendExtension(url);
@@ -960,7 +972,7 @@ void KFileWidget::slotOk()
         bool res = KIO::NetAccess::synchronousRun(statJob, this);
 
         if (!KAuthorized::authorizeUrlAction("open", QUrl(), url)) {
-            QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.prettyUrl());
+            QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->url.toDisplayString());
             KMessageBox::error(this, msg);
             return;
         }
@@ -983,7 +995,7 @@ void KFileWidget::slotOk()
             // cd
             ++it;
             while (it != locationEditCurrentTextList.constEnd()) {
-                KUrl checkUrl(*it);
+                QUrl checkUrl(*it);
                 KIO::StatJob *checkStatJob = KIO::stat(checkUrl, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(checkStatJob, this);
                 if (res && checkStatJob->statResult().isDir()) {
@@ -1010,7 +1022,7 @@ void KFileWidget::slotOk()
             }
             filesInList = true;
         } else {
-            KMessageBox::sorry(this, i18n("The file \"%1\" could not be found", url.pathOrUrl()), i18n("Cannot open file"));
+            KMessageBox::sorry(this, i18n("The file \"%1\" could not be found", url.toDisplayString(QUrl::PreferLocalFile)), i18n("Cannot open file"));
             return; // do not emit accepted() if we had ExistingOnly flag and stat failed
         }
         ++it;
@@ -1036,11 +1048,11 @@ void KFileWidget::accept()
     QList<QUrl>::const_iterator it = list.begin();
     int atmost = d->locationEdit->maxItems(); //don't add more items than necessary
     for ( ; it != list.end() && atmost > 0; ++it ) {
-        const KUrl& url = *it;
+        const QUrl& url = *it;
         // we strip the last slash (-1) because KUrlComboBox does that as well
         // when operating in file-mode. If we wouldn't , dupe-finding wouldn't
         // work.
-        QString file = url.isLocalFile() ? url.toLocalFile(KUrl::RemoveTrailingSlash) : url.prettyUrl(KUrl::RemoveTrailingSlash);
+        QString file = url.isLocalFile() ? url.toLocalFile() : url.toDisplayString();
 
         // remove dupes
         for ( int i = 1; i < d->locationEdit->count(); i++ ) {
@@ -1225,7 +1237,7 @@ void KFileWidgetPrivate::setLocationText(const QUrl& url)
         const QString path = url.path();
         if (!path.isEmpty()) {
             if (!urlPathInfo.directory().isEmpty()) {
-                KUrl u(url);
+                QUrl u(url);
                 u.setPath(urlPathInfo.directory());
                 q->setUrl(u, false);
             } else {
@@ -1243,21 +1255,18 @@ void KFileWidgetPrivate::setLocationText(const QUrl& url)
     }
 }
 
-static bool isRelativeUrl(const KUrl &baseUrl, const KUrl& url)
+static QString relativePathOrUrl(const QUrl &baseUrl, const QUrl& url)
 {
-    return KUrl::relativeUrl(baseUrl, url) != url.url();
-}
-
-static QString relativePathOrUrl(const KUrl &baseUrl, const KUrl& url)
-{
-    if (isRelativeUrl(baseUrl, url)) {
-        QString relPath = KUrl::relativePath(baseUrl.path(), url.path());
-        if (relPath.startsWith("./")) {
-            relPath = relPath.mid(2);
+    if (baseUrl.isParentOf(url)) {
+        const QString basePath(QDir::cleanPath(baseUrl.path()));
+        QString relPath(QDir::cleanPath(url.path()));
+        relPath.remove(0, basePath.length());
+        if (relPath.startsWith('/')) {
+            relPath = relPath.mid(1);
         }
         return relPath;
     } else {
-        return url.prettyUrl();
+        return url.toDisplayString();
     }
 }
 
@@ -1480,11 +1489,11 @@ void KFileWidgetPrivate::_k_enterUrl(const QUrl& url)
 {
 //     kDebug(kfile_area);
 
-    KUrl fixedUrl( url );
+    QUrlPathInfo pathInfo( url );
     // append '/' if needed: url combo does not add it
     // tokenize() expects it because uses KUrl::setFileName()
-    fixedUrl.adjustPath( KUrl::AddTrailingSlash );
-    q->setUrl( fixedUrl );
+    pathInfo.adjustPath( QUrlPathInfo::AppendTrailingSlash );
+    q->setUrl( pathInfo.url() );
     if (!locationEdit->hasFocus())
         ops->setFocus();
 }
@@ -1547,10 +1556,10 @@ void KFileWidgetPrivate::_k_slotLoadingFinished()
     }
 
     ops->blockSignals(true);
-    KUrl url = ops->url();
-    url.adjustPath(KUrl::AddTrailingSlash);
-    url.setFileName(locationEdit->currentText());
-    ops->setCurrentItem(url);
+    QUrlPathInfo pathInfo(ops->url());
+    pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+    pathInfo.setFileName(locationEdit->currentText());
+    ops->setCurrentItem(pathInfo.url());
     ops->blockSignals(false);
 }
 
@@ -1625,9 +1634,9 @@ QList<QUrl>& KFileWidgetPrivate::parseSelectedUrls()
 
     urlList.clear();
     if ( filenames.contains( '/' )) { // assume _one_ absolute filename
-        KUrl u;
+        QUrl u;
         if ( containsProtocolSection( filenames ) )
-            u = filenames;
+            u = QUrl(filenames);
         else
             u.setPath( filenames );
 
@@ -1655,16 +1664,16 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
 //     kDebug(kfile_area);
 
     QList<QUrl> urls;
-    KUrl u( ops->url() );
-    u.adjustPath(KUrl::AddTrailingSlash);
+    QUrlPathInfo u( ops->url() );
+    u.adjustPath(QUrlPathInfo::AppendTrailingSlash);
     QString name;
 
     const int count = line.count( QLatin1Char( '"' ) );
     if ( count == 0 ) { // no " " -> assume one single file
         if (!QDir::isAbsolutePath(line)) {
             u.setFileName( line );
-            if ( u.isValid() )
-                urls.append( u );
+            if ( u.url().isValid() )
+                urls.append( u.url() );
         } else {
             urls << QUrl::fromUserInput(line);
         }
@@ -1685,19 +1694,19 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
         name = line.mid( index1 + 1, index2 - index1 - 1 );
 
         // since we use setFileName we need to do this under a temporary url
-        KUrl _u( u );
-        KUrl currUrl( name );
+        QUrlPathInfo _u( u );
+        QUrl currUrl( name );
 
         if ( !QDir::isAbsolutePath(currUrl.url()) ) {
             _u.setFileName( name );
         } else {
             // we allow to insert various absolute paths like:
             // "/home/foo/bar.txt" "/boot/grub/menu.lst"
-            _u = currUrl;
+            _u.setUrl(currUrl);
         }
 
-        if ( _u.isValid() ) {
-            urls.append( _u );
+        if ( _u.url().isValid() ) {
+            urls.append( _u.url() );
         }
 
         start = index2 + 1;
@@ -1712,7 +1721,7 @@ QString KFileWidget::selectedFile() const
 //     kDebug(kfile_area);
 
     if ( d->inAccept ) {
-        const KUrl url = d->mostLocalUrl(d->url);
+        const QUrl url = d->mostLocalUrl(d->url);
         if (url.isLocalFile())
             return url.toLocalFile();
         else {
@@ -1735,7 +1744,7 @@ QStringList KFileWidget::selectedFiles() const
             const QList<QUrl> urls = d->parseSelectedUrls();
             QList<QUrl>::const_iterator it = urls.begin();
             while (it != urls.end()) {
-                KUrl url = d->mostLocalUrl(*it);
+                QUrl url = d->mostLocalUrl(*it);
                 if (url.isLocalFile())
                     list.append(url.toLocalFile());
                 ++it;
@@ -2294,7 +2303,7 @@ void KFileWidgetPrivate::updateLocationEditExtension (const QString &lastExtensi
     if (urlStr.isEmpty())
         return;
 
-    KUrl url = getCompleteUrl(urlStr);
+    QUrl url = getCompleteUrl(urlStr);
 //     kDebug (kfile_area) << "updateLocationEditExtension (" << url << ")";
 
     const int fileNameOffset = urlStr.lastIndexOf ('/') + 1;
@@ -2497,14 +2506,15 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
         lafBox->setColumnMinimumWidth(0, placesViewWidth);
 
         // check to see if they have a home item defined, if not show the home button
-        KUrl homeURL;
+        QUrl homeURL;
         homeURL.setPath( QDir::homePath() );
+        QUrlPathInfo pathInfo(homeURL);
         KFilePlacesModel *model = static_cast<KFilePlacesModel*>(placesView->model());
         for (int rowIndex = 0 ; rowIndex < model->rowCount() ; rowIndex++) {
             QModelIndex index = model->index(rowIndex, 0);
-            KUrl url = model->url(index);
+            QUrl url = model->url(index);
 
-            if ( homeURL.equals( url, KUrl::CompareWithoutTrailingSlash ) ) {
+            if ( pathInfo.equals( url, QUrlPathInfo::CompareWithoutTrailingSlash ) ) {
                 toolbar->removeAction( ops->actionCollection()->action( "home" ) );
                 break;
             }
@@ -2588,7 +2598,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
 {
     recentDirClass.clear();
     fileName.clear();
-    KUrl ret;
+    QUrl ret;
 
     QUrlPathInfo startDirInfo(startDir);
     bool useDefaultStartDir = startDir.isEmpty();
@@ -2791,7 +2801,7 @@ QUrl KFileWidgetPrivate::mostLocalUrl(const QUrl &url)
 
     const QString path = statJob->statResult().stringValue(KIO::UDSEntry::UDS_LOCAL_PATH);
     if (!path.isEmpty()) {
-        KUrl newUrl;
+        QUrl newUrl;
         newUrl.setPath(path);
         return newUrl;
     }

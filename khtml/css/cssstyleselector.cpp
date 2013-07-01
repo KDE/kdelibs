@@ -63,9 +63,9 @@ using namespace DOM;
 #include <QtCore/QFile>
 #include <QtCore/QString>
 #include <QtCore/QFileInfo>
+#include <QUrl>
 
 #include <kdebug.h>
-#include <kurl.h>
 #include <assert.h>
 #include <stdlib.h>
 #include <qstandardpaths.h>
@@ -226,7 +226,7 @@ static PseudoState pseudoState;
 
 
 CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, StyleSheetListImpl *styleSheets,
-                                    const KUrl &url, bool _strictParsing )
+                                    const QUrl &url, bool _strictParsing )
 {
     KHTMLView* view = doc->view();
     KHTMLPart* part = doc->part();
@@ -288,10 +288,10 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     //kDebug( 6080 ) << "number of style sheets in document " << authorStyleSheets.count();
     //kDebug( 6080 ) << "CSSStyleSelector: author style has " << authorStyle->count() << " elements";
 
-    KUrl u = url;
+    QUrl u = url;
 
     u.setQuery( QString() );
-    u.setRef( QString() );
+    u.setFragment( QString() );
     encodedurl.file = u.url();
     int pos = encodedurl.file.lastIndexOf('/');
     encodedurl.path = encodedurl.file;

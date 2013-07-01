@@ -24,8 +24,6 @@
 #ifndef KJAVAAPPLET_H
 #define KJAVAAPPLET_H
 
-#include <kurl.h>
-
 #include <QtCore/QObject>
 #include <QtCore/QStringList>
 #include <QtCore/QMap>

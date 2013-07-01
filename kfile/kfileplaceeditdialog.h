@@ -24,8 +24,8 @@
 //#include <kfile_export.h>
 
 #include <QDialog>
+#include <QUrl>
 #include <kiconloader.h>
-#include <kurl.h>
 
 class QCheckBox;
 class QDialogButtonBox;

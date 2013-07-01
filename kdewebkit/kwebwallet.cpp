@@ -150,9 +150,9 @@ public:
     KWebWallet *q;
     QScopedPointer<KWallet::Wallet> wallet;
     KWebWallet::WebFormList pendingRemoveRequests;
-    QHash<KUrl, FormsData> pendingFillRequests;
+    QHash<QUrl, FormsData> pendingFillRequests;
     QHash<QString, KWebWallet::WebFormList> pendingSaveRequests;
-    QSet<KUrl> confirmSaveRequestOverwrites;
+    QSet<QUrl> confirmSaveRequestOverwrites;
 };
 
 KWebWallet::KWebWalletPrivate::KWebWalletPrivate(KWebWallet *parent)
@@ -338,7 +338,7 @@ void KWebWallet::KWebWalletPrivate::_k_openWalletDone(bool ok)
         // Do pending fill requests...
         if (!pendingFillRequests.isEmpty()) {
             QList<QUrl> urlList;
-            QMutableHashIterator<KUrl, FormsData> requestIt (pendingFillRequests);
+            QMutableHashIterator<QUrl, FormsData> requestIt (pendingFillRequests);
             while (requestIt.hasNext()) {
                requestIt.next();
                KWebWallet::WebFormList list = requestIt.value().forms;

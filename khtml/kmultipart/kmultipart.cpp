@@ -360,17 +360,17 @@ void KMultiPart::setPart( const QString& mimeType )
         connect( childExtension, SIGNAL(openUrlNotify()),
                  m_extension, SIGNAL(openUrlNotify()) );
 
-        connect( childExtension, SIGNAL(openUrlRequestDelayed(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
-                 m_extension, SIGNAL(openUrlRequest(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
+        connect( childExtension, SIGNAL(openUrlRequestDelayed(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
+                 m_extension, SIGNAL(openUrlRequest(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)) );
 
-        connect( childExtension, SIGNAL(createNewWindow(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)),
-                 m_extension, SIGNAL(createNewWindow(KUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)) );
+        connect( childExtension, SIGNAL(createNewWindow(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)),
+                 m_extension, SIGNAL(createNewWindow(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::WindowArgs,KParts::ReadOnlyPart**)) );
 
         // Keep in sync with khtml_part.cpp
         connect( childExtension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
              m_extension, SIGNAL(popupMenu(QPoint,KFileItemList,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
-        connect( childExtension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
-             m_extension, SIGNAL(popupMenu(QPoint,KUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
+        connect( childExtension, SIGNAL(popupMenu(QPoint,QUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)),
+             m_extension, SIGNAL(popupMenu(QPoint,QUrl,mode_t,KParts::OpenUrlArguments,KParts::BrowserArguments,KParts::BrowserExtension::PopupFlags,KParts::BrowserExtension::ActionGroupMap)) );
 
         if ( m_isHTMLPart )
             connect( childExtension, SIGNAL(infoMessage(QString)),
@@ -383,8 +383,8 @@ void KMultiPart::setPart( const QString& mimeType )
                  m_extension, SIGNAL(enableAction(const char*,bool)) );
         connect( childExtension, SIGNAL(setLocationBarUrl(QString)),
                  m_extension, SIGNAL(setLocationBarUrl(QString)) );
-        connect( childExtension, SIGNAL(setIconUrl(KUrl)),
-                 m_extension, SIGNAL(setIconUrl(KUrl)) );
+        connect( childExtension, SIGNAL(setIconUrl(QUrl)),
+                 m_extension, SIGNAL(setIconUrl(QUrl)) );
         connect( childExtension, SIGNAL(loadingProgress(int)),
                  m_extension, SIGNAL(loadingProgress(int)) );
         if ( m_isHTMLPart ) // for non-HTML we have our own
@@ -509,7 +509,7 @@ void KMultiPart::endOfData()
         else
         {
             kDebug() << "KMultiPart::endOfData opening " << tempFileName;
-            KUrl url(tempFileName);
+            QUrl url(tempFileName);
             m_partIsLoading = true;
             (void) m_part->openUrl( url );
         }

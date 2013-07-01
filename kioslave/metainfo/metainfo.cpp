@@ -19,7 +19,7 @@
 #include "metainfo.h"
 
 #include <QApplication>
-#include <kurl.h>
+#include <QUrl>
 #include <kdebug.h>
 #include <kfilemetainfo.h>
 #include <klocalizedstring.h>

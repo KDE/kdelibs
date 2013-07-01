@@ -21,8 +21,8 @@
 #ifndef KNEWFILEMENU_H
 #define KNEWFILEMENU_H
 
+#include <QUrl>
 #include <kactionmenu.h>
-#include <kurl.h>
 #include <kfile_export.h>
 
 class KJob;

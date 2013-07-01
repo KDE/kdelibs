@@ -3036,7 +3036,7 @@ void KHTMLView::print(bool quick)
 
     const QPointerDeleter dialogDeleter(dialog);
 
-    QString docname = m_part->xmlDocImpl()->URL().prettyUrl();
+    QString docname = m_part->xmlDocImpl()->URL().toDisplayString();
     if ( !docname.isEmpty() )
         docname = KStringHandler::csqueeze(docname, 80);
 

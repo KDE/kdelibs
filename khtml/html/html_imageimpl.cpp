@@ -97,7 +97,7 @@ void HTMLImageElementImpl::parseAttribute(AttributeImpl *attr)
                     oldImage->deref(this);
             }
 
-            KUrl fullURL = document()->completeURL(parsedURL.string());
+            QUrl fullURL(document()->completeURL(parsedURL.string()));
             if (document()->origin()->taintsCanvas(fullURL))
                 unsafe = true;
         }
@@ -215,7 +215,7 @@ DOMString HTMLImageElementImpl::altText() const
         alt = getAttribute( ATTR_TITLE );
 #if 0
     if ( alt.isNull() ) {
-        QString p = KUrl( document()->completeURL( getAttribute(ATTR_SRC).string() ) ).prettyUrl();
+        QString p = QUrl( document()->completeURL( getAttribute(ATTR_SRC).string() ) ).toDisplayString();
         int pos;
         if ( ( pos = p.lastIndexOf( '.' ) ) > 0 )
             p.truncate( pos );

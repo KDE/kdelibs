@@ -29,6 +29,7 @@
 #include <QLabel>
 #include <QMenu>
 #include <QStandardPaths>
+#include <qurlpathinfo.h>
 
 #include <qtemporaryfile.h>
 #include <kactioncollection.h>
@@ -168,7 +169,7 @@ void KNewFileMenuSingleton::parseFiles()
                     if (templatePath[0] != '/' && !templatePath.startsWith("__"))
                     {
                         if (templatePath.startsWith("file:/"))
-                            templatePath = KUrl(templatePath).toLocalFile();
+                            templatePath = QUrl(templatePath).toLocalFile();
                         else
                         {
                             // A relative path, then (that's the default in the files we ship)
@@ -191,7 +192,7 @@ void KNewFileMenuSingleton::parseFiles()
             }
             if (text.isEmpty())
             {
-                text = KUrl(filePath).fileName();
+                text = QUrlPathInfo(QUrl(filePath)).fileName();
                 if (text.endsWith(".desktop"))
                     text.truncate(text.length() - 8);
             }
@@ -439,12 +440,12 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
         // KDE5 TODO: remove the "..." from link*.desktop files and use i18n("%1...") when making
         // the action.
 
-        KUrl defaultFile(*it);
+        QUrlPathInfo defaultFile(*it);
         defaultFile.addPath(KIO::encodeFileName(text));
-        if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
+        if (defaultFile.url().isLocalFile() && QFile::exists(defaultFile.url().toLocalFile()))
             text = KIO::RenameDialog::suggestName(*it, text);
 
-        const KUrl templateUrl(entry.templatePath);
+        const QUrl templateUrl(entry.templatePath);
 
 	QDialog* dlg = new KPropertiesDialog(templateUrl, *it, text, m_parentWidget);
 	dlg->setModal(q->isModal());
@@ -464,9 +465,9 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     text = text.trimmed(); // In some languages, there is a space in front of "...", see bug 268895
     m_copyData.m_src = entry.templatePath;
 
-    KUrl defaultFile(m_popupFiles.first());
+    QUrlPathInfo defaultFile(m_popupFiles.first());
     defaultFile.addPath(KIO::encodeFileName(text));
-    if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
+    if (defaultFile.url().isLocalFile() && QFile::exists(defaultFile.url().toLocalFile()))
         text = KIO::RenameDialog::suggestName(m_popupFiles.first(), text);
 
     QDialog* fileDialog = new QDialog(m_parentWidget);
@@ -523,7 +524,7 @@ void KNewFileMenuPrivate::executeStrategy()
 
     if (src.isEmpty())
         return;
-    KUrl uSrc(src);
+    QUrl uSrc(src);
     if (uSrc.isLocalFile()) {
         // In case the templates/.source directory contains symlinks, resolve
         // them to the target files. Fixes bug #149628.
@@ -550,10 +551,11 @@ void KNewFileMenuPrivate::executeStrategy()
     // The template is not a desktop file [or it's a URL one]
     // Copy it.
     QList<QUrl>::const_iterator it = m_popupFiles.constBegin();
-    for (; it != m_popupFiles.constEnd(); ++it)
-    {
-        KUrl dest(*it);
-        dest.addPath(KIO::encodeFileName(chosenFileName));
+    for (; it != m_popupFiles.constEnd(); ++it) {
+        QUrlPathInfo pathInfo(*it);
+        pathInfo.addPath(KIO::encodeFileName(chosenFileName));
+
+        QUrl dest(pathInfo.url());
 
         QList<QUrl> lstSrc;
         lstSrc.append(uSrc);
@@ -760,8 +762,8 @@ void KNewFileMenuPrivate::_k_slotActionTriggered(QAction* action)
 
 void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
 {
-    KUrl url;
-    KUrl baseUrl = m_popupFiles.first();
+    QUrl url;
+    QUrl baseUrl = m_popupFiles.first();
     bool askAgain = false;
 
     QString name = expandTilde(m_text);
@@ -777,8 +779,10 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
           }
         }
         name = KIO::encodeFileName( name );
-        url = baseUrl;
-        url.addPath( name );
+
+        QUrlPathInfo pathInfo(baseUrl);
+        pathInfo.addPath( name );
+        url = pathInfo.url();
       }
     }
 
@@ -877,7 +881,7 @@ void KNewFileMenuPrivate::_k_slotSymLink()
     KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
 
     m_copyData.m_chosenFileName = dlg->name(); // no path
-    KUrl linkUrl = dlg->url(); // the url to put in the file
+    QUrl linkUrl = dlg->url(); // the url to put in the file
 
     if (m_copyData.m_chosenFileName.isEmpty() || linkUrl.isEmpty())
         return;
@@ -919,7 +923,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
     KNameAndUrlInputDialog* dlg = static_cast<KNameAndUrlInputDialog*>(m_fileDialog);
 
     m_copyData.m_chosenFileName = dlg->name(); // no path
-    KUrl linkUrl = dlg->url();
+    QUrl linkUrl = dlg->url();
 
     // Filter user input so that short uri entries, e.g. www.kde.org, are
     // handled properly. This not only makes the icon detection below work
@@ -965,7 +969,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
     KDesktopFile df(tempFileName);
     KConfigGroup group = df.desktopGroup();
     group.writeEntry("Icon", KProtocolInfo::icon(linkUrl.scheme()));
-    group.writePathEntry("URL", linkUrl.prettyUrl());
+    group.writePathEntry("URL", linkUrl.toDisplayString());
     df.sync();
 
     m_copyData.m_src = tempFileName;
@@ -1032,11 +1036,11 @@ void KNewFileMenu::createDirectory()
     if (d->m_popupFiles.isEmpty())
 	return;
 
-    KUrl baseUrl = d->m_popupFiles.first();
+    QUrl baseUrl = d->m_popupFiles.first();
     QString name = d->m_text.isEmpty()? i18nc("Default name for a new folder", "New Folder") :
       d->m_text;
 
-    if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile(KUrl::AddTrailingSlash) + name).exists())
+    if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile() + '/' + name).exists())
 	name = KIO::RenameDialog::suggestName(baseUrl, name);
 
     QDialog* fileDialog = new QDialog(d->m_parentWidget);
@@ -1045,7 +1049,7 @@ void KNewFileMenu::createDirectory()
     fileDialog->setWindowTitle(i18nc("@title:window", "New Folder"));
 
     QVBoxLayout *layout = new QVBoxLayout;
-    QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.pathOrUrl()), fileDialog);
+    QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.toDisplayString(QUrl::PreferLocalFile)), fileDialog);
 
     // We don't set the text of lineEdit in its constructor because the clear button would not be shown then.
     // It seems that setClearButtonShown(true) must be called *before* the text is set to make it work.
@@ -1098,7 +1102,7 @@ void KNewFileMenu::setPopupFiles(const QList<QUrl>& files)
     if (files.isEmpty()) {
         d->m_newMenuGroup->setEnabled(false);
     } else {
-        KUrl firstUrl = files.first();
+        QUrl firstUrl = files.first();
         if (KProtocolManager::supportsWriting(firstUrl)) {
             d->m_newMenuGroup->setEnabled(true);
             if (d->m_newDirAction) {
@@ -1134,8 +1138,8 @@ void KNewFileMenu::slotResult(KJob * job)
         // Was this a copy or a mkdir?
         KIO::CopyJob* copyJob = ::qobject_cast<KIO::CopyJob*>(job);
         if (copyJob) {
-            const KUrl destUrl = copyJob->destUrl();
-            const KUrl localUrl = KIO::NetAccess::mostLocalUrl(destUrl, d->m_parentWidget);
+            const QUrl destUrl = copyJob->destUrl();
+            const QUrl localUrl = KIO::NetAccess::mostLocalUrl(destUrl, d->m_parentWidget);
             if (localUrl.isLocalFile()) {
                 // Normal (local) file. Need to "touch" it, kio_file copied the mtime.
                 (void) ::utime(QFile::encodeName(localUrl.toLocalFile()), 0);

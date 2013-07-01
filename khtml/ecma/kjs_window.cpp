@@ -1838,12 +1838,12 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
     str = v->toString(exec).qstring();
 
   // prepare arguments
-  KUrl url;
+  QUrl url;
   if (!str.isEmpty())
   {
     KHTMLPart* p = qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->m_frame->m_part);
     if ( p )
-      url = p->htmlDocument().completeURL(str).string();
+      url = QUrl(p->htmlDocument().completeURL(str).string());
     if ( !p ||
          !static_cast<DOM::DocumentImpl*>(p->htmlDocument().handle())->isURLAllowed(url.url()) )
       return jsUndefined();
@@ -1870,7 +1870,7 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
                                           "window via JavaScript.\n"
                                           "Do you want to allow this?" ) :
                                     i18n( "<qt>This site is requesting to open<p>%1</p>in a new browser window via JavaScript.<br />"
-                                          "Do you want to allow this?</qt>", KStringHandler::csqueeze(Qt::escape(url.prettyUrl()),  100)),
+                                          "Do you want to allow this?</qt>", KStringHandler::csqueeze(Qt::escape(url.toDisplayString()),  100)),
                                     caption, KGuiItem(i18n("Allow")), KGuiItem(i18n("Do Not Allow")) ) == KMessageBox::Yes )
       policy = KHTMLSettings::KJSWindowOpenAllow;
   } else if ( policy == KHTMLSettings::KJSWindowOpenSmart )
@@ -1903,7 +1903,7 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
   }
 }
 
-JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QString& frameName, const QString& features)
+JSValue *Window::executeOpenWindow(ExecState *exec, const QUrl& url, const QString& frameName, const QString& features)
 {
     KHTMLPart *p = qobject_cast<KHTMLPart *>(m_frame->m_part);
     KHTMLView *widget = p->view();
@@ -2011,7 +2011,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const KUrl& url, const QStri
 
     // request window (new or existing if framename is set)
     KParts::ReadOnlyPart *newPart = 0;
-    emit p->browserExtension()->createNewWindow(KUrl(), args, browserArgs, winargs, &newPart);
+    emit p->browserExtension()->createNewWindow(QUrl(), args, browserArgs, winargs, &newPart);
     if (newPart && qobject_cast<KHTMLPart*>(newPart)) {
       KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
@@ -2264,7 +2264,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
 
         QString sourceOrigin = part->xmlDocImpl()->origin()->toString();
         QString targetOrigin = args[1]->toString(exec).qstring();
-        KUrl    targetURL(targetOrigin);
+        QUrl    targetURL(targetOrigin);
         kDebug(6070) << "postMessage targetting:" << targetOrigin;
 
         // Make sure we get * or an absolute URL for target origin
@@ -2862,10 +2862,10 @@ bool Location::getOwnPropertySlot(ExecState *exec, const Identifier &p, Property
 
 JSValue* Location::getValueProperty(ExecState *exec, int token) const
 {
-  KUrl url = m_frame->m_part->url();
+  QUrl url = m_frame->m_part->url();
   switch(token) {
     case Hash:
-      return jsString( UString(url.htmlRef().isNull() ? QString("") : '#' + url.htmlRef()) );
+      return jsString( UString(url.fragment().isNull() ? QString("") : '#' + url.fragment()) );
     case Host: {
       UString str = url.host();
       if (url.port() > 0)
@@ -2880,10 +2880,10 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
     case Href:
       if (url.isEmpty())
 	return jsString("about:blank");
-      else if (!url.hasPath())
-        return jsString( UString(url.prettyUrl()+'/') );
+      else if (url.path().isEmpty())
+        return jsString( UString(url.toDisplayString()+'/') );
       else
-        return jsString( UString(url.prettyUrl()) );
+        return jsString( UString(url.toDisplayString()) );
     case Pathname:
       if (url.isEmpty())
 	return jsString("");
@@ -2912,7 +2912,7 @@ void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
   if ( !window )
     return;
 
-  KUrl url = m_frame->m_part->url();
+  QUrl url = m_frame->m_part->url();
 
   const HashEntry *entry = Lookup::findEntry(&LocationTable, p);
 
@@ -2927,9 +2927,9 @@ void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
     case Href: {
       KHTMLPart* p =qobject_cast<KHTMLPart*>(Window::retrieveActive(exec)->part());
       if ( p )
-        url = p->htmlDocument().completeURL( str ).string();
+        url = QUrl(p->htmlDocument().completeURL( str ).string());
       else
-        url = str;
+        url = QUrl(str);
       break;
     }
     case Hash:
@@ -2943,9 +2943,9 @@ void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
       // Setting this must always provide a ref, even if just ; see
       // HTML5 2.6.
       if (str.isEmpty()) {
-        url.setHTMLRef("");
+        url.setFragment("");
       } else {
-        url.setRef(str);
+        url.setFragment(str);
       }
       break;
     case Host: {
@@ -2995,13 +2995,13 @@ UString Location::toString(ExecState *exec) const
     Window* window = Window::retrieveWindow( m_frame->m_part );
     if ( window && window->isSafeScript(exec) )
     {
-      KUrl url = m_frame->m_part->url();
+      QUrl url = m_frame->m_part->url();
       if (url.isEmpty())
         return "about:blank";
-      else if (!url.hasPath())
-        return QString(url.prettyUrl()+'/');
+      else if (url.path().isEmpty())
+        return QString(url.toDisplayString()+'/');
       else
-        return url.prettyUrl();
+        return url.toDisplayString();
     }
   }
   return "";
