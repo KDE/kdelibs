@@ -131,7 +131,8 @@ void KEntryMapTest::testDefault()
     // revert entry2, no default --> should be marked as deleted
     map.revertEntry(group1, key2);
     QCOMPARE(entry2->mValue, QByteArray());
-    QVERIFY(entry2->bDirty && entry2->bDeleted);
+    QVERIFY(entry2->bDirty);
+    QVERIFY(entry2->bReverted);
 }
 
 void KEntryMapTest::testDelete()
