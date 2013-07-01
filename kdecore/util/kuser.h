@@ -23,8 +23,8 @@
 #define KUSER_H
 
 #include <kdecore_export.h>
-#include <ksharedptr.h>
 
+#include <QSharedDataPointer>
 #include <QtCore/QVariant>
 
 class KUserGroup;
@@ -244,7 +244,7 @@ public:
 
 private:
   class Private;
-  KSharedPtr<Private> d;
+  QSharedDataPointer<Private> d;
 };
 
 /**
@@ -383,7 +383,7 @@ public:
 
 private:
   class Private;
-  KSharedPtr<Private> d;
+  QSharedDataPointer<Private> d;
 };
 
 #endif

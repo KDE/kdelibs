@@ -23,7 +23,7 @@
 #include <QStringList>
 
 
-class KUser::Private : public KShared
+class KUser::Private : public QSharedData
 {
 };
 
@@ -151,7 +151,7 @@ KUser::~KUser()
 {
 }
 
-class KUserGroup::Private : public KShared
+class KUserGroup::Private : public QSharedData
 {
 };
 

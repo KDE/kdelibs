@@ -29,7 +29,7 @@
 #include <stdlib.h>
 #include <grp.h>
 
-class KUser::Private : public KShared
+class KUser::Private : public QSharedData
 {
 public:
     uid_t uid;
@@ -234,7 +234,7 @@ QStringList KUser::allUserNames() {
 KUser::~KUser() {
 }
 
-class KUserGroup::Private : public KShared
+class KUserGroup::Private : public QSharedData
 {
 public:
     gid_t gid;

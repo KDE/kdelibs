@@ -28,7 +28,7 @@
 #include <lm.h>
 #include <sddl.h>
 
-class KUser::Private : public KShared
+class KUser::Private : public QSharedData
 {
     public:
         PUSER_INFO_11 userInfo;
@@ -316,7 +316,7 @@ KUser::~KUser()
 {
 }
 
-class KUserGroup::Private : public KShared
+class KUserGroup::Private : public QSharedData
 {
     public:
         PGROUP_INFO_0 groupInfo;
