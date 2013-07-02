@@ -20,17 +20,11 @@
 
 #include "klanguagebutton.h"
 #include <QtGui/QLineEdit>
-#include <kcmdlineargs.h>
-#include <kaboutdata.h>
-#include <kapplication.h>
-#include <klocale.h>
+#include <qapplication.h>
 
 int main(int argc, char** argv)
 {
-  KAboutData about("KLanguageButtonTest", "kdelibs4", ki18n("KLanguageButtonTest"), "version");
-  KCmdLineArgs::init(argc, argv, &about);
-
-  KApplication app;
+  QApplication app(argc, argv);
 
   KLanguageButton button;
   button.loadAllLanguages();
