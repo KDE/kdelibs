@@ -46,8 +46,8 @@ target_link_libraries(ThreadWeaverLifecycleTest Qt5::Test ThreadWeaver)
 
 set(ShutdownOnQApplicationQuitTest_SRCS ShutdownOnQApplicationQuitTests.cpp)
 
-add_executable(ShutdownOnQApplicationQuitTest ${ShutdownOnQApplicationQuitTest_SRCS})
-add_test(ShutdownOnQApplicationQuitTest ShutdownOnQApplicationQuitTest)
-ecm_mark_as_test(ShutdownOnQApplicationQuitTest)
+add_executable(ThreadWeaverShutdownOnQApplicationQuitTest ${ShutdownOnQApplicationQuitTest_SRCS})
+add_test(ThreadWeaverShutdownOnQApplicationQuitTest ShutdownOnQApplicationQuitTest)
+ecm_mark_as_test(ThreadWeaverShutdownOnQApplicationQuitTest)
 
-target_link_libraries(ShutdownOnQApplicationQuitTest Qt5::Test ThreadWeaver)
+target_link_libraries(ThreadWeaverShutdownOnQApplicationQuitTest Qt5::Test ThreadWeaver)
