@@ -16,18 +16,21 @@ void DeleteTest::DeleteSequenceTest()
 {
     m_finishCount = 100;
 
+    ThreadWeaver::Weaver::instance()->suspend();
     for (int i = 0; i < m_finishCount; ++i) {
-        ThreadWeaver::JobSequence jobSeq(this);
-        connect(jobSeq, SIGNAL(done(ThreadWeaver::Job*)), SLOT(deleteSequence(ThreadWeaver::Job*)));
+        QSharedPointer<ThreadWeaver::JobSequence> jobSeq(new ThreadWeaver::JobSequence);
+        QVERIFY(connect(jobSeq.data(), SIGNAL(done(ThreadWeaver::Job*)), this, SLOT(deleteSequence(ThreadWeaver::Job*))));
 
-        jobSeq->addNakedJob(JobPointer(new BusyJob));
-        jobSeq->addNakedJob(JobPointer(new BusyJob));
+        jobSeq->addJob(JobPointer(new BusyJob));
+        jobSeq->addJob(JobPointer(new BusyJob));
 
         ThreadWeaver::Weaver::instance()->enqueue(jobSeq);
     }
 
     ThreadWeaver::Weaver::instance()->resume();
     ThreadWeaver::Weaver::instance()->finish();
+    QEXPECT_FAIL("", "FIXME The done signal does not get emitted for collections", Continue);
+    QCOMPARE(m_finishCount, 0);
 }
 
 void DeleteTest::deleteSequence(ThreadWeaver::Job* job)
