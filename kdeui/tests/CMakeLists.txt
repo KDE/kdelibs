@@ -38,7 +38,6 @@ KDEUI_EXECUTABLE_TESTS(
   kglobalsettingsclient # helper program for kglobalsettingstest
   kmainwindowtest
   kmainwindowrestoretest
-  kmessagewidgettest
   knewpassworddialogtest
   knotificationrestrictionstest
   kpopuptest

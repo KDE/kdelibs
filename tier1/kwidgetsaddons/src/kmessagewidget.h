@@ -20,7 +20,7 @@
 #ifndef KMESSAGEWIDGET_H
 #define KMESSAGEWIDGET_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QFrame>
 
@@ -89,7 +89,7 @@ class KMessageWidgetPrivate;
  * @author Aurélien Gâteau <agateau@kde.org>
  * @since 4.7
  */
-class KDEUI_EXPORT KMessageWidget : public QFrame
+class KWIDGETSADDONS_EXPORT KMessageWidget : public QFrame
 {
     Q_OBJECT
     Q_ENUMS(MessageType)
@@ -150,14 +150,12 @@ public Q_SLOTS:
     void setMessageType(KMessageWidget::MessageType type);
 
     /**
-     * Show the widget using an animation, unless
-     * KGlobalSettings::graphicsEffectLevel() does not allow simple effects.
+     * Show the widget using an animation.
      */
     void animatedShow();
 
     /**
-     * Hide the widget using an animation, unless
-     * KGlobalSettings::graphicsEffectLevel() does not allow simple effects.
+     * Hide the widget using an animation.
      */
     void animatedHide();
 

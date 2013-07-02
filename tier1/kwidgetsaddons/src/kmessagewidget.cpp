@@ -19,11 +19,6 @@
  */
 #include "kmessagewidget.h"
 
-#include <kcolorscheme.h>
-#include <kdebug.h>
-#include <kglobalsettings.h>
-#include <kstandardaction.h>
-
 #include <QAction>
 #include <QEvent>
 #include <QGridLayout>
@@ -90,7 +85,12 @@ void KMessageWidgetPrivate::init(KMessageWidget *q_ptr)
     QObject::connect(textLabel, SIGNAL(linkActivated(const QString&)), q, SIGNAL(linkActivated(const QString&)));
     QObject::connect(textLabel, SIGNAL(linkHovered(const QString&)), q, SIGNAL(linkHovered(const QString&)));
 
-    QAction* closeAction = KStandardAction::close(q, SLOT(animatedHide()), q);
+    QAction* closeAction = new QAction(q);
+    closeAction->setText(QObject::tr("&Close"));
+    closeAction->setToolTip(QObject::tr("Close message"));
+    closeAction->setIcon(q->style()->standardIcon(QStyle::SP_DialogCloseButton));
+
+    QObject::connect(closeAction, SIGNAL(triggered(bool)), q, SLOT(animatedHide()));
 
     closeButton = new QToolButton(content);
     closeButton->setAutoRaise(true);
@@ -241,11 +241,23 @@ KMessageWidget::MessageType KMessageWidget::messageType() const
     return d->messageType;
 }
 
-static void getColorsFromColorScheme(KColorScheme::BackgroundRole bgRole, QColor* bg, QColor* fg)
+static QColor darkShade(QColor c)
 {
-    KColorScheme scheme(QPalette::Active, KColorScheme::Window);
-    *bg = scheme.background(bgRole).color();
-    *fg = scheme.foreground().color();
+    qreal contrast = 0.7; // taken from kcolorscheme for the dark shade
+
+    qreal darkAmount;
+    if (c.lightnessF() < 0.006) /* too dark */ {
+        darkAmount = 0.02 + 0.40 * contrast;
+    } else if (c.lightnessF() > 0.93) /* too bright */ {
+        darkAmount = -0.06 - 0.60 * contrast;
+    } else {
+        darkAmount = (-c.lightnessF()) * (0.55 + contrast * 0.35);
+    }
+
+    qreal v = c.lightnessF() + darkAmount;
+    v = v > 0.0 ? (v < 1.0 ? v : 1.0) : 0.0;
+    c.setHsvF(c.hslHueF(), c.hslSaturationF(), v);
+    return c;
 }
 
 void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
@@ -254,29 +266,27 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
     QColor bg0, bg1, bg2, border, fg;
     switch (type) {
     case Positive:
-        getColorsFromColorScheme(KColorScheme::PositiveBackground, &bg1, &fg);
+        bg1.setRgb(0, 110,  40); // values taken from kcolorscheme.cpp (Positive)
         break;
     case Information:
-        // There is no "information" background role in KColorScheme, use the
-        // colors of highlighted items instead
         bg1 = palette().highlight().color();
-        fg = palette().highlightedText().color();
         break;
     case Warning:
-        getColorsFromColorScheme(KColorScheme::NeutralBackground, &bg1, &fg);
+        bg1.setRgb(176, 128, 0); // values taken from kcolorscheme.cpp (Neutral)
         break;
     case Error:
-        getColorsFromColorScheme(KColorScheme::NegativeBackground, &bg1, &fg);
+        bg1.setRgb(191, 3, 3); // values taken from kcolorscheme.cpp (Negative)
         break;
     }
 
     // Colors
+    fg = palette().highlightedText().color();
     bg0 = bg1.lighter(110);
     bg2 = bg1.darker(110);
-    border = KColorScheme::shade(bg1, KColorScheme::DarkShade);
+    border = darkShade(bg1);
 
     d->content->setStyleSheet(
-        QString(".QFrame {"
+        QString(QLatin1String(".QFrame {"
             "background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,"
             "    stop: 0 %1,"
             "    stop: 0.1 %2,"
@@ -286,7 +296,7 @@ void KMessageWidget::setMessageType(KMessageWidget::MessageType type)
             "margin: %5px;"
             "}"
             ".QLabel { color: %6; }"
-            )
+            ))
         .arg(bg0.name())
         .arg(bg1.name())
         .arg(bg2.name())
@@ -388,10 +398,13 @@ void KMessageWidget::removeAction(QAction* action)
 
 void KMessageWidget::animatedShow()
 {
+#if 0
+    // TODO port to QStyle's SH_Widget_Animate once it is integrated
     if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
         show();
         return;
     }
+#endif
 
     if (isVisible()) {
         return;
@@ -412,10 +425,13 @@ void KMessageWidget::animatedShow()
 
 void KMessageWidget::animatedHide()
 {
+#if 0
+    // TODO port to QStyle's SH_Widget_Animate once it is integrated
     if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
         hide();
         return;
     }
+#endif
 
     if (!isVisible()) {
         return;
