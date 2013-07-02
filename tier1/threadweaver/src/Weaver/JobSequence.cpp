@@ -27,6 +27,7 @@
 */
 
 #include "JobSequence.h"
+#include "ManagedJobPointer.h"
 #include "QueueAPI.h"
 #include "DebuggingAids.h"
 #include "DependencyPolicy.h"
@@ -64,7 +65,7 @@ void JobSequence::elementFinished(Job *job, Thread *thread)
     REQUIRE ( job != 0 );
     JobCollection::elementFinished(job, thread);
     if (!job->success()) {
-        stop(JobPointer(job));
+        stop(ManagedJobPointer(job));
     }
     QMutexLocker l(mutex()); Q_UNUSED(l);
     if (jobListLength_locked() > 0) {

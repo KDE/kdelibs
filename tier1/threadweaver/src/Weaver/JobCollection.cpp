@@ -150,7 +150,7 @@ void JobCollection::stop(JobPointer job)
     QMutexLocker l(mutex()); Q_UNUSED(l);
     if ( d->api != 0 ) {
         debug( 4, "JobCollection::stop: dequeueing %p.\n", (void*)this);
-        if (!d->api->dequeue(JobPointer(this))) {
+        if (!d->api->dequeue(ManagedJobPointer(this))) {
             dequeueElements(false);
         }
     }
