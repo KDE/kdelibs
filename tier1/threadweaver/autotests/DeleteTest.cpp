@@ -12,25 +12,22 @@ DeleteTest::DeleteTest()
     ThreadWeaver::Weaver::instance()->setMaximumNumberOfThreads(4);
 }
 
-//TODO re-write test for the use of JobPointer
 void DeleteTest::DeleteSequenceTest()
 {
-    return; //MARK_TEMPORARILY_DISABLED
-//    m_finishCount = 100;
+    m_finishCount = 100;
 
-//    for (int i = 0; i < m_finishCount; ++i) {
-//        JobPointer jobSeq(new ThreadWeaver::JobSequence(this));
-//        connect ( jobSeq, SIGNAL(done(ThreadWeaver::Job*)),
-//                  SLOT(deleteSequence(ThreadWeaver::Job*)) );
+    for (int i = 0; i < m_finishCount; ++i) {
+        ThreadWeaver::JobSequence jobSeq(this);
+        connect(jobSeq, SIGNAL(done(ThreadWeaver::Job*)), SLOT(deleteSequence(ThreadWeaver::Job*)));
 
-//        jobSeq->addJob(JobPointer(new BusyJob));
-//        jobSeq->addJob(JobPointer(new BusyJob));
+        jobSeq->addNakedJob(JobPointer(new BusyJob));
+        jobSeq->addNakedJob(JobPointer(new BusyJob));
 
-//        ThreadWeaver::Weaver::instance()->enqueue( jobSeq );
-//    }
+        ThreadWeaver::Weaver::instance()->enqueue(jobSeq);
+    }
 
-//    ThreadWeaver::Weaver::instance()->resume();
-//    ThreadWeaver::Weaver::instance()->finish();
+    ThreadWeaver::Weaver::instance()->resume();
+    ThreadWeaver::Weaver::instance()->finish();
 }
 
 void DeleteTest::deleteSequence(ThreadWeaver::Job* job)
@@ -38,6 +35,7 @@ void DeleteTest::deleteSequence(ThreadWeaver::Job* job)
     Q_ASSERT(job);
     delete job;
 
+    //TODO atomic int
     QMutexLocker lock(&m_finishMutex);
     --m_finishCount;
     if (m_finishCount == 0)

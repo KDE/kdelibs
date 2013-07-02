@@ -35,7 +35,6 @@ public:
     LifecycleTests();
     
 private Q_SLOTS:
-    void testShutdownOnQApplicationQuit();
     void testJobAutoDeletionBasics();
     void testJobAutoDeletion();
 };
@@ -44,26 +43,16 @@ LifecycleTests::LifecycleTests()
 {
 }
 
-void LifecycleTests::testShutdownOnQApplicationQuit()
-{
-    {
-        int argc = 0;
-        QCoreApplication app(argc, (char**)0);
-        ThreadWeaver::Weaver::instance()->suspend();
-        ThreadWeaver::Weaver::instance()->resume();
-        QTest::qWait(10);
-    }
-    QVERIFY(ThreadWeaver::Weaver::instance()==0);
-}
-
 void LifecycleTests::testJobAutoDeletionBasics()
 {
     bool job1Exists = false;
     bool job2Exists = false;
     ThreadWeaver::JobPointer job2(new NotifyOnDeletejob(job2Exists));
+    Q_UNUSED(job2);
     QCOMPARE(true, job2Exists);
     {
         ThreadWeaver::JobPointer job1(new NotifyOnDeletejob(job1Exists));
+        Q_UNUSED(job1);
         QCOMPARE(job1Exists, true);
     }
     QCOMPARE(job1Exists, false);
@@ -72,6 +61,7 @@ void LifecycleTests::testJobAutoDeletionBasics()
 
 void LifecycleTests::testJobAutoDeletion()
 {
+    QVERIFY(ThreadWeaver::Weaver::instance());
     bool job1Exists = false;
     bool job2Exists = false;
     {
@@ -87,12 +77,13 @@ void LifecycleTests::testJobAutoDeletion()
         ThreadWeaver::Weaver::instance()->finish();
         QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
         ThreadWeaver::Weaver::instance()->suspend();
-        //QCOMPARE(job2Exists, false);
+        //TODO this *should* work!
+        QCOMPARE(job2Exists, false);
         QCOMPARE(job1Exists, true);
     }
     QVERIFY(ThreadWeaver::Weaver::instance()==0);
     QCOMPARE(job2Exists, false);
-    QCOMPARE(false, job1Exists);
+    QCOMPARE(job1Exists, false);
 }
 
 QTEST_APPLESS_MAIN(LifecycleTests)

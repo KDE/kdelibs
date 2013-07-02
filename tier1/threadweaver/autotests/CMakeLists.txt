@@ -1,4 +1,3 @@
-
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 include(ECMMarkAsTest)
@@ -42,3 +41,13 @@ add_test(ThreadWeaverLifecycleTest ThreadWeaverLifecycleTest)
 ecm_mark_as_test(ThreadWeaverLifecycleTest)
 
 target_link_libraries(ThreadWeaverLifecycleTest Qt5::Test ThreadWeaver)
+
+########### next target ###############
+
+set(ShutdownOnQApplicationQuitTest_SRCS ShutdownOnQApplicationQuitTests.cpp)
+
+add_executable(ShutdownOnQApplicationQuitTest ${ShutdownOnQApplicationQuitTest_SRCS})
+add_test(ShutdownOnQApplicationQuitTest ShutdownOnQApplicationQuitTest)
+ecm_mark_as_test(ShutdownOnQApplicationQuitTest)
+
+target_link_libraries(ShutdownOnQApplicationQuitTest Qt5::Test ThreadWeaver)
