@@ -21,7 +21,8 @@
 
 #include <QClipboard>
 #include <QtTest/QtTest>
-#include <qtestevent.h>
+#include <QTestEvent>
+
 #include <ktextedit.h>
 
 class KTextEdit_UnitTest : public QObject
@@ -40,10 +41,10 @@ private Q_SLOTS:
 void KTextEdit_UnitTest::testPaste()
 {
     const QString origText = QApplication::clipboard()->text();
-    const QString pastedText = "Test paste from ktextedit_unittest";
+    const QString pastedText = QLatin1String("Test paste from ktextedit_unittest");
     QApplication::clipboard()->setText(pastedText);
     KTextEdit w;
-    w.setPlainText("Hello world");
+    w.setPlainText(QLatin1String("Hello world"));
     w.selectAll();
     QTest::keyClick(&w, Qt::Key_V, Qt::ControlModifier);
     QCOMPARE(w.toPlainText(), pastedText);

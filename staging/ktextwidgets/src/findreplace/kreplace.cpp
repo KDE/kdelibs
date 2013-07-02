@@ -19,18 +19,18 @@
 */
 
 #include "kreplace.h"
+
 #include "kfind_p.h"
+#include "kreplacedialog.h"
 
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include <kdebug.h>
+#include <QtCore/QRegExp>
 
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include "kreplacedialog.h"
-#include <QtCore/QRegExp>
 
 //#define DEBUG_REPLACE
 #define INDEX_NOMATCH -1
@@ -65,11 +65,11 @@ KReplaceNextDialog::KReplaceNextDialog(QWidget *parent)
     layout->addWidget(m_mainLabel);
 
     m_allButton = new QPushButton(i18nc("@action:button Replace all occurrences", "&All"));
-    m_allButton->setObjectName("allButton");
+    m_allButton->setObjectName(QLatin1String("allButton"));
     m_skipButton = new QPushButton(i18n("&Skip"));
-    m_skipButton->setObjectName("skipButton");
+    m_skipButton->setObjectName(QLatin1String("skipButton"));
     m_replaceButton = new QPushButton(i18n("Replace"));
-    m_replaceButton->setObjectName("replaceButton");
+    m_replaceButton->setObjectName(QLatin1String("replaceButton"));
     m_replaceButton->setDefault(true);
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
@@ -185,13 +185,13 @@ static int replaceHelper(QString &text, const QString &replacement, int index, l
     QString rep(replacement);
     if (options & KReplaceDialog::BackReference) {
         // Backreferences: replace \0 with the right portion of 'text'
-        rep.replace( "\\0", text.mid( index, length ) );
+        rep.replace( QLatin1String("\\0"), text.mid( index, length ) );
 
         // Other backrefs
         if (regExp) {
             const QStringList caps = regExp->capturedTexts();
             for (int i = 0; i < caps.count(); ++i) {
-                rep.replace( "\\" + QString::number(i), caps.at(i) );
+                rep.replace( QLatin1String("\\") + QString::number(i), caps.at(i) );
             }
         }
     }
@@ -205,7 +205,7 @@ KFind::Result KReplace::replace()
 {
     KFind::Private* df = KFind::d;
 #ifdef DEBUG_REPLACE
-    kDebug() << "d->index=" << df->index;
+    //qDebug() << "d->index=" << df->index;
 #endif
     if ( df->index == INDEX_NOMATCH && df->lastResult == Match )
     {
@@ -216,7 +216,7 @@ KFind::Result KReplace::replace()
     do // this loop is only because validateMatch can fail
     {
 #ifdef DEBUG_REPLACE
-        kDebug() << "beginning of loop: df->index=" << df->index;
+        //qDebug() << "beginning of loop: df->index=" << df->index;
 #endif
         // Find the next match.
         if ( df->options & KFind::RegularExpression )
@@ -225,7 +225,7 @@ KFind::Result KReplace::replace()
             df->index = KFind::find(df->text, df->pattern, df->index, df->options, &df->matchedLength);
 
 #ifdef DEBUG_REPLACE
-        kDebug() << "KFind::find returned df->index=" << df->index;
+        //qDebug() << "KFind::find returned df->index=" << df->index;
 #endif
         if ( df->index != -1 )
         {
@@ -235,7 +235,7 @@ KFind::Result KReplace::replace()
                 if ( df->options & KReplaceDialog::PromptOnReplace )
                 {
 #ifdef DEBUG_REPLACE
-                    kDebug() << "PromptOnReplace";
+                    //qDebug() << "PromptOnReplace";
 #endif
                     // Display accurate initial string and replacement string, they can vary
                     QString matchedText (df->text.mid( df->index, df->matchedLength ));
@@ -344,7 +344,7 @@ void KReplacePrivate::doReplace()
     // highlight it.
     emit q->replace(df->text, df->index, replacedLength, df->matchedLength);
 #ifdef DEBUG_REPLACE
-    kDebug() << "after replace() signal: KFind::d->index=" << df->index << " replacedLength=" << replacedLength;
+    //qDebug() << "after replace() signal: KFind::d->index=" << df->index << " replacedLength=" << replacedLength;
 #endif
     m_replacements++;
     if (df->options & KFind::FindBackwards) {
@@ -357,7 +357,7 @@ void KReplacePrivate::doReplace()
             ++(df->index);
     }
 #ifdef DEBUG_REPLACE
-    kDebug() << "after adjustement: KFind::d->index=" << df->index;
+    //qDebug() << "after adjustement: KFind::d->index=" << df->index;
 #endif
 }
 
@@ -395,7 +395,7 @@ bool KReplace::shouldRestart( bool forceAsking, bool showNumMatches ) const
             message = i18n( "End of document reached." );
     }
 
-    message += '\n';
+    message += QLatin1Char('\n');
     // Hope this word puzzle is ok, it's a different sentence
     message +=
         ( KFind::d->options & KFind::FindBackwards ) ?

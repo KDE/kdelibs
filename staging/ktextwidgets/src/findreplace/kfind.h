@@ -21,7 +21,8 @@
 #ifndef KFIND_H
 #define KFIND_H
 
-#include <kdeui_export.h>
+#include "ktextwidgets_export.h"
+
 #include <QtCore/QRect>
 #include <QObject>
 
@@ -101,7 +102,7 @@ class QDialog;
  *  A "Find Previous" action can simply switch temporarily the value of
  *  FindBackwards and call slotFindNext() - and reset the value afterwards.
  */
-class KDEUI_EXPORT KFind :
+class KTEXTWIDGETS_EXPORT KFind :
     public QObject
 {
     Q_OBJECT

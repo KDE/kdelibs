@@ -18,11 +18,8 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 KDEUI_UNIT_TESTS(
   kactioncollectiontest
   kactioncategorytest
-  kfindtest
   kglobalsettingstest
   kmainwindow_unittest
-  ktextedit_unittest
-  kreplacetest
   kxmlgui_unittest
   ktoolbar_unittest
   krichtextedittest
@@ -43,7 +40,6 @@ KDEUI_EXECUTABLE_TESTS(
   knotificationrestrictionstest
   kpopuptest
   krulertest
-  ktextedittest
   ktoolbartest
   kwindowtest
   kxmlguitest

@@ -27,10 +27,10 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QtCore/QRegExp>
+
 #include <khistorycombobox.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kdebug.h>
 
 /**
  * we need to insert the strings after the dialog is set
@@ -130,10 +130,11 @@ void KReplaceDialog::setOptions(long options)
 
 void KReplaceDialog::setReplacementHistory(const QStringList &strings)
 {
-    if (strings.count() > 0)
+    if (strings.count() > 0) {
         KFindDialog::d->replace->setHistoryItems(strings, true);
-    else
+    } else {
         KFindDialog::d->replace->clearHistory();
+    }
 }
 
 void KReplaceDialogPrivate::_k_slotOk()
@@ -143,7 +144,7 @@ void KReplaceDialogPrivate::_k_slotOk()
     {
         QRegExp r ( q->pattern() );
         int caps = r.captureCount();
-        QRegExp check(QString("((?:\\\\)+)(\\d+)"));
+        QRegExp check(QLatin1String("((?:\\\\)+)(\\d+)"));
         int p = 0;
         QString rep = q->replacement();
         while ( (p = check.indexIn( rep, p ) ) > -1 )

@@ -17,16 +17,16 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <QApplication>
 #include <ktextedit.h>
 
 #include <QFile>
 #include <QAction>
+#include <QApplication>
 #include <QtTest/QtTest>
 
 int main( int argc, char **argv )
 {
-    QApplication::setApplicationName("ktextedittest");
+    QApplication::setApplicationName(QLatin1String("ktextedittest"));
     QApplication app(argc, argv);
     KTextEdit *edit = new KTextEdit();
 
@@ -35,10 +35,10 @@ int main( int argc, char **argv )
     //edit->addAction(action);
     //QObject::connect(action, SIGNAL(triggered()), edit, SLOT(selectAll()));
 
-    QFile file(QFINDTESTDATA("ktextedittest.cpp"));
+    QFile file(QFINDTESTDATA(QLatin1String("ktextedittest.cpp")));
     if ( file.open( QIODevice::ReadOnly ) )
     {
-        edit->setPlainText( file.readAll() );
+        edit->setPlainText( QLatin1String(file.readAll()) );
         file.close();
     }
 

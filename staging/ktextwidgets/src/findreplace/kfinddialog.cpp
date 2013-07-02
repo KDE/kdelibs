@@ -21,6 +21,8 @@
 #include "kfinddialog.h"
 #include "kfinddialog_p.h"
 
+#include "kfind.h"
+
 #include <QCheckBox>
 #include <QCursor>
 #include <QDialogButtonBox>
@@ -31,15 +33,15 @@
 #include <QMenu>
 #include <QPushButton>
 #include <QtCore/QRegExp>
-#include <kcombobox.h>
-#include <khistorycombobox.h>
-#include <kdebug.h>
+
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <assert.h>
-#include <kfind.h>
 #include <kregexpeditorinterface.h>
 #include <kservicetypetrader.h>
+#include <kguiitem.h>
+#include <khistorycombobox.h>
+
+#include <assert.h>
 
 KFindDialog::KFindDialog(QWidget *parent, long options, const QStringList &findStrings, bool hasSelection, bool replaceDialog)
     : QDialog(parent),
@@ -206,7 +208,7 @@ void KFindDialog::KFindDialogPrivate::init(bool forReplace, const QStringList &_
     }
     else
     {
-        KGuiItem::assign(buttonOk, KGuiItem( i18n("&Find"), "edit-find",
+        KGuiItem::assign(buttonOk, KGuiItem( i18n("&Find"), QLatin1String("edit-find"),
                     i18n("Start searching"),
                     i18n("<qt>If you press the <b>Find</b> button, the text you entered "
                          "above is searched for within the document.</qt>")));
@@ -258,7 +260,7 @@ void KFindDialog::showEvent( QShowEvent *e )
     if ( !d->initialShowDone )
     {
         d->initialShowDone = true; // only once
-        kDebug() << "showEvent\n";
+        //qDebug() << "showEvent\n";
         if (!d->findStrings.isEmpty())
             setFindHistory(d->findStrings);
         d->findStrings = QStringList();
@@ -270,7 +272,7 @@ void KFindDialog::showEvent( QShowEvent *e )
         //maintain a user-friendly tab order
         if (d->findExtension) {
             QWidget* prev=d->regExpItem;
-            foreach(QWidget* child, d->findExtension->findChildren<QWidget*>()) {
+            Q_FOREACH(QWidget* child, d->findExtension->findChildren<QWidget*>()) {
                 setTabOrder(prev, child);
                 prev=child;
             }
@@ -309,7 +311,7 @@ void KFindDialog::setPattern (const QString &pattern)
     d->find->lineEdit()->setText( pattern );
     d->find->lineEdit()->selectAll();
     d->pattern = pattern;
-    kDebug() << "setPattern " << pattern;
+    //qDebug() << "setPattern " << pattern;
 }
 
 void KFindDialog::setFindHistory(const QStringList &strings)
@@ -413,7 +415,7 @@ void KFindDialog::KFindDialogPrivate::_k_showPatterns()
 {
     if ( !regexpDialogQueryDone )
     {
-        regexpDialog = KServiceTypeTrader::createInstanceFromQuery<QDialog>( "KRegExpEditor/KRegExpEditor", QString(), q );
+        regexpDialog = KServiceTypeTrader::createInstanceFromQuery<QDialog>( QLatin1String("KRegExpEditor/KRegExpEditor"), QString(), q );
         regexpDialogQueryDone = true;
     }
 
@@ -479,7 +481,7 @@ void KFindDialog::KFindDialogPrivate::_k_showPatterns()
             for (i = 0; (unsigned)i < sizeof(items) / sizeof(items[0]); i++)
             {
                 patterns->addAction(new RegExpAction(patterns, i18n(items[i].description),
-                                                     items[i].regExp,
+                                                     QLatin1String(items[i].regExp),
                                                      items[i].cursorAdjustment));
             }
         }
@@ -533,7 +535,7 @@ void KFindDialog::KFindDialogPrivate::_k_showPlaceholders()
         PlaceHolderAction *placeHolderAction = static_cast<PlaceHolderAction*>(action);
         if (placeHolderAction) {
           QLineEdit *editor = replace->lineEdit();
-          editor->insert( QString("\\%1").arg( placeHolderAction->id() ) );
+          editor->insert( QString::fromLatin1("\\%1").arg( placeHolderAction->id() ) );
         }
     }
 }
@@ -569,7 +571,9 @@ void KFindDialog::KFindDialogPrivate::_k_slotOk()
             return;
         }
     }
+
     find->addToHistory(q->pattern());
+
     if ( q->windowModality() != Qt::NonModal )
         q->accept();
 }

@@ -21,11 +21,12 @@
 
 #include "kfind.h"
 #include "kfind_p.h"
+
 #include "kfinddialog.h"
 
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kdebug.h>
+#include <kguiitem.h>
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -117,7 +118,7 @@ void KFind::Private::init( const QString& _pattern )
 KFind::~KFind()
 {
     delete d;
-    kDebug() ;
+    //qDebug() ;
 }
 
 bool KFind::needData() const
@@ -168,7 +169,7 @@ void KFind::setData( int id, const QString& data, int startPos )
         else
             d->index = 0;
 #ifdef DEBUG_FIND
-        kDebug() << "setData: '" << d->text << "' d->index=" << d->index;
+        //qDebug() << "setData: '" << d->text << "' d->index=" << d->index;
 #endif
         Q_ASSERT( d->index != INDEX_NOMATCH );
         d->lastResult = NoMatch;
@@ -300,7 +301,7 @@ KFind::Result KFind::find()
     }
 
 #ifdef DEBUG_FIND
-    kDebug() << "d->index=" << d->index;
+    //qDebug() << "d->index=" << d->index;
 #endif
     do
     {
@@ -365,7 +366,7 @@ KFind::Result KFind::find()
                         findNextDialog(true)->show();
 
 #ifdef DEBUG_FIND
-                    kDebug() << "Match. Next d->index=" << d->index;
+                    //qDebug() << "Match. Next d->index=" << d->index;
 #endif
                     d->lastResult = Match;
                     return Match;
@@ -395,7 +396,7 @@ KFind::Result KFind::find()
     while (d->index != INDEX_NOMATCH);
 
 #ifdef DEBUG_FIND
-    kDebug() << "NoMatch. d->index=" << d->index;
+    //qDebug() << "NoMatch. d->index=" << d->index;
 #endif
     d->lastResult = NoMatch;
     return NoMatch;
@@ -425,7 +426,7 @@ void KFind::Private::startNewIncrementalSearch()
 
 static bool isInWord(QChar ch)
 {
-    return ch.isLetter() || ch.isDigit() || ch == '_';
+    return ch.isLetter() || ch.isDigit() || ch == QLatin1Char('_');
 }
 
 static bool isWholeWords(const QString &text, int starts, int matchedLength)
@@ -484,7 +485,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
             if (matchOk(text, index, pattern.length(), options))
                 break;
             index--;
-            kDebug() << "decrementing:" << index;
+            //qDebug() << "decrementing:" << index;
         }
     } else {
         // Forward search, until the end of the line...
@@ -500,7 +501,7 @@ int KFind::find(const QString &text, const QString &pattern, int index, long opt
             index++;
         }
         if (index > text.length()) { // end of line
-            kDebug() << "at" << index << "-> not found";
+            //qDebug() << "at" << index << "-> not found";
             index = -1; // not found
         }
     }
@@ -555,7 +556,7 @@ static int doFind(const QString &text, const QRegExp &pattern, int index, long o
 // we have to cut the text into lines if the pattern starts with ^ or ends with $.
 static int lineBasedFind(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
 {
-    const QStringList lines = text.split('\n');
+    const QStringList lines = text.split(QLatin1Char('\n'));
     int offset = 0;
     // Use "index" to find the first line we should start from
     int startLineNumber = 0;
@@ -599,7 +600,7 @@ static int lineBasedFind(const QString &text, const QRegExp &pattern, int index,
 // static
 int KFind::find(const QString &text, const QRegExp &pattern, int index, long options, int *matchedLength)
 {
-    if (pattern.pattern().startsWith('^') || pattern.pattern().endsWith('$')) {
+    if (pattern.pattern().startsWith(QLatin1Char('^')) || pattern.pattern().endsWith(QLatin1Char('$'))) {
         return lineBasedFind(text, pattern, index, options, matchedLength);
     }
 
@@ -614,12 +615,12 @@ void KFind::Private::_k_slotFindNext()
 void KFind::Private::_k_slotDialogClosed()
 {
 #ifdef DEBUG_FIND
-    kDebug() << " Begin";
+    //qDebug() << " Begin";
 #endif
     emit q->dialogClosed();
     dialogClosed = true;
 #ifdef DEBUG_FIND
-    kDebug() << " End";
+    //qDebug() << " End";
 #endif
 
 }
@@ -630,7 +631,7 @@ void KFind::displayFinalDialog() const
     if ( numMatches() )
         message = i18np( "1 match found.", "%1 matches found.", numMatches() );
     else
-        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>", Qt::escape(d->pattern));
+        message = i18n("<qt>No matches found for '<b>%1</b>'.</qt>", d->pattern.toHtmlEscaped());
     KMessageBox::information(dialogsParent(), message);
 }
 
@@ -650,7 +651,7 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
         if ( numMatches() )
             message = i18np( "1 match found.", "%1 matches found.", numMatches() );
         else
-            message = i18n("No matches found for '<b>%1</b>'.", Qt::escape(d->pattern));
+            message = i18n("No matches found for '<b>%1</b>'.", d->pattern.toHtmlEscaped());
     }
     else
     {
@@ -660,14 +661,14 @@ bool KFind::shouldRestart( bool forceAsking, bool showNumMatches ) const
             message = i18n( "End of document reached." );
     }
 
-    message += "<br><br>"; // can't be in the i18n() of the first if() because of the plural form.
+    message += QLatin1String("<br><br>"); // can't be in the i18n() of the first if() because of the plural form.
     // Hope this word puzzle is ok, it's a different sentence
     message +=
         ( d->options & KFind::FindBackwards ) ?
         i18n("Continue from the end?")
         : i18n("Continue from the beginning?");
 
-    int ret = KMessageBox::questionYesNo( dialogsParent(), "<qt>"+message+"</qt>",
+    int ret = KMessageBox::questionYesNo( dialogsParent(), QString::fromLatin1("<qt>%1</qt>").arg(message),
                                           QString(), KStandardGuiItem::cont(), KStandardGuiItem::stop() );
     bool yes = ( ret == KMessageBox::Yes );
     if ( yes )

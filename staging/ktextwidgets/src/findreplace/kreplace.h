@@ -23,6 +23,8 @@
 
 #include "kfind.h"
 
+#include "ktextwidgets_export.h"
+
 class KReplaceNextDialog;
 class KReplacePrivate;
 
@@ -93,7 +95,7 @@ class KReplacePrivate;
  *  unless you gave it a parent widget on construction.
  *
  */
-class KDEUI_EXPORT KReplace :
+class KTEXTWIDGETS_EXPORT KReplace :
     public KFind
 {
     Q_OBJECT

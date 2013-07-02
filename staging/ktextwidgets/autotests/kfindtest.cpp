@@ -18,12 +18,11 @@
     the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
     Boston, MA 02110-1301, USA.
 */
-
 #include "kfindtest.h"
+
 #include <QtTest/QtTest>
 
-#include "kfind.h"
-#include <kdebug.h>
+#include <kfind.h>
 
 #include <assert.h>
 
@@ -76,13 +75,13 @@ bool KFindRecorder::findNext(const QString &pattern)
 	KFind::Result result = KFind::NoMatch;
 	do
 	{
-		//kDebug() << "m_line: " << m_line;
+		//qDebug() << "m_line: " << m_line;
 
 		result = m_find->find();
 
 		if(result == KFind::NoMatch && m_line < m_text.count())
 		{
-			//kDebug() << "incrementing m_line...";
+			//qDebug() << "incrementing m_line...";
 			if(m_find->options() & KFind::FindIncremental)
 				m_find->setData(m_line, m_text[m_line]);
 			else
@@ -91,21 +90,21 @@ bool KFindRecorder::findNext(const QString &pattern)
 			m_line++;
 		}
 	} while(result == KFind::NoMatch && m_line < m_text.count());
-	//kDebug() << "find next completed" << m_line;
+	//qDebug() << "find next completed" << m_line;
 
         return result != KFind::NoMatch;
 }
 
 void KFindRecorder::slotHighlight(const QString &text, int index, int matchedLength)
 {
-	m_hits.append("line: \"" + text + "\", index: " + QString::number(index) +
-	              ", length: " + QString::number(matchedLength) + "\n");
+	m_hits.append(QLatin1String("line: \"") + text + QLatin1String("\", index: ") + QString::number(index) +
+	              QLatin1String(", length: ") + QString::number(matchedLength) + QLatin1Char('\n'));
 }
 
 void KFindRecorder::slotHighlight(int id, int index, int matchedLength)
 {
-	m_hits.append("line: \"" + m_text[id] + "\", index: " + QString::number(index) +
-	              ", length: " + QString::number(matchedLength) + "\n");
+	m_hits.append(QLatin1String("line: \"") + m_text[id] + QLatin1String("\", index: ") + QString::number(index) +
+	              QLatin1String(", length: ") + QString::number(matchedLength) + QLatin1Char('\n'));
 }
 
 ////
@@ -113,20 +112,20 @@ void KFindRecorder::slotHighlight(int id, int index, int matchedLength)
 TestKFind::TestKFind()
     : QObject()
 {
-    m_text = "This file is part of the KDE project.\n"
-             "This library is free software; you can redistribute it and/or\n"
-             "modify it under the terms of the GNU Library General Public\n"
-             "License version 2, as published by the Free Software Foundation.\n"
-             "\n"
-             "    This library is distributed in the hope that it will be useful,\n"
-             "    but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-             "    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
-             "    Library General Public License for more details.\n"
-             "\n"
-             "    You should have received a copy of the GNU Library General Public License\n"
-             "    along with this library; see the file COPYING.LIB.  If not, write to\n"
-             "    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,\n"
-             "    Boston, MA 02110-1301, USA.\n";
+    m_text = QLatin1String("This file is part of the KDE project.\n") +
+             QLatin1String("This library is free software; you can redistribute it and/or\n") +
+             QLatin1String("modify it under the terms of the GNU Library General Public\n") +
+             QLatin1String("License version 2, as published by the Free Software Foundation.\n") +
+             QLatin1Char('\n') +
+             QLatin1String("    This library is distributed in the hope that it will be useful,\n") +
+             QLatin1String("    but WITHOUT ANY WARRANTY; without even the implied warranty of\n") +
+             QLatin1String("    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n") +
+             QLatin1String("    Library General Public License for more details.\n") +
+             QLatin1Char('\n') +
+             QLatin1String("    You should have received a copy of the GNU Library General Public License\n") +
+             QLatin1String("    along with this library; see the file COPYING.LIB.  If not, write to\n") +
+             QLatin1String("    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,\n") +
+             QLatin1String("    Boston, MA 02110-1301, USA.\n");
 }
 
 void TestKFind::testStaticFindString_data()
@@ -242,131 +241,131 @@ void TestKFind::testStaticFindRegexp()
 void TestKFind::testSimpleSearch()
 {
     // first we do a simple text searching the text and doing a few find nexts
-    KFindRecorder test(m_text.split('\n'));
-    test.find("This", 0);
+    KFindRecorder test(m_text.split(QLatin1Char('\n')));
+    test.find(QLatin1String("This"), 0);
     while (test.findNext()) {}
 
     const QString output1 =
-        "line: \"This file is part of the KDE project.\", index: 0, length: 4\n"
-        "line: \"This library is free software; you can redistribute it and/or\", index: 0, length: 4\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 4, length: 4\n"
-        "line: \"    along with this library; see the file COPYING.LIB.  If not, write to\", index: 15, length: 4\n";
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 0, length: 4\n") +
+        QLatin1String("line: \"This library is free software; you can redistribute it and/or\", index: 0, length: 4\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 4, length: 4\n") +
+        QLatin1String("line: \"    along with this library; see the file COPYING.LIB.  If not, write to\", index: 15, length: 4\n");
 
-    QCOMPARE(test.hits().join(""), output1);
+    QCOMPARE(test.hits().join(QString()), output1);
 }
 
 void TestKFind::testSimpleRegexp()
 {
-    KFindRecorder test(m_text.split('\n'));
-    test.find("W.R+ANT[YZ]", KFind::RegularExpression | KFind::CaseSensitive);
+    KFindRecorder test(m_text.split(QLatin1Char('\n')));
+    test.find(QLatin1String("W.R+ANT[YZ]"), KFind::RegularExpression | KFind::CaseSensitive);
     while (test.findNext()) {}
     const QString output =
-        "line: \"    but WITHOUT ANY WARRANTY; without even the implied warranty of\", index: 20, length: 8\n";
-    QCOMPARE(test.hits().join(""), output);
+        QLatin1String("line: \"    but WITHOUT ANY WARRANTY; without even the implied warranty of\", index: 20, length: 8\n");
+    QCOMPARE(test.hits().join(QString()), output);
 }
 
 void TestKFind::testLineBeginRegexp()
 {
     // Let's see what QRegExp can do on a big text (like in KTextEdit)
     {
-        const QString foobar = "foo\nbar";
-        const int idx = foobar.indexOf(QRegExp("^bar"));
+        const QString foobar = QLatin1String("foo\nbar");
+        const int idx = foobar.indexOf(QRegExp(QLatin1String("^bar")));
         QCOMPARE(idx, -1); // it doesn't find it. No /m support, as they say. Too bad.
     }
 
     // If we split, it works, but then looking for "foo\nbar" won't work...
-    KFindRecorder test(m_text.split('\n'));
-    test.find("^License", KFind::RegularExpression);
+    KFindRecorder test(m_text.split(QLatin1Char('\n')));
+    test.find(QLatin1String("^License"), KFind::RegularExpression);
     while (test.findNext()) {}
     const QString output =
-        "line: \"License version 2, as published by the Free Software Foundation.\", index: 0, length: 7\n";
-    QCOMPARE(test.hits().join(""), output);
+        QLatin1String("line: \"License version 2, as published by the Free Software Foundation.\", index: 0, length: 7\n");
+    QCOMPARE(test.hits().join(QString()), output);
 }
 
 void TestKFind::testFindIncremental()
 {
     // FindIncremental with static contents...
 
-    KFindRecorder test(m_text.split('\n'));
-    test.find("", KFind::FindIncremental);
-    test.findNext("i");
-    test.findNext("is");
-    test.findNext("ist");
+    KFindRecorder test(m_text.split(QLatin1Char('\n')));
+    test.find(QString(), KFind::FindIncremental);
+    test.findNext(QLatin1String("i"));
+    test.findNext(QLatin1String("is"));
+    test.findNext(QLatin1String("ist"));
     test.findNext();
-    test.findNext("istri");
-    test.findNext("istr");
-    test.findNext("ist");
-    test.findNext("is");
-    test.findNext("W");
-    test.findNext("WA");
-    test.findNext("WARRANTY");
-    test.findNext("Free");
-    test.findNext("Software Foundation");
+    test.findNext(QLatin1String("istri"));
+    test.findNext(QLatin1String("istr"));
+    test.findNext(QLatin1String("ist"));
+    test.findNext(QLatin1String("is"));
+    test.findNext(QLatin1String("W"));
+    test.findNext(QLatin1String("WA"));
+    test.findNext(QLatin1String("WARRANTY"));
+    test.findNext(QLatin1String("Free"));
+    test.findNext(QLatin1String("Software Foundation"));
 
     const QString output2 =
-        "line: \"This file is part of the KDE project.\", index: 0, length: 0\n"
-        "line: \"This file is part of the KDE project.\", index: 2, length: 1\n"
-        "line: \"This file is part of the KDE project.\", index: 2, length: 2\n"
-        "line: \"This library is free software; you can redistribute it and/or\", index: 42, length: 3\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 3\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 5\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 4\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 3\n"
-        "line: \"This file is part of the KDE project.\", index: 2, length: 2\n"
-        "line: \"This library is free software; you can redistribute it and/or\", index: 25, length: 1\n"
-        "line: \"This library is free software; you can redistribute it and/or\", index: 25, length: 2\n"
-        "line: \"    but WITHOUT ANY WARRANTY; without even the implied warranty of\", index: 20, length: 8\n"
-        "line: \"This library is free software; you can redistribute it and/or\", index: 16, length: 4\n"
-        "line: \"License version 2, as published by the Free Software Foundation.\", index: 44, length: 19\n";
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 0, length: 0\n") +
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 2, length: 1\n") +
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 2, length: 2\n") +
+        QLatin1String("line: \"This library is free software; you can redistribute it and/or\", index: 42, length: 3\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 3\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 5\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 4\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 3\n") +
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 2, length: 2\n") +
+        QLatin1String("line: \"This library is free software; you can redistribute it and/or\", index: 25, length: 1\n") +
+        QLatin1String("line: \"This library is free software; you can redistribute it and/or\", index: 25, length: 2\n") +
+        QLatin1String("line: \"    but WITHOUT ANY WARRANTY; without even the implied warranty of\", index: 20, length: 8\n") +
+        QLatin1String("line: \"This library is free software; you can redistribute it and/or\", index: 16, length: 4\n") +
+        QLatin1String("line: \"License version 2, as published by the Free Software Foundation.\", index: 44, length: 19\n");
 
-    QCOMPARE(test.hits().join(""), output2);
+    QCOMPARE(test.hits().join(QString()), output2);
 }
 
 void TestKFind::testFindIncrementalDynamic()
 {
     // Now do that again but with pages that change between searches
-    KFindRecorder test(m_text.split('\n'));
+    KFindRecorder test(m_text.split(QLatin1Char('\n')));
 
-    test.find("", KFind::FindIncremental);
-    test.findNext("i");
-    test.findNext("is");
-    test.findNext("ist");
-    test.findNext("istr");
+    test.find(QString(), KFind::FindIncremental);
+    test.findNext(QLatin1String("i"));
+    test.findNext(QLatin1String("is"));
+    test.findNext(QLatin1String("ist"));
+    test.findNext(QLatin1String("istr"));
     test.findNext();
-    test.changeText(1, "The second line now looks a whole lot different.");
-    test.findNext("istri");
-    test.findNext("istr");
-    test.findNext("ist");
-    test.findNext("is");
-    test.findNext("i");
-    test.findNext("W");
-    test.findNext("WA");
-    test.findNext("WARRANTY");
-    test.changeText(6, "    but WITHOUT ANY xxxx; without even the implied warranty of");
-    test.findNext("WARRAN");
-    test.findNext("Free");
-    test.findNext("Software Foundation");
+    test.changeText(1, QLatin1String("The second line now looks a whole lot different."));
+    test.findNext(QLatin1String("istri"));
+    test.findNext(QLatin1String("istr"));
+    test.findNext(QLatin1String("ist"));
+    test.findNext(QLatin1String("is"));
+    test.findNext(QLatin1String("i"));
+    test.findNext(QLatin1String("W"));
+    test.findNext(QLatin1String("WA"));
+    test.findNext(QLatin1String("WARRANTY"));
+    test.changeText(6, QLatin1String("    but WITHOUT ANY xxxx; without even the implied warranty of"));
+    test.findNext(QLatin1String("WARRAN"));
+    test.findNext(QLatin1String("Free"));
+    test.findNext(QLatin1String("Software Foundation"));
 
     const QString output3 =
-        "line: \"This file is part of the KDE project.\", index: 0, length: 0\n"
-        "line: \"This file is part of the KDE project.\", index: 2, length: 1\n"
-        "line: \"This file is part of the KDE project.\", index: 2, length: 2\n"
-        "line: \"This library is free software; you can redistribute it and/or\", index: 42, length: 3\n"
-        "line: \"This library is free software; you can redistribute it and/or\", index: 42, length: 4\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 4\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 5\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 4\n"
-        "line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 3\n"
-        "line: \"This file is part of the KDE project.\", index: 2, length: 2\n"
-        "line: \"This file is part of the KDE project.\", index: 2, length: 1\n"
-        "line: \"The second line now looks a whole lot different.\", index: 18, length: 1\n"
-        "line: \"License version 2, as published by the Free Software Foundation.\", index: 48, length: 2\n"
-        "line: \"    but WITHOUT ANY WARRANTY; without even the implied warranty of\", index: 20, length: 8\n"
-        "line: \"    but WITHOUT ANY xxxx; without even the implied warranty of\", index: 51, length: 6\n"
-        "line: \"License version 2, as published by the Free Software Foundation.\", index: 39, length: 4\n"
-        "line: \"License version 2, as published by the Free Software Foundation.\", index: 44, length: 19\n";
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 0, length: 0\n") +
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 2, length: 1\n") +
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 2, length: 2\n") +
+        QLatin1String("line: \"This library is free software; you can redistribute it and/or\", index: 42, length: 3\n") +
+        QLatin1String("line: \"This library is free software; you can redistribute it and/or\", index: 42, length: 4\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 4\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 5\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 4\n") +
+        QLatin1String("line: \"    This library is distributed in the hope that it will be useful,\", index: 21, length: 3\n") +
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 2, length: 2\n") +
+        QLatin1String("line: \"This file is part of the KDE project.\", index: 2, length: 1\n") +
+        QLatin1String("line: \"The second line now looks a whole lot different.\", index: 18, length: 1\n") +
+        QLatin1String("line: \"License version 2, as published by the Free Software Foundation.\", index: 48, length: 2\n") +
+        QLatin1String("line: \"    but WITHOUT ANY WARRANTY; without even the implied warranty of\", index: 20, length: 8\n") +
+        QLatin1String("line: \"    but WITHOUT ANY xxxx; without even the implied warranty of\", index: 51, length: 6\n") +
+        QLatin1String("line: \"License version 2, as published by the Free Software Foundation.\", index: 39, length: 4\n") +
+        QLatin1String("line: \"License version 2, as published by the Free Software Foundation.\", index: 44, length: 19\n");
 
-    QCOMPARE(test.hits().join(""), output3);
+    QCOMPARE(test.hits().join(QString()), output3);
 }
 
 QTEST_MAIN(TestKFind)

@@ -20,7 +20,8 @@
 #ifndef KTEXTEDIT_H
 #define KTEXTEDIT_H
 
-#include <kdeui_export.h>
+#include "ktextwidgets_export.h"
+
 #include <highlighter.h>
 #include <QTextEdit>
 
@@ -87,7 +88,7 @@ class KTextEditSpellInterface
  * @see QTextEdit
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
+class KTEXTWIDGETS_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
 {
     Q_OBJECT
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
@@ -398,12 +399,6 @@ class KDEUI_EXPORT KTextEdit : public QTextEdit //krazy:exclude=qclasses
      * spellchecking is enabled.
      */
     virtual void focusInEvent( QFocusEvent* );
-
-    /**
-     * Reimplemented to allow fast-wheelscrolling with Ctrl-Wheel
-     * or zoom.
-     */
-    virtual void wheelEvent( QWheelEvent* );
 
     /**
      * Deletes a word backwards from the current cursor position,

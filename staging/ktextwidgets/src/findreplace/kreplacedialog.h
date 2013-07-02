@@ -21,6 +21,8 @@
 #ifndef KREPLACEDIALOG_H
 #define KREPLACEDIALOG_H
 
+#include "ktextwidgets_export.h"
+
 #include "kfinddialog.h"
 
 
@@ -51,7 +53,7 @@ class KReplaceDialogPrivate;
  *
  * \image html kreplacedialog.png "KDE Replace Dialog"
  */
-class KDEUI_EXPORT KReplaceDialog:
+class KTEXTWIDGETS_EXPORT KReplaceDialog:
     public KFindDialog
 {
     Q_OBJECT

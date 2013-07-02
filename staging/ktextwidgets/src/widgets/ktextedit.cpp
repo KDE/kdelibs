@@ -33,24 +33,25 @@
 #include <QDBusInterface>
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
+#include <QDebug>
 
 #include <configdialog.h>
 #include <dialog.h>
-#include "backgroundchecker.h"
+#include <backgroundchecker.h>
+#include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kcursor.h>
-#include <kglobalsettings.h>
 #include <kstandardaction.h>
 #include <kicontheme.h>
 #include <kstandardshortcut.h>
 #include <klocalizedstring.h>
-#include <kreplacedialog.h>
-#include <kfinddialog.h>
-#include <kfind.h>
-#include <kreplace.h>
 #include <kmessagebox.h>
 #include <kwindowsystem.h>
-#include <QDebug>
+
+#include "kreplacedialog.h"
+#include "kfinddialog.h"
+#include "kfind.h"
+#include "kreplace.h"
 
 class KTextEdit::Private
 {
@@ -66,7 +67,7 @@ class KTextEdit::Private
         lastReplacedPosition(-1)
     {
         //Check the default sonnet settings to see if spellchecking should be enabled.
-        sonnetKConfig = new KConfig("sonnetrc");
+        sonnetKConfig = new KConfig(QLatin1String("sonnetrc"));
         KConfigGroup group(sonnetKConfig, "Spelling");
         checkSpellingEnabled = group.readEntry("checkerEnabledByDefault", false);
 
@@ -76,7 +77,7 @@ class KTextEdit::Private
         // By default the text is set in italic, which may not be appropriate
         // for some languages and scripts (e.g. for CJK ideographs).
         QString metaMsg = i18nc("Italic placeholder text in line edits: 0 no, 1 yes", "1");
-        italicizePlaceholder = (metaMsg.trimmed() != QString('0'));
+        italicizePlaceholder = (metaMsg.trimmed() != QString(QLatin1Char('0')));
     }
 
     ~Private()
@@ -215,13 +216,13 @@ void KTextEdit::Private::spellCheckerAutoCorrect(const QString& currentWord,cons
 
 void KTextEdit::Private::spellCheckerMisspelling( const QString &text, int pos )
 {
-    //kDebug()<<"TextEdit::Private::spellCheckerMisspelling :"<<text<<" pos :"<<pos;
+    //qDebug()<<"TextEdit::Private::spellCheckerMisspelling :"<<text<<" pos :"<<pos;
     parent->highlightWord( text.length(), pos );
 }
 
 void KTextEdit::Private::spellCheckerCorrected( const QString& oldWord, int pos,const QString& newWord)
 {
-  //kDebug()<<" oldWord :"<<oldWord<<" newWord :"<<newWord<<" pos : "<<pos;
+  //qDebug()<<" oldWord :"<<oldWord<<" newWord :"<<newWord<<" pos : "<<pos;
   if (oldWord != newWord ) {
     QTextCursor cursor(parent->document());
     cursor.setPosition(pos);
@@ -273,7 +274,7 @@ void KTextEdit::Private::menuActivated( QAction* action )
 void KTextEdit::Private::slotFindHighlight(const QString& text, int matchingIndex, int matchingLength)
 {
     Q_UNUSED(text)
-    //kDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength;
+    //qDebug() << "Highlight: [" << text << "] mi:" << matchingIndex << " ml:" << matchingLength;
     QTextCursor tc = parent->textCursor();
     tc.setPosition(matchingIndex);
     tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchingLength);
@@ -283,7 +284,7 @@ void KTextEdit::Private::slotFindHighlight(const QString& text, int matchingInde
 
 
 void KTextEdit::Private::slotReplaceText(const QString &text, int replacementIndex, int replacedLength, int matchedLength) {
-    //kDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength;
+    //qDebug() << "Replace: [" << text << "] ri:" << replacementIndex << " rl:" << replacedLength << " ml:" << matchedLength;
     QTextCursor tc = parent->textCursor();
     tc.setPosition(replacementIndex);
     tc.movePosition(QTextCursor::NextCharacter, QTextCursor::KeepAnchor, matchedLength);
@@ -530,7 +531,7 @@ QMenu *KTextEdit::mousePopupMenu()
   if( !isReadOnly() )
   {
       popup->addSeparator();
-      d->spellCheckAction = popup->addAction( QIcon::fromTheme( "tools-check-spelling" ),
+      d->spellCheckAction = popup->addAction( QIcon::fromTheme( QLatin1String("tools-check-spelling") ),
                                               i18n( "Check Spelling..." ) );
       if ( emptyDocument )
         d->spellCheckAction->setEnabled( false );
@@ -568,7 +569,7 @@ QMenu *KTextEdit::mousePopupMenu()
   }
   popup->addSeparator();
   QAction *speakAction = popup->addAction(i18n("Speak Text"));
-  speakAction->setIcon(QIcon::fromTheme("preferences-desktop-text-to-speech"));
+  speakAction->setIcon(QIcon::fromTheme(QLatin1String("preferences-desktop-text-to-speech")));
   speakAction->setEnabled(!emptyDocument );
   connect( speakAction, SIGNAL(triggered(bool)), this, SLOT(slotSpeakText()) );
   return popup;
@@ -578,21 +579,21 @@ void KTextEdit::slotSpeakText()
 {
     // If KTTSD not running, start it.
     QDBusConnectionInterface* bus = QDBusConnection::sessionBus().interface();
-    if (!bus->isServiceRegistered("org.kde.kttsd"))
+    if (!bus->isServiceRegistered(QLatin1String("org.kde.kttsd")))
     {
-        QDBusReply<void> reply = bus->startService("org.kde.kttsd");
+        QDBusReply<void> reply = bus->startService(QLatin1String("org.kde.kttsd"));
         if (!reply.isValid()) {
             KMessageBox::error(this, i18n("Starting Jovie Text-to-Speech Service Failed"), reply.error().message());
             return;
         }
     }
-    QDBusInterface ktts("org.kde.kttsd", "/KSpeech", "org.kde.KSpeech");
+    QDBusInterface ktts(QLatin1String("org.kde.kttsd"), QLatin1String("/KSpeech"), QLatin1String("org.kde.KSpeech"));
     QString text;
     if(textCursor().hasSelection())
         text = textCursor().selectedText();
     else
         text = toPlainText();
-    ktts.asyncCall("say", text, 0);
+    ktts.asyncCall(QLatin1String("say"), text, 0);
 }
 
 void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
@@ -623,11 +624,11 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
 
     // Clear the selection again, we re-select it below (without the apostrophes).
     wordSelectCursor.setPosition(wordSelectCursor.position()-selectedWord.size());
-    if (selectedWord.startsWith('\'') || selectedWord.startsWith('\"')) {
+    if (selectedWord.startsWith(QLatin1Char('\'')) || selectedWord.startsWith(QLatin1Char('\"'))) {
         selectedWord = selectedWord.right(selectedWord.size() - 1);
         wordSelectCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor);
     }
-    if (selectedWord.endsWith('\'') || selectedWord.endsWith('\"'))
+    if (selectedWord.endsWith(QLatin1Char('\'')) || selectedWord.endsWith(QLatin1Char('\"')))
         selectedWord.chop(1);
 
     wordSelectCursor.movePosition(QTextCursor::NextCharacter,
@@ -704,14 +705,6 @@ void KTextEdit::contextMenuEvent(QContextMenuEvent *event)
             }
         }
     }
-}
-
-void KTextEdit::wheelEvent( QWheelEvent *event )
-{
-  if ( KGlobalSettings::wheelMouseZooms() )
-    QTextEdit::wheelEvent( event );
-  else // thanks, we don't want to zoom, so skip QTextEdit's impl.
-    QAbstractScrollArea::wheelEvent( event );
 }
 
 void KTextEdit::createHighlighter()

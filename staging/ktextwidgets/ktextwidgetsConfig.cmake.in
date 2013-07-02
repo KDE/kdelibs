@@ -1,0 +1,12 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(ktextwidgets_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(ktextwidgets_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+# un-comment this once the dependencies have been cleaned:
+include("${CMAKE_CURRENT_LIST_DIR}/ktextwidgetsTargets.cmake")
+
+set(ktextwidgets_LIBRARIES KF5::ktextwidgets)
+set(ktextwidgets_INCLUDE_DIRS ${ktextwidgets_INCLUDE_DIR} )

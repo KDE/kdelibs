@@ -38,7 +38,7 @@ struct KFind::Private
         , currentId(0)
         , customIds(false)
         , patternChanged(false)
-        , matchedPattern("")
+        , matchedPattern(QLatin1String(""))
         , emptyMatch(0)
     {
     }

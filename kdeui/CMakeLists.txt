@@ -88,10 +88,6 @@ set(kdeui_LIB_SRCS
  dialogs/kshortcutschemeseditor.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/kswitchlanguagedialog_p.cpp
- findreplace/kfind.cpp
- findreplace/kreplace.cpp
- findreplace/kfinddialog.cpp
- findreplace/kreplacedialog.cpp
  fonts/fonthelpers.cpp
  fonts/kfontcombobox.cpp
  kernel/kstyle.cpp
@@ -113,7 +109,6 @@ set(kdeui_LIB_SRCS
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
- widgets/ktextedit.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -162,8 +157,37 @@ target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 
 find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} ${Sonnet_LIBRARIES} ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n XmlGui ItemViews KCompletion KNotifications KJobWidgets KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} KCompletion Qt5::Concurrent)
+target_link_libraries(kdeui LINK_PUBLIC
+    ${ItemModels_LIBRARIES}
+    ${Sonnet_LIBRARIES}
+    ${KAuth_LIBRARIES}
+    kguiaddons
+    kwidgets
+    ${KWidgetsAddons_LIBRARIES}
+    ki18n
+    KTextWidgets
+    XmlGui
+    ItemViews
+    KCompletion
+    KNotifications
+    KJobWidgets
+    KConfigWidgets
+    KIconThemes
+    ${KDE4_KDECORE_LIBS}
+    ${X11_LIBRARIES}
+    Qt5::Widgets
+    Qt5::Svg
+    Qt5::PrintSupport
+    Qt5::Xml
+    ${KDEUI_EXTRA_LIBS}
+    Qt5::Network
+    ${KCoreAddons_LIBRARIES}
+    ${KWindowSystem_LIBRARIES}
+    ${kdeqt5staging_LIBRARIES}
+    ${KConfig_GUI_LIBRARY}
+    KCompletion
+    Qt5::Concurrent
+)
 
 if(X11_FOUND)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
@@ -237,10 +261,6 @@ install( FILES
  dialogs/knewpassworddialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
- findreplace/kfind.h
- findreplace/kreplace.h
- findreplace/kfinddialog.h
- findreplace/kreplacedialog.h
  fonts/kfontcombobox.h
  kernel/kstyle.h
  shortcuts/kacceleratormanager.h
@@ -256,7 +276,6 @@ install( FILES
  widgets/kkeysequencewidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
- widgets/ktextedit.h
  widgets/kshortcutwidget.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h
