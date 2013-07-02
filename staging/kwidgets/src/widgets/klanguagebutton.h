@@ -25,11 +25,10 @@
 #ifndef KLANGUAGEBUTTON_H
 #define KLANGUAGEBUTTON_H
 
-#include <kdeui_export.h>
+#include "kwidgets_export.h"
 #include <QWidget>
 
 class QAction;
-class KLocale;
 class KLanguageButtonPrivate;
 
 /**
@@ -43,7 +42,7 @@ class KLanguageButtonPrivate;
  * @author Hans Petter Bieker <bieker@kde.org>, Martijn Klingens <klingens@kde.org>,
  *         David Jarvie <software@astrojar.org.uk>
  */
-class KDEUI_EXPORT KLanguageButton : public QWidget
+class KWIDGETS_EXPORT KLanguageButton : public QWidget
 {
   Q_OBJECT
 
@@ -70,11 +69,11 @@ public:
   virtual ~KLanguageButton();
 
   /**
-   * Sets the locale to display language names. By default, KLocale::global() is used.
+   * Sets the locale to display language names. By default, QLocale::system().name() is used.
    *
    * @param locale locale to use
    */
-  void setLocale( const KLocale *locale );
+  void setLocale( const QString &locale );
 
   /**
    * Sets a static button text.

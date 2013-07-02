@@ -19,11 +19,13 @@
 */
 
 #include "klanguagebutton.h"
-#include <QtGui/QLineEdit>
-#include <qapplication.h>
+
+#include <QApplication>
+#include <QLineEdit>
 
 int main(int argc, char** argv)
 {
+  QApplication::setApplicationName(QString::fromLatin1("KLanguageButtonTest"));
   QApplication app(argc, argv);
 
   KLanguageButton button;

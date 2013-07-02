@@ -18,18 +18,17 @@
  *  Boston, MA 02110-1301, USA.
  */
 
+#include "klanguagebutton.h"
 
 #include <QMenu>
 #include <QLayout>
 #include <QPushButton>
 #include <QDir>
 #include <QFile>
+#include <QLocale>
 
-#include "klanguagebutton.h"
-
-#include <klocale.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <kconfig.h>
 #include <kconfiggroup.h>
 
 static void checkInsertPos( QMenu *popup, const QString &str, int &index )
@@ -70,18 +69,18 @@ public:
   QStringList ids;
   QMenu *popup;
   QString current;
-  const KLocale *locale;
+  QString locale;
   bool staticText : 1;
   bool showCodes : 1;
 };
 
-KLanguageButton::KLanguageButton( QWidget * parent )
+KLanguageButton::KLanguageButton( QWidget *parent )
   : QWidget( parent ),
     d( new KLanguageButtonPrivate(this) )
 {
 }
 
-KLanguageButton::KLanguageButton( const QString & text, QWidget * parent )
+KLanguageButton::KLanguageButton( const QString &text, QWidget *parent )
   : QWidget( parent ),
     d( new KLanguageButtonPrivate(this) )
 {
@@ -91,7 +90,7 @@ KLanguageButton::KLanguageButton( const QString & text, QWidget * parent )
 KLanguageButtonPrivate::KLanguageButtonPrivate( KLanguageButton *parent )
   : button(new QPushButton(parent)),
     popup(new QMenu(parent)),
-    locale(0),
+    locale(QLocale::system().name()),
     staticText(false),
     showCodes(false)
 {
@@ -113,13 +112,13 @@ KLanguageButton::~KLanguageButton()
   delete d;
 }
 
-void KLanguageButton::setText(const QString & text)
+void KLanguageButton::setText(const QString &text)
 {
   d->staticText = true;
   d->button->setText(text);
 }
 
-void KLanguageButton::setLocale( const KLocale *locale )
+void KLanguageButton::setLocale( const QString &locale )
 {
   d->locale = locale;
 }
@@ -136,9 +135,9 @@ void KLanguageButton::insertLanguage( const QString &languageCode, const QString
   if (name.isEmpty())
   {
     text = languageCode;
-    const KLocale *locale = d->locale ? d->locale : KLocale::global();
-    if (locale)
-      text = locale->languageCodeToName(languageCode);
+    QLocale locale(languageCode);
+    if (locale != QLocale::c())
+        text = locale.nativeLanguageName();
     else
       showCodes = false;
   }
@@ -189,13 +188,12 @@ void KLanguageButton::loadAllLanguages()
     insertLanguage(code, name);
   }
 
-  const KLocale *locale = d->locale ? d->locale : KLocale::global();
-  setCurrentItem(locale ? locale->language() : KLocale::defaultLanguage());
+  setCurrentItem(d->locale);
 }
 
 void KLanguageButton::slotTriggered( QAction *a )
 {
-  //kDebug() << "slotTriggered" << index;
+  //qDebug() << "slotTriggered" << index;
   if (!a)
     return;
 
@@ -207,7 +205,7 @@ void KLanguageButton::slotTriggered( QAction *a )
 
 void KLanguageButton::slotHovered( QAction *a )
 {
-  //kDebug() << "slotHovered" << index;
+  //qDebug() << "slotHovered" << index;
 
   emit highlighted(a->data().toString());
 }
@@ -244,14 +242,14 @@ QString KLanguageButton::current() const
 
 QAction *KLanguageButtonPrivate::findAction(const QString& data) const
 {
-  foreach(QAction *a, popup->actions()) {
+  Q_FOREACH(QAction *a, popup->actions()) {
     if (!a->data().toString().compare(data))
       return a;
   }
   return 0;
 }
 
-void KLanguageButton::setCurrentItem( const QString & languageCode )
+void KLanguageButton::setCurrentItem( const QString &languageCode )
 {
   if (!d->ids.count())
     return;

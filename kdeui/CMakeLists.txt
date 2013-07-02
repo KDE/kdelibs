@@ -110,7 +110,6 @@ set(kdeui_LIB_SRCS
  widgets/kcmodule.cpp
  widgets/khelpmenu.cpp
  widgets/kkeysequencewidget.cpp
- widgets/klanguagebutton.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
@@ -255,7 +254,6 @@ install( FILES
  widgets/kcmodule.h
  widgets/khelpmenu.h
  widgets/kkeysequencewidget.h
- widgets/klanguagebutton.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
  widgets/ktextedit.h

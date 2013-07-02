@@ -35,7 +35,6 @@ KDEUI_EXECUTABLE_TESTS(
   kbugreporttest
   kcategorizedviewtest
   kcolorcollectiontest
-  klanguagebuttontest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
   kmainwindowtest
