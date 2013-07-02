@@ -21,6 +21,7 @@ set(kiocore_SRCS
   kprotocolinfofactory.cpp
   jobtracker.cpp
   jobuidelegateextension.cpp
+  jobuidelegatefactory.cpp
 )
 
 if (UNIX)
@@ -79,6 +80,7 @@ install( FILES
   metadata.h
   udsentry.h
   jobuidelegateextension.h
+  jobuidelegatefactory.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
