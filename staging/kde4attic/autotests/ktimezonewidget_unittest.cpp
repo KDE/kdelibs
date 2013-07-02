@@ -34,12 +34,12 @@ private Q_SLOTS:
 
     void initTestCase()
     {
-        mTestData.setupTimeZoneTest(); // see ktimezonestest_p.h
+        //mTestData.setupTimeZoneTest(); // see ktimezonestest_p.h
     }
 
     void cleanupTestCase()
     {
-        mTestData.cleanupTimeZoneTest();
+        //mTestData.cleanupTimeZoneTest();
     }
 
     void testSetSelected()
@@ -102,7 +102,9 @@ private Q_SLOTS:
         QCOMPARE(tzw.selection(), QStringList() << "America/Los_Angeles" << "Europe/Paris");
     }
 private:
-    TimeZoneTestData mTestData;
+    // Because we don't use a separate KDEHOME, we can't use TimeZoneTestData.
+    // It would remove ktimezonedrc from the user!
+    //TimeZoneTestData mTestData;
 };
 
 // Note: no QStandardPaths::enableTestMode(true) here.

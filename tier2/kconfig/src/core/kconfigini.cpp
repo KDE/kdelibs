@@ -63,6 +63,8 @@ KConfigBackend::ParseInfo
     return parseConfig(currentLocale, entryMap, options, false);
 }
 
+// merging==true is the merging that happens at the beginning of writeConfig:
+// merge changes in the on-disk file with the changes in the KConfig object.
 KConfigBackend::ParseInfo
 KConfigIniBackend::parseConfig(const QByteArray& currentLocale, KEntryMap& entryMap,
                                ParseOptions options, bool merging)
@@ -368,6 +370,7 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
     const bool bGlobal = options & WriteGlobal;
 
     // First, reparse the file on disk, to merge our changes with the ones done by other apps
+    // Store the result into writeMap.
     {
         ParseOptions opts = ParseExpansions;
         if (bGlobal)
@@ -386,7 +389,9 @@ bool KConfigIniBackend::writeConfig(const QByteArray& locale, KEntryMap& entryMa
 
         // only write entries that have the same "globality" as the file
         if (it->bGlobal == bGlobal) {
-            if (!it->bDeleted) {
+            if (it->bReverted) {
+                writeMap.remove(key);
+            } else if (!it->bDeleted) {
                 writeMap[key] = *it;
             } else {
                 KEntryKey defaultKey = key;

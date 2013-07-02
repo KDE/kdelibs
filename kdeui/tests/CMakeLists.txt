@@ -28,12 +28,14 @@ KDEUI_UNIT_TESTS(
   krichtextedittest
   kconfigdialog_unittest
   kcolorbuttontest
+  klinkitemselectionmodeltest
 )
 
 KDEUI_EXECUTABLE_TESTS(
   kbugreporttest
   kcategorizedviewtest
   kcolorcollectiontest
+  klanguagebuttontest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
   kmainwindowtest

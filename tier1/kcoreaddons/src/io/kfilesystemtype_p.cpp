@@ -38,6 +38,9 @@ inline KFileSystemType::Type kde_typeFromName(const char *name)
     if (qstrncmp(name, "cifs", 4) == 0
         || qstrncmp(name, "smbfs", 5) == 0)
         return KFileSystemType::Smb;
+    if (qstrncmp(name, "ramfs", 5) == 0)
+        return KFileSystemType::Ramfs;
+
     return KFileSystemType::Other;
 }
 
@@ -77,6 +80,10 @@ KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
 # ifndef FUSE_SUPER_MAGIC
 #  define FUSE_SUPER_MAGIC     0x65735546
 # endif
+# ifndef RAMFS_MAGIC
+#  define RAMFS_MAGIC          0x858458F6
+# endif
+
 // Reverse-engineering without C++ code:
 // strace stat -f /mnt 2>&1|grep statfs|grep mnt, and look for f_type
 
@@ -97,6 +104,8 @@ KFileSystemType::Type determineFileSystemTypeImpl(const QByteArray& path)
         return KFileSystemType::Smb;
     case MSDOS_SUPER_MAGIC:
         return KFileSystemType::Fat;
+    case RAMFS_MAGIC:
+        return KFileSystemType::Ramfs;
     default:
         return KFileSystemType::Other;
     }

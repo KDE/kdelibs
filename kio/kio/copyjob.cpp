@@ -349,7 +349,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
                 path = QFileInfo(path).absolutePath();
             }
             KFileSystemType::Type fsType = KFileSystemType::fileSystemType( path );
-            if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb ) {
+            if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb  && fsType != KFileSystemType::Ramfs ) {
                 m_freeSpace = KDiskFreeSpaceInfo::freeSpaceInfo( path ).available();
             }
             //TODO actually preliminary check is even more valuable for slow NFS/SMB mounts,

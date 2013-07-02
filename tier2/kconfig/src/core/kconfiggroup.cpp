@@ -1115,10 +1115,7 @@ void KConfigGroup::revertToDefault(const char *key)
     Q_ASSERT_X(isValid(), "KConfigGroup::revertToDefault", "accessing an invalid group");
     Q_ASSERT_X(!d->bConst, "KConfigGroup::revertToDefault", "writing to a read-only group");
 
-    const QByteArray theDefault = config()->d_func()->lookupData(d->fullName(), key,
-                      KEntryMap::SearchDefaults|KEntryMap::SearchLocalized);
-
-    config()->d_func()->putData(d->fullName(), key, theDefault, KConfig::Normal);
+    config()->d_func()->revertEntry(d->fullName(), key);
 }
 
 void KConfigGroup::revertToDefault(const QString &key)

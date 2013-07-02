@@ -53,6 +53,7 @@ target_link_libraries(kiocore
  Qt5::DBus
  Qt5::Concurrent
  ${kdeqt5staging_LIBRARIES} # Needed QUrlPathInfo
+ ${KDBusAddons_LIBRARIES} # KDBusConnectionPool
 )
 
 if(ACL_FOUND)
