@@ -19,7 +19,8 @@ public:
     {
     }
     AccumulateJob(const AccumulateJob& a)
-        : m_count(a.m_count)
+        : ThreadWeaver::Job(a.parent())
+        , m_count(a.m_count)
         , m_result(a.m_result)
     {
     }
