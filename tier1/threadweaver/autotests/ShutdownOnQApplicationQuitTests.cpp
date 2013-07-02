@@ -26,12 +26,12 @@ void ShutdownOnQApplicationQuitTests::testShutdownOnQApplicationQuit()
     {
         int argc = 0;
         QCoreApplication app(argc, (char**)0);
+        QVERIFY(ThreadWeaver::Weaver::instance()!=0);
         ThreadWeaver::Weaver::instance()->suspend();
         ThreadWeaver::Weaver::instance()->resume();
         QTest::qWait(10);
     }
     QVERIFY(ThreadWeaver::Weaver::instance()==0);
-
 }
 
 QTEST_APPLESS_MAIN(ShutdownOnQApplicationQuitTests)
