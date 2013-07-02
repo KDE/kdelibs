@@ -99,6 +99,7 @@ KDEUI_EXECUTABLE_TESTS(
   kcomboboxtest
   kcompletionuitest
   kdatepicktest
+  klanguagebuttontest
   kdatetabletest
   kdatetimewidgettest
   kdatewidgettest
