@@ -103,7 +103,7 @@ protected Q_SLOTS: // internal slots
 private:
     void waitUntilMTimeChange(const QString& path);
     void waitUntilNewSecond();
-    void waitUntilAfter(QDateTime ctime);
+    void waitUntilAfter(const QDateTime &ctime);
     QList<QVariantList> waitForDirtySignal(KDirWatch& watch, int expected);
     QList<QVariantList> waitForCreatedSignal(KDirWatch& watch, int expected);
     QList<QVariantList> waitForDeletedSignal(KDirWatch& watch, int expected);
@@ -170,13 +170,13 @@ void KDirWatch_UnitTest::waitUntilNewSecond()
     waitUntilAfter(now);
 }
 
-void KDirWatch_UnitTest::waitUntilAfter(QDateTime ctime)
+void KDirWatch_UnitTest::waitUntilAfter(const QDateTime &ctime)
 {
     int totalWait = 0;
     QDateTime now;
     Q_FOREVER {
         now = QDateTime::currentDateTime();
-        if (now == ctime) {
+        if (now.toTime_t() == ctime.toTime_t()) { // truncate milliseconds
             totalWait += 50;
             QTest::qWait(50);
         } else {
