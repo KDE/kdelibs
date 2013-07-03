@@ -73,26 +73,30 @@ int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
 
-    QCommandLineParser* parser = new QCommandLineParser;
-    parser->addHelpOption(QCoreApplication::translate("main", "KStatusNotifierItemtest"));
-    parser->addOption(QCommandLineOption(QStringList() << "active-icon", QCoreApplication::translate("main", "Name of active icon"), "name", false, QStringList() << "konqueror"));
-    parser->addOption(QCommandLineOption(QStringList() << "ksni-count", QCoreApplication::translate("main", "How many instances of KStatusNotifierItem to create"), "count", false, QStringList() << "1"));
+    int ksniCount;
+    QString iconName;
+    {
+        QCommandLineParser parser;
+        parser.addHelpOption(QCoreApplication::translate("main", "KStatusNotifierItemtest"));
+        parser.addOption(QCommandLineOption(QStringList() << "active-icon", QCoreApplication::translate("main", "Name of active icon"), "name", "konqueror"));
+        parser.addOption(QCommandLineOption(QStringList() << "ksni-count", QCoreApplication::translate("main", "How many instances of KStatusNotifierItem to create"), "count", "1"));
 
-    if (parser->remainingArguments().count() != 0) {
-        parser->showHelp();
-        return ( 1 );
+        if (parser.remainingArguments().count() != 0) {
+            parser.showHelp();
+            return ( 1 );
+        }
+        ksniCount = parser.value("ksni-count").toInt();
+        iconName = parser.value("active-icon");
     }
 
     QLabel *l = new QLabel("System Tray Main Window", 0L);
-
-    int ksniCount = parser->argument("ksni-count").toInt();
     for (int x=0; x < ksniCount; ++x) {
         KStatusNotifierItem *tray = new KStatusNotifierItem(l);
 
         new KStatusNotifierItemTest(0, tray);
 
         tray->setTitle("DBus System tray test");
-        tray->setIconByName(parser->argument("active-icon"));
+        tray->setIconByName(iconName);
         //tray->setIconByPixmap(QIcon::fromTheme("konqueror"));
         //tray->setAttentionIconByName("kmail");
         tray->setOverlayIconByName("emblem-important");

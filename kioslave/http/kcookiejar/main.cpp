@@ -37,26 +37,26 @@ int main(int argc, char *argv[])
 
     QString description = QCoreApplication::translate("main", "HTTP Cookie Daemon");
 
-    QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption();
-    parser->addHelpOption(description);
-    parser->addOption(QCommandLineOption(QStringList() << "shutdown", QCoreApplication::translate("main", "Shut down cookie jar")));
-    parser->addOption(QCommandLineOption(QStringList() << "remove", QCoreApplication::translate("main", "Remove cookies for domain"), "domain"));
-    parser->addOption(QCommandLineOption(QStringList() << "remove-all", QCoreApplication::translate("main", "Remove all cookies")));
-    parser->addOption(QCommandLineOption(QStringList() << "reload-config", QCoreApplication::translate("main", "Reload configuration file")));
+    QCommandLineParser parser;
+    parser.addVersionOption();
+    parser.addHelpOption(description);
+    parser.addOption(QCommandLineOption(QStringList() << "shutdown", QCoreApplication::translate("main", "Shut down cookie jar")));
+    parser.addOption(QCommandLineOption(QStringList() << "remove", QCoreApplication::translate("main", "Remove cookies for domain"), "domain"));
+    parser.addOption(QCommandLineOption(QStringList() << "remove-all", QCoreApplication::translate("main", "Remove all cookies")));
+    parser.addOption(QCommandLineOption(QStringList() << "reload-config", QCoreApplication::translate("main", "Reload configuration file")));
 
     org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded5", "/modules/kcookiejar", QDBusConnection::sessionBus());
-    if (parser->isSet("remove-all")) {
+    if (parser.isSet("remove-all")) {
       kcookiejar->deleteAllCookies();
     }
-    if (parser->isSet("remove")) {
-      QString domain = parser->argument("remove");
+    if (parser.isSet("remove")) {
+      QString domain = parser.value("remove");
       kcookiejar->deleteCookiesFromDomain(domain);
     }
-    if (parser->isSet("shutdown")) {
+    if (parser.isSet("shutdown")) {
       org::kde::kded5 kded("org.kde.kded5", "/kded", QDBusConnection::sessionBus());
       kded.unloadModule("kcookiejar");
-    } else if (parser->isSet("reload-config")) {
+    } else if (parser.isSet("reload-config")) {
       kcookiejar->reloadPolicy();
     } else {
       org::kde::kded5 kded("org.kde.kded5", "/kded", QDBusConnection::sessionBus());

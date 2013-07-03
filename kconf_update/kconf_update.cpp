@@ -121,10 +121,10 @@ KonfUpdate::KonfUpdate(QCommandLineParser * parser)
     m_bUseConfigInfo = false;
     if (parser->isSet("check")) {
         m_bUseConfigInfo = true;
-        QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kconf_update/" + parser->argument("check"));
+        QString file = QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kconf_update/" + parser->value("check"));
         if (file.isEmpty()) {
-            qWarning("File '%s' not found.", parser->argument("check").toLocal8Bit().data());
-            log() << "File '" << parser->argument("check") << "' passed on command line not found" << endl;
+            qWarning("File '%s' not found.", parser->value("check").toLocal8Bit().data());
+            log() << "File '" << parser->value("check") << "' passed on command line not found" << endl;
             return;
         }
         updateFiles.append(file);
@@ -950,16 +950,16 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     QCoreApplication app(argc, argv);
     app.setApplicationVersion("1.1");
 
-    QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption();
-    parser->addHelpOption(QCoreApplication::translate("main", "KDE Tool for updating user configuration files"));
-    parser->addOption(QCommandLineOption(QStringList() << "debug", QCoreApplication::translate("main", "Keep output results from scripts")));
-    parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check whether config file itself requires updating"), "update-file"));
-    //parser->addOption(QCommandLineOption(QStringList() << "+[file]", QCoreApplication::translate("main", "File to read update instructions from")));
+    QCommandLineParser parser;
+    parser.addVersionOption();
+    parser.addHelpOption(QCoreApplication::translate("main", "KDE Tool for updating user configuration files"));
+    parser.addOption(QCommandLineOption(QStringList() << "debug", QCoreApplication::translate("main", "Keep output results from scripts")));
+    parser.addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check whether config file itself requires updating"), "update-file"));
+    //parser.addOption(QCommandLineOption(QStringList() << "+[file]", QCoreApplication::translate("main", "File to read update instructions from")));
 
     // TODO aboutData.addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
 
-    KonfUpdate konfUpdate(parser);
+    KonfUpdate konfUpdate(&parser);
 
     return 0;
 }

@@ -80,13 +80,16 @@ int main(int argc, char **argv) {
 
     //d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
 
-    QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption();
-    parser->addHelpOption(QCoreApplication::translate("main", "Sends a bug report by email"));
-    parser->addOption(QCommandLineOption(QStringList() << "subject", QCoreApplication::translate("main", "Subject line"), "argument"));
-    parser->addOption(QCommandLineOption(QStringList() << "recipient", QCoreApplication::translate("main", "Recipient"), "argument", false, QStringList() << "submit@bugs.kde.org"));
-
-    QString recipient = parser->argument("recipient");
+    QString subject, recipient;
+    {
+        QCommandLineParser parser;
+        parser.addVersionOption();
+        parser.addHelpOption(QCoreApplication::translate("main", "Sends a bug report by email"));
+        parser.addOption(QCommandLineOption(QStringList() << "subject", QCoreApplication::translate("main", "Subject line"), "argument"));
+        parser.addOption(QCommandLineOption(QStringList() << "recipient", QCoreApplication::translate("main", "Recipient"), "argument", "submit@bugs.kde.org"));
+        recipient = parser.value("recipient");
+        subject = parser.value("subject");
+    }
     if (recipient.isEmpty())
         recipient = "submit@bugs.kde.org";
     else {
@@ -96,7 +99,6 @@ int main(int argc, char **argv) {
     }
     kDebug() << "recp" << recipient;
 
-    QString subject = parser->argument("subject");
     if (subject.isEmpty())
         subject = "(no subject)";
     else {

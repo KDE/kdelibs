@@ -716,23 +716,23 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 
     KLocalizedString::setApplicationCatalog("kio5");
 
-    QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption();
-    parser->addHelpOption(QCoreApplication::translate("main", "KDE HTTP cache maintenance tool"));
-    parser->addOption(QCommandLineOption(QStringList() << "clear-all", QCoreApplication::translate("main", "Empty the cache")));
-    parser->addOption(QCommandLineOption(QStringList() << "info", QCoreApplication::translate("main", "Display information about cache file"), "filename"));
+    QCommandLineParser parser;
+    parser.addVersionOption();
+    parser.addHelpOption(QCoreApplication::translate("main", "KDE HTTP cache maintenance tool"));
+    parser.addOption(QCommandLineOption(QStringList() << "clear-all", QCoreApplication::translate("main", "Empty the cache")));
+    parser.addOption(QCommandLineOption(QStringList() << "info", QCoreApplication::translate("main", "Display information about cache file"), "filename"));
 
     OperationMode mode = CleanCache;
-    if (parser->isSet("clear-all")) {
+    if (parser.isSet("clear-all")) {
         mode = DeleteCache;
-    } else if (parser->isSet("file-info")) {
+    } else if (parser.isSet("file-info")) {
         mode = FileInfo;
     }
 
     // file info mode: no scanning of directories, just output info and exit.
     if (mode == FileInfo) {
         CacheFileInfo fi;
-        if (!readCacheFile(parser->argument("file-info"), &fi, mode)) {
+        if (!readCacheFile(parser.value("file-info"), &fi, mode)) {
             return 1;
         }
         fi.prettyPrint();

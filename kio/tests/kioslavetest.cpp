@@ -483,54 +483,56 @@ int main(int argc, char **argv) {
   QApplication app(argc, argv);
   app.setApplicationVersion(version);
 
-  QCommandLineParser *parser = new QCommandLineParser;
-  parser->addVersionOption();
-  parser->addHelpOption("Test for kioslaves");
-  parser->addOption(QCommandLineOption(QStringList() << "s" << "src", "Source URL", "url"));
-  parser->addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", "url"));
-  parser->addOption(QCommandLineOption(QStringList() << "o" << "operation", "Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)", "operation"));
-  parser->addOption(QCommandLineOption(QStringList() << "p" << "progress", "Progress Type (none,default,status)", "progress", false, QStringList() << "default"));
-
-  QString src = parser->argument("src");
-  QString dest = parser->argument("dest");
-
   uint op = KioslaveTest::Copy;
   uint pr = 0;
+  QString src, dest, operation;
+  {
+    QCommandLineParser parser;
+    parser.addVersionOption();
+    parser.addHelpOption("Test for kioslaves");
+    parser.addOption(QCommandLineOption(QStringList() << "s" << "src", "Source URL", "url"));
+    parser.addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", "url"));
+    parser.addOption(QCommandLineOption(QStringList() << "o" << "operation", "Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)", "operation"));
+    parser.addOption(QCommandLineOption(QStringList() << "p" << "progress", "Progress Type (none,default,status)", "progress", "default"));
 
-  QString operation = parser->argument("operation");
-  if ( operation == "list") {
-    op = KioslaveTest::List;
-  } else if ( operation == "listrecursive") {
-    op = KioslaveTest::ListRecursive;
-  } else if ( operation == "stat") {
-    op = KioslaveTest::Stat;
-  } else if ( operation == "get") {
-    op = KioslaveTest::Get;
-  } else if ( operation == "put") {
-    op = KioslaveTest::Put;
-  } else if ( operation == "copy") {
-    op = KioslaveTest::Copy;
-  } else if ( operation == "move") {
-    op = KioslaveTest::Move;
-  } else if ( operation == "del") {
-    op = KioslaveTest::Delete;
-  } else if ( operation == "mkdir") {
-    op = KioslaveTest::Mkdir;
-  } else if (!operation.isEmpty()) {
-    qWarning("Unknown operation, see --help");
-    return 1;
-  }
+    src = parser.value("src");
+    dest = parser.value("dest");
 
-  QString progress = parser->argument("progress");
-  if ( progress == "none") {
-    pr = KioslaveTest::ProgressNone;
-  } else if ( progress == "default") {
-    pr = KioslaveTest::ProgressDefault;
-  } else if ( progress == "status") {
-    pr = KioslaveTest::ProgressStatus;
-  } else {
-    qWarning("Unknown progress mode, see --help");
-    return 1;
+    operation = parser.value("operation");
+    if ( operation == "list") {
+        op = KioslaveTest::List;
+    } else if ( operation == "listrecursive") {
+        op = KioslaveTest::ListRecursive;
+    } else if ( operation == "stat") {
+        op = KioslaveTest::Stat;
+    } else if ( operation == "get") {
+        op = KioslaveTest::Get;
+    } else if ( operation == "put") {
+        op = KioslaveTest::Put;
+    } else if ( operation == "copy") {
+        op = KioslaveTest::Copy;
+    } else if ( operation == "move") {
+        op = KioslaveTest::Move;
+    } else if ( operation == "del") {
+        op = KioslaveTest::Delete;
+    } else if ( operation == "mkdir") {
+        op = KioslaveTest::Mkdir;
+    } else if (!operation.isEmpty()) {
+        qWarning("Unknown operation, see --help");
+        return 1;
+    }
+
+    QString progress = parser.value("progress");
+    if ( progress == "none") {
+        pr = KioslaveTest::ProgressNone;
+    } else if ( progress == "default") {
+        pr = KioslaveTest::ProgressDefault;
+    } else if ( progress == "status") {
+        pr = KioslaveTest::ProgressStatus;
+    } else {
+        qWarning("Unknown progress mode, see --help");
+        return 1;
+    }
   }
 
   KioslaveTest* test = new KioslaveTest( src, dest, op, pr );
