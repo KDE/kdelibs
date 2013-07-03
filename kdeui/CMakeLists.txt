@@ -11,7 +11,6 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 set(KDEUI_NO_ATTICA TRUE)
 
 include_directories(
- ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
  ${DBUSMENUQT_INCLUDE_DIR}
 )
 

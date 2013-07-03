@@ -11,6 +11,7 @@ generate_export_header(KTextWidgets)
 
 set(ktextwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
+  ${CMAKE_CURRENT_SOURCE_DIR}/kregexpeditor
   ${CMAKE_CURRENT_SOURCE_DIR}/widgets
   ${CMAKE_CURRENT_SOURCE_DIR}/kregexpeditor
 )
