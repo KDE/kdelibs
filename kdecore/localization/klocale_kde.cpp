@@ -2794,7 +2794,7 @@ QString KLocalePrivate::decodeFileNameUTF8(const QByteArray &localFileName)
     uint uc = 0;
     uint min_uc = 0;
 
-    QString result(need + len + 1, Qt::Uninitialized); // worst case
+    QString result(2 * (len + 1), Qt::Uninitialized); // worst case
     ushort *qch = (ushort *)result.unicode();
     uchar ch;
 
