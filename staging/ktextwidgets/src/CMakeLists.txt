@@ -42,7 +42,10 @@ install(FILES
   findreplace/kfinddialog.h
   findreplace/kreplace.h
   findreplace/kreplacedialog.h
+  kregexpeditor/kregexpeditorinterface.h
   widgets/ktextedit.h
   ${CMAKE_CURRENT_BINARY_DIR}/ktextwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+install( FILES kregexpeditor/kregexpeditorinterface.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR} )

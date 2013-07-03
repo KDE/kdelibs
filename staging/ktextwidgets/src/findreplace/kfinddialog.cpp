@@ -22,6 +22,7 @@
 #include "kfinddialog_p.h"
 
 #include "kfind.h"
+#include "kregexpeditorinterface.h"
 
 #include <QCheckBox>
 #include <QCursor>
@@ -36,7 +37,6 @@
 
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kregexpeditorinterface.h>
 #include <kservicetypetrader.h>
 #include <kguiitem.h>
 #include <khistorycombobox.h>
