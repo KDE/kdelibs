@@ -38,6 +38,7 @@ protected:
     {
     }
 
+    QVariantList args;
     QHash<QString, Plugin> createInstanceHash;
     QString componentName;
     QString catalogName;

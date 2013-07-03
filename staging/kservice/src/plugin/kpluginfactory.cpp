@@ -186,6 +186,19 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
     return obj;
 }
 
+void KPluginFactory::setArgs(const QVariantList& args)
+{
+    Q_D(KPluginFactory);
+    d->args = args;
+}
+
+QVariantList KPluginFactory::args()
+{
+    Q_D(KPluginFactory);
+    return d->args;
+}
+
+
 void KPluginFactory::setupTranslations()
 {
     Q_D(KPluginFactory);

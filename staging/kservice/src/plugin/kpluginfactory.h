@@ -73,7 +73,7 @@ class name : public KPluginFactory \
 \
         virtual QObject *create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword) \
         { \
-            return new baseclass(parent, args); \
+            return new baseclass(parent, KPluginFactory::args()); \
         } \
 \
     private: \
@@ -322,6 +322,8 @@ public:
     }
 #endif
 
+    QVariantList args();
+    void setArgs(const QVariantList &args);
 
     /**
      * \internal

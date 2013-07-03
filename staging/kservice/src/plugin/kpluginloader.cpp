@@ -34,6 +34,7 @@ QString i18n(QString a, QString, QString) { return a; }
 #include <QtCore/QFileInfo>
 #include <QDebug>
 #include <QCoreApplication>
+#include <QtCore/QJsonObject>
 
 class KPluginLoaderPrivate
 {
@@ -230,6 +231,10 @@ KPluginFactory *KPluginLoader::factory()
         return 0;
 
     KPluginFactory *factory = qobject_cast<KPluginFactory *>(obj);
+    QVariantList args;
+    args << metaData().toVariantMap();
+    //qDebug() << "--> ARGS: " << args;
+    factory->setArgs(args);
 
     if (factory == 0) {
         qDebug() << "Expected a KPluginFactory, got a" << obj->metaObject()->className();
