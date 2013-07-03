@@ -48,4 +48,4 @@ install(FILES
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-install( FILES kregexpeditor/kregexpeditorinterface.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR} )
+install( FILES kregexpeditor/kregexpeditor.desktop DESTINATION ${SERVICETYPES_INSTALL_DIR} )
