@@ -15,4 +15,5 @@ kwidgets_executable_tests(
     kmessagetest
     kmessageboxtest
     kselectactiontest
+    openurltest
 )

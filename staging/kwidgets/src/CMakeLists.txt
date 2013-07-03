@@ -27,6 +27,7 @@ set(kwidgets_LIB_SRCS
   widgets/kdragwidgetdecorator.cpp
   widgets/klanguagebutton.cpp
   widgets/kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
+  utils/urlhandler.cpp
 )
 
 add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
