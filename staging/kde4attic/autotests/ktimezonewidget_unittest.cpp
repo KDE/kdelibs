@@ -19,8 +19,8 @@
 
 #include <QtTest/QtTest>
 #include <ktimezonewidget.h>
+#include <ksystemtimezone.h>
 #include <kconfiggroup.h>
-#include <QtDBus/QtDBus>
 #include "../../kdecore/tests/ktimezonestest_p.h"
 
 class KTimeZoneWidgetTest : public QObject
@@ -44,8 +44,8 @@ private Q_SLOTS:
 
     void testSetSelected()
     {
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
-            QSKIP("kded5 not running");
+        if (!KSystemTimeZones::isTimeZoneDaemonAvailable()) {
+            QSKIP("ktimezoned not available, check that kded5 is running and /modules/ktimezoned is available");
         }
 
         KTimeZoneWidget tzw;
@@ -75,9 +75,9 @@ private Q_SLOTS:
 
     void testCheckableItems()
     {
-        //if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
-        //    QSKIP("kded5 not running");
-        //}
+        if (!KSystemTimeZones::isTimeZoneDaemonAvailable()) {
+            QSKIP("ktimezoned not available, check that kded5 is running and /modules/ktimezoned is available");
+        }
 
         KTimeZoneWidget tzw;
         tzw.setItemsCheckable(true);
