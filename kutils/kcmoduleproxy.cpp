@@ -96,7 +96,7 @@ void KCModuleProxyPrivate::loadModule()
 		QString name = modInfo.handle();
 		name.replace("-", "_"); //hyphen is not allowed in dbus, only [A-Z][a-z][0-9]_
 		dbusPath = QLatin1String("/internal/KSettingsWidget/") + name;
-		dbusService = QLatin1String("org.kde.internal.KSettingsWidget-") + name;
+		dbusService = QLatin1String("org.kde.internal.KSettingsWidget_") + name;
 	}
 
 	if( QDBusConnection::sessionBus().registerService( dbusService ) || bogusOccupier )
