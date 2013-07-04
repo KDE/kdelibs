@@ -265,10 +265,6 @@ add_subdirectory( kinit  )
 add_subdirectory( includes )
 macro_optional_add_subdirectory( doc )
 
-if(FALSE) # Needs porting
-  add_subdirectory( kimgio )
-endif()
-
 add_subdirectory( kimgio )
 find_package(Qt5Quick)
 if(Qt5Quick_FOUND)
