@@ -111,11 +111,22 @@ bool KConfigToJson::resolveFiles()
 void KConfigToJson::convert(const QString& src, const QString& dest)
 {
     KDesktopFile df(src);
-    const QMap<QString, QString> &m = df.desktopGroup().entryMap();
+    KConfigGroup c = df.desktopGroup();
+
+    const QStringList boolkeys = QStringList()
+            << "Hidden" << "X-KDE-PluginInfo-EnabledByDefault";
+    const QStringList stringlistkeys = QStringList()
+            << "X-KDE-ServiceTypes" << "X-KDE-PluginInfo-Depends";
 
     QVariantMap vm;
-    foreach (const QString &k, m.keys()) {
-        vm[k] = m[k];
+    foreach (const QString &k, c.keyList()) {
+        if (boolkeys.contains(k)) {
+            vm[k] = c.readEntry(k, false);
+        } else if (stringlistkeys.contains(k)) {
+            vm[k] = c.readEntry(k, QStringList());
+        } else {
+            vm[k] = c.readEntry(k, QString());
+        }
     }
 
     QJsonObject jo = QJsonObject::fromVariantMap(vm);
