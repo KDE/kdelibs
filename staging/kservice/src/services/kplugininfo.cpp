@@ -99,6 +99,42 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
             "X-KDE-PluginInfo-EnabledByDefault", false);
 }
 
+KPluginInfo::KPluginInfo(const QVariantList &args)
+: d( new KPluginInfoPrivate )
+{
+    QVariantMap meta;
+    QString metadatastring = QString("MetaData");
+
+    foreach (const QVariant &v, args) {
+        if (v.canConvert<QVariantMap>()) {
+            const QVariantMap &m = v.toMap();
+            if (m.contains(metadatastring) && m[metadatastring].canConvert<QVariantMap>()) {
+                meta = m[metadatastring].toMap();
+                continue;
+            }
+        }
+    }
+
+    d->hidden = meta["Hidden"].toBool();
+    if (d->hidden) {
+        return;
+    }
+
+    d->name = meta["Name"].toString();
+    d->comment = meta["Comment"].toString();
+    d->icon = meta["Icon"].toString();
+    d->author = meta["X-KDE-PluginInfo-Author"].toString();
+    d->email = meta["X-KDE-PluginInfo-Email"].toString();
+    d->pluginName = meta["X-KDE-PluginInfo-Name"].toString();
+    d->version = meta["X-KDE-PluginInfo-Version"].toString();
+    d->website = meta["X-KDE-PluginInfo-Website"].toString();
+    d->category = meta["X-KDE-PluginInfo-Category"].toString();
+    d->license = meta["X-KDE-PluginInfo-License" ].toString();
+    d->dependencies = meta["X-KDE-PluginInfo-Depends"].toStringList();
+    d->enabledbydefault = meta["X-KDE-PluginInfo-EnabledByDefault"].toBool();
+}
+
+#ifndef KDE_NO_DEPRECATED
 KPluginInfo::KPluginInfo( const KService::Ptr service )
 : d( new KPluginInfoPrivate )
 {
@@ -130,6 +166,7 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
     QVariant tmp = service->property( QLatin1String("X-KDE-PluginInfo-EnabledByDefault") );
     d->enabledbydefault = tmp.isValid() ? tmp.toBool() : false;
 }
+#endif
 
 KPluginInfo::KPluginInfo()
     : d(0) // isValid() == false

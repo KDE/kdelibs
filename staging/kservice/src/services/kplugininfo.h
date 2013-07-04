@@ -108,7 +108,12 @@ class KSERVICE_EXPORT KPluginInfo
            \endverbatim
          * In the first three entries the Icon entry is optional.
          */
-        explicit KPluginInfo( const KService::Ptr service );
+#ifndef KDE_NO_DEPRECATED
+        explicit KSERVICE_DEPRECATED KPluginInfo( const KService::Ptr service );
+#endif
+
+
+        explicit KPluginInfo( const QVariantList &args );
 
         /**
          * Creates an invalid plugin.
