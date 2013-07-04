@@ -73,6 +73,11 @@ public:
     bool isSet(const QString &name) const;
     QString value(const QString &name) const;
     QStringList values(const QString &name) const;
+
+    bool isSet(const QCommandLineOption &option) const;
+    QString value(const QCommandLineOption &option) const;
+    QStringList values(const QCommandLineOption &option) const;
+
     QStringList remainingArguments() const;
     QStringList optionNames() const;
     QStringList unknownOptionNames() const;

@@ -52,7 +52,7 @@ public:
     { }
 
     //! The list of names used for this option.
-    QStringList nameSet;
+    QStringList names;
 
     //! The documentation name for the value, if one is expected
     //! Example: "-o <file>" means valueName == "file"
@@ -78,16 +78,43 @@ public:
     It is also used to describe how the option is used - it may be a flag (e.g. \c{-v})
     or take an argument (e.g. \c{-o file}).
 
+    Examples:
+    \snippet code/src_corelib_tools_qcommandlineoption.cpp 0
+
     \sa QCommandLineParser
 */
 
 /*!
     Constructs a command line option object with the given arguments.
 
+    The name of the option is set to \a name and the description to \a description.
+    It is customary to add a "." at the end of the description.
+    In addition, the \a valueName can be set if the option expects a value.
+    The default value for the option is set to \a defaultValue.
+
+    \sa setNames(), setDescription(), setValueName(), setDefaultValues()
+*/
+QCommandLineOption::QCommandLineOption(const QString &name, const QString &description,
+                                       const QString &valueName,
+                                       const QString &defaultValue)
+    : d(new QCommandLineOptionPrivate)
+{
+    setNames(QStringList(name));
+    setValueName(valueName);
+    setDescription(description);
+    setDefaultValue(defaultValue);
+}
+
+/*!
+    Constructs a command line option object with the given arguments.
+
+    This overload allows to set multiple names for the option, for instance
+    \c{o} and \c{output}.
+
     The names of the option are set to \a names and the description to \a description.
     It is customary to add a "." at the end of the description.
     In addition, the \a valueName can be set if the option expects a value.
-    The default value for the option can be set to \a defaultValue.
+    The default value for the option is set to \a defaultValue.
 
     \sa setNames(), setDescription(), setValueName(), setDefaultValues()
 */
@@ -144,7 +171,7 @@ QCommandLineOption &QCommandLineOption::operator=(const QCommandLineOption &othe
  */
 QStringList QCommandLineOption::names() const
 {
-    return d->nameSet;
+    return d->names;
 }
 
 /*!
@@ -152,7 +179,8 @@ QStringList QCommandLineOption::names() const
 
     The name can be either short or long. Any name in the list that is one
     character in length is a short name. Option names must not be empty,
-    must not start with a dash or a slash character, and cannot be repeated.
+    must not start with a dash or a slash character, must not contain a \c{=}
+    and cannot be repeated.
 
     \sa names()
  */
@@ -163,10 +191,12 @@ void QCommandLineOption::setNames(const QStringList &names)
             qWarning("Option names cannot be empty");
         else if (name.startsWith(QLatin1Char('-')))
             qWarning("Option names cannot start with a '-'");
-        else if (name.startsWith(QLatin1Char('?')))
-            qWarning("Option names cannot start with a '?'");
+        else if (name.startsWith(QLatin1Char('/')))
+            qWarning("Option names cannot start with a '/'");
+        else if (name.contains(QLatin1Char('=')))
+            qWarning("Option names cannot contain a '='");
         else
-            d->nameSet.append(name);
+            d->names.append(name);
     }
 }
 
@@ -176,13 +206,13 @@ void QCommandLineOption::setNames(const QStringList &names)
     Options without a value assigned have a boolean-like behavior:
     either the user specifies --option or they don't.
 
-    Options with a value assigned, need to set a name for the expected value,
+    Options with a value assigned need to set a name for the expected value,
     for the documentation of the option in the help output. An option with names \c{o} and \c{output},
     and a value name of \c{file} will appear as \c{-o, --output <file>}.
 
-    The application should call QCommandLineParser::argument() if it expects the
-    option to be present only once, and QCommandLineParser::arguments() if it expects
-    that option to be present multiple times.
+    Call QCommandLineParser::argument() if you expect the option to be present
+    only once, and QCommandLineParser::arguments() if you expect that option
+    to be present multiple times.
 
     \sa valueName()
  */

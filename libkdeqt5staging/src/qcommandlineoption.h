@@ -54,7 +54,10 @@ class QCommandLineOptionPrivate;
 class KDEQT5STAGING_EXPORT QCommandLineOption
 {
 public:
-    explicit QCommandLineOption(const QStringList &names = QStringList(), const QString &description = QString(),
+    explicit QCommandLineOption(const QString &name = QString(), const QString &description = QString(),
+                                const QString &valueName = QString(),
+                                const QString &defaultValue = QString());
+    explicit QCommandLineOption(const QStringList &names, const QString &description = QString(),
                                 const QString &valueName = QString(),
                                 const QString &defaultValue = QString());
     QCommandLineOption(const QCommandLineOption &other);
