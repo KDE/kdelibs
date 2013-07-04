@@ -1,1 +1,1 @@
-add_subdirectory(kconfigtojson)
+add_subdirectory(desktoptojson)

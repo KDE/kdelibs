@@ -1,0 +1,15 @@
+project("desktoptojson")
+
+add_executable(desktoptojson
+    main.cpp
+    kconfigtojson.cpp
+)
+
+target_link_libraries(desktoptojson
+    KConfigCore
+    ki18n
+    kdeqt5staging
+)
+
+install(TARGETS desktoptojson ${INSTALL_TARGETS_DEFAULT_ARGS})
+
