@@ -324,6 +324,18 @@ public:
   Q_INVOKABLE QAction *addAction(const QString &name, QAction *action);
 
   /**
+   * Adds a list of actions to the collection.
+   *
+   * The objectName of the actions is used as their internal name in the collection.
+   *
+   * Uses addAction(QString, QAction*).
+   *
+   * @param actions the list of the actions to add.
+   * @since 5.0
+   */
+  void addActions(const QList<QAction *> &actions);
+
+  /**
    * Removes an action from the collection and deletes it.
    * @param action The action to remove.
    */
