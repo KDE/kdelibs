@@ -80,6 +80,7 @@ int main(int argc, char **argv)
         parser.addHelpOption(QCoreApplication::translate("main", "KStatusNotifierItemtest"));
         parser.addOption(QCommandLineOption(QStringList() << "active-icon", QCoreApplication::translate("main", "Name of active icon"), "name", "konqueror"));
         parser.addOption(QCommandLineOption(QStringList() << "ksni-count", QCoreApplication::translate("main", "How many instances of KStatusNotifierItem to create"), "count", "1"));
+        parser.process(app);
 
         if (parser.remainingArguments().count() != 0) {
             parser.showHelp();

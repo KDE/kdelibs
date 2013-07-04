@@ -494,6 +494,7 @@ int main(int argc, char **argv) {
     parser.addOption(QCommandLineOption(QStringList() << "d" << "dest", "Destination URL", "url"));
     parser.addOption(QCommandLineOption(QStringList() << "o" << "operation", "Operation (list,listrecursive,stat,get,put,copy,move,del,mkdir)", "operation"));
     parser.addOption(QCommandLineOption(QStringList() << "p" << "progress", "Progress Type (none,default,status)", "progress", "default"));
+    parser.process(app);
 
     src = parser.value("src");
     dest = parser.value("dest");

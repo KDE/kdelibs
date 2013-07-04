@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
     parser.addOption(QCommandLineOption(QStringList() << "remove", QCoreApplication::translate("main", "Remove cookies for domain"), "domain"));
     parser.addOption(QCommandLineOption(QStringList() << "remove-all", QCoreApplication::translate("main", "Remove all cookies")));
     parser.addOption(QCommandLineOption(QStringList() << "reload-config", QCoreApplication::translate("main", "Reload configuration file")));
+    parser.process(app);
 
     org::kde::KCookieServer *kcookiejar = new org::kde::KCookieServer("org.kde.kded5", "/modules/kcookiejar", QDBusConnection::sessionBus());
     if (parser.isSet("remove-all")) {

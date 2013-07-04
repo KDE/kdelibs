@@ -642,6 +642,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    parser.addOption(QCommandLineOption(QStringList() << "menutest", QCoreApplication::translate("main", "Perform menu generation test run only")));
    parser.addOption(QCommandLineOption(QStringList() << "track", QCoreApplication::translate("main", "Track menu id for debug purposes"), "menu-id"));
    parser.addOption(QCommandLineOption(QStringList() << "testmode", QCoreApplication::translate("main", "Switch QStandardPaths to test mode, for unit tests only")));
+   parser.process(app);
 
    bGlobalDatabase = parser.isSet("global");
    bMenuTest = parser.isSet("menutest");

@@ -92,7 +92,7 @@ int main( int argc, char **argv ) {
     parser.addOption(QCommandLineOption(QStringList() << "o", QCoreApplication::translate("main", "Output file"), "file"));
     parser.addOption(QCommandLineOption(QStringList() << "n", QCoreApplication::translate("main", "Name of the plugin class to generate"), "plugin name", "WidgetsPlugin"));
     parser.addOption(QCommandLineOption(QStringList() << "g", QCoreApplication::translate("main", "Default widget group name to display in designer"), "group", "Custom"));
-
+    parser.process(app);
 
     //K4AboutData about( "makekdewidgets", 0, ki18n( "makekdewidgets" ), version, description, K4AboutData::License_GPL, ki18n("(C) 2004-2005 Ian Reinhart Geiser"), KLocalizedString(), 0, "geiseri@kde.org" );
     //about.addAuthor( ki18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );

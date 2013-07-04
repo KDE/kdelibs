@@ -721,6 +721,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     parser.addHelpOption(QCoreApplication::translate("main", "KDE HTTP cache maintenance tool"));
     parser.addOption(QCommandLineOption(QStringList() << "clear-all", QCoreApplication::translate("main", "Empty the cache")));
     parser.addOption(QCommandLineOption(QStringList() << "info", QCoreApplication::translate("main", "Display information about cache file"), "filename"));
+    parser.process(app);
 
     OperationMode mode = CleanCache;
     if (parser.isSet("clear-all")) {

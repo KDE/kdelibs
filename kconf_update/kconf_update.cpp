@@ -959,6 +959,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 
     // TODO aboutData.addAuthor(ki18n("Waldo Bastian"), KLocalizedString(), "bastian@kde.org");
 
+    parser.process(app);
     KonfUpdate konfUpdate(&parser);
 
     return 0;

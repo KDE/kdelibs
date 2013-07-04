@@ -110,6 +110,7 @@ int main(int argc, char **argv) {
     parser.addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), "dir"));
     parser.addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), "key=value"));
     // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
+    parser.process(app);
 
     if (parser.remainingArguments().count() != 1) {
         parser.showHelp();
