@@ -115,23 +115,23 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
         }
     }
 
-    d->hidden = meta["Hidden"].toBool();
+    d->hidden = meta.value("Hidden").toBool();
     if (d->hidden) {
         return;
     }
 
-    d->name = meta["Name"].toString();
-    d->comment = meta["Comment"].toString();
-    d->icon = meta["Icon"].toString();
-    d->author = meta["X-KDE-PluginInfo-Author"].toString();
-    d->email = meta["X-KDE-PluginInfo-Email"].toString();
-    d->pluginName = meta["X-KDE-PluginInfo-Name"].toString();
-    d->version = meta["X-KDE-PluginInfo-Version"].toString();
-    d->website = meta["X-KDE-PluginInfo-Website"].toString();
-    d->category = meta["X-KDE-PluginInfo-Category"].toString();
-    d->license = meta["X-KDE-PluginInfo-License" ].toString();
-    d->dependencies = meta["X-KDE-PluginInfo-Depends"].toStringList();
-    d->enabledbydefault = meta["X-KDE-PluginInfo-EnabledByDefault"].toBool();
+    d->name = meta.value("Name").toString();
+    d->comment = meta.value("Comment").toString();
+    d->icon = meta.value("Icon").toString();
+    d->author = meta.value("X-KDE-PluginInfo-Author").toString();
+    d->email = meta.value("X-KDE-PluginInfo-Email").toString();
+    d->pluginName = meta.value("X-KDE-PluginInfo-Name").toString();
+    d->version = meta.value("X-KDE-PluginInfo-Version").toString();
+    d->website = meta.value("X-KDE-PluginInfo-Website").toString();
+    d->category = meta.value("X-KDE-PluginInfo-Category").toString();
+    d->license = meta.value("X-KDE-PluginInfo-License").toString();
+    d->dependencies = meta.value("X-KDE-PluginInfo-Depends").toStringList();
+    d->enabledbydefault = meta.value("X-KDE-PluginInfo-EnabledByDefault").toBool();
 }
 
 #ifndef KDE_NO_DEPRECATED
