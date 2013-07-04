@@ -20,15 +20,17 @@
  */
 
 #include "krichtexteditor.h"
-
-#include <QFileDialog>
-#include <QtCore/QTextStream>
+#include <krichtextwidget.h>
 
 #include <kactioncollection.h>
 #include <kstandardaction.h>
-#include <KRichTextWidget>
 #include <kmessagebox.h>
-#include <kio/netaccess.h>
+
+#include <QApplication>
+#include <QFileDialog>
+#include <QLabel>
+#include <QtCore/QTextStream>
+#include <qtest.h>
 #include <qsavefile.h>
 #include <QStatusBar>
 
@@ -41,7 +43,7 @@ KRichTextEditor::KRichTextEditor() : KXmlGuiWindow()
     setCentralWidget(textArea);
 
     textArea->createActions(actionCollection());
-    setupGUI();
+    setupGUI(KXmlGuiWindow::Default, QFINDTESTDATA("krichtexteditorui.rc"));
 
     itemLabel = new QLabel;
     statusBar()->addWidget(itemLabel);
@@ -129,17 +131,9 @@ void KRichTextEditor::openFile()
         return;
     }
 
-    QString tmpFile;
-    if (KIO::NetAccess::download(fileNameFromDialog, tmpFile,
-                                 this)) {
-        QFile file(tmpFile);
-        file.open(QIODevice::ReadOnly);
+    QFile file(fileNameFromDialog);
+    if (file.open(QIODevice::ReadOnly)) {
         textArea->setTextOrHtml(QTextStream(&file).readAll());
         fileName = fileNameFromDialog;
-
-        KIO::NetAccess::removeTempFile(tmpFile);
-    } else {
-        KMessageBox::error(this,
-                           KIO::NetAccess::lastErrorString());
     }
 }

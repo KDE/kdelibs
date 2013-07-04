@@ -22,7 +22,7 @@
 #ifndef KRICHTEXTEDITOR_H
 #define KRICHTEXTEDITOR_H
 
-#include <KRichTextWidget>
+#include <krichtextwidget.h>
 
 #include <kxmlguiwindow.h>
 
