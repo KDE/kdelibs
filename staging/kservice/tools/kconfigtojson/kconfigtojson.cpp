@@ -78,6 +78,7 @@ void KConfigToJson::runMain()
 
     } else {
         // Let the event loop run once more to show help
+        coutput("Usage --help. In short: kconfigtojson -i inputfile.desktop -o outputfile.json");
         QTimer::singleShot(50, this, SLOT(quit()));
     }
 }
@@ -106,7 +107,6 @@ bool KConfigToJson::resolveFiles()
 
     return d->inFile != d->outFile && !d->inFile.isEmpty() && !d->outFile.isEmpty();
 }
-
 
 void KConfigToJson::convert(const QString& src, const QString& dest)
 {
@@ -138,7 +138,6 @@ void KConfigToJson::convert(const QString& src, const QString& dest)
         coutput("Failed to open " + dest);
         exit(1);
         return;
-
     }
 
     QTextStream out(&file);
