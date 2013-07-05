@@ -104,6 +104,7 @@ public:
     QAtomicInt jobCounter;
     QAtomicInt jobsStarted;
     CollectionSelfExecuteWrapper selfExecuteWrapper;
+    JobPointer self;
 };
 
 JobCollection::JobCollection(QObject *parent)
@@ -175,6 +176,7 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
 void JobCollection::execute(Thread *thread, JobPointer job)
 {
     Q_ASSERT(job.data() == this);
+    Q_ASSERT(d->self.isNull());
     Q_ASSERT(d->api!= 0);
     {
         QMutexLocker l(mutex()); Q_UNUSED(l);
@@ -182,6 +184,7 @@ void JobCollection::execute(Thread *thread, JobPointer job)
         Q_FOREACH(JobPointer child, d->elements) {
             d->api->enqueue(child);
         }
+        d->self = job;
     }
     Job::execute(thread,job);
 }
@@ -204,10 +207,13 @@ void JobCollection::elementFinished(JobPointer job, Thread *thread)
     const int remainingJobs = d->jobCounter.fetchAndAddOrdered(-1) -1;
     Q_ASSERT(remainingJobs >=0);
     if (remainingJobs == 0 ) {
+        // all elements can only be done if self has been executed:
+        Q_ASSERT(!d->self.isNull());
         // there is a small chance that (this) has been dequeued in the
         // meantime, in this case, there is nothing left to clean up
         finalCleanup();
-        executor()->defaultEnd(job, thread);
+        executor()->defaultEnd(d->self, thread);
+        d->self.clear();
     }
 }
 
