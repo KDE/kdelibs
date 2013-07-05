@@ -152,7 +152,7 @@ void JobTests::EmptyJobSequenceTest() {
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
-    QSignalSpy doneSignalSpy(sequence.data(), SIGNAL(done(ThreadWeaver::Job*)));
+    QSignalSpy doneSignalSpy(sequence.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
     QCOMPARE(doneSignalSpy.count(), 0);
     ThreadWeaver::Weaver::instance()->enqueue(sequence);
     ThreadWeaver::Weaver::instance()->finish();
@@ -172,7 +172,7 @@ void JobTests::IncompleteCollectionTest()
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::DependencyPolicy::instance().addDependency(jobA.data(), jobB.data());
-    QSignalSpy collectionDoneSignalSpy(collection.data(), SIGNAL(done(ThreadWeaver::Job*)));
+    QSignalSpy collectionDoneSignalSpy(collection.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
     QSignalSpy jobADoneSignalSpy(jobA.data(), SIGNAL(done(ThreadWeaver::Job*)));
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
     QCOMPARE(jobADoneSignalSpy.count(), 0);
@@ -203,8 +203,8 @@ void JobTests::EmitStartedOnFirstElementTest()
     collection->addJob(jobA);
     collection->addJob(jobB);
     ThreadWeaver::Weaver::instance()->enqueue(collection);
-    QSignalSpy collectionStartedSignalSpy(collection.data(), SIGNAL(started(ThreadWeaver::Job*)));
-    QSignalSpy collectionDoneSignalSpy(collection.data(), SIGNAL(done(ThreadWeaver::Job*)));
+    QSignalSpy collectionStartedSignalSpy(collection.data(), SIGNAL(started(ThreadWeaver::JobPointer)));
+    QSignalSpy collectionDoneSignalSpy(collection.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
     ThreadWeaver::Weaver::instance()->resume();
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
@@ -220,11 +220,11 @@ void JobTests::EmitStartedOnFirstElementTest()
 void JobTests::CollectionDependenciesTest()
 {
     QString result;
-    ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &result, this));
-    ThreadWeaver::JobPointer jobB(new AppendCharacterJob(QChar('b'), &result, this));
-    QSharedPointer<AppendCharacterJob> jobC(new AppendCharacterJob(QChar('c'), &result, this));
+    ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
+    ThreadWeaver::JobPointer jobB(new AppendCharacterJob(QChar('b'), &result));
+    QSharedPointer<AppendCharacterJob> jobC(new AppendCharacterJob(QChar('c'), &result));
     QSharedPointer<ThreadWeaver::JobCollection> collection(new ThreadWeaver::JobCollection());
-    QSignalSpy collectionStartedSignalSpy(collection.data(), SIGNAL(started(ThreadWeaver::Job*)));
+    QSignalSpy collectionStartedSignalSpy(collection.data(), SIGNAL(started(ThreadWeaver::JobPointer)));
     collection->addJob(jobA);
     collection->addJob(jobB);
     ThreadWeaver::DependencyPolicy::instance().addDependency(collection.data(), jobC.data());
