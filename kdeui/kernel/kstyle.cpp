@@ -64,6 +64,7 @@
 #include <kdebug.h>
 #include <kiconloader.h>
 #include <kcolorscheme.h>
+#include <kglobalsettings.h>
 
 #include <config-kdeui.h>
 
