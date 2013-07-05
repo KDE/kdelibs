@@ -2,8 +2,8 @@
 #define DELETETEST_H
 
 #include <QtCore/QObject>
-#include <QtCore/QMutex>
 #include <QtTest/QtTest>
+#include <QAtomicInt>
 
 #include <Weaver/JobPointer.h>
 
@@ -27,9 +27,7 @@ Q_SIGNALS:
     void deleteSequenceTestCompleted();
 
 private:
-    int m_finishCount;
-    mutable QMutex m_finishMutex;
-
+    QAtomicInt m_finishCount;
 };
 
 #endif
