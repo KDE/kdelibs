@@ -2,6 +2,7 @@
 #define JOBTESTS_H
 
 #include <QtCore/QObject>
+#include <Weaver/JobPointer.h>
 
 namespace ThreadWeaver{
     class Job;
@@ -44,8 +45,8 @@ private Q_SLOTS:
     void DequeueSuspendedSequence();
 
 public Q_SLOTS: // slots used during tests that are not test cases
-    void jobStarted( ThreadWeaver::Job* );
-    void jobDone( ThreadWeaver::Job* );
+    void jobStarted(ThreadWeaver::JobPointer);
+    void jobDone(ThreadWeaver::JobPointer);
 };
 
 #endif
