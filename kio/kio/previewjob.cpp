@@ -66,7 +66,6 @@ class KIO::PreviewJobPrivate: public KIO::JobPrivate
 public:
     PreviewJobPrivate(const KFileItemList &items, const QSize &size)
         : initialItems(items),
-          tOrig(0),
           width(size.width()),
           height(size.height()),
           cacheWidth(width),
@@ -103,7 +102,7 @@ public:
     // The current item
     PreviewItem currentItem;
     // The modification time of that URL
-    qlonglong /*time_t*/ tOrig;
+    QDateTime tOrig;
     // Path to thumbnail cache for the current size
     QString thumbPath;
     // Original URL of current item in TMS format
@@ -445,7 +444,7 @@ void PreviewJob::slotResult( KJob *job )
                 return;
             }
             const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
-            d->tOrig = entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, 0 );
+            d->tOrig = QDateTime::fromTime_t(entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, 0));
 
             bool skipCurrentItem = false;
             const KIO::filesize_t size = (KIO::filesize_t)entry.numberValue( KIO::UDSEntry::UDS_SIZE, 0 );
@@ -533,7 +532,9 @@ bool PreviewJobPrivate::statResultThumbnail()
     if ( !thumb.load( thumbPath + thumbName ) ) return false;
 
     if ( thumb.text( "Thumb::URI", 0 ) != origName ||
-         thumb.text( "Thumb::MTime", 0 ).toLongLong() != tOrig ) return false;
+         thumb.text("Thumb::MTime", 0).toLongLong() != tOrig.toTime_t()) {
+        return false;
+    }
 
     QString thumbnailerVersion = currentItem.plugin->property("ThumbnailerVersion", QVariant::String).toString();
 
@@ -682,7 +683,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
 
     if (save) {
         thumb.setText("Thumb::URI", origName);
-        thumb.setText("Thumb::MTime", QString::number(tOrig));
+        thumb.setText("Thumb::MTime", QString::number(tOrig.toTime_t()));
         thumb.setText("Thumb::Size", number(currentItem.item.size()));
         thumb.setText("Thumb::Mimetype", currentItem.item.mimetype());
         QString thumbnailerVersion = currentItem.plugin->property("ThumbnailerVersion", QVariant::String).toString();

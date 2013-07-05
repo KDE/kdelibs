@@ -20,12 +20,12 @@
 #undef QT_NO_CAST_FROM_ASCII
 
 #include <unistd.h>
-#include <time.h>
 
 #include <iostream>
 #include <QCoreApplication>
 #include <QtCore/QBuffer>
 #include <QtCore/QFile>
+#include <QtCore/QDateTime>
 
 #include <kdebug.h>
 #include <klocalizedstring.h>
@@ -189,8 +189,8 @@ void MD5_timeTrial ()
 {
     KMD5 context;
 
-    time_t endTime;
-    time_t startTime;
+    QDateTime endTime;
+    QDateTime startTime;
 
     quint8 block[TEST_BLOCK_LEN];
     quint32 i;
@@ -203,16 +203,16 @@ void MD5_timeTrial ()
         block[i] = (quint8)(i & 0xff);
 
     // Start timer
-    time (&startTime);
+    startTime = QDateTime::currentDateTime();
 
     // Digest blocks
     for (i = 0; i < TEST_BLOCK_COUNT; ++i)
         context.update (block, TEST_BLOCK_LEN);
 
     // Stop timer
-    time (&endTime);
+    endTime = QDateTime::currentDateTime();
 
-    long duration = endTime - startTime;
+    long duration = startTime.secsTo(endTime);
     long speed;
     if (duration)
       speed = (TEST_BLOCK_LEN * (TEST_BLOCK_COUNT/duration));

@@ -51,8 +51,8 @@ namespace KIO
      *
      * To know the modification time of the file/url:
      * \code
-     *  time_t mtime = entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
-     *  if ( mtime != -1 )
+     *  QDateTime mtime = QDateTime::fromTime_t(entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, 0));
+     *  if (mtime.isValid())
      *      ...
      * \endcode
      */
