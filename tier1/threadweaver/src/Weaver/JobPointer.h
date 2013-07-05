@@ -1,16 +1,18 @@
-#ifndef JOBPOINTER_H
-#define JOBPOINTER_H
+#ifndef THREADWEAVER_JOBPOINTER_H
+#define THREADWEAVER_JOBPOINTER_H
 
 #include <QSharedPointer>
 
-#include <Weaver/Job.h>
-
 namespace ThreadWeaver {
+
+class Job;
 
 typedef QSharedPointer<Job> JobPointer;
 
 }
 
+#include <Weaver/Job.h>
+
 Q_DECLARE_METATYPE(ThreadWeaver::JobPointer)
 
-#endif // JOBPOINTER_H
+#endif // THREADWEAVER_JOBPOINTER_H

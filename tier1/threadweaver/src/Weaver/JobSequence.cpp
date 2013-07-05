@@ -60,12 +60,12 @@ void JobSequence::aboutToBeQueued_locked (QueueAPI *api )
     JobCollection::aboutToBeQueued_locked(api);
 }
 
-void JobSequence::elementFinished(Job *job, Thread *thread)
+void JobSequence::elementFinished(JobPointer job, Thread *thread)
 {
     REQUIRE ( job != 0 );
     JobCollection::elementFinished(job, thread);
     if (!job->success()) {
-        stop(ManagedJobPointer(job));
+        stop(job);
     }
     QMutexLocker l(mutex()); Q_UNUSED(l);
     if (jobListLength_locked() > 0) {

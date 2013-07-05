@@ -49,14 +49,14 @@ public:
         collection = collection_;
     }
 
-    void execute(ThreadWeaver::Job* job, ThreadWeaver::Thread *thread) {
+    void execute(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *thread) Q_DECL_OVERRIDE {
         Q_ASSERT(collection);
         collection->elementStarted(job, thread);
         executeWrapped(job, thread);
         collection->elementFinished(job, thread);
     }
 
-    void cleanup(Job *job, Thread *) {
+    void cleanup(JobPointer job, Thread *) Q_DECL_OVERRIDE {
         //Once job is unwrapped from us, this object is dangling. Job::executor points to the next higher up execute wrapper.
         //It is thus safe to "delete this". By no means add any later steps after delete!
         delete unwrap(job);
@@ -68,10 +68,10 @@ private:
 
 class CollectionSelfExecuteWrapper : public ThreadWeaver::ExecuteWrapper {
 public:
-    void begin(Job*, Thread*) {
+    void begin(JobPointer, Thread*) Q_DECL_OVERRIDE {
     }
 
-    void end(Job*, Thread*) {
+    void end(JobPointer, Thread*) Q_DECL_OVERRIDE{
     }
 };
 
@@ -172,8 +172,9 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
     Job::aboutToBeDequeued_locked(api);
 }
 
-void JobCollection::execute(Thread *thread)
+void JobCollection::execute(Thread *thread, JobPointer job)
 {
+    Q_ASSERT(job.data() == this);
     Q_ASSERT(d->api!= 0);
     {
         QMutexLocker l(mutex()); Q_UNUSED(l);
@@ -182,19 +183,21 @@ void JobCollection::execute(Thread *thread)
             d->api->enqueue(child);
         }
     }
-    Job::execute(thread);
+    Job::execute(thread,job);
 }
 
-void JobCollection::elementStarted(Job*, Thread* thread)
+void JobCollection::elementStarted(JobPointer job, Thread* thread)
 {
+    Q_ASSERT(job.data() == this || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     if (d->jobsStarted.fetchAndAddOrdered(1) == 0) {
         //emit started() signal on beginning of first job execution
-        executor()->defaultBegin(this, thread);
+        executor()->defaultBegin(job, thread);
     }
 }
 
-void JobCollection::elementFinished(Job*, Thread *thread)
+void JobCollection::elementFinished(JobPointer job, Thread *thread)
 {
+    Q_ASSERT(job.data() == this || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     QMutexLocker l(mutex()); Q_UNUSED(l);
     const int jobsStarted = d->jobsStarted.loadAcquire();
     Q_ASSERT(jobsStarted >=0); Q_UNUSED(jobsStarted);
@@ -204,7 +207,7 @@ void JobCollection::elementFinished(Job*, Thread *thread)
         // there is a small chance that (this) has been dequeued in the
         // meantime, in this case, there is nothing left to clean up
         finalCleanup();
-        executor()->defaultEnd(this, thread);
+        executor()->defaultEnd(job, thread);
     }
 }
 

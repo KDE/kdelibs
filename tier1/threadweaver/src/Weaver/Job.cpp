@@ -46,22 +46,22 @@ namespace {
 //maaaaaaybeeee...
 class DefaultExecutor : public ThreadWeaver::Executor {
 public:
-    void begin(ThreadWeaver::Job *job, ThreadWeaver::Thread *thread) {
+    void begin(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *thread) {
         defaultBegin(job, thread);
     }
 
-    void execute(ThreadWeaver::Job *job, ThreadWeaver::Thread *) /* override */ {
+    void execute(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *) Q_DECL_OVERRIDE {
         run(job);
     }
 
-    void end(ThreadWeaver::Job *job, ThreadWeaver::Thread *thread) {
+    void end(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *thread) {
         defaultEnd(job, thread);
     }
 };
 
 class DebugExecuteWrapper : public ThreadWeaver::ExecuteWrapper {
 public:
-    void execute(ThreadWeaver::Job *job,ThreadWeaver::Thread *th) /* override */ {
+    void execute(ThreadWeaver::JobPointer job,ThreadWeaver::Thread *th) Q_DECL_OVERRIDE {
         Q_ASSERT_X(job, Q_FUNC_INFO, "job may not be zero!");
         ThreadWeaver::debug(3, "DefaultExecuteWrapper::execute: executing job of type %s %s in thread %i.\n",
                             job->metaObject()->className(), job->objectName().isEmpty() ? "" : qPrintable(job->objectName()),
@@ -128,22 +128,23 @@ Job::~Job()
     delete d;
 }
 
-void Job::execute(Thread *th)
+void Job::execute(Thread *th, JobPointer job)
 {
     d->thread.fetchAndStoreOrdered(th);
     Executor* executor = d->executor.fetchAndAddOrdered(0);
     Q_ASSERT(executor); //may never be unset!
-    executor->begin(this, th);
-    executor->execute(this, th);
-    executor->end(this, th);
+    executor->begin(job, th);
+    executor->execute(job, th);
+    executor->end(job, th);
     d->thread.fetchAndStoreOrdered(0);
     setFinished (true);
-    executor->cleanup(this, th);
+    executor->cleanup(job, th);
 }
 
 void Job::operator ()()
 {
-    execute(0);
+    Q_ASSERT(false); //TODO NI
+    //execute(0);
 }
 
 Executor *Job::setExecutor(Executor *executor)
@@ -173,14 +174,15 @@ void Job::freeQueuePolicyResources()
     }
 }
 
-void Job::defaultBegin(Job*, Thread *)
+void Job::defaultBegin(JobPointer job, Thread *)
 {
-    Q_EMIT started(this);
+    Q_ASSERT(job.data() == this);
+    Q_EMIT started(job);
 }
 
-void Job::defaultEnd(Job *job, Thread *)
+void Job::defaultEnd(JobPointer job, Thread *)
 {
-    Q_ASSERT(job == this);
+    Q_ASSERT(job.data() == this);
     if (!success()) {
         Q_EMIT failed(job);
     }

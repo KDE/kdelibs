@@ -99,12 +99,12 @@ protected:
 
 protected:
     friend class CollectionExecuteWrapper;
-    virtual void elementStarted(Job* job, Thread* thread);
-    virtual void elementFinished(Job* job, Thread* thread);
+    virtual void elementStarted(JobPointer job, Thread* thread);
+    virtual void elementFinished(JobPointer job, Thread* thread);
 
 private:
     /** Overload the execute method. */
-    void execute ( Thread * );
+    void execute(Thread*, JobPointer job);
 
 
     /** Overload run().

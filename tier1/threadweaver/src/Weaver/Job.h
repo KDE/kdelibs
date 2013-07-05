@@ -32,6 +32,7 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 #include <QtCore/QObject>
 
 #include <threadweaver_export.h>
+#include <Weaver/JobPointer.h>
 
 class QMutex;
 class QWaitCondition;
@@ -71,8 +72,10 @@ public:
 
     /** Perform the job. The thread in which this job is executed is given as a parameter.
      *
-     * Do not overload this method to create your own Job implementation, overload run(). */
-    virtual void execute(Thread*);
+     * Do not overload this method to create your own Job implementation, overload run().
+     * Whenever the currently executed job is communicated to the outside world, use the supplied job pointer
+     * to keep the reference count correct. */
+    virtual void execute(Thread*, JobPointer job);
 
     /** Perform the job synchroneously in the current thread. */
     void operator()();
@@ -174,16 +177,16 @@ public:
 
 Q_SIGNALS:
     /** This signal is emitted when this job is being processed by a thread. */
-    void started ( ThreadWeaver::Job* );
+    void started(ThreadWeaver::JobPointer);
     /** This signal is emitted when the job has been finished (no matter if it succeeded or not).
      * After this signal has been emitted, ThreadWeaver no longer references the Job internally
      * and the Job can be deleted. */
-    void done ( ThreadWeaver::Job* );
+    void done(ThreadWeaver::JobPointer);
 
     /** This job has failed.
      *
      * This signal is emitted when success() returns false after the job is executed. */
-    void failed( ThreadWeaver::Job* );
+    void failed(ThreadWeaver::JobPointer);
 
 private:
     class Private;
@@ -201,11 +204,11 @@ protected:
 
     /** @brief Perform standard tasks before starting the execution of a job.
      * This emits the started() signal. */
-    void defaultBegin(Job* job, Thread* thread);
+    void defaultBegin(JobPointer job, Thread* thread);
 
     /** @brief Perform standard task after the execution of a job.
      * This emits the done() and maybe the failed() signals. */
-    void defaultEnd(Job* job, Thread* thread);
+    void defaultEnd(JobPointer job, Thread* thread);
 
     /** Return the thread that executes this job.
      *

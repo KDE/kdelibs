@@ -18,11 +18,11 @@ class ExecuteWrapper : public Executor
 public:
     ExecuteWrapper();
     Executor* wrap(Executor* previous);
-    Executor* unwrap(Job*);
-    void begin(Job *, Thread *);
-    void execute(Job *job, Thread *thread);
-    void executeWrapped(Job* job, Thread* thread);
-    void end(Job *, Thread *);
+    Executor* unwrap(JobPointer job);
+    void begin(JobPointer job, Thread *);
+    void execute(JobPointer job, Thread *thread);
+    void executeWrapped(JobPointer job, Thread* thread);
+    void end(JobPointer job, Thread *);
 
 private:
     QAtomicPointer<Executor> wrapped;

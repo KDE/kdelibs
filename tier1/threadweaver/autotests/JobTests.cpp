@@ -216,7 +216,7 @@ void JobTests::EmitStartedOnFirstElementTest()
 
 /* This test verifies that all elements of a collection are only executed after all dependencies for the collection
  * itself have been resolved.
- * Previous tests have already verified that collections without dependencies get executes right away. */
+ * Previous tests have already verified that collections without dependencies get executed right away. */
 void JobTests::CollectionDependenciesTest()
 {
     QString result;
