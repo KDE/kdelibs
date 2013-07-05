@@ -28,12 +28,9 @@
 #include <QMetaProperty>
 #include <QTimer>
 #include <QRadioButton>
-//#include <QButtonGroup>
+#include <QDebug>
 
 #include <kconfigskeleton.h>
-#include <kdebug.h>
-
-#include <assert.h>
 
 typedef QHash<QString, QByteArray> MyHash;
 Q_GLOBAL_STATIC(MyHash, s_propertyMap)
@@ -46,8 +43,6 @@ public:
 
 public:
   KConfigDialogManager *q;
-
-  static int debugArea() { static int s_area = KDebug::registerArea("kdeui (KConfigDialogManager)"); return s_area; }
 
   /**
   * KConfigSkeleton object used to store settings
@@ -262,7 +257,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
 
           if (changedIt == s_changedMap()->constEnd())
           {
-            kWarning(d->debugArea()) << "Don't know how to monitor widget '" << childWidget->metaObject()->className() << "' for changes!";
+            qWarning() << "Don't know how to monitor widget '" << childWidget->metaObject()->className() << "' for changes!";
           }
           else
           {
@@ -283,7 +278,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
       }
       else
       {
-        kWarning(d->debugArea()) << "A widget named '" << widgetName << "' was found but there is no setting named '" << configId << "'";
+        qWarning() << "A widget named '" << widgetName << "' was found but there is no setting named '" << configId << "'";
       }
     }
     else if (QLabel *label = qobject_cast<QLabel*>(childWidget))
@@ -299,18 +294,19 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
         d->buddyWidget.insert(configId, childWidget);
       }
     }
-#ifndef NDEBUG
-    else if (!widgetName.isEmpty() && d->trackChanges)
-    {
-      QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap()->constFind(childWidget->metaObject()->className());
-      if (changedIt != s_changedMap()->constEnd())
-      {
-        if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
-            !qobject_cast<QGroupBox*>(childWidget) &&!qobject_cast<QTabWidget*>(childWidget) )
-          kDebug(d->debugArea()) << "Widget '" << widgetName << "' (" << childWidget->metaObject()->className() << ") remains unmanaged.";
-      }
-    }
-#endif
+//kf5: commented out to reduce debug output
+// #ifndef NDEBUG
+//     else if (!widgetName.isEmpty() && d->trackChanges)
+//     {
+//       QHash<QString, QByteArray>::const_iterator changedIt = s_changedMap()->constFind(childWidget->metaObject()->className());
+//       if (changedIt != s_changedMap()->constEnd())
+//       {
+//         if ((!d->insideGroupBox || !qobject_cast<QRadioButton*>(childWidget)) &&
+//             !qobject_cast<QGroupBox*>(childWidget) &&!qobject_cast<QTabWidget*>(childWidget) )
+//           qDebug() << "Widget '" << widgetName << "' (" << childWidget->metaObject()->className() << ") remains unmanaged.";
+//       }
+//     }
+// #endif
 
     if(bParseChildren)
     {
@@ -338,14 +334,14 @@ void KConfigDialogManager::updateWidgets()
      KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
      if (!item)
      {
-        kWarning(d->debugArea()) << "The setting '" << it.key() << "' has disappeared!";
+        qWarning() << "The setting '" << it.key() << "' has disappeared!";
         continue;
      }
 
      if(!item->isEqual( property(widget) ))
      {
         setProperty( widget, item->property() );
-//        kDebug(d->debugArea()) << "The setting '" << it.key() << "' [" << widget->className() << "] has changed";
+//        qDebug() << "The setting '" << it.key() << "' [" << widget->className() << "] has changed";
         changed = true;
      }
      if (item->isImmutable())
@@ -381,7 +377,7 @@ void KConfigDialogManager::updateSettings()
 
         KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
         if (!item) {
-            kWarning(d->debugArea()) << "The setting '" << it.key() << "' has disappeared!";
+            qWarning() << "The setting '" << it.key() << "' has disappeared!";
             continue;
         }
 
@@ -405,7 +401,7 @@ QByteArray KConfigDialogManager::getUserProperty(const QWidget *widget) const
     const QMetaProperty user = metaObject->userProperty();
     if ( user.isValid() ) {
         s_propertyMap()->insert( widget->metaObject()->className(), user.name() );
-        //kDebug(d->debugArea()) << "class name: '" << widget->metaObject()->className()
+        //qDebug() << "class name: '" << widget->metaObject()->className()
         //<< " 's USER property: " << metaProperty.name() << endl;
     }
     else {
@@ -432,7 +428,7 @@ QByteArray KConfigDialogManager::getCustomProperty(const QWidget *widget) const
     QVariant prop(widget->property("kcfg_property"));
     if (prop.isValid()) {
         if (!prop.canConvert(QVariant::ByteArray)) {
-            kWarning(d->debugArea()) << "kcfg_property on" << widget->metaObject()->className()
+            qWarning() << "kcfg_property on" << widget->metaObject()->className()
                           << "is not of type ByteArray";
         } else {
             return prop.toByteArray();
@@ -473,7 +469,7 @@ void KConfigDialogManager::setProperty(QWidget *w, const QVariant &v)
         }
     }
     if (userproperty.isEmpty()) {
-        kWarning(d->debugArea()) << w->metaObject()->className() << " widget not handled!";
+        qWarning() << w->metaObject()->className() << " widget not handled!";
         return;
     }
 
@@ -501,7 +497,7 @@ QVariant KConfigDialogManager::property(QWidget *w) const
         }
     }
     if (userproperty.isEmpty()) {
-        kWarning(d->debugArea()) << w->metaObject()->className() << " widget not handled!";
+        qWarning() << w->metaObject()->className() << " widget not handled!";
         return QVariant();
     }
 
@@ -518,12 +514,12 @@ bool KConfigDialogManager::hasChanged() const
 
         KConfigSkeletonItem *item = d->m_conf->findItem(it.key());
         if (!item) {
-            kWarning(d->debugArea()) << "The setting '" << it.key() << "' has disappeared!";
+            qWarning() << "The setting '" << it.key() << "' has disappeared!";
             continue;
         }
 
         if(!item->isEqual( property(widget) )) {
-            // kDebug(d->debugArea()) << "Widget for '" << it.key() << "' has changed.";
+            // qDebug() << "Widget for '" << it.key() << "' has changed.";
             return true;
         }
     }

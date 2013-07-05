@@ -1,6 +1,6 @@
-
 set(kconfigwidgets_SRCS
   kconfigviewstatesaver.cpp
+  kconfigdialogmanager.cpp
 )
 
 add_library(KConfigWidgets ${kconfigwidgets_SRCS})
@@ -17,6 +17,7 @@ install(TARGETS KConfigWidgets EXPORT KConfigWidgetsTargets ${INSTALL_TARGETS_DE
 install(FILES
   kconfigviewstatesaver.h
   kviewstatemaintainer.h
+  kconfigdialogmanager.h
   ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

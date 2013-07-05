@@ -22,7 +22,7 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KCONFIGWIDGETS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KConfigWidgetsConfigVersion.cmake")
 
-remove_definitions(-DQT_NO_KEYWORDS)
+remove_definitions(-DQT_NO_KEYWORDS -DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_FROM_BYTEARRAY)
 
 add_subdirectory(src)
 add_subdirectory(tests)

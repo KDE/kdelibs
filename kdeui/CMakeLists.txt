@@ -38,7 +38,6 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  colors/kcolorbutton.cpp
  dialogs/kconfigdialog.cpp
- dialogs/kconfigdialogmanager.cpp
  dialogs/klinkdialog.cpp
  dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
@@ -178,7 +177,6 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  colors/kcolorbutton.h
  dialogs/kconfigdialog.h
- dialogs/kconfigdialogmanager.h
  dialogs/knewpassworddialog.h
  kernel/kstyle.h
  shortcuts/kgesture.h

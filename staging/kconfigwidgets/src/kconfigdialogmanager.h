@@ -21,7 +21,7 @@
 #ifndef KCONFIGDIALOGMANAGER_H
 #define KCONFIGDIALOGMANAGER_H
 
-#include <kdeui_export.h>
+#include <kconfigwidgets_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
@@ -82,7 +82,7 @@ class QWidget;
  * @author Benjamin C Meyer <ben+kdelibs at meyerhome dot net>
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDEUI_EXPORT KConfigDialogManager : public QObject {
+class KCONFIGWIDGETS_EXPORT KConfigDialogManager : public QObject {
 
 Q_OBJECT
 
