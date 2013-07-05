@@ -241,26 +241,42 @@ public:
     /**
      * The default color to use for inactive titles.
      * @return the inactive title color
+     * @deprecated since 5.0, This used to export the color of the titlebar.
+     * If you wanted to query the color of the inactive window background, use
+     * KColorScheme(QPalette::Inactive, KColorScheme::Window).background().color(),
+     * otherwise please read the setting from kdeglobals/WM/inactiveBackground directly
      */
-    static QColor inactiveTitleColor();
+    static KDEUI_DEPRECATED QColor inactiveTitleColor();
 
     /**
      * The default color to use for inactive texts.
      * @return the inactive text color
+     * @deprecated since 5.0, This used to export the color of the titlebar.
+     * If you wanted to query the color of the inactive window foreground, use
+     * KColorScheme(QPalette::Inactive, KColorScheme::Window).foreground().color()
+     * otherwise please read the setting from kdeglobals/WM/inactiveForeground directly
      */
-    static QColor inactiveTextColor();
+    static KDEUI_DEPRECATED QColor inactiveTextColor();
 
     /**
      * The default color to use for active titles.
      * @return the active title color
+     * @deprecated since 5.0, This used to export the color of the titlebar.
+     * If you wanted to query the color of the active window background, use
+     * KColorScheme(QPalette::Active, KColorScheme::Window).background(KColorScheme::ActiveBackground).color(),
+     * otherwise please read the setting from kdeglobals/WM/activeBackground directly
      */
-    static QColor activeTitleColor();
+    static KDEUI_DEPRECATED QColor activeTitleColor();
 
     /**
      * The default color to use for active texts.
      * @return the active text color
+     * @deprecated since 5.0, This used to export the color of the titlebar.
+     * If you wanted to query the color of the active window foreground, use
+     * KColorScheme(QPalette::Active, KColorScheme::Window).foreground(KColorScheme::ActiveText).color(),
+     * otherwise please read the setting from kdeglobals/WM/activeForeground directly
      */
-    static QColor activeTextColor();
+    static KDEUI_DEPRECATED QColor activeTextColor();
 
     /**
      * Returns the contrast for borders.
