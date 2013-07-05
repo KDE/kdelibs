@@ -57,7 +57,7 @@ public:
 public Q_SLOTS:
     // this slot (which is not a test) is part of
     // DeleteDoneJobsFromSequenceTest
-    void deleteJob( ThreadWeaver::Job* );
+    void deleteJob( ThreadWeaver::JobPointer );
     // this slot is part of DeleteCollectionOnDoneTest
     void deleteCollection( ThreadWeaver::Job* );
 
