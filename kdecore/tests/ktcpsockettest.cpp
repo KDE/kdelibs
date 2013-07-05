@@ -222,7 +222,7 @@ static QString stateToString(KTcpSocket::State state)
 
 void KTcpSocketTest::statesIana()
 {
-    QSKIP("Too unreliable");
+    QSKIP("Too unreliable", SkipAll);
     //A connection to a real internet host
     KTcpSocket *s = new KTcpSocket(this);
     connect(s, SIGNAL(hostFound()), this, SLOT(states_hostFound()));
