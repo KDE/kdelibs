@@ -144,19 +144,19 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
     QVERIFY( autoDeleteJob == 0 );
 }
 
-void QueueTests::deleteCollection( Job* collection )
+void QueueTests::deleteCollection(ThreadWeaver::JobPointer collection)
 {
     QVERIFY( thread() == QThread::currentThread() );
     QVERIFY( collection == autoDeleteCollection );
-    delete autoDeleteCollection;
-    autoDeleteCollection = 0;
+    delete autoDeleteCollection; autoDeleteCollection = 0;
 }
 
 void QueueTests::DeleteCollectionOnDoneTest()
 {
     QString sequence;
     autoDeleteCollection = new ThreadWeaver::JobCollection( this );
-    QVERIFY(connect(autoDeleteCollection, SIGNAL(done(ThreadWeaver::Job*)), SLOT(deleteCollection(ThreadWeaver::Job*))));
+    QVERIFY(connect(autoDeleteCollection, SIGNAL(done(ThreadWeaver::JobPointer)),
+                    SLOT(deleteCollection(ThreadWeaver::JobPointer))));
 
     AppendCharacterJob a( QChar( 'a' ), &sequence );
     AppendCharacterJob b( QChar( 'b' ), &sequence );
