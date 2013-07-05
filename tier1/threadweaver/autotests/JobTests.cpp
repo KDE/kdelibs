@@ -717,19 +717,13 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
     QString sequence;
     QList<Job*> jobs;
     ThreadWeaver::JobCollection collection;
-    connect( &collection, SIGNAL(started(ThreadWeaver::JobPointer)),
-             SLOT(jobStarted(ThreadWeaver::JobPointer)) );
-    connect( &collection, SIGNAL(done(ThreadWeaver::JobPointer)),
-             SLOT(jobDone(ThreadWeaver::JobPointer)) );
+    QVERIFY(connect(&collection, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
+    QVERIFY(connect( &collection, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
     for ( int counter = 0; counter < NumberOfBits; ++counter )
     {
         Job* job = new AppendCharacterJob( bits[counter], &sequence, this );
-
-        connect ( job, SIGNAL(started(ThreadWeaver::JobPointer)),
-                  SLOT(jobStarted(ThreadWeaver::JobPointer)) );
-        connect ( job, SIGNAL(done(ThreadWeaver::JobPointer)),
-                  SLOT(jobDone(ThreadWeaver::JobPointer)) );
-
+        QVERIFY(connect(job, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
+        QVERIFY(connect(job, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
         jobs.append( job );
         collection.addNakedJob(job);
     }
