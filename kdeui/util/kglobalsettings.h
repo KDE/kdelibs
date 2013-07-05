@@ -496,8 +496,10 @@ public:
      * ::KColorScheme).
      *
      * @return the QPalette
+     * 
+     * @deprecated Use KColorScheme::createApplicationPalette()
      */
-    static QPalette createApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KDEUI_DEPRECATED QPalette createApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Used to obtain the QPalette that will be used to set the application palette.
@@ -511,8 +513,10 @@ public:
      * @since 4.6.3
      *
      * @return the QPalette
+     * 
+     * @deprecated Use KColorScheme::createApplicationPalette()
      */
-    static QPalette createNewApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KDEUI_DEPRECATED QPalette createNewApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * An identifier for change signals.

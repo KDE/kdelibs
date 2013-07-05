@@ -427,6 +427,21 @@ public:
                                  ColorSet set = View,
                                  KSharedConfigPtr = KSharedConfigPtr());
 
+    /**
+     * Used to obtain the QPalette that will be used to set the application
+     * palette from KDE Platform theme.
+     *
+     * Otherwise, it will be only useful for configuration modules such as krdb
+     * and should not be used in normal circumstances.
+     *
+     * @param config KConfig from which to load the colors
+     *
+     * @returns the QPalette
+     * 
+     * @since 5.0
+     */
+    static QPalette createApplicationPalette(const KSharedConfigPtr &config);
+
 private:
     QExplicitlySharedDataPointer<KColorSchemePrivate> d;
 };
