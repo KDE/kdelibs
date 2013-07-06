@@ -16,7 +16,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "dataprotocol.h"
+#include "dataprotocol_p.h"
 
 #include "global.h"
 

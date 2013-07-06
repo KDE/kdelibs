@@ -38,7 +38,7 @@
 #include <klauncher_iface.h>
 #include <klibrary.h>
 
-#include "dataprotocol.h"
+#include "dataprotocol_p.h"
 #include "kservice.h"
 #include <kio/global.h>
 #include "connection_p.h"

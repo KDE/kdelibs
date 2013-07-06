@@ -27,11 +27,11 @@
 
 class QTimer;
 
-// don't forget to sync DISPATCH_IMPL in dataslave.h
+// don't forget to sync DISPATCH_IMPL in dataslave_p.h
 #define DISPATCH_DECL(type) \
 	void dispatch_##type();
 
-// don't forget to sync DISPATCH_IMPL1 in dataslave.h
+// don't forget to sync DISPATCH_IMPL1 in dataslave_p.h
 #define DISPATCH_DECL1(type, paramtype, param) \
 	void dispatch_##type(paramtype param);
 
