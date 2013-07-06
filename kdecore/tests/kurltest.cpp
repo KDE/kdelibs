@@ -74,6 +74,9 @@ void KUrlTest::testEmptyURL()
   fileURL = "file:///";
   QVERIFY( !fileURL.isEmpty() );
 
+  fileURL = QLatin1String("FILE:///");
+  QVERIFY( fileURL.isLocalFile() );
+
   KUrl udir;
   QCOMPARE( udir.url(), QString() );
   QVERIFY( udir.isEmpty() );
