@@ -140,7 +140,7 @@ void JobCollection::addJob(JobPointer job)
     d->elements.append(job);
 }
 
-void JobCollection::addNakedJob(Job *job)
+void JobCollection::addRawJob(Job *job)
 {
     addJob(ManagedJobPointer(job));
 }

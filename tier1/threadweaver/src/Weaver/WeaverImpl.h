@@ -78,7 +78,7 @@ public:
     void setState( StateId );
     void registerObserver ( WeaverObserver* );
     void enqueue(JobPointer job);
-    void enqueueJob(Job* job);
+    void enqueueRaw(Job* job);
     bool dequeue(JobPointer job);
     void dequeue ();
     void finish();

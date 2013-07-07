@@ -44,7 +44,7 @@ private:
 
 void JobTests::initTestCase ()
 {
-    ThreadWeaver::setDebugLevel(true, 1);
+    ThreadWeaver::setDebugLevel(true, 2);
 }
 
 // call finish() before leave a test to make sure the queue is empty
@@ -209,6 +209,13 @@ void JobTests::EmitStartedOnFirstElementTest()
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(collection->isFinished());
+    QCOMPARE(result.length(), 2);
+    for(int i = 0; i < 100; ++i) {
+        if (collectionStartedSignalSpy.count() != 0 && collectionDoneSignalSpy.count() !=0) break;
+        QTest::qWait(1);
+        ThreadWeaver::debug(2, "JobTests::EmitStartedOnFirstElementTest: waiting (%i)\n", i);
+        qApp->processEvents();
+    }
     QCOMPARE(collectionStartedSignalSpy.count(), 1);
     QCOMPARE(collectionDoneSignalSpy.count(), 1);
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
@@ -228,7 +235,6 @@ void JobTests::CollectionDependenciesTest()
     collection->addJob(jobA);
     collection->addJob(jobB);
     ThreadWeaver::DependencyPolicy::instance().addDependency(collection.data(), jobC.data());
-
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::Weaver::instance()->suspend();
     ThreadWeaver::Weaver::instance()->enqueue(collection);
@@ -239,9 +245,10 @@ void JobTests::CollectionDependenciesTest()
     ThreadWeaver::Weaver::instance()->enqueue(jobC);
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
-    QCOMPARE(collectionStartedSignalSpy.count(), 1);
     QVERIFY(collection->isFinished());
     QVERIFY(result.startsWith(jobC->character()));
+    qApp->processEvents();
+    QCOMPARE(collectionStartedSignalSpy.count(), 1);
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
@@ -568,12 +575,12 @@ void JobTests::MassiveJobSequenceTest() {
 
     for ( int i = 0; i<NoOfChars; ++i ) {
         jobs[i].setValues( in.at(i), &sequence, in );
-        jobSequence.addNakedJob(&jobs[i]);
+        jobSequence.addRawJob(&jobs[i]);
     }
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
-    ThreadWeaver::Weaver::instance()->enqueueJob(&jobSequence);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&jobSequence);
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
     QCOMPARE(sequence,in);
@@ -583,17 +590,17 @@ void JobTests::SimpleRecursiveSequencesTest() {
     QString sequence;
     AppendCharacterJob jobB(QChar('b'), &sequence, this);
     ThreadWeaver::JobSequence jobSequence1(this);
-    jobSequence1.addNakedJob(&jobB);
+    jobSequence1.addRawJob(&jobB);
 
     AppendCharacterJob jobC(QChar('c'), &sequence, this);
     AppendCharacterJob jobA(QChar('a'), &sequence, this);
     ThreadWeaver::JobSequence jobSequence2(this);
-    jobSequence2.addNakedJob(&jobA);
-    jobSequence2.addNakedJob(&jobSequence1);
-    jobSequence2.addNakedJob(&jobC);
+    jobSequence2.addRawJob(&jobA);
+    jobSequence2.addRawJob(&jobSequence1);
+    jobSequence2.addRawJob(&jobC);
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::Weaver::instance()->enqueueJob(&jobSequence2);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&jobSequence2);
     ThreadWeaver::Weaver::instance()->finish();
     QCOMPARE(sequence, QString("abc"));
 }
@@ -612,29 +619,29 @@ void JobTests::SequenceOfSequencesTest() {
     AppendCharacterJob jobJ ( QChar( 'j' ), &sequence, this );
     ThreadWeaver::JobSequence jobSequence1( this );
     jobSequence1.setObjectName( "Sequ_1" );
-    jobSequence1.addNakedJob(&jobA);
-    jobSequence1.addNakedJob(&jobB);
-    jobSequence1.addNakedJob(&jobC);
+    jobSequence1.addRawJob(&jobA);
+    jobSequence1.addRawJob(&jobB);
+    jobSequence1.addRawJob(&jobC);
     ThreadWeaver::JobSequence jobSequence2( this );
     jobSequence2.setObjectName( "Sequ_2" );
-    jobSequence2.addNakedJob(&jobD);
-    jobSequence2.addNakedJob(&jobE);
-    jobSequence2.addNakedJob(&jobF);
+    jobSequence2.addRawJob(&jobD);
+    jobSequence2.addRawJob(&jobE);
+    jobSequence2.addRawJob(&jobF);
     ThreadWeaver::JobSequence jobSequence3( this );
     jobSequence3.setObjectName( "Sequ_3" );
-    jobSequence3.addNakedJob(&jobG);
-    jobSequence3.addNakedJob(&jobH);
-    jobSequence3.addNakedJob(&jobI);
-    jobSequence3.addNakedJob(&jobJ);
+    jobSequence3.addRawJob(&jobG);
+    jobSequence3.addRawJob(&jobH);
+    jobSequence3.addRawJob(&jobI);
+    jobSequence3.addRawJob(&jobJ);
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
     ThreadWeaver::JobSequence jobSequence4( this );
     jobSequence4.setObjectName( "Sequ_4" );
-    jobSequence4.addNakedJob(&jobSequence1);
-    jobSequence4.addNakedJob(&jobSequence2);
-    jobSequence4.addNakedJob(&jobSequence3);
+    jobSequence4.addRawJob(&jobSequence1);
+    jobSequence4.addRawJob(&jobSequence2);
+    jobSequence4.addRawJob(&jobSequence3);
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::Weaver::instance()->enqueueJob(&jobSequence4);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&jobSequence4);
     // ThreadWeaver::Job::DumpJobDependencies();
     ThreadWeaver::Weaver::instance()->finish();
     QCOMPARE(sequence,QString("abcdefghij"));
@@ -650,16 +657,16 @@ void JobTests::QueueAndStopTest() {
     AppendCharacterJob f( 'f', &sequence );
     AppendCharacterJob g( 'g', &sequence );
     ThreadWeaver::JobSequence jobSequence ( this );
-    jobSequence.addNakedJob(&a);
-    jobSequence.addNakedJob(&b);
-    jobSequence.addNakedJob(&c);
-    jobSequence.addNakedJob(&d);
-    jobSequence.addNakedJob(&e);
-    jobSequence.addNakedJob(&f);
-    jobSequence.addNakedJob(&g);
+    jobSequence.addRawJob(&a);
+    jobSequence.addRawJob(&b);
+    jobSequence.addRawJob(&c);
+    jobSequence.addRawJob(&d);
+    jobSequence.addRawJob(&e);
+    jobSequence.addRawJob(&f);
+    jobSequence.addRawJob(&g);
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::Weaver::instance()->enqueueJob(&jobSequence);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&jobSequence);
     ThreadWeaver::Weaver::instance()->finish();
     QCOMPARE(sequence, QString("abcd"));
 }
@@ -677,23 +684,23 @@ void JobTests::ResourceRestrictionPolicyBasicsTest () {
     AppendCharacterJob f( 'f', &sequence );
     AppendCharacterJob g( 'g', &sequence );
     ThreadWeaver::JobCollection collection;
-    collection.addNakedJob( &a );
+    collection.addRawJob( &a );
     a.assignQueuePolicy ( &restriction);
-    collection.addNakedJob( &b );
+    collection.addRawJob( &b );
     b.assignQueuePolicy ( &restriction);
-    collection.addNakedJob( &c );
+    collection.addRawJob( &c );
     c.assignQueuePolicy ( &restriction);
-    collection.addNakedJob( &d );
+    collection.addRawJob( &d );
     d.assignQueuePolicy ( &restriction);
-    collection.addNakedJob( &e );
+    collection.addRawJob( &e );
     e.assignQueuePolicy ( &restriction);
-    collection.addNakedJob( &f );
+    collection.addRawJob( &f );
     f.assignQueuePolicy ( &restriction);
-    collection.addNakedJob( &g );
+    collection.addRawJob( &g );
     g.assignQueuePolicy ( &restriction);
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::Weaver::instance()->enqueueJob(&collection);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&collection);
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY ( ThreadWeaver::Weaver::instance()->isIdle() );
 }
@@ -725,11 +732,11 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
         QVERIFY(connect(job, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
         QVERIFY(connect(job, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
         jobs.append( job );
-        collection.addNakedJob(job);
+        collection.addRawJob(job);
     }
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::Weaver::instance()->enqueueJob(&collection);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&collection);
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY( sequence.length() == NumberOfBits );
@@ -740,7 +747,7 @@ void JobTests::DequeueSuspendedSequence()
     return; //MARK_TEMPORARILY_DISABLED
     ThreadWeaver::Weaver weaver;
     weaver.suspend();
-    weaver.enqueueJob(new ThreadWeaver::JobSequence(this) );
+    weaver.enqueueRaw(new ThreadWeaver::JobSequence(this) );
     weaver.dequeue();
     // don't crash
 }

@@ -163,7 +163,7 @@ void QueueBenchmarksTest::IndividualJobsBenchmark()
     QVector<AccumulateJob> jobs(n);
     for(int i = 0; i < n; ++i) {
         jobs[i].setCount(m);
-        weaver.enqueueJob(&jobs[i]);
+        weaver.enqueueRaw(&jobs[i]);
     }
 
     QBENCHMARK_ONCE {
@@ -198,9 +198,9 @@ void QueueBenchmarksTest::CollectionsBenchmark()
         for (int operation = 0; operation < c; ++operation) {
             const int index = block * b + operation;
             jobs[index].setCount(m);
-            collection->addNakedJob(&jobs[index]);
+            collection->addRawJob(&jobs[index]);
         }
-        weaver.enqueueJob(collection);
+        weaver.enqueueRaw(collection);
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";
@@ -236,9 +236,9 @@ void QueueBenchmarksTest::SequencesBenchmark()
         for (int operation = 0; operation < c; ++operation) {
             const int index = block * b + operation;
             jobs[index].setCount(m);
-            sequence->addNakedJob(&jobs[index]);
+            sequence->addRawJob(&jobs[index]);
         }
-        weaver.enqueueJob(sequence);
+        weaver.enqueueRaw(sequence);
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";

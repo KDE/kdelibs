@@ -58,7 +58,7 @@ const WeaverImpl *WeaverImplState::weaver() const
     return static_cast<const WeaverImpl*> ( State::weaver() );
 }
 
-void WeaverImplState::enqueueJob(Job*)
+void WeaverImplState::enqueueRaw(Job*)
 {
     Q_ASSERT(false); //should not be called, handled in WeaverImpl
 }

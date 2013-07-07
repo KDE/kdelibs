@@ -138,9 +138,9 @@ void Weaver::enqueue(JobPointer job)
     d->implementation->enqueue(job);
 }
 
-void Weaver::enqueueJob(Job* job)
+void Weaver::enqueueRaw(Job* job)
 {
-    d->implementation->enqueueJob(job);
+    d->implementation->enqueueRaw(job);
 }
 
 bool Weaver::dequeue(JobPointer job)

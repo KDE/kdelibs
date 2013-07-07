@@ -225,7 +225,7 @@ void WeaverImpl::enqueue(JobPointer job)
     state()->enqueue(job);
 }
 
-void WeaverImpl::enqueueJob(Job *job)
+void WeaverImpl::enqueueRaw(Job *job)
 {
     enqueue(ManagedJobPointer(job));
 }

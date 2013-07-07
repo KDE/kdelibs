@@ -108,7 +108,7 @@ public:
      *
      * Use this overloaded method to queue jobs that are memory-managed by the caller, instead of being
      * QSharedPointers. */
-    virtual void enqueueJob(Job* job) = 0;
+    virtual void enqueueRaw(Job* job) = 0;
 
     /** Remove a job from the queue.
     If the job was queued but not started so far, it is simply

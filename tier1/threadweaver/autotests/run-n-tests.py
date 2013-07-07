@@ -9,16 +9,19 @@ def RunTests( Number ):
     # use Linux as the default:
     SuccessCount = 0
     Platform = platform.platform()
-#   Command = "./Tests/ThreadWeaverJobTests >/dev/null"
-    Command = "make test"
-#    if re.search( "Darwin", Platform ):
-#        Command = "DYLD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests.app/Contents/MacOs/JobTests >/dev/null"
+    Command = "./ThreadWeaverJobTests EmitStartedOnFirstElementTest 2>&1"
+#   Command = "./ThreadWeaverJobTests CollectionDependenciesTest"
+#   Command = "make test"
+#   if re.search( "Darwin", Platform ):
+#       Command = "DYLD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests.app/Contents/MacOs/JobTests >/dev/null"
     for count in range( Number ):
 	retValue = os.system ( Command)
 	resultString = " (FAILED)"
 	if retValue == 0:
 	    resultString = " (succeeded)"
             SuccessCount = SuccessCount + 1
+        else:
+            sys.exit(1)
         print "Test run #" + str(count + 1) + resultString
     return SuccessCount
 
