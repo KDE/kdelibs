@@ -21,7 +21,7 @@
 #ifndef KIO_AUTHINFO_H
 #define KIO_AUTHINFO_H
 
-#include "kio_export.h"
+#include "kiocore_export.h"
 
 #include <QtCore/QMap>
 #include <QtCore/QList>
@@ -55,13 +55,13 @@ class AuthInfoPrivate;
  * @short A two way messaging class for passing authentication information.
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class KIO_EXPORT AuthInfo
+class KIOCORE_EXPORT AuthInfo
 {
-    KIO_EXPORT friend QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
-    KIO_EXPORT friend QDataStream& operator>> (QDataStream& s, AuthInfo& a);
+    KIOCORE_EXPORT friend QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
+    KIOCORE_EXPORT friend QDataStream& operator>> (QDataStream& s, AuthInfo& a);
 
-    KIO_EXPORT friend QDBusArgument &operator<<(QDBusArgument &argument, const AuthInfo &a);
-    KIO_EXPORT friend const QDBusArgument &operator>>(const QDBusArgument &argument, AuthInfo &a);
+    KIOCORE_EXPORT friend QDBusArgument &operator<<(QDBusArgument &argument, const AuthInfo &a);
+    KIOCORE_EXPORT friend const QDBusArgument &operator>>(const QDBusArgument &argument, AuthInfo &a);
 
 public:
 
@@ -289,11 +289,11 @@ private:
     AuthInfoPrivate * const d;
 };
 
-KIO_EXPORT QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
-KIO_EXPORT QDataStream& operator>> (QDataStream& s, AuthInfo& a);
+KIOCORE_EXPORT QDataStream& operator<< (QDataStream& s, const AuthInfo& a);
+KIOCORE_EXPORT QDataStream& operator>> (QDataStream& s, AuthInfo& a);
 
-KIO_EXPORT QDBusArgument &operator<<(QDBusArgument &argument, const AuthInfo &a);
-KIO_EXPORT const QDBusArgument &operator>>(const QDBusArgument &argument, AuthInfo &a);
+KIOCORE_EXPORT QDBusArgument &operator<<(QDBusArgument &argument, const AuthInfo &a);
+KIOCORE_EXPORT const QDBusArgument &operator>>(const QDBusArgument &argument, AuthInfo &a);
 
 /**
  * A Singleton class that provides access to passwords
@@ -304,7 +304,7 @@ KIO_EXPORT const QDBusArgument &operator>>(const QDBusArgument &argument, AuthIn
  * @short An interface to the ftp .netrc files
  * @author Dawit Alemayehu <adawit@kde.org>
  */
-class KIO_EXPORT NetRC
+class KIOCORE_EXPORT NetRC
 {
 public:
 

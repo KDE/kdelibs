@@ -25,6 +25,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
+#include "kio_export.h"
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <kio/jobclasses.h> // for KIO::JobFlags

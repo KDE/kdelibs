@@ -27,6 +27,7 @@
 #include <kio/jobuidelegatefactory.h>
 #include <kmessagebox.h>
 #include <QtCore/QFile>
+#include <QtCore/QLinkedList>
 #include <QDebug>
 #include <qurlpathinfo.h>
 

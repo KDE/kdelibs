@@ -21,6 +21,7 @@
 #ifndef MKDIRJOB_H
 #define MKDIRJOB_H
 
+#include "kiocore_export.h"
 #include "jobclasses.h"
 
 namespace KIO {
@@ -30,7 +31,7 @@ class MkdirJobPrivate;
  * A KIO job that creates a directory
  * @see KIO::mkdir()
  */
-class KIO_EXPORT MkdirJob : public SimpleJob {
+class KIOCORE_EXPORT MkdirJob : public SimpleJob {
 
     Q_OBJECT
 

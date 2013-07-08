@@ -21,7 +21,7 @@
 
 #include "deletejob.h"
 
-#include "kdirlister.h"
+#include "kcoredirlister.h"
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
@@ -217,7 +217,7 @@ void DeleteJobPrivate::statNextSrc()
         // Fast path for KFileItems in directory views
         while(m_currentStat != m_srcList.end()) {
             m_currentURL = (*m_currentStat);
-            const KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentURL);
+            const KFileItem cachedItem = KCoreDirLister::cachedItemForUrl(m_currentURL);
             if (cachedItem.isNull())
                 break;
             //qDebug() << "Found cached info about" << m_currentURL << "isDir=" << cachedItem.isDir() << "isLink=" << cachedItem.isLink();

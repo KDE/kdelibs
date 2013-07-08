@@ -24,6 +24,7 @@
 #ifndef KIO_PREVIEWJOB_H
 #define KIO_PREVIEWJOB_H
 
+#include "kio_export.h"
 #include <kfileitem.h>
 #include <kio/job.h>
 

@@ -7,3 +7,7 @@
 /* Defined if acl/libacl.h exists */
 #cmakedefine01 HAVE_ACL_LIBACL_H
 
+#define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
+#define LIBEXEC_INSTALL_DIR "${LIBEXEC_INSTALL_DIR}"
+
+

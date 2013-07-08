@@ -21,7 +21,7 @@
 
 #include "copyjob.h"
 #include <errno.h>
-#include "kdirlister.h"
+#include "kcoredirlister.h"
 #include "kfileitem.h"
 #include "mkdirjob.h"
 #include "deletejob.h"
@@ -297,7 +297,7 @@ void CopyJobPrivate::slotStart()
 }
 
 // For unit test purposes
-KIO_EXPORT bool kio_resolve_local_urls = true;
+KIOCORE_EXPORT bool kio_resolve_local_urls = true;
 
 void CopyJobPrivate::slotResultStating( KJob *job )
 {
@@ -733,8 +733,8 @@ void CopyJobPrivate::statCurrentSrc()
         }
 
         // Let's see if we can skip stat'ing, for the case where a directory view has the info already
-        const KFileItem cachedItem = KDirLister::cachedItemForUrl(m_currentSrcURL);
         KIO::UDSEntry entry;
+        const KFileItem cachedItem = KCoreDirLister::cachedItemForUrl(m_currentSrcURL);
         if (!cachedItem.isNull()) {
             entry = cachedItem.entry();
             if (destinationState != DEST_DOESNT_EXIST) { // only resolve src if we could resolve dest (#218719)
@@ -785,7 +785,7 @@ void CopyJobPrivate::statCurrentSrc()
         // Testing for entry.count()>0 here is not good enough; KFileItem inserts
         // entries for UDS_USER and UDS_GROUP even on initially empty UDSEntries (#192185)
         if (entry.contains(KIO::UDSEntry::UDS_NAME)) {
-            //qDebug() << "fast path! found info about" << m_currentSrcURL << "in KDirLister";
+            //qDebug() << "fast path! found info about" << m_currentSrcURL << "in KCoreDirLister";
             // sourceStated(entry, m_currentSrcURL); // don't recurse, see #319747, use queued invokeMethod instead
             QMetaObject::invokeMethod(q, "sourceStated", Qt::QueuedConnection, Q_ARG(KIO::UDSEntry, entry), Q_ARG(QUrl, m_currentSrcURL));
             return;

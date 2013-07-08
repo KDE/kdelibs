@@ -19,7 +19,7 @@
 #ifndef KREMOTEENCODING_H
 #define KREMOTEENCODING_H
 
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 #include <QtCore/QString>
 #include <QtCore/QByteArray>
 class QUrl;
@@ -40,7 +40,7 @@ class KRemoteEncodingPrivate;
  * @short A class for handling remote filenames
  * @author Thiago Macieira <thiago.macieira@kdemail.net>
  */
-class KIO_EXPORT KRemoteEncoding
+class KIOCORE_EXPORT KRemoteEncoding
 {
 public:
   /**

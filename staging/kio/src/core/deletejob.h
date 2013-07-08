@@ -24,6 +24,7 @@
 
 #include <QtCore/QStringList>
 
+#include "kiocore_export.h"
 #include "global.h"
 
 #include "jobclasses.h"
@@ -39,7 +40,7 @@ namespace KIO {
      *
      * @see KIO::del()
      */
-    class KIO_EXPORT DeleteJob : public Job {
+    class KIOCORE_EXPORT DeleteJob : public Job {
     Q_OBJECT
 
     public:
@@ -107,7 +108,7 @@ namespace KIO {
      * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT DeleteJob *del( const QUrl& src, JobFlags flags = DefaultFlags );
+    KIOCORE_EXPORT DeleteJob *del( const QUrl& src, JobFlags flags = DefaultFlags );
 
     /**
      * Deletes a list of files or directories.
@@ -116,7 +117,7 @@ namespace KIO {
      * @param flags: We support HideProgressInfo here
      * @return the job handling the operation
      */
-    KIO_EXPORT DeleteJob *del( const QList<QUrl>& src, JobFlags flags = DefaultFlags );
+    KIOCORE_EXPORT DeleteJob *del( const QList<QUrl>& src, JobFlags flags = DefaultFlags );
 }
 
 #endif

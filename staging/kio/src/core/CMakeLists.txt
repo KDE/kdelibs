@@ -15,6 +15,25 @@ set(kiocore_SRCS
   ksambashare.cpp
   knfsshare.cpp
   kfileitem.cpp
+  davjob.cpp
+  deletejob.cpp
+  copyjob.cpp
+  filejob.cpp
+  mkdirjob.cpp
+  kpasswdserverloop.cpp
+  kpasswdserver.cpp
+  kremoteencoding.cpp
+  sessiondata.cpp
+  slavebase.cpp
+  dataslave.cpp
+  dataprotocol.cpp
+  dataprotocol.cpp
+  authinfo.cpp
+  slaveinterface.cpp
+  slave.cpp
+  job_error.cpp
+  job.cpp
+  scheduler.cpp
   slaveconfig.cpp
   kprotocolmanager.cpp
   hostinfo.cpp
@@ -30,6 +49,7 @@ set(kiocore_SRCS
   jobuidelegateextension.cpp
   jobuidelegatefactory.cpp
   kmountpoint.cpp
+  kcoredirlister.cpp
 )
 
 if (UNIX)
@@ -42,6 +62,13 @@ if (WIN32)
       klocalsocket_win.cpp
    )
 endif()
+
+
+set_source_files_properties(org.kde.KPasswdServer.xml
+        PROPERTIES INCLUDE authinfo.h
+)
+qt5_add_dbus_interface(kiocore_SRCS org.kde.KPasswdServer.xml kpasswdserver_interface)
+install(FILES org.kde.KPasswdServer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 add_library(kiocore ${kiocore_SRCS})
 generate_export_header(kiocore)
@@ -60,6 +87,7 @@ target_link_libraries(kiocore
  Qt5::Network
  Qt5::DBus
  Qt5::Concurrent
+ Qt5::Xml   # davjob.cpp uses QDom
  ${kdeqt5staging_LIBRARIES} # Needed QUrlPathInfo
  ${KDBusAddons_LIBRARIES} # KDBusConnectionPool
 )
@@ -80,6 +108,13 @@ install( FILES
   ksambashare.h
   knfsshare.h
   kfileitem.h
+  davjob.h
+  deletejob.h
+  copyjob.h
+  filejob.h
+  mkdirjob.h
+  kremoteencoding.h
+  slavebase.h
   kacl.h
   kauthorized.h
   http_slave_defaults.h
@@ -90,13 +125,20 @@ install( FILES
   ioslave_defaults.h
   hostinfo.h
   jobtracker.h
-  klocalsocket.h # TODO stop installing this once kiocore is done -- should not be public
   kprotocolinfo.h
   metadata.h
   udsentry.h
   jobuidelegateextension.h
   jobuidelegatefactory.h
   kmountpoint.h
+  slaveinterface.h
+  slave.h
+  job.h
+  scheduler.h
+  jobclasses.h
+  authinfo.h
+  http.h
+  kcoredirlister.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)

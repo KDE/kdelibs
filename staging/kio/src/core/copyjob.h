@@ -27,6 +27,7 @@
 #include <QDateTime>
 #include <QUrl>
 
+#include "kiocore_export.h"
 #include "jobclasses.h"
 
 class QTimer;
@@ -60,7 +61,7 @@ namespace KIO {
      * @see KIO::link()
      * @see KIO::linkAs()
      */
-    class KIO_EXPORT CopyJob : public Job {
+    class KIOCORE_EXPORT CopyJob : public Job {
 
         Q_OBJECT
 
@@ -283,7 +284,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *copy(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *copy(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Copy a file or directory @p src into the destination @p dest,
@@ -302,7 +303,7 @@ namespace KIO {
      *
      * * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *copyAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *copyAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Copy a list of file/dirs @p src into a destination directory @p dest.
@@ -315,7 +316,7 @@ namespace KIO {
      * into a subdir of dest, just like "cp" does.
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *copy(const QList<QUrl>& src, const QUrl& dest, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *copy(const QList<QUrl>& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Moves a file or directory @p src to the given destination @p dest.
@@ -330,7 +331,7 @@ namespace KIO {
      * @see copy()
      * @see moveAs()
      */
-    KIO_EXPORT CopyJob *move(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *move(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
     /**
      * Moves a file or directory @p src to the given destination @p dest. Unlike move()
      * this operation will not move @p src into @p dest when @p dest exists: it will
@@ -344,7 +345,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *moveAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *moveAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
     /**
      * Moves a list of files or directories @p src to the given destination @p dest.
      *
@@ -357,7 +358,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see copy()
      */
-    KIO_EXPORT CopyJob *move(const QList<QUrl>& src, const QUrl& dest, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *move(const QList<QUrl>& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Create a link.
@@ -369,7 +370,7 @@ namespace KIO {
      * @param flags: link() supports HideProgressInfo only
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *link(const QUrl& src, const QUrl& destDir, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *link(const QUrl& src, const QUrl& destDir, JobFlags flags = DefaultFlags);
 
     /**
      * Create several links
@@ -382,7 +383,7 @@ namespace KIO {
      * @return the job handling the operation
      * @see link()
      */
-    KIO_EXPORT CopyJob *link(const QList<QUrl>& src, const QUrl& destDir, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *link(const QList<QUrl>& src, const QUrl& destDir, JobFlags flags = DefaultFlags);
 
     /**
      * Create a link. Unlike link() this operation will fail when the directory already
@@ -397,7 +398,7 @@ namespace KIO {
      * @see link ()
      * @see copyAs()
      */
-    KIO_EXPORT CopyJob *linkAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *linkAs(const QUrl& src, const QUrl& dest, JobFlags flags = DefaultFlags);
 
     /**
      * Trash a file or directory.
@@ -408,7 +409,7 @@ namespace KIO {
      * @param flags: trash() supports HideProgressInfo only
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *trash(const QUrl& src, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *trash(const QUrl& src, JobFlags flags = DefaultFlags);
 
     /**
      * Trash a list of files or directories.
@@ -418,7 +419,7 @@ namespace KIO {
      * @param flags: trash() supports HideProgressInfo only
      * @return the job handling the operation
      */
-    KIO_EXPORT CopyJob *trash(const QList<QUrl>& src, JobFlags flags = DefaultFlags);
+    KIOCORE_EXPORT CopyJob *trash(const QList<QUrl>& src, JobFlags flags = DefaultFlags);
 
 }
 

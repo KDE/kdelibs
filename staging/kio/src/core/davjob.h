@@ -30,6 +30,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include "kiocore_export.h"
 #include "jobclasses.h"
 #include "global.h"
 
@@ -48,7 +49,7 @@ namespace KIO {
      * @see KIO::davPropPatch()
      * @see KIO::davSearch()
      */
-    class KIO_EXPORT DavJob : public TransferJob
+    class KIOCORE_EXPORT DavJob : public TransferJob
     {
         Q_OBJECT
     public:
@@ -79,7 +80,7 @@ namespace KIO {
     * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropFind( const QUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags = DefaultFlags );
+   KIOCORE_EXPORT DavJob* davPropFind( const QUrl& url, const QDomDocument& properties, const QString &depth, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a PROPPATCH command. PROPPATCH sets
@@ -91,7 +92,7 @@ namespace KIO {
     * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davPropPatch( const QUrl& url, const QDomDocument& properties, JobFlags flags = DefaultFlags );
+   KIOCORE_EXPORT DavJob* davPropPatch( const QUrl& url, const QDomDocument& properties, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a SEARCH command.
@@ -103,7 +104,7 @@ namespace KIO {
     * @param flags: We support HideProgressInfo here
     * @return the new DavJob
     */
-   KIO_EXPORT DavJob* davSearch( const QUrl &url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags = DefaultFlags );
+   KIOCORE_EXPORT DavJob* davSearch( const QUrl &url, const QString& nsURI, const QString& qName, const QString& query, JobFlags flags = DefaultFlags );
 
    /**
     * Creates a new DavJob that issues a REPORT command.
@@ -115,7 +116,7 @@ namespace KIO {
     * @return the new DavJob
     * @since 4.4
     */
-   KIO_EXPORT DavJob* davReport( const QUrl& url, const QString& report, const QString &depth, JobFlags flags = DefaultFlags );
+   KIOCORE_EXPORT DavJob* davReport( const QUrl& url, const QString& report, const QString &depth, JobFlags flags = DefaultFlags );
 
 }
 

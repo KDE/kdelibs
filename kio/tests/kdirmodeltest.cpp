@@ -614,7 +614,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     delete m_dirModel;
     m_dirModel = 0;
 
-    // Now let's rename a directory that is in KDirListerCache
+    // Now let's rename a directory that is in KCoreDirListerCache
     const QUrl url = QUrl::fromLocalFile(path);
     QUrlPathInfo pathInfo(url);
     pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);

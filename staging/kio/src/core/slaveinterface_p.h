@@ -22,7 +22,6 @@
 #include "global.h"
 #include "connection_p.h"
 #include <QtCore/QTimer>
-#include <QWidget>
 #include <QtCore/QPointer>
 #include <QtNetwork/QHostInfo>
 
@@ -34,7 +33,7 @@ class KIO::SlaveInterfacePrivate
 public:
     SlaveInterfacePrivate()
         : connection(0), filesize(0), offset(0), last_time(0),
-          nums(0), slave_calcs_speed(false), parentWindow(0)
+          nums(0), slave_calcs_speed(false)
     {
         start_time.tv_sec = 0;
         start_time.tv_usec = 0;
@@ -58,7 +57,6 @@ public:
     struct timeval start_time;
     uint nums;
     bool slave_calcs_speed;
-    QPointer<QWidget> parentWindow;
 
     void slotHostInfo(const QHostInfo& info);
 };

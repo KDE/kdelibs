@@ -22,7 +22,7 @@
 #ifndef KIO_SLAVE_H
 #define KIO_SLAVE_H
 
-#define KIO_SLAVE_EXPORT KIO_EXPORT
+#define KIO_SLAVE_EXPORT KIOCORE_EXPORT
 
 #include <unistd.h>
 

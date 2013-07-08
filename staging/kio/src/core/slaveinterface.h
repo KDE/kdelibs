@@ -95,7 +95,7 @@ class SlaveInterfacePrivate;
  *
  * A call to foo() results in a call to slotFoo() on the other end.
  */
-class KIO_EXPORT SlaveInterface : public QObject
+class KIOCORE_EXPORT SlaveInterface : public QObject
 {
     Q_OBJECT
 
@@ -111,13 +111,6 @@ public:
     // Send our answer to the MSG_RESUME (canResume) request
     // (to tell the "put" job whether to resume or not)
     void sendResumeAnswer( bool resume );
-
-    /**
-     * Sends our answer for the INF_MESSAGEBOX request.
-     *
-     * @since 4.11
-     */
-    void sendMessageBoxAnswer(int result);
 
     void setOffset( KIO::filesize_t offset );
     KIO::filesize_t offset() const;
@@ -187,9 +180,5 @@ private:
 };
 
 }
-
-// moved to udesentry.cpp!!!
-// KIO_EXPORT QDataStream &operator <<(QDataStream &s, const KIO::UDSEntry &e );
-// KIO_EXPORT QDataStream &operator >>(QDataStream &s, KIO::UDSEntry &e );
 
 #endif

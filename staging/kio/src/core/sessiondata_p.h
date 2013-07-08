@@ -22,7 +22,7 @@
 #define KIO_SESSIONDATA_H
 
 #include <QtCore/QObject>
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include <kio/metadata.h>
 
 namespace KIO  {

@@ -43,7 +43,7 @@
 #include <kio/global.h>
 #include "connection_p.h"
 #include <kprotocolinfo.h>
-#include <config-kio.h>
+#include <config-kiocore.h> // CMAKE_INSTALL_PREFIX
 
 #include "slaveinterface_p.h"
 

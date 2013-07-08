@@ -105,7 +105,7 @@ namespace KIO {
      * @see KIO::Job
      **/
 
-    class KIO_EXPORT Scheduler : public QObject
+    class KIOCORE_EXPORT Scheduler : public QObject
     {
         Q_OBJECT
         Q_CLASSINFO("D-Bus Interface", "org.kde.KIO.Scheduler")
@@ -125,7 +125,7 @@ namespace KIO {
          * @param job the job to schedule
          */
 #ifndef KDE_NO_DEPRECATED
-        KIO_DEPRECATED static void scheduleJob(SimpleJob *job);
+        KIOCORE_DEPRECATED static void scheduleJob(SimpleJob *job);
 #endif
 
         /**

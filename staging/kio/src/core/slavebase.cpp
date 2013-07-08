@@ -23,7 +23,7 @@
 
 #include "slavebase.h"
 
-#include <config-kio.h>
+#include <config-kiocore.h>
 
 #include <stdlib.h>
 #include <errno.h>
@@ -734,7 +734,7 @@ void SlaveBase::setHost(QString const &, quint16, QString const &, QString const
 {
 }
 
-KIO_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
+KIOCORE_EXPORT QString KIO::unsupportedActionErrorString(const QString &protocol, int cmd) {
   switch (cmd) {
     case CMD_CONNECT:
       return i18n("Opening connections is not supported with the protocol %1." , protocol);

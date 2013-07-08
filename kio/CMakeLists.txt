@@ -68,23 +68,14 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp
   kio/accessmanagerreply_p.cpp
-  kio/authinfo.cpp
   kio/chmodjob.cpp
-  kio/copyjob.cpp
-  kio/dataprotocol.cpp
-  kio/dataslave.cpp
-  kio/davjob.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
-  kio/deletejob.cpp
   kio/directorysizejob.cpp
-  kio/filejob.cpp
   kio/fileundomanager.cpp
   kio/forwardingslavebase.cpp
   kio/pixmaploader.cpp
   kio/imagefilter.cpp
-  kio/job.cpp
-  kio/job_error.cpp
   kio/jobuidelegate.cpp
   kio/joburlcache.cpp
   kio/kabstractfileitemactionplugin.cpp
@@ -106,31 +97,22 @@ set(kiocore_STAT_SRCS
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/kremoteencoding.cpp
   kio/krun.cpp
   kio/kscan.cpp
   kio/kshellcompletion.cpp
   kio/kurifilter.cpp
   kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
-  kio/mkdirjob.cpp
   kio/netaccess.cpp
   kio/paste.cpp
   kio/pastedialog.cpp
   kio/predicateproperties.cpp
   kio/previewjob.cpp
   kio/renamedialog.cpp
-  kio/scheduler.cpp
-  kio/sessiondata.cpp
   kio/skipdialog.cpp
-  kio/slave.cpp
-  kio/slavebase.cpp
-  kio/slaveinterface.cpp
   kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
   kio/thumbsequencecreator.cpp
-  kio/kpasswdserver.cpp
-  kio/kpasswdserverloop.cpp
   kio/usernotificationhandler.cpp
 )
 
@@ -152,12 +134,6 @@ endif(NOT KIO_NO_SOLID)
 qt5_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
 
 qt5_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.kuiserver.xml kuiserver_interface)
-
-set_source_files_properties(kio/org.kde.KPasswdServer.xml
-   PROPERTIES INCLUDE kio/authinfo.h
-)
-qt5_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.KPasswdServer.xml kpasswdserver_interface)
-install(FILES kio/org.kde.KPasswdServer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
@@ -354,29 +330,17 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
   kio/accessmanager.h
-  kio/slaveinterface.h
-  kio/slave.h
   kio/pixmaploader.h
   kio/netaccess.h
-  kio/job.h
-  kio/scheduler.h
-  kio/jobclasses.h
-  kio/mkdirjob.h
-  kio/copyjob.h
-  kio/deletejob.h
   kio/jobuidelegate.h
   kio/paste.h
-  kio/slavebase.h
-  kio/filejob.h
   kio/fileundomanager.h
   kio/tcpslavebase.h
   kio/forwardingslavebase.h
   kio/chmodjob.h
-  kio/authinfo.h
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h
-  kio/davjob.h
   kio/directorysizejob.h
   kio/renamedialog.h
   kio/skipdialog.h

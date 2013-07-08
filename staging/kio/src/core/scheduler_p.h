@@ -40,7 +40,7 @@ public:
 private:
     void scheduleGrimReaper();
 
-private slots:
+private Q_SLOTS:
     void grimReaper();
 
 private:
@@ -96,7 +96,7 @@ public:
     bool isEmpty() const { return m_connectedSlaves.isEmpty(); }
     QList<KIO::Slave *> allSlaves() const { return m_connectedSlaves.keys(); }
 
-private slots:
+private Q_SLOTS:
     void startRunnableJobs();
 private:
     // note that connected slaves stay here when idle, they are not returned to SlaveKeeper
@@ -148,7 +148,7 @@ public:
     QList<KIO::Slave *> allSlaves() const;
     ConnectedSlaveQueue m_connectedSlaveQueue;
 
-private slots:
+private Q_SLOTS:
     // start max one (non-connected) job and return
     void startAJob();
 

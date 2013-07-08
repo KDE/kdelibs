@@ -26,7 +26,7 @@
 #include <QtCore/QStringList>
 
 #include <kio/global.h> // filesize_t
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include <kio/metadata.h>
 #include <kio/udsentry.h>
 
@@ -91,7 +91,7 @@ namespace KIO {
      * \endcode
      * @see KIO::Scheduler
      */
-    class KIO_EXPORT Job : public KCompositeJob {
+    class KIOCORE_EXPORT Job : public KCompositeJob {
         Q_OBJECT
 
     protected:
@@ -308,7 +308,7 @@ namespace KIO {
      * Other jobs are high-level jobs (CopyJob, DeleteJob, FileCopyJob...)
      * that manage subjobs but aren't scheduled directly.
      */
-    class KIO_EXPORT SimpleJob : public KIO::Job {
+    class KIOCORE_EXPORT SimpleJob : public KIO::Job {
     Q_OBJECT
 
     public:
@@ -426,7 +426,7 @@ namespace KIO {
      * A KIO job that retrieves information about a file or directory.
      * @see KIO::stat()
      */
-    class KIO_EXPORT StatJob : public SimpleJob {
+    class KIOCORE_EXPORT StatJob : public SimpleJob {
 
     Q_OBJECT
 
@@ -455,7 +455,7 @@ namespace KIO {
          * @param source true for "source" mode, false for "dest" mode
          */
 #ifndef KDE_NO_DEPRECATED
-        KIO_DEPRECATED void setSide( bool source );
+        KIOCORE_DEPRECATED void setSide( bool source );
 #endif
 
         /**
@@ -541,7 +541,7 @@ namespace KIO {
      * If data coming from the slave can not be handled, the
      * reading of data from the slave should be suspended.
      */
-    class KIO_EXPORT TransferJob : public SimpleJob {
+    class KIOCORE_EXPORT TransferJob : public SimpleJob {
     Q_OBJECT
 
     public:
@@ -586,7 +586,7 @@ namespace KIO {
          *             automatically since KDE-4.2.1
          */
 #ifndef KDE_NO_DEPRECATED
-        KIO_DEPRECATED void setReportDataSent(bool enabled);
+        KIOCORE_DEPRECATED void setReportDataSent(bool enabled);
 #endif
 
         /**
@@ -597,7 +597,7 @@ namespace KIO {
          *             automatically since KDE-4.2.1 (and not useful as public API)
          */
 #ifndef KDE_NO_DEPRECATED
-        KIO_DEPRECATED bool reportDataSent() const;
+        KIOCORE_DEPRECATED bool reportDataSent() const;
 #endif
 
         /**
@@ -729,7 +729,7 @@ namespace KIO {
      * provide the in chunks while it's being uploaded, since storing
      * everything in a QByteArray can potentially require a lot of memory.
      */
-    class KIO_EXPORT StoredTransferJob : public KIO::TransferJob {
+    class KIOCORE_EXPORT StoredTransferJob : public KIO::TransferJob {
         Q_OBJECT
 
     public:
@@ -764,7 +764,7 @@ namespace KIO {
      * but use KIO::multi_get() instead.
      * @see KIO::multi_get()
      */
-    class KIO_EXPORT MultiGetJob : public TransferJob {
+    class KIOCORE_EXPORT MultiGetJob : public TransferJob {
     Q_OBJECT
 
     public:
@@ -823,7 +823,7 @@ namespace KIO {
      * but use KIO::mimetype() instead.
      * @see KIO::mimetype()
      */
-    class KIO_EXPORT MimetypeJob : public TransferJob {
+    class KIOCORE_EXPORT MimetypeJob : public TransferJob {
     Q_OBJECT
 
     public:
@@ -842,7 +842,7 @@ namespace KIO {
      * @see KIO::file_copy()
      * @see KIO::file_move()
      */
-    class KIO_EXPORT FileCopyJob : public Job {
+    class KIOCORE_EXPORT FileCopyJob : public Job {
     Q_OBJECT
 
     public:
@@ -922,7 +922,7 @@ namespace KIO {
      * @see KIO::listRecursive()
      * @see KIO::listDir()
      */
-    class KIO_EXPORT ListJob : public SimpleJob {
+    class KIOCORE_EXPORT ListJob : public SimpleJob {
     Q_OBJECT
 
     public:
@@ -1007,7 +1007,7 @@ namespace KIO {
      *
      * @see KIO::special
      */
-    class KIO_EXPORT SpecialJob : public TransferJob
+    class KIOCORE_EXPORT SpecialJob : public TransferJob
     {
         Q_OBJECT
     public:

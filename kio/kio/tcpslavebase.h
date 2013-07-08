@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 
+#include "kio_export.h"
 #include <kio/slavebase.h>
 
 class QIODevice;

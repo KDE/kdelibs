@@ -21,6 +21,7 @@
 #ifndef KIO_FILEJOB_H
 #define KIO_FILEJOB_H
 
+#include "kiocore_export.h"
 #include <kio/jobclasses.h>
 
 namespace KIO {
@@ -33,7 +34,7 @@ class FileJobPrivate;
  *  Should always be created using KIO::open(QUrl)
  */
 
-class KIO_EXPORT FileJob : public SimpleJob
+class KIOCORE_EXPORT FileJob : public SimpleJob
 {
 Q_OBJECT
 
@@ -153,7 +154,7 @@ private:
  * @return The file-handling job. It will never return 0. Errors are handled asynchronously
  * (emitted as signals).
  */
-KIO_EXPORT FileJob *open(const QUrl &url, QIODevice::OpenMode mode);
+KIOCORE_EXPORT FileJob *open(const QUrl &url, QIODevice::OpenMode mode);
 
 } // namespace
 

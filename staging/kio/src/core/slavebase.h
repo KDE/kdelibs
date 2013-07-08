@@ -47,7 +47,7 @@ class SlaveBasePrivate;
  *
  * A call to foo() results in a call to slotFoo() on the other end.
  */
-class KIO_EXPORT SlaveBase
+class KIOCORE_EXPORT SlaveBase
 {
 public:
     SlaveBase( const QByteArray &protocol, const QByteArray &pool_socket, const QByteArray &app_socket);
@@ -912,7 +912,7 @@ private:
      * @param cmd given command
      * @see enum Command
      */
-    KIO_EXPORT QString unsupportedActionErrorString(const QString &protocol, int cmd);
+    KIOCORE_EXPORT QString unsupportedActionErrorString(const QString &protocol, int cmd);
 }
 
 #endif

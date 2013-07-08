@@ -46,7 +46,7 @@ class QUrl;
 #if defined(DATAKIOSLAVE)
 #  include <kio/slavebase.h>
 #elif !defined(TESTKIO)
-#  include "kio/dataslave_p.h"
+#  include "dataslave_p.h"
 #endif
 
 namespace KIO {

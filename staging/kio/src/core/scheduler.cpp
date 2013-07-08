@@ -29,7 +29,7 @@
 
 #include <kprotocolmanager.h>
 #include <kprotocolinfo.h>
-#include <kjobwidgets.h>
+//#include <kjobwidgets.h>
 
 #include <QtCore/QHash>
 #include <QtDBus/QtDBus>

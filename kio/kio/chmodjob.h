@@ -23,9 +23,8 @@
 
 #include "global.h"
 #include "job.h"
+#include <kio_export.h>
 #include <kfileitem.h>
-
-#include <QtCore/QLinkedList>
 
 namespace KIO {
 

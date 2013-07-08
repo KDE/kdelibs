@@ -20,7 +20,6 @@
 #include <kprotocolmanager.h>
 #include <klocalizedstring.h>
 #include <qurlpathinfo.h>
-#include <QTextDocument> // Qt::escape
 #include <QUrl>
 #include <QDateTime>
 
@@ -29,7 +28,7 @@ QString KIO::Job::errorString() const
   return KIO::buildErrorString(error(), errorText());
 }
 
-KIO_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText)
+KIOCORE_EXPORT QString KIO::buildErrorString(int errorCode, const QString &errorText)
 {
   QString result;
 
@@ -296,7 +295,7 @@ QStringList KIO::Job::detailedErrorStrings(const QUrl *reqUrl /*= 0*/,
   return ret;
 }
 
-KIO_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
+KIOCORE_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &errorText,
                                           const QUrl *reqUrl /*= 0*/, int /*method = -1*/ )
 {
   QString url, host, protocol, datetime, domain, path, filename;
