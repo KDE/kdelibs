@@ -168,7 +168,7 @@ static DataHeader parseDataHeader(const QUrl &url, const bool mimeOnly)
   header_info.is_base64 = false;
 
   // decode url and save it
-  const QByteArray &raw_url = header_info.url = QByteArray::fromPercentEncoding( url.encodedPath() );
+  const QByteArray &raw_url = header_info.url = QByteArray::fromPercentEncoding(url.path(QUrl::FullyEncoded).toLatin1());
   const int raw_url_len = raw_url.length();
 
   header_info.data_offset = 0;
