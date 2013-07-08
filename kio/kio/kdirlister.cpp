@@ -1082,7 +1082,7 @@ QStringList KDirListerCache::directoriesForCanonicalPath(const QString& dir) con
 // but it can also be called for a file.
 void KDirListerCache::slotFileDirty( const QString& path )
 {
-    kDebug(7004) << path;
+    // kDebug(7004) << path;
 
     KUrl url(path);
     url.adjustPath(KUrl::RemoveTrailingSlash);
