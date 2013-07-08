@@ -1,5 +1,6 @@
 
 set(kwidgetsaddons_SRCS
+  kacceleratormanager.cpp
   fonthelpers.cpp
   kdualaction.cpp
   kfontchooser.cpp
@@ -59,6 +60,7 @@ set_target_properties(KWidgetsAddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSI
 install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  kacceleratormanager.h
   kdualaction.h
   kfontchooser.h
   kguiitem.h

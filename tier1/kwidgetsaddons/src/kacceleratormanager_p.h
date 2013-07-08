@@ -23,10 +23,15 @@
 
 
 #include <QtCore/QString>
-
 #include <QtCore/QObject>
 
+#include <kwidgetsaddons_export.h>
+
 class QStackedWidget;
+class QMenuBar;
+class QTabBar;
+class QDockWidget;
+
 
 /**
  * A string class handling accelerators.
@@ -186,6 +191,82 @@ private:
   QStackedWidget     *m_stack;
   KAccelStringList m_entries;
 
+};
+
+/*********************************************************************
+
+ class KAcceleratorManagerPrivate - internal helper class
+
+ This class does all the work to find accelerators for a hierarchy of
+ widgets.
+
+ *********************************************************************/
+
+
+class KAcceleratorManagerPrivate
+{
+public:
+
+    static void manage(QWidget *widget);
+    static bool programmers_mode;
+    // We export this function because KStandardAction uses it (sets list of standard action names).
+    // KStandardAction calls this function only once when the first standard action is created.
+    static void KWIDGETSADDONS_EXPORT setStandardActionNames(const QStringList &strList);
+    static bool standardName(const QString &str);
+
+    static bool checkChange(const KAccelString &as)  {
+        QString t2 = as.accelerated();
+        QString t1 = as.originalText();
+        if (t1 != t2)
+        {
+            if (as.accel() == -1)  {
+                removed_string  += QLatin1String("<tr><td>") + t1.toHtmlEscaped() + QLatin1String("</td></tr>");
+            } else if (as.originalAccel() == -1) {
+                added_string += QLatin1String("<tr><td>") + t2.toHtmlEscaped() + QLatin1String("</td></tr>");
+            } else {
+                changed_string += QLatin1String("<tr><td>") + t1.toHtmlEscaped() + QLatin1String("</td>");
+                changed_string += QLatin1String("<td>") + t2.toHtmlEscaped() + QLatin1String("</td></tr>");
+            }
+            return true;
+        }
+        return false;
+    }
+    static QString changed_string;
+    static QString added_string;
+    static QString removed_string;
+    static QMap<QWidget *, int> ignored_widgets;
+    static QStringList standardNames;
+
+private:
+  class Item;
+public:
+  typedef QList<Item *> ItemList;
+
+private:
+  static void traverseChildren(QWidget *widget, Item *item);
+
+  static void manageWidget(QWidget *widget, Item *item);
+  static void manageMenuBar(QMenuBar *mbar, Item *item);
+  static void manageTabBar(QTabBar *bar, Item *item);
+  static void manageDockWidget(QDockWidget *dock, Item *item);
+
+  static void calculateAccelerators(Item *item, QString &used);
+
+  class Item
+  {
+  public:
+
+    Item() : m_widget(0), m_children(0), m_index(-1) {}
+    ~Item();
+
+    void addChild(Item *item);
+
+    QWidget       *m_widget;
+    KAccelString  m_content;
+    ItemList      *m_children;
+    int           m_index;
+
+  };
 };
 
 

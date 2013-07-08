@@ -89,7 +89,6 @@ set(kdeui_LIB_SRCS
  dialogs/kswitchlanguagedialog_p.cpp
  kernel/kstyle.cpp
  shortcuts/kshortcutschemeshelper.cpp
- shortcuts/kacceleratormanager.cpp
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
@@ -258,7 +257,6 @@ install( FILES
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
  kernel/kstyle.h
- shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/kcrash.h
  util/kglobalsettings.h
