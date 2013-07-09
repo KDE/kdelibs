@@ -67,6 +67,7 @@ KConfigToJson::~KConfigToJson()
 
 void KConfigToJson::runMain()
 {
+    d->parser->process(*this);
     if (d->parser->isSet("input")) {
         if (!resolveFiles()) {
             qDebug() << "Failed to resolve filenames" << d->inFile << d->outFile;
