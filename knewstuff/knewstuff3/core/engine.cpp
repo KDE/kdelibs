@@ -37,6 +37,7 @@
 #include <QtCore/QTimer>
 #include <QtCore/QDir>
 #include <QtXml/qdom.h>
+#include <QUrlQuery>
 
 #if defined(Q_OS_WIN)
 #include <windows.h>
@@ -456,7 +457,9 @@ void Engine::contactAuthor(const EntryInternal &entry)
         QUrl mailUrl;
         mailUrl.setScheme("mailto");
         mailUrl.setPath(entry.author().email());
-        mailUrl.addQueryItem("subject", i18n("Re: %1", entry.name()));
+        QUrlQuery query;
+        query.addQueryItem("subject", i18n("Re: %1", entry.name()));
+        mailUrl.setQuery(query);
         QDesktopServices::openUrl(mailUrl);
     } else if (!entry.author().homepage().isEmpty()) {
         QDesktopServices::openUrl(QUrl(entry.author().homepage()));

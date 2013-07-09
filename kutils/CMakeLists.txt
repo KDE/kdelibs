@@ -1,8 +1,5 @@
 project(kutils)
 
-# kcmoduleproxy.cpp:219:8: error: ‘class QApplication’ has no member named ‘syncX’
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
-
 ########### kcmutils ###############
 set(kcmutils_LIB_SRCS
     kcmoduleinfo.cpp
