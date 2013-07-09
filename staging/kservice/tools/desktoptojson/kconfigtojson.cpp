@@ -86,7 +86,7 @@ void KConfigToJson::runMain()
 bool KConfigToJson::resolveFiles()
 {
     if (d->parser->isSet("input")) {
-        d->inFile = d->parser->argument("input");
+        d->inFile = d->parser->value("input");
         if (QFile::exists(d->inFile)) {
             if (!d->inFile.startsWith('/')) {
                 d->inFile = QDir::currentPath() + '/' + d->inFile;
@@ -97,7 +97,7 @@ bool KConfigToJson::resolveFiles()
         }
     }
     if (d->parser->isSet("output")) {
-        d->outFile = d->parser->argument("output");
+        d->outFile = d->parser->value("output");
     } else {
         if (!d->inFile.isEmpty()) {
             d->outFile = d->inFile;
