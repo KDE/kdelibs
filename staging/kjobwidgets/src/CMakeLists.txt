@@ -6,7 +6,6 @@ else ()
    set (HAVE_X11 0)
 endif ()
 
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 configure_file(config-kjobwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kjobwidgets.h )
 

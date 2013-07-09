@@ -132,9 +132,9 @@ KCharSelectTable::KCharSelectTable(QWidget *parent, const QFont &_font)
     _palette.setColor(backgroundRole(), palette().color(QPalette::Base));
     setPalette(_palette);
     verticalHeader()->setVisible(false);
-    verticalHeader()->setResizeMode(QHeaderView::Custom);
+    verticalHeader()->setSectionResizeMode(QHeaderView::Custom);
     horizontalHeader()->setVisible(false);
-    horizontalHeader()->setResizeMode(QHeaderView::Custom);
+    horizontalHeader()->setSectionResizeMode(QHeaderView::Custom);
 
     setFocusPolicy(Qt::StrongFocus);
     setDragEnabled(true);
@@ -633,7 +633,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     QString name = s_data()->name(c);
     if (!name.isEmpty()) {
         //is name ever empty? </p> should always be there...
-        html += i18n("Name: ") + Qt::escape(name) + "</p>";
+        html += i18n("Name: ") + name.toHtmlEscaped() + "</p>";
     }
     QStringList aliases = s_data()->aliases(c);
     QStringList notes = s_data()->notes(c);
@@ -647,7 +647,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     if (!aliases.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &alias, aliases) {
-            html += "<li>" + Qt::escape(alias) + "</li>";
+            html += "<li>" + alias.toHtmlEscaped() + "</li>";
         }
         html += "</ul>";
     }
@@ -655,7 +655,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     if (!notes.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Notes:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &note, notes) {
-            html += "<li>" + createLinks(Qt::escape(note)) + "</li>";
+            html += "<li>" + createLinks(note.toHtmlEscaped()) + "</li>";
         }
         html += "</ul>";
     }
@@ -667,7 +667,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
             if (s_data()->isPrint(c2)) {
                 html += "&#" + QString::number(c2.unicode()) + "; ";
             }
-            html += s_data()->formatCode(c2.unicode()) + ' ' + Qt::escape(s_data()->name(c2)) + "</a></li>";
+            html += s_data()->formatCode(c2.unicode()) + ' ' + s_data()->name(c2).toHtmlEscaped() + "</a></li>";
         }
         html += "</ul>";
     }
@@ -675,7 +675,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     if (!equivalents.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &equivalent, equivalents) {
-            html += "<li>" + createLinks(Qt::escape(equivalent)) + "</li>";
+            html += "<li>" + createLinks(equivalent.toHtmlEscaped()) + "</li>";
         }
         html += "</ul>";
     }
@@ -683,7 +683,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     if (!approxEquivalents.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Approximate equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &approxEquivalent, approxEquivalents) {
-            html += "<li>" + createLinks(Qt::escape(approxEquivalent)) + "</li>";
+            html += "<li>" + createLinks(approxEquivalent.toHtmlEscaped()) + "</li>";
         }
         html += "</ul>";
     }
@@ -768,7 +768,7 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
             link += "&#" + QString::number(unicode) + ";&nbsp;";
         }
         link += "U+" + c + ' ';
-        link += Qt::escape(s_data()->name(QChar(unicode))) + "</a>";
+        link += s_data()->name(QChar(unicode)).toHtmlEscaped() + "</a>";
         s.replace(c, link);
     }
     return s;
@@ -870,7 +870,7 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
 
     QChar c = m_chars[pos];
     if (role == Qt::ToolTipRole) {
-        QString result = s_data()->display(c, m_font) + "<br />" + Qt::escape(s_data()->name(c)) + "<br />" +
+        QString result = s_data()->display(c, m_font) + "<br />" + s_data()->name(c).toHtmlEscaped() + "<br />" +
                          i18n("Unicode code point:") + ' ' + s_data()->formatCode(c.unicode()) + "<br />" +
                          i18nc("Character", "In decimal:") + ' ' + QString::number(c.unicode());
         return QVariant(result);
