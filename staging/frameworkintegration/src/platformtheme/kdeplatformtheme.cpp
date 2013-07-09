@@ -50,16 +50,18 @@ KdePlatformTheme::~KdePlatformTheme()
 
 QVariant KdePlatformTheme::themeHint(QPlatformTheme::ThemeHint hint) const
 {
-    if (m_hints.contains(hint))
-        return m_hints.value(hint);
+    QHash<ThemeHint, QVariant>::const_iterator it = m_hints.constFind(hint);
+    if (it != m_hints.constEnd())
+        return *it;
     else
         return QPlatformTheme::themeHint(hint);
 }
 
 const QPalette *KdePlatformTheme::palette(Palette type) const
 {
-    if (m_palettes.contains(type))
-        return m_palettes.value(type);
+    QHash<Palette, QPalette*>::const_iterator it = m_palettes.constFind(type);
+    if (it != m_palettes.constEnd())
+        return *it;
     else
         return QPlatformTheme::palette(type);
 }
