@@ -23,9 +23,6 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX KAUTH
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kauth_version.h"
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KAuthConfigVersion.cmake")
 
-# qInstallMsgHandler
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
-
 add_subdirectory(src)
 add_subdirectory(autotests)
 
