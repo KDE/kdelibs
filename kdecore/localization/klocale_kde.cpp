@@ -236,7 +236,6 @@ void KLocalePrivate::init(const QString &language, const QString &country,
     }
 
     initEncoding();
-    initFileNameEncoding();
     initCountry(country, cg.readEntry(QLatin1String("Country")));
     initLanguageList(language, cg.readEntry(QLatin1String("Language")), useEnvironmentVariables);
     // Now that we have a language, we can set up the config which uses it to setLocale()
@@ -2318,45 +2317,6 @@ QByteArray KLocalePrivate::systemCodeset() const
     }
 #endif
     return codeset;
-}
-
-void KLocalePrivate::initFileNameEncoding()
-{
-    // If the following environment variable is set, assume all filenames
-    // are in UTF-8 regardless of the current C locale.
-    m_utf8FileEncoding = !qgetenv("KDE_UTF8_FILENAMES").isEmpty();
-    if (m_utf8FileEncoding) {
-        QFile::setEncodingFunction(KLocalePrivate::encodeFileNameUTF8);
-        QFile::setDecodingFunction(KLocalePrivate::decodeFileNameUTF8);
-    } else {
-        const QByteArray ctype = setlocale(LC_CTYPE, 0);
-        int indexOfDot = ctype.indexOf('.');
-        if (indexOfDot != -1) {
-            if (!qstrnicmp(ctype.data() + indexOfDot + 1, "UTF-8", 5)) {
-                QFile::setEncodingFunction(KLocalePrivate::encodeFileNameUTF8);
-                QFile::setDecodingFunction(KLocalePrivate::decodeFileNameUTF8);
-                m_utf8FileEncoding = true;
-            }
-            return;
-        }
-        QByteArray lang = qgetenv("LC_ALL");
-        if (lang.isEmpty() || lang == "C") {
-            lang = qgetenv("LC_CTYPE");
-        }
-        if (lang.isEmpty() || lang == "C") {
-            lang = qgetenv("LANG");
-        }
-        indexOfDot = lang.indexOf('.');
-        if (indexOfDot != -1) {
-            if (!qstrnicmp(lang.data() + indexOfDot + 1, "UTF-8", 5)) {
-                QFile::setEncodingFunction(KLocalePrivate::encodeFileNameUTF8);
-                QFile::setDecodingFunction(KLocalePrivate::decodeFileNameUTF8);
-                m_utf8FileEncoding = true;
-            }
-        }
-    }
-    // Otherwise, stay with QFile's default filename encoding functions
-    // which, on Unix platforms, use the locale's codec.
 }
 
 static inline bool isUnicodeNonCharacter(uint ucs4)
