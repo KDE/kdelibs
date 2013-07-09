@@ -37,7 +37,7 @@ struct KEntry
   /** Constructor. @internal */
   KEntry()
     : mValue(), bDirty(false),
-      bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false) {}
+      bGlobal(false), bImmutable(false), bDeleted(false), bExpand(false), bReverted(false) {}
   /** @internal */
   QByteArray mValue;
   /**
@@ -60,6 +60,10 @@ struct KEntry
    * Whether to apply dollar expansion or not.
    */
   bool    bExpand:1;
+  /**
+   * Entry has been reverted to its default value (from a more global file).
+   */
+  bool    bReverted:1;
 };
 
 // These operators are used to check whether an entry which is about
@@ -209,7 +213,7 @@ class KEntryMap : public QMap<KEntryKey, KEntry>
             setEntryOption(findEntry(group, key, flags), option, bf);
         }
 
-        void revertEntry(const QByteArray& group, const QByteArray& key, SearchFlags flags=SearchFlags());
+        bool revertEntry(const QByteArray& group, const QByteArray& key, SearchFlags flags=SearchFlags());
 };
 Q_DECLARE_OPERATORS_FOR_FLAGS(KEntryMap::SearchFlags)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KEntryMap::EntryOptions)

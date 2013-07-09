@@ -174,7 +174,9 @@ void KConfigTest::initTestCase()
   KConfigGroup cg3(&cg, "SubGroup/3");
   cg3.writeEntry( "sub3string", "somevalue" );
 
+  QVERIFY(sc.isDirty());
   QVERIFY(sc.sync());
+  QVERIFY(!sc.isDirty());
 
   QVERIFY(QFile::exists(kdehome + "/kconfigtestdir/kconfigtest"));
   QVERIFY(QFile::exists(kdehome + "/kconfigtestdir/kdeglobals"));
@@ -240,24 +242,26 @@ static QList<QByteArray> readLines(const char* fileName = "kconfigtest")
     return readLinesFrom(path);
 }
 
-// ### TODO: call this, and test the state of things afterwards
-void KConfigTest::revertEntries()
+// see also testDefaults, which tests reverting with a defaults (global) file available
+void KConfigTest::testDirtyAfterRevert()
 {
-//  qDebug("Reverting entries");
-  KConfig sc( "kconfigtest" );
+  KConfig sc( "kconfigtest_revert" );
 
   KConfigGroup cg(&sc, "Hello");
-  cg.revertToDefault( "boolEntry1" );
-  cg.revertToDefault( "boolEntry2" );
+  cg.revertToDefault( "does_not_exist" );
+  QVERIFY(!sc.isDirty());
+  cg.writeEntry("Test", "Correct");
+  QVERIFY(sc.isDirty());
+  sc.sync();
+  QVERIFY(!sc.isDirty());
 
-  cg.revertToDefault( "Test" );
-  cg.revertToDefault( "emptyEntry" );
-  cg.revertToDefault( "stringEntry1" );
-  cg.revertToDefault( "stringEntry2" );
-  cg.revertToDefault( "stringEntry3" );
-  cg.revertToDefault( "stringEntry4" );
-  cg.revertToDefault( "stringEntry5" );
+  cg.revertToDefault("Test");
+  QVERIFY(sc.isDirty());
   QVERIFY(sc.sync());
+  QVERIFY(!sc.isDirty());
+
+  cg.revertToDefault("Test");
+  QVERIFY(!sc.isDirty());
 }
 
 void KConfigTest::testRevertAllEntries()
@@ -265,19 +269,19 @@ void KConfigTest::testRevertAllEntries()
     // this tests the case were we revert (delete) all entries in a file,
     // leaving a blank file
     {
-        KConfig sc( "konfigtest2" );
+        KConfig sc( "konfigtest2", KConfig::SimpleConfig );
         KConfigGroup cg( &sc, "Hello" );
         cg.writeEntry( "Test", "Correct" );
     }
 
     {
-        KConfig sc( "konfigtest2" );
+        KConfig sc( "konfigtest2", KConfig::SimpleConfig );
         KConfigGroup cg( &sc, "Hello" );
         QCOMPARE( cg.readEntry( "Test", "Default" ), QString("Correct") );
         cg.revertToDefault( "Test" );
     }
 
-    KConfig sc( "konfigtest2" );
+    KConfig sc( "konfigtest2", KConfig::SimpleConfig );
     KConfigGroup cg( &sc, "Hello" );
     QCOMPARE( cg.readEntry( "Test", "Default" ), QString("Default") );
 }
@@ -367,6 +371,18 @@ void KConfigTest::testDefaults()
     QCOMPARE(group.readEntry("entry1", QString()), Default);
     group.revertToDefault("entry2");
     QCOMPARE(group.readEntry("entry2", QString()), QString());
+
+    // TODO test reverting localized entries
+
+    Q_ASSERT(config.isDirty());
+    group.sync();
+
+    // Check that everything is OK on disk, too
+    KConfig reader("defaulttest", KConfig::NoGlobals);
+    reader.addConfigSources(QStringList() << QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + '/' + defaultsFile);
+    KConfigGroup readerGroup = reader.group("any group");
+    QCOMPARE(readerGroup.readEntry("entry1", QString()), Default);
+    QCOMPARE(readerGroup.readEntry("entry2", QString()), QString());
 }
 
 void KConfigTest::testLocale()
@@ -840,6 +856,51 @@ void KConfigTest::testEmptyGroup()
     // Test if deleteGroup worked
     lines = readLines();
     QVERIFY(lines.first() != QByteArray("TestKey=defaultGroup\n"));
+}
+
+void KConfigTest::testCascadingWithLocale()
+{
+    QTemporaryDir middleDir;
+    QTemporaryDir globalDir;
+    qputenv("XDG_CONFIG_DIRS", qPrintable(middleDir.path() + QString(":") + globalDir.path()));
+
+    const QString globalConfigDir = globalDir.path();
+    QVERIFY(QDir().mkpath(globalConfigDir));
+    QFile global(globalConfigDir + "/foo.desktop");
+    QVERIFY(global.open(QIODevice::WriteOnly|QIODevice::Text));
+    QTextStream globalOut(&global);
+    globalOut << "[Group]" << endl
+              << "FromGlobal=true" << endl
+              << "FromGlobal[fr]=vrai" << endl
+              << "Name=Testing" << endl
+              << "Name[fr]=FR" << endl
+              << "Other=Global" << endl
+              << "Other[fr]=Global_FR" << endl;
+    global.close();
+
+    const QString middleConfigDir = middleDir.path();
+    QVERIFY(QDir().mkpath(middleConfigDir));
+    QFile local(middleConfigDir + "/foo.desktop");
+    QVERIFY(local.open(QIODevice::WriteOnly|QIODevice::Text));
+    QTextStream out(&local);
+    out << "[Group]" << endl
+        << "FromLocal=true" << endl
+        << "FromLocal[fr]=vrai" << endl
+        << "Name=Local Testing" << endl
+        << "Name[fr]=FR" << endl
+        << "Other=English Only" << endl;
+    local.close();
+
+    KConfig config("foo.desktop");
+    KConfigGroup group = config.group("Group");
+    QCOMPARE(group.readEntry("FromGlobal"), QString("true"));
+    QCOMPARE(group.readEntry("FromLocal"), QString("true"));
+    QCOMPARE(group.readEntry("Name"), QString("Local Testing"));
+    config.setLocale("fr");
+    QCOMPARE(group.readEntry("FromGlobal"), QString("vrai"));
+    QCOMPARE(group.readEntry("FromLocal"), QString("vrai"));
+    QCOMPARE(group.readEntry("Name"), QString("FR"));
+    QCOMPARE(group.readEntry("Other"), QString("English Only")); // Global_FR is locally overriden
 }
 
 void KConfigTest::testMerge()

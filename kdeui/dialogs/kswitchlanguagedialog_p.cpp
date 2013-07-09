@@ -21,25 +21,58 @@
 
 #include <QApplication>
 #include <QDialogButtonBox>
+#include <QDir>
 #include <QLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QtCore/QEvent>
 #include <QtCore/QMap>
-#include <ksharedconfig.h>
+#include <QSettings>
+#include <QSharedPointer>
+#include <QStandardPaths>
 
 #include <klanguagebutton.h>
 #include "kswitchlanguagedialog_p.h"
-#include <kconfig.h>
-#include <kconfiggroup.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kdebug.h>
 
+// Believe it or not we can't use KConfig from here
+// (we need KConfig during QCoreApplication ctor which is too early for it)
+// So we cooked a QSettings based solution
+typedef QSharedPointer<QSettings> QSettingsPtr;
+
+static QSettingsPtr localeOverridesSettings()
+{
+    const QString configPath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+    const QDir configDir(configPath);
+    if (!configDir.exists())
+        configDir.mkpath(".");
+
+    return QSettingsPtr(new QSettings(configPath + "/klanguageoverridesrc", QSettings::NativeFormat));
+}
+
+static QByteArray getApplicationSpecificLanguage(const QByteArray &defaultCode = QByteArray())
+{
+    QSettingsPtr settings = localeOverridesSettings();
+    settings->beginGroup("Language");
+    return settings->value(qAppName(), defaultCode).toByteArray();
+}
+
+static void setApplicationSpecificLanguage(const QByteArray &languageCode)
+{
+    QSettingsPtr settings = localeOverridesSettings();
+    settings->beginGroup("Language");
+
+    if (languageCode.isEmpty())
+        settings->remove(qAppName());
+    else
+        settings->setValue(qAppName(), languageCode);
+}
+
 static void initializeLanguages()
 {
-    KConfigGroup group(KSharedConfig::openConfig(), "Locale");
-    const QByteArray languageCode = group.readEntry("Language", QByteArray());
+    const QByteArray languageCode = getApplicationSpecificLanguage();
 
     if(!languageCode.isEmpty()) {
         QByteArray languages = qgetenv("LANGUAGE");
@@ -242,10 +275,7 @@ void KSwitchLanguageDialog::slotOk()
     {
         QString languageString = languages.join(":");
         //list is different from defaults or saved languages list
-        KConfigGroup group(KSharedConfig::openConfig(), "Locale");
-
-        group.writeEntry("Language", languageString);
-        group.sync();
+        setApplicationSpecificLanguage(languageString.toLatin1());
 
         KMessageBox::information(
             this,
@@ -262,12 +292,10 @@ void KSwitchLanguageDialog::slotDefault()
 {
     const QStringList defaultLanguages = d->applicationLanguageList();
 
-    KConfigGroup group(KSharedConfig::openConfig(), "Locale");
+    setApplicationSpecificLanguage(QByteArray());
 
-    group.revertToDefault("Language");
-    group.sync();
     // read back the new default
-    QString language = group.readEntry("Language", "en_US");
+    QString language = QString::fromLatin1(getApplicationSpecificLanguage("en_US"));
 
     if (defaultLanguages != (QStringList() << language)) {
 
@@ -307,16 +335,11 @@ void KSwitchLanguageDialogPrivate::fillApplicationLanguages(KLanguageButton *but
 
 QStringList KSwitchLanguageDialogPrivate::applicationLanguageList()
 {
-    KSharedConfigPtr config = KSharedConfig::openConfig();
     QStringList languagesList;
 
-    if (config->hasGroup("Locale"))
-    {
-        KConfigGroup group(config, "Locale");
-        if (group.hasKey("Language"))
-        {
-            languagesList = group.readEntry("Language", QString()).split(':');
-        }
+    QByteArray languageCode = getApplicationSpecificLanguage();
+    if (!languageCode.isEmpty()) {
+        languagesList = QString::fromLatin1(languageCode).split(':');
     }
     if (languagesList.isEmpty())
     {

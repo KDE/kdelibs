@@ -11,7 +11,6 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 set(KDEUI_NO_ATTICA TRUE)
 
 include_directories(
- ${CMAKE_SOURCE_DIR}/interfaces/kregexpeditor
  ${DBUSMENUQT_INCLUDE_DIR}
 )
 
@@ -88,12 +87,6 @@ set(kdeui_LIB_SRCS
  dialogs/kshortcutschemeseditor.cpp
  dialogs/kshortcutsdialog.cpp
  dialogs/kswitchlanguagedialog_p.cpp
- findreplace/kfind.cpp
- findreplace/kreplace.cpp
- findreplace/kfinddialog.cpp
- findreplace/kreplacedialog.cpp
- fonts/fonthelpers.cpp
- fonts/kfontcombobox.cpp
  kernel/kstyle.cpp
  shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kacceleratormanager.cpp
@@ -105,19 +98,14 @@ set(kdeui_LIB_SRCS
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
- util/kmodifierkeyinfo.cpp
- util/kmodifierkeyinfoprovider.cpp
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
  widgets/kcmodule.cpp
  widgets/khelpmenu.cpp
  widgets/kkeysequencewidget.cpp
- widgets/klanguagebutton.cpp
- widgets/kmessagewidget.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
  widgets/kshortcutwidget.cpp
- widgets/ktextedit.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
  xmlgui/kxmlguibuilder.cpp
@@ -133,16 +121,6 @@ set(kdeui_LIB_SRCS
  xmlgui/ktoolbar.cpp
 )
 
-message("Port to Qt5 native filter")
-#if (X11_FOUND AND X11_Xkb_FOUND)
-#    include_directories (
-#        ${X11_Xkb_INCLUDE_PATH}
-#        ${X11_Xlib_INCLUDE_PATH}
-#    )
-#    set(kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_x11.cpp)
-#else (X11_FOUND AND X11_Xkb_FOUND)
-    set (kdeui_LIB_SRCS ${kdeui_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
-#endif (X11_FOUND AND X11_Xkb_FOUND)
 
 set( kdeui_UI
    dialogs/knewpassworddialog.ui
@@ -163,7 +141,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/colors
  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
  ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
- ${CMAKE_CURRENT_SOURCE_DIR}/fonts
  ${CMAKE_CURRENT_SOURCE_DIR}/kernel
  ${CMAKE_CURRENT_SOURCE_DIR}/notifications
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
@@ -176,8 +153,37 @@ target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
 
 find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
-target_link_libraries(kdeui LINK_PUBLIC ${ItemModels_LIBRARIES} ${Sonnet_LIBRARIES} ${KAuth_LIBRARIES} kguiaddons kwidgets ${KWidgetsAddons_LIBRARIES} ki18n XmlGui ItemViews KCompletion KNotifications KJobWidgets KConfigWidgets KIconThemes ${KDE4_KDECORE_LIBS} ${X11_LIBRARIES} Qt5::Widgets Qt5::Svg Qt5::PrintSupport
-                            Qt5::Xml ${KDEUI_EXTRA_LIBS} Qt5::Network ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${kdeqt5staging_LIBRARIES} ${KConfig_GUI_LIBRARY} KCompletion Qt5::Concurrent)
+target_link_libraries(kdeui LINK_PUBLIC
+    ${ItemModels_LIBRARIES}
+    ${Sonnet_LIBRARIES}
+    ${KAuth_LIBRARIES}
+    kguiaddons
+    kwidgets
+    ${KWidgetsAddons_LIBRARIES}
+    ki18n
+    KTextWidgets
+    XmlGui
+    ItemViews
+    KCompletion
+    KNotifications
+    KJobWidgets
+    KConfigWidgets
+    KIconThemes
+    ${KDE4_KDECORE_LIBS}
+    ${X11_LIBRARIES}
+    Qt5::Widgets
+    Qt5::Svg
+    Qt5::PrintSupport
+    Qt5::Xml
+    ${KDEUI_EXTRA_LIBS}
+    Qt5::Network
+    ${KCoreAddons_LIBRARIES}
+    ${KWindowSystem_LIBRARIES}
+    ${kdeqt5staging_LIBRARIES}
+    ${KConfig_GUI_LIBRARY}
+    KCompletion
+    Qt5::Concurrent
+)
 
 if(X11_FOUND)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
@@ -251,29 +257,20 @@ install( FILES
  dialogs/knewpassworddialog.h
  dialogs/kshortcutsdialog.h
  dialogs/kshortcutseditor.h
- findreplace/kfind.h
- findreplace/kreplace.h
- findreplace/kfinddialog.h
- findreplace/kreplacedialog.h
- fonts/kfontcombobox.h
  kernel/kstyle.h
  shortcuts/kacceleratormanager.h
  shortcuts/kgesture.h
  util/kcrash.h
  util/kglobalsettings.h
  util/khelpclient.h
- util/kmodifierkeyinfo.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
  util/kundoactions.h
  widgets/kcmodule.h
  widgets/khelpmenu.h
  widgets/kkeysequencewidget.h
- widgets/klanguagebutton.h
- widgets/kmessagewidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
- widgets/ktextedit.h
  widgets/kshortcutwidget.h
  xmlgui/kxmlguiwindow.h
  xmlgui/kxmlguiclient.h

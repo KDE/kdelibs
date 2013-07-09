@@ -1035,14 +1035,7 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
 
     QUrlPathInfo info(newurl);
     info.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-
     newurl = info.url();
-#ifdef Q_OS_WIN
-    QString pathstr = (newurl.isLocalFile()) ? QDir::fromNativeSeparators(newurl.toLocalFile()) : newurl.path();
-#else
-    QString pathstr = newurl.path();
-#endif
-    newurl.setPath(pathstr);
 
     info.setUrl(newurl);
 

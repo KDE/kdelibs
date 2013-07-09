@@ -78,11 +78,13 @@ class KParts::StatusBarExtensionPrivate
 {
 public:
   StatusBarExtensionPrivate(StatusBarExtension *q): q(q),
-                                                    m_statusBar(0) {}
+                                                    m_statusBar(0),
+                                                    m_activated(true) {}
 
   StatusBarExtension *q;
   QList<StatusBarItem> m_statusBarItems; // Our statusbar items
   QStatusBar* m_statusBar;
+  bool m_activated;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -125,8 +127,9 @@ bool StatusBarExtension::eventFilter(QObject * watched, QEvent* ev)
       return QObject::eventFilter(watched, ev);
 
   GUIActivateEvent *gae = static_cast<GUIActivateEvent*>(ev);
+  d->m_activated = gae->activated();
 
-  if ( gae->activated() )
+  if ( d->m_activated )
   {
     QList<StatusBarItem>::iterator it = d->m_statusBarItems.begin();
     for ( ; it != d->m_statusBarItems.end() ; ++it )
@@ -165,7 +168,7 @@ void StatusBarExtension::addStatusBarItem( QWidget * widget, int stretch, bool p
   d->m_statusBarItems.append( StatusBarItem( widget, stretch, permanent ) );
   StatusBarItem& it = d->m_statusBarItems.last();
   QStatusBar * sb = statusBar();
-  if (sb)
+  if (sb && d->m_activated)
     it.ensureItemShown( sb );
 }
 

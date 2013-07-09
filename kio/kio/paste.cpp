@@ -26,7 +26,6 @@
 #include "kio/netaccess.h"
 #include "kio/renamedialog.h"
 #include "kio/kprotocolmanager.h"
-#include "jobuidelegate.h"
 
 #include <kjobwidgets.h>
 #include <klocalizedstring.h>

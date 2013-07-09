@@ -22,9 +22,9 @@
 #include "chmodjob.h"
 
 #include "job.h"
-#include "jobuidelegate.h"
 
 #include <klocalizedstring.h>
+#include <kio/jobuidelegatefactory.h>
 #include <kmessagebox.h>
 #include <QtCore/QFile>
 #include <QDebug>
@@ -86,7 +86,7 @@ namespace KIO {
         {
             ChmodJob *job = new ChmodJob(*new ChmodJobPrivate(lstItems,permissions,mask,
                                                               newOwner,newGroup,recursive));
-            job->setUiDelegate(new JobUiDelegate());
+            job->setUiDelegate(KIO::createDefaultJobUiDelegate());
             if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;

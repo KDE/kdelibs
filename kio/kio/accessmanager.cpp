@@ -28,7 +28,6 @@
 #include "job.h"
 #include "kjobwidgets.h"
 #include "scheduler.h"
-#include "jobuidelegate.h"
 #include "netaccess.h"
 
 #include <kconfiggroup.h>

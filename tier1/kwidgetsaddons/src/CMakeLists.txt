@@ -38,6 +38,7 @@ set(kwidgetsaddons_SRCS
   kpagewidget.cpp
   kpagewidgetmodel.cpp
   kassistantdialog.cpp
+  kmessagewidget.cpp
 )
 
 set(kwidgetsaddon_UI
@@ -92,6 +93,7 @@ install(FILES
   kpagewidget.h
   kpagewidgetmodel.h
   kassistantdialog.h
+  kmessagewidget.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

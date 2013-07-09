@@ -615,32 +615,33 @@ int main(int argc, char *argv[])
     // workaround various Qt crashes by always enforcing a TrueColor visual
     QApplication::setColorSpec( QApplication::ManyColor );
 
-    QCommandLineParser *parser = new QCommandLineParser;
-    parser->addHelpOption(QCoreApplication::translate("main", "Regression tester for khtml"));
-    parser->addOption(QCommandLineOption(QStringList() << "b" << "base", QCoreApplication::translate("main", "Directory containing tests, basedir and output directories."), "base_dir"));
-    parser->addOption(QCommandLineOption(QStringList() << "d" << "debug", QCoreApplication::translate("main", "Do not suppress debug output")));
-    parser->addOption(QCommandLineOption(QStringList() << "g" << "genoutput", QCoreApplication::translate("main", "Regenerate baseline (instead of checking)")));
-    parser->addOption(QCommandLineOption(QStringList() << "s" << "noshow", QCoreApplication::translate("main", "Do not show the window while running tests")));
-    parser->addOption(QCommandLineOption(QStringList() << "t" << "test", QCoreApplication::translate("main", "Only run a single test. Multiple options allowed."), "filename"));
-    parser->addOption(QCommandLineOption(QStringList() << "js", QCoreApplication::translate("main", "Only run .js tests")));
-    parser->addOption(QCommandLineOption(QStringList() << "html", QCoreApplication::translate("main", "Only run .html tests")));
-    parser->addOption(QCommandLineOption(QStringList() << "noxvfb", QCoreApplication::translate("main", "Do not use Xvfb")));
-    parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Put output in &lt;directory&gt; instead of &lt;base_dir&gt;/output"), "directory"));
-    parser->addOption(QCommandLineOption(QStringList() << "r" << "reference", QCoreApplication::translate("main", "Use &lt;directory&gt; as reference instead of &lt;base_dir&gt;/baseline"), "directory"));
-    parser->addOption(QCommandLineOption(QStringList() << "+[base_dir]", QCoreApplication::translate("main", "Directory containing tests, basedir and output directories. Only regarded if -b is not specified.")));
-    parser->addOption(QCommandLineOption(QStringList() << "+[testcases]", QCoreApplication::translate("main", "Relative path to testcase, or directory of testcases to be run (equivalent to -t).")));
+    QCommandLineParser parser;
+    parser.addHelpOption(QCoreApplication::translate("main", "Regression tester for khtml"));
+    parser.addOption(QCommandLineOption(QStringList() << "b" << "base", QCoreApplication::translate("main", "Directory containing tests, basedir and output directories."), "base_dir"));
+    parser.addOption(QCommandLineOption(QStringList() << "d" << "debug", QCoreApplication::translate("main", "Do not suppress debug output")));
+    parser.addOption(QCommandLineOption(QStringList() << "g" << "genoutput", QCoreApplication::translate("main", "Regenerate baseline (instead of checking)")));
+    parser.addOption(QCommandLineOption(QStringList() << "s" << "noshow", QCoreApplication::translate("main", "Do not show the window while running tests")));
+    parser.addOption(QCommandLineOption(QStringList() << "t" << "test", QCoreApplication::translate("main", "Only run a single test. Multiple options allowed."), "filename"));
+    parser.addOption(QCommandLineOption(QStringList() << "js", QCoreApplication::translate("main", "Only run .js tests")));
+    parser.addOption(QCommandLineOption(QStringList() << "html", QCoreApplication::translate("main", "Only run .html tests")));
+    parser.addOption(QCommandLineOption(QStringList() << "noxvfb", QCoreApplication::translate("main", "Do not use Xvfb")));
+    parser.addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Put output in &lt;directory&gt; instead of &lt;base_dir&gt;/output"), "directory"));
+    parser.addOption(QCommandLineOption(QStringList() << "r" << "reference", QCoreApplication::translate("main", "Use &lt;directory&gt; as reference instead of &lt;base_dir&gt;/baseline"), "directory"));
+    parser.addOption(QCommandLineOption(QStringList() << "+[base_dir]", QCoreApplication::translate("main", "Directory containing tests, basedir and output directories. Only regarded if -b is not specified.")));
+    parser.addOption(QCommandLineOption(QStringList() << "+[testcases]", QCoreApplication::translate("main", "Relative path to testcase, or directory of testcases to be run (equivalent to -t).")));
+    parser.process(a);
 
 
-    QString baseDir = parser->argument("base");
+    QString baseDir = parser.value("base");
 
-    if ( parser->remainingArguments().count() < 1 && baseDir.isEmpty() ) {
-        parser->showHelp();
+    if ( parser.remainingArguments().count() < 1 && baseDir.isEmpty() ) {
+        parser.showHelp();
         ::exit( 1 );
     }
 
     int testcase_index = 0;
     if (baseDir.isEmpty())
-        baseDir = parser->remainingArguments().at(testcase_index++);
+        baseDir = parser.remainingArguments().at(testcase_index++);
 
     QFileInfo bdInfo(baseDir);
     // font pathes passed to Xvfb must be absolute
@@ -656,7 +657,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    if (parser->isSet("xvfb"))
+    if (parser.isSet("xvfb"))
     {
         QString xvfbPath = QStandardPaths::findExecutable("Xvfb");
         if ( xvfbPath.isEmpty() ) {
@@ -730,7 +731,7 @@ int main(int argc, char *argv[])
 
     int rv = 1;
 
-    bool outputDebug = parser->isSet( "debug" );
+    bool outputDebug = parser.isSet( "debug" );
 
     KConfig dc( "kdebugrc", KConfig::SimpleConfig );
     static int areas[] = { 1000, 6000, 6005, 6010, 6020, 6030,
@@ -765,7 +766,7 @@ int main(int argc, char *argv[])
     part->setJavaEnabled(false);
     part->setPluginsEnabled(false);
 
-    if (parser->isSet("show"))
+    if (parser.isSet("show"))
 	visual = true;
 
     //a.setTopWidget(part->widget());
@@ -786,21 +787,21 @@ int main(int argc, char *argv[])
     // run the tests
     RegressionTest *regressionTest = new RegressionTest(part,
                                                         baseDir,
-                                                        parser->argument("output"),
-                                                        parser->argument("reference"),
-                                                        parser->isSet("genoutput"),
-                                                        !parser->isSet( "html" ),
-                                                        !parser->isSet( "js" ));
+                                                        parser.argument("output"),
+                                                        parser.argument("reference"),
+                                                        parser.isSet("genoutput"),
+                                                        !parser.isSet( "html" ),
+                                                        !parser.isSet( "js" ));
     QObject::connect(part->browserExtension(), SIGNAL(openUrlRequest(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)),
 		     regressionTest, SLOT(slotOpenURL(QUrl,KParts::OpenUrlArguments,KParts::BrowserArguments)));
     QObject::connect(part->browserExtension(), SIGNAL(resizeTopLevelWidget(int,int)),
 		     regressionTest, SLOT(resizeTopLevelWidget(int,int)));
 
     bool result = false;
-    QStringList tests = parser->arguments("test");
+    QStringList tests = parser.arguments("test");
     // merge testcases specified on command line
-    for (; testcase_index < parser->remainingArguments().count(); testcase_index++)
-        tests << parser->remainingArguments().at(testcase_index);
+    for (; testcase_index < parser.remainingArguments().count(); testcase_index++)
+        tests << parser.remainingArguments().at(testcase_index);
     if (tests.count() > 0)
         foreach (QString test, tests) {
 	    result = regressionTest->runTests(test,true);
@@ -810,7 +811,7 @@ int main(int argc, char *argv[])
 	result = regressionTest->runTests();
 
     if (result) {
-	if (parser->isSet("genoutput")) {
+	if (parser.isSet("genoutput")) {
 	    printf("\nOutput generation completed.\n");
 	}
 	else {

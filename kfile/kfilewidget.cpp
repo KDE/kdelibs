@@ -1277,7 +1277,7 @@ void KFileWidgetPrivate::setLocationText( const QList<QUrl>& urlList )
     if ( urlList.count() > 1 ) {
         QString urls;
         foreach (const QUrl &url, urlList) {
-            urls += QString("\"%1\"").arg(relativePathOrUrl(currUrl, url));
+            urls += QString("\"%1\"").arg(relativePathOrUrl(currUrl, url)) + ' ';
         }
         urls = urls.left( urls.size() - 1 );
 

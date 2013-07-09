@@ -144,43 +144,8 @@ void KdePlatformTheme::loadPalettes()
     qDeleteAll(m_palettes);
     m_palettes.clear();
 
-    QPalette palette;
-
-    QList<QPalette::ColorGroup> groups;
-    groups << QPalette::Disabled << QPalette::Active << QPalette::Inactive;
-    foreach (QPalette::ColorGroup group, groups) {
-        KColorScheme windowScheme(group, KColorScheme::Window, KSharedConfig::openConfig("kdeglobals"));
-        palette.setBrush(group, QPalette::Window, windowScheme.background(KColorScheme::NormalBackground));
-        palette.setBrush(group, QPalette::WindowText, windowScheme.foreground(KColorScheme::NormalText));
-        palette.setBrush(group, QPalette::BrightText, windowScheme.foreground(KColorScheme::NegativeText));
-        palette.setBrush(group, QPalette::Link, windowScheme.foreground(KColorScheme::LinkText));
-        palette.setBrush(group, QPalette::LinkVisited, windowScheme.foreground(KColorScheme::VisitedText));
-
-        palette.setBrush(group, QPalette::Light, windowScheme.shade(KColorScheme::LightShade));
-        palette.setBrush(group, QPalette::Midlight, windowScheme.shade(KColorScheme::MidlightShade));
-        palette.setBrush(group, QPalette::Dark, windowScheme.shade(KColorScheme::DarkShade));
-        palette.setBrush(group, QPalette::Mid, windowScheme.shade(KColorScheme::MidShade));
-        palette.setBrush(group, QPalette::Shadow, windowScheme.shade(KColorScheme::ShadowShade));
-
-        KColorScheme viewScheme(group, KColorScheme::View, KSharedConfig::openConfig("kdeglobals"));
-        palette.setBrush(group, QPalette::Base, viewScheme.background(KColorScheme::NormalBackground));
-        palette.setBrush(group, QPalette::AlternateBase, viewScheme.background(KColorScheme::AlternateBackground));
-        palette.setBrush(group, QPalette::Text, viewScheme.foreground(KColorScheme::NormalText));
-
-        KColorScheme tooltipScheme(group, KColorScheme::Tooltip, KSharedConfig::openConfig("kdeglobals"));
-        palette.setBrush(group, QPalette::ToolTipBase, tooltipScheme.background(KColorScheme::NormalBackground));
-        palette.setBrush(group, QPalette::ToolTipText, tooltipScheme.foreground(KColorScheme::NormalText));
-
-        KColorScheme buttonScheme(group, KColorScheme::Button, KSharedConfig::openConfig("kdeglobals"));
-        palette.setBrush(group, QPalette::Button, buttonScheme.background(KColorScheme::NormalBackground));
-        palette.setBrush(group, QPalette::ButtonText, buttonScheme.foreground(KColorScheme::NormalText));
-
-        KColorScheme selectionScheme(group, KColorScheme::Selection, KSharedConfig::openConfig("kdeglobals"));
-        palette.setBrush(group, QPalette::Highlight, selectionScheme.background(KColorScheme::NormalBackground));
-        palette.setBrush(group, QPalette::HighlightedText, selectionScheme.foreground(KColorScheme::NormalText));
-    }
-
-    m_palettes[SystemPalette] = new QPalette(palette);
+    KSharedConfig::Ptr globals = KSharedConfig::openConfig("kdeglobals");
+    m_palettes[SystemPalette] = new QPalette(KColorScheme::createApplicationPalette(globals));
 }
 
 void KdePlatformTheme::loadFonts()

@@ -29,13 +29,25 @@ if (WIN32)
     set(kcoreaddons_OPTIONAL_SRCS
         ${kcoreaddons_OPTIONAL_SRCS}
         text/kmacroexpander_win.cpp
+        util/kshell_win.cpp
     )
+    if(NOT WINCE)
+        LIST(APPEND kcoreaddons_OPTIONAL_SRCS
+           util/kuser_win.cpp
+        )
+    else(NOT WINCE)
+        LIST(APPEND kcoreaddons_OPTIONAL_SRCS
+           util/kuser_wince.cpp
+        )
+    endif(NOT WINCE)
 endif ()
 
 if (UNIX)
     set(kcoreaddons_OPTIONAL_SRCS
         ${kcoreaddons_OPTIONAL_SRCS}
         text/kmacroexpander_unix.cpp
+        util/kuser_unix.cpp
+        util/kshell_unix.cpp
     )
 endif ()
 
@@ -54,17 +66,19 @@ set(libkcoreaddons_SRCS
     randomness/krandomsequence.cpp
     text/kmacroexpander.cpp
     text/kstringhandler.cpp
+    util/kshell.cpp
     ${kcoreaddons_OPTIONAL_SRCS}
 )
 
 
 set(kcoreaddons_INCLUDE_DIRS
+    ${CMAKE_CURRENT_SOURCE_DIR}/caching/
     ${CMAKE_CURRENT_BINARY_DIR}/io/
     ${CMAKE_CURRENT_SOURCE_DIR}/io/
     ${CMAKE_CURRENT_SOURCE_DIR}/jobs/
     ${CMAKE_CURRENT_SOURCE_DIR}/randomness/
     ${CMAKE_CURRENT_SOURCE_DIR}/text/
-    ${CMAKE_CURRENT_SOURCE_DIR}/caching/
+    ${CMAKE_CURRENT_SOURCE_DIR}/util/
 )
 
 add_library(KCoreAddons ${libkcoreaddons_SRCS})
@@ -103,6 +117,8 @@ install(FILES
     randomness/krandomsequence.h
     text/kmacroexpander.h
     text/kstringhandler.h
+    util/kuser.h
+    util/kshell.h
     ${CMAKE_CURRENT_BINARY_DIR}/kcoreaddons_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -179,15 +179,6 @@ public:
     KLineEdit* q;
 };
 
-QStyle *KLineEditStyle::style() const
-{
-    if (m_subStyle) {
-        return m_subStyle.data();
-    }
-
-    return QProxyStyle::baseStyle();
-}
-
 QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *option, const QWidget *widget) const
 {
   if (element == SE_LineEditContents) {
@@ -199,7 +190,7 @@ QRect KLineEditStyle::subElementRect(SubElement element, const QStyleOption *opt
     }
 
     unconstThis->m_sentinel = true;
-    QStyle *s = m_subStyle ? m_subStyle.data() : style();
+    QStyle *s = m_subStyle ? m_subStyle.data() : baseStyle();
     QRect rect = s->subElementRect(SE_LineEditContents, option, widget);
     unconstThis->m_sentinel = false;
 
@@ -256,7 +247,7 @@ void KLineEdit::initWidget()
     if ( !d->previousHighlightColor.isValid() )
       d->previousHighlightColor=p.color(QPalette::Normal,QPalette::Highlight);
 
-    d->style = new KLineEditStyle(this);
+    d->style = new KLineEditStyle(style());
     setStyle(d->style.data());
 
     connect(this, SIGNAL(textChanged(QString)), this, SLOT(_k_textChanged(QString)));
@@ -1364,7 +1355,7 @@ bool KLineEdit::event( QEvent* ev )
             QLatin1String(style()->metaObject()->className()) != d->lastStyleClass) {
             KLineEditStyle *kleStyle = d->style.data();
             if (!kleStyle) {
-                d->style = kleStyle = new KLineEditStyle(this);
+                d->style = kleStyle = new KLineEditStyle(style());
             }
 
             kleStyle->m_subStyle = style();

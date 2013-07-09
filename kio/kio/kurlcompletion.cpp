@@ -37,6 +37,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
+#include <QtCore/QDebug>
 #include <qurlpathinfo.h>
 #include <qplatformdefs.h> // QT_LSTAT, QT_STAT, QT_STATBUF
 
@@ -473,7 +474,8 @@ void KUrlCompletionPrivate::MyURL::init(const QString& _url, const QUrl& cwd)
             if (cwd.isEmpty()) {
                 m_kurl = QUrl(url_copy);
             } else {
-                m_kurl = cwd.resolved(QUrl(url_copy));
+                m_kurl = cwd;
+                m_kurl.setPath(m_kurl.path() + '/' + url_copy);
             }
         }
     }
@@ -593,10 +595,16 @@ QString KUrlCompletion::makeCompletion(const QString& text)
 
     // Set d->prepend to the original URL, with the filename [and ref/query] stripped.
     // This is what gets prepended to the directory-listing matches.
-    int toRemove = url.file().length() - url.kurl().encodedQuery().length();
-    if (url.kurl().hasFragment())
-        toRemove += url.kurl().fragment().length() + 1;
-    d->prepend = text.left(text.length() - toRemove);
+    if (url.isURL()) {
+        QUrl directoryUrl(url.kurl());
+        directoryUrl.setQuery(QString());
+        directoryUrl.setFragment(QString());
+        directoryUrl.setPath(url.dir());
+        d->prepend = directoryUrl.toString();
+    } else {
+        d->prepend = text.left(text.length() - url.file().length());
+    }
+
     d->complete_url = url.isURL();
 
     QString aMatch;

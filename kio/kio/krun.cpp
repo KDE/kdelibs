@@ -45,10 +45,10 @@
 #include <QDebug>
 
 #include <kiconloader.h>
+#include <kjobuidelegate.h>
 #include <kmimetypetrader.h>
 #include "kio/jobclasses.h" // for KIO::JobFlags
 #include "kio/job.h"
-#include "kio/jobuidelegate.h"
 #include "kio/global.h"
 #include "kio/scheduler.h"
 #include "kio/netaccess.h"
@@ -75,7 +75,6 @@
 #include <kdesktopfile.h>
 #include <kmacroexpander.h>
 #include <kshell.h>
-#include <QTextDocument>
 #include <kconfiggroup.h>
 #include <kstandardguiitem.h>
 #include <kguiitem.h>
@@ -161,7 +160,7 @@ bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool
     bool noAuth = false;
     if (_mimetype == QLatin1String("inode/directory-locked")) {
         KMessageBoxWrapper::error(window,
-                                  i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", Qt::escape(u.toDisplayString())));
+                                  i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", u.toDisplayString().toHtmlEscaped()));
         return false;
     }
     else if (_mimetype == QLatin1String("application/x-desktop")) {
@@ -196,12 +195,12 @@ bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool
     if (noRun) {
         KMessageBox::sorry(window,
                            i18n("<qt>The file <b>%1</b> is an executable program. "
-                                "For safety it will not be started.</qt>", Qt::escape(u.toDisplayString())));
+                                "For safety it will not be started.</qt>", u.toDisplayString().toHtmlEscaped()));
         return false;
     }
     if (noAuth) {
         KMessageBoxWrapper::error(window,
-                                  i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", Qt::escape(u.toDisplayString())));
+                                  i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", u.toDisplayString().toHtmlEscaped()));
         return false;
     }
 
@@ -342,7 +341,7 @@ KRunMX2::subst(int option, const QUrl &url, QStringList &ret)
 {
     switch (option) {
     case 'u':
-        ret << ((url.isLocalFile() && url.fragment().isNull() && url.encodedQuery().isNull()) ?
+        ret << ((url.isLocalFile() && url.fragment().isNull() && url.query().isNull()) ?
                 QDir::toNativeSeparators(url.toLocalFile())  : url.toString());
         break;
     case 'd':
@@ -1199,7 +1198,7 @@ void KRun::init()
             KMessageBoxWrapper::error(d->m_window,
                                       i18n("<qt>Unable to run the command specified. "
                                       "The file or folder <b>%1</b> does not exist.</qt>" ,
-                                      Qt::escape(localPath)));
+                                      localPath.toHtmlEscaped()));
             d->m_showingDialog = false;
             d->m_bFault = true;
             d->m_bFinished = true;

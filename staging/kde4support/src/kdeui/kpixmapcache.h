@@ -26,6 +26,7 @@
 #include <QtCore/QList>
 #include <QtCore/QSet>
 #include <QtCore/QSize>
+#include <QtCore/QDateTime>
 
 class QString;
 class QPixmap;
@@ -148,14 +149,14 @@ public:
      * must set the timestamp if it to be used.
      * @return Timestamp of the cache, set using the setTimestamp() method.
      */
-    unsigned int timestamp() const;
+    QDateTime timestamp() const;
 
     /**
      * Sets the timestamp of app-specific cache. It's saved in the cache file
      * and can later be retrieved using the timestamp() method.
      * By default the timestamp is set to the cache creation time.
      */
-    void setTimestamp(unsigned int time);
+    void setTimestamp(const QDateTime &time);
 
     /**
      * Sets whether QPixmapCache (memory caching) should be used in addition

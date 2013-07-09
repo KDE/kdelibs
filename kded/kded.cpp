@@ -555,6 +555,8 @@ void Kded::recreateDone()
    {
       m_pTimer->start(2000);
       m_recreateCount = m_recreateRequests.count();
+   } else {
+       initModules();
    }
 }
 
@@ -860,8 +862,6 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 
      //if (bCheckHostname)
      //    (void) new KHostnameD(HostnamePollInterval); // Watch for hostname changes
-
-     kded->initModules();
 
      int result = app.exec(); // keep running
 

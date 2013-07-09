@@ -30,9 +30,7 @@ KDECORE_UNIT_TESTS(
  klocaletimeformattest
  kmountpointtest
  cplusplustest
- kshelltest
  ktimezonestest
- ksharedptrtest
  kdatetimetest
  kautostarttest
  kprocesstest

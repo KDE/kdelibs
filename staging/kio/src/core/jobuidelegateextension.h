@@ -62,7 +62,7 @@ enum SkipDialog_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
  * \li asking what to do in case of a conflict while copying/moving files or directories
  * \li asking what to do in case of an error while copying/moving files or directories
  * \li asking for confirmation before deleting files or directories
- * since 5.0
+ * @since 5.0
  */
 class KIOCORE_EXPORT JobUiDelegateExtension
 {

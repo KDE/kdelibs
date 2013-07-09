@@ -21,6 +21,7 @@ set(kiocore_SRCS
   kprotocolinfofactory.cpp
   jobtracker.cpp
   jobuidelegateextension.cpp
+  jobuidelegatefactory.cpp
 )
 
 if (UNIX)
@@ -52,6 +53,7 @@ target_link_libraries(kiocore
  Qt5::DBus
  Qt5::Concurrent
  ${kdeqt5staging_LIBRARIES} # Needed QUrlPathInfo
+ ${KDBusAddons_LIBRARIES} # KDBusConnectionPool
 )
 
 if(ACL_FOUND)
@@ -79,6 +81,7 @@ install( FILES
   metadata.h
   udsentry.h
   jobuidelegateextension.h
+  jobuidelegatefactory.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)

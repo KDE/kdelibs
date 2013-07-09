@@ -61,7 +61,7 @@ public:
     static inline FileJob *newJob(const QUrl &url, const QByteArray &packedArgs)
     {
         FileJob *job = new FileJob(*new FileJobPrivate(url, packedArgs));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         return job;
     }
 };

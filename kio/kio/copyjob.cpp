@@ -34,9 +34,10 @@
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
+#include <kio/renamedialog.h>
 
-#include "jobuidelegate.h" // GUI!!!
 #include <jobuidelegateextension.h>
+#include <kio/jobuidelegatefactory.h>
 
 #include <kdirnotify.h>
 
@@ -244,7 +245,7 @@ public:
                                   CopyJob::CopyMode mode, bool asMethod, JobFlags flags)
     {
         CopyJob *job = new CopyJob(*new CopyJobPrivate(src,dest,mode,asMethod));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         if (flags & KIO::Overwrite) {
@@ -348,7 +349,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
                 path = QFileInfo(path).absolutePath();
             }
             KFileSystemType::Type fsType = KFileSystemType::fileSystemType( path );
-            if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb ) {
+            if ( fsType != KFileSystemType::Nfs && fsType != KFileSystemType::Smb  && fsType != KFileSystemType::Ramfs ) {
                 m_freeSpace = KDiskFreeSpaceInfo::freeSpaceInfo( path ).available();
             }
             //TODO actually preliminary check is even more valuable for slow NFS/SMB mounts,

@@ -48,7 +48,7 @@ public:
     static inline MkdirJob *newJob(const QUrl& url, int command, const QByteArray &packedArgs)
     {
         MkdirJob *job = new MkdirJob(*new MkdirJobPrivate(url, command, packedArgs));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         return job;
     }
 };

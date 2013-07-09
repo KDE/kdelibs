@@ -19,8 +19,8 @@
 
 #include <QtTest/QtTest>
 #include <ktimezonewidget.h>
+#include <ksystemtimezone.h>
 #include <kconfiggroup.h>
-#include <QtDBus/QtDBus>
 #include "../../kdecore/tests/ktimezonestest_p.h"
 
 class KTimeZoneWidgetTest : public QObject
@@ -34,18 +34,18 @@ private Q_SLOTS:
 
     void initTestCase()
     {
-        mTestData.setupTimeZoneTest(); // see ktimezonestest_p.h
+        //mTestData.setupTimeZoneTest(); // see ktimezonestest_p.h
     }
 
     void cleanupTestCase()
     {
-        mTestData.cleanupTimeZoneTest();
+        //mTestData.cleanupTimeZoneTest();
     }
 
     void testSetSelected()
     {
-        if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
-            QSKIP("kded5 not running");
+        if (!KSystemTimeZones::isTimeZoneDaemonAvailable()) {
+            QSKIP("ktimezoned not available, check that kded5 is running and /modules/ktimezoned is available");
         }
 
         KTimeZoneWidget tzw;
@@ -75,9 +75,9 @@ private Q_SLOTS:
 
     void testCheckableItems()
     {
-        //if (!QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.kded5")) {
-        //    QSKIP("kded5 not running");
-        //}
+        if (!KSystemTimeZones::isTimeZoneDaemonAvailable()) {
+            QSKIP("ktimezoned not available, check that kded5 is running and /modules/ktimezoned is available");
+        }
 
         KTimeZoneWidget tzw;
         tzw.setItemsCheckable(true);
@@ -102,7 +102,9 @@ private Q_SLOTS:
         QCOMPARE(tzw.selection(), QStringList() << "America/Los_Angeles" << "Europe/Paris");
     }
 private:
-    TimeZoneTestData mTestData;
+    // Because we don't use a separate KDEHOME, we can't use TimeZoneTestData.
+    // It would remove ktimezonedrc from the user!
+    //TimeZoneTestData mTestData;
 };
 
 // Note: no QStandardPaths::enableTestMode(true) here.

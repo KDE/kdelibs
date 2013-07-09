@@ -47,7 +47,6 @@
 #include <config-kdeui.h>
 #include <config-ksycoca.h>
 
-#include <time.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
@@ -128,7 +127,7 @@ struct KPixmapCacheIndexHeader
 
     // These belong only to this header type.
     quint32 cacheId;
-    time_t  timestamp;
+    QDateTime  timestamp;
 };
 
 class KPCMemoryDevice : public QIODevice
@@ -273,7 +272,7 @@ public:
     QString mLockFileName;
     QMutex mMutex;
 
-    quint32 mTimestamp;
+    QDateTime mTimestamp;
     quint32 mCacheId;  // Unique id, will change when cache is recreated
     int mCacheLimit;
     RemoveStrategy mRemoveStrategy:4;
@@ -1040,13 +1039,13 @@ void KPixmapCache::setValid(bool valid)
     d->mValid = valid;
 }
 
-unsigned int KPixmapCache::timestamp() const
+QDateTime KPixmapCache::timestamp() const
 {
     ensureInited();
     return d->mTimestamp;
 }
 
-void KPixmapCache::setTimestamp(unsigned int ts)
+void KPixmapCache::setTimestamp(const QDateTime &ts)
 {
     ensureInited();
     d->mTimestamp = ts;
@@ -1149,8 +1148,8 @@ bool KPixmapCache::recreateCacheFiles()
         return false;
     }
 
-    d->mCacheId = ::time(0);
-    d->mTimestamp = ::time(0);
+    d->mCacheId = QDateTime::currentDateTime().toTime_t();
+    d->mTimestamp = QDateTime::currentDateTime();
 
     // We can't know the full size until custom headers written.
     // mmapFiles() will take care of correcting the size.
@@ -1426,7 +1425,7 @@ QPixmap KPixmapCache::loadFromFile(const QString& filename)
     QFileInfo fi(filename);
     if (!fi.exists()) {
         return QPixmap();
-    } else if (fi.lastModified().toTime_t() > timestamp()) {
+    } else if (fi.lastModified() > timestamp()) {
         // Cache is obsolete, will be regenerated
         discard();
     }
@@ -1452,7 +1451,7 @@ QPixmap KPixmapCache::loadFromSvg(const QString& filename, const QSize& size)
     QFileInfo fi(filename);
     if (!fi.exists()) {
         return QPixmap();
-    } else if (fi.lastModified().toTime_t() > timestamp()) {
+    } else if (fi.lastModified() > timestamp()) {
         // Cache is obsolete, will be regenerated
         discard();
     }

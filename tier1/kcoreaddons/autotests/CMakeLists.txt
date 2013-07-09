@@ -29,5 +29,6 @@ kcoreaddons_unit_tests(
     kurlmimedatatest
     kdirwatch_unittest
     kshareddatacachetest
+    kshelltest
 )
 

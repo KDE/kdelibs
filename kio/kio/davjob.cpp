@@ -29,7 +29,6 @@
 #include "job.h"
 #include "job_p.h"
 
-#include "jobuidelegate.h"
 
 using namespace KIO;
 
@@ -52,7 +51,7 @@ public:
                                  JobFlags flags)
     {
         DavJob *job = new DavJob(*new DavJobPrivate(url), method, request);
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         return job;

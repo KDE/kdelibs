@@ -2118,10 +2118,10 @@ KDateTime KDateTime::fromString(const QString &string, TimeFormat format, bool *
             }
             return KDateTime(d, t, Spec(spec, offset));
         }
-        case QtTextDate:    // format is Wdy Mth DD [hh:mm:ss] YYYY [±hhmm]
+        case QtTextDate:    // format is Wdy Mth DD [hh:mm:ss.zzz] YYYY [±hhmm]
         {
             int offset = 0;
-            QRegExp rx(QString::fromLatin1("^(\\S+\\s+\\S+\\s+\\d\\d\\s+(\\d\\d:\\d\\d:\\d\\d\\s+)?\\d\\d\\d\\d)\\s*(.*)$"));
+            QRegExp rx(QString::fromLatin1("^(\\S+\\s+\\S+\\s+\\d\\d\\s+(\\d\\d:\\d\\d:\\d\\d.\\d\\d\\d\\s+)?\\d\\d\\d\\d)\\s*(.*)$"));
             if (str.indexOf(rx) < 0)
                 break;
             QStringList parts = rx.capturedTexts();

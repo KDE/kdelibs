@@ -85,32 +85,32 @@ int main( int argc, char **argv ) {
     const char version[] = "0.5";
     app.setApplicationVersion(version);
 
-    QCommandLineParser *parser = new QCommandLineParser;
-    parser->addVersionOption();
-    parser->addHelpOption(description);
+    QCommandLineParser parser;
+    parser.addVersionOption();
+    parser.addHelpOption(description);
     //options.add("+file", ki18n( "Input file" ) );
-    parser->addOption(QCommandLineOption(QStringList() << "o", QCoreApplication::translate("main", "Output file"), "file"));
-    parser->addOption(QCommandLineOption(QStringList() << "n", QCoreApplication::translate("main", "Name of the plugin class to generate"), "plugin name", false, QStringList() << "WidgetsPlugin"));
-    parser->addOption(QCommandLineOption(QStringList() << "g", QCoreApplication::translate("main", "Default widget group name to display in designer"), "group", false, QStringList() << "Custom"));
-
+    parser.addOption(QCommandLineOption(QStringList() << "o", QCoreApplication::translate("main", "Output file"), "file"));
+    parser.addOption(QCommandLineOption(QStringList() << "n", QCoreApplication::translate("main", "Name of the plugin class to generate"), "plugin name", "WidgetsPlugin"));
+    parser.addOption(QCommandLineOption(QStringList() << "g", QCoreApplication::translate("main", "Default widget group name to display in designer"), "group", "Custom"));
+    parser.process(app);
 
     //K4AboutData about( "makekdewidgets", 0, ki18n( "makekdewidgets" ), version, description, K4AboutData::License_GPL, ki18n("(C) 2004-2005 Ian Reinhart Geiser"), KLocalizedString(), 0, "geiseri@kde.org" );
     //about.addAuthor( ki18n("Ian Reinhart Geiser"), KLocalizedString(), "geiseri@kde.org" );
     //about.addAuthor( ki18n("Daniel Molkentin"), KLocalizedString(), "molkentin@kde.org" );
 
-    if (parser->remainingArguments().count() < 1) {
-        parser->showHelp();
+    if (parser.remainingArguments().count() < 1) {
+        parser.showHelp();
         return 1;
     }
 
-    QFileInfo fi(parser->remainingArguments().at(0));
+    QFileInfo fi(parser.remainingArguments().at(0));
 
-    QString outputFile = parser->argument( "o" );
-    QString pluginName = parser->argument( "n" );
-    QString group = parser->argument( "g" );
+    QString outputFile = parser.value( "o" );
+    QString pluginName = parser.value( "n" );
+    QString group = parser.value( "g" );
     QString fileName = fi.absoluteFilePath();
 
-    if ( parser->isSet( "o" ) ) {
+    if ( parser.isSet( "o" ) ) {
         QFile output( outputFile );
         if ( output.open( QIODevice::WriteOnly ) ) {
             QTextStream ts( &output );

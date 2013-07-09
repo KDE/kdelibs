@@ -18,16 +18,14 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 KDEUI_UNIT_TESTS(
   kactioncollectiontest
   kactioncategorytest
-  kfindtest
   kglobalsettingstest
   kmainwindow_unittest
-  ktextedit_unittest
-  kreplacetest
   kxmlgui_unittest
   ktoolbar_unittest
   krichtextedittest
   kconfigdialog_unittest
   kcolorbuttontest
+  klinkitemselectionmodeltest
 )
 
 KDEUI_EXECUTABLE_TESTS(
@@ -38,18 +36,17 @@ KDEUI_EXECUTABLE_TESTS(
   kglobalsettingsclient # helper program for kglobalsettingstest
   kmainwindowtest
   kmainwindowrestoretest
-  kmessagewidgettest
-  kmodifierkeyinfotest
   knewpassworddialogtest
   knotificationrestrictionstest
   kpopuptest
   krulertest
-  ktextedittest
   ktoolbartest
   kwindowtest
   kxmlguitest
   kxmlguiwindowtest
 )
+
+add_subdirectory(krichtexteditor)
 
 if (X11_FOUND)
 find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)

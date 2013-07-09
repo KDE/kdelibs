@@ -26,8 +26,6 @@
 #include <qtemporarydir.h>
 #include <QtTest>
 #include <sys/stat.h>
-#include <sys/time.h>
-#include <time.h>
 #include <unistd.h>
 
 // Debugging notes: to see which inotify signals are emitted, either set s_verboseDebug=true
@@ -105,7 +103,7 @@ protected Q_SLOTS: // internal slots
 private:
     void waitUntilMTimeChange(const QString& path);
     void waitUntilNewSecond();
-    void waitUntilAfter(time_t ctime);
+    void waitUntilAfter(const QDateTime &ctime);
     QList<QVariantList> waitForDirtySignal(KDirWatch& watch, int expected);
     QList<QVariantList> waitForCreatedSignal(KDirWatch& watch, int expected);
     QList<QVariantList> waitForDeletedSignal(KDirWatch& watch, int expected);
@@ -154,16 +152,6 @@ void KDirWatch_UnitTest::removeFile(int num)
     QFile::remove(m_path + fileName);
 }
 
-static QByteArray printableTime(time_t mtime)
-{
-    struct tm* tmp = localtime(&mtime);
-    char outstr[200];
-    if (strftime(outstr, sizeof(outstr), "%T", tmp) == 0)
-        return "ERROR calling strftime!";
-    return outstr;
-}
-
-
 void KDirWatch_UnitTest::waitUntilMTimeChange(const QString& path)
 {
    // Wait until the current second is more than the file's mtime
@@ -171,39 +159,34 @@ void KDirWatch_UnitTest::waitUntilMTimeChange(const QString& path)
 
     QFileInfo fi(path);
     QVERIFY(fi.exists());
-    const time_t ctime = qMax(fi.lastModified(), fi.created()).toTime_t();
+    const QDateTime ctime = qMax(fi.lastModified(), fi.created());
     waitUntilAfter(ctime);
 
 }
 
 void KDirWatch_UnitTest::waitUntilNewSecond()
 {
-    struct timeval now_tv;
-    gettimeofday(&now_tv, NULL);
-    waitUntilAfter(now_tv.tv_sec);
+    QDateTime now = QDateTime::currentDateTime();
+    waitUntilAfter(now);
 }
 
-void KDirWatch_UnitTest::waitUntilAfter(time_t ctime)
+void KDirWatch_UnitTest::waitUntilAfter(const QDateTime &ctime)
 {
     int totalWait = 0;
-    struct timeval now_tv;
+    QDateTime now;
     Q_FOREVER {
-        gettimeofday(&now_tv, NULL);
-        // The mtime only has a granularity of a second, that's the whole issue;
-        // We can't just QTest::qWait(now_tv.tv_sec - stat_buf.st_ctime), that would
-        // be a full second every time.
-
-        if (now_tv.tv_sec == ctime) {
+        now = QDateTime::currentDateTime();
+        if (now.toTime_t() == ctime.toTime_t()) { // truncate milliseconds
             totalWait += 50;
             QTest::qWait(50);
         } else {
-            QVERIFY(now_tv.tv_sec > ctime); // can't go back in time ;)
+            QVERIFY(now > ctime); // can't go back in time ;)
             QTest::qWait(50); // be safe
             break;
         }
     }
     //if (totalWait > 0)
-    qDebug() << "Waited" << totalWait << "ms so that now" << printableTime(now_tv.tv_sec) << "is >" << printableTime(ctime);
+    qDebug() << "Waited" << totalWait << "ms so that now" << now.toString(Qt::ISODate) << "is >" << ctime.toString(Qt::ISODate);
 }
 
 // helper method: modifies a file
@@ -221,9 +204,9 @@ void KDirWatch_UnitTest::appendToFile(const QString& path)
     if (0) {
         QFileInfo fi(path);
         QVERIFY(fi.exists());
-        qDebug() << "After append: file ctime=" << printableTime(fi.lastModified().toTime_t());
+        qDebug() << "After append: file ctime=" << fi.lastModified().toString(Qt::ISODate);
         QVERIFY(fi.exists());
-        qDebug() << "After append: directory mtime=" << printableTime(fi.created().toTime_t());
+        qDebug() << "After append: directory mtime=" << fi.created().toString(Qt::ISODate);
     }
 }
 

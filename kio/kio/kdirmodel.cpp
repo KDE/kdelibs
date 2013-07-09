@@ -22,9 +22,9 @@
 #include "kfileitem.h"
 #include <kiconloader.h>
 #include <klocalizedstring.h>
+#include <kjobuidelegate.h>
 #include <kio/copyjob.h>
 #include <kio/fileundomanager.h>
-#include <kio/jobuidelegate.h>
 #include <kio/joburlcache_p.h>
 #include <kurlmimedata.h>
 #include <kiconloader.h>

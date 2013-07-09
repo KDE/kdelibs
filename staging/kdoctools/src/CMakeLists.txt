@@ -72,25 +72,25 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 
 # The cross compiling parts are commented out on purpose. Alex
 # if (CMAKE_CROSSCOMPILING)
-#    set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc4 from a native build")
+#    set(IMPORT_MEINPROC4_EXECUTABLE "${KDE_HOST_TOOLS_PATH}/ImportMeinProc4Executable.cmake" CACHE FILEPATH "Point it to the export file of meinproc5 from a native build")
 #    include(${IMPORT_MEINPROC4_EXECUTABLE})
 #
 # else (CMAKE_CROSSCOMPILING)
 
    set(meinproc_SRCS meinproc.cpp meinproc_common.cpp xslt.cpp xslt_kde.cpp )
 
-   kde4_add_executable(meinproc4 NOGUI ${meinproc_SRCS})
+   kde4_add_executable(meinproc5 NOGUI ${meinproc_SRCS})
 
-   target_link_libraries(meinproc4 kdeqt5staging ki18n ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
+   target_link_libraries(meinproc5 kdeqt5staging ki18n ${KArchive_LIBRARIES} ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
-   add_dependencies(meinproc4 docbookl10nhelper)
+   add_dependencies(meinproc5 docbookl10nhelper)
 
    # "export" this target too so we can use the LOCATION property of the imported target in
    # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
-   install(TARGETS meinproc4  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+   install(TARGETS meinproc5  EXPORT kdelibsToolsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 #    # export this binary for cross-compilation
-#    export(TARGETS meinproc4 FILE ${CMAKE_BINARY_DIR}/ImportMeinProc4Executable.cmake)
+#    export(TARGETS meinproc5 FILE ${CMAKE_BINARY_DIR}/ImportMeinProc4Executable.cmake)
 #
 # endif (CMAKE_CROSSCOMPILING)
 
@@ -101,13 +101,13 @@ set_source_files_properties(xslt.cpp PROPERTIES COMPILE_FLAGS -DSIMPLE_XSLT )
 if (NOT CMAKE_CROSSCOMPILING)
    set(meinproc_qt_SRCS meinproc_simple.cpp meinproc_common.cpp xslt.cpp )
 
-   kde4_add_executable(meinproc4_simple NOGUI ${meinproc_qt_SRCS})
+   kde4_add_executable(meinproc5_simple NOGUI ${meinproc_qt_SRCS})
 
-   target_link_libraries(meinproc4_simple kdeqt5staging Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES})
+   target_link_libraries(meinproc5_simple kdeqt5staging Qt5::Core ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES})
 
-   add_dependencies(meinproc4_simple docbookl10nhelper)
+   add_dependencies(meinproc5_simple docbookl10nhelper)
 
-   install(TARGETS meinproc4_simple ${INSTALL_TARGETS_DEFAULT_ARGS})
+   install(TARGETS meinproc5_simple ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 endif (NOT CMAKE_CROSSCOMPILING)
 

@@ -77,16 +77,13 @@ if (WIN32)
       kernel/ktoolinvocation_win.cpp
       localization/klocale_win.cpp
       util/kde_file_win.cpp
-      util/kshell_win.cpp
       date/ktimezone_win.cpp
    )
    if(NOT WINCE)
        LIST(APPEND kdecore_OPTIONAL_SRCS
-          util/kuser_win.cpp
        )
    else(NOT WINCE)
        LIST(APPEND kdecore_OPTIONAL_SRCS
-          util/kuser_wince.cpp
        )
    endif(NOT WINCE)
 endif (WIN32)
@@ -96,8 +93,6 @@ if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp
       localization/klocale_unix.cpp
-      util/kshell_unix.cpp
-      util/kuser_unix.cpp
    )
 endif (UNIX)
 
@@ -153,7 +148,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
-   util/kshell.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 
@@ -274,8 +268,6 @@ install(FILES
    util/kde_file.h
    util/kdedmodule.h
    util/klauncher_iface.h
-   util/kshell.h
-   util/kuser.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

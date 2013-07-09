@@ -1,38 +1,38 @@
 /****************************************************************************
 **
-** Copyright (C) 2012 author Laszlo Papp <lpapp@kde.org>
-** All rights reserved.
-** Contact: Nokia Corporation (qt-info@nokia.com)
+** Copyright (C) 2013 Laszlo Papp <lpapp@kde.org>
+** Contact: http://www.qt-project.org/legal
 **
 ** This file is part of the QtCore module of the Qt Toolkit.
 **
 ** $QT_BEGIN_LICENSE:LGPL$
-** GNU Lesser General Public License Usage
-** This file may be used under the terms of the GNU Lesser General Public
-** License version 2.1 as published by the Free Software Foundation and
-** appearing in the file LICENSE.LGPL included in the packaging of this
-** file. Please review the following information to ensure the GNU Lesser
-** General Public License version 2.1 requirements will be met:
-** http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.  For licensing terms and
+** conditions see http://qt.digia.com/licensing.  For further information
+** use the contact form at http://qt.digia.com/contact-us.
 **
-** In addition, as a special exception, Nokia gives you certain additional
-** rights. These rights are described in the Nokia Qt LGPL Exception
+** GNU Lesser General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU Lesser
+** General Public License version 2.1 as published by the Free Software
+** Foundation and appearing in the file LICENSE.LGPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU Lesser General Public License version 2.1 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html.
+**
+** In addition, as a special exception, Digia gives you certain additional
+** rights.  These rights are described in the Digia Qt LGPL Exception
 ** version 1.1, included in the file LGPL_EXCEPTION.txt in this package.
 **
 ** GNU General Public License Usage
-** Alternatively, this file may be used under the terms of the GNU General
-** Public License version 3.0 as published by the Free Software Foundation
-** and appearing in the file LICENSE.GPL included in the packaging of this
-** file. Please review the following information to ensure the GNU General
-** Public License version 3.0 requirements will be met:
-** http://www.gnu.org/copyleft/gpl.html.
-**
-** Other Usage
-** Alternatively, this file may be used in accordance with the terms and
-** conditions contained in a signed written agreement between you and Nokia.
-**
-**
-**
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3.0 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL included in the
+** packaging of this file.  Please review the following information to
+** ensure the GNU General Public License version 3.0 requirements will be
+** met: http://www.gnu.org/copyleft/gpl.html.
 **
 **
 ** $QT_END_LICENSE$
@@ -49,18 +49,14 @@ class QCommandLineOptionPrivate : public QSharedData
 {
 public:
     inline QCommandLineOptionPrivate()
-        : isRequired(false)
     { }
 
     //! The list of names used for this option.
-    QStringList nameSet;
+    QStringList names;
 
     //! The documentation name for the value, if one is expected
     //! Example: "-o <file>" means valueName == "file"
     QString valueName;
-
-    //! Whether the option is required or optional.
-    bool isRequired;
 
     //! The description used for this option.
     QString description;
@@ -72,39 +68,73 @@ public:
 /*!
     \since 5.2
     \class QCommandLineOption
-    \brief The QCommandLineOption class provides a means for command line option
+    \brief The QCommandLineOption class defines a possible command-line option.
+    \inmodule QtCore
+    \ingroup shared
+    \ingroup tools
 
     This class is used to describe an option on the command line. It allows
     different ways of defining the same option with multiple aliases possible.
-    It is also used to describe how the option is used - it may be a flag used
-    once or more, or take an argument or multiple.
+    It is also used to describe how the option is used - it may be a flag (e.g. \c{-v})
+    or take an argument (e.g. \c{-o file}).
+
+    Examples:
+    \snippet code/src_corelib_tools_qcommandlineoption.cpp 0
 
     \sa QCommandLineParser
 */
 
 /*!
-    Constructs a command line option object
+    Constructs a command line option object with the given arguments.
+
+    The name of the option is set to \a name and the description to \a description.
+    It is customary to add a "." at the end of the description.
+    In addition, the \a valueName can be set if the option expects a value.
+    The default value for the option is set to \a defaultValue.
+
+    \sa setNames(), setDescription(), setValueName(), setDefaultValues()
 */
-QCommandLineOption::QCommandLineOption()
+QCommandLineOption::QCommandLineOption(const QString &name, const QString &description,
+                                       const QString &valueName,
+                                       const QString &defaultValue)
     : d(new QCommandLineOptionPrivate)
 {
+    setNames(QStringList(name));
+    setValueName(valueName);
+    setDescription(description);
+    setDefaultValue(defaultValue);
 }
 
 /*!
     Constructs a command line option object with the given arguments.
+
+    This overload allows to set multiple names for the option, for instance
+    \c{o} and \c{output}.
+
+    The names of the option are set to \a names and the description to \a description.
+    It is customary to add a "." at the end of the description.
+    In addition, the \a valueName can be set if the option expects a value.
+    The default value for the option is set to \a defaultValue.
+
+    \sa setNames(), setDescription(), setValueName(), setDefaultValues()
 */
 QCommandLineOption::QCommandLineOption(const QStringList &names, const QString &description,
-                                       const QString &valueName, bool required,
-                                       const QStringList &defaultValues)
+                                       const QString &valueName,
+                                       const QString &defaultValue)
     : d(new QCommandLineOptionPrivate)
 {
-    setRequired(required);
     setNames(names);
     setValueName(valueName);
     setDescription(description);
-    setDefaultValues(defaultValues);
+    setDefaultValue(defaultValue);
 }
 
+/*!
+    Constructs a QCommandLineOption object that is a copy of the QCommandLineOption
+    object \a other.
+
+    \sa operator=()
+*/
 QCommandLineOption::QCommandLineOption(const QCommandLineOption &other):
     d(other.d)
 {
@@ -117,36 +147,40 @@ QCommandLineOption::~QCommandLineOption()
 {
 }
 
-QCommandLineOption&
-QCommandLineOption::operator=(const QCommandLineOption &other)
+/*!
+    Makes a copy of the \a other object and assigns it to this QCommandLineOption
+    object.
+*/
+QCommandLineOption &QCommandLineOption::operator=(const QCommandLineOption &other)
 {
     d = other.d;
     return *this;
 }
 
-bool QCommandLineOption::operator==(const QCommandLineOption &other) const
-{
-    return (d->nameSet == other.names() && d->valueName == other.valueName()
-            && d->isRequired == other.required()
-            && d->description == other.description() && d->defaultValues == other.defaultValues());
-}
+/*!
+    \fn void QCommandLineOption::swap(QCommandLineOption &other)
+
+    Swaps option \a other with this option. This operation is very
+    fast and never fails.
+*/
 
 /*!
-    Return the names set for this option.
+    Returns the names set for this option.
 
     \sa setNames()
  */
 QStringList QCommandLineOption::names() const
 {
-    return d->nameSet;
+    return d->names;
 }
 
 /*!
-    Set the list of names used for this option to \a names
+    Sets the list of names used for this option to \a names.
 
     The name can be either short or long. Any name in the list that is one
     character in length is a short name. Option names must not be empty,
-    must not start with a dash character, and cannot be repeated.
+    must not start with a dash or a slash character, must not contain a \c{=}
+    and cannot be repeated.
 
     \sa names()
  */
@@ -157,26 +191,28 @@ void QCommandLineOption::setNames(const QStringList &names)
             qWarning("Option names cannot be empty");
         else if (name.startsWith(QLatin1Char('-')))
             qWarning("Option names cannot start with a '-'");
-        else if (name.startsWith(QLatin1Char('?')))
-            qWarning("Option names cannot start with a '?'");
+        else if (name.startsWith(QLatin1Char('/')))
+            qWarning("Option names cannot start with a '/'");
+        else if (name.contains(QLatin1Char('=')))
+            qWarning("Option names cannot contain a '='");
         else
-            d->nameSet.append(name);
+            d->names.append(name);
     }
 }
 
 /*!
-    Set the name of the expected value, for the documentation.
+    Sets the name of the expected value, for the documentation, to \a valueName.
 
     Options without a value assigned have a boolean-like behavior:
-    either the user specifies --foobar or they don't.
+    either the user specifies --option or they don't.
 
-    Options with a value assigned, need to set a name for the expected value,
-    for the documentation of the option in the help output. An option with names "o" and "output",
-    and a value name of "file" will appear as  "-o, --output <file>".
+    Options with a value assigned need to set a name for the expected value,
+    for the documentation of the option in the help output. An option with names \c{o} and \c{output},
+    and a value name of \c{file} will appear as \c{-o, --output <file>}.
 
-    The application should call QCommandLineParser::argument() if it expects the
-    option to be present only once, and QCommandLineParser::arguments() if it expects
-    that option to be present multiple times.
+    Call QCommandLineParser::argument() if you expect the option to be present
+    only once, and QCommandLineParser::arguments() if you expect that option
+    to be present multiple times.
 
     \sa valueName()
  */
@@ -186,7 +222,7 @@ void QCommandLineOption::setValueName(const QString &valueName)
 }
 
 /*!
-    Return the name of the expected value.
+    Returns the name of the expected value.
 
     If empty, the option doesn't take a value.
 
@@ -198,35 +234,11 @@ QString QCommandLineOption::valueName() const
 }
 
 /*!
-    Set whether or not this option is required to \a required
+    Sets the description used for this option to \a description.
 
-    If this is set to true as required, the option needs to be set explicitely
-    and does not have a default value. Otherwise if it is set to false, this option
-    becomes optional and the user is not obligated to define it when running the
-    application.
+    It is customary to add a "." at the end of the description.
 
-    \sa required()
- */
-void QCommandLineOption::setRequired(bool required)
-{
-    d->isRequired = required;
-}
-
-/*!
-    Return if the option is required. The default value is false.
-
-    \sa setRequired()
- */
-bool QCommandLineOption::required() const
-{
-    return d->isRequired;
-}
-
-/*!
-    Set the description used for this option to \a description
-
-    The description is used for instance while prompting some help output to the
-    user of the application.
+    The description is used by QCommandLineParser::showHelp().
 
     \sa description()
  */
@@ -236,7 +248,7 @@ void QCommandLineOption::setDescription(const QString &description)
 }
 
 /*!
-    Return the description set for this option.
+    Returns the description set for this option.
 
     \sa setDescription()
  */
@@ -246,12 +258,30 @@ QString QCommandLineOption::description() const
 }
 
 /*!
-   Set the list of default values used for this option to \a defaultValues
+    Sets the default value used for this option to \a defaultValue.
 
-   The default values are used, if the user of the application does not specify
-   them explicitely via the command line or other user interface.
+    The default value is used if the user of the application does not specify
+    the option on the command line.
 
-   \sa defaultValues()
+    If \a defaultValue is empty, the option has no default values.
+
+    \sa defaultValues() setDefaultValues()
+ */
+void QCommandLineOption::setDefaultValue(const QString &defaultValue)
+{
+    if (defaultValue.isEmpty())
+        d->defaultValues.clear();
+    else
+        d->defaultValues = QStringList() << defaultValue;
+}
+
+/*!
+    Sets the list of default values used for this option to \a defaultValues.
+
+    The default values are used if the user of the application does not specify
+    the option on the command line.
+
+    \sa defaultValues() setDefaultValue()
  */
 void QCommandLineOption::setDefaultValues(const QStringList &defaultValues)
 {
@@ -259,7 +289,7 @@ void QCommandLineOption::setDefaultValues(const QStringList &defaultValues)
 }
 
 /*!
-    Return the default values set for this option.
+    Returns the default values set for this option.
 
     \sa setDefaultValues()
  */

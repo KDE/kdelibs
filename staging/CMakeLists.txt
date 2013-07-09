@@ -6,6 +6,7 @@ add_subdirectory(kconfigwidgets)
 add_subdirectory(kiconthemes)
 add_subdirectory(kjobwidgets)
 add_subdirectory(knotifications)
+add_subdirectory(ktextwidgets)
 add_subdirectory(xmlgui)
 
 add_subdirectory(kwallet)

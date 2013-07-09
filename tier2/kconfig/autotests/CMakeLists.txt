@@ -28,6 +28,7 @@ kconfigcore_unit_tests(
    kconfigtest
    kdesktopfiletest
    ksharedconfigtest
+   ksharedptrtest
 )
 
 # compile KEntryMap into the test since it's not exported

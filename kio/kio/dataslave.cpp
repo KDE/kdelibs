@@ -18,8 +18,8 @@
  *  Boston, MA 02110-1301, USA.
  **/
 
-#include "dataslave.h"
-#include "dataprotocol.h"
+#include "dataslave_p.h"
+#include "dataprotocol_p.h"
 #include "slavebase.h"
 
 #include <klocalizedstring.h>
@@ -30,7 +30,7 @@ using namespace KIO;
 
 #define KIO_DATA_POLL_INTERVAL 0
 
-// don't forget to sync DISPATCH_DECL in dataslave.h
+// don't forget to sync DISPATCH_DECL in dataslave_p.h
 #define DISPATCH_IMPL(type) \
 	void DataSlave::dispatch_##type() { \
 	  if (_suspended) { \
@@ -42,7 +42,7 @@ using namespace KIO;
 	    type(); \
 	}
 
-// don't forget to sync DISPATCH_DECL1 in dataslave.h
+// don't forget to sync DISPATCH_DECL1 in dataslave_p.h
 #define DISPATCH_IMPL1(type, paramtype, paramname) \
 	void DataSlave::dispatch_##type(paramtype paramname) { \
 	  if (_suspended) { \

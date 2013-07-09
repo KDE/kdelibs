@@ -63,8 +63,8 @@
 #include <kconfiggroup.h>
 #include <kdebug.h>
 #include <kiconloader.h>
-
-#include "kglobalsettings.h"
+#include <kcolorscheme.h>
+#include <kglobalsettings.h>
 
 #include <config-kdeui.h>
 
@@ -437,8 +437,7 @@ void KStyle::drawItemPixmap(QPainter *painter, const QRect &rect,
 }
 QPalette KStyle::standardPalette() const
 {
-    return KGlobalSettings::createApplicationPalette(
-        KSharedConfig::openConfig());
+    return KColorScheme::createApplicationPalette(KSharedConfig::openConfig());
 }
 
 QIcon KStyle::standardIcon(StandardPixmap standardIcon, const QStyleOption */*option*/,

@@ -11,7 +11,9 @@ endmacro()
 
 kwidgets_executable_tests(
     kcodecactiontest
+    klanguagebuttontest
     kmessagetest
     kmessageboxtest
     kselectactiontest
+    openurltest
 )

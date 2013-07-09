@@ -31,7 +31,6 @@
 #include <kcharsets.h>
 
 #include <qtextcodec.h>
-#include <qtextdocument.h> // Qt::escape
 #include <QApplication>
 
 
@@ -175,7 +174,7 @@ QString KNSBookmarkExporterImpl::folderAsString(const KBookmarkGroup &parent) co
          continue;
       }
 
-      QString text = Qt::escape(bk.fullText());
+      QString text = bk.fullText().toHtmlEscaped();
 
       if (bk.isGroup() ) {
          fstream << "<DT><H3 "

@@ -99,10 +99,8 @@ bool Job::addSubjob(KJob *jobBase)
         connect(job, SIGNAL(speed(KJob*,ulong)),
                 SLOT(slotSpeed(KJob*,ulong)));
 
-        if (ui() && job->ui()) {
-            job->setProperty("window", property("window")); // see KJobWidgets
-            job->setProperty("userTimestamp", property("userTimestamp")); // see KJobWidgets
-        }
+        job->setProperty("window", property("window")); // see KJobWidgets
+        job->setProperty("userTimestamp", property("userTimestamp")); // see KJobWidgets
     }
     return ok;
 }
@@ -392,17 +390,17 @@ void SimpleJobPrivate::start(Slave *slave)
                     SLOT(slotSpeed(ulong)) );
     }
 
-    if (ui() && ui()->window())
-    {
-        m_outgoingMetaData.insert("window-id", QString::number(q->property("window-id").toULongLong())); // see KJobWidgets::setWindow
+    const QVariant windowIdProp = q->property("window-id"); // see KJobWidgets::setWindow
+    if (windowIdProp.isValid()) {
+        m_outgoingMetaData.insert("window-id", QString::number(windowIdProp.toULongLong()));
     }
 
-    if (ui() && ui()->userTimestamp())
-    {
-        m_outgoingMetaData.insert("user-timestamp", QString::number(ui()->userTimestamp()));
+    const QVariant userTimestampProp = q->property("userTimestamp"); // see KJobWidgets::updateUserTimestamp
+    if (userTimestampProp.isValid()) {
+        m_outgoingMetaData.insert("user-timestamp", QString::number(userTimestampProp.toULongLong()));
     }
 
-    if (ui() == 0)              // not interactive
+    if (q->uiDelegate() == 0)              // not interactive
     {
         m_outgoingMetaData.insert("no-auth-prompt", "true");
     }
@@ -656,7 +654,7 @@ public:
         JobFlags flags )
     {
         StatJob *job = new StatJob(*new StatJobPrivate(url, command, packedArgs));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo)) {
             KIO::getJobTracker()->registerJob(job);
             emitStating(job, url);
@@ -1250,7 +1248,7 @@ public:
     {
         StoredTransferJob *job = new StoredTransferJob(
             *new StoredTransferJobPrivate(url, command, packedArgs, staticData));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         return job;
@@ -1262,7 +1260,7 @@ public:
     {
         StoredTransferJob *job = new StoredTransferJob(
             *new StoredTransferJobPrivate(url, command, packedArgs, ioDevice));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         return job;
@@ -1406,7 +1404,7 @@ static KIO::PostErrorJob* precheckHttpPost(const QUrl& url, QIODevice* ioDevice,
     {
         KIO_ARGS << (int)1 << url;
         PostErrorJob * job = new PostErrorJob(_error, url.toString(), packedArgs, ioDevice);
-        job->setUiDelegate(new JobUiDelegate());
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo)) {
             KIO::getJobTracker()->registerJob(job);
         }
@@ -1426,7 +1424,7 @@ static KIO::PostErrorJob* precheckHttpPost(const QUrl& url, const QByteArray& po
     {
         KIO_ARGS << (int)1 << url;
         PostErrorJob * job = new PostErrorJob(_error, url.toString(), packedArgs, postData);
-        job->setUiDelegate(new JobUiDelegate());
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo)) {
             KIO::getJobTracker()->registerJob(job);
         }
@@ -1654,7 +1652,7 @@ public:
                                       JobFlags flags)
     {
         MimetypeJob *job = new MimetypeJob(*new MimetypeJobPrivate(url, command, packedArgs));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo)) {
             KIO::getJobTracker()->registerJob(job);
             emitStating(job, url);
@@ -1739,7 +1737,7 @@ public:
 DirectCopyJob::DirectCopyJob(const QUrl &url, const QByteArray &packedArgs)
     : SimpleJob(*new DirectCopyJobPrivate(url, CMD_COPY, packedArgs))
 {
-    setUiDelegate(new JobUiDelegate);
+    setUiDelegate(KIO::createDefaultJobUiDelegate());
 }
 
 DirectCopyJob::~DirectCopyJob()
@@ -1835,7 +1833,7 @@ public:
         FileCopyJob *job = new FileCopyJob(
             *new FileCopyJobPrivate(src, dest, permissions, move, flags));
         job->setProperty("destUrl", dest.toString());
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         return job;
@@ -2380,7 +2378,7 @@ public:
                                   bool _includeHidden, JobFlags flags = HideProgressInfo)
     {
         ListJob *job = new ListJob(*new ListJobPrivate(u, _recursive, prefix, displayPrefix, _includeHidden));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         if (!(flags & HideProgressInfo))
             KIO::getJobTracker()->registerJob(job);
         return job;
@@ -2657,7 +2655,7 @@ public:
     static inline MultiGetJob *newJob(const QUrl &url)
     {
         MultiGetJob *job = new MultiGetJob(*new MultiGetJobPrivate(url));
-        job->setUiDelegate(new JobUiDelegate);
+        job->setUiDelegate(KIO::createDefaultJobUiDelegate());
         return job;
     }
 };

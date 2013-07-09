@@ -2367,12 +2367,12 @@ void KHTMLPart::slotUserSheetStatDone( KJob *_job )
   }
 
   const UDSEntry entry = dynamic_cast<KIO::StatJob *>( _job )->statResult();
-  const time_t lastModified = entry.numberValue( KIO::UDSEntry::UDS_MODIFICATION_TIME, -1 );
+  const QDateTime lastModified = QDateTime::fromTime_t(entry.numberValue(KIO::UDSEntry::UDS_MODIFICATION_TIME, -1));
 
   // If the filesystem supports modification times, only reload the
   // user-defined stylesheet if necessary - otherwise always reload.
-  if ( lastModified != static_cast<time_t>(-1) ) {
-    if ( d->m_userStyleSheetLastModified >= lastModified ) {
+  if (lastModified.isValid()) {
+    if (d->m_userStyleSheetLastModified >= lastModified) {
       return;
     }
     d->m_userStyleSheetLastModified = lastModified;

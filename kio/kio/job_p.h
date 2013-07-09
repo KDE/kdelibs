@@ -25,9 +25,9 @@
 
 #include "job.h"
 #include "kcompositejob_p.h"
-#include "jobuidelegate.h"
 #include "kjobtrackerinterface.h"
 #include <kio/jobuidelegateextension.h>
+#include <kio/jobuidelegatefactory.h>
 #include <QUrl>
 #include <QPointer>
 
@@ -63,9 +63,6 @@ namespace KIO {
         MetaData m_internalMetaData;
         MetaData m_outgoingMetaData;
         JobUiDelegateExtension *m_uiDelegateExtension;
-
-        inline KIO::JobUiDelegate *ui() const
-            { return static_cast<KIO::JobUiDelegate *>(uiDelegate); }
 
         void slotSpeed( KJob *job, unsigned long speed );
 
@@ -199,7 +196,7 @@ namespace KIO {
                                         JobFlags flags = HideProgressInfo )
         {
             SimpleJob *job = new SimpleJob(*new SimpleJobPrivate(url, command, packedArgs));
-            job->setUiDelegate(new JobUiDelegate);
+            job->setUiDelegate(KIO::createDefaultJobUiDelegate());
             if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;
@@ -270,7 +267,7 @@ namespace KIO {
                                           JobFlags flags)
         {
             TransferJob *job = new TransferJob(*new TransferJobPrivate(url, command, packedArgs, _staticData));
-            job->setUiDelegate(new JobUiDelegate);
+            job->setUiDelegate(KIO::createDefaultJobUiDelegate());
             if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;
@@ -282,7 +279,7 @@ namespace KIO {
                                           JobFlags flags)
         {
             TransferJob *job = new TransferJob(*new TransferJobPrivate(url, command, packedArgs, ioDevice));
-            job->setUiDelegate(new JobUiDelegate);
+            job->setUiDelegate(KIO::createDefaultJobUiDelegate());
             if (!(flags & HideProgressInfo))
                 KIO::getJobTracker()->registerJob(job);
             return job;

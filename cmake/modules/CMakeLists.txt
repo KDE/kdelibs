@@ -72,7 +72,6 @@ set(cmakeFiles
                FindOpenEXR.cmake
                FindPlasma.cmake
                FindPopplerQt4.cmake
-               FindPostgreSQL.cmake
                FindPulseAudio.cmake
                FindPythonLibrary.cmake
                FindQImageBlitz.cmake

@@ -631,22 +631,23 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    QCoreApplication app(argc, argv);
    app.setApplicationVersion(appVersion);
 
-   QCommandLineParser *parser = new QCommandLineParser;
-   parser->addVersionOption();
-   parser->addHelpOption(QCoreApplication::translate("main", "Rebuilds the system configuration cache."));
-   parser->addOption(QCommandLineOption(QStringList() << "nosignal", QCoreApplication::translate("main", "Do not signal applications to update")));
-   parser->addOption(QCommandLineOption(QStringList() << "noincremental", QCoreApplication::translate("main", "Disable incremental update, re-read everything")));
-   parser->addOption(QCommandLineOption(QStringList() << "checkstamps", QCoreApplication::translate("main", "Check file timestamps")));
-   parser->addOption(QCommandLineOption(QStringList() << "nocheckfiles", QCoreApplication::translate("main", "Disable checking files (dangerous)")));
-   parser->addOption(QCommandLineOption(QStringList() << "global", QCoreApplication::translate("main", "Create global database")));
-   parser->addOption(QCommandLineOption(QStringList() << "menutest", QCoreApplication::translate("main", "Perform menu generation test run only")));
-   parser->addOption(QCommandLineOption(QStringList() << "track", QCoreApplication::translate("main", "Track menu id for debug purposes"), "menu-id"));
-   parser->addOption(QCommandLineOption(QStringList() << "testmode", QCoreApplication::translate("main", "Switch QStandardPaths to test mode, for unit tests only")));
+   QCommandLineParser parser;
+   parser.addVersionOption();
+   parser.addHelpOption(QCoreApplication::translate("main", "Rebuilds the system configuration cache."));
+   parser.addOption(QCommandLineOption(QStringList() << "nosignal", QCoreApplication::translate("main", "Do not signal applications to update")));
+   parser.addOption(QCommandLineOption(QStringList() << "noincremental", QCoreApplication::translate("main", "Disable incremental update, re-read everything")));
+   parser.addOption(QCommandLineOption(QStringList() << "checkstamps", QCoreApplication::translate("main", "Check file timestamps")));
+   parser.addOption(QCommandLineOption(QStringList() << "nocheckfiles", QCoreApplication::translate("main", "Disable checking files (dangerous)")));
+   parser.addOption(QCommandLineOption(QStringList() << "global", QCoreApplication::translate("main", "Create global database")));
+   parser.addOption(QCommandLineOption(QStringList() << "menutest", QCoreApplication::translate("main", "Perform menu generation test run only")));
+   parser.addOption(QCommandLineOption(QStringList() << "track", QCoreApplication::translate("main", "Track menu id for debug purposes"), "menu-id"));
+   parser.addOption(QCommandLineOption(QStringList() << "testmode", QCoreApplication::translate("main", "Switch QStandardPaths to test mode, for unit tests only")));
+   parser.process(app);
 
-   bGlobalDatabase = parser->isSet("global");
-   bMenuTest = parser->isSet("menutest");
+   bGlobalDatabase = parser.isSet("global");
+   bMenuTest = parser.isSet("menutest");
 
-   if (parser->isSet("testmode")) {
+   if (parser.isSet("testmode")) {
        QStandardPaths::enableTestMode(true);
    }
 
@@ -684,9 +685,9 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    }
    fprintf(stderr, "%s running...\n", KBUILDSYCOCA_EXENAME);
 
-   bool checkfiles = bGlobalDatabase || !parser->isSet("nocheckfiles");
+   bool checkfiles = bGlobalDatabase || !parser.isSet("nocheckfiles");
 
-   bool incremental = !bGlobalDatabase && !parser->isSet("noincremental") && checkfiles;
+   bool incremental = !bGlobalDatabase && !parser.isSet("noincremental") && checkfiles;
    if (incremental || !checkfiles)
    {
      KSycoca::disableAutoRebuild(); // Prevent deadlock
@@ -708,7 +709,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
      }
    }
 
-   bool checkstamps = incremental && parser->isSet("checkstamps") && checkfiles;
+   bool checkstamps = incremental && parser.isSet("checkstamps") && checkfiles;
    quint32 filestamp = 0;
    QStringList oldresourcedirs;
    if( checkstamps && incremental )
@@ -786,8 +787,8 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
       cSycocaPath = 0;
 
       KBuildSycoca *sycoca = new KBuildSycoca; // Build data base (deletes oldSycoca)
-      if (parser->isSet("track"))
-         sycoca->setTrackId(parser->argument("track"));
+      if (parser.isSet("track"))
+         sycoca->setTrackId(parser.value("track"));
       if (!sycoca->recreate()) {
         return -1;
       }
@@ -803,7 +804,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
       }
    }
 
-   if (!parser->isSet("nosignal"))
+   if (!parser.isSet("nosignal"))
    {
      // Notify ALL applications that have a ksycoca object, using a signal
      QDBusMessage signal = QDBusMessage::createSignal("/", "org.kde.KSycoca", "notifyDatabaseChanged" );

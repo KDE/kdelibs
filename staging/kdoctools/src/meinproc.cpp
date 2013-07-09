@@ -98,21 +98,22 @@ int main(int argc, char **argv) {
     app.setApplicationVersion("5.0");
     KLocalizedString::setApplicationCatalog("kio_help4");
 
-    QCommandLineParser* parser = new QCommandLineParser;
-    parser->addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));
-    parser->addVersionOption();
-    parser->addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), "xsl"));
-    parser->addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
-    parser->addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), "file"));
-    parser->addOption(QCommandLineOption(QStringList() << "htdig", QCoreApplication::translate("main", "Create a ht://dig compatible index")));
-    parser->addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check the document for validity")));
-    parser->addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), "file"));
-    parser->addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), "dir"));
-    parser->addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), "key=value"));
+    QCommandLineParser parser;
+    parser.addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));
+    parser.addVersionOption();
+    parser.addOption(QCommandLineOption(QStringList() << "stylesheet", QCoreApplication::translate("main", "Stylesheet to use"), "xsl"));
+    parser.addOption(QCommandLineOption(QStringList() << "stdout", QCoreApplication::translate("main", "Output whole document to stdout")));
+    parser.addOption(QCommandLineOption(QStringList() << "o" << "output", QCoreApplication::translate("main", "Output whole document to file"), "file"));
+    parser.addOption(QCommandLineOption(QStringList() << "htdig", QCoreApplication::translate("main", "Create a ht://dig compatible index")));
+    parser.addOption(QCommandLineOption(QStringList() << "check", QCoreApplication::translate("main", "Check the document for validity")));
+    parser.addOption(QCommandLineOption(QStringList() << "cache", QCoreApplication::translate("main", "Create a cache file for the document"), "file"));
+    parser.addOption(QCommandLineOption(QStringList() << "srcdir", QCoreApplication::translate("main", "Set the srcdir, for kdelibs"), "dir"));
+    parser.addOption(QCommandLineOption(QStringList() << "param", QCoreApplication::translate("main", "Parameters to pass to the stylesheet"), "key=value"));
     // TODO how to document the remaining arguments? parser.addOption(QCommandLineOption(QStringList() << "+xml", QCoreApplication::translate("main", "The file to transform")));
+    parser.process(app);
 
-    if (parser->remainingArguments().count() != 1) {
-        parser->showHelp();
+    if (parser.remainingArguments().count() != 1) {
+        parser.showHelp();
         return ( 1 );
     }
 
@@ -120,13 +121,13 @@ int main(int argc, char **argv) {
 
     // Need to set SRCDIR before calling setupStandardDirs
     QString srcdir;
-    if (parser->isSet("srcdir"))
-        srcdir = QDir(parser->argument("srcdir")).absolutePath();
+    if (parser.isSet("srcdir"))
+        srcdir = QDir(parser.value("srcdir")).absolutePath();
     setupStandardDirs(srcdir);
 
     LIBXML_TEST_VERSION
 
-    const QString checkFilename = parser->remainingArguments().first();
+    const QString checkFilename = parser.remainingArguments().first();
     CheckFileResult ckr = checkFile( checkFilename );
     if ( ckr != CheckFileSuccess )
     {
@@ -136,7 +137,7 @@ int main(int argc, char **argv) {
         return ( 2 );
     }
 
-    if (parser->isSet("check")) {
+    if (parser.isSet("check")) {
 
         QByteArray catalogs;
         catalogs += QUrl::fromLocalFile(locateFileInDtdResource("customization/catalog.xml")).toEncoded();
@@ -166,15 +167,15 @@ int main(int argc, char **argv) {
     // see libxslt/xsltEvalUserParams
     // this parameter is used only by share/apps/ksgmltools2/docbook/xsl/html/math.xsl
     // and is not supported on windows yet
-    if (parser->isSet("output")) {
+    if (parser.isSet("output")) {
         params.append(qstrdup("outputFile"));
-        params.append(qstrdup(parser->argument("output").toLocal8Bit().constData()));
+        params.append(qstrdup(parser.value("output").toLocal8Bit().constData()));
     }
 #endif
     {
-        const QStringList paramList = parser->arguments("param");
-        QStringList::ConstIterator it = paramList.begin();
-        QStringList::ConstIterator end = paramList.end();
+        const QStringList paramList = parser.values("param");
+        QStringList::ConstIterator it = paramList.constBegin();
+        QStringList::ConstIterator end = paramList.constEnd();
         for ( ; it != end; ++it ) {
             const QString tuple = *it;
             const int ch = tuple.indexOf( '=' );
@@ -188,18 +189,18 @@ int main(int argc, char **argv) {
     }
     params.append( NULL );
 
-    bool index = parser->isSet("htdig");
-    QString tss = parser->argument("stylesheet");
+    bool index = parser.isSet("htdig");
+    QString tss = parser.value("stylesheet");
     if ( tss.isEmpty() )
         tss =  "customization/kde-chunk.xsl";
     if ( index )
         tss = "customization/htdig_index.xsl" ;
 
     tss = locateFileInDtdResource(tss);
-    const QString cache = parser->argument("cache");
-    const bool usingStdOut = parser->isSet("stdout");
-    const bool usingOutput = parser->isSet("output");
-    const QString outputOption = parser->argument("output");
+    const QString cache = parser.value("cache");
+    const bool usingStdOut = parser.isSet("stdout");
+    const bool usingOutput = parser.isSet("output");
+    const QString outputOption = parser.value("output");
 
     if ( index ) {
         xsltStylesheetPtr style_sheet =
