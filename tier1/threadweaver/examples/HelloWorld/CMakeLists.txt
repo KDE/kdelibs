@@ -5,10 +5,22 @@ ADD_DEFINITIONS(
     -std=c++11
 )
 
+########### next target ###############
+
 set(HelloWorld_SRCS HelloWorld.cpp)
 
-add_executable(ThreadweaverHelloWorld ${HelloWorld_SRCS})
+add_executable(ThreadWeaverHelloWorld ${HelloWorld_SRCS})
 
-target_link_libraries(ThreadweaverHelloWorld ${KDE4_KDECORE_LIBS} ThreadWeaver)
+target_link_libraries(ThreadWeaverHelloWorld ${KDE4_KDECORE_LIBS} ThreadWeaver)
 
-install(TARGETS ThreadweaverHelloWorld DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS ThreadWeaverHelloWorld DESTINATION ${BIN_INSTALL_DIR} )
+
+########### next target ###############
+
+set(HelloWorldRaw_SRCS HelloWorldRaw.cpp)
+
+add_executable(ThreadWeaverHelloWorldRaw ${HelloWorld_SRCS})
+
+target_link_libraries(ThreadWeaverHelloWorldRaw ${KDE4_KDECORE_LIBS} ThreadWeaver)
+
+install(TARGETS ThreadWeaverHelloWorldRaw DESTINATION ${BIN_INSTALL_DIR} )
