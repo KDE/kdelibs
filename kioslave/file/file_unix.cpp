@@ -74,8 +74,6 @@ same_inode(const QT_STATBUF &src, const QT_STATBUF &dest)
    return false;
 }
 
-extern int write_all(int fd, const char *buf, size_t len);
-
 void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
                          int _mode, JobFlags _flags )
 {
@@ -135,18 +133,18 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
         if ((_flags & KIO::Overwrite) && S_ISLNK(buff_dest.st_mode))
         {
             //kDebug(7101) << "copy(): LINK DESTINATION";
-            remove( _dest.data() );
+            QFile::remove(dest);
         }
     }
 
-    int src_fd = KDE_open( _src.data(), O_RDONLY);
-    if ( src_fd < 0 ) {
-	error(KIO::ERR_CANNOT_OPEN_FOR_READING, src);
-	return;
+    QFile src_file(src);
+    if (!src_file.open(QIODevice::ReadOnly)) {
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, src);
+        return;
     }
 
 #if HAVE_FADVISE
-    posix_fadvise(src_fd,0,0,POSIX_FADV_SEQUENTIAL);
+    posix_fadvise(src_file.handle(),0,0,POSIX_FADV_SEQUENTIAL);
 #endif
     // WABA: Make sure that we keep writing permissions ourselves,
     // otherwise we can be in for a surprise on NFS.
@@ -156,24 +154,24 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
     else
        initialMode = 0666;
 
-    int dest_fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
-    if ( dest_fd < 0 ) {
-	kDebug(7101) << "###### COULD NOT WRITE " << dest;
+    QFile dest_file(dest);
+    if (!dest_file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        kDebug(7101) << "###### COULD NOT WRITE " << dest;
         if ( errno == EACCES ) {
             error(KIO::ERR_WRITE_ACCESS_DENIED, dest);
         } else {
             error(KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest);
         }
-        ::close(src_fd);
+        src_file.close();
         return;
     }
 
 #if HAVE_FADVISE
-    posix_fadvise(dest_fd,0,0,POSIX_FADV_SEQUENTIAL);
+    posix_fadvise(dest_file.handle(),0,0,POSIX_FADV_SEQUENTIAL);
 #endif
 
 #if HAVE_POSIX_ACL
-    acl = acl_get_fd(src_fd);
+    acl = acl_get_fd(src_file.handle());
     if ( acl && !isExtendedACL( acl ) ) {
         kDebug(7101) << _dest.data() << " doesn't have extended ACL";
         acl_free( acl );
@@ -193,7 +191,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 #ifdef USE_SENDFILE
        if (use_sendfile) {
             off_t sf = processed_size;
-            n = KDE_sendfile( dest_fd, src_fd, &sf, MAX_IPC_SIZE );
+            n = ::sendfile( dest_file.handle(), src_file.handle(), &sf, MAX_IPC_SIZE );
             processed_size = sf;
             if ( n == -1 && ( errno == EINVAL || errno == ENOSYS ) ) { //not all filesystems support sendfile()
                 kDebug(7101) << "sendfile() not supported, falling back ";
@@ -202,7 +200,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
        }
        if (!use_sendfile)
 #endif
-        n = ::read( src_fd, buffer, MAX_IPC_SIZE );
+        n = ::read(src_file.handle(), buffer, MAX_IPC_SIZE);
 
        if (n == -1)
        {
@@ -224,8 +222,8 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
           } else
 #endif
           error(KIO::ERR_COULD_NOT_READ, src);
-          ::close(src_fd);
-          ::close(dest_fd);
+          src_file.close();
+          dest_file.close();
 #if HAVE_POSIX_ACL
           if (acl) acl_free(acl);
 #endif
@@ -236,20 +234,13 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 #ifdef USE_SENDFILE
        if ( !use_sendfile ) {
 #endif
-         if (write_all( dest_fd, buffer, n))
-         {
-           ::close(src_fd);
-           ::close(dest_fd);
-
-           if ( errno == ENOSPC ) // disk full
-           {
-              error(KIO::ERR_DISK_FULL, dest);
-              remove( _dest.data() );
-           }
-           else
-           {
-              kWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno);
-              error(KIO::ERR_COULD_NOT_WRITE, dest);
+        if (dest_file.write( buffer, n ) != n) {
+            if (dest_file.error() == QFileDevice::ResourceError ) { // disk full
+                error(KIO::ERR_DISK_FULL, dest);
+                remove( _dest.data() );
+            } else {
+                kWarning(7101) << "Couldn't write[2]. Error:" << dest_file.errorString();
+                error(KIO::ERR_COULD_NOT_WRITE, dest);
            }
 #if HAVE_POSIX_ACL
            if (acl) acl_free(acl);
@@ -263,11 +254,12 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
        processedSize( processed_size );
     }
 
-    ::close( src_fd );
+    src_file.close();
+    dest_file.close();
 
-    if (::close( dest_fd))
+    if (dest_file.error() != QFile::NoError)
     {
-        kWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno);
+        kWarning(7101) << "Error when closing file descriptor[2]:" << dest_file.errorString();
         error(KIO::ERR_COULD_NOT_WRITE, dest);
 #if HAVE_POSIX_ACL
         if (acl) acl_free(acl);

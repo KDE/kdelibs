@@ -28,6 +28,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
+#include <QtCore/QFile>
 
 #include <config-kioslave-file.h>
 
@@ -94,8 +95,7 @@ private:
 private:
   mutable QHash<uid_t, QString> mUsercache;
   mutable QHash<gid_t, QString> mGroupcache;
-  int openFd;
-  QString openPath;
+  QFile *mFile;
 };
 
 #endif

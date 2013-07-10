@@ -115,7 +115,7 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 }
 
 FileProtocol::FileProtocol( const QByteArray &pool, const QByteArray &app )
-    : SlaveBase( "file", pool, app ), openFd(-1)
+    : SlaveBase( "file", pool, app ), mFile(0)
 {
 }
 
@@ -237,19 +237,12 @@ void FileProtocol::mkdir( const QUrl& url, int permissions )
     if (metaData(QLatin1String("overwrite")) == QLatin1String("true"))
         QFile::remove(path);
 
-        if ( KDE::mkdir( path, 0777 /*umask will be applied*/ ) != 0 ) {
-            if ( errno == EACCES ) {
-                error(KIO::ERR_ACCESS_DENIED, path);
-                return;
-            } else if ( errno == ENOSPC ) {
-                error(KIO::ERR_DISK_FULL, path);
-                return;
-            } else {
-                error(KIO::ERR_COULD_NOT_MKDIR, path);
-                return;
-            }
     QT_STATBUF buff;
     if (QT_LSTAT(QFile::encodeName(path).constData(), &buff) == -1) {
+        if (!QDir().mkdir(path)) {
+            //TODO: add access denied & disk full (or another reasons) handling (into Qt, possibly)
+            error(KIO::ERR_COULD_NOT_MKDIR, path);
+            return;
         } else {
             if ( permissions != -1 )
                 chmod( url, permissions );
@@ -297,14 +290,14 @@ void FileProtocol::get( const QUrl& url )
         return;
     }
 
-    int fd = KDE::open( path, O_RDONLY);
-    if ( fd < 0 ) {
+    QFile f(path);
+    if (!f.open(QIODevice::ReadOnly)) {
         error(KIO::ERR_CANNOT_OPEN_FOR_READING, path);
         return;
     }
 
 #if HAVE_FADVISE
-    posix_fadvise( fd, 0, 0, POSIX_FADV_SEQUENTIAL);
+    posix_fadvise(f.handle(), 0, 0, POSIX_FADV_SEQUENTIAL);
 #endif
 
     // Determine the mimetype of the file to be retrieved, and emit it.
@@ -327,7 +320,7 @@ void FileProtocol::get( const QUrl& url )
         KIO::fileoffset_t offset = resumeOffset.toLongLong(&ok);
         if (ok && (offset > 0) && (offset < buff.st_size))
         {
-            if (KDE_lseek(fd, offset, SEEK_SET) == offset)
+            if (f.seek(offset))
             {
                 canResume ();
                 processed_size = offset;
@@ -341,13 +334,13 @@ void FileProtocol::get( const QUrl& url )
 
     while( 1 )
     {
-       int n = ::read( fd, buffer, MAX_IPC_SIZE );
+       int n = f.read(buffer, MAX_IPC_SIZE);
        if (n == -1)
        {
           if (errno == EINTR)
               continue;
           error(KIO::ERR_COULD_NOT_READ, path);
-          ::close(fd);
+          f.close();
           return;
        }
        if (n == 0)
@@ -365,34 +358,17 @@ void FileProtocol::get( const QUrl& url )
 
     data( QByteArray() );
 
-    ::close( fd );
+    f.close();
 
     processedSize( buff.st_size );
     finished();
-}
-
-int write_all(int fd, const char *buf, size_t len)
-{
-   while (len > 0)
-   {
-      ssize_t written = write(fd, buf, len);
-      if (written < 0)
-      {
-          if (errno == EINTR)
-             continue;
-          return -1;
-      }
-      buf += written;
-      len -= written;
-   }
-   return 0;
 }
 
 void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
 {
     kDebug(7101) << url;
 
-    openPath = url.toLocalFile();
+    QString openPath = url.toLocalFile();
     QT_STATBUF buff;
     if (QT_STAT(QFile::encodeName(openPath).constData(), &buff) == -1) {
         if ( errno == EACCES )
@@ -411,30 +387,14 @@ void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
         return;
     }
 
-    int flags = 0;
-    if (mode & QIODevice::ReadOnly) {
-        if (mode & QIODevice::WriteOnly) {
-            flags = O_RDWR | O_CREAT;
+    mFile = new QFile(openPath);
+    if (!mFile->open(mode)) {
+        if (mode & QIODevice::ReadOnly) {
+            error(KIO::ERR_CANNOT_OPEN_FOR_READING, openPath);
         } else {
-            flags = O_RDONLY;
+            error(KIO::ERR_CANNOT_OPEN_FOR_WRITING, openPath);
         }
-    } else if (mode & QIODevice::WriteOnly) {
-        flags = O_WRONLY | O_CREAT;
-    }
 
-    if (mode & QIODevice::Append) {
-        flags |= O_APPEND;
-    } else if (mode & QIODevice::Truncate) {
-        flags |= O_TRUNC;
-    }
-
-    int fd = -1;
-    if ( flags & O_CREAT)
-        fd = KDE::open( openPath, flags, 0666);
-    else
-        fd = KDE::open( openPath, flags);
-    if ( fd < 0 ) {
-        error(KIO::ERR_CANNOT_OPEN_FOR_READING, openPath);
         return;
     }
     // Determine the mimetype of the file to be retrieved, and emit it.
@@ -451,30 +411,25 @@ void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
     position( 0 );
 
     emit opened();
-    openFd = fd;
 }
 
 void FileProtocol::read(KIO::filesize_t bytes)
 {
     kDebug(7101) << "File::open -- read";
-    Q_ASSERT(openFd != -1);
+    Q_ASSERT(mFile && mFile->isOpen());
 
     QVarLengthArray<char> buffer(bytes);
     while (true) {
-        int res;
-        do {
-            res = ::read(openFd, buffer.data(), bytes);
-        } while (res == -1 && errno == EINTR);
+        QByteArray res = mFile->read(bytes);
 
-        if (res > 0) {
-            QByteArray array = QByteArray::fromRawData(buffer.data(), res);
-            data( array );
-            bytes -= res;
+        if (!res.isEmpty()) {
+            data(res);
+            bytes -= res.size();
         } else {
             // empty array designates eof
             data(QByteArray());
-            if (res != 0) {
-                error(KIO::ERR_COULD_NOT_READ, openPath);
+            if (!mFile->atEnd()) {
+                error(KIO::ERR_COULD_NOT_READ, mFile->fileName());
                 close();
             }
             break;
@@ -486,15 +441,15 @@ void FileProtocol::read(KIO::filesize_t bytes)
 void FileProtocol::write(const QByteArray &data)
 {
     kDebug(7101) << "File::open -- write";
-    Q_ASSERT(openFd != -1);
+    Q_ASSERT(mFile && mFile->isWritable());
 
-    if (write_all(openFd, data.constData(), data.size())) {
-        if (errno == ENOSPC) { // disk full
-            error(KIO::ERR_DISK_FULL, openPath);
+    if (mFile->write(data) != data.size()) {
+        if (mFile->error() == QFileDevice::ResourceError) { // disk full
+            error(KIO::ERR_DISK_FULL, mFile->fileName());
             close();
         } else {
-            kWarning(7101) << "Couldn't write. Error:" << strerror(errno);
-            error(KIO::ERR_COULD_NOT_WRITE, openPath);
+            kWarning(7101) << "Couldn't write. Error:" << mFile->errorString();
+            error(KIO::ERR_COULD_NOT_WRITE, mFile->fileName());
             close();
         }
     } else {
@@ -505,13 +460,12 @@ void FileProtocol::write(const QByteArray &data)
 void FileProtocol::seek(KIO::filesize_t offset)
 {
     kDebug(7101) << "File::open -- seek";
-    Q_ASSERT(openFd != -1);
+    Q_ASSERT(mFile && mFile->isOpen());
 
-    int res = KDE_lseek(openFd, offset, SEEK_SET);
-    if (res != -1) {
+    if (mFile->seek(offset)) {
         position( offset );
     } else {
-        error(KIO::ERR_COULD_NOT_SEEK, openPath);
+        error(KIO::ERR_COULD_NOT_SEEK, mFile->fileName());
         close();
     }
 }
@@ -519,11 +473,10 @@ void FileProtocol::seek(KIO::filesize_t offset)
 void FileProtocol::close()
 {
     kDebug(7101) << "File::open -- close ";
-    Q_ASSERT(openFd != -1);
+    Q_ASSERT(mFile);
 
-    ::close( openFd );
-    openFd = -1;
-    openPath.clear();
+    delete mFile;
+    mFile = 0;
 
     finished();
 }
@@ -571,8 +524,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
     int result;
     QString dest;
     QByteArray _dest;
-
-    int fd = -1;
+    QFile f;
 
     // Loop until we got 0 (end of data)
     do
@@ -607,12 +559,11 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
                     }
                 }
 
+                f.setFileName(dest);
+
                 if ( (_flags & KIO::Resume) )
                 {
-                    fd = KDE::open( dest, O_RDWR );  // append if resuming
-                    if (fd != -1) {
-                        KDE_lseek(fd, 0, SEEK_END); // Seek to end
-                    }
+                    f.open(QIODevice::ReadWrite | QIODevice::Append);
                 }
                 else
                 {
@@ -624,33 +575,51 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
                     else
                         initialMode = 0666;
 
-                    fd = KDE::open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+                    QFile::Permissions perms;
+                    if (initialMode & S_IRUSR)
+                        perms |= QFile::ReadOwner;
+                    if (initialMode & S_IWUSR)
+                        perms |= QFile::WriteOwner;
+                    if (initialMode & S_IXUSR)
+                        perms |= QFile::ExeOwner;
+                    if (initialMode & S_IRGRP)
+                        perms |= QFile::ReadGroup;
+                    if (initialMode & S_IWGRP)
+                        perms |= QFile::WriteGroup;
+                    if (initialMode & S_IXGRP)
+                        perms |= QFile::ExeGroup;
+                    if (initialMode & S_IROTH)
+                        perms |= QFile::ReadOther;
+                    if (initialMode & S_IWOTH)
+                        perms |= QFile::WriteOther;
+                    if (initialMode & S_IXOTH)
+                        perms |= QFile::ExeOther;
+
+                    f.open(QIODevice::Truncate | QIODevice::WriteOnly);
+                    f.setPermissions(perms);
                 }
 
-                if ( fd < 0 )
-                {
+                if (!f.isOpen()) {
                     kDebug(7101) << "####################### COULD NOT WRITE" << dest << "_mode=" << _mode;
-                    kDebug(7101) << "errno==" << errno << "(" << strerror(errno) << ")";
-                    if ( errno == EACCES )
+                    kDebug(7101) << "QFile error==" << f.error() << "(" << f.errorString() << ")";
+
+                    if (f.error() == QFileDevice::PermissionsError) {
                         error(KIO::ERR_WRITE_ACCESS_DENIED, dest);
-                    else
+                    } else {
                         error(KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest);
+                    }
                     return;
                 }
             }
 
-            if (write_all( fd, buffer.data(), buffer.size()))
-            {
-                if ( errno == ENOSPC ) // disk full
-                {
-                  error(KIO::ERR_DISK_FULL, dest_orig);
-                  result = -2; // means: remove dest file
-                }
-                else
-                {
-                  kWarning(7101) << "Couldn't write. Error:" << strerror(errno);
-                  error(KIO::ERR_COULD_NOT_WRITE, dest_orig);
-                  result = -1;
+            if (f.write(buffer) == -1) {
+                if (f.error() == QFile::ResourceError) { // disk full
+                    error(KIO::ERR_DISK_FULL, dest_orig);
+                    result = -2; // means: remove dest file
+                } else {
+                    kWarning(7101) << "Couldn't write. Error:" << f.errorString();
+                    error(KIO::ERR_COULD_NOT_WRITE, dest_orig);
+                    result = -1;
                 }
             }
         }
@@ -662,30 +631,30 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
     {
         kDebug(7101) << "Error during 'put'. Aborting.";
 
-        if (fd != -1)
-        {
-          ::close(fd);
+        if (f.isOpen()) {
+            f.close();
 
-            int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
-            if (buff.st_size <  size)
-              remove(_dest.data());
             QT_STATBUF buff;
             if (QT_STAT(QFile::encodeName(dest).constData(), &buff) == 0) {
+                int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
+                if (buff.st_size <  size) {
+                    QFile::remove(dest);
+                }
             }
         }
 
         ::exit(255);
     }
 
-    if ( fd == -1 ) // we got nothing to write out, so we never opened the file
-    {
+    if (!f.isOpen()) { // we got nothing to write out, so we never opened the file
         finished();
         return;
     }
 
-    if ( ::close(fd) )
-    {
-        kWarning(7101) << "Error when closing file descriptor:" << strerror(errno);
+    f.close();
+
+    if (f.error() != QFile::NoError) {
+        kWarning(7101) << "Error when closing file descriptor:" << f.errorString();
         error(KIO::ERR_COULD_NOT_WRITE, dest_orig);
         return;
     }
@@ -693,14 +662,14 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
     // after full download rename the file back to original name
     if ( bMarkPartial )
     {
-        // If the original URL is a symlink and we were asked to overwrite it,
-        // remove the symlink first. This ensures that we do not overwrite the
-        // current source if the symlink points to it.
-        if( (_flags & KIO::Overwrite) && S_ISLNK( buff_orig.st_mode ) )
-          QFile::remove( dest_orig );
-        if ( KDE::rename( dest, dest_orig ) )
-        {
-            kWarning(7101) << " Couldn't rename " << _dest << " to " << dest_orig;
+        //QFile::rename() never overwrites the destination file unlike ::remove,
+        //so we must remove it manually first
+        if (_flags & KIO::Overwrite) {
+            QFile::remove( dest_orig );
+        }
+
+        if (!QFile::rename(dest, dest_orig)) {
+            kWarning(7101) << " Couldn't rename " << dest << " to " << dest_orig;
             error(KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig);
             return;
         }
@@ -799,7 +768,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
             entry.insert( KIO::UDSEntry::UDS_LINK_DEST, QFile::decodeName( buffer2 ) );
 
             // A symlink -> follow it only if details>1
-            if ( details > 1 && KDE_stat( path.data(), &buff ) == -1 ) {
+            if (details > 1 && QT_STAT( path.constData(), &buff ) == -1) {
                 // It is a link pointing to nowhere
                 type = S_IFMT - 1;
                 access = S_IRWXU | S_IRWXG | S_IRWXO;
