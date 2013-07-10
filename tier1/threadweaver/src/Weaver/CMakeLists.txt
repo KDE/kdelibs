@@ -8,6 +8,7 @@ set(ThreadWeaver_LIB_SRCS
     DebuggingAids.cpp
     Thread.cpp
     Job.cpp
+    Lambda.cpp
     ManagedJobPointer.cpp
     Executor.cpp
     ExecuteWrapper.cpp
@@ -43,6 +44,7 @@ install(FILES
     DebuggingAids.h
     Thread.h
     Job.h
+    Lambda.h
     State.h
     WeaverObserver.h
     JobCollection.h
