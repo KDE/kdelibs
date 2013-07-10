@@ -15,76 +15,57 @@
    $Id: Construction.cpp 30 2005-08-16 16:16:04Z mirko $
 */
 
-extern "C" {
-#include <unistd.h>
-}
-
-#include <QtCore/QDebug>
 #include <QtCore/QCoreApplication>
-
+#include <QtCore/QThread>
 #include <Job.h>
 #include <Thread.h>
 #include <ThreadWeaver.h>
-
 #include <DebuggingAids.h>
+
+const int Multiplier = 20; // [0..9]* Multiplier sleep time for each job
+const int NoOfThreads = qMax(2 * QThread::idealThreadCount(), 4);
+const int NoOfJobs = NoOfThreads * 4; // number of jobs for every thread
 
 using namespace ThreadWeaver;
 
-class DummyJob : public Job
+class WaitJob : public Job
 {
+    Q_OBJECT
 public:
-    DummyJob(QObject* parent = 0, int msec = 100)
-        : Job ( parent ),
-          m_wait ( msec )
-        {
-        }
-
-    ~DummyJob() {}
+    WaitJob(QObject* parent = 0)
+        : Job(parent)
+        , m_wait(0) {
+        m_wait = Multiplier * (1 + s_count++ % 10);
+    }
+    ~WaitJob() {}
 protected:
-    void run ()
-        {
-            debug (0, "DummyJob::run: doing it - sleeping %i milliseconds.\n",
-                   m_wait );
-            thread()->msleep( m_wait );
-            debug (0, "DummyJob::run: done.\n" );
-        }
-
+    void run () {
+        debug(0, "WaitJob::run: doing it - sleeping %i milliseconds.\n", m_wait);
+        thread()->msleep( m_wait );
+        debug(0, "WaitJob::run: done.\n");
+    }
+private:
     int m_wait;
+    static int s_count;
 };
 
+int WaitJob::s_count;
 
 int main ( int argc,  char** argv )
 {
-    const int NoOfThreads = 4 ;
-    const int NoOfJobs = NoOfThreads * 4  ; // number of jobs for every thread
-    const int Multiplier = 250; // [0..9]* Multiplier sleep time for each job
-    ThreadWeaver::setDebugLevel ( true, 4);
-    QCoreApplication app ( argc,  argv );
+    QCoreApplication app(argc, argv);
+    ThreadWeaver::setDebugLevel(true, 4);
+
     ThreadWeaver::Weaver weaver;
     weaver.setMaximumNumberOfThreads( NoOfThreads );
-    DummyJob *dummies[ NoOfJobs];
-
-    // ----- create a number of dummy jobs:
-    for ( int count  = 0; count < NoOfJobs; ++count )
-    {
-        dummies[count] = new DummyJob (0, Multiplier * (count % 10) );
-    }
+    WaitJob dummies[NoOfJobs];
 
     // ----- enqueue the jobs:
-    for ( int count  = 0; count < NoOfJobs; ++count )
-    {
-        weaver.enqueue( dummies[count] );
+    for ( int count  = 0; count < NoOfJobs; ++count ) {
+        weaver.enqueueRaw(&dummies[count]);
     }
 
     weaver.finish();
-
-    for ( int count  = 0; count < NoOfJobs; ++count )
-    {
-        delete dummies[count];
-    }
-
-    qDebug() << "main() exits here, the Weaver is destructed when it goes out"
-             << " of scope " << endl
-             << "... let's see if that works:" << endl;
-    return 0;
 }
+
+#include "Construction.moc"

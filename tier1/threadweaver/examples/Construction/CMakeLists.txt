@@ -7,8 +7,8 @@ set(Construction_SRCS
 )
 
 
-add_executable(Construction ${Construction_SRCS})
+add_executable(ThreadWeaverConstruction ${Construction_SRCS})
 
-target_link_libraries(Construction ThreadWeaver)
+target_link_libraries(ThreadWeaverConstruction ThreadWeaver)
 
-install(TARGETS Construction DESTINATION ${BIN_INSTALL_DIR} )
+install(TARGETS ThreadWeaverConstruction DESTINATION ${BIN_INSTALL_DIR} )

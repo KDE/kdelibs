@@ -2,7 +2,7 @@
 #remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
 add_subdirectory(HelloWorld)
-#add_subdirectory(Construction)
+add_subdirectory(Construction)
 #add_subdirectory(Jobs)
 #add_subdirectory(SMIV)
 #add_subdirectory(QProcessJob)
