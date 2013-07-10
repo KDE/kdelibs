@@ -32,6 +32,7 @@
 #include <QtCore/QFile>
 #include <qurlpathinfo.h>
 #include <QtCore/QDir>
+#include <qplatformdefs.h>
 
 #include <kde_file.h>
 #include <kdebug.h>
@@ -64,7 +65,7 @@ using namespace KIO;
 #define MAX_IPC_SIZE (1024*32)
 
 static bool
-same_inode(const KDE_struct_stat &src, const KDE_struct_stat &dest)
+same_inode(const QT_STATBUF &src, const QT_STATBUF &dest)
 {
    if (src.st_ino == dest.st_ino &&
        src.st_dev == dest.st_dev)
@@ -84,17 +85,17 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
     const QString dest = destUrl.toLocalFile();
     QByteArray _src( QFile::encodeName(src));
     QByteArray _dest( QFile::encodeName(dest));
-    KDE_struct_stat buff_src;
+
+    QT_STATBUF buff_src;
 #if HAVE_POSIX_ACL
     acl_t acl;
 #endif
-
-    if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
+    if (QT_STAT(_src.data(), &buff_src) == -1) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, src);
         else
            error(KIO::ERR_DOES_NOT_EXIST, src);
-	return;
+        return;
     }
 
     if ( S_ISDIR( buff_src.st_mode ) ) {
@@ -106,8 +107,8 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 	return;
     }
 
-    KDE_struct_stat buff_dest;
-    bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
+    QT_STATBUF buff_dest;
+    bool dest_exists = (QT_LSTAT(_dest.data(), &buff_dest) != -1);
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))
@@ -376,7 +377,7 @@ void FileProtocol::listDir( const QUrl& url)
     UDSEntry entry;
 
 #ifndef HAVE_DIRENT_D_TYPE
-    KDE_struct_stat st;
+    QT_STATBUF st;
 #endif
     KDE_struct_dirent *ep;
     while ((ep = KDE_readdir(dp)) != 0 ) {
@@ -402,7 +403,7 @@ void FileProtocol::listDir( const QUrl& url)
             const bool isSymLink = (ep->d_type & DT_LNK);
 #else
             // oops, no fast way, we need to stat (e.g. on Solaris)
-            if (KDE_lstat(ep->d_name, &st) == -1) {
+            if (QT_LSTAT(ep->d_name, &st) == -1) {
                 continue; // how can stat fail?
             }
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
@@ -440,8 +441,8 @@ void FileProtocol::rename( const QUrl &srcUrl, const QUrl &destUrl,
     const QString dest = destUrl.toLocalFile();
     const QByteArray _src(QFile::encodeName(src));
     const QByteArray _dest(QFile::encodeName(dest));
-    KDE_struct_stat buff_src;
-    if ( KDE_lstat( _src.data(), &buff_src ) == -1 ) {
+    QT_STATBUF buff_src;
+    if (QT_LSTAT(_src.data(), &buff_src) == -1) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, src);
         else
@@ -449,10 +450,10 @@ void FileProtocol::rename( const QUrl &srcUrl, const QUrl &destUrl,
         return;
     }
 
-    KDE_struct_stat buff_dest;
+    QT_STATBUF buff_dest;
     // stat symlinks here (lstat, not stat), to avoid ERR_IDENTICAL_FILES when replacing symlink
     // with its target (#169547)
-    bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
+    bool dest_exists = (QT_LSTAT(_dest.data(), &buff_dest) != -1);
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))
@@ -516,8 +517,8 @@ void FileProtocol::symlink( const QString &target, const QUrl &destUrl, KIO::Job
             }
             else
             {
-                KDE_struct_stat buff_dest;
-                if (KDE_lstat(QFile::encodeName(dest), &buff_dest) == 0 && S_ISDIR(buff_dest.st_mode))
+                QT_STATBUF buff_dest;
+                if (QT_LSTAT(QFile::encodeName(dest), &buff_dest) == 0 && S_ISDIR(buff_dest.st_mode))
                     error(KIO::ERR_DIR_ALREADY_EXIST, dest);
                 else
                     error(KIO::ERR_FILE_ALREADY_EXIST, dest);

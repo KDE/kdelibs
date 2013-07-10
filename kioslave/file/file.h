@@ -36,12 +36,6 @@
 #include <acl/libacl.h>
 #endif
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <stdio.h>
-#include <unistd.h>
-
 class FileProtocol : public QObject, public KIO::SlaveBase
 {
   Q_OBJECT

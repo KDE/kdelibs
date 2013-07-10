@@ -26,6 +26,7 @@
 
 #include "file.h"
 #include <QDirIterator>
+#include <qplatformdefs.h>
 
 #include <config-kioslave-file.h>
 
@@ -210,8 +211,8 @@ void FileProtocol::chmod( const QUrl& url, int permissions )
 void FileProtocol::setModificationTime( const QUrl& url, const QDateTime& mtime )
 {
     const QString path(url.toLocalFile());
-    KDE_struct_stat statbuf;
-    if (KDE::lstat(path, &statbuf) == 0) {
+    QT_STATBUF statbuf;
+    if (QT_LSTAT(QFile::encodeName(path).constData(), &statbuf) == 0) {
         struct utimbuf utbuf;
         utbuf.actime = statbuf.st_atime; // access time, unchanged
         utbuf.modtime = mtime.toTime_t(); // modification time
@@ -236,8 +237,6 @@ void FileProtocol::mkdir( const QUrl& url, int permissions )
     if (metaData(QLatin1String("overwrite")) == QLatin1String("true"))
         QFile::remove(path);
 
-    KDE_struct_stat buff;
-    if ( KDE::lstat( path, &buff ) == -1 ) {
         if ( KDE::mkdir( path, 0777 /*umask will be applied*/ ) != 0 ) {
             if ( errno == EACCES ) {
                 error(KIO::ERR_ACCESS_DENIED, path);
@@ -249,6 +248,8 @@ void FileProtocol::mkdir( const QUrl& url, int permissions )
                 error(KIO::ERR_COULD_NOT_MKDIR, path);
                 return;
             }
+    QT_STATBUF buff;
+    if (QT_LSTAT(QFile::encodeName(path).constData(), &buff) == -1) {
         } else {
             if ( permissions != -1 )
                 chmod( url, permissions );
@@ -278,8 +279,8 @@ void FileProtocol::get( const QUrl& url )
     }
 
     const QString path(url.toLocalFile());
-    KDE_struct_stat buff;
-    if ( KDE::stat( path, &buff ) == -1 ) {
+    QT_STATBUF buff;
+    if (QT_STAT(QFile::encodeName(path).constData(), &buff) == -1) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, path);
         else
@@ -392,8 +393,8 @@ void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
     kDebug(7101) << url;
 
     openPath = url.toLocalFile();
-    KDE_struct_stat buff;
-    if (KDE::stat(openPath, &buff) == -1) {
+    QT_STATBUF buff;
+    if (QT_STAT(QFile::encodeName(openPath).constData(), &buff) == -1) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, openPath);
         else
@@ -535,15 +536,15 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
 
     QString dest_part(dest_orig + QLatin1String(".part"));
 
-    KDE_struct_stat buff_orig;
-    const bool bOrigExists = (KDE::lstat(dest_orig, &buff_orig) != -1);
+    QT_STATBUF buff_orig;
+    const bool bOrigExists = (QT_LSTAT(QFile::encodeName(dest_part).constData(), &buff_orig) != -1);
     bool bPartExists = false;
     const bool bMarkPartial = config()->readEntry("MarkPartial", true);
 
     if (bMarkPartial)
     {
-        KDE_struct_stat buff_part;
-        bPartExists = (KDE::stat( dest_part, &buff_part ) != -1);
+        QT_STATBUF buff_part;
+        bPartExists = (QT_LSTAT(QFile::encodeName(dest_part).constData(), &buff_part) != -1);
 
         if (bPartExists && !(_flags & KIO::Resume) && !(_flags & KIO::Overwrite) && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
@@ -665,13 +666,12 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
         {
           ::close(fd);
 
-          KDE_struct_stat buff;
-          if (bMarkPartial && KDE::stat( dest, &buff ) == 0)
-          {
             int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
             if (buff.st_size <  size)
               remove(_dest.data());
-          }
+            QT_STATBUF buff;
+            if (QT_STAT(QFile::encodeName(dest).constData(), &buff) == 0) {
+            }
         }
 
         ::exit(255);
@@ -724,8 +724,8 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
     if ( !mtimeStr.isEmpty() ) {
         QDateTime dt = QDateTime::fromString( mtimeStr, Qt::ISODate );
         if ( dt.isValid() ) {
-            KDE_struct_stat dest_statbuf;
-            if (KDE::stat( dest_orig, &dest_statbuf ) == 0) {
+            QT_STATBUF dest_statbuf;
+            if (QT_STAT(QFile::encodeName(dest_orig).constData(), &dest_statbuf) == 0) {
                 struct timeval utbuf[2];
                 // access time
                 utbuf[0].tv_sec = dest_statbuf.st_atime; // access time, unchanged  ## TODO preserve msec
@@ -779,9 +779,9 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
 
     mode_t type;
     mode_t access;
-    KDE_struct_stat buff;
+    QT_STATBUF buff;
 
-    if ( KDE_lstat( path.data(), &buff ) == 0 )  {
+    if (QT_LSTAT(path.data(), &buff) == 0)  {
 
         if (details > 2) {
             entry.insert( KIO::UDSEntry::UDS_DEVICE_ID, buff.st_dev );
