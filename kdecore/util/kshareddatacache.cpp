@@ -1015,9 +1015,9 @@ class KSharedDataCache::Private
         // cleared before shm is removed.
         m_lock.clear();
 
-        if (shm && !::munmap(shm, m_mapSize)) {
+        if (shm && 0 != ::munmap(shm, m_mapSize)) {
             kError(ksdcArea()) << "Unable to unmap shared memory segment"
-                << static_cast<void*>(shm);
+                << static_cast<void*>(shm) << ":" << ::strerror(errno);
         }
 
         shm = 0;
