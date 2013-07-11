@@ -34,7 +34,6 @@
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
-#include <kio/renamedialog.h>
 
 #include <jobuidelegateextension.h>
 #include <kio/jobuidelegatefactory.h>
@@ -989,7 +988,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                     if (m_bAutoRenameDirs) {
                         const QUrlPathInfo destInfo((*it).uDest);
                         const QUrl destDirectory = destInfo.directoryUrl();
-                        const QString newName = KIO::RenameDialog::suggestName(destDirectory, destInfo.fileName());
+                        const QString newName = KIO::suggestName(destDirectory, destInfo.fileName());
 
                         QUrlPathInfo newUrl((*it).uDest);
                         newUrl.setFileName(newName);
@@ -1216,7 +1215,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                 if (m_bAutoRenameFiles) {
                     QUrl destDirectory = QUrlPathInfo((*it).uDest).directoryUrl();
                     QUrlPathInfo destInfo((*it).uDest);
-                    const QString newName = KIO::RenameDialog::suggestName(destDirectory, destInfo.fileName());
+                    const QString newName = KIO::suggestName(destDirectory, destInfo.fileName());
 
                     destInfo.setFileName(newName);
 
@@ -1884,7 +1883,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 ; // nothing to do, stat+copy+del will overwrite
             } else if ((isDir && m_bAutoRenameDirs) || (!isDir && m_bAutoRenameFiles)) {
                 QUrl destDirectory = QUrlPathInfo(m_currentDestURL).directoryUrl(); // m_currendDestURL includes filename
-                const QString newName = KIO::RenameDialog::suggestName(destDirectory, QUrlPathInfo(m_currentDestURL).fileName());
+                const QString newName = KIO::suggestName(destDirectory, QUrlPathInfo(m_currentDestURL).fileName());
 
                 m_dest.setPath(m_currentDestURL.path());
                 QUrlPathInfo destInfo(m_dest);

@@ -27,6 +27,7 @@
 #include <QtDBus/QtDBus>
 #include <QHash>
 #include <QLocale>
+#include <QFileInfo>
 #include <qurlpathinfo.h>
 
 
@@ -390,4 +391,53 @@ QUrl KIO::upUrl(const QUrl &url)
     QUrlPathInfo pathInfo(url.resolved(QUrl("../")));
     pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
     return pathInfo.url();
+}
+
+QString KIO::suggestName(const QUrl &baseURL, const QString& oldName)
+{
+    QString dotSuffix, suggestedName;
+    QString basename = oldName;
+    const QChar spacer(' ');
+
+    //ignore dots at the beginning, that way "..aFile.tar.gz" will become "..aFile 1.tar.gz" instead of " 1..aFile.tar.gz"
+    int index = basename.indexOf('.');
+    int continous = 0;
+    while (continous == index) {
+        index = basename.indexOf('.', index + 1);
+        ++continous;
+    }
+
+    if (index != -1) {
+        dotSuffix = basename.mid(index);
+        basename.truncate(index);
+    }
+
+    int pos = basename.lastIndexOf(spacer);
+
+    if (pos != -1) {
+        QString tmp = basename.mid(pos + 1);
+        bool ok;
+        int number = tmp.toInt(&ok);
+
+        if (!ok) {  // ok there is no number
+            suggestedName = basename + spacer + '1' + dotSuffix;
+        } else {
+            // yes there's already a number behind the spacer so increment it by one
+            basename.replace(pos + 1, tmp.length(), QString::number(number + 1));
+            suggestedName = basename + dotSuffix;
+        }
+    } else // no spacer yet
+        suggestedName = basename + spacer + "1" + dotSuffix ;
+
+    // Check if suggested name already exists
+    bool exists = false;
+    // TODO: network transparency. However, using NetAccess from a modal dialog
+    // could be a problem, no? (given that it uses a modal widget itself....)
+    if (baseURL.isLocalFile())
+        exists = QFileInfo(baseURL.toLocalFile() + '/' + suggestedName).exists();
+
+    if (!exists)
+        return suggestedName;
+    else // already exists -> recurse
+        return suggestName(baseURL, suggestedName);
 }

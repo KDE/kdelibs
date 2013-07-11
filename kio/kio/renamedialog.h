@@ -95,8 +95,11 @@ public:
      * this function returns a suggested name for a file that doesn't exist
      * in that directory. The existence is only checked for local urls though.
      * The suggested file name is of the form "foo 1", "foo 2" etc.
+     * @deprecated use KIO::suggestName
      */
-    static QString suggestName(const QUrl& baseURL, const QString& oldName);
+#ifndef KDE_NO_DEPRECATED
+    static KIO_DEPRECATED QString suggestName(const QUrl& baseURL, const QString& oldName);
+#endif
 
 public Q_SLOTS:
     void cancelPressed();

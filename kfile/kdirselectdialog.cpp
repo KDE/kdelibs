@@ -44,7 +44,6 @@
 #include <kio/copyjob.h>
 #include <kio/mkdirjob.h>
 #include <kio/netaccess.h>
-#include <kio/renamedialog.h>
 #include <jobuidelegate.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
@@ -132,7 +131,7 @@ void KDirSelectDialog::Private::slotMkdir()
     QString where = m_parent->url().toDisplayString(QUrl::PreferLocalFile);
     QString name = i18nc("folder name", "New Folder" );
     if (m_parent->url().isLocalFile() && QFileInfo(m_parent->url().toLocalFile() + '/' + name).exists())
-        name = KIO::RenameDialog::suggestName( m_parent->url(), name );
+        name = KIO::suggestName( m_parent->url(), name );
 
     QString directory = KIO::encodeFileName( QInputDialog::getText(m_parent, i18nc("@title:window", "New Folder" ),
                                              i18nc("@label:textbox", "Create new folder in:\n%1" ,  where ),
