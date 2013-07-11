@@ -73,6 +73,7 @@ install( FILES
   slaveconfig.h
   kprotocolmanager.h
   global.h
+  http.h
   ioslave_defaults.h
   hostinfo.h
   jobtracker.h
