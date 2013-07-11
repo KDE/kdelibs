@@ -217,7 +217,7 @@ add_definitions(${KDE4_DEFINITIONS})
 # Needed for the calls to kconfig_add_kcfg_files in some modules
 set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
-set(kde4support_LIBRARY kde4support)
+set(KDE4Support_LIBRARIES kde4support)
 
 ################# list the subdirectories #################
 
