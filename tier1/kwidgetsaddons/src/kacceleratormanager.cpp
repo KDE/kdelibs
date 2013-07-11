@@ -41,7 +41,6 @@
 #include <QTextDocument>
 #include <QDebug>
 
-#include <kdeversion.h>
 #include "kacceleratormanager_p.h"
 
 
