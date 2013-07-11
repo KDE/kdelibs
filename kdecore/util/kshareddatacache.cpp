@@ -256,9 +256,11 @@ T *offsetAs(void *const base, qint32 offset)
  * @param a Numerator, should be ≥ 0.
  * @param b Denominator, should be > 0.
  */
-unsigned intCeil(unsigned a, unsigned b)
+static unsigned intCeil(unsigned a, unsigned b)
 {
-    if (KDE_ISUNLIKELY(b == 0)) {
+    // The overflow check is unsigned and so is actually defined behavior.
+    if (KDE_ISUNLIKELY(b == 0 || ((a + b) < a)))
+    {
         throw KSDCCorrupted();
     }
 
