@@ -26,7 +26,7 @@ target_link_libraries(KTextWidgets
   ki18n
   KWidgets
   KWidgetsAddons
-  kservice
+  KService
   KConfigCore
   KWindowSystem
   KIconThemes
