@@ -24,7 +24,7 @@ target_link_libraries(KTextWidgets
   SonnetCore
   SonnetUi
   ki18n
-  kwidgets
+  KWidgets
   KWidgetsAddons
   kservice
   KConfigCore

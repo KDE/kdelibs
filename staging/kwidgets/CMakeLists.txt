@@ -16,7 +16,7 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KWIDGETS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kwidgets_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KWidgetsConfigVersion.cmake")
 
 
 # TODO: Remove these
@@ -35,20 +35,20 @@ add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kwidgets")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KWidgets")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kwidgetsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KWidgetsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KWidgetsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
                              )
 
-install(EXPORT kwidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kwidgetsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KWidgetsTargets.cmake NAMESPACE KF5:: )
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfig.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/kwidgetsConfigVersion.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KWidgetsConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/KWidgetsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
        )
