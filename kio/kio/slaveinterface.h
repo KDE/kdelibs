@@ -102,6 +102,7 @@ class KIO_EXPORT SlaveInterface : public QObject
 protected:
     SlaveInterface(SlaveInterfacePrivate &dd, QObject *parent = 0);
 public:
+
     virtual ~SlaveInterface();
 
     void setConnection( Connection* connection );
@@ -110,6 +111,13 @@ public:
     // Send our answer to the MSG_RESUME (canResume) request
     // (to tell the "put" job whether to resume or not)
     void sendResumeAnswer( bool resume );
+
+    /**
+     * Sends our answer for the INF_MESSAGEBOX request.
+     *
+     * @since 4.11
+     */
+    void sendMessageBoxAnswer(int result);
 
     void setOffset( KIO::filesize_t offset );
     KIO::filesize_t offset() const;
@@ -120,16 +128,18 @@ public:
      *
      * @see setWindow
      * @since 4.8.2
+     * @deprecated
      */
-    QWidget* window() const;
+    KDE_DEPRECATED QWidget* window() const;
 
     /**
      * Sets the top level window used as a parent when displaying
      * dialogs.
      * @see window
      * @since 4.8.2
+     * @deprecated
      */
-    void setWindow(QWidget* window);
+    KDE_DEPRECATED void setWindow(QWidget* window);
 
 Q_SIGNALS:
     ///////////

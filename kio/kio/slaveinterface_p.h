@@ -60,9 +60,6 @@ public:
     bool slave_calcs_speed;
     QPointer<QWidget> parentWindow;
 
-    int messageBox(int type, const QString &text, const QString &caption,
-                 const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName);
-
     void slotHostInfo(const QHostInfo& info);
 };
 

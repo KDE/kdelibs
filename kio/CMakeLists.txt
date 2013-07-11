@@ -150,6 +150,7 @@ set(kiocore_STAT_SRCS
   kio/hostinfo.cpp
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
+  kio/usernotificationhandler.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)

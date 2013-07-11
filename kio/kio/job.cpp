@@ -557,6 +557,22 @@ void SimpleJobPrivate::restartAfterRedirection(KUrl *redirectionUrl)
     }
 }
 
+int SimpleJobPrivate::requestMessageBox(int _type, const QString& text, const QString& caption,
+                                       const QString& buttonYes, const QString& buttonNo,
+                                       const QString& iconYes, const QString& iconNo,
+                                       const QString& dontAskAgainName,
+                                       const KIO::MetaData& sslMetaData)
+{
+    JobUiDelegate* delegate = ui();
+    if (delegate) {
+      const JobUiDelegate::MessageBoxType type = static_cast<JobUiDelegate::MessageBoxType>(_type);
+      return delegate->requestMessageBox(type, text, caption, buttonYes, buttonNo,
+                                         iconYes, iconNo, dontAskAgainName, sslMetaData);
+    }
+    kWarning(7007) << "JobUiDelegate not set! Returing -1";
+    return -1;
+}
+
 void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )
 {
     Q_D(SimpleJob);
