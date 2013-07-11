@@ -6,7 +6,7 @@ macro(KDE4SUPPORT_EXAMPLES)
     add_executable(${_testname} ${_testname}.cpp)
     target_link_libraries(${_testname} kde4support Qt5::Test Qt5::Network Qt5::Widgets kdecore kdeui ${KCoreAddons_LIBRARIES} ki18n)
     ecm_mark_as_test(${_testname})
-  endforeach(_testname)
+  endforeach()
 endmacro()
 
 kde4support_examples(
@@ -30,11 +30,9 @@ kde4support_examples(
 )
 
 if (X11_FOUND)
-find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-kde4support_examples(
- kxerrorhandlertest
-)
+  find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+  kde4support_examples( kxerrorhandlertest )
 
-target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
-endif (X11_FOUND)
+  target_link_libraries(kxerrorhandlertest ${X11_X11_LIB})
+endif ()
 
