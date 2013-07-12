@@ -35,14 +35,10 @@
 #include <QtCore/QDirIterator>
 #include <QtCore/QFile>
 #include <QtCore/QMap>
-#include <QApplication>
-#include <QPalette>
 #include <QMimeDatabase>
 #include <qurlpathinfo.h>
 #include <QDebug>
 
-#include <kfilemetainfo.h>
-#include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kdesktopfile.h>
 #include <kmountpoint.h>
@@ -205,7 +201,6 @@ public:
 #ifndef KDE_NO_DEPRECATED
     QMap<const void*, void*> m_extra; // DEPRECATED
 #endif
-    mutable KFileMetaInfo m_metaInfo;
 
     enum { NumFlags = KFileItem::CreationTime + 1 };
     mutable QDateTime m_time[3];
@@ -565,7 +560,6 @@ void KFileItem::refresh()
     d->m_fileMode = KFileItem::Unknown;
     d->m_permissions = -1;
     d->m_bPermissionsKnown = false;
-    d->m_metaInfo = KFileMetaInfo();
     d->m_hidden = KFileItemPrivate::Auto;
     refreshMimeType();
 
@@ -1091,63 +1085,6 @@ QString KFileItem::comment() const
     return d->m_entry.stringValue( KIO::UDSEntry::UDS_COMMENT );
 }
 
-// ## where is this used?
-QPixmap KFileItem::pixmap( int _size, int _state ) const
-{
-    if (!d)
-        return QPixmap();
-
-    const QString udsIconName = d->m_entry.stringValue( KIO::UDSEntry::UDS_ICON_NAME );
-    if ( !udsIconName.isEmpty() )
-        return DesktopIcon(udsIconName, _size, _state);
-
-    QMimeDatabase db;
-
-    if (!d->m_useIconNameCache && !d->m_mimeType.isValid()) {
-        // No mimetype determined yet, go for a fast default icon
-        if (S_ISDIR(d->m_fileMode)) {
-            static QString defaultFolderIcon;
-            if ( defaultFolderIcon.isEmpty() ) {
-                const QMimeType mimeType = db.mimeTypeForName("inode/directory");
-                if (mimeType.isValid())
-                    defaultFolderIcon = mimeType.iconName();
-                else {
-                    qWarning() << "No mimetype for inode/directory could be found. Check your installation.";
-                    defaultFolderIcon = "unknown";
-                }
-            }
-            return DesktopIcon( defaultFolderIcon, _size, _state );
-        }
-        return DesktopIcon( "unknown", _size, _state );
-    }
-
-    QMimeType mime;
-    // Use guessed mimetype for the icon
-    if (!d->m_guessedMimeType.isEmpty())
-        mime = db.mimeTypeForName(d->m_guessedMimeType);
-    else
-        mime = d->m_mimeType;
-
-    QString icon = iconName();
-
-    // Support for gzipped files: extract mimetype of contained file
-    // See also the relevant code in overlays, which adds the zip overlay.
-    if (mime.name() == "application/x-gzip" && d->m_url.path().endsWith(QLatin1String(".gz"))) {
-        QUrl sf(d->m_url);
-        sf.setPath(sf.path().left(sf.path().length() - 3));
-        //qDebug() << "subFileName=" << subFileName;
-        mime = db.mimeTypeForUrl(sf);
-        icon = mime.iconName();
-    }
-
-    QPixmap p = KIconLoader::global()->loadMimeTypeIcon(icon, KIconLoader::Desktop, _size, _state);
-    //qDebug() << "finding pixmap for" << url << "mime=" << mime.name() << "icon=" << icon;
-    if (p.isNull())
-        qWarning() << "Pixmap not found for mimetype" << mime.name() << "icon" << icon;
-
-    return p;
-}
-
 bool KFileItem::isReadable() const
 {
     if (!d)
@@ -1299,87 +1236,6 @@ QString KFileItem::getStatusBarInfo() const
     return text;
 }
 
-#ifndef KDE_NO_DEPRECATED
-QString KFileItem::getToolTipText(int maxcount) const
-{
-    if (!d)
-        return QString();
-
-    // we can return QString() if no tool tip should be shown
-    QString tip;
-    KFileMetaInfo info = metaInfo();
-
-    // the font tags are a workaround for the fact that the tool tip gets
-    // screwed if the color scheme uses white as default text color
-    const QString colorName = QApplication::palette().color(QPalette::ToolTipText).name();
-    const QString start = "<tr><td align=\"right\"><nobr><font color=\"" + colorName + "\"><b>";
-    const QString mid = "&nbsp;</b></font></nobr></td><td><nobr><font color=\"" + colorName + "\">";
-    const char* end = "</font></nobr></td></tr>";
-
-    tip = "<table cellspacing=0 cellpadding=0>";
-
-    tip += start + i18n("Name:") + mid + text() + end;
-    tip += start + i18n("Type:") + mid;
-
-    QString type = mimeComment().toHtmlEscaped();
-    if ( d->m_bLink ) {
-        tip += i18n("Link to %1 (%2)", linkDest(), type) + end;
-    } else
-        tip += type + end;
-
-    if ( !S_ISDIR ( d->m_fileMode ) )
-        tip += start + i18n("Size:") + mid +
-               QString("%1").arg(KIO::convertSize(size())) +
-               end;
-
-    tip += start + i18n("Modified:") + mid +
-           timeString( KFileItem::ModificationTime ) + end
-#ifndef Q_OS_WIN //TODO: show win32-specific permissions
-           +start + i18n("Owner:") + mid + user() + " - " + group() + end +
-           start + i18n("Permissions:") + mid +
-           permissionsString() + end
-#endif
-           ;
-
-    if (info.isValid())
-    {
-        const QStringList keys = info.preferredKeys();
-
-        // now the rest
-        QStringList::ConstIterator it = keys.begin();
-        for (int count = 0; count<maxcount && it!=keys.end() ; ++it)
-        {
-            if ( count == 0 )
-            {
-                tip += "<tr><td colspan=2><center><s>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</s></center></td></tr>";
-            }
-
-            KFileMetaInfoItem item = info.item( *it );
-            if ( item.isValid() )
-            {
-                QString s = item.value().toString();
-                if ( !s.isEmpty() )
-                {
-                    count++;
-                    tip += start +
-                           item.name().toHtmlEscaped() + ':' +
-                           mid +
-                           s.toHtmlEscaped() +
-                           end;
-                }
-
-            }
-        }
-    }
-    tip += "</table>";
-
-    //qDebug() << "making this the tool tip rich text:\n";
-    //qDebug() << tip;
-
-    return tip;
-}
-#endif
-
 bool KFileItem::cmp( const KFileItem & item ) const
 {
     if (!d && !item.d)
@@ -1482,30 +1338,6 @@ QString KFileItem::timeString( unsigned int which ) const
     }
 }
 #endif
-
-void KFileItem::setMetaInfo( const KFileMetaInfo & info ) const
-{
-    if (!d)
-        return;
-
-    d->m_metaInfo = info;
-}
-
-KFileMetaInfo KFileItem::metaInfo(bool autoget, int what) const
-{
-    if (!d)
-        return KFileMetaInfo();
-
-    if ((isRegularFile() || isDir()) && autoget && !d->m_metaInfo.isValid())
-    {
-        bool isLocalUrl;
-        QUrl url(mostLocalUrl(isLocalUrl));
-        if (isLocalUrl) {
-            d->m_metaInfo = KFileMetaInfo(url.toLocalFile(), mimetype(), (KFileMetaInfo::What)what);
-        }
-    }
-    return d->m_metaInfo;
-}
 
 #ifndef KDE_NO_DEPRECATED
 void KFileItem::assign( const KFileItem & item )

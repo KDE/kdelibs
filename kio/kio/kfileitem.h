@@ -22,6 +22,7 @@
 
 #include <sys/stat.h>
 
+#include <kio_export.h>
 #include <kio/global.h>
 #include <kio/kacl.h>
 #include <kio/udsentry.h>
@@ -30,7 +31,6 @@
 #include <QFile>
 
 #include <qmimetype.h>
-#include <kfilemetainfo.h>
 #include <QtCore/QList>
 
 class KFileItemPrivate;
@@ -412,16 +412,6 @@ public:
     QString iconName() const;
 
     /**
-     * Returns a pixmap representing the file.
-     * @param _size Size for the pixmap in pixels. Zero will return the
-     * globally configured default size.
-     * @param _state The state of the icon: KIconLoader::DefaultState,
-     * KIconLoader::ActiveState or KIconLoader::DisabledState.
-     * @return the pixmap
-     */
-    QPixmap pixmap( int _size, int _state=0 ) const;
-
-    /**
      * Returns the overlays (bitfield of KIconLoader::*Overlay flags) that are used
      * for this item's pixmap. Overlays are used to show for example, whether
      * a file can be modified.
@@ -443,20 +433,6 @@ public:
      * @return the status bar information
      */
     QString getStatusBarInfo() const;
-
-    /**
-     * Returns the string to be displayed in the tool tip when the mouse
-     * is over this item. This may load a plugin to determine additional
-     * information specific to the mimetype of the file.
-     *
-     * @param maxcount the maximum number of entries shown
-     * @return the tool tip string
-     *
-     * @deprecated File Managers implement more complete tooltips.
-     */
-#ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED QString getToolTipText(int maxcount = 6) const;
-#endif
 
     /**
      * Returns true if files can be dropped over this item.
@@ -590,25 +566,6 @@ public:
 #ifndef KDE_NO_DEPRECATED
     KIO_DEPRECATED void removeExtraData( const void *key );
 #endif
-
-    /**
-     * Sets the metainfo of this item to @p info.
-     *
-     * Made const to avoid deep copy.
-     * @param info the new meta info
-     */
-    void setMetaInfo( const KFileMetaInfo & info ) const;
-
-    /**
-     * Returns the metainfo of this item.
-     *
-     * (since 4.4.3) By default it uses the KFileMetaInfo::ContentInfo | KFileMetaInfo::TechnicalInfo.
-     * If you need more information, create your own KFileMetaInfo object and set it using setMetaInfo()
-     * @param autoget if true, the metainfo will automatically be created
-     * @param what how much metainfo you need to retrieve from the file (KFileMetaInfo::WhatFlag)
-     */
-    KFileMetaInfo metaInfo(bool autoget = true,
-                           int what = KFileMetaInfo::ContentInfo | KFileMetaInfo::TechnicalInfo) const;
 
     /**
      * @deprecated simply use '='
