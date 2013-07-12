@@ -387,30 +387,20 @@ void KDirListerCache::forgetCachedItemsJob(KDirLister::Private::CachedItemsJob* 
     }
 }
 
-bool KDirListerCache::validUrl( const KDirLister *lister, const QUrl& url ) const
+bool KDirListerCache::validUrl(KDirLister *lister, const QUrl& url) const
 {
-  if ( !url.isValid() )
-  {
-    if ( lister->d->autoErrorHandling )
-    {
-      QString tmp = i18n("Malformed URL\n%1", url.errorString() );
-      qWarning() << url.errorString();
-      KMessageBox::error( lister->d->errorParent, tmp );
+    if (!url.isValid()) {
+        qWarning() << url.errorString();
+        lister->handleErrorMessage(i18n("Malformed URL\n%1", url.errorString()));
+        return false;
     }
-    return false;
-  }
 
-  if ( !KProtocolManager::supportsListing( url ) )
-  {
-    if ( lister->d->autoErrorHandling )
-    {
-      QString tmp = i18n("URL cannot be listed\n%1", url.toString() );
-      KMessageBox::error( lister->d->errorParent, tmp );
+    if (!KProtocolManager::supportsListing(url)) {
+        lister->handleErrorMessage(i18n("URL cannot be listed\n%1", url.toString()));
+        return false;
     }
-    return false;
-  }
 
-  return true;
+    return true;
 }
 
 void KDirListerCache::stop( KDirLister *lister, bool silent )
@@ -2404,6 +2394,12 @@ void KDirLister::handleError( KIO::Job *job )
 {
   if ( d->autoErrorHandling )
     job->uiDelegate()->showErrorMessage();
+}
+
+void KDirLister::handleErrorMessage(const QString &message)
+{
+    if (d->autoErrorHandling)
+        KMessageBox::error(d->errorParent, message);
 }
 
 

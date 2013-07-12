@@ -644,8 +644,14 @@ protected:
    */
   virtual bool doMimeFilter( const QString& mime, const QStringList& filters ) const;
 
-  /** Reimplement to customize error handling */
+  /**
+   * Reimplement to customize error handling
+   */
   virtual void handleError( KIO::Job * );
+  /**
+   * Reimplement to customize error handling
+   */
+  virtual void handleErrorMessage(const QString &message);
 
 private:
   class Private;

@@ -456,7 +456,6 @@ void tst_KToolBar::changeGlobalToolButtonStyleSetting(const QString& mainToolBar
     KConfigGroup group(KSharedConfig::openConfig(), "Toolbar style");
     group.writeEntry("ToolButtonStyle", mainToolBar);
     group.writeEntry("ToolButtonStyleOtherToolbars", otherToolBars);
-<<<<<<< HEAD:kdeui/tests/ktoolbar_unittest.cpp
     group.sync();
 
     // Same dbus connect as the one in KToolBar. We want our spy to be notified of receiving it.
@@ -468,11 +467,6 @@ void tst_KToolBar::changeGlobalToolButtonStyleSetting(const QString& mainToolBar
 
     KToolBar::emitToolbarStyleChanged();
     spy.wait(2000);
-=======
-    KSharedConfig::openConfig()->sync();
-    // KGlobalSettings::emitChange(KGlobalSettings::ToolbarStyleChanged);
-    // too racy: QEventLoop().processEvents( QEventLoop::AllEvents, 20 ); // need to process DBUS signal
->>>>>>> 685744a... Move the xmlgui classes to the XmlGui framework.:staging/xmlgui/autotests/ktoolbar_unittest.cpp
 }
 
 void tst_KToolBar::deleteGlobalToolButtonStyleSetting()

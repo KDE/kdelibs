@@ -261,7 +261,7 @@ private:
     class DirItem;
     DirItem* dirItemForUrl(const QUrl& dir) const;
 
-    bool validUrl( const KDirLister *lister, const QUrl& _url ) const;
+    bool validUrl(KDirLister *lister, const QUrl& _url) const;
 
     void stopListJob(const QString& url, bool silent);
 
