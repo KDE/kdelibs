@@ -43,7 +43,7 @@ else (APPLE)
   kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
 endif (APPLE)
 
-target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n kde4support)
+target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n kde4support KCrash)
 if (X11_FOUND)
   target_link_libraries(kdeinit5 ${X11_X11_LIB})
 endif()
@@ -127,7 +127,7 @@ qt5_generate_dbus_interface(klauncher_adaptor.h org.kde.KLauncher.xml)
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 set_target_properties(kdeinit_klauncher PROPERTIES DEFINE_SYMBOL MAKE_KLAUNCHER)
 
-target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} ${KCoreAddons_LIBRARIES} )
+target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} ${KCoreAddons_LIBRARIES} KCrash)
 
 install(TARGETS kdeinit_klauncher ${INSTALL_TARGETS_DEFAULT_ARGS})
 

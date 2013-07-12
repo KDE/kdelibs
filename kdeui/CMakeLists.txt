@@ -42,20 +42,12 @@ check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 check_include_files(unistd.h      HAVE_UNISTD_H)
 check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
-check_function_exists(strlcpy    HAVE_STRLCPY)
-check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
-check_include_files(string.h      HAVE_STRING_H)
 
 configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
 
 configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/kaboutapplicationconfigattica_p.h.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/dialogs/kaboutapplicationconfigattica_p.h
-)
-
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/util/config-strlcpy.h.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/util/config-strlcpy.h
 )
 
 add_subdirectory( about )
@@ -92,8 +84,6 @@ set(kdeui_LIB_SRCS
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
- util/strlcpy-fake.c
- util/kcrash.cpp
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
@@ -258,7 +248,6 @@ install( FILES
  dialogs/kshortcutseditor.h
  kernel/kstyle.h
  shortcuts/kgesture.h
- util/kcrash.h
  util/kglobalsettings.h
  util/khelpclient.h
  util/kpassivepopupmessagehandler.h

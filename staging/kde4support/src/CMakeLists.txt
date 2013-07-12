@@ -124,7 +124,7 @@ set(kde4support_INCLUDES
 )
 target_include_directories(kde4support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
-target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES} KCompletion)
+target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} KCrash ${KWidgetsAddons_LIBRARIES} kwidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES} KCompletion)
 
 set_target_properties(kde4support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
                                   SOVERSION ${KDE4SUPPORT_SOVERSION} )
