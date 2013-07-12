@@ -22,7 +22,7 @@
 #ifndef _KGLOBALACCEL_H_
 #define _KGLOBALACCEL_H_
 
-#include "xmlgui_export.h"
+#include <xmlgui_export.h>
 #include "kglobalshortcutinfo.h"
 
 #include <QtCore/QObject>

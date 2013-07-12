@@ -17,11 +17,7 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
 KDEUI_UNIT_TESTS(
   kactioncollectiontest
-  kactioncategorytest
   kglobalsettingstest
-  kmainwindow_unittest
-  kxmlgui_unittest
-  ktoolbar_unittest
   krichtextedittest
   kconfigdialog_unittest
   kcolorbuttontest
@@ -29,21 +25,14 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  kbugreporttest
   kcategorizedviewtest
   kcolorcollectiontest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
-  kmainwindowtest
-  kmainwindowrestoretest
   knewpassworddialogtest
   knotificationrestrictionstest
   kpopuptest
   krulertest
-  ktoolbartest
-  kwindowtest
-  kxmlguitest
-  kxmlguiwindowtest
 )
 
 add_subdirectory(krichtexteditor)

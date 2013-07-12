@@ -150,12 +150,6 @@ set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and searc
                        PURPOSE ${STRIGI_EXTRA_TEXT}
                       )
 
-find_package(LibAttica 0.4.2)
-set_package_properties(LibAttica PROPERTIES DESCRIPTION "Support for Get Hot New Stuff"
-                       URL "https://projects.kde.org/attica"
-                       TYPE REQUIRED
-                      )
-
 #optional features
 find_package(X11)
 if(X11_FOUND)

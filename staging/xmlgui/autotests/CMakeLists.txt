@@ -17,5 +17,9 @@ macro(XMLGUI_TESTS)
 endmacro()
 
 xmlgui_tests(
+   kactioncategorytest
    kglobalshortcuttest
+   kmainwindow_unittest
+   ktoolbar_unittest
+   kxmlgui_unittest
 )

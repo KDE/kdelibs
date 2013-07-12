@@ -213,7 +213,7 @@ KGlobalAccel *KGlobalAccel::self()
 
 bool KGlobalAccelPrivate::doRegister(QAction *action)
 {
-    if (!action || action->objectName().isEmpty() || action->objectName().startsWith(QLatin1String("unnamed-"))) {
+    if (!action || action->objectName().isEmpty() || action->objectName().startsWith(QStringLiteral("unnamed-"))) {
         qWarning() << "Attempt to set global shortcut for action without objectName()."
                         " Read the setGlobalShortcut() documentation.";
         return false;
@@ -259,7 +259,7 @@ void KGlobalAccelPrivate::remove(QAction *action, Removal removal)
         // internal registry. That happened above.
         if (!action->property("isConfigurationAction").toBool()) {
             // If it's a session shortcut unregister it.
-            action->objectName().startsWith(QLatin1String("_k_session:"))
+            action->objectName().startsWith(QStringLiteral("_k_session:"))
                 ? iface.unRegister(actionId)
                 : iface.setInactive(actionId);
         }
@@ -447,7 +447,7 @@ void KGlobalAccelPrivate::_k_serviceOwnerChanged(const QString &name, const QStr
                                                  const QString &newOwner)
 {
     Q_UNUSED(oldOwner);
-    if (name == QLatin1String("org.kde.kglobalaccel") && !newOwner.isEmpty()) {
+    if (name == QStringLiteral("org.kde.kglobalaccel") && !newOwner.isEmpty()) {
         // kglobalaccel was restarted
         qDebug() << "detected kglobalaccel restarting, re-registering all shortcut keys";
         reRegisterAll();
