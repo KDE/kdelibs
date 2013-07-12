@@ -18,13 +18,13 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kglobalsettings.h>
 #include <QtTest/QtTest>
+#include <QDBusConnection>
+
 #include <ktoolbar.h>
 #include <kmainwindow.h>
 #include <kconfiggroup.h>
 #include <kiconloader.h>
-#include <QDomElement>
 #include <QToolButton>
 #include "testxmlguiwindow.h"
 #include "testguiclient.h"
@@ -57,6 +57,9 @@ private slots:
     void testToolButtonStyleXmlGui();
     void testToolBarPosition();
     void testXmlGuiSwitching();
+
+Q_SIGNALS:
+    void signalAppearanceChanged();
 
 protected:
     bool eventFilter(QObject * watched, QEvent * event);
@@ -302,9 +305,8 @@ void tst_KToolBar::changeGlobalIconSizeSetting(int mainToolbarIconSize, int icon
     globals.writeEntry("Size", iconSize);
     KSharedConfig::openConfig()->sync();
 
-    KIconLoader l;
-    QSignalSpy spy(&l, SIGNAL(iconChanged(int)));
-    l.emitChange(KIconLoader::Desktop);
+    QSignalSpy spy(KIconLoader::global(), SIGNAL(iconChanged(int)));
+    KIconLoader::global()->emitChange(KIconLoader::Desktop);
     spy.wait(200);
 }
 
@@ -316,9 +318,8 @@ void tst_KToolBar::deleteGlobalIconSizeSetting()
     globals.deleteEntry("Size");
     KSharedConfig::openConfig()->sync();
 
-    KIconLoader l;
-    QSignalSpy spy(&l, SIGNAL(iconChanged(int)));
-    l.emitChange(KIconLoader::Desktop);
+    QSignalSpy spy(KIconLoader::global(), SIGNAL(iconChanged(int)));
+    KIconLoader::global()->emitChange(KIconLoader::Desktop);
     spy.wait(200);
 }
 
@@ -451,10 +452,17 @@ void tst_KToolBar::changeGlobalToolButtonStyleSetting(const QString& mainToolBar
     KConfigGroup group(KSharedConfig::openConfig(), "Toolbar style");
     group.writeEntry("ToolButtonStyle", mainToolBar);
     group.writeEntry("ToolButtonStyleOtherToolbars", otherToolBars);
-    KSharedConfig::openConfig()->sync();
-    // KGlobalSettings::emitChange(KGlobalSettings::ToolbarStyleChanged);
-    // too racy: QEventLoop().processEvents( QEventLoop::AllEvents, 20 ); // need to process DBUS signal
-    QMetaObject::invokeMethod(KGlobalSettings::self(), "_k_slotNotifyChange", Q_ARG(int, KGlobalSettings::ToolbarStyleChanged), Q_ARG(int, 0));
+    group.sync();
+
+    // Same dbus connect as the one in KToolBar. We want our spy to be notified of receiving it.
+    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KToolBar"),
+                                          QStringLiteral("org.kde.KToolBar"),
+                                          QStringLiteral("styleChanged"),
+                                          this, SIGNAL(signalAppearanceChanged()));
+    QSignalSpy spy(this, SIGNAL(signalAppearanceChanged()));
+
+    KToolBar::emitToolbarStyleChanged();
+    spy.wait(2000);
 }
 
 void tst_KToolBar::deleteGlobalToolButtonStyleSetting()

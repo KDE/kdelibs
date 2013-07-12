@@ -224,6 +224,13 @@ public:
      */
     static void setToolBarsLocked( bool locked );
 
+    /**
+     * Emits a dbus signal to tell all toolbars in all applications, that the user settings have
+     * changed.
+     * @since 5.0
+     */
+    static void emitToolbarStyleChanged();
+
   protected Q_SLOTS:
     virtual void slotMovableChanged(bool movable);
 

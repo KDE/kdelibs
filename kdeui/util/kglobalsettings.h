@@ -548,8 +548,13 @@ public:
      *
      * This is typically called by kcontrol modules after changing the corresponding
      * config file. Do not call this from a normal KDE application.
+     *
+     * @deprecated since 5.0 :
+     * @li emitChange(ToolbarStyleChanged) is now KToolBar::emitToolbarStyleChanged()
+     * @li emitChange(IconChanged, group) is now KIconLoader::emitChange(group)
+     * TODO: complete this list
      */
-    static void emitChange(ChangeType changeType, int arg = 0);
+    static KDEUI_DEPRECATED void emitChange(ChangeType changeType, int arg = 0);
 
     /**
      * Return the KGlobalSettings singleton.

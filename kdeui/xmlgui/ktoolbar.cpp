@@ -38,6 +38,9 @@
 #include <QMouseEvent>
 #include <QToolButton>
 #include <QtXml/QDomElement>
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QDebug>
 
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
@@ -259,10 +262,10 @@ void KToolBar::Private::init(bool readConfig, bool _isMainToolBar)
 
   q->setAcceptDrops(true);
 
-  connect(KGlobalSettings::self(), SIGNAL(toolbarAppearanceChanged(int)),
-          q, SLOT(slotAppearanceChanged()));
-  connect(KIconLoader::global(), SIGNAL(iconLoaderSettingsChanged()),
-          q, SLOT(slotAppearanceChanged()));
+    QDBusConnection::sessionBus().connect(QString(), QStringLiteral("/KToolBar"), QStringLiteral("org.kde.KToolBar"),
+                                          QStringLiteral("styleChanged"), q, SLOT(slotAppearanceChanged()));
+    connect(KIconLoader::global(), SIGNAL(iconLoaderSettingsChanged()),
+            q, SLOT(slotAppearanceChanged()));
 }
 
 QString KToolBar::Private::getPositionAsString() const
@@ -1425,6 +1428,12 @@ void KToolBar::setToolBarsLocked(bool locked)
 bool KToolBar::toolBarsLocked()
 {
     return KToolBar::Private::s_locked;
+}
+
+void KToolBar::emitToolbarStyleChanged()
+{
+    QDBusMessage message = QDBusMessage::createSignal(QStringLiteral("/KToolBar"), QStringLiteral("org.kde.KToolBar"), QStringLiteral("styleChanged"));
+    QDBusConnection::sessionBus().send(message);
 }
 
 #include "moc_ktoolbar.cpp"
