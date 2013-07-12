@@ -44,7 +44,6 @@
 #include <kfilemetainfo.h>
 #include <kiconloader.h>
 #include <klocalizedstring.h>
-#include <krun.h>
 #include <kdesktopfile.h>
 #include <kmountpoint.h>
 #include <kconfiggroup.h>
@@ -1380,16 +1379,6 @@ QString KFileItem::getToolTipText(int maxcount) const
     return tip;
 }
 #endif
-
-void KFileItem::run( QWidget* parentWidget ) const
-{
-    if (!d) {
-        qWarning() << "null item";
-        return;
-    }
-
-    (void) new KRun(targetUrl(), parentWidget);
-}
 
 bool KFileItem::cmp( const KFileItem & item ) const
 {

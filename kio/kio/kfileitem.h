@@ -473,12 +473,6 @@ public:
 #endif
 
     /**
-     * Let's "KRun" this file !
-     * (e.g. when file is clicked or double-clicked or return is pressed)
-     */
-    void run( QWidget* parentWidget = 0 ) const;
-
-    /**
      * Returns the UDS entry. Used by the tree view to access all details
      * by position.
      * @return the UDS entry
