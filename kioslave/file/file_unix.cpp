@@ -32,6 +32,7 @@
 #include <QtCore/QFile>
 #include <qurlpathinfo.h>
 #include <QtCore/QDir>
+#include <qplatformdefs.h>
 
 #include <kde_file.h>
 #include <kdebug.h>
@@ -64,7 +65,7 @@ using namespace KIO;
 #define MAX_IPC_SIZE (1024*32)
 
 static bool
-same_inode(const KDE_struct_stat &src, const KDE_struct_stat &dest)
+same_inode(const QT_STATBUF &src, const QT_STATBUF &dest)
 {
    if (src.st_ino == dest.st_ino &&
        src.st_dev == dest.st_dev)
@@ -72,8 +73,6 @@ same_inode(const KDE_struct_stat &src, const KDE_struct_stat &dest)
 
    return false;
 }
-
-extern int write_all(int fd, const char *buf, size_t len);
 
 void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
                          int _mode, JobFlags _flags )
@@ -84,17 +83,17 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
     const QString dest = destUrl.toLocalFile();
     QByteArray _src( QFile::encodeName(src));
     QByteArray _dest( QFile::encodeName(dest));
-    KDE_struct_stat buff_src;
+
+    QT_STATBUF buff_src;
 #if HAVE_POSIX_ACL
     acl_t acl;
 #endif
-
-    if ( KDE_stat( _src.data(), &buff_src ) == -1 ) {
+    if (QT_STAT(_src.data(), &buff_src) == -1) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, src);
         else
            error(KIO::ERR_DOES_NOT_EXIST, src);
-	return;
+        return;
     }
 
     if ( S_ISDIR( buff_src.st_mode ) ) {
@@ -106,8 +105,8 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 	return;
     }
 
-    KDE_struct_stat buff_dest;
-    bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
+    QT_STATBUF buff_dest;
+    bool dest_exists = (QT_LSTAT(_dest.data(), &buff_dest) != -1);
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))
@@ -134,18 +133,18 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
         if ((_flags & KIO::Overwrite) && S_ISLNK(buff_dest.st_mode))
         {
             //kDebug(7101) << "copy(): LINK DESTINATION";
-            remove( _dest.data() );
+            QFile::remove(dest);
         }
     }
 
-    int src_fd = KDE_open( _src.data(), O_RDONLY);
-    if ( src_fd < 0 ) {
-	error(KIO::ERR_CANNOT_OPEN_FOR_READING, src);
-	return;
+    QFile src_file(src);
+    if (!src_file.open(QIODevice::ReadOnly)) {
+        error(KIO::ERR_CANNOT_OPEN_FOR_READING, src);
+        return;
     }
 
 #if HAVE_FADVISE
-    posix_fadvise(src_fd,0,0,POSIX_FADV_SEQUENTIAL);
+    posix_fadvise(src_file.handle(),0,0,POSIX_FADV_SEQUENTIAL);
 #endif
     // WABA: Make sure that we keep writing permissions ourselves,
     // otherwise we can be in for a surprise on NFS.
@@ -155,24 +154,24 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
     else
        initialMode = 0666;
 
-    int dest_fd = KDE_open(_dest.data(), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
-    if ( dest_fd < 0 ) {
-	kDebug(7101) << "###### COULD NOT WRITE " << dest;
+    QFile dest_file(dest);
+    if (!dest_file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
+        kDebug(7101) << "###### COULD NOT WRITE " << dest;
         if ( errno == EACCES ) {
             error(KIO::ERR_WRITE_ACCESS_DENIED, dest);
         } else {
             error(KIO::ERR_CANNOT_OPEN_FOR_WRITING, dest);
         }
-        ::close(src_fd);
+        src_file.close();
         return;
     }
 
 #if HAVE_FADVISE
-    posix_fadvise(dest_fd,0,0,POSIX_FADV_SEQUENTIAL);
+    posix_fadvise(dest_file.handle(),0,0,POSIX_FADV_SEQUENTIAL);
 #endif
 
 #if HAVE_POSIX_ACL
-    acl = acl_get_fd(src_fd);
+    acl = acl_get_fd(src_file.handle());
     if ( acl && !isExtendedACL( acl ) ) {
         kDebug(7101) << _dest.data() << " doesn't have extended ACL";
         acl_free( acl );
@@ -192,7 +191,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 #ifdef USE_SENDFILE
        if (use_sendfile) {
             off_t sf = processed_size;
-            n = KDE_sendfile( dest_fd, src_fd, &sf, MAX_IPC_SIZE );
+            n = ::sendfile( dest_file.handle(), src_file.handle(), &sf, MAX_IPC_SIZE );
             processed_size = sf;
             if ( n == -1 && ( errno == EINVAL || errno == ENOSYS ) ) { //not all filesystems support sendfile()
                 kDebug(7101) << "sendfile() not supported, falling back ";
@@ -201,7 +200,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
        }
        if (!use_sendfile)
 #endif
-        n = ::read( src_fd, buffer, MAX_IPC_SIZE );
+        n = ::read(src_file.handle(), buffer, MAX_IPC_SIZE);
 
        if (n == -1)
        {
@@ -223,8 +222,8 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
           } else
 #endif
           error(KIO::ERR_COULD_NOT_READ, src);
-          ::close(src_fd);
-          ::close(dest_fd);
+          src_file.close();
+          dest_file.close();
 #if HAVE_POSIX_ACL
           if (acl) acl_free(acl);
 #endif
@@ -235,20 +234,13 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 #ifdef USE_SENDFILE
        if ( !use_sendfile ) {
 #endif
-         if (write_all( dest_fd, buffer, n))
-         {
-           ::close(src_fd);
-           ::close(dest_fd);
-
-           if ( errno == ENOSPC ) // disk full
-           {
-              error(KIO::ERR_DISK_FULL, dest);
-              remove( _dest.data() );
-           }
-           else
-           {
-              kWarning(7101) << "Couldn't write[2]. Error:" << strerror(errno);
-              error(KIO::ERR_COULD_NOT_WRITE, dest);
+        if (dest_file.write( buffer, n ) != n) {
+            if (dest_file.error() == QFileDevice::ResourceError ) { // disk full
+                error(KIO::ERR_DISK_FULL, dest);
+                remove( _dest.data() );
+            } else {
+                kWarning(7101) << "Couldn't write[2]. Error:" << dest_file.errorString();
+                error(KIO::ERR_COULD_NOT_WRITE, dest);
            }
 #if HAVE_POSIX_ACL
            if (acl) acl_free(acl);
@@ -262,11 +254,12 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
        processedSize( processed_size );
     }
 
-    ::close( src_fd );
+    src_file.close();
+    dest_file.close();
 
-    if (::close( dest_fd))
+    if (dest_file.error() != QFile::NoError)
     {
-        kWarning(7101) << "Error when closing file descriptor[2]:" << strerror(errno);
+        kWarning(7101) << "Error when closing file descriptor[2]:" << dest_file.errorString();
         error(KIO::ERR_COULD_NOT_WRITE, dest);
 #if HAVE_POSIX_ACL
         if (acl) acl_free(acl);
@@ -376,7 +369,7 @@ void FileProtocol::listDir( const QUrl& url)
     UDSEntry entry;
 
 #ifndef HAVE_DIRENT_D_TYPE
-    KDE_struct_stat st;
+    QT_STATBUF st;
 #endif
     KDE_struct_dirent *ep;
     while ((ep = KDE_readdir(dp)) != 0 ) {
@@ -402,7 +395,7 @@ void FileProtocol::listDir( const QUrl& url)
             const bool isSymLink = (ep->d_type & DT_LNK);
 #else
             // oops, no fast way, we need to stat (e.g. on Solaris)
-            if (KDE_lstat(ep->d_name, &st) == -1) {
+            if (QT_LSTAT(ep->d_name, &st) == -1) {
                 continue; // how can stat fail?
             }
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
@@ -440,8 +433,8 @@ void FileProtocol::rename( const QUrl &srcUrl, const QUrl &destUrl,
     const QString dest = destUrl.toLocalFile();
     const QByteArray _src(QFile::encodeName(src));
     const QByteArray _dest(QFile::encodeName(dest));
-    KDE_struct_stat buff_src;
-    if ( KDE_lstat( _src.data(), &buff_src ) == -1 ) {
+    QT_STATBUF buff_src;
+    if (QT_LSTAT(_src.data(), &buff_src) == -1) {
         if ( errno == EACCES )
            error(KIO::ERR_ACCESS_DENIED, src);
         else
@@ -449,10 +442,10 @@ void FileProtocol::rename( const QUrl &srcUrl, const QUrl &destUrl,
         return;
     }
 
-    KDE_struct_stat buff_dest;
+    QT_STATBUF buff_dest;
     // stat symlinks here (lstat, not stat), to avoid ERR_IDENTICAL_FILES when replacing symlink
     // with its target (#169547)
-    bool dest_exists = ( KDE_lstat( _dest.data(), &buff_dest ) != -1 );
+    bool dest_exists = (QT_LSTAT(_dest.data(), &buff_dest) != -1);
     if ( dest_exists )
     {
         if (S_ISDIR(buff_dest.st_mode))
@@ -516,8 +509,8 @@ void FileProtocol::symlink( const QString &target, const QUrl &destUrl, KIO::Job
             }
             else
             {
-                KDE_struct_stat buff_dest;
-                if (KDE_lstat(QFile::encodeName(dest), &buff_dest) == 0 && S_ISDIR(buff_dest.st_mode))
+                QT_STATBUF buff_dest;
+                if (QT_LSTAT(QFile::encodeName(dest), &buff_dest) == 0 && S_ISDIR(buff_dest.st_mode))
                     error(KIO::ERR_DIR_ALREADY_EXIST, dest);
                 else
                     error(KIO::ERR_FILE_ALREADY_EXIST, dest);

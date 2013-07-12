@@ -35,7 +35,6 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QCoreApplication>
 
-#include <kcrash.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
@@ -183,7 +182,7 @@ SlaveBase::SlaveBase( const QByteArray &protocol,
 #ifdef Q_OS_UNIX
     if (qgetenv("KDE_DEBUG").isEmpty())
     {
-        KCrash::setCrashHandler( sigsegv_handler );
+        ::signal(SIGSEGV,&sigsegv_handler);
         ::signal(SIGILL,&sigsegv_handler);
         ::signal(SIGTRAP,&sigsegv_handler);
         ::signal(SIGABRT,&sigsegv_handler);

@@ -1,4 +1,3 @@
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 set(kde4attic_SRCS
   kanimatedbutton.cpp

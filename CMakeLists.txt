@@ -65,6 +65,13 @@ set(ItemModels_LIBRARIES ItemModels)
 
 set(KArchive_LIBRARIES KArchive)
 
+set(KConfig_CORE_LIBRARY KConfigCore)
+set(KConfig_GUI_LIBRARY KConfigGui)
+set(KConfig_LIBRARIES KConfigCore KConfigGui)
+
+set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
+include(${CMAKE_SOURCE_DIR}/tier1/kconfig/KConfigMacros.cmake)
+
 set(KCoreAddons_LIBRARIES KCoreAddons)
 
 set(KCodecs_LIBRARIES KCodecs)
@@ -91,13 +98,6 @@ set(Sonnet_LIBRARIES ${Sonnet_SonnetUi_LIBRARY} ${Sonnet_SonnetCore_LIBRARY} )
 add_subdirectory( tier2 )
 
 set(KAuth_LIBRARIES  KAuth)
-
-set(KConfig_CORE_LIBRARY KConfigCore)
-set(KConfig_GUI_LIBRARY KConfigGui)
-set(KConfig_LIBRARIES KConfigCore KConfigGui)
-
-set(KConfig_KCFGC_EXECUTABLE kconfig_compiler)
-include(${CMAKE_SOURCE_DIR}/tier2/kconfig/KConfigMacros.cmake)
 
 set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
 
@@ -217,7 +217,7 @@ add_definitions(${KDE4_DEFINITIONS})
 # Needed for the calls to kconfig_add_kcfg_files in some modules
 set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
-set(kde4support_LIBRARY kde4support)
+set(KDE4Support_LIBRARIES kde4support)
 
 ################# list the subdirectories #################
 

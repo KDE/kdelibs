@@ -35,7 +35,7 @@ namespace KAuth
 
 namespace HelperSupport
 {
-void helperDebugHandler(QtMsgType type, const char *msg);
+void helperDebugHandler(QtMsgType type, const QMessageLogContext &context, const QString &msgStr);
 }
 
 static bool remote_dbg = false;
@@ -43,7 +43,7 @@ static bool remote_dbg = false;
 int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *responder)
 {
     openlog(id, 0, LOG_USER);
-    qInstallMsgHandler(&HelperSupport::helperDebugHandler);
+    qInstallMessageHandler(&HelperSupport::helperDebugHandler);
 
     if (!BackendsManager::helperProxy()->initHelper(QString::fromLatin1(id))) {
         syslog(LOG_DEBUG, "Helper initialization failed");
@@ -67,8 +67,10 @@ int HelperSupport::helperMain(int argc, char **argv, const char *id, QObject *re
     return 0;
 }
 
-void HelperSupport::helperDebugHandler(QtMsgType type, const char *msg)
+void HelperSupport::helperDebugHandler(QtMsgType type, const QMessageLogContext &context, const QString &msgStr)
 {
+    Q_UNUSED(context); // can be used to find out about file, line, function name
+    QByteArray msg = msgStr.toLocal8Bit();
     if (!remote_dbg) {
         int level = LOG_DEBUG;
         switch (type) {
@@ -83,9 +85,9 @@ void HelperSupport::helperDebugHandler(QtMsgType type, const char *msg)
             level = LOG_ERR;
             break;
         }
-        syslog(level, "%s", msg);
+        syslog(level, "%s", msg.constData());
     } else {
-        BackendsManager::helperProxy()->sendDebugMessage(type, msg);
+        BackendsManager::helperProxy()->sendDebugMessage(type, msg.constData());
     }
 
     // Anyway I should follow the rule:

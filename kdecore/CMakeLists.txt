@@ -4,9 +4,6 @@ find_package(X11)
 
 find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
-# QUrl
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
-
 find_package(X11)
 if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)

@@ -4,6 +4,7 @@ project(tier1)
 
 add_subdirectory(itemmodels)
 add_subdirectory(karchive)
+add_subdirectory(kconfig)
 add_subdirectory(kdbusaddons)
 add_subdirectory(kplotting)
 add_subdirectory(solid)

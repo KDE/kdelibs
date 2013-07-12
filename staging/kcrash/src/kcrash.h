@@ -22,7 +22,7 @@
 #ifndef KCRASH_H
 #define KCRASH_H
 
-#include <kdeui_export.h>
+#include <kcrash_export.h>
 
 #include <qglobal.h>
 
@@ -56,7 +56,7 @@ namespace KCrash
    * call this function from your implementation if you want to use the
    * features of this namespace.
    */
-  KDEUI_EXPORT void defaultCrashHandler (int signal);
+  KCRASH_EXPORT void defaultCrashHandler (int signal);
 
   /**
    * Typedef for a pointer to a crash handler function.
@@ -80,13 +80,13 @@ namespace KCrash
    * those functions if needed. However, if you set a custom crash handler,
    * those functions will not change it.
    */
-  KDEUI_EXPORT void setCrashHandler (HandlerType handler = defaultCrashHandler);
+  KCRASH_EXPORT void setCrashHandler (HandlerType handler = defaultCrashHandler);
 
   /**
    * Returns the installed crash handler.
    * @return the crash handler
    */
-  KDEUI_EXPORT HandlerType crashHandler();
+  KCRASH_EXPORT HandlerType crashHandler();
 
   /**
    * Installs a function which should try to save the application's data.
@@ -95,13 +95,13 @@ namespace KCrash
    * is installed to ensure the save function will be called.
    * @param saveFunction the handler to install
    */
-  KDEUI_EXPORT void setEmergencySaveFunction (HandlerType saveFunction = 0);
+  KCRASH_EXPORT void setEmergencySaveFunction (HandlerType saveFunction = 0);
 
   /**
    * Returns the currently set emergency save function.
    * @return the emergency save function
    */
-  KDEUI_EXPORT HandlerType emergencySaveFunction();
+  KCRASH_EXPORT HandlerType emergencySaveFunction();
 
   /**
    * Options to determine how the default crash handler should behave.
@@ -118,21 +118,21 @@ namespace KCrash
    * Set options to determine how the default crash handler should behave.
    * @param flags ORed together CrashFlags
    */
-  KDEUI_EXPORT void setFlags( CrashFlags flags );
+  KCRASH_EXPORT void setFlags( CrashFlags flags );
 
   /**
    * Sets the application @p path which should be passed to
    * DrKonqi, our nice crash display application.
    * @param path the application path
    */
-  KDEUI_EXPORT void setApplicationPath (const QString &path);
+  KCRASH_EXPORT void setApplicationPath (const QString &path);
 
   /**
    * Sets the application @p name which should be passed to
    * DrKonqi, our nice crash display application.
    * @param name the name of the application, as shown in DrKonqi
    */
-  KDEUI_EXPORT void setApplicationName (const QString &name);
+  KCRASH_EXPORT void setApplicationName (const QString &name);
 
   /**
    * Enables or disables launching DrKonqi from the crash handler.
@@ -149,13 +149,13 @@ namespace KCrash
    * the default crash handler to ensure that DrKonqi will be launched.
    * @since 4.5
    */
-  KDEUI_EXPORT void setDrKonqiEnabled(bool enabled);
+  KCRASH_EXPORT void setDrKonqiEnabled(bool enabled);
 
   /**
    * Returns true if DrKonqi is set to be launched from the crash handler or false otherwise.
    * @since 4.5
    */
-  KDEUI_EXPORT bool isDrKonqiEnabled();
+  KCRASH_EXPORT bool isDrKonqiEnabled();
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCrash::CrashFlags)

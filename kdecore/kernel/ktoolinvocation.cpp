@@ -268,7 +268,7 @@ void KToolInvocation::invokeMailer(const QUrl &mailtoURL, const QByteArray& star
     QString bcc;
     QString body;
 
-    QList<QPair<QString, QString> > queryItems = mailtoURL.queryItems();
+    QList<QPair<QString, QString> > queryItems = QUrlQuery(mailtoURL).queryItems();
     const QChar comma = QChar::fromLatin1(',');
     QStringList attachURLs;
     for (int i = 0; i < queryItems.count(); ++i) {

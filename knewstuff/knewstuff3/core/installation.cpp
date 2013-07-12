@@ -23,6 +23,7 @@
 #include <QFile>
 #include <QTemporaryFile>
 #include <QtCore/QProcess>
+#include <QUrlQuery>
 #include <qurlpathinfo.h>
 
 #include "qmimedatabase.h"
@@ -477,7 +478,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                 // and using the http headers if they exist to get the file name, but as discussed in
                 // Randa this is not going to happen anytime soon (if ever) so go with the hack
                 if (source.url().startsWith("http://newstuff.kde.org/cgi-bin/hotstuff-access?file=")) {
-                    installfile = source.queryItemValue("file");
+                    installfile = QUrlQuery(source).queryItemValue("file");
                     int lastSlash = installfile.lastIndexOf('/');
                     if (lastSlash >= 0)
                         installfile = installfile.mid(lastSlash);

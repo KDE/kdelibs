@@ -176,26 +176,29 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
     QString cmd = cmdTokens.takeFirst();
 
     QUrl url;
+    QUrlQuery query;
     if (!to.isEmpty())
     {
         QStringList tos = splitEmailAddressList( to );
         url.setPath( tos.first() );
         tos.erase( tos.begin() );
         for (QStringList::ConstIterator it = tos.constBegin(); it != tos.constEnd(); ++it)
-            url.addQueryItem(QString::fromLatin1("to"), *it);
+            query.addQueryItem(QString::fromLatin1("to"), *it);
     }
     const QStringList ccs = splitEmailAddressList( cc );
     for (QStringList::ConstIterator it = ccs.constBegin(); it != ccs.constEnd(); ++it)
-        url.addQueryItem(QString::fromLatin1("cc"), *it);
+        query.addQueryItem(QString::fromLatin1("cc"), *it);
     const QStringList bccs = splitEmailAddressList( bcc );
     for (QStringList::ConstIterator it = bccs.constBegin(); it != bccs.constEnd(); ++it)
-        url.addQueryItem(QString::fromLatin1("bcc"), *it);
+        query.addQueryItem(QString::fromLatin1("bcc"), *it);
     for (QStringList::ConstIterator it = attachURLs.constBegin(); it != attachURLs.constEnd(); ++it)
-        url.addQueryItem(QString::fromLatin1("attach"), *it);
+        query.addQueryItem(QString::fromLatin1("attach"), *it);
     if (!subject.isEmpty())
-        url.addQueryItem(QString::fromLatin1("subject"), subject);
+        query.addQueryItem(QString::fromLatin1("subject"), subject);
     if (!body.isEmpty())
-        url.addQueryItem(QString::fromLatin1("body"), body);
+        query.addQueryItem(QString::fromLatin1("body"), body);
+
+    url.setQuery(query);
 
     if ( ! (to.isEmpty() && (!url.hasQuery())) )
         url.setScheme(QString::fromLatin1("mailto"));

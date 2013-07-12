@@ -25,7 +25,7 @@
 */
 
 #include <config-strlcpy.h>
-#include <kdecore_export.h>
+#include <kcrash_export.h>
 
 #ifndef HAVE_STRLCPY
 
@@ -33,7 +33,7 @@
 #include <string.h>
 #endif
 
-KDECORE_EXPORT unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
+KCRASH_EXPORT unsigned long strlcpy(char* d, const char* s, unsigned long bufsize)
 {
     unsigned long len, ret = strlen(s);
 

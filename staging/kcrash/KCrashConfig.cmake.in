@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(KCrash_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KCrash_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/KCrashTargets.cmake")
+
+set(KCrash_LIBRARIES KF5::KCrash)
+set(KCrash_INCLUDE_DIRS ${KCrash_INCLUDE_DIR} )

@@ -1,0 +1,22 @@
+@PACKAGE_INIT@
+
+set(KDE4Support_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KDE4Support_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/KDE4SupportTargets.cmake")
+
+# the following two checks are hacks for as long as there are still cyclic depndencies between kde4support and kdelibs:
+if(NOT TARGET KDE4__kdeui)
+  set( ${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+  set( ${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "KDE4Support found, but required target KDE4__kdeui, supposed to be imported earlier via find_package(KDELibs4), does not exist !")
+  return()
+endif()
+
+if(NOT TARGET KDE4__kde4support)
+  set( ${CMAKE_FIND_PACKAGE_NAME}_FOUND FALSE)
+  set( ${CMAKE_FIND_PACKAGE_NAME}_NOT_FOUND_MESSAGE "KDE4Support found, but target KDE4__kde4support, supposed to be imported earlier via find_package(KDELibs4), does not exist !")
+  return()
+endif()
+
+set(KDE4Support_LIBRARIES KDE4__kde4support)
+set(KDE4Support_INCLUDE_DIRS ${KDE4Support_INCLUDE_DIR} )

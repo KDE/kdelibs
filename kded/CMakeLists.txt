@@ -26,7 +26,7 @@ if (APPLE)
     set_target_properties(kded5 PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "KDE Daemon")
 endif (APPLE)
 
-target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} ${KCoreAddons_LIBRARIES} ${KDBusAddons_LIBRARIES} ki18n)
+target_link_libraries(kdeinit_kded5  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} ${KCoreAddons_LIBRARIES} ${KDBusAddons_LIBRARIES} ki18n KCrash)
 
 install(TARGETS kdeinit_kded5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 
@@ -73,7 +73,7 @@ endif(KBUILDSYCOCA_NO_KCRASH)
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
 kde4_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} ${KCoreAddons_LIBRARIES} ki18n Qt5::Xml)
+target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} ${KCoreAddons_LIBRARIES} ki18n Qt5::Xml KCrash)
 
 install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 

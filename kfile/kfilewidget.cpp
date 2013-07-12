@@ -2630,7 +2630,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
                 fileName = urlFile;
             }
 
-            if (startDir.encodedQuery() == "global")
+            if (startDir.query() == "global")
               recentDirClass = QString( "::%1" ).arg( keyword );
             else
               recentDirClass = QString( ":%1" ).arg( keyword );

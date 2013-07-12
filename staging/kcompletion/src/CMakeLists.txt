@@ -9,7 +9,6 @@ endif ()
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 configure_file(config-kcompletion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kcompletion.h )
 

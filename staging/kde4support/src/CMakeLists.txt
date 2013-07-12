@@ -90,7 +90,7 @@ set(libkde4support_SRCS
 
 if (X11_FOUND)
    set(libkde4support_SRCS ${libkde4support_SRCS} kdeui/kxerrorhandler.cpp )
-endif (X11_FOUND)
+endif ()
 
 if (WIN32)
     set(libkde4support_SRCS ${libkde4support_SRCS} kernel/kapplication_win.cpp kdecore/klockfile_win.cpp)
@@ -124,10 +124,14 @@ set(kde4support_INCLUDES
 )
 target_include_directories(kde4support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
-target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} kwidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES} KCompletion)
-set_target_properties(kde4support PROPERTIES VERSION ${ECM_VERSION_STRING} SOVERSION ${ECM_SOVERSION})
+target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} KCrash ${KWidgetsAddons_LIBRARIES} kwidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES} KCompletion)
 
-install(TARGETS kde4support EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+set_target_properties(kde4support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
+                                  SOVERSION ${KDE4SUPPORT_SOVERSION} )
+
+install(TARGETS kde4support
+        EXPORT kdelibsLibraryTargets # KDE4SupportTargets <- cannot be moved to separate export set as long as kde4support depends on kdelibs and kdelibs depends on kde4support
+        ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     kdecore/klibloader.h
@@ -212,7 +216,7 @@ install( FILES kdeui/40.colors kdeui/Oxygen.colors kdeui/Web.colors kdeui/Royal.
 if (NOT X11_FOUND)
     # install our copy of the rgb.txt named colors list on systems without X11
     install(FILES kdeui/rgb.txt DESTINATION ${DATA_INSTALL_DIR}/kdeui)
-endif (NOT X11_FOUND)
+endif ()
 
 # kio/*.h
 install(FILES

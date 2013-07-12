@@ -8,7 +8,6 @@ endif ()
 
 configure_file(config-xmlgui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-xmlgui.h )
 
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 set(xmlgui_SRCS
   kglobalaccel.cpp

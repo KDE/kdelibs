@@ -147,7 +147,7 @@ gen_kcfg_test_source(test10 test10_SRCS)
 
 add_executable(test10 ${test10_SRCS})
 
-target_link_libraries(test10 Qt5::Widgets KConfigCore KConfigGui ${KCoreAddons_LIBRARIES} )
+target_link_libraries(test10 Qt5::Widgets KConfigCore KConfigGui )
 
 
 ########### next target ###############
@@ -198,7 +198,7 @@ set(kconfigcompiler_test_SRCS kconfigcompiler_test.cpp )
 add_executable(kconfigcompiler_test ${kconfigcompiler_test_SRCS})
 add_test(kconfig-kconfigcompiler kconfigcompiler_test)
 
-target_link_libraries(kconfigcompiler_test Qt5::Test ${KCoreAddons_LIBRARIES})
+target_link_libraries(kconfigcompiler_test Qt5::Test )
 
 ########### install files ###############
 

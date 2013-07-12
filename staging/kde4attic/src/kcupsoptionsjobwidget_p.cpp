@@ -165,7 +165,7 @@ int KCupsOptionsJobWidget::jobPriority() const
 
 void KCupsOptionsJobWidget::initJobOptions()
 {
-    ui.jobOptionsTable->horizontalHeader()->setResizeMode( QHeaderView::Stretch );
+    ui.jobOptionsTable->horizontalHeader()->setSectionResizeMode( QHeaderView::Stretch );
 }
 
 void KCupsOptionsJobWidget::setJobOptions( QStringList jobOptions  )

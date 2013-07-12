@@ -32,6 +32,7 @@
 #include "krecentfilesaction.h"
 #include "ktogglefullscreenaction.h"
 #include "kpastetextaction.h"
+#include "kacceleratormanager_p.h"
 
 namespace KStandardAction
 {
@@ -68,9 +69,15 @@ KWIDGETS_EXPORT KStandardShortcut::StandardShortcut shortcutForActionId(Standard
   return (pInfo) ? pInfo->idAccel : KStandardShortcut::AccelNone;
 }
 
-
 QAction *create(StandardAction id, const QObject *recvr, const char *slot, QObject *parent)
 {
+  static bool stdNamesInitialized = false;
+
+  if (!stdNamesInitialized) {
+      KAcceleratorManagerPrivate::setStandardActionNames(stdNames());
+      stdNamesInitialized = true;
+  }
+
   QAction *pAction = 0;
   const KStandardActionInfo* pInfo = infoPtr(id);
 

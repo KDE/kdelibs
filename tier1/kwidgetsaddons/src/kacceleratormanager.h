@@ -21,7 +21,7 @@
 #ifndef K_ACCELERATORMANAGER_H
 #define K_ACCELERATORMANAGER_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QWidget;
 class QString;
@@ -35,7 +35,7 @@ class QString;
  * @author Matthias Hölzer-Klüpfel <mhk@kde.org>
 */
 
-class KDEUI_EXPORT KAcceleratorManager
+class KWIDGETSADDONS_EXPORT KAcceleratorManager
 {
 public:
 

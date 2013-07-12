@@ -28,6 +28,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
+#include <QtCore/QFile>
 
 #include <config-kioslave-file.h>
 
@@ -35,12 +36,6 @@
 #include <sys/acl.h>
 #include <acl/libacl.h>
 #endif
-
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <stdio.h>
-#include <unistd.h>
 
 class FileProtocol : public QObject, public KIO::SlaveBase
 {
@@ -100,8 +95,7 @@ private:
 private:
   mutable QHash<uid_t, QString> mUsercache;
   mutable QHash<gid_t, QString> mGroupcache;
-  int openFd;
-  QString openPath;
+  QFile *mFile;
 };
 
 #endif

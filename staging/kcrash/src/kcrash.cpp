@@ -24,7 +24,7 @@
 
 #include "kcrash.h"
 
-#include <config-kdeui.h>
+#include <config-kcrash.h>
 #include <config-strlcpy.h>
 
 #include <string.h>
@@ -46,11 +46,9 @@
 
 #include <qwindowdefs.h>
 #include <kaboutdata.h>
-#include <kdebug.h>
 #include <kstartupinfo.h>
 
-#include <../kinit/klauncher_cmds.h>
-
+#include <QDebug>
 #include <QCoreApplication>
 #include <QtCore/QFileInfo>
 #include <QtCore/QDir>
@@ -75,8 +73,18 @@
 # include <windows.h>
 #endif
 
+  // Copy from klauncher_cmds
+  typedef struct
+  {
+      long cmd;
+      long arg_length;
+  }   kcrash_launcher_header;
+
+  #define LAUNCHER_OK 4
+  #define LAUNCHER_EXEC_NEW 12
+
 namespace KCrash {
-    KDEUI_EXPORT bool loadedByKdeinit = false;
+    KCRASH_EXPORT bool loadedByKdeinit = false;
 }
 
 static KCrash::HandlerType s_emergencySaveFunction = 0;
@@ -98,14 +106,14 @@ static void kcrashInitialize()
     }
     const QStringList args = QCoreApplication::arguments();
     if (qgetenv("KDE_DEBUG").isEmpty()
-     && !args.contains("--nocrashhandler")) {
+     && !args.contains(QStringLiteral("--nocrashhandler"))) {
         // enable drkonqi
         KCrash::setDrKonqiEnabled(true);
     }
 
     // Always set the app name, can be usefuls for apps that call setEmergencySaveFunction or enable AutoRestart
     const QString appPath = args[0];
-    const QString appName = appPath.mid(appPath.lastIndexOf('/'));
+    const QString appName = appPath.mid(appPath.lastIndexOf(QLatin1Char('/')));
     KCrash::setApplicationName(appName);
     if (!QCoreApplication::applicationDirPath().isEmpty()) {
         KCrash::setApplicationPath(QCoreApplication::applicationDirPath());
@@ -172,7 +180,7 @@ KCrash::setFlags(KCrash::CrashFlags flags)
     if (s_flags & AutoRestart) {
         // We need at least the default crash handler for autorestart to work.
         if (!s_crashHandler) {
-            if (!QCoreApplication::arguments().contains("--nocrashhandler")) // --nocrashhandler was passed, probably due to a crash, delay restart handler
+            if (!QCoreApplication::arguments().contains(QStringLiteral("--nocrashhandler"))) // --nocrashhandler was passed, probably due to a crash, delay restart handler
                 new KCrashDelaySetHandler;
             else // probably because KDE_DEBUG=1. set restart handler immediately.
                 setCrashHandler(defaultCrashHandler);
@@ -195,9 +203,9 @@ KCrash::setApplicationPath(const QString& path)
     }
 
     QStringList args = QCoreApplication::arguments();
-    args[0] = s_autoRestartCommand; // replace argv[0] with full path above
-    if (!args.contains("--nocrashhandler"))
-         args.insert(1, "--nocrashhandler");
+    args[0] = QLatin1String(s_autoRestartCommand); // replace argv[0] with full path above
+    if (!args.contains(QStringLiteral("--nocrashhandler")))
+         args.insert(1, QStringLiteral("--nocrashhandler"));
     delete[] s_autoRestartCommandLine;
     s_autoRestartArgc = args.count();
     s_autoRestartCommandLine = new char* [args.count() + 1];
@@ -230,7 +238,7 @@ void KCrash::setDrKonqiEnabled(bool enabled)
     s_launchDrKonqi = enabled ? 1 : 0;
     if (s_launchDrKonqi && !s_drkonqiPath) {
         s_drkonqiPath = qstrdup(CMAKE_INSTALL_PREFIX "/" LIBEXEC_INSTALL_DIR "/drkonqi");
-        if (!QFile::exists(s_drkonqiPath)) {
+        if (!QFile::exists(QLatin1String(s_drkonqiPath))) {
             qWarning() << "Could not find drkonqi at" << s_drkonqiPath;
             s_launchDrKonqi = false;
         }
@@ -599,7 +607,7 @@ static pid_t startFromKdeinit(int argc, const char *argv[])
   int socket = openSocket();
   if( socket < -1 )
     return 0;
-  klauncher_header header;
+  kcrash_launcher_header header;
   header.cmd = LAUNCHER_EXEC_NEW;
   const int BUFSIZE = 8192; // make sure this is big enough
   char buffer[ BUFSIZE + 10 ];

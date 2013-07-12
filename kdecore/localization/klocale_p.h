@@ -964,12 +964,6 @@ protected:
     virtual void initEncoding();
 
     /**
-     * @internal Figures out which encoding the user prefers for filenames
-     * and sets up the appropriate QFile encoding and decoding functions.
-     */
-    virtual void initFileNameEncoding();
-
-    /**
      * @internal Returns the system codeset.
      */
     virtual QByteArray systemCodeset() const;

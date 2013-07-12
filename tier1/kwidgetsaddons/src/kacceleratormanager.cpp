@@ -39,13 +39,9 @@
 #include <QStackedWidget>
 #include <QDockWidget>
 #include <QTextDocument>
+#include <QDebug>
 
-#include <kstandardaction.h>
-#include <kdebug.h>
-#include <kdeversion.h>
-
-#include "kacceleratormanager_private.h"
-#include <kstandardaction_p.h>
+#include "kacceleratormanager_p.h"
 
 
 /*********************************************************************
@@ -58,90 +54,21 @@
  *********************************************************************/
 
 
-
-/*********************************************************************
-
- class KAcceleratorManagerPrivate - internal helper class
-
- This class does all the work to find accelerators for a hierarchy of
- widgets.
-
- *********************************************************************/
-
-
-class KAcceleratorManagerPrivate
-{
-public:
-
-    static void manage(QWidget *widget);
-    static bool programmers_mode;
-    static bool standardName(const QString &str);
-
-    static bool checkChange(const KAccelString &as)  {
-        QString t2 = as.accelerated();
-        QString t1 = as.originalText();
-        if (t1 != t2)
-        {
-            if (as.accel() == -1)  {
-                removed_string  += "<tr><td>" + Qt::escape(t1) + "</td></tr>";
-            } else if (as.originalAccel() == -1) {
-                added_string += "<tr><td>" + Qt::escape(t2) + "</td></tr>";
-            } else {
-                changed_string += "<tr><td>" + Qt::escape(t1) + "</td>";
-                changed_string += "<td>" + Qt::escape(t2) + "</td></tr>";
-            }
-            return true;
-        }
-        return false;
-    }
-    static QString changed_string;
-    static QString added_string;
-    static QString removed_string;
-    static QMap<QWidget *, int> ignored_widgets;
-
-private:
-  class Item;
-public:
-  typedef QList<Item *> ItemList;
-
-private:
-  static void traverseChildren(QWidget *widget, Item *item);
-
-  static void manageWidget(QWidget *widget, Item *item);
-  static void manageMenuBar(QMenuBar *mbar, Item *item);
-  static void manageTabBar(QTabBar *bar, Item *item);
-  static void manageDockWidget(QDockWidget *dock, Item *item);
-
-  static void calculateAccelerators(Item *item, QString &used);
-
-  class Item
-  {
-  public:
-
-    Item() : m_widget(0), m_children(0), m_index(-1) {}
-    ~Item();
-
-    void addChild(Item *item);
-
-    QWidget       *m_widget;
-    KAccelString  m_content;
-    ItemList      *m_children;
-    int           m_index;
-
-  };
-};
-
-
 bool KAcceleratorManagerPrivate::programmers_mode = false;
 QString KAcceleratorManagerPrivate::changed_string;
 QString KAcceleratorManagerPrivate::added_string;
 QString KAcceleratorManagerPrivate::removed_string;
-Q_GLOBAL_STATIC_WITH_ARGS(QStringList, kaccmp_sns, (KStandardAction::internal_stdNames()))
 QMap<QWidget*, int> KAcceleratorManagerPrivate::ignored_widgets;
+QStringList KAcceleratorManagerPrivate::standardNames;
+
+void KAcceleratorManagerPrivate::setStandardActionNames(const QStringList &list)
+{
+    standardNames = list;
+}
 
 bool KAcceleratorManagerPrivate::standardName(const QString &str)
 {
-    return kaccmp_sns()->contains(str);
+    return standardNames.contains(str);
 }
 
 KAcceleratorManagerPrivate::Item::~Item()
@@ -530,18 +457,18 @@ void KAcceleratorManager::last_manage(QString &added,  QString &changed, QString
 KAccelString::KAccelString(const QString &input, int initialWeight)
   : m_pureText(input), m_weight()
 {
-    m_orig_accel = m_pureText.indexOf("(!)&");
+    m_orig_accel = m_pureText.indexOf(QStringLiteral("(!)&"));
     if (m_orig_accel != -1)
 	m_pureText.remove(m_orig_accel, 4);
 
-    m_orig_accel = m_pureText.indexOf("(&&)");
+    m_orig_accel = m_pureText.indexOf(QStringLiteral("(&&)"));
     if (m_orig_accel != -1)
-        m_pureText.replace(m_orig_accel, 4, "&");
+        m_pureText.replace(m_orig_accel, 4, QStringLiteral("&"));
 
     m_origText = m_pureText;
 
-    if (m_pureText.contains('\t'))
-        m_pureText = m_pureText.left(m_pureText.indexOf('\t'));
+    if (m_pureText.contains(QLatin1Char('\t')))
+        m_pureText = m_pureText.left(m_pureText.indexOf(QLatin1Char('\t')));
 
     m_orig_accel = m_accel = stripAccelerator(m_pureText);
 
@@ -566,18 +493,18 @@ QString KAccelString::accelerated() const
       int oa = m_orig_accel;
 
       if (m_accel >= 0) {
-              result.insert(m_accel, "(!)&");
+              result.insert(m_accel, QStringLiteral("(!)&"));
               if (m_accel < m_orig_accel)
                   oa += 4;
       }
       if (m_orig_accel >= 0)
-	  result.replace(oa, 1, "(&&)");
+          result.replace(oa, 1, QStringLiteral("(&&)"));
     }
   } else {
       if (m_accel >= 0 && m_orig_accel != m_accel) {
           if (m_orig_accel != -1)
               result.remove(m_orig_accel, 1);
-          result.insert(m_accel, "&");
+          result.insert(m_accel, QStringLiteral("&"));
       }
   }
   return result;
@@ -651,18 +578,18 @@ int KAccelString::stripAccelerator(QString &text)
 
   while (p >= 0)
   {
-    p = text.indexOf('&', p)+1;
+    p = text.indexOf(QLatin1Char('&'), p)+1;
 
     if (p <= 0 || p >= (int)text.length())
       break;
 
-    if (text[p] != '&')
+    if (text[p] != QLatin1Char('&'))
     {
       QChar c = text[p];
       if (c.isPrint())
       {
         text.remove(p-1,1);
-	return p-1;
+        return p-1;
       }
     }
 
@@ -683,7 +610,7 @@ int KAccelString::maxWeight(int &index, const QString &used) const
       if (m_weight[pos] > max)
       {
         max = m_weight[pos];
-	index = pos;
+        index = pos;
       }
 
   return max;
@@ -694,7 +621,7 @@ void KAccelString::dump()
 {
   QString s;
   for (int i=0; i<m_weight.count(); ++i)
-    s += QString("%1(%2) ").arg(pure()[i]).arg(m_weight[i]);
+    s += QStringLiteral("%1(%2) ").arg(pure()[i]).arg(m_weight[i]);
   qDebug() << "s " << s;
 }
 
@@ -843,7 +770,7 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
 
     // in full menus, look at entries with global accelerators last
     int weight = 50;
-    if (s.contains('\t'))
+    if (s.contains(QLatin1Char('\t')))
         weight = 0;
 
     list.append(KAccelString(s, weight));
@@ -915,4 +842,4 @@ void KAcceleratorManager::setNoAccel( QWidget *widget )
     KAcceleratorManagerPrivate::ignored_widgets[widget] = 1;
 }
 
-#include "moc_kacceleratormanager_private.cpp"
+#include "moc_kacceleratormanager_p.cpp"

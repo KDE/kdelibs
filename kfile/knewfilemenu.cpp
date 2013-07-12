@@ -48,7 +48,6 @@
 #include <kio/job.h>
 #include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
-#include <kio/renamedialog.h>
 #include <kio/netaccess.h>
 #include <kio/fileundomanager.h>
 #include <kio/kurifilter.h>
@@ -443,7 +442,7 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
         QUrlPathInfo defaultFile(*it);
         defaultFile.addPath(KIO::encodeFileName(text));
         if (defaultFile.url().isLocalFile() && QFile::exists(defaultFile.url().toLocalFile()))
-            text = KIO::RenameDialog::suggestName(*it, text);
+            text = KIO::suggestName(*it, text);
 
         const QUrl templateUrl(entry.templatePath);
 
@@ -468,7 +467,7 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     QUrlPathInfo defaultFile(m_popupFiles.first());
     defaultFile.addPath(KIO::encodeFileName(text));
     if (defaultFile.url().isLocalFile() && QFile::exists(defaultFile.url().toLocalFile()))
-        text = KIO::RenameDialog::suggestName(m_popupFiles.first(), text);
+        text = KIO::suggestName(m_popupFiles.first(), text);
 
     QDialog* fileDialog = new QDialog(m_parentWidget);
     fileDialog->setAttribute(Qt::WA_DeleteOnClose);
@@ -1041,7 +1040,7 @@ void KNewFileMenu::createDirectory()
       d->m_text;
 
     if (baseUrl.isLocalFile() && QFileInfo(baseUrl.toLocalFile() + '/' + name).exists())
-	name = KIO::RenameDialog::suggestName(baseUrl, name);
+	name = KIO::suggestName(baseUrl, name);
 
     QDialog* fileDialog = new QDialog(d->m_parentWidget);
     fileDialog->setModal(isModal());

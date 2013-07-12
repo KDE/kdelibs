@@ -321,6 +321,12 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     return action;
 }
 
+void KActionCollection::addActions(const QList<QAction *> &actions)
+{
+    Q_FOREACH (QAction* action, actions)
+         addAction(action->objectName(), action);
+}
+
 void KActionCollection::removeAction( QAction* action )
 {
     delete takeAction( action );

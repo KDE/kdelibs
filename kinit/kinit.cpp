@@ -98,7 +98,7 @@ static const char *extra_libs[] = {
 // #define SKIP_PROCTITLE 1
 
 namespace KCrash {
-    extern KDEUI_EXPORT bool loadedByKdeinit;
+    extern KCRASH_EXPORT bool loadedByKdeinit;
 }
 
 extern char **environ;

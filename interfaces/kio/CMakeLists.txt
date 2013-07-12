@@ -1,1 +1,0 @@
-install( FILES http.h  DESTINATION  ${INCLUDE_INSTALL_DIR}/kio )

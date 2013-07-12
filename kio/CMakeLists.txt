@@ -308,7 +308,7 @@ if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
 
-target_link_libraries(kio kdeqt5staging kiocore ${KCoreAddons_LIBRARIES} ki18n KCompletion KJobWidgets ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet kwidgets)
+target_link_libraries(kio kdeqt5staging kiocore ${KCoreAddons_LIBRARIES} ki18n KCompletion KJobWidgets ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet kwidgets KCrash)
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kiocore kdeui kdecore Qt5::Network Qt5::Xml Qt5::Widgets )
 
 if(ACL_FOUND)
