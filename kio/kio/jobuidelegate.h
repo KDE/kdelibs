@@ -118,23 +118,6 @@ public:
                                ConfirmationType confirmationType) Q_DECL_OVERRIDE;
 
     /**
-    * Message box types.
-    *
-    * Should be kept in sync with SlaveBase::MessageBoxType.
-    *
-    * @since 4.11
-    *
-    * @internal
-    */
-    enum MessageBoxType {
-        QuestionYesNo = 1,
-        WarningYesNo = 2,
-        WarningContinueCancel = 3,
-        WarningYesNoCancel = 4,
-        Information = 5,
-        SSLMessageBox = 6
-    };
-    /**
     * This function allows for the delegation user prompts from the ioslaves.
     *
     * @param type the desired type of message box.
@@ -158,7 +141,7 @@ public:
                           const QString& iconYes = QString(),
                           const QString& iconNo = QString(),
                           const QString& dontAskAgainName = QString(),
-                          const KIO::MetaData& sslMetaData = KIO::MetaData());
+                          const KIO::MetaData& sslMetaData = KIO::MetaData()) Q_DECL_OVERRIDE;
 private:
     class Private;
     Private * const d;

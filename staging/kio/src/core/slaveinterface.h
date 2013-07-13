@@ -112,6 +112,13 @@ public:
     // (to tell the "put" job whether to resume or not)
     void sendResumeAnswer( bool resume );
 
+    /**
+     * Sends our answer for the INF_MESSAGEBOX request.
+     *
+     * @since 4.11
+     */
+    void sendMessageBoxAnswer(int result);
+
     void setOffset( KIO::filesize_t offset );
     KIO::filesize_t offset() const;
 

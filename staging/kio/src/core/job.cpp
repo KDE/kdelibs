@@ -36,7 +36,6 @@
 #include <kdirnotify.h>
 #include "kprotocolmanager.h"
 
-#include <kio/jobuidelegate.h>
 #include <kio/jobuidelegateextension.h>
 #include "slave.h"
 #include "scheduler.h"
@@ -536,11 +535,9 @@ int SimpleJobPrivate::requestMessageBox(int _type, const QString& text, const QS
 {
     Q_Q(SimpleJob);
     if (uiDelegate) {
-        const JobUiDelegate::MessageBoxType type = static_cast<JobUiDelegate::MessageBoxType>(_type);
-#if 0 // TODO PENDING UNFINISHED PORT ME
-        return q->ui()->requestMessageBox(type, text, caption, buttonYes, buttonNo,
-                                          iconYes, iconNo, dontAskAgainName, sslMetaData);
-#endif
+        const JobUiDelegateExtension::MessageBoxType type = static_cast<JobUiDelegateExtension::MessageBoxType>(_type);
+        return q->uiDelegateExtension()->requestMessageBox(type, text, caption, buttonYes, buttonNo,
+                                                           iconYes, iconNo, dontAskAgainName, sslMetaData);
     }
     qWarning() << "JobUiDelegate not set! Returing -1";
     return -1;

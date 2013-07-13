@@ -11,6 +11,7 @@ set(kiocore_SRCS
   socketconnectionbackend.cpp
   connection.cpp
   kdiskfreespaceinfo.cpp
+  usernotificationhandler.cpp
   ksambasharedata.cpp
   ksambashare.cpp
   knfsshare.cpp

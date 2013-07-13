@@ -23,6 +23,7 @@
 #include "kdirlister.h"
 #include <kio/jobclasses.h> // ListJob
 #include <kjobwidgets.h>
+#include <kjobuidelegate.h>
 
 #include <kmessagebox.h>
 #include <QWidget>
