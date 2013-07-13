@@ -18,26 +18,31 @@
 
 #include "slaveinterface.h"
 #include "slaveinterface_p.h"
+#include "usernotificationhandler_p.h"
 
 #include "slavebase.h"
 #include "connection_p.h"
 #include "hostinfo.h"
 #include <errno.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
 #include <klocalizedstring.h>
-#include <ksslinfodialog.h>
-#include <kmessagebox.h>
 #include <time.h>
+
+#include <kdebug.h>
+#include <klocale.h>
+
 #include <QtDBus/QtDBus>
 #include <QtCore/QPointer>
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslError>
 
 using namespace KIO;
+
+
+Q_GLOBAL_STATIC(UserNotificationHandler, globalUserNotificationHandler)
 
 
 SlaveInterface::SlaveInterface(SlaveInterfacePrivate &dd, QObject *parent)
@@ -75,7 +80,7 @@ static KIO::filesize_t readFilesize_t(QDataStream &stream)
 bool SlaveInterface::dispatch()
 {
     Q_D(SlaveInterface);
-    assert( d->connection );
+    Q_ASSERT( d->connection );
 
     int cmd;
     QByteArray data;
@@ -371,6 +376,23 @@ void SlaveInterface::sendResumeAnswer( bool resume )
     d->connection->sendnow( resume ? CMD_RESUMEANSWER : CMD_NONE, QByteArray() );
 }
 
+void SlaveInterface::sendMessageBoxAnswer(int result)
+{
+    Q_D(SlaveInterface);
+    if (!d->connection) {
+        return;
+    }
+
+    if (d->connection->suspended()) {
+        d->connection->resume();
+    }
+    QByteArray packedArgs;
+    QDataStream stream( &packedArgs, QIODevice::WriteOnly );
+    stream << result;
+    d->connection->sendnow(CMD_MESSAGEBOXANSWER, packedArgs);
+    kDebug(7007) << "message box answer" << result;
+}
+
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,
                                  const QString &buttonYes, const QString &buttonNo )
 {
@@ -381,132 +403,36 @@ void SlaveInterface::messageBox( int type, const QString &text, const QString &c
                                  const QString &buttonYes, const QString &buttonNo, const QString &dontAskAgainName )
 {
     Q_D(SlaveInterface);
-    //qDebug() << "messageBox " << type << " " << text << " - " << caption << " " << dontAskAgainName;
-    QByteArray packedArgs;
-    QDataStream stream( &packedArgs, QIODevice::WriteOnly );
-
-    QPointer<SlaveInterface> me = this;
-    if (d->connection) d->connection->suspend();
-    int result = d->messageBox( type, text, caption, buttonYes, buttonNo, dontAskAgainName );
-    if ( me && d->connection ) // Don't do anything if deleted meanwhile
-    {
-        d->connection->resume();
-        //qDebug() << this << " SlaveInterface result=" << result;
-        stream << result;
-        d->connection->sendnow( CMD_MESSAGEBOXANSWER, packedArgs );
+    if (d->connection) {
+        d->connection->suspend();
     }
-}
 
-void SlaveInterface::setWindow (QWidget* window)
-{
-    Q_D(SlaveInterface);
-    d->parentWindow = window;
-}
-
-QWidget* SlaveInterface::window() const
-{
-    const Q_D(SlaveInterface);
-    return d->parentWindow;
-}
-
-int SlaveInterfacePrivate::messageBox(int type, const QString &text,
-                                      const QString &caption, const QString &buttonYes,
-                                      const QString &buttonNo, const QString &dontAskAgainName)
-{
-    //qDebug() << type << text << "caption=" << caption;
-    int result = -1;
-    KConfig *config = new KConfig("kioslaverc");
-    KMessageBox::setDontShowAgainConfig(config);
+    QHash<UserNotificationHandler::MessageBoxDataType, QVariant> data;
+    data.insert(UserNotificationHandler::MSG_TEXT, text);
+    data.insert(UserNotificationHandler::MSG_CAPTION, caption);
+    data.insert(UserNotificationHandler::MSG_YES_BUTTON_TEXT, buttonYes);
+    data.insert(UserNotificationHandler::MSG_NO_BUTTON_TEXT, buttonNo);
+    data.insert(UserNotificationHandler::MSG_DONT_ASK_AGAIN, dontAskAgainName);
 
     // SMELL: the braindead way to support button icons
-    KGuiItem buttonYesGui, buttonNoGui;
-
-    if (buttonYes == i18n("&Details"))
-        buttonYesGui = KGuiItem(buttonYes, "help-about");
-    else if (buttonYes == i18n("&Forever"))
-        buttonYesGui = KGuiItem(buttonYes, "flag-green");
-    else
-        buttonYesGui = KGuiItem(buttonYes);
-
-    if (buttonNo == i18n("Co&ntinue"))
-        buttonNoGui = KGuiItem(buttonNo, "arrow-right");
-    else if (buttonNo == i18n("&Current Session only"))
-        buttonNoGui = KGuiItem(buttonNo, "chronometer");
-    else
-        buttonNoGui = KGuiItem(buttonNo);
-
-    switch (type) {
-    case KIO::SlaveBase::QuestionYesNo:
-        result = KMessageBox::questionYesNo(
-                     parentWindow, text, caption, buttonYesGui,
-                     buttonNoGui, dontAskAgainName);
-        break;
-    case KIO::SlaveBase::WarningYesNo:
-        result = KMessageBox::warningYesNo(
-                     parentWindow, text, caption, buttonYesGui,
-                     buttonNoGui, dontAskAgainName);
-        break;
-    case KIO::SlaveBase::WarningContinueCancel:
-        result = KMessageBox::warningContinueCancel(
-                     parentWindow, text, caption, buttonYesGui,
-                     KStandardGuiItem::cancel(), dontAskAgainName);
-        break;
-    case KIO::SlaveBase::WarningYesNoCancel:
-        result = KMessageBox::warningYesNoCancel(
-                     parentWindow, text, caption, buttonYesGui, buttonNoGui,
-                     KStandardGuiItem::cancel(), dontAskAgainName);
-        break;
-    case KIO::SlaveBase::Information:
-        KMessageBox::information(parentWindow, text, caption, dontAskAgainName);
-        result = 1; // whatever
-        break;
-    case KIO::SlaveBase::SSLMessageBox:
-    {
-        KIO::MetaData meta = sslMetaData;
-        QPointer<KSslInfoDialog> kid (new KSslInfoDialog(parentWindow));
-        //### this is boilerplate code and appears in khtml_part.cpp almost unchanged!
-        QStringList sl = meta["ssl_peer_chain"].split('\x01', QString::SkipEmptyParts);
-        QList<QSslCertificate> certChain;
-        bool decodedOk = true;
-        foreach (const QString &s, sl) {
-            certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
-            if (certChain.last().isNull()) {
-                decodedOk = false;
-                break;
-            }
-        }
-
-        if (decodedOk || true/*H4X*/) {
-            kid->setSslInfo(certChain,
-                            meta["ssl_peer_ip"],
-                            text, // the URL
-                            meta["ssl_protocol_version"],
-                            meta["ssl_cipher"],
-                            meta["ssl_cipher_used_bits"].toInt(),
-                            meta["ssl_cipher_bits"].toInt(),
-                            KSslInfoDialog::errorsFromString(meta["ssl_cert_errors"]));
-
-            //qDebug() << "Showing SSL Info dialog";
-            kid->exec();
-            //qDebug() << "SSL Info dialog closed";
-        } else {
-            KMessageBox::information(0, i18n("The peer SSL certificate chain "
-                                             "appears to be corrupt."),
-                                     i18n("SSL"));
-        }
-        // KSslInfoDialog deletes itself (Qt::WA_DeleteOnClose).
-        result = 1; // whatever
-        delete kid;
-        break;
+    // TODO: Fix this in KIO::SlaveBase.
+    if (buttonYes == i18n("&Details")) {
+        data.insert(UserNotificationHandler::MSG_YES_BUTTON_ICON, QLatin1String("help-about"));
+    } else if (buttonYes == i18n("&Forever")) {
+        data.insert(UserNotificationHandler::MSG_YES_BUTTON_ICON, QLatin1String("flag-green"));
     }
-    default:
-        qWarning() << "Unknown type" << type;
-        result = 0;
-        break;
+
+    if (buttonNo == i18n("Co&ntinue")) {
+        data.insert(UserNotificationHandler::MSG_NO_BUTTON_ICON, QLatin1String("arrow-right"));
+    } else if (buttonNo == i18n("&Current Session only")) {
+        data.insert(UserNotificationHandler::MSG_NO_BUTTON_ICON, QLatin1String("chronometer"));
     }
-    KMessageBox::setDontShowAgainConfig(0);
-    delete config;
-    return result;
+
+    if (type == KIO::SlaveBase::SSLMessageBox) {
+        data.insert(UserNotificationHandler::MSG_META_DATA, d->sslMetaData.toVariant());
+    }
+
+    globalUserNotificationHandler()->requestMessageBox(this, type, data);
 }
 
 void SlaveInterfacePrivate::slotHostInfo(const QHostInfo& info)

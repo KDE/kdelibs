@@ -36,6 +36,7 @@
 #include <kdirnotify.h>
 #include "kprotocolmanager.h"
 
+#include <kio/jobuidelegate.h>
 #include <kio/jobuidelegateextension.h>
 #include "slave.h"
 #include "scheduler.h"
@@ -525,6 +526,24 @@ void SimpleJobPrivate::restartAfterRedirection(QUrl *redirectionUrl)
     if ((m_extraFlags & EF_KillCalled) == 0) {
         Scheduler::doJob(q);
     }
+}
+
+int SimpleJobPrivate::requestMessageBox(int _type, const QString& text, const QString& caption,
+                                       const QString& buttonYes, const QString& buttonNo,
+                                       const QString& iconYes, const QString& iconNo,
+                                       const QString& dontAskAgainName,
+                                       const KIO::MetaData& sslMetaData)
+{
+    Q_Q(SimpleJob);
+    if (uiDelegate) {
+        const JobUiDelegate::MessageBoxType type = static_cast<JobUiDelegate::MessageBoxType>(_type);
+#if 0 // TODO PENDING UNFINISHED PORT ME
+        return q->ui()->requestMessageBox(type, text, caption, buttonYes, buttonNo,
+                                          iconYes, iconNo, dontAskAgainName, sslMetaData);
+#endif
+    }
+    qWarning() << "JobUiDelegate not set! Returing -1";
+    return -1;
 }
 
 void SimpleJob::slotMetaData( const KIO::MetaData &_metaData )

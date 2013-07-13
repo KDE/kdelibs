@@ -2,6 +2,7 @@
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
                        David Faure <faure@kde.org>
     Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2013 Dawit Alemayehu <adawit@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -29,6 +30,8 @@
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
 #include <QDBusInterface>
+#include <ksslinfodialog.h>
+#include <kmessage.h>
 
 #include <QPointer>
 #include <QWidget>
@@ -255,6 +258,94 @@ bool KIO::JobUiDelegate::askDeleteConfirmation(const QList<QUrl>& urls,
         return (result == KMessageBox::Continue);
     }
     return true;
+}
+
+
+int KIO::JobUiDelegate::requestMessageBox(KIO::JobUiDelegate::MessageBoxType type,
+                                          const QString& text, const QString& caption,
+                                          const QString& buttonYes, const QString& buttonNo,
+                                          const QString& iconYes, const QString& iconNo,
+                                          const QString& dontAskAgainName,
+                                          const KIO::MetaData& sslMetaData)
+{
+    int result = -1;
+
+    //kDebug() << type << text << "caption=" << caption;
+
+    KConfig config("kioslaverc");
+    KMessageBox::setDontShowAgainConfig(&config);
+
+    const KGuiItem buttonYesGui (buttonYes, iconYes);
+    const KGuiItem buttonNoGui (buttonNo, iconNo);
+
+    switch (type) {
+    case QuestionYesNo:
+        result = KMessageBox::questionYesNo(
+                    window(), text, caption, buttonYesGui,
+                    buttonNoGui, dontAskAgainName);
+        break;
+    case WarningYesNo:
+        result = KMessageBox::warningYesNo(
+                    window(), text, caption, buttonYesGui,
+                    buttonNoGui, dontAskAgainName);
+        break;
+    case WarningYesNoCancel:
+        result = KMessageBox::warningYesNoCancel(
+                    window(), text, caption, buttonYesGui, buttonNoGui,
+                    KStandardGuiItem::cancel(), dontAskAgainName);
+        break;
+    case WarningContinueCancel:
+        result = KMessageBox::warningContinueCancel(
+                    window(), text, caption, buttonYesGui,
+                    KStandardGuiItem::cancel(), dontAskAgainName);
+        break;
+    case Information:
+        KMessageBox::information(window(), text, caption, dontAskAgainName);
+        result = 1; // whatever
+        break;
+    case SSLMessageBox:
+    {
+        QPointer<KSslInfoDialog> kid (new KSslInfoDialog(window()));
+        //### this is boilerplate code and appears in khtml_part.cpp almost unchanged!
+        const QStringList sl = sslMetaData.value(QLatin1String("ssl_peer_chain")).split('\x01', QString::SkipEmptyParts);
+        QList<QSslCertificate> certChain;
+        bool decodedOk = true;
+        foreach (const QString &s, sl) {
+            certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
+            if (certChain.last().isNull()) {
+                decodedOk = false;
+                break;
+            }
+        }
+
+        if (decodedOk) {
+            result = 1; // whatever
+            kid->setSslInfo(certChain,
+                            sslMetaData.value(QLatin1String("ssl_peer_ip")),
+                            text, // the URL
+                            sslMetaData.value(QLatin1String("ssl_protocol_version")),
+                            sslMetaData.value(QLatin1String("ssl_cipher")),
+                            sslMetaData.value(QLatin1String("ssl_cipher_used_bits")).toInt(),
+                            sslMetaData.value(QLatin1String("ssl_cipher_bits")).toInt(),
+                            KSslInfoDialog::errorsFromString(sslMetaData.value(QLatin1String("ssl_cert_errors"))));
+            kid->exec();
+        } else {
+            result = -1;
+            KMessageBox::information(window(),
+                                     i18n("The peer SSL certificate chain appears to be corrupt."),
+                                     i18n("SSL"));
+        }
+        // KSslInfoDialog deletes itself (Qt::WA_DeleteOnClose).
+        delete kid;
+        break;
+    }
+    default:
+        qWarning() << "Unknown type" << type;
+        result = 0;
+        break;
+    }
+    KMessageBox::setDontShowAgainConfig(0);
+    return result;
 }
 
 class KIOWidgetJobUiDelegateFactory : public KIO::JobUiDelegateFactory

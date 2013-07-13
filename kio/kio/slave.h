@@ -41,6 +41,7 @@ class DataProtocol;
 class ConnectedSlaveQueue;
 class ProtoQueue;
 class SimpleJobPrivate;
+class UserNotificationHandler;
 
 // Attention developers: If you change the implementation of KIO::Slave,
 // do *not* use connection() or slaveconn but the respective KIO::Slave
@@ -153,6 +154,7 @@ private:
   friend class ConnectedSlaveQueue;
   friend class ProtoQueue;
   friend class SimpleJobPrivate;
+  friend class UserNotificationHandler;
 
   void setPID(pid_t);
   int slave_pid();

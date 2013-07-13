@@ -531,10 +531,6 @@ Slave *ProtoQueue::createSlave(const QString &protocol, SimpleJob *job, const QU
     QString errortext;
     Slave *slave = Slave::createSlave(protocol, url, error, errortext);
     if (slave) {
-        // Set the parent widget the slave should use to display message boxes.
-        if (job) {
-            slave->setWindow(KJobWidgets::window(job));
-        }
         scheduler()->connect(slave, SIGNAL(slaveDied(KIO::Slave*)),
                              SLOT(slotSlaveDied(KIO::Slave*)));
         scheduler()->connect(slave, SIGNAL(slaveStatus(pid_t,QByteArray,QString,bool)),
@@ -1205,12 +1201,6 @@ Slave *SchedulerPrivate::heldSlaveForJob(SimpleJob *job)
         }
     } else if (slave) {
         //qDebug() << "HOLD: Reusing klauncher held slave (" << slave << ")";
-    }
-
-    // Reset the parent widget the ioslave should use when displaying message
-    // boxes after being put on hold.
-    if (slave && job->ui()) {
-        slave->setWindow(KJobWidgets::window(job));
     }
 
     return slave;

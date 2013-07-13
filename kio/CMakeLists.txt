@@ -132,6 +132,7 @@ set(kiocore_STAT_SRCS
   kio/thumbsequencecreator.cpp
   kio/kpasswdserver.cpp
   kio/kpasswdserverloop.cpp
+  kio/usernotificationhandler.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)

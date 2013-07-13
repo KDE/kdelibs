@@ -3,6 +3,7 @@
                   2000-2009 David Faure <faure@kde.org>
                        Waldo Bastian <bastian@kde.org>
     Copyright (C) 2007 Thiago Macieira <thiago@kde.org>
+    Copyright (C) 2013 Dawit Alemayehu <adawit@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -182,6 +183,19 @@ namespace KIO {
          * passed in. The regular URL will be set to the redirection URL which is then cleared.
          */
         void restartAfterRedirection(QUrl *redirectionUrl);
+
+        /**
+         * Request the ui delegate to show a message box.
+         * @internal
+         */
+        int requestMessageBox(int type, const QString& text,
+                              const QString& caption,
+                              const QString& buttonYes,
+                              const QString& buttonNo,
+                              const QString& iconYes = QString(),
+                              const QString& iconNo = QString(),
+                              const QString& dontAskAgainName = QString(),
+                              const KIO::MetaData& sslMetaData = KIO::MetaData());
 
         Q_DECLARE_PUBLIC(SimpleJob)
 
