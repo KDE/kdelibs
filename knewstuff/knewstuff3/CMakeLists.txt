@@ -2,8 +2,14 @@ project(knewstuff3)
 
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
+find_package(LibAttica REQUIRED NO_MODULE)
+set_package_properties(LibAttica PROPERTIES DESCRIPTION "Support for Get Hot New Stuff"
+                       URL "https://projects.kde.org/attica"
+                       TYPE REQUIRED
+                      )
+
 include_directories(
-   ${LIBATTICA_INCLUDE_DIR}
+   ${LibAttica_INCLUDE_DIR}
 )
 
 set(knewstuff3_SRCS
@@ -50,7 +56,7 @@ target_link_libraries(knewstuff3
     ${KDE4_KDECORE_LIBS}
     ${KCoreAddons_LIBRARIES}
     kwidgets
-    ${LIBATTICA_LIBRARIES}
+    ${LibAttica_LIBRARIES}
     ${KArchive_LIBRARIES}
     ki18n
 )
