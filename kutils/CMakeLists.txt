@@ -19,7 +19,7 @@ kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 generate_export_header(kcmutils)
 
 target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} ${KAuth_LIBRARIES} ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} ki18n KCompletion)
-target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdeui kwidgets Qt5::Widgets)
+target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdeui KWidgets Qt5::Widgets)
 set_target_properties(kcmutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})

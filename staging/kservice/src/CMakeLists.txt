@@ -32,18 +32,18 @@ set(kservice_SRCS
    plugin/kpluginloader.cpp
 )
 
-add_library(kservice ${kservice_SRCS})
-generate_export_header(kservice)
+add_library(KService ${kservice_SRCS})
+generate_export_header(KService)
 set(kservice_includes
    ${CMAKE_CURRENT_BINARY_DIR}/.. # Since we publicly include kservice_version.h
    ${CMAKE_CURRENT_SOURCE_DIR}/services
    ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
    ${CMAKE_CURRENT_SOURCE_DIR}/plugin)
-target_include_directories(kservice PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
+target_include_directories(KService PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
 
-target_link_libraries(kservice
+target_link_libraries(KService
    Qt5::DBus)
-target_link_libraries(kservice
+target_link_libraries(KService
   LINK_PUBLIC
     KConfigCore
     KCoreAddons
@@ -51,10 +51,10 @@ target_link_libraries(kservice
    ki18n
 )
 
-set_target_properties(kservice PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
+set_target_properties(KService PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
                                         SOVERSION ${KSERVICE_SOVERSION})
 
-install(TARGETS kservice EXPORT kserviceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KService EXPORT KServiceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
    "${CMAKE_CURRENT_BINARY_DIR}/kservice_export.h"

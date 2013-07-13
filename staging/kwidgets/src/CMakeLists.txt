@@ -26,8 +26,8 @@ set(kwidgets_LIB_SRCS
   utils/urlhandler.cpp
 )
 
-add_library(kwidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
-generate_export_header(kwidgets)
+add_library(KWidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
+generate_export_header(KWidgets)
 
 set(kwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/actions
@@ -35,10 +35,10 @@ set(kwidgets_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
   ${CMAKE_CURRENT_SOURCE_DIR}/widgets
 )
-target_include_directories(kwidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDES}>"
+target_include_directories(KWidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDES}>"
 )
 
-target_link_libraries(kwidgets
+target_link_libraries(KWidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}
   Qt5::Widgets
   Qt5::Svg
@@ -52,21 +52,21 @@ target_link_libraries(kwidgets
   ${KWidgetsAddons_LIBRARIES}
   ${KAuth_LIBRARIES}
   ${KWindowSystem_LIBRARIES}
-  kservice
+  KService
   ki18n
   KCodecs
 )
 
 if(X11_FOUND)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(kwidgets Qt5::X11Extras)
+  target_link_libraries(KWidgets Qt5::X11Extras)
 endif()
 
-set_target_properties(kwidgets PROPERTIES VERSION ${KWIDGETS_VERSION_STRING}
+set_target_properties(KWidgets PROPERTIES VERSION ${KWIDGETS_VERSION_STRING}
                                         SOVERSION ${KWIDGETS_SOVERSION}
 )
 
-install(TARGETS kwidgets EXPORT kwidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KWidgets EXPORT KWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   actions/kcodecaction.h
