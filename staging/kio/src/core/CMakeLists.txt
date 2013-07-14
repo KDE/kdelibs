@@ -104,34 +104,22 @@ set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
-  kdiskfreespaceinfo.h
-  ksambasharedata.h
-  ksambashare.h
-  knfsshare.h
-  kfileitem.h
-  davjob.h
   deletejob.h
   copyjob.h
   filejob.h
   mkdirjob.h
-  kremoteencoding.h
   slavebase.h
-  kacl.h
-  kauthorized.h
   http_slave_defaults.h
   slaveconfig.h
-  kprotocolmanager.h
   global.h
   http.h
   ioslave_defaults.h
   hostinfo.h
   jobtracker.h
-  kprotocolinfo.h
   metadata.h
   udsentry.h
   jobuidelegateextension.h
   jobuidelegatefactory.h
-  kmountpoint.h
   slaveinterface.h
   slave.h
   job.h
@@ -139,9 +127,21 @@ install( FILES
   jobclasses.h
   authinfo.h
   http.h
-  kcoredirlister.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
-install(FILES kdirnotify.h DESTINATION ${INCLUDE_INSTALL_DIR})
+install(FILES
+  kacl.h
+  kauthorized.h
+  kremoteencoding.h
+  kdiskfreespaceinfo.h
+  kdirnotify.h
+  kfileitem.h
+  kmountpoint.h
+  knfsshare.h
+  ksambashare.h
+  ksambasharedata.h
+  kprotocolinfo.h
+  kprotocolmanager.h
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
