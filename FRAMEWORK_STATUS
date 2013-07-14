@@ -5,8 +5,7 @@ For development discussions, please subscribe to kde-frameworks-devel@kde.org
 
 Dependencies:
   * extra-cmake-modules (ECM)
-  * cmake >= 2.8.6
-    (right now this means either the 2.8.6 release, or cmake git master with 'git revert 5e8e9ad68c')
+  * cmake >= 2.8.11 or later
 
 Status:
 =======
