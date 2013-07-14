@@ -270,7 +270,7 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
     const QStringList lst = l->languages();
     QMap<QString, QString> langs;
 
-    foreach(QString tag, lst) { // krazy:exclude=foreach (no const& because tag is modified below)
+    Q_FOREACH(QString tag, lst) { // krazy:exclude=foreach (no const& because tag is modified below)
         tag = tag.mid(0, tag.indexOf(QLatin1Char('-')));
         QLocale loc(tag);
         QString description;

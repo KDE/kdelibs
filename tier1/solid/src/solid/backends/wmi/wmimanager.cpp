@@ -73,7 +73,7 @@ public:
     void init(){
         if(m_deviceCache.isEmpty())
         {
-            foreach(const Solid::DeviceInterface::Type &dev, supportedInterfaces){
+            Q_FOREACH(const Solid::DeviceInterface::Type &dev, supportedInterfaces){
                 updateDeviceCache(dev);
             }
         }
@@ -85,11 +85,11 @@ public:
         QSet<QString> devSet = m_parent->findDeviceByDeviceInterface(type).toSet();
         if(m_deviceCache.contains(type)){
             QSet<QString> added = devSet - m_deviceCache[type];
-            foreach(const QString & s,added){
+            Q_FOREACH(const QString & s,added){
                 m_parent->slotDeviceAdded(s);
             }
             QSet<QString> removed = m_deviceCache[type] - devSet;
-            foreach(const QString & s,removed){
+            Q_FOREACH(const QString & s,removed){
                 m_parent->slotDeviceRemoved(s);
             }
         }
@@ -170,7 +170,7 @@ QStringList WmiManager::devicesFromQuery(const QString &parentUdi,
     QStringList result;
     if (!parentUdi.isEmpty())
     {
-        foreach(const QString &udi,allDevices()){
+        Q_FOREACH(const QString &udi,allDevices()){
             WmiDevice device(udi);
             if(device.type() == type && device.parentUdi() == parentUdi ){
                 result<<udi;
@@ -258,7 +258,7 @@ HRESULT  STDMETHODCALLTYPE WmiManager::WmiEventSink::QueryInterface(REFIID riid,
 
 HRESULT STDMETHODCALLTYPE WmiManager::WmiEventSink::Indicate(long lObjectCount,IWbemClassObject **apObjArray)
 {
-    foreach(const Solid::DeviceInterface::Type &type,m_types){
+    Q_FOREACH(const Solid::DeviceInterface::Type &type,m_types){
         m_parent->d->updateDeviceCache(type);
     }
     return WBEM_S_NO_ERROR;
