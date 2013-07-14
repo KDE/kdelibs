@@ -279,7 +279,7 @@ void Loader::loadPlugin(const QString &pluginPath)
 
 void Loader::changed()
 {
-    emit configurationChanged();
+    Q_EMIT configurationChanged();
 }
 
 }

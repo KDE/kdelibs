@@ -38,7 +38,7 @@ public:
 
 void ConfigDialog::Private::slotConfigChanged()
 {
-  emit q->languageChanged( ui->language() );
+  Q_EMIT q->languageChanged( ui->language() );
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent)

@@ -37,8 +37,8 @@ class DictionaryComboBox::Private
 
 void DictionaryComboBox::Private::slotDictionaryChanged( int idx )
 {
-    emit q->dictionaryChanged( q->itemData( idx ).toString() );
-    emit q->dictionaryNameChanged( q->itemText( idx ) );
+    Q_EMIT q->dictionaryChanged( q->itemData( idx ).toString() );
+    Q_EMIT q->dictionaryNameChanged( q->itemText( idx ) );
 }
 //@endcon
 
