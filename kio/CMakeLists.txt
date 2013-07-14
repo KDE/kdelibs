@@ -367,7 +367,6 @@ install( FILES
   kio/kfilewriteplugin.h
   kio/kimageio.h
   kio/kmimetypechooser.h
-  kio/kremoteencoding.h
   kio/krun.h
   kio/kscan.h
   kio/kshellcompletion.h
