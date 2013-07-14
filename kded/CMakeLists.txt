@@ -1,6 +1,9 @@
 project(kded)
 
-find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+if(NOT WIN32)
+    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+endif(NOT WIN32)
+
 
 add_subdirectory( tests )
 

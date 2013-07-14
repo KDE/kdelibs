@@ -93,7 +93,7 @@ if (X11_FOUND)
 endif ()
 
 if (WIN32)
-    set(libkde4support_SRCS ${libkde4support_SRCS} kernel/kapplication_win.cpp kdecore/klockfile_win.cpp)
+    set(libkde4support_SRCS ${libkde4support_SRCS} kdecore/klockfile_win.cpp)
 else()
     set(libkde4support_SRCS ${libkde4support_SRCS} kdecore/klockfile_unix.cpp)
 endif ()

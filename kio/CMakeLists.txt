@@ -30,7 +30,10 @@ if(NOT KIO_NO_NEPOMUK)
     )
 endif(NOT KIO_NO_NEPOMUK)
 
-find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+if(NOT WIN32)
+    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+endif(NOT WIN32)
+
 
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})
