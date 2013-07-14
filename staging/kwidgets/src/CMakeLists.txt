@@ -48,7 +48,7 @@ target_link_libraries(KWidgets
   ${KConfig_CORE_LIBRARY}
   ${KConfig_GUI_LIBRARY}
   ${KCoreAddons_LIBRARIES}
-  kguiaddons
+  KGuiAddons
   ${KWidgetsAddons_LIBRARIES}
   ${KAuth_LIBRARIES}
   ${KWindowSystem_LIBRARIES}

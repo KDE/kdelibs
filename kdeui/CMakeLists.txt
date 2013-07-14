@@ -90,7 +90,7 @@ target_link_libraries(kdeui LINK_PUBLIC
     ${ItemModels_LIBRARIES}
     ${Sonnet_LIBRARIES}
     ${KAuth_LIBRARIES}
-    kguiaddons
+    KGuiAddons
     KWidgets
     ${KWidgetsAddons_LIBRARIES}
     ki18n

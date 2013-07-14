@@ -21,21 +21,21 @@ message("Port to Qt5 native filter")
     set (kguiaddons_LIB_SRCS ${kguiaddons_LIB_SRCS} util/kmodifierkeyinfoprovider_dummy.cpp)
 #endif (X11_FOUND AND X11_Xkb_FOUND)
 
-add_library(kguiaddons ${kguiaddons_LIB_SRCS})
+add_library(KGuiAddons ${kguiaddons_LIB_SRCS})
 
-generate_export_header(kguiaddons)
+generate_export_header(KGuiAddons)
 
 set(kguiaddons_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/colors
   ${CMAKE_CURRENT_SOURCE_DIR}/text
   )
-target_include_directories(kguiaddons PUBLIC "$<BUILD_INTERFACE:${kguiaddons_INCLUDES}>")
-target_link_libraries(kguiaddons Qt5::Gui)
-set_target_properties(kguiaddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
+target_include_directories(KGuiAddons PUBLIC "$<BUILD_INTERFACE:${kguiaddons_INCLUDES}>")
+target_link_libraries(KGuiAddons Qt5::Gui)
+set_target_properties(KGuiAddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
                                             SOVERSION ${KGUIADDONS_SOVERSION} )
 
 
-install(TARGETS kguiaddons EXPORT kguiaddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KGuiAddons EXPORT KGuiAddonsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_export.h
