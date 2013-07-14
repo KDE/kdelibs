@@ -110,10 +110,10 @@ configure_file(config-kstandarddirs.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-k
 
 configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 
-add_library(kde4support ${libkde4support_SRCS})
-generate_export_header(kde4support)
+add_library(KDE4Support ${libkde4support_SRCS})
+generate_export_header(KDE4Support)
 
-target_include_directories(kde4support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
+target_include_directories(KDE4Support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
 
 set(kde4support_INCLUDES
   "${CMAKE_CURRENT_SOURCE_DIR}/kdecore"
@@ -122,14 +122,14 @@ set(kde4support_INCLUDES
   "${CMAKE_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/kparts"
 )
-target_include_directories(kde4support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
+target_include_directories(KDE4Support PUBLIC "$<BUILD_INTERFACE:${kde4support_INCLUDES}>")
 
-target_link_libraries(kde4support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} KCrash ${KWidgetsAddons_LIBRARIES} KWidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES} KCompletion)
+target_link_libraries(KDE4Support Qt5::Widgets Qt5::DBus Qt5::Test kdecore ${KCoreAddons_LIBRARIES} KCrash ${KWidgetsAddons_LIBRARIES} KWidgets kdeui kio ki18n kinterprocesswindowing ${X11_LIBRARIES} KCompletion)
 
-set_target_properties(kde4support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
+set_target_properties(KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
                                   SOVERSION ${KDE4SUPPORT_SOVERSION} )
 
-install(TARGETS kde4support
+install(TARGETS KDE4Support
         EXPORT kdelibsLibraryTargets # KDE4SupportTargets <- cannot be moved to separate export set as long as kde4support depends on kdelibs and kdelibs depends on kde4support
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 

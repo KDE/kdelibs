@@ -305,7 +305,7 @@ target_include_directories(kio PRIVATE
 
 if(NOT KIO_NO_NEPOMUK)
   kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
-  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} ki18n kde4support)
+  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} ki18n KDE4Support)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
 

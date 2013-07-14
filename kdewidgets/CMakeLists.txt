@@ -76,7 +76,7 @@ if(Qt5Designer_FOUND)
 
     kde4_add_plugin(kdedeprecated ${kdedeprecated_PART_SRCS})
 
-    target_link_libraries(kdedeprecated kde4support ${KDE4_KIO_LIBS} KWidgets)
+    target_link_libraries(kdedeprecated KDE4Support ${KDE4_KIO_LIBS} KWidgets)
     if(NOT WIN32)
       set_target_properties(kdedeprecated PROPERTIES
                                           INSTALL_RPATH_USE_LINK_PATH TRUE
