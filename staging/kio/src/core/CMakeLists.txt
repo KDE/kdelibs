@@ -11,6 +11,10 @@ set(kiocore_SRCS
   socketconnectionbackend.cpp
   connection.cpp
   kdiskfreespaceinfo.cpp
+  ksambasharedata.cpp
+  ksambashare.cpp
+  knfsshare.cpp
+  kfileitem.cpp
   slaveconfig.cpp
   kprotocolmanager.cpp
   hostinfo.cpp
@@ -72,6 +76,10 @@ install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
   kdiskfreespaceinfo.h
+  ksambasharedata.h
+  ksambashare.h
+  knfsshare.h
+  kfileitem.h
   kacl.h
   kauthorized.h
   http_slave_defaults.h

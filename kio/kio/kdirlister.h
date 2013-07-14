@@ -23,6 +23,7 @@
 
 #include "kfileitem.h"
 #include "kdirnotify.h"
+#include <kio_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>

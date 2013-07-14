@@ -20,14 +20,11 @@
 
 #include "kfileitem.h"
 
-#include <config-kio.h>
-
 #include <pwd.h>
 #include <grp.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <assert.h>
 #include <unistd.h>
 
 #include <QtCore/QDate>
@@ -1495,23 +1492,17 @@ QUrl KFileItem::targetUrl() const
 
 QUrl KFileItem::nepomukUri() const
 {
-#if ! KIO_NO_NEPOMUK
     if (!d)
         return QUrl();
 
     const QString nepomukUriStr = d->m_entry.stringValue( KIO::UDSEntry::UDS_NEPOMUK_URI );
-    if(!nepomukUriStr.isEmpty()) {
+    if (!nepomukUriStr.isEmpty()) {
         return QUrl(nepomukUriStr);
-    }
-    else if(targetUrl().isLocalFile()) {
+    } else if (targetUrl().isLocalFile()) {
         return targetUrl();
-    }
-    else {
+    } else {
         return QUrl();
     }
-#else
-    return QUrl();
-#endif
 }
 
 /*

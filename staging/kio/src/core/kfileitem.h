@@ -22,7 +22,7 @@
 
 #include <sys/stat.h>
 
-#include <kio_export.h>
+#include <kiocore_export.h>
 #include <kio/global.h>
 #include <kio/kacl.h>
 #include <kio/udsentry.h>
@@ -43,7 +43,7 @@ class KFileItemPrivate;
  *
  * KFileItem is implicitly shared, i.e. it can be used as a value and copied around at almost no cost.
  */
-class KIO_EXPORT KFileItem
+class KIOCORE_EXPORT KFileItem
 {
 public:
     enum { Unknown = static_cast<mode_t>(-1) };
@@ -335,7 +335,7 @@ public:
      */
     QString timeString( FileTimes which = ModificationTime ) const;
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED QString timeString( unsigned int which) const;
+    KIOCORE_DEPRECATED QString timeString( unsigned int which) const;
 #endif
 
     /**
@@ -445,7 +445,7 @@ public:
      * KDirModel has setDropsAllowed for similar (but configurable) logic.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED bool acceptsDrops() const;
+    KIOCORE_DEPRECATED bool acceptsDrops() const;
 #endif
 
     /**
@@ -541,7 +541,7 @@ public:
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setExtraData( const void *key, void *value );
+    KIOCORE_DEPRECATED void setExtraData( const void *key, void *value );
 #endif
 
     /**
@@ -554,7 +554,7 @@ public:
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED const void * extraData( const void *key ) const;
+    KIOCORE_DEPRECATED const void * extraData( const void *key ) const;
 #endif
 
     /**
@@ -564,14 +564,14 @@ public:
      * @deprecated use model/view (KDirModel) and you won't need this anymore
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void removeExtraData( const void *key );
+    KIOCORE_DEPRECATED void removeExtraData( const void *key );
 #endif
 
     /**
      * @deprecated simply use '='
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void assign( const KFileItem & item );
+    KIOCORE_DEPRECATED void assign( const KFileItem & item );
 #endif
 
     /**
@@ -596,8 +596,8 @@ private:
     QSharedDataPointer<KFileItemPrivate> d;
 
 private:
-    KIO_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
-    KIO_EXPORT friend QDataStream & operator>> ( QDataStream & s, KFileItem & a );
+    KIOCORE_EXPORT friend QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
+    KIOCORE_EXPORT friend QDataStream & operator>> ( QDataStream & s, KFileItem & a );
 
     friend class KFileItemTest;
 };
@@ -610,7 +610,7 @@ inline uint qHash(const KFileItem& item) { return qHash(item.url()); }
  * List of KFileItems, which adds a few helper
  * methods to QList<KFileItem>.
  */
-class KIO_EXPORT KFileItemList : public QList<KFileItem>
+class KIOCORE_EXPORT KFileItemList : public QList<KFileItem>
 {
 public:
   /// Creates an empty list of file items.
@@ -643,13 +643,13 @@ public:
   // TODO KDE-5 add d pointer here so that we can merge KFileItemListProperties into KFileItemList
 };
 
-KIO_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
-KIO_EXPORT QDataStream & operator>> ( QDataStream & s, KFileItem & a );
+KIOCORE_EXPORT QDataStream & operator<< ( QDataStream & s, const KFileItem & a );
+KIOCORE_EXPORT QDataStream & operator>> ( QDataStream & s, KFileItem & a );
 
 /**
  * Support for qDebug() << aFileItem
  * \since 4.4
  */
-KIO_EXPORT QDebug operator<<(QDebug stream, const KFileItem& item);
+KIOCORE_EXPORT QDebug operator<<(QDebug stream, const KFileItem& item);
 
 #endif

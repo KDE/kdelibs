@@ -21,7 +21,7 @@
 #define ksambashare_h
 
 #include <QtCore/QObject>
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 
 class KSambaShareData;
 class KSambaSharePrivate;
@@ -30,7 +30,7 @@ class KSambaSharePrivate;
  * This class lists Samba user shares and monitors them for addition, update and removal.
  * Singleton class, call instance() to get an instance.
  */
-class KIO_EXPORT KSambaShare : public QObject
+class KIOCORE_EXPORT KSambaShare : public QObject
 {
     Q_OBJECT
 
@@ -112,7 +112,7 @@ public:
      *
      * @deprecated
      */
-    KIO_DEPRECATED QString smbConfPath() const;
+    KIOCORE_DEPRECATED QString smbConfPath() const;
 
 Q_SIGNALS:
     /**

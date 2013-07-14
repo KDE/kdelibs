@@ -21,7 +21,7 @@
 
 #include <QtCore/QObject>
 
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 
 /**
  * Similar functionality like KFileShare, 
@@ -30,7 +30,7 @@
  * It parses the /etc/exports file to get its information.
  * Singleton class, call instance() to get an instance.
  */
-class KIO_EXPORT KNFSShare : public QObject 
+class KIOCORE_EXPORT KNFSShare : public QObject 
 {
 Q_OBJECT
 public:

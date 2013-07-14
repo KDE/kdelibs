@@ -96,7 +96,6 @@ set(kiocore_STAT_SRCS
   kio/kdirmodel.cpp
   kio/kdynamicjobtracker.cpp
   kio/kemailsettings.cpp
-  kio/kfileitem.cpp
   kio/kfileitemactionplugin.cpp
   kio/kfileitemlistproperties.cpp
   kio/kfileitemactions.cpp
@@ -163,9 +162,6 @@ install(FILES kio/org.kde.KPasswdServer.xml DESTINATION ${DBUS_INTERFACES_INSTAL
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
        kio/kautomount.cpp
-       kio/knfsshare.cpp
-       kio/ksambashare.cpp
-       kio/ksambasharedata.cpp
    )
 endif(UNIX)
 
@@ -398,7 +394,6 @@ install( FILES
   kio/kdirlister.h
   kio/kdirmodel.h
   kio/kemailsettings.h
-  kio/kfileitem.h
   kio/kfileitemlistproperties.h
   kio/kfileitemactionplugin.h
   kio/kfileitemactions.h
@@ -409,11 +404,8 @@ install( FILES
   kio/kfilewriteplugin.h
   kio/kimageio.h
   kio/kmimetypechooser.h
-  kio/knfsshare.h
   kio/kremoteencoding.h
   kio/krun.h
-  kio/ksambashare.h
-  kio/ksambasharedata.h
   kio/kscan.h
   kio/kshellcompletion.h
   kio/kurifilter.h
