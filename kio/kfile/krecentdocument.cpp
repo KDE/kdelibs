@@ -107,9 +107,10 @@ void KRecentDocument::add(const KUrl& url, const QString& desktopEntryName)
     if(!useRecent || maxEntries <= 0)
         return;
 
-    QString path = recentDocumentDirectory();
-
-    QString dStr = path + url.fileName();
+    const QString path = recentDocumentDirectory();
+    const QString fileName = url.fileName();
+    // don't create a file called ".desktop", it will lead to an empty name in kio_recentdocuments
+    const QString dStr = fileName.isEmpty() ? QString("unnamed") : fileName;
 
     QString ddesktop = dStr + QLatin1String(".desktop");
 
