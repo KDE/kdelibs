@@ -192,7 +192,6 @@ set(kbookmarks_STAT_SRCS
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
-  kfile/kdiskfreespaceinfo.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfile.cpp
   kfile/kfiledialog.cpp
@@ -423,7 +422,6 @@ install( FILES
   kio/predicateproperties.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
-  kfile/kdiskfreespaceinfo.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
   kfile/kfiledialog.h

@@ -24,7 +24,7 @@
 #include <QtCore/QSharedDataPointer>
 #include <QtCore/QString>
 
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 #include <kio/global.h>
 
 /**
@@ -49,7 +49,7 @@
  *
  * \since 4.2
  */
-class KIO_EXPORT KDiskFreeSpaceInfo
+class KIOCORE_EXPORT KDiskFreeSpaceInfo
 {
 public:
     /**

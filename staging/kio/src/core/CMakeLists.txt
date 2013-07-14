@@ -10,6 +10,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  kdiskfreespaceinfo.cpp
   slaveconfig.cpp
   kprotocolmanager.cpp
   hostinfo.cpp
@@ -70,6 +71,7 @@ set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
+  kdiskfreespaceinfo.h
   kacl.h
   kauthorized.h
   http_slave_defaults.h
