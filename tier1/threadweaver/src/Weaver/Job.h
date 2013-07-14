@@ -32,7 +32,7 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 #include <QtCore/QObject>
 
 #include <threadweaver_export.h>
-#include <Weaver/JobPointer.h>
+#include <JobPointer.h>
 
 class QMutex;
 class QWaitCondition;
