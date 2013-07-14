@@ -4,6 +4,8 @@ include (ConfigureChecks.cmake)
 
 configure_file(config-kiocore.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiocore.h )
 
+configure_file(config-kmountpoint.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kmountpoint.h)
+
 set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
@@ -22,6 +24,7 @@ set(kiocore_SRCS
   jobtracker.cpp
   jobuidelegateextension.cpp
   jobuidelegatefactory.cpp
+  kmountpoint.cpp
 )
 
 if (UNIX)
@@ -83,6 +86,7 @@ install( FILES
   udsentry.h
   jobuidelegateextension.h
   jobuidelegatefactory.h
+  kmountpoint.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)

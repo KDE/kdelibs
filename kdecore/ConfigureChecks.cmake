@@ -15,35 +15,13 @@ check_include_files(strings.h     HAVE_STRINGS_H)
 check_include_files(unistd.h      HAVE_UNISTD_H)
 check_include_files(stdlib.h      HAVE_STDLIB_H)
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
-check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
 check_include_files(sys/select.h  HAVE_SYS_SELECT_H)
 check_include_files(errno.h       HAVE_ERRNO_H)
-check_include_files("stdio.h;sys/mnttab.h"  HAVE_SYS_MNTTAB_H)
-check_include_files(mntent.h      HAVE_MNTENT_H)
-check_include_files(sys/mntent.h  HAVE_SYS_MNTENT_H)
-check_include_files("sys/param.h;sys/mount.h"  HAVE_SYS_MOUNT_H)
-check_include_files(sys/param.h   HAVE_SYS_PARAM_H)
-check_include_files(fstab.h       HAVE_FSTAB_H)
 check_include_files(sys/time.h    HAVE_SYS_TIME_H)
 check_include_files(sys/time.h    TIME_WITH_SYS_TIME)
 check_include_files(time.h        HAVE_TIME_H)
 
-check_function_exists(setmntent   HAVE_SETMNTENT)
-check_function_exists(getmntinfo  HAVE_GETMNTINFO)
-
-check_library_exists(volmgt volmgt_running "" HAVE_VOLMGT)
-
 check_struct_member(dirent d_type dirent.h HAVE_DIRENT_D_TYPE)
-
-check_cxx_source_compiles("
-  #include <sys/types.h>
-  #include <sys/statvfs.h>
-  int main(){
-  	struct statvfs *mntbufp;
-	int flags;
-	return getmntinfo(&mntbufp, flags);
-	}
-" GETMNTINFO_USES_STATVFS )
 
 check_prototype_exists(strlcpy string.h             HAVE_STRLCPY_PROTO)
 check_prototype_exists(setenv stdlib.h              HAVE_SETENV_PROTO)

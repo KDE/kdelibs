@@ -28,7 +28,6 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 
 KDECORE_UNIT_TESTS(
  klocaletimeformattest
- kmountpointtest
  cplusplustest
  ktimezonestest
  kdatetimetest

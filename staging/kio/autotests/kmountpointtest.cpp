@@ -20,7 +20,7 @@
 
 #include <QtTest/QtTest>
 #include "kmountpoint.h"
-#include <kdebug.h>
+#include <QDebug>
 #ifdef Q_OS_UNIX
 #include <sys/stat.h>
 #include <unistd.h>
@@ -39,7 +39,7 @@ void KMountPointTest::testCurrentMountPoints()
     QVERIFY(!mountPoints.isEmpty());
     KMountPoint::Ptr mountWithDevice;
     foreach(KMountPoint::Ptr mountPoint, mountPoints) {
-        kDebug() << "Mount: " << mountPoint->mountedFrom()
+        qDebug() << "Mount: " << mountPoint->mountedFrom()
           << " (" << mountPoint->realDeviceName() << ") "
           << mountPoint->mountPoint() << " " << mountPoint->mountType() << endl;
         QVERIFY(!mountPoint->mountedFrom().isEmpty());
@@ -58,7 +58,7 @@ void KMountPointTest::testCurrentMountPoints()
 
     if (!mountWithDevice) {
         // This happens on build.kde.org (LXC virtualization, mtab points to non-existing device paths)
-        kWarning() << "Couldn't find any mountpoint with a valid device?";
+        qWarning() << "Couldn't find any mountpoint with a valid device?";
     } else {
         // Check findByDevice
         KMountPoint::Ptr found = mountPoints.findByDevice(mountWithDevice->mountedFrom());
@@ -82,13 +82,13 @@ void KMountPointTest::testCurrentMountPoints()
         bool sameDevice = rootStatBuff.st_dev == homeStatBuff.st_dev;
         const KMountPoint::Ptr homeMountPoint = mountPoints.findByPath("/home");
         QVERIFY(homeMountPoint);
-        //kDebug() << "Checking the home mount point, sameDevice=" << sameDevice;
+        //qDebug() << "Checking the home mount point, sameDevice=" << sameDevice;
         if (sameDevice)
             QCOMPARE(homeMountPoint->mountPoint(), QString("/"));
         else
             QCOMPARE(homeMountPoint->mountPoint(), QString("/home"));
     } else {
-        kDebug() << "/home doesn't seem to exist, skipping test";
+        qDebug() << "/home doesn't seem to exist, skipping test";
     }
 #endif
 }
@@ -102,7 +102,7 @@ void KMountPointTest::testPossibleMountPoints()
     }
     KMountPoint::Ptr mountWithDevice;
     foreach(KMountPoint::Ptr mountPoint, mountPoints) {
-        kDebug() << "Possible mount: " << mountPoint->mountedFrom()
+        qDebug() << "Possible mount: " << mountPoint->mountedFrom()
           << " (" << mountPoint->realDeviceName() << ") "
           << mountPoint->mountPoint() << " " << mountPoint->mountType()
                  << " options:" << mountPoint->mountOptions() << endl;
