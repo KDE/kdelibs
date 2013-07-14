@@ -22,7 +22,7 @@
 #define kdirlister_h
 
 #include <kcoredirlister.h>
-#include <kio_export.h>
+#include "kio_export.h"
 class QWidget;
 
 /**

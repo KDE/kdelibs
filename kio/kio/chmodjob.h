@@ -23,7 +23,7 @@
 
 #include "global.h"
 #include "job.h"
-#include <kio_export.h>
+#include "kio_export.h"
 #include <kfileitem.h>
 
 namespace KIO {
