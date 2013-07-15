@@ -98,7 +98,7 @@ target_link_libraries(XmlGui LINK_PUBLIC
     KWidgets
     KWidgetsAddons
     ItemViews
-    ki18n
+    KI18n
     KCoreAddons
     KConfigCore
     KIconThemes

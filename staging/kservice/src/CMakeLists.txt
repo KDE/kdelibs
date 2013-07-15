@@ -48,7 +48,7 @@ target_link_libraries(KService
     KConfigCore
     KCoreAddons
   LINK_PRIVATE
-   ki18n
+   KI18n
 )
 
 set_target_properties(KService PROPERTIES VERSION ${KSERVICE_VERSION_STRING}

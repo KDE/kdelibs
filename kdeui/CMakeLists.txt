@@ -93,7 +93,7 @@ target_link_libraries(kdeui LINK_PUBLIC
     KGuiAddons
     KWidgets
     ${KWidgetsAddons_LIBRARIES}
-    ki18n
+    KI18n
     KTextWidgets
     XmlGui
     ItemViews

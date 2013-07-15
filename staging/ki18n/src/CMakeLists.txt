@@ -6,17 +6,17 @@ set(libki18n_SRCS
     common_helpers.cpp
 )
 
-add_library(ki18n ${libki18n_SRCS})
-generate_export_header(ki18n)
+add_library(KI18n ${libki18n_SRCS})
+generate_export_header(KI18n)
 
-target_link_libraries(ki18n LINK_PUBLIC  Qt5::Core
+target_link_libraries(KI18n LINK_PUBLIC  Qt5::Core
                             LINK_PRIVATE Qt5::Xml)
 
-set_target_properties(ki18n PROPERTIES VERSION   ${KI18N_VERSION_STRING}
+set_target_properties(KI18n PROPERTIES VERSION   ${KI18N_VERSION_STRING}
                                        SOVERSION ${KI18N_SOVERSION}
 )
 
-install(TARGETS ki18n EXPORT ki18nTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KI18n EXPORT KI18nTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     klocalizedstring.h

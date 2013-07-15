@@ -38,7 +38,7 @@ set(kio_help_PART_SRCS
 
 kde4_add_plugin(kio_help ${kio_help_PART_SRCS})
 
-target_link_libraries(kio_help ki18n ${KArchive_LIBRARIES} kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
+target_link_libraries(kio_help KI18n ${KArchive_LIBRARIES} kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
 install(TARGETS kio_help  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -50,7 +50,7 @@ set(kio_ghelp_PART_SRCS kio_help.cpp main_ghelp.cpp xslt_help.cpp)
 
 kde4_add_plugin(kio_ghelp ${kio_ghelp_PART_SRCS})
 
-target_link_libraries(kio_ghelp ki18n ${KArchive_LIBRARIES} kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
+target_link_libraries(kio_ghelp KI18n ${KArchive_LIBRARIES} kio xslt_kde ${LIBXML2_LIBRARIES} ${LIBXSLT_LIBRARIES} ${LIBXSLT_EXSLT_LIBRARIES} )
 
 install(TARGETS kio_ghelp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

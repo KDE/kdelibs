@@ -23,7 +23,7 @@ target_link_libraries(KTextWidgets
   Qt5::DBus
   SonnetCore
   SonnetUi
-  ki18n
+  KI18n
   KWidgets
   KWidgetsAddons
   KService

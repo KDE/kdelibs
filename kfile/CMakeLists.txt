@@ -46,7 +46,7 @@ target_link_libraries(kfile
    ${KCoreAddons_LIBRARIES}
    KWidgets
    ${KWidgetsAddons_LIBRARIES}
-   ki18n
+   KI18n
 )
 
 if(X11_Xrender_FOUND)

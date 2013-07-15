@@ -15,7 +15,7 @@ macro(KSERVICE_UNIT_TESTS)
        Qt5::Test
        Qt5::Xml
        ${KConfig_CORE_LIBRARY}
-       ki18n
+       KI18n
        Qt5::Concurrent
     )
     ecm_mark_as_test(${_testname})

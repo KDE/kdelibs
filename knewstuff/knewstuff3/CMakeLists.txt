@@ -58,7 +58,7 @@ target_link_libraries(knewstuff3
     KWidgets
     ${LibAttica_LIBRARIES}
     ${KArchive_LIBRARIES}
-    ki18n
+    KI18n
 )
 
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore KCompletion Qt5::Widgets)

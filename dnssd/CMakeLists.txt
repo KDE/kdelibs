@@ -70,7 +70,7 @@ generate_export_header(kdnssd
 )
 
 # Currently uses kdecore for i18n, TODO port to QCoreApplication::translate
-target_link_libraries(kdnssd kdecore ki18n Qt5::Network)
+target_link_libraries(kdnssd kdecore KI18n Qt5::Network)
 if (HAVE_DNSSD)
   target_link_libraries(kdnssd ${DNSSD_LIBRARIES})
 endif (HAVE_DNSSD)

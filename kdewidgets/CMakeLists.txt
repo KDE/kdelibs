@@ -11,7 +11,7 @@ set(makekdewidgets_SRCS makekdewidgets.cpp )
 
 kde4_add_executable(makekdewidgets NOGUI ${makekdewidgets_SRCS})
 
-target_link_libraries(makekdewidgets kdeqt5staging KConfigCore ${KCoreAddons_LIBRARIES} ki18n)
+target_link_libraries(makekdewidgets kdeqt5staging KConfigCore ${KCoreAddons_LIBRARIES} KI18n)
 
 # "export" this target too so we can use the LOCATION property of the imported target in
 # FindKDE4Internal.cmake to get the full path to the installed executable instead of using FIND_PROGRAM(), Alex
@@ -45,7 +45,7 @@ if(Qt5Designer_FOUND)
 
   kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} KWidgets KDE4Attic ${KWidgetsAddons_LIBRARIES} ki18n)
+  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} KWidgets KDE4Attic ${KWidgetsAddons_LIBRARIES} KI18n)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

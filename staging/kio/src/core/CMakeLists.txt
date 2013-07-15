@@ -83,7 +83,7 @@ target_link_libraries(kiocore
  ${KDE4_KDECORE_LIBS} # TODO remove once klocale is in a framework
  ${KConfig_CORE_LIBRARY}
  ${KCoreAddons_LIBRARIES}
- ki18n
+ KI18n
  KService
  Qt5::Network
  Qt5::DBus

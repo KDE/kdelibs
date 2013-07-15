@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-project(ki18n)
+project(KI18n)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
@@ -27,19 +27,19 @@ add_subdirectory(src)
 add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/ki18n")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KI18n")
 
-configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/ki18nConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/ki18nConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_LIST_DIR}/KI18nConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KI18nConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR LIB_INSTALL_DIR CMAKE_INSTALL_PREFIX)
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/ki18nConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/ki18nConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KI18nConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KI18nConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel)
 
-install(EXPORT ki18nTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE ki18nTargets.cmake NAMESPACE KDE4__)
+install(EXPORT KI18nTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KI18nTargets.cmake NAMESPACE KDE4__)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ki18n_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

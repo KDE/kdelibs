@@ -14,7 +14,7 @@ macro(KIOCORE_UNIT_TESTS)
        kiocore
        Qt5::Test
        Qt5::Xml
-       ki18n
+       KI18n
        Qt5::Concurrent
        ${KConfig_CORE_LIBRARY}
     )
