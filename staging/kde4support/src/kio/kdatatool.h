@@ -21,7 +21,7 @@
 #ifndef KDATATOOL_H
 #define KDATATOOL_H
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
@@ -46,7 +46,7 @@ class KActionCollection;
  * described by the service.
  * @see KDataTool
  */
-class KIO_EXPORT KDataToolInfo
+class KDE4SUPPORT_EXPORT KDataToolInfo
 {
 public:
     /**
@@ -182,7 +182,7 @@ private:
  * The slot defined for step 2 is called when the action is activated, and
  * that's where the tool should be created and run.
  */
-class KIO_EXPORT KDataToolAction : public QAction
+class KDE4SUPPORT_EXPORT KDataToolAction : public QAction
 {
     Q_OBJECT
 public:
@@ -243,7 +243,7 @@ private:
  * @see KDataToolAction, and for activating a tool, passing it the data
  * (and possibly getting modified data from it).
  */
-class KIO_EXPORT KDataTool : public QObject
+class KDE4SUPPORT_EXPORT KDataTool : public QObject
 {
     Q_OBJECT
 public:
