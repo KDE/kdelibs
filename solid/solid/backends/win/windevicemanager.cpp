@@ -201,7 +201,7 @@ LRESULT WinDeviceManager::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM
         break;
     case WM_POWERBROADCAST:
     {
-
+        m_instance->promotePowerChange();
     }
     break;
     case WM_DESTROY:
