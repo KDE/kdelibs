@@ -22,7 +22,7 @@
 #define KMIMETYPERESOLVER_H
 
 #include <QtCore/QObject>
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 class QModelIndex;
 class QAbstractItemView;
 class QAbstractProxyModel;
@@ -42,7 +42,7 @@ class KAbstractViewAdapter;
  * (actually, it rather does one or the other), and with better performance
  * (it batches the updates rather than doing them one by one)
  */
-class KIO_EXPORT KMimeTypeResolver : public QObject
+class KDE4SUPPORT_EXPORT KMimeTypeResolver : public QObject
 {
     Q_OBJECT
 public:
@@ -54,19 +54,19 @@ public:
      * WARNING: if you call KDirModel::setDirLister, do it before creating the KMimeTypeResolver
      * If this is a problem, tell me and I'll add a signal...
      */
-    KIO_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, KDirModel* model);
+    KDE4SUPPORT_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, KDirModel* model);
 
     /**
      * This constructor should be used when the view uses a proxy model instead of a KDirModel.
      * The source model must be a KDirModel however, and the above warning applies
      * to this constructor as well.
      */
-    KIO_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
+    KDE4SUPPORT_DEPRECATED KMimeTypeResolver(QAbstractItemView* view, QAbstractProxyModel* model);
 
     /**
      * @internal
      */
-    explicit KIO_DEPRECATED KMimeTypeResolver(KAbstractViewAdapter* adapter);
+    explicit KDE4SUPPORT_DEPRECATED KMimeTypeResolver(KAbstractViewAdapter* adapter);
 
     ~KMimeTypeResolver();
 

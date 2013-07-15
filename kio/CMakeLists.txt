@@ -118,7 +118,6 @@ set(kiocore_STAT_SRCS
 if(NOT KDE_NO_DEPRECATED)
   set(kiocore_STAT_SRCS
     ${kiocore_STAT_SRCS}
-    kio/kmimetyperesolver.cpp
     kio/passworddialog.cpp
     )
 endif(NOT KDE_NO_DEPRECATED)
@@ -404,7 +403,6 @@ install( FILES
 if(NOT KDE_NO_DEPRECATED)
 install( FILES
   kfile/kdiskfreespace.h
-  kio/kmimetyperesolver.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install( FILES

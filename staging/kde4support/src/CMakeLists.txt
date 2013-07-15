@@ -84,6 +84,7 @@ set(libkde4support_SRCS
 
     kio/kfilemetainfowidget.cpp
     kio/metainfojob.cpp
+    kio/kmimetyperesolver.cpp
     kio/kdatatool.cpp
 
     kparts/factory.cpp
@@ -223,6 +224,7 @@ endif ()
 install(FILES
     kio/kfilemetainfowidget.h
     kio/metainfojob.h
+    kio/kmimetyperesolver.h
     kio/kdatatool.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
 )
