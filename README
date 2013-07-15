@@ -196,6 +196,10 @@ compiler or the distribution used. For that reason, please have a look at
 http://techbase.kde.org/Getting_Started/Build/FAQ for known issues in certain
 OS environments before reporting bugs or going mad :).
 
+A good guide for comiling can be found at the following locations
+http://community.kde.org/Frameworks/Building
+http://community.kde.org/Frameworks/Building/Details
+
 KDE 4 requires gcc 3.3 or better as the compiler.
 
 How to report
