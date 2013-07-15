@@ -60,12 +60,22 @@ public:
 
     static const Battery batteryInfoFromUdi(const QString &udi);
 
+    Solid::Battery::Technology technology() const;
+
+    double energy() const;
+
+    double energyRate() const;
+
+    double voltage() const;
+
 signals:
     void chargePercentChanged(int value, const QString &udi) ;
     void capacityChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
     void powerSupplyStateChanged(bool newState, const QString &udi);
+    void energyChanged(double energy, const QString &udi);
+    void energyRateChanged(double energyRate, const QString &udi);
 
 private slots:
     void powerChanged();
@@ -80,6 +90,13 @@ private:
     bool m_rechargabel;
     bool m_isPowerSupply;
     Solid::Battery::ChargeState m_state;
+    Solid::Battery::Technology m_technology;
+    double m_energy;
+    double m_energyRate;
+    double m_voltage;
+
+    
+
 };
 }
 }

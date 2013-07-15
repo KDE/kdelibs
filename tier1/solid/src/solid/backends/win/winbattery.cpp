@@ -140,11 +140,13 @@ const WinBattery::Battery WinBattery::batteryInfoFromUdi(const QString &udi)
 void WinBattery::powerChanged()
 {
 
-     const int old_charge  = m_charge;
-     const int old_capacity = m_capacity;
-     const Solid::Battery::ChargeState old_state = m_state;
-     const bool old_pluggedIn = m_pluggedIn;
-     const bool old_isPowerSupply = m_isPowerSupply;
+    const int old_charge  = m_charge;
+    const int old_capacity = m_capacity;
+    const Solid::Battery::ChargeState old_state = m_state;
+    const bool old_pluggedIn = m_pluggedIn;
+    const bool old_isPowerSupply = m_isPowerSupply;
+    const double old_energy = m_energy;
+    const double old_energyRate = m_energyRate;
 
     BATTERY_WAIT_STATUS batteryStatusQuery;
     ZeroMemory(&batteryStatusQuery,sizeof(batteryStatusQuery));
@@ -164,9 +166,41 @@ void WinBattery::powerChanged()
     m_isPowerSupply = true;//TODO: is there a wy to implement this
 
 
+
+
+     QString tech = QString::fromUtf8((const char*)info.Chemistry,4);
+
+    if(tech == "LION" || tech == "LI-I")
+    {
+        m_technology = Solid::Battery::LithiumIon;
+    }
+    else if(tech == "PBAC")
+    {
+        m_technology = Solid::Battery::LeadAcid;
+    }
+    else if(tech == "NICD")
+    {
+        m_technology = Solid::Battery::NickelCadmium;
+    }
+    else if(tech == "NIMH")
+    {
+        m_technology = Solid::Battery::NickelMetalHydride;
+    }
+    else
+    {
+         qDebug() << tech << QObject::tr("Unknown", "battery technology");
+        m_technology = Solid::Battery::UnknownTechnology;
+    }
+
+
+
+    m_energy = status.Capacity;
+    m_energyRate = status.Rate;
+    m_voltage = status.Voltage;
+
     if(info.FullChargedCapacity!=0)
     {
-        m_charge = (float)status.Capacity/info.FullChargedCapacity*100.0;
+        m_charge = m_energy/info.FullChargedCapacity*100.0;
     }
 
     if(info.DesignedCapacity != 0)
@@ -226,6 +260,34 @@ void WinBattery::powerChanged()
     {
         emit powerSupplyStateChanged(m_isPowerSupply,m_device->udi());
     }
+
+    if(old_energy != m_energy)
+    {
+        emit energyChanged(m_energy,m_device->udi());
+    }
+
+    if(old_energyRate != m_energyRate)
+    {
+        emit energyRateChanged(m_energyRate,m_device->udi());
+    }
 }
 
-#include "winbattery.moc"
+Solid::Battery::Technology WinBattery::technology() const
+{
+    return m_technology;
+}
+
+double WinBattery::energy() const
+{
+    return m_energy;
+}
+
+double WinBattery::energyRate() const
+{
+    return m_energyRate;
+}
+
+double WinBattery::voltage() const
+{
+    return m_voltage;
+}

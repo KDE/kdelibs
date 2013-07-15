@@ -243,8 +243,3 @@ void WinDeviceManager::promotePowerChange()
 {
     emit powerChanged();
 }
-
-
-
-#include <windevicemanager.moc>
-

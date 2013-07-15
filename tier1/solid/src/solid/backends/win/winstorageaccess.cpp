@@ -64,6 +64,3 @@ bool WinStorageAccess::teardown()
     }
     return true;
 }
-
-
-#include "winstorageaccess.moc"

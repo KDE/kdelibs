@@ -65,7 +65,6 @@ private:
     void initStorageDevice();
     void initBatteryDevice();
     void initCpuDevice();
-    QString batteryTechnology(QString tech) const;
 
 
 

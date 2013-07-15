@@ -48,5 +48,3 @@ bool WinGenericInterface::propertyExists(const QString &key) const
     qFatal("Not implemented");
     return true;
 }
-
-#include "wingenericinterface.moc"

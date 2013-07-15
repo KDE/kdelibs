@@ -110,5 +110,3 @@ void WinStorageDrive::updateCache()
     m_isRemovable = plugInfo.MediaRemovable;
 
 }
-
-#include "winstoragedrive.moc"

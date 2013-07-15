@@ -191,14 +191,22 @@ void WinDevice::initBatteryDevice()
     WinDeviceManager::getDeviceInfo<wchar_t,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,buff,size,&query);
     m_vendor = QString::fromWCharArray(buff);
 
-    query.InformationLevel = BatteryInformation;
-    BATTERY_INFORMATION info = WinDeviceManager::getDeviceInfo<BATTERY_INFORMATION,BATTERY_QUERY_INFORMATION>(battery.first,IOCTL_BATTERY_QUERY_INFORMATION,&query);
-
-    if(info.Chemistry != 0)
+    switch(WinBattery(this).technology())
     {
-        QString tech = QString::fromUtf8((const char*)info.Chemistry,4);
-
-        m_description = QObject::tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology(tech.toUpper()));
+    case Solid::Battery::LithiumIon:
+        m_description = QObject::tr("Lithium Ion", "battery technology");
+        break;
+    case Solid::Battery::LeadAcid:
+        m_description =  QObject::tr("Lead Acid", "battery technology");
+        break;
+    case Solid::Battery::NickelCadmium:
+        m_description = QObject::tr("Nickel Cadmium", "battery technology");
+        break;
+    case Solid::Battery::NickelMetalHydride:
+         m_description = QObject::tr("Nickel Metal Hydride", "battery technology");
+         break;
+    default:
+        m_description = QObject::tr("Unknown", "battery technology");
     }
 }
 
@@ -398,36 +406,3 @@ Solid::DeviceInterface::Type WinDevice::type() const
 {
     return m_type;
 }
-
-QString WinDevice::batteryTechnology(QString tec) const
-{
-    //based on upowerdevice.cpp
-    if(tec == "LION" || tec == "LI-I")
-    {
-        return QObject::tr("Lithium Ion", "battery technology");
-    }
-    else if(tec == "PBAC")
-    {
-        return QObject::tr("Lead Acid", "battery technology");
-    }
-    else if(tec == "NICD")
-    {
-        return QObject::tr("Nickel Cadmium", "battery technology");
-    }
-    else if(tec == "NIMH")
-    {
-        return QObject::tr("Nickel Metal Hydride", "battery technology");
-    }
-    else if(tec == "NIZN")
-    {
-        return QObject::tr("Nickel  Zinc", "battery technology");
-    }
-    else
-    {
-        qDebug()<<tec<< QObject::tr("Unknown", "battery technology");
-        return QObject::tr("Unknown", "battery technology");
-    }
-}
-
-
-#include "windevice.moc"

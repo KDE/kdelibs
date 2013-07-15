@@ -220,5 +220,3 @@ QSet<QString> WinBlock::getFromBitMask(const DWORD unitmask)
     }
     return list;
 }
-
-#include "winblock.moc"

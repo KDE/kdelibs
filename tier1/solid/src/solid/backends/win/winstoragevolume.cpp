@@ -101,8 +101,3 @@ QString WinStorageVolume::encryptedContainerUdi() const
 {
     return QString();
 }
-
-#include "winstoragevolume.moc"
-
-
-

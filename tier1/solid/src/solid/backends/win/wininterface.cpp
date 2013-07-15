@@ -34,9 +34,3 @@ WinInterface::WinInterface(WinDevice *device)
 WinInterface::~WinInterface()
 {
 }
-
-
-
-#include "wininterface.moc"
-
-

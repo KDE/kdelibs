@@ -54,5 +54,3 @@ void WinAcadapter::powerChanged()
         emit plugStateChanged(m_pluggedIn,m_device->udi());
     }
 }
-
-#include "winacadapter.moc"

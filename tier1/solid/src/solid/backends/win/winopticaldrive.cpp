@@ -172,6 +172,3 @@ const MediaProfiles MediaProfiles::getProfile(ulong val)
     return profiles[val];
 }
 #endif
-
-
-#include "winopticaldrive.moc"
