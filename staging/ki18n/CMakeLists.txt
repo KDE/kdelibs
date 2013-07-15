@@ -16,7 +16,7 @@ find_package(Qt5Test 5.2.0 REQUIRED NO_MODULE)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KI18N
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ki18n_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ki18nConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KI18nConfigVersion.cmake")
 
 remove_definitions(-DQT_NO_KEYWORDS)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
