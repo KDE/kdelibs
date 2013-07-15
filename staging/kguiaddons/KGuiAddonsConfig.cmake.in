@@ -14,4 +14,4 @@ set_and_check(KGuiAddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
 include("${CMAKE_CURRENT_LIST_DIR}/KGuiAddonsTargets.cmake")
 
 set(KGuiAddons_LIBRARIES KF5::KGuiAddons)
-set(kguiaddons_INCLUDE_DIRS ${KGuiAddons_INCLUDE_DIR} )
+set(KGuiAddons_INCLUDE_DIRS ${KGuiAddons_INCLUDE_DIR} )
