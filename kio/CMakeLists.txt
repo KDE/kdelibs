@@ -73,7 +73,6 @@ set(kiocore_STAT_SRCS
   kio/accessmanagerreply_p.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
-  kio/directorysizejob.cpp
   kio/fileundomanager.cpp
   kio/pixmaploader.cpp
   kio/imagefilter.cpp
@@ -337,7 +336,6 @@ install(  FILES
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h
-  kio/directorysizejob.h
   kio/renamedialog.h
   kio/skipdialog.h
   kssl/sslui.h

@@ -20,7 +20,7 @@
 #ifndef DIRECTORYSIZEJOB_H
 #define DIRECTORYSIZEJOB_H
 
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include "job.h"
 #include <kfileitem.h>
 
@@ -33,7 +33,7 @@ class DirectorySizeJobPrivate;
  *
  * Usage: see KIO::directorySize.
  */
-class KIO_EXPORT DirectorySizeJob : public KIO::Job
+class KIOCORE_EXPORT DirectorySizeJob : public KIO::Job
 {
     Q_OBJECT
 
@@ -78,7 +78,7 @@ private:
  *
  * This one lists a single directory.
  */
-KIO_EXPORT DirectorySizeJob * directorySize(const QUrl & directory);
+KIOCORE_EXPORT DirectorySizeJob * directorySize(const QUrl & directory);
 
 /**
  * Computes a directory size (by doing a recursive listing).
@@ -90,7 +90,7 @@ KIO_EXPORT DirectorySizeJob * directorySize(const QUrl & directory);
  * we directly know if the item is a file or a directory,
  * and in case of a file, we already have its size.
  */
-KIO_EXPORT DirectorySizeJob * directorySize( const KFileItemList & lstItems );
+KIOCORE_EXPORT DirectorySizeJob * directorySize( const KFileItemList & lstItems );
 
 }
 
