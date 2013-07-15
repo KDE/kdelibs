@@ -420,7 +420,6 @@ install( FILES
 endif(NOT KIO_NO_SOLID)
 
 install(FILES
-   kio/org.kde.KDirNotify.xml
    kio/org.kde.kio.FileUndoManager.xml
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 

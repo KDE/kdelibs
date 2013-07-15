@@ -71,7 +71,10 @@ set_source_files_properties(org.kde.KPasswdServer.xml
         PROPERTIES INCLUDE authinfo.h
 )
 qt5_add_dbus_interface(kiocore_SRCS org.kde.KPasswdServer.xml kpasswdserver_interface)
-install(FILES org.kde.KPasswdServer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+install(FILES
+   org.kde.KDirNotify.xml
+   org.kde.KPasswdServer.xml
+   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 add_library(kiocore ${kiocore_SRCS})
 generate_export_header(kiocore)
