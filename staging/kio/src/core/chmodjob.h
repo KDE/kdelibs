@@ -23,7 +23,7 @@
 
 #include "global.h"
 #include "job.h"
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include <kfileitem.h>
 
 namespace KIO {
@@ -34,7 +34,7 @@ namespace KIO {
      * optionally in a recursive manner.
      * @see KIO::chmod()
      */
-    class KIO_EXPORT ChmodJob : public KIO::Job
+    class KIOCORE_EXPORT ChmodJob : public KIO::Job
     {
         Q_OBJECT
     public:
@@ -78,7 +78,7 @@ namespace KIO {
      * @param flags: We support HideProgressInfo here
      * @return The job handling the operation.
      */
-    KIO_EXPORT ChmodJob * chmod( const KFileItemList& lstItems, int permissions, int mask,
+    KIOCORE_EXPORT ChmodJob * chmod( const KFileItemList& lstItems, int permissions, int mask,
                       const QString& newOwner, const QString& newGroup,
                       bool recursive, JobFlags flags = DefaultFlags );
 

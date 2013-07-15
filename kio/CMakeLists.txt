@@ -71,12 +71,10 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp
   kio/accessmanagerreply_p.cpp
-  kio/chmodjob.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
   kio/directorysizejob.cpp
   kio/fileundomanager.cpp
-  kio/forwardingslavebase.cpp
   kio/pixmaploader.cpp
   kio/imagefilter.cpp
   kio/jobuidelegate.cpp
@@ -338,8 +336,6 @@ install(  FILES
   kio/paste.h
   kio/fileundomanager.h
   kio/tcpslavebase.h
-  kio/forwardingslavebase.h
-  kio/chmodjob.h
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h

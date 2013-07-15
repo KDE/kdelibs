@@ -10,6 +10,8 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  forwardingslavebase.cpp
+  chmodjob.cpp
   kdiskfreespaceinfo.cpp
   usernotificationhandler.cpp
   ksambasharedata.cpp
@@ -104,6 +106,8 @@ set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
+  forwardingslavebase.h
+  chmodjob.h
   deletejob.h
   copyjob.h
   filejob.h

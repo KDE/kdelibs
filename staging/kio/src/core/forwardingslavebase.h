@@ -20,7 +20,7 @@
 #ifndef _FORWARDING_SLAVE_BASE_H_
 #define _FORWARDING_SLAVE_BASE_H_
 
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include <kio/slavebase.h>
 #include <kio/jobclasses.h>
 
@@ -86,7 +86,7 @@ class ForwardingSlaveBasePrivate;
  * @see ForwardingSlaveBase::rewriteUrl()
  * @author Kevin Ottens <ervin@ipsquad.net>
  */
-class KIO_EXPORT ForwardingSlaveBase : public QObject, public SlaveBase
+class KIOCORE_EXPORT ForwardingSlaveBase : public QObject, public SlaveBase
 {
 Q_OBJECT
 public:
