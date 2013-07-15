@@ -106,16 +106,20 @@ static void createTestDirectory( const QString& path, CreateTestDirectoryOptions
     setTimeStamp( path, s_referenceTimeStamp );
 }
 
-#include <kio/jobuidelegate.h>
-class PredefinedAnswerJobUiDelegate : public KIO::JobUiDelegate
+#include <kio/jobuidelegateextension.h>
+class PredefinedAnswerJobUiDelegate : public KIO::JobUiDelegateExtension
 {
 public:
     PredefinedAnswerJobUiDelegate()
-        : JobUiDelegate(),
+        : JobUiDelegateExtension(),
           m_askFileRenameCalled(0),
           m_askSkipCalled(0),
+          m_askDeleteCalled(0),
+          m_messageBoxCalled(0),
           m_renameResult(KIO::R_SKIP),
-          m_skipResult(KIO::S_SKIP)
+          m_skipResult(KIO::S_SKIP),
+          m_deleteResult(false),
+          m_messageBoxResult(0)
     {
     }
 
@@ -152,11 +156,47 @@ public:
         return m_skipResult;
     }
 
+    bool askDeleteConfirmation(const QList<QUrl>& urls, DeletionType deletionType,
+                               ConfirmationType confirmationType) Q_DECL_OVERRIDE
+    {
+        Q_UNUSED(urls);
+        Q_UNUSED(deletionType);
+        Q_UNUSED(confirmationType);
+        ++m_askDeleteCalled;
+        return m_deleteResult;
+    }
+
+    int requestMessageBox(MessageBoxType type, const QString &text,
+                          const QString &caption,
+                          const QString &buttonYes,
+                          const QString &buttonNo,
+                          const QString &iconYes = QString(),
+                          const QString &iconNo = QString(),
+                          const QString &dontAskAgainName = QString(),
+                          const KIO::MetaData &sslMetaData = KIO::MetaData()) {
+        Q_UNUSED(type);
+        Q_UNUSED(text);
+        Q_UNUSED(caption);
+        Q_UNUSED(buttonYes);
+        Q_UNUSED(buttonNo);
+        Q_UNUSED(iconYes);
+        Q_UNUSED(iconNo);
+        Q_UNUSED(dontAskAgainName);
+        Q_UNUSED(sslMetaData);
+        ++m_messageBoxCalled;
+        return m_messageBoxResult;
+    }
+
+
 
     // yeah, public, for get and reset.
     int m_askFileRenameCalled;
     int m_askSkipCalled;
+    int m_askDeleteCalled;
+    int m_messageBoxCalled;
 
     KIO::RenameDialog_Result m_renameResult;
     KIO::SkipDialog_Result m_skipResult;
+    bool m_deleteResult;
+    int m_messageBoxResult;
 };

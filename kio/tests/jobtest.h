@@ -68,6 +68,8 @@ private Q_SLOTS:
     void rmdirNotEmpty();
     void stat();
     void mostLocalUrl();
+    void chmodFile();
+    void chmodFileError();
     void mimeType();
     void mimeTypeError();
     //void newApiPerformance();

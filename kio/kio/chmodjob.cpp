@@ -21,11 +21,8 @@
 
 #include "chmodjob.h"
 
-#include "job.h"
-
 #include <klocalizedstring.h>
 #include <kio/jobuidelegatefactory.h>
-#include <kmessagebox.h>
 #include <QtCore/QFile>
 #include <QtCore/QLinkedList>
 #include <QDebug>
@@ -63,6 +60,7 @@ namespace KIO {
             , m_newOwner( newOwner )
             , m_newGroup( newGroup )
             , m_recursive( recursive )
+            , m_bAutoSkipFiles( false )
             , m_lstItems( lstItems )
         {
         }
@@ -73,10 +71,11 @@ namespace KIO {
         int m_newOwner;
         int m_newGroup;
         bool m_recursive;
+        bool m_bAutoSkipFiles;
         KFileItemList m_lstItems;
         QLinkedList<ChmodInfo> m_infos; // linkedlist since we keep removing the first item
 
-        void chmodNextFile();
+        void _k_chmodNextFile();
         void _k_slotEntries( KIO::Job * , const KIO::UDSEntryList & );
         void _k_processList();
 
@@ -147,7 +146,7 @@ void ChmodJobPrivate::_k_processList()
     //qDebug() << "ChmodJob::processList -> going to STATE_CHMODING";
     // We have finished, move on
     state = CHMODJOB_STATE_CHMODING;
-    chmodNextFile();
+    _k_chmodNextFile();
 }
 
 void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list )
@@ -196,7 +195,7 @@ void ChmodJobPrivate::_k_slotEntries( KIO::Job*, const KIO::UDSEntryList & list 
     }
 }
 
-void ChmodJobPrivate::chmodNextFile()
+void ChmodJobPrivate::_k_chmodNextFile()
 {
     Q_Q(ChmodJob);
     if ( !m_infos.isEmpty() )
@@ -209,12 +208,23 @@ void ChmodJobPrivate::chmodNextFile()
             QString path = info.url.toLocalFile();
             if ( chown( QFile::encodeName(path), m_newOwner, m_newGroup ) != 0 )
             {
-                int answer = KMessageBox::warningContinueCancel( 0, i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>" , path), QString(), KGuiItem(i18n("&Skip File")) );
-                if (answer == KMessageBox::Cancel)
-                {
-                    q->setError( ERR_USER_CANCELED );
-                    q->emitResult();
-                    return;
+                if (!m_uiDelegateExtension) {
+                    emit q->warning(q, i18n("Could not modify the ownership of file %1", path));
+                } else if (!m_bAutoSkipFiles) {
+                    const QString errMsg = i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>", path);
+                    const SkipDialog_Result skipResult = m_uiDelegateExtension->askSkip(q, m_infos.count() > 1, errMsg);
+                    switch (skipResult) {
+                    case S_AUTO_SKIP:
+                        m_bAutoSkipFiles = true;
+                        // fall through
+                    case S_SKIP:
+                        QMetaObject::invokeMethod(q, "_k_chmodNextFile", Qt::QueuedConnection);
+                        break;
+                    case S_CANCEL:
+                        q->setError( ERR_USER_CANCELED );
+                        q->emitResult();
+                        return;
+                    }
                 }
             }
         }
@@ -257,7 +267,7 @@ void ChmodJob::slotResult( KJob * job )
             return;
         case CHMODJOB_STATE_CHMODING:
             //qDebug() << "-> chmodNextFile";
-            d->chmodNextFile();
+            d->_k_chmodNextFile();
             return;
         default:
             assert(0);
