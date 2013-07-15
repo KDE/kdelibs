@@ -21,7 +21,7 @@
 #ifndef KMOUNTPOINT_H
 #define KMOUNTPOINT_H
 
-#include <kiocore_export.h>
+#include "kio/kiocore_export.h"
 #include <ksharedptr.h>
 
 #include <QtCore/QStringList>

@@ -24,7 +24,7 @@
 #include <QtCore/QSharedDataPointer>
 #include <QtCore/QString>
 
-#include <kiocore_export.h>
+#include "kio/kiocore_export.h"
 #include <kio/global.h>
 
 /**

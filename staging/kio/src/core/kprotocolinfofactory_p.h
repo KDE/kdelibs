@@ -23,7 +23,7 @@
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include <kiocore_export.h> // TODO KDE5: remove export, as soon as KProtocolManager is in kiocore
+#include "kio/kiocore_export.h" // TODO KDE5: remove export, as soon as KProtocolManager is in kiocore
 
 class KProtocolInfoPrivate;
 

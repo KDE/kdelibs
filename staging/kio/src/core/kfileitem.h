@@ -22,9 +22,9 @@
 
 #include <sys/stat.h>
 
-#include <kiocore_export.h>
+#include "kio/kiocore_export.h"
 #include <kio/global.h>
-#include <kio/kacl.h>
+#include <kacl.h>
 #include <kio/udsentry.h>
 #include <QDateTime>
 #include <QUrl>

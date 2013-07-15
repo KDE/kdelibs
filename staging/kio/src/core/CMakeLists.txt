@@ -127,6 +127,7 @@ install( FILES
   jobclasses.h
   authinfo.h
   http.h
+  davjob.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
@@ -134,6 +135,7 @@ install( FILES
 install(FILES
   kacl.h
   kauthorized.h
+  kcoredirlister.h
   kremoteencoding.h
   kdiskfreespaceinfo.h
   kdirnotify.h

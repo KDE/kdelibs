@@ -21,7 +21,7 @@
 #ifndef KLOCALSOCKET_H
 #define KLOCALSOCKET_H
 
-#include <kiocore_export.h>
+#include "kio/kiocore_export.h"
 #include <QtCore/QString>
 #include <QtNetwork/QTcpSocket>
 #include <QHostAddress>

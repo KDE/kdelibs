@@ -21,7 +21,7 @@
 
 #include <QtCore/QObject>
 
-#include <kiocore_export.h>
+#include "kio/kiocore_export.h"
 
 /**
  * Similar functionality like KFileShare, 
