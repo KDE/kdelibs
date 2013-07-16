@@ -1053,7 +1053,7 @@ void KDirListerTest::testWatchingAfterCopyJob() // #331582
 
     int numTries = 0;
     // Give time for KDirWatch to notify us
-    // This should end up in "KDirListerCache::slotFileDirty"
+    // This should end up in "KCoreDirListerCache::slotFileDirty"
     while (m_items.isEmpty()) {
         QVERIFY(++numTries < 10);
         QTest::qWait(200);

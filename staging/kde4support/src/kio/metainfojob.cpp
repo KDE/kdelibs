@@ -99,6 +99,7 @@ void MetaInfoJob::determineNextFile()
     ++d->currentItem;
     d->succeeded = false;
 
+#if 0 // HACK DISABLED
     // does the file item already have the needed info? Then shortcut
     KFileItem item = d->items.at( d->currentItem );
     if (item.metaInfo(false).isValid())
@@ -108,6 +109,7 @@ void MetaInfoJob::determineNextFile()
         determineNextFile();
         return;
     }
+#endif
 
     getMetaInfo();
 }
@@ -149,7 +151,9 @@ void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
     s >> info;
 
     KFileItem item = d->items.at( d->currentItem );
+#if 0 // HACK DISABLED
     item.setMetaInfo(info);
+#endif
     emit gotMetaInfo(item);
     d->succeeded = true;
 }

@@ -7,5 +7,5 @@ set(krosskjs_PART_SRCS
 )
 
 kde4_add_plugin(krosskjs ${krosskjs_PART_SRCS})
-target_link_libraries(krosskjs ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} krosscore kjs kjsembed ki18n)
+target_link_libraries(krosskjs ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} krosscore kjs kjsembed KI18n)
 install(TARGETS krosskjs DESTINATION ${PLUGIN_INSTALL_DIR})

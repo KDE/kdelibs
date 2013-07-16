@@ -1,9 +1,3 @@
-add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
-
-find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KCoreAddons KWindowSystem)
-
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
-
 check_function_exists(strlcpy HAVE_STRLCPY)
 check_prototype_exists(strlcpy string.h HAVE_STRLCPY_PROTO)
 check_include_files(string.h HAVE_STRING_H)

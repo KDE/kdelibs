@@ -238,10 +238,10 @@ void Loader::loadPlugins()
 {
     const QStringList libPaths = QCoreApplication::libraryPaths();
     const QLatin1String pathSuffix("/sonnet_clients/");
-    foreach(const QString &libPath, libPaths) {
+    Q_FOREACH(const QString &libPath, libPaths) {
         QDir dir(libPath + pathSuffix);
         if (!dir.exists()) continue;
-        foreach(const QString &plugin, dir.entryList(QDir::Files)) {
+        Q_FOREACH(const QString &plugin, dir.entryList(QDir::Files)) {
             loadPlugin(plugin);
         }
     }
@@ -265,7 +265,7 @@ void Loader::loadPlugin(const QString &pluginPath)
     const QStringList languages = client->languages();
     d->clients.append(client->name());
 
-    foreach(const QString &language, languages) {
+    Q_FOREACH(const QString &language, languages) {
         QList<Client*> &languageClients = d->languageClients[language];
 
         if (languageClients.isEmpty())
@@ -279,7 +279,7 @@ void Loader::loadPlugin(const QString &pluginPath)
 
 void Loader::changed()
 {
-    emit configurationChanged();
+    Q_EMIT configurationChanged();
 }
 
 }

@@ -47,6 +47,7 @@
 #include <kio/directorysizejob.h>
 #include <kio/copyjob.h>
 #include <kio/deletejob.h>
+#include <kio/chmodjob.h>
 #include "kiotesthelper.h" // createTestFile etc.
 
 QTEST_MAIN(JobTest)
@@ -1366,6 +1367,46 @@ void JobTest::mostLocalUrl()
     bool ok = job->exec();
     QVERIFY(ok);
     QCOMPARE(job->mostLocalUrl().toLocalFile(), filePath);
+}
+
+void JobTest::chmodFile()
+{
+    const QString filePath = homeTmpDir() + "fileForChmod";
+    createTestFile(filePath);
+    KFileItem item(QUrl::fromLocalFile(filePath));
+    const mode_t origPerm = item.permissions();
+    mode_t newPerm = origPerm ^ S_IWGRP;
+    QVERIFY(newPerm != origPerm);
+    KFileItemList items; items << item;
+    KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP /*TODO: QFile::WriteGroup*/, QString(), QString(), false, KIO::HideProgressInfo);
+    job->setUiDelegate(0);
+    QVERIFY(job->exec());
+
+    KFileItem newItem(QUrl::fromLocalFile(filePath));
+    QCOMPARE(QString::number(newItem.permissions(), 16), QString::number(newPerm, 16));
+    QFile::remove(filePath);
+}
+
+void JobTest::chmodFileError()
+{
+    const QString filePath = homeTmpDir() + "fileForChmod";
+    createTestFile(filePath);
+    KFileItem item(QUrl::fromLocalFile(filePath));
+    const mode_t origPerm = item.permissions();
+    mode_t newPerm = origPerm ^ S_IWGRP;
+    QVERIFY(newPerm != origPerm);
+    KFileItemList items; items << item;
+    KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP /*TODO: QFile::WriteGroup*/, QString("root"), QString(), false, KIO::HideProgressInfo);
+    PredefinedAnswerJobUiDelegate extension;
+    extension.m_skipResult = KIO::S_SKIP;
+    job->setUiDelegateExtension(&extension);
+
+    QVERIFY(job->exec());
+
+    QCOMPARE(extension.m_askSkipCalled, 1);
+    KFileItem newItem(QUrl::fromLocalFile(filePath));
+    QCOMPARE(QString::number(newItem.permissions(), 16), QString::number(origPerm, 16));
+    QFile::remove(filePath);
 }
 
 void JobTest::mimeType()

@@ -18,7 +18,7 @@ qt5_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
 
 kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
 
-target_link_libraries( kcookiejar4 kdeqt5staging Qt5::DBus ${KCoreAddons_LIBRARIES} ki18n ${KWidgetsAddons_LIBRARIES})
+target_link_libraries( kcookiejar4 kdeqt5staging Qt5::DBus ${KCoreAddons_LIBRARIES} KI18n ${KWidgetsAddons_LIBRARIES})
 
 install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
@@ -35,7 +35,7 @@ qt5_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.K
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_SRCS})
 
-target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${KWindowSystem_LIBRARIES} ${KCoreAddons_LIBRARIES} ki18n kwidgets KCompletion ${KWidgetsAddons_LIBRARIES} kinterprocesswindowing)
+target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${KWindowSystem_LIBRARIES} ${KCoreAddons_LIBRARIES} KI18n KWidgets KCompletion ${KWidgetsAddons_LIBRARIES} kinterprocesswindowing)
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

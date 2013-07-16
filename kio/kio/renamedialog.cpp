@@ -503,14 +503,20 @@ void RenameDialog::showSrcIcon(const KFileItem& fileitem)
 {
     // The preview job failed, show a standard file icon.
     d->m_srcPendingPreview = false;
-    d->m_srcPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
+
+    const int size = d->m_srcPreview->height();
+    const QPixmap pix = KIconLoader::global()->loadMimeTypeIcon(fileitem.iconName(), KIconLoader::Desktop, size);
+    d->m_srcPreview->setPixmap(pix);
 }
 
 void RenameDialog::showDestIcon(const KFileItem& fileitem)
 {
     // The preview job failed, show a standard file icon.
     d->m_destPendingPreview = false;
-    d->m_destPreview->setPixmap(fileitem.pixmap(d->m_srcPreview->height()));
+
+    const int size = d->m_destPreview->height();
+    const QPixmap pix = KIconLoader::global()->loadMimeTypeIcon(fileitem.iconName(), KIconLoader::Desktop, size);
+    d->m_destPreview->setPixmap(pix);
 }
 
 void RenameDialog::showSrcPreview(const KFileItem& fileitem, const QPixmap& pixmap)

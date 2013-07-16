@@ -333,6 +333,13 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
   <li>The very common job-&gt;ui()-&gt;setWindow(widget) has to be ported to KJobWidgets::setWindow(job, widget), because job-&gt;ui() is now only a KJobUiDelegate.</li>
   <li>The deprecated KIO::Job::showErrorDialog() has been removed, use KJobWidgets::setWindow(job, parent) and job-&gt;ui()-&gt;showErrorMessage()
   <li>The KFileItem API has been ported to QMimeType. As a consequence, mimeTypePtr() is now currentMimeType().</li>
+  <li>KFileItem::run(QWidget*) has disappeared, due to core/gui separation. Use new KRun(item.targetUrl(), widget) instead.</li>
+  <li>KFileItem::pixmap(size, state=0) has disappeared, due to core/gui separation. If you can, use KIcon(item.iconName(), 0, item.overlays()) instead.
+   If you really need a QPixmap, e.g. for showing in a QLabel, use this instead:
+  <pre>
+    KIconLoader::global()-&gt;loadMimeTypeIcon(item.iconName(), KIconLoader::Desktop, size, state);
+  </pre>
+
   <li>KIO::pixmapForUrl has moved from kio/global.h to kio/pixmaploader.h (so that global.h is core only)</li>
   <li>KProtocolInfo::isHelperProtocol() and exec() no longer detect apps associated with x-scheme-handler/*. This has moved up to KRun. Therefore KProtocolInfo is again about .protocol files only.</li>
   <li>KIO::RenameDialogPlugin was removed, it was unused for a long time anyway. The rename dialog uses KFileMetaDataWidget and PreviewJob instead.</li>

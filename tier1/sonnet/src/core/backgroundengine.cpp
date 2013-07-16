@@ -89,13 +89,13 @@ void BackgroundEngine::checkNext()
 {
     Word w = m_filter->nextWord();
     if (w.end) {
-        emit done();
+        Q_EMIT done();
         return;
     }
 
     if (Q_UNLIKELY( m_dict.isMisspelled(w.word) )) {
         //qDebug()<<"found misspelling "<< w.word;
-        emit misspelling(w.word, w.start);
+        Q_EMIT misspelling(w.word, w.start);
         //wait for the handler. the parent will decide itself when to continue
     } else
         continueChecking();

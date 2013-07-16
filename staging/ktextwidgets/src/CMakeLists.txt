@@ -23,10 +23,10 @@ target_link_libraries(KTextWidgets
   Qt5::DBus
   SonnetCore
   SonnetUi
-  ki18n
-  kwidgets
+  KI18n
+  KWidgets
   KWidgetsAddons
-  kservice
+  KService
   KConfigCore
   KWindowSystem
   KIconThemes

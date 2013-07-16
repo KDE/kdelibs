@@ -23,7 +23,6 @@ configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-
 # Configure checks for io/
 include(io/ConfigureChecks.cmake)
 configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
-configure_file(io/config-kmountpoint.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-kmountpoint.h)
 
 # Configure checks for kernel/
 include(kernel/ConfigureChecks.cmake)
@@ -125,7 +124,6 @@ set(kdecore_LIB_SRCS
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
    io/kmessage.cpp
-   io/kmountpoint.cpp
    io/kprocess.cpp
 
    kernel/k4aboutdata.cpp
@@ -199,7 +197,7 @@ target_include_directories(kdecore PUBLIC "$<BUILD_INTERFACE:${kdecore_INCLUDES}
 
 target_link_libraries(kdecore
   LINK_PUBLIC
-    Qt5::Network Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} kservice ki18n
+    Qt5::Network Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} KService KI18n
   LINK_PRIVATE
     Qt5::Xml ${kdecore_OPTIONAL_LIBS}
 )
@@ -247,7 +245,6 @@ install( FILES
    io/kdebug.h
    io/kmessage.h
    io/kprocess.h
-   io/kmountpoint.h
 
    kernel/k4aboutdata.h
    kernel/kcomponentdata.h

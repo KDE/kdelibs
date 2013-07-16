@@ -43,7 +43,7 @@ else (APPLE)
   kde4_add_executable(kdeinit5 NOGUI ${kdeinit_SRCS})
 endif (APPLE)
 
-target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} ${KCoreAddons_LIBRARIES} ki18n kde4support KCrash)
+target_link_libraries(kdeinit5 ${KDE4_KDEUI_LIBS} ${kdeinit_LIBS} ${KINIT_SOCKET_LIBRARY} ${KCoreAddons_LIBRARIES} KI18n KDE4Support KCrash)
 if (X11_FOUND)
   target_link_libraries(kdeinit5 ${X11_X11_LIB})
 endif()

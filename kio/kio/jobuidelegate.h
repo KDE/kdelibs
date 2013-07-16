@@ -2,6 +2,7 @@
     Copyright (C) 2000 Stephan Kulow <coolo@kde.org>
                        David Faure <faure@kde.org>
     Copyright (C) 2006 Kevin Ottens <ervin@kde.org>
+    Copyright (C) 2013 Dawit Alemayehu <adawit@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -26,6 +27,7 @@
 #include <kio/jobuidelegateextension.h>
 #include <kio/skipdialog.h>
 #include <kio/renamedialog.h>
+#include <kio/global.h>
 
 class KJob;
 namespace KIO
@@ -115,6 +117,31 @@ public:
     bool askDeleteConfirmation(const QList<QUrl>& urls, DeletionType deletionType,
                                ConfirmationType confirmationType) Q_DECL_OVERRIDE;
 
+    /**
+    * This function allows for the delegation user prompts from the ioslaves.
+    *
+    * @param type the desired type of message box.
+    * @param text the message shown to the user.
+    * @param caption the caption of the message dialog box.
+    * @param buttonYes the text for the YES button.
+    * @param buttonNo the text for the NO button.
+    * @param iconYes the icon shown on the YES button.
+    * @param iconNo the icon shown on the NO button.
+    * @param dontAskAgainName the name used to store result from 'Do not ask again' checkbox.
+    * @param sslMetaData SSL information used by the SSLMessageBox.
+    *
+    * @since 4.11
+    *
+    * @internal
+    */
+    int requestMessageBox(MessageBoxType type, const QString& text,
+                          const QString& caption,
+                          const QString& buttonYes,
+                          const QString& buttonNo,
+                          const QString& iconYes = QString(),
+                          const QString& iconNo = QString(),
+                          const QString& dontAskAgainName = QString(),
+                          const KIO::MetaData& sslMetaData = KIO::MetaData()) Q_DECL_OVERRIDE;
 private:
     class Private;
     Private * const d;

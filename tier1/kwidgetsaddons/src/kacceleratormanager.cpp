@@ -126,7 +126,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
     // collect the contents
     KAccelStringList contents;
-    foreach(Item *it, *item->m_children)
+    Q_FOREACH (Item *it, *item->m_children)
     {
         contents << it->m_content;
     }
@@ -136,7 +136,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 
     // write them back into the widgets
     int cnt = -1;
-    foreach(Item *it, *item->m_children)
+    Q_FOREACH(Item *it, *item->m_children)
     {
         cnt++;
 
@@ -186,7 +186,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
     }
 
     // calculate the accelerators for the children
-    foreach(Item *it, *item->m_children)
+    Q_FOREACH(Item *it, *item->m_children)
     {
         if (it->m_widget && it->m_widget->isVisibleTo( item->m_widget ) )
             calculateAccelerators(it, used);
@@ -197,7 +197,7 @@ void KAcceleratorManagerPrivate::calculateAccelerators(Item *item, QString &used
 void KAcceleratorManagerPrivate::traverseChildren(QWidget *widget, Item *item)
 {
   QList<QWidget*> childList = widget->findChildren<QWidget*>();
-  foreach ( QWidget *w , childList ) {
+  Q_FOREACH ( QWidget *w , childList ) {
     // Ignore unless we have the direct parent
     if(qobject_cast<QWidget *>(w->parent()) != widget) continue;
 
@@ -761,7 +761,7 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
   list.clear();
 
   // read out the menu entries
-  foreach (QAction *maction, m_popup->actions())
+  Q_FOREACH (QAction *maction, m_popup->actions())
   {
     if (maction->isSeparator())
       continue;
@@ -785,7 +785,7 @@ void KPopupAccelManager::findMenuEntries(KAccelStringList &list)
 void KPopupAccelManager::setMenuEntries(const KAccelStringList &list)
 {
   uint cnt = 0;
-  foreach (QAction *maction, m_popup->actions())
+  Q_FOREACH (QAction *maction, m_popup->actions())
   {
     if (maction->isSeparator())
       continue;

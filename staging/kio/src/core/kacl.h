@@ -22,7 +22,7 @@
 
 
 #include <sys/types.h>
-#include "kiocore_export.h"
+#include "kio/kiocore_export.h"
 
 #include <QtCore/QPair>
 #include <QtCore/QList>

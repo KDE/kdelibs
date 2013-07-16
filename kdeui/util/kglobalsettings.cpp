@@ -19,8 +19,8 @@
 
 #include "kglobalsettings.h"
 
+#include <ktoolbar.h>
 #include <kconfig.h>
-
 #include <kcolorscheme.h>
 
 //#include <kstyle.h>
@@ -753,9 +753,14 @@ static void x11_apply_settings_in_all_apps()
 
 void KGlobalSettings::emitChange(ChangeType changeType, int arg)
 {
-    if(changeType == IconChanged) {
+    switch (changeType) {
+    case IconChanged:
         KIconLoader::emitChange(KIconLoader::Group(arg));
-    } else {
+        break;
+    case ToolbarStyleChanged:
+        KToolBar::emitToolbarStyleChanged();
+        break;
+    default:
         QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
         QList<QVariant> args;
         args.append(static_cast<int>(changeType));
@@ -763,12 +768,6 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
         message.setArguments(args);
         QDBusConnection::sessionBus().send(message);
     }
-#if 0 // none of this exists in Qt5 anymore
-    if (qApp && qApp->type() != QApplication::Tty) {
-        //notify non-kde qt applications of the change
-        //x11_apply_settings_in_all_apps();
-    }
-#endif
 }
 
 void KGlobalSettings::Private::_k_slotIconChange(int arg)

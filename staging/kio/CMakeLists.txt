@@ -34,5 +34,5 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/src/kio_version.h
         DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 add_subdirectory(src)
-#add_subdirectory(autotests)
+add_subdirectory(autotests)
 #add_subdirectory(tests)

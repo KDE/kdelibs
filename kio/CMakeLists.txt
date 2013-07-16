@@ -30,7 +30,10 @@ if(NOT KIO_NO_NEPOMUK)
     )
 endif(NOT KIO_NO_NEPOMUK)
 
-find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+if(NOT WIN32)
+    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+endif(NOT WIN32)
+
 
 if (NOT KIO_NO_STRIGI)
    include_directories(${STRIGI_INCLUDE_DIR})
@@ -68,35 +71,21 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp
   kio/accessmanagerreply_p.cpp
-  kio/authinfo.cpp
-  kio/chmodjob.cpp
-  kio/copyjob.cpp
-  kio/dataprotocol.cpp
-  kio/dataslave.cpp
-  kio/davjob.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
-  kio/deletejob.cpp
-  kio/directorysizejob.cpp
-  kio/filejob.cpp
   kio/fileundomanager.cpp
-  kio/forwardingslavebase.cpp
   kio/pixmaploader.cpp
   kio/imagefilter.cpp
-  kio/job.cpp
-  kio/job_error.cpp
   kio/jobuidelegate.cpp
   kio/joburlcache.cpp
   kio/kabstractfileitemactionplugin.cpp
   kio/kbuildsycocaprogressdialog.cpp
-  kio/kdatatool.cpp
   kio/kdbusservicestarter.cpp
   kio/kdesktopfileactions.cpp
   kio/kdirlister.cpp
   kio/kdirmodel.cpp
   kio/kdynamicjobtracker.cpp
   kio/kemailsettings.cpp
-  kio/kfileitem.cpp
   kio/kfileitemactionplugin.cpp
   kio/kfileitemlistproperties.cpp
   kio/kfileitemactions.cpp
@@ -107,37 +96,27 @@ set(kiocore_STAT_SRCS
   kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/kremoteencoding.cpp
   kio/krun.cpp
   kio/kscan.cpp
   kio/kshellcompletion.cpp
   kio/kurifilter.cpp
   kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
-  kio/mkdirjob.cpp
   kio/netaccess.cpp
   kio/paste.cpp
   kio/pastedialog.cpp
   kio/predicateproperties.cpp
   kio/previewjob.cpp
   kio/renamedialog.cpp
-  kio/scheduler.cpp
-  kio/sessiondata.cpp
   kio/skipdialog.cpp
-  kio/slave.cpp
-  kio/slavebase.cpp
-  kio/slaveinterface.cpp
   kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
   kio/thumbsequencecreator.cpp
-  kio/kpasswdserver.cpp
-  kio/kpasswdserverloop.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
   set(kiocore_STAT_SRCS
     ${kiocore_STAT_SRCS}
-    kio/kmimetyperesolver.cpp
     kio/passworddialog.cpp
     )
 endif(NOT KDE_NO_DEPRECATED)
@@ -153,18 +132,9 @@ qt5_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileu
 
 qt5_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.kuiserver.xml kuiserver_interface)
 
-set_source_files_properties(kio/org.kde.KPasswdServer.xml
-   PROPERTIES INCLUDE kio/authinfo.h
-)
-qt5_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.KPasswdServer.xml kpasswdserver_interface)
-install(FILES kio/org.kde.KPasswdServer.xml DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
        kio/kautomount.cpp
-       kio/knfsshare.cpp
-       kio/ksambashare.cpp
-       kio/ksambasharedata.cpp
    )
 endif(UNIX)
 
@@ -191,7 +161,6 @@ set(kbookmarks_STAT_SRCS
 set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
-  kfile/kdiskfreespaceinfo.cpp
   kfile/kencodingfiledialog.cpp
   kfile/kfile.cpp
   kfile/kfiledialog.cpp
@@ -304,11 +273,11 @@ target_include_directories(kio PRIVATE
 
 if(NOT KIO_NO_NEPOMUK)
   kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
-  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} ki18n kde4support)
+  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} KI18n KDE4Support)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
 
-target_link_libraries(kio kdeqt5staging kiocore ${KCoreAddons_LIBRARIES} ki18n KCompletion KJobWidgets ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet kwidgets KCrash)
+target_link_libraries(kio kdeqt5staging kiocore ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KWidgets KCrash)
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES kiocore kdeui kdecore Qt5::Network Qt5::Xml Qt5::Widgets )
 
 if(ACL_FOUND)
@@ -358,30 +327,15 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
   kio/accessmanager.h
-  kio/slaveinterface.h
-  kio/slave.h
   kio/pixmaploader.h
   kio/netaccess.h
-  kio/job.h
-  kio/scheduler.h
-  kio/jobclasses.h
-  kio/mkdirjob.h
-  kio/copyjob.h
-  kio/deletejob.h
   kio/jobuidelegate.h
   kio/paste.h
-  kio/slavebase.h
-  kio/filejob.h
   kio/fileundomanager.h
   kio/tcpslavebase.h
-  kio/forwardingslavebase.h
-  kio/chmodjob.h
-  kio/authinfo.h
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h
-  kio/davjob.h
-  kio/directorysizejob.h
   kio/renamedialog.h
   kio/skipdialog.h
   kssl/sslui.h
@@ -392,13 +346,11 @@ install( FILES
   kio/kabstractfileitemactionplugin.h
   kio/kautomount.h
   kio/kbuildsycocaprogressdialog.h
-  kio/kdatatool.h
   kio/kdbusservicestarter.h
   kio/kdesktopfileactions.h
   kio/kdirlister.h
   kio/kdirmodel.h
   kio/kemailsettings.h
-  kio/kfileitem.h
   kio/kfileitemlistproperties.h
   kio/kfileitemactionplugin.h
   kio/kfileitemactions.h
@@ -409,11 +361,7 @@ install( FILES
   kio/kfilewriteplugin.h
   kio/kimageio.h
   kio/kmimetypechooser.h
-  kio/knfsshare.h
-  kio/kremoteencoding.h
   kio/krun.h
-  kio/ksambashare.h
-  kio/ksambasharedata.h
   kio/kscan.h
   kio/kshellcompletion.h
   kio/kurifilter.h
@@ -422,7 +370,6 @@ install( FILES
   kio/predicateproperties.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
-  kfile/kdiskfreespaceinfo.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
   kfile/kfiledialog.h
@@ -454,7 +401,6 @@ install( FILES
 if(NOT KDE_NO_DEPRECATED)
 install( FILES
   kfile/kdiskfreespace.h
-  kio/kmimetyperesolver.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install( FILES
@@ -470,7 +416,6 @@ install( FILES
 endif(NOT KIO_NO_SOLID)
 
 install(FILES
-   kio/org.kde.KDirNotify.xml
    kio/org.kde.kio.FileUndoManager.xml
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 

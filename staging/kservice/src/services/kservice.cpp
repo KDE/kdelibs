@@ -968,6 +968,16 @@ void KService::setTerminalOptions(const QString &options)
     d->m_strTerminalOptions = options;
 }
 
+void KService::setExec(const QString& exec)
+{
+  Q_D(KService);
+
+  if (!exec.isEmpty()) {
+      d->m_strExec = exec;
+      d->path.clear();
+  }
+}
+
 QVector<KService::ServiceTypeAndPreference> & KService::_k_accessServiceTypes()
 {
     Q_D(KService);

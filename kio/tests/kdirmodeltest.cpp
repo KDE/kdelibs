@@ -614,7 +614,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     delete m_dirModel;
     m_dirModel = 0;
 
-    // Now let's rename a directory that is in KDirListerCache
+    // Now let's rename a directory that is in KCoreDirListerCache
     const QUrl url = QUrl::fromLocalFile(path);
     QUrlPathInfo pathInfo(url);
     pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
@@ -1199,13 +1199,13 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
              &m_eventLoop, SLOT(exitLoop()) );
 
     KIO::Job* job = KIO::move(QUrl::fromLocalFile(dir), QUrl::fromLocalFile(file), KIO::HideProgressInfo);
-    PredefinedAnswerJobUiDelegate* delegate = new PredefinedAnswerJobUiDelegate;
-    delegate->m_renameResult = KIO::R_OVERWRITE;
-    job->setUiDelegate(delegate);
-    job->setUiDelegateExtension(delegate);
+    job->setUiDelegate(0);
+    PredefinedAnswerJobUiDelegate extension;
+    extension.m_renameResult = KIO::R_OVERWRITE;
+    job->setUiDelegateExtension(&extension);
     QVERIFY(job->exec());
 
-    QCOMPARE(delegate->m_askFileRenameCalled, 1);
+    QCOMPARE(extension.m_askFileRenameCalled, 1);
 
     if (spyRowsRemoved.isEmpty()) {
         // Wait for the DBUS signal from KDirNotify, it's the one the triggers rowsRemoved

@@ -150,12 +150,6 @@ set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and searc
                        PURPOSE ${STRIGI_EXTRA_TEXT}
                       )
 
-find_package(LibAttica 0.4.2)
-set_package_properties(LibAttica PROPERTIES DESCRIPTION "Support for Get Hot New Stuff"
-                       URL "https://projects.kde.org/attica"
-                       TYPE REQUIRED
-                      )
-
 #optional features
 find_package(X11)
 if(X11_FOUND)
@@ -217,7 +211,7 @@ add_definitions(${KDE4_DEFINITIONS})
 # Needed for the calls to kconfig_add_kcfg_files in some modules
 set(CMAKECONFIG_INSTALL_DIR ${LIB_INSTALL_DIR}/cmake/KDELibs4)
 
-set(KDE4Support_LIBRARIES kde4support)
+set(KDE4Support_LIBRARIES KDE4Support)
 
 ################# list the subdirectories #################
 

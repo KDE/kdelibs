@@ -251,9 +251,10 @@ T *offsetAs(void *const base, qint32 offset)
  * @param a Numerator, should be ≥ 0.
  * @param b Denominator, should be > 0.
  */
-unsigned intCeil(unsigned a, unsigned b)
+static unsigned intCeil(unsigned a, unsigned b)
 {
-    if (Q_UNLIKELY(b == 0)) {
+    // The overflow check is unsigned and so is actually defined behavior.
+    if (Q_UNLIKELY(b == 0 || ((a + b) < a))) {
         throw KSDCCorrupted();
     }
 
@@ -1008,9 +1009,9 @@ class KSharedDataCache::Private
         // cleared before shm is removed.
         m_lock.clear();
 
-        if (shm && !::munmap(shm, m_mapSize)) {
+        if (shm && 0 != ::munmap(shm, m_mapSize)) {
             qCritical() << "Unable to unmap shared memory segment"
-                << static_cast<void*>(shm);
+                << static_cast<void*>(shm) << ":" << ::strerror(errno);
         }
 
         shm = 0;

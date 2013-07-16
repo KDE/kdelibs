@@ -11,7 +11,7 @@ mediacontrols.cpp
 
 kde4_add_plugin(kfileaudiopreview ${kfileaudiopreview_PART_SRCS})
 
-target_link_libraries(kfileaudiopreview ${KDE4_KIO_LIBS} ${PHONON_LIBRARIES} kwidgets ki18n)
+target_link_libraries(kfileaudiopreview ${KDE4_KIO_LIBS} ${PHONON_LIBRARIES} KWidgets KI18n)
 
 install(TARGETS kfileaudiopreview  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

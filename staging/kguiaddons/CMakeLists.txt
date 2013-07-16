@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-project(kguiaddons)
+project(KGuiAddons)
 
 if(NOT kdelibs_SOURCE_DIR)
 
@@ -18,7 +18,7 @@ endif()
 include(ECMSetupVersion)
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KGUIADDONS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kguiaddonsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfigVersion.cmake")
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
@@ -30,23 +30,23 @@ add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kguiaddons")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KGuiAddons")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kguiaddonsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/kguiaddonsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KGuiAddonsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kguiaddonsConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/kguiaddonsConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KGuiAddonsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
 
-install(EXPORT kguiaddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE kguiaddonsTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
+install(EXPORT KGuiAddonsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        FILE KGuiAddonsTargets.cmake NAMESPACE KF5:: COMPONENT Devel)
 
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kguiaddons_version.h

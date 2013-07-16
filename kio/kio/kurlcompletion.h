@@ -23,6 +23,7 @@
 #ifndef KURLCOMPLETION_H
 #define KURLCOMPLETION_H
 
+#include <kio/kio_export.h>
 #include <kcompletion.h>
 #include <kio/jobclasses.h>
 #include <QtCore/QString>

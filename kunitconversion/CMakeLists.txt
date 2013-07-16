@@ -55,7 +55,7 @@ add_subdirectory(tests)
 
 kde4_add_library(kunitconversion ${LIBRARY_TYPE} ${kunitconversion_LIB_SRCS})
 generate_export_header(kunitconversion)
-target_link_libraries(kunitconversion ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS} ${KCoreAddons_LIBRARIES} ki18n)
+target_link_libraries(kunitconversion ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS} ${KCoreAddons_LIBRARIES} KI18n)
 target_include_directories(kunitconversion PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS kunitconversion EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

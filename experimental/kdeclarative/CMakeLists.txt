@@ -18,7 +18,7 @@ generate_export_header(kdeclarative)
 
 set_target_properties(kdeclarative PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
-target_link_libraries(kdeclarative ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} ${KCoreAddons_LIBRARIES} ki18n KIconThemes)
+target_link_libraries(kdeclarative ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} ${KCoreAddons_LIBRARIES} KI18n KIconThemes)
 
 
 ## test
@@ -29,7 +29,7 @@ kde4_add_executable(kdeclarativetest ${kdeclarative_TEST_SRCS})
 
 find_package(Qt5Script 5.2.0 REQUIRED NO_MODULE)
 
-target_link_libraries(kdeclarativetest kdeclarative Qt5::Widgets ${Qt5Quick_LIBRARIES} ${Qt5Qml_LIBRARIES} Qt5::Script ki18n)
+target_link_libraries(kdeclarativetest kdeclarative Qt5::Widgets ${Qt5Quick_LIBRARIES} ${Qt5Qml_LIBRARIES} Qt5::Script KI18n)
 
 ## install
 

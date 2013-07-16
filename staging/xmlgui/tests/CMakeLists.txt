@@ -12,4 +12,11 @@ macro(xmlgui_executable_tests)
 endmacro()
 
 xmlgui_executable_tests(
+  kbugreporttest
+  kmainwindowrestoretest
+  kmainwindowtest
+  ktoolbartest
+  kxmlguitest
+  kxmlguiwindowtest
+  kwindowtest
 )

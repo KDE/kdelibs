@@ -6,7 +6,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}/../../..")
 macro(KDE4SUPPORT_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
-        target_link_libraries(${_testname} kde4support Qt5::Core)
+        target_link_libraries(${_testname} KDE4Support Qt5::Core)
         ecm_mark_as_test(${_testname})
     endforeach()
 endmacro()
@@ -15,7 +15,7 @@ macro(KDE4SUPPORT_UNIT_TESTS)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kde4support-${_testname} ${_testname})
-    target_link_libraries(${_testname} kde4support Qt5::Test Qt5::Network kdecore ${KCoreAddons_LIBRARIES} ki18n kdeui KCrash)
+    target_link_libraries(${_testname} KDE4Support Qt5::Test Qt5::Network kdecore ${KCoreAddons_LIBRARIES} KI18n kdeui KCrash)
     ecm_mark_as_test(${_testname})
   endforeach(_testname)
 endmacro(KDE4SUPPORT_UNIT_TESTS)
@@ -64,7 +64,7 @@ if(NOT KDE_NO_DEPRECATED)
   add_library(klibloadertestmodule MODULE ${klibloadertestmodule_PART_SRCS})
   set_target_properties(klibloadertestmodule PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-  target_link_libraries(klibloadertestmodule kde4support kdecore ki18n Qt5::Test)
+  target_link_libraries(klibloadertestmodule KDE4Support kdecore KI18n Qt5::Test)
 
   set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 endif(NOT KDE_NO_DEPRECATED)
@@ -76,7 +76,7 @@ set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
 set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-target_link_libraries(klibloadertestmodule4 kde4support kdecore ki18n Qt5::Test)
+target_link_libraries(klibloadertestmodule4 KDE4Support kdecore KI18n Qt5::Test)
 
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 

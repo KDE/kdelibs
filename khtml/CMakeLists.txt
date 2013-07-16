@@ -47,7 +47,10 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
 
-find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+if(NOT WIN32)
+    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+endif(NOT WIN32)
+
 
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  ${KDE4_ENABLE_EXCEPTIONS}")
 
@@ -576,7 +579,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${PHONON_LIBRARIES} kjs ${KArchive_LIBRARIES} ${Sonnet_SonnetCore_LIBRARY} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} kguiaddons ${KWidgetsAddons_LIBRARIES} ki18n ${KWindowSystem_LIBRARIES} KWallet Qt5::X11Extras)
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${PHONON_LIBRARIES} kjs ${KArchive_LIBRARIES} ${Sonnet_SonnetCore_LIBRARY} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} KGuiAddons ${KWidgetsAddons_LIBRARIES} KI18n ${KWindowSystem_LIBRARIES} KWallet Qt5::X11Extras)
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()

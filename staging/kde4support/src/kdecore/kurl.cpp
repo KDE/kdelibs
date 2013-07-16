@@ -781,7 +781,7 @@ inline static bool hasSubUrl( const QUrl& url );
 
 static inline bool isLocalFile( const QUrl& url )
 {
-  if ( ( url.scheme() != QLatin1String("file") ) || hasSubUrl( url ) )
+  if ( url.scheme().compare(QLatin1String("file"), Qt::CaseInsensitive) != 0 || hasSubUrl( url ) )
      return false;
 
   if (url.host().isEmpty() || (url.host() == QLatin1String("localhost")))

@@ -22,7 +22,7 @@
 #ifndef KIO_JOBUIDELEGATEEXTENSION_H
 #define KIO_JOBUIDELEGATEEXTENSION_H
 
-#include <kiocore_export.h>
+#include "kiocore_export.h"
 #include <kio/global.h>
 #include <QDateTime>
 
@@ -62,6 +62,7 @@ enum SkipDialog_Result { S_SKIP = 1, S_AUTO_SKIP = 2, S_CANCEL = 0 };
  * \li asking what to do in case of a conflict while copying/moving files or directories
  * \li asking what to do in case of an error while copying/moving files or directories
  * \li asking for confirmation before deleting files or directories
+ * \li popping up message boxes when the slave requests it
  * @since 5.0
  */
 class KIOCORE_EXPORT JobUiDelegateExtension
@@ -147,6 +148,45 @@ public:
      */
     virtual bool askDeleteConfirmation(const QList<QUrl>& urls, DeletionType deletionType,
                                        ConfirmationType confirmationType) = 0;
+
+    /**
+     * Message box types.
+     *
+     * Should be kept in sync with SlaveBase::MessageBoxType.
+     *
+     * @since 4.11
+     */
+    enum MessageBoxType {
+        QuestionYesNo = 1,
+        WarningYesNo = 2,
+        WarningContinueCancel = 3,
+        WarningYesNoCancel = 4,
+        Information = 5,
+        SSLMessageBox = 6
+    };
+
+    /**
+     * This function allows for the delegation user prompts from the ioslaves.
+     *
+     * @param type the desired type of message box.
+     * @param text the message shown to the user.
+     * @param caption the caption of the message dialog box.
+     * @param buttonYes the text for the YES button.
+     * @param buttonNo the text for the NO button.
+     * @param iconYes the icon shown on the YES button.
+     * @param iconNo the icon shown on the NO button.
+     * @param dontAskAgainName the name used to store result from 'Do not ask again' checkbox.
+     * @param sslMetaData SSL information used by the SSLMessageBox.
+     */
+    virtual int requestMessageBox(MessageBoxType type, const QString &text,
+                                  const QString &caption,
+                                  const QString &buttonYes,
+                                  const QString &buttonNo,
+                                  const QString &iconYes = QString(),
+                                  const QString &iconNo = QString(),
+                                  const QString &dontAskAgainName = QString(),
+                                  const KIO::MetaData &sslMetaData = KIO::MetaData()) = 0;
+
 
 private:
     class Private;

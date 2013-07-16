@@ -40,7 +40,7 @@ protected Q_SLOTS:
         ++m_receivedCount;
         m_receivedId = id;
         m_receivedData = data;
-        emit ready();
+        Q_EMIT ready();
     }
 Q_SIGNALS:
     void ready();

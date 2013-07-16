@@ -19,7 +19,7 @@ macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control li
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
 
-target_link_libraries(kio_file  ${KDE4_KDECORE_LIBS} kio ${KCoreAddons_LIBRARIES} ki18n)
+target_link_libraries(kio_file  ${KDE4_KDECORE_LIBS} kio ${KCoreAddons_LIBRARIES} KI18n)
 
 if (HAVE_VOLMGT AND CMAKE_SYSTEM_NAME MATCHES SunOS)
     target_link_libraries(kio_file -lvolmgt)

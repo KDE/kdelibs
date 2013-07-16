@@ -1744,7 +1744,7 @@ KDirWatch* KDirWatch::self()
 }
 
 // <steve> is this used anywhere?
-// <dfaure> yes, see kio/kdirlister_p.h:328
+// <dfaure> yes, see kio/src/core/kcoredirlister_p.h:328
 bool KDirWatch::exists()
 {
   return s_pKDirWatchSelf.exists();

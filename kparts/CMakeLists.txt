@@ -31,9 +31,9 @@ set(kparts_LIB_SRCS
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 generate_export_header(kparts)
 
-target_link_libraries(kparts  kdeui kio ${KCoreAddons_LIBRARIES} kwidgets ki18n)
+target_link_libraries(kparts  kdeui kio ${KCoreAddons_LIBRARIES} KWidgets KI18n)
 target_include_directories(kparts PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
-target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui Qt5::Widgets kwidgets)
+target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio kdeui Qt5::Widgets KWidgets)
 if(HAVE_NEPOMUK)
   target_link_libraries(kparts  nepomuk nepomukutils)
   target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES nepomuk nepomukutils )

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-project(kde4support)
+project(KDE4Support)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
@@ -8,7 +8,11 @@ set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras Network)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Network)
+
+if(NOT WIN32)
+    find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
+endif(NOT WIN32)
 
 
 include(FeatureSummary)
@@ -31,7 +35,7 @@ remove_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 kde4_add_executable(kf5-config NOGUI kde-config.cpp )
 
-target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} kde4support)
+target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} KDE4Support)
 target_include_directories(kf5-config PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../..")
 
 install(TARGETS kf5-config EXPORT KDE4SupportTargets ${INSTALL_TARGETS_DEFAULT_ARGS} ) # put this for now into the export set KDE4SupportTargets, so that it exists and is not empty

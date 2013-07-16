@@ -1,0 +1,17 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+if(NOT TARGET KF5::KConfigCore)
+   set(KConfig_NOT_FOUND_MESSAGE "KGuiAddons depends on the package KConfig, which is missing. Use find_package() to find it before KGuiAddons.")
+   set(KConfig_FOUND FALSE)
+   return()
+endif()
+
+set(KGuiAddons_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KGuiAddons_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/KGuiAddonsTargets.cmake")
+
+set(KGuiAddons_LIBRARIES KF5::KGuiAddons)
+set(KGuiAddons_INCLUDE_DIRS ${KGuiAddons_INCLUDE_DIR} )

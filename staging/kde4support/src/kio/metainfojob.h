@@ -25,6 +25,7 @@
 #include <kde4support_export.h>
 #include <kio/job.h>
 #include <kfileitem.h>
+#include <kfilemetainfo.h>
 
 namespace KIO {
     class MetaInfoJobPrivate;
@@ -32,6 +33,9 @@ namespace KIO {
      * MetaInfoJob is a KIO Job to retrieve meta information from files.
      *
      * @short KIO Job to retrieve meta information from files.
+     * @deprecated use Nepomuk or Strigi
+     * Note: this job doesn't even work as before, KFileItem::setMetaInfo
+     * doesn't exist anymore.
      */
     class KDE4SUPPORT_DEPRECATED_EXPORT MetaInfoJob : public KIO::Job
     {

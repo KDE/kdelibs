@@ -145,7 +145,7 @@ QString transform( const QString &pat, const QString& tss,
 #endif
 
     xsltStylesheetPtr style_sheet =
-        xsltParseStylesheetFile((const xmlChar *)tss.toLatin1().data());
+        xsltParseStylesheetFile((const xmlChar *)QFile::encodeName(tss).constData());
 
     if ( !style_sheet ) {
         return parsed;
@@ -157,7 +157,7 @@ QString transform( const QString &pat, const QString& tss,
 
     INFO(i18n("Parsing document"));
 
-    xmlDocPtr doc = xmlParseFile( pat.toLatin1().constData() );
+    xmlDocPtr doc = xmlParseFile(QFile::encodeName(pat).constData());
     xsltTransformContextPtr ctxt;
 
     ctxt = xsltNewTransformContext(style_sheet, doc);

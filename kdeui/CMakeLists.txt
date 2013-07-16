@@ -3,25 +3,9 @@ project(kdeui)
 # QUrl
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
-#set(KDEUI_NO_ATTICA FALSE)
-#if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
-#    set(KDEUI_NO_ATTICA TRUE)
-#endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
-# TODO QT5 Make the above work and port it to whatever parts of QtGui actually need attica.
-set(KDEUI_NO_ATTICA TRUE)
-
 include_directories(
  ${DBUSMENUQT_INCLUDE_DIR}
 )
-
-if(NOT KDEUI_NO_ATTICA)
-   include_directories( ${LIBATTICA_INCLUDE_DIR} )
-   set(KDEUI_EXTRA_LIBS ${KDEUI_EXTRA_LIBS} ${LIBATTICA_LIBRARIES} )
-   set(HAVE_ATTICA TRUE)
-endif(NOT KDEUI_NO_ATTICA)
-
-macro_bool_to_01(HAVE_ATTICA)
-
 
 find_package(X11)
 if(X11_FOUND)
@@ -45,42 +29,19 @@ check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
 
 configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
 
-configure_file(
-    ${CMAKE_CURRENT_SOURCE_DIR}/dialogs/kaboutapplicationconfigattica_p.h.cmake
-    ${CMAKE_CURRENT_BINARY_DIR}/dialogs/kaboutapplicationconfigattica_p.h
-)
-
 add_subdirectory( about )
 add_subdirectory( tests )
 add_subdirectory( sonnet/tests )
 
 ########### next target ###############
 set(kdeui_LIB_SRCS
- actions/kactioncollection.cpp
  actions/kactionconflictdetector.cpp
- actions/kactioncategory.cpp
- actions/ktoggletoolbaraction.cpp
  colors/kcolorbutton.cpp
- dialogs/kaboutkdedialog_p.cpp
  dialogs/kconfigdialog.cpp
  dialogs/kconfigdialogmanager.cpp
- dialogs/kbugreport.cpp
- dialogs/kedittoolbar.cpp
  dialogs/klinkdialog.cpp
- dialogs/kaboutapplicationdialog.cpp
- dialogs/kaboutapplicationpersonmodel_p.cpp
- dialogs/kaboutapplicationpersonlistdelegate_p.cpp
- dialogs/kaboutapplicationpersonlistview_p.cpp
  dialogs/knewpassworddialog.cpp
- dialogs/kshortcuteditwidget.cpp
- dialogs/kshortcutseditordelegate.cpp
- dialogs/kshortcutseditoritem.cpp
- dialogs/kshortcutseditor.cpp
- dialogs/kshortcutschemeseditor.cpp
- dialogs/kshortcutsdialog.cpp
- dialogs/kswitchlanguagedialog_p.cpp
  kernel/kstyle.cpp
- shortcuts/kshortcutschemeshelper.cpp
  shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
@@ -90,31 +51,15 @@ set(kdeui_LIB_SRCS
  util/kpassivepopupmessagehandler.cpp
  util/kundoactions.cpp
  widgets/kcmodule.cpp
- widgets/khelpmenu.cpp
- widgets/kkeysequencewidget.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
- widgets/kshortcutwidget.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
  widgets/nestedlisthelper.cpp
- xmlgui/kxmlguibuilder.cpp
- xmlgui/kxmlguiwindow.cpp
- xmlgui/kmainwindowiface.cpp
- xmlgui/kmenumenuhandler_p.cpp
- xmlgui/ktoolbarhandler.cpp
- xmlgui/kxmlguiclient.cpp
- xmlgui/kxmlguifactory.cpp
- xmlgui/kxmlguifactory_p.cpp
- xmlgui/kxmlguiversionhandler.cpp
- xmlgui/kmainwindow.cpp
- xmlgui/ktoolbar.cpp
 )
 
 
 set( kdeui_UI
    dialogs/knewpassworddialog.ui
-   dialogs/kshortcutsdialog.ui
-   widgets/kshortcutwidget.ui
    )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
@@ -135,7 +80,6 @@ set(kdeui_INCLUDES
  ${CMAKE_CURRENT_SOURCE_DIR}/shortcuts
  ${CMAKE_CURRENT_SOURCE_DIR}/util
  ${CMAKE_CURRENT_SOURCE_DIR}/widgets
- ${CMAKE_CURRENT_SOURCE_DIR}/xmlgui
  ${CMAKE_CURRENT_BINARY_DIR}/util
  )
 target_include_directories(kdeui PUBLIC "$<BUILD_INTERFACE:${kdeui_INCLUDES}>")
@@ -146,10 +90,10 @@ target_link_libraries(kdeui LINK_PUBLIC
     ${ItemModels_LIBRARIES}
     ${Sonnet_LIBRARIES}
     ${KAuth_LIBRARIES}
-    kguiaddons
-    kwidgets
+    KGuiAddons
+    KWidgets
     ${KWidgetsAddons_LIBRARIES}
-    ki18n
+    KI18n
     KTextWidgets
     XmlGui
     ItemViews
@@ -230,22 +174,12 @@ install( FILES
  dialogs/thumb_frame.png
  DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
 
-install( FILES xmlgui/ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
-
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
- actions/kactioncollection.h
- actions/kactioncategory.h
- actions/ktoggletoolbaraction.h
  colors/kcolorbutton.h
- dialogs/kaboutapplicationdialog.h
- dialogs/kbugreport.h
  dialogs/kconfigdialog.h
  dialogs/kconfigdialogmanager.h
- dialogs/kedittoolbar.h
  dialogs/knewpassworddialog.h
- dialogs/kshortcutsdialog.h
- dialogs/kshortcutseditor.h
  kernel/kstyle.h
  shortcuts/kgesture.h
  util/kglobalsettings.h
@@ -254,17 +188,8 @@ install( FILES
  util/kimagecache.h
  util/kundoactions.h
  widgets/kcmodule.h
- widgets/khelpmenu.h
- widgets/kkeysequencewidget.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h
- widgets/kshortcutwidget.h
- xmlgui/kxmlguiwindow.h
- xmlgui/kxmlguiclient.h
- xmlgui/kxmlguibuilder.h
- xmlgui/kxmlguifactory.h
- xmlgui/kmainwindow.h
- xmlgui/ktoolbar.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
