@@ -31,8 +31,7 @@
 #include <klocalizedstring.h>
 #include <time.h>
 
-#include <kdebug.h>
-#include <klocale.h>
+#include <QDebug>
 
 #include <QtDBus/QtDBus>
 #include <QtCore/QPointer>
@@ -390,7 +389,7 @@ void SlaveInterface::sendMessageBoxAnswer(int result)
     QDataStream stream( &packedArgs, QIODevice::WriteOnly );
     stream << result;
     d->connection->sendnow(CMD_MESSAGEBOXANSWER, packedArgs);
-    kDebug(7007) << "message box answer" << result;
+    // qDebug() << "message box answer" << result;
 }
 
 void SlaveInterface::messageBox( int type, const QString &text, const QString &_caption,

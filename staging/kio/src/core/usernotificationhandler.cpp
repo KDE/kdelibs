@@ -21,7 +21,7 @@
 #include "slave.h"
 #include "job_p.h"
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QTimer>
 
@@ -92,7 +92,7 @@ void UserNotificationHandler::processRequest()
             m_cachedResults.insert(key, new int(result));
         }
     } else {
-        kWarning() << "Cannot prompt user because the requesting ioslave died!" << r->slave;
+        qWarning() << "Cannot prompt user because the requesting ioslave died!" << r->slave;
     }
 
     r->slave->sendMessageBoxAnswer(result);
