@@ -99,7 +99,7 @@ add_subdirectory( tier2 )
 
 set(KAuth_LIBRARIES  KAuth)
 
-set(kinterprocesswindowing_LIBRARY kinterprocesswindowing)
+#set(kinterprocesswindowing_LIBRARY KInterProcessWindowing)
 
 ################# write platform profile file which will be installed #################
 include(CreateKDEPlatformProfile.cmake)
