@@ -14,6 +14,6 @@ add_library(kdeplatformtheme MODULE ${platformtheme_SRCS})
 set_target_properties(kdeplatformtheme PROPERTIES PREFIX "") # remove lib prefix
 
 # We link to KIO to pull in the qfiledialog hooks
-target_link_libraries(kdeplatformtheme ${KDE4_KIO_LIBS})
+target_link_libraries(kdeplatformtheme Qt5::Widgets KConfigCore KWidgets KIconThemes)
 
 install(TARGETS kdeplatformtheme DESTINATION ${QT_PLUGIN_INSTALL_DIR}/platformthemes)
