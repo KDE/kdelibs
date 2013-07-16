@@ -19,7 +19,6 @@
 
 #include "plugintest.h"
 
-#include <kqpluginfactory.h>
 #include <klocalizedstring.h>
 
 
