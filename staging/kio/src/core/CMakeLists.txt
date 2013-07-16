@@ -1,4 +1,4 @@
-project(kiocore)
+project(KioCore)
 
 include (ConfigureChecks.cmake)
 
@@ -77,15 +77,15 @@ install(FILES
    org.kde.KPasswdServer.xml
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
-add_library(kiocore ${kiocore_SRCS})
-generate_export_header(kiocore)
+add_library(KioCore ${kiocore_SRCS})
+generate_export_header(KioCore)
 
-target_include_directories(kiocore PUBLIC
+target_include_directories(KioCore PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
 )
 
-target_link_libraries(kiocore
+target_link_libraries(KioCore
  ${KDE4_KDECORE_LIBS} # TODO remove once klocale is in a framework
  ${KConfig_CORE_LIBRARY}
  ${KCoreAddons_LIBRARIES}
@@ -100,14 +100,14 @@ target_link_libraries(kiocore
 )
 
 if(ACL_FOUND)
-  target_link_libraries(kiocore ${ACL_LIBS})
+  target_link_libraries(KioCore ${ACL_LIBS})
 endif(ACL_FOUND)
 
-set_target_properties(kiocore PROPERTIES VERSION ${ECM_VERSION_STRING}
+set_target_properties(KioCore PROPERTIES VERSION ${ECM_VERSION_STRING}
                                           SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS kiocore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS KioCore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
   directorysizejob.h
