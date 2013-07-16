@@ -28,7 +28,7 @@
 #include <QtCore/QVariant>
 #include <QtCore/QStringList>
 #include <ksharedconfig.h> // for source compat
-#include <kexportplugin.h>
+#include <kexportplugin.h> // for source compat
 
 class KPluginFactoryPrivate;
 namespace KParts { class Part; }
