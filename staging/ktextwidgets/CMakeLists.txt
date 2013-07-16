@@ -16,27 +16,27 @@ include(ECMSetupVersion)
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KTEXTWIDGETS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ktextwidgets_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/ktextwidgetsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KTextWidgetsConfigVersion.cmake")
 
 add_subdirectory(src)
 add_subdirectory(tests)
 add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/ktextwidgets")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KTextWidgets")
 
 include(CMakePackageConfigHelpers)
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/ktextwidgetsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/ktextwidgetsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KTextWidgetsConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KTextWidgetsConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
                              )
 
 install(EXPORT KTextWidgetsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KTextWidgetsTargets.cmake NAMESPACE KF5:: )
 
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ktextwidgetsConfig.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/ktextwidgetsConfigVersion.cmake"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KTextWidgetsConfig.cmake"
+              "${CMAKE_CURRENT_BINARY_DIR}/KTextWidgetsConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
        )

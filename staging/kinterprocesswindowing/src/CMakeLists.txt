@@ -16,24 +16,24 @@ set(libkinterprocesswindowing_SRCS
 )
 
 
-add_library(kinterprocesswindowing ${libkinterprocesswindowing_SRCS})
-generate_export_header(kinterprocesswindowing)
+add_library(KInterProcessWindowing ${libkinterprocesswindowing_SRCS})
+generate_export_header(KInterProcessWindowing)
 
-target_link_libraries(kinterprocesswindowing
+target_link_libraries(KInterProcessWindowing
    LINK_PUBLIC Qt5::Widgets ${KWindowSystem_LIBRARIES} ${X11_LIBRARIES}
    KWidgets KI18n ${KConfig_CORE_LIBRARY} kdeui
 )
 
 if (X11_FOUND)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(kinterprocesswindowing Qt5::X11Extras)
+  target_link_libraries(KInterProcessWindowing Qt5::X11Extras)
 endif()
 
-set_target_properties(kinterprocesswindowing PROPERTIES VERSION   ${ECM_VERSION_STRING}
+set_target_properties(KInterProcessWindowing PROPERTIES VERSION   ${ECM_VERSION_STRING}
                                                         SOVERSION ${ECM_SOVERSION}
 )
 
-install(TARGETS kinterprocesswindowing EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS KInterProcessWindowing EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install(FILES
     kusertimestamp.h

@@ -26,6 +26,7 @@ install(FILES
   kiconbutton.h
   kicondialog.h
   kiconeffect.h
+  kiconengine_p.h
   kiconloader.h
   kicontheme.h
   kpixmapsequence.h
