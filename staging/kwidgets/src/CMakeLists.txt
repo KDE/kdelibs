@@ -77,6 +77,7 @@ install(FILES
   actions/kselectaction.h
   actions/kstandardaction.h
   dialogs/kmessagebox.h
+  dialogs/kmessageboxdontaskagaininterface.h
   dialogs/ktip.h
   utils/kcolorscheme.h
   utils/kstandardguiitem.h
