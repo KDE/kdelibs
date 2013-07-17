@@ -11,7 +11,7 @@ macro(KIOCORE_UNIT_TESTS)
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kiocore-${_testname} ${_testname})
     target_link_libraries(${_testname}
-       KioCore
+       KIOCore
        Qt5::Test
        Qt5::Xml
        KI18n

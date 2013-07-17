@@ -1,0 +1,24 @@
+@PACKAGE_INIT@
+
+# Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.
+
+if(NOT TARGET KF5::KI18n)
+   set(KIO_NOT_FOUND_MESSAGE "Kio depends on the package KI18n, which is missing. Use find_package() to find it before Kio.")
+   set(KIO_FOUND FALSE)
+   return()
+endif()
+
+if(NOT TARGET KF5::KService)
+   set(KIO_NOT_FOUND_MESSAGE "Kio depends on the package KService, which is missing. Use find_package() to find it before Kio.")
+   set(KIO_FOUND FALSE)
+   return()
+endif()
+
+set(KIO_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KIO_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/KIOTargets.cmake")
+
+set(KIO_CORE_LIBRARY KF5::KIOCore)
+set(KIO_LIBRARIES KF5::KIOCore)
+set(KIO_INCLUDE_DIRS ${KIO_INCLUDE_DIR})

@@ -1,7 +1,7 @@
 
 cmake_minimum_required(VERSION 2.8.11)
 
-project(Kio)
+project(KIO)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
