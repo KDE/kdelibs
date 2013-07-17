@@ -28,7 +28,7 @@ install(FILES
 ### ktranscript plugin
 
 # kjs hash stuff for transcript plugin
-set(CREATE_HASH_TABLE ${kjs_SOURCE_DIR}/src/kjs/create_hash_table)
+set(CREATE_HASH_TABLE ${KJS_SOURCE_DIR}/src/kjs/create_hash_table)
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
