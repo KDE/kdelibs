@@ -24,8 +24,6 @@
 #include <QPushButton>
 #include <QBoxLayout>
 
-#include <kdebug.h>
-
 #include <kmessage.h>
 #include <kmessageboxmessagehandler.h>
 #include <kpassivepopupmessagehandler.h>

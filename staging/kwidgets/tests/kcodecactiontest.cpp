@@ -3,7 +3,7 @@
 #include <QToolBar>
 #include <QtCore/QTextCodec>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include "kcodecactiontest.h"
 
@@ -50,27 +50,27 @@ CodecActionTest::CodecActionTest(QWidget *parent)
 
 void CodecActionTest::triggered(QAction* action)
 {
-  kDebug() << action;
+  qDebug() << action;
 }
 
 void CodecActionTest::triggered(int index)
 {
-  kDebug() << index;
+  qDebug() << index;
 }
 
 void CodecActionTest::triggered(const QString& text)
 {
-  kDebug() << '"' << text << '"';
+  qDebug() << '"' << text << '"';
 }
 
 void CodecActionTest::triggered(QTextCodec *codec)
 {
-  kDebug() << codec->name() << ':' << codec->mibEnum();
+  qDebug() << codec->name() << ':' << codec->mibEnum();
 }
 
 void CodecActionTest::slotActionTriggered(bool state)
 {
-    kDebug() << sender() << " state " << state;
+  qDebug() << sender() << " state " << state;
 }
 
 
