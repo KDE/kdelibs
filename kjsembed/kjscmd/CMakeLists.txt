@@ -10,7 +10,7 @@ set(kjscmd_SRCS kjscmd.cpp )
 qt5_add_resources(kjscmd_SRCS kjscmd.qrc )
 
 if (NOT DEFINED QT_ONLY)
-   set(KJSLIBNAME kjs)
+   set(KJSLIBNAME KJS)
    set(KJSEMBEDLIBNAME kjsembed)
 	 set(KJSCMDNAME kjscmd)
 else (NOT DEFINED QT_ONLY)
@@ -27,7 +27,7 @@ endif (NOT DEFINED QT_ONLY)
 
 kde4_add_executable(${KJSCMDNAME} ${kjscmd_SRCS})
 
-target_link_libraries(${KJSCMDNAME} ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} ${KJSEMBEDLIBNAME} kjs KDE4Support)
+target_link_libraries(${KJSCMDNAME} ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} ${KJSEMBEDLIBNAME} KJS KDE4Support)
 
 install(TARGETS ${KJSCMDNAME} ${INSTALL_TARGETS_DEFAULT_ARGS} )
 

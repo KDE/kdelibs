@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.11)
 
-project(kjs)
+project(KJS)
 
 find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
@@ -30,7 +30,7 @@ option(KJS_FORCE_DISABLE_PCRE "Force building of KJS without PCRE. Doing this wi
 
 ecm_setup_version(5 0 0 VARIABLE_PREFIX KJS
                         VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kjs_version.h"
-                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/kjsConfigVersion.cmake")
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake")
 
 # TODO: Remove these
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
@@ -40,19 +40,19 @@ add_subdirectory(autotests)
 add_subdirectory(tests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
-set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/kjs")
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KJS")
 
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/kjsConfig.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/kjsConfig.cmake"
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KJSConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KJSConfig.cmake"
                               INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
                               PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
 
-install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/kjsConfig.cmake"
-               "${CMAKE_CURRENT_BINARY_DIR}/kjsConfigVersion.cmake"
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KJSConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KJSConfigVersion.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel )
 
-install(EXPORT kjsTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE kjsTargets.cmake NAMESPACE KF5:: )
+install(EXPORT KJSTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KJSTargets.cmake NAMESPACE KF5:: )
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/kjs_version.h DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 

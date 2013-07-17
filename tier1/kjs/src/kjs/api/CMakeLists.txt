@@ -6,13 +6,13 @@ set(kjsapi_LIB_SRCS
     kjsarguments.cpp
    )
 
-add_library(kjsapi ${kjsapi_LIB_SRCS})
-generate_export_header(kjsapi)
+add_library(KJSApi ${kjsapi_LIB_SRCS})
+generate_export_header(KJSApi)
 
-target_link_libraries(kjsapi kjs Qt5::Core)
+target_link_libraries(KJSApi KJS Qt5::Core)
 
-set_target_properties(kjsapi PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
-install(TARGETS kjsapi EXPORT kjsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+set_target_properties(KJSApi PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
+install(TARGETS KJSApi EXPORT KJSTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/kjsapi_export.h

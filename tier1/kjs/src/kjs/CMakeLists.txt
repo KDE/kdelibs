@@ -171,7 +171,7 @@ set(kjs_LIB_SRCS
    )
 
 
-add_library(kjs ${kjs_LIB_SRCS})
+add_library(KJS ${kjs_LIB_SRCS})
 
 set(kjs_INCLUDES
   ${CMAKE_CURRENT_BINARY_DIR}/..
@@ -180,26 +180,26 @@ set(kjs_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/../wtf
 )
 
-target_include_directories(kjs PUBLIC "$<BUILD_INTERFACE:${kjs_INCLUDES}>")
+target_include_directories(KJS PUBLIC "$<BUILD_INTERFACE:${kjs_INCLUDES}>")
 
 if(WIN32)
-   target_link_libraries(kjs ${KDEWIN_LIBRARIES})
+   target_link_libraries(KJS ${KDEWIN_LIBRARIES})
 endif()
 
 if(CMAKE_THREAD_LIBS_INIT)
-   target_link_libraries(kjs ${CMAKE_THREAD_LIBS_INIT})
+   target_link_libraries(KJS ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 if(UNIX)
-   target_link_libraries(kjs m)
+   target_link_libraries(KJS m)
 endif()
 
 if(PCRE_FOUND)
-   target_link_libraries(kjs ${PCRE_LIBRARIES})
+   target_link_libraries(KJS ${PCRE_LIBRARIES})
 endif()
 
-set_target_properties(kjs PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
-install(TARGETS kjs EXPORT kjsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+set_target_properties(KJS PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
+install(TARGETS KJS EXPORT KJSTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### kjs - basic shell ###############
 
@@ -213,7 +213,7 @@ add_executable(kjs_bin ${kjs_SRCS})
 
 set_target_properties(kjs_bin PROPERTIES RUNTIME_OUTPUT_NAME ${kjs_bin_OUTPUT_NAME})
 
-target_link_libraries(kjs_bin kjs)
+target_link_libraries(kjs_bin KJS)
 
 install(TARGETS kjs_bin ${INSTALL_TARGETS_DEFAULT_ARGS})
 

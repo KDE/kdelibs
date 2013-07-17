@@ -37,7 +37,7 @@ set(kjsembed_LIB_SRCS
    )
 
 if (NOT DEFINED QT_ONLY)
-   set(KJSLIBNAME kjs)
+   set(KJSLIBNAME KJS)
    set(KJSEMBEDLIBNAME kjsembed)
 else (NOT DEFINED QT_ONLY)
    if (NOT QTONLY_WEBKIT)
