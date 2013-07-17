@@ -41,6 +41,8 @@ sb_add_project(tier2/kauth DEPENDS kcoreaddons)
 
 sb_add_project(staging/kguiaddons DEPENDS kconfig)
 
+sb_add_project(staging/itemviews DEPENDS kcoreaddons)
+
 if(SB_EVERYTHING_DISABLED)
   message(STATUS "All projects are disabled. You may consider running make edit_cache or cmake-gui to enable some.")
 endif()
