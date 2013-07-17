@@ -22,7 +22,6 @@
 
 #include <ksslconfig.h>
 
-#include "kssldefs.h"
 #include "ksslcertificate.h"
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
