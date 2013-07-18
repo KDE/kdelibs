@@ -92,7 +92,13 @@ target_link_libraries(KCoreAddons
 )
 if(NOT WIN32)
     target_link_libraries(KCoreAddons LINK_PRIVATE pthread)
-endif(NOT WIN32)
+endif()
+
+if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
+  target_include_directories(KCoreAddons INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+else()
+  target_include_directories(KCoreAddons INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+endif()
 
 set_target_properties(KCoreAddons PROPERTIES VERSION   ${KCOREADDONS_VERSION_STRING}
                                              SOVERSION ${KCOREADDONS_SOVERSION}
