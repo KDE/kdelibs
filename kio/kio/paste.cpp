@@ -17,6 +17,7 @@
 */
 
 #include "paste.h"
+#include "clipboardupdater_p.h"
 #include "pastedialog.h"
 
 #include "kio/job.h"
@@ -72,18 +73,7 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const KUrl& destD
 
         // If moving, update the clipboard contents with the new locations
         if (move) {
-            QApplication::clipboard()->clear();
-
-            KUrl::List newUrls;
-            Q_FOREACH(const KUrl& url, urls) {
-                KUrl dUrl = destDir;
-                dUrl.addPath(url.fileName());
-                newUrls.append(dUrl);
-            }
-
-            QMimeData* mime = new QMimeData();
-            newUrls.populateMimeData(mime);
-            QApplication::clipboard()->setMimeData(mime);
+            new KIO::ClipboardUpdater(job, KIO::ClipboardUpdater::OverwriteContent);
         }
         return job;
     }
