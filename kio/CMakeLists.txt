@@ -214,7 +214,6 @@ set(kssl_STAT_SRCS
   kssl/kssl.cpp
   kssl/ksslcertchain.cpp
   kssl/ksslcertificate.cpp
-  kssl/ksslkeygen.cpp
   kssl/ksslsettings.cpp
   kssl/ksslutils.cpp
   kssl/ksslx509v3.cpp

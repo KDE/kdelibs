@@ -56,3 +56,5 @@ set(kencodingdetector_SRCS
 )
 kde4_add_unit_test(kencodingdetectortest kencodingdetectortest.cpp ${kencodingdetector_SRCS})
 target_link_libraries(kencodingdetectortest Qt5::Test ${KDE4_KDECORE_LIBS})
+
+# TODO: ksslkeygentest

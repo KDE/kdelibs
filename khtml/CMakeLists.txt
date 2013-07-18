@@ -296,6 +296,7 @@ set(khtmlhtml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLVideoElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLSourceElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/TimeRanges.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/html/ksslkeygen.cpp
 )
 
 # khtml/ecma/Makefile.am: kjs_html
