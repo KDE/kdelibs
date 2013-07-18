@@ -23,8 +23,8 @@
 
 #include "kdedmodule.h"
 
-#include "kdebug.h"
-#include <QtCore/QTimer>
+#include <QDebug>
+#include <QTimer>
 #include <QtDBus/QtDBus>
 
 
@@ -53,7 +53,7 @@ void KDEDModule::setModuleName( const QString& name )
 
    if (realPath.path().isEmpty())
       {
-      kError() << "The kded module name '" << name << "' is invalid!";
+      qWarning() << "The kded module name" << name << "is invalid!";
       return;
       }
 
@@ -77,17 +77,17 @@ void KDEDModule::setModuleName( const QString& name )
       regOptions = QDBusConnection::ExportScriptableSlots
                      | QDBusConnection::ExportScriptableProperties
                      | QDBusConnection::ExportAdaptors;
-      kDebug() << "Registration of kded module " << d->moduleName << "without D-Bus interface.";
+      qDebug() << "Registration of kded module" << d->moduleName << "without D-Bus interface.";
       }
 
    if (!QDBusConnection::sessionBus().registerObject(realPath.path(), this, regOptions))
       {
       // Happens for khotkeys but the module works. Need some time to investigate.
-      kDebug() << "registerObject() returned false for " << d->moduleName;
+      qDebug() << "registerObject() returned false for" << d->moduleName;
       }
    else
       {
-      kDebug() << "registerObject() successful for " << d->moduleName;
+      //qDebug() << "registerObject() successful for" << d->moduleName;
       emit moduleRegistered(realPath);
       }
 
