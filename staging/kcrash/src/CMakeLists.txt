@@ -1,5 +1,9 @@
+include(CheckFunctionExists)
+include(CheckIncludeFiles)
+include(CheckPrototypeDefinition)
+
 check_function_exists(strlcpy HAVE_STRLCPY)
-check_prototype_exists(strlcpy string.h HAVE_STRLCPY_PROTO)
+check_prototype_definition(strlcpy "unsigned long strlcpy(char*, const char*, unsigned long)" "0" string.h HAVE_STRLCPY_PROTO)
 check_include_files(string.h HAVE_STRING_H)
 
 set(kcrash_SRCS
