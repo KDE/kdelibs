@@ -41,7 +41,8 @@ sb_add_project(tier2/kauth DEPENDS kcoreaddons)
 
 sb_add_project(staging/kguiaddons DEPENDS kconfig)
 
-sb_add_project(staging/itemviews DEPENDS kcoreaddons)
+sb_add_project(staging/kcrash         DEPENDS kcoreaddons kwindowsystem)
+sb_add_project(staging/itemviews      DEPENDS kcoreaddons)
 sb_add_project(staging/kconfigwidgets DEPENDS kconfig kwidgetsaddons)
 
 if(SB_EVERYTHING_DISABLED)
