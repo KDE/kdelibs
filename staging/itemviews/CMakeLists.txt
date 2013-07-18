@@ -2,13 +2,17 @@ cmake_minimum_required(VERSION 2.8.11)
 
 project(ItemViews)
 
-find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+if(NOT kdelibs_SOURCE_DIR)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+  find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
-find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+  set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt5Widgets 5.2.0 REQUIRED NO_MODULE)
+  find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets)
+
+  find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs KCoreAddons)
+
+endif()
 
 include(FeatureSummary)
 

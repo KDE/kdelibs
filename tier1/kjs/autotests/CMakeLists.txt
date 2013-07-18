@@ -6,7 +6,7 @@ find_package(Qt5Test 5.2.0 REQUIRED NO_MODULE)
 add_executable(ecmatest
   ecmatest.cpp
 )
-target_link_libraries(ecmatest ${KDE4_KDECORE_LIBS} kjs ${KDEWIN_LIBRARIES} Qt5::Test Qt5::Widgets)
+target_link_libraries(ecmatest ${KDE4_KDECORE_LIBS} KJS ${KDEWIN_LIBRARIES} Qt5::Test Qt5::Widgets)
 
 function(ADD_ECMATEST ECMA262_CHAPTER)
    if (IS_DIRECTORY "${ECMATEST_BASEDIR}/test/suite/${ECMA262_CHAPTER}")
@@ -47,4 +47,4 @@ endif ()
 
 add_executable(kjsapitest kjsapitest.cpp)
 add_test(kjsapitest kjsapitest)
-target_link_libraries(kjsapitest kjsapi Qt5::Test)
+target_link_libraries(kjsapitest KJSApi Qt5::Test)

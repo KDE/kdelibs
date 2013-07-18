@@ -28,7 +28,7 @@ install(FILES
 ### ktranscript plugin
 
 # kjs hash stuff for transcript plugin
-set(CREATE_HASH_TABLE ${kjs_SOURCE_DIR}/src/kjs/create_hash_table)
+set(CREATE_HASH_TABLE ${KJS_SOURCE_DIR}/src/kjs/create_hash_table)
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ktranscript.lut.h
@@ -46,7 +46,7 @@ set(ktranscript_LIB_SRCS
 
 add_library(ktranscript MODULE ${ktranscript_LIB_SRCS})
 set_target_properties(ktranscript PROPERTIES PREFIX "") # remove lib prefix
-target_link_libraries(ktranscript kjs Qt5::Core)
+target_link_libraries(ktranscript KJS Qt5::Core)
 
 install(TARGETS ktranscript DESTINATION ${PLUGIN_INSTALL_DIR})
 

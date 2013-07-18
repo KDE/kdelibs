@@ -296,6 +296,7 @@ set(khtmlhtml_STAT_SRCS
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLVideoElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/HTMLSourceElement.cpp
   ${CMAKE_SOURCE_DIR}/khtml/html/TimeRanges.cpp
+  ${CMAKE_SOURCE_DIR}/khtml/html/ksslkeygen.cpp
 )
 
 # khtml/ecma/Makefile.am: kjs_html
@@ -579,11 +580,11 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
-target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${PHONON_LIBRARIES} kjs ${KArchive_LIBRARIES} ${Sonnet_SonnetCore_LIBRARY} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} KGuiAddons ${KWidgetsAddons_LIBRARIES} KI18n ${KWindowSystem_LIBRARIES} KWallet Qt5::X11Extras)
+target_link_libraries(khtml ${KDE4_KPARTS_LIBS} ${PHONON_LIBRARIES} KJS ${KArchive_LIBRARIES} ${Sonnet_SonnetCore_LIBRARY} ${JPEG_LIBRARIES} ${GIF_LIBRARIES} ${PNG_LIBRARIES} ${X11_LIBRARIES} KGuiAddons ${KWidgetsAddons_LIBRARIES} KI18n ${KWindowSystem_LIBRARIES} KWallet Qt5::X11Extras)
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()
-target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts kjs kio kdeui kdecore Qt5::Widgets)
+target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio kdeui kdecore Qt5::Widgets)
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
@@ -728,7 +729,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 kde4_add_plugin(khtmladaptorpart khtmladaptorpart.cpp)
 
-target_link_libraries(khtmladaptorpart ${KDE4_KPARTS_LIBS} kjs)
+target_link_libraries(khtmladaptorpart ${KDE4_KPARTS_LIBS} KJS)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 

@@ -584,6 +584,11 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
         KBookmark bookmark = item->bookmark();
 
         int destRow = row == -1 ? d->items.count() : row;
+        // The item is not moved when the drop indicator is on either item edge
+        if (itemRow == destRow || itemRow + 1 == destRow) {
+            return false;
+        }
+
         beginMoveRows(QModelIndex(), itemRow, itemRow, QModelIndex(), destRow);
         d->bookmarkManager->root().moveBookmark(bookmark, afterBookmark);
         // Move item ourselves so that _k_reloadBookmarks() does not consider

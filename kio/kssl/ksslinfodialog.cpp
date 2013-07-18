@@ -39,7 +39,6 @@
 
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
-#include "ksslsigners.h"
 #include "ktcpsocket.h"
 
 

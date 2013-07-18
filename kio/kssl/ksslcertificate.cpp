@@ -29,7 +29,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QStandardPaths>
 
-#include "kssldefs.h"
 #include "ksslcertchain.h"
 #include "ksslutils.h"
 

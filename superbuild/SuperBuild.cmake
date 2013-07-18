@@ -111,7 +111,6 @@ macro(sb_add_project _subdir )
         set(DEPENDS_ARGS DEPENDS ${existingDepends} )
       endif()
 
-      set(DEPEND_ARGS DEPENDS ${_SB_DEPENDS} )
     endif()
 
     externalproject_add(${name}

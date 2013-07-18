@@ -3,7 +3,8 @@ project(knewstuff3)
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=550)
 
 find_package(LibAttica NO_MODULE)
-set_package_properties(LibAttica PROPERTIES DESCRIPTION "Support for Get Hot New Stuff"
+set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"
+                       PURPOSE "Support for Get Hot New Stuff in knewstuff3"
                        URL "https://projects.kde.org/attica"
                        TYPE REQUIRED
                       )

@@ -22,7 +22,6 @@
 
 QTEST_MAIN( KStandardShortcutTest) // GUI needed by KAccel
 
-#include <kdebug.h>
 #include <kstandardshortcut.h>
 
 void KStandardShortcutTest::testShortcutDefault()

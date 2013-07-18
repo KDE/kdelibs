@@ -53,6 +53,12 @@ generate_export_header(KWidgetsAddons)
 
 target_link_libraries(KWidgetsAddons Qt5::Widgets)
 
+if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
+  target_include_directories(KWidgetsAddons INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+else()
+  target_include_directories(KWidgetsAddons INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+endif()
+
 set_target_properties(KWidgetsAddons PROPERTIES VERSION   ${KWIDGETSADDONS_VERSION_STRING}
                                                 SOVERSION ${KWIDGETSADDONS_SOVERSION}
 )

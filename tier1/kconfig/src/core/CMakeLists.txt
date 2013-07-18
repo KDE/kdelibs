@@ -22,6 +22,12 @@ if(WIN32)
     target_link_libraries(KConfigCore ${KDEWIN_LIBRARIES})
 endif()
 
+if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
+  target_include_directories(KConfigCore INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+else()
+  target_include_directories(KConfigCore INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+endif()
+
 set_target_properties(KConfigCore PROPERTIES VERSION   ${KCONFIG_VERSION_STRING}
                                              SOVERSION ${KCONFIG_SOVERSION} )
 

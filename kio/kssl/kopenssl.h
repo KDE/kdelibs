@@ -62,7 +62,7 @@ class KOpenSSLProxyPrivate;
  * @short KDE OpenSSL Wrapper
  * @internal
  */
-class KOpenSSLProxy {
+class KIO_EXPORT KOpenSSLProxy {
 public:
 
    /**
