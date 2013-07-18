@@ -45,7 +45,7 @@ if(Qt5Designer_FOUND)
 
   kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} KWidgets KDE4Attic ${KWidgetsAddons_LIBRARIES} KI18n)
+  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} KWidgets KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KI18n)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE
