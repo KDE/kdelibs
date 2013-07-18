@@ -22,7 +22,7 @@
 #ifndef __KDEDMODULE_H__
 #define __KDEDMODULE_H__
 
-#include <kdecore_export.h>
+#include <kdbusaddons_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
@@ -44,7 +44,7 @@ class QDBusObjectPath;
  *
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDECORE_EXPORT KDEDModule: public QObject
+class KDBUSADDONS_EXPORT KDEDModule: public QObject
 {
   Q_OBJECT
   Q_CLASSINFO("D-Bus Interface", "org.kde.KDEDModule")

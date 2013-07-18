@@ -140,7 +140,6 @@ set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    localization/klocale.cpp
    localization/klocale_kde.cpp
    util/kautostart.cpp
-   util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
    ${kdecore_OPTIONAL_SRCS}
@@ -260,7 +259,6 @@ install(FILES
    localization/klocale.h
    util/kautostart.h
    util/kde_file.h
-   util/kdedmodule.h
    util/klauncher_iface.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
