@@ -115,7 +115,6 @@ set(kiocore_STAT_SRCS
   kio/previewjob.cpp
   kio/renamedialog.cpp
   kio/skipdialog.cpp
-  kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
   kio/thumbsequencecreator.cpp
 )
@@ -332,7 +331,6 @@ install(  FILES
   kio/jobuidelegate.h
   kio/paste.h
   kio/fileundomanager.h
-  kio/tcpslavebase.h
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h

@@ -28,7 +28,7 @@
 #include <sys/types.h>
 #include <stdio.h>
 
-#include "kio_export.h"
+#include "kiocore_export.h"
 #include <kio/slavebase.h>
 
 class QIODevice;
@@ -44,7 +44,7 @@ namespace KIO {
  *
  * A call to foo() results in a call to slotFoo() on the other end.
  */
-class KIO_EXPORT TCPSlaveBase : public SlaveBase
+class KIOCORE_EXPORT TCPSlaveBase : public SlaveBase
 {
 public:
     /**
