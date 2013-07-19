@@ -31,7 +31,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 
 class KEMailSettingsPrivate;
 
@@ -43,7 +43,7 @@ class KEMailSettingsPrivate;
   *
   * @author Alex Zepeda zipzippy@sonic.net
   **/
-class KIO_EXPORT KEMailSettings {
+class KIOCORE_EXPORT KEMailSettings {
 public:
 	/**
 	  * The list of settings that I thought of when I wrote this 

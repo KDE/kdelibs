@@ -91,7 +91,6 @@ set(kiocore_STAT_SRCS
   kio/kdirlister.cpp
   kio/kdirmodel.cpp
   kio/kdynamicjobtracker.cpp
-  kio/kemailsettings.cpp
   kio/kfileitemactionplugin.cpp
   kio/kfileitemlistproperties.cpp
   kio/kfileitemactions.cpp
@@ -348,7 +347,6 @@ install( FILES
   kio/kdesktopfileactions.h
   kio/kdirlister.h
   kio/kdirmodel.h
-  kio/kemailsettings.h
   kio/kfileitemlistproperties.h
   kio/kfileitemactionplugin.h
   kio/kfileitemactions.h
