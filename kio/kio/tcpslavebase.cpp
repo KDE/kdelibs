@@ -29,7 +29,6 @@
 #include <kconfiggroup.h>
 #include <kio_ksslcertificatemanager.h>
 #include <ksslsettings.h>
-#include <kmessagebox.h>
 #include <klocalizedstring.h>
 #include <kio_ktcpsocket.h>
 
@@ -325,8 +324,7 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
           && metaData("ssl_activate_warnings") == "TRUE"
           && metaData("ssl_was_in_use") == "TRUE"
           && !d->autoSSL) {
-        KSSLSettings kss;
-        if (kss.warnOnLeave()) {
+        if (d->sslSettings.warnOnLeave()) {
             int result = messageBox(i18n("You are about to leave secure "
                                          "mode. Transmissions will no "
                                          "longer be encrypted.\nThis "
@@ -337,7 +335,7 @@ int TCPSlaveBase::connectToHost(const QString& host, quint16 port, QString* erro
                                     i18n("C&ontinue Loading"), QString(),
                                     "WarnOnLeaveSSLMode");
 
-            if (result == KMessageBox::Cancel) {
+            if (result == SlaveBase::Cancel) {
                 if (errorString)
                     *errorString = host;
                 return ERR_USER_CANCELED;
@@ -596,7 +594,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::TcpSlaveBasePrivate::startTLSInternal (KTc
                                    i18n("Display SSL &Information"),
                                    i18n("C&onnect"),
                                    "WarnOnEnterSSLMode");
-        if (msgResult == KMessageBox::Yes) {
+        if (msgResult == SlaveBase::Yes) {
             q->messageBox(SSLMessageBox /*==the SSL info dialog*/, host);
         }
     }
@@ -815,14 +813,14 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
         msgResult = messageBox(WarningYesNoCancel, message,
                                i18n("Server Authentication"),
                                i18n("&Details"), i18n("Co&ntinue"));
-        if (msgResult == KMessageBox::Yes) {
+        if (msgResult == SlaveBase::Yes) {
             //Details was chosen- show the certificate and error details
             messageBox(SSLMessageBox /*the SSL info dialog*/, d->host);
-        } else if (msgResult == KMessageBox::Cancel) {
+        } else if (msgResult == SlaveBase::Cancel) {
             return ResultFailed;
         }
-        //fall through on KMessageBox::No
-    } while (msgResult == KMessageBox::Yes);
+        //fall through on SlaveBase::No
+    } while (msgResult == SlaveBase::Yes);
 
     //Save the user's choice to ignore the SSL errors.
 
@@ -834,7 +832,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                             i18n("&Forever"),
                             i18n("&Current Session only"));
     QDateTime ruleExpiry = QDateTime::currentDateTime();
-    if (msgResult == KMessageBox::Yes) {
+    if (msgResult == SlaveBase::Yes) {
         //accept forever ("for a very long time")
         ruleExpiry = ruleExpiry.addYears(1000);
     } else {
@@ -907,7 +905,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                 result = messageBox(WarningYesNo,
                                     i18n("The certificate is valid but does not appear to have been assigned to this server.  Do you wish to continue loading?"),
                                     i18n("Server Authentication"));
-                if (result == KMessageBox::Yes) {     // success
+                if (result == SlaveBase::Yes) {     // success
                   rc = 1;
                   setMetaData("ssl_action", "accept");
                 } else {    // fail
@@ -933,7 +931,7 @@ TCPSlaveBase::SslResult TCPSlaveBase::verifyServerCertificate()
                     result = messageBox(WarningYesNo,
                                         i18n("You have indicated that you wish to accept this certificate, but it is not issued to the server who is presenting it. Do you wish to continue loading?"),
                                         i18n("Server Authentication"));
-                    if (result == KMessageBox::Yes) {
+                    if (result == SlaveBase::Yes) {
                         rc = 1;
                         setMetaData("ssl_action", "accept");
                         d->certCache->addHost(pc, d->host);

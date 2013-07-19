@@ -57,7 +57,6 @@
 
 #include <kremoteencoding.h>
 #include <kio_ktcpsocket.h>
-#include <kmessagebox.h>
 
 #include <kio/ioslave_defaults.h>
 #include <kio/http_slave_defaults.h>
@@ -3019,7 +3018,7 @@ try_again:
                              "<p>Is \"%1\" the site you want to visit?</p>",
                              m_request.url.host(), m_request.url.userName()),
                        i18nc("@title:window", "Confirm Website Access"));
-        if (result == KMessageBox::No) {
+        if (result == SlaveBase::No) {
             error(ERR_USER_CANCELED, m_request.url.toDisplayString());
             return false;
         }

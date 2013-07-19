@@ -245,7 +245,21 @@ public:
      */
     void infoMessage( const QString &msg );
 
+    /**
+     * Type of message box. Should be kept in sync with KMessageBox::ButtonCode.
+     */
     enum MessageBoxType { QuestionYesNo = 1, WarningYesNo = 2, WarningContinueCancel = 3, WarningYesNoCancel = 4, Information = 5, SSLMessageBox = 6 };
+
+    /**
+     * Button codes. Should be kept in sync with KMessageBox::ButtonCode
+     */
+    enum ButtonCode {
+        Ok = 1,
+        Cancel = 2,
+        Yes = 3,
+        No = 4,
+        Continue = 5
+    };
 
     /**
      * Call this to show a message box from the slave
@@ -258,7 +272,7 @@ public:
      *                  The default is i18n("&No").
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
-     * @return a button code, as defined in KMessageBox, or 0 on communication error.
+     * @return a button code, as defined in ButtonCode, or 0 on communication error.
      */
     int messageBox( MessageBoxType type, const QString &text,
                     const QString &caption = QString(),
@@ -277,8 +291,8 @@ public:
      * Note: for ContinueCancel, buttonYes is the continue button and buttonNo is unused.
      *       and for Information, none is used.
      * @param dontAskAgain A checkbox is added with which further confirmation can be turned off.
-     *        If the checkbox was ticked @p*dontAskAgain will be set to true, otherwise false.
-     * @return a button code, as defined in KMessageBox, or 0 on communication error.
+     *        If the checkbox was ticked @p dontAskAgain will be set to true, otherwise false.
+     * @return a button code, as defined in ButtonCode, or 0 on communication error.
      */
     int messageBox( const QString &text, MessageBoxType type,
                     const QString &caption = QString(),
