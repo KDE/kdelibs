@@ -82,7 +82,7 @@ public:
 
     void postResizeEvent();
     static void sendPostedResizeEvents();
-public slots:
+public Q_SLOTS:
     void slotEmitLoadEvent();
 private:
     friend class ::KHTMLPart;
@@ -137,7 +137,7 @@ public:
     void requestRerender();
 
     void renderAlternative();
-protected slots:
+protected Q_SLOTS:
     void slotRerender();
     void slotPartLoadingErrorNotify();
 protected:

@@ -36,7 +36,7 @@ protected:
 
     void resizeEvent(QResizeEvent *event);
 
-signals:
+Q_SIGNALS:
     void hideMe();
 
 private:

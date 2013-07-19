@@ -58,7 +58,7 @@ public:
 Q_SIGNALS:
     void signalShowDetails(const KNS3::EntryInternal& entry);
     
-protected slots:
+protected Q_SLOTS:
     bool eventFilter(QObject *watched, QEvent *event);
     void slotInstallClicked();
     void slotInstallActionTriggered(QAction* action);

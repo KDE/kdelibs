@@ -43,7 +43,7 @@ const QString signature = "DEADBEEF";
 class testEntry: public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void testProperties();
     void testCopy();
     void testAssignment();

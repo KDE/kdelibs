@@ -123,7 +123,7 @@ protected:
 
     void setupCupsOptions( QStringList &cupsOptions );
 
-private slots:
+private Q_SLOTS:
 
     void toggleJobHoldTime();
 

@@ -50,13 +50,13 @@ public:
     
     virtual QSize sizeHint() const;
 
-signals:
+Q_SIGNALS:
     void commentChanged(const QString& comment);
 
 protected:
     virtual bool event(QEvent* event);
 
-private slots:
+private Q_SLOTS:
     void slotLinkActivated(const QString& link);
 
 private:

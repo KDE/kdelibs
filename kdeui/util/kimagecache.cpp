@@ -60,7 +60,7 @@ class KImageCache::Private : public QObject
         return false;
     }
 
-    public slots:
+    public Q_SLOTS:
     void clearPixmaps()
     {
         pixmapCache.clear();

@@ -44,7 +44,7 @@ public:
 
     virtual bool propertyExists(const QString &key) const;
 
-signals:
+Q_SIGNALS:
     void propertyChanged(const QMap<QString,int> &changes);
     void conditionRaised(const QString &condition, const QString &reason);
 };

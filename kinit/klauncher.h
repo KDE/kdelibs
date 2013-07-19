@@ -137,7 +137,7 @@ public:
 
    void close();
 
-public slots:
+public Q_SLOTS:
    void destruct(); // exit!
 
 protected:

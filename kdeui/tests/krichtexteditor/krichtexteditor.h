@@ -43,7 +43,7 @@ public:
 
     void setupActions();
 
-private slots:
+private Q_SLOTS:
     void newFile();
     void openFile();
     void saveFile();

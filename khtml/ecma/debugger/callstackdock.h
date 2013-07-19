@@ -44,9 +44,9 @@ public:
     void clearDisplay();
 
     KJS::ExecState* selectedFrameContext();
-private slots:
+private Q_SLOTS:
     void slotViewItem(QTableWidgetItem* item);
-signals:
+Q_SIGNALS:
     void displayScript(KJSDebugger::DebugDocument* doc, int line);
 private:
     InterpreterContext* m_activeCtx;

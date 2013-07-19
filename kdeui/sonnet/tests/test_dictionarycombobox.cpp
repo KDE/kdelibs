@@ -42,7 +42,7 @@ class DictionaryComboBoxTest : public QWidget
             connect( btn, SIGNAL(clicked()), SLOT(dump()) );
         }
 
-    public slots:
+    public Q_SLOTS:
         void dump()
         {
             qDebug() << "Current dictionary: " << dcb->currentDictionary();

@@ -52,7 +52,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
 find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_FROM_BYTEARRAY -DQT_NO_KEYWORDS -DQT_STRICT_ITERATORS -DQT_NO_SIGNALS_SLOTS_KEYWORDS)
+remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_FROM_BYTEARRAY -DQT_NO_KEYWORDS -DQT_STRICT_ITERATORS)
 
 add_subdirectory( libkdeqt5staging )
 

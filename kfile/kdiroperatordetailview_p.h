@@ -50,7 +50,7 @@ protected:
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void currentChanged(const QModelIndex& current, const QModelIndex& previous);
 
-private slots:
+private Q_SLOTS:
     void resetResizing();
     void disableColumnResizing();
     void slotLayoutChanged();

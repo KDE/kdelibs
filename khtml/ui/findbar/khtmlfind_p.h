@@ -55,11 +55,11 @@ public:
   bool findTextNext( bool reverse = false );
   KHTMLFindBar *findBar() const { return m_parent ? m_parent->findBar() : m_findDialog.data(); }
 
-public slots:
+public Q_SLOTS:
   void activate();
   void deactivate();
 
-private slots:
+private Q_SLOTS:
   void slotFindDestroyed();
   void slotSelectionChanged();
   void slotHighlight( const QString &, int index, int length );
@@ -67,7 +67,7 @@ private slots:
   void slotFindNext();
   void slotFindPrevious();
 
-signals:
+Q_SIGNALS:
   void foundMatch( const DOM::Selection &selection, int length );
 
 protected:

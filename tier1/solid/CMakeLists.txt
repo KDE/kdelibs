@@ -69,7 +69,6 @@ remove_definitions(-DQT_STRICT_ITERATORS)
 remove_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 remove_definitions(-DQT_NO_KEYWORDS)
-remove_definitions(-DQT_NO_SIGNALS_SLOTS_KEYWORDS)
 remove_definitions(-DQT_USE_FAST_CONCATENATION)
 remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 

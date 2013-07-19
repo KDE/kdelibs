@@ -165,7 +165,7 @@ public:
         }
     }
 
-public slots:
+public Q_SLOTS:
     void adblockFilterResult(KJob *job)
     {
       KIO::StoredTransferJob *tJob = qobject_cast<KIO::StoredTransferJob*>(job);

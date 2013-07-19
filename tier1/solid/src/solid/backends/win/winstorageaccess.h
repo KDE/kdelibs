@@ -51,7 +51,7 @@ public:
 
     virtual bool teardown();
 
-signals:
+Q_SIGNALS:
     void accessibilityChanged(bool accessible, const QString &udi);
 
     void setupDone(Solid::ErrorType error, QVariant resultData, const QString &udi);

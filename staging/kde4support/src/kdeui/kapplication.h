@@ -339,7 +339,7 @@ public Q_SLOTS:
    */
   Q_SCRIPTABLE void updateUserTimestamp( int time = 0 );
 
-  // D-Bus slots:
+  // D-Bus Q_SLOTS:
   Q_SCRIPTABLE void reparseConfiguration();
   Q_SCRIPTABLE void quit();
 

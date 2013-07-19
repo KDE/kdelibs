@@ -488,7 +488,7 @@ namespace Kross {
             virtual void slotButtonClicked(QAbstractButton *button);
             void slotCurrentPageChanged(KPageWidgetItem* current);
 
-        signals:
+        Q_SIGNALS:
             /**
              * use it to setAppropriate()
              */

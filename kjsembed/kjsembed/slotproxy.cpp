@@ -52,7 +52,7 @@ SlotProxy::SlotProxy(KJS::JSObject *obj, KJS::Interpreter *interpreter, QObject 
     m_data[7] = 0;  // properties
     m_data[8] = 0;  // enums/sets
     m_data[9] = 0;  // enums/sets
-    // slots:
+    // Q_SLOTS:
     m_data[10] = 10;  //signature start
     m_data[11] = 10 + signatureSize;  //parameters start
     m_data[12] = 10 + signatureSize;  //type start

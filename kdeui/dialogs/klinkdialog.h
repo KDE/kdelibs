@@ -81,7 +81,7 @@ public:
      */
     QString linkUrl() const;
 
-private slots:
+private Q_SLOTS:
     void slotTextChanged(const QString &);
 
 private:

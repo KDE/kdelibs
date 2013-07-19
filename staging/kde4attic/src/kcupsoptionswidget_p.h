@@ -57,7 +57,7 @@ public:
     */
     static bool cupsAvailable();
 
-public slots:
+public Q_SLOTS:
 
     /**
      * Setup the given QPrinter with the selected print options

@@ -68,7 +68,7 @@ public:
 
     double voltage() const;
 
-signals:
+Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi) ;
     void capacityChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
@@ -77,7 +77,7 @@ signals:
     void energyChanged(double energy, const QString &udi);
     void energyRateChanged(double energyRate, const QString &udi);
 
-private slots:
+private Q_SLOTS:
     void powerChanged();
 
 private:

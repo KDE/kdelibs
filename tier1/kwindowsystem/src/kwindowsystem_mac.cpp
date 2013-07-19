@@ -78,7 +78,7 @@ public:
 
     static KWindowSystemPrivate* self() { return KWindowSystem::s_d_func(); }
 #ifdef EXPERIMENTAL_WINDOW_TRACKING
-public slots:
+public Q_SLOTS:
     void tryRegisterProcess();
 #endif
 };

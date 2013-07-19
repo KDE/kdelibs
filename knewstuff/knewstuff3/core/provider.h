@@ -131,7 +131,7 @@ namespace KNS3
         virtual bool userCanBecomeFan() {return false;}
         virtual void becomeFan(const EntryInternal& entry) { Q_UNUSED(entry) }
 
-    signals:
+    Q_SIGNALS:
         void providerInitialized(KNS3::Provider*);
 
         void loadingFinished(const KNS3::Provider::SearchRequest&, const KNS3::EntryInternal::List&) const;

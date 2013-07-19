@@ -48,7 +48,7 @@ protected:
     virtual void leaveEvent(QEvent* event);
     virtual void paintEvent(QPaintEvent* event);
 
-private slots:
+private Q_SLOTS:
     void updateToolTip();
     void updateCursor();
 
