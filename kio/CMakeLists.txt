@@ -189,7 +189,6 @@ set(kfile_STAT_SRCS
 if(NOT KIO_NO_SOLID)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
-    kfile/kdiskfreespace.cpp
     kfile/kdevicelistitem.cpp
     kfile/kdevicelistmodel.cpp
     )
@@ -395,9 +394,6 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 if(NOT KDE_NO_DEPRECATED)
-install( FILES
-  kfile/kdiskfreespace.h
-  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install( FILES
   kio/passworddialog.h

@@ -26,12 +26,12 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 
 /**
  * \deprecated Use KDiskFreeSpaceInfo
  */
-class KIO_DEPRECATED_EXPORT KDiskFreeSpace : public QObject
+class KDE4SUPPORT_EXPORT KDiskFreeSpace : public QObject
 {
     Q_OBJECT
 
