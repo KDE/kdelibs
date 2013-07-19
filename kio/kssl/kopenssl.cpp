@@ -24,17 +24,12 @@
 #include <openssl/opensslv.h>
 #endif
 
-#include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <klibrary.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
-
-
-#include <stdio.h>
-#include <unistd.h>
 
 extern "C" {
 #if KSSL_HAVE_SSL
@@ -384,10 +379,10 @@ KOpenSSLProxy::KOpenSSLProxy()
          if (!alib.isEmpty() && !alib.endsWith('/'))
             alib += '/';
          alib += *shit;
-	     // someone knows why this is needed?
-	     QString tmpStr(alib.toLatin1().constData());
-	     tmpStr.remove(QRegExp("\\(.*\\)"));
-         if (!access(tmpStr.toLatin1(), R_OK)) {
+         // someone knows why this is needed?
+         QString tmpStr(alib);
+         tmpStr.remove(QRegExp("\\(.*\\)"));
+         if (QFile(tmpStr).isReadable()) {
             d->cryptoLib = new KLibrary(alib);
             d->cryptoLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
          } 
@@ -558,11 +553,11 @@ KOpenSSLProxy::KOpenSSLProxy()
          if (!alib.isEmpty() && !alib.endsWith('/'))
             alib += '/';
          alib += *shit;
-	     QString tmpStr(alib.toLatin1());
-	     tmpStr.remove(QRegExp("\\(.*\\)"));
-         if (!access(tmpStr.toLatin1(), R_OK)) {
-         	d->sslLib = new KLibrary(alib);
-            d->sslLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
+         QString tmpStr(alib);
+         tmpStr.remove(QRegExp("\\(.*\\)"));
+         if (QFile(tmpStr).isReadable()) {
+             d->sslLib = new KLibrary(alib);
+             d->sslLib->setLoadHints(QLibrary::ExportExternalSymbolsHint);
          }
          if (d->sslLib && d->sslLib->load()) {
              break;

@@ -23,7 +23,6 @@
 #include <ksslconfig.h>
 
 #include <kopenssl.h>
-#include <kdebug.h>
 
 
 KSSLX509V3::KSSLX509V3() {

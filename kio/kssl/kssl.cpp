@@ -25,9 +25,6 @@
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
 // on some systems
 #if KSSL_HAVE_SSL
-#include <unistd.h>
-#include <netinet/in.h>
-#include <sys/socket.h>
 #define crypt _openssl_crypt
 #include <openssl/ssl.h>
 #include <openssl/x509.h>
@@ -37,19 +34,17 @@
 #undef crypt
 #endif
 
-#include <kdebug.h>
-
-
 #include <kopenssl.h>
 #include <ksslx509v3.h>
 #include <ksslcertificate.h>
 #include <klocalizedstring.h>
 
-#include <QtNetwork/QAbstractSocket>
+#include <QAbstractSocket>
+#include <QFile>
 
 #ifdef __GNUC__
-#warning "kssl.cc contains temporary functions! Clean up"
-#warning "kssl.cc needs to be ported to QSslSocket"
+#warning "kssl.cpp contains temporary functions! Clean up"
+#warning "kssl.cpp needs to be ported to QSslSocket"
 #endif
 
 #define sk_dup d->kossl->sk_dup
@@ -95,29 +90,31 @@ KSSL::~KSSL() {
 
 
 int KSSL::seedWithEGD() {
-int rc = 0;
+    int rc = 0;
 #if KSSL_HAVE_SSL
-	if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
-		rc = d->kossl->RAND_egd(m_cfg->getEGDPath().toLatin1().constData());
-		if (rc < 0)
-			kDebug(7029) << "KSSL: Error seeding PRNG with the EGD.";
-		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc
-				   << " bytes from the EGD." << endl;
-	} else if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
-		rc = d->kossl->RAND_load_file(m_cfg->getEGDPath().toLatin1().constData(), -1);
-		if (rc < 0)
-			kDebug(7029) << "KSSL: Error seeding PRNG with the entropy file.";
-		else kDebug(7029) << "KSSL: PRNG was seeded with " << rc
-				   << " bytes from the entropy file." << endl;
-	}
+    if (m_cfg->useEGD() && !m_cfg->getEGDPath().isEmpty()) {
+        rc = d->kossl->RAND_egd(QFile::encodeName(m_cfg->getEGDPath()).constData());
+        if (rc < 0) {
+            qWarning() << "KSSL: Error seeding PRNG with the EGD.";
+        } else {
+            //qDebug() << "KSSL: PRNG was seeded with" << rc << "bytes from the EGD.";
+        }
+    } else if (m_cfg->useEFile() && !m_cfg->getEGDPath().isEmpty()) {
+        rc = d->kossl->RAND_load_file(QFile::encodeName(m_cfg->getEGDPath()).constData(), -1);
+        if (rc < 0) {
+            qWarning() << "KSSL: Error seeding PRNG with the entropy file.";
+        } else {
+           //qDebug() << "KSSL: PRNG was seeded with" << rc << "bytes from the entropy file.";
+        }
+    }
 #endif
-return rc;
+    return rc;
 }
 
 
 bool KSSL::initialize() {
 #if KSSL_HAVE_SSL
-	kDebug(7029) << "KSSL initialize";
+    //qDebug() << "KSSL initialize";
 	if (m_bInit)
 		return false;
 
@@ -134,7 +131,7 @@ bool KSSL::initialize() {
 
 	// set cipher list
 	QString clist = m_cfg->getCipherList();
-	kDebug(7029) << "Cipher list: " << clist;
+	//qDebug() << "Cipher list: " << clist;
 	if (!clist.isEmpty())
 		d->kossl->SSL_CTX_set_cipher_list(d->m_ctx, const_cast<char *>(clist.toLatin1().constData()));
 
@@ -148,7 +145,7 @@ return false;
 
 void KSSL::close() {
 #if KSSL_HAVE_SSL
-//kDebug(7029) << "KSSL close";
+    //qDebug() << "KSSL close";
 	if (!m_bInit)
 		return;
 
