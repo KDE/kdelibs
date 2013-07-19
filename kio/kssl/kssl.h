@@ -22,6 +22,7 @@
 #define _KSSL_H
 
 #include <ksslsettings.h>
+#include <kio_export.h>
 
 class QIODevice;
 class KSSLPrivate;

@@ -36,7 +36,6 @@
 
 #include <kopenssl.h>
 #include <ksslx509v3.h>
-#include <ksslcertificate.h>
 #include <klocalizedstring.h>
 
 #include <QAbstractSocket>
@@ -56,8 +55,6 @@ public:
 	}
 
 	~KSSLPrivate() {}
-
-	KSSLCertificate::KSSLValidation m_cert_vfy_res;
 
 #if KSSL_HAVE_SSL
 	SSL *m_ssl;

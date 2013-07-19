@@ -172,13 +172,6 @@ if(X11_FOUND)
   endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
 
-find_package(OpenSSL)
-set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
-                       URL "http://openssl.org"
-                       TYPE RECOMMENDED
-                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
-                      )
-
 find_package(Libintl)
 set_package_properties(Libintl PROPERTIES DESCRIPTION "Support for multiple languages"
                        URL "http://www.gnu.org/software/gettext"

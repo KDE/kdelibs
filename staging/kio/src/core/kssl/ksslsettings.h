@@ -21,7 +21,7 @@
 #ifndef _KSSLSETTINGS_H
 #define _KSSLSETTINGS_H
 
-#include <kio/kio_export.h>
+#include <kio/kiocore_export.h>
 
 #include <QtCore/QString>
 
@@ -38,7 +38,7 @@ class KSSLSettingsPrivate;
  * @see KSSL
  * @short KDE SSL Settings
  */
-class KIO_EXPORT KSSLSettings {
+class KIOCORE_EXPORT KSSLSettings {
 public:
 	/**
 	 *  Construct a KSSL Settings object

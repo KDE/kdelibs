@@ -6,6 +6,19 @@ configure_file(config-kiocore.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiocore
 
 configure_file(config-kmountpoint.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kmountpoint.h)
 
+find_package(OpenSSL)
+set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
+                       URL "http://openssl.org"
+                       TYPE RECOMMENDED
+                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
+                      )
+if(OPENSSL_FOUND)
+   set(KSSL_HAVE_SSL 1)
+   include_directories(${OPENSSL_INCLUDE_DIR})
+endif(OPENSSL_FOUND)
+
+configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
+
 set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
@@ -57,6 +70,8 @@ set(kiocore_SRCS
 
   kio_ksslcertificatemanager.cpp # temporary (used by ktcpsocket)
   kio_ktcpsocket.cpp             # temporary (port to Qt API once it has hooks for users approving invalid certificates)
+  kssl/ksslsettings.cpp          # temporary (used by tcpslavebase)
+  kssl/kopenssl.cpp              # temporary (used by ksslsettings)
 )
 
 if (UNIX)
@@ -85,6 +100,7 @@ generate_export_header(KIOCore)
 
 target_include_directories(KIOCore PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kssl>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
 )
 
