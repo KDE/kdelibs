@@ -22,16 +22,8 @@
 
 #include <ksslconfig.h>
 
-#include <sys/types.h>
-#include <sys/stat.h>
-
-#include <stdlib.h>
-#include <pwd.h>
-#include <unistd.h>
-
 #include <QtCore/QFile>
 
-#include <kdebug.h>
 #include <kconfiggroup.h>
 
 // this hack provided by Malte Starostik to avoid glibc/openssl bug
