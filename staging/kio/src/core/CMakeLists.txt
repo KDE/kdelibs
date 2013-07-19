@@ -54,6 +54,9 @@ set(kiocore_SRCS
   jobuidelegatefactory.cpp
   kmountpoint.cpp
   kcoredirlister.cpp
+
+  kio_ksslcertificatemanager.cpp # temporary (used by ktcpsocket)
+  kio_ktcpsocket.cpp             # temporary (port to Qt API once it has hooks for users approving invalid certificates)
 )
 
 if (UNIX)

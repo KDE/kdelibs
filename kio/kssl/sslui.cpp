@@ -23,9 +23,9 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <ksslcertificatemanager.h>
+#include <kio_ksslcertificatemanager.h>
 #include <ksslinfodialog.h>
-#include <ktcpsocket_p.h>
+#include <kio_ktcpsocket_p.h>
 
 
 bool KIO::SslUi::askIgnoreSslErrors(const KTcpSocket *socket, RulesStorage storedRules)

@@ -21,3 +21,7 @@ endif()
 add_subdirectory(core)
 #add_subdirectory(widgets)
 
+if ( NOT WINCE )
+    add_subdirectory(kssld)
+endif ( NOT WINCE )
+

@@ -93,9 +93,9 @@ public:
     QString userCertDir;
 };
 
-// don't export KSslCertificateManagerPrivate to avoid unnecessary symbols in libkdecore
-KDECORE_EXPORT QList<KSslCaCertificate> _allKsslCaCertificates(KSslCertificateManager *cm);
-KDECORE_EXPORT void _setAllKsslCaCertificates(KSslCertificateManager *cm,
+// don't export KSslCertificateManagerPrivate to avoid unnecessary symbols
+KDE4ATTIC_EXPORT QList<KSslCaCertificate> _allKsslCaCertificates(KSslCertificateManager *cm);
+KDE4ATTIC_EXPORT void _setAllKsslCaCertificates(KSslCertificateManager *cm,
                                               const QList<KSslCaCertificate> &certsIn);
 
 #endif //KSSLCERTIFICATEMANAGER_P_H

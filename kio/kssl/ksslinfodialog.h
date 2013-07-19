@@ -25,7 +25,9 @@
 #include <kssl.h>
 #include <QDialog>
 
-#include "ktcpsocket.h"
+#include "kio_ktcpsocket.h"
+
+using KIO::KSslError;
 
 /**
  * KDE SSL Information Dialog

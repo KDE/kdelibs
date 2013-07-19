@@ -93,9 +93,6 @@ if (UNIX)
 endif (UNIX)
 
 add_subdirectory( tests )
-if ( NOT WINCE )
-    add_subdirectory( network/kssld )
-endif ( NOT WINCE )
 
 ########### next target ###############
 
@@ -134,8 +131,6 @@ set(kdecore_LIB_SRCS
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
-   network/ksslcertificatemanager.cpp
-   network/ktcpsocket.cpp
    localization/kcurrencycode.cpp
    localization/klocale.cpp
    localization/klocale_kde.cpp
@@ -254,7 +249,6 @@ install( FILES
 
 install(FILES
    network/ksocketfactory.h
-   network/ktcpsocket.h
    localization/kcurrencycode.h
    localization/klocale.h
    util/kautostart.h

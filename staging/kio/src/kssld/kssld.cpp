@@ -22,19 +22,17 @@
 
 #include "kssld.h"
 
-#include "ksslcertificatemanager.h"
 #include "kssld_adaptor.h"
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <QtCore/QFile>
 
-#include <kdebug.h>
 #include <QtCore/QDate>
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 
-
+using namespace KIO;
 
 K_PLUGIN_FACTORY(KSSLDFactory, registerPlugin<KSSLD>();)
 K_EXPORT_PLUGIN(KSSLDFactory("kssld"))

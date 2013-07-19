@@ -31,7 +31,7 @@
 #include <QtDBus/QtDBus>
 #include <qstandardpaths.h>
 
-#include "kssld/kssld_interface.h"
+#include "kssld_interface.h"
 
 /*
   Config file format:
@@ -527,4 +527,4 @@ void _setAllKsslCaCertificates(KSslCertificateManager *cm, const QList<KSslCaCer
     KSslCertificateManagerPrivate::get(cm)->setAllCertificates(certsIn);
 }
 
-#include "kssld/moc_kssld_interface.cpp"
+#include "moc_kssld_interface.cpp"

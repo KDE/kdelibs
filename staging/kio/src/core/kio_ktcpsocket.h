@@ -24,7 +24,9 @@
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QSslConfiguration>
 
-#include "kdecore_export.h"
+#include "kiocore_export.h"
+
+class QHostAddress;
 
 /*
   Notes on QCA::TLS compatibility
@@ -35,10 +37,11 @@
   TLS::Error QCA::TLS::errorCode() - for more generic (but stil SSL) errors
  */
 
+namespace KIO {
 
 class KSslKeyPrivate;
 
-class KDECORE_EXPORT KSslKey {
+class KIOCORE_EXPORT KSslKey {
 public:
     enum Algorithm {
         Rsa = 0,
@@ -67,7 +70,7 @@ private:
 
 class KSslCipherPrivate;
 
-class KDECORE_EXPORT KSslCipher {
+class KIOCORE_EXPORT KSslCipher {
 public:
     KSslCipher();
     KSslCipher(const KSslCipher &other);
@@ -95,7 +98,7 @@ private:
 class KSslErrorPrivate;
 class KTcpSocket;
 
-class KDECORE_EXPORT KSslError
+class KIOCORE_EXPORT KSslError
 {
 public:
     enum Error {
@@ -138,9 +141,8 @@ private:
 //TODO protocol (or maybe even application?) dependent automatic proxy choice
 
 class KTcpSocketPrivate;
-class QHostAddress;
 
-class KDECORE_EXPORT KTcpSocket: public QIODevice
+class KIOCORE_EXPORT KTcpSocket: public QIODevice
 {
     Q_OBJECT
 public:
@@ -239,7 +241,7 @@ QSslError::NoSslSupport                             Never happens :)
 protected:
     virtual qint64 readData (char *data, qint64 maxSize);
     virtual qint64 writeData (const char *data, qint64 maxSize);
-signals:
+Q_SIGNALS:
     /// @since 4.8.1
     /// Forwarded from QSslSocket
     void encryptedBytesWritten( qint64 written );
@@ -393,7 +395,7 @@ private:
  *
  * @see: KSslCertificateManager::askIgnoreSslErrors()
  */
-class KDECORE_EXPORT KSslErrorUiData
+class KIOCORE_EXPORT KSslErrorUiData
 {
 public:
     /**
@@ -421,5 +423,6 @@ private:
     Private *const d;
 };
 
+}
 
 #endif // KTCPSOCKET_H

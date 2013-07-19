@@ -25,13 +25,15 @@
 #include <kdedmodule.h>
 #include <QtCore/QList>
 #include <QtCore/QVariant>
+class QString;
+class QSslCertificate;
 
+namespace KIO {
+class KSslCertificateRule;
+}
+using namespace KIO;
 
 class KSSLDPrivate;
-class KSslCertificateRule;
-class QSslCertificate;
-class QString;
-
 class KSSLD : public KDEDModule
 {
     Q_OBJECT

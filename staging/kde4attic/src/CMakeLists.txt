@@ -12,6 +12,8 @@ set(kde4attic_SRCS
   kmultitabbar.cpp
   ktimecombobox.cpp
   ktimezonewidget.cpp
+  ksslcertificatemanager.cpp
+  ktcpsocket.cpp
 )
 
 if(NOT WINCE)
@@ -77,6 +79,7 @@ install(FILES
   kmultitabbar.h
   ktimecombobox.h
   ktimezonewidget.h
+  ktcpsocket.h
   ${CMAKE_CURRENT_BINARY_DIR}/kde4attic_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -39,7 +39,7 @@
 
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
-#include "ktcpsocket.h"
+#include "kio_ktcpsocket.h"
 
 
 class KSslInfoDialog::KSslInfoDialogPrivate
