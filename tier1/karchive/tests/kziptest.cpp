@@ -31,11 +31,11 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
   {
     const KArchiveEntry* entry = dir->entry( (*it) );
     printf("mode=%07o %s %s size: %lld pos: %lld %s%s isdir=%d%s", entry->permissions(),
-	entry->user().toLatin1().constData(), entry->group().toLatin1().constData(),
-	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
-	entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
-	path.toLatin1().constData(), (*it).toLatin1().constData(), entry->isDirectory(),
-	entry->symLinkTarget().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symLinkTarget()).toLatin1().constData() );
+    entry->user().toLatin1().constData(), entry->group().toLatin1().constData(),
+    entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->size(),
+    entry->isDirectory() ? 0 : ((KArchiveFile*)entry)->position(),
+    path.toLatin1().constData(), (*it).toLatin1().constData(), entry->isDirectory(),
+    entry->symLinkTarget().isEmpty() ? "" : QString(" symlink: %1").arg(entry->symLinkTarget()).toLatin1().constData() );
 
 //    if (!entry->isDirectory()) printf("%d", ((KArchiveFile*)entry)->size());
     printf("\n");
@@ -46,38 +46,37 @@ void recursive_print( const KArchiveDirectory * dir, const QString & path )
 
 
 void recursive_transfer(const KArchiveDirectory * dir,
-	    const QString & path, KZip * zip)
+        const QString & path, KZip * zip)
 {
     QStringList l = dir->entries();
     QStringList::Iterator it = l.begin();
     for( ; it != l.end(); ++it )
     {
         const KArchiveEntry* e = dir->entry( (*it) );
-	qDebug() << "actual file: " << e->name();
-	if (e->isFile())
-	{
-    	    Q_ASSERT( e && e->isFile() );
-    	    const KArchiveFile* f = (KArchiveFile*)e;
-    	    printf("FILE=%s\n", e->name().toLatin1().constData());
+    qDebug() << "actual file: " << e->name();
+    if (e->isFile())
+    {
+            Q_ASSERT( e && e->isFile() );
+            const KArchiveFile* f = (KArchiveFile*)e;
+            printf("FILE=%s\n", e->name().toLatin1().constData());
 
-    	    QByteArray arr( f->data() );
-    	    printf("SIZE=%i\n",arr.size() );
-    	    QString str( arr );
-    	    printf("DATA=%s\n", str.toLatin1().constData());
+            QByteArray arr( f->data() );
+            printf("SIZE=%i\n",arr.size() );
+            QString str( arr );
+            printf("DATA=%s\n", str.toLatin1().constData());
 
-	    if (e->symLinkTarget().isEmpty()) {
-	        zip->writeFile( path + e->name(),
+        if (e->symLinkTarget().isEmpty()) {
+            zip->writeFile( path + e->name(),
                                 "holgi", "holgrp",
                                 arr.constData(), arr.size() );
-	    } else
-	        zip->writeSymLink(path+e->name(), e->symLinkTarget(), "leo", "leo",
-				0120777, 1000000000l, 1000000000l, 1000000000l);
-	}
-	else if (e->isDirectory())
-	{
-	    recursive_transfer((KArchiveDirectory *)e ,
-			path+e->name()+'/', zip);
-	}
+        } else
+            zip->writeSymLink(path+e->name(), e->symLinkTarget(), "leo", "leo", 0120777);
+    }
+    else if (e->isDirectory())
+    {
+        recursive_transfer((KArchiveDirectory *)e ,
+            path+e->name()+'/', zip);
+    }
     }
 }
 
@@ -133,17 +132,17 @@ int main( int argc, char** argv )
     for( ; it != l.end(); ++it )
     {
         const KArchiveEntry* e = dir->entry( (*it) );
-	qDebug() << "Printing " << (*it);
-	if (e->isFile())
-	{
-    	    Q_ASSERT( e && e->isFile() );
-    	    const KArchiveFile* f = (KArchiveFile*)e;
+    qDebug() << "Printing " << (*it);
+    if (e->isFile())
+    {
+            Q_ASSERT( e && e->isFile() );
+            const KArchiveFile* f = (KArchiveFile*)e;
 
-    	    QByteArray arr( f->data() );
-    	    printf("SIZE=%i\n",arr.size() );
-    	    QString str( arr );
-    	    printf("DATA=%s\n", str.toLatin1().constData());
-	}
+            QByteArray arr( f->data() );
+            printf("SIZE=%i\n",arr.size() );
+            QString str( arr );
+            printf("DATA=%s\n", str.toLatin1().constData());
+    }
     }
     zip.close();
     return 0;
@@ -152,8 +151,8 @@ int main( int argc, char** argv )
   {
     if (argc != 4)
     {
-        printf("usage: kziptest print2 archivename filename");
-	return 1;
+      printf("usage: kziptest print2 archivename filename");
+      return 1;
     }
     KZip zip( argv[2] );
     if ( !zip.open( QIODevice::ReadOnly ) )
@@ -215,7 +214,7 @@ int main( int argc, char** argv )
     if (argc != 4)
     {
         printf("usage: kziptest transfer sourcefile destfile");
-	return 1;
+    return 1;
     }
     KZip zip1( argv[2] );
     KZip zip2( argv[3] );

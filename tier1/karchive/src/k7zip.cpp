@@ -17,6 +17,7 @@
 */
 
 #include "k7zip.h"
+#include "karchive_p.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QDir>
@@ -28,10 +29,8 @@
 #include <kxzfilter.h>
 #include "klimitediodevice_p.h"
 
-
 #include <time.h> // time()
 #include "zlib.h"
-
 
 ////////////////////////////////////////////////////////////////////////
 /////////////////////////// K7Zip //////////////////////////////////////
@@ -163,7 +162,7 @@ static const quint64 k_AES = 0x06F10701;
 class KARCHIVE_EXPORT K7ZipFileEntry : public KArchiveFile
 {
 public:
-    K7ZipFileEntry( K7Zip* zip, const QString& name, int access, int date,
+    K7ZipFileEntry(K7Zip* zip, const QString& name, int access, const QDateTime &date,
                    const QString& user, const QString& group, const QString& symlink,
                    qint64 pos, qint64 size, const QByteArray& data);
 
@@ -191,7 +190,7 @@ private:
 };
 
 
-K7ZipFileEntry::K7ZipFileEntry(K7Zip* zip, const QString& name, int access, int date,
+K7ZipFileEntry::K7ZipFileEntry(K7Zip* zip, const QString& name, int access, const QDateTime &date,
                                const QString& user, const QString& group, const QString& symlink,
                                qint64 pos, qint64 size, const QByteArray& data)
     : KArchiveFile(zip, name, access, date, user, group, symlink, pos, size)
@@ -704,7 +703,7 @@ Folder* K7Zip::K7ZipPrivate::folderItem()
     quint64 numOutStreamsTotal = 0;
     for (int i = 0; i < numCoders; i++) {
         Folder::FolderInfo* info = new Folder::FolderInfo();
-        //BYTE 
+        //BYTE
         //    {
         //      0:3 CodecIdSize
         //      4:  Is Complex Coder
@@ -1044,7 +1043,7 @@ bool K7Zip::K7ZipPrivate::readSubStreamsInfo()
 #define TICKS_1601_TO_1970 (SECS_1601_TO_1970 * TICKSPERSEC)
 #define SECS_1601_TO_1970  ((369 * 365 + 89) * (unsigned long long)SECSPERDAY)
 
-static time_t toTimeT(const long long liTime)
+static uint toTimeT(const long long liTime)
 {
     long long time = liTime / TICKSPERSEC;
 
@@ -1086,7 +1085,7 @@ static time_t toTimeT(const long long liTime)
 
     QDateTime t(QDate(year, month, day), QTime(hour, minute, second));
     t.setTimeSpec(Qt::UTC);
-    return  t.toTime_t();
+    return t.toTime_t();
 }
 
 long long rtlSecondsSince1970ToSpecTime(quint32 seconds) {
@@ -1661,7 +1660,7 @@ void K7Zip::K7ZipPrivate::createItemsFromEntities(const KArchiveDirectory * dir,
 
         fileInfo->path = path + entry->name();
         mTimesDefined.append(true);
-        mTimes.append(rtlSecondsSince1970ToSpecTime(entry->date()));
+        mTimes.append(rtlSecondsSince1970ToSpecTime(entry->date().toTime_t()));
 
         if (entry->isFile()) {
             const K7ZipFileEntry* fileEntry = static_cast<const K7ZipFileEntry*>(entry);
@@ -2663,11 +2662,11 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         }
         Q_ASSERT( !entryName.isEmpty() );
 
-        time_t mTime;
+        QDateTime mTime;
         if (d->mTimesDefined[i]) {
-            mTime = toTimeT(d->mTimes[i]);
+            mTime = KArchivePrivate::time_tToDateTime(toTimeT(d->mTimes[i]));
         } else {
-            mTime = time(NULL);
+            mTime = KArchivePrivate::time_tToDateTime(time(NULL));
         }
 
         if (fileInfo->isDir) {
@@ -2855,7 +2854,7 @@ bool K7Zip::writeData(const char * data, qint64 size)
 
 bool K7Zip::doPrepareWriting(const QString &name, const QString &user,
                           const QString &group, qint64 /*size*/, mode_t perm,
-                          time_t /*atime*/, time_t mtime, time_t /*ctime*/)
+                          const QDateTime& /*atime*/, const QDateTime& mtime, const QDateTime& /*ctime*/)
 {
     if ( !isOpen() )
     {
@@ -2898,7 +2897,7 @@ bool K7Zip::doPrepareWriting(const QString &name, const QString &user,
 
 bool K7Zip::doWriteDir(const QString &name, const QString &user,
                       const QString &group, mode_t perm,
-                      time_t /*atime*/, time_t mtime, time_t /*ctime*/)
+                      const QDateTime & /*atime*/, const QDateTime &mtime, const QDateTime & /*ctime*/)
 {
     if ( !isOpen() )
     {
@@ -2935,7 +2934,7 @@ bool K7Zip::doWriteDir(const QString &name, const QString &user,
 
 bool K7Zip::doWriteSymLink(const QString &name, const QString &target,
                         const QString &user, const QString &group,
-                        mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/)
+                        mode_t perm, const QDateTime & /*atime*/, const QDateTime &mtime, const QDateTime & /*ctime*/)
 {
     if ( !isOpen() )
     {

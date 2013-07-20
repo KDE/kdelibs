@@ -56,7 +56,7 @@ protected:
      * @return always false
      */
     virtual bool doPrepareWriting( const QString& name, const QString& user, const QString& group, qint64 size,
-                                 mode_t perm, time_t atime, time_t mtime, time_t ctime );
+                                 mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime );
 
     /*
      * Writing not supported by this class, will always fail.
@@ -69,10 +69,11 @@ protected:
      * @return always false
      */
     virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
-                             mode_t perm, time_t atime, time_t mtime, time_t ctime );
+                             mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime );
 
     virtual bool doWriteSymLink( const QString &name, const QString &target,
-                                 const QString &user, const QString &group, mode_t perm, time_t atime, time_t mtime, time_t ctime );
+                                 const QString &user, const QString &group, mode_t perm,
+                                 const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime );
 
     /**
      * Opens the archive for reading.

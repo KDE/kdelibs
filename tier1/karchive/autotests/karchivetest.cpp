@@ -33,6 +33,12 @@
 #include <errno.h>
 #endif
 
+#ifdef Q_OS_WIN
+#include <Windows.h>
+#else
+#include <grp.h>
+#include <pwd.h>
+#endif
 
 QTEST_MAIN( KArchiveTest )
 
@@ -56,6 +62,7 @@ static void writeTestFilesToArchive( KArchive* archive )
     QVERIFY( localFile.open( QIODevice::WriteOnly ) );
     QVERIFY( localFile.write( "Noch so einer", 13 ) == 13 );
     localFile.close();
+
     QVERIFY( archive->addLocalFile( "test3", "z/test3" ) );
 
     // writeFile API
@@ -84,7 +91,36 @@ static void writeTestFilesToArchive( KArchive* archive )
 #endif
 }
 
-enum { WithUserGroup = 1 }; // ListingFlags
+static QString getCurrentUserName()
+{
+#if defined(Q_OS_UNIX)
+    struct passwd* pw = getpwuid( getuid() );
+    return pw ? QFile::decodeName(pw->pw_name) : QString::number( getuid() );
+#elif defined(Q_OS_WIN)
+    wchar_t buffer[255];
+    DWORD size = 255;
+    bool ok = GetUserNameW(buffer, &size);
+    if (!ok)
+        return QString();
+    return QString::fromWCharArray(buffer);
+#else
+    return QString();
+#endif
+}
+
+static QString getCurrentGroupName()
+{
+#if defined(Q_OS_UNIX)
+    struct group* grp = getgrgid( getgid() );
+    return grp ? QFile::decodeName(grp->gr_name) : QString::number( getgid() );
+#elif defined(Q_OS_WIN)
+    return QString();
+#else
+    return QString();
+#endif
+}
+
+enum { WithUserGroup = 1, WithTime = 0x02 }; // ListingFlags
 
 static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QString & path, int listingFlags )
 {
@@ -108,6 +144,10 @@ static QStringList recursiveListEntries( const KArchiveDirectory * dir, const QS
     if (!entry->symLinkTarget().isEmpty())
         descr += QString(" symlink=") + entry->symLinkTarget();
 
+    if (listingFlags & WithTime)
+    {
+        descr += QString(" time=") + entry->date().toString("dd.MM.yyyy hh:mm:ss");
+    }
     // TODO add date and time
 
     //qDebug() << descr;
@@ -288,6 +328,8 @@ void KArchiveTest::initTestCase()
         QVERIFY(false);
     }
 #endif
+
+    QVERIFY(QFileInfo(":/qt-project.org/qmime/freedesktop.org.xml").exists());
 }
 
 void KArchiveTest::testCreateTar_data()
@@ -373,7 +415,7 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
 
     const KArchiveDirectory* dir = tar.directory();
     QVERIFY( dir != 0 );
-    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
+    const QStringList listing = recursiveListEntries( dir, "", WithUserGroup | WithTime );
 
     QFileInfo localFileData("test3");
 
@@ -382,27 +424,37 @@ void KArchiveTest::testReadTar() // testCreateTarGz must have been run first.
 #else
     QCOMPARE( listing.count(), 14 );
 #endif
-    QCOMPARE( listing[ 0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir") );
-    QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
-    QCOMPARE( listing[ 2], QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
-    QCOMPARE( listing[ 3], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100") );
-    QCOMPARE( listing[ 4], QString("mode=100644 user=weis group=users path=empty type=file size=0") );
-    QCOMPARE( listing[ 5], QString("mode=100644 user=user group=group path=hugefile type=file size=20000") );
-    QCOMPARE( listing[ 6], QString("mode=100644 user=user group=group path=mediumfile type=file size=100") );
-    QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
-    QCOMPARE( listing[ 8], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
-    QCOMPARE( listing[ 9], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29") );
-    QCOMPARE( listing[10], QString("mode=100440 user=weis group=users path=test1 type=file size=5") );
-    QCOMPARE( listing[11], QString("mode=100644 user=weis group=users path=test2 type=file size=8") );
-    QCOMPARE( listing[12], QString("mode=40777 user=%1 group=%2 path=z type=dir").arg(localFileData.owner()).arg(localFileData.group()) );
+    QString owner = localFileData.owner().isEmpty() ? getCurrentUserName() : localFileData.owner();
+    QString group = localFileData.group().isEmpty() ? getCurrentGroupName() : localFileData.group();
+    QString emptyTime = QDateTime().toString("dd.MM.yyyy hh:mm:ss");
+    QDateTime dt = QFileInfo(fileName).created();
+    QString time = dt.toString("dd.MM.yyyy hh:mm:ss");
+
+    QCOMPARE( listing[ 0], QString("mode=40755 user=user group=group path=aaaemptydir type=dir time=%1").arg(emptyTime) );
+    QCOMPARE( listing[ 1], QString("mode=40777 user=%1 group=%2 path=dir type=dir time=%3").arg(owner).arg(group).arg(emptyTime) );
+    QCOMPARE( listing[ 2], QString("mode=40777 user=%1 group=%2 path=dir/subdir type=dir time=%3").arg(owner).arg(group).arg(emptyTime) );
+    QCOMPARE( listing[ 3], QString("mode=100644 user=user group=group path=dir/subdir/mediumfile2 type=file size=100 time=%3").arg(emptyTime) );
+    QCOMPARE( listing[ 4], QString("mode=100644 user=weis group=users path=empty type=file size=0 time=") );
+    QCOMPARE( listing[ 5], QString("mode=100644 user=user group=group path=hugefile type=file size=20000 time=") );
+    QCOMPARE( listing[ 6], QString("mode=100644 user=user group=group path=mediumfile type=file size=100 time=") );
+    QCOMPARE( listing[ 7], QString("mode=40777 user=%1 group=%2 path=my type=dir time=").arg(owner).arg(group) );
+    QCOMPARE( listing[ 8], QString("mode=40777 user=%1 group=%2 path=my/dir type=dir time=").arg(owner).arg(group) );
+    QCOMPARE( listing[ 9], QString("mode=100644 user=dfaure group=hackers path=my/dir/test3 type=file size=29 time=") );
+    QCOMPARE( listing[10], QString("mode=100440 user=weis group=users path=test1 type=file size=5 time=") );
+    QCOMPARE( listing[11], QString("mode=100644 user=weis group=users path=test2 type=file size=8 time=") );
+    QCOMPARE( listing[12], QString("mode=40777 user=%1 group=%2 path=z type=dir time=").arg(owner).arg(group) );
+
+    // NOTE: this test can occasionally fail, when archive time is not equal to file time in the archive.
+    // This happens bacause of a contention and is not a bug. Just rerun test.
+
     // This one was added with addLocalFile, so ignore mode/user/group.
     QString str = listing[13];
     str.replace(QRegExp("mode.*path"), "path" );
-    QCOMPARE( str, QString("path=z/test3 type=file size=13") );
+    QCOMPARE( str, QString("path=z/test3 type=file size=13 time=%1").arg(time)  );
 #ifndef Q_OS_WIN
     str = listing[14];
     str.replace(QRegExp("mode.*path"), "path" );
-    QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3") );
+    QCOMPARE( str, QString("path=z/test3_symlink type=file size=0 symlink=test3 time=%1").arg(time) );
 #endif
 
     QVERIFY( tar.close() );
@@ -566,10 +618,10 @@ void KArchiveTest::testTarGlobalHeader()
 
     const QStringList listing = recursiveListEntries( dir, "", WithUserGroup );
 
+    QCOMPARE( listing.count(), 2 );
+
     QCOMPARE( listing[  0], QString("mode=40775 user=root group=root path=Test type=dir") );
     QCOMPARE( listing[  1], QString("mode=664 user=root group=root path=Test/test.txt type=file size=0") );
-
-    QCOMPARE( listing.count(), 2 );
 
     QVERIFY( tar.close() );
 }
@@ -720,19 +772,20 @@ void KArchiveTest::testReadZipError()
     brokenZip.write( QByteArray( "PK\003" ) );
 
     brokenZip.close();
+    {
+        KZip zip( "broken.zip" );
 
-    KZip zip( "broken.zip" );
+        QVERIFY( !zip.open(QIODevice::ReadOnly) );
 
-    QVERIFY( !zip.open(QIODevice::ReadOnly) );
+        QVERIFY( brokenZip.open( QIODevice::WriteOnly | QIODevice::Append ) );
 
-    QVERIFY( brokenZip.open( QIODevice::WriteOnly | QIODevice::Append ) );
+        // add rest of magic, but still incomplete header
+        brokenZip.write( QByteArray( "\004\000\000\000\000" ) );
 
-    // add rest of magic, but still incomplete header
-    brokenZip.write( QByteArray( "\004\000\000\000\000" ) );
+        brokenZip.close();
 
-    brokenZip.close();
-
-    QVERIFY( !zip.open(QIODevice::ReadOnly) );
+        QVERIFY( !zip.open(QIODevice::ReadOnly) );
+    }
 
     QVERIFY( brokenZip.remove() );
 }

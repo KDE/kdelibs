@@ -95,7 +95,7 @@ public:
      * Describes the compression type for a given file in the Zip archive.
      */
     enum Compression { NoCompression = 0,     ///< Uncompressed.
-		       DeflateCompression = 1 ///< Deflate compression method.
+               DeflateCompression = 1 ///< Deflate compression method.
     };
 
 
@@ -126,11 +126,11 @@ protected:
     /// Reimplemented from KArchive
     virtual bool doWriteSymLink(const QString &name, const QString &target,
                                 const QString &user, const QString &group,
-                                mode_t perm, time_t atime, time_t mtime, time_t ctime);
+                                mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime);
     /// Reimplemented from KArchive
-    virtual bool doPrepareWriting( const QString& name, const QString& user,
+    virtual bool doPrepareWriting(const QString& name, const QString& user,
                                  const QString& group, qint64 size, mode_t perm,
-                                 time_t atime, time_t mtime, time_t ctime );
+                                 const QDateTime& atime, const QDateTime& mtime, const QDateTime& creationTime );
 
     /**
      * Write data to a file that has been created using prepareWriting().
@@ -151,9 +151,8 @@ protected:
     virtual bool closeArchive();
 
     /// Reimplemented from KArchive
-    virtual bool doWriteDir( const QString& name, const QString& user,
-                             const QString& group, mode_t perm, time_t atime,
-                             time_t mtime, time_t ctime );
+    virtual bool doWriteDir( const QString& name, const QString& user, const QString& group, mode_t perm,
+                             const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime );
 
 protected:
     virtual void virtual_hook( int id, void* data );
@@ -173,7 +172,7 @@ public:
     /**
      * Creates a new zip file entry. Do not call this, KZip takes care of it.
      */
-    KZipFileEntry( KZip* zip, const QString& name, int access, int date,
+    KZipFileEntry( KZip* zip, const QString& name, int access, const QDateTime& date,
                    const QString& user, const QString& group, const QString& symlink,
                    const QString& path, qint64 start, qint64 uncompressedSize,
                    int encoding, qint64 compressedSize);
