@@ -25,21 +25,21 @@
 #include <QUndoStack>
 
 #include <kactioncollection.h>
-#include <klocalizedstring.h>
 #include <kstandardaction.h>
 #include <kstandardshortcut.h>
+#include <klocalizedstring.h>
 
 QAction *KUndoActions::createRedoAction(QUndoStack *undoStack, KActionCollection *actionCollection, const QString &actionName)
 {
     QAction *action = undoStack->createRedoAction(actionCollection);
 
     if (actionName.isEmpty()) {
-        action->setObjectName(KStandardAction::name(KStandardAction::Redo));
+        action->setObjectName(QLatin1String(KStandardAction::name(KStandardAction::Redo)));
     } else {
         action->setObjectName(actionName);
     }
 
-    action->setIcon(QIcon::fromTheme("edit-redo"));
+    action->setIcon(QIcon::fromTheme(QStringLiteral("edit-redo")));
     action->setIconText(i18n("Redo"));
     action->setShortcuts(KStandardShortcut::redo());
 
@@ -53,12 +53,12 @@ QAction *KUndoActions::createUndoAction(QUndoStack* undoStack, KActionCollection
     QAction *action = undoStack->createUndoAction(actionCollection);
 
     if (actionName.isEmpty()) {
-        action->setObjectName(KStandardAction::name(KStandardAction::Undo));
+        action->setObjectName(QLatin1String(KStandardAction::name(KStandardAction::Undo)));
     } else {
         action->setObjectName(actionName);
     }
 
-    action->setIcon(QIcon::fromTheme("edit-undo"));
+    action->setIcon(QIcon::fromTheme(QStringLiteral("edit-undo")));
     action->setIconText(i18n("Undo"));
     action->setShortcuts(KStandardShortcut::undo());
 

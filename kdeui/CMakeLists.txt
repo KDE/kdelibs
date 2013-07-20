@@ -41,14 +41,12 @@ set(kdeui_LIB_SRCS
  dialogs/klinkdialog.cpp
  dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
- shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
  util/kpassivepopupmessagehandler.cpp
- util/kundoactions.cpp
  widgets/kcmodule.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
@@ -184,7 +182,6 @@ install( FILES
  util/khelpclient.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
- util/kundoactions.h
  widgets/kcmodule.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h

@@ -31,7 +31,7 @@
 #include <QPushButton>
 #include <QTabBar>
 #include <QTextBrowser>
-
+#include <QChar>
 #include <QLabel>
 #include <QComboBox>
 #include <QGroupBox>
@@ -39,12 +39,10 @@
 #include <QProcess>
 
 #include <kconfig.h>
-#include <ksharedconfig.h>
-#include <kdebug.h>
-#include <klocalizedstring.h>
-
-#include "kacceleratormanager.h"
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
+#include <klocalizedstring.h>
+#include <kacceleratormanager.h>
 
 class KCheckAcceleratorsInitializer : public QObject
 {
@@ -52,16 +50,16 @@ class KCheckAcceleratorsInitializer : public QObject
 public Q_SLOTS:
     void initiateIfNeeded()
     {
-        KConfigGroup cg(KSharedConfig::openConfig(), "Development");
-        QString sKey = cg.readEntry("CheckAccelerators").trimmed();
+        KConfigGroup cg(KSharedConfig::openConfig(), QStringLiteral("Development"));
+        QString sKey = cg.readEntry(QStringLiteral("CheckAccelerators")).trimmed();
         int key = 0;
         if (!sKey.isEmpty()) {
           QList<QKeySequence> cuts = QKeySequence::listFromString(sKey);
           if (!cuts.isEmpty())
             key = cuts.first()[0];
         }
-        const bool autoCheck = cg.readEntry("AutoCheckAccelerators", true);
-        const bool copyWidgetText = cg.readEntry("CopyWidgetText", false);
+        const bool autoCheck = cg.readEntry(QStringLiteral("AutoCheckAccelerators"), true);
+        const bool copyWidgetText = cg.readEntry(QStringLiteral("CopyWidgetText"), false);
         if (!copyWidgetText && key == 0 && !autoCheck)
             return;
 
@@ -88,11 +86,11 @@ KCheckAccelerators::KCheckAccelerators(QObject* parent, int key_, bool autoCheck
     , copyWidgetText(copyWidgetText_)
     , drklash(0)
 {
-    setObjectName( "kapp_accel_filter" );
+    setObjectName( QStringLiteral("kapp_accel_filter") );
 
-    KConfigGroup cg( KSharedConfig::openConfig(), "Development" );
-    alwaysShow = cg.readEntry( "AlwaysShowCheckAccelerators", false );
-    copyWidgetTextCommand = cg.readEntry( "CopyWidgetTextCommand", "" );
+    KConfigGroup cg( KSharedConfig::openConfig(), QStringLiteral("Development") );
+    alwaysShow = cg.readEntry( QStringLiteral("AlwaysShowCheckAccelerators"), false );
+    copyWidgetTextCommand = cg.readEntry( QStringLiteral("CopyWidgetTextCommand"), QString() );
 
     parent->installEventFilter( this );
     connect( &autoCheckTimer, SIGNAL(timeout()), SLOT(autoCheckSlot()));
@@ -162,7 +160,7 @@ bool KCheckAccelerators::eventFilter(QObject* obj, QEvent* e)
                 return false;
 
             if (static_cast<QMouseEvent*>(e)->modifiers() == Qt::ControlModifier)
-                text.remove('&');
+                text.remove(QChar::fromLatin1('&'));
 
             //kWarning()<<KGlobal::activeComponent().catalogName()<<text;
             if (copyWidgetTextCommand.isEmpty())
@@ -213,7 +211,7 @@ void KCheckAccelerators::createDialog(QWidget *actWin, bool automatic)
 
     drklash = new QDialog( actWin );
     drklash->setAttribute( Qt::WA_DeleteOnClose );
-    drklash->setObjectName( "kapp_accel_check_dlg" );
+    drklash->setObjectName( QStringLiteral("kapp_accel_check_dlg") );
     drklash->setWindowTitle( i18nc("@title:window", "Dr. Klash' Accelerator Diagnosis" ));
     drklash->resize( 500, 460 );
     QVBoxLayout* layout = new QVBoxLayout( drklash );
@@ -262,18 +260,31 @@ void KCheckAccelerators::checkAccelerators( bool automatic )
 
     if ( ! c.isEmpty() )  {
         s += i18n("<h2>Accelerators changed</h2>");
-        s += "<table border><tr><th><b>Old Text</b></th><th><b>New Text</b></th></tr>"
-             + c + "</table>";
+        s += QStringLiteral("<table border><tr><th><b>");
+        s += i18n("Old Text");
+        s += QStringLiteral("</b></th><th><b>");
+        s += i18n("New Text");
+        s += QStringLiteral("</b></th></tr>");
+        s += c;
+        s += QStringLiteral("</table>");
     }
 
     if ( ! r.isEmpty() )  {
         s += i18n("<h2>Accelerators removed</h2>");
-        s += "<table border><tr><th><b>Old Text</b></th></tr>" + r + "</table>";
+        s += QStringLiteral("<table border><tr><th><b>");
+        s += i18n("Old Text");
+        s += QStringLiteral("</b></th></tr>");
+        s += r;
+        s += QStringLiteral("</table>");
     }
 
     if ( ! a.isEmpty() )  {
         s += i18n("<h2>Accelerators added (just for your info)</h2>");
-        s += "<table border><tr><th><b>New Text</b></th></tr>" + a + "</table>";
+        s += QStringLiteral("<table border><tr><th><b>");
+        s += i18n("New Text");
+        s += QStringLiteral("</b></th></tr>");
+        s += a;
+        s += QStringLiteral("</table>");
     }
 
     createDialog(actWin, automatic);

@@ -20,7 +20,7 @@
 #ifndef KUNDOACTIONS_H
 #define KUNDOACTIONS_H
 
-#include <kdeui_export.h>
+#include <xmlgui_export.h>
 
 #include <QString>
 
@@ -43,7 +43,7 @@ namespace KUndoActions
      * @param actionName the created action's object name, empty string will set it to the KDE default
      * @return the created action.
      */
-    KDEUI_EXPORT QAction *createRedoAction(QUndoStack *undoStack, KActionCollection *actionCollection, const QString &actionName = QString());
+    XMLGUI_EXPORT QAction *createRedoAction(QUndoStack *undoStack, KActionCollection *actionCollection, const QString &actionName = QString());
 
     /**
      * Creates an undo action with the default KDE shortcut and icon and adds it to @p actionCollection
@@ -52,7 +52,7 @@ namespace KUndoActions
      * @param actionName the created action's object name, empty string will set it to the KDE default
      * @return the created action.
      */
-    KDEUI_EXPORT QAction *createUndoAction(QUndoStack *undoStack, KActionCollection *actionCollection, const QString &actionName = QString());
+    XMLGUI_EXPORT QAction *createUndoAction(QUndoStack *undoStack, KActionCollection *actionCollection, const QString &actionName = QString());
 }
 
 #endif
