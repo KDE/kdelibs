@@ -35,7 +35,7 @@
 #include <klocalizedstring.h>
 
 #include <kdeinit_interface.h>
-#include <klauncher_iface.h>
+#include <klauncher_interface.h>
 #include <klibrary.h>
 
 #include "dataprotocol_p.h"

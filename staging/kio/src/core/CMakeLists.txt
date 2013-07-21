@@ -87,6 +87,7 @@ if (WIN32)
    )
 endif()
 
+qt5_add_dbus_interface(kiocore_SRCS org.kde.KLauncher.xml klauncher_interface)
 
 set_source_files_properties(org.kde.KPasswdServer.xml
         PROPERTIES INCLUDE authinfo.h
@@ -107,7 +108,6 @@ target_include_directories(KIOCore PUBLIC
 )
 
 target_link_libraries(KIOCore
- ${KDE4_KDECORE_LIBS} # TODO remove once klocale is in a framework
  ${KConfig_CORE_LIBRARY}
  ${KCoreAddons_LIBRARIES}
  KI18n
