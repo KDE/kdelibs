@@ -36,12 +36,12 @@
 #include <kio/kprotocolmanager.h>
 #include <ksslcertificate.h>
 #include <ksslcertchain.h>
-#include <kssl.h>
 
 #include <QtCore/QTimer>
 #include <QtCore/QPointer>
 #include <QtCore/QDir>
 #include <QtCore/QEventLoop>
+#include <QSslSocket>
 #include <QApplication>
 #include <QLabel>
 #include <QDialog>
@@ -644,12 +644,10 @@ void KJavaAppletServer::slotJavaRequest( const QByteArray& qb )
             cmd = QLatin1String( "AppletFailed" );
             break;
         case KJAS_SECURITY_CONFIRM: {
-            if (KSSL::doesSSLWork() && !d->kssl)
-                d->kssl = new KSSL;
             QStringList sl;
             QString answer( "invalid" );
 
-            if (!d->kssl) {
+            if (!QSslSocket::supportsSsl()) {
                 answer = "nossl";
             } else if (args.size() > 2) {
                 const int certsnr = args[1].toInt();

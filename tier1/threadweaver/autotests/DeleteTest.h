@@ -2,8 +2,10 @@
 #define DELETETEST_H
 
 #include <QtCore/QObject>
-#include <QtCore/QMutex>
 #include <QtTest/QtTest>
+#include <QAtomicInt>
+
+#include <Weaver/JobPointer.h>
 
 namespace ThreadWeaver { class Job; }
 
@@ -19,11 +21,13 @@ private Q_SLOTS:
     void DeleteSequenceTest();
 
 public Q_SLOTS: // not a test!
-    void deleteSequence(ThreadWeaver::Job* job);
+    void deleteSequence(ThreadWeaver::JobPointer job);
+
+Q_SIGNALS:
+    void deleteSequenceTestCompleted();
 
 private:
-    int m_finishCount;
-    mutable QMutex m_finishMutex;
+    QAtomicInt m_finishCount;
 };
 
 #endif

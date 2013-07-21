@@ -21,7 +21,7 @@
 #include <QLabel>
 
 #include <QApplication>
-#include <kdebug.h>
+#include <QDebug>
 #include <kservice.h>
 #include <kde_file.h>
 #include <QPushButton>
@@ -37,7 +37,7 @@ testKRun * myArray[MAXKRUNS];
 
 void testKRun::foundMimeType( const QString& _type )
 {
-  kDebug() << "found mime type" << _type << "for URL=" << url();
+  qDebug() << "found mime type" << _type << "for URL=" << url();
   setFinished( true );
   return;
 }
@@ -122,7 +122,7 @@ void Receiver::slotStop()
 {
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
-    kDebug() << " deleting krun " << i;
+    qDebug() << " deleting krun " << i;
     delete myArray[i];
   }
   start->setEnabled(true);
@@ -133,7 +133,7 @@ void Receiver::slotStart()
 {
   for (int i = 0 ; i < MAXKRUNS ; i++ )
   {
-    kDebug() << "creating testKRun " << i;
+    qDebug() << "creating testKRun " << i;
     myArray[i] = new testKRun(QUrl::fromLocalFile("file:///tmp"), window());
     myArray[i]->setAutoDelete(false);
   }

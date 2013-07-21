@@ -31,7 +31,7 @@
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #endif
-#include <kdebug.h>
+#include <QDebug>
 #include <kio/deletejob.h>
 #include <kio/job.h>
 #include <kio/netaccess.h>
@@ -79,14 +79,14 @@ void KDirModelTest::initTestCase()
 void KDirModelTest::recreateTestData()
 {
     if (m_tempDir) {
-        kDebug() << "Deleting old tempdir" << m_tempDir->path();
+        qDebug() << "Deleting old tempdir" << m_tempDir->path();
         delete m_tempDir;
         qApp->processEvents(); // process inotify events so they don't pollute us later on
     }
 
 
     m_tempDir = new QTemporaryDir;
-    kDebug() << "new tmp dir:" << m_tempDir->path();
+    qDebug() << "new tmp dir:" << m_tempDir->path();
     // Create test data:
     /*
      * PATH/toplevelfile_1
@@ -130,10 +130,10 @@ void KDirModelTest::fillModel(bool reload, bool expectAllIndexes)
     m_dirModel->dirLister()->setAutoErrorHandlingEnabled(false, 0);
     const QString path = m_tempDir->path() + '/';
     KDirLister* dirLister = m_dirModel->dirLister();
-    kDebug() << "Calling openUrl";
+    qDebug() << "Calling openUrl";
     dirLister->openUrl(QUrl::fromLocalFile(path), reload ? KDirLister::Reload : KDirLister::NoFlags);
     connect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
-    kDebug() << "enterLoop, waiting for completed()";
+    qDebug() << "enterLoop, waiting for completed()";
     enterLoop();
 
     if (expectAllIndexes)
@@ -164,7 +164,7 @@ void KDirModelTest::collectKnownIndexes()
         QModelIndex idx = m_dirModel->index(row, 0, QModelIndex());
         QVERIFY(idx.isValid());
         KFileItem item = m_dirModel->itemForIndex(idx);
-        kDebug() << item.url() << "isDir=" << item.isDir();
+        qDebug() << item.url() << "isDir=" << item.isDir();
         QUrlPathInfo urlInfo(item.url());
         if (item.isDir())
             m_dirIndex = idx;
@@ -183,7 +183,7 @@ void KDirModelTest::collectKnownIndexes()
     // Now list subdir/
     QVERIFY(m_dirModel->canFetchMore(m_dirIndex));
     m_dirModel->fetchMore(m_dirIndex);
-    kDebug() << "Listing subdir/";
+    qDebug() << "Listing subdir/";
     enterLoop();
 
     // Index of a file inside a directory (subdir/testfile)
@@ -199,7 +199,7 @@ void KDirModelTest::collectKnownIndexes()
 
     // List subdir/subsubdir
     QVERIFY(m_dirModel->canFetchMore(subdirIndex));
-    kDebug() << "Listing subdir/subsubdir";
+    qDebug() << "Listing subdir/subsubdir";
     m_dirModel->fetchMore(subdirIndex);
     enterLoop();
 
@@ -219,7 +219,7 @@ void KDirModelTest::enterLoop()
 
 void KDirModelTest::slotListingCompleted()
 {
-    kDebug();
+    qDebug();
 #ifdef USE_QTESTEVENTLOOP
     m_eventLoop.exitLoop();
 #else
@@ -491,7 +491,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
             &m_eventLoop, SLOT(exitLoop()));
 
     // Move
-    kDebug() << "Moving" << srcdir << "to" << dest;
+    qDebug() << "Moving" << srcdir << "to" << dest;
     KIO::CopyJob* job = KIO::move(QUrl::fromLocalFile(srcdir), QUrl::fromLocalFile(dest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setUiDelegateExtension(0);
@@ -510,7 +510,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
             &m_eventLoop, SLOT(exitLoop()));
 
     // Move back
-    kDebug() << "Moving" << dest+dir << "back to" << srcdir;
+    qDebug() << "Moving" << dest+dir << "back to" << srcdir;
     job = KIO::move(QUrl::fromLocalFile(dest + dir), QUrl::fromLocalFile(srcdir), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setUiDelegateExtension(0);
@@ -559,7 +559,7 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
 
     // check renaming happened
     QCOMPARE(m_dirModel->itemForIndex(m_dirIndex).url().toString(), newUrl.toString());
-    kDebug() << newUrl << "indexForUrl=" << m_dirModel->indexForUrl(newUrl) << "m_dirIndex=" << m_dirIndex;
+    qDebug() << newUrl << "indexForUrl=" << m_dirModel->indexForUrl(newUrl) << "m_dirIndex=" << m_dirIndex;
     QCOMPARE(m_dirModel->indexForUrl(newUrl), m_dirIndex);
     QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed")).isValid());
     QVERIFY(m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "subdir_renamed/testfile")).isValid());
@@ -569,7 +569,7 @@ void KDirModelTest::testRenameDirectory() // #172945, #174703, (and #180156)
     // Check the other kdirmodel got redirected
     QCOMPARE(dirListerForExpand->url().toLocalFile(), QString(path+"subdir_renamed"));
 
-    kDebug() << "calling testMoveDirectory(subdir_renamed)";
+    qDebug() << "calling testMoveDirectory(subdir_renamed)";
 
     // Test moving the renamed directory; if something inside KDirModel
     // wasn't properly updated by the renaming, this would detect it and crash (#180673)
@@ -620,7 +620,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
     pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
     QUrl newUrl = pathInfo.url();
     newUrl.setPath(newUrl.path() + "_renamed");
-    kDebug() << newUrl;
+    qDebug() << newUrl;
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
     QVERIFY(job->exec());
 
@@ -666,7 +666,7 @@ void KDirModelTest::testChmodDirectory() // #53397
     // If we come here, then dataChanged() was emitted - all good.
     QCOMPARE(spyDataChanged.count(), 1);
     QModelIndex receivedIndex = spyDataChanged[0][0].value<QModelIndex>();
-    kDebug() << receivedIndex;
+    qDebug() << receivedIndex;
     QVERIFY(!receivedIndex.isValid());
 
     const KFileItem newRootItem = m_dirModel->itemForIndex(QModelIndex());
@@ -794,7 +794,7 @@ void KDirModelTest::testExpandToUrl()
 
     // Now it should exist
     if (!expandToPath.isEmpty() && expandToPath != ".") {
-        kDebug() << "Do I know" << m_urlToExpandTo << "?";
+        qDebug() << "Do I know" << m_urlToExpandTo << "?";
         QVERIFY(m_dirModelForExpand->indexForUrl(m_urlToExpandTo).isValid());
     }
 
@@ -815,7 +815,7 @@ void KDirModelTest::slotExpand(const QModelIndex& index)
     const QString path = m_tempDir->path() + '/';
     KFileItem item = m_dirModelForExpand->itemForIndex(index);
     QVERIFY(!item.isNull());
-    kDebug() << item.url().toLocalFile();
+    qDebug() << item.url().toLocalFile();
     QCOMPARE(item.url().toLocalFile(), QString(path + m_expectedExpandSignals[m_nextExpectedExpandSignals++]));
 
     // if rowsInserted wasn't emitted yet, then any proxy model would be unable to do anything with index at this point
@@ -839,7 +839,7 @@ void KDirModelTest::testUpdateParentAfterExpand() // #193364
 {
     const QString path = m_tempDir->path() + '/';
     const QString file = path + "subdir/aNewFile";
-    kDebug() << "Creating" << file;
+    qDebug() << "Creating" << file;
     QVERIFY(!QFile::exists(file));
     createTestFile(file);
     QSignalSpy spyRowsInserted(m_dirModelForExpand, SIGNAL(rowsInserted(QModelIndex,int,int)));
@@ -878,7 +878,7 @@ void KDirModelTest::testFilter()
             dirName = "root";
         }
         rowsRemovedPerDir[dirName] += args[2].toInt() - args[1].toInt() + 1;
-        //kDebug() << parentIdx << args[1].toInt() << args[2].toInt();
+        //qDebug() << parentIdx << args[1].toInt() << args[2].toInt();
     }
     QCOMPARE(rowsRemovedPerDir.count(), 3); // once for every dir
     QCOMPARE(rowsRemovedPerDir.value("root"     ), 1); // one from toplevel ('specialchars')
@@ -893,7 +893,7 @@ void KDirModelTest::testFilter()
     spyItemsFilteredByMime.clear();
 
     // Reset the filter
-    kDebug() << "reset to no filter";
+    qDebug() << "reset to no filter";
     m_dirModel->dirLister()->setNameFilter(QString());
     m_dirModel->dirLister()->emitChanges();
 
@@ -934,7 +934,7 @@ void KDirModelTest::testMimeFilter()
     spyItemsFilteredByMime.clear();
 
     // Reset the filter
-    kDebug() << "reset to no filter";
+    qDebug() << "reset to no filter";
     m_dirModel->dirLister()->setMimeFilter(QStringList());
     m_dirModel->dirLister()->emitChanges();
 
@@ -1177,7 +1177,7 @@ void KDirModelTest::testDeleteFileWhileListing() // doesn't really test that yet
     QModelIndex fileIndex = m_dirModel->indexForUrl(QUrl::fromLocalFile(path + "toplevelfile_1"));
     QVERIFY(!fileIndex.isValid());
 
-    kDebug() << "Test done, recreating file";
+    qDebug() << "Test done, recreating file";
 
     // Recreate the file, for consistency in the next tests
     // So the second part of this test is a "testCreateFile"
@@ -1223,7 +1223,7 @@ void KDirModelTest::testOverwriteFileWithDir() // #151851 c4
     KFileItem newItem = m_dirModel->itemForIndex(newIndex);
     QVERIFY(newItem.isDir()); // yes, the file is a dir now ;-)
 
-    kDebug() << "========= Test done, recreating test data =========";
+    qDebug() << "========= Test done, recreating test data =========";
 
     recreateTestData();
     fillModel(false);
@@ -1249,15 +1249,15 @@ void KDirModelTest::testDeleteFiles()
         numRowsRemoved = 0;
         for (int sigNum = 0; sigNum < spyRowsRemoved.count(); ++sigNum)
             numRowsRemoved += spyRowsRemoved[sigNum][2].toInt() - spyRowsRemoved[sigNum][1].toInt() + 1;
-        kDebug() << "numRowsRemoved=" << numRowsRemoved;
+        qDebug() << "numRowsRemoved=" << numRowsRemoved;
     }
 
     const int topLevelRowCount = m_dirModel->rowCount();
     QCOMPARE(topLevelRowCount, oldTopLevelRowCount - 3); // three less than before
 
-    kDebug() << "Recreating test data";
+    qDebug() << "Recreating test data";
     recreateTestData();
-    kDebug() << "Re-filling model";
+    qDebug() << "Re-filling model";
     fillModel(false);
 }
 
@@ -1370,7 +1370,7 @@ void KDirModelTest::testDeleteCurrentDirectory()
     for (i = 0; i < spyRowsRemoved.count(); ++i) {
         const int from = spyRowsRemoved[i][1].toInt();
         const int to = spyRowsRemoved[i][2].toInt();
-        kDebug() << spyRowsRemoved[i][0].value<QModelIndex>() << from << to;
+        qDebug() << spyRowsRemoved[i][0].value<QModelIndex>() << from << to;
         if (!spyRowsRemoved[i][0].value<QModelIndex>().isValid()) {
             numDeleted += (to - from) + 1;
         }
@@ -1399,23 +1399,23 @@ void KDirModelTest::testQUrlHash()
     for (int i = 0; i < count; ++i) {
         qurlHash.insert(urls[i], i);
     }
-    //kDebug() << "inserting" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
+    //qDebug() << "inserting" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
     dt.start();
     for (int i = 0; i < count; ++i) {
         kurlHash.insert(urls[i], i);
     }
-    //kDebug() << "inserting" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
+    //qDebug() << "inserting" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
     // Nice results: for count=30000 I got 4515 (before) and 103 (after)
 
     dt.start();
     for (int i = 0; i < count; ++i) {
         QCOMPARE(qurlHash.value(urls[i]), i);
     }
-    //kDebug() << "looking up" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
+    //qDebug() << "looking up" << count << "urls into QHash using old qHash:" << dt.elapsed() << "msecs";
     dt.start();
     for (int i = 0; i < count; ++i) {
         QCOMPARE(kurlHash.value(urls[i]), i);
     }
-    //kDebug() << "looking up" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
+    //qDebug() << "looking up" << count << "urls into QHash using new qHash:" << dt.elapsed() << "msecs";
     // Nice results: for count=30000 I got 4296 (before) and 63 (after)
 }

@@ -19,7 +19,7 @@
 #include <QtTest/QtTest>
 #include <qapplication.h>
 #include <kurlcompletion.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <qtemporarydir.h>
@@ -53,13 +53,13 @@ private:
 
 void KUrlCompletionTest::setup()
 {
-    kDebug() ;
+    qDebug() ;
     m_completion = new KUrlCompletion;
     m_tempDir = new QTemporaryDir;
     m_dir = m_tempDir->path();
     m_dir += "/Dir With#Spaces/";
     QDir().mkdir(m_dir);
-    kDebug() << "m_dir=" << m_dir;
+    qDebug() << "m_dir=" << m_dir;
     m_completion->setDir(QUrl::fromLocalFile(m_dir));
     m_dirURL = QUrl::fromLocalFile(m_dir);
 
@@ -91,19 +91,19 @@ void KUrlCompletionTest::teardown()
 void KUrlCompletionTest::waitForCompletion()
 {
     while ( m_completion->isRunning() ) {
-        kDebug() << "waiting for thread...";
+        qDebug() << "waiting for thread...";
         QThread::usleep( 10 );
     }
 }
 
 void KUrlCompletionTest::testLocalRelativePath()
 {
-    kDebug() ;
+    qDebug() ;
     // Completion from relative path, with two matches
     m_completion->makeCompletion( "f" );
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
-    kDebug() << comp1all;
+    qDebug() << comp1all;
     QCOMPARE(comp1all.count(), 3);
     QVERIFY(comp1all.contains("file1"));
     QVERIFY(comp1all.contains("file#a"));
@@ -112,18 +112,18 @@ void KUrlCompletionTest::testLocalRelativePath()
     QCOMPARE(comp1, QString("file1"));
 
     // Completion from relative path
-    kDebug() << endl << "now completing on 'file#'";
+    qDebug() << endl << "now completing on 'file#'";
     m_completion->makeCompletion("file#");
     waitForCompletion();
     QStringList compall = m_completion->allMatches();
-    kDebug() << compall;
+    qDebug() << compall;
     QCOMPARE(compall.count(), 1);
     QCOMPARE(compall.first(), QString("file#a"));
     QString comp2 = m_completion->replacedPath(compall.first()); // like KUrlRequester does
     QCOMPARE(comp2, QString("file#a"));
 
     // Completion with empty string
-    kDebug () << endl << "now completing on ''";
+    qDebug () << endl << "now completing on ''";
     m_completion->makeCompletion("");
     waitForCompletion();
     QStringList compEmpty = m_completion->allMatches();
@@ -133,11 +133,11 @@ void KUrlCompletionTest::testLocalRelativePath()
 void KUrlCompletionTest::testLocalAbsolutePath()
 {
     // Completion from absolute path
-    kDebug() << m_dir+"file#";
+    qDebug() << m_dir+"file#";
     m_completion->makeCompletion(m_dir + "file#");
     waitForCompletion();
     QStringList compall = m_completion->allMatches();
-    kDebug() << compall;
+    qDebug() << compall;
     QCOMPARE(compall.count(), 1);
     QString comp = compall.first();
     QCOMPARE(comp, QString(m_dir + "file#a"));
@@ -148,26 +148,26 @@ void KUrlCompletionTest::testLocalAbsolutePath()
 void KUrlCompletionTest::testLocalURL()
 {
     // Completion from URL
-    kDebug() ;
+    qDebug() ;
     QUrl url = QUrl::fromLocalFile(m_dirURL.toLocalFile() + "file");
     m_completion->makeCompletion(url.toString());
     waitForCompletion();
     QStringList comp1all = m_completion->allMatches();
-    kDebug() << comp1all;
+    qDebug() << comp1all;
     QCOMPARE(comp1all.count(), 3);
-    kDebug() << "Looking for" << m_dirURL.toString() + "file1";
+    qDebug() << "Looking for" << m_dirURL.toString() + "file1";
     QVERIFY(comp1all.contains(m_dirURL.toString() + "file1"));
     QVERIFY(comp1all.contains(m_dirURL.toString() + "file_subdir/"));
     QString filehash = m_dirURL.toString() + "file%23a";
-    kDebug() << "Looking for" << filehash;
+    qDebug() << "Looking for" << filehash;
     QVERIFY(comp1all.contains(filehash));
     QString filehashPath = m_completion->replacedPath(filehash); // note that it returns a path!!
-    kDebug() << filehashPath;
+    qDebug() << filehashPath;
     QCOMPARE(filehashPath, QString(m_dirURL.toLocalFile() + "file#a"));
 
     // Completion from URL with no match
     url = QUrl::fromLocalFile(m_dirURL.toLocalFile() + "foobar");
-    kDebug() << "makeCompletion(" << url << ")";
+    qDebug() << "makeCompletion(" << url << ")";
     QString comp2 = m_completion->makeCompletion(url.toString());
     QVERIFY(comp2.isEmpty());
     waitForCompletion();
@@ -176,7 +176,7 @@ void KUrlCompletionTest::testLocalURL()
     // Completion from URL with a ref -> no match
     url = QUrl::fromLocalFile(m_dirURL.toLocalFile() + 'f');
     url.setFragment("ref");
-    kDebug() << "makeCompletion(" << url << ")";
+    qDebug() << "makeCompletion(" << url << ")";
     m_completion->makeCompletion(url.toString());
     waitForCompletion();
     QVERIFY(m_completion->allMatches().isEmpty());
@@ -184,9 +184,9 @@ void KUrlCompletionTest::testLocalURL()
 
 void KUrlCompletionTest::testEmptyCwd()
 {
-    kDebug() ;
+    qDebug() ;
     // Completion with empty string (with a KUrlCompletion whose cwd is "")
-    kDebug () << endl << "now completing on '' with empty cwd";
+    qDebug () << endl << "now completing on '' with empty cwd";
     m_completionEmptyCwd->makeCompletion("");
     waitForCompletion();
     QStringList compEmpty = m_completionEmptyCwd->allMatches();

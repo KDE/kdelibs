@@ -83,6 +83,7 @@ set(libkde4support_SRCS
     kdeui/knuminput.cpp
 
     kio/kfilemetainfowidget.cpp
+    kio/kdiskfreespace.cpp
     kio/metainfojob.cpp
     kio/kmimetyperesolver.cpp
     kio/kdatatool.cpp
@@ -165,6 +166,10 @@ install(FILES
     kdecore/klockfile.h
     kdecore/kurl.h
 
+    kio/kdiskfreespace.h
+    kio/kdatatool.h
+    kio/kmimetyperesolver.h
+
     kdeui/kaccelgen.h
     kdeui/kaction.h
     kdeui/kapplication.h
@@ -222,10 +227,7 @@ endif ()
 
 # kio/*.h
 install(FILES
-    kio/kfilemetainfowidget.h
     kio/metainfojob.h
-    kio/kmimetyperesolver.h
-    kio/kdatatool.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
 )
 

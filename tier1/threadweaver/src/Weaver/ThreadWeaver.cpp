@@ -51,10 +51,10 @@ Weaver::Weaver ( QObject* parent )
 {
     d->implementation = makeWeaverImpl();
     //FIXME move to makeWeaverImpl(), so that implementations can be replaced
-    connect ( d->implementation, SIGNAL (finished()), SIGNAL (finished()) );
-    connect ( d->implementation, SIGNAL (suspended()), SIGNAL (suspended()) );
-    connect ( d->implementation, SIGNAL (jobDone(ThreadWeaver::Job*)),
-              SIGNAL (jobDone(ThreadWeaver::Job*)) );
+    connect(d->implementation, SIGNAL (finished()), SIGNAL (finished()));
+    connect(d->implementation, SIGNAL (suspended()), SIGNAL (suspended()));
+    connect(d->implementation, SIGNAL (jobDone(ThreadWeaver::JobPointer)),
+            SIGNAL(jobDone(ThreadWeaver::JobPointer)));
 }
 
 Weaver::~Weaver()
@@ -133,14 +133,19 @@ Weaver* Weaver::instance()
     return s_instance.loadAcquire();
 }
 
-void Weaver::enqueue (Job* j)
+void Weaver::enqueue(JobPointer job)
 {
-    d->implementation->enqueue ( j );
+    d->implementation->enqueue(job);
 }
 
-bool Weaver::dequeue (Job* j)
+void Weaver::enqueueRaw(Job* job)
 {
-    return d->implementation->dequeue ( j );
+    d->implementation->enqueueRaw(job);
+}
+
+bool Weaver::dequeue(JobPointer job)
+{
+    return d->implementation->dequeue(job);
 }
 
 void Weaver::dequeue ()

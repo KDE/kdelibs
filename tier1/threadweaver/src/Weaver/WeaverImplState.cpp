@@ -58,6 +58,11 @@ const WeaverImpl *WeaverImplState::weaver() const
     return static_cast<const WeaverImpl*> ( State::weaver() );
 }
 
+void WeaverImplState::enqueueRaw(Job*)
+{
+    Q_ASSERT(false); //should not be called, handled in WeaverImpl
+}
+
 void WeaverImplState::setMaximumNumberOfThreads(int cap)
 {
     weaver()->setMaximumNumberOfThreads_p(cap);
@@ -78,12 +83,12 @@ void WeaverImplState::registerObserver(WeaverObserver *obs)
     weaver()->registerObserver_p(obs);
 }
 
-void WeaverImplState::enqueue(Job* job)
+void WeaverImplState::enqueue(JobPointer job)
 {
     weaver()->enqueue_p(job);
 }
 
-bool WeaverImplState::dequeue(Job* job)
+bool WeaverImplState::dequeue(JobPointer job)
 {
     return weaver()->dequeue_p(job);
 }

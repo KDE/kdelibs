@@ -17,7 +17,7 @@
  */
 
 #include <QApplication>
-#include <kdebug.h>
+#include <QDebug>
 #include <kprotocolinfo.h>
 #include <kservice.h>
 #include <kservicegroup.h>

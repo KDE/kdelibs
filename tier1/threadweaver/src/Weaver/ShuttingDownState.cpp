@@ -49,10 +49,10 @@ void ShuttingDownState::resume()
     // ignored: when shutting down, we do not return from the suspended state
 }
 
-Job* ShuttingDownState::applyForWork ( Thread*,  Job* previous)
+JobPointer ShuttingDownState::applyForWork(Thread*, JobPointer previous)
 {
     Q_ASSERT(previous==0);
-    return 0;  // tell threads to exit
+    return JobPointer();  // tell threads to exit
 }
 
 void ShuttingDownState::waitForAvailableJob ( Thread*)

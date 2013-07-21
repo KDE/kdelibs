@@ -30,6 +30,7 @@
 #define JOBCOLLECTION_H
 
 #include "Job.h"
+#include "JobPointer.h"
 
 namespace ThreadWeaver {
 
@@ -37,12 +38,12 @@ class Thread;
 class CollectionExecuteWrapper;
 
 /** A JobCollection is a vector of Jobs that will be queued together.
- * In a JobCollection, the order of execution of the elements is not guaranteed.
+ * In a JobCollection, the order of execution of the elements is not specified.
  *
  * It is intended that the collection is set up first and then
  * queued. After queuing, no further jobs should be added to the collection.
  *
- * JobCollection emits a done(Job*) signal when all of the jobs in the collection
+ * JobCollection emits a done(JobPointer) signal when all of the jobs in the collection
  * have completed.
  */
 class THREADWEAVER_EXPORT JobCollection : public Job
@@ -57,24 +58,31 @@ public:
      * To use JobCollection, create the Job objects first, add them to the collection, and then queue it. After
      * the collection has been queued, no further Jobs are supposed to be added.
      *
-     * @note Once the job has been added, execute wrappers ca no more be set on it */
-    virtual void addJob ( Job* );
+     * @note Once the job has been added, execute wrappers can no more be set on it */
+    virtual void addJob(JobPointer);
+    /** Append an naked job pointer to the collection.
+     *
+     * Use this overloaded method to queue jobs that are memory-managed by the caller, instead of being
+     * QSharedPointers. */
+    //TODO naming
+    virtual void addRawJob(Job* job);
 
 public Q_SLOTS:
     /** Stop processing, dequeue all remaining Jobs.
      * job is supposed to be an element of the collection.
      */
-    void stop ( ThreadWeaver::Job *job );
+    //FIXME remove job argument?
+    void stop(ThreadWeaver::JobPointer job);
 
 protected:
     /** Overload to queue the collection. */
-    void aboutToBeQueued_locked ( QueueAPI *api );
+    void aboutToBeQueued_locked(QueueAPI *api);
 
     /** Overload to dequeue the collection. */
-    void aboutToBeDequeued_locked ( QueueAPI *api );
+    void aboutToBeDequeued_locked(QueueAPI *api);
 
     /** Return a reference to the job in the job list at position i. */
-    Job* jobAt( int i );
+    JobPointer jobAt(int i);
 
     /** Return the number of jobs in the joblist. */
     int jobListLength() const;
@@ -92,12 +100,12 @@ protected:
 
 protected:
     friend class CollectionExecuteWrapper;
-    virtual void elementStarted(Job* job, Thread* thread);
-    virtual void elementFinished(Job* job, Thread* thread);
+    virtual void elementStarted(JobPointer job, Thread* thread);
+    virtual void elementFinished(JobPointer job, Thread* thread);
 
 private:
     /** Overload the execute method. */
-    void execute ( Thread * );
+    void execute(Thread*, JobPointer job);
 
 
     /** Overload run().

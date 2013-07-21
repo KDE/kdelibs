@@ -39,7 +39,6 @@
 #endif
 
 #include <kopenssl.h>
-#include <kdebug.h>
 #include <QtCore/QStringList>
 
 #if KSSL_HAVE_SSL

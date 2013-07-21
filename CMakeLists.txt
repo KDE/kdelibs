@@ -52,7 +52,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${ECM_MODULE_PATH})
 # this gives us the KDE install dir variables (instead of defining them in FindKDE4Internal.cmake),
 # RPATH handling and test settings.
 find_package(KF5 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
-remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_FROM_BYTEARRAY -DQT_NO_KEYWORDS -DQT_STRICT_ITERATORS -DQT_NO_SIGNALS_SLOTS_KEYWORDS)
+remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_NO_CAST_FROM_BYTEARRAY -DQT_NO_KEYWORDS -DQT_STRICT_ITERATORS)
 
 add_subdirectory( libkdeqt5staging )
 
@@ -171,13 +171,6 @@ if(X11_FOUND)
     message(FATAL_ERROR "\nThe X11 Session Management (SM) development package could not be found.\nPlease install libSM.\n")
   endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
-
-find_package(OpenSSL)
-set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
-                       URL "http://openssl.org"
-                       TYPE RECOMMENDED
-                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
-                      )
 
 find_package(Libintl)
 set_package_properties(Libintl PROPERTIES DESCRIPTION "Support for multiple languages"

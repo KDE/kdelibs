@@ -25,7 +25,6 @@ include(io/ConfigureChecks.cmake)
 configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
 
 # Configure checks for kernel/
-include(kernel/ConfigureChecks.cmake)
 configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
 
 # Configure checks for localization
@@ -93,9 +92,6 @@ if (UNIX)
 endif (UNIX)
 
 add_subdirectory( tests )
-if ( NOT WINCE )
-    add_subdirectory( network/kssld )
-endif ( NOT WINCE )
 
 ########### next target ###############
 
@@ -134,13 +130,10 @@ set(kdecore_LIB_SRCS
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
-   network/ksslcertificatemanager.cpp
-   network/ktcpsocket.cpp
    localization/kcurrencycode.cpp
    localization/klocale.cpp
    localization/klocale_kde.cpp
    util/kautostart.cpp
-   util/kdedmodule.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
    ${kdecore_OPTIONAL_SRCS}
@@ -199,7 +192,7 @@ target_link_libraries(kdecore
   LINK_PUBLIC
     Qt5::Network Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} KService KI18n
   LINK_PRIVATE
-    Qt5::Xml ${kdecore_OPTIONAL_LIBS}
+    Qt5::Xml ${kdecore_OPTIONAL_LIBS} KDBusAddons
 )
 
 if(WINCE)
@@ -255,12 +248,10 @@ install( FILES
 
 install(FILES
    network/ksocketfactory.h
-   network/ktcpsocket.h
    localization/kcurrencycode.h
    localization/klocale.h
    util/kautostart.h
    util/kde_file.h
-   util/kdedmodule.h
    util/klauncher_iface.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

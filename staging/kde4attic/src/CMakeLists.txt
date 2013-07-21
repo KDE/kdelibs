@@ -12,6 +12,8 @@ set(kde4attic_SRCS
   kmultitabbar.cpp
   ktimecombobox.cpp
   ktimezonewidget.cpp
+  ksslcertificatemanager.cpp
+  ktcpsocket.cpp
 )
 
 if(NOT WINCE)
@@ -49,7 +51,7 @@ kde4_add_ui_files(kde4attic_SRCS ${kde4attic_UI} )
 add_library(KDE4Attic ${kde4attic_SRCS})
 generate_export_header(KDE4Attic)
 
-target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::Widgets Qt5::PrintSupport KDE4Support kdeui kdecore KCompletion)
+target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::Widgets Qt5::PrintSupport kdeui kdecore KCompletion)
 
 set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
                                            SOVERSION ${KDE4ATTIC_SOVERSION}
@@ -77,6 +79,7 @@ install(FILES
   kmultitabbar.h
   ktimecombobox.h
   ktimezonewidget.h
+  ktcpsocket.h
   ${CMAKE_CURRENT_BINARY_DIR}/kde4attic_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

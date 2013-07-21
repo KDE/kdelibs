@@ -35,7 +35,7 @@
 #include <kdiroperator.h>
 #endif
 #include <kfile.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kicondialog.h>
 
 #include "kfdtest.h"
@@ -140,7 +140,7 @@ int main(int argc, char **argv)
     else if (argv1 == QLatin1String("icon")) {
         KIconDialog dlg;
         QString icon = dlg.getIcon();
-        kDebug() << icon;
+        qDebug() << icon;
     }
 
 //     else if ( argv1 == QLatin1String("dirselect") ) {

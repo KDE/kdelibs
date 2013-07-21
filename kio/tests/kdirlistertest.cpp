@@ -24,7 +24,7 @@
 
 QTEST_MAIN(KDirListerTest)
 
-#include <kdebug.h>
+#include <QDebug>
 #include "kiotesthelper.h"
 #include <kio/deletejob.h>
 #include <kdirwatch.h>
@@ -38,7 +38,8 @@ QTEST_MAIN(KDirListerTest)
 void MyDirLister::handleError(KIO::Job* job)
 {
     // Currently we don't expect any errors.
-    kFatal() << "KDirLister called handleError!" << job << job->error() << job->errorString();
+    qCritical() << "KDirLister called handleError!" << job << job->error() << job->errorString();
+    qFatal("aborting");
 }
 
 void KDirListerTest::initTestCase()
@@ -180,7 +181,7 @@ void KDirListerTest::testNewItems()
 
     QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
 
-    kDebug() << "Creating new file";
+    qDebug() << "Creating new file";
     const QString fileName = "toplevelfile_new";
     createSimpleFile(path + fileName);
 
@@ -190,7 +191,7 @@ void KDirListerTest::testNewItems()
         QVERIFY(++numTries < 10);
         QTest::qWait(200);
     }
-    //kDebug() << "numTries=" << numTries;
+    //qDebug() << "numTries=" << numTries;
     QCOMPARE(m_items.count(), 5);
 
     QCOMPARE(m_dirLister.spyStarted.count(), 1); // Updates call started
@@ -230,7 +231,7 @@ void KDirListerTest::testNewItemByCopy()
         QVERIFY(++numTries < 10);
         QTest::qWait(200);
     }
-    //kDebug() << "numTries=" << numTries;
+    //qDebug() << "numTries=" << numTries;
     QCOMPARE(m_items.count(), origItemCount+1);
 
     QCOMPARE(m_dirLister.spyStarted.count(), 1); // Updates call started
@@ -275,7 +276,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
 
     QTest::qWait(1000); // We need a 1s timestamp difference on the dir, otherwise FAM won't notice anything.
 
-    kDebug() << "Creating new file";
+    qDebug() << "Creating new file";
     const QString fileName = "toplevelfile_newinlink";
     createSimpleFile(path + fileName);
 
@@ -288,7 +289,7 @@ void KDirListerTest::testNewItemsInSymlink() // #213799
         QVERIFY(++numTries < 10);
         QTest::qWait(200);
     }
-    //kDebug() << "numTries=" << numTries;
+    //qDebug() << "numTries=" << numTries;
     QCOMPARE(m_items2.count(), origItemCount+1);
     QCOMPARE(m_items.count(), origItemCount+1);
 
@@ -444,7 +445,7 @@ void KDirListerTest::testDeleteItem()
     const QString path = m_tempDir.path() + '/';
     connect(&m_dirLister, SIGNAL(deleteItem(KFileItem)), this, SLOT(exitLoop()));
 
-    //kDebug() << "Removing " << path+"toplevelfile_1";
+    //qDebug() << "Removing " << path+"toplevelfile_1";
     QFile::remove(path+"toplevelfile_1");
     // the remove() doesn't always trigger kdirwatch in stat mode, if this all happens in the same second
     KDirWatch::self()->setDirty(path);
@@ -761,7 +762,7 @@ void KDirListerTest::testDeleteListerEarly()
     testOpenUrl();
 
     // Start a second lister, it will get a cached items job, but delete it before the job can run
-    //kDebug() << "==========================================";
+    //qDebug() << "==========================================";
     {
         m_items.clear();
         const QString path = m_tempDir.path() + '/';
@@ -769,7 +770,7 @@ void KDirListerTest::testDeleteListerEarly()
         secondDirLister.openUrl(QUrl::fromLocalFile(path), KDirLister::NoFlags);
         QVERIFY(!secondDirLister.isFinished());
     }
-    //kDebug() << "==========================================";
+    //qDebug() << "==========================================";
 
     // Check if we didn't keep the deleted dirlister in one of our lists.
     // I guess the best way to do that is to just list the same dir again.
@@ -856,7 +857,7 @@ void KDirListerTest::testOpenAndStop()
     const QString path = "/"; // better not use a directory that we already listed!
     connect(&m_dirLister, SIGNAL(newItems(KFileItemList)), this, SLOT(slotNewItems(KFileItemList)));
     m_dirLister.openUrl(QUrl::fromLocalFile(path), KDirLister::NoFlags);
-    kDebug() << "Calling stop!";
+    qDebug() << "Calling stop!";
     m_dirLister.stop(); // we should also test stop(QUrl::fromLocalFile(path))...
 
     QCOMPARE(m_dirLister.spyStarted.count(), 1); // The call to openUrl itself, emits started
@@ -1194,7 +1195,7 @@ void KDirListerTest::testDeleteCurrentDir()
     QList<QUrl> deletedUrls;
     for (int i = 0; i < m_dirLister.spyItemsDeleted.count(); ++i)
         deletedUrls += m_dirLister.spyItemsDeleted[i][0].value<KFileItemList>().urlList();
-    //kDebug() << deletedUrls;
+    //qDebug() << deletedUrls;
     QUrl currentDirUrl = QUrl::fromLocalFile(path());
     QUrlPathInfo::adjustPath(currentDirUrl, QUrlPathInfo::StripTrailingSlash);
     // Sometimes I get ("current/subdir", "current") here, but that seems ok.

@@ -41,10 +41,10 @@ public:
     static QSet<QString> getUdis();
 
 
-signals:
+Q_SIGNALS:
     void plugStateChanged(bool newState, const QString &udi);
 
-private slots:
+private Q_SLOTS:
     void powerChanged();
 
 private:

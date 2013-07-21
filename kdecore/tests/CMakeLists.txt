@@ -33,7 +33,6 @@ KDECORE_UNIT_TESTS(
  kdatetimetest
  kautostarttest
  kprocesstest
- ktcpsockettest
  qcoreapptest
  kcalendartest
  kconfignokdehometest

@@ -29,7 +29,7 @@ using namespace KUnitConversion;
 class ValueTest : public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void initTestCase();
     void testStrings();
     void testRound();

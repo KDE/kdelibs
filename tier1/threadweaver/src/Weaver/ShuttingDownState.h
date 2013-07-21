@@ -54,7 +54,7 @@ public:
     /** Resume job processing. */
     void resume();
     /** Assign a job to an idle thread. */
-    Job* applyForWork(Thread *th, Job* previous);
+    JobPointer applyForWork(Thread *th, JobPointer previous);
     /** Wait (by suspending the calling thread) until a job becomes available. */
     void waitForAvailableJob(Thread *th);
     /** reimpl */

@@ -24,7 +24,10 @@
 
 #include <QWidget>
 class QTreeWidgetItem;
+namespace KIO {
 class KSslCaCertificate;
+}
+using KIO::KSslCaCertificate;
 
 class CaCertificatesPage : public QWidget
 {

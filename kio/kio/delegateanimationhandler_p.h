@@ -121,7 +121,7 @@ public:
 
     void gotNewIcon(const QModelIndex& index);
 
-private slots:
+private Q_SLOTS:
     void viewDeleted(QObject *view);
     void sequenceTimerTimeout();
 

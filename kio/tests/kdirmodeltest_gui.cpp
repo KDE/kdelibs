@@ -16,7 +16,7 @@
  *  Boston, MA 02110-1301, USA.
  */
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kdirlister.h>
 #include <kdirmodel.h>
 
@@ -42,7 +42,7 @@ private Q_SLOTS:
     void slotExpand(const QModelIndex& index)
     {
         KFileItem item = m_model->itemForIndex(index);
-        kDebug() << "slotListingCompleted" << item.url();
+        qDebug() << "slotListingCompleted" << item.url();
         m_treeView->setExpanded(index, true);
 
         // The scrollTo call doesn't seem to work.
@@ -100,7 +100,7 @@ int main (int argc, char **argv)
     const int count = QCoreApplication::arguments().count() - 1;
     for(int i = 0 ; i < count; i++) {
         QUrl u = QUrl::fromUserInput(QCoreApplication::arguments().at(i + 1));
-        kDebug() << "Adding: " << u;
+        qDebug() << "Adding: " << u;
         dirmodel->dirLister()->openUrl(u, KDirLister::Keep);
     }
 

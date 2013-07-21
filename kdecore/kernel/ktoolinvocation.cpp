@@ -20,15 +20,14 @@
 
 #include "ktoolinvocation.h"
 #include "klauncher_iface.h"
-#include "kdebug.h"
 #include <klocalizedstring.h>
+#include <kdeinit_interface.h>
 
-#include <qlockfile.h>
 #include <QUrl>
 #include <QCoreApplication>
 #include <QThread>
 #include <qstandardpaths.h>
-#include <config-kernel.h>
+#include <config-kernel.h> // HAVE_X11
 
 #include <errno.h> // for EINVAL
 
@@ -58,10 +57,7 @@ Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
 
 org::kde::KLauncher *KToolInvocation::klauncher()
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5"))) {
-        kDebug(180) << "klauncher not running... launching kdeinit";
-        KToolInvocation::startKdeinit();
-    }
+    KToolInvocation::ensureKdeinitRunning();
     return ::klauncherIface();
 }
 
@@ -70,7 +66,7 @@ static void printError(const QString& text, QString* error)
     if (error)
         *error = text;
     else
-        kError() << text << endl;
+        qWarning() << text;
 }
 
 bool KToolInvocation::isMainThreadActive(QString* error)
@@ -91,11 +87,11 @@ int KToolInvocation::startServiceInternal(const char *_function,
                                           const QString& workdir)
 {
     QString function = QLatin1String(_function);
-    org::kde::KLauncher *launcher = KToolInvocation::klauncher();
-    QDBusMessage msg = QDBusMessage::createMethodCall(launcher->service(),
-                                                launcher->path(),
-                                                launcher->interface(),
-                                                function);
+    KToolInvocation::ensureKdeinitRunning();
+    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.klauncher5"),
+                                                      QStringLiteral("/KLauncher"),
+                                                      QStringLiteral("org.kde.KLauncher"),
+                                                      function);
     msg << _name << URLs;
     if (function == QLatin1String("kdeinit_exec_with_workdir"))
         msg << workdir;
@@ -293,29 +289,9 @@ void KToolInvocation::invokeMailer(const QUrl &mailtoURL, const QByteArray& star
     invokeMailer( address, cc, bcc, subject, body, QString(), attachURLs, startup_id );
 }
 
-void KToolInvocation::startKdeinit()
+void KToolInvocation::ensureKdeinitRunning()
 {
-  QLockFile lock(QDir::tempPath() + QLatin1Char('/') + QLatin1String("startkdeinitlock"));
-  if (!lock.tryLock()) {
-     lock.lock();
-     if( QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5")))
-         return; // whoever held the lock has already started it
-  }
-  // Try to launch kdeinit.
-  QString srv = QStandardPaths::findExecutable(QLatin1String("kdeinit5"));
-  if (srv.isEmpty())
-     return;
-//   this is disabled because we are in kdecore
-//  const bool gui = qApp && qApp->type() != QApplication::Tty;
-//  if ( gui )
-//    qApp->setOverrideCursor( Qt::WaitCursor );
-  QStringList args;
-#ifndef Q_OS_WIN
-  args += QString::fromLatin1("--suicide");
-#endif
-  QProcess::execute(srv, args);
-//  if ( gui )
-//    qApp->restoreOverrideCursor();
+    KDEInitInterface::ensureKdeinitRunning();
 }
 
 #include "ktoolinvocation.moc"

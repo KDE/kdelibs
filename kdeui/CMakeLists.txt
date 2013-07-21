@@ -38,18 +38,15 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  colors/kcolorbutton.cpp
  dialogs/kconfigdialog.cpp
- dialogs/kconfigdialogmanager.cpp
  dialogs/klinkdialog.cpp
  dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
- shortcuts/kcheckaccelerators.cpp
  shortcuts/kgesture.cpp
  shortcuts/kgesturemap.cpp
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
  util/kpassivepopupmessagehandler.cpp
- util/kundoactions.cpp
  widgets/kcmodule.cpp
  widgets/krichtextedit.cpp
  widgets/krichtextwidget.cpp
@@ -178,7 +175,6 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  colors/kcolorbutton.h
  dialogs/kconfigdialog.h
- dialogs/kconfigdialogmanager.h
  dialogs/knewpassworddialog.h
  kernel/kstyle.h
  shortcuts/kgesture.h
@@ -186,7 +182,6 @@ install( FILES
  util/khelpclient.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
- util/kundoactions.h
  widgets/kcmodule.h
  widgets/krichtextedit.h
  widgets/krichtextwidget.h

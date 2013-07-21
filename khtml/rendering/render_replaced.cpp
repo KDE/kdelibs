@@ -39,7 +39,6 @@
 #include <QComboBox>
 #include <QCheckBox>
 #include <QRadioButton>
-#include <kglobalsettings.h>
 #include <kurlrequester.h>
 #include <QtCore/QObject>
 #include <QVector>
@@ -55,6 +54,8 @@
 #include "misc/helper.h"
 #include "misc/paintbuffer.h"
 #include "css/cssvalues.h"
+
+#include <kcolorscheme.h>
 #include <kdebug.h>
 
 //#define IN_PLACE_WIDGET_PAINTING
@@ -394,7 +395,7 @@ void RenderWidget::updateFromElement()
         QPalette non_trans_pal = pal;
 
         if (color.isValid() || backgroundColor.isValid() || trans) {
-            int contrast_ = KGlobalSettings::contrast();
+            int contrast_ = KColorScheme::contrast();
             int highlightVal = 100 + (2*contrast_+4)*16/10;
             int lowlightVal = 100 + (2*contrast_+4)*10;
             bool shouldChangeBgPal = true;

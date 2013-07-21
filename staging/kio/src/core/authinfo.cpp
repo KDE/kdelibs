@@ -31,7 +31,6 @@
 #include <QtCore/QFile>
 #include <QtDBus/QDBusArgument>
 #include <QtDBus/QDBusMetaType>
-#include <kde_file.h>
 
 #include <qstandardpaths.h>
 
@@ -371,6 +370,10 @@ void NetRC::reload()
 
 int NetRC::openf( const QString& f )
 {
+#pragma message("KF5 TODO: port to QFile")
+#if 1
+  return -1;
+#else
   KDE_struct_stat sbuff;
   if ( KDE::stat(f, &sbuff) != 0 )
     return -1;
@@ -381,6 +384,7 @@ int NetRC::openf( const QString& f )
     return -1;
 
   return KDE::open( f, O_RDONLY );
+#endif
 }
 
 QString NetRC::extract( const char* buf, const char* key, int& pos )
@@ -423,6 +427,8 @@ bool NetRC::parse( int fd )
   if (fd == -1)
     return false;
 
+#pragma message("KF5 TODO: port to QFile")
+#if 0
   QString type;
   QString macro;
 
@@ -501,5 +507,6 @@ bool NetRC::parse( int fd )
   delete [] buf;
   fclose (fstream);
   close (fd);
+#endif
   return true;
 }

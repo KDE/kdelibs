@@ -1,5 +1,9 @@
+include(CheckFunctionExists)
+include(CheckIncludeFiles)
+include(CheckPrototypeDefinition)
+
 check_function_exists(strlcpy HAVE_STRLCPY)
-check_prototype_exists(strlcpy string.h HAVE_STRLCPY_PROTO)
+check_prototype_definition(strlcpy "unsigned long strlcpy(char*, const char*, unsigned long)" "0" string.h HAVE_STRLCPY_PROTO)
 check_include_files(string.h HAVE_STRING_H)
 
 set(kcrash_SRCS
@@ -20,7 +24,7 @@ configure_file(
 add_library(KCrash ${kcrash_SRCS})
 generate_export_header(KCrash)
 
-target_link_libraries(KCrash Qt5::Widgets KCoreAddons KWindowSystem)
+target_link_libraries(KCrash Qt5::Widgets ${KCoreAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} )
 
 if(${X11_FOUND})
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)

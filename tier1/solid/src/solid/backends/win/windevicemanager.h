@@ -101,10 +101,10 @@ public:
         getDeviceInfoPrivate<void,void*>(devName,code,NULL,0,NULL);
     }
 
-signals:
+Q_SIGNALS:
     void powerChanged();
 
-private slots:
+private Q_SLOTS:
     void updateDeviceList();
 
 private:

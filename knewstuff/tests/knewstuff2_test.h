@@ -38,7 +38,7 @@ public:
     void entryTest();
     void providerTest();
     void engineTest();
-public slots:
+public Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
     void slotProvidersFailed();
     void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);

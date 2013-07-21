@@ -40,7 +40,7 @@ class KNewStuff2Download : public QWidget
 public:
     KNewStuff2Download();
     void run();
-public slots:
+public Q_SLOTS:
     void slotProviderLoaded(KNS::Provider *provider);
     void slotProvidersFailed();
     void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);

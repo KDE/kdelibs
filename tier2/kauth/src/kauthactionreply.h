@@ -96,7 +96,7 @@
  {
      Q_OBJECT
 
-     public slots:
+     public Q_SLOTS:
          ActionReply read(const QVariantMap& args);
          ActionReply write(const QVariantMap& args);
          ActionReply longaction(const QVariantMap& args);

@@ -18,9 +18,9 @@
 */
 
 #include "ktar.h"
+#include "karchive_p.h"
 
 #include <stdlib.h> // strtol
-#include <time.h> // time()
 #include <assert.h>
 
 #include <QtCore/QDebug>
@@ -62,7 +62,7 @@ public:
 
     bool fillTempFile(const QString & fileName);
     bool writeBackTempFile( const QString & fileName );
-    void fillBuffer( char * buffer, const char * mode, qint64 size, time_t mtime,
+    void fillBuffer(char * buffer, const char * mode, qint64 size, uint mtime,
                      char typeflag, const char * uname, const char * gname );
     void writeLonglink(char *buffer, const QByteArray &name, char typeflag,
                        const char *uname, const char *gname);
@@ -384,7 +384,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             buffer[ 0x93 ] = 0;
             p = buffer + 0x88;
             while( *p == ' ' ) ++p;
-            int time = (int)strtol( p, &dummy, 8 );
+            uint time = (int)strtol( p, &dummy, 8 );
 
             // read type flag
             char typeflag = buffer[ 0x9c ];
@@ -417,7 +417,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
             if ( isdir )
             {
                 //qDebug() << "directory" << nm;
-                e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
+                e = new KArchiveDirectory( this, nm, access, KArchivePrivate::time_tToDateTime(time), user, group, symlink );
             }
             else
             {
@@ -430,7 +430,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                 if ( isDumpDir )
                 {
                     //qDebug() << nm << "isDumpDir";
-                    e = new KArchiveDirectory( this, nm, access, time, user, group, symlink );
+                    e = new KArchiveDirectory( this, nm, access, KArchivePrivate::time_tToDateTime(time), user, group, symlink );
                 }
                 else
                 {
@@ -443,7 +443,7 @@ bool KTar::openArchive( QIODevice::OpenMode mode ) {
                     }
 
                     //qDebug() << "file" << nm << "size=" << size;
-                    e = new KArchiveFile( this, nm, access, time, user, group, symlink,
+                    e = new KArchiveFile( this, nm, access, KArchivePrivate::time_tToDateTime(time), user, group, symlink,
                                           dev->pos(), size );
                 }
 
@@ -589,7 +589,7 @@ struct posix_header
 */
 
 void KTar::KTarPrivate::fillBuffer( char * buffer,
-                                    const char * mode, qint64 size, time_t mtime, char typeflag,
+                                    const char * mode, qint64 size, uint mtime, char typeflag,
                                     const char * uname, const char * gname ) {
   // mode (as in stpos())
   assert( strlen(mode) == 6 );
@@ -671,7 +671,7 @@ void KTar::KTarPrivate::writeLonglink(char *buffer, const QByteArray &name, char
 
 bool KTar::doPrepareWriting(const QString &name, const QString &user,
                           const QString &group, qint64 size, mode_t perm,
-                          time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+                          const QDateTime & /*atime*/, const QDateTime &mtime, const QDateTime & /*ctime*/) {
     if ( !isOpen() )
     {
         //qWarning() << "You must open the tar file before writing to it\n";
@@ -728,7 +728,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, '0');
-    d->fillBuffer(buffer, permstr.constData(), size, mtime, 0x30, uname.constData(), gname.constData());
+    d->fillBuffer(buffer, permstr.constData(), size, mtime.toTime_t(), 0x30, uname.constData(), gname.constData());
 
     // Write header
     return device()->write( buffer, 0x200 ) == 0x200;
@@ -736,7 +736,7 @@ bool KTar::doPrepareWriting(const QString &name, const QString &user,
 
 bool KTar::doWriteDir(const QString &name, const QString &user,
                       const QString &group, mode_t perm,
-                      time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+                      const QDateTime & /*atime*/, const QDateTime &mtime, const QDateTime & /*ctime*/) {
     if ( !isOpen() )
     {
         //qWarning() << "You must open the tar file before writing to it\n";
@@ -781,7 +781,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    d->fillBuffer( buffer, permstr.constData(), 0, mtime, 0x35, uname.constData(), gname.constData());
+    d->fillBuffer( buffer, permstr.constData(), 0, mtime.toTime_t(), 0x35, uname.constData(), gname.constData());
 
     // Write header
     device()->write( buffer, 0x200 );
@@ -794,7 +794,7 @@ bool KTar::doWriteDir(const QString &name, const QString &user,
 
 bool KTar::doWriteSymLink(const QString &name, const QString &target,
                         const QString &user, const QString &group,
-                        mode_t perm, time_t /*atime*/, time_t mtime, time_t /*ctime*/) {
+                        mode_t perm, const QDateTime & /*atime*/, const QDateTime &mtime, const QDateTime & /*ctime*/) {
     if ( !isOpen() )
     {
         //qWarning() << "You must open the tar file before writing to it\n";
@@ -838,7 +838,7 @@ bool KTar::doWriteSymLink(const QString &name, const QString &target,
 
     QByteArray permstr = QByteArray::number( (unsigned int)perm, 8 );
     permstr = permstr.rightJustified(6, ' ');
-    d->fillBuffer(buffer, permstr.constData(), 0, mtime, 0x32, uname.constData(), gname.constData());
+    d->fillBuffer(buffer, permstr.constData(), 0, mtime.toTime_t(), 0x32, uname.constData(), gname.constData());
 
     // Write header
     bool retval = device()->write( buffer, 0x200 ) == 0x200;

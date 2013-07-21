@@ -28,7 +28,7 @@
 class testTranslatable: public QObject
 {
     Q_OBJECT
-private slots:
+private Q_SLOTS:
     void testAddString();
     void testRepresentation();
 };

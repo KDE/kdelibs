@@ -51,7 +51,7 @@ public Q_SLOTS:
         if ( !QFile::exists( otherTmpDir() ) ) {
             bool ok = QDir().mkdir( otherTmpDir() );
             if ( !ok )
-                kFatal() << "Couldn't create " << otherTmpDir();
+                qFatal("Couldn't create %s", qPrintable(homeTmpDir()));
         }
     }
 

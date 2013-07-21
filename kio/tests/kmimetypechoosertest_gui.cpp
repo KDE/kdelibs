@@ -20,7 +20,7 @@
 #include <QApplication>
 #include <kmimetypechooser.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <QDebug>
 
 int main( int argc, char** argv ) {
     QApplication app( argc, argv );
@@ -31,8 +31,8 @@ int main( int argc, char** argv ) {
                                 KMimeTypeChooser::Comments|KMimeTypeChooser::Patterns|KMimeTypeChooser::EditButton,
                                 (QWidget*)0 );
     if ( dlg.exec() == QDialog::Accepted ) {
-        kDebug() << dlg.chooser()->patterns();
-        kDebug() << dlg.chooser()->mimeTypes().join(";");
+        qDebug() << dlg.chooser()->patterns();
+        qDebug() << dlg.chooser()->mimeTypes().join(";");
     }
 
     return 0; // app.exec();

@@ -67,11 +67,11 @@ void DestructedState::registerObserver(WeaverObserver*)
 {
 }
 
-void DestructedState::enqueue(Job*)
+void DestructedState::enqueue(JobPointer)
 {
 }
 
-bool DestructedState::dequeue(Job*)
+bool DestructedState::dequeue(JobPointer)
 {
     return false;
 }
@@ -111,10 +111,10 @@ void DestructedState::resume()
 {
 }
 
-Job* DestructedState::applyForWork(Thread*, Job* previous)
+JobPointer DestructedState::applyForWork(Thread*, JobPointer previous)
 {
     Q_ASSERT(previous==0);
-    return 0;
+    return JobPointer();
 }
 
 void DestructedState::waitForAvailableJob(Thread*)

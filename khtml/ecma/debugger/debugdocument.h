@@ -57,7 +57,7 @@ public:
     int baseLine() const;
     int length()   const;
 
-signals:
+Q_SIGNALS:
     void documentDestroyed(KJSDebugger::DebugDocument*);
 private:
     QString m_url;

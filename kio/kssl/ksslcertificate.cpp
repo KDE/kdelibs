@@ -28,13 +28,14 @@
 #include <QtCore/QStringList>
 #include <QtCore/QFile>
 #include <QtCore/QStandardPaths>
+#include <QtCore/QDate>
+#include <QDebug>
+#include <qtemporaryfile.h>
 
 #include "ksslcertchain.h"
 #include "ksslutils.h"
 
 #include <klocalizedstring.h>
-#include <QtCore/QDate>
-#include <qtemporaryfile.h>
 
 #include <sys/types.h>
 
@@ -57,7 +58,6 @@
 #endif
 
 #include <kopenssl.h>
-#include <kdebug.h>
 #include "ksslx509v3.h"
 
 
@@ -468,9 +468,8 @@ void KSSLCertificate::setCert(X509 *c) {
         d->kossl->X509_check_purpose(c, -1, 0);    // setup the fields (!!)
 
 #if 0
-        kDebug(7029) << "---------------- Certificate ------------------"
-                  << endl;
-        kDebug(7029) << getSubject();
+        qDebug() << "---------------- Certificate ------------------";
+        qDebug() << getSubject();
 #endif
 
         for (int j = 0; j < d->kossl->X509_PURPOSE_get_count(); j++) {
@@ -479,7 +478,7 @@ void KSSLCertificate::setCert(X509 *c) {
             for (int ca = 0; ca < 2; ca++) {
                 int idret = d->kossl->X509_check_purpose(c, id, ca);
                 if (idret == 1 || idret == 2) {   // have it
-                    // kDebug() << "PURPOSE: " << id << (ca?" CA":"");
+                    // qDebug() << "PURPOSE: " << id << (ca?" CA":"");
                     if (!ca) {
                         d->_extensions.flags |= (1L <<(id-1));
                     }
@@ -494,65 +493,63 @@ void KSSLCertificate::setCert(X509 *c) {
         }
 
 #if 0
-        kDebug(7029) << "flags: " << QString::number(c->ex_flags, 2)
+        qDebug() << "flags: " << QString::number(c->ex_flags, 2)
                   << "\nkeyusage: " << QString::number(c->ex_kusage, 2)
                   << "\nxkeyusage: " << QString::number(c->ex_xkusage, 2)
-                  << "\nnscert: " << QString::number(c->ex_nscert, 2)
-                  << endl;
+                  << "\nnscert: " << QString::number(c->ex_nscert, 2);
         if (c->ex_flags & EXFLAG_KUSAGE)
-            kDebug(7029) << "     --- Key Usage extensions found";
-        else kDebug(7029) << "     --- Key Usage extensions NOT found";
+            qDebug() << "     --- Key Usage extensions found";
+        else qDebug() << "     --- Key Usage extensions NOT found";
 
         if (c->ex_flags & EXFLAG_XKUSAGE)
-            kDebug(7029) << "     --- Extended key usage extensions found";
-        else kDebug(7029) << "     --- Extended key usage extensions NOT found";
+            qDebug() << "     --- Extended key usage extensions found";
+        else qDebug() << "     --- Extended key usage extensions NOT found";
 
         if (c->ex_flags & EXFLAG_NSCERT)
-            kDebug(7029) << "     --- NS extensions found";
-        else kDebug(7029) << "     --- NS extensions NOT found";
+            qDebug() << "     --- NS extensions found";
+        else qDebug() << "     --- NS extensions NOT found";
 
         if (d->_extensions.certTypeSSLCA())
-            kDebug(7029) << "NOTE: this is an SSL CA file.";
-        else kDebug(7029) << "NOTE: this is NOT an SSL CA file.";
+            qDebug() << "NOTE: this is an SSL CA file.";
+        else qDebug() << "NOTE: this is NOT an SSL CA file.";
 
         if (d->_extensions.certTypeEmailCA())
-            kDebug(7029) << "NOTE: this is an EMAIL CA file.";
-        else kDebug(7029) << "NOTE: this is NOT an EMAIL CA file.";
+            qDebug() << "NOTE: this is an EMAIL CA file.";
+        else qDebug() << "NOTE: this is NOT an EMAIL CA file.";
 
         if (d->_extensions.certTypeCodeCA())
-            kDebug(7029) << "NOTE: this is a CODE CA file.";
-        else kDebug(7029) << "NOTE: this is NOT a CODE CA file.";
+            qDebug() << "NOTE: this is a CODE CA file.";
+        else qDebug() << "NOTE: this is NOT a CODE CA file.";
 
         if (d->_extensions.certTypeSSLClient())
-            kDebug(7029) << "NOTE: this is an SSL client.";
-        else kDebug(7029) << "NOTE: this is NOT an SSL client.";
+            qDebug() << "NOTE: this is an SSL client.";
+        else qDebug() << "NOTE: this is NOT an SSL client.";
 
         if (d->_extensions.certTypeSSLServer())
-            kDebug(7029) << "NOTE: this is an SSL server.";
-        else kDebug(7029) << "NOTE: this is NOT an SSL server.";
+            qDebug() << "NOTE: this is an SSL server.";
+        else qDebug() << "NOTE: this is NOT an SSL server.";
 
         if (d->_extensions.certTypeNSSSLServer())
-            kDebug(7029) << "NOTE: this is a NETSCAPE SSL server.";
-        else kDebug(7029) << "NOTE: this is NOT a NETSCAPE SSL server.";
+            qDebug() << "NOTE: this is a NETSCAPE SSL server.";
+        else qDebug() << "NOTE: this is NOT a NETSCAPE SSL server.";
 
         if (d->_extensions.certTypeSMIME())
-            kDebug(7029) << "NOTE: this is an SMIME certificate.";
-        else kDebug(7029) << "NOTE: this is NOT an SMIME certificate.";
+            qDebug() << "NOTE: this is an SMIME certificate.";
+        else qDebug() << "NOTE: this is NOT an SMIME certificate.";
 
         if (d->_extensions.certTypeSMIMEEncrypt())
-            kDebug(7029) << "NOTE: this is an SMIME encrypt cert.";
-        else kDebug(7029) << "NOTE: this is NOT an SMIME encrypt cert.";
+            qDebug() << "NOTE: this is an SMIME encrypt cert.";
+        else qDebug() << "NOTE: this is NOT an SMIME encrypt cert.";
 
         if (d->_extensions.certTypeSMIMESign())
-            kDebug(7029) << "NOTE: this is an SMIME sign cert.";
-        else kDebug(7029) << "NOTE: this is NOT an SMIME sign cert.";
+            qDebug() << "NOTE: this is an SMIME sign cert.";
+        else qDebug() << "NOTE: this is NOT an SMIME sign cert.";
 
         if (d->_extensions.certTypeCRLSign())
-            kDebug(7029) << "NOTE: this is a CRL signer.";
-        else kDebug(7029) << "NOTE: this is NOT a CRL signer.";
+            qDebug() << "NOTE: this is a CRL signer.";
+        else qDebug() << "NOTE: this is NOT a CRL signer.";
 
-        kDebug(7029) << "-----------------------------------------------"
-                 << endl;
+        qDebug() << "-----------------------------------------------";
 #endif
     }
 #endif
@@ -686,8 +683,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
 
         if (!d->kossl->X509_LOOKUP_load_file(certLookup, _j.toLatin1().constData(), X509_FILETYPE_PEM)) {
             // error accessing directory and loading pems
-            kDebug(7029) << "KSSL couldn't read CA root: "
-                    << _j << endl;
+            qDebug() << "KSSL couldn't read CA root: " << _j;
             ksslv = KSSLCertificate::ErrorReadingRoot;
             d->kossl->X509_STORE_free(certStore);
             continue;
@@ -699,7 +695,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
         // this is a bad error - could mean no free memory.
         // This may be the wrong thing to do here
         if (!certStoreCTX) {
-            kDebug(7029) << "KSSL couldn't create an X509 store context.";
+            qDebug() << "KSSL couldn't create an X509 store context.";
             d->kossl->X509_STORE_free(certStore);
             continue;
         }
@@ -709,7 +705,7 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
             d->kossl->X509_STORE_CTX_set_chain(certStoreCTX, (STACK_OF(X509)*)d->_chain.rawChain());
         }
 
-        //kDebug(7029) << "KSSL setting CRL..............";
+        //qDebug() << "KSSL setting CRL..............";
         // int X509_STORE_add_crl(X509_STORE *ctx, X509_CRL *x);
 
         d->kossl->X509_STORE_CTX_set_purpose(certStoreCTX, purposeToOpenSSL(purpose));
@@ -742,11 +738,11 @@ KSSLCertificate::KSSLValidationList KSSLCertificate::validateVerbose(KSSLCertifi
         // end of checking code
         //
 
-        //kDebug(7029) << "KSSL Validation procedure RC: "
+        //qDebug() << "KSSL Validation procedure RC: "
         //        << rc << endl;
-        //kDebug(7029) << "KSSL Validation procedure errcode: "
+        //qDebug() << "KSSL Validation procedure errcode: "
         //        << errcode << endl;
-        //kDebug(7029) << "KSSL Validation procedure RESULTS: "
+        //qDebug() << "KSSL Validation procedure RESULTS: "
         //        << ksslv << endl;
 
         if (ksslv != NoCARoot && ksslv != InvalidCA && ksslv != GetIssuerCertFailed && ksslv != DecodeIssuerPublicKeyFailed && ksslv != GetIssuerCertLocallyFailed ) {
@@ -836,8 +832,7 @@ KSSLCertificate::KSSLValidation KSSLCertificate::processError(int ec) {
         // error 10
         case X509_V_ERR_CERT_HAS_EXPIRED:
             rc = KSSLCertificate::CertificateHasExpired;
-            kDebug(7029) << "KSSL apparently this is expired.  Not after: "
-                    << getNotAfter() << endl;
+            qDebug() << "KSSL apparently this is expired.  Not after:" << getNotAfter();
         break;
 
         // error 11

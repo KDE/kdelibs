@@ -34,8 +34,8 @@
 
 #include <klocalizedstring.h>
 
-#include <ktoolinvocation.h>
-#include <klauncher_iface.h>
+#include <kdeinit_interface.h>
+#include <klauncher_interface.h>
 #include <klibrary.h>
 
 #include "dataprotocol_p.h"
@@ -60,6 +60,16 @@ using namespace KIO;
 #else
 #define SLAVE_CONNECTION_TIMEOUT_MAX    3600
 #endif
+
+Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
+                          (QString::fromLatin1("org.kde.klauncher5"), QString::fromLatin1("/KLauncher"), QDBusConnection::sessionBus()))
+
+static org::kde::KLauncher *klauncher()
+{
+    KDEInitInterface::ensureKdeinitRunning();
+    return ::klauncherIface();
+}
+
 
 namespace KIO {
 
@@ -305,7 +315,7 @@ void Slave::hold(const QUrl &url)
     deref();
     // Call KLauncher::waitForSlave(pid);
     {
-        KToolInvocation::klauncher()->waitForSlave(d->m_pid);
+        klauncher()->waitForSlave(d->m_pid);
     }
 }
 
@@ -423,7 +433,7 @@ Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error,
     if (!bForkSlaves)
     {
        // check the UID of klauncher
-       QDBusReply<uint> reply = QDBusConnection::sessionBus().interface()->serviceUid(KToolInvocation::klauncher()->service());
+       QDBusReply<uint> reply = QDBusConnection::sessionBus().interface()->serviceUid(klauncher()->service());
        if (reply.isValid() && getuid() != reply)
           bForkSlaves = true;
     }
@@ -465,11 +475,10 @@ Slave* Slave::createSlave( const QString &protocol, const QUrl& url, int& error,
     }
 #endif
 
-    org::kde::KLauncher* klauncher = KToolInvocation::klauncher();
     QString errorStr;
-    QDBusReply<int> reply = klauncher->requestSlave(protocol, url.host(), slaveAddress.toString(), errorStr);
+    QDBusReply<int> reply = klauncher()->requestSlave(protocol, url.host(), slaveAddress.toString(), errorStr);
     if (!reply.isValid()) {
-	error_text = i18n("Cannot talk to klauncher: %1", klauncher->lastError().message() );
+	error_text = i18n("Cannot talk to klauncher: %1", klauncher()->lastError().message() );
 	error = KIO::ERR_CANNOT_LAUNCH_PROCESS;
         delete slave;
         return 0;
@@ -495,7 +504,7 @@ Slave* Slave::holdSlave(const QString &protocol, const QUrl& url)
         return 0;
     Slave *slave = new Slave(protocol);
     QUrl slaveAddress = slave->d_func()->slaveconnserver->address();
-    QDBusReply<int> reply = KToolInvocation::klauncher()->requestHoldSlave(url.toString(), slaveAddress.toString());
+    QDBusReply<int> reply = klauncher()->requestHoldSlave(url.toString(), slaveAddress.toString());
     if (!reply.isValid()) {
         delete slave;
         return 0;
@@ -513,6 +522,6 @@ Slave* Slave::holdSlave(const QString &protocol, const QUrl& url)
 
 bool Slave::checkForHeldSlave(const QUrl &url)
 {
-    return KToolInvocation::klauncher()->checkForHeldSlave(url.toString());
+    return klauncher()->checkForHeldSlave(url.toString());
 }
 

@@ -59,9 +59,9 @@ public:
     /** Register an observer. */
     void registerObserver(WeaverObserver* obs);
     /** Enqueue a job. */
-    void enqueue(Job*job);
+    void enqueue(JobPointer job);
     /** Dequeue a job. */
-    bool dequeue(Job*job);
+    bool dequeue(JobPointer job);
     /** Dequeue all jobs. */
     void dequeue();
     /** Finish all queued jobs. */
@@ -81,6 +81,9 @@ protected:
     /** Provide correct return type for WeaverImpl states. */
     WeaverImpl* weaver();
     const WeaverImpl* weaver() const;
+private:
+    /** Enqueue a naked job. Not implemented. */
+    void enqueueRaw(Job* job);
 };
 
 }

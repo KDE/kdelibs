@@ -33,7 +33,7 @@ public:
 
     virtual QSize sizeHint() const;
     
-signals:
+Q_SIGNALS:
     void clicked();
 
 protected:

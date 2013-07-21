@@ -6,7 +6,7 @@
 #include <QLayout>
 #include <QPushButton>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klineedit.h>
 #include <kiconloader.h>
 #include <kio/previewjob.h>
@@ -47,18 +47,18 @@ void PreviewTest::slotGenerate()
 
 void PreviewTest::slotResult(KJob*)
 {
-    kDebug() << "PreviewTest::slotResult(...)";
+    qDebug() << "PreviewTest::slotResult(...)";
 }
 
 void PreviewTest::slotPreview(const KFileItem&, const QPixmap &pix)
 {
-    kDebug() << "PreviewTest::slotPreview()";
+    qDebug() << "PreviewTest::slotPreview()";
     m_preview->setPixmap(pix);
 }
 
 void PreviewTest::slotFailed()
 {
-    kDebug() << "PreviewTest::slotFailed()";
+    qDebug() << "PreviewTest::slotFailed()";
     m_preview->setText("failed");
 }
 

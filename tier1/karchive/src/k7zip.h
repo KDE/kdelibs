@@ -57,14 +57,14 @@ protected:
     /// Reimplemented from KArchive
     virtual bool doWriteSymLink(const QString &name, const QString &target,
                                 const QString &user, const QString &group,
-                                mode_t perm, time_t atime, time_t mtime, time_t ctime);
+                                mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime);
     /// Reimplemented from KArchive
     virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
-                             mode_t perm, time_t atime, time_t mtime, time_t ctime );
+                             mode_t perm, const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime );
     /// Reimplemented from KArchive
-    virtual bool doPrepareWriting( const QString& name, const QString& user,
+    virtual bool doPrepareWriting(const QString& name, const QString& user,
                                    const QString& group, qint64 size, mode_t perm,
-                                   time_t atime, time_t mtime, time_t ctime );
+                                   const QDateTime &atime, const QDateTime &mtime, const QDateTime &ctime );
     /// Reimplemented from KArchive
     virtual bool doFinishWriting( qint64 size );
 

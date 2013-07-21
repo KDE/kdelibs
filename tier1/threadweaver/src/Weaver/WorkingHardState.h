@@ -49,7 +49,7 @@ public:
     /** Resume job processing. */
     void resume();
     /** Assign a job to an idle thread. */
-    Job* applyForWork ( Thread *th,  Job* previous );
+    JobPointer applyForWork(Thread *th, JobPointer previous);
     /** Overload. */
     void activated();
     /** reimpl */

@@ -1,6 +1,8 @@
 #ifndef THREADWEAVER_QUEUEINTERFACE_H
 #define THREADWEAVER_QUEUEINTERFACE_H
 
+#include <JobPointer.h>
+
 namespace ThreadWeaver {
 
 class Job;
@@ -14,10 +16,10 @@ public:
      * @param th the thread to give a new Job to
      * @param previous the job this thread finished before calling
      */
-    virtual Job* applyForWork ( Thread *th,  Job* previous ) = 0;
+    virtual JobPointer applyForWork(Thread *th, JobPointer previous) = 0;
 
     /** Wait (by suspending the calling thread) until a job becomes available. */
-    virtual void waitForAvailableJob ( Thread *th ) = 0;
+    virtual void waitForAvailableJob(Thread *th) = 0;
 };
 
 }

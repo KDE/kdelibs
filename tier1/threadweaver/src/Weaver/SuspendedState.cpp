@@ -48,7 +48,7 @@ void SuspendedState::resume()
     weaver()->setState(WorkingHard);
 }
 
-Job* SuspendedState::applyForWork(Thread *th, Job* previous)
+JobPointer SuspendedState::applyForWork(Thread *th, JobPointer previous)
 {   // suspend all threads in case they wake up:
     Q_ASSERT(previous==0);
     weaver()->waitForAvailableJob(th);

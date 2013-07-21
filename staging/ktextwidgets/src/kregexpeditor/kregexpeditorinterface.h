@@ -103,7 +103,7 @@ public:
   virtual ~KRegExpEditorInterface(){}
 
 protected:
-// These are signals: in classes that actually implement the interface.
+// These are Q_SIGNALS: in classes that actually implement the interface.
 
   /**
    * This signal tells whether undo is available.
@@ -124,7 +124,7 @@ protected:
   virtual void changes( bool ) = 0;
 
 public:
-// These are public slots: in classes that implement the interface.
+// These are public Q_SLOTS: in classes that implement the interface.
 
  /**
   * Set the regular expression for the editor. The syntax must be Qt3

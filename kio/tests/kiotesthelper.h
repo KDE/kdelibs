@@ -19,7 +19,7 @@
 
 // This file can only be included once in a given binary
 
-#include <kdebug.h>
+#include <QDebug>
 #include <QtCore/qglobal.h>
 #include <qstandardpaths.h>
 #include <QDir>
@@ -37,7 +37,7 @@ QString homeTmpDir()
     if (!QFile::exists(dir)) {
         const bool ok = QDir().mkpath(dir);
         if ( !ok )
-            kFatal() << "Couldn't create " << dir;
+            qFatal("Couldn't create %s", qPrintable(dir));
     }
     return dir;
 }
@@ -65,7 +65,7 @@ static void createTestFile( const QString& path, bool plainText = false )
 {
     QFile f( path );
     if ( !f.open( QIODevice::WriteOnly ) )
-        kFatal() << "Can't create " << path;
+        qFatal("Couldn't create %s", qPrintable(path));
     QByteArray data(plainText ? "Hello world" : "Hello\0world", 11);
     QCOMPARE( data.size(), 11 );
     f.write(data);
@@ -78,7 +78,7 @@ static void createTestSymlink( const QString& path, const QByteArray& target = "
     QFile::remove(path);
     bool ok = symlink( target.constData(), QFile::encodeName( path ) ) == 0; // broken symlink
     if ( !ok )
-        kFatal() << "couldn't create symlink: " << strerror( errno );
+        qFatal("couldn't create symlink: %s", strerror(errno));
     KDE_struct_stat buf;
     QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
     QVERIFY( S_ISLNK( buf.st_mode ) );
@@ -92,7 +92,7 @@ static void createTestDirectory( const QString& path, CreateTestDirectoryOptions
     QDir dir;
     bool ok = dir.mkdir( path );
     if ( !ok && !dir.exists() )
-        kFatal() << "couldn't create " << path;
+        qFatal("Couldn't create %s", qPrintable(path));
     createTestFile( path + "/testfile" );
     if ( (opt & NoSymlink) == 0 ) {
 #ifndef Q_OS_WIN

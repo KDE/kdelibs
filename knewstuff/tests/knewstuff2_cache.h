@@ -36,7 +36,7 @@ class KNewStuff2Cache : public QObject
 public:
     KNewStuff2Cache();
     void run();
-public slots:
+public Q_SLOTS:
     void slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, const KNS::Provider *provider);
     void slotEntriesFailed();
     void slotEntriesFinished();

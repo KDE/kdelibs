@@ -31,6 +31,10 @@
 
 #include <karchive_export.h>
 
+#ifdef Q_OS_WIN
+#include <qplatformdefs.h> // mode_t
+#endif
+
 class KArchiveDirectory;
 class KArchiveFile;
 
@@ -138,8 +142,6 @@ public:
      */
     bool addLocalDirectory( const QString& path, const QString& destName );
 
-    enum { UnknownTime = static_cast<time_t>( -1 ) };
-
     /**
      * If an archive is opened for writing then you can add new directories
      * using this function. KArchive won't write one directory twice.
@@ -156,8 +158,8 @@ public:
      * @param ctime time of last status change
      */
     virtual bool writeDir( const QString& name, const QString& user, const QString& group,
-                           mode_t perm = 040755, time_t atime = UnknownTime,
-                           time_t mtime = UnknownTime, time_t ctime = UnknownTime );
+                           mode_t perm = 040755, const QDateTime& atime = QDateTime(),
+                           const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
 
     /**
      * Writes a symbolic link to the archive if supported.
@@ -174,8 +176,8 @@ public:
      */
     virtual bool writeSymLink(const QString &name, const QString &target,
                               const QString &user, const QString &group,
-                              mode_t perm = 0120755, time_t atime = UnknownTime,
-                              time_t mtime = UnknownTime, time_t ctime = UnknownTime );
+                              mode_t perm = 0120755, const QDateTime& atime = QDateTime(),
+                              const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
 
     /**
      * If an archive is opened for writing then you can add a new file
@@ -198,8 +200,8 @@ public:
      */
     virtual bool writeFile( const QString& name, const QString& user, const QString& group,
                             const char* data, qint64 size,
-                            mode_t perm = 0100644, time_t atime = UnknownTime,
-                            time_t mtime = UnknownTime, time_t ctime = UnknownTime );
+                            mode_t perm = 0100644, const QDateTime& atime = QDateTime(),
+                            const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
 
     /**
      * Here's another way of writing a file into an archive:
@@ -222,8 +224,8 @@ public:
      */
     virtual bool prepareWriting( const QString& name, const QString& user,
                                  const QString& group, qint64 size,
-                                 mode_t perm = 0100644, time_t atime = UnknownTime,
-                                 time_t mtime = UnknownTime, time_t ctime = UnknownTime );
+                                 mode_t perm = 0100644, const QDateTime& atime = QDateTime(),
+                                 const QDateTime& mtime = QDateTime(), const QDateTime& ctime = QDateTime() );
 
     /**
      * Write data into the current file - to be called after calling prepareWriting
@@ -276,7 +278,7 @@ protected:
      * @see writeDir
      */
     virtual bool doWriteDir( const QString& name, const QString& user, const QString& group,
-                             mode_t perm, time_t atime, time_t mtime, time_t ctime ) = 0;
+                             mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime ) = 0;
 
     /**
      * Writes a symbolic link to the archive.
@@ -294,7 +296,7 @@ protected:
      */
     virtual bool doWriteSymLink(const QString &name, const QString &target,
                                 const QString &user, const QString &group,
-                                mode_t perm, time_t atime, time_t mtime, time_t ctime) = 0;
+                                mode_t perm, const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime) = 0;
 
     /**
      * This virtual method must be implemented by subclasses.
@@ -313,7 +315,7 @@ protected:
      */
     virtual bool doPrepareWriting( const QString& name, const QString& user,
                                    const QString& group, qint64 size, mode_t perm,
-                                   time_t atime, time_t mtime, time_t ctime ) = 0;
+                                   const QDateTime& atime, const QDateTime& mtime, const QDateTime& ctime ) = 0;
 
     /**
      * Called after writing the data.
@@ -379,7 +381,7 @@ public:
      * @param group the group that owns the entry
      * @param symlink the symlink, or QString()
      */
-    KArchiveEntry( KArchive* archive, const QString& name, int access, int date,
+    KArchiveEntry(KArchive* archive, const QString& name, int access, const QDateTime &date,
                    const QString& user, const QString& group,
                    const QString& symlink );
 
@@ -389,13 +391,7 @@ public:
      * Creation date of the file.
      * @return the creation date
      */
-    QDateTime datetime() const;
-
-    /**
-     * Creation date of the file.
-     * @return the creation date in seconds since 1970
-     */
-    int date() const;
+    QDateTime date() const;
 
     /**
      * Name of the file without path.
@@ -469,7 +465,7 @@ public:
      * @param pos the position of the file in the directory
      * @param size the size of the file
      */
-    KArchiveFile( KArchive* archive, const QString& name, int access, int date,
+    KArchiveFile( KArchive* archive, const QString& name, int access, const QDateTime& date,
                   const QString& user, const QString& group, const QString &symlink,
                   qint64 pos, qint64 size );
 
@@ -552,7 +548,7 @@ public:
      * @param group the group that owns the entry
      * @param symlink the symlink, or QString()
      */
-    KArchiveDirectory( KArchive* archive, const QString& name, int access, int date,
+    KArchiveDirectory( KArchive* archive, const QString& name, int access, const QDateTime& date,
                    const QString& user, const QString& group,
                    const QString& symlink);
 

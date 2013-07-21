@@ -59,12 +59,12 @@ Q_SIGNALS:
     the Job itself emits a done() signal just before the jobDone() signal
     is emitted.
     */
-    void jobDone ( ThreadWeaver::Job* );
+    void jobDone(ThreadWeaver::JobPointer);
     // FIXME (0.7) provide jobStarted and jobFailed signals
     // FIXME (0.7) or remove all these, and add them to WeaverObserver
 
     /** The Weaver's state has changed. */
-    void stateChanged ( ThreadWeaver::State* );
+    void stateChanged(ThreadWeaver::State*);
 };
 
 }

@@ -46,7 +46,7 @@ Q_OBJECT
 public:
     MainWindow(QWidget *parent = 0);
 
-private slots:
+private Q_SLOTS:
     void slotAddNew();
 
 private:

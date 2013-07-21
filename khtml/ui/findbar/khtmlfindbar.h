@@ -104,12 +104,12 @@ public:
 protected:
     virtual bool event(QEvent* e);
 
-private slots:
+private Q_SLOTS:
     void slotSelectedTextToggled(bool selec);
     void slotSearchChanged();
     void slotAddPatternToHistory();
 
-signals:
+Q_SIGNALS:
     void searchChanged();
     void findNextClicked();
     void findPreviousClicked();

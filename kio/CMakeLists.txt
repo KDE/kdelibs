@@ -19,6 +19,12 @@ if(NOT SOPRANO_FOUND)
    set(KIO_NO_SOPRANO TRUE)
 endif(NOT SOPRANO_FOUND)
 
+find_package(OpenSSL)
+set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
+                       URL "http://openssl.org"
+                       TYPE RECOMMENDED
+                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
+                      )
 if(OPENSSL_FOUND)
    set(KSSL_HAVE_SSL 1)
    include_directories(${OPENSSL_INCLUDE_DIR})
@@ -85,7 +91,6 @@ set(kiocore_STAT_SRCS
   kio/kdirlister.cpp
   kio/kdirmodel.cpp
   kio/kdynamicjobtracker.cpp
-  kio/kemailsettings.cpp
   kio/kfileitemactionplugin.cpp
   kio/kfileitemlistproperties.cpp
   kio/kfileitemactions.cpp
@@ -109,7 +114,6 @@ set(kiocore_STAT_SRCS
   kio/previewjob.cpp
   kio/renamedialog.cpp
   kio/skipdialog.cpp
-  kio/tcpslavebase.cpp
   kio/thumbcreator.cpp
   kio/thumbsequencecreator.cpp
 )
@@ -185,7 +189,6 @@ set(kfile_STAT_SRCS
 if(NOT KIO_NO_SOLID)
   set(kfile_STAT_SRCS
     ${kfile_STAT_SRCS}
-    kfile/kdiskfreespace.cpp
     kfile/kdevicelistitem.cpp
     kfile/kdevicelistmodel.cpp
     )
@@ -202,21 +205,16 @@ endif(NOT KIO_NO_NEPOMUK)
 
 qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
-# kio/kssl/Makefile.am: kssl
-
 set(kssl_STAT_SRCS
   kssl/sslui.cpp
   kssl/ksslcertificatebox.cpp
   kssl/ksslinfodialog.cpp
-# below is what's left of KDE2/3 SSL code, still required for certificate chain validation
-# by hand and for key generation. Network code has been removed.
-  kssl/kopenssl.cpp
-  kssl/kssl.cpp
-  kssl/ksslcertchain.cpp
-  kssl/ksslcertificate.cpp
-  kssl/ksslsettings.cpp
-  kssl/ksslutils.cpp
-  kssl/ksslx509v3.cpp
+
+  kssl/ksslcertificate.cpp # TODO: remove after porting khtml/java
+  kssl/ksslcertchain.cpp # TODO: remove together with ksslcertificate.cpp
+  kssl/ksslutils.cpp # TODO: remove together with ksslcertificate.cpp
+  kssl/kssl.cpp # same
+  kssl/ksslx509v3.cpp # same
 )
 
 
@@ -331,7 +329,6 @@ install(  FILES
   kio/jobuidelegate.h
   kio/paste.h
   kio/fileundomanager.h
-  kio/tcpslavebase.h
   kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h
@@ -349,7 +346,6 @@ install( FILES
   kio/kdesktopfileactions.h
   kio/kdirlister.h
   kio/kdirmodel.h
-  kio/kemailsettings.h
   kio/kfileitemlistproperties.h
   kio/kfileitemactionplugin.h
   kio/kfileitemactions.h
@@ -398,9 +394,6 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 if(NOT KDE_NO_DEPRECATED)
-install( FILES
-  kfile/kdiskfreespace.h
-  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
 install( FILES
   kio/passworddialog.h

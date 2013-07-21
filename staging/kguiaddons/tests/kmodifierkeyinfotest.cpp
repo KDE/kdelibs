@@ -49,7 +49,7 @@ class TestWidget : public QWidget
 public:
     TestWidget();
 
-protected slots:
+protected Q_SLOTS:
     void keyPressed(Qt::Key key, bool state);
     void keyLatched(Qt::Key key, bool state);
     void keyLocked(Qt::Key key, bool state);

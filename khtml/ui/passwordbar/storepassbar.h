@@ -36,7 +36,7 @@ public:
     
   void setHost(const QString& host);
     
-signals:
+Q_SIGNALS:
   void storeClicked();
   void neverForThisSiteClicked();
   void doNotStoreClicked();
@@ -53,7 +53,7 @@ public:
     const QMap<QString, QString>& walletMap);
   void removeBar();
 
-private slots:
+private Q_SLOTS:
   void slotStoreClicked();
   void slotNeverForThisSiteClicked();
   void slotDoNotStoreClicked();

@@ -23,7 +23,6 @@
 #include <kio/kio_export.h>
 #include <ksslconfig.h>
 
-#include <unistd.h>
 #if KSSL_HAVE_SSL
 #define crypt _openssl_crypt
 #include <openssl/x509.h>

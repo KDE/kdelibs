@@ -6,10 +6,25 @@ configure_file(config-kiocore.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiocore
 
 configure_file(config-kmountpoint.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kmountpoint.h)
 
+find_package(OpenSSL)
+set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
+                       URL "http://openssl.org"
+                       TYPE RECOMMENDED
+                       PURPOSE "KDE uses OpenSSL for the bulk of secure communications, including secure web browsing via HTTPS"
+                      )
+if(OPENSSL_FOUND)
+   set(KSSL_HAVE_SSL 1)
+   include_directories(${OPENSSL_INCLUDE_DIR})
+endif(OPENSSL_FOUND)
+
+configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/ksslconfig.h )
+
 set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  kemailsettings.cpp
+  tcpslavebase.cpp
   directorysizejob.cpp
   forwardingslavebase.cpp
   chmodjob.cpp
@@ -54,6 +69,11 @@ set(kiocore_SRCS
   jobuidelegatefactory.cpp
   kmountpoint.cpp
   kcoredirlister.cpp
+
+  kio_ksslcertificatemanager.cpp # temporary (used by ktcpsocket)
+  kio_ktcpsocket.cpp             # temporary (port to Qt API once it has hooks for users approving invalid certificates)
+  kssl/ksslsettings.cpp          # temporary (used by tcpslavebase)
+  kssl/kopenssl.cpp              # temporary (used by ksslsettings)
 )
 
 if (UNIX)
@@ -67,6 +87,7 @@ if (WIN32)
    )
 endif()
 
+qt5_add_dbus_interface(kiocore_SRCS org.kde.KLauncher.xml klauncher_interface)
 
 set_source_files_properties(org.kde.KPasswdServer.xml
         PROPERTIES INCLUDE authinfo.h
@@ -82,11 +103,11 @@ generate_export_header(KIOCore)
 
 target_include_directories(KIOCore PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>" # kio_version.h
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kssl>"
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # kio/global.h
 )
 
 target_link_libraries(KIOCore
- ${KDE4_KDECORE_LIBS} # TODO remove once klocale is in a framework
  ${KConfig_CORE_LIBRARY}
  ${KCoreAddons_LIBRARIES}
  KI18n
@@ -110,6 +131,8 @@ set_target_properties(KIOCore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS KIOCore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
+  kemailsettings.h
+  tcpslavebase.h
   directorysizejob.h
   forwardingslavebase.h
   chmodjob.h

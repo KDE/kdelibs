@@ -68,6 +68,12 @@ generate_export_header(KWindowSystem)
 
 target_link_libraries(KWindowSystem Qt5::Widgets ${platformLinkLibraries} ${qt5CompatLib})
 
+if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
+  target_include_directories(KWindowSystem INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
+else()
+  target_include_directories(KWindowSystem INTERFACE "$<INSTALL_INTERFACE:${CMAKE_INSTALL_PREFIX}/${INCLUDE_INSTALL_DIR}>" )
+endif()
+
 set_target_properties(KWindowSystem PROPERTIES VERSION   ${KWINDOWSYSTEM_VERSION_STRING}
                                                SOVERSION ${KWINDOWSYSTEM_SOVERSION})
 

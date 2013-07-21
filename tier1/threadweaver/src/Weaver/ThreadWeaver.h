@@ -89,8 +89,9 @@ public:
         created.
     */
     static ThreadWeaver::Weaver* instance();
-    virtual void enqueue (Job*);
-    virtual bool dequeue (Job*);
+    virtual void enqueue(JobPointer);
+    virtual void enqueueRaw(Job* job);
+    virtual bool dequeue(JobPointer);
     virtual void dequeue ();
     virtual void finish();
     virtual void suspend( );

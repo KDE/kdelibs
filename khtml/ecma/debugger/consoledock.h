@@ -41,10 +41,10 @@ public:
 
     void reportResult(const QString& src, const QString& msg);
 
-signals: // Bah. This isn't a public header.
+Q_SIGNALS: // Bah. This isn't a public header.
     void requestEval(const QString& code);
 
-private slots:
+private Q_SLOTS:
     void slotUserRequestedEval();
     void slotPasteItem(QListWidgetItem* item);
 

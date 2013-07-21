@@ -51,7 +51,7 @@ public:
 
     virtual bool eject();
 
-signals:
+Q_SIGNALS:
     void ejectPressed(const QString &udi);
 
     void ejectDone(Solid::ErrorType error, QVariant errorData, const QString &udi);

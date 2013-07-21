@@ -23,8 +23,6 @@
 #include "ui_sslinfo.h"
 #include "ksslcertificatebox.h"
 
-#include <kssl.h>
-
 #include <QDialogButtonBox>
 #include <QFrame>
 #include <QtCore/QDate>
@@ -39,7 +37,7 @@
 
 #include "ksslcertificate.h"
 #include "ksslcertchain.h"
-#include "ktcpsocket.h"
+#include "kio_ktcpsocket.h"
 
 
 class KSslInfoDialog::KSslInfoDialogPrivate
@@ -88,7 +86,7 @@ KSslInfoDialog::KSslInfoDialog(QWidget *parent)
     layout->addWidget(buttonBox);
 
 #if 0
-    if (KSSL::doesSSLWork()) {
+    if (QSslSocket::supportsSsl()) {
         if (d->m_secCon) {
             d->pixmap->setPixmap(BarIcon("security-high"));
             d->info->setText(i18n("Current connection is secured with SSL."));

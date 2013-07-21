@@ -57,7 +57,7 @@ public:
 
     void warnDateTime();
 
-//private slots:
+//private Q_SLOTS:
     void selectCalendar(int index);
     void enterCalendar(KLocale::CalendarSystem calendarSystem);
     void selectTimeZone(int index);

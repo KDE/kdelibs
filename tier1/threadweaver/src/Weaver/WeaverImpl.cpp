@@ -36,6 +36,7 @@ $Id: WeaverImpl.cpp 30 2005-08-16 16:16:04Z mirko $
 #include <QtCore/QDebug>
 
 #include "Job.h"
+#include "ManagedJobPointer.h"
 #include "State.h"
 #include "Thread.h"
 #include "ThreadWeaver.h"
@@ -56,6 +57,8 @@ WeaverImpl::WeaverImpl( QObject* parent )
     , m_inventoryMax( qMax(4, 2 * QThread::idealThreadCount() ) )
     , m_mutex ( new QMutex( QMutex::NonRecursive ) )
 {
+    qRegisterMetaType<ThreadWeaver::JobPointer>("ThreadWeaver::JobPointer");
+
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     // initialize state objects:
     m_states[InConstruction] = QSharedPointer<State>(new InConstructionState(this));
@@ -216,18 +219,23 @@ void WeaverImpl::registerObserver_p(WeaverObserver *ext)
               ext,  SIGNAL (threadExited(ThreadWeaver::Thread*)) );
 }
 
-void WeaverImpl::enqueue(Job* job)
+void WeaverImpl::enqueue(JobPointer job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     state()->enqueue(job);
 }
 
-void WeaverImpl::enqueue_p(Job *job)
+void WeaverImpl::enqueueRaw(Job *job)
+{
+    enqueue(ManagedJobPointer(job));
+}
+
+void WeaverImpl::enqueue_p(JobPointer job)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
     if (job) {
         adjustInventory(1);
-        debug(3, "WeaverImpl::enqueue: queueing job %p of type %s.\n", (void*)job, job->metaObject()->className());
+        debug(3, "WeaverImpl::enqueue: queueing job %p of type %s.\n", (void*)job.data(), job->metaObject()->className());
         job->aboutToBeQueued(this);
         // find position for insertion:
         int i = m_assignments.size();
@@ -241,28 +249,28 @@ void WeaverImpl::enqueue_p(Job *job)
     }
 }
 
-bool WeaverImpl::dequeue ( Job* job )
+bool WeaverImpl::dequeue(JobPointer job)
 {
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     return state()->dequeue(job);
 }
 
-bool WeaverImpl::dequeue_p(Job* job)
+bool WeaverImpl::dequeue_p(JobPointer job)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
-    int position = m_assignments.indexOf ( job );
-    if ( position != -1 ) {
-        job->aboutToBeDequeued( this );
-        int newPosition = m_assignments.indexOf ( job );
+    int position = m_assignments.indexOf(job);
+    if (position != -1) {
+        job->aboutToBeDequeued(this);
+        int newPosition = m_assignments.indexOf(job);
         m_assignments.removeAt(newPosition);
         Q_ASSERT(!m_assignments.contains(job));
-        debug(3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n", (void*)job, queueLength_p());
+        debug(3, "WeaverImpl::dequeue: job %p dequeued, %i jobs left.\n", (void*)job.data(), queueLength_p());
         // from the queues point of view, a job is just as finished if it gets dequeued:
         m_jobFinished.wakeAll();
         Q_ASSERT(!m_assignments.contains(job));
         return true;
     } else {
-        debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", (void*)job );
+        debug( 3, "WeaverImpl::dequeue: job %p not found in queue.\n", (void*)job.data() );
         return false;
     }
 }
@@ -394,10 +402,10 @@ void WeaverImpl::adjustInventory ( int numberOfNewJobs )
             Thread *th = createThread();
             th->moveToThread( th ); // be sane from the start
             m_inventory.append(th);
-            connect ( th,  SIGNAL (jobStarted(ThreadWeaver::Thread*,ThreadWeaver::Job*)),
-                      SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)) );
-            connect ( th,  SIGNAL (jobDone(ThreadWeaver::Job*)),
-                      SIGNAL (jobDone(ThreadWeaver::Job*)) );
+            connect(th, SIGNAL(jobStarted(ThreadWeaver::Thread*,ThreadWeaver::JobPointer)),
+                      SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::JobPointer)));
+            connect(th, SIGNAL(jobDone(ThreadWeaver::JobPointer)),
+                      SIGNAL (jobDone(ThreadWeaver::JobPointer)));
             th->start();
             m_createdThreads.ref();
             debug(2, "WeaverImpl::adjustInventory: thread created, "
@@ -454,14 +462,15 @@ void WeaverImpl::threadEnteredRun(Thread *thread)
     Q_EMIT threadStarted(thread);
 }
 
-Job* WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, Job *previous, bool suspendIfInactive, bool justReturning)
+JobPointer WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, JobPointer previous,
+                                                            bool suspendIfInactive, bool justReturning)
 {
     QMutexLocker l (m_mutex); Q_UNUSED(l);
     Q_ASSERT(previous==0 || (previous != 0 && m_active > 0));
     debug(3, "WeaverImpl::takeFirstAvailableJobOrWait: trying to assign new job to thread %i (%s state).\n",
           th->id(), qPrintable(state()->stateName()));
     debug(5, "WeaverImpl::takeFirstAvailableJobOrWait: %i active threads, previous: %p, suspend?: %s, assign new job?: %s.\n",
-          activeThreadCount(), previous, suspendIfInactive ? "yes" : "no", !justReturning ? "yes" : "no");
+          activeThreadCount(), previous.data(), suspendIfInactive ? "yes" : "no", !justReturning ? "yes" : "no");
     if (previous) {
         // cleanup and send events:
         decActiveThreadCount();
@@ -470,14 +479,14 @@ Job* WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, Job *previous,
 
     if (suspendIfInactive && m_active == 0 && state()->stateId() == Suspending) {
         setState_p(Suspended);
-        return 0;
+        return JobPointer();
     }
 
     if (state()->stateId() != WorkingHard || justReturning) {
-        return 0;
+        return JobPointer();
     }
 
-    Job *next = 0;
+    JobPointer next;
     for (int index = 0; index < m_assignments.size(); ++index) {
         if (m_assignments.at(index)->canBeExecuted()) {
             next = m_assignments.at(index);
@@ -488,15 +497,15 @@ Job* WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, Job *previous,
     if (next) {
         incActiveThreadCount();
         debug(3, "WeaverImpl::takeFirstAvailableJobOrWait: job %p assigned to thread %i (%s state).\n",
-              next, th->id(), qPrintable(state()->stateName()));
+              next.data(), th->id(), qPrintable(state()->stateName()));
         return next;
     }
 
     blockThreadUntilJobsAreBeingAssigned_locked(th);
-    return 0;
+    return JobPointer();
 }
 
-Job* WeaverImpl::applyForWork(Thread *th, Job* previous)
+JobPointer WeaverImpl::applyForWork(Thread *th, JobPointer previous)
 {
     return state()->applyForWork(th, previous);
 }
@@ -528,7 +537,7 @@ void WeaverImpl::dumpJobs()
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     debug( 0, "WeaverImpl::dumpJobs: current jobs:\n" );
     for ( int index = 0; index < m_assignments.size(); ++index ) {
-        debug( 0, "--> %4i: %p %s (priority %i, can be executed: %s)\n", index, (void*)m_assignments.at( index ),
+        debug( 0, "--> %4i: %p %s (priority %i, can be executed: %s)\n", index, (void*)m_assignments.at( index ).data(),
                m_assignments.at( index )->metaObject()->className(),
                m_assignments.at(index)->priority(),
                m_assignments.at(index)->canBeExecuted() ? "yes" : "no");

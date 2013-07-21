@@ -50,7 +50,8 @@ protected:
     void aboutToBeQueued_locked ( QueueAPI *api );
 
     /** reimplemented */
-    void elementFinished(Job *job, Thread *thread);
+    void elementFinished(JobPointer job, Thread *thread) Q_DECL_OVERRIDE;
+
 private:
     class Private;
     Private * const d;

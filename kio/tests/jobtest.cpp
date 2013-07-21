@@ -20,14 +20,13 @@
 #include <qtest.h>
 
 #include "jobtest.h"
-#include <QPointer>
-#include <QSignalSpy>
 
 #include <kio/netaccess.h>
-#include <kio/previewjob.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 
+#include <QDebug>
+#include <QPointer>
+#include <QSignalSpy>
 #include <QtCore/QFileInfo>
 #include <QtCore/QEventLoop>
 #include <QtCore/QDir>
@@ -36,12 +35,6 @@
 #include <QUrl>
 #include <qurlpathinfo.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <sys/types.h>
 #include <kprotocolinfo.h>
 #include <kio/scheduler.h>
 #include <kio/directorysizejob.h>
@@ -94,14 +87,14 @@ void JobTest::initTestCase()
     if ( !QFile::exists( otherTmpDir() ) ) {
         bool ok = QDir().mkdir( otherTmpDir() );
         if ( !ok )
-            kFatal() << "Couldn't create " << otherTmpDir();
+            qFatal("couldn't create %s", qPrintable(otherTmpDir()));
     }
 #if 0
     if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
         if ( !QFile::exists( realSystemPath() ) ) {
             bool ok = dir.mkdir( realSystemPath() );
             if ( !ok )
-                kFatal() << "Couldn't create " << realSystemPath();
+                qFatal("couldn't create %s", qPrintable(realSystemPath()));
         }
     }
 #endif
@@ -133,7 +126,7 @@ void JobTest::enterLoop()
 
 void JobTest::storedGet()
 {
-    kDebug() ;
+    qDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     createTestFile( filePath );
     QUrl u = QUrl::fromLocalFile( filePath );
@@ -307,7 +300,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
     if ( flags & AlreadyExists ) {
         QUrlPathInfo p(u);
         dest += '/' + p.fileName();
-        //kDebug() << "Expecting dest=" << dest;
+        //qDebug() << "Expecting dest=" << dest;
     }
 
     // CopyJob::setNextDirAttribute isn't implemented for Windows currently.
@@ -338,7 +331,6 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
 
 void JobTest::copyFileToSamePartition()
 {
-    kDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -347,7 +339,7 @@ void JobTest::copyFileToSamePartition()
 
 void JobTest::copyDirectoryToSamePartition()
 {
-    kDebug() ;
+    qDebug() ;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_copied";
     createTestDirectory( src );
@@ -356,7 +348,7 @@ void JobTest::copyDirectoryToSamePartition()
 
 void JobTest::copyDirectoryToExistingDirectory()
 {
-    kDebug() ;
+    qDebug() ;
     // just the same as copyDirectoryToSamePartition, but this time dest exists.
     // So we get a subdir, "dirFromHome_copy/dirFromHome"
     const QString src = homeTmpDir() + "dirFromHome";
@@ -368,7 +360,7 @@ void JobTest::copyDirectoryToExistingDirectory()
 
 void JobTest::copyFileToOtherPartition()
 {
-    kDebug() ;
+    qDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_copied";
     createTestFile( filePath );
@@ -377,7 +369,7 @@ void JobTest::copyFileToOtherPartition()
 
 void JobTest::copyDirectoryToOtherPartition()
 {
-    kDebug() ;
+    qDebug() ;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_copied";
     createTestDirectory( src );
@@ -421,7 +413,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     job->setUiDelegateExtension(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     if ( !ok )
-        kWarning() << KIO::NetAccess::lastError();
+        qWarning() << KIO::NetAccess::lastError();
     QVERIFY( ok );
     QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
     QVERIFY( !QFile::exists( src ) ); // not there anymore
@@ -438,7 +430,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
 
 void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 {
-    kDebug() << src << " " << dest;
+    qDebug() << src << " " << dest;
     QVERIFY( QFile::exists( src ) );
     QVERIFY( QFileInfo( src ).isDir() );
     QVERIFY( QFileInfo( src + "/testfile" ).isFile() );
@@ -464,7 +456,7 @@ void JobTest::moveLocalDirectory( const QString& src, const QString& dest )
 
 void JobTest::moveFileToSamePartition()
 {
-    kDebug() ;
+    qDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = homeTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -473,7 +465,7 @@ void JobTest::moveFileToSamePartition()
 
 void JobTest::moveDirectoryToSamePartition()
 {
-    kDebug() ;
+    qDebug() ;
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = homeTmpDir() + "dirFromHome_moved";
     createTestDirectory( src );
@@ -482,7 +474,7 @@ void JobTest::moveDirectoryToSamePartition()
 
 void JobTest::moveFileToOtherPartition()
 {
-    kDebug() ;
+    qDebug() ;
     const QString filePath = homeTmpDir() + "fileFromHome";
     const QString dest = otherTmpDir() + "fileFromHome_moved";
     createTestFile( filePath );
@@ -492,7 +484,7 @@ void JobTest::moveFileToOtherPartition()
 void JobTest::moveSymlinkToOtherPartition()
 {
 #ifndef Q_OS_WIN
-    kDebug() ;
+    qDebug() ;
     const QString filePath = homeTmpDir() + "testlink";
     const QString dest = otherTmpDir() + "testlink_moved";
     createTestSymlink( filePath );
@@ -502,7 +494,7 @@ void JobTest::moveSymlinkToOtherPartition()
 
 void JobTest::moveDirectoryToOtherPartition()
 {
-    kDebug() ;
+    qDebug() ;
 #ifndef Q_OS_WIN
     const QString src = homeTmpDir() + "dirFromHome";
     const QString dest = otherTmpDir() + "dirFromHome_moved";
@@ -513,9 +505,9 @@ void JobTest::moveDirectoryToOtherPartition()
 
 void JobTest::moveFileNoPermissions()
 {
-    kDebug() ;
+    qDebug() ;
 #ifdef Q_OS_WIN
-    kDebug() << "port to win32";
+    qDebug() << "port to win32";
 #else
     const QString src = "/etc/passwd";
     const QString dest = homeTmpDir() + "passwd";
@@ -542,9 +534,9 @@ void JobTest::moveFileNoPermissions()
 
 void JobTest::moveDirectoryNoPermissions()
 {
-    kDebug() ;
+    qDebug() ;
 #ifdef Q_OS_WIN
-    kDebug() << "port to win32";
+    qDebug() << "port to win32";
 #else
 
     // All of /etc is a bit much, so try to find something smaller:
@@ -674,9 +666,9 @@ void JobTest::directorySize()
     job->setUiDelegate( 0 );
     bool ok = KIO::NetAccess::synchronousRun( job, 0 );
     QVERIFY( ok );
-    kDebug() << "totalSize: " << job->totalSize();
-    kDebug() << "totalFiles: " << job->totalFiles();
-    kDebug() << "totalSubdirs: " << job->totalSubdirs();
+    qDebug() << "totalSize: " << job->totalSize();
+    qDebug() << "totalFiles: " << job->totalFiles();
+    qDebug() << "totalSubdirs: " << job->totalSubdirs();
 #ifdef Q_OS_WIN
     QCOMPARE(job->totalFiles(), 5ULL); // see expected result in listRecursive() above
     QCOMPARE(job->totalSubdirs(), 3ULL); // see expected result in listRecursive() above
@@ -1050,7 +1042,7 @@ void JobTest::calculateRemainingSeconds()
 void JobTest::copyFileToSystem()
 {
     if ( !KProtocolInfo::isKnownProtocol( "system" ) ) {
-        kDebug() << "no kio_system, skipping test";
+        qDebug() << "no kio_system, skipping test";
         return;
     }
 
@@ -1067,7 +1059,7 @@ void JobTest::copyFileToSystem()
 
 void JobTest::copyFileToSystem( bool resolve_local_urls )
 {
-    kDebug() << resolve_local_urls;
+    qDebug() << resolve_local_urls;
     extern KIO_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = resolve_local_urls;
 
@@ -1077,7 +1069,7 @@ void JobTest::copyFileToSystem( bool resolve_local_urls )
     QUrl d = QUrl::fromLocalFile(systemTmpDir());
     d.addPath( "fileFromHome_copied" );
 
-    kDebug() << "copying " << u << " to " << d;
+    qDebug() << "copying " << u << " to " << d;
 
     // copy the file with file_copy
     m_mimetype.clear();
@@ -1169,7 +1161,7 @@ void JobTest::deleteDirectory()
     bool symlink_ok = symlink( QFile::encodeName(QFileInfo(QFINDTESTDATA("jobtest.cpp")).absolutePath()),
                                QFile::encodeName(dest + "/symlink_to_dir" ) ) == 0;
     if ( !symlink_ok )
-        kFatal() << "couldn't create symlink: " << strerror( errno ) ;
+        qFatal("couldn't create symlink: %s", strerror(errno));
 #endif
 
     KIO::Job* job = KIO::del(QUrl::fromLocalFile(dest), KIO::HideProgressInfo);
@@ -1237,7 +1229,7 @@ void JobTest::deleteManyDirs(bool using_fast_path)
         QVERIFY(!QFile::exists(dir.toLocalFile()));
     }
 
-    kDebug() << "Deleted" << numDirs << "dirs in" << dt.elapsed() << "milliseconds";
+    qDebug() << "Deleted" << numDirs << "dirs in" << dt.elapsed() << "milliseconds";
     kio_resolve_local_urls = true;
 }
 
@@ -1267,14 +1259,14 @@ void JobTest::deleteManyFilesIndependently()
         // delete each file independently. lots of jobs. this stress-tests kio scheduling.
         const QString file = baseDir + QString::number(i);
         QVERIFY(QFile::exists(file));
-        //kDebug() << file;
+        //qDebug() << file;
         KIO::Job* job = KIO::del(QUrl::fromLocalFile(file), KIO::HideProgressInfo);
         job->setUiDelegate(0);
         bool ok = KIO::NetAccess::synchronousRun(job, 0);
         QVERIFY(ok);
         QVERIFY(!QFile::exists(file));
     }
-    kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
+    qDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
 }
 
 void JobTest::deleteManyFilesTogether(bool using_fast_path)
@@ -1294,12 +1286,12 @@ void JobTest::deleteManyFilesTogether(bool using_fast_path)
         urls.append(QUrl::fromLocalFile(file));
     }
 
-    //kDebug() << file;
+    //qDebug() << file;
     KIO::Job* job = KIO::del(urls, KIO::HideProgressInfo);
     job->setUiDelegate(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     QVERIFY(ok);
-    kDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
+    qDebug() << "Deleted" << numFiles << "files in" << dt.elapsed() << "milliseconds";
 
     kio_resolve_local_urls = true;
 }
@@ -1524,11 +1516,11 @@ void JobTest::moveDestAlreadyExistsAutoRename(const QString& destDir, bool moveD
     job->setUiDelegateExtension(0);
     job->setAutoRename(true);
 
-    //kDebug() << QDir(destDir).entryList();
+    //qDebug() << QDir(destDir).entryList();
 
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
 
-    kDebug() << QDir(destDir).entryList();
+    qDebug() << QDir(destDir).entryList();
     QVERIFY(ok);
     QVERIFY(!QFile::exists(file1)); // it was moved
     QVERIFY(!QFile::exists(file2)); // it was moved

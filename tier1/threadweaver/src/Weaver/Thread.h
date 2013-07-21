@@ -35,6 +35,7 @@
 #include <QtCore/QThread>
 
 #include <threadweaver_export.h>
+#include <JobPointer.h>
 
 namespace ThreadWeaver {
 
@@ -87,11 +88,11 @@ namespace ThreadWeaver {
 
     Q_SIGNALS:
         /** The thread has been started. */
-        void started ( ThreadWeaver::Thread* );
+        void started(ThreadWeaver::Thread*);
         /** The thread started to process a job. */
-        void jobStarted ( ThreadWeaver::Thread*,  ThreadWeaver::Job* );
+        void jobStarted(ThreadWeaver::Thread*, ThreadWeaver::JobPointer);
         /** The thread finished to execute a job. */
-        void jobDone ( ThreadWeaver::Job* );
+        void jobDone(ThreadWeaver::JobPointer);
 
     private:
         class Private;

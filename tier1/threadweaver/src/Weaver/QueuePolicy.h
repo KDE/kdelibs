@@ -53,7 +53,7 @@ namespace ThreadWeaver {
     if all of them return true from canRun() within the same execution attempt.
     Jobs only keep a reference to the QueuePolicy. Therefore, the same object
     can be assigned to multiple jobs and this way control the way all those
-    jobs are executed. Jobs never assume ownership of their assigned queue
+    jobs are exeuted. Jobs never assume ownership of their assigned queue
     policies.
 */
     class THREADWEAVER_EXPORT QueuePolicy
@@ -64,25 +64,25 @@ namespace ThreadWeaver {
         /** canRun() is called before the job is executed.
             The job will only be executed if canRun() returns true.
         */
-        virtual bool canRun( Job* ) = 0;
+        virtual bool canRun(Job*) = 0;
 
         /** free() is called after the job has been executed.
             It is guaranteed that free is called only after canRun()
             returned true at an earlier time.
         */
-        virtual void free( Job* ) = 0;
+        virtual void free(Job*) = 0;
 
         /** release() is called if canRun() returned true, but the job has not
             been executed for external reasons. For example, a second
             QueuePolicy could have returned false from canRun() for the same
             job.
         */
-        virtual void release( Job* ) = 0;
+        virtual void release(Job*) = 0;
 
         /** destructing() is called when a Job that has this queue policy
             assigned gets destructed.
         */
-        virtual void destructed ( Job* ) = 0;
+        virtual void destructed(Job*) = 0;
     };
 
 }

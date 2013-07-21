@@ -20,12 +20,11 @@
 
 #include "sslui.h"
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <ksslcertificatemanager.h>
+#include <kio_ksslcertificatemanager.h>
 #include <ksslinfodialog.h>
-#include <ktcpsocket_p.h>
+#include <kio_ktcpsocket_p.h>
 
 
 bool KIO::SslUi::askIgnoreSslErrors(const KTcpSocket *socket, RulesStorage storedRules)
@@ -61,7 +60,7 @@ bool KIO::SslUi::askIgnoreSslErrors(const KSslErrorUiData &uiData, RulesStorage 
         // remove previously seen and acknowledged errors
         QList<KSslError> remainingErrors = rule.filterErrors(ud->sslErrors);
         if (remainingErrors.isEmpty()) {
-            kDebug(7029) << "Error list empty after removing errors to be ignored. Continuing.";
+            //qDebug() << "Error list empty after removing errors to be ignored. Continuing.";
             return true;
         }
     }

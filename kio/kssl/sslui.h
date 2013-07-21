@@ -22,7 +22,7 @@
 #define _KSSLUI_H
 
 #include <kio/kio_export.h>
-#include <ktcpsocket.h>
+#include <kio_ktcpsocket.h>
 
 namespace KIO {
 namespace SslUi {

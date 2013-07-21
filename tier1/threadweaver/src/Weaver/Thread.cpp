@@ -55,7 +55,7 @@ public:
 
     WeaverImpl *parent;
     const unsigned int id;
-    Job* job;
+    JobPointer job;
     QMutex mutex;
 
     static unsigned int makeId()
@@ -95,12 +95,12 @@ void Thread::run()
 
     while (true) {
         debug(3, "Thread::run [%u]: trying to execute the next job.\n", id());
-        Job* oldJob = 0;
+        JobPointer oldJob;
         {
             QMutexLocker l(&d->mutex); Q_UNUSED(l);
-            oldJob = d->job; d->job = 0;
+            oldJob = d->job; d->job.clear();
         }
-        Job* newJob = d->parent->applyForWork(this, oldJob);
+        JobPointer newJob = d->parent->applyForWork(this, oldJob);
 
         if (newJob == 0) {
             break;
@@ -110,7 +110,7 @@ void Thread::run()
                 d->job = newJob;
             }
             Q_EMIT jobStarted(this, newJob);
-            newJob->execute (this);
+            newJob->execute (this, newJob);
             Q_EMIT jobDone(newJob);
         }
     }

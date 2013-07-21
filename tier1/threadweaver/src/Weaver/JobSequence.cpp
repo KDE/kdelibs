@@ -27,13 +27,14 @@
 */
 
 #include "JobSequence.h"
+#include "ManagedJobPointer.h"
 #include "QueueAPI.h"
 #include "DebuggingAids.h"
 #include "DependencyPolicy.h"
 
 namespace ThreadWeaver {
 
-JobSequence::JobSequence ( QObject *parent )
+JobSequence::JobSequence(QObject *parent)
     : JobCollection ( parent )
     , d(0)
 {
@@ -46,20 +47,20 @@ void JobSequence::aboutToBeQueued_locked (QueueAPI *api )
 
     const int jobs = jobListLength_locked();
     if (jobs > 0) {
-        DependencyPolicy::instance().addDependency(jobAt(0), this);
+        DependencyPolicy::instance().addDependency(jobAt(0).data(), this);
         // set up the dependencies:
         for (int i = 1; i < jobs; ++i) {
-            Job* jobA = jobAt(i);
-            Job* jobB = jobAt(i-1);
+            JobPointer jobA = jobAt(i);
+            JobPointer jobB = jobAt(i-1);
             P_ASSERT(jobA != 0);
             P_ASSERT(jobB != 0);
-            DependencyPolicy::instance().addDependency(jobA, jobB);
+            DependencyPolicy::instance().addDependency(jobA.data(), jobB.data());
         }
     }
     JobCollection::aboutToBeQueued_locked(api);
 }
 
-void JobSequence::elementFinished(Job *job, Thread *thread)
+void JobSequence::elementFinished(JobPointer job, Thread *thread)
 {
     REQUIRE ( job != 0 );
     JobCollection::elementFinished(job, thread);
@@ -68,7 +69,7 @@ void JobSequence::elementFinished(Job *job, Thread *thread)
     }
     QMutexLocker l(mutex()); Q_UNUSED(l);
     if (jobListLength_locked() > 0) {
-        DependencyPolicy::instance().removeDependency(jobAt(0), this);
+        DependencyPolicy::instance().removeDependency(jobAt(0).data(), this);
     }
 }
 

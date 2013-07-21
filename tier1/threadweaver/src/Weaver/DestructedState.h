@@ -53,8 +53,8 @@ public:
     int maximumNumberOfThreads() const;
     int currentNumberOfThreads() const;
     void registerObserver(WeaverObserver *obs);
-    void enqueue(Job *job);
-    bool dequeue(Job* job);
+    void enqueue(JobPointer job);
+    bool dequeue(JobPointer job);
     void dequeue();
     void finish();
     bool isEmpty() const;
@@ -63,7 +63,7 @@ public:
     void requestAbort();
     void suspend();
     void resume();
-    Job* applyForWork ( Thread *th,  Job* previous );
+    JobPointer applyForWork(Thread *th, JobPointer previous);
     void waitForAvailableJob ( Thread *th );
     StateId stateId() const;
 };

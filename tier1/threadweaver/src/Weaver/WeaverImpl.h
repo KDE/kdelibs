@@ -77,8 +77,9 @@ public:
     /** Set the object state. */
     void setState( StateId );
     void registerObserver ( WeaverObserver* );
-    void enqueue (Job*);
-    bool dequeue (Job*);
+    void enqueue(JobPointer job);
+    void enqueueRaw(Job* job);
+    bool dequeue(JobPointer job);
     void dequeue ();
     void finish();
     void suspend( );
@@ -97,7 +98,7 @@ public:
         met.
         In *previous*, threads give the job they have completed. If this is
         the first job, previous is zero. */
-    virtual Job* applyForWork (Thread *thread, Job *previous);
+    virtual JobPointer applyForWork (Thread *thread, JobPointer previous);
     /** Wait for a job to become available. */
     void waitForAvailableJob(Thread *th);
     /** Blocks the calling thread until some actor calls assignJobs. */
@@ -122,7 +123,8 @@ public:
      * available. If only jobs that depened on other, unfinished jobs are in the queue, this method blocks on m_jobAvailable.
      * Go to suspended state if the active thread count is now zero and suspendIfAllThreadsInactive is true.
      * If justReturning is true, do not assign a new job, just process the completed previous one. */
-    Job* takeFirstAvailableJobOrSuspendOrWait(Thread* th, Job* previous, bool suspendIfAllThreadsInactive, bool justReturning);
+    JobPointer takeFirstAvailableJobOrSuspendOrWait(Thread* th, JobPointer previous,
+                                                    bool suspendIfAllThreadsInactive, bool justReturning);
     /** Schedule enqueued jobs to be executed by idle threads.
      * This will try to distribute as many jobs as possible to all idle threads. */
     void assignJobs();
@@ -140,7 +142,9 @@ public:
     int currentNumberOfThreads_p() const;
     void registerObserver_p(WeaverObserver*);
     void enqueue_p(Job* job);
+    void enqueue_p(JobPointer job);
     bool dequeue_p(Job* job);
+    bool dequeue_p(JobPointer job);
     void dequeue_p();
     void finish_p();
     void suspend_p( );
@@ -152,13 +156,13 @@ public:
 
 Q_SIGNALS:
     /** A Thread has been created. */
-    void threadStarted ( ThreadWeaver::Thread* );
+    void threadStarted(ThreadWeaver::Thread*);
     /** A thread has exited. */
-    void threadExited ( ThreadWeaver::Thread* );
+    void threadExited(ThreadWeaver::Thread*);
     /** A thread has been suspended. */
-    void threadSuspended ( ThreadWeaver::Thread* );
+    void threadSuspended(ThreadWeaver::Thread*);
     /** The thread is busy executing job j. */
-    void threadBusy ( ThreadWeaver::Thread*,  ThreadWeaver::Job* j);
+    void threadBusy(ThreadWeaver::Thread*, ThreadWeaver::JobPointer j);
 
 protected:
     /** Adjust active thread count.
@@ -187,7 +191,7 @@ private:
     /** The thread inventory. */
     QList<Thread*> m_inventory;
     /** The job queue. */
-    QList<Job*> m_assignments;
+    QList<JobPointer> m_assignments;
     /** The number of jobs that are assigned to the worker
         threads, but not finished. */
     int m_active;

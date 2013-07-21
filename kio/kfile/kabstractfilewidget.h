@@ -45,7 +45,7 @@ class KFileFilterCombo;
  * on the dlopened KFileWidget (from kfilemodule.so)
  *
  * In addition to the pure virtual methods defined below, the implementations
- * of KAbstractFileWidget are expected to define the following signals:
+ * of KAbstractFileWidget are expected to define the following Q_SIGNALS:
  * <ul>
  * <li>fileSelected(const QUrl&)</li>
  * <li>fileHighlighted(const QUrl&)</li>

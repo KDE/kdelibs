@@ -35,7 +35,17 @@ qt5_add_dbus_adaptor( kded_kcookiejar_SRCS ${CMAKE_CURRENT_BINARY_DIR}/org.kde.K
 
 kde4_add_plugin(kded_kcookiejar ${kded_kcookiejar_SRCS})
 
-target_link_libraries(kded_kcookiejar  ${KDE4_KIO_LIBS} ${KWindowSystem_LIBRARIES} ${KCoreAddons_LIBRARIES} KI18n KWidgets KCompletion ${KWidgetsAddons_LIBRARIES} KInterProcessWindowing)
+target_link_libraries(kded_kcookiejar
+   ${KDE4_KIO_LIBS}
+   KWindowSystem
+   KCoreAddons
+   KDBusAddons
+   KI18n
+   KWidgets
+   KCompletion
+   KWidgetsAddons
+   KInterProcessWindowing
+)
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

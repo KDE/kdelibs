@@ -37,7 +37,7 @@ public:
   Part1( QObject *parent, QWidget * parentWidget );
   virtual ~Part1();
 
-public slots:
+public Q_SLOTS:
  void slotBlah();
  void slotFooBar();
 
