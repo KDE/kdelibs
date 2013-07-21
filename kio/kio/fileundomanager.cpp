@@ -20,6 +20,7 @@
 
 #include "fileundomanager.h"
 #include "fileundomanager_p.h"
+#include "clipboardupdater_p.h"
 #include "fileundomanager_adaptor.h"
 
 #include <kdatetime.h>
@@ -537,6 +538,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
         {
             kDebug(1203) << "file_move" << op.m_dst << op.m_src;
             m_currentJob = KIO::file_move(op.m_dst, op.m_src, -1, KIO::Overwrite | KIO::HideProgressInfo);
+            new KIO::ClipboardUpdater(m_currentJob, KIO::ClipboardUpdater::UpdateContent);
             m_undoJob->emitMoving(op.m_dst, op.m_src);
         }
 

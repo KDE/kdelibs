@@ -1,7 +1,7 @@
 # Find if we installed kdepimlibs before to compile it
 # Once done this will define
 #
-#  KDEPIMLIBS_FOUND - system has KDE PIM Libraries
+#  KdepimLibs_FOUND - system has KDE PIM Libraries
 #  KDEPIMLIBS_INCLUDE_DIR - the KDE PIM Libraries include directory
 #  KDEPIMLIBS_INCLUDE_DIRS - the KDE PIM Libraries include directory and CamelCase headers
 #
