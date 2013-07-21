@@ -173,21 +173,24 @@ void JobTests::IncompleteCollectionTest()
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
     ThreadWeaver::DependencyPolicy::instance().addDependency(jobA.data(), jobB.data());
     QSignalSpy collectionDoneSignalSpy(collection.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
-    QSignalSpy jobADoneSignalSpy(jobA.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
-    QCOMPARE(collectionDoneSignalSpy.count(), 0);
-    QCOMPARE(jobADoneSignalSpy.count(), 0);
-    ThreadWeaver::Weaver::instance()->enqueue(collection);
-    ThreadWeaver::Weaver::instance()->resume();
-    QCoreApplication::processEvents();
-    QCOMPARE(collectionDoneSignalSpy.count(), 0);
-    QCOMPARE(jobADoneSignalSpy.count(), 0);
-    ThreadWeaver::DependencyPolicy::instance().removeDependency(jobA.data(), jobB.data());
-    ThreadWeaver::Weaver::instance()->finish();
-    QCoreApplication::processEvents();
-    QVERIFY(collection->isFinished());
-    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
-    QCOMPARE(collectionDoneSignalSpy.count(), 1);
-    QCOMPARE(jobADoneSignalSpy.count(), 1);
+//TODO MIRKO_JOBINTERFACE_TEMPREM
+    QFAIL("NI");
+//    QSignalSpy jobADoneSignalSpy(jobA.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
+//    QCOMPARE(collectionDoneSignalSpy.count(), 0);
+//    QCOMPARE(jobADoneSignalSpy.count(), 0);
+//    ThreadWeaver::Weaver::instance()->enqueue(collection);
+//    ThreadWeaver::Weaver::instance()->resume();
+//    QCoreApplication::processEvents();
+//    QCOMPARE(collectionDoneSignalSpy.count(), 0);
+//    QCOMPARE(jobADoneSignalSpy.count(), 0);
+//    ThreadWeaver::DependencyPolicy::instance().removeDependency(jobA.data(), jobB.data());
+//    ThreadWeaver::Weaver::instance()->finish();
+//    QCoreApplication::processEvents();
+//    QVERIFY(collection->isFinished());
+//    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
+//    QCOMPARE(collectionDoneSignalSpy.count(), 1);
+//    QCOMPARE(jobADoneSignalSpy.count(), 1);
+//^^^END
 }
 
 /** This test verifies that started() is emitted for a collection at the time the first of any elements of the collection gets

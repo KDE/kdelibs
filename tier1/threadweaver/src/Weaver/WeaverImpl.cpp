@@ -235,7 +235,7 @@ void WeaverImpl::enqueue_p(JobPointer job)
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called
     if (job) {
         adjustInventory(1);
-        debug(3, "WeaverImpl::enqueue: queueing job %p of type %s.\n", (void*)job.data(), job->metaObject()->className());
+        debug(3, "WeaverImpl::enqueue: queueing job %p.\n", (void*)job.data());
         job->aboutToBeQueued(this);
         // find position for insertion:
         int i = m_assignments.size();
@@ -542,8 +542,7 @@ void WeaverImpl::dumpJobs()
     QMutexLocker l(m_mutex); Q_UNUSED(l);
     debug( 0, "WeaverImpl::dumpJobs: current jobs:\n" );
     for ( int index = 0; index < m_assignments.size(); ++index ) {
-        debug( 0, "--> %4i: %p %s (priority %i, can be executed: %s)\n", index, (void*)m_assignments.at( index ).data(),
-               m_assignments.at( index )->metaObject()->className(),
+        debug( 0, "--> %4i: %p (priority %i, can be executed: %s)\n", index, (void*)m_assignments.at( index ).data(),
                m_assignments.at(index)->priority(),
                m_assignments.at(index)->canBeExecuted() ? "yes" : "no");
     }
