@@ -25,7 +25,6 @@ include(io/ConfigureChecks.cmake)
 configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
 
 # Configure checks for kernel/
-include(kernel/ConfigureChecks.cmake)
 configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
 
 # Configure checks for localization

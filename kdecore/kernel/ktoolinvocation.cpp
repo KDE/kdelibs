@@ -20,7 +20,6 @@
 
 #include "ktoolinvocation.h"
 #include "klauncher_iface.h"
-#include "kdebug.h"
 #include <klocalizedstring.h>
 
 #include <qlockfile.h>
@@ -28,7 +27,7 @@
 #include <QCoreApplication>
 #include <QThread>
 #include <qstandardpaths.h>
-#include <config-kernel.h>
+#include <config-kernel.h> // HAVE_X11
 
 #include <errno.h> // for EINVAL
 
@@ -67,7 +66,7 @@ static void printError(const QString& text, QString* error)
     if (error)
         *error = text;
     else
-        kError() << text << endl;
+        qWarning() << text;
 }
 
 bool KToolInvocation::isMainThreadActive(QString* error)
