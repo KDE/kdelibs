@@ -33,7 +33,7 @@
 
 namespace ThreadWeaver {
 
-    class Job;
+    class JobInterface;
 
 /** QueuePolicy is an interface for customizations of the queueing behaviour
     of sets of jobs.
@@ -64,25 +64,25 @@ namespace ThreadWeaver {
         /** canRun() is called before the job is executed.
             The job will only be executed if canRun() returns true.
         */
-        virtual bool canRun(Job*) = 0;
+        virtual bool canRun(JobInterface*) = 0;
 
         /** free() is called after the job has been executed.
             It is guaranteed that free is called only after canRun()
             returned true at an earlier time.
         */
-        virtual void free(Job*) = 0;
+        virtual void free(JobInterface*) = 0;
 
         /** release() is called if canRun() returned true, but the job has not
             been executed for external reasons. For example, a second
             QueuePolicy could have returned false from canRun() for the same
             job.
         */
-        virtual void release(Job*) = 0;
+        virtual void release(JobInterface*) = 0;
 
         /** destructing() is called when a Job that has this queue policy
             assigned gets destructed.
         */
-        virtual void destructed(Job*) = 0;
+        virtual void destructed(JobInterface*) = 0;
     };
 
 }

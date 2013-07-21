@@ -2,14 +2,14 @@
 #define MANAGEDJOBPOINTER_H
 
 #include <QSharedPointer>
-#include <Weaver/Job.h>
+#include <JobInterface.h>
 
 namespace ThreadWeaver {
 
-class ManagedJobPointer : public QSharedPointer<Job>
+class ManagedJobPointer : public QSharedPointer<JobInterface>
 {
 public:
-    ManagedJobPointer(Job *job);
+    ManagedJobPointer(JobInterface *job);
 };
 
 };

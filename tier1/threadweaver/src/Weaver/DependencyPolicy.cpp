@@ -37,7 +37,7 @@ $Id: DebuggingAids.cpp 20 2005-08-08 21:02:51Z mirko $
 
 using namespace ThreadWeaver;
 
-typedef QMultiMap<Job*, Job*> JobMultiMap;
+typedef QMultiMap<JobInterface*, JobInterface*> JobMultiMap;
 
 class DependencyPolicy::Private
 {
@@ -72,7 +72,7 @@ DependencyPolicy::~DependencyPolicy()
     delete d;
 }
 
-void DependencyPolicy::addDependency( Job* jobA, Job* jobB )
+void DependencyPolicy::addDependency(JobInterface *jobA, JobInterface *jobB )
 {
     // jobA depends on jobB
     REQUIRE ( jobA != 0 && jobB != 0 && jobA != jobB );
@@ -85,14 +85,14 @@ void DependencyPolicy::addDependency( Job* jobA, Job* jobB )
     ENSURE ( d->dependencies().contains (jobA));
 }
 
-bool DependencyPolicy::removeDependency( Job* jobA, Job* jobB )
+bool DependencyPolicy::removeDependency(JobInterface *jobA, JobInterface *jobB )
 {
     REQUIRE (jobA != 0 && jobB != 0);
     bool result = false;
     QMutexLocker l( & d->mutex() );
 
     // there may be only one (!) occurrence of [this, dep]:
-    QMutableMapIterator<Job*, Job*> it( d->dependencies () );
+    QMutableMapIterator<JobInterface*, JobInterface*> it( d->dependencies () );
     while ( it.hasNext() )
     {
         it.next();
@@ -108,12 +108,12 @@ bool DependencyPolicy::removeDependency( Job* jobA, Job* jobB )
     return result;
 }
 
-void DependencyPolicy::resolveDependencies( Job* job )
+void DependencyPolicy::resolveDependencies( JobInterface* job )
 {
     if ( job->success() )
     {
         QMutexLocker l( & d->mutex() );
-        QMutableMapIterator<Job*, Job*> it( d->dependencies() );
+        QMutableMapIterator<JobInterface*, JobInterface*> it( d->dependencies() );
         // there has to be a better way to do this: (?)
         while ( it.hasNext() )
         {   // we remove all entries where jobs depend on *this* :
@@ -126,10 +126,10 @@ void DependencyPolicy::resolveDependencies( Job* job )
     }
 }
 
-QList<Job*> DependencyPolicy::getDependencies( Job* job ) const
+QList<JobInterface *> DependencyPolicy::getDependencies(JobInterface *job ) const
 {
     REQUIRE (job != 0);
-    QList<Job*> result;
+    QList<JobInterface*> result;
     JobMultiMap::const_iterator it;
     QMutexLocker l( & d->mutex() );
 
@@ -143,7 +143,7 @@ QList<Job*> DependencyPolicy::getDependencies( Job* job ) const
     return result;
 }
 
-bool DependencyPolicy::hasUnresolvedDependencies( Job* job ) const
+bool DependencyPolicy::hasUnresolvedDependencies(JobInterface *job ) const
 {
     REQUIRE (job != 0);
     QMutexLocker l( & d->mutex() );
@@ -156,13 +156,13 @@ DependencyPolicy& DependencyPolicy::instance ()
     return policy;
 }
 
-bool DependencyPolicy::canRun( Job* job )
+bool DependencyPolicy::canRun(JobInterface *job )
 {
     REQUIRE (job != 0);
     return ! hasUnresolvedDependencies( job );
 }
 
-void DependencyPolicy::free( Job* job )
+void DependencyPolicy::free(JobInterface *job )
 {
     REQUIRE (job != 0);
     if ( job->success() )
@@ -176,12 +176,12 @@ void DependencyPolicy::free( Job* job )
     ENSURE ( ( ! hasUnresolvedDependencies( job ) && job->success() ) || ! job->success() );
 }
 
-void DependencyPolicy::release( Job* job )
+void DependencyPolicy::release(JobInterface *job )
 {
     REQUIRE (job != 0); Q_UNUSED(job)
 }
 
-void DependencyPolicy::destructed( Job* job )
+void DependencyPolicy::destructed(JobInterface *job )
 {
     REQUIRE (job != 0);
     resolveDependencies ( job );
@@ -194,13 +194,7 @@ void DependencyPolicy::dumpJobDependencies()
     debug ( 0, "Job Dependencies (left depends on right side):\n" );
     for ( JobMultiMap::const_iterator it = d->dependencies().constBegin(); it != d->dependencies().constEnd(); ++it )
     {
-        debug( 0, "  : %p (%s%s) <-- %p (%s%s)\n",
-               (void*)it.key(),
-               it.key()->objectName().isEmpty() ? "" : qPrintable ( QString(it.key()->objectName() + QCoreApplication::translate ( "DependencyPolicy", " of type " )) ),
-               it.key()->metaObject()->className(),
-               (void*)it.value(),
-               it.value()->objectName().isEmpty() ? "" : qPrintable ( QString(it.value()->objectName() + QCoreApplication::translate ( "DependencyPolicy", " of type " )) ),
-               it.value()->metaObject()->className() );
+      debug( 0, "  : %p <-- %p\n", (void*)it.key(), (void*)it.value());
     }
     debug ( 0, "-----------------\n" );
 }

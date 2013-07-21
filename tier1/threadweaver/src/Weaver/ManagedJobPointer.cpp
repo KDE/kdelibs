@@ -2,10 +2,10 @@
 
 namespace ThreadWeaver {
 
-void doNotDeleteJob(Job*) {}
+void doNotDeleteJob(JobInterface*) {}
 
-ManagedJobPointer::ManagedJobPointer(Job* job)
-    : QSharedPointer<Job>(job,doNotDeleteJob)
+ManagedJobPointer::ManagedJobPointer(JobInterface *job)
+    : QSharedPointer<JobInterface>(job,doNotDeleteJob)
 {
 }
 

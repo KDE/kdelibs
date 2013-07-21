@@ -43,7 +43,7 @@ public:
     {}
 
     int cap;
-    QList<Job*> customers;
+    QList<JobInterface*> customers;
     QMutex mutex;
 };
 
@@ -70,7 +70,7 @@ int ResourceRestrictionPolicy::cap() const
     return d->cap;
 }
 
-bool ResourceRestrictionPolicy::canRun( Job* job )
+bool ResourceRestrictionPolicy::canRun(JobInterface *job )
 {
     QMutexLocker l ( & d->mutex );
     if ( d->customers.size() < d->cap )
@@ -82,7 +82,7 @@ bool ResourceRestrictionPolicy::canRun( Job* job )
     }
 }
 
-void ResourceRestrictionPolicy::free ( Job* job )
+void ResourceRestrictionPolicy::free (JobInterface *job )
 {
     QMutexLocker l ( & d->mutex );
     int position = d->customers.indexOf (job);
@@ -94,12 +94,12 @@ void ResourceRestrictionPolicy::free ( Job* job )
     }
 }
 
-void ResourceRestrictionPolicy::release ( Job* job )
+void ResourceRestrictionPolicy::release (JobInterface *job )
 {
     free (job);
 }
 
-void ResourceRestrictionPolicy::destructed ( Job* job )
+void ResourceRestrictionPolicy::destructed (JobInterface *job )
 {
     free (job);
 }

@@ -57,7 +57,7 @@ namespace ThreadWeaver {
             @param jobA the depending job
             @param jobB the job jobA depends on
         */
-        void addDependency( Job* jobA,  Job* jobB );
+        void addDependency( JobInterface* jobA,  JobInterface* jobB );
 
         /** Remove dependency.
 
@@ -73,7 +73,7 @@ namespace ThreadWeaver {
 	    @param jobB the job jobA depends on
 	    @return true if dependency existed, false otherwise
         */
-        bool removeDependency( Job* jobA, Job* jobB );
+        bool removeDependency( JobInterface* jobA, JobInterface* jobB );
 
         /** Resolve all dependencies.
             This method is called after the Job has been finished, or
@@ -82,27 +82,27 @@ namespace ThreadWeaver {
             The method will remove all entries stating that another Job
             depends on this one.
         */
-        void resolveDependencies ( Job* );
+        void resolveDependencies ( JobInterface* );
 
         /** Retrieve a list of dependencies of this job. */
-        QList<Job*> getDependencies( Job* ) const;
+        QList<JobInterface*> getDependencies( JobInterface* ) const;
 
         // FIXME add factory method for singleton creation
         static DependencyPolicy& instance();
 
-        bool canRun( Job* );
+        bool canRun( JobInterface* );
 
-        void free( Job* );
+        void free( JobInterface* );
 
-        void release( Job* );
+        void release( JobInterface* );
 
-        void destructed( Job* );
+        void destructed( JobInterface* );
 
     protected:
         /** Query whether the job has an unresolved dependency.
             In case it does, the policy will return false from canRun().
         */
-        bool hasUnresolvedDependencies( Job* ) const;
+        bool hasUnresolvedDependencies( JobInterface* ) const;
 
         DependencyPolicy();
 

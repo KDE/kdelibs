@@ -32,6 +32,7 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 #include <QtCore/QObject>
 
 #include <threadweaver_export.h>
+#include <JobInterface.h>
 #include <JobPointer.h>
 
 class QMutex;
@@ -45,6 +46,7 @@ class QueueAPI;
 class QueuePolicyList;
 class Executor;
 
+
 /** A Job is a simple abstraction of an action that is to be executed in a thread context.
  * It is essential for the ThreadWeaver library that as a kind of convention, the different creators of Job objects do not touch
  * the protected data members of the Job until somehow notified by the Job.
@@ -57,7 +59,7 @@ class Executor;
  * Job objects finish by emitting the done(Job*) signal.  Once this has been emitted, ThreadWeaver is no longer using the Job which
  * may then be deleted.
  */
-class THREADWEAVER_EXPORT Job : public QObject
+class THREADWEAVER_EXPORT Job : public QObject, public JobInterface
 {
     Q_OBJECT
 
@@ -170,10 +172,10 @@ public:
      * Queue Policies customize the queueing (running) behaviour of sets of jobs. Examples for queue policies are dependencies
      * and resource restrictions. Every queue policy object can only be assigned once to a job, multiple assignments will be
      * IGNORED. */
-    void assignQueuePolicy ( QueuePolicy* );
+    void assignQueuePolicy(QueuePolicy*);
 
     /** Remove a queue policy from this job. */
-    void removeQueuePolicy ( QueuePolicy* );
+    void removeQueuePolicy(QueuePolicy*);
 
 Q_SIGNALS:
     /** This signal is emitted when this job is being processed by a thread. */
