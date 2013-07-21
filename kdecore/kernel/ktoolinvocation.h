@@ -376,9 +376,9 @@ public:
                 QString *error=0, int *pid = 0, const QByteArray& startup_id = QByteArray() );
 
   /**
-   * @internal
+   * Ensures that kdeinit5 and klauncher are running.
    */
-  static void startKdeinit();
+  static void ensureKdeinitRunning();
 
 Q_SIGNALS:
   /**

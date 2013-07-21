@@ -58,10 +58,7 @@ Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
 
 org::kde::KLauncher *KToolInvocation::klauncher()
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5"))) {
-        kDebug(180) << "klauncher not running... launching kdeinit";
-        KToolInvocation::startKdeinit();
-    }
+    KToolInvocation::ensureKdeinitRunning();
     return ::klauncherIface();
 }
 
@@ -91,6 +88,7 @@ int KToolInvocation::startServiceInternal(const char *_function,
                                           const QString& workdir)
 {
     QString function = QLatin1String(_function);
+    KToolInvocation::ensureKdeinitRunning();
     QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.klauncher5"),
                                                       QStringLiteral("/KLauncher"),
                                                       QStringLiteral("org.kde.KLauncher"),
@@ -292,8 +290,13 @@ void KToolInvocation::invokeMailer(const QUrl &mailtoURL, const QByteArray& star
     invokeMailer( address, cc, bcc, subject, body, QString(), attachURLs, startup_id );
 }
 
-void KToolInvocation::startKdeinit()
+void KToolInvocation::ensureKdeinitRunning()
 {
+    if (QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5"))) {
+        return;
+    }
+    qDebug() << "klauncher not running... launching kdeinit";
+
   QLockFile lock(QDir::tempPath() + QLatin1Char('/') + QLatin1String("startkdeinitlock"));
   if (!lock.tryLock()) {
      lock.lock();

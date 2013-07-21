@@ -66,10 +66,7 @@ Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
 
 static org::kde::KLauncher *klauncher()
 {
-    if (!QDBusConnection::sessionBus().interface()->isServiceRegistered(QString::fromLatin1("org.kde.klauncher5"))) {
-        //qDebug() << "klauncher not running... launching kdeinit";
-        KToolInvocation::startKdeinit();
-    }
+    KToolInvocation::ensureKdeinitRunning();
     return ::klauncherIface();
 }
 

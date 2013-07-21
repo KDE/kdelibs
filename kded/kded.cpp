@@ -94,6 +94,7 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    {
       QVariantList argList;
       argList << exe << args << QStringList() << QString();
+      KToolInvocation::ensureKdeinitRunning();
       QDBusInterface klauncher(QStringLiteral("org.kde.klauncher5"), QStringLiteral("/KLauncher"), QStringLiteral("org.kde.KLauncher"), QDBusConnection::sessionBus());
       klauncher.callWithCallback("kdeinit_exec_wait", argList, callBackObj, callBackSlot);
    }
