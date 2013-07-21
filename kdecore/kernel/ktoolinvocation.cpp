@@ -91,11 +91,10 @@ int KToolInvocation::startServiceInternal(const char *_function,
                                           const QString& workdir)
 {
     QString function = QLatin1String(_function);
-    org::kde::KLauncher *launcher = KToolInvocation::klauncher();
-    QDBusMessage msg = QDBusMessage::createMethodCall(launcher->service(),
-                                                launcher->path(),
-                                                launcher->interface(),
-                                                function);
+    QDBusMessage msg = QDBusMessage::createMethodCall(QStringLiteral("org.kde.klauncher5"),
+                                                      QStringLiteral("/KLauncher"),
+                                                      QStringLiteral("org.kde.KLauncher"),
+                                                      function);
     msg << _name << URLs;
     if (function == QLatin1String("kdeinit_exec_with_workdir"))
         msg << workdir;

@@ -47,7 +47,6 @@
 #include <ktoolinvocation.h>
 #include <kde_file.h>
 #include <kdeversion.h> // KDE_VERSION_MAJOR
-#include "klauncher_iface.h"
 #include "config-kded.h"
 
 #if HAVE_X11
@@ -95,8 +94,8 @@ static void runBuildSycoca(QObject *callBackObj=0, const char *callBackSlot=0)
    {
       QVariantList argList;
       argList << exe << args << QStringList() << QString();
-      KToolInvocation::klauncher()->callWithCallback("kdeinit_exec_wait", argList, callBackObj,
-                                                         callBackSlot);
+      QDBusInterface klauncher(QStringLiteral("org.kde.klauncher5"), QStringLiteral("/KLauncher"), QStringLiteral("org.kde.KLauncher"), QDBusConnection::sessionBus());
+      klauncher.callWithCallback("kdeinit_exec_wait", argList, callBackObj, callBackSlot);
    }
    else
    {

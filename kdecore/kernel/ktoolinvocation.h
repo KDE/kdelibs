@@ -164,12 +164,14 @@ public Q_SLOTS:
 public:
   /**
    * Returns the D-Bus interface of the service launcher.
-   * The returned object is owned by KApplication, do not delete it!
+   * The returned object is a global static, do not delete it!
+   * @deprecated since 5.0. Use startKdeinit if you just want kdeinit/klauncher to be running.
+   * Otherwise you shouldn't be calling this anyway (talk to David Faure for solutions)
+   * TODO: provide wrapper for setLaunchEnv, used in kde-runtime.
    */
-  static OrgKdeKLauncherInterface *klauncher();
-  // KDE5: remove this from the public API. Make it kdelibs-private, and provide
-  // replacements for setLaunchEnv and for "making sure kdeinit/klauncher is running".
-  // (We could do the last two without waiting, of course).
+#ifndef KDE_NO_DEPRECATED
+  KDECORE_DEPRECATED OrgKdeKLauncherInterface *klauncher();
+#endif
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -373,6 +375,11 @@ public:
   static int kdeinitExecWait( const QString& name, const QStringList &args=QStringList(),
                 QString *error=0, int *pid = 0, const QByteArray& startup_id = QByteArray() );
 
+  /**
+   * @internal
+   */
+  static void startKdeinit();
+
 Q_SIGNALS:
   /**
    * Hook for KApplication in kdeui
@@ -381,11 +388,6 @@ Q_SIGNALS:
   void kapplication_hook(QStringList& env , QByteArray& startup_id);
 
 private:
-  /**
-   * @internal
-   */
-  static void startKdeinit();
-
   int startServiceInternal(const char *_function,
                            const QString& _name, const QStringList &URLs,
                            QString *error, QString *serviceName, int *pid,
