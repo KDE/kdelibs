@@ -34,7 +34,7 @@
 
 #include <klocalizedstring.h>
 
-#include <ktoolinvocation.h>
+#include <kdeinit_interface.h>
 #include <klauncher_iface.h>
 #include <klibrary.h>
 
@@ -66,7 +66,7 @@ Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
 
 static org::kde::KLauncher *klauncher()
 {
-    KToolInvocation::ensureKdeinitRunning();
+    KDEInitInterface::ensureKdeinitRunning();
     return ::klauncherIface();
 }
 

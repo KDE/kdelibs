@@ -192,7 +192,7 @@ target_link_libraries(kdecore
   LINK_PUBLIC
     Qt5::Network Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} KService KI18n
   LINK_PRIVATE
-    Qt5::Xml ${kdecore_OPTIONAL_LIBS}
+    Qt5::Xml ${kdecore_OPTIONAL_LIBS} KDBusAddons
 )
 
 if(WINCE)
