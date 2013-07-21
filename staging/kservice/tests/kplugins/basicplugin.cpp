@@ -19,39 +19,16 @@
  *
  */
 
-#include "kqpluginfactory.h"
+#include "basicplugin.h"
 
 #include <QDebug>
 
-/*
-KQPluginFactory::KQPluginFactory(const KPluginInfo& plugin, QObject* parent)
-    : QObject(parent)
-{
-    qDebug() << "right constructor for kqpluginfactory :)";
-
-}
-*/
-KQPluginFactory::KQPluginFactory()
+BasicPlugin::BasicPlugin()
     : QObject()
 {
-    qDebug() << "empty args kqpluginfactory :)";
+    qDebug() << "empty args basicplugin:)";
 
 }
 
-// KQPluginFactory::~KQPluginFactory()
-// {
-//     qDebug() << "KQPluginFactory destroyed";
-// }
 
-
-QObject* KQPluginFactory::createPlugin(const QString& name)
-{
-    qDebug() << "Create Plugin implementation" << name;
-    QObject *o = new QObject(); // getter is expected to take ownership
-    o->setObjectName(name);
-
-    return o;
-
-}
-
-#include "kqpluginfactory.moc"
+//#include "basicplugin.moc"

@@ -19,31 +19,32 @@
  *
  */
 
-#ifndef KQPLUGINFACTORY_H
-#define KQPLUGINFACTORY_H
+#ifndef BASICPLUGIN_H
+#define BASICPLUGIN_H
 
-#include "kqpluginfactoryinterface.h"
-#include <kplugininfo.h>
+#include <kpluginfactory.h>
 
 #include <QObject>
 
 
-class KSERVICE_EXPORT KQPluginFactory : public QObject, public KQPluginFactoryInterface
+class BasicPlugin : public QObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.kde.KQPluginFactoryInterface" FILE "kqpluginfactory.json")
-    Q_INTERFACES(KQPluginFactoryInterface)
+    Q_PLUGIN_METADATA(IID "org.kde.BasicPluginInterface" FILE "kqpluginfactory.json")
+    Q_INTERFACES(BasicPlugin)
 
     public:
-//         explicit KQPluginFactory(const KPluginInfo &plugin, QObject *parent = 0);
-        explicit KQPluginFactory();
+//         explicit BasicPlugin(const KPluginInfo &plugin, QObject *parent = 0);
+        explicit BasicPlugin();
 //
-//         virtual ~KQPluginFactory();
+//         virtual ~BasicPlugin();
 
-        QObject* createPlugin(const QString &name);
+//         QObject* createPlugin(const QString &name);
 
 private:
 
 };
 
-#endif // KQPLUGINFACTORY_H
+Q_DECLARE_INTERFACE(BasicPlugin, "org.kde.BasicPluginInterface")
+
+#endif // BASICPLUGIN_H

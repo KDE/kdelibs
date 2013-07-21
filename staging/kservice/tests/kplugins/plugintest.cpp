@@ -18,9 +18,9 @@
 *******************************************************************************/
 
 #include "plugintest.h"
+#include "basicplugin.h"
 
 #include <klocalizedstring.h>
-
 
 #include <qcommandlineparser.h>
 #include <QDir>
@@ -58,30 +58,33 @@ void PluginTest::runMain()
 {
     qDebug() << " libs are in: " << QCoreApplication::libraryPaths();
     qDebug() << "plugin test runs: ";
-    loadKQPlugin();
+    loadPlugin();
     exit(0);
 }
 
-void PluginTest::loadKQPlugin()
+void PluginTest::loadPlugin()
 {
-    qDebug() << "Load KQPlugin";
-    QString pluginPath = "/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/";
+    qDebug() << "Load Plugin";
+    //QString pluginPath = QFINDTESTDATA("libbasicplugin.so");
+    QString pluginPath = "/home/sebas/kf5/build/kdelibs/staging/kservice/tests/kplugins";
+    qDebug() << "Plugin is in: " << pluginPath;
+    //"/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/";
     QCoreApplication::addLibraryPath(pluginPath);
-    QPluginLoader loader("/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/libkqpluginfactory.so", this);
-    KQPluginFactory *factory = qobject_cast<KQPluginFactory*>(loader.instance());
-    //QObject *factory = loader.instance();
-    if (factory) {
-        qDebug() << "loaded successfully and cast";
-        qDebug() << "metadata: " << loader.metaData();
-        QObject *o = factory->createInstance<QObject>(this, QVariantList() << "Peter");
-        qDebug() << " objec name:" << o->objectName();
-
-    } else {
-        qDebug() << "loading failed somehow";
-    }
+    QPluginLoader loader("libbasicplugin.so", this);
+//     BasicPlugin *factory = qobject_cast<BasicPlugin*>(loader.instance()); // FIXME
+//     //QObject *factory = loader.instance();
+//     if (factory) {
+//         qDebug() << "loaded successfully and cast";
+//         qDebug() << "metadata: " << loader.metaData();
+//         //QObject *o = factory->createInstance<QObject>(this, QVariantList() << "Peter");
+//         //qDebug() << " objec name:" << o->objectName();
+//
+//     } else {
+//         qDebug() << "loading failed somehow";
+//     }
     //KQPluginFactory* factory = new KQPluginFactory(KPluginInfo(), this);
 
 }
 
-#include "moc_plugintest.cpp"
+#include "plugintest.moc"
 

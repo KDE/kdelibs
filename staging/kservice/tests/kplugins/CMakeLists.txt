@@ -1,18 +1,21 @@
 project("plugintest")
 
-# set(kqpluginfactory_SRCS
-#     kqpluginfactory.cpp
-#     )
-#
-# add_library(kqpluginfactory SHARED ${kqpluginfactory_SRCS})
-#
-# target_link_libraries(kqpluginfactory
-#     kservice
-#     KConfigCore
-#     KCoreAddons
-#     ki18n)
+include(ECMMarkAsTest)
 
-#install(TARGETS kqpluginfactory DESTINATION ${PLUGIN_INSTALL_DIR}/kplugins)
+
+set(basicplugin_SRCS
+    basicplugin.cpp
+    )
+
+add_library(basicplugin SHARED ${basicplugin_SRCS})
+
+target_link_libraries(basicplugin
+    KService
+    KConfigCore
+    KCoreAddons
+    KI18n)
+
+#install(TARGETS basicplugin DESTINATION ${PLUGIN_INSTALL_DIR}/kplugins)
 
 add_executable(plugintest
     main.cpp
@@ -20,11 +23,16 @@ add_executable(plugintest
 )
 
 target_link_libraries(plugintest
-    kservice
+    ${QT_QTTEST_LIBRARY}
+    KService
     KConfigCore
     KCoreAddons
     KI18n
-    kdeqt5staging)
+    kdeqt5staging
+)
+
+add_test(kservice-plugintest plugintest)
+ecm_mark_as_test(plugintest)
 
 message("INSTALL_TARGETS_DEFAULT_ARGS ${INSTALL_TARGETS_DEFAULT_ARGS}")
 

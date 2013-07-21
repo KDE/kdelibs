@@ -37,7 +37,7 @@ class PluginTest : public QCoreApplication
         void runMain();
 
     private:
-        void loadKQPlugin();
+        void loadPlugin();
         PluginTestPrivate* d;
 };
 
