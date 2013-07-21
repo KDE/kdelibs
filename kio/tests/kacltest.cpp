@@ -29,10 +29,6 @@
 #include <QFileInfo>
 #include <QEventLoop>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 
 static bool check(const QString& txt, QString a, QString b)
