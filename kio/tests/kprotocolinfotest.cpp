@@ -21,7 +21,7 @@
 #include <QUrl>
 #include <kprotocolmanager.h>
 #include <kglobalsettings.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <QtTest>
 #include <qstandardpaths.h>
 #include <kservice.h>

@@ -3,7 +3,7 @@
 #include <kservicetype.h>
 
 #include <qapplication.h>
-#include <kdebug.h>
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -11,30 +11,30 @@ int main(int argc, char *argv[])
     QApplication k(argc, argv);
 
 //for (int i = 0 ; i < 2 ; ++i ) { // test twice to see if they got deleted
-   kDebug() << "All services";
+   qDebug() << "All services";
    KService::List services = KService::allServices();
-   kDebug() << "got " << services.count() << " services";
+   qDebug() << "got " << services.count() << " services";
    Q_FOREACH(const KService::Ptr s, services) {
-     kDebug() << s->name() << " " << s->entryPath();
+     qDebug() << s->name() << " " << s->entryPath();
    }
 //}
 
-   kDebug() << "All mimeTypes";
+   qDebug() << "All mimeTypes";
    QMimeDatabase db;
    QList<QMimeType> mimeTypes = db.allMimeTypes();
-   kDebug() << "got " << mimeTypes.count() << " mimeTypes";
+   qDebug() << "got " << mimeTypes.count() << " mimeTypes";
    Q_FOREACH(const QMimeType& m, mimeTypes) {
-     kDebug() << m.name();
+     qDebug() << m.name();
    }
 
-   kDebug() << "All service types";
+   qDebug() << "All service types";
    KServiceType::List list = KServiceType::allServiceTypes();
-   kDebug() << "got " << list.count() << " service types";
+   qDebug() << "got " << list.count() << " service types";
    Q_FOREACH(const KServiceType::Ptr st, list) {
-     kDebug() << st->name();
+     qDebug() << st->name();
    }
 
-   kDebug() << "done";
+   qDebug() << "done";
 
    return 0;
 }

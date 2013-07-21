@@ -1,16 +1,16 @@
 #include <QApplication>
-#include <kdebug.h>
+#include <QDebug>
 
 #include "authinfo.h"
 
 void output( const QUrl& u )
 {
-    kDebug() << "Looking up auto login for: " << u;
+    qDebug() << "Looking up auto login for: " << u;
     KIO::NetRC::AutoLogin l;
     bool result = KIO::NetRC::self()->lookup( u, l, true );
     if ( !result )
     {
-       kDebug() << "Either no .netrc and/or .kionetrc file was "
+       qDebug() << "Either no .netrc and/or .kionetrc file was "
                     "found or there was problem when attempting to "
                     "read from them!  Please make sure either or both "
                     "of the above files exist and have the correct "
@@ -19,7 +19,7 @@ void output( const QUrl& u )
        return;
     }
 
-    kDebug() << "Type: " << l.type << endl
+    qDebug() << "Type: " << l.type << endl
               << "Machine: " << l.machine << endl
               << "Login: " << l.login << endl
               << "Password: " << l.password << endl;
@@ -27,7 +27,7 @@ void output( const QUrl& u )
     QMap<QString,QStringList>::ConstIterator it = l.macdef.constBegin();
     for ( ; it != l.macdef.constEnd(); ++it )
     {
-        kDebug() << "Macro: " << it.key() << "= "
+        qDebug() << "Macro: " << it.key() << "= "
                   << it.value().join("   ") << endl;
     }
 }
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
     for(int i = 0 ; i < count; i++) {
         QUrl u = QUrl::fromUserInput(QCoreApplication::arguments().at(i + 1));
         if (!u.isValid()) {
-          kDebug() << u << "is invalid! Ignoring...";
+          qDebug() << u << "is invalid! Ignoring...";
           continue;
         }
         output( u );

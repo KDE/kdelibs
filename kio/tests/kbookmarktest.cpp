@@ -22,7 +22,7 @@
 QTEST_MAIN(KBookmarkTest)
 
 #include <kbookmark.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <QtCore/QMimeData>
 
 static void compareBookmarks( const KBookmark& initialBookmark, const KBookmark& decodedBookmark )

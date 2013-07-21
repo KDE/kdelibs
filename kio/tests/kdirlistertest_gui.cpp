@@ -24,7 +24,7 @@
 #include <QtCore/QDir>
 
 #include <kdirlister.h>
-#include <kdebug.h>
+#include <QDebug>
 #include "kdirlistertest_gui.h"
 
 #include <cstdlib>
@@ -147,9 +147,9 @@ void KDirListerTest::completed()
     {
         const KFileItem item = lister->findByUrl( QUrl::fromLocalFile( QDir::tempPath() ) );
         if ( !item.isNull() )
-            kDebug() << "Found " << QDir::tempPath() << ": " << item.name();
+            qDebug() << "Found " << QDir::tempPath() << ": " << item.name();
         else
-            kWarning() << QDir::tempPath() << " not found! Bug in findByURL?";
+            qWarning() << QDir::tempPath() << " not found! Bug in findByURL?";
     }
 }
 

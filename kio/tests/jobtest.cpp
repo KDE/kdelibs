@@ -87,14 +87,14 @@ void JobTest::initTestCase()
     if ( !QFile::exists( otherTmpDir() ) ) {
         bool ok = QDir().mkdir( otherTmpDir() );
         if ( !ok )
-            kFatal() << "Couldn't create " << otherTmpDir();
+            qFatal("couldn't create %s", qPrintable(otherTmpDir()));
     }
 #if 0
     if ( KProtocolInfo::isKnownProtocol( "system" ) ) {
         if ( !QFile::exists( realSystemPath() ) ) {
             bool ok = dir.mkdir( realSystemPath() );
             if ( !ok )
-                kFatal() << "Couldn't create " << realSystemPath();
+                qFatal("couldn't create %s", qPrintable(realSystemPath()));
         }
     }
 #endif
@@ -413,7 +413,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     job->setUiDelegateExtension(0);
     bool ok = KIO::NetAccess::synchronousRun(job, 0);
     if ( !ok )
-        kWarning() << KIO::NetAccess::lastError();
+        qWarning() << KIO::NetAccess::lastError();
     QVERIFY( ok );
     QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
     QVERIFY( !QFile::exists( src ) ); // not there anymore
@@ -1161,7 +1161,7 @@ void JobTest::deleteDirectory()
     bool symlink_ok = symlink( QFile::encodeName(QFileInfo(QFINDTESTDATA("jobtest.cpp")).absolutePath()),
                                QFile::encodeName(dest + "/symlink_to_dir" ) ) == 0;
     if ( !symlink_ok )
-        kFatal() << "couldn't create symlink: " << strerror( errno ) ;
+        qFatal("couldn't create symlink: %s", strerror(errno));
 #endif
 
     KIO::Job* job = KIO::del(QUrl::fromLocalFile(dest), KIO::HideProgressInfo);

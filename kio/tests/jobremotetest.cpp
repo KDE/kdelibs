@@ -23,7 +23,7 @@
 #include "jobremotetest.h"
 
 #include <kio/netaccess.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 
 #include <QtCore/QFileInfo>
@@ -93,11 +93,11 @@ void JobRemoteTest::initTestCase()
     if (!myExists(url)) {
         const bool ok = url.isLocalFile() ? QDir().mkpath(url.toLocalFile()) : myMkdir(url);
         if ( !ok )
-            kFatal() << "Couldn't create" << url;
+            qFatal("couldn't create %s", qPrintable(url.toString()));
     }
     const bool ok = QDir().mkpath(localTmpDir());
     if ( !ok )
-        kFatal() << "Couldn't create" << localTmpDir();
+        qFatal("couldn't create %s", qPrintable(localTmpDir()));
 }
 
 static void delDir(const QUrl& pathOrUrl) {

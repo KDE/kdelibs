@@ -33,7 +33,7 @@
 #include <kprotocolinfo.h>
 
 #include <kde_file.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 
@@ -75,7 +75,7 @@ static void createTestFile( const QString& path, const char* contents )
 {
     QFile f( path );
     if ( !f.open( QIODevice::WriteOnly ) )
-        kFatal() << "Can't create " << path ;
+        qFatal("Couldn't create %s", qPrintable(path));
     f.write( QByteArray( contents ) );
     f.close();
 }
@@ -87,7 +87,7 @@ static void createTestSymlink( const QString& path )
     if ( KDE_lstat( QFile::encodeName( path ), &buf ) != 0 ) {
         bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
         if ( !ok )
-            kFatal() << "couldn't create symlink: " << strerror( errno ) ;
+            qFatal("couldn't create symlink: %s", strerror(errno));
         QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
         QVERIFY( S_ISLNK( buf.st_mode ) );
     } else {
@@ -113,14 +113,14 @@ static void createTestDirectory( const QString& path )
     QDir dir;
     bool ok = dir.mkdir( path );
     if ( !ok )
-        kFatal() << "couldn't create " << path ;
+        qFatal("couldn't create %s", qPrintable(path));
     createTestFile( path + "/fileindir", "File in dir" );
 #ifndef Q_OS_WIN
     createTestSymlink( path + "/testlink" );
 #endif
     ok = dir.mkdir( path + "/dirindir" );
     if ( !ok )
-        kFatal() << "couldn't create " << path ;
+        qFatal("couldn't create %s", qPrintable(path));
     createTestFile( path + "/dirindir/nested", "Nested" );
     checkTestDirectory( path );
 }
@@ -132,7 +132,7 @@ public:
         setShowProgressInfo( false );
     }
     virtual void jobError( KIO::Job* job ) {
-        kFatal() << job->errorString() ;
+        qFatal("%s", qPrintable(job->errorString()));
     }
     virtual bool copiedFileWasModified( const QUrl& src, const QUrl& dest, const QDateTime& srcTime, const QDateTime& destTime ) {
         Q_UNUSED( src );
@@ -177,7 +177,7 @@ void FileUndoManagerTest::initTestCase()
     if ( !QFile::exists( homeTmpDir() ) ) {
         bool ok = dir.mkdir( homeTmpDir() );
         if ( !ok )
-            kFatal() << "Couldn't create " << homeTmpDir() ;
+            qFatal("Couldn't create %s", qPrintable(homeTmpDir()));
     }
 
     createTestFile( srcFile(), "Hello world" );
@@ -213,7 +213,7 @@ void FileUndoManagerTest::doUndo()
 
 void FileUndoManagerTest::testCopyFiles()
 {
-    kDebug() ;
+    qDebug() ;
     // Initially inspired from JobTest::copyFileToSamePartition()
     const QString destdir = destDir();
     QList<QUrl> lst = sourceList();
@@ -270,7 +270,7 @@ void FileUndoManagerTest::testCopyFiles()
 
 void FileUndoManagerTest::testMoveFiles()
 {
-    kDebug() ;
+    qDebug() ;
     const QString destdir = destDir();
     QList<QUrl> lst = sourceList();
     const QUrl d = QUrl::fromLocalFile(destdir);
@@ -304,7 +304,7 @@ void FileUndoManagerTest::testMoveFiles()
 #if 0
 void FileUndoManagerTest::testCopyFilesOverwrite()
 {
-    kDebug() ;
+    qDebug() ;
     // Create a different file in the destdir
     createTestFile( destFile(), "An old file already in the destdir" );
 

@@ -19,7 +19,7 @@
 
 #include <kdbusservicestarter.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kservice.h>
 #include <QApplication>
 

@@ -16,7 +16,7 @@
  *  the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
  *  Boston, MA 02110-1301, USA.
  */
-#include <kdebug.h>
+#include <QDebug>
 #include <QApplication>
 #include <QUrl>
 #include <time.h>
@@ -45,12 +45,12 @@ void SpeedTest::entries(KIO::Job*, const UDSEntryList& list) {
     UDSEntryList::ConstIterator it = list.begin();
     const UDSEntryList::ConstIterator end = list.end();
     for (; it != end; ++it)
-        kDebug() << (*it).stringValue( UDSEntry::UDS_NAME );
+        qDebug() << (*it).stringValue( UDSEntry::UDS_NAME );
 }
 
 
 void SpeedTest::finished(KJob*) {
-    kDebug() << "job finished";
+    qDebug() << "job finished";
     qApp->quit();
 }
 
@@ -79,24 +79,24 @@ int main(int argc, char **argv) {
 
     KMountPoint::Ptr mp = mountPoints.findByDevice(url.toLocalFile());
     if (!mp) {
-        kDebug() << "no mount point for device " << url << " found\n";
+        qDebug() << "no mount point for device " << url << " found\n";
     } else
-        kDebug() << mp->mountPoint() << " is the mount point for device " << url;
+        qDebug() << mp->mountPoint() << " is the mount point for device " << url;
 
     mp = mountPoints.findByPath(url.toLocalFile());
     if (!mp) {
-        kDebug() << "no mount point for path " << url << " found\n";
+        qDebug() << "no mount point for path " << url << " found\n";
     } else {
-        kDebug() << mp->mountPoint() << " is the mount point for path " << url;
-        kDebug() << url << " is probably " << (mp->probablySlow() ? "slow" : "normal") << " mounted\n";
+        qDebug() << mp->mountPoint() << " is the mount point for path " << url;
+        qDebug() << url << " is probably " << (mp->probablySlow() ? "slow" : "normal") << " mounted\n";
     }
 
     url.setPath(QDir::homePath());
 
     mp = mountPoints.findByPath(url.toLocalFile());
     if (!mp) {
-        kDebug() << "no mount point for path " << url << " found\n";
+        qDebug() << "no mount point for path " << url << " found\n";
     } else
-        kDebug() << mp->mountPoint() << " is the mount point for path " << url;
+        qDebug() << mp->mountPoint() << " is the mount point for path " << url;
 }
 
