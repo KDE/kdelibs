@@ -88,9 +88,6 @@ extern "C" void endvfsent( );
 # endif
 #endif
 
-#include "kdebug.h"
-
-
 #ifdef _OS_SOLARIS_
 #define FSTAB "/etc/vfstab"
 #else
