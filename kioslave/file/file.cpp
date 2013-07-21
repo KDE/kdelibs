@@ -99,8 +99,6 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
   QCoreApplication app( argc, argv ); // needed for QSocketNotifier
   app.setApplicationName(QLatin1String("kio_file"));
 
-  kDebug(7101) << "Starting" << getpid();
-
   if (argc != 4)
   {
      fprintf(stderr, "Usage: kio_file protocol domain-socket1 domain-socket2\n");
@@ -108,9 +106,15 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
   }
 
   FileProtocol slave(argv[2], argv[3]);
+
+  // Make sure the first kDebug is after the slave ctor (which sets a SIGPIPE handler)
+  // This is useful in case kdeinit was autostarted by another app, which then exited and closed fd2
+  // (e.g. ctest does that, or closing the terminal window would do that)
+  //kDebug(7101) << "Starting" << getpid();
+
   slave.dispatchLoop();
 
-  kDebug(7101) << "Done";
+  //kDebug(7101) << "Done";
   return 0;
 }
 
