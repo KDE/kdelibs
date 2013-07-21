@@ -67,10 +67,10 @@ namespace ThreadWeaver {
          */
         void setCap (int newCap);
         int cap() const;
-        bool canRun( Job* );
-        void free (Job*);
-        void release (Job*);
-        void destructed (Job*);
+        bool canRun( JobInterface* );
+        void free (JobInterface*);
+        void release (JobInterface*);
+        void destructed (JobInterface*);
 
     private:
         class Private;

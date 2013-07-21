@@ -63,10 +63,7 @@ class DebugExecuteWrapper : public ThreadWeaver::ExecuteWrapper {
 public:
     void execute(ThreadWeaver::JobPointer job,ThreadWeaver::Thread *th) Q_DECL_OVERRIDE {
         Q_ASSERT_X(job, Q_FUNC_INFO, "job may not be zero!");
-        ThreadWeaver::debug(3, "DefaultExecuteWrapper::execute: executing job of type %s (%s) in thread %i.\n",
-                            job->metaObject()->className(),
-                            job->objectName().isEmpty() ? "unnamed" : qPrintable(job->objectName()),
-                            th ? th->id() : 0);
+        ThreadWeaver::debug(3, "DefaultExecuteWrapper::execute: executing job %p in thread %i.\n", job.data(), th ? th->id() : 0);
         executeWrapped(job, th);
         ThreadWeaver::debug(3, "Job::execute: finished execution of job in thread %i.\n", th ? th->id() : 0);
     }
