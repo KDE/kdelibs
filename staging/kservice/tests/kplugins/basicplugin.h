@@ -30,13 +30,16 @@
 class BasicPlugin : public QObject
 {
     Q_OBJECT
+    //Q_INTERFACES(BasicPlugin)
 
     public:
-        explicit BasicPlugin(QObject* parent, const QVariantList& args);
+        explicit BasicPlugin(QObject* parent = 0, const QVariantList& args = QVariantList());
 
 private:
 
 };
+
+Q_DECLARE_METATYPE(BasicPlugin*)
 
 // K_PLUGIN_HEADER(BasicPluginFactory, BasicPlugin, "basicplugin.json")
 
