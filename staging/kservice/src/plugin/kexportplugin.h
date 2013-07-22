@@ -80,8 +80,6 @@ class KSERVICE_DEPRECATED_EXPORT K_EXPORT_PLUGIN_is_deprecated_port_to_K_PLUGIN_
 
 #define K_EXPORT_PLUGIN(factory) \
             K_EXPORT_PLUGIN_is_deprecated_port_to_K_PLUGIN_HEADER dummy; \
-            Q_EXTERN_C Q_DECL_EXPORT QT_PREPEND_NAMESPACE(QObject) * Q_STANDARD_CALL qt_plugin_instance() \
-            Q_PLUGIN_INSTANCE(factory) \
             K_PLUGIN_VERIFICATION_DATA
 
 #endif

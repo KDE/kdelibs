@@ -33,9 +33,14 @@
 class KPluginFactoryPrivate;
 namespace KParts { class Part; }
 
+#define KPluginFactory_iid "org.kde.KPluginFactory"
+
 #define K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
-class name : public baseFactory \
+class name : public KPluginFactory \
 { \
+    Q_OBJECT \
+    Q_PLUGIN_METADATA(IID "KPluginFactory_iid") \
+    Q_INTERFACES(KPluginFactory) \
     public: \
         explicit name(const char * = 0, const char * = 0, QObject * = 0); \
         ~name(); \
@@ -56,7 +61,6 @@ name::~name() {}
     K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
     K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations)
 
-#define KPluginFactory_iid "org.kde.KPluginFactory"
 
 #define K_PLUGIN_HEADER(name, baseclass, jsonfile) \
 class name : public KPluginFactory \
@@ -69,11 +73,6 @@ class name : public KPluginFactory \
         explicit name(const char * = 0, const char * = 0, QObject * = 0) \
         { \
             init(); \
-        } \
-\
-        virtual QObject *create(const char *iface, QWidget *parentWidget, QObject *parent, const QVariantList &args, const QString &keyword) \
-        { \
-            return new baseclass(parent, KPluginFactory::args()); \
         } \
 \
     private: \
