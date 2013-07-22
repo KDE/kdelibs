@@ -31,7 +31,7 @@ class QKeyEvent;
 
 class KRichTextEditPrivate;
 
-#include <kdeui_export.h>
+#include <ktextwidgets_export.h>
 
 #define HAVE_INSERTPLAINTEXT 1
 
@@ -62,7 +62,7 @@ class KRichTextEditPrivate;
  *
  * @since 4.1
  */
-class KDEUI_EXPORT KRichTextEdit : public KTextEdit
+class KTEXTWIDGETS_EXPORT KRichTextEdit : public KTextEdit
 {
     Q_OBJECT
 

@@ -30,8 +30,8 @@
 #include <QFileDialog>
 #include <QLabel>
 #include <QtCore/QTextStream>
-#include <qtest.h>
-#include <qsavefile.h>
+#include <QTest>
+#include <QSaveFile>
 #include <QStatusBar>
 
 
@@ -42,7 +42,8 @@ KRichTextEditor::KRichTextEditor() : KXmlGuiWindow()
     textArea = new KRichTextWidget(this);
     setCentralWidget(textArea);
 
-    textArea->createActions(actionCollection());
+    actionCollection()->addActions(textArea->createActions());
+
     setupGUI(KXmlGuiWindow::Default, QFINDTESTDATA("krichtexteditorui.rc"));
 
     itemLabel = new QLabel;
@@ -80,7 +81,7 @@ void KRichTextEditor::cursorPositionChanged()
     if (textArea->textCursor().charFormat().isAnchor()) {
         QString text = textArea->currentLinkText();
         QString url = textArea->currentLinkUrl();
-        itemLabel->setText(text + " -> " + url);
+        itemLabel->setText(text + QStringLiteral(" -> ") + url);
     } else {
         itemLabel->setText(QString());
     }

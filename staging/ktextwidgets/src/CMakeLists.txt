@@ -1,19 +1,23 @@
 set(ktextwidgets_LIB_SRCS
+  dialogs/klinkdialog.cpp
   findreplace/kfind.cpp
   findreplace/kfinddialog.cpp
   findreplace/kreplace.cpp
   findreplace/kreplacedialog.cpp
+  widgets/krichtextedit.cpp
+  widgets/krichtextwidget.cpp
   widgets/ktextedit.cpp
+  widgets/nestedlisthelper.cpp
 )
 
 add_library(KTextWidgets ${LIBRARY_TYPE} ${ktextwidgets_LIB_SRCS})
 generate_export_header(KTextWidgets)
 
 set(ktextwidgets_INCLUDES
+  ${CMAKE_CURRENT_SOURCE_DIR}/dialogs
   ${CMAKE_CURRENT_SOURCE_DIR}/findreplace
   ${CMAKE_CURRENT_SOURCE_DIR}/kregexpeditor
   ${CMAKE_CURRENT_SOURCE_DIR}/widgets
-  ${CMAKE_CURRENT_SOURCE_DIR}/kregexpeditor
 )
 target_include_directories(KTextWidgets PUBLIC "$<BUILD_INTERFACE:${ktextwidgets_INCLUDES}>"
 )
@@ -45,6 +49,8 @@ install(FILES
   findreplace/kreplace.h
   findreplace/kreplacedialog.h
   kregexpeditor/kregexpeditorinterface.h
+  widgets/krichtextedit.h
+  widgets/krichtextwidget.h
   widgets/ktextedit.h
   ${CMAKE_CURRENT_BINARY_DIR}/ktextwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

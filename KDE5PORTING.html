@@ -323,6 +323,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KAction global shortcut handling logic moved to KGlobalAccel. So the KAction::globalShortcutChanged signal was removed and a new corresponding KGlobalAccel::globalShortcutChanged has been added. The signal semantics have not changed.
 </li>
 <li>KUndoStack: Use QUndoStack with KUndoActions::createUndoAction() and KUndoActions::createRedoAction() instead</li>
+<li>KRichTextWidget: createActions() does not take any KActionCollection and returns a list of QAction instead. You could use KActionCollection.addActions(KRichTextWidget.createActions()) instead.</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

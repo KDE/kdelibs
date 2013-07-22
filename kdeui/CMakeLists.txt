@@ -42,7 +42,6 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  colors/kcolorbutton.cpp
  dialogs/kconfigdialog.cpp
- dialogs/klinkdialog.cpp
  dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
  shortcuts/kgesture.cpp
@@ -52,10 +51,7 @@ set(kdeui_LIB_SRCS
  util/kimagecache.cpp
  util/kpassivepopupmessagehandler.cpp
  widgets/kcmodule.cpp
- widgets/krichtextedit.cpp
- widgets/krichtextwidget.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
- widgets/nestedlisthelper.cpp
 )
 
 
@@ -187,8 +183,6 @@ install( FILES
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
  widgets/kcmodule.h
- widgets/krichtextedit.h
- widgets/krichtextwidget.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )

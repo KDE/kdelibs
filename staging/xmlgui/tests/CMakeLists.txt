@@ -20,3 +20,5 @@ xmlgui_executable_tests(
   kxmlguiwindowtest
   kwindowtest
 )
+
+add_subdirectory(krichtexteditor)
