@@ -29,8 +29,6 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 #ifndef THREADWEAVER_JOB_H
 #define THREADWEAVER_JOB_H
 
-#include <QtCore/QObject>
-
 #include <threadweaver_export.h>
 #include <JobInterface.h>
 #include <JobPointer.h>
@@ -59,15 +57,11 @@ class Executor;
  * Job objects finish by emitting the done(Job*) signal.  Once this has been emitted, ThreadWeaver is no longer using the Job which
  * may then be deleted.
  */
-class THREADWEAVER_EXPORT Job : public QObject, public JobInterface
+class THREADWEAVER_EXPORT Job : public JobInterface
 {
-    Q_OBJECT
-
 public:
-    /** Construct a Job.
-     * @param parent the parent QObject
-     */
-    explicit Job ( QObject* parent = 0 );
+    /** Construct a Job. */
+    Job();
 
     /** Destructor. */
     virtual ~Job();
@@ -176,19 +170,6 @@ public:
 
     /** Remove a queue policy from this job. */
     void removeQueuePolicy(QueuePolicy*);
-
-Q_SIGNALS:
-    /** This signal is emitted when this job is being processed by a thread. */
-    void started(ThreadWeaver::JobPointer);
-    /** This signal is emitted when the job has been finished (no matter if it succeeded or not).
-     * After this signal has been emitted, ThreadWeaver no longer references the Job internally
-     * and the Job can be deleted. */
-    void done(ThreadWeaver::JobPointer);
-
-    /** This job has failed.
-     *
-     * This signal is emitted when success() returns false after the job is executed. */
-    void failed(ThreadWeaver::JobPointer);
 
 private:
     class Private;

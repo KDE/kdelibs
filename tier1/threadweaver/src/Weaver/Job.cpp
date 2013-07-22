@@ -42,8 +42,6 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 
 namespace {
 
-//TODO QObjectExecutor? that would allows for Jobs to no inherit QObject?
-//maaaaaaybeeee...
 class DefaultExecutor : public ThreadWeaver::Executor {
 public:
     void begin(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *thread) {
@@ -108,11 +106,9 @@ public:
 #endif
 };
 
-Job::Job(QObject *parent)
-    : QObject (parent)
-    , d(new Private())
+Job::Job()
+    : d(new Private())
 {
-    //FIXME What is the correct KDE frameworks no debug switch?
 #if not defined NDEBUG
     d->debugExecuteWrapper.wrap(setExecutor(&d->debugExecuteWrapper));
 #endif
@@ -175,17 +171,11 @@ void Job::freeQueuePolicyResources()
 void Job::defaultBegin(JobPointer job, Thread *)
 {
     Q_ASSERT(job.data() == this);
-    emit started(job);
 }
 
 void Job::defaultEnd(JobPointer job, Thread *)
 {
     Q_ASSERT(job.data() == this);
-    if (!success()) {
-        emit failed(job);
-    }
-    emit done(job);
-    //FIXME this requires the job lock?
     freeQueuePolicyResources();
 }
 
