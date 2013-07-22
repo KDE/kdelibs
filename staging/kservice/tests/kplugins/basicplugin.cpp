@@ -23,11 +23,14 @@
 
 #include <QDebug>
 
+K_PLUGIN_HEADER(BasicPluginFactory, BasicPlugin, "basicplugin.json")
+
 BasicPlugin::BasicPlugin(QObject* parent, const QVariantList& args)
     : QObject(parent)
 {
-    qDebug() << "args basicplugin:)" << args;
+    setObjectName("BasicPlugin object");
+    qDebug() << "args basicplugin:)"  << args;
 
 }
 
-//#include "basicplugin.moc"
+#include "basicplugin.moc"

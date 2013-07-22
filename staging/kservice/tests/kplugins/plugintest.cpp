@@ -71,19 +71,19 @@ void PluginTest::loadPlugin()
     //"/home/sebas/kf5/install/lib/x86_64-linux-gnu/kplugins/";
     QCoreApplication::addLibraryPath(pluginPath);
     QPluginLoader loader("libbasicplugin.so", this);
-//     BasicPlugin *factory = qobject_cast<BasicPlugin*>(loader.instance()); // FIXME
+    KPluginFactory *factory = qobject_cast<KPluginFactory*>(loader.instance());
 //     //QObject *factory = loader.instance();
-//     if (factory) {
-//         qDebug() << "loaded successfully and cast";
-//         qDebug() << "metadata: " << loader.metaData();
-//         //QObject *o = factory->createInstance<QObject>(this, QVariantList() << "Peter");
-//         //qDebug() << " objec name:" << o->objectName();
-//
-//     } else {
-//         qDebug() << "loading failed somehow";
-//     }
-    //KQPluginFactory* factory = new KQPluginFactory(KPluginInfo(), this);
+    if (factory) {
+        qDebug() << "loaded successfully and cast";
+        qDebug() << "metadata: " << loader.metaData();
+        QVariantList args;
+        args << "Peter";
+        QObject *o = factory->create<QObject>(this, args);
+        qDebug() << " objec name:" << o->objectName();
 
+    } else {
+        qDebug() << "loading failed somehow";
+    }
 }
 
 #include "plugintest.moc"

@@ -38,6 +38,6 @@ private:
 
 };
 
-K_PLUGIN_HEADER(BasicPluginFactory, BasicPlugin, "basicplugin.json")
+// K_PLUGIN_HEADER(BasicPluginFactory, BasicPlugin, "basicplugin.json")
 
 #endif // BASICPLUGIN_H
