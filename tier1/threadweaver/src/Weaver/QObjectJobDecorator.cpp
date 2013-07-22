@@ -38,6 +38,18 @@ void QObjectJobDecorator::run()
     reinterpret_cast<JobInterface*>(d)->run();
 }
 
+void QObjectJobDecorator::defaultBegin(JobPointer job, Thread *thread)
+{
+    Q_ASSERT(d);
+    reinterpret_cast<JobInterface*>(d)->defaultBegin(job, thread);
+}
+
+void QObjectJobDecorator::defaultEnd(JobPointer job, Thread *thread)
+{
+    Q_ASSERT(d);
+    reinterpret_cast<JobInterface*>(d)->defaultEnd(job, thread);
+}
+
 void QObjectJobDecorator::freeQueuePolicyResources()
 {
     Q_ASSERT(d);
@@ -132,6 +144,16 @@ void ThreadWeaver::QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, Th
     }
     Q_EMIT done(job);
 
+}
+
+const ThreadWeaver::JobInterface* ThreadWeaver::QObjectJobDecorator::decoratee() const
+{
+    return reinterpret_cast<JobInterface*>(d);
+}
+
+JobInterface *QObjectJobDecorator::decoratee()
+{
+    return reinterpret_cast<JobInterface*>(d);
 }
 
 }

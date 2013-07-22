@@ -29,8 +29,8 @@
 
 QMutex s_GlobalMutex;
 
-LowPriorityAppendCharacterJob::LowPriorityAppendCharacterJob (QChar c, QString* stringref, QObject* parent)
-    : AppendCharacterJob (c, stringref, parent)
+LowPriorityAppendCharacterJob::LowPriorityAppendCharacterJob (QChar c, QString* stringref)
+    : AppendCharacterJob (c, stringref)
 {}
 
 int LowPriorityAppendCharacterJob ::priority() const
@@ -38,9 +38,8 @@ int LowPriorityAppendCharacterJob ::priority() const
     return -1;
 }
 
-HighPriorityAppendCharacterJob::HighPriorityAppendCharacterJob (QChar c, QString* stringref,
-                                                                QObject* parent)
-    : AppendCharacterJob (c, stringref, parent)
+HighPriorityAppendCharacterJob::HighPriorityAppendCharacterJob (QChar c, QString* stringref)
+    : AppendCharacterJob (c, stringref)
 {}
 
 int HighPriorityAppendCharacterJob::priority() const

@@ -3,6 +3,7 @@
 #include "DeleteTest.h"
 
 #include <JobPointer.h>
+#include <QObjectJobDecorator.h>
 #include <JobSequence.h>
 #include <ThreadWeaver.h>
 #include <DebuggingAids.h>
@@ -11,8 +12,8 @@
 
 class InstanceCountingJobSequence : public JobSequence {
 public:
-    explicit InstanceCountingJobSequence(QObject* parent = 0)
-        : JobSequence(parent)
+    explicit InstanceCountingJobSequence()
+        : JobSequence()
     {
         ++instances_;
     }
@@ -42,12 +43,12 @@ void DeleteTest::DeleteSequenceTest()
     const int NumberOfSequences = 100;
     ThreadWeaver::Weaver::instance()->suspend();
     for (int i = 0; i < NumberOfSequences; ++i) {
-        QSharedPointer<InstanceCountingJobSequence> jobSeq(new InstanceCountingJobSequence);
-        QVERIFY(connect(jobSeq.data(), SIGNAL(done(ThreadWeaver::JobPointer)),
-                        this, SLOT(deleteSequence(ThreadWeaver::JobPointer))));
-
-        jobSeq->addJob(JobPointer(new BusyJob));
-        jobSeq->addJob(JobPointer(new BusyJob));
+        InstanceCountingJobSequence* seq = new InstanceCountingJobSequence;
+        seq->addJob(JobPointer(new BusyJob));
+        seq->addJob(JobPointer(new BusyJob));
+        QObjectJobDecorator *decorated = new QObjectJobDecorator(seq);
+        QVERIFY(connect(decorated, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(deleteSequence(ThreadWeaver::JobPointer))));
+        JobPointer jobSeq(decorated);
 
         ThreadWeaver::Weaver::instance()->enqueue(jobSeq);
         m_finishCount.fetchAndAddRelease(1);
