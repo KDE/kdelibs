@@ -73,6 +73,7 @@ Q_EXTERN_C KSERVICE_EXPORT const quint32 kde_plugin_version = version;
 #else
 #define Q_STANDARD_CALL
 
+// Hack to warn when this code is built, spitting out something that gives a hint for porting
 class KSERVICE_DEPRECATED_EXPORT K_EXPORT_PLUGIN_is_deprecated_port_to_K_PLUGIN_HEADER
 {
 };
