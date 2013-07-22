@@ -90,21 +90,11 @@ set(cmakeFiles
                FindXmms.cmake
                HandleImportedTargetsInCMakeRequiredLibraries.cmake
                KDE4Defaults.cmake
-               MacroAddCompileFlags.cmake
-               MacroAddLinkFlags.cmake
-               MacroAdditionalCleanFiles.cmake
                MacroAppendIf.cmake
                MacroBoolTo01.cmake
                MacroEnsureOutOfSourceBuild.cmake
-               MacroEnsureVersion.cmake
                MacroKAuth.cmake
                MacroLibrary.cmake
-               MacroLogFeature.cmake
-               MacroOptionalAddSubdirectory.cmake
-               MacroOptionalDependPackage.cmake
-               MacroOptionalFindPackage.cmake
-               MacroPushRequiredVars.cmake
-               MacroWriteBasicCMakeVersionFile.cmake
                NepomukMacros.cmake
                NepomukAddOntologyClasses.cmake
                PythonMacros.cmake
