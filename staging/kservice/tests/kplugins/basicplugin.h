@@ -30,21 +30,14 @@
 class BasicPlugin : public QObject
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.kde.BasicPluginInterface" FILE "kqpluginfactory.json")
-    Q_INTERFACES(BasicPlugin)
 
     public:
-//         explicit BasicPlugin(const KPluginInfo &plugin, QObject *parent = 0);
-        explicit BasicPlugin();
-//
-//         virtual ~BasicPlugin();
-
-//         QObject* createPlugin(const QString &name);
+        explicit BasicPlugin(QObject* parent, const QVariantList& args);
 
 private:
 
 };
 
-Q_DECLARE_INTERFACE(BasicPlugin, "org.kde.BasicPluginInterface")
+K_PLUGIN_HEADER(BasicPluginFactory, BasicPlugin, "basicplugin.json")
 
 #endif // BASICPLUGIN_H

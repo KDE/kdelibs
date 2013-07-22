@@ -23,12 +23,11 @@
 
 #include <QDebug>
 
-BasicPlugin::BasicPlugin()
-    : QObject()
+BasicPlugin::BasicPlugin(QObject* parent, const QVariantList& args)
+    : QObject(parent)
 {
-    qDebug() << "empty args basicplugin:)";
+    qDebug() << "args basicplugin:)" << args;
 
 }
-
 
 //#include "basicplugin.moc"
