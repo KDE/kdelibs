@@ -20,8 +20,8 @@
 
 namespace ThreadWeaver {
 
-FileLoaderJob::FileLoaderJob (const QString &filename, QObject* parent)
-    : Job (parent)
+FileLoaderJob::FileLoaderJob (const QString &filename)
+    : Job()
     , m_filename (filename)
     , m_data (0)
     , m_error (0)

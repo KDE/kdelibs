@@ -34,9 +34,8 @@
 
 namespace ThreadWeaver {
 
-JobSequence::JobSequence(QObject *parent)
-    : JobCollection ( parent )
-    , d(0)
+JobSequence::JobSequence()
+    : d(0)
 {
 }
 

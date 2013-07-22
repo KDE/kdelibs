@@ -12,6 +12,7 @@
 #include <JobCollection.h>
 #include <ResourceRestrictionPolicy.h>
 #include <DependencyPolicy.h>
+#include <QObjectJobDecorator.h>
 
 #include "AppendCharacterJob.h"
 #include "AppendCharacterAndVerifyJob.h"
@@ -148,49 +149,50 @@ void JobTests::ShortJobSequenceTest() {
 }
 
 void JobTests::EmptyJobSequenceTest() {
-    QSharedPointer<ThreadWeaver::JobSequence> sequence(new ThreadWeaver::JobSequence());
-
-    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    Q_ASSERT(ThreadWeaver::Weaver::instance()->isIdle());
-    QSignalSpy doneSignalSpy(sequence.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
+    using namespace ThreadWeaver;
+    //QSharedPointer<ThreadWeaver::JobSequence> sequence(new ThreadWeaver::JobSequence());
+    QObjectJobDecorator sequence(new JobSequence());
+    WaitForIdleAndFinished w(Weaver::instance()); Q_UNUSED(w);
+    Q_ASSERT(Weaver::instance()->isIdle());
+    QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(JobPointer)));
     QCOMPARE(doneSignalSpy.count(), 0);
-    ThreadWeaver::Weaver::instance()->enqueue(sequence);
-    ThreadWeaver::Weaver::instance()->finish();
-    QVERIFY(sequence->isFinished());
-    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
+    Weaver::instance()->enqueueRaw(&sequence);
+    Weaver::instance()->finish();
+    QVERIFY(sequence.isFinished());
+    QVERIFY(Weaver::instance()->isIdle());
     QCOMPARE(doneSignalSpy.count(), 1);
 }
 
 /** This test verifies that the done signal for a collection is only sent after all element of the collection have completed. */
 void JobTests::IncompleteCollectionTest()
 {
-    QString result;
-    ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
-    ThreadWeaver::JobPointer jobB(new AppendCharacterJob(QChar('b'), &result)); //jobB does not get added to the sequence and queued
-    QSharedPointer<ThreadWeaver::JobCollection> collection(new ThreadWeaver::JobCollection());
-    collection->addJob(jobA);
+    using namespace ThreadWeaver;
 
-    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::DependencyPolicy::instance().addDependency(jobA.data(), jobB.data());
-    QSignalSpy collectionDoneSignalSpy(collection.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
-//TODO MIRKO_JOBINTERFACE_TEMPREM
-    QFAIL("NI");
-//    QSignalSpy jobADoneSignalSpy(jobA.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
-//    QCOMPARE(collectionDoneSignalSpy.count(), 0);
-//    QCOMPARE(jobADoneSignalSpy.count(), 0);
-//    ThreadWeaver::Weaver::instance()->enqueue(collection);
-//    ThreadWeaver::Weaver::instance()->resume();
-//    QCoreApplication::processEvents();
-//    QCOMPARE(collectionDoneSignalSpy.count(), 0);
-//    QCOMPARE(jobADoneSignalSpy.count(), 0);
-//    ThreadWeaver::DependencyPolicy::instance().removeDependency(jobA.data(), jobB.data());
-//    ThreadWeaver::Weaver::instance()->finish();
-//    QCoreApplication::processEvents();
-//    QVERIFY(collection->isFinished());
-//    QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
-//    QCOMPARE(collectionDoneSignalSpy.count(), 1);
-//    QCOMPARE(jobADoneSignalSpy.count(), 1);
-//^^^END
+    QString result;
+    QObjectJobDecorator jobA(new AppendCharacterJob(QChar('a'), &result));
+    AppendCharacterJob jobB(QChar('b'), &result); //jobB does not get added to the sequence and queued
+    JobCollection* collection  = new JobCollection();
+    collection->addRawJob(&jobA);
+
+    WaitForIdleAndFinished w(Weaver::instance());
+    DependencyPolicy::instance().addDependency(&jobA, &jobB);
+    QObjectJobDecorator q(collection);
+    QSignalSpy collectionDoneSignalSpy(&q, SIGNAL(done(JobPointer)));
+    QSignalSpy jobADoneSignalSpy(&jobA, SIGNAL(done(JobPointer)));
+    QCOMPARE(collectionDoneSignalSpy.count(), 0);
+    QCOMPARE(jobADoneSignalSpy.count(), 0);
+    Weaver::instance()->enqueueRaw(&q);
+    Weaver::instance()->resume();
+    QCoreApplication::processEvents();
+    QCOMPARE(collectionDoneSignalSpy.count(), 0);
+    QCOMPARE(jobADoneSignalSpy.count(), 0);
+    DependencyPolicy::instance().removeDependency(&jobA, &jobB);
+    Weaver::instance()->finish();
+    QCoreApplication::processEvents();
+    QVERIFY(collection->isFinished());
+    QVERIFY(Weaver::instance()->isIdle());
+    QCOMPARE(collectionDoneSignalSpy.count(), 1);
+    QCOMPARE(jobADoneSignalSpy.count(), 1);
 }
 
 /** This test verifies that started() is emitted for a collection at the time the first of any elements of the collection gets
@@ -307,24 +309,20 @@ void JobTests::RecursiveSequenceTest()
     ThreadWeaver::JobPointer jobI(new AppendCharacterJob(QChar('i'), &sequence));
     ThreadWeaver::JobPointer jobJ(new AppendCharacterJob(QChar('j'), &sequence));
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence1(new ThreadWeaver::JobSequence());
-    jobSequence1->setObjectName( "Sequ_1" );
     jobSequence1->addJob(jobA);
     jobSequence1->addJob(jobB);
     jobSequence1->addJob(jobC);
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence2(new ThreadWeaver::JobSequence());
-    jobSequence2->setObjectName( "Sequ_2" );
     jobSequence2->addJob(jobD);
     jobSequence2->addJob(jobE);
     jobSequence2->addJob(jobF);
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence3(new ThreadWeaver::JobSequence());
-    jobSequence3->setObjectName( "Sequ_3" );
     jobSequence3->addJob(jobG);
     jobSequence3->addJob(jobH);
     jobSequence3->addJob(jobI);
     jobSequence3->addJob(jobJ);
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence4(new ThreadWeaver::JobSequence());
-    jobSequence4->setObjectName( "Sequ_4" );
     jobSequence4->addJob(jobSequence1);
     jobSequence4->addJob(jobSequence2);
     jobSequence4->addJob(jobSequence3);
@@ -352,24 +350,20 @@ void JobTests::RecursiveQueueAndDequeueCollectionTest()
     ThreadWeaver::JobPointer jobI(new AppendCharacterJob(QChar('i'), &sequence));
     ThreadWeaver::JobPointer jobJ(new AppendCharacterJob(QChar('j'), &sequence));
     QSharedPointer<ThreadWeaver::JobCollection> collection1(new ThreadWeaver::JobCollection());
-    collection1->setObjectName("Coll_1");
     collection1->addJob(jobA);
     collection1->addJob(jobB);
     collection1->addJob(jobC);
     QSharedPointer<ThreadWeaver::JobCollection> collection2(new ThreadWeaver::JobCollection());
-    collection2->setObjectName( "Coll_2" );
     collection2->addJob(jobD);
     collection2->addJob(jobE);
     collection2->addJob(jobF);
     QSharedPointer<ThreadWeaver::JobCollection> collection3(new ThreadWeaver::JobCollection());
-    collection3->setObjectName( "Coll_3" );
     collection3->addJob(jobG);
     collection3->addJob(jobH);
     collection3->addJob(jobI);
     collection3->addJob(jobJ);
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
     QSharedPointer<ThreadWeaver::JobCollection> collection4(new ThreadWeaver::JobCollection());
-    collection4->setObjectName( "Coll_4" );
     collection4->addJob(collection1);
     collection4->addJob(collection2);
     collection4->addJob(collection3);
@@ -395,24 +389,20 @@ void JobTests::RecursiveQueueAndDequeueSequenceTest() {
     ThreadWeaver::JobPointer jobI(new AppendCharacterJob(QChar('i'), &sequence));
     ThreadWeaver::JobPointer jobJ(new AppendCharacterJob(QChar('j'), &sequence));
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence1(new ThreadWeaver::JobSequence());
-    jobSequence1->setObjectName("Sequ_1");
     jobSequence1->addJob(jobA);
     jobSequence1->addJob(jobB);
     jobSequence1->addJob(jobC);
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence2(new ThreadWeaver::JobSequence());
-    jobSequence2->setObjectName("Sequ_2");
     jobSequence2->addJob(jobD);
     jobSequence2->addJob(jobE);
     jobSequence2->addJob(jobF);
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence3(new ThreadWeaver::JobSequence());
-    jobSequence3->setObjectName( "Sequ_3" );
     jobSequence3->addJob(jobG);
     jobSequence3->addJob(jobH);
     jobSequence3->addJob(jobI);
     jobSequence3->addJob(jobJ);
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence4(new ThreadWeaver::JobSequence());
-    jobSequence4->setObjectName( "Sequ_4" );
     jobSequence4->addJob(jobSequence1);
     jobSequence4->addJob(jobSequence2);
     jobSequence4->addJob(jobSequence3);
@@ -478,24 +468,20 @@ void JobTests::RecursiveQueueAndDequeueAllCollectionTest()
     ThreadWeaver::JobPointer jobI(new AppendCharacterJob(QChar('i'), &sequence));
     ThreadWeaver::JobPointer jobJ(new AppendCharacterJob(QChar('j'), &sequence));
     QSharedPointer<ThreadWeaver::JobCollection> collection1(new ThreadWeaver::JobCollection());
-    collection1->setObjectName("Coll_1");
     collection1->addJob(jobA);
     collection1->addJob(jobB);
     collection1->addJob(jobC);
     QSharedPointer<ThreadWeaver::JobCollection> collection2(new ThreadWeaver::JobCollection());
-    collection2->setObjectName("Coll_2");
     collection2->addJob(jobD);
     collection2->addJob(jobE);
     collection2->addJob(jobF);
     QSharedPointer<ThreadWeaver::JobCollection> collection3(new ThreadWeaver::JobCollection());
-    collection3->setObjectName("Coll_3");
     collection3->addJob(jobG);
     collection3->addJob(jobH);
     collection3->addJob(jobI);
     collection3->addJob(jobJ);
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
     QSharedPointer<ThreadWeaver::JobCollection> collection4(new ThreadWeaver::JobCollection());
-    collection4->setObjectName("Coll_4");
     collection4->addJob(collection1);
     collection4->addJob(collection2);
     collection4->addJob(collection3);
@@ -523,24 +509,20 @@ void JobTests::RecursiveQueueAndDequeueAllSequenceTest() {
     ThreadWeaver::JobPointer jobI(new AppendCharacterJob(QChar('i'), &sequence));
     ThreadWeaver::JobPointer jobJ(new AppendCharacterJob(QChar('j'), &sequence));
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence1(new ThreadWeaver::JobSequence());
-    jobSequence1->setObjectName("Sequ_1");
     jobSequence1->addJob(jobA);
     jobSequence1->addJob(jobB);
     jobSequence1->addJob(jobC);
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence2(new ThreadWeaver::JobSequence());
-    jobSequence2->setObjectName("Sequ_2");
     jobSequence2->addJob(jobD);
     jobSequence2->addJob(jobE);
     jobSequence2->addJob(jobF);
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence3(new ThreadWeaver::JobSequence());
-    jobSequence3->setObjectName("Sequ_3");
     jobSequence3->addJob(jobG);
     jobSequence3->addJob(jobH);
     jobSequence3->addJob(jobI);
     jobSequence3->addJob(jobJ);
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
     QSharedPointer<ThreadWeaver::JobSequence> jobSequence4(new ThreadWeaver::JobSequence());
-    jobSequence4->setObjectName("Sequ_4");
     jobSequence4->addJob(jobSequence1);
     jobSequence4->addJob(jobSequence2);
     jobSequence4->addJob(jobSequence3);
@@ -562,7 +544,7 @@ void JobTests::MassiveJobSequenceTest() {
     const char* Alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const int SizeOfAlphabet = strlen( Alphabet );
     AppendCharacterAndVerifyJob jobs[NoOfChars];
-    ThreadWeaver::JobSequence jobSequence(this);
+    ThreadWeaver::JobSequence jobSequence;
     QString sequence;
     QString in;
 
@@ -591,13 +573,13 @@ void JobTests::MassiveJobSequenceTest() {
 
 void JobTests::SimpleRecursiveSequencesTest() {
     QString sequence;
-    AppendCharacterJob jobB(QChar('b'), &sequence, this);
-    ThreadWeaver::JobSequence jobSequence1(this);
+    AppendCharacterJob jobB(QChar('b'), &sequence);
+    ThreadWeaver::JobSequence jobSequence1;
     jobSequence1.addRawJob(&jobB);
 
-    AppendCharacterJob jobC(QChar('c'), &sequence, this);
-    AppendCharacterJob jobA(QChar('a'), &sequence, this);
-    ThreadWeaver::JobSequence jobSequence2(this);
+    AppendCharacterJob jobC(QChar('c'), &sequence);
+    AppendCharacterJob jobA(QChar('a'), &sequence);
+    ThreadWeaver::JobSequence jobSequence2;
     jobSequence2.addRawJob(&jobA);
     jobSequence2.addRawJob(&jobSequence1);
     jobSequence2.addRawJob(&jobC);
@@ -610,35 +592,31 @@ void JobTests::SimpleRecursiveSequencesTest() {
 
 void JobTests::SequenceOfSequencesTest() {
     QString sequence;
-    AppendCharacterJob jobA ( QChar( 'a' ), &sequence, this );
-    AppendCharacterJob jobB ( QChar( 'b' ), &sequence, this );
-    AppendCharacterJob jobC ( QChar( 'c' ), &sequence, this );
-    AppendCharacterJob jobD ( QChar( 'd' ), &sequence, this );
-    AppendCharacterJob jobE ( QChar( 'e' ), &sequence, this );
-    AppendCharacterJob jobF ( QChar( 'f' ), &sequence, this );
-    AppendCharacterJob jobG ( QChar( 'g' ), &sequence, this );
-    AppendCharacterJob jobH ( QChar( 'h' ), &sequence, this );
-    AppendCharacterJob jobI ( QChar( 'i' ), &sequence, this );
-    AppendCharacterJob jobJ ( QChar( 'j' ), &sequence, this );
-    ThreadWeaver::JobSequence jobSequence1( this );
-    jobSequence1.setObjectName( "Sequ_1" );
+    AppendCharacterJob jobA ( QChar( 'a' ), &sequence);
+    AppendCharacterJob jobB ( QChar( 'b' ), &sequence);
+    AppendCharacterJob jobC ( QChar( 'c' ), &sequence);
+    AppendCharacterJob jobD ( QChar( 'd' ), &sequence);
+    AppendCharacterJob jobE ( QChar( 'e' ), &sequence);
+    AppendCharacterJob jobF ( QChar( 'f' ), &sequence);
+    AppendCharacterJob jobG ( QChar( 'g' ), &sequence);
+    AppendCharacterJob jobH ( QChar( 'h' ), &sequence);
+    AppendCharacterJob jobI ( QChar( 'i' ), &sequence);
+    AppendCharacterJob jobJ ( QChar( 'j' ), &sequence);
+    ThreadWeaver::JobSequence jobSequence1;
     jobSequence1.addRawJob(&jobA);
     jobSequence1.addRawJob(&jobB);
     jobSequence1.addRawJob(&jobC);
-    ThreadWeaver::JobSequence jobSequence2( this );
-    jobSequence2.setObjectName( "Sequ_2" );
+    ThreadWeaver::JobSequence jobSequence2;
     jobSequence2.addRawJob(&jobD);
     jobSequence2.addRawJob(&jobE);
     jobSequence2.addRawJob(&jobF);
-    ThreadWeaver::JobSequence jobSequence3( this );
-    jobSequence3.setObjectName( "Sequ_3" );
+    ThreadWeaver::JobSequence jobSequence3;
     jobSequence3.addRawJob(&jobG);
     jobSequence3.addRawJob(&jobH);
     jobSequence3.addRawJob(&jobI);
     jobSequence3.addRawJob(&jobJ);
     // sequence 4 will contain sequences 1, 2, and 3, in that order:
-    ThreadWeaver::JobSequence jobSequence4( this );
-    jobSequence4.setObjectName( "Sequ_4" );
+    ThreadWeaver::JobSequence jobSequence4;
     jobSequence4.addRawJob(&jobSequence1);
     jobSequence4.addRawJob(&jobSequence2);
     jobSequence4.addRawJob(&jobSequence3);
@@ -659,7 +637,7 @@ void JobTests::QueueAndStopTest() {
     AppendCharacterJob e( 'e', &sequence );
     AppendCharacterJob f( 'f', &sequence );
     AppendCharacterJob g( 'g', &sequence );
-    ThreadWeaver::JobSequence jobSequence ( this );
+    ThreadWeaver::JobSequence jobSequence;
     jobSequence.addRawJob(&a);
     jobSequence.addRawJob(&b);
     jobSequence.addRawJob(&c);
@@ -731,7 +709,8 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
     QVERIFY(connect( &collection, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
     for ( int counter = 0; counter < NumberOfBits; ++counter )
     {
-        Job* job = new AppendCharacterJob( bits[counter], &sequence, this );
+        //FIXME leak
+        Job* job = new AppendCharacterJob( bits[counter], &sequence);
         QVERIFY(connect(job, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
         QVERIFY(connect(job, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
         jobs.append( job );
@@ -750,7 +729,8 @@ void JobTests::DequeueSuspendedSequence()
     return; //MARK_TEMPORARILY_DISABLED
     ThreadWeaver::Weaver weaver;
     weaver.suspend();
-    weaver.enqueueRaw(new ThreadWeaver::JobSequence(this) );
+    //FIXME leak
+    weaver.enqueueRaw(new ThreadWeaver::JobSequence);
     weaver.dequeue();
     // don't crash
 }

@@ -90,9 +90,9 @@ public:
     */
     static ThreadWeaver::Weaver* instance();
     void enqueue(JobPointer) Q_DECL_OVERRIDE;
-    void enqueueRaw(Job* job) Q_DECL_OVERRIDE;
+    void enqueueRaw(JobInterface* job) Q_DECL_OVERRIDE;
     bool dequeue(JobPointer) Q_DECL_OVERRIDE;
-    bool dequeueRaw(Job* job) Q_DECL_OVERRIDE;
+    bool dequeueRaw(JobInterface* job) Q_DECL_OVERRIDE;
     void dequeue() Q_DECL_OVERRIDE;
     void finish() Q_DECL_OVERRIDE;
     void suspend() Q_DECL_OVERRIDE;
