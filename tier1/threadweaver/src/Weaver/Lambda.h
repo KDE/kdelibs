@@ -8,7 +8,6 @@ namespace ThreadWeaver {
 
 class THREADWEAVER_EXPORT Lambda : public Job
 {
-    Q_OBJECT
 public:
     explicit Lambda(void (*payload)() = 0);
     ~Lambda();

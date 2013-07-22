@@ -9,12 +9,14 @@
 
 namespace ThreadWeaver {
 
-class QObjectJobDecorator : public QObject, public JobInterface
+class THREADWEAVER_EXPORT QObjectJobDecorator : public QObject, public JobInterface
 {
     Q_OBJECT
 public:
-    explicit QObjectJobDecorator(JobInterface* decoratee, QObject *parent Q_DECL_OVERRIDE);
+    explicit QObjectJobDecorator(JobInterface* decoratee, QObject *parent = 0);
     ~QObjectJobDecorator();
+    const JobInterface* decoratee() const;
+    JobInterface* decoratee();
     void execute(Thread*, JobPointer job) Q_DECL_OVERRIDE;
     Executor* setExecutor(Executor* executor) Q_DECL_OVERRIDE;
     Executor* executor() const Q_DECL_OVERRIDE;
@@ -43,6 +45,9 @@ Q_SIGNALS:
 protected:
     void freeQueuePolicyResources() Q_DECL_OVERRIDE;
     void run() Q_DECL_OVERRIDE;
+    void defaultBegin(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
+    void defaultEnd(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
+
     Thread* thread() Q_DECL_OVERRIDE;
     void setFinished(bool status) Q_DECL_OVERRIDE;
     QMutex* mutex() const Q_DECL_OVERRIDE;

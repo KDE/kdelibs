@@ -19,7 +19,7 @@ public:
     {
     }
     AccumulateJob(const AccumulateJob& a)
-        : ThreadWeaver::Job(a.parent())
+        : ThreadWeaver::Job()
         , m_count(a.m_count)
         , m_result(a.m_result)
     {
@@ -188,17 +188,18 @@ void QueueBenchmarksTest::CollectionsBenchmark()
     weaver.suspend();
     QVector<AccumulateJob> jobs(n);
 
-    QObject parent;
+    //FIXME currently, memory management of the job sequences (they are deleted when they go out of scope)
+    //is measured as part of the benchmark
     qDebug() << b << "blocks" << c << "operations, queueing...";
     //queue the jobs blockwise as collections
     for (int block = 0; block < b; ++block) {
-        ThreadWeaver::JobCollection* collection = new ThreadWeaver::JobCollection(&parent);
+        ThreadWeaver::JobCollection* collection = new ThreadWeaver::JobCollection();
         for (int operation = 0; operation < c; ++operation) {
             const int index = block * b + operation;
             jobs[index].setCount(m);
             collection->addRawJob(&jobs[index]);
         }
-        weaver.enqueueRaw(collection);
+        weaver.enqueue(ThreadWeaver::JobPointer(collection));
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";
@@ -226,17 +227,16 @@ void QueueBenchmarksTest::SequencesBenchmark()
     weaver.suspend();
     QVector<AccumulateJob> jobs(n);
 
-    QObject parent;
     qDebug() << b << "blocks" << c << "operations, queueing...";
     //queue the jobs blockwise as collections
     for (int block = 0; block < b; ++block) {
-        ThreadWeaver::JobSequence* sequence = new ThreadWeaver::JobSequence(&parent);
+        ThreadWeaver::JobSequence* sequence = new ThreadWeaver::JobSequence();
         for (int operation = 0; operation < c; ++operation) {
             const int index = block * b + operation;
             jobs[index].setCount(m);
             sequence->addRawJob(&jobs[index]);
         }
-        weaver.enqueueRaw(sequence);
+        weaver.enqueue(ThreadWeaver::JobPointer(sequence));
     }
 
     qDebug() << b << "blocks" << c << "operations, executing...";

@@ -107,9 +107,8 @@ public:
     JobPointer self;
 };
 
-JobCollection::JobCollection(QObject *parent)
-    : Job(parent)
-    , d(new Private)
+JobCollection::JobCollection()
+    : d(new Private)
 {
     d->selfExecuteWrapper.wrap(setExecutor(&d->selfExecuteWrapper));
     CollectionExecuteWrapper* wrapper = new CollectionExecuteWrapper();
@@ -140,7 +139,7 @@ void JobCollection::addJob(JobPointer job)
     d->elements.append(job);
 }
 
-void JobCollection::addRawJob(Job *job)
+void JobCollection::addRawJob(JobInterface *job)
 {
     addJob(ManagedJobPointer(job));
 }
@@ -187,6 +186,11 @@ void JobCollection::execute(Thread *thread, JobPointer job)
         d->self = job;
     }
     Job::execute(thread,job);
+}
+
+void JobCollection::run()
+{
+    //empty
 }
 
 void JobCollection::elementStarted(JobPointer job, Thread* thread)

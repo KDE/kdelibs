@@ -41,9 +41,8 @@ namespace ThreadWeaver {
  * of the sequence will stop, and all its remaining Jobs will be dequeued. */
 class THREADWEAVER_EXPORT JobSequence : public JobCollection
 {
-    Q_OBJECT
 public:
-    explicit JobSequence ( QObject *parent = 0 );
+    explicit JobSequence();
 
 protected:
     /** Overload to queue the sequence. */

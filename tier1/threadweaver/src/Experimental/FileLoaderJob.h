@@ -39,9 +39,8 @@ namespace ThreadWeaver {
 */
 class THREADWEAVEREXPERIMENTAL_EXPORT FileLoaderJob : public Job
 {
-    Q_OBJECT
 public:
-    explicit FileLoaderJob (const QString &filename, QObject* parent=0);
+    explicit FileLoaderJob (const QString &filename);
     ~FileLoaderJob ();
     /** Return true if the operation succeeded. */
     bool success () const;

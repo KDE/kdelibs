@@ -13,11 +13,9 @@ extern QMutex s_GlobalMutex;
 
 class AppendCharacterJob : public ThreadWeaver::Job
 {
-    Q_OBJECT
-
 public:
-    AppendCharacterJob ( QChar c = QChar(), QString* stringref = 0 , QObject* parent = 0 )
-        : ThreadWeaver::Job ( parent )
+    AppendCharacterJob(QChar c = QChar(), QString* stringref = 0)
+        : ThreadWeaver::Job()
     {
         setValues( c, stringref );
     }
@@ -26,7 +24,6 @@ public:
     {
         m_c = c;
         m_stringref = stringref;
-        setObjectName ( tr ( "Job_" ) + m_c );
     }
 
     void run()
@@ -50,11 +47,9 @@ private:
 
 class FailingAppendCharacterJob : public AppendCharacterJob
 {
-    Q_OBJECT
-
 public:
-    FailingAppendCharacterJob(QChar c = QChar(), QString* stringref = 0, QObject* parent = 0)
-        : AppendCharacterJob(c, stringref, parent)
+    FailingAppendCharacterJob(QChar c = QChar(), QString* stringref = 0)
+        : AppendCharacterJob(c, stringref)
     {
     }
 
@@ -66,11 +61,9 @@ public:
 
 class BusyJob : public ThreadWeaver::Job
 {
-    Q_OBJECT
-
 public:
-    BusyJob( QObject* parent = 0 )
-        : ThreadWeaver::Job ( parent )
+    BusyJob()
+        : ThreadWeaver::Job()
     {
     }
 

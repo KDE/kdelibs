@@ -48,10 +48,8 @@ class CollectionExecuteWrapper;
  */
 class THREADWEAVER_EXPORT JobCollection : public Job
 {
-    Q_OBJECT
-
 public:
-    explicit JobCollection ( QObject *parent = 0 );
+    explicit JobCollection();
     ~JobCollection ();
     /** Append a job to the collection.
      *
@@ -64,10 +62,8 @@ public:
      *
      * Use this overloaded method to queue jobs that are memory-managed by the caller, instead of being
      * QSharedPointers. */
-    //TODO naming
-    virtual void addRawJob(Job* job);
+    virtual void addRawJob(JobInterface* job);
 
-public Q_SLOTS:
     /** Stop processing, dequeue all remaining Jobs.
      * job is supposed to be an element of the collection.
      */
@@ -110,7 +106,7 @@ private:
 
     /** Overload run().
      * We have to. */
-    void run() {}
+    void run();
 
     /** Dequeue all elements of the collection.
      * Note: This will not dequeue the collection itself.

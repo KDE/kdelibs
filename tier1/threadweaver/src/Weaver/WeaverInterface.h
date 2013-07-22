@@ -32,6 +32,7 @@
 
 #include <threadweaver_export.h>
 #include <JobPointer.h>
+#include <JobInterface.h>
 
 namespace ThreadWeaver {
 
@@ -108,7 +109,7 @@ public:
      *
      * Use this overloaded method to queue jobs that are memory-managed by the caller, instead of being
      * QSharedPointers. */
-    virtual void enqueueRaw(Job* job) = 0;
+    virtual void enqueueRaw(JobInterface* job) = 0;
 
     /** Remove a job from the queue.
     If the job was queued but not started so far, it is simply
