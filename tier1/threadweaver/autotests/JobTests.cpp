@@ -199,21 +199,27 @@ void JobTests::IncompleteCollectionTest()
  * executed. */
 void JobTests::EmitStartedOnFirstElementTest()
 {
-    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::Weaver::instance()->suspend();
+    using namespace ThreadWeaver;
+
+    WaitForIdleAndFinished w(Weaver::instance());
+    Weaver::instance()->suspend();
     QString result;
-    ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
-    ThreadWeaver::JobPointer jobB(new AppendCharacterJob(QChar('b'), &result));
-    QSharedPointer<ThreadWeaver::JobCollection> collection (new ThreadWeaver::JobCollection());
-    collection->addJob(jobA);
-    collection->addJob(jobB);
-    ThreadWeaver::Weaver::instance()->enqueue(collection);
-    QSignalSpy collectionStartedSignalSpy(collection.data(), SIGNAL(started(ThreadWeaver::JobPointer)));
-    QSignalSpy collectionDoneSignalSpy(collection.data(), SIGNAL(done(ThreadWeaver::JobPointer)));
+
+    JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
+    JobPointer jobB(new AppendCharacterJob(QChar('b'), &result));
+    QObjectJobDecorator collection(new JobCollection());
+    JobCollection* decorated = dynamic_cast<JobCollection*>(collection.job());
+    QVERIFY(decorated!=0);
+    decorated->addJob(jobA);
+    decorated->addJob(jobB);
+
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&collection);
+    QSignalSpy collectionStartedSignalSpy(&collection, SIGNAL(started(ThreadWeaver::JobPointer)));
+    QSignalSpy collectionDoneSignalSpy(&collection, SIGNAL(done(ThreadWeaver::JobPointer)));
     ThreadWeaver::Weaver::instance()->resume();
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
-    QVERIFY(collection->isFinished());
+    QVERIFY(collection.isFinished());
     QCOMPARE(result.length(), 2);
     for(int i = 0; i < 100; ++i) {
         if (collectionStartedSignalSpy.count() != 0 && collectionDoneSignalSpy.count() !=0) break;
@@ -232,24 +238,27 @@ void JobTests::EmitStartedOnFirstElementTest()
  * Previous tests have already verified that collections without dependencies get executed right away. */
 void JobTests::CollectionDependenciesTest()
 {
+    using namespace ThreadWeaver;
+
     QString result;
     ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
     ThreadWeaver::JobPointer jobB(new AppendCharacterJob(QChar('b'), &result));
     QSharedPointer<AppendCharacterJob> jobC(new AppendCharacterJob(QChar('c'), &result));
-    QSharedPointer<ThreadWeaver::JobCollection> collection(new ThreadWeaver::JobCollection());
-    QSignalSpy collectionStartedSignalSpy(collection.data(), SIGNAL(started(ThreadWeaver::JobPointer)));
-    collection->addJob(jobA);
-    collection->addJob(jobB);
-    ThreadWeaver::DependencyPolicy::instance().addDependency(collection.data(), jobC.data());
-    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
+    QObjectJobDecorator collection(new ThreadWeaver::JobCollection());
+
+    QSignalSpy collectionStartedSignalSpy(&collection, SIGNAL(started(ThreadWeaver::JobPointer)));
+    collection.collection()->addJob(jobA);
+    collection.collection()->addJob(jobB);
+    ThreadWeaver::DependencyPolicy::instance().addDependency(&collection, jobC.data());
+    WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance()); Q_UNUSED(w);
     ThreadWeaver::Weaver::instance()->suspend();
-    ThreadWeaver::Weaver::instance()->enqueue(collection);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&collection);
     ThreadWeaver::Weaver::instance()->resume();
     QTRY_COMPARE(collectionStartedSignalSpy.count(), 0);
     ThreadWeaver::Weaver::instance()->enqueue(jobC);
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
-    QVERIFY(collection->isFinished());
+    QVERIFY(collection.isFinished());
     QVERIFY(result.startsWith(jobC->character()));
     QSKIP("This test is too fragile"); // PENDING(Mirko): fix
     QTRY_COMPARE(collectionStartedSignalSpy.count(), 1);
@@ -699,21 +708,21 @@ void JobTests::jobDone( ThreadWeaver::JobPointer )
 
 void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
 {
+    using namespace ThreadWeaver;
+
     char bits[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
     const int NumberOfBits = sizeof bits / sizeof bits[0];
     QString sequence;
-    QList<Job*> jobs;
-    ThreadWeaver::JobCollection collection;
+    QObjectJobDecorator collection(new JobCollection);
+
     QVERIFY(connect(&collection, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
     QVERIFY(connect( &collection, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
     for ( int counter = 0; counter < NumberOfBits; ++counter )
     {
-        //FIXME leak
-        Job* job = new AppendCharacterJob( bits[counter], &sequence);
+        QObjectJobDecorator* job = new QObjectJobDecorator(new AppendCharacterJob( bits[counter], &sequence), this);
         QVERIFY(connect(job, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
         QVERIFY(connect(job, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
-        jobs.append( job );
-        collection.addRawJob(job);
+        collection.collection()->addRawJob(job);
     }
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
