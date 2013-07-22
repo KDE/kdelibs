@@ -1,4 +1,6 @@
-#include "QObjectJobDecorator.h"
+#include <QObjectJobDecorator.h>
+#include <JobCollection.h>
+#include <JobSequence.h>
 
 namespace ThreadWeaver {
 
@@ -134,7 +136,7 @@ Executor *QObjectJobDecorator::setExecutor(Executor *executor)
     return reinterpret_cast<JobInterface*>(d)->setExecutor(executor);
 }
 
-void ThreadWeaver::QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, ThreadWeaver::JobPointer job)
+void QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, ThreadWeaver::JobPointer job)
 {
     Q_ASSERT(d);
     Q_EMIT started(job);
@@ -146,14 +148,38 @@ void ThreadWeaver::QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, Th
 
 }
 
-const ThreadWeaver::JobInterface* ThreadWeaver::QObjectJobDecorator::decoratee() const
+const ThreadWeaver::JobInterface* QObjectJobDecorator::job() const
 {
     return reinterpret_cast<JobInterface*>(d);
 }
 
-JobInterface *QObjectJobDecorator::decoratee()
+JobInterface *QObjectJobDecorator::job()
 {
     return reinterpret_cast<JobInterface*>(d);
+}
+
+const ThreadWeaver::JobCollection *ThreadWeaver::QObjectJobDecorator::collection() const
+{
+    const JobInterface* i = reinterpret_cast<JobInterface*>(d);
+    return dynamic_cast<const JobCollection*>(i);
+}
+
+JobCollection *QObjectJobDecorator::collection()
+{
+    JobInterface* i = reinterpret_cast<JobInterface*>(d);
+    return dynamic_cast<JobCollection*>(i);
+}
+
+const JobSequence *QObjectJobDecorator::sequence() const
+{
+    const JobInterface* i = reinterpret_cast<JobInterface*>(d);
+    return dynamic_cast<const JobSequence*>(i);
+}
+
+JobSequence *QObjectJobDecorator::sequence()
+{
+    JobInterface* i = reinterpret_cast<JobInterface*>(d);
+    return dynamic_cast<JobSequence*>(i);
 }
 
 }

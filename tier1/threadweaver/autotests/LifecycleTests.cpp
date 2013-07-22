@@ -6,8 +6,6 @@
 #include <Job.h>
 
 class NotifyOnDeletejob : public ThreadWeaver::Job {
-    Q_OBJECT
-
 public:
     explicit NotifyOnDeletejob(bool& exists)
         : ThreadWeaver::Job()

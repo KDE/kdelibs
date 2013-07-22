@@ -9,22 +9,16 @@
 
 class LowPriorityAppendCharacterJob : public AppendCharacterJob
 {
-    Q_OBJECT
-
 public:
-    LowPriorityAppendCharacterJob (QChar character = QChar(), QString* stringref = 0,
-                                   QObject* parent = 0);
+    LowPriorityAppendCharacterJob(QChar character = QChar(), QString* stringref = 0);
 
     int priority() const;
 };
 
 class HighPriorityAppendCharacterJob : public AppendCharacterJob
 {
-    Q_OBJECT
-
 public:
-    HighPriorityAppendCharacterJob (QChar character = QChar(), QString* stringref = 0,
-                                    QObject* parent = 0);
+    HighPriorityAppendCharacterJob(QChar character = QChar(), QString* stringref = 0);
 
     int priority() const;
 };
@@ -32,6 +26,7 @@ public:
 namespace ThreadWeaver {
     class Job;
     class JobCollection;
+    class QObjectJobDecorator;
 }
 
 using ThreadWeaver::Job;
@@ -63,9 +58,9 @@ public Q_SLOTS:
 
 private:
     // this is also part of DeleteDoneJobsFromSequenceTest
-    AppendCharacterJob* autoDeleteJob;
+    ThreadWeaver::QObjectJobDecorator* autoDeleteJob;
     // this is part of DeleteCollectionOnDoneTest
-    ThreadWeaver::JobCollection* autoDeleteCollection;
+    ThreadWeaver::QObjectJobDecorator* autoDeleteCollection;
 
 private Q_SLOTS:
 

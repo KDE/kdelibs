@@ -49,7 +49,7 @@ class CollectionExecuteWrapper;
 class THREADWEAVER_EXPORT JobCollection : public Job
 {
 public:
-    explicit JobCollection();
+    JobCollection();
     ~JobCollection ();
     /** Append a job to the collection.
      *
@@ -70,6 +70,9 @@ public:
     //FIXME remove job argument?
     void stop(ThreadWeaver::JobPointer job);
 
+    /** Return the number of jobs in the joblist. */
+    int jobListLength() const;
+
 protected:
     /** Overload to queue the collection. */
     void aboutToBeQueued_locked(QueueAPI *api);
@@ -80,8 +83,6 @@ protected:
     /** Return a reference to the job in the job list at position i. */
     JobPointer jobAt(int i);
 
-    /** Return the number of jobs in the joblist. */
-    int jobListLength() const;
 
     /** Return the number of jobs in the joblist.
      *  Assumes that the mutex is being held.
