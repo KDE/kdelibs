@@ -7,16 +7,35 @@
 #include <QObject>
 #include <JobInterface.h>
 
+#include <qlist.h>
 namespace ThreadWeaver {
+
+class JobCollection;
+class JobSequence;
 
 class THREADWEAVER_EXPORT QObjectJobDecorator : public QObject, public JobInterface
 {
     Q_OBJECT
 public:
-    explicit QObjectJobDecorator(JobInterface* decoratee, QObject *parent = 0);
+    explicit QObjectJobDecorator(JobInterface* job, QObject *parent = 0);
     ~QObjectJobDecorator();
-    const JobInterface* decoratee() const;
-    JobInterface* decoratee();
+    /** Retrieve the decorated job. */
+    const JobInterface* job() const;
+    /** Retrieve the decorated job. */
+    JobInterface* job();
+    /** Retrieve the decorated job as a JobCollection.
+     *  If the decorated Job is not a JobCollection, 0 is returned. */
+    const JobCollection* collection() const;
+    /** Retrieve the decorated job as a JobCollection.
+     *  If the decorated Job is not a JobCollection, 0 is returned. */
+    JobCollection* collection();
+    /** Retrieve the decorated job as a JobSequence.
+     *  If the decorated Job is not a JobSequence, 0 is returned. */
+    const JobSequence* sequence() const;
+    /** Retrieve the decorated job as a JobSequence.
+     *  If the decorated Job is not a JobSequence, 0 is returned. */
+    JobSequence* sequence();
+
     void execute(Thread*, JobPointer job) Q_DECL_OVERRIDE;
     Executor* setExecutor(Executor* executor) Q_DECL_OVERRIDE;
     Executor* executor() const Q_DECL_OVERRIDE;

@@ -21,6 +21,7 @@
 
 #include <ThreadWeaver.h>
 #include <Thread.h>
+#include <QObjectJobDecorator.h>
 
 // always. ahm. no. never. never show your private parts in public.
 #ifdef THREADWEAVER_PRIVATE_API
@@ -124,20 +125,21 @@ void QueueTests::deleteJob(ThreadWeaver::JobPointer job)
 
 void QueueTests::DeleteDoneJobsFromSequenceTest()
 {
+    using namespace ThreadWeaver;
     QString sequence;
-    autoDeleteJob = new AppendCharacterJob( QChar( 'a' ), &sequence );
+    autoDeleteJob = new QObjectJobDecorator(new AppendCharacterJob( QChar( 'a' ), &sequence));
     AppendCharacterJob b( QChar( 'b' ), &sequence );
     AppendCharacterJob c( QChar( 'c' ), &sequence );
-    ThreadWeaver::JobCollection jobCollection( this );
+    JobCollection jobCollection;
     jobCollection.addRawJob(autoDeleteJob);
     jobCollection.addRawJob(&b);
     jobCollection.addRawJob(&c);
 
     QVERIFY(autoDeleteJob != 0);
-    QVERIFY(connect(autoDeleteJob, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(deleteJob(ThreadWeaver::JobPointer))));
-    ThreadWeaver::Weaver::instance()->enqueueRaw(&jobCollection);
+    QVERIFY(connect(autoDeleteJob, SIGNAL(done(JobPointer)), SLOT(deleteJob(JobPointer))));
+    Weaver::instance()->enqueueRaw(&jobCollection);
     QTest::qWait(100); // return to event queue to make sure signals are delivered
-    ThreadWeaver::Weaver::instance()->finish();
+    Weaver::instance()->finish();
     QTest::qWait(100); // return to event queue to make sure signals are delivered
     // no need to delete a, that should be done in deleteJob
     QVERIFY( autoDeleteJob == 0 );
@@ -152,22 +154,22 @@ void QueueTests::deleteCollection(ThreadWeaver::JobPointer collection)
 
 void QueueTests::DeleteCollectionOnDoneTest()
 {
+    using namespace ThreadWeaver;
     QString sequence;
-    autoDeleteCollection = new ThreadWeaver::JobCollection( this );
-    QVERIFY(connect(autoDeleteCollection, SIGNAL(done(ThreadWeaver::JobPointer)),
-                    SLOT(deleteCollection(ThreadWeaver::JobPointer))));
+    autoDeleteCollection = new QObjectJobDecorator(new JobCollection);
+    QVERIFY(connect(autoDeleteCollection, SIGNAL(done(JobPointer)), SLOT(deleteCollection(JobPointer))));
 
     AppendCharacterJob a( QChar( 'a' ), &sequence );
     AppendCharacterJob b( QChar( 'b' ), &sequence );
-    autoDeleteCollection->addRawJob(&a);
-    autoDeleteCollection->addRawJob(&b);
+    autoDeleteCollection->collection()->addRawJob(&a);
+    autoDeleteCollection->collection()->addRawJob(&b);
 
-    ThreadWeaver::Weaver::instance()->enqueueRaw(autoDeleteCollection);
+    Weaver::instance()->enqueueRaw(autoDeleteCollection);
     // return to event queue to make sure signals are delivered
     // (otherwise, no slot calls would happen before the end of this function)
     // I assume the amount of time that we wait does not matter
     QTest::qWait(10);
-    ThreadWeaver::Weaver::instance()->finish();
+    Weaver::instance()->finish();
     // return to event queue to make sure signals are delivered
     QTest::qWait(10);
     // no need to delete a, that should be done in deleteJob

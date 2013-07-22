@@ -42,7 +42,7 @@ private Q_SLOTS:
     void QueueAndStopTest();
     void ResourceRestrictionPolicyBasicsTest ();
     void JobSignalsAreEmittedAsynchronouslyTest();
-    void DequeueSuspendedSequence();
+    void DequeueSuspendedSequence(); //FIXME ...test?
 
 public Q_SLOTS: // slots used during tests that are not test cases
     void jobStarted(ThreadWeaver::JobPointer);
