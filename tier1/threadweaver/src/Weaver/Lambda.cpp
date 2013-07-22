@@ -7,9 +7,8 @@ public:
     void (*payload)();
 };
 
-Lambda::Lambda(void (*payload)(), QObject *parent)
-    : Job(parent)
-    , d(new Lambda::Private)
+Lambda::Lambda(void (*payload)())
+    : d(new Lambda::Private)
 {
     d->payload = payload;
 }

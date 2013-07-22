@@ -125,7 +125,13 @@ Executor *QObjectJobDecorator::setExecutor(Executor *executor)
 void ThreadWeaver::QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, ThreadWeaver::JobPointer job)
 {
     Q_ASSERT(d);
+    Q_EMIT started(job);
     reinterpret_cast<JobInterface*>(d)->execute(thread, job);
+    if (!job->success()) {
+        Q_EMIT failed(job);
+    }
+    Q_EMIT done(job);
+
 }
 
 }
