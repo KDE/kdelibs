@@ -1,1 +1,1 @@
-#add_subdirectory(kplugins)
+add_subdirectory(kplugins)
