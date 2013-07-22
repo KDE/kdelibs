@@ -1,6 +1,7 @@
 #include <QObjectJobDecorator.h>
 #include <JobCollection.h>
 #include <JobSequence.h>
+#include <ManagedJobPointer.h>
 
 namespace ThreadWeaver {
 
@@ -139,8 +140,10 @@ Executor *QObjectJobDecorator::setExecutor(Executor *executor)
 void QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, ThreadWeaver::JobPointer job)
 {
     Q_ASSERT(d);
+    ManagedJobPointer payload(reinterpret_cast<JobInterface*>(d));
+    Q_ASSERT(payload);
     Q_EMIT started(job);
-    reinterpret_cast<JobInterface*>(d)->execute(thread, job);
+    payload->execute(thread, payload);
     if (!job->success()) {
         Q_EMIT failed(job);
     }
