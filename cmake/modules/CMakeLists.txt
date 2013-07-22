@@ -85,7 +85,6 @@ set(cmakeFiles
                FindTaglib.cmake
                FindUSB.cmake
                FindWcecompat.cmake
-               FindX11.cmake
                FindXKB.cmake
                FindXine.cmake
                FindXmms.cmake
