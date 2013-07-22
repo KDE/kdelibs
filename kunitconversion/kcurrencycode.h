@@ -20,7 +20,7 @@
 #ifndef KCURRENCYCODE_H
 #define KCURRENCYCODE_H
 
-#include <kdecore_export.h>
+#include <kunitconversion/kunitconversion_export.h>
 
 #include <QtCore/QSharedDataPointer>
 #include <QtCore/QString>
@@ -42,7 +42,7 @@ class KCurrencyCodePrivate;
  *
  * @author John Layt <john@layt.net>
  */
-class KDECORE_EXPORT KCurrencyCode
+class KUNITCONVERSION_EXPORT KCurrencyCode
 {
 public:
     /**

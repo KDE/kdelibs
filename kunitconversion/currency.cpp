@@ -28,7 +28,7 @@
 #include <QtCore/QMutex>
 #include <QtCore/QProcess>
 #include <QtXml/QDomDocument>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 
 
@@ -540,7 +540,7 @@ Value Currency::convert(const Value& value, UnitPtr to)
 #else
         {
 #endif
-            kDebug() << "Getting currency info from net:" << URL;
+            //qDebug() << "Getting currency info from net:" << URL;
             // TODO: This crashes in runner. Threading issues??
             /*
             KIO::Job* job = KIO::file_copy(QUrl(URL), QUrl::fromLocalFile(m_cache), -1,
@@ -550,7 +550,7 @@ Value Currency::convert(const Value& value, UnitPtr to)
                 m_update = true;
             }
             */
-            kDebug() << "Removed previous cache:" << QFile::remove(m_cache);
+            //qDebug() << "Removed previous cache:" << QFile::remove(m_cache);
 #if !KUNITCONVERSION_NO_KIO
             QProcess copyProcess;
             copyProcess.start("kioclient", QStringList() << "copy" << "--noninteractive" << URL << m_cache);

@@ -8,6 +8,7 @@ endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kunitconversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kunitconversion.h)
 
 set(kunitconversion_LIB_SRCS
+    kcurrencycode.cpp
     converter.cpp
     value.cpp
     unit.cpp
@@ -32,6 +33,7 @@ set(kunitconversion_LIB_SRCS
 )
 
 set(kunitconversion_HEADERS
+    kcurrencycode.h
     converter.h
     value.h
     unit.h
@@ -42,7 +44,7 @@ set(kunitconversion_HEADERS
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=930)
 
 if(NOT KUNITCONVERSION_NO_KIO)
-    set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} ${KDE4_KIO_LIBS})
+    set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} KIOCore Qt5::Xml)
 else(NOT KUNITCONVERSION_NO_KIO)
     set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} Qt5::Network Qt5::Xml)
 endif(NOT KUNITCONVERSION_NO_KIO)
@@ -55,8 +57,8 @@ add_subdirectory(tests)
 
 kde4_add_library(kunitconversion ${LIBRARY_TYPE} ${kunitconversion_LIB_SRCS})
 generate_export_header(kunitconversion)
-target_link_libraries(kunitconversion ${KDE4_KDECORE_LIBS} ${KUNITCONVERSION_EXTRA_LIBS} ${KCoreAddons_LIBRARIES} KI18n)
-target_include_directories(kunitconversion PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
+target_link_libraries(kunitconversion ${KUNITCONVERSION_EXTRA_LIBS} ${KCoreAddons_LIBRARIES} KConfigCore KI18n)
+target_include_directories(kunitconversion PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>" "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>")
 set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
 install(TARGETS kunitconversion EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES ${kunitconversion_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kunitconversion COMPONENT Devel)

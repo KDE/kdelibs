@@ -130,7 +130,6 @@ set(kdecore_LIB_SRCS
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
-   localization/kcurrencycode.cpp
    localization/klocale.cpp
    localization/klocale_kde.cpp
    util/kautostart.cpp
@@ -192,7 +191,7 @@ target_link_libraries(kdecore
   LINK_PUBLIC
     Qt5::Network Qt5::DBus ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY} ${KCodecs_LIBRARIES} KService KI18n
   LINK_PRIVATE
-    Qt5::Xml ${kdecore_OPTIONAL_LIBS} KDBusAddons
+    Qt5::Xml kunitconversion ${kdecore_OPTIONAL_LIBS} KDBusAddons
 )
 
 if(WINCE)
@@ -248,7 +247,6 @@ install( FILES
 
 install(FILES
    network/ksocketfactory.h
-   localization/kcurrencycode.h
    localization/klocale.h
    util/kautostart.h
    util/kde_file.h
