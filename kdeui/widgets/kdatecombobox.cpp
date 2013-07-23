@@ -81,6 +81,7 @@ KDateComboBoxPrivate::KDateComboBoxPrivate(KDateComboBox *q)
                       m_dateMenu(new QMenu(q)),
                       m_datePicker(new KDatePicker(q)),
                       m_datePickerAction(new QWidgetAction(q)),
+                      m_warningShown(false),
                       m_displayFormat(KLocale::ShortDate)
 {
     m_options = KDateComboBox::EditDate | KDateComboBox::SelectDate | KDateComboBox::DatePicker | KDateComboBox::DateKeywords;
