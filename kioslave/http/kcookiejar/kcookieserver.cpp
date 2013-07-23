@@ -591,4 +591,5 @@ KCookieServer::shutdown()
    deleteLater();
 }
 
+#include "kcookieserver.moc"
 

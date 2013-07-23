@@ -216,4 +216,6 @@ void XmppEmoticons::createNew()
     fp.close();
 }
 
+#include "xmpp_emoticons.moc"
+
 // kate: space-indent on; indent-width 4; replace-tabs on;
