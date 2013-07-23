@@ -18,7 +18,19 @@
 */
 
 #include "klocale_mac_p.h"
-#include "kkernel_mac.h"
+#include <CoreFoundation/CFString.h>
+
+// Copied from kkernel_mac.cpp
+QString convert_CFString_to_QString(CFStringRef str) {
+	CFIndex length = CFStringGetLength(str);
+	const UniChar *chars = CFStringGetCharactersPtr(str);
+	if (chars)
+		return QString(reinterpret_cast<const QChar *>(chars), length);
+
+	QVarLengthArray<UniChar> buffer(length);
+	CFStringGetCharacters(str, CFRangeMake(0, length), buffer.data());
+	return QString(reinterpret_cast<const QChar *>(buffer.constData()), length);
+}
 
 KLocaleMacPrivate::KLocaleMacPrivate(KLocale *q_ptr, KSharedConfig::Ptr config)
                   :KLocalePrivate(q_ptr)
