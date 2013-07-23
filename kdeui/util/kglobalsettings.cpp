@@ -46,7 +46,6 @@
 
 #ifdef Q_OS_WIN
 #include <windows.h>
-#include <kkernel_win.h>
 
 static QRgb qt_colorref2qrgb(COLORREF col)
 {
