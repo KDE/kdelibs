@@ -28,14 +28,13 @@
 
 #include <QLayout>
 #include <QTimer>
+#include <QDebug>
 
 #include <kaboutdata.h>
 #include <kconfigskeleton.h>
 #include <kconfigdialogmanager.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
-#include "kauthaction.h"
-#include "kauthexecutejob.h"
+#include <kauthexecutejob.h>
 
 class KCModulePrivate
 {

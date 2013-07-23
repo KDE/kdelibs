@@ -50,7 +50,6 @@ set(kdeui_LIB_SRCS
  util/khelpclient.cpp
  util/kimagecache.cpp
  util/kpassivepopupmessagehandler.cpp
- widgets/kcmodule.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
 )
 
@@ -182,7 +181,6 @@ install( FILES
  util/khelpclient.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
- widgets/kcmodule.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
