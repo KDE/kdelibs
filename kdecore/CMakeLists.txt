@@ -59,7 +59,6 @@ endif (HAVE_RESOLV_LIBRARY)
 
 if (APPLE)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      kernel/kkernel_mac.cpp
       localization/klocale_mac.cpp
    )
 
@@ -68,7 +67,6 @@ endif (APPLE)
 
 if (WIN32)
    LIST(APPEND kdecore_OPTIONAL_SRCS
-      kernel/kkernel_win.cpp
       kernel/ktoolinvocation_win.cpp
       localization/klocale_win.cpp
       util/kde_file_win.cpp
