@@ -19,7 +19,7 @@
 #ifndef KDECORE_KMESSAGE_H
 #define KDECORE_KMESSAGE_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 #include <QtCore/QString>
 
@@ -85,7 +85,7 @@ namespace KMessage
      * @param text Long message to be displayed.
      * @param caption Caption to be used. This is optional.
      */ 
-    KDECORE_EXPORT void message(KMessage::MessageType messageType, const QString &text, const QString &caption = QString());
+    KCOREADDONS_EXPORT void message(KMessage::MessageType messageType, const QString &text, const QString &caption = QString());
 
     /**
      * @brief Set the current KMessageHandler
@@ -96,7 +96,7 @@ namespace KMessage
      *          change the message handler during the program's
      *          execution anyways. Do so <b>only</b> at start-up.
      */
-    KDECORE_EXPORT void setMessageHandler(KMessageHandler *handler);
+    KCOREADDONS_EXPORT void setMessageHandler(KMessageHandler *handler);
 }
 
 /**
@@ -110,7 +110,7 @@ namespace KMessage
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */
-class KDECORE_EXPORT KMessageHandler
+class KCOREADDONS_EXPORT KMessageHandler
 {
 public:
     virtual ~KMessageHandler() {}
