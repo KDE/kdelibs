@@ -1392,6 +1392,10 @@ bool KLineEdit::event( QEvent* ev )
             setStyle(kleStyle);
             d->lastStyleClass.clear();
         }
+    } else if (ev->type() == QEvent::ApplicationLayoutDirectionChange
+               || ev->type() == QEvent::LayoutDirectionChange) {
+        updateClearButtonIcon(text());
+        updateClearButton();
     }
 
     return QLineEdit::event( ev );
