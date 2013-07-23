@@ -82,8 +82,10 @@ protected:
     WeaverImpl* weaver();
     const WeaverImpl* weaver() const;
 private:
-    /** Enqueue a naked job. Not implemented. */
+    /** Enqueue a raw job. Not implemented. */
     void enqueueRaw(Job* job);
+    /** Dequeue a raw job. Not implemented. */
+    bool dequeueRaw(Job* job);
 };
 
 }
