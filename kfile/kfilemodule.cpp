@@ -53,3 +53,5 @@ QUrl KFileModule::selectDirectory( const QUrl& startDir,
     return KDirSelectDialog::selectDirectory(startDir, localOnly, parent, caption);
 }
 
+
+#include "kfilemodule.moc"

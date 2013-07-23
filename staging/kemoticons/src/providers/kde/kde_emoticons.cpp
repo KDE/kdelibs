@@ -201,4 +201,6 @@ void KdeEmoticons::createNew()
     fp.close();
 }
 
+#include "kde_emoticons.moc"
+
 // kate: space-indent on; indent-width 4; replace-tabs on;

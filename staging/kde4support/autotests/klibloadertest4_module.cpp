@@ -35,3 +35,5 @@ KLibLoaderTestObject::~KLibLoaderTestObject()
 {
     qDebug( "KLibLoaderTestObject created with KPluginFactory, now deleted" );
 }
+
+#include "klibloadertest4_module.moc"
