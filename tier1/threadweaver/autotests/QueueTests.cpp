@@ -136,7 +136,8 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
     jobCollection.addRawJob(&c);
 
     QVERIFY(autoDeleteJob != 0);
-    QVERIFY(connect(autoDeleteJob, SIGNAL(done(JobPointer)), SLOT(deleteJob(JobPointer))));
+    QVERIFY(connect(autoDeleteJob, SIGNAL(done(ThreadWeaver::JobPointer)),
+                    SLOT(deleteJob(ThreadWeaver::JobPointer))));
     Weaver::instance()->enqueueRaw(&jobCollection);
     QTest::qWait(100); // return to event queue to make sure signals are delivered
     Weaver::instance()->finish();
