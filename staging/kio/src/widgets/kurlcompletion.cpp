@@ -58,7 +58,7 @@
 #include <kconfiggroup.h>
 
 #ifdef Q_OS_WIN
-#include <kkernel_win.h>
+#include <windows.h>
 #endif
 
 static bool expandTilde(QString&);
