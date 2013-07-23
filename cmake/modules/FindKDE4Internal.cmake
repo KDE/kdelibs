@@ -404,11 +404,11 @@ set(CMAKE_MODULE_PATH ${kde_cmake_module_dir} ${CMAKE_MODULE_PATH} )
 # if the minimum Qt requirement is changed, change all occurrence in the
 # following lines
 if( NOT QT_MIN_VERSION )
-  set(QT_MIN_VERSION "4.5.0")
+  set(QT_MIN_VERSION "4.8.0")
 endif( NOT QT_MIN_VERSION )
-if( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
-  set(QT_MIN_VERSION "4.5.0")
-endif( ${QT_MIN_VERSION} VERSION_LESS "4.5.0" )
+if( ${QT_MIN_VERSION} VERSION_LESS "4.8.0" )
+  set(QT_MIN_VERSION "4.8.0")
+endif( ${QT_MIN_VERSION} VERSION_LESS "4.8.0" )
 
 # Tell FindQt4.cmake to point the QT_QTFOO_LIBRARY targets at the imported targets
 # for the Qt libraries, so we get full handling of release and debug versions of the
@@ -1350,13 +1350,13 @@ macro (KDE4_PRINT_RESULTS)
    # inside kdelibs the include dir and lib dir are internal, not "found"
    if (NOT _kdeBootStrapping)
        if(KDE4_INCLUDE_DIR)
-          message(STATUS "Found KDE 4.10 include dir: ${KDE4_INCLUDE_DIR}")
+          message(STATUS "Found KDE 4.11 include dir: ${KDE4_INCLUDE_DIR}")
        else(KDE4_INCLUDE_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 headers")
        endif(KDE4_INCLUDE_DIR)
 
        if(KDE4_LIB_DIR)
-          message(STATUS "Found KDE 4.10 library dir: ${KDE4_LIB_DIR}")
+          message(STATUS "Found KDE 4.11 library dir: ${KDE4_LIB_DIR}")
        else(KDE4_LIB_DIR)
           message(STATUS "ERROR: unable to find the KDE 4 core library")
        endif(KDE4_LIB_DIR)
