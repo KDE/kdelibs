@@ -15,7 +15,7 @@
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
 include(CheckCXXSourceCompiles)
-include(MacroPushRequiredVars)
+include(CMakePushCheckState)
 
 if(WIN32)
    find_path(MYSQL_INCLUDE_DIR mysql.h
@@ -115,11 +115,11 @@ if(MYSQL_EMBEDDED_LIBRARIES)
    get_filename_component(MYSQL_EMBEDDED_LIB_DIR ${MYSQL_EMBEDDED_LIBRARIES} PATH)
 endif(MYSQL_EMBEDDED_LIBRARIES)
 
-macro_push_required_vars()
+cmake_push_check_state()
 set( CMAKE_REQUIRED_INCLUDES ${MYSQL_INCLUDE_DIR} )
 set( CMAKE_REQUIRED_LIBRARIES ${MYSQL_EMBEDDED_LIBRARIES} )
 check_cxx_source_compiles( "#include <mysql.h>\nint main() { int i = MYSQL_OPT_USE_EMBEDDED_CONNECTION; }" HAVE_MYSQL_OPT_EMBEDDED_CONNECTION )
-macro_pop_required_vars()
+cmake_pop_check_state()
 
 if(MYSQL_INCLUDE_DIR AND MYSQL_LIBRARIES)
    set(MYSQL_FOUND TRUE)

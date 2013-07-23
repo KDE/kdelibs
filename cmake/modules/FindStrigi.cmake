@@ -58,7 +58,6 @@ if (STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
 else(STRIGI_CONFIG_FOUND_AND_HAS_COMPLETE_INFORMATION)
    # this else() branch is for finding strigi versions before November 16th, 2008. Alex
    include(FindLibraryWithDebug)
-   include(MacroPushRequiredVars)
 
    if (WIN32)
        file(TO_CMAKE_PATH "$ENV{PROGRAMFILES}" _program_FILES_DIR)
