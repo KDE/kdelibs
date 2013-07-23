@@ -15,6 +15,7 @@ xmlgui_executable_tests(
   kbugreporttest
   kmainwindowrestoretest
   kmainwindowtest
+  krulertest
   ktoolbartest
   kxmlguitest
   kxmlguiwindowtest
