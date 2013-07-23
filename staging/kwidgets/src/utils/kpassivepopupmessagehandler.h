@@ -19,7 +19,7 @@
 #ifndef KDEUI_KPASSIVEPOPUPMESSAGEHANDLER_H
 #define KDEUI_KPASSIVEPOPUPMESSAGEHANDLER_H
 
-#include <kdeui_export.h>
+#include <kwidgets_export.h>
 #include <kmessage.h>
 
 #include <QtCore/QObject>
@@ -30,7 +30,7 @@ class QWidget;
  *
  * @author Michaël Larouche <michael.larouche@kdemail.net>
  */
-class KDEUI_EXPORT KPassivePopupMessageHandler : public QObject, public KMessageHandler
+class KWIDGETS_EXPORT KPassivePopupMessageHandler : public QObject, public KMessageHandler
 {
     Q_OBJECT
 public:
