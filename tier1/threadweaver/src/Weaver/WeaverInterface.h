@@ -122,6 +122,18 @@ public:
     queue. */
     virtual bool dequeue(JobPointer job) = 0;
 
+    /** Remove a raw job from the queue.
+    If the job was queued but not started so far, it is simply
+    removed from the queue. For now, it is unsupported to
+    dequeue a job once its execution has started.
+
+    For that case, you will have to provide a method to interrupt your
+    job's execution (and receive the done signal).
+    Returns true if the job has been dequeued, false if the
+    job has already been started or is not found in the
+    queue. */
+    virtual bool dequeueRaw(Job* job) = 0;
+
     /** Remove all queued jobs.
     Please note that this will not kill the threads, therefore
     all jobs that are being processed will be continued. */

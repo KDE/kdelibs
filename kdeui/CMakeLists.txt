@@ -10,13 +10,17 @@ include_directories(
 find_package(X11)
 if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
-	macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
+    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
+                           URL "http://www.x.org" TYPE RECOMMENDED
+                           PURPOSE "Support for compositing, rendering operations, and alpha-blending")
 	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 	macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)
 endif(X11_FOUND)
 
 find_package(DBusMenuQt)
-macro_log_feature(DBUSMENUQT_FOUND "DBusMenuQt" "Support for notification area menus via the DBusMenu protocol" "https://launchpad.net/libdbusmenu-qt" TRUE "" "")
+set_package_properties(DBUSMENUQT PROPERTIES DESCRIPTION "DBusMenuQt"
+                       URL "https://launchpad.net/libdbusmenu-qt" TYPE REQUIRED
+                       PURPOSE "Support for notification area menus via the DBusMenu protocol")
 macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
 
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
@@ -37,21 +41,13 @@ add_subdirectory( sonnet/tests )
 set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  colors/kcolorbutton.cpp
- dialogs/kconfigdialog.cpp
- dialogs/klinkdialog.cpp
  dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
- shortcuts/kgesture.cpp
- shortcuts/kgesturemap.cpp
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
  util/kpassivepopupmessagehandler.cpp
- widgets/kcmodule.cpp
- widgets/krichtextedit.cpp
- widgets/krichtextwidget.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
- widgets/nestedlisthelper.cpp
 )
 
 
@@ -174,17 +170,12 @@ install( FILES
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  colors/kcolorbutton.h
- dialogs/kconfigdialog.h
  dialogs/knewpassworddialog.h
  kernel/kstyle.h
- shortcuts/kgesture.h
  util/kglobalsettings.h
  util/khelpclient.h
  util/kpassivepopupmessagehandler.h
  util/kimagecache.h
- widgets/kcmodule.h
- widgets/krichtextedit.h
- widgets/krichtextwidget.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )

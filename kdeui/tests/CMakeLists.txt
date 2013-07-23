@@ -16,26 +16,16 @@ MACRO(KDEUI_EXECUTABLE_TESTS)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
 KDEUI_UNIT_TESTS(
-  kactioncollectiontest
   kglobalsettingstest
-  krichtextedittest
-  kconfigdialog_unittest
   kcolorbuttontest
-  klinkitemselectionmodeltest
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  kcategorizedviewtest
-  kcolorcollectiontest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
   knewpassworddialogtest
-  knotificationrestrictionstest
   kpopuptest
-  krulertest
 )
-
-add_subdirectory(krichtexteditor)
 
 if (X11_FOUND)
 find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)

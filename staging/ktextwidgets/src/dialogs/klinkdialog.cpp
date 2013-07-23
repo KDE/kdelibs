@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 
-#include "klinkdialog.h"
+#include "klinkdialog_p.h"
 
 #include <klocalizedstring.h>
 #include <klineedit.h>

@@ -1,6 +1,6 @@
 #include "krulertest.h"
 
-#include "kruler.h"
+#include <kruler.h>
 
 #include <QApplication>
 #include <QLayout>
@@ -94,51 +94,51 @@ KRulerTest::KRulerTest()
   layout->addWidget(vruler, 1, 0);
   layout->addWidget(bigwidget, 1, 1);
 
-  mouse_message = new QLabel("Press and hold mouse button\nfor pointer movement", bigwidget);
+  mouse_message = new QLabel(QStringLiteral("Press and hold mouse button\nfor pointer movement"), bigwidget);
   mouse_message->adjustSize();
   mouse_message->move(4,4);
 
-  showMarks = new QGroupBox("Show which marks ?", bigwidget);
+  showMarks = new QGroupBox(QStringLiteral("Show which marks ?"), bigwidget);
   showMarks->setFixedSize(140, 160);
   showMarks->move(330,4);
-  showTM = new QCheckBox("show tiny marks", showMarks);
+  showTM = new QCheckBox(QStringLiteral("show tiny marks"), showMarks);
   showTM->adjustSize();
   showTM->move(5,15);
   showTM->setChecked(true);
   connect(showTM, SIGNAL(toggled(bool)), SLOT(slotSetTinyMarks(bool)) );
-  showLM = new QCheckBox("show little marks", showMarks);
+  showLM = new QCheckBox(QStringLiteral("show little marks"), showMarks);
   showLM->adjustSize();
   showLM->move(5,35);
   showLM->setChecked(true);
   connect(showLM, SIGNAL(toggled(bool)), SLOT(slotSetLittleMarks(bool)) );
-  showMM = new QCheckBox("show medium marks", showMarks);
+  showMM = new QCheckBox(QStringLiteral("show medium marks"), showMarks);
   showMM->adjustSize();
   showMM->move(5,55);
   showMM->setChecked(true);
   connect(showMM, SIGNAL(toggled(bool)), SLOT(slotSetMediumMarks(bool)) );
-  showBM = new QCheckBox("show big marks", showMarks);
+  showBM = new QCheckBox(QStringLiteral("show big marks"), showMarks);
   showBM->adjustSize();
   showBM->move(5,75);
   showBM->setChecked(true);
   connect(showBM, SIGNAL(toggled(bool)), SLOT(slotSetBigMarks(bool)) );
-  showEM = new QCheckBox("show end marks", showMarks);
+  showEM = new QCheckBox(QStringLiteral("show end marks"), showMarks);
   showEM->adjustSize();
   showEM->move(5,95);
   showEM->setChecked(true);
   connect(showEM, SIGNAL(toggled(bool)), SLOT(slotSetEndMarks(bool)) );
-  showPT = new QCheckBox("show ruler pointer", showMarks);
+  showPT = new QCheckBox(QStringLiteral("show ruler pointer"), showMarks);
   showPT->adjustSize();
   showPT->move(5,115);
   showPT->setChecked(true);
   connect(showPT, SIGNAL(toggled(bool)), SLOT(slotSetRulerPointer(bool)) );
-  fixLen = new QCheckBox("fix ruler length", showMarks);
+  fixLen = new QCheckBox(QStringLiteral("fix ruler length"), showMarks);
   fixLen->adjustSize();
   fixLen->move(5,135);
   fixLen->setChecked(true);
   connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotFixRulerLength(bool)) );
   connect(fixLen, SIGNAL(toggled(bool)), SLOT(slotCheckLength(bool)) );
 
-  lineEdit = new QGroupBox("Value of begin/end", bigwidget);
+  lineEdit = new QGroupBox(QStringLiteral("Value of begin/end"), bigwidget);
   lineEdit->setFixedSize(140, 80);
   lineEdit->move(330,4+160);
   beginMark = new QSpinBox(lineEdit);
@@ -170,7 +170,7 @@ KRulerTest::KRulerTest()
 	  vruler, SLOT(slotEndOffset(int)) );
 
 
-  vertrot = new QGroupBox("Value of rotate translate for Vert.", bigwidget);
+  vertrot = new QGroupBox(QStringLiteral("Value of rotate translate for Vert."), bigwidget);
   vertrot->setFixedSize(140, 80);
   vertrot->move(330,4+160+80+4);
   transX = new QDoubleSpinBox(vertrot);
@@ -202,29 +202,29 @@ KRulerTest::KRulerTest()
 	  SLOT(slotSetRotate(double)) );
 
 
-  metricstyle = new QGroupBox("metric styles", bigwidget);
+  metricstyle = new QGroupBox(QStringLiteral("metric styles"), bigwidget);
 
   QButtonGroup* metricstyleButtons = new QButtonGroup(bigwidget);
 
   metricstyle->setFixedSize(100, 120);
   metricstyle->move(330-110,4);
-  pixelmetric = new QRadioButton("pixel", metricstyle);
+  pixelmetric = new QRadioButton(QStringLiteral("pixel"), metricstyle);
   pixelmetric->adjustSize();
   pixelmetric->move(5,15);
   metricstyleButtons->addButton(pixelmetric, (int)KRuler::Pixel);
-  inchmetric = new QRadioButton("inch", metricstyle);
+  inchmetric = new QRadioButton(QStringLiteral("inch"), metricstyle);
   inchmetric->adjustSize();
   inchmetric->move(5,35);
   metricstyleButtons->addButton(inchmetric, (int)KRuler::Inch);
-  mmmetric = new QRadioButton("millimeter", metricstyle);
+  mmmetric = new QRadioButton(QStringLiteral("millimeter"), metricstyle);
   mmmetric->adjustSize();
   mmmetric->move(5,55);
   metricstyleButtons->addButton(mmmetric, (int)KRuler::Millimetres);
-  cmmetric = new QRadioButton("centimeter", metricstyle);
+  cmmetric = new QRadioButton(QStringLiteral("centimeter"), metricstyle);
   cmmetric->adjustSize();
   cmmetric->move(5,75);
   metricstyleButtons->addButton(cmmetric, (int)KRuler::Centimetres);
-  mmetric = new QRadioButton("meter", metricstyle);
+  mmetric = new QRadioButton(QStringLiteral("meter"), metricstyle);
   mmetric->adjustSize();
   mmetric->move(5,95);
   metricstyleButtons->addButton(mmetric, (int)KRuler::Metres);
@@ -378,15 +378,15 @@ KRulerTest::slotSetYTrans(double d)
 /* --- MAIN -----------------------*/
 int main(int argc, char **argv)
 {
-  QApplication::setApplicationName("test");
+  QApplication::setApplicationName(QStringLiteral("test"));
   QApplication *testapp;
   KRulerTest   *window;
 
   testapp = new QApplication(argc, argv);
-  testapp->setFont(QFont("Helvetica",12));
+  testapp->setFont(QFont(QStringLiteral("Helvetica"),12));
 
   window = new KRulerTest();
-  window->setCaption("KRulerTest");
+  window->setCaption(QStringLiteral("KRulerTest"));
   window->show();
   return testapp->exec();
 }

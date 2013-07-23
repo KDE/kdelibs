@@ -23,12 +23,12 @@
 
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QComboBox>
+#include <QSpinBox>
 
 #include <kconfigdialog.h>
 #include <kconfigskeleton.h>
-#include <kcombobox.h>
 #include <kcolorcombo.h>
-#include <knuminput.h>
 
 class ComboBoxPage : public QWidget
 {
@@ -39,23 +39,24 @@ public:
         colorCombo->setObjectName("kcfg_Color");
         colorCombo->setColor(Qt::red);
 
-        enumCombo = new KComboBox(this);
+        enumCombo = new QComboBox(this);
         enumCombo->setObjectName("kcfg_Enum");
         enumCombo->addItems(QStringList() << "A" << "B" << "C");
 
-        textCombo = new KComboBox(this);
+        textCombo = new QComboBox(this);
         textCombo->setObjectName("kcfg_Text");
         textCombo->setEditable(true);
         textCombo->addItems(QStringList() << "A" << "B" << "C");
 
-        numInput = new KIntNumInput(1, this);
+        numInput = new QSpinBox(this);
+        numInput->setValue(1);
         numInput->setObjectName("kcfg_IntNumInput");
     }
 
     KColorCombo *colorCombo;
-    KComboBox *enumCombo;
-    KComboBox *textCombo;
-    KIntNumInput *numInput;
+    QComboBox *enumCombo;
+    QComboBox *textCombo;
+    QSpinBox *numInput;
 };
 
 class ComboSettings : public KConfigSkeleton

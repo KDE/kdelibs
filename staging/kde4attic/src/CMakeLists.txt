@@ -9,6 +9,8 @@ set(kde4attic_SRCS
   kdatetimeedit.cpp
   kdatetimewidget.cpp
   kdatewidget.cpp
+  kgesture.cpp
+  kgesturemap.cpp
   kmultitabbar.cpp
   ktimecombobox.cpp
   ktimezonewidget.cpp
@@ -76,6 +78,7 @@ install(FILES
   kdatetimewidget.h
   kdatewidget.h
   kdeprintdialog.h
+  kgesture.h
   kmultitabbar.h
   ktimecombobox.h
   ktimezonewidget.h

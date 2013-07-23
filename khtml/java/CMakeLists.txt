@@ -28,7 +28,7 @@ target_link_libraries(kjavaappletviewer ${KDE4_KPARTS_LIBS} ${KWindowSystem_LIBR
 install(TARGETS kjavaappletviewer  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/kjava.policy.in.cmake ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
-#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kjava.policy )
 add_definitions(-DMAKE_KHTML_LIB)
 
 ########### install files ###############

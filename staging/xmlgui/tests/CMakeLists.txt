@@ -15,8 +15,11 @@ xmlgui_executable_tests(
   kbugreporttest
   kmainwindowrestoretest
   kmainwindowtest
+  krulertest
   ktoolbartest
   kxmlguitest
   kxmlguiwindowtest
   kwindowtest
 )
+
+add_subdirectory(krichtexteditor)
