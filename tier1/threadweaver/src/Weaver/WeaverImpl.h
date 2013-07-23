@@ -80,7 +80,7 @@ public:
     void enqueue(JobPointer job);
     void enqueueRaw(JobInterface* job);
     bool dequeue(JobPointer job);
-    bool dequeueRaw(Job* job);
+    bool dequeueRaw(JobInterface* job);
     void dequeue ();
     void finish();
     void suspend( );

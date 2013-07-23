@@ -133,7 +133,7 @@ public:
     Returns true if the job has been dequeued, false if the
     job has already been started or is not found in the
     queue. */
-    virtual bool dequeueRaw(Job* job) = 0;
+    virtual bool dequeueRaw(JobInterface* job) = 0;
 
     /** Remove all queued jobs.
     Please note that this will not kill the threads, therefore

@@ -255,7 +255,7 @@ bool WeaverImpl::dequeue(JobPointer job)
     return state()->dequeue(job);
 }
 
-bool WeaverImpl::dequeueRaw(Job *job)
+bool WeaverImpl::dequeueRaw(JobInterface *job)
 {
     return dequeue(ManagedJobPointer(job));
 }
