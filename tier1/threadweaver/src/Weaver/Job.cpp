@@ -170,12 +170,13 @@ void Job::freeQueuePolicyResources()
 
 void Job::defaultBegin(JobPointer job, Thread *)
 {
-    Q_ASSERT(job.data() == this);
+    //FIXME document - not valid anymore: job is the job the queue see. this could be decorated, and then job.data != thiss
+    //Q_ASSERT(job.data() == this);
 }
 
 void Job::defaultEnd(JobPointer job, Thread *)
 {
-    Q_ASSERT(job.data() == this);
+    //Q_ASSERT(job.data() == this);
     freeQueuePolicyResources();
 }
 

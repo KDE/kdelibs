@@ -14,141 +14,139 @@ QObjectJobDecorator::QObjectJobDecorator(JobInterface *decoratee, QObject *paren
 
 QObjectJobDecorator::~QObjectJobDecorator()
 {
-    delete reinterpret_cast<JobInterface*>(d);
+    Q_ASSERT(d);
+    delete job();
 }
 
 QMutex *QObjectJobDecorator::mutex() const
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->mutex();
+    return job()->mutex();
 }
 
 void QObjectJobDecorator::setFinished(bool status)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->setFinished(status);
+    job()->setFinished(status);
 }
 
 Thread *QObjectJobDecorator::thread()
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->thread();
+    return job()->thread();
 }
 
 void QObjectJobDecorator::run()
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->run();
+    job()->run();
 }
 
-void QObjectJobDecorator::defaultBegin(JobPointer job, Thread *thread)
+void QObjectJobDecorator::defaultBegin(JobPointer self, Thread *thread)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->defaultBegin(job, thread);
+    Q_EMIT started(self);
+    job()->defaultBegin(self, thread);
 }
 
-void QObjectJobDecorator::defaultEnd(JobPointer job, Thread *thread)
+void QObjectJobDecorator::defaultEnd(JobPointer self, Thread *thread)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->defaultEnd(job, thread);
+    job()->defaultEnd(self, thread);
+    if (!self->success()) {
+        Q_EMIT failed(self);
+    }
+    Q_EMIT done(self);
 }
 
 void QObjectJobDecorator::freeQueuePolicyResources()
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->freeQueuePolicyResources();
+    job()->freeQueuePolicyResources();
 }
 
 void QObjectJobDecorator::removeQueuePolicy(QueuePolicy* policy)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->removeQueuePolicy(policy);
+    job()->removeQueuePolicy(policy);
 }
 
 void QObjectJobDecorator::assignQueuePolicy(QueuePolicy* policy)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->assignQueuePolicy(policy);
+    job()->assignQueuePolicy(policy);
 }
 
 bool QObjectJobDecorator::isFinished() const
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->isFinished();
+    return job()->isFinished();
 }
 
 bool QObjectJobDecorator::canBeExecuted()
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->canBeExecuted();
+    return job()->canBeExecuted();
 }
 
 void QObjectJobDecorator::aboutToBeQueued(QueueAPI *api)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->aboutToBeQueued(api);
+    job()->aboutToBeQueued(api);
 }
 
 void QObjectJobDecorator::aboutToBeQueued_locked(QueueAPI *api)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->aboutToBeQueued_locked(api);
+    job()->aboutToBeQueued_locked(api);
 }
 
 void QObjectJobDecorator::aboutToBeDequeued(QueueAPI *api)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->aboutToBeDequeued(api);
+    job()->aboutToBeDequeued(api);
 }
 
 void QObjectJobDecorator::aboutToBeDequeued_locked(QueueAPI* api)
 {
     Q_ASSERT(d);
-    reinterpret_cast<JobInterface*>(d)->aboutToBeDequeued_locked(api);
+    job()->aboutToBeDequeued_locked(api);
 }
 
 void QObjectJobDecorator::requestAbort()
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->requestAbort();
+    job()->requestAbort();
 }
 
 bool QObjectJobDecorator::success() const
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->success();
+    return job()->success();
 }
 
 int QObjectJobDecorator::priority() const
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->priority();
+    return job()->priority();
 }
 
 Executor *QObjectJobDecorator::executor() const
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->executor();
+    return job()->executor();
 }
 
 Executor *QObjectJobDecorator::setExecutor(Executor *executor)
 {
     Q_ASSERT(d);
-    return reinterpret_cast<JobInterface*>(d)->setExecutor(executor);
+    return job()->setExecutor(executor);
 }
 
-void QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, ThreadWeaver::JobPointer job)
+void QObjectJobDecorator::execute(ThreadWeaver::Thread* thread, ThreadWeaver::JobPointer self)
 {
     Q_ASSERT(d);
-    ManagedJobPointer payload(reinterpret_cast<JobInterface*>(d));
-    Q_ASSERT(payload);
-    Q_EMIT started(job);
-    payload->execute(thread, payload);
-    if (!job->success()) {
-        Q_EMIT failed(job);
-    }
-    Q_EMIT done(job);
-
+    job()->execute(thread, self);
 }
 
 const ThreadWeaver::JobInterface* QObjectJobDecorator::job() const
@@ -163,26 +161,22 @@ JobInterface *QObjectJobDecorator::job()
 
 const ThreadWeaver::JobCollection *ThreadWeaver::QObjectJobDecorator::collection() const
 {
-    const JobInterface* i = reinterpret_cast<JobInterface*>(d);
-    return dynamic_cast<const JobCollection*>(i);
+   return dynamic_cast<const JobCollection*>(job());
 }
 
 JobCollection *QObjectJobDecorator::collection()
 {
-    JobInterface* i = reinterpret_cast<JobInterface*>(d);
-    return dynamic_cast<JobCollection*>(i);
+    return dynamic_cast<JobCollection*>(job());
 }
 
 const JobSequence *QObjectJobDecorator::sequence() const
 {
-    const JobInterface* i = reinterpret_cast<JobInterface*>(d);
-    return dynamic_cast<const JobSequence*>(i);
+    return dynamic_cast<const JobSequence*>(job());
 }
 
 JobSequence *QObjectJobDecorator::sequence()
 {
-    JobInterface* i = reinterpret_cast<JobInterface*>(d);
-    return dynamic_cast<JobSequence*>(i);
+    return dynamic_cast<JobSequence*>(job());
 }
 
 }

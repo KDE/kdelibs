@@ -70,7 +70,11 @@ public:
      *
      * Do not overload this method to create your own Job implementation, overload run().
      * Whenever the currently executed job is communicated to the outside world, use the supplied job pointer
-     * to keep the reference count correct. */
+     * to keep the reference count correct.
+     *
+     * job is the Job that the queue is executing. It is not necessarily equal to this. For example, Jobs that are
+     * decorated expose the decorator's address, not the address of the decorated object.
+     */
     virtual void execute(Thread*, JobPointer job);
 
     /** Perform the job synchroneously in the current thread. */
@@ -186,11 +190,17 @@ protected:
     virtual void run () = 0;
 
     /** @brief Perform standard tasks before starting the execution of a job.
-     * This emits the started() signal. */
+     *
+     * The default implementation is empty.
+     * job is the Job that the queue is executing. It is not necessarily equal to this. For example, Jobs that are
+     * decorated expose the decorator's address, not the address of the decorated object. */
     void defaultBegin(JobPointer job, Thread* thread);
 
     /** @brief Perform standard task after the execution of a job.
-     * This emits the done() and maybe the failed() signals. */
+     *
+     * The default implementation is empty.
+     * job is the Job that the queue is executing. It is not necessarily equal to this. For example, Jobs that are
+     * decorated expose the decorator's address, not the address of the decorated object. */
     void defaultEnd(JobPointer job, Thread* thread);
 
     /** Return the thread that executes this job.
