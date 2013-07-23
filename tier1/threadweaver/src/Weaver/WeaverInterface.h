@@ -112,32 +112,33 @@ public:
     virtual void enqueueRaw(JobInterface* job) = 0;
 
     /** Remove a job from the queue.
-    If the job was queued but not started so far, it is simply
-    removed from the queue. For now, it is unsupported to
-    dequeue a job once its execution has started.
-
-    For that case, you will have to provide a method to interrupt your
-    job's execution (and receive the done signal).
-    Returns true if the job has been dequeued, false if the
-    job has already been started or is not found in the
-    queue. */
+     *
+     * If the job was queued but not started so far, it is removed from the queue.
+     *
+     * You can always call dequeue, it will return true if the job was dequeued. However if the job is not in the queue anymore,
+     * it is already being executed, it is too late to dequeue, and dequeue will return false. The return value is thread-safe - if
+     * true is returned, the job was still waiting, and has been dequeued. If not, the job was not waiting in the queue.
+     *
+     * Modifying queued jobs is best done on a suspended queue. Often, for example at the end of an application, it is sufficient
+     * to dequeue all jobs (which leaves only the ones mid-air in threads), call finish (that will wait for all the mid air jobs to
+     * complete), and then exit. Without dequeue(), all jobs in the queue would be executed during finish().
+     * @see requestAbort for aborting jobs during execution
+     * @return true if the job was waiting and has been dequeued
+     * @return false if the job was not found waiting in the queue
+     */
     virtual bool dequeue(JobPointer job) = 0;
 
     /** Remove a raw job from the queue.
-    If the job was queued but not started so far, it is simply
-    removed from the queue. For now, it is unsupported to
-    dequeue a job once its execution has started.
-
-    For that case, you will have to provide a method to interrupt your
-    job's execution (and receive the done signal).
-    Returns true if the job has been dequeued, false if the
-    job has already been started or is not found in the
-    queue. */
+     * @see dequeue(JobPointer)
+     */
     virtual bool dequeueRaw(JobInterface* job) = 0;
 
     /** Remove all queued jobs.
-    Please note that this will not kill the threads, therefore
-    all jobs that are being processed will be continued. */
+     *
+     * All waiting jobs will be dequeued. The semantics are the same as for dequeue(JobInterface).
+     *
+     * @see dequeue(JobInterface)
+     */
     virtual void dequeue () = 0;
     /** Finish all queued operations, then return.
 
