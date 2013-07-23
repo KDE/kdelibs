@@ -22,7 +22,9 @@
 
 #include "krichtextedit.h"
 
-class KActionCollection;
+#include "ktextwidgets_export.h"
+
+class QAction;
 
 /**
  * @brief A KRichTextEdit with common actions
@@ -42,7 +44,7 @@ class KActionCollection;
  *
  * @since 4.1
  */
-class KDEUI_EXPORT KRichTextWidget : public KRichTextEdit
+class KTEXTWIDGETS_EXPORT KRichTextWidget : public KRichTextEdit
 {
     Q_OBJECT
     Q_FLAGS(RichTextSupport)
@@ -289,9 +291,9 @@ public:
      * <tr><td>format_text_subscript & format_text_superscript</td><td>SupportSuperScriptAndSubScript</td></tr>
      * </table>
      *
-     * @param actionCollection the actions will be added to this action collection
+     * @since 5.0
      */
-    virtual void createActions(KActionCollection *actionCollection);
+    virtual QList<QAction *> createActions();
 
     /**
      * @brief Sets the supported rich text subset available.

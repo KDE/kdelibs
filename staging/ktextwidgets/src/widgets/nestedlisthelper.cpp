@@ -19,7 +19,7 @@
  * 02110-1301  USA
  */
 
-#include "nestedlisthelper.h"
+#include "nestedlisthelper_p.h"
 
 #include <QKeyEvent>
 #include <QTextCursor>
@@ -27,8 +27,7 @@
 #include <QTextBlock>
 #include <QTextDocumentFragment>
 
-#include <ktextedit.h>
-#include <kdebug.h>
+#include "ktextedit.h"
 
 NestedListHelper::NestedListHelper(QTextEdit *te)
 {

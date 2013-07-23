@@ -23,11 +23,11 @@
 #ifndef KCMODULE_H
 #define KCMODULE_H
 
-#include <kdeui_export.h>
+#include <kconfigwidgets_export.h>
 
 #include <kauthaction.h>
 
-#include <QtCore/QVariant>
+#include <QVariant>
 #include <QWidget>
 
 class QStringList;
@@ -97,7 +97,7 @@ class KCModulePrivate;
  *
  * @author Matthias Hoelzer-Kluepfel <hoelzer@kde.org>
  */
-class KDEUI_EXPORT KCModule : public QWidget
+class KCONFIGWIDGETS_EXPORT KCModule : public QWidget
 {
   Q_OBJECT
 

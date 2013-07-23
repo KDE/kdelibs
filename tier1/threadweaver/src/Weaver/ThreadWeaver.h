@@ -74,9 +74,9 @@ public:
 
     const State* state() const;
 
-    void setMaximumNumberOfThreads( int cap );
-    int maximumNumberOfThreads() const;
-    int currentNumberOfThreads () const;
+    void setMaximumNumberOfThreads(int cap) Q_DECL_OVERRIDE;
+    int maximumNumberOfThreads() const Q_DECL_OVERRIDE;
+    int currentNumberOfThreads() const Q_DECL_OVERRIDE;
 
 
     void registerObserver ( WeaverObserver* );
@@ -89,18 +89,19 @@ public:
         created.
     */
     static ThreadWeaver::Weaver* instance();
-    virtual void enqueue(JobPointer);
-    virtual void enqueueRaw(Job* job);
-    virtual bool dequeue(JobPointer);
-    virtual void dequeue ();
-    virtual void finish();
-    virtual void suspend( );
-    virtual void resume();
-    bool isEmpty () const;
-    bool isIdle () const;
-    int queueLength () const;
-    void requestAbort();
-    void shutDown();
+    void enqueue(JobPointer) Q_DECL_OVERRIDE;
+    void enqueueRaw(Job* job) Q_DECL_OVERRIDE;
+    bool dequeue(JobPointer) Q_DECL_OVERRIDE;
+    bool dequeueRaw(Job* job) Q_DECL_OVERRIDE;
+    void dequeue() Q_DECL_OVERRIDE;
+    void finish() Q_DECL_OVERRIDE;
+    void suspend() Q_DECL_OVERRIDE;
+    void resume() Q_DECL_OVERRIDE;
+    bool isEmpty() const Q_DECL_OVERRIDE;
+    bool isIdle() const Q_DECL_OVERRIDE;
+    int queueLength () const Q_DECL_OVERRIDE;
+    void requestAbort() Q_DECL_OVERRIDE;
+    void shutDown() Q_DECL_OVERRIDE;
 
 protected:
     /** The factory method to create the actual Weaver implementation.

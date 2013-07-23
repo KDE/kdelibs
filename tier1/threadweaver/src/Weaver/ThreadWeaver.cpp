@@ -148,6 +148,11 @@ bool Weaver::dequeue(JobPointer job)
     return d->implementation->dequeue(job);
 }
 
+bool Weaver::dequeueRaw(Job *job)
+{
+    return d->implementation->dequeueRaw(job);
+}
+
 void Weaver::dequeue ()
 {
     return d->implementation->dequeue();

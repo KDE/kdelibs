@@ -24,8 +24,8 @@
 #include "krichtextedit.h"
 
 // Own includes
-#include "nestedlisthelper.h"
-#include "klinkdialog.h"
+#include "nestedlisthelper_p.h"
+#include "klinkdialog_p.h"
 
 // kdelibs includes
 #include <kcursor.h>
@@ -165,7 +165,7 @@ void KRichTextEdit::insertHorizontalRule()
     QTextCharFormat cf = cursor.charFormat();
 
     cursor.beginEditBlock();
-    cursor.insertHtml("<hr>");
+    cursor.insertHtml(QStringLiteral("<hr>"));
     cursor.insertBlock(bf, cf);
     setTextCursor(cursor);
     d->activateRichText();
@@ -476,7 +476,7 @@ void KRichTextEdit::updateLink(const QString &linkUrl, const QString &linkText)
     if (!linkUrl.isEmpty() && cursor.atBlockEnd()) {
         cursor.setPosition(cursor.selectionEnd());
         cursor.setCharFormat(originalFormat);
-        cursor.insertText(QString(" "));
+        cursor.insertText(QStringLiteral(" "));
     }
 
     cursor.endEditBlock();

@@ -63,6 +63,12 @@ void WeaverImplState::enqueueRaw(Job*)
     Q_ASSERT(false); //should not be called, handled in WeaverImpl
 }
 
+bool WeaverImplState::dequeueRaw(Job*)
+{
+    Q_ASSERT(false); //should not be called, handled in WeaverImpl
+    return false;
+}
+
 void WeaverImplState::setMaximumNumberOfThreads(int cap)
 {
     weaver()->setMaximumNumberOfThreads_p(cap);

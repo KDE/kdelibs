@@ -255,6 +255,11 @@ bool WeaverImpl::dequeue(JobPointer job)
     return state()->dequeue(job);
 }
 
+bool WeaverImpl::dequeueRaw(Job *job)
+{
+    return dequeue(ManagedJobPointer(job));
+}
+
 bool WeaverImpl::dequeue_p(JobPointer job)
 {
     Q_ASSERT(!m_mutex->tryLock()); //mutex has to be held when this method is called

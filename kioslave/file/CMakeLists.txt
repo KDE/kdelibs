@@ -15,7 +15,8 @@ endif(WIN32)
 
 find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
-macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control lists" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED")
+set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
+                       TYPE RECOMMENDED PURPOSE "Support for manipulating access control lists")
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
 

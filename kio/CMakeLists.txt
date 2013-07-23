@@ -57,13 +57,16 @@ endif(NOT KIO_NO_SOLID)
 find_package(X11)
 if(X11_FOUND)
 	macro_bool_to_01(X11_FOUND HAVE_X11)
-	macro_log_feature(X11_Xrender_FOUND "X Rendering Extension (libXrender)" "Support for compositing, rendering operations, and alpha-blending" "http://www.x.org" FALSE "" "STRONGLY RECOMMENDED")
+    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
+                           URL "http://www.x.org" TYPE RECOMMENDED
+                           PURPOSE "Support for compositing, rendering operations, and alpha-blending")
 	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
 endif(X11_FOUND)
 
 find_package(ACL)
 macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
-macro_log_feature(ACL_FOUND "LibACL" "Support for manipulating access control lists" "ftp://oss.sgi.com/projects/xfs/cmd_tars" FALSE "" "STRONGLY RECOMMENDED")
+set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
+                       TYPE RECOMMENDED PURPOSE "Support for manipulating access control lists")
 
 include(ConfigureChecks.cmake)
 
@@ -72,7 +75,7 @@ configure_file(kio/config-kio.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kio/config-kio
 configure_file(kfile/config-kfile.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kfile/config-kfile.h )
 
 configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
-#macro_additional_clean_files( ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 set(kiocore_STAT_SRCS
   kio/accessmanager.cpp

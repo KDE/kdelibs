@@ -71,7 +71,7 @@ macro (KDE4_HANDLE_RPATH_FOR_EXECUTABLE _target_NAME)
          -P ${KDE4_MODULE_DIR}/kde4_exec_via_sh.cmake
          )
 
-      macro_additional_clean_files(${_executable}.shell)
+      set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${_executable}.shell)
 
       # under UNIX, set the property WRAPPER_SCRIPT to the name of the generated shell script
       # so it can be queried and used later on easily
