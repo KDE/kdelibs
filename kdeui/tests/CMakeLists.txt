@@ -17,7 +17,6 @@ ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
 KDEUI_UNIT_TESTS(
   kglobalsettingstest
-  kconfigdialog_unittest
   kcolorbuttontest
 )
 

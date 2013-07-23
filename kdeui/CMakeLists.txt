@@ -41,7 +41,6 @@ add_subdirectory( sonnet/tests )
 set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  colors/kcolorbutton.cpp
- dialogs/kconfigdialog.cpp
  dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
  util/kglobalsettings.cpp
@@ -171,7 +170,6 @@ install( FILES
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  colors/kcolorbutton.h
- dialogs/kconfigdialog.h
  dialogs/knewpassworddialog.h
  kernel/kstyle.h
  util/kglobalsettings.h
