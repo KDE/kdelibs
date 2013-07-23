@@ -127,14 +127,13 @@ void QueueTests::DeleteDoneJobsFromSequenceTest()
 {
     using namespace ThreadWeaver;
     QString sequence;
-    autoDeleteJob = new QObjectJobDecorator(new AppendCharacterJob( QChar( 'a' ), &sequence));
-    AppendCharacterJob b( QChar( 'b' ), &sequence );
-    AppendCharacterJob c( QChar( 'c' ), &sequence );
+    autoDeleteJob = new QObjectJobDecorator(new AppendCharacterJob(QChar('a'), &sequence));
+    AppendCharacterJob b(QChar('b'), &sequence);
+    AppendCharacterJob c(QChar('c'), &sequence);
     JobCollection jobCollection;
     jobCollection.addRawJob(autoDeleteJob);
     jobCollection.addRawJob(&b);
     jobCollection.addRawJob(&c);
-
     QVERIFY(autoDeleteJob != 0);
     QVERIFY(connect(autoDeleteJob, SIGNAL(done(ThreadWeaver::JobPointer)),
                     SLOT(deleteJob(ThreadWeaver::JobPointer))));
@@ -158,7 +157,8 @@ void QueueTests::DeleteCollectionOnDoneTest()
     using namespace ThreadWeaver;
     QString sequence;
     autoDeleteCollection = new QObjectJobDecorator(new JobCollection);
-    QVERIFY(connect(autoDeleteCollection, SIGNAL(done(JobPointer)), SLOT(deleteCollection(JobPointer))));
+    QVERIFY(connect(autoDeleteCollection, SIGNAL(done(ThreadWeaver::JobPointer)),
+                    SLOT(deleteCollection(ThreadWeaver::JobPointer))));
 
     AppendCharacterJob a( QChar( 'a' ), &sequence );
     AppendCharacterJob b( QChar( 'b' ), &sequence );
