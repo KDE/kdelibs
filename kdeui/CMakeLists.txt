@@ -44,8 +44,6 @@ set(kdeui_LIB_SRCS
  dialogs/kconfigdialog.cpp
  dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
- shortcuts/kgesture.cpp
- shortcuts/kgesturemap.cpp
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
@@ -176,7 +174,6 @@ install( FILES
  dialogs/kconfigdialog.h
  dialogs/knewpassworddialog.h
  kernel/kstyle.h
- shortcuts/kgesture.h
  util/kglobalsettings.h
  util/khelpclient.h
  util/kpassivepopupmessagehandler.h
