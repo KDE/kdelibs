@@ -36,6 +36,7 @@ http://creative-destruction.me $
 
 #include "DependencyPolicy.h"
 #include "ExecuteWrapper.h"
+#include "Thread.h"
 
 namespace ThreadWeaver {
 
@@ -174,18 +175,17 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
 
 void JobCollection::execute(Thread *thread, JobPointer job)
 {
-    Q_ASSERT(job.data() == this);
     Q_ASSERT(d->self.isNull());
     Q_ASSERT(d->api!= 0);
     {
         QMutexLocker l(mutex()); Q_UNUSED(l);
+        d->self = job;
         d->jobCounter.fetchAndStoreOrdered(d->elements.count() + 1); //including self
         Q_FOREACH(JobPointer child, d->elements) {
             d->api->enqueue(child);
         }
-        d->self = job;
     }
-    Job::execute(thread,job);
+    Job::execute(thread, job);
 }
 
 void JobCollection::run()
@@ -195,7 +195,8 @@ void JobCollection::run()
 
 void JobCollection::elementStarted(JobPointer job, Thread* thread)
 {
-    Q_ASSERT(job.data() == this || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
+    Q_ASSERT(!d->self.isNull());
+    Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     if (d->jobsStarted.fetchAndAddOrdered(1) == 0) {
         //emit started() signal on beginning of first job execution
         executor()->defaultBegin(job, thread);
@@ -204,7 +205,8 @@ void JobCollection::elementStarted(JobPointer job, Thread* thread)
 
 void JobCollection::elementFinished(JobPointer job, Thread *thread)
 {
-    Q_ASSERT(job.data() == this || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
+    Q_ASSERT(!d->self.isNull());
+    Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     QMutexLocker l(mutex()); Q_UNUSED(l);
     const int jobsStarted = d->jobsStarted.loadAcquire();
     Q_ASSERT(jobsStarted >=0); Q_UNUSED(jobsStarted);
