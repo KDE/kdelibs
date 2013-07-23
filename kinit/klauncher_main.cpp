@@ -48,7 +48,81 @@ static void sig_handler(int sig_num)
 #endif
 
 #if defined(Q_OS_DARWIN) || defined (Q_OS_MAC)
-#include <kkernel_mac.h>
+// Copied from kkernel_mac.cpp
+bool dbus_initialized = false;
+
+/**
+ Set the D-Bus environment based on session bus socket
+*/
+
+bool mac_set_dbus_address(QString value)
+{
+	if (!value.isEmpty() && QFile::exists(value) && (QFile::permissions(value) & QFile::WriteUser)) {
+		value = QLatin1String("unix:path=") + value;
+		qputenv("DBUS_SESSION_BUS_ADDRESS", value.toLocal8Bit());
+		kDebug() << "set session bus address to" << value;
+		return true;
+	}
+	return false;
+}
+
+/**
+ Make sure D-Bus is initialized, by any means necessary.
+*/
+
+void mac_initialize_dbus()
+{
+	if (dbus_initialized)
+		return;
+
+	QString dbusVar = QString::fromLocal8Bit(qgetenv("DBUS_SESSION_BUS_ADDRESS"));
+	if (!dbusVar.isEmpty()) {
+		dbus_initialized = true;
+		return;
+	}
+
+	dbusVar = QFile::decodeName(qgetenv("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
+	if (mac_set_dbus_address(dbusVar)) {
+		dbus_initialized = true;
+		return;
+	}
+
+	QString externalProc;
+	QStringList path = QFile::decodeName(qgetenv("KDEDIRS")).split(QLatin1Char(':')).replaceInStrings(QRegExp(QLatin1String("$")), QLatin1String("/bin"));
+	path << QFile::decodeName(qgetenv("PATH")).split(QLatin1Char(':')) << QLatin1String("/usr/local/bin");
+
+	for (int i = 0; i < path.size(); ++i) {
+		QString testLaunchctl = QString(path.at(i)).append(QLatin1String("/launchctl"));
+		if (QFile(testLaunchctl).exists()) {
+			externalProc = testLaunchctl;
+			break;
+		}
+	}
+
+	if (!externalProc.isEmpty()) {
+                QProcess qp;
+                qp.setTextModeEnabled(true);
+
+		qp.start(externalProc, QStringList() << QLatin1String("getenv") << QLatin1String("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
+                if (!qp.waitForFinished(timeout)) {
+                    kDebug() << "error running" << externalProc << qp.errorString();
+                    return;
+                }
+                if (qp.exitCode() != 0) {
+                    kDebug() << externalProc << "unsuccessful:" << qp.readAllStandardError();
+                    return;
+                }
+
+                QString line = QString::fromLatin1(qp.readLine()).trimmed(); // read the first line
+                if (mac_set_dbus_address(line))
+                    dbus_initialized = true; // hooray
+	}
+
+	if (dbus_initialized == false) {
+		kDebug() << "warning: unable to initialize D-Bus environment!";
+	}
+
+}
 #endif
 
 extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )

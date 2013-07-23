@@ -70,7 +70,9 @@
 #endif
 
 #ifdef Q_OS_MAC
-#include <kkernel_mac.h>
+#include <CoreFoundation/CFBundle.h>
+#include <CoreFoundation/CFString.h>
+#include <CoreFoundation/CFURL.h>
 #endif
 
 #include <kdeversion.h>
@@ -1660,6 +1662,58 @@ static QString findSharedLib(const QString& lib)
     // We could also look in LD_LIBRARY_PATH, but really, who installs the main libs in different prefixes?
     return QString();
 }
+
+#ifdef Q_OS_MAC
+/**
+ Calling CoreFoundation APIs (which is unavoidable in Qt/Mac) has always had issues
+ on Mac OS X, but as of 10.5 is explicitly disallowed with an exception.  As a
+ result, in the case where we would normally fork and then dlopen code, or continue
+ to run other code, we must now fork-and-exec.
+ 
+ See "CoreFoundation and fork()" at http://developer.apple.com/releasenotes/CoreFoundation/CoreFoundation.html
+*/
+// Copied from kkernel_mac.cpp
+void
+mac_fork_and_reexec_self()
+{
+	int argc = *_NSGetArgc();
+	char ** argv = *_NSGetArgv();
+	char * newargv[argc+2];
+	char progname[PATH_MAX];
+	uint32_t buflen = PATH_MAX;
+	_NSGetExecutablePath(progname, &buflen);
+	bool found_psn = false;
+
+	for (int i = 0; i < argc; i++) {
+		newargv[i] = argv[i];
+	}
+
+	newargv[argc] = "--nofork";
+	newargv[argc+1] = NULL;
+
+	int x_fork_result = fork();
+	switch(x_fork_result) {
+
+		case -1:
+#ifndef NDEBUG
+			fprintf(stderr, "Mac OS X workaround fork() failed!\n");
+#endif
+			::_exit(255);
+			break;
+
+		case 0:
+			// Child
+			execvp(progname, newargv);
+			break;
+
+		default:
+			// Parent
+			_exit(0);
+			break;
+
+	}
+}
+#endif
 
 extern "C" {
 
