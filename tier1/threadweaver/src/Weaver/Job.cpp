@@ -124,15 +124,15 @@ Job::~Job()
 
 void Job::execute(Thread *th, JobPointer job)
 {
-    d->thread.fetchAndStoreOrdered(th);
-    Executor* executor = d->executor.fetchAndAddOrdered(0);
+    d->thread.loadAcquire();
+    Executor* executor = d->executor.loadAcquire();
     Q_ASSERT(executor); //may never be unset!
     executor->begin(job, th);
     executor->execute(job, th);
     executor->end(job, th);
-    d->thread.fetchAndStoreOrdered(0);
     setFinished (true);
     executor->cleanup(job, th);
+    d->thread.storeRelease(0);
 }
 
 void Job::operator ()()
