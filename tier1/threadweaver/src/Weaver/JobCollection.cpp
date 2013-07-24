@@ -199,7 +199,7 @@ void JobCollection::elementStarted(JobPointer job, Thread* thread)
     Q_ASSERT(job.data() == d->self || std::find(d->elements.begin(), d->elements.end(), job) != d->elements.end());
     if (d->jobsStarted.fetchAndAddOrdered(1) == 0) {
         //emit started() signal on beginning of first job execution
-        executor()->defaultBegin(job, thread);
+        executor()->defaultBegin(d->self, thread);
     }
 }
 

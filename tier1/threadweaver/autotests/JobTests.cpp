@@ -246,6 +246,8 @@ void JobTests::CollectionDependenciesTest()
     QSignalSpy collectionStartedSignalSpy(&col, SIGNAL(started(ThreadWeaver::JobPointer)));
     col.collection()->addJob(jobA);
     col.collection()->addJob(jobB);
+    QEventLoop loop;
+    connect(&col, SIGNAL(started(ThreadWeaver::JobPointer)), &loop, SLOT(quit()));
 
     QSharedPointer<AppendCharacterJob> jobC(new AppendCharacterJob(QChar('c'), &result));
     ThreadWeaver::DependencyPolicy::instance().addDependency(&col, jobC.data());
@@ -265,8 +267,11 @@ void JobTests::CollectionDependenciesTest()
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(col.isFinished());
     QVERIFY(result.startsWith(jobC->character()));
-    QSKIP("This test is too fragile"); // PENDING(Mirko): fix
-    QTRY_COMPARE(collectionStartedSignalSpy.count(), 1);
+    //QSKIP("This test is too fragile"); // PENDING(Mirko): fix
+    //QTRY_COMPARE(collectionStartedSignalSpy.count(), 1);
+    loop.exec();
+    qApp->processEvents();
+    QCOMPARE(collectionStartedSignalSpy.count(), 1);
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
