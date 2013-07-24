@@ -100,8 +100,6 @@ set(kiocore_STAT_SRCS
   kio/kmimetypechooser.cpp
   kio/krun.cpp
   kio/kscan.cpp
-  kio/kshellcompletion.cpp
-  kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
   kio/netaccess.cpp
   kio/paste.cpp
@@ -335,8 +333,6 @@ install( FILES
   kio/kmimetypechooser.h
   kio/krun.h
   kio/kscan.h
-  kio/kshellcompletion.h
-  kio/kurlcompletion.h
   kio/kurlpixmapprovider.h
   kio/predicateproperties.h
   kfile/kabstractfilemodule.h

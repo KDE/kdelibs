@@ -23,17 +23,16 @@
 #include "ui_sslinfo.h"
 #include "ksslcertificatebox.h"
 
+#include <QProcess>
+
 #include <QDialogButtonBox>
-#include <QFrame>
-#include <QtCore/QDate>
-#include <QtCore/QFile>
 #include <QLabel>
 #include <QLayout>
-#include <QtCore/Q_PID>
+
 #include <QtNetwork/QSslCertificate>
 
 #include <klocalizedstring.h>
-#include <kiconloader.h>
+#include <kiconloader.h> // BarIcon
 
 #include "kio_ktcpsocket.h"
 

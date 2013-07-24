@@ -23,7 +23,7 @@
 #ifndef KURLCOMPLETION_H
 #define KURLCOMPLETION_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <kcompletion.h>
 #include <kio/jobclasses.h>
 #include <QtCore/QString>
@@ -38,7 +38,7 @@ class KUrlCompletionPrivate;
  * @short Completion of a single URL
  * @author David Smith <dsmith@algonet.se>
  */
-class KIO_EXPORT KUrlCompletion : public KCompletion
+class KIOWIDGETS_EXPORT KUrlCompletion : public KCompletion
 {
     Q_OBJECT
 
