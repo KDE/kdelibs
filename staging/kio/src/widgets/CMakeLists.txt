@@ -67,6 +67,10 @@ set_target_properties(KIOWidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
 
 install(TARGETS KIOWidgets EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
+install(FILES
+   org.kde.kio.FileUndoManager.xml
+   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
+
 install( FILES
   kurlpixmapprovider.h
   pixmaploader.h

@@ -362,9 +362,4 @@ install( FILES
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 endif(NOT KIO_NO_SOLID)
 
-install(FILES
-   kio/org.kde.kio.FileUndoManager.xml
-   DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
-
-
 install(FILES kio/accept-languages.codes DESTINATION ${CONFIG_INSTALL_DIR})
