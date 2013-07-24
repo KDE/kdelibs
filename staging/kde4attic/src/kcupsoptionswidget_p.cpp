@@ -20,6 +20,8 @@
 
 #include "kcupsoptionswidget_p.h"
 
+#include <config-kde4attic.h>
+
 #if HAVE_X11
 #include <fixx11h.h>
 #endif
