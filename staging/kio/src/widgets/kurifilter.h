@@ -25,7 +25,7 @@
 #ifndef KURIFILTER_H
 #define KURIFILTER_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QHash>
@@ -47,7 +47,7 @@ class QHostInfo;
  *
  * @since 4.6
  */
-class KIO_EXPORT KUriFilterSearchProvider
+class KIOWIDGETS_EXPORT KUriFilterSearchProvider
 {
 public:
     /**
@@ -166,7 +166,7 @@ private:
 * @author Dawit Alemayehu <adawit at kde.org>
 */
 
-class KIO_EXPORT KUriFilterData
+class KIOWIDGETS_EXPORT KUriFilterData
 {
 public:
     /**
@@ -642,7 +642,7 @@ private:
  *
  * @short Abstract class for URI filter plugins.
  */
-class KIO_EXPORT KUriFilterPlugin : public QObject
+class KIOWIDGETS_EXPORT KUriFilterPlugin : public QObject
 {
     Q_OBJECT
 
@@ -655,7 +655,7 @@ public:
      * @deprecated Use @ref KUriFilterSearchProvider instead. See @ref setSearchProviders;
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED typedef QHash<QString, QPair<QString, QString> > ProviderInfoList;
+    KIOWIDGETS_DEPRECATED typedef QHash<QString, QPair<QString, QString> > ProviderInfoList;
 #endif
 
     /**
@@ -729,7 +729,7 @@ protected:
      * @deprecated Use @ref setSearchProviders instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setPreferredSearchProviders(KUriFilterData& data, const ProviderInfoList& providers) const;
+    KIOWIDGETS_DEPRECATED void setPreferredSearchProviders(KUriFilterData& data, const ProviderInfoList& providers) const;
 #endif
 
     /**
@@ -868,7 +868,7 @@ private:
  *
  * @short Filters the given input into a valid url whenever possible.
  */
-class KIO_EXPORT KUriFilter
+class KIOWIDGETS_EXPORT KUriFilter
 {
 public:
     /**
@@ -965,7 +965,7 @@ public:
      * @deprecated Use filterSearchUri(KUriFilterData&, SearchFilterTypes) instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED bool filterSearchUri(KUriFilterData &data);
+    KIOWIDGETS_DEPRECATED bool filterSearchUri(KUriFilterData &data);
 #endif
 
     /**

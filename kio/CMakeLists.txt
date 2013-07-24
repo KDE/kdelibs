@@ -101,7 +101,6 @@ set(kiocore_STAT_SRCS
   kio/krun.cpp
   kio/kscan.cpp
   kio/kshellcompletion.cpp
-  kio/kurifilter.cpp
   kio/kurlcompletion.cpp
   kio/kurlpixmapprovider.cpp
   kio/netaccess.cpp
@@ -337,7 +336,6 @@ install( FILES
   kio/krun.h
   kio/kscan.h
   kio/kshellcompletion.h
-  kio/kurifilter.h
   kio/kurlcompletion.h
   kio/kurlpixmapprovider.h
   kio/predicateproperties.h
