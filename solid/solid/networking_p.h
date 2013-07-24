@@ -22,6 +22,7 @@
 #define SOLID_NETWORKING_P_H
 
 #include <QtCore/QMap>
+#include <QtNetwork/QNetworkConfigurationManager>
 
 #include "networking.h"
 
@@ -49,6 +50,7 @@ namespace Solid
         Networking::ManagementPolicy disconnectPolicy;
     public Q_SLOTS:
         uint status() const;
+#ifndef Q_OS_WIN
         /**
          * Called on DBus signal from the network status service
          */
@@ -58,9 +60,16 @@ namespace Solid
          * may proceed
          */
         void serviceOwnerChanged( const QString &, const QString &, const QString & );
+#else
+        void serviceStatusChanged( bool status );
+#endif
     private:
         void initialize();
+#ifndef Q_OS_WIN
         OrgKdeSolidNetworkingClientInterface * iface;
+#else
+        QNetworkConfigurationManager *m_manager;
+#endif
     };
 } // namespace Solid
 #endif

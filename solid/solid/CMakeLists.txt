@@ -54,7 +54,14 @@ file(MAKE_DIRECTORY
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KDE4_C_FLAGS}") # enable -fvisibility=hidden for C sources
 
+if(WIN32)
+   set(solid_LIB_SRCS networking_win.cpp)
+else()
+   set(solid_LIB_SRCS networking.cpp)
+endif()
+
 set(solid_LIB_SRCS
+   ${solid_LIB_SRCS}
    solidnamespace.cpp
    managerbase.cpp
    device.cpp
@@ -83,7 +90,6 @@ set(solid_LIB_SRCS
    predicate_lexer.c
    predicate_parser.c
    powermanagement.cpp
-   networking.cpp
    video.cpp
    smartcardreader.cpp
    internetgateway.cpp
@@ -424,13 +430,13 @@ qt4_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY})
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY} ${QT_QTNETWORK_LIBRARY})
    if(WITH_SOLID_WMI)
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${WBEM_LIBRARIES})
-   else(WITH_SOLID_WMI)
+   else()
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} setupapi)
-   endif(WITH_SOLID_WMI)
-endif(WIN32)
+   endif()
+endif()
 
 if(APPLE)
    set(solid_OPTIONAL_LIBS ${IOKIT_LIBRARY})
