@@ -170,17 +170,16 @@ void JobTests::IncompleteCollectionTest()
     QString result;
     QObjectJobDecorator jobA(new AppendCharacterJob(QChar('a'), &result));
     AppendCharacterJob jobB(QChar('b'), &result); //jobB does not get added to the sequence and queued
-    JobCollection* collection  = new JobCollection();
-    collection->addRawJob(&jobA);
+    QObjectJobDecorator col(new JobCollection());
+    col.collection()->addRawJob(&jobA);
 
     WaitForIdleAndFinished w(Weaver::instance());
     DependencyPolicy::instance().addDependency(&jobA, &jobB);
-    QObjectJobDecorator q(collection);
-    QSignalSpy collectionDoneSignalSpy(&q, SIGNAL(done(JobPointer)));
-    QSignalSpy jobADoneSignalSpy(&jobA, SIGNAL(done(JobPointer)));
+    QSignalSpy collectionDoneSignalSpy(&col, SIGNAL(done(ThreadWeaver::JobPointer)));
+    QSignalSpy jobADoneSignalSpy(&jobA, SIGNAL(done(ThreadWeaver::JobPointer)));
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
     QCOMPARE(jobADoneSignalSpy.count(), 0);
-    Weaver::instance()->enqueueRaw(&q);
+    Weaver::instance()->enqueueRaw(&col);
     Weaver::instance()->resume();
     QCoreApplication::processEvents();
     QCOMPARE(collectionDoneSignalSpy.count(), 0);
@@ -188,7 +187,7 @@ void JobTests::IncompleteCollectionTest()
     DependencyPolicy::instance().removeDependency(&jobA, &jobB);
     Weaver::instance()->finish();
     QCoreApplication::processEvents();
-    QVERIFY(collection->isFinished());
+    QVERIFY(col.collection()->isFinished());
     QVERIFY(Weaver::instance()->isIdle());
     QCOMPARE(collectionDoneSignalSpy.count(), 1);
     QCOMPARE(jobADoneSignalSpy.count(), 1);
