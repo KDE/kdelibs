@@ -27,6 +27,7 @@ kde4support_examples(
   keditlistboxtest
   knuminputtest
   kinputdialogtest
+  kiopassdlgtest
 )
 
 if (X11_FOUND)

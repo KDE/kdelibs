@@ -115,7 +115,6 @@ set(kiocore_STAT_SRCS
 if(NOT KDE_NO_DEPRECATED)
   set(kiocore_STAT_SRCS
     ${kiocore_STAT_SRCS}
-    kio/passworddialog.cpp
     )
 endif(NOT KDE_NO_DEPRECATED)
 
@@ -371,13 +370,6 @@ install( FILES
   bookmarks/konqbookmarkmenu.h
   bookmarks/kbookmarkdialog.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
-
-if(NOT KDE_NO_DEPRECATED)
-
-install( FILES
-  kio/passworddialog.h
-  DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
-endif(NOT KDE_NO_DEPRECATED)
 
 if(NOT KIO_NO_SOLID)
 install( FILES
