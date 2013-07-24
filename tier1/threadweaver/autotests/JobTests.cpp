@@ -239,24 +239,31 @@ void JobTests::CollectionDependenciesTest()
     using namespace ThreadWeaver;
 
     QString result;
+    // set up a collection that depends on jobC which does not get queued
     ThreadWeaver::JobPointer jobA(new AppendCharacterJob(QChar('a'), &result));
     ThreadWeaver::JobPointer jobB(new AppendCharacterJob(QChar('b'), &result));
-    QSharedPointer<AppendCharacterJob> jobC(new AppendCharacterJob(QChar('c'), &result));
-    QObjectJobDecorator collection(new ThreadWeaver::JobCollection());
+    QObjectJobDecorator col(new JobCollection());
+    QSignalSpy collectionStartedSignalSpy(&col, SIGNAL(started(ThreadWeaver::JobPointer)));
+    col.collection()->addJob(jobA);
+    col.collection()->addJob(jobB);
 
-    QSignalSpy collectionStartedSignalSpy(&collection, SIGNAL(started(ThreadWeaver::JobPointer)));
-    collection.collection()->addJob(jobA);
-    collection.collection()->addJob(jobB);
-    ThreadWeaver::DependencyPolicy::instance().addDependency(&collection, jobC.data());
+    QSharedPointer<AppendCharacterJob> jobC(new AppendCharacterJob(QChar('c'), &result));
+    ThreadWeaver::DependencyPolicy::instance().addDependency(&col, jobC.data());
+
+    // queue collection, but not jobC, the collection should not be executed
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance()); Q_UNUSED(w);
     ThreadWeaver::Weaver::instance()->suspend();
-    ThreadWeaver::Weaver::instance()->enqueueRaw(&collection);
+    ThreadWeaver::Weaver::instance()->enqueueRaw(&col);
     ThreadWeaver::Weaver::instance()->resume();
-    QTRY_COMPARE(collectionStartedSignalSpy.count(), 0);
+    QCoreApplication::processEvents();
+    QTest::qWait(100);
+    //FIXME verify: dfaure needed this here: QTRY_COMPARE(collectionStartedSignalSpy.count(), 0);
+    QCOMPARE(collectionStartedSignalSpy.count(), 0);
+    // enqueue jobC, first jobC then the collection should be executed
     ThreadWeaver::Weaver::instance()->enqueue(jobC);
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
-    QVERIFY(collection.isFinished());
+    QVERIFY(col.isFinished());
     QVERIFY(result.startsWith(jobC->character()));
     QSKIP("This test is too fragile"); // PENDING(Mirko): fix
     QTRY_COMPARE(collectionStartedSignalSpy.count(), 1);
