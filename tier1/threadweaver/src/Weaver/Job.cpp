@@ -32,7 +32,6 @@ $Id: Job.cpp 20 2005-08-08 21:02:51Z mirko $
 #include <QtCore/QMutex>
 #include <DebuggingAids.h>
 #include <Thread.h>
-#include <QtDebug>
 #include <QAtomicPointer>
 
 #include "QueuePolicy.h"
