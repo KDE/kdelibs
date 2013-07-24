@@ -23,7 +23,7 @@
 
 #include <kpagedialog.h>
 
-#include "kdeui_export.h"
+#include "kconfigwidgets_export.h"
 
 class KConfig;
 class KCoreConfigSkeleton;
@@ -71,7 +71,7 @@ class KConfigDialogManager;
  * @see KConfigSkeleton
  * @author Waldo Bastian <bastian@kde.org>
  */
-class KDEUI_EXPORT KConfigDialog : public KPageDialog {
+class KCONFIGWIDGETS_EXPORT KConfigDialog : public KPageDialog {
 Q_OBJECT
 
 Q_SIGNALS:

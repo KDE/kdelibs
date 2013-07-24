@@ -23,10 +23,10 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <kdebug.h>
 #include <QMap>
 #include <QWidget>
 #include <QPushButton>
+#include <QDebug>
 
 #include "kmodifierkeyinfo.h"
 
@@ -57,10 +57,10 @@ protected Q_SLOTS:
     void latch();
     void lock();
     void keyAdded(Qt::Key) {
-        kDebug() << "Key added";
+        qDebug() << "Key added";
     }
     void keyRemoved(Qt::Key) {
-        kDebug() << "Key removed";
+        qDebug() << "Key removed";
     }
 
 private:

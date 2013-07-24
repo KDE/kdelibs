@@ -16,22 +16,15 @@ MACRO(KDEUI_EXECUTABLE_TESTS)
 ENDMACRO(KDEUI_EXECUTABLE_TESTS)
 
 KDEUI_UNIT_TESTS(
-  kactioncollectiontest
   kglobalsettingstest
-  kconfigdialog_unittest
   kcolorbuttontest
-  klinkitemselectionmodeltest
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  kcategorizedviewtest
-  kcolorcollectiontest
   kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
   knewpassworddialogtest
-  knotificationrestrictionstest
   kpopuptest
-  krulertest
 )
 
 if (X11_FOUND)

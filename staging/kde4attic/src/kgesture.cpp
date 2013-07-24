@@ -19,7 +19,6 @@
 
 #include "kgesture.h"
 #include <klocalizedstring.h>
-#include <kdebug.h>
 #include <math.h>
 #include <QStringList>
 

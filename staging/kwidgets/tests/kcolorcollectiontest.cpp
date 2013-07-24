@@ -1,13 +1,13 @@
 
 #include <QWidget>
-#include <QtCore/QTimer>
-#include <stdlib.h>
-#include "kcolorcollection.h"
-#include <stdio.h>
-
+#include <QTimer>
 #include <QApplication>
-#include <QtCore/QStringList>
+#include <QStringList>
 
+#include <kcolorcollection.h>
+
+#include <stdlib.h>
+#include <stdio.h>
 
 int main( int argc, char **argv )
 {

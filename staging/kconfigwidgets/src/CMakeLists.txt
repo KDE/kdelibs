@@ -1,4 +1,5 @@
 set(kconfigwidgets_SRCS
+  kconfigdialog.cpp
   kconfigviewstatesaver.cpp
   kconfigdialogmanager.cpp
   kcmodule.cpp
@@ -25,6 +26,7 @@ set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSI
 install(TARGETS KConfigWidgets EXPORT KConfigWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  kconfigdialog.h
   kconfigviewstatesaver.h
   kviewstatemaintainer.h
   kconfigdialogmanager.h

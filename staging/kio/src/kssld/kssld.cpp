@@ -279,3 +279,4 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
 
 #include "moc_kssld.cpp"
 #include "moc_kssld_adaptor.cpp"
+#include "kssld.moc"

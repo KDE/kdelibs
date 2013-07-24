@@ -18,6 +18,7 @@ endmacro()
 
 xmlgui_tests(
    kactioncategorytest
+   kactioncollectiontest
    kglobalshortcuttest
    kmainwindow_unittest
    ktoolbar_unittest

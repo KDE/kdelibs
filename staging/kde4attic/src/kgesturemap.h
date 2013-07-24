@@ -31,7 +31,7 @@ class QApplication;
 class QAction;
 class QEvent;
 
-class KDEUI_EXPORT KGestureMap : public QObject
+class KDE4ATTIC_EXPORT KGestureMap : public QObject
 {
     Q_OBJECT
 public:

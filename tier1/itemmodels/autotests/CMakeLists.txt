@@ -26,6 +26,7 @@ endmacro()
 
 itemmodels_proxymodel_tests(
   kdescendantsproxymodeltest
+  klinkitemselectionmodeltest
   kselectionproxymodeltest
   testmodelqueuedconnections
 )

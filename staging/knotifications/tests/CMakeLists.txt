@@ -13,5 +13,6 @@ macro(knotifications_executable_tests)
 endmacro()
 
 knotifications_executable_tests(
+    knotificationrestrictionstest
     kstatusnotifieritemtest
 )

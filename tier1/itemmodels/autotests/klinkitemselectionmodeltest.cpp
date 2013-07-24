@@ -17,7 +17,7 @@
     02110-1301, USA.
 */
 
-#include <klinkitemselectionmodeltest.h>
+#include "klinkitemselectionmodeltest.h"
 
 #include <klinkitemselectionmodel.h>
 #include <qtest_kde.h>

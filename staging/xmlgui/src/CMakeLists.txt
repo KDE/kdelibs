@@ -1,7 +1,7 @@
 find_package(X11)
 set_package_properties(X11 PROPERTIES TYPE OPTIONAL)
 
-find_package(LibAttica NO_MODULE)
+find_package(LibAttica 1.0.0 NO_MODULE)
 set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"
                        PURPOSE "Support for Get Hot New Stuff in XMLGUI"
                        URL "https://projects.kde.org/attica"

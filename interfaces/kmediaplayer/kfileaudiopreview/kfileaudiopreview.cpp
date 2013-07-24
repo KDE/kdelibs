@@ -148,3 +148,4 @@ void KFileAudioPreview::toggleAuto( bool on )
         d->player->stop();
 }
 
+#include "kfileaudiopreview.moc"
