@@ -40,7 +40,7 @@
  *
  * @since 4.3
  */
-class KIO_EXPORT ThumbSequenceCreator : public ThumbCreator
+class KIOWIDGETS_EXPORT ThumbSequenceCreator : public ThumbCreator
 {
 public:
     Q_DISABLE_COPY(ThumbSequenceCreator)

@@ -20,7 +20,7 @@
 #ifndef _THUMBCREATOR_H_
 #define _THUMBCREATOR_H_
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 class QString;
 class QImage;
@@ -106,7 +106,7 @@ class QWidget;
  *
  * @short Baseclass for thumbnail-generating plugins.
  */
-class KIO_EXPORT ThumbCreator
+class KIOWIDGETS_EXPORT ThumbCreator
 {
 public:
   /**
@@ -147,7 +147,7 @@ public:
 /**
  * @since 4.7
  */
-class KIO_EXPORT ThumbCreatorV2 : public ThumbCreator
+class KIOWIDGETS_EXPORT ThumbCreatorV2 : public ThumbCreator
 {
 public:
     virtual ~ThumbCreatorV2();

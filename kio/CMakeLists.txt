@@ -105,8 +105,6 @@ set(kiocore_STAT_SRCS
   kio/paste.cpp
   kio/pastedialog.cpp
   kio/predicateproperties.cpp
-  kio/thumbcreator.cpp
-  kio/thumbsequencecreator.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -309,8 +307,6 @@ install(  FILES
   kio/pixmaploader.h
   kio/netaccess.h
   kio/paste.h
-  kio/thumbcreator.h
-  kio/thumbsequencecreator.h
   kssl/sslui.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
