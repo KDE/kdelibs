@@ -31,7 +31,7 @@ public:
     virtual void aboutToBeQueued_locked(QueueAPI *api) = 0;
     virtual void aboutToBeDequeued(QueueAPI *api) = 0;
     virtual void aboutToBeDequeued_locked(QueueAPI *api) = 0;
-    virtual bool canBeExecuted() = 0;
+    virtual bool canBeExecuted(JobPointer job) = 0;
     virtual bool isFinished() const = 0;
     virtual void assignQueuePolicy(QueuePolicy*) = 0;
     virtual void removeQueuePolicy(QueuePolicy*) = 0;

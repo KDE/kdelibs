@@ -168,13 +168,13 @@ void Job::freeQueuePolicyResources()
     }
 }
 
-void Job::defaultBegin(JobPointer job, Thread *)
+void Job::defaultBegin(JobPointer, Thread *)
 {
     //FIXME document - not valid anymore: job is the job the queue see. this could be decorated, and then job.data != thiss
     //Q_ASSERT(job.data() == this);
 }
 
-void Job::defaultEnd(JobPointer job, Thread *)
+void Job::defaultEnd(JobPointer, Thread *)
 {
     //Q_ASSERT(job.data() == this);
     freeQueuePolicyResources();
@@ -200,8 +200,7 @@ void Job::aboutToBeDequeued_locked (QueueAPI*)
 {
 }
 
-bool Job::canBeExecuted()
-{
+bool Job::canBeExecuted(JobPointer job) {
     QueuePolicyList acquired;
 
     bool success = true;
@@ -210,7 +209,7 @@ bool Job::canBeExecuted()
         debug( 4, "Job::canBeExecuted: acquiring permission from %i queue %s.\n",
                d->queuePolicies.size(), d->queuePolicies.size()==1 ? "policy" : "policies" );
         for (int index = 0; index < d->queuePolicies.size(); ++index) {
-            if (d->queuePolicies.at(index)->canRun(this)) {
+            if (d->queuePolicies.at(index)->canRun(job.data())) {
                 acquired.append(d->queuePolicies.at(index));
             } else {
                 success = false;
@@ -222,7 +221,7 @@ bool Job::canBeExecuted()
 
         if (!success) {
             for (int index = 0; index < acquired.size(); ++index) {
-                acquired.at(index)->release(this);
+                acquired.at(index)->release(job.data());
             }
         }
     } else {

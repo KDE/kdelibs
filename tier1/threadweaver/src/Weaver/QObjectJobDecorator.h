@@ -46,7 +46,7 @@ public:
     void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
     void aboutToBeDequeued(QueueAPI *api) Q_DECL_OVERRIDE;
     void aboutToBeDequeued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
-    bool canBeExecuted() Q_DECL_OVERRIDE;
+    bool canBeExecuted(JobPointer job) Q_DECL_OVERRIDE;
     bool isFinished() const Q_DECL_OVERRIDE;
     void assignQueuePolicy(QueuePolicy*) Q_DECL_OVERRIDE;
     void removeQueuePolicy(QueuePolicy*) Q_DECL_OVERRIDE;

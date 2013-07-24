@@ -83,10 +83,10 @@ bool QObjectJobDecorator::isFinished() const
     return job()->isFinished();
 }
 
-bool QObjectJobDecorator::canBeExecuted()
+bool QObjectJobDecorator::canBeExecuted(JobPointer self)
 {
     Q_ASSERT(d);
-    return job()->canBeExecuted();
+    return job()->canBeExecuted(self);
 }
 
 void QObjectJobDecorator::aboutToBeQueued(QueueAPI *api)
