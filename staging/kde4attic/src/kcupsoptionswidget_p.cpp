@@ -31,8 +31,6 @@
 #include <QFile>
 #include <QtNetwork/QTcpSocket>
 
-#include <kdebug.h>
-
 /** @internal */
 KCupsOptionsWidget::KCupsOptionsWidget( QPrintDialog *parent ) : QWidget( parent )
 {

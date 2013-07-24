@@ -30,7 +30,6 @@
 #include <qstandardpaths.h>
 
 #include <kcombobox.h>
-#include <kdebug.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 

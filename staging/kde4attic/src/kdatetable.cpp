@@ -23,7 +23,6 @@
 
 #include <kconfig.h>
 #include <kcolorscheme.h>
-#include <kdebug.h>
 #include <knotification.h>
 #include <kcalendarsystem.h>
 #include <klocalizeddate.h>
@@ -33,6 +32,7 @@
 #include <kdeversion.h>
 
 #include <QAction>
+#include <QDebug>
 #include <QFontDatabase>
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
@@ -815,7 +815,7 @@ QSize KDateTable::sizeHint() const
         return QSize( qRound( d->m_maxCell.width() * d->m_numDayColumns ),
                       ( qRound( d->m_maxCell.height() + 2 ) * d->m_numWeekRows ) );
     } else {
-        kDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
+        //qDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
         return QSize( -1, -1 );
     }
 }

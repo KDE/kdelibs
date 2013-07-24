@@ -22,9 +22,7 @@
 #include <qapplication.h>
 #include <QAction>
 #include <QActionEvent>
-
-
-#include <kdebug.h>
+#include <QDebug>
 
 /*
  This is a class for internal use by the KDE libraries only. This class

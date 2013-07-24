@@ -28,7 +28,6 @@
 #include <QPainter>
 #include <QMovie>
 
-#include <kdebug.h>
 #include <kiconloader.h>
 
 class KAnimatedButtonPrivate

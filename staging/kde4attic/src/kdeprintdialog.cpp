@@ -29,7 +29,6 @@
 #include "kcupsoptionssettingswidget_p.h"
 #endif
 
-#include "kdebug.h"
 #include "klocalizedstring.h"
 #include "kdeversion.h"
 

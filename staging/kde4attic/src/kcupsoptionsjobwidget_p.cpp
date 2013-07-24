@@ -35,7 +35,6 @@
 #include <kcombobox.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
-//#include <kdebug.h>
 
 /** @internal */
 KCupsOptionsJobWidget::KCupsOptionsJobWidget( QPrintDialog *parent ) : KCupsOptionsWidget( parent )
