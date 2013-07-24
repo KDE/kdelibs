@@ -21,7 +21,7 @@
 
 #include <QPixmap>
 #include <kiconloader.h>
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 class QUrl;
 
@@ -44,7 +44,7 @@ namespace KIO
    *              Ignored if 0
    * @return the pixmap of the URL, can be a default icon if not found
    */
-  KIO_EXPORT QPixmap pixmapForUrl( const QUrl & url, int mode = 0, KIconLoader::Group group = KIconLoader::Desktop,
+  KIOWIDGETS_EXPORT QPixmap pixmapForUrl( const QUrl & url, int mode = 0, KIconLoader::Group group = KIconLoader::Desktop,
                                    int force_size = 0, int state = 0, QString * path = 0 );
 
 }

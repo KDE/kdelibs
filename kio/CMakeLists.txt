@@ -82,7 +82,6 @@ set(kiocore_STAT_SRCS
   kio/accessmanagerreply_p.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
-  kio/pixmaploader.cpp
   kio/imagefilter.cpp
   kio/kabstractfileitemactionplugin.cpp
   kio/kbuildsycocaprogressdialog.cpp
@@ -100,7 +99,6 @@ set(kiocore_STAT_SRCS
   kio/kmimetypechooser.cpp
   kio/krun.cpp
   kio/kscan.cpp
-  kio/kurlpixmapprovider.cpp
   kio/netaccess.cpp
   kio/paste.cpp
   kio/pastedialog.cpp
@@ -304,7 +302,6 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
   kio/accessmanager.h
-  kio/pixmaploader.h
   kio/netaccess.h
   kio/paste.h
   kssl/sslui.h
@@ -329,7 +326,6 @@ install( FILES
   kio/kmimetypechooser.h
   kio/krun.h
   kio/kscan.h
-  kio/kurlpixmapprovider.h
   kio/predicateproperties.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h

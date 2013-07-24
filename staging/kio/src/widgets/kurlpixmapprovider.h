@@ -21,7 +21,7 @@
 #ifndef KURLPIXMAPPROVIDER_H
 #define KURLPIXMAPPROVIDER_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <kpixmapprovider.h>
 
 /**
@@ -39,7 +39,7 @@
  * @short Resolves pixmaps for URLs
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlPixmapProvider : public KPixmapProvider
+class KIOWIDGETS_EXPORT KUrlPixmapProvider : public KPixmapProvider
 {
 public:
     /**
