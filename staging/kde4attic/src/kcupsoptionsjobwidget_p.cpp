@@ -22,6 +22,7 @@
 
 #include <QCheckBox>
 #include <QDateTime>
+#include <QFontDatabase>
 #include <QLabel>
 #include <QLayout>
 #include <QTime>
@@ -32,7 +33,6 @@
 #include <QPrintEngine>
 
 #include <kcombobox.h>
-#include <kglobalsettings.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 //#include <kdebug.h>
@@ -41,7 +41,7 @@
 KCupsOptionsJobWidget::KCupsOptionsJobWidget( QPrintDialog *parent ) : KCupsOptionsWidget( parent )
 {
     ui.setupUi( this );
-    ui.jobOptionsTable->setFont(KGlobalSettings::smallestReadableFont());
+    ui.jobOptionsTable->setFont(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont));
 
     //set all the default values
     //TODO restore last used values

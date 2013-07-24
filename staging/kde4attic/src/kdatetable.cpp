@@ -23,7 +23,6 @@
 
 #include <kconfig.h>
 #include <kcolorscheme.h>
-#include <kglobalsettings.h>
 #include <kdebug.h>
 #include <knotification.h>
 #include <kcalendarsystem.h>
@@ -34,6 +33,7 @@
 #include <kdeversion.h>
 
 #include <QAction>
+#include <QFontDatabase>
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 #include <QPen>
@@ -377,7 +377,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
     QString cellText;
     QPen pen;
     QColor cellBackgroundColor, cellTextColor;
-    QFont cellFont = KGlobalSettings::generalFont();
+    QFont cellFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     bool workingDay = false;
     int cellWeekDay, pos;
     BackgroundMode cellBackgroundMode = RectangleMode;
