@@ -108,16 +108,18 @@ target_include_directories(KIOCore PUBLIC
 )
 
 target_link_libraries(KIOCore
- ${KConfig_CORE_LIBRARY}
- ${KCoreAddons_LIBRARIES}
- KI18n
+LINK_PUBLIC
+ ${KCoreAddons_LIBRARIES}   # KJob
  KService
+LINK_PRIVATE
+ KI18n
  Qt5::Network
  Qt5::DBus
- Qt5::Concurrent
- Qt5::Xml   # davjob.cpp uses QDom
- ${kdeqt5staging_LIBRARIES} # Needed QUrlPathInfo
- ${KDBusAddons_LIBRARIES} # KDBusConnectionPool
+ Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
+ ${KConfig_CORE_LIBRARY}
+ Qt5::Xml                   # davjob.cpp uses QDom
+ ${kdeqt5staging_LIBRARIES} # QUrlPathInfo
+ ${KDBusAddons_LIBRARIES}   # KDBusConnectionPool
 )
 
 if(ACL_FOUND)
