@@ -23,6 +23,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  kfileitemlistproperties.cpp
   kemailsettings.cpp
   tcpslavebase.cpp
   directorysizejob.cpp
@@ -133,6 +134,7 @@ set_target_properties(KIOCore PROPERTIES VERSION ${ECM_VERSION_STRING}
 install(TARGETS KIOCore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
 
 install( FILES
+  kfileitemlistproperties.h
   kemailsettings.h
   tcpslavebase.h
   directorysizejob.h

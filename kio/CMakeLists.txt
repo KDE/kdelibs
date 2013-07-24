@@ -88,7 +88,6 @@ set(kiocore_STAT_SRCS
   kio/kdbusservicestarter.cpp
   kio/kdesktopfileactions.cpp
   kio/kfileitemactionplugin.cpp
-  kio/kfileitemlistproperties.cpp
   kio/kfileitemactions.cpp
   kio/kfileitemdelegate.cpp
   kio/kfilemetainfo.cpp
@@ -314,7 +313,6 @@ install( FILES
   kio/kbuildsycocaprogressdialog.h
   kio/kdbusservicestarter.h
   kio/kdesktopfileactions.h
-  kio/kfileitemlistproperties.h
   kio/kfileitemactionplugin.h
   kio/kfileitemactions.h
   kio/kfileitemdelegate.h

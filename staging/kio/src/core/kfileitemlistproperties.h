@@ -23,7 +23,7 @@
 #ifndef KFILEITEMLISTPROPERTIES_H
 #define KFILEITEMLISTPROPERTIES_H
 
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 
 #include <QtCore/QSharedDataPointer>
 #include <QtCore/QList>
@@ -47,7 +47,7 @@ class KFileItemList;
  *
  * @since 4.3
  */
-class KIO_EXPORT KFileItemListProperties
+class KIOCORE_EXPORT KFileItemListProperties
 {
 public:
     /**
