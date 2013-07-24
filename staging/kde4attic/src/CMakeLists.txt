@@ -1,3 +1,9 @@
+if(X11_FOUND)
+  set(HAVE_X11 1)
+else()
+  set(HAVE_X11 0)
+endif()
+configure_file(config-kde4attic.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde4attic.h )
 
 set(kde4attic_SRCS
   kanimatedbutton.cpp
