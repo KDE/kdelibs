@@ -20,8 +20,8 @@ Executor *ExecuteWrapper::unwrap(JobPointer job)
 }
 
 void ExecuteWrapper::begin(JobPointer job, Thread *thread) {
-    Q_ASSERT(wrapped.fetchAndAddOrdered(0));
-    wrapped.fetchAndAddOrdered(0)->begin(job, thread);
+    Q_ASSERT(wrapped.loadAcquire()!=0);
+    wrapped.loadAcquire()->begin(job, thread);
 }
 
 void ExecuteWrapper::execute(JobPointer job, Thread *thread)
@@ -31,14 +31,14 @@ void ExecuteWrapper::execute(JobPointer job, Thread *thread)
 
 void ExecuteWrapper::executeWrapped(JobPointer job, Thread *thread)
 {
-    Executor* executor = wrapped.fetchAndAddOrdered(0);
+    Executor* executor = wrapped.loadAcquire();
     Q_ASSERT_X(executor!=0, Q_FUNC_INFO, "Wrapped Executor cannot be zero!");
     executor->execute(job, thread);
 }
 
 void ExecuteWrapper::end(JobPointer job, Thread *thread) {
-    Q_ASSERT(wrapped.fetchAndAddOrdered(0));
-    wrapped.fetchAndAddOrdered(0)->end(job, thread);
+    Q_ASSERT(wrapped.loadAcquire()!=0);
+    wrapped.loadAcquire()->end(job, thread);
 }
 
 }
