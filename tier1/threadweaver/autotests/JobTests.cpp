@@ -45,7 +45,7 @@ private:
 
 void JobTests::initTestCase ()
 {
-    ThreadWeaver::setDebugLevel(true, 2);
+    ThreadWeaver::setDebugLevel(true, 1);
 }
 
 // call finish() before leave a test to make sure the queue is empty
@@ -150,11 +150,10 @@ void JobTests::ShortJobSequenceTest() {
 
 void JobTests::EmptyJobSequenceTest() {
     using namespace ThreadWeaver;
-    //QSharedPointer<ThreadWeaver::JobSequence> sequence(new ThreadWeaver::JobSequence());
     QObjectJobDecorator sequence(new JobSequence());
     WaitForIdleAndFinished w(Weaver::instance()); Q_UNUSED(w);
     Q_ASSERT(Weaver::instance()->isIdle());
-    QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(JobPointer)));
+    QSignalSpy doneSignalSpy(&sequence, SIGNAL(done(ThreadWeaver::JobPointer)));
     QCOMPARE(doneSignalSpy.count(), 0);
     Weaver::instance()->enqueueRaw(&sequence);
     Weaver::instance()->finish();
