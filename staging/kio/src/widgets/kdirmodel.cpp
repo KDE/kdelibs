@@ -25,7 +25,7 @@
 #include <kjobuidelegate.h>
 #include <kio/copyjob.h>
 #include <kio/fileundomanager.h>
-#include <kio/joburlcache_p.h>
+#include "joburlcache_p.h"
 #include <kurlmimedata.h>
 #include <kiconloader.h>
 #include <QMimeData>

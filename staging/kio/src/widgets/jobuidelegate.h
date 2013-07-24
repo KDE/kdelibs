@@ -37,7 +37,7 @@ class Job;
 /**
  * A UI delegate tuned to be used with KIO Jobs.
  */
-class KIO_EXPORT JobUiDelegate : public KDialogJobUiDelegate, public JobUiDelegateExtension
+class KIOWIDGETS_EXPORT JobUiDelegate : public KDialogJobUiDelegate, public JobUiDelegateExtension
 {
     Q_OBJECT
 

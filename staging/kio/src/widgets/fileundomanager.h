@@ -23,7 +23,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QUrl>
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 class QDateTime;
 
@@ -41,7 +41,7 @@ class UndoJob;
  * FileUndoManager: makes it possible to undo kio jobs.
  * This class is a singleton, use self() to access its only instance.
  */
-class KIO_EXPORT FileUndoManager : public QObject
+class KIOWIDGETS_EXPORT FileUndoManager : public QObject
 {
     Q_OBJECT
 public:
@@ -60,7 +60,7 @@ public:
      * By default UiInterface shows message boxes in all three cases;
      * applications can reimplement this interface to provide different user interfaces.
      */
-    class KIO_EXPORT UiInterface
+    class KIOWIDGETS_EXPORT UiInterface
     {
     public:
         UiInterface();

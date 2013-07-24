@@ -29,7 +29,7 @@
 #include <QDateTime>
 
 #include <kio/global.h>
-#include "kio_export.h"
+#include "kiowidgets_export.h"
 
 class QScrollArea;
 class QLabel;
@@ -45,7 +45,7 @@ namespace KIO
  * this dialog is also used when a .part file exists and the user can choose to
  * Resume a previous download.
  */
-class KIO_EXPORT RenameDialog : public QDialog
+class KIOWIDGETS_EXPORT RenameDialog : public QDialog
 {
     Q_OBJECT
 public:
@@ -98,7 +98,7 @@ public:
      * @deprecated use KIO::suggestName
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED QString suggestName(const QUrl& baseURL, const QString& oldName);
+    static KIOWIDGETS_DEPRECATED QString suggestName(const QUrl& baseURL, const QString& oldName);
 #endif
 
 public Q_SLOTS:

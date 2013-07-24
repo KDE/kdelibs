@@ -21,7 +21,7 @@
 #ifndef KSSLCERTIFICATEBOX_H
 #define KSSLCERTIFICATEBOX_H
 
-#include "kio_export.h"
+#include "kiowidgets_export.h"
 
 #include <QWidget>
 
@@ -29,7 +29,7 @@ class QSslCertificate;
 
 class KSslCertificateBoxPrivate;
 
-class KIO_EXPORT KSslCertificateBox : public QWidget
+class KIOWIDGETS_EXPORT KSslCertificateBox : public QWidget
 {
     Q_OBJECT
 public:

@@ -22,9 +22,9 @@
 #ifndef _KSSLINFODIALOG_H
 #define _KSSLINFODIALOG_H
 
-#include <kssl.h>
 #include <QDialog>
 
+#include <kiowidgets_export.h>
 #include "kio_ktcpsocket.h"
 
 using KIO::KSslError;
@@ -42,7 +42,7 @@ using KIO::KSslError;
  * @see KSSL
  * @short KDE SSL Information Dialog
  */
-class KIO_EXPORT KSslInfoDialog : public QDialog {
+class KIOWIDGETS_EXPORT KSslInfoDialog : public QDialog {
 	Q_OBJECT
 public:
 	/**

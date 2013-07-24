@@ -35,8 +35,6 @@
 #include <klocalizedstring.h>
 #include <kiconloader.h>
 
-#include "ksslcertificate.h"
-#include "ksslcertchain.h"
 #include "kio_ktcpsocket.h"
 
 

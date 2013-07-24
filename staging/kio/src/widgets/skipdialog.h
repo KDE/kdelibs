@@ -19,7 +19,7 @@
 #ifndef KIO_SKIPDIALOG_H
 #define KIO_SKIPDIALOG_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <QDialog>
 
 class QWidget;
@@ -30,7 +30,7 @@ class SkipDialogPrivate;
 /**
  * @internal
  */
-class KIO_EXPORT SkipDialog : public QDialog
+class KIOWIDGETS_EXPORT SkipDialog : public QDialog
 {
   Q_OBJECT
 public:

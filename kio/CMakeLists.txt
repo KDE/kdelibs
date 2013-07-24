@@ -82,18 +82,12 @@ set(kiocore_STAT_SRCS
   kio/accessmanagerreply_p.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
-  kio/fileundomanager.cpp
   kio/pixmaploader.cpp
   kio/imagefilter.cpp
-  kio/jobuidelegate.cpp
-  kio/joburlcache.cpp
   kio/kabstractfileitemactionplugin.cpp
   kio/kbuildsycocaprogressdialog.cpp
   kio/kdbusservicestarter.cpp
   kio/kdesktopfileactions.cpp
-  kio/kdirlister.cpp
-  kio/kdirmodel.cpp
-  kio/kdynamicjobtracker.cpp
   kio/kfileitemactionplugin.cpp
   kio/kfileitemlistproperties.cpp
   kio/kfileitemactions.cpp
@@ -114,9 +108,6 @@ set(kiocore_STAT_SRCS
   kio/paste.cpp
   kio/pastedialog.cpp
   kio/predicateproperties.cpp
-  kio/previewjob.cpp
-  kio/renamedialog.cpp
-  kio/skipdialog.cpp
   kio/thumbcreator.cpp
   kio/thumbsequencecreator.cpp
 )
@@ -134,10 +125,6 @@ if(NOT KIO_NO_SOLID)
     kio/kstatusbarofflineindicator.cpp
     )
 endif(NOT KIO_NO_SOLID)
-
-qt5_add_dbus_adaptor(kiocore_STAT_SRCS kio/org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
-
-qt5_add_dbus_interface(kiocore_STAT_SRCS kio/org.kde.kuiserver.xml kuiserver_interface)
 
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
@@ -210,8 +197,6 @@ qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
 set(kssl_STAT_SRCS
   kssl/sslui.cpp
-  kssl/ksslcertificatebox.cpp
-  kssl/ksslinfodialog.cpp
 
   kssl/ksslcertificate.cpp # TODO: remove after porting khtml/java
   kssl/ksslcertchain.cpp # TODO: remove together with ksslcertificate.cpp
@@ -243,8 +228,6 @@ kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopbase.ui
    kssl/keygenwizard.ui
    kssl/keygenwizard2.ui
-   kssl/sslinfo.ui
-   kssl/certificateparty.ui
 )
 
 kde4_add_library(kio ${LIBRARY_TYPE} ${kio_LIB_SRCS})
@@ -277,8 +260,8 @@ if(NOT KIO_NO_NEPOMUK)
   target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
 endif(NOT KIO_NO_NEPOMUK)
 
-target_link_libraries(kio kdeqt5staging KIOCore ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KWidgets KCrash)
-target_link_libraries(kio LINK_INTERFACE_LIBRARIES KIOCore kdeui kdecore Qt5::Network Qt5::Xml Qt5::Widgets )
+target_link_libraries(kio kdeqt5staging KIOWidgets KIOCore ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KWidgets KCrash)
+target_link_libraries(kio LINK_INTERFACE_LIBRARIES KIOWidgets KIOCore kdeui kdecore Qt5::Network Qt5::Xml Qt5::Widgets )
 
 if(ACL_FOUND)
    target_link_libraries(kio ${ACL_LIBS})
@@ -329,14 +312,9 @@ install(  FILES
   kio/accessmanager.h
   kio/pixmaploader.h
   kio/netaccess.h
-  kio/jobuidelegate.h
   kio/paste.h
-  kio/fileundomanager.h
-  kio/previewjob.h
   kio/thumbcreator.h
   kio/thumbsequencecreator.h
-  kio/renamedialog.h
-  kio/skipdialog.h
   kssl/sslui.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
@@ -347,8 +325,6 @@ install( FILES
   kio/kbuildsycocaprogressdialog.h
   kio/kdbusservicestarter.h
   kio/kdesktopfileactions.h
-  kio/kdirlister.h
-  kio/kdirmodel.h
   kio/kfileitemlistproperties.h
   kio/kfileitemactionplugin.h
   kio/kfileitemactions.h

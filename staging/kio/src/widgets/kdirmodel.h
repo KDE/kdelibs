@@ -20,7 +20,7 @@
 #define KDIRMODEL_H
 
 #include <QtCore/QAbstractItemModel>
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <kfileitem.h>
 
 class KDirLister;
@@ -45,7 +45,7 @@ class JobUrlCache;
  * @author David Faure
  * Based on work by Hamish Rodda and Pascal Letourneau
  */
-class KIO_EXPORT KDirModel : public QAbstractItemModel
+class KIOWIDGETS_EXPORT KDirModel : public QAbstractItemModel
 {
     Q_OBJECT
 
@@ -77,7 +77,7 @@ public:
      * @deprecated use the method that takes a KFileItem by value
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED QModelIndex indexForItem( const KFileItem* ) const;
+    KIOWIDGETS_DEPRECATED QModelIndex indexForItem( const KFileItem* ) const;
 #endif
 
     /**

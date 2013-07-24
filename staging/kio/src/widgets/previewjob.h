@@ -24,7 +24,7 @@
 #ifndef KIO_PREVIEWJOB_H
 #define KIO_PREVIEWJOB_H
 
-#include "kio_export.h"
+#include "kiowidgets_export.h"
 #include <kfileitem.h>
 #include <kio/job.h>
 
@@ -36,7 +36,7 @@ namespace KIO {
      * This class catches a preview (thumbnail) for files.
      * @short KIO Job to get a thumbnail picture
      */
-    class KIO_EXPORT PreviewJob : public KIO::Job
+    class KIOWIDGETS_EXPORT PreviewJob : public KIO::Job
     {
         Q_OBJECT
     public:
@@ -84,7 +84,7 @@ namespace KIO {
          *             with the setter-methods instead. Note that the semantics of
          *             \p enabledPlugins has been slightly changed.
          */
-        KIO_DEPRECATED PreviewJob(const KFileItemList& items, int width, int height,
+        KIOWIDGETS_DEPRECATED PreviewJob(const KFileItemList& items, int width, int height,
                                   int iconSize, int iconAlpha, bool scale, bool save,
                                   const QStringList *enabledPlugins);
 #endif
@@ -206,7 +206,7 @@ namespace KIO {
          *             The returned file size is only valid for local URLs.
          */
 #ifndef KDE_NO_DEPRECATED
-        KIO_DEPRECATED static KIO::filesize_t maximumFileSize();
+        KIOWIDGETS_DEPRECATED static KIO::filesize_t maximumFileSize();
 #endif
 
 
@@ -259,7 +259,7 @@ namespace KIO {
      *             with the setter-methods instead. Note that the semantics of
      *             \p enabledPlugins has been slightly changed.
      */
-    KIO_DEPRECATED_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 ); // KDE5: use enums instead of bool scale + bool save
+    KIOWIDGETS_DEPRECATED_EXPORT PreviewJob *filePreview( const KFileItemList &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 ); // KDE5: use enums instead of bool scale + bool save
 
     /**
      * Creates a PreviewJob to generate or retrieve a preview image
@@ -284,7 +284,7 @@ namespace KIO {
      *             with the setter-methods instead. Note that the semantics of
      *             \p enabledPlugins has been slightly changed.
      */
-    KIO_DEPRECATED_EXPORT PreviewJob *filePreview( const QList<QUrl> &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
+    KIOWIDGETS_DEPRECATED_EXPORT PreviewJob *filePreview( const QList<QUrl> &items, int width, int height = 0, int iconSize = 0, int iconAlpha = 70, bool scale = true, bool save = true, const QStringList *enabledPlugins = 0 );
 #endif
 
     /**
@@ -297,7 +297,7 @@ namespace KIO {
      *                       KConfigGroup "PreviewSettings" are used.
      * @since 4.7
      */
-    KIO_EXPORT PreviewJob *filePreview(const KFileItemList &items, const QSize &size, const QStringList *enabledPlugins = 0);
+    KIOWIDGETS_EXPORT PreviewJob *filePreview(const KFileItemList &items, const QSize &size, const QStringList *enabledPlugins = 0);
 }
 
 #endif

@@ -22,14 +22,14 @@
 #define kdirlister_h
 
 #include <kcoredirlister.h>
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 class QWidget;
 
 /**
  * Subclass of KCoreDirLister which uses QWidgets to show error messages
  * and to associate jobs with windows.
  */
-class KIO_EXPORT KDirLister : public KCoreDirLister
+class KIOWIDGETS_EXPORT KDirLister : public KCoreDirLister
 {
     Q_OBJECT
     Q_PROPERTY(bool autoErrorHandlingEnabled READ autoErrorHandlingEnabled)

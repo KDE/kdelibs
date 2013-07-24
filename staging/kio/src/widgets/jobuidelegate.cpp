@@ -31,7 +31,6 @@
 #include <ksharedconfig.h>
 #include <QDBusInterface>
 #include <ksslinfodialog.h>
-#include <kmessage.h>
 
 #include <QPointer>
 #include <QWidget>

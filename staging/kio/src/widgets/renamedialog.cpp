@@ -31,6 +31,7 @@
 #include <QScrollArea>
 #include <QScrollBar>
 #include <QApplication>
+#include <QLineEdit>
 #include <QDesktopWidget>
 #include <QPushButton>
 #include <QtCore/QDir>
@@ -38,7 +39,6 @@
 #include <qurlpathinfo.h>
 #include <QDebug>
 
-#include <klineedit.h>
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <kio/global.h>
@@ -50,7 +50,9 @@
 #include <kstandardguiitem.h>
 #include <kguiitem.h>
 #include <ksqueezedtextlabel.h>
+#if 0
 #include <kfilemetadatawidget.h>
+#endif
 #include <previewjob.h>
 
 using namespace KIO;
@@ -92,7 +94,7 @@ public:
     QPushButton *bResume;
     QPushButton *bSuggestNewName;
     QCheckBox *bApplyAll;
-    KLineEdit* m_pLineEdit;
+    QLineEdit* m_pLineEdit;
     QUrl src;
     QUrl dest;
     bool m_srcPendingPreview;
@@ -286,7 +288,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     QHBoxLayout* layout2 = new QHBoxLayout();
     pLayout->addLayout(layout2);
 
-    d->m_pLineEdit = new KLineEdit(this);
+    d->m_pLineEdit = new QLineEdit(this);
     layout2->addWidget(d->m_pLineEdit);
 
     if (d->bRename) {
@@ -581,12 +583,15 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
     KFileItemList itemList;
     itemList << item;
 
+#pragma message("TODO: use KFileMetaDataWidget in RenameDialog via a plugin")
+#if 0 // PENDING
     // widget
     KFileMetaDataWidget* metaWidget =  new KFileMetaDataWidget(this);
 
     metaWidget->setReadOnly(true);
     metaWidget->setItems(itemList);
     connect(metaWidget, SIGNAL(metaDataRequestFinished(KFileItemList)), this, SLOT(resizePanels()));
+#endif
 
     // Encapsulate the MetaDataWidgets inside a container with stretch at the bottom.
     // This prevents that the meta data widgets get vertically stretched
@@ -598,7 +603,9 @@ QScrollArea* RenameDialog::createContainerLayout(QWidget* parent, const KFileIte
     containerLayout->setContentsMargins(0, 0, 0, 0);
     containerLayout->setSpacing(0);
     containerLayout->addWidget(preview);
+#if 0 // PENDING
     containerLayout->addWidget(metaWidget);
+#endif
     containerLayout->addStretch(1);
 
     QScrollArea* metaDataArea = new QScrollArea(parent);
