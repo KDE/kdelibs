@@ -76,6 +76,8 @@ private:
     Private* const d;
 };
 
+typedef QSharedPointer<QObjectJobDecorator> QJobPointer;
+
 }
 
 #endif // QOBJECTJOBDECORATOR_H
