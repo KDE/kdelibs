@@ -160,7 +160,7 @@ public:
      *
      * If it returns false, all queue policy resources have been freed, and the method can be called again at a later time.
      */
-    virtual bool canBeExecuted();
+    virtual bool canBeExecuted(JobPointer);
 
     /** Returns true if the jobs's execute method finished. */
     bool isFinished() const;

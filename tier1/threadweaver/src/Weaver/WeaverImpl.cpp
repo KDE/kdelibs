@@ -493,8 +493,9 @@ JobPointer WeaverImpl::takeFirstAvailableJobOrSuspendOrWait(Thread *th, JobPoint
 
     JobPointer next;
     for (int index = 0; index < m_assignments.size(); ++index) {
-        if (m_assignments.at(index)->canBeExecuted()) {
-            next = m_assignments.at(index);
+        const JobPointer& candidate = m_assignments.at(index);
+        if (candidate->canBeExecuted(candidate)) {
+            next = candidate;
             m_assignments.removeAt (index);
             break;
         }
@@ -544,7 +545,7 @@ void WeaverImpl::dumpJobs()
     for ( int index = 0; index < m_assignments.size(); ++index ) {
         debug( 0, "--> %4i: %p (priority %i, can be executed: %s)\n", index, (void*)m_assignments.at( index ).data(),
                m_assignments.at(index)->priority(),
-               m_assignments.at(index)->canBeExecuted() ? "yes" : "no");
+               m_assignments.at(index)->canBeExecuted(m_assignments.at(index)) ? "yes" : "no");
     }
 }
 
