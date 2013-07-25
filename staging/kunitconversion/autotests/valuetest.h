@@ -17,27 +17,29 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef CATEGORYTEST_H
-#define CATEGORYTEST_H
+#ifndef VALUE_TEST_H
+#define VALUE_TEST_H
 
 #include <QtCore/QObject>
 #include <QtTest/QtTest>
-#include <../converter.h>
+#include <kunitconversion/converter.h>
 
 using namespace KUnitConversion;
 
-class CategoryTest : public QObject
+class ValueTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
     void initTestCase();
-    void testInfo();
-    void testUnits();
+    void testStrings();
+    void testRound();
     void testConvert();
     void testInvalid();
 
 private:
-    Converter c;
+    Value v1;
+    Value v2;
+    Value v3;
 };
 
-#endif // CATEGORYTEST_H
+#endif

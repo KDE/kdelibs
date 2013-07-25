@@ -1,69 +1,55 @@
-project(kunitconversion)
+cmake_minimum_required(VERSION 2.8.11)
 
-if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
-    set(KUNITCONVERSION_NO_SOLID TRUE)
-    set(KUNITCONVERSION_NO_KIO TRUE)
-endif(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
+project(KUnitConversion)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-kunitconversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kunitconversion.h)
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
 
-set(kunitconversion_LIB_SRCS
-    kcurrencycode.cpp
-    converter.cpp
-    value.cpp
-    unit.cpp
-    unitcategory.cpp
-    length.cpp
-    area.cpp
-    volume.cpp
-    temperature.cpp
-    velocity.cpp
-    mass.cpp
-    pressure.cpp
-    energy.cpp
-    currency.cpp
-    power.cpp
-    timeunit.cpp
-    fuel_efficiency.cpp
-    density.cpp
-    acceleration.cpp
-    force.cpp
-    angle.cpp
-    frequency.cpp
-)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-set(kunitconversion_HEADERS
-    kcurrencycode.h
-    converter.h
-    value.h
-    unit.h
-    unitcategory.h
-    ${CMAKE_CURRENT_BINARY_DIR}/kunitconversion_export.h
-)
+find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
+include(FeatureSummary)
+
+include(ECMSetupVersion)
+
+ecm_setup_version(5 0 0 VARIABLE_PREFIX KUNITCONVERSION
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/kunitconversion_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KUnitConversionConfigVersion.cmake")
+
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
-remove_definitions(-DQT_NO_CAST_TO_ASCII)
 remove_definitions(-DQT_NO_KEYWORDS)
 
-add_definitions(-DKDE_DEFAULT_DEBUG_AREA=930)
+add_subdirectory(src)
+add_subdirectory(autotests)
 
-if(NOT KUNITCONVERSION_NO_KIO)
-    set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} KIOCore Qt5::Xml)
-else(NOT KUNITCONVERSION_NO_KIO)
-    set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} Qt5::Network Qt5::Xml)
-endif(NOT KUNITCONVERSION_NO_KIO)
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KUnitConversion")
 
-if(NOT KUNITCONVERSION_NO_SOLID)
-    set(KUNITCONVERSION_EXTRA_LIBS ${KUNITCONVERSION_EXTRA_LIBS} ${Solid_LIBRARIES})
-endif(NOT KUNITCONVERSION_NO_SOLID)
+include(CMakePackageConfigHelpers)
 
-add_subdirectory(tests)
+configure_package_config_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/KUnitConversionConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KUnitConversionConfig.cmake"
+  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+  PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX
+)
 
-kde4_add_library(kunitconversion ${LIBRARY_TYPE} ${kunitconversion_LIB_SRCS})
-generate_export_header(kunitconversion)
-target_link_libraries(kunitconversion ${KUNITCONVERSION_EXTRA_LIBS} ${KCoreAddons_LIBRARIES} KConfigCore KI18n)
-target_include_directories(kunitconversion PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>" "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>")
-set_target_properties(kunitconversion PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION})
-install(TARGETS kunitconversion EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-install(FILES ${kunitconversion_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/kunitconversion COMPONENT Devel)
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/KUnitConversionConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KUnitConversionConfigVersion.cmake"
+  DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+  COMPONENT Devel
+)
+
+install(EXPORT KUnitConversionTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KUnitConversionTargets.cmake NAMESPACE KF5:: )
+
+install(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/kunitconversion_version.h
+  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
+)
+
+if ("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+  feature_summary(WHAT ALL   FATAL_ON_MISSING_REQUIRED_PACKAGES)
+endif()

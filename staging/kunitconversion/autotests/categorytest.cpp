@@ -18,7 +18,7 @@
  */
 
 #include "categorytest.h"
-#include <../unitcategory.h>
+#include <kunitconversion/unitcategory.h>
 
 using namespace KUnitConversion;
 

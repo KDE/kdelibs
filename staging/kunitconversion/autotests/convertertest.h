@@ -22,7 +22,7 @@
 
 #include <QtCore/QObject>
 #include <QtTest/QtTest>
-#include <../converter.h>
+#include <kunitconversion/converter.h>
 
 using namespace KUnitConversion;
 

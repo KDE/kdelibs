@@ -1,0 +1,11 @@
+@PACKAGE_INIT@
+
+# Any changes in this file will be overwritten by CMake.
+
+set(KUnitConversion_INSTALL_PREFIX "@PACKAGE_CMAKE_INSTALL_PREFIX@")
+set_and_check(KUnitConversion_INCLUDE_DIR    "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+include("${CMAKE_CURRENT_LIST_DIR}/KUnitConversionTargets.cmake")
+
+set(KUnitConversion_LIBRARIES KF5::KUnitConversion)
+set(KUnitConversion_INCLUDE_DIRS ${KUnitConversion_INCLUDE_DIR} )
