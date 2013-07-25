@@ -7,10 +7,6 @@ set(knotifications_SRCS
   knotificationrestrictions.cpp
 )
 
-include_directories(
- ${DBusMenuQt5_INCLUDE_DIR}
-)
-
 find_package(DBusMenuQt5)
 set_package_properties(DBusMenuQt5 PROPERTIES DESCRIPTION "DBusMenuQt"
                        URL "https://launchpad.net/libdbusmenu-qt" TYPE OPTIONAL
@@ -20,6 +16,10 @@ if (DBusMenuQt5_FOUND)
 else()
    set(HAVE_DBUSMENUQT 0)
 endif()
+
+include_directories(
+ ${DBusMenuQt5_INCLUDE_DIR}
+)
 
 qt5_add_dbus_interface(knotifications_SRCS org.kde.KNotify.xml knotify_interface)
 
