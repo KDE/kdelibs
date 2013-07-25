@@ -233,7 +233,6 @@ KPluginFactory *KPluginLoader::factory()
     KPluginFactory *factory = qobject_cast<KPluginFactory *>(obj);
     QVariantList args;
     args << metaData().toVariantMap();
-    //qDebug() << "--> ARGS: " << args;
     factory->setArgs(args);
 
     if (factory == 0) {

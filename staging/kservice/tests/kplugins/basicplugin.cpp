@@ -23,7 +23,7 @@
 
 #include <QDebug>
 
-K_PLUGIN_HEADER(BasicPluginFactory, BasicPlugin, "basicplugin.json")
+//K_PLUGIN_HEADER(BasicPluginFactory, BasicPlugin, "basicplugin.json")
 
 BasicPlugin::BasicPlugin(QObject* parent, const QVariantList& args)
     : QObject(parent)

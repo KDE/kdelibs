@@ -61,28 +61,6 @@ name::~name() {}
     K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
     K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations)
 
-
-#define K_PLUGIN_HEADER(name, baseclass, jsonfile) \
-class name : public KPluginFactory \
-{ \
-    Q_OBJECT \
-    Q_PLUGIN_METADATA(IID "KPluginFactory_iid" FILE jsonfile) \
-    Q_INTERFACES(KPluginFactory) \
-\
-    public: \
-        explicit name(const char * = 0, const char * = 0, QObject * = 0) \
-        { \
-            init(); \
-        } \
-\
-    private: \
-        void init() \
-        { \
-            registerPlugin<baseclass>(); \
-        } \
-}; \
-\
-
 /**
  * \relates KPluginFactory
  * Defines a KPluginFactory subclass with two constructors and a static componentData function.
