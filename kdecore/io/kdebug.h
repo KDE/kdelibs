@@ -213,10 +213,10 @@ KDECORE_EXPORT QDebug perror(QDebug, KDebugTag);
 
 // operators for KDE types
 class QUrl;
-class KDateTime;
+//class KDateTime;
 class QObject;
 KDECORE_EXPORT QDebug operator<<(QDebug s, const QUrl &url);
-KDECORE_EXPORT QDebug operator<<(QDebug s, const KDateTime &time);
+//KDECORE_EXPORT QDebug operator<<(QDebug s, const KDateTime &time);
 
 #if 1 || defined(KDE3_SUPPORT)
 #ifndef KDE_NO_DEPRECATED
