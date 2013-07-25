@@ -29,7 +29,6 @@
 #include <kstandardshortcut.h>
 #include "kdatepicker.h"
 #include "kactioncollection.h"
-#include <kdeversion.h>
 
 #include <QAction>
 #include <QDebug>
