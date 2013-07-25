@@ -74,7 +74,6 @@ Q_EXTERN_C KSERVICE_EXPORT const quint32 kde_plugin_version = version;
 #define Q_STANDARD_CALL
 
 #define K_EXPORT_PLUGIN(factory) \
-            K_EXPORT_PLUGIN_is_deprecated_port_to_K_PLUGIN_HEADER dummy; \
             K_PLUGIN_VERIFICATION_DATA
 
 #endif
