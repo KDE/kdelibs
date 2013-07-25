@@ -44,7 +44,6 @@
 #endif
 #include <kdebug.h>
 
-#include <config-kdeui.h>
 #include <config-ksycoca.h>
 
 #include <unistd.h>

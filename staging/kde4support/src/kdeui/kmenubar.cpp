@@ -22,7 +22,7 @@
 
 #include "kmenubar.h"
 
-#include <config-kdeui.h>
+#include <config-kde4support.h>
 
 #include <stdio.h>
 
