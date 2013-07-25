@@ -4,7 +4,7 @@ project(kdeui)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
 include_directories(
- ${DBUSMENUQT_INCLUDE_DIR}
+ ${DBusMenuQt5_INCLUDE_DIRS}
 )
 
 find_package(X11)
@@ -17,11 +17,11 @@ if(X11_FOUND)
 	macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)
 endif(X11_FOUND)
 
-find_package(DBusMenuQt)
-set_package_properties(DBUSMENUQT PROPERTIES DESCRIPTION "DBusMenuQt"
+find_package(DBusMenuQt5)
+set_package_properties(DBUSMENUQT5 PROPERTIES DESCRIPTION "DBusMenuQt"
                        URL "https://launchpad.net/libdbusmenu-qt" TYPE REQUIRED
                        PURPOSE "Support for notification area menus via the DBusMenu protocol")
-macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
+macro_bool_to_01(DBusMenuQt5_FOUND HAVE_DBUSMENUQT)
 
 check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
 check_include_files(paths.h       HAVE_PATHS_H)
@@ -120,7 +120,7 @@ target_link_libraries(kdeui  Qt5::Svg)
 endif(NOT WINCE)
 
 if(HAVE_DBUSMENUQT)
-  target_link_libraries(kdeui ${DBUSMENUQT_LIBRARIES})
+  target_link_libraries(kdeui ${DBusMenuQt5_LIBRARIES})
 endif()
 
 if(MINGW)

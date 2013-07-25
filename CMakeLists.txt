@@ -174,8 +174,8 @@ if(X11_FOUND)
   endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
 
-find_package(DBusMenuQt)
-set_package_properties(DBusMenuQt PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
+find_package(DBusMenuQt5)
+set_package_properties(DBusMenuQt5 PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
                        URL "https://launchpad.net/libdbusmenu-qt"
                        TYPE REQUIRED
                       )

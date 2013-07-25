@@ -8,14 +8,14 @@ set(knotifications_SRCS
 )
 
 include_directories(
- ${DBUSMENUQT_INCLUDE_DIR}
+ ${DBusMenuQt5_INCLUDE_DIR}
 )
 
-find_package(DBusMenuQt)
-set_package_properties(DBUSMENUQT PROPERTIES DESCRIPTION "DBusMenuQt"
+find_package(DBusMenuQt5)
+set_package_properties(DBusMenuQt5 PROPERTIES DESCRIPTION "DBusMenuQt"
                        URL "https://launchpad.net/libdbusmenu-qt" TYPE REQUIRED
                        PURPOSE "Support for notification area menus via the DBusMenu protocol")
-macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
+macro_bool_to_01(DBusMenuQt5_FOUND HAVE_DBUSMENUQT)
 
 qt5_add_dbus_interface(knotifications_SRCS org.kde.KNotify.xml knotify_interface)
 
@@ -38,7 +38,7 @@ target_link_libraries(KNotifications LINK_PUBLIC Qt5::Widgets)
 target_link_libraries(KNotifications LINK_PRIVATE KWindowSystem Qt5::DBus)
 
 if(HAVE_DBUSMENUQT)
-  target_link_libraries(KNotifications ${DBUSMENUQT_LIBRARIES})
+  target_link_libraries(KNotifications ${DBusMenuQt5_LIBRARIES})
 endif()
 
 set_target_properties(KNotifications PROPERTIES VERSION   ${KNOTIFICATIONS_VERSION_STRING}
