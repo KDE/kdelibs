@@ -21,7 +21,7 @@
 #include <ktimezonewidget.h>
 #include <ksystemtimezone.h>
 #include <kconfiggroup.h>
-#include "../../kdecore/tests/ktimezonestest_p.h"
+#include "ktimezonestest_p.h"
 
 class KTimeZoneWidgetTest : public QObject
 {

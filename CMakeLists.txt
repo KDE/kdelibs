@@ -174,13 +174,6 @@ if(X11_FOUND)
   endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
 
-find_package(Libintl)
-set_package_properties(Libintl PROPERTIES DESCRIPTION "Support for multiple languages"
-                       URL "http://www.gnu.org/software/gettext"
-                       TYPE RECOMMENDED
-                       PURPOSE "Enables KDE to be available in many different languages"
-                      )
-
 find_package(DBusMenuQt)
 set_package_properties(DBusMenuQt PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
                        URL "https://launchpad.net/libdbusmenu-qt"

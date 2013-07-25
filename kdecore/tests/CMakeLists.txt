@@ -27,38 +27,18 @@ ENDMACRO(KDECORE_EXECUTABLE_TESTS)
 ########### next target ###############
 
 KDECORE_UNIT_TESTS(
- klocaletimeformattest
  cplusplustest
- ktimezonestest
- kdatetimetest
  kautostarttest
  kprocesstest
  qcoreapptest
- kcalendartest
  kconfignokdehometest
 )
-
-target_include_directories(ktimezonestest PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../date")
 
 KDECORE_EXECUTABLE_TESTS(
  kmemtest
  dbuscalltest
  startserviceby
 )
-
-########### klocaletest ###############
-
-# compile into the test since it's not exported
-set(klocaletest_SRCS klocaletest.cpp ../date/kdayperiod.cpp)
-kde4_add_unit_test(klocaletest ${klocaletest_SRCS})
-target_link_libraries(klocaletest ${KDE4_KDECORE_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES})
-
-########### kdatetimeformattertest ###############
-
-# compile KDateTimeFormatter and KDayPeriod into the test since it's not exported
-set(kdatetimeformattertest_SRCS kdatetimeformattertest.cpp ../date/kdatetimeformatter.cpp ../date/kdayperiod.cpp)
-kde4_add_unit_test(kdatetimeformattertest ${kdatetimeformattertest_SRCS})
-target_link_libraries(kdatetimeformattertest ${KDE4_KDECORE_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES})
 
 ########### kcompositejobtest ###############
 

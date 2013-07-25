@@ -6,7 +6,7 @@ set(kcookiejartest_SRCS kcookiejartest.cpp )
 
 kde4_add_unit_test(kcookiejartest NOGUI ${kcookiejartest_SRCS})
 
-target_link_libraries(kcookiejartest  ${KDE4_KIO_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
+target_link_libraries(kcookiejartest  ${KDE4_KIO_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} KDE4Attic)
 
 ########### install files ###############
 

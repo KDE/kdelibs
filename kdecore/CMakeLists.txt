@@ -16,20 +16,12 @@ configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h 
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 
-# Configure checks for date/
-include(date/ConfigureChecks.cmake)
-configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
-
 # Configure checks for io/
 include(io/ConfigureChecks.cmake)
 configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
 
 # Configure checks for kernel/
 configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
-
-# Configure checks for localization
-include(localization/ConfigureChecks.cmake)
-configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/localization/config-localization.h)
 
 
 # kdecore_OPTIONAL_SRCS is used to collect source files
@@ -57,20 +49,10 @@ if (HAVE_RESOLV_LIBRARY)
   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} resolv)
 endif (HAVE_RESOLV_LIBRARY)
 
-if (APPLE)
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      localization/klocale_mac.cpp
-   )
-
-   set(kdecore_OPTIONAL_LIBS ${kdecore_OPTIONAL_LIBS} ${CARBON_LIBRARY})
-endif (APPLE)
-
 if (WIN32)
    LIST(APPEND kdecore_OPTIONAL_SRCS
       kernel/ktoolinvocation_win.cpp
-      localization/klocale_win.cpp
       util/kde_file_win.cpp
-      date/ktimezone_win.cpp
    )
    if(NOT WINCE)
        LIST(APPEND kdecore_OPTIONAL_SRCS
@@ -85,7 +67,6 @@ endif (WIN32)
 if (UNIX)
    set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
       kernel/ktoolinvocation_x11.cpp
-      localization/klocale_unix.cpp
    )
 endif (UNIX)
 
@@ -94,27 +75,6 @@ add_subdirectory( tests )
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   date/kcalendarera.cpp
-   date/kcalendarsystem.cpp
-   date/kcalendarsystemcoptic.cpp
-   date/kcalendarsystemethiopian.cpp
-   date/kcalendarsystemgregorian.cpp
-   date/kcalendarsystemislamiccivil.cpp
-   date/kcalendarsystemhebrew.cpp
-   date/kcalendarsystemindiannational.cpp
-   date/kcalendarsystemjalali.cpp
-   date/kcalendarsystemjapanese.cpp
-   date/kcalendarsystemjulian.cpp
-   date/kcalendarsystemminguo.cpp
-   date/kcalendarsystemthai.cpp
-   date/kdatetime.cpp
-   date/kdatetimeformatter.cpp
-   date/kdatetimeparser.cpp
-   date/kdayperiod.cpp
-   date/klocalizeddate.cpp
-   date/ktimezone.cpp
-   date/ksystemtimezone.cpp
-   date/ktzfiletimezone.cpp
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
    io/kprocess.cpp
@@ -127,8 +87,6 @@ set(kdecore_LIB_SRCS
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
-   localization/klocale.cpp
-   localization/klocale_kde.cpp
    util/kautostart.cpp
    util/kdeversion.cpp
    util/klauncher_iface.cpp
@@ -167,19 +125,15 @@ endif ()
 target_include_directories(kdecore PRIVATE
   ${ZLIB_INCLUDE_DIR}
   ${CMAKE_CURRENT_BINARY_DIR}/network
-  ${CMAKE_CURRENT_BINARY_DIR}/date
   ${CMAKE_CURRENT_BINARY_DIR}/io
   ${CMAKE_CURRENT_BINARY_DIR}/kernel
-  ${CMAKE_CURRENT_BINARY_DIR}/localization
   $<TARGET_PROPERTY:Qt5::PrintSupport,INTERFACE_INCLUDE_DIRECTORIES>
   ${LIBINTL_INCLUDE_DIR})
 
 set(kdecore_INCLUDES
-                          ${CMAKE_CURRENT_SOURCE_DIR}/date
                           ${CMAKE_CURRENT_SOURCE_DIR}/io
                           ${CMAKE_CURRENT_SOURCE_DIR}/kernel
                           ${CMAKE_CURRENT_SOURCE_DIR}/network
-                          ${CMAKE_CURRENT_SOURCE_DIR}/localization
                           ${CMAKE_CURRENT_SOURCE_DIR}/util
 )
 target_include_directories(kdecore PUBLIC "$<BUILD_INTERFACE:${kdecore_INCLUDES}>")
@@ -217,20 +171,10 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 
 ########### next target ###############
 
-configure_file(localization/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
-
 ########### install files ###############
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
-install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en_US )
 install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdecore_export.h
-   date/kcalendarsystem.h
-   date/kdatetime.h
-   date/klocalizeddate.h
-   date/ksystemtimezone.h
-   date/ktimezone.h
-   date/ktzfiletimezone.h
    io/kdebug.h
    io/kprocess.h
 
@@ -243,7 +187,6 @@ install( FILES
 
 install(FILES
    network/ksocketfactory.h
-   localization/klocale.h
    util/kautostart.h
    util/kde_file.h
    util/klauncher_iface.h
