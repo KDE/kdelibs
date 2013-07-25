@@ -15,12 +15,12 @@ set(sonnetcore_HEADERS
     backgroundchecker.h
     speller.h
     globals.h
-    ${CMAKE_CURRENT_BINARY_DIR}/sonnetcore_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/sonnet/sonnetcore_export.h
 )
 
 
 add_library(SonnetCore ${sonnetcore_SRCS})
-generate_export_header(SonnetCore)
+generate_export_header(SonnetCore EXPORT_FILE_NAME sonnet/sonnetcore_export.h)
 
 target_link_libraries(SonnetCore LINK_PUBLIC Qt5::Core)
 
