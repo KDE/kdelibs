@@ -22,7 +22,6 @@
 #include <QtCore/QDate>
 
 #include <QtTest/QtTest>
-#include "kdebug.h"
 #include "kdatetimeedit.h"
 #include "kcalendarsystem.h"
 #include "ksystemtimezone.h"
