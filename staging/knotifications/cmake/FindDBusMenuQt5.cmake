@@ -38,6 +38,7 @@ find_path(DBusMenuQt5_INCLUDE_DIR dbusmenuexporter.h
     PATH_SUFFIXES dbusmenu-qt5 dbusmenu-qt
     )
 
+ message(STATUS "DBusMenuQt5_INCLUDE_DIR=${DBusMenuQt5_INCLUDE_DIR} DBusMenuQt5_LIBRARY=${DBusMenuQt5_LIBRARY} DBusMenuQt5_VERSION=${DBusMenuQt5_VERSION}")
 
 # find the version number from dbusmenu_version.h and store it in the cache
 if(DBusMenuQt5_INCLUDE_DIR  AND NOT DBusMenuQt5_VERSION)
@@ -54,9 +55,10 @@ if(DBusMenuQt5_INCLUDE_DIR  AND NOT DBusMenuQt5_VERSION)
     string(REGEX MATCH "#define +DBUSMENUQT_VERSION_PATCH +([0-9]+)"  _dummy "${DBusMenuQt5_VERSION_CONTENT}")
     set(DBusMenuQt5_VERSION_PATCH "${CMAKE_MATCH_1}")
 
-  endif(EXISTS ${DBusMenuQt5_INCLUDE_DIR}/dbusmenu_version.h)
+  endif()
 
   set(DBusMenuQt5_VERSION "${DBusMenuQt5_VERSION_MAJOR}.${DBusMenuQt5_VERSION_MINOR}.${DBusMenuQt5_VERSION_PATCH}" CACHE STRING "Version number of DBusMenuQt5" FORCE)
+  message(STATUS "NOW DBusMenuQt5_VERSION=${DBusMenuQt5_VERSION}")
 endif()
 
 
