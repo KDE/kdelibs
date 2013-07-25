@@ -22,7 +22,7 @@
 
 #include "ktextwidgets_export.h"
 
-#include <sonnet/highlighter.h>
+#include <highlighter.h>
 #include <QTextEdit>
 
 #define HAVE_SHOWTABACTION 1
