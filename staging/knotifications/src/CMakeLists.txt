@@ -13,13 +13,10 @@ set_package_properties(DBusMenuQt5 PROPERTIES DESCRIPTION "DBusMenuQt"
                        PURPOSE "Support for notification area menus via the DBusMenu protocol")
 if (DBusMenuQt5_FOUND)
    set(HAVE_DBUSMENUQT 1)
+   include_directories(${DBusMenuQt5_INCLUDE_DIRS})
 else()
    set(HAVE_DBUSMENUQT 0)
 endif()
-
-include_directories(
- ${DBusMenuQt5_INCLUDE_DIR}
-)
 
 qt5_add_dbus_interface(knotifications_SRCS org.kde.KNotify.xml knotify_interface)
 
