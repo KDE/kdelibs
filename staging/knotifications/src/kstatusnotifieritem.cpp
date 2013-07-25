@@ -42,13 +42,12 @@
 #include <config-knotifications.h>
 
 static const char s_statusNotifierWatcherServiceName[] = "org.kde.StatusNotifierWatcher";
+static const int s_legacyTrayIconSize = 24;
 
 #if HAVE_DBUSMENUQT
 #include <dbusmenuexporter.h>
 
 #include "statusnotifieritemadaptor.h"
-
-static const int s_legacyTrayIconSize = 24;
 
 /**
  * Specialization to provide access to KDE icon names
