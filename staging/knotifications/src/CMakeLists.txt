@@ -7,15 +7,19 @@ set(knotifications_SRCS
   knotificationrestrictions.cpp
 )
 
-include_directories(
- ${DBUSMENUQT_INCLUDE_DIR}
-)
-
-find_package(DBusMenuQt)
-set_package_properties(DBUSMENUQT PROPERTIES DESCRIPTION "DBusMenuQt"
-                       URL "https://launchpad.net/libdbusmenu-qt" TYPE REQUIRED
+find_package(DBusMenuQt5)
+set_package_properties(DBusMenuQt5 PROPERTIES DESCRIPTION "DBusMenuQt"
+                       URL "https://launchpad.net/libdbusmenu-qt" TYPE OPTIONAL
                        PURPOSE "Support for notification area menus via the DBusMenu protocol")
-macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
+if (DBusMenuQt5_FOUND)
+   set(HAVE_DBUSMENUQT 1)
+else()
+   set(HAVE_DBUSMENUQT 0)
+endif()
+
+include_directories(
+ ${DBusMenuQt5_INCLUDE_DIR}
+)
 
 qt5_add_dbus_interface(knotifications_SRCS org.kde.KNotify.xml knotify_interface)
 
@@ -29,16 +33,31 @@ qt5_add_dbus_interface(knotifications_SRCS ${statusnotifierwatcher_xml} statusno
 set(notifications_xml org.freedesktop.Notifications.xml)
 qt5_add_dbus_interface(knotifications_SRCS ${notifications_xml} notifications_interface)
 
+find_package(X11)
+
+if (X11_XTest_FOUND)
+   set (HAVE_XTEST 1)
+else ()
+   set (HAVE_XTEST 0)
+endif ()
+
 configure_file(config-knotifications.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-knotifications.h )
 
 add_library(KNotifications ${knotifications_SRCS})
 generate_export_header(KNotifications)
 
-target_link_libraries(KNotifications LINK_PUBLIC Qt5::Widgets)
-target_link_libraries(KNotifications LINK_PRIVATE KWindowSystem Qt5::DBus)
+target_link_libraries(KNotifications LINK_PUBLIC
+   Qt5::Widgets
+)
+target_link_libraries(KNotifications LINK_PRIVATE
+   KWindowSystem
+   Qt5::DBus
+   Qt5::X11Extras
+   ${X11_LIBRARIES}
+)
 
 if(HAVE_DBUSMENUQT)
-  target_link_libraries(KNotifications ${DBUSMENUQT_LIBRARIES})
+  target_link_libraries(KNotifications ${DBusMenuQt5_LIBRARIES})
 endif()
 
 set_target_properties(KNotifications PROPERTIES VERSION   ${KNOTIFICATIONS_VERSION_STRING}

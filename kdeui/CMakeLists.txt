@@ -3,33 +3,10 @@ project(kdeui)
 # QUrl
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
 
-include_directories(
- ${DBUSMENUQT_INCLUDE_DIR}
-)
-
 find_package(X11)
 if(X11_FOUND)
-	macro_bool_to_01(X11_FOUND HAVE_X11)
-    set_package_properties(X11_Xrender PROPERTIES DESCRIPTION "X Rendering Extension (libXrender)"
-                           URL "http://www.x.org" TYPE RECOMMENDED
-                           PURPOSE "Support for compositing, rendering operations, and alpha-blending")
-	macro_bool_to_01(X11_Xrender_FOUND HAVE_XRENDER)
-	macro_bool_to_01(X11_XTest_FOUND HAVE_XTEST)
+  macro_bool_to_01(X11_FOUND HAVE_X11)
 endif(X11_FOUND)
-
-find_package(DBusMenuQt)
-set_package_properties(DBUSMENUQT PROPERTIES DESCRIPTION "DBusMenuQt"
-                       URL "https://launchpad.net/libdbusmenu-qt" TYPE REQUIRED
-                       PURPOSE "Support for notification area menus via the DBusMenu protocol")
-macro_bool_to_01(DBUSMENUQT_FOUND HAVE_DBUSMENUQT)
-
-check_include_files(sys/stat.h    HAVE_SYS_STAT_H)
-check_include_files(paths.h       HAVE_PATHS_H)
-check_include_files(limits.h      HAVE_LIMITS_H)
-check_include_files(sys/types.h   HAVE_SYS_TYPES_H)
-check_include_files(sys/time.h    HAVE_SYS_TIME_H)
-check_include_files(unistd.h      HAVE_UNISTD_H)
-check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
 
 configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
 
@@ -118,10 +95,6 @@ endif()
 if(NOT WINCE)
 target_link_libraries(kdeui  Qt5::Svg)
 endif(NOT WINCE)
-
-if(HAVE_DBUSMENUQT)
-  target_link_libraries(kdeui ${DBUSMENUQT_LIBRARIES})
-endif()
 
 if(MINGW)
    target_link_libraries(kdeui gdi32 oleaut32)

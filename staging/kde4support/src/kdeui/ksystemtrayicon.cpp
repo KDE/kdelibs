@@ -33,7 +33,7 @@
 #include <kglobal.h>
 #include <kwindowsystem.h>
 
-#include <config-kdeui.h>
+#include <config-kde4support.h>
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif

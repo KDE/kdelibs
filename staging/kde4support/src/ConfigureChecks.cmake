@@ -76,6 +76,8 @@ check_function_exists(if_nametoindex  HAVE_IF_NAMETOINDEX)
 
 check_prototype_exists(getservbyname_r netdb.h      HAVE_GETSERVBYNAME_R_PROTO)
 
+check_symbol_exists(posix_madvise   "sys/mman.h"               HAVE_MADVISE)
+
 check_symbol_exists(freeaddrinfo    "sys/types.h;sys/socket.h;netdb.h"     HAVE_FREEADDRINFO)
 check_symbol_exists(getnameinfo     "sys/types.h;sys/socket.h;netdb.h"     HAVE_GETNAMEINFO)
 check_symbol_exists(getaddrinfo     "sys/types.h;sys/socket.h;netdb.h"     HAVE_GETADDRINFO)

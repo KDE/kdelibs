@@ -174,12 +174,6 @@ if(X11_FOUND)
   endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
 
-find_package(DBusMenuQt)
-set_package_properties(DBusMenuQt PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
-                       URL "https://launchpad.net/libdbusmenu-qt"
-                       TYPE REQUIRED
-                      )
-
 ################# Disallow in-source build #################
 
 macro_ensure_out_of_source_build("kdelibs requires an out of source build. Please create a separate build directory and run 'cmake path_to_kdelibs [options]' there.")

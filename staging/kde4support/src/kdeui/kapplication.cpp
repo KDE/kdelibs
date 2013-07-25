@@ -21,7 +21,7 @@
 #include "kapplication.h"
 
 #include "kdeversion.h"
-#include <config-kdeui.h>
+#include <config-kde4support.h>
 
 #include <QtCore/QDir>
 #include <QtCore/QFile>
