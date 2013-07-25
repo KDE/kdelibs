@@ -36,7 +36,7 @@ set(sonnetui_HDRS
 qt5_wrap_ui(sonnetui_SRCS ${sonnetui_UI})
 
 add_library(SonnetUi ${sonnetui_SRCS})
-generate_export_header(SonnetUi)
+generate_export_header(SonnetUi EXPORT_FILE_NAME sonnet/sonnetui_export.h)
 
 target_link_libraries(SonnetUi Qt5::Widgets SonnetCore)
 
@@ -46,6 +46,6 @@ set_target_properties(SonnetUi PROPERTIES VERSION ${SONNET_VERSION_STRING}
 
 install(TARGETS SonnetUi EXPORT SonnetTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-install( FILES ${sonnetui_HDRS} ${CMAKE_CURRENT_BINARY_DIR}/sonnetui_export.h
+install( FILES ${sonnetui_HDRS} ${CMAKE_CURRENT_BINARY_DIR}/sonnet/sonnetui_export.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/sonnet COMPONENT Devel)
 

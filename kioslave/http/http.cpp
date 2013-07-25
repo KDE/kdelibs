@@ -40,6 +40,8 @@
 #include <QtCore/QDateTime>
 #include <QtCore/QBuffer>
 #include <QtCore/QIODevice>
+#include <QtCore/QTemporaryFile>
+#include <QtCore/QStandardPaths>
 #include <QtDBus/QtDBus>
 #include <QtCore/QMimeDatabase>
 #include <QtNetwork/QAuthenticator>
@@ -65,9 +67,7 @@
 
 #include <solid/networking.h>
 
-#include <kde_file.h>
-#include <qtemporaryfile.h>
-#include <qstandardpaths.h>
+#include <sys/stat.h>
 
 #include "httpauthentication.h"
 

@@ -1,3 +1,17 @@
+if(X11_FOUND)
+  set(HAVE_X11 1)
+else()
+  set(HAVE_X11 0)
+endif()
+configure_file(config-kde4attic.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kde4attic.h )
+
+# Configure checks for date/
+include(date/ConfigureChecks.cmake)
+configure_file(date/config-date.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/date/config-date.h)
+
+# Configure checks for localization
+include(localization/ConfigureChecks.cmake)
+configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/localization/config-localization.h)
 
 set(kde4attic_SRCS
   kanimatedbutton.cpp
@@ -16,7 +30,53 @@ set(kde4attic_SRCS
   ktimezonewidget.cpp
   ksslcertificatemanager.cpp
   ktcpsocket.cpp
+
+  date/kcalendarera.cpp
+  date/kcalendarsystem.cpp
+  date/kcalendarsystemcoptic.cpp
+  date/kcalendarsystemethiopian.cpp
+  date/kcalendarsystemgregorian.cpp
+  date/kcalendarsystemislamiccivil.cpp
+  date/kcalendarsystemhebrew.cpp
+  date/kcalendarsystemindiannational.cpp
+  date/kcalendarsystemjalali.cpp
+  date/kcalendarsystemjapanese.cpp
+  date/kcalendarsystemjulian.cpp
+  date/kcalendarsystemminguo.cpp
+  date/kcalendarsystemthai.cpp
+  date/kdatetime.cpp
+  date/kdatetimeformatter.cpp
+  date/kdatetimeparser.cpp
+  date/kdayperiod.cpp
+  date/klocalizeddate.cpp
+  date/ktimezone.cpp
+  date/ksystemtimezone.cpp
+  date/ktzfiletimezone.cpp
+
+  localization/klocale.cpp
+  localization/klocale_kde.cpp
 )
+
+if (APPLE)
+   LIST(APPEND kde4attic_SRCS
+      localization/klocale_mac.cpp
+   )
+
+   set(kde4attic_OPTIONAL_LIBS ${CARBON_LIBRARY})
+endif (APPLE)
+
+if (WIN32)
+   LIST(APPEND kde4attic_SRCS
+      localization/klocale_win.cpp
+      date/ktimezone_win.cpp
+   )
+endif (WIN32)
+
+if (UNIX)
+   LIST(APPEND kde4attic_SRCS
+      localization/klocale_unix.cpp
+   )
+endif (UNIX)
 
 if(NOT WINCE)
 set(kde4attic_SRCS
@@ -53,7 +113,18 @@ kde4_add_ui_files(kde4attic_SRCS ${kde4attic_UI} )
 add_library(KDE4Attic ${kde4attic_SRCS})
 generate_export_header(KDE4Attic)
 
-target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::Widgets Qt5::PrintSupport kdeui kdecore KCompletion)
+target_include_directories(KDE4Attic PRIVATE
+  ${CMAKE_CURRENT_BINARY_DIR}/date
+  ${CMAKE_CURRENT_BINARY_DIR}/localization
+)
+set(kde4attic_INCLUDES
+  ${CMAKE_CURRENT_SOURCE_DIR}/date
+  ${CMAKE_CURRENT_SOURCE_DIR}/localization
+)
+target_include_directories(KDE4Attic PUBLIC "$<BUILD_INTERFACE:${kde4attic_INCLUDES}>")
+
+target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::Widgets Qt5::PrintSupport KCompletion XmlGui ${kde4attic_OPTIONAL_LIBS})
+target_link_libraries(KDE4Attic LINK_PRIVATE KUnitConversion Qt5::Concurrent KI18n KIconThemes KNotifications)
 
 set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
                                            SOVERSION ${KDE4ATTIC_SOVERSION}
@@ -83,8 +154,22 @@ install(FILES
   ktimecombobox.h
   ktimezonewidget.h
   ktcpsocket.h
+
+  date/kcalendarsystem.h
+  date/kdatetime.h
+  date/klocalizeddate.h
+  date/ksystemtimezone.h
+  date/ktimezone.h
+  date/ktzfiletimezone.h
+
+  localization/klocale.h
+
   ${CMAKE_CURRENT_BINARY_DIR}/kde4attic_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+configure_file(localization/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
+install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en_US )
 
 install(FILES kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect)

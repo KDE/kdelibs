@@ -23,6 +23,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  kfileitemlistproperties.cpp
   kemailsettings.cpp
   tcpslavebase.cpp
   directorysizejob.cpp
@@ -108,29 +109,32 @@ target_include_directories(KIOCore PUBLIC
 )
 
 target_link_libraries(KIOCore
- ${KConfig_CORE_LIBRARY}
- ${KCoreAddons_LIBRARIES}
- KI18n
+LINK_PUBLIC
+ ${KCoreAddons_LIBRARIES}   # KJob
  KService
+LINK_PRIVATE
+ KI18n
  Qt5::Network
  Qt5::DBus
- Qt5::Concurrent
- Qt5::Xml   # davjob.cpp uses QDom
- ${kdeqt5staging_LIBRARIES} # Needed QUrlPathInfo
- ${KDBusAddons_LIBRARIES} # KDBusConnectionPool
+ Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
+ ${KConfig_CORE_LIBRARY}
+ Qt5::Xml                   # davjob.cpp uses QDom
+ ${kdeqt5staging_LIBRARIES} # QUrlPathInfo
+ ${KDBusAddons_LIBRARIES}   # KDBusConnectionPool
 )
 
 if(ACL_FOUND)
   target_link_libraries(KIOCore ${ACL_LIBS})
 endif(ACL_FOUND)
 
-set_target_properties(KIOCore PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                          SOVERSION ${ECM_SOVERSION}
+set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}
+                                       SOVERSION ${KIO_SOVERSION}
 )
 
-install(TARGETS KIOCore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS KIOCore EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
+  kfileitemlistproperties.h
   kemailsettings.h
   tcpslavebase.h
   directorysizejob.h

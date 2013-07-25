@@ -23,8 +23,6 @@
 #include "kshell.h"
 #include "kshell_p.h"
 
-#include <kkernel_win.h>
-
 #include <QString>
 #include <QStringList>
 #include <QtCore/QDir>

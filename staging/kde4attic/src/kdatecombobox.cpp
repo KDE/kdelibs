@@ -28,7 +28,6 @@
 #include <QDesktopWidget>
 #include <QVector>
 
-#include "kdebug.h"
 #include "kcalendarsystem.h"
 #include "klocale.h"
 #include "klocalizedstring.h"

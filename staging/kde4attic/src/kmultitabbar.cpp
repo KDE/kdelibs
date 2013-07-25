@@ -35,7 +35,6 @@
 #include <QStyleOptionButton>
 
 #include <kiconloader.h>
-#include <kdebug.h>
 #include <QApplication>
 #include <math.h>
 

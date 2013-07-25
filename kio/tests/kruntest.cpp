@@ -18,12 +18,11 @@
  */
 
 #include "kruntest.h"
-#include <QLabel>
 
+#include <QLabel>
 #include <QApplication>
 #include <QDebug>
 #include <kservice.h>
-#include <kde_file.h>
 #include <QPushButton>
 #include <QLayout>
 #include <QtTest/QtTest>

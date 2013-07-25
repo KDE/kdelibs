@@ -25,6 +25,7 @@
 
 #include <QApplication>
 #include <QFont>
+#include <QFontDatabase>
 #include <QLayout>
 #include <QKeyEvent>
 #include <QMenu>
@@ -34,11 +35,9 @@
 #include <QDoubleValidator>
 
 #include <kcalendarsystem.h>
-#include <kglobalsettings.h>
 #include <klocalizeddate.h>
 #include <klocalizedstring.h>
 #include <kcombobox.h>
-#include <kdebug.h>
 #include <klineedit.h>
 #include <knotification.h>
 
@@ -55,9 +54,7 @@ KDatePickerPrivateYearSelector::KDatePickerPrivateYearSelector(
     calendar = cal;
     oldDate = currentDate;
 
-    QFont font;
-    font = KGlobalSettings::generalFont();
-    setFont( font );
+    setFont( QFontDatabase::systemFont(QFontDatabase::GeneralFont) );
 
     setFrame( false );
 
@@ -263,9 +260,9 @@ void KDatePicker::initWidget( const QDate &date_ )
     d->table = new KDateTable( this );
     setFocusProxy( d->table );
 
-    d->fontsize = KGlobalSettings::generalFont().pointSize();
+    d->fontsize = QFontDatabase::systemFont(QFontDatabase::GeneralFont).pointSize();
     if ( d->fontsize == -1 ) {
-        d->fontsize = QFontInfo( KGlobalSettings::generalFont() ).pointSize();
+        d->fontsize = QFontInfo( QFontDatabase::systemFont(QFontDatabase::GeneralFont) ).pointSize();
     }
 
     d->fontsize++; // Make a little bigger

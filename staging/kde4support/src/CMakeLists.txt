@@ -7,6 +7,8 @@ else ()
 endif ()
 
 set(libkde4support_SRCS
+    kdecore/kkernel_mac.cpp
+    kdecore/kkernel_win.cpp
     kdecore/klibloader.cpp
     kdecore/ktemporaryfile.cpp
     kdecore/ktempdir.cpp
@@ -85,6 +87,7 @@ set(libkde4support_SRCS
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
     kio/metainfojob.cpp
+    kio/passworddialog.cpp
     kio/kmimetyperesolver.cpp
     kio/kdatatool.cpp
 
@@ -137,6 +140,8 @@ install(TARGETS KDE4Support
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+    kdecore/kkernel_mac.h
+    kdecore/kkernel_win.h
     kdecore/klibloader.h
     kdecore/ktemporaryfile.h
     kdecore/ktempdir.h
@@ -228,6 +233,7 @@ endif ()
 # kio/*.h
 install(FILES
     kio/metainfojob.h
+    kio/passworddialog.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
 )
 

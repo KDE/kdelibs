@@ -20,10 +20,10 @@
 #include "ktcpsocket.h"
 #include "ktcpsocket_p.h"
 
-#include <kdebug.h>
 #include <ksslcertificatemanager.h>
 #include <klocalizedstring.h>
 
+#include <QDebug>
 #include <QUrl>
 #include <QtCore/QStringList>
 #include <QtNetwork/QSslKey>
@@ -842,7 +842,7 @@ void KTcpSocket::startClientEncryption()
 void KTcpSocket::showSslErrors()
 {
 	foreach (const QSslError &e, d->sock.sslErrors())
-		kDebug(7029) << e.errorString();
+		qDebug() << e.errorString();
 }
 
 

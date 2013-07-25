@@ -25,9 +25,9 @@
 #include "ktcpsocket_p.h"
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 
+#include <QDebug>
 #include <QtDBus/QtDBus>
 #include <qstandardpaths.h>
 
@@ -244,7 +244,7 @@ void KSslCertificateManagerPrivate::loadDefaultCaCertificates()
 
 bool KSslCertificateManagerPrivate::addCertificate(const KSslCaCertificate &in)
 {
-    kDebug(7029);
+    //qDebug() << Q_FUNC_INFO;
     // cannot add a certificate to the system store
     if (in.store == KSslCaCertificate::SystemStore) {
         Q_ASSERT(false);
@@ -256,7 +256,7 @@ bool KSslCertificateManagerPrivate::addCertificate(const KSslCaCertificate &in)
     }
 
     QString certFilename = userCertDir + QString::fromLatin1(in.certHash);
-    kDebug(7029) << certFilename;
+    //qDebug() << certFilename;
     QFile certFile(certFilename);
     if (certFile.open(QIODevice::ReadOnly)) {
         return false;
@@ -277,7 +277,7 @@ bool KSslCertificateManagerPrivate::addCertificate(const KSslCaCertificate &in)
 
 bool KSslCertificateManagerPrivate::removeCertificate(const KSslCaCertificate &old)
 {
-    kDebug(7029);
+    //qDebug() << Q_FUNC_INFO;
     // cannot remove a certificate from the system store
     if (old.store == KSslCaCertificate::SystemStore) {
         Q_ASSERT(false);
@@ -380,7 +380,7 @@ void KSslCertificateManagerPrivate::setAllCertificates(const QList<KSslCaCertifi
 
 QList<KSslCaCertificate> KSslCertificateManagerPrivate::allCertificates() const
 {
-    kDebug(7029);
+    //qDebug() << Q_FUNC_INFO;
     QList<KSslCaCertificate> ret;
     foreach (const QSslCertificate &cert, deduplicate(QSslSocket::systemCaCertificates())) {
         ret += KSslCaCertificate(cert, KSslCaCertificate::SystemStore, false);
@@ -396,7 +396,7 @@ QList<KSslCaCertificate> KSslCertificateManagerPrivate::allCertificates() const
     for (int i = 0; i < ret.size(); i++) {
         if (group.hasKey(ret[i].certHash.constData())) {
             ret[i].isBlacklisted = true;
-            kDebug(7029) << "is blacklisted";
+            //qDebug() << "is blacklisted";
         }
     }
 
@@ -413,7 +413,7 @@ bool KSslCertificateManagerPrivate::updateCertificateBlacklisted(const KSslCaCer
 bool KSslCertificateManagerPrivate::setCertificateBlacklisted(const QByteArray &certHash,
                                                               bool isBlacklisted)
 {
-    kDebug(7029) << isBlacklisted;
+    //qDebug() << Q_FUNC_INFO << isBlacklisted;
     KConfig config(QString::fromLatin1("ksslcablacklist"), KConfig::SimpleConfig);
     KConfigGroup group = config.group("Blacklist of CA Certificates");
     if (isBlacklisted) {

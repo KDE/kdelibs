@@ -58,7 +58,7 @@
 #include <time.h>
 #endif
 
-#include "kdatetime.h"
+//#include "kdatetime.h"
 
 #include <kmessage.h>
 #include <klocalizedstring.h>
@@ -769,6 +769,7 @@ QDebug perror(QDebug s, KDebugTag)
     return s << QString::fromLocal8Bit(strerror(errno));
 }
 
+#if 0
 QDebug operator<<(QDebug s, const KDateTime &time)
 {
     if ( time.isDateOnly() )
@@ -777,6 +778,7 @@ QDebug operator<<(QDebug s, const KDateTime &time)
         s.nospace() << "KDateTime(" << qPrintable(time.toString(KDateTime::ISODate)) << ")";
     return s.space();
 }
+#endif
 
 QDebug operator<<(QDebug s, const QUrl &url)
 {

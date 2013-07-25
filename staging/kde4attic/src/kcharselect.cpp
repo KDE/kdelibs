@@ -23,6 +23,7 @@
 #include "kcharselect_p.h"
 
 #include <QActionEvent>
+#include <QDebug>
 #include <QDoubleSpinBox>
 #include <QHeaderView>
 #include <QBoxLayout>
@@ -34,7 +35,6 @@
 #include <QFontComboBox>
 
 #include <kcombobox.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <klineedit.h>
 #include <kactioncollection.h>
@@ -515,7 +515,7 @@ void KCharSelect::setCurrentChar(const QChar &c)
 
 void KCharSelect::KCharSelectPrivate::historyAdd(const QChar &c, bool fromSearch, const QString &searchString)
 {
-    //kDebug() << "about to add char" << c << "fromSearch" << fromSearch << "searchString" << searchString;
+    //qDebug() << "about to add char" << c << "fromSearch" << fromSearch << "searchString" << searchString;
 
     if (!historyEnabled) {
         return;
@@ -554,7 +554,7 @@ void KCharSelect::KCharSelectPrivate::showFromHistory(int index)
     updateBackForwardButtons();
 
     const HistoryItem &item = history[index];
-    //kDebug() << "index" << index << "char" << item.c << "fromSearch" << item.fromSearch
+    //qDebug() << "index" << index << "char" << item.c << "fromSearch" << item.fromSearch
     //    << "searchString" << item.searchString;
 
     //avoid adding an item from history into history again

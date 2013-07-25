@@ -19,10 +19,10 @@
 #include "kdatetimewidget.h"
 
 #include <QtCore/QDate>
+#include <QDebug>
 #include <QLayout>
 #include <QTimeEdit>
 
-#include <kdebug.h>
 
 #include "kdatewidget.h"
 
@@ -88,7 +88,7 @@ void KDateTimeWidget::slotValueChanged()
   QDateTime datetime(d->dateWidget->date(),
                      d->timeWidget->time());
 
-  kDebug() << "slotValueChanged(): " << datetime << "\n";
+  //qDebug() << "slotValueChanged(): " << datetime << "\n";
 
   emit valueChanged(datetime);
 }

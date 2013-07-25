@@ -25,7 +25,6 @@
 #include <QLineEdit>
 #include <QWidgetAction>
 
-#include "kdebug.h"
 #include "kdatetime.h"
 #include "ksystemtimezone.h"
 #include "kcalendarsystem.h"

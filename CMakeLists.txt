@@ -174,13 +174,6 @@ if(X11_FOUND)
   endif(UNIX AND NOT X11_SM_FOUND)
 endif(X11_FOUND)
 
-find_package(Libintl)
-set_package_properties(Libintl PROPERTIES DESCRIPTION "Support for multiple languages"
-                       URL "http://www.gnu.org/software/gettext"
-                       TYPE RECOMMENDED
-                       PURPOSE "Enables KDE to be available in many different languages"
-                      )
-
 find_package(DBusMenuQt)
 set_package_properties(DBusMenuQt PROPERTIES DESCRIPTION "Support for notification area menus via the DBusMenu protocol"
                        URL "https://launchpad.net/libdbusmenu-qt"
@@ -238,7 +231,6 @@ add_subdirectory( kded       )
 add_subdirectory( kfile )
 add_subdirectory( kioslave   )
 add_subdirectory( kparts     )
-add_subdirectory( kunitconversion )
 
 find_package(Phonon4Qt5 4.6.60 NO_MODULE)
 if (Phonon4Qt5_FOUND)

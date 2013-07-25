@@ -24,7 +24,7 @@
 #include <QtCore/QStringList>
 #include <QtCore/QString>
 
-#include <sonnetcore_export.h>
+#include <sonnet/sonnetcore_export.h>
 
 namespace Sonnet
 {

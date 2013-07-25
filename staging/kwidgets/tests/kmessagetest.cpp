@@ -25,7 +25,6 @@
 #include <QBoxLayout>
 
 #include <kmessage.h>
-#include <kmessageboxmessagehandler.h>
 #include <kpassivepopupmessagehandler.h>
 
 KMessage_Test::KMessage_Test(QWidget *parent)
@@ -89,17 +88,7 @@ int main(int argc, char **argv)
 
     KMessage_Test *mainWidget = new KMessage_Test;
     mainWidget->setAttribute( static_cast<Qt::WidgetAttribute>(Qt::WA_DeleteOnClose | Qt::WA_QuitOnClose) );
-
-    int i = QMessageBox::information(0, "Select", "Select type of MessageHandler",
-                                 "KMessageBox", "KPassivePopup", "Default (stderr)");
-    if(i == 0)
-    {
-        KMessage::setMessageHandler( new KMessageBoxMessageHandler(mainWidget) );
-    }
-    else if(i == 1)
-    {
-        KMessage::setMessageHandler( new KPassivePopupMessageHandler(mainWidget) );
-    }
+    KMessage::setMessageHandler( new KPassivePopupMessageHandler(mainWidget) );
 
     mainWidget->show();
 

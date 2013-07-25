@@ -134,7 +134,9 @@ extern "C" {
 #include <qstandardpaths.h>
 
 #ifdef Q_OS_WIN
-# include <kkernel_win.h>
+#include <windows.h>
+#include <shellapi.h>
+#include <process.h>
 #ifdef __GNUC__
 # warning TODO: port completely to win32
 #endif
@@ -276,6 +278,36 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _tempUrl, const QUrl& _current
     d->m_items.append(KFileItem(d->m_singleUrl));
     d->init();
 }
+
+#ifdef Q_OS_WIN
+bool showWin32FilePropertyDialog ( const QString& fileName )
+{
+    QString path_ = QDir::convertSeparators ( QFileInfo ( fileName ).absoluteFilePath() );
+
+#ifndef _WIN32_WCE
+    SHELLEXECUTEINFOW execInfo;
+#else
+    SHELLEXECUTEINFO execInfo;
+#endif
+    memset ( &execInfo,0,sizeof ( execInfo ) );
+    execInfo.cbSize = sizeof ( execInfo );
+#ifndef _WIN32_WCE
+    execInfo.fMask = SEE_MASK_INVOKEIDLIST | SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+#else
+    execInfo.fMask = SEE_MASK_NOCLOSEPROCESS | SEE_MASK_FLAG_NO_UI;
+#endif
+    const QString verb ( QLatin1String ( "properties" ) );
+    execInfo.lpVerb = WIN32_CAST_CHAR verb.utf16();
+    execInfo.lpFile = WIN32_CAST_CHAR path_.utf16();
+#ifndef _WIN32_WCE
+    return ShellExecuteExW ( &execInfo );
+#else
+    return ShellExecuteEx ( &execInfo );
+    //There is no native file property dialog in wince
+   // return false;
+#endif
+}
+#endif
 
 bool KPropertiesDialog::showDialog(const KFileItem& item, QWidget* parent,
                                    bool modal)

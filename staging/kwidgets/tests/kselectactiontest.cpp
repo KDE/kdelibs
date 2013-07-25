@@ -22,7 +22,7 @@
 #include <QApplication>
 #include <QMenuBar>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include "kselectactiontest.h"
 
@@ -78,17 +78,17 @@ SelectActionTest::SelectActionTest(QWidget *parent)
 
 void SelectActionTest::triggered(QAction* action)
 {
-  kDebug() << action;
+  qDebug() << Q_FUNC_INFO << action;
 }
 
 void SelectActionTest::triggered(int index)
 {
-  kDebug() << index;
+  qDebug() << Q_FUNC_INFO << index;
 }
 
 void SelectActionTest::triggered(const QString& text)
 {
-  kDebug() << '"' << text << '"';
+  qDebug() << Q_FUNC_INFO << '"' << text << '"';
 }
 
 void SelectActionTest::addAction()
@@ -110,7 +110,7 @@ void SelectActionTest::removeAction()
 
 void SelectActionTest::slotActionTriggered(bool state)
 {
-    kDebug() << sender() << " state " << state;
+    qDebug() << sender() << " state " << state;
 }
 
 

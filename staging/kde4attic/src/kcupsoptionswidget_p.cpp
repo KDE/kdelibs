@@ -20,6 +20,8 @@
 
 #include "kcupsoptionswidget_p.h"
 
+#include <config-kde4attic.h>
+
 #if HAVE_X11
 #include <fixx11h.h>
 #endif
@@ -28,8 +30,6 @@
 #include <QPrintDialog>
 #include <QFile>
 #include <QtNetwork/QTcpSocket>
-
-#include <kdebug.h>
 
 /** @internal */
 KCupsOptionsWidget::KCupsOptionsWidget( QPrintDialog *parent ) : QWidget( parent )

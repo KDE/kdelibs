@@ -54,7 +54,6 @@
 #include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kio/kfileitemdelegate.h>
-#include <kde_file.h>
 #include <ksharedconfig.h>
 
 #include <QCheckBox>
@@ -67,13 +66,13 @@
 #include <QHelpEvent>
 #include <QApplication>
 #include <QPushButton>
+#include <QStandardPaths>
 #include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 
 #include <kshell.h>
 #include <kmessagebox.h>
 #include <kauthorized.h>
-#include <qstandardpaths.h>
 
 class KFileWidgetPrivate
 {

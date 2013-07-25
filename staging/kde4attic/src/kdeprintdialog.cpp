@@ -21,7 +21,7 @@
  **/
 
 #include "kdeprintdialog.h"
-#include <config-kdeui.h>
+#include <config-kde4attic.h>
 
 #if HAVE_X11
 #include "kcupsoptionspageswidget_p.h"
@@ -29,9 +29,7 @@
 #include "kcupsoptionssettingswidget_p.h"
 #endif
 
-#include "kdebug.h"
 #include "klocalizedstring.h"
-#include "kdeversion.h"
 
 #if HAVE_X11
 #include <fixx11h.h> // for enable-final
@@ -53,7 +51,7 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
     }
 #if HAVE_X11
 // Hopefully Qt 4.9 will have native support for all Cups options, Odd/Even, and page ranges
-#if QT_VERSION < KDE_MAKE_VERSION(4,9,0)
+#if QT_VERSION < 0x040900
     if ( KCupsOptionsWidget::cupsAvailable() ) {
         KCupsOptionsPagesWidget *cupsOptionsPagesTab = new KCupsOptionsPagesWidget( dialog );
         KCupsOptionsJobWidget *cupsOptionsJobTab = new KCupsOptionsJobWidget( dialog );

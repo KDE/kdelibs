@@ -60,7 +60,6 @@ set(cmakeFiles
                FindLibArt.cmake
                FindLibKonq.cmake
                FindLibLZMA.cmake
-               FindLibintl.cmake
                FindLibraryWithDebug.cmake
                FindLinuxWirelesstools.cmake
                FindMusicBrainz.cmake

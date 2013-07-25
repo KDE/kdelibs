@@ -20,7 +20,7 @@
 #ifndef __kbookmark_h
 #define __kbookmark_h
 
-#include "kio_export.h"
+#include <kio/kio_export.h>
 
 #include <QtCore/QString>
 #include <QtCore/QUrl>

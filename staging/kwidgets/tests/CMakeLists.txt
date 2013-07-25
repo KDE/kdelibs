@@ -4,7 +4,7 @@ include(ECMMarkAsTest)
 macro(kwidgets_executable_tests)
    foreach(_testname ${ARGN})
       add_executable(${_testname} ${_testname}.cpp)
-      target_link_libraries(${_testname} KWidgets Qt5::Widgets Qt5::Test Qt5::Xml XmlGui KCodecs ${KDE4_KDEUI_LIBS} KDE4Support) # dependence for kmessage
+      target_link_libraries(${_testname} KWidgets Qt5::Widgets Qt5::Test Qt5::Xml XmlGui KCodecs)
       ecm_mark_as_test(${_testname})
    endforeach()
 endmacro()

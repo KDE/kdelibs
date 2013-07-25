@@ -18,6 +18,7 @@ add_subdirectory(kcrash)
 add_subdirectory(kio)
 add_subdirectory(frameworkintegration)
 
+add_subdirectory(kunitconversion)
 add_subdirectory(kinterprocesswindowing)
 add_subdirectory(kde4attic)
 add_subdirectory(kde4support)

@@ -23,7 +23,6 @@
 #include <QKeyEvent>
 #include <QLineEdit>
 
-#include "kdebug.h"
 #include "klocale.h"
 #include "klocalizedstring.h"
 #include "kcombobox.h"

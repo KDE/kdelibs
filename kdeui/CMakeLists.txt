@@ -46,7 +46,6 @@ set(kdeui_LIB_SRCS
  util/kglobalsettings.cpp
  util/khelpclient.cpp
  util/kimagecache.cpp
- util/kpassivepopupmessagehandler.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
 )
 
@@ -174,7 +173,6 @@ install( FILES
  kernel/kstyle.h
  util/kglobalsettings.h
  util/khelpclient.h
- util/kpassivepopupmessagehandler.h
  util/kimagecache.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 

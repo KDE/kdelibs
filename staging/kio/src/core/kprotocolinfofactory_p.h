@@ -23,7 +23,6 @@
 #include <QtCore/QHash>
 #include <QtCore/QString>
 #include <QtCore/QStringList>
-#include "kio/kiocore_export.h" // TODO KDE5: remove export, as soon as KProtocolManager is in kiocore
 
 class KProtocolInfoPrivate;
 
@@ -34,7 +33,7 @@ class KProtocolInfoPrivate;
  * KProtocolInfo. The factory is a singleton
  * (only one instance can exist).
  */
-class KIOCORE_EXPORT KProtocolInfoFactory
+class KProtocolInfoFactory
 {
 public:
     /**

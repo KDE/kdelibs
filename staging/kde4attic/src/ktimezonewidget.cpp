@@ -20,10 +20,10 @@
 
 #include "ktimezonewidget.h"
 
+#include <QDebug>
 #include <QtCore/QFile>
 #include <QPixmap>
 
-#include <kdebug.h>
 #include <klocale.h>
 #include <klocalizedstring.h>
 #include <ksystemtimezone.h>
@@ -210,7 +210,7 @@ void KTimeZoneWidget::setSelected( const QString &zone, bool selected )
     }
 
     if ( !found )
-        kDebug() << "No such zone: " << zone;
+        qDebug() << "No such zone: " << zone;
 }
 
 void KTimeZoneWidget::clearSelection()

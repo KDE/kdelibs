@@ -23,17 +23,16 @@
 
 #include <kconfig.h>
 #include <kcolorscheme.h>
-#include <kglobalsettings.h>
-#include <kdebug.h>
 #include <knotification.h>
 #include <kcalendarsystem.h>
 #include <klocalizeddate.h>
 #include <kstandardshortcut.h>
 #include "kdatepicker.h"
 #include "kactioncollection.h"
-#include <kdeversion.h>
 
 #include <QAction>
+#include <QDebug>
+#include <QFontDatabase>
 #include <QtCore/QDate>
 #include <QtCore/QCharRef>
 #include <QPen>
@@ -377,7 +376,7 @@ void KDateTable::paintCell( QPainter *painter, int row, int col, const KColorSch
     QString cellText;
     QPen pen;
     QColor cellBackgroundColor, cellTextColor;
-    QFont cellFont = KGlobalSettings::generalFont();
+    QFont cellFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     bool workingDay = false;
     int cellWeekDay, pos;
     BackgroundMode cellBackgroundMode = RectangleMode;
@@ -815,7 +814,7 @@ QSize KDateTable::sizeHint() const
         return QSize( qRound( d->m_maxCell.width() * d->m_numDayColumns ),
                       ( qRound( d->m_maxCell.height() + 2 ) * d->m_numWeekRows ) );
     } else {
-        kDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
+        //qDebug() << "KDateTable::sizeHint: obscure failure - " << endl;
         return QSize( -1, -1 );
     }
 }
