@@ -47,7 +47,7 @@ add_library(KNotifications ${knotifications_SRCS})
 generate_export_header(KNotifications)
 
 target_link_libraries(KNotifications LINK_PUBLIC Qt5::Widgets)
-target_link_libraries(KNotifications LINK_PRIVATE KWindowSystem Qt5::DBus)
+target_link_libraries(KNotifications LINK_PRIVATE KWindowSystem Qt5::DBus Qt5::X11Extras)
 
 if(HAVE_DBUSMENUQT)
   target_link_libraries(KNotifications ${DBusMenuQt5_LIBRARIES})
