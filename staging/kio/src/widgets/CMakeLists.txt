@@ -61,11 +61,11 @@ if(ACL_FOUND)
    target_link_libraries(KIOWidgets ${ACL_LIBS})
 endif(ACL_FOUND)
 
-set_target_properties(KIOWidgets PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                          SOVERSION ${ECM_SOVERSION}
+set_target_properties(KIOWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
+                                          SOVERSION ${KIO_SOVERSION}
 )
 
-install(TARGETS KIOWidgets EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS KIOWidgets EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
    org.kde.kio.FileUndoManager.xml

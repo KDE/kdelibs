@@ -127,11 +127,11 @@ if(ACL_FOUND)
   target_link_libraries(KIOCore ${ACL_LIBS})
 endif(ACL_FOUND)
 
-set_target_properties(KIOCore PROPERTIES VERSION ${ECM_VERSION_STRING}
-                                          SOVERSION ${ECM_SOVERSION}
+set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}
+                                       SOVERSION ${KIO_SOVERSION}
 )
 
-install(TARGETS KIOCore EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
+install(TARGETS KIOCore EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   kfileitemlistproperties.h
