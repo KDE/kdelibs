@@ -46,8 +46,15 @@ configure_file(config-knotifications.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-
 add_library(KNotifications ${knotifications_SRCS})
 generate_export_header(KNotifications)
 
-target_link_libraries(KNotifications LINK_PUBLIC Qt5::Widgets)
-target_link_libraries(KNotifications LINK_PRIVATE KWindowSystem Qt5::DBus Qt5::X11Extras)
+target_link_libraries(KNotifications LINK_PUBLIC
+   Qt5::Widgets
+)
+target_link_libraries(KNotifications LINK_PRIVATE
+   KWindowSystem
+   Qt5::DBus
+   Qt5::X11Extras
+   ${X11_LIBRARIES}
+)
 
 if(HAVE_DBUSMENUQT)
   target_link_libraries(KNotifications ${DBusMenuQt5_LIBRARIES})
