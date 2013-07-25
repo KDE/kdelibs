@@ -41,6 +41,11 @@ set(kunitconversion_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/kunitconversion_export.h
 )
 
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
+remove_definitions(-DQT_NO_KEYWORDS)
+
 add_definitions(-DKDE_DEFAULT_DEBUG_AREA=930)
 
 if(NOT KUNITCONVERSION_NO_KIO)
