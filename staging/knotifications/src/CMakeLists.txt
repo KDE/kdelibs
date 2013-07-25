@@ -13,9 +13,13 @@ include_directories(
 
 find_package(DBusMenuQt5)
 set_package_properties(DBusMenuQt5 PROPERTIES DESCRIPTION "DBusMenuQt"
-                       URL "https://launchpad.net/libdbusmenu-qt" TYPE REQUIRED
+                       URL "https://launchpad.net/libdbusmenu-qt" TYPE OPTIONAL
                        PURPOSE "Support for notification area menus via the DBusMenu protocol")
-macro_bool_to_01(DBusMenuQt5_FOUND HAVE_DBUSMENUQT)
+if (DBusMenuQt5_FOUND)
+   set(HAVE_DBUSMENUQT 1)
+else()
+   set(HAVE_DBUSMENUQT 0)
+endif()
 
 qt5_add_dbus_interface(knotifications_SRCS org.kde.KNotify.xml knotify_interface)
 
