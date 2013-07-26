@@ -21,7 +21,7 @@
 #ifndef _KSSLUI_H
 #define _KSSLUI_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <kio_ktcpsocket.h>
 
 namespace KIO {
@@ -33,9 +33,9 @@ enum RulesStorage {
     RecallAndStoreRules = 3 ///< apply stored rules and store new rules
 };
 
-bool KIO_EXPORT askIgnoreSslErrors(const KTcpSocket *socket,
+bool KIOWIDGETS_EXPORT askIgnoreSslErrors(const KTcpSocket *socket,
                                    RulesStorage storedRules = RecallAndStoreRules);
-bool KIO_EXPORT askIgnoreSslErrors(const KSslErrorUiData &uiData,
+bool KIOWIDGETS_EXPORT askIgnoreSslErrors(const KSslErrorUiData &uiData,
                                    RulesStorage storedRules = RecallAndStoreRules);
 }
 }

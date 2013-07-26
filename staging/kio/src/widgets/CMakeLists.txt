@@ -6,6 +6,7 @@ project(KIOWidgets)
 
 set(kiowidgets_SRCS
   fileundomanager.cpp
+  sslui.cpp
   kurlpixmapprovider.cpp
   pixmaploader.cpp
   thumbsequencecreator.cpp
@@ -72,6 +73,7 @@ install(FILES
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install( FILES
+  sslui.h
   pixmaploader.h
   thumbsequencecreator.h
   thumbcreator.h

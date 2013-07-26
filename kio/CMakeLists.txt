@@ -187,8 +187,6 @@ endif(NOT KIO_NO_NEPOMUK)
 qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
 set(kssl_STAT_SRCS
-  kssl/sslui.cpp
-
   kssl/ksslcertificate.cpp # TODO: remove after porting khtml/java
   kssl/ksslcertchain.cpp # TODO: remove together with ksslcertificate.cpp
   kssl/ksslutils.cpp # TODO: remove together with ksslcertificate.cpp
@@ -303,7 +301,6 @@ install(  FILES
   kio/accessmanager.h
   kio/netaccess.h
   kio/paste.h
-  kssl/sslui.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
