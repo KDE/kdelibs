@@ -49,10 +49,11 @@ target_link_libraries(KNotifications LINK_PUBLIC
 target_link_libraries(KNotifications LINK_PRIVATE
    KWindowSystem
    Qt5::DBus
-   Qt5::X11Extras
-   ${X11_LIBRARIES}
 )
 
+if(HAVE_XTEST)
+  target_link_libraries(KNotifications LINK_PRIVATE ${X11_X11_LIB} ${X11_XTest_LIB} Qt5::X11Extras)
+endif()
 if(HAVE_DBUSMENUQT)
   target_link_libraries(KNotifications ${DBusMenuQt5_LIBRARIES})
 endif()
