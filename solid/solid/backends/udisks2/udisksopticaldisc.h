@@ -52,12 +52,23 @@ public:
     virtual Solid::OpticalDisc::DiscType discType() const;
     virtual Solid::OpticalDisc::ContentTypes availableContent() const;
 
-private Q_SLOTS:
-    void slotDrivePropertiesChanged(const QString & ifaceName, const QVariantMap & changedProps, const QStringList & invalidatedProps);
+    class Identity
+    {
+    public:
+        Identity();
+        Identity(const Device &device, const Device &drive);
+        bool operator ==(const Identity &) const;
+
+    private:
+        long long m_detectTime;
+        long long m_size;
+        uint m_labelHash;
+    };
 
 private:
+
+    mutable Identity m_identity;
     QString media() const;
-    mutable bool m_needsReprobe;
     mutable Solid::OpticalDisc::ContentTypes m_cachedContent;
     Device * m_drive;
     UdevQt::Device m_udevDevice;
