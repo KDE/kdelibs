@@ -134,8 +134,6 @@ set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}
 install(TARGETS KIOCore EXPORT KIOTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
-  kfileitemlistproperties.h
-  kemailsettings.h
   tcpslavebase.h
   directorysizejob.h
   forwardingslavebase.h
@@ -172,10 +170,12 @@ install(FILES
   kacl.h
   kauthorized.h
   kcoredirlister.h
+  kemailsettings.h
   kremoteencoding.h
   kdiskfreespaceinfo.h
   kdirnotify.h
   kfileitem.h
+  kfileitemlistproperties.h
   kmountpoint.h
   knfsshare.h
   ksambashare.h
