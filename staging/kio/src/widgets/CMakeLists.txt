@@ -72,23 +72,26 @@ install(FILES
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install( FILES
-  kurlpixmapprovider.h
   pixmaploader.h
   thumbsequencecreator.h
   thumbcreator.h
-  kshellcompletion.h
-  kurlcompletion.h
-  kurifilter.h
   previewjob.h
   renamedialog.h
-  ksslcertificatebox.h
-  ksslinfodialog.h
   skipdialog.h
   jobuidelegate.h
   fileundomanager.h
-  kdirlister.h
-  kdirmodel.h
 
    ${CMAKE_CURRENT_BINARY_DIR}/kiowidgets_export.h
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
+
+install( FILES
+  kurlpixmapprovider.h
+  ksslcertificatebox.h
+  ksslinfodialog.h
+  kdirlister.h
+  kdirmodel.h
+  kshellcompletion.h
+  kurlcompletion.h
+  kurifilter.h
+   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)
 
