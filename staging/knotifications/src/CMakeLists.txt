@@ -55,7 +55,7 @@ if(HAVE_XTEST)
   target_link_libraries(KNotifications LINK_PRIVATE ${X11_X11_LIB} ${X11_XTest_LIB} Qt5::X11Extras)
 endif()
 if(HAVE_DBUSMENUQT)
-  target_link_libraries(KNotifications ${DBusMenuQt5_LIBRARIES})
+  target_link_libraries(KNotifications LINK_PRIVATE ${DBusMenuQt5_LIBRARIES})
 endif()
 
 set_target_properties(KNotifications PROPERTIES VERSION   ${KNOTIFICATIONS_VERSION_STRING}
