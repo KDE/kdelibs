@@ -15,17 +15,24 @@ set(sonnetcore_HEADERS
     backgroundchecker.h
     speller.h
     globals.h
-    ${CMAKE_CURRENT_BINARY_DIR}/sonnet/sonnetcore_export.h
+    ${CMAKE_CURRENT_BINARY_DIR}/sonnetcore_export.h
 )
 
 
 add_library(SonnetCore ${sonnetcore_SRCS})
-generate_export_header(SonnetCore EXPORT_FILE_NAME sonnet/sonnetcore_export.h)
+generate_export_header(SonnetCore EXPORT_FILE_NAME sonnetcore_export.h)
 
 target_link_libraries(SonnetCore LINK_PUBLIC Qt5::Core)
 
 set_target_properties(SonnetCore PROPERTIES VERSION ${SONNET_VERSION_STRING}
                                           SOVERSION ${SONNET_SOVERSION}
+)
+
+target_include_directories(SonnetCore PUBLIC
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>" # needed?
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>" # needed?
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>"
+  "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/../include>" # sonnet/*.h
 )
 
 install(TARGETS SonnetCore EXPORT SonnetTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
