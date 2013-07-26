@@ -160,7 +160,6 @@ install( FILES
   scheduler.h
   jobclasses.h
   authinfo.h
-  http.h
   davjob.h
   ${CMAKE_CURRENT_BINARY_DIR}/kiocore_export.h
 

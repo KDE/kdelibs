@@ -140,8 +140,6 @@ install(TARGETS KDE4Support
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
-    kdecore/kkernel_mac.h
-    kdecore/kkernel_win.h
     kdecore/klibloader.h
     kdecore/ktemporaryfile.h
     kdecore/ktempdir.h
@@ -186,6 +184,7 @@ install(FILES
     kdeui/khuesaturationselect.h
     kdeui/ksessionmanager.h
     kdeui/kfadewidgeteffect.h
+    kdeui/kfontcombobox.h
     kdeui/kfontdialog.h
     kdeui/kicon.h
     kdeui/kinputdialog.h

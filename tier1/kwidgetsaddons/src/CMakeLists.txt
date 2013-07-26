@@ -94,6 +94,7 @@ install(FILES
   kactionmenu.h
   ktoolbarlabelaction.h
   ktoolbarpopupaction.h
+  ktoolbarspaceraction.h
   kpagedialog.h
   kpagedialog_p.h
   kpagemodel.h

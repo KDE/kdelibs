@@ -138,7 +138,6 @@ install(FILES
   kxmlguifactory.h
   kxmlguiwindow.h
   kundoactions.h
-  kcheckaccelerators.h
   ${CMAKE_CURRENT_BINARY_DIR}/xmlgui_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -116,9 +116,7 @@ install(FILES
     io/kbackup.h
     io/kurlmimedata.h
     jobs/kcompositejob.h
-    jobs/kcompositejob_p.h
     jobs/kjob.h
-    jobs/kjob_p.h
     jobs/kjobtrackerinterface.h
     jobs/kjobuidelegate.h
     randomness/krandom.h
