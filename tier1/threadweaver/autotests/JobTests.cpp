@@ -247,8 +247,7 @@ void JobTests::CollectionDependenciesTest()
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY(collection->isFinished());
     QVERIFY(result.startsWith(jobC->character()));
-    qApp->processEvents();
-    QCOMPARE(collectionStartedSignalSpy.count(), 1);
+    QTRY_COMPARE(collectionStartedSignalSpy.count(), 1);
     QVERIFY(ThreadWeaver::Weaver::instance()->isIdle());
 }
 
