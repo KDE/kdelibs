@@ -30,6 +30,7 @@ int main( int argc, char *argv[] )
     QApplication a(argc, argv);
 
 	KNewPasswordDialog dlg;
+    dlg.setPasswordStrengthWarningLevel(30);
     dlg.setPrompt(i18n("Enter a password for the test"));
 
     if( dlg.exec() )

@@ -40,9 +40,11 @@ set(kwidgetsaddons_SRCS
   kpagewidgetmodel.cpp
   kassistantdialog.cpp
   kmessagewidget.cpp
+  knewpassworddialog.cpp
 )
 
 set(kwidgetsaddon_UI
+   knewpassworddialog.ui
    kpassworddialog.ui
 )
 
@@ -103,6 +105,7 @@ install(FILES
   kpagewidgetmodel.h
   kassistantdialog.h
   kmessagewidget.h
+  knewpassworddialog.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

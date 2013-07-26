@@ -18,7 +18,6 @@ add_subdirectory( sonnet/tests )
 set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  colors/kcolorbutton.cpp
- dialogs/knewpassworddialog.cpp
  kernel/kstyle.cpp
  util/kglobalsettings.cpp
  util/khelpclient.cpp
@@ -26,10 +25,6 @@ set(kdeui_LIB_SRCS
  widgets/kdeuiwidgetsproxystyle.cpp
 )
 
-
-set( kdeui_UI
-   dialogs/knewpassworddialog.ui
-   )
 
 kde4_add_ui_files(kdeui_LIB_SRCS ${kdeui_UI} )
 
@@ -142,7 +137,6 @@ install( FILES
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  colors/kcolorbutton.h
- dialogs/knewpassworddialog.h
  kernel/kstyle.h
  util/kglobalsettings.h
  util/khelpclient.h
