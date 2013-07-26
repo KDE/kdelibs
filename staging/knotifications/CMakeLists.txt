@@ -8,7 +8,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${ECM_MODULE_PATH})
 
 find_package(KF5 5.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets X11Extras)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets)
 
 
 include(FeatureSummary)

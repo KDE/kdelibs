@@ -51,9 +51,15 @@ target_link_libraries(KNotifications LINK_PRIVATE
    Qt5::DBus
 )
 
-if(HAVE_XTEST)
-  target_link_libraries(KNotifications LINK_PRIVATE ${X11_X11_LIB} ${X11_XTest_LIB} Qt5::X11Extras)
+if(X11_FOUND)
+   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+   target_link_libraries(KNotifications LINK_PRIVATE ${X11_X11_LIB} Qt5::X11Extras)
 endif()
+
+if(X11_XTest_FOUND)
+  target_link_libraries(KNotifications LINK_PRIVATE ${X11_XTest_LIB})
+endif(X11_XTest_FOUND)
+
 if(HAVE_DBUSMENUQT)
   target_link_libraries(KNotifications LINK_PRIVATE ${DBusMenuQt5_LIBRARIES})
 endif()
