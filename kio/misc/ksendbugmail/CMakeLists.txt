@@ -1,6 +1,6 @@
 include_directories(
    ${CMAKE_SOURCE_DIR}/staging/kio/src/core # kemailsettings.h
-   ${CMAKE_BINARY_DIR}/staging/kio/src/core # kio_export.h
+   ${CMAKE_BINARY_DIR}/staging/kio/src/include # kio/kio_export.h
 )
 
 set(ksendbugmail_SRCS
