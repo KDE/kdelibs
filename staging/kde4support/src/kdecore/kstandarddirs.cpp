@@ -1961,7 +1961,7 @@ static QStringList lookupProfiles(const QString &mapFile)
     return profiles;
 }
 
-extern KSERVICE_EXPORT bool kde_kiosk_admin;
+extern KDECORE_EXPORT bool kde_kiosk_admin;
 
 bool KStandardDirs::addCustomized(KConfig *config)
 {
