@@ -27,29 +27,17 @@
 
 #include "file.h"
 
-#include <config-kioslave-file.h>
-
 #include <QtCore/QFile>
 #include <qurlpathinfo.h>
 #include <QtCore/QDir>
 #include <qplatformdefs.h>
 
-#include <kde_file.h>
 #include <kdebug.h>
 #include <kconfiggroup.h>
 #include <kmountpoint.h>
 
-#include <dirent.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <grp.h>
 #include <utime.h>
-#include <pwd.h>
-#include <stdlib.h>
-
-#if HAVE_LIMITS_H
-#include <limits.h>  // PATH_MAX
-#endif
 
 //sendfile has different semantics in different platforms
 #if defined HAVE_SENDFILE && defined Q_OS_LINUX
@@ -371,8 +359,8 @@ void FileProtocol::listDir( const QUrl& url)
 #ifndef HAVE_DIRENT_D_TYPE
     QT_STATBUF st;
 #endif
-    KDE_struct_dirent *ep;
-    while ((ep = KDE_readdir(dp)) != 0 ) {
+    QT_DIRENT *ep;
+    while ((ep = QT_READDIR(dp)) != 0 ) {
         entry.clear();
 
         const QString filename = QFile::decodeName(ep->d_name);
@@ -467,8 +455,7 @@ void FileProtocol::rename( const QUrl &srcUrl, const QUrl &destUrl,
         }
     }
 
-    if ( KDE_rename( _src.data(), _dest.data()))
-    {
+    if (::rename( _src.data(), _dest.data())) {
         if (( errno == EACCES ) || (errno == EPERM)) {
             error(KIO::ERR_ACCESS_DENIED, dest);
         }
