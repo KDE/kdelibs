@@ -63,9 +63,6 @@ set(kdecore_LIB_SRCS
    io/kdebug.cpp
    io/kdebugdbusiface.cpp
    io/kprocess.cpp
-
-   kernel/k4aboutdata.cpp
-   kernel/kcomponentdata.cpp
 )
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
@@ -160,9 +157,6 @@ install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdecore_export.h
    io/kdebug.h
    io/kprocess.h
-
-   kernel/k4aboutdata.h
-   kernel/kcomponentdata.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

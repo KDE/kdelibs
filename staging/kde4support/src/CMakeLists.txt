@@ -7,6 +7,8 @@ else ()
 endif ()
 
 set(libkde4support_SRCS
+    kdecore/k4aboutdata.cpp
+    kdecore/kcomponentdata.cpp
     kdecore/kkernel_mac.cpp
     kdecore/kkernel_win.cpp
     kdecore/klibloader.cpp
@@ -140,6 +142,8 @@ install(TARGETS KDE4Support
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+    kdecore/k4aboutdata.h
+    kdecore/kcomponentdata.h
     kdecore/klibloader.h
     kdecore/ktemporaryfile.h
     kdecore/ktempdir.h
