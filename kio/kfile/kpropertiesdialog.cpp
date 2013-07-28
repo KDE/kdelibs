@@ -251,7 +251,7 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _url,
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-    setWindowTitle(i18n("Properties for %1", KIO::decodeFileName(QUrlPathInfo(_url).fileName())));
+    setWindowTitle(i18n("Properties for %1", KIO::decodeFileName(_url.fileName())));
 
     d->m_singleUrl = _url;
 
@@ -267,7 +267,7 @@ KPropertiesDialog::KPropertiesDialog (const QUrl& _tempUrl, const QUrl& _current
                                       QWidget* parent)
     : KPageDialog(parent), d(new KPropertiesDialogPrivate(this))
 {
-    setWindowTitle(i18n("Properties for %1", KIO::decodeFileName(QUrlPathInfo(_tempUrl).fileName())));
+    setWindowTitle(i18n("Properties for %1", KIO::decodeFileName(_tempUrl.fileName())));
 
     d->m_singleUrl = _tempUrl;
     d->m_defaultName = _defaultName;

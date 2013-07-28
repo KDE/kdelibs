@@ -383,7 +383,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             path = QUrl(val);
                         }
 
-                        hstr += fixUpfromUnicode(codec, "; filename=\"" + QUrlPathInfo(path).fileName() + "\"");
+                        hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if (path.isValid()) {
                             fileUploads << path.toDisplayString(QUrl::PreferLocalFile);
                             QMimeDatabase db;

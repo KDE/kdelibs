@@ -443,7 +443,7 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
     if ( !suggestedFileName.isEmpty() )
         name = suggestedFileName;
     else
-        name = QUrlPathInfo(url).fileName(); // can be empty, e.g. in case http://www.kde.org/
+        name = url.fileName(); // can be empty, e.g. in case http://www.kde.org/
 
     dlg->setSelection(name);
     if ( dlg->exec() )

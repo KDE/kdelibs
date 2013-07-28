@@ -2448,7 +2448,7 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
             }
 
             if (entry.isDir() && !entry.isLink()) {
-                const QString filename = QUrlPathInfo(itemURL).fileName();
+                const QString filename = itemURL.fileName();
                 QString displayName = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
                 if (displayName.isEmpty())
                     displayName = filename;

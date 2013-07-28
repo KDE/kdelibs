@@ -107,7 +107,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
         return;
 
     const QString path = recentDocumentDirectory();
-    const QString fileName = QUrlPathInfo(url).fileName();
+    const QString fileName = url.fileName();
     // don't create a file called ".desktop", it will lead to an empty name in kio_recentdocuments
     const QString dStr = fileName.isEmpty() ? QString("unnamed") : fileName;
 
@@ -149,7 +149,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     conf.writePathEntry( "URL", openStr );
     // If you change the line below, change the test in the above loop
     conf.writeEntry( "X-KDE-LastOpenedWith", desktopEntryName );
-    conf.writeEntry( "Name", QUrlPathInfo(url).fileName() );
+    conf.writeEntry( "Name", url.fileName() );
     conf.writeEntry( "Icon", KIO::iconNameForUrl( url ) );
 }
 

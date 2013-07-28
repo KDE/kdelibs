@@ -78,7 +78,7 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const QUrl& destD
             QList<QUrl> newUrls;
             Q_FOREACH(const QUrl& url, urls) {
                 QUrlPathInfo dUrlInfo(destDir);
-                dUrlInfo.addPath(QUrlPathInfo(url).fileName());
+                dUrlInfo.addPath(url.fileName());
                 newUrls.append(dUrlInfo.url());
             }
 

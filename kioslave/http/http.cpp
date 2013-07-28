@@ -698,7 +698,7 @@ void HTTPProtocol::stat(const QUrl& url)
 
     // When downloading we assume it exists
     UDSEntry entry;
-    entry.insert( KIO::UDSEntry::UDS_NAME, QUrlPathInfo(url).fileName() );
+    entry.insert( KIO::UDSEntry::UDS_NAME, url.fileName() );
     entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG ); // a file
     entry.insert( KIO::UDSEntry::UDS_ACCESS, S_IRUSR | S_IRGRP | S_IROTH ); // readable by everybody
 

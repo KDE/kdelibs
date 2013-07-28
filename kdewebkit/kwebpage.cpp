@@ -116,7 +116,7 @@ static void extractMimeType(const QNetworkReply* reply, QString& mimeType)
 static bool downloadResource (const QUrl& srcUrl, const QString& suggestedName = QString(),
                               QWidget* parent = 0, const KIO::MetaData& metaData = KIO::MetaData())
 {
-    const QString fileName = suggestedName.isEmpty() ? QUrlPathInfo(srcUrl).fileName() : suggestedName;
+    const QString fileName = suggestedName.isEmpty() ? srcUrl.fileName() : suggestedName;
     // convert filename to URL using fromPath to avoid trouble with ':' in filenames (#184202)
     QUrl destUrl = QUrl::fromLocalFile(QFileDialog::getSaveFileName(parent, QString(), fileName));
     if (!destUrl.isValid())
@@ -520,7 +520,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                 // Handle Post operations that return content...
                 if (reply->operation() == QNetworkAccessManager::PostOperation) {
                     d->mimeType = mimeType;
-                    QFileInfo finfo (suggestedFileName.isEmpty() ? QUrlPathInfo(replyUrl).fileName() : suggestedFileName);
+                    QFileInfo finfo (suggestedFileName.isEmpty() ? replyUrl.fileName() : suggestedFileName);
                     QTemporaryFile tempFile(QDir::tempPath() + QLatin1String("/kwebpage_XXXXXX.") + finfo.suffix());
                     tempFile.setAutoRemove(false);
                     tempFile.open();

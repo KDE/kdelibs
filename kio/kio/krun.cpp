@@ -351,7 +351,7 @@ KRunMX2::subst(int option, const QUrl &url, QStringList &ret)
         ret << QDir::toNativeSeparators(url.toLocalFile());
         break;
     case 'n':
-        ret << QUrlPathInfo(url).fileName();
+        ret << url.fileName();
         break;
     case 'v':
         if (url.isLocalFile() && QFile::exists(url.toLocalFile())) {

@@ -82,7 +82,7 @@ public:
             readUDSEntry( urlIsDirectory );
         } else {
             Q_ASSERT(!urlIsDirectory);
-            m_strName = QUrlPathInfo(itemOrDirUrl).fileName();
+            m_strName = itemOrDirUrl.fileName();
             m_strText = KIO::decodeFileName( m_strName );
         }
         init();
@@ -593,7 +593,7 @@ void KFileItem::setUrl( const QUrl &url )
     }
 
     d->m_url = url;
-    setName(QUrlPathInfo(url).fileName());
+    setName(url.fileName());
 }
 
 void KFileItem::setName( const QString& name )
@@ -1152,7 +1152,7 @@ bool KFileItem::isHidden() const
         return d->m_hidden == KFileItemPrivate::Hidden;
 
     // Prefer the filename that is part of the URL, in case the display name is different.
-    QString fileName = QUrlPathInfo(d->m_url).fileName();
+    QString fileName = d->m_url.fileName();
     if (fileName.isEmpty()) // e.g. "trash:/"
         fileName = d->m_strName;
     return fileName.length() > 1 && fileName[0] == '.';  // Just "." is current directory, not hidden.

@@ -184,7 +184,7 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
         return;
     }
 
-    QString fileName(QUrlPathInfo(source).fileName());
+    QString fileName(source.fileName());
     QTemporaryFile tempFile(QDir::tempPath() + "/XXXXXX-" + fileName);
     if (!tempFile.open())
         return; // ERROR
@@ -468,7 +468,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             QUrl source = QUrl(entry.payload());
             kDebug() << "installing non-archive from " << source.url();
             QString installfile;
-            QString ext = QUrlPathInfo(source).fileName().section('.', -1);
+            QString ext = source.fileName().section('.', -1);
             if (customName) {
                 installfile = entry.name();
                 installfile += '-' + entry.version();
@@ -484,7 +484,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                         installfile = installfile.mid(lastSlash);
                 }
                 if (installfile.isEmpty()) {
-                    installfile = QUrlPathInfo(source).fileName();
+                    installfile = source.fileName();
                 }
             }
             installpath = installdir + '/' + installfile;

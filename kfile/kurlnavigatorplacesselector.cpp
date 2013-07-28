@@ -188,7 +188,7 @@ void KUrlNavigatorPlacesSelector::dropEvent(QDropEvent* event)
     foreach(const QUrl &url, urlList) {
         QMimeType mimetype = db.mimeTypeForUrl(url);
         if (mimetype.inherits("inode/directory")) {
-            m_placesModel->addPlace(QUrlPathInfo(url).fileName(), url);
+            m_placesModel->addPlace(url.fileName(), url);
         }
     }
 }

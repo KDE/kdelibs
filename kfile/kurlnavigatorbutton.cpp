@@ -93,7 +93,7 @@ void KUrlNavigatorButton::setUrl(const QUrl& url)
                 this, SLOT(statFinished(KJob*)));
         emit startedTextResolving();
     } else {
-        setText(QUrlPathInfo(m_url).fileName().replace('&', "&&"));
+        setText(m_url.fileName().replace('&', "&&"));
     }
 }
 
@@ -460,7 +460,7 @@ void KUrlNavigatorButton::statFinished(KJob* job)
         const KIO::UDSEntry entry = static_cast<KIO::StatJob*>(job)->statResult();
         QString name = entry.stringValue(KIO::UDSEntry::UDS_DISPLAY_NAME);
         if (name.isEmpty()) {
-            name = QUrlPathInfo(m_url).fileName();
+            name = m_url.fileName();
         }
         setText(name);
 
@@ -531,7 +531,7 @@ void KUrlNavigatorButton::replaceButton(KJob* job)
     qSort(m_subDirs.begin(), m_subDirs.end(), naturalLessThan);
 
     // Get index of the directory that is shown currently in the button
-    const QString currentDir = QUrlPathInfo(m_url).fileName();
+    const QString currentDir = m_url.fileName();
     int currentIndex = 0;
     const int subDirsCount = m_subDirs.count();
     while (currentIndex < subDirsCount) {

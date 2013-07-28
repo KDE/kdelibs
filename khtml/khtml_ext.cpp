@@ -572,7 +572,7 @@ KHTMLPopupGUIClient::KHTMLPopupGUIClient( KHTMLPart *khtml, const QUrl &url )
         }
 
         QString actionText = d->m_suggestedFilename.isEmpty() ?
-                                   KStringHandler::csqueeze(QUrlPathInfo(d->m_imageURL).fileName()+d->m_imageURL.query(), 25)
+                                   KStringHandler::csqueeze(d->m_imageURL.fileName()+d->m_imageURL.query(), 25)
                                    : d->m_suggestedFilename;
         action = new QAction( i18n("View Image (%1)", actionText.replace("&", "&&")), this );
         d->m_actionCollection->addAction( "viewimage", action );

@@ -1236,7 +1236,7 @@ void KFileWidgetPrivate::setLocationText(const QUrl& url)
                 q->setUrl(url, false);
             }
         }
-        setDummyHistoryEntry(QUrlPathInfo(url).fileName(), mimeTypeIcon);
+        setDummyHistoryEntry(url.fileName(), mimeTypeIcon);
     } else {
         removeDummyHistoryEntry();
     }

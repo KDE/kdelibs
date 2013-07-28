@@ -612,7 +612,7 @@ void ReadOnlyPartPrivate::openRemoteFile()
     Q_Q(ReadOnlyPart);
     m_bTemp = true;
     // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
-    QString fileName = QUrlPathInfo(m_url).fileName();
+    QString fileName = m_url.fileName();
     QFileInfo fileInfo(fileName);
     QString ext = fileInfo.completeSuffix();
     QString extension;
