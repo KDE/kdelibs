@@ -234,8 +234,10 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
     }
 
     for (;;) {
-        QUrlPathInfo pathInfo(nodeUrl);
-        const QString nodePath = pathInfo.path(QUrlPathInfo::AppendTrailingSlash);
+        QString nodePath = nodeUrl.path();
+        if (!nodePath.endsWith('/')) {
+            nodePath += '/';
+        }
         if(!pathStr.startsWith(nodePath)) {
             qWarning() << "The kioslave for" << url.scheme() << "violates the hierarchy structure:"
                          << "I arrived at node" << nodePath << ", but" << pathStr << "does not start with that path.";
@@ -245,8 +247,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
         // E.g. pathStr is /a/b/c and nodePath is /a/. We want to find the node with url /a/b
         const int nextSlash = pathStr.indexOf('/', nodePath.length());
         const QString newPath = pathStr.left(nextSlash); // works even if nextSlash==-1
-        pathInfo.setPath(newPath);
-        nodeUrl = pathInfo.url();
+        nodeUrl.setPath(newPath);
         nodeUrl = nodeUrl.adjusted(QUrl::StripTrailingSlash); // #172508
         KDirModelNode* node = nodeForUrl(nodeUrl);
         if (!node) {

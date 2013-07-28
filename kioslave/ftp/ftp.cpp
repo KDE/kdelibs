@@ -1417,7 +1417,7 @@ void Ftp::stat(const QUrl &url)
   if (!isDir)
   {
     // It is a file or it doesn't exist, try going to parent directory
-    parentDir = tempurlInfo.directory(QUrlPathInfo::AppendTrailingSlash);
+    parentDir = tempurl.adjusted(QUrl::RemoveFilename).path();
     // With files we can do "LIST <filename>" to avoid listing the whole dir
     listarg = filename;
   }

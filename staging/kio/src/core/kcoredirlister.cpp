@@ -1085,7 +1085,10 @@ void KCoreDirListerCache::handleDirDirty(const QUrl& url)
     // A dir: launch an update job if anyone cares about it
 
     // This also means we can forget about pending updates to individual files in that dir
-    const QString dirPath = QUrlPathInfo(url).localPath(QUrlPathInfo::AppendTrailingSlash);
+    QString dirPath = url.toLocalFile();
+    if (!dirPath.endsWith('/')) {
+        dirPath += '/';
+    }
     QMutableSetIterator<QString> pendingIt(pendingUpdates);
     while (pendingIt.hasNext()) {
         const QString updPath = pendingIt.next();

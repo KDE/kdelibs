@@ -389,8 +389,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
                              u.toLocalFile());
 
     QUrl docPath = QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    if ( (QUrlPathInfo(u).path(QUrlPathInfo::AppendTrailingSlash) !=
-                QUrlPathInfo(docPath).path(QUrlPathInfo::AppendTrailingSlash)) &&
+    if (u.adjusted(QUrl::StripTrailingSlash) != docPath.adjusted(QUrl::StripTrailingSlash) &&
           QDir(docPath.toLocalFile()).exists() )
     {
         pathCombo->addDefaultUrl(docPath,
@@ -919,9 +918,8 @@ void KFileWidget::slotOk()
                         pathInfo.setFileName(QString());
                         url = pathInfo.url();
                     } else {
-                        QUrlPathInfo pathInfo(url);
-                        pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-                        url = pathInfo.url();
+                        if (!url.path().endsWith('/'))
+                            url.setPath(url.path() + '/');
                     }
                 }
             } else {
@@ -1483,11 +1481,12 @@ void KFileWidgetPrivate::_k_enterUrl(const QUrl& url)
 {
 //     kDebug(kfile_area);
 
-    QUrlPathInfo pathInfo( url );
     // append '/' if needed: url combo does not add it
     // tokenize() expects it because uses KUrl::setFileName()
-    pathInfo.adjustPath( QUrlPathInfo::AppendTrailingSlash );
-    q->setUrl( pathInfo.url() );
+    QUrl u(url);
+    if (!u.path().endsWith('/'))
+        u.setPath(u.path() + '/');
+    q->setUrl(u);
     if (!locationEdit->hasFocus())
         ops->setFocus();
 }
@@ -1550,10 +1549,12 @@ void KFileWidgetPrivate::_k_slotLoadingFinished()
     }
 
     ops->blockSignals(true);
-    QUrlPathInfo pathInfo(ops->url());
-    pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-    pathInfo.setFileName(locationEdit->currentText());
-    ops->setCurrentItem(pathInfo.url());
+    QUrl u(ops->url());
+    QString path = ops->url().path();
+    if (!path.endsWith('/'))
+        path += '/';
+    u.setPath(path + locationEdit->currentText());
+    ops->setCurrentItem(u);
     ops->blockSignals(false);
 }
 
@@ -1658,8 +1659,11 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
 //     kDebug(kfile_area);
 
     QList<QUrl> urls;
-    QUrlPathInfo u( ops->url() );
-    u.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+    QUrl url(ops->url());
+    if (!url.path().endsWith(QLatin1Char('/'))) {
+        url.setPath(url.path() + QLatin1Char('/'));
+    }
+    QUrlPathInfo u(url);
     QString name;
 
     const int count = line.count( QLatin1Char( '"' ) );
@@ -2662,12 +2666,12 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
     {
         if (lastDirectory()->isEmpty()) {
             lastDirectory()->setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-            const QUrlPathInfo home(QUrl::fromLocalFile(QDir::homePath()));
+            const QUrl home(QUrl::fromLocalFile(QDir::homePath()));
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory or when the document dir
             // does not exist
-            if (QUrlPathInfo(*lastDirectory()).path(QUrlPathInfo::AppendTrailingSlash) == home.path(QUrlPathInfo::AppendTrailingSlash) ||
+            if (lastDirectory()->adjusted(QUrl::StripTrailingSlash) == home.adjusted(QUrl::StripTrailingSlash) ||
                  QDir::currentPath() != QDir::homePath() ||
                  !QDir(lastDirectory()->toLocalFile()).exists() )
                 *lastDirectory() = QUrl::fromLocalFile(QDir::currentPath());

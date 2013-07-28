@@ -818,7 +818,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             // Extract the full name, but without file: for local files
             path = properties->url().toDisplayString(QUrl::PreferLocalFile);
         } else {
-            path = QUrlPathInfo(properties->currentDir()).path(QUrlPathInfo::AppendTrailingSlash) + properties->defaultName();
+            path = properties->currentDir().path() + '/' + properties->defaultName();
             directory = properties->currentDir().toDisplayString(QUrl::PreferLocalFile);
         }
 

@@ -55,8 +55,7 @@ class KDEQT5STAGING_EXPORT QUrlPathInfo
 public:
     enum PathFormattingOption {
         None = 0x0,
-        StripTrailingSlash = 0x200, // compatible with QUrl
-        AppendTrailingSlash = 0x400
+        StripTrailingSlash = 0x200 // compatible with QUrl
     };
     Q_DECLARE_FLAGS(PathFormattingOptions, PathFormattingOption)
 
@@ -104,7 +103,7 @@ public:
     QString fileName() const;
     void setFileName(const QString &name);
 
-    QString directory(PathFormattingOptions options = None) const;
+    QString directory() const;
 
 private:
     QSharedDataPointer<QUrlPathInfoPrivate> d;

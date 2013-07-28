@@ -92,7 +92,6 @@ void tst_QUrlPathInfo::directoryAndFileName()
     QVERIFY(url.isValid());
     const QUrlPathInfo info(url);
     QCOMPARE(info.directory(), expectedDirectory);
-    QCOMPARE(info.directory(QUrlPathInfo::AppendTrailingSlash), expectedDirectoryTrailingSlash);
     QCOMPARE(info.fileName(), expectedFileName);
 }
 
@@ -147,7 +146,6 @@ void tst_QUrlPathInfo::path()
     const QUrlPathInfo info(url);
     QCOMPARE(info.path(), expectedPath);
     QCOMPARE(info.path(QUrlPathInfo::StripTrailingSlash), expectedPathNoSlash);
-    QCOMPARE(info.path(QUrlPathInfo::AppendTrailingSlash), expectedPathWithSlash);
 }
 
 
@@ -197,11 +195,8 @@ void tst_QUrlPathInfo::adjustPath()
     // Go via QUrlPathInfo::path in order to get decoded paths
     QCOMPARE(QUrlPathInfo(info.url()).path(), expectedPath);
     QCOMPARE(QUrlPathInfo(info.url(QUrlPathInfo::StripTrailingSlash)).path(), expectedPathNoSlash);
-    QCOMPARE(QUrlPathInfo(info.url(QUrlPathInfo::AppendTrailingSlash)).path(), expectedPathWithSlash);
     info.adjustPath(QUrlPathInfo::StripTrailingSlash);
     QCOMPARE(info.path(), expectedPathNoSlash);
-    info.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-    QCOMPARE(info.path(), expectedPathWithSlash);
 }
 
 void tst_QUrlPathInfo::equals_data()

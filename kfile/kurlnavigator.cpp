@@ -664,9 +664,8 @@ void KUrlNavigator::Private::updateButtonVisibility()
         m_dropDownButton->show();
     } else {
         // Check whether going upwards is possible. If this is the case, show the drop-down button.
-        QUrlPathInfo pathInfo(m_navButtons.front()->url());
-        pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-        QUrl url(pathInfo.url());
+        QUrl url(m_navButtons.front()->url());
+        // TODO use url.matches(KIO::upUrl(url), QUrl::StripTrailingSlash)
         const bool visible = !QUrlPathInfo(url).equals(KIO::upUrl(url)) && (url.scheme() != "nepomuksearch");
         m_dropDownButton->setVisible(visible);
     }
@@ -874,12 +873,9 @@ bool KUrlNavigator::goForward()
 
 bool KUrlNavigator::goUp()
 {
-    QUrlPathInfo path(locationUrl());
-    path.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-
-    const QUrl currentUrl = path.url();
+    const QUrl currentUrl = locationUrl();
     const QUrl upUrl = KIO::upUrl(currentUrl);
-    if (upUrl != currentUrl) {
+    if (upUrl != currentUrl) { // TODO use url.matches(KIO::upUrl(url), QUrl::StripTrailingSlash)
         setLocationUrl(upUrl);
         return true;
     }

@@ -916,19 +916,23 @@ void CopyJobPrivate::renameDirectory(QList<CopyInfo>::iterator it, const QUrl& n
     Q_Q(CopyJob);
     emit q->renamed(q, (*it).uDest, newUrl); // for e.g. KPropertiesDialog
 
-    const QUrlPathInfo destInfo((*it).uDest);
-    const QString oldPath = destInfo.path(QUrlPathInfo::AppendTrailingSlash);
+    QString oldPath = (*it).uDest.path();
+    if (!oldPath.endsWith('/')) {
+        oldPath += '/';
+    }
 
-    const QUrlPathInfo newUrlInfo(newUrl);
     // Change the current one and strip the trailing '/'
-    (*it).uDest.setPath(newUrlInfo.path(QUrlPathInfo::StripTrailingSlash), QUrl::DecodedMode);
+    (*it).uDest = newUrl.adjusted(QUrl::StripTrailingSlash);
 
-    const QString newPath = newUrlInfo.path(QUrlPathInfo::AppendTrailingSlash); // With trailing slash
+    QString newPath = newUrl.path(); // With trailing slash
+    if (!newPath.endsWith('/')) {
+        newPath += '/';
+    }
     QList<CopyInfo>::Iterator renamedirit = it;
     ++renamedirit;
     // Change the name of subdirectories inside the directory
     for(; renamedirit != dirs.end() ; ++renamedirit) {
-        QString path = (*renamedirit).uDest.path(QUrl::FullyDecoded);
+        QString path = (*renamedirit).uDest.path();
         if (path.startsWith(oldPath)) {
             QString n = path;
             n.replace(0, oldPath.length(), newPath);
@@ -975,7 +979,11 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
             // Should we skip automatically ?
             if ( m_bAutoSkipDirs ) {
                 // We don't want to copy files in this directory, so we put it on the skip list
-                m_skipList.append(QUrlPathInfo(oldURL).path(QUrlPathInfo::AppendTrailingSlash));
+                QString path = oldURL.path();
+                if (!path.endsWith('/')) {
+                    path += '/';
+                }
+                m_skipList.append(path);
                 skip(oldURL, true);
                 dirs.erase( it ); // Move on to next dir
             } else {
@@ -1354,7 +1362,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         } else {
             if ( (*it).uSource == (*it).uDest  ||
                  ((*it).uSource.scheme() == (*it).uDest.scheme() &&
-                   sourceInfo.path(QUrlPathInfo::StripTrailingSlash) == linkDest))
+                   (*it).uSource.adjusted(QUrl::StripTrailingSlash).path() == linkDest))
                 mode = M_OVERWRITE_ITSELF;
             else
                 mode = M_OVERWRITE;
