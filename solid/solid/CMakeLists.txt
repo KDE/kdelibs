@@ -367,7 +367,7 @@ if(WIN32)
       endif(HAVE_WBEM AND WBEM_LIBRARIES)
    endif(WITH_SOLID_WMI)
    if(WITH_SOLID_WMI)
-       add_definitions(-WITH_SOLID_WMI)
+       add_definitions(-DWITH_SOLID_WMI)
        message(STATUS "-- Building Solid WMI backend." )
 
        set(solid_LIB_SRCS ${solid_LIB_SRCS}
