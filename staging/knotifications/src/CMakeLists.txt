@@ -13,13 +13,10 @@ set_package_properties(DBusMenuQt5 PROPERTIES DESCRIPTION "DBusMenuQt"
                        PURPOSE "Support for notification area menus via the DBusMenu protocol")
 if (DBusMenuQt5_FOUND)
    set(HAVE_DBUSMENUQT 1)
+   include_directories(${DBusMenuQt5_INCLUDE_DIRS})
 else()
    set(HAVE_DBUSMENUQT 0)
 endif()
-
-include_directories(
- ${DBusMenuQt5_INCLUDE_DIR}
-)
 
 qt5_add_dbus_interface(knotifications_SRCS org.kde.KNotify.xml knotify_interface)
 
@@ -52,12 +49,19 @@ target_link_libraries(KNotifications LINK_PUBLIC
 target_link_libraries(KNotifications LINK_PRIVATE
    KWindowSystem
    Qt5::DBus
-   Qt5::X11Extras
-   ${X11_LIBRARIES}
 )
 
+if(X11_FOUND)
+   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
+   target_link_libraries(KNotifications LINK_PRIVATE ${X11_X11_LIB} Qt5::X11Extras)
+endif()
+
+if(X11_XTest_FOUND)
+  target_link_libraries(KNotifications LINK_PRIVATE ${X11_XTest_LIB})
+endif(X11_XTest_FOUND)
+
 if(HAVE_DBUSMENUQT)
-  target_link_libraries(KNotifications ${DBusMenuQt5_LIBRARIES})
+  target_link_libraries(KNotifications LINK_PRIVATE ${DBusMenuQt5_LIBRARIES})
 endif()
 
 set_target_properties(KNotifications PROPERTIES VERSION   ${KNOTIFICATIONS_VERSION_STRING}

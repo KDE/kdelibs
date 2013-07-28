@@ -200,7 +200,7 @@ void KComponentDataPrivate::lazyInit()
 }
 
 extern KCONFIGCORE_EXPORT bool kde_kiosk_exception;
-KSERVICE_EXPORT bool kde_kiosk_admin = false;
+KDECORE_EXPORT bool kde_kiosk_admin = false;
 
 void KComponentDataPrivate::configInit()
 {

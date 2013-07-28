@@ -48,7 +48,6 @@ install(TARGETS KArchive EXPORT KArchiveTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install( FILES
   karchive.h
-  karchive_p.h
   kar.h
   kcompressiondevice.h
   kfilterbase.h

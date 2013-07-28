@@ -30,7 +30,6 @@ set(cmakeFiles
                FindBlitz.cmake
                FindBlueZ.cmake
                FindCarbon.cmake
-               FindDBusMenuQt5.cmake
                FindDNSSD.cmake
                FindENCHANT.cmake
                FindEigen.cmake

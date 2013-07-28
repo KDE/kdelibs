@@ -828,7 +828,7 @@ void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
 
     // Silence KDirWatch notifications, otherwise performance is horrible
     if (m_currentSrcURL.isLocalFile()) {
-        const QString parentDir = QUrlPathInfo(m_currentSrcURL).directory();
+        const QString parentDir = m_currentSrcURL.adjusted(QUrl::RemoveFilename).path();
         if (!m_parentDirs.contains(parentDir)) {
             KDirWatch::self()->stopDirScan(parentDir);
             m_parentDirs.insert(parentDir);
@@ -856,7 +856,7 @@ void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
     SimpleJob * newJob = SimpleJobPrivate::newJobNoUi(slave_url, CMD_RENAME, packedArgs);
     Scheduler::setJobPriority(newJob, 1);
     q->addSubjob( newJob );
-    if (QUrlPathInfo(m_currentSrcURL).directory() != QUrlPathInfo(dest).directory()) // For the user, moving isn't renaming. Only renaming is.
+    if (m_currentSrcURL.adjusted(QUrl::RemoveFilename) != dest.adjusted(QUrl::RemoveFilename)) // For the user, moving isn't renaming. Only renaming is.
         m_bOnlyRenames = false;
 }
 
@@ -1717,7 +1717,7 @@ void CopyJob::emitResult()
         // If only renaming happened, KDirNotify::FileRenamed was emitted by the rename jobs
         QUrl url(d->m_globalDest);
         if (d->m_globalDestinationState != DEST_IS_DIR || d->m_asMethod)
-            url = QUrlPathInfo(url).directoryUrl();
+            url = url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
         //qDebug() << "KDirNotify'ing FilesAdded" << url;
         org::kde::KDirNotify::emitFilesAdded(url);
 
@@ -1882,7 +1882,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
             } else if ((isDir && m_bOverwriteAllDirs) || (!isDir && m_bOverwriteAllFiles)) {
                 ; // nothing to do, stat+copy+del will overwrite
             } else if ((isDir && m_bAutoRenameDirs) || (!isDir && m_bAutoRenameFiles)) {
-                QUrl destDirectory = QUrlPathInfo(m_currentDestURL).directoryUrl(); // m_currendDestURL includes filename
+                QUrl destDirectory = m_currentDestURL.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash); // m_currendDestURL includes filename
                 const QString newName = KIO::suggestName(destDirectory, QUrlPathInfo(m_currentDestURL).fileName());
 
                 m_dest.setPath(m_currentDestURL.path());

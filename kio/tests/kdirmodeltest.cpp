@@ -616,9 +616,7 @@ void KDirModelTest::testRenameDirectoryInCache() // #188807
 
     // Now let's rename a directory that is in KCoreDirListerCache
     const QUrl url = QUrl::fromLocalFile(path);
-    QUrlPathInfo pathInfo(url);
-    pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    QUrl newUrl = pathInfo.url();
+    QUrl newUrl = url.adjusted(QUrl::StripTrailingSlash);
     newUrl.setPath(newUrl.path() + "_renamed");
     qDebug() << newUrl;
     KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);

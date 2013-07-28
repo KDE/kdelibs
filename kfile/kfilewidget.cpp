@@ -913,8 +913,8 @@ void KFileWidget::slotOk()
                 bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     if (!statJob->statResult().isDir()) {
+                        url = url.adjusted(QUrl::StripTrailingSlash);
                         QUrlPathInfo pathInfo(url);
-                        pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
                         fileName = pathInfo.fileName();
                         pathInfo.setFileName(QString());
                         url = pathInfo.url();
@@ -925,18 +925,16 @@ void KFileWidget::slotOk()
                     }
                 }
             } else {
-                QUrlPathInfo pathInfo(url);
-                pathInfo.setFileName(QString());
-                QUrl directory = pathInfo.url();
+                const QUrl directory = url.adjusted(QUrl::RemoveFilename);
                 //Check if the folder exists
                 KIO::StatJob * statJob = KIO::stat(directory, KIO::HideProgressInfo);
                 bool res = KIO::NetAccess::synchronousRun(statJob, this);
                 if (res) {
                     if (statJob->statResult().isDir()) {
-                        pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
+                        url = url.adjusted(QUrl::StripTrailingSlash);
+                        QUrlPathInfo pathInfo(url);
                         fileName = pathInfo.fileName();
-                        pathInfo.setFileName(QString());
-                        url = pathInfo.url();
+                        url = url.adjusted(QUrl::RemoveFilename);
                     }
                 }
             }

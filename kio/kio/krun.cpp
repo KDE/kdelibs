@@ -171,7 +171,7 @@ bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool
     else if (isExecutableFile(u, _mimetype)) {
         if (u.isLocalFile() && runExecutables) {
             if (KAuthorized::authorize("shell_access")) {
-                return (KRun::runCommand(KShell::quoteArg(u.toLocalFile()), QString(), QString(), window, asn, QUrlPathInfo(u).directory())); // just execute the url as a command
+                return (KRun::runCommand(KShell::quoteArg(u.toLocalFile()), QString(), QString(), window, asn, u.adjusted(QUrl::RemoveFilename).path())); // just execute the url as a command
                 // ## TODO implement deleting the file if tempFile==true
             }
             else {
@@ -345,7 +345,7 @@ KRunMX2::subst(int option, const QUrl &url, QStringList &ret)
                 QDir::toNativeSeparators(url.toLocalFile())  : url.toString());
         break;
     case 'd':
-        ret << QUrlPathInfo(url).directory();
+        ret << url.adjusted(QUrl::RemoveFilename).path();
         break;
     case 'f':
         ret << QDir::toNativeSeparators(url.toLocalFile());

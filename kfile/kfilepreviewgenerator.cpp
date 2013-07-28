@@ -628,8 +628,7 @@ void KFilePreviewGenerator::Private::addToPreviewQueue(const KFileItem& item, co
     // that a preview from an old directory lister is received)
     bool isOldPreview = true;
 
-    QUrl itemParentDir(item.url());
-    itemParentDir.setPath(QUrlPathInfo(itemParentDir).directory());
+    const QUrl itemParentDir = item.url().adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
 
     foreach (const QUrl& dir, dirModel->dirLister()->directories()) {
         if (dir == itemParentDir || dir.path().isEmpty()) {

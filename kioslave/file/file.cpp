@@ -28,33 +28,9 @@
 #include <QDirIterator>
 #include <qplatformdefs.h>
 
-#include <config-kioslave-file.h>
-
-#include <qmimedatabase.h>
-
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <sys/socket.h>
-#if HAVE_SYS_TIME_H
-#include <sys/time.h>
-#endif
-
 #include <assert.h>
-#include <dirent.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <grp.h>
-#include <pwd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <time.h>
 #include <utime.h>
-#include <unistd.h>
-#if HAVE_STRING_H
-#include <string.h>
-#endif
 
 #include <QtCore/QByteRef>
 #include <QtCore/QDate>
@@ -69,9 +45,7 @@
 #endif
 
 #include <kdebug.h>
-#include <kconfig.h>
 #include <kconfiggroup.h>
-#include <limits.h>
 #include <kshell.h>
 #include <kmountpoint.h>
 
@@ -82,7 +56,6 @@
 
 #include <kdirnotify.h>
 #include <kio/ioslave_defaults.h>
-#include <kde_file.h>
 
 using namespace KIO;
 
@@ -116,6 +89,40 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
 
   //kDebug(7101) << "Done";
   return 0;
+}
+
+static QFile::Permissions modeToQFilePermissions(int mode)
+{
+    QFile::Permissions perms;
+    if (mode & S_IRUSR) {
+        perms |= QFile::ReadOwner;
+    }
+    if (mode & S_IWUSR) {
+        perms |= QFile::WriteOwner;
+    }
+    if (mode & S_IXUSR) {
+        perms |= QFile::ExeOwner;
+    }
+    if (mode & S_IRGRP) {
+        perms |= QFile::ReadGroup;
+    }
+    if (mode & S_IWGRP) {
+        perms |= QFile::WriteGroup;
+    }
+    if (mode & S_IXGRP) {
+        perms |= QFile::ExeGroup;
+    }
+    if (mode & S_IROTH) {
+        perms |= QFile::ReadOther;
+    }
+    if (mode & S_IWOTH) {
+        perms |= QFile::WriteOther;
+    }
+    if (mode & S_IXOTH) {
+        perms |= QFile::ExeOther;
+    }
+
+    return perms;
 }
 
 FileProtocol::FileProtocol( const QByteArray &pool, const QByteArray &app )
@@ -187,7 +194,7 @@ void FileProtocol::chmod( const QUrl& url, int permissions )
     const QString path(url.toLocalFile());
     const QByteArray _path( QFile::encodeName(path) );
     /* FIXME: Should be atomic */
-    if ( KDE::chmod( path, permissions ) == -1 ||
+    if (!QFile::setPermissions(path, modeToQFilePermissions(permissions)) ||
         ( setACL( _path.data(), permissions, false ) == -1 ) ||
         /* if not a directory, cannot set default ACLs */
         ( setACL( _path.data(), permissions, true ) == -1 && errno != ENOTDIR ) ) {
@@ -220,7 +227,7 @@ void FileProtocol::setModificationTime( const QUrl& url, const QDateTime& mtime 
         struct utimbuf utbuf;
         utbuf.actime = statbuf.st_atime; // access time, unchanged
         utbuf.modtime = mtime.toTime_t(); // modification time
-        if (KDE::utime(path, &utbuf) != 0) {
+        if (::utime(QFile::encodeName(path).constData(), &utbuf) != 0) {
             // TODO: errno could be EACCES, EPERM, EROFS
             error(KIO::ERR_CANNOT_SETTIME, path);
         } else {
@@ -579,28 +586,8 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
                     else
                         initialMode = 0666;
 
-                    QFile::Permissions perms;
-                    if (initialMode & S_IRUSR)
-                        perms |= QFile::ReadOwner;
-                    if (initialMode & S_IWUSR)
-                        perms |= QFile::WriteOwner;
-                    if (initialMode & S_IXUSR)
-                        perms |= QFile::ExeOwner;
-                    if (initialMode & S_IRGRP)
-                        perms |= QFile::ReadGroup;
-                    if (initialMode & S_IWGRP)
-                        perms |= QFile::WriteGroup;
-                    if (initialMode & S_IXGRP)
-                        perms |= QFile::ExeGroup;
-                    if (initialMode & S_IROTH)
-                        perms |= QFile::ReadOther;
-                    if (initialMode & S_IWOTH)
-                        perms |= QFile::WriteOther;
-                    if (initialMode & S_IXOTH)
-                        perms |= QFile::ExeOther;
-
                     f.open(QIODevice::Truncate | QIODevice::WriteOnly);
-                    f.setPermissions(perms);
+                    f.setPermissions(modeToQFilePermissions(initialMode));
                 }
 
                 if (!f.isOpen()) {
@@ -683,7 +670,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
     // set final permissions
     if ( _mode != -1 && !(_flags & KIO::Resume) )
     {
-        if (KDE::chmod(dest_orig, _mode) != 0)
+        if (!QFile::setPermissions(dest_orig, modeToQFilePermissions(_mode)))
         {
             // couldn't chmod. Eat the error if the filesystem apparently doesn't support it.
             KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByPath(dest_orig);
@@ -1040,7 +1027,7 @@ void FileProtocol::unmount( const QString& _point )
 		kDebug(7101) << "VOLMGT: looking for "
 			<< _point.toLocal8Bit();
 
-		if( (mnttab = KDE_fopen( MNTTAB, "r" )) == NULL ) {
+		if( (mnttab = QT_FOPEN( MNTTAB, "r" )) == NULL ) {
 			err = QLatin1String("could not open mnttab");
 			kDebug(7101) << "VOLMGT: " << err;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );

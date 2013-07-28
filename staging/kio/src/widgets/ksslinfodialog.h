@@ -24,7 +24,7 @@
 
 #include <QDialog>
 
-#include <kiowidgets_export.h>
+#include <kio/kiowidgets_export.h>
 #include "kio_ktcpsocket.h"
 
 using KIO::KSslError;
