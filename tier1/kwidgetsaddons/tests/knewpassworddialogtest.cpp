@@ -19,27 +19,20 @@
 
 #include <qapplication.h>
 #include <knewpassworddialog.h>
-#include <klocalizedstring.h>
 #include <iostream>
 
 int main( int argc, char *argv[] )
 {
-	QApplication::setColorSpec( QApplication::CustomColor );
-    QApplication::setApplicationName("KNewPasswordDialogTest");
-
     QApplication a(argc, argv);
 
-	KNewPasswordDialog dlg;
+    KNewPasswordDialog dlg;
     dlg.setPasswordStrengthWarningLevel(30);
-    dlg.setPrompt(i18n("Enter a password for the test"));
+    dlg.setPrompt(QApplication::translate("main", "Enter a password for the test"));
 
-    if( dlg.exec() )
-    {
-        std::cout << "Entered password: " << (const char*)dlg.password().toLatin1() << std::endl;
+    if (dlg.exec()) {
+        std::cout << "Entered password: " << qPrintable(dlg.password()) << std::endl;
         return 0;
-    }
-    else
-    {
+    } else {
         std::cout << "No password" << std::endl;
         return -1;
     }
