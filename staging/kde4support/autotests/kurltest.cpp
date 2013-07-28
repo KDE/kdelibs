@@ -2109,7 +2109,7 @@ void KUrlTest::testUrl_data()
     QTest::newRow("local file 3")
         << KUrl("file:///home/kde//")
         << QString::fromLatin1("file:///home/kde//")
-        << QString::fromLatin1("file:///home/kde/") // RemoveTrailingSlash removes only one slash now
+        << QString::fromLatin1("file:///home/kde")
         << QString::fromLatin1("file:///home/kde//");
 
     QTest::newRow("ftp url")
@@ -2159,7 +2159,7 @@ void KUrlTest::testToStringList()
               QStringList()
               << QLatin1String("file:///")
               << QLatin1String("file:///home/kde")
-              << QLatin1String("file:///home/kde/") // RemoveTrailingSlash removes only one slash now
+              << QLatin1String("file:///home/kde")
               << QLatin1String("ftp://ftp.kde.org/")
               << QLatin1String("ftp://ftp.kde.org/") );
 
