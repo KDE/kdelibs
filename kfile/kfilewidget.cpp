@@ -1230,18 +1230,15 @@ void KFileWidgetPrivate::setLocationText(const QUrl& url)
 {
     if (!url.isEmpty()) {
         QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KIO::iconNameForUrl( url ), KIconLoader::Small );
-        QUrlPathInfo urlPathInfo(url);
-        const QString path = url.path();
-        if (!path.isEmpty()) {
-            if (!urlPathInfo.directory().isEmpty()) {
-                QUrl u(url);
-                u.setPath(urlPathInfo.directory());
-                q->setUrl(u, false);
+        if (!url.path().isEmpty()) {
+            const QUrl directory = url.adjusted(QUrl::RemoveFileName);
+            if (!directory.path().isEmpty()) {
+                q->setUrl(directory, false);
             } else {
                 q->setUrl(url, false);
             }
         }
-        setDummyHistoryEntry(urlPathInfo.fileName() , mimeTypeIcon);
+        setDummyHistoryEntry(QUrlPathInfo(url).fileName(), mimeTypeIcon);
     } else {
         removeDummyHistoryEntry();
     }

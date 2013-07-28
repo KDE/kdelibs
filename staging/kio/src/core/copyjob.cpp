@@ -986,9 +986,8 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                     dirs.erase( it ); // Move on to next dir
                 } else {
                     if (m_bAutoRenameDirs) {
-                        const QUrlPathInfo destInfo((*it).uDest);
-                        const QUrl destDirectory = destInfo.directoryUrl();
-                        const QString newName = KIO::suggestName(destDirectory, destInfo.fileName());
+                        const QUrl destDirectory = (*it).uDest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
+                        const QString newName = KIO::suggestName(destDirectory, QUrlPathInfo((*it).uDest).fileName());
 
                         QUrlPathInfo newUrl((*it).uDest);
                         newUrl.setFileName(newName);
@@ -1213,7 +1212,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                  || ( m_conflictError == ERR_IDENTICAL_FILES ) )
             {
                 if (m_bAutoRenameFiles) {
-                    QUrl destDirectory = QUrlPathInfo((*it).uDest).directoryUrl();
+                    QUrl destDirectory = (*it).uDest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
                     QUrlPathInfo destInfo((*it).uDest);
                     const QString newName = KIO::suggestName(destDirectory, destInfo.fileName());
 
