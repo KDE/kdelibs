@@ -94,7 +94,6 @@ void tst_QUrlPathInfo::directoryAndFileName()
     QCOMPARE(info.directory(), expectedDirectory);
     QCOMPARE(info.directory(QUrlPathInfo::AppendTrailingSlash), expectedDirectoryTrailingSlash);
     QCOMPARE(info.fileName(), expectedFileName);
-    QCOMPARE(info.directoryUrl().toString(), expectedDirectoryUrl);
 }
 
 void tst_QUrlPathInfo::setFileName_data()

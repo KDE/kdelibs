@@ -288,7 +288,7 @@ void QUrlPathInfo::setFileName(const QString &fileName)
 
    If the path doesn't contain any slash, it is fully returned as part of fileName(), and directory() will be empty.
 
-   \sa path(), fileName(), setFileName(), directoryUrl()
+   \sa path(), fileName(), setFileName()
 */
 QString QUrlPathInfo::directory(QUrlPathInfo::PathFormattingOptions options) const
 {
@@ -299,18 +299,6 @@ QString QUrlPathInfo::directory(QUrlPathInfo::PathFormattingOptions options) con
     else if (slash == 0)
         return QString(QLatin1Char('/'));
     return options == AppendTrailingSlash ? ourPath.left(slash+1) : ourPath.left(slash);
-}
-
-/*!
-   Returns a URL for the parent directory of this URL.
-
-   \sa directory()
-*/
-QUrl QUrlPathInfo::directoryUrl() const
-{
-    QUrl url = d->url;
-    url.setPath(directory(), QUrl::DecodedMode);
-    return url;
 }
 
 /*!

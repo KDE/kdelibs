@@ -105,7 +105,6 @@ public:
     void setFileName(const QString &name);
 
     QString directory(PathFormattingOptions options = None) const;
-    QUrl directoryUrl() const;
 
 private:
     QSharedDataPointer<QUrlPathInfoPrivate> d;
