@@ -566,7 +566,7 @@ void FileUndoManagerPrivate::stepRemovingLinks()
         m_currentJob = KIO::file_delete(file, KIO::HideProgressInfo);
         m_undoJob->emitDeleting(file);
 
-        QUrl url = QUrlPathInfo(file).directoryUrl();
+        QUrl url = file.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
         addDirToUpdate(url);
     }
     else

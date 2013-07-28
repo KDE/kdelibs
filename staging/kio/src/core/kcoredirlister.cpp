@@ -797,7 +797,7 @@ KFileItem *KCoreDirListerCache::findByUrl( const KCoreDirLister *lister, const Q
     QUrl url(_u);
     QUrlPathInfo::adjustPath(url, QUrlPathInfo::StripTrailingSlash);
 
-    const QUrl parentDir = QUrlPathInfo(url).directoryUrl();
+    const QUrl parentDir = url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     DirItem* dirItem = dirItemForUrl(parentDir);
     if (dirItem) {
         // If lister is set, check that it contains this dir
@@ -865,7 +865,7 @@ void KCoreDirListerCache::slotFilesRemoved(const QList<QUrl>& fileList)
             }
         }
 
-        const QUrl parentDir = QUrlPathInfo(url).directoryUrl();
+        const QUrl parentDir = url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
         dirItem = dirItemForUrl(parentDir);
         if (!dirItem)
             continue;
@@ -918,7 +918,7 @@ void KCoreDirListerCache::slotFilesChanged( const QStringList &fileList ) // fro
             pendingRemoteUpdates.insert(fileitem);
             // For remote files, we won't be able to figure out the new information,
             // we have to do a update (directory listing)
-            const QUrl dir = QUrlPathInfo(url).directoryUrl();
+            const QUrl dir = url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
             if (!dirsToUpdate.contains(dir))
                 dirsToUpdate.prepend(dir);
         }
@@ -966,7 +966,7 @@ void KCoreDirListerCache::slotFileRenamed( const QString &_src, const QString &_
     // Check to see if a URL exists, and if so, if only the file part has changed,
     // only update the name and not the underlying URL.
     bool nameOnly = !fileitem->entry().stringValue( KIO::UDSEntry::UDS_URL ).isEmpty();
-    nameOnly &= QUrlPathInfo(src).directory() == QUrlPathInfo(dst).directory();
+    nameOnly = nameOnly && src.adjusted(QUrl::RemoveFilename) == dst.adjusted(QUrl::RemoveFilename);
 
     if (!nameOnly && fileitem->isDir()) {
         renameDir(oldurl, dst);
@@ -1025,7 +1025,7 @@ QSet<KCoreDirLister*> KCoreDirListerCache::emitRefreshItem(const KFileItem& oldI
             kdl->d->rootFileItem = fileitem;
             kdl->d->addRefreshItem(directoryUrl, oldRootItem, fileitem);
         } else {
-            directoryUrl = QUrlPathInfo(directoryUrl).directoryUrl();
+            directoryUrl = directoryUrl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
             kdl->d->addRefreshItem(directoryUrl, oldItem, fileitem);
         }
         listersToRefresh.insert(kdl);
@@ -1107,13 +1107,13 @@ void KCoreDirListerCache::handleFileDirty(const QUrl& url)
     KFileItem* existingItem = findByUrl(0, url);
     if (!existingItem) {
         // No - update the parent dir then
-        const QUrl dir = QUrlPathInfo(url).directoryUrl();
+        const QUrl dir = url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
         updateDirectory(dir);
     } else {
         // A known file: delay updating it, FAM is flooding us with events
         const QString filePath = url.toLocalFile();
         if (!pendingUpdates.contains(filePath)) {
-            const QUrl dir = QUrlPathInfo(url).directoryUrl();
+            const QUrl dir = url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
             if (checkUpdate(dir)) {
                 pendingUpdates.insert(filePath);
                 if (!pendingUpdateTimer.isActive())

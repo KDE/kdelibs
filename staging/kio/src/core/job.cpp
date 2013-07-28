@@ -455,7 +455,7 @@ void SimpleJob::slotFinished( )
                 QUrl src, dst;
                 QDataStream str( d->m_packedArgs );
                 str >> src >> dst;
-                if( QUrlPathInfo(src).directory() == QUrlPathInfo(dst).directory() ) // For the user, moving isn't renaming. Only renaming is.
+                if(src.adjusted(QUrl::RemoveFilename) == dst.adjusted(QUrl::RemoveFilename)) // For the user, moving isn't renaming. Only renaming is.
                     org::kde::KDirNotify::emitFileRenamed(src, dst);
 
                 org::kde::KDirNotify::emitFileMoved(src, dst);

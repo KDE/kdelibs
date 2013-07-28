@@ -997,7 +997,7 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
             return false;
 
         // url does not specify a valid directory
-        if (QUrlPathInfo(url_dir).directory().isEmpty())
+        if (url_dir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path().isEmpty())
             return false;
 
         // automatic completion is disabled
