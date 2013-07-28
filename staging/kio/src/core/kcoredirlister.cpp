@@ -638,11 +638,10 @@ void KCoreDirListerCache::updateDirectory( const QUrl& _dir )
 {
     //qDebug() << _dir;
 
-    QUrlPathInfo dirInfo(_dir);
-    dirInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    if (!checkUpdate(dirInfo.url())) {
-        if (_dir.isLocalFile() && findByUrl(0, _dir)) {
-            pendingUpdates.insert(_dir.toLocalFile());
+    const QUrl dir = _dir.adjusted(QUrl::StripTrailingSlash);
+    if (!checkUpdate(dir)) {
+        if (dir.isLocalFile() && findByUrl(0, dir)) {
+            pendingUpdates.insert(dir.toLocalFile());
             if (!pendingUpdateTimer.isActive())
                 pendingUpdateTimer.start(500);
         }
@@ -654,14 +653,14 @@ void KCoreDirListerCache::updateDirectory( const QUrl& _dir )
     //   - only update a directory: the listers are in listersCurrentlyHolding
     //   - update a currently running listing: the listers are in both
 
-    QString urlStr = dirInfo.url().toString();
+    QString urlStr = dir.toString();
     KCoreDirListerCacheDirectoryData& dirData = directoryData[urlStr];
     QList<KCoreDirLister *> listers = dirData.listersCurrentlyListing;
     QList<KCoreDirLister *> holders = dirData.listersCurrentlyHolding;
 
     //qDebug() << urlStr << "listers=" << listers << "holders=" << holders;
 
-    // restart the job for _dir if it is running already
+    // restart the job for dir if it is running already
     bool killed = false;
     KIO::ListJob *job = jobForUrl( urlStr );
     if (job) {
@@ -677,7 +676,7 @@ void KCoreDirListerCache::updateDirectory( const QUrl& _dir )
         // Emit any cached items.
         // updateDirectory() is about the diff compared to the cached items...
         Q_FOREACH(KCoreDirLister *kdl, listers) {
-	    KCoreDirLister::Private::CachedItemsJob* cachedItemsJob = kdl->d->cachedItemsJobForUrl(_dir);
+	    KCoreDirLister::Private::CachedItemsJob* cachedItemsJob = kdl->d->cachedItemsJobForUrl(dir);
             if (cachedItemsJob) {
                 cachedItemsJob->setEmitCompleted(false);
                 cachedItemsJob->done(); // removes from cachedItemsJobs list
@@ -693,7 +692,7 @@ void KCoreDirListerCache::updateDirectory( const QUrl& _dir )
 
     if (!(listers.isEmpty() || killed)) {
         qWarning() << "The unexpected happened.";
-        qWarning() << "listers for" << _dir << "=" << listers;
+        qWarning() << "listers for" << dir << "=" << listers;
         qWarning() << "job=" << job;
         //Q_FOREACH(KCoreDirLister *kdl, listers) {
             //qDebug() << "lister" << kdl << "m_cachedItemsJobs=" << kdl->d->m_cachedItemsJobs;
@@ -704,7 +703,7 @@ void KCoreDirListerCache::updateDirectory( const QUrl& _dir )
     }
     Q_ASSERT( listers.isEmpty() || killed );
 
-    job = KIO::listDir( _dir, KIO::HideProgressInfo );
+    job = KIO::listDir( dir, KIO::HideProgressInfo );
     runningListJobs.insert( job, KIO::UDSEntryList() );
 
     connect( job, SIGNAL(entries(KIO::Job*,KIO::UDSEntryList)),
@@ -712,7 +711,7 @@ void KCoreDirListerCache::updateDirectory( const QUrl& _dir )
     connect( job, SIGNAL(result(KJob*)),
              this, SLOT(slotUpdateResult(KJob*)) );
 
-    //qDebug() << "update started in" << _dir;
+    //qDebug() << "update started in" << dir;
 
     foreach ( KCoreDirLister *kdl, listers ) {
         kdl->jobStarted(job);
@@ -722,7 +721,7 @@ void KCoreDirListerCache::updateDirectory( const QUrl& _dir )
         if ( !killed ) {
             foreach ( KCoreDirLister *kdl, holders ) {
                 kdl->jobStarted(job);
-                emit kdl->started( _dir );
+                emit kdl->started( dir );
             }
         } else {
             foreach ( KCoreDirLister *kdl, holders ) {
@@ -943,11 +942,10 @@ void KCoreDirListerCache::slotFileRenamed( const QString &_src, const QString &_
   printDebug();
 #endif
 
-    QUrlPathInfo oldurl(src);
-    oldurl.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    KFileItem *fileitem = findByUrl(0, oldurl.url());
+    QUrl oldurl = src.adjusted(QUrl::StripTrailingSlash);
+    KFileItem *fileitem = findByUrl(0, oldurl);
     if (!fileitem) {
-        //qDebug() << "Item not found:" << oldurl.url();
+        //qDebug() << "Item not found:" << oldurl;
         return;
     }
 
@@ -971,10 +969,10 @@ void KCoreDirListerCache::slotFileRenamed( const QString &_src, const QString &_
     nameOnly &= QUrlPathInfo(src).directory() == QUrlPathInfo(dst).directory();
 
     if (!nameOnly && fileitem->isDir()) {
-        renameDir( oldurl.url(), dst );
+        renameDir(oldurl, dst);
         // #172945 - if the fileitem was the root item of a DirItem that was just removed from the cache,
         // then it's a dangling pointer now...
-        fileitem = findByUrl(0, oldurl.url());
+        fileitem = findByUrl(0, oldurl);
         if (!fileitem) //deleted from cache altogether, #188807
             return;
     }
@@ -1054,11 +1052,10 @@ QList<QUrl> KCoreDirListerCache::directoriesForCanonicalPath(const QUrl& dir) co
 void KCoreDirListerCache::slotFileDirty( const QString& path )
 {
     //qDebug() << path;
-    QUrlPathInfo urlInfo(QUrl::fromLocalFile(path));
-    urlInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
+    QUrl url = QUrl::fromLocalFile(path).adjusted(QUrl::StripTrailingSlash);
     // File or dir?
     bool isDir;
-    const KFileItem item = itemForUrl(urlInfo.url());
+    const KFileItem item = itemForUrl(url);
 
     if (!item.isNull()) {
         isDir = item.isDir();
@@ -1070,13 +1067,13 @@ void KCoreDirListerCache::slotFileDirty( const QString& path )
     }
 
     if (isDir) {
-        Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(urlInfo.url())) {
+        Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(url)) {
             handleDirDirty(dir);
         }
     } else {
-        Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(urlInfo.directoryUrl())) {
+        Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(url.adjusted(QUrl::RemoveFilename))) {
             QUrlPathInfo aliasUrl(dir);
-            aliasUrl.addPath(urlInfo.fileName());
+            aliasUrl.addPath(QUrlPathInfo(url).fileName());
             handleFileDirty(aliasUrl.url());
         }
     }

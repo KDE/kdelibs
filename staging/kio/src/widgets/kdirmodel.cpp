@@ -246,8 +246,8 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
         const int nextSlash = pathStr.indexOf('/', nodePath.length());
         const QString newPath = pathStr.left(nextSlash); // works even if nextSlash==-1
         pathInfo.setPath(newPath);
-        pathInfo.adjustPath(QUrlPathInfo::StripTrailingSlash); // #172508
         nodeUrl = pathInfo.url();
+        nodeUrl = nodeUrl.adjusted(QUrl::StripTrailingSlash); // #172508
         KDirModelNode* node = nodeForUrl(nodeUrl);
         if (!node) {
             //qDebug() << "child equal or starting with" << url << "not found";

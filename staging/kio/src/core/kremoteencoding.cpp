@@ -70,15 +70,15 @@ QByteArray KRemoteEncoding::encode(const QString& name) const
 
 QByteArray KRemoteEncoding::encode(const QUrl& url) const
 {
-    return encode(QUrlPathInfo(url).path());
+    return encode(url.path());
 }
 
 QByteArray KRemoteEncoding::directory(const QUrl& url, bool ignore_trailing_slash) const
 {
-    QUrlPathInfo urlInfo(url);
-    if (ignore_trailing_slash && urlInfo.path().endsWith(QLatin1Char('/')))
-        urlInfo.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    const QString dir = urlInfo.directory();
+    QUrl dirUrl(url);
+    if (ignore_trailing_slash && dirUrl.path().endsWith(QLatin1Char('/')))
+        dirUrl = dirUrl.adjusted(QUrl::StripTrailingSlash);
+    const QString dir = dirUrl.adjusted(QUrl::RemoveFilename).path();
     return encode(dir);
 }
 
