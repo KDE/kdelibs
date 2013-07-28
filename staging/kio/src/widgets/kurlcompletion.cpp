@@ -401,7 +401,7 @@ public:
     }
     // The directory with a trailing '/'
     QString dir() const {
-        return QUrlPathInfo(m_kurl).directory(QUrlPathInfo::AppendTrailingSlash);
+        return m_kurl.adjusted(QUrl::RemoveFilename).path();
     }
     QString file() const {
         return QUrlPathInfo(m_kurl).fileName();
@@ -1010,10 +1010,8 @@ bool KUrlCompletionPrivate::urlCompletion(const KUrlCompletionPrivate::MyURL& ur
         return false;
 
     // Remove escapes
-    QUrlPathInfo info(url_dir);
-    const QString directory = unescape(info.directory());
-    info.setPath(directory);
-    url_dir = info.url();
+    const QString directory = unescape(url_dir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path());
+    url_dir.setPath(directory);
 
     // List files if needed
     //
@@ -1208,7 +1206,8 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
                     (entry.numberValue(KIO::UDSEntry::UDS_ACCESS) & MODE_EXE)  // true if executable
                ) {
                 if (complete_url) {
-                    QUrlPathInfo info = QUrlPathInfo(QUrl(prepend));
+                    QUrl prependUrl(prepend);
+                    QUrlPathInfo info(prependUrl);
                     info.addPath(toAppend);
                     matchList.append(info.url().toDisplayString());
                 } else {

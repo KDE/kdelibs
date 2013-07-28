@@ -1033,21 +1033,18 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
     else
         newurl = _newurl;
 
-    QUrlPathInfo info(newurl);
-    info.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-    newurl = info.url();
-
-    info.setUrl(newurl);
+    if (!newurl.path().endsWith(QLatin1Char('/'))) {
+        newurl.setPath(newurl.path() + QLatin1Char('/'));
+    }
 
     // already set
-    if (info.equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
+    if (QUrlPathInfo(newurl).equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
         return;
 
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
-        newurl.setPath(info.directory());
-        info.setUrl(newurl);
-        if (info.equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
+        newurl = newurl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
+        if (QUrlPathInfo(newurl).equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
             return; // parent is current dir, nothing to do (fixes #173454, too)
         KIO::UDSEntry entry;
         bool res = KIO::NetAccess::stat(newurl, entry, this);
@@ -2534,7 +2531,7 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
                     treeView->expand(_proxyIndex);
 
                     // if we have expanded the last parent of this item, select it
-                    if (QUrlPathInfo(item.url()).directory() == urlInfo.path(QUrlPathInfo::StripTrailingSlash)) {
+                    if (item.url().adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash) == url.adjusted(QUrl::StripTrailingSlash)) {
                         treeView->selectionModel()->select(proxyIndex, QItemSelectionModel::Select);
                     }
                 }

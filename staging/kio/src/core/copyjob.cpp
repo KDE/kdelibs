@@ -475,7 +475,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const QUrl& sourceUrl)
         //qDebug() << "Source is a file (or a symlink), or we are linking -> no recursive listing";
 
         if (srcurl.isLocalFile()) {
-            const QString parentDir = srcurlInfo.directory();
+            const QString parentDir = srcurl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path();
             m_parentDirs.insert(parentDir);
         }
 
@@ -876,15 +876,15 @@ void CopyJobPrivate::startListing( const QUrl & src )
 
 void CopyJobPrivate::skip(const QUrl & sourceUrl, bool isDir)
 {
-    QUrlPathInfo dir(sourceUrl);
+    QUrl dir(sourceUrl);
     if (!isDir) {
         // Skipping a file: make sure not to delete the parent dir (#208418)
-        dir.setPath(dir.directory());
+        dir = dir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     }
-    while (dirsToRemove.removeAll(dir.url()) > 0) {
+    while (dirsToRemove.removeAll(dir) > 0) {
         // Do not rely on rmdir() on the parent directories aborting.
         // Exclude the parent dirs explicitly.
-        dir.setPath(dir.directory());
+        dir = dir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     }
 }
 

@@ -628,7 +628,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
         if (!statRes || !statJob->statResult().isDir()) {
             QUrlPathInfo startDirInfo(startDir);
             filename = startDirInfo.fileName();
-            startDir.setPath(startDirInfo.directory());
+            startDir = startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
             kDebug(kfile_area) << "statJob -> startDir" << startDir << "filename" << filename;
         }
     }
@@ -2611,7 +2611,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
 //  6.  kfiledialog:///keyword/filename?global         /keyword      filename
 
             QString keyword;
-            QString urlDir = startDirInfo.directory();
+            QString urlDir = startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path();
             QString urlFile = startDirInfo.fileName();
             if ( urlDir == "/" )			// '1'..'4' above
             {
@@ -2640,7 +2640,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
             // In all other cases (startDir contains a directory path, or has no
             // fileName for us anyway, such as smb://), startDir is indeed a dir url.
 
-            if (!startDirInfo.directory().isEmpty() ||
+            if (!startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path().isEmpty() ||
                 startDirInfo.fileName().isEmpty()) {
                 // can use start directory
                 ret = startDir;				// will be checked by stat later

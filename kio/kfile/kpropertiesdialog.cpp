@@ -870,7 +870,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                 mode = (mode_t)0;
             if ( KIO::iconNameForUrl(url) != iconStr )
                 iconStr = "document-multiple";
-            if ( info.directory() != directory )
+            if ( url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path() != directory )
                 directory.clear();
             if ( url.scheme() != protocol )
                 protocol.clear();
