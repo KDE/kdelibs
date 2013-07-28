@@ -107,6 +107,8 @@ class KSERVICE_EXPORT KPluginInfo
            Comment=Description of what the plugin does
            \endverbatim
          * In the first three entries the Icon entry is optional.
+         * @deprecated since 5.0, use QPluginLoader instead and build the
+         * metadata into the plugin using Q_PLUGIN_METADATA( ... "metadata.json")
          */
 #ifndef KDE_NO_DEPRECATED
         explicit KSERVICE_DEPRECATED KPluginInfo( const KService::Ptr service );
