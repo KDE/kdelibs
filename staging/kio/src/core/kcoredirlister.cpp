@@ -104,7 +104,7 @@ bool KCoreDirListerCache::listDir( KCoreDirLister *lister, const QUrl& _u,
   }
 
   // like this we don't have to worry about trailing slashes any further
-  QUrlPathInfo::adjustPath(_url, QUrlPathInfo::StripTrailingSlash);
+  _url = _url.adjusted(QUrl::StripTrailingSlash);
 
   const QString urlStr = _url.toString();
 
@@ -425,7 +425,7 @@ void KCoreDirListerCache::stop( KCoreDirLister *lister, bool silent )
 void KCoreDirListerCache::stopListingUrl(KCoreDirLister *lister, const QUrl& _u, bool silent)
 {
     QUrl url(_u);
-    QUrlPathInfo::adjustPath(url, QUrlPathInfo::StripTrailingSlash);
+    url = url.adjusted(QUrl::StripTrailingSlash);
     const QString urlStr = url.toString();
 
     KCoreDirLister::Private::CachedItemsJob* cachedItemsJob = lister->d->cachedItemsJobForUrl(url);
@@ -536,7 +536,7 @@ void KCoreDirListerCache::forgetDirs( KCoreDirLister *lister, const QUrl& _url, 
     //qDebug() << lister << " _url: " << _url;
 
     QUrl url(_url);
-    QUrlPathInfo::adjustPath(url, QUrlPathInfo::StripTrailingSlash);
+    url = url.adjusted(QUrl::StripTrailingSlash);
     const QString urlStr = url.toString();
 
     DirectoryDataHash::iterator dit = directoryData.find(urlStr);
@@ -795,7 +795,7 @@ KFileItem KCoreDirListerCache::findByName( const KCoreDirLister *lister, const Q
 KFileItem *KCoreDirListerCache::findByUrl( const KCoreDirLister *lister, const QUrl& _u ) const
 {
     QUrl url(_u);
-    QUrlPathInfo::adjustPath(url, QUrlPathInfo::StripTrailingSlash);
+    url = url.adjusted(QUrl::StripTrailingSlash);
 
     const QUrl parentDir = url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     DirItem* dirItem = dirItemForUrl(parentDir);
@@ -1149,7 +1149,7 @@ void KCoreDirListerCache::slotFileDeleted( const QString& path ) // from KDirWat
 void KCoreDirListerCache::slotEntries( KIO::Job *job, const KIO::UDSEntryList &entries )
 {
     QUrl url(joburl(static_cast<KIO::ListJob *>(job)));
-    QUrlPathInfo::adjustPath(url, QUrlPathInfo::StripTrailingSlash);
+    url = url.adjusted(QUrl::StripTrailingSlash);
     QString urlStr = url.toString();
 
     //qDebug() << "new entries for " << url;
@@ -1237,7 +1237,7 @@ void KCoreDirListerCache::slotResult( KJob *j )
   runningListJobs.remove( job );
 
   QUrl jobUrl(joburl( job ));
-  QUrlPathInfo::adjustPath(jobUrl, QUrlPathInfo::StripTrailingSlash);  // need remove trailing slashes again, in case of redirections
+  jobUrl = jobUrl.adjusted(QUrl::StripTrailingSlash);  // need remove trailing slashes again, in case of redirections
   QString jobUrlStr = jobUrl.toString();
 
   //qDebug() << "finished listing" << jobUrl;
@@ -1325,8 +1325,8 @@ void KCoreDirListerCache::slotRedirection( KIO::Job *j, const QUrl& url )
     QUrl newUrl(url);
 
     // strip trailing slashes
-    QUrlPathInfo::adjustPath(oldUrl, QUrlPathInfo::StripTrailingSlash);
-    QUrlPathInfo::adjustPath(newUrl, QUrlPathInfo::StripTrailingSlash);
+    oldUrl = oldUrl.adjusted(QUrl::StripTrailingSlash);
+    newUrl = newUrl.adjusted(QUrl::StripTrailingSlash);
 
     if ( oldUrl == newUrl ) {
         //qDebug() << "New redirection url same as old, giving up.";
@@ -1651,7 +1651,7 @@ void KCoreDirListerCache::slotUpdateResult( KJob * j )
     KIO::ListJob *job = static_cast<KIO::ListJob *>( j );
 
     QUrl jobUrl(joburl( job ));
-    QUrlPathInfo::adjustPath(jobUrl, QUrlPathInfo::StripTrailingSlash);  // need remove trailing slashes again, in case of redirections
+    jobUrl = jobUrl.adjusted(QUrl::StripTrailingSlash);  // need remove trailing slashes again, in case of redirections
     QString jobUrlStr(jobUrl.toString());
 
     //qDebug() << "finished update" << jobUrl;

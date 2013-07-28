@@ -48,7 +48,7 @@ class KDirModelDirNode;
 static QUrl cleanupUrl(const QUrl& url) {
     QUrl u = url;
     u.setPath(QDir::cleanPath(u.path())); // remove double slashes in the path, simplify "foo/." to "foo/", etc.
-    QUrlPathInfo::adjustPath(u, QUrlPathInfo::StripTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
+    u = u.adjusted(QUrl::StripTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
     u.setQuery(QString());
     u.setFragment(QString());
     return u;
