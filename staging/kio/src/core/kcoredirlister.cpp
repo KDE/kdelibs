@@ -1003,7 +1003,7 @@ QSet<KCoreDirLister*> KCoreDirListerCache::emitRefreshItem(const KFileItem& oldI
     //qDebug() << "old:" << oldItem.name() << oldItem.url()
     //             << "new:" << fileitem.name() << fileitem.url();
     // Look whether this item was shown in any view, i.e. held by any dirlister
-    const QUrl parentDir = QUrlPathInfo(oldItem.url()).directoryUrl();
+    const QUrl parentDir = oldItem.url().adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     const QString parentDirURL = parentDir.toString();
     DirectoryDataHash::iterator dit = directoryData.find(parentDirURL);
     QList<KCoreDirLister *> listers;
@@ -1071,7 +1071,7 @@ void KCoreDirListerCache::slotFileDirty( const QString& path )
             handleDirDirty(dir);
         }
     } else {
-        Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(url.adjusted(QUrl::RemoveFilename))) {
+        Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash))) {
             QUrlPathInfo aliasUrl(dir);
             aliasUrl.addPath(QUrlPathInfo(url).fileName());
             handleFileDirty(aliasUrl.url());
@@ -1128,18 +1128,19 @@ void KCoreDirListerCache::slotFileCreated( const QString& path ) // from KDirWat
     //qDebug() << path;
     // XXX: how to avoid a complete rescan here?
     // We'd need to stat that one file separately and refresh the item(s) for it.
-    QUrlPathInfo fileUrl(QUrl::fromLocalFile(path));
-    itemsAddedInDirectory(fileUrl.directoryUrl());
+    QUrl fileUrl(QUrl::fromLocalFile(path));
+    itemsAddedInDirectory(fileUrl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash));
 }
 
 void KCoreDirListerCache::slotFileDeleted( const QString& path ) // from KDirWatch
 {
     //qDebug() << path;
-    QUrlPathInfo dirUrlInfo(QUrl::fromLocalFile(path));
+    const QString fileName = QFileInfo(path).fileName();
+    QUrl dirUrl(QUrl::fromLocalFile(path));
     QStringList fileUrls;
-    Q_FOREACH(const QUrl& url, directoriesForCanonicalPath(dirUrlInfo.directoryUrl())) {
+    Q_FOREACH(const QUrl& url, directoriesForCanonicalPath(dirUrl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash))) {
         QUrlPathInfo urlInfo(url);
-        urlInfo.addPath(dirUrlInfo.fileName());
+        urlInfo.addPath(fileName);
         fileUrls << urlInfo.url().toString();
     }
     slotFilesRemoved(fileUrls);

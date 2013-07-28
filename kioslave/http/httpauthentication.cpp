@@ -42,7 +42,6 @@
 
 #include <QtCore/QTextCodec>
 #include <QtCore/QCryptographicHash>
-#include <qurlpathinfo.h>
 
 
 static bool isWhiteSpace(char ch)
@@ -607,8 +606,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
         bool send = true;
 
         // Determine the path of the request url...
-        QUrlPathInfo pathInfo(m_resource);
-        QString requestPath = pathInfo.directory(QUrlPathInfo::AppendTrailingSlash);
+        QString requestPath = m_resource.adjusted(QUrl::RemoveFilename).path();
         if (requestPath.isEmpty())
           requestPath = QLatin1Char('/');
 
@@ -620,8 +618,7 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
           if (m_resource.port() > 0 && u.port() > 0)
             send &= (m_resource.port() == u.port());
 
-          pathInfo.setUrl(u);
-          QString digestPath = pathInfo.directory(QUrlPathInfo::AppendTrailingSlash);
+          QString digestPath = u.adjusted(QUrl::RemoveFilename).path();
           if (digestPath.isEmpty())
             digestPath = QLatin1Char('/');
 

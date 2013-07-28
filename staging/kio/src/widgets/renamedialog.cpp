@@ -384,7 +384,7 @@ QUrl RenameDialog::newDestUrl()
 QUrl RenameDialog::autoDestUrl() const
 {
     QUrlPathInfo newDest(d->dest);
-    const QUrl destDirectory = newDest.directoryUrl();
+    const QUrl destDirectory = d->dest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     newDest.setFileName(suggestName(destDirectory, newDest.fileName()));
     return newDest.url();
 }
@@ -427,7 +427,7 @@ void RenameDialog::suggestNewNamePressed()
     if (d->m_pLineEdit->text().isEmpty())
         return;
 
-    QUrl destDirectory = QUrlPathInfo(d->dest).directoryUrl();
+    QUrl destDirectory = d->dest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     d->setRenameBoxText(suggestName(destDirectory, d->m_pLineEdit->text()));
 
     return;

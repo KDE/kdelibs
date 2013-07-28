@@ -447,7 +447,7 @@ void SimpleJob::slotFinished( )
         {
             if ( d->m_command == CMD_MKDIR )
             {
-                const QUrl urlDir = QUrlPathInfo(url()).directoryUrl();
+                const QUrl urlDir = url().adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
                 org::kde::KDirNotify::emitFilesAdded(urlDir);
             }
             else /*if ( m_command == CMD_RENAME )*/
