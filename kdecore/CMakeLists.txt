@@ -16,10 +16,6 @@ configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h 
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 
-# Configure checks for io/
-include(io/ConfigureChecks.cmake)
-configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
-
 # Configure checks for kernel/
 configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
 
@@ -60,8 +56,6 @@ add_subdirectory( tests )
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   io/kdebug.cpp
-   io/kdebugdbusiface.cpp
    io/kprocess.cpp
 )
 
@@ -152,10 +146,8 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 ########### next target ###############
 
 ########### install files ###############
-install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdecore_export.h
-   io/kdebug.h
    io/kprocess.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
