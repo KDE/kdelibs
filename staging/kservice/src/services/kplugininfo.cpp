@@ -80,7 +80,7 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
     d->entryPath = filename;
 
     KConfigGroup cg = file.desktopGroup();
-    d->hidden = cg.readEntry("Hidden", false);
+    d->hidden = cg.readEntry(QStringLiteral("Hidden"), false);
     if( d->hidden )
         return;
 
@@ -118,7 +118,7 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
         }
     }
 
-    d->hidden = meta.value("Hidden").toBool();
+    d->hidden = meta.value(QStringLiteral("Hidden")).toBool();
     if (d->hidden) {
         return;
     }
