@@ -73,7 +73,7 @@ namespace KJS {
  * These are the normal definitions used when KDE is available.
  */
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 
 #else // QT_ONLY

@@ -18,7 +18,7 @@
 #include "entrydetailsdialog.h"
 
 #include <QMenu>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <knewstuff3/core/engine.h>
 #include <knewstuff3/ui/imageloader.h>
@@ -149,7 +149,7 @@ void EntryDetails::entryChanged(const KNS3::EntryInternal& entry)
         } else
 
         if (!m_entry.previewUrl((EntryInternal::PreviewType)type).isEmpty()) {
-            kDebug() << "type: " << type << m_entry.previewUrl((EntryInternal::PreviewType)type);
+            // qDebug() << "type: " << type << m_entry.previewUrl((EntryInternal::PreviewType)type);
             if (m_entry.previewImage((EntryInternal::PreviewType)type).isNull()) {
                 m_engine->loadPreview(m_entry, (EntryInternal::PreviewType)type);
             } else {
@@ -172,7 +172,7 @@ void EntryDetails::updateButtons()
     if (ui->detailsStack->currentIndex() == 0) {
         return;
     }
-    kDebug() << "update buttons: " << m_entry.status();
+    // qDebug() << "update buttons: " << m_entry.status();
     ui->installButton->setVisible(false);
     ui->uninstallButton->setVisible(false);
     ui->updateButton->setVisible(false);
@@ -227,7 +227,7 @@ void EntryDetails::updateButtons()
             QAction* installAction = installMenu->addAction(QIcon::fromTheme("dialog-ok"), text);
             installAction->setData(info.id);
         }
-        kDebug() << "links: " << m_entry.downloadLinkInformationList().size();
+        // qDebug() << "links: " << m_entry.downloadLinkInformationList().size();
         ui->installButton->setMenu(installMenu);
     }
 }
@@ -292,7 +292,7 @@ void EntryDetails::previewSelected(int current)
 void EntryDetails::ratingChanged(uint rating)
 {
     // engine expects values from 0..100
-    kDebug() << "rating: " << rating << " -> " << rating*10;
+    // qDebug() << "rating: " << rating << " -> " << rating*10;
     m_engine->vote(m_entry, rating*10);
 }
 

@@ -31,7 +31,7 @@
 #include <QtCore/QRegExp>
 #include <qstandardpaths.h>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <ktoolinvocation.h>
 #include <kde_file.h>
@@ -60,7 +60,7 @@ KDEsuClient::KDEsuClient()
     QString display = QString::fromLatin1(qgetenv("DISPLAY"));
     if (display.isEmpty())
     {
-        kWarning(kdesuDebugArea()) << k_lineinfo << "$DISPLAY is not set.";
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "$DISPLAY is not set.";
         return;
     }
 
@@ -95,7 +95,7 @@ int KDEsuClient::connect()
     d->sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (d->sockfd < 0)
     {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "socket():" << perror;
+	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "socket():" << perror;
 	return -1;
     }
     struct sockaddr_un addr;
@@ -104,7 +104,7 @@ int KDEsuClient::connect()
 
     if (::connect(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
-        kWarning(kdesuDebugArea()) << k_lineinfo << "connect():" << perror;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "connect():" << perror;
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
@@ -118,7 +118,7 @@ int KDEsuClient::connect()
     {
        if (euid != getuid())
        {
-            kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid =" << euid;
+            qWarning() << "socket not owned by me! socket uid =" << euid;
             close(d->sockfd); d->sockfd = -1;
             return -1;
        }
@@ -134,19 +134,19 @@ int KDEsuClient::connect()
     KDE_struct_stat s;
     if (KDE_lstat(d->sock, &s)!=0)
     {
-        kWarning(kdesuDebugArea()) << "stat failed (" << d->sock << ")";
+        qWarning() << "stat failed (" << d->sock << ")";
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
     if (s.st_uid != getuid())
     {
-        kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid =" << s.st_uid;
+        qWarning() << "socket not owned by me! socket uid =" << s.st_uid;
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
     if (!S_ISSOCK(s.st_mode))
     {
-        kWarning(kdesuDebugArea()) << "socket is not a socket (" << d->sock << ")";
+        qWarning() << "socket is not a socket (" << d->sock << ")";
 	close(d->sockfd); d->sockfd = -1;
 	return -1;
     }
@@ -160,7 +160,7 @@ int KDEsuClient::connect()
     {
         if (cred.uid != getuid())
         {
-            kWarning(kdesuDebugArea()) << "socket not owned by me! socket uid =" << cred.uid;
+            qWarning() << "socket not owned by me! socket uid =" << cred.uid;
             close(d->sockfd); d->sockfd = -1;
             return -1;
         }
@@ -203,7 +203,7 @@ int KDEsuClient::command(const QByteArray &cmd, QByteArray *result)
     int nbytes = recv(d->sockfd, buf, 1023, 0);
     if (nbytes <= 0)
     {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "no reply from daemon.";
+	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "no reply from daemon.";
 	return -1;
     }
     buf[nbytes] = '\000';
@@ -319,7 +319,7 @@ QList<QByteArray> KDEsuClient::getKeys(const QByteArray &group)
     QList<QByteArray> list;
     if( !reply.isEmpty() )
     {
-        // kDebug(kdesuDebugArea()) << "Found a matching entry:" << reply;
+        // qDebug() << "Found a matching entry:" << reply;
         while (1)
         {
             pos = reply.indexOf( '\007', index );
@@ -400,7 +400,7 @@ static QString findDaemon()
     if (!QFile::exists(daemon)) { // if not in libexec, find it in PATH
         daemon = QStandardPaths::findExecutable("kdesud");
         if (daemon.isEmpty()) {
-            kWarning(kdesuDebugArea()) << "kdesud daemon not found.";
+            qWarning() << "kdesud daemon not found.";
         }
     }
     return daemon;
@@ -416,7 +416,7 @@ bool KDEsuClient::isServerSGID()
     KDE_struct_stat sbuf;
     if (KDE::stat(d->daemon, &sbuf) < 0)
     {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "stat():" << perror;
+	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "stat():" << perror;
 	return false;
     }
     return (sbuf.st_mode & S_ISGID);
@@ -430,7 +430,7 @@ int KDEsuClient::startServer()
        return -1;
 
     if (!isServerSGID()) {
-	kWarning(kdesuDebugArea()) << k_lineinfo << "kdesud not setgid!";
+	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "kdesud not setgid!";
     }
 
     // kdesud only forks to the background after it is accepting

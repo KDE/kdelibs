@@ -24,7 +24,7 @@
 #include <ktoolinvocation.h>
 #include <kcoreauthorized.h>
 #include <kmessagebox.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -56,7 +56,7 @@ int main(int argc, char **argv)
         else if ( url.scheme() == "rlogin" )
             cmd << "rlogin";
         else {
-            kError() << "Invalid protocol " << url.scheme() << endl;
+            qCritical() << "Invalid protocol " << url.scheme() << endl;
             return 2;
         }
 
@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
         if (host.isEmpty() || host.startsWith('-'))
         {
-            kError() << "Invalid hostname " << host << endl;
+            qCritical() << "Invalid hostname " << host << endl;
             return 2;
         }
 

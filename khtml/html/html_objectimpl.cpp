@@ -33,7 +33,7 @@
 #include <QtCore/QTimer>
 #include <QImageReader>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kmessagebox.h>
 #include <qmimedatabase.h>
 
@@ -459,9 +459,9 @@ void HTMLObjectBaseElementImpl::computeContent()
             else if(classId.indexOf(QString::fromLatin1("6BF52A52-394A-11d3-B153-00C04F79FAA6")) >= 0 ||
                     classId.indexOf(QString::fromLatin1("22D6f312-B0F6-11D0-94AB-0080C74C7E95")) >= 0)
                 effectiveServiceType = "video/x-msvideo";
-            else
-                kDebug(6031) << "ActiveX classId " << classId;
-
+            else {
+                // qDebug() << "ActiveX classId " << classId;
+            }
               // TODO: add more plugins here
         }
     }
@@ -525,7 +525,7 @@ void HTMLObjectBaseElementImpl::computeContent()
     KHTMLPart* part = document()->part();
     clearChildWidget();
 
-    kDebug(6031) << effectiveURL << effectiveServiceType << params;
+    // qDebug() << effectiveURL << effectiveServiceType << params;
 
     if (!part->loadObjectElement( this, effectiveURL, effectiveServiceType, params)) {
         // Looks like we are gonna need alternative content after all...

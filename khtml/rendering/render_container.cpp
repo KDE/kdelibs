@@ -39,7 +39,7 @@
 #include "xml/dom_position.h"
 #include "css/css_valueimpl.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <assert.h>
 #include <limits.h>
 
@@ -56,7 +56,7 @@ RenderContainer::RenderContainer(DOM::NodeImpl* node)
 void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << this << ": " <<  renderName() << "(RenderObject)::addChild( " << newChild << ": " <<
+    // qDebug() << this << ": " <<  renderName() << "(RenderObject)::addChild( " << newChild << ": " <<
         newChild->renderName() << ", " << (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
     // protect ourselves from deletion
@@ -85,17 +85,17 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         case TABLE_HEADER_GROUP:
         case TABLE_FOOTER_GROUP:
 
-            //kDebug( 6040 ) << "adding section";
+            //qDebug() << "adding section";
             if ( !isTable() )
                 needsTable = true;
             break;
         case TABLE_ROW:
-            //kDebug( 6040 ) << "adding row";
+            //qDebug() << "adding row";
             if ( !isTableSection() )
                 needsTable = true;
             break;
         case TABLE_CELL:
-            //kDebug( 6040 ) << "adding cell";
+            //qDebug() << "adding cell";
             if ( !isTableRow() )
                 needsTable = true;
             // I'm not 100% sure this is the best way to fix this, but without this
@@ -118,7 +118,7 @@ void RenderContainer::addChild(RenderObject *newChild, RenderObject *beforeChild
         if ( last && last->isTable() && last->isAnonymous() ) {
             table = static_cast<RenderTable *>(last);
         } else {
-	    //kDebug( 6040 ) << "creating anonymous table, before=" << beforeChild;
+	    //qDebug() << "creating anonymous table, before=" << beforeChild;
             table = new (renderArena()) RenderTable(document() /* is anonymous */);
             RenderStyle *newStyle = new RenderStyle();
             newStyle->inheritFrom(style());

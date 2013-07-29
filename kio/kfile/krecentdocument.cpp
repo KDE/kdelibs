@@ -28,7 +28,7 @@
 
 #include "krecentdocument.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kio/global.h>
 #include <kdesktopfile.h>
 #include <kde_file.h>
@@ -98,7 +98,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     QString openStr = url.toDisplayString();
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
-    kDebug(250) << "KRecentDocument::add for " << openStr;
+    // qDebug() << "KRecentDocument::add for " << openStr;
     KConfigGroup config = KSharedConfig::openConfig()->group(QByteArray("RecentDocuments"));
     bool useRecent = config.readEntry(QLatin1String("UseRecent"), true);
     int maxEntries = config.readEntry(QLatin1String("MaxEntries"), 10);

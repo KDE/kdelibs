@@ -130,10 +130,10 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 {
 	assert( context );
 #ifdef XPATH_VERBOSE
-	kDebug(6011) << "Evaluating step, axis='" << axisAsString( m_axis ) <<"'"
+	// qDebug() << "Evaluating step, axis='" << axisAsString( m_axis ) <<"'"
 	             << ", nodetest='" << m_nodeTest << "'"
 	             << ", " << m_predicates.count() << " predicates";
-	kDebug(6011) << DOM::getPrintableName( context->id() );
+	// qDebug() << DOM::getPrintableName( context->id() );
 #endif
 
 	DomNodeList inNodes = nodesInAxis( context ), outNodes;
@@ -143,14 +143,14 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 	inNodes->setKnownNormalization(known);
 
 #ifdef XPATH_VERBOSE
-	kDebug(6011) << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
+	// qDebug() << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
 #endif
 	
 	inNodes = nodeTestMatches( context, inNodes );
 	inNodes->setKnownNormalization(known); // nodeTest doesn't change order
 
 #ifdef XPATH_VERBOSE
-	kDebug(6011) << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
+	// qDebug() << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
 #endif
 
 	if ( m_predicates.isEmpty() )
@@ -166,7 +166,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 			Expression::evaluationContext().node = node;
 			EvaluationContext backupCtx = Expression::evaluationContext();
 #ifdef XPATH_VERBOSE			
-			kDebug() << Expression::evaluationContext().position << "/" << node;
+			// qDebug() << Expression::evaluationContext().position << "/" << node;
 #endif
 			if ( predicate->evaluate() ) {
 				outNodes->append( node );
@@ -175,7 +175,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 			++Expression::evaluationContext().position;
 		}
 #ifdef XPATH_VERBOSE
-		kDebug(6011) << "\tPredicate trims this number to " << outNodes->length();
+		// qDebug() << "\tPredicate trims this number to " << outNodes->length();
 #endif
 		inNodes = outNodes;
 		inNodes->setKnownNormalization(known); // predicates don't change order
@@ -336,7 +336,7 @@ DomNodeList Step::nodesInAxis( NodeImpl *context ) const
 			return nodes;
 		}
 		default:
-			kWarning(6011) << "Unknown axis " << axisAsString( m_axis ) << " passed to Step::nodesInAxis";
+			qWarning() << "Unknown axis " << axisAsString( m_axis ) << " passed to Step::nodesInAxis";
 	}
 
 	return nodes; // empty

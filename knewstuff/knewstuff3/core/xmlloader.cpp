@@ -24,7 +24,7 @@
 #include <QtCore/QByteArray>
 
 #include <kconfig.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kio/job.h>
 #include <klocalizedstring.h>
 
@@ -40,7 +40,7 @@ namespace KNS3
     {
         m_jobdata.clear();
 
-        kDebug(550) << "XmlLoader::load(): url: " << url;
+        // qDebug() << "XmlLoader::load(): url: " << url;
 
         KIO::TransferJob *job = KIO::get(url, KIO::NoReload, KIO::HideProgressInfo);
         connect(job, SIGNAL(result(KJob*)),
@@ -53,7 +53,7 @@ namespace KNS3
 
     void XmlLoader::slotJobData(KIO::Job *, const QByteArray &data)
     {
-        kDebug(550) << "XmlLoader::slotJobData()";
+        // qDebug() << "XmlLoader::slotJobData()";
 
         m_jobdata.append(data);
     }
@@ -65,9 +65,9 @@ namespace KNS3
             return;
         }
 /*
-        kDebug(550) << "--Xml Loader-START--";
-        kDebug(550) << QString::fromUtf8(m_jobdata);
-        kDebug(550) << "--Xml Loader-END--";
+        // qDebug() << "--Xml Loader-START--";
+        // qDebug() << QString::fromUtf8(m_jobdata);
+        // qDebug() << "--Xml Loader-END--";
 */
         QDomDocument doc;
         if (!doc.setContent(m_jobdata)) {

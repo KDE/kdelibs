@@ -22,7 +22,6 @@
 #include <QtTest/QtTest>
 
 #include <QtCore/QByteArray>
-#include <kdebug.h>
 
 #include "httpobjecttest.moc"
 

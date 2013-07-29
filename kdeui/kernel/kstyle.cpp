@@ -61,7 +61,7 @@
 #include <QStyleOption>
 
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kiconloader.h>
 #include <kcolorscheme.h>
 #include <kglobalsettings.h>

@@ -25,8 +25,6 @@
 #include "dom/dom_doc.h"
 #include "xml/dom_docimpl.h"
 
-#include <kdebug.h>
-
 using namespace KJS;
 
 ////////////////////// XMLSerializer Object ////////////////////////

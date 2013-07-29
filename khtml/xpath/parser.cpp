@@ -1632,7 +1632,7 @@ yyreduce:
 			DOMString prefix( (yyvsp[(1) - (1)].str)->substring( 0, colon ) );
 			XPathNSResolverImpl *resolver = Expression::evaluationContext().resolver;
 			if ( !resolver || resolver->lookupNamespaceURI( prefix ).isNull() ) {
-				kWarning(6011) << "Found unknown namespace prefix " << prefix.string();
+				qWarning() << "Found unknown namespace prefix " << prefix.string();
 				xpathParseException = DOMException::NAMESPACE_ERR;
 				YYABORT;
 			}

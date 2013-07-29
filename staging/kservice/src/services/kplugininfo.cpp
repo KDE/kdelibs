@@ -235,21 +235,21 @@ bool KPluginInfo::isHidden() const
 void KPluginInfo::setPluginEnabled( bool enabled )
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( d->debugArea() ) ;
+    //qDebug() << Q_FUNC_INFO;
     d->pluginenabled = enabled;
 }
 
 bool KPluginInfo::isPluginEnabled() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( d->debugArea() ) ;
+    //qDebug() << Q_FUNC_INFO;
     return d->pluginenabled;
 }
 
 bool KPluginInfo::isPluginEnabledByDefault() const
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( d->debugArea() ) ;
+    //qDebug() << Q_FUNC_INFO;
     return d->enabledbydefault;
 }
 
@@ -346,7 +346,7 @@ QList<KService::Ptr> KPluginInfo::kcmServices() const
     {
         d->kcmservices = KServiceTypeTrader::self()->query( QLatin1String("KCModule"), QLatin1Char('\'') + d->pluginName +
             QString::fromLatin1("' in [X-KDE-ParentComponents]") );
-        //kDebug(d->debugArea()) << "found" << d->kcmservices.count() << "offers for" << d->pluginName;
+        //qDebug() << "found" << d->kcmservices.count() << "offers for" << d->pluginName;
 
         d->kcmservicesCached = true;
     }
@@ -378,7 +378,7 @@ QVariant KPluginInfo::property( const QString & key ) const
 void KPluginInfo::save(KConfigGroup config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( d->debugArea() ) ;
+    //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
         config.writeEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabled());
     } else {
@@ -393,7 +393,7 @@ void KPluginInfo::save(KConfigGroup config)
 void KPluginInfo::load(const KConfigGroup &config)
 {
     KPLUGININFO_ISVALID_ASSERTION;
-    //kDebug( d->debugArea() ) ;
+    //qDebug() << Q_FUNC_INFO;
     if (config.isValid()) {
         setPluginEnabled(config.readEntry(d->pluginName + QString::fromLatin1("Enabled"), isPluginEnabledByDefault()));
     } else {
@@ -407,7 +407,7 @@ void KPluginInfo::load(const KConfigGroup &config)
 
 void KPluginInfo::defaults()
 {
-    //kDebug( d->debugArea() ) ;
+    //qDebug() << Q_FUNC_INFO;
     setPluginEnabled( isPluginEnabledByDefault() );
 }
 

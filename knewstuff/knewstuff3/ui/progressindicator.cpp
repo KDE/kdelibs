@@ -26,7 +26,6 @@
 #include <QLayout>
 
 #include "kjob.h"
-#include "kdebug.h"
 
 #include <kpixmapsequencewidget.h>
 

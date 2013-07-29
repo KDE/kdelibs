@@ -34,7 +34,7 @@
 
 #include "render_block.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <limits.h>
 #include "render_text.h"
 #include "render_table.h"
@@ -754,7 +754,7 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
         setNeedsLayout(false);
         return;
     }
-    //    kDebug( 6040 ) << renderName() << " " << this << "::layoutBlock() start";
+    //    qDebug() << renderName() << " " << this << "::layoutBlock() start";
     //     QTime t;
     //     t.start();
     KHTMLAssert( needsLayout() );
@@ -792,14 +792,14 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     if ( oldWidth != m_width )
         relayoutChildren = true;
 
-    //     kDebug( 6040 ) << floatingObjects << "," << oldWidth << ","
+    //     qDebug() << floatingObjects << "," << oldWidth << ","
     //                     << m_width << ","<< needsLayout() << "," << isAnonymousBox() << ","
     //                     << isPositioned() << endl;
 
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << renderName() << "(RenderBlock) " << this << " ::layout() width=" << m_width << ", needsLayout=" << needsLayout();
+    // qDebug() << renderName() << "(RenderBlock) " << this << " ::layout() width=" << m_width << ", needsLayout=" << needsLayout();
     if(containingBlock() == static_cast<RenderObject *>(this))
-        kDebug( 6040 ) << renderName() << ": containingBlock == this";
+        // qDebug() << renderName() << ": containingBlock == this";
 #endif
 
     clearFloats();
@@ -890,21 +890,21 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     if (canvas()->pagedMode()) {
 #ifdef PAGE_DEBUG
-        kDebug(6040) << renderName() << " Page Bottom: " << pageTopAfter(0);
-        kDebug(6040) << renderName() << " Bottom: " << m_height;
+        // qDebug() << renderName() << " Page Bottom: " << pageTopAfter(0);
+        // qDebug() << renderName() << " Bottom: " << m_height;
 #endif
         bool needsPageBreak = false;
         int xpage = crossesPageBreak(0, m_height);
         if (xpage) {
             needsPageBreak = true;
 #ifdef PAGE_DEBUG
-            kDebug( 6040 ) << renderName() << " crosses to page " << xpage;
+            // qDebug() << renderName() << " crosses to page " << xpage;
 #endif
         }
         if (needsPageBreak && !containsPageBreak()) {
             setNeedsPageClear(true);
 #ifdef PAGE_DEBUG
-            kDebug( 6040 ) << renderName() << " marked for page-clear";
+            // qDebug() << renderName() << " marked for page-clear";
 #endif
         }
     }
@@ -1333,7 +1333,7 @@ void RenderBlock::clearPageBreak(RenderObject* child, int pageBottom)
 
     // ### should never happen, canClear should have been called to detect it.
     if (child->height() > canvas()->pageHeight()) {
-        kDebug(6040) << "### child is too large to clear: " << child->height() << " > " << canvas()->pageHeight();
+        // qDebug() << "### child is too large to clear: " << child->height() << " > " << canvas()->pageHeight();
         return;
     }
 
@@ -1341,7 +1341,7 @@ void RenderBlock::clearPageBreak(RenderObject* child, int pageBottom)
     child->setPos(child->xPos(), pageBottom);
 
 #ifdef PAGE_DEBUG
-    kDebug(6040) << "Cleared block " << heightIncrease << "px";
+    // qDebug() << "Cleared block " << heightIncrease << "px";
 #endif
 
     // Increase our height by the amount we had to clear.
@@ -1483,7 +1483,7 @@ void RenderBlock::handleBottomOfBlock(int top, int bottom, MarginInfo& marginInf
 void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 {
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << renderName() << " layoutBlockChildren( " << this <<" ), relayoutChildren="<< relayoutChildren;
+    // qDebug() << renderName() << " layoutBlockChildren( " << this <<" ), relayoutChildren="<< relayoutChildren;
 #endif
 
     int top = borderTop() + paddingTop();
@@ -1653,13 +1653,13 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
     int childTop = child->yPos();
     int childBottom = child->yPos()+child->height();
 #ifdef PAGE_DEBUG
-    kDebug(6040) << renderName() << " ChildTop: " << childTop << " ChildBottom: " << childBottom;
+    // qDebug() << renderName() << " ChildTop: " << childTop << " ChildBottom: " << childBottom;
 #endif
 
     bool forcePageBreak = pageBreakInfo.forcePageBreak() || child->style()->pageBreakBefore() == PBALWAYS;
 #ifdef PAGE_DEBUG
     if (forcePageBreak)
-        kDebug(6040) << renderName() << "Forced break required";
+        // qDebug() << renderName() << "Forced break required";
 #endif
 
     int xpage = crossesPageBreak(childTop, childBottom);
@@ -1667,7 +1667,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
     {
         if (!forcePageBreak && child->containsPageBreak() && !child->needsPageClear()) {
 #ifdef PAGE_DEBUG
-            kDebug(6040) << renderName() << " Child contains page-break to page " << xpage;
+            // qDebug() << renderName() << " Child contains page-break to page " << xpage;
 #endif
             // ### Actually this assumes floating children are breaking/clearing
             // nicely as well.
@@ -1679,7 +1679,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
             if (!forcePageBreak && (!style()->pageBreakInside() || m_avoidPageBreak || child == firstChild())) {
                 if (parent() && parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
 #ifdef PAGE_DEBUG
-                    kDebug(6040) << renderName() << "Avoid page-break inside";
+                    // qDebug() << renderName() << "Avoid page-break inside";
 #endif
                     child->setNeedsPageClear(false);
                     setNeedsPageClear(true);
@@ -1687,13 +1687,13 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
                 }
 #ifdef PAGE_DEBUG
                 else
-                    kDebug(6040) << renderName() << "Ignoring page-break avoid";
+                    // qDebug() << renderName() << "Ignoring page-break avoid";
 #endif
             }
             if (doBreak) {
 #ifdef PAGE_DEBUG
-                kDebug(6040) << renderName() << " Clearing child of page-break";
-                kDebug(6040) << renderName() << " child top of page " << xpage;
+                // qDebug() << renderName() << " Clearing child of page-break";
+                // qDebug() << renderName() << " child top of page " << xpage;
 #endif
                 clearPageBreak(child, pageBreakInfo.pageBottom());
                 child->setNeedsPageClear(false);
@@ -1706,12 +1706,12 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
     if (child->yPos() >= pageBreakInfo.pageBottom()) {
         bool doBreak = true;
 #ifdef PAGE_DEBUG
-        kDebug(6040) << "Page-break between children";
+        // qDebug() << "Page-break between children";
 #endif
         if (!style()->pageBreakInside() || m_avoidPageBreak) {
             if (parent() && parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
 #ifdef PAGE_DEBUG
-                kDebug(6040) << "Avoid page-break inside";
+                // qDebug() << "Avoid page-break inside";
 #endif
                 child->setNeedsPageClear(false);
                 setNeedsPageClear(true);
@@ -1719,7 +1719,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
             }
 #ifdef PAGE_DEBUG
             else
-                kDebug(6040) << "Ignoring page-break avoid";
+                // qDebug() << "Ignoring page-break avoid";
 #endif
         }
         if (doBreak) {
@@ -1780,7 +1780,7 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
 void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintOutline)
 {
 #ifdef DEBUG_LAYOUT
-   //kDebug( 6040 ) << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")";
+   //qDebug() << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")";
 #endif
 
     // If we're a repositioned run-in, don't paint background/borders.
@@ -2044,7 +2044,7 @@ void RenderBlock::positionNewFloats()
             if (crossesPageBreak(top, bottom) && o->height() < canvas()->pageHeight() ) {
                 int newY = pageTopAfter(top);
 #ifdef PAGE_DEBUG
-                kDebug(6040) << renderName() << " clearing float " << newY - y << "px";
+                // qDebug() << renderName() << " clearing float " << newY - y << "px";
 #endif
                 y = newY;
             }
@@ -2053,7 +2053,7 @@ void RenderBlock::positionNewFloats()
         int ro = rightOffset(); // Constant part of right offset.
         int lo = leftOffset(); // Constant part of left offset.
         int fwidth = f->width; // The width we look for.
-                               //kDebug( 6040 ) << " Object width: " << fwidth << " available width: " << ro - lo;
+                               //qDebug() << " Object width: " << fwidth << " available width: " << ro - lo;
 
         // in quirk mode, floated auto-width tables try to fit within remaining linewidth
         bool ftQuirk = o->isTable() && style()->htmlHacks() && o->style()->width().isAuto();
@@ -2090,7 +2090,7 @@ void RenderBlock::positionNewFloats()
                 f->width = o->width() + o->marginLeft() + o->marginRight();
             }
             f->left = fx;
-            //kDebug( 6040 ) << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ") fx=" << fx;
+            //qDebug() << "positioning left aligned float at (" << fx + o->marginLeft()  << "/" << y + o->marginTop() << ") fx=" << fx;
             o->setPos(fx + o->marginLeft(), y + o->marginTop());
         }
         else
@@ -2114,7 +2114,7 @@ void RenderBlock::positionNewFloats()
                 f->width = o->width() + o->marginLeft() + o->marginRight();
             }
             f->left = fx - f->width;
-            //kDebug( 6040 ) << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")";
+            //qDebug() << "positioning right aligned float at (" << fx - o->marginRight() - o->width() << "/" << y + o->marginTop() << ")";
             o->setPos(fx - o->marginRight() - o->width(), y + o->marginTop());
         }
 
@@ -2129,7 +2129,7 @@ void RenderBlock::positionNewFloats()
         f->startY = y;
         f->endY = f->startY + _height;
 
-        //kDebug( 6040 ) << "floatingObject x/y= (" << f->left << "/" << f->startY << "-" << f->width << "/" << f->endY - f->startY << ")";
+        //qDebug() << "floatingObject x/y= (" << f->left << "/" << f->startY << "-" << f->width << "/" << f->endY - f->startY << ")";
 
         f = it.hasNext() ? it.next() : 0;
     }
@@ -2155,7 +2155,7 @@ void RenderBlock::newLine()
     }
     if(m_height < newY)
     {
-        //      kDebug( 6040 ) << "adjusting y position";
+        //      qDebug() << "adjusting y position";
         m_height = newY;
     }
     m_clearStatus = CNONE;
@@ -2183,7 +2183,7 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *he
         while ( it.hasNext() )
         {
             r = it.next();
-            //kDebug( 6040 ) <<(void *)this << " left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " ";
+            //qDebug() <<(void *)this << " left: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " ";
             if (r->startY <= y && r->endY > y &&
                 r->type == FloatingObject::FloatLeft &&
                 r->left + r->width > left) {
@@ -2201,7 +2201,7 @@ RenderBlock::leftRelOffset(int y, int fixedOffset, bool applyTextIndent, int *he
         left += style()->textIndent().minWidth(cw);
     }
 
-    //kDebug( 6040 ) << "leftOffset(" << y << ") = " << left;
+    //qDebug() << "leftOffset(" << y << ") = " << left;
     return left;
 }
 
@@ -2227,7 +2227,7 @@ RenderBlock::rightRelOffset(int y, int fixedOffset, bool applyTextIndent, int *h
         while ( it.hasNext() )
         {
             r = it.next();
-            //kDebug( 6040 ) << "right: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " ";
+            //qDebug() << "right: sy, ey, x, w " << r->startY << "," << r->endY << "," << r->left << "," << r->width << " ";
             if (r->startY <= y && r->endY > y &&
                 r->type == FloatingObject::FloatRight &&
                 r->left < right) {
@@ -2245,14 +2245,14 @@ RenderBlock::rightRelOffset(int y, int fixedOffset, bool applyTextIndent, int *h
         right -= style()->textIndent().minWidth(cw);
     }
 
-    //kDebug( 6040 ) << "rightOffset(" << y << ") = " << right;
+    //qDebug() << "rightOffset(" << y << ") = " << right;
     return right;
 }
 
 unsigned short
 RenderBlock::lineWidth(int y, bool *canClearLine) const
 {
-    //kDebug( 6040 ) << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y);
+    //qDebug() << "lineWidth(" << y << ")=" << rightOffset(y) - leftOffset(y);
     int result;
     if (canClearLine) {
         bool rightCanClearLine;
@@ -2561,7 +2561,7 @@ RenderBlock::clearFloats()
         if(!prev) return;
         xoffset += prev->borderLeft() + prev->paddingLeft();
     }
-    //kDebug() << "RenderBlock::clearFloats found previous "<< (void *)this << " prev=" << (void *)prev;
+    //qDebug() << "RenderBlock::clearFloats found previous "<< (void *)this << " prev=" << (void *)prev;
 
     // add overhanging special objects from the previous RenderBlock
     if(!prev->isRenderBlock()) return;
@@ -2574,7 +2574,7 @@ RenderBlock::clearFloats()
 void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset, bool child )
 {
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << (void *)this << ": adding overhanging floats xoff=" << xoff << "  offset=" << offset << " child=" << child;
+    // qDebug() << (void *)this << ": adding overhanging floats xoff=" << xoff << "  offset=" << offset << " child=" << child;
 #endif
 
     // Prevent floats from being added to the canvas by the root element, e.g., <html>.
@@ -2648,7 +2648,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
                     m_floatingObjects = new QList<FloatingObject*>;
                 m_floatingObjects->append(floatingObj);
 #ifdef DEBUG_LAYOUT
-                kDebug( 6040 ) << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")";
+                // qDebug() << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")";
 #endif
             }
         }
@@ -2690,7 +2690,7 @@ int RenderBlock::getClearDelta(RenderObject *child, int yPos)
     if (!hasFloats())
         return 0;
 
-    //kDebug( 6040 ) << "getClearDelta on child " << child << " oldheight=" << m_height;
+    //qDebug() << "getClearDelta on child " << child << " oldheight=" << m_height;
     bool clearSet = child->style()->clear() != CNONE;
     int bottom = 0;
     switch(child->style()->clear())
@@ -2919,7 +2919,7 @@ void RenderBlock::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << renderName() << "(RenderBlock)::calcMinMaxWidth() this=" << this;
+    // qDebug() << renderName() << "(RenderBlock)::calcMinMaxWidth() this=" << this;
 #endif
     if (!isTableCell() && style()->width().isFixed() && style()->width().isPositive())
         m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
@@ -2969,7 +2969,7 @@ void RenderBlock::calcMinMaxWidth()
 
     setMinMaxKnown();
 
-    //kDebug( 6040 ) << "Text::calcMinMaxWidth(" << this << "): min = " << m_minWidth << " max = " << m_maxWidth;
+    //qDebug() << "Text::calcMinMaxWidth(" << this << "): min = " << m_minWidth << " max = " << m_maxWidth;
     // ### compare with min/max width set in style sheet...
 }
 
@@ -3271,7 +3271,7 @@ void RenderBlock::calcInlineMinMaxWidth()
 
     if(m_minWidth < inlineMin) m_minWidth = inlineMin;
     if(m_maxWidth < inlineMax) m_maxWidth = inlineMax;
-    //         kDebug( 6040 ) << "m_minWidth=" << m_minWidth
+    //         qDebug() << "m_minWidth=" << m_minWidth
     // 			<< " m_maxWidth=" << m_maxWidth << endl;
 }
 
@@ -3479,10 +3479,10 @@ void RenderBlock::printTree(int indent) const
             r = it.next();
             QString s;
             s.fill(' ', indent);
-            kDebug() << s << renderName() << ":  " <<
-                (r->type == FloatingObject::FloatLeft ? "FloatLeft" : "FloatRight" )  <<
-                "[" << r->node->renderName() << ": " << (void*)r->node << "] (" << r->startY << " - " << r->endY << ")" << "width: " << r->width <<
-                endl;
+            // qDebug() << s << renderName() << ":  " <<
+            //    (r->type == FloatingObject::FloatLeft ? "FloatLeft" : "FloatRight" )  <<
+            //    "[" << r->node->renderName() << ": " << (void*)r->node << "] (" << r->startY << " - " << r->endY << ")" << "width: " << r->width <<
+            //    endl;
         }
     }
 }

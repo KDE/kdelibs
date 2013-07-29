@@ -21,7 +21,6 @@
 #include "kurlnavigatorplacesselector_p.h"
 
 #include <kfileplacesmodel.h>
-#include <kdebug.h>
 #include <kurlmimedata.h>
 
 #include <qmimedatabase.h>

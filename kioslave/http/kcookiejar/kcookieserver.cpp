@@ -33,7 +33,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtDBus/QtDBus>
 
 #include <kconfig.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
@@ -212,7 +212,7 @@ void KCookieServer::checkCookies(KHttpCookieList *cookieList, qlonglong windowId
             shownCookies << i;
         }
     }
-    //kDebug() << shownCookies;
+    //qDebug() << shownCookies;
 
     KCookieWin *kw = new KCookieWin( 0L, currentList,
                                      mCookieJar->preferredDefaultPolicy(),
@@ -260,7 +260,7 @@ void KCookieServer::checkCookies(KHttpCookieList *cookieList, qlonglong windowId
                break;
 
            default:
-               kWarning() << "userAdvice not accept or reject, this should never happen!";
+               qWarning() << "userAdvice not accept or reject, this should never happen!";
                break;
         }
     }

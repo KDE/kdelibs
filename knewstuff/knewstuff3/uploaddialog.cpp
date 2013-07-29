@@ -36,7 +36,7 @@
 #include <kpixmapsequencewidget.h>
 #include <krun.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kimageio.h>
@@ -78,7 +78,7 @@ bool UploadDialog::Private::init(const QString& configfile)
     bool success = true;
     KConfig conf(configfile);
     if (conf.accessMode() == KConfig::NoAccess) {
-        kError() << "No knsrc file named '" << configfile << "' was found." << endl;
+        qCritical() << "No knsrc file named '" << configfile << "' was found." << endl;
         success = false;
     }
     // FIXME: accessMode() doesn't return NoAccess for non-existing files
@@ -86,16 +86,16 @@ bool UploadDialog::Private::init(const QString& configfile)
     // - this needs to be looked at again until KConfig backend changes for KDE 4
     //   the check below is a workaround
     if (QStandardPaths::locate(QStandardPaths::ConfigLocation, configfile).isEmpty()) {
-        kError() << "No knsrc file named '" << configfile << "' was found." << endl;
+        qCritical() << "No knsrc file named '" << configfile << "' was found." << endl;
         success = false;
     }
 
     KConfigGroup group;
     if (conf.hasGroup("KNewStuff3")) {
-        kDebug() << "Loading KNewStuff3 config: " << configfile;
+        // qDebug() << "Loading KNewStuff3 config: " << configfile;
         group = conf.group("KNewStuff3");
     } else {
-        kError() << "A knsrc file was found but it doesn't contain a KNewStuff3 section." << endl;
+        qCritical() << "A knsrc file was found but it doesn't contain a KNewStuff3 section." << endl;
         success = false;
     }
 
@@ -118,7 +118,7 @@ bool UploadDialog::Private::init(const QString& configfile)
         ui.mCategoryCombo->setVisible(false);
     }
 
-    kDebug() << "Categories: " << categoryNames;
+    // qDebug() << "Categories: " << categoryNames;
 
     q->connect(atticaHelper, SIGNAL(providersLoaded(QStringList)), q, SLOT(_k_providersLoaded(QStringList)));
     q->connect(atticaHelper, SIGNAL(loginChecked(bool)), q, SLOT(_k_checkCredentialsFinished(bool)));
@@ -262,7 +262,7 @@ void UploadDialog::Private::_k_providersLoaded(const QStringList& providers)
     if (providers.size() == 0) {
         // TODO 4.6 enable new string: setIdle(i18n("Could not fetch provider information."));
         ui.stackedWidget->setEnabled(false);
-        kWarning() << "Could not load providers.";
+        qWarning() << "Could not load providers.";
         return;
     }
     setIdle(QString());
@@ -545,7 +545,7 @@ void UploadDialog::setPreviewImageFile(uint number, const QUrl & file)
         d->ui.previewImage3->setPixmap(preview.scaled(d->ui.previewImage3->size()));
         break;
     default :
-        kError() << "Wrong preview image file number";
+        qCritical() << "Wrong preview image file number";
         break;
     }
 }
@@ -659,7 +659,7 @@ void UploadDialog::Private::_k_changePreview1()
     const QString filter = KImageIO::pattern( KImageIO::Reading ).replace( '\n', ";;" );
     QUrl url = QFileDialog::getOpenFileUrl(q, i18n("Select preview image"), QUrl(), filter);
     previewFile1 = url;
-    kDebug() << "preview is: " << url.url();
+    // qDebug() << "preview is: " << url.url();
     QPixmap preview(url.toLocalFile());
     ui.previewImage1->setPixmap(preview.scaled(ui.previewImage1->size()));
 }

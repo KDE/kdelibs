@@ -41,7 +41,7 @@
 
 #include <klocalizedstring.h>
 #include <kfileitem.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #if HAVE_ACL_LIBACL_H
 # include <acl/libacl.h>
@@ -584,7 +584,7 @@ void EditACLEntryDialog::slotOk()
 {
     KACLListView::EntryType type = static_cast<KACLListView::EntryType>( m_buttonIds[m_buttonGroup->checkedButton()] );
 
-    kWarning() << "Type 2: " << type;
+    qWarning() << "Type 2: " << type;
 
     QString qualifier;
     if ( type == KACLListView::NamedUser )

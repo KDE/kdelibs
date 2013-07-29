@@ -31,7 +31,7 @@
 #include <assert.h>
 #include <QList>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include "xml/dom_docimpl.h"
 #include "misc/khtmllayout.h"
@@ -56,7 +56,7 @@ template<class Key, class T> class QCache;
 #define KHTMLAssert( x ) if( !(x) ) { \
     const RenderObject *o = this; while( o->parent() ) o = o->parent(); \
     o->printTree(); \
-    qDebug(" this object = %p, %s", (void*) this, qPrintable(kBacktrace()) ); \
+    qDebug(" this object = %p", (void*) this); \
     assert( x ); \
 }
 #else

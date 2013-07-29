@@ -27,7 +27,6 @@
 
 #include <kio/copyjob.h>
 #include <kio/jobuidelegate.h>
-#include "kdebug.h"
 
 class KEmoticonsProviderPrivate
 {

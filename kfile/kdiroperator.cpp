@@ -54,7 +54,7 @@
 #include <qurlpathinfo.h>
 
 #include <qapplication.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kdirlister.h>
 #include <kfileitemdelegate.h>
 #include <klocalizedstring.h>
@@ -1021,7 +1021,7 @@ void KDirOperator::Private::checkPath(const QString &, bool /*takeFiles*/) // SL
         accept();
     }
 #endif
-    kDebug(kfile_area) << "TODO KDirOperator::checkPath()";
+    // qDebug() << "TODO KDirOperator::checkPath()";
 }
 
 void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
@@ -1134,7 +1134,7 @@ Qt::SortOrder KDirOperator::Private::sortOrder() const
 
 void KDirOperator::Private::updateSorting(QDir::SortFlags sort)
 {
-    kDebug(kfile_area) << "changing sort flags from"  << sorting << "to" << sort;
+    // qDebug() << "changing sort flags from"  << sorting << "to" << sort;
     if (sort == sorting) {
         return;
     }
@@ -1671,7 +1671,7 @@ void KDirOperator::setDirLister(KDirLister *lister)
 
     QWidget* mainWidget = topLevelWidget();
     d->dirLister->setMainWindow(mainWidget);
-    kDebug(kfile_area) << "mainWidget=" << mainWidget;
+    // qDebug() << "mainWidget=" << mainWidget;
 
     connect(d->dirLister, SIGNAL(percent(int)),
             SLOT(_k_slotProgress(int)));
@@ -1709,7 +1709,7 @@ void KDirOperator::highlightFile(const KFileItem &item)
 
 void KDirOperator::setCurrentItem(const QUrl& url)
 {
-    kDebug(kfile_area);
+    // qDebug();
 
     KFileItem item = d->dirLister->findByUrl(url);
     if (d->shouldFetchForItems && item.isNull()) {
@@ -1723,7 +1723,7 @@ void KDirOperator::setCurrentItem(const QUrl& url)
 
 void KDirOperator::setCurrentItem(const KFileItem& item)
 {
-    kDebug(kfile_area);
+    // qDebug();
 
     if (!d->itemView) {
         return;
@@ -1742,7 +1742,7 @@ void KDirOperator::setCurrentItem(const KFileItem& item)
 
 void KDirOperator::setCurrentItems(const QList<QUrl>& urls)
 {
-    kDebug(kfile_area);
+    // qDebug();
 
     if (!d->itemView) {
         return;
@@ -1764,7 +1764,7 @@ void KDirOperator::setCurrentItems(const QList<QUrl>& urls)
 
 void KDirOperator::setCurrentItems(const KFileItemList& items)
 {
-    kDebug(kfile_area);
+    // qDebug();
 
     if (d->itemView == 0) {
         return;

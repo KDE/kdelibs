@@ -30,7 +30,7 @@
 
 #include <kcompletionbox.h>
 #include <kcursor.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kfind.h>
 #include <kfinddialog.h>
 #include <klocalizedstring.h>
@@ -1378,7 +1378,7 @@ RenderObject* RenderFieldset::findLegend() const
 
 void RenderFieldset::paintBoxDecorations(PaintInfo& pI, int _tx, int _ty)
 {
-    //kDebug( 6040 ) << renderName() << "::paintDecorations()";
+    //qDebug() << renderName() << "::paintDecorations()";
 
     RenderObject* legend = findLegend();
     if (!legend)

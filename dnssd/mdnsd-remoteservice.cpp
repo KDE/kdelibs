@@ -21,7 +21,7 @@
 #include <netinet/in.h>
 #include <QtCore/QEventLoop>
 #include <QtCore/QCoreApplication>
-#include <kdebug.h>
+#include <QDebug>
 #include "remoteservice.h"
 #include "servicebase_p.h"
 #include "mdnsd-responder.h"
@@ -77,7 +77,7 @@ void RemoteService::resolveAsync()
 	K_D;
 	if (d->isRunning()) return;
 	d->m_resolved = false;
-	kDebug() << this << ":Starting resolve of : " << d->m_serviceName << " " << d->m_type << " " << d->m_domain << "\n";
+	//qDebug() << this << ":Starting resolve of : " << d->m_serviceName << " " << d->m_type << " " << d->m_domain << "\n";
 	DNSServiceRef ref;
 	if (DNSServiceResolve(&ref,0,0,d->m_serviceName.toUtf8(), d->m_type.toLatin1().constData(), 
  		domainToDNS(d->m_domain),(DNSServiceResolveReply)resolve_callback,reinterpret_cast<void*>(d))
@@ -135,7 +135,7 @@ void resolve_callback    (    DNSServiceRef,
 	char key[256];
 	int index=0;
 	unsigned char valueLen;
-	kDebug() << "Resolve callback\n";
+	//qDebug() << "Resolve callback\n";
 	QMap<QString,QByteArray> map;
         const void *voidValue = 0;
 	while (TXTRecordGetItemAtIndex(txtLen,txtRecord,index++,256,key,&valueLen,

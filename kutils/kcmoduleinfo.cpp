@@ -26,7 +26,7 @@
 #include <QtCore/QVariant>
 
 #include <kdesktopfile.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <klocalizedstring.h>
 
@@ -60,7 +60,7 @@ KCModuleInfo::Private::Private( KService::Ptr s )
 {
   if ( !service )
   {
-    kDebug(712) << "Could not find the service.";
+    // qDebug() << "Could not find the service.";
     return;
   }
 

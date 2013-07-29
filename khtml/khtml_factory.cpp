@@ -25,12 +25,12 @@
 
 KHTMLFactory::KHTMLFactory()
 {
-    kDebug(6000) << this;
+    // qDebug() << this;
 }
 
 KHTMLFactory::~KHTMLFactory()
 {
-    kDebug(6000) << this;
+    // qDebug() << this;
     // Called when khtml part is unloaded; check that we didn't leak anything
     KHTMLGlobal::finalCheck();
 }

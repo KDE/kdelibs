@@ -40,7 +40,6 @@
 #include <fixx11h.h>
 #endif
 #include <QtGlobal>
-#include <kdebug.h>
 
 struct MetricsInfo {
     const char* name;

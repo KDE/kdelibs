@@ -106,9 +106,9 @@ static void printSubTree(NodeImpl *node, int indent = 0)
 {
     QString temp;
     temp.fill(' ', indent);
-    kDebug() << temp << node << node->nodeName() << node->renderer()
-        << (node->renderer() ? node->renderer()->renderName() : "")
-        << (node->isTextNode() ? static_cast<TextImpl*>(node)->toString() : "") << endl;
+    // qDebug() << temp << node << node->nodeName() << node->renderer()
+    //    << (node->renderer() ? node->renderer()->renderName() : "")
+    //    << (node->isTextNode() ? static_cast<TextImpl*>(node)->toString() : "") << endl;
     for (NodeImpl *subNode = node->firstChild(); subNode; subNode = subNode->nextSibling())
         printSubTree(subNode, indent + 1);
 }
@@ -116,7 +116,7 @@ static void printSubTree(NodeImpl *node, int indent = 0)
 void printEnclosingBlockTree(NodeImpl *node)
 {
     if (!node || !node->enclosingBlockFlowElement()) {
-        kDebug() << "[null node]" << node << endl;
+        // qDebug() << "[null node]" << node << endl;
         return;
     }
     printSubTree(node->enclosingBlockFlowElement());
@@ -125,7 +125,7 @@ void printEnclosingBlockTree(NodeImpl *node)
 void printRootEditableTree(NodeImpl *node)
 {
     if (!node || !node->rootEditableElement()) {
-        kDebug() << "[null node]" << node << endl;
+        // qDebug() << "[null node]" << node << endl;
         return;
     }
     printSubTree(node->rootEditableElement());
@@ -189,7 +189,7 @@ long Position::renderedOffset() const
 Position Position::equivalentLeafPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug(6200) << *this << endl;
+    // qDebug() << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -198,7 +198,7 @@ Position Position::equivalentLeafPosition() const
         return *this;
 
 #ifdef DEBUG_CARET
-    kDebug(6200) << "[Position]" << this << endl;
+    // qDebug() << "[Position]" << this << endl;
 #endif
     NodeImpl *n = node();
     int count = 0;
@@ -207,7 +207,7 @@ Position Position::equivalentLeafPosition() const
         if (!n || !n->inSameContainingBlockFlowElement(node()))
             return *this;
 #ifdef DEBUG_CARET
-        kDebug(6200) << "[iterate]" << n << count << n->maxOffset() << endl;
+        // qDebug() << "[iterate]" << n << count << n->maxOffset() << endl;
 #endif
         if (count + n->maxOffset() >= offset()) {
             count = offset() - count;
@@ -221,7 +221,7 @@ Position Position::equivalentLeafPosition() const
 Position Position::previousRenderedEditablePosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug(6200) << *this << endl;
+    // qDebug() << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -244,7 +244,7 @@ Position Position::previousRenderedEditablePosition() const
 Position Position::nextRenderedEditablePosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug(6200) << *this << endl;
+    // qDebug() << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -267,14 +267,14 @@ Position Position::nextRenderedEditablePosition() const
 Position Position::previousCharacterPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug(6200) << *this << endl;
+    // qDebug() << *this << endl;
 #endif
     if (isEmpty())
         return Position();
 
     NodeImpl *fromRootNavigableElement = rootNavigableElement(node());
 #ifdef DEBUG_CARET
-    kDebug(6200) << "RootElement" << fromRootNavigableElement << endl;
+    // qDebug() << "RootElement" << fromRootNavigableElement << endl;
 #endif
     PositionIterator it(*this);
 
@@ -283,12 +283,12 @@ Position Position::previousCharacterPosition() const
     while (!it.atStart()) {
         Position pos = it.previous();
 #ifdef DEBUG_CARET
-        kDebug(6200) << "iterate" << pos << endl;
+        // qDebug() << "iterate" << pos << endl;
 #endif
 
         if (rootNavigableElement(pos.node()) != fromRootNavigableElement) {
 #ifdef DEBUG_CARET
-            kDebug(6200) << "different root" << rootNavigableElement(pos.node()) << endl;
+            // qDebug() << "different root" << rootNavigableElement(pos.node()) << endl;
 #endif
             return *this;
         }
@@ -297,7 +297,7 @@ Position Position::previousCharacterPosition() const
             return currentRPosition.position();
     }
 #ifdef DEBUG_CARET
-    kDebug(6200) << "no previous position" << endl;
+    // qDebug() << "no previous position" << endl;
 #endif
     return *this;
 }
@@ -305,7 +305,7 @@ Position Position::previousCharacterPosition() const
 Position Position::nextCharacterPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug(6200) << *this << endl;
+    // qDebug() << *this << endl;
 #endif
     if (isEmpty())
         return Position();
@@ -395,7 +395,7 @@ Position Position::nextLinePosition(int x) const
 Position Position::equivalentUpstreamPosition() const
 {
 #ifdef DEBUG_CARET
-    kDebug(6200) << *this << endl;
+    // qDebug() << *this << endl;
 #endif
     if (!node())
         return Position();
@@ -405,7 +405,7 @@ Position Position::equivalentUpstreamPosition() const
     PositionIterator it(*this);
     for (; !it.atStart(); it.previous()) {
 #ifdef DEBUG_CARET
-        kDebug(6200) << "[iterate]" << it.current() << endl;
+        // qDebug() << "[iterate]" << it.current() << endl;
 #endif
         NodeImpl *currentBlock = it.current().node()->enclosingBlockFlowElement();
         if (block != currentBlock)
@@ -455,7 +455,7 @@ Position Position::equivalentUpstreamPosition() const
 
 Position Position::equivalentDownstreamPosition() const
 {
-    kDebug() << *this << endl;
+    // qDebug() << *this << endl;
     if (!node())
         return Position();
 
@@ -463,7 +463,7 @@ Position Position::equivalentDownstreamPosition() const
 
     PositionIterator it(*this);
     for (; !it.atEnd(); it.next()) {
-        kDebug() << "[iterate]" << it.current() << endl;
+        // qDebug() << "[iterate]" << it.current() << endl;
         NodeImpl *currentBlock = it.current().node()->enclosingBlockFlowElement();
         if (block != currentBlock)
             return it.previous();
@@ -583,7 +583,7 @@ bool Position::rendersOnSameLine(const Position &pos) const
 bool Position::rendersInDifferentPosition(const Position &pos) const
 {
     return RenderPosition::rendersInDifferentPosition(RenderPosition::fromDOMPosition(*this), RenderPosition::fromDOMPosition(pos));
-    /*kDebug() << *this << pos << endl;
+    /*// qDebug() << *this << pos << endl;
     if (isEmpty() || pos.isEmpty())
         return false;
 
@@ -633,14 +633,14 @@ bool Position::rendersInDifferentPosition(const Position &pos) const
     if (renderer == posRenderer && thisRenderedOffset == posRenderedOffset)
         return false;
 
-    kDebug(6200) << "onDifferentLine:" << (renderersOnDifferentLine(renderer, offset(), posRenderer, pos.offset()) ? "YES" : "NO");
-    kDebug(6200) << "renderer:" << renderer << "[" << (renderer ? renderer->inlineBox(offset()) : 0) << "]";
-    kDebug(6200) << "thisRenderedOffset:" << thisRenderedOffset;
-    kDebug(6200) << "posRenderer:" << posRenderer <<  "[" << (posRenderer ? posRenderer->inlineBox(offset()) : 0) << "]";
-    kDebug(6200) << "posRenderedOffset:"<< posRenderedOffset;
-    kDebug(6200) << "node min/max:"<< node()->caretMinOffset() << "/" << node()->caretMaxRenderedOffset();
-    kDebug(6200) << "pos node min/max:"<< pos.node()->caretMinOffset() << "/" << pos.node()->caretMaxRenderedOffset();
-    kDebug(6200) << "----------------------------------------------------------------------";
+    // qDebug() << "onDifferentLine:" << (renderersOnDifferentLine(renderer, offset(), posRenderer, pos.offset()) ? "YES" : "NO");
+    // qDebug() << "renderer:" << renderer << "[" << (renderer ? renderer->inlineBox(offset()) : 0) << "]";
+    // qDebug() << "thisRenderedOffset:" << thisRenderedOffset;
+    // qDebug() << "posRenderer:" << posRenderer <<  "[" << (posRenderer ? posRenderer->inlineBox(offset()) : 0) << "]";
+    // qDebug() << "posRenderedOffset:"<< posRenderedOffset;
+    // qDebug() << "node min/max:"<< node()->caretMinOffset() << "/" << node()->caretMaxRenderedOffset();
+    // qDebug() << "pos node min/max:"<< pos.node()->caretMinOffset() << "/" << pos.node()->caretMaxRenderedOffset();
+    // qDebug() << "----------------------------------------------------------------------";
 
     InlineBox *b1 = renderer ? renderer->inlineBox(offset()) : 0;
     InlineBox *b2 = posRenderer ? posRenderer->inlineBox(pos.offset()) : 0;
@@ -669,14 +669,14 @@ bool Position::rendersInDifferentPosition(const Position &pos) const
 bool Position::isFirstRenderedPositionOnLine() const
 {
     // return RenderPosition::fromDOMPosition(*this).isFirst*/
-    kDebug() << *this << endl;
+    // qDebug() << *this << endl;
     if (isEmpty())
         return false;
 
     RenderObject *renderer = node()->renderer();
     if (!renderer)
         return false;
-    kDebug() << "Renderer" << renderer << renderer->renderName() << endl;
+    // qDebug() << "Renderer" << renderer << renderer->renderName() << endl;
 
     if (renderer->style()->visibility() != khtml::VISIBLE)
         return false;
@@ -685,7 +685,7 @@ bool Position::isFirstRenderedPositionOnLine() const
     PositionIterator it(pos);
     while (!it.atStart()) {
         it.previous();
-        kDebug() << "To previous" << it.current() << endl;
+        // qDebug() << "To previous" << it.current() << endl;
         if (it.current().inRenderedContent())
             return !rendersOnSameLine(it.current());
             // return renderersOnDifferentLine(renderer, offset(), it.current().node()->renderer(), it.current().offset());

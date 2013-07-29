@@ -24,7 +24,7 @@
 
 #include "klauncher.h"
 #include "kcrash.h"
-#include "kdebug.h"
+#include "QDebug"
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -60,7 +60,7 @@ bool mac_set_dbus_address(QString value)
 	if (!value.isEmpty() && QFile::exists(value) && (QFile::permissions(value) & QFile::WriteUser)) {
 		value = QLatin1String("unix:path=") + value;
 		qputenv("DBUS_SESSION_BUS_ADDRESS", value.toLocal8Bit());
-		kDebug() << "set session bus address to" << value;
+		// qDebug() << "set session bus address to" << value;
 		return true;
 	}
 	return false;
@@ -105,11 +105,11 @@ void mac_initialize_dbus()
 
 		qp.start(externalProc, QStringList() << QLatin1String("getenv") << QLatin1String("DBUS_LAUNCHD_SESSION_BUS_SOCKET"));
                 if (!qp.waitForFinished(timeout)) {
-                    kDebug() << "error running" << externalProc << qp.errorString();
+                    // qDebug() << "error running" << externalProc << qp.errorString();
                     return;
                 }
                 if (qp.exitCode() != 0) {
-                    kDebug() << externalProc << "unsuccessful:" << qp.readAllStandardError();
+                    // qDebug() << externalProc << "unsuccessful:" << qp.readAllStandardError();
                     return;
                 }
 
@@ -119,7 +119,7 @@ void mac_initialize_dbus()
 	}
 
 	if (dbus_initialized == false) {
-		kDebug() << "warning: unable to initialize D-Bus environment!";
+		// qDebug() << "warning: unable to initialize D-Bus environment!";
 	}
 
 }
@@ -156,14 +156,14 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
    {
       QString service(QLatin1String("org.kde.klauncher5")); // same as ktoolinvocation.cpp
       if (!QDBusConnection::sessionBus().isConnected()) {
-         kWarning() << "No DBUS session-bus found. Check if you have started the DBUS server.";
+         qWarning() << "No DBUS session-bus found. Check if you have started the DBUS server.";
          return 1;
       }
       QDBusReply<QDBusConnectionInterface::RegisterServiceReply> reply =
           QDBusConnection::sessionBus().interface()->registerService(service);
       if (!reply.isValid())
       {
-         kWarning() << "DBUS communication problem!";
+         qWarning() << "DBUS communication problem!";
          return 1;
       }
       if (reply == QDBusConnectionInterface::ServiceRegistered)
@@ -171,12 +171,12 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
 
       if (--maxTry == 0)
       {
-         kWarning() << "Another instance of klauncher is already running!";
+         qWarning() << "Another instance of klauncher is already running!";
          return 1;
       }
 
       // Wait a bit...
-      kWarning() << "Waiting for already running klauncher to exit.";
+      qWarning() << "Waiting for already running klauncher to exit.";
       sleep(1);
 
       // Try again...

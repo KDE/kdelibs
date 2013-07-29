@@ -150,7 +150,7 @@ void KSelectionOwner::Private::claimSucceeded()
 
     xcb_send_event(QX11Info::connection(), false, root, XCB_EVENT_MASK_STRUCTURE_NOTIFY, (const char *) &ev);
 
-    // kDebug() << "Claimed selection";
+    // qDebug() << "Claimed selection";
 
     Q_EMIT owner->claimedOwnership();
 }
@@ -169,7 +169,7 @@ void KSelectionOwner::Private::gotTimestamp()
 
     if (new_owner != window)
     {
-        // kDebug() << "Failed to claim selection : " << new_owner;
+        // qDebug() << "Failed to claim selection : " << new_owner;
         xcb_destroy_window(c, window);
         timestamp = XCB_CURRENT_TIME;
         window = XCB_NONE;
@@ -179,7 +179,7 @@ void KSelectionOwner::Private::gotTimestamp()
     }
 
     if (prev_owner != XCB_NONE) {
-        // kDebug() << "Waiting for previous owner to disown";
+        // qDebug() << "Waiting for previous owner to disown";
         timer.start(1000, owner);
         state = WaitingForPreviousOwner;
 
@@ -199,7 +199,7 @@ void KSelectionOwner::Private::timeout()
     state = Idle;
 
     if (force_kill) {
-        // kDebug() << "Killing previous owner";
+        // qDebug() << "Killing previous owner";
         xcb_connection_t *c = QX11Info::connection();
 
         // Ignore any errors from the kill request
@@ -230,7 +230,7 @@ void KSelectionOwner::claim(bool force_P, bool force_kill_P)
     {
         if (!force_P)
         {
-            // kDebug() << "Selection already owned, failing";
+            // qDebug() << "Selection already owned, failing";
             Q_EMIT failedToClaimOwnership();
             return;
         }
@@ -266,7 +266,7 @@ void KSelectionOwner::release()
     xcb_destroy_window(QX11Info::connection(), d->window); // also makes the selection not owned
     d->window = XCB_NONE;
 
-    // kDebug() << "Releasing selection";
+    // qDebug() << "Releasing selection";
 
     d->timestamp = XCB_CURRENT_TIME;
 }
@@ -308,7 +308,7 @@ bool KSelectionOwner::filterEvent( void* ev_P )
             return false;
 
         d->timestamp = XCB_CURRENT_TIME;
-//	    kDebug() << "Lost selection";
+//	    qDebug() << "Lost selection";
 
         xcb_window_t window = d->window;
         Q_EMIT lostOwnership();
@@ -337,7 +337,7 @@ bool KSelectionOwner::filterEvent( void* ev_P )
             return false;
 
         d->timestamp = XCB_CURRENT_TIME;
-//	    kDebug() << "Lost selection (destroyed)";
+//	    qDebug() << "Lost selection (destroyed)";
         Q_EMIT lostOwnership();
         return true;
     }
@@ -396,7 +396,7 @@ void KSelectionOwner::filter_selection_request( void* event )
     if (ev->time != XCB_CURRENT_TIME && ev->time - d->timestamp > 1U << 31)
         return; // too old or too new request
 
-    // kDebug() << "Got selection request";
+    // qDebug() << "Got selection request";
 
     xcb_connection_t *c = QX11Info::connection();
     bool handled = false;
@@ -457,7 +457,7 @@ void KSelectionOwner::filter_selection_request( void* event )
 bool KSelectionOwner::handle_selection(xcb_atom_t target_P, xcb_atom_t property_P, xcb_window_t requestor_P)
 {
     if( target_P == Private::xa_timestamp ) {
-        // kDebug() << "Handling timestamp request";
+        // qDebug() << "Handling timestamp request";
         xcb_change_property(QX11Info::connection(), requestor_P, property_P, XCB_ATOM_INTEGER, 32,
                             XCB_PROP_MODE_REPLACE, 1, reinterpret_cast<const void *>(&d->timestamp));
     } else if (target_P == Private::xa_targets) {
@@ -478,7 +478,7 @@ void KSelectionOwner::replyTargets(xcb_atom_t property_P, xcb_window_t requestor
     xcb_change_property(QX11Info::connection(), requestor_P, property_P, XCB_ATOM_ATOM, 32, XCB_PROP_MODE_REPLACE,
                         sizeof(atoms) / sizeof(atoms[0]), reinterpret_cast<const void *>(atoms));
 
-    // kDebug() << "Handling targets request";
+    // qDebug() << "Handling targets request";
 }
 
 bool KSelectionOwner::genericReply(xcb_atom_t, xcb_atom_t, xcb_window_t)
@@ -648,7 +648,7 @@ void KSelectionWatcher::filterEvent(void* ev_P)
 //        if( cm_event->type != Private::manager_atom
 //            || cm_event->data.l[ 1 ] != static_cast< long >( d->selection ))
 //            return;
-//        kDebug() << "handling message";
+//        qDebug() << "handling message";
         //if( static_cast< long >( owner()) == cm_event->data.l[ 2 ] ) {
             // owner() emits newOwner() if needed, no need to do it twice
         //}

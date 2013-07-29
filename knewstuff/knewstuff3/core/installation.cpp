@@ -37,7 +37,7 @@
 #include <qdesktopservices.h> // TODO remove, this was only for my playing round
 #include <qstandardpaths.h>
 #include "klocalizedstring.h"
-#include "kdebug.h"
+#include "QDebug"
 
 #include "core/security.h"
 #ifdef Q_OS_WIN
@@ -68,7 +68,7 @@ bool Installation::readConfig(const KConfigGroup& group)
         uncompresssetting = "always";
     }
     if (uncompresssetting != "always" && uncompresssetting != "archive" && uncompresssetting != "never") {
-        kError() << "invalid Uncompress setting chosen, must be one of: always, archive, or never" << endl;
+        qCritical() << "invalid Uncompress setting chosen, must be one of: always, archive, or never" << endl;
         return false;
     }
     uncompression = uncompresssetting;
@@ -92,7 +92,7 @@ bool Installation::readConfig(const KConfigGroup& group)
             xdgTargetDirectory.isEmpty() &&
             installPath.isEmpty() &&
             absoluteInstallPath.isEmpty()) {
-        kError() << "No installation target set";
+        qCritical() << "No installation target set";
         return false;
     }
 
@@ -105,7 +105,7 @@ bool Installation::readConfig(const KConfigGroup& group)
         else if (checksumpolicy == "always")
             checksumPolicy = Installation::CheckAlways;
         else {
-            kError() << "The checksum policy '" + checksumpolicy + "' is unknown." << endl;
+            qCritical() << "The checksum policy '" + checksumpolicy + "' is unknown." << endl;
             return false;
         }
     }
@@ -119,7 +119,7 @@ bool Installation::readConfig(const KConfigGroup& group)
         else if (signaturepolicy == "always")
             signaturePolicy = Installation::CheckAlways;
         else {
-            kError() << "The signature policy '" + signaturepolicy + "' is unknown." << endl;
+            qCritical() << "The signature policy '" + signaturepolicy + "' is unknown." << endl;
             return false;
         }
     }
@@ -131,13 +131,13 @@ bool Installation::readConfig(const KConfigGroup& group)
         else if (scopeString == "system")
             scope = ScopeSystem;
         else {
-            kError() << "The scope '" + scopeString + "' is unknown." << endl;
+            qCritical() << "The scope '" + scopeString + "' is unknown." << endl;
             return false;
         }
 
         if (scope == ScopeSystem) {
             if (!installPath.isEmpty()) {
-                kError() << "System installation cannot be mixed with InstallPath." << endl;
+                qCritical() << "System installation cannot be mixed with InstallPath." << endl;
                 return false;
             }
         }
@@ -169,7 +169,7 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
     QUrl source = QUrl(entry.payload());
 
     if (!source.isValid()) {
-        kError() << "The entry doesn't have a payload." << endl;
+        qCritical() << "The entry doesn't have a payload." << endl;
         emit signalInstallationFailed(i18n("Download of item failed: no download URL for \"%1\".", entry.name()));
         return;
     }
@@ -177,7 +177,7 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
     // FIXME no clue what this is supposed to do
     if (isRemote()) {
         // Remote resource
-        //kDebug() << "Relaying remote payload '" << source << "'";
+        //qDebug() << "Relaying remote payload '" << source << "'";
         install(entry, source.toDisplayString(QUrl::PreferLocalFile));
         emit signalPayloadLoaded(source);
         // FIXME: we still need registration for eventual deletion
@@ -189,7 +189,7 @@ void Installation::downloadPayload(const KNS3::EntryInternal& entry)
     if (!tempFile.open())
         return; // ERROR
     QUrl destination = QUrl::fromLocalFile(tempFile.fileName());
-    kDebug() << "Downloading payload" << source << "to" << destination;
+    // qDebug() << "Downloading payload" << source << "to" << destination;
 
     // FIXME: check for validity
     KIO::FileCopyJob *job = KIO::file_copy(source, destination, -1, KIO::Overwrite | KIO::HideProgressInfo);
@@ -238,10 +238,10 @@ void Installation::slotPayloadResult(KJob *job)
 
 void Installation::install(KNS3::EntryInternal entry, const QString& downloadedFile)
 {
-    kDebug() << "Install: " << entry.name() << " from " << downloadedFile;
+    // qDebug() << "Install: " << entry.name() << " from " << downloadedFile;
 
     if (entry.payload().isEmpty()) {
-        kDebug() << "No payload associated with: " << entry.name();
+        // qDebug() << "No payload associated with: " << entry.name();
         return;
     }
 
@@ -252,25 +252,25 @@ void Installation::install(KNS3::EntryInternal entry, const QString& downloadedF
     if (checksumPolicy() != Installation::CheckNever) {
         if (entry.checksum().isEmpty()) {
             if (checksumPolicy() == Installation::CheckIfPossible) {
-                //kDebug() << "Skip checksum verification";
+                //qDebug() << "Skip checksum verification";
             } else {
-                kError() << "Checksum verification not possible" << endl;
+                qCritical() << "Checksum verification not possible" << endl;
                 return false;
             }
         } else {
-            //kDebug() << "Verify checksum...";
+            //qDebug() << "Verify checksum...";
         }
     }
     if (signaturePolicy() != Installation::CheckNever) {
         if (entry.signature().isEmpty()) {
             if (signaturePolicy() == Installation::CheckIfPossible) {
-                //kDebug() << "Skip signature verification";
+                //qDebug() << "Skip signature verification";
             } else {
-                kError() << "Signature verification not possible" << endl;
+                qCritical() << "Signature verification not possible" << endl;
                 return false;
             }
         } else {
-            //kDebug() << "Verify signature...";
+            //qDebug() << "Verify signature...";
         }
     }
     */
@@ -381,11 +381,11 @@ QString Installation::targetInstallationPath(const QString& payloadfile)
             pathcounter++;
         }
         if (pathcounter != 1) {
-            kError() << "Wrong number of installation directories given." << endl;
+            qCritical() << "Wrong number of installation directories given." << endl;
             return QString();
         }
 
-        kDebug() << "installdir: " << installdir;
+        // qDebug() << "installdir: " << installdir;
 
     }
 
@@ -407,7 +407,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             installpath = installdir;
             QMimeDatabase db;
             QMimeType mimeType = db.mimeTypeForFile(payloadfile);
-            //kDebug() << "Postinstallation: uncompress the file";
+            //qDebug() << "Postinstallation: uncompress the file";
 
             // FIXME: check for overwriting, malicious archive entries (../foo) etc.
             // FIXME: KArchive should provide "safe mode" for this!
@@ -426,7 +426,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
                 archive = new KTar(payloadfile);
             } else {
                 delete archive;
-                kError() << "Could not determine type of archive file '" << payloadfile << "'";
+                qCritical() << "Could not determine type of archive file '" << payloadfile << "'";
                 if (uncompression == "always") {
                     return QStringList();
                 }
@@ -436,7 +436,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             if (isarchive) {
                 bool success = archive->open(QIODevice::ReadOnly);
                 if (!success) {
-                    kError() << "Cannot open archive file '" << payloadfile << "'";
+                    qCritical() << "Cannot open archive file '" << payloadfile << "'";
                     if (uncompression == "always") {
                         return QStringList();
                     }
@@ -458,7 +458,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             }
         }
 
-        kDebug() << "isarchive: " << isarchive;
+        // qDebug() << "isarchive: " << isarchive;
 
         if (uncompression == "never" || (uncompression == "archive" && !isarchive)) {
             // no decompress but move to target
@@ -466,7 +466,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             /// @todo when using KIO::get the http header can be accessed and it contains a real file name.
             // FIXME: make naming convention configurable through *.knsrc? e.g. for kde-look.org image names
             QUrl source = QUrl(entry.payload());
-            kDebug() << "installing non-archive from " << source.url();
+            // qDebug() << "installing non-archive from " << source.url();
             QString installfile;
             QString ext = source.fileName().section('.', -1);
             if (customName) {
@@ -489,7 +489,7 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             }
             installpath = installdir + '/' + installfile;
 
-            //kDebug() << "Install to file " << installpath;
+            //qDebug() << "Install to file " << installpath;
             // FIXME: copy goes here (including overwrite checking)
             // FIXME: what must be done now is to update the cache *again*
             //        in order to set the new payload filename (on root tag only)
@@ -509,10 +509,10 @@ QStringList Installation::installDownloadedFileAndUncompress(const KNS3::EntryIn
             }
             if (success) {
                 success = file.rename(QUrl(installpath).toLocalFile());
-                kDebug() << "move: " << file.fileName() << " to " << installpath;
+                // qDebug() << "move: " << file.fileName() << " to " << installpath;
             }
             if (!success) {
-                kError() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
+                qCritical() << "Cannot move file '" << payloadfile << "' to destination '"  << installpath << "'";
                 return QStringList();
             }
             installedFiles << installpath;
@@ -527,12 +527,12 @@ void Installation::runPostInstallationCommand(const QString& installPath)
     QString fileArg(KShell::quoteArg(installPath));
     command.replace("%f", fileArg);
 
-    kDebug() << "Run command: " << command;
+    // qDebug() << "Run command: " << command;
 
     int exitcode = QProcess::execute(command);
 
     if (exitcode) {
-        kError() << "Command failed" << endl;
+        qCritical() << "Command failed" << endl;
     }
 }
 
@@ -552,9 +552,9 @@ void Installation::uninstall(EntryInternal entry)
                 int exitcode = QProcess::execute(command);
 
                 if (exitcode) {
-                    kError() << "Command failed" << endl;
+                    qCritical() << "Command failed" << endl;
                 } else {
-                    //kDebug() << "Command executed successfully";
+                    //qDebug() << "Command executed successfully";
                 }
             }
         }
@@ -573,11 +573,11 @@ void Installation::uninstall(EntryInternal entry)
             if (info.exists() || info.isSymLink()) {
                 bool worked = QFile::remove(file);
                 if (!worked) {
-                    kWarning() << "unable to delete file " << file;
+                    qWarning() << "unable to delete file " << file;
                     return;
                 }
             } else {
-                kWarning() << "unable to delete file " << file << ". file does not exist.";
+                qWarning() << "unable to delete file " << file << ". file does not exist.";
             }
         }
     }
@@ -590,7 +590,7 @@ void Installation::uninstall(EntryInternal entry)
 
 void Installation::slotInstallationVerification(int result)
 {
-    //kDebug() << "SECURITY result " << result;
+    //qDebug() << "SECURITY result " << result;
 
     //FIXME do something here ??? and get the right entry again
     EntryInternal entry;

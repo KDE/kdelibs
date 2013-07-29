@@ -27,7 +27,7 @@ using namespace Kross;
 
 void Kross::krossdebug(const QString &s)
 {
-    //kDebug(410) << s;
+    //qDebug() << s;
     qDebug() << "Kross:" << s;
 }
 

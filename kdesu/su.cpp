@@ -32,17 +32,11 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <ksharedconfig.h>
 #include <klocalizedstring.h>
 #include <qstandardpaths.h>
 #include <kuser.h>
-
-int kdesuDebugArea()
-{
-    static int s_area = KDebug::registerArea("kdesu (kdelibs)");
-    return s_area;
-}
 
 #ifndef __PATH_SU
 #define __PATH_SU "false"
@@ -78,7 +72,7 @@ SuProcess::SuProcess(const QByteArray &user, const QByteArray &command)
     d->m_superUserCommand = group.readEntry("super-user-command", DEFAULT_SUPER_USER_COMMAND);
 
     if ( d->m_superUserCommand != "sudo" && d->m_superUserCommand != "su" ) {
-      kWarning() << "unknown super user command.";
+      qWarning() << "unknown super user command.";
       d->m_superUserCommand = DEFAULT_SUPER_USER_COMMAND;
     }
 }
@@ -159,20 +153,20 @@ int SuProcess::exec(const char *password, int check)
             return check ? SuNotFound : -1;
     }
 
-    // kDebug(kdesuDebugArea()) << k_lineinfo << "Call StubProcess::exec()";
+    // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Call StubProcess::exec()";
     if (StubProcess::exec(command, args) < 0)
     {
         return check ? SuNotFound : -1;
     }
-    // kDebug(kdesuDebugArea()) << k_lineinfo << "Done StubProcess::exec()";
+    // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Done StubProcess::exec()";
 
     SuErrors ret = (SuErrors) ConverseSU(password);
-    // kDebug(kdesuDebugArea()) << k_lineinfo << "Conversation returned" << ret;
+    // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Conversation returned" << ret;
 
     if (ret == error)
     {
         if (!check)
-            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with su failed.";
+            qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Conversation with su failed.";
         return ret;
     }
     if (check == NeedPassword)
@@ -184,7 +178,7 @@ int SuProcess::exec(const char *password, int check)
  	        return ret;
  	    }
  	    if (kill(m_Pid, SIGKILL) < 0) {
- 	        kDebug() << "kill < 0";
+ 	        // qDebug() << "kill < 0";
  		//FIXME SIGKILL doesn't work for sudo,
  		//why is this different from su?
  		//A: because sudo runs as root. Perhaps we could write a Ctrl+C to its stdin, instead?
@@ -216,7 +210,7 @@ int SuProcess::exec(const char *password, int check)
     if (iret < 0)
     {
         if (!check)
-            kError(kdesuDebugArea()) << k_lineinfo << "Conversation with kdesu_stub failed.";
+            qCritical() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Conversation with kdesu_stub failed.";
         return iret;
     }
     else if (iret == 1)
@@ -246,7 +240,7 @@ int SuProcess::ConverseSU(const char *password)
     enum { WaitForPrompt, CheckStar, HandleStub } state = WaitForPrompt;
     int colon;
     unsigned i, j;
-    // kDebug(kdesuDebugArea()) << k_lineinfo << "ConverseSU starting.";
+    // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "ConverseSU starting.";
 
     QByteArray line;
     while (true)
@@ -254,7 +248,7 @@ int SuProcess::ConverseSU(const char *password)
         line = readLine();
         if (line.isNull())
             return ( state == HandleStub ? notauthorized : error);
-        kDebug(kdesuDebugArea()) << k_lineinfo << "Read line" << line;
+        // qDebug() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Read line" << line;
 
         if (line == "kdesu_stub")
         {

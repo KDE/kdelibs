@@ -35,7 +35,7 @@
 #endif /* HAVE_LIBGSSAPI */
 
 #include <krandom.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfiggroup.h>
 #include <kio/authinfo.h>
 #include <misc/kntlm/kntlm.h>
@@ -158,7 +158,7 @@ static QList<QByteArray> parseChallenge(QByteArray &ba, QByteArray *scheme, QByt
             }
             if (hasErr || (end == len)) {
                 // remove the key we already inserted
-                kDebug(7113) << "error in quoted text for key" << values.last();
+                // qDebug() << "error in quoted text for key" << values.last();
                 values.removeLast();
                 break;
              }
@@ -188,7 +188,7 @@ static QList<QByteArray> parseChallenge(QByteArray &ba, QByteArray *scheme, QByt
 
         // garbage, here should be end or field delimiter (comma)
         if (end < len && b[end] != ',') {
-            kDebug(7113) << "unexpected character" << b[end] << "found in WWW-authentication header where token boundary (,) was expected";
+            // qDebug() << "unexpected character" << b[end] << "found in WWW-authentication header where token boundary (,) was expected";
             break;
         }
     }
@@ -471,7 +471,7 @@ static QByteArray calculateResponse(const DigestAuthInfo &info, const QUrl &reso
   }
   HA1 = md.result().toHex();
 
-  kDebug(7113) << "A1 => " << HA1;
+  // qDebug() << "A1 => " << HA1;
 
   // Calcualte H(A2)
   authStr = info.method;
@@ -490,7 +490,7 @@ static QByteArray calculateResponse(const DigestAuthInfo &info, const QUrl &reso
   md.addData( authStr );
   HA2 = md.result().toHex();
 
-  kDebug(7113) << "A2 => " << HA2;
+  // qDebug() << "A2 => " << HA2;
 
   // Calcualte the response.
   authStr = HA1;
@@ -511,7 +511,7 @@ static QByteArray calculateResponse(const DigestAuthInfo &info, const QUrl &reso
   md.addData( authStr );
 
   const QByteArray response = md.result().toHex();
-  kDebug(7113) << "Response =>" << response;
+  // qDebug() << "Response =>" << response;
   return response;
 }
 
@@ -580,11 +580,11 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
         if (info.qop.contains("auth"))
             info.qop = "auth";
         else {
-            kWarning(7113) << "Unsupported digest authentication qop parameters:" << values;
+            qWarning() << "Unsupported digest authentication qop parameters:" << values;
             info.qop.clear();
         }
     } else if (info.qop == "auth-int") {
-        kWarning(7113) << "Unsupported digest authentication qop parameter:" << info.qop;
+        qWarning() << "Unsupported digest authentication qop parameter:" << info.qop;
         info.qop.clear();
     }
 
@@ -634,12 +634,12 @@ void KHttpDigestAuthentication::generateResponse(const QString &user, const QStr
         }
     }
 
-    kDebug(7113) << "RESULT OF PARSING:";
-    kDebug(7113) << "  algorithm: " << info.algorithm;
-    kDebug(7113) << "  realm:     " << info.realm;
-    kDebug(7113) << "  nonce:     " << info.nonce;
-    kDebug(7113) << "  opaque:    " << opaque;
-    kDebug(7113) << "  qop:       " << info.qop;
+    // qDebug() << "RESULT OF PARSING:";
+    // qDebug() << "  algorithm: " << info.algorithm;
+    // qDebug() << "  realm:     " << info.realm;
+    // qDebug() << "  nonce:     " << info.nonce;
+    // qDebug() << "  opaque:    " << opaque;
+    // qDebug() << "  qop:       " << info.qop;
 
     // Calculate the response...
     const QByteArray response = calculateResponse(info, m_resource);
@@ -744,7 +744,7 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
         m_finalAuthStage = false;
         // first, send type 1 message (with empty domain, workstation..., but it still works)
         if (!KNTLM::getNegotiate(buf)) {
-            kWarning(7113) << "Error while constructing Type 1 NTLM authentication request";
+            qWarning() << "Error while constructing Type 1 NTLM authentication request";
             m_isError = true;
             return;
         }
@@ -768,7 +768,7 @@ void KHttpNtlmAuthentication::generateResponse(const QString &_user, const QStri
         }
 
         if (!KNTLM::getAuth(buf, challenge, user, m_password, domain, QLatin1String("WORKSTATION"), flags)) {
-            kWarning(7113) << "Error while constructing Type 3 NTLM authentication request";
+            qWarning() << "Error while constructing Type 3 NTLM authentication request";
             m_isError = true;
             return;
         }
@@ -855,13 +855,13 @@ void KHttpNegotiateAuthentication::generateResponse(const QString &user, const Q
     // see whether we can use the SPNEGO mechanism
     major_status = gss_indicate_mechs(&minor_status, &mech_set);
     if (GSS_ERROR(major_status)) {
-        kDebug(7113) << "gss_indicate_mechs failed: " << gssError(major_status, minor_status);
+        // qDebug() << "gss_indicate_mechs failed: " << gssError(major_status, minor_status);
     } else {
         for (uint i = 0; i < mech_set->count; i++) {
             tmp_oid = &mech_set->elements[i];
             if (tmp_oid->length == spnego_oid_desc.length &&
                 !memcmp(tmp_oid->elements, spnego_oid_desc.elements, tmp_oid->length)) {
-                kDebug(7113) << "found SPNEGO mech";
+                // qDebug() << "found SPNEGO mech";
                 mech_oid = &spnego_oid_desc;
                 break;
             }
@@ -883,7 +883,7 @@ void KHttpNegotiateAuthentication::generateResponse(const QString &user, const Q
     input_token.length = 0;
 
     if (GSS_ERROR(major_status)) {
-        kDebug(7113) << "gss_import_name failed: " << gssError(major_status, minor_status);
+        // qDebug() << "gss_import_name failed: " << gssError(major_status, minor_status);
         m_isError = true;
         return;
     }
@@ -903,7 +903,7 @@ void KHttpNegotiateAuthentication::generateResponse(const QString &user, const Q
                                         NULL, NULL);
 
     if (GSS_ERROR(major_status) || (output_token.length == 0)) {
-        kDebug(7113) << "gss_init_sec_context failed: " << gssError(major_status, minor_status);
+        // qDebug() << "gss_init_sec_context failed: " << gssError(major_status, minor_status);
         gss_release_name(&minor_status, &server);
         if (ctx != GSS_C_NO_CONTEXT) {
             gss_delete_sec_context(&minor_status, &ctx, GSS_C_NO_BUFFER);

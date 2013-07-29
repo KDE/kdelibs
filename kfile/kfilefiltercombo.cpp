@@ -19,7 +19,7 @@
 
 #include "kfilefiltercombo.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <qmimedatabase.h>
 #include <config-kfile.h>
@@ -149,7 +149,7 @@ void KFileFilterCombo::setMimeFilter( const QStringList& types,
     QString allComments, allTypes;
     for(QStringList::ConstIterator it = types.begin(); it != types.end(); ++it)
     {
-        kDebug(kfile_area) << *it;
+        // qDebug() << *it;
         QMimeType type = db.mimeTypeForName(*it);
 
         if (type.name().startsWith(QLatin1String("all/"))) {

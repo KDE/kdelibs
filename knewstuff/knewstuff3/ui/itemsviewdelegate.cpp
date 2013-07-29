@@ -25,7 +25,7 @@
 #include <QApplication>
 #include <QToolButton>
 #include <QMenu>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <klocalizedstring.h>
 #include <kratingwidget.h>
@@ -88,7 +88,7 @@ void ItemsViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 {
     const ItemsModel * model = qobject_cast<const ItemsModel*>(index.model());
     if (!model) {
-        kDebug() << "WARNING - INVALID MODEL!";
+        // qDebug() << "WARNING - INVALID MODEL!";
         return;
     }
 

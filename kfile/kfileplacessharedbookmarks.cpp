@@ -26,7 +26,7 @@
 #include <QtCore/QStandardPaths>
 #include <kbookmarkmanager.h>
 #include <kbookmark.h>
-#include <kdebug.h>
+#include <QDebug>
 
 //////////////// utility functions
 
@@ -68,7 +68,7 @@ static QString nodeAsString(const QDomNode & node1)
 
 static bool exactCompareBookmarks(const KBookmark & bookmark1, const KBookmark & bookmark2)
 {
-    //kDebug() << "excat comparing:\n" << nodeAsString(bookmark1.internalElement()) << "\nwith:\n" << nodeAsString(bookmark2.internalElement());
+    //qDebug() << "excat comparing:\n" << nodeAsString(bookmark1.internalElement()) << "\nwith:\n" << nodeAsString(bookmark2.internalElement());
     return deepCompareDomNodes(bookmark1.internalElement(), bookmark2.internalElement());
 }
 
@@ -144,7 +144,7 @@ bool KFilePlacesSharedBookmarks::integrateSharedBookmarks()
     bool dirty = false;
 
     while (!bookmark.isNull()) {
-        //kDebug() << "importing" << bookmark.text();
+        //qDebug() << "importing" << bookmark.text();
 
         // skip over system items
         if (bookmark.metaDataItem("isSystemItem") == "true") {
@@ -154,7 +154,7 @@ bool KFilePlacesSharedBookmarks::integrateSharedBookmarks()
 
         // do the bookmarks match?
         if (!sharedBookmark.isNull() && compareBookmarks(bookmark, sharedBookmark)) {
-            //kDebug() << "excat comparing: targetbk:\n" << nodeAsString(bookmark.internalElement()) << "\nsourcbk:\n" << nodeAsString(sharedBookmark.internalElement());
+            //qDebug() << "excat comparing: targetbk:\n" << nodeAsString(bookmark.internalElement()) << "\nsourcbk:\n" << nodeAsString(sharedBookmark.internalElement());
 
             if (!exactCompareBookmarks(bookmark, sharedBookmark)) {
                 KBookmark cloneTarget=bookmark;
@@ -163,14 +163,14 @@ bool KFilePlacesSharedBookmarks::integrateSharedBookmarks()
                 sharedBookmark = sharedRoot.next(sharedBookmark);
                 bookmark = root.next(bookmark);
 
-                //kDebug() << "cloning" << cloneSource.text();
-                //kDebug() << "cloning: target=\n" << nodeAsString(cloneTarget.internalElement()) << "\n source:\n" << nodeAsString(cloneSource.internalElement());
+                //qDebug() << "cloning" << cloneSource.text();
+                //qDebug() << "cloning: target=\n" << nodeAsString(cloneTarget.internalElement()) << "\n source:\n" << nodeAsString(cloneSource.internalElement());
 
                 cloneBookmarkContents(cloneTarget, cloneSource);
                 dirty = true;
                 continue;
             } else {
-                //kDebug() << "keeping" << bookmark.text();
+                //qDebug() << "keeping" << bookmark.text();
             }
             sharedBookmark = sharedRoot.next(sharedBookmark);
             bookmark = root.next(bookmark);
@@ -178,7 +178,7 @@ bool KFilePlacesSharedBookmarks::integrateSharedBookmarks()
         }
 
         // they don't match -> remove
-        //kDebug() << "removing" << bookmark.text();
+        //qDebug() << "removing" << bookmark.text();
         KBookmark bookmarkToRemove = bookmark;
         bookmark = root.next(bookmark);
         root.deleteBookmark(bookmarkToRemove);
@@ -209,7 +209,7 @@ bool KFilePlacesSharedBookmarks::exportSharedBookmarks()
     // first check if they are the same
     int count=0;
     while (!bookmark.isNull()) {
-        //kDebug() << "exporting..." << bookmark.text();
+        //qDebug() << "exporting..." << bookmark.text();
 
         // skip over system items
         if (bookmark.metaDataItem("isSystemItem") == "true") {
@@ -238,7 +238,7 @@ bool KFilePlacesSharedBookmarks::exportSharedBookmarks()
         bookmark = root.next(bookmark);
     }
 
-    //kDebug() << "dirty=" << dirty << " oldsize=" << bookmarkGroupSize(sharedRoot) << " count=" << count;
+    //qDebug() << "dirty=" << dirty << " oldsize=" << bookmarkGroupSize(sharedRoot) << " count=" << count;
 
     if (bookmarkGroupSize(sharedRoot) != count)
         dirty=true;
@@ -268,14 +268,14 @@ bool KFilePlacesSharedBookmarks::exportSharedBookmarks()
 
 void KFilePlacesSharedBookmarks::slotSharedBookmarksChanged()
 {
-    //kDebug() << "shared bookmarks changed";
+    //qDebug() << "shared bookmarks changed";
     bool dirty = integrateSharedBookmarks();
     if (dirty) m_placesBookmarkManager->emitChanged();
 }
 
 void KFilePlacesSharedBookmarks::slotBookmarksChanged()
 {
-    //kDebug() << "places bookmarks changed";
+    //qDebug() << "places bookmarks changed";
     bool dirty = exportSharedBookmarks();
     if (dirty) m_sharedBookmarkManager->emitChanged();
 }

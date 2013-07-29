@@ -22,9 +22,9 @@
 #include "ksycocadict_p.h"
 #include "ksycocaresourcelist.h"
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <assert.h>
+#include <QDebug>
 #include <QtCore/QHash>
 #include <qstandardpaths.h>
 
@@ -76,7 +76,7 @@ KSycocaEntry* KBuildMimeTypeFactory::createEntry(const QString &file) const
         return 0;
     const QString name = file.left(dot);
 
-    //kDebug() << "Creating mimetype" << name << "from file" << file;
+    //qDebug() << "Creating mimetype" << name << "from file" << file;
 
     MimeTypeEntry* e = new MimeTypeEntry(file, name);
     return e;

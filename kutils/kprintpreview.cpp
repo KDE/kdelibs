@@ -33,7 +33,7 @@
 #include <kpluginfactory.h>
 #include <kpluginloader.h>
 #include <kservice.h>
-#include <kdebug.h>
+#include <QDebug>
 
 
 class KPrintPreviewPrivate
@@ -52,7 +52,7 @@ public:
             filename = tempdir.path() + '/' + "print_preview.pdf";
         } else {
             // XXX: not portable!
-            kWarning() << "Failed to create temporary directory";
+            qWarning() << "Failed to create temporary directory";
             filename = "/dev/null";
         }
     }
@@ -77,10 +77,10 @@ public:
 void KPrintPreviewPrivate::getPart()
 {
     if (previewPart) {
-        kDebug(500) << "already got a part";
+        // qDebug() << "already got a part";
         return;
     }
-    kDebug(500) << "querying trader for application/pdf service";
+    // qDebug() << "querying trader for application/pdf service";
 
     KPluginFactory *factory(0);
     const KService::List offers =
@@ -91,15 +91,15 @@ void KPrintPreviewPrivate::getPart()
         KPluginLoader loader(**it);
         factory = loader.factory();
         if (!factory) {
-            kDebug(500) << "Loading failed:" << loader.errorString();
+            // qDebug() << "Loading failed:" << loader.errorString();
         }
         ++it;
     }
     if (factory) {
-        kDebug(500) << "Trying to create a part";
+        // qDebug() << "Trying to create a part";
         previewPart = factory->create<KParts::ReadOnlyPart>(q, (QVariantList() << "Print/Preview"));
         if (!previewPart) {
-            kDebug(500) << "Part creation failed";
+            // qDebug() << "Part creation failed";
         }
     }
 }
@@ -107,14 +107,14 @@ void KPrintPreviewPrivate::getPart()
 bool KPrintPreviewPrivate::doPreview()
 {
     if (!QFile::exists(filename)) {
-        kWarning() << "Nothing was produced to be previewed";
+        qWarning() << "Nothing was produced to be previewed";
         return false;
     }
 
     getPart();
     if (!previewPart) {
         //TODO: error dialog
-        kWarning() << "Could not find a PDF viewer for the preview dialog";
+        qWarning() << "Could not find a PDF viewer for the preview dialog";
         fail();
         return false;
     } else {
@@ -142,7 +142,7 @@ KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
     : QDialog(parent)
     , d(new KPrintPreviewPrivate(this, printer))
 {
-    kDebug(500) << "kdeprint: creating preview dialog";
+    // qDebug() << "kdeprint: creating preview dialog";
 
     //There is no printing on wince
 #ifndef _WIN32_WCE
@@ -150,7 +150,7 @@ KPrintPreview::KPrintPreview(QPrinter *printer, QWidget *parent)
     setWindowTitle(i18n("Print Preview"));
 
     // Set up the printer
-    kDebug(500) << "Will print to" << d->filename;
+    // qDebug() << "Will print to" << d->filename;
     printer->setOutputFileName(d->filename);
 
     QVBoxLayout *layout = new QVBoxLayout;

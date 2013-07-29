@@ -188,6 +188,6 @@ KService::Ptr KMimeTypeTrader::preferredService( const QString & mimeType, const
     if( itOff != offers.constEnd() && (*itOff).allowAsDefault() )
         return (*itOff).service();
 
-    //kDebug(7014) << "No offers, or none allowed as default";
+    //qDebug() << "No offers, or none allowed as default";
     return KService::Ptr();
 }

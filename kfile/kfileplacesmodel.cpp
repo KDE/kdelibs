@@ -39,7 +39,7 @@
 #include <kfileitem.h>
 #include <klocalizedstring.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kurlmimedata.h>
 
 #include <kbookmarkmanager.h>
@@ -611,7 +611,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
             QMimeType mimetype = db.mimeTypeForName(KIO::NetAccess::mimetype(url, 0));
 
             if (!mimetype.isValid()) {
-                kWarning() << "URL not added to Places as mimetype could not be determined!";
+                qWarning() << "URL not added to Places as mimetype could not be determined!";
                 continue;
             }
 
@@ -631,7 +631,7 @@ bool KFilePlacesModel::dropMimeData(const QMimeData *data, Qt::DropAction action
 
     } else {
         // Oops, shouldn't happen thanks to mimeTypes()
-        kWarning() << ": received wrong mimedata, " << data->formats();
+        qWarning() << ": received wrong mimedata, " << data->formats();
         return false;
     }
 

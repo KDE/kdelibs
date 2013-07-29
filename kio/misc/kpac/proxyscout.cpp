@@ -25,7 +25,7 @@
 #include "discovery.h"
 #include "script.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <knotification.h>
 #include <kprotocolmanager.h>
@@ -235,7 +235,7 @@ namespace KPAC
             }
             catch ( const Script::Error& e )
             {
-                kWarning() << "Error:" << e.message();
+                qWarning() << "Error:" << e.message();
                 KNotification *notify= new KNotification ( "script-error" );
                 notify->setText( i18n("The proxy configuration script is invalid:\n%1" , e.message() ) );
                 notify->setComponentName(m_componentName);
@@ -340,14 +340,14 @@ namespace KPAC
             }
 
             if (!proxyList.isEmpty()) {
-                kDebug(m_debugArea) << proxyList;
+                // qDebug() << proxyList;
                 return proxyList;
             }
             // FIXME: blacklist
         }
         catch ( const Script::Error& e )
         {
-            kError() << e.message();
+            qCritical() << e.message();
             KNotification *n=new KNotification( "evaluation-error" );
             n->setText( i18n( "The proxy configuration script returned an error:\n%1" , e.message() ) );
             n->setComponentName(m_componentName);

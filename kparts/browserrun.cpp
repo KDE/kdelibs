@@ -32,7 +32,7 @@
 #include <kmimetypetrader.h>
 #include <qtemporaryfile.h>
 #include <qmimedatabase.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kdatetime.h>
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
@@ -103,7 +103,7 @@ void BrowserRun::init()
     if ( isLocalFile() )  {
       const QString localPath = KRun::url().toLocalFile();
       if (!QFile::exists(localPath)) {
-        kDebug(1000) << localPath << "doesn't exist.";
+        // qDebug() << localPath << "doesn't exist.";
         redirectToError(KIO::ERR_DOES_NOT_EXIST, localPath);
         return;
       }
@@ -114,7 +114,7 @@ void BrowserRun::init()
 
 void BrowserRun::scanFile()
 {
-  kDebug(1000) << KRun::url();
+  // qDebug() << KRun::url();
 
   // Let's check for well-known extensions
   // Not when there is a query in the URL, in any case.
@@ -130,7 +130,7 @@ void BrowserRun::scanFile()
         QMimeDatabase db;
         QMimeType mime = db.mimeTypeForUrl(KRun::url());
         if (!mime.isDefault() || isLocalFile()) {
-            kDebug(1000) << "MIME TYPE is" << mime.name();
+            // qDebug() << "MIME TYPE is" << mime.name();
             mimeTypeDetermined(mime.name());
             return;
         }
@@ -178,13 +178,13 @@ void BrowserRun::scanFile()
 
 void BrowserRun::slotBrowserScanFinished(KJob *job)
 {
-  kDebug(1000) << job->error();
+  // qDebug() << job->error();
   if ( job->error() == KIO::ERR_IS_DIRECTORY )
   {
       // It is in fact a directory. This happens when HTTP redirects to FTP.
       // Due to the "protocol doesn't support listing" code in BrowserRun, we
       // assumed it was a file.
-      kDebug(1000) << "It is in fact a directory!";
+      // qDebug() << "It is in fact a directory!";
       // Update our URL in case of a redirection
       KRun::setUrl( static_cast<KIO::TransferJob *>(job)->url() );
       setJob( 0 );
@@ -214,8 +214,8 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
     Q_ASSERT( _job == KRun::job() ); Q_UNUSED(_job)
     KIO::TransferJob *job = static_cast<KIO::TransferJob *>(KRun::job());
     // Update our URL in case of a redirection
-    //kDebug(1000) << "old URL=" << KRun::url();
-    //kDebug(1000) << "new URL=" << job->url();
+    //qDebug() << "old URL=" << KRun::url();
+    //qDebug() << "new URL=" << job->url();
     setUrl( job->url() );
 
     if (job->isErrorPage()) {
@@ -223,13 +223,13 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
         handleError(job);
         setJob( 0 );
     } else {
-        kDebug(1000) << "found" << type << "for" << KRun::url();
+        // qDebug() << "found" << type << "for" << KRun::url();
 
         // Suggested filename given by the server (e.g. HTTP content-disposition)
         // When set, we should really be saving instead of embedding
         const QString suggestedFileName = job->queryMetaData("content-disposition-filename");
         setSuggestedFileName(suggestedFileName); // store it (in KRun)
-        //kDebug(1000) << "suggestedFileName=" << suggestedFileName;
+        //qDebug() << "suggestedFileName=" << suggestedFileName;
         d->m_contentDisposition = job->queryMetaData("content-disposition-type");
 
         const QString modificationTime = job->queryMetaData("content-disposition-modification-date");
@@ -283,13 +283,13 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
         BrowserOpenOrSaveQuestion::Result res = question.askOpenOrSave();
         if (res == BrowserOpenOrSaveQuestion::Save) {
             save( KRun::url(), suggestedFileName() );
-            kDebug(1000) << "Save: returning Handled";
+            // qDebug() << "Save: returning Handled";
             setFinished( true );
             return Handled;
         }
         else if (res == BrowserOpenOrSaveQuestion::Cancel) {
             // saving done or canceled
-            kDebug(1000) << "Cancel: returning Handled";
+            // qDebug() << "Cancel: returning Handled";
             setFinished( true );
             return Handled;
         }
@@ -299,7 +299,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
             // We must save the data to a tempfile first.
             if ( d->m_browserArgs.doPost() )
             {
-                kDebug(1000) << "request comes from a POST, can't pass a URL to another app, need to save";
+                // qDebug() << "request comes from a POST, can't pass a URL to another app, need to save";
                 d->m_mimeType = mimeType;
                 QString extension;
                 QString fileName = suggestedFileName().isEmpty() ? QUrlPathInfo(KRun::url()).fileName() : suggestedFileName();
@@ -404,7 +404,7 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
         if (!downloadManger.isEmpty())
         {
             // then find the download manager location
-            kDebug(1000) << "Using: "<<downloadManger <<" as Download Manager";
+            // qDebug() << "Using: "<<downloadManger <<" as Download Manager";
             QString cmd = QStandardPaths::findExecutable(downloadManger);
             if (cmd.isEmpty())
             {
@@ -424,7 +424,7 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
                 if ( !suggestedFileName.isEmpty() )
                     cmd += ' ' + KShell::quoteArg(suggestedFileName);
 
-                kDebug(1000) << "Calling command" << cmd;
+                // qDebug() << "Calling command" << cmd;
                 // slave is already on hold (slotBrowserMimetype())
                 KIO::Scheduler::publishSlaveOnHold();
                 KRun::runCommand(cmd, window);
@@ -477,7 +477,7 @@ void BrowserRun::saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
 void BrowserRun::slotStatResult( KJob *job )
 {
     if ( job->error() ) {
-        kDebug(1000) << job->errorString();
+        // qDebug() << job->errorString();
         handleError( job );
     } else
         KRun::slotStatResult( job );
@@ -486,7 +486,7 @@ void BrowserRun::slotStatResult( KJob *job )
 void BrowserRun::handleError( KJob * job )
 {
     if ( !job ) { // Shouldn't happen, see docu.
-        kWarning(1000) << "handleError called with job=0! hideErrorDialog=" << d->m_bHideErrorDialog;
+        qWarning() << "handleError called with job=0! hideErrorDialog=" << d->m_bHideErrorDialog;
         return;
     }
 

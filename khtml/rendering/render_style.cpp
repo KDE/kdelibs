@@ -30,8 +30,6 @@
 #include <css/cssstyleselector.h>
 #include <css/css_valueimpl.h>
 
-#include <kdebug.h>
-
 using namespace khtml;
 using namespace DOM;
 

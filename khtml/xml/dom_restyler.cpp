@@ -70,10 +70,10 @@ void DynamicDomRestyler::restyleDependent(ElementImpl* dependency, StructuralDep
 void DynamicDomRestyler::dumpStats() const
 {
 /*
-    kDebug() << "Keys in structural dependencies: " << dependency_map[StructuralDependency].size();
-    kDebug() << "Keys in attribute dependencies: " << dependency_map[AttributeDependency].size();
+    // qDebug() << "Keys in structural dependencies: " << dependency_map[StructuralDependency].size();
+    // qDebug() << "Keys in attribute dependencies: " << dependency_map[AttributeDependency].size();
 
-    kDebug() << "Keys in reverse map: " << reverse_map.size();
+    // qDebug() << "Keys in reverse map: " << reverse_map.size();
     */
 }
 

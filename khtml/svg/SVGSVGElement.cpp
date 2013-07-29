@@ -246,7 +246,7 @@ void SVGSVGElement::addSVGWindowEventListener(const AtomicString& eventType, con
 
 void SVGSVGElement::parseMappedAttribute(MappedAttribute* attr)
 {
-    kDebug() << "parse attribute: " << attr->localName() << attr->value() << endl;
+    // qDebug() << "parse attribute: " << attr->localName() << attr->value() << endl;
     if (!nearestViewportElement()) {
         // Only handle events if we're the outermost <svg> element
         /*if (attr->name() == onunloadAttr)
@@ -267,13 +267,13 @@ void SVGSVGElement::parseMappedAttribute(MappedAttribute* attr)
     else if (attr->name() == SVGNames::yAttr)
         setYBaseValue(SVGLength(this, LengthModeHeight, attr->value()));
     else if (attr->name() == SVGNames::widthAttr) {
-        kDebug() << "set width" << attr->value() << endl;
+        // qDebug() << "set width" << attr->value() << endl;
         setWidthBaseValue(SVGLength(this, LengthModeWidth, attr->value()));
         addCSSProperty(attr, CSSPropertyWidth, attr->value());
         /*if (width().value() < 0.0)
             document()->accessSVGExtensions()->reportError("A negative value for svg attribute <width> is not allowed");*/
     } else if (attr->name() == SVGNames::heightAttr) {
-        kDebug() << "set height" << attr->value() << endl;
+        // qDebug() << "set height" << attr->value() << endl;
         setHeightBaseValue(SVGLength(this, LengthModeHeight, attr->value()));
         addCSSProperty(attr, CSSPropertyHeight, attr->value());
         /*if (height().value() < 0.0)
@@ -461,7 +461,7 @@ AffineTransform SVGSVGElement::getScreenCTM() const
 
 RenderObject* SVGSVGElement::createRenderer(RenderArena* arena, RenderStyle*)
 {
-    kDebug() << "create RenderSVGRoot from <svg> element" << endl;
+    // qDebug() << "create RenderSVGRoot from <svg> element" << endl;
     return new (arena) RenderSVGRoot(this);
     /*if (isOutermostSVG())
         return new (arena) RenderSVGRoot(this);

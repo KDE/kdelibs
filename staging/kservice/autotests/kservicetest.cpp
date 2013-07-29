@@ -281,7 +281,7 @@ void KServiceTest::testAllServices()
 
         const QString name = service->name();
         const QString entryPath = service->entryPath();
-        //kDebug() << name << "entryPath=" << entryPath << "menuId=" << service->menuId();
+        //qDebug() << name << "entryPath=" << entryPath << "menuId=" << service->menuId();
         QVERIFY( !name.isEmpty() );
         QVERIFY( !entryPath.isEmpty() );
 

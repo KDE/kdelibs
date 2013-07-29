@@ -39,7 +39,7 @@
 #include <QUrl>
 
 #include <kconfig.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kde_file.h>
 #include <klibrary.h>
 #include <klocalizedstring.h>
@@ -84,7 +84,7 @@ IdleSlave::gotInput()
    if (mConn.read( &cmd, data) == -1)
    {
       // Communication problem with slave.
-      //kError(7016) << "SlavePool: No communication with slave." << endl;
+      //qCritical() << "SlavePool: No communication with slave." << endl;
       deleteLater();
    }
    else if (cmd == MSG_SLAVE_ACK)
@@ -93,7 +93,7 @@ IdleSlave::gotInput()
    }
    else if (cmd != MSG_SLAVE_STATUS)
    {
-      kError(7016) << "SlavePool: Unexpected data from slave." << endl;
+      qCritical() << "SlavePool: Unexpected data from slave." << endl;
       deleteLater();
    }
    else
@@ -221,7 +221,7 @@ KLauncher::KLauncher()
       qWarning("Klauncher running slaves through valgrind for slaves of protocol '%s'", qPrintable(mSlaveValgrind));
    }
 #ifdef USE_KPROCESS_FOR_KIOSLAVES
-   kDebug(7016) << "LAUNCHER_OK";
+   // qDebug() << "LAUNCHER_OK";
 #else
    klauncher_header request_header;
    request_header.cmd = LAUNCHER_OK;
@@ -296,7 +296,7 @@ read_socket(int sock, char *buffer, int len)
         FD_SET( sock, &in );
         select( sock + 1, &in, 0, 0, &tm );
         if( !FD_ISSET( sock, &in )) {
-            kDebug(7016) << "read_socket" << sock << "nothing to read, kdeinit5 must be dead";
+            // qDebug() << "read_socket" << sock << "nothing to read, kdeinit5 must be dead";
             return -1;
         }
 
@@ -326,7 +326,7 @@ KLauncher::slotKDEInitData(int)
                             sizeof( request_header));
    if (result == -1)
    {
-      kDebug(7016) << "Exiting on read_socket errno:" << errno;
+      // qDebug() << "Exiting on read_socket errno:" << errno;
       KDE_signal( SIGHUP, SIG_IGN);
       KDE_signal( SIGTERM, SIG_IGN);
       destruct(); // Exit!
@@ -353,7 +353,7 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
      long *request_data;
      request_data = (long *) requestData.data();
      lastRequest->pid = (pid_t) (*request_data);
-     kDebug(7016).nospace() << lastRequest->name << " (pid " << lastRequest->pid <<
+     // qDebug().nospace() << lastRequest->name << " (pid " << lastRequest->pid <<
         ") up and running.";
      switch(lastRequest->dbus_startup_type)
      {
@@ -371,21 +371,21 @@ void KLauncher::processRequestReturn(int status, const QByteArray &requestData)
    if (lastRequest && (status == LAUNCHER_ERROR))
    {
      lastRequest->status = KLaunchRequest::Error;
-     kDebug(7016) << lastRequest->name << " failed." << endl;
+     // qDebug() << lastRequest->name << " failed." << endl;
      if (!requestData.isEmpty())
         lastRequest->errorMsg = QString::fromUtf8((char *) requestData.data());
      lastRequest = 0;
      return;
    }
 
-   kWarning(7016)<< "Unexpected request return" << (unsigned int) status;
+   qWarning()<< "Unexpected request return" << (unsigned int) status;
 }
 
 void
 KLauncher::processDied(pid_t pid, long exitStatus)
 {
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-    kDebug(7016) << pid << "exitStatus=" << exitStatus;
+    // qDebug() << pid << "exitStatus=" << exitStatus;
 #else
     Q_UNUSED(exitStatus);
     // We should probably check the exitStatus for the uniqueapp case?
@@ -393,7 +393,7 @@ KLauncher::processDied(pid_t pid, long exitStatus)
    foreach (KLaunchRequest *request, requestList)
    {
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-       kDebug(7016) << "  had pending request" << request->pid;
+       // qDebug() << "  had pending request" << request->pid;
 #endif
       if (request->pid == pid)
       {
@@ -401,12 +401,12 @@ KLauncher::processDied(pid_t pid, long exitStatus)
                   && QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)) {
              request->status = KLaunchRequest::Running;
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-             kDebug(7016) << pid << "running as a unique app";
+             // qDebug() << pid << "running as a unique app";
 #endif
          } else {
              request->status = KLaunchRequest::Error;
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-             kDebug(7016) << pid << "died, requestDone. status=" << request->status;
+             // qDebug() << pid << "died, requestDone. status=" << request->status;
 #endif
          }
          requestDone(request);
@@ -414,7 +414,7 @@ KLauncher::processDied(pid_t pid, long exitStatus)
       }
    }
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-   kDebug(7016) << "found no pending requests for PID" << pid;
+   // qDebug() << "found no pending requests for PID" << pid;
 #endif
 }
 
@@ -425,12 +425,12 @@ static bool matchesPendingRequest(const QString& appId, const QString& pendingAp
 
     const QString newAppId = appId.left(appId.lastIndexOf(QLatin1Char('-'))); // strip out the -12345 if present.
 
-    //kDebug() << "appId=" << appId << "newAppId=" << newAppId << "pendingAppId=" << pendingAppId;
+    //qDebug() << "appId=" << appId << "newAppId=" << newAppId << "pendingAppId=" << pendingAppId;
 
     if (pendingAppId.startsWith(QLatin1String("*."))) {
         const QString pendingName = pendingAppId.mid(2);
         const QString appName = newAppId.mid(newAppId.lastIndexOf(QLatin1Char('.'))+1);
-        //kDebug() << "appName=" << appName;
+        //qDebug() << "appName=" << appName;
         return appName == pendingName;
     }
 
@@ -446,7 +446,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
       return;
 
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-   kDebug(7016) << "new app" << appId;
+   // qDebug() << "new app" << appId;
 #endif
    foreach (KLaunchRequest *request, requestList)
    {
@@ -454,7 +454,7 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
          continue;
 
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-      kDebug(7016) << "had pending request" << request->name << s_DBusStartupTypeToString[request->dbus_startup_type] << "dbus_name" << request->dbus_name << request->tolerant_dbus_name;
+      // qDebug() << "had pending request" << request->name << s_DBusStartupTypeToString[request->dbus_startup_type] << "dbus_name" << request->dbus_name << request->tolerant_dbus_name;
 #endif
       // For unique services check the requested service name first
       if (request->dbus_startup_type == KService::DBusUnique) {
@@ -462,27 +462,27 @@ KLauncher::slotNameOwnerChanged(const QString &appId, const QString &oldOwner,
               QDBusConnection::sessionBus().interface()->isServiceRegistered(request->dbus_name)) { // was already running
               request->status = KLaunchRequest::Running;
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-              kDebug(7016) << "OK, unique app" << request->dbus_name << "is running";
+              // qDebug() << "OK, unique app" << request->dbus_name << "is running";
 #endif
               requestDone(request);
               continue;
           } else {
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-              kDebug(7016) << "unique app" << request->dbus_name << "not running yet";
+              // qDebug() << "unique app" << request->dbus_name << "not running yet";
 #endif
           }
       }
 
       const QString rAppId = !request->tolerant_dbus_name.isEmpty() ? request->tolerant_dbus_name : request->dbus_name;
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-      //kDebug(7016) << "using" << rAppId << "for matching";
+      //qDebug() << "using" << rAppId << "for matching";
 #endif
       if (rAppId.isEmpty())
           continue;
 
       if (matchesPendingRequest(appId, rAppId)) {
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-         kDebug(7016) << "ok, request done";
+         // qDebug() << "ok, request done";
 #endif
          request->dbus_name = appId;
          request->status = KLaunchRequest::Running;
@@ -596,7 +596,7 @@ KLauncher::requestDone(KLaunchRequest *request)
                                      << stream_pid));
    }
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-   kDebug(7016) << "removing done request" << request->name << "PID" << request->pid;
+   // qDebug() << "removing done request" << request->name << "PID" << request->pid;
 #endif
 
    requestList.removeAll( request );
@@ -680,7 +680,7 @@ KLauncher::requestStart(KLaunchRequest *request)
    request_header.arg_length = requestData.length();
 
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-   kDebug(7016) << "Asking kdeinit to start" << request->name << request->arg_list
+   // qDebug() << "Asking kdeinit to start" << request->name << request->arg_list
                 << "cmd=" << commandToString(request_header.cmd);
 #endif
 
@@ -871,7 +871,7 @@ KLauncher::start_service(KService::Ptr service, const QStringList &_urls,
    }
 
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-   kDebug(7016) << "name=" << request->name << "dbus_name=" << request->dbus_name
+   // qDebug() << "name=" << request->name << "dbus_name=" << request->dbus_name
                 << "startup type=" << s_DBusStartupTypeToString[request->dbus_startup_type];
 #endif
 
@@ -1030,7 +1030,7 @@ KLauncher::slotDequeue()
       {
          // Request handled.
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-         kDebug(7016) << "Request handled already";
+         // qDebug() << "Request handled already";
 #endif
          requestDone( request );
          continue;
@@ -1143,8 +1143,8 @@ KLauncher::requestSlave(const QString &protocol,
     arg_list.append(arg3);
 #endif
 
-    kDebug(7016) << "KLauncher: launching new slave " << name << " with protocol=" << protocol
-     << " args=" << arg_list << endl;
+    // qDebug() << "KLauncher: launching new slave " << name << " with protocol=" << protocol
+    // << " args=" << arg_list << endl;
 
 #ifdef Q_OS_UNIX
     if (mSlaveDebug == protocol)
@@ -1185,7 +1185,7 @@ KLauncher::requestSlave(const QString &protocol,
     requestStart(request);
     pid_t pid = request->pid;
 
-//    kDebug(7016) << "Slave launched, pid = " << pid;
+//    qDebug() << "Slave launched, pid = " << pid;
 
     // We don't care about this request any longer....
     requestDone(request);
@@ -1295,7 +1295,7 @@ KLauncher::slotGotOutput()
 #ifdef USE_KPROCESS_FOR_KIOSLAVES
   QProcess *p = static_cast<QProcess *>(sender());
   QByteArray _stdout = p->readAllStandardOutput();
-  kDebug(7016) << _stdout.data();
+  // qDebug() << _stdout.data();
 #endif
 }
 
@@ -1304,14 +1304,14 @@ KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
 {
 #ifdef USE_KPROCESS_FOR_KIOSLAVES
     QProcess *p = static_cast<QProcess *>(sender());
-    kDebug(7016) << "process finished exitcode=" << exitCode << "exitStatus=" << exitStatus;
+    // qDebug() << "process finished exitcode=" << exitCode << "exitStatus=" << exitStatus;
 
     foreach (KLaunchRequest *request, requestList)
     {
         if (request->process == p)
         {
 #ifdef KLAUNCHER_VERBOSE_OUTPUT
-            kDebug(7016) << "found KProcess, request done";
+            // qDebug() << "found KProcess, request done";
 #endif
             if (exitCode == 0  && exitStatus == QProcess::NormalExit)
                 request->status = KLaunchRequest::Done;
@@ -1331,7 +1331,7 @@ KLauncher::slotFinished(int exitCode, QProcess::ExitStatus exitStatus )
 
 void KLauncher::terminate_kdeinit()
 {
-    kDebug(7016);
+    // qDebug();
 #ifndef USE_KPROCESS_FOR_KIOSLAVES
     klauncher_header request_header;
     request_header.cmd = LAUNCHER_TERMINATE_KDEINIT;

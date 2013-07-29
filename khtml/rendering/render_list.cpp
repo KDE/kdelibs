@@ -34,7 +34,7 @@
 #include "misc/loader.h"
 #include "xml/dom_docimpl.h"
 
-#include <kdebug.h>
+#include <QDebug>
 
 //#define BOX_DEBUG
 
@@ -247,7 +247,7 @@ void RenderListMarker::paint(PaintInfo& paintInfo, int _tx, int _ty)
 
     QPainter* p = paintInfo.p;
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")";
+    // qDebug() << nodeName().string() << "(ListMarker)::paintObject(" << _tx << ", " << _ty << ")";
 #endif
     p->setFont(style()->font());
     const QFontMetrics fm = p->fontMetrics();

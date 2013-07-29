@@ -25,7 +25,6 @@
 #include <QMenu>
 #include <knameandurlinputdialog.h>
 #include <kactioncollection.h>
-#include <kdebug.h>
 #include <knewfilemenu.h>
 
 #include <qtemporarydir.h>

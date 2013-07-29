@@ -33,7 +33,6 @@
 #include "khtmlview.h"
 #include "khtml_part.h"
 #include <QtCore/QVariant>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kencodingdetector.h>
 

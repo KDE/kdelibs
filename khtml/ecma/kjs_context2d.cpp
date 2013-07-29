@@ -55,7 +55,7 @@
 #include <rendering/render_object.h>
 #include <rendering/render_layer.h>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <css/cssparser.h>
 #include <css/css_stylesheetimpl.h>
@@ -197,7 +197,7 @@ JSValue *KJS::Context2DFunction::callAsFunction(ExecState *exec, JSObject *thisO
     KJS_CHECK_THIS(Context2D, thisObj);
 
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "KJS::Context2DFunction::callAsFunction " << functionName().qstring();
+    // qDebug() << "KJS::Context2DFunction::callAsFunction " << functionName().qstring();
 #endif
 
     Context2D *jsContextObject = static_cast<KJS::Context2D *>(thisObj);

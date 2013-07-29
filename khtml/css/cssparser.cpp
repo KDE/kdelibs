@@ -28,7 +28,7 @@
 
 #include "cssparser.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <QUrl>
 
 #include "css_valueimpl.h"
@@ -93,7 +93,7 @@ CSSParser *CSSParser::currentParser = 0;
 CSSParser::CSSParser( bool strictParsing )
 {
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "CSSParser::CSSParser this=" << this;
+    // qDebug() << "CSSParser::CSSParser this=" << this;
 #endif
     strict = strictParsing;
 
@@ -128,7 +128,7 @@ CSSParser::~CSSParser()
     delete valueList;
 
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "CSSParser::~CSSParser this=" << this;
+    // qDebug() << "CSSParser::~CSSParser this=" << this;
 #endif
 
     free( data );
@@ -198,11 +198,11 @@ void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
     setupParser("", string, "");
 
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << ">>>>>>> start parsing style sheet";
+    // qDebug() << ">>>>>>> start parsing style sheet";
 #endif
     runParser();
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "<<<<<<< done parsing style sheet";
+    // qDebug() << "<<<<<<< done parsing style sheet";
 #endif
 
     delete rule;
@@ -239,7 +239,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
                             bool _important)
 {
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "CSSParser::parseValue: id=" << _id << " important=" << _important
+    // qDebug() << "CSSParser::parseValue: id=" << _id << " important=" << _important
                    << " value='" << string.string() << "'" << endl;
 #endif
 
@@ -269,7 +269,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
 bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, const DOM::DOMString &string)
 {
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "CSSParser::parseDeclaration:"
+    // qDebug() << "CSSParser::parseDeclaration:"
                     << " value='" << string.string() << "'" << endl;
 #endif
 
@@ -1009,7 +1009,7 @@ bool CSSParser::parseValue( int propId, bool important )
                 }
                 value = valueList->next();
             }
-            //kDebug( 6080 ) << "got " << list->length() << "d decorations";
+            //qDebug() << "got " << list->length() << "d decorations";
             if(list->length() && is_valid) {
                 parsedValue = list;
                 valueList->next();
@@ -1056,7 +1056,7 @@ bool CSSParser::parseValue( int propId, bool important )
     case CSS_PROP__KHTML_USER_INPUT:        // none | enabled | disabled | inherit
         if ( id == CSS_VAL_NONE || id == CSS_VAL_ENABLED || id == CSS_VAL_DISABLED )
             valid_primitive = true;
-//        kDebug(6080) << "CSS_PROP__KHTML_USER_INPUT: " << valid_primitive;
+//        qDebug() << "CSS_PROP__KHTML_USER_INPUT: " << valid_primitive;
         break;
     case CSS_PROP__KHTML_MARQUEE: {
         const int properties[5] = { CSS_PROP__KHTML_MARQUEE_DIRECTION, CSS_PROP__KHTML_MARQUEE_INCREMENT,
@@ -1205,7 +1205,7 @@ bool CSSParser::parseValue( int propId, bool important )
     default:
         return parseSVGValue(propId, important);
 // #ifdef CSS_DEBUG
-//         kDebug( 6080 ) << "illegal or CSS2 Aural property: " << val;
+//         qDebug() << "illegal or CSS2 Aural property: " << val;
 // #endif
         //break;
     }
@@ -1388,7 +1388,7 @@ bool CSSParser::parseBorderRadius(bool important) {
         valueList->next();
 
         for (int c = 0; c < 4; ++c) {
-            kDebug() << c;
+            // qDebug() << c;
             value = valueList->current();
             if (!value)
                 break;
@@ -1540,7 +1540,7 @@ bool CSSParser::parseContent( int propId, bool important )
             DOMString value = domString(val->string);
             parsedValue = new CSSImageValueImpl( value, styleElement );
 #ifdef CSS_DEBUG
-            kDebug( 6080 ) << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( );
+            // qDebug() << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( );
 #endif
         } else if ( val->unit == Value::Function ) {
             // attr( X ) | counter( X [,Y] ) | counters( X, Y, [,Z] )
@@ -1808,8 +1808,8 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                                         CSSValueImpl*& retValue1, CSSValueImpl*& retValue2)
 {
 #ifdef CSS_DEBUG
-    kDebug(6080) << "parseBackgroundProperty()";
-    kDebug(6080) << "LOOKING FOR: " << getPropertyName(propId).string();
+    // qDebug() << "parseBackgroundProperty()";
+    // qDebug() << "LOOKING FOR: " << getPropertyName(propId).string();
 #endif
     CSSValueListImpl *values = 0, *values2 = 0;
     Value* val;
@@ -2020,14 +2020,14 @@ bool CSSParser::parseShape( int propId, bool important )
 // [ 'font-style' || 'font-variant' || 'font-weight' ]? 'font-size' [ / 'line-height' ]? 'font-family'
 bool CSSParser::parseFont( bool important )
 {
-//     kDebug(6080) << "parsing font property current=" << valueList->currentValue;
+//     qDebug() << "parsing font property current=" << valueList->currentValue;
     bool valid = true;
     Value *value = valueList->current();
     CSSValueListImpl* family = 0;
     CSSPrimitiveValueImpl *style = 0, *variant = 0, *weight = 0, *size = 0, *lineHeight = 0;
     // optional font-style, font-variant and font-weight
     while ( value ) {
-//         kDebug( 6080 ) << "got value " << value->id << " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
+//         qDebug() << "got value " << value->id << " / " << (value->unit == CSSPrimitiveValue::CSS_STRING ||
         //                                    value->unit == CSSPrimitiveValue::CSS_IDENT ? qString( value->string ) : QString() )
 //                         << endl;
         int id = value->id;
@@ -2101,7 +2101,7 @@ bool CSSParser::parseFont( bool important )
     if ( !weight )
         weight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
 
-//     kDebug( 6080 ) << "  got style, variant and weight current=" << valueList->currentValue;
+//     qDebug() << "  got style, variant and weight current=" << valueList->currentValue;
 
     // now a font size _must_ come
     // <absolute-size> | <relative-size> | <length> | <percentage> | inherit
@@ -2114,7 +2114,7 @@ bool CSSParser::parseFont( bool important )
     if ( !size || !value )
         goto invalid;
 
-    // kDebug( 6080 ) << "  got size";
+    // qDebug() << "  got size";
 
     if ( value->unit == Value::Operator && value->iValue == '/' ) {
         // line-height
@@ -2135,13 +2135,13 @@ bool CSSParser::parseFont( bool important )
     if ( !lineHeight )
         lineHeight = new CSSPrimitiveValueImpl( CSS_VAL_NORMAL );
 
-//     kDebug( 6080 ) << "  got line height current=" << valueList->currentValue;
+//     qDebug() << "  got line height current=" << valueList->currentValue;
     // font family must come now
     family = parseFontFamily();
 
     if ( valueList->current() || !family )
         goto invalid;
-    //kDebug( 6080 ) << "  got family, parsing ok!";
+    //qDebug() << "  got family, parsing ok!";
 
     addProperty( CSS_PROP_FONT_FAMILY,  family,     important );
     addProperty( CSS_PROP_FONT_STYLE,   style,      important );
@@ -2152,7 +2152,7 @@ bool CSSParser::parseFont( bool important )
     return true;
 
  invalid:
-    //kDebug(6080) << "   -> invalid";
+    //qDebug() << "   -> invalid";
     delete family;
     delete style;
     delete variant;
@@ -2165,13 +2165,13 @@ bool CSSParser::parseFont( bool important )
 
 CSSValueListImpl *CSSParser::parseFontFamily()
 {
-//     kDebug( 6080 ) << "CSSParser::parseFontFamily current=" << valueList->currentValue;
+//     qDebug() << "CSSParser::parseFontFamily current=" << valueList->currentValue;
     CSSValueListImpl *list = new CSSValueListImpl(CSSValueListImpl::Comma);
     Value *value = valueList->current();
     QString currFace;
 
     while ( value ) {
-//         kDebug( 6080 ) << "got value " << value->id << " / "
+//         qDebug() << "got value " << value->id << " / "
 //                         << (value->unit == CSSPrimitiveValue::CSS_STRING ||
 //                             value->unit == CSSPrimitiveValue::CSS_IDENT ? qString( value->string ) : QString() )
 //                         << endl;
@@ -2221,7 +2221,7 @@ CSSValueListImpl *CSSParser::parseFontFamily()
         }
         }
 	else {
- 	    //kDebug( 6080 ) << "invalid family part";
+ 	    //qDebug() << "invalid family part";
             break;
         }
 
@@ -2700,7 +2700,7 @@ bool CSSParser::parseCounter(int propId, bool increment, bool important)
 static inline int yyerror( const char *str ) {
 //    assert( 0 );
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "CSS parse error " << str;
+    // qDebug() << "CSS parse error " << str;
 #else
     Q_UNUSED( str );
 #endif

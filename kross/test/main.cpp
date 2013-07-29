@@ -34,7 +34,7 @@
 #include <QUrl>
 
 // KDE
-#include <kdebug.h>
+#include <QDebug>
 
 // for std namespace
 #include <string>
@@ -124,7 +124,7 @@ int runScriptFile(const QString& scriptfile)
 QVariant OtherObjectHandler(void* ptr)
 {
     OtherObject* obj = static_cast<OtherObject*>(ptr);
-    kDebug()<<"OtherObjectHandler objectName="<<(obj ? obj->objectName() : "NULL");
+    // qDebug()<<"OtherObjectHandler objectName="<<(obj ? obj->objectName() : "NULL");
     OtherObjectWrapper* wrapper = new OtherObjectWrapper(obj);
     QVariant r;
     r.setValue( (QObject*) wrapper );
@@ -186,6 +186,6 @@ int main(int argc, char **argv)
     delete testobj2;
     delete app;
 
-    kDebug() << "DONE!!!";
+    // qDebug() << "DONE!!!";
     return result;
 }

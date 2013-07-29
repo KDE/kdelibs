@@ -32,7 +32,7 @@
 #include <QtCore/QDir>
 #include <qplatformdefs.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfiggroup.h>
 #include <kmountpoint.h>
 
@@ -65,7 +65,7 @@ same_inode(const QT_STATBUF &src, const QT_STATBUF &dest)
 void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
                          int _mode, JobFlags _flags )
 {
-    kDebug(7101) << "copy(): " << srcUrl << " -> " << destUrl << ", mode=" << _mode;
+    // qDebug() << "copy(): " << srcUrl << " -> " << destUrl << ", mode=" << _mode;
 
     const QString src = srcUrl.toLocalFile();
     const QString dest = destUrl.toLocalFile();
@@ -120,7 +120,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
         // the symlink actually points to current source!
         if ((_flags & KIO::Overwrite) && S_ISLNK(buff_dest.st_mode))
         {
-            //kDebug(7101) << "copy(): LINK DESTINATION";
+            //qDebug() << "copy(): LINK DESTINATION";
             QFile::remove(dest);
         }
     }
@@ -144,7 +144,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 
     QFile dest_file(dest);
     if (!dest_file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        kDebug(7101) << "###### COULD NOT WRITE " << dest;
+        // qDebug() << "###### COULD NOT WRITE " << dest;
         if ( errno == EACCES ) {
             error(KIO::ERR_WRITE_ACCESS_DENIED, dest);
         } else {
@@ -161,7 +161,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 #if HAVE_POSIX_ACL
     acl = acl_get_fd(src_file.handle());
     if ( acl && !isExtendedACL( acl ) ) {
-        kDebug(7101) << _dest.data() << " doesn't have extended ACL";
+        // qDebug() << _dest.data() << " doesn't have extended ACL";
         acl_free( acl );
         acl = NULL;
     }
@@ -182,7 +182,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
             n = ::sendfile( dest_file.handle(), src_file.handle(), &sf, MAX_IPC_SIZE );
             processed_size = sf;
             if ( n == -1 && ( errno == EINVAL || errno == ENOSYS ) ) { //not all filesystems support sendfile()
-                kDebug(7101) << "sendfile() not supported, falling back ";
+                // qDebug() << "sendfile() not supported, falling back ";
                 use_sendfile = false;
             }
        }
@@ -196,7 +196,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
               continue;
 #ifdef USE_SENDFILE
           if ( use_sendfile ) {
-            kDebug(7101) << "sendfile() error:" << strerror(errno);
+            // qDebug() << "sendfile() error:" << strerror(errno);
             if ( errno == ENOSPC ) // disk full
             {
                 error(KIO::ERR_DISK_FULL, dest);
@@ -227,7 +227,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
                 error(KIO::ERR_DISK_FULL, dest);
                 remove( _dest.data() );
             } else {
-                kWarning(7101) << "Couldn't write[2]. Error:" << dest_file.errorString();
+                qWarning() << "Couldn't write[2]. Error:" << dest_file.errorString();
                 error(KIO::ERR_COULD_NOT_WRITE, dest);
            }
 #if HAVE_POSIX_ACL
@@ -247,7 +247,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
 
     if (dest_file.error() != QFile::NoError)
     {
-        kWarning(7101) << "Error when closing file descriptor[2]:" << dest_file.errorString();
+        qWarning() << "Error when closing file descriptor[2]:" << dest_file.errorString();
         error(KIO::ERR_COULD_NOT_WRITE, dest);
 #if HAVE_POSIX_ACL
         if (acl) acl_free(acl);
@@ -280,7 +280,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
     ut.modtime = buff_src.st_mtime;
     if ( ::utime( _dest.data(), &ut ) != 0 )
     {
-        kWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg(dest);
+        qWarning() << QString::fromLatin1("Couldn't preserve access and modification time for\n%1").arg(dest);
     }
 
     processedSize( buff_src.st_size );
@@ -309,7 +309,7 @@ void FileProtocol::listDir( const QUrl& url)
         QUrl redir(url);
         redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
         redirection(redir);
-        kDebug(7101) << "redirecting to " << redir;
+        // qDebug() << "redirecting to " << redir;
         finished();
         return;
     }
@@ -353,7 +353,7 @@ void FileProtocol::listDir( const QUrl& url)
 
     const QString sDetails = metaData(QLatin1String("details"));
     const int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-    //kDebug(7101) << "========= LIST " << url << "details=" << details << " =========";
+    //qDebug() << "========= LIST " << url << "details=" << details << " =========";
     UDSEntry entry;
 
 #ifndef HAVE_DIRENT_D_TYPE
@@ -523,7 +523,7 @@ void FileProtocol::del(const QUrl& url, bool isfile)
      *****/
 
     if (isfile) {
-	kDebug(7101) << "Deleting file "<< url;
+	// qDebug() << "Deleting file "<< url;
 
 	if ( unlink( _path.data() ) == -1 ) {
             if ((errno == EACCES) || (errno == EPERM))
@@ -540,7 +540,7 @@ void FileProtocol::del(const QUrl& url, bool isfile)
        * Delete empty directory
        *****/
 
-      kDebug( 7101 ) << "Deleting directory " << url;
+      // qDebug() << "Deleting directory " << url;
       if (metaData(QLatin1String("recurse")) == QLatin1String("true")) {
           if (!deleteRecursive(path))
               return;
@@ -549,7 +549,7 @@ void FileProtocol::del(const QUrl& url, bool isfile)
 	if ((errno == EACCES) || (errno == EPERM))
 	  error(KIO::ERR_ACCESS_DENIED, path);
 	else {
-	  kDebug( 7101 ) << "could not rmdir " << perror;
+	  // qDebug() << "could not rmdir " << perror;
 	  error(KIO::ERR_COULD_NOT_RMDIR, path);
 	  return;
 	}
@@ -614,7 +614,7 @@ void FileProtocol::stat( const QUrl & url )
         QUrl redir(url);
 	redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
 	redirection(redir);
-	kDebug(7101) << "redirecting to " << redir;
+	// qDebug() << "redirecting to " << redir;
 	finished();
 	return;
     }
@@ -641,7 +641,7 @@ void FileProtocol::stat( const QUrl & url )
 ///////// debug code
     MetaData::iterator it1 = mOutgoingMetaData.begin();
     for ( ; it1 != mOutgoingMetaData.end(); it1++ ) {
-        kDebug(7101) << it1.key() << " = " << it1.data();
+        // qDebug() << it1.key() << " = " << it1.data();
     }
 /////////
 #endif

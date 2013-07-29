@@ -42,7 +42,7 @@
 #include "rendering/render_object.h"
 #include "dom/dom_exception.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <QtDBus/QtDBus>
 #include <kcookiejar_interface.h>
 
@@ -58,7 +58,7 @@ using namespace khtml;
 HTMLDocumentImpl::HTMLDocumentImpl(KHTMLView *v)
   : DocumentImpl(v)
 {
-//    kDebug( 6090 ) << "HTMLDocumentImpl constructor this = " << this;
+//    qDebug() << "HTMLDocumentImpl constructor this = " << this;
     htmlElement = 0;
 
     m_doAutoFill = false;
@@ -105,7 +105,7 @@ DOMString HTMLDocumentImpl::cookie() const
 
     if ( !reply.isValid() )
     {
-       kWarning(6010) << "Can't communicate with cookiejar!";
+       qWarning() << "Can't communicate with cookiejar!";
        return DOMString();
     }
 
@@ -191,7 +191,7 @@ HTMLMapElementImpl* HTMLDocumentImpl::getMap(const DOMString& _url)
     QString url = _url.string();
     QString s;
     int pos = url.indexOf('#');
-    //kDebug(0) << "map pos of #:" << pos;
+    //qDebug() << "map pos of #:" << pos;
     s = QString(_url.unicode() + pos + 1, _url.length() - pos - 1);
 
     QMap<QString,HTMLMapElementImpl*>::const_iterator it = mapMap.constFind(s);
@@ -229,7 +229,7 @@ void HTMLDocumentImpl::close()
         // the first(IE)/last(Moz/Konq) registered onload on a <frame> and the
         // first(IE)/last(Moz/Konq) registered onload on a <frameset>.
 
-        //kDebug() << "dispatching LOAD_EVENT on document " << document() << " " << (view()?view()->part()->name():0);
+        //qDebug() << "dispatching LOAD_EVENT on document " << document() << " " << (view()?view()->part()->name():0);
 
         //Make sure to flush any pending image events now, as we want them out before the document's load event
         dispatchImageLoadEventsNow();
@@ -268,14 +268,16 @@ void HTMLDocumentImpl::changeModes(ParseMode newPMode, HTMLMode newHMode)
 
     m_styleSelector->strictParsing = !inCompatMode();
 
-    // kDebug() << "DocumentImpl::determineParseMode: publicId =" << publicID << " systemId = " << systemID;
-    // kDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode;
+#if 0
+    qDebug() << "DocumentImpl::determineParseMode: publicId =" << publicID << " systemId = " << systemID;
+    qDebug() << "DocumentImpl::determineParseMode: htmlMode = " << hMode;
     if( pMode == Strict )
-        kDebug(6030) << " using strict parseMode";
+        qDebug() << " using strict parseMode";
     else if (pMode == Compat )
-        kDebug(6030) << " using compatibility parseMode";
+        qDebug() << " using compatibility parseMode";
     else
-        kDebug(6030) << " using transitional parseMode";
+        qDebug() << " using transitional parseMode";
+#endif
 
     if ( pMode != oldPMode && styleSelector() )
         updateStyleSelector(true/*shallow*/);

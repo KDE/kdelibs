@@ -331,7 +331,7 @@ closeAllFDs()
 void
 KCrash::defaultCrashHandler (int sig)
 {
-    // WABA: Do NOT use kDebug() in this function because it is much too risky!
+    // WABA: Do NOT use qDebug() in this function because it is much too risky!
     // Handle possible recursions
     static int crashRecursionCounter = 0;
     crashRecursionCounter++; // Nothing before this, please !

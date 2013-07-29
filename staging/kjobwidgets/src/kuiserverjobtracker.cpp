@@ -99,7 +99,7 @@ void KUiServerJobTracker::registerJob(KJob *job)
                                                            reply.value().path(),
                                                            QDBusConnection::sessionBus());
         if (!jobWatch) {
-            //kDebug() << "deleted out from under us when asking the server proxy for the view";
+            //qDebug() << "deleted out from under us when asking the server proxy for the view";
             jobView->terminate(QString());
             delete jobView;
             return;
@@ -118,7 +118,7 @@ void KUiServerJobTracker::registerJob(KJob *job)
         }
 
         if (!jobWatch) {
-            //kDebug() << "deleted out from under us when creating the dbus interface";
+            //qDebug() << "deleted out from under us when creating the dbus interface";
             jobView->terminate(QString());
             delete jobView;
             return;

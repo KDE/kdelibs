@@ -20,7 +20,6 @@
 
 #include <kio/job.h>
 #include <kio/scheduler.h>
-#include <kdebug.h>
 
 #include <QtCore/QFile>
 

@@ -23,7 +23,7 @@
 
 #include "core/xmlloader.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 
 #include <QtCore/QTimer>
@@ -43,7 +43,7 @@ QString StaticXmlProvider::id() const
 
 bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
 {
-    kDebug(550) << "setting provider xml";
+    // qDebug() << "setting provider xml";
 
     if (xmldata.tagName() != "provider")
         return false;
@@ -85,18 +85,18 @@ bool StaticXmlProvider::setProviderXML(const QDomElement & xmldata)
         if (e.tagName() == "title") {
             //QString lang = e.attribute("lang");
             mName = e.text().trimmed();
-            kDebug() << "add name for provider ("<< this << "): " << e.text();
+            // qDebug() << "add name for provider ("<< this << "): " << e.text();
         }
     }
 
     // Validation
     if ((mNoUploadUrl.isValid()) && (mUploadUrl.isValid())) {
-        kWarning(550) << "StaticXmlProvider: both uploadurl and nouploadurl given";
+        qWarning() << "StaticXmlProvider: both uploadurl and nouploadurl given";
         return false;
     }
 
     if ((!mNoUploadUrl.isValid()) && (!mUploadUrl.isValid())) {
-        kWarning(550) << "StaticXmlProvider: neither uploadurl nor nouploadurl given";
+        qWarning() << "StaticXmlProvider: neither uploadurl nor nouploadurl given";
         return false;
     }
 
@@ -123,7 +123,7 @@ bool StaticXmlProvider::isInitialized() const
 
 void StaticXmlProvider::setCachedEntries(const KNS3::EntryInternal::List& cachedEntries)
 {
-    kDebug() << "Set cached entries " << cachedEntries.size();
+    // qDebug() << "Set cached entries " << cachedEntries.size();
     mCachedEntries.append(cachedEntries);
 }
 
@@ -138,7 +138,7 @@ void StaticXmlProvider::loadEntries(const KNS3::Provider::SearchRequest& request
     }
 
     if (request.sortMode == Installed) {
-        kDebug() << "Installed entries: " << mId << installedEntries().size();
+        // qDebug() << "Installed entries: " << mId << installedEntries().size();
         emit loadingFinished(request, installedEntries());
         return;
     }
@@ -189,7 +189,7 @@ void StaticXmlProvider::slotFeedFileLoaded(const QDomDocument& doc)
     XmlLoader * loader = qobject_cast<KNS3::XmlLoader*>(sender());
     if (!loader)
     {
-        kWarning() << "Loader not found!";
+        qWarning() << "Loader not found!";
         emit loadingFailed(mCurrentRequest);
         return;
     }
@@ -260,7 +260,7 @@ bool StaticXmlProvider::searchIncludesEntry(const KNS3::EntryInternal& entry) co
 
 void StaticXmlProvider::loadPayloadLink(const KNS3::EntryInternal& entry, int)
 {
-    kDebug() << "Payload: " << entry.payload();
+    // qDebug() << "Payload: " << entry.payload();
     emit payloadLinkLoaded(entry);
 }
 

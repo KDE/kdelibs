@@ -31,7 +31,6 @@
 #include <QtCore/QCryptographicHash>
 
 #include <krandom.h>
-#include <kdebug.h>
 
 static const char NTLM_SIGNATURE[] = "NTLMSSP";
 

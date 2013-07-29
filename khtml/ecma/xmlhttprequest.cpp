@@ -39,7 +39,7 @@
 #include <kio/job.h>
 #include <QtCore/QObject>
 #include <QtCore/QHash>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kio/netaccess.h>
 using KIO::NetAccess;
@@ -193,7 +193,7 @@ JSValue *XMLHttpRequest::getValueProperty(ExecState *exec, int token) const
      return jsNull();
    }
   default:
-    kWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token;
+    qWarning() << "XMLHttpRequest::getValueProperty unhandled token " << token;
     return 0;
   }
 }
@@ -217,7 +217,7 @@ void XMLHttpRequest::putValueProperty(ExecState *exec, int token, JSValue *value
     if (onLoadListener) onLoadListener->ref();
     break;
   default:
-    kWarning() << "XMLHttpRequest::putValue unhandled token " << token;
+    qWarning() << "XMLHttpRequest::putValue unhandled token " << token;
   }
 }
 
@@ -533,7 +533,7 @@ void XMLHttpRequest::send(const QString& _body, int& ec)
   documentURL.setPassword(QString());
   documentURL.setUserName(QString());
   job->addMetaData("referrer", documentURL.url());
-  // kDebug() << "Adding referrer: " << documentURL;
+  // qDebug() << "Adding referrer: " << documentURL;
 
   if (!async) {
     QByteArray data;
@@ -638,7 +638,7 @@ void XMLHttpRequest::setRequestHeader(const QString& _name, const QString& _valu
 
   // Reject all banned headers.
   if (!canSetRequestHeader(_name)) {
-      kWarning(6070) << "Refusing to set unsafe XMLHttpRequest header "
+      qWarning() << "Refusing to set unsafe XMLHttpRequest header "
                      << name << endl;
       return;
   }

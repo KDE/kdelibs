@@ -76,7 +76,7 @@ void ConnectionPrivate::dequeue()
 
 void ConnectionPrivate::commandReceived(const Task &task)
 {
-    //kDebug() << this << "Command " << task.cmd << " added to the queue";
+    //qDebug() << this << "Command " << task.cmd << " added to the queue";
     if (!suspended && incomingTasks.isEmpty())
         QMetaObject::invokeMethod(q, "dequeue", Qt::QueuedConnection);
     incomingTasks.enqueue(task);
@@ -112,7 +112,7 @@ Connection::~Connection()
 
 void Connection::suspend()
 {
-    //kDebug() << this << "Suspended";
+    //qDebug() << this << "Suspended";
     d->suspended = true;
     if (d->backend)
         d->backend->setSuspended(true);
@@ -123,7 +123,7 @@ void Connection::resume()
     // send any outgoing or incoming commands that may be in queue
     QMetaObject::invokeMethod(this, "dequeue", Qt::QueuedConnection);
 
-    //kDebug() << this << "Resumed";
+    //qDebug() << this << "Resumed";
     d->suspended = false;
     if (d->backend)
         d->backend->setSuspended(false);
@@ -157,7 +157,7 @@ bool Connection::suspended() const
 
 void Connection::connectToRemote(const QUrl &address)
 {
-    //kDebug(7017) << "Connection requested to " << address;
+    //qDebug() << "Connection requested to " << address;
     const QString scheme = address.scheme();
 
     if (scheme == QLatin1String("local")) {
@@ -209,7 +209,7 @@ bool Connection::sendnow(int _cmd, const QByteArray &data)
     if (!isConnected())
         return false;
 
-    //kDebug() << this << "Sending command " << _cmd << " of size " << data.size();
+    //qDebug() << this << "Sending command " << _cmd << " of size " << data.size();
     Task task;
     task.cmd = _cmd;
     task.data = data;
@@ -239,7 +239,7 @@ int Connection::read( int* _cmd, QByteArray &data )
         return -1;
     }
     const Task task = d->incomingTasks.dequeue();
-    //kDebug() << this << "Command " << task.cmd << " removed from the queue (size "
+    //qDebug() << this << "Command " << task.cmd << " removed from the queue (size "
     //         << task.data.size() << ")";
     *_cmd = task.cmd;
     data = task.data;
@@ -276,7 +276,7 @@ void ConnectionServer::listenForRemote()
     }
 
     connect(d->backend, SIGNAL(newConnection()), SIGNAL(newConnection()));
-    //kDebug(7017) << "Listening on" << d->backend->address;
+    //qDebug() << "Listening on" << d->backend->address;
 }
 
 QUrl ConnectionServer::address() const

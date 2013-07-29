@@ -85,7 +85,7 @@ KExtendableItemDelegate::~KExtendableItemDelegate()
 
 void KExtendableItemDelegate::extendItem(QWidget *ext, const QModelIndex &index)
 {
-    // kDebug() << "Creating extender at " << ext << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
+    // qDebug() << "Creating extender at " << ext << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
 
     if (!ext || !index.isValid()) {
         return;
@@ -114,7 +114,7 @@ void KExtendableItemDelegate::contractItem(const QModelIndex& index)
     if (!extender) {
         return;
     }
-    // kDebug() << "Collapse extender at " << extender << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
+    // qDebug() << "Collapse extender at " << extender << " for item " << index.model()->data(index,Qt::DisplayRole).toString();
     extender->hide();
     extender->deleteLater();
 
@@ -136,7 +136,7 @@ void KExtendableItemDelegate::contractAll()
 //slot
 void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *destroyed)
 {
-    // kDebug() << "Removing extender at " << destroyed;
+    // qDebug() << "Removing extender at " << destroyed;
 
     QWidget *extender = static_cast<QWidget *>(destroyed);
     stateTick++;

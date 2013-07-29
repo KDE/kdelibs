@@ -19,7 +19,7 @@
 */
 #include "scriptableextension.h"
 #include "scriptableextension_p.h"
-#include <kdebug.h>
+#include <QDebug>
 
 namespace KParts {
 
@@ -387,7 +387,7 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
     QVariant enclosure = enclosingObject();
     if (!enclosure.canConvert<Object>()) {
         releaseValue(enclosure);
-        kDebug(1000) << "No enclosure, can't evaluate";
+        // qDebug() << "No enclosure, can't evaluate";
         return;
     }
 
@@ -395,7 +395,7 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
 
     if (!host()->isScriptLanguageSupported(ECMAScript)) {
         releaseValue(enclosure);
-        kDebug(1000) << "Host can't evaluate ECMAScript";
+        // qDebug() << "Host can't evaluate ECMAScript";
     }
 
     // Compute a string to evaluate. We ned to escape a lot of stuff
@@ -419,7 +419,7 @@ void ScriptableLiveConnectExtension::liveConnectEvent(const unsigned long, const
     }
     script += ")";
 
-    kDebug(1000) << script;
+    // qDebug() << script;
 
     // Ask host to evaluate.. (unfortunately, we can't do anything with the result,
     // but anything that uses this interface isn't expective one in the first place)

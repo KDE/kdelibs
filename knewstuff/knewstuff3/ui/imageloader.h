@@ -23,8 +23,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 
-#include <kdebug.h>
-
 #include "core/entryinternal.h"
 
 class KJob;

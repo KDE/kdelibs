@@ -29,7 +29,7 @@
 #include "css_base.h"
 
 #include <assert.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #ifdef CSS_DEBUG
 #include "cssproperties.h"
@@ -101,7 +101,7 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
 
     propList->append(prop);
 #ifdef CSS_DEBUG
-    kDebug( 6080 ) << "added property: " << getPropertyName(propId).string()
+    // qDebug() << "added property: " << getPropertyName(propId).string()
                     // non implemented yet << ", value: " << parsedValue->cssText().string()
                     << " important: " << prop->m_important;
 #endif
@@ -129,12 +129,12 @@ StyleListImpl::~StyleListImpl()
 
 void CSSSelector::print(void)
 {
-    kDebug( 6080 ) << "[Selector: tag = " <<       QString::number(makeId(tagNamespace.id(), tagLocalName.id()),16) << ", attr = \"" << makeId(attrNamespace.id(), attrLocalName.id()) << "\", match = \"" << match
-		    << "\" value = \"" << value.string().string().toLatin1().constData() << "\" relation = " << (int)relation
-		    << "]" << endl;
+    // qDebug() << "[Selector: tag = " <<       QString::number(makeId(tagNamespace.id(), tagLocalName.id()),16) << ", attr = \"" << makeId(attrNamespace.id(), attrLocalName.id()) << "\", match = \"" << match
+		//    << "\" value = \"" << value.string().string().toLatin1().constData() << "\" relation = " << (int)relation
+		//    << "]" << endl;
     if ( tagHistory )
         tagHistory->print();
-    kDebug( 6080 ) << "    specificity = " << specificity();
+    // qDebug() << "    specificity = " << specificity();
 }
 
 unsigned int CSSSelector::specificity() const
@@ -393,7 +393,7 @@ DOMString CSSSelector::selectorText() const
                 str += "*=";
                 break;
             default:
-                kWarning(6080) << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match;
+                qWarning() << "Unhandled case in CSSStyleRuleImpl::selectorText : match=" << cs->match;
             }
             if (cs->match != CSSSelector::Set) {
                 str += "\"";

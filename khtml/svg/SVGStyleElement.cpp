@@ -89,7 +89,7 @@ void SVGStyleElement::setTitle(const DOMString&, ExceptionCode& ec)
 
 void SVGStyleElement::parseMappedAttribute(MappedAttribute* attr)
 {
-    kDebug() << "parse: " << attr->id() << attr->localName() << attr->value() << endl;
+    // qDebug() << "parse: " << attr->id() << attr->localName() << attr->value() << endl;
     if (/*attr->name() == titleAttr*/attr->id() == ATTR_TITLE && m_sheet)
         ;//FIXME m_sheet->setTitle(attr->value());
     else
@@ -110,7 +110,7 @@ void SVGStyleElement::insertedIntoDocument()
     /*if (!m_createdByParser)
         StyleElement::insertedIntoDocument(document(), this);*/
     // Copy implementation from HTMLStyleElementImpl for KHTML
-    kDebug() << "not implemented" << endl;
+    // qDebug() << "not implemented" << endl;
 }
 
 void SVGStyleElement::removedFromDocument()
@@ -118,7 +118,7 @@ void SVGStyleElement::removedFromDocument()
     SVGElement::removedFromDocument();
     /*StyleElement::removedFromDocument(document());*/
     // Copy implementation from HTMLStyleElementImpl for KHTML
-    kDebug() << "not implemented" << endl;
+    // qDebug() << "not implemented" << endl;
 }
 
 void SVGStyleElement::childrenChanged(bool changedByParser, Node* beforeChange, Node* afterChange, int childCountDelta)
@@ -131,7 +131,7 @@ void SVGStyleElement::childrenChanged(bool changedByParser, Node* beforeChange, 
     SVGElement::childrenChanged();
     /*StyleElement::process(this);*/
     // Copy implementation from HTMLStyleElementImpl for KHTML
-    kDebug() << "not implemented" << endl;
+    // qDebug() << "not implemented" << endl;
 }
 
 StyleSheet* SVGStyleElement::sheet()

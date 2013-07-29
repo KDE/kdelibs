@@ -22,7 +22,7 @@ DEALINGS IN THE SOFTWARE.
 
 ****************************************************************************/
 
-// kDebug() can't be turned off in kdeinit
+// qDebug() can't be turned off in kdeinit
 #if 0
 #define KSTARTUPINFO_ALL_DEBUG
 #ifdef __GNUC__

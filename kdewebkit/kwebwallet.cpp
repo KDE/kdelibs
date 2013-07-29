@@ -23,7 +23,7 @@
 #include "kwebwallet.h"
 
 #include <kwallet.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QSet>
 #include <QtCore/QHash>
@@ -211,7 +211,7 @@ KWebWallet::WebFormList KWebWallet::KWebWalletPrivate::parseFormData(QWebFrame *
 void KWebWallet::KWebWalletPrivate::fillDataFromCache(KWebWallet::WebFormList &formList)
 {
     if (!wallet) {
-        kWarning(800) << "Unable to retrieve form data from wallet";
+        qWarning() << "Unable to retrieve form data from wallet";
         return;
     }
 
@@ -223,7 +223,7 @@ void KWebWallet::KWebWalletPrivate::fillDataFromCache(KWebWallet::WebFormList &f
         KWebWallet::WebForm &form = formIt.next();
         const QString key (walletKey(form));
         if (key != lastKey && wallet->readMap(key, cachedValues) != 0) {
-            kWarning(800) << "Unable to read form data for key:" << key;
+            qWarning() << "Unable to read form data for key:" << key;
             continue;
         }
 
@@ -282,7 +282,7 @@ void KWebWallet::KWebWalletPrivate::saveDataToCache(const QString &key)
             if (wallet->writeMap(accessKey, values) == 0)
                 count++;
             else
-                kWarning(800) << "Unable to write form data to wallet";
+                qWarning() << "Unable to write form data to wallet";
         }
 
         if (list.isEmpty() || count > 0)
@@ -290,7 +290,7 @@ void KWebWallet::KWebWalletPrivate::saveDataToCache(const QString &key)
 
         pendingSaveRequests.remove(key);
     } else {
-        kWarning(800) << "NULL KWallet instance!";
+        qWarning() << "NULL KWallet instance!";
     }
 
     emit q->saveFormDataCompleted(url, success);
@@ -317,7 +317,7 @@ void KWebWallet::KWebWalletPrivate::openWallet()
 void KWebWallet::KWebWalletPrivate::removeDataFromCache(const WebFormList &formList)
 {
     if (!wallet) {
-        kWarning(800) << "NULL KWallet instance!";
+        qWarning() << "NULL KWallet instance!";
         return;
     }
 
@@ -426,7 +426,7 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
     if (!formsList.isEmpty()) {
         const QUrl url (urlForFrame(frame));
         if (d->pendingFillRequests.contains(url)) {
-            kWarning(800) << "Duplicate request rejected!";
+            qWarning() << "Duplicate request rejected!";
         } else {
             KWebWalletPrivate::FormsData data;
             data.frame = QPointer<QWebFrame>(frame);
@@ -447,7 +447,7 @@ void KWebWallet::fillFormData(QWebFrame *frame, bool recursive)
                 continue;
             const QUrl url (childFrame->url());
             if (d->pendingFillRequests.contains(url)) {
-                kWarning(800) << "Duplicate request rejected!!!";
+                qWarning() << "Duplicate request rejected!!!";
             } else {
                 KWebWalletPrivate::FormsData data;
                 data.frame = QPointer<QWebFrame>(childFrame);

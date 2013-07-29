@@ -23,7 +23,6 @@
 #include <QTableWidget>
 #include <QHeaderView>
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 
 #include "debugdocument.h"

@@ -112,7 +112,7 @@ void RenderSVGText::layout()
 
 InlineBox* RenderSVGText::createInlineBox(bool makePlaceHolderBox, bool isRootLineBox/*, bool isOnlyRun*/)
 {
-    kDebug() << "createInlineBox" << makePlaceHolderBox << isRootLineBox << endl;
+    // qDebug() << "createInlineBox" << makePlaceHolderBox << isRootLineBox << endl;
     ASSERT(!isInlineFlow());
     InlineFlowBox* flowBox = new (renderArena()) SVGRootInlineBox(this);
     

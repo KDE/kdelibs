@@ -26,7 +26,7 @@
 #include <kmessagebox.h>
 #include <kpluginfactory.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <QDebug>
 
 PluginSpellCheck::PluginSpellCheck( QObject* parent,
                                     const QVariantList& )
@@ -43,7 +43,7 @@ PluginSpellCheck::~PluginSpellCheck()
 
 void PluginSpellCheck::slotSpellCheck()
 {
-    kDebug() << "Plugin parent : " << parent()->objectName() << " (" << parent()->metaObject()->className() << ")";
+    // qDebug() << "Plugin parent : " << parent()->objectName() << " (" << parent()->metaObject()->className() << ")";
     // The parent is assumed to be a NotepadPart
     // Can't use qobject_cast here, we would need NotepadPart to be in a shared library.
     if ( !parent()->inherits("NotepadPart") )

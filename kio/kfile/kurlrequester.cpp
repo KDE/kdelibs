@@ -26,7 +26,7 @@
 #include <kurlcompletion.h>
 #include <kprotocolmanager.h>
 #include <kstandardshortcut.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QEvent>
 #include <QDrag>
@@ -535,7 +535,7 @@ const KEditListWidget::CustomEditor &KUrlRequester::customEditor()
 
 #ifndef NDEBUG
     if ( !edit ) {
-        kWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
+        qWarning() << "KUrlRequester's lineedit is not a KLineEdit!??\n";
     }
 #endif
 

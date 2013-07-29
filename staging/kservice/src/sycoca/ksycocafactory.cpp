@@ -158,7 +158,7 @@ KSycocaFactory::addEntry(const KSycocaEntry::Ptr& newEntry)
         // This can also happen with two .protocol files using the same protocol= entry.
         // If we didn't remove one here, we would end up asserting because save()
         // wasn't called on one of the entries.
-        //kDebug(7021) << "removing" << oldEntry.data() << oldEntry->entryPath() << "because of" << newEntry->entryPath() << "they have the same storageId" << newEntry->storageId();
+        //qDebug() << "removing" << oldEntry.data() << oldEntry->entryPath() << "because of" << newEntry->entryPath() << "they have the same storageId" << newEntry->storageId();
         removeEntry(newEntry->storageId());
     }
 

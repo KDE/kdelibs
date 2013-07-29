@@ -44,7 +44,7 @@
 
 #include <wtf/ASCIICType.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <QtCore/QRegExp>
 #include <QPaintDevice>
 
@@ -314,7 +314,7 @@ DOMString CSSStyleDeclarationImpl::getPropertyValue( int propertyID ) const
         return getShortHandValue( properties, 3 );
     }
     }
-    //kDebug() << "property not found:" << propertyID;
+    //qDebug() << "property not found:" << propertyID;
     return DOMString();
 }
  
@@ -760,10 +760,10 @@ bool CSSStyleDeclarationImpl::setProperty(int id, const DOMString &value, bool i
 
     CSSParser parser( strictParsing );
     bool success = parser.parseValue( this, id, value, important );
-    if(!success)
-	kDebug( 6080 ) << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
-			<< "] value: [" << value.string() << "]"<< endl;
-    else
+    if(!success) {
+	// qDebug() << "CSSStyleDeclarationImpl::setProperty invalid property: [" << getPropertyName(id).string()
+			//<< "] value: [" << value.string() << "]"<< endl;
+    } else
         setChanged();
     return success;
 }
@@ -878,7 +878,7 @@ void CSSStyleDeclarationImpl::setCssText(const DOM::DOMString& text)
 
 bool CSSStyleDeclarationImpl::parseString( const DOMString &/*string*/, bool )
 {
-    kDebug() << "WARNING: CSSStyleDeclarationImpl::parseString, unimplemented, was called";
+    // qDebug() << "WARNING: CSSStyleDeclarationImpl::parseString, unimplemented, was called";
     return false;
     // ###
 }
@@ -1161,7 +1161,7 @@ unsigned short CSSPrimitiveValueImpl::cssValueType() const
 bool CSSPrimitiveValueImpl::parseString( const DOMString &/*string*/, bool )
 {
     // ###
-    kDebug() << "WARNING: CSSPrimitiveValueImpl::parseString, unimplemented, was called";
+    // qDebug() << "WARNING: CSSPrimitiveValueImpl::parseString, unimplemented, was called";
     return false;
 }
 
@@ -1418,7 +1418,7 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
     const QString &available = KHTMLSettings::availableFamilies();
 
     parsedFontName = parsedFontName.toLower();
-    // kDebug(0) << "searching for face '" << parsedFontName << "'";
+    // qDebug() << "searching for face '" << parsedFontName << "'";
 
     int pos = available.indexOf( ',' + parsedFontName + ',', 0, Qt::CaseInsensitive );
     if ( pos == -1 ) {
@@ -1437,7 +1437,7 @@ FontFamilyValueImpl::FontFamilyValueImpl( const QString &string)
        int p = available.indexOf(',', pos);
        assert( p != -1 ); // available is supposed to start and end with ,
        parsedFontName = available.mid( pos, p - pos);
-       // kDebug(0) << "going for '" << parsedFontName << "'";
+       // qDebug() << "going for '" << parsedFontName << "'";
     }
 
 #endif // !APPLE_CHANGES
@@ -1523,7 +1523,7 @@ QString QuotesValueImpl::openQuote(int level) const
 {
     if (levels == 0) return "";
     level--; // increments are calculated before openQuote is called
-//     kDebug( 6080 ) << "Open quote level:" << level;
+//     qDebug() << "Open quote level:" << level;
     if (level < 0) level = 0;
     else
     if (level >= (int) levels) level = (int) (levels-1);
@@ -1533,7 +1533,7 @@ QString QuotesValueImpl::openQuote(int level) const
 QString QuotesValueImpl::closeQuote(int level) const
 {
     if (levels == 0) return "";
-//     kDebug( 6080 ) << "Close quote level:" << level;
+//     qDebug() << "Close quote level:" << level;
     if (level < 0) level = 0;
     else
     if (level >= (int) levels) level = (int) (levels-1);

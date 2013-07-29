@@ -37,7 +37,7 @@
 #include <kjobwidgets.h>
 
 #include <kstandardshortcut.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kshell.h>
 #include <kmimetypetrader.h>
 #include <klocalizedstring.h>
@@ -81,7 +81,7 @@ static bool isMimeTypeAssociatedWithSelf(const KService::Ptr &offer)
     if (!offer)
         return false;
 
-    kDebug(800) << offer->desktopEntryName();
+    // qDebug() << offer->desktopEntryName();
 
     const QString& appName = QCoreApplication::applicationName();
 
@@ -185,7 +185,7 @@ public:
             // Get suggested file name...
             mimeType = mimetype;
             const QString suggestedFileName (tJob->queryMetaData(QL1S("content-disposition-filename")));
-            // kDebug(800) << "suggested filename:" << suggestedFileName << ", mimetype:" << mimetype;
+            // qDebug() << "suggested filename:" << suggestedFileName << ", mimetype:" << mimetype;
             (void) downloadResource(tJob->url(), suggestedFileName, window, tJob->metaData());
         }
     }
@@ -437,7 +437,7 @@ static void setDisableCookieJarStorage(QNetworkAccessManager* manager, bool stat
     if (manager) {
         KIO::Integration::CookieJar *cookieJar = manager ? qobject_cast<KIO::Integration::CookieJar*>(manager->cookieJar()) : 0;
         if (cookieJar) {
-            //kDebug(800) << "Store cookies ?" << !status;
+            //qDebug() << "Store cookies ?" << !status;
             cookieJar->setDisableCookieStorage(status);
         }
     }
@@ -445,7 +445,7 @@ static void setDisableCookieJarStorage(QNetworkAccessManager* manager, bool stat
 
 bool KWebPage::acceptNavigationRequest(QWebFrame *frame, const QNetworkRequest &request, NavigationType type)
 {
-    kDebug(800) << "url:" << request.url() << ", type:" << type << ", frame:" << frame;
+    // qDebug() << "url:" << request.url() << ", type:" << type << ", frame:" << frame;
 
     if (frame && d->wallet && type == QWebPage::NavigationTypeFormSubmitted)
         d->wallet->saveFormData(frame);
@@ -503,9 +503,9 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
     if (KParts::BrowserRun::isTextExecutable(mimeType))
         mimeType = QL1S("text/plain");
 
-    //kDebug(800) << "Content-disposition:" << suggestedFileName;
-    //kDebug(800) << "Got unsupported content of type:" << mimeType << "URL:" << replyUrl;
-    //kDebug(800) << "Error code:" << reply->error() << reply->errorString();
+    //qDebug() << "Content-disposition:" << suggestedFileName;
+    //qDebug() << "Got unsupported content of type:" << mimeType << "URL:" << replyUrl;
+    //qDebug() << "Error code:" << reply->error() << reply->errorString();
 
     if (isReplyStatusOk(reply)) {
         while (true) {
@@ -547,7 +547,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                         QList<QUrl> list;
                         list.append(replyUrl);
                         bool success = false;
-                        // kDebug(800) << "Suggested file name:" << suggestedFileName;
+                        // qDebug() << "Suggested file name:" << suggestedFileName;
                         if (offer) {
                             success = KRun::run(*offer, list, d->windowWidget() , false, suggestedFileName);
                         } else {
@@ -576,7 +576,7 @@ bool KWebPage::handleReply(QNetworkReply* reply, QString* contentType, KIO::Meta
                             downloadCmd += QLatin1Char(' ');
                             downloadCmd += KShell::quoteArg(suggestedFileName);
                         }
-                        // kDebug(800) << "download command:" << downloadCmd;
+                        // qDebug() << "download command:" << downloadCmd;
                         if (KRun::runCommand(downloadCmd, view()))
                             return true;
                     }

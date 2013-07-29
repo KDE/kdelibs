@@ -26,7 +26,7 @@
 #include <xml/dom_docimpl.h>
 #include <khtmlview.h>
 #include <khtml_part.h>
-#include <kdebug.h>
+#include <QDebug>
 
 using namespace KJS;
 
@@ -89,7 +89,7 @@ JSValue *DOMNodeIterator::getValueProperty(ExecState *exec, int token) const
   case ExpandEntityReferences:
     return jsBoolean(ni.expandEntityReferences());
  default:
-   kDebug(6070) << "WARNING: Unhandled token in DOMNodeIterator::getValueProperty : " << token;
+   // qDebug() << "WARNING: Unhandled token in DOMNodeIterator::getValueProperty : " << token;
    return 0;
   }
 }
@@ -234,7 +234,7 @@ JSValue *DOMTreeWalker::getValueProperty(ExecState *exec, int token) const
   case CurrentNode:
     return getDOMNode(exec,tw.getCurrentNode());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMTreeWalker::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMTreeWalker::getValueProperty : " << token;
     return 0;
   }
 }

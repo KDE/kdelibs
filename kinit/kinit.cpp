@@ -58,7 +58,7 @@
 #include <kconfig.h>
 #include <kapplication.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kde_file.h>
 #include <qsavefile.h>
 
@@ -611,7 +611,7 @@ static pid_t launch(int argc, const char *_name, const char *args,
        QString argvexe = QStandardPaths::findExecutable(QString::fromLatin1(d.argv[0]));
        if (!argvexe.isEmpty()) {
           QByteArray cstr = argvexe.toLocal8Bit();
-          kDebug(7016) << "kdeinit5: launch() setting argv: " << cstr.data();
+          // qDebug() << "kdeinit5: launch() setting argv: " << cstr.data();
           d.argv[0] = strdup(cstr.data());
        }
 #endif
@@ -1117,7 +1117,7 @@ static bool handle_launcher_request(int sock, const char *who)
        }
    }
 
-   //kDebug() << "Got cmd" << request_header.cmd << commandToString(request_header.cmd);
+   //qDebug() << "Got cmd" << request_header.cmd << commandToString(request_header.cmd);
    if (request_header.cmd == LAUNCHER_OK)
    {
       d.launcher_ok = true;
@@ -1573,7 +1573,7 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
                     "         Resource id:  0x%lx\n",
             getpid(), errstr, err->error_code, err->request_code, err->minor_code, err->resourceid );
 
-    //kDebug() << kBacktrace();
+    //qDebug() << kBacktrace();
 
 #else
     Q_UNUSED(dpy);

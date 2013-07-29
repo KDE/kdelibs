@@ -51,7 +51,7 @@
 #include <ktoggleaction.h>
 #include <kurlcompletion.h>
 #include <kurlpixmapprovider.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kpropertiesdialog.h>
 
 #include "kfileplacesview.h"
@@ -424,7 +424,7 @@ QUrl KDirSelectDialog::url() const
        }
     }
 
-    kDebug() << comboUrl.path() << " is not an accessible directory";
+    // qDebug() << comboUrl.path() << " is not an accessible directory";
     return d->m_treeView->currentUrl();
 }
 

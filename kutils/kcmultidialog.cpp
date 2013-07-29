@@ -36,7 +36,7 @@
 #include <kiconloader.h>
 #include <klocalizedstring.h>
 #include <kpagewidgetmodel.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kmessagebox.h>
 
 #include "kauthaction.h"
@@ -81,7 +81,7 @@ bool KCMultiDialogPrivate::resolveChanges(KCModuleProxy *currentProxy)
 void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *current, KPageWidgetItem *previous )
 {
     Q_Q(KCMultiDialog);
-    kDebug(710);
+    // qDebug();
 
     q->blockSignals(true);
     q->setCurrentPage(previous);
@@ -106,7 +106,7 @@ void KCMultiDialogPrivate::_k_slotCurrentPageChanged( KPageWidgetItem *current, 
 void KCMultiDialogPrivate::_k_clientChanged()
 {
     Q_Q(KCMultiDialog);
-    kDebug(710);
+    // qDebug();
     // Get the current module
     KCModuleProxy *activeModule = 0;
     for ( int i = 0; i < modules.count(); ++i ) {
@@ -201,7 +201,7 @@ void KCMultiDialogPrivate::_k_updateHeader(bool use, const QString &message)
 
 void KCMultiDialogPrivate::_k_dialogClosed()
 {
-  kDebug(710) ;
+  // qDebug() ;
 
   /**
    * If we don't delete them, the DBUS registration stays, and trying to load the KCMs
@@ -407,7 +407,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 
     KCModuleProxy *kcm = new KCModuleProxy(moduleInfo, 0, args);
 
-    kDebug(710) << moduleInfo.moduleName();
+    // qDebug() << moduleInfo.moduleName();
     KPageWidgetItem *item = new KPageWidgetItem(kcm, moduleInfo.moduleName());
 
     if (kcm->useRootOnlyMessage()) {
@@ -430,14 +430,14 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
             KPageWidgetItem *siblingItem = model->item(parentIndex.child(row, 0));
             if (siblingItem->property("_k_weight").toInt() > moduleInfo.weight()) {
                 // the item we found is heavier than the new module
-                kDebug(710) << "adding KCM " << item->name() << " before " << siblingItem->name();
+                // qDebug() << "adding KCM " << item->name() << " before " << siblingItem->name();
                 insertPage(siblingItem, item);
                 break;
             }
         }
         if (row >= siblingCount) {
             // the new module is either the first or the heaviest item
-            kDebug(710) << "adding KCM " << item->name() << " with parent " << parentItem->name();
+            // qDebug() << "adding KCM " << item->name() << " with parent " << parentItem->name();
             addSubPage(parentItem, item);
         }
     } else {
@@ -447,7 +447,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
             KPageWidgetItem *siblingItem = model->item(model->index(row, 0));
             if (siblingItem->property("_k_weight").toInt() > moduleInfo.weight()) {
                 // the item we found is heavier than the new module
-                kDebug(710) << "adding KCM " << item->name() << " before " << siblingItem->name();
+                // qDebug() << "adding KCM " << item->name() << " before " << siblingItem->name();
                 insertPage(siblingItem, item);
                 if ( siblingItem == currentPage() )
                     updateCurrentPage = true;
@@ -457,7 +457,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
         }
         if (row == siblingCount) {
             // the new module is either the first or the heaviest item
-            kDebug(710) << "adding KCM " << item->name() << " at the top level";
+            // qDebug() << "adding KCM " << item->name() << " at the top level";
             addPage(item);
         }
     }
@@ -483,7 +483,7 @@ KPageWidgetItem* KCMultiDialog::addModule( const KCModuleInfo& moduleInfo,
 void KCMultiDialog::clear()
 {
     Q_D(KCMultiDialog);
-  kDebug( 710 ) ;
+  // qDebug() ;
 
   for ( int i = 0; i < d->modules.count(); ++i ) {
     removePage( d->modules[ i ].item );

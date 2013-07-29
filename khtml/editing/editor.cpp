@@ -240,7 +240,7 @@ void Editor::applyStyle(CSSStyleDeclarationImpl *style)
     case Selection::RANGE:
       if (m_part->xmlDocImpl() && style) {
 #ifdef DEBUG_COMMANDS
-        kDebug() << "[create ApplyStyleCommand]" << endl;
+        // qDebug() << "[create ApplyStyleCommand]" << endl;
 #endif
         // FIXME
         (new ApplyStyleCommandImpl(m_part->xmlDocImpl(), style))->apply();
@@ -404,7 +404,7 @@ PassRefPtr<EditCommandImpl> Editor::lastEditCommand() const
 void Editor::appliedEditing(EditCommandImpl *cmd)
 {
 #ifdef DEBUG_COMMANDS
-    kDebug() << "[Applied editing]" << endl;
+    // qDebug() << "[Applied editing]" << endl;
 #endif
   // make sure we have all the changes in rendering tree applied with relayout if needed before setting caret
   // in particular that could be required for inline boxes recomputation when inserting text
@@ -520,17 +520,17 @@ bool Editor::handleKeyEvent(QKeyEvent *_ke)
     case Qt::Key_Delete: {
       Selection selectionToDelete = m_part->caret();
 #ifdef DEBUG_COMMANDS
-      kDebug(6200) << "========== KEY_DELETE ==========" << endl;
+      // qDebug() << "========== KEY_DELETE ==========" << endl;
 #endif
       if (selectionToDelete.state() == Selection::CARET) {
           Position pos(selectionToDelete.start());
 #ifdef DEBUG_COMMANDS
-          kDebug(6200) << "pos.inLastEditableInRootEditableElement " << pos.inLastEditableInRootEditableElement() << " pos.offset " << pos.offset() << " pos.max " << pos.node()->caretMaxRenderedOffset() << endl;
+          // qDebug() << "pos.inLastEditableInRootEditableElement " << pos.inLastEditableInRootEditableElement() << " pos.offset " << pos.offset() << " pos.max " << pos.node()->caretMaxRenderedOffset() << endl;
 #endif
           if (pos.nextCharacterPosition() == pos) {
               // we're at the end of a root editable block...do nothing
 #ifdef DEBUG_COMMANDS
-              kDebug(6200) << "no delete!!!!!!!!!!" << endl;
+              // qDebug() << "no delete!!!!!!!!!!" << endl;
 #endif
               break;
           }
@@ -565,7 +565,7 @@ bool Editor::handleKeyEvent(QKeyEvent *_ke)
         // We didn't get a chance to grab the caret, likely because
         // a script messed with contentEditable in the middle of events
         // acquire it now if there isn't a selection
-        kDebug(6200) << "Editable node w/o caret!";
+        // qDebug() << "Editable node w/o caret!";
         DOM::NodeImpl* focus = m_part->xmlDocImpl()->focusNode();
         if (m_part->caret().state() == Selection::NONE) {
             if (focus)

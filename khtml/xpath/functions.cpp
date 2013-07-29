@@ -526,7 +526,7 @@ Value FunCount::doEvaluate() const
 	Value a = arg( 0 )->evaluate();
 	if ( !a.isNodeset() ) {
 		Expression::reportInvalidExpressionErr();
-		kWarning() << "count() expects <nodeset>";
+		qWarning() << "count() expects <nodeset>";
 		return Value( );
 	}
 	a.toNodeset()->normalizeUpto(StaticNodeListImpl::AxisOrder);
@@ -770,7 +770,7 @@ Value FunSum::doEvaluate() const
 	Value a = arg( 0 )->evaluate();
 	if ( !a.isNodeset() ) {
 		Expression::reportInvalidExpressionErr();
-		kWarning() << "sum() expects <nodeset>";
+		qWarning() << "sum() expects <nodeset>";
 		return Value( 0.0 );
 	}
 
@@ -877,14 +877,14 @@ Function *FunctionLibrary::getFunction( const DOM::DOMString& name,
                                         const QList<Expression *> &args ) const
 {
 	if ( !m_functionDict.contains( name ) ) {
-		kWarning() << "Function '" << name << "' not supported by this implementation.";
+		qWarning() << "Function '" << name << "' not supported by this implementation.";
 
 		return 0;
 	}
 
 	FunctionRec functionRec = m_functionDict[ name ];
 	if ( !functionRec.args.contains( args.count() ) ) {
-		kWarning() << "Function '" << name << "' requires " << functionRec.args.asString() << " arguments, but " << args.count() << " given.";
+		qWarning() << "Function '" << name << "' requires " << functionRec.args.asString() << " arguments, but " << args.count() << " given.";
 		return 0;
 	}
 

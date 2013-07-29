@@ -21,7 +21,7 @@
 
 
 
-#include <kdebug.h>
+#include <QDebug>
 
 extern int kdesuDebugArea();
 
@@ -209,7 +209,7 @@ int StubProcess::ConverseStub(int check)
 	    return 0;
 	} else
 	{
-	    kWarning(kdesuDebugArea()) << k_lineinfo << "Unknown request:" << line;
+	    qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "Unknown request:" << line;
 	    return 1;
 	}
     }

@@ -28,7 +28,7 @@
 #include <QHBoxLayout>
 #include <QAbstractItemView>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kratingwidget.h>
 #include <ksqueezedtextlabel.h>
@@ -84,7 +84,7 @@ void ItemsGridViewDelegate::updateItemWidgets(const QList<QWidget*> widgets,
 {
     const ItemsModel * model = qobject_cast<const ItemsModel*>(index.model());
     if (!model) {
-        kDebug() << "WARNING - INVALID MODEL!";
+        // qDebug() << "WARNING - INVALID MODEL!";
         return;
     }
     
@@ -205,7 +205,7 @@ void ItemsGridViewDelegate::paint(QPainter * painter, const QStyleOptionViewItem
     } else {
         QModelIndex focindex = focusedIndex();
         if(!focindex.isValid()){
-            //kDebug() << "INVALID hide selection";
+            //qDebug() << "INVALID hide selection";
             m_operationBar->hide();
         }
     }

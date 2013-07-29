@@ -53,7 +53,7 @@ ANIMATED_PROPERTY_DEFINITIONS(SVGTextPositioningElement, SVGNumberList*, NumberL
 
 void SVGTextPositioningElement::parseMappedAttribute(MappedAttribute* attr)
 {
-    kDebug() << "parse:" << attr->localName() << attr->value() << endl;
+    // qDebug() << "parse:" << attr->localName() << attr->value() << endl;
     if (attr->name() == SVGNames::xAttr)
         xBaseValue()->parse(attr->value(), this, LengthModeWidth);
     else if (attr->name() == SVGNames::yAttr)

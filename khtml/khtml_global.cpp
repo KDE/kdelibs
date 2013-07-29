@@ -42,7 +42,7 @@
 
 #include <assert.h>
 
-#include <kdebug.h>
+#include <QDebug>
 
 // SVG
 #include "svg/SVGNames.h"
@@ -76,7 +76,7 @@ KHTMLGlobal::KHTMLGlobal()
 
 KHTMLGlobal::~KHTMLGlobal()
 {
-    //kDebug(6000) << this;
+    //qDebug() << this;
     if ( s_self == this )
     {
         finalCheck();
@@ -120,7 +120,7 @@ void KHTMLGlobal::ref()
 {
     if ( !s_refcnt && !s_self )
     {
-        //kDebug(6000) << "Creating KHTMLGlobal instance";
+        //qDebug() << "Creating KHTMLGlobal instance";
         // we can't use a staticdeleter here, because that would mean
         // that the KHTMLGlobal instance gets deleted from within a qPostRoutine, called
         // from the QApplication destructor. That however is too late, because
@@ -134,12 +134,12 @@ void KHTMLGlobal::ref()
     } else {
         ++s_refcnt;
     }
-    //kDebug(6000) << "s_refcnt=" << s_refcnt;
+    //qDebug() << "s_refcnt=" << s_refcnt;
 }
 
 void KHTMLGlobal::deref()
 {
-    //kDebug(6000) << "s_refcnt=" << s_refcnt - 1;
+    //qDebug() << "s_refcnt=" << s_refcnt - 1;
     if ( !--s_refcnt && s_self )
     {
         delete s_self;
@@ -149,7 +149,7 @@ void KHTMLGlobal::deref()
 
 void KHTMLGlobal::registerPart( KHTMLPart *part )
 {
-    //kDebug(6000) << part;
+    //qDebug() << part;
     if ( !s_parts )
         s_parts = new QLinkedList<KHTMLPart*>;
 
@@ -161,7 +161,7 @@ void KHTMLGlobal::registerPart( KHTMLPart *part )
 
 void KHTMLGlobal::deregisterPart( KHTMLPart *part )
 {
-    //kDebug(6000) << part;
+    //qDebug() << part;
     assert( s_parts );
 
     if ( s_parts->removeAll( part ) ) {
@@ -175,7 +175,7 @@ void KHTMLGlobal::deregisterPart( KHTMLPart *part )
 
 void KHTMLGlobal::registerDocumentImpl( DOM::DocumentImpl *doc )
 {
-    //kDebug(6000) << doc;
+    //qDebug() << doc;
     if ( !s_docs )
         s_docs = new QLinkedList<DOM::DocumentImpl*>;
 
@@ -187,7 +187,7 @@ void KHTMLGlobal::registerDocumentImpl( DOM::DocumentImpl *doc )
 
 void KHTMLGlobal::deregisterDocumentImpl( DOM::DocumentImpl *doc )
 {
-    //kDebug(6000) << doc;
+    //qDebug() << doc;
     assert( s_docs );
 
     if ( s_docs->removeAll( doc ) ) {
@@ -249,12 +249,12 @@ void KHTMLGlobal::finalCheck()
     if (s_refcnt) {
         if (s_parts && !s_parts->isEmpty()) {
             Q_FOREACH(KHTMLPart *part, *s_parts) {
-                kWarning(6000) << "Part" << part->url() << "was not deleted";
+                qWarning() << "Part" << part->url() << "was not deleted";
             }
         }
         if (s_docs && !s_docs->isEmpty()) {
             Q_FOREACH(DOM::DocumentImpl *doc, *s_docs) {
-                kWarning(6000) << "Document" << doc->URL() << "was not deleted";
+                qWarning() << "Document" << doc->URL() << "was not deleted";
             }
         }
     }

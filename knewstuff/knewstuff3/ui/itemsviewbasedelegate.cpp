@@ -21,7 +21,7 @@
 #include "itemsmodel.h"
 #include "entrydetailsdialog.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <qstandardpaths.h>
 
 
@@ -71,7 +71,7 @@ void ItemsViewBaseDelegate::slotInstallClicked()
     if (index.isValid()) {
         KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         if (!entry.isValid()) {
-            kDebug() << "Invalid entry: " << entry.name();
+            // qDebug() << "Invalid entry: " << entry.name();
             return;
         }
 
@@ -106,7 +106,7 @@ void ItemsViewBaseDelegate::slotDetailsClicked(const QModelIndex& index)
         KNS3::EntryInternal entry = index.data(Qt::UserRole).value<KNS3::EntryInternal>();
         if ( !entry.isValid() )
             return;
-kDebug() << "Details: " << entry.name();
+// qDebug() << "Details: " << entry.name();
         emit signalShowDetails(entry);
     }
 }

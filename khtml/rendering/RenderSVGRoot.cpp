@@ -171,11 +171,11 @@ void RenderSVGRoot::paint(PaintInfo& paintInfo, int parentX, int parentY)
     childPaintInfo.p->restore();
 
 #if 0
-	kDebug() << "in paint()" << endl;
+	// qDebug() << "in paint()" << endl;
 	/*if (!paintInfo.context) {
 		GraphicsContext context(paintInfo.p);
 		paintInfo.context = &context;
-		kDebug() << "context:" << &context << endl;
+		// qDebug() << "context:" << &context << endl;
 	}*/
     if (paintInfo.context->paintingDisabled())
         return;
@@ -184,10 +184,10 @@ void RenderSVGRoot::paint(PaintInfo& paintInfo, int parentX, int parentY)
 
     SVGSVGElement* svg = static_cast<SVGSVGElement*>(element());
     // A value of zero disables rendering of the element.
-	kDebug() << "viewport:" << viewport().width() << viewport().height() << endl;
+	// qDebug() << "viewport:" << viewport().width() << viewport().height() << endl;
     if (viewport().width() <= 0. || viewport().height() <= 0.)
         return;
-    kDebug() << "painting:" << parentX << parentY << viewport().width() << viewport().height() << endl;
+    // qDebug() << "painting:" << parentX << parentY << viewport().width() << viewport().height() << endl;
 
 
     // This should only exist for <svg> renderers
@@ -208,7 +208,7 @@ void RenderSVGRoot::paint(PaintInfo& paintInfo, int parentX, int parentY)
 
     RenderObject::PaintInfo childPaintInfo(paintInfo);
     childPaintInfo.context->save();
-	kDebug() << "context= " << childPaintInfo.context << "parent=" << paintInfo.context << endl;
+	// qDebug() << "context= " << childPaintInfo.context << "parent=" << paintInfo.context << endl;
 
     /*applyContentTransforms(childPaintInfo, parentX, parentY);
 

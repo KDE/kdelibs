@@ -22,7 +22,7 @@
 #include <qtest.h>
 
 #include <QtCore/QByteArray>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <parsinghelpers.h>
 

@@ -18,7 +18,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kdebug.h>
+#include <QDebug>
 #include <browseropenorsavequestion.h>
 #include <QApplication>
 
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
         BrowserOpenOrSaveQuestion questionOpenUnknownMimeType(0, QUrl("http://www.example.com/foo.foo"),
                                                               QString::fromLatin1("application/foo"));
         BrowserOpenOrSaveQuestion::Result res = questionOpenUnknownMimeType.askOpenOrSave();
-        kDebug() << res;
+        qDebug() << res;
     }
 
     // The normal case
@@ -44,9 +44,9 @@ int main(int argc, char **argv)
         questionOpen.setSuggestedFileName(QString::fromLatin1("file.pdf"));
         questionOpen.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
         BrowserOpenOrSaveQuestion::Result res = questionOpen.askOpenOrSave();
-        kDebug() << res;
+        qDebug() << res;
         if (res == BrowserOpenOrSaveQuestion::Open && questionOpen.selectedService())
-            kDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
+            qDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
     }
 
     // Trying a case with only one app associated
@@ -55,9 +55,9 @@ int main(int argc, char **argv)
                                                QString::fromLatin1("application/zip"));
         questionOpen.setFeatures(BrowserOpenOrSaveQuestion::ServiceSelection);
         BrowserOpenOrSaveQuestion::Result res = questionOpen.askOpenOrSave();
-        kDebug() << res;
+        qDebug() << res;
         if (res == BrowserOpenOrSaveQuestion::Open && questionOpen.selectedService())
-            kDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
+            qDebug() << "Selected service:" << questionOpen.selectedService()->entryPath();
     }
 
     return 0;

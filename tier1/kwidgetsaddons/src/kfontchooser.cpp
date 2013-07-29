@@ -764,8 +764,8 @@ void KFontChooser::Private::_k_displaySample( const QFont& font )
     //sampleEdit->setCursorPosition(0);
 
     //QFontInfo a = QFontInfo(font);
-    //kDebug() << "font: " << a.family () << ", " << a.pointSize ();
-    //kDebug() << "      (" << font.toString() << ")\n";
+    //qDebug() << "font: " << a.family () << ", " << a.pointSize ();
+    //qDebug() << "      (" << font.toString() << ")\n";
 }
 
 int KFontChooser::Private::nearestSizeRow (qreal val, bool customize)

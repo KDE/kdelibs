@@ -363,7 +363,7 @@ namespace KJS {
                 return jsNumber(m_length);
             default:
                 ASSERT_NOT_REACHED();
-                kWarning() << "ArrayBufferView<T>::getValueProperty unhandled token " << token;
+                qWarning() << "ArrayBufferView<T>::getValueProperty unhandled token " << token;
                 break;
         }
         return 0;

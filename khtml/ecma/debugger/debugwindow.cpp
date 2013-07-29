@@ -28,7 +28,7 @@
 
 #include <ktoolbar.h>
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kactioncollection.h>
 #include <ktoggleaction.h>
 #include <kconfig.h>
@@ -438,7 +438,7 @@ void DebugWindow::cleanupDocument(DebugDocument::Ptr doc)
 static void fatalAssert(bool shouldBeTrue, const char* error)
 {
     if (!shouldBeTrue)
-        kFatal() << error;
+        qFatal(error);
 }
 
 void DebugWindow::detach(KJS::Interpreter* interp)
@@ -494,7 +494,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
 {
     Q_UNUSED(exec);
 
-    kDebug() << "sourceId: " << sourceId
+    // qDebug() << "sourceId: " << sourceId
              << "sourceURL: " << jsSourceURL.qstring()
              << "startingLineNumber: " << startingLineNumber
              << "errorLine: " << errorLine;
@@ -907,7 +907,7 @@ void DebugWindow::markSet(KTextEditor::Document* document, KTextEditor::Mark mar
     switch(action)
     {
         case KTextEditor::MarkInterface::MarkAdded:
-            kDebug() << lineNumber;
+            // qDebug() << lineNumber;
             debugDocument->setBreakpoint(lineNumber);
             break;
         case KTextEditor::MarkInterface::MarkRemoved:
@@ -915,7 +915,7 @@ void DebugWindow::markSet(KTextEditor::Document* document, KTextEditor::Mark mar
             break;
     }
 
-    kDebug() << "breakpoint set for: " << endl
+    // qDebug() << "breakpoint set for: " << endl
              << "document: " << document->documentName() << endl
              << "line: " << lineNumber;
 }

@@ -13,7 +13,7 @@
 #include <QImage>
 #include <QtCore/QDataStream>
 
-#include <kdebug.h>
+#include <QDebug>
 
 typedef Q_UINT8 uchar;
 
@@ -222,7 +222,7 @@ Q_DECL_EXPORT void kimgio_hdr_read( QImageIO * io )
 
 	if( /*!validHeader ||*/ !validFormat )
 	{
-		kDebug(399) << "Unknown HDR format.";
+		// qDebug() << "Unknown HDR format.";
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;
@@ -235,7 +235,7 @@ Q_DECL_EXPORT void kimgio_hdr_read( QImageIO * io )
 	if (sscanf(line, "%2[+-XY] %d %2[+-XY] %d\n", s1, &height, s2, &width) != 4)
 	//if( sscanf(line, "-Y %d +X %d", &height, &width) < 2 )
 	{
-		kDebug(399) << "Invalid HDR file.";
+		// qDebug() << "Invalid HDR file.";
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;
@@ -246,7 +246,7 @@ Q_DECL_EXPORT void kimgio_hdr_read( QImageIO * io )
 	QImage img;
 	if( !LoadHDR(s, width, height, img) )
 	{
-		kDebug(399) << "Error loading HDR file.";
+		// qDebug() << "Error loading HDR file.";
 		io->setImage( 0 );
 		io->setStatus( -1 );
 		return;

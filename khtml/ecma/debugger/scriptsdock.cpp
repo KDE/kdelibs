@@ -27,8 +27,6 @@
 #include <QHeaderView>
 #include <QUrl>
 
-#include <kdebug.h>
-
 #include "debugwindow.h"
 #include "debugdocument.h"
 

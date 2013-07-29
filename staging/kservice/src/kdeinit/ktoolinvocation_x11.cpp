@@ -35,6 +35,7 @@
 #include "kmessage.h"
 #include "kservice.h"
 
+#include <QDebug>
 #include <qstandardpaths.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QProcess>

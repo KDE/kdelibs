@@ -88,7 +88,7 @@ extern "C" {
 #include <kcoreauthorized.h>
 #include <kdirnotify.h>
 #include <kdiskfreespaceinfo.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kdesktopfile.h>
 #include <kiconbutton.h>
 #include <kurlrequester.h>
@@ -484,12 +484,12 @@ void KPropertiesDialog::slotOk()
     for (pageListIt = d->m_pageList.constBegin(); pageListIt != d->m_pageList.constEnd() && !d->m_aborted; ++pageListIt) {
         if ( (*pageListIt)->isDirty() )
         {
-            kDebug( 250 ) << "applying changes for " << (*pageListIt)->metaObject()->className();
+            // qDebug() << "applying changes for " << (*pageListIt)->metaObject()->className();
             (*pageListIt)->applyChanges();
             // applyChanges may change d->m_aborted.
         }
         else {
-            kDebug( 250 ) << "skipping page " << (*pageListIt)->metaObject()->className();
+            // qDebug() << "skipping page " << (*pageListIt)->metaObject()->className();
         }
     }
 
@@ -570,7 +570,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
             " ([X-KDE-Protocol] == '%1'  )   )"
             ).arg(item.url().scheme());
 
-    kDebug( 250 ) << "trader query: " << query;
+    // qDebug() << "trader query: " << query;
     const KService::List offers = KMimeTypeTrader::self()->query( mimetype, "KPropertiesDialog/Plugin", query );
     foreach (const KService::Ptr &ptr, offers) {
         KPropertiesDialogPlugin *plugin = ptr->createInstance<KPropertiesDialogPlugin>(q);
@@ -585,10 +585,10 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
 void KPropertiesDialog::updateUrl(const QUrl& _newUrl)
 {
     Q_ASSERT(d->m_items.count() == 1);
-    kDebug(250) << "KPropertiesDialog::updateUrl (pre)" << _newUrl;
+    // qDebug() << "KPropertiesDialog::updateUrl (pre)" << _newUrl;
     QUrl newUrl = _newUrl;
     emit saveAs(d->m_singleUrl, newUrl);
-    kDebug(250) << "KPropertiesDialog::updateUrl (post)" << newUrl;
+    // qDebug() << "KPropertiesDialog::updateUrl (post)" << newUrl;
 
     d->m_singleUrl = newUrl;
     d->m_items.first().setUrl(newUrl);
@@ -599,7 +599,7 @@ void KPropertiesDialog::updateUrl(const QUrl& _newUrl)
         if ( qobject_cast<KUrlPropsPlugin*>(it) ||
              qobject_cast<KDesktopPropsPlugin*>(it) )
         {
-            //kDebug(250) << "Setting page dirty";
+            //qDebug() << "Setting page dirty";
             it->setDirty();
             break;
         }
@@ -609,7 +609,7 @@ void KPropertiesDialog::updateUrl(const QUrl& _newUrl)
 void KPropertiesDialog::rename( const QString& _name )
 {
     Q_ASSERT(d->m_items.count() == 1);
-    kDebug(250) << "KPropertiesDialog::rename " << _name;
+    // qDebug() << "KPropertiesDialog::rename " << _name;
     QUrl newUrl;
     // if we're creating from a template : use currentdir
     if (!d->m_currentDir.isEmpty()) {
@@ -689,7 +689,7 @@ bool KPropertiesDialogPlugin::isDirty() const
 
 void KPropertiesDialogPlugin::applyChanges()
 {
-    kWarning(250) << "applyChanges() not implemented in page !";
+    qWarning() << "applyChanges() not implemented in page !";
 }
 
 int KPropertiesDialogPlugin::fontHeight() const
@@ -751,7 +751,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     d->bMultiple = (properties->items().count() > 1);
     d->bIconChanged = false;
     d->bDesktopFile = KDesktopPropsPlugin::supports(properties->items());
-    kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple;
+    // qDebug() << "KFilePropsPlugin::KFilePropsPlugin bMultiple=" << d->bMultiple;
 
     // We set this data from the first item, and we'll
     // check that the other items match against it, resetting when not.
@@ -858,7 +858,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         {
             const QUrl url = (*kit).url();
             const QUrlPathInfo info(url);
-            kDebug(250) << "KFilePropsPlugin::KFilePropsPlugin " << url.toDisplayString();
+            // qDebug() << "KFilePropsPlugin::KFilePropsPlugin " << url.toDisplayString();
             // The list of things we check here should match the variables defined
             // at the beginning of this method.
             if ( url.isLocalFile() != isLocal )
@@ -1280,7 +1280,7 @@ void KFilePropsPlugin::slotDirSizeFinished( KJob * job )
 void KFilePropsPlugin::slotSizeDetermine()
 {
     d->m_sizeLabel->setText( i18n("Calculating...") );
-    kDebug(250) << "properties->item()=" << properties->item() << "URL=" << properties->item().url();
+    // qDebug() << "properties->item()=" << properties->item() << "URL=" << properties->item().url();
 
     d->dirSizeJob = KIO::directorySize( properties->items() );
     d->dirSizeUpdateTimer = new QTimer(this);
@@ -1340,7 +1340,7 @@ void KFilePropsPlugin::applyChanges()
     if ( d->dirSizeJob )
         slotSizeStop();
 
-    kDebug(250) << "KFilePropsPlugin::applyChanges";
+    // qDebug() << "KFilePropsPlugin::applyChanges";
 
     if (qobject_cast<QLineEdit*>(d->nameArea))
     {
@@ -1356,8 +1356,8 @@ void KFilePropsPlugin::applyChanges()
         }
 
         // Do we need to rename the file ?
-        kDebug(250) << "oldname = " << d->oldName;
-        kDebug(250) << "newname = " << n;
+        // qDebug() << "oldname = " << d->oldName;
+        // qDebug() << "newname = " << n;
         if ( d->oldName != n || d->m_bFromTemplate ) { // true for any from-template file
             KIO::Job * job = 0L;
             QUrl oldurl = properties->url();
@@ -1374,8 +1374,8 @@ void KFilePropsPlugin::applyChanges()
             if ( !d->m_sRelativePath.isEmpty() )
                 determineRelativePath( properties->url().toLocalFile() );
 
-            kDebug(250) << "New URL = " << properties->url();
-            kDebug(250) << "old = " << oldurl.url();
+            // qDebug() << "New URL = " << properties->url();
+            // qDebug() << "old = " << oldurl.url();
 
             // Don't remove the template !!
             if ( !d->m_bFromTemplate ) // (normal renaming)
@@ -1406,7 +1406,7 @@ void KFilePropsPlugin::applyChanges()
 
 void KFilePropsPlugin::slotCopyFinished( KJob * job )
 {
-    kDebug(250) << "KFilePropsPlugin::slotCopyFinished";
+    // qDebug() << "KFilePropsPlugin::slotCopyFinished";
     if (job)
     {
         // allow apply() to return
@@ -1427,10 +1427,10 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
     // Save the file locally
     if (d->bDesktopFile && !d->m_sRelativePath.isEmpty())
     {
-        kDebug(250) << "KFilePropsPlugin::slotCopyFinished " << d->m_sRelativePath;
+        // qDebug() << "KFilePropsPlugin::slotCopyFinished " << d->m_sRelativePath;
         const QString newPath = QStandardPaths::writableLocation(QStandardPaths::ApplicationsLocation) + '/' + d->m_sRelativePath;
         const QUrl newURL = QUrl::fromLocalFile(newPath);
-        kDebug(250) << "KFilePropsPlugin::slotCopyFinished path=" << newURL;
+        // qDebug() << "KFilePropsPlugin::slotCopyFinished path=" << newURL;
         properties->updateUrl(newURL);
     }
 
@@ -1454,7 +1454,7 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
         const KFileItem item = properties->item();
         const QString newTarget = d->m_linkTargetLineEdit->text();
         if (newTarget != item.linkDest()) {
-            kDebug(250) << "Updating target of symlink to" << newTarget;
+            // qDebug() << "Updating target of symlink to" << newTarget;
             KIO::Job* job = KIO::symlink(newTarget, item.url(), KIO::Overwrite);
             job->ui()->setAutoErrorHandlingEnabled(true);
             job->exec();
@@ -1513,14 +1513,14 @@ void KFilePropsPlugin::applyIconChanges()
             sIcon = iconButton->icon();
         // (otherwise write empty value)
 
-        kDebug(250) << "**" << path << "**";
+        // qDebug() << "**" << path << "**";
 
         // If default icon and no .directory file -> don't create one
         if ( !sIcon.isEmpty() || QFile::exists(path) )
         {
             KDesktopFile cfg(path);
-            kDebug(250) << "sIcon = " << (sIcon);
-            kDebug(250) << "str = " << (str);
+            // qDebug() << "sIcon = " << (sIcon);
+            // qDebug() << "str = " << (str);
             cfg.desktopGroup().writeEntry( "Icon", sIcon );
             cfg.sync();
 
@@ -1695,7 +1695,7 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
         {
             isMyFile = (d->strOwner == QString::fromLocal8Bit(myself->pw_name));
         } else
-            kWarning() << "I don't exist ?! geteuid=" << geteuid();
+            qWarning() << "I don't exist ?! geteuid=" << geteuid();
     } else {
         //We don't know, for remote files, if they are ours or not.
         //So we let the user change permissions, and
@@ -2596,7 +2596,7 @@ void KFilePermissionsPropsPlugin::applyChanges()
 
 void KFilePermissionsPropsPlugin::slotChmodResult( KJob * job )
 {
-    kDebug(250) << "KFilePermissionsPropsPlugin::slotChmodResult";
+    // qDebug() << "KFilePermissionsPropsPlugin::slotChmodResult";
     if (job->error())
         job->uiDelegate()->showErrorMessage();
     // allow apply() to return
@@ -2775,7 +2775,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
         const KMountPoint::Ptr mp = (*it);
         QString mountPoint = mp->mountPoint();
         QString device = mp->mountedFrom();
-        kDebug()<<"mountPoint :"<<mountPoint<<" device :"<<device<<" mp->mountType() :"<<mp->mountType();
+        // qDebug()<<"mountPoint :"<<mountPoint<<" device :"<<device<<" mp->mountType() :"<<mp->mountType();
 
         if ((mountPoint != "-") && (mountPoint != "none") && !mountPoint.isEmpty()
             && device != "none")
@@ -2876,7 +2876,7 @@ KDevicePropsPlugin::KDevicePropsPlugin( KPropertiesDialog *_props ) : KPropertie
         int index = d->m_devicelist.indexOf(deviceStr);
         if (index != -1)
         {
-            //kDebug(250) << "found it" << index;
+            //qDebug() << "found it" << index;
             slotActivated( index );
         }
     }
@@ -3240,7 +3240,7 @@ void KDesktopPropsPlugin::checkCommandChanged()
 
 void KDesktopPropsPlugin::applyChanges()
 {
-    kDebug(250);
+    // qDebug();
 
     const QUrl url = KIO::NetAccess::mostLocalUrl(properties->url(), properties);
     if (!url.isLocalFile()) {
@@ -3288,7 +3288,7 @@ void KDesktopPropsPlugin::applyChanges()
             mimeTypes.append(preference);
     }
 
-    kDebug() << mimeTypes;
+    // qDebug() << mimeTypes;
     config.writeXdgListEntry( "MimeType", mimeTypes );
 
     if ( !d->w->nameEdit->isHidden() ) {

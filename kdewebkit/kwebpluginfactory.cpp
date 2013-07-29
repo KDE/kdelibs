@@ -28,7 +28,7 @@
 
 #include <kmimetypetrader.h>
 #include <kservicetypetrader.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kio/job.h>
 #include <kparts/part.h>
@@ -60,9 +60,9 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     QString mimeType (_mimeType.trimmed());
     // If no mimetype is provided, we do our best to correctly determine it here...
     if (mimeType.isEmpty()) {
-        kDebug(800) << "Looking up missing mimetype for plugin resource:" << url;
+        // qDebug() << "Looking up missing mimetype for plugin resource:" << url;
         extractGuessedMimeType(url, &mimeType);
-        kDebug(800) << "Updated mimetype to" << mimeType;
+        // qDebug() << "Updated mimetype to" << mimeType;
     }
 
     // Defer handling of flash content to QtWebKit's builtin viewer.
@@ -70,7 +70,7 @@ QObject* KWebPluginFactory::create(const QString& _mimeType, const QUrl& url, co
     // if statement below.
     KParts::ReadOnlyPart* part = (excludedMimeType(mimeType) ? 0 : createPartInstanceFrom(mimeType, argumentNames, argumentValues, 0, parent()));
 
-    kDebug(800) << "Asked for" << mimeType << "plugin, got" << part;
+    // qDebug() << "Asked for" << mimeType << "plugin, got" << part;
 
     if (part) {
         QMap<QString, QString> metaData = part->arguments().metaData();

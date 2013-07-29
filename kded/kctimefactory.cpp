@@ -19,7 +19,7 @@
 #include "kctimefactory.h"
 #include <ksycoca.h>
 #include <ksycocatype.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <assert.h>
 
@@ -53,7 +53,7 @@ void KCTimeDict::remove(const QString &path, const QByteArray &resource)
 
 void KCTimeDict::dump() const
 {
-    kDebug() << m_hash.keys();
+    qDebug() << m_hash.keys();
 }
 
 QStringList KCTimeDict::remainingResourceList() const

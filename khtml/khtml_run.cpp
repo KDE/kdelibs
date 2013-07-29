@@ -23,7 +23,7 @@
 #include "khtml_run.h"
 #include "khtmlpart_p.h"
 #include <kio/job.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include "khtml_ext.h"
 #include <QImage>
@@ -48,7 +48,7 @@ KHTMLRun::KHTMLRun( KHTMLPart *part, khtml::ChildFrame *child, const QUrl &url,
 
 void KHTMLRun::foundMimeType( const QString &_type )
 {
-    //kDebug(6050) << this << _type;
+    //qDebug() << this << _type;
     Q_ASSERT(!hasFinished());
     QString mimeType = _type; // this ref comes from the job, we lose it when using KIO again
 
@@ -80,11 +80,11 @@ void KHTMLRun::foundMimeType( const QString &_type )
     }
 
     if ( hasFinished() ) {
-        kDebug() << "finished";
+        // qDebug() << "finished";
         return;
     }
 
-    //kDebug(6050) << _type << " couldn't open";
+    //qDebug() << _type << " couldn't open";
     KRun::foundMimeType( mimeType );
 
     // "open" is finished -> flag completed

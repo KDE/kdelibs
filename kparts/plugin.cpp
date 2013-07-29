@@ -31,7 +31,7 @@
 #include <QDir>
 
 #include <kaboutdata.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kxmlguifactory.h>
 #include <klocalizedstring.h>
 #include <kdesktopfile.h>
@@ -50,7 +50,7 @@ public:
 Plugin::Plugin( QObject* parent )
     : QObject( parent ),d(new PluginPrivate())
 {
-  //kDebug() << className();
+  //qDebug() << className();
 }
 
 Plugin::~Plugin()
@@ -109,7 +109,7 @@ QList<Plugin::PluginInfo> Plugin::pluginInfos(const QString &componentName)
       if ( info.m_absXMLFileName.isEmpty() )
           continue;
 
-      kDebug( 1000 ) << "found KParts Plugin : " << info.m_absXMLFileName;
+      // qDebug() << "found KParts Plugin : " << info.m_absXMLFileName;
       info.m_relXMLFileName = "kpartplugins/";
       info.m_relXMLFileName += mapIt.key();
 
@@ -238,11 +238,11 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
             QString relPath = componentName + '/' + (*pIt).m_relXMLFileName;
             relPath.truncate( relPath.lastIndexOf( '.' ) ); // remove extension
             relPath += ".desktop";
-            //kDebug(1000) << "looking for " << relPath;
+            //qDebug() << "looking for " << relPath;
             const QString desktopfile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, relPath);
             if (!desktopfile.isEmpty())
             {
-                //kDebug(1000) << "loadPlugins found desktop file for " << name << ": " << desktopfile;
+                //qDebug() << "loadPlugins found desktop file for " << name << ": " << desktopfile;
                 KDesktopFile _desktop( desktopfile );
                 const KConfigGroup desktop = _desktop.desktopGroup();
                 keyword = desktop.readEntry("X-KDE-PluginKeyword", "");
@@ -253,14 +253,14 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
                     const int version = desktop.readEntry( "X-KDE-InterfaceVersion", 1 );
                     if ( version != interfaceVersionRequired )
                     {
-                        kDebug(1000) << "Discarding plugin " << name << ", interface version " << version << ", expected " << interfaceVersionRequired;
+                        // qDebug() << "Discarding plugin " << name << ", interface version " << version << ", expected " << interfaceVersionRequired;
                         pluginEnabled = false;
                     }
                 }
             }
             else
             {
-                //kDebug(1000) << "loadPlugins no desktop file found in " << relPath;
+                //qDebug() << "loadPlugins no desktop file found in " << relPath;
             }
         }
 
@@ -276,7 +276,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
                 // delete and unload disabled plugins
                 if( !pluginEnabled )
                 {
-                    kDebug( 1000 ) << "remove plugin " << name;
+                    // qDebug() << "remove plugin " << name;
                     KXMLGUIFactory * factory = plugin->factory();
                     if( factory )
                         factory->removeClient( plugin );
@@ -293,7 +293,7 @@ void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,
         if( pluginFound || !pluginEnabled )
             continue;
 
-        kDebug( 1000 ) << "load plugin " << name << " " << library << " " << keyword;
+        // qDebug() << "load plugin " << name << " " << library << " " << keyword;
         Plugin *plugin = loadPlugin( parent, library, keyword );
 
         if ( plugin )

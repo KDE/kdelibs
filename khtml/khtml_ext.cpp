@@ -50,7 +50,7 @@
 #include <assert.h>
 
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kjobuidelegate.h>
 #include <kio/job.h>
@@ -95,13 +95,13 @@ int KHTMLPartBrowserExtension::yOffset()
 
 void KHTMLPartBrowserExtension::saveState( QDataStream &stream )
 {
-  //kDebug( 6050 ) << "saveState!";
+  //qDebug() << "saveState!";
   m_part->saveState( stream );
 }
 
 void KHTMLPartBrowserExtension::restoreState( QDataStream &stream )
 {
-  //kDebug( 6050 ) << "restoreState!";
+  //qDebug() << "restoreState!";
   m_part->restoreState( stream );
 }
 
@@ -222,7 +222,7 @@ void KHTMLPartBrowserExtension::copy()
         // get selected text and paste to the clipboard
         QString text = m_part->selectedText();
         text.replace( QChar( 0xa0 ), ' ' );
-        //kDebug(6050) << text;
+        //qDebug() << text;
 
         QClipboard *cb = QApplication::clipboard();
         disconnect( cb, SIGNAL(selectionChanged()), m_part, SLOT(slotClearSelection()) );
@@ -788,7 +788,7 @@ void KHTMLPopupGUIClient::slotCopyImage()
   mimeData->setUrls( QList<QUrl>() << safeURL );
   QApplication::clipboard()->setMimeData( mimeData, QClipboard::Selection );
 #else
-  kDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible.";
+  // qDebug() << "slotCopyImage called when the clipboard does not support this.  This should not be possible.";
 #endif
 }
 
@@ -933,7 +933,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const QUrl &url, const QUrl 
             if (!downloadManger.isEmpty())
             {
                 // then find the download manager location
-                kDebug(1000) << "Using: "<<downloadManger <<" as Download Manager";
+                // qDebug() << "Using: "<<downloadManger <<" as Download Manager";
                 QString cmd = QStandardPaths::findExecutable(downloadManger);
                 if (cmd.isEmpty())
                 {
@@ -950,7 +950,7 @@ void KHTMLPopupGUIClient::saveURL( QWidget* parent, const QUrl &url, const QUrl 
                     cleanDest.setPassword( QString() ); // don't put password into commandline
                     cmd += ' ' + KShell::quoteArg(url.url()) + ' ' +
                            KShell::quoteArg(cleanDest.url());
-                    kDebug(1000) << "Calling command  "<<cmd;
+                    // qDebug() << "Calling command  "<<cmd;
                     KRun::runCommand(cmd, parent->topLevelWidget());
                 }
             }

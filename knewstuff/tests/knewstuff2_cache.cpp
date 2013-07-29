@@ -23,7 +23,7 @@
 
 #include <kstandarddirs.h>
 #include <qapplication.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QFile>
 
@@ -37,13 +37,13 @@ KNewStuff2Cache::KNewStuff2Cache()
 
 void KNewStuff2Cache::run()
 {
-    kDebug() << "-- start the engine";
+    // qDebug() << "-- start the engine";
 
     m_engine = new KNS::CoreEngine(0);
     m_engine->setCachePolicy(KNS::CoreEngine::CacheOnly);
     bool ret = m_engine->init("knewstuff2_test.knsrc");
 
-    kDebug() << "-- engine initialisation result: " << ret;
+    // qDebug() << "-- engine initialisation result: " << ret;
 
     if (ret) {
         connect(m_engine,
@@ -58,8 +58,8 @@ void KNewStuff2Cache::run()
 
         m_engine->start();
     } else {
-        kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first.";
-        kWarning() << "Although this is not required anymore, so something went really wrong.";
+        qWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first.";
+        qWarning() << "Although this is not required anymore, so something went really wrong.";
         quitTest();
     }
 }
@@ -69,25 +69,25 @@ void KNewStuff2Cache::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *feed, 
     Q_UNUSED(feed);
     Q_UNUSED(provider);
 
-    kDebug() << "SLOT: slotEntryLoaded";
-    kDebug() << "-- entry: " << entry->name().representation();
+    // qDebug() << "SLOT: slotEntryLoaded";
+    // qDebug() << "-- entry: " << entry->name().representation();
 }
 
 void KNewStuff2Cache::slotEntriesFailed()
 {
-    kDebug() << "SLOT: slotEntriesFailed";
+    // qDebug() << "SLOT: slotEntriesFailed";
     quitTest();
 }
 
 void KNewStuff2Cache::slotEntriesFinished()
 {
-    kDebug() << "SLOT: slotEntriesFinished";
+    // qDebug() << "SLOT: slotEntriesFinished";
     quitTest();
 }
 
 void KNewStuff2Cache::quitTest()
 {
-    kDebug() << "-- quitting now...";
+    // qDebug() << "-- quitting now...";
     if (1 == 0) {
         // this would be the soft way out...
         delete m_engine;
@@ -104,8 +104,8 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     // Take source directory into account
-    kDebug() << "-- adding source directory " << KNSSRCDIR;
-    kDebug() << "-- adding build directory " << KNSBUILDDIR;
+    // qDebug() << "-- adding source directory " << KNSSRCDIR;
+    // qDebug() << "-- adding build directory " << KNSBUILDDIR;
     KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
     KGlobal::dirs()->addResourceDir("config", KNSBUILDDIR);
 

@@ -221,7 +221,7 @@ void RenderPath::paint(PaintInfo& paintInfo, int, int)
 
     //paintInfo.p->fillRect(0, 0, 50, 50, QBrush(Qt::yellow));
     /*paintInfo.p->setPen(Qt::blue);
-    kDebug() << "path:" << *m_path.platformPath() << endl;
+    // qDebug() << "path:" << *m_path.platformPath() << endl;
     paintInfo.p->drawPath(*m_path.platformPath());*/
     /*SVGResourceFilter* filter = 0;
 

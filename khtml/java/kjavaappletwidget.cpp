@@ -23,7 +23,7 @@
 #include "kjavaappletserver.h"
 
 #include <kwindowsystem.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 
 #include <QLabel>
@@ -91,7 +91,7 @@ void KJavaAppletWidget::setWindow( WId w )
          m_swallowTitle == w_info.visibleName() )
     {
         KWindowSystem::setState(w, NET::Hidden | NET::SkipTaskbar | NET::SkipPager);
-        kDebug(6100) << "swallowing our window: " << m_swallowTitle
+        // qDebug() << "swallowing our window: " << m_swallowTitle
                       << ", window id = " << w << endl;
         delete d->tmplabel;
         d->tmplabel = 0;
@@ -110,7 +110,7 @@ void KJavaAppletWidget::setWindow( WId w )
 
 QSize KJavaAppletWidget::sizeHint() const
 {
-    kDebug(6100) << "KJavaAppletWidget::sizeHint()";
+    // qDebug() << "KJavaAppletWidget::sizeHint()";
     QSize rval = QX11EmbedContainer::sizeHint();
 
     if( rval.width() == 0 || rval.height() == 0 )
@@ -121,7 +121,7 @@ QSize KJavaAppletWidget::sizeHint() const
         }
     }
 
-    kDebug(6100) << "returning: (" << rval.width() << ", " << rval.height() << ")";
+    // qDebug() << "returning: (" << rval.width() << ", " << rval.height() << ")";
 
     return rval;
 }

@@ -265,7 +265,7 @@ void KServicePrivate::init( const KDesktopFile *config, KService* q )
         const QString key = it.key();
         // do not store other translations like Name[fr]; kbuildsycoca will rerun if we change languages anyway
         if (!key.contains(QLatin1Char('['))) {
-            //kDebug(servicesDebugArea()) << "  Key =" << key << " Data =" << *it;
+            //qDebug() << "  Key =" << key << " Data =" << *it;
             m_mapProps.insert(key, QVariant(*it));
         }
     }
@@ -416,7 +416,7 @@ bool KService::hasServiceType( const QString& serviceType ) const
     QVector<ServiceTypeAndPreference>::ConstIterator it = d->m_serviceTypes.begin();
     for( ; it != d->m_serviceTypes.end(); ++it ) {
         const QString& st = (*it).serviceType;
-        //kDebug(servicesDebugArea()) << "    has " << (*it);
+        //qDebug() << "    has " << (*it);
         if ( st == ptr->name() )
             return true;
         // also the case of parent servicetypes
@@ -457,7 +457,7 @@ bool KService::hasMimeType(const QString& mimeType) const
     QVector<ServiceTypeAndPreference>::ConstIterator it = d->m_serviceTypes.begin();
     for( ; it != d->m_serviceTypes.end(); ++it ) {
         const QString& st = (*it).serviceType;
-        //kDebug(servicesDebugArea()) << "    has " << (*it);
+        //qDebug() << "    has " << (*it);
         if ( st == mime )
             return true;
         // TODO: should we handle inherited mimetypes here?
@@ -543,7 +543,7 @@ QVariant KServicePrivate::property( const QString& _name, QVariant::Type t ) con
     QMap<QString,QVariant>::ConstIterator it = m_mapProps.find( _name );
     if ( (it == m_mapProps.end()) || (!it->isValid()))
     {
-        //kDebug(servicesDebugArea()) << "Property not found " << _name;
+        //qDebug() << "Property not found " << _name;
         return QVariant(); // No property set.
     }
 

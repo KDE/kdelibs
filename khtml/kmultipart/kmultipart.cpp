@@ -200,7 +200,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
     if (m_boundary.isNull())
     {
        QString tmp = job->queryMetaData("media-boundary");
-       kDebug() << "Got Boundary from kio-http '" << tmp << "'";
+       // qDebug() << "Got Boundary from kio-http '" << tmp << "'";
        if ( !tmp.isEmpty() ) {
            // as per r437578, sometimes we se something like this:
            // Content-Type: multipart/x-mixed-replace; boundary=--myboundary
@@ -231,10 +231,10 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
         {
             QByteArray line = m_lineParser->currentLine();
 #ifdef DEBUG_PARSING
-            kDebug() << "line.size()=" << line.size();
+            // qDebug() << "line.size()=" << line.size();
 #endif
 #ifdef DEBUG_PARSING
-            kDebug() << "[" << m_bParsingHeader << "] line='" << line << "'";
+            // qDebug() << "[" << m_bParsingHeader << "] line='" << line << "'";
 #endif
             if ( m_bParsingHeader )
             {
@@ -244,7 +244,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                 {
                     if ( !line.isEmpty() ) {
 #ifdef DEBUG_PARSING
-                        kDebug() << "Boundary is " << line;
+                        // qDebug() << "Boundary is " << line;
 #endif
                         m_boundary = line;
                         m_boundaryLength = m_boundary.length();
@@ -256,7 +256,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                     if (encoding == "gzip" || encoding == "x-gzip") {
                         m_gzip = true;
                     } else {
-                        kDebug() << "FIXME: unhandled encoding type in KMultiPart: " << encoding;
+                        // qDebug() << "FIXME: unhandled encoding type in KMultiPart: " << encoding;
                     }
                 }
                 // parse Content-Type
@@ -267,34 +267,35 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                     int semicolon = m_nextMimeType.indexOf( ';' );
                     if ( semicolon != -1 )
                         m_nextMimeType = m_nextMimeType.left( semicolon );
-                    kDebug() << "m_nextMimeType=" << m_nextMimeType;
+                    // qDebug() << "m_nextMimeType=" << m_nextMimeType;
                 }
                 // Empty line, end of headers (if we had any header line before)
                 else if ( line.isEmpty() && m_bGotAnyHeader )
                 {
                     m_bParsingHeader = false;
 #ifdef DEBUG_PARSING
-                    kDebug() << "end of headers";
+                    // qDebug() << "end of headers";
 #endif
                     startOfData();
                 }
                 // First header (when we know it from kio_http)
                 else if ( line == m_boundary )
                     ; // nothing to do
-                else if ( !line.isEmpty() ) // this happens with e.g. Set-Cookie:
-                    kDebug() << "Ignoring header " << line;
+                else if ( !line.isEmpty() ) { // this happens with e.g. Set-Cookie:
+                    // qDebug() << "Ignoring header " << line;
+                }
             } else {
                 if ( !qstrncmp( line, m_boundary, m_boundaryLength ) )
                 {
 #ifdef DEBUG_PARSING
-                    kDebug() << "boundary found!";
-                    kDebug() << "after it is " << line.data() + m_boundaryLength;
+                    // qDebug() << "boundary found!";
+                    // qDebug() << "after it is " << line.data() + m_boundaryLength;
 #endif
                     // Was it the very last boundary ?
                     if ( !qstrncmp( line.data() + m_boundaryLength, "--", 2 ) )
                     {
 #ifdef DEBUG_PARSING
-                        kDebug() << "Completed!";
+                        // qDebug() << "Completed!";
 #endif
                         endOfData();
                         emit completed();
@@ -302,7 +303,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                     {
                         char nextChar = *(line.data() + m_boundaryLength);
 #ifdef DEBUG_PARSING
-                        kDebug() << "KMultiPart::slotData nextChar='" << nextChar << "'";
+                        // qDebug() << "KMultiPart::slotData nextChar='" << nextChar << "'";
 #endif
                         if ( nextChar == '\n' || nextChar == '\r' ) {
                             endOfData();
@@ -328,7 +329,7 @@ void KMultiPart::setPart( const QString& mimeType )
     KXMLGUIFactory *guiFactory = factory();
     if ( guiFactory ) // seems to be 0 when restoring from SM
         guiFactory->removeClient( this );
-    kDebug() << "KMultiPart::setPart " << mimeType;
+    // qDebug() << "KMultiPart::setPart " << mimeType;
     delete m_part;
     // Try to find an appropriate viewer component
     m_part = KMimeTypeTrader::createPartInstanceFromQuery<KParts::ReadOnlyPart>
@@ -416,7 +417,7 @@ void KMultiPart::setPart( const QString& mimeType )
 
 void KMultiPart::startOfData()
 {
-    kDebug() << "KMultiPart::startOfData";
+    // qDebug() << "KMultiPart::startOfData";
     Q_ASSERT( !m_nextMimeType.isNull() );
     if( m_nextMimeType.isNull() )
         return;
@@ -502,13 +503,13 @@ void KMultiPart::endOfData()
         {
             // The part is still loading the last data! Let it proceed then
             // Otherwise we'd keep canceling it, and nothing would ever show up...
-            kDebug() << "KMultiPart::endOfData part isn't ready, skipping frame";
+            // qDebug() << "KMultiPart::endOfData part isn't ready, skipping frame";
             ++m_numberOfFramesSkipped;
             m_tempFile->setAutoRemove( true );
         }
         else
         {
-            kDebug() << "KMultiPart::endOfData opening " << tempFileName;
+            // qDebug() << "KMultiPart::endOfData opening " << tempFileName;
             QUrl url(tempFileName);
             m_partIsLoading = true;
             (void) m_part->openUrl( url );
@@ -525,7 +526,7 @@ void KMultiPart::slotPartCompleted()
         Q_ASSERT( m_part );
         // Delete temp file used by the part
         Q_ASSERT( m_part->url().isLocalFile() );
-	kDebug() << "slotPartCompleted deleting " << m_part->url().toLocalFile();
+	// qDebug() << "slotPartCompleted deleting " << m_part->url().toLocalFile();
         (void) unlink( QFile::encodeName( m_part->url().toLocalFile() ) );
         m_partIsLoading = false;
         ++m_numberOfFrames;
@@ -577,12 +578,12 @@ void KMultiPart::slotProgressInfo()
     if ( !time ) return;
     if ( m_totalNumberOfFrames == m_numberOfFrames + m_numberOfFramesSkipped )
         return; // No change, don't overwrite statusbar messages if any
-    //kDebug() << m_numberOfFrames << " in " << time << " milliseconds";
+    //qDebug() << m_numberOfFrames << " in " << time << " milliseconds";
     QString str( "%1 frames per second, %2 frames skipped per second" );
     str = str.arg( 1000.0 * (double)m_numberOfFrames / (double)time );
     str = str.arg( 1000.0 * (double)m_numberOfFramesSkipped / (double)time );
     m_totalNumberOfFrames = m_numberOfFrames + m_numberOfFramesSkipped;
-    //kDebug() << str;
+    //qDebug() << str;
     emit m_extension->infoMessage( str );
 }
 

@@ -38,7 +38,7 @@
 #ifdef KJS_DEBUGGER
 #include "debugger/debugwindow.h"
 #endif
-#include <kdebug.h>
+#include <QDebug>
 
 using namespace KJS;
 using namespace KJSDebugger;
@@ -279,7 +279,7 @@ DOMEvent::~DOMEvent()
 bool DOMEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug() << "KJS::DOMEvent::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "KJS::DOMEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
   return getStaticValueSlot<DOMEvent, DOMObject>(exec,&DOMEventTable,this,propertyName,slot);
@@ -310,7 +310,7 @@ JSValue *DOMEvent::getValueProperty(ExecState *exec, int token) const
   case CancelBubble: // MSIE extension
     return jsBoolean(event.propagationStopped());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token;
     return 0;
   }
 }
@@ -532,7 +532,7 @@ JSValue *DOMUIEvent::getValueProperty(ExecState *exec, int token) const
     // NS-compatibility
     return jsNumber(event.which());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMUIEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMUIEvent::getValueProperty : " << token;
     return jsUndefined();
   }
 }
@@ -596,7 +596,7 @@ DOMMouseEvent::~DOMMouseEvent()
 bool DOMMouseEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMMouseEvent::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "DOMMouseEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
   return getStaticValueSlot<DOMMouseEvent, DOMUIEvent>(exec,&DOMMouseEventTable,this,propertyName,slot);
@@ -633,7 +633,7 @@ JSValue *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
     if ( rend ) {
       int xPos, yPos;
       if ( rend->absolutePosition( xPos, yPos ) ) {
-        //kDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos;
+        //qDebug() << "DOMMouseEvent::getValueProperty rend=" << rend << "  xPos=" << xPos << "  yPos=" << yPos;
         x -= xPos;
         y -= yPos;
       }
@@ -679,7 +679,7 @@ JSValue *DOMMouseEvent::getValueProperty(ExecState *exec, int token) const
   case RelatedTarget:
     return getEventTarget(exec,event.relatedTarget());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMMouseEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMMouseEvent::getValueProperty : " << token;
     return 0;
   }
 }
@@ -734,7 +734,7 @@ DOMKeyEventBase::~DOMKeyEventBase()
 bool DOMKeyEventBase::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMKeyEventBase::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "DOMKeyEventBase::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMKeyEventBase, DOMUIEvent>(exec,&DOMKeyEventBaseTable,this,propertyName,slot);
 }
@@ -758,7 +758,7 @@ JSValue* DOMKeyEventBase::getValueProperty(ExecState *, int token) const
   case MetaKey:
     return jsBoolean(tevent->metaKey());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMKeyEventBase::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMKeyEventBase::getValueProperty : " << token;
     return jsUndefined();
   }
 }
@@ -789,7 +789,7 @@ DOMTextEvent::~DOMTextEvent()
 bool DOMTextEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMTextEvent::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "DOMTextEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMTextEvent, DOMKeyEventBase>(exec,&DOMTextEventTable,this,propertyName,slot);
 }
@@ -802,7 +802,7 @@ JSValue *DOMTextEvent::getValueProperty(ExecState *, int token) const
   case Data:
     return jsString(tevent.data());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMTextEvent::getValueProperty : " << token;
     return jsUndefined();
   }
 }
@@ -850,7 +850,7 @@ DOMKeyboardEvent::~DOMKeyboardEvent()
 bool DOMKeyboardEvent::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMKeyboardEvent, DOMKeyEventBase>(exec,&DOMKeyboardEventTable,this,propertyName,slot);
 }
@@ -864,7 +864,7 @@ JSValue* DOMKeyboardEvent::getValueProperty(ExecState *, int token) const
   case KeyLocation:
     return jsNumber(tevent->keyLocation());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMKeyboardEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMKeyboardEvent::getValueProperty : " << token;
     return jsUndefined();
   }
 }
@@ -907,7 +907,7 @@ KeyboardEventConstructor::KeyboardEventConstructor(ExecState* exec)
 bool KeyboardEventConstructor::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "DOMKeyboardEvent::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<KeyboardEventConstructor, DOMObject>(exec,&KeyboardEventConstructorTable,this,propertyName,slot);
 }
@@ -1002,7 +1002,7 @@ JSValue *DOMMutationEvent::getValueProperty(ExecState *exec, int token) const
   case AttrChange:
     return jsNumber((unsigned int)event.attrChange());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMMutationEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMMutationEvent::getValueProperty : " << token;
     return 0;
   }
 }
@@ -1068,7 +1068,7 @@ JSValue *DOMMessageEvent::getValueProperty(ExecState *exec, int token) const
     else
 	return jsNull();
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMMessageEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMMessageEvent::getValueProperty : " << token;
     return 0;
   }
 }
@@ -1143,7 +1143,7 @@ JSValue *DOMHashChangeEvent::getValueProperty(ExecState *exec, int token) const
   case OldUrl:
     return jsString(event.oldUrl());
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMHashChangeEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMHashChangeEvent::getValueProperty : " << token;
     return jsUndefined();
   }
 }

@@ -24,7 +24,7 @@
 #include "kjs_binding.h"
 
 #include <klocalizedstring.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kjs/lookup.h>
 #include <khtml_part.h>
@@ -50,7 +50,7 @@ MozillaSidebarExtension::MozillaSidebarExtension(ExecState *exec, KHTMLPart *p)
 bool MozillaSidebarExtension::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "MozillaSidebarExtension::get " << propertyName.ascii();
+  // qDebug() << "MozillaSidebarExtension::get " << propertyName.ascii();
 #endif
   return getStaticPropertySlot<MozillaSidebarExtensionFunc,MozillaSidebarExtension,JSObject>
             (exec,&MozillaSidebarExtensionTable,this, propertyName, slot);
@@ -61,7 +61,7 @@ JSValue *MozillaSidebarExtension::getValueProperty(ExecState *exec, int token) c
   Q_UNUSED(exec);
   switch (token) {
   default:
-    kDebug(6070) << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in MozillaSidebarExtension::getValueProperty : " << token;
     return jsNull();
   }
 }

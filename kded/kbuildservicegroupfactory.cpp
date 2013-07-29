@@ -22,7 +22,7 @@
 #include "ksycocaresourcelist.h"
 #include <kservicegroup_p.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <assert.h>
 #include <QtCore/QHash>
@@ -49,7 +49,7 @@ KBuildServiceGroupFactory::~KBuildServiceGroupFactory()
 KServiceGroup* KBuildServiceGroupFactory::createEntry(const QString&) const
 {
   // Unused
-  kWarning(7021) << "called!";
+  qWarning() << "called!";
   return 0;
 }
 
@@ -63,7 +63,7 @@ void KBuildServiceGroupFactory::addNewEntryTo( const QString &menuName, const KS
 
   if (!entry)
   {
-    kWarning(7021) << "( " << menuName << ", " << newEntry->name() << " ): menu does not exists!";
+    qWarning() << "( " << menuName << ", " << newEntry->name() << " ): menu does not exists!";
     return;
   }
   entry->addEntry( KSycocaEntry::Ptr::staticCast( newEntry ) );
@@ -75,7 +75,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
   KSycocaEntry::Ptr ptr = m_entryDict->value(menuName);
   if (ptr)
   {
-    kWarning(7021) << "( " << menuName << ", " << file << " ): menu already exists!";
+    qWarning() << "( " << menuName << ", " << file << " ): menu already exists!";
     return KServiceGroup::Ptr::staticCast( ptr );
   }
 
@@ -105,7 +105,7 @@ KBuildServiceGroupFactory::addNew( const QString &menuName, const QString& file,
          parentEntry = KServiceGroup::Ptr::staticCast( ptr );
      if (!parentEntry)
      {
-        kWarning(7021) << "( " << menuName << ", " << file << " ): parent menu does not exist!";
+        qWarning() << "( " << menuName << ", " << file << " ): parent menu does not exist!";
      }
      else
      {

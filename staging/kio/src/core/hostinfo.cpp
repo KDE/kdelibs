@@ -273,7 +273,7 @@ QHostInfo HostInfo::lookupHost(const QString& hostName, unsigned long timeout)
         QMetaObject::invokeMethod(nameLookUpThread()->worker(), "abortLookup", Qt::QueuedConnection, Q_ARG(QSharedPointer<NameLookupThreadRequest>, request));
     }
 
-    //kDebug(7022) << "Name look up succeeded for" << hostName;
+    //qDebug() << "Name look up succeeded for" << hostName;
     return hostInfo;
 }
 

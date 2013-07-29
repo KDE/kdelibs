@@ -30,7 +30,7 @@
 #include <QCoreApplication>
 
 #include <kmessagebox.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include "ui/itemsmodel.h"
 #include "ui/itemsviewdelegate.h"
@@ -322,7 +322,7 @@ void DownloadWidgetPrivate::setListViewMode(QListView::ViewMode mode)
 
 void DownloadWidgetPrivate::slotProvidersLoaded()
 {
-    kDebug() << "providers loaded";
+    // qDebug() << "providers loaded";
     engine->reloadEntries();
 }
 
@@ -330,7 +330,7 @@ void DownloadWidgetPrivate::slotEntriesLoaded(const EntryInternal::List& entries
 {
     foreach(const KNS3::EntryInternal &entry, entries) {
         if (!categories.contains(entry.category())) {
-            kDebug() << "Found category: " << entry.category();
+            // qDebug() << "Found category: " << entry.category();
             categories.insert(entry.category());
         }
     }
@@ -352,7 +352,7 @@ void DownloadWidgetPrivate::displayMessage(const QString & msg, KTitleWidget::Me
 
     // single shot the resetColors timer (and create it if null)
     if (timeOutMs > 0) {
-        //kDebug(551) << "starting the message timer for " << timeOutMs;
+        //qDebug() << "starting the message timer for " << timeOutMs;
         messageTimer->start(timeOutMs);
     }
 }
@@ -360,7 +360,7 @@ void DownloadWidgetPrivate::displayMessage(const QString & msg, KTitleWidget::Me
 void DownloadWidgetPrivate::slotShowDetails(const KNS3::EntryInternal& entry)
 {
     if (!entry.isValid()) {
-        kDebug() << "invalid entry";
+        // qDebug() << "invalid entry";
         return;
     }
     titleText = ui.m_titleWidget->text();

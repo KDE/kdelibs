@@ -38,7 +38,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QtNetwork/QLocalSocket>
 
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
 
@@ -94,9 +94,9 @@ struct MiniCacheFileInfo {
     bool operator<(const MiniCacheFileInfo &other) const;
     void debugPrint() const
     {
-        kDebug(7113) << "useCount:" << useCount
-                     << "\nlastUsedDate:" << lastUsedDate.toString(Qt::ISODate)
-                     << "\nsizeOnDisk:" << sizeOnDisk << '\n';
+        // qDebug() << "useCount:" << useCount
+        //             << "\nlastUsedDate:" << lastUsedDate.toString(Qt::ISODate)
+        //             << "\nsizeOnDisk:" << sizeOnDisk << '\n';
     }
 };
 
@@ -157,7 +157,7 @@ enum OperationMode {
 static bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
 {
     if (d.size() < SerializedCacheFileInfo::size) {
-        kDebug(7113) << "readBinaryHeader(): file too small?";
+        // qDebug() << "readBinaryHeader(): file too small?";
         return false;
     }
     QDataStream stream(d);
@@ -166,7 +166,7 @@ static bool readBinaryHeader(const QByteArray &d, CacheFileInfo *fi)
     stream >> fi->version[0];
     stream >> fi->version[1];
     if (fi->version[0] != version[0] || fi->version[1] != version[1]) {
-        kDebug(7113) << "readBinaryHeader(): wrong magic bytes";
+        // qDebug() << "readBinaryHeader(): wrong magic bytes";
         return false;
     }
     stream >> fi->compression;
@@ -218,7 +218,7 @@ static bool readTextHeader(QFile *file, CacheFileInfo *fi, OperationMode mode)
     ok = ok && readLineChecked(file, &readBuf);
     fi->url = QString::fromLatin1(readBuf);
     if (filenameFromUrl(readBuf) != QFileInfo(*file).baseName()) {
-        kDebug(7103) << "You have witnessed a very improbable hash collision!";
+        // qDebug() << "You have witnessed a very improbable hash collision!";
         return false;
     }
 
@@ -263,7 +263,7 @@ static bool readCacheFile(const QString &baseName, CacheFileInfo *fi, OperationM
     QByteArray header = file.read(SerializedCacheFileInfo::size);
     // do *not* modify/delete the file if we're in file info mode.
     if (!(readBinaryHeader(header, fi) && readTextHeader(&file, fi, mode)) && mode != FileInfo) {
-        kDebug(7113) << "read(Text|Binary)Header() returned false, deleting file" << baseName;
+        // qDebug() << "read(Text|Binary)Header() returned false, deleting file" << baseName;
         file.remove();
         return false;
     }
@@ -458,14 +458,14 @@ public:
 
         switch (ccc) {
         case CreateFileNotificationCommand:
-            kDebug(7113) << "CreateNotificationCommand for" << fi.baseName;
+            // qDebug() << "CreateNotificationCommand for" << fi.baseName;
             if (!readBinaryHeader(cmd, &fi)) {
                 return 0;
             }
             break;
 
         case UpdateFileCommand: {
-            kDebug(7113) << "UpdateFileCommand for" << fi.baseName;
+            // qDebug() << "UpdateFileCommand for" << fi.baseName;
             QFile file(fileName);
             file.open(QIODevice::ReadWrite);
 
@@ -496,7 +496,7 @@ public:
         }
 
         default:
-            kDebug(7113) << "received invalid command";
+            // qDebug() << "received invalid command";
             return 0;
         }
 
@@ -527,7 +527,7 @@ public:
         if (m_scoreboard.count() < fiList.count() + 100) {
             return;
         }
-        kDebug(7113) << "we have too many fake/stale entries, cleaning up...";
+        // qDebug() << "we have too many fake/stale entries, cleaning up...";
         QSet<CacheIndex> realFiles;
         Q_FOREACH (CacheFileInfo *fi, fiList) {
             realFiles.insert(CacheIndex(fi->baseName));
@@ -611,7 +611,7 @@ public:
     CacheCleaner(const QDir &cacheDir)
      : m_totalSizeOnDisk(0)
     {
-        kDebug(7113);
+        // qDebug();
         m_fileNameList = cacheDir.entryList();
     }
 
@@ -666,7 +666,7 @@ public:
                     delete fi;
                 }
             }
-            kDebug(7113) << "total size of cache files is" << m_totalSizeOnDisk;
+            // qDebug() << "total size of cache files is" << m_totalSizeOnDisk;
 
             if (m_fileNameList.isEmpty()) {
                 // final step of phase one
@@ -680,7 +680,7 @@ public:
         // TODO: delete files larger than allowed for a single file
         while (t.elapsed() < 100) {
             if (m_totalSizeOnDisk <= g_maxCacheSize || m_fiList.isEmpty()) {
-                kDebug(7113) << "total size of cache files after cleaning is" << m_totalSizeOnDisk;
+                // qDebug() << "total size of cache files after cleaning is" << m_totalSizeOnDisk;
                 if (scoreboard) {
                     scoreboard->maybeRemoveStaleEntries(m_fiList);
                     scoreboard->writeOut();

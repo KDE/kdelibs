@@ -273,7 +273,7 @@ KDirWatchPrivate::~KDirWatchPrivate()
 
 void KDirWatchPrivate::inotifyEventReceived()
 {
-  //kDebug(7001);
+  //qDebug();
 #if HAVE_SYS_INOTIFY_H
   if ( !supports_inotify )
     return;
@@ -323,7 +323,7 @@ void KDirWatchPrivate::inotifyEventReceived()
           e->dirty = true;
 
           //if (s_verboseDebug) {
-          //  kDebug(7001) << "got event" << "0x"+QString::number(event->mask, 16) << "for" << e->path;
+          //  qDebug() << "got event" << "0x"+QString::number(event->mask, 16) << "for" << e->path;
           //}
 
           if( event->mask & IN_DELETE_SELF) {
@@ -542,7 +542,7 @@ QList<KDirWatchPrivate::Client *> KDirWatchPrivate::Entry::clientsForFileOrDir(c
     }
   } else {
     // Happens frequently, e.g. ERROR: couldn't stat "/home/dfaure/.viminfo.tmp"
-    //kDebug(7001) << "ERROR: couldn't stat" << tpath;
+    //qDebug() << "ERROR: couldn't stat" << tpath;
     // In this case isDir is not set, but ret is empty anyway
     // so isDir won't be used.
   }
@@ -670,7 +670,7 @@ bool KDirWatchPrivate::useFAM(Entry* e)
 // setup INotify notification, returns false if not possible
 bool KDirWatchPrivate::useINotify( Entry* e )
 {
-  //kDebug (7001) << "trying to use inotify for monitoring";
+  //qDebug() << "trying to use inotify for monitoring";
 
   e->wd = -1;
   e->dirty = false;
@@ -882,7 +882,7 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
 #if HAVE_SYS_INOTIFY_H
     if (e->m_mode == INotifyMode || (e->m_mode == UnknownMode && m_preferredMethod == KDirWatch::INotify)  )
     {
-        //kDebug(7001) << "Ignoring WatchFiles directive - this is implicit with inotify";
+        //qDebug() << "Ignoring WatchFiles directive - this is implicit with inotify";
         // Placing a watch on individual files is redundant with inotify
         // (inotify gives us WatchFiles functionality "for free") and indeed
         // actively harmful, so prevent it.  WatchSubDirs is necessary, though.
@@ -1512,7 +1512,7 @@ void KDirWatchPrivate::famEventReceived()
 
   delayRemove = true;
 
-  //kDebug(7001) << "Fam event received";
+  //qDebug() << "Fam event received";
 
   while(use_fam && FAMPending(&fc)) {
     if (FAMNextEvent(&fc, &fe) == -1) {
@@ -1537,7 +1537,7 @@ void KDirWatchPrivate::famEventReceived()
 
 void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 {
-  //kDebug(7001);
+  //qDebug();
 
   // Don't be too verbose ;-)
   if ((fe->code == FAMExists) ||
@@ -1575,7 +1575,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
 
   if (!e) {
     // this happens e.g. for FAMAcknowledge after deleting a dir...
-    //    kDebug(7001) << "No entry for FAM event ?!";
+    //    qDebug() << "No entry for FAM event ?!";
     return;
   }
 
@@ -1611,7 +1611,7 @@ void KDirWatchPrivate::checkFAMEvent(FAMEvent* fe)
             // A file in this directory has been removed, and wasn't explicitly watched.
             // We could still inform clients, like inotify does? But stat can't.
             // For now we just marked e dirty and slotRescan will emit the dir as dirty.
-            //kDebug(7001) << "Got FAMDeleted for" << QFile::decodeName(fe->filename) << "in" << e->path << ". Absolute path -> NOOP!";
+            //qDebug() << "Got FAMDeleted for" << QFile::decodeName(fe->filename) << "in" << e->path << ". Absolute path -> NOOP!";
         }
         break;
 
@@ -1899,7 +1899,7 @@ void KDirWatch::setCreated( const QString & _file )
 
 void KDirWatch::setDirty( const QString & _file )
 {
-  //kDebug(7001) << objectName() << "emitting dirty" << _file;
+  //qDebug() << objectName() << "emitting dirty" << _file;
   Q_EMIT dirty( _file );
 }
 

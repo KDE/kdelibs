@@ -23,7 +23,7 @@
 #include <QtCore/QFileInfo>
 #include <QtCore/QXmlStreamReader>
 #include <qstandardpaths.h>
-#include <kdebug.h>
+#include <QDebug>
 
 using namespace KNS3;
 
@@ -35,7 +35,7 @@ Cache::Cache(const QString &appName): QObject(0)
     m_kns2ComponentName = appName;
 
     registryFile = QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + "knewstuff3/" + appName + ".knsregistry";
-    kDebug() << "Using registry file: " << registryFile;
+    // qDebug() << "Using registry file: " << registryFile;
 }
 
 QSharedPointer<Cache> Cache::getCache(const QString &appName)
@@ -62,19 +62,19 @@ void Cache::readRegistry()
 
     QFile f(registryFile);
     if (!f.open(QIODevice::ReadOnly)) {
-        kWarning() << "The file " << registryFile << " could not be opened.";
+        qWarning() << "The file " << registryFile << " could not be opened.";
         return;
     }
 
     QDomDocument doc;
     if (!doc.setContent(&f)) {
-        kWarning() << "The file could not be parsed.";
+        qWarning() << "The file could not be parsed.";
         return;
     }
 
     QDomElement root = doc.documentElement();
     if (root.tagName() != "hotnewstuffregistry") {
-        kWarning() << "The file doesn't seem to be of interest.";
+        qWarning() << "The file doesn't seem to be of interest.";
         return;
     }
 
@@ -87,24 +87,24 @@ void Cache::readRegistry()
         stuff = stuff.nextSiblingElement("stuff");
     }
 
-    kDebug() << "Cache read... entries: " << cache.size();
+    // qDebug() << "Cache read... entries: " << cache.size();
 }
 
 void Cache::readKns2MetaFiles()
 {
-    kDebug() << "Loading KNS2 registry of files for the component: " << m_kns2ComponentName;
+    // qDebug() << "Loading KNS2 registry of files for the component: " << m_kns2ComponentName;
 
     QString realAppName = m_kns2ComponentName.split(':')[0];
 
     const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "knewstuff2-entries.registry", QStandardPaths::LocateDirectory);
     for (QStringList::ConstIterator it = dirs.begin(); it != dirs.end(); ++it) {
-        //kDebug() << " + Load from directory '" + (*it) + "'.";
+        //qDebug() << " + Load from directory '" + (*it) + "'.";
         QDir dir((*it));
         const QStringList files = dir.entryList(QDir::Files | QDir::Readable);
         for (QStringList::const_iterator fit = files.begin(); fit != files.end(); ++fit) {
             QString filepath = (*it) + '/' + (*fit);
 
-            kDebug() << " Load from file '" + filepath + "'.";
+            // qDebug() << " Load from file '" + filepath + "'.";
 
             QFileInfo info(filepath);
             QFile f(filepath);
@@ -123,20 +123,20 @@ void Cache::readKns2MetaFiles()
             }
 
             if (!f.open(QIODevice::ReadOnly)) {
-                kWarning() << "The file: " << filepath << " could not be opened.";
+                qWarning() << "The file: " << filepath << " could not be opened.";
                 continue;
             }
 
             QDomDocument doc;
             if (!doc.setContent(&f)) {
-                kWarning() << "The file could not be parsed.";
+                qWarning() << "The file could not be parsed.";
                 return;
             }
-            kDebug() << "found entry: " << doc.toString();
+            // qDebug() << "found entry: " << doc.toString();
 
             QDomElement root = doc.documentElement();
             if (root.tagName() != "ghnsinstall") {
-                kWarning() << "The file doesn't seem to be of interest.";
+                qWarning() << "The file doesn't seem to be of interest.";
                 return;
             }
 
@@ -159,7 +159,7 @@ void Cache::readKns2MetaFiles()
                 e.setProviderId("http://edu.kde.org/contrib/kvtml2/provider41.xml");
             } else {
                 // we failed, skip
-                kWarning() << "Could not load entry: " << filepath;
+                qWarning() << "Could not load entry: " << filepath;
                 continue;
             }
 
@@ -168,15 +168,15 @@ void Cache::readKns2MetaFiles()
             cache.insert(e);
             QDomDocument tmp("yay");
             tmp.appendChild(e.entryXML());
-            kDebug() << "new entry: " << tmp.toString();
+            // qDebug() << "new entry: " << tmp.toString();
 
             f.close();
 
             QDir dir;
             if (!dir.remove(filepath)) {
-                kWarning() << "could not delete old kns2 .meta file: " << filepath;
+                qWarning() << "could not delete old kns2 .meta file: " << filepath;
             } else {
-                kDebug() << "Migrated KNS2 entry to KNS3.";
+                // qDebug() << "Migrated KNS2 entry to KNS3.";
             }
 
         }
@@ -197,11 +197,11 @@ EntryInternal::List Cache::registryForProvider(const QString& providerId)
 
 void Cache::writeRegistry()
 {
-    kDebug() << "Write registry";
+    // qDebug() << "Write registry";
 
     QFile f(registryFile);
     if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        kWarning() << "Cannot write meta information to '" << registryFile << "'." << endl;
+        qWarning() << "Cannot write meta information to '" << registryFile << "'." << endl;
         return;
     }
 
@@ -233,12 +233,12 @@ void Cache::insertRequest(const KNS3::Provider::SearchRequest& request, const KN
 {
     // append new entries
     requestCache[request.hashForRequest()].append(entries);
-    kDebug() << request.hashForRequest() << " add: " << entries.size() << " keys: " << requestCache.keys();
+    // qDebug() << request.hashForRequest() << " add: " << entries.size() << " keys: " << requestCache.keys();
 }
 
 EntryInternal::List Cache::requestFromCache(const KNS3::Provider::SearchRequest& request)
 {
-    kDebug() << request.hashForRequest();
+    // qDebug() << request.hashForRequest();
     return requestCache.value(request.hashForRequest());
 }
 
