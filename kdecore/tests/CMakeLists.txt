@@ -31,7 +31,6 @@ KDECORE_UNIT_TESTS(
  kautostarttest
  kprocesstest
  qcoreapptest
- kconfignokdehometest
 )
 
 KDECORE_EXECUTABLE_TESTS(
