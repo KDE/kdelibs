@@ -103,13 +103,13 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
 : d( new KPluginInfoPrivate )
 {
     QVariantMap meta;
-    QString metadatastring = QString("MetaData");
+    static const QString metaData = QStringLiteral("MetaData");
 
     foreach (const QVariant &v, args) {
         if (v.canConvert<QVariantMap>()) {
             const QVariantMap &m = v.toMap();
-            const QVariant &_metadata = m.value(metadatastring);
-            if (m.contains(metadatastring)) {
+            const QVariant &_metadata = m.value(metaData);
+            if (m.contains(metaData)) {
                 if (_metadata.canConvert<QVariantMap>()) {
                     meta = _metadata.value<QVariantMap>();
                     break;
@@ -123,18 +123,18 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
         return;
     }
 
-    d->name = meta.value("Name").toString();
-    d->comment = meta.value("Comment").toString();
-    d->icon = meta.value("Icon").toString();
-    d->author = meta.value("X-KDE-PluginInfo-Author").toString();
-    d->email = meta.value("X-KDE-PluginInfo-Email").toString();
-    d->pluginName = meta.value("X-KDE-PluginInfo-Name").toString();
-    d->version = meta.value("X-KDE-PluginInfo-Version").toString();
-    d->website = meta.value("X-KDE-PluginInfo-Website").toString();
-    d->category = meta.value("X-KDE-PluginInfo-Category").toString();
-    d->license = meta.value("X-KDE-PluginInfo-License").toString();
-    d->dependencies = meta.value("X-KDE-PluginInfo-Depends").toStringList();
-    d->enabledbydefault = meta.value("X-KDE-PluginInfo-EnabledByDefault").toBool();
+    d->name = meta.value(QStringLiteral("Name")).toString();
+    d->comment = meta.value(QStringLiteral("Comment")).toString();
+    d->icon = meta.value(QStringLiteral("Icon")).toString();
+    d->author = meta.value(QStringLiteral("X-KDE-PluginInfo-Author")).toString();
+    d->email = meta.value(QStringLiteral("X-KDE-PluginInfo-Email")).toString();
+    d->pluginName = meta.value(QStringLiteral("X-KDE-PluginInfo-Name")).toString();
+    d->version = meta.value(QStringLiteral("X-KDE-PluginInfo-Version")).toString();
+    d->website = meta.value(QStringLiteral("X-KDE-PluginInfo-Website")).toString();
+    d->category = meta.value(QStringLiteral("X-KDE-PluginInfo-Category")).toString();
+    d->license = meta.value(QStringLiteral("X-KDE-PluginInfo-License")).toString();
+    d->dependencies = meta.value(QStringLiteral("X-KDE-PluginInfo-Depends")).toStringList();
+    d->enabledbydefault = meta.value(QStringLiteral("X-KDE-PluginInfo-EnabledByDefault")).toBool();
 }
 
 #ifndef KDE_NO_DEPRECATED
