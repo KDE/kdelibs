@@ -200,6 +200,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KTemporaryFile is deprecated, port to QTemporaryFile instead, see KTemporaryFile API documentation for details.</li>
 <li>KTempDir is deprecated, port to QTemporaryDir instead, see KTempDir API documentation for details.</li>
 <li>KToolInvocation::invokeHelp is now KHelpClient::invokeHelp, in the kwidgets framework.</li>
+<li>KToolInvocation::klauncher() has been removed. Use startKdeinit if you just want kdeinit/klauncher to be running. Otherwise you shouldn't be calling this anyway (talk to David Faure for solutions). TODO: provide wrapper for setLaunchEnv, used in kde-runtime.</li>
 <li>KMD5 is deprecated, port to QCryptographicHash instead.</li>
 <li>KMimeType is deprecated, port to QMimeType instead. Here's a porting guide:
 <pre>

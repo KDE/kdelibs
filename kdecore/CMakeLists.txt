@@ -51,24 +51,9 @@ endif (HAVE_RESOLV_LIBRARY)
 
 if (WIN32)
    LIST(APPEND kdecore_OPTIONAL_SRCS
-      kernel/ktoolinvocation_win.cpp
       util/kde_file_win.cpp
    )
-   if(NOT WINCE)
-       LIST(APPEND kdecore_OPTIONAL_SRCS
-       )
-   else(NOT WINCE)
-       LIST(APPEND kdecore_OPTIONAL_SRCS
-       )
-   endif(NOT WINCE)
 endif (WIN32)
-
-
-if (UNIX)
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      kernel/ktoolinvocation_x11.cpp
-   )
-endif (UNIX)
 
 add_subdirectory( tests )
 
@@ -81,8 +66,6 @@ set(kdecore_LIB_SRCS
 
    kernel/k4aboutdata.cpp
    kernel/kcomponentdata.cpp
-
-   kernel/ktoolinvocation.cpp
 )
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
@@ -181,7 +164,6 @@ install( FILES
    kernel/k4aboutdata.h
    kernel/kcomponentdata.h
 
-   kernel/ktoolinvocation.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

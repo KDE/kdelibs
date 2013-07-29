@@ -27,7 +27,6 @@
 #include <QCoreApplication>
 #include <QThread>
 #include <qstandardpaths.h>
-#include <config-kernel.h> // HAVE_X11
 
 #include <errno.h> // for EINVAL
 
@@ -50,15 +49,6 @@ KToolInvocation::KToolInvocation() : QObject(0), d(0)
 
 KToolInvocation::~KToolInvocation()
 {
-}
-
-Q_GLOBAL_STATIC_WITH_ARGS(org::kde::KLauncher, klauncherIface,
-                          (QString::fromLatin1("org.kde.klauncher5"), QString::fromLatin1("/KLauncher"), QDBusConnection::sessionBus()))
-
-org::kde::KLauncher *KToolInvocation::klauncher()
-{
-    KToolInvocation::ensureKdeinitRunning();
-    return ::klauncherIface();
 }
 
 static void printError(const QString& text, QString* error)
@@ -95,17 +85,12 @@ int KToolInvocation::startServiceInternal(const char *_function,
     msg << _name << URLs;
     if (function == QLatin1String("kdeinit_exec_with_workdir"))
         msg << workdir;
-#if HAVE_X11
     // make sure there is id, so that user timestamp exists
     QStringList envs;
     QByteArray s = startup_id;
     emit kapplication_hook(envs, s);
     msg << envs;
     msg << QString::fromLatin1(s);
-#else
-    msg << QStringList();
-    msg << QString();
-#endif
     if( !function.startsWith( QLatin1String("kdeinit_exec") ) )
         msg << noWait;
 

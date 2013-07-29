@@ -37,7 +37,6 @@ KDECORE_UNIT_TESTS(
 KDECORE_EXECUTABLE_TESTS(
  kmemtest
  dbuscalltest
- startserviceby
 )
 
 ########### kcompositejobtest ###############
