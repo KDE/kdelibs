@@ -109,7 +109,7 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
         if (v.canConvert<QVariantMap>()) {
             const QVariantMap &m = v.toMap();
             const QVariant &_metadata = m.value(metaData);
-            if (m.contains(metaData)) {
+            if (!_metadata.isNull()) {
                 if (_metadata.canConvert<QVariantMap>()) {
                     meta = _metadata.value<QVariantMap>();
                     break;
