@@ -14,11 +14,6 @@ find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test Concurrent)
 
-if(NOT kdelibs_SOURCE_DIR)
-  find_package(kdeqt5staging REQUIRED NO_MODULE)
-  set_package_properties(kdeqt5staging PROPERTIES PURPOSE "Stuff which will go into Qt5.")
-endif()
-
 # Configure checks for kdirwatch
 find_package(FAM)
 

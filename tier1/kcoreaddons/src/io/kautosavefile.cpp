@@ -27,7 +27,6 @@
 #include "qlockfile.h"
 #include "krandom.h"
 #include "qstandardpaths.h"
-#include <qurlpathinfo.h>
 
 class KAutoSaveFilePrivate
 {
@@ -67,9 +66,8 @@ QString KAutoSaveFilePrivate::tempFileName()
 
     // Note: we drop any query string and user/pass info
     const QString protocol(managedFile.scheme());
-    QUrlPathInfo info(managedFile);
     QString path(managedFile.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path());
-    QString name(info.fileName());
+    QString name(managedFile.fileName());
 
     // Remove any part of the path to the right if it is longer than the max file size and
     // ensure that the max filesize takes into account the other parts of the tempFileName
