@@ -149,25 +149,25 @@ void KWindowSystemPrivate::activate()
 }
 
 // Qt5 TODO: port to nativeEvent or better, to QAbstractNativeEventFilter::nativeEventFilter()
-bool KWindowSystemPrivate::x11Event( XEvent * ev )
+bool KWindowSystemPrivate::x11Event(XEvent *ev)
 {
     KWindowSystem* s_q = KWindowSystem::self();
 
 #ifdef HAVE_XFIXES
-    if ( ev->type == xfixesEventBase + XFixesSelectionNotify ) {
-        if ( ev->xany.window == winId() ) {
+    if (ev->type == xfixesEventBase + XFixesSelectionNotify) {
+        if (ev->xany.window == winId()) {
             XFixesSelectionNotifyEvent *event = reinterpret_cast<XFixesSelectionNotifyEvent*>(ev);
             bool haveOwner = event->owner != None;
             if (compositingEnabled != haveOwner) {
                 compositingEnabled = haveOwner;
-                Q_EMIT s_q->compositingChanged( compositingEnabled );
+                Q_EMIT s_q->compositingChanged(compositingEnabled);
             }
             return true;
         }
         // Qt compresses XFixesSelectionNotifyEvents without caring about the actual window
         // gui/kernel/qapplication_x11.cpp
         // until that can be assumed fixed, we also react on events on the root (caused by Qts own compositing tracker)
-        if ( ev->xany.window == QX11Info::appRootWindow() ) {
+        if (ev->xany.window == QX11Info::appRootWindow()) {
             XFixesSelectionNotifyEvent *event = reinterpret_cast<XFixesSelectionNotifyEvent*>(ev);
             if (event->selection == net_wm_cm) {
                 bool haveOwner = event->owner != None;
@@ -183,65 +183,74 @@ bool KWindowSystemPrivate::x11Event( XEvent * ev )
     }
 #endif
 
-    if ( ev->xany.window == QX11Info::appRootWindow() ) {
+    if (ev->xany.window == QX11Info::appRootWindow()) {
         int old_current_desktop = currentDesktop();
         WId old_active_window = activeWindow();
         int old_number_of_desktops = numberOfDesktops();
         bool old_showing_desktop = showingDesktop();
         unsigned long m[ 5 ];
-	NETRootInfo::event( ev, m, 5 );
+        NETRootInfo::event( ev, m, 5 );
 
-	if (( m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop )
-	    Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
-	if (( m[ PROTOCOLS ] & DesktopViewport ) && mapViewport() && currentDesktop() != old_current_desktop )
-	    Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
-	if (( m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window )
-	    Q_EMIT s_q->activeWindowChanged( activeWindow() );
-	if ( m[ PROTOCOLS ] & DesktopNames )
-	    Q_EMIT s_q->desktopNamesChanged();
-	if (( m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops )
-	    Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
-	if (( m[ PROTOCOLS ] & DesktopGeometry ) && mapViewport() && numberOfDesktops() != old_number_of_desktops )
-	    Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
-	if ( m[ PROTOCOLS ] & WorkArea )
-	    Q_EMIT s_q->workAreaChanged();
-	if ( m[ PROTOCOLS ] & ClientListStacking ) {
-	    updateStackingOrder();
-	    Q_EMIT s_q->stackingOrderChanged();
-	}
-        if(( m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop ) {
-	    Q_EMIT s_q->showingDesktopChanged( showingDesktop());
+        if ((m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop) {
+            Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
         }
-    } else  if ( windows.contains( ev->xany.window ) ){
-	NETWinInfo ni( QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0 );
+        if ((m[ PROTOCOLS ] & DesktopViewport ) && mapViewport() && currentDesktop() != old_current_desktop) {
+            Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
+        }
+        if ((m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window) {
+            Q_EMIT s_q->activeWindowChanged( activeWindow() );
+        }
+        if (m[ PROTOCOLS ] & DesktopNames) {
+            Q_EMIT s_q->desktopNamesChanged();
+        }
+        if ((m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops) {
+            Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
+        }
+        if ((m[ PROTOCOLS ] & DesktopGeometry ) && mapViewport() && numberOfDesktops() != old_number_of_desktops) {
+            Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
+        }
+        if (m[ PROTOCOLS ] & WorkArea) {
+            Q_EMIT s_q->workAreaChanged();
+        }
+        if (m[ PROTOCOLS ] & ClientListStacking) {
+            updateStackingOrder();
+            Q_EMIT s_q->stackingOrderChanged();
+        }
+        if ((m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop) {
+            Q_EMIT s_q->showingDesktopChanged( showingDesktop());
+        }
+    } else if (windows.contains(ev->xany.window)) {
+        NETWinInfo ni(QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0);
         unsigned long dirty[ 2 ];
-	ni.event( ev, dirty, 2 );
-	if ( ev->type ==PropertyNotify ) {
-            if( ev->xproperty.atom == XA_WM_HINTS )
-	        dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIcon; // support for old icons
-            else if( ev->xproperty.atom == XA_WM_NAME )
+        ni.event( ev, dirty, 2 );
+        if (ev->type ==PropertyNotify) {
+            if (ev->xproperty.atom == XA_WM_HINTS) {
+                dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIcon; // support for old icons
+            } else if (ev->xproperty.atom == XA_WM_NAME) {
                 dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMName; // support for old name
-            else if( ev->xproperty.atom == XA_WM_ICON_NAME )
+            } else if (ev->xproperty.atom == XA_WM_ICON_NAME)
                 dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIconName; // support for old iconic name
         }
-        if( mapViewport() && ( dirty[ NETWinInfo::PROTOCOLS ] & (NET::WMState | NET::WMGeometry) )) {
-	    /* geometry change -> possible viewport change
-	     * state change -> possible NET::Sticky change
-	     */
+        if (mapViewport() && ( dirty[ NETWinInfo::PROTOCOLS ] & (NET::WMState | NET::WMGeometry))) {
+            /* geometry change -> possible viewport change
+             * state change -> possible NET::Sticky change
+             */
             dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMDesktop;
-	}
-	if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 ) {
+        }
+        if ((dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0) {
             removeStrutWindow( ev->xany.window );
-            if ( !possibleStrutWindows.contains( ev->xany.window ) )
-        	possibleStrutWindows.append( ev->xany.window );
-	}
-	if ( dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ] ) {
-	    Q_EMIT s_q->windowChanged( ev->xany.window );
-	    Q_EMIT s_q->windowChanged( ev->xany.window, dirty );
-	    Q_EMIT s_q->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
-	    if ( (dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0 )
-		Q_EMIT s_q->strutChanged();
-	}
+            if (!possibleStrutWindows.contains( ev->xany.window )) {
+                possibleStrutWindows.append( ev->xany.window );
+            }
+        }
+        if (dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ]) {
+            Q_EMIT s_q->windowChanged( ev->xany.window );
+            Q_EMIT s_q->windowChanged( ev->xany.window, dirty );
+            Q_EMIT s_q->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
+            if ((dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0) {
+                Q_EMIT s_q->strutChanged();
+            }
+        }
     }
 
     return false;
