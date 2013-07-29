@@ -45,7 +45,6 @@ target_link_libraries(KWidgets
   Qt5::Svg
   Qt5::DBus
 
-  kdeqt5staging # QUrlPathInfo
   ${KConfig_CORE_LIBRARY}
   ${KConfig_GUI_LIBRARY}
   ${KCoreAddons_LIBRARIES}
