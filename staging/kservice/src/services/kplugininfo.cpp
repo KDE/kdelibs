@@ -108,9 +108,12 @@ KPluginInfo::KPluginInfo(const QVariantList &args)
     foreach (const QVariant &v, args) {
         if (v.canConvert<QVariantMap>()) {
             const QVariantMap &m = v.toMap();
-            if (m.contains(metadatastring) && m[metadatastring].canConvert<QVariantMap>()) {
-                meta = m[metadatastring].toMap();
-                continue;
+            const QVariant &_metadata = m.value(metadatastring);
+            if (m.contains(metadatastring)) {
+                if (_metadata.canConvert<QVariantMap>()) {
+                    meta = _metadata.value<QVariantMap>();
+                    break;
+                }
             }
         }
     }
