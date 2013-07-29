@@ -1313,7 +1313,7 @@ public:
        @param properties properties that changed
        @param properties_size size of the passed properties array
     **/
-    void event( XEvent* event, unsigned long* properties, int properties_size );
+    void event( xcb_generic_event_t* event, unsigned long* properties, int properties_size );
 
     /**
        This function takes the pass XEvent and returns an OR'ed list of NETWinInfo
@@ -1326,7 +1326,7 @@ public:
 
        @return the properties
     **/
-    unsigned long event(XEvent *event);
+    unsigned long event(xcb_generic_event_t *event);
 
     /**
        Sentinel value to indicate that the client wishes to be visible on

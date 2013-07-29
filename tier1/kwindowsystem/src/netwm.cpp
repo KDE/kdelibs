@@ -3664,28 +3664,29 @@ void NETWinInfo::setUserTime( Time time ) {
 }
 
 
-unsigned long NETWinInfo::event(XEvent *ev )
+unsigned long NETWinInfo::event(xcb_generic_event_t *ev )
 {
     unsigned long props[ 1 ];
     event( ev, props, 1 );
     return props[ 0 ];
 }
 
-void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_size ) {
+void NETWinInfo::event(xcb_generic_event_t *event, unsigned long* properties, int properties_size ) {
     unsigned long props[ PROPERTIES_SIZE ] = { 0, 0 };
     assert( PROPERTIES_SIZE == 2 ); // add elements above
     unsigned long& dirty = props[ PROTOCOLS ];
     unsigned long& dirty2 = props[ PROTOCOLS2 ];
     bool do_update = false;
+    const uint8_t eventType = event->response_type & ~0x80;
 
-    if (p->role == WindowManager && event->type == ClientMessage &&
-            event->xclient.format == 32) {
-
+    if (p->role == WindowManager && eventType == XCB_CLIENT_MESSAGE &&
+            reinterpret_cast<xcb_client_message_event_t*>(event)->format == 32) {
+        xcb_client_message_event_t *message = reinterpret_cast<xcb_client_message_event_t*>(event);
 #ifdef NETWMDEBUG
         fprintf(stderr, "NETWinInfo::event: handling ClientMessage event\n");
 #endif // NETWMDEBUG
 
-        if (event->xclient.message_type == net_wm_state) {
+        if (message->type == net_wm_state) {
             dirty = WMState;
 
             // we need to generate a change mask
@@ -3700,43 +3701,43 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 
             for (i = 1; i < 3; i++) {
 #ifdef NETWMDEBUG
-                char* debug_txt = XGetAtomName(p->display, (Atom) event->xclient.data.l[i]);
+                char* debug_txt = XGetAtomName(p->display, (xcb_atom_t) message->data.data32[i]);
                 fprintf(stderr, "NETWinInfo::event:  message %ld '%s'\n",
-                        event->xclient.data.l[i], debug_txt );
+                        message->data.data32[i], debug_txt );
                 if ( debug_txt )
                     XFree( debug_txt );
 #endif
 
-                if ((Atom) event->xclient.data.l[i] == net_wm_state_modal)
+                if ((xcb_atom_t) message->data.data32[i] == net_wm_state_modal)
                     mask |= Modal;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_sticky)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_sticky)
                     mask |= Sticky;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_max_vert)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_max_vert)
                     mask |= MaxVert;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_max_horiz)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_max_horiz)
                     mask |= MaxHoriz;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_shaded)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_shaded)
                     mask |= Shaded;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_skip_taskbar)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_skip_taskbar)
                     mask |= SkipTaskbar;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_skip_pager)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_skip_pager)
                     mask |= SkipPager;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_hidden)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_hidden)
                     mask |= Hidden;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_fullscreen)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_fullscreen)
                     mask |= FullScreen;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_above)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_above)
                     mask |= KeepAbove;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_below)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_below)
                     mask |= KeepBelow;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_demands_attention)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_demands_attention)
                     mask |= DemandsAttention;
-                else if ((Atom) event->xclient.data.l[i] == net_wm_state_stays_on_top)
+                else if ((xcb_atom_t) message->data.data32[i] == net_wm_state_stays_on_top)
                     mask |= StaysOnTop;
             }
 
             // when removing, we just leave newstate == 0
-            switch (event->xclient.data.l[0]) {
+            switch (message->data.data32[0]) {
             case 1: // set
                 // to set... the change state should be the same as the mask
                 state = mask;
@@ -3758,30 +3759,30 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
 #endif
 
             changeState(state, mask);
-        } else if (event->xclient.message_type == net_wm_desktop) {
+        } else if (message->type == net_wm_desktop) {
             dirty = WMDesktop;
 
-            if( event->xclient.data.l[0] == OnAllDesktops )
+            if( message->data.data32[0] == OnAllDesktops )
                 changeDesktop( OnAllDesktops );
             else
-                changeDesktop(event->xclient.data.l[0] + 1);
-        } else if (event->xclient.message_type == net_wm_fullscreen_monitors) {
+                changeDesktop(message->data.data32[0] + 1);
+        } else if (message->type == net_wm_fullscreen_monitors) {
             dirty2 = WM2FullscreenMonitors;
 
             NETFullscreenMonitors topology;
-            topology.top =  event->xclient.data.l[0];
-            topology.bottom =  event->xclient.data.l[1];
-            topology.left =  event->xclient.data.l[2];
-            topology.right =  event->xclient.data.l[3];
+            topology.top =  message->data.data32[0];
+            topology.bottom =  message->data.data32[1];
+            topology.left =  message->data.data32[2];
+            topology.right =  message->data.data32[3];
 
 #ifdef    NETWMDEBUG
             fprintf(stderr, "NETWinInfo2::event: calling changeFullscreenMonitors"
                     "(%ld, %ld, %ld, %ld, %ld)\n",
-                    event->xclient.window,
-                    event->xclient.data.l[0],
-                    event->xclient.data.l[1],
-                    event->xclient.data.l[2],
-                    event->xclient.data.l[3]
+                    message->window,
+                    message->data.data32[0],
+                    message->data.data32[1],
+                    message->data.data32[2],
+                    message->data.data32[3]
                    );
 #endif
             if (NETWinInfo2* this2 = dynamic_cast< NETWinInfo2* >( this ))
@@ -3789,99 +3790,75 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
         }
     }
 
-    if (event->type == PropertyNotify) {
+    if (eventType == XCB_PROPERTY_NOTIFY) {
 
 #ifdef    NETWMDEBUG
         fprintf(stderr, "NETWinInfo::event: handling PropertyNotify event\n");
 #endif
 
-        XEvent pe = *event;
+        xcb_property_notify_event_t *pe = reinterpret_cast<xcb_property_notify_event_t*>(event);
 
-        Bool done = False;
-        Bool compaction = False;
-        while (! done) {
-
-#ifdef    NETWMDEBUG
-            fprintf(stderr, "NETWinInfo::event: loop fire\n");
-#endif
-
-            if (pe.xproperty.atom == net_wm_name)
-                dirty |= WMName;
-            else if (pe.xproperty.atom == net_wm_visible_name)
-                dirty |= WMVisibleName;
-            else if (pe.xproperty.atom == net_wm_desktop)
-                dirty |= WMDesktop;
-            else if (pe.xproperty.atom == net_wm_window_type)
-                dirty |=WMWindowType;
-            else if (pe.xproperty.atom == net_wm_state)
-                dirty |= WMState;
-            else if (pe.xproperty.atom == net_wm_strut)
-                dirty |= WMStrut;
-            else if (pe.xproperty.atom == net_wm_extended_strut)
-                dirty2 |= WM2ExtendedStrut;
-            else if (pe.xproperty.atom == net_wm_icon_geometry)
-                dirty |= WMIconGeometry;
-            else if (pe.xproperty.atom == net_wm_icon)
-                dirty |= WMIcon;
-            else if (pe.xproperty.atom == net_wm_pid)
-                dirty |= WMPid;
-            else if (pe.xproperty.atom == net_wm_handled_icons)
-                dirty |= WMHandledIcons;
-            else if (pe.xproperty.atom == net_startup_id)
-                dirty2 |= WM2StartupId;
-            else if (pe.xproperty.atom == net_wm_window_opacity)
-                dirty2 |= WM2Opacity;
-            else if (pe.xproperty.atom == net_wm_allowed_actions)
-                dirty2 |= WM2AllowedActions;
-            else if (pe.xproperty.atom == xa_wm_state)
-                dirty |= XAWMState;
-            else if (pe.xproperty.atom == net_frame_extents)
-                dirty |= WMFrameExtents;
-            else if (pe.xproperty.atom == kde_net_wm_frame_strut)
-                dirty |= WMFrameExtents;
-            else if (pe.xproperty.atom == kde_net_wm_frame_overlap)
-                dirty2 |= WM2FrameOverlap;
-            else if (pe.xproperty.atom == net_wm_icon_name)
-                dirty |= WMIconName;
-            else if (pe.xproperty.atom == net_wm_visible_icon_name)
-                dirty |= WMVisibleIconName;
-            else if (pe.xproperty.atom == net_wm_user_time)
-                dirty2 |= WM2UserTime;
-            else if (pe.xproperty.atom == XA_WM_HINTS)
-                dirty2 |= WM2GroupLeader;
-            else if (pe.xproperty.atom == XA_WM_TRANSIENT_FOR)
-                dirty2 |= WM2TransientFor;
-            else if (pe.xproperty.atom == XA_WM_CLASS)
-                dirty2 |= WM2WindowClass;
-            else if (pe.xproperty.atom == wm_window_role)
-                dirty2 |= WM2WindowRole;
-            else if (pe.xproperty.atom == XA_WM_CLIENT_MACHINE)
-                dirty2 |= WM2ClientMachine;
-            else if (pe.xproperty.atom == kde_net_wm_activities)
-                dirty2 |= WM2Activities;
-            else if (pe.xproperty.atom == kde_net_wm_block_compositing)
-                dirty2 |= WM2BlockCompositing;
-            else if (pe.xproperty.atom == kde_net_wm_shadow)
-                dirty2 |= WM2KDEShadow;
-            else {
-
-#ifdef    NETWMDEBUG
-                fprintf(stderr, "NETWinInfo::event: putting back event and breaking\n");
-#endif
-
-                if ( compaction )
-                    XPutBackEvent(p->display, &pe);
-                break;
-            }
-
-            if (false && XCheckTypedWindowEvent(p->display, p->window, PropertyNotify, &pe) )
-                compaction = True;
-            else
-                break;
-        }
+        if (pe->atom == net_wm_name)
+            dirty |= WMName;
+        else if (pe->atom == net_wm_visible_name)
+            dirty |= WMVisibleName;
+        else if (pe->atom == net_wm_desktop)
+            dirty |= WMDesktop;
+        else if (pe->atom == net_wm_window_type)
+            dirty |=WMWindowType;
+        else if (pe->atom == net_wm_state)
+            dirty |= WMState;
+        else if (pe->atom == net_wm_strut)
+            dirty |= WMStrut;
+        else if (pe->atom == net_wm_extended_strut)
+            dirty2 |= WM2ExtendedStrut;
+        else if (pe->atom == net_wm_icon_geometry)
+            dirty |= WMIconGeometry;
+        else if (pe->atom == net_wm_icon)
+            dirty |= WMIcon;
+        else if (pe->atom == net_wm_pid)
+            dirty |= WMPid;
+        else if (pe->atom == net_wm_handled_icons)
+            dirty |= WMHandledIcons;
+        else if (pe->atom == net_startup_id)
+            dirty2 |= WM2StartupId;
+        else if (pe->atom == net_wm_window_opacity)
+            dirty2 |= WM2Opacity;
+        else if (pe->atom == net_wm_allowed_actions)
+            dirty2 |= WM2AllowedActions;
+        else if (pe->atom == xa_wm_state)
+            dirty |= XAWMState;
+        else if (pe->atom == net_frame_extents)
+            dirty |= WMFrameExtents;
+        else if (pe->atom == kde_net_wm_frame_strut)
+            dirty |= WMFrameExtents;
+        else if (pe->atom == kde_net_wm_frame_overlap)
+            dirty2 |= WM2FrameOverlap;
+        else if (pe->atom == net_wm_icon_name)
+            dirty |= WMIconName;
+        else if (pe->atom == net_wm_visible_icon_name)
+            dirty |= WMVisibleIconName;
+        else if (pe->atom == net_wm_user_time)
+            dirty2 |= WM2UserTime;
+        else if (pe->atom == XCB_ATOM_WM_HINTS)
+            dirty2 |= WM2GroupLeader;
+        else if (pe->atom == XCB_ATOM_WM_TRANSIENT_FOR)
+            dirty2 |= WM2TransientFor;
+        else if (pe->atom == XCB_ATOM_WM_CLASS)
+            dirty2 |= WM2WindowClass;
+        else if (pe->atom == wm_window_role)
+            dirty2 |= WM2WindowRole;
+        else if (pe->atom == XCB_ATOM_WM_CLIENT_MACHINE)
+            dirty2 |= WM2ClientMachine;
+        else if (pe->atom == kde_net_wm_activities)
+            dirty2 |= WM2Activities;
+        else if (pe->atom == kde_net_wm_block_compositing)
+            dirty2 |= WM2BlockCompositing;
+        else if (pe->atom == kde_net_wm_shadow)
+            dirty2 |= WM2KDEShadow;
 
         do_update = true;
-    } else if (event->type == ConfigureNotify) {
+    } else if (eventType == XCB_CONFIGURE_NOTIFY) {
 
 #ifdef NETWMDEBUG
         fprintf(stderr, "NETWinInfo::event: handling ConfigureNotify event\n");
@@ -3890,10 +3867,11 @@ void NETWinInfo::event(XEvent *event, unsigned long* properties, int properties_
         dirty |= WMGeometry;
 
         // update window geometry
-        p->win_geom.pos.x = event->xconfigure.x;
-        p->win_geom.pos.y = event->xconfigure.y;
-        p->win_geom.size.width = event->xconfigure.width;
-        p->win_geom.size.height = event->xconfigure.height;
+        xcb_configure_notify_event_t *configure = reinterpret_cast<xcb_configure_notify_event_t*>(event);
+        p->win_geom.pos.x = configure->x;
+        p->win_geom.pos.y = configure->y;
+        p->win_geom.size.width = configure->width;
+        p->win_geom.size.height = configure->height;
     }
 
     if (do_update) {
