@@ -192,9 +192,9 @@ void KPluginFactory::setArgs(const QVariantList& args)
     d->args = args;
 }
 
-QVariantList KPluginFactory::args()
+QVariantList KPluginFactory::args() const
 {
-    Q_D(KPluginFactory);
+    Q_D(const KPluginFactory);
     return d->args;
 }
 

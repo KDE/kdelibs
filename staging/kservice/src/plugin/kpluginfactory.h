@@ -299,7 +299,20 @@ public:
     }
 #endif
 
-    QVariantList args();
+    /**
+     * Arguments provided to the plugin
+     *
+     * \returns The arguments passed into the plugin when loaded, including json metadata
+     * @since 5.0
+     */
+    QVariantList args() const;
+
+    /**
+     * Arguments to load the plugin with.
+     *
+     * \param args Arguments for the plugin as QVariantList.
+     * @since 5.0
+     */
     void setArgs(const QVariantList &args);
 
     /**
