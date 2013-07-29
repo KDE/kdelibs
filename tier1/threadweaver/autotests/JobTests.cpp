@@ -7,6 +7,7 @@
 #include <QSignalSpy>
 
 #include <JobSequence.h>
+#include <Lambda.h>
 #include <ThreadWeaver.h>
 #include <DebuggingAids.h>
 #include <JobCollection.h>
@@ -723,23 +724,51 @@ void JobTests::JobSignalsAreEmittedAsynchronouslyTest()
     char bits[] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
     const int NumberOfBits = sizeof bits / sizeof bits[0];
     QString sequence;
-    QObjectJobDecorator collection(new JobCollection);
+    QObjectJobDecorator collection(new JobCollection, this);
 
     QVERIFY(connect(&collection, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
     QVERIFY(connect( &collection, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
     for ( int counter = 0; counter < NumberOfBits; ++counter )
     {
-        QObjectJobDecorator* job = new QObjectJobDecorator(new AppendCharacterJob( bits[counter], &sequence), this);
-        QVERIFY(connect(job, SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
-        QVERIFY(connect(job, SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
-        collection.collection()->addRawJob(job);
+        QJobPointer job(new QObjectJobDecorator(new AppendCharacterJob( bits[counter], &sequence)));
+        QVERIFY(connect(job.data(), SIGNAL(started(ThreadWeaver::JobPointer)), SLOT(jobStarted(ThreadWeaver::JobPointer))));
+        QVERIFY(connect(job.data(), SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(jobDone(ThreadWeaver::JobPointer))));
+        collection.collection()->addJob(job);
     }
 
     WaitForIdleAndFinished w(ThreadWeaver::Weaver::instance());
-    ThreadWeaver::Weaver::instance()->enqueueRaw(&collection);
+    Weaver::instance()->enqueueRaw(&collection);
     QCoreApplication::processEvents();
     ThreadWeaver::Weaver::instance()->finish();
     QVERIFY( sequence.length() == NumberOfBits );
+}
+
+QAtomicInt deliveryTestCounter;
+
+void JobTests::deliveryTestJobDone(ThreadWeaver::JobPointer)
+{
+    deliveryTestCounter.fetchAndAddRelease(-1);
+}
+
+void noOp() {}
+
+void JobTests::JobSignalsDeliveryTest()
+{
+    //This test was added to investigate segmentation faults during signal delivery from jobs to the main thread.
+    //Relies on processEvents() processing all pending events, as the specification says.
+    using namespace ThreadWeaver;
+
+    WaitForIdleAndFinished w(Weaver::instance());
+    for(int count = 0; count < 100; ++count) {
+        QJobPointer job(new QObjectJobDecorator(new Lambda(noOp)));
+        QVERIFY(connect(job.data(), SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(deliveryTestJobDone(ThreadWeaver::JobPointer))));
+        deliveryTestCounter.fetchAndAddRelease(1);
+        Weaver::instance()->enqueue(job);
+    }
+    QCoreApplication::processEvents();
+    Weaver::instance()->finish();
+    QCoreApplication::processEvents();
+    QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
 }
 
 void JobTests::DequeueSuspendedSequence()
