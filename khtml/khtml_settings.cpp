@@ -37,6 +37,7 @@
 #include <QByteArray>
 #include <QUrl>
 #include <qstandardpaths.h>
+#include <ksharedconfig.h>
 
 /**
  * @internal
@@ -441,8 +442,8 @@ void KHTMLSettings::init( KConfig * config, bool reset )
     // Fonts and colors
     if( reset ) {
         d->defaultFonts = QStringList();
-        d->defaultFonts.append( cgHtml.readEntry( "StandardFont", KGlobalSettings::generalFont().family() ) );
-        d->defaultFonts.append( cgHtml.readEntry( "FixedFont", KGlobalSettings::fixedFont().family() ) );
+        d->defaultFonts.append( cgHtml.readEntry( "StandardFont", QFontDatabase::systemFont(QFontDatabase::GeneralFont).family() ) );
+        d->defaultFonts.append( cgHtml.readEntry( "FixedFont", QFontDatabase::systemFont(QFontDatabase::FixedFont).family() ) );
         d->defaultFonts.append( cgHtml.readEntry( "SerifFont", HTML_DEFAULT_VIEW_SERIF_FONT ) );
         d->defaultFonts.append( cgHtml.readEntry( "SansSerifFont", HTML_DEFAULT_VIEW_SANSSERIF_FONT ) );
         d->defaultFonts.append( cgHtml.readEntry( "CursiveFont", HTML_DEFAULT_VIEW_CURSIVE_FONT ) );

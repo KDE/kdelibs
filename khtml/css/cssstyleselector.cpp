@@ -59,16 +59,16 @@ using namespace DOM;
 
 
 #include <kconfig.h>
-#include <kglobalsettings.h>
 #include <QtCore/QFile>
 #include <QtCore/QString>
 #include <QtCore/QFileInfo>
 #include <QUrl>
+#include <QFontDatabase>
+#include <qstandardpaths.h>
 
 #include <kdebug.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <qstandardpaths.h>
 
 // keep in sync with html4.css'
 #define KHTML_STYLE_VERSION 1
@@ -4023,21 +4023,21 @@ void CSSStyleSelector::applyRule( int id, DOM::CSSValueImpl *value )
             QFont f;
             switch (primitiveValue->getIdent()) {
             case CSS_VAL_ICON:
-                f = KGlobalSettings::toolBarFont();
+                f = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
                 break;
 
             case CSS_VAL_MENU:
-                f = KGlobalSettings::menuFont();
+                f = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
                 break;
 
             case CSS_VAL_SMALL_CAPTION:
-                f = KGlobalSettings::smallestReadableFont();
+                f = QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont);
                 break;
 
             case CSS_VAL_CAPTION:
             case CSS_VAL_MESSAGE_BOX:
             case CSS_VAL_STATUS_BAR:
-                f = KGlobalSettings::generalFont();
+                f = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
                 break;
             default:
                 return;

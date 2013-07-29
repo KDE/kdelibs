@@ -25,6 +25,7 @@
 
 #include <QHash>
 
+class KFontSettingsData;
 class QIconEngine;
 
 class KdePlatformTheme : public QPlatformTheme
@@ -42,11 +43,10 @@ private:
     void loadSettings();
     void loadHints();
     void loadPalettes();
-    void loadFonts();
 
     QHash<ThemeHint, QVariant> m_hints;
     QHash<Palette, QPalette*> m_palettes;
-    QHash<Font, QFont*> m_fonts;
+    KFontSettingsData* m_fontsData;
 };
 
 #endif // KDEPLATFORMTHEME_H

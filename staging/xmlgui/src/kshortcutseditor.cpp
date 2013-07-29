@@ -44,11 +44,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kmessagebox.h>
-
-#if 0
-#include <kgesturemap.h>
-#endif
-
 #include "kactioncollection.h"
 #include "kactioncategory.h"
 #include "kglobalaccel.h"
@@ -636,12 +631,9 @@ void KShortcutsEditorPrivate::printShortcuts() const
 #ifndef _WIN32_WCE
     QTreeWidgetItem* root = ui.list->invisibleRootItem();
     QTextDocument doc;
-#pragma message("Use QFontDatabase::systemFont(QFontDatabase::GeneralFont) once https://codereview.qt-project.org/59808 is in")
-#if 0
-    doc.setDefaultFont(KGlobalSettings::generalFont());
-#else
-    doc.setDefaultFont(QFont(QLatin1String("Sans Serif", 9)));
-#endif
+
+    doc.setDefaultFont(QFontDatabase::systemFont(QFontDatabase::GeneralFont));
+
     QTextCursor cursor(&doc);
     cursor.beginEditBlock();
     QTextCharFormat headerFormat;

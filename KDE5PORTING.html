@@ -291,6 +291,8 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KCodecAction: use enum KEncodingProber::ProberType instead of enum KEncodingDetector::AutoDetectScript</li>
 <li>KXMessages: the "obsolete = false" argument has been removed from all methods, and int screen has a default value of -1 now. Remove the "-1, false" in all calls. The sendMessage and sendMessageX methods were apparently unused, and have been commented out. Email kde-frameworks-devel at kde.org if you need them back.</li>
 <li>KGlobalSettings::contextMenuKey is gone, reimplement QWidget::contextMenuEvent() instead.</li>
+<li>KGlobalSettings::*Font methods are deprecated. Use QFontsDatabase::systemFonts(). ::menuFont, ::taskBarFont and ::toolBarFont are not available now (they are provided by the QPA but not public API). If cases needing those arise we'll
+have to find an alternative</li>
 <li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in three frameworks:
     <ul>
     <li>WId methods are now in kmessagebox_kiw.h from kinterprocesswindowing framework</li>

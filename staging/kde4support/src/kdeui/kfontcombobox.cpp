@@ -24,7 +24,6 @@
 #include "kdebug.h"
 #include "klocalizedstring.h"
 #include "kcolorscheme.h"
-#include "kglobalsettings.h"
 #include "kfontchooser.h"
 #include "kcompletion.h"
 
@@ -98,7 +97,7 @@ void KFontFamilyDelegate::paint (QPainter *painter,
         sampleBrush = KColorScheme(QPalette::Normal).foreground(KColorScheme::InactiveText);
     }
 
-    QFont baseFont = KGlobalSettings::generalFont();
+    QFont baseFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     QString trFontFamily = index.data(Qt::DisplayRole).toString();
     QString fontFamily = fontFamilyTrMap[trFontFamily];
 
@@ -192,7 +191,7 @@ QSize KFontFamilyDelegate::sizeHint (const QStyleOptionViewItem &option,
 {
     Q_UNUSED(option);
 
-    QFont baseFont = KGlobalSettings::generalFont();
+    QFont baseFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     QString trFontFamily = index.data(Qt::DisplayRole).toString();
     QString fontFamily = fontFamilyTrMap[trFontFamily];
 
@@ -230,7 +229,7 @@ public:
 
 KFontComboBoxPrivate::KFontComboBoxPrivate (KFontComboBox *parent)
     : k(parent),
-      currentFont(KGlobalSettings::generalFont()),
+      currentFont(QFontDatabase::systemFont(QFontDatabase::GeneralFont)),
       onlyFixed(false),
       signalsAllowed(true)
 {
@@ -375,7 +374,7 @@ bool KFontComboBox::event (QEvent *e)
             if (sample.length() > 60) {
                 sample = sample.left(57) + "...";
             }
-            QFont approxFont = KGlobalSettings::generalFont();
+            QFont approxFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
             approxFont.setPointSizeF(approxFont.pointSizeF()
                                            * d->delegate->sizeFactSample);
             int widgetWidth = width();
@@ -396,7 +395,7 @@ bool KFontComboBox::event (QEvent *e)
 QSize KFontComboBox::sizeHint() const
 {
     QSize sz = KComboBox::sizeHint();
-    QFontMetrics fm(KGlobalSettings::generalFont());
+    QFontMetrics fm(QFontDatabase::systemFont(QFontDatabase::GeneralFont));
     sz.setWidth(fm.width("m") * 14);
     return sz;
 }

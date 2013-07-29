@@ -93,7 +93,6 @@ extern "C" {
 #include <kiconbutton.h>
 #include <kurlrequester.h>
 #include <klocalizedstring.h>
-#include <kglobalsettings.h>
 #include <kjobuidelegate.h>
 #include <kio/global.h>
 #include <kio/job.h>

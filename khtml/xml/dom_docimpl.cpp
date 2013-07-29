@@ -64,7 +64,6 @@
 #include <khtmlview.h>
 #include <khtml_part.h>
 #include <kauthorized.h>
-#include <kglobalsettings.h>
 #include <kdatetime.h>
 #include <khtml_settings.h>
 #include <khtmlpart_p.h>
@@ -121,6 +120,7 @@
 #include <svg/SVGFontElement.h>
 
 #include <kio/job.h>
+#include <QFontDatabase>
 
 #include <stdlib.h>
 #include <limits.h>
@@ -1403,7 +1403,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
         // ### make the font stuff _really_ work!!!!
 
 	khtml::FontDef fontDef;
-	QFont f = KGlobalSettings::generalFont();
+	QFont f = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
 	fontDef.family = f.family();
 	fontDef.italic = f.italic();
 	fontDef.weight = f.weight();

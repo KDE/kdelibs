@@ -33,6 +33,7 @@
 #include <QStyle>
 #include <QToolButton>
 #include <QDoubleValidator>
+#include <QFontDatabase>
 
 #include <kcalendarsystem.h>
 #include <klocalizeddate.h>

@@ -396,15 +396,7 @@ KFontChooser::KFontChooser( QWidget *parent,
 
     // lets initialize the display if possible
     if (d->usingFixed) {
-#ifdef Q_OS_MAC
-        QFont fixedFont(QStringLiteral("Monaco"), 10);
-#else
-        QFont fixedFont(QStringLiteral("Monospace"), 9);
-#endif
-        if (QGuiApplication::instance()->property("_k_fixedFont").isValid()) {
-            fixedFont = QGuiApplication::instance()->property("_k_fixedFont").value<QFont>();
-        }
-        setFont( fixedFont, d->usingFixed );
+        setFont( QFontDatabase::systemFont(QFontDatabase::FixedFont), d->usingFixed );
     } else {
         setFont( QGuiApplication::font(), d->usingFixed );
     }

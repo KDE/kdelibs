@@ -71,79 +71,11 @@ static QRgb qt_colorref2qrgb(COLORREF col)
 //static QColor *_buttonBackground = 0;
 static KGlobalSettings::GraphicEffects _graphicEffects = KGlobalSettings::NoEffects;
 
-// TODO: merge this with KGlobalSettings::Private
-//
-// F. Kossebau: KDE5: think to make all methods static and not expose an object,
-// making KGlobalSettings rather a namespace
-// D. Faure: how would people connect to signals, then?
-class KGlobalSettingsData
-{
-  public:
-    // if adding a new type here also add an entry to DefaultFontData
-    enum FontTypes
-    {
-        GeneralFont = 0,
-        FixedFont,
-        ToolbarFont,
-        MenuFont,
-        WindowTitleFont,
-        TaskbarFont ,
-        SmallestReadableFont,
-        FontTypesCount
-    };
-
-  public:
-    KGlobalSettingsData();
-    ~KGlobalSettingsData();
-
-  public:
-    static KGlobalSettingsData* self();
-
-  public: // access, is not const due to caching
-    QFont font( FontTypes fontType );
-    QFont largeFont( const QString& text );
-    KGlobalSettings::KMouseSettings& mouseSettings();
-
-  public:
-    void dropFontSettingsCache();
-    void dropMouseSettingsCache();
-
-  protected:
-    QFont* mFonts[FontTypesCount];
-    QFont* mLargeFont;
-    KGlobalSettings::KMouseSettings* mMouseSettings;
-};
-
-KGlobalSettingsData::KGlobalSettingsData()
-  : mLargeFont( 0 ),
-    mMouseSettings( 0 )
-{
-    for( int i=0; i<FontTypesCount; ++i )
-        mFonts[i] = 0;
-}
-
-KGlobalSettingsData::~KGlobalSettingsData()
-{
-    for( int i=0; i<FontTypesCount; ++i )
-        delete mFonts[i];
-    delete mLargeFont;
-
-    delete mMouseSettings;
-}
-
-Q_GLOBAL_STATIC( KGlobalSettingsData, globalSettingsDataSingleton )
-
-inline KGlobalSettingsData* KGlobalSettingsData::self()
-{
-    return globalSettingsDataSingleton();
-}
-
-
 class KGlobalSettings::Private
 {
     public:
         Private(KGlobalSettings *q)
-            : q(q), activated(false), paletteCreated(false)
+            : q(q), activated(false), paletteCreated(false), mLargeFont(0)
         {
             kdeFullSession = !qgetenv("KDE_FULL_SESSION").isEmpty();
         }
@@ -158,6 +90,8 @@ class KGlobalSettings::Private
         void kdisplaySetStyle();
         void kdisplaySetFont();
         void applyGUIStyle();
+        void dropMouseSettingsCache();
+        KGlobalSettings::KMouseSettings &mouseSettings();
 
         /**
          * @internal
@@ -174,11 +108,15 @@ class KGlobalSettings::Private
 
         static void reloadStyleSettings();
 
+        QFont largeFont( const QString &text );
+
         KGlobalSettings *q;
         bool activated;
         bool paletteCreated;
         bool kdeFullSession;
         QPalette applicationPalette;
+        KGlobalSettings::KMouseSettings *mMouseSettings;
+        QFont *mLargeFont;
 };
 
 // class for access to KGlobalSettings constructor
@@ -198,6 +136,7 @@ KGlobalSettings* KGlobalSettings::self()
 KGlobalSettings::KGlobalSettings()
     : QObject(0), d(new Private(this))
 {
+    connect(this, SIGNAL(kdisplayFontChanged()), SIGNAL(appearanceChanged()));
 }
 
 KGlobalSettings::~KGlobalSettings()
@@ -220,6 +159,8 @@ void KGlobalSettings::activate(ActivateOptions options)
                                                    "notifyChange", this, SLOT(_k_slotNotifyChange(int,int)) );
             QDBusConnection::sessionBus().connect( QString(), "/KIconLoader", "org.kde.KIconLoader",
                                                    "iconChanged", this, SLOT(_k_slotIconChange(int)) );
+            QDBusConnection::sessionBus().connect( QString(), "/KDEPlatformTheme", "org.kde.KDEPlatformTheme",
+                                                      "fontsChanged", this, SLOT(kdisplayFontChanged()) );
         }
 
         if (options & ApplySettings) {
@@ -266,7 +207,7 @@ KGlobalSettings::Completion KGlobalSettings::completionMode()
       {
         completion = (int) CompletionPopup; // Default
       }
-  return (Completion) completion;
+    return (Completion) completion;
 }
 
 bool KGlobalSettings::showContextMenusOnPress ()
@@ -341,91 +282,46 @@ bool KGlobalSettings::allowDefaultBackgroundImages()
     return g.readEntry( "allowDefaultBackgroundImages", KDE_DEFAULT_ALLOW_DEFAULT_BACKGROUND_IMAGES );
 }
 
-struct KFontData
+//inspired in old KGlobalSettingsData code
+QFont constructFontFromConfig(const char* groupKey, const char* configKey)
 {
-    const char* ConfigGroupKey;
-    const char* ConfigKey;
-    const char* FontName;
-    int Size;
-    int Weight;
-    QFont::StyleHint StyleHint;
-};
-
-// NOTE: keep in sync with kdebase/workspace/kcontrol/fonts/fonts.cpp
-static const char GeneralId[] =      "General";
-static const char DefaultFont[] =    "Sans Serif";
-#ifdef Q_OS_MAC
-static const char DefaultMacFont[] = "Lucida Grande";
-#endif
-
-static const KFontData DefaultFontData[KGlobalSettingsData::FontTypesCount] =
-{
-#ifdef Q_OS_MAC
-    { GeneralId, "font",        DefaultMacFont, 13, -1, QFont::SansSerif },
-    { GeneralId, "fixed",       "Monaco",       10, -1, QFont::TypeWriter },
-    { GeneralId, "toolBarFont", DefaultMacFont, 11, -1, QFont::SansSerif },
-    { GeneralId, "menuFont",    DefaultMacFont, 13, -1, QFont::SansSerif },
-#else
-    { GeneralId, "font",        DefaultFont, 9, -1, QFont::SansSerif },
-    { GeneralId, "fixed",       "Monospace", 9, -1, QFont::TypeWriter },
-    { GeneralId, "toolBarFont", DefaultFont,  8, -1, QFont::SansSerif },
-    { GeneralId, "menuFont",    DefaultFont, 9, -1, QFont::SansSerif },
-#endif
-    { "WM",      "activeFont",           DefaultFont,  8, -1, QFont::SansSerif },
-    { GeneralId, "taskbarFont",          DefaultFont, 9, -1, QFont::SansSerif },
-    { GeneralId, "smallestReadableFont", DefaultFont,  8, -1, QFont::SansSerif }
-};
-
-QFont KGlobalSettingsData::font( FontTypes fontType )
-{
-    QFont* cachedFont = mFonts[fontType];
-
-    if (!cachedFont)
-    {
-        const KFontData& fontData = DefaultFontData[fontType];
-        cachedFont = new QFont( fontData.FontName, fontData.Size, fontData.Weight );
-        cachedFont->setStyleHint( fontData.StyleHint );
-
-        const KConfigGroup configGroup( KSharedConfig::openConfig(), fontData.ConfigGroupKey );
-        *cachedFont = configGroup.readEntry( fontData.ConfigKey, *cachedFont );
-
-        mFonts[fontType] = cachedFont;
-    }
-
-    return *cachedFont;
+    const KConfigGroup configGroup( KSharedConfig::openConfig(), groupKey );
+    QFont ret;
+    ret.setStyleHint(QFont::SansSerif);
+    ret = configGroup.readEntry( configKey, ret );
+    return ret;
 }
 
 QFont KGlobalSettings::generalFont()
 {
-    return KGlobalSettingsData::self()->font( KGlobalSettingsData::GeneralFont );
+    return QFontDatabase::systemFont(QFontDatabase::GeneralFont);
 }
 QFont KGlobalSettings::fixedFont()
 {
-    return KGlobalSettingsData::self()->font( KGlobalSettingsData::FixedFont );
-}
-QFont KGlobalSettings::toolBarFont()
-{
-    return KGlobalSettingsData::self()->font( KGlobalSettingsData::ToolbarFont );
-}
-QFont KGlobalSettings::menuFont()
-{
-    return KGlobalSettingsData::self()->font( KGlobalSettingsData::MenuFont );
+    return QFontDatabase::systemFont(QFontDatabase::FixedFont);
 }
 QFont KGlobalSettings::windowTitleFont()
 {
-    return KGlobalSettingsData::self()->font( KGlobalSettingsData::WindowTitleFont );
-}
-QFont KGlobalSettings::taskbarFont()
-{
-    return KGlobalSettingsData::self()->font( KGlobalSettingsData::TaskbarFont );
+    return QFontDatabase::systemFont(QFontDatabase::TitleFont);
 }
 QFont KGlobalSettings::smallestReadableFont()
 {
-    return KGlobalSettingsData::self()->font( KGlobalSettingsData::SmallestReadableFont );
+    return QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont);
+}
+QFont KGlobalSettings::toolBarFont()
+{
+    return constructFontFromConfig("General", "toolBarFont");
+}
+QFont KGlobalSettings::menuFont()
+{
+    return constructFontFromConfig("General", "menuFont");
+}
+QFont KGlobalSettings::taskbarFont()
+{
+    return constructFontFromConfig("General", "taskbarFont");
 }
 
-
-QFont KGlobalSettingsData::largeFont( const QString& text )
+QFont KGlobalSettings::Private::largeFont( const QString& text )
 {
     QFontDatabase db;
     QStringList fam = db.families();
@@ -485,27 +381,17 @@ QFont KGlobalSettingsData::largeFont( const QString& text )
             return *mLargeFont;
         }
     }
-    mLargeFont = new QFont( font(GeneralFont) );
+    mLargeFont = new QFont( q->generalFont() );
     mLargeFont->setPointSize(48);
     return *mLargeFont;
 }
+
 QFont KGlobalSettings::largeFont( const QString& text )
 {
-    return KGlobalSettingsData::self()->largeFont( text );
+    return self()->d->largeFont( text );
 }
 
-void KGlobalSettingsData::dropFontSettingsCache()
-{
-    for( int i=0; i<FontTypesCount; ++i )
-    {
-        delete mFonts[i];
-        mFonts[i] = 0;
-    }
-    delete mLargeFont;
-    mLargeFont = 0;
-}
-
-KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
+KGlobalSettings::KMouseSettings& KGlobalSettings::Private::mouseSettings()
 {
     if (!mMouseSettings)
     {
@@ -564,15 +450,7 @@ KGlobalSettings::KMouseSettings& KGlobalSettingsData::mouseSettings()
 // KDE5: make this a const return?
 KGlobalSettings::KMouseSettings & KGlobalSettings::mouseSettings()
 {
-    return KGlobalSettingsData::self()->mouseSettings();
-}
-
-void KGlobalSettingsData::dropMouseSettingsCache()
-{
-#ifndef Q_OS_WIN
-    delete mMouseSettings;
-    mMouseSettings = 0;
-#endif
+    return self()->d->mouseSettings();
 }
 
 QString KGlobalSettings::desktopPath()
@@ -755,17 +633,22 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
     switch (changeType) {
     case IconChanged:
         KIconLoader::emitChange(KIconLoader::Group(arg));
-        break;
     case ToolbarStyleChanged:
         KToolBar::emitToolbarStyleChanged();
         break;
-    default:
+    case FontChanged: {
+        QDBusMessage message = QDBusMessage::createSignal("/KDEPlatformTheme", "org.kde.KDEPlatformTheme", "refreshFonts" );
+        QDBusConnection::sessionBus().send(message);
+    }   break;
+    default: {
         QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
         QList<QVariant> args;
         args.append(static_cast<int>(changeType));
         args.append(arg);
         message.setArguments(args);
         QDBusConnection::sessionBus().send(message);
+    }   break;
+
     }
 }
 
@@ -798,11 +681,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
         break;
 
     case FontChanged:
-        KSharedConfig::openConfig()->reparseConfiguration();
-        KGlobalSettingsData::self()->dropFontSettingsCache();
-        if (activated) {
-            kdisplaySetFont();
-        }
+        Q_ASSERT(false && "shouldn't get here now...");
         break;
 
     case SettingsChanged: {
@@ -818,7 +697,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
                     reloadStyleSettings();
                     break;
                 case SETTINGS_MOUSE:
-                    KGlobalSettingsData::self()->dropMouseSettingsCache();
+                    self()->d->dropMouseSettingsCache();
                     break;
                 case SETTINGS_LOCALE:
                     // QT5 TODO REPLACEMENT ? KLocale::global()->reparseConfiguration();
@@ -963,16 +842,7 @@ void KGlobalSettings::Private::kdisplaySetFont()
         return;
     }
 
-    KGlobalSettingsData* data = KGlobalSettingsData::self();
-
-    QApplication::setFont( data->font(KGlobalSettingsData::GeneralFont) );
-    const QFont menuFont = data->font( KGlobalSettingsData::MenuFont );
-    QApplication::setFont( menuFont, "QMenuBar" );
-    QApplication::setFont( menuFont, "QMenu" );
-    QApplication::setFont( menuFont, "KPopupTitle" );
-    QApplication::setFont( data->font(KGlobalSettingsData::ToolbarFont), "QToolBar" );
     emit q->kdisplayFontChanged();
-    emit q->appearanceChanged();
 #endif
 }
 
@@ -1059,6 +929,14 @@ void KGlobalSettings::Private::propagateQtSettings()
 
     // KDE5: this seems fairly pointless
     emit q->settingsChanged(SETTINGS_QT);
+}
+
+void KGlobalSettings::Private::dropMouseSettingsCache()
+{
+#ifndef Q_OS_WIN
+    delete self()->d->mMouseSettings;
+    self()->d->mMouseSettings = 0;
+#endif
 }
 
 #include "moc_kglobalsettings.cpp"
