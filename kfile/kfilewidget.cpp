@@ -389,8 +389,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
                              u.toLocalFile());
 
     QUrl docPath = QUrl::fromLocalFile(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    if ( (QUrlPathInfo(u).path(QUrlPathInfo::AppendTrailingSlash) !=
-                QUrlPathInfo(docPath).path(QUrlPathInfo::AppendTrailingSlash)) &&
+    if (u.adjusted(QUrl::StripTrailingSlash) != docPath.adjusted(QUrl::StripTrailingSlash) &&
           QDir(docPath.toLocalFile()).exists() )
     {
         pathCombo->addDefaultUrl(docPath,
@@ -628,7 +627,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
         if (!statRes || !statJob->statResult().isDir()) {
             QUrlPathInfo startDirInfo(startDir);
             filename = startDirInfo.fileName();
-            startDir.setPath(startDirInfo.directory());
+            startDir = startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
             kDebug(kfile_area) << "statJob -> startDir" << startDir << "filename" << filename;
         }
     }
@@ -919,9 +918,8 @@ void KFileWidget::slotOk()
                         pathInfo.setFileName(QString());
                         url = pathInfo.url();
                     } else {
-                        QUrlPathInfo pathInfo(url);
-                        pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-                        url = pathInfo.url();
+                        if (!url.path().endsWith('/'))
+                            url.setPath(url.path() + '/');
                     }
                 }
             } else {
@@ -1230,18 +1228,15 @@ void KFileWidgetPrivate::setLocationText(const QUrl& url)
 {
     if (!url.isEmpty()) {
         QPixmap mimeTypeIcon = KIconLoader::global()->loadMimeTypeIcon( KIO::iconNameForUrl( url ), KIconLoader::Small );
-        QUrlPathInfo urlPathInfo(url);
-        const QString path = url.path();
-        if (!path.isEmpty()) {
-            if (!urlPathInfo.directory().isEmpty()) {
-                QUrl u(url);
-                u.setPath(urlPathInfo.directory());
-                q->setUrl(u, false);
+        if (!url.path().isEmpty()) {
+            const QUrl directory = url.adjusted(QUrl::RemoveFilename);
+            if (!directory.path().isEmpty()) {
+                q->setUrl(directory, false);
             } else {
                 q->setUrl(url, false);
             }
         }
-        setDummyHistoryEntry(urlPathInfo.fileName() , mimeTypeIcon);
+        setDummyHistoryEntry(QUrlPathInfo(url).fileName(), mimeTypeIcon);
     } else {
         removeDummyHistoryEntry();
     }
@@ -1486,11 +1481,12 @@ void KFileWidgetPrivate::_k_enterUrl(const QUrl& url)
 {
 //     kDebug(kfile_area);
 
-    QUrlPathInfo pathInfo( url );
     // append '/' if needed: url combo does not add it
     // tokenize() expects it because uses KUrl::setFileName()
-    pathInfo.adjustPath( QUrlPathInfo::AppendTrailingSlash );
-    q->setUrl( pathInfo.url() );
+    QUrl u(url);
+    if (!u.path().endsWith('/'))
+        u.setPath(u.path() + '/');
+    q->setUrl(u);
     if (!locationEdit->hasFocus())
         ops->setFocus();
 }
@@ -1553,10 +1549,12 @@ void KFileWidgetPrivate::_k_slotLoadingFinished()
     }
 
     ops->blockSignals(true);
-    QUrlPathInfo pathInfo(ops->url());
-    pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-    pathInfo.setFileName(locationEdit->currentText());
-    ops->setCurrentItem(pathInfo.url());
+    QUrl u(ops->url());
+    QString path = ops->url().path();
+    if (!path.endsWith('/'))
+        path += '/';
+    u.setPath(path + locationEdit->currentText());
+    ops->setCurrentItem(u);
     ops->blockSignals(false);
 }
 
@@ -1661,8 +1659,11 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
 //     kDebug(kfile_area);
 
     QList<QUrl> urls;
-    QUrlPathInfo u( ops->url() );
-    u.adjustPath(QUrlPathInfo::AppendTrailingSlash);
+    QUrl url(ops->url());
+    if (!url.path().endsWith(QLatin1Char('/'))) {
+        url.setPath(url.path() + QLatin1Char('/'));
+    }
+    QUrlPathInfo u(url);
     QString name;
 
     const int count = line.count( QLatin1Char( '"' ) );
@@ -2614,7 +2615,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
 //  6.  kfiledialog:///keyword/filename?global         /keyword      filename
 
             QString keyword;
-            QString urlDir = startDirInfo.directory();
+            QString urlDir = startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path();
             QString urlFile = startDirInfo.fileName();
             if ( urlDir == "/" )			// '1'..'4' above
             {
@@ -2643,7 +2644,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
             // In all other cases (startDir contains a directory path, or has no
             // fileName for us anyway, such as smb://), startDir is indeed a dir url.
 
-            if (!startDirInfo.directory().isEmpty() ||
+            if (!startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path().isEmpty() ||
                 startDirInfo.fileName().isEmpty()) {
                 // can use start directory
                 ret = startDir;				// will be checked by stat later
@@ -2665,12 +2666,12 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
     {
         if (lastDirectory()->isEmpty()) {
             lastDirectory()->setPath(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-            const QUrlPathInfo home(QUrl::fromLocalFile(QDir::homePath()));
+            const QUrl home(QUrl::fromLocalFile(QDir::homePath()));
             // if there is no docpath set (== home dir), we prefer the current
             // directory over it. We also prefer the homedir when our CWD is
             // different from our homedirectory or when the document dir
             // does not exist
-            if (QUrlPathInfo(*lastDirectory()).path(QUrlPathInfo::AppendTrailingSlash) == home.path(QUrlPathInfo::AppendTrailingSlash) ||
+            if (lastDirectory()->adjusted(QUrl::StripTrailingSlash) == home.adjusted(QUrl::StripTrailingSlash) ||
                  QDir::currentPath() != QDir::homePath() ||
                  !QDir(lastDirectory()->toLocalFile()).exists() )
                 *lastDirectory() = QUrl::fromLocalFile(QDir::currentPath());

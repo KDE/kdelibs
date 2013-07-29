@@ -382,15 +382,16 @@ QUrl KIO::upUrl(const QUrl &url)
     if (!url.isValid() || url.isRelative())
         return QUrl();
 
+    QUrl u(url);
     if (url.hasQuery()) {
-        QUrl u(url);
         u.setQuery(QString());
         return u;
     }
-
-    QUrlPathInfo pathInfo(url.resolved(QUrl("../")));
-    pathInfo.adjustPath(QUrlPathInfo::AppendTrailingSlash);
-    return pathInfo.url();
+    if (url.hasFragment()) {
+        u.setFragment(QString());
+    }
+    u = u.adjusted(QUrl::StripTrailingSlash); /// don't combine with the line below
+    return u.adjusted(QUrl::RemoveFilename);
 }
 
 QString KIO::suggestName(const QUrl &baseURL, const QString& oldName)

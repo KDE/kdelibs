@@ -32,10 +32,6 @@
 #include <QDirIterator>
 #include <QUrl>
 #include <qstandardpaths.h>
-#include <qurlpathinfo.h>
-#include <job.h>
-#include <deletejob.h>
-#include <mkdirjob.h>
 
 using namespace Kross;
 
@@ -261,10 +257,9 @@ void ScriptingPlugin::save()
 
 void ScriptingPlugin::slotEditScriptActions()
 {
-    if(!KIO::NetAccess::exists(QUrl::fromLocalFile(d->userActionsFile), KIO::NetAccess::SourceSide, 0)) {
-        QUrl dir = QUrlPathInfo(QUrl::fromLocalFile(d->userActionsFile)).directoryUrl();
-        KIO::MkdirJob* job = KIO::mkdir(dir, 0);
-        job->exec();
+    if (!QFile::exists(d->userActionsFile)) {
+        QString dir = QFileInfo(d->userActionsFile).absolutePath();
+        QDir().mkpath(dir);
 
         save();
     }
@@ -275,7 +270,6 @@ void ScriptingPlugin::slotEditScriptActions()
 
 void ScriptingPlugin::slotResetScriptActions()
 {
-    KIO::DeleteJob* job = KIO::del(QUrl::fromLocalFile(d->userActionsFile));
-    job->exec();
+    QFile::remove(d->userActionsFile);
 }
 

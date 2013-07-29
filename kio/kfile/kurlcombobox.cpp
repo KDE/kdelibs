@@ -23,7 +23,6 @@
 #include <QDrag>
 #include <QMimeData>
 #include <QApplication>
-#include <qurlpathinfo.h>
 
 #include <kdebug.h>
 #include <kio/global.h>
@@ -64,8 +63,7 @@ public:
     QIcon dirIcon;
     bool urlAdded;
     int myMaximum;
-    KUrlComboBox::Mode myMode; // can be used as parameter to QUrlPathInfo::path()
-                               // to specify if we want a trailing slash or not
+    KUrlComboBox::Mode myMode;
     QPoint m_dragPoint;
 
     QList<const KUrlComboItem*> itemList;
@@ -79,17 +77,19 @@ QString KUrlComboBoxPrivate::textForItem(const KUrlComboItem* item) const
 {
     if (!item->text.isEmpty())
         return item->text;
-    const QUrl& url = item->url;
-    if (url.isLocalFile()) {
-        return QUrlPathInfo(url).localPath(myMode == KUrlComboBox::Directories
-                                           ? QUrlPathInfo::AppendTrailingSlash
-                                           : QUrlPathInfo::StripTrailingSlash);
+    QString text;
+    QUrl url = item->url;
+    if (myMode == KUrlComboBox::Directories) {
+        if (!url.path().endsWith(QLatin1Char('/'))) {
+            url.setPath(url.path() + QLatin1Char('/'));
+        }
     } else {
-        QUrlPathInfo urlInfo(url);
-        urlInfo.setPath(urlInfo.path(myMode == KUrlComboBox::Directories
-                                     ? QUrlPathInfo::AppendTrailingSlash
-                                     : QUrlPathInfo::StripTrailingSlash));
-        return urlInfo.url().toDisplayString();
+        url = url.adjusted(QUrl::StripTrailingSlash);
+    }
+    if (url.isLocalFile()) {
+        return url.toLocalFile();
+    } else {
+        return url.toDisplayString();
     }
 }
 

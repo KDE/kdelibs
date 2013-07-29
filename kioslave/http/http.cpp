@@ -782,8 +782,10 @@ void HTTPProtocol::davStatList( const QUrl& url, bool stat )
   m_request.url.setQuery(QString());
   m_request.cacheTag.policy = CC_Reload;
   m_request.davData.depth = stat ? 0 : 1;
-  if (!stat)
-     m_request.url.setPath(QUrlPathInfo(m_request.url).path(QUrlPathInfo::AppendTrailingSlash));
+  if (!stat) {
+    if (!m_request.url.path().endsWith(QLatin1Char('/')))
+      m_request.url.setPath(m_request.url.path() + QLatin1Char('/'));
+  }
 
   proceedUntilResponseContent( true );
   infoMessage(QLatin1String(""));
@@ -821,7 +823,7 @@ void HTTPProtocol::davStatList( const QUrl& url, bool stat )
         QString name = thisUrlInfo.fileName();
 
         // base dir of a listDir(): name should be "."
-        if ( !stat && thisUrlInfo.path(QUrlPathInfo::AppendTrailingSlash).length() == QUrlPathInfo(url).path(QUrlPathInfo::AppendTrailingSlash).length() )
+        if (!stat && thisURL.adjusted(QUrl::StripTrailingSlash) == url.adjusted(QUrl::StripTrailingSlash)) // TODO: use QUrl::matches
           name = QLatin1Char('.');
 
         entry.insert( KIO::UDSEntry::UDS_NAME, name.isEmpty() ? href.text() : name );

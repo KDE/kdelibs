@@ -1006,9 +1006,7 @@ void ReadWritePartPrivate::_k_slotUploadFinished( KJob * )
     }
     else
     {
-        QUrlPathInfo dirUrlInfo( m_url );
-        dirUrlInfo.setPath(dirUrlInfo.directory());
-        ::org::kde::KDirNotify::emitFilesAdded(dirUrlInfo.url());
+        ::org::kde::KDirNotify::emitFilesAdded(m_url.adjusted(QUrl::RemoveFilename));
 
         m_uploadJob = 0;
         q->setModified( false );

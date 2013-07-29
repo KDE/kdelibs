@@ -48,7 +48,7 @@ class KDirModelDirNode;
 static QUrl cleanupUrl(const QUrl& url) {
     QUrl u = url;
     u.setPath(QDir::cleanPath(u.path())); // remove double slashes in the path, simplify "foo/." to "foo/", etc.
-    QUrlPathInfo::adjustPath(u, QUrlPathInfo::StripTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
+    u = u.adjusted(QUrl::StripTrailingSlash); // KDirLister does this too, so we remove the slash before comparing with the root node url.
     u.setQuery(QString());
     u.setFragment(QString());
     return u;
@@ -234,8 +234,10 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
     }
 
     for (;;) {
-        QUrlPathInfo pathInfo(nodeUrl);
-        const QString nodePath = pathInfo.path(QUrlPathInfo::AppendTrailingSlash);
+        QString nodePath = nodeUrl.path();
+        if (!nodePath.endsWith('/')) {
+            nodePath += '/';
+        }
         if(!pathStr.startsWith(nodePath)) {
             qWarning() << "The kioslave for" << url.scheme() << "violates the hierarchy structure:"
                          << "I arrived at node" << nodePath << ", but" << pathStr << "does not start with that path.";
@@ -245,8 +247,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
         // E.g. pathStr is /a/b/c and nodePath is /a/. We want to find the node with url /a/b
         const int nextSlash = pathStr.indexOf('/', nodePath.length());
         const QString newPath = pathStr.left(nextSlash); // works even if nextSlash==-1
-        pathInfo.setPath(newPath);
-        nodeUrl = pathInfo.url();
+        nodeUrl.setPath(newPath);
         nodeUrl = nodeUrl.adjusted(QUrl::StripTrailingSlash); // #172508
         KDirModelNode* node = nodeForUrl(nodeUrl);
         if (!node) {

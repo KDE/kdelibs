@@ -68,7 +68,7 @@ QString KAutoSaveFilePrivate::tempFileName()
     // Note: we drop any query string and user/pass info
     const QString protocol(managedFile.scheme());
     QUrlPathInfo info(managedFile);
-    QString path(info.directory());
+    QString path(managedFile.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path());
     QString name(info.fileName());
 
     // Remove any part of the path to the right if it is longer than the max file size and

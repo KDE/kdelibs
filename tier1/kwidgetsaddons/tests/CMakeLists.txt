@@ -29,4 +29,5 @@ kwidgetsaddons_executable_tests(
   kpagewidgettest
   kassistantdialogtest
   kmessagewidgettest
+  knewpassworddialogtest
 )

@@ -818,7 +818,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
             // Extract the full name, but without file: for local files
             path = properties->url().toDisplayString(QUrl::PreferLocalFile);
         } else {
-            path = QUrlPathInfo(properties->currentDir()).path(QUrlPathInfo::AppendTrailingSlash) + properties->defaultName();
+            path = properties->currentDir().path() + '/' + properties->defaultName();
             directory = properties->currentDir().toDisplayString(QUrl::PreferLocalFile);
         }
 
@@ -870,7 +870,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
                 mode = (mode_t)0;
             if ( KIO::iconNameForUrl(url) != iconStr )
                 iconStr = "document-multiple";
-            if ( info.directory() != directory )
+            if ( url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path() != directory )
                 directory.clear();
             if ( url.scheme() != protocol )
                 protocol.clear();

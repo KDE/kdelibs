@@ -26,6 +26,7 @@
 #include <kwindowsystem_export.h>
 #include <X11/Xlib.h>
 #include <fixx11h.h>
+#include <xcb/xcb.h>
 
 namespace KKeyServer
 {
@@ -167,6 +168,20 @@ namespace KKeyServer
 	 * @return true if successful, false otherwise
 	 */
 	KWINDOWSYSTEM_EXPORT bool xEventToQt( XEvent* e, int* keyModQt );
+
+    /**
+     * Converts an XCB keypress event into a Qt key + modifier code
+     * @param e the XCB keypress event
+     * @param keyModQt the Qt keycode and mask of Qt key code modifiers will be written here
+     *        if successful
+     * @return true if successful, false otherwise
+     */
+    KWINDOWSYSTEM_EXPORT bool xcbKeyPressEventToQt( xcb_generic_event_t* e, int* keyModQt );
+    /**
+     * Overloaded method for convenience.
+     */
+    KWINDOWSYSTEM_EXPORT bool xcbKeyPressEventToQt( xcb_key_press_event_t* e, int* keyModQt );
+
 }
 
 #endif // !_KKEYSERVER_X11_H

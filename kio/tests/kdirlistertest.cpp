@@ -31,7 +31,6 @@ QTEST_MAIN(KDirListerTest)
 #include <kprotocolinfo.h>
 #include <kio/job.h>
 #include <kio/copyjob.h>
-#include <qurlpathinfo.h>
 
 #define WORKAROUND_BROKEN_INOTIFY 0
 
@@ -1196,8 +1195,7 @@ void KDirListerTest::testDeleteCurrentDir()
     for (int i = 0; i < m_dirLister.spyItemsDeleted.count(); ++i)
         deletedUrls += m_dirLister.spyItemsDeleted[i][0].value<KFileItemList>().urlList();
     //qDebug() << deletedUrls;
-    QUrl currentDirUrl = QUrl::fromLocalFile(path());
-    QUrlPathInfo::adjustPath(currentDirUrl, QUrlPathInfo::StripTrailingSlash);
+    QUrl currentDirUrl = QUrl::fromLocalFile(path()).adjusted(QUrl::StripTrailingSlash);
     // Sometimes I get ("current/subdir", "current") here, but that seems ok.
     QVERIFY(deletedUrls.contains(currentDirUrl));
 }

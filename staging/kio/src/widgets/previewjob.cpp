@@ -47,7 +47,6 @@
 #include <kconfiggroup.h>
 #include <kprotocolinfo.h>
 #include <qmimedatabase.h>
-#include <qurlpathinfo.h>
 #include <qstandardpaths.h>
 
 #include "job_p.h"
@@ -336,7 +335,7 @@ void PreviewJobPrivate::startPreview()
             if (!bNeedCache && bSave && plugin->property("CacheThumbnail").toBool()) {
                 const QUrl url = (*kit).url();
                 if (!url.isLocalFile() ||
-                    !QString(QUrlPathInfo(url).directory(QUrlPathInfo::AppendTrailingSlash)).startsWith(thumbRoot)) {
+                    !url.adjusted(QUrl::RemoveFilename).toLocalFile().startsWith(thumbRoot)) {
                     bNeedCache = true;
                 }
             }
@@ -658,7 +657,7 @@ void PreviewJobPrivate::slotThumbData(KIO::Job *, const QByteArray &data)
     bool save = bSave &&
                 currentItem.plugin->property("CacheThumbnail").toBool() &&
                 (!currentItem.item.url().isLocalFile() ||
-                 !QString(QUrlPathInfo(currentItem.item.url()).directory(QUrlPathInfo::AppendTrailingSlash)).startsWith(thumbRoot))
+                 !currentItem.item.url().adjusted(QUrl::RemoveFilename).toLocalFile().startsWith(thumbRoot))
                 && !sequenceIndex;
     QImage thumb;
 #ifdef Q_OS_UNIX

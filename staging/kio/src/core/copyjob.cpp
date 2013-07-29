@@ -475,7 +475,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const QUrl& sourceUrl)
         //qDebug() << "Source is a file (or a symlink), or we are linking -> no recursive listing";
 
         if (srcurl.isLocalFile()) {
-            const QString parentDir = srcurlInfo.directory();
+            const QString parentDir = srcurl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path();
             m_parentDirs.insert(parentDir);
         }
 
@@ -876,15 +876,15 @@ void CopyJobPrivate::startListing( const QUrl & src )
 
 void CopyJobPrivate::skip(const QUrl & sourceUrl, bool isDir)
 {
-    QUrlPathInfo dir(sourceUrl);
+    QUrl dir(sourceUrl);
     if (!isDir) {
         // Skipping a file: make sure not to delete the parent dir (#208418)
-        dir.setPath(dir.directory());
+        dir = dir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     }
-    while (dirsToRemove.removeAll(dir.url()) > 0) {
+    while (dirsToRemove.removeAll(dir) > 0) {
         // Do not rely on rmdir() on the parent directories aborting.
         // Exclude the parent dirs explicitly.
-        dir.setPath(dir.directory());
+        dir = dir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
     }
 }
 
@@ -916,19 +916,23 @@ void CopyJobPrivate::renameDirectory(QList<CopyInfo>::iterator it, const QUrl& n
     Q_Q(CopyJob);
     emit q->renamed(q, (*it).uDest, newUrl); // for e.g. KPropertiesDialog
 
-    const QUrlPathInfo destInfo((*it).uDest);
-    const QString oldPath = destInfo.path(QUrlPathInfo::AppendTrailingSlash);
+    QString oldPath = (*it).uDest.path();
+    if (!oldPath.endsWith('/')) {
+        oldPath += '/';
+    }
 
-    const QUrlPathInfo newUrlInfo(newUrl);
     // Change the current one and strip the trailing '/'
-    (*it).uDest.setPath(newUrlInfo.path(QUrlPathInfo::StripTrailingSlash), QUrl::DecodedMode);
+    (*it).uDest = newUrl.adjusted(QUrl::StripTrailingSlash);
 
-    const QString newPath = newUrlInfo.path(QUrlPathInfo::AppendTrailingSlash); // With trailing slash
+    QString newPath = newUrl.path(); // With trailing slash
+    if (!newPath.endsWith('/')) {
+        newPath += '/';
+    }
     QList<CopyInfo>::Iterator renamedirit = it;
     ++renamedirit;
     // Change the name of subdirectories inside the directory
     for(; renamedirit != dirs.end() ; ++renamedirit) {
-        QString path = (*renamedirit).uDest.path(QUrl::FullyDecoded);
+        QString path = (*renamedirit).uDest.path();
         if (path.startsWith(oldPath)) {
             QString n = path;
             n.replace(0, oldPath.length(), newPath);
@@ -975,7 +979,11 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
             // Should we skip automatically ?
             if ( m_bAutoSkipDirs ) {
                 // We don't want to copy files in this directory, so we put it on the skip list
-                m_skipList.append(QUrlPathInfo(oldURL).path(QUrlPathInfo::AppendTrailingSlash));
+                QString path = oldURL.path();
+                if (!path.endsWith('/')) {
+                    path += '/';
+                }
+                m_skipList.append(path);
                 skip(oldURL, true);
                 dirs.erase( it ); // Move on to next dir
             } else {
@@ -986,9 +994,8 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                     dirs.erase( it ); // Move on to next dir
                 } else {
                     if (m_bAutoRenameDirs) {
-                        const QUrlPathInfo destInfo((*it).uDest);
-                        const QUrl destDirectory = destInfo.directoryUrl();
-                        const QString newName = KIO::suggestName(destDirectory, destInfo.fileName());
+                        const QUrl destDirectory = (*it).uDest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
+                        const QString newName = KIO::suggestName(destDirectory, QUrlPathInfo((*it).uDest).fileName());
 
                         QUrlPathInfo newUrl((*it).uDest);
                         newUrl.setFileName(newName);
@@ -1213,7 +1220,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                  || ( m_conflictError == ERR_IDENTICAL_FILES ) )
             {
                 if (m_bAutoRenameFiles) {
-                    QUrl destDirectory = QUrlPathInfo((*it).uDest).directoryUrl();
+                    QUrl destDirectory = (*it).uDest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
                     QUrlPathInfo destInfo((*it).uDest);
                     const QString newName = KIO::suggestName(destDirectory, destInfo.fileName());
 
@@ -1355,7 +1362,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         } else {
             if ( (*it).uSource == (*it).uDest  ||
                  ((*it).uSource.scheme() == (*it).uDest.scheme() &&
-                   sourceInfo.path(QUrlPathInfo::StripTrailingSlash) == linkDest))
+                   (*it).uSource.adjusted(QUrl::StripTrailingSlash).path() == linkDest))
                 mode = M_OVERWRITE_ITSELF;
             else
                 mode = M_OVERWRITE;

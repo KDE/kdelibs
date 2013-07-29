@@ -82,7 +82,7 @@ private Q_SLOTS:
     void testBug187066()
     {
         const QString dir = QFileInfo(QFINDTESTDATA("kdiroperatortest.cpp")).absolutePath();
-        const QUrl kFileDirUrl(QUrlPathInfo(QUrl::fromLocalFile(dir)).directoryUrl());
+        const QUrl kFileDirUrl(QUrl::fromLocalFile(dir).adjusted(QUrl::RemoveFilename));
 
         KDirOperator dirOp(kFileDirUrl);
         QSignalSpy completedSpy(dirOp.dirLister(), SIGNAL(completed()));

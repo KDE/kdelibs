@@ -24,7 +24,7 @@
 
 #include <QDialog>
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QWidget;
 
@@ -64,7 +64,7 @@ class QWidget;
  * @author Olivier Goffart <ogoffart@kde.org>
  */
 
-class KDEUI_EXPORT KNewPasswordDialog
+class KWIDGETSADDONS_EXPORT KNewPasswordDialog
     : public QDialog
 {
     Q_OBJECT
