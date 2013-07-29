@@ -39,8 +39,3 @@ KDECORE_EXECUTABLE_TESTS(
  dbuscalltest
 )
 
-########### kcompositejobtest ###############
-
-set(kcompositejobtest_SRCS kcompositejobtest.cpp)
-kde4_add_unit_test(kcompositejobtest TESTNAME kdecore-kcompositejobtest ${kcompositejobtest_SRCS})
-target_link_libraries(kcompositejobtest ${KDE4_KDECORE_LIBS} Qt5::Test )
