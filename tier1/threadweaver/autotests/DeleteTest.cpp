@@ -59,7 +59,7 @@ void DeleteTest::DeleteSequenceTest()
     loop.exec();
     QCOMPARE(m_finishCount.loadAcquire(), 0);
     // The used Weaver instance needs to be shut down. The threads may still hold a reference to the previous job while
-    // waiting for the next one or blocking because the queue is empty. If all threads have exited, not references to any jobs are
+    // waiting for the next one or blocking because the queue is empty. If all threads have exited, no references to any jobs are
     // held anymore.
     ThreadWeaver::Weaver::instance()->shutDown();
     QCOMPARE(InstanceCountingJobSequence::instances(), 0);
