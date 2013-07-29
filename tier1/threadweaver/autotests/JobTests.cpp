@@ -758,10 +758,34 @@ void JobTests::JobSignalsDeliveryTest()
     //Relies on processEvents() processing all pending events, as the specification says.
     using namespace ThreadWeaver;
 
+    QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
     WaitForIdleAndFinished w(Weaver::instance());
     for(int count = 0; count < 100; ++count) {
         QJobPointer job(new QObjectJobDecorator(new Lambda(noOp)));
         QVERIFY(connect(job.data(), SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(deliveryTestJobDone(ThreadWeaver::JobPointer))));
+        deliveryTestCounter.fetchAndAddRelease(1);
+        Weaver::instance()->enqueue(job);
+    }
+    QCoreApplication::processEvents();
+    Weaver::instance()->finish();
+    QCoreApplication::processEvents();
+    QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
+}
+
+void decrementCounter() {
+    deliveryTestCounter.fetchAndAddRelease(-1);
+}
+
+void JobTests::JobPointerExecutionTest()
+{
+    //This test was added to investigate segmentation faults during signal delivery from jobs to the main thread.
+    //Relies on processEvents() processing all pending events, as the specification says.
+    using namespace ThreadWeaver;
+
+    QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
+    WaitForIdleAndFinished w(Weaver::instance());
+    for(int count = 0; count < 100; ++count) {
+        JobPointer job(new Lambda(decrementCounter));
         deliveryTestCounter.fetchAndAddRelease(1);
         Weaver::instance()->enqueue(job);
     }
