@@ -22,12 +22,12 @@
 #include "kwindowsystem.h"
 
 #include <QDebug>
-#include <ksystemeventfilter_p.h>
 #include <kxerrorhandler_p.h>
 #include <kxutils_p.h>
 #include <netwm.h>
 #include <fixx11h.h>
 
+#include <QAbstractNativeEventFilter>
 #include <QApplication>
 #include <QBitmap>
 #include <QDesktopWidget>
@@ -36,6 +36,8 @@
 #include <QX11Info>
 
 #include <X11/Xatom.h>
+#include <xcb/xcb.h>
+#include <xcb/xfixes.h>
 
 #include <config-kwindowsystem.h>
 
@@ -81,7 +83,7 @@ static unsigned long desktop_properties[ 2 ] = { NET::ClientList | NET::ClientLi
                                      NET::WM2ShowingDesktop };
 
 class KWindowSystemPrivate
-    : public QWidget, public NETRootInfo
+    : public QWidget, public NETRootInfo, public QAbstractNativeEventFilter
 {
 public:
     KWindowSystemPrivate(int _what);
@@ -110,10 +112,13 @@ public:
     void addClient(Window);
     void removeClient(Window);
 
-    bool x11Event( XEvent * ev );
+    virtual bool nativeEventFilter(const QByteArray& eventType, void* message, long int* result) Q_DECL_OVERRIDE;
 
     void updateStackingOrder();
     bool removeStrutWindow( WId );
+
+private:
+    bool nativeEventFilter(xcb_generic_event_t *event);
 };
 
 KWindowSystemPrivate::KWindowSystemPrivate(int _what)
@@ -121,11 +126,12 @@ KWindowSystemPrivate::KWindowSystemPrivate(int _what)
       NETRootInfo( QX11Info::display(),
                    _what >= KWindowSystem::INFO_WINDOWS ? windows_properties : desktop_properties,
                    2, -1, false ),
+      QAbstractNativeEventFilter(),
       strutSignalConnected( false ),
       haveXfixes( false ),
       what( _what )
 {
-    KSystemEventFilter::installEventFilter(this);
+    QCoreApplication::instance()->installNativeEventFilter(this);
     (void ) qApp->desktop(); //trigger desktop widget creation to select root window events
 
 #if HAVE_XFIXES
@@ -148,16 +154,26 @@ void KWindowSystemPrivate::activate()
     updateStackingOrder();
 }
 
-// Qt5 TODO: port to nativeEvent or better, to QAbstractNativeEventFilter::nativeEventFilter()
-bool KWindowSystemPrivate::x11Event(XEvent *ev)
+bool KWindowSystemPrivate::nativeEventFilter(const QByteArray& eventType, void* message, long int* result)
+{
+    Q_UNUSED(result)
+    if (eventType != "xcb_generic_event_t") {
+        // only interested in XCB events of course
+        return false;
+    }
+    return nativeEventFilter(reinterpret_cast<xcb_generic_event_t*>(message));
+}
+
+bool KWindowSystemPrivate::nativeEventFilter(xcb_generic_event_t *ev)
 {
     KWindowSystem* s_q = KWindowSystem::self();
+    const uint8_t eventType = ev->response_type & ~0x80;
 
 #ifdef HAVE_XFIXES
-    if (ev->type == xfixesEventBase + XFixesSelectionNotify) {
-        if (ev->xany.window == winId()) {
-            XFixesSelectionNotifyEvent *event = reinterpret_cast<XFixesSelectionNotifyEvent*>(ev);
-            bool haveOwner = event->owner != None;
+    if (eventType == xfixesEventBase + XCB_XFIXES_SELECTION_NOTIFY) {
+        xcb_xfixes_selection_notify_event_t *event = reinterpret_cast<xcb_xfixes_selection_notify_event_t*>(ev);
+        if (event->window == winId()) {
+            bool haveOwner = event->owner != XCB_WINDOW_NONE;
             if (compositingEnabled != haveOwner) {
                 compositingEnabled = haveOwner;
                 Q_EMIT s_q->compositingChanged(compositingEnabled);
@@ -167,10 +183,9 @@ bool KWindowSystemPrivate::x11Event(XEvent *ev)
         // Qt compresses XFixesSelectionNotifyEvents without caring about the actual window
         // gui/kernel/qapplication_x11.cpp
         // until that can be assumed fixed, we also react on events on the root (caused by Qts own compositing tracker)
-        if (ev->xany.window == QX11Info::appRootWindow()) {
-            XFixesSelectionNotifyEvent *event = reinterpret_cast<XFixesSelectionNotifyEvent*>(ev);
+        if (event->window == QX11Info::appRootWindow()) {
             if (event->selection == net_wm_cm) {
-                bool haveOwner = event->owner != None;
+                bool haveOwner = event->owner != XCB_WINDOW_NONE;
                 if (compositingEnabled != haveOwner) {
                     compositingEnabled = haveOwner;
                     Q_EMIT s_q->compositingChanged( compositingEnabled );
@@ -183,9 +198,22 @@ bool KWindowSystemPrivate::x11Event(XEvent *ev)
     }
 #endif
 
-    if (ev->xany.window == QX11Info::appRootWindow()) {
+    xcb_window_t eventWindow = XCB_WINDOW_NONE;
+    switch (eventType) {
+    case XCB_CLIENT_MESSAGE:
+        eventWindow = reinterpret_cast<xcb_client_message_event_t*>(ev)->window;
+        break;
+    case XCB_PROPERTY_NOTIFY:
+        eventWindow = reinterpret_cast<xcb_property_notify_event_t*>(ev)->window;
+        break;
+    case XCB_CONFIGURE_NOTIFY:
+        eventWindow = reinterpret_cast<xcb_configure_notify_event_t*>(ev)->window;
+        break;
+    }
+
+    if (eventWindow == QX11Info::appRootWindow()) {
         int old_current_desktop = currentDesktop();
-        WId old_active_window = activeWindow();
+        xcb_window_t old_active_window = activeWindow();
         int old_number_of_desktops = numberOfDesktops();
         bool old_showing_desktop = showingDesktop();
         unsigned long m[ 5 ];
@@ -219,16 +247,17 @@ bool KWindowSystemPrivate::x11Event(XEvent *ev)
         if ((m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop) {
             Q_EMIT s_q->showingDesktopChanged( showingDesktop());
         }
-    } else if (windows.contains(ev->xany.window)) {
-        NETWinInfo ni(QX11Info::display(), ev->xany.window, QX11Info::appRootWindow(), 0);
+    } else if (windows.contains(eventWindow)) {
+        NETWinInfo ni(QX11Info::display(), eventWindow, QX11Info::appRootWindow(), 0);
         unsigned long dirty[ 2 ];
         ni.event( ev, dirty, 2 );
-        if (ev->type ==PropertyNotify) {
-            if (ev->xproperty.atom == XA_WM_HINTS) {
+        if (eventType == XCB_PROPERTY_NOTIFY) {
+            xcb_property_notify_event_t *event = reinterpret_cast<xcb_property_notify_event_t*>(ev);
+            if (event->atom == XCB_ATOM_WM_HINTS) {
                 dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIcon; // support for old icons
-            } else if (ev->xproperty.atom == XA_WM_NAME) {
+            } else if (event->atom == XCB_ATOM_WM_NAME) {
                 dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMName; // support for old name
-            } else if (ev->xproperty.atom == XA_WM_ICON_NAME)
+            } else if (event->atom == XCB_ATOM_WM_ICON_NAME)
                 dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMIconName; // support for old iconic name
         }
         if (mapViewport() && ( dirty[ NETWinInfo::PROTOCOLS ] & (NET::WMState | NET::WMGeometry))) {
@@ -238,15 +267,15 @@ bool KWindowSystemPrivate::x11Event(XEvent *ev)
             dirty[ NETWinInfo::PROTOCOLS ] |= NET::WMDesktop;
         }
         if ((dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0) {
-            removeStrutWindow( ev->xany.window );
-            if (!possibleStrutWindows.contains( ev->xany.window )) {
-                possibleStrutWindows.append( ev->xany.window );
+            removeStrutWindow(eventWindow);
+            if (!possibleStrutWindows.contains(eventWindow)) {
+                possibleStrutWindows.append(eventWindow);
             }
         }
         if (dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ]) {
-            Q_EMIT s_q->windowChanged( ev->xany.window );
-            Q_EMIT s_q->windowChanged( ev->xany.window, dirty );
-            Q_EMIT s_q->windowChanged( ev->xany.window, dirty[ NETWinInfo::PROTOCOLS ] );
+            Q_EMIT s_q->windowChanged(eventWindow);
+            Q_EMIT s_q->windowChanged(eventWindow, dirty );
+            Q_EMIT s_q->windowChanged(eventWindow, dirty[ NETWinInfo::PROTOCOLS ] );
             if ((dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0) {
                 Q_EMIT s_q->strutChanged();
             }

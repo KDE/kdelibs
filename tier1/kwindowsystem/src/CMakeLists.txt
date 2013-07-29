@@ -30,10 +30,6 @@ set(kwindowsystem_SRCS
     kxutils.cpp
     )
 
-
-set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
-  ksystemeventfilter.cpp
-)
 if (HAVE_X11)
   set(kwindowsystem_SRCS ${kwindowsystem_SRCS}
     kmanagerselection.cpp
