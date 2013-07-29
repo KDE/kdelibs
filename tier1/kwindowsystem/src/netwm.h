@@ -35,6 +35,7 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 #include <fixx11h.h>
+#include <xcb/xcb.h>
 
 #include "netwm_def.h"
 
@@ -637,7 +638,7 @@ public:
        @param properties_size size of the passed properties array
 
     **/
-    void event( XEvent* event, unsigned long* properties, int properties_size );
+    void event( xcb_generic_event_t* event, unsigned long* properties, int properties_size );
 
     /**
        This function takes the passed XEvent and returns an OR'ed list of
@@ -650,7 +651,7 @@ public:
 
        @return the properties
     **/
-    unsigned long event(XEvent *event);
+    unsigned long event(xcb_generic_event_t *event);
 
 
 protected:
