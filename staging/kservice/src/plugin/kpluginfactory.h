@@ -36,10 +36,13 @@ namespace KParts { class Part; }
 #define KPluginFactory_iid "org.kde.KPluginFactory"
 
 #define K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
+    K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY_JSON(name, baseFactory, "")
+
+#define K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY_JSON(name, baseFactory, json) \
 class name : public KPluginFactory \
 { \
     Q_OBJECT \
-    Q_PLUGIN_METADATA(IID "KPluginFactory_iid") \
+    Q_PLUGIN_METADATA(IID KPluginFactory_iid FILE json) \
     Q_INTERFACES(KPluginFactory) \
     public: \
         explicit name(const char * = 0, const char * = 0, QObject * = 0); \
@@ -59,6 +62,10 @@ name::~name() {}
 
 #define K_PLUGIN_FACTORY_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
     K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY(name, baseFactory) \
+    K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations)
+
+#define K_PLUGIN_FACTORY_WITH_BASEFACTORY_JSON(name, baseFactory, jsonFile, pluginRegistrations) \
+    K_PLUGIN_FACTORY_DECLARATION_WITH_BASEFACTORY_JSON(name, baseFactory, jsonFile) \
     K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations)
 
 /**
@@ -97,6 +104,53 @@ name::~name() {}
  * \see K_PLUGIN_FACTORY_DEFINITION
  */
 #define K_PLUGIN_FACTORY(name, pluginRegistrations) K_PLUGIN_FACTORY_WITH_BASEFACTORY(name, KPluginFactory, pluginRegistrations)
+
+
+/**
+ * \relates KPluginFactory
+ * Defines a KPluginFactory subclass with two constructors and a static componentData function.
+ *
+ * This macro does the same as K_PLUGIN_FACTORY, but allows to build a custom json file as metadata
+ * into the plugin.
+ *
+ * \param name The name of the KPluginFactory derived class. This is the name you'll need for
+ * K_EXPORT_PLUGIN
+ *
+ * \param pluginRegistrations This is code inserted into the constructors the class. You'll want to
+ * call registerPlugin from there.
+ *
+ * \param jsonFile Name of the json file to be compiled into the plugin as metadata
+ *
+ * Example:
+ * \code
+ * #include <KPluginFactory>
+ * #include <KPluginLoader>
+ * #include <plugininterface.h>
+ *
+ * class MyPlugin;
+ *
+ * K_PLUGIN_FACTORY_WITH_METADATA(MyPluginFactory,
+ *                  registerPlugin<MyPlugin>();,
+ *                  metadata.json
+ *                 )
+ * K_EXPORT_PLUGIN(MyPluginFactory("componentName"))
+ *
+ * class MyPlugin : public PluginInterface
+ * {
+ *     ...
+ *     KAboutData pluginAboutData("componentName", "catalogName", i18n("My Component"), "1.0");
+ *     KAboutData::registerPluginData(pluginAboutData);
+ *     ...
+ * };
+ * \endcode
+ *
+ * \see K_PLUGIN_FACTORY
+ * \see K_PLUGIN_FACTORY_DECLARATION
+ * \see K_PLUGIN_FACTORY_DEFINITION
+ *
+ * @since 5.0
+ */
+#define K_PLUGIN_FACTORY_WITH_METADATA(name, jsonFile, pluginRegistrations)  K_PLUGIN_FACTORY_WITH_BASEFACTORY_JSON(name, KPluginFactory, jsonFile, pluginRegistrations)
 
 /**
  * \relates KPluginFactory
