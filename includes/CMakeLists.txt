@@ -476,7 +476,6 @@ install( FILES
   NETRootInfo
   NETWinInfo
   OrgKdeKDirNotifyInterface
-  OrgKdeKLauncherInterface
   ThumbCreator
   kdbgstream
   kndbgstream
