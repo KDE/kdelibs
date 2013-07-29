@@ -32,6 +32,7 @@ KIO_UNIT_TESTS(
   fileundomanagertest
   kfilemetainfotest
   dataprotocoltest
+  clipboardupdatertest
 )
 
 KIO_EXECUTABLE_TESTS(

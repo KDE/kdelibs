@@ -39,7 +39,7 @@ private slots:
     void testTrashFiles();
     void testModifyFileBeforeUndo(); // #20532
     void testCreateDir();
-    void testPasteClipboard(); // #318757
+    void testPasteClipboardUndo(); // #318757
 
     // TODO find tests that would lead to kio job errors
 
