@@ -43,6 +43,7 @@ private Q_SLOTS:
     void ResourceRestrictionPolicyBasicsTest ();
     void JobSignalsAreEmittedAsynchronouslyTest();
     void JobSignalsDeliveryTest();
+    void JobPointerExecutionTest();
     void DequeueSuspendedSequence(); //FIXME ...test?
 
 public Q_SLOTS: // slots used during tests that are not test cases
