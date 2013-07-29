@@ -53,7 +53,6 @@ target_link_libraries(KWidgets
   ${KWidgetsAddons_LIBRARIES}
   ${KAuth_LIBRARIES}
   ${KWindowSystem_LIBRARIES}
-  KService
   KI18n
   KCodecs
 )
