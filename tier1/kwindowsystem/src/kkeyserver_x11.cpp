@@ -31,6 +31,7 @@
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <X11/keysymdef.h>
+#include <xcb/xcb_keysyms.h>
 # define X11_ONLY(arg) arg, //allows to omit an argument
 
 // #define KKEYSERVER_DEBUG 1
@@ -859,5 +860,53 @@ bool xEventToQt( XEvent* e, int* keyQt )
     return true;
 }
 
+bool xcbKeyPressEventToQt( xcb_generic_event_t* e, int* keyQt )
+{
+    if ((e->response_type & ~0x80) != XCB_KEY_PRESS && (e->response_type & ~0x80) != XCB_KEY_RELEASE) {
+        return false;
+    }
+    return xcbKeyPressEventToQt(reinterpret_cast<xcb_key_press_event_t*>(e), keyQt);
+}
+
+bool xcbKeyPressEventToQt( xcb_key_press_event_t* e, int* keyQt )
+{
+    xcb_keycode_t keyCodeX = e->detail;
+    uint keyModX = e->state & (accelModMaskX() | MODE_SWITCH);
+
+    xcb_key_symbols_t *symbols = xcb_key_symbols_alloc(QX11Info::connection());
+    xcb_keysym_t keySymX = xcb_key_symbols_get_keysym(symbols, keyCodeX, 0);
+
+    // If numlock is active and a keypad key is pressed, XOR the SHIFT state.
+    //  e.g., KP_4 => Shift+KP_Left, and Shift+KP_4 => KP_Left.
+    if (e->state & modXNumLock()) {
+        // If this is a keypad key,
+        if( keySymX >= XK_KP_Space && keySymX <= XK_KP_9 ) {
+            switch( keySymX ) {
+                // Leave the following keys unaltered
+                // FIXME: The proper solution is to see which keysyms don't change when shifted.
+                case XK_KP_Multiply:
+                case XK_KP_Add:
+                case XK_KP_Subtract:
+                case XK_KP_Divide:
+                    break;
+                default:
+                    if( keyModX & modXShift() )
+                        keyModX &= ~modXShift();
+                    else
+                        keyModX |= modXShift();
+            }
+        }
+    }
+
+    int keyCodeQt;
+    int keyModQt;
+    symXToKeyQt(keySymX, &keyCodeQt);
+    modXToQt(keyModX, &keyModQt);
+
+    *keyQt = keyCodeQt | keyModQt;
+
+    xcb_key_symbols_free(symbols);
+    return true;
+}
 
 } // end of namespace KKeyServer block
