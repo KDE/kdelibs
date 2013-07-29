@@ -795,13 +795,12 @@ void JobTests::JobPointerExecutionTest()
     QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
 }
 
-void JobTests::DequeueSuspendedSequence()
+void JobTests::DequeueSuspendedSequenceTest()
 {
-    return; //MARK_TEMPORARILY_DISABLED
+    QScopedPointer<ThreadWeaver::JobSequence> sequence(new ThreadWeaver::JobSequence);
     ThreadWeaver::Weaver weaver;
     weaver.suspend();
-    //FIXME leak
-    weaver.enqueueRaw(new ThreadWeaver::JobSequence);
+    weaver.enqueueRaw(sequence.data());
     weaver.dequeue();
     // don't crash
 }
