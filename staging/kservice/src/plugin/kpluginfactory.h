@@ -100,6 +100,9 @@ name::~name() {}
  * };
  * \endcode
  *
+ * If you want to compile a .json file into the plugin, use K_PLUGIN_FACTORY_WITH_JSON.
+ *
+ * \see K_PLUGIN_FACTORY_WITH_JSON
  * \see K_PLUGIN_FACTORY_DECLARATION
  * \see K_PLUGIN_FACTORY_DEFINITION
  */
@@ -352,22 +355,6 @@ public:
         return create(classname, 0, parent, stringListToVariantList(args), QString());
     }
 #endif
-
-    /**
-     * Arguments provided to the plugin
-     *
-     * \returns The arguments passed into the plugin when loaded, including json metadata
-     * @since 5.0
-     */
-    QVariantList args() const;
-
-    /**
-     * Arguments to load the plugin with.
-     *
-     * \param args Arguments for the plugin as QVariantList.
-     * @since 5.0
-     */
-    void setArgs(const QVariantList &args);
 
     /**
      * \internal
