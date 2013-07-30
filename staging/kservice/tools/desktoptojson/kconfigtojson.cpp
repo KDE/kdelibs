@@ -141,3 +141,5 @@ bool KConfigToJson::convert(const QString& src, const QString& dest)
     coutput("Converted " + src + " to " + dest);
     return true;
 }
+
+

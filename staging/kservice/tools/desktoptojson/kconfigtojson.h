@@ -25,10 +25,8 @@
 class QCommandLineParser;
 class KConfigToJsonPrivate;
 
-class KConfigToJson //: public QCoreApplication
+class KConfigToJson
 {
-    //Q_OBJECT
-
     public:
         KConfigToJson(int& argc, char** argv, QCommandLineParser *parser);
         virtual ~KConfigToJson();
