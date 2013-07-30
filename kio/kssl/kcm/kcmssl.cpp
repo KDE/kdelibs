@@ -21,7 +21,7 @@
 #include "cacertificatespage.h"
 
 #include <kaboutdata.h>
-#include <kdeversion.h>
+#include <kcoreaddons_version.h>
 
 #include <QVBoxLayout>
 #include <kpluginfactory.h>
@@ -37,7 +37,7 @@ KcmSsl::KcmSsl(QWidget *parent, const QVariantList &args)
 {
     KAboutData *about = new KAboutData(
         "kcm_ssl", 0, i18n("SSL Configuration Module"),
-        KDE_VERSION_STRING, QString(), KAboutData::License_GPL,
+        KCOREADDONS_VERSION_STRING, QString(), KAboutData::License_GPL,
         i18n("Copyright 2010 Andreas Hartmetz"));
     about->addAuthor(i18n("Andreas Hartmetz"), QString(), "ahartmetz@gmail.com");
     setAboutData(about);

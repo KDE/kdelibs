@@ -35,7 +35,6 @@
 #include <QTreeView>
 #include <QLabel>
 
-//#include <kdeversion.h>
 #include <kconfig.h>
 
 #include <kmessagebox.h>

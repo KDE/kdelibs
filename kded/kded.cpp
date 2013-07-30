@@ -23,7 +23,6 @@
 #include "kdedmodule.h"
 
 #include <kcrash.h>
-#include <kdeversion.h>
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -46,7 +45,7 @@
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
 #include <kde_file.h>
-#include <kdeversion.h> // KDE_VERSION_MAJOR
+#include <kcoreaddons_version.h> // KCOREADDONS_VERSION_MAJOR
 #include "config-kded.h"
 
 #if HAVE_X11
@@ -224,7 +223,7 @@ void Kded::initModules()
 
         // not the same kde version as the current desktop
         const QByteArray kdeSession = qgetenv("KDE_SESSION_VERSION");
-        if (kdeSession.toInt() != KDE_VERSION_MAJOR)
+        if (kdeSession.toInt() != KCOREADDONS_VERSION_MAJOR)
             kde_running = false;
     }
 
