@@ -39,6 +39,10 @@
  * If the link starts with the text "whatsthis:" a QWhatsThis
  * box will appear and then display the rest of the text.
  *
+ * @warning The "whatsthis:" feature is considered deprecated: it is not
+ *          available in KDE Frameworks 5, because KDE Frameworks 5 does
+ *          not provide KTextBrowser anymore.
+ *
  * \image html ktextbrowser.png "KDE Text Browser"
  *
  * @author Espen Sand (espensa@online.no)
