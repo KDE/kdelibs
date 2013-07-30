@@ -1,8 +1,7 @@
 set(libki18n_SRCS
     klocalizedstring.cpp
     kcatalog.cpp
-    kuitformats.cpp
-    kuitsemantics.cpp
+    kuitmarkup.cpp
     common_helpers.cpp
 )
 
@@ -20,6 +19,7 @@ install(TARGETS KI18n EXPORT KI18nTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
     klocalizedstring.h
+    kuitmarkup.h
     ${CMAKE_CURRENT_BINARY_DIR}/ki18n_export.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

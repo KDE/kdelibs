@@ -29,36 +29,85 @@
 
 #include <libintl.h>
 
-#include "klocalizedstring.h"
+#include <klocalizedstring.h>
 
 #include <QtCore/QString>
 
 
-void KLocalizedStringTest::initTestCase ()
+void KLocalizedStringTest::initTestCase()
 {
-    const QString kdelibs_fr = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("locale/") + "fr/LC_MESSAGES/kdelibs4.mo");
-    m_hasFrench = !kdelibs_fr.isEmpty();
+    KLocalizedString::setApplicationDomain("ki18n-test");
+
+    m_hasFrench = true;
     if (m_hasFrench) {
         setlocale(LC_ALL, "fr_FR.utf8");
         if (setlocale(LC_ALL, NULL) != QByteArray("fr_FR.utf8")) {
-            qDebug() << "Setting locale to fr_FR.utf8 failed";
+            qDebug() << "Failed to set locale to fr_FR.utf8.";
             m_hasFrench = false;
         }
     }
-
-    KLocalizedString::setApplicationCatalog("kdelibs4");
     if (m_hasFrench) {
+        if (!m_tempDir.isValid()) {
+            qDebug() << "Failed to create temporary directory for test data.";
+            m_hasFrench = false;
+        }
+    }
+    QDir dataDir(m_tempDir.path());
+    if (m_hasFrench) {
+        m_hasFrench = compileCatalogs(dataDir);
+    }
+    if (m_hasFrench) {
+        qputenv("XDG_DATA_DIRS",
+                qgetenv("XDG_DATA_DIRS") + ":" + QFile::encodeName(dataDir.path()));
+        // bind... dataDir.path()
         QStringList languages;
         languages.append("fr");
         KLocalizedString::setLanguages(languages);
     }
 
     #if 0 // until locale system is ready
-    if (m_hasFrench)
+    if (m_hasFrench) {
         KLocale::global()->setLanguage(QStringList() << "fr" << "en_US");
+    }
     KLocale::global()->setThousandsSeparator(QLatin1String(","));
     KLocale::global()->setDecimalSymbol(QLatin1String("."));
     #endif
+}
+
+bool KLocalizedStringTest::compileCatalogs (const QDir &dataDir)
+{
+    if (!dataDir.mkpath("locale/fr/LC_MESSAGES")) {
+        qDebug() << "Failed to create locale subdirectory "
+                    "inside temporary directory.";
+        return false;
+    }
+    QString msgfmt = QStandardPaths::findExecutable(QLatin1String("msgfmt"));
+    if (msgfmt.isEmpty()) {
+        qDebug() << "msgfmt(1) not found in path.";
+        return false;
+    }
+    QStringList testPoPaths;
+    testPoPaths << QFINDTESTDATA("po/fr/ki18n-test.po");
+    testPoPaths << QFINDTESTDATA("po/fr/ki18n-test-qt.po");
+    foreach (const QString &testPoPath, testPoPaths) {
+        int pos_1 = testPoPath.lastIndexOf(QLatin1Char('/'));
+        int pos_2 = testPoPath.lastIndexOf(QLatin1Char('.'));
+        QString domain = testPoPath.mid(pos_1 + 1, pos_2 - pos_1 - 1);
+        QString testMoPath;
+        testMoPath = QString::fromLatin1("%1/locale/fr/LC_MESSAGES/%2.mo")
+                                        .arg(dataDir.path(), domain);
+        QProcess process;
+        QStringList arguments;
+        arguments << testPoPath << QLatin1String("-o") << testMoPath;
+        process.start(msgfmt, arguments);
+        process.waitForFinished(10000);
+        if (process.exitCode() != 0) {
+            qDebug() << QString::fromLatin1("msgfmt(1) could not compile %1.")
+                                            .arg(testPoPath);
+            return false;
+        }
+    }
+    return true;
 }
 
 void KLocalizedStringTest::correctSubs ()
@@ -133,33 +182,22 @@ void KLocalizedStringTest::correctSubs ()
              QString("Some pods left on Discovery"));
 
     // Visual formatting.
-    QCOMPARE(i18n("E = mc^2"),
+    // FIXME: Needs much more tests.
+    QCOMPARE(xi18n("E = mc^2"),
              QString("E = mc^2"));
-    QCOMPARE(i18n("E &lt; mc^2"),
+    QCOMPARE(xi18n("E &lt; mc^2"),
              QString("E < mc^2"));
-    QCOMPARE(i18n("E &lt; mc^2<br/>"),
-             QString("E &lt; mc^2<br/>"));
-    QCOMPARE(i18n("<b>E</b> &lt; mc^2"),
-             QString("<b>E</b> &lt; mc^2"));
-    QCOMPARE(i18n("<html>E &lt; mc^2</html>"),
-             QString("<html>E &lt; mc^2</html>"));
-    QCOMPARE(i18n("E ? <emphasis>mc^2</emphasis>"),
+    QCOMPARE(xi18n("E ? <emphasis>mc^2</emphasis>"),
              QString("E ? *mc^2*"));
-    QCOMPARE(i18n("E &lt; <emphasis>mc^2</emphasis>"),
+    QCOMPARE(xi18n("E &lt; <emphasis>mc^2</emphasis>"),
              QString("E < *mc^2*"));
-    QCOMPARE(i18n("<html>E &lt; <emphasis>mc^2</emphasis></html>"),
-             QString("<html>E &lt; <i>mc^2</i></html>"));
-    QCOMPARE(i18n("<b>E</b> &lt; <emphasis>mc^2</emphasis>"),
-             QString("<b>E</b> &lt; <i>mc^2</i>"));
-    QCOMPARE(i18n("<emphasis>E</emphasis> &lt; <b>mc^2</b>"),
-             QString("<i>E</i> &lt; <b>mc^2</b>"));
-    QCOMPARE(i18nc("@label", "E &lt; <emphasis>mc^2</emphasis>"),
+    QCOMPARE(xi18nc("@label", "E &lt; <emphasis>mc^2</emphasis>"),
              QString("E < *mc^2*"));
-    QCOMPARE(i18nc("@info", "E &lt; <emphasis>mc^2</emphasis>"),
+    QCOMPARE(xi18nc("@info", "E &lt; <emphasis>mc^2</emphasis>"),
              QString("<html>E &lt; <i>mc^2</i></html>"));
-    QCOMPARE(i18n("E = mc^&#x0032;"),
+    QCOMPARE(xi18n("E = mc^&#x0032;"),
              QString("E = mc^2"));
-    QCOMPARE(i18n("E = mc^&#0050;"),
+    QCOMPARE(xi18n("E = mc^&#0050;"),
              QString("E = mc^2"));
 
     // Number formatting.
@@ -173,17 +211,7 @@ void KLocalizedStringTest::correctSubs ()
              QString(" 4.20"));
 }
 
-void KLocalizedStringTest::correctButIllFormed()
-{
-    QCOMPARE(i18n("E < %1 * mc^2", 10),
-             QString("E < 10 * mc^2"));
-    QCOMPARE(i18n("<emphasis>%1</emphasis> &lt; mc^2", QString("<E>")),
-             QString("*<E>* &lt; mc^2"));
-    QCOMPARE(i18n("<emphasis>%1</emphasis> &lt; <b>mc^2</b>", QString("<E>")),
-             QString("<i><E></i> &lt; <b>mc^2</b>"));
-}
-
-void KLocalizedStringTest::wrongSubs ()
+void KLocalizedStringTest::wrongSubs()
 {
     #ifndef NDEBUG
     // Too many arguments.
@@ -207,7 +235,7 @@ void KLocalizedStringTest::wrongSubs ()
 }
 
 void
-KLocalizedStringTest::removeAcceleratorMarker ()
+KLocalizedStringTest::removeAcceleratorMarker()
 {
     // No accelerator marker.
     QCOMPARE(KLocalizedString::removeAcceleratorMarker(QString()),
@@ -262,7 +290,7 @@ KLocalizedStringTest::removeAcceleratorMarker ()
              QString("Foo & Bar"));
 }
 
-void KLocalizedStringTest::miscMethods ()
+void KLocalizedStringTest::miscMethods()
 {
     KLocalizedString k;
     QVERIFY(k.isEmpty());
@@ -273,20 +301,20 @@ void KLocalizedStringTest::miscMethods ()
 void KLocalizedStringTest::translateToFrenchLowlevel()
 {
     if (!m_hasFrench) {
-        QSKIP("l10n/fr not installed");
+        QSKIP("French test files not usable.");
     }
-    QSKIP("skipped by default to avoid changing global state");
+    QSKIP("Skipped by default to avoid changing global state.");
     // fr_FR locale was set by initTestCase already.
-    if (QFile::exists("/usr/share/locale/fr/LC_MESSAGES/kdelibs4.mo")) {
-        bindtextdomain("kdelibs4", "/usr/share/locale");
-        QCOMPARE(QString::fromUtf8(dgettext("kdelibs4", "Loadable modules")), QString::fromUtf8("Modules chargeables"));
+    if (QFile::exists("/usr/share/locale/fr/LC_MESSAGES/ki18n-test.mo")) {
+        bindtextdomain("ki18n-test", "/usr/share/locale");
+        QCOMPARE(QString::fromUtf8(dgettext("ki18n-test", "Loadable modules")), QString::fromUtf8("Modules chargeables"));
     }
 }
 
 void KLocalizedStringTest::translateToFrench()
 {
     if (!m_hasFrench) {
-        QSKIP("l10n/fr not installed");
+        QSKIP("French test files not usable.");
     }
     QCOMPARE(i18n("Loadable modules"), QString::fromUtf8("Modules chargeables"));
     QCOMPARE(i18n("Job"), QString::fromUtf8("Tâche"));
@@ -294,10 +322,8 @@ void KLocalizedStringTest::translateToFrench()
 
 void KLocalizedStringTest::translateQt()
 {
-    KLocalizedString::insertCatalog("kdeqt");
-    QString result = KLocalizedString::translateQt("QPrintPreviewDialog", "Landscape", 0
-            , 0
-            );
+    KLocalizedString::insertQtDomain("ki18n-test-qt");
+    QString result = KLocalizedString::translateQt("QPrintPreviewDialog", "Landscape", 0 , 0);
     // When we use the default language, translateQt returns an empty string.
     QString expected = m_hasFrench ? QString("Paysage") : QString();
     QCOMPARE(result, expected);
@@ -314,7 +340,7 @@ void KLocalizedStringTest::translateQt()
     QCOMPARE(lang, m_hasFrench ? QString("fr") : QString("en_US"));
     QCOMPARE(result, m_hasFrench ? QString("Paysage") : QString("Landscape"));
     #endif
-    KLocalizedString::removeCatalog("kdeqt");
+    KLocalizedString::removeQtDomain("ki18n-test-qt");
 }
 
 #include <QThreadPool>
@@ -332,7 +358,6 @@ void KLocalizedStringTest::testThreads()
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateQt));
     sync.addFuture(QtConcurrent::run(this, &KLocalizedStringTest::translateToFrench));
-    KLocalizedString::removeCatalog("kdelibs4");
     sync.waitForFinished();
     QThreadPool::globalInstance()->setMaxThreadCount(1); // delete those threads
 }
