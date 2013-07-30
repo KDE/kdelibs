@@ -14,12 +14,6 @@ include(ConfigureChecks.cmake)
 # Generate kdeversion.h
 configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
 
-check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
-
-# Configure checks for kernel/
-configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
-
-
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
 # if it's used, *always* append to it
