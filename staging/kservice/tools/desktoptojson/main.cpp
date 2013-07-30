@@ -26,7 +26,8 @@
 int main(int argc, char **argv)
 {
     QCommandLineParser *parser = new QCommandLineParser;
-    KConfigToJson app(argc, argv, parser);
+    QCoreApplication app(argc, argv);
+    KConfigToJson dtj(argc, argv, parser);
 
     const QString description = i18n("Converts kconfig files to json");
     const char version[] = "2.0";
@@ -35,9 +36,10 @@ int main(int argc, char **argv)
     parser->addVersionOption();
     parser->addHelpOption(description);
 
-    parser->addOption(QCommandLineOption(QStringList() << "i" << "input", i18nc("Do not translate <name>", "Read input from file"), "name"));
-    parser->addOption(QCommandLineOption(QStringList() << "o" << "output", i18nc("Do not translate <name>", "Write output to file"), "name"));
+    parser->addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << QStringLiteral("input"), i18nc("Do not translate <name>", "Read input from file"), QStringLiteral("name")));
+    parser->addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << QStringLiteral("output"), i18nc("Do not translate <name>", "Write output to file"), QStringLiteral("name")));
 
-    return app.exec();
+    parser->process(app);
+    return dtj.runMain();
 }
 

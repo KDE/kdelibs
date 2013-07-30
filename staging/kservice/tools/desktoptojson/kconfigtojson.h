@@ -25,19 +25,17 @@
 class QCommandLineParser;
 class KConfigToJsonPrivate;
 
-class KConfigToJson : public QCoreApplication
+class KConfigToJson //: public QCoreApplication
 {
-    Q_OBJECT
+    //Q_OBJECT
 
     public:
         KConfigToJson(int& argc, char** argv, QCommandLineParser *parser);
         virtual ~KConfigToJson();
-
-    public Q_SLOTS:
-        void runMain();
+        int runMain();
 
     private:
-        void convert(const QString &src = QString(), const QString &dest = QString());
+        bool convert(const QString &src = QString(), const QString &dest = QString());
         bool resolveFiles();
         KConfigToJsonPrivate* d;
 };

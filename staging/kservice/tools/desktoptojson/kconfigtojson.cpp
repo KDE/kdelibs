@@ -52,12 +52,10 @@ public:
     QString outFile;
 };
 
-KConfigToJson::KConfigToJson(int& argc, char** argv, QCommandLineParser *parser) :
-    QCoreApplication(argc, argv)
+KConfigToJson::KConfigToJson(int& argc, char** argv, QCommandLineParser *parser)
 {
     d = new KConfigToJsonPrivate;
     d->parser = parser;
-    QTimer::singleShot(0, this, SLOT(runMain()));
 }
 
 KConfigToJson::~KConfigToJson()
@@ -65,28 +63,27 @@ KConfigToJson::~KConfigToJson()
     delete d;
 }
 
-void KConfigToJson::runMain()
+int KConfigToJson::runMain()
 {
-    d->parser->process(*this);
-    if (d->parser->isSet("input")) {
+    if (d->parser->isSet(QStringLiteral("input"))) {
         if (!resolveFiles()) {
             qDebug() << "Failed to resolve filenames" << d->inFile << d->outFile;
-            exit(1);
-            return;
+            return 1;
         };
-        convert(d->inFile, d->outFile);
-        exit(0);
-
+        if (convert(d->inFile, d->outFile)) {
+            return 0;
+        } else {
+            return 1;
+        }
     } else {
-        // Let the event loop run once more to show help
-        coutput("Usage --help. In short: kconfigtojson -i inputfile.desktop -o outputfile.json");
-        QTimer::singleShot(50, this, SLOT(quit()));
+        coutput("Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json");
+        return 1;
     }
 }
 
 bool KConfigToJson::resolveFiles()
 {
-    if (d->parser->isSet("input")) {
+    if (d->parser->isSet(QStringLiteral("input"))) {
         d->inFile = d->parser->value("input");
         if (QFile::exists(d->inFile)) {
             if (!d->inFile.startsWith('/')) {
@@ -97,7 +94,7 @@ bool KConfigToJson::resolveFiles()
             return false;
         }
     }
-    if (d->parser->isSet("output")) {
+    if (d->parser->isSet(QStringLiteral("output"))) {
         d->outFile = d->parser->value("output");
     } else {
         if (!d->inFile.isEmpty()) {
@@ -109,14 +106,14 @@ bool KConfigToJson::resolveFiles()
     return d->inFile != d->outFile && !d->inFile.isEmpty() && !d->outFile.isEmpty();
 }
 
-void KConfigToJson::convert(const QString& src, const QString& dest)
+bool KConfigToJson::convert(const QString& src, const QString& dest)
 {
     KDesktopFile df(src);
     KConfigGroup c = df.desktopGroup();
 
-    const QStringList boolkeys = QStringList()
+    static const QStringList boolkeys = QStringList()
             << "Hidden" << "X-KDE-PluginInfo-EnabledByDefault";
-    const QStringList stringlistkeys = QStringList()
+    static const QStringList stringlistkeys = QStringList()
             << "X-KDE-ServiceTypes" << "X-KDE-PluginInfo-Depends";
 
     QVariantMap vm;
@@ -137,15 +134,10 @@ void KConfigToJson::convert(const QString& src, const QString& dest)
     QFile file(dest);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
         coutput("Failed to open " + dest);
-        exit(1);
-        return;
+        return false;
     }
 
-    QTextStream out(&file);
-    out << jdoc.toJson();
-    file.close();
-
+    file.write(jdoc.toJson());
     coutput("Converted " + src + " to " + dest);
+    return true;
 }
-
-
