@@ -88,8 +88,10 @@ generate_export_header(KCoreAddons)
 target_include_directories(KCoreAddons PUBLIC "$<BUILD_INTERFACE:${kcoreaddons_INCLUDE_DIRS}>")
 
 target_link_libraries(KCoreAddons
-  LINK_PUBLIC Qt5::Core ${kcoreaddons_OPTIONAL_LIBS}
-  LINK_PRIVATE ${kdeqt5staging_LIBRARIES}
+  LINK_PUBLIC
+    Qt5::Core
+  LINK_PRIVATE
+    ${kcoreaddons_OPTIONAL_LIBS}
 )
 if(NOT WIN32)
     target_link_libraries(KCoreAddons LINK_PRIVATE pthread)

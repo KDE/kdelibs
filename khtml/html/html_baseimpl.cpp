@@ -43,7 +43,7 @@
 #include "xml/dom2_eventsimpl.h"
 
 #include <QUrl>
-#include <kdebug.h>
+#include <QDebug>
 
 using namespace DOM;
 using namespace khtml;
@@ -844,7 +844,7 @@ void HTMLIFrameElementImpl::computeContent()
     if (effectiveURL.isEmpty())
         effectiveURL = aboutBlank;
 
-    kDebug(6031) << "-> requesting:" << name.string() << effectiveURL << contentPart();
+    // qDebug() << "-> requesting:" << name.string() << effectiveURL << contentPart();
     
     parentPart->loadFrameElement(this, effectiveURL, name.string(), QStringList(), true);
 }

@@ -66,10 +66,10 @@ void SocketConnectionBackend::setSuspended(bool enable)
     Q_ASSERT(!localServer);     // !tcpServer as well
 
     if (enable) {
-        //kDebug() << this << " suspending";
+        //qDebug() << this << " suspending";
         socket->setReadBufferSize(1);
     } else {
-        //kDebug() << this << " resuming";
+        //qDebug() << this << " resuming";
         socket->setReadBufferSize(StandardBufferSize);
         if (socket->bytesAvailable() >= HeaderSize) {
             // there are bytes available
@@ -214,7 +214,7 @@ bool SocketConnectionBackend::sendCommand(const Task &task)
     socket->write(buffer, HeaderSize);
     socket->write(task.data);
 
-    //kDebug() << this << " Sending command " << hex << task.cmd << " of "
+    //qDebug() << this << " Sending command " << hex << task.cmd << " of "
     //         << task.data.size() << " bytes (" << socket->bytesToWrite()
     //         << " bytes left to write";
 
@@ -231,7 +231,7 @@ AbstractConnectionBackend *SocketConnectionBackend::nextPendingConnection()
     Q_ASSERT(localServer || tcpServer);
     Q_ASSERT(!socket);
 
-    //kDebug() << "Got a new connection";
+    //qDebug() << "Got a new connection";
 
     QTcpSocket *newSocket;
     if (mode == LocalSocketMode)
@@ -259,7 +259,7 @@ void SocketConnectionBackend::socketReadyRead()
             // might happen if the invokeMethods were delivered after we disconnected
             return;
 
-        // kDebug() << this << "Got " << socket->bytesAvailable() << " bytes";
+        // qDebug() << this << "Got " << socket->bytesAvailable() << " bytes";
         if (len == -1) {
             // We have to read the header
             static char buffer[HeaderSize];
@@ -280,13 +280,13 @@ void SocketConnectionBackend::socketReadyRead()
             while( *p == ' ' ) p++;
             cmd = strtol( p, 0L, 16 );
 
-            // kDebug() << this << " Beginning of command " << hex << cmd << " of size "
+            // qDebug() << this << " Beginning of command " << hex << cmd << " of size "
             //        << len;
         }
 
         QPointer<SocketConnectionBackend> that = this;
 
-        // kDebug() << this <<  "Want to read " << len << " bytes";
+        // qDebug() << this <<  "Want to read " << len << " bytes";
         if (socket->bytesAvailable() >= len) {
             Task task;
             task.cmd = cmd;

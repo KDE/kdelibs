@@ -41,9 +41,9 @@ ANIMATED_PROPERTY_DEFINITIONS_WITH_CONTEXT(SVGURIReference, String, String, stri
 
 bool SVGURIReference::parseMappedAttribute(MappedAttribute* attr)
 {
-    kDebug() << "parse" << attr->localName() << attr->value() << endl;
+    // qDebug() << "parse" << attr->localName() << attr->value() << endl;
     if (attr->id() == ATTR_XLINK_HREF) {
-        kDebug() << "set href base value" << attr->value() << endl;
+        // qDebug() << "set href base value" << attr->value() << endl;
         setHrefBaseValue(attr->value());
         return true;
     }

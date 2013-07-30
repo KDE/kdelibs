@@ -127,7 +127,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
     if (d.isEmpty())
         return;
 
-    //kDebug() << "Got" << d.size() << "bytes as input";
+    //qDebug() << "Got" << d.size() << "bytes as input";
     if (m_firstData) {
         if (m_deflateMode) {
             bool zlibHeader = true;
@@ -144,7 +144,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
                 }
             }
             //if (!zlibHeader)
-            //    kDebug() << "Bad webserver, uses raw-deflate instead of zlib-deflate...";
+            //    qDebug() << "Bad webserver, uses raw-deflate instead of zlib-deflate...";
             if (zlibHeader) {
                 m_gzipFilter->setFilterFlags(KFilterBase::ZlibHeaders);
             } else {
@@ -164,7 +164,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
         char buf[8192];
         m_gzipFilter->setOutBuffer(buf, sizeof(buf));
         KFilterBase::Result result = m_gzipFilter->uncompress();
-        //kDebug() << "uncompress returned" << result;
+        //qDebug() << "uncompress returned" << result;
         switch (result) {
         case KFilterBase::Ok:
         case KFilterBase::End:
@@ -174,7 +174,7 @@ HTTPFilterGZip::slotInput(const QByteArray &d)
                 Q_EMIT output(QByteArray(buf, bytesOut));
             }
             if (result == KFilterBase::End) {
-                //kDebug() << "done, bHasFinished=true";
+                //qDebug() << "done, bHasFinished=true";
                 Q_EMIT output(QByteArray());
                 m_finished = true;
             }

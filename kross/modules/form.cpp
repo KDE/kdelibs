@@ -44,7 +44,7 @@
 #include <QTime>
 #include <QUrl>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 //#include <kurlcombobox.h>
 //#include <kdiroperator.h>
@@ -169,7 +169,7 @@ void FormFileWidget::setMimeFilter(const QStringList& filter)
 
 void FormFileWidget::slotFileSelected(const QUrl & fn)
 {
-    //kDebug()<<fn;
+    //qDebug()<<fn;
     d->filename = fn.toString();
     emit fileSelected(fn.toString());
 }
@@ -184,7 +184,7 @@ QString FormFileWidget::selectedFile() const
     if ( d->filewidget->operationMode() != KFileWidget::Saving ) {
       d->filewidget->accept();
     } else {
-      //kDebug()<<d->filename<<d->filewidget->operationMode();
+      //qDebug()<<d->filename<<d->filewidget->operationMode();
       if ( d->filename.isEmpty() ) {
         // make KFileWidget create an url for us (including extension if necessary)
         QObject::connect(d->filewidget, SIGNAL(accepted()), d->filewidget, SLOT(accept()));
@@ -192,7 +192,7 @@ QString FormFileWidget::selectedFile() const
         QObject::disconnect(d->filewidget, SIGNAL(accepted()), d->filewidget, SLOT(accept()));
       }
     }
-    //kDebug()<<d->filename;
+    //qDebug()<<d->filename;
     QUrl url = QUrl::fromLocalFile( d->filename );
     return url.path(); // strip file:// at least python chokes on it
 }
@@ -356,7 +356,7 @@ FormDialog::FormDialog(const QString& caption)
 
 FormDialog::~FormDialog()
 {
-    kWarning()<<"dtor";
+    qWarning()<<"dtor";
     delete d;
 }
 
@@ -445,7 +445,7 @@ QString FormDialog::result()
 {
     int i = buttonBox()->metaObject()->indexOfEnumerator("StandardButton");
     if( i < 0 ) {
-        kWarning() << "Kross::FormDialog::setButtons No such enumerator \"StandardButton\"";
+        qWarning() << "Kross::FormDialog::setButtons No such enumerator \"StandardButton\"";
         return QString();
     }
     QMetaEnum e = buttonBox()->metaObject()->enumerator(i);
@@ -460,7 +460,7 @@ void FormDialog::slotButtonClicked(QAbstractButton *button)
 void FormDialog::slotCurrentPageChanged(KPageWidgetItem* current)
 {
     Q_UNUSED(current);
-    //kDebug() << "FormDialog::slotCurrentPageChanged current=" << current->name();
+    //qDebug() << "FormDialog::slotCurrentPageChanged current=" << current->name();
     //foreach(QWidget* widget, current->widget()->findChildren< QWidget* >("")) widget->setFocus();
 }
 
@@ -565,7 +565,7 @@ QString FormAssistant::result()
 {
     int i = metaObject()->indexOfEnumerator("AssistantButtonCode");
     if( i < 0 ) {
-        kWarning() << "Kross::FormAssistant::setButtons No such enumerator \"AssistantButtonCode\"";
+        qWarning() << "Kross::FormAssistant::setButtons No such enumerator \"AssistantButtonCode\"";
         return QString();
     }
     QMetaEnum e = metaObject()->enumerator(i);
@@ -580,7 +580,7 @@ void FormAssistant::slotButtonClicked(QAbstractButton *button)
 void FormAssistant::slotCurrentPageChanged(KPageWidgetItem* current)
 {
     Q_UNUSED(current);
-    //kDebug() << "FormAssistant::slotCurrentPageChanged current=" << current->name();
+    //qDebug() << "FormAssistant::slotCurrentPageChanged current=" << current->name();
     //foreach(QWidget* widget, current->widget()->findChildren< QWidget* >("")) widget->setFocus();
 }
 
@@ -774,11 +774,11 @@ QWidget* FormModule::createWidgetFromUIFile(QWidget* parent, const QString& file
 {
     QFile file(filename);
     if( ! file.exists() ) {
-        kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: There exists no such file \"%1\"").arg(filename);
+        // qDebug() << QString("Kross::FormModule::createWidgetFromUIFile: There exists no such file \"%1\"").arg(filename);
         return 0;
     }
     if( ! file.open(QFile::ReadOnly) ) {
-        kDebug() << QString("Kross::FormModule::createWidgetFromUIFile: Failed to open the file \"%1\"").arg(filename);
+        // qDebug() << QString("Kross::FormModule::createWidgetFromUIFile: Failed to open the file \"%1\"").arg(filename);
         return 0;
     }
     const QString xml = file.readAll();
@@ -812,12 +812,12 @@ QObject* FormModule::loadPart(QWidget* parent, const QString& name, const QUrl& 
     //name e.g. "libkghostview"
     KPluginFactory* factory = KPluginLoader( name.toLatin1() ).factory();
     if( ! factory ) {
-        kWarning() << QString("Kross::FormModule::loadPart: No such library \"%1\"").arg(name);
+        qWarning() << QString("Kross::FormModule::loadPart: No such library \"%1\"").arg(name);
         return 0;
     }
     KParts::ReadOnlyPart* part = factory->create< KParts::ReadOnlyPart >( parent );
     if( ! part ) {
-        kWarning() << QString("Kross::FormModule::loadPart: Library \"%1\" is not a KPart").arg(name);
+        qWarning() << QString("Kross::FormModule::loadPart: Library \"%1\" is not a KPart").arg(name);
         return 0;
     }
     if( url.isValid() )

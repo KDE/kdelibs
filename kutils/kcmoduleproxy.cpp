@@ -38,7 +38,7 @@
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kservice.h>
 
@@ -99,7 +99,7 @@ void KCModuleProxyPrivate::loadModule()
 	if( QDBusConnection::sessionBus().registerService( dbusService ) || bogusOccupier )
 	{ /* We got the name we requested, because no one was before us,
 	   * or, it was an random application which had picked that name */
-		kDebug(711) << "Module not already loaded, loading module " << modInfo.moduleName() << " from library " << modInfo.library() << " using symbol " << modInfo.handle();
+		// qDebug() << "Module not already loaded, loading module " << modInfo.moduleName() << " from library " << modInfo.library() << " using symbol " << modInfo.handle();
 
 		kcm = KCModuleLoader::loadModule( modInfo, KCModuleLoader::Inline, parent, args );
 
@@ -149,7 +149,7 @@ void KCModuleProxyPrivate::loadModule()
 	}
 	else
 	{
-		kDebug(711) << "Module already loaded, loading KCMError";
+		// qDebug() << "Module already loaded, loading KCMError";
 
 		/* Figure out the name of where the module is already loaded */
 		QDBusInterface proxy( dbusService, dbusPath, "org.kde.internal.KSettingsWidget" );
@@ -166,7 +166,7 @@ void KCModuleProxyPrivate::loadModule()
 		}
 		else
 		{
-			kDebug(711) << "Calling KCModuleProxy's DBus interface for fetching the name failed.";
+			// qDebug() << "Calling KCModuleProxy's DBus interface for fetching the name failed.";
 			bogusOccupier = true;
 			loadModule();
 		}

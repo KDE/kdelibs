@@ -26,11 +26,11 @@
 #include "kdesktopfile.h"
 #include <kservicetype.h>
 
+#include <QDebug>
 #include <QDir>
 #include <qmimedatabase.h>
 
 #include <klocalizedstring.h>
-#include <kdebug.h>
 #include <assert.h>
 #include <kmimetypefactory.h>
 #include <qstandardpaths.h>
@@ -94,7 +94,7 @@ KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
     // Is it a .desktop file?
     if (name.endsWith(QLatin1String(".desktop"))) {
 
-        kDebug() << file;
+        //qDebug() << file;
 
         KService* serv;
         if (QDir::isAbsolutePath(file)) { // vfolder sends us full paths for applications
@@ -107,17 +107,16 @@ KSycocaEntry* KBuildServiceFactory::createEntry(const QString& file) const
             serv = new KService(&desktopFile, file);
         }
 
-        //kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath();
+        //qDebug() << "Creating KService from" << file << "entryPath=" << serv->entryPath();
         // Note that the menuId will be set by the vfolder_menu.cpp code just after
         // createEntry returns.
 
         if ( serv->isValid() && !serv->isDeleted() ) {
-            kDebug(7021) << "Creating KService from" << file << "entryPath=" << serv->entryPath() <<
-                "storageId=" << serv->storageId();
+            //qDebug() << "Creating KService from" << file << "entryPath=" << serv->entryPath() << "storageId=" << serv->storageId();
             return serv;
         } else {
             if (!serv->isDeleted()) {
-                kWarning(7012) << "Invalid Service : " << file;
+                qWarning() << "Invalid Service : " << file;
             }
             delete serv;
             return 0;
@@ -199,7 +198,7 @@ void KBuildServiceFactory::collectInheritedServices(const QString& mimeTypeName,
             if (!m_offerHash.hasRemovedOffer(mimeTypeName, (*itserv).service())) {
                 KServiceOffer offer(*itserv);
                 offer.setMimeTypeInheritanceLevel(mimeTypeInheritanceLevel);
-                //kDebug(7021) << "INHERITANCE: Adding service" << (*itserv).service()->entryPath() << "to" << mimeTypeName << "mimeTypeInheritanceLevel=" << mimeTypeInheritanceLevel;
+                //qDebug() << "INHERITANCE: Adding service" << (*itserv).service()->entryPath() << "to" << mimeTypeName << "mimeTypeInheritanceLevel=" << mimeTypeInheritanceLevel;
                 m_offerHash.addInheritedServiceOffer( mimeTypeName, offer );
             }
         }
@@ -230,7 +229,7 @@ void KBuildServiceFactory::postProcessServices()
         m_nameMemoryHash.insert(name, service);
 
         const QString relName = service->entryPath();
-        //kDebug(7021) << "adding service" << service.data() << "isApp=" << service->isApplication() << "menuId=" << service->menuId() << "name=" << name << "relName=" << relName;
+        //qDebug() << "adding service" << service.data() << "isApp=" << service->isApplication() << "menuId=" << service->menuId() << "name=" << name << "relName=" << relName;
         m_relNameDict->add(relName, entry);
         m_relNameMemoryHash.insert(relName, service); // for KMimeAssociations
 
@@ -267,7 +266,7 @@ void KBuildServiceFactory::populateServiceTypes()
                 if (!parent.isEmpty())
                     serviceTypeList.append(KService::ServiceTypeAndPreference(preference, parent));
 
-                //kDebug(7021) << "Adding service" << service->entryPath() << "to" << serviceType->name() << "pref=" << preference;
+                //qDebug() << "Adding service" << service->entryPath() << "to" << serviceType->name() << "pref=" << preference;
                 m_offerHash.addServiceOffer(stName, KServiceOffer(service, preference, 0, service->allowAsDefault()) );
             } else {
                 KServiceOffer offer(service, serviceTypeList[i].preference, 0, service->allowAsDefault());
@@ -278,14 +277,14 @@ void KBuildServiceFactory::populateServiceTypes()
                         m_mimeTypeFactory->createFakeMimeType(stName);
                         m_offerHash.addServiceOffer(stName, offer);
                     } else {
-                        kDebug(7021) << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
+                        //qDebug() << service->entryPath() << "specifies undefined mimetype/servicetype" << stName;
                         // technically we could call addServiceOffer here, 'mime' isn't used. But it
                         // would be useless, since the loops for writing out the offers iterate
                         // over all known servicetypes and mimetypes. Unknown -> never written out.
                         continue;
                     }
                 } else {
-                    //kDebug(7021) << "Adding service" << service->entryPath() << "to mime" << mime->name();
+                    //qDebug() << "Adding service" << service->entryPath() << "to mime" << mime->name();
                     m_offerHash.addServiceOffer(mime.name(), offer); // mime->name so that we resolve aliases
                 }
             }
@@ -324,7 +323,7 @@ void KBuildServiceFactory::populateServiceTypes()
         KMimeTypeFactory::MimeTypeEntry::Ptr entry = KMimeTypeFactory::MimeTypeEntry::Ptr::staticCast( *itmtf );
         const int numOffers = m_offerHash.offersFor(entry->name()).count();
         if ( numOffers ) {
-            //kDebug() << entry->name() << "offset=" << offersOffset;
+            //qDebug() << entry->name() << "offset=" << offersOffset;
             entry->setServiceOffersOffset( offersOffset );
             offersOffset += offerEntrySize * numOffers;
         }
@@ -348,7 +347,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
 
         for(QList<KServiceOffer>::const_iterator it2 = offers.constBegin();
             it2 != offers.constEnd(); ++it2) {
-            //kDebug(7021) << "servicetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath();
+            //qDebug() << "servicetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath();
 
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();
@@ -370,7 +369,7 @@ void KBuildServiceFactory::saveOfferList(QDataStream &str)
 
         for(QList<KServiceOffer>::const_iterator it2 = offers.constBegin();
             it2 != offers.constEnd(); ++it2) {
-            //kDebug(7021) << "mimetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath() << "pref" << (*it2).preference();
+            //qDebug() << "mimetype offers list:" << entry->name() << "->" << (*it2).service()->entryPath() << "pref" << (*it2).preference();
             Q_ASSERT((*it2).service()->offset() != 0);
             str << (qint32) entry->offset();
             str << (qint32) (*it2).service()->offset();

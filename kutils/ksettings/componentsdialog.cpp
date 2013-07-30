@@ -25,7 +25,7 @@
 #include <QPushButton>
 #include <kplugininfo.h>
 #include <kiconloader.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfig.h>
 #include <kseparator.h>
 
@@ -146,14 +146,14 @@ void ComponentsDialog::show()
 
 void ComponentsDialog::executed( QTreeWidgetItem * item, int )
 {
-    kDebug( 704 ) ;
+    // qDebug() ;
     if( item == 0 )
         return;
 
     bool checked = ( item->checkState(0) == Qt::Checked );
 
-    kDebug( 704 ) << "it's a " << ( checked ? "checked" : "unchecked" )
-        << " QCheckListItem" << endl;
+    // qDebug() << "it's a " << ( checked ? "checked" : "unchecked" )
+    //    << " QCheckListItem" << endl;
 
     KPluginInfo * info = d->plugininfomap[ item ];
     info->setPluginEnabled( checked );

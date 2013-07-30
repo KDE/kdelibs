@@ -49,8 +49,6 @@
 #include <khtmlview.h>
 #include <khtml_part.h>
 
-#include <kdebug.h>
-
 #include <dom/dom_exception.h>
 #include <rendering/render_canvasimage.h>
 #include <rendering/render_flow.h>

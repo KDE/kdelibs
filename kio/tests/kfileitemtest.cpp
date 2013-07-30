@@ -134,7 +134,7 @@ void KFileItemTest::testBasic()
 
     QUrl url = QUrl::fromLocalFile(file.fileName());
     KFileItem fileItem(url, QString(), KFileItem::Unknown);
-    QCOMPARE(fileItem.text(), QUrlPathInfo(url).fileName());
+    QCOMPARE(fileItem.text(), url.fileName());
     QVERIFY(fileItem.isLocalFile());
     QCOMPARE(fileItem.localPath(), url.path());
     QCOMPARE(fileItem.size(), KIO::filesize_t(5));

@@ -28,7 +28,7 @@
 #include <QtCore/QRegExp>
 #include <QTextDocument>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kurifilter.h>
@@ -495,7 +495,7 @@ void BrowserExtension::BrowserExtensionPrivate::createActionSlotMap()
     ActionSlotMap::ConstIterator itEnd = s_actionSlotMap()->constEnd();
     for ( int i=0 ; it != itEnd ; ++it, ++i )
     {
-        //kDebug(1202) << " action " << it.key() << " number " << i;
+        //qDebug() << " action " << it.key() << " number " << i;
         s_actionNumberMap()->insert( it.key(), i );
     }
 }
@@ -505,7 +505,7 @@ void BrowserExtension::BrowserExtensionPrivate::createActionSlotMap()
 BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 : QObject( parent ), d( new BrowserExtensionPrivate(parent) )
 {
-  //kDebug() << "BrowserExtension::BrowserExtension() " << this;
+  //qDebug() << "BrowserExtension::BrowserExtension() " << this;
 
   if (s_actionSlotMap()->isEmpty())
       // Create the action-slot map
@@ -545,7 +545,7 @@ BrowserExtension::BrowserExtension( KParts::ReadOnlyPart *parent )
 
 BrowserExtension::~BrowserExtension()
 {
-  //kDebug() << "BrowserExtension::~BrowserExtension() " << this;
+  //qDebug() << "BrowserExtension::~BrowserExtension() " << this;
   delete d;
 }
 
@@ -649,7 +649,7 @@ void BrowserExtension::pasteRequest()
 
 void BrowserExtension::slotOpenUrlRequest( const QUrl &url, const KParts::OpenUrlArguments& args, const KParts::BrowserArguments &browserArgs )
 {
-    //kDebug() << this << " BrowserExtension::slotOpenURLRequest(): url=" << url.url();
+    //qDebug() << this << " BrowserExtension::slotOpenURLRequest(): url=" << url.url();
     BrowserExtensionPrivate::DelayedRequest req;
     req.m_delayedURL = url;
     req.m_delayedArgs = args;
@@ -679,15 +679,15 @@ BrowserInterface *BrowserExtension::browserInterface() const
 
 void BrowserExtension::slotEnableAction( const char * name, bool enabled )
 {
-    //kDebug() << "BrowserExtension::slotEnableAction " << name << " " << enabled;
+    //qDebug() << "BrowserExtension::slotEnableAction " << name << " " << enabled;
     ActionNumberMap::ConstIterator it = s_actionNumberMap()->constFind( name );
     if ( it != s_actionNumberMap()->constEnd() )
     {
         d->m_actionStatus.setBit( it.value(), enabled );
-        //kDebug() << "BrowserExtension::slotEnableAction setting bit " << it.data() << " to " << enabled;
+        //qDebug() << "BrowserExtension::slotEnableAction setting bit " << it.data() << " to " << enabled;
     }
     else
-        kWarning() << "BrowserExtension::slotEnableAction unknown action " << name;
+        qWarning() << "BrowserExtension::slotEnableAction unknown action " << name;
 }
 
 bool BrowserExtension::isActionEnabled( const char * name ) const
@@ -698,14 +698,14 @@ bool BrowserExtension::isActionEnabled( const char * name ) const
 
 void BrowserExtension::slotSetActionText( const char * name, const QString& text )
 {
-    //kDebug() << "BrowserExtension::slotSetActionText " << name << " " << text;
+    //qDebug() << "BrowserExtension::slotSetActionText " << name << " " << text;
     ActionNumberMap::ConstIterator it = s_actionNumberMap()->constFind( name );
     if ( it != s_actionNumberMap()->constEnd() )
     {
         d->m_actionText[ it.value() ] = text;
     }
     else
-        kWarning() << "BrowserExtension::slotSetActionText unknown action " << name;
+        qWarning() << "BrowserExtension::slotSetActionText unknown action " << name;
 }
 
 QString BrowserExtension::actionText( const char * name ) const

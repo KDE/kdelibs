@@ -31,7 +31,7 @@
 
 using namespace DOM;
 
-#include <kdebug.h>
+#include <QDebug>
 
 HTMLBaseFontElementImpl::HTMLBaseFontElementImpl(DocumentImpl *doc)
     : HTMLElementImpl(doc)
@@ -158,7 +158,8 @@ bool HTMLCollectionImpl::nodeMatches(NodeImpl *current, bool& deep) const
         deep = false;
         break;
     default:
-        kDebug( 6030 ) << "Error in HTMLCollection, wrong tagId!";
+        // qDebug() << "Error in HTMLCollection, wrong tagId!";
+        break;
     }
 
     return check;

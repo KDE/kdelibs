@@ -86,16 +86,16 @@ void KServiceTypeTrader::applyConstraints( KService::List& lst,
 #if 0
 static void dumpOfferList( const KServiceOfferList& offers )
 {
-    kDebug(7014) << "Sorted list:";
+    // qDebug() << "Sorted list:";
     OfferList::Iterator itOff = offers.begin();
     for( ; itOff != offers.end(); ++itOff )
-        kDebug(7014) << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << " preference=" << (*itOff).preference();
+        // qDebug() << (*itOff).service()->name() << " allow-as-default=" << (*itOff).allowAsDefault() << " preference=" << (*itOff).preference();
 }
 #endif
 
 static KServiceOfferList weightedOffers( const QString& serviceType )
 {
-    //kDebug(7014) << "KServiceTypeTrader::weightedOffers( " << serviceType << " )";
+    //qDebug() << "KServiceTypeTrader::weightedOffers( " << serviceType << " )";
 
     KServiceType::Ptr servTypePtr = KServiceTypeFactory::self()->findServiceTypeByName( serviceType );
     if ( !servTypePtr ) {
@@ -109,7 +109,7 @@ static KServiceOfferList weightedOffers( const QString& serviceType )
     const KServiceOfferList services = KServiceFactory::self()->offers( servTypePtr->offset(), servTypePtr->serviceOffersOffset() );
 
     const KServiceOfferList offers = KServiceTypeProfile::sortServiceTypeOffers( services, serviceType );
-    //kDebug(7014) << "Found profile: " << offers.count() << " offers";
+    //qDebug() << "Found profile: " << offers.count() << " offers";
 
 #if 0
     dumpOfferList( offers );
@@ -134,7 +134,7 @@ KService::List KServiceTypeTrader::defaultOffers( const QString& serviceType,
 
     applyConstraints( lst, constraint );
 
-    //kDebug(7014) << "query for serviceType " << serviceType << constraint
+    //qDebug() << "query for serviceType " << serviceType << constraint
     //             << " : returning " << lst.count() << " offers" << endl;
     return lst;
 }
@@ -160,7 +160,7 @@ KService::List KServiceTypeTrader::query( const QString& serviceType,
 
     applyConstraints( lst, constraint );
 
-    //kDebug(7014) << "query for serviceType " << serviceType << constraint
+    //qDebug() << "query for serviceType " << serviceType << constraint
     //             << " : returning " << lst.count() << " offers" << endl;
     return lst;
 }
@@ -176,6 +176,6 @@ KService::Ptr KServiceTypeTrader::preferredService( const QString & serviceType 
     if( itOff != offers.end() && (*itOff).allowAsDefault() )
         return (*itOff).service();
 
-    //kDebug(7014) << "No offers, or none allowed as default";
+    //qDebug() << "No offers, or none allowed as default";
     return KService::Ptr();
 }

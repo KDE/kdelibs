@@ -425,7 +425,7 @@ static QString translatePath( QString path ) // krazy:exclude=passbyvalue
    if (cleanHomeDirPath(path, homeDir0) ||
        cleanHomeDirPath(path, homeDir1) ||
        cleanHomeDirPath(path, homeDir2) ) {
-     // kDebug() << "Path was replaced\n";
+     // qDebug() << "Path was replaced\n";
    }
 
    if (startsWithFile)

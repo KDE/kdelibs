@@ -34,7 +34,6 @@
 #include <QCryptographicHash>
 
 //kde includes
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kpassworddialog.h>

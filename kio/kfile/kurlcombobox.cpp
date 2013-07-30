@@ -24,7 +24,7 @@
 #include <QMimeData>
 #include <QApplication>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kio/global.h>
 #include <klocalizedstring.h>
 #include <kiconloader.h>
@@ -134,7 +134,7 @@ void KUrlComboBoxPrivate::init(KUrlComboBox::Mode mode)
 
 QStringList KUrlComboBox::urls() const
 {
-    kDebug(250) << "::urls()";
+    // qDebug() << "::urls()";
     //const QLatin1Sting fileProt("file:");
     QStringList list;
     QString url;
@@ -317,7 +317,7 @@ void KUrlComboBoxPrivate::insertUrlItem( const KUrlComboBoxPrivate::KUrlComboIte
 {
     Q_ASSERT( item );
 
-// kDebug(250) << "insertURLItem " << d->textForItem(item);
+// qDebug() << "insertURLItem " << d->textForItem(item);
     int id = m_parent->count();
     m_parent->KComboBox::insertItem(id, item->icon, textForItem(item));
     itemMapper.insert( id, item );

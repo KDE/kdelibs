@@ -16,10 +16,6 @@ configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h 
 
 check_struct_member("struct sockaddr" sa_len "sys/types.h;sys/socket.h" HAVE_STRUCT_SOCKADDR_SA_LEN)
 
-# Configure checks for io/
-include(io/ConfigureChecks.cmake)
-configure_file(io/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/io/config-io.h)
-
 # Configure checks for kernel/
 configure_file(kernel/config-kernel.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kernel/config-kernel.h)
 
@@ -51,45 +47,22 @@ endif (HAVE_RESOLV_LIBRARY)
 
 if (WIN32)
    LIST(APPEND kdecore_OPTIONAL_SRCS
-      kernel/ktoolinvocation_win.cpp
       util/kde_file_win.cpp
    )
-   if(NOT WINCE)
-       LIST(APPEND kdecore_OPTIONAL_SRCS
-       )
-   else(NOT WINCE)
-       LIST(APPEND kdecore_OPTIONAL_SRCS
-       )
-   endif(NOT WINCE)
 endif (WIN32)
-
-
-if (UNIX)
-   set(kdecore_OPTIONAL_SRCS ${kdecore_OPTIONAL_SRCS}
-      kernel/ktoolinvocation_x11.cpp
-   )
-endif (UNIX)
 
 add_subdirectory( tests )
 
 ########### next target ###############
 
 set(kdecore_LIB_SRCS
-   io/kdebug.cpp
-   io/kdebugdbusiface.cpp
    io/kprocess.cpp
-
-   kernel/k4aboutdata.cpp
-   kernel/kcomponentdata.cpp
-
-   kernel/ktoolinvocation.cpp
 )
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
    util/kautostart.cpp
    util/kdeversion.cpp
-   util/klauncher_iface.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 
@@ -172,16 +145,10 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 ########### next target ###############
 
 ########### install files ###############
-install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdecore_export.h
-   io/kdebug.h
    io/kprocess.h
 
-   kernel/k4aboutdata.h
-   kernel/kcomponentdata.h
-
-   kernel/ktoolinvocation.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
@@ -189,7 +156,6 @@ install(FILES
    network/ksocketfactory.h
    util/kautostart.h
    util/kde_file.h
-   util/klauncher_iface.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -44,7 +44,7 @@
 #include <QtCore/QFileInfo>
 #endif
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfiggroup.h>
 #include <kshell.h>
 #include <kmountpoint.h>
@@ -83,11 +83,11 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char **argv )
   // Make sure the first kDebug is after the slave ctor (which sets a SIGPIPE handler)
   // This is useful in case kdeinit was autostarted by another app, which then exited and closed fd2
   // (e.g. ctest does that, or closing the terminal window would do that)
-  //kDebug(7101) << "Starting" << getpid();
+  //qDebug() << "Starting" << getpid();
 
   slave.dispatchLoop();
 
-  //kDebug(7101) << "Done";
+  //qDebug() << "Done";
   return 0;
 }
 
@@ -162,7 +162,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
         acl = acl_from_text( ACLString.toLatin1() );
         if ( acl_valid( acl ) == 0 ) { // let's be safe
             ret = acl_set_file( path, ACL_TYPE_ACCESS, acl );
-            kDebug(7101) << "Set ACL on:" << path << "to:" << aclToText(acl);
+            // qDebug() << "Set ACL on:" << path << "to:" << aclToText(acl);
         }
         acl_free( acl );
         if ( ret != 0 ) return ret; // better stop trying right away
@@ -176,7 +176,7 @@ int FileProtocol::setACL( const char *path, mode_t perm, bool directoryDefault )
             acl_t acl = acl_from_text( defaultACLString.toLatin1() );
             if ( acl_valid( acl ) == 0 ) { // let's be safe
                 ret += acl_set_file( path, ACL_TYPE_DEFAULT, acl );
-                kDebug(7101) << "Set Default ACL on:" << path << "to:" << aclToText(acl);
+                // qDebug() << "Set Default ACL on:" << path << "to:" << aclToText(acl);
             }
             acl_free( acl );
         }
@@ -242,7 +242,7 @@ void FileProtocol::mkdir( const QUrl& url, int permissions )
 {
     const QString path(url.toLocalFile());
 
-    kDebug(7101) << path << "permission=" << permissions;
+    // qDebug() << path << "permission=" << permissions;
 
     // Remove existing file or symlink, if requested (#151851)
     if (metaData(QLatin1String("overwrite")) == QLatin1String("true"))
@@ -264,7 +264,7 @@ void FileProtocol::mkdir( const QUrl& url, int permissions )
     }
 
     if ( S_ISDIR( buff.st_mode ) ) {
-        kDebug(7101) << "ERR_DIR_ALREADY_EXIST";
+        // qDebug() << "ERR_DIR_ALREADY_EXIST";
         error(KIO::ERR_DIR_ALREADY_EXIST, path);
         return;
     }
@@ -335,7 +335,7 @@ void FileProtocol::get( const QUrl& url )
             {
                 canResume ();
                 processed_size = offset;
-                kDebug(7101) << "Resume offset:" << KIO::number(offset);
+                // qDebug() << "Resume offset:" << KIO::number(offset);
             }
         }
     }
@@ -364,7 +364,7 @@ void FileProtocol::get( const QUrl& url )
        processed_size += n;
        processedSize( processed_size );
 
-       //kDebug(7101) << "Processed: " << KIO::number (processed_size);
+       //qDebug() << "Processed: " << KIO::number (processed_size);
     }
 
     data( QByteArray() );
@@ -377,7 +377,7 @@ void FileProtocol::get( const QUrl& url )
 
 void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
 {
-    kDebug(7101) << url;
+    // qDebug() << url;
 
     QString openPath = url.toLocalFile();
     QT_STATBUF buff;
@@ -426,7 +426,7 @@ void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
 
 void FileProtocol::read(KIO::filesize_t bytes)
 {
-    kDebug(7101) << "File::open -- read";
+    // qDebug() << "File::open -- read";
     Q_ASSERT(mFile && mFile->isOpen());
 
     QVarLengthArray<char> buffer(bytes);
@@ -451,7 +451,7 @@ void FileProtocol::read(KIO::filesize_t bytes)
 
 void FileProtocol::write(const QByteArray &data)
 {
-    kDebug(7101) << "File::open -- write";
+    // qDebug() << "File::open -- write";
     Q_ASSERT(mFile && mFile->isWritable());
 
     if (mFile->write(data) != data.size()) {
@@ -459,7 +459,7 @@ void FileProtocol::write(const QByteArray &data)
             error(KIO::ERR_DISK_FULL, mFile->fileName());
             close();
         } else {
-            kWarning(7101) << "Couldn't write. Error:" << mFile->errorString();
+            qWarning() << "Couldn't write. Error:" << mFile->errorString();
             error(KIO::ERR_COULD_NOT_WRITE, mFile->fileName());
             close();
         }
@@ -470,7 +470,7 @@ void FileProtocol::write(const QByteArray &data)
 
 void FileProtocol::seek(KIO::filesize_t offset)
 {
-    kDebug(7101) << "File::open -- seek";
+    // qDebug() << "File::open -- seek";
     Q_ASSERT(mFile && mFile->isOpen());
 
     if (mFile->seek(offset)) {
@@ -483,7 +483,7 @@ void FileProtocol::seek(KIO::filesize_t offset)
 
 void FileProtocol::close()
 {
-    kDebug(7101) << "File::open -- close ";
+    // qDebug() << "File::open -- close ";
     Q_ASSERT(mFile);
 
     delete mFile;
@@ -496,7 +496,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
 {
     const QString dest_orig = url.toLocalFile();
 
-    kDebug(7101) << dest_orig << "mode=" << _mode;
+    // qDebug() << dest_orig << "mode=" << _mode;
 
     QString dest_part(dest_orig + QLatin1String(".part"));
 
@@ -512,14 +512,14 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
 
         if (bPartExists && !(_flags & KIO::Resume) && !(_flags & KIO::Overwrite) && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
         {
-            kDebug(7101) << "calling canResume with" << KIO::number(buff_part.st_size);
+            // qDebug() << "calling canResume with" << KIO::number(buff_part.st_size);
 
             // Maybe we can use this partial file for resuming
             // Tell about the size we have, and the app will tell us
             // if it's ok to resume or not.
             _flags |= canResume( buff_part.st_size ) ? KIO::Resume : KIO::DefaultFlags;
 
-            kDebug(7101) << "got answer" << (_flags & KIO::Resume);
+            // qDebug() << "got answer" << (_flags & KIO::Resume);
         }
     }
 
@@ -550,11 +550,11 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
             {
                 if (bMarkPartial)
                 {
-                    kDebug(7101) << "Appending .part extension to" << dest_orig;
+                    // qDebug() << "Appending .part extension to" << dest_orig;
                     dest = dest_part;
                     if ( bPartExists && !(_flags & KIO::Resume) )
                     {
-                        kDebug(7101) << "Deleting partial file" << dest_part;
+                        // qDebug() << "Deleting partial file" << dest_part;
                         QFile::remove( dest_part );
                         // Catch errors when we try to open the file.
                     }
@@ -564,7 +564,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
                     dest = dest_orig;
                     if ( bOrigExists && !(_flags & KIO::Resume) )
                     {
-                        kDebug(7101) << "Deleting destination file" << dest_orig;
+                        // qDebug() << "Deleting destination file" << dest_orig;
                         QFile::remove( dest_orig );
                         // Catch errors when we try to open the file.
                     }
@@ -591,8 +591,8 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
                 }
 
                 if (!f.isOpen()) {
-                    kDebug(7101) << "####################### COULD NOT WRITE" << dest << "_mode=" << _mode;
-                    kDebug(7101) << "QFile error==" << f.error() << "(" << f.errorString() << ")";
+                    // qDebug() << "####################### COULD NOT WRITE" << dest << "_mode=" << _mode;
+                    // qDebug() << "QFile error==" << f.error() << "(" << f.errorString() << ")";
 
                     if (f.error() == QFileDevice::PermissionsError) {
                         error(KIO::ERR_WRITE_ACCESS_DENIED, dest);
@@ -608,7 +608,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
                     error(KIO::ERR_DISK_FULL, dest_orig);
                     result = -2; // means: remove dest file
                 } else {
-                    kWarning(7101) << "Couldn't write. Error:" << f.errorString();
+                    qWarning() << "Couldn't write. Error:" << f.errorString();
                     error(KIO::ERR_COULD_NOT_WRITE, dest_orig);
                     result = -1;
                 }
@@ -620,7 +620,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
     // An error occurred deal with it.
     if (result < 0)
     {
-        kDebug(7101) << "Error during 'put'. Aborting.";
+        // qDebug() << "Error during 'put'. Aborting.";
 
         if (f.isOpen()) {
             f.close();
@@ -645,7 +645,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
     f.close();
 
     if (f.error() != QFile::NoError) {
-        kWarning(7101) << "Error when closing file descriptor:" << f.errorString();
+        qWarning() << "Error when closing file descriptor:" << f.errorString();
         error(KIO::ERR_COULD_NOT_WRITE, dest_orig);
         return;
     }
@@ -660,7 +660,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
         }
 
         if (!QFile::rename(dest, dest_orig)) {
-            kWarning(7101) << " Couldn't rename " << dest << " to " << dest_orig;
+            qWarning() << " Couldn't rename " << dest << " to " << dest_orig;
             error(KIO::ERR_CANNOT_RENAME_PARTIAL, dest_orig);
             return;
         }
@@ -772,7 +772,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
             }
         }
     } else {
-        // kWarning() << "lstat didn't work on " << path.data();
+        // qWarning() << "lstat didn't work on " << path.data();
         return false;
     }
 
@@ -826,7 +826,7 @@ void FileProtocol::special( const QByteArray &data)
 
 	bool ro = ( iRo != 0 );
 
-	kDebug(7101) << "MOUNTING fstype=" << fstype << " dev=" << dev << " point=" << point << " ro=" << ro;
+	// qDebug() << "MOUNTING fstype=" << fstype << " dev=" << dev << " point=" << point << " ro=" << ro;
 	bool ok = pmount( dev );
 	if (ok)
 	    finished();
@@ -858,7 +858,7 @@ static QStringList fallbackSystemPath() {
 
 void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, const QString& _point )
 {
-    kDebug(7101) << "fstype=" << _fstype;
+    // qDebug() << "fstype=" << _fstype;
 
 #ifndef _WIN32_WCE
 #if  HAVE_VOLMGT
@@ -869,22 +869,20 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
 	QByteArray devname = QFile::encodeName( _dev );
 
 	if( volmgt_running() ) {
-//		kDebug(7101) << "VOLMGT: vold ok.";
+//		qDebug() << "VOLMGT: vold ok.";
 		if( volmgt_check( devname.data() ) == 0 ) {
-			kDebug(7101) << "VOLMGT: no media in "
-					<< devname.data();
+			// qDebug() << "VOLMGT: no media in " << devname.data();
 			err = i18n("No Media inserted or Media not recognized.");
 			error( KIO::ERR_COULD_NOT_MOUNT, err );
 			return;
 		} else {
-			kDebug(7101) << "VOLMGT: " << devname.data()
-				<< ": media ok";
+			// qDebug() << "VOLMGT: " << devname.data() << ": media ok";
 			finished();
 			return;
 		}
 	} else {
 		err = i18n("\"vold\" is not running.");
-		kDebug(7101) << "VOLMGT: " << err;
+		// qDebug() << "VOLMGT: " << err;
 		error( KIO::ERR_COULD_NOT_MOUNT, err );
 		return;
 	}
@@ -945,7 +943,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
                 buffer += readonly + " -t " + fstype + ' ' + dev + ' ' + point;
 #endif
         buffer += " 2>" + tmpFileName;
-        kDebug(7101) << buffer;
+        // qDebug() << buffer;
 
         int mount_ret = system( buffer.constData() );
 
@@ -962,7 +960,7 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             // Is the device mounted ?
             if ( mp && mount_ret == 0)
             {
-                kDebug(7101) << "mount got a warning:" << err;
+                // qDebug() << "mount got a warning:" << err;
                 warning( err );
                 finished();
                 return;
@@ -971,8 +969,8 @@ void FileProtocol::mount( bool _ro, const char *_fstype, const QString& _dev, co
             {
                 if ( (step == 0) && !_point.isEmpty())
                 {
-                    kDebug(7101) << err;
-                    kDebug(7101) << "Mounting with those options didn't work, trying with only mountpoint";
+                    // qDebug() << err;
+                    // qDebug() << "Mounting with those options didn't work, trying with only mountpoint";
                     fstype = "";
                     fstype_empty = true;
                     dev = "";
@@ -1024,12 +1022,12 @@ void FileProtocol::unmount( const QString& _point )
 	struct mnttab mnt;
 
 	if( volmgt_running() ) {
-		kDebug(7101) << "VOLMGT: looking for "
+		// qDebug() << "VOLMGT: looking for "
 			<< _point.toLocal8Bit();
 
 		if( (mnttab = QT_FOPEN( MNTTAB, "r" )) == NULL ) {
 			err = QLatin1String("could not open mnttab");
-			kDebug(7101) << "VOLMGT: " << err;
+			// qDebug() << "VOLMGT: " << err;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 			return;
 		}
@@ -1052,7 +1050,7 @@ void FileProtocol::unmount( const QString& _point )
 
 		if( devname == NULL ) {
 			err = QLatin1String("not in mnttab");
-			kDebug(7101) << "VOLMGT: "
+			// qDebug() << "VOLMGT: "
 				<< QFile::encodeName(_point).data()
 				<< ": " << err;
 			error( KIO::ERR_COULD_NOT_UNMOUNT, err );
@@ -1068,7 +1066,7 @@ void FileProtocol::unmount( const QString& _point )
 		*ptr = '\0';
                 QByteArray qdevname(QFile::encodeName(KShell::quoteArg(QFile::decodeName(QByteArray(devname)))).data());
 		buffer = "/usr/bin/eject " + qdevname + " 2>" + tmpFileName;
-		kDebug(7101) << "VOLMGT: eject " << qdevname;
+		// qDebug() << "VOLMGT: eject " << qdevname;
 
 		/*
 		 *  from eject(1): exit status == 0 => need to manually eject
@@ -1092,7 +1090,7 @@ void FileProtocol::unmount( const QString& _point )
 		 *  during the user's session, so it should be restarted...
 		 */
 		err = i18n("\"vold\" is not running.");
-		kDebug(7101) << "VOLMGT: " << err;
+		// qDebug() << "VOLMGT: " << err;
 		error( KIO::ERR_COULD_NOT_UNMOUNT, err );
 		return;
 	}
@@ -1225,19 +1223,19 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
         defaultAcl = acl_get_file( path.data(), ACL_TYPE_DEFAULT );
     }
     if ( acl || defaultAcl ) {
-      kDebug(7101) << path.constData() << "has extended ACL entries";
+      // qDebug() << path.constData() << "has extended ACL entries";
       entry.insert( KIO::UDSEntry::UDS_EXTENDED_ACL, 1 );
     }
     if ( withACL ) {
         if ( acl ) {
             const QString str = aclToText(acl);
             entry.insert( KIO::UDSEntry::UDS_ACL_STRING, str );
-            kDebug(7101) << path.constData() << "ACL:" << str;
+            // qDebug() << path.constData() << "ACL:" << str;
         }
         if ( defaultAcl ) {
             const QString str = aclToText(defaultAcl);
             entry.insert( KIO::UDSEntry::UDS_DEFAULT_ACL_STRING, str );
-            kDebug(7101) << path.constData() << "DEFAULT ACL:" << str;
+            // qDebug() << path.constData() << "DEFAULT ACL:" << str;
         }
     }
     if ( acl ) acl_free( acl );
@@ -1249,18 +1247,18 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
 // where exactly the deletion failed, in case of errors.
 bool FileProtocol::deleteRecursive(const QString& path)
 {
-    //kDebug() << path;
+    //qDebug() << path;
     QDirIterator it(path, QDir::AllEntries | QDir::NoDotAndDotDot | QDir::System | QDir::Hidden,
                     QDirIterator::Subdirectories);
     QStringList dirsToDelete;
     while ( it.hasNext() ) {
         const QString itemPath = it.next();
-        //kDebug() << "itemPath=" << itemPath;
+        //qDebug() << "itemPath=" << itemPath;
         const QFileInfo info = it.fileInfo();
         if (info.isDir() && !info.isSymLink())
             dirsToDelete.prepend(itemPath);
         else {
-            //kDebug() << "QFile::remove" << itemPath;
+            //qDebug() << "QFile::remove" << itemPath;
             if (!QFile::remove(itemPath)) {
                 error(KIO::ERR_CANNOT_DELETE, itemPath);
                 return false;
@@ -1269,7 +1267,7 @@ bool FileProtocol::deleteRecursive(const QString& path)
     }
     QDir dir;
     Q_FOREACH(const QString& itemPath, dirsToDelete) {
-        //kDebug() << "QDir::rmdir" << itemPath;
+        //qDebug() << "QDir::rmdir" << itemPath;
         if (!dir.rmdir(itemPath)) {
             error(KIO::ERR_CANNOT_DELETE, itemPath);
             return false;

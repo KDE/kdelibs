@@ -28,7 +28,7 @@
 #include <QtCore/QtAlgorithms>
 
 #include <kio/netaccess.h>
-#include <kdebug.h>
+#include <QDebug>
 
 class KEmoticonsTheme::KEmoticonsThemeData : public QSharedData
 {
@@ -180,7 +180,7 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
             }
             break;
         default:
-            kWarning() << "Unknown token type. Something's broken.";
+            qWarning() << "Unknown token type. Something's broken.";
             break;
         }
     }
@@ -313,7 +313,7 @@ QList<KEmoticonsTheme::Token> KEmoticonsTheme::tokenize(const QString &message, 
                     if (htmlEnd == -1) {
                         // Apparently this HTML entity isn't ended, something is wrong, try skip the '&'
                         // and continue
-                        kDebug() << "Broken HTML entity, trying to recover.";
+                        // qDebug() << "Broken HTML entity, trying to recover.";
                         inHTMLEntity = false;
                         pos++;
                     } else {

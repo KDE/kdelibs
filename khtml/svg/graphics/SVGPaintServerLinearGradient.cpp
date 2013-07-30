@@ -34,7 +34,7 @@ namespace WebCore {
 SVGPaintServerLinearGradient::SVGPaintServerLinearGradient(const SVGGradientElement* owner)
     : SVGPaintServerGradient(owner)
 {
-    kDebug() << "create LinearGradient Paint server" << endl;
+    // qDebug() << "create LinearGradient Paint server" << endl;
 }
 
 SVGPaintServerLinearGradient::~SVGPaintServerLinearGradient()

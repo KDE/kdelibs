@@ -35,7 +35,6 @@
 #include <QMenu>
 #include <QEvent>
 #include <QStyle>
-#include <qurlpathinfo.h>
 
 #include <ksqueezedtextlabel.h>
 #include <kseparator.h>
@@ -617,9 +616,7 @@ void KWidgetJobTracker::Private::ProgressWidget::_k_openFile()
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_openLocation()
 {
-    QUrlPathInfo dirLocation(location);
-    dirLocation.setFileName(QString());
-    QProcess::startDetached("kde-open", QStringList() << dirLocation.url().toString());
+    QProcess::startDetached("kde-open", QStringList() << location.adjusted(QUrl::RemoveFilename).toString());
 }
 
 void KWidgetJobTracker::Private::ProgressWidget::_k_pauseResumeClicked()

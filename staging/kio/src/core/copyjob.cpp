@@ -322,7 +322,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
             info.uDest = m_dest;
             // Append filename or dirname to destination URL, if allowed
             if (destinationState == DEST_IS_DIR && !m_asMethod) {
-                info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, QUrlPathInfo(srcurl).fileName());
+                info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, srcurl.fileName());
             }
 
             files.append( info );
@@ -719,7 +719,7 @@ void CopyJobPrivate::statCurrentSrc()
                     (m_currentSrcURL.userName() == info.uDest.userName()) &&
                     (m_currentSrcURL.password() == info.uDest.password()) ) {
                     // This is the case of creating a real symlink
-                    info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, QUrlPathInfo(m_currentSrcURL).fileName());
+                    info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, m_currentSrcURL.fileName());
                 } else {
                     // Different protocols, we'll create a .desktop file
                     // We have to change the extension anyway, so while we're at it,
@@ -838,7 +838,7 @@ void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
     QUrl dest = m_dest;
     // Append filename or dirname to destination URL, if allowed
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
-        dest = QUrlPathInfo::addPathToUrl(dest, QUrlPathInfo(m_currentSrcURL).fileName());
+        dest = QUrlPathInfo::addPathToUrl(dest, m_currentSrcURL.fileName());
     m_currentDestURL = dest;
     //qDebug() << m_currentSrcURL << "->" << dest << "trying direct rename first";
     state = STATE_RENAMING;
@@ -1820,7 +1820,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     // Determine dest again
     QUrl dest = m_dest;
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
-        dest = QUrlPathInfo::addPathToUrl(dest, QUrlPathInfo(m_currentSrcURL).fileName());
+        dest = QUrlPathInfo::addPathToUrl(dest, m_currentSrcURL.fileName());
     if ( err )
     {
         // Direct renaming didn't work. Try renaming to a temp name,
@@ -1890,7 +1890,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 ; // nothing to do, stat+copy+del will overwrite
             } else if ((isDir && m_bAutoRenameDirs) || (!isDir && m_bAutoRenameFiles)) {
                 QUrl destDirectory = m_currentDestURL.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash); // m_currendDestURL includes filename
-                const QString newName = KIO::suggestName(destDirectory, QUrlPathInfo(m_currentDestURL).fileName());
+                const QString newName = KIO::suggestName(destDirectory, m_currentDestURL.fileName());
 
                 m_dest.setPath(m_currentDestURL.path());
                 QUrlPathInfo destInfo(m_dest);

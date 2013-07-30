@@ -29,7 +29,7 @@
 
 #include <klibrary.h>
 #include <kpluginloader.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kaboutdata.h>
@@ -102,9 +102,9 @@ KCModule* KCModuleLoader::loadModule(const KCModuleInfo& mod, ErrorReporting rep
                 create = reinterpret_cast<KCModule *(*)(QWidget *, const char*)>(lib.resolveFunction(factorymethod));
                 if (create) {
                     return create(parent, mod.handle().toLatin1());
-                    kFatal(1208) << "This module still uses a custom factory method (" << factorymethod << "). This is not supported anymore. Please fix the module.";
+                    qFatal("This module still uses a custom factory method (%s). This is not supported anymore. Please fix the module.", factorymethod.constData());
                 } else {
-                    kWarning(1208) << "This module has no valid entry symbol at all. The reason could be that it's still using K_EXPORT_COMPONENT_FACTORY with a custom X-KDE-FactoryName which is not supported anymore";
+                    qWarning() << "This module has no valid entry symbol at all. The reason could be that it's still using K_EXPORT_COMPONENT_FACTORY with a custom X-KDE-FactoryName which is not supported anymore";
                 }
                 lib.unload();
             }

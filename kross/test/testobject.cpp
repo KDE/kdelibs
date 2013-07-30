@@ -61,100 +61,100 @@ QString TestObject::name()
 
 void TestObject::func_void()
 {
-    //kDebug() << "TestObject::func_void";
+    //qDebug() << "TestObject::func_void";
 }
 
 void TestObject::func_void_int(int)
 {
-    //kDebug() << "TestObject::func_void_int i=" << i;
+    //qDebug() << "TestObject::func_void_int i=" << i;
 }
 
 int TestObject::func_int_int(int i)
 {
-    //kDebug() << "TestObject::func_int_int i=" << i;
+    //qDebug() << "TestObject::func_int_int i=" << i;
     return i;
 }
 
 bool TestObject::func_bool_bool(bool b)
 {
-    //kDebug() << "TestObject::func_bool_bool b=" << b;
+    //qDebug() << "TestObject::func_bool_bool b=" << b;
     return b;
 }
 
 uint TestObject::func_uint_uint(uint i)
 {
-    //kDebug() << "TestObject::func_uint_uint i=" << i;
+    //qDebug() << "TestObject::func_uint_uint i=" << i;
     return i;
 }
 
 double TestObject::func_double_double(double d)
 {
-    //kDebug() << "TestObject::func_double_double d=" << d;
+    //qDebug() << "TestObject::func_double_double d=" << d;
     return d;
 }
 
 qlonglong TestObject::func_qlonglong_qlonglong(qlonglong l)
 {
-    //kDebug() << "TestObject::func_qlonglong_qlonglong l=" << l;
+    //qDebug() << "TestObject::func_qlonglong_qlonglong l=" << l;
     return l;
 }
 
 qulonglong TestObject::func_qulonglong_qulonglong(qulonglong l)
 {
-    //kDebug() << "TestObject::func_qulonglong_qulonglong l=" << l;
+    //qDebug() << "TestObject::func_qulonglong_qulonglong l=" << l;
     return l;
 }
 
 void TestObject::func_void_qstring_int(QString, int)
 {
-    //kDebug() << "TestObject::func_void_qstring_int s=" << s << " i=" << i;
+    //qDebug() << "TestObject::func_void_qstring_int s=" << s << " i=" << i;
 }
 
 void TestObject::func_void_qstringlist(QStringList)
 {
-    //kDebug() << "TestObject::func_void_qstringlist sl=" << sl.join(",");
+    //qDebug() << "TestObject::func_void_qstringlist sl=" << sl.join(",");
 }
 
 QString TestObject::func_qstring_qstring_int(QString s, int i)
 {
     QString r = QString("%1,%2").arg(s).arg(i);
-    //kDebug() << "TestObject::func_void_qstring_int s=" << s << " i=" << i << " returnvalue=" << r;
+    //qDebug() << "TestObject::func_void_qstring_int s=" << s << " i=" << i << " returnvalue=" << r;
     return r;
 }
 
 QByteArray TestObject::func_qbytearray_qbytearray(QByteArray ba)
 {
-    //kDebug() << "TestObject::func_qbytearray_qbytearray ba=" << ba;
+    //qDebug() << "TestObject::func_qbytearray_qbytearray ba=" << ba;
     return ba;
 }
 
 QString TestObject::func_qstring_qstring(const QString& s)
 {
-    //kDebug() << "TestObject::func_qstring_qstring s=" << s;
+    //qDebug() << "TestObject::func_qstring_qstring s=" << s;
     return s;
 }
 
 QStringList TestObject::func_qstringlist_qstringlist(QStringList sl)
 {
-    //kDebug() << "TestObject::func_qstringlist_qstringlist sl=" << sl.join(",");
+    //qDebug() << "TestObject::func_qstringlist_qstringlist sl=" << sl.join(",");
     return sl;
 }
 
 QVariantList TestObject::func_qvariantlist_qvariantlist(QVariantList vl)
 {
-    //kDebug() << "TestObject::func_qvariantlist_qvariantlist vl.count=" << vl.count();
+    //qDebug() << "TestObject::func_qvariantlist_qvariantlist vl.count=" << vl.count();
     return vl;
 }
 
 QVariantMap TestObject::func_qvariantmap_qvariantmap(QVariantMap vm)
 {
-    //kDebug() << "TestObject::func_qvariantmap_qvariantmap vm.count=" << vm.count();
+    //qDebug() << "TestObject::func_qvariantmap_qvariantmap vm.count=" << vm.count();
     return vm;
 }
 
 QVariantList TestObject::func_qobject2qvariantlist(QObject* obj)
 {
-    //kDebug()<<"TestObject::func_qobject2qvariantlist obj="<<(obj ? obj->objectName() : "NULL");
+    //qDebug()<<"TestObject::func_qobject2qvariantlist obj="<<(obj ? obj->objectName() : "NULL");
     QVariant v;
     v.setValue(obj);
     return QVariantList() << v;
@@ -183,30 +183,30 @@ QDateTime TestObject::func_qdatetime_qdatetime(const QDateTime& dt) { return dt;
 
 void TestObject::func_void_qvariant(const QVariant& v)
 {
-    kDebug() << "TestObject::func_void_qvariant variant.toString=" << v.toString() << " variant.type=" << v.typeName();
+    //qDebug() << "TestObject::func_void_qvariant variant.toString=" << v.toString() << " variant.type=" << v.typeName();
 }
 
 QVariant TestObject::func_qvariant_qvariant(const QVariant& v)
 {
-    //kDebug() << "TestObject::func_qvariant_qvariant value=" << v.toString() << " type=" << v.typeName();
+    //qDebug() << "TestObject::func_qvariant_qvariant value=" << v.toString() << " type=" << v.typeName();
     return v;
 }
 
 Kross::Object::Ptr TestObject::func_krossobject_krossobject(Kross::Object::Ptr object)
 {
-    //kDebug() << "TestObject::func_krossobject_krossobject";
+    //qDebug() << "TestObject::func_krossobject_krossobject";
     return object;
 }
 
 QStringList TestObject::get_krossobject_methods(Kross::Object::Ptr object)
 {
-    //kDebug() << "TestObject::get_krossobject_methods";
+    //qDebug() << "TestObject::get_krossobject_methods";
     return object->methodNames();
 }
 
 QVariant TestObject::call_krossobject_method(Kross::Object::Ptr object, const QString& methodname, const QVariantList& args)
 {
-    //kDebug() << "TestObject::call_krossobject_method";
+    //qDebug() << "TestObject::call_krossobject_method";
     return object->callMethod(methodname, args);
 }
 
@@ -217,29 +217,29 @@ QObject* TestObject::func_createChildTestObject(const QString& objectname)
 
 void TestObject::func_void_qobject(QObject*)
 {
-    //kDebug() << "TestObject::func_void_qobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
+    //qDebug() << "TestObject::func_void_qobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
 }
 
 QObject* TestObject::func_qobject_qobject(QObject* obj)
 {
-    //kDebug() << "TestObject::func_qobject_qobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
+    //qDebug() << "TestObject::func_qobject_qobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
     return obj;
 }
 
 QWidget* TestObject::func_qwidget_qwidget(QWidget* widget)
 {
-    kDebug() << "TestObject::func_qwidget_qwidget " << (widget ? QString("objectName=%1 className=%2").arg(widget->objectName()).arg(widget->metaObject()->className()) : "NULL");
+    //qDebug() << "TestObject::func_qwidget_qwidget " << (widget ? QString("objectName=%1 className=%2").arg(widget->objectName()).arg(widget->metaObject()->className()) : "NULL");
     return widget;
 }
 
 void TestObject::func_void_testobject(TestObject* obj)
 {
-    kDebug() << "TestObject::func_void_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
+    //qDebug() << "TestObject::func_void_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
 }
 
 TestObject* TestObject::func_testobject_testobject(TestObject* obj)
 {
-    kDebug() << "TestObject::func_testobject_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
+    //qDebug() << "TestObject::func_testobject_testobject " << (obj ? QString("objectName=%1 className=%2").arg(obj->objectName()).arg(obj->metaObject()->className()) : "NULL");
     return obj;
 }
 
@@ -251,14 +251,14 @@ TestObject* TestObject::func_testobject_qobject(QObject* obj)
 
 void TestObject::func_void_testobjectlist(QList<TestObject*> l)
 {
-    kDebug() << "TestObject::func_void_testobjectlist " << l.count();
+    //qDebug() << "TestObject::func_void_testobjectlist " << l.count();
     foreach(TestObject* obj, l)
-        kDebug() << "  " << (obj ? obj->objectName() : "NULL");
+        qDebug() << "  " << (obj ? obj->objectName() : "NULL");
 }
 
 QList<TestObject*> TestObject::func_testobjectlist_testobjectlist(QList<TestObject*> l)
 {
-    kDebug() << "TestObject::func_testobjectlist_testobjectlist " << l.count();
+    //qDebug() << "TestObject::func_testobjectlist_testobjectlist " << l.count();
     return l;
 }
 
@@ -336,17 +336,17 @@ TestThread::TestThread(TestObject* parent, int steps, int msecs)
     , m_steps(steps)
     , m_msecs(msecs)
 {
-    //kDebug() << "TestThread::TestThread()";
+    //qDebug() << "TestThread::TestThread()";
 }
 
 TestThread::~TestThread()
 {
-    //kDebug() << "TestThread::~TestThread()";
+    //qDebug() << "TestThread::~TestThread()";
 }
 
 void TestThread::emitStepDone(int step)
 {
-    //kDebug() << "TestThread::emitStepDone() step=" << step;
+    //qDebug() << "TestThread::emitStepDone() step=" << step;
     emit stepDone(step);
 }
 
@@ -359,9 +359,9 @@ QVariant TestThread::callFunction(QObject* action, const QString& functionname, 
 
 void TestThread::run()
 {
-    //kDebug() << "TestThread::run()";
+    //qDebug() << "TestThread::run()";
     for(int i = 0; i < m_steps; ++i) {
-        kDebug() << "TestThread::run() 1 step=" << i << "m_steps=" << m_steps << "m_msecs=" << m_msecs;
+        //qDebug() << "TestThread::run() 1 step=" << i << "m_steps=" << m_steps << "m_msecs=" << m_msecs;
         emit stepDone(i);
         //m_testobject->emitSignalVoid();
         msleep(m_msecs);

@@ -1,6 +1,7 @@
 
 set(platformtheme_SRCS
    kdeplatformtheme.cpp
+   kfontsettingsdata.cpp
    main.cpp
 )
 

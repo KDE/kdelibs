@@ -25,6 +25,7 @@ macro(KCONFIGGUI_UNIT_TESTS)
 endmacro()
 
 kconfigcore_unit_tests(
+   kconfignokdehometest
    kconfigtest
    kdesktopfiletest
    ksharedconfigtest

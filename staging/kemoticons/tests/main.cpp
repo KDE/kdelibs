@@ -19,7 +19,7 @@
 
 #include <kemoticons.h>
 #include <QApplication>
-#include <kdebug.h>
+#include <QDebug>
 #include <qstring.h>
 #include <klineedit.h>
 #include <qlabel.h>
@@ -48,7 +48,7 @@ class KEmoTest : public QWidget
 KEmoTest::KEmoTest()
 {
     QStringList tl = KEmoticons::themeList();
-    kDebug() << "ThemeList:" << tl;
+    // qDebug() << "ThemeList:" << tl;
     
     t = e.theme();
     

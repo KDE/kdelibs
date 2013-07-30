@@ -25,8 +25,6 @@
 
 #include "dom_stringimpl.h"
 
-#include <kdebug.h>
-
 #include <string.h>
 #include <QtCore/QMutableStringListIterator>
 #include "misc/AtomicString.h"

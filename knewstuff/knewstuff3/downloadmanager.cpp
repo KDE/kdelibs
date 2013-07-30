@@ -18,7 +18,7 @@
 #include "downloadmanager.h"
 
 #include <QCoreApplication>
-#include <kdebug.h>
+#include <QDebug>
 
 #include "core/engine.h"
 
@@ -88,7 +88,7 @@ DownloadManager::~DownloadManager()
 
 void DownloadManager::Private::_k_slotProvidersLoaded()
 {
-    kDebug() << "providers loaded";
+    // qDebug() << "providers loaded";
     isInitialized = true;
     if (checkForUpdates) {
         engine->checkForUpdates();

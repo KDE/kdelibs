@@ -58,7 +58,7 @@ ANIMATED_PROPERTY_DEFINITIONS(SVGRectElement, SVGLength, Length, length, Ry, ry,
 
 void SVGRectElement::parseMappedAttribute(MappedAttribute* attr)
 {
-    kDebug() << "called with" << attr->localName() << attr->value() << endl;
+    // qDebug() << "called with" << attr->localName() << attr->value() << endl;
     if (attr->name() == SVGNames::xAttr)
         setXBaseValue(SVGLength(this, LengthModeWidth, attr->value()));
     else if (attr->name() == SVGNames::yAttr)

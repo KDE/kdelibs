@@ -42,7 +42,7 @@
 #include "ecma/kjs_proxy.h"
 
 #include <QUrl>
-#include <kdebug.h>
+#include <QDebug>
 
 using namespace khtml;
 using namespace DOM;
@@ -288,7 +288,7 @@ void HTMLLinkElementImpl::error( int, const QString& )
 
 bool HTMLLinkElementImpl::isLoading() const
 {
-//    kDebug( 6030 ) << "link: checking if loading!";
+//    qDebug() << "link: checking if loading!";
     if(m_loading) return true;
     if(!m_sheet) return false;
     //if(!m_sheet->isCSSStyleSheet()) return false;

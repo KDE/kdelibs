@@ -1,7 +1,7 @@
 #ifndef TESTKHTML_H
 #define TESTKHTML_H
 
-#include <kdebug.h>
+#include <QDebug>
 #include <khtml_part.h>
 #include <QList>
 #include <QMap>
@@ -38,7 +38,7 @@ private Q_SLOTS:
 
   void toggleEditable(bool s)
   {
-  kDebug() << "editable: " << s;
+      qDebug() << "editable: " << s;
       m_part->setEditable(s);
   }
 

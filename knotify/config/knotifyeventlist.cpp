@@ -17,7 +17,7 @@
 */
 #include "knotifyeventlist.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -55,7 +55,7 @@ void KNotifyEventList::KNotifyEventListDelegate::paint( QPainter* painter,
 
 	QStyledItemDelegate::paint(painter, option, index);
 
-// 	kDebug() << prstring;
+// 	qDebug() << prstring;
 
 	QRect rect=option.rect;
 

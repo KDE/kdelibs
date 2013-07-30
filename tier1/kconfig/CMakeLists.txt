@@ -9,8 +9,6 @@ if(NOT kdelibs_SOURCE_DIR)
 
   find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Xml Test Concurrent)
 
-  find_package(kdeqt5staging REQUIRED NO_MODULE)
-
   find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
 endif()
 

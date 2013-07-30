@@ -22,7 +22,6 @@
 
 #include <kconfiggroup.h>
 #include <kconfig.h>
-#include <kdebug.h>
 
 #include <kservice.h>
 

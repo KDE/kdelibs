@@ -84,7 +84,7 @@ QByteArray KRemoteEncoding::directory(const QUrl& url, bool ignore_trailing_slas
 
 QByteArray KRemoteEncoding::fileName(const QUrl& url) const
 {
-  return encode(QUrlPathInfo(url).fileName());
+  return encode(url.fileName());
 }
 
 const char *KRemoteEncoding::encoding() const

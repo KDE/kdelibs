@@ -23,7 +23,7 @@
 
 #include "render_line.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <assert.h>
 #include <QPainter>
 
@@ -375,7 +375,7 @@ void InlineBox::printTree(int indent) const
     QString temp;
     temp.fill(' ', indent);
 
-    kDebug() << (temp + information());
+    // qDebug() << (temp + information());
     if (isRootInlineBox()) {
         // const RootInlineBox* root = static_cast<const RootInlineBox*>(this);
     }

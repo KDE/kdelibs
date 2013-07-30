@@ -149,7 +149,7 @@ bool DelayedPostMessage::execute(Window* w)
     DOM::DocumentImpl* doc = part ? static_cast<DOM::DocumentImpl*>(part->document().handle()) : 0;
     KJSProxy* js = part ? KJSProxy::proxy(part) : 0;
     
-    kDebug(6070) << doc << js << sourceOrigin << targetOrigin;
+    // qDebug() << doc << js << sourceOrigin << targetOrigin;
     if (doc && js) {
         // Verify destination.
         bool safe = false;
@@ -176,7 +176,7 @@ bool DelayedPostMessage::execute(Window* w)
                                   source.data()); 
             doc->dispatchWindowEvent(msg.get());
         } else {
-            kWarning(6070) << "PostMessage XSS check failed;" 
+            qWarning() << "PostMessage XSS check failed;" 
                            << "target mask:" << targetOrigin 
                            << "actual:" << doc->origin()->toString()
                            << "source:" << sourceOrigin;

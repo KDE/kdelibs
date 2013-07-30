@@ -22,7 +22,7 @@
 #include <netinet/in.h>
 #include <QtCore/QEventLoop>
 #include <QtCore/QCoreApplication>
-#include <kdebug.h>
+#include <QDebug>
 #include "remoteservice.h"
 #include "avahi_server_interface.h"
 #include "avahi_serviceresolver_interface.h"
@@ -54,7 +54,7 @@ void RemoteService::resolveAsync()
 	if (d->m_running) return;
 	d->m_resolved = false;
         registerTypes();
-	kDebug() << this << ":Starting resolve of : " << d->m_serviceName << " " << d->m_type << " " << d->m_domain << "\n";
+	//qDebug() << this << ":Starting resolve of : " << d->m_serviceName << " " << d->m_type << " " << d->m_domain << "\n";
 	org::freedesktop::Avahi::Server s("org.freedesktop.Avahi","/",QDBusConnection::systemBus());
 	//FIXME: don't use LOOKUP_NO_ADDRESS if NSS unavailable 
 	QDBusReply<QDBusObjectPath> rep=s.ServiceResolverNew(-1, -1, d->m_serviceName, d->m_type, 

@@ -94,7 +94,7 @@ FindSelectionResult RenderBR::checkSelectionPoint(int _x, int _y, int _tx, int _
   if (!prev || !prev->isText() || !prev->firstTextBox() || prev->isBR())
     prev = this;
 
-  //kDebug(6040) << "delegated to " << prev->renderName() << "@" << prev;
+  //qDebug() << "delegated to " << prev->renderName() << "@" << prev;
   return prev->RenderText::checkSelectionPoint(_x, _y, _tx, _ty, node, offset, state);
 }
 

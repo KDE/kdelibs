@@ -269,7 +269,7 @@ int KIO::JobUiDelegate::requestMessageBox(KIO::JobUiDelegate::MessageBoxType typ
 {
     int result = -1;
 
-    //kDebug() << type << text << "caption=" << caption;
+    //qDebug() << type << text << "caption=" << caption;
 
     KConfig config("kioslaverc");
     KMessageBox::setDontShowAgainConfig(&config);

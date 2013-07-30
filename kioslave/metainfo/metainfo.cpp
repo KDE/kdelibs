@@ -20,7 +20,7 @@
 
 #include <QApplication>
 #include <QUrl>
-#include <kdebug.h>
+#include <QDebug>
 #include <kfilemetainfo.h>
 #include <klocalizedstring.h>
 #include <stdlib.h>
@@ -41,7 +41,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
 
     if (argc != 4)
     {
-        kError() << "Usage: kio_metainfo protocol domain-socket1 domain-socket2" << endl;
+        qCritical() << "Usage: kio_metainfo protocol domain-socket1 domain-socket2" << endl;
         exit(-1);
     }
 

@@ -23,12 +23,11 @@
 
 #include "kimproxy.h"
 
-
+#include <QDebug>
 #include <QPixmapCache>
 
 #include <kapplication.h>
 #include <kdbusservicestarter.h>
-#include <kdebug.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kiconloader.h>
@@ -44,11 +43,6 @@ struct AppPresenceCurrent
 	QString appId;
 	int presence;
 };
-
-static int debugArea() {
-    static int s_area = KDebug::registerArea("kimproxy (kdelibs)");
-    return s_area;
-}
 
 class ContactPresenceListCurrent : public QList<AppPresenceCurrent>
 {
@@ -232,22 +226,22 @@ bool KIMProxy::initialize()
 			QStringList registeredApps = QDBusConnection::sessionBus().interface()->registeredServiceNames();
 			foreach (const QString &app, registeredApps)
 			{
-				//kDebug( debugArea() ) << " considering: " << *app;
+				//qDebug() << " considering: " << *app;
 				//for each offer
 				for ( offer = offers.begin(); offer != offers.end(); ++offer )
 				{
 					QString dbusService = (*offer)->property("X-DBUS-ServiceName").toString();
 					if ( !dbusService.isEmpty() )
 					{
-						//kDebug( debugArea() ) << " is it: " << dbusService << "?";
+						//qDebug() << " is it: " << dbusService << "?";
 						// if the application implements the dcop service, add it
 						if ( app.startsWith( dbusService ) )
 						{
 							m_apps_available = true;
-							//kDebug( debugArea() ) << " app name: " << (*offer)->name() << ", has instance " << *app << ", dbusService: " << dbusService;
+							//qDebug() << " app name: " << (*offer)->name() << ", has instance " << *app << ", dbusService: " << dbusService;
 							if ( !m_im_client_stubs.contains( dbusService ) )
 							{
-								kDebug( debugArea() ) << "App " << app << ", found, using it for presence info.";
+								//qDebug() << "App " << app << ", found, using it for presence info.";
 								m_im_client_stubs.insert( app, findInterface( app ) );
 								pollApp( app );
 							}
@@ -265,7 +259,7 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 	// unregister...
 	if ( m_im_client_stubs.contains( appId ) )
 	{
-		kDebug( debugArea() ) << appId << " quit, removing its presence info.";
+		qDebug() << appId << " quit, removing its presence info.";
 
 		PresenceStringMap::Iterator it = d->presence_map.begin();
 		const PresenceStringMap::Iterator end = d->presence_map.end();
@@ -301,12 +295,12 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 				// if it's not already known, insert it
 				if ( !m_im_client_stubs.contains( appId ) )
 				{
-					kDebug( debugArea() ) << "App: " << appId << ", dbusService: " << dbusService << " started, using it for presence info.";
+					qDebug() << "App: " << appId << ", dbusService: " << dbusService << " started, using it for presence info.";
 					m_im_client_stubs.insert( appId, findInterface( appId ) );
 				}
 			}
 			//else
-			//	kDebug( debugArea() ) << "App doesn't implement our ServiceType";
+			//	qDebug() << "App doesn't implement our ServiceType";
 		}
 	}
 }
@@ -314,10 +308,10 @@ void KIMProxy::nameOwnerChanged( const QString & appId, const QString &, const Q
 void KIMProxy::contactPresenceChanged( const QString& uid, const QString& appId, int presence )
 {
 	// update the presence map
-	//kDebug( debugArea() ) << "uid: " << uid << " appId: " << appId << " presence " << presence;
+	//qDebug() << "uid: " << uid << " appId: " << appId << " presence " << presence;
 	ContactPresenceListCurrent current;
 	current = d->presence_map[ uid ];
-  //kDebug( debugArea() ) << "current best presence from : " << current.best().appId << " is: " << current.best().presence;
+  //qDebug() << "current best presence from : " << current.best().appId << " is: " << current.best().presence;
 	AppPresenceCurrent newPresence;
 	newPresence.appId = appId;
 	newPresence.presence = presence;
@@ -367,12 +361,12 @@ QPixmap KIMProxy::presenceIcon( const QString& uid )
 	}
 	if ( ap.appId.isEmpty() )
 	{
-		//kDebug( debugArea() ) << "returning a null QPixmap because we were asked for an icon for a uid we know nothing about";
+		//qDebug() << "returning a null QPixmap because we were asked for an icon for a uid we know nothing about";
 		return QPixmap();
 	}
 	else
 	{
-		//kDebug( debugArea() ) << "returning this: " << d->presence_icons[ ap.presence ];
+		//qDebug() << "returning this: " << d->presence_icons[ ap.presence ];
 		return SmallIcon( d->presence_icons[ ap.presence ]);
 	}
 }
@@ -440,7 +434,7 @@ QString KIMProxy::displayName( const QString& uid )
 		if ( OrgKdeKIMInterface* s = stubForUid( uid ) )
 			name = s->displayName( uid );
 	}
-	//kDebug( debugArea() ) << name;
+	//qDebug() << name;
     return name;
 }
 
@@ -553,7 +547,7 @@ bool KIMProxy::startPreferredApp()
 	// The app will notify itself to us using nameOwnerChanged, so we don't need to record a stub for it here
 	int result = KDBusServiceStarter::self()->findServiceFor( IM_SERVICE_TYPE, QString("Application"), &error, &dbusService );
 
-	kDebug( debugArea() ) << "error was: " << error << ", dbusService: " << dbusService;
+	qDebug() << "error was: " << error << ", dbusService: " << dbusService;
 
 	return ( result == 0 );
 }
@@ -580,7 +574,7 @@ void KIMProxy::pollAll( const QString &uid )
 
 void KIMProxy::pollApp( const QString & appId )
 {
-	//kDebug( debugArea() ) ;
+	//qDebug() ;
 	OrgKdeKIMInterface * appStub = m_im_client_stubs.value( appId );
 	QStringList contacts = m_im_client_stubs.value( appId )->allContacts();
 	QStringList::iterator it = contacts.begin();
@@ -599,7 +593,7 @@ void KIMProxy::pollApp( const QString & appId )
 		d->presence_map.insert( *it, current );
 		if ( current.update( ap ) )
 			emit sigContactPresenceChanged( *it );
-		//kDebug( debugArea() ) << " uid: " << *it << " presence: " << ap.presence;
+		//qDebug() << " uid: " << *it << " presence: " << ap.presence;
 	}
 }
 
@@ -643,7 +637,7 @@ QString KIMProxy::preferredApp()
 	KConfig cfg( IM_CLIENT_PREFERENCES_FILE, KConfig::SimpleConfig );
 	KConfigGroup cg(&cfg, IM_CLIENT_PREFERENCES_SECTION );
 	QString preferredApp = cg.readEntry( IM_CLIENT_PREFERENCES_ENTRY );
-	//kDebug( debugArea() ) << "found preferred app: " << preferredApp;
+	//qDebug() << "found preferred app: " << preferredApp;
 	return preferredApp;
 }
 

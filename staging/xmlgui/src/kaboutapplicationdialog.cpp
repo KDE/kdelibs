@@ -41,6 +41,7 @@
 #include <QStyle>
 #include <QTabWidget>
 #include <QTextBrowser>
+#include <QFontDatabase>
 
 class KAboutApplicationDialog::Private
 {
@@ -304,12 +305,7 @@ void KAboutApplicationDialog::Private::_k_showLicense( const QString &number )
 
     dialog->setWindowTitle(i18n("License Agreement"));
 
-#pragma message("Use QFontDatabase::systemFont(QFontDatabase::FixedFont) once https://codereview.qt-project.org/59808 is in")
-#if 0
-    const QFont font = KGlobalSettings::fixedFont();
-#else
-    const QFont font(QLatin1String("Monospace"), 9);
-#endif
+    const QFont font = QFontDatabase::systemFont(QFontDatabase::FixedFont);
     QFontMetrics metrics(font);
 
     const QString licenseText = aboutData.licenses().at(number.toInt()).text();

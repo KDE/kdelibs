@@ -23,7 +23,6 @@
 #include <QVariant>
 #include <QVariantList>
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <klocalizedstring.h>
 #include <kpluginloader.h>

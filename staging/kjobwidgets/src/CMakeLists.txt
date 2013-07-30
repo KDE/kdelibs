@@ -27,7 +27,13 @@ add_library(KJobWidgets ${kjobwidgets_SRCS})
 
 generate_export_header(KJobWidgets)
 
-target_link_libraries(KJobWidgets LINK_PUBLIC Qt5::Widgets Qt5::DBus KCoreAddons KWidgetsAddons ${kdeqt5staging_LIBRARIES})
+target_link_libraries(KJobWidgets
+   LINK_PUBLIC
+   Qt5::Widgets
+   Qt5::DBus
+   KCoreAddons    # KJob
+   KWidgetsAddons # KSqueezedTextLabel
+)
 
 if (HAVE_X11)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)

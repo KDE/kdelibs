@@ -6,7 +6,7 @@ include(ECMMarkAsTest)
 MACRO(KDECORE_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME "kdecore-${_testname}" NOGUI ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} Qt5::Test Qt5::Network ${KCoreAddons_LIBRARIES}  kdeqt5staging)
+               target_link_libraries(${_testname} ${KDE4_KDECORE_LIBS} Qt5::Test Qt5::Network ${KCoreAddons_LIBRARIES} kdeqt5staging KDE4Support)
                if(WINCE)
                 target_link_libraries(${_testname} ${WCECOMPAT_LIBRARIES})
                endif(WINCE)
@@ -31,17 +31,10 @@ KDECORE_UNIT_TESTS(
  kautostarttest
  kprocesstest
  qcoreapptest
- kconfignokdehometest
 )
 
 KDECORE_EXECUTABLE_TESTS(
  kmemtest
  dbuscalltest
- startserviceby
 )
 
-########### kcompositejobtest ###############
-
-set(kcompositejobtest_SRCS kcompositejobtest.cpp)
-kde4_add_unit_test(kcompositejobtest TESTNAME kdecore-kcompositejobtest ${kcompositejobtest_SRCS})
-target_link_libraries(kcompositejobtest ${KDE4_KDECORE_LIBS} Qt5::Test )

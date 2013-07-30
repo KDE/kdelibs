@@ -18,7 +18,7 @@
 #include "atticahelper.h"
 #include <QImage>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kio/job.h>
 #include <kio/scheduler.h>
@@ -119,7 +119,7 @@ void AtticaHelper::categoriesLoaded(Attica::BaseJob *baseJob)
     Attica::Category::List newCategories = listJob->itemList();
 
     if (m_configuredCategories.isEmpty()) {
-        kWarning() << "No category was set in knsrc file. Adding all categories.";
+        qWarning() << "No category was set in knsrc file. Adding all categories.";
         Q_FOREACH(const Attica::Category& category, newCategories) {
             m_validCategories.append(category);
         }

@@ -29,8 +29,7 @@
 #include <kemailsettings.h>
 #include <klocalizedstring.h>
 
-#include <k4aboutdata.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfig.h>
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
@@ -57,7 +56,7 @@ void BugMailer::slotError(int errornum) {
             lstr = sm->getLastLine().trimmed();
             lstr = i18n("Server said: \"%1\"", lstr);
     }
-    kDebug() << lstr;
+    // qDebug() << lstr;
 
     fputs(lstr.toUtf8().data(), stdout);
     fflush(stdout);
@@ -66,7 +65,7 @@ void BugMailer::slotError(int errornum) {
 }
 
 void BugMailer::slotSend() {
-    kDebug();
+    // qDebug();
     qApp->exit(0);
 }
 
@@ -98,7 +97,7 @@ int main(int argc, char **argv) {
             recipient = recipient.mid(1).left(recipient.length() - 2);
         }
     }
-    kDebug() << "recp" << recipient;
+    // qDebug() << "recp" << recipient;
 
     if (subject.isEmpty())
         subject = "(no subject)";
@@ -113,7 +112,7 @@ int main(int argc, char **argv) {
         line = input.readLine();
         text += line + "\r\n";
     }
-    kDebug() << text;
+    // qDebug() << text;
 
     KEMailSettings emailConfig;
     emailConfig.setProfile(emailConfig.defaultProfileName());
@@ -133,7 +132,7 @@ int main(int argc, char **argv) {
 	    buffer[sizeof(buffer)-1] = '\0';
         fromaddr += buffer;
     }
-    kDebug() << "fromaddr \"" << fromaddr << "\"";
+    // qDebug() << "fromaddr \"" << fromaddr << "\"";
 
     QString  server = emailConfig.getSetting(KEMailSettings::OutServer);
     if (server.isEmpty())
@@ -154,7 +153,7 @@ int main(int argc, char **argv) {
     sm->sendMessage();
 
     int r = a.exec();
-    kDebug() << "execing " << r;
+    // qDebug() << "execing " << r;
     delete sm;
     return r;
 }

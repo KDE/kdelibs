@@ -42,6 +42,7 @@
 #include <QStyleOptionViewItem>
 #include <QDialog>
 #include <QActionEvent>
+#include <QFontDatabase>
 #include <QtCore/QHash>
 #include <QApplication>
 #include <QMenu>

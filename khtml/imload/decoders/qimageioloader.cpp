@@ -31,7 +31,7 @@
 #include "imageloader.h"
 #include "kservice.h"
 #include "kservicetypetrader.h"
-#include "kdebug.h"
+#include "QDebug"
 #include "imagemanager.h"
 
 namespace khtmlImLoad {
@@ -170,7 +170,7 @@ const QStringList& QImageIOLoaderProvider::mimeTypes()
         if (!positive) continue;
         if (!mimetype.isEmpty()) {
             s_formats.append(mimetype);
-            kDebug(399) << "QImageIO - Format supported: " << mimetype << endl;
+            // qDebug() << "QImageIO - Format supported: " << mimetype << endl;
         }
     }
     return s_formats;
@@ -186,7 +186,7 @@ ImageLoader* QImageIOLoaderProvider::loaderFor(const QByteArray& prefix)
     if (format.isEmpty() || !isSupportedFormat(format))
         return 0;
     else
-        kDebug(399) << "QImageIO - Format guessed: " << format << endl;
+        // qDebug() << "QImageIO - Format guessed: " << format << endl;
 
     return new QImageIOLoader;
 }

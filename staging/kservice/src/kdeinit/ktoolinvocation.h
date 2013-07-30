@@ -25,13 +25,12 @@
 #ifndef _KTOOLINVOCATION_H
 #define _KTOOLINVOCATION_H
 
-#include <kdecore_export.h>
+#include <kservice_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QStringList>
 
-class OrgKdeKLauncherInterface;
 class QUrl;
 class KToolInvocationPrivate;
 
@@ -68,7 +67,7 @@ class KToolInvocationPrivate;
  * href="http://techbase.kde.org/Development/Architecture/KDE4/Starting_Other_Programs#KToolInvocation::startServiceByDesktopPath">techbase</a>.
  *
  */
-class KDECORE_EXPORT KToolInvocation : public QObject
+class KSERVICE_EXPORT KToolInvocation : public QObject
 {
 
   Q_OBJECT
@@ -162,16 +161,6 @@ public Q_SLOTS:
                              const QByteArray &startup_id = "");
 
 public:
-  /**
-   * Returns the D-Bus interface of the service launcher.
-   * The returned object is a global static, do not delete it!
-   * @deprecated since 5.0. Use startKdeinit if you just want kdeinit/klauncher to be running.
-   * Otherwise you shouldn't be calling this anyway (talk to David Faure for solutions)
-   * TODO: provide wrapper for setLaunchEnv, used in kde-runtime.
-   */
-#ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED OrgKdeKLauncherInterface *klauncher();
-#endif
 
   /**
    * Starts a service based on the (translated) name of the service.
@@ -195,7 +184,7 @@ public:
    * @deprecated Use startServiceByDesktopName or startServiceByDesktopPath
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED static int startServiceByName( const QString& _name, const QString &URL,
+  KSERVICE_DEPRECATED static int startServiceByName( const QString& _name, const QString &URL,
                                                 QString *error=0, QString *serviceName=0, int *pid=0,
                                                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
 #endif
@@ -222,7 +211,7 @@ public:
    * @deprecated Use startServiceByDesktopName or startServiceByDesktopPath
    */
 #ifndef KDE_NO_DEPRECATED
-  KDECORE_DEPRECATED static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
+  KSERVICE_DEPRECATED static int startServiceByName( const QString& _name, const QStringList &URLs=QStringList(),
                                                 QString *error=0, QString *serviceName=0, int *pid=0,
                                                 const QByteArray &startup_id = QByteArray(), bool noWait = false );
 #endif

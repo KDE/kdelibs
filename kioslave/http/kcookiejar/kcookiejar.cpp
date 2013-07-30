@@ -40,7 +40,7 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <qsavefile.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QString>
 #include <QtCore/QFile>
@@ -1232,9 +1232,9 @@ void KCookieJar::eatSessionCookies( const QString& fqdn, long windowId,
 #ifndef NDEBUG
             if (ids.contains(windowId)) {
                 if (ids.count() > 1)
-                    kDebug(7104) << "removing window id" << windowId << "from session cookie";
+                    qDebug() << "removing window id" << windowId << "from session cookie";
                 else
-                    kDebug(7104) << "deleting session cookie";
+                    qDebug() << "deleting session cookie";
             }
 #endif
             if (!ids.removeAll(windowId) || !ids.isEmpty()) {

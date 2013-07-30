@@ -102,7 +102,7 @@ void KServiceTypeProfiles::ensureParsed()
             const QString serviceId = config.readEntry( num + QLatin1String("_Service"), QString() );
             if (!serviceId.isEmpty()) {
                 const int pref = config.readEntry( num + QLatin1String("_Preference"), 0 );
-                //kDebug(7014) << "adding service " << serviceId << " to profile for " << type << " with preference " << pref;
+                //qDebug() << "adding service " << serviceId << " to profile for " << type << " with preference " << pref;
                 p->addService( serviceId, pref );
             }
         }
@@ -144,7 +144,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
     for( ; it != end; ++it )
     {
         const KService::Ptr servPtr = (*it).service();
-        //kDebug(7014) << "KServiceTypeProfile::offers considering " << servPtr->storageId();
+        //qDebug() << "KServiceTypeProfile::offers considering " << servPtr->storageId();
         // Look into the profile (if there's one), to find this service's preference.
         bool foundInProfile = false;
         if ( profile )
@@ -153,7 +153,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
             if( it2 != profile->m_mapServices.constEnd() )
             {
                 const int pref = it2.value();
-                //kDebug(7014) << "found in mapServices pref=" << pref;
+                //qDebug() << "found in mapServices pref=" << pref;
                 if ( pref > 0 ) { // 0 disables the service
                     offers.append( KServiceOffer( servPtr, pref, 0, servPtr->allowAsDefault() ) );
                 }
@@ -166,7 +166,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
             // This can be because we have no profile at all, or because the
             // services have been installed after the profile was written,
             // but it's also the case for any service that's neither App nor ReadOnlyPart, e.g. RenameDlg/Plugin
-            //kDebug(7014) << "not found in mapServices. Appending.";
+            //qDebug() << "not found in mapServices. Appending.";
 
             // If there's a profile, we use 0 as the preference to ensure new apps don't take over existing apps (which default to 1)
             offers.append( KServiceOffer( servPtr,
@@ -178,7 +178,7 @@ KServiceOfferList KServiceTypeProfile::sortServiceTypeOffers( const KServiceOffe
 
     qStableSort( offers );
 
-    //kDebug(7014) << "KServiceTypeProfile::offers returning " << offers.count() << " offers";
+    //qDebug() << "KServiceTypeProfile::offers returning " << offers.count() << " offers";
     return offers;
 }
 

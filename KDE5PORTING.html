@@ -200,6 +200,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KTemporaryFile is deprecated, port to QTemporaryFile instead, see KTemporaryFile API documentation for details.</li>
 <li>KTempDir is deprecated, port to QTemporaryDir instead, see KTempDir API documentation for details.</li>
 <li>KToolInvocation::invokeHelp is now KHelpClient::invokeHelp, in the kwidgets framework.</li>
+<li>KToolInvocation::klauncher() has been removed. Use startKdeinit if you just want kdeinit/klauncher to be running. Otherwise you shouldn't be calling this anyway (talk to David Faure for solutions). TODO: provide wrapper for setLaunchEnv, used in kde-runtime.</li>
 <li>KMD5 is deprecated, port to QCryptographicHash instead.</li>
 <li>KMimeType is deprecated, port to QMimeType instead. Here's a porting guide:
 <pre>
@@ -291,6 +292,8 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KCodecAction: use enum KEncodingProber::ProberType instead of enum KEncodingDetector::AutoDetectScript</li>
 <li>KXMessages: the "obsolete = false" argument has been removed from all methods, and int screen has a default value of -1 now. Remove the "-1, false" in all calls. The sendMessage and sendMessageX methods were apparently unused, and have been commented out. Email kde-frameworks-devel at kde.org if you need them back.</li>
 <li>KGlobalSettings::contextMenuKey is gone, reimplement QWidget::contextMenuEvent() instead.</li>
+<li>KGlobalSettings::*Font methods are deprecated. Use QFontsDatabase::systemFonts(). ::menuFont, ::taskBarFont and ::toolBarFont are not available now (they are provided by the QPA but not public API). If cases needing those arise we'll
+have to find an alternative</li>
 <li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in three frameworks:
     <ul>
     <li>WId methods are now in kmessagebox_kiw.h from kinterprocesswindowing framework</li>
@@ -324,6 +327,7 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 </li>
 <li>KUndoStack: Use QUndoStack with KUndoActions::createUndoAction() and KUndoActions::createRedoAction() instead</li>
 <li>KRichTextWidget: createActions() does not take any KActionCollection and returns a list of QAction instead. You could use KActionCollection.addActions(KRichTextWidget.createActions()) instead.</li>
+<li>KTextBrowser: Use QTextBrowser instead. The only difference is QTextBrowser does not support "whatsthis:" urls.</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>

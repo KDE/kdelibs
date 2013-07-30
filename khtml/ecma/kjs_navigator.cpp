@@ -29,7 +29,7 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kio/kprotocolmanager.h>
 #include <kservice.h>
@@ -185,7 +185,7 @@ Navigator::Navigator(ExecState *exec, KHTMLPart *p)
 bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Navigator::getOwnPropertySlot " << propertyName.ascii();
+  // qDebug() << "Navigator::getOwnPropertySlot " << propertyName.ascii();
 #endif
   return getStaticPropertySlot<NavigatorFunc, Navigator, JSObject>(exec, &NavigatorTable, this, propertyName, slot);
 }
@@ -212,16 +212,16 @@ JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
     if (userAgent.indexOf(QLatin1String("Mozilla")) >= 0 &&
         userAgent.indexOf(QLatin1String("compatible")) == -1)
     {
-      //kDebug() << "appName -> Mozilla";
+      //qDebug() << "appName -> Mozilla";
       return jsString("Netscape");
     }
     if (userAgent.indexOf(QLatin1String("Microsoft")) >= 0 ||
         userAgent.indexOf(QLatin1String("MSIE")) >= 0)
     {
-      //kDebug() << "appName -> IE";
+      //qDebug() << "appName -> IE";
       return jsString("Microsoft Internet Explorer");
     }
-    //kDebug() << "appName -> Default";
+    //qDebug() << "appName -> Default";
     return jsString(appName);
   case AppVersion:
     // We assume the string is something like Mozilla/version (properties)
@@ -297,7 +297,7 @@ JSValue *Navigator::getValueProperty(ExecState *exec, int token) const
   case CookieEnabled:
     return jsBoolean(true); /// ##### FIXME
   default:
-    kDebug(6070) << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in DOMEvent::getValueProperty : " << token;
     return jsNull();
   }
 }
@@ -351,7 +351,7 @@ PluginBase::PluginBase(ExecState *exec, bool loadPluginInfo)
                     MimeClassInfo *mime = new MimeClassInfo;
                     QStringList::ConstIterator token = tokens.begin();
                     mime->type = (*token).toLower();
-                    //kDebug(6070) << "mime->type=" << mime->type;
+                    //qDebug() << "mime->type=" << mime->type;
                     ++token;
 
                     mime->suffixes = *token;
@@ -425,7 +425,7 @@ JSValue *Plugins::nameGetter(ExecState* exec, JSObject*, const Identifier& prope
 bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Plugins::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "Plugins::getOwnPropertySlot " << propertyName.qstring();
 #endif
   if (getStaticOwnPropertySlot<PluginsFunc, Plugins>(&PluginsTable, this, propertyName, slot))
       return true;
@@ -486,7 +486,7 @@ JSValue *PluginsFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const L
     return base->pluginByName( exec, s.qstring() );
   }
   default:
-    kDebug(6070) << "WARNING: Unhandled token in PluginsFunc::callAsFunction : " << id;
+    // qDebug() << "WARNING: Unhandled token in PluginsFunc::callAsFunction : " << id;
     return jsUndefined();
   }
 }
@@ -516,7 +516,7 @@ JSValue *MimeTypes::nameGetter(ExecState* exec, JSObject*, const Identifier& pro
 bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "MimeTypes::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "MimeTypes::getOwnPropertySlot " << propertyName.qstring();
 #endif
   if (getStaticOwnPropertySlot<MimeTypesFunc, MimeTypes>(&MimeTypesTable, this, propertyName, slot))
       return true;
@@ -545,7 +545,7 @@ bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyNa
 
 JSValue *MimeTypes::mimeTypeByName( ExecState* exec, const QString& name )
 {
-  //kDebug(6070) << "MimeTypes[" << name << "]";
+  //qDebug() << "MimeTypes[" << name << "]";
   QList<const MimeClassInfo*>::const_iterator it, end = mimes->constEnd();
   for (it = mimes->constBegin(); it != end; ++it) {
     if ((*it)->type == name)
@@ -586,7 +586,7 @@ JSValue *MimeTypesFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const
     return base->mimeTypeByName( exec, s.qstring() );
   }
   default:
-    kDebug(6070) << "WARNING: Unhandled token in MimeTypesFunc::callAsFunction : " << id;
+    // qDebug() << "WARNING: Unhandled token in MimeTypesFunc::callAsFunction : " << id;
     return jsUndefined();
   }
 }
@@ -620,7 +620,7 @@ JSValue *Plugin::nameGetter(ExecState *exec, JSObject*, const Identifier& proper
 bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Plugin::getOwnPropertySlot " << propertyName.qstring();
+  // qDebug() << "Plugin::getOwnPropertySlot " << propertyName.qstring();
 #endif
   if (getStaticOwnPropertySlot<PluginFunc, Plugin>(&PluginTable, this, propertyName, slot))
       return true;
@@ -668,7 +668,7 @@ JSValue *Plugin::getValueProperty(ExecState* /*exec*/, int token) const
   case Plugin_Length:
     return jsNumber( m_info->mimes.count() );
   default:
-    kDebug(6070) << "WARNING: Unhandled token in Plugin::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in Plugin::getValueProperty : " << token;
     return jsUndefined();
   }
 }
@@ -692,7 +692,7 @@ JSValue *PluginFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
     return plugin->mimeByName( exec, s.qstring() );
   }
   default:
-    kDebug(6070) << "WARNING: Unhandled token in PluginFunc::callAsFunction : " << id;
+    // qDebug() << "WARNING: Unhandled token in PluginFunc::callAsFunction : " << id;
     return jsUndefined();
   }
 }
@@ -712,7 +712,7 @@ const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypeTable, 0 };
 bool MimeType::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "MimeType::get " << propertyName.qstring();
+  // qDebug() << "MimeType::get " << propertyName.qstring();
 #endif
   return getStaticValueSlot<MimeType, JSObject>(exec, &MimeTypeTable, this, propertyName, slot);
 }
@@ -729,7 +729,7 @@ JSValue *MimeType::getValueProperty(ExecState* exec, int token) const
   case MimeType_EnabledPlugin:
     return new Plugin(exec, m_info->plugin);
   default:
-    kDebug(6070) << "WARNING: Unhandled token in MimeType::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in MimeType::getValueProperty : " << token;
     return jsUndefined();
   }
 }

@@ -23,7 +23,7 @@
 #include <qtest_widgets.h>
 
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QDialog>
 #include <QMenu>
@@ -85,7 +85,7 @@ private Q_SLOTS:
             QTest::newRow("(zip) save") << "application/zip" << Save << (int)BrowserOpenOrSaveQuestion::Save << false;
         }
         else {
-            kWarning() << "This test relies on the fact that there is at least one app associated with appliation/zip.";
+            qWarning() << "This test relies on the fact that there is at least one app associated with appliation/zip.";
         }
 
         if(KMimeTypeTrader::self()->query("text/plain", "Application").count() > 0) {
@@ -95,7 +95,7 @@ private Q_SLOTS:
             QTest::newRow("(text) save") << "text/plain" << Save << (int)BrowserOpenOrSaveQuestion::Save << false;
         }
         else {
-            kWarning() << "This test relies on the fact that there is at least one app associated with text/plain.";
+            qWarning() << "This test relies on the fact that there is at least one app associated with text/plain.";
         }
 
         if(KMimeTypeTrader::self()->query("application/x-zerosize", "Application").count() == 0) {
@@ -104,7 +104,7 @@ private Q_SLOTS:
             QTest::newRow("(zero) save") << "application/x-zerosize" << Save << (int)BrowserOpenOrSaveQuestion::Save << false;
         }
         else {
-            kWarning() << "This test relies on the fact that there are no apps associated with application/x-zerosize.";
+            qWarning() << "This test relies on the fact that there are no apps associated with application/x-zerosize.";
         }
 
 

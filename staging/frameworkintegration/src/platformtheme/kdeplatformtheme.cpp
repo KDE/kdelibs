@@ -1,5 +1,6 @@
 /*  This file is part of the KDE libraries
  *  Copyright 2013 Kevin Ottens <ervin+bluesystems@kde.org>
+ *  Copyright 2013 Aleix Pol Gonzalez <aleixpol@blue-systems.com>
  *
  *  This library is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -19,6 +20,7 @@
  */
 
 #include "kdeplatformtheme.h"
+#include "kfontsettingsdata.h"
 
 #include <QCoreApplication>
 #include <QDialogButtonBox>
@@ -44,7 +46,7 @@ KdePlatformTheme::KdePlatformTheme()
 
 KdePlatformTheme::~KdePlatformTheme()
 {
-    qDeleteAll(m_fonts);
+    delete m_fontsData;
     qDeleteAll(m_palettes);
 }
 
@@ -68,10 +70,39 @@ const QPalette *KdePlatformTheme::palette(Palette type) const
 
 const QFont *KdePlatformTheme::font(Font type) const
 {
-    if (m_fonts.contains(type))
-        return m_fonts.value(type);
-    else
-        return QPlatformTheme::font(type);
+    KFontSettingsData::FontTypes fdtype;
+    switch(type) {
+        case SystemFont:
+            fdtype = KFontSettingsData::GeneralFont; break;
+        case MenuFont:
+        case MenuBarFont:
+        case MenuItemFont:
+            fdtype = KFontSettingsData::MenuFont; break;
+        case MessageBoxFont:
+        case LabelFont:
+        case TipLabelFont:
+        case StatusBarFont:
+        case PushButtonFont:
+        case ToolButtonFont:
+        case ItemViewFont:
+        case ListViewFont:
+        case HeaderViewFont:
+        case ListBoxFont:
+        case ComboMenuItemFont:
+        case ComboLineEditFont:
+            fdtype = KFontSettingsData::GeneralFont; break;
+        case TitleBarFont:
+        case MdiSubWindowTitleFont:
+        case DockWidgetTitleFont:
+            fdtype = KFontSettingsData::WindowTitleFont; break;
+        case SmallFont:
+        case MiniFont:
+            fdtype = KFontSettingsData::SmallestReadableFont; break;
+        default:
+            fdtype = KFontSettingsData::GeneralFont; break;
+    }
+
+    return m_fontsData->font(fdtype);
 }
 
 QIconEngine *KdePlatformTheme::createIconEngine(const QString &iconName) const
@@ -104,7 +135,8 @@ void KdePlatformTheme::loadSettings()
 {
     loadHints();
     loadPalettes();
-    loadFonts();
+
+    m_fontsData = new KFontSettingsData;
 }
 
 void KdePlatformTheme::loadHints()
@@ -149,51 +181,3 @@ void KdePlatformTheme::loadPalettes()
     KSharedConfig::Ptr globals = KSharedConfig::openConfig("kdeglobals");
     m_palettes[SystemPalette] = new QPalette(KColorScheme::createApplicationPalette(globals));
 }
-
-void KdePlatformTheme::loadFonts()
-{
-    qDeleteAll(m_fonts);
-    m_fonts.clear();
-
-    KConfigGroup cg(KSharedConfig::openConfig("kdeglobals"), "General");
-    QFont defaultFont = QFont("Sans Serif", 9);
-    defaultFont.setStyleHint(QFont::SansSerif);
-    QFont defaultFixedFont = QFont("Monospace", 9);
-
-    const QFont generalFont = cg.readEntry("font", defaultFont);
-    const QFont fixedFont = cg.readEntry("fixed", defaultFixedFont);
-    const QFont menuFont = cg.readEntry("menuFont", defaultFont);
-
-    defaultFont.setPointSize(8);
-    const QFont toolBarFont = cg.readEntry("toolBarFont", defaultFont);
-    const QFont smallestReadableFont = cg.readEntry("smallestReadableFont", defaultFont);
-
-    KConfigGroup wmcg(KSharedConfig::openConfig("kdeglobals"), "WM");
-    const QFont windowTitleFont = wmcg.readEntry("activeFont", defaultFont);
-
-
-    QCoreApplication::instance()->setProperty("_k_fixedFont", QVariant::fromValue(fixedFont));
-
-    m_fonts[SystemFont] = new QFont(generalFont);
-    m_fonts[MenuFont] = new QFont(menuFont);
-    m_fonts[MenuBarFont] = new QFont(menuFont);
-    m_fonts[MenuItemFont] = new QFont(menuFont);
-    m_fonts[MessageBoxFont] = new QFont(generalFont);
-    m_fonts[LabelFont] = new QFont(generalFont);
-    m_fonts[TipLabelFont] = new QFont(generalFont);
-    m_fonts[StatusBarFont] = new QFont(generalFont);
-    m_fonts[TitleBarFont] = new QFont(windowTitleFont);
-    m_fonts[MdiSubWindowTitleFont] = new QFont(windowTitleFont);
-    m_fonts[DockWidgetTitleFont] = new QFont(smallestReadableFont);
-    m_fonts[PushButtonFont] = new QFont(generalFont);
-    m_fonts[ToolButtonFont] = new QFont(toolBarFont);
-    m_fonts[ItemViewFont] = new QFont(generalFont);
-    m_fonts[ListViewFont] = new QFont(generalFont);
-    m_fonts[HeaderViewFont] = new QFont(generalFont);
-    m_fonts[ListBoxFont] = new QFont(generalFont);
-    m_fonts[ComboMenuItemFont] = new QFont(generalFont);
-    m_fonts[ComboLineEditFont] = new QFont(generalFont);
-    m_fonts[SmallFont] = new QFont(smallestReadableFont);
-    m_fonts[MiniFont] = new QFont(smallestReadableFont);
-}
-

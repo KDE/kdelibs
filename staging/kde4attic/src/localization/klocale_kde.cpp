@@ -1265,7 +1265,7 @@ QString KLocalePrivate::formatNumber(const QString &numStr, bool round, int prec
         tmpString.remove(0, 1);
     }
 
-    //kDebug(173)<<"tmpString:"<<tmpString;
+    //qDebug()<<"tmpString:"<<tmpString;
 
     // Split off exponential part (including 'e'-symbol)
     const int expPos = tmpString.indexOf(QLatin1Char('e')); // -1 if not found
@@ -1278,8 +1278,8 @@ QString KLocalePrivate::formatNumber(const QString &numStr, bool round, int prec
         }
     }
 
-    //kDebug(173)<<"mantString:"<<mantString;
-    //kDebug(173)<<"expString:"<<expString;
+    //qDebug()<<"mantString:"<<mantString;
+    //qDebug()<<"expString:"<<expString;
     if (mantString.isEmpty() || !mantString[0].isDigit()) {// invalid number
         mantString = QLatin1Char('0');
     }

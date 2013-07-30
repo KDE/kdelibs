@@ -32,7 +32,6 @@
 #include <QDesktopWidget>
 #include <QDir>
 #include <QMenu>
-#include <qurlpathinfo.h>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -154,8 +153,7 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
 
     if (url.isLocalFile() && url.toLocalFile().startsWith(QDir::tempPath()))
        return;
-    QUrlPathInfo urlPathInfo(url);
-    const QString tmpName = name.isEmpty() ? urlPathInfo.fileName() : name;
+    const QString tmpName = name.isEmpty() ? url.fileName() : name;
     const QString pathOrUrl(url.toDisplayString(QUrl::PreferLocalFile));
 
 #ifdef Q_OS_WIN
@@ -301,8 +299,7 @@ void KRecentFilesAction::loadEntries( const KConfigGroup& _config)
 #endif
 
         nameKey = QString( "Name%1" ).arg( i );
-        QUrlPathInfo urlPathInfo(url);
-        nameValue = cg.readPathEntry(nameKey, urlPathInfo.fileName());
+        nameValue = cg.readPathEntry(nameKey, url.fileName());
         title = titleWithSensibleWidth(nameValue, value);
         if (!value.isNull())
         {

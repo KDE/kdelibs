@@ -562,10 +562,10 @@ QChar KCharsets::fromEntity(const QString &str)
 
     if(!e)
     {
-        //kDebug( 0 ) << "unknown entity " << str <<", len = " << str.length();
+        //qDebug() << "unknown entity " << str <<", len = " << str.length();
         return QChar::Null;
     }
-    //kDebug() << "got entity " << str << " = " << e->code;
+    //qDebug() << "got entity " << str << " = " << e->code;
 
     return QChar(e->code);
 }

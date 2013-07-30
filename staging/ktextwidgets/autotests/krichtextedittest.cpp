@@ -138,7 +138,7 @@ void KRichTextEditTest::testHTMLLineBreaks()
   const QStringList lines = html.split(QLatin1Char('\n'));
   
 //  for (int idx=0; idx<lines.size(); idx++) {
-//    kDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
+//    qDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
 //  }
   
   QVERIFY2( lines.size() == 7,  "we can't perform this unit test: "
@@ -181,7 +181,7 @@ void KRichTextEditTest::testHTMLOrderedLists()
 //  rendering has actually introduced a bug, or merely a problem with the unit test itself
 //  
 //  for (int idx=0; idx<lines.size(); idx++) {
-//    kDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
+//    qDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
 //  }
   
   QVERIFY2( lines.size() == 9,  "we can't perform this unit test: "
@@ -190,7 +190,7 @@ void KRichTextEditTest::testHTMLOrderedLists()
   // this is the <ol> declaration line
   const QString& line6 = lines.at(5);
   
-//  kDebug() << line6;
+//  qDebug() << line6;
   
   // there should not be a margin-left: 0 defined for the <ol> element
   QRegExp regex( QStringLiteral ( "<ol.*margin-left: 0px.*><li" ) );
@@ -227,7 +227,7 @@ void KRichTextEditTest::testHTMLUnorderedLists()
 //  rendering has actually introduced a bug, or merely a problem with the unit test itself
 //  
 //  for (int idx=0; idx<lines.size(); idx++) {
-//    kDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
+//    qDebug() << ( idx + 1 ) << QString( " : " ) << lines.at( idx );
 //  }
   
   QVERIFY2( lines.size() == 9,  "we can't perform this unit test: "
@@ -236,7 +236,7 @@ void KRichTextEditTest::testHTMLUnorderedLists()
   // this is the <ol> declaration line
   const QString& line6 = lines.at(5);
   
-//  kDebug() << line6;
+//  qDebug() << line6;
   
   // there should not be a margin-left: 0 defined for the <ol> element
   QRegExp regex( QStringLiteral ( "<ul.*margin-left: 0px.*><li" ) );

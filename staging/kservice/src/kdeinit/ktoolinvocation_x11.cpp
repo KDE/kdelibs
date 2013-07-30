@@ -29,13 +29,13 @@
 #include <kmimetypetrader.h>
 
 #include "kconfig.h"
-#include "kdebug.h"
 #include "kshell.h"
 #include "kmacroexpander.h"
 #include "klocalizedstring.h"
 #include "kmessage.h"
 #include "kservice.h"
 
+#include <QDebug>
 #include <qstandardpaths.h>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QProcess>
@@ -82,7 +82,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
                 if (commentlevel > 0)
                     commentlevel--;
                 else {
-                    //kDebug() << "Error in address splitting: Unmatched ')'"
+                    //qDebug() << "Error in address splitting: Unmatched ')'"
                     //          << endl;
                     return list;
                 }
@@ -108,7 +108,7 @@ static QStringList splitEmailAddressList( const QString & aStr )
             list += addr.simplified();
     }
     //else
-    //  kDebug() << "Error in address splitting: "
+    //  qDebug() << "Error in address splitting: "
     //            << "Unexpected end of address list"
     //            << endl;
 
@@ -295,7 +295,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
                 // desktop file ID
                 KService::Ptr service = KService::serviceByStorageId(exe);
                 if (service) {
-                    kDebug() << "Starting service" << service->entryPath();
+                    //qDebug() << "Starting service" << service->entryPath();
                     if (startServiceByDesktopPath(service->entryPath(), args,
                             &error, 0, 0, startup_id)) {
                         KMessage::message(KMessage::Error,
@@ -340,7 +340,7 @@ void KToolInvocation::invokeBrowser( const QString &url, const QByteArray& start
         exe = QString::fromLatin1("kde-open"); // it's from kdebase-runtime, it has to be there.
     }
 
-    kDebug(180) << "Using" << exe << "to open" << url;
+    //qDebug() << "Using" << exe << "to open" << url;
     if (kdeinitExec(exe, args, &error, NULL, startup_id ))
     {
         KMessage::message(KMessage::Error,

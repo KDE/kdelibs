@@ -130,7 +130,7 @@ KService::Ptr KServiceFactory::findServiceByDesktopPath(const QString &_name)
 
     int offset = m_relNameDict->find_string( _name );
     if (!offset) {
-        //kDebug(servicesDebugArea()) << "findServiceByDesktopPath:" << _name << "not found";
+        //qDebug() << "findServiceByDesktopPath:" << _name << "not found";
         return KService::Ptr(); // Not found
     }
 

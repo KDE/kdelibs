@@ -22,7 +22,7 @@
 
 #include <QtCore/QStringList>
 #include <QImage>
-#include <kdebug.h>
+#include <QDebug>
 
 #include "core/xmlloader.h"
 
@@ -417,7 +417,7 @@ void EntryInternal::clearDownloadLinkInformation()
 bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
 {
     if (xmldata.tagName() != "stuff") {
-        kWarning() << "Parsing Entry from invalid XML";
+        qWarning() << "Parsing Entry from invalid XML";
         return false;
     }
 
@@ -475,7 +475,7 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
         } else if (e.tagName() == "status") {
             QString statusText = e.text();
             if (statusText == "installed") {
-                kDebug() << "Found an installed entry in registry";
+                // qDebug() << "Found an installed entry in registry";
                 d->mStatus = Entry::Installed;
             } else if (statusText == "updateable") {
                 d->mStatus = Entry::Updateable;
@@ -485,7 +485,7 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
 
     // Validation
     if (d->mName.isEmpty()) {
-        kWarning(550) << "Entry: no name given";
+        qWarning() << "Entry: no name given";
         return false;
     }
 
@@ -498,7 +498,7 @@ bool KNS3::EntryInternal::setEntryXML(const QDomElement & xmldata)
     }
 
     if (d->mPayload.isEmpty()) {
-        kWarning(550) << "Entry: no payload URL given for: " << d->mName << " - " << d->mUniqueId;
+        qWarning() << "Entry: no payload URL given for: " << d->mName << " - " << d->mUniqueId;
         return false;
     }
     return true;

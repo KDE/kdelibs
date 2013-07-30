@@ -35,7 +35,7 @@
 #include <QLineEdit>
 #include <QtTest/QtTest>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 
 Part1::Part1( QObject *parent, QWidget * parentWidget )
@@ -83,7 +83,7 @@ void Part1::slotFooBar()
 
 bool Part1::openFile()
 {
-    kDebug() << "Part1: opening " << QFile::encodeName(localFilePath());
+    // qDebug() << "Part1: opening " << QFile::encodeName(localFilePath());
     // Hehe this is from a tutorial I did some time ago :)
     QFile f(localFilePath());
     QString s;

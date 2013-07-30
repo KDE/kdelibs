@@ -29,7 +29,6 @@
 
 #include <ksharedconfig.h>
 #include <ktitlewidget.h>
-#include <kdebug.h>
 #include <kwindowconfig.h>
 #include <QCoreApplication>
 #include <kstandardguiitem.h>

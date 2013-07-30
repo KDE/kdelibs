@@ -24,7 +24,7 @@
 #include <kio_ksslcertificatemanager_p.h>
 using namespace KIO;
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kfiledialog.h>
 
 #include <QList>
@@ -145,7 +145,7 @@ void CaCertificatesPage::load()
     m_userCertificatesParent->setFlags(m_userCertificatesParent->flags() & ~Qt::ItemIsSelectable);
 
     QList<KSslCaCertificate> caCerts = _allKsslCaCertificates(KSslCertificateManager::self());
-    kDebug(7029) << "# certs:" << caCerts.count();
+    // qDebug() << "# certs:" << caCerts.count();
     foreach (const KSslCaCertificate &caCert, caCerts) {
         addCertificateItem(caCert);
     }
@@ -183,7 +183,7 @@ void CaCertificatesPage::save()
         grandParent = m_userCertificatesParent;
     }
 
-    kDebug(7029) << "# certs:" << newState.count();
+    // qDebug() << "# certs:" << newState.count();
     _setAllKsslCaCertificates(KSslCertificateManager::self(), newState);
     emit changed(false);
 }
@@ -199,7 +199,7 @@ void CaCertificatesPage::defaults()
 // private slot
 void CaCertificatesPage::itemSelectionChanged()
 {
-    kDebug(7029) << m_ui.treeWidget->selectionModel()->hasSelection();
+    // qDebug() << m_ui.treeWidget->selectionModel()->hasSelection();
     int numRemovable = 0;
     int numEnabled = 0;
     int numDisplayable = 0;
@@ -307,7 +307,7 @@ void CaCertificatesPage::addCertificateClicked()
             certs += QSslCertificate::fromPath(certFile, QSsl::Der);
         }
         if (prevCertCount == certs.count()) {
-            kDebug(7029) << "failed to load certificate file" << certFile;
+            // qDebug() << "failed to load certificate file" << certFile;
         }
     }
 
@@ -334,7 +334,7 @@ void CaCertificatesPage::itemChanged(QTreeWidgetItem *item, int column)
     if (m_blockItemChanged) {
         return;
     }
-    kDebug(7029);
+    // qDebug();
     // we could try to emit changed(false) if everything was changed back to status quo
 
     // a click on the checkbox of an unselected item first invokes itemSelectionChanged(),
@@ -357,7 +357,7 @@ static QTreeWidgetItem *findImmediateChild(QTreeWidgetItem *parent, const QStrin
 bool CaCertificatesPage::addCertificateItem(const KSslCaCertificate &caCert)
 {
     if (m_knownCertificates.contains(caCert.certHash)) {
-        kDebug(7029) << "CaCertificatesPage::addCertificateItem(): refusing duplicate";
+        // qDebug() << "CaCertificatesPage::addCertificateItem(): refusing duplicate";
         return false;
     }
     const bool prevBlockItemChanged = m_blockItemChanged;

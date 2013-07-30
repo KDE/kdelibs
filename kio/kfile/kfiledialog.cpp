@@ -39,7 +39,7 @@
 #include <klocalizedstring.h>
 #include <defaults-kfile.h>
 #include <krecentdocument.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kwindowsystem.h>
 #include "kabstractfilewidget.h"
 #include "kabstractfilemodule.h"
@@ -155,9 +155,9 @@ static KAbstractFileModule* fileModule()
     if(!s_module) {
         QString moduleName = KConfig("kdeglobals").group(ConfigGroup).readEntry("file module", s_defaultFileModuleName);
         if(!(s_module = loadFileModule(moduleName))) {
-            kDebug() << "Failed to load configured file module" << moduleName;
+            // qDebug() << "Failed to load configured file module" << moduleName;
             if(moduleName != s_defaultFileModuleName) {
-                kDebug() << "Falling back to default file module.";
+                // qDebug() << "Falling back to default file module.";
                 s_module = loadFileModule(s_defaultFileModuleName);
             }
         }
@@ -300,7 +300,7 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
     //       Else, all of these connects (including "accepted") are not typesafe.
     // Answer: you cannot define signals in a non-qobject base class (DF).
     //         I simply documentde them in kabstractfilewidget.h now.
-    kDebug (kfile_area) << "KFileDialog connecting signals";
+    // qDebug() << "KFileDialog connecting signals";
     connect(fileQWidget, SIGNAL(fileSelected(QUrl)),
                          SIGNAL(fileSelected(QUrl)));
     connect(fileQWidget, SIGNAL(fileHighlighted(QUrl)),
@@ -739,7 +739,7 @@ QString KFileDialogPrivate::getSaveFileName(const QUrl& dir, const QString& filt
         }
         else if ( !specialDir && !defaultDir ) {
           if (!dir.isLocalFile())
-              kWarning() << "non-local start dir " << dir;
+              qWarning() << "non-local start dir " << dir;
           startDir = dir;
         }
 

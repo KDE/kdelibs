@@ -48,7 +48,7 @@
 #include <ctype.h>
 #include <assert.h>
 #include <QtCore/QVariant>
-#include <kdebug.h>
+#include <QDebug>
 #include <stdlib.h>
 
 #include "kentities.c"
@@ -1034,7 +1034,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
         }
         case SearchSemicolon:
 #ifdef TOKEN_DEBUG
-            kDebug( 6036 ) << "ENTITY " << EntityChar.unicode();
+            // qDebug() << "ENTITY " << EntityChar.unicode();
 #endif
             fixUpChar(EntityChar);
 
@@ -1051,7 +1051,7 @@ void HTMLTokenizer::parseEntity(TokenizerString &src, QChar *&dest, bool start)
                 rawContentSinceLastEntity = -1;
             } else {
 #ifdef TOKEN_DEBUG
-                kDebug( 6036 ) << "unknown entity!";
+                // qDebug() << "unknown entity!";
 #endif
                 checkBuffer(11);
                 // ignore the sequence, add it to the buffer as plaintext
@@ -1107,7 +1107,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     if (searchCount == 4)
                     {
 #ifdef TOKEN_DEBUG
-                        kDebug( 6036 ) << "Found comment";
+                        // qDebug() << "Found comment";
 #endif
                         // Found '<!--' sequence
                         ++src;
@@ -1198,13 +1198,13 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                     }
 #ifdef TOKEN_DEBUG
                     QByteArray tmp(ptr, len+1);
-                    kDebug( 6036 ) << "Unknown tag: \"" << tmp.data() << "\"";
+                    // qDebug() << "Unknown tag: \"" << tmp.data() << "\"";
 #endif
                 }
                 if (tagID) {
 #ifdef TOKEN_DEBUG
                     QByteArray tmp(ptr, len+1);
-                    kDebug( 6036 ) << "found tag id=" << tagID << ": " << tmp.data();
+                    // qDebug() << "found tag id=" << tagID << ": " << tmp.data();
 #endif
                     currToken.tid = beginTag ? tagID : tagID + ID_CLOSE_TAG;
                 }
@@ -1280,9 +1280,9 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                         *dest++ = a;
 #ifdef TOKEN_DEBUG
                         if (!a || (cBufferPos && *cBuffer == '!'))
-                            kDebug( 6036 ) << "Unknown attribute: *" << QByteArray(cBuffer, cBufferPos+1).data() << "*";
+                            // qDebug() << "Unknown attribute: *" << QByteArray(cBuffer, cBufferPos+1).data() << "*";
                         else
-                            kDebug( 6036 ) << "Known attribute: " << QByteArray(cBuffer, cBufferPos+1).data();
+                            // qDebug() << "Known attribute: " << QByteArray(cBuffer, cBufferPos+1).data();
 #endif
 
                         tag = SearchEqual;
@@ -1314,7 +1314,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
                 if(curchar > ' ') {
                     if(curchar == '=') {
 #ifdef TOKEN_DEBUG
-                        kDebug(6036) << "found equal";
+                        // qDebug() << "found equal";
 #endif
                         tag = SearchValue;
                         ++src;
@@ -1463,7 +1463,7 @@ void HTMLTokenizer::parseTag(TokenizerString &src)
 
             uint tagID = currToken.tid;
 #if defined(TOKEN_DEBUG) && TOKEN_DEBUG > 0
-            kDebug( 6036 ) << "appending Tag: " << tagID;
+            // qDebug() << "appending Tag: " << tagID;
 #endif
             // When parsing HTML flat tags like <div /> should 
 	    // be ignored, the only exception is SCRIPT, and 
@@ -1631,7 +1631,7 @@ inline bool HTMLTokenizer::continueProcessing(int& processedCount)
 void HTMLTokenizer::write( const TokenizerString &str, bool appendData )
 {
 #ifdef TOKEN_DEBUG
-    kDebug( 6036 ) << this << " Tokenizer::write(\"" << str.toString() << "\"," << appendData << ")";
+    // qDebug() << this << " Tokenizer::write(\"" << str.toString() << "\"," << appendData << ")";
 #endif
     if ( !buffer )
         return;
@@ -2006,20 +2006,20 @@ void HTMLTokenizer::processToken()
     int rid = currToken.tid-(closing ? ID_CLOSE_TAG : 0);
     if(currToken.text)
         text = QString::fromRawData(currToken.text->s, currToken.text->l);
-    kDebug( 6036 ) << "Token -->" << LocalName::fromId(localNamePart(rid)).toString()
+    // qDebug() << "Token -->" << LocalName::fromId(localNamePart(rid)).toString()
                    << "id =" << currToken.tid << "closing ="<< closing;
     if (currToken.flat)
-        kDebug( 6036 ) << "Token is FLAT!";
+        // qDebug() << "Token is FLAT!";
     if(!text.isNull())
-        kDebug( 6036 ) << "text: \"" << text << "\"";
+        // qDebug() << "text: \"" << text << "\"";
     unsigned long l = currToken.attrs ? currToken.attrs->length() : 0;
  
     if(l) {
-        kDebug( 6036 ) << "Attributes: " << l;
+        // qDebug() << "Attributes: " << l;
         for (unsigned long i = 0; i < l; ++i) {
             NodeImpl::Id tid = currToken.attrs->idAt(i);
             DOMString value = currToken.attrs->valueAt(i);
-            kDebug( 6036 ) << "    " << tid << " " << LocalName::fromId(localNamePart(tid)).toString()
+            // qDebug() << "    " << tid << " " << LocalName::fromId(localNamePart(tid)).toString()
                             << "=\"" << value.string() << "\"" << endl;
         }
     }
@@ -2045,7 +2045,7 @@ void HTMLTokenizer::processToken()
 
 void HTMLTokenizer::processDoctypeToken()
 {
-    // kDebug( 6036 ) << "Process DoctypeToken (name: " << doctypeToken.name << ", publicID: " << doctypeToken.publicID << ", systemID: " << doctypeToken.systemID;
+    // qDebug() << "Process DoctypeToken (name: " << doctypeToken.name << ", publicID: " << doctypeToken.publicID << ", systemID: " << doctypeToken.systemID;
     doctypeToken.publicID = doctypeToken.publicID.simplified();
     doctypeToken.systemID = doctypeToken.systemID.simplified();
     parser->parseDoctypeToken(&doctypeToken);
@@ -2084,11 +2084,10 @@ void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
     // FIXME: This needs to be done for inline scripts too.
     m_hasScriptsWaitingForStylesheets = !parser->doc()->haveStylesheetsLoaded();
     if (m_hasScriptsWaitingForStylesheets) {
-        kDebug( 6036 ) << "Delaying script execution until stylesheets have loaded.";
+        // qDebug() << "Delaying script execution until stylesheets have loaded.";
         return;
     }
-    kDebug( 6036 ) << (finishedObj ? "Processing an external script"  : 
-                                     "Continuing processing of delayed external scripts");
+    // qDebug() << (finishedObj ? "Processing an external script"  : "Continuing processing of delayed external scripts");
 
     bool done = false;
     m_scriptTime.start();
@@ -2099,7 +2098,7 @@ void HTMLTokenizer::notifyFinished(CachedObject* finishedObj)
         CachedScript* cs = cachedScript.dequeue();
         DOMString scriptSource = cs->script();
 #ifdef TOKEN_DEBUG
-        kDebug( 6036 ) << "External script is:" << endl << scriptSource.string();
+        // qDebug() << "External script is:" << endl << scriptSource.string();
 #endif
         setSrc(TokenizerString());
 

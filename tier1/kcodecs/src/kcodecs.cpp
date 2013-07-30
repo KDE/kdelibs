@@ -468,7 +468,7 @@ void KCodecs::base64Decode( const QByteArray& in, QByteArray& out )
         }
     }
 
-    // kDebug() << "Tail size = " << tail << ", Length size = " << len;
+    // qDebug() << "Tail size = " << tail << ", Length size = " << len;
 
     // 4-byte to 3-byte conversion
     len = (tail>(len/4)) ? tail-(len/4) : 0;

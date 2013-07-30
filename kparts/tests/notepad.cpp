@@ -32,7 +32,7 @@
 #include <QTextEdit>
 
 #include <kaboutdata.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kactioncollection.h>
 #include <klocalizedstring.h>
 #include <kpluginfactory.h>
@@ -86,7 +86,7 @@ KAboutData* NotepadPart::createAboutData()
 
 bool NotepadPart::openFile()
 {
-  kDebug() << "NotepadPart: opening " << localFilePath();
+  // qDebug() << "NotepadPart: opening " << localFilePath();
   QFile f(localFilePath());
   QString s;
   if ( f.open(QIODevice::ReadOnly) ) {

@@ -20,7 +20,7 @@
 
 #include <kdirlister.h>
 #include <kdirmodel.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QEvent>
 #include <QtCore/QTimer>

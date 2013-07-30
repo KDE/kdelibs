@@ -29,7 +29,7 @@
 #include <kxmlguifactory.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QAction>
 #include <QApplication>
@@ -86,7 +86,7 @@ MainWindow::~MainWindow()
 void MainWindow::createGUI( Part * part )
 {
 #if 0
-  kDebug(1000) << "part=" << part
+  // qDebug() << "part=" << part
                 << ( part ? part->metaObject()->className() : "" )
                 << ( part ? part->objectName() : "" );
 #endif
@@ -97,7 +97,7 @@ void MainWindow::createGUI( Part * part )
   if ( d->m_activePart )
   {
 #if 0
-    kDebug(1000) << "deactivating GUI for" << d->m_activePart
+    // qDebug() << "deactivating GUI for" << d->m_activePart
                   << d->m_activePart->metaObject()->className()
                   << d->m_activePart->objectName();
 #endif

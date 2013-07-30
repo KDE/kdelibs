@@ -18,7 +18,7 @@
 
 #include "itemsmodel.h"
 
-#include "kdebug.h"
+#include "QDebug"
 #include "klocalizedstring.h"
 
 #include "core/entryinternal.h"
@@ -69,7 +69,7 @@ void ItemsModel::addEntry(const EntryInternal& entry)
         }
     }
 
-    //kDebug(551) << "adding entry " << entry.name() << " to the model";
+    //qDebug() << "adding entry " << entry.name() << " to the model";
     beginInsertRows(QModelIndex(), m_entries.count(), m_entries.count());
     m_entries.append(entry);
     endInsertRows();
@@ -81,7 +81,7 @@ void ItemsModel::addEntry(const EntryInternal& entry)
 
 void ItemsModel::removeEntry(const EntryInternal& entry)
 {
-    kDebug(551) << "removing entry " << entry.name() << " from the model";
+    // qDebug() << "removing entry " << entry.name() << " from the model";
     int index = m_entries.indexOf(entry);
     if (index > -1) {
         beginRemoveRows(QModelIndex(), index, index);

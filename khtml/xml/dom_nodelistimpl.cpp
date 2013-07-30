@@ -55,7 +55,6 @@
 #include "dom_nodelistimpl.h"
 #include "dom_nodeimpl.h"
 #include "dom_docimpl.h"
-#include <kdebug.h>
 
 using namespace DOM;
 using namespace khtml;

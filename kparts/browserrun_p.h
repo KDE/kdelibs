@@ -22,7 +22,7 @@
 #define BROWSERRUN_P_H
 
 #include <kio/copyjob.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QtCore/QDateTime>
 
@@ -44,9 +44,9 @@ public:
     DownloadJobWatcher(KIO::FileCopyJob* job, const QMap<QString, QString> &metaData)
         : QObject(job), m_metaData(metaData), m_downloadJobStartTime(QDateTime::currentDateTime())
     {
-        kDebug() << "download started: srcUrl=" << job->srcUrl()
-                 << "destUrl=" << job->destUrl()
-                 << "referrer=" << m_metaData.value("referrer");
+        // qDebug() << "download started: srcUrl=" << job->srcUrl()
+        //         << "destUrl=" << job->destUrl()
+        //         << "referrer=" << m_metaData.value("referrer");
         connect(job, SIGNAL(result(KJob*)), this, SLOT(slotDownloadFinished(KJob*)));
     }
 
@@ -55,14 +55,14 @@ private Q_SLOTS:
     {
         KIO::FileCopyJob* fileCopyJob = static_cast<KIO::FileCopyJob *>(job);
         if (job->error()) {
-            kDebug() << "error during download: srcUrl=" << fileCopyJob->srcUrl()
-                     << "destUrl=" << fileCopyJob->destUrl()
-                     << "referrer=" << m_metaData.value("referrer");
+            // qDebug() << "error during download: srcUrl=" << fileCopyJob->srcUrl()
+            //         << "destUrl=" << fileCopyJob->destUrl()
+            //         << "referrer=" << m_metaData.value("referrer");
             // TODO: test whether destUrl+".part" exists
         } else {
-            kDebug() << "download finished: srcUrl=" << fileCopyJob->srcUrl()
-                     << "destUrl=" << fileCopyJob->destUrl()
-                     << "referrer=" << m_metaData.value("referrer");
+            // qDebug() << "download finished: srcUrl=" << fileCopyJob->srcUrl()
+            //         << "destUrl=" << fileCopyJob->destUrl()
+            //         << "referrer=" << m_metaData.value("referrer");
 #ifdef HAVE_NEPOMUK
             Nepomuk::Utils::createCopyEvent( fileCopyJob->srcUrl(),
                                              fileCopyJob->destUrl(),

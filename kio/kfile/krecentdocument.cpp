@@ -28,7 +28,7 @@
 
 #include "krecentdocument.h"
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kio/global.h>
 #include <kdesktopfile.h>
 #include <kde_file.h>
@@ -98,7 +98,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     QString openStr = url.toDisplayString();
     openStr.replace( QRegExp("\\$"), "$$" ); // Desktop files with type "Link" are $-variable expanded
 
-    kDebug(250) << "KRecentDocument::add for " << openStr;
+    // qDebug() << "KRecentDocument::add for " << openStr;
     KConfigGroup config = KSharedConfig::openConfig()->group(QByteArray("RecentDocuments"));
     bool useRecent = config.readEntry(QLatin1String("UseRecent"), true);
     int maxEntries = config.readEntry(QLatin1String("MaxEntries"), 10);
@@ -107,7 +107,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
         return;
 
     const QString path = recentDocumentDirectory();
-    const QString fileName = QUrlPathInfo(url).fileName();
+    const QString fileName = url.fileName();
     // don't create a file called ".desktop", it will lead to an empty name in kio_recentdocuments
     const QString dStr = fileName.isEmpty() ? QString("unnamed") : fileName;
 
@@ -149,7 +149,7 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     conf.writePathEntry( "URL", openStr );
     // If you change the line below, change the test in the above loop
     conf.writeEntry( "X-KDE-LastOpenedWith", desktopEntryName );
-    conf.writeEntry( "Name", QUrlPathInfo(url).fileName() );
+    conf.writeEntry( "Name", url.fileName() );
     conf.writeEntry( "Icon", KIO::iconNameForUrl( url ) );
 }
 

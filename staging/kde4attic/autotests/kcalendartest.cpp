@@ -1985,7 +1985,7 @@ void KCalendarTest::testRoundTrip(const KCalendarSystem *calendar, bool testFull
                          QByteArray::number(testDay) + " = " +
                          QByteArray::number(testDate.toJulianDay());
         /*
-        kDebug() << msg;
+        // qDebug() << msg;
         */
         if (testMonth <= 0 || testDay <= 0) {   // year <= 0 is OK
             msg.prepend("Round Trip : JD to Date failed : ");

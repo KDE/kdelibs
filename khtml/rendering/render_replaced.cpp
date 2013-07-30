@@ -56,7 +56,7 @@
 #include "css/cssvalues.h"
 
 #include <kcolorscheme.h>
-#include <kdebug.h>
+#include <QDebug>
 
 //#define IN_PLACE_WIDGET_PAINTING
 
@@ -81,7 +81,7 @@ void RenderReplaced::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown());
 
 #ifdef DEBUG_LAYOUT
-    kDebug( 6040 ) << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown();
+    // qDebug() << "RenderReplaced::calcMinMaxWidth() known=" << minMaxKnown();
 #endif
 
     m_width = calcReplacedWidth() + borderLeft() + borderRight() + paddingLeft() + paddingRight();
@@ -101,7 +101,7 @@ void RenderReplaced::calcMinMaxWidth()
 FindSelectionResult RenderReplaced::checkSelectionPoint(int _x, int _y, int _tx, int _ty, DOM::NodeImpl*& node, int &offset, SelPointState &)
 {
 #if 0
-    kDebug(6040) << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
+    // qDebug() << "RenderReplaced::checkSelectionPoint(_x="<<_x<<",_y="<<_y<<",_tx="<<_tx<<",_ty="<<_ty<<")" << endl
                     << "xPos: " << xPos() << " yPos: " << yPos() << " width: " << width() << " height: " << height() << endl
                 << "_ty + yPos: " << (_ty + yPos()) << " + height: " << (_ty + yPos() + height()) << "; _tx + xPos: " << (_tx + xPos()) << " + width: " << (_tx + xPos() + width()) << endl;
 #endif
@@ -811,7 +811,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
 
     bool filtered = false;
 
-    //kDebug() << "RenderWidget::eventFilter type=" << e->type();
+    //qDebug() << "RenderWidget::eventFilter type=" << e->type();
     switch(e->type()) {
     case QEvent::FocusOut:
         // First, forward it to the widget, so that Qt gets a precise
@@ -833,7 +833,7 @@ bool RenderWidget::eventFilter(QObject* /*o*/, QEvent* e)
         directToWidget = false;
         filtered       = true; //We already delivered it!
 
-        //kDebug(6000) << "RenderWidget::eventFilter captures FocusIn";
+        //qDebug() << "RenderWidget::eventFilter captures FocusIn";
         document()->setFocusNode(element());
 //         if ( isEditable() ) {
 //             KHTMLPartBrowserExtension *ext = static_cast<KHTMLPartBrowserExtension *>( element()->view->part()->browserExtension() );

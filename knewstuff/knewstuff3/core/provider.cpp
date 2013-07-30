@@ -23,7 +23,6 @@
 
 #include "xmlloader.h"
 
-#include <kdebug.h>
 #include <klocalizedstring.h>
 #include <kio/job.h>
 

@@ -25,7 +25,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kemoticons.h>
 
 QTEST_MAIN(KEmoticonTest)
@@ -49,7 +49,7 @@ void KEmoticonTest::testEmoticonParser()
 
     QStringList inputFileNames = testCasesDir.entryList(QStringList(QLatin1String("*.input")));
     Q_FOREACH (const QString& fileName, inputFileNames) {
-        kDebug() << "testcase: " << fileName;
+        // qDebug() << "testcase: " << fileName;
         QString outputFileName = fileName;
         outputFileName.replace("input", "output");
         // open the input file
@@ -74,7 +74,7 @@ void KEmoticonTest::testEmoticonParser()
 
             QString result = emo.parseEmoticons(inputData, KEmoticonsTheme::RelaxedParse | KEmoticonsTheme::SkipHTML).replace(path, QString());
 
-            kDebug() << "Parse result: " << result;
+            // qDebug() << "Parse result: " << result;
 
             // HACK to know the test case we applied, concatenate testcase name to both
             // input and expected string. WIll remove when I can add some sort of metadata
@@ -84,11 +84,11 @@ void KEmoticonTest::testEmoticonParser()
             // if the test case begins with broken, we expect it to fail, then use XFAIL
             // otherwise use CHECK
             if (fileName.section("-", 0, 0) == QString::fromLatin1("broken")) {
-                kDebug() << "checking known-broken testcase: " << fileName;
+                // qDebug() << "checking known-broken testcase: " << fileName;
                 QEXPECT_FAIL("", "Checking know-broken testcase", Continue);
                 QCOMPARE(result, expectedData);
             } else {
-                kDebug() << "checking known-working testcase: " << fileName;
+                // qDebug() << "checking known-working testcase: " << fileName;
                 QCOMPARE(result, expectedData);
             }
         } else {

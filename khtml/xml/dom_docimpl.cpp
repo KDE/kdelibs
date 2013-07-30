@@ -50,7 +50,7 @@
 //Added by qt3to4:
 #include <QTimerEvent>
 #include <QtCore/QList>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 
 #include <rendering/counter_tree.h>
@@ -64,7 +64,6 @@
 #include <khtmlview.h>
 #include <khtml_part.h>
 #include <kauthorized.h>
-#include <kglobalsettings.h>
 #include <kdatetime.h>
 #include <khtml_settings.h>
 #include <khtmlpart_p.h>
@@ -121,6 +120,7 @@
 #include <svg/SVGFontElement.h>
 
 #include <kio/job.h>
+#include <QFontDatabase>
 
 #include <stdlib.h>
 #include <limits.h>
@@ -748,7 +748,7 @@ ElementImpl *DocumentImpl::createElementNS( const DOMString &_namespaceURI, cons
         e = createSVGElement(QualifiedName(prefix, localName, _namespaceURI));
         if (e) return e;
         if (!e) {
-            kWarning() << "svg element" << localName << "either is not supported by khtml or it's not a proper svg element";
+            qWarning() << "svg element" << localName << "either is not supported by khtml or it's not a proper svg element";
         }
     }
 
@@ -843,7 +843,7 @@ ElementImpl *DocumentImpl::getElementById( const DOMString &elementId ) const
 
     assert(0); //If there is no item with such an ID, we should never get here
 
-    //kDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string();
+    //qDebug() << "WARNING: *DocumentImpl::getElementById not found " << elementId.string();
 
     return 0;
 }
@@ -1161,7 +1161,7 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name, bool caseIn
         break;
 // text
     case ID_TEXT:
-        kDebug( 6020 ) << "Use document->createTextNode()";
+        // qDebug() << "Use document->createTextNode()";
         break;
 
     default:
@@ -1176,8 +1176,8 @@ ElementImpl *DocumentImpl::createHTMLElement( const DOMString &name, bool caseIn
 ElementImpl *DocumentImpl::createSVGElement(const QualifiedName& name)
 {
     uint id = name.localNameId().id();
-    kDebug() << getPrintableName(name.id()) << endl;
-    kDebug() << "svg text:   " << getPrintableName(WebCore::SVGNames::textTag.id()) << endl;
+    // qDebug() << getPrintableName(name.id()) << endl;
+    // qDebug() << "svg text:   " << getPrintableName(WebCore::SVGNames::textTag.id()) << endl;
 
     ElementImpl *n = 0;
     switch (id)
@@ -1403,7 +1403,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
         // ### make the font stuff _really_ work!!!!
 
 	khtml::FontDef fontDef;
-	QFont f = KGlobalSettings::generalFont();
+	QFont f = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
 	fontDef.family = f.family();
 	fontDef.italic = f.italic();
 	fontDef.weight = f.weight();
@@ -1416,7 +1416,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
             fontDef.size = m_styleSelector->fontSizes()[3];
         }
 
-        //kDebug() << "DocumentImpl::attach: setting to charset " << settings->charset();
+        //qDebug() << "DocumentImpl::attach: setting to charset " << settings->charset();
         _style->setFontDef(fontDef);
 	_style->htmlFont().update( 0 );
         if ( inCompatMode() )
@@ -1436,7 +1436,7 @@ void DocumentImpl::recalcStyle( StyleChange change )
     for (n = _first; n; n = n->nextSibling())
         if ( change>= Inherit || n->hasChangedChild() || n->changed() )
             n->recalcStyle( change );
-    //kDebug( 6020 ) << "TIME: recalcStyle() dt=" << qt.elapsed();
+    //qDebug() << "TIME: recalcStyle() dt=" << qt.elapsed();
 
     if (changed() && m_view)
 	m_view->layout();
@@ -1455,7 +1455,7 @@ void DocumentImpl::updateRendering()
 
 //     QTime time;
 //     time.start();
-//     kDebug() << "UPDATERENDERING: ";
+//     qDebug() << "UPDATERENDERING: ";
 
     StyleChange change = NoChange;
 #if 0
@@ -1466,7 +1466,7 @@ void DocumentImpl::updateRendering()
 #endif
     recalcStyle( change );
 
-//    kDebug() << "UPDATERENDERING time used="<<time.elapsed();
+//    qDebug() << "UPDATERENDERING time used="<<time.elapsed();
 }
 
 void DocumentImpl::updateDocumentsRendering()
@@ -1726,7 +1726,7 @@ void DocumentImpl::determineParseMode()
     pMode = Strict;
     hMode = XHtml;
     m_htmlCompat = false;
-    kDebug(6020) << " using strict parseMode";
+    // qDebug() << " using strict parseMode";
 }
 
 NodeImpl *DocumentImpl::nextFocusNode(NodeImpl *fromNode)
@@ -2207,7 +2207,7 @@ void DocumentImpl::removeStyleSheet(StyleSheetImpl *sheet, int *exceptioncode)
 
 void DocumentImpl::updateStyleSelector(bool shallow)
 {
-//    kDebug() << "PENDING " << m_pendingStylesheets;
+//    qDebug() << "PENDING " << m_pendingStylesheets;
 
     // Don't bother updating, since we haven't loaded all our style info yet.
     if (m_pendingStylesheets > 0) {
@@ -2989,7 +2989,7 @@ JSEditor *DocumentImpl::jsEditor()
 
 bool DocumentImpl::execCommand(const DOMString &command, bool userInterface, const DOMString &value)
 {
-    kDebug() << "[execute command]" << command << userInterface << value << endl;
+    // qDebug() << "[execute command]" << command << userInterface << value << endl;
     return jsEditor()->execCommand(jsEditor()->commandImp(command), userInterface, value);
 }
 
@@ -3010,7 +3010,7 @@ bool DocumentImpl::queryCommandState(const DOMString &command)
 
 bool DocumentImpl::queryCommandSupported(const DOMString &command)
 {
-    kDebug() << "[query command supported]" << command << endl;
+    // qDebug() << "[query command supported]" << command << endl;
     return jsEditor()->queryCommandSupported(jsEditor()->commandImp(command));
 }
 

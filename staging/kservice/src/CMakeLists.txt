@@ -5,6 +5,7 @@ check_symbol_exists(posix_madvise "sys/mman.h" HAVE_MADVISE)
 configure_file(config-ksycoca.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-ksycoca.h )
 
 set(kservice_SRCS
+   kdeinit/ktoolinvocation.cpp
    services/kmimetypefactory.cpp
    services/kmimetypetrader.cpp
    services/kservice.cpp
@@ -31,6 +32,19 @@ set(kservice_SRCS
    plugin/kpluginfactory.cpp
    plugin/kpluginloader.cpp
 )
+if (WIN32)
+   LIST(APPEND kservice_SRCS
+      kdeinit/ktoolinvocation_win.cpp
+   )
+endif()
+if (UNIX)
+   LIST(APPEND kservice_SRCS
+      kdeinit/ktoolinvocation_x11.cpp
+   )
+endif()
+
+# Temporary until klauncher moves here and we can generate it from klauncher_adaptor.h
+qt5_add_dbus_interface(kservice_SRCS kdeinit/org.kde.KLauncher.xml klauncher_iface)
 
 add_library(KService ${kservice_SRCS})
 generate_export_header(KService)
@@ -38,7 +52,9 @@ set(kservice_includes
    ${CMAKE_CURRENT_BINARY_DIR}/.. # Since we publicly include kservice_version.h
    ${CMAKE_CURRENT_SOURCE_DIR}/services
    ${CMAKE_CURRENT_SOURCE_DIR}/sycoca
-   ${CMAKE_CURRENT_SOURCE_DIR}/plugin)
+   ${CMAKE_CURRENT_SOURCE_DIR}/plugin
+   ${CMAKE_CURRENT_SOURCE_DIR}/kdeinit
+)
 target_include_directories(KService PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
 
 target_link_libraries(KService
@@ -48,7 +64,8 @@ target_link_libraries(KService
     KConfigCore
     KCoreAddons
   LINK_PRIVATE
-   KI18n
+    KI18n
+    KDBusAddons   # KDEInitInterface
 )
 
 set_target_properties(KService PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
@@ -58,6 +75,7 @@ install(TARGETS KService EXPORT KServiceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
    "${CMAKE_CURRENT_BINARY_DIR}/kservice_export.h"
+   kdeinit/ktoolinvocation.h
    services/kmimetypetrader.h
    services/kservice.h
    services/kserviceaction.h

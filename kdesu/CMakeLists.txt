@@ -39,8 +39,13 @@ generate_export_header(kdesu)
 
 target_include_directories(kdesu PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 
-target_link_libraries(kdesu ${KDE4_KPTY_LIBS} )
-target_link_libraries(kdesu LINK_INTERFACE_LIBRARIES KI18n)
+target_link_libraries(kdesu
+  LINK_PUBLIC
+    ${KDE4_KPTY_LIBS}
+  LINK_PRIVATE
+    KI18n
+    KService # KToolInvocation::kdeinitExecWait
+)
 
 if(KDESU_USE_SUDO_DEFAULT)
    set_source_files_properties(su.cpp PROPERTIES 

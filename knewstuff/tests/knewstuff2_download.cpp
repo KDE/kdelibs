@@ -22,7 +22,7 @@
 #include <knewstuff2/core/author.h>
 
 #include <kstandarddirs.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QApplication>
 #include <QPushButton>
@@ -193,12 +193,12 @@ void KNewStuff2Download::switchCategory(KNewStuff2Download::Category category)
 
 void KNewStuff2Download::run()
 {
-    kDebug() << "-- test kns2 engine";
+    // qDebug() << "-- test kns2 engine";
 
     m_engine = new KNS::CoreEngine(NULL);
     bool success = m_engine->init("knewstuff2_test.knsrc");
 
-    kDebug() << "-- engine test result: " << success;
+    // qDebug() << "-- engine test result: " << success;
 
     if (success) {
         connect(m_engine,
@@ -228,20 +228,20 @@ void KNewStuff2Download::run()
 
         m_engine->start();
     } else {
-        kWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first.";
-        kWarning() << "Although this is not required anymore, so something went really wrong.";
+        qWarning() << "ACHTUNG: you probably need to 'make install' the knsrc file first.";
+        qWarning() << "Although this is not required anymore, so something went really wrong.";
     }
 }
 
 void KNewStuff2Download::slotInstall()
 {
-    kDebug() << "Attempt to install entry...";
+    // qDebug() << "Attempt to install entry...";
 
     if (!m_activeentry) {
-        kError() << "No entries loaded!" << endl;
+        qCritical() << "No entries loaded!" << endl;
         return;
     } else {
-        kDebug() << "Entry to install is called " << m_activeentry->name().representation();
+        // qDebug() << "Entry to install is called " << m_activeentry->name().representation();
     }
 
     m_engine->downloadPayload(m_activeentry);
@@ -249,8 +249,8 @@ void KNewStuff2Download::slotInstall()
 
 void KNewStuff2Download::slotProviderLoaded(KNS::Provider *provider)
 {
-    kDebug() << "SLOT: slotProviderLoaded";
-    kDebug() << "-- provider: " << provider->name().representation();
+    // qDebug() << "SLOT: slotProviderLoaded";
+    // qDebug() << "-- provider: " << provider->name().representation();
 
     QListWidgetItem *item = new QListWidgetItem(QIcon(), provider->name().representation());
     m_providerlist->addItem(item);
@@ -278,8 +278,8 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *fee
     Q_UNUSED(feed);
     Q_UNUSED(provider);
 
-    kDebug() << "SLOT: slotEntryLoaded";
-    kDebug() << "-- entry: " << entry->name().representation();
+    // qDebug() << "SLOT: slotEntryLoaded";
+    // qDebug() << "-- entry: " << entry->name().representation();
 
     FeedWidget *fw = static_cast<FeedWidget*>(m_activefeed);
     fw->addEntry(entry);
@@ -294,8 +294,8 @@ void KNewStuff2Download::slotEntryLoaded(KNS::Entry *entry, const KNS::Feed *fee
 
 void KNewStuff2Download::slotPreviewLoaded(QUrl preview)
 {
-    kDebug() << "-- preview downloaded successfully";
-    kDebug() << "-- downloaded to " << preview.prettyUrl();
+    // qDebug() << "-- preview downloaded successfully";
+    // qDebug() << "-- downloaded to " << preview.prettyUrl();
 
     FeedWidget *fw = static_cast<FeedWidget*>(m_activefeed);
     fw->addPreview(preview);
@@ -303,35 +303,35 @@ void KNewStuff2Download::slotPreviewLoaded(QUrl preview)
 
 void KNewStuff2Download::slotPreviewFailed()
 {
-    kDebug() << "SLOT: slotPreviewFailed";
+    // qDebug() << "SLOT: slotPreviewFailed";
 }
 
 void KNewStuff2Download::slotPayloadLoaded(QUrl payload)
 {
-    kDebug() << "-- entry downloaded successfully";
-    kDebug() << "-- downloaded to " << payload.prettyUrl();
+    // qDebug() << "-- entry downloaded successfully";
+    // qDebug() << "-- downloaded to " << payload.prettyUrl();
 
     bool success = m_engine->install(payload.path());
     if (success) {
-        kDebug() << "-- installation succeeded";
+        // qDebug() << "-- installation succeeded";
     } else {
-        kError() << "-- installation failed" << endl;
+        qCritical() << "-- installation failed" << endl;
     }
 }
 
 void KNewStuff2Download::slotPayloadFailed()
 {
-    kDebug() << "SLOT: slotPayloadFailed";
+    // qDebug() << "SLOT: slotPayloadFailed";
 }
 
 void KNewStuff2Download::slotProvidersFailed()
 {
-    kDebug() << "SLOT: slotProvidersFailed";
+    // qDebug() << "SLOT: slotProvidersFailed";
 }
 
 void KNewStuff2Download::slotEntriesFailed()
 {
-    kDebug() << "SLOT: slotEntriesFailed";
+    // qDebug() << "SLOT: slotEntriesFailed";
 }
 
 int main(int argc, char **argv)
@@ -340,8 +340,8 @@ int main(int argc, char **argv)
     QApplication app(argc, argv);
 
     // Take source directory into account
-    kDebug() << "-- adding source directory " << KNSSRCDIR;
-    kDebug() << "-- adding build directory " << KNSBUILDDIR;
+    // qDebug() << "-- adding source directory " << KNSSRCDIR;
+    // qDebug() << "-- adding build directory " << KNSBUILDDIR;
     KGlobal::dirs()->addResourceDir("config", KNSSRCDIR);
     KGlobal::dirs()->addResourceDir("config", KNSBUILDDIR);
 

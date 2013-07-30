@@ -404,7 +404,7 @@ public:
         return m_kurl.adjusted(QUrl::RemoveFilename).path();
     }
     QString file() const {
-        return QUrlPathInfo(m_kurl).fileName();
+        return m_kurl.fileName();
     }
 
     // The initial, unparsed, url, as a string.

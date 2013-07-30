@@ -32,7 +32,7 @@
 #include <QtCore/QFileInfo>
 
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 
 using namespace KIO;
 
@@ -103,7 +103,7 @@ static UDSEntry createUDSEntryWin( const QFileInfo &fileInfo )
 void FileProtocol::copy( const QUrl &src, const QUrl &dest,
                          int _mode, JobFlags _flags )
 {
-    kDebug(7101) << "copy(): " << src << " -> " << dest << ", mode=" << _mode;
+    // qDebug() << "copy(): " << src << " -> " << dest << ", mode=" << _mode;
 
     QFileInfo _src(src.toLocalFile());
     QFileInfo _dest(dest.toLocalFile());
@@ -172,10 +172,7 @@ void FileProtocol::copy( const QUrl &src, const QUrl &dest,
             OutputDebugString((WCHAR*)lpMsgBuf);
 #endif
             error( KIO::ERR_CANNOT_RENAME, _src.filePath() );
-            kDebug( 7101 ) <<  "Copying file "
-                           << _src.filePath()
-                           << " failed ("
-                           << dwLastErr << ")";
+            // qDebug() <<  "Copying file " << _src.filePath() << " failed (" << dwLastErr << ")";
         }
         return;
     }
@@ -185,13 +182,13 @@ void FileProtocol::copy( const QUrl &src, const QUrl &dest,
 
 void FileProtocol::listDir( const QUrl& url )
 {
-    kDebug(7101) << "========= LIST " << url << " =========";
+    // qDebug() << "========= LIST " << url << " =========";
 
     if (!url.isLocalFile()) {
         QUrl redir(url);
         redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
         redirection(redir);
-        kDebug(7101) << "redirecting to " << redir;
+        // qDebug() << "redirecting to " << redir;
         finished();
         return;
     }
@@ -200,13 +197,13 @@ void FileProtocol::listDir( const QUrl& url )
     dir.setFilter( QDir::AllEntries|QDir::Hidden );
 
     if ( !dir.exists() ) {
-        kDebug(7101) << "========= ERR_DOES_NOT_EXIST  =========";
+        // qDebug() << "========= ERR_DOES_NOT_EXIST  =========";
         error( KIO::ERR_DOES_NOT_EXIST, url.toLocalFile() );
         return;
     }
 
     if ( !dir.isReadable() ) {
-        kDebug(7101) << "========= ERR_CANNOT_ENTER_DIRECTORY =========";
+        // qDebug() << "========= ERR_CANNOT_ENTER_DIRECTORY =========";
         error( KIO::ERR_CANNOT_ENTER_DIRECTORY, url.toLocalFile() );
         return;
     }
@@ -222,7 +219,7 @@ void FileProtocol::listDir( const QUrl& url )
 
     listEntry( entry, true ); // ready
 
-    kDebug(7101) << "============= COMPLETED LIST ============";
+    // qDebug() << "============= COMPLETED LIST ============";
 
     finished();
 }
@@ -230,7 +227,7 @@ void FileProtocol::listDir( const QUrl& url )
 void FileProtocol::rename( const QUrl &src, const QUrl &dest,
                            KIO::JobFlags _flags )
 {
-    kDebug(7101) << "rename(): " << src << " -> " << dest;
+    // qDebug() << "rename(): " << src << " -> " << dest;
 
     QFileInfo _src(src.toLocalFile());
     QFileInfo _dest(dest.toLocalFile());
@@ -281,7 +278,7 @@ void FileProtocol::rename( const QUrl &src, const QUrl &dest,
             error( KIO::ERR_ACCESS_DENIED, _dest.filePath() );
         else {
             error( KIO::ERR_CANNOT_RENAME, _src.filePath() );
-            kDebug( 7101 ) <<  "Renaming file "
+            // qDebug() <<  "Renaming file "
                            << _src.filePath()
                            << " failed ("
                            << dwLastErr << ")";
@@ -307,7 +304,7 @@ void FileProtocol::del( const QUrl& url, bool isfile )
      *****/
 
     if (isfile) {
-        kDebug( 7101 ) << "Deleting file " << _path;
+        // qDebug() << "Deleting file " << _path;
 
         if( DeleteFileW( ( LPCWSTR ) _path.utf16() ) == 0 ) {
             DWORD dwLastErr = GetLastError();
@@ -317,14 +314,11 @@ void FileProtocol::del( const QUrl& url, bool isfile )
                 error( KIO::ERR_ACCESS_DENIED, _path );
             else {
                 error( KIO::ERR_CANNOT_DELETE, _path );
-                kDebug( 7101 ) <<  "Deleting file "
-                               << _path
-                               << " failed ("
-                               << dwLastErr << ")";
+                // qDebug() <<  "Deleting file " << _path << " failed (" << dwLastErr << ")";
             }
         }
     } else {
-        kDebug( 7101 ) << "Deleting directory " << _path;
+        // qDebug() << "Deleting directory " << _path;
         if (!deleteRecursive(_path))
             return;
         if( RemoveDirectoryW( ( LPCWSTR ) _path.utf16() ) == 0 ) {
@@ -335,10 +329,7 @@ void FileProtocol::del( const QUrl& url, bool isfile )
                 error( KIO::ERR_ACCESS_DENIED, _path );
             else {
                 error( KIO::ERR_CANNOT_DELETE, _path );
-                kDebug( 7101 ) <<  "Deleting directory "
-                               << _path
-                               << " failed ("
-                               << dwLastErr << ")";
+                // qDebug() <<  "Deleting directory " << _path << " failed (" << dwLastErr << ")";
             }
         }
     }
@@ -356,14 +347,14 @@ void FileProtocol::stat( const QUrl & url )
         QUrl redir(url);
         redir.setScheme(config()->readEntry("DefaultRemoteProtocol", "smb"));
         redirection(redir);
-        kDebug(7101) << "redirecting to " << redir;
+        // qDebug() << "redirecting to " << redir;
         finished();
         return;
     }
 
     const QString sDetails = metaData(QLatin1String("details"));
     int details = sDetails.isEmpty() ? 2 : sDetails.toInt();
-    kDebug(7101) << "FileProtocol::stat details=" << details;
+    // qDebug() << "FileProtocol::stat details=" << details;
 
     UDSEntry entry = createUDSEntryWin( QFileInfo(url.toLocalFile()) );
 

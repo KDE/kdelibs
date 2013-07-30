@@ -918,7 +918,7 @@ QString KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) cons
         QString currentName = name;
 
         while (!currentName.isEmpty()) {
-            //kDebug(264) << "Looking up" << currentName;
+            //qDebug() << "Looking up" << currentName;
 
             for (int i = 0 ; i < 4 ; i++)
             {
@@ -930,7 +930,7 @@ QString KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) cons
                 if (!path.isEmpty())
                     return path;
             }
-            //kDebug(264) << "Looking up" << currentName;
+            //qDebug() << "Looking up" << currentName;
 
             if (genericFallback) {
                 // we already tested the base name

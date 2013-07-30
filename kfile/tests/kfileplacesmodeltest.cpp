@@ -22,7 +22,7 @@
 
 #include <kbookmarkmanager.h>
 #include <kbookmark.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kfileplacesmodel.h>
 #include <solid/device.h>
 
@@ -121,8 +121,8 @@ QStringList KFilePlacesModelTest::placesUrls() const
 
 #define CHECK_PLACES_URLS(urls)                                              \
     if (placesUrls() != urls) {                                              \
-        kDebug() << "Expected:" << urls;                                     \
-        kDebug() << "Got:" << placesUrls();                                  \
+        qDebug() << "Expected:" << urls;                                     \
+        qDebug() << "Got:" << placesUrls();                                  \
         QCOMPARE(placesUrls(), urls);                                        \
     }                                                                        \
     for (int row = 0; row < urls.size(); ++row) {                            \

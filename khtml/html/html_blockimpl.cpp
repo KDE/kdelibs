@@ -31,8 +31,6 @@
 #include "css/cssproperties.h"
 #include "css/cssvalues.h"
 
-#include <kdebug.h>
-
 using namespace khtml;
 using namespace DOM;
 

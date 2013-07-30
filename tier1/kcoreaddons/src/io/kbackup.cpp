@@ -67,7 +67,7 @@ bool simpleBackupFile( const QString& qFilename,
         backupFileName = backupDir + QLatin1Char('/') + fileInfo.fileName() + backupExtension;
     }
 
-//    kDebug(180) << "KBackup copying " << qFilename << " to " << backupFileName;
+//    qDebug() << "KBackup copying " << qFilename << " to " << backupFileName;
     QFile::remove(backupFileName);
     return QFile::copy(qFilename, backupFileName);
 }
@@ -188,13 +188,13 @@ bool numberedBackupFile( const QString& qFilename,
     QString to=sTemplate.arg( maxBackupFound+1 );
     for ( int i=maxBackupFound; i>0; i-- ) {
         QString from = sTemplate.arg( i );
-//        kDebug(180) << "KBackup renaming " << from << " to " << to;
+//        qDebug() << "KBackup renaming " << from << " to " << to;
         QFile::rename( from, to );
         to = from;
     }
 
     // Finally create most recent backup by copying the file to backup number 1.
-//    kDebug(180) << "KBackup copying " << qFilename << " to " << sTemplate.arg(1);
+//    qDebug() << "KBackup copying " << qFilename << " to " << sTemplate.arg(1);
     return QFile::copy(qFilename, sTemplate.arg(1));
 }
 

@@ -118,7 +118,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
         url = QUrl(urlStr);
         QUrlPathInfo new_url(d->m_requestedURL);
         if (listing)
-            new_url.addPath(QUrlPathInfo(url).fileName());
+            new_url.addPath(url.fileName());
         // ## Didn't find a way to use an iterator instead of re-doing a key lookup
         entry.insert(KIO::UDSEntry::UDS_URL, new_url.url().toString());
         //qDebug() << "URL =" << url;
@@ -129,7 +129,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
     {
         QUrlPathInfo new_url(d->m_processedURL);
         if (url_found && listing) {
-            new_url.addPath(QUrlPathInfo(url).fileName());
+            new_url.addPath(url.fileName());
         } else if (listing) {
             new_url.addPath(name);
         }

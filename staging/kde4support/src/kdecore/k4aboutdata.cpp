@@ -25,7 +25,7 @@
 #include "k4aboutdata.h"
 #include "kaboutdata.h"
 
-#include "qstandardpaths.h"
+#include <QStandardPaths>
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QSharedData>

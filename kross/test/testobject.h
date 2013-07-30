@@ -42,7 +42,7 @@ class QDate;
 class QTime;
 class QDateTime;
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include "../core/action.h"
 #include "../core/object.h"

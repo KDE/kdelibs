@@ -22,7 +22,7 @@
 #ifndef _KDEBUG_H_
 #define _KDEBUG_H_
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 
 #include <QtCore/QDebug>
 #include <QtCore/QElapsedTimer>
@@ -78,20 +78,20 @@
  * @internal
  * Returns a debug stream that may or may not output anything.
  */
-KDECORE_EXPORT QDebug kDebugStream(QtMsgType level, int area, const char *file = 0,
+KDE4SUPPORT_DEPRECATED_EXPORT QDebug kDebugStream(QtMsgType level, int area, const char *file = 0,
                                    int line = -1, const char *funcinfo = 0);
 
 /**
  * @internal
  * Returns a debug stream that goes the way of the blackhole.
  */
-KDECORE_EXPORT QDebug kDebugDevNull();
+KDE4SUPPORT_DEPRECATED_EXPORT QDebug kDebugDevNull();
 
 /**
  * @internal
  * The actual backtrace.
  */
-KDECORE_EXPORT QString kRealBacktrace(int);
+KDE4SUPPORT_DEPRECATED_EXPORT QString kRealBacktrace(int);
 
 
 /**
@@ -114,7 +114,7 @@ static inline QString kBacktrace(int=-1) { return QString(); }
  * Deletes the kdebugrc cache and therefore forces KDebug to reread the
  * config file
  */
-KDECORE_EXPORT void kClearDebugConfig();
+KDE4SUPPORT_DEPRECATED_EXPORT void kClearDebugConfig();
 
 #ifndef KDE_DEFAULT_DEBUG_AREA
 # define KDE_DEFAULT_DEBUG_AREA 0
@@ -209,27 +209,27 @@ inline QDebug operator<<(QDebug s, KDebugStreamFunction f)
  * @return the debug stream (@p s)
  * @see perror(3)
  */
-KDECORE_EXPORT QDebug perror(QDebug, KDebugTag);
+KDE4SUPPORT_DEPRECATED_EXPORT QDebug perror(QDebug, KDebugTag);
 
 // operators for KDE types
 class QUrl;
 //class KDateTime;
 class QObject;
-KDECORE_EXPORT QDebug operator<<(QDebug s, const QUrl &url);
-//KDECORE_EXPORT QDebug operator<<(QDebug s, const KDateTime &time);
+KDE4SUPPORT_DEPRECATED_EXPORT QDebug operator<<(QDebug s, const QUrl &url);
+//KDE4SUPPORT_DEPRECATED_EXPORT QDebug operator<<(QDebug s, const KDateTime &time);
 
 #if 1 || defined(KDE3_SUPPORT)
 #ifndef KDE_NO_DEPRECATED
-class KDECORE_DEPRECATED kndbgstream { };
+class KDE4SUPPORT_DEPRECATED kndbgstream { };
 typedef QDebug kdbgstream;
 
-static inline KDECORE_DEPRECATED QDebug kdDebug(int area = KDE_DEFAULT_DEBUG_AREA) { return kDebug(area); }
-static inline KDECORE_DEPRECATED QDebug kdWarning(int area = KDE_DEFAULT_DEBUG_AREA) { return kWarning(area); }
-static inline KDECORE_DEPRECATED QDebug kdError(int area = KDE_DEFAULT_DEBUG_AREA) { return kError(area); }
-static inline KDECORE_DEPRECATED QDebug kdFatal(int area = KDE_DEFAULT_DEBUG_AREA) { return kFatal(area); }
-inline KDECORE_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
+static inline KDE4SUPPORT_DEPRECATED QDebug kdDebug(int area = KDE_DEFAULT_DEBUG_AREA) { return kDebug(area); }
+static inline KDE4SUPPORT_DEPRECATED QDebug kdWarning(int area = KDE_DEFAULT_DEBUG_AREA) { return kWarning(area); }
+static inline KDE4SUPPORT_DEPRECATED QDebug kdError(int area = KDE_DEFAULT_DEBUG_AREA) { return kError(area); }
+static inline KDE4SUPPORT_DEPRECATED QDebug kdFatal(int area = KDE_DEFAULT_DEBUG_AREA) { return kFatal(area); }
+inline KDE4SUPPORT_DEPRECATED QString kdBacktrace(int levels=-1) { return kBacktrace( levels ); }
 
-static inline KDECORE_DEPRECATED QDebug kndDebug() { return kDebugDevNull(); }
+static inline KDE4SUPPORT_DEPRECATED QDebug kndDebug() { return kDebugDevNull(); }
 #endif
 #endif
 
@@ -261,7 +261,7 @@ public:
         { if (cond) return operator()(area); return kDebugDevNull(); }
 
     /// @internal
-    static KDECORE_EXPORT bool hasNullOutput(QtMsgType type,
+    static KDE4SUPPORT_DEPRECATED_EXPORT bool hasNullOutput(QtMsgType type,
                                              bool condition,
                                              int area,
                                              bool enableByDefault);
@@ -298,7 +298,7 @@ public:
      * declare it in one file without static, and use "extern int debugArea();"
      * in other files (with a better name for the function of course).
      */
-    static KDECORE_EXPORT int registerArea(const QByteArray& areaName, bool enabled = true);
+    static KDE4SUPPORT_DEPRECATED_EXPORT int registerArea(const QByteArray& areaName, bool enabled = true);
 
 private:
     WrongSyntax operator()(const char*) {return WrongSyntax();} // error! Use kDebug() << "..." or kWarning() << "..." instead.
@@ -350,7 +350,7 @@ private:
  *
  * Alternatively, use the KDEBUG_BLOCK macro, for automatic naming.
  */
-class KDECORE_EXPORT KDebug::Block
+class KDE4SUPPORT_DEPRECATED_EXPORT KDebug::Block
 {
 public:
     Block(const char* label, int area = KDE_DEFAULT_DEBUG_AREA);
@@ -370,7 +370,7 @@ private:
 
 #else
 
-class KDECORE_EXPORT KDebug::Block
+class KDE4SUPPORT_DEPRECATED_EXPORT KDebug::Block
 {
 public:
     Block(const char*, int = KDE_DEFAULT_DEBUG_AREA) {}

@@ -21,7 +21,7 @@
 
 #include <kaboutdata.h>
 #include <kconfig.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kiconbutton.h>
 #include <kiconloader.h>
 #include <klineedit.h>

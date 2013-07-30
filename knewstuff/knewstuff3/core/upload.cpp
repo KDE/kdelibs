@@ -23,7 +23,7 @@
 /*
 bool Engine::uploadEntry(Provider *provider, const Entry& entry)
 {
-    //kDebug() << "Uploading " << entry.name().representation() << "...";
+    //qDebug() << "Uploading " << entry.name().representation() << "...";
 
     //if (d->uploadedentry) {
     //    kError() << "Another upload is in progress!" << endl;

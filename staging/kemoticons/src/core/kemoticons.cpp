@@ -25,7 +25,7 @@
 #include <QDir>
 
 #include <kpluginloader.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kconfiggroup.h>
 #include <ktar.h>
 #include <kzip.h>
@@ -76,7 +76,7 @@ KEmoticonsProvider *KEmoticonsPrivate::loadProvider(const KService::Ptr &service
 {
     KPluginFactory *factory = KPluginLoader(service->library()).factory();
     if (!factory) {
-        kWarning() << "Invalid plugin factory for" << service->library();
+        qWarning() << "Invalid plugin factory for" << service->library();
         return 0;
     }
     KEmoticonsProvider *provider = factory->create<KEmoticonsProvider>(0);
@@ -196,7 +196,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
     QString localThemesDir( QStandardPaths::writableLocation( QStandardPaths::GenericDataLocation ) + "/emoticons" );
 
     if (localThemesDir.isEmpty()) {
-        kError() << "Could not find a suitable place in which to install the emoticon theme";
+        qCritical() << "Could not find a suitable place in which to install the emoticon theme";
         return QStringList();
     }
 
@@ -223,7 +223,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
     }
 
     if (!archive || !archive->open(QIODevice::ReadOnly)) {
-        kError() << "Could not open" << archiveName << "for unpacking";
+        qCritical() << "Could not open" << archiveName << "for unpacking";
         delete archive;
         return QStringList();
     }
@@ -249,7 +249,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
     }
 
     if (foundThemes.isEmpty()) {
-        kError() << "The file" << archiveName << "is not a valid emoticon theme archive";
+        qCritical() << "The file" << archiveName << "is not a valid emoticon theme archive";
         archive->close();
         delete archive;
         return QStringList();
@@ -260,7 +260,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
 
         currentEntry = const_cast<KArchiveEntry *>(rootDir->entry(theme));
         if (currentEntry == 0) {
-            kDebug() << "couldn't get next archive entry";
+            // qDebug() << "couldn't get next archive entry";
             continue;
         }
 
@@ -268,7 +268,7 @@ QStringList KEmoticons::installTheme(const QString &archiveName)
             currentDir = dynamic_cast<KArchiveDirectory*>(currentEntry);
 
             if (currentDir == 0) {
-                kDebug() << "couldn't cast archive entry to KArchiveDirectory";
+                // qDebug() << "couldn't cast archive entry to KArchiveDirectory";
                 continue;
             }
 

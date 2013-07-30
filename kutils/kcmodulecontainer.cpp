@@ -27,7 +27,7 @@
 #include <kcmodule.h>
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kservice.h>
 
 /***********************************************************************/
@@ -94,8 +94,8 @@ void KCModuleContainer::addModule( const QString& module )
 	KService::Ptr service = KService::serviceByDesktopName( module );
 	if ( !service )
 	{
-		kDebug(713) << "KCModuleContainer: module '" <<
-			module << "' was not found and thus not loaded" << endl;
+		// qDebug() << "KCModuleContainer: module '" <<
+			// module << "' was not found and thus not loaded" << endl;
 		return;
 	}
 

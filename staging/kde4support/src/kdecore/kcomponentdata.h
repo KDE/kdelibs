@@ -19,7 +19,7 @@
 #ifndef KCOMPONENTDATA_H
 #define KCOMPONENTDATA_H
 
-#include <kservice_export.h>
+#include <kde4support_export.h>
 #include <ksharedconfig.h>
 #include <kaboutdata.h>
 
@@ -43,7 +43,7 @@ class KComponentDataPrivate;
  * @author Torben Weis
  * @author Matthias Kretz <kretz@kde.org>
  */
-class KSERVICE_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
+class KDE4SUPPORT_EXPORT KComponentData // krazy:exclude=dpointer (implicitly shared)
 {
 public:
     /**

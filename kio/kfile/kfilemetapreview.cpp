@@ -11,7 +11,7 @@
 #include <QLayout>
 #include <qmimedatabase.h>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <kio/previewjob.h>
 #include <kpluginloader.h>
 #include <kpluginfactory.h>
@@ -190,7 +190,7 @@ KPreviewWidgetBase * KFileMetaPreview::createAudioPreview( QWidget *parent )
     KPluginFactory *factory = loader.factory();
     if ( !factory )
     {
-        kWarning() << "Couldn't load kfileaudiopreview" << loader.errorString();
+        qWarning() << "Couldn't load kfileaudiopreview" << loader.errorString();
         s_tryAudioPreview = false;
         return 0L;
     }

@@ -35,8 +35,6 @@
 
 using namespace DOM;
 
-#include <kdebug.h>
-
 CSSStyleSheetImpl *CSSRuleImpl::parentStyleSheet() const
 {
     return ( m_parent && m_parent->isCSSStyleSheet() )  ?

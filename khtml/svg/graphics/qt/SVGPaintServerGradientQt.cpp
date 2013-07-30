@@ -40,11 +40,11 @@ namespace WebCore {
 void SVGPaintServerGradient::fillColorArray(QGradient& gradient, const Vector<SVGGradientStop>& stops,
                                             float opacity) const
 {
-    kDebug() << stops.size() << endl;
+    // qDebug() << stops.size() << endl;
     for (unsigned i = 0; i < stops.size(); ++i) {
         float offset = stops[i].first;
         QColor color = stops[i].second;
-        kDebug() << "offset" << offset << "color" << color << endl;
+        // qDebug() << "offset" << offset << "color" << color << endl;
 
         QColor c(color.red(), color.green(), color.blue());
         c.setAlpha(int(color.alpha() * opacity));
@@ -57,7 +57,7 @@ bool SVGPaintServerGradient::setup(QPainter* painter, QPainterPath* painterPath,
                                    SVGPaintTargetType type, bool isPaintingText) const
 {
     Q_UNUSED(isPaintingText);
-    kDebug() << "!!!!!!!" << endl;
+    // qDebug() << "!!!!!!!" << endl;
     m_ownerElement->buildGradient();
 
     /*QPainter* painter(context ? context->platformContext() : 0);
@@ -81,7 +81,7 @@ bool SVGPaintServerGradient::setup(QPainter* painter, QPainterPath* painterPath,
         gradient.setSpread(QGradient::PadSpread);    
     double opacity = 1.0;
 
-    kDebug() << "type: " << type << (type & ApplyToFillTargetType) << endl;
+    // qDebug() << "type: " << type << (type & ApplyToFillTargetType) << endl;
     if ((type & ApplyToFillTargetType) && renderStyle->svgStyle()->hasFill()) {
         fillColorArray(gradient, gradientStops(), opacity);
 

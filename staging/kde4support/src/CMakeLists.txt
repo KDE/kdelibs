@@ -7,6 +7,10 @@ else ()
 endif ()
 
 set(libkde4support_SRCS
+    kdecore/k4aboutdata.cpp
+    kdecore/kcomponentdata.cpp
+    kdecore/kdebug.cpp
+    kdecore/kdebugdbusiface.cpp
     kdecore/kkernel_mac.cpp
     kdecore/kkernel_win.cpp
     kdecore/klibloader.cpp
@@ -104,6 +108,10 @@ else()
     set(libkde4support_SRCS ${libkde4support_SRCS} kdecore/klockfile_unix.cpp)
 endif ()
 
+# Configure checks for io/
+include(kdecore/ConfigureChecks.cmake)
+configure_file(kdecore/config-io.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-io.h)
+
 # Configure checks for network/ but also for netsupp.*
 include(ConfigureChecks.cmake)
 configure_file(config-network.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-network.h )
@@ -140,6 +148,9 @@ install(TARGETS KDE4Support
         ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+    kdecore/k4aboutdata.h
+    kdecore/kcomponentdata.h
+    kdecore/kdebug.h
     kdecore/klibloader.h
     kdecore/ktemporaryfile.h
     kdecore/ktempdir.h
@@ -220,6 +231,8 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+install( FILES kdebug.areas kdebugrc DESTINATION ${CONFIG_INSTALL_DIR} )
 
 install( FILES kdeui/40.colors kdeui/Oxygen.colors kdeui/Web.colors kdeui/Royal.colors kdeui/Rainbow.colors
          DESTINATION ${CONFIG_INSTALL_DIR}/colors)

@@ -103,7 +103,7 @@ void SVGPolyElement::svgAttributeChanged(const QualifiedName& attrName)
         // Spec: Additionally, the 'points' attribute on the original element
         // accessed via the XML DOM (e.g., using the getAttribute() method call)
         // will reflect any changes made to points.
-        kDebug() << "fixme!!!!!!!!!" << endl;
+        // qDebug() << "fixme!!!!!!!!!" << endl;
         /*FIXME KHTML String _points;
         int len = points()->numberOfItems();
         for (int i = 0; i < len; ++i) {

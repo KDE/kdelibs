@@ -43,7 +43,6 @@
 #include <ctype.h>
 #include <assert.h>
 #include <QtCore/QVariant>
-#include <kdebug.h>
 #include <stdlib.h>
 
 #ifdef __GNUC__
@@ -76,7 +75,7 @@ ProspectiveTokenizer::ProspectiveTokenizer(DOM::DocumentImpl * doc)
     , m_document(doc)
 {
 #if PRELOAD_DEBUG
-    kDebug() << "CREATING PRELOAD SCANNER FOR" << m_document << m_document->URL().toDisplayString();
+    // qDebug() << "CREATING PRELOAD SCANNER FOR" << m_document << m_document->URL().toDisplayString();
 #endif
 }
     

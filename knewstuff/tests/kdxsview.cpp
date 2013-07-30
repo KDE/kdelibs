@@ -23,7 +23,7 @@
 
 #include <klocalizedstring.h>
 #include <kiconloader.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <QLayout>
 #include <QLabel>
@@ -100,7 +100,7 @@ void KDXSView::slotRun()
 
 void KDXSView::slotProvidersLoaded(KNS::Provider::List providers)
 {
-    kDebug() << "(providers loaded)";
+    // qDebug() << "(providers loaded)";
 
     if (m_type->currentIndex() != access_webservice) {
         QMessageBox::warning(this,

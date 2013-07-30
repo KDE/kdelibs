@@ -180,7 +180,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         } else {
             UDSEntry srcUds;
 
-            srcUds.insert(UDSEntry::UDS_NAME, QUrlPathInfo(d->src).fileName());
+            srcUds.insert(UDSEntry::UDS_NAME, d->src.fileName());
             srcUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeSrc.toMSecsSinceEpoch() / 1000);
             srcUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeSrc.toMSecsSinceEpoch() / 1000);
             srcUds.insert(UDSEntry::UDS_SIZE, sizeSrc);
@@ -193,7 +193,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
         } else {
             UDSEntry destUds;
 
-            destUds.insert(UDSEntry::UDS_NAME, QUrlPathInfo(d->dest).fileName());
+            destUds.insert(UDSEntry::UDS_NAME, d->dest.fileName());
             destUds.insert(UDSEntry::UDS_MODIFICATION_TIME, mtimeDest.toMSecsSinceEpoch() / 1000);
             destUds.insert(UDSEntry::UDS_CREATION_TIME, ctimeDest.toMSecsSinceEpoch() / 1000);
             destUds.insert(UDSEntry::UDS_SIZE, sizeDest);
@@ -292,7 +292,7 @@ RenameDialog::RenameDialog(QWidget *parent, const QString & _caption,
     layout2->addWidget(d->m_pLineEdit);
 
     if (d->bRename) {
-        const QString fileName = QUrlPathInfo(d->dest).fileName();
+        const QString fileName = d->dest.fileName();
         d->setRenameBoxText(KIO::decodeFileName(fileName));
 
         connect(d->m_pLineEdit, SIGNAL(textChanged(QString)),
@@ -355,7 +355,7 @@ RenameDialog::~RenameDialog()
 
 void RenameDialog::enableRenameButton(const QString &newDest)
 {
-    if (newDest != KIO::decodeFileName(QUrlPathInfo(d->dest).fileName()) && !newDest.isEmpty()) {
+    if (newDest != KIO::decodeFileName(d->dest.fileName()) && !newDest.isEmpty()) {
         d->bRename->setEnabled(true);
         d->bRename->setDefault(true);
 
@@ -478,7 +478,7 @@ void RenameDialog::resumeAllPressed()
 void RenameDialog::applyAllPressed()
 {
     if (d->bApplyAll  && d->bApplyAll->isChecked()) {
-        d->m_pLineEdit->setText(KIO::decodeFileName(QUrlPathInfo(d->dest).fileName()));
+        d->m_pLineEdit->setText(KIO::decodeFileName(d->dest.fileName()));
         d->m_pLineEdit->setEnabled(false);
 
         if (d->bRename) {

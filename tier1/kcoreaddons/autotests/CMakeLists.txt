@@ -24,6 +24,7 @@ endmacro()
 
 kcoreaddons_unit_tests(
     kaboutdatatest
+    kcompositejobtest
     kjobtest
     kautosavefiletest
     kurlmimedatatest

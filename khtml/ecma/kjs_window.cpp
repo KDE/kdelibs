@@ -40,7 +40,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <qinputdialog.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kmessagebox.h>
 #include <klocalizedstring.h>
 #include <kparts/browserinterface.h>
@@ -141,7 +141,7 @@ Screen::Screen(ExecState *exec)
 bool Screen::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Screen::getPropertyName " << propertyName.qstring();
+  // qDebug() << "Screen::getPropertyName " << propertyName.qstring();
 #endif
   return getStaticValueSlot<Screen, JSObject>(exec, &ScreenTable, this, propertyName, slot);
 }
@@ -192,7 +192,7 @@ JSValue *Screen::getValueProperty(ExecState *exec, int token) const
 #endif
   }
   default:
-    kDebug(6070) << "WARNING: Screen::getValueProperty unhandled token " << token;
+    // qDebug() << "WARNING: Screen::getValueProperty unhandled token " << token;
     return jsUndefined();
   }
 }
@@ -223,7 +223,7 @@ Console::Console(ExecState *exec)
 bool Console::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "Console::getPropertyName " << propertyName.qstring();
+    // qDebug() << "Console::getPropertyName " << propertyName.qstring();
 #endif
     return getStaticFunctionSlot<ConsoleFunc, JSObject>(exec, &ConsoleTable, this, propertyName, slot);
 }
@@ -253,8 +253,7 @@ void printMessage(Console::MessageType msgType, const UString& message)
             type = "UNKNOWN";
             ASSERT_NOT_REACHED();
     }
-    static const int s_area = KDebug::registerArea("khtml (jscript console)");
-    kDebug(s_area) << "[" << type << "]\t" << message.ascii();
+    // qDebug() << "[" << type << "]\t" << message.ascii();
 }
 
 JSValue* consolePrintf(ExecState *exec, Console::MessageType msgType, const List &args)
@@ -596,7 +595,7 @@ Window::Window(khtml::ChildFrame *p)
   : JSGlobalObject(/*no proto*/), m_frame(p), screen(0), console(0), history(0), external(0), loc(0), m_evt(0)
 {
   winq = new WindowQObject(this);
-  //kDebug(6070) << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name();
+  //qDebug() << "Window::Window this=" << this << " part=" << m_part << " " << m_part->name();
 }
 
 Window::~Window()
@@ -643,12 +642,12 @@ JSValue *Window::retrieve(KParts::ReadOnlyPart *p)
     proxy = part->jScript();
   if (proxy) {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "Window::retrieve part=" << part << " '" << part->objectName() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject();
+    // qDebug() << "Window::retrieve part=" << part << " '" << part->objectName() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject();
 #endif
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
   } else {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "Window::retrieve part=" << p << " '" << p->objectName() << "' no jsproxy.";
+    // qDebug() << "Window::retrieve part=" << p << " '" << p->objectName() << "' no jsproxy.";
 #endif
     return jsUndefined(); // This can happen with JS disabled on the domain of that window
   }
@@ -673,7 +672,7 @@ void Window::mark()
     history->mark();
   if (external && !external->marked())
     external->mark();
-  //kDebug(6070) << "Window::mark " << this << " marking loc=" << loc;
+  //qDebug() << "Window::mark " << this << " marking loc=" << loc;
   if (loc && !loc->marked())
     loc->mark();
   if (winq)
@@ -719,7 +718,7 @@ bool Window::isCrossFrameAccessible(int token) const
 bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
+    // qDebug() << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
     // we want only limited operations on a closed window
@@ -842,7 +841,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
     // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
     // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "WARNING: Window::get property not found: " << propertyName.qstring();
+    // qDebug() << "WARNING: Window::get property not found: " << propertyName.qstring();
 #endif
 
     return JSObject::getOwnPropertySlot(exec, propertyName, slot);
@@ -1132,7 +1131,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
         return getDOMEvent(exec,m_evt);
       else {
 #ifdef KJS_VERBOSE
-        kDebug(6070) << "WARNING: window(" << this << "," << part->objectName() << ").event, no event!";
+        // qDebug() << "WARNING: window(" << this << "," << part->objectName() << ").event, no event!";
 #endif
         return jsUndefined();
       }
@@ -1345,7 +1344,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
   if (entry && !m_frame.isNull() && !m_frame->m_part.isNull())
   {
 #ifdef KJS_VERBOSE
-    kDebug(6070) << "Window("<<this<<")::put " << propertyName.qstring();
+    // qDebug() << "Window("<<this<<")::put " << propertyName.qstring();
 #endif
     switch( entry->value) {
     case _Location:
@@ -1490,7 +1489,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
       pluginRootPut(exec, m_frame->m_scriptable.data(), propertyName, value))
     return;
   if (safe) {
-    //kDebug(6070) << "Window("<<this<<")::put storing " << propertyName.qstring();
+    //qDebug() << "Window("<<this<<")::put storing " << propertyName.qstring();
     JSObject::put(exec, propertyName, value, attr);
   }
 }
@@ -1510,7 +1509,7 @@ DOM::AbstractViewImpl* Window::toAbstractView() const
 
 void Window::scheduleClose()
 {
-  kDebug(6070) << "Window::scheduleClose window.close() " << m_frame;
+  // qDebug() << "Window::scheduleClose window.close() " << m_frame;
   Q_ASSERT(winq);
   QTimer::singleShot( 0, winq, SLOT(timeoutClose()) );
 }
@@ -1518,13 +1517,13 @@ void Window::scheduleClose()
 void Window::closeNow()
 {
   if (m_frame.isNull() || m_frame->m_part.isNull()) {
-    kDebug(6070) << "part is deleted already";
+    // qDebug() << "part is deleted already";
   } else {
     KHTMLPart *part = qobject_cast<KHTMLPart*>(m_frame->m_part);
     if (!part) {
-      kDebug(6070) << "closeNow on non KHTML part";
+      // qDebug() << "closeNow on non KHTML part";
     } else {
-      //kDebug(6070) << " -> closing window";
+      //qDebug() << " -> closing window";
       // We want to make sure that window.open won't find this part by name.
       part->setObjectName( QString() );
       part->deleteLater();
@@ -1548,11 +1547,11 @@ void Window::afterScriptExecution()
 bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
 {
   if (m_frame.isNull() || m_frame->m_part.isNull()) { // part deleted ? can't grant access
-    kDebug(6070) << "Window::isSafeScript: accessing deleted part !";
+    // qDebug() << "Window::isSafeScript: accessing deleted part !";
     return false;
   }
   if (!activePart) {
-    kDebug(6070) << "Window::isSafeScript: current interpreter's part is 0L!";
+    // qDebug() << "Window::isSafeScript: current interpreter's part is 0L!";
     return false;
   }
    if ( activePart == m_frame->m_part ) // Not calling from another frame, no problem.
@@ -1573,7 +1572,7 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
 
   DOM::DocumentImpl* actDocument = activeKHTMLPart->xmlDocImpl();
   if ( !actDocument ) {
-    kDebug(6070) << "Window::isSafeScript: active part has no document!";
+    // qDebug() << "Window::isSafeScript: active part has no document!";
     return false;
   }
   khtml::SecurityOrigin* actDomain  = actDocument->origin();
@@ -1581,12 +1580,12 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
 
   if ( actDomain->canAccess( thisDomain ) ) {
 #ifdef KJS_VERBOSE
-    //kDebug(6070) << "JavaScript: access granted, domain is '" << actDomain.string() << "'";
+    //qDebug() << "JavaScript: access granted, domain is '" << actDomain.string() << "'";
 #endif
     return true;
   }
 
-  kDebug(6070) << "WARNING: JavaScript: access denied for current frame '" << actDomain->toString() << "' to frame '" << thisDomain->toString() << "'";
+  // qDebug() << "WARNING: JavaScript: access denied for current frame '" << actDomain->toString() << "' to frame '" << thisDomain->toString() << "'";
   // TODO after 3.1: throw security exception (exec->setException())
   return false;
 }
@@ -1707,7 +1706,7 @@ void Window::clear( ExecState *exec )
 void Window::setCurrentEvent( DOM::EventImpl *evt )
 {
   m_evt = evt;
-  //kDebug(6070) << "Window " << this << " (part=" << m_part << ")::setCurrentEvent m_evt=" << evt;
+  //qDebug() << "Window " << this << " (part=" << m_part << ")::setCurrentEvent m_evt=" << evt;
 }
 
 void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
@@ -1718,7 +1717,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   // Complete the URL using the "active part" (running interpreter)
   if (active_part && part) {
     QString dstUrl = active_part->htmlDocument().completeURL(url).string();
-    kDebug(6070) << "Window::goURL dstUrl=" << dstUrl;
+    // qDebug() << "Window::goURL dstUrl=" << dstUrl;
 
     // check if we're allowed to inject javascript
     if ( !KHTMLPartPrivate::isJavaScriptURL(dstUrl) || isSafeScript(exec) )
@@ -1729,7 +1728,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
       emit b->openUrlRequest(QUrl(m_frame->m_partContainerElement.data()->document()->completeURL(url)));
-    kDebug() << "goURL for ROPart";
+    // qDebug() << "goURL for ROPart";
   }
 }
 
@@ -1777,24 +1776,24 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
     return;
   KParts::BrowserExtension *ext = part->browserExtension();
   if (!ext) {
-    kDebug(6070) << "Window::resizeTo found no browserExtension";
+    // qDebug() << "Window::resizeTo found no browserExtension";
     return;
   }
 
   // Security check: within desktop limits and bigger than 100x100 (per spec)
   if ( width < 100 || height < 100 ) {
-    kDebug(6070) << "Window::resizeTo refused, window would be too small ("<<width<<","<<height<<")";
+    // qDebug() << "Window::resizeTo refused, window would be too small ("<<width<<","<<height<<")";
     return;
   }
 
   QRect sg = QApplication::desktop()->screenGeometry(tl);
 
   if ( width > sg.width() || height > sg.height() ) {
-    kDebug(6070) << "Window::resizeTo refused, window would be too big ("<<width<<","<<height<<")";
+    // qDebug() << "Window::resizeTo refused, window would be too big ("<<width<<","<<height<<")";
     return;
   }
 
-  kDebug(6070) << "resizing to " << width << "x" << height;
+  // qDebug() << "resizing to " << width << "x" << height;
 
   emit ext->resizeTopLevelWidget( width, height );
 
@@ -2022,7 +2021,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const QUrl& url, const QStri
         khtmlpart->write("<HTML><BODY>");
         khtmlpart->end();
         if ( p->docImpl() ) {
-          //kDebug(6070) << "Setting domain to " << p->docImpl()->domain().string();
+          //qDebug() << "Setting domain to " << p->docImpl()->domain().string();
           khtmlpart->docImpl()->setOrigin( p->docImpl()->origin());
           khtmlpart->docImpl()->setBaseURL( p->docImpl()->baseURL() );
         }
@@ -2203,12 +2202,12 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
           // this fixes 'setTimeout('self.close()',1000); alert("Hi");' crash
           widget->closeChildDialogs();
         }
-        //kDebug() << "scheduling delayed close";
+        //qDebug() << "scheduling delayed close";
         // We'll close the window at the end of the script execution
         Window* w = const_cast<Window*>(window);
         w->m_delayed.append( new DelayedClose );
       } else {
-        //kDebug() << "closing NOW";
+        //qDebug() << "closing NOW";
         (const_cast<Window*>(window))->closeNow();
       }
     }
@@ -2265,7 +2264,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         QString sourceOrigin = part->xmlDocImpl()->origin()->toString();
         QString targetOrigin = args[1]->toString(exec).qstring();
         QUrl    targetURL(targetOrigin);
-        kDebug(6070) << "postMessage targetting:" << targetOrigin;
+        // qDebug() << "postMessage targetting:" << targetOrigin;
 
         // Make sure we get * or an absolute URL for target origin
         if (targetOrigin != QLatin1String("*") &&
@@ -2422,7 +2421,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
 	    if (docimpl)
 		docimpl->addWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
 	    else
-		kWarning() << "document missing on Window::AddEventListener. why?";
+		qWarning() << "document missing on Window::AddEventListener. why?";
         }
         return jsUndefined();
     }
@@ -2433,7 +2432,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
 	    if (docimpl)
 		docimpl->removeWindowEventListener(EventName::fromString(args[0]->toString(exec).domString()),listener,args[2]->toBoolean(exec));
 	    else
-		kWarning() << "document missing on Window::RemoveEventListener. why?";
+		qWarning() << "document missing on Window::RemoveEventListener. why?";
         }
         return jsUndefined();
     }
@@ -2448,7 +2447,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
 ScheduledAction::ScheduledAction(JSObject* _func, List _args, DateTimeMS _nextTime, int _interval, bool _singleShot,
 				  int _timerId)
 {
-  //kDebug(6070) << "ScheduledAction::ScheduledAction(isFunction) " << this;
+  //qDebug() << "ScheduledAction::ScheduledAction(isFunction) " << this;
   func = static_cast<JSObject*>(_func);
   args = _args;
   isFunction = true;
@@ -2462,7 +2461,7 @@ ScheduledAction::ScheduledAction(JSObject* _func, List _args, DateTimeMS _nextTi
 // KDE 4: Make it const QString &
 ScheduledAction::ScheduledAction(QString _code, DateTimeMS _nextTime, int _interval, bool _singleShot, int _timerId)
 {
-  //kDebug(6070) << "ScheduledAction::ScheduledAction(!isFunction) " << this;
+  //qDebug() << "ScheduledAction::ScheduledAction(!isFunction) " << this;
   //func = 0;
   //args = 0;
   func = 0;
@@ -2484,7 +2483,7 @@ bool ScheduledAction::execute(Window *window)
 
   interpreter->setProcessingTimerCallback(true);
 
-  //kDebug(6070) << "ScheduledAction::execute " << this;
+  //qDebug() << "ScheduledAction::execute " << this;
   if (isFunction) {
     if (func->implementsCall()) {
       // #### check this
@@ -2521,7 +2520,7 @@ void ScheduledAction::mark()
 ScheduledAction::~ScheduledAction()
 {
   args.reset();
-  //kDebug(6070) << "ScheduledAction::~ScheduledAction " << this;
+  //qDebug() << "ScheduledAction::~ScheduledAction " << this;
 }
 
 ////////////////////// WindowQObject ////////////////////////
@@ -2529,10 +2528,10 @@ ScheduledAction::~ScheduledAction()
 WindowQObject::WindowQObject(Window *w)
   : parent(w)
 {
-  //kDebug(6070) << "WindowQObject::WindowQObject " << this;
-  if ( !parent->m_frame )
-      kDebug(6070) << "WARNING: null part in " ;
-  else
+  //qDebug() << "WindowQObject::WindowQObject " << this;
+  if ( !parent->m_frame ) {
+      // qDebug() << "WARNING: null part in " ;
+  } else
       connect( parent->m_frame, SIGNAL(destroyed()),
                this, SLOT(parentDestroyed()) );
   pauseLevel  = 0;
@@ -2542,7 +2541,7 @@ WindowQObject::WindowQObject(Window *w)
 
 WindowQObject::~WindowQObject()
 {
-  //kDebug(6070) << "WindowQObject::~WindowQObject " << this;
+  //qDebug() << "WindowQObject::~WindowQObject " << this;
   parentDestroyed(); // reuse same code
 }
 
@@ -2815,12 +2814,12 @@ const ClassInfo Location::info = { "Location", 0, &LocationTable, 0 };
 KJS_IMPLEMENT_PROTOFUNC(LocationFunc)
 Location::Location(khtml::ChildFrame *f) : m_frame(f)
 {
-  //kDebug(6070) << "Location::Location " << this << " m_part=" << (void*)m_part;
+  //qDebug() << "Location::Location " << this << " m_part=" << (void*)m_part;
 }
 
 Location::~Location()
 {
-  //kDebug(6070) << "Location::~Location " << this << " m_part=" << (void*)m_part;
+  //qDebug() << "Location::~Location " << this << " m_part=" << (void*)m_part;
 }
 
 KParts::ReadOnlyPart *Location::part() const {
@@ -2830,7 +2829,7 @@ KParts::ReadOnlyPart *Location::part() const {
 bool Location::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Location::getOwnPropertySlot " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
+  // qDebug() << "Location::getOwnPropertySlot " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
 #endif
 
   if (m_frame.isNull() || m_frame->m_part.isNull())
@@ -2903,7 +2902,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
 void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
 {
 #ifdef KJS_VERBOSE
-  kDebug(6070) << "Location::put " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
+  // qDebug() << "Location::put " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
 #endif
   if (m_frame.isNull() || m_frame->m_part.isNull())
     return;
@@ -3163,7 +3162,7 @@ JSValue *History::getValueProperty(ExecState *, int token) const
     return jsNumber( length.toUInt() );
   }
   default:
-    kDebug(6070) << "WARNING: Unhandled token in History::getValueProperty : " << token;
+    // qDebug() << "WARNING: Unhandled token in History::getValueProperty : " << token;
     return jsUndefined();
   }
 }

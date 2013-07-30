@@ -46,7 +46,7 @@
 #include "rendering/render_form.h"
 
 #include <kcharsets.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kmessagebox.h>
 #include <krandom.h>
 #include <klocalizedstring.h>
@@ -261,7 +261,7 @@ Vector<HTMLGenericFormElementImpl*> HTMLFormElementImpl::gatherInTreeOrder(NodeI
 QByteArray HTMLFormElementImpl::formData(bool& ok)
 {
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "form: formData()";
+    // qDebug() << "form: formData()";
 #endif
 
     QByteArray form_data;
@@ -336,7 +336,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
 
         if (!current->disabled() && current->encoding(codec, lst, useMultipart))
         {
-            //kDebug(6030) << "adding name '" << current->name().string() << "'";
+            //qDebug() << "adding name '" << current->name().string() << "'";
             khtml::encodingList::ConstIterator it = lst.constBegin();
             const khtml::encodingList::ConstIterator itEnd = lst.constEnd();
             for( ; it != itEnd; ++it )
@@ -383,7 +383,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
                             path = QUrl(val);
                         }
 
-                        hstr += fixUpfromUnicode(codec, "; filename=\"" + QUrlPathInfo(path).fileName() + "\"");
+                        hstr += fixUpfromUnicode(codec, "; filename=\"" + path.fileName() + "\"");
                         if (path.isValid()) {
                             fileUploads << path.toDisplayString(QUrl::PreferLocalFile);
                             QMimeDatabase db;
@@ -641,7 +641,7 @@ void HTMLFormElementImpl::submit(  )
     m_insubmit = true;
 
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "submitting!";
+    // qDebug() << "submitting!";
 #endif
 
     bool ok;
@@ -717,7 +717,7 @@ void HTMLFormElementImpl::reset(  )
     m_inreset = true;
 
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "reset pressed!";
+    // qDebug() << "reset pressed!";
 #endif
 
     // ### DOM2 labels this event as not cancelable, however
@@ -977,8 +977,8 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
         p = p->parentNode();
     }
 #ifdef FORMS_DEBUG
-    kDebug( 6030 ) << "couldn't find form!";
-    kDebug( 6030 ) << kBacktrace();
+    // qDebug() << "couldn't find form!";
+    // qDebug() << kBacktrace();
 #endif
     return 0;
 }
@@ -2779,13 +2779,13 @@ long HTMLOptionElementImpl::index() const
             ++optionIndex;
         }
     }
-    kWarning() << "HTMLOptionElementImpl::index(): option not found!";
+    qWarning() << "HTMLOptionElementImpl::index(): option not found!";
     return 0;
 }
 
 void HTMLOptionElementImpl::setIndex( long  )
 {
-    kWarning() << "Unimplemented HTMLOptionElementImpl::setIndex(long) called";
+    qWarning() << "Unimplemented HTMLOptionElementImpl::setIndex(long) called";
     // ###
 }
 

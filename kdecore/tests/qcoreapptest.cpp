@@ -23,7 +23,6 @@
 #include <kcomponentdata.h>
 #include <klocalizedstring.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
 
 int main(int argc, char **argv)
 {

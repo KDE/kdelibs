@@ -47,7 +47,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <assert.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kiconloader.h>
 
 
@@ -200,7 +200,7 @@ Part::~Part()
 {
     Q_D(Part);
 
-    //kDebug(1000) << this;
+    //qDebug() << this;
 
     if ( d->m_widget )
     {
@@ -214,7 +214,7 @@ Part::~Part()
 
     if ( d->m_widget && d->m_autoDeleteWidget )
     {
-        kDebug(1000) << "deleting widget" << d->m_widget << d->m_widget->objectName();
+        // qDebug() << "deleting widget" << d->m_widget << d->m_widget->objectName();
         delete static_cast<QWidget*>(d->m_widget);
     }
 
@@ -357,7 +357,7 @@ void Part::slotWidgetDestroyed()
 
     d->m_widget = 0;
     if (d->m_autoDeletePart) {
-        kDebug(1000) << "deleting part" << objectName();
+        // qDebug() << "deleting part" << objectName();
         delete this; // ouch, this should probably be deleteLater()
     }
 }
@@ -576,7 +576,7 @@ bool ReadOnlyPart::openUrl( const QUrl &url )
 
 bool ReadOnlyPart::openFile()
 {
-    kWarning(1000) << "Default implementation of ReadOnlyPart::openFile called!"
+    qWarning() << "Default implementation of ReadOnlyPart::openFile called!"
                    << metaObject()->className() << "should reimplement either openUrl or openFile.";
     return false;
 }
@@ -612,7 +612,7 @@ void ReadOnlyPartPrivate::openRemoteFile()
     Q_Q(ReadOnlyPart);
     m_bTemp = true;
     // Use same extension as remote file. This is important for mimetype-determination (e.g. koffice)
-    QString fileName = QUrlPathInfo(m_url).fileName();
+    QString fileName = m_url.fileName();
     QFileInfo fileInfo(fileName);
     QString ext = fileInfo.completeSuffix();
     QString extension;
@@ -639,12 +639,12 @@ void ReadOnlyPart::abortLoad()
     Q_D(ReadOnlyPart);
 
     if ( d->m_statJob ) {
-        //kDebug(1000) << "Aborting job" << d->m_statJob;
+        //qDebug() << "Aborting job" << d->m_statJob;
         d->m_statJob->kill();
         d->m_statJob = 0;
     }
     if ( d->m_job ) {
-        //kDebug(1000) << "Aborting job" << d->m_job;
+        //qDebug() << "Aborting job" << d->m_job;
         d->m_job->kill();
         d->m_job = 0;
     }
@@ -707,7 +707,7 @@ void ReadOnlyPartPrivate::_k_slotJobFinished( KJob * job )
 
 void ReadOnlyPartPrivate::_k_slotGotMimeType(KIO::Job *job, const QString &mime)
 {
-    kDebug(1000) << mime;
+    // qDebug() << mime;
     Q_ASSERT(job == m_job); Q_UNUSED(job)
     // set the mimetype only if it was not already set (for example, by the host application)
     if (m_arguments.mimeType().isEmpty()) {
@@ -724,7 +724,7 @@ void ReadOnlyPart::guiActivateEvent( GUIActivateEvent * event )
     {
         if (!d->m_url.isEmpty())
         {
-            kDebug(1000) << d->m_url;
+            // qDebug() << d->m_url;
             emit setWindowCaption(d->m_url.toDisplayString());
         } else emit setWindowCaption( "" );
     }
@@ -798,10 +798,10 @@ void ReadWritePart::setModified( bool modified )
 {
     Q_D(ReadWritePart);
 
-    kDebug(1000) << "setModified(" << (modified ? "true" : "false") << ")";
+    // qDebug() << "setModified(" << (modified ? "true" : "false") << ")";
     if ( !d->m_bReadWrite && modified )
     {
-        kError(1000) << "Can't set a read-only document to 'modified' !" << endl;
+        qCritical() << "Can't set a read-only document to 'modified' !" << endl;
         return;
     }
     d->m_bModified = modified;
@@ -896,7 +896,7 @@ bool ReadWritePart::saveAs(const QUrl & url)
 
     if (!url.isValid())
     {
-        kError(1000) << "saveAs: Malformed URL " << url << endl;
+        qCritical() << "saveAs: Malformed URL " << url << endl;
         return false;
     }
     d->m_duringSaveAs = true;

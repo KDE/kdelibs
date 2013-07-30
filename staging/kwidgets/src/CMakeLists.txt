@@ -45,7 +45,6 @@ target_link_libraries(KWidgets
   Qt5::Svg
   Qt5::DBus
 
-  kdeqt5staging # QUrlPathInfo
   ${KConfig_CORE_LIBRARY}
   ${KConfig_GUI_LIBRARY}
   ${KCoreAddons_LIBRARIES}
@@ -53,7 +52,6 @@ target_link_libraries(KWidgets
   ${KWidgetsAddons_LIBRARIES}
   ${KAuth_LIBRARIES}
   ${KWindowSystem_LIBRARIES}
-  KService
   KI18n
   KCodecs
 )

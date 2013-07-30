@@ -549,7 +549,7 @@ static OSStatus writeEntryImplementation( const QString& walletName, const QStri
         qWarning() << "Could not store password in keychain: " << qPrintable(errMsg);
         return err;
     }
-    kDebug() << "Succesfully written out key:" << key;
+    // qDebug() << "Succesfully written out key:" << key;
     return err;
 
 }

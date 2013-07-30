@@ -20,7 +20,6 @@
 #include "httpauthenticationtest.h"
 
 #include <qtest.h>
-#include <kdebug.h>
 
 #include <QtCore/QList>
 #include <QtCore/QByteArray>

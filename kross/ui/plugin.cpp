@@ -223,7 +223,7 @@ void ScriptingPlugin::save()
         QStringList searchPath = QStandardPaths::locateAll(QStandardPaths::DataLocation, QStringLiteral("scripts/") + d->referenceActionsDir, QStandardPaths::LocateDirectory);
         searchPath.append(QFileInfo(d->userActionsFile).absolutePath());
         if( collection->writeXml(&f, 2, searchPath) ) {
-            //kDebug() << "Successfully saved file: " << d->userActionsFile;
+            //qDebug() << "Successfully saved file: " << d->userActionsFile;
         }
     }
     else {

@@ -33,7 +33,6 @@
 #include <phonon/videowidget.h>
 #include <ktogglefullscreenaction.h>
 #include <kglobalaccel.h>
-#include <kdebug.h>
 #include <klocalizedstring.h>
 
 namespace khtml {

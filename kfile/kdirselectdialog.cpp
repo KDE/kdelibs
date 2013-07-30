@@ -51,7 +51,7 @@
 #include <ktoggleaction.h>
 #include <kurlcompletion.h>
 #include <kurlpixmapprovider.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kpropertiesdialog.h>
 
 #include "kfileplacesview.h"
@@ -424,7 +424,7 @@ QUrl KDirSelectDialog::url() const
        }
     }
 
-    kDebug() << comboUrl.path() << " is not an accessible directory";
+    // qDebug() << comboUrl.path() << " is not an accessible directory";
     return d->m_treeView->currentUrl();
 }
 
@@ -456,7 +456,7 @@ void KDirSelectDialog::setCurrentUrl( const QUrl& url )
     }
 
     //Check if url represents a hidden folder and enable showing them
-    QString fileName = QUrlPathInfo(url).fileName();
+    QString fileName = url.fileName();
     //TODO a better hidden file check?
     bool isHidden = fileName.length() > 1 && fileName[0] == '.' &&
                                                 (fileName.length() > 2 ? fileName[1] != '.' : true);

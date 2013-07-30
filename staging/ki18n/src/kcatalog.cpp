@@ -158,7 +158,7 @@ void KCatalogPrivate::setupGettextEnv ()
         currentLanguage = language;
         bindDone = true;
 
-        //kDebug() << "bindtextdomain" << name << localeDir;
+        //qDebug() << "bindtextdomain" << name << localeDir;
         bindtextdomain(name, localeDir);
 
         // Magic to make sure Gettext doesn't use stale cached translation

@@ -30,7 +30,7 @@
 #include <QMenu>
 #include <QScrollBar>
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <kconfig.h>
 #include <kconfiggroup.h>

@@ -49,7 +49,7 @@
 #include <kurlrequester.h>
 #include <kservicegroup.h>
 #include <kserviceoffer.h>
-#include <kdebug.h>
+#include <QDebug>
 
 #include <assert.h>
 #include <stdlib.h>
@@ -171,7 +171,7 @@ void KApplicationModelPrivate::fillNode(const QString &_entryPath, KDEPrivate::A
       }
       else
       {
-         kWarning(250) << "KServiceGroup: Unexpected object in list!";
+         qWarning() << "KServiceGroup: Unexpected object in list!";
          continue;
       }
 
@@ -791,7 +791,7 @@ void KOpenWithDialogPrivate::addToMimeAppsList(const QString& serviceId /*menu i
     fileTypesConfig->group("EmbedSettings").writeEntry(QString("embed-")+qMimeType, false);
     fileTypesConfig->sync();
 
-    kDebug(250) << "rebuilding ksycoca...";
+    // qDebug() << "rebuilding ksycoca...";
 
     // kbuildsycoca is the one reading mimeapps.list, so we need to run it now
     KBuildSycocaProgressDialog::rebuildKSycoca(q);
@@ -825,32 +825,32 @@ bool KOpenWithDialogPrivate::checkAccept()
         initialServiceName = serviceName;
         // Also remember the binaryName with a path, if any, for the
         // check that the binary exists.
-        kDebug(250) << "initialServiceName=" << initialServiceName;
+        // qDebug() << "initialServiceName=" << initialServiceName;
         int i = 1; // We have app, app-2, app-3... Looks better for the user.
         bool ok = false;
         // Check if there's already a service by that name, with the same Exec line
         do {
-            kDebug(250) << "looking for service" << serviceName;
+            // qDebug() << "looking for service" << serviceName;
             KService::Ptr serv = KService::serviceByDesktopName( serviceName );
             ok = !serv; // ok if no such service yet
             // also ok if we find the exact same service (well, "kwrite" == "kwrite %U")
             if (serv && !serv->noDisplay() /* #297720 */) {
                 if (serv->isApplication()) {
-                    /*kDebug(250) << "typedExec=" << typedExec
+                    /*// qDebug() << "typedExec=" << typedExec
                       << "serv->exec=" << serv->exec()
                       << "simplifiedExecLineFromService=" << simplifiedExecLineFromService(fullExec);*/
                     serviceExec = simplifiedExecLineFromService(serv->exec());
                     if (typedExec == serviceExec){
                         ok = true;
                         m_pService = serv;
-                        kDebug(250) << "OK, found identical service: " << serv->entryPath();
+                        // qDebug() << "OK, found identical service: " << serv->entryPath();
                     } else {
-                        kDebug(250) << "Exec line differs, service says:" << serviceExec;
+                        // qDebug() << "Exec line differs, service says:" << serviceExec;
                         configPath = serv->entryPath();
                         serviceExec = serv->exec();
                     }
                 } else {
-                    kDebug(250) << "Found, but not an application:" << serv->entryPath();
+                    // qDebug() << "Found, but not an application:" << serv->entryPath();
                 }
             }
             if (!ok) { // service was found, but it was different -> keep looking
@@ -866,7 +866,7 @@ bool KOpenWithDialogPrivate::checkAccept()
         fullExec = m_pService->exec();
     } else {
         const QString binaryName = KRun::binaryName(typedExec, false);
-        kDebug(250) << "binaryName=" << binaryName;
+        // qDebug() << "binaryName=" << binaryName;
         // Ensure that the typed binary name actually exists (#81190)
         if (QStandardPaths::findExecutable(binaryName).isEmpty()) {
             KMessageBox::error(q, i18n("'%1' not found, please type a valid program name.", binaryName));
@@ -883,14 +883,14 @@ bool KOpenWithDialogPrivate::checkAccept()
             m_command += QString::fromLatin1(" --noclose");
         m_command += QString::fromLatin1(" -e ");
         m_command += edit->text();
-        kDebug(250) << "Setting m_command to" << m_command;
+        // qDebug() << "Setting m_command to" << m_command;
     }
     if ( m_pService && terminal->isChecked() != m_pService->terminal() )
         m_pService = 0; // It's not exactly this service we're running
 
 
     const bool bRemember = remember && remember->isChecked();
-    kDebug(250) << "bRemember=" << bRemember << "service found=" << m_pService;
+    // qDebug() << "bRemember=" << bRemember << "service found=" << m_pService;
     if (m_pService) {
         if (bRemember) {
             // Associate this app with qMimeType in mimeapps.list
@@ -915,7 +915,7 @@ bool KOpenWithDialogPrivate::checkAccept()
                       fullExec += serviceExec.mid(index, 2);
                     }
                 }
-                kDebug(250) << "Creating service with Exec=" << fullExec;
+                // qDebug() << "Creating service with Exec=" << fullExec;
                 m_pService = new KService(configPath);
                 m_pService->setExec(fullExec);
             }
@@ -934,7 +934,7 @@ bool KOpenWithDialogPrivate::checkAccept()
             serviceName = QFileInfo(serviceName).fileName();
 #endif
             QString newPath = KService::newServicePath(false /* ignored argument */, serviceName, &menuId);
-            kDebug(250) << "Creating new service" << serviceName << "(" << newPath << ")" << "menuId=" << menuId;
+            // qDebug() << "Creating new service" << serviceName << "(" << newPath << ")" << "menuId=" << menuId;
 
             KDesktopFile desktopFile(newPath);
             KConfigGroup cg = desktopFile.desktopGroup();

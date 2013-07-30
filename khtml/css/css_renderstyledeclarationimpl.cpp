@@ -362,12 +362,12 @@ static CSSValueImpl *getPositionOffsetValue(RenderObject *renderer, int property
 RenderStyleDeclarationImpl::RenderStyleDeclarationImpl( DOM::NodeImpl *node )
     : CSSStyleDeclarationImpl(0), m_node(node)
 {
-    //kDebug() << "Render Style Declaration created";
+    //qDebug() << "Render Style Declaration created";
 }
 
 RenderStyleDeclarationImpl::~RenderStyleDeclarationImpl()
 {
-    //kDebug() << "Render Style Declaration destroyed";
+    //qDebug() << "Render Style Declaration destroyed";
 }
 
 DOM::DOMString RenderStyleDeclarationImpl::cssText() const
@@ -1209,7 +1209,7 @@ CSSValueImpl *RenderStyleDeclarationImpl::getPropertyCSSValue( int propertyID ) 
             return new CSSPrimitiveValueImpl(CSS_VAL_CLIP);
         break;
     default:
-        kWarning() << "Unhandled property:" << getPropertyName(propertyID);
+        qWarning() << "Unhandled property:" << getPropertyName(propertyID);
         //Q_ASSERT( 0 );
         break;
     }

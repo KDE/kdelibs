@@ -982,7 +982,7 @@ void KCoreDirListerCache::slotFileRenamed( const QString &_src, const QString &_
         slotFilesChanged(QStringList() << src.toString());
     } else {
         if( nameOnly )
-            fileitem->setName(QUrlPathInfo(dst).fileName());
+            fileitem->setName(dst.fileName());
         else
             fileitem->setUrl( dst );
         fileitem->refreshMimeType();
@@ -1073,7 +1073,7 @@ void KCoreDirListerCache::slotFileDirty( const QString& path )
     } else {
         Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash))) {
             QUrlPathInfo aliasUrl(dir);
-            aliasUrl.addPath(QUrlPathInfo(url).fileName());
+            aliasUrl.addPath(url.fileName());
             handleFileDirty(aliasUrl.url());
         }
     }
@@ -1554,7 +1554,7 @@ void KCoreDirListerCache::renameDir( const QUrl &oldUrl, const QUrl &newUrl )
                 const QString oldItemUrlStr(oldItemUrl.toString(QUrl::StripTrailingSlash));
                 QUrl newItemUrl(oldItemUrl);
                 newItemUrl.setPath(newDirUrl.path());
-                newItemUrl = QUrlPathInfo::addPathToUrl(newItemUrl, QUrlPathInfo(oldItemUrl).fileName());
+                newItemUrl = QUrlPathInfo::addPathToUrl(newItemUrl, oldItemUrl.fileName());
                 //qDebug() << "renaming" << oldItemUrl << "to" << newItemUrl;
                 (*kit).setUrl(newItemUrl);
 

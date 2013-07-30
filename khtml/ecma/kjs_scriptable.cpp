@@ -48,7 +48,7 @@ static bool isForeignObject(const QVariant& v)
 
 QVariant exception(const char* msg)
 {
-    kWarning(6031) << msg;
+    qWarning() << msg;
     return QVariant::fromValue(ScriptableExtension::Exception(QString::fromLatin1(msg)));
 }
 
@@ -400,7 +400,7 @@ JSValue* ScriptableOperations::importValue(ExecState* exec, const QVariant& v, b
         return jsString(v.toString());
     if (v.canConvert<double>())
         return jsNumber(v.toDouble());
-    kWarning(6031) << "conversion from " << v << "failed";
+    qWarning() << "conversion from " << v << "failed";
     return jsNull();
 }
 
@@ -440,7 +440,7 @@ QVariant ScriptableOperations::exportObject(JSObject* o, bool preRef)
                 acquireValue(v);
             return v;
         } else {
-            kWarning(6031) << "export of an object of a destroyed extension. Returning null";
+            qWarning() << "export of an object of a destroyed extension. Returning null";
             return scriptableNull();
         }   
     } else {
@@ -826,7 +826,7 @@ QVariant KHTMLPartScriptable::encloserForKid(KParts::ScriptableExtension* kid)
     khtml::ChildFrame* f = m_part->frame(childPart);
 
     if (!f) {
-        kWarning(6031) << "unable to find frame. Huh?";
+        qWarning() << "unable to find frame. Huh?";
         return scriptableNull();
     }
 
@@ -837,7 +837,7 @@ QVariant KHTMLPartScriptable::encloserForKid(KParts::ScriptableExtension* kid)
                 getDOMNode(i->globalExec(), f->m_partContainerElement.data()), true);
     }
 
-    kWarning(6031) << "could not find the part container";
+    qWarning() << "could not find the part container";
     return scriptableNull();
 }
 
@@ -857,7 +857,7 @@ QVariant KHTMLPartScriptable::evaluateScript(ScriptableExtension* caller,
                                              const QString& code,
                                              ScriptLanguage lang)
 {
-    kDebug(6031) << code;
+    // qDebug() << code;
     
     if (lang != ECMAScript)
         return exception("unsupported language");
@@ -904,7 +904,7 @@ bool KHTMLPartScriptable::isScriptLanguageSupported(ScriptLanguage lang) const
 bool KHTMLPartScriptable::setException(ScriptableExtension* /*caller*/,
                                        const QString& message)
 {
-    kWarning(6031) << "ignoring:" << message;
+    qWarning() << "ignoring:" << message;
     return false;
 }
 

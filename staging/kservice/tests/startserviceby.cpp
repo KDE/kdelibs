@@ -17,11 +17,9 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <kcomponentdata.h>
 #include <qcoreapplication.h>
-#include <kaboutdata.h>
 #include <ktoolinvocation.h>
-#include <kdebug.h>
+#include <QDebug>
 
 int
 main(int argc, char *argv[])
@@ -41,7 +39,7 @@ main(int argc, char *argv[])
    QString dbusService;
    int pid;
    KToolInvocation::startServiceByDesktopPath( serviceId, url, &error, &dbusService, &pid );
-   kDebug() << "Started. error=" << error << " dbusService=" << dbusService << " pid=" << pid;
+   qDebug() << "Started. error=" << error << " dbusService=" << dbusService << " pid=" << pid;
 
    return 0;
 }

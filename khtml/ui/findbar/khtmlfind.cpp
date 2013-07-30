@@ -84,12 +84,12 @@ bool KHTMLFind::initFindNode( bool selection, bool reverse, bool fromCursor )
 
     if ( !firstNode )
     {
-      //kDebug(6050) << "no first node (body or doc) -> return false";
+      //qDebug() << "no first node (body or doc) -> return false";
       return false;
     }
     if ( selection && m_part->hasSelection() )
     {
-      //kDebug(6050) << "using selection";
+      //qDebug() << "using selection";
       const Selection &sel = m_part->caret();
       if ( !fromCursor )
       {
@@ -104,7 +104,7 @@ bool KHTMLFind::initFindNode( bool selection, bool reverse, bool fromCursor )
     }
     else // whole document
     {
-      //kDebug(6050) << "whole doc";
+      //qDebug() << "whole doc";
       if ( !fromCursor )
       {
         d->m_findNode = firstNode;
@@ -140,7 +140,7 @@ bool KHTMLFind::initFindNode( bool selection, bool reverse, bool fromCursor )
 
 void KHTMLFind::deactivate()
 {
-  kDebug(6050);
+  // qDebug();
   d->m_lastFindState.options = d->m_findDialog->options();
   d->m_lastFindState.history = d->m_findDialog->findHistory();
   if (!m_parent) {
@@ -378,16 +378,16 @@ bool KHTMLFind::findTextNext( bool reverse )
   KFind::Result res = KFind::NoMatch;
   khtml::RenderObject* obj = d->m_findNode ? d->m_findNode->renderer() : 0;
   khtml::RenderObject* end = d->m_findNodeEnd ? d->m_findNodeEnd->renderer() : 0;
-  //kDebug(6050) << "obj=" << obj << " end=" << end;
+  //qDebug() << "obj=" << obj << " end=" << end;
   while( res == KFind::NoMatch )
   {
     if ( d->m_find->needData() )
     {
       if ( !obj ) {
-        //kDebug(6050) << "obj=0 -> done";
+        //qDebug() << "obj=0 -> done";
         break; // we're done
       }
-      //kDebug(6050) << " gathering data";
+      //qDebug() << " gathering data";
       // First make up the QString for the current 'line' (i.e. up to \n)
       // We also want to remember the DOMNode for every portion of the string.
       // We store this in an index->node list.
@@ -464,7 +464,7 @@ bool KHTMLFind::findTextNext( bool reverse )
           newLine = s.indexOf( '\n' ) != -1; // did we just get a newline?
           if( !( options & KFind::FindBackwards ))
           {
-            //kDebug(6050) << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << lastNode;
+            //qDebug() << "StringPortion: " << index << "-" << index+s.length()-1 << " -> " << lastNode;
             d->m_stringPortions.append( StringPortion( str.length(), lastNode ) );
             str += s;
           }
@@ -515,24 +515,24 @@ bool KHTMLFind::findTextNext( bool reverse )
 
   if ( res == KFind::NoMatch ) // i.e. we're done
   {
-    kDebug(6050) << "No more matches.";
+    // qDebug() << "No more matches.";
     if ( !(options & KHTMLPart::FindNoPopups) && d->m_find->shouldRestart() )
     {
-      kDebug(6050) << "Restarting";
+      // qDebug() << "Restarting";
       initFindNode( false, options & KFind::FindBackwards, false );
       d->m_find->resetCounts();
       findTextNext( reverse );
     }
     else // really done
     {
-      kDebug(6050) << "Finishing";
+      // qDebug() << "Finishing";
       //delete d->m_find;
       //d->m_find = 0L;
       initFindNode( false, options & KFind::FindBackwards, false );
       d->m_find->resetCounts();
       d->m_part->clearSelection();
     }
-    kDebug(6050) << "Dialog closed.";
+    // qDebug() << "Dialog closed.";
   }
 
   if ( m_findDialog != 0 )
@@ -546,7 +546,7 @@ bool KHTMLFind::findTextNext( bool reverse )
 
 void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
 {
-  //kDebug(6050) << "slotHighlight index=" << index << " length=" << length;
+  //qDebug() << "slotHighlight index=" << index << " length=" << length;
   QList<StringPortion>::Iterator it = d->m_stringPortions.begin();
   const QList<StringPortion>::Iterator itEnd = d->m_stringPortions.end();
   QList<StringPortion>::Iterator prev = it;
@@ -582,7 +582,7 @@ void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
         int dummy;
         static_cast<khtml::RenderText *>(node->renderer())
           ->caretPos( RenderPosition::fromDOMPosition(sel.start()).renderedOffset(), false, x, y, dummy, dummy ); // more precise than posOfChar
-        //kDebug(6050) << "topleft: " << x << "," << y;
+        //qDebug() << "topleft: " << x << "," << y;
         if ( x != -1 || y != -1 )
         {
           int gox = m_part->view()->contentsX();
@@ -607,11 +607,11 @@ void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
   sel.moveTo(sel.start(), RenderPosition((*prev).node, index + length - (*prev).index).position());
 
 #if 0
-  kDebug(6050) << "slotHighlight: " << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<
+  // qDebug() << "slotHighlight: " << d->m_selectionStart.handle() << "," << d->m_startOffset << " - " <<
     d->m_selectionEnd.handle() << "," << d->m_endOffset << endl;
   it = d->m_stringPortions.begin();
   for ( ; it != d->m_stringPortions.end() ; ++it )
-    kDebug(6050) << "  StringPortion: from index=" << (*it).index << " -> node=" << (*it).node;
+    // qDebug() << "  StringPortion: from index=" << (*it).index << " -> node=" << (*it).node;
 #endif
   if ( renderTextArea )
     renderTextArea->highLightWord( length, sel.end().offset()-length );
@@ -626,7 +626,7 @@ void KHTMLFind::slotHighlight( const QString& /*text*/, int index, int length )
       int x, y, height, dummy;
       static_cast<khtml::RenderText *>(sel.end().node()->renderer())
           ->caretPos( RenderPosition::fromDOMPosition(sel.end()).renderedOffset(), false, x, y, dummy, height ); // more precise than posOfChar
-      //kDebug(6050) << "bottomright: " << x << "," << y+height;
+      //qDebug() << "bottomright: " << x << "," << y+height;
     }
   }
   m_part->emitSelectionChanged();

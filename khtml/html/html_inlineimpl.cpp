@@ -39,8 +39,6 @@
 #include "rendering/render_image.h"
 #include "rendering/render_inline.h"
 
-#include <kdebug.h>
-
 using namespace khtml;
 using namespace DOM;
 

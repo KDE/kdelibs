@@ -44,18 +44,15 @@ target_include_directories(KIOWidgets PUBLIC
 )
 
 target_link_libraries(KIOWidgets
- KIOCore
- KJobWidgets
- KIconThemes   # KIconLoader
- KCompletion   # KUrlCompletion uses KCompletion
- Qt5::Widgets
- Qt5::Network  # SSL
- #${KConfig_CORE_LIBRARY}
- #${KCoreAddons_LIBRARIES}
- #ki18n
- #kservice
- #Qt5::DBus
- #Qt5::Concurrent
+  LINK_PUBLIC
+    KIOCore
+    KJobWidgets
+    Qt5::Widgets
+    Qt5::Network  # SSL
+    KCompletion   # KUrlCompletion uses KCompletion
+  LINK_PRIVATE
+    KIconThemes   # KIconLoader
+    kdeqt5staging # QUrlPathInfo
 )
 
 if(ACL_FOUND)

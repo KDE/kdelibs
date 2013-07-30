@@ -20,7 +20,7 @@
 #include "dispatcher.h"
 #include "dispatcher_p.h"
 
-#include <kdebug.h>
+#include <QDebug>
 
 namespace KSettings
 {
@@ -33,7 +33,7 @@ Q_GLOBAL_STATIC(DispatcherPrivate, d)
 void registerComponent(const QString &componentName, QObject *recv, const char *slot)
 {
     Q_ASSERT(!componentName.isEmpty());
-    kDebug(701) << componentName;
+    // qDebug() << componentName;
     d()->m_componentName[recv] = componentName;
     d()->m_componentInfo[componentName].slotList.append(ComponentInfo::Slot(recv, slot));
 
@@ -43,13 +43,13 @@ void registerComponent(const QString &componentName, QObject *recv, const char *
 
 KSharedConfig::Ptr configForComponentName(const QString &componentName)
 {
-    kDebug(701) ;
+    // qDebug() ;
     return KSharedConfig::openConfig(componentName + "rc");
 }
 
 QList<QString> componentNames()
 {
-    kDebug(701) ;
+    // qDebug() ;
     QList<QString> names;
     for (QMap<QString, ComponentInfo>::ConstIterator it = d()->m_componentInfo.constBegin(); it != d()->m_componentInfo.constEnd(); ++it) {
         if ((*it).count > 0) {
@@ -61,7 +61,7 @@ QList<QString> componentNames()
 
 void reparseConfiguration(const QString & componentName)
 {
-    kDebug(701) << componentName;
+    // qDebug() << componentName;
     // check if the componentName is valid:
     if (! d()->m_componentInfo.contains(componentName)) {
         return;
@@ -86,14 +86,14 @@ void syncConfiguration()
 void DispatcherPrivate::unregisterComponent(QObject *obj)
 {
     if (!m_componentName.contains(obj)) {
-      kWarning(701) << k_funcinfo << "Tried to unregister an object which is not already registered.";
+      qWarning() << Q_FUNC_INFO << "Tried to unregister an object which is not already registered.";
       return;
     }
 
     QString name = m_componentName[obj];
     m_componentName.remove(obj); //obj will be destroyed when we return, so we better remove this entry
     --(m_componentInfo[name].count);
-    kDebug(701) << "componentName=" << name << "refcount=" << m_componentInfo[name].count;
+    // qDebug() << "componentName=" << name << "refcount=" << m_componentInfo[name].count;
     Q_ASSERT(m_componentInfo[name].count >= 0);
     if (m_componentInfo[name].count == 0) {
         m_componentInfo.remove(name);

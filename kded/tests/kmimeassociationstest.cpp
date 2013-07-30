@@ -18,12 +18,12 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include <QDebug>
 #include <QDir>
 #include <QtCore/QProcess>
 #include <kconfiggroup.h>
 #include <kdesktopfile.h>
 #include <kmimetypetrader.h>
-#include <kdebug.h>
 #include <kservicefactory.h>
 #include <qtemporaryfile.h>
 #include <qtest.h>
@@ -38,13 +38,13 @@ public:
     FakeServiceFactory() : KServiceFactory() {}
 
     virtual KService::Ptr findServiceByMenuId(const QString &name) {
-        //kDebug() << name;
+        //qDebug() << name;
         KService::Ptr result = m_cache.value(name);
         if (!result) {
             result = KServiceFactory::findServiceByMenuId(name);
             m_cache.insert(name, result);
         }
-        //kDebug() << name << result.data();
+        //qDebug() << name << result.data();
         return result;
     }
     virtual KService::Ptr findServiceByDesktopPath(const QString &name)
@@ -76,9 +76,9 @@ static bool offerListHasService( const KService::List& offers,
         }
     }
     if (!found && expected) {
-        kWarning() << "ERROR:" << entryPath << "not found in offer list. Here's the full list:";
+        qWarning() << "ERROR:" << entryPath << "not found in offer list. Here's the full list:";
         Q_FOREACH(const KService::Ptr &serv, offers) {
-            kDebug() << serv->entryPath();
+            //qDebug() << serv->entryPath();
         }
     }
     return found;
@@ -237,7 +237,7 @@ private Q_SLOTS:
             Q_FOREACH(const QString& service, it.value()) {
                 KService::Ptr serv = KService::serviceByStorageId(service);
                 if (serv && !offersContains(offers, serv)) {
-                    kDebug() << serv.data() << serv->entryPath() << "does not have" << mime;
+                    //qDebug() << serv.data() << serv->entryPath() << "does not have" << mime;
                     QFAIL("offer does not have servicetype");
                 }
             }
@@ -250,7 +250,7 @@ private Q_SLOTS:
             Q_FOREACH(const QString& service, it.value()) {
                 KService::Ptr serv = KService::serviceByStorageId(service);
                 if (serv && offersContains(offers, serv)) {
-                    kDebug() << serv.data() << serv->entryPath() << "does not have" << mime;
+                    //qDebug() << serv.data() << serv->entryPath() << "does not have" << mime;
                     QFAIL("offer should not have servicetype");
                 }
             }
@@ -307,10 +307,10 @@ private Q_SLOTS:
 
         // Test a trader query
         KService::List offers = KMimeTypeTrader::self()->query("image/jpeg");
-        //kDebug() << m_mimeAppsFileContents;
-        //kDebug() << "preferred apps for jpeg: " << preferredApps.value("image/jpeg");
+        //qDebug() << m_mimeAppsFileContents;
+        //qDebug() << "preferred apps for jpeg: " << preferredApps.value("image/jpeg");
         //for (int i = 0; i < offers.count(); ++i) {
-        //    kDebug() << "offers for" << "image/jpeg" << ":" << i << offers[i]->storageId();
+        //    qDebug() << "offers for" << "image/jpeg" << ":" << i << offers[i]->storageId();
         //}
         QCOMPARE(offers.first()->storageId(), QString("fakejpegapplication.desktop"));
 
@@ -318,17 +318,17 @@ private Q_SLOTS:
         // for each mimetype, check that the preferred apps are as specified
         for (ExpectedResultsMap::const_iterator it = preferredApps.constBegin(), end = preferredApps.constEnd() ; it != end ; ++it) {
             const QString mime = it.key();
-            kDebug() << "offers for" << mime << ":";
+            //qDebug() << "offers for" << mime << ":";
             const KService::List offers = KMimeTypeTrader::self()->query(mime);
             for (int i = 0; i < offers.count(); ++i) {
-                kDebug() << "   " << i << ":" << offers[i]->storageId();
+                //qDebug() << "   " << i << ":" << offers[i]->storageId();
             }
             const QStringList offerIds = assembleServices(offers, it.value().count());
-            kDebug() << " Expected:" << it.value();
+            //qDebug() << " Expected:" << it.value();
             QCOMPARE(offerIds, it.value());
             //const QStringList expectedPreferredServices = it.value();
             //for (int i = 0; i < expectedPreferredServices.count(); ++i) {
-                //kDebug() << mime << i << expectedPreferredServices[i];
+                //qDebug() << mime << i << expectedPreferredServices[i];
             //    QCOMPARE(expectedPreferredServices[i], offers[i]->storageId());
             //}
         }
@@ -420,7 +420,7 @@ private:
 
     void runKBuildSycoca()
     {
-        //kDebug();
+        //qDebug();
         // Wait for notifyDatabaseChanged DBus signal
         // (The real KCM code simply does the refresh in a slot, asynchronously)
         QEventLoop loop;
@@ -475,7 +475,7 @@ private:
             QMutableStringListIterator serv_it( it.value() );
             while (serv_it.hasNext()) {
                 if (!KService::serviceByStorageId(serv_it.next())) {
-                    kDebug() << "removing non-existing entry" << serv_it.value();
+                    //qDebug() << "removing non-existing entry" << serv_it.value();
                     serv_it.remove();
                 }
             }

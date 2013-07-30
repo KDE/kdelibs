@@ -59,7 +59,7 @@ Value Filter::doEvaluate() const
 	Value v = m_expr->evaluate();
 	if ( !v.isNodeset() ) {
 		if ( !m_predicates.empty() ) {
-			kDebug(6011) << "Ignoring predicates for filter since expression does not evaluate to a nodeset!";
+			// qDebug() << "Ignoring predicates for filter since expression does not evaluate to a nodeset!";
 		}
 		return v;
 	}
@@ -87,7 +87,7 @@ Value Filter::doEvaluate() const
 		outNodes->setKnownNormalization(StaticNodeListImpl::DocumentOrder);
 
 #ifdef XPATH_VERBOSE
-		kDebug(6011) << "Predicate within filter trims to:" << outNodes->length();
+		// qDebug() << "Predicate within filter trims to:" << outNodes->length();
 #endif
 	}
 
@@ -115,9 +115,9 @@ Value LocationPath::doEvaluate() const
 {
 #ifdef XPATH_VERBOSE
 	if ( m_absolute ) {
-		kDebug(6011) << "Evaluating absolute path expression, steps:" << m_steps.count();
+		// qDebug() << "Evaluating absolute path expression, steps:" << m_steps.count();
 	} else {
-		kDebug(6011) << "Evaluating relative path expression, steps:" << m_steps.count();
+		// qDebug() << "Evaluating relative path expression, steps:" << m_steps.count();
 	}
 #endif
 
@@ -142,8 +142,8 @@ Value LocationPath::doEvaluate() const
 	int s = 0;
 	foreach( Step *step, m_steps ) {
 #ifdef XPATH_VERBOSE
-		kDebug(6011) << "-------------------------------------";
-		kDebug(6011) << "Step " << s << "insize " << inDomNodes->length();
+		// qDebug() << "-------------------------------------";
+		// qDebug() << "Step " << s << "insize " << inDomNodes->length();
 #endif		
 
 		outDomNodes = new StaticNodeListImpl;
@@ -158,9 +158,9 @@ Value LocationPath::doEvaluate() const
 	}
 
 #ifdef XPATH_VERBOSE
-	kDebug(6011) << "-------------------------------------";
-	kDebug(6011) << "output:" <<outDomNodes->length();
-	kDebug(6011) << "=====================================";
+	// qDebug() << "-------------------------------------";
+	// qDebug() << "output:" <<outDomNodes->length();
+	// qDebug() << "=====================================";
 #endif
 
 	return Value( outDomNodes );

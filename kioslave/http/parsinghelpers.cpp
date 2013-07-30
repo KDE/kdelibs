@@ -25,7 +25,7 @@
 #include <QTextCodec>
 #include <QUrl>
 
-#include <kdebug.h>
+#include <QDebug>
 
 // Advance *pos beyond spaces / tabs
 static void skipSpace(const char input[], int *pos, int end)
@@ -426,7 +426,7 @@ static QString extractMaybeQuotedUntil(const QString &str, int &pos)
 
 static QMap<QString, QString> contentDispositionParserInternal(const QString &disposition)
 {
-    kDebug(7113) << "disposition: " << disposition;
+    // qDebug() << "disposition: " << disposition;
     int pos = 0;
     const QString strDisposition = extractUntil(disposition, QLatin1Char(';'), pos, typeSpecials).toLower();
 
@@ -447,7 +447,7 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
         if (key.isEmpty()) {
             // parse error in this key: do not parse more, but add up
             // everything we already got
-            kDebug(7113) << "parse error in key, abort parsing";
+            // qDebug() << "parse error in key, abort parsing";
             break;
         }
 
@@ -460,7 +460,7 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
 
         if (val.isEmpty()) {
             if (pos == -1) {
-                kDebug(7113) << "parse error in value, abort parsing";
+                // qDebug() << "parse error in value, abort parsing";
                 break;
             }
             continue;
@@ -473,7 +473,7 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
         } else if (spos >= 0) {
             contparams.insert(key, val);
         } else if (parameters.contains(key)) {
-            kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
+            // qDebug() << "duplicate key" << key << "found, ignoring everything more";
             parameters.remove(key);
             return parameters;
         } else {
@@ -497,7 +497,7 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
         if (klen > spos + 2) {
             // nothing but continuations and encodings may insert * into parameter name
             if ((klen > spos + 3) || ((klen == spos + 3) && (key.at(spos + 2) != QLatin1Char('*')))) {
-                kDebug(7113) << "removing invalid key " << key << "with val" << i.value() << key.at(spos + 2);
+                // qDebug() << "removing invalid key " << key << "with val" << i.value() << key.at(spos + 2);
                 i = contparams.erase(i);
                 continue;
             }
@@ -524,7 +524,7 @@ static QMap<QString, QString> contentDispositionParserInternal(const QString &di
             encparams.insert(key, val);
         } else {
             if (parameters.contains(key)) {
-                kDebug(7113) << "duplicate key" << key << "found, ignoring everything more";
+                // qDebug() << "duplicate key" << key << "found, ignoring everything more";
                 parameters.remove(key);
                 return parameters;
             }

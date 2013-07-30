@@ -41,12 +41,12 @@
 
 void coutput(const QString &msg)
 {
-    std::cout << msg.toLocal8Bit().constData() << std::endl;
+    QTextStream out(stdout);
+    out << msg.toLocal8Bit().constData() << "\n";
 }
 
 KConfigToJson::KConfigToJson(int& argc, char** argv, QCommandLineParser *parser)
 {
-    d = new KConfigToJsonPrivate;
     m_parser = parser;
 }
 

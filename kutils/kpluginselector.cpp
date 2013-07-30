@@ -35,7 +35,7 @@
 #include <QStyle>
 #include <QStyleOptionViewItemV4>
 
-#include <kdebug.h>
+#include <QDebug>
 #include <klineedit.h>
 #include <kurllabel.h>
 #include <kcmoduleinfo.h>
@@ -318,7 +318,7 @@ void KPluginSelector::addPlugins(const QString &componentName,
         config = KSharedConfig::openConfig(componentName);
 
     KConfigGroup cfgGroup(config, "KParts Plugins");
-    kDebug( 702 ) << "cfgGroup = " << &cfgGroup;
+    // qDebug() << "cfgGroup = " << &cfgGroup;
 
     d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup);
     d->proxyModel->sort(0);
@@ -334,7 +334,7 @@ void KPluginSelector::addPlugins(const QList<KPluginInfo> &pluginInfoList,
         return;
 
     KConfigGroup cfgGroup(config ? config : KSharedConfig::openConfig(), "Plugins");
-    kDebug( 702 ) << "cfgGroup = " << &cfgGroup;
+    // qDebug() << "cfgGroup = " << &cfgGroup;
 
     d->pluginModel->addPlugins(pluginInfoList, categoryName, categoryKey, cfgGroup, pluginLoadMethod, true /* manually added */);
     d->proxyModel->sort(0);

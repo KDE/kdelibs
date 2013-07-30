@@ -20,9 +20,9 @@
 #include "kbuildservicefactory.h"
 #include "kbuildsycocainterface.h"
 
-#include <kdebug.h>
 #include <kservice.h>
 
+#include <QDebug>
 #include <QtCore/QMap>
 #include <QtCore/QFile>
 #include <QtCore/QDir>
@@ -37,7 +37,7 @@ static void foldNode(QDomElement &docElem, QDomElement &e, QMap<QString,QDomElem
    QMap<QString,QDomElement>::iterator it = dupeList.find(s);
    if (it != dupeList.end())
    {
-      kDebug(7021) << e.tagName() << "and" << s << "requires combining!";
+      qDebug() << e.tagName() << "and" << s << "requires combining!";
 
       docElem.removeChild(*it);
       dupeList.erase(it);
@@ -59,7 +59,7 @@ static void replaceNode(QDomElement &docElem, QDomNode &n, const QStringList &li
    QDomNode next = n.nextSibling();
    docElem.removeChild(n);
    n = next;
-//   kDebug(7021) << "Next tag = " << n.toElement().tagName();
+//   qDebug() << "Next tag = " << n.toElement().tagName();
 }
 
 void VFolderMenu::registerFile(const QString &file)
@@ -472,14 +472,14 @@ VFolderMenu::loadDoc()
    QFile file( m_docInfo.path );
    if ( !file.open( QIODevice::ReadOnly ) )
    {
-      kWarning(7021) << "Could not open " << m_docInfo.path;
+      qWarning() << "Could not open " << m_docInfo.path;
       return doc;
    }
    QString errorMsg;
    int errorRow;
    int errorCol;
    if ( !doc.setContent( &file, &errorMsg, &errorRow, &errorCol ) ) {
-      kWarning(7021) << "Parse error in " << m_docInfo.path << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg;
+      qWarning() << "Parse error in " << m_docInfo.path << ", line " << errorRow << ", col " << errorCol << ": " << errorMsg;
       file.close();
       return doc;
    }
@@ -499,7 +499,7 @@ VFolderMenu::loadDoc()
 void
 VFolderMenu::mergeFile(QDomElement &parent, const QDomNode &mergeHere)
 {
-   kDebug(7021) << m_docInfo.path;
+   //qDebug() << m_docInfo.path;
    QDomDocument doc = loadDoc();
 
    QDomElement docElem = doc.documentElement();
@@ -542,7 +542,7 @@ VFolderMenu::mergeMenus(QDomElement &docElem, QString &name)
    while( !n.isNull() ) {
       QDomElement e = n.toElement(); // try to convert the node to an element.
       if( e.isNull() ) {
-// kDebug(7021) << "Empty node";
+// qDebug() << "Empty node";
       }
       else if( e.tagName() == "DefaultAppDirs") {
          // Replace with m_defaultAppDirs
@@ -712,7 +712,7 @@ VFolderMenu::pushDocInfo(const QString &fileName, const QString &baseDir)
    {
       m_docInfo.baseDir.clear();
       m_docInfo.baseName.clear();
-      kDebug(7021) << "Menu" << fileName << "not found.";
+      qDebug() << "Menu" << fileName << "not found.";
       return;
    }
    int i;
@@ -847,9 +847,9 @@ VFolderMenu::loadMenu(const QString &fileName)
    if (m_doc.isNull())
    {
       if (m_docInfo.path.isEmpty())
-         kError(7021) << fileName << " not found in " << m_allDirectories << endl;
+         qCritical() << fileName << " not found in " << m_allDirectories << endl;
       else
-         kWarning(7021) << "Load error (" << m_docInfo.path << ")";
+         qWarning() << "Load error (" << m_docInfo.path << ")";
       return;
    }
 
@@ -966,7 +966,7 @@ VFolderMenu::processCondition(QDomElement &domElem, QHash<QString,KService::Ptr>
    else if (domElem.tagName() == "Filename")
    {
       const QString filename = domElem.text();
-      //kDebug(7021) << "Adding file" << filename;
+      //qDebug() << "Adding file" << filename;
       KService::Ptr s = findApplication(filename);
       if (s)
          items.insert(filename, s);
@@ -976,7 +976,7 @@ VFolderMenu::processCondition(QDomElement &domElem, QHash<QString,KService::Ptr>
 void
 VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 {
-   kDebug(7021) << "Looking up applications under" << dir;
+   //qDebug() << "Looking up applications under" << dir;
 
    QDirIterator it(dir);
    while (it.hasNext()) {
@@ -1002,7 +1002,7 @@ VFolderMenu::loadApplications(const QString &dir, const QString &prefix)
 void
 VFolderMenu::processLegacyDir(const QString &dir, const QString &relDir, const QString &prefix)
 {
-   kDebug(7021).nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
+   //qDebug().nospace() << "processLegacyDir(" << dir << ", " << relDir << ", " << prefix << ")";
 
    QHash<QString,KService::Ptr> items;
    QDirIterator it(dir);
@@ -1135,7 +1135,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
       }
       if (directoryFile.isEmpty())
       {
-         kDebug(7021) << "Menu" << name << "does not specify a directory file.";
+         //qDebug() << "Menu" << name << "does not specify a directory file.";
       }
 
       // Override previous directoryFile iff available
@@ -1302,7 +1302,7 @@ VFolderMenu::processMenu(QDomElement &docElem, int pass)
                   dest = e2.text();
                n2 = n2.nextSibling();
             }
-            kDebug(7021) << "Moving" << orig << "to" << dest;
+            //qDebug() << "Moving" << orig << "to" << dest;
             if (!orig.isEmpty() && !dest.isEmpty())
             {
               SubMenu *menu = takeSubMenu(m_currentMenu, orig);
@@ -1337,8 +1337,9 @@ static QString parseAttribute( const QDomElement &e)
             option= "ME ";
         else if ( str=="false" )
             option= "NME ";
-        else
-            kDebug()<<" Error in parsing show_empty attribute :"<<str;
+        else {
+            //qDebug()<<" Error in parsing show_empty attribute :"<<str;
+        }
     }
     if ( e.hasAttribute( "inline" ) )
     {
@@ -1347,8 +1348,9 @@ static QString parseAttribute( const QDomElement &e)
             option+="I ";
         else if ( str=="false" )
             option+="NI ";
-        else
-            kDebug()<<" Error in parsing inline attribute :"<<str;
+        else {
+            qDebug()<<" Error in parsing inline attribute :"<<str;
+        }
     }
     if ( e.hasAttribute( "inline_limit" ) )
     {
@@ -1364,8 +1366,9 @@ static QString parseAttribute( const QDomElement &e)
             option+="IH ";
         else if ( str == "false" )
             option+="NIH ";
-        else
-            kDebug()<<" Error in parsing of inline_header attribute :"<<str;
+        else {
+            qDebug()<<" Error in parsing of inline_header attribute :"<<str;
+        }
 
     }
     if ( e.hasAttribute( "inline_alias" ) && e.attribute( "inline_alias" )=="true")
@@ -1375,8 +1378,9 @@ static QString parseAttribute( const QDomElement &e)
             option+="IA";
         else if ( str=="false" )
             option+="NIA";
-        else
-            kDebug()<<" Error in parsing inline_alias attribute :"<<str;
+        else {
+            qDebug()<<" Error in parsing inline_alias attribute :"<<str;
+        }
     }
     if( !option.isEmpty())
     {
@@ -1433,7 +1437,7 @@ static QStringList parseLayoutNode(const QDomElement &docElem)
    if ( !mergeTagExists ) {
        layout.append(":M");
        layout.append(":F");
-       kWarning() << "The menu spec file contains a Layout or DefaultLayout tag without the mandatory Merge tag inside. Please fix your file.";
+       qWarning() << "The menu spec file contains a Layout or DefaultLayout tag without the mandatory Merge tag inside. Please fix your file.";
    }
    return layout;
 }

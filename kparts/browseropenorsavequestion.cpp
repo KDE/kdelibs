@@ -20,7 +20,7 @@
 
 #include "browseropenorsavequestion.h"
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <klocalizedstring.h>
 #include <kfileitemactions.h>
 #include <ksqueezedtextlabel.h>
@@ -286,8 +286,8 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
                 KGuiItem::assign(d->openWithButton, openWithDialogItem);
             }
         } else {
-            kDebug() << "Not using new feature ServiceSelection; port the caller to BrowserOpenOrSaveQuestion::setFeature(ServiceSelection)";
-            //kDebug() << kBacktrace();
+            // qDebug() << "Not using new feature ServiceSelection; port the caller to BrowserOpenOrSaveQuestion::setFeature(ServiceSelection)";
+            //qDebug() << kBacktrace();
         }
     }
 

@@ -23,7 +23,6 @@
 #include <QCoreApplication>
 
 class QCommandLineParser;
-class KConfigToJsonPrivate;
 
 class KConfigToJson
 {
@@ -39,7 +38,6 @@ class KConfigToJson
         QCommandLineParser *m_parser;
         QString m_inFile;
         QString m_outFile;
-        KConfigToJsonPrivate* d;
 };
 
 #endif

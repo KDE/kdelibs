@@ -25,7 +25,7 @@
 #include <QStatusBar>
 
 #include <kmainwindow.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kparts/part.h>
 #include <kparts/event.h>
 
@@ -185,7 +185,7 @@ void StatusBarExtension::removeStatusBarItem( QWidget * widget )
       return;
     }
 
-  kWarning(1000) << "StatusBarExtension::removeStatusBarItem. Widget not found : " << widget;
+  qWarning() << "StatusBarExtension::removeStatusBarItem. Widget not found : " << widget;
 }
 
 

@@ -34,7 +34,7 @@
 #include <qtemporaryfile.h>
 #include <kactioncollection.h>
 #include <kconfiggroup.h>
-#include <kdebug.h>
+#include <QDebug>
 #include <kdesktopfile.h>
 #include <kdirwatch.h>
 #include <kjobwidgets.h>
@@ -140,7 +140,7 @@ public:
 
 void KNewFileMenuSingleton::parseFiles()
 {
-    //kDebug(1203);
+    //qDebug();
     filesParsed = true;
     QMutableListIterator<KNewFileMenuSingleton::Entry> templIter(*templatesList);
     while (templIter.hasNext()) {
@@ -173,7 +173,7 @@ void KNewFileMenuSingleton::parseFiles()
                         {
                             // A relative path, then (that's the default in the files we ship)
                             QString linkDir = filePath.left(filePath.lastIndexOf('/') + 1 /*keep / */);
-                            //kDebug(1203) << "linkDir=" << linkDir;
+                            //qDebug() << "linkDir=" << linkDir;
                             templatePath = linkDir + templatePath;
                         }
                     }
@@ -196,7 +196,7 @@ void KNewFileMenuSingleton::parseFiles()
                     text.truncate(text.length() - 8);
             }
             templ.text = text;
-            /*kDebug(1203) << "Updating entry with text=" << text
+            /*// qDebug() << "Updating entry with text=" << text
                           << "entryType=" << templ.entryType
                           << "templatePath=" << templ.templatePath;*/
         }
@@ -363,7 +363,7 @@ public:
 bool KNewFileMenuPrivate::checkSourceExists(const QString& src)
 {
     if (!QFile::exists(src)) {
-        kWarning(1203) << src << "doesn't exist" ;
+        qWarning() << src << "doesn't exist" ;
 
         QDialog* dialog = new QDialog(m_parentWidget);
         dialog->setWindowTitle(i18n("Sorry"));
@@ -539,7 +539,7 @@ void KNewFileMenuPrivate::executeStrategy()
                 QMimeDatabase db;
                 QMimeType wantedMime = db.mimeTypeForUrl(uSrc);
                 QMimeType mime = db.mimeTypeForFileNameAndData(m_copyData.m_chosenFileName, srcFile.read(1024));
-                //kDebug() << "mime=" << mime->name() << "wantedMime=" << wantedMime->name();
+                //qDebug() << "mime=" << mime->name() << "wantedMime=" << wantedMime->name();
                 if (!mime.inherits(wantedMime.name()))
                     if (!wantedMime.preferredSuffix().isEmpty())
                         chosenFileName += QLatin1Char('.') + wantedMime.preferredSuffix();
@@ -565,7 +565,7 @@ void KNewFileMenuPrivate::executeStrategy()
             // which KIO::symlink obviously doesn't emit... Needs code in FileUndoManager.
             //KIO::FileUndoManager::self()->recordJob(KIO::FileUndoManager::Link, lstSrc, dest, kjob);
         } else {
-            //kDebug(1203) << "KIO::copyAs(" << uSrc.url() << "," << dest.url() << ")";
+            //qDebug() << "KIO::copyAs(" << uSrc.url() << "," << dest.url() << ")";
             KIO::CopyJob * job = KIO::copyAs(uSrc, dest);
             job->setDefaultPermissions(true);
             kjob = job;
@@ -617,7 +617,7 @@ void KNewFileMenuPrivate::fillMenu()
 
             const bool bSkip = seenTexts.contains(entry.text);
             if (bSkip) {
-                kDebug(1203) << "skipping" << entry.filePath;
+                // qDebug() << "skipping" << entry.filePath;
             } else {
                 seenTexts.insert(entry.text);
                 //const KNewFileMenuSingleton::Entry entry = templatesList->at(i-1);
@@ -651,7 +651,7 @@ void KNewFileMenuPrivate::fillMenu()
                             QMimeType mime;
                             if (entry.mimeType.isEmpty()) {
                                 mime = db.mimeTypeForFile(entry.templatePath);
-                                //kDebug() << entry.templatePath << "is" << mime.name();
+                                //qDebug() << entry.templatePath << "is" << mime.name();
                                 entry.mimeType = mime.name();
                             } else {
                                 mime = db.mimeTypeForName(entry.mimeType);
@@ -665,7 +665,7 @@ void KNewFileMenuPrivate::fillMenu()
                         }
 
                         if (!keep) {
-                            //kDebug() << "Not keeping" << entry.templatePath;
+                            //qDebug() << "Not keeping" << entry.templatePath;
                             continue;
                         }
                     }
@@ -676,7 +676,7 @@ void KNewFileMenuPrivate::fillMenu()
                     act->setText(i18nc("@item:inmenu Create New", "%1", entry.text));
                     act->setActionGroup(m_newMenuGroup);
 
-                    //kDebug() << templatePath << entry.filePath;
+                    //qDebug() << templatePath << entry.filePath;
 
                     if (templatePath.endsWith("/URL.desktop")) {
                         linkURL = act;
@@ -812,13 +812,13 @@ void KNewFileMenuPrivate::_k_slotCreateHiddenDirectory()
 void KNewFileMenuPrivate::_k_slotFillTemplates()
 {
     KNewFileMenuSingleton* s = kNewMenuGlobals();
-    //kDebug(1203);
+    //qDebug();
     // Ensure any changes in the templates dir will call this
     if (! s->dirWatch) {
         s->dirWatch = new KDirWatch;
         const QStringList dirs = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "templates", QStandardPaths::LocateDirectory);
         for (QStringList::const_iterator it = dirs.constBegin() ; it != dirs.constEnd() ; ++it) {
-            //kDebug(1203) << "Templates resource dir:" << *it;
+            //qDebug() << "Templates resource dir:" << *it;
             s->dirWatch->addDir(*it);
         }
         QObject::connect(s->dirWatch, SIGNAL(dirty(QString)),
@@ -838,7 +838,7 @@ void KNewFileMenuPrivate::_k_slotFillTemplates()
     const QStringList files = QStandardPaths::locateAll(QStandardPaths::GenericDataLocation, "templates", QStandardPaths::LocateDirectory);
     QMap<QString, KNewFileMenuSingleton::Entry> slist; // used for sorting
     Q_FOREACH(const QString& file, files) {
-        //kDebug(1203) << file;
+        //qDebug() << file;
         if (file[0] != '.') {
             KNewFileMenuSingleton::Entry e;
             e.filePath = file;
@@ -944,7 +944,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
     QTemporaryFile tmpFile;
     tmpFile.setAutoRemove(false); // done below
     if (!tmpFile.open()) {
-        kError() << "Couldn't create temp file!";
+        qCritical() << "Couldn't create temp file!";
         return;
     }
 
@@ -955,7 +955,7 @@ void KNewFileMenuPrivate::_k_slotUrlDesktopFile()
     // First copy the template into the temp file
     QFile file(m_copyData.m_templatePath);
     if (!file.open(QIODevice::ReadOnly)) {
-        kError() << "Couldn't open template" << m_copyData.m_templatePath;
+        qCritical() << "Couldn't open template" << m_copyData.m_templatePath;
         return;
     }
     const QByteArray data = file.readAll();
@@ -996,17 +996,17 @@ KNewFileMenu::KNewFileMenu(KActionCollection* collection, const QString& name, Q
 
 KNewFileMenu::~KNewFileMenu()
 {
-    //kDebug(1203) << this;
+    //qDebug() << this;
     delete d;
 }
 
 void KNewFileMenu::checkUpToDate()
 {
     KNewFileMenuSingleton* s = kNewMenuGlobals();
-    //kDebug(1203) << this << "m_menuItemsVersion=" << d->m_menuItemsVersion
+    //qDebug() << this << "m_menuItemsVersion=" << d->m_menuItemsVersion
     //              << "s->templatesVersion=" << s->templatesVersion;
     if (d->m_menuItemsVersion < s->templatesVersion || s->templatesVersion == 0) {
-        //kDebug(1203) << "recreating actions";
+        //qDebug() << "recreating actions";
         // We need to clean up the action collection
         // We look for our actions using the group
         foreach (QAction* action, d->m_newMenuGroup->actions())
@@ -1147,7 +1147,7 @@ void KNewFileMenu::slotResult(KJob * job)
         } else if (KIO::SimpleJob* simpleJob = ::qobject_cast<KIO::SimpleJob*>(job)) {
             // Can be mkdir or symlink
             if (simpleJob->property("isMkdirJob").toBool() == true) {
-                kDebug() << "Emit directoryCreated" << simpleJob->url();
+                // qDebug() << "Emit directoryCreated" << simpleJob->url();
                 emit directoryCreated(simpleJob->url());
             } else {
                 emit fileCreated(simpleJob->url());

@@ -19,7 +19,7 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include <kdebug.h>
+#include <QDebug>
 
 #include <stdlib.h>
 #include <stdio.h>

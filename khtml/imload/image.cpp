@@ -32,7 +32,7 @@
 
 #include <QPainter>
 #include <limits.h>
-#include <kdebug.h>
+#include <QDebug>
 
 namespace khtmlImLoad {
 
@@ -232,7 +232,7 @@ void Image::processEOF()
 void Image::notifyImageInfo(int _width, int _height)
 {
     if (!ImageManager::isAcceptableSize(_width, _height)) {
-        kWarning() << "ImageLoader somehow fed us an illegal size, killing it!";
+        qWarning() << "ImageLoader somehow fed us an illegal size, killing it!";
         loadError();
         return;
     }
@@ -245,7 +245,7 @@ void Image::notifyImageInfo(int _width, int _height)
 void Image::notifyAppendFrame(int fwidth, int fheight, const ImageFormat& format)
 {
     if (!ImageManager::isAcceptableSize(fwidth, fheight)) {
-        kWarning() << "ImageLoader somehow fed us an illegal size, killing it!";
+        qWarning() << "ImageLoader somehow fed us an illegal size, killing it!";
         loadError();
         return;
     }

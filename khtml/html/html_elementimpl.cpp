@@ -48,7 +48,7 @@
 #include <xml/dom2_eventsimpl.h>
 #include <dom/dom_doc.h>
 
-#include <kdebug.h>
+#include <QDebug>
 
 using namespace DOM;
 using namespace khtml;
@@ -224,7 +224,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 // other misc attributes
     default:
 #ifdef UNSUPPORTED_ATTR
-	kDebug(6030) << "UATTR: <" << this->nodeName().string() << "> ["
+	// qDebug() << "UATTR: <" << this->nodeName().string() << "> ["
 		      << attr->name().string() << "]=[" << attr->value().string() << "]" << endl;
 #endif
         break;

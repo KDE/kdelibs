@@ -135,7 +135,7 @@ public:
         endOfInline = false;
         while (current != 0 || (current == parent))
         {
-            //kDebug( 6040 ) << "current = " << current;
+            //qDebug() << "current = " << current;
             if (!oldEndOfInline &&
                 (current == parent ||
                 (!current->isFloating() && !current->isReplaced() && !current->isPositioned())))
