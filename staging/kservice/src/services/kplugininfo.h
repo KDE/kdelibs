@@ -107,14 +107,59 @@ class KSERVICE_EXPORT KPluginInfo
            Comment=Description of what the plugin does
            \endverbatim
          * In the first three entries the Icon entry is optional.
-         * @deprecated since 5.0, use QPluginLoader instead and build the
-         * metadata into the plugin using Q_PLUGIN_METADATA( ... "metadata.json")
+         * @deprecated since 5.0, use (Q|K)PluginLoader instead and build the
+         * metadata into the plugin using K_PLUGIN_FACTORY_WITH_JSON( ..., "mypluginmetadata.json", ...)
          */
 #ifndef KDE_NO_DEPRECATED
         explicit KSERVICE_DEPRECATED KPluginInfo( const KService::Ptr service );
 #endif
 
 
+        /**
+         * Read plugin info from arguments passed to the plugin. These arguments should contain
+         * the plugin's metadata (as read from QPluginLoader::metaData(). This constructor uses
+         * the metadata read from the QVariantList. It reads the first QVariantMap it finds in a
+         * field called "MetaData".
+         *
+         * Use (Q|K)PluginLoader and build the metadata into the plugin using
+         * K_PLUGIN_FACTORY_WITH_JSON( ..., "mypluginmetadata.json", ...)
+         *
+         * You can use the "kconfigtojson tool to generate a .json file from your .desktop file.
+         * The .json file should look like this:
+         *
+         * \verbatim
+            {
+                "Comment": "Date and time by timezone",
+                "Icon": "preferences-system-time",
+                "Name": "Date and Time",
+                "Type": "Service",
+                "X-KDE-Library": "plasma_engine_time",
+                "X-KDE-PluginInfo-Author": "Aaron Seigo",
+                "X-KDE-PluginInfo-Category": "Date and Time",
+                "X-KDE-PluginInfo-Depends": [
+                ],
+                "X-KDE-PluginInfo-Email": "aseigo@kde.org",
+                "X-KDE-PluginInfo-EnabledByDefault": true,
+                "X-KDE-PluginInfo-License": "LGPL",
+                "X-KDE-PluginInfo-Name": "time",
+                "X-KDE-PluginInfo-Version": "1.0",
+                "X-KDE-PluginInfo-Website": "http://plasma.kde.org/",
+                "X-KDE-ServiceTypes": [
+                    "Plasma/DataEngine"
+                ]
+            }
+           \endverbatim
+         * The layout of the args is a QVariantList, laid out like this:
+         * \verbatim
+
+         #FIXME: add QVariantList layout
+
+           \endverbatim
+         *
+         * @see K_PLUGIN_FACTORY_WITH_JSON()
+         * @see KPluginFactory::factory()
+         * @since 5.0
+         */
         explicit KPluginInfo( const QVariantList &args );
 
         /**
