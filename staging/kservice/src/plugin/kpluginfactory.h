@@ -129,9 +129,9 @@ name::~name() {}
  *
  * class MyPlugin;
  *
- * K_PLUGIN_FACTORY_WITH_METADATA(MyPluginFactory,
- *                  registerPlugin<MyPlugin>();,
- *                  metadata.json
+ * K_PLUGIN_FACTORY_WITH_JSON(MyPluginFactory,
+ *                  metadata.json,
+ *                  registerPlugin<MyPlugin>();
  *                 )
  * K_EXPORT_PLUGIN(MyPluginFactory("componentName"))
  *
@@ -150,7 +150,7 @@ name::~name() {}
  *
  * @since 5.0
  */
-#define K_PLUGIN_FACTORY_WITH_METADATA(name, jsonFile, pluginRegistrations)  K_PLUGIN_FACTORY_WITH_BASEFACTORY_JSON(name, KPluginFactory, jsonFile, pluginRegistrations)
+#define K_PLUGIN_FACTORY_WITH_JSON(name, jsonFile, pluginRegistrations)  K_PLUGIN_FACTORY_WITH_BASEFACTORY_JSON(name, KPluginFactory, jsonFile, pluginRegistrations)
 
 /**
  * \relates KPluginFactory
