@@ -69,7 +69,7 @@ QFont *KFontSettingsData::font( FontTypes fontType )
         cachedFont = new QFont( fontData.FontName, fontData.Size, fontData.Weight );
         cachedFont->setStyleHint( fontData.StyleHint );
 
-        const KConfigGroup configGroup( KSharedConfig::openConfig(), fontData.ConfigGroupKey );
+        const KConfigGroup configGroup(KSharedConfig::openConfig("kdeglobals"), fontData.ConfigGroupKey);
         *cachedFont = configGroup.readEntry( fontData.ConfigKey, *cachedFont );
 
         mFonts[fontType] = cachedFont;
