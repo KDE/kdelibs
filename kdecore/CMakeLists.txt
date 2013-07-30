@@ -51,7 +51,6 @@ add_subdirectory( tests )
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
-   util/kautostart.cpp
    util/kdeversion.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
@@ -143,7 +142,6 @@ install( FILES
 
 install(FILES
    network/ksocketfactory.h
-   util/kautostart.h
    util/kde_file.h
    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

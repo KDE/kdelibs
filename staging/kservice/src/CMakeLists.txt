@@ -6,6 +6,7 @@ configure_file(config-ksycoca.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-ksycoca
 
 set(kservice_SRCS
    kdeinit/ktoolinvocation.cpp
+   services/kautostart.cpp
    services/kmimetypefactory.cpp
    services/kmimetypetrader.cpp
    services/kservice.cpp
@@ -76,6 +77,7 @@ install(TARGETS KService EXPORT KServiceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
    "${CMAKE_CURRENT_BINARY_DIR}/kservice_export.h"
    kdeinit/ktoolinvocation.h
+   services/kautostart.h
    services/kmimetypetrader.h
    services/kservice.h
    services/kserviceaction.h

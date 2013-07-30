@@ -20,7 +20,7 @@
 #ifndef KDELIBS_KAUTOSTART_H
 #define KDELIBS_KAUTOSTART_H
 
-#include <kdecore_export.h>
+#include <kservice_export.h>
 
 #include <QtCore/QObject>
 
@@ -46,7 +46,7 @@ class QStringList;
  * config.setAutoStart(autostart.autoStarts());
  * @endcode
  */
-class KDECORE_EXPORT KAutostart : public QObject
+class KSERVICE_EXPORT KAutostart : public QObject
 {
     Q_OBJECT
 
