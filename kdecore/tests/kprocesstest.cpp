@@ -43,7 +43,7 @@ static QString recurse(KProcess::OutputChannelMode how)
 {
     QProcess p;
     p.setProcessChannelMode(QProcess::MergedChannels);
-    p.start(gargv[0], QStringList() << QString::number((int)how));
+    p.start(gargv[0], QStringList() << QString::number((int)how) << QStringLiteral("--nocrashhandler"));
     p.waitForFinished();
     return p.readAllStandardOutput();
 }
