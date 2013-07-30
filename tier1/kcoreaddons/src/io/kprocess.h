@@ -22,7 +22,7 @@
 #ifndef KPROCESS_H
 #define KPROCESS_H
 
-#include <kdecore_export.h>
+#include <kcoreaddons_export.h>
 
 #include <QtCore/QProcess>
 
@@ -36,12 +36,12 @@ class KProcessPrivate;
  * This class extends QProcess by some useful functionality, overrides
  * some defaults with saner values and wraps parts of the API into a more
  * accessible one.
- * This is the preferred way of spawning child processes in KDE; don't
- * use QProcess directly.
+ * Only use KProcess if you need the extra features, otherwise QProcess
+ * is the preferred way of spawning child processes.
  *
  * @author Oswald Buddenhagen <ossi@kde.org>
  **/
-class KDECORE_EXPORT KProcess : public QProcess
+class KCOREADDONS_EXPORT KProcess : public QProcess
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(KProcess)

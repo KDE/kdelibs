@@ -24,12 +24,13 @@ endmacro()
 
 kcoreaddons_unit_tests(
     kaboutdatatest
-    kcompositejobtest
-    kjobtest
     kautosavefiletest
-    kurlmimedatatest
+    kcompositejobtest
     kdirwatch_unittest
+    kjobtest
+    kprocesstest
     kshareddatacachetest
     kshelltest
+    kurlmimedatatest
 )
 

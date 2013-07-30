@@ -49,10 +49,6 @@ add_subdirectory( tests )
 
 ########### next target ###############
 
-set(kdecore_LIB_SRCS
-   io/kprocess.cpp
-)
-
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
    util/kautostart.cpp
@@ -141,7 +137,6 @@ install(TARGETS kdecore EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_A
 ########### install files ###############
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kdecore_export.h
-   io/kprocess.h
 
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

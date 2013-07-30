@@ -102,9 +102,9 @@ static void recursor(char **argv)
         fflush(stdout);
         p.execute();
         fputs(ROUT, stdout);
-        fputs(p.readAllStandardOutput(), stdout);
+        fputs(p.readAllStandardOutput().constData(), stdout);
         fputs(RERR, stdout);
-        fputs(p.readAllStandardError(), stdout);
+        fputs(p.readAllStandardError().constData(), stdout);
         exit(0);
     }
     gargv = argv;

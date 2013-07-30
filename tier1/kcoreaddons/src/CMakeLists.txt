@@ -57,6 +57,7 @@ set(libkcoreaddons_SRCS
     io/kdirwatch.cpp
     io/kfilesystemtype_p.cpp
     io/kmessage.cpp
+    io/kprocess.cpp
     io/kbackup.cpp
     io/kurlmimedata.cpp
     jobs/kcompositejob.cpp
@@ -115,6 +116,7 @@ install(FILES
     io/kautosavefile.h
     io/kdirwatch.h
     io/kmessage.h
+    io/kprocess.h
     io/kbackup.h
     io/kurlmimedata.h
     jobs/kcompositejob.h
