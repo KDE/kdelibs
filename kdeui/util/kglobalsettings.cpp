@@ -160,12 +160,11 @@ void KGlobalSettings::activate(ActivateOptions options)
             QDBusConnection::sessionBus().connect( QString(), "/KIconLoader", "org.kde.KIconLoader",
                                                    "iconChanged", this, SLOT(_k_slotIconChange(int)) );
             QDBusConnection::sessionBus().connect( QString(), "/KDEPlatformTheme", "org.kde.KDEPlatformTheme",
-                                                      "fontsChanged", this, SLOT(kdisplayFontChanged()) );
+                                                      "refreshFonts", this, SLOT(kdisplayFontChanged()) );
         }
 
         if (options & ApplySettings) {
             d->kdisplaySetStyle(); // implies palette setup
-            d->kdisplaySetFont();
             d->propagateQtSettings();
         }
     }
@@ -633,13 +632,13 @@ void KGlobalSettings::emitChange(ChangeType changeType, int arg)
     switch (changeType) {
     case IconChanged:
         KIconLoader::emitChange(KIconLoader::Group(arg));
+        break;
     case ToolbarStyleChanged:
         KToolBar::emitToolbarStyleChanged();
         break;
-    case FontChanged: {
-        QDBusMessage message = QDBusMessage::createSignal("/KDEPlatformTheme", "org.kde.KDEPlatformTheme", "refreshFonts" );
-        QDBusConnection::sessionBus().send(message);
-    }   break;
+    case FontChanged:
+        self()->d->kdisplaySetFont();
+        break;
     default: {
         QDBusMessage message = QDBusMessage::createSignal("/KGlobalSettings", "org.kde.KGlobalSettings", "notifyChange" );
         QList<QVariant> args;
@@ -842,6 +841,8 @@ void KGlobalSettings::Private::kdisplaySetFont()
         return;
     }
 
+    QDBusMessage message = QDBusMessage::createSignal("/KDEPlatformTheme", "org.kde.KDEPlatformTheme", "refreshFonts" );
+    QDBusConnection::sessionBus().send(message);
     emit q->kdisplayFontChanged();
 #endif
 }

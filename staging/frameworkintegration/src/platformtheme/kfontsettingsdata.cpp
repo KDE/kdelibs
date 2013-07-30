@@ -87,7 +87,4 @@ void KFontSettingsData::dropFontSettingsCache()
     }
     QWindowSystemInterface::handleThemeChange(0);
     QGuiApplication::setFont( *font(KFontSettingsData::GeneralFont) );
-
-    QDBusMessage message = QDBusMessage::createSignal("/KDEPlatformTheme", "org.kde.KDEPlatformTheme", "fontsChanged" );
-    QDBusConnection::sessionBus().send(message);
 }
