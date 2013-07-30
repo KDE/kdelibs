@@ -149,15 +149,11 @@ class KSERVICE_EXPORT KPluginInfo
                 ]
             }
            \endverbatim
-         * The layout of the args is a QVariantList, laid out like this:
-         * \verbatim
-
-         #FIXME: add QVariantList layout
-
-           \endverbatim
+         * @param args QVariantList with arguments, should contain a QVariantMap, keyed "MetaData"
+         * as provided by QPluginLoader::metaData()
          *
-         * @see K_PLUGIN_FACTORY_WITH_JSON()
-         * @see KPluginFactory::factory()
+         * \see K_PLUGIN_FACTORY_WITH_JSON()
+         * \see KPluginFactory::factory()
          * @since 5.0
          */
         explicit KPluginInfo( const QVariantList &args );
