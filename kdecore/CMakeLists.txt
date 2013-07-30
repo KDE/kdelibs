@@ -45,8 +45,6 @@ if (WIN32)
    )
 endif (WIN32)
 
-add_subdirectory( tests )
-
 ########### next target ###############
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
