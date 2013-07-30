@@ -44,33 +44,24 @@ void coutput(const QString &msg)
     std::cout << msg.toLocal8Bit().constData() << std::endl;
 }
 
-class KConfigToJsonPrivate {
-public:
-    QString pluginName;
-    QCommandLineParser *parser;
-    QString inFile;
-    QString outFile;
-};
-
 KConfigToJson::KConfigToJson(int& argc, char** argv, QCommandLineParser *parser)
 {
     d = new KConfigToJsonPrivate;
-    d->parser = parser;
+    m_parser = parser;
 }
 
 KConfigToJson::~KConfigToJson()
 {
-    delete d;
 }
 
 int KConfigToJson::runMain()
 {
-    if (d->parser->isSet(QStringLiteral("input"))) {
+    if (m_parser->isSet(QStringLiteral("input"))) {
         if (!resolveFiles()) {
-            qDebug() << "Failed to resolve filenames" << d->inFile << d->outFile;
+            qDebug() << "Failed to resolve filenames" << m_inFile << m_outFile;
             return 1;
         };
-        if (convert(d->inFile, d->outFile)) {
+        if (convert(m_inFile, m_outFile)) {
             return 0;
         } else {
             return 1;
@@ -83,27 +74,27 @@ int KConfigToJson::runMain()
 
 bool KConfigToJson::resolveFiles()
 {
-    if (d->parser->isSet(QStringLiteral("input"))) {
-        d->inFile = d->parser->value("input");
-        if (QFile::exists(d->inFile)) {
-            if (!d->inFile.startsWith('/')) {
-                d->inFile = QDir::currentPath() + '/' + d->inFile;
+    if (m_parser->isSet(QStringLiteral("input"))) {
+        m_inFile = m_parser->value("input");
+        if (QFile::exists(m_inFile)) {
+            if (!m_inFile.startsWith('/')) {
+                m_inFile = QDir::currentPath() + '/' + m_inFile;
             }
         } else {
-            coutput("File not found: " + d->inFile);
+            coutput("File not found: " + m_inFile);
             return false;
         }
     }
-    if (d->parser->isSet(QStringLiteral("output"))) {
-        d->outFile = d->parser->value("output");
+    if (m_parser->isSet(QStringLiteral("output"))) {
+        m_outFile = m_parser->value("output");
     } else {
-        if (!d->inFile.isEmpty()) {
-            d->outFile = d->inFile;
-            d->outFile.replace(".desktop", ".json");
+        if (!m_inFile.isEmpty()) {
+            m_outFile = m_inFile;
+            m_outFile.replace(".desktop", ".json");
         }
     }
 
-    return d->inFile != d->outFile && !d->inFile.isEmpty() && !d->outFile.isEmpty();
+    return m_inFile != m_outFile && !m_inFile.isEmpty() && !m_outFile.isEmpty();
 }
 
 bool KConfigToJson::convert(const QString& src, const QString& dest)

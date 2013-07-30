@@ -35,6 +35,10 @@ class KConfigToJson
     private:
         bool convert(const QString &src = QString(), const QString &dest = QString());
         bool resolveFiles();
+        QString pluginName;
+        QCommandLineParser *m_parser;
+        QString m_inFile;
+        QString m_outFile;
         KConfigToJsonPrivate* d;
 };
 
