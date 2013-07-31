@@ -14,5 +14,6 @@ macro(kguiaddons_executable_tests)
 endmacro()
 
 kguiaddons_executable_tests(
+  kcolorcollectiontest
   kmodifierkeyinfotest
 )
