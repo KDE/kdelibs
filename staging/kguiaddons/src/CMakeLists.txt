@@ -27,7 +27,9 @@ generate_export_header(KGuiAddons)
 
 set(kguiaddons_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/colors
+  ${CMAKE_CURRENT_SOURCE_DIR}/fonts
   ${CMAKE_CURRENT_SOURCE_DIR}/text
+  ${CMAKE_CURRENT_SOURCE_DIR}/util
   )
 target_include_directories(KGuiAddons PUBLIC "$<BUILD_INTERFACE:${kguiaddons_INCLUDES}>")
 target_link_libraries(KGuiAddons Qt5::Gui)
