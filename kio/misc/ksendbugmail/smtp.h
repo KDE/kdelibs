@@ -22,7 +22,6 @@
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
 #include <QtNetwork/QTcpSocket>
-#include <ksocketfactory.h>
 
 /*int SMTPServerStatus[] = {
     220,  // greeting from server

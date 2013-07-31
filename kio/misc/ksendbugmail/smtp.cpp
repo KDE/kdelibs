@@ -24,6 +24,7 @@
 #include <stdio.h>
 
 #include <QDebug>
+#include <QSslSocket>
 
 SMTP::SMTP(char *serverhost, unsigned short int port, int timeout)
 {
@@ -171,7 +172,8 @@ void SMTP::connectTimerTick(void)
     sock = 0L;
 
     // qDebug() << "connecting to " << serverHost << ":" << hostPort << " ..... ";
-    sock = KSocketFactory::connectToHost("smtp", serverHost, hostPort, this);
+    sock = new QSslSocket(this);
+    sock->connectToHost(serverHost, hostPort);
 
     connected = true;
     finished = false;

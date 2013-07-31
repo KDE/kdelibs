@@ -343,6 +343,11 @@ private:
    */
   bool maybeEmitStatEntry(FtpEntry& ftpEnt, const QString& search, const QString& filename, bool isDir);
 
+  /**
+   * Setup the connection to the server
+   */
+  QTcpSocket *synchronousConnectToHost(const QString &host, quint16 port);
+
 private Q_SLOTS:
   void proxyAuthentication(const QNetworkProxy&, QAuthenticator*);
   void saveProxyAuthentication();
