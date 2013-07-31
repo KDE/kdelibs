@@ -8,6 +8,7 @@ set(kwidgetsaddons_SRCS
   kfontchooser.cpp
   kguiitem.cpp
   kled.cpp
+  kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
   kcapacitybar.cpp
   kfontrequester.cpp
   kpassworddialog.cpp
@@ -77,6 +78,7 @@ install(FILES
   kfontchooser.h
   kguiitem.h
   kled.h
+  kurllabel.h
   kcapacitybar.h
   kfontrequester.h
   kpassworddialog.h
