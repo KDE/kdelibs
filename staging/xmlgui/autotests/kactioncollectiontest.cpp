@@ -5,6 +5,7 @@
 #include <QtCore/QPointer>
 
 #include <ksharedconfig.h>
+#include <kstandardaction.h>
 
 #include <assert.h>
 #include <kaboutdata.h>
@@ -230,6 +231,26 @@ void tst_KActionCollection::testSetShortcuts()
     shortcut2 << QKeySequence( Qt::ALT+Qt::Key_Plus ) << QKeySequence( Qt::CTRL+Qt::Key_Plus );
     QCOMPARE(QKeySequence::listToString(shortcut2), QString("Alt++; Ctrl++"));
 }
+
+void tst_KActionCollection::implicitStandardActionInsertionUsingCreate()
+{
+    KActionCollection collection(static_cast<QObject *>(0));
+    QAction *a = KStandardAction::create(KStandardAction::Undo, qApp, SLOT(quit()), &collection);
+    QVERIFY(a);
+
+    QVERIFY(a->parent() == &collection);
+    QVERIFY(collection.action(KStandardAction::name(KStandardAction::Undo)) == a);
+}
+
+void tst_KActionCollection::implicitStandardActionInsertionUsingCut()
+{
+    KActionCollection collection(static_cast<QObject *>(0));
+    QAction* cut = KStandardAction::cut(&collection);
+    QAction* a = collection.action(KStandardAction::name(KStandardAction::Cut));
+    QVERIFY(a);
+    QVERIFY(a == cut);
+}
+
 
 QTEST_MAIN(tst_KActionCollection)
 

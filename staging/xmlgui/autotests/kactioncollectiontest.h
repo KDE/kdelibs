@@ -22,6 +22,8 @@ private Q_SLOTS:
     void insertReplaces1();
     void insertReplaces2();
     void testSetShortcuts();
+    void implicitStandardActionInsertionUsingCreate();
+    void implicitStandardActionInsertionUsingCut();
 
 private:
     KConfigGroup clearConfig();

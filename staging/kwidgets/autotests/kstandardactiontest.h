@@ -28,8 +28,6 @@ class tst_KStandardAction : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    void implicitInsertionUsingCreate();
-    void implicitInsertionUsingCut();
     void shortcutForActionId();
 };
 

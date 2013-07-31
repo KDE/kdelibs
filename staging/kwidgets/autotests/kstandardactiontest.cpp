@@ -23,26 +23,6 @@
 #include <QtTestWidgets>
 
 #include "kstandardaction.h"
-#include "kactioncollection.h"
-
-void tst_KStandardAction::implicitInsertionUsingCreate()
-{
-    KActionCollection collection(static_cast<QObject *>(0));
-    QAction *a = KStandardAction::create(KStandardAction::Undo, qApp, SLOT(quit()), &collection);
-    QVERIFY(a);
-
-    QVERIFY(a->parent() == &collection);
-    QVERIFY(collection.action(KStandardAction::name(KStandardAction::Undo)) == a);
-}
-
-void tst_KStandardAction::implicitInsertionUsingCut()
-{
-    KActionCollection collection(static_cast<QObject *>(0));
-    QAction* cut = KStandardAction::cut(&collection);
-    QAction* a = collection.action(KStandardAction::name(KStandardAction::Cut));
-    QVERIFY(a);
-    QVERIFY(a == cut);
-}
 
 void tst_KStandardAction::shortcutForActionId()
 {
