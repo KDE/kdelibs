@@ -27,7 +27,7 @@ remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
 add_subdirectory(src)
 add_subdirectory(autotests)
-#add_subdirectory(tests)
+add_subdirectory(tests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them

@@ -18,7 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <kled.h>
 #include <QApplication>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -27,6 +26,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QDebug>
+#include <QCheckBox>
 
 #include "kmodifierkeyinfo.h"
 
@@ -65,8 +65,8 @@ protected Q_SLOTS:
 
 private:
     KModifierKeyInfo m_lock;
-    QMap<Qt::Key, Triple<KLed*,KLed*,KLed*> > m_leds;
-    QMap<Qt::MouseButton, KLed*> m_mouseLeds;
+    QMap<Qt::Key, Triple<QCheckBox*,QCheckBox*,QCheckBox*> > m_leds;
+    QMap<Qt::MouseButton, QCheckBox*> m_mouseLeds;
 };
 
 TestWidget::TestWidget() : QWidget(0), m_lock(this)
@@ -97,19 +97,19 @@ TestWidget::TestWidget() : QWidget(0), m_lock(this)
     for (it = mods.constBegin(); it != end; ++it) {
         if (m_lock.knowsKey(it.key())) {
             QHBoxLayout *hlayout = new QHBoxLayout;
-            KLed *pressed = new KLed(this);
-            KLed *latched = new KLed(this);
-            KLed *locked = new KLed(this);
+            QCheckBox *pressed = new QCheckBox(this);
+            QCheckBox *latched = new QCheckBox(this);
+            QCheckBox *locked = new QCheckBox(this);
             QPushButton *latch = new QPushButton("latch", this);
             latch->setProperty("modifier", it.key());
             connect(latch, SIGNAL(clicked()), SLOT(latch()));
             QPushButton *lock = new QPushButton("lock", this);
             lock->setProperty("modifier", it.key());
             connect(lock, SIGNAL(clicked()), SLOT(lock()));
-            pressed->setState(m_lock.isKeyPressed(it.key()) ? KLed::On : KLed::Off);
-            latched->setState(m_lock.isKeyLatched(it.key()) ? KLed::On : KLed::Off);
-            locked->setState(m_lock.isKeyLocked(it.key()) ? KLed::On : KLed:: Off);
-            m_leds.insert(it.key(), Triple<KLed*,KLed*,KLed*>(pressed, latched, locked));
+            pressed->setChecked(m_lock.isKeyPressed(it.key()));
+            latched->setChecked(m_lock.isKeyLatched(it.key()));
+            locked->setChecked(m_lock.isKeyLocked(it.key()));
+            m_leds.insert(it.key(), Triple<QCheckBox*,QCheckBox*,QCheckBox*>(pressed, latched, locked));
             hlayout->addWidget(pressed);
             hlayout->addWidget(latched);
             hlayout->addWidget(locked);
@@ -124,8 +124,8 @@ TestWidget::TestWidget() : QWidget(0), m_lock(this)
     QMap<Qt::MouseButton, QString>::const_iterator end2 = buttons.constEnd();
     for (it2 = buttons.constBegin(); it2 != end2; ++it2) {
         QHBoxLayout *hlayout = new QHBoxLayout;
-        KLed *pressed = new KLed(this);
-        pressed->setState(m_lock.isButtonPressed(it2.key()) ? KLed::On : KLed::Off);
+        QCheckBox *pressed = new QCheckBox(this);
+        pressed->setChecked(m_lock.isButtonPressed(it2.key()));
         m_mouseLeds.insert(it2.key(), pressed);
         hlayout->addWidget(pressed);
         hlayout->addWidget(new QLabel(it2.value()));
@@ -146,28 +146,28 @@ TestWidget::TestWidget() : QWidget(0), m_lock(this)
 void TestWidget::keyPressed(Qt::Key key, bool pressed)
 {
     if (m_leds.contains(key)) {
-        m_leds[key].first->setState(pressed ? KLed::On : KLed::Off);
+        m_leds[key].first->setChecked(pressed);
     }
 }
 
 void TestWidget::keyLatched(Qt::Key key, bool latched)
 {
     if (m_leds.contains(key)) {
-        m_leds[key].second->setState(latched ? KLed::On : KLed::Off);
+        m_leds[key].second->setChecked(latched);
     }
 }
 
 void TestWidget::keyLocked(Qt::Key key, bool locked)
 {
     if (m_leds.contains(key)) {
-        m_leds[key].third->setState(locked ? KLed::On : KLed::Off);
+        m_leds[key].third->setChecked(locked);
     }
 }
 
 void TestWidget::mouseButtonPressed(Qt::MouseButton button, bool pressed)
 {
     if (m_mouseLeds.contains(button)) {
-        m_mouseLeds[button]->setState(pressed ? KLed::On : KLed::Off);
+        m_mouseLeds[button]->setChecked(pressed);
     }
 }
 
