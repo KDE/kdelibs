@@ -11,9 +11,6 @@ endif(X11_FOUND)
 
 include(ConfigureChecks.cmake)
 
-# Generate kdeversion.h
-configure_file(util/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
-
 # kdecore_OPTIONAL_SRCS is used to collect source files
 # which are not always compiled into kdecore
 # if it's used, *always* append to it
@@ -49,7 +46,6 @@ endif (WIN32)
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
    network/ksocketfactory.cpp
-   util/kdeversion.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 
@@ -141,7 +137,6 @@ install( FILES
 install(FILES
    network/ksocketfactory.h
    util/kde_file.h
-   ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 

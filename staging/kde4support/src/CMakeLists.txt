@@ -11,6 +11,7 @@ set(libkde4support_SRCS
     kdecore/kcomponentdata.cpp
     kdecore/kdebug.cpp
     kdecore/kdebugdbusiface.cpp
+    kdecore/kdeversion.cpp
     kdecore/kkernel_mac.cpp
     kdecore/kkernel_win.cpp
     kdecore/klibloader.cpp
@@ -127,6 +128,9 @@ configure_file(kdemacros.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h )
 add_library(KDE4Support ${libkde4support_SRCS})
 generate_export_header(KDE4Support)
 
+# Generate kdeversion.h
+configure_file(kdecore/kdeversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h )
+
 target_include_directories(KDE4Support PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../../..")
 
 set(kde4support_INCLUDES
@@ -229,6 +233,7 @@ install(FILES
     kdeui/kxerrorhandler.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
+    ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
