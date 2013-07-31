@@ -32,7 +32,6 @@
 #include <kstandardshortcut.h>
 #include <QMouseEvent>
 #include <QStyleOptionButton>
-#include "kcolormimedata.h"
 
 class KColorButton::KColorButtonPrivate
 {
@@ -54,6 +53,56 @@ public:
 
     void initStyleOption(QStyleOptionButton* opt) const;    
 };
+
+/////////////////////////////////////////////////////////////////////
+// Functions duplicated from KColorMimeData
+// Should be kept in sync
+void _k_populateMimeData(QMimeData *mimeData, const QColor &color)
+{
+    mimeData->setColorData(color);
+    mimeData->setText(color.name());
+}
+
+bool _k_canDecode(const QMimeData *mimeData)
+{
+    if (mimeData->hasColor())
+        return true;
+    if (mimeData->hasText()) {
+        const QString colorName=mimeData->text();
+        if ((colorName.length() >= 4) && (colorName[0] == QLatin1Char('#')))
+            return true;
+    }
+    return false;
+}
+
+QColor _k_fromMimeData(const QMimeData *mimeData)
+{
+    if (mimeData->hasColor())
+        return mimeData->colorData().value<QColor>();
+    if (_k_canDecode(mimeData))
+        return QColor(mimeData->text());
+    return QColor();
+}
+
+
+QDrag *_k_createDrag(const QColor &color, QObject *dragsource)
+{
+    QDrag *drag = new QDrag(dragsource);
+    QMimeData *mime = new QMimeData;
+    _k_populateMimeData(mime, color);
+    drag->setMimeData(mime);
+    QPixmap colorpix( 25, 20 );
+    colorpix.fill( color );
+    QPainter p( &colorpix );
+    p.setPen( Qt::black );
+    p.drawRect(0,0,24,19);
+    p.end();
+    drag->setPixmap(colorpix);
+    drag->setHotSpot(QPoint(-5,-7));
+    return drag;
+}
+/////////////////////////////////////////////////////////////////////
+
 
 KColorButton::KColorButtonPrivate::KColorButtonPrivate(KColorButton *q)
     : q(q)
@@ -206,12 +255,12 @@ QSize KColorButton::minimumSizeHint() const
 
 void KColorButton::dragEnterEvent( QDragEnterEvent *event)
 {
-  event->setAccepted( KColorMimeData::canDecode( event->mimeData()) && isEnabled());
+  event->setAccepted(_k_canDecode(event->mimeData()) && isEnabled());
 }
 
 void KColorButton::dropEvent( QDropEvent *event)
 {
-  QColor c=KColorMimeData::fromMimeData( event->mimeData());
+  QColor c = _k_fromMimeData(event->mimeData());
   if (c.isValid()) {
     setColor(c);
   }
@@ -223,11 +272,11 @@ void KColorButton::keyPressEvent( QKeyEvent *e )
 
   if ( KStandardShortcut::copy().contains( key ) ) {
     QMimeData *mime=new QMimeData;
-    KColorMimeData::populateMimeData(mime,color());
+    _k_populateMimeData(mime, color());
     QApplication::clipboard()->setMimeData( mime, QClipboard::Clipboard );
   }
   else if ( KStandardShortcut::paste().contains( key ) ) {
-    QColor color=KColorMimeData::fromMimeData( QApplication::clipboard()->mimeData( QClipboard::Clipboard ));
+    QColor color = _k_fromMimeData(QApplication::clipboard()->mimeData(QClipboard::Clipboard));
     setColor( color );
   }
   else
@@ -245,7 +294,7 @@ void KColorButton::mouseMoveEvent( QMouseEvent *e)
   if( (e->buttons() & Qt::LeftButton) &&
     (e->pos()-d->mPos).manhattanLength() > QApplication::startDragDistance() )
   {
-    KColorMimeData::createDrag(color(),this)->start();
+    _k_createDrag(color(), this)->start();
     setDown(false);
   }
 }
