@@ -108,52 +108,52 @@ QString standardItem( StandardItem ui_enum )
 
 KGuiItem ok()
 {
-  return KGuiItem( i18n( "&OK" ), "dialog-ok" );
+  return KGuiItem( i18n( "&OK" ), QStringLiteral("dialog-ok") );
 }
 
 
 KGuiItem cancel()
 {
-  return KGuiItem( i18n( "&Cancel" ), "dialog-cancel" );
+  return KGuiItem( i18n( "&Cancel" ), QStringLiteral("dialog-cancel") );
 }
 
 KGuiItem yes()
 {
-  return KGuiItem( i18n( "&Yes" ), "dialog-ok", i18n( "Yes" ) );
+  return KGuiItem( i18n( "&Yes" ), QStringLiteral("dialog-ok"), i18n( "Yes" ) );
 }
 
 KGuiItem no()
 {
-  return KGuiItem( i18n( "&No" ), "process-stop", i18n( "No" ) );
+  return KGuiItem( i18n( "&No" ), QStringLiteral("process-stop"), i18n( "No" ) );
 }
 
 KGuiItem discard()
 {
-  return KGuiItem( i18n( "&Discard" ), "edit-clear", i18n( "Discard changes" ),
+  return KGuiItem( i18n( "&Discard" ), QStringLiteral("edit-clear"), i18n( "Discard changes" ),
                    i18n( "Pressing this button will discard all recent "
                          "changes made in this dialog." ) );
 }
 
 KGuiItem save()
 {
-  return KGuiItem( i18n( "&Save" ), "document-save", i18n( "Save data" ) );
+  return KGuiItem( i18n( "&Save" ), QStringLiteral("document-save"), i18n( "Save data" ) );
 }
 
 KGuiItem dontSave()
 {
-  return KGuiItem( i18n( "&Do Not Save" ), "",
+  return KGuiItem( i18n( "&Do Not Save" ), QStringLiteral(""),
                    i18n( "Do not save data" ) );
 }
 
 KGuiItem saveAs()
 {
-  return KGuiItem( i18n( "Save &As..." ), "document-save-as",
+  return KGuiItem( i18n( "Save &As..." ), QStringLiteral("document-save-as"),
                    i18n( "Save file with another name" ) );
 }
 
 KGuiItem apply()
 {
-  return KGuiItem( i18n( "&Apply" ), "dialog-ok-apply", i18n( "Apply changes" ),
+  return KGuiItem( i18n( "&Apply" ), QStringLiteral("dialog-ok-apply"), i18n( "Apply changes" ),
                    i18n( "When you click <b>Apply</b>, the settings will be "
                          "handed over to the program, but the dialog "
                          "will not be closed.\n"
@@ -162,7 +162,7 @@ KGuiItem apply()
 
 KGuiItem adminMode()
 {
-  return KGuiItem( i18n( "Administrator &Mode..." ), "", i18n( "Enter Administrator Mode" ),
+  return KGuiItem( i18n( "Administrator &Mode..." ), QStringLiteral(""), i18n( "Enter Administrator Mode" ),
                    i18n( "When you click <b>Administrator Mode</b> you will be prompted "
                          "for the administrator (root) password in order to make changes "
                          "which require root privileges." ) );
@@ -170,45 +170,45 @@ KGuiItem adminMode()
 
 KGuiItem clear()
 {
-  return KGuiItem( i18n( "C&lear" ), "edit-clear",
+  return KGuiItem( i18n( "C&lear" ), QStringLiteral("edit-clear"),
                    i18n( "Clear input" ),
                    i18n( "Clear the input in the edit field" ) );
 }
 
 KGuiItem help()
 {
-  return KGuiItem( i18nc( "show help", "&Help" ), "help-contents",
+  return KGuiItem( i18nc( "show help", "&Help" ), QStringLiteral("help-contents"),
                    i18n( "Show help" ) );
 }
 
 KGuiItem close()
 {
-  return KGuiItem( i18n( "&Close" ), "window-close",
+  return KGuiItem( i18n( "&Close" ), QStringLiteral("window-close"),
                    i18n( "Close the current window or document" ) );
 }
 
 KGuiItem closeWindow()
 {
-  return KGuiItem( i18n( "&Close Window" ), "window-close",
+  return KGuiItem( i18n( "&Close Window" ), QStringLiteral("window-close"),
 		   i18n( "Close the current window." ) );
 }
 
 KGuiItem closeDocument()
 {
-  return KGuiItem( i18n( "&Close Document" ), "document-close",
+  return KGuiItem( i18n( "&Close Document" ), QStringLiteral("document-close"),
 		   i18n( "Close the current document." ) );
 }
 
 KGuiItem defaults()
 {
-  return KGuiItem( i18n( "&Defaults" ), "document-revert",
+  return KGuiItem( i18n( "&Defaults" ), QStringLiteral("document-revert"),
                    i18n( "Reset all items to their default values" ) );
 }
 
 KGuiItem back( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
-                 ? "go-next" : "go-previous";
+                 ? QStringLiteral("go-next") : QStringLiteral("go-previous");
   return KGuiItem( i18nc( "go back", "&Back" ), icon,
                    i18n( "Go back one step" ) );
 }
@@ -216,7 +216,7 @@ KGuiItem back( BidiMode useBidi )
 KGuiItem forward( BidiMode useBidi )
 {
   QString icon = ( useBidi == UseRTL && QApplication::isRightToLeft() )
-                 ? "go-previous" : "go-next";
+                 ? QStringLiteral("go-previous") : QStringLiteral("go-next");
   return KGuiItem( i18nc( "go forward", "&Forward" ), icon,
                    i18n( "Go forward one step" ) );
 }
@@ -228,38 +228,38 @@ QPair<KGuiItem, KGuiItem> backAndForward()
 
 KGuiItem print()
 {
-  return KGuiItem( i18n( "&Print..." ), "document-print",
+  return KGuiItem( i18n( "&Print..." ), QStringLiteral("document-print"),
                    i18n( "Opens the print dialog to print "
                          "the current document" ) );
 }
 
 KGuiItem cont()
 {
-  return KGuiItem( i18n( "C&ontinue" ), "arrow-right",
+  return KGuiItem( i18n( "C&ontinue" ), QStringLiteral("arrow-right"),
                    i18n( "Continue operation" ) );
 }
 
 KGuiItem del()
 {
-  return KGuiItem( i18n( "&Delete" ), "edit-delete",
+  return KGuiItem( i18n( "&Delete" ), QStringLiteral("edit-delete"),
                    i18n( "Delete item(s)" ) );
 }
 
 KGuiItem open()
 {
-  return KGuiItem( i18n( "&Open..." ), "document-open",
+  return KGuiItem( i18n( "&Open..." ), QStringLiteral("document-open"),
                    i18n( "Open file" ) );
 }
 
 KGuiItem quit()
 {
-  return KGuiItem( i18n( "&Quit" ), "application-exit",
+  return KGuiItem( i18n( "&Quit" ), QStringLiteral("application-exit"),
                    i18n( "Quit application" ) );
 }
 
 KGuiItem reset()
 {
-  return KGuiItem( i18n( "&Reset" ), "edit-undo",
+  return KGuiItem( i18n( "&Reset" ), QStringLiteral("edit-undo"),
                   i18n( "Reset configuration" ) );
 }
 
@@ -270,27 +270,27 @@ KGuiItem insert()
 
 KGuiItem configure()
 {
-  return KGuiItem( i18n( "Confi&gure..." ), "configure" );
+  return KGuiItem( i18n( "Confi&gure..." ), QStringLiteral("configure") );
 }
 
 KGuiItem find()
 {
-  return KGuiItem(i18n("&Find"), "edit-find");
+  return KGuiItem(i18n("&Find"), QStringLiteral("edit-find"));
 }
 
 KGuiItem stop()
 {
-  return KGuiItem(i18n("Stop"), "process-stop");
+  return KGuiItem(i18n("Stop"), QStringLiteral("process-stop"));
 }
 
 KGuiItem add()
 {
-  return KGuiItem(i18n("Add"), "list-add");
+  return KGuiItem(i18n("Add"), QStringLiteral("list-add"));
 }
 
 KGuiItem remove()
 {
-  return KGuiItem(i18n("Remove"), "list-remove");
+  return KGuiItem(i18n("Remove"), QStringLiteral("list-remove"));
 }
 
 KGuiItem test()
@@ -300,7 +300,7 @@ KGuiItem test()
 
 KGuiItem properties()
 {
-  return KGuiItem(i18n("Properties"), "document-properties");
+  return KGuiItem(i18n("Properties"), QStringLiteral("document-properties"));
 }
 
 KGuiItem overwrite()

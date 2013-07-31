@@ -19,7 +19,7 @@
 #ifndef kstandardguiitem_h
 #define kstandardguiitem_h
 
-#include <kwidgets_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QtCore/QPair>
 
@@ -30,7 +30,7 @@ class QString;
 /**
  * @short Provides a set of standardized KGuiItems.
  *
- * The various KWIDGETS_EXPORT methods returns standardized @ref KGuiItem's
+ * The various KWIDGETSADDONS_EXPORT methods returns standardized @ref KGuiItem's
  * conforming to the KDE UI Standards. Use them instead of creating
  * your own.
  *
@@ -58,139 +58,139 @@ namespace KStandardGuiItem
      *
      * @param id the identifier to search for
      */
-    KWIDGETS_EXPORT KGuiItem guiItem( StandardItem id );
+    KWIDGETSADDONS_EXPORT KGuiItem guiItem( StandardItem id );
 
     /**
      * Returns the name of the gui item for the given identifier @param id.
      *
      * @param id the identifier to search for
      */
-    KWIDGETS_EXPORT QString standardItem( StandardItem id );
+    KWIDGETSADDONS_EXPORT QString standardItem( StandardItem id );
 
     /**
      * Returns the 'Ok' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem ok();
+    KWIDGETSADDONS_EXPORT KGuiItem ok();
 
     /**
      * Returns the 'Cancel' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem cancel();
+    KWIDGETSADDONS_EXPORT KGuiItem cancel();
 
     /**
      * Returns the 'Yes' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem yes();
+    KWIDGETSADDONS_EXPORT KGuiItem yes();
 
     /**
      * Returns the 'No' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem no();
+    KWIDGETSADDONS_EXPORT KGuiItem no();
 
     /**
      * Returns the 'Insert' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem insert();
+    KWIDGETSADDONS_EXPORT KGuiItem insert();
 
     /**
      * Returns the 'Discard' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem discard();
+    KWIDGETSADDONS_EXPORT KGuiItem discard();
 
     /**
      * Returns the 'Save' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem save();
+    KWIDGETSADDONS_EXPORT KGuiItem save();
 
     /**
      * Returns the 'Help' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem help();
+    KWIDGETSADDONS_EXPORT KGuiItem help();
 
     /**
      * Returns the 'DontSave' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem dontSave();
+    KWIDGETSADDONS_EXPORT KGuiItem dontSave();
 
     /**
      * Returns the 'SaveAs' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem saveAs();
+    KWIDGETSADDONS_EXPORT KGuiItem saveAs();
 
     /**
      * Returns the 'Apply' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem apply();
+    KWIDGETSADDONS_EXPORT KGuiItem apply();
 
     /**
      * Returns the 'Clear' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem clear();
+    KWIDGETSADDONS_EXPORT KGuiItem clear();
 
     /**
      * Returns the 'Defaults' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem defaults();
+    KWIDGETSADDONS_EXPORT KGuiItem defaults();
 
     /**
      * Returns the 'Close' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem close();
+    KWIDGETSADDONS_EXPORT KGuiItem close();
 
     /**
      * Returns the 'CloseWindow' gui item.
      * @since 4.3
      */
-    KWIDGETS_EXPORT KGuiItem closeWindow();
+    KWIDGETSADDONS_EXPORT KGuiItem closeWindow();
 
     /**
      * Returns the 'CloseDocument' gui item.
      * @since 4.3
      */
-    KWIDGETS_EXPORT KGuiItem closeDocument();
+    KWIDGETSADDONS_EXPORT KGuiItem closeDocument();
 
     /**
      * Returns the 'Print' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem print();
+    KWIDGETSADDONS_EXPORT KGuiItem print();
 
     /**
      * Returns the 'Properties' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem properties();
+    KWIDGETSADDONS_EXPORT KGuiItem properties();
 
     /**
      * Returns the 'Reset' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem reset();
+    KWIDGETSADDONS_EXPORT KGuiItem reset();
 
     /**
      * Returns the 'Overwrite' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem overwrite();
+    KWIDGETSADDONS_EXPORT KGuiItem overwrite();
 
     /**
      * Returns a KGuiItem suiting for cases where code or functionality
      * runs under root privileges. Used in conjunction with KConfig Modules.
      */
-    KWIDGETS_EXPORT KGuiItem adminMode();
+    KWIDGETSADDONS_EXPORT KGuiItem adminMode();
 
     /**
      * Returns the 'Continue' gui item. The short name is due to 'continue' being a
      * reserved word in the C++ language.
      */
-    KWIDGETS_EXPORT KGuiItem cont();
+    KWIDGETSADDONS_EXPORT KGuiItem cont();
 
     /**
      * Returns the 'Delete' gui item. The short name is due to 'delete' being a
      * reserved word in the C++ language.
      */
-    KWIDGETS_EXPORT KGuiItem del();
+    KWIDGETSADDONS_EXPORT KGuiItem del();
 
     /**
      * Returns the 'Open' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem open();
+    KWIDGETSADDONS_EXPORT KGuiItem open();
 
     /**
      * Returns the 'Back' gui item, like Konqueror's back button.
@@ -202,7 +202,7 @@ namespace KStandardGuiItem
      * GUI item if you also want the 'forward' item. Those two are available
      * in the separate backAndForward() method.
      */
-    KWIDGETS_EXPORT KGuiItem back( BidiMode useBidi = IgnoreRTL );
+    KWIDGETSADDONS_EXPORT KGuiItem back( BidiMode useBidi = IgnoreRTL );
 
     /**
      * Returns the 'Forward' gui item, like Konqueror's forward
@@ -214,12 +214,12 @@ namespace KStandardGuiItem
      * GUI item if you also want the 'back' item. Those two are available
      * in the separate backAndForward() method.
      */
-    KWIDGETS_EXPORT KGuiItem forward( BidiMode useBidi = IgnoreRTL );
+    KWIDGETSADDONS_EXPORT KGuiItem forward( BidiMode useBidi = IgnoreRTL );
 
     /**
      * Returns the 'Configure' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem configure();
+    KWIDGETSADDONS_EXPORT KGuiItem configure();
 
     /**
      * Return both a back and a forward gui item. This function always returns
@@ -227,40 +227,40 @@ namespace KStandardGuiItem
      * locales. If you have a reason for wanting the 'Western' back/forward
      * buttons, please use the back() and forward() items instead.
      */
-    KWIDGETS_EXPORT QPair<KGuiItem, KGuiItem> backAndForward();
+    KWIDGETSADDONS_EXPORT QPair<KGuiItem, KGuiItem> backAndForward();
 
     /**
      * Returns the 'Quit' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem quit();
+    KWIDGETSADDONS_EXPORT KGuiItem quit();
 
     /**
      * Returns the 'Find' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem find();
+    KWIDGETSADDONS_EXPORT KGuiItem find();
 
     /**
      * Returns the 'Stop' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem stop();
+    KWIDGETSADDONS_EXPORT KGuiItem stop();
 
     /**
      * Returns the 'Add' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem add();
+    KWIDGETSADDONS_EXPORT KGuiItem add();
 
     /**
      * Returns the 'Remove' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem remove();
+    KWIDGETSADDONS_EXPORT KGuiItem remove();
 
     /**
      * Returns the 'Test' gui item.
      */
-    KWIDGETS_EXPORT KGuiItem test();
+    KWIDGETSADDONS_EXPORT KGuiItem test();
 
 
-    KWIDGETS_EXPORT void assign(QPushButton *button, StandardItem item);
+    KWIDGETSADDONS_EXPORT void assign(QPushButton *button, StandardItem item);
 }
 
 #endif

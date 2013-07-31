@@ -18,7 +18,6 @@ set(kwidgets_LIB_SRCS
   dialogs/kmessagebox.cpp
   dialogs/ktip.cpp
   utils/kcolorscheme.cpp
-  utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
   widgets/klanguagebutton.cpp
 )
@@ -72,7 +71,6 @@ install(FILES
   dialogs/kmessageboxdontaskagaininterface.h
   dialogs/ktip.h
   utils/kcolorscheme.h
-  utils/kstandardguiitem.h
   utils/kstandardshortcut.h
   widgets/klanguagebutton.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
