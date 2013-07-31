@@ -4395,3 +4395,4 @@ static bool allowAutomaticSemicolon()
 }
 
 // kate: indent-width 2; replace-tabs on; tab-width 4; space-indent on;
+

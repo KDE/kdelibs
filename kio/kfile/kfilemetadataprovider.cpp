@@ -393,8 +393,8 @@ void KFileMetaDataProvider::setItems(const KFileItemList& items)
     if (items.isEmpty()) {
         return;
     }
-    Q_PRIVATE_SLOT(d, void slotDataChangeStarted())
-    Q_PRIVATE_SLOT(d, void slotDataChangeFinished())
+    Q_PRIVATE_SLOT(d,void slotDataChangeStarted())
+    Q_PRIVATE_SLOT(d,void slotDataChangeFinished())
     QList<KUrl> urls;
     foreach (const KFileItem& item, items) {
         const KUrl url = item.nepomukUri();

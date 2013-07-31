@@ -46,7 +46,7 @@ OpticalDrive::OpticalDrive(Device *device)
 {
     m_device->registerAction("eject", this,
                              SLOT(slotEjectRequested()),
-                             SLOT(slotEjectDone(int, const QString&)));
+                             SLOT(slotEjectDone(int,QString)));
 
     connect(m_device, SIGNAL(changed()), this, SLOT(slotChanged()));
 }
@@ -101,7 +101,7 @@ bool OpticalDrive::eject()
 
     QDBusMessage msg = QDBusMessage::createMethodCall(UD2_DBUS_SERVICE, path, UD2_DBUS_INTERFACE_DRIVE, "Eject");
     msg << QVariantMap();
-    return c.callWithCallback(msg, this, SLOT(slotDBusReply(const QDBusMessage &)), SLOT(slotDBusError(const QDBusError &)));
+    return c.callWithCallback(msg, this, SLOT(slotDBusReply(QDBusMessage)), SLOT(slotDBusError(QDBusError)));
 }
 
 void OpticalDrive::slotDBusReply(const QDBusMessage &/*reply*/)

@@ -68,7 +68,7 @@ Manager::Manager(QObject *parent)
     }
 
     if (serviceFound) {
-        connect(&m_manager, SIGNAL(InterfacesAdded(QDBusObjectPath, QVariantMapMap)),
+        connect(&m_manager, SIGNAL(InterfacesAdded(QDBusObjectPath,QVariantMapMap)),
                 this, SLOT(slotInterfacesAdded(QDBusObjectPath,QVariantMapMap)));
         connect(&m_manager, SIGNAL(InterfacesRemoved(QDBusObjectPath,QStringList)),
                 this, SLOT(slotInterfacesRemoved(QDBusObjectPath,QStringList)));

@@ -48,11 +48,11 @@ void StorageAccess::connectDBusSignals()
 {
     m_device->registerAction("setup", this,
                              SLOT(slotSetupRequested()),
-                             SLOT(slotSetupDone(int, const QString&)));
+                             SLOT(slotSetupDone(int,QString)));
 
     m_device->registerAction("teardown", this,
                              SLOT(slotTeardownRequested()),
-                             SLOT(slotTeardownDone(int, const QString&)));
+                             SLOT(slotTeardownDone(int,QString)));
 }
 
 bool StorageAccess::isLuksDevice() const
@@ -262,8 +262,8 @@ bool StorageAccess::mount()
     msg << options;
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }
 
 bool StorageAccess::unmount()
@@ -281,8 +281,8 @@ bool StorageAccess::unmount()
     msg << QVariantMap();   // options, unused now
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)),
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)),
                               s_unmountTimeout);
 }
 
@@ -372,8 +372,8 @@ void StorageAccess::callCryptoSetup(const QString & passphrase)
     msg << QVariantMap();   // options, unused now
 
     c.callWithCallback(msg, this,
-                       SLOT(slotDBusReply(const QDBusMessage &)),
-                       SLOT(slotDBusError(const QDBusError &)));
+                       SLOT(slotDBusReply(QDBusMessage)),
+                       SLOT(slotDBusError(QDBusError)));
 }
 
 bool StorageAccess::callCryptoTeardown(bool actOnParent)
@@ -385,6 +385,6 @@ bool StorageAccess::callCryptoTeardown(bool actOnParent)
     msg << QVariantMap();   // options, unused now
 
     return c.callWithCallback(msg, this,
-                              SLOT(slotDBusReply(const QDBusMessage &)),
-                              SLOT(slotDBusError(const QDBusError &)));
+                              SLOT(slotDBusReply(QDBusMessage)),
+                              SLOT(slotDBusError(QDBusError)));
 }

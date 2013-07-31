@@ -408,10 +408,10 @@ bool Nepomuk::ResourceData::load()
             //
             m_rm->m_watcher = new ResourceWatcher(m_rm->m_manager);
             m_rm->m_watcher->moveToThread(m_rm->m_manager->thread());
-            QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
-                              m_rm->m_manager, SLOT(slotPropertyAdded(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
-            QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)),
-                              m_rm->m_manager, SLOT(slotPropertyRemoved(Nepomuk::Resource, Nepomuk::Types::Property, QVariant)) );
+            QObject::connect( m_rm->m_watcher, SIGNAL(propertyAdded(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)),
+                              m_rm->m_manager, SLOT(slotPropertyAdded(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)) );
+            QObject::connect( m_rm->m_watcher, SIGNAL(propertyRemoved(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)),
+                              m_rm->m_manager, SLOT(slotPropertyRemoved(Nepomuk::Resource,Nepomuk::Types::Property,QVariant)) );
             m_rm->m_watcher->addResource( Nepomuk::Resource::fromResourceUri(m_uri) );
         }
         else {
