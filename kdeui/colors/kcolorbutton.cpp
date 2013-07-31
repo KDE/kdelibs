@@ -29,7 +29,6 @@
 #include <QMimeData>
 #include <QDrag>
 #include <QStyle>
-#include <kstandardshortcut.h>
 #include <QMouseEvent>
 #include <QStyleOptionButton>
 
@@ -270,12 +269,11 @@ void KColorButton::keyPressEvent( QKeyEvent *e )
 {
   int key = e->key() | e->modifiers();
 
-  if ( KStandardShortcut::copy().contains( key ) ) {
+  if (QKeySequence::keyBindings(QKeySequence::Copy).contains(key)) {
     QMimeData *mime=new QMimeData;
     _k_populateMimeData(mime, color());
     QApplication::clipboard()->setMimeData( mime, QClipboard::Clipboard );
-  }
-  else if ( KStandardShortcut::paste().contains( key ) ) {
+  } else if (QKeySequence::keyBindings(QKeySequence::Paste).contains(key)) {
     QColor color = _k_fromMimeData(QApplication::clipboard()->mimeData(QClipboard::Clipboard));
     setColor( color );
   }
