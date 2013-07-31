@@ -59,6 +59,7 @@ set(libkde4support_SRCS
     kdeui/fonthelpers.cpp
     kdeui/kfontdialog.cpp
     kdeui/khuesaturationselect.cpp
+    kdeui/kpassivepopupmessagehandler.cpp
     kdeui/ksessionmanager.cpp
     kdeui/kfadewidgeteffect.cpp
     kdeui/kicon.cpp
@@ -217,6 +218,7 @@ install(FILES
     kdeui/kcolorvalueselector.h
     kdeui/kdialog.h
     kdeui/khuesaturationselect.h
+    kdeui/kpassivepopupmessagehandler.h
     kdeui/ksessionmanager.h
     kdeui/kfadewidgeteffect.h
     kdeui/kfontcombobox.h

@@ -18,7 +18,6 @@ set(kwidgets_LIB_SRCS
   dialogs/kmessagebox.cpp
   dialogs/ktip.cpp
   utils/kcolorscheme.cpp
-  utils/kpassivepopupmessagehandler.cpp
   utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
   widgets/klanguagebutton.cpp
@@ -73,7 +72,6 @@ install(FILES
   dialogs/kmessageboxdontaskagaininterface.h
   dialogs/ktip.h
   utils/kcolorscheme.h
-  utils/kpassivepopupmessagehandler.h
   utils/kstandardguiitem.h
   utils/kstandardshortcut.h
   widgets/klanguagebutton.h

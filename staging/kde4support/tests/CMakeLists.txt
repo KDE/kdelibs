@@ -13,6 +13,7 @@ kde4support_examples(
   kcolordlgtest
   kdialogtest
   kmdcodectest
+  kmessagetest
   kcmdlineargstest
   kdialogbuttonboxtest
   kmessageboxqueuedtest
