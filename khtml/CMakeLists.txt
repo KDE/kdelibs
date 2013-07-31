@@ -1,21 +1,33 @@
+cmake_minimum_required(VERSION 2.8.11)
 
-project(khtml)
+project(KHtml)
 
-add_definitions(-DKDE_DEFAULT_DEBUG_AREA=6000)
+find_package(ECM 0.0.8 REQUIRED NO_MODULE)
+
+include(FeatureSummary)
+include(CMakePackageConfigHelpers)
+include(ECMSetupVersion)
+
+find_package(KF5 5.0.0 REQUIRED MODULE COMPONENTS CMake Compiler InstallDirs)
+
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS PrintSupport Test Concurrent)
+
+ecm_setup_version(5 0 0 VARIABLE_PREFIX KHTML
+                        VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h"
+                        PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake")
+
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+remove_definitions(-DQT_NO_CAST_FROM_BYTEARRAY)
 
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0)
-
-find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
-
-include(ConfigureChecks.cmake)
-configure_file(config-khtml.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-khtml.h )
-
 
 ########svg#########
 add_definitions(-DENABLE_SVG)
 add_definitions(-DENABLE_SVG_FONTS)
 add_definitions(-DWTF_PLATFORM_QT)
 ########svg#########
+
+include(ConfigureChecks.cmake)
 
 add_subdirectory( tests )
 
@@ -718,7 +730,7 @@ create_js_binding(html/HTMLVideoElement.idl)
 #create_js_binding(svg/SVGPathSegMovetoAbs.idl)
 #create_js_binding(svg/SVGPathSegMovetoRel.idl)
 
-install(TARGETS khtml EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS khtml EXPORT KHtmlTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 ########### khtmlpart ###############
 
@@ -833,3 +845,22 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.KHTMLPart.xml DESTINATION ${D
 install( FILES error.html DESTINATION ${DATA_INSTALL_DIR}/khtml )
 
 install( FILES khtmlrc DESTINATION ${CONFIG_INSTALL_DIR} )
+
+# create a Config.cmake and a ConfigVersion.cmake file and install them
+set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/KHtml")
+
+configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/KHtmlConfig.cmake.in"
+                              "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfig.cmake"
+                              INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
+                              PATH_VARS  INCLUDE_INSTALL_DIR CMAKE_INSTALL_PREFIX )
+
+install(FILES  "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfig.cmake"
+               "${CMAKE_CURRENT_BINARY_DIR}/KHtmlConfigVersion.cmake"
+        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+        COMPONENT Devel )
+
+install(EXPORT KHtmlTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KHtmlTargets.cmake NAMESPACE KF5:: )
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/khtml_version.h
+        DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
+
