@@ -33,7 +33,6 @@
 #include <QMouseEvent>
 #include <QStyleOptionButton>
 #include "kcolormimedata.h"
-#include "QDebug"
 
 class KColorButton::KColorButtonPrivate
 {
