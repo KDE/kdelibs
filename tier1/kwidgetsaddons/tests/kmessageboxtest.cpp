@@ -1,10 +1,11 @@
+#undef QT_NO_CAST_FROM_ASCII
+
 #include "kmessagebox.h"
 #include <QLabel>
 
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <kaboutdata.h>
 #include <qapplication.h>
 
 class ExampleWidget : public QLabel

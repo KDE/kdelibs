@@ -27,7 +27,7 @@
 #include <kguiitem.h>
 #include <kstandardguiitem.h>
 
-#include <kwidgets_export.h>
+#include <kwidgetsaddons_export.h>
 
 class KMessageBoxDontAskAgainInterface;
 class QDialog;
@@ -137,7 +137,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
 
- KWIDGETS_EXPORT int questionYesNo(QWidget *parent,
+ KWIDGETSADDONS_EXPORT int questionYesNo(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -174,7 +174,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "Cancel".
   */
 
-  KWIDGETS_EXPORT int questionYesNoCancel(QWidget *parent,
+  KWIDGETSADDONS_EXPORT int questionYesNoCancel(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -215,7 +215,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "No".
   */
 
- KWIDGETS_EXPORT int questionYesNoList(QWidget *parent,
+ KWIDGETSADDONS_EXPORT int questionYesNoList(QWidget *parent,
                           const QString &text,
                           const QStringList &strlist,
                           const QString &caption = QString(),
@@ -252,7 +252,7 @@ namespace KMessageBox
   *
   * The default button is "No". Pressing "Esc" selects "No".
   */
- KWIDGETS_EXPORT int warningYesNo(QWidget *parent,
+ KWIDGETSADDONS_EXPORT int warningYesNo(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -292,7 +292,7 @@ namespace KMessageBox
   * The default button is "No". Pressing "Esc" selects "No".
   */
 
- KWIDGETS_EXPORT int warningYesNoList(QWidget *parent,
+ KWIDGETSADDONS_EXPORT int warningYesNoList(QWidget *parent,
                             const QString &text,
                             const QStringList &strlist,
                             const QString &caption = QString(),
@@ -329,7 +329,7 @@ namespace KMessageBox
   *
   * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
   */
- KWIDGETS_EXPORT int warningContinueCancel(QWidget *parent,
+ KWIDGETSADDONS_EXPORT int warningContinueCancel(QWidget *parent,
                          const QString &text,
                          const QString &caption = QString(),
                          const KGuiItem &buttonContinue = KStandardGuiItem::cont(),
@@ -369,7 +369,7 @@ namespace KMessageBox
   *
   * The default button is buttonContinue. Pressing "Esc" selects "Cancel".
   */
- KWIDGETS_EXPORT int warningContinueCancelList(QWidget *parent,
+ KWIDGETSADDONS_EXPORT int warningContinueCancelList(QWidget *parent,
                          const QString &text,
                          const QStringList &strlist,
                          const QString &caption = QString(),
@@ -412,7 +412,7 @@ namespace KMessageBox
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   */
 
-  KWIDGETS_EXPORT int warningYesNoCancel(QWidget *parent,
+  KWIDGETSADDONS_EXPORT int warningYesNoCancel(QWidget *parent,
                                 const QString &text,
                                 const QString &caption = QString(),
                                 const KGuiItem &buttonYes = KStandardGuiItem::yes(),
@@ -458,7 +458,7 @@ namespace KMessageBox
   *
   * The default button is "Yes". Pressing "Esc" selects "Cancel"
   */
-  KWIDGETS_EXPORT int warningYesNoCancelList(QWidget *parent,
+  KWIDGETSADDONS_EXPORT int warningYesNoCancelList(QWidget *parent,
                                 const QString &text,
                                 const QStringList &strlist,
                                 const QString &caption = QString(),
@@ -489,7 +489,7 @@ namespace KMessageBox
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  KWIDGETS_EXPORT void error(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void error(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -518,7 +518,7 @@ namespace KMessageBox
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  KWIDGETS_EXPORT void errorList(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void errorList(QWidget *parent,
                     const QString &text,
                     const QStringList &strlist,
                     const QString &caption = QString(),
@@ -548,7 +548,7 @@ namespace KMessageBox
   *
   * NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
-  KWIDGETS_EXPORT void detailedError(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void detailedError(QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -574,7 +574,7 @@ namespace KMessageBox
   * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
 
-  KWIDGETS_EXPORT void sorry(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void sorry(QWidget *parent,
                     const QString &text,
                     const QString &caption = QString(),
                     Options options = Notify);
@@ -605,7 +605,7 @@ namespace KMessageBox
   * NOTE: The ok button will always have the i18n'ed text '&OK'.
   */
 
-  KWIDGETS_EXPORT void detailedSorry(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void detailedSorry(QWidget *parent,
                     const QString &text,
                     const QString &details,
                     const QString &caption = QString(),
@@ -635,7 +635,7 @@ namespace KMessageBox
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  KWIDGETS_EXPORT void information(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void information(QWidget *parent,
                           const QString &text,
                           const QString &caption = QString(),
                           const QString &dontShowAgainName = QString(),
@@ -668,7 +668,7 @@ namespace KMessageBox
   *  NOTE: The OK button will always have the i18n'ed text '&OK'.
   */
 
-  KWIDGETS_EXPORT void informationList(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void informationList(QWidget *parent,
 			      const QString &text,
 			      const QStringList & strlist,
 			      const QString &caption = QString(),
@@ -679,7 +679,7 @@ namespace KMessageBox
    * Enable all messages which have been turned off with the
    * @p dontShowAgainName feature.
    */
-  KWIDGETS_EXPORT void enableAllMessages();
+  KWIDGETSADDONS_EXPORT void enableAllMessages();
 
   /**
    * Re-enable a specific @p dontShowAgainName messages that had
@@ -687,7 +687,7 @@ namespace KMessageBox
    * @see saveDontShowAgainYesNo()
    * @see saveDontShowAgainContinue()
    */
-  KWIDGETS_EXPORT void enableMessage(const QString &dontShowAgainName);
+  KWIDGETSADDONS_EXPORT void enableMessage(const QString &dontShowAgainName);
 
   /**
    * Display an "About" dialog.
@@ -706,7 +706,7 @@ namespace KMessageBox
    *
    *  NOTE: The ok button will always have the i18n'ed text '&OK'.
    */
-  KWIDGETS_EXPORT void about(QWidget *parent,
+  KWIDGETSADDONS_EXPORT void about(QWidget *parent,
 		    const QString& text,
 		    const QString& caption = QString(),
                     Options options = Notify);
@@ -736,7 +736,7 @@ namespace KMessageBox
      * @return a button code, as defined in KMessageBox.
      */
 
-    KWIDGETS_EXPORT int messageBox( QWidget *parent, DialogType type, const QString &text,
+    KWIDGETSADDONS_EXPORT int messageBox( QWidget *parent, DialogType type, const QString &text,
                     const QString &caption = QString(),
                     const KGuiItem &buttonYes = KStandardGuiItem::yes(),
                     const KGuiItem &buttonNo = KStandardGuiItem::no(),
@@ -752,7 +752,7 @@ namespace KMessageBox
      * time the message box was shown. Only meaningful, if the message box
      * should not be shown.
      */
-    KWIDGETS_EXPORT bool shouldBeShownYesNo(const QString &dontShowAgainName,
+    KWIDGETSADDONS_EXPORT bool shouldBeShownYesNo(const QString &dontShowAgainName,
                                    ButtonCode &result);
     /**
      * @return true if the corresponding continue/cancel message box should be
@@ -760,7 +760,7 @@ namespace KMessageBox
      * @param dontShowAgainName the name that identify the message box. If
      * empty, true is always returned.
      */
-    KWIDGETS_EXPORT bool shouldBeShownContinue(const QString &dontShowAgainName);
+    KWIDGETSADDONS_EXPORT bool shouldBeShownContinue(const QString &dontShowAgainName);
 
     /**
      * Save the fact that the yes/no message box should not be shown again.
@@ -769,7 +769,7 @@ namespace KMessageBox
      * @param result the value (Yes or No) that should be used as the result
      * for the message box.
      */
-    KWIDGETS_EXPORT void saveDontShowAgainYesNo(const QString &dontShowAgainName,
+    KWIDGETSADDONS_EXPORT void saveDontShowAgainYesNo(const QString &dontShowAgainName,
                                        ButtonCode result);
 
     /**
@@ -778,18 +778,18 @@ namespace KMessageBox
      * @param dontShowAgainName the name that identify the message box. If
      * empty, this method does nothing.
      */
-    KWIDGETS_EXPORT void saveDontShowAgainContinue(const QString &dontShowAgainName);
+    KWIDGETSADDONS_EXPORT void saveDontShowAgainContinue(const QString &dontShowAgainName);
 
     /**
      * Use @p cfg for all settings related to the dontShowAgainName feature.
      * If @p cfg is 0 (default) KGlobal::config() will be used.
      */
-    KWIDGETS_EXPORT void setDontShowAgainConfig(KConfig* cfg);
+    KWIDGETSADDONS_EXPORT void setDontShowAgainConfig(KConfig* cfg);
 
     /**
      * Use @p dontAskAgainInterface for all settings related to the donShowAgain feature
      */
-    KWIDGETS_EXPORT void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface);
+    KWIDGETSADDONS_EXPORT void setDontShowAgainInterface(KMessageBoxDontAskAgainInterface* dontAskAgainInterface);
 
     /**
      * Create content and layout of a standard dialog
@@ -815,7 +815,7 @@ namespace KMessageBox
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    KWIDGETS_EXPORT int createKMessageBox(QDialog *dialog, QDialogButtonBox *buttons,
+    KWIDGETSADDONS_EXPORT int createKMessageBox(QDialog *dialog, QDialogButtonBox *buttons,
                              QMessageBox::Icon icon, //krazy:exclude=qclasses
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,
@@ -848,7 +848,7 @@ namespace KMessageBox
      *         the @p dialog that is passed in is deleted by this
      *         function. Do not delete it yourself.
      */
-    KWIDGETS_EXPORT int createKMessageBox(QDialog *dialog, QDialogButtonBox *buttons,
+    KWIDGETSADDONS_EXPORT int createKMessageBox(QDialog *dialog, QDialogButtonBox *buttons,
                              const QIcon &icon,
                              const QString &text, const QStringList &strlist,
                              const QString &ask, bool *checkboxReturn,

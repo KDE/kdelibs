@@ -38,12 +38,14 @@
 #include <QTextBrowser>
 
 #include <qapplication.h>
-#include <klocalizedstring.h>
 #if 0
     // NOTE waiting for the notification framework plan
 #include <knotification.h>
 #endif
 #include <ksqueezedtextlabel.h>
+
+static const QString i18n(const char *a) { return QApplication::translate("KMessageBox", a); }
+static const QString i18nc(const char *comment, const char *a) { return QApplication::translate("KMessageBox", a, comment); }
 
 // Some i18n filters, that standard button texts are piped through
 // (the new KGuiItem object with filtered text is created from the old one).
@@ -52,25 +54,25 @@
 // after the message caption/text have been translated.
 #define I18N_FILTER_BUTTON_YES(src, dst) \
     KGuiItem dst(src); \
-    dst.setText( i18nc( "@action:button filter-yes", "%1", src.text() ) );
+    dst.setText( i18nc( "@action:button filter-yes", src.text().toUtf8().constData() ) );
 
 // i18n: Filter for the No-button text in standard message dialogs,
 // after the message caption/text have been translated.
 #define I18N_FILTER_BUTTON_NO(src, dst) \
     KGuiItem dst(src); \
-    dst.setText( i18nc( "@action:button filter-no", "%1", src.text() ) );
+    dst.setText( i18nc( "@action:button filter-no", src.text().toUtf8().constData() ) );
 
 // i18n: Filter for the Continue-button text in standard message dialogs,
 // after the message caption/text have been translated.
 #define I18N_FILTER_BUTTON_CONTINUE(src, dst) \
     KGuiItem dst(src); \
-    dst.setText( i18nc( "@action:button filter-continue", "%1", src.text() ) );
+    dst.setText( i18nc( "@action:button filter-continue", src.text().toUtf8().constData() ) );
 
 // i18n: Filter for the Cancel-button text in standard message dialogs,
 // after the message caption/text have been translated.
 #define I18N_FILTER_BUTTON_CANCEL(src, dst) \
     KGuiItem dst(src); \
-    dst.setText( i18nc( "@action:button filter-cancel", "%1", src.text() ) );
+    dst.setText( i18nc( "@action:button filter-cancel", src.text().toUtf8().constData() ) );
 
 // i18n: Called after the button texts in standard message dialogs
 // have been filtered by the messages above. Not visible to user.
@@ -83,7 +85,7 @@ namespace KMessageBox {
  * this static is used by the createKMessageBox function to enqueue dialogs
  * FIXME what should we do about this static?
  */
-int KWIDGETS_EXPORT (*KMessageBox_exec_hook)(QDialog*) = 0;
+int KWIDGETSADDONS_EXPORT (*KMessageBox_exec_hook)(QDialog*) = 0;
 
 static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
 {
@@ -94,13 +96,13 @@ static QIcon themedMessageBoxIcon(QMessageBox::Icon icon)
         return QIcon();
         break;
     case QMessageBox::Information:
-        icon_name = "dialog-information";
+        icon_name = QStringLiteral("dialog-information");
         break;
     case QMessageBox::Warning:
-        icon_name = "dialog-warning";
+        icon_name = QStringLiteral("dialog-warning");
         break;
     case QMessageBox::Critical:
-        icon_name = "dialog-error";
+        icon_name = QStringLiteral("dialog-error");
         break;
     default:
         break;
@@ -124,22 +126,22 @@ static void sendNotification( QString message, //krazy:exclude=passbyvalue
     QString messageType;
     switch (icon) {
     case QMessageBox::Warning:
-        messageType = "messageWarning";
+        messageType = QStringLiteral("messageWarning");
         break;
     case QMessageBox::Critical:
-        messageType = "messageCritical";
+        messageType = QStringLiteral("messageCritical");
         break;
     case QMessageBox::Question:
-        messageType = "messageQuestion";
+        messageType = QStringLiteral("messageQuestion");
         break;
     default:
-        messageType = "messageInformation";
+        messageType = QStringLiteral("messageInformation");
         break;
     }
 
     if ( !strlist.isEmpty() ) {
         for ( QStringList::ConstIterator it = strlist.begin(); it != strlist.end(); ++it ) {
-            message += '\n' + *it;
+            message += QLatin1Char('\n') + *it;
         }
     }
 
@@ -185,8 +187,8 @@ public Q_SLOTS:
         QDialogButtonBox::StandardButton code = m_buttons->standardButton(button);
         if (code != QDialogButtonBox::NoButton) {
             m_dialog->done(code);
-        } else if (m_details && (button->objectName() == "detailsButton")) {
-            button->setText(i18n("&Details") + (m_details->isVisible() ? " >>" : " <<"));
+        } else if (m_details && (button->objectName() == QStringLiteral("detailsButton"))) {
+            button->setText(i18n("&Details") + (m_details->isVisible() ? QStringLiteral(" >>") : QStringLiteral(" <<")));
             m_details->setVisible(!m_details->isVisible());
         }
     }
@@ -467,7 +469,7 @@ static KMessageBoxDontAskAgainInterface* dontAskAgainInterface() {
         if (!triedLoadingPlugin) {
             triedLoadingPlugin = true;
 
-            QPluginLoader lib("kf5/frameworkintegrationplugin");
+            QPluginLoader lib(QStringLiteral("kf5/frameworkintegrationplugin"));
             QObject* rootObj = lib.instance();
             if (rootObj) {
                 s_dontAskAgainInterface = rootObj->property(KMESSAGEBOXDONTASKAGAIN_PROPERTY).value<KMessageBoxDontAskAgainInterface *>();
@@ -557,7 +559,7 @@ int questionYesNoList(QWidget *parent, const QString &text,
 
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Question") : caption);
-    dialog->setObjectName( "questionYesNo" );
+    dialog->setObjectName(QStringLiteral("questionYesNo"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
@@ -599,7 +601,7 @@ int questionYesNoCancel(QWidget *parent,
 
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Question") : caption);
-    dialog->setObjectName( "questionYesNoCancel" );
+    dialog->setObjectName(QStringLiteral("questionYesNoCancel"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No | QDialogButtonBox::Cancel);
@@ -659,7 +661,7 @@ int warningYesNoList(QWidget *parent, const QString &text,
 
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Warning") : caption);
-    dialog->setObjectName( "warningYesNoList" );
+    dialog->setObjectName(QStringLiteral("warningYesNoList"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
@@ -709,7 +711,7 @@ int warningContinueCancelList(QWidget *parent, const QString &text,
 
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Warning") : caption);
-    dialog->setObjectName( "warningYesNo" );
+    dialog->setObjectName(QStringLiteral("warningYesNo"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No);
@@ -765,7 +767,7 @@ int warningYesNoCancelList(QWidget *parent, const QString &text,
 
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Warning") : caption);
-    dialog->setObjectName( "warningYesNoCancel" );
+    dialog->setObjectName(QStringLiteral("warningYesNoCancel"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Yes | QDialogButtonBox::No | QDialogButtonBox::Cancel);
@@ -805,7 +807,7 @@ void errorList(QWidget *parent, const QString &text, const QStringList &strlist,
 {
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Error") : caption);
-    dialog->setObjectName( "error" );
+    dialog->setObjectName(QStringLiteral("error"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Ok);
@@ -822,12 +824,12 @@ detailedError(QWidget *parent,  const QString &text,
 {
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Error") : caption);
-    dialog->setObjectName( "error" );
+    dialog->setObjectName(QStringLiteral("error"));
 
     QPushButton *detailsButton = new QPushButton;
-    detailsButton->setObjectName("detailsButton");
-    detailsButton->setText(i18n("&Details") + " >>");
-    detailsButton->setIcon(QIcon::fromTheme("help-about"));
+    detailsButton->setObjectName(QStringLiteral("detailsButton"));
+    detailsButton->setText(i18n("&Details") + QStringLiteral(" >>"));
+    detailsButton->setIcon(QIcon::fromTheme(QStringLiteral("help-about")));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->addButton(detailsButton, QDialogButtonBox::HelpRole);
@@ -844,7 +846,7 @@ void sorry(QWidget *parent, const QString &text,
 {
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Sorry") : caption);
-    dialog->setObjectName( "sorry" );
+    dialog->setObjectName(QStringLiteral("sorry"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Ok);
@@ -860,12 +862,12 @@ void detailedSorry(QWidget *parent, const QString &text,
 {
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Sorry") : caption);
-    dialog->setObjectName( "sorry" );
+    dialog->setObjectName(QStringLiteral("sorry"));
 
     QPushButton *detailsButton = new QPushButton;
-    detailsButton->setObjectName("detailsButton");
-    detailsButton->setText(i18n("&Details") + " >>");
-    detailsButton->setIcon(QIcon::fromTheme("help-about"));
+    detailsButton->setObjectName(QStringLiteral("detailsButton"));
+    detailsButton->setText(i18n("&Details") + QStringLiteral(" >>"));
+    detailsButton->setIcon(QIcon::fromTheme(QStringLiteral("help-about")));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->addButton(detailsButton, QDialogButtonBox::HelpRole);
@@ -892,7 +894,7 @@ void informationList(QWidget *parent,const QString &text, const QStringList & st
 
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     dialog->setWindowTitle(caption.isEmpty() ? i18n("Information") : caption);
-    dialog->setObjectName( "information" );
+    dialog->setObjectName(QStringLiteral("information"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Ok);
@@ -916,7 +918,7 @@ void about(QWidget *parent, const QString &text,
     QDialog *dialog = new QDialog(parent, Qt::Dialog);
     if (!caption.isEmpty())
         dialog->setWindowTitle(caption);
-    dialog->setObjectName( "about" );
+    dialog->setObjectName(QStringLiteral("about"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(dialog);
     buttonBox->setStandardButtons(QDialogButtonBox::Ok);

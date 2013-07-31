@@ -15,7 +15,6 @@ set(kwidgets_LIB_SRCS
   actions/krecentfilesaction.cpp
   actions/kselectaction.cpp
   actions/kstandardaction.cpp
-  dialogs/kmessagebox.cpp
   dialogs/ktip.cpp
   utils/kcolorscheme.cpp
   utils/kstandardshortcut.cpp
@@ -67,8 +66,6 @@ install(FILES
   actions/krecentfilesaction.h
   actions/kselectaction.h
   actions/kstandardaction.h
-  dialogs/kmessagebox.h
-  dialogs/kmessageboxdontaskagaininterface.h
   dialogs/ktip.h
   utils/kcolorscheme.h
   utils/kstandardshortcut.h
