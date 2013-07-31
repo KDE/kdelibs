@@ -446,6 +446,13 @@ public:
      */
     static void setApplicationDomain(const char *domain);
 
+    /**
+     * Get the application's main translation domain.
+     *
+     * Returns the domain set by \c setApplicationDomain.
+     */
+    static QByteArray applicationDomain();
+
     #if 0 // until locale system is ready
     /**
      * Set the locale for which translations will be made.

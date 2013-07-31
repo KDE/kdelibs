@@ -1251,6 +1251,13 @@ void KLocalizedString::setApplicationDomain(const char *domain)
     s->applicationDomain = domain;
 }
 
+QByteArray KLocalizedString::applicationDomain()
+{
+    KLocalizedStringPrivateStatics *s = staticsKLSP();
+
+    return s->applicationDomain;
+}
+
 void KLocalizedString::setLanguages(const QStringList &languages)
 {
     KLocalizedStringPrivateStatics *s = staticsKLSP();
