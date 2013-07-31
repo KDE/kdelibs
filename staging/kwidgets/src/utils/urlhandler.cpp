@@ -27,8 +27,6 @@
 #include <QProcess>
 #include <QDesktopServices>
 
-#include <kdesktopfile.h>
-
 class UrlHandler : public QObject
 {
     Q_OBJECT
