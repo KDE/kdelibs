@@ -22,7 +22,6 @@ set(kwidgets_LIB_SRCS
   utils/kstandardguiitem.cpp
   utils/kstandardshortcut.cpp
   widgets/klanguagebutton.cpp
-  utils/urlhandler.cpp
 )
 
 add_library(KWidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})

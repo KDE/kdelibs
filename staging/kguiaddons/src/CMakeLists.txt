@@ -8,6 +8,7 @@ set(kguiaddons_LIB_SRCS
  fonts/kfontutils.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
+ util/urlhandler.cpp
 )
 
 message("Port to Qt5 native filter")
