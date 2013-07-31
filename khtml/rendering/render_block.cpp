@@ -797,9 +797,9 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
     //                     << isPositioned() << endl;
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(RenderBlock) " << this << " ::layout() width=" << m_width << ", needsLayout=" << needsLayout();
+    qDebug() << renderName() << "(RenderBlock) " << this << " ::layout() width=" << m_width << ", needsLayout=" << needsLayout();
     if(containingBlock() == static_cast<RenderObject *>(this))
-        // qDebug() << renderName() << ": containingBlock == this";
+        qDebug() << renderName() << ": containingBlock == this";
 #endif
 
     clearFloats();
@@ -890,21 +890,21 @@ void RenderBlock::layoutBlock(bool relayoutChildren)
 
     if (canvas()->pagedMode()) {
 #ifdef PAGE_DEBUG
-        // qDebug() << renderName() << " Page Bottom: " << pageTopAfter(0);
-        // qDebug() << renderName() << " Bottom: " << m_height;
+        qDebug() << renderName() << " Page Bottom: " << pageTopAfter(0);
+        qDebug() << renderName() << " Bottom: " << m_height;
 #endif
         bool needsPageBreak = false;
         int xpage = crossesPageBreak(0, m_height);
         if (xpage) {
             needsPageBreak = true;
 #ifdef PAGE_DEBUG
-            // qDebug() << renderName() << " crosses to page " << xpage;
+            qDebug() << renderName() << " crosses to page " << xpage;
 #endif
         }
         if (needsPageBreak && !containsPageBreak()) {
             setNeedsPageClear(true);
 #ifdef PAGE_DEBUG
-            // qDebug() << renderName() << " marked for page-clear";
+            qDebug() << renderName() << " marked for page-clear";
 #endif
         }
     }
@@ -1341,7 +1341,7 @@ void RenderBlock::clearPageBreak(RenderObject* child, int pageBottom)
     child->setPos(child->xPos(), pageBottom);
 
 #ifdef PAGE_DEBUG
-    // qDebug() << "Cleared block " << heightIncrease << "px";
+    qDebug() << "Cleared block " << heightIncrease << "px";
 #endif
 
     // Increase our height by the amount we had to clear.
@@ -1483,7 +1483,7 @@ void RenderBlock::handleBottomOfBlock(int top, int bottom, MarginInfo& marginInf
 void RenderBlock::layoutBlockChildren( bool relayoutChildren )
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << " layoutBlockChildren( " << this <<" ), relayoutChildren="<< relayoutChildren;
+    qDebug() << renderName() << " layoutBlockChildren( " << this <<" ), relayoutChildren="<< relayoutChildren;
 #endif
 
     int top = borderTop() + paddingTop();
@@ -1653,13 +1653,13 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
     int childTop = child->yPos();
     int childBottom = child->yPos()+child->height();
 #ifdef PAGE_DEBUG
-    // qDebug() << renderName() << " ChildTop: " << childTop << " ChildBottom: " << childBottom;
+    qDebug() << renderName() << " ChildTop: " << childTop << " ChildBottom: " << childBottom;
 #endif
 
     bool forcePageBreak = pageBreakInfo.forcePageBreak() || child->style()->pageBreakBefore() == PBALWAYS;
 #ifdef PAGE_DEBUG
     if (forcePageBreak)
-        // qDebug() << renderName() << "Forced break required";
+        qDebug() << renderName() << "Forced break required";
 #endif
 
     int xpage = crossesPageBreak(childTop, childBottom);
@@ -1667,7 +1667,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
     {
         if (!forcePageBreak && child->containsPageBreak() && !child->needsPageClear()) {
 #ifdef PAGE_DEBUG
-            // qDebug() << renderName() << " Child contains page-break to page " << xpage;
+            qDebug() << renderName() << " Child contains page-break to page " << xpage;
 #endif
             // ### Actually this assumes floating children are breaking/clearing
             // nicely as well.
@@ -1679,7 +1679,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
             if (!forcePageBreak && (!style()->pageBreakInside() || m_avoidPageBreak || child == firstChild())) {
                 if (parent() && parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
 #ifdef PAGE_DEBUG
-                    // qDebug() << renderName() << "Avoid page-break inside";
+                    qDebug() << renderName() << "Avoid page-break inside";
 #endif
                     child->setNeedsPageClear(false);
                     setNeedsPageClear(true);
@@ -1687,13 +1687,13 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
                 }
 #ifdef PAGE_DEBUG
                 else
-                    // qDebug() << renderName() << "Ignoring page-break avoid";
+                    qDebug() << renderName() << "Ignoring page-break avoid";
 #endif
             }
             if (doBreak) {
 #ifdef PAGE_DEBUG
-                // qDebug() << renderName() << " Clearing child of page-break";
-                // qDebug() << renderName() << " child top of page " << xpage;
+                qDebug() << renderName() << " Clearing child of page-break";
+                qDebug() << renderName() << " child top of page " << xpage;
 #endif
                 clearPageBreak(child, pageBreakInfo.pageBottom());
                 child->setNeedsPageClear(false);
@@ -1706,12 +1706,12 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
     if (child->yPos() >= pageBreakInfo.pageBottom()) {
         bool doBreak = true;
 #ifdef PAGE_DEBUG
-        // qDebug() << "Page-break between children";
+        qDebug() << "Page-break between children";
 #endif
         if (!style()->pageBreakInside() || m_avoidPageBreak) {
             if (parent() && parent()->canClear(this, (m_avoidPageBreak) ? PageBreakHarder : PageBreakNormal )) {
 #ifdef PAGE_DEBUG
-                // qDebug() << "Avoid page-break inside";
+                qDebug() << "Avoid page-break inside";
 #endif
                 child->setNeedsPageClear(false);
                 setNeedsPageClear(true);
@@ -1719,7 +1719,7 @@ void RenderBlock::clearChildOfPageBreaks(RenderObject *child, PageBreakInfo &pag
             }
 #ifdef PAGE_DEBUG
             else
-                // qDebug() << "Ignoring page-break avoid";
+                qDebug() << "Ignoring page-break avoid";
 #endif
         }
         if (doBreak) {
@@ -1780,7 +1780,7 @@ void RenderBlock::paint(PaintInfo& pI, int _tx, int _ty)
 void RenderBlock::paintObject(PaintInfo& pI, int _tx, int _ty, bool shouldPaintOutline)
 {
 #ifdef DEBUG_LAYOUT
-   //qDebug() << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")";
+   qDebug() << renderName() << "(RenderBlock) " << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")";
 #endif
 
     // If we're a repositioned run-in, don't paint background/borders.
@@ -2044,7 +2044,7 @@ void RenderBlock::positionNewFloats()
             if (crossesPageBreak(top, bottom) && o->height() < canvas()->pageHeight() ) {
                 int newY = pageTopAfter(top);
 #ifdef PAGE_DEBUG
-                // qDebug() << renderName() << " clearing float " << newY - y << "px";
+                qDebug() << renderName() << " clearing float " << newY - y << "px";
 #endif
                 y = newY;
             }
@@ -2574,7 +2574,7 @@ RenderBlock::clearFloats()
 void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset, bool child )
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << (void *)this << ": adding overhanging floats xoff=" << xoff << "  offset=" << offset << " child=" << child;
+    qDebug() << (void *)this << ": adding overhanging floats xoff=" << xoff << "  offset=" << offset << " child=" << child;
 #endif
 
     // Prevent floats from being added to the canvas by the root element, e.g., <html>.
@@ -2648,7 +2648,7 @@ void RenderBlock::addOverHangingFloats( RenderBlock *flow, int xoff, int offset,
                     m_floatingObjects = new QList<FloatingObject*>;
                 m_floatingObjects->append(floatingObj);
 #ifdef DEBUG_LAYOUT
-                // qDebug() << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")";
+                qDebug() << "addOverHangingFloats x/y= (" << floatingObj->left << "/" << floatingObj->startY << "-" << floatingObj->width << "/" << floatingObj->endY - floatingObj->startY << ")";
 #endif
             }
         }
@@ -2919,7 +2919,7 @@ void RenderBlock::calcMinMaxWidth()
     KHTMLAssert( !minMaxKnown() );
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(RenderBlock)::calcMinMaxWidth() this=" << this;
+    qDebug() << renderName() << "(RenderBlock)::calcMinMaxWidth() this=" << this;
 #endif
     if (!isTableCell() && style()->width().isFixed() && style()->width().isPositive())
         m_minWidth = m_maxWidth = calcContentWidth(style()->width().value());
@@ -3479,10 +3479,10 @@ void RenderBlock::printTree(int indent) const
             r = it.next();
             QString s;
             s.fill(' ', indent);
-            // qDebug() << s << renderName() << ":  " <<
-            //    (r->type == FloatingObject::FloatLeft ? "FloatLeft" : "FloatRight" )  <<
-            //    "[" << r->node->renderName() << ": " << (void*)r->node << "] (" << r->startY << " - " << r->endY << ")" << "width: " << r->width <<
-            //    endl;
+            qDebug() << s << renderName() << ":  " <<
+               (r->type == FloatingObject::FloatLeft ? "FloatLeft" : "FloatRight" )  <<
+               "[" << r->node->renderName() << ": " << (void*)r->node << "] (" << r->startY << " - " << r->endY << ")" << "width: " << r->width <<
+               endl;
         }
     }
 }

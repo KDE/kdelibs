@@ -559,7 +559,7 @@ static void appendRun( BidiState &bidi )
 {
     if ( emptyRun ) return;
 #if BIDI_DEBUG > 1
-    // qDebug() << "appendRun: dir="<<(int)dir;
+    qDebug() << "appendRun: dir="<<(int)dir;
 #endif
 
     int start = bidi.sor.pos;
@@ -853,8 +853,8 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
     int xpage = crossesPageBreak(lineBox->topOverflow(), lineBox->bottomOverflow());
     if (xpage) {
 #ifdef PAGE_DEBUG
-        // qDebug() << renderName() << " Line crosses to page " << xpage;
-        // qDebug() << renderName() << " at pos " << lineBox->yPos() << " height " << lineBox->height();
+        qDebug() << renderName() << " Line crosses to page " << xpage;
+        qDebug() << renderName() << " at pos " << lineBox->yPos() << " height " << lineBox->height();
 #endif
 
         doPageBreak = true;
@@ -866,7 +866,7 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
             }
 #ifdef PAGE_DEBUG
             else
-                // qDebug() << "Ignoring page-break-inside: avoid";
+                qDebug() << "Ignoring page-break-inside: avoid";
 #endif
         }
         // check orphans
@@ -883,7 +883,7 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
         } else
         if (orphans < style()->orphans() ) {
 #ifdef PAGE_DEBUG
-            // qDebug() << "Orphans: " << orphans;
+            qDebug() << "Orphans: " << orphans;
 #endif
             // Orphans is a level 2 page-break rule and can be broken only
             // if the break is physically required.
@@ -894,7 +894,7 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
             }
 #ifdef PAGE_DEBUG
             else
-                // qDebug() << "Ignoring violated orphans";
+                qDebug() << "Ignoring violated orphans";
 #endif
         }
         if (doPageBreak) {
@@ -913,7 +913,7 @@ bool RenderBlock::clearLineOfPageBreaks(InlineFlowBox* lineBox)
                 lineBox->verticallyAlignBoxes(m_height);
             }
 #ifdef PAGE_DEBUG
-            // qDebug() << "Cleared line " << lineBox->yPos() - oldYPos << "px";
+            qDebug() << "Cleared line " << lineBox->yPos() - oldYPos << "px";
 #endif
             setContainsPageBreak(true);
         }
@@ -932,7 +932,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     }
 
 #if BIDI_DEBUG > 1
-    // qDebug() << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos;
+    qDebug() << "reordering Line from " << start.obj << "/" << start.pos << " to " << end.obj << "/" << end.pos;
 #endif
 
     sFirstBidiRun = 0;
@@ -969,7 +969,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
 #ifndef QT_NO_UNICODETABLES
 
 #if BIDI_DEBUG > 1
-        // qDebug() << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << bidi.status.last << " eor=" << bidi.status.eor << " lastStrong=" << bidi.status.lastStrong << " embedding=" << (int)bidi.context->dir << " level =" << (int)bidi.context->level;
+        qDebug() << "directions: dir=" << (int)dir << " current=" << (int)dirCurrent << " last=" << bidi.status.last << " eor=" << bidi.status.eor << " lastStrong=" << bidi.status.lastStrong << " embedding=" << (int)bidi.context->dir << " level =" << (int)bidi.context->level;
 #endif
 
         switch(dirCurrent) {
@@ -1291,7 +1291,7 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     }
 
 #if BIDI_DEBUG > 0
-    // qDebug() << "reached end of line current=" << bidi.current.obj << "/" << bidi.current.pos
+    qDebug() << "reached end of line current=" << bidi.current.obj << "/" << bidi.current.pos
 		  << ", eor=" << bidi.eor.obj << "/" << bidi.eor.pos << endl;
 #endif
     if ( !emptyRun && bidi.sor != bidi.current ) {
@@ -1345,9 +1345,9 @@ void RenderBlock::bidiReorderLine(const BidiIterator &start, const BidiIterator 
     }
 
 #if BIDI_DEBUG > 0
-    // qDebug() << "visual order is:";
+    qDebug() << "visual order is:";
     for (BidiRun* curr = sFirstBidiRun; curr; curr = curr->nextRun)
-        // qDebug() << "    " << curr;
+        qDebug() << "    " << curr;
 #endif
 }
 
@@ -1361,10 +1361,10 @@ void RenderBlock::layoutInlineChildren(bool relayoutChildren, int breakBeforeLin
 #ifdef DEBUG_LAYOUT
     QTime qt;
     qt.start();
-    // qDebug() << renderName() << " layoutInlineChildren( " << this <<" )";
+    qDebug() << renderName() << " layoutInlineChildren( " << this <<" )";
 #endif
 #if BIDI_DEBUG > 1 || defined( DEBUG_LINEBREAKS )
-    // qDebug() << " ------- bidi start " << this << " -------";
+    qDebug() << " ------- bidi start " << this << " -------";
 #endif
 
     m_height = borderTop() + paddingTop();
@@ -1667,7 +1667,7 @@ redo_linebreak:
         checkLinesForTextOverflow();
 
 #if BIDI_DEBUG > 1
-    // qDebug() << " ------- bidi end " << this << " -------";
+    qDebug() << " ------- bidi end " << this << " -------";
 #endif
     //qDebug() << "RenderBlock::layoutInlineChildren time used " << qt.elapsed();
     //qDebug() << "height = " << m_height;
@@ -1878,7 +1878,7 @@ void RenderBlock::fitBelowFloats(int widthToFit, int& availableWidth)
         m_height = lastFloatBottom;
         availableWidth = newLineWidth;
 #ifdef DEBUG_LINEBREAKS
-    // qDebug() << " new position at " << m_height << " newWidth " << availableWidth;
+    qDebug() << " new position at " << m_height << " newWidth " << availableWidth;
 #endif
     }
 }
@@ -1889,8 +1889,8 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     int w = 0; // the width from the start of the line up to the currently chosen breaking opportunity
     int tmpW = 0; // the accumulated width since the last chosen breaking opportunity
 #ifdef DEBUG_LINEBREAKS
-    // qDebug() << "findNextLineBreak: line at " << m_height << " line width " << width;
-    // qDebug() << "sol: " << start.obj << " " << start.pos;
+    qDebug() << "findNextLineBreak: line at " << m_height << " line width " << width;
+    qDebug() << "sol: " << start.obj << " " << start.pos;
 #endif
 
     BidiIterator posStart = start;
@@ -1969,7 +1969,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     RenderObject* o = it.current;
     while( o ) {
 #ifdef DEBUG_LINEBREAKS
-        // qDebug() << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW;
+        qDebug() << "new object "<< o <<" width = " << w <<" tmpw = " << tmpW;
 #endif
         if(o->isBR()) {
             if( w + tmpW <= width ) {
@@ -2161,7 +2161,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         !t->containsOnlyWhitespace(pos+1, strlen-(pos+1)));
 #endif
 #ifdef DEBUG_LINEBREAKS
-                    // qDebug() << "found space at " << pos << " in string '" << QString( str, strlen ).toLatin1().constData() << "' adding " << tmpW << " new width = " << w;
+                    qDebug() << "found space at " << pos << " in string '" << QString( str, strlen ).toLatin1().constData() << "' adding " << tmpW << " new width = " << w;
 #endif
                     if (!w && autoWrap && tmpW > width)
                         fitBelowFloats(tmpW, width);
@@ -2185,7 +2185,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
                         lBreak.endOfInline = false;
 
 #ifdef DEBUG_LINEBREAKS
-                        // qDebug() << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w;
+                        qDebug() << "forced break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w;
 #endif
                         return lBreak;
                     }
@@ -2367,7 +2367,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     }
 
 #ifdef DEBUG_LINEBREAKS
-    // qDebug() << "end of par, width = " << width << " linewidth = " << w + tmpW;
+    qDebug() << "end of par, width = " << width << " linewidth = " << w + tmpW;
 #endif
     if( w + tmpW <= width || (lastIt.current && !lastIt.current->style()->autoWrap())) {
         lBreak.obj = 0;
@@ -2407,7 +2407,7 @@ BidiIterator RenderBlock::findNextLineBreak(BidiIterator &start, BidiState &bidi
     }
 
 #ifdef DEBUG_LINEBREAKS
-    // qDebug() << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w;
+    qDebug() << "regular break sol: " << start.obj << " " << start.pos << "   end: " << lBreak.obj << " " << lBreak.pos << "   width=" << w;
 #endif
 
     // Sanity check our midpoints.

@@ -680,7 +680,7 @@ RenderText::RenderText(DOM::NodeImpl* node, DOMStringImpl *_str)
 
 #ifdef DEBUG_LAYOUT
     const QString cstr = QString::fromRawData(str->s, str->l);
-    // qDebug() << "RenderText ctr( "<< cstr.length() << " )  '" << cstr << "'";
+    qDebug() << "RenderText ctr( "<< cstr.length() << " )  '" << cstr << "'";
 #endif
 }
 
@@ -1447,7 +1447,7 @@ void RenderText::setTextInternal(DOMStringImpl *text)
     if (parent()) setNeedsLayoutAndMinMaxRecalc();
 #ifdef BIDI_DEBUG
     QString cstr = QString::fromRawData(str->s, str->l);
-    // qDebug() << "RenderText::setText( " << cstr.length() << " ) '" << cstr << "'";
+    qDebug() << "RenderText::setText( " << cstr.length() << " ) '" << cstr << "'";
 #endif
 }
 

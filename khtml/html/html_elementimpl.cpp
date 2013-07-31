@@ -224,7 +224,7 @@ void HTMLElementImpl::parseAttribute(AttributeImpl *attr)
 // other misc attributes
     default:
 #ifdef UNSUPPORTED_ATTR
-	// qDebug() << "UATTR: <" << this->nodeName().string() << "> ["
+	qDebug() << "UATTR: <" << this->nodeName().string() << "> ["
 		      << attr->name().string() << "]=[" << attr->value().string() << "]" << endl;
 #endif
         break;

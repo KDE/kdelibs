@@ -87,7 +87,7 @@ Value Filter::doEvaluate() const
 		outNodes->setKnownNormalization(StaticNodeListImpl::DocumentOrder);
 
 #ifdef XPATH_VERBOSE
-		// qDebug() << "Predicate within filter trims to:" << outNodes->length();
+		qDebug() << "Predicate within filter trims to:" << outNodes->length();
 #endif
 	}
 
@@ -115,9 +115,9 @@ Value LocationPath::doEvaluate() const
 {
 #ifdef XPATH_VERBOSE
 	if ( m_absolute ) {
-		// qDebug() << "Evaluating absolute path expression, steps:" << m_steps.count();
+		qDebug() << "Evaluating absolute path expression, steps:" << m_steps.count();
 	} else {
-		// qDebug() << "Evaluating relative path expression, steps:" << m_steps.count();
+		qDebug() << "Evaluating relative path expression, steps:" << m_steps.count();
 	}
 #endif
 
@@ -142,8 +142,8 @@ Value LocationPath::doEvaluate() const
 	int s = 0;
 	foreach( Step *step, m_steps ) {
 #ifdef XPATH_VERBOSE
-		// qDebug() << "-------------------------------------";
-		// qDebug() << "Step " << s << "insize " << inDomNodes->length();
+		qDebug() << "-------------------------------------";
+		qDebug() << "Step " << s << "insize " << inDomNodes->length();
 #endif		
 
 		outDomNodes = new StaticNodeListImpl;
@@ -158,9 +158,9 @@ Value LocationPath::doEvaluate() const
 	}
 
 #ifdef XPATH_VERBOSE
-	// qDebug() << "-------------------------------------";
-	// qDebug() << "output:" <<outDomNodes->length();
-	// qDebug() << "=====================================";
+	qDebug() << "-------------------------------------";
+	qDebug() << "output:" <<outDomNodes->length();
+	qDebug() << "=====================================";
 #endif
 
 	return Value( outDomNodes );

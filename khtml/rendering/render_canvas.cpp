@@ -181,7 +181,7 @@ void RenderCanvas::layout()
 	recalcMinMaxWidths();
 
 #ifdef SPEED_DEBUG
-    // qDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed();
+    qDebug() << "RenderCanvas::calcMinMax time used=" << qt.elapsed();
     qt.start();
 #endif
 
@@ -190,7 +190,7 @@ void RenderCanvas::layout()
     RenderBlock::layoutBlock( relayoutChildren );
 
 #ifdef SPEED_DEBUG
-    // qDebug() << "RenderCanvas::layout time used=" << qt.elapsed();
+    qDebug() << "RenderCanvas::layout time used=" << qt.elapsed();
     qt.start();
 #endif
 
@@ -206,7 +206,7 @@ void RenderCanvas::layout()
 
     m_isPerformingLayout = false;
 #ifdef SPEED_DEBUG
-    // qDebug() << "RenderCanvas::end time used=" << qt.elapsed();
+    qDebug() << "RenderCanvas::end time used=" << qt.elapsed();
 #endif
 }
 
@@ -376,7 +376,7 @@ bool RenderCanvas::absolutePosition(int &xPos, int &yPos, bool f) const
 void RenderCanvas::paint(PaintInfo& paintInfo, int _tx, int _ty)
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")";
+    qDebug() << renderName() << this << " ::paintObject() w/h = (" << width() << "/" << height() << ")";
 #endif
 
     // 1. paint background, borders etc

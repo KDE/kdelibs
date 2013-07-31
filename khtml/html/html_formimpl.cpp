@@ -261,7 +261,7 @@ Vector<HTMLGenericFormElementImpl*> HTMLFormElementImpl::gatherInTreeOrder(NodeI
 QByteArray HTMLFormElementImpl::formData(bool& ok)
 {
 #ifdef FORMS_DEBUG
-    // qDebug() << "form: formData()";
+    qDebug() << "form: formData()";
 #endif
 
     QByteArray form_data;
@@ -641,7 +641,7 @@ void HTMLFormElementImpl::submit(  )
     m_insubmit = true;
 
 #ifdef FORMS_DEBUG
-    // qDebug() << "submitting!";
+    qDebug() << "submitting!";
 #endif
 
     bool ok;
@@ -717,7 +717,7 @@ void HTMLFormElementImpl::reset(  )
     m_inreset = true;
 
 #ifdef FORMS_DEBUG
-    // qDebug() << "reset pressed!";
+    qDebug() << "reset pressed!";
 #endif
 
     // ### DOM2 labels this event as not cancelable, however
@@ -977,8 +977,7 @@ HTMLFormElementImpl *HTMLGenericFormElementImpl::getForm() const
         p = p->parentNode();
     }
 #ifdef FORMS_DEBUG
-    // qDebug() << "couldn't find form!";
-    // qDebug() << kBacktrace();
+    qDebug() << "couldn't find form!";
 #endif
     return 0;
 }

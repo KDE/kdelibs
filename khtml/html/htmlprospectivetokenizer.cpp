@@ -75,7 +75,7 @@ ProspectiveTokenizer::ProspectiveTokenizer(DOM::DocumentImpl * doc)
     , m_document(doc)
 {
 #if PRELOAD_DEBUG
-    // qDebug() << "CREATING PRELOAD SCANNER FOR" << m_document << m_document->URL().toDisplayString();
+    qDebug() << "CREATING PRELOAD SCANNER FOR" << m_document << m_document->URL().toDisplayString();
 #endif
 }
     

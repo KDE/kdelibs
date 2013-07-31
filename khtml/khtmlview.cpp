@@ -908,7 +908,6 @@ void KHTMLView::paintEvent( QPaintEvent *e )
 
     if (d->painting) {
         // qDebug() << "WARNING: paintEvent reentered! ";
-        // qDebug() << kBacktrace();
         return;
     }
     d->painting = true;
@@ -3808,7 +3807,6 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
     }
     if (widget()->pos() != QPoint(0,0)) {
          // qDebug() << "Static widget wasn't positioned at (0,0). This should NOT happen. Please report this event to developers.";
-         // qDebug() <<  kBacktrace();
          widget()->move(0,0);
     }
 

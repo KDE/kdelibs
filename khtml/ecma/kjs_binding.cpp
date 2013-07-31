@@ -74,7 +74,7 @@ ScriptInterpreter::ScriptInterpreter( JSGlobalObject *global, khtml::ChildFrame*
     m_evt( 0L ), m_inlineCode(false), m_timerCallback(false)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_frame;
+  qDebug() << "ScriptInterpreter::ScriptInterpreter " << this << " for part=" << m_frame;
 #endif
   if ( !interpreterList )
     interpreterList = new InterpreterList;
@@ -84,7 +84,7 @@ ScriptInterpreter::ScriptInterpreter( JSGlobalObject *global, khtml::ChildFrame*
 ScriptInterpreter::~ScriptInterpreter()
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame;
+  qDebug() << "ScriptInterpreter::~ScriptInterpreter " << this << " for part=" << m_frame;
 #endif
   assert( interpreterList && interpreterList->contains( this ) );
   interpreterList->removeAll( this );
@@ -107,7 +107,7 @@ void ScriptInterpreter::mark(bool isMain)
 {
   Interpreter::mark(isMain);
 #ifdef KJS_VERBOSE
-  // qDebug() << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects";
+  qDebug() << "ScriptInterpreter::mark " << this << " marking " << m_domObjects.size() << " DOM objects";
 #endif
   HashMap<void*, DOMObject*>::iterator it = m_domObjects.begin();
   while (it != m_domObjects.end()) {

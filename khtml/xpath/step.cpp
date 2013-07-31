@@ -130,10 +130,10 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 {
 	assert( context );
 #ifdef XPATH_VERBOSE
-	// qDebug() << "Evaluating step, axis='" << axisAsString( m_axis ) <<"'"
+	qDebug() << "Evaluating step, axis='" << axisAsString( m_axis ) <<"'"
 	             << ", nodetest='" << m_nodeTest << "'"
 	             << ", " << m_predicates.count() << " predicates";
-	// qDebug() << DOM::getPrintableName( context->id() );
+	qDebug() << DOM::getPrintableName( context->id() );
 #endif
 
 	DomNodeList inNodes = nodesInAxis( context ), outNodes;
@@ -143,14 +143,14 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 	inNodes->setKnownNormalization(known);
 
 #ifdef XPATH_VERBOSE
-	// qDebug() << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
+	qDebug() << "Axis " << axisAsString( m_axis ) << " matches " << inNodes->length() << " nodes.";
 #endif
 	
 	inNodes = nodeTestMatches( context, inNodes );
 	inNodes->setKnownNormalization(known); // nodeTest doesn't change order
 
 #ifdef XPATH_VERBOSE
-	// qDebug() << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
+	qDebug() << "\tNodetest " << m_nodeTest << " trims this number to " << inNodes->length();
 #endif
 
 	if ( m_predicates.isEmpty() )
@@ -166,7 +166,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 			Expression::evaluationContext().node = node;
 			EvaluationContext backupCtx = Expression::evaluationContext();
 #ifdef XPATH_VERBOSE			
-			// qDebug() << Expression::evaluationContext().position << "/" << node;
+			qDebug() << Expression::evaluationContext().position << "/" << node;
 #endif
 			if ( predicate->evaluate() ) {
 				outNodes->append( node );
@@ -175,7 +175,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 			++Expression::evaluationContext().position;
 		}
 #ifdef XPATH_VERBOSE
-		// qDebug() << "\tPredicate trims this number to " << outNodes->length();
+		qDebug() << "\tPredicate trims this number to " << outNodes->length();
 #endif
 		inNodes = outNodes;
 		inNodes->setKnownNormalization(known); // predicates don't change order

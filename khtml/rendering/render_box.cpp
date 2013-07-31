@@ -1128,7 +1128,7 @@ void RenderBox::relativePositionOffset(int &tx, int &ty) const
 void RenderBox::calcWidth()
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << "RenderBox("<<renderName()<<")::calcWidth()";
+    qDebug() << "RenderBox("<<renderName()<<")::calcWidth()";
 #endif
     if (isPositioned())
     {
@@ -1216,8 +1216,8 @@ void RenderBox::calcWidth()
     }
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth();
-    // qDebug() << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight;
+    qDebug() << "RenderBox::calcWidth(): m_width=" << m_width << " containingBlockWidth()=" << containingBlockWidth();
+    qDebug() << "m_marginLeft=" << m_marginLeft << " m_marginRight=" << m_marginRight;
 #endif
 }
 
@@ -1297,7 +1297,7 @@ void RenderBox::calcHeight()
 {
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << "RenderBox::calcHeight()";
+    qDebug() << "RenderBox::calcHeight()";
 #endif
 
     //cell height is managed by table, inline elements do not have a height property.

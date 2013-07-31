@@ -102,7 +102,7 @@ void RenderTable::setStyle(RenderStyle *_style)
 	if (style()->tableLayout() == TFIXED && !style()->width().isAuto()) {
 	    tableLayout = new FixedTableLayout(this);
 #ifdef DEBUG_LAYOUT
-	    // qDebug() << "using fixed table layout";
+	    qDebug() << "using fixed table layout";
 #endif
 	} else
 	    tableLayout = new AutoTableLayout(this);
@@ -147,7 +147,7 @@ static inline void resetSectionPointerIfNotBefore(RenderTableSection*& ptr, Rend
 void RenderTable::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
+    qDebug() << renderName() << "(Table)::addChild( " << child->renderName() << ", " <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
     bool wrapInAnonymousSection = false;
@@ -353,7 +353,7 @@ void RenderTable::layout()
     tableLayout->layout();
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(Table)::layout1() width=" << width() << ", marginLeft=" << marginLeft() << " marginRight=" << marginRight();
+    qDebug() << renderName() << "(Table)::layout1() width=" << width() << ", marginLeft=" << marginLeft() << " marginRight=" << marginRight();
 #endif
 
     setCellWidths();
@@ -467,7 +467,7 @@ void RenderTable::layout()
 void RenderTable::setCellWidths()
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(Table, this=0x" << this << ")::setCellWidths()";
+    qDebug() << renderName() << "(Table, this=0x" << this << ")::setCellWidths()";
 #endif
 
     RenderObject *child = firstChild();
@@ -486,7 +486,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
     _ty += yPos();
 
 #ifdef TABLE_PRINT
-    // qDebug() << "RenderTable::paint() w/h = (" << width() << "/" << height() << ")";
+    qDebug() << "RenderTable::paint() w/h = (" << width() << "/" << height() << ")";
 #endif
     if (!isRelPositioned() && !isPositioned())
     {
@@ -496,7 +496,7 @@ void RenderTable::paint( PaintInfo& pI, int _tx, int _ty)
     }
 
 #ifdef TABLE_PRINT
-    // qDebug() << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")";
+    qDebug() << "RenderTable::paint(2) " << _tx << "/" << _ty << " (" << _y << "/" << _h << ")";
 #endif
 
     if (pI.phase == PaintActionOutline)
@@ -591,7 +591,7 @@ void RenderTable::calcMinMaxWidth()
 	recalcSections();
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(Table " << this << ")::calcMinMaxWidth()";
+    qDebug() << renderName() << "(Table " << this << ")::calcMinMaxWidth()";
 #endif
 
     tableLayout->calcMinMaxWidth();
@@ -604,7 +604,7 @@ void RenderTable::calcMinMaxWidth()
 
     setMinMaxKnown();
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << " END: (Table " << this << ")::calcMinMaxWidth() min = " << m_minWidth << " max = " << m_maxWidth;
+    qDebug() << renderName() << " END: (Table " << this << ")::calcMinMaxWidth() min = " << m_minWidth << " max = " << m_maxWidth;
 #endif
 }
 
@@ -1087,7 +1087,7 @@ void RenderTableSection::setStyle(RenderStyle* _style)
 void RenderTableSection::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", beforeChild=" <<
+    qDebug() << renderName() << "(TableSection)::addChild( " << child->renderName()  << ", beforeChild=" <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
     if ( !child->isTableRow() ) {
@@ -1370,7 +1370,7 @@ void RenderTableSection::addCell( RenderTableCell *cell, RenderTableRow *row )
 void RenderTableSection::setCellWidths()
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(Table, this=0x" << this << ")::setCellWidths()";
+    qDebug() << renderName() << "(Table, this=0x" << this << ")::setCellWidths()";
 #endif
     const QVector<int> &columnPos = table()->columnPos;
 
@@ -1391,7 +1391,7 @@ void RenderTableSection::setCellWidths()
 	    }
 	    int w = columnPos[endCol] - columnPos[j] - table()->borderHSpacing();
 #ifdef DEBUG_LAYOUT
-	    // qDebug() << "setting width of cell " << cell << " " << cell->row() << "/" << cell->col() << " to " << w << " colspan=" << cell->colSpan() << " start=" << j << " end=" << endCol;
+	    qDebug() << "setting width of cell " << cell << " " << cell->row() << "/" << cell->col() << " to " << w << " colspan=" << cell->colSpan() << " start=" << j << " end=" << endCol;
 #endif
 	    int oldWidth = cell->width();
 	    if ( w != oldWidth ) {
@@ -1655,7 +1655,7 @@ int RenderTableSection::layoutRows( int toAdd )
             }
             {
 #ifdef DEBUG_LAYOUT
-		// qDebug() << "setting position " << r << "/" << c << ": "
+		qDebug() << "setting position " << r << "/" << c << ": "
 				<< table()->columnPos[c] /*+ padding */ << "/" << rowPos[rindx] << " height=" << rHeight<< endl;
 #endif
 
@@ -1684,7 +1684,7 @@ int RenderTableSection::layoutRows( int toAdd )
 		}
 		te = qMax( 0, te );
 #ifdef DEBUG_LAYOUT
-		//            qDebug() << "CELL " << cell << " te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va;
+		qDebug() << "CELL " << cell << " te=" << te << ", be=" << rHeight - cell->height() - te << ", rHeight=" << rHeight << ", valign=" << va;
 #endif
 		cell->setCellTopExtra( te );
 		cell->setCellBottomExtra( rHeight - cell->height() - te);
@@ -1923,7 +1923,7 @@ void RenderTableSection::paint( PaintInfo& pI, int tx, int ty )
                 int rtx = tx+rowr->xPos();
                 int rty = ty+rowr->yPos();
 #ifdef TABLE_PRINT
-		// qDebug() << "painting cell " << r << "/" << c;
+		qDebug() << "painting cell " << r << "/" << c;
 #endif
                 if (pI.phase == PaintActionElementBackground || pI.phase == PaintActionChildBackground) {
                     // We need to handle painting a stack of backgrounds.  This stack (from bottom to top) consists of
@@ -2247,7 +2247,7 @@ void RenderTableRow::setStyle(RenderStyle* newStyle)
 void RenderTableRow::addChild(RenderObject *child, RenderObject *beforeChild)
 {
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
+    qDebug() << renderName() << "(TableRow)::addChild( " << child->renderName() << " )"  << ", " <<
                        (beforeChild ? beforeChild->renderName() : "0") << " )" << endl;
 #endif
 
@@ -2499,7 +2499,7 @@ void RenderTableCell::calcMinMaxWidth()
 {
     KHTMLAssert( !minMaxKnown() );
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown();
+    qDebug() << renderName() << "(TableCell)::calcMinMaxWidth() known=" << minMaxKnown();
 #endif
 
     if (section()->needCellRecalc)
@@ -2546,7 +2546,7 @@ void RenderTableCell::close()
     RenderBlock::close();
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << "(RenderTableCell)::close() total height =" << m_height;
+    qDebug() << renderName() << "(RenderTableCell)::close() total height =" << m_height;
 #endif
 }
 
@@ -2992,7 +2992,7 @@ void RenderTableCell::paint(PaintInfo& pI, int _tx, int _ty)
 {
 
 #ifdef TABLE_PRINT
-    // qDebug() << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << pI.r.y() << "/" << pI.r.height();
+    qDebug() << renderName() << "(RenderTableCell)::paint() w/h = (" << width() << "/" << height() << ")" << " _y/_h=" << pI.r.y() << "/" << pI.r.height();
 #endif
 
     if (needsLayout()) return;

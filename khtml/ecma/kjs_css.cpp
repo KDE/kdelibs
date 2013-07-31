@@ -171,7 +171,7 @@ JSValue *DOMCSSStyleDeclaration::indexGetter(ExecState* , unsigned index)
 bool DOMCSSStyleDeclaration::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMCSSStyleDeclaration::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "DOMCSSStyleDeclaration::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
   if (getStaticOwnValueSlot(&DOMCSSStyleDeclarationTable, this, propertyName, slot))
@@ -233,7 +233,7 @@ void DOMCSSStyleDeclaration::getOwnPropertyNames(ExecState* exec, PropertyNameAr
 void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName, JSValue *value, int attr )
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMCSSStyleDeclaration::put " << propertyName.qstring();
+  qDebug() << "DOMCSSStyleDeclaration::put " << propertyName.qstring();
 #endif
   DOMExceptionTranslator exception(exec);
   CSSStyleDeclarationImpl &styleDecl = *m_impl;
@@ -249,7 +249,7 @@ void DOMCSSStyleDeclaration::put(ExecState *exec, const Identifier &propertyName
     if (pxSuffix)
       propvalue += QLatin1String("px");
 #ifdef KJS_VERBOSE
-    // qDebug() << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue;
+    qDebug() << "DOMCSSStyleDeclaration: prop=" << prop << " propvalue=" << propvalue;
 #endif
     // Look whether the property is known. In that case add it as a CSS property.
     if (int pId = cssPropertyId(prop)) {
@@ -438,7 +438,7 @@ JSValue *DOMStyleSheetList::nameGetter(ExecState *exec, JSObject*, const Identif
 bool DOMStyleSheetList::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMStyleSheetList::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "DOMStyleSheetList::getOwnPropertySlot " << propertyName.qstring();
 #endif
   if (getStaticOwnPropertySlot<DOMStyleSheetListFunc, DOMStyleSheetList>(&DOMStyleSheetListTable, this, propertyName, slot))
     return true;
@@ -836,7 +836,7 @@ const ClassInfo* DOMCSSRule::classInfo() const
 bool DOMCSSRule::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMCSSRule::tryGet " << propertyName.qstring();
+  qDebug() << "DOMCSSRule::tryGet " << propertyName.qstring();
 #endif
   //First do the rule-type-specific stuff
   const HashTable* table = classInfo()->propHashTable; // get the right hashtable

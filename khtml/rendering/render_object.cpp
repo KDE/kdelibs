@@ -810,8 +810,7 @@ RenderBlock *RenderObject::containingBlock() const
     if(!o || !o->isRenderBlock()) {
         if(!isCanvas()) {
 #ifndef NDEBUG
-            // qDebug() << this << ": " << renderName() << "(RenderObject): No containingBlock!";
-            // qDebug() << kBacktrace();
+            qDebug() << this << ": " << renderName() << "(RenderObject): No containingBlock!";
             const RenderObject* p = this;
             while (p->parent()) p = p->parent();
             p->printTree();
@@ -2706,7 +2705,7 @@ void RenderObject::recalcMinMaxWidths()
     KHTMLAssert( m_recalcMinMax );
 
 #ifdef DEBUG_LAYOUT
-    // qDebug() << renderName() << " recalcMinMaxWidths() this=" << this;
+    qDebug() << renderName() << " recalcMinMaxWidths() this=" << this;
 #endif
 
     RenderObject *child = firstChild();
@@ -3054,9 +3053,9 @@ void RenderObject::updateWidgetMasks() {
                                   curr->height()-pby-curr->borderBottom()-curr->paddingBottom()));
 #ifdef MASK_DEBUG
                 QVector<QRect> ar = r.rects();
-                // qDebug() << "|| Setting widget mask for " << curr->information();
+                qDebug() << "|| Setting widget mask for " << curr->information();
                 for (int i = 0; i < ar.size() ; ++i) {
-                    // qDebug() << "		" <<  ar[i];
+                    qDebug() << "		" <<  ar[i];
                 }
 #endif
                 r.translate(-x,-y);

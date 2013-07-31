@@ -93,7 +93,7 @@ CSSParser *CSSParser::currentParser = 0;
 CSSParser::CSSParser( bool strictParsing )
 {
 #ifdef CSS_DEBUG
-    // qDebug() << "CSSParser::CSSParser this=" << this;
+    qDebug() << "CSSParser::CSSParser this=" << this;
 #endif
     strict = strictParsing;
 
@@ -128,7 +128,7 @@ CSSParser::~CSSParser()
     delete valueList;
 
 #ifdef CSS_DEBUG
-    // qDebug() << "CSSParser::~CSSParser this=" << this;
+    qDebug() << "CSSParser::~CSSParser this=" << this;
 #endif
 
     free( data );
@@ -198,11 +198,11 @@ void CSSParser::parseSheet( CSSStyleSheetImpl *sheet, const DOMString &string )
     setupParser("", string, "");
 
 #ifdef CSS_DEBUG
-    // qDebug() << ">>>>>>> start parsing style sheet";
+    qDebug() << ">>>>>>> start parsing style sheet";
 #endif
     runParser();
 #ifdef CSS_DEBUG
-    // qDebug() << "<<<<<<< done parsing style sheet";
+    qDebug() << "<<<<<<< done parsing style sheet";
 #endif
 
     delete rule;
@@ -239,7 +239,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
                             bool _important)
 {
 #ifdef CSS_DEBUG
-    // qDebug() << "CSSParser::parseValue: id=" << _id << " important=" << _important
+    qDebug() << "CSSParser::parseValue: id=" << _id << " important=" << _important
                    << " value='" << string.string() << "'" << endl;
 #endif
 
@@ -269,7 +269,7 @@ bool CSSParser::parseValue( DOM::CSSStyleDeclarationImpl *declaration, int _id, 
 bool CSSParser::parseDeclaration( DOM::CSSStyleDeclarationImpl *declaration, const DOM::DOMString &string)
 {
 #ifdef CSS_DEBUG
-    // qDebug() << "CSSParser::parseDeclaration:"
+    qDebug() << "CSSParser::parseDeclaration:"
                     << " value='" << string.string() << "'" << endl;
 #endif
 
@@ -1540,7 +1540,7 @@ bool CSSParser::parseContent( int propId, bool important )
             DOMString value = domString(val->string);
             parsedValue = new CSSImageValueImpl( value, styleElement );
 #ifdef CSS_DEBUG
-            // qDebug() << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( );
+            qDebug() << "content, url=" << value.string() << " base=" << styleElement->baseURL().url( );
 #endif
         } else if ( val->unit == Value::Function ) {
             // attr( X ) | counter( X [,Y] ) | counters( X, Y, [,Z] )
@@ -1808,8 +1808,8 @@ bool CSSParser::parseBackgroundProperty(int propId, int& propId1, int& propId2,
                                         CSSValueImpl*& retValue1, CSSValueImpl*& retValue2)
 {
 #ifdef CSS_DEBUG
-    // qDebug() << "parseBackgroundProperty()";
-    // qDebug() << "LOOKING FOR: " << getPropertyName(propId).string();
+    qDebug() << "parseBackgroundProperty()";
+    qDebug() << "LOOKING FOR: " << getPropertyName(propId).string();
 #endif
     CSSValueListImpl *values = 0, *values2 = 0;
     Value* val;
@@ -2700,7 +2700,7 @@ bool CSSParser::parseCounter(int propId, bool increment, bool important)
 static inline int yyerror( const char *str ) {
 //    assert( 0 );
 #ifdef CSS_DEBUG
-    // qDebug() << "CSS parse error " << str;
+    qDebug() << "CSS parse error " << str;
 #else
     Q_UNUSED( str );
 #endif

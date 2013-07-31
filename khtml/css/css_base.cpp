@@ -101,7 +101,7 @@ void StyleBaseImpl::setParsedValue(int propId, const CSSValueImpl *parsedValue,
 
     propList->append(prop);
 #ifdef CSS_DEBUG
-    // qDebug() << "added property: " << getPropertyName(propId).string()
+    qDebug() << "added property: " << getPropertyName(propId).string()
                     // non implemented yet << ", value: " << parsedValue->cssText().string()
                     << " important: " << prop->m_important;
 #endif

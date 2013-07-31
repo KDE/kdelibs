@@ -1269,7 +1269,7 @@ void RegressionTest::doJavascriptReport( const QString &test )
 {
     QFile compare( m_outputDir + "/" + test + "-compare.html" );	//krazy:exclude=duoblequote_chars DOM demands chars
     if ( !compare.open( QIODevice::WriteOnly|QIODevice::Truncate ) )
-        // qDebug() << "failed to open " << m_outputDir + "/" + test + "-compare.html";	//krazy:exclude=duoblequote_chars DOM demands chars
+        qDebug() << "failed to open " << m_outputDir + "/" + test + "-compare.html";	//krazy:exclude=duoblequote_chars DOM demands chars
     QString cl;
     cl = QString( "<html><head><title>%1</title>" ).arg( test );
     cl += "<body><tt>";

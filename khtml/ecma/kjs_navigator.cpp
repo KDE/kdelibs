@@ -185,7 +185,7 @@ Navigator::Navigator(ExecState *exec, KHTMLPart *p)
 bool Navigator::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "Navigator::getOwnPropertySlot " << propertyName.ascii();
+  qDebug() << "Navigator::getOwnPropertySlot " << propertyName.ascii();
 #endif
   return getStaticPropertySlot<NavigatorFunc, Navigator, JSObject>(exec, &NavigatorTable, this, propertyName, slot);
 }
@@ -425,7 +425,7 @@ JSValue *Plugins::nameGetter(ExecState* exec, JSObject*, const Identifier& prope
 bool Plugins::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "Plugins::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "Plugins::getOwnPropertySlot " << propertyName.qstring();
 #endif
   if (getStaticOwnPropertySlot<PluginsFunc, Plugins>(&PluginsTable, this, propertyName, slot))
       return true;
@@ -516,7 +516,7 @@ JSValue *MimeTypes::nameGetter(ExecState* exec, JSObject*, const Identifier& pro
 bool MimeTypes::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "MimeTypes::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "MimeTypes::getOwnPropertySlot " << propertyName.qstring();
 #endif
   if (getStaticOwnPropertySlot<MimeTypesFunc, MimeTypes>(&MimeTypesTable, this, propertyName, slot))
       return true;
@@ -620,7 +620,7 @@ JSValue *Plugin::nameGetter(ExecState *exec, JSObject*, const Identifier& proper
 bool Plugin::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "Plugin::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "Plugin::getOwnPropertySlot " << propertyName.qstring();
 #endif
   if (getStaticOwnPropertySlot<PluginFunc, Plugin>(&PluginTable, this, propertyName, slot))
       return true;
@@ -712,7 +712,7 @@ const ClassInfo MimeType::info = { "MimeType", 0, &MimeTypeTable, 0 };
 bool MimeType::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "MimeType::get " << propertyName.qstring();
+  qDebug() << "MimeType::get " << propertyName.qstring();
 #endif
   return getStaticValueSlot<MimeType, JSObject>(exec, &MimeTypeTable, this, propertyName, slot);
 }

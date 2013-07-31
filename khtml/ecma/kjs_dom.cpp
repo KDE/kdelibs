@@ -213,7 +213,7 @@ bool DOMNode::toBoolean(ExecState *) const
 bool DOMNode::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMNode::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "DOMNode::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMNode, DOMObject>(exec, &DOMNodeTable, this, propertyName, slot);
 }
@@ -432,7 +432,7 @@ JSValue* DOMNode::getValueProperty(ExecState *exec, int token) const
 void DOMNode::put(ExecState *exec, const Identifier& propertyName, JSValue* value, int attr)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMNode::tryPut " << propertyName.qstring();
+  qDebug() << "DOMNode::tryPut " << propertyName.qstring();
 #endif
   lookupPut<DOMNode,DOMObject>(exec, propertyName, value, attr,
                                         &DOMNodeTable, this );
@@ -856,7 +856,7 @@ const ClassInfo DOMAttr::info = { "Attr", &DOMNode::info, &DOMAttrTable, 0 };
 bool DOMAttr::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMAttr::tryGet " << propertyName.qstring();
+  qDebug() << "DOMAttr::tryGet " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMAttr, DOMNode>(exec, &DOMAttrTable, this, propertyName, slot);
 }
@@ -880,7 +880,7 @@ JSValue* DOMAttr::getValueProperty(ExecState *exec, int token) const
 void DOMAttr::put(ExecState *exec, const Identifier &propertyName, JSValue* value, int attr)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMAttr::tryPut " << propertyName.qstring();
+  qDebug() << "DOMAttr::tryPut " << propertyName.qstring();
 #endif
   lookupPut<DOMAttr,DOMNode>(exec, propertyName, value, attr,
                                       &DOMAttrTable, this );
@@ -982,7 +982,7 @@ DOMDocument::DOMDocument(JSObject *proto, DOM::DocumentImpl* d)
 bool DOMDocument::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMDocument::tryGet " << propertyName.qstring();
+  qDebug() << "DOMDocument::tryGet " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMDocument, DOMNode>(
     exec, &DOMDocumentTable, this, propertyName, slot);
@@ -1044,7 +1044,7 @@ JSValue* DOMDocument::getValueProperty(ExecState *exec, int token) const
 void DOMDocument::put(ExecState *exec, const Identifier& propertyName, JSValue* value, int attr)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMDocument::tryPut " << propertyName.qstring();
+  qDebug() << "DOMDocument::tryPut " << propertyName.qstring();
 #endif
   lookupPut<DOMDocument,DOMNode>(exec, propertyName, value, attr, &DOMDocumentTable, this );
 }
@@ -1081,7 +1081,7 @@ JSValue* DOMDocumentProtoFunc::callAsFunction(ExecState *exec, JSObject *thisObj
   // we can do it fast, without copying the data
   if (id == DOMDocument::GetElementById) {
 #ifdef KJS_VERBOSE
-      // qDebug() << "DOMDocument::GetElementById looking for " << args[0]->toString(exec).qstring();
+      qDebug() << "DOMDocument::GetElementById looking for " << args[0]->toString(exec).qstring();
 #endif
       // create DOMStringImpl without copying
       DOMStringImpl shallowCopy(DOMStringImpl::ShallowCopy, (QChar*)str.data(), str.size());
@@ -1313,7 +1313,7 @@ JSValue* DOMElement::getValueProperty(ExecState *exec, int token) const
 bool DOMElement::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMElement::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "DOMElement::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
   //DOM::Element element = static_cast<DOM::Element>(node);
@@ -1562,7 +1562,7 @@ DOMDocumentType::DOMDocumentType(ExecState *exec, DOM::DocumentTypeImpl* dt)
 bool DOMDocumentType::getOwnPropertySlot(ExecState *exec, const Identifier &propertyName, KJS::PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "DOMDocumentType::getOwnPropertySlot " << propertyName.qstring();
+  qDebug() << "DOMDocumentType::getOwnPropertySlot " << propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMDocumentType, DOMNode>(exec, &DOMDocumentTypeTable, this, propertyName, slot);
 }
@@ -2044,7 +2044,7 @@ DOMCharacterData::DOMCharacterData(ExecState *exec, DOM::CharacterDataImpl* d)
 bool DOMCharacterData::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug()<<"DOMCharacterData::tryGet "<<propertyName.qstring();
+  qDebug()<<"DOMCharacterData::tryGet "<<propertyName.qstring();
 #endif
   return getStaticValueSlot<DOMCharacterData, DOMNode>(exec, &DOMCharacterDataTable, this, propertyName, slot);
 }

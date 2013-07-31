@@ -141,7 +141,7 @@ Screen::Screen(ExecState *exec)
 bool Screen::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "Screen::getPropertyName " << propertyName.qstring();
+  qDebug() << "Screen::getPropertyName " << propertyName.qstring();
 #endif
   return getStaticValueSlot<Screen, JSObject>(exec, &ScreenTable, this, propertyName, slot);
 }
@@ -223,7 +223,7 @@ Console::Console(ExecState *exec)
 bool Console::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-    // qDebug() << "Console::getPropertyName " << propertyName.qstring();
+    qDebug() << "Console::getPropertyName " << propertyName.qstring();
 #endif
     return getStaticFunctionSlot<ConsoleFunc, JSObject>(exec, &ConsoleTable, this, propertyName, slot);
 }
@@ -642,12 +642,12 @@ JSValue *Window::retrieve(KParts::ReadOnlyPart *p)
     proxy = part->jScript();
   if (proxy) {
 #ifdef KJS_VERBOSE
-    // qDebug() << "Window::retrieve part=" << part << " '" << part->objectName() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject();
+    qDebug() << "Window::retrieve part=" << part << " '" << part->objectName() << "' interpreter=" << proxy->interpreter() << " window=" << proxy->interpreter()->globalObject();
 #endif
     return proxy->interpreter()->globalObject(); // the Global object is the "window"
   } else {
 #ifdef KJS_VERBOSE
-    // qDebug() << "Window::retrieve part=" << p << " '" << p->objectName() << "' no jsproxy.";
+    qDebug() << "Window::retrieve part=" << p << " '" << p->objectName() << "' no jsproxy.";
 #endif
     return jsUndefined(); // This can happen with JS disabled on the domain of that window
   }
@@ -718,7 +718,7 @@ bool Window::isCrossFrameAccessible(int token) const
 bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-    // qDebug() << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
+    qDebug() << "Window("<<this<<")::getOwnPropertySlot " << propertyName.qstring();
 #endif
 
     // we want only limited operations on a closed window
@@ -841,7 +841,7 @@ bool Window::getOwnPropertySlot(ExecState *exec, const Identifier& propertyName,
     // This isn't necessarily a bug. Some code uses if(!window.blah) window.blah=1
     // But it can also mean something isn't loaded or implemented, hence the WARNING to help grepping.
 #ifdef KJS_VERBOSE
-    // qDebug() << "WARNING: Window::get property not found: " << propertyName.qstring();
+    qDebug() << "WARNING: Window::get property not found: " << propertyName.qstring();
 #endif
 
     return JSObject::getOwnPropertySlot(exec, propertyName, slot);
@@ -1131,7 +1131,7 @@ JSValue* Window::getValueProperty(ExecState *exec, int token)
         return getDOMEvent(exec,m_evt);
       else {
 #ifdef KJS_VERBOSE
-        // qDebug() << "WARNING: window(" << this << "," << part->objectName() << ").event, no event!";
+        qDebug() << "WARNING: window(" << this << "," << part->objectName() << ").event, no event!";
 #endif
         return jsUndefined();
       }
@@ -1344,7 +1344,7 @@ void Window::put(ExecState* exec, const Identifier &propertyName, JSValue *value
   if (entry && !m_frame.isNull() && !m_frame->m_part.isNull())
   {
 #ifdef KJS_VERBOSE
-    // qDebug() << "Window("<<this<<")::put " << propertyName.qstring();
+    qDebug() << "Window("<<this<<")::put " << propertyName.qstring();
 #endif
     switch( entry->value) {
     case _Location:
@@ -1580,7 +1580,7 @@ bool Window::checkIsSafeScript(KParts::ReadOnlyPart *activePart) const
 
   if ( actDomain->canAccess( thisDomain ) ) {
 #ifdef KJS_VERBOSE
-    //qDebug() << "JavaScript: access granted, domain is '" << actDomain.string() << "'";
+    qDebug() << "JavaScript: access granted, domain is '" << actDomain.string() << "'";
 #endif
     return true;
   }
@@ -2829,7 +2829,7 @@ KParts::ReadOnlyPart *Location::part() const {
 bool Location::getOwnPropertySlot(ExecState *exec, const Identifier &p, PropertySlot& slot)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "Location::getOwnPropertySlot " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
+  qDebug() << "Location::getOwnPropertySlot " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
 #endif
 
   if (m_frame.isNull() || m_frame->m_part.isNull())
@@ -2902,7 +2902,7 @@ JSValue* Location::getValueProperty(ExecState *exec, int token) const
 void Location::put(ExecState *exec, const Identifier &p, JSValue *v, int attr)
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "Location::put " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
+  qDebug() << "Location::put " << p.qstring() << " m_part=" << (void*)m_frame->m_part;
 #endif
   if (m_frame.isNull() || m_frame->m_part.isNull())
     return;

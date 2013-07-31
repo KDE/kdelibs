@@ -324,7 +324,7 @@ void KJSProxy::applyUserAgent()
   {
     m_script->setCompatMode(Interpreter::IECompat);
 #ifdef KJS_VERBOSE
-    // qDebug() << "Setting IE compat mode";
+    qDebug() << "Setting IE compat mode";
 #endif
   }
   else
@@ -335,7 +335,7 @@ void KJSProxy::applyUserAgent()
     {
       m_script->setCompatMode(Interpreter::NetscapeCompat);
 #ifdef KJS_VERBOSE
-      // qDebug() << "Setting NS compat mode";
+      qDebug() << "Setting NS compat mode";
 #endif
     }
 }

@@ -1302,7 +1302,7 @@ QVariant KHTMLPart::executeScript(const QString& filename, int baseLine, const D
 {
 #ifdef KJS_VERBOSE
   // The script is now printed by KJS's Parser::parse
-  // qDebug() << "executeScript: caller='" << objectName() << "' filename=" << filename << " baseLine=" << baseLine /*<< " script=" << script*/;
+  qDebug() << "executeScript: caller='" << objectName() << "' filename=" << filename << " baseLine=" << baseLine /*<< " script=" << script*/;
 #endif
   KJSProxy *proxy = jScript();
 
@@ -1352,7 +1352,7 @@ QVariant KHTMLPart::executeScript( const QString &script )
 QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
 {
 #ifdef KJS_VERBOSE
-  // qDebug() << "caller=" << objectName() << "node=" << n.nodeName().string().toLatin1().constData() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " /* << script */;
+  qDebug() << "caller=" << objectName() << "node=" << n.nodeName().string().toLatin1().constData() << "(" << (n.isNull() ? 0 : n.nodeType()) << ") " /* << script */;
 #endif
   KJSProxy *proxy = jScript();
 
@@ -1382,7 +1382,7 @@ QVariant KHTMLPart::executeScript( const DOM::Node &n, const QString &script )
       submitFormAgain();
 
 #ifdef KJS_VERBOSE
-  // qDebug() << "done";
+  qDebug() << "done";
 #endif
   return ret;
 }
@@ -2513,7 +2513,7 @@ void KHTMLPart::checkCompleted()
 
 #ifdef SPEED_DEBUG
   if (!parentPart())
-      // qDebug() << "DONE:" <<d->m_parsetime.elapsed();
+      qDebug() << "DONE:" <<d->m_parsetime.elapsed();
 #endif
 }
 
@@ -2941,7 +2941,7 @@ void KHTMLPart::setCaretPosition(DOM::Node node, long offset, bool extendSelecti
   Q_UNUSED(extendSelection);
 #ifndef KHTML_NO_CARET
 #if 0
-  // qDebug() << "node: " << node.handle() << " nodeName: "
+  qDebug() << "node: " << node.handle() << " nodeName: "
                << node.nodeName().string() << " offset: " << offset
                << " extendSelection " << extendSelection;
   if (view()->moveCaretTo(node.handle(), offset, !extendSelection))
@@ -5187,7 +5187,7 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
 
   if (!xmlDocImpl()) {
 #ifdef DEBUG_FINDFRAME
-    // qDebug() << "Empty part" << this << "URL = " << url();
+    qDebug() << "Empty part" << this << "URL = " << url();
 #endif
     return false; // we are empty?
   }
@@ -5203,7 +5203,7 @@ bool KHTMLPart::checkFrameAccess(KHTMLPart *callingHtmlPart)
 #ifdef DEBUG_FINDFRAME
   else
   {
-    // qDebug() << "Unknown part/domain" << callingHtmlPart << "tries to access part" << this;
+    qDebug() << "Unknown part/domain" << callingHtmlPart << "tries to access part" << this;
   }
 #endif
   return false;
@@ -5219,7 +5219,7 @@ KHTMLPart* KHTMLPartPrivate::findFrameParent(KParts::ReadOnlyPart* callingPart,
                                              const QString& f, khtml::ChildFrame **childFrame, bool checkForNavigation)
 {
 #ifdef DEBUG_FINDFRAME
-    // qDebug() << q << "URL =" << q->url() << "name =" << q->objectName() << "findFrameParent(" << f << ")";
+    qDebug() << q << "URL =" << q->url() << "name =" << q->objectName() << "findFrameParent(" << f << ")";
 #endif
     // Check access
     KHTMLPart* const callingHtmlPart = qobject_cast<KHTMLPart *>(callingPart);
@@ -5240,7 +5240,7 @@ KHTMLPart* KHTMLPartPrivate::findFrameParent(KParts::ReadOnlyPart* callingPart,
     if ( it != end )
     {
 #ifdef DEBUG_FINDFRAME
-        // qDebug() << "FOUND!";
+        qDebug() << "FOUND!";
 #endif
         if (!checkForNavigation || callingHtmlPart->d->canNavigate((*it)->m_part.data())) {
             if (childFrame)
@@ -5386,7 +5386,7 @@ khtml::ChildFrame *KHTMLPart::recursiveFrameRequest( KHTMLPart *callingHtmlPart,
                                                      const KParts::BrowserArguments &browserArgs, bool callParent )
 {
 #ifdef DEBUG_FINDFRAME
-  // qDebug() << this << "frame = " << args.frameName << "url = " << url;
+  qDebug() << this << "frame = " << args.frameName << "url = " << url;
 #endif
   khtml::ChildFrame *childFrame;
   KHTMLPart *childPart = findFrameParent(callingHtmlPart, browserArgs.frameName, &childFrame);
@@ -5419,7 +5419,7 @@ void KHTMLPart::saveState( QDataStream &stream )
 #ifdef DEBUG_SAVESTATE
   QString indent= QString().leftJustified( s_saveStateIndentLevel * 4, ' ' );
   const int indentLevel = s_saveStateIndentLevel++;
-  // qDebug() << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << url();
+  qDebug() << indent << "saveState this=" << this << " '" << objectName() << "' saving URL " << url();
 #endif
 
   stream << url() << (qint32)d->m_view->contentsX() << (qint32)d->m_view->contentsY()
