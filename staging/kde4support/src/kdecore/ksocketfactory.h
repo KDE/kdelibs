@@ -21,7 +21,7 @@
 #ifndef KSOCKETFACTORY_H
 #define KSOCKETFACTORY_H
 
-#include <kdecore_export.h>
+#include <kde4support_export.h>
 #include <QtCore/QString>
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QHostAddress>
@@ -96,24 +96,24 @@ namespace KSocketFactory
      *                  QTcpSocket constructor
      * @threadsafe
      */
-    KDECORE_EXPORT QTcpSocket *connectToHost(const QString &protocol, const QString &host,
+    KDE4SUPPORT_EXPORT QTcpSocket *connectToHost(const QString &protocol, const QString &host,
                                              quint16 port, QObject *parent = 0);
 
     /**
      * @overload
      */
-    KDECORE_EXPORT QTcpSocket *connectToHost(const QUrl &url, QObject *parent = 0);
+    KDE4SUPPORT_EXPORT QTcpSocket *connectToHost(const QUrl &url, QObject *parent = 0);
 
     /**
      * @overload
      */
-    KDECORE_EXPORT void connectToHost(QTcpSocket *socket, const QString &protocol,
+    KDE4SUPPORT_EXPORT void connectToHost(QTcpSocket *socket, const QString &protocol,
                                       const QString &host, quint16 port);
 
     /**
      * @overload
      */
-    KDECORE_EXPORT void connectToHost(QTcpSocket *socket, const QUrl &url);
+    KDE4SUPPORT_EXPORT void connectToHost(QTcpSocket *socket, const QUrl &url);
 
     /**
      * This function behaves exactly like connectToHost() above, except
@@ -142,7 +142,7 @@ namespace KSocketFactory
      *                  QTcpSocket constructor
      * @threadsafe
      */
-    KDECORE_EXPORT QTcpSocket *synchronousConnectToHost(const QString &protocol,
+    KDE4SUPPORT_EXPORT QTcpSocket *synchronousConnectToHost(const QString &protocol,
                                                         const QString &host,
                                                         quint16 port, int msecs = 30000,
                                                         QObject *parent = 0);
@@ -150,20 +150,20 @@ namespace KSocketFactory
     /**
      * @overload
      */
-    KDECORE_EXPORT QTcpSocket *synchronousConnectToHost(const QUrl &url, int msecs = 30000,
+    KDE4SUPPORT_EXPORT QTcpSocket *synchronousConnectToHost(const QUrl &url, int msecs = 30000,
                                                         QObject *parent = 0);
 
     /**
      * @overload
      */
-    KDECORE_EXPORT void synchronousConnectToHost(QTcpSocket *socket, const QString &protocol,
+    KDE4SUPPORT_EXPORT void synchronousConnectToHost(QTcpSocket *socket, const QString &protocol,
                                                  const QString &host, quint16 port,
                                                  int msecs = 30000);
 
     /**
      * @overload
      */
-    KDECORE_EXPORT void synchronousConnectToHost(QTcpSocket *socket, const QUrl &url,
+    KDE4SUPPORT_EXPORT void synchronousConnectToHost(QTcpSocket *socket, const QUrl &url,
                                                  int msecs = 30000);
 
     /**
@@ -186,18 +186,18 @@ namespace KSocketFactory
      * @param parent    the parent object to be passed to the
      *                  QTcpServer constructor
      */
-    KDECORE_EXPORT QTcpServer *listen(const QString &protocol, const QHostAddress &address = QHostAddress::Any,
+    KDE4SUPPORT_EXPORT QTcpServer *listen(const QString &protocol, const QHostAddress &address = QHostAddress::Any,
                                       quint16 port = 0, QObject *parent = 0);
 
     // These functions below aren't done yet
     // Undocumented -> don't use!
 
-    KDECORE_EXPORT QUdpSocket *datagramSocket(const QString &protocol, const QString &host, QObject *parent = 0);
+    KDE4SUPPORT_EXPORT QUdpSocket *datagramSocket(const QString &protocol, const QString &host, QObject *parent = 0);
 
 #ifndef QT_NO_NETWORKPROXY
-    KDECORE_EXPORT QNetworkProxy proxyForConnection(const QString &protocol, const QString &host);
-    KDECORE_EXPORT QNetworkProxy proxyForListening(const QString &protocol);
-    KDECORE_EXPORT QNetworkProxy proxyForDatagram(const QString &protocol, const QString &host);
+    KDE4SUPPORT_EXPORT QNetworkProxy proxyForConnection(const QString &protocol, const QString &host);
+    KDE4SUPPORT_EXPORT QNetworkProxy proxyForListening(const QString &protocol);
+    KDE4SUPPORT_EXPORT QNetworkProxy proxyForDatagram(const QString &protocol, const QString &host);
 #endif
 }
 

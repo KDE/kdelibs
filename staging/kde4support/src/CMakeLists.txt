@@ -21,6 +21,7 @@ set(libkde4support_SRCS
     kdecore/kmimetype.cpp
     kdecore/kmimetyperepository.cpp
     kdecore/ksavefile.cpp
+    kdecore/ksocketfactory.cpp
     kdecore/k3socks.cpp
     kdecore/k3sockssocketdevice.cpp
     kdecore/k3socketdevice.cpp
@@ -160,6 +161,7 @@ install(FILES
     kdecore/ktempdir.h
     kdecore/kmd5.h
     kdecore/ksavefile.h
+    kdecore/ksocketfactory.h
     kdecore/k3bufferedsocket.h
     kdecore/k3clientsocketbase.h
     kdecore/k3resolver.h

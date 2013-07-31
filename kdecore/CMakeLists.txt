@@ -45,7 +45,7 @@ endif (WIN32)
 ########### next target ###############
 
 set(kdecore_LIB_SRCS ${kdecore_LIB_SRCS}
-   network/ksocketfactory.cpp
+   dummy.cpp
    ${kdecore_OPTIONAL_SRCS}
 )
 
@@ -135,7 +135,6 @@ install( FILES
 )
 
 install(FILES
-   network/ksocketfactory.h
    util/kde_file.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
