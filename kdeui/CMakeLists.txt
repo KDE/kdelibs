@@ -17,7 +17,6 @@ add_subdirectory( sonnet/tests )
 ########### next target ###############
 set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
- colors/kcolorbutton.cpp
  kernel/kstyle.cpp
  util/kglobalsettings.cpp
  util/khelpclient.cpp
@@ -136,7 +135,6 @@ install( FILES
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
- colors/kcolorbutton.h
  kernel/kstyle.h
  util/kglobalsettings.h
  util/khelpclient.h

@@ -13,5 +13,6 @@ macro(kwidgetsaddons_unit_tests)
 endmacro()
 
 kwidgetsaddons_unit_tests(
+  kcolorbuttontest
   kdualactiontest
 )

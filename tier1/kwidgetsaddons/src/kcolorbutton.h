@@ -20,7 +20,7 @@
 #ifndef KCOLORBUTTON_H
 #define KCOLORBUTTON_H
 
-#include <kdeui_export.h>
+#include <kwidgetsaddons_export.h>
 
 #include <QPushButton>
 
@@ -34,7 +34,7 @@ class KColorButtonPrivate;
 *
 * \image html kcolorbutton.png "KDE Color Button"
 */
-class KDEUI_EXPORT KColorButton : public QPushButton
+class KWIDGETSADDONS_EXPORT KColorButton : public QPushButton
 {
     Q_OBJECT
     Q_PROPERTY( QColor color READ color WRITE setColor NOTIFY changed USER true )
