@@ -42,7 +42,6 @@ target_include_directories(KWidgets PUBLIC "$<BUILD_INTERFACE:${kwidgets_INCLUDE
 target_link_libraries(KWidgets
   ${X11_LIBRARIES} ${X11_Xcursor_LIB}
   Qt5::Widgets
-  Qt5::Svg
   Qt5::DBus
 
   ${KConfig_CORE_LIBRARY}
@@ -50,8 +49,6 @@ target_link_libraries(KWidgets
   ${KCoreAddons_LIBRARIES}
   KGuiAddons
   ${KWidgetsAddons_LIBRARIES}
-  ${KAuth_LIBRARIES}
-  ${KWindowSystem_LIBRARIES}
   KI18n
   KCodecs
 )
