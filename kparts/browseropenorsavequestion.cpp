@@ -287,7 +287,6 @@ BrowserOpenOrSaveQuestion::Result BrowserOpenOrSaveQuestion::askOpenOrSave()
             }
         } else {
             // qDebug() << "Not using new feature ServiceSelection; port the caller to BrowserOpenOrSaveQuestion::setFeature(ServiceSelection)";
-            //qDebug() << kBacktrace();
         }
     }
 

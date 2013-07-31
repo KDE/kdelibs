@@ -1573,8 +1573,6 @@ int kdeinit_x_errhandler( Display *dpy, XErrorEvent *err )
                     "         Resource id:  0x%lx\n",
             getpid(), errstr, err->error_code, err->request_code, err->minor_code, err->resourceid );
 
-    //qDebug() << kBacktrace();
-
 #else
     Q_UNUSED(dpy);
     Q_UNUSED(err);

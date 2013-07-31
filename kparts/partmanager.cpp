@@ -342,7 +342,7 @@ void PartManager::addPart( Part *part, bool setActive )
     // don't add parts more than once :)
     if ( d->m_parts.contains( part ) ) {
 #ifdef DEBUG_PARTMANAGER
-        qWarning() << part << " already added" << kBacktrace(5);
+        qWarning() << part << " already added";
 #endif
         return;
     }
