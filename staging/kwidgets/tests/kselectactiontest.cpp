@@ -27,7 +27,6 @@
 #include "kselectactiontest.h"
 
 #include <kselectaction.h>
-#include <kactioncollection.h>
 
 int main( int argc, char **argv )
 {
@@ -41,12 +40,10 @@ int main( int argc, char **argv )
 }
 
 SelectActionTest::SelectActionTest(QWidget *parent)
-    : KXmlGuiWindow(parent)
+    : QMainWindow(parent)
     , m_comboSelect(new KSelectAction("Combo Selection", this))
     , m_buttonSelect(new KSelectAction("Button Selection", this))
 {
-    actionCollection()->addAction("combo", m_comboSelect);
-    actionCollection()->addAction("button", m_buttonSelect);
     for (int i = 0; i < 7; ++i) {
       QAction* action = m_comboSelect->addAction(QString ("Combo Action %1").arg(i));
       connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered(bool)));

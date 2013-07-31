@@ -20,11 +20,11 @@
 #ifndef KSELECTACTION_TEST_H
 #define KSELECTACTION_TEST_H
 
-#include <kxmlguiwindow.h>
+#include <QMainWindow>
 
 class KSelectAction;
 
-class SelectActionTest : public KXmlGuiWindow
+class SelectActionTest : public QMainWindow
 {
     Q_OBJECT
 
