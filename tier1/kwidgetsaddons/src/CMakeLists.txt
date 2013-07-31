@@ -3,6 +3,7 @@ set(kwidgetsaddons_SRCS
   kacceleratormanager.cpp
   kcolorbutton.cpp
   fonthelpers.cpp
+  kdragwidgetdecorator.cpp
   kdualaction.cpp
   kfontchooser.cpp
   kguiitem.cpp
@@ -71,6 +72,7 @@ install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DE
 install(FILES
   kacceleratormanager.h
   kcolorbutton.h
+  kdragwidgetdecorator.h
   kdualaction.h
   kfontchooser.h
   kguiitem.h

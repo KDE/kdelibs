@@ -23,7 +23,7 @@
 
 #include <QObject>
 
-#include <kwidgets_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QDrag;
 class KDragWidgetDecoratorBasePrivate;
@@ -39,7 +39,7 @@ class KDragWidgetDecoratorBasePrivate;
  *
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KWIDGETS_EXPORT KDragWidgetDecoratorBase : public QObject
+class KWIDGETSADDONS_EXPORT KDragWidgetDecoratorBase : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(bool isDragEnabled READ isDragEnabled WRITE setDragEnabled)
