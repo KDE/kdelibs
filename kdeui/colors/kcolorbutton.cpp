@@ -34,7 +34,6 @@
 #include <QStyleOptionButton>
 #include "kcolormimedata.h"
 #include "QDebug"
-#include "kwindowsystem.h"
 
 class KColorButton::KColorButtonPrivate
 {
@@ -257,7 +256,8 @@ void KColorButton::KColorButtonPrivate::_k_chooseColor()
     QColorDialog *dialog = dialogPtr.data();
     if (dialog) {
         dialog->show();
-        KWindowSystem::forceActiveWindow(dialog->winId());
+        dialog->raise();
+        dialog->activateWindow();
         return;
     }
 
