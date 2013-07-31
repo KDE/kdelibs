@@ -68,7 +68,7 @@
 #include <kiconloader.h>
 #include <knotification.h>
 #include <kconfig.h>
-#include <kcoreaddons_version.h>
+#include <khtml_version.h>
 
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
@@ -3043,7 +3043,7 @@ void KHTMLView::print(bool quick)
         viewport()->setCursor( Qt::WaitCursor ); // only viewport(), no QApplication::, otherwise we get the busy cursor in kdeprint's dialogs
         // set up KPrinter
         printer.setFullPage(false);
-        printer.setCreator(QString("KDE %1.%2.%3 HTML Library").arg(KCOREADDONS_VERSION_MAJOR).arg(KCOREADDONS_VERSION_MINOR).arg(KCOREADDONS_VERSION_PATCH));
+        printer.setCreator(QString("KDE %1.%2.%3 HTML Library").arg(KHTML_VERSION_MAJOR).arg(KHTML_VERSION_MINOR).arg(KHTML_VERSION_PATCH));
         printer.setDocName(docname);
 
         QPainter *p = new QPainter;
