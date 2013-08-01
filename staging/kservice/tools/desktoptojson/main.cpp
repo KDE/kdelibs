@@ -35,8 +35,8 @@ int main(int argc, char **argv)
     parser.addVersionOption();
     parser.addHelpOption(description);
 
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << QStringLiteral("input"), QStringLiteral("Read input from file"), QStringLiteral("name")));
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << QStringLiteral("output"), QStringLiteral("Write output to file"), QStringLiteral("name")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << INPUT, QStringLiteral("Read input from file"), NAME));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << OUTPUT, QStringLiteral("Write output to file"), NAME));
 
     parser.process(app);
     return dtj.runMain();

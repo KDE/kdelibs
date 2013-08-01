@@ -34,9 +34,6 @@
 static QTextStream cout(stdout);
 static QTextStream cerr(stderr);
 
-static const QString INPUT = QStringLiteral("input");
-static const QString OUTPUT = QStringLiteral("output");
-
 
 KConfigToJson::KConfigToJson(int &argc, char **argv, QCommandLineParser *parser)
   : m_parser(parser)
