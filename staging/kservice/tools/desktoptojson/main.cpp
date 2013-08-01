@@ -32,15 +32,17 @@ int main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     KConfigToJson dtj(&parser);
 
-    const QString description = QStringLiteral("Converts kconfig files to json");
-    const char version[] = "2.0";
+    const QString description = QStringLiteral("Converts desktop files to json");
+    const char version[] = "1.0";
 
     app.setApplicationVersion(version);
     parser.addVersionOption();
     parser.addHelpOption(description);
 
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << INPUT, QStringLiteral("Read input from file"), NAME));
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << OUTPUT, QStringLiteral("Write output to file"), NAME));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << INPUT,
+                                        QStringLiteral("Read input from file"), NAME));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << OUTPUT,
+                                        QStringLiteral("Write output to file"), NAME));
 
     parser.process(app);
     return dtj.runMain();
