@@ -23,13 +23,13 @@
 
 #include "kconfigtojson.h"
 
-
 #include <qcommandlineparser.h>
 #include <QDir>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QDebug>
+#include <QSet>
+#include <QTextStream>
 
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
@@ -37,7 +37,6 @@
 
 static QTextStream cout(stdout);
 static QTextStream cerr(stderr);
-
 
 KConfigToJson::KConfigToJson(QCommandLineParser *parser)
   : m_parser(parser)
@@ -117,5 +116,3 @@ bool KConfigToJson::convert(const QString &src, const QString &dest)
     cout << "Converted " << src << " to " << dest << endl;;
     return true;
 }
-
-
