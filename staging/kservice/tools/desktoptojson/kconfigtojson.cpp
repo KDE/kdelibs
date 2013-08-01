@@ -19,35 +19,31 @@
 
 #include "kconfigtojson.h"
 
-//#include <kqpluginfactory.h>
-#include <klocalizedstring.h>
-
 
 #include <qcommandlineparser.h>
 #include <QDir>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QStandardPaths>
-#include <QTimer>
 #include <QDebug>
 
-#include <kconfig.h>
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
+//#include <klocalizedstring.h>
 
-#include <iostream>
-#include <iomanip>
 
-void coutput(const QString &msg)
+static QTextStream cout(stdout);
+static QTextStream cerr(stderr);
+
+static const QString INPUT = QStringLiteral("input");
+static const QString OUTPUT = QStringLiteral("output");
+
+
+KConfigToJson::KConfigToJson(int& argc, char **argv, QCommandLineParser *parser)
+  : m_parser(parser)
 {
-    QTextStream out(stdout);
-    out << msg.toLocal8Bit().constData() << "\n";
-}
-
-KConfigToJson::KConfigToJson(int& argc, char **argv, QCommandLineParser *parser) :
-    m_parser(parser)
-{
+    Q_UNUSED(argc)
+    Q_UNUSED(argv)
 }
 
 KConfigToJson::~KConfigToJson()
@@ -56,9 +52,9 @@ KConfigToJson::~KConfigToJson()
 
 int KConfigToJson::runMain()
 {
-    if (m_parser->isSet(QStringLiteral("input"))) {
+    if (m_parser->isSet(INPUT)) {
         if (!resolveFiles()) {
-            qDebug() << "Failed to resolve filenames" << m_inFile << m_outFile;
+            cerr << "Failed to resolve filenames" << m_inFile << m_outFile << endl;;
             return 1;
         };
         if (convert(m_inFile, m_outFile)) {
@@ -67,30 +63,30 @@ int KConfigToJson::runMain()
             return 1;
         }
     } else {
-        coutput(QStringLiteral("Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json"));
+        cout << "Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json" << endl;
         return 1;
     }
 }
 
 bool KConfigToJson::resolveFiles()
 {
-    if (m_parser->isSet(QStringLiteral("input"))) {
-        m_inFile = m_parser->value("input");
+    if (m_parser->isSet(INPUT)) {
+        m_inFile = m_parser->value(INPUT);
         if (QFile::exists(m_inFile)) {
             if (!m_inFile.startsWith('/')) {
                 m_inFile = QDir::currentPath() + '/' + m_inFile;
             }
         } else {
-            coutput("File not found: " + m_inFile);
+            cerr << "File not found: " + m_inFile;
             return false;
         }
     }
-    if (m_parser->isSet(QStringLiteral("output"))) {
-        m_outFile = m_parser->value("output");
+    if (m_parser->isSet(OUTPUT)) {
+        m_outFile = m_parser->value(OUTPUT);
     } else {
         if (!m_inFile.isEmpty()) {
             m_outFile = m_inFile;
-            m_outFile.replace(".desktop", ".json");
+            m_outFile.replace(QStringLiteral(".desktop"), QStringLiteral(".json"));
         }
     }
 
@@ -124,12 +120,12 @@ bool KConfigToJson::convert(const QString &src, const QString &dest)
 
     QFile file(dest);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        coutput("Failed to open " + dest);
+        cerr << "Failed to open " << dest << endl;
         return false;
     }
 
     file.write(jdoc.toJson());
-    coutput("Converted " + src + " to " + dest);
+    cout << "Converted " << src << " to " << dest << endl;;
     return true;
 }
 
