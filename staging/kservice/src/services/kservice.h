@@ -566,9 +566,9 @@ public:
     {
         KPluginLoader pluginLoader(*this);
         KPluginFactory *factory = pluginLoader.factory();
-        QVariantList argsWithMetaData = args;
-        argsWithMetaData << pluginLoader.metaData().toVariantMap();
         if (factory) {
+            QVariantList argsWithMetaData = args;
+            argsWithMetaData << pluginLoader.metaData().toVariantMap();
             T *o = factory->template create<T>(parentWidget, parent, pluginKeyword(), argsWithMetaData);
             if (!o && error)
                 *error = QCoreApplication::translate("", "The service '%1' does not provide an interface '%2' with keyword '%3'")

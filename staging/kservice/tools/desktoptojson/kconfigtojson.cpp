@@ -45,9 +45,9 @@ void coutput(const QString &msg)
     out << msg.toLocal8Bit().constData() << "\n";
 }
 
-KConfigToJson::KConfigToJson(int& argc, char** argv, QCommandLineParser *parser)
+KConfigToJson::KConfigToJson(int& argc, char **argv, QCommandLineParser *parser) :
+    m_parser(parser)
 {
-    m_parser = parser;
 }
 
 KConfigToJson::~KConfigToJson()
@@ -67,7 +67,7 @@ int KConfigToJson::runMain()
             return 1;
         }
     } else {
-        coutput("Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json");
+        coutput(QStringLiteral("Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json"));
         return 1;
     }
 }
@@ -97,15 +97,15 @@ bool KConfigToJson::resolveFiles()
     return m_inFile != m_outFile && !m_inFile.isEmpty() && !m_outFile.isEmpty();
 }
 
-bool KConfigToJson::convert(const QString& src, const QString& dest)
+bool KConfigToJson::convert(const QString &src, const QString &dest)
 {
     KDesktopFile df(src);
     KConfigGroup c = df.desktopGroup();
 
     static const QStringList boolkeys = QStringList()
-            << "Hidden" << "X-KDE-PluginInfo-EnabledByDefault";
+            << QStringLiteral("Hidden") << QStringLiteral("X-KDE-PluginInfo-EnabledByDefault");
     static const QStringList stringlistkeys = QStringList()
-            << "X-KDE-ServiceTypes" << "X-KDE-PluginInfo-Depends";
+            << QStringLiteral("X-KDE-ServiceTypes") << QStringLiteral("X-KDE-PluginInfo-Depends");
 
     QVariantMap vm;
     foreach (const QString &k, c.keyList()) {

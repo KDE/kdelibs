@@ -80,7 +80,7 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
     d->entryPath = filename;
 
     KConfigGroup cg = file.desktopGroup();
-    d->hidden = cg.readEntry(QStringLiteral("Hidden"), false);
+    d->hidden = cg.readEntry("Hidden", false);
     if( d->hidden )
         return;
 
