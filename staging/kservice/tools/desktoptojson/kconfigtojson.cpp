@@ -39,55 +39,44 @@ static QTextStream cout(stdout);
 static QTextStream cerr(stderr);
 
 
-KConfigToJson::KConfigToJson(int &argc, char **argv, QCommandLineParser *parser)
+KConfigToJson::KConfigToJson(QCommandLineParser *parser)
   : m_parser(parser)
-{
-    Q_UNUSED(argc)
-    Q_UNUSED(argv)
-}
-
-KConfigToJson::~KConfigToJson()
 {
 }
 
 int KConfigToJson::runMain()
 {
-    if (m_parser->isSet(INPUT)) {
-        if (!resolveFiles()) {
-            cerr << "Failed to resolve filenames" << m_inFile << m_outFile << endl;;
-            return 1;
-        };
-        if (convert(m_inFile, m_outFile)) {
-            return 0;
-        } else {
-            return 1;
-        }
-    } else {
+    if (!m_parser->isSet(INPUT)) {
         cout << "Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json" << endl;
         return 1;
     }
+
+    if (!resolveFiles()) {
+        cerr << "Failed to resolve filenames" << m_inFile << m_outFile << endl;;
+        return 1;
+    }
+
+    return convert(m_inFile, m_outFile) ? 0 : 1;
 }
 
 bool KConfigToJson::resolveFiles()
 {
     if (m_parser->isSet(INPUT)) {
         m_inFile = m_parser->value(INPUT);
-        if (QFile::exists(m_inFile)) {
-            if (!m_inFile.startsWith('/')) {
-                m_inFile = QDir::currentPath() + '/' + m_inFile;
-            }
-        } else {
+        if (!QFile::exists(m_inFile)) {
             cerr << "File not found: " + m_inFile;
             return false;
         }
+        if (!m_inFile.startsWith('/')) {
+            m_inFile = QDir::currentPath() + '/' + m_inFile;
+        }
     }
+
     if (m_parser->isSet(OUTPUT)) {
         m_outFile = m_parser->value(OUTPUT);
-    } else {
-        if (!m_inFile.isEmpty()) {
-            m_outFile = m_inFile;
-            m_outFile.replace(QStringLiteral(".desktop"), QStringLiteral(".json"));
-        }
+    } else if (!m_inFile.isEmpty()) {
+        m_outFile = m_inFile;
+        m_outFile.replace(QStringLiteral(".desktop"), QStringLiteral(".json"));
     }
 
     return m_inFile != m_outFile && !m_inFile.isEmpty() && !m_outFile.isEmpty();

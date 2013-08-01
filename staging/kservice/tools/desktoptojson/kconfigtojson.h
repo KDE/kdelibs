@@ -24,7 +24,7 @@
 #ifndef KCONFIGTOJSON_H
 #define KCONFIGTOJSON_H
 
-#include <QCoreApplication>
+#include <QString>
 
 class QCommandLineParser;
 
@@ -35,18 +35,17 @@ static const QString NAME = QStringLiteral("name");
 
 class KConfigToJson
 {
-    public:
-        KConfigToJson(int &argc, char **argv, QCommandLineParser *parser);
-        virtual ~KConfigToJson();
-        int runMain();
+public:
+    KConfigToJson(QCommandLineParser *parser);
+    int runMain();
 
-    private:
-        bool convert(const QString &src = QString(), const QString &dest = QString());
-        bool resolveFiles();
-        QString pluginName;
-        QCommandLineParser *m_parser;
-        QString m_inFile;
-        QString m_outFile;
+private:
+    bool convert(const QString &src = QString(), const QString &dest = QString());
+    bool resolveFiles();
+    QString pluginName;
+    QCommandLineParser *m_parser;
+    QString m_inFile;
+    QString m_outFile;
 };
 
 #endif

@@ -30,7 +30,7 @@ int main(int argc, char **argv)
 {
     QCommandLineParser parser;
     QCoreApplication app(argc, argv);
-    KConfigToJson dtj(argc, argv, &parser);
+    KConfigToJson dtj(&parser);
 
     const QString description = QStringLiteral("Converts kconfig files to json");
     const char version[] = "2.0";
