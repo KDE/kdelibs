@@ -40,7 +40,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocalizedstring.h>
 #include <ksharedconfig.h>
 #include <krandom.h>
 #include <kseparator.h>
@@ -208,14 +207,14 @@ void KTipDialog::Private::_k_prevTip()
 {
   database->prevTip();
   tipText->setHtml( QString::fromLatin1( "<html><body>%1</body></html>" )
-                  .arg( i18n( database->tip().toUtf8() ) ) );
+                  .arg( KTipDialog::tr( database->tip().toUtf8() ) ) );
 }
 
 void KTipDialog::Private::_k_nextTip()
 {
   database->nextTip();
   tipText->setHtml( QString::fromLatin1( "<html><body>%1</body></html>" )
-                  .arg( i18n( database->tip().toUtf8() ) ) );
+                  .arg( KTipDialog::tr( database->tip().toUtf8() ) ) );
 }
 
 void KTipDialog::Private::_k_showOnStart( bool on )
@@ -228,7 +227,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
   : QDialog( parent ),
     d( new Private( this ) )
 {
-  setWindowTitle( i18n( "Tip of the Day" ) );
+  setWindowTitle( tr( "Tip of the Day" ) );
 
   /**
    * Parent is 0L when TipDialog is used as a mainWidget. This should
@@ -245,7 +244,7 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   if ( isTipDialog ) {
     QLabel *titleLabel = new QLabel( this );
-    titleLabel->setText( i18n( "Did you know...?\n" ) );
+    titleLabel->setText( tr( "Did you know...?\n" ) );
     titleLabel->setFont(QFont(qApp->font().family(), 20, QFont::Bold));
     titleLabel->setAlignment( Qt::AlignCenter );
     mainLayout->addWidget( titleLabel );
@@ -297,17 +296,17 @@ KTipDialog::KTipDialog( KTipDatabase *database, QWidget *parent )
 
   mainLayout->addLayout( buttonLayout );
 
-  d->tipOnStart = new QCheckBox( i18n( "&Show tips on startup" ) );
+  d->tipOnStart = new QCheckBox( tr( "&Show tips on startup" ) );
   buttonLayout->addWidget( d->tipOnStart, 1 );
 
   QPushButton *prev = new QPushButton;
   KGuiItem::assign(prev, KStandardGuiItem::back( KStandardGuiItem::UseRTL ));
-  prev->setText( i18n( "&Previous" ) );
+  prev->setText( tr( "&Previous" ) );
   buttonLayout->addWidget( prev );
 
   QPushButton *next = new QPushButton;
   KGuiItem::assign(next, KStandardGuiItem::forward( KStandardGuiItem::UseRTL ));
-  next->setText( i18nc( "Opposite to Previous", "&Next" ) );
+  next->setText( tr( "&Next", "Opposite to Previous" ) );
   buttonLayout->addWidget( next );
 
   QPushButton *ok = new QPushButton;
