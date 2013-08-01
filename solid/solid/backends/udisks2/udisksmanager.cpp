@@ -132,12 +132,6 @@ QStringList Manager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInt
 
 QStringList Manager::allDevices()
 {
-    /* Clear the cache, destroy all backends */
-    while (!m_deviceCache.isEmpty()) {
-        QString udi= m_deviceCache.takeFirst();
-        DeviceBackend::destroyBackend(udi);
-    }
-
     introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
     introspect("/org/freedesktop/UDisks2/drives");
 
