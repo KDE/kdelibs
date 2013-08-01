@@ -11,5 +11,7 @@ target_link_libraries(desktoptojson
     kdeqt5staging
 )
 
-install(TARGETS desktoptojson ${INSTALL_TARGETS_DEFAULT_ARGS})
-
+# "export" this target too so we can use the LOCATION property of the imported target in
+# FindKDE4Internal.cmake to get the full path to the installed executable instead of using
+# FIND_PROGRAM(), Alex
+install(TARGETS desktoptojson EXPORT KServiceTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
