@@ -25,13 +25,8 @@
 #include "ksharedconfig.h"
 #include <kconfiggroup.h>
 
-#include <config-kwidgets.h>
-
 #include <QDebug>
 #include <QKeySequence>
-#if HAVE_X11
-#include <qx11info_x11.h>
-#endif
 
 namespace KStandardShortcut
 {
@@ -215,13 +210,7 @@ static void initialize(StandardShortcut id)
 
     KConfigGroup cg(KSharedConfig::openConfig(), "Shortcuts");
 
-#if HAVE_X11
-    // Code within this block breaks if we aren't running in GUI mode.
-    if(QX11Info::display() && cg.hasKey(info->name))
-#else
-    if(cg.hasKey(info->name))
-#endif
-    {
+    if (cg.hasKey(info->name)) {
         QString s = cg.readEntry(info->name);
         if (s != "none")
             info->cut = QKeySequence::listFromString(s);
