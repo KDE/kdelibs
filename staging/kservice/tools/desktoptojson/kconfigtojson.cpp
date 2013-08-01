@@ -29,7 +29,6 @@
 
 #include <kdesktopfile.h>
 #include <kconfiggroup.h>
-//#include <klocalizedstring.h>
 
 
 static QTextStream cout(stdout);
@@ -39,7 +38,7 @@ static const QString INPUT = QStringLiteral("input");
 static const QString OUTPUT = QStringLiteral("output");
 
 
-KConfigToJson::KConfigToJson(int& argc, char **argv, QCommandLineParser *parser)
+KConfigToJson::KConfigToJson(int &argc, char **argv, QCommandLineParser *parser)
   : m_parser(parser)
 {
     Q_UNUSED(argc)
@@ -98,9 +97,9 @@ bool KConfigToJson::convert(const QString &src, const QString &dest)
     KDesktopFile df(src);
     KConfigGroup c = df.desktopGroup();
 
-    static const QStringList boolkeys = QStringList()
+    static const QSet<QString> boolkeys = QSet<QString>()
             << QStringLiteral("Hidden") << QStringLiteral("X-KDE-PluginInfo-EnabledByDefault");
-    static const QStringList stringlistkeys = QStringList()
+    static const QSet<QString> stringlistkeys = QSet<QString>()
             << QStringLiteral("X-KDE-ServiceTypes") << QStringLiteral("X-KDE-PluginInfo-Depends");
 
     QVariantMap vm;

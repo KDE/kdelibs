@@ -8,7 +8,6 @@ add_executable(desktoptojson
 target_link_libraries(desktoptojson
     Qt5::Core
     KConfigCore
-    KI18n
     kdeqt5staging
 )
 

@@ -17,7 +17,6 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include <klocalizedstring.h>
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
 
@@ -29,15 +28,15 @@ int main(int argc, char **argv)
     QCoreApplication app(argc, argv);
     KConfigToJson dtj(argc, argv, &parser);
 
-    const QString description = i18n("Converts kconfig files to json");
+    const QString description = QStringLiteral("Converts kconfig files to json");
     const char version[] = "2.0";
 
     app.setApplicationVersion(version);
     parser.addVersionOption();
     parser.addHelpOption(description);
 
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << QStringLiteral("input"), i18nc("Do not translate <name>", "Read input from file"), QStringLiteral("name")));
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << QStringLiteral("output"), i18nc("Do not translate <name>", "Write output to file"), QStringLiteral("name")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << QStringLiteral("input"), QStringLiteral("Read input from file"), QStringLiteral("name")));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << QStringLiteral("output"), QStringLiteral("Write output to file"), QStringLiteral("name")));
 
     parser.process(app);
     return dtj.runMain();
