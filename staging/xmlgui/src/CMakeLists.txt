@@ -68,6 +68,7 @@ set(xmlgui_SRCS
   kxmlguiwindow.cpp
   kundoactions.cpp
   kcheckaccelerators.cpp
+  khelpclient.cpp
 )
 
 set(kglobalaccel_xml ${CMAKE_CURRENT_SOURCE_DIR}/org.kde.KGlobalAccel.xml)
@@ -138,6 +139,7 @@ install(FILES
   kxmlguifactory.h
   kxmlguiwindow.h
   kundoactions.h
+  khelpclient.h
   ${CMAKE_CURRENT_BINARY_DIR}/xmlgui_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

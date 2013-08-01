@@ -25,11 +25,10 @@
 #include <QCoreApplication>
 #include <QUrl>
 #include <QDirIterator>
+#include <QUrlQuery>
 #include <QDesktopServices>
 
-void KHelpClient::invokeHelp(const QString& anchor,
-                             const QString& _appname,
-                             const QByteArray& startup_id)
+void KHelpClient::invokeHelp(const QString& anchor, const QString& _appname)
 {
     QString appname;
     if (_appname.isEmpty()) {
@@ -68,7 +67,9 @@ void KHelpClient::invokeHelp(const QString& anchor,
     }
 
     if (!anchor.isEmpty()) {
-        url.addQueryItem(QString::fromLatin1("anchor"), anchor);
+        QUrlQuery query(url);
+        query.addQueryItem(QString::fromLatin1("anchor"), anchor);
+        url.setQuery(query);
     }
 
     // launch khelpcenter, or a browser for URIs not handled by khelpcenter

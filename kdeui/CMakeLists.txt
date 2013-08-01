@@ -19,7 +19,6 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  kernel/kstyle.cpp
  util/kglobalsettings.cpp
- util/khelpclient.cpp
  util/kimagecache.cpp
  widgets/kdeuiwidgetsproxystyle.cpp
 )
@@ -136,7 +135,6 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  kernel/kstyle.h
  util/kglobalsettings.h
- util/khelpclient.h
  util/kimagecache.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
