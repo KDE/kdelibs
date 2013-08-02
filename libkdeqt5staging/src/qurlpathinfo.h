@@ -102,8 +102,6 @@ public:
 
     void setFileName(const QString &name);
 
-    QString directory() const;
-
 private:
     QSharedDataPointer<QUrlPathInfoPrivate> d;
 };

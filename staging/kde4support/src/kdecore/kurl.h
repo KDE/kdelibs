@@ -447,9 +447,10 @@ public:
    * @return The current decoded path. This does not include the query. Can
    *         be QString() if no path is set.
    *
-   * @deprecated Use QUrl::path() or QUrlPathInfo::path(flags). Warning,
+   * @deprecated Use QUrl::path(). Warning,
    * this returns an encoded path. To get a completely decoded path like in
    * KDE4/Qt4, use QUrl::path(QUrl::FullyDecoded). This decodes %25 into %.
+   * If the default was changed to FullyDecoded in QUrl, ignore this warning :)
    *
    * If you only need path comparisons, or a path to adjust and give back
    * to setPath() again, then QUrl::path() is fine.
@@ -790,8 +791,8 @@ public:
    * @param options a set of DirectoryOption flags.  (StripTrailingSlashFromResult has no effect)
    * @return The filename of the current path. The returned string is decoded. Null
    *         if there is no file (and thus no path).
-   * @deprecated since 5.0, use QUrlPathInfo(url).fileName(), which behaves like ObeyTrailingSlash though.
-   * To get rid of the trailing slash if there could be one, use adjustPath first.
+   * @deprecated since 5.0, use url.fileName(), which behaves like ObeyTrailingSlash though.
+   * To get rid of the trailing slash if there could be one, use adjusted(QUrl::StripTrailingSlash) first.
    */
   QString fileName( const DirectoryOptions& options = IgnoreTrailingSlash ) const;
 
@@ -802,8 +803,9 @@ public:
    *         is returned. For example <tt>file:///hallo/torben/</tt> would return "/hallo/torben/" while
    *         <tt>file:///hallo/torben</tt> would return "hallo/". The returned string is decoded.
    *         QString() is returned when there is no path.
-   * @deprecated since 5.0, use QUrlPathInfo(url).directory(), which behaves like ObeyTrailingSlash though.
-   * To get rid of the trailing slash if there could be one, use adjustPath first.
+   * @deprecated since 5.0, use url.adjusted(QUrl::RemoveFilename).path(), which behaves like ObeyTrailingSlash though.
+   * To get rid of the trailing slash if there could be one, use adjusted(QUrl::StripTrailingSlash) first.
+   * Do not combine the two calls! You want to remove the trailing slash first, and then remove the filename.
    */
   QString directory( const DirectoryOptions& options = IgnoreTrailingSlash ) const;
 
@@ -842,8 +844,8 @@ public:
    * @see prettyUrl()
    *
    * @deprecated since 5.0, use QUrl::toString() instead.
-   * RemoveTrailingSlash becomes QUrl::StripTrailingSlash
-   * AddTrailingSlash is not available directly, use QUrlPathInfo::adjustPath(AppendTrailingSlash) first.
+   * In case of RemoveTrailingSlash, call adjusted(QUrl::StripTrailingSlash) first.
+   * AddTrailingSlash is not available directly, test if path ends with '/', and if not setPath(path() + '/').
    */
   QString url( AdjustPathOption trailing = LeaveTrailingSlash ) const;
 

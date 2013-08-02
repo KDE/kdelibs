@@ -253,31 +253,6 @@ void QUrlPathInfo::setFileName(const QString &fileName)
 }
 
 /*!
-   Returns the directory path, excluding the file name returned by fileName().
-
-   Example:
-
-   \snippet doc/src/snippets/code/src_corelib_io_qurl.cpp 7
-
-   If \a options is None (the default) or StripTrailingSlash, the directory is returned
-   without a trailing slash. The root directory ("/") is always returned as "/".
-
-   If the path doesn't contain any slash, it is fully returned as part of fileName(), and directory() will be empty.
-
-   \sa path(), fileName(), setFileName()
-*/
-QString QUrlPathInfo::directory() const
-{
-    const QString ourPath = path();
-    const int slash = ourPath.lastIndexOf(QLatin1Char('/'));
-    if (slash == -1)
-        return QString();
-    else if (slash == 0)
-        return QString(QLatin1Char('/'));
-    return ourPath.left(slash);
-}
-
-/*!
    Adds to the current path.
 
    Assumes that the current path is a directory.

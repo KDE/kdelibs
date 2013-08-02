@@ -764,8 +764,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
     bool hasDirs = item.isDir() && !item.isLink();
     bool hasRoot = url.path() == QLatin1String("/");
     QString iconStr = item.iconName();
-    QUrlPathInfo pathInfo(properties->url());
-    QString directory = pathInfo.directory();
+    QString directory = properties->url().adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path();
     QString protocol = properties->url().scheme();
     d->bKDesktopMode = protocol == QLatin1String("desktop") ||
                 properties->currentDir().scheme() == QLatin1String("desktop");
