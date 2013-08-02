@@ -45,6 +45,7 @@ KConfigToJson::KConfigToJson(QCommandLineParser *parser)
 
 int KConfigToJson::runMain()
 {
+    cout << endl << endl << " ***********************************";
     if (!m_parser->isSet(INPUT)) {
         cout << "Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json" << endl;
         return 1;
@@ -83,6 +84,7 @@ bool KConfigToJson::resolveFiles()
 
 bool KConfigToJson::convert(const QString &src, const QString &dest)
 {
+    cout << src << endl << dest << endl;
     KDesktopFile df(src);
     KConfigGroup c = df.desktopGroup();
 
