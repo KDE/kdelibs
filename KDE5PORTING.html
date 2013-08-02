@@ -294,6 +294,12 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
 <li>KGlobalSettings::contextMenuKey is gone, reimplement QWidget::contextMenuEvent() instead.</li>
 <li>KGlobalSettings::*Font methods are deprecated. Use QFontsDatabase::systemFonts(). ::menuFont, ::taskBarFont and ::toolBarFont are not available now (they are provided by the QPA but not public API). If cases needing those arise we'll
 have to find an alternative</li>
+<li>KGlobalSettings::naturalCompare is deprecated, you'll have to especifically read the settings:
+<pre>
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
+    m_naturalSorting = g.readEntry("NaturalSorting", true);
+</pre>
+</li>
 <li>KMessageBox is no longer a class, but a namespace, as it only had static methods. The KMessageBox namespace spans now in three frameworks:
     <ul>
     <li>WId methods are now in kmessagebox_kiw.h from kinterprocesswindowing framework</li>

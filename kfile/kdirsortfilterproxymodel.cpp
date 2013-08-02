@@ -27,7 +27,7 @@
 #include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <kstringhandler.h>
-
+#include <kconfiggroup.h>
 
 class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
 {
@@ -42,11 +42,9 @@ public:
 };
 
 KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::KDirSortFilterProxyModelPrivate(KDirSortFilterProxyModel* q) :
-    m_sortFoldersFirst(true),
-    m_naturalSorting(KGlobalSettings::naturalSorting())
+    m_sortFoldersFirst(true)
 {
-    connect(KGlobalSettings::self(), SIGNAL(naturalSortingChanged()),
-            q, SLOT(slotNaturalSortingChanged()));
+    slotNaturalSortingChanged();
 }
 
 int KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::compare(const QString& a,
@@ -71,7 +69,8 @@ int KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::compare(const QSt
 
 void KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate::slotNaturalSortingChanged()
 {
-    m_naturalSorting = KGlobalSettings::naturalSorting();
+    KConfigGroup g( KSharedConfig::openConfig(), "KDE" );
+    m_naturalSorting = g.readEntry("NaturalSorting", true);
 }
 
 KDirSortFilterProxyModel::KDirSortFilterProxyModel(QObject* parent)
