@@ -418,7 +418,8 @@ QUrl KDirSelectDialog::url() const
 
     if ( comboUrl.isValid() ) {
        KIO::StatJob *statJob = KIO::stat(comboUrl, KIO::HideProgressInfo);
-       const bool ok = KIO::NetAccess::synchronousRun(statJob, d->m_parent);
+       KJobWidgets::setWindow(statJob, d->m_parent);
+       const bool ok = statJob->exec();
        if (ok && statJob->statResult().isDir()) {
            return comboUrl;
        }

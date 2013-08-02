@@ -197,7 +197,7 @@ void FileUndoManagerTest::initTestCase()
 void FileUndoManagerTest::cleanupTestCase()
 {
     KIO::Job* job = KIO::del(QUrl::fromLocalFile( homeTmpDir() ), KIO::HideProgressInfo);
-    KIO::NetAccess::synchronousRun( job, 0 );
+    job->exec();
 }
 
 void FileUndoManagerTest::doUndo()
@@ -227,7 +227,7 @@ void FileUndoManagerTest::testCopyFiles()
     QSignalSpy spyTextChanged( FileUndoManager::self(), SIGNAL(undoTextChanged(QString)) );
     QVERIFY( spyTextChanged.isValid() );
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     QVERIFY( QFile::exists( destFile() ) );
@@ -278,7 +278,7 @@ void FileUndoManagerTest::testMoveFiles()
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     QVERIFY( !QFile::exists( srcFile() ) ); // the source moved
@@ -321,7 +321,7 @@ void FileUndoManagerTest::testCopyDirectory()
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     checkTestDirectory( srcSubDir() ); // src untouched
@@ -342,7 +342,7 @@ void FileUndoManagerTest::testMoveDirectory()
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     QVERIFY( !QFile::exists( srcSubDir() ) );
@@ -366,7 +366,7 @@ void FileUndoManagerTest::testRenameFile()
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordJob( FileUndoManager::Rename, lst, newUrl, job );
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     QVERIFY( !QFile::exists( srcFile() ) );
@@ -389,7 +389,7 @@ void FileUndoManagerTest::testRenameDir()
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordJob( FileUndoManager::Rename, lst, newUrl, job );
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     QVERIFY( !QFile::exists( srcSubDir() ) );
@@ -410,7 +410,7 @@ void FileUndoManagerTest::testCreateDir()
     KIO::SimpleJob* job = KIO::mkdir(url);
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordJob( FileUndoManager::Mkdir, QList<QUrl>(), url, job );
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
     QVERIFY( QFile::exists(path) );
     QVERIFY( QFileInfo(path).isDir() );
@@ -442,7 +442,7 @@ void FileUndoManagerTest::testTrashFiles()
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordJob( FileUndoManager::Trash, lst, QUrl("trash:/"), job );
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     // Check that things got removed
@@ -494,7 +494,7 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
     job->setUiDelegate( 0 );
     FileUndoManager::self()->recordCopyJob(job);
 
-    bool ok = KIO::NetAccess::synchronousRun( job, 0 );
+    bool ok = job->exec();
     QVERIFY( ok );
 
     checkTestDirectory( srcSubDir() ); // src untouched

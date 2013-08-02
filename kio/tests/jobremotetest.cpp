@@ -72,13 +72,13 @@ static QString localTmpDir()
 static bool myExists(const QUrl& url) {
     KIO::Job* job = KIO::stat(url, KIO::StatJob::DestinationSide, 0, KIO::HideProgressInfo);
     job->setUiDelegate(0);
-    return KIO::NetAccess::synchronousRun(job, 0);
+    return job->exec();
 }
 
 static bool myMkdir(const QUrl& url) {
     KIO::Job* job = KIO::mkdir(url, -1);
     job->setUiDelegate(0);
-    return KIO::NetAccess::synchronousRun(job, 0);
+    return job->exec();
 }
 
 void JobRemoteTest::initTestCase()
@@ -103,7 +103,7 @@ void JobRemoteTest::initTestCase()
 static void delDir(const QUrl& pathOrUrl) {
     KIO::Job* job = KIO::del(pathOrUrl, KIO::HideProgressInfo);
     job->setUiDelegate(0);
-    KIO::NetAccess::synchronousRun(job, 0);
+    job->exec();
 }
 
 

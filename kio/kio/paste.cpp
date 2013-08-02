@@ -365,7 +365,8 @@ KIO_EXPORT void KIO::pasteData(const QUrl& u, const QByteArray& data, QWidget* w
        return;
 
     KIO::Job* job = putDataAsyncTo(newUrl, data, widget, KIO::Overwrite);
-    KIO::NetAccess::synchronousRun(job, widget);
+    KJobWidgets::setWindow(job, widget);
+    job->exec();
 }
 
 // KDE5: remove

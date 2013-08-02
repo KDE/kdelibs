@@ -495,7 +495,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     KIO::CopyJob* job = KIO::move(QUrl::fromLocalFile(srcdir), QUrl::fromLocalFile(dest), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setUiDelegateExtension(0);
-    QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
+    QVERIFY(job->exec());
 
     // wait for kdirnotify
     enterLoop();
@@ -514,7 +514,7 @@ void KDirModelTest::testMoveDirectory(const QString& dir /*just a dir name, no s
     job = KIO::move(QUrl::fromLocalFile(dest + dir), QUrl::fromLocalFile(srcdir), KIO::HideProgressInfo);
     job->setUiDelegate(0);
     job->setUiDelegateExtension(0);
-    QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
+    QVERIFY(job->exec());
 
     enterLoop();
 
@@ -654,7 +654,7 @@ void KDirModelTest::testChmodDirectory() // #53397
     KFileItemList items; items << rootItem;
     KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP /*TODO: QFile::WriteGroup*/, QString(), QString(), false, KIO::HideProgressInfo);
     job->setUiDelegate(0);
-    QVERIFY(KIO::NetAccess::synchronousRun(job, 0));
+    QVERIFY(job->exec());
     // ChmodJob doesn't talk to KDirNotify, kpropertiesdialog does.
     // [this allows to group notifications after all the changes one can make in the dialog]
     org::kde::KDirNotify::emitFilesChanged(QList<QUrl>() << QUrl::fromLocalFile(path));

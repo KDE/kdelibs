@@ -75,7 +75,7 @@ public Q_SLOTS:
 
         KIO::Job* job = KIO::pasteClipboard(QUrl::fromLocalFile(otherTmpDir()), static_cast<QWidget*>(0));
         job->setUiDelegate(0);
-        bool ok = KIO::NetAccess::synchronousRun(job, 0);
+        bool ok = job->exec();
         QVERIFY( ok );
 
         QVERIFY( QFile::exists( dest ) );
@@ -86,7 +86,7 @@ private:
     static void delDir(const QString& pathOrUrl) {
         KIO::Job* job = KIO::del(QUrl::fromLocalFile(pathOrUrl), KIO::HideProgressInfo);
         job->setUiDelegate(0);
-        KIO::NetAccess::synchronousRun(job, 0);
+        job->exec();
     }
 
 
