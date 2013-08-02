@@ -73,7 +73,7 @@ void ClipboardUpdaterTest::testPasteAfterRenameFiles()
     createTestDirectory(pasteDir, NoSymlink);
     KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
     QVERIFY(job->exec());
-    QVERIFY(job->error() == 0);
+    QCOMPARE(job->error(), 0);
 }
 
 void ClipboardUpdaterTest::testPasteAfterMoveFile()
@@ -98,7 +98,7 @@ void ClipboardUpdaterTest::testPasteAfterMoveFile()
     createTestDirectory(pasteDir, NoSymlink);
     KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
     QVERIFY(job->exec());
-    QVERIFY(job->error() == 0);
+    QCOMPARE(job->error(), 0);
 }
 
 void ClipboardUpdaterTest::testPasteAfterMoveFiles()
@@ -120,7 +120,7 @@ void ClipboardUpdaterTest::testPasteAfterMoveFiles()
     createTestDirectory(pasteDir, NoSymlink);
     KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
     QVERIFY(job->exec());
-    QVERIFY(job->error() == 0);
+    QCOMPARE(job->error(), 0);
 }
 
 void ClipboardUpdaterTest::testPasteAfterDeleteFile()
