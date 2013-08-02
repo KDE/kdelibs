@@ -48,7 +48,7 @@ void AcAdapter::slotChanged()
 
         if (old_isPlugged != m_isPlugged)
         {
-            Q_EMIT plugStateChanged(m_isPlugged, m_device.data()->udi());
+            emit plugStateChanged(m_isPlugged, m_device.data()->udi());
         }
     }
 }

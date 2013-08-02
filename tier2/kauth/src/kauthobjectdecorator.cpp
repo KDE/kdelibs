@@ -93,7 +93,7 @@ void ObjectDecoratorPrivate::slotActivated()
         q->connect(job, SIGNAL(statusChanged(KAuth::Action::AuthStatus)),
                    q, SLOT(authStatusChanged(KAuth::Action::AuthStatus)));
         if (job->exec()) {
-            Q_EMIT q->authorized(authAction);
+            emit q->authorized(authAction);
         } else {
             decoratedObject->setProperty("enabled", false);
         }

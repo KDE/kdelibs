@@ -235,7 +235,7 @@ void KUPnPManager::onDevicesAdded( const DeviceTypeMap& deviceTypeMap )
     DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
     DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
     for( ; it != end; ++it )
-        Q_EMIT deviceAdded( udiFromUdn(it.key()) );
+        emit deviceAdded( udiFromUdn(it.key()) );
 }
 
 void KUPnPManager::onDevicesRemoved( const DeviceTypeMap& deviceTypeMap )
@@ -243,7 +243,7 @@ void KUPnPManager::onDevicesRemoved( const DeviceTypeMap& deviceTypeMap )
     DeviceTypeMap::ConstIterator it = deviceTypeMap.constBegin();
     DeviceTypeMap::ConstIterator end = deviceTypeMap.constEnd();
     for( ; it != end; ++it )
-        Q_EMIT deviceRemoved( udiFromUdn(it.key()) );
+        emit deviceRemoved( udiFromUdn(it.key()) );
 }
 
 

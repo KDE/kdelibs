@@ -176,7 +176,7 @@ bool KWindowSystemPrivate::nativeEventFilter(xcb_generic_event_t *ev)
             bool haveOwner = event->owner != XCB_WINDOW_NONE;
             if (compositingEnabled != haveOwner) {
                 compositingEnabled = haveOwner;
-                Q_EMIT s_q->compositingChanged(compositingEnabled);
+                emit s_q->compositingChanged(compositingEnabled);
             }
             return true;
         }
@@ -188,7 +188,7 @@ bool KWindowSystemPrivate::nativeEventFilter(xcb_generic_event_t *ev)
                 bool haveOwner = event->owner != XCB_WINDOW_NONE;
                 if (compositingEnabled != haveOwner) {
                     compositingEnabled = haveOwner;
-                    Q_EMIT s_q->compositingChanged( compositingEnabled );
+                    emit s_q->compositingChanged( compositingEnabled );
                 }
                 // NOTICE this is not our event, we just randomly captured it from Qt -> pass on
                 return false;
@@ -220,32 +220,32 @@ bool KWindowSystemPrivate::nativeEventFilter(xcb_generic_event_t *ev)
         NETRootInfo::event( ev, m, 5 );
 
         if ((m[ PROTOCOLS ] & CurrentDesktop ) && currentDesktop() != old_current_desktop) {
-            Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
+            emit s_q->currentDesktopChanged( currentDesktop() );
         }
         if ((m[ PROTOCOLS ] & DesktopViewport ) && mapViewport() && currentDesktop() != old_current_desktop) {
-            Q_EMIT s_q->currentDesktopChanged( currentDesktop() );
+            emit s_q->currentDesktopChanged( currentDesktop() );
         }
         if ((m[ PROTOCOLS ] & ActiveWindow ) && activeWindow() != old_active_window) {
-            Q_EMIT s_q->activeWindowChanged( activeWindow() );
+            emit s_q->activeWindowChanged( activeWindow() );
         }
         if (m[ PROTOCOLS ] & DesktopNames) {
-            Q_EMIT s_q->desktopNamesChanged();
+            emit s_q->desktopNamesChanged();
         }
         if ((m[ PROTOCOLS ] & NumberOfDesktops ) && numberOfDesktops() != old_number_of_desktops) {
-            Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
+            emit s_q->numberOfDesktopsChanged( numberOfDesktops() );
         }
         if ((m[ PROTOCOLS ] & DesktopGeometry ) && mapViewport() && numberOfDesktops() != old_number_of_desktops) {
-            Q_EMIT s_q->numberOfDesktopsChanged( numberOfDesktops() );
+            emit s_q->numberOfDesktopsChanged( numberOfDesktops() );
         }
         if (m[ PROTOCOLS ] & WorkArea) {
-            Q_EMIT s_q->workAreaChanged();
+            emit s_q->workAreaChanged();
         }
         if (m[ PROTOCOLS ] & ClientListStacking) {
             updateStackingOrder();
-            Q_EMIT s_q->stackingOrderChanged();
+            emit s_q->stackingOrderChanged();
         }
         if ((m[ PROTOCOLS2 ] & WM2ShowingDesktop ) && showingDesktop() != old_showing_desktop) {
-            Q_EMIT s_q->showingDesktopChanged( showingDesktop());
+            emit s_q->showingDesktopChanged( showingDesktop());
         }
     } else if (windows.contains(eventWindow)) {
         NETWinInfo ni(QX11Info::display(), eventWindow, QX11Info::appRootWindow(), 0);
@@ -273,11 +273,11 @@ bool KWindowSystemPrivate::nativeEventFilter(xcb_generic_event_t *ev)
             }
         }
         if (dirty[ NETWinInfo::PROTOCOLS ] || dirty[ NETWinInfo::PROTOCOLS2 ]) {
-            Q_EMIT s_q->windowChanged(eventWindow);
-            Q_EMIT s_q->windowChanged(eventWindow, dirty );
-            Q_EMIT s_q->windowChanged(eventWindow, dirty[ NETWinInfo::PROTOCOLS ] );
+            emit s_q->windowChanged(eventWindow);
+            emit s_q->windowChanged(eventWindow, dirty );
+            emit s_q->windowChanged(eventWindow, dirty[ NETWinInfo::PROTOCOLS ] );
             if ((dirty[ NETWinInfo::PROTOCOLS ] & NET::WMStrut) != 0) {
-                Q_EMIT s_q->strutChanged();
+                emit s_q->strutChanged();
             }
         }
     }
@@ -324,9 +324,9 @@ void KWindowSystemPrivate::addClient(Window w)
         possibleStrutWindows.append( w );
 
     windows.append( w );
-    Q_EMIT s_q->windowAdded( w );
+    emit s_q->windowAdded( w );
     if ( emit_strutChanged )
-        Q_EMIT s_q->strutChanged();
+        emit s_q->strutChanged();
 }
 
 void KWindowSystemPrivate::removeClient(Window w)
@@ -344,9 +344,9 @@ void KWindowSystemPrivate::removeClient(Window w)
 
     possibleStrutWindows.removeAll( w );
     windows.removeAll( w );
-    Q_EMIT s_q->windowRemoved( w );
+    emit s_q->windowRemoved( w );
     if ( emit_strutChanged )
-        Q_EMIT s_q->strutChanged();
+        emit s_q->strutChanged();
 }
 
 bool KWindowSystemPrivate::mapViewport()

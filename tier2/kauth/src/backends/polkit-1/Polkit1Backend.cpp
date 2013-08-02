@@ -196,7 +196,7 @@ void Polkit1Backend::checkForResultChanged()
     Q_FOREACH(const QString &action, m_cachedResults.keys()) {
         if (m_cachedResults[action] != actionStatus(action)) {
             m_cachedResults[action] = actionStatus(action);
-            Q_EMIT actionStatusChanged(action, m_cachedResults[action]);
+            emit actionStatusChanged(action, m_cachedResults[action]);
         }
     }
 

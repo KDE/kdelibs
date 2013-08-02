@@ -117,7 +117,7 @@ void HelperHandler::init()
     // Make BackendsManager aware
     BackendsManager::setProxyForThread(m_thread, m_helperProxy);
 
-    Q_EMIT ready();
+    emit ready();
 }
 
 void HelperTest::initTestCase()
@@ -138,7 +138,7 @@ void HelperTest::initTestCase()
 
 void HelperTest::testBasicActionExecution()
 {
-    Q_EMIT changeCapabilities(KAuth::AuthBackend::AuthorizeFromHelperCapability | KAuth::AuthBackend::CheckActionExistenceCapability);
+    emit changeCapabilities(KAuth::AuthBackend::AuthorizeFromHelperCapability | KAuth::AuthBackend::CheckActionExistenceCapability);
 
     KAuth::Action action(QLatin1String("org.kde.auth.autotest.standardaction"));
     action.setHelperId(QLatin1String("org.kde.auth.autotest"));

@@ -46,7 +46,7 @@ public:
     void _k_serviceRegistered(const QString &service)
     {
         if (service == m_serviceName)
-            Q_EMIT m_parent->lockGranted(m_parent);
+            emit m_parent->lockGranted(m_parent);
     }
 
     QString m_resource;

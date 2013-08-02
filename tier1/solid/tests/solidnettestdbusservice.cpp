@@ -143,7 +143,7 @@ void TestNetworkingService::setStatus( uint status )
 {
     qDebug( "Setting status to %s", qPrintable( statusToString( status ) ) );
     mStatus = status;
-    Q_EMIT statusChanged( mStatus );
+    emit statusChanged( mStatus );
 }
 
 int main( int argc, char** argv )

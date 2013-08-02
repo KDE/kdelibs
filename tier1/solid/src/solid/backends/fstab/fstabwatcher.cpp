@@ -101,13 +101,13 @@ FstabWatcher *FstabWatcher::instance()
 void FstabWatcher::onFileChanged(const QString &path)
 {
     if (path == MTAB) {
-        Q_EMIT mtabChanged();
+        emit mtabChanged();
         if (!m_fileSystemWatcher->files().contains(MTAB)) {
             m_fileSystemWatcher->addPath(MTAB);
         }
     }
     if (path == FSTAB) {
-        Q_EMIT fstabChanged();
+        emit fstabChanged();
         if (!m_fileSystemWatcher->files().contains(FSTAB)) {
             m_fileSystemWatcher->addPath(FSTAB);
         }

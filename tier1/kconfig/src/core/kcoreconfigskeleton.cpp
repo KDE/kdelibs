@@ -1088,7 +1088,7 @@ bool KCoreConfigSkeleton::writeConfig()
 
   readConfig();
 
-  Q_EMIT configChanged();
+  emit configChanged();
 
   return true;
 }

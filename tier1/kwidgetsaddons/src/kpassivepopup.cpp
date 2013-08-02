@@ -265,8 +265,8 @@ void KPassivePopup::setAutoDelete( bool autoDelete )
 
 void KPassivePopup::mouseReleaseEvent( QMouseEvent *e )
 {
-    Q_EMIT clicked();
-    Q_EMIT clicked( e->pos() );
+    emit clicked();
+    emit clicked( e->pos() );
 }
 
 //

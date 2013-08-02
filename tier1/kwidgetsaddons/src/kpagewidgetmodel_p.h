@@ -82,7 +82,7 @@ class KPageWidgetModelPrivate : public KPageModelPrivate
                 return;
             }
 
-            Q_EMIT q->dataChanged(index, index);
+            emit q->dataChanged(index, index);
         }
 
         void _k_itemToggled(bool checked)
@@ -93,7 +93,7 @@ class KPageWidgetModelPrivate : public KPageModelPrivate
                 return;
             }
 
-            Q_EMIT q->toggled(item, checked);
+            emit q->toggled(item, checked);
         }
 };
 

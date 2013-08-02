@@ -243,7 +243,7 @@ void DescendantsProxyModelTest::testData()
   // Although the source model emits only one range is changed, this proxy model puts children indexes
   // in the way, breaking the continuous range.
   // Currently separate Q_SIGNALS are emitted for each changed row.
-  // This should really Q_EMIT one signal for each continuous range instead. That's a TODO.
+  // This should really emit one signal for each continuous range instead. That's a TODO.
 
   topLeftFinder = IndexFinder(m_proxyModel, QList<int>() << 65 );
   bottomRightFinder = IndexFinder(m_proxyModel, QList<int>() << 65 );

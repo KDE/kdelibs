@@ -68,6 +68,6 @@ bool FakeButton::stateValue() const
 void FakeButton::press()
 {
     if (hasState()) fakeDevice()->setProperty("stateValue", !stateValue());
-    Q_EMIT pressed(type(), fakeDevice()->udi());
+    emit pressed(type(), fakeDevice()->udi());
 }
 

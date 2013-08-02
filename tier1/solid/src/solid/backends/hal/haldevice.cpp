@@ -552,12 +552,12 @@ void HalDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
     }
 
     //qDebug() << this << "unsyncing the cache";
-    Q_EMIT propertyChanged(result);
+    emit propertyChanged(result);
 }
 
 void HalDevice::slotCondition(const QString &condition, const QString &reason)
 {
-    Q_EMIT conditionRaised(condition, reason);
+    emit conditionRaised(condition, reason);
 }
 
 QString HalDevice::storageDescription() const

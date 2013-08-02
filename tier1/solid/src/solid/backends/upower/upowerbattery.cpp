@@ -170,37 +170,37 @@ void Battery::slotChanged()
         updateCache();
 
         if (old_chargePercent != m_chargePercent) {
-            Q_EMIT chargePercentChanged(m_chargePercent, m_device.data()->udi());
+            emit chargePercentChanged(m_chargePercent, m_device.data()->udi());
         }
 
         if (old_chargeState != m_chargeState) {
-            Q_EMIT chargeStateChanged(m_chargeState, m_device.data()->udi());
+            emit chargeStateChanged(m_chargeState, m_device.data()->udi());
         }
 
         if (old_capacity != m_capacity) {
-            Q_EMIT capacityChanged(m_capacity, m_device.data()->udi());
+            emit capacityChanged(m_capacity, m_device.data()->udi());
         }
 
         if (old_chargeState != m_chargeState)
         {
-            Q_EMIT chargeStateChanged(m_chargeState, m_device.data()->udi());
+            emit chargeStateChanged(m_chargeState, m_device.data()->udi());
         }
 
         if (old_isPlugged != m_isPlugged) {
-            Q_EMIT plugStateChanged(m_isPlugged, m_device.data()->udi());
+            emit plugStateChanged(m_isPlugged, m_device.data()->udi());
         }
 
         if (old_energy != m_energy) {
-            Q_EMIT energyChanged(m_energy, m_device.data()->udi());
+            emit energyChanged(m_energy, m_device.data()->udi());
         }
 
         if (old_energyRate != m_energyRate) {
-            Q_EMIT energyRateChanged(m_energyRate, m_device.data()->udi());
+            emit energyRateChanged(m_energyRate, m_device.data()->udi());
         }
 
         if (old_isPowerSupply != m_isPowerSupply)
         {
-            Q_EMIT powerSupplyStateChanged(m_isPowerSupply, m_device.data()->udi());
+            emit powerSupplyStateChanged(m_isPowerSupply, m_device.data()->udi());
         }
     }
 }

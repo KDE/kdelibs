@@ -74,7 +74,7 @@ void Solid::Backends::Fake::FakeStorageAccess::onPropertyChanged(const QMap<QStr
 {
     Q_FOREACH (const QString &property, changes.keys()) {
         if (property=="isMounted") {
-            Q_EMIT accessibilityChanged(fakeDevice()->property("isMounted").toBool(), fakeDevice()->udi());
+            emit accessibilityChanged(fakeDevice()->property("isMounted").toBool(), fakeDevice()->udi());
         }
     }
 }

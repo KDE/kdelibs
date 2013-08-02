@@ -91,7 +91,7 @@ void Cdrom::slotCondition(const QString &name, const QString &/*reason */)
 {
     if (name == "EjectPressed")
     {
-        Q_EMIT ejectPressed(m_device->udi());
+        emit ejectPressed(m_device->udi());
     }
 }
 
@@ -150,9 +150,9 @@ void Solid::Backends::Wmi::Cdrom::slotProcessFinished(int exitCode, QProcess::Ex
         m_ejectInProgress = false;
 
         if (exitCode==0) {
-            Q_EMIT ejectDone(Solid::NoError, QVariant(), m_device->udi());
+            emit ejectDone(Solid::NoError, QVariant(), m_device->udi());
         } else {
-            Q_EMIT ejectDone(Solid::UnauthorizedOperation,
+            emit ejectDone(Solid::UnauthorizedOperation,
                            m_process->readAllStandardError(),
                            m_device->udi());
         }

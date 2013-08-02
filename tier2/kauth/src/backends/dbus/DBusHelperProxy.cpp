@@ -79,7 +79,7 @@ void DBusHelperProxy::executeAction(const QString &action, const QString &helper
         ActionReply errorReply = ActionReply::DBusErrorReply();
         errorReply.setErrorDescription(tr("DBus Backend error: connection to helper failed. ")
 				       + m_busConnection.lastError().message());
-        Q_EMIT actionPerformed(action, errorReply);
+        emit actionPerformed(action, errorReply);
     }
 
     QDBusMessage message;
@@ -99,7 +99,7 @@ void DBusHelperProxy::executeAction(const QString &action, const QString &helper
                 "Connection error: ") + m_busConnection.lastError().message() + tr(". Message error: ") + pendingCall.reply().errorMessage());
         qDebug() << pendingCall.reply().errorMessage();
 
-        Q_EMIT actionPerformed(action, r);
+        emit actionPerformed(action, r);
     }
 }
 
@@ -165,12 +165,12 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
     QDataStream stream(&blob, QIODevice::ReadOnly);
 
     if (type == ActionStarted) {
-        Q_EMIT actionStarted(action);
+        emit actionStarted(action);
     } else if (type == ActionPerformed) {
         ActionReply reply = ActionReply::deserialize(blob);
 
         m_actionsInProgress.removeOne(action);
-        Q_EMIT actionPerformed(action, reply);
+        emit actionPerformed(action, reply);
     } else if (type == DebugMessage) {
         int level;
         QString message;
@@ -182,12 +182,12 @@ void DBusHelperProxy::remoteSignalReceived(int t, const QString &action, QByteAr
         int step;
         stream >> step;
 
-        Q_EMIT progressStep(action, step);
+        emit progressStep(action, step);
     } else if (type == ProgressStepData) {
         QVariantMap data;
         stream >> data;
 
-        Q_EMIT progressStep(action, data);
+        emit progressStep(action, data);
     }
 }
 
@@ -221,7 +221,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
     s >> args;
 
     m_currentAction = action;
-    Q_EMIT remoteSignal(ActionStarted, action, QByteArray());
+    emit remoteSignal(ActionStarted, action, QByteArray());
     QEventLoop e;
     e.processEvents(QEventLoop::AllEvents);
 
@@ -251,7 +251,7 @@ QByteArray DBusHelperProxy::performAction(const QString &action, const QByteArra
 
     timer->start();
 
-    Q_EMIT remoteSignal(ActionPerformed, action, retVal.serialized());
+    emit remoteSignal(ActionPerformed, action, retVal.serialized());
     e.processEvents(QEventLoop::AllEvents);
     m_currentAction.clear();
     m_stopRequest = false;
@@ -293,7 +293,7 @@ void DBusHelperProxy::sendDebugMessage(int level, const char *msg)
 
     stream << level << QString::fromLocal8Bit(msg);
 
-    Q_EMIT remoteSignal(DebugMessage, m_currentAction, blob);
+    emit remoteSignal(DebugMessage, m_currentAction, blob);
 }
 
 void DBusHelperProxy::sendProgressStep(int step)
@@ -303,7 +303,7 @@ void DBusHelperProxy::sendProgressStep(int step)
 
     stream << step;
 
-    Q_EMIT remoteSignal(ProgressStepIndicator, m_currentAction, blob);
+    emit remoteSignal(ProgressStepIndicator, m_currentAction, blob);
 }
 
 void DBusHelperProxy::sendProgressStep(const QVariantMap &data)
@@ -313,7 +313,7 @@ void DBusHelperProxy::sendProgressStep(const QVariantMap &data)
 
     stream << data;
 
-    Q_EMIT remoteSignal(ProgressStepData, m_currentAction, blob);
+    emit remoteSignal(ProgressStepData, m_currentAction, blob);
 }
 
 void debugMessageReceived(int t, const QString &message)

@@ -211,13 +211,13 @@ QStringList WmiManager::findDeviceByDeviceInterface(Solid::DeviceInterface::Type
 void WmiManager::slotDeviceAdded(const QString &udi)
 {
     qDebug()<<"Device added"<<udi;
-    Q_EMIT deviceAdded(udi);
+    emit deviceAdded(udi);
 }
 
 void WmiManager::slotDeviceRemoved(const QString &udi)
 {
     qDebug()<<"Device removed"<<udi;
-    Q_EMIT deviceRemoved(udi);
+    emit deviceRemoved(udi);
 }
 
 

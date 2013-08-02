@@ -178,16 +178,16 @@ void Job::freeQueuePolicyResources()
 void Job::defaultBegin(JobPointer job, Thread *)
 {
     Q_ASSERT(job.data() == this);
-    Q_EMIT started(job);
+    emit started(job);
 }
 
 void Job::defaultEnd(JobPointer job, Thread *)
 {
     Q_ASSERT(job.data() == this);
     if (!success()) {
-        Q_EMIT failed(job);
+        emit failed(job);
     }
-    Q_EMIT done(job);
+    emit done(job);
     //FIXME this requires the job lock?
     freeQueuePolicyResources();
 }

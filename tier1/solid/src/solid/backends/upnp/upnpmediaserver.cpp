@@ -82,12 +82,12 @@ bool UPnPMediaServer::teardown()
 
 void UPnPMediaServer::onSetupTimeout()
 {
-    Q_EMIT setupDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+    emit setupDone(Solid::NoError, QVariant(), upnpDevice()->udi());
 }
 
 void UPnPMediaServer::onTeardownTimeout()
 {
-    Q_EMIT teardownDone(Solid::NoError, QVariant(), upnpDevice()->udi());
+    emit teardownDone(Solid::NoError, QVariant(), upnpDevice()->udi());
 }
 
 }

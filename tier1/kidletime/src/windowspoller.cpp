@@ -85,7 +85,7 @@ void WindowsPoller::checkForIdle()
 {
     if (getIdleTime() < 1000) {
         stopCatchingIdleEvents();
-        Q_EMIT resumingFromIdle();
+        emit resumingFromIdle();
     }
 }
 

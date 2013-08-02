@@ -690,12 +690,12 @@ void WmiDevice::slotPropertyModified(int /*count */, const QList<ChangeDescripti
         result[key] = type;
     }
 
-    Q_EMIT propertyChanged(result);
+    emit propertyChanged(result);
 }
 
 void WmiDevice::slotCondition(const QString &condition, const QString &reason)
 {
-    Q_EMIT conditionRaised(condition, reason);
+    emit conditionRaised(condition, reason);
 }
 
 #include "backends/wmi/wmidevice.moc"

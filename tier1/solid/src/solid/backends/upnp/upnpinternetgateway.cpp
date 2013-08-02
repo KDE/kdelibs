@@ -92,7 +92,7 @@ void UPnPInternetGateway::setEnabledForInternetInvokeCallback(Herqq::Upnp::HClie
         Herqq::Upnp::HActionArguments inArgs = setEnabledForInternetAction->info().inputArguments();
         bool enabled = inArgs["NewEnabledForInternet"].value().toBool();
 
-        Q_EMIT enabledForInternet(enabled);
+        emit enabledForInternet(enabled);
     } else {
         qDebug() << "setEnabledForInternetAction invocation failed";
     }
@@ -202,7 +202,7 @@ void UPnPInternetGateway::deletePortMappingInvokeCallback(Herqq::Upnp::HClientAc
             protocol = Solid::InternetGateway::UDP;
         }
 
-        Q_EMIT portMappingDeleted(newRemoteHost, newExternalPort, protocol);
+        emit portMappingDeleted(newRemoteHost, newExternalPort, protocol);
     } else {
         qDebug() << "deletePortMapping Action invocation failed";
     }
@@ -303,7 +303,7 @@ void UPnPInternetGateway::addPortMappingInvokeCallback(Herqq::Upnp::HClientActio
         int newInternalPort = inArgs["NewInternalPort"].value().toInt();
         QString newInternalClient = inArgs["NewInternalClient"].value().toString();
 
-        Q_EMIT portMappingAdded(newRemoteHost, newExternalPort, protocol, newInternalPort, newInternalClient);
+        emit portMappingAdded(newRemoteHost, newExternalPort, protocol, newInternalPort, newInternalClient);
     } else {
         qDebug() << "addPortMapping Action invocation failed" << invocationID.returnValue();
     }
@@ -389,7 +389,7 @@ void UPnPInternetGateway::getActiveConnectionActionInvokeCallback(Herqq::Upnp::H
     }
 
     if (activeConnections.count() == numberOfConnections) {
-        Q_EMIT currentConnectionsDataIsReady(activeConnections);
+        emit currentConnectionsDataIsReady(activeConnections);
     }
 }
 

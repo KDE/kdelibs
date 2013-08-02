@@ -198,7 +198,7 @@ void FakeManager::plug(const QString &udi)
     {
         QMap<QString, QVariant> properties = d->hiddenDevices.take(udi);
         d->loadedDevices[udi] = new FakeDevice(udi, properties);
-        Q_EMIT deviceAdded(udi);
+        emit deviceAdded(udi);
     }
 }
 
@@ -208,7 +208,7 @@ void FakeManager::unplug(const QString &udi)
     {
         FakeDevice *dev = d->loadedDevices.take(udi);
         d->hiddenDevices[udi] = dev->allProperties();
-        Q_EMIT deviceRemoved(udi);
+        emit deviceRemoved(udi);
         delete dev;
     }
 }
@@ -243,7 +243,7 @@ void FakeManager::parseMachineFile()
             if(tempDevice) {
                 Q_ASSERT(!d->loadedDevices.contains(tempDevice->udi()));
                 d->loadedDevices.insert(tempDevice->udi(), tempDevice);
-                Q_EMIT deviceAdded(tempDevice->udi());
+                emit deviceAdded(tempDevice->udi());
             }
         }
 

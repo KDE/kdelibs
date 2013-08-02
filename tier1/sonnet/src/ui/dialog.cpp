@@ -201,7 +201,7 @@ void Dialog::slotAutocorrect()
 {
     setGuiEnabled(false);
     setProgressDialogVisible(true);
-    Q_EMIT autoCorrect(d->currentWord.word, d->ui.m_replacement->text() );
+    emit autoCorrect(d->currentWord.word, d->ui.m_replacement->text() );
     slotReplaceWord();
 }
 
@@ -241,10 +241,10 @@ void Dialog::setProgressDialogVisible(bool b)
 void Dialog::slotFinished()
 {
     setProgressDialogVisible(false);
-    Q_EMIT stop();
+    emit stop();
     //FIXME: should we emit done here?
-    Q_EMIT done(d->checker->text());
-    Q_EMIT spellCheckStatus(tr("Spell check stopped."));
+    emit done(d->checker->text());
+    emit spellCheckStatus(tr("Spell check stopped."));
     accept();
 }
 
@@ -253,8 +253,8 @@ void Dialog::slotCancel()
     d->canceled = true;
     d->deleteProgressDialog(false); // this method can be called in response to
                                     // pressing 'Cancel' on the dialog
-    Q_EMIT cancel();
-    Q_EMIT spellCheckStatus(tr("Spell check canceled."));
+    emit cancel();
+    emit spellCheckStatus(tr("Spell check canceled."));
     reject();
 }
 
@@ -333,7 +333,7 @@ void Dialog::slotReplaceWord()
     setGuiEnabled(false);
     setProgressDialogVisible(true);
     QString replacementText = d->ui.m_replacement->text();
-    Q_EMIT replace( d->currentWord.word, d->currentWord.start,
+    emit replace( d->currentWord.word, d->currentWord.start,
                   replacementText );
 
     if( d->spellCheckContinuedAfterReplacement ) {
@@ -387,7 +387,7 @@ void Dialog::slotChangeLanguage(const QString &lang)
     if (!languageCode.isEmpty()) {
         d->checker->changeLanguage(languageCode);
         slotSuggest();
-        Q_EMIT languageChanged(languageCode);
+        emit languageChanged(languageCode);
     }
 }
 
@@ -405,7 +405,7 @@ void Dialog::slotMisspelling(const QString& word, int start)
 {
     setGuiEnabled(true);
     setProgressDialogVisible(false);
-    Q_EMIT misspelling(word, start);
+    emit misspelling(word, start);
     //NOTE this is HACK I had to introduce because BackgroundChecker lacks 'virtual' marks on methods
     //this dramatically reduces spellchecking time in Lokalize
     //as this doesn't fetch suggestions for words that are present in msgid
@@ -425,7 +425,7 @@ void Dialog::slotMisspelling(const QString& word, int start)
 void Dialog::slotDone()
 {
     d->restart=false;
-    Q_EMIT done(d->checker->text());
+    emit done(d->checker->text());
     if (d->restart)
     {
         updateDictionaryComboBox();
@@ -435,7 +435,7 @@ void Dialog::slotDone()
     else
     {
         setProgressDialogVisible(false);
-        Q_EMIT spellCheckStatus(tr("Spell check complete."));
+        emit spellCheckStatus(tr("Spell check complete."));
         accept();
         if(!d->canceled && d->showCompletionMessageBox)
         {

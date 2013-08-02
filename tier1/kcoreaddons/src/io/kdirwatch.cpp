@@ -1894,19 +1894,19 @@ void KDirWatch::statistics()
 void KDirWatch::setCreated( const QString & _file )
 {
   qDebug() << objectName() << "emitting created" << _file;
-  Q_EMIT created( _file );
+  emit created( _file );
 }
 
 void KDirWatch::setDirty( const QString & _file )
 {
   //qDebug() << objectName() << "emitting dirty" << _file;
-  Q_EMIT dirty( _file );
+  emit dirty( _file );
 }
 
 void KDirWatch::setDeleted( const QString & _file )
 {
   qDebug() << objectName() << "emitting deleted" << _file;
-  Q_EMIT deleted( _file );
+  emit deleted( _file );
 }
 
 KDirWatch::Method KDirWatch::internalMethod() const

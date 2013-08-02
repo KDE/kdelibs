@@ -290,7 +290,7 @@ bool XSyncBasedPoller::xcbEvent(xcb_generic_event_t *event)
     for (QHash<int, XSyncAlarm>::const_iterator i = m_timeoutAlarm.constBegin(); i != m_timeoutAlarm.constEnd(); ++i) {
         if (alarmEvent->alarm == i.value()) {
             /* Bling! Caught! */
-            Q_EMIT timeoutReached(i.key());
+            emit timeoutReached(i.key());
             // Update the alarm to fire back if the system gets inactive for the same time
             catchIdleEvent();
             return false;
@@ -301,7 +301,7 @@ bool XSyncBasedPoller::xcbEvent(xcb_generic_event_t *event)
         /* Resuming from idle here! */
         stopCatchingIdleEvents();
         reloadAlarms();
-        Q_EMIT resumingFromIdle();
+        emit resumingFromIdle();
     }
 
     return false;

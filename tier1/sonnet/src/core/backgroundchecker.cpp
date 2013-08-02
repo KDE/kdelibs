@@ -134,7 +134,7 @@ void BackgroundChecker::slotEngineDone()
     d->currentText = fetchMoreText();
 
     if ( d->currentText.isNull() ) {
-        Q_EMIT done();
+        emit done();
     } else {
         d->engine->setText( d->currentText );
         d->engine->start();

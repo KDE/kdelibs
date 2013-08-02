@@ -188,7 +188,7 @@ void KXYSelector::mouseMoveEvent( QMouseEvent *e )
   valuesFromPosition( e->pos().x() - w, e->pos().y() - w, xVal, yVal );
   setValues( xVal, yVal );
 
-  Q_EMIT valueChanged( d->xPos, d->yPos );
+  emit valueChanged( d->xPos, d->yPos );
 }
 
 void KXYSelector::wheelEvent( QWheelEvent *e )
@@ -198,7 +198,7 @@ void KXYSelector::wheelEvent( QWheelEvent *e )
   else
     setValues( xValue(), yValue() + e->delta()/120 );
 
-  Q_EMIT valueChanged( d->xPos, d->yPos );
+  emit valueChanged( d->xPos, d->yPos );
 }
 
 void KXYSelector::valuesFromPosition( int x, int y, int &xVal, int &yVal ) const

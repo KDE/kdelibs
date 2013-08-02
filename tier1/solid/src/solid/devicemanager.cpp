@@ -186,7 +186,7 @@ void Solid::DeviceManagerPrivate::_k_deviceAdded(const QString &udi)
         }
     }
 
-    Q_EMIT deviceAdded(udi);
+    emit deviceAdded(udi);
 }
 
 void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
@@ -204,7 +204,7 @@ void Solid::DeviceManagerPrivate::_k_deviceRemoved(const QString &udi)
         }
     }
 
-    Q_EMIT deviceRemoved(udi);
+    emit deviceRemoved(udi);
 }
 
 void Solid::DeviceManagerPrivate::_k_destroyed(QObject *object)

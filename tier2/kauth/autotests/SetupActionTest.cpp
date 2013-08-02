@@ -58,7 +58,7 @@ void SetupActionTest::initTestCase()
 
 void SetupActionTest::testNonExistentAction()
 {
-    Q_EMIT changeCapabilities(KAuth::AuthBackend::AuthorizeFromHelperCapability | KAuth::AuthBackend::CheckActionExistenceCapability);
+    emit changeCapabilities(KAuth::AuthBackend::AuthorizeFromHelperCapability | KAuth::AuthBackend::CheckActionExistenceCapability);
     KAuth::Action action(QLatin1String("i.do.not.exist"));
     QVERIFY(!action.isValid());
 
@@ -66,7 +66,7 @@ void SetupActionTest::testNonExistentAction()
     QVERIFY(action.isValid());
 
     // Now with regexp check
-    Q_EMIT changeCapabilities(0);
+    emit changeCapabilities(0);
 
     action = KAuth::Action(QLatin1String("/safinvalid124%$&"));
     QVERIFY(!action.isValid());
@@ -74,7 +74,7 @@ void SetupActionTest::testNonExistentAction()
 
 void SetupActionTest::testBasicActionProperties()
 {
-    Q_EMIT changeCapabilities(KAuth::AuthBackend::AuthorizeFromHelperCapability | KAuth::AuthBackend::CheckActionExistenceCapability);
+    emit changeCapabilities(KAuth::AuthBackend::AuthorizeFromHelperCapability | KAuth::AuthBackend::CheckActionExistenceCapability);
     KAuth::Action action(QLatin1String("always.authorized"), QLatin1String("details"));
     QVERIFY(action.isValid());
 
@@ -93,7 +93,7 @@ void SetupActionTest::testBasicActionProperties()
     action.setName(QLatin1String("i.do.not.exist"));
     QVERIFY(!action.isValid());
 
-    Q_EMIT changeCapabilities(0);
+    emit changeCapabilities(0);
 
     action = KAuth::Action(QLatin1String("i.do.not.exist"), QLatin1String("details"));
 
@@ -107,7 +107,7 @@ void SetupActionTest::testBasicActionProperties()
 
 void SetupActionTest::testUserAuthorization()
 {
-    Q_EMIT changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability);
+    emit changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability);
 
     KAuth::Action action(QLatin1String("requires.auth"), QLatin1String("details"));
     QVERIFY(action.isValid());
@@ -119,7 +119,7 @@ void SetupActionTest::testUserAuthorization()
 
     QCOMPARE(job->error(), (int)KAuth::ActionReply::BackendError);
 
-    Q_EMIT changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability | KAuth::AuthBackend::AuthorizeFromClientCapability);
+    emit changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability | KAuth::AuthBackend::AuthorizeFromClientCapability);
 
     QVERIFY(action.isValid());
 
@@ -134,7 +134,7 @@ void SetupActionTest::testUserAuthorization()
 
 void SetupActionTest::testAuthorizationFail()
 {
-    Q_EMIT changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability | KAuth::AuthBackend::AuthorizeFromClientCapability);
+    emit changeCapabilities(KAuth::AuthBackend::CheckActionExistenceCapability | KAuth::AuthBackend::AuthorizeFromClientCapability);
 
     KAuth::Action action(QLatin1String("doomed.to.fail"), QLatin1String("details"));
     QVERIFY(action.isValid());

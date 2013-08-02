@@ -124,5 +124,5 @@ QString FstabDevice::device() const
 void FstabDevice::onMtabChanged(const QString& device)
 {
     if (m_device == device)
-        Q_EMIT mtabChanged(device);
+        emit mtabChanged(device);
 }

@@ -259,7 +259,7 @@ public:
 
 Q_SIGNALS:
 #if !defined(Q_MOC_RUN) && !defined(DOXYGEN_SHOULD_SKIP_THIS) && !defined(IN_IDE_PARSER)
-private: // Don't allow subclasses to Q_EMIT these Q_SIGNALS.
+private: // Don't allow subclasses to emit these Q_SIGNALS.
 #endif
 
     /**

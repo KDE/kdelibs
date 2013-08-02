@@ -630,7 +630,7 @@ void KFontChooser::Private::_k_family_chosen_slot(const QString& family)
     if (dbase.isSmoothlyScalable(currentFamily, currentStyle) && selFont.pointSize() == floor(currentSize)) {
         selFont.setPointSizeF(currentSize);
     }
-    Q_EMIT q->fontSelected(selFont);
+    emit q->fontSelected(selFont);
 
     signalsAllowed = true;
 }
@@ -659,7 +659,7 @@ void KFontChooser::Private::_k_style_chosen_slot(const QString& style)
     if (dbase.isSmoothlyScalable(currentFamily, currentStyle) && selFont.pointSize() == floor(currentSize)) {
         selFont.setPointSizeF(currentSize);
     }
-    Q_EMIT q->fontSelected(selFont);
+    emit q->fontSelected(selFont);
 
     if (!style.isEmpty()) {
         selectedStyle = currentStyle;
@@ -691,7 +691,7 @@ void KFontChooser::Private::_k_size_chosen_slot(const QString& size)
 
     sizeOfFont->setValue(currentSize);
     selFont.setPointSizeF(currentSize);
-    Q_EMIT q->fontSelected(selFont);
+    emit q->fontSelected(selFont);
 
     if (!size.isEmpty()) {
         selectedSize = currentSize;
@@ -753,7 +753,7 @@ void KFontChooser::Private::_k_size_value_slot(double dval)
 
     selectedSize = val;
     selFont.setPointSizeF(val);
-    Q_EMIT q->fontSelected( selFont );
+    emit q->fontSelected( selFont );
 
     signalsAllowed = true;
 }

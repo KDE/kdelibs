@@ -99,7 +99,7 @@ bool FstabStorageAccess::setup()
 
 void FstabStorageAccess::slotSetupRequested()
 {
-    Q_EMIT setupRequested(m_fstabDevice->udi());
+    emit setupRequested(m_fstabDevice->udi());
 }
 
 bool FstabStorageAccess::teardown()
@@ -116,7 +116,7 @@ bool FstabStorageAccess::teardown()
 
 void FstabStorageAccess::slotTeardownRequested()
 {
-    Q_EMIT teardownRequested(m_fstabDevice->udi());
+    emit teardownRequested(m_fstabDevice->udi());
 }
 
 void FstabStorageAccess::slotSetupFinished(int exitCode, QProcess::ExitStatus /*exitStatus*/)
@@ -131,7 +131,7 @@ void FstabStorageAccess::slotSetupFinished(int exitCode, QProcess::ExitStatus /*
 
 void FstabStorageAccess::slotSetupDone(int error, const QString &errorString)
 {
-    Q_EMIT setupDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
+    emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
 }
 
 void FstabStorageAccess::slotTeardownFinished(int exitCode, QProcess::ExitStatus /*exitStatus*/)
@@ -146,7 +146,7 @@ void FstabStorageAccess::slotTeardownFinished(int exitCode, QProcess::ExitStatus
 
 void FstabStorageAccess::slotTeardownDone(int error, const QString &errorString)
 {
-    Q_EMIT teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
+    emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_fstabDevice->udi());
 }
 
 void FstabStorageAccess::onMtabChanged(const QString& device)
@@ -156,11 +156,11 @@ void FstabStorageAccess::onMtabChanged(const QString& device)
         // device umounted
         m_filePath = FstabHandling::mountPoints(device).first();
         m_isAccessible = false;
-        Q_EMIT accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + device);
+        emit accessibilityChanged(false, QString(FSTAB_UDI_PREFIX) + "/" + device);
     } else {
         // device added
         m_filePath = currentMountPoints.first();
         m_isAccessible = true;
-        Q_EMIT accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + device);
+        emit accessibilityChanged(true, QString(FSTAB_UDI_PREFIX) + "/" + device);
     }
 }

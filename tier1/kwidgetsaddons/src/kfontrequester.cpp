@@ -163,7 +163,7 @@ void KFontRequester::setFont( const QFont &font, bool onlyFixed )
   d->m_onlyFixed = onlyFixed;
 
   d->displaySampleText();
-  Q_EMIT fontSelected( d->m_selFont );
+  emit fontSelected( d->m_selFont );
 }
 
 void KFontRequester::setSampleText( const QString &text )
@@ -191,7 +191,7 @@ void KFontRequester::KFontRequesterPrivate::_k_buttonClicked()
     {
         m_selFont = font;
         displaySampleText();
-        Q_EMIT q->fontSelected( m_selFont );
+        emit q->fontSelected( m_selFont );
     }
 }
 

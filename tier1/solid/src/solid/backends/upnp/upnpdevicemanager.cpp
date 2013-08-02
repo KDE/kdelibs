@@ -130,14 +130,14 @@ void UPnPDeviceManager::rootDeviceOnline(Herqq::Upnp::HClientDevice* device)
 {
     QString udn = device->info().udn().toString();
     qDebug() << "UPnP device entered:" << udn;
-    Q_EMIT deviceAdded(udiPrefix() + '/' + udn);
+    emit deviceAdded(udiPrefix() + '/' + udn);
 }
 
 void UPnPDeviceManager::rootDeviceOffline(Herqq::Upnp::HClientDevice* device)
 {
     QString udn = device->info().udn().toString();
     qDebug() << "UPnP device gone:" << udn;
-    Q_EMIT deviceRemoved(udiPrefix() + '/' + udn);
+    emit deviceRemoved(udiPrefix() + '/' + udn);
 
     UPnPControlPoint* upnpControlPoint = UPnPControlPoint::acquireInstance();
 

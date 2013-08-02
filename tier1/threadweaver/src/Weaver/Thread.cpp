@@ -90,7 +90,7 @@ void Thread::run()
     Q_ASSERT(QCoreApplication::instance() != 0);
     d->parent->threadEnteredRun(this);
 
-    Q_EMIT started(this);
+    emit started(this);
     debug(3, "Thread::run [%u]: running.\n", id());
 
     while (true) {
@@ -109,9 +109,9 @@ void Thread::run()
                 QMutexLocker l(&d->mutex); Q_UNUSED(l);
                 d->job = newJob;
             }
-            Q_EMIT jobStarted(this, newJob);
+            emit jobStarted(this, newJob);
             newJob->execute (this, newJob);
-            Q_EMIT jobDone(newJob);
+            emit jobDone(newJob);
         }
     }
     debug ( 3, "Thread::run [%u]: exiting.\n", id() );

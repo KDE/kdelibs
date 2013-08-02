@@ -40,7 +40,7 @@ void KPageWidgetPrivate::_k_slotCurrentPageChanged(const QModelIndex &current, c
     beforeItem = model()->item( before );
 
     Q_Q(KPageWidget);
-    Q_EMIT q->currentPageChanged(currentItem, beforeItem);
+    emit q->currentPageChanged(currentItem, beforeItem);
 }
 
 KPageWidget::KPageWidget(KPageWidgetPrivate &dd, QWidget *parent)
@@ -109,7 +109,7 @@ void KPageWidget::addSubPage( KPageWidgetItem *parent, KPageWidgetItem *item )
 
 void KPageWidget::removePage( KPageWidgetItem *item )
 {
-    Q_EMIT pageRemoved(item); // Q_EMIT signal before we remove it, because the item will be deleted in the model
+    emit pageRemoved(item); // Q_EMIT signal before we remove it, because the item will be deleted in the model
     d_func()->model()->removePage(item);
 }
 

@@ -103,7 +103,7 @@ bool KCheckableProxyModel::setData(const QModelIndex& index, const QVariant& val
     Qt::CheckState state = static_cast<Qt::CheckState>(value.toInt());
     const QModelIndex srcIndex = mapToSource(index);
     bool result = select(QItemSelection(srcIndex, srcIndex), state == Qt::Checked ? QItemSelectionModel::Select : QItemSelectionModel::Deselect);
-    Q_EMIT dataChanged(index, index);
+    emit dataChanged(index, index);
     return result;
   }
   return QIdentityProxyModel::setData(index, value, role);

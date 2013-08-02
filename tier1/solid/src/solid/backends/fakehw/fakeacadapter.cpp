@@ -40,12 +40,12 @@ bool FakeAcAdapter::isPlugged() const
 void FakeAcAdapter::plug()
 {
     fakeDevice()->setProperty("isPlugged", true);
-    Q_EMIT plugStateChanged(true, fakeDevice()->udi());
+    emit plugStateChanged(true, fakeDevice()->udi());
 }
 
 void FakeAcAdapter::unplug()
 {
     fakeDevice()->setProperty("isPlugged", false);
-    Q_EMIT plugStateChanged(false, fakeDevice()->udi());
+    emit plugStateChanged(false, fakeDevice()->udi());
 }
 

@@ -79,11 +79,11 @@ bool TestBackend::isCallerAuthorized(const QString &action, QByteArray callerId)
         return false;
     } else if (action == QLatin1String("requires.auth")) {
         m_actionStatuses.insert(action, Action::AuthorizedStatus);
-        Q_EMIT actionStatusChanged(action, Action::AuthorizedStatus);
+        emit actionStatusChanged(action, Action::AuthorizedStatus);
         return true;
     } else if (action == QLatin1String("generates.error")) {
         m_actionStatuses.insert(action, Action::ErrorStatus);
-        Q_EMIT actionStatusChanged(action, Action::ErrorStatus);
+        emit actionStatusChanged(action, Action::ErrorStatus);
         return false;
     } else if (action == QLatin1String("always.authorized")) {
         return true;
@@ -91,11 +91,11 @@ bool TestBackend::isCallerAuthorized(const QString &action, QByteArray callerId)
         qDebug() << "Caller ID:" << callerId;
         if (callerId == callerID()) {
             m_actionStatuses.insert(action, Action::AuthorizedStatus);
-            Q_EMIT actionStatusChanged(action, Action::AuthorizedStatus);
+            emit actionStatusChanged(action, Action::AuthorizedStatus);
             return true;
         } else {
             m_actionStatuses.insert(action, Action::DeniedStatus);
-            Q_EMIT actionStatusChanged(action, Action::DeniedStatus);
+            emit actionStatusChanged(action, Action::DeniedStatus);
         }
     }
 

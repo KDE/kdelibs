@@ -155,14 +155,14 @@ void KDBusService::unregister()
 void KDBusService::Activate(const QVariantMap &platform_data)
 {
     // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
-    Q_EMIT activateRequested();
+    emit activateRequested();
     // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
 }
 
 void KDBusService::Open(const QStringList &uris, const QVariantMap &platform_data)
 {
     // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
-    Q_EMIT openRequested(QUrl::fromStringList(uris));
+    emit openRequested(QUrl::fromStringList(uris));
     // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
 }
 
@@ -171,6 +171,6 @@ void KDBusService::ActivateAction(const QString &action_name, const QVariantList
     // TODO (via hook) KStartupInfo::setStartupId(platform_data.value("desktop-startup-id"))
     // This is a workaround for DBus not supporting null variants.
     const QVariant param = maybeParameter.count() == 1 ? maybeParameter.first() : QVariant();
-    Q_EMIT activateActionRequested(action_name, param);
+    emit activateActionRequested(action_name, param);
     // TODO (via hook) KStartupInfo::appStarted(platform_data.value("desktop-startup-id"))
 }

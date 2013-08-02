@@ -52,7 +52,7 @@ void XScreensaverBasedPoller::screensaverActivated(bool activated)
 
     if (!activated) {
         m_screenSaverIface->SimulateUserActivity();
-        Q_EMIT resumingFromIdle();
+        emit resumingFromIdle();
     }
 }
 
@@ -70,6 +70,6 @@ void XScreensaverBasedPoller::simulateUserActivity()
 {
     stopCatchingIdleEvents();
     XResetScreenSaver(QX11Info::display());
-    Q_EMIT resumingFromIdle();
+    emit resumingFromIdle();
 }
 

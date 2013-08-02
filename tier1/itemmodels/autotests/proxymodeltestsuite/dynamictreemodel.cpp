@@ -631,7 +631,7 @@ void ModelInsertAndRemoveQueuedCommand::doCommand()
   connect (this, SIGNAL(beginRemoveRows(QModelIndex,int,int)), SLOT(queuedBeginRemoveRows(QModelIndex,int,int)), Qt::QueuedConnection);
   connect (this, SIGNAL(endRemoveRows()), SLOT(queuedEndRemoveRows()), Qt::QueuedConnection);
 
-  Q_EMIT beginInsertRows(parent, m_startRow, m_endRow);
+  emit beginInsertRows(parent, m_startRow, m_endRow);
 //   m_model->beginInsertRows(parent, m_startRow, m_endRow);
   qint64 parentId = parent.internalId();
   for (int row = m_startRow; row <= m_endRow; row++)
@@ -651,10 +651,10 @@ void ModelInsertAndRemoveQueuedCommand::doCommand()
     }
   }
 
-  Q_EMIT endInsertRows();
+  emit endInsertRows();
 //   m_model->endInsertRows();
 
-  Q_EMIT beginRemoveRows(parent, m_startRow, m_endRow);
+  emit beginRemoveRows(parent, m_startRow, m_endRow);
 //   m_model->beginRemoveRows(parent, m_startRow, m_endRow);
   for(int col = 0; col < m_numCols; col++ )
   {
@@ -666,7 +666,7 @@ void ModelInsertAndRemoveQueuedCommand::doCommand()
       m_model->m_childItems[parentId][col].removeOne(item);
     }
   }
-  Q_EMIT endRemoveRows();
+  emit endRemoveRows();
 //   m_model->endRemoveRows();
 
 }

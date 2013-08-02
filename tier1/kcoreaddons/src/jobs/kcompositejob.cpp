@@ -111,7 +111,7 @@ void KCompositeJob::slotResult( KJob *job )
 
 void KCompositeJob::slotInfoMessage( KJob *job, const QString &plain, const QString &rich )
 {
-    Q_EMIT infoMessage( job, plain, rich );
+    emit infoMessage( job, plain, rich );
 }
 
 #include "moc_kcompositejob.cpp"

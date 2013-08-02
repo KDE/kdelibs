@@ -182,12 +182,12 @@ QObject *HalManager::createDevice(const QString &udi)
 void HalManager::slotDeviceAdded(const QString &udi)
 {
     d->devicesCache.append(udi);
-    Q_EMIT deviceAdded(udi);
+    emit deviceAdded(udi);
 }
 
 void HalManager::slotDeviceRemoved(const QString &udi)
 {
     d->devicesCache.removeAll(udi);
-    Q_EMIT deviceRemoved(udi);
+    emit deviceRemoved(udi);
 }
 

@@ -77,19 +77,19 @@ void StorageAccess::connectDBusSignals()
 void StorageAccess::slotSetupDone(int error, const QString &errorString)
 {
     m_setupInProgress = false;
-    Q_EMIT setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 void StorageAccess::slotTeardownDone(int error, const QString &errorString)
 {
     m_teardownInProgress = false;
-    Q_EMIT teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 void StorageAccess::slotEjectDone(int error, const QString &errorString)
 {
     m_ejectInProgress = false;
-    Q_EMIT ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    emit ejectDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
 }
 
 bool StorageAccess::isAccessible() const
@@ -198,7 +198,7 @@ void StorageAccess::slotPropertyChanged(const QMap<QString,int> &changes)
 {
     if (changes.contains("volume.is_mounted"))
     {
-        Q_EMIT accessibilityChanged(isAccessible(), m_device->udi());
+        emit accessibilityChanged(isAccessible(), m_device->udi());
     }
 }
 
@@ -296,13 +296,13 @@ void Solid::Backends::Hal::StorageAccess::slotProcessFinished(int exitCode, QPro
 void StorageAccess::slotSetupRequested()
 {
     m_setupInProgress = true;
-    Q_EMIT setupRequested(m_device->udi());
+    emit setupRequested(m_device->udi());
 }
 
 void StorageAccess::slotTeardownRequested()
 {
     m_teardownInProgress = true;
-    Q_EMIT teardownRequested(m_device->udi());
+    emit teardownRequested(m_device->udi());
 }
 
 void StorageAccess::slotEjectRequested()

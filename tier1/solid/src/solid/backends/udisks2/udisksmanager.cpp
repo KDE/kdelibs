@@ -202,11 +202,11 @@ void Manager::slotInterfacesAdded(const QDBusObjectPath &object_path, const QVar
     // new device, we don't know it yet
     if (!m_deviceCache.contains(udi)) {
         m_deviceCache.append(udi);
-        Q_EMIT deviceAdded(udi);
+        emit deviceAdded(udi);
     }
     // re-emit in case of 2-stage devices like N9 or some Android phones
     else if (m_deviceCache.contains(udi) && interfaces_and_properties.keys().contains(UD2_DBUS_INTERFACE_FILESYSTEM)) {
-        Q_EMIT deviceAdded(udi);
+        emit deviceAdded(udi);
     }
 }
 
@@ -226,7 +226,7 @@ void Manager::slotInterfacesRemoved(const QDBusObjectPath &object_path, const QS
     Device device(udi);
 
     if (!udi.isEmpty() && (interfaces.isEmpty() || device.interfaces().isEmpty())) {
-        Q_EMIT deviceRemoved(udi);
+        emit deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
         DeviceBackend::destroyBackend(udi);
     }
@@ -246,11 +246,11 @@ void Manager::slotMediaChanged(const QDBusMessage & msg)
 
     if (!m_deviceCache.contains(udi) && size > 0) { // we don't know the optdisc, got inserted
         m_deviceCache.append(udi);
-        Q_EMIT deviceAdded(udi);
+        emit deviceAdded(udi);
     }
 
     if (m_deviceCache.contains(udi) && size == 0) {  // we know the optdisc, got removed
-        Q_EMIT deviceRemoved(udi);
+        emit deviceRemoved(udi);
         m_deviceCache.removeAll(udi);
         DeviceBackend::destroyBackend(udi);
     }

@@ -152,7 +152,7 @@ void KSelectionOwner::Private::claimSucceeded()
 
     // qDebug() << "Claimed selection";
 
-    Q_EMIT owner->claimedOwnership();
+    emit owner->claimedOwnership();
 }
 
 void KSelectionOwner::Private::gotTimestamp()
@@ -174,7 +174,7 @@ void KSelectionOwner::Private::gotTimestamp()
         timestamp = XCB_CURRENT_TIME;
         window = XCB_NONE;
 
-        Q_EMIT owner->failedToClaimOwnership();
+        emit owner->failedToClaimOwnership();
         return;
     }
 
@@ -210,7 +210,7 @@ void KSelectionOwner::Private::timeout()
         return;
     }
 
-    Q_EMIT owner->failedToClaimOwnership();
+    emit owner->failedToClaimOwnership();
 }
 
 void KSelectionOwner::claim(bool force_P, bool force_kill_P)
@@ -231,7 +231,7 @@ void KSelectionOwner::claim(bool force_P, bool force_kill_P)
         if (!force_P)
         {
             // qDebug() << "Selection already owned, failing";
-            Q_EMIT failedToClaimOwnership();
+            emit failedToClaimOwnership();
             return;
         }
 
@@ -311,7 +311,7 @@ bool KSelectionOwner::filterEvent( void* ev_P )
 //	    qDebug() << "Lost selection";
 
         xcb_window_t window = d->window;
-        Q_EMIT lostOwnership();
+        emit lostOwnership();
 
         // Unset the event mask before we destroy the window so we don't get a destroy event
         uint32_t event_mask = XCB_NONE;
@@ -338,7 +338,7 @@ bool KSelectionOwner::filterEvent( void* ev_P )
 
         d->timestamp = XCB_CURRENT_TIME;
 //	    qDebug() << "Lost selection (destroyed)";
-        Q_EMIT lostOwnership();
+        emit lostOwnership();
         return true;
     }
     case XCB_SELECTION_NOTIFY:
@@ -626,7 +626,7 @@ xcb_window_t KSelectionWatcher::owner()
 
     if (!err && current_owner == new_owner) {
         d->selection_owner = current_owner;
-        Q_EMIT newOwner(d->selection_owner);
+        emit newOwner(d->selection_owner);
     } else {
         // ### This doesn't look right - the selection could have an owner
         d->selection_owner = XCB_NONE;
@@ -662,7 +662,7 @@ void KSelectionWatcher::filterEvent(void* ev_P)
         d->selection_owner = XCB_NONE; // in case the exactly same ID gets reused as the owner
 
         if (owner() == XCB_NONE)
-            Q_EMIT lostOwner(); // it must be safe to delete 'this' in a slot
+            emit lostOwner(); // it must be safe to delete 'this' in a slot
         return;
     }
 }

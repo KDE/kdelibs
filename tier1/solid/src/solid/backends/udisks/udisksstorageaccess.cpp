@@ -132,7 +132,7 @@ void UDisksStorageAccess::slotChanged()
 
     if (old_isAccessible != m_isAccessible)
     {
-        Q_EMIT accessibilityChanged(m_isAccessible, m_device->udi());
+        emit accessibilityChanged(m_isAccessible, m_device->udi());
     }
 }
 
@@ -235,26 +235,26 @@ void UDisksStorageAccess::slotDBusError( const QDBusError & error )
 void UDisksStorageAccess::slotSetupRequested()
 {
     m_setupInProgress = true;
-    Q_EMIT setupRequested(m_device->udi());
+    emit setupRequested(m_device->udi());
 }
 
 void UDisksStorageAccess::slotSetupDone(int error, const QString &errorString)
 {
     m_setupInProgress = false;
-    Q_EMIT setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    emit setupDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
     slotChanged();
 }
 
 void UDisksStorageAccess::slotTeardownRequested()
 {
     m_teardownInProgress = true;
-    Q_EMIT teardownRequested(m_device->udi());
+    emit teardownRequested(m_device->udi());
 }
 
 void UDisksStorageAccess::slotTeardownDone(int error, const QString &errorString)
 {
     m_teardownInProgress = false;
-    Q_EMIT teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
+    emit teardownDone(static_cast<Solid::ErrorType>(error), errorString, m_device->udi());
     slotChanged();
 }
 

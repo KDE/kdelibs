@@ -162,11 +162,11 @@ QString UPowerManager::udiPrefix() const
 
 void UPowerManager::slotDeviceAdded(const QString &opath)
 {
-    Q_EMIT deviceAdded(opath);
+    emit deviceAdded(opath);
 }
 
 void UPowerManager::slotDeviceRemoved(const QString &opath)
 {
-    Q_EMIT deviceRemoved(opath);
+    emit deviceRemoved(opath);
 }
 

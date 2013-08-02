@@ -98,24 +98,24 @@ void Solid::NetworkingPrivate::serviceStatusChanged( uint status )
       case Solid::Networking::Disconnecting:
       case Solid::Networking::Connecting:
         if ( disconnectPolicy == Solid::Networking::Managed ) {
-          Q_EMIT globalNetworkManager->shouldDisconnect();
+          emit globalNetworkManager->shouldDisconnect();
         } else if ( disconnectPolicy == Solid::Networking::OnNextStatusChange ) {
           setDisconnectPolicy( Solid::Networking::Manual );
-          Q_EMIT globalNetworkManager->shouldDisconnect();
+          emit globalNetworkManager->shouldDisconnect();
         }
         break;
       case Solid::Networking::Connected:
         if ( disconnectPolicy == Solid::Networking::Managed ) {
-          Q_EMIT globalNetworkManager->shouldConnect();
+          emit globalNetworkManager->shouldConnect();
         } else if ( disconnectPolicy == Solid::Networking::OnNextStatusChange ) {
           setConnectPolicy( Solid::Networking::Manual );
-          Q_EMIT globalNetworkManager->shouldConnect();
+          emit globalNetworkManager->shouldConnect();
         }
         break;
 //      default:
 //        qDebug() <<  "Unrecognised status code!";
     }
-    Q_EMIT globalNetworkManager->statusChanged( netStatus );
+    emit globalNetworkManager->statusChanged( netStatus );
 }
 
 void Solid::NetworkingPrivate::serviceOwnerChanged( const QString & name, const QString & oldOwner, const QString & newOwner )
@@ -125,12 +125,12 @@ void Solid::NetworkingPrivate::serviceOwnerChanged( const QString & name, const 
     if ( newOwner.isEmpty() ) {
         // kded quit on us
         netStatus = Solid::Networking::Unknown;
-        Q_EMIT globalNetworkManager->statusChanged( netStatus );
+        emit globalNetworkManager->statusChanged( netStatus );
 
     } else {
         // kded was replaced or started
         initialize();
-        Q_EMIT globalNetworkManager->statusChanged( netStatus );
+        emit globalNetworkManager->statusChanged( netStatus );
         serviceStatusChanged( netStatus );
     }
 }

@@ -395,10 +395,10 @@ void KPasswordDialog::KPasswordDialogPrivate::actuallyAccept()
     }
 
     bool keep = ui.keepCheckBox->isVisibleTo( q ) && ui.keepCheckBox->isChecked();
-    Q_EMIT q->gotPassword(q->password(), keep);
+    emit q->gotPassword(q->password(), keep);
 
     if ( ui.userEdit->isVisibleTo( q ) ) {
-        Q_EMIT q->gotUsernameAndPassword(q->username(), q->password(), keep);
+        emit q->gotUsernameAndPassword(q->username(), q->password(), keep);
     }
 
     q->QDialog::accept();

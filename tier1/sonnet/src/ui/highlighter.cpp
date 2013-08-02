@@ -229,9 +229,9 @@ void Highlighter::slotAutoDetection()
 
     if (d->active != savedActive) {
         if (d->active) {
-            Q_EMIT activeChanged(tr("As-you-type spell checking enabled."));
+            emit activeChanged(tr("As-you-type spell checking enabled."));
         } else {
-            Q_EMIT activeChanged(tr( "Too many misspelled words. "
+            emit activeChanged(tr( "Too many misspelled words. "
                                "As-you-type spell checking disabled."));
         }
 
@@ -251,9 +251,9 @@ void Highlighter::setActive( bool active )
 
 
     if ( d->active )
-        Q_EMIT activeChanged( tr("As-you-type spell checking enabled.") );
+        emit activeChanged( tr("As-you-type spell checking enabled.") );
     else
-        Q_EMIT activeChanged( tr("As-you-type spell checking disabled.") );
+        emit activeChanged( tr("As-you-type spell checking disabled.") );
 }
 
 bool Highlighter::isActive() const
@@ -274,7 +274,7 @@ void Highlighter::highlightBlock(const QString &text)
             ++d->errorCount;
             setMisspelled(w.start, w.word.length());
             if (d->suggestionListeners)
-                Q_EMIT newSuggestions(w.word, d->dict->suggest(w.word));
+                emit newSuggestions(w.word, d->dict->suggest(w.word));
         } else
             unsetMisspelled(w.start, w.word.length());
         w = d->filter->nextWord();

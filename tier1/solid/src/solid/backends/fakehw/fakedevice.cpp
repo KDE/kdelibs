@@ -182,7 +182,7 @@ bool FakeDevice::setProperty(const QString &key, const QVariant &value)
     QMap<QString,int> change;
     change[key] = change_type;
 
-    Q_EMIT d->propertyChanged(change);
+    emit d->propertyChanged(change);
 
     return true;
 }
@@ -196,7 +196,7 @@ bool FakeDevice::removeProperty(const QString &key)
     QMap<QString,int> change;
     change[key] = Solid::GenericInterface::PropertyRemoved;
 
-    Q_EMIT d->propertyChanged(change);
+    emit d->propertyChanged(change);
 
     return true;
 }
@@ -243,7 +243,7 @@ QString FakeDevice::lockReason() const
 
 void FakeDevice::raiseCondition(const QString &condition, const QString &reason)
 {
-    Q_EMIT d->conditionRaised(condition, reason);
+    emit d->conditionRaised(condition, reason);
 }
 
 bool FakeDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) const

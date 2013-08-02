@@ -137,13 +137,13 @@ void FakeBattery::setChargeState(Solid::Battery::ChargeState newState)
     }
 
     fakeDevice()->setProperty("chargeState", name);
-    Q_EMIT chargeStateChanged(newState, fakeDevice()->udi());
+    emit chargeStateChanged(newState, fakeDevice()->udi());
 }
 
 void FakeBattery::setChargeLevel(int newLevel)
 {
     fakeDevice()->setProperty("currentLevel", newLevel);
-    Q_EMIT chargePercentChanged(chargePercent(), fakeDevice()->udi());
+    emit chargePercentChanged(chargePercent(), fakeDevice()->udi());
 }
 
 Solid::Battery::Technology FakeBattery::technology() const

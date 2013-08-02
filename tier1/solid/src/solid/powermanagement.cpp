@@ -233,7 +233,7 @@ void Solid::PowerManagementPrivate::slotPowerSaveStatusChanged(bool newState)
     }
 
     powerSaveStatus = newState;
-    Q_EMIT appShouldConserveResourcesChanged(powerSaveStatus);
+    emit appShouldConserveResourcesChanged(powerSaveStatus);
 }
 
 void Solid::PowerManagementPrivate::slotServiceRegistered(const QString &serviceName)
