@@ -63,7 +63,6 @@ target_link_libraries(kdeui LINK_PUBLIC
     KCompletion
     KNotifications
     KJobWidgets
-    KConfigWidgets
     KIconThemes
     ${KDE4_KDECORE_LIBS}
     ${X11_LIBRARIES}

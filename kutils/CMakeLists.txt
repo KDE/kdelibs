@@ -18,8 +18,22 @@ set(kcmutils_LIB_SRCS
 kde4_add_library(kcmutils ${LIBRARY_TYPE} ${kcmutils_LIB_SRCS})
 generate_export_header(kcmutils)
 
-target_link_libraries(kcmutils ${KDE4_KDEUI_LIBS} ${KAuth_LIBRARIES} ${KCoreAddons_LIBRARIES} ${KWidgetsAddons_LIBRARIES} KI18n KCompletion)
-target_link_libraries(kcmutils LINK_INTERFACE_LIBRARIES kdeui KWidgets Qt5::Widgets)
+target_link_libraries(kcmutils
+  LINK_PUBLIC
+    KWidgets
+    Qt5::Widgets
+    KConfigWidgets  # KCModule
+    KService        # KService
+  LINK_PRIVATE
+    ${KAuth_LIBRARIES}
+    ${KCoreAddons_LIBRARIES}
+    ${KWidgetsAddons_LIBRARIES}
+    KI18n
+    KCompletion
+    KIconThemes     # KIconLoader
+    ItemViews       # KWidgetItemDelegate
+    XmlGui          # KAboutApplicationDialog
+)
 set_target_properties(kcmutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
@@ -52,8 +66,15 @@ set(kprintutils_LIB_SRCS
 kde4_add_library(kprintutils ${LIBRARY_TYPE} ${kprintutils_LIB_SRCS})
 generate_export_header(kprintutils)
 
-target_link_libraries(kprintutils ${KDE4_KPARTS_LIBS} ${KCoreAddons_LIBRARIES})
-target_link_libraries(kprintutils LINK_INTERFACE_LIBRARIES kdeui Qt5::Widgets)
+target_link_libraries(kprintutils
+  LINK_PUBLIC
+    Qt5::Widgets
+    Qt5::PrintSupport
+  LINK_PRIVATE
+    kdeui
+    ${KDE4_KPARTS_LIBS}
+    ${KCoreAddons_LIBRARIES}
+)
 set_target_properties(kprintutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
