@@ -40,7 +40,7 @@ public:
     int runMain();
 
 private:
-    bool convert(const QString &src = QString(), const QString &dest = QString());
+    bool convert(const QString &src, const QString &dest);
     bool resolveFiles();
     QString pluginName;
     QCommandLineParser *m_parser;
