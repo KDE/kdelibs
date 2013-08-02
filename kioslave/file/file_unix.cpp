@@ -626,8 +626,7 @@ void FileProtocol::stat( const QUrl & url )
      * stat("/is/unaccessible/") -> EPERM            H.Z.
      * This is the reason for the -1
      */
-    const QUrlPathInfo pathInfo(url);
-    const QString path(pathInfo.localPath(QUrlPathInfo::StripTrailingSlash));
+    const QString path(url.adjusted(QUrl::StripTrailingSlash).toLocalFile());
     const QByteArray _path(QFile::encodeName(path));
     const QString sDetails = metaData(QLatin1String("details"));
     const int details = sDetails.isEmpty() ? 2 : sDetails.toInt();

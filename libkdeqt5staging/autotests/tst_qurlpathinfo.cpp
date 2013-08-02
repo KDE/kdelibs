@@ -56,8 +56,6 @@ private Q_SLOTS:
     void path();
     void addPath_data();
     void addPath();
-    void adjustPath_data();
-    void adjustPath();
     void equals_data();
     void equals();
 };
@@ -142,28 +140,6 @@ void tst_QUrlPathInfo::addPath()
     QUrlPathInfo info(url);
     info.addPath(toAdd);
     QCOMPARE(info.url().toString(), expectedUrl);
-}
-
-void tst_QUrlPathInfo::adjustPath_data()
-{
-    path_data();
-}
-
-void tst_QUrlPathInfo::adjustPath()
-{
-    QFETCH(QString, urlStr);
-    QFETCH(QString, expectedPath);
-    QFETCH(QString, expectedPathNoSlash);
-    QFETCH(QString, expectedPathWithSlash);
-
-    const QUrl url(urlStr);
-    QUrlPathInfo info(url);
-
-    // Go via QUrlPathInfo::path in order to get decoded paths
-    QCOMPARE(QUrlPathInfo(info.url()).path(), expectedPath);
-    QCOMPARE(QUrlPathInfo(info.url(QUrlPathInfo::StripTrailingSlash)).path(), expectedPathNoSlash);
-    info.adjustPath(QUrlPathInfo::StripTrailingSlash);
-    QCOMPARE(info.path(), expectedPathNoSlash);
 }
 
 void tst_QUrlPathInfo::equals_data()

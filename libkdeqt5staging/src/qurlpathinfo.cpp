@@ -216,26 +216,6 @@ QString QUrlPathInfo::localPath(PathFormattingOptions options) const
 }
 
 /*!
-    Returns true if the path is empty
-
-    \sa path()
-*/
-bool QUrlPathInfo::isEmpty() const
-{
-    return d->url.path().isEmpty();
-}
-
-/*!
-   Sets the path to be empty
-
-   \sa path(), setPath()
-*/
-void QUrlPathInfo::clear()
-{
-    d->url.setPath(QString());
-}
-
-/*!
    Sets the name of the file, keeping the directory unchanged.
 
    \sa path(), fileName(), directory()
@@ -299,18 +279,6 @@ QUrl QUrlPathInfo::addPathToUrl(const QUrl &url, const QString& relativePath)
 }
 
 /*!
-    Adjust the trailing slash in the path of the URL.
-
-    The other components of the URL (scheme, host, query, fragment...) remain unchanged.
-
-    \sa path(), addPath()
-*/
-void QUrlPathInfo::adjustPath(PathFormattingOptions options)
-{
-    setPath(path(options));
-}
-
-/*!
     Return true if this URL is a parent of \a child, or if they are equal.
     Trailing slashes are ignored.
 */
@@ -356,16 +324,4 @@ bool QUrlPathInfo::equals(const QUrl& url, EqualsOptions options) const
     }
 
     return d->url == url;
-}
-
-/*!
-    Adjust the trailing slash in the path of the URL.
-
-    The other components of the URL (scheme, host, query, fragment...) remain unchanged.
-
-    \sa path(), addPath()
-*/
-void QUrlPathInfo::adjustPath(QUrl& url, PathFormattingOptions options)
-{
-    url.setPath(QUrlPathInfo(url).path(options), QUrl::DecodedMode);
 }

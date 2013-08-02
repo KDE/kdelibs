@@ -88,17 +88,12 @@ public:
     QString path(PathFormattingOptions options = None) const;
     void setPath(const QString &path);
     void addPath(const QString &relativePath);
-    void adjustPath(PathFormattingOptions options);
     static QUrl addPathToUrl(const QUrl &url, const QString& relativePath) Q_REQUIRED_RESULT;
-    static void adjustPath(QUrl& url, PathFormattingOptions options);
 
     QString localPath(PathFormattingOptions options = None) const;
 
-    bool isEmpty() const;
     bool equals(const QUrl& u, EqualsOptions options = StrictComparison) const;
     bool isParentOfOrEqual(const QUrl &child) const;
-
-    void clear();
 
     void setFileName(const QString &name);
 

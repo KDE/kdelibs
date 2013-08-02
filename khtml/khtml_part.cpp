@@ -633,12 +633,12 @@ bool KHTMLPart::restoreURL( const QUrl &url )
 
 static bool areUrlsForSamePage(const QUrl& url1, const QUrl& url2)
 {
-    QUrl u1 = QUrlPathInfo(url1).url(QUrlPathInfo::StripTrailingSlash);
+    QUrl u1 = url1.adjusted(QUrl::StripTrailingSlash);
     u1.setFragment(QString());
     if (u1.path() == QLatin1String("/")) {
         u1.setPath(QString());
     }
-    QUrl u2 = QUrlPathInfo(url2).url(QUrlPathInfo::StripTrailingSlash);
+    QUrl u2 = url2.adjusted(QUrl::StripTrailingSlash);
     u2.setFragment(QString());
     if (u2.path() == QLatin1String("/")) {
         u2.setPath(QString());
