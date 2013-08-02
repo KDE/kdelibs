@@ -41,7 +41,6 @@ target_link_libraries(kded_kcookiejar
    KCoreAddons
    KDBusAddons
    KI18n
-   KWidgets
    KCompletion
    KWidgetsAddons
    KInterProcessWindowing

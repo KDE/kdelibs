@@ -20,7 +20,6 @@ generate_export_header(kcmutils)
 
 target_link_libraries(kcmutils
   LINK_PUBLIC
-    KWidgets
     Qt5::Widgets
     KConfigWidgets  # KCModule
     KService        # KService

@@ -53,7 +53,6 @@ target_link_libraries(kdeui LINK_PUBLIC
     ${Sonnet_LIBRARIES}
     ${KAuth_LIBRARIES}
     KGuiAddons
-    KWidgets
     ${KWidgetsAddons_LIBRARIES}
     KI18n
     KTextWidgets

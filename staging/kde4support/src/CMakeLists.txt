@@ -153,7 +153,6 @@ target_link_libraries(KDE4Support
    ${KCoreAddons_LIBRARIES}
    KCrash
    ${KWidgetsAddons_LIBRARIES}
-   KWidgets
    KConfigWidgets
    kdeui
    kio

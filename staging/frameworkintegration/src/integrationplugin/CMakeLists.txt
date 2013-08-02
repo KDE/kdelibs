@@ -4,6 +4,6 @@ set(plugin_SRCS frameworkintegrationplugin.cpp)
 add_library(FrameworkIntegrationPlugin MODULE ${plugin_SRCS})
 set_target_properties(FrameworkIntegrationPlugin PROPERTIES PREFIX "") # remove lib prefix
 
-target_link_libraries(FrameworkIntegrationPlugin Qt5::Widgets KWidgets KWidgetsAddons KConfigCore)
+target_link_libraries(FrameworkIntegrationPlugin Qt5::Widgets KWidgetsAddons KConfigCore)
 
 install(TARGETS FrameworkIntegrationPlugin DESTINATION ${QT_PLUGIN_INSTALL_DIR}/kf5)

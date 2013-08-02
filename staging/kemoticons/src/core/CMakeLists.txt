@@ -8,7 +8,7 @@ set(kemoticons_LIB_SRCS
 
 add_library(KEmoticons ${LIBRARY_TYPE} ${kemoticons_LIB_SRCS})
 generate_export_header(KEmoticons)
-target_link_libraries(KEmoticons kio ${KCoreAddons_LIBRARIES} ${KArchive_LIBRARIES} ${KConfig_CORE_LIBRARY} KService KWidgets)
+target_link_libraries(KEmoticons kio ${KCoreAddons_LIBRARIES} ${KArchive_LIBRARIES} ${KConfig_CORE_LIBRARY} KService)
 target_link_libraries(KEmoticons LINK_INTERFACE_LIBRARIES Qt5::Widgets)
 set_target_properties(KEmoticons PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

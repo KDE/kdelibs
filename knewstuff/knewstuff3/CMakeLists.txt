@@ -56,7 +56,6 @@ target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
     ${KDE4_KDECORE_LIBS}
     ${KCoreAddons_LIBRARIES}
-    KWidgets
     ${LibAttica_LIBRARIES}
     ${KArchive_LIBRARIES}
     KI18n

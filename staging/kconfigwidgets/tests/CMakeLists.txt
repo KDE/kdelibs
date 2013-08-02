@@ -12,5 +12,6 @@ macro(kconfigwidgets_executable_tests)
 endmacro()
 
 kconfigwidgets_executable_tests(
+   kcodecactiontest
    klanguagebuttontest
 )

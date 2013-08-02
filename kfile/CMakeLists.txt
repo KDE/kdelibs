@@ -44,7 +44,6 @@ target_link_libraries(kfile
    ${Solid_LIBRARIES}
    ${X11_LIBRARIES}
    ${KCoreAddons_LIBRARIES}
-   KWidgets
    ${KWidgetsAddons_LIBRARIES}
    KI18n
 )

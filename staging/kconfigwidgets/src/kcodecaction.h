@@ -29,14 +29,14 @@
 
 #include <kencodingprober.h>
 #include <kselectaction.h>
-#include <kwidgets_export.h>
+#include <kconfigwidgets_export.h>
 
 /**
  *  @short Action for selecting one of several QTextCodec.
  *
  *  This action shows up a submenu with a list of the available codecs on the system.
  */
-class KWIDGETS_EXPORT KCodecAction
+class KCONFIGWIDGETS_EXPORT KCodecAction
     : public KSelectAction
 {
     Q_OBJECT

@@ -99,7 +99,6 @@ target_link_libraries(XmlGui LINK_PUBLIC
     Qt5::Network
     Qt5::PrintSupport
 
-    KWidgets
     KWidgetsAddons
     ItemViews
     KI18n

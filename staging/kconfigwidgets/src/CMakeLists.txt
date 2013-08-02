@@ -1,4 +1,5 @@
 set(kconfigwidgets_SRCS
+  kcodecaction.cpp
   kcolorscheme.cpp
   kconfigdialog.cpp
   kconfigviewstatesaver.cpp
@@ -22,6 +23,7 @@ target_link_libraries(KConfigWidgets LINK_PUBLIC
     KConfigCore
     KConfigGui
     KAuth
+    KCodecs
     KCoreAddons
     KI18n
 )
@@ -37,6 +39,7 @@ set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSI
 install(TARGETS KConfigWidgets EXPORT KConfigWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  kcodecaction.h
   kcolorscheme.h
   kconfigdialog.h
   kconfigviewstatesaver.h
