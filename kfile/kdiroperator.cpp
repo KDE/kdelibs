@@ -31,55 +31,32 @@
 
 #include <config-kfile.h>
 
-#include <unistd.h>
-
-#include <QtCore/QDir>
-#include <QtCore/QRegExp>
-#include <QtCore/QTimer>
-#include <QtCore/QAbstractItemModel>
 #include <QApplication>
-#include <QDialog>
 #include <QHeaderView>
-#include <QLabel>
-#include <QLayout>
 #include <QListView>
 #include <QMenu>
-#include <QMouseEvent>
-#include <QTreeView>
-#include <QPushButton>
 #include <QProgressBar>
 #include <QScrollBar>
 #include <QSplitter>
 #include <QWheelEvent>
 #include <qurlpathinfo.h>
-
-#include <qapplication.h>
 #include <QDebug>
+
 #include <kdirlister.h>
 #include <kfileitemdelegate.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
-#include <kstandardaction.h>
 #include <kjobwidgets.h>
-#include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
-#include <kio/mkdirjob.h>
 #include <kio/jobuidelegate.h>
-#include <kio/jobclasses.h>
 #include <kio/netaccess.h>
 #include <kio/previewjob.h>
-#include <kio/renamedialog.h>
 #include <kfilepreviewgenerator.h>
 #include <krun.h>
 #include <kpropertiesdialog.h>
-#include <kstandardshortcut.h>
-#include <kde_file.h>
 #include <kactioncollection.h>
-#include <ktoggleaction.h>
-#include <kactionmenu.h>
 #include <kconfiggroup.h>
-#include <qmimedatabase.h>
 #include <ksharedconfig.h>
 
 template class QHash<QString, KFileItem>;
@@ -2629,23 +2606,12 @@ void KDirOperator::setDecorationPosition(QStyleOptionViewItem::Position position
     d->actionCollection->action("decorationAtTop")->setChecked(!decorationAtLeft);
 }
 
-// ### temporary code
-#include <dirent.h>
-bool KDirOperator::Private::isReadable(const QUrl& url)
+bool KDirOperator::Private::isReadable(const QUrl &url)
 {
-    if (!url.isLocalFile())
+    if (!url.isLocalFile()) {
         return true; // what else can we say?
-
-    KDE_struct_stat buf;
-    QString ts = url.toLocalFile();
-    bool readable = (KDE::stat(ts, &buf) == 0);
-    if (readable) { // further checks
-        DIR *test = opendir(QFile::encodeName(ts));    // we do it just to test here
-        readable = (test != 0);
-        if (test)
-            closedir(test);
     }
-    return readable;
+    return QDir(url.toLocalFile()).isReadable();
 }
 
 void KDirOperator::Private::_k_slotDirectoryCreated(const QUrl& url)
