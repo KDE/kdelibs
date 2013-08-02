@@ -41,6 +41,10 @@ namespace KIO  {
      * the urls in the clipboard are actually there for the purposes of carrying
      * out the specified job. This mode for example is used by the KIO::pasteClipboard
      * job when a user performs a cut+paste operation.
+     *
+     * This class also sets @ref job as its parent object. As such, when @ref job
+     * is deleted the instance of ClipboardUpdater you create will also be deleted
+     * as well.
      */
     class ClipboardUpdater : public QObject
     {
