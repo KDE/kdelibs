@@ -37,15 +37,15 @@ namespace KParts { class Part; }
 class name : public baseFactory \
 { \
     public: \
-        explicit name(const char * = 0, const char * = 0, QObject * = 0); \
+        explicit name(const char * = 0, QObject * = 0); \
         ~name(); \
     private: \
         void init(); \
 };
 
 #define K_PLUGIN_FACTORY_DEFINITION_WITH_BASEFACTORY(name, baseFactory, pluginRegistrations) \
-name::name(const char *componentName, const char *catalogName, QObject *parent) \
-    : baseFactory(componentName, catalogName, parent) { init(); } \
+name::name(const char *componentName, QObject *parent) \
+    : baseFactory(componentName, parent) { init(); } \
 void name::init() \
 { \
     pluginRegistrations \
@@ -82,7 +82,7 @@ name::~name() {}
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KAboutData pluginAboutData("componentName", "catalogName", i18n("My Component"), "1.0");
+ *     KAboutData pluginAboutData("componentName", i18n("My Component"), "1.0");
  *     KAboutData::registerPluginData(pluginAboutData);
  *     ...
  * };
@@ -146,7 +146,7 @@ name::~name() {}
  * class MyPlugin : public PluginInterface
  * {
  *     ...
- *     KAboutData pluginAboutData("componentName", "catalogName", i18n("My Component"), "1.0");
+ *     KAboutData pluginAboutData("componentName", i18n("My Component"), "1.0");
  *     KAboutData::registerPluginData(pluginAboutData);
  *     ...
  * };
@@ -203,18 +203,15 @@ class KSERVICE_EXPORT KPluginFactory : public QObject
     Q_DECLARE_PRIVATE(KPluginFactory)
 public:
     /**
-     * This constructor creates a factory for a plugin with the given \p componentName and
-     * \p catalogName.
+     * This constructor creates a factory for a plugin with the given \p componentName.
      *
      * \param componentName the component name of the plugin
-     * \param catalogName the translation catalog to use
      * \param parent a parent object
      */
-    explicit KPluginFactory(const char *componentName = 0, const char *catalogName = 0, QObject *parent = 0);
+    explicit KPluginFactory(const char *componentName = 0, QObject *parent = 0);
 
     /**
-     * This destroys the PluginFactory. It will remove the translation catalog for the plugin,
-     * if it was initialized.
+     * This destroys the PluginFactory.
      */
     virtual ~KPluginFactory();
 
@@ -355,8 +352,6 @@ protected:
     {
         registerPlugin(keyword, &T::staticMetaObject, instanceFunction);
     }
-
-    virtual void setupTranslations();
 
     KPluginFactoryPrivate *const d_ptr;
 

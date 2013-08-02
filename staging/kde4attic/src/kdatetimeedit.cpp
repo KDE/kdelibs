@@ -196,7 +196,7 @@ void KDateTimeEditPrivate::initTimeSpecWidget()
     QStringList keys = m_zones.keys();
     QMap<QString, QString> names;
     foreach (const QString &key, keys) {
-        names.insert(i18n(key.toUtf8()).replace('_', ' '), key);
+        names.insert(i18nd("timezones4", key.toUtf8()).replace('_', ' '), key);
     }
     QMapIterator<QString, QString> i(names);
     while (i.hasNext()) {
@@ -264,7 +264,6 @@ KDateTimeEdit::KDateTimeEdit(QWidget *parent)
               :QWidget(parent),
                d(new KDateTimeEditPrivate(this))
 {
-    KLocalizedString::insertCatalog("timezones4");
     d->ui.setupUi(this);
     //Need to do the min/max defaults here and not in private init as need to wait for ui to init
     //the KDateComboBox which holds the calendar object.  Revisit this???

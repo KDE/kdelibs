@@ -82,13 +82,7 @@ class KGlobalPrivate
 
         KStandardDirs *dirs;
         KStringDict *stringDict;
-        QStringList catalogsToInsert;
 };
-
-KCatalogLoader::KCatalogLoader(const QString &catalogName)
-{
-    KLocalizedString::insertCatalog(catalogName);
-}
 
 K_GLOBAL_STATIC(KGlobalPrivate, globalData)
 
@@ -120,11 +114,6 @@ const KComponentData &KGlobal::mainComponent()
 bool KGlobal::hasMainComponent()
 {
     return KComponentData::hasMainComponent();
-}
-
-void KGlobal::insertCatalog(const QString& catalog)
-{
-    KLocalizedString::insertCatalog(catalog);
 }
 
 KLocale *KGlobal::locale()

@@ -37,25 +37,13 @@ class KComponentDataPrivate
 public:
     KComponentDataPrivate(const K4AboutData &aboutData_)
         : aboutData(aboutData_),
-        shouldRemoveCatalog(false),
         refCount(1)
     {
-#if 0 // TEMP_KF5_REENABLE
-        if (QCoreApplication::instance()) {
-            // KLocal::global() needs an app name
-            KLocale::global()->insertCatalog(aboutData.catalogName());
-            shouldRemoveCatalog = true;
-        }
-#endif
     }
 
     ~KComponentDataPrivate()
     {
         refCount.fetchAndStoreOrdered(-0x00FFFFFF); //prevent a reentering of the dtor
-#if 0 // TEMP_KF5_REENABLE
-        if (shouldRemoveCatalog && KLocale::global())
-            KLocale::global()->removeCatalog(aboutData.catalogName());
-#endif
 
         sharedConfig = 0;   //delete the config object first, because it could access the standard dirs while syncing
     }
@@ -83,7 +71,6 @@ public:
     KSharedConfig::Ptr sharedConfig;
 
 private:
-    bool shouldRemoveCatalog;
     QAtomicInt refCount;
     KComponentDataPrivate(const KComponentDataPrivate&);
     KComponentDataPrivate &operator=(const KComponentDataPrivate&);

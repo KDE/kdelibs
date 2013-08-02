@@ -714,7 +714,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
     QCoreApplication app(argc, argv);
     app.setApplicationVersion("5.0");
 
-    KLocalizedString::setApplicationCatalog("kio5");
+    KLocalizedString::setApplicationDomain("kio5");
 
     QCommandLineParser parser;
     parser.addVersionOption();

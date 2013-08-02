@@ -32,7 +32,7 @@ Q_GLOBAL_STATIC(QObjectCleanupHandler, factorycleanup)
 
 extern int kLibraryDebugArea();
 
-KPluginFactory::KPluginFactory(const char *componentName, const char *catalogName, QObject *parent)
+KPluginFactory::KPluginFactory(const char *componentName, QObject *parent)
     : QObject(parent), d_ptr(new KPluginFactoryPrivate)
 {
     Q_D(KPluginFactory);
@@ -40,8 +40,6 @@ KPluginFactory::KPluginFactory(const char *componentName, const char *catalogNam
 
     if (componentName)
         d->componentName = QString::fromUtf8(componentName);
-    if (catalogName)
-        d->catalogName = QString::fromUtf8(catalogName);
 
     factorycleanup()->add(this);
 }
@@ -55,12 +53,6 @@ KPluginFactory::KPluginFactory(KPluginFactoryPrivate &d, QObject *parent)
 KPluginFactory::~KPluginFactory()
 {
     Q_D(KPluginFactory);
-
-#if 0 // TEMP_KF5_REENABLE
-    if (d->catalogInitialized && !d->catalogName.isEmpty() && KLocale::global()) {
-        KLocale::global()->removeCatalog(d->catalogName);
-    }
-#endif
 
     delete d_ptr;
 }
@@ -138,11 +130,6 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
 
     QObject *obj = 0;
 
-    if (!d->catalogInitialized) {
-        d->catalogInitialized = true;
-        setupTranslations();
-    }
-
 #ifndef KDE_NO_DEPRECATED
     if (keyword.isEmpty()) {
 
@@ -184,18 +171,6 @@ QObject *KPluginFactory::create(const char *iface, QWidget *parentWidget, QObjec
         emit objectCreated(obj);
     }
     return obj;
-}
-
-void KPluginFactory::setupTranslations()
-{
-    Q_D(KPluginFactory);
-
-    if (d->catalogName.isEmpty())
-        return;
-
-#if 0 // TEMP_KF5_REENABLE
-    KLocale::global()->insertCatalog(d->catalogName);
-#endif
 }
 
 QStringList KPluginFactory::variantListToStringList(const QVariantList &list)

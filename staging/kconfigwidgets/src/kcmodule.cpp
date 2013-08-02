@@ -224,8 +224,6 @@ const KAboutData *KCModule::aboutData() const
 
 void KCModule::setAboutData(const KAboutData *about)
 {
-    KLocalizedString::insertCatalog(about->catalogName());
-
     delete d->_about;
     d->_about = about;
 }

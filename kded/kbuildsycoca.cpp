@@ -662,7 +662,7 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char **argv)
    KCrash::setApplicationName(QString::fromLatin1(KBUILDSYCOCA_EXENAME));
 #endif
 
-   KLocalizedString::setApplicationCatalog("kdelibs5");
+   KLocalizedString::setApplicationDomain("kdelibs5");
    // force generating of KLocale object. if not, the database will get
    // be translated
    QLocale::setDefault(QLocale::C);

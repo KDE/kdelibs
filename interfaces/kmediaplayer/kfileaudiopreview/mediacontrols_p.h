@@ -21,6 +21,7 @@
 #define PHONON_MEDIACONTROLS_P_H
 
 #include "mediacontrols.h"
+#define TRANSLATION_DOMAIN "kfileaudiopreview4"
 #include <klocalizedstring.h>
 #include <phonon/volumeslider.h>
 #include <phonon/seekslider.h>

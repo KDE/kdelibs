@@ -156,7 +156,6 @@ void PartBase::setComponentData(const KAboutData &pluginData, bool bLoadPlugins)
     d->m_componentData = pluginData;
     KAboutData::registerPluginData(pluginData);
     KXMLGUIClient::setComponentName(pluginData.componentName(), pluginData.displayName());
-    KLocalizedString::insertCatalog(pluginData.catalogName());
     if (bLoadPlugins) {
         loadPlugins(d->m_obj, this, pluginData);
     }

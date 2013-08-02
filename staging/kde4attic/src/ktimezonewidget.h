@@ -134,12 +134,7 @@ class KDE4ATTIC_EXPORT KTimeZoneWidget : public QTreeWidget
     void clearSelection();
 
     /**
-     * Format a time zone name in a standardised manner. The returned value is
-     * transformed via an i18n lookup, so the caller should previously have
-     * set the time zone catalog:
-     * \code
-     *   KLocalizedString::insertCatalog( "timezones4" );
-     * \endcode
+     * Format a time zone name in a standardised manner.
      *
      * @return formatted time zone name.
      */

@@ -96,7 +96,7 @@ int main(int argc, char **argv) {
     QCoreApplication app( argc, argv );
     app.setApplicationName("meinproc");
     app.setApplicationVersion("5.0");
-    KLocalizedString::setApplicationCatalog("kio_help4");
+    KLocalizedString::setApplicationDomain("kio_help4");
 
     QCommandLineParser parser;
     parser.addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));

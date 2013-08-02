@@ -171,7 +171,7 @@ bool KCheckAccelerators::eventFilter(QObject* obj, QEvent* e)
             else
             {
                 QProcess* script=new QProcess(this);
-                script->start(copyWidgetTextCommand.arg(text).arg(KLocalizedString::applicationCatalog()));
+                script->start(copyWidgetTextCommand.arg(text).arg(QFile::decodeName(KLocalizedString::applicationDomain())));
                 connect(script,SIGNAL(finished(int,QProcess::ExitStatus)),script,SLOT(deleteLater()));
             }
             e->accept();
