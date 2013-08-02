@@ -47,7 +47,6 @@
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QAuthenticator>
 #include <qmimedatabase.h>
-#include <qurlpathinfo.h>
 
 #include <QDebug>
 #include <kio/ioslave_defaults.h>
@@ -1393,10 +1392,9 @@ void Ftp::stat(const QUrl &url)
 
   QUrl tempurl( url );
   tempurl.setPath( path ); // take the clean one
-  const QUrlPathInfo tempurlInfo(tempurl);
   QString listarg; // = tempurl.directory(QUrl::ObeyTrailingSlash);
   QString parentDir;
-  QString filename = tempurlInfo.fileName();
+  QString filename = tempurl.fileName();
   Q_ASSERT(!filename.isEmpty());
   QString search = filename;
 

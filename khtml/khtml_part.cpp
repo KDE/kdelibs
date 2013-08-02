@@ -3967,14 +3967,14 @@ void KHTMLPart::slotSaveBackground()
 
 void KHTMLPart::slotSaveDocument()
 {
-  QUrlPathInfo srcURL( url() );
+  QUrl srcURL(url());
 
-  if ( srcURL.fileName().isEmpty() )
-    srcURL.setFileName( "index" + defaultExtension() );
+  if (srcURL.fileName().isEmpty())
+    srcURL.setPath(srcURL.path() + "index" + defaultExtension());
 
   KIO::MetaData metaData;
   // Referre unknown?
-  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), srcURL.url(), metaData, "text/html", d->m_cacheId );
+  KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save As" ), srcURL, metaData, "text/html", d->m_cacheId );
 }
 
 void KHTMLPart::slotSecurity()
@@ -4066,14 +4066,14 @@ void KHTMLPart::slotSaveFrame()
     if ( !frame )
         return;
 
-    QUrlPathInfo srcURL( frame->url() );
+    QUrl srcURL( frame->url() );
 
     if ( srcURL.fileName().isEmpty() )
-        srcURL.setFileName( "index" + defaultExtension() );
+        srcURL.setPath( srcURL.path() + "index" + defaultExtension() );
 
     KIO::MetaData metaData;
     // Referrer unknown?
-    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save Frame As" ), srcURL.url(), metaData, "text/html" );
+    KHTMLPopupGUIClient::saveURL( d->m_view, i18n( "Save Frame As" ), srcURL, metaData, "text/html" );
 }
 
 void KHTMLPart::slotSetEncoding(const QString &enc)
@@ -4977,8 +4977,7 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
     }
     else                                                // look at "extension" of link
     {
-      const QUrlPathInfo pathInfo(popupURL);
-      const QString fname(pathInfo.fileName());
+      const QString fname(popupURL.fileName());
       if (!fname.isEmpty() && !popupURL.hasFragment() && popupURL.query().isEmpty())
       {
         QMimeType pmt = db.mimeTypeForFile(fname, QMimeDatabase::MatchExtension);

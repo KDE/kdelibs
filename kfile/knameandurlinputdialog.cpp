@@ -27,7 +27,6 @@
 #include <QFormLayout>
 #include <QLabel>
 #include <QVBoxLayout>
-#include <qurlpathinfo.h>
 
 class KNameAndUrlInputDialogPrivate
 {
@@ -130,9 +129,8 @@ void KNameAndUrlInputDialogPrivate::_k_slotURLTextChanged(const QString&)
         // (we copy only its filename if protocol supports listing,
         // but for HTTP we don't want tons of index.html links)
         QUrl url(m_urlRequester->url());
-        QUrlPathInfo pathInfo(url);
-        if (KProtocolManager::supportsListing(url) && !pathInfo.fileName().isEmpty())
-            m_leName->setText(pathInfo.fileName());
+        if (KProtocolManager::supportsListing(url) && !url.fileName().isEmpty())
+            m_leName->setText(url.fileName());
         else
             m_leName->setText(url.toString());
         m_fileNameEdited = false; // slotNameTextChanged set it to true erroneously

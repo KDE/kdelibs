@@ -1177,7 +1177,7 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
         QString entry_name;
         if (!url.isEmpty()) {
             //qDebug() << "url:" << url;
-            entry_name = QUrlPathInfo(QUrl(url)).fileName();
+            entry_name = QUrl(url).fileName();
         } else {
             entry_name = entry.stringValue(KIO::UDSEntry::UDS_NAME);
         }

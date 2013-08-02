@@ -92,7 +92,6 @@ void tst_QUrlPathInfo::directoryAndFileName()
     QVERIFY(url.isValid());
     const QUrlPathInfo info(url);
     QCOMPARE(info.directory(), expectedDirectory);
-    QCOMPARE(info.fileName(), expectedFileName);
 }
 
 void tst_QUrlPathInfo::setFileName_data()

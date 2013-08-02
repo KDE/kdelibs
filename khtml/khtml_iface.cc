@@ -25,7 +25,6 @@
 #include <kio/global.h>
 #include <QApplication>
 #include <QtCore/QVariant>
-#include <qurlpathinfo.h>
 
 KHTMLPartIface::KHTMLPartIface( KHTMLPart *_part )
     : QDBusAbstractAdaptor( _part ), part(_part)
@@ -199,14 +198,14 @@ void KHTMLPartIface::saveBackground(const QString &destination)
 
 void KHTMLPartIface::saveDocument(const QString &destination)
 {
-    QUrlPathInfo srcURL( part->url() );
+    QUrl srcURL( part->url() );
 
     if ( srcURL.fileName().isEmpty() )
-        srcURL.setFileName( "index.html" );
+        srcURL.setPath( srcURL.path() + "index.html" );
 
     KIO::MetaData metaData;
     // Referrer unknown?
-    KHTMLPopupGUIClient::saveURL( part->widget(), srcURL.url(), QUrl( destination ), metaData, part->cacheId() );
+    KHTMLPopupGUIClient::saveURL( part->widget(), srcURL, QUrl( destination ), metaData, part->cacheId() );
 }
 
 void KHTMLPartIface::setUserStyleSheet(const QString &styleSheet)

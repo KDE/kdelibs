@@ -627,8 +627,7 @@ KFileWidget::KFileWidget( const QUrl& _startDir, QWidget *parent )
         statRes = statJob->exec();
         // qDebug() << "stat of" << startDir << "-> statRes" << statRes << "isDir" << statJob->statResult().isDir();
         if (!statRes || !statJob->statResult().isDir()) {
-            QUrlPathInfo startDirInfo(startDir);
-            filename = startDirInfo.fileName();
+            filename = startDir.fileName();
             startDir = startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
             // qDebug() << "statJob -> startDir" << startDir << "filename" << filename;
         }
@@ -852,11 +851,9 @@ void KFileWidget::slotOk()
             Q_ASSERT(statJob);
 
             // if this is not a dir, strip the filename. after this we have an existent and valid
-            // dir (if we stated correctly the file, setting a null filename won't make any bad).
+            // dir (we stated correctly the file).
             if (!statJob->statResult().isDir()) {
-                QUrlPathInfo pathInfo(topMostUrl);
-                pathInfo.setFileName(QString());
-                topMostUrl = pathInfo.url();
+                topMostUrl = topMostUrl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
             }
 
             // now the funny part. for the rest of filenames, go and look for the closest ancestor
@@ -869,9 +866,7 @@ void KFileWidget::slotOk()
                 if (res) {
                     // again, we don't care about filenames
                     if (!statJob->statResult().isDir()) {
-                        QUrlPathInfo pathInfo(currUrl);
-                        pathInfo.setFileName(QString());
-                        currUrl = pathInfo.url();
+                        currUrl = currUrl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
                     }
 
                     // iterate while this item is contained on the top most url
@@ -917,11 +912,8 @@ void KFileWidget::slotOk()
                 int res = statJob->exec();
                 if (res) {
                     if (!statJob->statResult().isDir()) {
-                        url = url.adjusted(QUrl::StripTrailingSlash);
-                        QUrlPathInfo pathInfo(url);
-                        fileName = pathInfo.fileName();
-                        pathInfo.setFileName(QString());
-                        url = pathInfo.url();
+                        fileName = url.fileName();
+                        url = url.adjusted(QUrl::RemoveFilename); // keeps trailing slash
                     } else {
                         if (!url.path().endsWith('/'))
                             url.setPath(url.path() + '/');
@@ -936,8 +928,7 @@ void KFileWidget::slotOk()
                 if (res) {
                     if (statJob->statResult().isDir()) {
                         url = url.adjusted(QUrl::StripTrailingSlash);
-                        QUrlPathInfo pathInfo(url);
-                        fileName = pathInfo.fileName();
+                        fileName = url.fileName();
                         url = url.adjusted(QUrl::RemoveFilename);
                     }
                 }
@@ -1513,12 +1504,11 @@ bool KFileWidgetPrivate::toOverwrite(const QUrl &url)
     KIO::StatJob *statJob = KIO::stat(url, KIO::HideProgressInfo);
     KJobWidgets::setWindow(statJob, q);
     bool res = statJob->exec();
-    QUrlPathInfo urlPathInfo(url);
 
     if (res) {
         int ret = KMessageBox::warningContinueCancel( q,
             i18n( "The file \"%1\" already exists. Do you wish to overwrite it?" ,
-            urlPathInfo.fileName() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite(),
+            url.fileName() ), i18n( "Overwrite File?" ), KStandardGuiItem::overwrite(),
             KStandardGuiItem::cancel(), QString(), KMessageBox::Notify | KMessageBox::Dangerous);
 
         if (ret != KMessageBox::Continue) {
@@ -2409,8 +2399,7 @@ void KFileWidgetPrivate::appendExtension (QUrl &url)
     if (!autoSelectExtCheckBox->isChecked() || extension.isEmpty())
         return;
 
-    QUrlPathInfo urlPathInfo(url);
-    QString fileName = urlPathInfo.fileName();
+    QString fileName = url.fileName();
     if (fileName.isEmpty())
         return;
 
@@ -2450,16 +2439,18 @@ void KFileWidgetPrivate::appendExtension (QUrl &url)
         // turn off this feature so that you can type "README.")
         //
 //         qDebug() << "\tstrip trailing dot";
-        urlPathInfo.setFileName (fileName.left (len - 1));
+        QString path = url.path();
+        path.chop(1);
+        url.setPath(path);
     }
     // evilmatically append extension :) if the user hasn't specified one
     else if (unspecifiedExtension)
     {
 //         qDebug() << "\tappending extension \'" << extension << "\'...";
-        urlPathInfo.setFileName (fileName + extension);
+        url = url.adjusted(QUrl::RemoveFilename); // keeps trailing slash
+        url.setPath(url.path() + fileName + extension);
 //         qDebug() << "\tsaving as \'" << url << "\'";
     }
-    url = urlPathInfo.url();
 }
 
 
@@ -2608,7 +2599,6 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
     fileName.clear();
     QUrl ret;
 
-    QUrlPathInfo startDirInfo(startDir);
     bool useDefaultStartDir = startDir.isEmpty();
     if ( !useDefaultStartDir )
     {
@@ -2626,7 +2616,7 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
 
             QString keyword;
             QString urlDir = startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path();
-            QString urlFile = startDirInfo.fileName();
+            QString urlFile = startDir.fileName();
             if ( urlDir == "/" )			// '1'..'4' above
             {
                 keyword = urlFile;
@@ -2655,18 +2645,18 @@ QUrl KFileWidget::getStartUrl(const QUrl& startDir,
             // fileName for us anyway, such as smb://), startDir is indeed a dir url.
 
             if (!startDir.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash).path().isEmpty() ||
-                startDirInfo.fileName().isEmpty()) {
+                startDir.fileName().isEmpty()) {
                 // can use start directory
                 ret = startDir;				// will be checked by stat later
                 // If we won't be able to list it (e.g. http), then use default
                 if ( !KProtocolManager::supportsListing( ret ) ) {
                     useDefaultStartDir = true;
-                    fileName = startDirInfo.fileName();
+                    fileName = startDir.fileName();
                 }
             }
             else					// file name only
             {
-                fileName = startDirInfo.fileName();
+                fileName = startDir.fileName();
                 useDefaultStartDir = true;
             }
         }

@@ -42,7 +42,6 @@
 #include <QMenu>
 #include <QPainter>
 #include <QStyle>
-#include <qurlpathinfo.h>
 
 #include <unistd.h>
 #include <kconfiggroup.h>
@@ -189,9 +188,8 @@ QString KFilePlaceEditDialog::label() const
 
     // derive descriptive label from the URL
     QUrl url = m_urlEdit->url();
-    QUrlPathInfo pathInfo(url);
-    if (!pathInfo.fileName().isEmpty()) {
-        return pathInfo.fileName();
+    if (!url.fileName().isEmpty()) {
+        return url.fileName();
     }
     if (!url.host().isEmpty()) {
         return url.host();

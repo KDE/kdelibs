@@ -46,7 +46,6 @@
 #include <QtCore/QMimeData>
 #include <qstandardpaths.h>
 #include <qinputdialog.h>
-#include <qurlpathinfo.h>
 #include <assert.h>
 
 #include <kconfiggroup.h>
@@ -858,12 +857,11 @@ void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,
                                    const QString &filter, long cacheId,
                                    const QString & suggestedFilename )
 {
-  QUrlPathInfo pathInfo(url);
   QString name = QLatin1String( "index.html" );
   if ( !suggestedFilename.isEmpty() )
     name = suggestedFilename;
-  else if ( !pathInfo.fileName().isEmpty() )
-    name = pathInfo.fileName();
+  else if ( !url.fileName().isEmpty() )
+    name = url.fileName();
 
   QUrl destURL;
   int query;

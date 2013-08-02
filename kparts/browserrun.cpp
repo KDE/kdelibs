@@ -37,7 +37,6 @@
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
 #include <qstandardpaths.h>
-#include <qurlpathinfo.h>
 
 
 using namespace KParts;
@@ -251,7 +250,7 @@ void BrowserRun::slotBrowserMimetype( KIO::Job *_job, const QString &type )
 
         // If the current mime-type is the default mime-type, then attempt to
         // determine the "real" mimetype from the file name.
-        QMimeType mime = fixupMimeType(_type, suggestedFileName.isEmpty() ? QUrlPathInfo(url()).fileName() : suggestedFileName);
+        QMimeType mime = fixupMimeType(_type, suggestedFileName.isEmpty() ? url().fileName() : suggestedFileName);
         if (mime.isValid() && mime.name() != _type) {
             _type = mime.name();
         }
@@ -302,7 +301,7 @@ BrowserRun::NonEmbeddableResult BrowserRun::handleNonEmbeddable(const QString& _
                 // qDebug() << "request comes from a POST, can't pass a URL to another app, need to save";
                 d->m_mimeType = mimeType;
                 QString extension;
-                QString fileName = suggestedFileName().isEmpty() ? QUrlPathInfo(KRun::url()).fileName() : suggestedFileName();
+                QString fileName = suggestedFileName().isEmpty() ? KRun::url().fileName() : suggestedFileName();
                 int extensionPos = fileName.lastIndexOf( '.' );
                 if ( extensionPos != -1 )
                     extension = fileName.mid( extensionPos ); // keep the '.'

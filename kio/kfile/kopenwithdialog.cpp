@@ -33,7 +33,6 @@
 #include <QStyle>
 #include <QStyleOptionButton>
 #include <qstandardpaths.h>
-#include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 
 #include <kcoreauthorized.h>
@@ -490,7 +489,7 @@ KOpenWithDialog::KOpenWithDialog( const QList<QUrl>& _urls, QWidget* parent )
     {
         text = i18n("<qt>Select the program that should be used to open <b>%1</b>. "
                      "If the program is not listed, enter the name or click "
-                     "the browse button.</qt>",  QUrlPathInfo(_urls.first()).fileName() );
+                     "the browse button.</qt>",  _urls.first().fileName() );
     }
     else
         // Should never happen ??

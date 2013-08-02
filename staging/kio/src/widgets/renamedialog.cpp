@@ -383,10 +383,11 @@ QUrl RenameDialog::newDestUrl()
 
 QUrl RenameDialog::autoDestUrl() const
 {
-    QUrlPathInfo newDest(d->dest);
     const QUrl destDirectory = d->dest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
-    newDest.setFileName(suggestName(destDirectory, newDest.fileName()));
-    return newDest.url();
+    const QString newName = suggestName(destDirectory, d->dest.fileName());
+    QUrl newDest(destDirectory);
+    newDest.setPath(newDest.path() + QLatin1Char('/') + newName);
+    return newDest;
 }
 
 void RenameDialog::cancelPressed()

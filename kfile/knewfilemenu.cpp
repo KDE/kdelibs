@@ -191,7 +191,7 @@ void KNewFileMenuSingleton::parseFiles()
             }
             if (text.isEmpty())
             {
-                text = QUrlPathInfo(QUrl(filePath)).fileName();
+                text = QUrl(filePath).fileName();
                 if (text.endsWith(".desktop"))
                     text.truncate(text.length() - 8);
             }

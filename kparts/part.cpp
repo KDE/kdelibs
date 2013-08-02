@@ -819,7 +819,7 @@ bool ReadWritePart::queryClose()
     if ( !isReadWrite() || !isModified() )
         return true;
 
-    QString docName = QUrlPathInfo(url()).fileName();
+    QString docName = url().fileName();
     if (docName.isEmpty()) docName = i18n( "Untitled" );
 
     QWidget *parentWidget=widget();

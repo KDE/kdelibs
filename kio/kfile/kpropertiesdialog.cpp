@@ -1444,7 +1444,7 @@ void KFilePropsPlugin::slotCopyFinished( KJob * job )
             KFileItem item( entry, properties->url() );
             KDesktopFile config( item.localPath() );
             KConfigGroup cg = config.desktopGroup();
-            QString nameStr = nameFromFileName(QUrlPathInfo(properties->url()).fileName());
+            QString nameStr = nameFromFileName(properties->url().fileName());
             cg.writeEntry( "Name", nameStr );
             cg.writeEntry( "Name", nameStr, KConfigGroup::Persistent|KConfigGroup::Localized);
         }
@@ -1623,9 +1623,8 @@ KFilePermissionsPropsPlugin::KFilePermissionsPropsPlugin( KPropertiesDialog *_pr
     d->cbRecursive = 0L;
     d->grpCombo = 0L; d->grpEdit = 0;
     d->usrEdit = 0L;
-    const QUrlPathInfo pathInfo(properties->url());
-    QString path = pathInfo.path(QUrlPathInfo::StripTrailingSlash);
-    QString fname = pathInfo.fileName();
+    QString path = properties->url().path();
+    QString fname = properties->url().fileName();
     bool isLocal = properties->url().isLocalFile();
     bool isTrash = (properties->url().scheme() == "trash");
     bool IamRoot = (geteuid() == 0);
@@ -2718,8 +2717,7 @@ void KUrlPropsPlugin::applyChanges()
     // but distributions can. Update the Name field in that case.
     if ( dg.hasKey("Name") )
     {
-        const QUrlPathInfo pathInfo(properties->url());
-        const QString nameStr = nameFromFileName(pathInfo.fileName());
+        const QString nameStr = nameFromFileName(properties->url().fileName());
         dg.writeEntry( "Name", nameStr );
         dg.writeEntry( "Name", nameStr, KConfigBase::Persistent|KConfigBase::Localized );
 
@@ -3182,8 +3180,7 @@ KDesktopPropsPlugin::~KDesktopPropsPlugin()
 void KDesktopPropsPlugin::slotAddFiletype()
 {
     QMimeDatabase db;
-    const QUrlPathInfo pathInfo(properties->url());
-    KMimeTypeChooserDialog dlg(i18n("Add File Type for %1", pathInfo.fileName()),
+    KMimeTypeChooserDialog dlg(i18n("Add File Type for %1", properties->url().fileName()),
                                i18n("Select one or more file types to add:"),
                                QStringList(), // no preselected mimetypes
                                QString(),
@@ -3334,8 +3331,7 @@ void KDesktopPropsPlugin::slotAdvanced()
     QDialog dlg(d->m_frame);
     dlg.setObjectName( "KPropertiesDesktopAdv" );
     dlg.setModal( true );
-    const QUrlPathInfo pathInfo(properties->url());
-    dlg.setWindowTitle(i18n("Advanced Options for %1", pathInfo.fileName()));
+    dlg.setWindowTitle(i18n("Advanced Options for %1", properties->url().fileName()));
 
     Ui_KPropertiesDesktopAdvBase w;
     QWidget *mainWidget = new QWidget(&dlg);

@@ -236,24 +236,6 @@ void QUrlPathInfo::clear()
 }
 
 /*!
-   Returns the name of the file, excluding the directory.
-
-   Note that, if the URL's path ends in a slash, the name of the file is considered empty.
-
-   If the path doesn't contain any slash, it is fully returned as part of fileName(), and directory() will be empty.
-
-   \sa path(), setPath()
-*/
-QString QUrlPathInfo::fileName() const
-{
-    const QString ourPath = path();
-    const int slash = ourPath.lastIndexOf(QLatin1Char('/'));
-    if (slash == -1)
-        return ourPath;
-    return ourPath.mid(slash + 1);
-}
-
-/*!
    Sets the name of the file, keeping the directory unchanged.
 
    \sa path(), fileName(), directory()

@@ -100,7 +100,6 @@ public:
 
     void clear();
 
-    QString fileName() const;
     void setFileName(const QString &name);
 
     QString directory() const;

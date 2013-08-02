@@ -48,7 +48,6 @@
 #include <QtNetwork/QNetworkProxy>
 #include <QtNetwork/QTcpSocket>
 #include <QUrl>
-#include <qurlpathinfo.h>
 
 #include <QDebug>
 #include <klocale.h>
@@ -818,8 +817,7 @@ void HTTPProtocol::davStatList( const QUrl& url, bool stat )
 
       const QUrl thisURL(href.text()); // href.text() is a percent-encoded url.
       if ( thisURL.isValid() ) {
-        QUrlPathInfo thisUrlInfo(thisURL);
-        QString name = thisUrlInfo.fileName();
+        QString name = thisURL.fileName();
 
         // base dir of a listDir(): name should be "."
         if (!stat && thisURL.adjusted(QUrl::StripTrailingSlash) == url.adjusted(QUrl::StripTrailingSlash)) // TODO: use QUrl::matches
