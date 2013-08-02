@@ -23,7 +23,7 @@
 #include <QtCore/QString>
 #include <QKeySequence>
 
-#include <kwidgets_export.h>
+#include <kconfiggui_export.h>
 
 /**
  * \namespace KStandardShortcut
@@ -124,28 +124,28 @@ namespace KStandardShortcut
    * default keybinding will always be returned.
    * @param id the id of the accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &shortcut(StandardShortcut id);
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &shortcut(StandardShortcut id);
 
   /**
    * Returns a unique name for the given accel.
    * @param id the id of the accelerator
    * @return the unique name of the accelerator
    */
-  KWIDGETS_EXPORT QString name(StandardShortcut id);
+  KCONFIGGUI_EXPORT QString name(StandardShortcut id);
 
   /**
    * Returns a localized label for user-visible display.
    * @param id the id of the accelerator
    * @return a localized label for the accelerator
    */
-  KWIDGETS_EXPORT QString label(StandardShortcut id);
+  KCONFIGGUI_EXPORT QString label(StandardShortcut id);
 
   /**
    * Returns an extended WhatsThis description for the given accelerator.
    * @param id the id of the accelerator
    * @return a localized description of the accelerator
    */
-  KWIDGETS_EXPORT QString whatsThis(StandardShortcut id);
+  KCONFIGGUI_EXPORT QString whatsThis(StandardShortcut id);
 
   /**
    * Return the StandardShortcut id of the standard accel action which
@@ -155,7 +155,7 @@ namespace KStandardShortcut
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  KWIDGETS_EXPORT StandardShortcut find(const QKeySequence &keySeq);
+  KCONFIGGUI_EXPORT StandardShortcut find(const QKeySequence &keySeq);
 
   /**
    * Return the StandardShortcut id of the standard accel action which
@@ -165,7 +165,7 @@ namespace KStandardShortcut
    * @return the id of the standard accelerator, or AccelNone if there
    *          is none
    */
-  KWIDGETS_EXPORT StandardShortcut find(const char *keyName);
+  KCONFIGGUI_EXPORT StandardShortcut find(const char *keyName);
 
   /**
    * Returns the hardcoded default shortcut for @p id.
@@ -173,309 +173,309 @@ namespace KStandardShortcut
    * @param id the id of the accelerator
    * @return the default shortcut of the accelerator
    */
-  KWIDGETS_EXPORT QList<QKeySequence> hardcodedDefaultShortcut(StandardShortcut id);
+  KCONFIGGUI_EXPORT QList<QKeySequence> hardcodedDefaultShortcut(StandardShortcut id);
 
   /**
    * Saves the new shortcut \a cut for standard accel \a id.
    */
-  KWIDGETS_EXPORT void saveShortcut(StandardShortcut id, const QList<QKeySequence> &newShortcut);
+  KCONFIGGUI_EXPORT void saveShortcut(StandardShortcut id, const QList<QKeySequence> &newShortcut);
 
   /**
    * Open file. Default: Ctrl-o
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &open();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &open();
 
   /**
    * Create a new document (or whatever). Default: Ctrl-n
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &openNew();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &openNew();
 
   /**
    * Close current document. Default: Ctrl-w
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &close();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &close();
 
   /**
    * Save current document. Default: Ctrl-s
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &save();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &save();
 
   /**
    * Print current document. Default: Ctrl-p
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &print();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &print();
 
   /**
    * Quit the program. Default: Ctrl-q
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &quit();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &quit();
 
   /**
    * Undo last operation. Default: Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &undo();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &undo();
 
   /**
    * Redo. Default: Shift-Ctrl-z
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &redo();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &redo();
 
   /**
    * Cut selected area and store it in the clipboard. Default: Ctrl-x
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &cut();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &cut();
 
   /**
    * Copy selected area into the clipboard. Default: Ctrl-c
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &copy();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &copy();
 
   /**
    * Paste contents of clipboard at mouse/cursor position. Default: Ctrl-v
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &paste();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &paste();
 
   /**
    * Paste the selection at mouse/cursor position. Default: Ctrl-Shift-Insert
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &pasteSelection();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &pasteSelection();
 
   /**
    * Select all. Default: Ctrl-A
    * @return the shortcut of the standard accelerator
    **/
-  KWIDGETS_EXPORT const QList<QKeySequence> &selectAll();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &selectAll();
 
   /**
    * Delete a word back from mouse/cursor position. Default: Ctrl-Backspace
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &deleteWordBack();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &deleteWordBack();
 
   /**
    * Delete a word forward from mouse/cursor position. Default: Ctrl-Delete
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &deleteWordForward();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &deleteWordForward();
 
   /**
    * Find, search. Default: Ctrl-f
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &find();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &find();
 
   /**
    * Find/search next. Default: F3
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &findNext();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &findNext();
 
   /**
    * Find/search previous. Default: Shift-F3
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &findPrev();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &findPrev();
 
   /**
    * Find and replace matches. Default: Ctrl-r
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &replace();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &replace();
 
   /**
    * Zoom in. Default: Ctrl-Plus
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &zoomIn();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &zoomIn();
 
   /**
    * Zoom out. Default: Ctrl-Minus
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &zoomOut();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &zoomOut();
 
   /**
    * Toggle insert/overwrite (with visual feedback, e.g. in the statusbar). Default: Insert
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &insert();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &insert();
 
   /**
    * Goto home page. Default: Alt-Home
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &home();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &home();
 
   /**
    * Goto beginning of the document. Default: Ctrl-Home
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &begin();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &begin();
 
   /**
    * Goto end of the document. Default: Ctrl-End
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &end();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &end();
 
   /**
    * Goto beginning of current line. Default: Home
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &beginningOfLine();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &beginningOfLine();
 
   /**
    * Goto end of current line. Default: End
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &endOfLine();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &endOfLine();
 
   /**
    * Scroll up one page. Default: Prior
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &prior();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &prior();
 
   /**
    * Scroll down one page. Default: Next
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &next();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &next();
 
   /**
    * Go to line. Default: Ctrl+G
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &gotoLine();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &gotoLine();
 
   /**
    * Add current page to bookmarks. Default: Ctrl+B
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &addBookmark();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &addBookmark();
 
   /**
    * Next Tab. Default: Ctrl-<
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &tabNext();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &tabNext();
 
   /**
    * Previous Tab. Default: Ctrl->
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &tabPrev();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &tabPrev();
 
   /**
    * Full Screen Mode. Default: Ctrl+Shift+F
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &fullScreen();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &fullScreen();
 
   /**
    * Help the user in the current situation. Default: F1
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &help();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &help();
 
   /**
    * Complete text in input widgets. Default Ctrl+E
    * @return the shortcut of the standard accelerator
    **/
-  KWIDGETS_EXPORT const QList<QKeySequence> &completion();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &completion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Up
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &prevCompletion();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &prevCompletion();
 
   /**
    * Iterate through a list when completion returns
    * multiple items. Default: Ctrl+Down
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &nextCompletion();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &nextCompletion();
 
   /**
    * Find a string within another string or list of strings.
    * Default: Ctrl-T
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &substringCompletion();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &substringCompletion();
 
   /**
    * Help users iterate through a list of entries. Default: Up
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &rotateUp();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &rotateUp();
 
   /**
    * Help users iterate through a list of entries. Default: Down
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &rotateDown();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &rotateDown();
 
   /**
    * What's This button. Default: Shift+F1
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &whatsThis();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &whatsThis();
 
   /**
    * Reload. Default: F5
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &reload();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &reload();
 
   /**
    * Up. Default: Alt+Up
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &up();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &up();
 
   /**
    * Back. Default: Alt+Left
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &back();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &back();
 
   /**
    * Forward. Default: ALT+Right
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &forward();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &forward();
 
   /**
    * BackwardWord. Default: Ctrl+Left
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &backwardWord();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &backwardWord();
 
   /**
    * ForwardWord. Default: Ctrl+Right
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &forwardWord();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &forwardWord();
 
   /**
    * Show Menu Bar.  Default: Ctrl-M
    * @return the shortcut of the standard accelerator
    */
-  KWIDGETS_EXPORT const QList<QKeySequence> &showMenubar();
+  KCONFIGGUI_EXPORT const QList<QKeySequence> &showMenubar();
 
 }
 

@@ -5,6 +5,7 @@ set(libkconfiggui_SRCS
    kconfiggui.cpp
    kconfiggroupgui.cpp
    kconfigskeleton.cpp
+   kstandardshortcut.cpp
    kwindowconfig.cpp
 )
 
@@ -29,6 +30,7 @@ install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfiggui_export.h
    kconfiggui.h
    kconfigskeleton.h
+   kstandardshortcut.h
    kwindowconfig.h
    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

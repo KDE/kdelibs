@@ -42,6 +42,7 @@ ecm_mark_as_test(kentrymaptest)
 kconfiggui_unit_tests(
    kconfigguitest
    kconfigskeletontest
+   kstandardshortcuttest
 )
 if(WIN32)
     target_link_libraries(kconfigguitest ${KDEWIN_LIBRARIES})
