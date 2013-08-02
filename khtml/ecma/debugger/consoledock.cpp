@@ -281,7 +281,7 @@ void ConsoleDock::slotUserRequestedEval()
     consoleInput->addToHistory(src);
     consoleInput->lineEdit()->clear();
 
-    emit requestEval(src);
+    Q_EMIT requestEval(src);
 }
 
 }

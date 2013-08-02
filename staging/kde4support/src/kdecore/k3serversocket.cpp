@@ -165,7 +165,7 @@ bool KServerSocket::lookup()
 
   if (d->resolver.status() <= 0)
     // if it's already running, there's no harm in calling again
-    d->resolver.start();	// signal may emit
+    d->resolver.start();	// signal may Q_EMIT
 
   if (blocking())
     {
@@ -186,7 +186,7 @@ bool KServerSocket::bind(const KResolverEntry& address)
       setError(NoError);
 
       d->state = KServerSocketPrivate::Bound;
-      emit bound(address);
+      Q_EMIT bound(address);
       return true;
     }
   copyError();
@@ -272,7 +272,7 @@ void KServerSocket::close()
   if (d->resolver.isRunning())
     d->resolver.cancel(false);
   d->state = KServerSocketPrivate::None;
-  emit closed();
+  Q_EMIT closed();
 }
 
 void KServerSocket::setAcceptBuffered(bool enable)
@@ -358,7 +358,7 @@ void KServerSocket::lookupFinishedSlot()
   if (d->resolver.status() < 0)
     {
       setError(LookupFailure);
-      emit gotError(LookupFailure);
+      Q_EMIT gotError(LookupFailure);
       d->bindWhenFound = d->listenWhenBound = false;
       d->state = KServerSocketPrivate::None;
       return;
@@ -367,7 +367,7 @@ void KServerSocket::lookupFinishedSlot()
   // lookup succeeded
   d->resolverResults = d->resolver.results();
   d->state = KServerSocketPrivate::LookupDone;
-  emit hostFound();
+  Q_EMIT hostFound();
 
   if (d->bindWhenFound)
     doBind();
@@ -395,7 +395,7 @@ bool KServerSocket::doBind()
       socketDevice()->close();	// didn't work, try again
 
   // failed to bind
-  emit gotError(error());
+  Q_EMIT gotError(error());
   return false;
 }
 
@@ -404,7 +404,7 @@ bool KServerSocket::doListen()
   if (!socketDevice()->listen(d->backlog))
     {
       copyError();
-      emit gotError(error());
+      Q_EMIT gotError(error());
       return false;		// failed to listen
     }
 

@@ -87,7 +87,7 @@ void KFileItemListPropertiesPrivate::setItems(const KFileItemList& items)
     m_mimeGroup.clear();
 
     QFileInfo parentDirInfo;
-    foreach (const KFileItem &item, items) {
+    Q_FOREACH (const KFileItem &item, items) {
         const QUrl url = item.url();
         m_isLocal = m_isLocal && url.isLocalFile();
         m_supportsReading  = m_supportsReading  && KProtocolManager::supportsReading(url);
@@ -188,7 +188,7 @@ void KFileItemListPropertiesPrivate::determineMimeTypeAndGroup() const
         m_mimeType = m_items.first().mimetype();
         m_mimeGroup = m_mimeType.left(m_mimeType.indexOf('/'));
     }
-    foreach (const KFileItem &item, m_items) {
+    Q_FOREACH (const KFileItem &item, m_items) {
         const QString itemMimeType = item.mimetype();
         // Determine if common mimetype among all items
         if (m_mimeType != itemMimeType) {

@@ -137,7 +137,7 @@ Value Converter::convert(const Value& value, UnitPtr toUnit) const
 
 UnitCategory* Converter::categoryForUnit(const QString& unit) const
 {
-    foreach (UnitCategory* u, categories()) {
+    Q_FOREACH (UnitCategory* u, categories()) {
         if (u->hasUnit(unit)) {
             return u;
         }
@@ -147,7 +147,7 @@ UnitCategory* Converter::categoryForUnit(const QString& unit) const
 
 UnitPtr Converter::unit(const QString& unitString) const
 {
-    foreach (UnitCategory* u, d->categories) {
+    Q_FOREACH (UnitCategory* u, d->categories) {
         UnitPtr unitClass = u->unit(unitString);
         if (unitClass) {
             return unitClass;
@@ -158,7 +158,7 @@ UnitPtr Converter::unit(const QString& unitString) const
 
 UnitPtr Converter::unit(int unitId) const
 {
-    foreach (UnitCategory* u, d->categories) {
+    Q_FOREACH (UnitCategory* u, d->categories) {
         UnitPtr unitClass = u->unit(unitId);
         if (unitClass) {
             return unitClass;
@@ -169,7 +169,7 @@ UnitPtr Converter::unit(int unitId) const
 
 UnitCategory* Converter::category(const QString& category) const
 {
-    foreach (UnitCategory *u, d->categories) {
+    Q_FOREACH (UnitCategory *u, d->categories) {
         if (u->name() == category)
             return u;
     }

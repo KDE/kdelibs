@@ -393,7 +393,7 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
     QPainter painter(&pix);
 
     int count = 0;
-    foreach (const QString& overlay, overlays) {
+    Q_FOREACH (const QString& overlay, overlays) {
         // Ensure empty strings fill up a emblem spot
         // Needed when you have several emblems to ensure they're always painted
         // at the same place, even if one is not here
@@ -896,7 +896,7 @@ QString KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) cons
     // The reasoning is that application icons should always match exactly, all other
     // icons may fallback. Since we do not know what the context is here when we start
     // looking for it, we can only go by the path found.
-    foreach (KIconThemeNode *themeNode, links) {
+    Q_FOREACH (KIconThemeNode *themeNode, links) {
         for (int i = 0 ; i < 4 ; i++) {
             path = themeNode->theme->iconPath(name + ext[i], size, KIconLoader::MatchExact);
             if (!path.isEmpty()) {
@@ -914,7 +914,7 @@ QString KIconLoaderPrivate::findMatchingIcon(const QString& name, int size) cons
         }
     }
 
-    foreach (KIconThemeNode *themeNode, links) {
+    Q_FOREACH (KIconThemeNode *themeNode, links) {
         QString currentName = name;
 
         while (!currentName.isEmpty()) {
@@ -1266,7 +1266,7 @@ QString KIconLoader::moviePath(const QString& name, KIconLoader::Group group, in
 
         QString path;
 
-        foreach(KIconThemeNode *themeNode, d->links)
+        Q_FOREACH(KIconThemeNode *themeNode, d->links)
         {
             path = themeNode->theme->iconPath(file, size, KIconLoader::MatchExact);
             if (!path.isEmpty())
@@ -1275,7 +1275,7 @@ QString KIconLoader::moviePath(const QString& name, KIconLoader::Group group, in
 
         if (path.isEmpty())
         {
-            foreach(KIconThemeNode *themeNode, d->links)
+            Q_FOREACH(KIconThemeNode *themeNode, d->links)
             {
                 path = themeNode->theme->iconPath(file, size, KIconLoader::MatchBest);
                 if (!path.isEmpty())
@@ -1326,7 +1326,7 @@ QStringList KIconLoader::loadAnimated(const QString& name, KIconLoader::Group gr
     if(!dir.exists())
         return lst;
 
-    foreach (const QString &entry, dir.entryList()) {
+    Q_FOREACH (const QString &entry, dir.entryList()) {
         if(!(entry.left(4)).toUInt())
             continue;
 
@@ -1384,7 +1384,7 @@ QStringList KIconLoader::queryIconsByContext(int group_or_size,
     else
         size = -group_or_size;
 
-    foreach(KIconThemeNode *themeNode, d->links)
+    Q_FOREACH(KIconThemeNode *themeNode, d->links)
        themeNode->queryIconsByContext(&result, size, context);
 
     // Eliminate duplicate entries (same icon in different directories)
@@ -1425,7 +1425,7 @@ QStringList KIconLoader::queryIcons(int group_or_size, KIconLoader::Context cont
     else
         size = -group_or_size;
 
-    foreach(KIconThemeNode *themeNode, d->links)
+    Q_FOREACH(KIconThemeNode *themeNode, d->links)
        themeNode->queryIcons(&result, size, context);
 
     // Eliminate duplicate entries (same icon in different directories)
@@ -1454,7 +1454,7 @@ bool KIconLoader::hasContext(KIconLoader::Context context) const
 {
     d->initIconThemes();
 
-    foreach(KIconThemeNode *themeNode, d->links)
+    Q_FOREACH(KIconThemeNode *themeNode, d->links)
        if( themeNode->theme->hasContext( context ))
            return true;
     return false;
@@ -1612,7 +1612,7 @@ void KIconLoader::newIconLoader()
     }
 
     reconfigure(objectName());
-    emit iconLoaderSettingsChanged();
+    Q_EMIT iconLoaderSettingsChanged();
 }
 
 void KIconLoader::emitChange(KIconLoader::Group g)

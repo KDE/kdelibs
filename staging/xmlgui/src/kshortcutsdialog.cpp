@@ -92,7 +92,7 @@ public:
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         m_keyChooser->clearCollections();
 
-        foreach (KActionCollection *collection, m_collections) {
+        Q_FOREACH (KActionCollection *collection, m_collections) {
             // passing an empty stream forces the clients to reread the XML
             KXMLGUIClient *client = const_cast<KXMLGUIClient *>(collection->parentGUIClient());
             if (client) {
@@ -111,7 +111,7 @@ public:
             }
         }
 
-        foreach (KActionCollection *collection, m_collections) {
+        Q_FOREACH (KActionCollection *collection, m_collections) {
             m_keyChooser->addCollection(collection);
         }
 
@@ -134,7 +134,7 @@ public:
     void save()
     {
         m_keyChooser->save();
-        emit q->saved();
+        Q_EMIT q->saved();
     }
 
     KShortcutsDialog *q;

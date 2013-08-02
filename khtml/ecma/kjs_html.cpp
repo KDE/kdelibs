@@ -2172,7 +2172,7 @@ JSValue* KJS::HTMLElementFunction::callAsFunction(ExecState *exec, JSObject *thi
 
           if ( block && policy == KHTMLSettings::KJSWindowOpenAsk && part ) {
             if  (part )
-              emit part->browserExtension()->requestFocus(part);
+              Q_EMIT part->browserExtension()->requestFocus(part);
             caption += i18n( "Confirmation: JavaScript Popup" );
             if ( KMessageBox::questionYesNo(part->view(), form.action().isEmpty() ?
                    i18n( "This site is submitting a form which will open up a new browser "
@@ -3174,7 +3174,7 @@ JSValue* KJS::HTMLCollection::getNamedItems(ExecState *exec, const Identifier &p
     else  {
       // multiple items, return a collection
       QList<SharedPtr<DOM::NodeImpl> > nodes;
-      foreach (DOM::NodeImpl* node, matches)
+      Q_FOREACH (DOM::NodeImpl* node, matches)
         nodes.append(node);
 #ifdef KJS_VERBOSE
       qDebug() << "returning list of " << matches.count() << " nodes";

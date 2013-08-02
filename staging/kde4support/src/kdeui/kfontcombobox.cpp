@@ -118,7 +118,7 @@ void KFontFamilyDelegate::paint (QPainter *painter,
         // as a comma-separated list (e.g. for Japanese it is "1,27").
                                     "1");
         QStringList scriptStrIds = scriptsSpec.split(',');
-        foreach (const QString &scriptStrId, scriptStrIds) {
+        Q_FOREACH (const QString &scriptStrId, scriptStrIds) {
             bool convOk;
             int ws = scriptStrId.toInt(&convOk);
             if (   convOk && ws > 0 && ws < QFontDatabase::WritingSystemsCount
@@ -163,7 +163,7 @@ void KFontFamilyDelegate::paint (QPainter *painter,
     if (canShowLanguageSample) {
         sample = alphabetSample();
     } else {
-        foreach (const QFontDatabase::WritingSystem &ws, availableSystems) {
+        Q_FOREACH (const QFontDatabase::WritingSystem &ws, availableSystems) {
             sample += QFontDatabase::writingSystemSample(ws) + "  ";
             if (sample.length() > 40) { // do not let the sample be too long
                 break;
@@ -269,7 +269,7 @@ void KFontComboBoxPrivate::updateIndexToFont ()
 
     // Match the font's family with an item in the list.
     int index = 0;
-    foreach (const QString &trFontFamily, trFontFamilies) {
+    Q_FOREACH (const QString &trFontFamily, trFontFamilies) {
         if (trSelectedFontFamily == trFontFamily) {
             break;
         }
@@ -279,7 +279,7 @@ void KFontComboBoxPrivate::updateIndexToFont ()
         // If no family matched, change font to first on the list.
         index = 0;
         currentFont = QFont(delegate->fontFamilyTrMap[trFontFamilies[0]]);
-        emit k->currentFontChanged(currentFont);
+        Q_EMIT k->currentFontChanged(currentFont);
     }
 
     // Set the new list item.
@@ -298,7 +298,7 @@ void KFontComboBoxPrivate::_k_currentFontChanged (int index)
     QString fontFamily = delegate->fontFamilyTrMap[trFontFamily];
     if (!fontFamily.isEmpty()) {
         currentFont = QFont(fontFamily);
-        emit k->currentFontChanged(currentFont);
+        Q_EMIT k->currentFontChanged(currentFont);
     } else {
         // Unknown font family given. Just remove from the list.
         // This should not happen, as adding arbitrary font names is prevented.
@@ -359,7 +359,7 @@ void KFontComboBox::setCurrentFont (const QFont &font)
 {
     if (font != d->currentFont) {
         d->currentFont = font;
-        emit currentFontChanged(d->currentFont);
+        Q_EMIT currentFontChanged(d->currentFont);
         d->updateIndexToFont();
     }
 }

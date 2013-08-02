@@ -408,7 +408,7 @@ void KIntNumInput::spinValueChanged(int val)
         priv->slider->setValue(val);
     }
 
-    emit valueChanged(val);
+    Q_EMIT valueChanged(val);
 }
 
 void KIntNumInput::slotEmitRelativeValueChanged(int value)
@@ -416,7 +416,7 @@ void KIntNumInput::slotEmitRelativeValueChanged(int value)
     if (d->blockRelative || !d->referencePoint) {
         return;
     }
-    emit relativeValueChanged(double(value) / double(d->referencePoint));
+    Q_EMIT relativeValueChanged(double(value) / double(d->referencePoint));
 }
 
 void KIntNumInput::setSliderEnabled(bool slider)
@@ -807,7 +807,7 @@ void KDoubleNumInput::slotEmitRelativeValueChanged(double value)
     if (!d->referencePoint) {
         return;
     }
-    emit relativeValueChanged(value / d->referencePoint);
+    Q_EMIT relativeValueChanged(value / d->referencePoint);
 }
 
 QSize KDoubleNumInput::minimumSizeHint() const

@@ -228,7 +228,7 @@ void KLocalSocketPrivate::connectToPath(const QString &path, KLocalSocket::Local
 
         // setSocketDescriptor emits stateChanged
         q->setSocketDescriptor(fd, QAbstractSocket::ConnectedState, openMode);
-        emit q->connected();
+        Q_EMIT q->connected();
     } else {
         emitError(QAbstractSocket::UnsupportedSocketOperationError,
                   i18n("The socket operation is not supported"));

@@ -91,7 +91,7 @@ void KBufferedSocket::close()
       QSocketNotifier *n = socketDevice()->readNotifier();
       if (n)
 	n->setEnabled(false);
-      emit stateChanged(Closing);
+      Q_EMIT stateChanged(Closing);
     }
 }
 
@@ -163,7 +163,7 @@ qint64 KBufferedSocket::writeData(const char *data, qint64 len,
       if (d->output->isFull())
 	{
 	  setError(WouldBlock);
-	  emit gotError(WouldBlock);
+	  Q_EMIT gotError(WouldBlock);
 	  return -1;
 	}
       resetError();
@@ -306,7 +306,7 @@ void KBufferedSocket::slotReadActivity()
 	      // nope, another error!
 	      copyError();
 	      mutex()->unlock();
-	      emit gotError(error());
+	      Q_EMIT gotError(error());
 	      closeNow();	// emits closed
 	      return;
 	    }
@@ -316,7 +316,7 @@ void KBufferedSocket::slotReadActivity()
 	  // remotely closed
 	  setError(RemotelyDisconnected);
 	  mutex()->unlock();
-	  emit gotError(error());
+	  Q_EMIT gotError(error());
 	  closeNow();		// emits closed
 	  return;
 	}
@@ -334,7 +334,7 @@ void KBufferedSocket::slotReadActivity()
 	  // buffer isn't empty
 	  // keep emitting signals till it is
 	  QTimer::singleShot(0, this, SLOT(slotReadActivity()));
-	  emit readyRead();
+	  Q_EMIT readyRead();
 	}
     }
 }
@@ -354,7 +354,7 @@ void KBufferedSocket::slotWriteActivity()
 	      // nope, another error!
 	      copyError();
 	      mutex()->unlock();
-	      emit gotError(error());
+	      Q_EMIT gotError(error());
 	      closeNow();
 	      return;
 	    }
@@ -364,7 +364,7 @@ void KBufferedSocket::slotWriteActivity()
 	  // remotely closed
 	  setError(RemotelyDisconnected);
 	  mutex()->unlock();
-	  emit gotError(error());
+	  Q_EMIT gotError(error());
 	  closeNow();
 	  return;
 	}
@@ -375,7 +375,7 @@ void KBufferedSocket::slotWriteActivity()
 	socketDevice()->writeNotifier()->setEnabled(false);
 
       mutex()->unlock();
-      emit bytesWritten(len);
+      Q_EMIT bytesWritten(len);
     }
 
   if (state() != Closing)

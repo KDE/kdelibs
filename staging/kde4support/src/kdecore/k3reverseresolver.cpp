@@ -186,8 +186,8 @@ bool KReverseResolver::event(QEvent *e)
   // KResolverManager::doNotifying takes care of that, if it hasn't already
   d->worker = 0L;
 
-  // emit signal
-  emit finished(*this);
+  // Q_EMIT signal
+  Q_EMIT finished(*this);
 
   return true;
 }

@@ -69,7 +69,7 @@ void KSycocaDictTest::testStandardDict()
     QByteArray buffer;
     {
         KSycocaDict dict;
-        foreach(const QString& str, serviceTypes) {
+        Q_FOREACH(const QString& str, serviceTypes) {
             add(dict, str, str);
         }
         dict.remove("KCModule"); // just to test remove
@@ -84,7 +84,7 @@ void KSycocaDictTest::testStandardDict()
     int offset = loadingDict.find_string("Browser/View");
     QVERIFY(offset > 0);
     QCOMPARE(offset, KServiceType::serviceType("Browser/View")->offset());
-    foreach(const QString& str, serviceTypes) {
+    Q_FOREACH(const QString& str, serviceTypes) {
         int offset = loadingDict.find_string(str);
         QVERIFY(offset > 0);
         QCOMPARE(offset, KServiceType::serviceType(str)->offset());

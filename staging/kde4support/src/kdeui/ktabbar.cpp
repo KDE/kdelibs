@@ -80,12 +80,12 @@ void KTabBar::mouseDoubleClickEvent( QMouseEvent *event )
   int tab = selectTab( event->pos() );
 
   if(tab == -1) {
-    emit newTabRequest();
+    Q_EMIT newTabRequest();
   } else {
 #ifndef KDE_NO_DEPRECATED
-    emit mouseDoubleClick( tab ); //deprecated
+    Q_EMIT mouseDoubleClick( tab ); //deprecated
 #endif
-    emit tabDoubleClicked( tab );
+    Q_EMIT tabDoubleClicked( tab );
   }
 
   QTabBar::mouseDoubleClickEvent( event );
@@ -98,9 +98,9 @@ void KTabBar::mousePressEvent( QMouseEvent *event )
   } else if( event->button() == Qt::RightButton ) {
     int tab = selectTab( event->pos() );
     if ( tab != -1 ) {
-      emit contextMenu( tab, mapToGlobal( event->pos() ) );
+      Q_EMIT contextMenu( tab, mapToGlobal( event->pos() ) );
     } else {
-      emit emptyAreaContextMenu( mapToGlobal( event->pos() ) );
+      Q_EMIT emptyAreaContextMenu( mapToGlobal( event->pos() ) );
     }
     return;
   }
@@ -122,7 +122,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
     if ( newPos.x() > d->mDragStart.x() + delay || newPos.x() < d->mDragStart.x() - delay ||
          newPos.y() > d->mDragStart.y() + delay || newPos.y() < d->mDragStart.y() - delay ) {
       if ( tab != -1 ) {
-        emit initiateDrag( tab );
+        Q_EMIT initiateDrag( tab );
         return;
       }
     }
@@ -145,7 +145,7 @@ void KTabBar::mouseMoveEvent( QMouseEvent *event )
       if ( tab != -1 ) {
         int reorderStopTab = tab;
         if ( d->mReorderStartTab != reorderStopTab && d->mReorderPreviousTab != reorderStopTab ) {
-          emit moveTab( d->mReorderStartTab, reorderStopTab );
+          Q_EMIT moveTab( d->mReorderStartTab, reorderStopTab );
 
           d->mReorderPreviousTab = d->mReorderStartTab;
           d->mReorderStartTab = reorderStopTab;
@@ -220,9 +220,9 @@ void KTabBar::mouseReleaseEvent( QMouseEvent *event )
           QCoreApplication::sendEvent(this, &fakedMouseEvent);
         }
         if ( tabsClosable() ) {
-          emit tabCloseRequested( tab );
+          Q_EMIT tabCloseRequested( tab );
         } else {
-          emit mouseMiddleClick( tab );
+          Q_EMIT mouseMiddleClick( tab );
         }
         return;
       }
@@ -248,7 +248,7 @@ void KTabBar::dragEnterEvent( QDragEnterEvent *event )
     bool accept = false;
     // The receivers of the testCanDecode() signal has to adjust
     // 'accept' accordingly.
-    emit testCanDecode( event, accept );
+    Q_EMIT testCanDecode( event, accept );
     if ( accept && tab != currentIndex() ) {
       d->mDragSwitchTab = tab;
       d->mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval() * 2 );
@@ -268,7 +268,7 @@ void KTabBar::dragMoveEvent( QDragMoveEvent *event )
     bool accept = false;
     // The receivers of the testCanDecode() signal has to adjust
     // 'accept' accordingly.
-    emit testCanDecode( event, accept );
+    Q_EMIT testCanDecode( event, accept );
     if ( accept && tab != currentIndex() ) {
       d->mDragSwitchTab = tab;
       d->mActivateDragSwitchTabTimer->start( QApplication::doubleClickInterval() * 2 );
@@ -287,7 +287,7 @@ void KTabBar::dropEvent( QDropEvent *event )
   if ( tab != -1 ) {
     d->mActivateDragSwitchTabTimer->stop();
     d->mDragSwitchTab = 0;
-    emit receivedDropEvent( tab , event );
+    Q_EMIT receivedDropEvent( tab , event );
     return;
   }
 
@@ -316,7 +316,7 @@ void KTabBar::wheelEvent( QWheelEvent *event )
 {
   if ( !( event->orientation() == Qt::Horizontal ) ) {
     if ( receivers( SIGNAL(wheelDelta(int)) ) ) {
-      emit( wheelDelta( event->delta() ) );
+      Q_EMIT( wheelDelta( event->delta() ) );
       return;
     }
     int lastIndex = count() - 1;

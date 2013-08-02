@@ -59,7 +59,7 @@ public:
     {
         if (e->type() == QEvent::Wheel) {
             QWheelEvent *wheelEvent = static_cast<QWheelEvent *>(e);
-            emit wheel(wheelEvent->delta());
+            Q_EMIT wheel(wheelEvent->delta());
         }
 
         return false;

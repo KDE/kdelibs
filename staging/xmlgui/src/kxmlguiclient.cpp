@@ -722,7 +722,7 @@ void KXMLGUIClient::stateChanged(const QString &newstate, KXMLGUIClient::Reverse
 void KXMLGUIClient::beginXMLPlug( QWidget* w )
 {
   actionCollection()->addAssociatedWidget( w );
-  foreach (KXMLGUIClient* client, d->m_children)
+  Q_FOREACH (KXMLGUIClient* client, d->m_children)
     client->beginXMLPlug( w );
 }
 
@@ -733,7 +733,7 @@ void KXMLGUIClient::endXMLPlug()
 void KXMLGUIClient::prepareXMLUnplug( QWidget * w )
 {
   actionCollection()->removeAssociatedWidget( w );
-  foreach (KXMLGUIClient* client, d->m_children)
+  Q_FOREACH (KXMLGUIClient* client, d->m_children)
     client->prepareXMLUnplug( w );
 }
 

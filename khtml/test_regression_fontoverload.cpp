@@ -373,7 +373,7 @@ static QFontEngine* loadFont(const QFontDef& request)
 {
     QString xlfd;
     QStringList flist = request.family.toLower().split(",");
-    foreach (QString family, flist) {
+    Q_FOREACH (QString family, flist) {
         if (!KHTMLSettings::availableFamilies().contains( ","+ family + ",", Qt::CaseInsensitive ))
             continue;
 

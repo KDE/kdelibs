@@ -90,6 +90,6 @@ void KDateTimeWidget::slotValueChanged()
 
   //qDebug() << "slotValueChanged(): " << datetime << "\n";
 
-  emit valueChanged(datetime);
+  Q_EMIT valueChanged(datetime);
 }
 

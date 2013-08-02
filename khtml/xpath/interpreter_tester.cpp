@@ -91,7 +91,7 @@ void check( DocumentImpl *doc, const QString &statement,
 	QStringList idsOfResultMatches;
 
 	DomNodeList nodes = result.toNodeset();
-	foreach( NodeImpl *node, nodes ) {
+	Q_FOREACH( NodeImpl *node, nodes ) {
 		if ( node->nodeType() != ELEMENT_NODE ) {
 			continue;
 		}
@@ -112,7 +112,7 @@ void check( DocumentImpl *doc, const QString &statement,
 
 	bool failure = false;
 
-	foreach( QString id, idsOfExpectedMatches ) {
+	Q_FOREACH( QString id, idsOfExpectedMatches ) {
 		if ( !idsOfResultMatches.contains( id ) ) {
 			failure = true;
 			break;
@@ -120,7 +120,7 @@ void check( DocumentImpl *doc, const QString &statement,
 	}
 
 	if ( !failure ) {
-		foreach( QString id, idsOfResultMatches ) {
+		Q_FOREACH( QString id, idsOfResultMatches ) {
 			if ( !idsOfExpectedMatches.contains( id ) ) {
 				failure = true;
 				break;

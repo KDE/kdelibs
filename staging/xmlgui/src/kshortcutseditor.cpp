@@ -130,9 +130,9 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
     // Add all categories in their own subtree below the collections root node
     QList<KActionCategory*> categories = collection->findChildren<KActionCategory*>();
-    foreach (KActionCategory *category, categories) {
+    Q_FOREACH (KActionCategory *category, categories) {
         hier[KShortcutsEditorPrivate::Action] = d->findOrMakeItem(hier[KShortcutsEditorPrivate::Program], category->text());
-        foreach(QAction *action, category->actions()) {
+        Q_FOREACH(QAction *action, category->actions()) {
             // Set a marker that we have seen this action
             actionsSeen.insert(action);
             d->addAction(action, hier, KShortcutsEditorPrivate::Action);
@@ -141,7 +141,7 @@ void KShortcutsEditor::addCollection(KActionCollection *collection, const QStrin
 
     // The rest of the shortcuts is added as a direct shild of the action
     // collections root node
-    foreach (QAction *action, collection->actions()) {
+    Q_FOREACH (QAction *action, collection->actions()) {
         if (actionsSeen.contains(action)) {
             continue;
         }
@@ -195,14 +195,14 @@ void KShortcutsEditor::exportConfiguration( KConfigBase *config) const
     if (d->actionTypes & KShortcutsEditor::GlobalAction) {
         QString groupName(QStringLiteral("Global Shortcuts"));
         KConfigGroup group( config, groupName );
-        foreach (KActionCollection* collection, d->actionCollections) {
+        Q_FOREACH (KActionCollection* collection, d->actionCollections) {
             collection->exportGlobalShortcuts( &group, true );
         }
     }
     if (d->actionTypes & ~KShortcutsEditor::GlobalAction) {
         QString groupName(QStringLiteral("Shortcuts"));
         KConfigGroup group( config, groupName );
-        foreach (KActionCollection* collection, d->actionCollections) {
+        Q_FOREACH (KActionCollection* collection, d->actionCollections) {
             collection->writeSettings( &group, true );
         }
     }
@@ -211,7 +211,7 @@ void KShortcutsEditor::exportConfiguration( KConfigBase *config) const
 
 void KShortcutsEditor::writeConfiguration( KConfigGroup *config) const
 {
-    foreach (KActionCollection* collection, d->actionCollections)
+    Q_FOREACH (KActionCollection* collection, d->actionCollections)
         collection->writeSettings(config);
 }
 

@@ -223,7 +223,7 @@ void KDateComboBoxPrivate::clickDate()
 void KDateComboBoxPrivate::editDate(const QString &text)
 {
     m_warningShown = false;
-    emit q->dateEdited(m_date.readDate(text).date());
+    Q_EMIT q->dateEdited(m_date.readDate(text).date());
 }
 
 void KDateComboBoxPrivate::parseDate()
@@ -245,7 +245,7 @@ void KDateComboBoxPrivate::enterDate(const QDate &date)
 
     m_dateMenu->hide();
     warnDate();
-    emit q->dateEntered(m_date.date());
+    Q_EMIT q->dateEntered(m_date.date());
 }
 
 void KDateComboBoxPrivate::warnDate()
@@ -316,7 +316,7 @@ void KDateComboBox::setDate(const QDate &date)
 
     assignDate(date);
     d->updateDateWidget();
-    emit dateChanged(d->m_date.date());
+    Q_EMIT dateChanged(d->m_date.date());
 }
 
 void KDateComboBox::assignDate(const QDate &date)

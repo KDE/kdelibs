@@ -1141,7 +1141,7 @@ void RenderLayer::paintLayer(RenderLayer* rootLayer, QPainter *p,
 
     // Paint any child layers that have overflow.
     if (m_overflowList)
-        foreach (RenderLayer* layer, *m_overflowList)
+        Q_FOREACH (RenderLayer* layer, *m_overflowList)
             layer->paintLayer(rootLayer, p, paintDirtyRect, selectionOnly);
 
     // Now walk the sorted list of children with positive z-indices.

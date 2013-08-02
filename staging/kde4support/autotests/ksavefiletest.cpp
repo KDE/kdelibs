@@ -468,7 +468,7 @@ void KSaveFileTest::test_rcsBackupFile()
 
 void KSaveFileTest::cleanupTestCase()
 {
-    foreach ( const QString &fileToRemove, filesToRemove ) {
+    Q_FOREACH ( const QString &fileToRemove, filesToRemove ) {
         QFile::remove(fileToRemove);
     }
 }

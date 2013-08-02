@@ -60,7 +60,7 @@ void KToolInvocation::invokeMailer(const QString &_to, const QString &_cc, const
   url.addQueryItem(QLatin1String("cc"), _cc);
   url.addQueryItem(QLatin1String("bcc"), _bcc);
   url.addQueryItem(QLatin1String("body"), body);
-  foreach (const QString& attachURL, attachURLs)
+  Q_FOREACH (const QString& attachURL, attachURLs)
     url.addQueryItem(QLatin1String("attach"), attachURL);
 
 #ifndef _WIN32_WCE

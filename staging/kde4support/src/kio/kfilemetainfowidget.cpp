@@ -366,7 +366,7 @@ void KFileMetaInfoWidget::slotChanged(bool value)
 {
     Q_ASSERT(qobject_cast<QComboBox*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -374,7 +374,7 @@ void KFileMetaInfoWidget::slotChanged(int value)
 {
     Q_ASSERT(qobject_cast<QSpinBox*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -382,7 +382,7 @@ void KFileMetaInfoWidget::slotChanged(double value)
 {
     Q_ASSERT(qobject_cast<QSpinBox*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -390,7 +390,7 @@ void KFileMetaInfoWidget::slotComboChanged(const QString &value)
 {
     Q_ASSERT(qobject_cast<KComboBox*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -398,7 +398,7 @@ void KFileMetaInfoWidget::slotLineEditChanged(const QString& value)
 {
     Q_ASSERT(qobject_cast<KLineEdit*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -407,7 +407,7 @@ void KFileMetaInfoWidget::slotMultiLineEditChanged()
 {
     Q_ASSERT(qobject_cast<KTextEdit*>(d->m_widget));
     d->m_value = QVariant(static_cast<const KTextEdit*>(sender())->toPlainText());
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -415,7 +415,7 @@ void KFileMetaInfoWidget::slotDateChanged(const QDate& value)
 {
     Q_ASSERT(qobject_cast<QDateEdit*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -423,7 +423,7 @@ void KFileMetaInfoWidget::slotTimeChanged(const QTime& value)
 {
     Q_ASSERT(qobject_cast<QTimeEdit*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 
@@ -431,7 +431,7 @@ void KFileMetaInfoWidget::slotDateTimeChanged(const QDateTime& value)
 {
     Q_ASSERT(qobject_cast<QDateTimeEdit*>(d->m_widget));
     d->m_value = QVariant(value);
-    emit valueChanged(d->m_value);
+    Q_EMIT valueChanged(d->m_value);
     d->m_dirty = true;
 }
 

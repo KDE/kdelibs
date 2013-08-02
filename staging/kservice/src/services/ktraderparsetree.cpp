@@ -476,7 +476,7 @@ bool ParseTreeIN::eval( ParseContext *_context ) const
   {
       if (false && m_substring) {
           _context->b = false;
-          foreach (const QString &string, c2.strSeq) {
+          Q_FOREACH (const QString &string, c2.strSeq) {
               if (string.contains(c1.str, m_cs)) {
                   _context->b = true;
                   break;

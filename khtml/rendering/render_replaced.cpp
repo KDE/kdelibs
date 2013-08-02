@@ -481,7 +481,7 @@ void RenderWidget::updateFromElement()
             }
             // mmh great, there's no accessor for the popup... 
             QList<QWidget*>l = m_widget->findChildren<QWidget *>();
-            foreach(QWidget* w, l) {
+            Q_FOREACH(QWidget* w, l) {
                 if (QAbstractScrollArea* lView = qobject_cast<QAbstractScrollArea*>(w)) {
                     // we have the listview, climb up to reach its container.
                     assert( w->parentWidget() != m_widget );
@@ -658,7 +658,7 @@ static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
           return;
       }
 
-      foreach(QObject* o, w->children()) {
+      Q_FOREACH(QObject* o, w->children()) {
           QWidget* const cw = static_cast<QWidget*>(o);
           if (o->isWidgetType() && ! cw->isWindow()
                                 && !(cw->windowModality() & Qt::ApplicationModal)) {

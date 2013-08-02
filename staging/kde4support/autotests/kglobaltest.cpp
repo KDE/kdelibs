@@ -83,7 +83,7 @@ private Q_SLOTS:
 protected Q_SLOTS:
     void emitSigFoo()
     {
-        emit sigFoo();
+        Q_EMIT sigFoo();
 #ifndef Q_OS_MAC
         // Mac currently uses the unix event loop (not glib) which
         // has issues and blocks in nested event loops such as the

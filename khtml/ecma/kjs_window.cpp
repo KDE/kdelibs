@@ -677,7 +677,7 @@ void Window::mark()
     loc->mark();
   if (winq)
     winq->mark();
-  foreach (DelayedAction* action, m_delayed)
+  Q_FOREACH (DelayedAction* action, m_delayed)
     action->mark();
 }
 
@@ -1537,7 +1537,7 @@ void Window::afterScriptExecution()
     DOM::DocumentImpl::updateDocumentsRendering();
     const QList<DelayedAction*> delayedActions = m_delayed;
     m_delayed.clear();
-    foreach(DelayedAction* act, delayedActions) {
+    Q_FOREACH(DelayedAction* act, delayedActions) {
         if (!act->execute(this))
             break; // done with them
     }
@@ -1727,7 +1727,7 @@ void Window::goURL(ExecState* exec, const QString& url, bool lockHistory)
   } else if (!part && m_frame->m_partContainerElement) {
     KParts::BrowserExtension *b = KParts::BrowserExtension::childObject(m_frame->m_part);
     if (b)
-      emit b->openUrlRequest(QUrl(m_frame->m_partContainerElement.data()->document()->completeURL(url)));
+      Q_EMIT b->openUrlRequest(QUrl(m_frame->m_partContainerElement.data()->document()->completeURL(url)));
     // qDebug() << "goURL for ROPart";
   }
 }
@@ -1765,7 +1765,7 @@ void Window::goHistory( int steps )
     return;
 
   iface->callMethod( "goHistory", steps );
-  //emit ext->goHistory(steps);
+  //Q_EMIT ext->goHistory(steps);
 }
 
 void KJS::Window::resizeTo(QWidget* tl, int width, int height)
@@ -1795,7 +1795,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
 
   // qDebug() << "resizing to " << width << "x" << height;
 
-  emit ext->resizeTopLevelWidget( width, height );
+  Q_EMIT ext->resizeTopLevelWidget( width, height );
 
   // If the window is out of the desktop, move it up/left
   // (maybe we should use workarea instead of sg, otherwise the window ends up below kicker)
@@ -1808,7 +1808,7 @@ void KJS::Window::resizeTo(QWidget* tl, int width, int height)
   if ( bottom > sg.bottom() )
     moveByY = - bottom + sg.bottom(); // always <0
   if ( moveByX || moveByY )
-    emit ext->moveTopLevelWidget( tl->x() + moveByX , tl->y() + moveByY );
+    Q_EMIT ext->moveTopLevelWidget( tl->x() + moveByX , tl->y() + moveByY );
 }
 
 bool Window::targetIsExistingWindow(KHTMLPart* ourPart, const QString& frameName)
@@ -1858,7 +1858,7 @@ JSValue *Window::openWindow(ExecState *exec, const List& args)
     policy = KHTMLSettings::KJSWindowOpenAllow;
 
   if ( policy == KHTMLSettings::KJSWindowOpenAsk ) {
-    emit part->browserExtension()->requestFocus(part);
+    Q_EMIT part->browserExtension()->requestFocus(part);
     QString caption;
     if (!part->url().host().isEmpty())
       caption = part->url().host() + " - ";
@@ -2010,7 +2010,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const QUrl& url, const QStri
 
     // request window (new or existing if framename is set)
     KParts::ReadOnlyPart *newPart = 0;
-    emit p->browserExtension()->createNewWindow(QUrl(), args, browserArgs, winargs, &newPart);
+    Q_EMIT p->browserExtension()->createNewWindow(QUrl(), args, browserArgs, winargs, &newPart);
     if (newPart && qobject_cast<KHTMLPart*>(newPart)) {
       KHTMLPart *khtmlpart = static_cast<KHTMLPart*>(newPart);
       //qDebug("opener set to %p (this Window's part) in new Window %p  (this Window=%p)",part,win,window);
@@ -2030,7 +2030,7 @@ JSValue *Window::executeOpenWindow(ExecState *exec, const QUrl& url, const QStri
       if (browserArgs.frameName.toLower() == "_blank")
         browserArgs.frameName.clear();
       if (!url.isEmpty())
-        emit khtmlpart->browserExtension()->openUrlRequest(url, args, browserArgs);
+        Q_EMIT khtmlpart->browserExtension()->openUrlRequest(url, args, browserArgs);
       return Window::retrieve(khtmlpart); // global object
     } else
       return jsUndefined();
@@ -2049,7 +2049,7 @@ void Window::showSuppressedWindows()
 
   QList<SuppressedWindowInfo> suppressedWindowInfo = m_suppressedWindowInfo;
   m_suppressedWindowInfo.clear();
-  foreach ( const SuppressedWindowInfo &info, suppressedWindowInfo ) {
+  Q_FOREACH ( const SuppressedWindowInfo &info, suppressedWindowInfo ) {
     executeOpenWindow(exec, info.url, info.frameName, info.features);
   }
 }
@@ -2102,7 +2102,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
     if ( part && part->xmlDocImpl() )
       part->xmlDocImpl()->updateRendering();
     if ( part )
-      emit part->browserExtension()->requestFocus(part);
+      Q_EMIT part->browserExtension()->requestFocus(part);
     KMessageBox::error(widget, Qt::convertFromPlainText(str, Qt::WhiteSpaceNormal), caption);
     return jsUndefined();
   }
@@ -2113,7 +2113,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
     if ( part && part->xmlDocImpl() )
       part->xmlDocImpl()->updateRendering();
     if ( part )
-      emit part->browserExtension()->requestFocus(part);
+      Q_EMIT part->browserExtension()->requestFocus(part);
     return jsBoolean((KMessageBox::warningYesNo(widget, Qt::convertFromPlainText(str), caption,
                                                 KStandardGuiItem::ok(), KStandardGuiItem::cancel()) == KMessageBox::Yes));
   }
@@ -2125,7 +2125,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
     if ( part && part->xmlDocImpl() )
       part->xmlDocImpl()->updateRendering();
     if ( part )
-      emit part->browserExtension()->requestFocus(part);
+      Q_EMIT part->browserExtension()->requestFocus(part);
     bool ok;
     if (args.size() >= 2)
       str2 = QInputDialog::getText(widget, caption,
@@ -2180,7 +2180,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
       else
       {
         // Can we get this dialog with tabs??? Does it close the window or the tab in that case?
-        emit part->browserExtension()->requestFocus(part);
+        Q_EMIT part->browserExtension()->requestFocus(part);
         if ( KMessageBox::questionYesNo( window->part()->widget(),
                                          i18n("Close window?"), i18n("Confirmation Required"),
                                          KStandardGuiItem::close(), KStandardGuiItem::cancel() )
@@ -2230,7 +2230,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
       //TODO
 #endif
       widget->activateWindow();
-      emit part->browserExtension()->requestFocus(part);
+      Q_EMIT part->browserExtension()->requestFocus(part);
     }
     return jsUndefined();
   }
@@ -2314,7 +2314,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         if ( dest.x() >= sg.x() && dest.y() >= sg.x() &&
              dest.x()+tl->width() <= sg.width()+sg.x() &&
              dest.y()+tl->height() <= sg.height()+sg.y() )
-          emit ext->moveTopLevelWidget( dest.x(), dest.y() );
+          Q_EMIT ext->moveTopLevelWidget( dest.x(), dest.y() );
       }
     }
     return jsUndefined();
@@ -2334,7 +2334,7 @@ JSValue *WindowFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const Li
         if ( dest.x() >= sg.x() && dest.y() >= sg.y() &&
              dest.x()+tl->width() <= sg.width()+sg.x() &&
              dest.y()+tl->height() <= sg.height()+sg.y() )
-		emit ext->moveTopLevelWidget( dest.x(), dest.y() );
+		Q_EMIT ext->moveTopLevelWidget( dest.x(), dest.y() );
       }
     }
     return jsUndefined();
@@ -2570,7 +2570,7 @@ void WindowQObject::resumeTimers()
         DateTimeMS curTime          = DateTimeMS::now();
         DateTimeMS earliestDispatch = curTime.addMSecs(5);
         int delay = pauseStart.msecsTo(curTime);
-        foreach (ScheduledAction *action, scheduledActions) {
+        Q_FOREACH (ScheduledAction *action, scheduledActions) {
             action->nextTime = action->nextTime.addMSecs(delay);
             if (earliestDispatch > action->nextTime)
                 action->nextTime = earliestDispatch;
@@ -2613,7 +2613,7 @@ int WindowQObject::installTimeout(JSValue *func, List args, int t, bool singleSh
 
 void WindowQObject::clearTimeout(int timerId)
 {
-  foreach (ScheduledAction *action, scheduledActions)
+  Q_FOREACH (ScheduledAction *action, scheduledActions)
   {
     if (action->timerId == timerId)
     {
@@ -2632,7 +2632,7 @@ bool WindowQObject::hasTimers() const
 
 void WindowQObject::mark()
 {
-    foreach (ScheduledAction *action, scheduledActions)
+    Q_FOREACH (ScheduledAction *action, scheduledActions)
         action->mark();
 }
 
@@ -2654,14 +2654,14 @@ void WindowQObject::timerEvent(QTimerEvent *)
   // Work out which actions are to be executed. We take a separate copy of
   // this list since the main one may be modified during action execution
   QList<ScheduledAction*> toExecute;
-  foreach (ScheduledAction *action, scheduledActions)
+  Q_FOREACH (ScheduledAction *action, scheduledActions)
   {
     if (current >= action->nextTime)
       toExecute.append(action);
   }
 
   // ### verify that the window can't be closed (and action deleted) during execution
-  foreach (ScheduledAction *action, toExecute)
+  Q_FOREACH (ScheduledAction *action, toExecute)
   {
     if (!scheduledActions.count(action)) // removed by clearTimeout()
       continue;
@@ -3091,7 +3091,7 @@ JSValue *ExternalFunc::callAsFunction(ExecState *exec, JSObject *thisObj, const 
       question = i18n("Do you want a bookmark pointing to the location \"%1\" titled \"%2\" to be added to your collection?",
                   url, title);
 
-    emit part->browserExtension()->requestFocus(part);
+    Q_EMIT part->browserExtension()->requestFocus(part);
 
     QString caption;
     if (!part->url().host().isEmpty())

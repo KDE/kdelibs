@@ -297,7 +297,7 @@ void KMenu::keyPressEvent(QKeyEvent* e)
     d->keySeq += keyString;
     const int seqLen = d->keySeq.length();
 
-    foreach (a, actions()) {
+    Q_FOREACH (a, actions()) {
         // don't search disabled entries
         if (!a->isEnabled())
             continue;
@@ -512,7 +512,7 @@ void KMenu::KMenuPrivate::showCtxMenu(const QPoint &pos)
         return;
     }
 
-    emit parent->aboutToShowContextMenu(parent, highlightedAction, ctxMenu);
+    Q_EMIT parent->aboutToShowContextMenu(parent, highlightedAction, ctxMenu);
     KMenuSetActionData(parent,parent,highlightedAction);
 
 

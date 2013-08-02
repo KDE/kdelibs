@@ -106,7 +106,7 @@ namespace KIO
     private Q_SLOTS:
         void relayFinished()
         {
-            emit result(m_watcher.result());
+            Q_EMIT result(m_watcher.result());
         }
     private:
         QFutureWatcher<QHostInfo> m_watcher;
@@ -329,7 +329,7 @@ void HostInfoAgentPrivate::lookupHost(const QString& hostName,
             Result result;
             if (receiver) {
                 QObject::connect(&result, SIGNAL(result(QHostInfo)),receiver, member);
-                emit result.result(info->first);
+                Q_EMIT result.result(info->first);
             }
             return;
         }

@@ -68,7 +68,7 @@ QPrintDialog *KdePrint::createPrintDialog(QPrinter *printer,
     dialog->setOptionTabs( customTabs );
 #endif  // Qt < 4.9
 #else //Not X11
-    foreach( QWidget* w, customTabs ) // reparent to avoid leaks
+    Q_FOREACH( QWidget* w, customTabs ) // reparent to avoid leaks
         w->setParent( dialog );
 #endif
     dialog->setWindowTitle( i18nc( "@title:window", "Print" ) );

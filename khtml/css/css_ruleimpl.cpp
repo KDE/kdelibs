@@ -393,7 +393,7 @@ DOM::DOMString CSSStyleRuleImpl::selectorText() const
 {
     if (m_selector) {
         DOMString str;
-        foreach (CSSSelector *s, *m_selector) {
+        Q_FOREACH (CSSSelector *s, *m_selector) {
             if (s != m_selector->at(0))
                 str += ", ";
             str += s->selectorText();

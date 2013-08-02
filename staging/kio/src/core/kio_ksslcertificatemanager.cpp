@@ -133,7 +133,7 @@ bool KSslCertificateRule::isRejected() const
 
 bool KSslCertificateRule::isErrorIgnored(KSslError::Error error) const
 {
-    foreach (KSslError::Error ignoredError, d->ignoredErrors)
+    Q_FOREACH (KSslError::Error ignoredError, d->ignoredErrors)
         if (error == ignoredError)
             return true;
 
@@ -145,7 +145,7 @@ void KSslCertificateRule::setIgnoredErrors(const QList<KSslError::Error> &errors
 {
     d->ignoredErrors.clear();
     //### Quadratic runtime, woohoo! Use a QSet if that should ever be an issue.
-    foreach(KSslError::Error e, errors)
+    Q_FOREACH(KSslError::Error e, errors)
         if (!isErrorIgnored(e))
             d->ignoredErrors.append(e);
 }
@@ -154,7 +154,7 @@ void KSslCertificateRule::setIgnoredErrors(const QList<KSslError::Error> &errors
 void KSslCertificateRule::setIgnoredErrors(const QList<KSslError> &errors)
 {
     QList<KSslError::Error> el;
-    foreach(const KSslError &e, errors)
+    Q_FOREACH(const KSslError &e, errors)
         el.append(e.error());
     setIgnoredErrors(el);
 }
@@ -169,7 +169,7 @@ QList<KSslError::Error> KSslCertificateRule::ignoredErrors() const
 QList<KSslError::Error> KSslCertificateRule::filterErrors(const QList<KSslError::Error> &errors) const
 {
     QList<KSslError::Error> ret;
-    foreach (KSslError::Error error, errors) {
+    Q_FOREACH (KSslError::Error error, errors) {
         if (!isErrorIgnored(error))
             ret.append(error);
     }
@@ -180,7 +180,7 @@ QList<KSslError::Error> KSslCertificateRule::filterErrors(const QList<KSslError:
 QList<KSslError> KSslCertificateRule::filterErrors(const QList<KSslError> &errors) const
 {
     QList<KSslError> ret;
-    foreach (const KSslError &error, errors) {
+    Q_FOREACH (const KSslError &error, errors) {
         if (!isErrorIgnored(error.error()))
             ret.append(error);
     }
@@ -194,7 +194,7 @@ static QList<QSslCertificate> deduplicate(const QList<QSslCertificate> &certs)
 {
     QSet<QByteArray> digests;
     QList<QSslCertificate> ret;
-    foreach (const QSslCertificate &cert, certs) {
+    Q_FOREACH (const QSslCertificate &cert, certs) {
         QByteArray digest = cert.digest();
         if (!digests.contains(digest)) {
             digests.insert(digest);
@@ -233,7 +233,7 @@ void KSslCertificateManagerPrivate::loadDefaultCaCertificates()
 
     certs.append(QSslCertificate::fromPath(userCertDir + QLatin1String("*"), QSsl::Pem,
                                            QRegExp::Wildcard));
-    foreach (const QSslCertificate &cert, certs) {
+    Q_FOREACH (const QSslCertificate &cert, certs) {
         const QByteArray digest = cert.digest().toHex();
         if (!group.hasKey(digest.constData())) {
             defaultCaCertificates += cert;
@@ -295,7 +295,7 @@ bool KSslCertificateManagerPrivate::removeCertificate(const KSslCaCertificate &o
 
         bool removed = false;
         QDir dir(userCertDir);
-        foreach (const QString &certFilename, dir.entryList(QDir::Files)) {
+        Q_FOREACH (const QString &certFilename, dir.entryList(QDir::Files)) {
             const QString certPath = userCertDir + certFilename;
             QList<QSslCertificate> certs = QSslCertificate::fromPath(certPath);
 
@@ -380,11 +380,11 @@ void KSslCertificateManagerPrivate::setAllCertificates(const QList<KSslCaCertifi
 QList<KSslCaCertificate> KSslCertificateManagerPrivate::allCertificates() const
 {
     QList<KSslCaCertificate> ret;
-    foreach (const QSslCertificate &cert, deduplicate(QSslSocket::systemCaCertificates())) {
+    Q_FOREACH (const QSslCertificate &cert, deduplicate(QSslSocket::systemCaCertificates())) {
         ret += KSslCaCertificate(cert, KSslCaCertificate::SystemStore, false);
     }
 
-    foreach (const QSslCertificate &cert, QSslCertificate::fromPath(userCertDir + QLatin1String("*"),
+    Q_FOREACH (const QSslCertificate &cert, QSslCertificate::fromPath(userCertDir + QLatin1String("*"),
                                                                     QSsl::Pem, QRegExp::Wildcard)) {
         ret += KSslCaCertificate(cert, KSslCaCertificate::UserStore, false);
     }

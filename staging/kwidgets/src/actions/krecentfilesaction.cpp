@@ -89,7 +89,7 @@ KRecentFilesAction::~KRecentFilesAction()
 void KRecentFilesActionPrivate::_k_urlSelected( QAction* action )
 {
     Q_Q(KRecentFilesAction);
-    emit q->urlSelected(m_urls[action]);
+    Q_EMIT q->urlSelected(m_urls[action]);
 }
 
 int KRecentFilesAction::maxItems() const
@@ -163,7 +163,7 @@ void KRecentFilesAction::addUrl(const QUrl& _url, const QString& name)
 #endif
 
     // remove file if already in list
-    foreach (QAction* action, selectableActionGroup()->actions())
+    Q_FOREACH (QAction* action, selectableActionGroup()->actions())
     {
       const QString urlStr = d->m_urls[action].toDisplayString(QUrl::PreferLocalFile);
 #ifdef Q_OS_WIN
@@ -202,10 +202,10 @@ void KRecentFilesAction::addAction(QAction* action, const QUrl& url, const QStri
   action->setActionGroup(selectableActionGroup());
 
   // Keep in sync with createToolBarWidget()
-  foreach (QToolButton* button, d->m_buttons)
+  Q_FOREACH (QToolButton* button, d->m_buttons)
     button->insertAction(button->actions().value(0), action);
 
-  foreach (QComboBox* comboBox, d->m_comboBoxes)
+  Q_FOREACH (QComboBox* comboBox, d->m_comboBoxes)
     comboBox->insertAction(comboBox->actions().value(0), action);
 
   menu()->insertAction(menu()->actions().value(0), action);
@@ -244,7 +244,7 @@ QList<QUrl> KRecentFilesAction::urls() const
 void KRecentFilesAction::clear()
 {
     clearEntries();
-    emit recentListCleared();
+    Q_EMIT recentListCleared();
 }
 
 void KRecentFilesAction::clearEntries()

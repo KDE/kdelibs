@@ -803,7 +803,7 @@ int main(int argc, char *argv[])
     for (; testcase_index < parser.remainingArguments().count(); testcase_index++)
         tests << parser.remainingArguments().at(testcase_index);
     if (tests.count() > 0)
-        foreach (QString test, tests) {
+        Q_FOREACH (QString test, tests) {
 	    result = regressionTest->runTests(test,true);
             if (!result) break;
         }
@@ -1648,7 +1648,7 @@ void RegressionTest::testJSFile(const QString & filename )
     // NOTE: the basename is of little interest here, but the last basedir change
     // isn't taken in account
     QString basedir =  m_baseDir + "/tests/";
-    foreach(const QString &it, dirs) {
+    Q_FOREACH(const QString &it, dirs) {
         if ( ! ::access( QFile::encodeName( basedir + "shell.js" ), R_OK ) )
             evalJS( interp, basedir + "shell.js", false );
         basedir += it + "/";	//krazy:exclude=duoblequote_chars DOM demands chars

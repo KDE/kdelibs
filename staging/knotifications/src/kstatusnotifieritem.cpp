@@ -156,7 +156,7 @@ void KStatusNotifierItem::setStatus(const ItemStatus status)
     }
 
     d->status = status;
-    emit d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
+    Q_EMIT d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
 
     if (d->systemTrayIcon) {
         d->syncLegacySystemTrayIcon();
@@ -175,7 +175,7 @@ void KStatusNotifierItem::setIconByName(const QString &name)
 
     d->serializedIcon = KDbusImageVector();
     d->iconName = name;
-    emit d->statusNotifierItemDBus->NewIcon();
+    Q_EMIT d->statusNotifierItemDBus->NewIcon();
     if (d->systemTrayIcon) {
         d->systemTrayIcon->setIcon(QIcon::fromTheme(name));
     }
@@ -194,7 +194,7 @@ void KStatusNotifierItem::setIconByPixmap(const QIcon &icon)
 
     d->iconName.clear();
     d->serializedIcon = d->iconToVector(icon);
-    emit d->statusNotifierItemDBus->NewIcon();
+    Q_EMIT d->statusNotifierItemDBus->NewIcon();
 
     d->icon = icon;
     if (d->systemTrayIcon) {
@@ -214,7 +214,7 @@ void KStatusNotifierItem::setOverlayIconByName(const QString &name)
     }
 
     d->overlayIconName = name;
-    emit d->statusNotifierItemDBus->NewOverlayIcon();
+    Q_EMIT d->statusNotifierItemDBus->NewOverlayIcon();
     if (d->systemTrayIcon) {
         QPixmap iconPixmap = QIcon::fromTheme(d->iconName).pixmap(s_legacyTrayIconSize, s_legacyTrayIconSize);
         if (!name.isEmpty()) {
@@ -240,7 +240,7 @@ void KStatusNotifierItem::setOverlayIconByPixmap(const QIcon &icon)
 
     d->overlayIconName.clear();
     d->serializedOverlayIcon = d->iconToVector(icon);
-    emit d->statusNotifierItemDBus->NewOverlayIcon();
+    Q_EMIT d->statusNotifierItemDBus->NewOverlayIcon();
 
     d->overlayIcon = icon;
     if (d->systemTrayIcon) {
@@ -269,7 +269,7 @@ void KStatusNotifierItem::setAttentionIconByName(const QString &name)
 
     d->serializedAttentionIcon = KDbusImageVector();
     d->attentionIconName = name;
-    emit d->statusNotifierItemDBus->NewAttentionIcon();
+    Q_EMIT d->statusNotifierItemDBus->NewAttentionIcon();
 }
 
 QString KStatusNotifierItem::attentionIconName() const
@@ -286,7 +286,7 @@ void KStatusNotifierItem::setAttentionIconByPixmap(const QIcon &icon)
     d->attentionIconName.clear();
     d->serializedAttentionIcon = d->iconToVector(icon);
     d->attentionIcon = icon;
-    emit d->statusNotifierItemDBus->NewAttentionIcon();
+    Q_EMIT d->statusNotifierItemDBus->NewAttentionIcon();
 }
 
 QIcon KStatusNotifierItem::attentionIconPixmap() const
@@ -305,7 +305,7 @@ void KStatusNotifierItem::setAttentionMovieByName(const QString &name)
     delete d->movie;
     d->movie = 0;
 
-    emit d->statusNotifierItemDBus->NewAttentionIcon();
+    Q_EMIT d->statusNotifierItemDBus->NewAttentionIcon();
 
     if (d->systemTrayIcon) {
         d->movie = new QMovie(d->movieName);
@@ -337,7 +337,7 @@ void KStatusNotifierItem::setToolTip(const QString &iconName, const QString &tit
     }
 
     d->toolTipSubTitle = subTitle;
-    emit d->statusNotifierItemDBus->NewToolTip();
+    Q_EMIT d->statusNotifierItemDBus->NewToolTip();
 }
 
 void KStatusNotifierItem::setToolTip(const QIcon &icon, const QString &title, const QString &subTitle)
@@ -358,7 +358,7 @@ void KStatusNotifierItem::setToolTip(const QIcon &icon, const QString &title, co
     }
 
     d->toolTipSubTitle = subTitle;
-    emit d->statusNotifierItemDBus->NewToolTip();
+    Q_EMIT d->statusNotifierItemDBus->NewToolTip();
 }
 
 void KStatusNotifierItem::setToolTipIconByName(const QString &name)
@@ -369,7 +369,7 @@ void KStatusNotifierItem::setToolTipIconByName(const QString &name)
 
     d->serializedToolTipIcon = KDbusImageVector();
     d->toolTipIconName = name;
-    emit d->statusNotifierItemDBus->NewToolTip();
+    Q_EMIT d->statusNotifierItemDBus->NewToolTip();
 }
 
 QString KStatusNotifierItem::toolTipIconName() const
@@ -386,7 +386,7 @@ void KStatusNotifierItem::setToolTipIconByPixmap(const QIcon &icon)
     d->toolTipIconName.clear();
     d->serializedToolTipIcon = d->iconToVector(icon);
     d->toolTipIcon = icon;
-    emit d->statusNotifierItemDBus->NewToolTip();
+    Q_EMIT d->statusNotifierItemDBus->NewToolTip();
 }
 
 QIcon KStatusNotifierItem::toolTipIconPixmap() const
@@ -401,7 +401,7 @@ void KStatusNotifierItem::setToolTipTitle(const QString &title)
     }
 
     d->toolTipTitle = title;
-    emit d->statusNotifierItemDBus->NewToolTip();
+    Q_EMIT d->statusNotifierItemDBus->NewToolTip();
     if (d->systemTrayIcon) {
         d->systemTrayIcon->setToolTip(title);
     }
@@ -419,7 +419,7 @@ void KStatusNotifierItem::setToolTipSubTitle(const QString &subTitle)
     }
 
     d->toolTipSubTitle = subTitle;
-    emit d->statusNotifierItemDBus->NewToolTip();
+    Q_EMIT d->statusNotifierItemDBus->NewToolTip();
 }
 
 QString KStatusNotifierItem::toolTipSubTitle() const
@@ -583,7 +583,7 @@ void KStatusNotifierItem::activate(const QPoint &pos)
     //FIXME: always true?
     if (d->status == NeedsAttention) {
         d->status = Active;
-        emit d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
+        Q_EMIT d->statusNotifierItemDBus->NewStatus(metaObject()->enumerator(metaObject()->indexOfEnumerator("ItemStatus")).valueToKey(d->status));
     }
 
     if (d->associatedWidget == d->menu) {
@@ -596,7 +596,7 @@ void KStatusNotifierItem::activate(const QPoint &pos)
     }
 
     if (!d->associatedWidget) {
-        emit activateRequested(true, pos);
+        Q_EMIT activateRequested(true, pos);
         return;
     }
 
@@ -613,10 +613,10 @@ bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
     if(GetTickCount() - dwTickCount < 300) {
         // we were active in the last 300ms -> hide it
         minimizeRestore(false);
-        emit activateRequested(false, pos);
+        Q_EMIT activateRequested(false, pos);
     } else {
         minimizeRestore(true);
-        emit activateRequested(true, pos);
+        Q_EMIT activateRequested(true, pos);
     }
 #endif
 #elif HAVE_X11
@@ -632,7 +632,7 @@ bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
     if (!mapped) {
         if (perform) {
             minimizeRestore(true);
-            emit q->activateRequested(true, pos);
+            Q_EMIT q->activateRequested(true, pos);
         }
 
         return true;
@@ -671,7 +671,7 @@ bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
             if (perform) {
                 KWindowSystem::raiseWindow(associatedWidget->winId());
                 KWindowSystem::forceActiveWindow(associatedWidget->winId());
-                emit q->activateRequested(true, pos);
+                Q_EMIT q->activateRequested(true, pos);
             }
 
             return true;
@@ -681,7 +681,7 @@ bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
         if (!info1.isOnCurrentDesktop()) {
             if (perform) {
                 KWindowSystem::activateWindow(associatedWidget->winId());
-                emit q->activateRequested(true, pos);
+                Q_EMIT q->activateRequested(true, pos);
             }
 
             return true;
@@ -689,7 +689,7 @@ bool KStatusNotifierItemPrivate::checkVisibility(QPoint pos, bool perform)
 
         if (perform) {
             minimizeRestore(false); // hide
-            emit q->activateRequested(false, pos);
+            Q_EMIT q->activateRequested(false, pos);
         }
 
         return false;
@@ -843,7 +843,7 @@ void KStatusNotifierItemPrivate::legacyWheelEvent(int delta)
 void KStatusNotifierItemPrivate::legacyActivated(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason == QSystemTrayIcon::MiddleClick) {
-        emit q->secondaryActivateRequested(systemTrayIcon->geometry().topLeft());
+        Q_EMIT q->secondaryActivateRequested(systemTrayIcon->geometry().topLeft());
     }
 }
 
@@ -1027,7 +1027,7 @@ KDbusImageVector KStatusNotifierItemPrivate::iconToVector(const QIcon &icon)
     QPixmap iconPixmap;
 
     //if an icon exactly that size wasn't found don't add it to the vector
-    foreach (const QSize &size, icon.availableSizes()) {
+    Q_FOREACH (const QSize &size, icon.availableSizes()) {
         iconPixmap = icon.pixmap(size);
         iconVector.append(imageToStruct(iconPixmap.toImage()));
     }

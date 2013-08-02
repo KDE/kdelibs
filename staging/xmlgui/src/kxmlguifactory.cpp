@@ -217,7 +217,7 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
     }
 
     if (d->emptyState())
-        emit makingChanges(true);
+        Q_EMIT makingChanges(true);
     d->pushState();
 
 //    QTime dt; dt.start();
@@ -285,14 +285,14 @@ void KXMLGUIFactory::addClient( KXMLGUIClient *client )
 
     d->popState();
 
-    emit clientAdded( client );
+    Q_EMIT clientAdded( client );
 
     // build child clients
     Q_FOREACH (KXMLGUIClient *child, client->childClients())
         addClient( child );
 
     if (d->emptyState())
-        emit makingChanges(false);
+        Q_EMIT makingChanges(false);
 /*
     QString unaddedActions;
     Q_FOREACH (KActionCollection* ac, KActionCollection::allCollections())
@@ -406,7 +406,7 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
         return;
 
     if (d->emptyState())
-        emit makingChanges(true);
+        Q_EMIT makingChanges(true);
 
     // remove this client from our client list
     d->m_clients.removeAll( client );
@@ -450,9 +450,9 @@ void KXMLGUIFactory::removeClient( KXMLGUIClient *client )
     d->popState();
 
     if (d->emptyState())
-        emit makingChanges(false);
+        Q_EMIT makingChanges(false);
 
-    emit clientRemoved( client );
+    Q_EMIT clientRemoved( client );
 }
 
 QList<KXMLGUIClient*> KXMLGUIFactory::clients() const

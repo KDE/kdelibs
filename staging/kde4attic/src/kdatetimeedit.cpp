@@ -159,7 +159,7 @@ void KDateTimeEditPrivate::initCalendarWidget()
 {
     ui.m_calendarCombo->blockSignals(true);
     ui.m_calendarCombo->clear();
-    foreach (KLocale::CalendarSystem calendar, m_calendarSystems) {
+    Q_FOREACH (KLocale::CalendarSystem calendar, m_calendarSystems) {
         ui.m_calendarCombo->addItem(KCalendarSystem::calendarLabel(calendar), calendar);
     }
     ui.m_calendarCombo->setCurrentIndex(ui.m_calendarCombo->findData(ui.m_dateCombo->calendarSystem()));
@@ -184,7 +184,7 @@ void KDateTimeEditPrivate::selectCalendar(int index)
 void KDateTimeEditPrivate::enterCalendar(KLocale::CalendarSystem calendarSystem)
 {
     q->setCalendarSystem(calendarSystem);
-    emit q->calendarEntered(ui.m_dateCombo->calendarSystem());
+    Q_EMIT q->calendarEntered(ui.m_dateCombo->calendarSystem());
 }
 
 void KDateTimeEditPrivate::initTimeSpecWidget()
@@ -195,7 +195,7 @@ void KDateTimeEditPrivate::initTimeSpecWidget()
     ui.m_timeSpecCombo->addItem(i18nc("No specific time zone", "Floating"), "Floating");
     QStringList keys = m_zones.keys();
     QMap<QString, QString> names;
-    foreach (const QString &key, keys) {
+    Q_FOREACH (const QString &key, keys) {
         names.insert(i18n(key.toUtf8()).replace('_', ' '), key);
     }
     QMapIterator<QString, QString> i(names);
@@ -223,8 +223,8 @@ void KDateTimeEditPrivate::selectTimeZone(int index)
 void KDateTimeEditPrivate::enterTimeZone(const QString &zone)
 {
     q->setTimeSpec(m_zones.value(zone));
-    emit q->dateTimeEntered(m_dateTime);
-    emit q->timeSpecEntered(m_dateTime.timeSpec());
+    Q_EMIT q->dateTimeEntered(m_dateTime);
+    Q_EMIT q->timeSpecEntered(m_dateTime.timeSpec());
 }
 
 void KDateTimeEditPrivate::warnDateTime()
@@ -361,9 +361,9 @@ void KDateTimeEdit::setDateTime(const KDateTime &dateTime)
 {
     if (dateTime != d->m_dateTime) {
         assignDateTime(dateTime);
-        emit dateTimeChanged(d->m_dateTime);
-        emit dateChanged(d->m_dateTime.date());
-        emit timeChanged(d->m_dateTime.time());
+        Q_EMIT dateTimeChanged(d->m_dateTime);
+        Q_EMIT dateChanged(d->m_dateTime.date());
+        Q_EMIT timeChanged(d->m_dateTime.time());
     }
 }
 
@@ -378,8 +378,8 @@ void KDateTimeEdit::setDate(const QDate &date)
 {
     if (date != d->m_dateTime.date()) {
         assignDate(date);
-        emit dateTimeChanged(d->m_dateTime);
-        emit dateChanged(d->m_dateTime.date());
+        Q_EMIT dateTimeChanged(d->m_dateTime);
+        Q_EMIT dateChanged(d->m_dateTime.date());
     }
 }
 
@@ -397,7 +397,7 @@ void KDateTimeEdit::setCalendarSystem(KLocale::CalendarSystem calendarSystem)
     }
 
     assignCalendarSystem(calendarSystem);
-    emit calendarChanged(d->ui.m_dateCombo->calendarSystem());
+    Q_EMIT calendarChanged(d->ui.m_dateCombo->calendarSystem());
 }
 
 void KDateTimeEdit::assignCalendarSystem(KLocale::CalendarSystem calendarSystem)
@@ -416,8 +416,8 @@ void KDateTimeEdit::setTime(const QTime &time)
 {
     if (time != d->m_dateTime.time()) {
         assignTime(time);
-        emit dateTimeChanged(d->m_dateTime);
-        emit timeChanged(d->m_dateTime.time());
+        Q_EMIT dateTimeChanged(d->m_dateTime);
+        Q_EMIT timeChanged(d->m_dateTime.time());
     }
 }
 
@@ -434,8 +434,8 @@ void KDateTimeEdit::setTimeSpec(const KDateTime::Spec &spec)
     }
 
     assignTimeSpec(spec);
-    emit dateTimeChanged(d->m_dateTime);
-    emit timeSpecChanged(d->m_dateTime.timeSpec());
+    Q_EMIT dateTimeChanged(d->m_dateTime);
+    Q_EMIT timeSpecChanged(d->m_dateTime.timeSpec());
 }
 
 void KDateTimeEdit::assignTimeSpec(const KDateTime::Spec &spec)

@@ -58,9 +58,9 @@ void KActionPrivate::init(KAction *q_ptr)
 void KActionPrivate::slotTriggered()
 {
 #ifdef KDE3_SUPPORT
-  emit q->activated();
+  Q_EMIT q->activated();
 #endif
-  emit q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
+  Q_EMIT q->triggered(QApplication::mouseButtons(), QApplication::keyboardModifiers());
 }
 
 void KActionPrivate::_k_emitActionGlobalShortcutChanged(QAction *action, const QKeySequence &seq)
@@ -68,7 +68,7 @@ void KActionPrivate::_k_emitActionGlobalShortcutChanged(QAction *action, const Q
     if (action == q) {
         // reemit the legacy KAction::globalShortcutChanged
         // TODO: completely remove this method when KAction::globalShortcutChanged signal will be removed
-        emit q->globalShortcutChanged(seq);
+        Q_EMIT q->globalShortcutChanged(seq);
     }
 }
 

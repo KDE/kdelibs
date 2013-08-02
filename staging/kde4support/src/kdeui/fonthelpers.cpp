@@ -102,7 +102,7 @@ QStringList translateFontNameList (const QStringList &names,
     // Translate fonts, but do not add generics to the list right away.
     QStringList trNames;
     QHash<QString, QString> trMap;
-    foreach (const QString &name, names) {
+    Q_FOREACH (const QString &name, names) {
         QString trName = translateFontName(name);
         if (!genericNames.contains(name)) {
             trNames.append(trName);
@@ -114,7 +114,7 @@ QStringList translateFontNameList (const QStringList &names,
     qSort(trNames.begin(), trNames.end(), localeLessThan);
 
     // Prepend generic fonts, in the predefined order.
-    foreach (const QString &genericName, genericNames) {
+    Q_FOREACH (const QString &genericName, genericNames) {
         QString trGenericName = translateFontName(genericName);
         if (trMap.contains(trGenericName)) {
             trNames.prepend(trGenericName);

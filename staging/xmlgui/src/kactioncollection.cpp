@@ -318,7 +318,7 @@ QAction *KActionCollection::addAction(const QString &name, QAction *action)
     if (d->connectTriggered)
         connect(action, SIGNAL(triggered(bool)), SLOT(slotActionTriggered()));
 
-    emit inserted( action );
+    Q_EMIT inserted( action );
     return action;
 }
 
@@ -345,7 +345,7 @@ QAction* KActionCollection::takeAction(QAction *action)
 
   action->disconnect(this);
 
-  emit removed( action ); //deprecated
+  Q_EMIT removed( action ); //deprecated
   return action;
 }
 
@@ -683,7 +683,7 @@ void KActionCollection::slotActionTriggered( )
 {
   QAction* action = qobject_cast<QAction*>(sender());
   if (action)
-    emit actionTriggered(action);
+    Q_EMIT actionTriggered(action);
 }
 
 void KActionCollection::slotActionHighlighted( )
@@ -695,8 +695,8 @@ void KActionCollection::slotActionHovered( )
 {
   QAction* action = qobject_cast<QAction*>(sender());
   if (action) {
-    emit actionHighlighted(action);
-    emit actionHovered(action);
+    Q_EMIT actionHighlighted(action);
+    Q_EMIT actionHovered(action);
   }
 }
 
@@ -710,8 +710,8 @@ void KActionCollectionPrivate::_k_actionDestroyed( QObject *obj )
   if (!unlistAction(action))
       return;
 
-  //HACK the object we emit is partly destroyed
-  emit q->removed(action); //deprecated. remove in KDE5
+  //HACK the object we Q_EMIT is partly destroyed
+  Q_EMIT q->removed(action); //deprecated. remove in KDE5
 }
 
 void KActionCollection::connectNotify(const QMetaMethod& signal)

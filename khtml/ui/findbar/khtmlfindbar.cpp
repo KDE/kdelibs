@@ -249,7 +249,7 @@ bool KHTMLFindBar::event(QEvent* e)
         QKeyEvent* kev = static_cast<QKeyEvent* >(e);
         if (kev->key() == Qt::Key_Escape) {
             e->accept();
-            emit hideMe();
+            Q_EMIT hideMe();
             return true;
         }
     }

@@ -168,10 +168,10 @@ void KListWidget::KListWidgetPrivate::_k_slotAutoSelect()
       q->blockSignals( block );
       q->viewport()->setUpdatesEnabled( update );
 
-      emit q->itemSelectionChanged();
+      Q_EMIT q->itemSelectionChanged();
 
       if( q->selectionMode() == QAbstractItemView::SingleSelection )
-        q->emit itemSelectionChanged();
+        q->Q_EMIT itemSelectionChanged();
     }
     else if( (keybstate & Qt::ControlModifier) )
       m_pCurrentItem->setSelected(!m_pCurrentItem->isSelected());
@@ -197,11 +197,11 @@ void KListWidget::KListWidgetPrivate::_k_slotEmitExecute(QListWidgetItem *item)
 
   m_pAutoSelect->stop();
 
-  //Don't emit executed if in SC mode and Shift or Ctrl are pressed
+  //Don't Q_EMIT executed if in SC mode and Shift or Ctrl are pressed
   if( !( m_bUseSingle && ((keybstate & Qt::ShiftModifier) || (keybstate & Qt::ControlModifier)) ) ) {
-    emit q->executed( item );
+    Q_EMIT q->executed( item );
     if (!m_eventPos.isNull()) {
-        emit q->executed( item, m_eventPos );
+        Q_EMIT q->executed( item, m_eventPos );
     }
   }
 }

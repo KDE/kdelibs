@@ -61,8 +61,8 @@ void KRestrictedLine::keyPressEvent( QKeyEvent *e )
     // do we have a list of valid chars &&
     // is the pressed key in the list of valid chars?
     if (!d->qsValidChars.isEmpty() && !d->qsValidChars.contains(e->text())) {
-        // invalid char, emit signal and return
-        emit invalidChar(e->key());
+        // invalid char, Q_EMIT signal and return
+        Q_EMIT invalidChar(e->key());
     } else {
         // valid char: let KLineEdit process this key as usual
         KLineEdit::keyPressEvent(e);
@@ -76,7 +76,7 @@ void KRestrictedLine::inputMethodEvent(QInputMethodEvent *e)
         bool allOK = true;
         Q_FOREACH(QChar ch, str) {
             if (!d->qsValidChars.contains(ch)) {
-                emit invalidChar(ch.unicode());
+                Q_EMIT invalidChar(ch.unicode());
                 allOK = false;
             }
         }

@@ -44,7 +44,7 @@ void KTestJob::start()
             this, SLOT(nextStep()));
     m_state = StatingDirs;
     m_timer.start(50);
-    emit description(this, QString("Copying"), qMakePair(QString("Source"), QString("file:/src")),
+    Q_EMIT description(this, QString("Copying"), qMakePair(QString("Source"), QString("file:/src")),
                      qMakePair(QString("Destination"), QString("file:/dest")));
 }
 
@@ -53,15 +53,15 @@ void KTestJob::nextStep()
     switch (m_state)
     {
     case StatingDirs:
-        emit infoMessage(this, QString("Initial listing"));
+        Q_EMIT infoMessage(this, QString("Initial listing"));
         stateNextDir();
         break;
     case CreatingDirs:
-        emit infoMessage(this, QString("Folder creation"));
+        Q_EMIT infoMessage(this, QString("Folder creation"));
         createNextDir();
         break;
     case CopyingFiles:
-        emit infoMessage(this, QString("Actual file copying"));
+        Q_EMIT infoMessage(this, QString("Actual file copying"));
         copyNextFile();
         break;
     case Stopped:
@@ -83,7 +83,7 @@ void KTestJob::stateNextDir()
     setTotalAmount(KJob::Files, totalAmount(KJob::Directories)*10);
     setTotalAmount(KJob::Bytes, totalAmount(KJob::Files)*1000);
 
-    emit description(this, QString("Stating"), qMakePair(QString("Stating"), QString("file:/src/"+directory_name)));
+    Q_EMIT description(this, QString("Stating"), qMakePair(QString("Stating"), QString("file:/src/"+directory_name)));
 }
 
 void KTestJob::createNextDir()
@@ -98,7 +98,7 @@ void KTestJob::createNextDir()
     qDebug() << "Creating " << directory_name;
     setProcessedAmount(KJob::Directories, processedAmount(KJob::Directories)+1);
 
-    emit description(this, QString("Creating Dir"), qMakePair(QString("Creating"), QString("file:/dest/"+directory_name)));
+    Q_EMIT description(this, QString("Creating Dir"), qMakePair(QString("Creating"), QString("file:/dest/"+directory_name)));
 }
 
 void KTestJob::copyNextFile()
@@ -117,7 +117,7 @@ void KTestJob::copyNextFile()
     setProcessedAmount(KJob::Files, processedAmount(KJob::Files)+1);
     setProcessedAmount(KJob::Bytes, processedAmount(KJob::Bytes)+1000);
 
-    emit description(this, QString("Copying"), qMakePair(QString("Source"), QString("file:/src/"+file_name)),
+    Q_EMIT description(this, QString("Copying"), qMakePair(QString("Source"), QString("file:/src/"+file_name)),
                      qMakePair(QString("Destination"), QString("file:/dest/"+file_name)));
 
     emitSpeed(m_currentSpeed);

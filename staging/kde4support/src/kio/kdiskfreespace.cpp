@@ -66,10 +66,10 @@ bool KDiskFreeSpace::Private::_k_calculateFreeSpace()
     if ( info.isValid() ) {
         quint64 sizeKiB = info.size() / 1024;
         quint64 availKiB = info.available() / 1024;
-        emit m_parent->foundMountPoint( info.mountPoint(), sizeKiB, sizeKiB-availKiB, availKiB );
+        Q_EMIT m_parent->foundMountPoint( info.mountPoint(), sizeKiB, sizeKiB-availKiB, availKiB );
     }
 
-    emit m_parent->done();
+    Q_EMIT m_parent->done();
 
     m_parent->deleteLater();
 

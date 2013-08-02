@@ -99,7 +99,7 @@ public:
     {
 #if 0
         qDebug(240) << "XmlData" << this << "type" << s_XmlTypeToString[m_type] << "xmlFile:" << m_xmlFile;
-        foreach (const QDomElement& element, m_barList) {
+        Q_FOREACH (const QDomElement& element, m_barList) {
             qDebug(240) << "    ToolBar:" << toolBarText( element );
         }
         if ( m_actionCollection )
@@ -266,7 +266,7 @@ bool ToolBarListWidget::dropMimeData(int index, const QMimeData * mimeData, Qt::
     const bool sourceIsActiveList = mimeData->data(QStringLiteral("application/x-kde-source-treewidget")) == "active";
     ToolBarItem* item = new ToolBarItem(this); // needs parent, use this temporarily
     stream >> *item;
-    emit dropped(this, index, item, sourceIsActiveList);
+    Q_EMIT dropped(this, index, item, sourceIsActiveList);
     return true;
 }
 
@@ -623,7 +623,7 @@ void KEditToolBarPrivate::defaultClicked()
 
     if ( m_factory )
     {
-        foreach (KXMLGUIClient* client, m_factory->clients())
+        Q_FOREACH (KXMLGUIClient* client, m_factory->clients())
         {
             const QString file = client->localXMLFile();
             if (file.isEmpty())
@@ -666,8 +666,8 @@ void KEditToolBarPrivate::defaultClicked()
 
     _k_enableApply(false);
 
-    emit q->newToolBarConfig();
-    emit q->newToolbarConfig(); // compat
+    Q_EMIT q->newToolBarConfig();
+    Q_EMIT q->newToolbarConfig(); // compat
 }
 
 void KEditToolBarPrivate::_k_slotButtonClicked(QAbstractButton *button)
@@ -702,11 +702,11 @@ void KEditToolBarPrivate::okClicked()
   }
   else
   {
-    // Do not emit the "newToolBarConfig" signal again here if the "Apply"
+    // Do not Q_EMIT the "newToolBarConfig" signal again here if the "Apply"
     // button was already pressed and no further changes were made.
     if (m_buttonBox->button(QDialogButtonBox::Apply)->isEnabled()) {
-        emit q->newToolBarConfig();
-        emit q->newToolbarConfig(); // compat
+        Q_EMIT q->newToolBarConfig();
+        Q_EMIT q->newToolbarConfig(); // compat
     }
     q->accept();
   }
@@ -716,8 +716,8 @@ void KEditToolBarPrivate::applyClicked()
 {
     (void)m_widget->save();
     _k_enableApply(false);
-    emit q->newToolBarConfig();
-    emit q->newToolbarConfig(); // compat
+    Q_EMIT q->newToolBarConfig();
+    Q_EMIT q->newToolbarConfig(); // compat
 }
 
 void KEditToolBar::setGlobalDefaultToolBar(const char *toolbarName)
@@ -809,7 +809,7 @@ void KEditToolBarWidgetPrivate::initFromFactory(KXMLGUIFactory* factory,
 
   // add all of the client data
   bool first = true;
-  foreach (KXMLGUIClient* client, factory->clients())
+  Q_FOREACH (KXMLGUIClient* client, factory->clients())
   {
     if (client->xmlFile().isEmpty())
       continue;
@@ -839,7 +839,7 @@ void KEditToolBarWidgetPrivate::initFromFactory(KXMLGUIFactory* factory,
   m_widget->setMinimumSize( m_widget->sizeHint() );
 
   m_widget->actionCollection()->addAssociatedWidget( m_widget );
-  foreach (QAction* action, m_widget->actionCollection()->actions())
+  Q_FOREACH (QAction* action, m_widget->actionCollection()->actions())
     action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
 }
 
@@ -906,7 +906,7 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
 
   // now, rebuild the gui from the first to the last
   //qDebug(240) << "rebuilding the gui";
-  foreach (KXMLGUIClient* client, clients)
+  Q_FOREACH (KXMLGUIClient* client, clients)
   {
     //qDebug(240) << "updating client " << client << " " << client->componentName() << "  xmlFile=" << client->xmlFile();
     QString file( client->xmlFile() ); // before setting ui_standards!
@@ -929,7 +929,7 @@ void KEditToolBarWidget::rebuildKXMLGUIClients()
     // Now we can add the clients to the factory
     // We don't do it in the loop above because adding a part automatically
     // adds its plugins, so we must make sure the plugins were updated first.
-    foreach(KXMLGUIClient* client, clients) {
+    Q_FOREACH(KXMLGUIClient* client, clients) {
         d->m_factory->addClient(client);
     }
 }
@@ -1189,7 +1189,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
     // iterate through this client's actions
     // This used to iterate through _all_ actions, but we don't support
     // putting any action into any client...
-    foreach (QAction* action, actionCollection->actions())
+    Q_FOREACH (QAction* action, actionCollection->actions())
     {
       // do we have a match?
       if (it.attribute( attrName ) == action->objectName())
@@ -1207,7 +1207,7 @@ void KEditToolBarWidgetPrivate::loadActions(const QDomElement& elem)
   }
 
   // go through the rest of the collection
-  foreach (QAction* action, actionCollection->actions())
+  Q_FOREACH (QAction* action, actionCollection->actions())
   {
     // skip our active ones
     if (active_list.contains(action->objectName()))
@@ -1329,7 +1329,7 @@ void KEditToolBarWidgetPrivate::slotInsertButton()
 
   insertActive(m_inactiveList->currentItem(), m_activeList->currentItem(), false);
   // we're modified, so let this change
-  emit m_widget->enableOk(true);
+  Q_EMIT m_widget->enableOk(true);
 
   slotToolBarSelected( m_toolbarCombo->currentIndex() );
 
@@ -1403,7 +1403,7 @@ void KEditToolBarWidgetPrivate::removeActive(ToolBarItem *item)
     return;
 
   // we're modified, so let this change
-  emit m_widget->enableOk(true);
+  Q_EMIT m_widget->enableOk(true);
 
   // now iterate through to find the child to nuke
   QDomElement elem = findElementForToolBarItem( item );
@@ -1437,7 +1437,7 @@ void KEditToolBarWidgetPrivate::slotUpButton()
   }
 
   // we're modified, so let this change
-  emit m_widget->enableOk(true);
+  Q_EMIT m_widget->enableOk(true);
 
   moveActive( item, static_cast<ToolBarItem*>(item->listWidget()->item(row - 1)) );
 }
@@ -1488,7 +1488,7 @@ void KEditToolBarWidgetPrivate::slotDownButton()
   }
 
   // we're modified, so let this change
-  emit m_widget->enableOk(true);
+  Q_EMIT m_widget->enableOk(true);
 
   moveActive( item, static_cast<ToolBarItem*>(item->listWidget()->item(newRow)) );
 }
@@ -1617,7 +1617,7 @@ void KEditToolBarWidgetPrivate::slotChangeIconText()
         act_elem.setAttribute( QString::fromLatin1("priority"), hidden ? QAction::LowPriority : QAction::NormalPriority );
 
     // we're modified, so let this change
-    emit m_widget->enableOk(true);
+    Q_EMIT m_widget->enableOk(true);
   }
 }
 
@@ -1660,7 +1660,7 @@ void KEditToolBarWidgetPrivate::slotProcessExited()
     act_elem.setAttribute( QStringLiteral("icon"), icon );
 
     // we're modified, so let this change
-    emit m_widget->enableOk(true);
+    Q_EMIT m_widget->enableOk(true);
   }
 
   delete m_kdialogProcess;
@@ -1689,7 +1689,7 @@ void KEditToolBarWidgetPrivate::slotDropped(ToolBarListWidget* list, int index, 
     delete item; // not needed anymore. must be deleted before slotToolBarSelected clears the lists
 
     // we're modified, so let this change
-    emit m_widget->enableOk(true);
+    Q_EMIT m_widget->enableOk(true);
 
     slotToolBarSelected( m_toolbarCombo->currentIndex() );
 }

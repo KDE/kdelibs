@@ -244,7 +244,7 @@ QString KCompletion::makeCompletion( const QString& string )
         findAllCompletions( string, &d->matches, d->myHasMultipleMatches );
         QStringList l = d->matches.list();
         postProcessMatches( &l );
-        emit matches( l );
+        Q_EMIT matches( l );
 
         if ( l.isEmpty() )
             doBeep( NoMatch );
@@ -264,16 +264,16 @@ QString KCompletion::makeCompletion( const QString& string )
         completion = findCompletion( string );
 
     if ( d->myHasMultipleMatches )
-        emit multipleMatches();
+        Q_EMIT multipleMatches();
 
     d->myLastString = string;
     d->myCurrentMatch = completion;
 
     postProcessMatch( &completion );
 
-    if ( !string.isEmpty() ) { // only emit match when string is not empty
+    if ( !string.isEmpty() ) { // only Q_EMIT match when string is not empty
         //qDebug() << "KCompletion: Match: " << completion;
-        emit match( completion );
+        Q_EMIT match( completion );
     }
 
     if ( completion.isNull() )
@@ -408,7 +408,7 @@ QString KCompletion::nextMatch()
         d->myCurrentMatch = completion;
         d->myRotationIndex = 0;
         postProcessMatch( &completion );
-        emit match( completion );
+        Q_EMIT match( completion );
         return completion;
     }
 
@@ -424,7 +424,7 @@ QString KCompletion::nextMatch()
     completion = matches[ d->myRotationIndex ];
     d->myCurrentMatch = completion;
     postProcessMatch( &completion );
-    emit match( completion );
+    Q_EMIT match( completion );
     return completion;
 }
 
@@ -446,7 +446,7 @@ QString KCompletion::previousMatch()
         d->myCurrentMatch = completion;
         d->myRotationIndex = 0;
         postProcessMatch( &completion );
-        emit match( completion );
+        Q_EMIT match( completion );
         return completion;
     }
 
@@ -463,7 +463,7 @@ QString KCompletion::previousMatch()
     completion = matches[ d->myRotationIndex ];
     d->myCurrentMatch = completion;
     postProcessMatch( &completion );
-    emit match( completion );
+    Q_EMIT match( completion );
     return completion;
 }
 

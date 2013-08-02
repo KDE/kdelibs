@@ -192,7 +192,7 @@ void KTimeComboBoxPrivate::initTimeWidget()
         }
         q->addItem(formatTime(endTime), endTime);
     } else {
-        foreach (const QTime &thisTime, m_timeList) {
+        Q_FOREACH (const QTime &thisTime, m_timeList) {
             if (thisTime.isValid() && thisTime >= m_minTime && thisTime <= m_maxTime) {
                 q->addItem(formatTime(thisTime), thisTime);
             }
@@ -234,7 +234,7 @@ void KTimeComboBoxPrivate::selectTime(int index)
 void KTimeComboBoxPrivate::editTime(const QString &text)
 {
     m_warningShown = false;
-    emit q->timeEdited(KLocale::global()->readTime(text));
+    Q_EMIT q->timeEdited(KLocale::global()->readTime(text));
 }
 
 void KTimeComboBoxPrivate::parseTime()
@@ -246,7 +246,7 @@ void KTimeComboBoxPrivate::enterTime(const QTime &time)
 {
     q->setTime(time);
     warnTime();
-    emit q->timeEntered(m_time);
+    Q_EMIT q->timeEntered(m_time);
 }
 
 void KTimeComboBoxPrivate::warnTime()
@@ -316,7 +316,7 @@ void KTimeComboBox::setTime(const QTime &time)
     }
 
     d->updateTimeWidget();
-    emit timeChanged(d->m_time);
+    Q_EMIT timeChanged(d->m_time);
 }
 
 void KTimeComboBox::assignTime(const QTime &time)
@@ -458,7 +458,7 @@ void KTimeComboBox::setTimeList(QList<QTime> timeList,
 {
     if (timeList != d->m_timeList) {
         d->m_timeList.clear();
-        foreach (const QTime &time, timeList) {
+        Q_FOREACH (const QTime &time, timeList) {
             if (time.isValid() && !d->m_timeList.contains(time)) {
                 d->m_timeList.append(time);
             }

@@ -269,7 +269,7 @@ CSSStyleSelector::CSSStyleSelector( DocumentImpl* doc, QString userStyleSheet, S
     authorStyle = 0;
     implicitStyle = 0;
 
-    foreach (StyleSheetImpl* sh, styleSheets->styleSheets) {
+    Q_FOREACH (StyleSheetImpl* sh, styleSheets->styleSheets) {
         if ( sh->isCSSStyleSheet() ) {
             if ( static_cast<CSSStyleSheetImpl*>(sh)->implicit() ) {
                 if (!implicitStyle)

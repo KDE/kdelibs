@@ -429,7 +429,7 @@ void KTabWidget::dragEnterEvent( QDragEnterEvent *event )
     bool accept = false;
     // The receivers of the testCanDecode() signal has to adjust
     // 'accept' accordingly.
-    emit testCanDecode( event, accept);
+    Q_EMIT testCanDecode( event, accept);
 
     event->setAccepted( accept );
     return;
@@ -444,7 +444,7 @@ void KTabWidget::dragMoveEvent( QDragMoveEvent *event )
     bool accept = false;
     // The receivers of the testCanDecode() signal has to adjust
     // 'accept' accordingly.
-    emit testCanDecode( event, accept);
+    Q_EMIT testCanDecode( event, accept);
 
     event->setAccepted( accept );
     return;
@@ -456,7 +456,7 @@ void KTabWidget::dragMoveEvent( QDragMoveEvent *event )
 void KTabWidget::dropEvent( QDropEvent *event )
 {
   if ( d->isEmptyTabbarSpace( event->pos() ) ) {
-    emit ( receivedDropEvent( event ) );
+    Q_EMIT ( receivedDropEvent( event ) );
     return;
   }
 
@@ -495,7 +495,7 @@ void KTabWidget::mouseDoubleClickEvent( QMouseEvent *event )
     return;
 
   if ( d->isEmptyTabbarSpace( event->pos() ) ) {
-    emit( mouseDoubleClick() );
+    Q_EMIT( mouseDoubleClick() );
     return;
   }
 
@@ -506,7 +506,7 @@ void KTabWidget::mousePressEvent( QMouseEvent *event )
 {
   if ( event->button() == Qt::RightButton ) {
     if ( d->isEmptyTabbarSpace( event->pos() ) ) {
-      emit( contextMenu( mapToGlobal( event->pos() ) ) );
+      Q_EMIT( contextMenu( mapToGlobal( event->pos() ) ) );
       return;
     }
   }
@@ -518,7 +518,7 @@ void KTabWidget::mouseReleaseEvent( QMouseEvent *event )
 {
   if ( event->button() == Qt::MidButton ) {
     if ( d->isEmptyTabbarSpace( event->pos() ) ) {
-      emit( mouseMiddleClick() );
+      Q_EMIT( mouseMiddleClick() );
       return;
     }
   }
@@ -528,27 +528,27 @@ void KTabWidget::mouseReleaseEvent( QMouseEvent *event )
 
 void KTabWidget::receivedDropEvent( int index, QDropEvent *event )
 {
-  emit( receivedDropEvent( widget( index ), event ) );
+  Q_EMIT( receivedDropEvent( widget( index ), event ) );
 }
 
 void KTabWidget::initiateDrag( int index )
 {
-  emit( initiateDrag( widget( index ) ) );
+  Q_EMIT( initiateDrag( widget( index ) ) );
 }
 
 void KTabWidget::contextMenu( int index, const QPoint &point )
 {
-  emit( contextMenu( widget( index ), point ) );
+  Q_EMIT( contextMenu( widget( index ), point ) );
 }
 
 void KTabWidget::mouseDoubleClick( int index )
 {
-  emit( mouseDoubleClick( widget( index ) ) );
+  Q_EMIT( mouseDoubleClick( widget( index ) ) );
 }
 
 void KTabWidget::mouseMiddleClick( int index )
 {
-  emit( mouseMiddleClick( widget( index ) ) );
+  Q_EMIT( mouseMiddleClick( widget( index ) ) );
 }
 
 void KTabWidget::moveTab( int from, int to )
@@ -591,7 +591,7 @@ void KTabWidget::moveTab( int from, int to )
   setUpdatesEnabled(true);
 
 #ifndef KDE_NO_DEPRECATED
-  emit ( movedTab( from, to ) );
+  Q_EMIT ( movedTab( from, to ) );
 #endif
 }
 
@@ -694,7 +694,7 @@ bool KTabWidget::automaticResizeTabs() const
 
 void KTabWidget::closeRequest( int index )
 {
-  emit( closeRequest( widget( index ) ) );
+  Q_EMIT( closeRequest( widget( index ) ) );
 }
 
 void KTabWidget::resizeEvent( QResizeEvent *event )

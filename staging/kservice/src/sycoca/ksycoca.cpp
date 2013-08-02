@@ -356,9 +356,9 @@ void KSycoca::notifyDatabaseChanged(const QStringList &changeList)
 
     // Now notify applications
 #ifndef KDE_NO_DEPRECATED
-    emit databaseChanged();
+    Q_EMIT databaseChanged();
 #endif
-    emit databaseChanged(changeList);
+    Q_EMIT databaseChanged(changeList);
 }
 
 QDataStream * KSycoca::findEntry(int offset, KSycocaType &type)

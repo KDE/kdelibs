@@ -334,7 +334,7 @@ public:
     void scrollAccessKeys(int dx, int dy)
     {
         QList<QLabel*> wl = view->widget()->findChildren<QLabel*>("KHTMLAccessKey");
-        foreach(QLabel* w, wl) {
+        Q_FOREACH(QLabel* w, wl) {
             w->move( w->pos() + QPoint(dx, dy) );
         }
     }
@@ -630,7 +630,7 @@ void KHTMLView::clear()
         d->stopScrolling();
     d->reset();
     QAbstractEventDispatcher::instance()->unregisterTimers(this);
-    emit cleared();
+    Q_EMIT cleared();
 
     QScrollArea::setHorizontalScrollBarPolicy(d->hpolicy);
     QScrollArea::setVerticalScrollBarPolicy(d->vpolicy);
@@ -1004,7 +1004,7 @@ void KHTMLView::layout()
 
         canvas->layout();
 
-        emit finishedLayout();
+        Q_EMIT finishedLayout();
         if (d->firstLayoutPending) {
             // make sure firstLayoutPending is set to false now in case this layout
             // wasn't scheduled
@@ -1015,7 +1015,7 @@ void KHTMLView::layout()
         d->layoutCounter++;
 
         if (d->accessKeysEnabled && d->accessKeysActivated) {
-            emit hideAccessKeys();
+            Q_EMIT hideAccessKeys();
             displayAccessKeys();
         }
     }
@@ -1031,7 +1031,7 @@ void KHTMLView::layout()
 void KHTMLView::closeChildDialogs()
 {
     QList<QDialog *> dlgs = findChildren<QDialog *>();
-    foreach (QDialog *dlg, dlgs)
+    Q_FOREACH (QDialog *dlg, dlgs)
     {
         if ( dlg->testAttribute( Qt::WA_ShowModal ) ) {
             // qDebug() << "closeChildDialogs: closing dialog " << dlg;
@@ -1223,7 +1223,7 @@ void KHTMLView::mousePressEvent( QMouseEvent *_mouse )
                                            d->clickCount,_mouse,true,DOM::NodeImpl::MousePress);
 
     if (!swallowEvent) {
-	emit m_part->nodeActivated(mev.innerNode);
+	Q_EMIT m_part->nodeActivated(mev.innerNode);
 
 	khtml::MousePressEvent event( _mouse, xm, ym, mev.url, mev.target, mev.innerNode );
         QApplication::sendEvent( m_part, &event );
@@ -1355,7 +1355,7 @@ void KHTMLView::mouseMoveEvent( QMouseEvent * _mouse )
         else if (QLineEdit* le = qobject_cast<QLineEdit*>(rw->widget())) {
             QList<QWidget*> wl = le->findChildren<QWidget *>("KLineEditButton");
             // force arrow cursor above lineedit clear button
-            foreach (QWidget*w, wl) {
+            Q_FOREACH (QWidget*w, wl) {
                 if (w->underMouse()) {
                     forceDefault = true;
                     break;
@@ -1954,7 +1954,7 @@ static void handleWidget(QWidget* w, KHTMLView* view, bool recurse=true)
     }
 
     QObjectList children = w->children();
-    foreach (QObject* object, children) {
+    Q_FOREACH (QObject* object, children) {
 	QWidget *widget = qobject_cast<QWidget*>(object);
 	if (widget)
 	    handleWidget(widget, view);
@@ -2007,7 +2007,7 @@ static void setInPaintEventFlag(QWidget* w, bool b = true, bool recurse=true)
           return;
       }
 
-      foreach(QObject* cw, w->children()) {
+      Q_FOREACH(QObject* cw, w->children()) {
           if (cw->isWidgetType() && ! static_cast<QWidget*>(cw)->isWindow()
                                  && !(static_cast<QWidget*>(cw)->windowModality() & Qt::ApplicationModal)) {
               setInPaintEventFlag(static_cast<QWidget*>(cw), b);
@@ -2383,7 +2383,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 		    Node guard(toFocus);
 		    if (!toFocus->hasOneRef() )
 		    {
-			emit m_part->nodeActivated(Node(toFocus));
+			Q_EMIT m_part->nodeActivated(Node(toFocus));
 		    }
 		    return true;
 		}
@@ -2476,7 +2476,7 @@ bool KHTMLView::focusNextPrevNode(bool next)
 	    Node guard(newFocusNode);
 	    if (!newFocusNode->hasOneRef() )
 	    {
-		emit m_part->nodeActivated(Node(newFocusNode));
+		Q_EMIT m_part->nodeActivated(Node(newFocusNode));
 	    }
 	    return true;
 	}
@@ -2548,7 +2548,7 @@ void KHTMLView::displayAccessKeys( KHTMLView* caller, KHTMLView* origview, QVect
         return;
 
     QList<KParts::ReadOnlyPart*> frames = m_part->frames();
-    foreach( KParts::ReadOnlyPart* cur, frames ) {
+    Q_FOREACH( KParts::ReadOnlyPart* cur, frames ) {
         if( !qobject_cast<KHTMLPart*>(cur) )
             continue;
         KHTMLPart* part = static_cast< KHTMLPart* >( cur );
@@ -2572,7 +2572,7 @@ void KHTMLView::accessKeysTimeout()
     d->accessKeysActivated=false;
     d->accessKeysPreActivate = false;
     m_part->setStatusBarText(QString(), KHTMLPart::BarOverrideText);
-    emit hideAccessKeys();
+    Q_EMIT hideAccessKeys();
 }
 
 // Handling of the HTML accesskey attribute.
@@ -2604,7 +2604,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
     ElementImpl* node = doc->findAccessKeyElement( c );
     if( !node ) {
         QList<KParts::ReadOnlyPart*> frames = m_part->frames();
-        foreach( KParts::ReadOnlyPart* cur, frames ) {
+        Q_FOREACH( KParts::ReadOnlyPart* cur, frames ) {
             if( !qobject_cast<KHTMLPart*>(cur) )
                 continue;
             KHTMLPart* part = static_cast< KHTMLPart* >( cur );
@@ -2650,7 +2650,7 @@ bool KHTMLView::focusNodeWithAccessKey( QChar c, KHTMLView* caller )
 
         if( node != NULL && node->hasOneRef()) // deleted, only held by guard
             return true;
-        emit m_part->nodeActivated(Node(node));
+        Q_EMIT m_part->nodeActivated(Node(node));
         if( node != NULL && node->hasOneRef())
             return true;
     }
@@ -3642,7 +3642,7 @@ void KHTMLView::wheelEvent(QWheelEvent* e)
 
     if ( ( e->modifiers() & Qt::ControlModifier) == Qt::ControlModifier )
     {
-        emit zoomView( - e->delta() );
+        Q_EMIT zoomView( - e->delta() );
         e->accept();
     }
     else if (d->firstLayoutPending)
@@ -3771,7 +3771,7 @@ void KHTMLView::scrollContentsBy( int dx, int dy )
 
         // only do smooth scrolling if static region is relatively small
         if (!doSmoothScroll && d->staticWidget == KHTMLViewPrivate::SBPartial && r.rects().size() <= 10) {
-            foreach(const QRect &rr, r.rects())
+            Q_FOREACH(const QRect &rr, r.rects())
                 numStaticPixels += rr.width()*rr.height();
             if ((numStaticPixels < sSmoothScrollMinStaticPixels) || (numStaticPixels*8 < visibleWidth()*visibleHeight()))
                 doSmoothScroll = true;
@@ -4064,14 +4064,14 @@ void KHTMLView::timerEvent ( QTimerEvent *e )
 
     d->dirtyLayout = false;
 
-    emit repaintAccessKeys();
+    Q_EMIT repaintAccessKeys();
     if (d->emitCompletedAfterRepaint) {
         bool full = d->emitCompletedAfterRepaint == KHTMLViewPrivate::CSFull;
         d->emitCompletedAfterRepaint = KHTMLViewPrivate::CSNone;
         if ( full )
-            emit m_part->completed();
+            Q_EMIT m_part->completed();
         else
-            emit m_part->completed(true);
+            Q_EMIT m_part->completed(true);
     }
 }
 
@@ -4089,7 +4089,7 @@ void KHTMLView::checkExternalWidgetsPosition()
             !visibleRect.intersects(QRect(xp, yp, it.value()->width(), it.value()->height())))
             toRemove.append(rw);
     }
-    foreach (RenderWidget* r, toRemove)
+    Q_FOREACH (RenderWidget* r, toRemove)
         if ( (w = d->visibleWidgets.take(r) ) )
             w->move( 0, -500000);
 }
@@ -4193,9 +4193,9 @@ void KHTMLView::complete( bool pendingAction )
     if (!d->emitCompletedAfterRepaint)
     {
         if (!pendingAction)
-	    emit m_part->completed();
+	    Q_EMIT m_part->completed();
         else
-            emit m_part->completed(true);
+            Q_EMIT m_part->completed(true);
     }
 
 }
@@ -4319,7 +4319,7 @@ bool KHTMLView::caretKeyPressEvent(QKeyEvent *_ke)
       m_part->d->editor_context.m_xPosForVerticalArrowNavigation = old_x;
 
     m_part->emitCaretPositionChanged(pos);
-    // ### check when to emit it
+    // ### check when to Q_EMIT it
     m_part->notifySelectionChanged();
 
   }

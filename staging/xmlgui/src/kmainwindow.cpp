@@ -133,7 +133,7 @@ bool KMWSessionManager::saveState(QSessionManager&)
     }
 
     int n = 0;
-    foreach (KMainWindow* mw, KMainWindow::memberList()) {
+    Q_FOREACH (KMainWindow* mw, KMainWindow::memberList()) {
         n++;
         mw->savePropertiesInternal(config, n);
     }
@@ -270,7 +270,7 @@ void KMainWindowPrivate::polish(KMainWindow *q)
     for(;;) {
         const QList<QWidget*> list = qApp->topLevelWidgets();
         bool found = false;
-        foreach ( QWidget* w, list ) {
+        Q_FOREACH ( QWidget* w, list ) {
             if( w != q && w->objectName() == s )
             {
                 found = true;
@@ -466,7 +466,7 @@ void KMainWindow::closeEvent ( QCloseEvent *e )
         e->accept();
 
         int not_withdrawn = 0;
-        foreach (KMainWindow* mw, KMainWindow::memberList()) {
+        Q_FOREACH (KMainWindow* mw, KMainWindow::memberList()) {
             if ( !mw->isHidden() && mw->isTopLevel() && mw != this )
                 not_withdrawn++;
         }
@@ -567,7 +567,7 @@ void KMainWindow::saveMainWindowSettings(KConfigGroup &cg)
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-    foreach (KToolBar* toolbar, toolBars()) {
+    Q_FOREACH (KToolBar* toolbar, toolBars()) {
         QString group(QStringLiteral("Toolbar"));
         // Give a number to the toolbar, but prefer a name if there is one,
         // because there's no real guarantee on the ordering of toolbars
@@ -655,7 +655,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     }
 
     int n = 1; // Toolbar counter. toolbars are counted from 1,
-    foreach (KToolBar* toolbar, toolBars()) {
+    Q_FOREACH (KToolBar* toolbar, toolBars()) {
         QString group(QStringLiteral("Toolbar"));
         // Give a number to the toolbar, but prefer a name if there is one,
         // because there's no real guarantee on the ordering of toolbars
@@ -894,7 +894,7 @@ QList<KToolBar*> KMainWindow::toolBars() const
 {
     QList<KToolBar*> ret;
 
-    foreach (QObject* child, children())
+    Q_FOREACH (QObject* child, children())
         if (KToolBar* toolBar = qobject_cast<KToolBar*>(child))
             ret.append(toolBar);
 

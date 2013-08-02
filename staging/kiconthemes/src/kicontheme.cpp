@@ -194,7 +194,7 @@ KIconTheme::KIconTheme(const QString& name, const QString& appName)
 
     // Expand available sizes for scalable icons to their full range
     QMap<int,QList<int> > scIcons;
-    foreach(KIconThemeDir *dir, d->mDirs) {
+    Q_FOREACH(KIconThemeDir *dir, d->mDirs) {
         if (!dir) {
             break;
         }
@@ -388,7 +388,7 @@ QStringList KIconTheme::queryIconsByContext(int size, KIconLoader::Context conte
 
 bool KIconTheme::hasContext(KIconLoader::Context context) const
 {
-    foreach(KIconThemeDir *dir, d->mDirs) {
+    Q_FOREACH(KIconThemeDir *dir, d->mDirs) {
         if ((context == KIconLoader::Any) || (context == dir->context())) {
             return true;
         }

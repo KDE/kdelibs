@@ -331,7 +331,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
         }
         // Local file. If stat fails, the file definitely doesn't exist.
         // yes, q->Job::, because we don't want to call our override
-        q->Job::slotResult( job ); // will set the error and emit result(this)
+        q->Job::slotResult( job ); // will set the error and Q_EMIT result(this)
         return;
     }
 
@@ -502,22 +502,22 @@ void CopyJobPrivate::slotReport()
             q->setProcessedAmount( KJob::Files, m_processedFiles );
             if (m_bURLDirty)
             {
-                // Only emit urls when they changed. This saves time, and fixes #66281
+                // Only Q_EMIT urls when they changed. This saves time, and fixes #66281
                 m_bURLDirty = false;
                 if (m_mode==CopyJob::Move)
                 {
                     emitMoving(q, m_currentSrcURL, m_currentDestURL);
-                    emit q->moving( q, m_currentSrcURL, m_currentDestURL);
+                    Q_EMIT q->moving( q, m_currentSrcURL, m_currentDestURL);
                 }
                 else if (m_mode==CopyJob::Link)
                 {
                     emitCopying( q, m_currentSrcURL, m_currentDestURL ); // we don't have a delegate->linking
-                    emit q->linking( q, m_currentSrcURL.path(), m_currentDestURL );
+                    Q_EMIT q->linking( q, m_currentSrcURL.path(), m_currentDestURL );
                 }
                 else
                 {
                     emitCopying( q, m_currentSrcURL, m_currentDestURL );
-                    emit q->copying( q, m_currentSrcURL, m_currentDestURL );
+                    Q_EMIT q->copying( q, m_currentSrcURL, m_currentDestURL );
                 }
             }
             break;
@@ -527,7 +527,7 @@ void CopyJobPrivate::slotReport()
             if (m_bURLDirty)
             {
                 m_bURLDirty = false;
-                emit q->creatingDir( q, m_currentDestURL );
+                Q_EMIT q->creatingDir( q, m_currentDestURL );
                 emitCreatingDir( q, m_currentDestURL );
             }
             break;
@@ -574,7 +574,7 @@ void CopyJobPrivate::slotSubError(ListJob* job, ListJob* subJob)
 
 	Q_Q(CopyJob);
 
-	emit q->warning(job, subJob->errorString(), QString());
+	Q_EMIT q->warning(job, subJob->errorString(), QString());
 	skip(url, true);
 }
 
@@ -772,7 +772,7 @@ void CopyJobPrivate::statCurrentSrc()
         // if the file system doesn't support deleting, we do not even stat
         if (m_mode == CopyJob::Move && !KProtocolManager::supportsDeleting(m_currentSrcURL)) {
             QPointer<CopyJob> that = q;
-            emit q->warning( q, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.toDisplayString()) );
+            Q_EMIT q->warning( q, buildErrorString(ERR_CANNOT_DELETE, m_currentSrcURL.toDisplayString()) );
             if (that)
                 statNextSrc(); // we could use a loop instead of a recursive call :)
             return;
@@ -809,9 +809,9 @@ void CopyJobPrivate::statCurrentSrc()
 	//TODO warn user beforehand if space is not enough
 
         if (!dirs.isEmpty())
-           emit q->aboutToCreate( q, dirs );
+           Q_EMIT q->aboutToCreate( q, dirs );
         if (!files.isEmpty())
-           emit q->aboutToCreate( q, files );
+           Q_EMIT q->aboutToCreate( q, files );
         // Check if we are copying a single file
         m_bSingleFileCopy = ( files.count() == 1 && dirs.isEmpty() );
         // Then start copying things
@@ -848,7 +848,7 @@ void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
     info.uDest = dest;
     QList<CopyInfo> files;
     files.append(info);
-    emit q->aboutToCreate( q, files );
+    Q_EMIT q->aboutToCreate( q, files );
 
     KIO_ARGS << m_currentSrcURL << dest << (qint8) false /*no overwrite*/;
     SimpleJob * newJob = SimpleJobPrivate::newJobNoUi(slave_url, CMD_RENAME, packedArgs);
@@ -912,7 +912,7 @@ bool CopyJobPrivate::shouldSkip( const QString& path ) const
 void CopyJobPrivate::renameDirectory(QList<CopyInfo>::iterator it, const QUrl& newUrl)
 {
     Q_Q(CopyJob);
-    emit q->renamed(q, (*it).uDest, newUrl); // for e.g. KPropertiesDialog
+    Q_EMIT q->renamed(q, (*it).uDest, newUrl); // for e.g. KPropertiesDialog
 
     QString oldPath = (*it).uDest.path();
     if (!oldPath.endsWith('/')) {
@@ -954,10 +954,10 @@ void CopyJobPrivate::renameDirectory(QList<CopyInfo>::iterator it, const QUrl& n
         }
     }
     if (!dirs.isEmpty()) {
-        emit q->aboutToCreate(q, dirs);
+        Q_EMIT q->aboutToCreate(q, dirs);
     }
     if (!files.isEmpty()) {
-        emit q->aboutToCreate(q, files);
+        Q_EMIT q->aboutToCreate(q, files);
     }
 }
 
@@ -988,7 +988,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                 // Did the user choose to overwrite already?
                 const QString destDir = (*it).uDest.path();
                 if ( shouldOverwriteDir( destDir ) ) { // overwrite => just skip
-                    emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
+                    Q_EMIT q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
                     dirs.erase( it ); // Move on to next dir
                 } else {
                     if (m_bAutoRenameDirs) {
@@ -1000,7 +1000,7 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                     }
                     else {
                         if (!q->uiDelegateExtension()) {
-                            q->Job::slotResult(job); // will set the error and emit result(this)
+                            q->Job::slotResult(job); // will set the error and Q_EMIT result(this)
                             return;
                         }
 
@@ -1023,20 +1023,20 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
         else
         {
             // Severe error, abort
-            q->Job::slotResult( job ); // will set the error and emit result(this)
+            q->Job::slotResult( job ); // will set the error and Q_EMIT result(this)
             return;
         }
     }
     else // no error : remove from list, to move on to next dir
     {
         //this is required for the undo feature
-        emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true, false );
+        Q_EMIT q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true, false );
         m_directoriesCopied.append( *it );
         dirs.erase( it );
     }
 
     m_processedDirs++;
-    //emit processedAmount( this, KJob::Directories, m_processedDirs );
+    //Q_EMIT processedAmount( this, KJob::Directories, m_processedDirs );
     q->removeSubjob( job );
     assert( !q->hasSubjobs() ); // We should have only one job at a time ...
     createNextDir();
@@ -1116,14 +1116,14 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             break;
         case R_OVERWRITE:
             m_overwriteList.insert( existingDest );
-            emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
+            Q_EMIT q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.erase( it );
             m_processedDirs++;
             break;
         case R_OVERWRITE_ALL:
             m_bOverwriteAllDirs = true;
-            emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
+            Q_EMIT q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, true /* directory */, false /* renamed */ );
             // Move on to next dir
             dirs.erase( it );
             m_processedDirs++;
@@ -1132,7 +1132,7 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
             assert( 0 );
     }
     state = STATE_CREATING_DIRS;
-    //emit processedAmount( this, KJob::Directories, m_processedDirs );
+    //Q_EMIT processedAmount( this, KJob::Directories, m_processedDirs );
     createNextDir();
 }
 
@@ -1217,16 +1217,16 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     const QString newName = KIO::suggestName(destDirectory, (*it).uDest.fileName());
                     QUrl newDest(destDirectory);
                     newDest.setPath(newDest.path() + QLatin1Char('/') + newName);
-                    emit q->renamed(q, (*it).uDest, newDest); // for e.g. kpropsdlg
+                    Q_EMIT q->renamed(q, (*it).uDest, newDest); // for e.g. kpropsdlg
                     (*it).uDest = newDest;
 
                     QList<CopyInfo> files;
                     files.append(*it);
-                    emit q->aboutToCreate(q, files);
+                    Q_EMIT q->aboutToCreate(q, files);
                 }
                 else {
                     if ( !q->uiDelegateExtension() ) {
-                        q->Job::slotResult( job ); // will set the error and emit result(this)
+                        q->Job::slotResult( job ); // will set the error and Q_EMIT result(this)
                         return;
                     }
 
@@ -1252,7 +1252,7 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
                     files.erase( it );
                 } else {
                     if ( !q->uiDelegateExtension() ) {
-                        q->Job::slotResult( job ); // will set the error and emit result(this)
+                        q->Job::slotResult( job ); // will set the error and Q_EMIT result(this)
                         return;
                     }
 
@@ -1282,11 +1282,11 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
         {
             QString target = ( m_mode == CopyJob::Link ? (*it).uSource.path() : (*it).linkDest );
             //required for the undo feature
-            emit q->copyingLinkDone( q, (*it).uSource, target, (*it).uDest );
+            Q_EMIT q->copyingLinkDone( q, (*it).uSource, target, (*it).uDest );
         }
         else {
             //required for the undo feature
-            emit q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, false, false );
+            Q_EMIT q->copyingDone( q, (*it).uSource, (*it).uDest, (*it).mtime, false, false );
             if (m_mode == CopyJob::Move)
             {
                 org::kde::KDirNotify::emitFileMoved((*it).uSource, (*it).uDest);
@@ -1377,7 +1377,7 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         if ( job->error() == ERR_USER_CANCELED )
             res = R_CANCEL;
         else if ( !q->uiDelegateExtension() ) {
-            q->Job::slotResult( job ); // will set the error and emit result(this)
+            q->Job::slotResult( job ); // will set the error and Q_EMIT result(this)
             return;
         }
         else
@@ -1409,12 +1409,12 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         {
             QUrl newUrl( (*it).uDest );
             newUrl.setPath( newPath );
-            emit q->renamed( q, (*it).uDest, newUrl ); // for e.g. kpropsdlg
+            Q_EMIT q->renamed( q, (*it).uDest, newUrl ); // for e.g. kpropsdlg
             (*it).uDest = newUrl;
 
             QList<CopyInfo> files;
             files.append(*it);
-            emit q->aboutToCreate( q, files );
+            Q_EMIT q->aboutToCreate( q, files );
         }
         break;
         case R_AUTO_SKIP:
@@ -1455,7 +1455,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const QUrl& uSource, const QUrl& uDest, 
         KIO::SimpleJob *newJob = KIO::symlink( uSource.path(), uDest, flags|HideProgressInfo /*no GUI*/ );
         Scheduler::setJobPriority(newJob, 1);
         //qDebug() << "Linking target=" << uSource.path() << "link=" << uDest;
-        //emit linking( this, uSource.path(), uDest );
+        //Q_EMIT linking( this, uSource.path(), uDest );
         m_bCurrentOperationIsLink = true;
         m_currentSrcURL=uSource;
         m_currentDestURL=uDest;
@@ -1495,7 +1495,7 @@ KIO::Job* CopyJobPrivate::linkNextFile( const QUrl& uSource, const QUrl& uDest, 
                 config.sync();
                 files.erase( files.begin() ); // done with this one, move on
                 m_processedFiles++;
-                //emit processedAmount( this, KJob::Files, m_processedFiles );
+                //Q_EMIT processedAmount( this, KJob::Files, m_processedFiles );
                 copyNextFile();
                 return 0;
             }
@@ -1582,7 +1582,7 @@ void CopyJobPrivate::copyNextFile()
             m_currentSrcURL = QUrl::fromUserInput((*it).linkDest);
             m_currentDestURL = uDest;
             m_bURLDirty = true;
-            //emit linking( this, (*it).linkDest, uDest );
+            //Q_EMIT linking( this, (*it).linkDest, uDest );
             //Observer::self()->slotCopying( this, m_currentSrcURL, uDest ); // should be slotLinking perhaps
             m_bCurrentOperationIsLink = true;
             // NOTE: if we are moving stuff, the deletion of the source will be done in slotResultCopyingFiles
@@ -1594,7 +1594,7 @@ void CopyJobPrivate::copyNextFile()
             moveJob->setModificationTime((*it).mtime); // #55804
             newjob = moveJob;
             //qDebug() << "Moving" << uSource << "to" << uDest;
-            //emit moving( this, uSource, uDest );
+            //Q_EMIT moving( this, uSource, uDest );
             m_currentSrcURL=uSource;
             m_currentDestURL=uDest;
             m_bURLDirty = true;
@@ -1746,7 +1746,7 @@ void CopyJobPrivate::slotProcessedSize( KJob*, qulonglong data_size )
     //qDebug() << "Adjusting m_totalSize to" << m_totalSize;
     q->setTotalAmount(KJob::Bytes, m_totalSize); // safety
   }
-  //qDebug() << "emit processedSize" << (unsigned long) (m_processedSize + m_fileProcessedSize);
+  //qDebug() << "Q_EMIT processedSize" << (unsigned long) (m_processedSize + m_fileProcessedSize);
   q->setProcessedAmount(KJob::Bytes, m_processedSize + m_fileProcessedSize);
 }
 
@@ -1845,7 +1845,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                         if (QFile::rename( _tmp, _src ) != 0) {
                             qWarning() << "Couldn't rename" << _tmp << "back to" << _src << '!';
                             // Severe error, abort
-                            q->Job::slotResult(job); // will set the error and emit result(this)
+                            q->Job::slotResult(job); // will set the error and Q_EMIT result(this)
                             return;
                         }
                     }
@@ -2034,7 +2034,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     {
         //qDebug() << "Renaming succeeded, move on";
         ++m_processedFiles;
-        emit q->copyingDone( q, *m_currentStatSrc, dest, QDateTime() /*mtime unknown, and not needed*/, true, true );
+        Q_EMIT q->copyingDone( q, *m_currentStatSrc, dest, QDateTime() /*mtime unknown, and not needed*/, true, true );
         m_successSrcList.append(*m_currentStatSrc);
         statNextSrc();
     }
@@ -2063,7 +2063,7 @@ void CopyJob::slotResult( KJob *job )
             // Was there an error ?
             if (job->error())
             {
-                Job::slotResult( job ); // will set the error and emit result(this)
+                Job::slotResult( job ); // will set the error and Q_EMIT result(this)
                 return;
             }
 

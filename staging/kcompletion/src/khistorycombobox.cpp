@@ -410,7 +410,7 @@ void KHistoryComboBox::insertItems( const QStringList& items )
 void KHistoryComboBox::slotClear()
 {
     clearHistory();
-    emit cleared();
+    Q_EMIT cleared();
 }
 
 void KHistoryComboBox::slotSimulateActivated( const QString& text )
@@ -420,7 +420,7 @@ void KHistoryComboBox::slotSimulateActivated( const QString& text )
        which is perhaps reasonable. Generate the signal ourselves if that's the case.
     */
     if ((insertPolicy() == NoInsert && findText(text, Qt::MatchFixedString|Qt::MatchCaseSensitive) == -1)) {
-        emit activated(text);
+        Q_EMIT activated(text);
     }
 
     /*
@@ -428,7 +428,7 @@ void KHistoryComboBox::slotSimulateActivated( const QString& text )
        InsertAtCurrent
     */
     else if (insertPolicy() != InsertAtCurrent && count() >= maxCount()) {
-        emit activated(text);
+        Q_EMIT activated(text);
     }
 }
 

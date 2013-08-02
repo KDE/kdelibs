@@ -89,7 +89,7 @@ JSValue *MozillaSidebarExtensionFunc::callAsFunction(ExecState *exec, JSObject *
     } else {
       return jsBoolean(false);
     }
-    emit ext->addWebSideBar(QUrl( url ), name);
+    Q_EMIT ext->addWebSideBar(QUrl( url ), name);
     return jsBoolean(true);
   }
 

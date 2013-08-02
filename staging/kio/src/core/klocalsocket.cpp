@@ -31,8 +31,8 @@ void KLocalSocketPrivate::emitError(QAbstractSocket::SocketError error, const QS
     q->setSocketState(QAbstractSocket::UnconnectedState);
     q->setSocketError(error);
     q->setErrorString(errorString);
-    emit q->stateChanged(QAbstractSocket::UnconnectedState);
-    emit q->error(error);
+    Q_EMIT q->stateChanged(QAbstractSocket::UnconnectedState);
+    Q_EMIT q->error(error);
 }
 
 void KLocalSocketServerPrivate::emitError(QAbstractSocket::SocketError an_error, const QString &an_errorString)
@@ -73,7 +73,7 @@ void KLocalSocket::connectToHostImplementation(const QString &path, quint16 type
     d->peerPath.clear();
 
     setSocketState(ConnectingState);
-    emit stateChanged(ConnectingState);
+    Q_EMIT stateChanged(ConnectingState);
 
     d->connectToPath(path, LocalSocketType(type), mode);
 }
@@ -209,7 +209,7 @@ void KLocalSocketServer::incomingConnection(int descriptor)
     socket->setSocketDescriptor(descriptor, QAbstractSocket::ConnectedState, QIODevice::ReadWrite);
     d->pendingConnections.enqueue(socket);
 
-    emit newConnection();
+    Q_EMIT newConnection();
 }
 
 QAbstractSocket::SocketError KLocalSocketServer::serverError() const

@@ -312,7 +312,7 @@ bool KShortcutsEditorDelegate::eventFilter(QObject *o, QEvent *e)
 void KShortcutsEditorDelegate::keySequenceChanged(const QKeySequence &seq)
 {
     QVariant ret = QVariant::fromValue(seq);
-    emit shortcutChanged(ret, m_editingIndex);
+    Q_EMIT shortcutChanged(ret, m_editingIndex);
 }
 
 
@@ -328,7 +328,7 @@ void KShortcutsEditorDelegate::shapeGestureChanged(const KShapeGesture &gest)
 {
     //this is somewhat verbose because the gesture types are not "built in" to QVariant
     QVariant ret = QVariant::fromValue(gest);
-    emit shortcutChanged(ret, m_editingIndex);
+    Q_EMIT shortcutChanged(ret, m_editingIndex);
 }
 #endif
 
@@ -337,7 +337,7 @@ void KShortcutsEditorDelegate::shapeGestureChanged(const KShapeGesture &gest)
 void KShortcutsEditorDelegate::rockerGestureChanged(const KRockerGesture &gest)
 {
     QVariant ret = QVariant::fromValue(gest);
-    emit shortcutChanged(ret, m_editingIndex);
+    Q_EMIT shortcutChanged(ret, m_editingIndex);
 }
 #endif
 

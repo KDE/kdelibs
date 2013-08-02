@@ -253,7 +253,7 @@ QString KShortcut::toString() const
 QString KShortcut::toString(QKeySequence::SequenceFormat format) const
 {
     QString ret;
-    foreach(const QKeySequence &seq, toList()) {
+    Q_FOREACH(const QKeySequence &seq, toList()) {
         ret.append(seq.toString(format));
         ret.append("; ");
     }

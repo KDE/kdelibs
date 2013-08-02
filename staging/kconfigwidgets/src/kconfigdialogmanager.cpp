@@ -218,7 +218,7 @@ bool KConfigDialogManager::parseChildren(const QWidget *widget, bool trackChange
   if(listOfChildren.count()==0) //?? XXX
     return valueChanged;
 
-  foreach ( QObject *object, listOfChildren )
+  Q_FOREACH ( QObject *object, listOfChildren )
   {
     if(!object->isWidgetType())
       continue; // Skip non-widgets
@@ -390,7 +390,7 @@ void KConfigDialogManager::updateSettings()
     if (changed)
     {
         d->m_conf->writeConfig();
-        emit settingsChanged();
+        Q_EMIT settingsChanged();
     }
 }
 

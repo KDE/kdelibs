@@ -176,7 +176,7 @@ void KCModule::load()
     KConfigDialogManager* manager;
     Q_FOREACH( manager , d->managers )
         manager->updateWidgets();
-    emit( changed( false ));
+    Q_EMIT( changed( false ));
 }
 
 void KCModule::save()
@@ -184,7 +184,7 @@ void KCModule::save()
     KConfigDialogManager* manager;
     Q_FOREACH( manager , d->managers )
         manager->updateSettings();
-    emit( changed( false ));
+    Q_EMIT( changed( false ));
 }
 
 void KCModule::defaults()
@@ -196,7 +196,7 @@ void KCModule::defaults()
 
 void KCModule::widgetChanged()
 {
-    emit changed(d->_unmanagedWidgetChangeState || managedWidgetChangeState());
+    Q_EMIT changed(d->_unmanagedWidgetChangeState || managedWidgetChangeState());
 }
 
 bool KCModule::managedWidgetChangeState() const
@@ -233,7 +233,7 @@ void KCModule::setAboutData(const KAboutData *about)
 void KCModule::setRootOnlyMessage(const QString& message)
 {
     d->_rootOnlyMessage = message;
-    emit rootOnlyMessageChanged(d->_useRootOnlyMessage, d->_rootOnlyMessage);
+    Q_EMIT rootOnlyMessageChanged(d->_useRootOnlyMessage, d->_rootOnlyMessage);
 }
 
 QString KCModule::rootOnlyMessage() const
@@ -244,7 +244,7 @@ QString KCModule::rootOnlyMessage() const
 void KCModule::setUseRootOnlyMessage(bool on)
 {
     d->_useRootOnlyMessage = on;
-    emit rootOnlyMessageChanged(d->_useRootOnlyMessage, d->_rootOnlyMessage);
+    Q_EMIT rootOnlyMessageChanged(d->_useRootOnlyMessage, d->_rootOnlyMessage);
 }
 
 bool KCModule::useRootOnlyMessage() const
@@ -254,7 +254,7 @@ bool KCModule::useRootOnlyMessage() const
 
 void KCModule::changed()
 {
-    emit changed(true);
+    Q_EMIT changed(true);
 }
 
 KAboutData KCModule::componentData() const
@@ -275,7 +275,7 @@ void KCModule::setExportText(const QString& text)
 void KCModule::setQuickHelp( const QString& help )
 {
     d->_quickHelp = help;
-    emit( quickHelpChanged() );
+    Q_EMIT( quickHelpChanged() );
 }
 
 QString KCModule::quickHelp() const

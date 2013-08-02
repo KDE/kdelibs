@@ -417,7 +417,7 @@ void RenderFlow::paintLines(PaintInfo& i, int _tx, int _ty)
     }
 
     if (i.phase == PaintActionOutline && i.outlineObjects) {
-          foreach (RenderFlow* oo, *i.outlineObjects)
+          Q_FOREACH (RenderFlow* oo, *i.outlineObjects)
               if (oo->isRenderInline())
                   static_cast<RenderInline*>(oo)->paintOutlines(i.p, _tx, _ty);
           i.outlineObjects->clear();

@@ -379,7 +379,7 @@ void CSSStyleSheetImpl::checkPending() const
 
 StyleSheetListImpl::~StyleSheetListImpl()
 {
-    foreach (StyleSheetImpl* sh, styleSheets)
+    Q_FOREACH (StyleSheetImpl* sh, styleSheets)
         sh->deref();
 }
 
@@ -413,7 +413,7 @@ unsigned long StyleSheetListImpl::length() const
 
     // hack so implicit BODY stylesheets don't get counted here
     unsigned long l = 0;
-    foreach (StyleSheetImpl* sh, styleSheets) {
+    Q_FOREACH (StyleSheetImpl* sh, styleSheets) {
         if (!sh->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(sh)->implicit())
             ++l;
     }
@@ -426,7 +426,7 @@ StyleSheetImpl *StyleSheetListImpl::item ( unsigned long index )
         managerDocument->ensureStyleSheetListUpToDate();
 
     unsigned long l = 0;
-    foreach (StyleSheetImpl* sh, styleSheets) {
+    Q_FOREACH (StyleSheetImpl* sh, styleSheets) {
         if (!sh->isCSSStyleSheet() || !static_cast<CSSStyleSheetImpl*>(sh)->implicit()) {
             if (l == index)
                 return sh;

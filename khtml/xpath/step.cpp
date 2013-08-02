@@ -156,7 +156,7 @@ DomNodeList Step::evaluate( NodeImpl *context ) const
 	if ( m_predicates.isEmpty() )
 		return inNodes;
 
-	foreach( Predicate *predicate, m_predicates ) {
+	Q_FOREACH( Predicate *predicate, m_predicates ) {
 		outNodes = new StaticNodeListImpl;
 		Expression::evaluationContext().size = int(inNodes->length());
 		Expression::evaluationContext().position = 1;
@@ -468,7 +468,7 @@ DomNodeList Step::nodeTestMatches( NodeImpl* ctx, const DomNodeList &nodes ) con
 
 void Step::optimize()
 {
-	foreach( Predicate *predicate, m_predicates ) {
+	Q_FOREACH( Predicate *predicate, m_predicates ) {
 		predicate->optimize();
 	}
 }
@@ -476,7 +476,7 @@ void Step::optimize()
 QString Step::dump() const
 {
 	QString s = QString( "<step axis=\"%1\" nodetest=\"%2\">" ).arg( axisAsString( m_axis ) ).arg( m_nodeTest.string() );
-	foreach( Predicate *predicate, m_predicates ) {
+	Q_FOREACH( Predicate *predicate, m_predicates ) {
 		s += predicate->dump();
 	}
 	s += "</step>";

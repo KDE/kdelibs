@@ -704,7 +704,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
     }
 
     QRegExp regExp("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$");
-    foreach(const QString &s, searchStrings) {
+    Q_FOREACH(const QString &s, searchStrings) {
         if(regExp.exactMatch(s)) {
             returnRes.append(regExp.cap(2).toInt(0, 16));
             // search for "1234" instead of "0x1234"
@@ -721,7 +721,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
     }
 
     bool firstSubString = true;
-    foreach(const QString &s, searchStrings) {
+    Q_FOREACH(const QString &s, searchStrings) {
         QSet<quint16> partResult = getMatchingChars(s.toLower());
         if (firstSubString) {
             result = partResult;
@@ -733,14 +733,14 @@ QList<QChar> KCharSelectData::find(const QString& needle)
 
     // remove results found by matching the code point to prevent duplicate results
     // while letting these characters stay at the beginning
-    foreach(const QChar &c, returnRes) {
+    Q_FOREACH(const QChar &c, returnRes) {
         result.remove(c.unicode());
     }
 
     QList<quint16> sortedResult = result.toList();
     qSort(sortedResult);
 
-    foreach(const quint16 &c, sortedResult) {
+    Q_FOREACH(const quint16 &c, sortedResult) {
         returnRes.append(c);
     }
 
@@ -755,7 +755,7 @@ QSet<quint16> KCharSelectData::getMatchingChars(const QString& s)
     QSet<quint16> result;
 
     while (pos != index.constEnd() && pos.key().startsWith(s)) {
-        foreach (const quint16 &c, pos.value()) {
+        Q_FOREACH (const quint16 &c, pos.value()) {
             result.insert(c);
         }
         ++pos;
@@ -789,7 +789,7 @@ QStringList KCharSelectData::splitString(const QString& s)
 void KCharSelectData::appendToIndex(Index *index, quint16 unicode, const QString& s)
 {
     const QStringList strings = splitString(s);
-    foreach(const QString &s, strings) {
+    Q_FOREACH(const QString &s, strings) {
         (*index)[s.toLower()].append(unicode);
     }
 }

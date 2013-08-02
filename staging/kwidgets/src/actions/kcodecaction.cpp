@@ -90,7 +90,7 @@ void KCodecAction::Private::init(bool showAutoOptions)
     defaultAction = q->addAction(i18nc("Encodings menu", "Default"));
 
     int i;
-    foreach(const QStringList &encodingsForScript, KCharsets::charsets()->encodingsByScript())
+    Q_FOREACH(const QStringList &encodingsForScript, KCharsets::charsets()->encodingsByScript())
     {
         KSelectAction* tmp = new KSelectAction(encodingsForScript.at(0),q);
         if (showAutoOptions)
@@ -159,12 +159,12 @@ QTextCodec *KCodecAction::codecForMib(int mib) const
 
 void KCodecAction::actionTriggered(QAction *action)
 {
-//we don't want to emit any signals from top-level items
+//we don't want to Q_EMIT any signals from top-level items
 //except for the default one
     if (action==d->defaultAction)
     {
-        emit triggered(KEncodingProber::Universal);
-        emit defaultItemTriggered();
+        Q_EMIT triggered(KEncodingProber::Universal);
+        Q_EMIT defaultItemTriggered();
     }
 }
 
@@ -177,13 +177,13 @@ void KCodecAction::Private::_k_subActionTriggered(QAction *action)
     int mib = q->mibForName(action->text(), &ok);
     if (ok)
     {
-        emit q->triggered(action->text());
-        emit q->triggered(q->codecForMib(mib));
+        Q_EMIT q->triggered(action->text());
+        Q_EMIT q->triggered(q->codecForMib(mib));
     }
     else
     {
         if (!action->data().isNull())
-            emit q->triggered((KEncodingProber::ProberType) action->data().toUInt());
+            Q_EMIT q->triggered((KEncodingProber::ProberType) action->data().toUInt());
     }
 }
 

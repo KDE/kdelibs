@@ -303,7 +303,7 @@ QList<KServiceGroup::Ptr> KServiceGroup::groupEntries(EntriesOptions options)
     bool sort = options & SortEntries || options & AllowSeparators;
     QList<KServiceGroup::Ptr> list;
     List tmp = d->entries(this, sort, options & ExcludeNoDisplay, options & AllowSeparators, options & SortByGenericName);
-    foreach(const SPtr &ptr, tmp) {
+    Q_FOREACH(const SPtr &ptr, tmp) {
         if (ptr->isType(KST_KServiceGroup))
             list.append(Ptr::staticCast(ptr));
         else if (ptr->isType(KST_KServiceSeparator))
@@ -321,7 +321,7 @@ KService::List KServiceGroup::serviceEntries(EntriesOptions options)
     QList<KService::Ptr> list;
     List tmp = d->entries(this, sort, options & ExcludeNoDisplay, options & AllowSeparators, options & SortByGenericName);
     bool foundService = false;
-    foreach(const SPtr &ptr, tmp) {
+    Q_FOREACH(const SPtr &ptr, tmp) {
         if (ptr->isType(KST_KService)) {
             list.append(KService::Ptr::staticCast(ptr));
             foundService = true;

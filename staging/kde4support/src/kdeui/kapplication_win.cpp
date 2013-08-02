@@ -190,7 +190,7 @@ bool KApplication_otherProcessesExist( const QString& processName )
   QList<int> pids;
   KApplication_getProcessesIdForName( processName, pids );
   int myPid = getpid();
-  foreach ( int pid, pids ) {
+  Q_FOREACH ( int pid, pids ) {
     if (myPid != pid) {
 //      kDebug() << "Process ID is " << pid;
       return true;
@@ -207,7 +207,7 @@ bool KApplication_killProcesses( const QString& processName )
     return true;
   qWarning() << "Killing process \"" << processName << " (pid=" << pids[0] << ")..";
   int overallResult = 0;
-  foreach( int pid, pids ) {
+  Q_FOREACH( int pid, pids ) {
     int result = kill( pid, SIGTERM );
     if ( result == 0 )
       continue;
@@ -244,7 +244,7 @@ void KApplication_activateWindowForProcess( const QString& executableName )
   KApplication_getProcessesIdForName( executableName, pids );
   int myPid = getpid();
   int foundPid = 0;
-  foreach ( int pid, pids ) {
+  Q_FOREACH ( int pid, pids ) {
     if (myPid != pid) {
       qDebug() << "activateWindowForProcess(): PID to activate:" << pid;
       foundPid = pid;

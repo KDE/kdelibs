@@ -112,7 +112,7 @@ void KSSLD::setRule(const KSslCertificateRule &rule)
     if (rule.isRejected()) {
         sl.append(QString::fromLatin1("Reject"));
     } else {
-        foreach (KSslError::Error e, rule.ignoredErrors())
+        Q_FOREACH (KSslError::Error e, rule.ignoredErrors())
             sl.append(d->sslErrorToString.value(e));
     }
 
@@ -149,9 +149,9 @@ void KSSLD::pruneExpiredRules()
 {
     // expired rules are deleted when trying to load them, so we just try to load all rules.
     // be careful about iterating over KConfig(Group) while changing it
-    foreach (const QString &groupName, d->config.groupList()) {
+    Q_FOREACH (const QString &groupName, d->config.groupList()) {
         QByteArray certDigest = groupName.toLatin1();
-        foreach (const QString &key, d->config.group(groupName).keyList()) {
+        Q_FOREACH (const QString &key, d->config.group(groupName).keyList()) {
             if (key == QLatin1String("CertificatePEM")) {
                 continue;
             }
@@ -257,7 +257,7 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
 
     QList<KSslError::Error> ignoredErrors;
     bool isRejected = false;
-    foreach (const QString &s, sl) {
+    Q_FOREACH (const QString &s, sl) {
         if (s == QLatin1String("Reject")) {
             isRejected = true;
             ignoredErrors.clear();

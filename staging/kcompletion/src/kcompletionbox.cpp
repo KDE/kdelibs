@@ -91,7 +91,7 @@ void KCompletionBox::slotActivated( QListWidgetItem *item )
         return;
 
     hide();
-    emit activated( item->text() );
+    Q_EMIT activated( item->text() );
 }
 
 bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
@@ -118,7 +118,7 @@ bool KCompletionBox::eventFilter( QObject *o, QEvent *e )
     if (type == QEvent::MouseButtonPress && (wid && !isAncestorOf(wid))) {
         if (!d->emitSelected && currentItem() && !qobject_cast<QScrollBar*>(o)) {
             Q_ASSERT(currentItem());
-            emit currentTextChanged(currentItem()->text() );
+            Q_EMIT currentTextChanged(currentItem()->text() );
         }
         hide();
         e->accept();
@@ -476,7 +476,7 @@ QString KCompletionBox::cancelledText() const
 void KCompletionBox::canceled()
 {
     if ( !d->cancelText.isNull() )
-        emit userCancelled( d->cancelText );
+        Q_EMIT userCancelled( d->cancelText );
     if ( isVisible() )
         hide();
 }
@@ -562,8 +562,8 @@ void KCompletionBox::slotItemClicked( QListWidgetItem *item )
     if ( item )
     {
         hide();
-        emit currentTextChanged( item->text() );
-        emit activated( item->text() );
+        Q_EMIT currentTextChanged( item->text() );
+        Q_EMIT activated( item->text() );
     }
 }
 

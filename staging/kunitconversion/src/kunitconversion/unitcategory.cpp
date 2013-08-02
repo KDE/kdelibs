@@ -81,7 +81,7 @@ QList<UnitPtr> UnitCategory::mostCommonUnits() const
 void UnitCategory::setMostCommonUnits(const QList<int>& units)
 {
     d->mostCommonUnits.clear();
-    foreach (int u, units) {
+    Q_FOREACH (int u, units) {
         d->mostCommonUnits.append(unit(u));
     }
 }
@@ -125,7 +125,7 @@ Value UnitCategory::convert(const Value& value, UnitPtr toUnit)
 void UnitCategory::addUnitMapValues(UnitPtr unit, const QString& names)
 {
     const QStringList list = names.split(';');
-    foreach (const QString& name, list) {
+    Q_FOREACH (const QString& name, list) {
         d->unitMap[name] = unit;
     }
 }

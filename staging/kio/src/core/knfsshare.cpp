@@ -209,7 +209,7 @@ void KNFSShare::KNFSSharePrivate::_k_slotFileChange( const QString & path )
   if (path == exportsFile)
      readExportsFile();
 
-  emit q->changed();
+  Q_EMIT q->changed();
 }
 
 class KNFSShareSingleton

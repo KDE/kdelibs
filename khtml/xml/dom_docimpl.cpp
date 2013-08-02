@@ -868,7 +868,7 @@ void DocumentImpl::setTitle(const DOMString& _title)
 	    titleStr = url.toDisplayString();
 	}
 
-	emit view()->part()->setWindowCaption( titleStr );
+	Q_EMIT view()->part()->setWindowCaption( titleStr );
     }
 }
 
@@ -2380,14 +2380,14 @@ void DocumentImpl::rebuildStyleSheetList(bool force)
 
     // Include programmatically added style sheets
     if (m_addedStyleSheets) {
-        foreach (StyleSheetImpl* sh, m_addedStyleSheets->styleSheets) {
+        Q_FOREACH (StyleSheetImpl* sh, m_addedStyleSheets->styleSheets) {
             if (sh->isCSSStyleSheet() && !sh->disabled())
                 m_styleSheets->add(sh);
         }
     }
 
     // De-reference all the stylesheets in the old list
-    foreach ( StyleSheetImpl* sh, oldStyleSheets)
+    Q_FOREACH ( StyleSheetImpl* sh, oldStyleSheets)
         sh->deref();
 }
 

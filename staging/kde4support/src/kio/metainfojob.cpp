@@ -105,7 +105,7 @@ void MetaInfoJob::determineNextFile()
     if (item.metaInfo(false).isValid())
     {
 //qDebug() << "Is already valid *************************";
-        emit gotMetaInfo(item);
+        Q_EMIT gotMetaInfo(item);
         determineNextFile();
         return;
     }
@@ -154,7 +154,7 @@ void MetaInfoJob::slotMetaInfo(KIO::Job*, const QByteArray &data)
 #if 0 // HACK DISABLED
     item.setMetaInfo(info);
 #endif
-    emit gotMetaInfo(item);
+    Q_EMIT gotMetaInfo(item);
     d->succeeded = true;
 }
 
@@ -166,7 +166,7 @@ KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const KFileItemList& items)
 KIO_EXPORT MetaInfoJob *KIO::fileMetaInfo( const QList<QUrl> &items)
 {
     KFileItemList fileItems;
-    foreach (const QUrl& url, items) {
+    Q_FOREACH (const QUrl& url, items) {
         fileItems.append(KFileItem(url));
     }
     MetaInfoJob *job = new MetaInfoJob(fileItems);

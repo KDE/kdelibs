@@ -224,13 +224,13 @@ void KModifierKeyInfoProvider::xkbModifierStateChanged(unsigned char mods,
             m_modifierStates[it.key()] = newState;
 
             if ((newState ^ oldState) & Pressed) {
-                emit keyPressed(it.key(), newState & Pressed);
+                Q_EMIT keyPressed(it.key(), newState & Pressed);
             }
             if ((newState ^ oldState) & Latched) {
-                emit keyLatched(it.key(), newState & Latched);
+                Q_EMIT keyLatched(it.key(), newState & Latched);
             }
             if ((newState ^ oldState) & Locked) {
-                emit keyLocked(it.key(), newState & Locked);
+                Q_EMIT keyLocked(it.key(), newState & Locked);
             }
         }
     }
@@ -247,7 +247,7 @@ void KModifierKeyInfoProvider::xkbButtonStateChanged(unsigned short ptr_buttons)
         newButtonState = (ptr_buttons & it.value());
         if (newButtonState != m_buttonStates[it.key()]) {
             m_buttonStates[it.key()] = newButtonState;
-            emit buttonPressed(it.key(), newButtonState);
+            Q_EMIT buttonPressed(it.key(), newButtonState);
         }
     }
 }
@@ -296,7 +296,7 @@ void KModifierKeyInfoProvider::xkbUpdateModifierMapping()
             // previously unknown modifier
             if (!m_modifierStates.contains(it->key)) {
                 m_modifierStates.insert(it->key, Nothing);
-                emit keyAdded(it->key);
+                Q_EMIT keyAdded(it->key);
             }
         }
     }
@@ -308,7 +308,7 @@ void KModifierKeyInfoProvider::xkbUpdateModifierMapping()
         if (!m_xkbModifiers.contains(i.key())) {
             Qt::Key key = i.key();
             i.remove();
-            emit keyRemoved(key);
+            Q_EMIT keyRemoved(key);
         }
     }
 

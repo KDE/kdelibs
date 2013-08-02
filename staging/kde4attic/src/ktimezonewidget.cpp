@@ -91,7 +91,7 @@ KTimeZoneWidget::KTimeZoneWidget( QWidget *parent, KTimeZones *db )
   }
   qSort( cities.begin(), cities.end(), localeLessThan );
 
-  foreach ( const QString &key, cities ) {
+  Q_FOREACH ( const QString &key, cities ) {
     const KTimeZone zone = zonesByCity.value(key);
     const QString tzName = zone.name();
     QString comment = zone.comment();

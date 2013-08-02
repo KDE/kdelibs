@@ -129,7 +129,7 @@ bool KStreamSocket::connect(const QString& node, const QString& service,
   if (state() == Connecting && !blocking())
     {
       setError(InProgress);
-      emit gotError(InProgress);
+      Q_EMIT gotError(InProgress);
       return true;		// we're already connecting
     }
 
@@ -227,7 +227,7 @@ void KStreamSocket::connectionEvent()
       d->startTime.start();
 
       setState(Connecting);
-      emit stateChanged(Connecting);
+      Q_EMIT stateChanged(Connecting);
       d->peer = peer.begin();
       d->local = localResults().begin(); // just to be on the safe side
     }
@@ -267,7 +267,7 @@ void KStreamSocket::connectionEvent()
 
       {
 	bool skip = false;
-	emit aboutToConnect(r, skip);
+	Q_EMIT aboutToConnect(r, skip);
 	if (skip)
 	  {
 	    ++d->peer;
@@ -308,8 +308,8 @@ void KStreamSocket::connectionEvent()
   // that was the last item
   socketDevice()->setSocketOptions(socketOptions());
   setState(Idle);
-  emit stateChanged(Idle);
-  emit gotError(error());
+  Q_EMIT stateChanged(Idle);
+  Q_EMIT gotError(error());
   return;
 }
 
@@ -323,13 +323,13 @@ void KStreamSocket::timeoutSlot()
 
   setError(Timeout);
   setState(HostFound);
-  emit stateChanged(HostFound);
+  Q_EMIT stateChanged(HostFound);
 
   QPointer<KStreamSocket> that = this;
-  emit gotError(Timeout);
+  Q_EMIT gotError(Timeout);
 
   if (!that.isNull())
-    emit timedOut();
+    Q_EMIT timedOut();
 }
 
 bool KStreamSocket::bindLocallyFor(const KResolverEntry& peer)
@@ -356,7 +356,7 @@ bool KStreamSocket::bindLocallyFor(const KResolverEntry& peer)
     {
       // found nothing
       setError(NotSupported);
-      emit gotError(NotSupported);
+      Q_EMIT gotError(NotSupported);
     }
   else
     copyError();
@@ -373,11 +373,11 @@ void KStreamSocket::connectionSucceeded(const KResolverEntry& peer)
   setState(Connected);
   socketDevice()->setSocketOptions(socketOptions());
   d->timer.stop();
-  emit stateChanged(Connected);
+  Q_EMIT stateChanged(Connected);
 
   if (!localResults().isEmpty())
-    emit bound(*d->local);
-  emit connected(peer);
+    Q_EMIT bound(*d->local);
+  Q_EMIT connected(peer);
 }
 
 #include "k3streamsocket.moc"

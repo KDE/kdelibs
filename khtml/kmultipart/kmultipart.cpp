@@ -176,7 +176,7 @@ bool KMultiPart::openUrl(const QUrl &url)
                       arguments().reload() ? KIO::Reload : KIO::NoReload,
                       KIO::HideProgressInfo );
 
-    emit started( 0 /*m_job*/ ); // don't pass the job, it would interfere with our own infoMessage
+    Q_EMIT started( 0 /*m_job*/ ); // don't pass the job, it would interfere with our own infoMessage
 
     connect( m_job, SIGNAL(result(KJob*)),
              this, SLOT(slotJobFinished(KJob*)) );
@@ -298,7 +298,7 @@ void KMultiPart::slotData( KIO::Job *job, const QByteArray &data )
                         // qDebug() << "Completed!";
 #endif
                         endOfData();
-                        emit completed();
+                        Q_EMIT completed();
                     } else
                     {
                         char nextChar = *(line.data() + m_boundaryLength);
@@ -530,7 +530,7 @@ void KMultiPart::slotPartCompleted()
         (void) unlink( QFile::encodeName( m_part->url().toLocalFile() ) );
         m_partIsLoading = false;
         ++m_numberOfFrames;
-        // Do not emit completed from here.
+        // Do not Q_EMIT completed from here.
     }
 }
 
@@ -555,7 +555,7 @@ void KMultiPart::slotJobFinished( KJob *job )
     {
         // TODO use khtml's error:// scheme
         job->uiDelegate()->showErrorMessage();
-        emit canceled( job->errorString() );
+        Q_EMIT canceled( job->errorString() );
     }
     else
     {
@@ -565,7 +565,7 @@ void KMultiPart::slotJobFinished( KJob *job )
             m_khtml->view()->setContentsPos( args.xOffset(), args.yOffset() );
         }*/
 
-        emit completed();
+        Q_EMIT completed();
 
         //QTimer::singleShot( 0, this, SLOT(updateWindowCaption()) );
     }
@@ -584,7 +584,7 @@ void KMultiPart::slotProgressInfo()
     str = str.arg( 1000.0 * (double)m_numberOfFramesSkipped / (double)time );
     m_totalNumberOfFrames = m_numberOfFrames + m_numberOfFramesSkipped;
     //qDebug() << str;
-    emit m_extension->infoMessage( str );
+    Q_EMIT m_extension->infoMessage( str );
 }
 
 

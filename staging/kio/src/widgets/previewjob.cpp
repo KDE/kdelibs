@@ -267,11 +267,11 @@ void PreviewJobPrivate::startPreview()
         if (!p.isEmpty()) {
             protocols.append(p);
         }
-        foreach (const QString &protocol, protocols) {
+        Q_FOREACH (const QString &protocol, protocols) {
             const QStringList mtypes = (*it)->mimeTypes();
             // Add supported mimetype for this protocol
             QStringList &_ms = m_remoteProtocolPlugins[protocol];
-            foreach (const QString &_m, mtypes) {
+            Q_FOREACH (const QString &_m, mtypes) {
                 protocolMap[protocol].insert(_m, *it);
                 if (!_ms.contains(_m)) {
                     _ms.append(_m);
@@ -340,7 +340,7 @@ void PreviewJobPrivate::startPreview()
                 }
             }
         } else {
-            emit q->failed( *kit );
+            Q_EMIT q->failed( *kit );
         }
     }
 
@@ -405,7 +405,7 @@ void PreviewJobPrivate::determineNextFile()
     if (!currentItem.item.isNull())
     {
         if (!succeeded)
-            emit q->failed( currentItem.item );
+            Q_EMIT q->failed( currentItem.item );
     }
     // No more items ?
     if ( items.isEmpty() )
@@ -710,7 +710,7 @@ void PreviewJobPrivate::emitPreview(const QImage &thumb)
         pix = QPixmap::fromImage( thumb.scaled(QSize(width, height), Qt::KeepAspectRatio, Qt::SmoothTransformation) );
     else
         pix = QPixmap::fromImage( thumb );
-    emit q->gotPreview(currentItem.item, pix);
+    Q_EMIT q->gotPreview(currentItem.item, pix);
 }
 
 QStringList PreviewJob::availablePlugins()

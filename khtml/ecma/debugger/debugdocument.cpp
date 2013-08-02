@@ -56,7 +56,7 @@ DebugDocument::DebugDocument(KJS::Interpreter* intp, const QString& url,
 
 DebugDocument::~DebugDocument()
 {
-    emit documentDestroyed(this);
+    Q_EMIT documentDestroyed(this);
 
     // View has an another parent for UI purposes, so we have to clean it up
     delete m_kteView;
@@ -237,7 +237,7 @@ void DebugDocument::rebuildViewerDocument()
     if (imark)
     {
         QVector<int>& bps = breakpoints();
-        foreach (int bpLine, bps) {
+        Q_FOREACH (int bpLine, bps) {
             int relLine = bpLine - m_firstLine;
             if (0 <= relLine && relLine < length())
                 imark->addMark(relLine, KTextEditor::MarkInterface::BreakpointActive);

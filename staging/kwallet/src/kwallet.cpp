@@ -170,7 +170,7 @@ public:
         KSecretsService::SearchCollectionItemsJob *searchItemsJob = secretsCollection->searchItems(attrs);
         if ( searchItemsJob->exec() ) {
             QRegExp re(key, Qt::CaseSensitive, QRegExp::Wildcard);
-            foreach( KSecretsService::SearchCollectionItemsJob::Item item , searchItemsJob->items() ) {
+            Q_FOREACH( KSecretsService::SearchCollectionItemsJob::Item item , searchItemsJob->items() ) {
                 KSecretsService::ReadItemPropertyJob *readLabelJob = item->label();
                 if ( readLabelJob->exec() ) {
                     QString label = readLabelJob->propertyValue().toString();
@@ -543,7 +543,7 @@ void Wallet::slotCollectionDeleted()
 {
     d->folder.clear();
     d->name.clear();
-    emit walletClosed();
+    Q_EMIT walletClosed();
 }
 
 bool Wallet::disconnectApplication(const QString& wallet, const QString& app) {
@@ -705,7 +705,7 @@ void Wallet::slotWalletClosed(int handle) {
             d->handle = -1;
             d->folder.clear();
             d->name.clear();
-            emit walletClosed();
+            Q_EMIT walletClosed();
         }
 #if HAVE_KSECRETSSERVICE
     }
@@ -724,7 +724,7 @@ QStringList Wallet::folderList() {
 
         if (searchJob->exec()) {
             KSecretsService::ReadCollectionItemsJob::ItemList itemList = searchJob->items();
-            foreach( const KSecretsService::ReadCollectionItemsJob::Item &item, itemList ) {
+            Q_FOREACH( const KSecretsService::ReadCollectionItemsJob::Item &item, itemList ) {
                 KSecretsService::ReadItemPropertyJob *readAttrsJob = item->attributes();
                 if (readAttrsJob->exec()) {
                     KSecretsService::StringStringMap attrs = readAttrsJob->propertyValue().value<KSecretsService::StringStringMap>();
@@ -771,7 +771,7 @@ QStringList Wallet::entryList() {
         attrs[KSS_ATTR_ENTRYFOLDER] = d->folder;
         KSecretsService::SearchCollectionItemsJob *readItemsJob = d->secretsCollection->searchItems( attrs );
         if ( readItemsJob->exec() ) {
-            foreach( KSecretsService::SearchCollectionItemsJob::Item item, readItemsJob->items() ) {
+            Q_FOREACH( KSecretsService::SearchCollectionItemsJob::Item item, readItemsJob->items() ) {
                 KSecretsService::ReadItemPropertyJob *readLabelJob = item->label();
                 if ( readLabelJob->exec() ) {
                     result.append( readLabelJob->propertyValue().toString() );
@@ -915,7 +915,7 @@ bool Wallet::removeFolder(const QString& f) {
             KSecretsService::SearchCollectionItemsJob::ItemList itemList = searchJob->items();
             if ( !itemList.isEmpty() ) {
                 result = true;
-                foreach( const KSecretsService::SearchCollectionItemsJob::Item &item, itemList ) {
+                Q_FOREACH( const KSecretsService::SearchCollectionItemsJob::Item &item, itemList ) {
                     KSecretsService::SecretItemDeleteJob *deleteJob = item->deleteItem();
                     if (!deleteJob->exec()) {
                         qDebug() << "Cannot delete item : " << deleteJob->errorString();
@@ -1519,7 +1519,7 @@ void Wallet::slotFolderUpdated(const QString& wallet, const QString& folder) {
     else {
 #endif
         if (d->name == wallet) {
-            emit folderUpdated(folder);
+            Q_EMIT folderUpdated(folder);
         }
 #if HAVE_KSECRETSSERVICE
     }
@@ -1536,7 +1536,7 @@ void Wallet::slotFolderListUpdated(const QString& wallet) {
     else {
 #endif
         if (d->name == wallet) {
-            emit folderListUpdated();
+            Q_EMIT folderListUpdated();
         }
 #if HAVE_KSECRETSSERVICE
     }
@@ -1579,18 +1579,18 @@ void Wallet::walletAsyncOpened(int tId, int handle) {
         disconnect(this, SLOT(walletAsyncOpened(int,int)));
 
         d->handle = handle;
-        emit walletOpened(handle > 0);
+        Q_EMIT walletOpened(handle > 0);
 #if HAVE_KSECRETSSERVICE
     }
 #endif
 }
 
 void Wallet::emitWalletAsyncOpenError() {
-    emit walletOpened(false);
+    Q_EMIT walletOpened(false);
 }
 
 void Wallet::emitWalletOpened() {
-  emit walletOpened(true);
+  Q_EMIT walletOpened(true);
 }
 
 bool Wallet::folderDoesNotExist(const QString& wallet, const QString& folder)

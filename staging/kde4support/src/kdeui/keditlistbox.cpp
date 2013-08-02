@@ -390,7 +390,7 @@ void KEditListBox::typedSomething(const QString& text)
             if ( currentIndex.isValid() )
               d->model->setData(currentIndex,text);
             d->listView->blockSignals( block );
-            emit changed();
+            Q_EMIT changed();
         }
     }
 
@@ -444,7 +444,7 @@ void KEditListBox::moveItemUp()
       d->listView->selectionModel()->select(aboveIndex, QItemSelectionModel::Select);
     }
 
-    emit changed();
+    Q_EMIT changed();
 }
 
 void KEditListBox::moveItemDown()
@@ -472,7 +472,7 @@ void KEditListBox::moveItemDown()
       d->listView->selectionModel()->select(belowIndex, QItemSelectionModel::Select);
     }
 
-    emit changed();
+    Q_EMIT changed();
 }
 
 void KEditListBox::addItem()
@@ -522,8 +522,8 @@ void KEditListBox::addItem()
             lst<<d->model->stringList();
             d->model->setStringList(lst);
         }
-        emit changed();
-        emit added( currentTextLE ); // TODO: pass the index too
+        Q_EMIT changed();
+        Q_EMIT added( currentTextLE ); // TODO: pass the index too
     }
 
     d->updateButtonState();
@@ -552,9 +552,9 @@ void KEditListBox::removeItem()
 
         d->listView->selectionModel()->clear();
 
-        emit changed();
+        Q_EMIT changed();
 
-        emit removed( removedText );
+        Q_EMIT removed( removedText );
     }
 
     d->updateButtonState();
@@ -602,7 +602,7 @@ void KEditListBox::clear()
 {
     d->lineEdit->clear();
     d->model->setStringList( QStringList() );
-    emit changed();
+    Q_EMIT changed();
 }
 
 void KEditListBox::insertStringList(const QStringList& list, int index)

@@ -82,7 +82,7 @@ void KDatePickerPrivateYearSelector::yearEnteredSlot()
     // check if new year will lead to a valid date
     if ( calendar->setDate( newDate, newYear, calendar->month( oldDate ), calendar->day( oldDate ) ) ) {
         result = newYear;
-        emit( closeMe( 1 ) );
+        Q_EMIT( closeMe( 1 ) );
     } else {
         KNotification::beep();
     }
@@ -370,13 +370,13 @@ void KDatePicker::dateChangedSlot( const QDate &date_ )
                                     thisDate.daysInWeek() );
     d->selectYear->setText( thisDate.formatDate( KLocale::Year, KLocale::LongNumber ) );
 
-    emit( dateChanged( date_ ) );
+    Q_EMIT( dateChanged( date_ ) );
 }
 
 void KDatePicker::tableClickedSlot()
 {
-    emit( dateSelected( date() ) );
-    emit( tableClicked() );
+    Q_EMIT( dateSelected( date() ) );
+    Q_EMIT( tableClicked() );
 }
 
 const QDate & KDatePicker::date() const
@@ -554,7 +554,7 @@ void KDatePicker::lineEnterPressed()
     QDate newDate = calendar()->readDate( d->line->text() );
 
     if ( calendar()->isValid( newDate ) ) {
-        emit( dateEntered( newDate ) );
+        Q_EMIT( dateEntered( newDate ) );
         setDate( newDate );
         d->table->setFocus();
     } else {

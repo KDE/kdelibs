@@ -248,7 +248,7 @@ void KSystemTrayIcon::maybeQuit()
         return;
     }
 
-    emit quitSelected();
+    Q_EMIT quitSelected();
     qApp->quit();
 }
 
