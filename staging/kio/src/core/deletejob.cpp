@@ -375,7 +375,7 @@ void DeleteJobPrivate::currentSourceStated(bool isDir, bool isLink)
             // We are about to delete this dir, no need to watch it
             // Maybe we should ask kdirwatch to remove all watches recursively?
             // But then there would be no feedback (things disappearing progressively) during huge deletions
-            KDirWatch::self()->stopDirScan(QUrlPathInfo(url).localPath(QUrlPathInfo::StripTrailingSlash));
+            KDirWatch::self()->stopDirScan(url.adjusted(QUrl::StripTrailingSlash).toLocalFile());
         }
         if (!KProtocolManager::canDeleteRecursive(url)) {
             //qDebug() << url << "is a directory, let's list it";

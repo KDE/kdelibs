@@ -19,7 +19,6 @@
 #include "job.h"
 #include <kprotocolmanager.h>
 #include <klocalizedstring.h>
-#include <qurlpathinfo.h>
 #include <QUrl>
 #include <QDateTime>
 
@@ -310,8 +309,7 @@ KIOCORE_EXPORT QByteArray KIO::rawErrorDetail(int errorCode, const QString &erro
     else
       domain = host;
 
-    QUrlPathInfo reqUrlPathInfo(*reqUrl);
-    filename = reqUrlPathInfo.fileName();
+    filename = reqUrl->fileName();
     path = reqUrl->path();
 
     // detect if protocol is a network protocol...

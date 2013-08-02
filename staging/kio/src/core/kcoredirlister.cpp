@@ -1878,7 +1878,7 @@ void KCoreDirListerCache::deleteDir(const QUrl& _dirUrl)
     // Idea: tell all the KCoreDirListers that they should forget the dir
     //       and then remove it from the cache.
 
-    QUrl dirUrl(QUrlPathInfo(_dirUrl).url(QUrlPathInfo::StripTrailingSlash));
+    QUrl dirUrl(_dirUrl.adjusted(QUrl::StripTrailingSlash));
 
     // Separate itemsInUse iteration and calls to forgetDirs (which modify itemsInUse)
     QList<QUrl> affectedItems;

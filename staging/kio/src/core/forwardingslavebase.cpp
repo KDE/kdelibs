@@ -149,7 +149,7 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
             new_url.addPath(name);
         }
 
-        entry.insert( KIO::UDSEntry::UDS_LOCAL_PATH, new_url.localPath() );
+        entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, new_url.url().toLocalFile());
     }
 }
 

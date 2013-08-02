@@ -418,8 +418,6 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const QUrl& sourceUrl)
     }
     addCopyInfoFromUDSEntry(entry, srcurl, false, m_dest);
 
-    QUrlPathInfo srcurlInfo(srcurl);
-
     m_currentDest = m_dest;
     m_bCurrentSrcIsDir = false;
 
@@ -431,7 +429,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const QUrl& sourceUrl)
         //qDebug() << "Source is a directory";
 
         if (srcurl.isLocalFile()) {
-            const QString parentDir = srcurlInfo.localPath(QUrlPathInfo::StripTrailingSlash);
+            const QString parentDir = srcurl.adjusted(QUrl::StripTrailingSlash).toLocalFile();
             m_parentDirs.insert(parentDir);
         }
 
@@ -441,7 +439,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const QUrl& sourceUrl)
             if ( !m_asMethod )
             {
                 // Use <desturl>/<directory_copied> as destination, from now on
-                QString directory = srcurlInfo.fileName();
+                QString directory = srcurl.fileName();
                 const QString sName = entry.stringValue( KIO::UDSEntry::UDS_NAME );
                 KProtocolInfo::FileNameUsedForCopying fnu = KProtocolManager::fileNameUsedForCopying(srcurl);
                 if (fnu == KProtocolInfo::Name) {
@@ -995,12 +993,10 @@ void CopyJobPrivate::slotResultCreatingDirs( KJob * job )
                 } else {
                     if (m_bAutoRenameDirs) {
                         const QUrl destDirectory = (*it).uDest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
-                        const QString newName = KIO::suggestName(destDirectory, QUrlPathInfo((*it).uDest).fileName());
-
-                        QUrlPathInfo newUrl((*it).uDest);
-                        newUrl.setFileName(newName);
-
-                        renameDirectory(it, newUrl.url());
+                        const QString newName = KIO::suggestName(destDirectory, (*it).uDest.fileName());
+                        QUrl newUrl(destDirectory);
+                        newUrl.setPath(newUrl.path() + QLatin1Char('/') + newName);
+                        renameDirectory(it, newUrl);
                     }
                     else {
                         if (!q->uiDelegateExtension()) {
@@ -1066,9 +1062,6 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     q->removeSubjob( job );
     assert ( !q->hasSubjobs() ); // We should have only one job at a time ...
 
-    const QUrlPathInfo destInfo((*it).uDest);
-    const QUrlPathInfo sourceInfo((*it).uSource);
-
     // Always multi and skip (since there are files after that)
     RenameDialog_Mode mode = (RenameDialog_Mode)( M_MULTI | M_SKIP | M_ISDIR );
     // Overwrite only if the existing thing is a dir (no chance with a file)
@@ -1076,13 +1069,13 @@ void CopyJobPrivate::slotResultConflictCreatingDirs( KJob * job )
     {
         if( (*it).uSource == (*it).uDest ||
             ((*it).uSource.scheme() == (*it).uDest.scheme() &&
-             sourceInfo.path(QUrlPathInfo::StripTrailingSlash) == linkDest))
+             (*it).uSource.adjusted(QUrl::StripTrailingSlash).path() == linkDest))
           mode = (RenameDialog_Mode)( mode | M_OVERWRITE_ITSELF);
         else
           mode = (RenameDialog_Mode)( mode | M_OVERWRITE );
     }
 
-    const QString existingDest = destInfo.path();
+    const QString existingDest = (*it).uDest.path();
     QString newPath;
     if (m_reportTimer)
         m_reportTimer->stop();
@@ -1221,13 +1214,11 @@ void CopyJobPrivate::slotResultCopyingFiles( KJob * job )
             {
                 if (m_bAutoRenameFiles) {
                     QUrl destDirectory = (*it).uDest.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
-                    QUrlPathInfo destInfo((*it).uDest);
-                    const QString newName = KIO::suggestName(destDirectory, destInfo.fileName());
-
-                    destInfo.setFileName(newName);
-
-                    emit q->renamed(q, (*it).uDest, destInfo.url()); // for e.g. kpropsdlg
-                    (*it).uDest = destInfo.url();
+                    const QString newName = KIO::suggestName(destDirectory, (*it).uDest.fileName());
+                    QUrl newDest(destDirectory);
+                    newDest.setPath(newDest.path() + QLatin1Char('/') + newName);
+                    emit q->renamed(q, (*it).uDest, newDest); // for e.g. kpropsdlg
+                    (*it).uDest = newDest;
 
                     QList<CopyInfo> files;
                     files.append(*it);
@@ -1356,7 +1347,6 @@ void CopyJobPrivate::slotResultConflictCopyingFiles( KJob * job )
         RenameDialog_Mode mode;
         bool isDir = true;
 
-        QUrlPathInfo sourceInfo((*it).uSource);
         if( m_conflictError == ERR_DIR_ALREADY_EXIST ) {
             mode = M_ISDIR;
         } else {
@@ -1830,8 +1820,8 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
         // https://codereview.qt-project.org/44823 is in
         if ((err == ERR_FILE_ALREADY_EXIST || err == ERR_DIR_ALREADY_EXIST || err == ERR_IDENTICAL_FILES) &&
             m_currentSrcURL.isLocalFile() && dest.isLocalFile()) {
-          const QString _src(QUrlPathInfo(m_currentSrcURL).localPath(QUrlPathInfo::StripTrailingSlash));
-          const QString _dest(QUrlPathInfo(dest).localPath(QUrlPathInfo::StripTrailingSlash));
+          const QString _src(m_currentSrcURL.adjusted(QUrl::StripTrailingSlash).toLocalFile());
+          const QString _dest(dest.adjusted(QUrl::StripTrailingSlash).toLocalFile());
           if (_src != _dest && QString::compare(_src, _dest, Qt::CaseInsensitive) == 0) {
             //qDebug() << "Couldn't rename directly, dest already exists. Detected special case of lower/uppercase renaming in same dir, try with 2 rename calls";
             const QString srcDir = QFileInfo(_src).absolutePath();
@@ -1892,10 +1882,8 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
                 QUrl destDirectory = m_currentDestURL.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash); // m_currendDestURL includes filename
                 const QString newName = KIO::suggestName(destDirectory, m_currentDestURL.fileName());
 
-                m_dest.setPath(m_currentDestURL.path());
-                QUrlPathInfo destInfo(m_dest);
-                destInfo.setFileName(newName);
-                m_dest = destInfo.url();
+                m_dest = destDirectory;
+                m_dest.setPath(m_dest.path() + QLatin1Char('/') + newName);
                 KIO::Job* job = KIO::stat(m_dest, StatJob::DestinationSide, 2, KIO::HideProgressInfo);
                 state = STATE_STATING;
                 destinationState = DEST_NOT_STATED;

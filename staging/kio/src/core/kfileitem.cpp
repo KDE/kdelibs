@@ -270,7 +270,7 @@ void KFileItemPrivate::init()
              * stat("/is/unaccessible/") -> EPERM            H.Z.
              * This is the reason for the StripTrailingSlash
              */
-            const QString path = QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash);
+            const QString path = m_url.adjusted(QUrl::StripTrailingSlash).toLocalFile();
             QFileInfo info(path);
             m_bLink = info.isSymLink();
             // While we're at it, store the times
@@ -624,7 +624,7 @@ QString KFileItem::linkDest() const
     if ( d->m_bIsLocalUrl )
     {
         char buf[1000];
-        const int n = readlink(QFile::encodeName(QUrlPathInfo(d->m_url).localPath(QUrlPathInfo::StripTrailingSlash)), buf, sizeof(buf)-1);
+        const int n = readlink(QFile::encodeName(d->m_url.adjusted(QUrl::StripTrailingSlash).toLocalFile()), buf, sizeof(buf)-1);
         if ( n != -1 )
         {
             buf[ n ] = 0;
@@ -717,7 +717,7 @@ QString KFileItemPrivate::user() const
 {
     QString userName = m_entry.stringValue(KIO::UDSEntry::UDS_USER);
     if (userName.isEmpty() && m_bIsLocalUrl) {
-        QFileInfo a(QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash));
+        QFileInfo a(m_url.adjusted(QUrl::StripTrailingSlash).toLocalFile());
         userName = QFileInfo(a.canonicalFilePath()).owner(); // get user of the link, if it's a link
         m_entry.insert(KIO::UDSEntry::UDS_USER, userName);
     }
@@ -736,7 +736,7 @@ QString KFileItemPrivate::group() const
 {
     QString groupName = m_entry.stringValue( KIO::UDSEntry::UDS_GROUP );
     if (groupName.isEmpty() && m_bIsLocalUrl ) {
-        QFileInfo a(QUrlPathInfo(m_url).localPath(QUrlPathInfo::StripTrailingSlash));
+        QFileInfo a(m_url.adjusted(QUrl::StripTrailingSlash).toLocalFile());
         groupName = QFileInfo(a.canonicalFilePath()).group(); // get group of the link, if it's a link
         m_entry.insert( KIO::UDSEntry::UDS_GROUP, groupName );
     }
