@@ -15,7 +15,6 @@ set(kwidgets_LIB_SRCS
   actions/krecentfilesaction.cpp
   actions/kselectaction.cpp
   actions/kstandardaction.cpp
-  dialogs/ktip.cpp
 )
 
 add_library(KWidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -63,12 +62,7 @@ install(FILES
   actions/krecentfilesaction.h
   actions/kselectaction.h
   actions/kstandardaction.h
-  dialogs/ktip.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
 
-install( FILES
- dialogs/ktip-bulb.png
- DESTINATION  ${DATA_INSTALL_DIR}/kwidgets/pics
-)

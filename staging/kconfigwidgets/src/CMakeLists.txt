@@ -5,6 +5,7 @@ set(kconfigwidgets_SRCS
   kconfigdialogmanager.cpp
   kcmodule.cpp
   klanguagebutton.cpp
+  ktip.cpp
 )
 
 add_library(KConfigWidgets ${kconfigwidgets_SRCS})
@@ -39,6 +40,13 @@ install(FILES
   kconfigdialogmanager.h
   kcmodule.h
   klanguagebutton.h
+  ktip.h
   ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+install( FILES
+ ktip-bulb.png
+ DESTINATION  ${DATA_INSTALL_DIR}/kconfigwidgets/pics
+)
+
