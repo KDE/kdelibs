@@ -33,7 +33,7 @@
  * An action to select a font family.
  * On a toolbar this will show a combobox with all the fonts on the system.
  */
-class KWIDGETS_EXPORT KFontAction : public KSelectAction
+class KWIDGETSADDONS_EXPORT KFontAction : public KSelectAction
 {
     Q_OBJECT
     Q_PROPERTY( QString font READ font WRITE setFont )

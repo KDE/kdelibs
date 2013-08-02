@@ -29,6 +29,7 @@
 
 #include <kencodingprober.h>
 #include <kselectaction.h>
+#include <kwidgets_export.h>
 
 /**
  *  @short Action for selecting one of several QTextCodec.

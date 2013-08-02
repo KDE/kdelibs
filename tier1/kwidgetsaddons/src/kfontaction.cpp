@@ -32,7 +32,6 @@
 #include <QFontComboBox>
 #include <QToolBar>
 
-#include <klocalizedstring.h>
 #include <kfontchooser.h>
 
 class KFontAction::KFontActionPrivate
@@ -188,7 +187,7 @@ void KFontAction::setFont( const QString &family )
     if (setCurrentAction(lowerName, Qt::CaseInsensitive))
        return;
 
-    int i = lowerName.indexOf(" [");
+    int i = lowerName.indexOf(QStringLiteral(" ["));
     if (i > -1)
     {
        lowerName = lowerName.left(i);
@@ -197,7 +196,7 @@ void KFontAction::setFont( const QString &family )
           return;
     }
 
-    lowerName += " [";
+    lowerName += QStringLiteral(" [");
     if (setCurrentAction(lowerName, Qt::CaseInsensitive))
       return;
 

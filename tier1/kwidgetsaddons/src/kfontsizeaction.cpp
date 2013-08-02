@@ -32,8 +32,6 @@
 #include <QToolBar>
 #include <QToolButton>
 
-#include <klocalizedstring.h>
-
 class KFontSizeAction::Private
 {
     public:

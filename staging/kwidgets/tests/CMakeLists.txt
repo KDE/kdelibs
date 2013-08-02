@@ -11,5 +11,4 @@ endmacro()
 
 kwidgets_executable_tests(
     kcodecactiontest
-    kselectactiontest
 )

@@ -2,7 +2,10 @@
 set(kwidgetsaddons_SRCS
   kacceleratormanager.cpp
   kcolorbutton.cpp
+  kfontaction.cpp
   fonthelpers.cpp
+  kfontsizeaction.cpp
+  kselectaction.cpp
   kdragwidgetdecorator.cpp
   kdualaction.cpp
   kfontchooser.cpp
@@ -77,11 +80,14 @@ install(FILES
   kcolorbutton.h
   kdragwidgetdecorator.h
   kdualaction.h
+  kfontaction.h
   kfontchooser.h
+  kfontsizeaction.h
   kguiitem.h
   kled.h
   kmessagebox.h
   kmessageboxdontaskagaininterface.h
+  kselectaction.h
   kstandardguiitem.h
   kurllabel.h
   kcapacitybar.h

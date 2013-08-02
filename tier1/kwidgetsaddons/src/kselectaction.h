@@ -34,7 +34,7 @@
 #include <QToolButton>
 #include <QWidgetAction>
 
-#include <kwidgets_export.h>
+#include <kwidgetsaddons_export.h>
 
 class KSelectActionPrivate;
 
@@ -49,7 +49,7 @@ class KSelectActionPrivate;
  *  the formerly checked item becomes unchecked.
  *  There can be only one item checked at a time.
  */
-class KWIDGETS_EXPORT KSelectAction : public QWidgetAction
+class KWIDGETSADDONS_EXPORT KSelectAction : public QWidgetAction
 {
     Q_OBJECT
     Q_PROPERTY( QAction* currentAction READ currentAction WRITE setCurrentAction )

@@ -9,11 +9,8 @@ configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidge
 
 set(kwidgets_LIB_SRCS
   actions/kcodecaction.cpp
-  actions/kfontaction.cpp
-  actions/kfontsizeaction.cpp
   actions/kpastetextaction.cpp
   actions/krecentfilesaction.cpp
-  actions/kselectaction.cpp
   actions/kstandardaction.cpp
 )
 
@@ -56,11 +53,8 @@ install(TARGETS KWidgets EXPORT KWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   actions/kcodecaction.h
-  actions/kfontaction.h
-  actions/kfontsizeaction.h
   actions/kpastetextaction.h
   actions/krecentfilesaction.h
-  actions/kselectaction.h
   actions/kstandardaction.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

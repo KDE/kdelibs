@@ -10,6 +10,5 @@ macro(kwidgets_unit_tests)
 endmacro()
 
 kwidgets_unit_tests(
-    kselectaction_unittest
     kstandardactiontest
 )

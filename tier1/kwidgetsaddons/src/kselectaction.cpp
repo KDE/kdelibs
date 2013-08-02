@@ -40,14 +40,24 @@
 #include <QToolBar>
 #include <QStandardItem>
 
-#include <klocalizedstring.h>
-
 // QAction::setText("Hi") and then KPopupAccelManager exec'ing, causes
 // QAction::text() to return "&Hi" :(  Comboboxes don't have accels and
 // display ampersands literally.
 static QString DropAmpersands(const QString &text)
 {
-    return KLocalizedString::removeAcceleratorMarker(text);
+    QString label = text;
+
+    int p = label.indexOf(QLatin1Char('&'));
+    while (p >=0 && p < label.length() - 1) {
+        if (label[p + 1].isLetterOrNumber() // Valid accelerator.
+         || label[p + 1] == QLatin1Char('&')) { // Escaped accelerator marker.
+            label = label.left(p) + label.mid(p + 1);
+        }
+
+        p = label.indexOf(QLatin1Char('&'), p + 1);
+    }
+
+    return label;
 }
 
 

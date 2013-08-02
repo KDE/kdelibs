@@ -29,6 +29,7 @@
 
 #include <kselectaction.h>
 #include <qurl.h>
+#include <kwidgets_export.h>
 
 class KConfigGroup;
 class KRecentFilesActionPrivate;
