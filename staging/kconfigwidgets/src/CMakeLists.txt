@@ -4,6 +4,7 @@ set(kconfigwidgets_SRCS
   kconfigviewstatesaver.cpp
   kconfigdialogmanager.cpp
   kcmodule.cpp
+  klanguagebutton.cpp
 )
 
 add_library(KConfigWidgets ${kconfigwidgets_SRCS})
@@ -37,6 +38,7 @@ install(FILES
   kviewstatemaintainer.h
   kconfigdialogmanager.h
   kcmodule.h
+  klanguagebutton.h
   ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

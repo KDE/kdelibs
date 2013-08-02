@@ -25,7 +25,7 @@
 #ifndef KLANGUAGEBUTTON_H
 #define KLANGUAGEBUTTON_H
 
-#include "kwidgets_export.h"
+#include "kconfigwidgets_export.h"
 #include <QWidget>
 
 class QAction;
@@ -42,7 +42,7 @@ class KLanguageButtonPrivate;
  * @author Hans Petter Bieker <bieker@kde.org>, Martijn Klingens <klingens@kde.org>,
  *         David Jarvie <software@astrojar.org.uk>
  */
-class KWIDGETS_EXPORT KLanguageButton : public QWidget
+class KCONFIGWIDGETS_EXPORT KLanguageButton : public QWidget
 {
   Q_OBJECT
 

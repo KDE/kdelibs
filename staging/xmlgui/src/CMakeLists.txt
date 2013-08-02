@@ -105,6 +105,7 @@ target_link_libraries(XmlGui LINK_PUBLIC
     KI18n
     KCoreAddons
     KConfigCore
+    KConfigWidgets
     KIconThemes
     KTextWidgets
     SonnetUi
