@@ -511,14 +511,14 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
     QVERIFY( !QFile::exists( destSubDir() ) );
 }
 
-void FileUndoManagerTest::testPasteClipboard()
+void FileUndoManagerTest::testPasteClipboardUndo()
 {
-    KUrl::List urls;
-    urls << sourceList();
+    const KUrl::List urls (sourceList());
     QMimeData* mimeData = new QMimeData();
     urls.populateMimeData(mimeData);
     mimeData->setData(QLatin1String("application/x-kde-cutselection"), "1");
-    QApplication::clipboard()->setMimeData(mimeData);
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setMimeData(mimeData);
 
     // Paste the contents of the clipboard and check its status
     KUrl destDirUrl(destDir());
@@ -534,13 +534,13 @@ void FileUndoManagerTest::testPasteClipboard()
         dUrl.addPath(url.fileName());
         urls2 << dUrl;
     }
-    urls = KUrl::List::fromMimeData(QApplication::clipboard()->mimeData());
-    QCOMPARE(urls2, urls);
+    KUrl::List clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    QCOMPARE(clipboardUrls, urls2);
 
     // Check if the clipboard was updated after undo operation
     doUndo();
-    urls2 = KUrl::List::fromMimeData(QApplication::clipboard()->mimeData());
-    QCOMPARE(urls, urls2);
+    clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    QCOMPARE(clipboardUrls, urls);
 }
 
 

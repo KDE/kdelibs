@@ -26,6 +26,7 @@
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
 #include "jobuidelegate.h"
+#include "clipboardupdater_p.h"
 #include <kdirnotify.h>
 
 #include <klocale.h>
@@ -485,12 +486,16 @@ DeleteJob *KIO::del( const KUrl& src, JobFlags flags )
 {
     KUrl::List srcList;
     srcList.append( src );
-    return DeleteJobPrivate::newJob(srcList, flags);
+    DeleteJob* job = DeleteJobPrivate::newJob(srcList, flags);
+    new ClipboardUpdater(job, ClipboardUpdater::RemoveContent);
+    return job;
 }
 
 DeleteJob *KIO::del( const KUrl::List& src, JobFlags flags )
 {
-    return DeleteJobPrivate::newJob(src, flags);
+    DeleteJob* job = DeleteJobPrivate::newJob(src, flags);
+    new ClipboardUpdater(job, ClipboardUpdater::RemoveContent);
+    return job;
 }
 
 #include "deletejob.moc"

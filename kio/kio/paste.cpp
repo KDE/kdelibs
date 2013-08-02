@@ -66,15 +66,14 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const KUrl& destD
     if (!urls.isEmpty()) {
         const bool move = decodeIsCutSelection(mimeData);
         KIO::Job *job = 0;
-        if (move)
+        if (move) {
             job = KIO::move(urls, destDir, flags);
+            KIO::ClipboardUpdater* clipboardUpdater = job->findChild<KIO::ClipboardUpdater *>();
+            Q_ASSERT(clipboardUpdater);
+            clipboardUpdater->setMode(KIO::ClipboardUpdater::OverwriteContent);
+        }
         else
             job = KIO::copy(urls, destDir, flags);
-
-        // If moving, update the clipboard contents with the new locations
-        if (move) {
-            new KIO::ClipboardUpdater(job, KIO::ClipboardUpdater::OverwriteContent);
-        }
         return job;
     }
     return 0;

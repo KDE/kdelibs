@@ -24,6 +24,7 @@
 #include "kdirlister.h"
 #include "kfileitem.h"
 #include "deletejob.h"
+#include "clipboardupdater_p.h"
 
 #include <klocale.h>
 #include <kdesktopfile.h>
@@ -2185,7 +2186,9 @@ CopyJob *KIO::move(const KUrl& src, const KUrl& dest, JobFlags flags)
     //kDebug(7007) << src << dest;
     KUrl::List srcList;
     srcList.append( src );
-    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
+    CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
+    new ClipboardUpdater(job, ClipboardUpdater::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, JobFlags flags)
@@ -2193,13 +2196,17 @@ CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, JobFlags flags)
     //kDebug(7007) << src << dest;
     KUrl::List srcList;
     srcList.append( src );
-    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
+    CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
+    new ClipboardUpdater(job, ClipboardUpdater::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::move( const KUrl::List& src, const KUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << src << dest;
-    return CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
+    CopyJob* job = CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
+    new ClipboardUpdater(job, ClipboardUpdater::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::link(const KUrl& src, const KUrl& destDir, JobFlags flags)

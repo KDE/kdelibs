@@ -23,6 +23,7 @@
 #include <QObject>
 
 class KJob;
+class KUrl;
 
 namespace KIO  {
     class Job;
@@ -46,18 +47,29 @@ namespace KIO  {
         Q_OBJECT
 
     public:
-        enum UpdateMode {
+        enum Mode {
             UpdateContent,
             OverwriteContent,
+            RemoveContent
         };
 
-        explicit ClipboardUpdater(Job* job, UpdateMode mode);
+        explicit ClipboardUpdater(Job* job, Mode mode);
+
+        /**
+         * Convenience function that allows renaming of a single url in the clipboard.
+         */
+        static void update(const KUrl& srcUrl, const KUrl& destUrl);
+
+        /**
+         * Sets the mode.
+         */
+        void setMode(Mode m);
 
     private Q_SLOTS:
         void slotResult(KJob* job);
 
     private:
-        UpdateMode m_updateMode;
+        Mode m_mode;
     };
 }
 
