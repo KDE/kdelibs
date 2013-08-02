@@ -88,7 +88,7 @@ int KToolInvocation::startServiceInternal(const char *_function,
     // make sure there is id, so that user timestamp exists
     QStringList envs;
     QByteArray s = startup_id;
-    Q_EMIT kapplication_hook(envs, s);
+    emit kapplication_hook(envs, s);
     msg << envs;
     msg << QString::fromLatin1(s);
     if( !function.startsWith( QLatin1String("kdeinit_exec") ) )

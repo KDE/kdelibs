@@ -50,7 +50,7 @@ bool KSSLKeyGenWizardPage2::isComplete() const
 
 void KSSLKeyGenWizardPage2::slotPassChanged()
 {
-    Q_EMIT completeChanged(); // well maybe it hasn't changed, but it might have; QWizard calls isComplete() to find out
+    emit completeChanged(); // well maybe it hasn't changed, but it might have; QWizard calls isComplete() to find out
 }
 
 QString KSSLKeyGenWizardPage2::password() const

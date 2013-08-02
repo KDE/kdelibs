@@ -85,7 +85,7 @@ void MkdirJobPrivate::slotRedirection(const QUrl &url)
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
      // Tell the user that we haven't finished yet
-     Q_EMIT q->redirection(q, m_redirectionURL);
+     emit q->redirection(q, m_redirectionURL);
 }
 
 void MkdirJob::slotFinished()
@@ -96,7 +96,7 @@ void MkdirJob::slotFinished()
     {
         //qDebug() << "MkdirJob: Redirection to " << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
-            Q_EMIT permanentRedirection(this, d->m_url, d->m_redirectionURL);
+            emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
 
         if ( d->m_redirectionHandlingEnabled )
         {

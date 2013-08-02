@@ -216,19 +216,19 @@ void KNotification::activate(unsigned int action)
     switch (action)
     {
         case 0:
-            Q_EMIT activated();
+            emit activated();
             break;
         case 1:
-            Q_EMIT action1Activated();
+            emit action1Activated();
             break;
         case 2:
-            Q_EMIT action2Activated();
+            emit action2Activated();
             break;
         case 3:
-            Q_EMIT action3Activated();
+            emit action3Activated();
             break;
     }
-	Q_EMIT activated(action);
+	emit activated(action);
 	if(d->id != -1)
 		deleteLater();
 	d->id = -2;
@@ -242,7 +242,7 @@ void KNotification::close()
 	if(d->id != -1) //=-1 mean still waiting for receiving the id
 		deleteLater();
 	d->id = -2;
-	Q_EMIT closed();
+	emit closed();
 }
 
 

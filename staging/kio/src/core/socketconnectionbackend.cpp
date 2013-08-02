@@ -122,7 +122,7 @@ bool SocketConnectionBackend::connectToRemote(const QUrl &url)
 void SocketConnectionBackend::socketDisconnected()
 {
     state = Idle;
-    Q_EMIT disconnected();
+    emit disconnected();
 }
 
 bool SocketConnectionBackend::listenForRemote()
@@ -295,7 +295,7 @@ void SocketConnectionBackend::socketReadyRead()
             len = -1;
 
             signalEmitted = true;
-            Q_EMIT commandReceived(task);
+            emit commandReceived(task);
         } else if (len > StandardBufferSize) {
             qDebug() << this << "Jumbo packet of" << len << "bytes";
             socket->setReadBufferSize(len + 1);

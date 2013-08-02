@@ -220,7 +220,7 @@ void KCharSelectTablePrivate::_k_slotSelectionChanged(const QItemSelection & sel
         return;
     QChar c = temp.toChar();
     chr = c;
-    Q_EMIT q->focusItemChanged(c);
+    emit q->focusItemChanged(c);
 }
 
 void KCharSelectTable::resizeEvent(QResizeEvent * e)
@@ -273,7 +273,7 @@ void KCharSelectTablePrivate::_k_doubleClicked(const QModelIndex & index)
 {
     QChar c = model->data(index, KCharSelectItemModel::CharacterRole).toChar();
     if (s_data()->isPrint(c)) {
-        Q_EMIT q->activated(c);
+        emit q->activated(c);
     }
 }
 
@@ -282,14 +282,14 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
     if (d->model)
         switch (e->key()) {
         case Qt::Key_Space:
-            Q_EMIT activated(' ');
+            emit activated(' ');
             return;
             break;
     case Qt::Key_Enter: case Qt::Key_Return: {
             if (!currentIndex().isValid()) return;
             QChar c = d->model->data(currentIndex(), KCharSelectItemModel::CharacterRole).toChar();
             if (s_data()->isPrint(c)) {
-                Q_EMIT activated(c);
+                emit activated(c);
             }
         }
         return;
@@ -602,7 +602,7 @@ void KCharSelect::KCharSelectPrivate::_k_fontSelected()
     QFont font = fontCombo->currentFont();
     font.setPointSize(fontSizeSpinBox->value());
     charTable->setFont(font);
-    Q_EMIT q->currentFontChanged(font);
+    emit q->currentFontChanged(font);
 }
 
 void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
@@ -646,7 +646,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!aliases.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
-        Q_FOREACH(const QString &alias, aliases) {
+        foreach(const QString &alias, aliases) {
             html += "<li>" + alias.toHtmlEscaped() + "</li>";
         }
         html += "</ul>";
@@ -654,7 +654,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!notes.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Notes:") + "</p><ul style=\"margin-top: 0px;\">";
-        Q_FOREACH(const QString &note, notes) {
+        foreach(const QString &note, notes) {
             html += "<li>" + createLinks(note.toHtmlEscaped()) + "</li>";
         }
         html += "</ul>";
@@ -662,7 +662,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!seeAlso.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("See also:") + "</p><ul style=\"margin-top: 0px;\">";
-        Q_FOREACH(const QChar &c2, seeAlso) {
+        foreach(const QChar &c2, seeAlso) {
             html += "<li><a href=\"" + QString::number(c2.unicode(), 16) + "\">";
             if (s_data()->isPrint(c2)) {
                 html += "&#" + QString::number(c2.unicode()) + "; ";
@@ -674,7 +674,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!equivalents.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
-        Q_FOREACH(const QString &equivalent, equivalents) {
+        foreach(const QString &equivalent, equivalents) {
             html += "<li>" + createLinks(equivalent.toHtmlEscaped()) + "</li>";
         }
         html += "</ul>";
@@ -682,7 +682,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     if (!approxEquivalents.isEmpty()) {
         html += "<p style=\"margin-bottom: 0px;\">" + i18n("Approximate equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
-        Q_FOREACH(const QString &approxEquivalent, approxEquivalents) {
+        foreach(const QString &approxEquivalent, approxEquivalents) {
             html += "<li>" + createLinks(approxEquivalent.toHtmlEscaped()) + "</li>";
         }
         html += "</ul>";
@@ -737,11 +737,11 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     html += "<p><b>" + i18n("Various Useful Representations") + "</b><br>";
     html += i18n("UTF-8:");
-    Q_FOREACH(unsigned char c, utf8)
+    foreach(unsigned char c, utf8)
     html += ' ' + s_data()->formatCode(c, 2, "0x");
     html += "<br>" + i18n("UTF-16: ") + s_data()->formatCode(c.unicode(), 4, "0x") + "<br>";
     html += i18n("C octal escaped UTF-8: ");
-    Q_FOREACH(unsigned char c, utf8)
+    foreach(unsigned char c, utf8)
     html += s_data()->formatCode(c, 3, "\\", 8);
     html += "<br>" + i18n("XML decimal entity:") + " &amp;#" + QString::number(c.unicode()) + ";</p>";
 
@@ -761,7 +761,7 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
     }
 
     QSet<QString> chars2 = QSet<QString>::fromList(chars);
-    Q_FOREACH(const QString &c, chars2) {
+    foreach(const QString &c, chars2) {
         int unicode = c.toInt(0, 16);
         QString link = "<a href=\"" + c + "\">";
         if (s_data()->isPrint(QChar(unicode))) {
@@ -778,7 +778,7 @@ void KCharSelect::KCharSelectPrivate::_k_sectionSelected(int index)
 {
     blockCombo->clear();
     QList<int> blocks = s_data()->sectionContents(index);
-    Q_FOREACH(int block, blocks) {
+    foreach(int block, blocks) {
         blockCombo->addItem(s_data()->blockName(block), QVariant(block));
     }
     blockCombo->setCurrentIndex(0);
@@ -801,7 +801,7 @@ void KCharSelect::KCharSelectPrivate::_k_blockSelected(int index)
         return;
     }
     charTable->setContents(contents);
-    Q_EMIT q->displayedCharsChanged();
+    emit q->displayedCharsChanged();
     charTable->setChar(contents[0]);
 }
 
@@ -838,7 +838,7 @@ void KCharSelect::KCharSelectPrivate::_k_search()
     searchMode = true;
     const QList<QChar> contents = s_data()->find(searchLine->text());
     charTable->setContents(contents);
-    Q_EMIT q->displayedCharsChanged();
+    emit q->displayedCharsChanged();
     if (!contents.isEmpty()) {
         charTable->setChar(contents[0]);
     }

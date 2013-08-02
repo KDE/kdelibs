@@ -42,7 +42,7 @@ Part *Factory::createPart( QWidget *parentWidget, QObject *parent, const char *c
 {
     Part* part = createPartObject( parentWidget, parent, classname, args );
     if ( part )
-	Q_EMIT objectCreated( part );
+	emit objectCreated( part );
     return part;
 }
 

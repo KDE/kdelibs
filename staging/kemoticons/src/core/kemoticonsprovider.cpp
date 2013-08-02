@@ -136,7 +136,7 @@ QHash<QChar, QList<KEmoticonsProvider::Emoticon> > KEmoticonsProvider::emoticons
 
 void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList &emoList)
 {
-    Q_FOREACH(const QString &s, emoList) {
+    foreach(const QString &s, emoList) {
         KEmoticonsProvider::Emoticon e;
         QPixmap p;
 
@@ -159,7 +159,7 @@ void KEmoticonsProvider::addEmoticonIndex(const QString &path, const QStringList
 
 void KEmoticonsProvider::removeEmoticonIndex(const QString &path, const QStringList &emoList)
 {
-    Q_FOREACH(const QString &s, emoList) {
+    foreach(const QString &s, emoList) {
         QString escaped = s.toHtmlEscaped();
 
         if (s.isEmpty() || escaped.isEmpty())

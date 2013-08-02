@@ -113,7 +113,7 @@ void KIconCanvas::loadFiles(const QStringList& files)
 {
     clear();
     m_files = files;
-    Q_EMIT startLoading(m_files.count());
+    emit startLoading(m_files.count());
     m_timer->setSingleShot(true);
     m_timer->start(10);
     m_loading = false;
@@ -141,7 +141,7 @@ void KIconCanvas::loadFiles()
     QStringList::ConstIterator end(m_files.constEnd());
     for (it = m_files.constBegin(), i = 0; it != end; ++it, ++i) {
         if (emitProgress >= 10) {
-            Q_EMIT progress(i);
+            emit progress(i);
             emitProgress = 0;
         }
 
@@ -207,7 +207,7 @@ void KIconCanvas::loadFiles()
 
     QApplication::restoreOverrideCursor();
     m_loading = false;
-    Q_EMIT finished();
+    emit finished();
     setResizeMode(QListWidget::Adjust);
 }
 
@@ -227,7 +227,7 @@ void KIconCanvas::stopLoading()
 
 void KIconCanvas::currentListItemChanged(QListWidgetItem *item)
 {
-    Q_EMIT nameChanged((item != 0L) ? item->text() : QString());
+    emit nameChanged((item != 0L) ? item->text() : QString());
 }
 
 /*
@@ -561,7 +561,7 @@ void KIconDialog::slotOk()
         }
     }
 
-    Q_EMIT newIconName(name);
+    emit newIconName(name);
     QDialog::accept();
 }
 

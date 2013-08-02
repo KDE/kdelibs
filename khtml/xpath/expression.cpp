@@ -242,7 +242,7 @@ void Expression::addSubExpression( Expression *expr )
 void Expression::optimize()
 {
 	bool allSubExpressionsConstant = true;
-	Q_FOREACH( Expression *expr, m_subExpressions ) {
+	foreach( Expression *expr, m_subExpressions ) {
 		if ( expr->isConstant() ) {
 			expr->optimize();
 		} else {
@@ -277,7 +277,7 @@ const Expression *Expression::subExpr( unsigned int i ) const
 
 bool Expression::isConstant() const
 {
-	Q_FOREACH( Expression *expr, m_subExpressions ) {
+	foreach( Expression *expr, m_subExpressions ) {
 		if ( !expr->isConstant() ) {
 			return false;
 		}

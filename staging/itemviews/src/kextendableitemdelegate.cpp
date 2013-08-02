@@ -103,7 +103,7 @@ void KExtendableItemDelegate::extendItem(QWidget *ext, const QModelIndex &index)
     d->extenders.insert(index, ext);
     d->extenderIndices.insert(ext, index);
     connect(ext, SIGNAL(destroyed(QObject*)), this, SLOT(_k_extenderDestructionHandler(QObject*)));
-    Q_EMIT extenderCreated(ext, index);
+    emit extenderCreated(ext, index);
     d->scheduleUpdateViewLayout();
 }
 
@@ -146,7 +146,7 @@ void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *de
         q->receivers(SIGNAL(extenderDestroyed(QWidget*,QModelIndex)))) {
 
         QModelIndex index = persistentIndex;
-        Q_EMIT q->extenderDestroyed(extender, index);
+        emit q->extenderDestroyed(extender, index);
     }
 
     scheduleUpdateViewLayout();
@@ -156,7 +156,7 @@ void KExtendableItemDelegate::Private::_k_extenderDestructionHandler(QObject *de
 //slot
 void KExtendableItemDelegate::Private::_k_verticalScroll()
 {
-    Q_FOREACH (QWidget *extender, extenders) {
+    foreach (QWidget *extender, extenders) {
         // Fast scrolling can lead to artifacts where extenders stay in the viewport
         // of the parent's scroll area even though their items are scrolled out.
         // Therefore we hide all extenders when scrolling.
@@ -402,7 +402,7 @@ void KExtendableItemDelegate::updateExtenderGeometry(QWidget *extender, const QS
 
 void KExtendableItemDelegate::Private::deleteExtenders()
 {
-    Q_FOREACH (QWidget *ext, extenders) {
+    foreach (QWidget *ext, extenders) {
         ext->hide();
         ext->deleteLater();
     }
@@ -413,7 +413,7 @@ void KExtendableItemDelegate::Private::deleteExtenders()
 
 
 //make the view re-ask for sizeHint() and redisplay items with their new size
-//### starting from Qt 4.4 we could Q_EMIT sizeHintChanged() instead
+//### starting from Qt 4.4 we could emit sizeHintChanged() instead
 void KExtendableItemDelegate::Private::scheduleUpdateViewLayout()
 {
     QAbstractItemView *aiv = qobject_cast<QAbstractItemView *>(q->parent());

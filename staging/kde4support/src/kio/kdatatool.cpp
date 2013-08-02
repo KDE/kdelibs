@@ -233,7 +233,7 @@ KDataToolAction::~KDataToolAction()
 
 void KDataToolAction::slotActivated()
 {
-    Q_EMIT toolActivated( d->info, d->command );
+    emit toolActivated( d->info, d->command );
 }
 
 QList<QAction*> KDataToolAction::dataToolActionList( const QList<KDataToolInfo> & tools, const QObject *receiver, const char* slot, KActionCollection* parent )

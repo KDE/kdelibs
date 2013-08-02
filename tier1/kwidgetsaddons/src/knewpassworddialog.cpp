@@ -266,7 +266,7 @@ void KNewPasswordDialog::accept()
         return;
     }
     d->pass = pwd;
-    Q_EMIT newPassword( d->pass );
+    emit newPassword( d->pass );
     QDialog::accept();
 }
 

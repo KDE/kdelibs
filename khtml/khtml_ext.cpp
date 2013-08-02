@@ -273,7 +273,7 @@ void KHTMLPartBrowserExtension::searchProvider()
 
         KParts::BrowserArguments browserArgs;
         browserArgs.frameName = "_blank";
-        Q_EMIT m_part->browserExtension()->openUrlRequest( url, KParts::OpenUrlArguments(), browserArgs );
+        emit m_part->browserExtension()->openUrlRequest( url, KParts::OpenUrlArguments(), browserArgs );
     }
 }
 
@@ -679,7 +679,7 @@ void KHTMLPopupGUIClient::openSelection()
     browserArgs.frameName = "_blank";
 
     QUrl url(selectedTextAsOneLine(d->m_khtml));
-    Q_EMIT d->m_khtml->browserExtension()->openUrlRequest(url, KParts::OpenUrlArguments(), browserArgs);
+    emit d->m_khtml->browserExtension()->openUrlRequest(url, KParts::OpenUrlArguments(), browserArgs);
 }
 
 KParts::BrowserExtension::ActionGroupMap KHTMLPopupGUIClient::actionGroups() const
@@ -830,7 +830,7 @@ void KHTMLPopupGUIClient::slotFrameInWindow()
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   KParts::BrowserArguments browserArgs( d->m_khtml->browserExtension()->browserArguments() );
   browserArgs.setForcesNewWindow(true);
-  Q_EMIT d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args, browserArgs );
+  emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args, browserArgs );
 }
 
 void KHTMLPopupGUIClient::slotFrameInTop()
@@ -839,7 +839,7 @@ void KHTMLPopupGUIClient::slotFrameInTop()
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   KParts::BrowserArguments browserArgs( d->m_khtml->browserExtension()->browserArguments() );
   browserArgs.frameName = "_top";
-  Q_EMIT d->m_khtml->browserExtension()->openUrlRequest( d->m_khtml->url(), args, browserArgs );
+  emit d->m_khtml->browserExtension()->openUrlRequest( d->m_khtml->url(), args, browserArgs );
 }
 
 void KHTMLPopupGUIClient::slotFrameInTab()
@@ -848,7 +848,7 @@ void KHTMLPopupGUIClient::slotFrameInTab()
   args.metaData()["referrer"] = d->m_khtml->pageReferrer();
   KParts::BrowserArguments browserArgs( d->m_khtml->browserExtension()->browserArguments() );
   browserArgs.setNewTab(true);
-  Q_EMIT d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args, browserArgs );
+  emit d->m_khtml->browserExtension()->createNewWindow( d->m_khtml->url(), args, browserArgs );
 }
 
 void KHTMLPopupGUIClient::saveURL( QWidget *parent, const QString &caption,

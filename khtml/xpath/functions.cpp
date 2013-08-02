@@ -352,7 +352,7 @@ QString Interval::asString() const
 
 void Function::setArguments( const QList<Expression *> &args )
 {
-	Q_FOREACH( Expression *arg, args ) {
+	foreach( Expression *arg, args ) {
 		addSubExpression( arg );
 	}
 }

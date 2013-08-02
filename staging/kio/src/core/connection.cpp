@@ -71,7 +71,7 @@ void ConnectionPrivate::dequeue()
     }
 
     if (!incomingTasks.isEmpty())
-        Q_EMIT q->readyRead();
+        emit q->readyRead();
 }
 
 void ConnectionPrivate::commandReceived(const Task &task)

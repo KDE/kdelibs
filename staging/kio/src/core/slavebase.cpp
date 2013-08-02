@@ -505,7 +505,7 @@ void SlaveBase::processedSize(KIO::filesize_t _bytes)
         emitSignal=true;
     else {
         if (d->lastTimeout.isValid())
-            emitSignal = d->lastTimeout.msecsTo(now); // Q_EMIT size 10 times a second
+            emitSignal = d->lastTimeout.msecsTo(now); // emit size 10 times a second
         else
             emitSignal = true;
     }
@@ -667,7 +667,7 @@ void SlaveBase::listEntry( const UDSEntry& entry, bool _ready )
     if (!_ready) {
         d->pendingListEntries.append(entry);
 
-        // If more then maximum_updatetime time is passed, Q_EMIT the current batch
+        // If more then maximum_updatetime time is passed, emit the current batch
         if (d->m_timeSinceLastBatch.elapsed() > maximum_updatetime) {
             _ready = true;
         }

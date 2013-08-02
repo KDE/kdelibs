@@ -248,7 +248,7 @@ void KProgressDialog::KProgressDialogPrivate::slotAutoActions(int percentage)
         }
         else
         {
-            Q_EMIT q->finished();
+            emit q->finished();
         }
     }
 }

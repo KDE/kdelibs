@@ -449,7 +449,7 @@ void KColorCells::mouseReleaseEvent(QMouseEvent *e)
 
         d->inMouse = false;
         if (cell != -1)
-            Q_EMIT colorSelected(cell , color(cell));
+            emit colorSelected(cell , color(cell));
     }
 
     QTableWidget::mouseReleaseEvent(e);
@@ -460,7 +460,7 @@ void KColorCells::mouseDoubleClickEvent(QMouseEvent * /*e*/)
     int cell = positionToCell(d->mousePos);
 
     if (cell != -1)
-        Q_EMIT colorDoubleClicked(cell , color(cell));
+        emit colorDoubleClicked(cell , color(cell));
 }
 
 
@@ -525,7 +525,7 @@ void KColorPatch::dropEvent(QDropEvent *event)
     QColor c = KColorMimeData::fromMimeData(event->mimeData());
     if (c.isValid()) {
         setColor(c);
-        Q_EMIT colorChanged(c);
+        emit colorChanged(c);
     }
 }
 
@@ -857,7 +857,7 @@ KColorTable::KColorTablePrivate::slotColorCellSelected(int index , const QColor&
 {
     if (!mPalette || (index >= mPalette->count()))
         return;
-    Q_EMIT q->colorSelected(mPalette->color(index), mPalette->name(index));
+    emit q->colorSelected(mPalette->color(index), mPalette->name(index));
 }
 
 void
@@ -865,14 +865,14 @@ KColorTable::KColorTablePrivate::slotColorCellDoubleClicked(int index , const QC
 {
     if (!mPalette || (index >= mPalette->count()))
         return;
-    Q_EMIT q->colorDoubleClicked(mPalette->color(index), mPalette->name(index));
+    emit q->colorDoubleClicked(mPalette->color(index), mPalette->name(index));
 }
 
 
 void
 KColorTable::KColorTablePrivate::slotColorTextSelected(const QString &colorText)
 {
-    Q_EMIT q->colorSelected(m_namedColorMap[ colorText ], colorText);
+    emit q->colorSelected(m_namedColorMap[ colorText ], colorText);
 }
 
 
@@ -1396,7 +1396,7 @@ void KColorDialog::KColorDialogPrivate::slotDefaultColorClicked()
     } else {
         showColor(selColor, QString());
     }
-    Q_EMIT q->colorSelected(selColor);
+    emit q->colorSelected(selColor);
 }
 
 void
@@ -1630,10 +1630,10 @@ void KColorDialog::KColorDialogPrivate::_setColor(const QColor &color, const QSt
 
     showColor(selColor, name);
 
-    Q_EMIT q->colorSelected(selColor);
+    emit q->colorSelected(selColor);
 }
 
-// show but don't set into selColor, nor Q_EMIT colorSelected
+// show but don't set into selColor, nor emit colorSelected
 void KColorDialog::KColorDialogPrivate::showColor(const QColor &color, const QString &name)
 {
     bRecursion = true;

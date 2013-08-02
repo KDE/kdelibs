@@ -335,7 +335,7 @@ KResolverManager::~KResolverManager()
   // this should never be called
 
   // kill off running threads
-  Q_FOREACH (KResolverThread* worker, workers)
+  foreach (KResolverThread* worker, workers)
     worker->terminate();
 }
 
@@ -522,7 +522,7 @@ KResolverWorkerBase* KResolverManager::findWorker(KResolverPrivate* p)
   // class and call their preprocessing functions. The first one that
   // says they can process (i.e., preprocess() returns true) will get the job.
 
-  Q_FOREACH (KResolverWorkerFactoryBase *factory, workerFactories)
+  foreach (KResolverWorkerFactoryBase *factory, workerFactories)
     {
       KResolverWorkerBase *worker = factory->create();
 

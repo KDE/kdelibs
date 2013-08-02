@@ -273,7 +273,7 @@ void KJavaProcess::slotReceivedData()
         return;
     }
 
-    Q_EMIT received( QByteArray( msg, num_len ) );
+    emit received( QByteArray( msg, num_len ) );
     delete[] msg;
 }
 
@@ -284,6 +284,6 @@ void KJavaProcess::slotExited()
      status = exitCode();
     }
     // qDebug() << "jvm exited with status " << status; 
-    Q_EMIT exited(status);
+    emit exited(status);
 }
 

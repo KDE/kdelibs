@@ -107,7 +107,7 @@ void KPasteTextActionPrivate::_k_menuAboutToShow()
         list << clipboardText;
     bool found = false;
     const QFontMetrics fm = m_popup->fontMetrics();
-    Q_FOREACH (const QString& string, list)
+    foreach (const QString& string, list)
     {
       QString text = fm.elidedText(string.simplified(), Qt::ElideMiddle, fm.maxWidth() * 20);
       text.replace('&', "&&");

@@ -111,7 +111,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
         d->delegate->setProperty("goya:creatingWidgetForIndex", QVariant());
         d->allocatedWidgets << result;
         d->usedWidgets[index] = result;
-        Q_FOREACH (QWidget *widget, result) {
+        foreach (QWidget *widget, result) {
             d->widgetInIndex[widget] = index;
             widget->setParent(d->delegate->d->itemView->viewport());
             widget->installEventFilter(d->eventListener);
@@ -120,13 +120,13 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
     }
 
     if (updateWidgets == UpdateWidgets) {
-        Q_FOREACH (QWidget *widget, result) {
+        foreach (QWidget *widget, result) {
             widget->setVisible(true);
         }
 
         d->delegate->updateItemWidgets(result, option, idx);
 
-        Q_FOREACH (QWidget *widget, result) {
+        foreach (QWidget *widget, result) {
             widget->move(widget->x() + option.rect.left(), widget->y() + option.rect.top());
         }
     }
@@ -137,7 +137,7 @@ QList<QWidget*> KWidgetItemDelegatePool::findWidgets(const QPersistentModelIndex
 QList<QWidget*> KWidgetItemDelegatePool::invalidIndexesWidgets() const
 {
     QList<QWidget*> result;
-    Q_FOREACH (QWidget *widget, d->widgetInIndex.keys()) {
+    foreach (QWidget *widget, d->widgetInIndex.keys()) {
         const QAbstractProxyModel *proxyModel = qobject_cast<const QAbstractProxyModel*>(d->delegate->d->model);
         QModelIndex index;
         if (proxyModel) {

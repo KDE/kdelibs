@@ -158,7 +158,7 @@ bool KClientSocketBase::lookup()
 	d->peerResolver.start();
 
       setState(HostLookup);
-      Q_EMIT stateChanged(HostLookup);
+      emit stateChanged(HostLookup);
 
       if (!d->localResolver.isRunning() && !d->peerResolver.isRunning())
 	{
@@ -198,12 +198,12 @@ bool KClientSocketBase::bind(const KResolverEntry& address)
     {
       resetError();
 
-      // don't set the state or Q_EMIT signals if we are in a higher state
+      // don't set the state or emit signals if we are in a higher state
       if (state() < Bound)
 	{
 	  setState(Bound);
-	  Q_EMIT stateChanged(Bound);
-	  Q_EMIT bound(address);
+	  emit stateChanged(Bound);
+	  emit bound(address);
 	}
       return true;
     }
@@ -231,11 +231,11 @@ bool KClientSocketBase::connect(const KResolverEntry& address, OpenMode mode)
       if (state() < newstate)
 	{
 	  setState(newstate);
-	  Q_EMIT stateChanged(newstate);
+	  emit stateChanged(newstate);
 	  if (error() == NoError)
 	    {
 	      KActiveSocketBase::open(mode | Unbuffered);
-	      Q_EMIT connected(address);
+	      emit connected(address);
 	    }
 	}
 
@@ -255,7 +255,7 @@ bool KClientSocketBase::disconnect()
   if (ok)
     {
       setState(Unconnected);
-      Q_EMIT stateChanged(Unconnected);
+      emit stateChanged(Unconnected);
       return true;
     }
   return false;
@@ -282,8 +282,8 @@ void KClientSocketBase::close()
   socketDevice()->close();
   KActiveSocketBase::close();
   setState(Idle);
-  Q_EMIT stateChanged(Idle);
-  Q_EMIT closed();
+  emit stateChanged(Idle);
+  emit closed();
 }
 
 bool KClientSocketBase::flush()
@@ -307,7 +307,7 @@ qint64 KClientSocketBase::waitForMore(int msecs, bool *timeout)
   if (retval == -1)
     {
       copyError();
-      Q_EMIT gotError(error());
+      emit gotError(error());
     }
   return retval;
 }
@@ -319,7 +319,7 @@ qint64 KClientSocketBase::readData(char *data, qint64 maxlen, KSocketAddress* fr
   if (retval == -1)
     {
       copyError();
-      Q_EMIT gotError(error());
+      emit gotError(error());
     }
   return retval;
 }
@@ -331,7 +331,7 @@ qint64 KClientSocketBase::peekData(char *data, qint64 maxlen, KSocketAddress* fr
   if (retval == -1)
     {
       copyError();
-      Q_EMIT gotError(error());
+      emit gotError(error());
     }
   return retval;
 }
@@ -343,10 +343,10 @@ qint64 KClientSocketBase::writeData(const char *data, qint64 len, const KSocketA
   if (retval == -1)
     {
       copyError();
-      Q_EMIT gotError(error());
+      emit gotError(error());
     }
   else
-    Q_EMIT bytesWritten(retval);
+    emit bytesWritten(retval);
   return retval;
 }
 
@@ -393,13 +393,13 @@ void KClientSocketBase::enableWrite(bool enable)
 void KClientSocketBase::slotReadActivity()
 {
   if (d->enableRead)
-    Q_EMIT readyRead();
+    emit readyRead();
 }
 
 void KClientSocketBase::slotWriteActivity()
 {
   if (d->enableWrite)
-    Q_EMIT readyWrite();
+    emit readyWrite();
 }
 
 void KClientSocketBase::lookupFinishedSlot()
@@ -413,16 +413,16 @@ void KClientSocketBase::lookupFinishedSlot()
     {
       setState(Idle);		// backtrack
       setError(LookupFailure);
-      Q_EMIT stateChanged(Idle);
-      Q_EMIT gotError(LookupFailure);
+      emit stateChanged(Idle);
+      emit gotError(LookupFailure);
       return;
     }
 
   d->localResults = d->localResolver.results();
   d->peerResults = d->peerResolver.results();
   setState(HostFound);
-  Q_EMIT stateChanged(HostFound);
-  Q_EMIT hostFound();
+  emit stateChanged(HostFound);
+  emit hostFound();
 }
 
 void KClientSocketBase::stateChanging(SocketState newState)

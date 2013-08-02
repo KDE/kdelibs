@@ -29,8 +29,8 @@ void
 MouseWidget::mousePressEvent( QMouseEvent *e )
 {
   mouseButtonDown = true;
-  Q_EMIT newXPos(e->x());
-  Q_EMIT newYPos(e->y());
+  emit newXPos(e->x());
+  emit newYPos(e->y());
 }
 
 void
@@ -41,16 +41,16 @@ void
 MouseWidget::mouseMoveEvent( QMouseEvent *e )
 {
   if (mouseButtonDown) {
-    Q_EMIT newXPos(e->x());
-    Q_EMIT newYPos(e->y());
+    emit newXPos(e->x());
+    emit newYPos(e->y());
   }
 }
 
 void
 MouseWidget::resizeEvent( QResizeEvent *r )
 {
-  Q_EMIT newWidth(r->size().width());
-  Q_EMIT newHeight(r->size().height());
+  emit newWidth(r->size().width());
+  emit newHeight(r->size().height());
 }
 
 

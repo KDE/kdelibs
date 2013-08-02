@@ -507,7 +507,7 @@ void KDialog::resizeLayout( QWidget *widget, int margin, int spacing ) //static
 
   if ( widget->children().count() > 0 ) {
     const QList<QObject*> list = widget->children();
-    Q_FOREACH ( QObject *object, list ) {
+    foreach ( QObject *object, list ) {
       if ( object->isWidgetType() )
         resizeLayout( (QWidget*)object, margin, spacing );
     }
@@ -839,7 +839,7 @@ void KDialog::setDetailsWidgetVisible( bool visible )
   d->mSettingDetails = true;
   d->mDetailsVisible = visible;
   if ( d->mDetailsVisible ) {
-    Q_EMIT aboutToShowDetails();
+    emit aboutToShowDetails();
     setButtonText( Details, d->mDetailsButtonText + " <<" );
     if ( d->mDetailsWidget ) {
       if ( layout() )
@@ -881,54 +881,54 @@ void KDialog::delayedDestruct()
 void KDialog::slotButtonClicked( int button )
 {
     Q_D(KDialog);
-  Q_EMIT buttonClicked( static_cast<KDialog::ButtonCode>(button) );
+  emit buttonClicked( static_cast<KDialog::ButtonCode>(button) );
 
   switch( button ) {
     case Ok:
-      Q_EMIT okClicked();
+      emit okClicked();
       accept();
       break;
     case Apply:
-        Q_EMIT applyClicked();
+        emit applyClicked();
       break;
     case Try:
-      Q_EMIT tryClicked();
+      emit tryClicked();
       break;
     case User3:
-      Q_EMIT user3Clicked();
+      emit user3Clicked();
       break;
     case User2:
-        Q_EMIT user2Clicked();
+        emit user2Clicked();
       break;
     case User1:
-        Q_EMIT user1Clicked();
+        emit user1Clicked();
         break;
     case Yes:
-      Q_EMIT yesClicked();
+      emit yesClicked();
       done( Yes );
       break;
     case No:
-        Q_EMIT noClicked();
+        emit noClicked();
       done( No );
       break;
     case Cancel:
-      Q_EMIT cancelClicked();
+      emit cancelClicked();
       reject();
       break;
     case Close:
-      Q_EMIT closeClicked();
+      emit closeClicked();
       done(Close); // KDE5: call reject() instead; more QDialog-like.
       break;
     case Help:
-      Q_EMIT helpClicked();
+      emit helpClicked();
       if ( !d->mAnchor.isEmpty() || !d->mHelpApp.isEmpty() )
         KHelpClient::invokeHelp( d->mAnchor, d->mHelpApp );
       break;
     case Default:
-      Q_EMIT defaultClicked();
+      emit defaultClicked();
       break;
     case Reset:
-      Q_EMIT resetClicked();
+      emit resetClicked();
       break;
     case Details:
       setDetailsWidgetVisible( !d->mDetailsVisible );
@@ -996,10 +996,10 @@ void KDialog::updateGeometry()
 
 void KDialog::hideEvent( QHideEvent *event )
 {
-  Q_EMIT hidden();
+  emit hidden();
 
   if ( !event->spontaneous() )
-    Q_EMIT finished();
+    emit finished();
 }
 
 void KDialog::closeEvent( QCloseEvent *event )

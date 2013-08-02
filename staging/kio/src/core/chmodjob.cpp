@@ -209,7 +209,7 @@ void ChmodJobPrivate::_k_chmodNextFile()
             if ( chown( QFile::encodeName(path), m_newOwner, m_newGroup ) != 0 )
             {
                 if (!m_uiDelegateExtension) {
-                    Q_EMIT q->warning(q, i18n("Could not modify the ownership of file %1", path));
+                    emit q->warning(q, i18n("Could not modify the ownership of file %1", path));
                 } else if (!m_bAutoSkipFiles) {
                     const QString errMsg = i18n( "<qt>Could not modify the ownership of file <b>%1</b>. You have insufficient access to the file to perform the change.</qt>", path);
                     const SkipDialog_Result skipResult = m_uiDelegateExtension->askSkip(q, m_infos.count() > 1, errMsg);

@@ -143,7 +143,7 @@ public:
             canvasDrawRegion -= frameInfo[frame].geom;
             QVector<QRect> srcRects = canvasDrawRegion.rects();
     
-            Q_FOREACH (const QRect& r, srcRects)
+            foreach (const QRect& r, srcRects)
                 p->drawPixmap(QPoint(dx + r.x() - sx, dy + r.y() - sy), canvas, r);
         }
         else

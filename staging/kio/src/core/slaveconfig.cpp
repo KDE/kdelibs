@@ -200,7 +200,7 @@ MetaData SlaveConfig::configData(const QString &protocol, const QString &host)
    if (!scp->host.contains(host))
    {
       d->readConfigProtocolHost(protocol, scp, host);
-      Q_EMIT configNeeded(protocol, host);
+      emit configNeeded(protocol, host);
    }
    MetaData hostConfig = scp->host.value(host);
    config += hostConfig;

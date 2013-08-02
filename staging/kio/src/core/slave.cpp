@@ -158,9 +158,9 @@ void Slave::timeout()
 
    ref();
    // Tell the job about the problem.
-   Q_EMIT error(ERR_SLAVE_DIED, arg);
+   emit error(ERR_SLAVE_DIED, arg);
    // Tell the scheduler about the problem.
-   Q_EMIT slaveDied(this);
+   emit slaveDied(this);
    // After the above signal we're dead!!
    deref();
 }
@@ -282,7 +282,7 @@ void Slave::setJob(KIO::SimpleJob *job)
 {
     Q_D(Slave);
     if (!d->sslMetaData.isEmpty()) {
-        Q_EMIT metaData(d->sslMetaData);
+        emit metaData(d->sslMetaData);
     }
     d->m_job = job;
 }
@@ -310,7 +310,7 @@ void Slave::hold(const QUrl &url)
         d->connection->send( CMD_SLAVE_HOLD, data );
         d->connection->close();
         d->dead = true;
-        Q_EMIT slaveDied(this);
+        emit slaveDied(this);
     }
     deref();
     // Call KLauncher::waitForSlave(pid);
@@ -358,9 +358,9 @@ void Slave::gotInput()
             arg += "://"+d->m_host;
         //qDebug() << "slave died pid = " << d->m_pid;
         // Tell the job about the problem.
-        Q_EMIT error(ERR_SLAVE_DIED, arg);
+        emit error(ERR_SLAVE_DIED, arg);
         // Tell the scheduler about the problem.
-        Q_EMIT slaveDied(this);
+        emit slaveDied(this);
     }
     deref();
     // Here we might be dead!!

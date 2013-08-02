@@ -122,7 +122,7 @@ QStringList xdgIconThemePaths()
     if (xdgDirString.isEmpty())
         xdgDirString = QLatin1String("/usr/local/share/:/usr/share/");
 
-    Q_FOREACH (const QString &xdgDir, xdgDirString.split(QLatin1Char(':'))) {
+    foreach (const QString &xdgDir, xdgDirString.split(QLatin1Char(':'))) {
         const QFileInfo xdgIconsDir(xdgDir + QStringLiteral("/icons"));
         if (xdgIconsDir.isDir())
             paths << xdgIconsDir.absoluteFilePath();

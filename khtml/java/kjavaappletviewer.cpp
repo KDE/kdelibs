@@ -441,7 +441,7 @@ bool KJavaAppletViewer::openUrl (const QUrl & url) {
     else
         QTimer::singleShot (10, this, SLOT (delayedCreateTimeOut()));
     if (!applet->failed ())
-        Q_EMIT started (0L);
+        emit started (0L);
     return url.isValid ();
 }
 
@@ -475,7 +475,7 @@ void KJavaAppletViewer::appletLoaded () {
     if (!m_view) return;
     KJavaApplet* const applet = m_view->appletWidget ()->applet ();
     if (applet->isAlive() || applet->failed())
-        Q_EMIT completed();
+        emit completed();
 }
 
 void KJavaAppletViewer::infoMessage (const QString & msg) {
@@ -495,11 +495,11 @@ KJavaAppletViewerBrowserExtension::KJavaAppletViewerBrowserExtension (KJavaApple
 }
 
 void KJavaAppletViewerBrowserExtension::urlChanged (const QString & url) {
-    Q_EMIT setLocationBarUrl (url);
+    emit setLocationBarUrl (url);
 }
 
 void KJavaAppletViewerBrowserExtension::setLoadingProgress (int percentage) {
-    Q_EMIT loadingProgress (percentage);
+    emit loadingProgress (percentage);
 }
 
 void KJavaAppletViewerBrowserExtension::setBrowserArguments (const KParts::BrowserArguments & /*args*/) {
@@ -547,7 +547,7 @@ void KJavaAppletViewerBrowserExtension::showDocument (const QString & doc,
     const QUrl url (doc);
     KParts::BrowserArguments browserArgs;
     browserArgs.frameName = frame;
-    Q_EMIT openUrlRequest(url, KParts::OpenUrlArguments(), browserArgs);
+    emit openUrlRequest(url, KParts::OpenUrlArguments(), browserArgs);
 }
 
 //-----------------------------------------------------------------------------
@@ -663,7 +663,7 @@ void KJavaAppletViewerLiveConnectExtension::jsEvent (const QStringList & args) {
         const QStringList::ConstIterator prev = it++;
 	arglist.push_back(KParts::LiveConnectExtension::ArgList::value_type((KParts::LiveConnectExtension::Type) (*prev).toInt(), (*it)));
     }
-    Q_EMIT partEvent (objid, event, arglist);
+    emit partEvent (objid, event, arglist);
 }
 
 int KJavaAppletViewerLiveConnectExtension::m_jssessions = 0;

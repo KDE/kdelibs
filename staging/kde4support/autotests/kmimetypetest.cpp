@@ -622,7 +622,7 @@ void KMimeTypeTest::testMimeTypeInheritancePerformance()
     QTime dt; dt.start();
     QBENCHMARK {
         QString match;
-        Q_FOREACH (const QString& mt, mimeTypes) {
+        foreach (const QString& mt, mimeTypes) {
             if (mime->is(mt)) {
                 match = mt;
                 // of course there would normally be a "break" here, but we're testing worse-case
@@ -881,7 +881,7 @@ void KMimeTypeTest::testThreads()
     futures << QtConcurrent::run(this, &KMimeTypeTest::testPreferredService);
     futures << QtConcurrent::run(this, &KMimeTypeTest::testFromThread);
     kDebug() << "Joining all threads";
-    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=Q_FOREACH
+    Q_FOREACH(QFuture<void> f, futures) // krazy:exclude=foreach
         f.waitForFinished();
 }
 

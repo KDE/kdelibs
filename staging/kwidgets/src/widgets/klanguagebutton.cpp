@@ -200,14 +200,14 @@ void KLanguageButton::slotTriggered( QAction *a )
   d->setCurrentItem( a );
 
   // Forward event from popup menu as if it was emitted from this widget:
-  Q_EMIT activated( d->current );
+  emit activated( d->current );
 }
 
 void KLanguageButton::slotHovered( QAction *a )
 {
   //qDebug() << "slotHovered" << index;
 
-  Q_EMIT highlighted(a->data().toString());
+  emit highlighted(a->data().toString());
 }
 
 int KLanguageButton::count() const

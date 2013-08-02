@@ -166,7 +166,7 @@ void DataSlave::setAllMetaData(const MetaData &md) {
 }
 
 void DataSlave::sendMetaData() {
-  Q_EMIT metaData(meta_data);
+  emit metaData(meta_data);
 }
 
 DISPATCH_IMPL1(mimeType, const QString &, s)

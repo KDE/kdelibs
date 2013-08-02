@@ -371,7 +371,7 @@ void KApplicationPrivate::iceIOErrorHandler( _IceConn *conn )
 {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     http://thread.gmane.org/gmane.comp.kde.devel.frameworks/1122
-    Q_EMIT kapp->aboutToQuit();
+    emit kapp->aboutToQuit();
 #endif
 
     if ( oldIceIOErrorHandler != NULL )
@@ -447,7 +447,7 @@ void KApplicationPrivate::init(bool GUIenabled)
       if (parts.isEmpty())
           reversedDomain = QLatin1String("local.");
       else
-          Q_FOREACH (const QString& s, parts)
+          foreach (const QString& s, parts)
           {
               reversedDomain.prepend(QLatin1Char('.'));
               reversedDomain.prepend(s);
@@ -567,7 +567,7 @@ void KApplication::commitData( QSessionManager& sm )
     d->session_save = true;
     bool canceled = false;
 
-    Q_FOREACH (KSessionManager *it, KSessionManager::sessionClients()) {
+    foreach (KSessionManager *it, KSessionManager::sessionClients()) {
         if ( ( canceled = !it->commitData( sm ) ) )
             break;
     }
@@ -702,9 +702,9 @@ void KApplication::saveState( QSessionManager& sm )
     checkRestartVersion( sm );
 
     // finally: do session management
-    Q_EMIT saveYourself(); // for compatibility
+    emit saveYourself(); // for compatibility
     bool canceled = false;
-    Q_FOREACH(KSessionManager* it, KSessionManager::sessionClients()) {
+    foreach(KSessionManager* it, KSessionManager::sessionClients()) {
       if(canceled) break;
       canceled = !it->saveState( sm );
     }
@@ -832,7 +832,7 @@ public:
 bool KApplication::x11EventFilter( XEvent *_event )
 {
     if (x11Filter) {
-        Q_FOREACH (const QPointer< QWidget >& wp, *x11Filter) {
+        foreach (const QPointer< QWidget >& wp, *x11Filter) {
             if( QWidget* w = wp.data())
                 if ( static_cast<KAppX11HackWidget*>( w )->publicx11Event(_event))
                     return true;

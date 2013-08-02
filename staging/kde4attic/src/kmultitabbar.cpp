@@ -164,7 +164,7 @@ void KMultiTabBarButton::setText(const QString &text)
 void KMultiTabBarButton::slotClicked()
 {
 	updateGeometry();
-	Q_EMIT clicked(m_id);
+	emit clicked(m_id);
 }
 
 int KMultiTabBarButton::id() const

@@ -126,7 +126,7 @@ bool KDateWidget::setDate( const QDate &date )
         d->m_month->blockSignals( monthBlocked );
         d->m_year->blockSignals( yearBlocked );
 
-        Q_EMIT changed( d->m_refDate );
+        emit changed( d->m_refDate );
         return true;
     }
     return false;

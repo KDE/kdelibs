@@ -149,7 +149,7 @@ void KColorButton::setColor( const QColor &c )
   if ( d->col != c ) {
     d->col = c;
     update();
-    Q_EMIT changed( d->col );
+    emit changed( d->col );
   }
 }
 

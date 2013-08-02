@@ -82,13 +82,13 @@ void KTextBrowser::setSource( const QUrl& name )
     if ( !d->notifyClick ) {
         QDesktopServices::openUrl(name);
     } else {
-      Q_EMIT mailClick( QString(), strName );
+      emit mailClick( QString(), strName );
     }
   } else {
     if ( !d->notifyClick ) {
         QDesktopServices::openUrl(name);
     } else {
-      Q_EMIT urlClick( strName );
+      emit urlClick( strName );
     }
   }
 }

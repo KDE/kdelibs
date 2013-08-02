@@ -604,7 +604,7 @@ quint32 KStandardDirs::calcResourceHash( const char *type,
     }
     QStringList candidates = d->resourceDirs(type, filename);
 
-    Q_FOREACH ( const QString& candidate, candidates )
+    foreach ( const QString& candidate, candidates )
     {
         hash = updateHash(candidate + filename, hash);
         if (  !( options & Recursive ) && hash ) {
@@ -982,7 +982,7 @@ KStandardDirs::findAllResources( const char *type,
     QRegExp regExp(filterFile, Qt::CaseSensitive, QRegExp::Wildcard);
 
     QStringList list;
-    Q_FOREACH ( const QString& candidate, candidates )
+    foreach ( const QString& candidate, candidates )
     {
         lookupPrefix(candidate, filterPath, QString(), regExp, list,
                      relList, options & Recursive, options & NoDuplicates);
@@ -1213,7 +1213,7 @@ QStringList KStandardDirs::KStandardDirsPrivate::resourceDirs(const char* type, 
         // make sure we find the path where it's installed
         if (!installdir.isEmpty()) {
             bool ok = true;
-            Q_FOREACH (const QString &s, candidates) {
+            foreach (const QString &s, candidates) {
                 if (installdir.startsWith(s)) {
                     ok = false;
                     break;
@@ -1375,7 +1375,7 @@ QString KStandardDirs::findExe( const QString& appname,
     QStringList executable_extensions = executableExtensions();
     if (!executable_extensions.contains(appname.section(QLatin1Char('.'), -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
         QString found_exe;
-        Q_FOREACH (const QString& extension, executable_extensions) {
+        foreach (const QString& extension, executable_extensions) {
             found_exe = findExe(appname + extension, pstr, options);
             if (!found_exe.isEmpty()) {
                 return found_exe;
@@ -1442,7 +1442,7 @@ int KStandardDirs::findAllExe( QStringList& list, const QString& appname,
     QStringList executable_extensions = executableExtensions();
     if (!executable_extensions.contains(appname.section(QLatin1Char('.'), -1, -1, QString::SectionIncludeLeadingSep), Qt::CaseInsensitive)) {
         int total = 0;
-        Q_FOREACH (const QString& extension, executable_extensions) {
+        foreach (const QString& extension, executable_extensions) {
             total += findAllExe (list, appname + extension, pstr, options);
         }
         return total;
@@ -1712,7 +1712,7 @@ void KStandardDirs::addResourcesFrom_krcdirs()
     QSettings iniFile(localFile, QSettings::IniFormat);
     iniFile.beginGroup(QString::fromLatin1("KStandardDirs"));
     const QStringList resources = iniFile.allKeys();
-    Q_FOREACH(const QString &key, resources)
+    foreach(const QString &key, resources)
     {
         QDir path(iniFile.value(key).toString());
         if (!path.exists())

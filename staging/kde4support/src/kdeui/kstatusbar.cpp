@@ -52,14 +52,14 @@ bool KStatusBar::eventFilter(QObject* object, QEvent* event)
     if ( event->type() == QEvent::MouseButtonPress ) {
         const int id = d->id(object);
         if (id > -1) {
-            Q_EMIT pressed( d->id( object ) );
+            emit pressed( d->id( object ) );
             return true;
         }
     }
     else if ( event->type() == QEvent::MouseButtonRelease ) {
         const int id = d->id(object);
         if (id > -1) {
-            Q_EMIT released( d->id( object ) );
+            emit released( d->id( object ) );
             return true;
         }
     }

@@ -917,7 +917,7 @@ int KuitSemanticsPrivate::attSetKey (const QSet<Kuit::AttVar> &aset)
     qSort(alist);
     int key = 0;
     int tenp = 1;
-    Q_FOREACH (const Kuit::AttVar &att, alist) {
+    foreach (const Kuit::AttVar &att, alist) {
         key += att * tenp;
         tenp *= 10;
     }
@@ -1207,7 +1207,7 @@ QString KuitSemanticsPrivate::semanticToVisualText (const QString &text_,
             // be rich. Convert them back into entities.
             QString text = xml.text().toString();
             QString ntext;
-            Q_FOREACH (const QChar &c, text) {
+            foreach (const QChar &c, text) {
                 if (s->xmlEntitiesInverse.contains(c)) {
                     const QString entname = s->xmlEntitiesInverse[c];
                     ntext += QLatin1Char('&') + entname + QLatin1Char(';');
@@ -1246,7 +1246,7 @@ KuitSemanticsPrivate::parseOpenEl (const QXmlStreamReader &xml,
 
     // Collect attribute names and values, and format attribute string.
     QStringList attnams, attvals;
-    Q_FOREACH (const QXmlStreamAttribute &xatt, xml.attributes()) {
+    foreach (const QXmlStreamAttribute &xatt, xml.attributes()) {
         attnams += xatt.name().toString().toLower();
         attvals += xatt.value().toString();
         QChar qc = attvals.last().indexOf(QLatin1Char('\'')) < 0 ? QLatin1Char('\'') : QLatin1Char('"');

@@ -300,14 +300,14 @@ void AccessManagerReply::readHttpResponseHeaders(KIO::Job *job)
         if (isLocalRequest(url())) {
             setHeader(QNetworkRequest::ContentLengthHeader, job->totalAmount(KJob::Bytes));
             setAttribute(QNetworkRequest::HttpStatusCodeAttribute, "200");
-            Q_EMIT metaDataChanged();
+            emit metaDataChanged();
         }
         return;
     }
 
     setHeaderFromMetaData(metaData);
     m_metaDataRead = true;
-    Q_EMIT metaDataChanged();
+    emit metaDataChanged();
 }
 
 int AccessManagerReply::jobError(KJob* kJob)
@@ -392,7 +392,7 @@ void AccessManagerReply::slotData(KIO::Job *kioJob, const QByteArray &data)
     Q_UNUSED (kioJob);
     m_data += data;
     if (!data.isEmpty())
-        Q_EMIT readyRead();
+        emit readyRead();
 }
 
 void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
@@ -401,7 +401,7 @@ void AccessManagerReply::slotMimeType(KIO::Job *kioJob, const QString &mimeType)
     setHeader(QNetworkRequest::ContentTypeHeader, mimeType.toUtf8());
     readHttpResponseHeaders(kioJob);
     if (m_emitReadyReadOnMetaDataChange) {
-        Q_EMIT readyRead();
+        emit readyRead();
     }
 }
 
@@ -413,7 +413,7 @@ void AccessManagerReply::slotResult(KJob *kJob)
     if (!redirectUrl.isValid()) {
         setAttribute(static_cast<QNetworkRequest::Attribute>(KIO::AccessManager::KioError), errcode);
         if (errcode && errcode != KIO::ERR_NO_CONTENT)
-            Q_EMIT error(error());
+            emit error(error());
     }
 
     // Make sure HTTP response headers are always set.
@@ -427,7 +427,7 @@ void AccessManagerReply::slotResult(KJob *kJob)
 void AccessManagerReply::slotStatResult(KJob* kJob)
 {
     if (jobError(kJob)) {
-        Q_EMIT error (error());
+        emit error (error());
         emitFinished(true);
         return;
     }
@@ -453,7 +453,7 @@ void AccessManagerReply::slotRedirection(KIO::Job* job, const QUrl& u)
     if (!KAuthorized::authorizeUrlAction(QLatin1String("redirect"), url(), u)) {
         qWarning() << "Redirection from" << url() << "to" << u << "REJECTED by policy!";
         setError(QNetworkReply::ContentAccessDenied, u.toString());
-        Q_EMIT error(error());
+        emit error(error());
         return;
     }
     setAttribute(QNetworkRequest::RedirectionTargetAttribute, QUrl(u));
@@ -465,10 +465,10 @@ void AccessManagerReply::slotPercent(KJob *job, unsigned long percent)
     qulonglong bytesProcessed = bytesTotal * (percent / 100);
     if (operation() == QNetworkAccessManager::PutOperation ||
         operation() == QNetworkAccessManager::PostOperation) {
-        Q_EMIT uploadProgress(bytesProcessed, bytesTotal);
+        emit uploadProgress(bytesProcessed, bytesTotal);
         return;
     }
-    Q_EMIT downloadProgress(bytesProcessed, bytesTotal);
+    emit downloadProgress(bytesProcessed, bytesTotal);
 }
 
 void AccessManagerReply::emitFinished (bool state, Qt::ConnectionType type)
@@ -478,7 +478,7 @@ void AccessManagerReply::emitFinished (bool state, Qt::ConnectionType type)
 #else
     Q_UNUSED(state);
 #endif
-    Q_EMIT QMetaObject::invokeMethod(this, "finished", type);
+    emit QMetaObject::invokeMethod(this, "finished", type);
 }
 
 }

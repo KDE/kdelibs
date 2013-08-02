@@ -74,7 +74,7 @@ void KAbstractWidgetJobTracker::slotStop(KJob *job)
 {
     if (job) {
         job->kill(KJob::EmitResult); // notify that the job has been killed
-        Q_EMIT stopped(job);
+        emit stopped(job);
     }
 }
 
@@ -82,7 +82,7 @@ void KAbstractWidgetJobTracker::slotSuspend(KJob *job)
 {
     if (job) {
         job->suspend();
-        Q_EMIT suspend(job);
+        emit suspend(job);
     }
 }
 
@@ -90,7 +90,7 @@ void KAbstractWidgetJobTracker::slotResume(KJob *job)
 {
     if (job) {
         job->resume();
-        Q_EMIT resume(job);
+        emit resume(job);
     }
 }
 

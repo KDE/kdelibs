@@ -504,7 +504,7 @@ void XMLTokenizer::end()
     m_source.setFinished( true );
     //if ( m_noErrors )
     //m_noErrors = m_reader.parseContinue();
-    Q_EMIT finishedParsing();
+    emit finishedParsing();
 }
 
 void XMLTokenizer::finish()

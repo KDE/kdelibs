@@ -493,7 +493,7 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
   }
 
   // all shortcuts should only be active, when this part has focus
-  Q_FOREACH ( QAction *action, actionCollection ()->actions () ) {
+  foreach ( QAction *action, actionCollection ()->actions () ) {
       action->setShortcutContext ( Qt::WidgetWithChildrenShortcut );
   }
   actionCollection()->associateWidget(view);
@@ -626,7 +626,7 @@ bool KHTMLPart::restoreURL( const QUrl &url )
 
   KHTMLPageCache::self()->fetchData( d->m_cacheId, this, SLOT(slotRestoreData(QByteArray)));
 
-  Q_EMIT started( 0L );
+  emit started( 0L );
 
   return true;
 }
@@ -660,7 +660,7 @@ void KHTMLPartPrivate::executeAnchorJump( const QUrl& url, bool lockHistory )
 {
     // Note: we want to emit openUrlNotify first thing, to make the history capture the old state.
     if (!lockHistory)
-        Q_EMIT m_extension->openUrlNotify();
+        emit m_extension->openUrlNotify();
 
     const QString &oldRef = QUrl(q->url()).fragment();
     const QString &newRef = QUrl(url).fragment();
@@ -679,7 +679,7 @@ void KHTMLPartPrivate::executeAnchorJump( const QUrl& url, bool lockHistory )
         q->gotoAnchor( url.fragment() );
 
     q->setUrl(url);
-    Q_EMIT m_extension->setLocationBarUrl( url.toDisplayString() );
+    emit m_extension->setLocationBarUrl( url.toDisplayString() );
 }
 
 bool KHTMLPart::openUrl(const QUrl &_url)
@@ -723,7 +723,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
       const QString errorText = match.captured(2);
       d->m_workingURL = mainURL;
       //qDebug() << "Emitting fixed URL " << d->m_workingURL;
-      Q_EMIT d->m_extension->setLocationBarUrl( d->m_workingURL.toDisplayString() );
+      emit d->m_extension->setLocationBarUrl( d->m_workingURL.toDisplayString() );
       htmlError( error, errorText, d->m_workingURL );
       return true;
     }
@@ -791,7 +791,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
     {
         // qDebug() << "jumping to anchor. m_url = " << url;
         setUrl(url);
-        Q_EMIT started( 0 );
+        emit started( 0 );
 
         if ( !gotoAnchor( url.fragment(QUrl::FullyEncoded)) )
           gotoAnchor( url.fragment() );
@@ -801,7 +801,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
             d->m_doc->setParsing(false);
 
         // qDebug() << "completed...";
-        Q_EMIT completed();
+        emit completed();
         return true;
     }
   }
@@ -853,7 +853,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
   if(url.scheme().startsWith( "http" ) && !url.host().isEmpty() &&
      url.path().isEmpty()) {
     d->m_workingURL.setPath("/");
-    Q_EMIT d->m_extension->setLocationBarUrl( d->m_workingURL.toDisplayString() );
+    emit d->m_extension->setLocationBarUrl( d->m_workingURL.toDisplayString() );
   }
   setUrl(d->m_workingURL);
 
@@ -936,7 +936,7 @@ bool KHTMLPart::openUrl(const QUrl &_url)
              this, SLOT(slotUserSheetStatDone(KJob*)) );
   }
   startingJob( d->m_job );
-  Q_EMIT started( 0L );
+  emit started( 0L );
 
   return true;
 }
@@ -979,7 +979,7 @@ bool KHTMLPart::closeUrl()
   {
     // Aborted before starting to render
     // qDebug() << "Aborted before starting to render, reverting location bar to " << url();
-    Q_EMIT d->m_extension->setLocationBarUrl( url().toDisplayString() );
+    emit d->m_extension->setLocationBarUrl( url().toDisplayString() );
   }
 
   d->m_workingURL = QUrl();
@@ -1014,7 +1014,7 @@ bool KHTMLPart::closeUrl()
     d->m_redirectionTimer.stop();
 
   // null node activated.
-  Q_EMIT nodeActivated(Node());
+  emit nodeActivated(Node());
 
   // make sure before clear() runs, we pop out of a dialog's message loop
   if ( d->m_view )
@@ -1274,7 +1274,7 @@ void KHTMLPart::disableJSErrorExtension() {
   // right now.  It makes me wonder if there should be a more clean way to
   // contact all running "KHTML" instance as opposed to Konqueror instances too.
   d->m_settings->setJSErrorsEnabled(false);
-  Q_EMIT configurationChanged();
+  emit configurationChanged();
 }
 
 void KHTMLPart::jsErrorDialogContextMenu() {
@@ -1679,7 +1679,7 @@ void KHTMLPart::slotInfoMessage(KJob* kio_job, const QString& msg)
 
 void KHTMLPart::setPageSecurity( PageSecurity sec )
 {
-  Q_EMIT d->m_extension->setPageSecurity( sec );
+  emit d->m_extension->setPageSecurity( sec );
 }
 
 void KHTMLPart::slotData( KIO::Job* kio_job, const QByteArray &data )
@@ -1806,7 +1806,7 @@ void KHTMLPart::slotRestoreData(const QByteArray &data )
       //qDebug() << "<<end of data>>";
      // End of data.
     if (d->m_doc && d->m_doc->parsing())
-        end(); //will Q_EMIT completed()
+        end(); //will emit completed()
   }
 }
 
@@ -1918,12 +1918,12 @@ void KHTMLPart::htmlError( int errorCode, const QString& text, const QUrl& reqUr
   d->m_bJScriptOverride = bJSOO;
 
   // make the working url the current url, so that reload works and
-  // Q_EMIT the progress signals to advance one step in the history
+  // emit the progress signals to advance one step in the history
   // (so that 'back' works)
   setUrl(reqUrl); // same as d->m_workingURL
   d->m_workingURL = QUrl();
-  Q_EMIT started( 0 );
-  Q_EMIT completed();
+  emit started( 0 );
+  emit completed();
 }
 
 void KHTMLPart::slotFinished( KJob * job )
@@ -1942,12 +1942,12 @@ void KHTMLPart::slotFinished( KJob * job )
     // a directory...
     if (job->error() == KIO::ERR_IS_DIRECTORY)
     {
-      Q_EMIT canceled( job->errorString() );
-      Q_EMIT d->m_extension->openUrlRequest( d->m_workingURL );
+      emit canceled( job->errorString() );
+      emit d->m_extension->openUrlRequest( d->m_workingURL );
     }
     else
     {
-      Q_EMIT canceled( job->errorString() );
+      emit canceled( job->errorString() );
       // TODO: what else ?
       checkCompleted();
       showError( job );
@@ -1978,7 +1978,7 @@ void KHTMLPart::slotFinished( KJob * job )
   d->m_workingURL = QUrl();
 
   if ( d->m_doc && d->m_doc->parsing())
-    end(); //will Q_EMIT completed()
+    end(); //will emit completed()
 }
 
 MimeType KHTMLPartPrivate::classifyMimeType(const QString& mimeStr)
@@ -2023,7 +2023,7 @@ void KHTMLPart::begin( const QUrl &url, int xOffset, int yOffset )
     removeJSErrorExtension();
     setSuppressedPopupIndicator( false );
     d->m_openableSuppressedPopups = 0;
-    Q_FOREACH ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
+    foreach ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
       if (part) {
         KJS::Window *w = KJS::Window::retrieveWindow( part );
         if (w)
@@ -2092,7 +2092,7 @@ void KHTMLPart::begin( const QUrl &url, int xOffset, int yOffset )
     d->m_doc->attach( );
   d->m_doc->setBaseURL( QUrl() );
   d->m_doc->docLoader()->setShowAnimations( KHTMLGlobal::defaultHTMLSettings()->showAnimations() );
-  Q_EMIT docCreated();
+  emit docCreated();
 
   d->m_paUseStylesheet->setItems(QStringList());
   d->m_paUseStylesheet->setEnabled( false );
@@ -2105,7 +2105,7 @@ void KHTMLPart::begin( const QUrl &url, int xOffset, int yOffset )
   d->m_doc->setRestoreState(d->m_extension->browserArguments().docState);
   connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
 
-  Q_EMIT d->m_extension->enableAction( "print", true );
+  emit d->m_extension->enableAction( "print", true );
 
   d->m_doc->setParsing(true);
 }
@@ -2244,7 +2244,7 @@ void KHTMLPart::resetFromScript()
     connect(d->m_doc,SIGNAL(finishedParsing()),this,SLOT(slotFinishedParsing()));
     d->m_doc->setParsing(true);
 
-    Q_EMIT started( 0L );
+    emit started( 0L );
 }
 
 void KHTMLPart::slotFinishedParsing()
@@ -2322,12 +2322,12 @@ void KHTMLPart::slotProgressUpdate()
 
   if (d->m_statusMessagesEnabled) {
     if( d->m_bComplete )
-      Q_EMIT d->m_extension->infoMessage( i18n( "Page loaded." ));
+      emit d->m_extension->infoMessage( i18n( "Page loaded." ));
     else if ( d->m_loadedObjects < d->m_totalObjectCount && percent >= 75 )
-      Q_EMIT d->m_extension->infoMessage( i18np( "%1 Image of %2 loaded.", "%1 Images of %2 loaded.", d->m_loadedObjects, d->m_totalObjectCount) );
+      emit d->m_extension->infoMessage( i18np( "%1 Image of %2 loaded.", "%1 Images of %2 loaded.", d->m_loadedObjects, d->m_totalObjectCount) );
   }
 
-  Q_EMIT d->m_extension->loadingProgress( percent );
+  emit d->m_extension->loadingProgress( percent );
 }
 
 void KHTMLPart::slotJobSpeed( KJob* /*job*/, unsigned long speed )
@@ -2572,7 +2572,7 @@ void KHTMLPartPrivate::executeJavascriptURL(const QString &u)
       q->write( res.toString() );
       q->end();
     }
-    Q_EMIT q->completed();
+    emit q->completed();
 }
 
 bool KHTMLPartPrivate::isJavaScriptURL(const QString& url)
@@ -2640,7 +2640,7 @@ void KHTMLPart::slotRedirect()
   if (!KAuthorized::authorizeUrlAction("redirect", cUrl, url))
   {
     qWarning() << "KHTMLPart::scheduleRedirection: Redirection from " << cUrl << " to " << url << " REJECTED!";
-    Q_EMIT completed();
+    emit completed();
     return;
   }
 
@@ -2662,7 +2662,7 @@ void KHTMLPart::slotRedirect()
 
   if ( !urlSelected( u, 0, 0, "_self", args, browserArgs ) ) {
     // urlSelected didn't open a url, so emit completed ourselves
-    Q_EMIT completed();
+    emit completed();
   }
 }
 
@@ -2670,7 +2670,7 @@ void KHTMLPart::slotRedirection(KIO::Job*, const QUrl& url)
 {
   // the slave told us that we got redirected
   //qDebug() << "redirection by KIO to" << url;
-  Q_EMIT d->m_extension->setLocationBarUrl( url.toDisplayString() );
+  emit d->m_extension->setLocationBarUrl( url.toDisplayString() );
   d->m_workingURL = url;
 }
 
@@ -3474,7 +3474,7 @@ void KHTMLPart::timerEvent(QTimerEvent *e)
           d->m_DNSPrefetchTimer = -1;
       }
   } else if (e->timerId() == d->m_DNSTTLTimer) {
-      Q_FOREACH (const QString &name, d->m_lookedupHosts)
+      foreach (const QString &name, d->m_lookedupHosts)
           d->m_DNSPrefetchQueue.enqueue(name);
       if (d->m_DNSPrefetchTimer <= 0)
          d->m_DNSPrefetchTimer = startTimer( sDNSPrefetchTimerDelay );
@@ -3533,10 +3533,10 @@ void KHTMLPart::resetHoverText()
    {
      d->m_overURL.clear();
      d->m_overURLTarget.clear();
-     Q_EMIT onURL( QString() );
+     emit onURL( QString() );
      // revert to default statusbar text
      setStatusBarText(QString(), BarHoverText);
-     Q_EMIT d->m_extension->mouseOverInfo(KFileItem());
+     emit d->m_extension->mouseOverInfo(KFileItem());
   }
 }
 
@@ -3551,7 +3551,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     u = path.url();
   }
 
-  Q_EMIT onURL( url );
+  emit onURL( url );
 
   if ( url.isEmpty() ) {
     setStatusBarText(Qt::escape(u.toDisplayString()), BarHoverText);
@@ -3568,7 +3568,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   }
 
   KFileItem item(u, QString(), KFileItem::Unknown);
-  Q_EMIT d->m_extension->mouseOverInfo(item);
+  emit d->m_extension->mouseOverInfo(item);
   const QString com = item.mimeComment();
 
   if ( !u.isValid() ) {
@@ -3695,7 +3695,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
                 locate("locale", QLatin1String("l10n/")
                 + countryCode
                 + QLatin1String("/flag.png")));
-            Q_EMIT setStatusBarText(flagImg + u.toDisplayString() + extra);
+            emit setStatusBarText(flagImg + u.toDisplayString() + extra);
           }
         }
       }
@@ -3742,7 +3742,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( state & Qt::ControlModifier )
   {
-    Q_EMIT d->m_extension->createNewWindow( cURL, args, browserArgs );
+    emit d->m_extension->createNewWindow( cURL, args, browserArgs );
     return true;
   }
 
@@ -3786,7 +3786,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
 
   if ( button == Qt::NoButton && (state & Qt::ShiftModifier) && (state & Qt::ControlModifier) )
   {
-    Q_EMIT d->m_extension->createNewWindow( cURL, args, browserArgs );
+    emit d->m_extension->createNewWindow( cURL, args, browserArgs );
     return true;
   }
 
@@ -3794,7 +3794,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   {
     KParts::WindowArgs winArgs;
     winArgs.setLowerWindow(true);
-    Q_EMIT d->m_extension->createNewWindow( cURL, args, browserArgs, winArgs );
+    emit d->m_extension->createNewWindow( cURL, args, browserArgs, winArgs );
     return true;
   }
 
@@ -3814,7 +3814,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
     closeUrl();
 
   view()->viewport()->unsetCursor();
-  Q_EMIT d->m_extension->openUrlRequest( cURL, args, browserArgs );
+  emit d->m_extension->openUrlRequest( cURL, args, browserArgs );
   return true;
 }
 
@@ -4005,7 +4005,7 @@ void KHTMLPart::slotSecurity()
   QList<QSslCertificate> certChain;
   bool certChainOk = d->m_ssl_in_use;
   if (certChainOk) {
-    Q_FOREACH (const QString &s, sl) {
+    foreach (const QString &s, sl) {
       certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
       if (certChain.last().isNull()) {
         certChainOk = false;
@@ -4033,7 +4033,7 @@ void KHTMLPart::slotSecurity()
     QStringList sl = d->m_ssl_peer_chain.split('\x01', QString::SkipEmptyParts);
     QList<QSslCertificate> certChain;
     bool decodedOk = true;
-    Q_FOREACH (const QString &s, sl) {
+    foreach (const QString &s, sl) {
         certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
         if (certChain.last().isNull()) {
             decodedOk = false;
@@ -4347,7 +4347,7 @@ bool KHTMLPart::processObjectRequest( khtml::ChildFrame *child, const QUrl &_url
     if (child->m_bNotify) {
         child->m_bNotify = false;
         if ( !child->m_browserArgs.lockHistory() )
-            Q_EMIT d->m_extension->openUrlNotify();
+            emit d->m_extension->openUrlNotify();
     }
 
     QMimeDatabase db;
@@ -4713,10 +4713,10 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
 {
   // qDebug() << this << "target=" << _target << "url=" << url;
   if (d->m_formNotification == KHTMLPart::Only) {
-    Q_EMIT formSubmitNotification(action, url, formData, _target, contentType, boundary);
+    emit formSubmitNotification(action, url, formData, _target, contentType, boundary);
     return;
   } else if (d->m_formNotification == KHTMLPart::Before) {
-    Q_EMIT formSubmitNotification(action, url, formData, _target, contentType, boundary);
+    emit formSubmitNotification(action, url, formData, _target, contentType, boundary);
   }
 
   QUrl u = completeURL( url );
@@ -4912,7 +4912,7 @@ void KHTMLPart::submitForm( const char *action, const QString &url, const QByteA
   }
   else
   {
-    Q_EMIT d->m_extension->openUrlRequest( u, args, browserArgs );
+    emit d->m_extension->openUrlRequest( u, args, browserArgs );
   }
 }
 
@@ -5000,13 +5000,13 @@ void KHTMLPart::popupMenu( const QString &linkUrl )
 
   args.setMimeType(mimetype);
 
-  Q_EMIT d->m_extension->popupMenu( QCursor::pos(), popupURL, S_IFREG /*always a file*/,
+  emit d->m_extension->popupMenu( QCursor::pos(), popupURL, S_IFREG /*always a file*/,
                                   args, browserArgs, itemflags,
                                   client->actionGroups() );
 
   if ( !guard.isNull() ) {
      delete client;
-     Q_EMIT popupMenu(linkUrl, QCursor::pos());
+     emit popupMenu(linkUrl, QCursor::pos());
      d->m_strSelectedURL.clear();
      d->m_strSelectedURLTarget.clear();
   }
@@ -5037,11 +5037,11 @@ void KHTMLPart::slotChildStarted( KIO::Job *job )
     // WABA: Looks like this belongs somewhere else
     if ( !parentPart() ) // "toplevel" html document? if yes, then notify the hosting browser about the document (url) changes
     {
-      Q_EMIT d->m_extension->openURLNotify();
+      emit d->m_extension->openURLNotify();
     }
 #endif
     d->m_bComplete = false;
-    Q_EMIT started( job );
+    emit started( job );
   }
 }
 
@@ -5109,19 +5109,19 @@ void KHTMLPart::slotChildURLRequest( const QUrl &url, const KParts::OpenUrlArgum
   if ( !frameName.isEmpty() ) {
     if ( frameName == QLatin1String( "_top" ) )
     {
-      Q_EMIT d->m_extension->openUrlRequest( url, args, browserArgs );
+      emit d->m_extension->openUrlRequest( url, args, browserArgs );
       return;
     }
     else if ( frameName == QLatin1String( "_blank" ) )
     {
-      Q_EMIT d->m_extension->createNewWindow( url, args, browserArgs );
+      emit d->m_extension->createNewWindow( url, args, browserArgs );
       return;
     }
     else if ( frameName == QLatin1String( "_parent" ) )
     {
       KParts::BrowserArguments newBrowserArgs( browserArgs );
       newBrowserArgs.frameName.clear();
-      Q_EMIT d->m_extension->openUrlRequest( url, args, newBrowserArgs );
+      emit d->m_extension->openUrlRequest( url, args, newBrowserArgs );
       return;
     }
     else if ( frameName != QLatin1String( "_self" ) )
@@ -5130,7 +5130,7 @@ void KHTMLPart::slotChildURLRequest( const QUrl &url, const KParts::OpenUrlArgum
 
       if ( !_frame )
       {
-        Q_EMIT d->m_extension->openUrlRequest( url, args, browserArgs );
+        emit d->m_extension->openUrlRequest( url, args, browserArgs );
         return;
       }
 
@@ -5146,13 +5146,13 @@ void KHTMLPart::slotChildURLRequest( const QUrl &url, const KParts::OpenUrlArgum
   {
       KParts::BrowserArguments newBrowserArgs( browserArgs );
       newBrowserArgs.frameName.clear();
-      Q_EMIT d->m_extension->openUrlRequest( url, args, newBrowserArgs );
+      emit d->m_extension->openUrlRequest( url, args, newBrowserArgs );
   }
 }
 
 void KHTMLPart::slotRequestFocus( KParts::ReadOnlyPart * )
 {
-  Q_EMIT d->m_extension->requestFocus(this);
+  emit d->m_extension->requestFocus(this);
 }
 
 khtml::ChildFrame *KHTMLPart::frame( const QObject *obj )
@@ -5723,13 +5723,13 @@ DOM::Node KHTMLPart::nonSharedNodeUnderMouse() const
 
 void KHTMLPart::emitSelectionChanged()
 {
-    // Don't Q_EMIT signals about our selection if this is a frameset;
+    // Don't emit signals about our selection if this is a frameset;
     // the active frame has the selection (#187403)
     if (!d->m_activeFrame)
     {
-        Q_EMIT d->m_extension->enableAction( "copy", hasSelection() );
-        Q_EMIT d->m_extension->selectionInfo( selectedText() );
-        Q_EMIT selectionChanged();
+        emit d->m_extension->enableAction( "copy", hasSelection() );
+        emit d->m_extension->selectionInfo( selectedText() );
+        emit selectionChanged();
     }
 }
 
@@ -5938,7 +5938,7 @@ void KHTMLPart::setStatusBarText( const QString& text, StatusBarPriority p)
   }
   tobe = "<qt>"+tobe;
 
-  Q_EMIT ReadOnlyPart::setStatusBarText(tobe);
+  emit ReadOnlyPart::setStatusBarText(tobe);
 }
 
 
@@ -6089,7 +6089,7 @@ bool KHTMLPart::openUrlInFrame( const QUrl &url, const KParts::OpenUrlArguments&
 
   // Inform someone that we are about to show something else.
   if ( !browserArgs.lockHistory() )
-      Q_EMIT d->m_extension->openUrlNotify();
+      emit d->m_extension->openUrlNotify();
 
   requestObject( *it, url, args, browserArgs );
 
@@ -6652,7 +6652,7 @@ void KHTMLPart::guiActivateEvent( KParts::GUIActivateEvent *event )
   if ( event->activated() )
   {
     emitSelectionChanged();
-    Q_EMIT d->m_extension->enableAction( "print", d->m_doc != 0 );
+    emit d->m_extension->enableAction( "print", d->m_doc != 0 );
 
     if ( !d->m_settings->autoLoadImages() && d->m_paLoadImages )
     {
@@ -7075,7 +7075,7 @@ void KHTMLPart::emitCaretPositionChanged(const DOM::Position &pos) {
   // pos must not be already converted to range-compliant coordinates
   Position rng_pos = pos.equivalentRangeCompliantPosition();
   Node node = rng_pos.node();
-  Q_EMIT caretPositionChanged(node, rng_pos.offset());
+  emit caretPositionChanged(node, rng_pos.offset());
 }
 
 void KHTMLPart::restoreScrollPosition()
@@ -7464,11 +7464,11 @@ void KHTMLPart::suppressedPopupMenu() {
 void KHTMLPart::togglePopupPassivePopup() {
   // Same hack as in disableJSErrorExtension()
   d->m_settings->setJSPopupBlockerPassivePopup( !d->m_settings->jsPopupBlockerPassivePopup() );
-  Q_EMIT configurationChanged();
+  emit configurationChanged();
 }
 
 void KHTMLPart::showSuppressedPopups() {
-    Q_FOREACH ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
+    foreach ( KHTMLPart* part, d->m_suppressedPopupOriginParts ) {
       if (part) {
         KJS::Window *w = KJS::Window::retrieveWindow( part );
         if (w) {

@@ -139,7 +139,7 @@ void ScriptsDock::scriptSelected(QTreeWidgetItem *item, int /*column*/)
 {
     DebugDocument *doc = m_documents.key(item);
     if (doc)
-        Q_EMIT displayScript(doc);
+        emit displayScript(doc);
 }
 
 

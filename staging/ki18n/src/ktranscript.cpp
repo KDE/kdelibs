@@ -467,7 +467,7 @@ KTranscriptImp::~KTranscriptImp ()
 {
     // FIXME: vallgrind shows an afwul lot of "invalid read" in WTF:: stuff
     // when deref is called... Are we leaking somewhere?
-    //Q_FOREACH (Scriptface *sface, m_sface.values())
+    //foreach (Scriptface *sface, m_sface.values())
     //    sface->jsi->deref();
 }
 
@@ -621,7 +621,7 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
 {
     QList<QString> modErrors;
 
-    Q_FOREACH (const QStringList &mod, mods)
+    foreach (const QStringList &mod, mods)
     {
         QString mpath = mod[0];
         QString mlang = mod[1];
@@ -662,7 +662,7 @@ void KTranscriptImp::loadModules (const QList<QStringList> &mods,
     // Unset module path.
     currentModulePath.clear();
 
-    Q_FOREACH (const QString &merr, modErrors)
+    foreach (const QString &merr, modErrors)
         error.append(merr + QLatin1Char('\n'));
 }
 
@@ -1520,7 +1520,7 @@ QString Scriptface::loadProps_text (const QString &fpath)
 
                     // Add collected entry into global store,
                     // once for each entry key (QHash implicitly shared).
-                    Q_FOREACH (const QByteArray &ekey, ekeys) {
+                    foreach (const QByteArray &ekey, ekeys) {
                         phraseProps[ekey] = props;
                     }
 
@@ -1696,7 +1696,7 @@ QString Scriptface::loadProps_bin_00 (const QString &fpath)
 
         // Add collected entry into global store,
         // once for each entry key (QHash implicitly shared).
-        Q_FOREACH (const QByteArray &ekey, ekeys) {
+        foreach (const QByteArray &ekey, ekeys) {
             phraseProps[ekey] = props;
         }
     }

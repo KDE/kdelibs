@@ -85,7 +85,7 @@ void KDateTimeTest::cleanupTestCase()
 void KDateTimeTest::removeDir(const QString &subdir)
 {
     QDir local(QDir::homePath() + QLatin1String("/.kde-unit-test/") + subdir);
-    Q_FOREACH(const QString &file, local.entryList(QDir::Files))
+    foreach(const QString &file, local.entryList(QDir::Files))
         if(!local.remove(file))
             qWarning("%s: removing failed", qPrintable( file ));
     QCOMPARE((int)local.entryList(QDir::Files).count(), 0);

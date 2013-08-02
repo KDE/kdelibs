@@ -319,7 +319,7 @@ QByteArray HTMLFormElementImpl::formData(bool& ok)
      first in our kids, then if needed in the parent
     */
     HashSet<NodeImpl*> formElementsSet;
-    Q_FOREACH (HTMLGenericFormElementImpl* fe, formElements)
+    foreach (HTMLGenericFormElementImpl* fe, formElements)
         formElementsSet.add(fe);
 
     Vector<HTMLGenericFormElementImpl*> ordered = gatherInTreeOrder(this, formElementsSet);

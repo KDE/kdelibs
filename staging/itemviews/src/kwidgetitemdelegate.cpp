@@ -104,7 +104,7 @@ void KWidgetItemDelegatePrivate::_k_slotDataChanged(const QModelIndex &topLeft, 
 
 void KWidgetItemDelegatePrivate::_k_slotLayoutChanged()
 {
-    Q_FOREACH (QWidget *widget, widgetPool->invalidIndexesWidgets()) {
+    foreach (QWidget *widget, widgetPool->invalidIndexesWidgets()) {
         widget->setVisible(false);
     }
     QTimer::singleShot(0, this, SLOT(initializeModel()));
@@ -118,10 +118,10 @@ void KWidgetItemDelegatePrivate::_k_slotModelReset()
 
 void KWidgetItemDelegatePrivate::_k_slotSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
-    Q_FOREACH (const QModelIndex &index, selected.indexes()) {
+    foreach (const QModelIndex &index, selected.indexes()) {
         widgetPool->findWidgets(index, optionView(index));
     }
-    Q_FOREACH (const QModelIndex &index, deselected.indexes()) {
+    foreach (const QModelIndex &index, deselected.indexes()) {
         widgetPool->findWidgets(index, optionView(index));
     }
 }
@@ -136,7 +136,7 @@ void KWidgetItemDelegatePrivate::updateRowRange(const QModelIndex &parent, int s
                                                                                                       : KWidgetItemDelegatePool::UpdateWidgets);
             if (isRemoving) {
                 widgetPool->d->allocatedWidgets.removeAll(widgetList);
-                Q_FOREACH (QWidget *widget, widgetList) {
+                foreach (QWidget *widget, widgetList) {
                     const QModelIndex idx = widgetPool->d->widgetInIndex[widget];
                     widgetPool->d->usedWidgets.remove(idx);
                     widgetPool->d->widgetInIndex.remove(widget);
@@ -286,7 +286,7 @@ bool KWidgetItemDelegatePrivate::eventFilter(QObject *watched, QEvent *event)
         case QEvent::FocusIn:
         case QEvent::FocusOut:
             if (qobject_cast<QAbstractItemView*>(watched)) {
-                Q_FOREACH (const QModelIndex &index, selectionModel->selectedIndexes()) {
+                foreach (const QModelIndex &index, selectionModel->selectedIndexes()) {
                     if (index.isValid()) {
                         widgetPool->findWidgets(index, optionView(index));
                     }

@@ -142,7 +142,7 @@ void KReplaceTest::slotReplaceNext()
         }
 #endif
     if ( res == KFind::NoMatch && m_needEventLoop )
-        Q_EMIT exitLoop();
+        emit exitLoop();
 }
 
 void KReplaceTest::print()

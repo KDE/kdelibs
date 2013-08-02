@@ -144,19 +144,19 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
         QString tmp = arg.first();
         tmp.remove(QRegExp("[\n\r]"));
         // qDebug() << "status message = " << tmp;
-        Q_EMIT showStatus( tmp );
+        emit showStatus( tmp );
     }
     else if ( cmd == QLatin1String( "showurlinframe" )
               && arg.count() > 1 )
     {
         // qDebug() << "url = " << arg[0] << ", frame = " << arg[1];
-        Q_EMIT showDocument( arg[0], arg[1] );
+        emit showDocument( arg[0], arg[1] );
     }
     else if ( cmd == QLatin1String( "showdocument" )
               && !arg.empty() )
     {
         // qDebug() << "url = " << arg.first();
-        Q_EMIT showDocument( arg.first(), "_top" );
+        emit showDocument( arg.first(), "_top" );
     }
     else if ( cmd == QLatin1String( "resizeapplet" )
               && arg.count() > 2 )
@@ -213,7 +213,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
                     applet->stateChange(newState);
                     if (newState == KJavaApplet::INITIALIZED) {
                         // qDebug() << "emit appletLoaded";
-                        Q_EMIT appletLoaded();
+                        emit appletLoaded();
                     }
                 } else
                     qCritical() << "AppletStateNotification: status is not numerical" << endl;
@@ -235,7 +235,7 @@ void KJavaAppletContext::received( const QString& cmd, const QStringList& arg )
             */
             if (applet)
                 applet->setFailed();
-            Q_EMIT appletLoaded();
+            emit appletLoaded();
         }
     }
 }
@@ -247,7 +247,7 @@ void KJavaAppletContext::javaProcessExited(int) {
         if (!(*it).isNull() && (*it)->isCreated() && !(*it)->failed()) {
             (*it)->setFailed();
             if ((*it)->state() < KJavaApplet::INITIALIZED)
-                Q_EMIT appletLoaded();
+                emit appletLoaded();
         }
 }
 

@@ -294,7 +294,7 @@ void Wallet::slotWalletClosed(int handle) {
         d->handle = -1;
         d->folder.clear();
         d->name.clear();
-        Q_EMIT walletClosed();
+        emit walletClosed();
     }
 #endif
 }
@@ -611,14 +611,14 @@ Wallet::EntryType Wallet::entryType(const QString& key) {
 
 void Wallet::slotFolderUpdated(const QString& wallet, const QString& folder) {
     if (d->name == wallet) {
-        Q_EMIT folderUpdated(folder);
+        emit folderUpdated(folder);
     }
 }
 
 
 void Wallet::slotFolderListUpdated(const QString& wallet) {
     if (d->name == wallet) {
-        Q_EMIT folderListUpdated();
+        emit folderListUpdated();
     }
 }
 
@@ -644,16 +644,16 @@ void Wallet::walletAsyncOpened(int tId, int handle) {
     disconnect(this, SLOT(walletAsyncOpened(int,int)));
 
     d->handle = handle;
-    Q_EMIT walletOpened(handle > 0);
+    emit walletOpened(handle > 0);
 #endif
 }
 
 void Wallet::emitWalletAsyncOpenError() {
-    Q_EMIT walletOpened(false);
+    emit walletOpened(false);
 }
 
 void Wallet::emitWalletOpened() {
-  Q_EMIT walletOpened(true);
+  emit walletOpened(true);
 }
 
 
@@ -686,7 +686,7 @@ void Wallet::slotCollectionDeleted()
 {
     d->folder.clear();
     d->name.clear();
-    Q_EMIT walletClosed();
+    emit walletClosed();
 }
 
 

@@ -251,7 +251,7 @@ void KConfigDialog::KConfigDialogPrivate::_k_updateButtons()
 
   q->buttonBox()->button(QDialogButtonBox::RestoreDefaults)->setEnabled(!is_default);
 
-  Q_EMIT q->widgetModified();
+  emit q->widgetModified();
   only_once = false;
 }
 
@@ -259,7 +259,7 @@ void KConfigDialog::KConfigDialogPrivate::_k_settingsChangedSlot()
 {
   // Update the buttons
   _k_updateButtons();
-  Q_EMIT q->settingsChanged(q->objectName());
+  emit q->settingsChanged(q->objectName());
 }
 
 void KConfigDialog::showEvent(QShowEvent *e)

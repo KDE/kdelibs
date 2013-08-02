@@ -452,7 +452,7 @@ void DebugWindow::detach(KJS::Interpreter* interp)
     // Go through, and kill all the fragments from here.
     QList<DebugDocument::Ptr> docs = m_docsForIntrp[interp];
 
-    Q_FOREACH (DebugDocument::Ptr doc, docs)
+    foreach (DebugDocument::Ptr doc, docs)
         cleanupDocument(doc);
 
     m_docsForIntrp.remove(interp);
@@ -507,7 +507,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
     DebugDocument::Ptr document;
 
     // See if there is an open document window we can reuse...
-    Q_FOREACH (DebugDocument::Ptr cand, m_openDocuments)
+    foreach (DebugDocument::Ptr cand, m_openDocuments)
     {
         if (cand->isMarkedReload() && cand->url() == sourceURL && cand->baseLine() == startingLineNumber)
             document = cand;
@@ -523,7 +523,7 @@ bool DebugWindow::sourceParsed(ExecState *exec, int sourceId, const UString& jsS
         if (uiURL.isEmpty())
         {
             // Scan through all contexts, and see which one matches
-            Q_FOREACH (InterpreterContext* ic, m_contexts)
+            foreach (InterpreterContext* ic, m_contexts)
             {
                 if (!ic->execContexts.isEmpty() && ic->execContexts.top() == exec)
                 {
@@ -1002,14 +1002,14 @@ void DebugWindow::exitLoop()
 void DebugWindow::enterModality()
 {
     QWidgetList widgets = QApplication::allWidgets();
-    Q_FOREACH (QWidget *widget, widgets)
+    foreach (QWidget *widget, widgets)
         widget->installEventFilter(this);
 }
 
 void DebugWindow::leaveModality()
 {
     QWidgetList widgets = QApplication::allWidgets();
-    Q_FOREACH (QWidget *widget, widgets)
+    foreach (QWidget *widget, widgets)
         widget->removeEventFilter(this);
 }
 

@@ -177,7 +177,7 @@ public:
         if (event->type() == QEvent::Hide && m_popup) {
             // do not set d->result here, because the popup
             // hides itself after leaving the event loop.
-            Q_EMIT m_popup->leaveModality();
+            emit m_popup->leaveModality();
         }
         return false;
     }
@@ -305,7 +305,7 @@ void KDateTable::initAccels()
 
     localCollection->readSettings();
     localCollection->addAssociatedWidget( this );
-    Q_FOREACH (QAction* action, localCollection->actions()) {
+    foreach (QAction* action, localCollection->actions()) {
         action->setShortcutContext(Qt::WidgetWithChildrenShortcut);
     }
 }
@@ -620,7 +620,7 @@ void KDateTable::keyPressEvent( QKeyEvent *e )
         break;
     case Qt::Key_Return:
     case Qt::Key_Enter:
-        Q_EMIT tableClicked();
+        emit tableClicked();
         break;
     case Qt::Key_Control:
     case Qt::Key_Alt:
@@ -738,12 +738,12 @@ void KDateTable::mousePressEvent( QMouseEvent *e )
     // much here
     update();
 
-    Q_EMIT tableClicked();
+    emit tableClicked();
 
     if (  e->button() == Qt::RightButton && d->m_popupMenuEnabled ) {
         QMenu * menu = new QMenu();
         menu->addSection( d->m_date.formatDate() );
-        Q_EMIT aboutToShowContextMenu( menu, clickedDate );
+        emit aboutToShowContextMenu( menu, clickedDate );
         menu->popup( e->globalPos() );
     }
 }
@@ -769,8 +769,8 @@ bool KDateTable::setDate( const QDate& toDate )
 
     QDate oldDate = date();
     d->setDate( toDate );
-    Q_EMIT( dateChanged( date(), oldDate ) );
-    Q_EMIT( dateChanged( date() ) );
+    emit( dateChanged( date(), oldDate ) );
+    emit( dateChanged( date() ) );
     update();
 
     return true;
@@ -873,7 +873,7 @@ void KPopupFrame::keyPressEvent( QKeyEvent* e )
 {
     if( e->key() == Qt::Key_Escape ) {
         d->result = 0; // rejected
-        Q_EMIT leaveModality();
+        emit leaveModality();
         //qApp->exit_loop();
     }
 }
@@ -881,7 +881,7 @@ void KPopupFrame::keyPressEvent( QKeyEvent* e )
 void KPopupFrame::close( int r )
 {
     d->result = r;
-    Q_EMIT leaveModality();
+    emit leaveModality();
     //qApp->exit_loop();
 }
 

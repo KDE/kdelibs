@@ -128,7 +128,7 @@ static void appendLanguagesFromVariable (QStringList &languages,
 static QString extractCountry (const QStringList &languages)
 {
     QString country;
-    Q_FOREACH (const QString &language, languages) {
+    foreach (const QString &language, languages) {
         int pos1 = language.indexOf(QLatin1Char('_'));
         if (pos1 >= 0) {
             ++pos1;
@@ -281,7 +281,7 @@ class KLocalizedStringPrivateStatics
 
     ~KLocalizedStringPrivateStatics ()
     {
-        Q_FOREACH (const KCatalogPtrHash &langCatalogs, catalogs) {
+        foreach (const KCatalogPtrHash &langCatalogs, catalogs) {
             qDeleteAll(langCatalogs);
         }
         // ktrs is handled by QLibrary.
@@ -396,7 +396,7 @@ void KLocalizedStringPrivate::translateRaw (const QStringList &catalogNames,
 
     // Languages are ordered from highest to lowest priority.
     // Priority of catalogs is undefined.
-    Q_FOREACH (const QString &testLanguage, languages) {
+    foreach (const QString &testLanguage, languages) {
         // If code language reached, no catalog lookup is needed.
         if (testLanguage == s->codeLanguage) {
             break;
@@ -405,7 +405,7 @@ void KLocalizedStringPrivate::translateRaw (const QStringList &catalogNames,
         if (!KLocalizedString::isApplicationTranslatedInto(testLanguage)) {
             continue;
         }
-        Q_FOREACH (const QString &catalogName, catalogNames) {
+        foreach (const QString &catalogName, catalogNames) {
             const KCatalog &catalog = getCatalog(catalogName, testLanguage);
             QString text;
             if (!msgctxt.isNull() && !msgid_plural.isNull()) {
@@ -550,7 +550,7 @@ QString KLocalizedStringPrivate::toString (const QStringList &catalogNames,
     if (s->ktrs != NULL)
     {
         QStringList pcalls = s->ktrs->postCalls(lang);
-        Q_FOREACH(const QString &pcall, pcalls) {
+        foreach(const QString &pcall, pcalls) {
             postTranscript(pcall, lang, ctry, ftrans);
         }
     }
@@ -1312,7 +1312,7 @@ void KLocalizedStringPrivate::loadTranscript ()
     QString pluginSubdir = QLatin1String("kf5");
     QString pluginName = QLatin1String("ktranscript");
     nameFilters.append(pluginName + QLatin1String(".*"));
-    Q_FOREACH (const QString &dirPath, QCoreApplication::libraryPaths()) {
+    foreach (const QString &dirPath, QCoreApplication::libraryPaths()) {
         QString dirPathKf = dirPath + QLatin1Char('/') + pluginSubdir;
         if (!QDir(dirPathKf).entryList(nameFilters).isEmpty()) {
             pluginPathNoExt = dirPathKf + QLatin1Char('/') + pluginName;
@@ -1429,7 +1429,7 @@ QString KLocalizedString::localizedFilePath (const QString &filePath)
     // Go through possible localized paths by priority of languages,
     // return first that exists.
     QString fileName = fileInfo.fileName();
-    Q_FOREACH (const QString &lang, s->languages) {
+    foreach (const QString &lang, s->languages) {
         QString locFilePath =   locDirPath + QLatin1Char('/')
                               + lang + QLatin1Char('/')
                               + fileName;

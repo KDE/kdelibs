@@ -79,7 +79,7 @@ void KButtonGroup::setSelected( int id )
     {
       button->setChecked( true );
       d->currentId = id;
-      Q_EMIT changed( id );
+      emit changed( id );
       d->wantToBeId = -1;
       return;
     }
@@ -116,7 +116,7 @@ void KButtonGroup::childEvent( QChildEvent* event )
         d->currentId = d->wantToBeId;
         d->wantToBeId = -1;
         button->setChecked( true );
-        Q_EMIT changed( d->currentId );
+        emit changed( d->currentId );
       }
 
       ++d->nextId;
@@ -156,8 +156,8 @@ int KButtonGroup::id( QAbstractButton* button ) const
 void KButtonGroup::Private::slotClicked( int id )
 {
   currentId = id;
-  Q_EMIT q->clicked( id );
-  Q_EMIT q->changed( id );
+  emit q->clicked( id );
+  emit q->changed( id );
 }
 
 #include "moc_kbuttongroup.cpp"

@@ -427,7 +427,7 @@ void KSambaSharePrivate::_k_slotFileChange(const QString &/*path*/)
     sync();
     //qDebug() << "path changed:" << path;
     Q_Q(KSambaShare);
-    Q_EMIT q->changed();
+    emit q->changed();
 }
 
 KSambaShare::KSambaShare()

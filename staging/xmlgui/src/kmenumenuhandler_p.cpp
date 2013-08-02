@@ -100,7 +100,7 @@ void KMenuMenuHandler::buildToolbarAction()
   if(!window)
     return;
   QStringList toolbarlist;
-  Q_FOREACH(KToolBar *b , window->toolBars())
+  foreach(KToolBar *b , window->toolBars())
   {
     toolbarlist << (b->windowTitle().isEmpty() ? b->objectName() : b->windowTitle());
   }
@@ -109,7 +109,7 @@ void KMenuMenuHandler::buildToolbarAction()
 
 static KActionCollection* findParentCollection(KXMLGUIFactory* factory, QAction* action)
 {
-    Q_FOREACH(KXMLGUIClient *client, factory->clients()) {
+    foreach(KXMLGUIClient *client, factory->clients()) {
         KActionCollection* collection = client->actionCollection();
         // if the call to actions() is too slow, add KActionCollection::contains(QAction*).
         if (collection->actions().contains(action)) {
@@ -143,7 +143,7 @@ void KMenuMenuHandler::slotSetShortcut()
         QList<KActionCollection*> checkCollections;
         KXMLGUIFactory *factory=dynamic_cast<KXMLGUIClient*>(m_builder)->factory();
         parentCollection = findParentCollection(factory, m_popupAction);
-        Q_FOREACH(KXMLGUIClient *client, factory->clients()) {
+        foreach(KXMLGUIClient *client, factory->clients()) {
             checkCollections += client->actionCollection();
         }
         swidget.setCheckActionCollections(checkCollections);

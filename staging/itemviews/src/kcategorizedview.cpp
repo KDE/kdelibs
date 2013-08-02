@@ -326,7 +326,7 @@ void KCategorizedView::Private::rowsInserted(const QModelIndex &parent, int star
         QList<Block> blockList = blocks.values();
         qSort(blockList.begin(), blockList.end(), Block::lessThan);
         QList<int> firstIndexesRows;
-        Q_FOREACH (const Block &block, blockList) {
+        foreach (const Block &block, blockList) {
             firstIndexesRows << block.firstIndex.row();
         }
         //END: order for marking as alternate those blocks that are alternate
@@ -1327,7 +1327,7 @@ void KCategorizedView::rowsAboutToBeRemoved(const QModelIndex &parent,
         QList<Private::Block> blockList = d->blocks.values();
         qSort(blockList.begin(), blockList.end(), Private::Block::lessThan);
         QList<int> firstIndexesRows;
-        Q_FOREACH (const Private::Block &block, blockList) {
+        foreach (const Private::Block &block, blockList) {
             firstIndexesRows << block.firstIndex.row();
         }
         //END: order for marking as alternate those blocks that are alternate

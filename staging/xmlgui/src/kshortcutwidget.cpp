@@ -122,7 +122,7 @@ void KShortcutWidget::setShortcut(const QList<QKeySequence> &newSc)
 
     d->holdChangedSignal = false;
 
-    Q_EMIT shortcutChanged(d->cut);
+    emit shortcutChanged(d->cut);
 }
 
 
@@ -142,7 +142,7 @@ void KShortcutWidgetPrivate::priKeySequenceChanged(const QKeySequence &seq)
         cut[0] = seq;
 
     if (!holdChangedSignal)
-        Q_EMIT q->shortcutChanged(cut);
+        emit q->shortcutChanged(cut);
 }
 
 
@@ -155,7 +155,7 @@ void KShortcutWidgetPrivate::altKeySequenceChanged(const QKeySequence &seq)
         cut[1] = seq;
 
     if (!holdChangedSignal)
-        Q_EMIT q->shortcutChanged(cut);
+        emit q->shortcutChanged(cut);
 }
 
 #include "moc_kshortcutwidget.cpp"

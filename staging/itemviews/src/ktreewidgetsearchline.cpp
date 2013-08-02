@@ -86,7 +86,7 @@ void KTreeWidgetSearchLine::Private::_k_rowsInserted( const QModelIndex & parent
     return;
 
   QTreeWidget* widget = 0L;
-  Q_FOREACH ( QTreeWidget* tree, treeWidgets )
+  foreach ( QTreeWidget* tree, treeWidgets )
     if ( tree->model() == model ) {
       widget = tree;
       break;
@@ -101,7 +101,7 @@ void KTreeWidgetSearchLine::Private::_k_rowsInserted( const QModelIndex & parent
           bool newHidden = !q->itemMatches(item, q->text());
           if (item->isHidden() != newHidden) {
               item->setHidden(newHidden);
-              Q_EMIT q->hiddenChanged(item, newHidden);
+              emit q->hiddenChanged(item, newHidden);
           }
       }
   }
@@ -179,7 +179,7 @@ void KTreeWidgetSearchLine::Private::checkItemParentsNotVisible(QTreeWidget *tre
         bool newHidden = !q->itemMatches(item, search);
         if (item->isHidden() != newHidden) {
             item->setHidden(newHidden);
-            Q_EMIT q->hiddenChanged(item, newHidden);
+            emit q->hiddenChanged(item, newHidden);
         }
     }
 }
@@ -202,7 +202,7 @@ bool KTreeWidgetSearchLine::Private::checkItemParentsVisible(QTreeWidgetItem *it
     bool newHidden = !childMatch && !q->itemMatches(item, search);
     if (item->isHidden() != newHidden) {
         item->setHidden(newHidden);
-        Q_EMIT q->hiddenChanged(item, newHidden);
+        emit q->hiddenChanged(item, newHidden);
     }
 
     return !newHidden;
@@ -313,7 +313,7 @@ void KTreeWidgetSearchLine::updateSearch( const QString &pattern )
 {
   d->search = pattern.isNull() ? text() : pattern;
 
-  Q_FOREACH ( QTreeWidget* treeWidget, d->treeWidgets )
+  foreach ( QTreeWidget* treeWidget, d->treeWidgets )
     updateSearch( treeWidget );
 }
 
@@ -337,7 +337,7 @@ void KTreeWidgetSearchLine::updateSearch( QTreeWidget *treeWidget )
   if ( currentItem )
     treeWidget->scrollToItem( currentItem );
 
-  Q_EMIT searchUpdated(d->search);
+  emit searchUpdated(d->search);
 }
 
 void KTreeWidgetSearchLine::setCaseSensitivity( Qt::CaseSensitivity caseSensitive )
@@ -370,12 +370,12 @@ void KTreeWidgetSearchLine::setTreeWidget( QTreeWidget *treeWidget )
 
 void KTreeWidgetSearchLine::setTreeWidgets( const QList<QTreeWidget *> &treeWidgets )
 {
-  Q_FOREACH ( QTreeWidget* treeWidget, d->treeWidgets )
+  foreach ( QTreeWidget* treeWidget, d->treeWidgets )
     disconnectTreeWidget( treeWidget );
 
   d->treeWidgets = treeWidgets;
 
-  Q_FOREACH ( QTreeWidget* treeWidget, d->treeWidgets )
+  foreach ( QTreeWidget* treeWidget, d->treeWidgets )
     connectTreeWidget( treeWidget );
 
   d->checkColumns();

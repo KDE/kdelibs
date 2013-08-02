@@ -369,7 +369,7 @@ void KServiceTest::testServiceTypeTraderForReadOnlyPart()
     // Querying trader for services associated with KParts/ReadOnlyPart
     KService::List offers = KServiceTypeTrader::self()->query("KParts/ReadOnlyPart");
     QVERIFY( offers.count() > 0 );
-    //Q_FOREACH( KService::Ptr service, offers )
+    //foreach( KService::Ptr service, offers )
     //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->entryPath() ) );
 
     m_firstOffer = offers[0]->entryPath();
@@ -484,7 +484,7 @@ void KServiceTest::testWriteServiceTypeProfile()
     KService::List offers = KServiceTypeTrader::self()->query( serviceType );
     QVERIFY( offers.count() > 0 ); // not empty
 
-    //Q_FOREACH( KService::Ptr service, offers )
+    //foreach( KService::Ptr service, offers )
     //    qDebug( "%s %s", qPrintable( service->name() ), qPrintable( service->entryPath() ) );
 
     QVERIFY( offers.count() >= 2 );

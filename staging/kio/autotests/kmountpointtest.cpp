@@ -38,7 +38,7 @@ void KMountPointTest::testCurrentMountPoints()
     const KMountPoint::List mountPoints = KMountPoint::currentMountPoints(KMountPoint::NeedRealDeviceName);
     QVERIFY(!mountPoints.isEmpty());
     KMountPoint::Ptr mountWithDevice;
-    Q_FOREACH(KMountPoint::Ptr mountPoint, mountPoints) {
+    foreach(KMountPoint::Ptr mountPoint, mountPoints) {
         qDebug() << "Mount: " << mountPoint->mountedFrom()
           << " (" << mountPoint->realDeviceName() << ") "
           << mountPoint->mountPoint() << " " << mountPoint->mountType() << endl;
@@ -101,7 +101,7 @@ void KMountPointTest::testPossibleMountPoints()
         return;
     }
     KMountPoint::Ptr mountWithDevice;
-    Q_FOREACH(KMountPoint::Ptr mountPoint, mountPoints) {
+    foreach(KMountPoint::Ptr mountPoint, mountPoints) {
         qDebug() << "Possible mount: " << mountPoint->mountedFrom()
           << " (" << mountPoint->realDeviceName() << ") "
           << mountPoint->mountPoint() << " " << mountPoint->mountType()

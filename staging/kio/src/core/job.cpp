@@ -113,52 +113,52 @@ bool Job::removeSubjob( KJob *jobBase )
 
 void JobPrivate::emitMoving(KIO::Job * job, const QUrl &src, const QUrl &dest)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Moving"),
+    emit job->description(job, i18nc("@title job","Moving"),
                           qMakePair(i18nc("The source of a file operation", "Source"), src.toDisplayString(QUrl::PreferLocalFile)),
                           qMakePair(i18nc("The destination of a file operation", "Destination"), dest.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitCopying(KIO::Job * job, const QUrl &src, const QUrl &dest)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Copying"),
+    emit job->description(job, i18nc("@title job","Copying"),
                           qMakePair(i18nc("The source of a file operation", "Source"), src.toDisplayString(QUrl::PreferLocalFile)),
                           qMakePair(i18nc("The destination of a file operation", "Destination"), dest.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitCreatingDir(KIO::Job * job, const QUrl &dir)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Creating directory"),
+    emit job->description(job, i18nc("@title job","Creating directory"),
                           qMakePair(i18n("Directory"), dir.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitDeleting(KIO::Job *job, const QUrl &url)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Deleting"),
+    emit job->description(job, i18nc("@title job","Deleting"),
                           qMakePair(i18n("File"), url.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitStating(KIO::Job *job, const QUrl &url)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Examining"),
+    emit job->description(job, i18nc("@title job","Examining"),
                           qMakePair(i18n("File"), url.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitTransferring(KIO::Job *job, const QUrl &url)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Transferring"),
+    emit job->description(job, i18nc("@title job","Transferring"),
                           qMakePair(i18nc("The source of a file operation", "Source"), url.toDisplayString(QUrl::PreferLocalFile)));
 }
 
 void JobPrivate::emitMounting(KIO::Job * job, const QString &dev, const QString &point)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Mounting"),
+    emit job->description(job, i18nc("@title job","Mounting"),
                           qMakePair(i18n("Device"), dev),
                           qMakePair(i18n("Mountpoint"), point));
 }
 
 void JobPrivate::emitUnmounting(KIO::Job * job, const QString &point)
 {
-    Q_EMIT job->description(job, i18nc("@title job","Unmounting"),
+    emit job->description(job, i18nc("@title job","Unmounting"),
                           qMakePair(i18n("Mountpoint"), point));
 }
 
@@ -478,17 +478,17 @@ void SimpleJob::slotError( int err, const QString & errorText )
 
 void SimpleJob::slotWarning( const QString & errorText )
 {
-    Q_EMIT warning( this, errorText );
+    emit warning( this, errorText );
 }
 
 void SimpleJobPrivate::_k_slotSlaveInfoMessage( const QString & msg )
 {
-    Q_EMIT q_func()->infoMessage( q_func(), msg );
+    emit q_func()->infoMessage( q_func(), msg );
 }
 
 void SimpleJobPrivate::slotConnected()
 {
-    Q_EMIT q_func()->connected( q_func() );
+    emit q_func()->connected( q_func() );
 }
 
 void SimpleJobPrivate::slotTotalSize( KIO::filesize_t size )
@@ -755,7 +755,7 @@ void StatJobPrivate::slotRedirection(const QUrl &url)
      }
      m_redirectionURL = url; // We'll remember that when the job finishes
      // Tell the user that we haven't finished yet
-     Q_EMIT q->redirection(q, m_redirectionURL);
+     emit q->redirection(q, m_redirectionURL);
 }
 
 void StatJob::slotFinished()
@@ -766,7 +766,7 @@ void StatJob::slotFinished()
     {
         //qDebug() << "StatJob: Redirection to " << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
-            Q_EMIT permanentRedirection(this, d->m_url, d->m_redirectionURL);
+            emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
 
         if ( d->m_redirectionHandlingEnabled )
         {
@@ -865,7 +865,7 @@ void TransferJob::slotData( const QByteArray &_data)
     d->m_isMimetypeEmitted = true;
 
     if (d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error()) {
-        Q_EMIT data(this, _data);
+        emit data(this, _data);
     }
 }
 
@@ -900,7 +900,7 @@ void TransferJob::slotRedirection(const QUrl &url)
        d->m_redirectionList.append(url);
        d->m_outgoingMetaData["ssl_was_in_use"] = d->m_incomingMetaData["ssl_in_use"];
        // Tell the user that we haven't finished yet
-       Q_EMIT redirection(this, d->m_redirectionURL);
+       emit redirection(this, d->m_redirectionURL);
     }
 }
 
@@ -913,7 +913,7 @@ void TransferJob::slotFinished()
 
         //qDebug() << "Redirection to" << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
-            Q_EMIT permanentRedirection(this, d->m_url, d->m_redirectionURL);
+            emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
 
         if (d->m_redirectionHandlingEnabled) {
             // Honour the redirection
@@ -983,7 +983,7 @@ void TransferJob::sendAsyncData(const QByteArray &dataForSlave)
     if (d->m_extraFlags & JobPrivate::EF_TransferJobNeedData)
     {
        d->m_slave->send( MSG_DATA, dataForSlave );
-       if (d->m_extraFlags & JobPrivate::EF_TransferJobDataSent) // put job -> Q_EMIT progress
+       if (d->m_extraFlags & JobPrivate::EF_TransferJobDataSent) // put job -> emit progress
        {
            KIO::filesize_t size = processedAmount(KJob::Bytes)+dataForSlave.size();
            setProcessedAmount(KJob::Bytes, size);
@@ -1031,7 +1031,7 @@ void TransferJob::slotDataReq()
     }
     else
     {
-       Q_EMIT dataReq( this, dataForSlave);
+       emit dataReq( this, dataForSlave);
 
        if (d->m_extraFlags & JobPrivate::EF_TransferJobAsync)
           return;
@@ -1063,7 +1063,7 @@ void TransferJob::slotMimetype( const QString& type )
         qWarning() << "mimetype() emitted again, or after sending first data!; job URL =" << d->m_url;
     }
     d->m_isMimetypeEmitted = true;
-    Q_EMIT mimetype( this, type );
+    emit mimetype( this, type );
 }
 
 
@@ -1172,7 +1172,7 @@ void TransferJobPrivate::slotErrorPage()
 void TransferJobPrivate::slotCanResume( KIO::filesize_t offset )
 {
     Q_Q(TransferJob);
-    Q_EMIT q->canResume(q, offset);
+    emit q->canResume(q, offset);
 }
 
 void TransferJobPrivate::slotDataReqFromDevice()
@@ -1188,7 +1188,7 @@ void TransferJobPrivate::slotDataReqFromDevice()
 
     if (dataForSlave.isEmpty())
     {
-        Q_EMIT q->dataReq(q, dataForSlave);
+        emit q->dataReq(q, dataForSlave);
         if (m_extraFlags & JobPrivate::EF_TransferJobAsync)
             return;
     }
@@ -1564,7 +1564,7 @@ void TransferJobPrivate::slotPostRedirection()
     Q_Q(TransferJob);
     //qDebug() << m_url;
     // Tell the user about the new url.
-    Q_EMIT q->redirection(q, m_url);
+    emit q->redirection(q, m_url);
 }
 
 
@@ -1697,7 +1697,7 @@ void MimetypeJob::slotFinished( )
         // assumed it was a file.
         //qDebug() << "It is in fact a directory!";
         d->m_mimetype = QString::fromLatin1("inode/directory");
-        Q_EMIT TransferJob::mimetype( this, d->m_mimetype );
+        emit TransferJob::mimetype( this, d->m_mimetype );
         setError( 0 );
     }
 
@@ -1705,7 +1705,7 @@ void MimetypeJob::slotFinished( )
     {
         //qDebug() << "Redirection to " << m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
-            Q_EMIT permanentRedirection(this, d->m_url, d->m_redirectionURL);
+            emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
 
         if (d->m_redirectionHandlingEnabled)
         {
@@ -1770,7 +1770,7 @@ void DirectCopyJobPrivate::start( Slave* slave )
 
 void DirectCopyJob::slotCanResume( KIO::filesize_t offset )
 {
-    Q_EMIT canResume(this, offset);
+    emit canResume(this, offset);
 }
 
 //////////////////////////
@@ -2139,7 +2139,7 @@ void FileCopyJobPrivate::slotCanResume( KIO::Job* job, KIO::filesize_t offset )
             //qDebug() << "m_getJob=" << m_getJob << m_src;
             m_getJob->addMetaData( "errorPage", "false" );
             m_getJob->addMetaData( "AllowCompressedPage", "false" );
-            // Set size in subjob. This helps if the slave doesn't Q_EMIT totalSize.
+            // Set size in subjob. This helps if the slave doesn't emit totalSize.
             if ( m_sourceSize != (KIO::filesize_t)-1 )
                 m_getJob->setTotalAmount(KJob::Bytes, m_sourceSize);
             if (offset)
@@ -2227,7 +2227,7 @@ void FileCopyJobPrivate::slotDataReq( KIO::Job * , QByteArray &data)
 void FileCopyJobPrivate::slotMimetype( KIO::Job*, const QString& type )
 {
     Q_Q(FileCopyJob);
-    Q_EMIT q->mimetype( q, type );
+    emit q->mimetype( q, type );
 }
 
 void FileCopyJob::slotResult( KJob *job)
@@ -2424,7 +2424,7 @@ ListJob::~ListJob()
 void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
 {
     Q_Q(ListJob);
-    // Emit progress info (takes care of Q_EMIT processedSize and percent)
+    // Emit progress info (takes care of emit processedSize and percent)
     m_processedEntries += list.count();
     slotProcessedSize( m_processedEntries );
 
@@ -2472,9 +2472,9 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
     // exclusion of hidden files also requires the full sweep, but the case for full-listing
     // a single dir is probably common enough to justify the shortcut
     if (m_prefix.isNull() && includeHidden) {
-        Q_EMIT q->entries(q, list);
+        emit q->entries(q, list);
     } else {
-        // cull the unwanted hidden dirs and/or parent dir references from the listing, then Q_EMIT that
+        // cull the unwanted hidden dirs and/or parent dir references from the listing, then emit that
         UDSEntryList newlist;
 
         UDSEntryList::const_iterator it = list.begin();
@@ -2499,7 +2499,7 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
             }
         }
 
-        Q_EMIT q->entries(q, newlist);
+        emit q->entries(q, newlist);
     }
 }
 
@@ -2507,7 +2507,7 @@ void ListJobPrivate::gotEntries(KIO::Job *, const KIO::UDSEntryList& list )
 {
     // Forward entries received by subjob - faking we received them ourselves
     Q_Q(ListJob);
-    Q_EMIT q->entries(q, list);
+    emit q->entries(q, list);
 }
 
 void ListJob::slotResult( KJob * job )
@@ -2516,8 +2516,8 @@ void ListJob::slotResult( KJob * job )
 	// If we can't list a subdir, the result is still ok
 	// This is why we override KCompositeJob::slotResult - to not set
 	// an error on parent job.
-	// Let's Q_EMIT a signal about this though
-	Q_EMIT subError(this, static_cast<KIO::ListJob*>(job));
+	// Let's emit a signal about this though
+	emit subError(this, static_cast<KIO::ListJob*>(job));
     }
     removeSubjob(job);
     if (!hasSubjobs())
@@ -2533,7 +2533,7 @@ void ListJobPrivate::slotRedirection(const QUrl & url)
         return;
     }
     m_redirectionURL = url; // We'll remember that when the job finishes
-    Q_EMIT q->redirection( q, m_redirectionURL );
+    emit q->redirection( q, m_redirectionURL );
 }
 
 void ListJob::slotFinished()
@@ -2551,7 +2551,7 @@ void ListJob::slotFinished()
                 d->m_redirectionURL = d->m_url;
                 d->m_redirectionURL.setScheme(proto);
                 setError( 0 );
-                Q_EMIT redirection(this,d->m_redirectionURL);
+                emit redirection(this,d->m_redirectionURL);
             }
         }
 #endif
@@ -2561,7 +2561,7 @@ void ListJob::slotFinished()
 
         //qDebug() << "Redirection to " << d->m_redirectionURL;
         if (queryMetaData("permanent-redirect")=="true")
-            Q_EMIT permanentRedirection(this, d->m_url, d->m_redirectionURL);
+            emit permanentRedirection(this, d->m_url, d->m_redirectionURL);
 
         if ( d->m_redirectionHandlingEnabled ) {
             d->m_packedArgs.truncate(0);
@@ -2802,7 +2802,7 @@ void MultiGetJob::slotFinished()
   if (d->m_redirectionURL.isEmpty())
   {
      // No redirection, tell the world that we are finished.
-     Q_EMIT result(d->m_currentEntry.id);
+     emit result(d->m_currentEntry.id);
   }
   d->m_redirectionURL = QUrl();
   setError( 0 );
@@ -2834,7 +2834,7 @@ void MultiGetJob::slotData( const QByteArray &_data)
 {
     Q_D(MultiGetJob);
     if(d->m_redirectionURL.isEmpty() || !d->m_redirectionURL.isValid() || error())
-        Q_EMIT data(d->m_currentEntry.id, _data);
+        emit data(d->m_currentEntry.id, _data);
 }
 
 void MultiGetJob::slotMimetype( const QString &_mimetype )
@@ -2851,7 +2851,7 @@ void MultiGetJob::slotMimetype( const QString &_mimetype )
      }
   }
   if (!d->findCurrentEntry()) return; // Error, unknown request!
-  Q_EMIT mimetype(d->m_currentEntry.id, _mimetype);
+  emit mimetype(d->m_currentEntry.id, _mimetype);
 }
 
 MultiGetJob *KIO::multi_get(long id, const QUrl &url, const MetaData &metaData)

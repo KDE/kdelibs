@@ -254,9 +254,9 @@ KFind::Result KFind::find()
                 if ( clean )
                 {
                     if ( d->customIds )
-                        Q_EMIT highlight(d->currentId, d->index, d->matchedLength);
+                        emit highlight(d->currentId, d->index, d->matchedLength);
                     else
-                        Q_EMIT highlight(d->text, d->index, d->matchedLength);
+                        emit highlight(d->text, d->index, d->matchedLength);
 
                     d->lastResult = Match;
                     d->matchedPattern = d->pattern;
@@ -358,9 +358,9 @@ KFind::Result KFind::find()
                     // Tell the world about the match we found, in case someone wants to
                     // highlight it.
                     if ( d->customIds )
-                        Q_EMIT highlight(d->currentId, d->index, d->matchedLength);
+                        emit highlight(d->currentId, d->index, d->matchedLength);
                     else
-                        Q_EMIT highlight(d->text, d->index, d->matchedLength);
+                        emit highlight(d->text, d->index, d->matchedLength);
 
                     if ( !d->dialogClosed )
                         findNextDialog(true)->show();
@@ -609,7 +609,7 @@ int KFind::find(const QString &text, const QRegExp &pattern, int index, long opt
 
 void KFind::Private::_k_slotFindNext()
 {
-    Q_EMIT q->findNext();
+    emit q->findNext();
 }
 
 void KFind::Private::_k_slotDialogClosed()
@@ -617,7 +617,7 @@ void KFind::Private::_k_slotDialogClosed()
 #ifdef DEBUG_FIND
     //qDebug() << " Begin";
 #endif
-    Q_EMIT q->dialogClosed();
+    emit q->dialogClosed();
     dialogClosed = true;
 #ifdef DEBUG_FIND
     //qDebug() << " End";

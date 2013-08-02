@@ -125,27 +125,27 @@ KIO::filesize_t FileJob::size()
 void FileJobPrivate::slotData( const QByteArray &_data)
 {
     Q_Q(FileJob);
-    Q_EMIT q_func()->data(q, _data);
+    emit q_func()->data(q, _data);
 }
 
 void FileJobPrivate::slotRedirection(const QUrl &url)
 {
     Q_Q(FileJob);
     //qDebug() << url;
-    Q_EMIT q->redirection(q, url);
+    emit q->redirection(q, url);
 }
 
 void FileJobPrivate::slotMimetype( const QString& type )
 {
     Q_Q(FileJob);
     m_mimetype = type;
-    Q_EMIT q->mimetype(q, m_mimetype);
+    emit q->mimetype(q, m_mimetype);
 }
 
 void FileJobPrivate::slotPosition( KIO::filesize_t pos )
 {
     Q_Q(FileJob);
-    Q_EMIT q->position(q, pos);
+    emit q->position(q, pos);
 }
 
 void FileJobPrivate::slotTotalSize( KIO::filesize_t t_size )
@@ -159,20 +159,20 @@ void FileJobPrivate::slotOpen( )
 {
     Q_Q(FileJob);
     m_open = true;
-    Q_EMIT q->open( q );
+    emit q->open( q );
 }
 
 void FileJobPrivate::slotWritten( KIO::filesize_t t_written )
 {
     Q_Q(FileJob);
-    Q_EMIT q->written(q, t_written);
+    emit q->written(q, t_written);
 }
 
 void FileJobPrivate::slotFinished()
 {
     Q_Q(FileJob);
     //qDebug() << this << m_url;
-    Q_EMIT q->close( q );
+    emit q->close( q );
     // Return slave to the scheduler
     slaveDone();
 //     Scheduler::doJob(this);

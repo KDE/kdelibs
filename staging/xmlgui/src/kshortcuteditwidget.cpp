@@ -103,7 +103,7 @@ void ShortcutEditWidget::defaultToggled(bool checked)
         if (m_customEditor->isKeySequenceAvailable(m_defaultKeySequence)) {
             // Clear the customs widget
             m_customEditor->clearKeySequence();
-            Q_EMIT keySequenceChanged(m_defaultKeySequence);
+            emit keySequenceChanged(m_defaultKeySequence);
         } else {
             // We tried to switch to the default key sequence and failed. Go
             // back.
@@ -111,7 +111,7 @@ void ShortcutEditWidget::defaultToggled(bool checked)
         }
     } else {
         // The empty key sequence is always valid
-        Q_EMIT keySequenceChanged(QKeySequence());
+        emit keySequenceChanged(QKeySequence());
     }
     m_isUpdating = false;
 }
@@ -166,7 +166,7 @@ void ShortcutEditWidget::setCustom(const QKeySequence &seq)
     // We do this by calling setKeySequence which will do the right thing.
     setKeySequence(original);
 
-    Q_EMIT keySequenceChanged(original);
+    emit keySequenceChanged(original);
     m_isUpdating = false;
 }
 

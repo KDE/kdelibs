@@ -47,7 +47,7 @@ QString Filter::dump() const
 {
 	QString s = "<filter>";
 	s += m_expr->dump();
-	Q_FOREACH( Predicate *predicate, m_predicates ) {
+	foreach( Predicate *predicate, m_predicates ) {
 		s += predicate->dump();
 	}
 	s += "</filter>";
@@ -69,7 +69,7 @@ Value Filter::doEvaluate() const
 	// Filter seems to work in document order, not axis order
 	inNodes->normalizeUpto(StaticNodeListImpl::DocumentOrder);
 
-	Q_FOREACH( Predicate *predicate, m_predicates ) {
+	foreach( Predicate *predicate, m_predicates ) {
 		outNodes = new StaticNodeListImpl();
 		Expression::evaluationContext().size = int(inNodes->length());
 
@@ -106,7 +106,7 @@ LocationPath::~LocationPath()
 
 void LocationPath::optimize()
 {
-	Q_FOREACH( Step *step, m_steps ) {
+	foreach( Step *step, m_steps ) {
 		step->optimize();
 	}
 }
@@ -140,7 +140,7 @@ Value LocationPath::doEvaluate() const
 		return Value( inDomNodes );
 
 	int s = 0;
-	Q_FOREACH( Step *step, m_steps ) {
+	foreach( Step *step, m_steps ) {
 #ifdef XPATH_VERBOSE
 		qDebug() << "-------------------------------------";
 		qDebug() << "Step " << s << "insize " << inDomNodes->length();
@@ -171,7 +171,7 @@ QString LocationPath::dump() const
 	QString s = "<locationpath absolute=\"";
 	s += m_absolute ? "true" : "false";
 	s += "\">";
-	Q_FOREACH( Step *step, m_steps ) {
+	foreach( Step *step, m_steps ) {
 		s += step->dump();
 	}
 	s += "</locationpath>";

@@ -182,7 +182,7 @@ void KIconButton::KIconButtonPrivate::_k_newIconName(const QString& name)
         mpDialog->setCustomLocation(QFileInfo(mpLoader->iconPath(mIcon, mGroup, true)).absolutePath());
     }
 
-    Q_EMIT q->iconChanged(name);
+    emit q->iconChanged(name);
 }
 
 #include "moc_kiconbutton.cpp"

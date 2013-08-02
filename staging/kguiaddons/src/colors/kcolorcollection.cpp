@@ -146,7 +146,7 @@ KColorCollection::save()
 
    str << "KDE RGB Palette\n";
    str << description << "\n";
-   Q_FOREACH (const KColorCollectionPrivate::ColorNode &node, d->colorList)
+   foreach (const KColorCollectionPrivate::ColorNode &node, d->colorList)
    {
        int r,g,b;
        node.color.getRgb(&r, &g, &b);

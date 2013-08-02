@@ -97,7 +97,7 @@ class CipherCc
 public:
     CipherCc()
     {
-        Q_FOREACH (const QSslCipher &c, QSslSocket::supportedCiphers()) {
+        foreach (const QSslCipher &c, QSslSocket::supportedCiphers()) {
             allCiphers.insert(c.name(), c);
         }
     }
@@ -337,27 +337,27 @@ public:
     //private slots
     void reemitSocketError(QAbstractSocket::SocketError e)
     {
-        Q_EMIT q->error(errorFromAbsSocket(e));
+        emit q->error(errorFromAbsSocket(e));
     }
 
     void reemitSslErrors(const QList<QSslError> &errors)
     {
         q->showSslErrors(); //H4X
         QList<KSslError> kErrors;
-        Q_FOREACH (const QSslError &e, errors) {
+        foreach (const QSslError &e, errors) {
             kErrors.append(KSslError(e));
         }
-        Q_EMIT q->sslErrors(kErrors);
+        emit q->sslErrors(kErrors);
     }
 
     void reemitStateChanged(QAbstractSocket::SocketState s)
     {
-        Q_EMIT q->stateChanged(state(s));
+        emit q->stateChanged(state(s));
     }
 
     void reemitModeChanged(QSslSocket::SslMode m)
     {
-        Q_EMIT q->encryptionModeChanged(encryptionMode(m));
+        emit q->encryptionModeChanged(encryptionMode(m));
     }
 
     // This method is needed because we might emit readyRead() due to this QIODevice
@@ -367,7 +367,7 @@ public:
     {
         if (!emittedReadyRead) {
             emittedReadyRead = true;
-            Q_EMIT q->readyRead();
+            emit q->readyRead();
             emittedReadyRead = false;
         }
     }
@@ -557,7 +557,7 @@ QList<KSslError> KTcpSocket::sslErrors() const
     //    duplicates even though there were none in the original list because KSslError
     //    has a smallest common denominator range of SSL error codes.
     QList<KSslError> ret;
-    Q_FOREACH (const QSslError &e, d->sock.sslErrors())
+    foreach (const QSslError &e, d->sock.sslErrors())
         ret.append(KSslError(e));
     return ret;
 }
@@ -733,7 +733,7 @@ void KTcpSocket::setCiphers(const QList<KSslCipher> &ciphers)
 {
     d->ciphers = ciphers;
     QList<QSslCipher> cl;
-    Q_FOREACH (const KSslCipher &c, d->ciphers) {
+    foreach (const KSslCipher &c, d->ciphers) {
         cl.append(d->ccc.converted(c));
     }
     d->sock.setCiphers(cl);
@@ -841,7 +841,7 @@ void KTcpSocket::startClientEncryption()
 //debugging H4X
 void KTcpSocket::showSslErrors()
 {
-	Q_FOREACH (const QSslError &e, d->sock.sslErrors())
+	foreach (const QSslError &e, d->sock.sslErrors())
 		qDebug() << e.errorString();
 }
 
@@ -1084,7 +1084,7 @@ QList<KSslCipher> KSslCipher::supportedCiphers()
 {
     QList<KSslCipher> ret;
     QList<QSslCipher> candidates = QSslSocket::supportedCiphers();
-    Q_FOREACH(const QSslCipher &c, candidates) {
+    foreach(const QSslCipher &c, candidates) {
         ret.append(KSslCipher(c));
     }
     return ret;
@@ -1118,7 +1118,7 @@ KSslErrorUiData::KSslErrorUiData(const QSslSocket *socket)
     d->certificateChain = socket->peerCertificateChain();
 
     // See KTcpSocket::sslErrors()
-    Q_FOREACH (const QSslError &e, socket->sslErrors())
+    foreach (const QSslError &e, socket->sslErrors())
         d->sslErrors.append(KSslError(e));
 
     d->ip = socket->peerAddress().toString();

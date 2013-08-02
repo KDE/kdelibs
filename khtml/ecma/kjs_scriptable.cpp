@@ -297,7 +297,7 @@ void WrapScriptableObject::getOwnPropertyNames(ExecState* exec, PropertyNameArra
     if (ok) {
         QStringList out;
         if (actualObj.owner->enumerateProperties(principal(exec), actualObj.objId, &out)) {
-            Q_FOREACH (const QString& s, out)
+            foreach (const QString& s, out)
                 a.add(Identifier(s));
         }
     }

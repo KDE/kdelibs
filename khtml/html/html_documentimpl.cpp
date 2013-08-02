@@ -341,7 +341,7 @@ public:
     virtual void begin();
     virtual void write(const TokenizerString &str, bool appendData);
 
-    virtual void end()    { Q_EMIT finishedParsing(); };
+    virtual void end()    { emit finishedParsing(); };
     virtual void finish() { end(); };
 
     // We don't support any inline scripts here

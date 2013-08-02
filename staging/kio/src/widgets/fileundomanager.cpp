@@ -116,14 +116,14 @@ public:
     }
 
     void emitCreatingDir(const QUrl &dir)
-    { Q_EMIT description(this, i18n("Creating directory"),
+    { emit description(this, i18n("Creating directory"),
                        qMakePair(i18n("Directory"), dir.toDisplayString())); }
     void emitMoving(const QUrl &src, const QUrl &dest)
-    { Q_EMIT description(this, i18n("Moving"),
+    { emit description(this, i18n("Moving"),
                        qMakePair(i18nc("The source of a file operation", "Source"), src.toDisplayString()),
                        qMakePair(i18nc("The destination of a file operation", "Destination"), dest.toDisplayString())); }
     void emitDeleting(const QUrl &url)
-    { Q_EMIT description(this, i18n("Deleting"),
+    { emit description(this, i18n("Deleting"),
                        qMakePair(i18n("File"), url.toDisplayString())); }
     void emitResult() { KIO::Job::emitResult(); }
 };
@@ -250,7 +250,7 @@ void FileUndoManager::recordJob(CommandType op, const QList<QUrl> &src, const QU
 {
     // This records what the job does and calls addCommand when done
     (void) new CommandRecorder(op, src, dst, job);
-    Q_EMIT jobRecordingStarted(op);
+    emit jobRecordingStarted(op);
 }
 
 void FileUndoManager::recordCopyJob(KIO::CopyJob* copyJob)
@@ -274,7 +274,7 @@ void FileUndoManager::recordCopyJob(KIO::CopyJob* copyJob)
 void FileUndoManagerPrivate::addCommand(const UndoCommand &cmd)
 {
     broadcastPush(cmd);
-    Q_EMIT q->jobRecordingFinished(cmd.m_type);
+    emit q->jobRecordingFinished(cmd.m_type);
 }
 
 bool FileUndoManager::undoAvailable() const
@@ -603,7 +603,7 @@ void FileUndoManagerPrivate::stepRemovingDirectories()
             //qDebug() << "Notifying FilesAdded for " << *it;
             org::kde::KDirNotify::emitFilesAdded((*it));
         }
-        Q_EMIT q->undoJobFinished();
+        emit q->undoJobFinished();
         broadcastUnlock();
     }
 }
@@ -620,29 +620,29 @@ void FileUndoManagerPrivate::slotPush(QByteArray data)
 void FileUndoManagerPrivate::pushCommand(const UndoCommand& cmd)
 {
     m_commands.append(cmd);
-    Q_EMIT q->undoAvailable(true);
-    Q_EMIT q->undoTextChanged(q->undoText());
+    emit q->undoAvailable(true);
+    emit q->undoTextChanged(q->undoText());
 }
 
 void FileUndoManagerPrivate::slotPop()
 {
     m_commands.removeLast();
-    Q_EMIT q->undoAvailable(q->undoAvailable());
-    Q_EMIT q->undoTextChanged(q->undoText());
+    emit q->undoAvailable(q->undoAvailable());
+    emit q->undoTextChanged(q->undoText());
 }
 
 void FileUndoManagerPrivate::slotLock()
 {
 //  assert(!m_lock);
     m_lock = true;
-    Q_EMIT q->undoAvailable(q->undoAvailable());
+    emit q->undoAvailable(q->undoAvailable());
 }
 
 void FileUndoManagerPrivate::slotUnlock()
 {
 //  assert(m_lock);
     m_lock = false;
-    Q_EMIT q->undoAvailable(q->undoAvailable());
+    emit q->undoAvailable(q->undoAvailable());
 }
 
 QByteArray FileUndoManagerPrivate::get() const
@@ -663,7 +663,7 @@ void FileUndoManagerPrivate::broadcastPush(const UndoCommand &cmd)
     QByteArray data;
     QDataStream stream(&data, QIODevice::WriteOnly);
     stream << cmd;
-    Q_EMIT push(data); // DBUS signal
+    emit push(data); // DBUS signal
 }
 
 void FileUndoManagerPrivate::broadcastPop()
@@ -673,7 +673,7 @@ void FileUndoManagerPrivate::broadcastPop()
         return;
     }
 
-    Q_EMIT pop(); // DBUS signal
+    emit pop(); // DBUS signal
 }
 
 void FileUndoManagerPrivate::broadcastLock()
@@ -684,7 +684,7 @@ void FileUndoManagerPrivate::broadcastLock()
         slotLock();
         return;
     }
-    Q_EMIT lock(); // DBUS signal
+    emit lock(); // DBUS signal
 }
 
 void FileUndoManagerPrivate::broadcastUnlock()
@@ -695,7 +695,7 @@ void FileUndoManagerPrivate::broadcastUnlock()
         slotUnlock();
         return;
     }
-    Q_EMIT unlock(); // DBUS signal
+    emit unlock(); // DBUS signal
 }
 
 bool FileUndoManagerPrivate::initializeFromKDesky()

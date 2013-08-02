@@ -210,7 +210,7 @@ void KSslInfoDialog::displayFromChain(int i)
     QString trusted;
     if (!d->certificateErrors[i].isEmpty()) {
         trusted = i18nc("The certificate is not trusted", "NO, there were errors:");
-        Q_FOREACH (KSslError::Error e, d->certificateErrors[i]) {
+        foreach (KSslError::Error e, d->certificateErrors[i]) {
             KSslError classError(e);
             trusted.append('\n');
             trusted.append(classError.errorString());
@@ -239,10 +239,10 @@ QList<QList<KSslError::Error> > KSslInfoDialog::errorsFromString(const QString &
 {
     QStringList sl = es.split('\n', QString::KeepEmptyParts);
     QList<QList<KSslError::Error> > ret;
-    Q_FOREACH (const QString &s, sl) {
+    foreach (const QString &s, sl) {
         QList<KSslError::Error> certErrors;
         QStringList sl2 = s.split('\t', QString::SkipEmptyParts);
-        Q_FOREACH (const QString &s2, sl2) {
+        foreach (const QString &s2, sl2) {
             bool didConvert;
             KSslError::Error error = static_cast<KSslError::Error>(s2.toInt(&didConvert));
             if (didConvert) {

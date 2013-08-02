@@ -1188,7 +1188,7 @@ void Loader::load(DocLoader* dl, CachedObject *object, bool incremental, int pri
 {
     Request *req = new Request(dl, object, incremental, priority);
     scheduleRequest(req);
-    Q_EMIT requestStarted( req->m_docLoader, req->object );
+    emit requestStarted( req->m_docLoader, req->object );
 }
 
 void Loader::scheduleRequest(Request* req)
@@ -1267,13 +1267,13 @@ void Loader::slotFinished( KJob* job )
       qDebug() << "ERROR: job->error() =" << j->error() << ", job->isErrorPage() =" << j->isErrorPage();
 #endif
       r->object->error( job->error(), job->errorText().toLatin1().constData() );
-      Q_EMIT requestFailed( r->m_docLoader, r->object );
+      emit requestFailed( r->m_docLoader, r->object );
   }
   else {
       QString cs = j->queryMetaData("charset");
       if (!cs.isEmpty()) r->object->setCharset(cs);
       r->object->data(r->m_buffer, true);
-      Q_EMIT requestDone( r->m_docLoader, r->object );
+      emit requestDone( r->m_docLoader, r->object );
       QDateTime expireDate = QDateTime::fromTime_t(j->queryMetaData("expire-date").toLong());
 #ifdef LOADER_DEBUG
       qDebug() << "url =" << j->url().url();
@@ -1334,7 +1334,7 @@ void Loader::slotData( KIO::Job*job, const QByteArray &data )
 int Loader::numRequests( DocLoader* dl ) const
 {
     int res = 0;
-    Q_FOREACH( Request* req, m_requestsLoading)
+    foreach( Request* req, m_requestsLoading)
         if ( req->m_docLoader == dl )
             res++;
 
@@ -1423,7 +1423,7 @@ void Cache::clear()
 
 #ifndef NDEBUG
     bool crash = false;
-    Q_FOREACH (CachedObject* co, *cache) {
+    foreach (CachedObject* co, *cache) {
         if (!co->canDelete()) {
             qDebug() << " Object in cache still linked to";
             qDebug() << " -> URL :" << co->url();
@@ -1432,14 +1432,14 @@ void Cache::clear()
 //         assert(co->canDelete());
         }
     }
-    Q_FOREACH (CachedObject* co, *freeList) {
+    foreach (CachedObject* co, *freeList) {
         if (!co->canDelete()) {
             qDebug() << " Object in freelist still linked to";
             qDebug() << " -> URL :" << co->url();
             qDebug() << " -> #clients :" << co->count();
             crash = true;
             /*
-            Q_FOREACH (CachedObjectClient* cur, (*co->m_clients)))
+            foreach (CachedObjectClient* cur, (*co->m_clients)))
             {
                 if (dynamic_cast<RenderObject*>(cur)) {
                     qDebug() << " --> RenderObject";
@@ -1564,7 +1564,7 @@ void Cache::statistics()
     int stylesheets = 0;
     int sound = 0;
     int fonts = 0;
-    Q_FOREACH (CachedObject* o, *cache)
+    foreach (CachedObject* o, *cache)
     {
         switch(o->type()) {
         case CachedObject::Image:
@@ -1615,7 +1615,7 @@ void Cache::removeCacheEntry( CachedObject *object )
     cache->remove( key );
     removeFromLRUList( object );
 
-    Q_FOREACH( DocLoader* dl, *docloader )
+    foreach( DocLoader* dl, *docloader )
         dl->removeCachedObject( object );
 
     if ( !object->free() ) {

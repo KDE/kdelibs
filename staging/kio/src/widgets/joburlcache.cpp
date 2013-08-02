@@ -55,12 +55,12 @@ JobUrlCache::~JobUrlCache()
 void JobUrlCache::slotJobUrlsChanged(QStringList urlList)
 {
     m_destUrls = urlList;
-    Q_EMIT jobUrlsChanged(urlList);
+    emit jobUrlsChanged(urlList);
 }
 
 void JobUrlCache::requestJobUrlsChanged()
 {
-    Q_EMIT jobUrlsChanged(m_destUrls);
+    emit jobUrlsChanged(m_destUrls);
 }
 
 #include "moc_joburlcache_p.cpp"

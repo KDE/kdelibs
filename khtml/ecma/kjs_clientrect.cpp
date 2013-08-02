@@ -144,7 +144,7 @@ ClientRectList::ClientRectList(ExecState* /*exec*/)
 ClientRectList::ClientRectList(ExecState* exec, const QList< QRectF >& list)
     : JSObject()
 {
-    Q_FOREACH(const QRectF& rect, list)
+    foreach(const QRectF& rect, list)
         m_list.append(new ClientRect(exec, rect));
 }
 

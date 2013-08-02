@@ -118,7 +118,7 @@ KUniqueApplication::start(StartFlags flags)
   if (parts.isEmpty())
      appName.prepend(QLatin1String("local."));
   else
-     Q_FOREACH (const QString& s, parts)
+     foreach (const QString& s, parts)
      {
         appName.prepend(QLatin1Char('.'));
         appName.prepend(s);

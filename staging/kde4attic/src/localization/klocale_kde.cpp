@@ -611,7 +611,7 @@ bool KLocalePrivate::setLanguage(const QStringList &languages)
     //    kdelibs.mo but nothing from appname.mo, you get a mostly English app with layout from
     //    right to left. That was considered to be a bug by the Hebrew translators.
     QStringList list;
-    Q_FOREACH(const QString &language, languages) {
+    foreach(const QString &language, languages) {
         if (!language.isEmpty() && !list.contains(language) && KLocalizedString::isApplicationTranslatedInto(language)) {
             list.append(language);
         }
@@ -847,7 +847,7 @@ QString KLocalePrivate::convertDigits(const QString &str, KLocale::DigitSet digi
 
     QString nstr;
     QString digitDraw = digitSetString(digitSet);
-    Q_FOREACH(const QChar &c, str) {
+    foreach(const QChar &c, str) {
         if (c.isDigit()) {
             nstr += digitDraw[c.digitValue()];
         } else {
@@ -860,7 +860,7 @@ QString KLocalePrivate::convertDigits(const QString &str, KLocale::DigitSet digi
 QString KLocalePrivate::toArabicDigits(const QString &str)
 {
     QString nstr;
-    Q_FOREACH(const QChar &c, str) {
+    foreach(const QChar &c, str) {
         if (c.isDigit()) {
             nstr += QChar('0' + c.digitValue());
         } else {
@@ -1000,7 +1000,7 @@ QList<int> KLocalePrivate::digitGroupFormatToList(const QString &digitGroupForma
 {
     QList<int> groupList;
     QStringList stringList = digitGroupFormat.split(QLatin1Char(';'));
-    Q_FOREACH(const QString &size, stringList) {
+    foreach(const QString &size, stringList) {
         groupList.append(size.toInt());
     }
     return groupList;
@@ -1602,13 +1602,13 @@ double KLocalePrivate::readNumber(const QString &_str, bool * ok) const
 
     // Check the major and minor parts are only digits
     bool digitTest = true;
-    Q_FOREACH (const QChar &ch, major) {
+    foreach (const QChar &ch, major) {
         if (!ch.isDigit()) {
             digitTest = false;
             break;
         }
     }
-    Q_FOREACH (const QChar &ch, minor) {
+    foreach (const QChar &ch, minor) {
         if (!ch.isDigit()) {
             digitTest = false;
             break;
@@ -1725,13 +1725,13 @@ double KLocalePrivate::readMoney(const QString &_str, bool *ok) const
 
     // Check the major and minor parts are only digits
     bool digitTest = true;
-    Q_FOREACH (const QChar &ch, major) {
+    foreach (const QChar &ch, major) {
         if (!ch.isDigit()) {
             digitTest = false;
             break;
         }
     }
-    Q_FOREACH (const QChar &ch, minor) {
+    foreach (const QChar &ch, minor) {
         if (!ch.isDigit()) {
             digitTest = false;
             break;
@@ -1950,7 +1950,7 @@ QTime KLocalePrivate::readLocaleTime(const QString &intstr, bool *ok, KLocale::T
         case 'P': // Lowercase Day Period, normally am/pm
         {
             error = true;
-            Q_FOREACH (const KDayPeriod &testDayPeriod, dayPeriods()) {
+            foreach (const KDayPeriod &testDayPeriod, dayPeriods()) {
                 QString dayPeriodText = testDayPeriod.periodName(KLocale::ShortName);
                 int len = dayPeriodText.length();
                 if (str.mid(strpos, len) == dayPeriodText.toLower()) {
@@ -2132,7 +2132,7 @@ bool KLocalePrivate::use12Clock() const
 void KLocalePrivate::setDayPeriods(const QList<KDayPeriod> &dayPeriods)
 {
     if (dayPeriods.count() > 0) {
-        Q_FOREACH (const KDayPeriod &dayPeriod, dayPeriods) {
+        foreach (const KDayPeriod &dayPeriod, dayPeriods) {
             if (!dayPeriod.isValid()) {
                 return;
             }
@@ -2165,7 +2165,7 @@ QList<KDayPeriod> KLocalePrivate::dayPeriods() const
 KDayPeriod KLocalePrivate::dayPeriodForTime(const QTime &time) const
 {
     if (time.isValid()) {
-        Q_FOREACH (const KDayPeriod &dayPeriod, dayPeriods()) {
+        foreach (const KDayPeriod &dayPeriod, dayPeriods()) {
             if (dayPeriod.isValid(time)) {
                 return dayPeriod;
             }

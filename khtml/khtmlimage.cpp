@@ -145,13 +145,13 @@ bool KHTMLImage::openUrl(const QUrl &url)
 
     setUrl(url);
 
-    Q_EMIT started( 0 );
+    emit started( 0 );
 
     KParts::OpenUrlArguments args = arguments();
     m_mimeType = args.mimeType();
 
     QUrl kurl(url);
-    Q_EMIT setWindowCaption(kurl.toDisplayString());
+    emit setWindowCaption(kurl.toDisplayString());
 
     // Need to keep a copy of the offsets since they are cleared when emitting completed
     m_xOffset = args.xOffset();
@@ -216,9 +216,9 @@ void KHTMLImage::notifyFinished( khtml::CachedObject *o )
         }
     }
 
-    Q_EMIT setWindowCaption( caption );
-    Q_EMIT completed();
-    Q_EMIT setStatusBarText(i18n("Done."));
+    emit setWindowCaption( caption );
+    emit completed();
+    emit setStatusBarText(i18n("Done."));
 }
 
 void KHTMLImage::restoreScrollPosition()
@@ -244,11 +244,11 @@ void KHTMLImage::slotImageJobFinished( KIO::Job *job )
     if ( job->error() )
     {
         job->uiDelegate()->showErrorMessage();
-        Q_EMIT canceled( job->errorString() );
+        emit canceled( job->errorString() );
     }
     else
     {
-        Q_EMIT completed();
+        emit completed();
         QTimer::singleShot( 0, this, SLOT(updateWindowCaption()) );
     }
 }
@@ -288,9 +288,9 @@ void KHTMLImage::updateWindowCaption()
     else
         caption = i18n( "Image - %1x%2 Pixels" ).arg( pix.width() ).arg( pix.height() );
 
-    Q_EMIT setWindowCaption( caption );
-    Q_EMIT completed();
-    Q_EMIT setStatusBarText(i18n("Done."));
+    emit setWindowCaption( caption );
+    emit completed();
+    emit setStatusBarText(i18n("Done."));
 }
 */
 

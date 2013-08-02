@@ -131,7 +131,7 @@ bool KSslCertificateRule::isRejected() const
 
 bool KSslCertificateRule::isErrorIgnored(KSslError::Error error) const
 {
-    Q_FOREACH (KSslError::Error ignoredError, d->ignoredErrors)
+    foreach (KSslError::Error ignoredError, d->ignoredErrors)
         if (error == ignoredError)
             return true;
 
@@ -143,7 +143,7 @@ void KSslCertificateRule::setIgnoredErrors(const QList<KSslError::Error> &errors
 {
     d->ignoredErrors.clear();
     //### Quadratic runtime, woohoo! Use a QSet if that should ever be an issue.
-    Q_FOREACH(KSslError::Error e, errors)
+    foreach(KSslError::Error e, errors)
         if (!isErrorIgnored(e))
             d->ignoredErrors.append(e);
 }
@@ -152,7 +152,7 @@ void KSslCertificateRule::setIgnoredErrors(const QList<KSslError::Error> &errors
 void KSslCertificateRule::setIgnoredErrors(const QList<KSslError> &errors)
 {
     QList<KSslError::Error> el;
-    Q_FOREACH(const KSslError &e, errors)
+    foreach(const KSslError &e, errors)
         el.append(e.error());
     setIgnoredErrors(el);
 }
@@ -167,7 +167,7 @@ QList<KSslError::Error> KSslCertificateRule::ignoredErrors() const
 QList<KSslError::Error> KSslCertificateRule::filterErrors(const QList<KSslError::Error> &errors) const
 {
     QList<KSslError::Error> ret;
-    Q_FOREACH (KSslError::Error error, errors) {
+    foreach (KSslError::Error error, errors) {
         if (!isErrorIgnored(error))
             ret.append(error);
     }
@@ -178,7 +178,7 @@ QList<KSslError::Error> KSslCertificateRule::filterErrors(const QList<KSslError:
 QList<KSslError> KSslCertificateRule::filterErrors(const QList<KSslError> &errors) const
 {
     QList<KSslError> ret;
-    Q_FOREACH (const KSslError &error, errors) {
+    foreach (const KSslError &error, errors) {
         if (!isErrorIgnored(error.error()))
             ret.append(error);
     }
@@ -192,7 +192,7 @@ static QList<QSslCertificate> deduplicate(const QList<QSslCertificate> &certs)
 {
     QSet<QByteArray> digests;
     QList<QSslCertificate> ret;
-    Q_FOREACH (const QSslCertificate &cert, certs) {
+    foreach (const QSslCertificate &cert, certs) {
         QByteArray digest = cert.digest();
         if (!digests.contains(digest)) {
             digests.insert(digest);
@@ -231,7 +231,7 @@ void KSslCertificateManagerPrivate::loadDefaultCaCertificates()
 
     certs.append(QSslCertificate::fromPath(userCertDir + QLatin1String("*"), QSsl::Pem,
                                            QRegExp::Wildcard));
-    Q_FOREACH (const QSslCertificate &cert, certs) {
+    foreach (const QSslCertificate &cert, certs) {
         const QByteArray digest = cert.digest().toHex();
         if (!group.hasKey(digest.constData())) {
             defaultCaCertificates += cert;
@@ -296,7 +296,7 @@ bool KSslCertificateManagerPrivate::removeCertificate(const KSslCaCertificate &o
 
         bool removed = false;
         QDir dir(userCertDir);
-        Q_FOREACH (const QString &certFilename, dir.entryList(QDir::Files)) {
+        foreach (const QString &certFilename, dir.entryList(QDir::Files)) {
             const QString certPath = userCertDir + certFilename;
             QList<QSslCertificate> certs = QSslCertificate::fromPath(certPath);
 
@@ -382,11 +382,11 @@ QList<KSslCaCertificate> KSslCertificateManagerPrivate::allCertificates() const
 {
     //qDebug() << Q_FUNC_INFO;
     QList<KSslCaCertificate> ret;
-    Q_FOREACH (const QSslCertificate &cert, deduplicate(QSslSocket::systemCaCertificates())) {
+    foreach (const QSslCertificate &cert, deduplicate(QSslSocket::systemCaCertificates())) {
         ret += KSslCaCertificate(cert, KSslCaCertificate::SystemStore, false);
     }
 
-    Q_FOREACH (const QSslCertificate &cert, QSslCertificate::fromPath(userCertDir + QLatin1String("*"),
+    foreach (const QSslCertificate &cert, QSslCertificate::fromPath(userCertDir + QLatin1String("*"),
                                                                     QSsl::Pem, QRegExp::Wildcard)) {
         ret += KSslCaCertificate(cert, KSslCaCertificate::UserStore, false);
     }

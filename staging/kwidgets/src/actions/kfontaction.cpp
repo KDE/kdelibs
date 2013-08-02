@@ -75,7 +75,7 @@ QStringList _k_fontList(const QFontComboBox::FontFilters &fontFilters = QFontCom
         const QFontComboBox::FontFilters scalableMask = (QFontComboBox::ScalableFonts | QFontComboBox::NonScalableFonts);
         const QFontComboBox::FontFilters spacingMask = (QFontComboBox::ProportionalFonts | QFontComboBox::MonospacedFonts);
 
-        Q_FOREACH (const QString &family, dbase.families()) {
+        foreach (const QString &family, dbase.families()) {
             if ((fontFilters & scalableMask) && (fontFilters & scalableMask) != scalableMask) {
                 if (bool(fontFilters & QFontComboBox::ScalableFonts) != dbase.isSmoothlyScalable(family))
                     continue;
@@ -169,7 +169,7 @@ void KFontAction::setFont( const QString &family )
     // Suppress triggered(QString) signal and prevent recursive call to ourself.
     d->settingFont++;
 
-    Q_FOREACH(QWidget *w, createdWidgets())
+    foreach(QWidget *w, createdWidgets())
     {
         QFontComboBox *cb = qobject_cast<QFontComboBox *>(w);
         qDebug() << "\tw=" << w << "cb=" << cb;

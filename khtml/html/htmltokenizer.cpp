@@ -1922,7 +1922,7 @@ void HTMLTokenizer::end()
         rawContentSize = rawContentMaxSize = rawContentResync = 0;
         buffer = 0;
     }
-    Q_EMIT finishedParsing();
+    emit finishedParsing();
 }
 
 void HTMLTokenizer::finish()

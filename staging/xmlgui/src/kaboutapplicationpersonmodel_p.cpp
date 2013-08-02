@@ -212,7 +212,7 @@ void KAboutApplicationPersonModel::onPersonJobFinished( Attica::BaseJob *job )  
         m_profileList.replace( personProfileListIndex, profile );
 
         if( p.avatarUrl().isEmpty() ) {
-            Q_EMIT dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
+            emit dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
             fetchOcsLinkIcons( personProfileListIndex );
         }
         else {
@@ -241,7 +241,7 @@ void KAboutApplicationPersonModel::onAvatarJobFinished( QNetworkReply *reply )  
 
     if( reply->error() != QNetworkReply::NoError ) {
         //qDebug() << "Could not fetch OCS person avatar.";
-        Q_EMIT dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
+        emit dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
         return;
     }
     QByteArray data = reply->readAll();
@@ -283,8 +283,8 @@ void KAboutApplicationPersonModel::onOcsLinksJobFinished( KAboutApplicationPerso
 
     m_profileList.replace( personProfileListIndex, profile );
 
-    Q_EMIT dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
-    Q_EMIT layoutChanged();
+    emit dataChanged( index( personProfileListIndex ), index( personProfileListIndex ) );
+    emit layoutChanged();
 }
 
 KAboutApplicationPersonProfileOcsLink::Type KAboutApplicationPersonProfileOcsLink::typeFromAttica( const QString &atticaType )
@@ -378,7 +378,7 @@ void KAboutApplicationPersonIconsJob::getIcons( int i )
         }
         ++i;
     }
-    Q_EMIT finished( this );
+    emit finished( this );
 }
 
 void KAboutApplicationPersonIconsJob::onJobFinished( QNetworkReply *reply ) //SLOT

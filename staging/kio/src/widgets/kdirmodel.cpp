@@ -256,7 +256,7 @@ KDirModelNode* KDirModelPrivate::expandAllParentsUntil(const QUrl& _url) const /
             return dirNode;
         }
 
-        Q_EMIT q->expand(indexForNode(node));
+        emit q->expand(indexForNode(node));
 
         //qDebug() << " nodeUrl=" << nodeUrl;
         if (nodeUrl == url) {
@@ -427,7 +427,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
 
         if (!urlsBeingFetched.isEmpty()) {
             const QUrlPathInfo dirUrl(url);
-            Q_FOREACH(const QUrl& urlFetched, urlsBeingFetched) {
+            foreach(const QUrl& urlFetched, urlsBeingFetched) {
                 if (dirUrl.isParentOfOrEqual(urlFetched)) {
                     //qDebug() << "Listing found" << dirUrl.url() << "which is a parent of fetched url" << urlFetched;
                     const QModelIndex parentIndex = indexForNode(node, dirNode->m_childNodes.count()-1);
@@ -449,7 +449,7 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
     // Emit expand signal after rowsInserted signal has been emitted,
     // so that any proxy model will have updated its mapping already
     Q_FOREACH(const QModelIndex& idx, emitExpandFor) {
-        Q_EMIT q->expand(idx);
+        emit q->expand(idx);
     }
 }
 
@@ -535,7 +535,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
 {
     QModelIndex topLeft, bottomRight;
 
-    // Solution 1: we could Q_EMIT dataChanged for one row (if items.size()==1) or all rows
+    // Solution 1: we could emit dataChanged for one row (if items.size()==1) or all rows
     // Solution 2: more fine-grained, actually figure out the beginning and end rows.
     for ( QList<QPair<KFileItem, KFileItem> >::const_iterator fit = items.begin(), fend = items.end() ; fit != fend ; ++fit ) {
         Q_ASSERT(!fit->first.isNull());
@@ -587,7 +587,7 @@ void KDirModelPrivate::_k_slotRefreshItems(const QList<QPair<KFileItem, KFileIte
     //qDebug() << "dataChanged(" << debugIndex(topLeft) << " - " << debugIndex(bottomRight);
 #endif
     bottomRight = bottomRight.sibling(bottomRight.row(), q->columnCount(QModelIndex())-1);
-    Q_EMIT q->dataChanged(topLeft, bottomRight);
+    emit q->dataChanged(topLeft, bottomRight);
 }
 
 // Called when a kioslave redirects (e.g. smb:/Workgroup -> smb://workgroup)
@@ -622,9 +622,9 @@ void KDirModelPrivate::_k_slotClear()
     }
 
     m_nodeHash.clear();
-    //Q_EMIT layoutAboutToBeChanged();
+    //emit layoutAboutToBeChanged();
     clear();
-    //Q_EMIT layoutChanged();
+    //emit layoutChanged();
 }
 
 void KDirModelPrivate::_k_slotJobUrlsChanged(const QStringList& urlList)
@@ -644,7 +644,7 @@ void KDirModel::itemChanged( const QModelIndex& index )
 #ifndef NDEBUG // debugIndex only defined in debug mode
     //qDebug() << "dataChanged(" << debugIndex(index);
 #endif
-    Q_EMIT dataChanged(index, index);
+    emit dataChanged(index, index);
 }
 
 int KDirModel::columnCount( const QModelIndex & ) const
@@ -812,7 +812,7 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             } else if (value.type() == QVariant::Pixmap) {
                 node->setPreview(qvariant_cast<QPixmap>(value));
             }
-            Q_EMIT dataChanged(index, index);
+            emit dataChanged(index, index);
             return true;
         }
         break;
@@ -860,7 +860,7 @@ static bool lessThan(const QUrl &left, const QUrl &right)
 
 void KDirModel::requestSequenceIcon(const QModelIndex& index, int sequenceIndex)
 {
-    Q_EMIT needSequenceIcon(index, sequenceIndex);
+    emit needSequenceIcon(index, sequenceIndex);
 }
 
 void KDirModel::setJobTransfersVisible(bool value)
@@ -914,7 +914,7 @@ QMimeData * KDirModel::mimeData( const QModelIndexList & indexes ) const
 {
     QList<QUrl> urls, mostLocalUrls;
     bool canUseMostLocalUrls = true;
-    Q_FOREACH (const QModelIndex &index, indexes) {
+    foreach (const QModelIndex &index, indexes) {
         const KFileItem& item = d->nodeForIndex(index)->item();
         urls << item.url();
         bool isLocal;
@@ -1125,7 +1125,7 @@ void KDirModel::setDropsAllowed(DropsAllowed dropsAllowed)
 
 void KDirModel::expandToUrl(const QUrl& url)
 {
-    // Q_EMIT expand for each parent and return last parent
+    // emit expand for each parent and return last parent
     KDirModelNode* result = d->expandAllParentsUntil(url); // O(depth)
     //qDebug() << url << result;
 
@@ -1140,12 +1140,12 @@ void KDirModel::expandToUrl(const QUrl& url)
     d->m_urlsBeingFetched[result].append(url);
 
     if (result == d->m_rootNode) {
-        //qDebug() << "Remembering to Q_EMIT expand after listing the root url";
+        //qDebug() << "Remembering to emit expand after listing the root url";
         // the root is fetched by default, so it must be currently being fetched
         return;
     }
 
-    //qDebug() << "Remembering to Q_EMIT expand after listing" << result->item().url();
+    //qDebug() << "Remembering to emit expand after listing" << result->item().url();
 
     // start a new fetch to look for the next level down the URL
     const QModelIndex parentIndex = d->indexForNode(result); // O(n)

@@ -167,7 +167,7 @@ QString KEmoticonsTheme::parseEmoticons(const QString &text, ParseMode mode, con
 
     QString result;
 
-    Q_FOREACH(const Token &token , tokens) {
+    foreach(const Token &token , tokens) {
         switch (token.type) {
         case Text:
             result += token.text;

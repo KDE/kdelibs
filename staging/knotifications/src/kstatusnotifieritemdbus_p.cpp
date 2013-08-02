@@ -314,13 +314,13 @@ void KStatusNotifierItemDBus::Activate(int x, int y)
 
 void KStatusNotifierItemDBus::SecondaryActivate(int x, int y)
 {
-    Q_EMIT m_statusNotifierItem->secondaryActivateRequested(QPoint(x,y));
+    emit m_statusNotifierItem->secondaryActivateRequested(QPoint(x,y));
 }
 
 void KStatusNotifierItemDBus::Scroll(int delta, const QString &orientation)
 {
     Qt::Orientation dir = (orientation.toLower() == "horizontal" ? Qt::Horizontal : Qt::Vertical);
-    Q_EMIT m_statusNotifierItem->scrollRequested(delta, dir);
+    emit m_statusNotifierItem->scrollRequested(delta, dir);
 }
 
 

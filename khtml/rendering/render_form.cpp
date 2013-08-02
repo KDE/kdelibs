@@ -898,15 +898,15 @@ bool WebShortcutCreator::createWebShortcut(QString query)
             isOk = true;
             QStringList keyList( keys.split( ',' ) );
             KService::List providers = KServiceTypeTrader::self()->query( "SearchProvider" );
-            Q_FOREACH ( const KService::Ptr &provider, providers ) {
+            foreach ( const KService::Ptr &provider, providers ) {
                 if ( !isOk ) {
                     break;
                 }
-                Q_FOREACH ( const QString &s, provider->property( "Keys" ).toStringList() ) {
+                foreach ( const QString &s, provider->property( "Keys" ).toStringList() ) {
                     if ( !isOk ) {
                         break;
                     }
-                    Q_FOREACH ( const QString &t, keys ) {
+                    foreach ( const QString &t, keys ) {
                         if ( !isOk ) {
                             break;
                         }
@@ -1059,7 +1059,7 @@ void LineEditWidget::contextMenuEvent(QContextMenuEvent *e)
                 this, SLOT(slotCreateWebShortcut()));
     }
 
-    Q_EMIT aboutToShowContextMenu(popup);
+    emit aboutToShowContextMenu(popup);
 
     popup->exec(e->globalPos());
     delete popup;
@@ -1157,7 +1157,7 @@ void RenderLineEdit::setStyle(RenderStyle* _style)
     else if (showClearButton && !widget()->isClearButtonShown()) {
         widget()->setClearButtonShown(true);
         QObjectList children = widget()->children();
-        Q_FOREACH (QObject* object, children) {
+        foreach (QObject* object, children) {
             QWidget *w = qobject_cast<QWidget*>(object);
             if (w && !w->isWindow() && (w->objectName() == "KLineEditButton")) {
                 // this duplicates KHTMLView's handleWidget but this widget

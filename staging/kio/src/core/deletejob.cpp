@@ -140,7 +140,7 @@ void DeleteJobPrivate::slotStart()
 void DeleteJobPrivate::slotReport()
 {
    Q_Q(DeleteJob);
-   Q_EMIT q->deleting( q, m_currentURL );
+   emit q->deleting( q, m_currentURL );
 
    // TODO: maybe we could skip everything else when (flags & HideProgressInfo) ?
    JobPrivate::emitDeleting( q, m_currentURL);
@@ -206,7 +206,7 @@ void DeleteJobPrivate::statNextSrc()
         if (!KProtocolManager::supportsDeleting(m_currentURL)) {
             QPointer<DeleteJob> that = q;
             ++m_currentStat;
-            Q_EMIT q->warning(q, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.toDisplayString()));
+            emit q->warning(q, buildErrorString(ERR_CANNOT_DELETE, m_currentURL.toDisplayString()));
             if (that)
                 statNextSrc();
             return;
@@ -416,7 +416,7 @@ void DeleteJob::slotResult( KJob *job )
             // Was there an error while stating ?
             if (job->error()) {
                 // Probably : doesn't exist
-                Job::slotResult(job); // will set the error and Q_EMIT result(this)
+                Job::slotResult(job); // will set the error and emit result(this)
                 return;
             }
 
@@ -444,7 +444,7 @@ void DeleteJob::slotResult( KJob *job )
 
         if ( job->error() )
         {
-            Job::slotResult( job ); // will set the error and Q_EMIT result(this)
+            Job::slotResult( job ); // will set the error and emit result(this)
             return;
         }
         removeSubjob( job );
@@ -456,13 +456,13 @@ void DeleteJob::slotResult( KJob *job )
     case DELETEJOB_STATE_DELETING_DIRS:
         if ( job->error() )
         {
-            Job::slotResult( job ); // will set the error and Q_EMIT result(this)
+            Job::slotResult( job ); // will set the error and emit result(this)
             return;
         }
         removeSubjob( job );
         Q_ASSERT( !hasSubjobs() );
         d->m_processedDirs++;
-        //Q_EMIT processedAmount( this, KJob::Directories, d->m_processedDirs );
+        //emit processedAmount( this, KJob::Directories, d->m_processedDirs );
         //emitPercent( d->m_processedFiles + d->m_processedDirs, d->m_totalFilesDirs );
 
         d->deleteNextDir();

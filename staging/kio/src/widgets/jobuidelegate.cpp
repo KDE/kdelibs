@@ -309,7 +309,7 @@ int KIO::JobUiDelegate::requestMessageBox(KIO::JobUiDelegate::MessageBoxType typ
         const QStringList sl = sslMetaData.value(QLatin1String("ssl_peer_chain")).split('\x01', QString::SkipEmptyParts);
         QList<QSslCertificate> certChain;
         bool decodedOk = true;
-        Q_FOREACH (const QString &s, sl) {
+        foreach (const QString &s, sl) {
             certChain.append(QSslCertificate(s.toLatin1())); //or is it toLocal8Bit or whatever?
             if (certChain.last().isNull()) {
                 decodedOk = false;

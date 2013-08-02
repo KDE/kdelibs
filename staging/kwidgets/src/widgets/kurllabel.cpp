@@ -116,18 +116,18 @@ void KUrlLabel::mouseReleaseEvent( QMouseEvent* event )
 
   switch ( event->button() ) {
     case Qt::LeftButton:
-      Q_EMIT leftClickedUrl();
-      Q_EMIT leftClickedUrl( d->url );
+      emit leftClickedUrl();
+      emit leftClickedUrl( d->url );
       break;
 
     case Qt::MidButton:
-      Q_EMIT middleClickedUrl();
-      Q_EMIT middleClickedUrl( d->url );
+      emit middleClickedUrl();
+      emit middleClickedUrl( d->url );
       break;
 
     case Qt::RightButton:
-      Q_EMIT rightClickedUrl();
-      Q_EMIT rightClickedUrl( d->url );
+      emit rightClickedUrl();
+      emit rightClickedUrl( d->url );
       break;
 
     default:
@@ -288,8 +288,8 @@ void KUrlLabel::enterEvent( QEvent* event )
       setUnderline( true );
   }
 
-  Q_EMIT enteredUrl();
-  Q_EMIT enteredUrl( d->url );
+  emit enteredUrl();
+  emit enteredUrl( d->url );
 }
 
 void KUrlLabel::leaveEvent( QEvent* event )
@@ -304,8 +304,8 @@ void KUrlLabel::leaveEvent( QEvent* event )
 
   setUnderline( d->realUnderlined );
 
-  Q_EMIT leftUrl();
-  Q_EMIT leftUrl( d->url );
+  emit leftUrl();
+  emit leftUrl( d->url );
 }
 
 bool KUrlLabel::event( QEvent *event )

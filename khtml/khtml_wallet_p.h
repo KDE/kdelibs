@@ -65,7 +65,7 @@ class KHTMLWalletQueue : public QObject
         delete wallet;
         wallet = 0L;
       }
-      Q_EMIT walletOpened(wallet);
+      emit walletOpened(wallet);
       if (wallet) {
         if (!wallet->hasFolder(KWallet::Wallet::FormDataFolder())) {
           wallet->createFolder(KWallet::Wallet::FormDataFolder());

@@ -530,7 +530,7 @@ void KResolver::emitFinished()
 
   QPointer<QObject> p = this; // guard against deletion
 
-  Q_EMIT finished(d->results);
+  emit finished(d->results);
 
   if (p && d->deleteWhenDone)
     deleteLater();		// in QObject

@@ -195,13 +195,13 @@ public:
         if (text.isEmpty()) {
             return false;
         }
-        Q_EMIT showCharRequested(text[0]);
+        emit showCharRequested(text[0]);
         return true;
     }
 
     void updateColumnCount(int maxWidth)
     {
-        Q_EMIT layoutAboutToBeChanged();
+        emit layoutAboutToBeChanged();
         QFontMetrics fm(m_font);
         int maxChar = fm.maxWidth();
         if (maxChar < 2*fm.xHeight()) {
@@ -214,7 +214,7 @@ public:
         if (m_columns <= 0) {
             m_columns = 1;
         }
-        Q_EMIT layoutChanged();
+        emit layoutChanged();
     }
 private:
     QList<QChar> m_chars;

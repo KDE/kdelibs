@@ -122,7 +122,7 @@ bool KNotificationManager::notify( KNotification* n, const QPixmap &pix,
 
     QVariantList contextList;
     typedef QPair<QString,QString> Context;
-    Q_FOREACH (const Context& ctx, contexts)
+    foreach (const Context& ctx, contexts)
     {
         QVariantList vl;
         vl << ctx.first << ctx.second;
@@ -165,7 +165,7 @@ void KNotificationManager::reemit(KNotification * n, int id)
 {
 	QVariantList contextList;
 	typedef QPair<QString,QString> Context;
-	Q_FOREACH (const Context& ctx, n->contexts())
+	foreach (const Context& ctx, n->contexts())
 	{
 //		qDebug() << "add context " << ctx.first << "-" << ctx.second;
 		QVariantList vl;

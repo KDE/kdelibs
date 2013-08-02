@@ -271,7 +271,7 @@ void KHelpMenu::aboutApplication()
 {
   if (receivers(SIGNAL(showAboutApplication())) > 0)
   {
-    Q_EMIT showAboutApplication();
+    emit showAboutApplication();
   }
   else  // if (d->mAboutData)
   {

@@ -127,7 +127,7 @@ void KShortcutSchemesEditor::newScheme()
     m_schemesList->addItem(newName);
     m_schemesList->setCurrentIndex(m_schemesList->findText(newName));
     updateDeleteButton();
-    Q_EMIT shortcutsSchemeChanged(newName);
+    emit shortcutsSchemeChanged(newName);
 }
 
 void KShortcutSchemesEditor::deleteScheme()
@@ -141,7 +141,7 @@ Note that this will not remove any system wide shortcut schemes.", currentScheme
     QFile::remove(KShortcutSchemesHelper::applicationShortcutSchemeFileName(currentScheme()));
 
     //delete all scheme files we can find for xmlguiclients in the user directories
-    Q_FOREACH (KActionCollection *collection, m_dialog->actionCollections())
+    foreach (KActionCollection *collection, m_dialog->actionCollections())
     {
         const KXMLGUIClient *client = collection->parentGUIClient();
         if (!client)
@@ -151,7 +151,7 @@ Note that this will not remove any system wide shortcut schemes.", currentScheme
 
     m_schemesList->removeItem(m_schemesList->findText(currentScheme()));
     updateDeleteButton();
-    Q_EMIT shortcutsSchemeChanged(currentScheme());
+    emit shortcutsSchemeChanged(currentScheme());
 }
 
 QString KShortcutSchemesEditor::currentScheme()
@@ -175,7 +175,7 @@ void KShortcutSchemesEditor::exportShortcutsScheme()
         return;
     }
 
-    Q_FOREACH (KActionCollection *collection, m_dialog->actionCollections())
+    foreach (KActionCollection *collection, m_dialog->actionCollections())
     {
         const KXMLGUIClient *client = collection->parentGUIClient();
         if (!client) continue;
@@ -186,7 +186,7 @@ void KShortcutSchemesEditor::exportShortcutsScheme()
 
 void KShortcutSchemesEditor::saveAsDefaultsForScheme()
 {
-    Q_FOREACH (KActionCollection *collection, m_dialog->actionCollections())
+    foreach (KActionCollection *collection, m_dialog->actionCollections())
         KShortcutSchemesHelper::exportActionCollection(collection, currentScheme());
 }
 
