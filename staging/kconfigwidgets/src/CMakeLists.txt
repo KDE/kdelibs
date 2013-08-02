@@ -5,6 +5,7 @@ set(kconfigwidgets_SRCS
   kconfigdialogmanager.cpp
   kcmodule.cpp
   klanguagebutton.cpp
+  krecentfilesaction.cpp
   ktip.cpp
 )
 
@@ -40,6 +41,7 @@ install(FILES
   kconfigdialogmanager.h
   kcmodule.h
   klanguagebutton.h
+  krecentfilesaction.h
   ktip.h
   ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

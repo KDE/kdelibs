@@ -10,7 +10,6 @@ configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidge
 set(kwidgets_LIB_SRCS
   actions/kcodecaction.cpp
   actions/kpastetextaction.cpp
-  actions/krecentfilesaction.cpp
   actions/kstandardaction.cpp
 )
 
@@ -33,6 +32,7 @@ target_link_libraries(KWidgets
 
   ${KConfig_CORE_LIBRARY}
   ${KConfig_GUI_LIBRARY}
+  KConfigWidgets
   ${KCoreAddons_LIBRARIES}
   KGuiAddons
   ${KWidgetsAddons_LIBRARIES}
@@ -54,7 +54,6 @@ install(TARGETS KWidgets EXPORT KWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(FILES
   actions/kcodecaction.h
   actions/kpastetextaction.h
-  actions/krecentfilesaction.h
   actions/kstandardaction.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel

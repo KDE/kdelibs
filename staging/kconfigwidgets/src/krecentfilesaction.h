@@ -29,7 +29,7 @@
 
 #include <kselectaction.h>
 #include <qurl.h>
-#include <kwidgets_export.h>
+#include <kconfigwidgets_export.h>
 
 class KConfigGroup;
 class KRecentFilesActionPrivate;
@@ -44,7 +44,7 @@ class KRecentFilesActionPrivate;
  *
  *  @author Michael Koch
  */
-class KWIDGETS_EXPORT KRecentFilesAction : public KSelectAction
+class KCONFIGWIDGETS_EXPORT KRecentFilesAction : public KSelectAction
 {
   Q_OBJECT
   Q_PROPERTY( int maxItems READ maxItems WRITE setMaxItems )
