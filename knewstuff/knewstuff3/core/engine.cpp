@@ -426,10 +426,33 @@ void Engine::downloadLinkLoaded(const KNS3::EntryInternal& entry)
 
 void Engine::uninstall(KNS3::EntryInternal entry)
 {
-    // FIXME: change the status?
+    KNS3::EntryInternal::List list = m_cache->registryForProvider(entry.providerId());
+    //we have to use the cached entry here, not the entry from the provider
+    //since that does not contain the list of installed files
+    KNS3::EntryInternal actualEntryForUninstall;
+    foreach(const KNS3::EntryInternal& eInt, list) {
+        if (eInt.uniqueId() == entry.uniqueId()) {
+            actualEntryForUninstall = eInt;
+            break;
+        }
+    }
+    if (!actualEntryForUninstall.isValid()) {
+        kDebug() << "could not find a cached entry with following id:" << entry.uniqueId() <<
+		" ->  using the non-cached version";
+        return;
+    }
+
     entry.setStatus(Entry::Installing);
+    actualEntryForUninstall.setStatus(Entry::Installing);
     emit signalEntryChanged(entry);
-    m_installation->uninstall(entry);
+
+    kDebug() << "about to uninstall entry " << entry.uniqueId();
+    // FIXME: change the status?
+    m_installation->uninstall(actualEntryForUninstall);
+
+    entry.setStatus(Entry::Deleted); //status for actual entry gets set in m_installation->uninstall()
+    emit signalEntryChanged(entry);
+
 }
 
 void Engine::loadDetails(const KNS3::EntryInternal &entry)
