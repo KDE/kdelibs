@@ -16,7 +16,6 @@ set(kwidgets_LIB_SRCS
   actions/kselectaction.cpp
   actions/kstandardaction.cpp
   dialogs/ktip.cpp
-  utils/kcolorscheme.cpp
   utils/kstandardshortcut.cpp
   widgets/klanguagebutton.cpp
 )
@@ -67,7 +66,6 @@ install(FILES
   actions/kselectaction.h
   actions/kstandardaction.h
   dialogs/ktip.h
-  utils/kcolorscheme.h
   utils/kstandardshortcut.h
   widgets/klanguagebutton.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h

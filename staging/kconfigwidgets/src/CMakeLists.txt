@@ -1,4 +1,5 @@
 set(kconfigwidgets_SRCS
+  kcolorscheme.cpp
   kconfigdialog.cpp
   kconfigviewstatesaver.cpp
   kconfigdialogmanager.cpp
@@ -19,6 +20,10 @@ target_link_libraries(KConfigWidgets LINK_PUBLIC
     KI18n
 )
 
+target_link_libraries(KConfigWidgets LINK_PRIVATE
+    KGuiAddons
+)
+
 set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSION_STRING}
                                              SOVERSION ${KCONFIGWIDGETS_SOVERSION}
 )
@@ -26,6 +31,7 @@ set_target_properties(KConfigWidgets PROPERTIES VERSION   ${KCONFIGWIDGETS_VERSI
 install(TARGETS KConfigWidgets EXPORT KConfigWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
+  kcolorscheme.h
   kconfigdialog.h
   kconfigviewstatesaver.h
   kviewstatemaintainer.h

@@ -32,6 +32,7 @@ target_link_libraries(KTextWidgets
   KWidgetsAddons
   KService
   KConfigCore
+  KConfigWidgets
   KWindowSystem
   KIconThemes
   KCompletion
