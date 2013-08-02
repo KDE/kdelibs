@@ -21,7 +21,6 @@
 
 #include "jobtest.h"
 
-#include <kio/netaccess.h>
 #include <klocalizedstring.h>
 
 #include <QDebug>
@@ -411,7 +410,7 @@ static void moveLocalSymlink( const QString& src, const QString& dest )
     job->setUiDelegateExtension(0);
     bool ok = job->exec();
     if ( !ok )
-        qWarning() << KIO::NetAccess::lastError();
+        qWarning() << job->error();
     QVERIFY( ok );
     QVERIFY ( KDE_lstat( QFile::encodeName( dest ), &buf ) == 0 );
     QVERIFY( !QFile::exists( src ) ); // not there anymore
@@ -519,7 +518,7 @@ void JobTest::moveFileNoPermissions()
     job->setUiDelegateExtension(0); // no skip dialog, thanks
     bool ok = job->exec();
     QVERIFY( !ok );
-    QVERIFY( KIO::NetAccess::lastError() == KIO::ERR_ACCESS_DENIED );
+    QCOMPARE(job->error(), (int)KIO::ERR_ACCESS_DENIED);
     // OK this is fishy. Just like mv(1), KIO's behavior depends on whether
     // a direct rename(2) was used, or a full copy+del. In the first case
     // there is no destination file created, but in the second case the
@@ -552,7 +551,7 @@ void JobTest::moveDirectoryNoPermissions()
     job->setUiDelegateExtension(0); // no skip dialog, thanks
     bool ok = job->exec();
     QVERIFY( !ok );
-    QCOMPARE( KIO::NetAccess::lastError(), (int)KIO::ERR_ACCESS_DENIED );
+    QCOMPARE(job->error(), (int)KIO::ERR_ACCESS_DENIED);
     //QVERIFY( QFile::exists( dest ) ); // see moveFileNoPermissions
     QVERIFY( QFile::exists( src ) );
 #endif
@@ -1056,7 +1055,7 @@ void JobTest::copyFileToSystem()
 void JobTest::copyFileToSystem( bool resolve_local_urls )
 {
     qDebug() << resolve_local_urls;
-    extern KIO_EXPORT bool kio_resolve_local_urls;
+    extern KIOCORE_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = resolve_local_urls;
 
     const QString src = homeTmpDir() + "fileFromHome";
@@ -1169,7 +1168,7 @@ void JobTest::deleteDirectory()
 
 void JobTest::deleteSymlink(bool using_fast_path)
 {
-    extern KIO_EXPORT bool kio_resolve_local_urls;
+    extern KIOCORE_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = !using_fast_path;
 
 #ifndef Q_OS_WIN
@@ -1205,7 +1204,7 @@ void JobTest::deleteSymlink()
 
 void JobTest::deleteManyDirs(bool using_fast_path)
 {
-    extern KIO_EXPORT bool kio_resolve_local_urls;
+    extern KIOCORE_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = !using_fast_path;
 
     const int numDirs = 50;
@@ -1267,7 +1266,7 @@ void JobTest::deleteManyFilesIndependently()
 
 void JobTest::deleteManyFilesTogether(bool using_fast_path)
 {
-    extern KIO_EXPORT bool kio_resolve_local_urls;
+    extern KIOCORE_EXPORT bool kio_resolve_local_urls;
     kio_resolve_local_urls = !using_fast_path;
 
     QTime dt;
