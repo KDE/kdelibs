@@ -29,7 +29,7 @@
 
 #include <QAction>
 
-#include <kwidgets_export.h>
+#include <kconfigwidgets_export.h>
 
 
 class KPasteTextActionPrivate;
@@ -41,7 +41,7 @@ class KPasteTextActionPrivate;
  * If klipper is not running, the menu has only one
  * item: the current clipboard content.
  */
-class KWIDGETS_EXPORT KPasteTextAction: public QAction
+class KCONFIGWIDGETS_EXPORT KPasteTextAction: public QAction
 {
     Q_OBJECT
 public:

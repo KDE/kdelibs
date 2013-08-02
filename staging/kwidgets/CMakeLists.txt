@@ -34,7 +34,6 @@ remove_definitions(-DQT_USE_FAST_OPERATOR_PLUS)
 
 add_subdirectory(src)
 add_subdirectory(tests)
-add_subdirectory(autotests)
 
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them

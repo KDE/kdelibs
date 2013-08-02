@@ -9,8 +9,6 @@ configure_file(config-kwidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kwidge
 
 set(kwidgets_LIB_SRCS
   actions/kcodecaction.cpp
-  actions/kpastetextaction.cpp
-  actions/kstandardaction.cpp
 )
 
 add_library(KWidgets ${LIBRARY_TYPE} ${kwidgets_LIB_SRCS})
@@ -53,8 +51,6 @@ install(TARGETS KWidgets EXPORT KWidgetsTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
 
 install(FILES
   actions/kcodecaction.h
-  actions/kpastetextaction.h
-  actions/kstandardaction.h
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

@@ -14,4 +14,5 @@ endmacro()
 
 kconfigwidgets_tests(
   kconfigdialog_unittest
+  kstandardactiontest
 )

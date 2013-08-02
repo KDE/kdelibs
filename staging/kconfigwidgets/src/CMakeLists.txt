@@ -5,7 +5,9 @@ set(kconfigwidgets_SRCS
   kconfigdialogmanager.cpp
   kcmodule.cpp
   klanguagebutton.cpp
+  kpastetextaction.cpp
   krecentfilesaction.cpp
+  kstandardaction.cpp
   ktip.cpp
 )
 
@@ -13,6 +15,7 @@ add_library(KConfigWidgets ${kconfigwidgets_SRCS})
 generate_export_header(KConfigWidgets)
 
 target_link_libraries(KConfigWidgets LINK_PUBLIC
+    Qt5::DBus
     Qt5::Widgets
 
     KWidgetsAddons
@@ -41,7 +44,9 @@ install(FILES
   kconfigdialogmanager.h
   kcmodule.h
   klanguagebutton.h
+  kpastetextaction.h
   krecentfilesaction.h
+  kstandardaction.h
   ktip.h
   ${CMAKE_CURRENT_BINARY_DIR}/kconfigwidgets_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
