@@ -21,10 +21,10 @@
 #include "kstandardshortcut.h"
 
 #include "kconfig.h"
-#include "klocalizedstring.h"
 #include "ksharedconfig.h"
 #include <kconfiggroup.h>
 
+#include <QCoreApplication>
 #include <QDebug>
 #include <QKeySequence>
 
@@ -257,9 +257,9 @@ QString name(StandardShortcut id)
 QString label(StandardShortcut id)
 {
     KStandardShortcutInfo *info = guardedStandardShortcutInfo( id );
-    return i18nc(
-        info->translation_context,
-        info->description);
+    return QCoreApplication::translate("KStandardShortcut",
+                                       info->description,
+                                       info->translation_context);
 }
 
 // TODO: Add psWhatsThis entry to KStandardShortcutInfo
