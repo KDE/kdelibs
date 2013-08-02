@@ -39,7 +39,6 @@
 #include <kio/deletejob.h>
 #include <kio/filejob.h>
 #include <qstandardpaths.h>
-#include <qurlpathinfo.h>
 //#include "kiotesthelper.h" // createTestFile etc.
 
 QTEST_MAIN(JobRemoteTest)
@@ -125,9 +124,9 @@ void JobRemoteTest::enterLoop()
 
 void JobRemoteTest::putAndGet()
 {
-    QUrlPathInfo u(remoteTmpUrl());
-    u.addPath("putAndGetFile");
-    KIO::TransferJob* job = KIO::put(u.url(), 0600, KIO::Overwrite | KIO::HideProgressInfo);
+    QUrl u(remoteTmpUrl());
+    u.setPath(u.path() + "putAndGetFile");
+    KIO::TransferJob* job = KIO::put(u, 0600, KIO::Overwrite | KIO::HideProgressInfo);
     QDateTime mtime = QDateTime::currentDateTime().addSecs( -30 ); // 30 seconds ago
     mtime.setTime_t(mtime.toTime_t()); // hack for losing the milliseconds
     job->setModificationTime(mtime);
@@ -143,7 +142,7 @@ void JobRemoteTest::putAndGet()
 
     m_result = -1;
 
-    KIO::StoredTransferJob* getJob = KIO::storedGet(u.url(), KIO::NoReload, KIO::HideProgressInfo);
+    KIO::StoredTransferJob* getJob = KIO::storedGet(u, KIO::NoReload, KIO::HideProgressInfo);
     getJob->setUiDelegate( 0 );
     connect( getJob, SIGNAL(result(KJob*)),
             this, SLOT(slotGetResult(KJob*)) );
@@ -189,9 +188,9 @@ void JobRemoteTest::openFileWriting()
 {
     m_rwCount = 0;
 
-    QUrlPathInfo u(remoteTmpUrl());
-    u.addPath("openFileWriting");
-    fileJob = KIO::open(u.url(), QIODevice::WriteOnly);
+    QUrl u(remoteTmpUrl());
+    u.setPath(u.path() + "openFileWriting");
+    fileJob = KIO::open(u, QIODevice::WriteOnly);
 
     fileJob->setUiDelegate( 0 );
     connect( fileJob, SIGNAL(result(KJob*)),
@@ -212,7 +211,7 @@ void JobRemoteTest::openFileWriting()
     QEXPECT_FAIL("", "Needs fixing in kio_file", Abort);
     QVERIFY( m_result == 0 ); // no error
 
-    KIO::StoredTransferJob* getJob = KIO::storedGet(u.url(), KIO::NoReload, KIO::HideProgressInfo);
+    KIO::StoredTransferJob* getJob = KIO::storedGet(u, KIO::NoReload, KIO::HideProgressInfo);
     getJob->setUiDelegate( 0 );
     connect( getJob, SIGNAL(result(KJob*)),
              this, SLOT(slotGetResult(KJob*)) );
@@ -279,13 +278,13 @@ void JobRemoteTest::slotFileJobClose (KIO::Job *job)
 
 void JobRemoteTest::openFileReading()
 {
-    QUrlPathInfo u(remoteTmpUrl());
-    u.addPath("openFileReading");
+    QUrl u(remoteTmpUrl());
+    u.setPath(u.path() + "openFileReading");
 
     const QByteArray putData("test1test2test3test4test5");
 
     KIO::StoredTransferJob * putJob = KIO::storedPut( putData,
-            u.url(),
+            u,
             0600, KIO::Overwrite | KIO::HideProgressInfo
         );
 
@@ -303,7 +302,7 @@ void JobRemoteTest::openFileReading()
     m_rwCount = 4;
     m_data = QByteArray();
 
-    fileJob = KIO::open(u.url(), QIODevice::ReadOnly);
+    fileJob = KIO::open(u, QIODevice::ReadOnly);
 
     fileJob->setUiDelegate( 0 );
     connect( fileJob, SIGNAL(result(KJob*)),

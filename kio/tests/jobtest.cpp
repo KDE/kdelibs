@@ -33,7 +33,6 @@
 #include <QtCore/QHash>
 #include <QtCore/QVariant>
 #include <QUrl>
-#include <qurlpathinfo.h>
 
 #include <kprotocolinfo.h>
 #include <kio/scheduler.h>
@@ -298,8 +297,7 @@ void JobTest::copyLocalDirectory( const QString& src, const QString& _dest, int 
     QVERIFY( QFile::exists( src ) ); // still there
 
     if ( flags & AlreadyExists ) {
-        QUrlPathInfo p(u);
-        dest += '/' + p.fileName();
+        dest += '/' + u.fileName();
         //qDebug() << "Expecting dest=" << dest;
     }
 

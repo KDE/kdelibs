@@ -37,7 +37,6 @@
 #include <kio/netaccess.h>
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
-#include <qurlpathinfo.h>
 #include <QUrl>
 
 QTEST_MAIN(KDirModelTest)
@@ -165,14 +164,14 @@ void KDirModelTest::collectKnownIndexes()
         QVERIFY(idx.isValid());
         KFileItem item = m_dirModel->itemForIndex(idx);
         qDebug() << item.url() << "isDir=" << item.isDir();
-        QUrlPathInfo urlInfo(item.url());
+        QString fileName = item.url().fileName();
         if (item.isDir())
             m_dirIndex = idx;
-        else if (urlInfo.fileName() == "toplevelfile_1")
+        else if (fileName == "toplevelfile_1")
             m_fileIndex = idx;
-        else if (urlInfo.fileName() == "toplevelfile_2")
+        else if (fileName == "toplevelfile_2")
             m_secondFileIndex = idx;
-        else if (urlInfo.fileName().startsWith("special"))
+        else if (fileName.startsWith("special"))
             m_specialFileIndex = idx;
     }
     QVERIFY(m_dirIndex.isValid());
@@ -1036,11 +1035,9 @@ void KDirModelTest::testZipFile() // # 171721
     enterLoop();
     disconnect(dirLister, SIGNAL(completed()), this, SLOT(slotListingCompleted()));
 
-    QUrlPathInfo zipPath;
-    zipPath.setUrl(QUrl::fromLocalFile(path));
-    zipPath.addPath("wronglocalsizes.zip"); // just a zip file lying here for other reasons
+    QUrl zipUrl(QUrl::fromLocalFile(path));
+    zipUrl.setPath(zipUrl.path() + "/wronglocalsizes.zip"); // just a zip file lying here for other reasons
 
-    QUrl zipUrl = zipPath.url();
     QVERIFY(QFile::exists(zipUrl.toLocalFile()));
     zipUrl.setScheme("zip");
     QModelIndex index = m_dirModel->indexForUrl(zipUrl);

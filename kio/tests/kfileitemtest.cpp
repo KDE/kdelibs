@@ -22,7 +22,6 @@
 #include <qtest.h>
 #include <kfileitem.h>
 
-#include <qurlpathinfo.h>
 #include <qtemporarydir.h>
 #include <qtemporaryfile.h>
 #include <kuser.h>

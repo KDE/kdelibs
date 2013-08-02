@@ -862,9 +862,9 @@ QString KFileItem::mimeComment() const
 
     // Support for .directory file in directories
     if (isLocalUrl && isDir() && isDirectoryMounted(url)) {
-        QUrlPathInfo u(url);
-        u.addPath(QString::fromLatin1(".directory"));
-        const KDesktopFile cfg(u.localPath());
+        QUrl u(url);
+        u.setPath(u.path() + QString::fromLatin1("/.directory"));
+        const KDesktopFile cfg(u.toLocalFile());
         const QString comment = cfg.readComment();
         if (!comment.isEmpty())
             return comment;
@@ -880,9 +880,7 @@ QString KFileItem::mimeComment() const
 
 static QString iconFromDirectoryFile(const QString& path)
 {
-    QUrlPathInfo u(QUrl::fromLocalFile(path));
-    u.addPath(QString::fromLatin1(".directory"));
-    const QString filePath = u.localPath();
+    const QString filePath = path + QString::fromLatin1("/.directory");
     if (!QFileInfo(filePath).isFile()) // exists -and- is a file
         return QString();
 
@@ -909,9 +907,7 @@ static QString iconFromDirectoryFile(const QString& path)
     if (icon.startsWith(QLatin1String("./"))) {
         // path is relative with respect to the location
         // of the .directory file (#73463)
-        QUrlPathInfo iconUrl(QUrl::fromLocalFile(path));
-        iconUrl.addPath(icon.mid(2));
-        return iconUrl.localPath();
+        return path + icon.mid(1);
     }
     return icon;
 }
