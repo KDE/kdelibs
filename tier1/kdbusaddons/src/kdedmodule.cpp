@@ -42,7 +42,7 @@ KDEDModule::KDEDModule(QObject* parent)
 
 KDEDModule::~KDEDModule()
 {
-   emit moduleDeleted(this);
+   Q_EMIT moduleDeleted(this);
    delete d;
 }
 
@@ -88,7 +88,7 @@ void KDEDModule::setModuleName( const QString& name )
    else
       {
       //qDebug() << "registerObject() successful for" << d->moduleName;
-      emit moduleRegistered(realPath);
+      Q_EMIT moduleRegistered(realPath);
       }
 
 }
