@@ -560,7 +560,7 @@ set(khtml_LIB_SRCS
    khtml_ext.cpp
    khtml_pagecache.cpp
    khtml_printsettings.cpp
-   khtml_iface.cc
+   khtml_iface.cpp
    khtmlimage.cpp
    kjserrordlg.cpp
    ${xpath_STAT_SRCS}
