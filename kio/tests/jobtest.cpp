@@ -49,7 +49,7 @@
 #include <kio/deletejob.h>
 #include "kiotesthelper.h" // createTestFile etc.
 
-QTEST_KDEMAIN( JobTest, NoGUI )
+QTEST_KDEMAIN( JobTest, GUI )
 
 // The code comes partly from kdebase/kioslave/trash/testtrash.cpp
 

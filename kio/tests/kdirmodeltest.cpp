@@ -39,7 +39,7 @@
 #include <kdirwatch.h>
 #include "kiotesthelper.h"
 
-QTEST_KDEMAIN( KDirModelTest, NoGUI )
+QTEST_KDEMAIN( KDirModelTest, GUI )
 
 #ifndef USE_QTESTEVENTLOOP
 #define exitLoop quit
