@@ -39,20 +39,22 @@ static QTextStream cout(stdout);
 static QTextStream cerr(stderr);
 
 KConfigToJson::KConfigToJson(QCommandLineParser *parser)
-  : m_parser(parser)
+  : input(QStringLiteral("input")),
+    output(QStringLiteral("output")),
+    name(QStringLiteral("name")),
+    m_parser(parser)
 {
 }
 
 int KConfigToJson::runMain()
 {
-    cout << endl << endl << " ***********************************";
-    if (!m_parser->isSet(INPUT)) {
+    if (!m_parser->isSet(input)) {
         cout << "Usage --help. In short: desktoptojson -i inputfile.desktop -o outputfile.json" << endl;
         return 1;
     }
 
     if (!resolveFiles()) {
-        cerr << "Failed to resolve filenames" << m_inFile << m_outFile << endl;;
+        cerr << "Failed to resolve filenames" << m_inFile << m_outFile << endl;
         return 1;
     }
 
@@ -61,8 +63,8 @@ int KConfigToJson::runMain()
 
 bool KConfigToJson::resolveFiles()
 {
-    if (m_parser->isSet(INPUT)) {
-        m_inFile = m_parser->value(INPUT);
+    if (m_parser->isSet(input)) {
+        m_inFile = m_parser->value(input);
         if (!QFile::exists(m_inFile)) {
             cerr << "File not found: " + m_inFile;
             return false;
@@ -72,8 +74,8 @@ bool KConfigToJson::resolveFiles()
         }
     }
 
-    if (m_parser->isSet(OUTPUT)) {
-        m_outFile = m_parser->value(OUTPUT);
+    if (m_parser->isSet(output)) {
+        m_outFile = m_parser->value(output);
     } else if (!m_inFile.isEmpty()) {
         m_outFile = m_inFile;
         m_outFile.replace(QStringLiteral(".desktop"), QStringLiteral(".json"));
@@ -115,6 +117,6 @@ bool KConfigToJson::convert(const QString &src, const QString &dest)
     }
 
     file.write(jdoc.toJson());
-    cout << "Converted " << src << " to " << dest << endl;;
+    cout << "Converted " << src << " to " << dest << endl;
     return true;
 }

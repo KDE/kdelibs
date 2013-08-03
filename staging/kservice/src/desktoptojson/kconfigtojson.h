@@ -28,16 +28,15 @@
 
 class QCommandLineParser;
 
-static const QString INPUT = QStringLiteral("input");
-static const QString OUTPUT = QStringLiteral("output");
-static const QString NAME = QStringLiteral("name");
-
-
 class KConfigToJson
 {
 public:
     KConfigToJson(QCommandLineParser *parser);
     int runMain();
+
+    QString input;
+    QString output;
+    QString name;
 
 private:
     bool convert(const QString &src, const QString &dest);

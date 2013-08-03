@@ -28,8 +28,8 @@
 
 int main(int argc, char **argv)
 {
-    QCommandLineParser parser;
     QCoreApplication app(argc, argv);
+    QCommandLineParser parser;
     KConfigToJson dtj(&parser);
 
     const QString description = QStringLiteral("Converts desktop files to json");
@@ -39,10 +39,10 @@ int main(int argc, char **argv)
     parser.addVersionOption();
     parser.addHelpOption(description);
 
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << INPUT,
-                                        QStringLiteral("Read input from file"), NAME));
-    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << OUTPUT,
-                                        QStringLiteral("Write output to file"), NAME));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("i") << dtj.input,
+                                        QStringLiteral("Read input from file"), dtj.name));
+    parser.addOption(QCommandLineOption(QStringList() << QStringLiteral("o") << dtj.output,
+                                        QStringLiteral("Write output to file"), dtj.name));
 
     parser.process(app);
     return dtj.runMain();
