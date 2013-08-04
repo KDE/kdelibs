@@ -28,7 +28,6 @@
 #include "job.h"
 #include "kjobwidgets.h"
 #include "scheduler.h"
-#include "netaccess.h"
 
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
@@ -239,7 +238,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
         case GetOperation: {
             //qDebug() << "GetOperation:" << reqUrl;
             if (!reqUrl.path().isEmpty() || reqUrl.host().isEmpty())
-                kioJob = KIO::get(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
+                kioJob = KIO::storedGet(reqUrl, KIO::NoReload, KIO::HideProgressInfo);
             else
                 kioJob = KIO::stat(reqUrl, KIO::HideProgressInfo);
 
@@ -257,7 +256,7 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
             break;
         }
         case PostOperation: {
-            kioJob = KIO::http_post(reqUrl, outgoingData, sizeFromRequest(req), KIO::HideProgressInfo);
+            kioJob = KIO::storedHttpPost(outgoingData, reqUrl, sizeFromRequest(req), KIO::HideProgressInfo);
             if (!metaData.contains(QL1S("content-type")))  {
                 const QVariant header = req.header(QNetworkRequest::ContentTypeHeader);
                 if (header.isValid()) {
@@ -324,11 +323,13 @@ QNetworkReply *AccessManager::createRequest(Operation op, const QNetworkRequest 
       nested event loops.
     */
     if (req.attribute(gSynchronousNetworkRequestAttribute).toBool()) {
-        QUrl finalURL;
-        QByteArray data;
-
-        if (KIO::NetAccess::synchronousRun(kioJob, d->window, &data, &finalURL, &metaData)) {
-            reply = new KDEPrivate::AccessManagerReply(op, req, data, finalURL, metaData, this);
+        KJobWidgets::setWindow(kioJob, d->window);
+        kioJob->setRedirectionHandlingEnabled(true);
+        if (kioJob->exec()) {
+            QByteArray data;
+            if(StoredTransferJob* storedJob = qobject_cast< KIO::StoredTransferJob* >(kioJob))
+                data = storedJob->data();
+            reply = new KDEPrivate::AccessManagerReply(op, req, data, kioJob->url(), kioJob->metaData(), this);
             //qDebug() << "Synchronous XHR:" << reply << reqUrl;
         } else {
             qWarning() << "Failed to create a synchronous XHR for" << reqUrl;
