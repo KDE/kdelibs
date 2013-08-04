@@ -34,14 +34,14 @@ public:
     KConfigToJson(QCommandLineParser *parser);
     int runMain();
 
-    QString input;
-    QString output;
-    QString name;
+    const QString input;
+    const QString output;
+    const QString name;
 
 private:
     bool convert(const QString &src, const QString &dest);
     bool resolveFiles();
-    QString pluginName;
+
     QCommandLineParser *m_parser;
     QString m_inFile;
     QString m_outFile;
