@@ -1,28 +1,20 @@
 
 
-macro(DESKTOP_TO_JSON _target _input)
+macro(DESKTOP_TO_JSON _input)
     set(_output)
-    set(desktoptojson_EXECUTABLE /home/sebas/kf5/install/bin/desktoptojson)
+    set(targ)
     string(REPLACE ".desktop" ".json" _output ${_input})
+    string(REPLACE ".desktop" "Json" targ ${_input})
 
     set(_in ${CMAKE_CURRENT_SOURCE_DIR}/${_input})
     set(_out ${CMAKE_CURRENT_BINARY_DIR}/${_output})
 
-    set(targ ${_target}Json)
-
-    message("\n\n =========== RUNNING MACRO ===============")
-    message(" EXE: ${desktoptojson_EXECUTABLE}")
-    message(" IN: ${_in}")
-    message(" OUT: ${_out}")
-    message(" TAR: ${targ}")
-
     add_custom_target(${targ} ALL DEPENDS ${_in})
     add_custom_command(
         TARGET ${targ} PRE_BUILD
-        #OUTPUT ${_out}
-        COMMAND ${desktoptojson_EXECUTABLE} -i ${_in} -o ${_out}
+        COMMAND KF5::desktoptojson -i ${_in} -o ${_out}
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         DEPENDS ${_in}
+        COMMENT "\n\nGenerating ${_output}"
         )
-    message("\n\n")
 endmacro(DESKTOP_TO_JSON)
