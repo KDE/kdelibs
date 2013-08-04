@@ -535,12 +535,6 @@ void KHTMLPart::init( KHTMLView *view, GUIProfile prof )
 
   if (prof == BrowserViewGUI && !parentPart())
       loadPlugins();
-
-  // "khtml" catalog does not exist, our translations are in kdelibs.
-  // removing this catalog from KLocalizedString prevents problems
-  // with changing the language in applications at runtime -Thomas Reitelbach
-  // DF: a better fix would be to set the right catalog name in the KComponentData!
-  KLocalizedString::removeCatalog("khtml");
 }
 
 KHTMLPart::~KHTMLPart()

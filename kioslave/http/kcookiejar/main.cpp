@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
     app.setApplicationVersion("1.0");
-    KLocalizedString::setApplicationCatalog("kio5");
+    KLocalizedString::setApplicationDomain("kio5");
 
     QString description = QCoreApplication::translate("main", "HTTP Cookie Daemon");
 

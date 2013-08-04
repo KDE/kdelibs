@@ -1,6 +1,6 @@
 /* This file is part of the KDE libraries
    Copyright (c) 2001 Hans Petter Bieker <bieker@kde.org>
-   Copyright (c) 2012 Chusslove Illich <caslav.ilic@gmx.net>
+   Copyright (c) 2012, 2013 Chusslove Illich <caslav.ilic@gmx.net>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -27,8 +27,8 @@
 class KCatalogPrivate;
 
 /**
- * This class abstracts a gettext message catalog.
- * It takes care of needed gettext bindings.
+ * This class abstracts a Gettext message catalog.
+ * It takes care of needed Gettext bindings.
  *
  * @see KLocalizedString
  * @internal
@@ -39,36 +39,15 @@ public:
     /**
      * Constructor.
      *
-     * @param name name of the catalog
-     * @param language language of this catalog
+     * @param name translation domain
+     * @param language translation language
      */
-    KCatalog (const QString &name, const QString &language);
+    KCatalog(const QByteArray &domain, const QString &language);
 
     /**
      * Destructor.
      */
-    ~KCatalog ();
-
-    /**
-     * Get the name of the catalog.
-     *
-     * @return name of the catalog
-     */
-    QString name () const;
-
-    /**
-     * Get the language of the catalog.
-     *
-     * @return language of the catalog
-     */
-    QString language () const;
-
-    /**
-     * Get the locale directory of the catalog.
-     *
-     * @return locale directory of the catalog.
-     */
-    QString localeDir () const;
+    ~KCatalog();
 
     /**
      * Get translation of the given message text.
@@ -79,7 +58,7 @@ public:
      *
      * @return translated message if found, <tt>QString()</tt> otherwise
      */
-    QString translate (const QByteArray &msgid) const;
+    QString translate(const QByteArray &msgid) const;
 
     /**
      * Get translation of the given message text with given context.
@@ -91,7 +70,7 @@ public:
      *
      * @return translated message if found, <tt>QString()</tt> otherwise
      */
-    QString translate (const QByteArray &msgctxt, const QByteArray &msgid) const;
+    QString translate(const QByteArray &msgctxt, const QByteArray &msgid) const;
 
     /**
      * Get translation of given message with plural forms.
@@ -104,8 +83,8 @@ public:
      *
      * @return translated message if found, <tt>QString()</tt> otherwise
      */
-    QString translate (const QByteArray &msgid, const QByteArray &msgid_plural,
-                       qulonglong n) const;
+    QString translate(const QByteArray &msgid, const QByteArray &msgid_plural,
+                      qulonglong n) const;
 
     /**
      * Get translation of given message with plural forms with given context.
@@ -119,8 +98,8 @@ public:
      *
      * @return translated message if found, <tt>QString()</tt> otherwise
      */
-    QString translate (const QByteArray &msgctxt, const QByteArray &msgid,
-                       const QByteArray &msgid_plural, qulonglong n) const;
+    QString translate(const QByteArray &msgctxt, const QByteArray &msgid,
+                      const QByteArray &msgid_plural, qulonglong n) const;
 
     /**
      * Find the locale directory for the given catalog in the given language.
@@ -128,10 +107,10 @@ public:
      * @param name name of the catalog
      * @param language language of the catalog
      *
-     * @return the locale directory if found, <tt>QString()</tt> otherwise.
+     * @return the locale directory if found, <tt>QByteArray()</tt> otherwise.
      */
-    static QString catalogLocaleDir (const QString &name,
-                                     const QString &language);
+    static QString catalogLocaleDir(const QByteArray &domain,
+                                    const QString &language);
 
 private:
     Q_DISABLE_COPY(KCatalog);

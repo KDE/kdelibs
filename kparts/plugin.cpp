@@ -205,7 +205,6 @@ void Plugin::setComponentData(const KAboutData &pluginData)
 {
     KAboutData::registerPluginData(pluginData);
     KXMLGUIClient::setComponentName(pluginData.componentName(), pluginData.displayName());
-    KLocalizedString::insertCatalog(pluginData.catalogName());
 }
 
 void Plugin::loadPlugins(QObject *parent, KXMLGUIClient* parentGUIClient,

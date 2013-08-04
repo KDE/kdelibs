@@ -108,7 +108,7 @@ int main(int argc, char **argv)
                      "kross@dipe.org");*/
     //about.addAuthor(ki18n("Sebastian Sauer"), ki18n("Author"), "mail@dipe.org");
 
-    KLocalizedString::setApplicationCatalog("kdelibs4");
+    KLocalizedString::setApplicationDomain("kdelibs4");
 
     // Initialize command line args
     // Tell which options are supported and parse them.

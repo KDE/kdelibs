@@ -35,15 +35,15 @@ template <class T>
 class KGenericFactoryBase : public KPluginFactory
 {
 public:
-    explicit KGenericFactoryBase(const char *componentName, const char *catalogName)
-        : KPluginFactory(componentName, catalogName)
+    explicit KGenericFactoryBase(const char *componentName)
+        : KPluginFactory(componentName)
     {
         s_self = this;
         s_createComponentDataCalled = false;
     }
 
     explicit KGenericFactoryBase( const KAboutData *data )
-        : KPluginFactory(data->componentName().toUtf8().constData(), data->catalogName().toUtf8().constData())
+        : KPluginFactory(data->componentName().toUtf8().constData())
     {
         KAboutData::registerPluginData(*data);
         s_self = this;
@@ -121,8 +121,8 @@ bool KGenericFactoryBase<T>::s_createComponentDataCalled = false;
  *
  * In addition upon instantiation this template provides a central
  * KComponentData object for your component, accessible through the
- * static componentData() method. The componentName and catalogName arguments
- * of the KGenericFactory constructor are passed to the KComponentData object.
+ * static componentData() method. The componentName argument
+ * of the KGenericFactory constructor is passed to the KComponentData object.
  *
  * The creation of the KComponentData object can be customized by inheriting
  * from this template class and re-implementing the virtual createComponentData
@@ -153,8 +153,8 @@ template <class Product, class ParentType = QObject>
 class KDE4SUPPORT_DEPRECATED KGenericFactory : public KGenericFactoryBase<Product>
 {
 public:
-    explicit KGenericFactory( const char *componentName = 0, const char *catalogName = 0 )
-        : KGenericFactoryBase<Product>(componentName, catalogName)
+    explicit KGenericFactory( const char *componentName = 0 )
+        : KGenericFactoryBase<Product>(componentName)
     {}
 
     explicit KGenericFactory( const KAboutData *data )
@@ -202,8 +202,8 @@ protected:
  *
  * In addition upon instantiation this template provides a central
  * KComponentData object for your component, accessible through the
- * static componentData() method. The componentName and catalogName arguments
- * of the KGenericFactory constructor are passed to the KComponentData object.
+ * static componentData() method. The componentName argument
+ * of the KGenericFactory constructor is passed to the KComponentData object.
  *
  * The creation of the KComponentData object can be customized by inheriting
  * from this template class and re-implementing the virtual createComponentData
@@ -244,8 +244,8 @@ class KGenericFactory< KTypeList<Product, ProductListTail>, QObject >
     : public KGenericFactoryBase<KTypeList<Product, ProductListTail> >
 {
 public:
-    explicit KGenericFactory( const char *componentName  = 0, const char *catalogName  = 0 )
-        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(componentName, catalogName)
+    explicit KGenericFactory( const char *componentName  = 0 )
+        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(componentName)
     {}
 
     explicit KGenericFactory( const KAboutData *data )
@@ -294,8 +294,8 @@ protected:
  *
  * In addition upon instantiation this template provides a central
  * KComponentData object for your component, accessible through the
- * static componentData() method. The componentName and catalogNames arguments
- * of the KGenericFactory constructor are passed to the KComponentData object.
+ * static componentData() method. The componentName argument
+ * of the KGenericFactory constructor is passed to the KComponentData object.
  *
  * The creation of the KComponentData object can be customized by inheriting
  * from this template class and re-implementing the virtual createComponentData
@@ -338,8 +338,8 @@ class KGenericFactory< KTypeList<Product, ProductListTail>,
     : public KGenericFactoryBase<KTypeList<Product, ProductListTail> >
 {
 public:
-    explicit KGenericFactory( const char *componentName  = 0, const char *catalogName  = 0 )
-        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(componentName, catalogName)
+    explicit KGenericFactory( const char *componentName  = 0 )
+        : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(componentName)
     {}
     explicit KGenericFactory( const KAboutData *data )
         : KGenericFactoryBase<KTypeList<Product, ProductListTail> >(data)

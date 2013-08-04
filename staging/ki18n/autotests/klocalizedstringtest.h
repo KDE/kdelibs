@@ -20,25 +20,27 @@
 #define KLOCALIZEDSTRINGTEST_H
 
 #include <QtCore/QObject>
+#include <QtCore/QTemporaryDir>
 
 class KLocalizedStringTest : public QObject
 {
     Q_OBJECT
 private Q_SLOTS:
-    void initTestCase ();
-    void correctSubs ();
-    void correctButIllFormed();
-    void wrongSubs ();
+    void initTestCase();
+    void correctSubs();
+    void wrongSubs();
     void removeAcceleratorMarker();
-    void miscMethods ();
+    void miscMethods();
     void translateToFrenchLowlevel();
-    void translateToFrench ();
-    void translateQt ();
+    void translateToFrench();
+    void translateQt();
 
     void testThreads();
 
 private:
     bool m_hasFrench;
+    QTemporaryDir m_tempDir;
+    bool compileCatalogs(const QDir &dataDir);
 };
 
 #endif // KLOCALIZEDSTRINGTEST_H

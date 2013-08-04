@@ -787,7 +787,7 @@ void KBuildsycocaAdaptor::enableTestMode()
 
 extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
 {
-    KLocalizedString::setApplicationCatalog("kdelibs4");
+    KLocalizedString::setApplicationDomain("kdelibs4");
 
     //options.add("check", qi18n("Check Sycoca database only once"));
 

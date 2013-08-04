@@ -17,6 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "config-kunitconversion.h"
 #include "velocity.h"
 #include "converter.h"
 #include <math.h>

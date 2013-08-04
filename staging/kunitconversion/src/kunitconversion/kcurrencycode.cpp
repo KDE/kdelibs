@@ -17,6 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
+#include "config-kunitconversion.h"
 #include "kcurrencycode.h"
 
 #include <QtCore/QSharedData>

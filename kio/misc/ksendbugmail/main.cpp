@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     a.setApplicationName("ksendbugmail");
     a.setApplicationVersion("1.0");
 
-    KLocalizedString::setApplicationCatalog("kdelibs4");
+    KLocalizedString::setApplicationDomain("kdelibs4");
 
     //d.addAuthor(ki18n("Stephan Kulow"), ki18n("Author"), "coolo@kde.org");
 

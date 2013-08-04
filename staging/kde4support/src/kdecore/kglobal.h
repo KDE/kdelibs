@@ -311,28 +311,6 @@ static struct K_GLOBAL_STATIC_STRUCT_NAME(NAME)                                \
 
 
 /**
- * This class is useful in libraries where you want to make sure that
- * anyone that uses your library will get the correct catalog loaded.
- * Just declare a static KCatalogLoader in the global namespace of one of
- * your cpp files and that will load your catalog once
- * the global klocale is created
- *
- * @param catalogName The name of your catalog
- *
- * @since 4.6.2
- *
- * Example:
- * @code
- * static const KCatalogLoader loader("libkdepim");
- * @endcode
- */
-class KDE4SUPPORT_DEPRECATED_EXPORT KCatalogLoader
-{
-    public:
-        KCatalogLoader(const QString &catalogName);
-};
-
-/**
  * Access to the KDE global objects.
  * KGlobal provides you with pointers of many central
  * objects that exist only once in the process. It is also
@@ -372,14 +350,6 @@ namespace KGlobal
      * @deprecated since 5.0, use KSharedConfig::openConfig()
      */
     KDE4SUPPORT_DEPRECATED_EXPORT KSharedConfigPtr config();
-
-    /**
-     * Inserts the catalog in the main locale object if it exists.
-     * Otherwise the catalog name is stored and added once the main locale gets created
-     * @since 4.6
-     * @deprecated since 5.0, use KLocalizedString::insertCatalog
-     */
-    KDE4SUPPORT_DEPRECATED_EXPORT void insertCatalog(const QString& catalog);
 
     /**
      * Returns the global locale object.

@@ -17,6 +17,7 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
+#include "config-kunitconversion.h"
 #include "converter.h"
 
 #include <klocalizedstring.h>
@@ -63,8 +64,6 @@ public:
     QMap<int, UnitCategory *> categories;
     ConverterPrivate()
     {
-        KLocalizedString::insertCatalog("libkunitconversion");
-
         categories[InvalidCategory] = new Invalid;
         categories[LengthCategory] = new Length;
         categories[AreaCategory] = new Area();
