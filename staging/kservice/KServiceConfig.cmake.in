@@ -9,17 +9,29 @@ include("${CMAKE_CURRENT_LIST_DIR}/KServiceTargets.cmake")
 
 macro(DESKTOP_TO_JSON _target _input)
     set(_output)
-    string(REPLACE ".desktop" ".json" _output ${_input})
-    message("\n\n =========== RUNNING MACRO ===============")
-    message(" IN: ${_input}")
-    message(" OUT: ${_output}")
     set(desktoptojson_EXECUTABLE /home/sebas/kf5/install/bin/desktoptojson)
+    string(REPLACE ".desktop" ".json" _output ${_input})
+
+    set(_in ${CMAKE_CURRENT_SOURCE_DIR}/${_input})
+    set(_out ${CMAKE_CURRENT_SOURCE_DIR}/${_output})
+
+    set(targ ${_target}Json)
+
+    message("\n\n =========== RUNNING MACRO ===============")
+    message(" EXE: ${desktoptojson_EXECUTABLE}")
+    message(" IN: ${_in}")
+    message(" OUT: ${_out}")
+    message(" TAR: ${targ}")
+
+    add_custom_target(${targ} ALL DEPENDS ${_in})
     add_custom_command(
-        OUTPUT ${_output}
-        COMMAND ${desktoptojson_EXECUTABLE} -i ${_input} -o ${_output}
-        DEPENDS ${_input}
+        TARGET ${targ} PRE_BUILD
+        #OUTPUT ${_out}
+        COMMAND ${desktoptojson_EXECUTABLE} -i ${_in} -o ${_out}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        DEPENDS ${_in}
         )
-#DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_input} desktoptojson
+    message("\n\n")
 endmacro(DESKTOP_TO_JSON)
 
 
