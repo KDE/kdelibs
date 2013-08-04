@@ -86,7 +86,6 @@ bool KConfigToJson::resolveFiles()
 
 bool KConfigToJson::convert(const QString &src, const QString &dest)
 {
-    cout << src << endl << dest << endl;
     KDesktopFile df(src);
     KConfigGroup c = df.desktopGroup();
 
@@ -117,6 +116,6 @@ bool KConfigToJson::convert(const QString &src, const QString &dest)
     }
 
     file.write(jdoc.toJson());
-    cout << "Converted " << src << " to " << dest << endl;
+    cout << "Generated " << dest << endl;
     return true;
 }
