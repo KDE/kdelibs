@@ -81,7 +81,7 @@ class KLocalizedStringPrivate;
  */
 class KI18N_EXPORT KLocalizedString
 {
-    friend KLocalizedStringPrivate;
+    friend class KLocalizedStringPrivate;
 
     friend KLocalizedString KI18N_EXPORT ki18n(const char* text);
     friend KLocalizedString KI18N_EXPORT ki18nc(const char *context, const char *text);

@@ -113,7 +113,7 @@ class KuitFormatterPrivate;
 class KI18N_EXPORT KuitSetup
 {
     friend KuitSetup &Kuit::setupForDomain(const char *domain);
-    friend KuitFormatterPrivate;
+    friend class KuitFormatterPrivate;
 
 public:
 
