@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <klocalizedstring.h>
-#include <kde_file.h>
 
 #include "klauncher_cmds.h"
 #include <QtCore/QCoreApplication>
@@ -39,8 +38,8 @@ static int sigpipe[ 2 ];
 static void sig_handler(int sig_num)
 {
    // No recursion
-   KDE_signal( SIGHUP, SIG_IGN);
-   KDE_signal( SIGTERM, SIG_IGN);
+   signal(SIGHUP, SIG_IGN);
+   signal(SIGTERM, SIG_IGN);
    fprintf(stderr, "klauncher: Exiting on signal %d\n", sig_num);
    char tmp = 'x';
    write( sigpipe[ 1 ], &tmp, 1 );
@@ -197,9 +196,9 @@ extern "C" Q_DECL_EXPORT int kdemain( int argc, char**argv )
    QSocketNotifier* signotif = new QSocketNotifier( sigpipe[ 0 ], QSocketNotifier::Read, launcher );
    QObject::connect( signotif, SIGNAL(activated(int)), launcher, SLOT(destruct()));
    KCrash::setEmergencySaveFunction(sig_handler);
-   KDE_signal( SIGHUP, sig_handler);
-   KDE_signal( SIGPIPE, SIG_IGN);
-   KDE_signal( SIGTERM, sig_handler);
+   signal(SIGHUP, sig_handler);
+   signal(SIGPIPE, SIG_IGN);
+   signal(SIGTERM, sig_handler);
 #endif
 
    return app.exec();
