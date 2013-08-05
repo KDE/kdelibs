@@ -27,6 +27,7 @@
 #include <klocalizedstring.h>
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
+#include <ksharedconfig.h>
 
 class KDirSortFilterProxyModel::KDirSortFilterProxyModelPrivate
 {
