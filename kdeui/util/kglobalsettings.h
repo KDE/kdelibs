@@ -138,6 +138,8 @@ public:
      * This enum describes the completion mode used for by the KCompletion class.
      * See <a href="http://developer.kde.org/documentation/standards/kde/style/keys/completion.html">
      * the styleguide</a>.
+     *
+     * @deprecated Use KCompletion
      **/
     enum Completion {
         /**
