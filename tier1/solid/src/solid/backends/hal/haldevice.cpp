@@ -515,6 +515,10 @@ QObject *HalDevice::createDeviceInterface(const Solid::DeviceInterface::Type &ty
         break;
     case Solid::DeviceInterface::NetworkShare:
         break;
+    case Solid::DeviceInterface::Keyboard:
+        break;
+    case Solid::DeviceInterface::Pointer:
+        break;
     case Solid::DeviceInterface::Unknown:
     case Solid::DeviceInterface::Last:
         break;

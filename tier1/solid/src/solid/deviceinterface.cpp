@@ -109,6 +109,10 @@ QString Solid::DeviceInterface::typeDescription(Type type)
         return tr("Internet Gateway Device", "Internet Gateway device type");
     case NetworkShare:
         return tr("Network Share", "Network Share device type");
+    case Keyboard:
+        return tr("Keyboard", "A keyboard");
+    case Pointer:
+        return tr("Pointer", "A pointer device");
     case Last:
         return QString();
     }

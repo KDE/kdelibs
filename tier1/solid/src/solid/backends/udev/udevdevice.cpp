@@ -31,6 +31,8 @@
 #include "udevserialinterface.h"
 #include "udevnetworkinterface.h"
 #include "udevbutton.h"
+#include "udevkeyboard.h"
+#include "udevpointer.h"
 #include "cpuinfo.h"
 
 #include <sys/socket.h>
@@ -235,6 +237,15 @@ bool UDevDevice::queryDeviceInterface(const Solid::DeviceInterface::Type &type) 
     case Solid::DeviceInterface::Button:
         return m_device.subsystem() == QLatin1String("input");
 
+    case Solid::DeviceInterface::Keyboard:
+        return m_device.deviceProperty("ID_INPUT_KEYBOARD").toInt() == 1;
+
+    case Solid::DeviceInterface::Pointer:
+        return m_device.deviceProperty("ID_INPUT_MOUSE").toInt() == 1 ||
+               m_device.deviceProperty("ID_INPUT_TOUCHPAD").toInt() == 1 ||
+               m_device.deviceProperty("ID_INPUT_TABLET").toInt() == 1 ||
+               m_device.deviceProperty("ID_INPUT_TOUCHSCREEN").toInt() == 1;
+
     default:
         return false;
     }
@@ -279,6 +290,12 @@ QObject *UDevDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
 
     case Solid::DeviceInterface::Button:
         return new Button(this);
+
+    case Solid::DeviceInterface::Keyboard:
+        return new Keyboard(this);
+
+    case Solid::DeviceInterface::Pointer:
+        return new Pointer(this);
 
     default:
         qFatal("Shouldn't happen");

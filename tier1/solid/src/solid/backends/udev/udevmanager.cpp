@@ -106,6 +106,14 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
         if (device.deviceProperties().contains("SW")) {
             return isLidBubtton(device);
         }
+        if (device.deviceProperty("ID_INPUT_KEYBOARD").toInt() == 1 ||
+                device.deviceProperty("ID_INPUT_MOUSE").toInt() == 1 ||
+                device.deviceProperty("ID_INPUT_TOUCHPAD").toInt() == 1 ||
+                device.deviceProperty("ID_INPUT_TABLET").toInt() == 1 ||
+                device.deviceProperty("ID_INPUT_TOUCHSCREEN").toInt() == 1) {
+            return true;
+        }
+
     }
 
     return device.subsystem() == QLatin1String("dvb") ||
@@ -160,7 +168,10 @@ UDevManager::UDevManager(QObject *parent)
                              << Solid::DeviceInterface::DvbInterface
                              << Solid::DeviceInterface::Block
                              << Solid::DeviceInterface::Video
-                             << Solid::DeviceInterface::Button;
+                             << Solid::DeviceInterface::Button
+                             << Solid::DeviceInterface::Keyboard
+                             << Solid::DeviceInterface::Pointer
+                             ;
 }
 
 UDevManager::~UDevManager()
@@ -226,6 +237,7 @@ QObject *UDevManager::createDevice(const QString &udi_)
         device->setProduct(tr("Devices"));
         device->setDescription(tr("Devices declared in your system"));
         device->setIcon("computer");
+
         return device;
     }
     const QString udi = udi_.right(udi_.size() - udiPrefix().size());

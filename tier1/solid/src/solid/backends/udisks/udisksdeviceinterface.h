@@ -113,6 +113,12 @@ public:
         case Solid::DeviceInterface::NetworkShare:
             // Doesn't exist with UDisks
             break;
+        case Solid::DeviceInterface::Keyboard:
+            // Doesn't exist with UDisks
+            break;
+        case Solid::DeviceInterface::Pointer:
+            // Doesn't exist with UDisks
+            break;
         case Solid::DeviceInterface::Unknown:
             break;
         case Solid::DeviceInterface::Last:

@@ -68,6 +68,8 @@ set(solid_LIB_SRCS
    acadapter.cpp
    battery.cpp
    button.cpp
+   keyboard.cpp
+   pointer.cpp
    audiointerface.cpp
    dvbinterface.cpp
    predicate.cpp
@@ -85,6 +87,8 @@ set(solid_LIB_SRCS
    ifaces/battery.cpp
    ifaces/block.cpp
    ifaces/button.cpp
+   ifaces/keyboard.cpp
+   ifaces/pointer.cpp
    ifaces/camera.cpp
    ifaces/opticaldrive.cpp
    ifaces/device.cpp
@@ -110,6 +114,8 @@ set(solid_LIB_SRCS
    backends/fakehw/fakebattery.cpp
    backends/fakehw/fakeblock.cpp
    backends/fakehw/fakebutton.cpp
+   backends/fakehw/fakekeyboard.cpp
+   backends/fakehw/fakepointer.cpp
    backends/fakehw/fakecamera.cpp
    backends/fakehw/fakecdrom.cpp
    backends/fakehw/fakedevice.cpp
@@ -191,6 +197,8 @@ if(NOT WIN32 AND NOT APPLE)
       backends/udev/udevdvbinterface.cpp
       backends/udev/udevblock.cpp
       backends/udev/udevbutton.cpp
+      backends/udev/udevkeyboard.cpp
+      backends/udev/udevpointer.cpp
       backends/shared/udevqtclient.cpp
       backends/shared/udevqtdevice.cpp
       )
@@ -474,7 +482,7 @@ install( FILES ${CMAKE_CURRENT_BINARY_DIR}/solid_export.h solidnamespace.h devic
                camera.h portablemediaplayer.h networkinterface.h acadapter.h battery.h
                button.h audiointerface.h dvbinterface.h predicate.h powermanagement.h
                networking.h video.h serialinterface.h smartcardreader.h internetgateway.h
-               networkshare.h
+               networkshare.h keyboard.h pointer.h
          DESTINATION ${INCLUDE_INSTALL_DIR}/solid COMPONENT Devel)
 
 ########### parser build ###############

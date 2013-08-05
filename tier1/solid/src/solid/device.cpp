@@ -58,6 +58,10 @@
 #include <solid/ifaces/battery.h>
 #include <solid/button.h>
 #include <solid/ifaces/button.h>
+#include <solid/keyboard.h>
+#include <solid/ifaces/keyboard.h>
+#include <solid/pointer.h>
+#include <solid/ifaces/pointer.h>
 #include <solid/audiointerface.h>
 #include <solid/ifaces/audiointerface.h>
 #include <solid/dvbinterface.h>
@@ -242,6 +246,12 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
                 break;
             case DeviceInterface::NetworkShare:
                 iface = deviceinterface_cast(Ifaces::NetworkShare, NetworkShare, dev_iface);
+                break;
+            case DeviceInterface::Keyboard:
+                iface = deviceinterface_cast(Ifaces::Keyboard, Keyboard, dev_iface);
+                break;
+            case DeviceInterface::Pointer:
+                iface = deviceinterface_cast(Ifaces::Pointer, Pointer, dev_iface);
                 break;
             case DeviceInterface::Unknown:
             case DeviceInterface::Last:
