@@ -37,8 +37,8 @@
 #include <QtCore/QFile>
 #include <QtCore/QTextStream>
 #include <QtCore/QThread>
+#include <QtCore/QUrl>
 #include <QtCore/QDebug>
-#include <qurlpathinfo.h>
 #include <qplatformdefs.h> // QT_LSTAT, QT_STAT, QT_STATBUF
 
 #include <kauthorized.h>
@@ -74,6 +74,19 @@ static QString unescape(const QString& text);
 enum ComplType {CTNone = 0, CTEnv, CTUser, CTMan, CTExe, CTFile, CTUrl, CTInfo};
 
 class CompletionThread;
+
+// Ensure that we don't end up with "//".
+static QUrl addPathToUrl(const QUrl &url, const QString &relPath)
+{
+    QString path = url.path();
+    if (!path.endsWith('/')) {
+        path += '/';
+    }
+    path += relPath;
+    QUrl u(url);
+    u.setPath(path);
+    return u;
+}
 
 ///////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////
@@ -353,9 +366,9 @@ void DirectoryListThread::run()
                     toAppend.append(QLatin1Char('/'));
 
                 if (m_complete_url) {
-                    QUrlPathInfo info = QUrlPathInfo(QUrl(m_prepend));
-                    info.addPath(toAppend);
-                    addMatch(info.url().toDisplayString());
+                    QUrl info(m_prepend);
+                    info = addPathToUrl(info, toAppend);
+                    addMatch(info.toDisplayString());
                 } else {
                     addMatch(m_prepend + toAppend);
                 }
@@ -1206,10 +1219,9 @@ void KUrlCompletionPrivate::_k_slotEntries(KIO::Job*, const KIO::UDSEntryList& e
                     (entry.numberValue(KIO::UDSEntry::UDS_ACCESS) & MODE_EXE)  // true if executable
                ) {
                 if (complete_url) {
-                    QUrl prependUrl(prepend);
-                    QUrlPathInfo info(prependUrl);
-                    info.addPath(toAppend);
-                    matchList.append(info.url().toDisplayString());
+                    QUrl url(prepend);
+                    url = addPathToUrl(url, toAppend);
+                    matchList.append(url.toDisplayString());
                 } else {
                     matchList.append(prepend + toAppend);
                 }

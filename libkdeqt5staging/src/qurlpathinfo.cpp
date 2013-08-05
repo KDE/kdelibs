@@ -190,7 +190,7 @@ QString QUrlPathInfo::path(PathFormattingOptions options) const
 
     The other components of the URL (scheme, host, query, fragment...) remain unchanged.
 
-    \sa path(), addPath()
+    \sa path()
 */
 void QUrlPathInfo::setPath(const QString &path)
 {
@@ -232,51 +232,6 @@ void QUrlPathInfo::setFileName(const QString &fileName)
         setPath(ourPath.left(slash + 1) + fileName);
 }
 
-/*!
-   Adds to the current path.
-
-   Assumes that the current path is a directory.
-   \a relativePath is appended to the current path.
-   This method adds '/' if needed while concatenating.
-   This means it does not matter whether the current path has a trailing
-   '/' or not. If there is none, one will be appended. If \a relativePath
-   has a leading '/' then this one is stripped.
-
-   \param relativePath The relative path to add to the current directory path.
-   Usually this is simply a file name.
-
-   \sa path(), setPath()
-*/
-void QUrlPathInfo::addPath(const QString &relativePath)
-{
-    if (relativePath.isEmpty())
-        return;
-    QString p = path();
-    // "The function adds '/' if needed while concatenating."
-    if (!p.endsWith(QLatin1Char('/')))
-        p += QLatin1Char('/');
-
-    // If relativePath has a leading '/' then this one is stripped.
-    int i = 0;
-    if (relativePath.startsWith(QLatin1Char('/')))
-        ++i;
-
-    setPath(p + relativePath.mid(i));
-}
-
-/*!
-    Convenience method, for adding a relative path to a url.
-
-    \param url the initial URL
-    \param relativePath the relative path to add (often just a file name)
-    \return the modified URL
-*/
-QUrl QUrlPathInfo::addPathToUrl(const QUrl &url, const QString& relativePath)
-{
-    QUrlPathInfo info(url);
-    info.addPath(relativePath);
-    return info.url();
-}
 
 /*!
     Return true if this URL is a parent of \a child, or if they are equal.

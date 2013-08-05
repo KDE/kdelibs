@@ -724,18 +724,20 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     // The given path may contain any number directories, existent or not.
     // They will all be created, if possible.
 
+    // TODO: very similar to KDirSelectDialog::Private::slotMkdir
+
     bool writeOk = false;
     bool exists = false;
-    QUrlPathInfo urlInfo(d->currUrl);
+    QUrl folderurl(d->currUrl);
 
     const QStringList dirs = directory.split('/', QString::SkipEmptyParts);
     QStringList::ConstIterator it = dirs.begin();
 
     for (; it != dirs.end(); ++it) {
-        urlInfo.addPath(*it);
-        exists = KIO::NetAccess::exists(urlInfo.url(), KIO::NetAccess::DestinationSide, this);
+        folderurl.setPath(folderurl.path() + '/' + *it);
+        exists = KIO::NetAccess::exists(folderurl, KIO::NetAccess::DestinationSide, this);
         if (!exists) {
-            KIO::MkdirJob *job = KIO::mkdir(urlInfo.url());
+            KIO::MkdirJob *job = KIO::mkdir(folderurl);
             KJobWidgets::setWindow(job, this);
             writeOk = job->exec();
         }
@@ -743,12 +745,12 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
 
     if (exists) { // url was already existent
         KMessageBox::sorry(d->itemView, i18n("A file or folder named %1 already exists.",
-                    urlInfo.url().toDisplayString(QUrl::PreferLocalFile)));
+                    folderurl.toDisplayString(QUrl::PreferLocalFile)));
     } else if (!writeOk) {
         KMessageBox::sorry(d->itemView, i18n("You do not have permission to "
                                               "create that folder."));
     } else if (enterDirectory) {
-        setUrl(urlInfo.url(), true);
+        setUrl(folderurl, true);
     }
 
     return writeOk;

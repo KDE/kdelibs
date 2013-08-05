@@ -149,7 +149,7 @@ void KDirSelectDialog::Private::slotMkdir()
 
     for ( ; it != dirs.end(); ++it )
     {
-        folderurl = QUrlPathInfo::addPathToUrl( folderurl, *it );
+        folderurl.setPath(folderurl.path() + '/' + *it);
         exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, m_parent );
         if (!exists) {
             KIO::MkdirJob* job = KIO::mkdir(folderurl);

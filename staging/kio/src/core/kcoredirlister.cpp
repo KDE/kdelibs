@@ -1072,9 +1072,9 @@ void KCoreDirListerCache::slotFileDirty( const QString& path )
         }
     } else {
         Q_FOREACH(const QUrl& dir, directoriesForCanonicalPath(url.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash))) {
-            QUrlPathInfo aliasUrl(dir);
-            aliasUrl.addPath(url.fileName());
-            handleFileDirty(aliasUrl.url());
+            QUrl aliasUrl(dir);
+            aliasUrl.setPath(aliasUrl.path() + '/' + url.fileName());
+            handleFileDirty(aliasUrl);
         }
     }
 }
@@ -1142,9 +1142,9 @@ void KCoreDirListerCache::slotFileDeleted( const QString& path ) // from KDirWat
     QUrl dirUrl(QUrl::fromLocalFile(path));
     QStringList fileUrls;
     Q_FOREACH(const QUrl& url, directoriesForCanonicalPath(dirUrl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash))) {
-        QUrlPathInfo urlInfo(url);
-        urlInfo.addPath(fileName);
-        fileUrls << urlInfo.url().toString();
+        QUrl urlInfo(url);
+        urlInfo.setPath(urlInfo.path() + '/' + fileName);
+        fileUrls << urlInfo.toString();
     }
     slotFilesRemoved(fileUrls);
 }
@@ -1534,7 +1534,7 @@ void KCoreDirListerCache::renameDir( const QUrl &oldUrl, const QUrl &newUrl )
 
             QUrl newDirUrl(newUrl); // take new base
             if ( !relPath.isEmpty() )
-                newDirUrl = QUrlPathInfo::addPathToUrl(newDirUrl, relPath); // add unchanged relative path
+                newDirUrl.setPath(newDirUrl.path() + '/' + relPath); // add unchanged relative path
             //qDebug() << "new url=" << newDirUrl;
 
             // Update URL in dir item and in itemsInUse
@@ -1553,8 +1553,7 @@ void KCoreDirListerCache::renameDir( const QUrl &oldUrl, const QUrl &newUrl )
                 const QUrl oldItemUrl ((*kit).url());
                 const QString oldItemUrlStr(oldItemUrl.toString(QUrl::StripTrailingSlash));
                 QUrl newItemUrl(oldItemUrl);
-                newItemUrl.setPath(newDirUrl.path());
-                newItemUrl = QUrlPathInfo::addPathToUrl(newItemUrl, oldItemUrl.fileName());
+                newItemUrl.setPath(newDirUrl.path() + '/' + oldItemUrl.fileName());
                 //qDebug() << "renaming" << oldItemUrl << "to" << newItemUrl;
                 (*kit).setUrl(newItemUrl);
 

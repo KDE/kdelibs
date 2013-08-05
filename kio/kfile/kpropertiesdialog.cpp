@@ -75,7 +75,6 @@ extern "C" {
 #include <QProgressBar>
 #include <QVector>
 #include <QFileInfo>
-#include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 #include <QUrl>
 
@@ -614,21 +613,13 @@ void KPropertiesDialog::rename( const QString& _name )
     // if we're creating from a template : use currentdir
     if (!d->m_currentDir.isEmpty()) {
         newUrl = d->m_currentDir;
-        QUrlPathInfo pathInfo(newUrl);
-        pathInfo.addPath(_name);
-        newUrl = pathInfo.url();
+        newUrl.setPath(newUrl.path() + '/' + _name);
     } else {
-        QString tmpurl = d->m_singleUrl.url();
-        if (!tmpurl.isEmpty() && tmpurl.at(tmpurl.length() - 1) == '/') {
-            // It's a directory, so strip the trailing slash first
-            tmpurl.truncate(tmpurl.length() - 1);
-        }
-
-        QUrlPathInfo pathInfo;
-        pathInfo.setUrl(QUrl(tmpurl));
-        pathInfo.setFileName(_name);
-
-        newUrl = pathInfo.url();
+        // It's a directory, so strip the trailing slash first
+        newUrl = d->m_singleUrl.adjusted(QUrl::StripTrailingSlash);
+        // Now change the filename
+        newUrl = newUrl.adjusted(QUrl::RemoveFilename); // keep trailing slash
+        newUrl.setPath(newUrl.path() + _name);
     }
     updateUrl(newUrl);
 }
@@ -856,7 +847,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         for ( ++kit /*no need to check the first one again*/ ; kit != kend; ++kit )
         {
             const QUrl url = (*kit).url();
-            const QUrlPathInfo info(url);
             // qDebug() << "KFilePropsPlugin::KFilePropsPlugin " << url.toDisplayString();
             // The list of things we check here should match the variables defined
             // at the beginning of this method.

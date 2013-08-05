@@ -26,7 +26,6 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
-#include <qurlpathinfo.h>
 
 #include <kauthorized.h>
 #include <klocalizedstring.h>
@@ -2444,7 +2443,7 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
                 itemURL = q->url();
                 const QString fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
                 Q_ASSERT(!fileName.isEmpty()); // we'll recurse forever otherwise :)
-                itemURL = QUrlPathInfo::addPathToUrl(itemURL, fileName);
+                itemURL.setPath(itemURL.path() + '/' + fileName);
             }
 
             if (entry.isDir() && !entry.isLink()) {

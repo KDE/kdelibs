@@ -26,7 +26,6 @@
 #include <qmimedatabase.h>
 
 #include <QtCore/QEventLoop>
-#include <qurlpathinfo.h>
 
 
 namespace KIO
@@ -116,26 +115,26 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
     if ( url_found )
     {
         url = QUrl(urlStr);
-        QUrlPathInfo new_url(d->m_requestedURL);
+        QUrl new_url(d->m_requestedURL);
         if (listing)
-            new_url.addPath(url.fileName());
+            new_url.setPath(new_url.path() + '/' + url.fileName());
         // ## Didn't find a way to use an iterator instead of re-doing a key lookup
-        entry.insert(KIO::UDSEntry::UDS_URL, new_url.url().toString());
+        entry.insert(KIO::UDSEntry::UDS_URL, new_url.toString());
         //qDebug() << "URL =" << url;
-        //qDebug() << "New URL =" << new_url.url();
+        //qDebug() << "New URL =" << new_url;
     }
 
     if (mimetype.isEmpty())
     {
-        QUrlPathInfo new_url(d->m_processedURL);
+        QUrl new_url(d->m_processedURL);
         if (url_found && listing) {
-            new_url.addPath(url.fileName());
+            new_url.setPath(new_url.path() + '/' + url.fileName());
         } else if (listing) {
-            new_url.addPath(name);
+            new_url.setPath(new_url.path() + '/' + name);
         }
 
         QMimeDatabase db;
-        mimetype = db.mimeTypeForUrl(new_url.url()).name();
+        mimetype = db.mimeTypeForUrl(new_url).name();
 
         entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, mimetype );
 
@@ -144,12 +143,12 @@ void ForwardingSlaveBase::prepareUDSEntry(KIO::UDSEntry &entry,
 
     if ( d->m_processedURL.isLocalFile() )
     {
-        QUrlPathInfo new_url(d->m_processedURL);
+        QUrl new_url(d->m_processedURL);
         if (listing) {
-            new_url.addPath(name);
+            new_url.setPath(new_url.path() + '/' + name);
         }
 
-        entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, new_url.url().toLocalFile());
+        entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, new_url.toLocalFile());
     }
 }
 

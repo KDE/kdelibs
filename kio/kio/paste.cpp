@@ -34,7 +34,6 @@
 
 #include <QApplication>
 #include <QClipboard>
-#include <qurlpathinfo.h>
 #include <QMimeData>
 #include <qtemporaryfile.h>
 #include <qmimedatabase.h>
@@ -77,9 +76,9 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const QUrl& destD
 
             QList<QUrl> newUrls;
             Q_FOREACH(const QUrl& url, urls) {
-                QUrlPathInfo dUrlInfo(destDir);
-                dUrlInfo.addPath(url.fileName());
-                newUrls.append(dUrlInfo.url());
+                QUrl dUrl(destDir);
+                dUrl.setPath(dUrl.path() + '/' + url.fileName());
+                newUrls.append(dUrl);
             }
 
             QMimeData* mime = new QMimeData;
@@ -101,9 +100,8 @@ static QUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
   if ( !ok )
      return QUrl();
 
-  QUrlPathInfo myurlInfo(u);
-  myurlInfo.addPath(file);
-  QUrl myurl = myurlInfo.url();
+  QUrl myurl(u);
+  myurl.setPath(myurl.path() + '/' + file);
 
   // Check for existing destination file.
   // When we were using CopyJob, we couldn't let it do that (would expose
@@ -210,9 +208,8 @@ static QUrl getNewFileName(const QUrl &u, const QString& text, const QString& su
     const QString chosenFormat = formats[ dlg.comboItem() ];
 
     //qDebug() << " result=" << result << " chosenFormat=" << chosenFormat;
-    QUrlPathInfo urlInfo(u);
-    urlInfo.addPath(result);
-    *newUrl = urlInfo.url();
+    *newUrl = u;
+    newUrl->setPath(newUrl->path() + '/' + result);
     // if "data" came from QClipboard, then it was deleted already - by a nice 0-seconds timer
     // In that case, get it again. Let's hope the user didn't copy something else meanwhile :/
     // #### QT4/KDE4 TODO: check that this is still the case

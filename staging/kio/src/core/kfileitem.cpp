@@ -33,7 +33,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QMap>
 #include <QMimeDatabase>
-#include <qurlpathinfo.h>
 #include <QDebug>
 
 #include <klocalizedstring.h>
@@ -329,7 +328,10 @@ void KFileItemPrivate::readUDSEntry( bool _urlIsDirectory )
     m_hidden = hiddenVal == 1 ? Hidden : ( hiddenVal == 0 ? Shown : Auto );
 
     if (_urlIsDirectory && !UDS_URL_seen && !m_strName.isEmpty() && m_strName != QLatin1String(".")) {
-        m_url = QUrlPathInfo::addPathToUrl(m_url, m_strName);
+        if (!m_url.path().endsWith('/')) {
+            m_url.setPath(m_url.path() + '/');
+        }
+        m_url.setPath(m_url.path() + m_strName);
     }
 
     m_iconName.clear();
