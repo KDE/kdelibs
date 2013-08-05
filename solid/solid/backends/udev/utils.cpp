@@ -20,9 +20,9 @@
 #include "utils.h"
 
 #include <QtCore/QList>
+#include <QDebug>
 
-
-int Solid::Backends::UDev::input_str_to_bitmask(const QByteArray& value, long int* bitmask, size_t max_size)
+int Solid::Backends::UDev::input_str_to_bitmask(const QByteArray& value, long int* bitmask, size_t max_size, int max_bits)
 {
     int i, j;
     int num_bits_set = 0;
@@ -30,6 +30,10 @@ int Solid::Backends::UDev::input_str_to_bitmask(const QByteArray& value, long in
     memset (bitmask, 0, max_size);
     QList<QByteArray> bits = value.split(' ');
     for (i = bits.length() - 1, j = 0; i >= 0; i--, j++) {
+        if (j > max_bits) {
+            qWarning() << "Solid::Backends::UDev::input_str_to_bitmask can't handle some bits" << bits;
+            return num_bits_set;
+        }
         unsigned long val;
 
         val = bits[i].toLong(0, 16);
