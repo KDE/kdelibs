@@ -17,25 +17,26 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#include "kimagecache.h"
+#include "klocalimagecacheimpl.h"
 
-#include <QPixmap>
-#include <QImage>
 #include <QtCore/QBuffer>
 #include <QtCore/QCache>
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDateTime>
 
+#include <QImage>
+#include <QPixmap>
+
 /**
  * This is a QObject subclass so we can catch the signal that the application is about
  * to close and properly release any QPixmaps we have cached.
  */
-class KImageCache::Private : public QObject
+class KLocalImageCacheImplementation::Private : public QObject
 {
     Q_OBJECT
 
     public:
-    Private(QObject *parent = 0)
+        Private(QObject *parent = 0)
         : QObject(parent)
         , timestamp(QDateTime::currentDateTime())
         , enablePixmapCaching(true)
@@ -78,61 +79,37 @@ class KImageCache::Private : public QObject
     bool enablePixmapCaching;
 };
 
-KImageCache::KImageCache(const QString &cacheName,
-                         unsigned defaultCacheSize,
-                         unsigned expectedItemSize)
-    : KSharedDataCache(cacheName, defaultCacheSize, expectedItemSize)
-    , d(new Private)
+KLocalImageCacheImplementation::KLocalImageCacheImplementation(unsigned defaultCacheSize)
+    : d(new Private)
 {
     // Use at least 16 KiB for the pixmap cache
     d->pixmapCache.setMaxCost(qMax(defaultCacheSize / 8, (unsigned int) 16384));
 }
 
-KImageCache::~KImageCache()
+KLocalImageCacheImplementation::~KLocalImageCacheImplementation()
 {
     delete d;
 }
 
-bool KImageCache::insertImage(const QString &key, const QImage &image)
+void KLocalImageCacheImplementation::updateModifiedTime()
+{
+    d->timestamp = QDateTime::currentDateTime();
+}
+
+QByteArray KLocalImageCacheImplementation::serializeImage(const QImage &image) const
 {
     QBuffer buffer;
     buffer.open(QBuffer::WriteOnly);
     image.save(&buffer, "PNG");
-
-    if (this->insert(key, buffer.buffer())) {
-        d->timestamp = QDateTime::currentDateTime();
-        return true;
-    }
-
-    return false;
+    return buffer.buffer();
 }
 
-bool KImageCache::insertPixmap(const QString &key, const QPixmap &pixmap)
+bool KLocalImageCacheImplementation::insertLocalPixmap(const QString &key, const QPixmap &pixmap) const
 {
-    d->insertPixmap(key, new QPixmap(pixmap));
-
-    // One thing to think about is only inserting things to the shared cache
-    // that are frequently used. But that would require tracking the use count
-    // in our local cache too, which I think is probably too much work.
-
-    return insertImage(key, pixmap.toImage());
+    return d->insertPixmap(key, new QPixmap(pixmap));
 }
 
-bool KImageCache::findImage(const QString &key, QImage *destination) const
-{
-    QByteArray cachedData;
-    if (!this->find(key, &cachedData) || cachedData.isNull()) {
-        return false;
-    }
-
-    if (destination) {
-        destination->loadFromData(cachedData, "PNG");
-    }
-
-    return true;
-}
-
-bool KImageCache::findPixmap(const QString &key, QPixmap *destination) const
+bool KLocalImageCacheImplementation::findLocalPixmap(const QString &key, QPixmap *destination) const
 {
     if (d->enablePixmapCaching) {
         QPixmap *cachedPixmap = d->pixmapCache.object(key);
@@ -145,38 +122,25 @@ bool KImageCache::findPixmap(const QString &key, QPixmap *destination) const
         }
     }
 
-    QByteArray cachedData;
-    if (!this->find(key, &cachedData) || cachedData.isNull()) {
-        return false;
-    }
-
-    if (destination) {
-        destination->loadFromData(cachedData, "PNG");
-
-        // Manually re-insert to pixmap cache if we'll be using this one.
-        d->insertPixmap(key, new QPixmap(*destination));
-    }
-
-    return true;
+    return false;
 }
 
-void KImageCache::clear()
+void KLocalImageCacheImplementation::clearLocalCache()
 {
     d->pixmapCache.clear();
-    KSharedDataCache::clear();
 }
 
-QDateTime KImageCache::lastModifiedTime() const
+QDateTime KLocalImageCacheImplementation::lastModifiedTime() const
 {
     return d->timestamp;
 }
 
-bool KImageCache::pixmapCaching() const
+bool KLocalImageCacheImplementation::pixmapCaching() const
 {
     return d->enablePixmapCaching;
 }
 
-void KImageCache::setPixmapCaching(bool enable)
+void KLocalImageCacheImplementation::setPixmapCaching(bool enable)
 {
     if (enable != d->enablePixmapCaching) {
         d->enablePixmapCaching = enable;
@@ -186,14 +150,14 @@ void KImageCache::setPixmapCaching(bool enable)
     }
 }
 
-int KImageCache::pixmapCacheLimit() const
+int KLocalImageCacheImplementation::pixmapCacheLimit() const
 {
     return d->pixmapCache.maxCost();
 }
 
-void KImageCache::setPixmapCacheLimit(int size)
+void KLocalImageCacheImplementation::setPixmapCacheLimit(int size)
 {
     d->pixmapCache.setMaxCost(size);
 }
 
-#include "kimagecache.moc"
+#include "klocalimagecacheimpl.moc"

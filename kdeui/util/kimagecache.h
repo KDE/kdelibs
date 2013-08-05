@@ -21,11 +21,11 @@
 #define KIMAGECACHE_H
 
 #include <kdeui_export.h>
-#include <kshareddatacache.h>
+#include <klocalimagecacheimpl.h>
+#include <QPixmap>
+#include <QImage>
 
-class QImage;
-class QPixmap;
-class QDateTime;
+#define KImageCache KSharedPixmapCacheMixin<KSharedDataCache>
 
 /**
  * @brief A simple wrapping layer over KSharedDataCache to support caching
@@ -46,15 +46,16 @@ class QDateTime;
  * data (to modify the image after retrieval for instance) then you should
  * use QImage to save the conversion cost from QPixmap to QImage.
  *
- * KImageCache is a subclass of KSharedDataCache, so all of the methods that
- * can be used with KSharedDataCache can be used with KImageCache,
+ * KSharedPixmapCacheMixin is a subclass of KSharedDataCache, so all of the methods that
+ * can be used with KSharedDataCache can be used with KSharedPixmapCacheMixin,
  * <em>with the exception of KSharedDataCache::insert() and
  * KSharedDataCache::find()</em>.
  *
  * @author Michael Pyne <mpyne@kde.org>
  * @since 4.5
  */
-class KDEUI_EXPORT KImageCache : public KSharedDataCache
+template<class T>
+class KSharedPixmapCacheMixin : public T, private KLocalImageCacheImplementation
 {
     public:
     /**
@@ -70,20 +71,17 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      *  added to the image cache, in bytes. Use 0 if you just want a default
      *  item size.
      */
-    KImageCache(const QString &cacheName,
+    KSharedPixmapCacheMixin(const QString &cacheName,
                 unsigned defaultCacheSize,
-                unsigned expectedItemSize = 0);
-
-    /**
-     * Deconstructor
-     */
-    ~KImageCache();
+                unsigned expectedItemSize = 0)
+        : T(cacheName, defaultCacheSize, expectedItemSize),
+          KLocalImageCacheImplementation(defaultCacheSize) {}
 
     /**
      * Inserts the pixmap given by @p pixmap to the cache, accessible with
      * @p key. The pixmap must be converted to a QImage in order to be stored
      * into shared memory. In order to prevent unnecessary conversions from
-     * taking place @p pixmap will also be cached (but not in stored
+     * taking place @p pixmap will also be cached (but not in shared
      * memory) and would be accessible using findPixmap() if pixmap caching is
      * enabled.
      *
@@ -92,7 +90,16 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      * @return true if the pixmap was successfully cached, false otherwise.
      * @see setPixmapCaching()
      */
-    bool insertPixmap(const QString &key, const QPixmap &pixmap);
+    bool insertPixmap(const QString &key, const QPixmap &pixmap)
+    {
+        insertLocalPixmap(key, pixmap);
+
+        // One thing to think about is only inserting things to the shared cache
+        // that are frequently used. But that would require tracking the use count
+        // in our local cache too, which I think is probably too much work.
+
+        return insertImage(key, pixmap.toImage());
+    }
 
     /**
      * Inserts the @p image into the shared cache, accessible with @p key. This
@@ -105,7 +112,15 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      * @param image The image to add to the shared cache.
      * @return true if the image was successfully cached, false otherwise.
      */
-    bool insertImage(const QString &key, const QImage &image);
+    bool insertImage(const QString &key, const QImage &image)
+    {
+        if (this->insert(key, serializeImage(image))) {
+            updateModifiedTime();
+            return true;
+        }
+
+        return false;
+    }
 
     /**
      * Copies the cached pixmap identified by @p key to @p destination. If no such
@@ -114,7 +129,25 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      * @return true if the pixmap identified by @p key existed, false otherwise.
      * @see setPixmapCaching()
      */
-    bool findPixmap(const QString &key, QPixmap *destination) const;
+    bool findPixmap(const QString &key, QPixmap *destination) const
+    {
+        if (findLocalPixmap(key, destination))
+            return true;
+
+        QByteArray cachedData;
+        if (!this->find(key, &cachedData) || cachedData.isNull()) {
+            return false;
+        }
+
+        if (destination) {
+            destination->loadFromData(cachedData, "PNG");
+
+            // Manually re-insert to pixmap cache if we'll be using this one.
+            insertLocalPixmap(key, *destination);
+        }
+
+        return true;
+    }
 
     /**
      * Copies the cached image identified by @p key to @p destination. If no such
@@ -122,25 +155,41 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      *
      * @return true if the image identified by @p key existed, false otherwise.
      */
-    bool findImage(const QString &key, QImage *destination) const;
+    bool findImage(const QString &key, QImage *destination) const
+    {
+        QByteArray cachedData;
+        if (!this->find(key, &cachedData) || cachedData.isNull()) {
+            return false;
+        }
+
+        if (destination) {
+            destination->loadFromData(cachedData, "PNG");
+        }
+
+        return true;
+    }
 
     /**
      * Removes all entries from the cache. In addition any cached pixmaps (as per
      * setPixmapCaching()) are also removed.
      */
-    void clear();
+    void clear()
+    {
+        clearLocalCache();
+        T::clear();
+    }
 
     /**
      * @return The time that an image or pixmap was last inserted into a cache.
      */
-    QDateTime lastModifiedTime() const;
+    using KLocalImageCacheImplementation::lastModifiedTime;
 
     /**
      * @return if QPixmaps added with insertPixmap() will be stored in a local
      * pixmap cache as well as the shared image cache. The default is to cache
      * pixmaps locally.
      */
-    bool pixmapCaching() const;
+    using KLocalImageCacheImplementation::pixmapCaching;
 
     /**
      * Enables or disables local pixmap caching. If it is anticipated that a pixmap
@@ -150,13 +199,13 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      *
      * @param enable Enables pixmap caching if true, disables otherwise.
      */
-    void setPixmapCaching(bool enable);
+    using KLocalImageCacheImplementation::setPixmapCaching;
 
     /**
      * @return The highest memory size in bytes to be used by cached pixmaps.
      * @since 4.6
      */
-    int pixmapCacheLimit() const;
+    using KLocalImageCacheImplementation::pixmapCacheLimit;
 
     /**
      * Sets the highest memory size the pixmap cache should use.
@@ -164,11 +213,7 @@ class KDEUI_EXPORT KImageCache : public KSharedDataCache
      * @param size The size in bytes
      * @since 4.6
      */
-    void setPixmapCacheLimit(int size);
-
-    private:
-    class Private;
-    Private *const d; ///< @internal
+    using KLocalImageCacheImplementation::setPixmapCacheLimit;
 };
 
 #endif /* KIMAGECACHE_H */
