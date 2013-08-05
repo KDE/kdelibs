@@ -81,11 +81,8 @@ set(kiocore_STAT_SRCS
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
   kio/imagefilter.cpp
-  kio/kabstractfileitemactionplugin.cpp
-  kio/kbuildsycocaprogressdialog.cpp
   kio/kdbusservicestarter.cpp
   kio/kdesktopfileactions.cpp
-  kio/kfileitemactionplugin.cpp
   kio/kfileitemactions.cpp
   kio/kfileitemdelegate.cpp
   kio/kfilemetainfo.cpp
@@ -302,12 +299,9 @@ install(  FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
-  kio/kabstractfileitemactionplugin.h
   kio/kautomount.h
-  kio/kbuildsycocaprogressdialog.h
   kio/kdbusservicestarter.h
   kio/kdesktopfileactions.h
-  kio/kfileitemactionplugin.h
   kio/kfileitemactions.h
   kio/kfileitemdelegate.h
   kio/kfilemetainfo.h

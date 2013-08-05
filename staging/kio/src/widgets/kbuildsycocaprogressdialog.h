@@ -21,14 +21,14 @@
 
 #include <QtCore/QTimer>
 #include <QProgressDialog>
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 class KBuildSycocaProgressDialogPrivate;
 /**
  * Progress dialog while ksycoca is being rebuilt (by kbuildsycoca).
  * Usage: KBuildSycocaProgressDialog::rebuildKSycoca(parentWidget)
  */
-class KIO_EXPORT KBuildSycocaProgressDialog : public QProgressDialog
+class KIOWIDGETS_EXPORT KBuildSycocaProgressDialog : public QProgressDialog
 {
    Q_OBJECT
 public:

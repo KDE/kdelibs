@@ -22,7 +22,7 @@
 #ifndef KFILEITEMACTION_PLUGIN_H
 #define KFILEITEMACTION_PLUGIN_H
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 #include <QtCore/QObject>
 
 class QAction;
@@ -35,7 +35,7 @@ class KFileItemListProperties;
  * (introduced in kdelibs-4.6.1 in order to remove the erroneous
  * "const" in the actions method)
  */
-class KIO_DEPRECATED_EXPORT KFileItemActionPlugin : public QObject
+class KDE4SUPPORT_DEPRECATED_EXPORT KFileItemActionPlugin : public QObject
 {
     Q_OBJECT
 

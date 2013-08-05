@@ -93,6 +93,7 @@ set(libkde4support_SRCS
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
     kio/metainfojob.cpp
+    kio/kfileitemactionplugin.cpp
     kio/passworddialog.cpp
     kio/kmimetyperesolver.cpp
     kio/kdatatool.cpp
@@ -269,6 +270,7 @@ endif ()
 # kio/*.h
 install(FILES
     kio/metainfojob.h
+    kio/kfileitemactionplugin.h
     kio/passworddialog.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel
 )

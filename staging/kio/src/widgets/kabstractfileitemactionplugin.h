@@ -22,7 +22,7 @@
 #ifndef KABSTRACTFILEITEMACTION_PLUGIN_H
 #define KABSTRACTFILEITEMACTION_PLUGIN_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <QtCore/QObject>
 
 class QAction;
@@ -78,7 +78,7 @@ class KFileItemListProperties;
  *
  * @since 4.6.1
  */
-class KIO_EXPORT KAbstractFileItemActionPlugin : public QObject
+class KIOWIDGETS_EXPORT KAbstractFileItemActionPlugin : public QObject
 {
     Q_OBJECT
 
