@@ -28,6 +28,7 @@
 #include <kpluginloader.h>
 #include <ksycocaentry.h>
 #include <QtCore/QCoreApplication>
+#include <QJsonObject>
 
 class KServiceType;
 class QDataStream;
@@ -566,7 +567,9 @@ public:
         KPluginLoader pluginLoader(*this);
         KPluginFactory *factory = pluginLoader.factory();
         if (factory) {
-            T *o = factory->template create<T>(parentWidget, parent, pluginKeyword(), args);
+            QVariantList argsWithMetaData = args;
+            argsWithMetaData << pluginLoader.metaData().toVariantMap();
+            T *o = factory->template create<T>(parentWidget, parent, pluginKeyword(), argsWithMetaData);
             if (!o && error)
                 *error = QCoreApplication::translate("", "The service '%1' does not provide an interface '%2' with keyword '%3'")
                     .arg(name(), QString::fromLatin1(T::staticMetaObject.className()), pluginKeyword());
