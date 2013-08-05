@@ -20,7 +20,6 @@
 #ifndef KIMAGECACHE_H
 #define KIMAGECACHE_H
 
-#include <kdeui_export.h>
 #include <klocalimagecacheimpl.h>
 #include <QPixmap>
 #include <QImage>

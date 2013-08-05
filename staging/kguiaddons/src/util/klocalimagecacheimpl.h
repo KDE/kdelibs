@@ -20,7 +20,7 @@
 #ifndef KLOCALIMAGECACHEIMPL_H
 #define KLOCALIMAGECACHEIMPL_H
 
-#include <kdeui_export.h>
+#include <kguiaddons_export.h>
 
 class QImage;
 class QPixmap;
@@ -33,7 +33,7 @@ class QString;
  *
  * @internal
  */
-class KDEUI_EXPORT KLocalImageCacheImplementation
+class KGUIADDONS_EXPORT KLocalImageCacheImplementation
 {
     private:
     KLocalImageCacheImplementation(unsigned defaultCacheSize);
