@@ -790,12 +790,12 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             const QString newName = value.toString();
             if (newName.isEmpty() || newName == item.text() || (newName == QLatin1String(".")) || (newName == QLatin1String("..")))
                 return true;
-            QUrlPathInfo newUrlInfo(item.url());
-            newUrlInfo.setFileName(KIO::encodeFileName(newName));
-            KIO::Job * job = KIO::moveAs(item.url(), newUrlInfo.url(), item.url().isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
+            QUrl newUrl = item.url().adjusted(QUrl::RemoveFilename);
+            newUrl.setPath(newUrl.path() + KIO::encodeFileName(newName));
+            KIO::Job * job = KIO::moveAs(item.url(), newUrl, item.url().isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
             job->ui()->setAutoErrorHandlingEnabled(true);
             // undo handling
-            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Rename, QList<QUrl>() << item.url(), newUrlInfo.url(), job );
+            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Rename, QList<QUrl>() << item.url(), newUrl, job );
             return true;
         }
         break;

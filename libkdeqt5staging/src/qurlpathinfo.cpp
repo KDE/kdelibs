@@ -216,24 +216,6 @@ QString QUrlPathInfo::localPath(PathFormattingOptions options) const
 }
 
 /*!
-   Sets the name of the file, keeping the directory unchanged.
-
-   \sa path(), fileName(), directory()
-*/
-void QUrlPathInfo::setFileName(const QString &fileName)
-{
-    const QString ourPath = path();
-    const int slash = ourPath.lastIndexOf(QLatin1Char('/'));
-    if (slash == -1)
-        setPath(fileName);
-    else if (slash == 0)
-        setPath(QLatin1Char('/') + fileName);
-    else
-        setPath(ourPath.left(slash + 1) + fileName);
-}
-
-
-/*!
     Return true if this URL is a parent of \a child, or if they are equal.
     Trailing slashes are ignored.
 */

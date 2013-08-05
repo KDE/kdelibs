@@ -50,36 +50,11 @@ class tst_QUrlPathInfo : public QObject
     Q_OBJECT
 
 private Q_SLOTS:
-    void setFileName_data();
-    void setFileName();
     void path_data();
     void path();
     void equals_data();
     void equals();
 };
-
-void tst_QUrlPathInfo::setFileName_data()
-{
-    QTest::addColumn<QString>("urlStr");
-    QTest::addColumn<QString>("fileName");
-    QTest::addColumn<QString>("expectedUrl");
-
-    QTest::newRow("simple") << "foo://host/bar" << "blah" << "foo://host/blah";
-    QTest::newRow("empty") << "foo://host/bar" << "" << "foo://host/";
-}
-
-void tst_QUrlPathInfo::setFileName()
-{
-    QFETCH(QString, urlStr);
-    QFETCH(QString, fileName);
-    QFETCH(QString, expectedUrl);
-
-    const QUrl url(urlStr);
-    QVERIFY(url.isValid());
-    QUrlPathInfo info(url);
-    info.setFileName(fileName);
-    QCOMPARE(info.url().toString(), expectedUrl);
-}
 
 void tst_QUrlPathInfo::path_data()
 {

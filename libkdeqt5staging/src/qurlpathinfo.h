@@ -93,8 +93,6 @@ public:
     bool equals(const QUrl& u, EqualsOptions options = StrictComparison) const;
     bool isParentOfOrEqual(const QUrl &child) const;
 
-    void setFileName(const QString &name);
-
 private:
     QSharedDataPointer<QUrlPathInfoPrivate> d;
 };

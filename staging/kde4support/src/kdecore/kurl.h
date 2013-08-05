@@ -685,6 +685,8 @@ public:
    * has a leading '/' then this one is stripped.
    *
    * @param txt The text to add. It is considered to be decoded.
+   * @deprecated since 5.0, use u.setPath(u.path() + '/' + txt).
+   * If the path might already have a trailing slash, use u = u.adjusted(QUrl::StripTrailingSlash) first.
    */
   void addPath( const QString& txt );
 
@@ -749,6 +751,8 @@ public:
    *             all text behind the last '/' in the current path is erased and
    *             @p _txt is appended then. It does not matter whether @p _txt starts
    *             with '/' or not.
+   * @deprecated since 5.0, use u = u.adjusted(QUrl::RemoveFileName); followed by
+   * u.setPath(u.path() + txt);
    */
   void setFileName( const QString&_txt );
 

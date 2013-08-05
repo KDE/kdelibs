@@ -66,7 +66,6 @@
 #include <QDebug>
 #include <QtCore/QList>
 #include <QtCore/QHash>
-#include <qurlpathinfo.h>
 
 using namespace DOM;
 
@@ -1915,9 +1914,7 @@ JSValue* KJS::HTMLElement::getValueProperty(ExecState *exec, int token) const
     if ( !href.isNull() ) {
       url = QUrl(href.string());
       if ( href.isEmpty() ) {
-        QUrlPathInfo path(url);
-        path.setFileName( QString() ); // href="" clears the filename (in IE)
-        url = path.url();
+        url = url.adjusted(QUrl::RemoveFilename); // href="" clears the filename (in IE)
       }
     }
     switch(token) {

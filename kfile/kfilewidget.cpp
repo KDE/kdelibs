@@ -1658,19 +1658,19 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
 //     qDebug();
 
     QList<QUrl> urls;
-    QUrl url(ops->url());
-    if (!url.path().endsWith(QLatin1Char('/'))) {
-        url.setPath(url.path() + QLatin1Char('/'));
+    QUrl u(ops->url());
+    if (!u.path().endsWith(QLatin1Char('/'))) {
+        u.setPath(u.path() + QLatin1Char('/'));
     }
-    QUrlPathInfo u(url);
     QString name;
 
     const int count = line.count( QLatin1Char( '"' ) );
     if ( count == 0 ) { // no " " -> assume one single file
         if (!QDir::isAbsolutePath(line)) {
-            u.setFileName( line );
-            if ( u.url().isValid() )
-                urls.append( u.url() );
+            u = u.adjusted(QUrl::RemoveFilename);
+            u.setPath(u.path() + line);
+            if (u.isValid())
+                urls.append(u);
         } else {
             urls << QUrl::fromUserInput(line);
         }
@@ -1690,20 +1690,21 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
         // get everything between the " "
         name = line.mid( index1 + 1, index2 - index1 - 1 );
 
-        // since we use setFileName we need to do this under a temporary url
-        QUrlPathInfo _u( u );
+        // since we use setPath we need to do this under a temporary url
+        QUrl _u( u );
         QUrl currUrl( name );
 
-        if ( !QDir::isAbsolutePath(currUrl.url()) ) {
-            _u.setFileName( name );
+        if (!QDir::isAbsolutePath(currUrl.url())) {
+            _u = _u.adjusted(QUrl::RemoveFilename);
+            _u.setPath(_u.path() + name);
         } else {
             // we allow to insert various absolute paths like:
             // "/home/foo/bar.txt" "/boot/grub/menu.lst"
-            _u.setUrl(currUrl);
+            _u = currUrl;
         }
 
-        if ( _u.url().isValid() ) {
-            urls.append( _u.url() );
+        if (_u.isValid()) {
+            urls.append(_u);
         }
 
         start = index2 + 1;
