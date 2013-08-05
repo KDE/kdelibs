@@ -23,7 +23,7 @@
 #include <kdirlister.h>
 #include <qtest_kde.h>
 
-QTEST_KDEMAIN( KDirListerTest, GUI )
+QTEST_KDEMAIN( KDirListerTest, NoGUI )
 
 #include <kdebug.h>
 #include "kiotesthelper.h"
