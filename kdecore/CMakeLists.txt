@@ -115,7 +115,7 @@ else(WIN32)
   endif(APPLE)
 endif(WIN32)
 
-target_link_libraries(kdecore LINK_INTERFACE_LIBRARIES ${kdecore_LINK_INTERFACE_LIBRARIES} )
+target_link_libraries(kdecore LINK_PUBLIC ${kdecore_LINK_INTERFACE_LIBRARIES} )
 
 set_target_properties(kdecore PROPERTIES
                               VERSION ${KDE_NON_GENERIC_LIB_VERSION}

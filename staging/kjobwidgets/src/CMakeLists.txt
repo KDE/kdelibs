@@ -37,7 +37,7 @@ target_link_libraries(KJobWidgets
 
 if (HAVE_X11)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(KJobWidgets Qt5::X11Extras)
+  target_link_libraries(KJobWidgets LINK_PRIVATE Qt5::X11Extras)
 endif ()
 
 set_target_properties(KJobWidgets PROPERTIES VERSION   ${KJOBWIDGETS_VERSION_STRING}
