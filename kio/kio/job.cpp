@@ -2483,7 +2483,7 @@ FileCopyJob *KIO::file_move( const KUrl& src, const KUrl& dest, int permissions,
                              JobFlags flags )
 {
     FileCopyJob* job = FileCopyJobPrivate::newJob(src, dest, permissions, true, flags);
-    new ClipboardUpdater(job, ClipboardUpdater::UpdateContent);
+    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
     return job;
 }
 
@@ -2491,7 +2491,7 @@ SimpleJob *KIO::file_delete( const KUrl& src, JobFlags flags )
 {
     KIO_ARGS << src << qint8(true); // isFile
     SimpleJob* job = SimpleJobPrivate::newJob(src, CMD_DEL, packedArgs, flags);
-    new ClipboardUpdater(job, ClipboardUpdater::RemoveContent);
+    ClipboardUpdater::create(job, ClipboardUpdater::RemoveContent);
     return job;
 }
 
