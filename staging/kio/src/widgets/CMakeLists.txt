@@ -5,6 +5,8 @@ project(KIOWidgets)
 #configure_file(config-kiowidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiowidgets.h )
 
 set(kiowidgets_SRCS
+  accessmanager.cpp
+  accessmanagerreply_p.cpp
   fileundomanager.cpp
   sslui.cpp
   kurlpixmapprovider.cpp
@@ -70,6 +72,7 @@ install(FILES
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install( FILES
+ accessmanager.h
   sslui.h
   pixmaploader.h
   thumbsequencecreator.h

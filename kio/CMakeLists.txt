@@ -78,8 +78,6 @@ configure_file(kssl/ksslconfig.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconf
 set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/kssl/ksslconfig.h )
 
 set(kiocore_STAT_SRCS
-  kio/accessmanager.cpp
-  kio/accessmanagerreply_p.cpp
   kio/defaultviewadapter.cpp
   kio/delegateanimationhandler.cpp
   kio/imagefilter.cpp
@@ -298,7 +296,6 @@ install( FILES
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
-  kio/accessmanager.h
   kio/netaccess.h
   kio/paste.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h

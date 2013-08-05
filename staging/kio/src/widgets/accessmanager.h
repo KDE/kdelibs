@@ -25,7 +25,7 @@
 #define KIO_ACCESSMANAGER_H
 
 #include <kio/global.h>
-#include "kio_export.h"
+#include "kiowidgets_export.h"
 #include <qwindowdefs.h> // WId
 
 #include <QtNetwork/QNetworkAccessManager>
@@ -72,7 +72,7 @@ namespace KIO {
  * @deprecated Use the KIO::Integration::AccessManager typedef to access this class instead.
  * @since 4.3
  */
-class KIO_EXPORT AccessManager : public QNetworkAccessManager
+class KIOWIDGETS_EXPORT AccessManager : public QNetworkAccessManager
 {
     Q_OBJECT
 public:
@@ -125,7 +125,7 @@ public:
      * @deprecated Use setWindow
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setCookieJarWindowId(WId id);
+    KIOWIDGETS_DEPRECATED void setCookieJarWindowId(WId id);
 #endif
 
     /**
@@ -153,7 +153,7 @@ public:
      * @deprecated Use KIO::Integration::CookieJar::windowId
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED WId cookieJarWindowid() const;
+    KIOWIDGETS_DEPRECATED WId cookieJarWindowid() const;
 #endif
 
     /**
@@ -244,7 +244,7 @@ typedef KIO::AccessManager AccessManager;
  * @since 4.5
  * @return true if @p metadata contains ssl information and the mapping succeeded.
  */
-KIO_EXPORT bool sslConfigFromMetaData(const KIO::MetaData& metadata, QSslConfiguration& sslconfig);
+KIOWIDGETS_EXPORT bool sslConfigFromMetaData(const KIO::MetaData& metadata, QSslConfiguration& sslconfig);
 
 /**
  * @short A KDE implementation of QNetworkCookieJar.
@@ -277,7 +277,7 @@ KIO_EXPORT bool sslConfigFromMetaData(const KIO::MetaData& metadata, QSslConfigu
  * @author Dawit Alemayehu \<adawit @ kde.org\>
  * @since 4.4
  */
-class KIO_EXPORT CookieJar : public QNetworkCookieJar
+class KIOWIDGETS_EXPORT CookieJar : public QNetworkCookieJar
 {
     Q_OBJECT
 public:
