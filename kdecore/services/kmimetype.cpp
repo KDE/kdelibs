@@ -436,7 +436,9 @@ void KMimeTypePrivate::save( QDataStream& _str )
 QVariant KMimeTypePrivate::property( const QString& _name ) const
 {
     if ( _name == QLatin1String("Patterns") )
-        return QVariant( m_lstPatterns );
+        return patterns();
+    if ( _name == QLatin1String("Comment") )
+        return comment();
     if ( _name == QLatin1String("Icon") )
         return QVariant( iconName(KUrl()) );
 
@@ -608,8 +610,7 @@ QString KMimeType::iconName( const KUrl& url) const
 QStringList KMimeType::patterns() const
 {
     Q_D(const KMimeType);
-    d->ensureXmlDataLoaded();
-    return d->m_lstPatterns;
+    return d->patterns();
 }
 
 // loads comment, icon, mainPattern, m_lstPatterns

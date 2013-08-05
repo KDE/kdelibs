@@ -45,6 +45,12 @@ public:
         return m_strComment;
     }
 
+    QStringList patterns() const
+    {
+        ensureXmlDataLoaded();
+        return m_lstPatterns;
+    }
+
     // virtual because reimplemented in KFolderMimeType
     virtual QString iconName(const KUrl &) const;
 

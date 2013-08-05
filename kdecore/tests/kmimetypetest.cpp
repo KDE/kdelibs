@@ -990,4 +990,14 @@ void KMimeTypeTest::testThreads()
         f.waitForFinished();
 }
 
+void KMimeTypeTest::testProperties()
+{
+    KMimeType::Ptr pngMimeType = KMimeType::mimeType("image/png");
+    QVariant comment = pngMimeType->property("Comment");
+    QVariant patterns = pngMimeType->property("Patterns");
+
+    QCOMPARE(comment.toString(), pngMimeType->comment());
+    QCOMPARE(patterns.toStringList(), pngMimeType->patterns());
+}
+
 #include "kmimetypetest.moc"
