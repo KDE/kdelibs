@@ -44,7 +44,6 @@
 #include <kdirwatch.h>
 #include <kservicetypetrader.h>
 #include <ktoolinvocation.h>
-#include <kde_file.h>
 #include <kcoreaddons_version.h> // KCOREADDONS_VERSION_MAJOR
 #include "config-kded.h"
 
@@ -823,9 +822,9 @@ extern "C" Q_DECL_EXPORT int kdemain(int argc, char *argv[])
      delayedCheck = cg.readEntry("DelayedCheck", false);
 
 #ifndef _WIN32_WCE
-     KDE_signal(SIGTERM, sighandler);
+     signal(SIGTERM, sighandler);
 #endif
-     KDE_signal(SIGHUP, sighandler);
+     signal(SIGHUP, sighandler);
 
      KCrash::setFlags(KCrash::AutoRestart);
 
