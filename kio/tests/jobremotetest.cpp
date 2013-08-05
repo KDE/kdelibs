@@ -49,7 +49,7 @@
 #include <kio/filejob.h>
 //#include "kiotesthelper.h" // createTestFile etc.
 
-QTEST_KDEMAIN( JobRemoteTest, GUI )
+QTEST_KDEMAIN( JobRemoteTest, NoGUI )
 
 QDateTime s_referenceTimeStamp;
 
