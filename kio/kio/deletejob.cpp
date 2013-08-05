@@ -487,14 +487,14 @@ DeleteJob *KIO::del( const KUrl& src, JobFlags flags )
     KUrl::List srcList;
     srcList.append( src );
     DeleteJob* job = DeleteJobPrivate::newJob(srcList, flags);
-    new ClipboardUpdater(job, ClipboardUpdater::RemoveContent);
+    ClipboardUpdater::create(job, ClipboardUpdater::RemoveContent);
     return job;
 }
 
 DeleteJob *KIO::del( const KUrl::List& src, JobFlags flags )
 {
     DeleteJob* job = DeleteJobPrivate::newJob(src, flags);
-    new ClipboardUpdater(job, ClipboardUpdater::RemoveContent);
+    ClipboardUpdater::create(job, ClipboardUpdater::RemoveContent);
     return job;
 }
 

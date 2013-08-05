@@ -28,12 +28,10 @@
 
 using namespace KIO;
 
-ClipboardUpdater::ClipboardUpdater(Job* job, Mode mode)
-    :QObject(job),
-     m_mode(mode)
+
+static bool canUseClipboard()
 {
-    Q_ASSERT(job);
-    connect(job, SIGNAL(result(KJob*)), this, SLOT(slotResult(KJob*)));
+    return QApplication::type() != QApplication::Tty;
 }
 
 static void overwriteUrlsInClipboard(KJob* job)
@@ -156,8 +154,26 @@ void ClipboardUpdater::slotResult(KJob* job)
     }
 }
 
+void ClipboardUpdater::setMode(ClipboardUpdater::Mode mode)
+{
+    m_mode = mode;
+}
+
+ClipboardUpdater* ClipboardUpdater::create(Job* job, ClipboardUpdater::Mode mode)
+{
+    if (canUseClipboard()) {
+      return new ClipboardUpdater(job, mode);
+    }
+
+    return 0;
+}
+
 void ClipboardUpdater::update(const KUrl& srcUrl, const KUrl& destUrl)
 {
+    if (!canUseClipboard()) {
+        return;
+    }
+
     QClipboard* clipboard = QApplication::clipboard();
     if (clipboard->mimeData()->hasUrls()) {
         KUrl::List clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
@@ -171,7 +187,10 @@ void ClipboardUpdater::update(const KUrl& srcUrl, const KUrl& destUrl)
     }
 }
 
-void ClipboardUpdater::setMode(ClipboardUpdater::Mode mode)
+ClipboardUpdater::ClipboardUpdater(Job* job, Mode mode)
+    :QObject(job),
+     m_mode(mode)
 {
-    m_mode = mode;
+    Q_ASSERT(job);
+    connect(job, SIGNAL(result(KJob*)), this, SLOT(slotResult(KJob*)));
 }

@@ -2187,7 +2187,7 @@ CopyJob *KIO::move(const KUrl& src, const KUrl& dest, JobFlags flags)
     KUrl::List srcList;
     srcList.append( src );
     CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
-    new ClipboardUpdater(job, ClipboardUpdater::UpdateContent);
+    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
     return job;
 }
 
@@ -2197,7 +2197,7 @@ CopyJob *KIO::moveAs(const KUrl& src, const KUrl& dest, JobFlags flags)
     KUrl::List srcList;
     srcList.append( src );
     CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
-    new ClipboardUpdater(job, ClipboardUpdater::UpdateContent);
+    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
     return job;
 }
 
@@ -2205,7 +2205,7 @@ CopyJob *KIO::move( const KUrl::List& src, const KUrl& dest, JobFlags flags)
 {
     //kDebug(7007) << src << dest;
     CopyJob* job = CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
-    new ClipboardUpdater(job, ClipboardUpdater::UpdateContent);
+    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
     return job;
 }
 

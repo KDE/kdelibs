@@ -69,8 +69,9 @@ static KIO::Job *pasteClipboardUrls(const QMimeData* mimeData, const KUrl& destD
         if (move) {
             job = KIO::move(urls, destDir, flags);
             KIO::ClipboardUpdater* clipboardUpdater = job->findChild<KIO::ClipboardUpdater *>();
-            Q_ASSERT(clipboardUpdater);
-            clipboardUpdater->setMode(KIO::ClipboardUpdater::OverwriteContent);
+            if (clipboardUpdater) {
+                clipboardUpdater->setMode(KIO::ClipboardUpdater::OverwriteContent);
+            }
         }
         else
             job = KIO::copy(urls, destDir, flags);
