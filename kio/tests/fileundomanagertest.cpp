@@ -24,6 +24,7 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFileInfo>
+#include <qplatformdefs.h>
 #include <kio/fileundomanager.h>
 
 #include <kio/copyjob.h>
@@ -32,7 +33,6 @@
 #include <kio/netaccess.h>
 #include <kprotocolinfo.h>
 
-#include <kde_file.h>
 #include <QDebug>
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -83,12 +83,12 @@ static void createTestFile( const QString& path, const char* contents )
 static void createTestSymlink( const QString& path )
 {
     // Create symlink if it doesn't exist yet
-    KDE_struct_stat buf;
-    if ( KDE_lstat( QFile::encodeName( path ), &buf ) != 0 ) {
+    QT_STATBUF buf;
+    if ( QT_LSTAT( QFile::encodeName( path ), &buf ) != 0 ) {
         bool ok = symlink( "/IDontExist", QFile::encodeName( path ) ) == 0; // broken symlink
         if ( !ok )
             qFatal("couldn't create symlink: %s", strerror(errno));
-        QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
+        QVERIFY( QT_LSTAT( QFile::encodeName( path ), &buf ) == 0 );
         QVERIFY( S_ISLNK( buf.st_mode ) );
     } else {
         QVERIFY( S_ISLNK( buf.st_mode ) );
