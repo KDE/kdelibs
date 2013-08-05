@@ -64,7 +64,6 @@
 #include <QDebug>
 #include <kiconloader.h>
 #include <kcolorscheme.h>
-#include <kglobalsettings.h>
 
 #include <config-kdeui.h>
 
@@ -2531,7 +2530,7 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
             return false;
 
         case SH_ItemView_ActivateItemOnSingleClick:
-            return KSharedConfig::openConfig()->group("KDE").readEntry("SingleClick", KDE_DEFAULT_SINGLECLICK );
+            return KSharedConfig::openConfig()->group("KDE").readEntry("SingleClick", true );
         case SH_KCustomStyleElement:
             if (!widget)
                 return 0;
@@ -2558,7 +2557,7 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         {
             // was KGlobalSettings::showIconsOnPushButtons() :
             KConfigGroup g(KSharedConfig::openConfig(), "KDE");
-            return g.readEntry("ShowIconsOnPushButtons", KDE_DEFAULT_ICON_ON_PUSHBUTTON);
+            return g.readEntry("ShowIconsOnPushButtons", true);
         }
         case SH_ItemView_ArrowKeysNavigateIntoChildren:
             return true;

@@ -24,7 +24,6 @@
 
 #include <kdirmodel.h>
 #include <kfileitem.h>
-#include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <kstringhandler.h>
 #include <kconfiggroup.h>
