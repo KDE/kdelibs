@@ -59,7 +59,6 @@
 #include <kapplication.h>
 #include <klocalizedstring.h>
 #include <QDebug>
-#include <kde_file.h>
 #include <qsavefile.h>
 
 #ifdef Q_OS_LINUX
@@ -256,8 +255,8 @@ static void close_fds()
    }
 #endif
 
-   KDE_signal(SIGCHLD, SIG_DFL);
-   KDE_signal(SIGPIPE, SIG_DFL);
+   signal(SIGCHLD, SIG_DFL);
+   signal(SIGPIPE, SIG_DFL);
 }
 
 /* Notify wrapper program that the child it started has finished. */
@@ -307,7 +306,10 @@ static void setup_tty( const char* tty )
 {
     if( tty == NULL || *tty == '\0' )
         return;
-    int fd = KDE_open( tty, O_WRONLY );
+    QFile f(QFile::decodeName(tty));
+    f.open(QFileDevice::WriteOnly);
+    int fd = f.handle();
+
     if( fd < 0 )
     {
         perror( "kdeinit5: could not open() tty" );
@@ -1542,7 +1544,7 @@ int kdeinit_xio_errhandler( Display *disp )
     qWarning( "kdeinit5: sending SIGHUP to children." );
 
     /* this should remove all children we started */
-    KDE_signal(SIGHUP, SIG_IGN);
+    signal(SIGHUP, SIG_IGN);
     kill(0, SIGHUP);
 
     sleep(2);
@@ -1551,7 +1553,7 @@ int kdeinit_xio_errhandler( Display *disp )
     qWarning( "kdeinit5: sending SIGTERM to children." );
 
     /* and if they don't listen to us, this should work */
-    KDE_signal(SIGTERM, SIG_IGN);
+    signal(SIGTERM, SIG_IGN);
     kill(0, SIGTERM);
 
     if ( disp )
@@ -1804,7 +1806,7 @@ int main(int argc, char **argv, char **envp)
       // Fork here and let parent process exit.
       // Parent process may only exit after all required services have been
       // launched. (dcopserver/klauncher and services which start with '+')
-      KDE_signal( SIGCHLD, secondary_child_handler);
+      signal(SIGCHLD, secondary_child_handler);
       if (fork() > 0) // Go into background
       {
          close(d.initpipe[1]);
