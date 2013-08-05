@@ -24,7 +24,6 @@
 
 #include "klauncher.h"
 #include "kcrash.h"
-#include "QDebug"
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
@@ -32,6 +31,7 @@
 
 #include "klauncher_cmds.h"
 #include <QtCore/QCoreApplication>
+#include <QDebug>
 
 #ifndef USE_KPROCESS_FOR_KIOSLAVES
 static int sigpipe[ 2 ];
