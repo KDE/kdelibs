@@ -201,14 +201,11 @@ private:
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::ParseOptions)
 Q_DECLARE_OPERATORS_FOR_FLAGS(KConfigBackend::WriteOptions)
 
-#if 0 // TODO port to Qt5 plugin loading
 /**
  * Register a KConfig backend when it is contained in a loadable module
  */
 #define K_EXPORT_KCONFIGBACKEND(libname, classname) \
-K_PLUGIN_FACTORY(factory, registerPlugin<classname>();) \
-K_EXPORT_PLUGIN(factory("kconfigbackend_" #libname))
-#endif
+K_PLUGIN_FACTORY(factory, registerPlugin<classname>();)
 
 
 #endif // KCONFIGBACKEND_H
