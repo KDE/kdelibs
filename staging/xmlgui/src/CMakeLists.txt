@@ -38,6 +38,7 @@ set(xmlgui_SRCS
   kaboutkdedialog_p.cpp
   kactioncategory.cpp
   kactioncollection.cpp
+  kactionconflictdetector.cpp
   kbugreport.cpp
   kedittoolbar.cpp
   kglobalaccel.cpp

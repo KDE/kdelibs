@@ -15,7 +15,6 @@ add_subdirectory( tests )
 
 ########### next target ###############
 set(kdeui_LIB_SRCS
- actions/kactionconflictdetector.cpp
  kernel/kstyle.cpp
  util/kglobalsettings.cpp
 )
