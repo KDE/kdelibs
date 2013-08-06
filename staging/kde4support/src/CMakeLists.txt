@@ -53,6 +53,7 @@ set(libkde4support_SRCS
     kdeui/kcolordialog.cpp
     kdeui/kcolorhelpers.cpp
     kdeui/kcolorvalueselector.cpp
+    kdeui/kdeuiwidgetsproxystyle.cpp
     kdeui/kdialog.cpp
     kdeui/kdialogqueue.cpp
     kdeui/kfontcombobox.cpp
