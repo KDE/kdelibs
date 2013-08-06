@@ -145,3 +145,8 @@ install(FILES
 )
 
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
+
+install( FILES
+ aboutkde.png
+ thumb_frame.png
+ DESTINATION  ${DATA_INSTALL_DIR}/xmlgui/pics )

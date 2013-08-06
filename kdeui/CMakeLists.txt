@@ -117,11 +117,6 @@ install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 
 
 install( FILES
- dialogs/aboutkde.png
- dialogs/thumb_frame.png
- DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
-
-install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  kernel/kstyle.h
  util/kglobalsettings.h
