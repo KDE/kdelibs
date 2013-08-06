@@ -25,7 +25,7 @@ generate_export_header(knotifyconfig)
 
 # Needs KIO for KUrlRequester
 target_link_libraries(knotifyconfig  ${KDE4_KIO_LIBS} ${PHONON_LIBS} ${KCoreAddons_LIBRARIES} KI18n)
-target_link_libraries(knotifyconfig  LINK_INTERFACE_LIBRARIES kdecore Qt5::Widgets)
+target_link_libraries(knotifyconfig  LINK_INTERFACE_LIBRARIES Qt5::Widgets)
 
 set_target_properties(knotifyconfig PROPERTIES
    VERSION ${GENERIC_LIB_VERSION}

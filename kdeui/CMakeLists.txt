@@ -56,7 +56,6 @@ target_link_libraries(kdeui LINK_PUBLIC
     KNotifications
     KJobWidgets
     KIconThemes
-    ${KDE4_KDECORE_LIBS}
     ${X11_LIBRARIES}
     Qt5::Widgets
     Qt5::Svg

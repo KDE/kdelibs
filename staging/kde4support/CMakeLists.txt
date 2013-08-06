@@ -34,7 +34,7 @@ remove_definitions(-DQT_NO_KEYWORDS)
 
 kde4_add_executable(kf5-config NOGUI kde-config.cpp )
 
-target_link_libraries(kf5-config ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} KDE4Support)
+target_link_libraries(kf5-config ${KCoreAddons_LIBRARIES} KI18n KConfigCore KDE4Support)
 target_include_directories(kf5-config PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/../..")
 
 install(TARGETS kf5-config EXPORT KDE4SupportTargets ${INSTALL_TARGETS_DEFAULT_ARGS} ) # put this for now into the export set KDE4SupportTargets, so that it exists and is not empty

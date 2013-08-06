@@ -17,7 +17,7 @@ qt5_add_resources(console_SRCS console.qrc )
 
 kde4_add_executable(kjsconsole ${console_SRCS})
 
-target_link_libraries(kjsconsole  ${KDE4_KDECORE_LIBS} kjsembed )
+target_link_libraries(kjsconsole kjsembed)
 
 install(TARGETS kjsconsole DESTINATION ${BIN_INSTALL_DIR} )
 

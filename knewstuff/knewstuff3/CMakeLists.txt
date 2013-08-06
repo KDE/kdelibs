@@ -54,14 +54,13 @@ kde4_add_library(knewstuff3 ${LIBRARY_TYPE} ${knewstuff3_SRCS} )
 target_include_directories(knewstuff3 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 target_link_libraries(knewstuff3
     ${KDE4_KIO_LIBS}
-    ${KDE4_KDECORE_LIBS}
     ${KCoreAddons_LIBRARIES}
     ${LibAttica_LIBRARIES}
     ${KArchive_LIBRARIES}
     KI18n
 )
 
-target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui kdecore KCompletion Qt5::Widgets)
+target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui KCompletion Qt5::Widgets)
 
 generate_export_header(knewstuff3)
 

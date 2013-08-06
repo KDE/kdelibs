@@ -60,9 +60,6 @@ endif (WIN32)
 kde4_add_executable(kwrapper4 NOGUI ${kwrapper_SRCS})
 
 target_link_libraries(kwrapper4 ${KINIT_SOCKET_LIBRARY} Qt5::Core)
-if (WIN32)
-   target_link_libraries(kwrapper4 ${KDE4_KDECORE_LIBS})
-endif (WIN32)
 install(TARGETS kwrapper4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 
 if (NOT WIN32)

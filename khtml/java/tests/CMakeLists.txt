@@ -15,7 +15,7 @@ set(testserver_SRCS testkjavaappletserver.cpp
 add_executable(testserver ${testserver_SRCS})
 ecm_mark_as_test(testserver)
 
-target_link_libraries(testserver  ${KDE4_KDECORE_LIBS}
+target_link_libraries(testserver
     ${KDE4_KPARTS_LIBS}
     KInterProcessWindowing
     KDE4Support

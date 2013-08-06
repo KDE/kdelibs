@@ -67,7 +67,7 @@ set(kbuildsycoca_KDEINIT_SRCS
    )
 
 if(KBUILDSYCOCA_NO_KCRASH)
-    set(KBUILDSYCOCA_MAIN_LIBS ${KDE4_KDECORE_LIBS})
+    set(KBUILDSYCOCA_MAIN_LIBS Qt5::DBus KService kdeqt5staging)
 else(KBUILDSYCOCA_NO_KCRASH)
     set(KBUILDSYCOCA_MAIN_LIBS Qt5::DBus KCrash KService kdeqt5staging)
 endif(KBUILDSYCOCA_NO_KCRASH)
