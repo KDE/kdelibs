@@ -133,7 +133,6 @@ name::~name() {}
  *                  metadata.json,
  *                  registerPlugin<MyPlugin>();
  *                 )
- * K_EXPORT_PLUGIN(MyPluginFactory("componentName"))
  *
  * class MyPlugin : public PluginInterface
  * {
