@@ -61,7 +61,7 @@ class KGUIADDONS_EXPORT KLocalImageCacheImplementation
     class Private;
     Private *const d; ///< @internal
 
-    friend class KSharedPixmapCacheMixin;
+    template<class T> friend class KSharedPixmapCacheMixin;
 };
 
 #endif /* KLOCALIMAGECACHEIMPL_H */
