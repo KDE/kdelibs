@@ -58,6 +58,7 @@ ConfigDialog::ConfigDialog(QWidget *parent)
     QDialogButtonBox *buttonBox = new QDialogButtonBox(this);
     buttonBox->setStandardButtons(QDialogButtonBox::Ok
                                 | QDialogButtonBox::Cancel);
+    layout->addWidget(buttonBox);
 
     connect(buttonBox, SIGNAL(accepted()),
             this, SLOT(slotOk()));
