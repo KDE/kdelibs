@@ -45,18 +45,134 @@ public:
         m_textEdit->viewport()->installEventFilter(q);
     }
 
-    void onContextMenuEvent(QContextMenuEvent *event)
-    {
-        QMenu *menu = m_textEdit->createStandardContextMenu(event->globalPos());
-        menu->addAction(tr("My Menu Item"));
-        menu->exec(event->globalPos());
-        delete menu;
-    }
+    void onContextMenuEvent(QContextMenuEvent *event);
+    void execSuggestionMenu(const QPoint &pos, const QString &word, const QTextCursor &cursor);
 
     TextEditInstaller *q;
     QTextEdit *m_textEdit;
     Highlighter *m_highlighter;
 };
+
+void TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
+{
+    // Obtain the cursor at the mouse position and the current cursor
+    QTextCursor cursorAtMouse = m_textEdit->cursorForPosition(event->pos());
+    const int mousePos = cursorAtMouse.position();
+    QTextCursor cursor = m_textEdit->textCursor();
+
+    // Check if the user clicked a selected word
+    const bool selectedWordClicked = cursor.hasSelection() &&
+                               mousePos >= cursor.selectionStart() &&
+                               mousePos <= cursor.selectionEnd();
+
+    // Get the word under the (mouse-)cursor and see if it is misspelled.
+    // Don't include apostrophes at the start/end of the word in the selection.
+    QTextCursor wordSelectCursor(cursorAtMouse);
+    wordSelectCursor.clearSelection();
+    wordSelectCursor.select(QTextCursor::WordUnderCursor);
+    QString selectedWord = wordSelectCursor.selectedText();
+
+    bool isMouseCursorInsideWord = true;
+    if ((mousePos < wordSelectCursor.selectionStart() ||
+            mousePos >= wordSelectCursor.selectionEnd())
+                                        && (selectedWord.length() > 1)) {
+         isMouseCursorInsideWord = false;
+    }
+
+    // Clear the selection again, we re-select it below (without the apostrophes).
+    wordSelectCursor.setPosition(wordSelectCursor.position()-selectedWord.size());
+    if (selectedWord.startsWith('\'') || selectedWord.startsWith('\"')) {
+        selectedWord = selectedWord.right(selectedWord.size() - 1);
+        wordSelectCursor.movePosition(QTextCursor::NextCharacter, QTextCursor::MoveAnchor);
+    }
+    if (selectedWord.endsWith('\'') || selectedWord.endsWith('\"'))
+        selectedWord.chop(1);
+
+    wordSelectCursor.movePosition(QTextCursor::NextCharacter,
+                                  QTextCursor::KeepAnchor, selectedWord.size());
+
+    const bool wordIsMisspelled = isMouseCursorInsideWord &&
+                            /*checkSpellingEnabled() &&*/ //FIXME
+                            !selectedWord.isEmpty() &&
+                            m_highlighter &&
+                            m_highlighter->isWordMisspelled(selectedWord);
+
+    // If the user clicked a selected word, do nothing.
+    // If the user clicked somewhere else, move the cursor there.
+    // If the user clicked on a misspelled word, select that word.
+    // Same behavior as in OpenOffice Writer.
+    bool inQuote = false;
+    /* FIXME
+    if (d->spellInterface &&
+        !d->spellInterface->shouldBlockBeSpellChecked(cursorAtMouse.block().text()))
+        inQuote = true;
+        */
+    if (!selectedWordClicked) {
+        if (wordIsMisspelled && !inQuote) {
+            m_textEdit->setTextCursor(wordSelectCursor);
+        } else {
+            m_textEdit->setTextCursor(cursorAtMouse);
+        }
+        cursor = m_textEdit->textCursor();
+    }
+
+    // Use standard context menu for already selected words, correctly spelled
+    // words and words inside quotes.
+    if (!wordIsMisspelled || selectedWordClicked || inQuote) {
+        QMenu *menu = m_textEdit->createStandardContextMenu(event->globalPos());
+        menu->exec(event->globalPos());
+        delete menu;
+    } else {
+        execSuggestionMenu(event->globalPos(), selectedWord, cursor);
+    }
+}
+
+void TextEditInstaller::Private::execSuggestionMenu(const QPoint &pos, const QString &selectedWord, const QTextCursor &_cursor)
+{
+    QTextCursor cursor = _cursor;
+    QMenu menu; //don't use KMenu here we don't want auto management accelerator
+
+    //Add the suggestions to the menu
+    const QStringList reps = m_highlighter->suggestionsForWord(selectedWord);
+    if (reps.isEmpty()) {
+        QAction *suggestionsAction = menu.addAction(tr("No suggestions for %1").arg(selectedWord));
+        suggestionsAction->setEnabled(false);
+    } else {
+        QStringList::const_iterator end(reps.constEnd());
+        for (QStringList::const_iterator it = reps.constBegin(); it != end; ++it) {
+            menu.addAction(*it);
+        }
+    }
+
+    menu.addSeparator();
+
+    QAction *ignoreAction = menu.addAction(tr("Ignore"));
+    QAction *addToDictAction = menu.addAction(tr("Add to Dictionary"));
+    //Execute the popup inline
+    const QAction *selectedAction = menu.exec(pos);
+
+    if (selectedAction) {
+        Q_ASSERT(cursor.selectedText() == selectedWord);
+
+        if (selectedAction == ignoreAction) {
+            m_highlighter->ignoreWord(selectedWord);
+            m_highlighter->rehighlight();
+        }
+        else if (selectedAction == addToDictAction) {
+            m_highlighter->addWordToDictionary(selectedWord);
+            m_highlighter->rehighlight();
+        }
+
+        // Other actions can only be one of the suggested words
+        else {
+            const QString replacement = selectedAction->text();
+            Q_ASSERT(reps.contains(replacement));
+            cursor.insertText(replacement);
+            m_textEdit->setTextCursor(cursor);
+        }
+    }
+}
+
 
 TextEditInstaller::TextEditInstaller(QTextEdit *textEdit)
 : QObject(textEdit)
