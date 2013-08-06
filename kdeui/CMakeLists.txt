@@ -12,7 +12,6 @@ configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
 
 add_subdirectory( about )
 add_subdirectory( tests )
-add_subdirectory( sonnet/tests )
 
 ########### next target ###############
 set(kdeui_LIB_SRCS
