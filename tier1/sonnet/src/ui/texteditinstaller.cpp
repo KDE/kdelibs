@@ -92,7 +92,7 @@ void TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
                                   QTextCursor::KeepAnchor, selectedWord.size());
 
     const bool wordIsMisspelled = isMouseCursorInsideWord &&
-                            /*checkSpellingEnabled() &&*/ //FIXME
+                            m_highlighter->isActive() &&
                             !selectedWord.isEmpty() &&
                             m_highlighter &&
                             m_highlighter->isWordMisspelled(selectedWord);
@@ -101,14 +101,9 @@ void TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
     // If the user clicked somewhere else, move the cursor there.
     // If the user clicked on a misspelled word, select that word.
     // Same behavior as in OpenOffice Writer.
-    bool inQuote = false;
-    /* FIXME
-    if (d->spellInterface &&
-        !d->spellInterface->shouldBlockBeSpellChecked(cursorAtMouse.block().text()))
-        inQuote = true;
-        */
+    bool checkBlock = q->shouldBlockBeSpellChecked(cursorAtMouse.block().text());
     if (!selectedWordClicked) {
-        if (wordIsMisspelled && !inQuote) {
+        if (wordIsMisspelled && checkBlock) {
             m_textEdit->setTextCursor(wordSelectCursor);
         } else {
             m_textEdit->setTextCursor(cursorAtMouse);
@@ -118,7 +113,7 @@ void TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
 
     // Use standard context menu for already selected words, correctly spelled
     // words and words inside quotes.
-    if (!wordIsMisspelled || selectedWordClicked || inQuote) {
+    if (!wordIsMisspelled || selectedWordClicked || !checkBlock) {
         QMenu *menu = m_textEdit->createStandardContextMenu(event->globalPos());
         menu->exec(event->globalPos());
         delete menu;
@@ -197,6 +192,11 @@ bool TextEditInstaller::eventFilter(QObject * /*obj*/, QEvent *event)
         return true;
     }
     return false;
+}
+
+bool TextEditInstaller::shouldBlockBeSpellChecked(const QString &textBlock) const
+{
+    return true;
 }
 
 } // namespace

@@ -26,8 +26,24 @@
 
 // Qt
 #include <QApplication>
+#include <QDebug>
 #include <QTextEdit>
 #include <QVBoxLayout>
+
+class MailTextEditInstaller : public Sonnet::TextEditInstaller
+{
+public:
+    MailTextEditInstaller(QTextEdit *edit)
+    : Sonnet::TextEditInstaller(edit)
+    {}
+
+protected:
+    bool shouldBlockBeSpellChecked(const QString &blockText) const Q_DECL_OVERRIDE
+    {
+        qDebug() << blockText;
+        return !blockText.startsWith(">");
+    }
+};
 
 int main( int argc, char** argv )
 {
@@ -36,6 +52,7 @@ int main( int argc, char** argv )
     QWidget window;
 
     Sonnet::DictionaryComboBox *comboBox = new Sonnet::DictionaryComboBox;
+
 
     QTextEdit *textEdit = new QTextEdit;
     textEdit->setText( "This is a sample buffer. Whih this thingg will "
@@ -46,9 +63,22 @@ int main( int argc, char** argv )
     installer->highlighter()->setCurrentLanguage("en");
     QObject::connect(comboBox, SIGNAL(dictionaryChanged(QString)), installer->highlighter(), SLOT(setCurrentLanguage(QString)));
 
+
+    QTextEdit *mailTextEdit = new QTextEdit;
+    mailTextEdit->setText(
+        "John Doe said:\n"
+        "> Hello how aree you?\n"
+        "I am ffine thanks");
+
+    installer = new MailTextEditInstaller(mailTextEdit);
+    installer->highlighter()->setCurrentLanguage("en");
+    QObject::connect(comboBox, SIGNAL(dictionaryChanged(QString)), installer->highlighter(), SLOT(setCurrentLanguage(QString)));
+
+
     QVBoxLayout *layout = new QVBoxLayout(&window);
     layout->addWidget(comboBox);
     layout->addWidget(textEdit);
+    layout->addWidget(mailTextEdit);
 
     window.show();
     return app.exec();
