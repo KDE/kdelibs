@@ -1,9 +1,11 @@
 
 find_package(Qt5Widgets 5.2.0 REQUIRED NO_MODULE)
+find_package(Qt5Xml 5.2.0 REQUIRED NO_MODULE)
 
 set(libkconfiggui_SRCS
    kconfiggui.cpp
    kconfiggroupgui.cpp
+   kconfigloader.cpp
    kconfigskeleton.cpp
    kstandardshortcut.cpp
    kwindowconfig.cpp
@@ -12,7 +14,7 @@ set(libkconfiggui_SRCS
 add_library(KConfigGui ${libkconfiggui_SRCS})
 generate_export_header(KConfigGui)
 
-target_link_libraries(KConfigGui LINK_PUBLIC Qt5::Gui KConfigCore)
+target_link_libraries(KConfigGui LINK_PUBLIC Qt5::Gui Qt5::Xml KConfigCore)
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
   target_include_directories(KConfigGui INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
@@ -29,6 +31,7 @@ install(TARGETS KConfigGui EXPORT KConfigTargets ${INSTALL_TARGETS_DEFAULT_ARGS}
 install( FILES
    ${CMAKE_CURRENT_BINARY_DIR}/kconfiggui_export.h
    kconfiggui.h
+   kconfigloader.h
    kconfigskeleton.h
    kstandardshortcut.h
    kwindowconfig.h
