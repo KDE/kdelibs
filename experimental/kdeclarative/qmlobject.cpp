@@ -1,5 +1,5 @@
 /*
- *   Copyright 2010 Marco Martin <mart@kde.org>
+ *   Copyright 2013 Marco Martin <mart@kde.org>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -18,7 +18,7 @@
  */
 
 #include "qmlobject.h"
-
+#include "qmlobject_p.h"
 
 #include <QQmlComponent>
 #include <QQmlEngine>
