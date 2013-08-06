@@ -24,6 +24,8 @@
 #include <highlighter.h>
 
 // Qt
+#include <QContextMenuEvent>
+#include <QMenu>
 #include <QTextEdit>
 
 namespace Sonnet
@@ -32,19 +34,34 @@ namespace Sonnet
 class TextEditInstaller::Private
 {
 public:
-    void init(QTextEdit *textEdit)
+    Private(TextEditInstaller *installer, QTextEdit *textEdit)
+    : q(installer)
+    , m_textEdit(textEdit)
+    , m_highlighter(new Highlighter(textEdit))
     {
-        m_highlighter = new Highlighter(textEdit);
+        // Catch pressing the "menu" key
+        m_textEdit->installEventFilter(q);
+        // Catch right-click
+        m_textEdit->viewport()->installEventFilter(q);
     }
 
+    void onContextMenuEvent(QContextMenuEvent *event)
+    {
+        QMenu *menu = m_textEdit->createStandardContextMenu(event->globalPos());
+        menu->addAction(tr("My Menu Item"));
+        menu->exec(event->globalPos());
+        delete menu;
+    }
+
+    TextEditInstaller *q;
+    QTextEdit *m_textEdit;
     Highlighter *m_highlighter;
 };
 
 TextEditInstaller::TextEditInstaller(QTextEdit *textEdit)
 : QObject(textEdit)
-, d(new Private)
+, d(new Private(this, textEdit))
 {
-    d->init(textEdit);
 }
 
 TextEditInstaller::~TextEditInstaller()
@@ -55,6 +72,15 @@ TextEditInstaller::~TextEditInstaller()
 Highlighter *TextEditInstaller::highlighter() const
 {
     return d->m_highlighter;
+}
+
+bool TextEditInstaller::eventFilter(QObject * /*obj*/, QEvent *event)
+{
+    if (event->type() == QEvent::ContextMenu) {
+        d->onContextMenuEvent(static_cast<QContextMenuEvent *>(event));
+        return true;
+    }
+    return false;
 }
 
 } // namespace

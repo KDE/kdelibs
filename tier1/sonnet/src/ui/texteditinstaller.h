@@ -41,6 +41,9 @@ public:
 
     Highlighter *highlighter() const;
 
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
+
 private:
     class Private;
     Private *const d;
