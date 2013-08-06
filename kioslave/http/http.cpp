@@ -50,11 +50,9 @@
 #include <QUrl>
 
 #include <QDebug>
-#include <klocale.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <kservice.h>
-#include <kdatetime.h>
 
 #include <kremoteencoding.h>
 #include <kio_ktcpsocket.h>
@@ -338,11 +336,10 @@ QByteArray HTTPProtocol::HTTPRequest::methodString() const
 
 static QString formatHttpDate(const QDateTime &date)
 {
-    KDateTime dt(date);
-    QString ret = dt.toString(KDateTime::RFCDateDay);
+    QString ret = date.toString(QStringLiteral("ddd, ")) + date.toString(Qt::RFC2822Date);
     ret.chop(6);    // remove " +0000"
     // RFCDate[Day] omits the second if zero, but HTTP requires it; see bug 240585.
-    if (!dt.time().second()) {
+    if (!date.time().second()) {
         ret.append(QLatin1String(":00"));
     }
     ret.append(QLatin1String(" GMT"));
@@ -1123,19 +1120,19 @@ QDateTime HTTPProtocol::parseDateTime(const QString &input, const QString &type)
 {
   if ( type == QLatin1String("dateTime.tz") )
   {
-    return KDateTime::fromString(input, KDateTime::ISODate).dateTime();
+    return QDateTime::fromString(input, Qt::ISODate);
   }
   else if ( type == QLatin1String("dateTime.rfc1123") )
   {
-    return KDateTime::fromString(input, KDateTime::RFCDate).dateTime();
+    return QDateTime::fromString(input, Qt::RFC2822Date);
   }
 
   // format not advertised... try to parse anyway
-  QDateTime time = KDateTime::fromString(input, KDateTime::RFCDate).dateTime();
+  QDateTime time = QDateTime::fromString(input, Qt::RFC2822Date);
   if (time.isValid())
     return time;
 
-  return KDateTime::fromString(input, KDateTime::ISODate).dateTime();
+  return QDateTime::fromString(input, Qt::ISODate);
 }
 
 QString HTTPProtocol::davProcessLocks()
@@ -3612,9 +3609,9 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
     TokenIterator tIt = tokenizer.iterator("last-modified");
     if (tIt.hasNext()) {
         m_request.cacheTag.lastModifiedDate =
-              KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).dateTime();
+              QDateTime::fromString(toQString(tIt.next()), Qt::RFC2822Date);
 
-        //### might be good to canonicalize the date by using KDateTime::toString()
+        //### might be good to canonicalize the date by using QDateTime::toString()
         if (m_request.cacheTag.lastModifiedDate.isValid()) {
             setMetaData(QLatin1String("modified"), toQString(tIt.current()));
         }
@@ -3625,7 +3622,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         QDateTime dateHeader;
         tIt = tokenizer.iterator("date");
         if (tIt.hasNext()) {
-            dateHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).dateTime();
+            dateHeader = QDateTime::fromString(toQString(tIt.next()), Qt::RFC2822Date);
             // -1 on error
         }
 
@@ -3670,7 +3667,7 @@ void HTTPProtocol::cacheParseResponseHeader(const HeaderTokenizer &tokenizer)
         QDateTime expiresHeader;
         tIt = tokenizer.iterator("expires");
         if (tIt.hasNext()) {
-            expiresHeader = KDateTime::fromString(toQString(tIt.next()), KDateTime::RFCDate).dateTime();
+            expiresHeader = QDateTime::fromString(toQString(tIt.next()), Qt::RFC2822Date);
             // qDebug() << "parsed expire date from 'expires' header:" << tIt.current();
         }
 

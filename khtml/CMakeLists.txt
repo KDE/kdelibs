@@ -609,7 +609,6 @@ target_link_libraries(khtml
   ${KWindowSystem_LIBRARIES}
   KWallet
   Qt5::X11Extras
-  KDE4Attic
   KDE4Support # KComponentData (TODO port to KAboutData
 )
 if (KJS_DEBUGGER)

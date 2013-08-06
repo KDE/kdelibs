@@ -44,7 +44,6 @@ target_link_libraries(kded_kcookiejar
    KCompletion
    KWidgetsAddons
    KInterProcessWindowing
-   KDE4Attic
 )
 
 install(TARGETS kded_kcookiejar  DESTINATION ${PLUGIN_INSTALL_DIR} )

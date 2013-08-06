@@ -31,7 +31,7 @@ set(kparts_LIB_SRCS
 kde4_add_library(kparts ${LIBRARY_TYPE} ${kparts_LIB_SRCS})
 generate_export_header(kparts)
 
-target_link_libraries(kparts  kio ${KCoreAddons_LIBRARIES} KI18n KDE4Attic)
+target_link_libraries(kparts  kio ${KCoreAddons_LIBRARIES} KI18n)
 target_include_directories(kparts PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
 target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio Qt5::Widgets)
 if(HAVE_NEPOMUK)

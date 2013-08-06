@@ -25,7 +25,7 @@ kde4_add_unit_test(httpobjecttest httpobjecttest.cpp
 
 )
 target_link_libraries(httpobjecttest Qt5::Test
-   Qt5::Widgets ${KDE4_KIO_LIBS} KI18n kntlm ${KArchive_LIBRARIES} Solid KDE4Attic)
+   Qt5::Widgets ${KDE4_KIO_LIBS} KI18n kntlm ${KArchive_LIBRARIES} Solid)
 if(GSSAPI_FOUND)
   target_link_libraries(httpobjecttest ${GSSAPI_LIBS})
 endif(GSSAPI_FOUND)

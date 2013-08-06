@@ -246,9 +246,9 @@ private Q_SLOTS:
     {
         QStandardPaths::enableTestMode(true);
         jar = new KCookieJar;
-        KDateTime dt = KDateTime::currentDateTime(KDateTime::Spec::LocalZone());
-        lastYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(-1).toString("%:a, %e-%:b-%Y")));
-        nextYear = new QString(QString("%1 01:00:00 GMT").arg(dt.addYears(1).toString("%:a, %e-%:b-%Y")));
+        QDateTime dt = QDateTime::currentDateTime();
+        lastYear = new QString(dt.addYears(-1).toString(Qt::RFC2822Date));
+        nextYear = new QString(dt.addYears(1).toString(Qt::RFC2822Date));
     }
     void testCookieFile_data()
     {

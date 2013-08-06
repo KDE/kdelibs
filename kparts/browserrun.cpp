@@ -33,7 +33,6 @@
 #include <qtemporaryfile.h>
 #include <qmimedatabase.h>
 #include <QDebug>
-#include <kdatetime.h>
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
 #include <qstandardpaths.h>
@@ -463,7 +462,7 @@ void BrowserRun::saveUrlUsingKIO(const QUrl & srcUrl, const QUrl & destUrl,
 
     const QString modificationTime = metaData[QLatin1String("content-disposition-modification-date")];
     if (!modificationTime.isEmpty()) {
-        job->setModificationTime(KDateTime::fromString(modificationTime, KDateTime::RFCDate).dateTime());
+        job->setModificationTime(QDateTime::fromString(modificationTime, Qt::RFC2822Date));
     }
     job->setMetaData(metaData);
     job->addMetaData("MaxCacheSize", "0"); // Don't store in http cache.

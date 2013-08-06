@@ -36,7 +36,6 @@
 
 #include "kcookiejar.h"
 
-#include <kdatetime.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <qsavefile.h>
@@ -95,7 +94,7 @@ static QDateTime parseDate(const QString& _value)
 
     // Check if expiration date matches RFC dates as specified under
     // RFC 2616 sec 3.3.1 & RFC 6265 sec 4.1.1
-    KDateTime dt = KDateTime::fromString(value, KDateTime::RFCDate);
+    QDateTime dt = QDateTime::fromString(value, Qt::RFC2822Date);
 
     // In addition to the RFC date formats we support the ANSI C asctime format
     // per RFC 2616 sec 3.3.1 and a variation of that detected @ amazon.com
@@ -107,14 +106,14 @@ static QDateTime parseDate(const QString& _value)
         };
 
         for (int i = 0; date_formats[i]; ++i) {
-            dt = KDateTime::fromString(value, QL1S(date_formats[i]));
+            dt = QDateTime::fromString(value, QL1S(date_formats[i]));
             if (dt.isValid()) {
                 break;
             }
         }
     }
 
-    return dt.toUtc().dateTime();  // Per RFC 2616 sec 3.3.1 always convert to UTC.
+    return dt.toUTC();  // Per RFC 2616 sec 3.3.1 always convert to UTC.
 }
 
 static qint64 toEpochSecs(const QDateTime& dt)
