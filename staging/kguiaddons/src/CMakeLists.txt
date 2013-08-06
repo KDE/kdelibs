@@ -49,7 +49,7 @@ install( FILES
  text/kwordwrap.h
  fonts/kfontutils.h
  util/kimagecache.h
- util/klocalimagecacheimpl.cpp
+ util/klocalimagecacheimpl.h
  util/kmodifierkeyinfo.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
