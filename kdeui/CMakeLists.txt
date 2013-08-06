@@ -10,7 +10,6 @@ endif(X11_FOUND)
 
 configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
 
-add_subdirectory( about )
 add_subdirectory( tests )
 
 ########### next target ###############
