@@ -16,7 +16,7 @@
  */
 
 #include "kcolorutilsdemo.h"
-#include "../colors/kcolorspaces.h"
+#include <kcolorspaces.h>
 #include <kcolorutils.h>
 #include <kcolorscheme.h>
 

@@ -23,10 +23,3 @@ KDEUI_EXECUTABLE_TESTS(
   kglobalsettingsclient # helper program for kglobalsettingstest
 )
 
-## kcolorutilsdemo
-
-SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp kimageframe.cpp)
-kde4_add_ui_files(kcolorUtilsDemoSources kcolorutilsdemo.ui)
-add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
-ecm_mark_as_test(kcolorutilsdemo)
-target_link_libraries(kcolorutilsdemo ${KDE4_KDEUI_LIBS} ${KDEWIN_LIBRARIES} ${KCoreAddons_LIBRARIES} )

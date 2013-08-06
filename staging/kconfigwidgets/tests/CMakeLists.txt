@@ -15,3 +15,11 @@ kconfigwidgets_executable_tests(
    kcodecactiontest
    klanguagebuttontest
 )
+
+## kcolorutilsdemo
+
+set(kcolorUtilsDemoSources kcolorutilsdemo.cpp kimageframe.cpp)
+qt5_wrap_ui(kcolorUtilsDemoSources kcolorutilsdemo.ui)
+add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
+ecm_mark_as_test(kcolorutilsdemo)
+target_link_libraries(kcolorutilsdemo KConfigWidgets KGuiAddons)
