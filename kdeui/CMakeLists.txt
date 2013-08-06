@@ -119,10 +119,6 @@ install( FILES
  util/kglobalsettings.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
-if (APPLE)
-  install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
-endif (APPLE)
-
 install( FILES
     KDEUIMacros.cmake
     kde4uic.cmake
