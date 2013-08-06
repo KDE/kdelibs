@@ -24,12 +24,14 @@
 #include <qpa/qplatformtheme.h>
 
 #include <QHash>
+#include <QObject>
 
 class KFontSettingsData;
 class QIconEngine;
 
-class KdePlatformTheme : public QPlatformTheme
+class KdePlatformTheme : public QObject, public QPlatformTheme
 {
+    Q_OBJECT
 public:
     KdePlatformTheme();
     ~KdePlatformTheme();
@@ -43,6 +45,7 @@ private:
     void loadSettings();
     void loadHints();
     void loadPalettes();
+    void iconChanged(int group);
 
     QHash<ThemeHint, QVariant> m_hints;
     QHash<Palette, QPalette*> m_palettes;
