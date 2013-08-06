@@ -473,6 +473,8 @@ Q_SIGNALS:
  private:
     // @internal the data object
     KIconLoaderPrivate *d;
+
+    Q_PRIVATE_SLOT( d, void _k_refreshIcons(int group) )
 };
 
 /**
