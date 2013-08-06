@@ -18,7 +18,6 @@ set(kdeui_LIB_SRCS
  actions/kactionconflictdetector.cpp
  kernel/kstyle.cpp
  util/kglobalsettings.cpp
- widgets/kdeuiwidgetsproxystyle.cpp
 )
 
 
@@ -120,8 +119,6 @@ install( FILES
  kernel/kstyle.h
  util/kglobalsettings.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
-
-install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
 
 if (APPLE)
   install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
