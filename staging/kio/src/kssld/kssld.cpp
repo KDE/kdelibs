@@ -35,7 +35,6 @@
 using namespace KIO;
 
 K_PLUGIN_FACTORY(KSSLDFactory, registerPlugin<KSSLD>();)
-K_EXPORT_PLUGIN(KSSLDFactory("kssld"))
 //KDECORE_EXPORT void *__kde_do_unload; // TODO re-add support for this?
 
 
