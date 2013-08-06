@@ -42,7 +42,6 @@ namespace Sonnet
         bool spellCheckerFound() const;
 
         QString currentLanguage() const;
-        void setCurrentLanguage(const QString &lang);
 
         static QStringList personalWords();
 
@@ -158,8 +157,10 @@ namespace Sonnet
         void setIntraWordEditing(bool editing);
 
     public Q_SLOTS:
+        void setCurrentLanguage(const QString &lang);
         void slotAutoDetection();
         void slotRehighlight();
+
     private:
         virtual void connectNotify(const QMetaMethod& signal);
         virtual void disconnectNotify(const QMetaMethod& signal);
