@@ -11,6 +11,7 @@ endmacro()
 
 kde4support_examples(
   kcolordlgtest
+  kdebugtest_gui
   kdialogtest
   kmdcodectest
   kmessagetest

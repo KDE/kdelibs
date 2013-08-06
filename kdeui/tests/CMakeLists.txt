@@ -20,7 +20,6 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
   kpopuptest
 )

@@ -1,4 +1,4 @@
-#include "QDebug"
+#include "kdebug.h"
 #include <QWidget>
 #include <QApplication>
 #include <QtCore/QVariant>
@@ -12,15 +12,15 @@ int main(int argc, char** argv)
     widget.setGeometry(45, 54, 120, 80);
     widget.show();
 
-    // qDebug() << &widget;
+    kDebug() << &widget;
 
     QRect r(9,12,58,234);
     QRegion reg(r);
     reg += QRect(1,60,200,59);
-    // qDebug() << reg;
+    kDebug() << reg;
 
     QVariant v = QPen( Qt::red );
-    // qDebug() << "Variant: " << v;
+    kDebug() << "Variant: " << v;
 
     return 0;
 }
