@@ -108,7 +108,7 @@ if(Qt5Designer_FOUND)
 
   kde4_add_plugin(kdewebkitwidgets ${kdewebkitwidgets_PART_SRCS})
 
-  target_link_libraries(kdewebkitwidgets ${KDE4_KDEUI_LIBS} ${KDE4_KDEWEBKIT_LIBS} Qt5::WebKitWidgets)
+  target_link_libraries(kdewebkitwidgets ${KDE4_KDEWEBKIT_LIBS} Qt5::WebKitWidgets)
   if(NOT WIN32)
     set_target_properties(kdewebkitwidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

@@ -70,7 +70,6 @@ target_link_libraries(kprintutils
     Qt5::Widgets
     Qt5::PrintSupport
   LINK_PRIVATE
-    kdeui
     ${KDE4_KPARTS_LIBS}
     ${KCoreAddons_LIBRARIES}
 )
@@ -98,7 +97,7 @@ kde4_add_library(kutils ${LIBRARY_TYPE} ${kutils_LIB_SRCS})
 find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
 
 target_link_libraries(kutils kcmutils kprintutils)
-target_link_libraries(kutils LINK_INTERFACE_LIBRARIES kdeui Qt5::Widgets Qt5::PrintSupport kcmutils kprintutils)
+target_link_libraries(kutils LINK_INTERFACE_LIBRARIES Qt5::Widgets Qt5::PrintSupport kcmutils kprintutils)
 set_target_properties(kutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}
                       SOVERSION ${GENERIC_LIB_SOVERSION})
