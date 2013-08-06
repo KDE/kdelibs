@@ -22,7 +22,6 @@
 #include "speller.h"
 
 #include <qapplication.h>
-#include <kconfig.h>
 
 using namespace Sonnet;
 
