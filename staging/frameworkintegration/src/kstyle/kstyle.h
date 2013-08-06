@@ -35,7 +35,7 @@
 #ifndef KDE_KSTYLE_H
 #define KDE_KSTYLE_H
 
-#include <kdeui_export.h>
+#include <kstyle_export.h>
 
 #include <QCommonStyle>
 #include <QPalette>
@@ -82,7 +82,7 @@ class KStylePrivate;
 // TODO: implement standardIcon().. and what about standardPalette()?
 // TODO: maybe the arrow in CE_PushButtonLabel should be painted in CE_PushButtonBevel like QCommonStyle
 
-class KDEUI_EXPORT KStyle: public QCommonStyle
+class KSTYLE_EXPORT KStyle: public QCommonStyle
 {
     Q_OBJECT
 
@@ -188,7 +188,7 @@ protected:
      *
      * This marshals to and from integers.
     */
-    class KDEUI_EXPORT ColorMode //krazy:exclude=dpointer (lightweight helper)
+    class KSTYLE_EXPORT ColorMode //krazy:exclude=dpointer (lightweight helper)
     {
     public:
         /**
@@ -236,7 +236,7 @@ protected:
      When implementing the actual types, just implement the default ctor,
      filling in defaults, and you're set.
     */
-    struct KDEUI_EXPORT Option
+    struct KSTYLE_EXPORT Option
     {
         virtual ~Option() {} //So dynamic_cast works, and g++ shuts up
     };
@@ -251,7 +251,7 @@ protected:
      BaseType        --- the type of option from which this should inherit
      */
     template<typename EventualSubtype, typename BaseType>
-    struct KDEUI_EXPORT OptionBase: public BaseType
+    struct KSTYLE_EXPORT OptionBase: public BaseType
     {
         /** Default value for this option. Uses the default constructor
             of EventualSubtype to create the option. 
@@ -281,7 +281,7 @@ protected:
      Option representing the color of the thing to draw. Used for arrows, and for text
      (the latter actually uses TextOption)
     */
-    struct KDEUI_EXPORT ColorOption: public OptionBase<ColorOption, Option>
+    struct KSTYLE_EXPORT ColorOption: public OptionBase<ColorOption, Option>
     {
         /** Color to use for the drawing. Public, modifiable. */
         ColorMode color;
@@ -294,7 +294,7 @@ protected:
      Option for drawing icons: represents whether the icon should be active or not.
      The implementation is responsible for all other flags
     */
-    struct KDEUI_EXPORT IconOption: public OptionBase<IconOption, Option>
+    struct KSTYLE_EXPORT IconOption: public OptionBase<IconOption, Option>
     {
         bool  active; ///< Is the icon active?
         QIcon icon;   ///< Icon drawn by this option
@@ -309,7 +309,7 @@ protected:
      * a button should be drawn active or not.
      * @sa ScrollBar::Primitive
      */
-    struct KDEUI_EXPORT DoubleButtonOption: public OptionBase<DoubleButtonOption, Option>
+    struct KSTYLE_EXPORT DoubleButtonOption: public OptionBase<DoubleButtonOption, Option>
     {
         /**
          * List of active button possibilities.
@@ -346,7 +346,7 @@ protected:
      * the button is pressed, and containing the window icon
      * @sa Window
      */
-    struct KDEUI_EXPORT TitleButtonOption: public OptionBase<TitleButtonOption, Option>
+    struct KSTYLE_EXPORT TitleButtonOption: public OptionBase<TitleButtonOption, Option>
     {
         bool active;  ///< whether the button is pressed
         QIcon icon;   ///< window Icon
@@ -366,7 +366,7 @@ protected:
     };
     
     ///Option representing text drawing info. For Generic::Text. 
-    struct KDEUI_EXPORT TextOption: public OptionBase<TextOption, ColorOption>
+    struct KSTYLE_EXPORT TextOption: public OptionBase<TextOption, ColorOption>
     {
         Qt::Alignment        hAlign; ///< The horizontal alignment, default is Qt::AlignLeft
         QString              text;   ///< The text to draw
