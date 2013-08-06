@@ -230,7 +230,12 @@ A script is available in kdesdk/kde-dev-scripts/kf5/convert-kstandarddirs.pl to 
    KMimeType::allMimeTypes() -&gt; db.allMimeTypes()
 </pre>
 </li>
-<li>KLocale has been splitted up: KLocale is now only about locale settings, while translation support has moved to KLocalizedString.</li>
+<li>KLocale has been split up: KLocale is now only about locale settings, while translation support has moved to KLocalizedString (ki18n framework). Translation catalogs are no longer dynamically inserted, so the idiom
+<pre>
+    KGlobal::locale()-&gt;insertCatalog("somecatalog")
+</pre>
+is no longer available. To simply make the code build, for the sake of porting other things first, just remove or comment out these calls. This will stop translations from working, and to fully port them eventually, follow the section "Connecting Calls to Catalogs" in ki18n programmer's guide.
+</li>
 <li>KCmdLineArgs uses K4AboutData rather than KAboutData: K4AboutData keeps the old mechanism for delayed translations
  (I18N_NOOP), while KAboutData is the one used by plugins, which can use immediate translation (i18n).
 </li>
