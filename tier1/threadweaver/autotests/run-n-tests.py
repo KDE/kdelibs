@@ -9,9 +9,11 @@ def RunTests( Number ):
     # use Linux as the default:
     SuccessCount = 0
     Platform = platform.platform()
-    Command = "./ThreadWeaverJobTests EmitStartedOnFirstElementTest 2>&1"
+#   Command = "./ThreadWeaverJobTests EmitStartedOnFirstElementTest"
 #   Command = "./ThreadWeaverJobTests CollectionDependenciesTest"
-#   Command = "make test"
+#   Command = "./ThreadWeaverJobTests JobSignalsDeliveryTest"
+#   Command = "./ThreadWeaverJobTests"
+    Command = "make test"
 #   if re.search( "Darwin", Platform ):
 #       Command = "DYLD_LIBRARY_PATH=../Weaver:../Experimental ./JobTests.app/Contents/MacOs/JobTests >/dev/null"
     for count in range( Number ):
