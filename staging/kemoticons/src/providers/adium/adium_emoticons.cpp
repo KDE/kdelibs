@@ -27,7 +27,6 @@
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(AdiumEmoticonsFactory, registerPlugin<AdiumEmoticons>();)
-K_EXPORT_PLUGIN(AdiumEmoticonsFactory("AdiumEmoticons"))
 
 AdiumEmoticons::AdiumEmoticons(QObject *parent, const QVariantList &args)
         : KEmoticonsProvider(parent)

@@ -26,7 +26,6 @@
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(PidginEmoticonsFactory, registerPlugin<PidginEmoticons>();)
-K_EXPORT_PLUGIN(PidginEmoticonsFactory("PidginEmoticons"))
 
 PidginEmoticons::PidginEmoticons(QObject *parent, const QVariantList &args)
         : KEmoticonsProvider(parent)
