@@ -45,7 +45,7 @@ public:
         m_textEdit->viewport()->installEventFilter(q);
     }
 
-    void onContextMenuEvent(QContextMenuEvent *event);
+    bool onContextMenuEvent(QContextMenuEvent *event);
     void execSuggestionMenu(const QPoint &pos, const QString &word, const QTextCursor &cursor);
 
     TextEditInstaller *q;
@@ -53,7 +53,7 @@ public:
     Highlighter *m_highlighter;
 };
 
-void TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
+bool TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
 {
     // Obtain the cursor at the mouse position and the current cursor
     QTextCursor cursorAtMouse = m_textEdit->cursorForPosition(event->pos());
@@ -114,12 +114,10 @@ void TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
     // Use standard context menu for already selected words, correctly spelled
     // words and words inside quotes.
     if (!wordIsMisspelled || selectedWordClicked || !checkBlock) {
-        QMenu *menu = m_textEdit->createStandardContextMenu(event->globalPos());
-        menu->exec(event->globalPos());
-        delete menu;
-    } else {
-        execSuggestionMenu(event->globalPos(), selectedWord, cursor);
+        return false;
     }
+    execSuggestionMenu(event->globalPos(), selectedWord, cursor);
+    return true;
 }
 
 void TextEditInstaller::Private::execSuggestionMenu(const QPoint &pos, const QString &selectedWord, const QTextCursor &_cursor)
@@ -188,8 +186,7 @@ Highlighter *TextEditInstaller::highlighter() const
 bool TextEditInstaller::eventFilter(QObject * /*obj*/, QEvent *event)
 {
     if (event->type() == QEvent::ContextMenu) {
-        d->onContextMenuEvent(static_cast<QContextMenuEvent *>(event));
-        return true;
+        return d->onContextMenuEvent(static_cast<QContextMenuEvent *>(event));
     }
     return false;
 }
