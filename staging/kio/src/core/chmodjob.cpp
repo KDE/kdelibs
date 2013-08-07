@@ -218,7 +218,7 @@ void ChmodJobPrivate::_k_chmodNextFile()
                         // fall through
                     case S_SKIP:
                         QMetaObject::invokeMethod(q, "_k_chmodNextFile", Qt::QueuedConnection);
-                        break;
+                        return;
                     case S_CANCEL:
                         q->setError( ERR_USER_CANCELED );
                         q->emitResult();
