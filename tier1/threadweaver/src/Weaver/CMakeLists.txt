@@ -8,6 +8,7 @@ set(ThreadWeaver_LIB_SRCS
     DebuggingAids.cpp
     Thread.cpp
     Job.cpp
+    IdDecorator.cpp
     QObjectJobDecorator.cpp
     Lambda.cpp
     ManagedJobPointer.cpp
@@ -46,6 +47,7 @@ install(FILES
     Thread.h
     JobInterface.h
     Job.h
+    IdDecorator.h
     QObjectJobDecorator.h
     Lambda.h
     State.h
