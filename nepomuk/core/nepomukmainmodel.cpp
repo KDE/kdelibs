@@ -26,77 +26,80 @@
 #include <Soprano/StatementIterator>
 #include <Soprano/NodeIterator>
 #include <Soprano/QueryResultIterator>
-#include <Soprano/Client/LocalSocketClient>
 #include <Soprano/Query/QueryLanguage>
 #include <Soprano/Util/DummyModel>
-#include <Soprano/Vocabulary/RDF>
-#include <Soprano/Vocabulary/NRL>
-#include <Soprano/Vocabulary/NAO>
+#include <Soprano/StorageModel>
+
+#include <Soprano/Backend>
+#include <Soprano/PluginManager>
 
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kdebug.h>
+#include <ksharedconfig.h>
+#include <kconfiggroup.h>
 
 #include <QtCore/QTimer>
 #include <QtCore/QMutex>
 #include <QtCore/QMutexLocker>
 
 
-// FIXME: disconnect localSocketClient after n seconds of idling (but take care of not
-//        disconnecting when iterators are open)
-
 using namespace Soprano;
 
-
-namespace {
-class GlobalModelContainer
+class Nepomuk::MainModel::Private
 {
 public:
-    GlobalModelContainer()
-        : localSocketModel( 0 ),
+    Private()
+        : virtuosoModel( 0 ),
           dummyModel( 0 ),
-          m_socketConnectFailed( false ),
           m_initMutex( QMutex::Recursive ) {
     }
 
-    ~GlobalModelContainer() {
-        delete localSocketModel;
+    ~Private() {
+        delete virtuosoModel;
         delete dummyModel;
     }
 
-    Soprano::Client::LocalSocketClient localSocketClient;
-    Soprano::Model* localSocketModel;
-
+    Soprano::StorageModel* virtuosoModel;
     Soprano::Util::DummyModel* dummyModel;
 
     void init( bool forced ) {
         QMutexLocker lock( &m_initMutex );
 
-        if( forced ) {
-            m_socketConnectFailed = false;
+        if( !forced && virtuosoModel )
+            return;
+
+        Soprano::PluginManager* pm = Soprano::PluginManager::instance();
+        const Soprano::Backend* backend = pm->discoverBackendByName( QLatin1String( "virtuosobackend" ) );
+
+        if ( !backend || !backend->isAvailable() ) {
+            kError() << "Could not find virtuoso backend";
         }
 
-        // we may get disconnected from the server but we don't want to try
-        // to connect every time the model is requested
-        if ( !m_socketConnectFailed && !localSocketClient.isConnected() ) {
-            // ###### FIXME
-            // Cannot delete the model, other threads might still be using it.
-            // With the API that returns iterators, the only way to do this right would be to
-            // use shared pointers, for refcounting the use of the model.
-            // Meanwhile, better leak (on rare occasions) than crash.
-            //delete localSocketModel;
-            localSocketModel = 0;
-            localSocketClient.disconnect();
-            QString socketName = KGlobal::dirs()->locateLocal( "socket", "nepomuk-socket" );
-            kDebug() << "Connecting to local socket" << socketName;
-            if ( localSocketClient.connect( socketName ) ) {
-                localSocketModel = localSocketClient.createModel( "main" );
-            }
-            else {
-                m_socketConnectFailed = true;
-                kDebug() << "Failed to connect to Nepomuk server via local socket" << socketName;
-            }
+        Soprano::BackendSettings settings;
+
+        KConfig config("nepomukserverrc");
+        KConfigGroup repoConfig = config.group( "main Settings" );
+        int portNumber = repoConfig.readEntry("Port", 0);
+        if(!portNumber) {
+            kError() << "Could not find virtuoso to connect to. Aborting";
+            return;
         }
+
+        settings << Soprano::BackendSetting( Soprano::BackendOptionHost, "localhost" );
+        settings << Soprano::BackendSetting( Soprano::BackendOptionPort, portNumber );
+        settings << Soprano::BackendSetting( Soprano::BackendOptionUsername, "dba" );
+        settings << Soprano::BackendSetting( Soprano::BackendOptionPassword, "dba" );
+        settings << Soprano::BackendSetting( "noStatementSignals", true );
+        settings << Soprano::BackendSetting( "fakeBooleans", false );
+        settings << Soprano::BackendSetting( "emptyGraphs", false );
+
+        // FIXME: Can we really delete the model? What about open iterators?
+        if( virtuosoModel )
+            virtuosoModel->deleteLater();
+
+        virtuosoModel = backend ? backend->createModel( settings ) : 0;
+        // Listen to the virtuoso model crashing?
     }
 
     Soprano::Model* model() {
@@ -104,9 +107,8 @@ public:
 
         init( false );
 
-        // we always prefer the faster local socket client
-        if ( localSocketModel ) {
-            return localSocketModel;
+        if ( virtuosoModel ) {
+            return virtuosoModel;
         }
         else {
             if ( !dummyModel ) {
@@ -116,30 +118,13 @@ public:
         }
     }
 
-private:
-    bool m_socketConnectFailed;
     QMutex m_initMutex;
-};
-}
-
-K_GLOBAL_STATIC( GlobalModelContainer, s_modelContainer )
-
-
-class Nepomuk::MainModel::Private
-{
-public:
-    Private( MainModel* p )
-        : q(p) {
-    }
-
-private:
-    MainModel* q;
 };
 
 
 Nepomuk::MainModel::MainModel( QObject* parent )
     : Soprano::Model(),
-      d( new Private(this) )
+      d( new Private() )
 {
     setParent( parent );
 }
@@ -153,107 +138,127 @@ Nepomuk::MainModel::~MainModel()
 
 bool Nepomuk::MainModel::isValid() const
 {
-    return s_modelContainer->localSocketClient.isConnected();
+    QMutexLocker lock( &d->m_initMutex );
+    return d->virtuosoModel;
 }
 
 
 bool Nepomuk::MainModel::init()
 {
-    s_modelContainer->init( true );
+    d->init( true );
     return isValid();
 }
 
 void Nepomuk::MainModel::disconnect()
 {
-    s_modelContainer->localSocketClient.disconnect();
+    QMutexLocker lock( &d->m_initMutex );
+    d->virtuosoModel->deleteLater();
+    d->virtuosoModel = 0;
 }
+
 
 Soprano::StatementIterator Nepomuk::MainModel::listStatements( const Statement& partial ) const
 {
-    Soprano::StatementIterator it = s_modelContainer->model()->listStatements( partial );
-    setError( s_modelContainer->model()->lastError() );
+    Soprano::StatementIterator it = d->model()->listStatements( partial );
+    setError( d->model()->lastError() );
     return it;
 }
 
 
 Soprano::NodeIterator Nepomuk::MainModel::listContexts() const
 {
-    Soprano::NodeIterator it = s_modelContainer->model()->listContexts();
-    setError( s_modelContainer->model()->lastError() );
+    Soprano::NodeIterator it = d->model()->listContexts();
+    setError( d->model()->lastError() );
     return it;
 }
 
+//
+// Copied from services/storage/virtuosoinferencemodel.cpp
+//
+namespace {
+    const char* s_nepomukInferenceRuleSetName = "nepomukinference";
+}
 
 Soprano::QueryResultIterator Nepomuk::MainModel::executeQuery( const QString& query,
                                                                Soprano::Query::QueryLanguage language,
                                                                const QString& userQueryLanguage ) const
 {
-    Soprano::QueryResultIterator it = s_modelContainer->model()->executeQuery( query, language, userQueryLanguage );
-    setError( s_modelContainer->model()->lastError() );
+    Soprano::QueryResultIterator it;
+    if(language == Soprano::Query::QueryLanguageSparqlNoInference) {
+        it = d->model()->executeQuery(query, Soprano::Query::QueryLanguageSparql);
+    }
+    else if(language == Soprano::Query::QueryLanguageSparql ) {
+        it = d->model()->executeQuery(QString::fromLatin1("DEFINE input:inference <%1> ")
+                                         .arg(QLatin1String(s_nepomukInferenceRuleSetName)) + query, language);
+    }
+    else {
+        it = d->model()->executeQuery(query, language, userQueryLanguage);
+    }
+    setError( d->model()->lastError() );
     return it;
 }
 
 
 bool Nepomuk::MainModel::containsStatement( const Statement& statement ) const
 {
-    bool b = s_modelContainer->model()->containsStatement( statement );
-    setError( s_modelContainer->model()->lastError() );
+    bool b = d->model()->containsStatement( statement );
+    setError( d->model()->lastError() );
     return b;
 }
 
 
 bool Nepomuk::MainModel::containsAnyStatement( const Statement &statement ) const
 {
-    bool b = s_modelContainer->model()->containsAnyStatement( statement );
-    setError( s_modelContainer->model()->lastError() );
+    bool b = d->model()->containsAnyStatement( statement );
+    setError( d->model()->lastError() );
     return b;
 }
 
 
 bool Nepomuk::MainModel::isEmpty() const
 {
-    bool b = s_modelContainer->model()->isEmpty();
-    setError( s_modelContainer->model()->lastError() );
+    bool b = d->model()->isEmpty();
+    setError( d->model()->lastError() );
     return b;
 }
 
 
 int Nepomuk::MainModel::statementCount() const
 {
-    int c = s_modelContainer->model()->statementCount();
-    setError( s_modelContainer->model()->lastError() );
+    int c = d->model()->statementCount();
+    setError( d->model()->lastError() );
     return c;
 }
 
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::addStatement( const Statement& statement )
 {
-    Soprano::Error::ErrorCode c = s_modelContainer->model()->addStatement( statement );
-    setError( s_modelContainer->model()->lastError() );
+    Soprano::Error::ErrorCode c = d->model()->addStatement( statement );
+    setError( d->model()->lastError() );
     return c;
 }
 
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::removeStatement( const Statement& statement )
 {
-    Soprano::Error::ErrorCode c = s_modelContainer->model()->removeStatement( statement );
-    setError( s_modelContainer->model()->lastError() );
+    Soprano::Error::ErrorCode c = d->model()->removeStatement( statement );
+    setError( d->model()->lastError() );
     return c;
 }
 
 
 Soprano::Error::ErrorCode Nepomuk::MainModel::removeAllStatements( const Statement& statement )
 {
-    Soprano::Error::ErrorCode c = s_modelContainer->model()->removeAllStatements( statement );
-    setError( s_modelContainer->model()->lastError() );
+    Soprano::Error::ErrorCode c = d->model()->removeAllStatements( statement );
+    setError( d->model()->lastError() );
     return c;
 }
 
 
 Soprano::Node Nepomuk::MainModel::createBlankNode()
 {
-    Soprano::Node n = s_modelContainer->model()->createBlankNode();
-    setError( s_modelContainer->model()->lastError() );
+    Soprano::Node n = d->model()->createBlankNode();
+    setError( d->model()->lastError() );
     return n;
 }
 
