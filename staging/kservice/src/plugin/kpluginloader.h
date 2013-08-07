@@ -102,8 +102,8 @@ public:
     ~KPluginLoader();
 
     /**
-     * Used to obtain the factory object of the plugin. You have to give a class which inherits KPluginFactory
-     * to K_EXPORT_PLUGIN to use this method.
+     * Used to obtain the factory object of the plugin. The returned object is usually created
+     * from a K_PLUGIN_FACTORY invokation.
      *
      * \returns The factory of the plugin or 0 on error.
      */
