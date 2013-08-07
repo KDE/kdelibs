@@ -30,6 +30,7 @@ class KJob;
 namespace KIO
 {
 class Job;
+class ClipboardUpdater;
 
 // KDE5: get rid of M_OVERWRITE_ITSELF, trigger it internally if src==dest
 // KDE5: get rid of M_SINGLE. If not multi, then single ;)
@@ -187,6 +188,20 @@ public:
                                   const QString &dontAskAgainName = QString(),
                                   const KIO::MetaData &sslMetaData = KIO::MetaData()) = 0;
 
+    enum ClipboardUpdaterMode {
+        UpdateContent,
+        OverwriteContent,
+        RemoveContent
+    };
+
+    /**
+     * Creates a clipboard updater as a child of the given job.
+     */
+    virtual ClipboardUpdater* createClipboardUpdater(Job* job, ClipboardUpdaterMode mode);
+    /**
+     * Update URL in clipboard, if present
+     */
+    virtual void updateUrlInClipboard(const QUrl &src, const QUrl &dest);
 
 private:
     class Private;

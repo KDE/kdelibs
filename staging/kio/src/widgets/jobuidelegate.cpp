@@ -29,9 +29,11 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <ksharedconfig.h>
-#include <QDBusInterface>
 #include <ksslinfodialog.h>
+#include <clipboardupdater_p.h>
 
+#include <QDBusInterface>
+#include <QGuiApplication>
 #include <QPointer>
 #include <QWidget>
 #include <QIcon>
@@ -345,6 +347,19 @@ int KIO::JobUiDelegate::requestMessageBox(KIO::JobUiDelegate::MessageBoxType typ
     }
     KMessageBox::setDontShowAgainConfig(0);
     return result;
+}
+
+KIO::ClipboardUpdater* KIO::JobUiDelegate::createClipboardUpdater(Job* job, ClipboardUpdaterMode mode)
+{
+      if (qobject_cast<QGuiApplication *>(qApp) != NULL) {
+            return new KIO::ClipboardUpdater(job, mode);
+      }
+      return NULL;
+}
+
+void KIO::JobUiDelegate::updateUrlInClipboard(const QUrl &src, const QUrl &dest)
+{
+    KIO::ClipboardUpdater::update(src, dest);
 }
 
 class KIOWidgetJobUiDelegateFactory : public KIO::JobUiDelegateFactory

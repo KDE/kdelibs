@@ -17,7 +17,7 @@
     Boston, MA 02110-1301, USA.
 */
 
-#include <qtest_kde.h>
+#include <QtTestWidgets>
 
 #include "clipboardupdatertest.h"
 #include "kiotesthelper.h"
@@ -28,25 +28,23 @@
 #include <kio/copyjob.h>
 #include <kio/deletejob.h>
 
-#include <kdebug.h>
-#include <ktempdir.h>
-
+#include <QTemporaryDir>
 #include <QClipboard>
 #include <QApplication>
 #include <QMimeData>
 
 
-QTEST_KDEMAIN( ClipboardUpdaterTest, GUI )
+QTEST_MAIN(ClipboardUpdaterTest)
 
 using namespace KIO;
 
-static KUrl::List tempFiles(const KTempDir& dir, const QString& baseName, int count = 3)
+static QList<QUrl> tempFiles(const QTemporaryDir& dir, const QString& baseName, int count = 3)
 {
-    KUrl::List urls;
-    const QString path = dir.name();
+    QList<QUrl> urls;
+    const QString path = dir.path();
     for (int i = 1; i < count+1; ++i) {
-        const QString file = (path + baseName + QString::number(i));
-        urls << KUrl(file);
+        const QString file = (path + '/' + baseName + QString::number(i));
+        urls << QUrl::fromLocalFile(file);
         createTestFile(file);
     }
     return urls;
@@ -54,83 +52,84 @@ static KUrl::List tempFiles(const KTempDir& dir, const QString& baseName, int co
 
 void ClipboardUpdaterTest::testPasteAfterRenameFiles()
 {
-    KTempDir dir;
-    const KUrl::List urls = tempFiles(dir, QLatin1String("rfile"));
+    QTemporaryDir dir;
+    const QList<QUrl> urls = tempFiles(dir, QLatin1String("rfile"));
 
     QClipboard* clipboard = QApplication::clipboard();
     QMimeData* mimeData = new QMimeData();
-    urls.populateMimeData(mimeData);
+    mimeData->setUrls(urls);
     clipboard->setMimeData(mimeData);
 
-    Q_FOREACH(const KUrl& url, urls) {
-        KUrl newUrl = url;
-        newUrl.setFileName(url.fileName() + QLatin1String("_renamed"));
+    Q_FOREACH(const QUrl& url, urls) {
+        QUrl newUrl = url;
+        newUrl.setPath(url.path() + QLatin1String("_renamed"));
         KIO::SimpleJob* job = KIO::rename(url, newUrl, KIO::HideProgressInfo);
         QVERIFY(job->exec());
     }
 
-    const QString pasteDir = dir.name() + QLatin1String("pastedir");
+    const QString pasteDir = dir.path() + QLatin1String("/pastedir");
     createTestDirectory(pasteDir, NoSymlink);
-    KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
+    KIO::Job* job = KIO::pasteClipboard(QUrl::fromLocalFile(pasteDir), 0);
     QVERIFY(job->exec());
     QCOMPARE(job->error(), 0);
 }
 
 void ClipboardUpdaterTest::testPasteAfterMoveFile()
 {
-    KTempDir dir;
-    const KUrl::List urls = tempFiles(dir, QLatin1String("mfile"), 1);
+    QTemporaryDir dir;
+    const QList<QUrl> urls = tempFiles(dir, QLatin1String("mfile"), 1);
 
     QClipboard* clipboard = QApplication::clipboard();
     QMimeData* mimeData = new QMimeData();
-    urls.populateMimeData(mimeData);
+    mimeData->setUrls(urls);
     clipboard->setMimeData(mimeData);
 
-    const QString moveDir = dir.name() + QLatin1String("movedir/");
+    const QString moveDir = dir.path() + QLatin1String("/movedir/");
     createTestDirectory(moveDir, NoSymlink);
-    const KUrl srcUrl = urls.first();
-    KUrl destUrl (moveDir);
-    destUrl.setFileName(srcUrl.fileName());
+    const QUrl srcUrl = urls.first();
+    QUrl destUrl = QUrl::fromLocalFile(moveDir);
+    destUrl = destUrl.adjusted(QUrl::RemoveFilename);
+    destUrl.setPath(destUrl.path() + srcUrl.fileName());
     KIO::FileCopyJob* mJob = KIO::file_move(srcUrl, destUrl, -1, KIO::HideProgressInfo);
     QVERIFY(mJob->exec());
 
-    const QString pasteDir = dir.name() + QLatin1String("pastedir");
+    const QString pasteDir = dir.path() + QLatin1String("/pastedir");
     createTestDirectory(pasteDir, NoSymlink);
-    KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
+    KIO::Job* job = KIO::pasteClipboard(QUrl::fromLocalFile(pasteDir), 0);
     QVERIFY(job->exec());
     QCOMPARE(job->error(), 0);
 }
 
 void ClipboardUpdaterTest::testPasteAfterMoveFiles()
 {
-    KTempDir dir;
-    const KUrl::List urls = tempFiles(dir, QLatin1String("mfile"));
+    QTemporaryDir dir;
+    const QList<QUrl> urls = tempFiles(dir, QLatin1String("mfile"));
 
     QClipboard* clipboard = QApplication::clipboard();
     QMimeData* mimeData = new QMimeData();
-    urls.populateMimeData(mimeData);
+    mimeData->setUrls(urls);
     clipboard->setMimeData(mimeData);
 
-    const QString moveDir = dir.name() + QLatin1String("movedir");
+    const QString moveDir = dir.path() + QLatin1String("/movedir");
     createTestDirectory(moveDir, NoSymlink);
-    KIO::CopyJob* mJob = KIO::move(urls, KUrl(moveDir), KIO::HideProgressInfo);
+    KIO::CopyJob* mJob = KIO::move(urls, QUrl::fromLocalFile(moveDir), KIO::HideProgressInfo);
     QVERIFY(mJob->exec());
 
-    const QString pasteDir = dir.name() + QLatin1String("pastedir");
+    const QString pasteDir = dir.path() + QLatin1String("/pastedir");
     createTestDirectory(pasteDir, NoSymlink);
-    KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
+    KIO::Job* job = KIO::pasteClipboard(QUrl::fromLocalFile(pasteDir), 0);
     QVERIFY(job->exec());
     QCOMPARE(job->error(), 0);
 }
 
 void ClipboardUpdaterTest::testPasteAfterDeleteFile()
 {
-    KTempDir dir;
-    const KUrl::List urls = tempFiles(dir, QLatin1String("dfile"), 1);
+    QTemporaryDir dir;
+    const QList<QUrl> urls = tempFiles(dir, QLatin1String("dfile"), 1);
 
     QClipboard* clipboard = QApplication::clipboard();
     QMimeData* mimeData = new QMimeData();
-    urls.populateMimeData(mimeData);
+    mimeData->setUrls(urls);
     clipboard->setMimeData(mimeData);
 
     SimpleJob* sJob = KIO::file_delete(urls.first(), KIO::HideProgressInfo);
@@ -138,20 +137,20 @@ void ClipboardUpdaterTest::testPasteAfterDeleteFile()
 
     QVERIFY(!clipboard->mimeData()->hasUrls());
 
-    const QString pasteDir = dir.name() + QLatin1String("pastedir");
+    const QString pasteDir = dir.path() + QLatin1String("/pastedir");
     createTestDirectory(pasteDir, NoSymlink);
-    KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
+    KIO::Job* job = KIO::pasteClipboard(QUrl::fromLocalFile(pasteDir), 0);
     QVERIFY(!job);
 }
 
 void ClipboardUpdaterTest::testPasteAfterDeleteFiles()
 {
-    KTempDir dir;
-    const KUrl::List urls = tempFiles(dir, QLatin1String("dfile"));
+    QTemporaryDir dir;
+    const QList<QUrl> urls = tempFiles(dir, QLatin1String("dfile"));
 
     QClipboard* clipboard = QApplication::clipboard();
     QMimeData* mimeData = new QMimeData();
-    urls.populateMimeData(mimeData);
+    mimeData->setUrls(urls);
     clipboard->setMimeData(mimeData);
 
     DeleteJob* dJob = KIO::del(urls, KIO::HideProgressInfo);
@@ -159,9 +158,9 @@ void ClipboardUpdaterTest::testPasteAfterDeleteFiles()
 
     QVERIFY(!clipboard->mimeData()->hasUrls());
 
-    const QString pasteDir = dir.name() + QLatin1String("pastedir");
+    const QString pasteDir = dir.path() + QLatin1String("/pastedir");
     createTestDirectory(pasteDir, NoSymlink);
-    KIO::Job* job = KIO::pasteClipboard(KUrl(pasteDir), 0);
+    KIO::Job* job = KIO::pasteClipboard(QUrl::fromLocalFile(pasteDir), 0);
     QVERIFY(!job);
 }
 

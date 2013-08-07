@@ -142,6 +142,16 @@ public:
                           const QString& iconNo = QString(),
                           const QString& dontAskAgainName = QString(),
                           const KIO::MetaData& sslMetaData = KIO::MetaData()) Q_DECL_OVERRIDE;
+
+    /**
+     * Creates a clipboard updater
+     */
+    ClipboardUpdater* createClipboardUpdater(Job* job, ClipboardUpdaterMode mode) Q_DECL_OVERRIDE;
+    /**
+     * Update URL in clipboard, if present
+     */
+    void updateUrlInClipboard(const QUrl &src, const QUrl &dest) Q_DECL_OVERRIDE;
+
 private:
     class Private;
     Private * const d;

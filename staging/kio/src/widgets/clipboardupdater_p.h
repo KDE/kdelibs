@@ -21,12 +21,14 @@
 #define KIO_CLIPBOARDUPDATER_P_H
 
 #include <QObject>
+#include <jobuidelegateextension.h>
 
 class KJob;
-class KUrl;
+class QUrl;
 
 namespace KIO  {
     class Job;
+    class JobUiDelegate;
 
     /**
      * Updates the clipboard when it is affected by KIO operations.
@@ -51,35 +53,23 @@ namespace KIO  {
         Q_OBJECT
 
     public:
-        enum Mode {
-            UpdateContent,
-            OverwriteContent,
-            RemoveContent
-        };
-
-        /**
-         * Returns an instance of clipboard updater if QApplication::type() does
-         * not return a tty. Otherwise, it returns null.
-         */
-        static ClipboardUpdater* create(Job* job, Mode mode);
-
         /**
          * Convenience function that allows renaming of a single url in the clipboard.
-         * Note that this function does nothing if QApplication::type() returns tty.
          */
-        static void update(const KUrl& srcUrl, const KUrl& destUrl);
+        static void update(const QUrl& srcUrl, const QUrl& destUrl);
 
         /**
          * Sets the mode.
          */
-        void setMode(Mode m);
+        void setMode(JobUiDelegateExtension::ClipboardUpdaterMode m);
 
     private Q_SLOTS:
         void slotResult(KJob* job);
 
     private:
-        explicit ClipboardUpdater(Job* job, Mode mode);
-        Mode m_mode;
+        explicit ClipboardUpdater(Job* job, JobUiDelegateExtension::ClipboardUpdaterMode mode);
+        friend class JobUiDelegate;
+        JobUiDelegateExtension::ClipboardUpdaterMode m_mode;
     };
 }
 

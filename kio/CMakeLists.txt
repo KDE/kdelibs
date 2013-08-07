@@ -94,10 +94,7 @@ set(kiocore_STAT_SRCS
   kio/krun.cpp
   kio/kscan.cpp
   kio/netaccess.cpp
-  kio/paste.cpp
-  kio/pastedialog.cpp
   kio/predicateproperties.cpp
-  kio/clipboardupdater.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -295,7 +292,6 @@ DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
 
 install(  FILES
   kio/netaccess.h
-  kio/paste.h
   ${CMAKE_CURRENT_BINARY_DIR}/kio_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 

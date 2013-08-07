@@ -21,18 +21,14 @@
 #include "jobclasses.h"
 #include "copyjob.h"
 #include "deletejob.h"
+#include <kurlmimedata.h>
 
-#include <QApplication>
-#include <QMimeSource>
+#include <QGuiApplication>
+#include <QMimeData>
 #include <QClipboard>
 
 using namespace KIO;
 
-
-static bool canUseClipboard()
-{
-    return QApplication::type() != QApplication::Tty;
-}
 
 static void overwriteUrlsInClipboard(KJob* job)
 {
@@ -43,12 +39,12 @@ static void overwriteUrlsInClipboard(KJob* job)
         return;
     }
 
-    KUrl::List newUrls;
+    QList<QUrl> newUrls;
 
     if (copyJob) {
-        Q_FOREACH(const KUrl& url, copyJob->srcUrls()) {
-            KUrl dUrl = copyJob->destUrl();
-            dUrl.addPath(url.fileName());
+        Q_FOREACH(const QUrl& url, copyJob->srcUrls()) {
+            QUrl dUrl = copyJob->destUrl().adjusted(QUrl::StripTrailingSlash);
+            dUrl.setPath(dUrl.path() + '/' + url.fileName());
             newUrls.append(dUrl);
         }
     } else if (fileCopyJob) {
@@ -56,8 +52,8 @@ static void overwriteUrlsInClipboard(KJob* job)
     }
 
     QMimeData* mime = new QMimeData();
-    newUrls.populateMimeData(mime);
-    QApplication::clipboard()->setMimeData(mime);
+    mime->setUrls(newUrls);
+    QGuiApplication::clipboard()->setMimeData(mime);
 }
 
 static void updateUrlsInClipboard(KJob* job)
@@ -69,16 +65,16 @@ static void updateUrlsInClipboard(KJob* job)
         return;
     }
 
-    QClipboard* clipboard = QApplication::clipboard();
-    KUrl::List clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    QClipboard* clipboard = QGuiApplication::clipboard();
+    QList<QUrl> clipboardUrls = KUrlMimeData::urlsFromMimeData(clipboard->mimeData());
     bool update = false;
 
     if (copyJob) {
-        Q_FOREACH(const KUrl& url, copyJob->srcUrls()) {
+        Q_FOREACH(const QUrl& url, copyJob->srcUrls()) {
             const int index = clipboardUrls.indexOf(url);
             if (index > -1) {
-                KUrl dUrl = copyJob->destUrl();
-                dUrl.addPath(url.fileName());
+                QUrl dUrl = copyJob->destUrl().adjusted(QUrl::StripTrailingSlash);
+                dUrl.setPath(dUrl.path() + '/' + url.fileName());
                 clipboardUrls.replace(index, dUrl);
                 update = true;
             }
@@ -93,7 +89,7 @@ static void updateUrlsInClipboard(KJob* job)
 
     if (update) {
         QMimeData* mime = new QMimeData();
-        clipboardUrls.populateMimeData(mime);
+        mime->setUrls(clipboardUrls);
         clipboard->setMimeData(mime);
     }
 }
@@ -107,7 +103,7 @@ static void removeUrlsFromClipboard(KJob* job)
         return;
     }
 
-    KUrl::List deletedUrls;
+    QList<QUrl> deletedUrls;
     if (simpleJob) {
         deletedUrls << simpleJob->url();
     } else if (deleteJob) {
@@ -118,18 +114,18 @@ static void removeUrlsFromClipboard(KJob* job)
         return;
     }
 
-    QClipboard* clipboard = QApplication::clipboard();
-    KUrl::List clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    QClipboard* clipboard = QGuiApplication::clipboard();
+    QList<QUrl> clipboardUrls = KUrlMimeData::urlsFromMimeData(clipboard->mimeData());
     quint32 removedCount = 0;
 
-    Q_FOREACH(const KUrl& url, deletedUrls) {
+    Q_FOREACH(const QUrl& url, deletedUrls) {
         removedCount += clipboardUrls.removeAll(url);
     }
 
     if (removedCount > 0) {
         QMimeData* mime = new QMimeData();
         if (!clipboardUrls.isEmpty()) {
-            clipboardUrls.populateMimeData(mime);
+            mime->setUrls(clipboardUrls);
         }
         clipboard->setMimeData(mime);
     }
@@ -142,52 +138,39 @@ void ClipboardUpdater::slotResult(KJob* job)
     }
 
     switch (m_mode) {
-    case UpdateContent:
+    case JobUiDelegateExtension::UpdateContent:
         updateUrlsInClipboard(job);
         break;
-    case OverwriteContent:
+    case JobUiDelegateExtension::OverwriteContent:
         overwriteUrlsInClipboard(job);
         break;
-    case RemoveContent:
+    case JobUiDelegateExtension::RemoveContent:
         removeUrlsFromClipboard(job);
         break;
     }
 }
 
-void ClipboardUpdater::setMode(ClipboardUpdater::Mode mode)
+void ClipboardUpdater::setMode(JobUiDelegateExtension::ClipboardUpdaterMode mode)
 {
     m_mode = mode;
 }
 
-ClipboardUpdater* ClipboardUpdater::create(Job* job, ClipboardUpdater::Mode mode)
+void ClipboardUpdater::update(const QUrl& srcUrl, const QUrl& destUrl)
 {
-    if (canUseClipboard()) {
-      return new ClipboardUpdater(job, mode);
-    }
-
-    return 0;
-}
-
-void ClipboardUpdater::update(const KUrl& srcUrl, const KUrl& destUrl)
-{
-    if (!canUseClipboard()) {
-        return;
-    }
-
-    QClipboard* clipboard = QApplication::clipboard();
+    QClipboard* clipboard = QGuiApplication::clipboard();
     if (clipboard->mimeData()->hasUrls()) {
-        KUrl::List clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+        QList<QUrl> clipboardUrls = KUrlMimeData::urlsFromMimeData(clipboard->mimeData());
         const int index = clipboardUrls.indexOf(srcUrl);
         if (index > -1) {
             clipboardUrls.replace(index, destUrl);
             QMimeData* mime = new QMimeData();
-            clipboardUrls.populateMimeData(mime);
+            mime->setUrls(clipboardUrls);
             clipboard->setMimeData(mime);
         }
     }
 }
 
-ClipboardUpdater::ClipboardUpdater(Job* job, Mode mode)
+ClipboardUpdater::ClipboardUpdater(Job* job, JobUiDelegateExtension::ClipboardUpdaterMode mode)
     :QObject(job),
      m_mode(mode)
 {

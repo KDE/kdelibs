@@ -21,7 +21,6 @@
 
 #include "job.h"
 #include "job_p.h"
-#include "clipboardupdater_p.h"
 
 #include <time.h>
 
@@ -459,7 +458,7 @@ void SimpleJob::slotFinished( )
                     org::kde::KDirNotify::emitFileRenamed(src, dst);
 
                 org::kde::KDirNotify::emitFileMoved(src, dst);
-                ClipboardUpdater::update(src, dst);
+                uiDelegateExtension()->updateUrlInClipboard(src, dst);
             }
         }
         emitResult();
@@ -2349,7 +2348,7 @@ FileCopyJob *KIO::file_move( const QUrl& src, const QUrl& dest, int permissions,
                              JobFlags flags )
 {
     FileCopyJob* job = FileCopyJobPrivate::newJob(src, dest, permissions, true, flags);
-    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
     return job;
 }
 
@@ -2357,7 +2356,7 @@ SimpleJob *KIO::file_delete( const QUrl& src, JobFlags flags )
 {
     KIO_ARGS << src << qint8(true); // isFile
     SimpleJob* job = SimpleJobPrivate::newJob(src, CMD_DEL, packedArgs, flags);
-    ClipboardUpdater::create(job, ClipboardUpdater::RemoveContent);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
     return job;
 }
 

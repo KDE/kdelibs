@@ -541,7 +541,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
         {
             //qDebug() << "file_move" << op.m_dst << op.m_src;
             m_currentJob = KIO::file_move(op.m_dst, op.m_src, -1, KIO::Overwrite | KIO::HideProgressInfo);
-            KIO::ClipboardUpdater::create(m_currentJob, KIO::ClipboardUpdater::UpdateContent);
+            m_currentJob->uiDelegateExtension()->createClipboardUpdater(m_currentJob, JobUiDelegateExtension::UpdateContent);
             m_undoJob->emitMoving(op.m_dst, op.m_src);
         }
 

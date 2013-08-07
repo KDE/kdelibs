@@ -33,6 +33,7 @@
 #include <kio/netaccess.h>
 #include <kio/paste.h>
 #include <kprotocolinfo.h>
+#include <kurlmimedata.h>
 
 #include <QDebug>
 #include <kconfig.h>
@@ -519,33 +520,33 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
 
 void FileUndoManagerTest::testPasteClipboardUndo()
 {
-    const KUrl::List urls (sourceList());
+    const QList<QUrl> urls (sourceList());
     QMimeData* mimeData = new QMimeData();
-    urls.populateMimeData(mimeData);
+    mimeData->setUrls(urls);
     mimeData->setData(QLatin1String("application/x-kde-cutselection"), "1");
     QClipboard* clipboard = QApplication::clipboard();
     clipboard->setMimeData(mimeData);
 
     // Paste the contents of the clipboard and check its status
-    KUrl destDirUrl(destDir());
+    QUrl destDirUrl = QUrl::fromLocalFile(destDir());
     KIO::CopyJob* job = qobject_cast<KIO::CopyJob*>(KIO::pasteClipboard(destDirUrl, 0, true));
     QVERIFY(job);
     FileUndoManager::self()->recordCopyJob(job);
     QVERIFY(job->exec());
 
     // Check if the clipboard was updated after paste operation
-    KUrl::List urls2;
-    Q_FOREACH(const KUrl& url, urls) {
-        KUrl dUrl = destDirUrl;
-        dUrl.addPath(url.fileName());
+    QList<QUrl> urls2;
+    Q_FOREACH(const QUrl& url, urls) {
+        QUrl dUrl = destDirUrl.adjusted(QUrl::StripTrailingSlash);
+        dUrl.setPath(dUrl.path() + '/' + url.fileName());
         urls2 << dUrl;
     }
-    KUrl::List clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    QList<QUrl> clipboardUrls = KUrlMimeData::urlsFromMimeData(clipboard->mimeData());
     QCOMPARE(clipboardUrls, urls2);
 
     // Check if the clipboard was updated after undo operation
     doUndo();
-    clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    clipboardUrls = KUrlMimeData::urlsFromMimeData(clipboard->mimeData());
     QCOMPARE(clipboardUrls, urls);
 }
 
