@@ -45,7 +45,6 @@
 K_PLUGIN_FACTORY(ProxyScoutFactory,
                  registerPlugin<KPAC::ProxyScout>();
     )
-K_EXPORT_PLUGIN(ProxyScoutFactory("KProxyScoutd"))
 
 namespace KPAC
 {

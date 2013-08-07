@@ -28,7 +28,6 @@
 #include <qmimedatabase.h>
 
 K_PLUGIN_FACTORY(XmppEmoticonsFactory, registerPlugin<XmppEmoticons>();)
-K_EXPORT_PLUGIN(XmppEmoticonsFactory("XmppEmoticons"))
 
 XmppEmoticons::XmppEmoticons(QObject *parent, const QVariantList &args)
         : KEmoticonsProvider(parent)
