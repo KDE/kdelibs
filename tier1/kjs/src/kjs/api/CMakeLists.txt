@@ -9,7 +9,9 @@ set(kjsapi_LIB_SRCS
 add_library(KJSApi ${kjsapi_LIB_SRCS})
 generate_export_header(KJSApi)
 
-target_link_libraries(KJSApi KJS Qt5::Core)
+target_link_libraries(KJSApi
+    LINK_PUBLIC Qt5::Core
+    LINK_PRIVATE KJS)
 
 set_target_properties(KJSApi PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )
 install(TARGETS KJSApi EXPORT KJSTargets ${INSTALL_TARGETS_DEFAULT_ARGS})

@@ -13,7 +13,7 @@ ecm_mark_as_test(test_suggest)
 
 set(test_dialog_SRCS test_dialog.cpp)
 add_executable(test_dialog ${test_dialog_SRCS})
-target_link_libraries(test_dialog Qt5::Widgets SonnetCore SonnetUi)
+target_link_libraries(test_dialog SonnetCore SonnetUi)
 ecm_mark_as_test(test_dialog)
 
 ########### backgroundtest ###############
@@ -21,31 +21,31 @@ ecm_mark_as_test(test_dialog)
 set(backgroundtest_SRCS backgroundtest.cpp)
 add_executable(backgroundtest ${backgroundtest_SRCS})
 ecm_mark_as_test(backgroundtest)
-target_link_libraries(backgroundtest Qt5::Widgets SonnetCore SonnetUi)
+target_link_libraries(backgroundtest SonnetCore SonnetUi)
 
 ########### test_highlighter ###############
 
 set(test_highlighter_SRCS test_highlighter.cpp)
 add_executable(test_highlighter ${test_highlighter_SRCS})
 ecm_mark_as_test(test_highlighter)
-target_link_libraries(test_highlighter Qt5::Widgets SonnetCore SonnetUi)
+target_link_libraries(test_highlighter SonnetCore SonnetUi)
 
 ########### test_configdialog ###############
 
 set(test_configdialog_SRCS test_configdialog.cpp)
 add_executable(test_configdialog ${test_configdialog_SRCS})
 ecm_mark_as_test(test_configdialog)
-target_link_libraries(test_configdialog Qt5::Widgets SonnetCore SonnetUi)
+target_link_libraries(test_configdialog SonnetCore SonnetUi)
 
 ########### test_dictionarycombobox ###############
 
 add_executable(test_dictionarycombobox test_dictionarycombobox.cpp)
 ecm_mark_as_test(test_dictionarycombobox)
-target_link_libraries(test_dictionarycombobox Qt5::Widgets SonnetCore SonnetUi)
+target_link_libraries(test_dictionarycombobox SonnetCore SonnetUi)
 
 ########### test_textedit ###############
 
 set(test_textedit_SRCS test_textedit.cpp)
 add_executable(test_textedit ${test_textedit_SRCS})
-target_link_libraries(test_textedit Qt5::Widgets SonnetCore SonnetUi)
+target_link_libraries(test_textedit SonnetCore SonnetUi)
 ecm_mark_as_test(test_textedit)

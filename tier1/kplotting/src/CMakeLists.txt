@@ -10,7 +10,7 @@ set(kplotting_SRCS
 add_library(KPlotting ${kplotting_SRCS})
 generate_export_header(KPlotting)
 
-target_link_libraries(KPlotting Qt5::Widgets)
+target_link_libraries(KPlotting LINK_PUBLIC Qt5::Widgets)
 
 set_target_properties(KPlotting PROPERTIES VERSION   ${KPLOTTING_VERSION_STRING}
                                            SOVERSION ${KPLOTTING_SOVERSION}

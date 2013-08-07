@@ -183,19 +183,19 @@ set(kjs_INCLUDES
 target_include_directories(KJS PUBLIC "$<BUILD_INTERFACE:${kjs_INCLUDES}>")
 
 if(WIN32)
-   target_link_libraries(KJS ${KDEWIN_LIBRARIES})
+   target_link_libraries(KJS LINK_PRIVATE ${KDEWIN_LIBRARIES})
 endif()
 
 if(CMAKE_THREAD_LIBS_INIT)
-   target_link_libraries(KJS ${CMAKE_THREAD_LIBS_INIT})
+   target_link_libraries(KJS LINK_PRIVATE ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
 if(UNIX)
-   target_link_libraries(KJS m)
+   target_link_libraries(KJS LINK_PRIVATE m)
 endif()
 
 if(PCRE_FOUND)
-   target_link_libraries(KJS ${PCRE_LIBRARIES})
+   target_link_libraries(KJS LINK_PRIVATE ${PCRE_LIBRARIES})
 endif()
 
 set_target_properties(KJS PROPERTIES VERSION ${KJS_VERSION_STRING} SOVERSION ${KJS_SOVERSION} )

@@ -40,7 +40,10 @@ qt5_wrap_ui(sonnetui_SRCS ${sonnetui_UI})
 add_library(SonnetUi ${sonnetui_SRCS})
 generate_export_header(SonnetUi EXPORT_FILE_NAME sonnetui_export.h)
 
-target_link_libraries(SonnetUi Qt5::Widgets SonnetCore)
+target_link_libraries(SonnetUi
+    LINK_PUBLIC Qt5::Widgets
+    LINK_PRIVATE SonnetCore
+)
 
 set_target_properties(SonnetUi PROPERTIES VERSION ${SONNET_VERSION_STRING}
                                           SOVERSION ${SONNET_SOVERSION}

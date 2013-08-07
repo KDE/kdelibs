@@ -14,7 +14,7 @@ generate_export_header(KDBusAddons)
 
 
 
-target_link_libraries(KDBusAddons Qt5::DBus)
+target_link_libraries(KDBusAddons LINK_PUBLIC Qt5::DBus)
 
 set_target_properties(KDBusAddons PROPERTIES VERSION   ${KDBUSADDONS_VERSION_STRING}
                                              SOVERSION ${KDBUSADDONS_SOVERSION}

@@ -12,7 +12,7 @@ set(libkconfiggui_SRCS
 add_library(KConfigGui ${libkconfiggui_SRCS})
 generate_export_header(KConfigGui)
 
-target_link_libraries(KConfigGui Qt5::Gui KConfigCore)
+target_link_libraries(KConfigGui LINK_PUBLIC Qt5::Gui KConfigCore)
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
   target_include_directories(KConfigGui INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )

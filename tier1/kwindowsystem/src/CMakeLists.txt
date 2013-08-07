@@ -62,7 +62,10 @@ endif ()
 add_library(KWindowSystem ${kwindowsystem_SRCS})
 generate_export_header(KWindowSystem)
 
-target_link_libraries(KWindowSystem Qt5::Widgets ${platformLinkLibraries} ${qt5CompatLib})
+target_link_libraries(KWindowSystem
+  LINK_PUBLIC Qt5::Core
+  LINK_PRIVATE Qt5::Widgets ${platformLinkLibraries}
+)
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
   target_include_directories(KWindowSystem INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )

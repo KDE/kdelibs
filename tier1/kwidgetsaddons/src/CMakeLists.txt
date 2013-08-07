@@ -61,7 +61,7 @@ qt5_wrap_ui(kwidgetsaddons_SRCS ${kwidgetsaddon_UI} )
 add_library(KWidgetsAddons ${kwidgetsaddons_SRCS})
 generate_export_header(KWidgetsAddons)
 
-target_link_libraries(KWidgetsAddons Qt5::Widgets)
+target_link_libraries(KWidgetsAddons LINK_PUBLIC Qt5::Widgets)
 
 if(IS_ABSOLUTE "${INCLUDE_INSTALL_DIR}")
   target_include_directories(KWidgetsAddons INTERFACE "$<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>" )
