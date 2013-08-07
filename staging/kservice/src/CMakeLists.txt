@@ -102,3 +102,5 @@ install(FILES
    services/kplugininfo.desktop
    DESTINATION ${SERVICETYPES_INSTALL_DIR}
 )
+
+add_subdirectory(desktoptojson)
