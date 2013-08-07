@@ -888,11 +888,13 @@ void KMimeTypeTest::testThreads()
 void KMimeTypeTest::testProperties()
 {
     KMimeType::Ptr pngMimeType = KMimeType::mimeType("image/png");
+#if 0 // API removed
     QVariant comment = pngMimeType->property("Comment");
     QVariant patterns = pngMimeType->property("Patterns");
 
     QCOMPARE(comment.toString(), pngMimeType->comment());
     QCOMPARE(patterns.toStringList(), pngMimeType->patterns());
+#endif
 }
 
 #include "kmimetypetest.moc"

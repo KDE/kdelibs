@@ -431,7 +431,7 @@ void Engine::uninstall(KNS3::EntryInternal entry)
         }
     }
     if (!actualEntryForUninstall.isValid()) {
-        kDebug() << "could not find a cached entry with following id:" << entry.uniqueId() <<
+        qDebug() << "could not find a cached entry with following id:" << entry.uniqueId() <<
 		" ->  using the non-cached version";
         return;
     }
@@ -440,7 +440,7 @@ void Engine::uninstall(KNS3::EntryInternal entry)
     actualEntryForUninstall.setStatus(Entry::Installing);
     emit signalEntryChanged(entry);
 
-    kDebug() << "about to uninstall entry " << entry.uniqueId();
+    //qDebug() << "about to uninstall entry " << entry.uniqueId();
     // FIXME: change the status?
     m_installation->uninstall(actualEntryForUninstall);
 
