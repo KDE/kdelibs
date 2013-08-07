@@ -25,6 +25,7 @@
 #include "kfileitem.h"
 #include "mkdirjob.h"
 #include "deletejob.h"
+#include "clipboardupdater_p.h"
 
 #include <kconfiggroup.h>
 #include <klocalizedstring.h>
@@ -2160,7 +2161,9 @@ CopyJob *KIO::move(const QUrl& src, const QUrl& dest, JobFlags flags)
     //qDebug() << src << dest;
     QList<QUrl> srcList;
     srcList.append( src );
-    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
+    CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
+    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::moveAs(const QUrl& src, const QUrl& dest, JobFlags flags)
@@ -2168,13 +2171,17 @@ CopyJob *KIO::moveAs(const QUrl& src, const QUrl& dest, JobFlags flags)
     //qDebug() << src << dest;
     QList<QUrl> srcList;
     srcList.append( src );
-    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
+    CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
+    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::move( const QList<QUrl>& src, const QUrl& dest, JobFlags flags)
 {
     //qDebug() << src << dest;
-    return CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
+    CopyJob* job = CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
+    ClipboardUpdater::create(job, ClipboardUpdater::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::link(const QUrl& src, const QUrl& destDir, JobFlags flags)

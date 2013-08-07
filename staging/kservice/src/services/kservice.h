@@ -306,7 +306,7 @@ public:
 
     /**
      * Checks whether the service supports this mime type
-     * @param mimeTypePtr The name of the mime type you are
+     * @param mimeType The name of the mime type you are
      *        interested in determining whether this service supports.
      * @since 4.6
      */

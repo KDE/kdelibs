@@ -320,6 +320,7 @@ void KDirWatchPrivate::inotifyEventReceived()
         Entry* e = &( *it );
         ++it;
         if ( e->wd == event->wd ) {
+          const bool wasDirty = e->dirty;
           e->dirty = true;
 
           //if (s_verboseDebug) {
@@ -432,6 +433,8 @@ void KDirWatchPrivate::inotifyEventReceived()
               // Don't worry about duplicates for the time
               // being; this is handled in slotRescan.
               e->m_pendingFileChanges.append(tpath);
+              // Avoid stat'ing the directory if only an entry inside it changed.
+              e->dirty = (wasDirty || (path.isEmpty() && (event->mask & IN_ATTRIB)));
             }
           }
 

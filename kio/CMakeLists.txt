@@ -97,6 +97,7 @@ set(kiocore_STAT_SRCS
   kio/paste.cpp
   kio/pastedialog.cpp
   kio/predicateproperties.cpp
+  kio/clipboardupdater.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)

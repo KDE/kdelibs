@@ -655,17 +655,17 @@ void KHTMLPartPrivate::executeAnchorJump( const QUrl& url, bool lockHistory )
     if (!lockHistory)
         emit m_extension->openUrlNotify();
 
-    const QString &oldRef = QUrl(q->url()).fragment();
-    const QString &newRef = QUrl(url).fragment();
+    DOM::HashChangeEventImpl *hashChangeEvImpl = 0;
+    const QString &oldRef = q->url().fragment();
+    const QString &newRef = url.fragment();
     if ((oldRef != newRef) || (oldRef.isNull() && newRef.isEmpty())) {
-        DOM::HashChangeEventImpl *evImpl = new DOM::HashChangeEventImpl();
-        evImpl->initHashChangeEvent("hashchange",
+        hashChangeEvImpl = new DOM::HashChangeEventImpl();
+        hashChangeEvImpl->initHashChangeEvent("hashchange",
                                     true, //bubble
                                     false, //cancelable
                                     q->url().toString(), //oldURL
                                     url.toString() //newURL
                                     );
-        m_doc->dispatchWindowEvent(evImpl);
     }
 
     if ( !q->gotoAnchor( url.fragment(QUrl::FullyEncoded)) )
@@ -673,6 +673,10 @@ void KHTMLPartPrivate::executeAnchorJump( const QUrl& url, bool lockHistory )
 
     q->setUrl(url);
     emit m_extension->setLocationBarUrl( url.toDisplayString() );
+
+    if (hashChangeEvImpl) {
+        m_doc->dispatchWindowEvent(hashChangeEvImpl);
+    }
 }
 
 bool KHTMLPart::openUrl(const QUrl &_url)

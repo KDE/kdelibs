@@ -102,8 +102,13 @@ QString UPowerDevice::description() const
         return tr("A/C Adapter");
     else if (queryDeviceInterface(Solid::DeviceInterface::Battery))
         return tr("%1 Battery", "%1 is battery technology").arg(batteryTechnology());
-    else
-        return product();
+    else {
+        QString result = prop("Model").toString();
+        if (result.isEmpty()) {
+            return vendor();
+        }
+        return result;
+    }
 }
 
 QString UPowerDevice::batteryTechnology() const

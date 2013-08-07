@@ -1,11 +1,11 @@
 include (CheckCXXSourceCompiles)
 
-if(MSVC)
+if(MSVC OR (WIN32 AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel"))
     check_cxx_source_compiles("int main() { __asm { pxor mm0, mm0 }; }" HAVE_X86_MMX)
     check_cxx_source_compiles("int main() { __asm { xorps xmm0, xmm0 }; }" HAVE_X86_SSE)
     check_cxx_source_compiles("int main() { __asm { xorpd xmm0, xmm0 }; }" HAVE_X86_SSE2)
     check_cxx_source_compiles("int main() { __asm { femms }; }" HAVE_X86_3DNOW)
-else(MSVC)
+else()
     check_cxx_source_compiles("	    #ifdef __SUNPRO_CC
                                             #define __asm__ asm
                                     #endif
@@ -22,7 +22,7 @@ else(MSVC)
                                             #define __asm__ asm
                                     #endif
                     int main() { __asm__(\"femms\"); }" HAVE_X86_3DNOW)
-endif(MSVC)
+endif()
 check_cxx_source_compiles("     #ifdef __SUNPRO_CC
                                         #define __asm__ asm
                                 #endif
@@ -46,7 +46,14 @@ if(WIN32)
     add_definitions(-DYY_NO_UNISTD_H)
 endif(WIN32)
 
+if(WIN32)
+   set(solid_LIB_SRCS networking_win.cpp)
+else()
+   set(solid_LIB_SRCS networking.cpp)
+endif()
+
 set(solid_LIB_SRCS
+   ${solid_LIB_SRCS}
    solidnamespace.cpp
    managerbase.cpp
    device.cpp
@@ -75,7 +82,6 @@ set(solid_LIB_SRCS
    predicate_lexer.c
    predicate_parser.c
    powermanagement.cpp
-   networking.cpp
    video.cpp
    smartcardreader.cpp
    internetgateway.cpp
@@ -353,7 +359,7 @@ if(WIN32)
       endif(HAVE_WBEM AND WBEM_LIBRARIES)
    endif(WITH_SOLID_WMI)
    if(WITH_SOLID_WMI)
-       add_definitions(-WITH_SOLID_WMI)
+       add_definitions(-DWITH_SOLID_WMI)
        message(STATUS "-- Building Solid WMI backend." )
 
        set(solid_LIB_SRCS ${solid_LIB_SRCS}
@@ -415,13 +421,13 @@ qt5_add_dbus_interface(solid_LIB_SRCS org.kde.Solid.Networking.Client.xml
 set(solid_OPTIONAL_LIBS)
 
 if(WIN32)
-   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY})
+   set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${KDEWIN_LIBRARY} ${QT_QTNETWORK_LIBRARY})
    if(WITH_SOLID_WMI)
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} ${WBEM_LIBRARIES})
-   else(WITH_SOLID_WMI)
+   else()
       set(solid_OPTIONAL_LIBS ${solid_OPTIONAL_LIBS} setupapi)
-   endif(WITH_SOLID_WMI)
-endif(WIN32)
+   endif()
+endif()
 
 if(APPLE)
    set(solid_OPTIONAL_LIBS ${IOKIT_LIBRARY})

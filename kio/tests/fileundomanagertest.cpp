@@ -31,6 +31,7 @@
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/netaccess.h>
+#include <kio/paste.h>
 #include <kprotocolinfo.h>
 
 #include <QDebug>
@@ -42,6 +43,11 @@
 #include <time.h>
 #include <sys/time.h>
 
+#include <QClipboard>
+#include <QApplication>
+#include <QMimeData>
+
+#include "fileundomanagertest.moc"
 
 QTEST_MAIN(FileUndoManagerTest)
 
@@ -509,8 +515,40 @@ void FileUndoManagerTest::testModifyFileBeforeUndo()
 
     checkTestDirectory( srcSubDir() );
     QVERIFY( !QFile::exists( destSubDir() ) );
-
 }
+
+void FileUndoManagerTest::testPasteClipboardUndo()
+{
+    const KUrl::List urls (sourceList());
+    QMimeData* mimeData = new QMimeData();
+    urls.populateMimeData(mimeData);
+    mimeData->setData(QLatin1String("application/x-kde-cutselection"), "1");
+    QClipboard* clipboard = QApplication::clipboard();
+    clipboard->setMimeData(mimeData);
+
+    // Paste the contents of the clipboard and check its status
+    KUrl destDirUrl(destDir());
+    KIO::CopyJob* job = qobject_cast<KIO::CopyJob*>(KIO::pasteClipboard(destDirUrl, 0, true));
+    QVERIFY(job);
+    FileUndoManager::self()->recordCopyJob(job);
+    QVERIFY(job->exec());
+
+    // Check if the clipboard was updated after paste operation
+    KUrl::List urls2;
+    Q_FOREACH(const KUrl& url, urls) {
+        KUrl dUrl = destDirUrl;
+        dUrl.addPath(url.fileName());
+        urls2 << dUrl;
+    }
+    KUrl::List clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    QCOMPARE(clipboardUrls, urls2);
+
+    // Check if the clipboard was updated after undo operation
+    doUndo();
+    clipboardUrls = KUrl::List::fromMimeData(clipboard->mimeData());
+    QCOMPARE(clipboardUrls, urls);
+}
+
 
 // TODO: add test (and fix bug) for  DND of remote urls / "Link here" (creates .desktop files) // Undo (doesn't do anything)
 // TODO: add test for interrupting a moving operation and then using Undo - bug:91579

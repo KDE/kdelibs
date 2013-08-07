@@ -25,6 +25,7 @@
 #include "scheduler.h"
 #include "kdirwatch.h"
 #include "kprotocolmanager.h"
+#include "clipboardupdater_p.h"
 #include <kdirnotify.h>
 
 #include <klocalizedstring.h>
@@ -475,12 +476,16 @@ DeleteJob *KIO::del(const QUrl& src, JobFlags flags)
 {
     QList<QUrl> srcList;
     srcList.append( src );
-    return DeleteJobPrivate::newJob(srcList, flags);
+    DeleteJob* job = DeleteJobPrivate::newJob(srcList, flags);
+    ClipboardUpdater::create(job, ClipboardUpdater::RemoveContent);
+    return job;
 }
 
 DeleteJob *KIO::del( const QList<QUrl>& src, JobFlags flags )
 {
-    return DeleteJobPrivate::newJob(src, flags);
+    DeleteJob* job = DeleteJobPrivate::newJob(src, flags);
+    ClipboardUpdater::create(job, ClipboardUpdater::RemoveContent);
+    return job;
 }
 
 #include "moc_deletejob.cpp"

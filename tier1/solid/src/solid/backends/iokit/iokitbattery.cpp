@@ -59,9 +59,21 @@ int Battery::chargePercent() const
     return m_device->property(QLatin1String("CurrentCapacity")).toInt() / maxCapacity;
 }
 
+int Battery::capacity() const
+{
+    // TODO
+    return 100;
+}
+
 bool Battery::isRechargeable() const
 {
     return m_device->property(QLatin1String("DesignCycleCount")).toInt() > 1;
+}
+
+bool Battery::isPowerSupply() const
+{
+    // TODO
+    return true;
 }
 
 Solid::Battery::ChargeState Battery::chargeState() const

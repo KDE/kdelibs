@@ -20,6 +20,7 @@
 
 #include "fileundomanager.h"
 #include "fileundomanager_p.h"
+#include "clipboardupdater_p.h"
 #include "fileundomanager_adaptor.h"
 
 #include <kdirnotify.h>
@@ -540,6 +541,7 @@ void FileUndoManagerPrivate::stepMovingFiles()
         {
             //qDebug() << "file_move" << op.m_dst << op.m_src;
             m_currentJob = KIO::file_move(op.m_dst, op.m_src, -1, KIO::Overwrite | KIO::HideProgressInfo);
+            KIO::ClipboardUpdater::create(m_currentJob, KIO::ClipboardUpdater::UpdateContent);
             m_undoJob->emitMoving(op.m_dst, op.m_src);
         }
 

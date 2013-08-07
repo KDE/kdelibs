@@ -32,6 +32,7 @@ KIO_UNIT_TESTS(
   fileundomanagertest
   kfilemetainfotest
   dataprotocoltest
+  clipboardupdatertest
 )
 
 set_target_properties(krununittest PROPERTIES COMPILE_FLAGS "-DCMAKE_INSTALL_PREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\" -DLIBEXEC_INSTALL_DIR=\\\"${LIBEXEC_INSTALL_DIR}\\\"")
