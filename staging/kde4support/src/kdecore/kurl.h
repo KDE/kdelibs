@@ -977,7 +977,11 @@ public:
    * false is returned.
    * @see operator==. This function should be used if you want to
    * set additional options, like ignoring trailing '/' characters.
-   * @deprecated since 5.0, use QUrlPathInfo::equals(u, options)
+   * @deprecated since 5.0, use matches(u, formattingOptions)
+   * equals(u, KUrl::CompareWithoutTrailingSlash) becomes matches(u, QUrl::StripTrailingSlash)
+   * equals(u, KUrl::CompareWithoutFragment) becomes matches(u, QUrl::RemoveFragment)
+   * equals(u, KUrl::CompareWithoutTrailingSlash|KUrl::AllowEmptyPath) needs manual handling
+   * (it was mostly unused).
    */
   bool equals( const KUrl &u, const EqualsOptions& options=0 ) const;
 

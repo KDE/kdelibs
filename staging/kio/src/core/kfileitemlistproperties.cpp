@@ -26,7 +26,6 @@
 #include <kprotocolmanager.h>
 
 #include <QFileInfo>
-#include <qurlpathinfo.h>
 
 class KFileItemListPropertiesPrivate : public QSharedData
 {

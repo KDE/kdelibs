@@ -84,19 +84,6 @@
     has a different meaning.
 */
 
-/*!
-    \enum QUrlPathInfo::EqualsOption
-
-    Options for the equals() method.
-
-    \value CompareWithoutTrailingSlash Ignore trailing '/' in paths.
-    The paths "dir" and "dir/" are treated the same.
-    Note however, that by default, the paths "" and "/" are not the same
-    (For instance ftp://user@host redirects to ftp://user@host/home/user (on a linux server),
-    while ftp://user@host/ is the root dir).
-    This is also why path(StripTrailingSlash) for "/" returns "/" and not "".
-*/
-
 QT_BEGIN_NAMESPACE
 
 class QUrlPathInfoPrivate : public QSharedData
@@ -221,44 +208,6 @@ QString QUrlPathInfo::localPath(PathFormattingOptions options) const
 */
 bool QUrlPathInfo::isParentOfOrEqual(const QUrl &child) const
 {
-    return d->url.isParentOf(child) || equals(child, CompareWithoutTrailingSlash);
+    return d->url.isParentOf(child) || d->url.matches(child, QUrl::StripTrailingSlash);
 }
 
-/*!
-    Compares this url with \a url.
-    \param u the URL to compare this one with.
-    \param options a set of EqualsOption flags
-    \return True if both urls are the same. If at least one of the urls is invalid,
-    false is returned.
-    \see operator==. This function should be used if you want to
-    set additional options, like ignoring trailing '/' characters.
-*/
-bool QUrlPathInfo::equals(const QUrl& url, EqualsOptions options) const
-{
-    if (!d->url.isValid() || !url.isValid())
-        return false;
-
-    if (options != StrictComparison) {
-        if (d->url.scheme() != url.scheme() ||
-            d->url.authority() != url.authority() || // user+pass+host+port
-            d->url.query() != url.query() ||
-            d->url.fragment() != url.fragment())
-            return false;
-
-        const bool bLocal1 = d->url.isLocalFile();
-        const bool bLocal2 = url.isLocalFile();
-        if (bLocal1 != bLocal2)
-            return false;
-
-        // local files: use QFileInfo in case the filesystem is case sensitive
-        if (bLocal1 && bLocal2)
-            return QFileInfo(d->url.toLocalFile()) == QFileInfo(url.toLocalFile());
-
-        QString path1 = path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
-        QString path2 = QUrlPathInfo(url).path((options & CompareWithoutTrailingSlash) ? StripTrailingSlash : None);
-
-        return path1 == path2;
-    }
-
-    return d->url == url;
-}

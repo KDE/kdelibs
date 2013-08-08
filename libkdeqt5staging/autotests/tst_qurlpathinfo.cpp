@@ -43,8 +43,6 @@
 
 #include <qurlpathinfo.h>
 
-Q_DECLARE_METATYPE(QUrlPathInfo::EqualsOptions)
-
 class tst_QUrlPathInfo : public QObject
 {
     Q_OBJECT
@@ -52,8 +50,6 @@ class tst_QUrlPathInfo : public QObject
 private Q_SLOTS:
     void path_data();
     void path();
-    void equals_data();
-    void equals();
 };
 
 void tst_QUrlPathInfo::path_data()
@@ -84,36 +80,6 @@ void tst_QUrlPathInfo::path()
     const QUrlPathInfo info(url);
     QCOMPARE(info.path(), expectedPath);
     QCOMPARE(info.path(QUrlPathInfo::StripTrailingSlash), expectedPathNoSlash);
-}
-
-void tst_QUrlPathInfo::equals_data()
-{
-    QTest::addColumn<QString>("urlStr1");
-    QTest::addColumn<QString>("urlStr2");
-    QTest::addColumn<QUrlPathInfo::EqualsOptions>("options");
-    QTest::addColumn<bool>("expectedResult");
-
-    const QUrlPathInfo::EqualsOptions strict(QUrlPathInfo::StrictComparison);
-    const QUrlPathInfo::EqualsOptions noTrailing(QUrlPathInfo::CompareWithoutTrailingSlash);
-
-    QTest::newRow("slash_diff") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir/" << strict << false;
-    QTest::newRow("slash_diff_ignore_slash") << "ftp://ftp.kde.org/dir" << "ftp://ftp.kde.org/dir/" << noTrailing << true;
-    QTest::newRow("slash_vs_empty") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << strict << false;
-    QTest::newRow("slash_vs_empty_ignore_slash") << "ftp://ftp.kde.org/" << "ftp://ftp.kde.org" << noTrailing << false;
-
-}
-
-void tst_QUrlPathInfo::equals()
-{
-    QFETCH(QString, urlStr1);
-    QFETCH(QString, urlStr2);
-    QFETCH(QUrlPathInfo::EqualsOptions, options);
-    QFETCH(bool, expectedResult);
-
-    QUrl url1(urlStr1);
-    QUrl url2(urlStr2);
-    QCOMPARE(QUrlPathInfo(url1).equals(url2, options), expectedResult);
-    QCOMPARE(QUrlPathInfo(url2).equals(url1, options), expectedResult);
 }
 
 QTEST_MAIN(tst_QUrlPathInfo)

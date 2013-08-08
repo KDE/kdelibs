@@ -18,7 +18,6 @@
 #include <QResizeEvent>
 #include <QtCore/QTimer>
 #include <QtCore/QTimeLine>
-#include <qurlpathinfo.h>
 
 #include <kglobalsettings.h>
 #include <kconfig.h>
@@ -113,7 +112,7 @@ void KImageFilePreview::showPreview( const QUrl &url, bool force )
 {
     if (!url.isValid() ||
         (d->lastShownURL.isValid() &&
-         QUrlPathInfo(url).equals(d->lastShownURL, QUrlPathInfo::CompareWithoutTrailingSlash) &&
+         url.matches(d->lastShownURL, QUrl::StripTrailingSlash) &&
          d->currentURL.isValid()))
         return;
 

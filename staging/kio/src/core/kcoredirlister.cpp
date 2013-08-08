@@ -32,7 +32,6 @@
 
 #include <QFile>
 #include <qmimedatabase.h>
-#include <qurlpathinfo.h>
 #include <QDebug>
 
 // Enable this to get printDebug() called often, to see the contents of the cache
@@ -2682,7 +2681,7 @@ void KCoreDirLister::setDelayedMimeTypes( bool delayedMimeTypes )
 // called by KCoreDirListerCache::slotRedirection
 void KCoreDirLister::Private::redirect(const QUrl& oldUrl, const QUrl& newUrl, bool keepItems)
 {
-    if (QUrlPathInfo(url).equals(oldUrl, QUrlPathInfo::CompareWithoutTrailingSlash)) {
+    if (url.matches(oldUrl, QUrl::StripTrailingSlash)) {
         if (!keepItems) {
             rootFileItem = KFileItem();
         } else {

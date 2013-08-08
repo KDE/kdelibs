@@ -1017,13 +1017,13 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
     }
 
     // already set
-    if (QUrlPathInfo(newurl).equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
+    if (newurl.matches(d->currUrl, QUrl::StripTrailingSlash))
         return;
 
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
         newurl = newurl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
-        if (QUrlPathInfo(newurl).equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
+        if (newurl.matches(d->currUrl, QUrl::StripTrailingSlash))
             return; // parent is current dir, nothing to do (fixes #173454, too)
         KIO::UDSEntry entry;
         bool res = KIO::NetAccess::stat(newurl, entry, this);

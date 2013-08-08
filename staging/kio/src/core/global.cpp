@@ -28,7 +28,6 @@
 #include <QHash>
 #include <QLocale>
 #include <QFileInfo>
-#include <qurlpathinfo.h>
 
 
 enum BinaryUnitDialect {
