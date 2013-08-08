@@ -24,11 +24,11 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <sys/stat.h>
 
 
 #include <QtCore/QFile>
 #include <QtCore/QRegExp>
+#include <qplatformdefs.h>
 #include <qstandardpaths.h>
 
 #include <QDebug>
@@ -130,8 +130,8 @@ int KDEsuClient::connect()
     // If the socket was somehow not ours an attacker will be able
     // to delete it after we connect but shouldn't be able to
     // create a socket that is owned by us.
-    struct stat s;
-    if (lstat(d->sock, &s)!=0)
+    QT_STATBUF s;
+    if (QT_LSTAT(d->sock, &s)!=0)
     {
         qWarning() << "stat failed (" << d->sock << ")";
         close(d->sockfd); d->sockfd = -1;
@@ -412,8 +412,8 @@ bool KDEsuClient::isServerSGID()
     if (d->daemon.isEmpty())
        return false;
 
-    struct stat sbuf;
-    if (stat(QFile::encodeName(d->daemon).constData(), &sbuf) < 0)
+    QT_STATBUF sbuf;
+    if (QT_STAT(QFile::encodeName(d->daemon).constData(), &sbuf) < 0)
     {
         qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "stat():" << strerror(errno);
         return false;
