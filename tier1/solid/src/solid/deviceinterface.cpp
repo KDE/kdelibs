@@ -111,8 +111,8 @@ QString Solid::DeviceInterface::typeDescription(Type type)
         return tr("Network Share", "Network Share device type");
     case Keyboard:
         return tr("Keyboard", "A keyboard");
-    case Pointer:
-        return tr("Pointer", "A pointer device");
+    case PointingDevice:
+        return tr("PointingDevice", "A pointing device");
     case Last:
         return QString();
     }

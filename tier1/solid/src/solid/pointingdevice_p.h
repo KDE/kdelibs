@@ -18,32 +18,19 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "udevpointer.h"
+#ifndef SOLID_POINTING_DEVICE_P_H
+#define SOLID_POINTING_DEVICE_P_H
 
-#include <QDebug>
+#include "deviceinterface_p.h"
 
-using namespace Solid::Backends::UDev;
-
-Pointer::Pointer(UDevDevice *device)
-    : DeviceInterface(device)
-    , m_type(
-          device->property("ID_INPUT_MOUSE").toInt()       == 1 ? Solid::Pointer::MousePointer :
-          device->property("ID_INPUT_TOUCHPAD").toInt()    == 1 ? Solid::Pointer::TouchpadPointer :
-          device->property("ID_INPUT_TABLET").toInt()      == 1 ? Solid::Pointer::TabletPointer :
-          device->property("ID_INPUT_TOUCHSCREEN").toInt() == 1 ? Solid::Pointer::TouchscreenPointer :
-                                                                  Solid::Pointer::UnknownPointerType
-      )
+namespace Solid
 {
-    qDebug() << "This is the udev pointer type" << m_type;
+    class PointingDevicePrivate : public DeviceInterfacePrivate
+    {
+    public:
+        PointingDevicePrivate()
+            : DeviceInterfacePrivate() { }
+    };
 }
 
-Pointer::~Pointer()
-{
-
-}
-
-Solid::Pointer::PointerType Pointer::type() const
-{
-    return m_type;
-}
-
+#endif

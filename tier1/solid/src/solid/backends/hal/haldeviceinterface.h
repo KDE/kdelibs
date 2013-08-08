@@ -116,7 +116,7 @@ public:
         case Solid::DeviceInterface::Keyboard:
             // Is not supported by HAL backaned
             break;
-        case Solid::DeviceInterface::Pointer:
+        case Solid::DeviceInterface::PointingDevice:
             // Is not supported by HAL backaned
             break;
         case Solid::DeviceInterface::Unknown:

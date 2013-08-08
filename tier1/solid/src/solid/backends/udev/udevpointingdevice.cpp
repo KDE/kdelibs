@@ -18,44 +18,31 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "fakepointer.h"
+#include "udevpointingdevice.h"
 
-using namespace Solid::Backends::Fake;
+#include <QDebug>
 
-FakePointer::FakePointer(FakeDevice *device)
-    : FakeDeviceInterface(device)
+using namespace Solid::Backends::UDev;
+
+PointingDevice::PointingDevice(UDevDevice *device)
+    : DeviceInterface(device)
+    , m_type(
+          device->property("ID_INPUT_MOUSE").toInt()       == 1 ? Solid::PointingDevice::Mouse :
+          device->property("ID_INPUT_TOUCHPAD").toInt()    == 1 ? Solid::PointingDevice::Touchpad :
+          device->property("ID_INPUT_TABLET").toInt()      == 1 ? Solid::PointingDevice::Tablet :
+          device->property("ID_INPUT_TOUCHSCREEN").toInt() == 1 ? Solid::PointingDevice::Touchscreen :
+                                                                  Solid::PointingDevice::UnknownPointingDeviceType
+      )
+{
+}
+
+PointingDevice::~PointingDevice()
 {
 
 }
 
-FakePointer::~FakePointer()
+Solid::PointingDevice::PointingDeviceType PointingDevice::type() const
 {
-
-}
-
-Solid::Pointer::PointerType FakePointer::type() const
-{
-    QString pointertype = fakeDevice()->property("type").toString();
-
-    if (pointertype=="MousePointer")
-    {
-        return Solid::Pointer::MousePointer;
-    }
-    else if (pointertype=="TouchpadPointer")
-    {
-        return Solid::Pointer::TouchpadPointer;
-    }
-    else if (pointertype=="TouchscreenPointer")
-    {
-        return Solid::Pointer::TouchscreenPointer;
-    }
-    else if (pointertype=="TabletPointer")
-    {
-        return Solid::Pointer::TabletPointer;
-    }
-    else
-    {
-        return Solid::Pointer::UnknownPointerType;
-    }
+    return m_type;
 }
 

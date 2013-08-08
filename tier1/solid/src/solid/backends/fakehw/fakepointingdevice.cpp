@@ -18,43 +18,44 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_IFACES_POINTER_H
-#define SOLID_IFACES_POINTER_H
+#include "fakepointingdevice.h"
 
-#include <solid/ifaces/deviceinterface.h>
-#include <solid/pointer.h>
+using namespace Solid::Backends::Fake;
 
-namespace Solid
+FakePointingDevice::FakePointingDevice(FakeDevice *device)
+    : FakeDeviceInterface(device)
 {
-namespace Ifaces
+
+}
+
+FakePointingDevice::~FakePointingDevice()
 {
-    /**
-     * This device interface is available on pointers.
-     *
-     * Pointers are input devices such as mice, touchpads,
-     * touch screens and tablets.
-     *
-     * @author Ivan Cukic <ivan.cukic@kde.org>
-     */
-    class Pointer : virtual public DeviceInterface
+
+}
+
+Solid::PointingDevice::PointingDeviceType FakePointingDevice::type() const
+{
+    QString PointingDevicetype = fakeDevice()->property("type").toString();
+
+    if (PointingDevicetype=="Mouse")
     {
-    public:
-        /**
-         * Destroys a Pointer object.
-         */
-        virtual ~Pointer();
-
-        /**
-         * Retrieves the type of the pointer device.
-         *
-         * @return the type of the pointer device.
-         * @see Solid::Pointer::PointerType
-         */
-        virtual Solid::Pointer::PointerType type() const = 0;
-    };
+        return Solid::PointingDevice::Mouse;
+    }
+    else if (PointingDevicetype=="Touchpad")
+    {
+        return Solid::PointingDevice::Touchpad;
+    }
+    else if (PointingDevicetype=="Touchscreen")
+    {
+        return Solid::PointingDevice::Touchscreen;
+    }
+    else if (PointingDevicetype=="Tablet")
+    {
+        return Solid::PointingDevice::Tablet;
+    }
+    else
+    {
+        return Solid::PointingDevice::UnknownPointingDeviceType;
+    }
 }
-}
 
-Q_DECLARE_INTERFACE(Solid::Ifaces::Pointer, "org.kde.Solid.Ifaces.Pointer/0.1")
-
-#endif

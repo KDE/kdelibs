@@ -39,7 +39,7 @@
 #include "fakedvbinterface.h"
 #include "fakesmartcardreader.h"
 #include "fakekeyboard.h"
-#include "fakepointer.h"
+#include "fakepointingdevice.h"
 
 #include <QtCore/QStringList>
 #include <QtDBus/QDBusConnection>
@@ -326,8 +326,8 @@ QObject *FakeDevice::createDeviceInterface(const Solid::DeviceInterface::Type &t
     case Solid::DeviceInterface::Keyboard:
         iface = new FakeKeyboard(this);
         break;
-    case Solid::DeviceInterface::Pointer:
-        iface = new FakePointer(this);
+    case Solid::DeviceInterface::PointingDevice:
+        iface = new FakePointingDevice(this);
         break;
     case Solid::DeviceInterface::Unknown:
         break;

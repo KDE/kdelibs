@@ -18,34 +18,9 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_UDEV_POINTER_H
-#define SOLID_BACKENDS_UDEV_POINTER_H
+#include "pointingdevice.h"
 
-#include <solid/ifaces/pointer.h>
-#include "udevdeviceinterface.h"
-
-namespace Solid
+Solid::Ifaces::PointingDevice::~PointingDevice()
 {
-namespace Backends
-{
-namespace UDev
-{
-class Pointer : public DeviceInterface, virtual public Solid::Ifaces::Pointer
-{
-    Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Pointer)
 
-public:
-    Pointer(UDevDevice *device);
-    virtual ~Pointer();
-
-    virtual Solid::Pointer::PointerType type() const;
-
-private:
-    Solid::Pointer::PointerType m_type;
-};
 }
-}
-}
-
-#endif

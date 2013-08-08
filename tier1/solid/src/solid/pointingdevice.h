@@ -18,8 +18,8 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_POINTER_H
-#define SOLID_POINTER_H
+#ifndef SOLID_POINTING_DEVICE_H
+#define SOLID_POINTING_DEVICE_H
 
 #include <solid/solid_export.h>
 
@@ -27,66 +27,70 @@
 
 namespace Solid
 {
-    class PointerPrivate;
+    class PointingDevicePrivate;
     class Device;
 
     /**
-     * This device interface is available on pointer devices.
+     * This device interface is available on pointing devices.
      *
-     * A pointer is a device like a mouse, touchpad, touch screen or a tablet.
+     * A pointing device is a device like a mouse, touchpad, touch
+     * screen or a tablet (graphics tablet).
      *
      * @author Ivan Cukic <ivan.cukic@kde.org>
      */
-    class SOLID_EXPORT Pointer : public DeviceInterface
+    class SOLID_EXPORT PointingDevice : public DeviceInterface
     {
         Q_OBJECT
-        Q_ENUMS(PointerType)
-        Q_PROPERTY(PointerType type READ type)
-        Q_DECLARE_PRIVATE(Pointer)
+        Q_ENUMS(PointingDeviceType)
+        Q_PROPERTY(PointingDeviceType type READ type)
+        Q_DECLARE_PRIVATE(PointingDevice)
         friend class Device;
 
     public:
         /**
-         * This enum type defines the type of a pointer.
+         * This enum type defines the type of a PointingDevice.
          *
-         * -
-         * - UnknownPointerType : The type of the pointer is unknown.
+         * - Mouse : A mouse
+         * - Touchpad : A touchpad
+         * - Touchscreen : The touchscreen input device
+         * - Tablet : A graphics tablet with a stylus
+         * - UnknownPointingDeviceType : The type of the pointing device is unknown.
          */
-         enum PointerType{ MousePointer, TouchpadPointer, TouchscreenPointer, TabletPointer, UnknownPointerType };
+         enum PointingDeviceType{ Mouse, Touchpad, Touchscreen, Tablet, UnknownPointingDeviceType };
 
 
     private:
         /**
-         * Creates a new Pointer object.
+         * Creates a new PointingDevice object.
          * You generally won't need this. It's created when necessary using
          * Device::as().
          *
          * @param backendObject the device interface object provided by the backend
          * @see Solid::Device::as()
          */
-        explicit Pointer(QObject *backendObject);
+        explicit PointingDevice(QObject *backendObject);
 
     public:
         /**
-         * Destroys a Pointer object.
+         * Destroys a PointingDevice object.
          */
-        virtual ~Pointer();
+        virtual ~PointingDevice();
 
         /**
-         * Get the Solid::DeviceInterface::Type of the Pointer device interface.
+         * Get the Solid::DeviceInterface::Type of the pointing device interface.
          *
-         * @return the Pointer device interface type
+         * @return the pointing device interface type
          * @see Solid::DeviceInterface::Type
          */
-        static Type deviceInterfaceType() { return DeviceInterface::Pointer; }
+        static Type deviceInterfaceType() { return DeviceInterface::PointingDevice; }
 
         /**
-         * Retrieves the type of the pointer device.
+         * Retrieves the type of the pointing device.
          *
-         * @return the type of the pointer device.
-         * @see Solid::Pointer::PointerType
+         * @return the type of the pointing device.
+         * @see Solid::PointingDevice::PointingDeviceType
          */
-        PointerType type() const;
+        PointingDeviceType type() const;
 
     };
 }

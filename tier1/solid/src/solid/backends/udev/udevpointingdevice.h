@@ -18,33 +18,34 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_BACKENDS_FAKEHW_POINTER_H
-#define SOLID_BACKENDS_FAKEHW_POINTER_H
+#ifndef SOLID_BACKENDS_UDEV_POINTING_DEVICE_H
+#define SOLID_BACKENDS_UDEV_POINTING_DEVICE_H
 
-#include "fakedeviceinterface.h"
-#include <solid/ifaces/pointer.h>
+#include <solid/ifaces/pointingdevice.h>
+#include "udevdeviceinterface.h"
 
 namespace Solid
 {
 namespace Backends
 {
-namespace Fake
+namespace UDev
 {
-class FakePointer : public FakeDeviceInterface, virtual public Solid::Ifaces::Pointer
+class PointingDevice : public DeviceInterface, virtual public Solid::Ifaces::PointingDevice
 {
     Q_OBJECT
-    Q_INTERFACES(Solid::Ifaces::Pointer)
+    Q_INTERFACES(Solid::Ifaces::PointingDevice)
 
 public:
-    explicit FakePointer(FakeDevice *device);
-    ~FakePointer();
+    PointingDevice(UDevDevice *device);
+    virtual ~PointingDevice();
 
-public Q_SLOTS:
-    virtual Solid::Pointer::PointerType type() const;
+    virtual Solid::PointingDevice::PointingDeviceType type() const;
 
+private:
+    Solid::PointingDevice::PointingDeviceType m_type;
 };
 }
 }
 }
 
-#endif // SOLID_BACKENDS_FAKEHW_POINTER_H
+#endif

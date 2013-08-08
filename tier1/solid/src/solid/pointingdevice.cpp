@@ -18,25 +18,25 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "pointer.h"
-#include "pointer_p.h"
+#include "pointingdevice.h"
+#include "pointingdevice_p.h"
 
 #include "soliddefs_p.h"
-#include <solid/ifaces/pointer.h>
+#include <solid/ifaces/pointingdevice.h>
 
-Solid::Pointer::Pointer(QObject *backendObject)
-    : DeviceInterface(*new PointerPrivate(), backendObject)
+Solid::PointingDevice::PointingDevice(QObject *backendObject)
+    : DeviceInterface(*new PointingDevicePrivate(), backendObject)
 {
 }
 
-Solid::Pointer::~Pointer()
+Solid::PointingDevice::~PointingDevice()
 {
 
 }
 
-Solid::Pointer::PointerType Solid::Pointer::type() const
+Solid::PointingDevice::PointingDeviceType Solid::PointingDevice::type() const
 {
-    Q_D(const Pointer);
-    return_SOLID_CALL(Ifaces::Pointer *, d->backendObject(), UnknownPointerType, type());
+    Q_D(const PointingDevice);
+    return_SOLID_CALL(Ifaces::PointingDevice *, d->backendObject(), UnknownPointingDeviceType, type());
 }
 

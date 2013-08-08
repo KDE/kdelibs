@@ -64,7 +64,7 @@ namespace Solid
          * - SmartCardReader: A smart card reader interface
          * - NetworkShare: A network share interface
          * - Keyboard: A keyboard
-         * - Pointer: A mouse, touchpad, touchscreen or a tablet
+         * - PointingDevice: A mouse, touchpad, touchscreen or a tablet
          */
         enum Type { Unknown = 0, GenericInterface = 1, Processor = 2,
                     Block = 3, StorageAccess = 4, StorageDrive = 5,
@@ -73,7 +73,7 @@ namespace Solid
                     NetworkInterface = 11, AcAdapter = 12, Battery = 13,
                     Button = 14, AudioInterface = 15, DvbInterface = 16, Video = 17,
                     SerialInterface = 18, SmartCardReader = 19, InternetGateway = 20,
-                    NetworkShare = 21, Keyboard = 22, Pointer = 23,
+                    NetworkShare = 21, Keyboard = 22, PointingDevice = 23,
                     Last = 0xffff  };
 
         /**

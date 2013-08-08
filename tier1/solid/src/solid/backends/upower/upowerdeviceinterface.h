@@ -119,7 +119,7 @@ public:
         case Solid::DeviceInterface::Keyboard:
             // Doesn't exist with UPower
             break;
-        case Solid::DeviceInterface::Pointer:
+        case Solid::DeviceInterface::PointingDevice:
             // Doesn't exist with UPower
             break;
         case Solid::DeviceInterface::Unknown:

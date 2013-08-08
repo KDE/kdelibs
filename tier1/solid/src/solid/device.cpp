@@ -60,8 +60,8 @@
 #include <solid/ifaces/button.h>
 #include <solid/keyboard.h>
 #include <solid/ifaces/keyboard.h>
-#include <solid/pointer.h>
-#include <solid/ifaces/pointer.h>
+#include <solid/pointingdevice.h>
+#include <solid/ifaces/pointingdevice.h>
 #include <solid/audiointerface.h>
 #include <solid/ifaces/audiointerface.h>
 #include <solid/dvbinterface.h>
@@ -250,8 +250,8 @@ const Solid::DeviceInterface *Solid::Device::asDeviceInterface(const DeviceInter
             case DeviceInterface::Keyboard:
                 iface = deviceinterface_cast(Ifaces::Keyboard, Keyboard, dev_iface);
                 break;
-            case DeviceInterface::Pointer:
-                iface = deviceinterface_cast(Ifaces::Pointer, Pointer, dev_iface);
+            case DeviceInterface::PointingDevice:
+                iface = deviceinterface_cast(Ifaces::PointingDevice, PointingDevice, dev_iface);
                 break;
             case DeviceInterface::Unknown:
             case DeviceInterface::Last:

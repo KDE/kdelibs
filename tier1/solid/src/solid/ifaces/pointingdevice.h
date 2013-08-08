@@ -18,19 +18,43 @@
     License along with this library. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SOLID_POINTER_P_H
-#define SOLID_POINTER_P_H
+#ifndef SOLID_IFACES_POINTING_DEVICE_H
+#define SOLID_IFACES_POINTING_DEVICE_H
 
-#include "deviceinterface_p.h"
+#include <solid/ifaces/deviceinterface.h>
+#include <solid/pointingdevice.h>
 
 namespace Solid
 {
-    class PointerPrivate : public DeviceInterfacePrivate
+namespace Ifaces
+{
+    /**
+     * This device interface is available on pointing devices
+     *
+     * PointingDevice are input devices such as mice, touchpads,
+     * touch screens and tablets (graphics tablets).
+     *
+     * @author Ivan Cukic <ivan.cukic@kde.org>
+     */
+    class PointingDevice : virtual public DeviceInterface
     {
     public:
-        PointerPrivate()
-            : DeviceInterfacePrivate() { }
+        /**
+         * Destroys a PointingDevice object.
+         */
+        virtual ~PointingDevice();
+
+        /**
+         * Retrieves the type of the pointing device.
+         *
+         * @return the type of the pointing device.
+         * @see Solid::PointingDevice::PointingDeviceType
+         */
+        virtual Solid::PointingDevice::PointingDeviceType type() const = 0;
     };
 }
+}
+
+Q_DECLARE_INTERFACE(Solid::Ifaces::PointingDevice, "org.kde.Solid.Ifaces.PointingDevice/0.1")
 
 #endif

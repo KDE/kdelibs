@@ -170,7 +170,7 @@ UDevManager::UDevManager(QObject *parent)
                              << Solid::DeviceInterface::Video
                              << Solid::DeviceInterface::Button
                              << Solid::DeviceInterface::Keyboard
-                             << Solid::DeviceInterface::Pointer
+                             << Solid::DeviceInterface::PointingDevice
                              ;
 }
 
