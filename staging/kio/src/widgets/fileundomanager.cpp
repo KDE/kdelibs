@@ -32,7 +32,6 @@
 #include <kmessagebox.h>
 #include <kjobtrackerinterface.h>
 #include <kio/jobuidelegate.h>
-#include <qurlpathinfo.h>
 
 #include <QDateTime>
 #include <QtDBus/QtDBus>

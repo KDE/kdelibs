@@ -22,7 +22,6 @@
 #include <kdiroperator.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
-#include <qurlpathinfo.h>
 #include <qtreeview.h>
 
 /**

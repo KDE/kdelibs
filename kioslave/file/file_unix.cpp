@@ -28,7 +28,6 @@
 #include "file.h"
 
 #include <QtCore/QFile>
-#include <qurlpathinfo.h>
 #include <QtCore/QDir>
 #include <qplatformdefs.h>
 

@@ -35,7 +35,6 @@
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QtDBus/QtDBus>
-#include <qurlpathinfo.h>
 
 #include <kapplication.h>
 #include <kauthorized.h>

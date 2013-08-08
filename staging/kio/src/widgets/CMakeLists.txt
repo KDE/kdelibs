@@ -59,7 +59,6 @@ target_link_libraries(KIOWidgets
     KCompletion   # KUrlCompletion uses KCompletion
   LINK_PRIVATE
     KIconThemes   # KIconLoader
-    kdeqt5staging # QUrlPathInfo
 )
 
 if(ACL_FOUND)

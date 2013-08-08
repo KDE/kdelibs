@@ -67,7 +67,6 @@
 #include <QApplication>
 #include <QPushButton>
 #include <QStandardPaths>
-#include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 
 #include <kshell.h>

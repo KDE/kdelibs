@@ -40,7 +40,6 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QLabel>
-#include <qurlpathinfo.h>
 
 using namespace KParts;
 Q_DECLARE_METATYPE(KService::Ptr)

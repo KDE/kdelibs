@@ -31,7 +31,6 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QMimeData>
-#include <qurlpathinfo.h>
 
 namespace KDEPrivate
 {
