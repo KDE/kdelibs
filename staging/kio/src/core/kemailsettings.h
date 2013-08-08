@@ -32,7 +32,6 @@
 #include <QtCore/QStringList>
 
 #include <kio/kiocore_export.h>
-#include <kdemacros.h>
 
 class KEMailSettingsPrivate;
 
@@ -132,7 +131,7 @@ public:
 	  * Returns the name of the current profile.
 	  * @returns what profile we're currently using
 	  **/
-	KDE_DEPRECATED QString currentProfileName() const;
+	KIOCORE_DEPRECATED QString currentProfileName() const;
 #endif
 
 	/**
