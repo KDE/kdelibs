@@ -101,7 +101,7 @@ bool SpellCheckDecorator::Private::onContextMenuEvent(QContextMenuEvent *event)
     // If the user clicked somewhere else, move the cursor there.
     // If the user clicked on a misspelled word, select that word.
     // Same behavior as in OpenOffice Writer.
-    bool checkBlock = q->shouldBlockBeSpellChecked(cursorAtMouse.block().text());
+    bool checkBlock = q->isSpellCheckingEnabledForBlock(cursorAtMouse.block().text());
     if (!selectedWordClicked) {
         if (wordIsMisspelled && checkBlock) {
             m_textEdit->setTextCursor(wordSelectCursor);
@@ -191,7 +191,7 @@ bool SpellCheckDecorator::eventFilter(QObject * /*obj*/, QEvent *event)
     return false;
 }
 
-bool SpellCheckDecorator::shouldBlockBeSpellChecked(const QString &textBlock) const
+bool SpellCheckDecorator::isSpellCheckingEnabledForBlock(const QString &textBlock) const
 {
     return true;
 }

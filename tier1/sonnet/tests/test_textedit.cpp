@@ -38,7 +38,7 @@ public:
     {}
 
 protected:
-    bool shouldBlockBeSpellChecked(const QString &blockText) const Q_DECL_OVERRIDE
+    bool isSpellCheckingEnabledForBlock(const QString &blockText) const Q_DECL_OVERRIDE
     {
         qDebug() << blockText;
         return !blockText.startsWith(">");

@@ -44,7 +44,7 @@ public:
 protected:
     bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
-    virtual bool shouldBlockBeSpellChecked(const QString &textBlock) const;
+    virtual bool isSpellCheckingEnabledForBlock(const QString &textBlock) const;
 
 private:
     class Private;
