@@ -25,9 +25,11 @@
 using namespace KIO;
 
 #include <QDebug>
-#include <kfiledialog.h>
 
+#include <QFileDialog>
 #include <QList>
+#include <QMimeDatabase>
+#include <QMimeType>
 #include <QSslCertificate>
 #include <QTreeWidgetItem>
 #include <QStandardItemModel>
@@ -294,9 +296,17 @@ void CaCertificatesPage::removeSelectionClicked()
 // private slot
 void CaCertificatesPage::addCertificateClicked()
 {
+    QMimeDatabase db;
+    QString myFilter;
+    QString mimeType("application/x-x509-ca-cert");
+    QMimeType mime(db.mimeTypeForName(mimeType));
+    if (mime.isValid()) {
+        myFilter = QString("%1 (%2)").arg(mime.comment())
+                                      .arg(mime.globPatterns().join(QLatin1String(" ")));
+    }
+
     const QStringList certFiles
-      = KFileDialog::getOpenFileNames(QUrl(), QLatin1String("application/x-x509-ca-cert"),
-                                      this, i18n("Pick Certificates"));
+            = QFileDialog::getOpenFileNames(this, i18n("Pick Certificates"),QString(),myFilter);
 
     QList<QSslCertificate> certs;
     foreach (const QString &certFile, certFiles) {

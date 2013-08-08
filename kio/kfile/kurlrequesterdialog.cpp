@@ -22,8 +22,8 @@
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
+#include <QFileDialog>
 
-#include <kfiledialog.h>
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <krecentdocument.h>
@@ -140,7 +140,7 @@ QUrl KUrlRequesterDialog::getUrl(const QUrl& dir, QWidget *parent,
     return url;
 }
 
-KFileDialog * KUrlRequesterDialog::fileDialog()
+QFileDialog * KUrlRequesterDialog::fileDialog()
 {
     return d->urlRequester->fileDialog();
 }

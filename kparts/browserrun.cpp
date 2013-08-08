@@ -21,7 +21,6 @@
 
 #include <kconfiggroup.h>
 #include <kmessagebox.h>
-#include <kfiledialog.h>
 #include <kio/job.h>
 #include <kio/jobuidelegate.h>
 #include <kio/scheduler.h>
@@ -30,12 +29,14 @@
 #include <klocalizedstring.h>
 #include <kshell.h>
 #include <kmimetypetrader.h>
-#include <qtemporaryfile.h>
-#include <qmimedatabase.h>
-#include <QDebug>
 #include "browseropenorsavequestion.h"
 #include <kprotocolmanager.h>
-#include <qstandardpaths.h>
+
+#include <QTemporaryFile>
+#include <QMimeDatabase>
+#include <QDebug>
+#include <QStandardPaths>
+#include <QFileDialog>
 
 
 using namespace KParts;
@@ -432,10 +433,10 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
     }
 
     // no download manager available, let's do it ourself
-    KFileDialog *dlg = new KFileDialog(QUrl(), QString() /*all files*/, window);
-    dlg->setOperationMode( KFileDialog::Saving );
-    dlg->setWindowTitle(i18n("Save As"));
-    dlg->setConfirmOverwrite(true);
+    QFileDialog *dlg = new QFileDialog( window );
+    dlg->setAcceptMode( QFileDialog::AcceptSave );
+    dlg->setWindowTitle( i18n( "Save As" ) );
+    dlg->setConfirmOverwrite( true );
 
     QString name;
     if ( !suggestedFileName.isEmpty() )
@@ -443,10 +444,10 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
     else
         name = url.fileName(); // can be empty, e.g. in case http://www.kde.org/
 
-    dlg->setSelection(name);
+    dlg->selectFile( name );
     if ( dlg->exec() )
     {
-        QUrl destURL(dlg->selectedUrl());
+        QUrl destURL(dlg->selectedUrls().first());
         if ( destURL.isValid() )
         {
             saveUrlUsingKIO(url, destURL, window, args.metaData());

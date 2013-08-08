@@ -1,7 +1,8 @@
 /* This file is part of the KDE libraries
     Copyright (C) 1999,2000,2001 Carsten Pfeiffer <pfeiffer@kde.org>
+    Copyright (C) 2013           Teo Mrnjavac <teo@kde.org>
 
-    library is free software; you can redistribute it and/or
+    This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
     License version 2, as published by the Free Software Foundation.
 
@@ -19,28 +20,28 @@
 #ifndef KURLREQUESTER_H
 #define KURLREQUESTER_H
 
+#include <kio/kio_export.h>
+
+#include <keditlistwidget.h>
 #include <kfile.h>
+
+#include <QFileDialog>
 #include <QPushButton>
 #include <QUrl>
 
-#include <keditlistwidget.h>
-#include <kio/kio_export.h>
-
 class KComboBox;
-class KFileDialog;
 class KLineEdit;
 class KUrlCompletion;
 
+class QEvent;
 class QPushButton;
 class QString;
-class QEvent;
 
 /**
  * This class is a widget showing a lineedit and a button, which invokes a
  * filedialog. File name completion is available in the lineedit.
  *
- * The defaults for the filedialog are to ask for one existing local file, i.e.
- * KFileDialog::setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly )
+ * The defaults for the filedialog are to ask for one existing local file.
  * The default filter is "*", i.e. show all files, and the start directory is
  * the current working directory, or the last directory where a file has been
  * selected.
@@ -58,7 +59,7 @@ class KIO_EXPORT KUrlRequester : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
-    Q_PROPERTY( QString filter READ filter WRITE setFilter )
+    Q_PROPERTY( QStringList filters READ filters WRITE setFilters )
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
     #ifndef KDE_NO_DEPRECATED
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
@@ -117,27 +118,27 @@ public:
      * Sets the mode of the file dialog.
      * Note: you can only select one file with the filedialog,
      * so KFile::Files doesn't make much sense.
-     * @see KFileDialog::setMode()
+     * @see QFileDialog::setFileMode()
      */
     void setMode( KFile::Modes m );
 
     /**
     * Returns the current mode
-    * @see KFileDialog::mode()
+    * @see QFileDialog::fileMode()
     */
     KFile::Modes mode() const;
 
     /**
-     * Sets the filter for the file dialog.
-     * @see KFileDialog::setFilter()
+     * Sets the filters for the file dialog.
+     * @see QFileDialog::setNameFilters()
      */
-    void setFilter( const QString& filter );
+    void setFilters( const QStringList& filters );
 
     /**
     * Returns the current filter for the file dialog.
-    * @see KFileDialog::filter()
+    * @see QFileDialog::nameFilters()
     */
-    QString filter() const;
+    QStringList filters() const;
 
     /**
      * @returns a pointer to the filedialog.
@@ -149,7 +150,7 @@ public:
      * Important: in "Directory only" mode, a KDirSelectDialog is used
      * instead, so calling this method is useless.
      */
-    virtual KFileDialog * fileDialog() const;
+    virtual QFileDialog * fileDialog() const;
 
     /**
      * @returns a pointer to the lineedit, either the default one, or the

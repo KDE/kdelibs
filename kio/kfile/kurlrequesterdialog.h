@@ -26,7 +26,7 @@
 #include <QUrl>
 
 class KUrlRequester;
-class KFileDialog;
+class QFileDialog;
 class KUrlRequesterDialogPrivate;
 /**
  * Dialog in which a user can enter a filename or url. It is a dialog
@@ -85,7 +85,7 @@ public:
     /**
      * Returns a pointer to the file dialog used by the KUrlRequester.
      */
-    KFileDialog * fileDialog();
+    QFileDialog * fileDialog();
     /**
      * Returns a pointer to the KUrlRequester.
      */

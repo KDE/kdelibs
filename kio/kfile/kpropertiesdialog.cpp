@@ -59,24 +59,26 @@ extern "C" {
 #include <algorithm>
 #include <functional>
 
-#include <QtCore/QFile>
-#include <QtCore/QDir>
-#include <QDialog>
-#include <QDialogButtonBox>
-#include <QLabel>
-#include <QLocale>
-#include <QPushButton>
 #include <QCheckBox>
-#include <QtCore/QMutableStringListIterator>
-#include <QtCore/QTextStream>
-#include <QPainter>
-#include <QLayout>
-#include <QStyle>
-#include <QProgressBar>
-#include <QVector>
+#include <QDebug>
+#include <QDir>
+#include <QDialogButtonBox>
+#include <QFile>
+#include <QFileDialog>
 #include <QFileInfo>
-#include <qmimedatabase.h>
+#include <QLabel>
+#include <QLayout>
+#include <QLocale>
+#include <QMimeDatabase>
+#include <QMutableStringListIterator>
+#include <QPainter>
+#include <QProgressBar>
+#include <QPushButton>
+#include <QStandardPaths>
+#include <QStyle>
+#include <QTextStream>
 #include <QUrl>
+#include <QVector>
 #include <qplatformdefs.h>
 
 #if HAVE_POSIX_ACL
@@ -88,7 +90,6 @@ extern "C" {
 #include <kcoreauthorized.h>
 #include <kdirnotify.h>
 #include <kdiskfreespaceinfo.h>
-#include <QDebug>
 #include <kdesktopfile.h>
 #include <kiconbutton.h>
 #include <kurlrequester.h>
@@ -102,7 +103,6 @@ extern "C" {
 #include <kio/renamedialog.h>
 #include <kio/netaccess.h>
 #include <kio/jobuidelegate.h>
-#include <kfiledialog.h>
 #include <kmountpoint.h>
 #include <kmessagebox.h>
 #include <kservice.h>
@@ -130,7 +130,6 @@ extern "C" {
 
 #include <kbuildsycocaprogressdialog.h>
 #include <kmimetypechooser.h>
-#include <qstandardpaths.h>
 
 #ifdef Q_OS_WIN
 #include <windows.h>
@@ -3304,7 +3303,7 @@ void KDesktopPropsPlugin::applyChanges()
 
 void KDesktopPropsPlugin::slotBrowseExec()
 {
-    QUrl f = KFileDialog::getOpenUrl(QUrl(), QString(), d->m_frame);
+    QUrl f = QFileDialog::getOpenFileUrl(d->m_frame);
     if ( f.isEmpty() )
         return;
 

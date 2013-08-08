@@ -20,44 +20,75 @@
 
 #include "kdirselectdialog.h"
 
+#include <QDebug>
 #include <QDialogButtonBox>
-#include <QtCore/QDir>
-#include <QtCore/QStringList>
+#include <QDir>
+#include <QFileDialog>
+#include <QInputDialog>
 #include <QLayout>
 #include <QMenu>
-#include <qinputdialog.h>
-#include <qpushbutton.h>
+#include <QPushButton>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QUrl>
 
+#include <defaults-kfile.h>
+#include <jobuidelegate.h>
+#include <kabstractfilemodule.h>
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <ksharedconfig.h>
-#include <khistorycombobox.h>
-#include <kfiledialog.h>
 #include <kfiletreeview.h>
 #include <kfileitemdelegate.h>
-#include <kjobwidgets.h>
+#include <khistorycombobox.h>
 #include <kio/job.h>
 #include <kio/deletejob.h>
 #include <kio/copyjob.h>
 #include <kio/mkdirjob.h>
 #include <kio/netaccess.h>
-#include <jobuidelegate.h>
+#include <kjobwidgets.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
+#include <kpropertiesdialog.h>
 #include <krecentdirs.h>
+#include <kservice.h>
+#include <ksharedconfig.h>
 #include <ktoggleaction.h>
 #include <kurlcompletion.h>
 #include <kurlpixmapprovider.h>
-#include <QDebug>
-#include <kpropertiesdialog.h>
 
 #include "kfileplacesview.h"
 #include "kfileplacesmodel.h"
 // ### add mutator for treeview!
 
 
+
+static KAbstractFileModule* s_module = 0;
+static KAbstractFileModule* loadFileModule( const QString& moduleName )
+{
+    KService::Ptr fileModuleService = KService::serviceByDesktopName(moduleName);
+    if(fileModuleService)
+        return fileModuleService->createInstance<KAbstractFileModule>();
+    else
+        return 0;
+}
+
+static const char s_defaultFileModuleName[] = "kfilemodule";
+static KAbstractFileModule* fileModule()
+{
+    if(!s_module) {
+        QString moduleName = KConfig("kdeglobals").group(ConfigGroup).readEntry("file module", s_defaultFileModuleName);
+        if(!(s_module = loadFileModule(moduleName))) {
+            // qDebug() << "Failed to load configured file module" << moduleName;
+            if(moduleName != s_defaultFileModuleName) {
+                // qDebug() << "Falling back to default file module.";
+                s_module = loadFileModule(s_defaultFileModuleName);
+            }
+        }
+    }
+    return s_module;
+}
 
 class KDirSelectDialog::Private
 {
@@ -369,7 +400,7 @@ KDirSelectDialog::KDirSelectDialog(const QUrl &startDir, bool localOnly,
     connect( propertiesAction, SIGNAL(triggered(bool)), this, SLOT(slotProperties()) );
     d->m_contextMenu->addAction( propertiesAction );
 
-    d->m_startURL = KFileDialog::getStartUrl( startDir, d->m_recentDirClass );
+    d->m_startURL = fileModule()->getStartUrl( startDir, d->m_recentDirClass );
     if ( localOnly && !d->m_startURL.isLocalFile() )
     {
         d->m_startURL = QUrl();
@@ -481,7 +512,7 @@ void KDirSelectDialog::accept()
     }
 
     d->m_urlCombo->addToHistory(selectedUrl.toDisplayString());
-    KFileDialog::setStartDir( url() );
+    fileModule()->setStartDir( url() );
 
     QDialog::accept();
 }

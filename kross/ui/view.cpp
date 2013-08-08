@@ -26,15 +26,17 @@
 #include <kross/core/actioncollection.h>
 #include <kross/core/interpreter.h>
 
-#include <QtCore/QFileInfo>
-#include <QtCore/QDir>
 #include <QAction>
 #include <QBoxLayout>
+#include <QDir>
+#include <QFileInfo>
 #include <QHeaderView>
+#include <QLabel>
 #include <QLineEdit>
+#include <QMimeDatabase>
+#include <QMimeType>
 #include <QPushButton>
 #include <QTreeView>
-#include <QLabel>
 
 #include <kconfig.h>
 
@@ -215,7 +217,18 @@ void ActionCollectionEditor::initGui()
         }
         //InterpreterInfo* info = Manager::self().interpreterInfo( Manager::self().interpreternameForFile( d->action->file() ) );
         //const QString defaultmime = info ? info->mimeTypes().join(" ").trimmed() : QString();
-        d->fileedit->fileDialog()->setMimeFilter(mimetypes /*, defaultmime*/);
+
+        QMimeDatabase db;
+        QStringList myFilter;
+        foreach ( const QString &mimeType, mimetypes ) {
+            QMimeType mime(db.mimeTypeForName(mimeType));
+            if (mime.isValid()) {
+                myFilter.append(QString("%1 (%2)").arg(mime.comment())
+                                .arg(mime.globPatterns().join(QLatin1String(" "))));
+            }
+        }
+
+        d->fileedit->fileDialog()->setNameFilters(myFilter);
         d->fileedit->setMode( KFile::File | KFile::ExistingOnly | KFile::LocalOnly );
         d->fileedit->setUrl(QUrl::fromLocalFile(d->action->file()) );
         gridlayout->addWidget(d->fileedit, 5, 1);
