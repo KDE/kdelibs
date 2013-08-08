@@ -27,6 +27,8 @@
 
 #include "file.h"
 
+#include <config-kioslave-file.h>
+
 #include <QtCore/QFile>
 #include <QtCore/QDir>
 #include <qplatformdefs.h>
