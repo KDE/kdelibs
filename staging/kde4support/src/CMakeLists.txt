@@ -6,6 +6,24 @@ else ()
    set (HAVE_X11 0)
 endif ()
 
+if(NOT HAVE_NEPOMUK)
+   set(KIO_NO_NEPOMUK TRUE)
+endif(NOT HAVE_NEPOMUK)
+
+if(NOT STRIGI_FOUND)
+   set(KIO_NO_STRIGI TRUE)
+else()
+    add_subdirectory( kio/dummyanalyzers )
+endif(NOT STRIGI_FOUND)
+
+if(NOT KIO_NO_NEPOMUK)
+    include_directories(
+       ${SOPRANO_INCLUDE_DIR}
+    )
+endif(NOT KIO_NO_NEPOMUK)
+
+add_subdirectory( kioslave )
+
 set(libkde4support_SRCS
     kdecore/k4aboutdata.cpp
     kdecore/kcomponentdata.cpp
@@ -99,9 +117,28 @@ set(libkde4support_SRCS
     kio/passworddialog.cpp
     kio/kmimetyperesolver.cpp
     kio/kdatatool.cpp
+    kio/kfilemetadataconfigurationwidget.cpp
+    kio/kfilemetadatawidget.cpp
+    kio/kfilemetainfowidget.cpp
+    kio/kmetaprops.cpp
+    kio/knfotranslator.cpp
+    kio/kfilemetainfo.cpp
+    kio/kfilemetainfoitem.cpp
+    kio/kcommentwidget.cpp
+    kio/predicateproperties.cpp
+    kio/kfilewriteplugin.cpp
+#     kio/kpreviewprops.cpp
 
     kparts/factory.cpp
 )
+
+if (NOT KIO_NO_NEPOMUK)
+    set(libkde4support_SRCS ${libkde4support_SRCS}
+        kio/kfilemetadatareader.cpp
+        kio/kfilemetadatareaderprocess.cpp
+        kio/kfilemetadataprovider.cpp
+    )
+endif ()
 
 if (X11_FOUND)
    set(libkde4support_SRCS ${libkde4support_SRCS} kdeui/kxerrorhandler.cpp )
@@ -164,6 +201,16 @@ target_link_libraries(KDE4Support
    KDE4Attic
 )
 
+if(NOT KIO_NO_NEPOMUK)
+  target_link_libraries(KDE4Support ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
+endif(NOT KIO_NO_NEPOMUK)
+
+if(NOT KIO_NO_NEPOMUK)
+    kde4_add_executable(kfilemetadatareader kio/kfilemetadatareaderprocess.cpp)
+    target_link_libraries(kfilemetadatareader ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} KI18n KDE4Support)
+    install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
+endif(NOT KIO_NO_NEPOMUK)
+
 set_target_properties(KDE4Support PROPERTIES VERSION ${KDE4SUPPORT_VERSION_STRING}
                                   SOVERSION ${KDE4SUPPORT_SOVERSION} )
 
@@ -208,6 +255,12 @@ install(FILES
     kio/kdiskfreespace.h
     kio/kdatatool.h
     kio/kmimetyperesolver.h
+    kio/kfilemetadataconfigurationwidget.h
+    kio/kfilemetadatawidget.h
+    kio/kfilemetainfowidget.h
+    kio/kfilemetainfo.h
+    kio/predicateproperties.h
+    kio/kfilewriteplugin.h
 
     kdeui/kaccelgen.h
     kdeui/kaction.h
@@ -283,4 +336,9 @@ install(FILES
     kparts/genericfactory.h
     kparts/factory.h
     DESTINATION ${INCLUDE_INSTALL_DIR}/kparts COMPONENT Devel
+)
+
+install(FILES
+    kio/kfilewrite.desktop
+    DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

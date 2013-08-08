@@ -30,12 +30,6 @@ if(OPENSSL_FOUND)
    include_directories(${OPENSSL_INCLUDE_DIR})
 endif(OPENSSL_FOUND)
 
-if(NOT KIO_NO_NEPOMUK)
-    include_directories(
-       ${SOPRANO_INCLUDE_DIR}
-    )
-endif(NOT KIO_NO_NEPOMUK)
-
 if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
@@ -85,16 +79,12 @@ set(kiocore_STAT_SRCS
   kio/kdesktopfileactions.cpp
   kio/kfileitemactions.cpp
   kio/kfileitemdelegate.cpp
-  kio/kfilemetainfo.cpp
-  kio/kfilemetainfoitem.cpp
   kio/kfileshare.cpp
-  kio/kfilewriteplugin.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
   kio/krun.cpp
   kio/kscan.cpp
   kio/netaccess.cpp
-  kio/predicateproperties.cpp
 )
 
 if(NOT KDE_NO_DEPRECATED)
@@ -142,14 +132,8 @@ set(kfile_STAT_SRCS
   kfile/kencodingfiledialog.cpp
   kfile/kfile.cpp
   kfile/kfiledialog.cpp
-  kfile/kfilemetadataconfigurationwidget.cpp
-  kfile/kfilemetadatawidget.cpp
-  kfile/kfilemetapreview.cpp
   kfile/kimagefilepreview.cpp
-  kfile/kmetaprops.cpp
-  kfile/knfotranslator.cpp
   kfile/kopenwithdialog.cpp
-  kfile/kpreviewprops.cpp
   kfile/kpreviewwidgetbase.cpp
   kfile/kpropertiesdialog.cpp
   kfile/krecentdirs.cpp
@@ -158,6 +142,7 @@ set(kfile_STAT_SRCS
   kfile/kurlrequester.cpp
   kfile/kurlrequesterdialog.cpp
   kfile/getgrouplist-fake.c
+  kfile/kfilemetapreview.cpp
 )
 
 if(NOT KIO_NO_SOLID)
@@ -167,15 +152,6 @@ if(NOT KIO_NO_SOLID)
     kfile/kdevicelistmodel.cpp
     )
 endif(NOT KIO_NO_SOLID)
-
-if(NOT KIO_NO_NEPOMUK)
-  set(kfile_STAT_SRCS
-    ${kfile_STAT_SRCS}
-    kfile/kcommentwidget.cpp
-    kfile/kfilemetadatareader.cpp
-    kfile/kfilemetadataprovider.cpp
-    )
-endif(NOT KIO_NO_NEPOMUK)
 
 qt5_add_resources(kfile_STAT_SRCS kfile/kacleditwidget.qrc)
 
@@ -198,12 +174,6 @@ set(kio_LIB_SRCS
    ${kfile_STAT_SRCS}
    ${kssl_STAT_SRCS}
 )
-
-if(NOT KIO_NO_NEPOMUK)
-    set(kfilemetadatareaderprocess_SRCS
-        kfile/kfilemetadatareaderprocess.cpp
-    )
-endif(NOT KIO_NO_NEPOMUK)
 
 kde4_add_ui_files(kio_LIB_SRCS
    kfile/kpropertiesdesktopadvbase.ui
@@ -262,16 +232,9 @@ add_subdirectory( kssl/kcm )
 add_subdirectory( misc )
 add_subdirectory( tests )
 add_subdirectory( httpfilter/autotests )
-if (NOT KIO_NO_STRIGI)
-   add_subdirectory( kio/dummyanalyzers )
-endif()
 
 ########### install files ###############
 install(TARGETS kio EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARGS})
-if(NOT KIO_NO_NEPOMUK)
-    install(TARGETS kfilemetadatareader ${INSTALL_TARGETS_DEFAULT_ARGS})
-endif(NOT KIO_NO_NEPOMUK)
-
 install( PROGRAMS useragent.pl proxytype.pl  DESTINATION ${KCONF_UPDATE_INSTALL_DIR} )
 
 
@@ -285,7 +248,6 @@ install( FILES
  kscan.desktop
  kurifilterplugin.desktop
  kfile/kpropertiesdialogplugin.desktop
- kio/kfilewrite.desktop
  kio/kfileitemactionplugin.desktop
  kfile/kiofilemodule.desktop
 DESTINATION  ${SERVICETYPES_INSTALL_DIR} )
@@ -301,23 +263,17 @@ install( FILES
   kio/kdesktopfileactions.h
   kio/kfileitemactions.h
   kio/kfileitemdelegate.h
-  kio/kfilemetainfo.h
-  kio/kfilemetainfoitem.h
   kio/kfileshare.h
-  kio/kfilewriteplugin.h
   kio/kimageio.h
   kio/kmimetypechooser.h
   kio/krun.h
   kio/kscan.h
-  kio/predicateproperties.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
   kfile/kencodingfiledialog.h
   kfile/kfile.h
   kfile/kfiledialog.h
   kfile/kimagefilepreview.h
-  kfile/kfilemetadataconfigurationwidget.h
-  kfile/kfilemetadatawidget.h
   kfile/kopenwithdialog.h
   kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h

@@ -21,7 +21,7 @@
 
 #include "kfilemetainfoitem.h"
 #include "kfilemetainfoitem_p.h"
-#include <config-kio.h>
+#include <config-kde4support.h>
 
 #ifdef HAVE_NEPOMUK
 #include <config-nepomuk.h>

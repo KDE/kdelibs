@@ -48,6 +48,7 @@ kde4support_unit_tests(
   kglobaltest
   klockfiletest
   kurltest
+  kfilemetainfotest
 )
 
 

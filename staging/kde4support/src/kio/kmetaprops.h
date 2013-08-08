@@ -20,7 +20,7 @@
 #ifndef __KMETAPROPS_H__
 #define __KMETAPROPS_H__
 #include <kpropertiesdialog.h>
-
+#include <kde4support_export.h>
 
 class KFileMetaInfoItem;
 
@@ -28,7 +28,7 @@ class KFileMetaInfoItem;
  * 'MetaProps plugin
  * In this plugin you can modify meta information like id3 tags of mp3 files
  */
-class KIO_EXPORT KFileMetaPropsPlugin : public KPropertiesDialogPlugin
+class KDE4SUPPORT_EXPORT KFileMetaPropsPlugin : public KPropertiesDialogPlugin
 {
   Q_OBJECT
 public:

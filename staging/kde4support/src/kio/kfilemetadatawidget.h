@@ -21,7 +21,7 @@
 #ifndef KFILEMETADATAWIDGET_H
 #define KFILEMETADATAWIDGET_H
 
-#include <kio/kio_export.h>
+#include <kde4support_export.h>
 #include <kfileitem.h>
 
 #include <QList>
@@ -39,7 +39,7 @@
  *
  * @since 4.5
  */
-class KIO_EXPORT KFileMetaDataWidget : public QWidget
+class KDE4SUPPORT_EXPORT KFileMetaDataWidget : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(bool readOnly READ isReadOnly WRITE setReadOnly)

@@ -31,7 +31,7 @@ class QUrl;
 typedef QList<KFileMetaInfoItem> KFileMetaInfoItemList;
 
 class KFileMetaInfoGroupPrivate;
-class KIO_EXPORT KFileMetaInfoGroup {
+class KDE4SUPPORT_EXPORT KFileMetaInfoGroup {
 public:
     KFileMetaInfoGroup();
     KFileMetaInfoGroup(const KFileMetaInfoGroup&);
@@ -54,7 +54,7 @@ class KFileMetaInfoPrivate;
  * will be retrieved and stored in the instance. The data can be inspected
  * through KFileMetaInfoItem objects.
  **/
-class KIO_EXPORT KFileMetaInfo {
+class KDE4SUPPORT_EXPORT KFileMetaInfo {
 public:
     /**
      * This is used to specify what a KFileMetaInfo object should read, so
@@ -138,9 +138,9 @@ public:
      * Deprecated
      **/
     QStringList supportedKeys() const;
-    KIO_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& )
+    KDE4SUPPORT_EXPORT friend QDataStream& operator >>(QDataStream& s, KFileMetaInfo& )
 ;
-    KIO_EXPORT friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&);
+    KDE4SUPPORT_EXPORT friend QDataStream& operator <<(QDataStream& s, const KFileMetaInfo&);
     /**
      * Deprecated
      **/

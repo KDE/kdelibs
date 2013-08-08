@@ -1,6 +1,7 @@
 /* This file is part of the KDE libraries
 
    Copyright (c) 2007 Jos van den Oever <jos@vandenoever.info>
+                 2010 Sebastian Trueg <trueg@kde.org>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,39 +18,38 @@
    the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
    Boston, MA 02110-1301, USA.
 */
-#ifndef KFILEWRITEPLUGIN_H
-#define KFILEWRITEPLUGIN_H
+#ifndef KFILEMETAINFOITEM_P_H
+#define KFILEMETAINFOITEM_P_H
 
-#include <kio/kio_export.h>
-#include <QtCore/QVariant>
+#include <config-kde4support.h>
 
-class QUrl;
+#ifndef KDE_NO_DEPRECATED
+#include <predicateproperties.h>
+#else
+#if ! KIO_NO_NEPOMUK
+#include <nepomuk/types/property.h>
+#endif
+#endif
 
-class KIO_EXPORT KFileWritePlugin : public QObject {
-    Q_OBJECT
-    friend class KFileWriterProvider;
+#include <QtCore/QHash>
+#include <QtCore/QSharedData>
+
+class KFileWritePlugin;
+
+class KFileMetaInfoItemPrivate : public QSharedData {
 public:
-    /**
-     * @brief Constructor that initializes the object as a QObject.
-     **/
-    KFileWritePlugin(QObject* parent, const QStringList& args);
-    /**
-     * @brief Destructor
-     **/
-    virtual ~KFileWritePlugin();
-    /**
-     * @brief determine if this plugin can write a value into a particular
-     * resource.
-     **/
-    virtual bool canWrite(const QUrl& file, const QString& key) = 0;
-    /**
-     * @brief Write a set of values into a resource pointed to by @p file.
-     **/
-    virtual bool write(const QUrl& file, const QVariantMap& data) = 0;
-
-private:
-    class Private;
-    Private* const d;
+    KFileMetaInfoItemPrivate() : writer(0) {}
+#ifndef KDE_NO_DEPRECATED
+    PredicateProperties pp;
+#else
+#if ! KIO_NO_NEPOMUK
+    Nepomuk::Types::Property pp;
+#endif
+#endif
+    QVariant value;
+    KFileWritePlugin* writer;
+    bool embedded;
+    bool modified;
 };
 
 #endif

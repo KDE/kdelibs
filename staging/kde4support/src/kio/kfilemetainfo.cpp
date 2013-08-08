@@ -26,6 +26,8 @@
 #include "kfilewriteplugin.h"
 #include "kfilewriteplugin_p.h"
 
+#include "config-kde4support.h"
+
 #if ! KIO_NO_STRIGI
 #include <strigi/bufferedstream.h>
 #include <strigi/analyzerconfiguration.h>
