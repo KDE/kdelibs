@@ -11,9 +11,10 @@ if(NOT HAVE_NEPOMUK)
 endif(NOT HAVE_NEPOMUK)
 
 if(NOT STRIGI_FOUND)
-   set(KIO_NO_STRIGI TRUE)
+    set(KIO_NO_STRIGI TRUE)
 else()
     add_subdirectory( kio/dummyanalyzers )
+    set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY})
 endif(NOT STRIGI_FOUND)
 
 if(NOT KIO_NO_NEPOMUK)
@@ -194,6 +195,7 @@ target_link_libraries(KDE4Support
    KConfigWidgets
    kdeui
    kio
+   ${KIO_EXTRA_LIBS}
    KI18n
    KInterProcessWindowing
    ${X11_LIBRARIES}
