@@ -22,7 +22,7 @@
 // Local
 #include <dictionarycombobox.h>
 #include <highlighter.h>
-#include <texteditinstaller.h>
+#include <spellcheckdecorator.h>
 
 // Qt
 #include <QApplication>
@@ -30,11 +30,11 @@
 #include <QTextEdit>
 #include <QVBoxLayout>
 
-class MailTextEditInstaller : public Sonnet::TextEditInstaller
+class MailSpellCheckDecorator : public Sonnet::SpellCheckDecorator
 {
 public:
-    MailTextEditInstaller(QTextEdit *edit)
-    : Sonnet::TextEditInstaller(edit)
+    MailSpellCheckDecorator(QTextEdit *edit)
+    : Sonnet::SpellCheckDecorator(edit)
     {}
 
 protected:
@@ -59,7 +59,7 @@ int main( int argc, char** argv )
         "be checkin for misstakes. Whih, Enviroment, govermant. Whih."
         );
 
-    Sonnet::TextEditInstaller *installer = new Sonnet::TextEditInstaller(textEdit);
+    Sonnet::SpellCheckDecorator *installer = new Sonnet::SpellCheckDecorator(textEdit);
     installer->highlighter()->setCurrentLanguage("en");
     QObject::connect(comboBox, SIGNAL(dictionaryChanged(QString)), installer->highlighter(), SLOT(setCurrentLanguage(QString)));
 
@@ -70,7 +70,7 @@ int main( int argc, char** argv )
         "> Hello how aree you?\n"
         "I am ffine thanks");
 
-    installer = new MailTextEditInstaller(mailTextEdit);
+    installer = new MailSpellCheckDecorator(mailTextEdit);
     installer->highlighter()->setCurrentLanguage("en");
     QObject::connect(comboBox, SIGNAL(dictionaryChanged(QString)), installer->highlighter(), SLOT(setCurrentLanguage(QString)));
 

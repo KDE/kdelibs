@@ -1,5 +1,5 @@
 /*
- * texteditinstaller.h
+ * spellcheckdecorator.h
  *
  * Copyright (C)  2013  Aurélien Gâteau <agateau@kde.org>
  *
@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#include <texteditinstaller.h>
+#include <spellcheckdecorator.h>
 
 // Local
 #include <highlighter.h>
@@ -31,10 +31,10 @@
 namespace Sonnet
 {
 
-class TextEditInstaller::Private
+class SpellCheckDecorator::Private
 {
 public:
-    Private(TextEditInstaller *installer, QTextEdit *textEdit)
+    Private(SpellCheckDecorator *installer, QTextEdit *textEdit)
     : q(installer)
     , m_textEdit(textEdit)
     , m_highlighter(new Highlighter(textEdit))
@@ -48,12 +48,12 @@ public:
     bool onContextMenuEvent(QContextMenuEvent *event);
     void execSuggestionMenu(const QPoint &pos, const QString &word, const QTextCursor &cursor);
 
-    TextEditInstaller *q;
+    SpellCheckDecorator *q;
     QTextEdit *m_textEdit;
     Highlighter *m_highlighter;
 };
 
-bool TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
+bool SpellCheckDecorator::Private::onContextMenuEvent(QContextMenuEvent *event)
 {
     // Obtain the cursor at the mouse position and the current cursor
     QTextCursor cursorAtMouse = m_textEdit->cursorForPosition(event->pos());
@@ -120,7 +120,7 @@ bool TextEditInstaller::Private::onContextMenuEvent(QContextMenuEvent *event)
     return true;
 }
 
-void TextEditInstaller::Private::execSuggestionMenu(const QPoint &pos, const QString &selectedWord, const QTextCursor &_cursor)
+void SpellCheckDecorator::Private::execSuggestionMenu(const QPoint &pos, const QString &selectedWord, const QTextCursor &_cursor)
 {
     QTextCursor cursor = _cursor;
     QMenu menu; //don't use KMenu here we don't want auto management accelerator
@@ -167,23 +167,23 @@ void TextEditInstaller::Private::execSuggestionMenu(const QPoint &pos, const QSt
 }
 
 
-TextEditInstaller::TextEditInstaller(QTextEdit *textEdit)
+SpellCheckDecorator::SpellCheckDecorator(QTextEdit *textEdit)
 : QObject(textEdit)
 , d(new Private(this, textEdit))
 {
 }
 
-TextEditInstaller::~TextEditInstaller()
+SpellCheckDecorator::~SpellCheckDecorator()
 {
     delete d;
 }
 
-Highlighter *TextEditInstaller::highlighter() const
+Highlighter *SpellCheckDecorator::highlighter() const
 {
     return d->m_highlighter;
 }
 
-bool TextEditInstaller::eventFilter(QObject * /*obj*/, QEvent *event)
+bool SpellCheckDecorator::eventFilter(QObject * /*obj*/, QEvent *event)
 {
     if (event->type() == QEvent::ContextMenu) {
         return d->onContextMenuEvent(static_cast<QContextMenuEvent *>(event));
@@ -191,11 +191,11 @@ bool TextEditInstaller::eventFilter(QObject * /*obj*/, QEvent *event)
     return false;
 }
 
-bool TextEditInstaller::shouldBlockBeSpellChecked(const QString &textBlock) const
+bool SpellCheckDecorator::shouldBlockBeSpellChecked(const QString &textBlock) const
 {
     return true;
 }
 
 } // namespace
 
-#include <texteditinstaller.moc>
+#include <spellcheckdecorator.moc>

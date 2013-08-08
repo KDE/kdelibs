@@ -1,5 +1,5 @@
 /*
- * texteditinstaller.h
+ * spellcheckdecorator.h
  *
  * Copyright (C)  2013  Aurélien Gâteau <agateau@kde.org>
  *
@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301  USA
  */
-#ifndef TEXTEDITINSTALLER_H
-#define TEXTEDITINSTALLER_H
+#ifndef SPELLCHECKDECORATOR_H
+#define SPELLCHECKDECORATOR_H
 
 #include <QtCore/QObject>
 
@@ -32,12 +32,12 @@ namespace Sonnet
 
 class Highlighter;
 
-class SONNETUI_EXPORT TextEditInstaller : public QObject
+class SONNETUI_EXPORT SpellCheckDecorator : public QObject
 {
     Q_OBJECT
 public:
-    explicit TextEditInstaller(QTextEdit *);
-    ~TextEditInstaller();
+    explicit SpellCheckDecorator(QTextEdit *);
+    ~SpellCheckDecorator();
 
     Highlighter *highlighter() const;
 
@@ -49,9 +49,9 @@ protected:
 private:
     class Private;
     Private *const d;
-    Q_DISABLE_COPY(TextEditInstaller)
+    Q_DISABLE_COPY(SpellCheckDecorator)
 };
 
 }
 
-#endif /* TEXTEDITINSTALLER_H */
+#endif /* SPELLCHECKDECORATOR_H */
