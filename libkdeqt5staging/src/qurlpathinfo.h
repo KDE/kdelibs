@@ -79,8 +79,6 @@ public:
 
     QString localPath(PathFormattingOptions options = None) const;
 
-    bool isParentOfOrEqual(const QUrl &child) const;
-
 private:
     QSharedDataPointer<QUrlPathInfoPrivate> d;
 };

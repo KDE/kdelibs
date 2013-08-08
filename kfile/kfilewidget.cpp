@@ -870,7 +870,7 @@ void KFileWidget::slotOk()
                     }
 
                     // iterate while this item is contained on the top most url
-                    while (!QUrlPathInfo(topMostUrl).isParentOfOrEqual(currUrl)) {
+                    while (!topMostUrl.matches(currUrl, QUrl::StripTrailingSlash) && !topMostUrl.isParentOf(currUrl)) {
                         topMostUrl = KIO::upUrl(topMostUrl);
                     }
                 }

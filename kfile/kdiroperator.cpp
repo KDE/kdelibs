@@ -39,7 +39,6 @@
 #include <QScrollBar>
 #include <QSplitter>
 #include <QWheelEvent>
-#include <qurlpathinfo.h>
 #include <QDebug>
 
 #include <kdirlister.h>
@@ -2501,8 +2500,7 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
         QList<QUrl>::Iterator it = itemsToBeSetAsCurrent.begin();
         while (it != itemsToBeSetAsCurrent.end()) {
             const QUrl url = *it;
-            const QUrlPathInfo urlInfo(url);
-            if (urlInfo.isParentOfOrEqual(item.url())) {
+            if (url.matches(item.url(), QUrl::StripTrailingSlash) || url.isParentOf(item.url())) {
                 const KFileItem _item = dirLister->findByUrl(url);
                 if (!_item.isNull() && _item.isDir()) {
                     const QModelIndex _index = dirModel->indexForItem(_item);

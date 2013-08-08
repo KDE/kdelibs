@@ -989,9 +989,10 @@ public:
    * Checks whether the given URL is parent of this URL.
    * For instance, ftp://host/dir/ is a parent of ftp://host/dir/subdir/subsubdir/.
    * @return true if this url is a parent of @p u (or the same URL as @p u)
-   * @deprecated since 5.0, use QUrlPathInfo::isParentOfOrEqual
+   * @deprecated since 5.0. url.isParentOf(child) is now
+   *   url.isParentOf(child) || url.matches(child, QUrl::StripTrailingSlash);
    */
-  bool isParentOf( const KUrl& u ) const;
+  bool isParentOf( const KUrl& child ) const;
 
   /**
    * Splits nested URLs like file:///home/weis/kde.tgz#gzip:/#tar:/kdebase

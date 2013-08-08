@@ -202,12 +202,3 @@ QString QUrlPathInfo::localPath(PathFormattingOptions options) const
     return path;
 }
 
-/*!
-    Return true if this URL is a parent of \a child, or if they are equal.
-    Trailing slashes are ignored.
-*/
-bool QUrlPathInfo::isParentOfOrEqual(const QUrl &child) const
-{
-    return d->url.isParentOf(child) || d->url.matches(child, QUrl::StripTrailingSlash);
-}
-
