@@ -18,68 +18,109 @@
  */
 
 #include "devicenotifier.h"
+#include "devicenotifier_p.h"
 
 #include <QDebug>
 
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
 
+SolidDeviceNotifierPrivate::SolidDeviceNotifierPrivate(SolidDeviceNotifier * parent)
+    : q(parent)
+    , notifier(Solid::DeviceNotifier::instance())
+    , initialized(false)
+{
+    connect(notifier, &Solid::DeviceNotifier::deviceAdded,
+            this,     &SolidDeviceNotifierPrivate::addDevice);
+    connect(notifier, &Solid::DeviceNotifier::deviceRemoved,
+            this,     &SolidDeviceNotifierPrivate::removeDevice);
+}
+
+void SolidDeviceNotifierPrivate::addDevice(const QString & udi)
+{
+    if (!initialized) return;
+
+    if (predicate.matches(Solid::Device(udi))) {
+        devices << udi;
+        emit q->deviceAdded(udi);
+        emitChange();
+    }
+}
+
+void SolidDeviceNotifierPrivate::removeDevice(const QString & udi)
+{
+    if (!initialized) return;
+
+    if (devices.contains(udi)) {
+        devices.removeAll(udi);
+        emit q->deviceRemoved(udi);
+        emitChange();
+    }
+}
+
+void SolidDeviceNotifierPrivate::emitChange() const
+{
+    emit q->countChanged(devices.count());
+    emit q->devicesChanged(devices);
+}
+
+void SolidDeviceNotifierPrivate::initialize()
+{
+    if (initialized) return;
+
+    qDebug() << "This is the query to be used: " << query;
+    predicate = Solid::Predicate::fromString(query);
+    qDebug() << "Predicate: " << predicate.toString();
+
+    Q_FOREACH(const Solid::Device & device, Solid::Device::listFromQuery(predicate)) {
+        devices << device.udi();
+    }
+}
+
+void SolidDeviceNotifierPrivate::reset()
+{
+    if (!initialized) return;
+
+    initialized = false;
+    devices.clear();
+}
+
 SolidDeviceNotifier::SolidDeviceNotifier(QObject * parent)
-    : QObject(parent)
-    , m_notifier(Solid::DeviceNotifier::instance())
-    , m_predicate(Solid::Predicate::fromString(query))
+    : QObject(parent), d(new SolidDeviceNotifierPrivate(this))
 {
 }
 
-void SolidDeviceNotifier::addDevice(const QString & udi)
+SolidDeviceNotifier::~SolidDeviceNotifier()
 {
-    if (m_predicate.matches(Solid::Device(udi))) {
-        m_devices << udi;
-        emit deviceAdded(udi);
-        emitChange();
-    }
-}
-
-void SolidDeviceNotifier::removeDevice(const QString & udi)
-{
-    if (m_devices.contains(udi)) {
-        m_devices.removeAll(udi);
-        emit deviceRemoved(udi);
-        emitChange();
-    }
+    delete d;
 }
 
 int SolidDeviceNotifier::count() const
 {
-    return m_devices.count();
+    d->initialize();
+    return d->devices.count();
 }
 
 QStringList SolidDeviceNotifier::devices() const
 {
-    return m_devices;
-}
-
-void SolidDeviceNotifier::emitChange() const
-{
-    emit countChanged(m_devices.count());
-    emit devicesChanged(m_devices);
-}
-
-void SolidDeviceNotifier::initialize()
-{
-
+    d->initialize();
+    return d->devices;
 }
 
 QString SolidDeviceNotifier::query() const
 {
-    return m_query;
+    return d->query;
 }
 
 void SolidDeviceNotifier::setQuery(const QString & query)
 {
+    if (d->query == query) return;
 
+    d->query = query;
+    d->reset();
+
+    emit queryChanged(query);
 }
-
 
 #include "devicenotifier.moc"
 

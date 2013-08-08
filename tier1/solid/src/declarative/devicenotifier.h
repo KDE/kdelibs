@@ -27,6 +27,8 @@ namespace Solid {
     class DeviceNotifier;
 }
 
+class SolidDeviceNotifierPrivate;
+
 /**
  * A small interface class that allows the
  * indirect use of the DeviceNotifier singleton
@@ -34,14 +36,14 @@ namespace Solid {
  */
 class SolidDeviceNotifier: public QObject {
     Q_OBJECT
+
+    Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
     Q_PROPERTY(QStringList devices READ devices NOTIFY devicesChanged)
-    Q_PROPERTY(QString query READ query WRITE setQuery NOTFIY queryChanged)
 
 public:
-    explicit SolidDeviceNotifier(
-            const QString & query,
-            QObject * parent = Q_NULLPTR);
+    explicit SolidDeviceNotifier(QObject * parent = Q_NULLPTR);
+    ~SolidDeviceNotifier();
 
 Q_SIGNALS:
     void deviceAdded(const QString & udi) const;
@@ -51,26 +53,15 @@ Q_SIGNALS:
     void devicesChanged(const QStringList & devices) const;
     void queryChanged(const QString & query) const;
 
-public:
-    Q_INVOKABLE int count() const;
-    Q_INVOKABLE QStringList devices() const;
-    Q_INVOKABLE QString query() const;
-
-private Q_SLOTS:
-    void addDevice(const QString & udi);
-    void removeDevice(const QString & udi);
+public Q_SLOTS:
+    int count() const;
+    QStringList devices() const;
+    QString query() const;
     void setQuery(const QString & query);
 
 private:
-    void emitChange() const;
-
-    void initQuery();
-
-    Solid::DeviceNotifier * m_notifier;
-    Solid::Predicate m_predicate;
-    QStringList m_devices;
-    bool m_initialized;
-
+    friend class SolidDeviceNotifierPrivate;
+    SolidDeviceNotifierPrivate * const d;
 };
 
 #endif
