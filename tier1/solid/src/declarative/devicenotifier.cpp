@@ -22,8 +22,10 @@
 
 #include <QDebug>
 
-#include <solid/devicenotifier.h>
 #include <solid/device.h>
+#include <solid/deviceinterface.h>
+#include <solid/devicenotifier.h>
+#include <solid/genericinterface.h>
 
 SolidDeviceNotifierPrivate::SolidDeviceNotifierPrivate(SolidDeviceNotifier * parent)
     : q(parent)
@@ -141,6 +143,13 @@ void SolidDeviceNotifier::setQuery(const QString & query)
     d->reset();
 
     emit queryChanged(query);
+}
+
+QObject * SolidDeviceNotifier::device(const QString & udi, const QString & _type)
+{
+    Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType(_type);
+
+    return Solid::Device(udi).asDeviceInterface(type);
 }
 
 #include "devicenotifier.moc"

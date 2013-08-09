@@ -38,6 +38,9 @@ void SolidExtensionPlugin::registerTypes(const char * uri) Q_DECL_OVERRIDE
     Q_ASSERT(QLatin1String(uri) == QLatin1String("org.kde.solidx"));
 
     qmlRegisterType<SolidDeviceNotifier> (uri, 1, 0, "Devices");
+
+    // Not really needed.
+    // qmlRegisterUncreatableType<Solid::DeviceInterface> (uri, 1, 0, "DeviceInterface", "DeviceInterface can not be instantiated. Use Devices.device(...) instead.");
 }
 
 #include "solidextensionplugin.moc"

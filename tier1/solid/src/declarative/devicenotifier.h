@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <solid/predicate.h>
+#include <solid/deviceinterface.h>
 
 namespace Solid {
     class DeviceNotifier;
@@ -66,6 +67,8 @@ public Q_SLOTS:
 
     QString query() const;
     void setQuery(const QString & query);
+
+    QObject * device(const QString & udi, const QString & type);
 
 private:
     friend class SolidDeviceNotifierPrivate;
