@@ -30,9 +30,13 @@ namespace Solid {
 class SolidDeviceNotifierPrivate;
 
 /**
- * A small interface class that allows the
- * indirect use of the DeviceNotifier singleton
- * inside of QML
+ * A class that watches the devices known to the solid system.
+ *
+ * It behaves similarly to Solid::DeviceNotifier, but
+ * adds some convenience methods which allow it to
+ * watch only the devices matching a specified query
+ * (formatted for Solid::Predicate).
+ *
  */
 class SolidDeviceNotifier: public QObject {
     Q_OBJECT

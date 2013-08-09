@@ -23,6 +23,7 @@
 #include <QDebug>
 
 #include "devicenotifier.h"
+#include "solid/deviceinterface.h"
 
 SolidExtensionPlugin::SolidExtensionPlugin(QObject * parent)
     : QQmlExtensionPlugin(parent)
@@ -36,10 +37,7 @@ void SolidExtensionPlugin::registerTypes(const char * uri) Q_DECL_OVERRIDE
 
     Q_ASSERT(QLatin1String(uri) == QLatin1String("org.kde.solidx"));
 
-    // qDebug() << "registering Interface and InputDeviceModel";
-    // qmlRegisterType<Interface> (uri, 0, 1, "Interface");
-    // qmlRegisterType<InputDeviceModel> (uri, 0, 1, "InputDeviceModel");
-    qmlRegisterType<SolidDeviceNotifier> (uri, 1, 0, "DeviceNotifier");
+    qmlRegisterType<SolidDeviceNotifier> (uri, 1, 0, "Devices");
 }
 
 #include "solidextensionplugin.moc"
