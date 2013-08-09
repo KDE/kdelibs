@@ -44,6 +44,10 @@ void SolidDeviceNotifierPrivate::addDevice(const QString & udi)
         devices << udi;
         emit q->deviceAdded(udi);
         emitChange();
+
+        if (devices.count() == 1) {
+            emit q->isEmptyChanged(false);
+        }
     }
 }
 
@@ -55,6 +59,10 @@ void SolidDeviceNotifierPrivate::removeDevice(const QString & udi)
         devices.removeAll(udi);
         emit q->deviceRemoved(udi);
         emitChange();
+
+        if (devices.count() == 0) {
+            emit q->isEmptyChanged(true);
+        }
     }
 }
 
@@ -67,14 +75,21 @@ void SolidDeviceNotifierPrivate::emitChange() const
 void SolidDeviceNotifierPrivate::initialize()
 {
     if (initialized) return;
-    initialized = true;
 
     qDebug() << "This is the query to be used: " << query;
     predicate = Solid::Predicate::fromString(query);
-    qDebug() << "Predicate: " << predicate.toString();
+    qDebug() << "Predicate: " << predicate.isValid() << " " << predicate.toString();
+
+    if (!query.isEmpty() && !predicate.isValid()) return;
+
+    initialized = true;
 
     Q_FOREACH(const Solid::Device & device, Solid::Device::listFromQuery(predicate)) {
         devices << device.udi();
+    }
+
+    if (devices.count()) {
+        emit q->isEmptyChanged(false);
     }
 }
 
@@ -93,6 +108,12 @@ SolidDeviceNotifier::SolidDeviceNotifier(QObject * parent)
 SolidDeviceNotifier::~SolidDeviceNotifier()
 {
     delete d;
+}
+
+bool SolidDeviceNotifier::isEmpty() const
+{
+    d->initialize();
+    return d->devices.count() == 0;
 }
 
 int SolidDeviceNotifier::count() const

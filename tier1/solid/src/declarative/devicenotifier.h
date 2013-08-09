@@ -39,6 +39,7 @@ class SolidDeviceNotifier: public QObject {
 
     Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
     Q_PROPERTY(int count READ count NOTIFY countChanged)
+    Q_PROPERTY(bool isEmpty READ isEmpty NOTIFY isEmptyChanged)
     Q_PROPERTY(QStringList devices READ devices NOTIFY devicesChanged)
 
 public:
@@ -52,9 +53,11 @@ Q_SIGNALS:
     void countChanged(int count) const;
     void devicesChanged(const QStringList & devices) const;
     void queryChanged(const QString & query) const;
+    void isEmptyChanged(bool empty) const;
 
 public Q_SLOTS:
     int count() const;
+    bool isEmpty() const;
     QStringList devices() const;
 
     QString query() const;
