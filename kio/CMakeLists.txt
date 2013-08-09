@@ -4,20 +4,7 @@ add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
 if(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
    set(KIO_NO_SOLID TRUE)
-   set(KIO_NO_NEPOMUK TRUE)
 endif(KDE_PLATFORM_FEATURE_BINARY_INCOMPATIBLE_FEATURE_REDUCTION)
-
-if(NOT HAVE_NEPOMUK)
-   set(KIO_NO_NEPOMUK TRUE)
-endif(NOT HAVE_NEPOMUK)
-
-if(NOT STRIGI_FOUND)
-   set(KIO_NO_STRIGI TRUE)
-endif(NOT STRIGI_FOUND)
-
-if(NOT SOPRANO_FOUND)
-   set(KIO_NO_SOPRANO TRUE)
-endif(NOT SOPRANO_FOUND)
 
 find_package(OpenSSL)
 set_package_properties(OpenSSL PROPERTIES DESCRIPTION "Support for secure network communications (SSL and TLS)"
@@ -34,15 +21,6 @@ if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
 
-
-if (NOT KIO_NO_STRIGI)
-   include_directories(${STRIGI_INCLUDE_DIR})
-   set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY})
-endif()
-
-if (NOT KIO_NO_SOPRANO)
-   include_directories(${SOPRANO_INCLUDE_DIR})
-endif (NOT KIO_NO_SOPRANO)
 
 if(NOT KIO_NO_SOLID)
    set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${KDE4_SOLID_LIBS})
@@ -205,12 +183,6 @@ target_include_directories(kio PRIVATE
    ${ZLIB_INCLUDE_DIR}
    ${kiocore_BINARY_DIR}/..   # kio_version.h
 )
-
-if(NOT KIO_NO_NEPOMUK)
-  kde4_add_executable(kfilemetadatareader ${kfilemetadatareaderprocess_SRCS})
-  target_link_libraries(kfilemetadatareader ${KDE4_KIO_LIBS} ${KDE4_NEPOMUK_LIBRARY} nepomukutils ${KCoreAddons_LIBRARIES} KI18n KDE4Support)
-  target_link_libraries(kio ${KDE4_NEPOMUK_LIBRARY} nepomukquery nepomukutils)
-endif(NOT KIO_NO_NEPOMUK)
 
 target_link_libraries(kio KIOWidgets KIOCore ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash)
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES KIOWidgets KIOCore kdeui Qt5::Network Qt5::Xml Qt5::Widgets )
