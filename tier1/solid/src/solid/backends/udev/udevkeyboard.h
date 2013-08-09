@@ -38,6 +38,13 @@ class Keyboard : public DeviceInterface, virtual public Solid::Ifaces::Keyboard
 public:
     Keyboard(UDevDevice *device);
     virtual ~Keyboard();
+
+    virtual QString model() const;
+    virtual QString layout() const;
+
+private:
+    QString m_model;
+    QString m_layout;
 };
 }
 }

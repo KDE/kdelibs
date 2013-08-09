@@ -24,6 +24,8 @@ using namespace Solid::Backends::UDev;
 
 Keyboard::Keyboard(UDevDevice *device)
     : DeviceInterface(device)
+    , m_model(device->property("XKBMODEL").toString())
+    , m_layout(device->property("XKBLAYOUT").toString())
 {
 
 }
@@ -31,5 +33,15 @@ Keyboard::Keyboard(UDevDevice *device)
 Keyboard::~Keyboard()
 {
 
+}
+
+QString Keyboard::model() const
+{
+    return m_model;
+}
+
+QString Keyboard::layout() const
+{
+    return m_layout;
 }
 
