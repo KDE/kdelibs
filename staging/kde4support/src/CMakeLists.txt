@@ -260,6 +260,7 @@ install(FILES
     kio/kmimetyperesolver.h
     kio/kfilemetadataconfigurationwidget.h
     kio/kfilemetadatawidget.h
+    kio/kfilemetainfoitem.h
     kio/kfilemetainfowidget.h
     kio/kfilemetainfo.h
     kio/predicateproperties.h
