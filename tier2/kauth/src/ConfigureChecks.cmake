@@ -150,12 +150,6 @@ elseif(KDE4_AUTH_BACKEND_NAME STREQUAL "POLKITQT-1")
 
     set(KAUTH_BACKEND_LIBS ${POLKITQT-1_CORE_LIBRARY} Qt5::DBus Qt5::Widgets)
 
-    find_package(X11)
-    if (X11_FOUND)
-        # QtGui as well
-        set(KAUTH_BACKEND_LIBS ${KAUTH_BACKEND_LIBS} Qt5::Widgets)
-     endif (X11_FOUND)
-
     # POLKITQT-1_POLICY_FILES_INSTALL_DIR has an absolute pathname, fix that.
     string(REPLACE ${POLKITQT-1_INSTALL_DIR}
         ${CMAKE_INSTALL_PREFIX} _KDE4_AUTH_POLICY_FILES_INSTALL_DIR
