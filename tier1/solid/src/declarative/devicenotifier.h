@@ -56,6 +56,7 @@ Q_SIGNALS:
 public Q_SLOTS:
     int count() const;
     QStringList devices() const;
+
     QString query() const;
     void setQuery(const QString & query);
 

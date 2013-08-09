@@ -67,6 +67,7 @@ void SolidDeviceNotifierPrivate::emitChange() const
 void SolidDeviceNotifierPrivate::initialize()
 {
     if (initialized) return;
+    initialized = true;
 
     qDebug() << "This is the query to be used: " << query;
     predicate = Solid::Predicate::fromString(query);
@@ -80,7 +81,6 @@ void SolidDeviceNotifierPrivate::initialize()
 void SolidDeviceNotifierPrivate::reset()
 {
     if (!initialized) return;
-
     initialized = false;
     devices.clear();
 }
