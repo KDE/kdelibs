@@ -20,23 +20,25 @@
 #ifndef SOLID_DECALARATIVE_DEVICE_NOTIFIER_P_H
 #define SOLID_DECALARATIVE_DEVICE_NOTIFIER_P_H
 
-#include "devicenotifier.h"
+#include "devices.h"
 
 #include <solid/devicenotifier.h>
 #include <solid/device.h>
 
-class SolidDeviceNotifierPrivate: public QObject {
+namespace Solid {
+
+class DevicesPrivate: public QObject {
     Q_OBJECT
 
 public:
-    SolidDeviceNotifierPrivate(SolidDeviceNotifier * parent);
+    DevicesPrivate(Devices * parent);
 
     void emitChange() const;
 
     void initialize();
     void reset();
 
-    SolidDeviceNotifier * const q;
+    Devices * const q;
     Solid::DeviceNotifier * notifier;
     Solid::Predicate predicate;
     QString query;
@@ -48,6 +50,8 @@ public Q_SLOTS:
     void addDevice(const QString & udi);
     void removeDevice(const QString & udi);
 };
+
+} // namespace Solid
 
 #endif
 

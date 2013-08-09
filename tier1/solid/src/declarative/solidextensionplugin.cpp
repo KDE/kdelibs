@@ -22,7 +22,7 @@
 #include <QtQml>
 #include <QDebug>
 
-#include "devicenotifier.h"
+#include "devices.h"
 #include "solid/deviceinterface.h"
 
 SolidExtensionPlugin::SolidExtensionPlugin(QObject * parent)
@@ -33,11 +33,12 @@ SolidExtensionPlugin::SolidExtensionPlugin(QObject * parent)
 
 void SolidExtensionPlugin::registerTypes(const char * uri) Q_DECL_OVERRIDE
 {
+    using namespace Solid;
     qDebug() << "plugin loaded, registering types " << uri;
 
     Q_ASSERT(QLatin1String(uri) == QLatin1String("org.kde.solidx"));
 
-    qmlRegisterType<SolidDeviceNotifier> (uri, 1, 0, "Devices");
+    qmlRegisterType<Devices> (uri, 1, 0, "Devices");
 
     // Not really needed.
     // qmlRegisterUncreatableType<Solid::DeviceInterface> (uri, 1, 0, "DeviceInterface", "DeviceInterface can not be instantiated. Use Devices.device(...) instead.");

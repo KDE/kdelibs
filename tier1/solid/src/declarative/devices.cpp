@@ -17,8 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "devicenotifier.h"
-#include "devicenotifier_p.h"
+#include "devices.h"
+#include "devices_p.h"
 
 #include <QDebug>
 
@@ -27,18 +27,20 @@
 #include <solid/devicenotifier.h>
 #include <solid/genericinterface.h>
 
-SolidDeviceNotifierPrivate::SolidDeviceNotifierPrivate(SolidDeviceNotifier * parent)
+namespace Solid {
+
+DevicesPrivate::DevicesPrivate(Devices * parent)
     : q(parent)
     , notifier(Solid::DeviceNotifier::instance())
     , initialized(false)
 {
     connect(notifier, &Solid::DeviceNotifier::deviceAdded,
-            this,     &SolidDeviceNotifierPrivate::addDevice);
+            this,     &DevicesPrivate::addDevice);
     connect(notifier, &Solid::DeviceNotifier::deviceRemoved,
-            this,     &SolidDeviceNotifierPrivate::removeDevice);
+            this,     &DevicesPrivate::removeDevice);
 }
 
-void SolidDeviceNotifierPrivate::addDevice(const QString & udi)
+void DevicesPrivate::addDevice(const QString & udi)
 {
     if (!initialized) return;
 
@@ -53,7 +55,7 @@ void SolidDeviceNotifierPrivate::addDevice(const QString & udi)
     }
 }
 
-void SolidDeviceNotifierPrivate::removeDevice(const QString & udi)
+void DevicesPrivate::removeDevice(const QString & udi)
 {
     if (!initialized) return;
 
@@ -68,13 +70,13 @@ void SolidDeviceNotifierPrivate::removeDevice(const QString & udi)
     }
 }
 
-void SolidDeviceNotifierPrivate::emitChange() const
+void DevicesPrivate::emitChange() const
 {
     emit q->countChanged(devices.count());
     emit q->devicesChanged(devices);
 }
 
-void SolidDeviceNotifierPrivate::initialize()
+void DevicesPrivate::initialize()
 {
     if (initialized) return;
 
@@ -95,47 +97,47 @@ void SolidDeviceNotifierPrivate::initialize()
     }
 }
 
-void SolidDeviceNotifierPrivate::reset()
+void DevicesPrivate::reset()
 {
     if (!initialized) return;
     initialized = false;
     devices.clear();
 }
 
-SolidDeviceNotifier::SolidDeviceNotifier(QObject * parent)
-    : QObject(parent), d(new SolidDeviceNotifierPrivate(this))
+Devices::Devices(QObject * parent)
+    : QObject(parent), d(new DevicesPrivate(this))
 {
 }
 
-SolidDeviceNotifier::~SolidDeviceNotifier()
+Devices::~Devices()
 {
     delete d;
 }
 
-bool SolidDeviceNotifier::isEmpty() const
+bool Devices::isEmpty() const
 {
     d->initialize();
     return d->devices.count() == 0;
 }
 
-int SolidDeviceNotifier::count() const
+int Devices::count() const
 {
     d->initialize();
     return d->devices.count();
 }
 
-QStringList SolidDeviceNotifier::devices() const
+QStringList Devices::devices() const
 {
     d->initialize();
     return d->devices;
 }
 
-QString SolidDeviceNotifier::query() const
+QString Devices::query() const
 {
     return d->query;
 }
 
-void SolidDeviceNotifier::setQuery(const QString & query)
+void Devices::setQuery(const QString & query)
 {
     if (d->query == query) return;
 
@@ -145,12 +147,14 @@ void SolidDeviceNotifier::setQuery(const QString & query)
     emit queryChanged(query);
 }
 
-QObject * SolidDeviceNotifier::device(const QString & udi, const QString & _type)
+QObject * Devices::device(const QString & udi, const QString & _type)
 {
     Solid::DeviceInterface::Type type = Solid::DeviceInterface::stringToType(_type);
 
     return Solid::Device(udi).asDeviceInterface(type);
 }
 
-#include "devicenotifier.moc"
+} // namespace Solid
+
+#include "devices.moc"
 

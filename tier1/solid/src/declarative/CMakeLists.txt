@@ -1,12 +1,8 @@
 
-set(solid_common_SRCS
-    solidextensionplugin.cpp
-    )
-
 set(solidextensionplugin_SRCS
     ${solid_common_SRCS}
     solidextensionplugin.cpp
-    devicenotifier.cpp
+    devices.cpp
     )
 
 # find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Core Widgets DBus Declarative Quick Qml)

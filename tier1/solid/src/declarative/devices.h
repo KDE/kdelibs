@@ -17,18 +17,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#ifndef SOLID_DECALARATIVE_DEVICE_NOTIFIER_H
-#define SOLID_DECALARATIVE_DEVICE_NOTIFIER_H
+#ifndef SOLID_DECALARATIVE_DEVICES_H
+#define SOLID_DECALARATIVE_DEVICES_H
 
 #include <QObject>
 #include <solid/predicate.h>
 #include <solid/deviceinterface.h>
 
 namespace Solid {
-    class DeviceNotifier;
-}
 
-class SolidDeviceNotifierPrivate;
+class DeviceNotifier;
+class DevicesPrivate;
 
 /**
  * A class that watches the devices known to the solid system.
@@ -39,7 +38,7 @@ class SolidDeviceNotifierPrivate;
  * (formatted for Solid::Predicate).
  *
  */
-class SolidDeviceNotifier: public QObject {
+class Devices: public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QString query READ query WRITE setQuery NOTIFY queryChanged)
@@ -48,8 +47,8 @@ class SolidDeviceNotifier: public QObject {
     Q_PROPERTY(QStringList devices READ devices NOTIFY devicesChanged)
 
 public:
-    explicit SolidDeviceNotifier(QObject * parent = Q_NULLPTR);
-    ~SolidDeviceNotifier();
+    explicit Devices(QObject * parent = Q_NULLPTR);
+    ~Devices();
 
 Q_SIGNALS:
     void deviceAdded(const QString & udi) const;
@@ -71,9 +70,11 @@ public Q_SLOTS:
     QObject * device(const QString & udi, const QString & type);
 
 private:
-    friend class SolidDeviceNotifierPrivate;
-    SolidDeviceNotifierPrivate * const d;
+    friend class DevicesPrivate;
+    DevicesPrivate * const d;
 };
+
+} // namespace Solid
 
 #endif
 
