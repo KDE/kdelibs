@@ -8,6 +8,9 @@ set(kiowidgets_SRCS
   accessmanager.cpp
   accessmanagerreply_p.cpp
   fileundomanager.cpp
+  pastedialog.cpp
+  paste.cpp
+  clipboardupdater.cpp
   kabstractfileitemactionplugin.cpp
   kbuildsycocaprogressdialog.cpp
   sslui.cpp
@@ -56,7 +59,6 @@ target_link_libraries(KIOWidgets
     KCompletion   # KUrlCompletion uses KCompletion
   LINK_PRIVATE
     KIconThemes   # KIconLoader
-    kdeqt5staging # QUrlPathInfo
 )
 
 if(ACL_FOUND)
@@ -74,6 +76,8 @@ install(FILES
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install( FILES
+  pastedialog.h
+  paste.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
  accessmanager.h
@@ -91,6 +95,8 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
+  pastedialog.h
+  paste.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
   kurlpixmapprovider.h

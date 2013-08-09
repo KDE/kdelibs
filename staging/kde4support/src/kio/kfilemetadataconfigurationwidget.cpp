@@ -26,7 +26,7 @@
 #include "knfotranslator_p.h"
 #include <klocalizedstring.h>
 
-#include <config-kio.h>
+#include <config-kde4support.h>
 #if ! KIO_NO_NEPOMUK
     #define DISABLE_NEPOMUK_LEGACY
     #include <resource.h>

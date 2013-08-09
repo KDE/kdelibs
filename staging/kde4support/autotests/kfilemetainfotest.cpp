@@ -18,13 +18,13 @@
 */
 
 #include "kfilemetainfotest.h"
+#include <kiotesthelper.h>
 
 #include <kdirlister.h>
 #include <kfilemetainfo.h>
 #include <qtest.h>
 
-#include "kiotesthelper.h"
-#include <config-kio.h>
+#include <config-kde4support.h>
 
 #include <QtCore/QThread>
 

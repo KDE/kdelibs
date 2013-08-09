@@ -66,17 +66,22 @@ set(kbuildsycoca_KDEINIT_SRCS
    vfolder_menu.cpp
    )
 
-if(KBUILDSYCOCA_NO_KCRASH)
-    set(KBUILDSYCOCA_MAIN_LIBS Qt5::DBus KService kdeqt5staging)
-else(KBUILDSYCOCA_NO_KCRASH)
-    set(KBUILDSYCOCA_MAIN_LIBS Qt5::DBus KCrash KService kdeqt5staging)
-endif(KBUILDSYCOCA_NO_KCRASH)
 
 
 # We need to add a '4' so that kde3 apps running kbuildsycoca don't run the kde4 one.
 kde4_add_kdeinit_executable( kbuildsycoca5 NOGUI ${kbuildsycoca_KDEINIT_SRCS})
 
-target_link_libraries(kdeinit_kbuildsycoca5 ${KBUILDSYCOCA_MAIN_LIBS} ${KCoreAddons_LIBRARIES} KI18n Qt5::Xml KCrash)
+target_link_libraries(kdeinit_kbuildsycoca5
+   ${KCoreAddons_LIBRARIES}
+   KService
+   KI18n
+   Qt5::Xml
+   Qt5::DBus
+   kdeqt5staging # QCommandLineParser
+)
+if(NOT KBUILDSYCOCA_NO_KCRASH)
+   target_link_libraries(kdeinit_kbuildsycoca5 KCrash)
+endif(KBUILDSYCOCA_NO_KCRASH)
 
 install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 

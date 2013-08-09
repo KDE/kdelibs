@@ -119,7 +119,6 @@ LINK_PRIVATE
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
  ${KConfig_CORE_LIBRARY}
  Qt5::Xml                   # davjob.cpp uses QDom
- ${kdeqt5staging_LIBRARIES} # QUrlPathInfo
  ${KDBusAddons_LIBRARIES}   # KDBusConnectionPool
 )
 

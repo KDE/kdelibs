@@ -58,7 +58,6 @@
 #include <QWebFrame>
 #include <QtNetwork/QNetworkReply>
 #include <qtemporaryfile.h>
-#include <qurlpathinfo.h>
 
 
 #define QL1S(x)  QLatin1String(x)

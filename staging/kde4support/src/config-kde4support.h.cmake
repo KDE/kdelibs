@@ -9,3 +9,6 @@
 #cmakedefine01 HAVE_STROPTS_H
 #cmakedefine01 HAVE_FDATASYNC
 #cmakedefine01 HAVE_X11
+
+#cmakedefine01 KIO_NO_NEPOMUK
+#cmakedefine01 KIO_NO_STRIGI

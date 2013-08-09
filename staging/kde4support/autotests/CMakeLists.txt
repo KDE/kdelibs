@@ -15,7 +15,19 @@ macro(KDE4SUPPORT_UNIT_TESTS)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kde4support-${_testname} ${_testname})
-    target_link_libraries(${_testname} KDE4Support Qt5::Test Qt5::Network kdecore ${KCoreAddons_LIBRARIES} KI18n kdeui KCrash KDE4Attic)
+    target_link_libraries(${_testname}
+       KDE4Support
+       Qt5::Test
+       Qt5::Network
+       kdecore
+       ${KCoreAddons_LIBRARIES}
+       KI18n
+       kdeui
+       KCrash
+       KDE4Attic
+       KIOCore
+       KIOWidgets
+    )
     ecm_mark_as_test(${_testname})
   endforeach(_testname)
 endmacro(KDE4SUPPORT_UNIT_TESTS)
@@ -48,6 +60,7 @@ kde4support_unit_tests(
   kglobaltest
   klockfiletest
   kurltest
+  kfilemetainfotest
 )
 
 

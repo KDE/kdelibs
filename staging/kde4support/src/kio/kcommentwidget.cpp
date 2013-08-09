@@ -30,6 +30,7 @@
 #include <QPointer>
 #include <QTextEdit>
 #include <QVBoxLayout>
+#include <ksharedconfig.h>
 
 KCommentWidget::KCommentWidget(QWidget* parent) :
     QWidget(parent),

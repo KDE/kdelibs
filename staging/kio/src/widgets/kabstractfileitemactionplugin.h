@@ -40,11 +40,15 @@ class KFileItemListProperties;
  * two files are selected", or "show a submenu with a variable number of actions",
  * then you have to implement a KAbstractFileItemActionPlugin subclass.
  *
- * As always plugins need to be exported via the K_EXPORT_PLUGIN macro like so:
+ * Create a KPluginFactory instance and register your plugin as return type:
  *
  * \code
  * K_PLUGIN_FACTORY(MyActionPluginFactory, registerPlugin<MyActionPlugin>();)
- * K_EXPORT_PLUGIN(MyActionPluginFactory("myactionplugin"))
+ * \endcode
+ *
+ * You can compile the metadata into the plugin using
+ * \code
+ * K_PLUGIN_FACTORY(MyActionPluginFactory, myactionplugin.json, registerPlugin<MyActionPlugin>();)
  * \endcode
  *
  * A desktop file is necessary to register the plugin with the KDE plugin system:
@@ -64,11 +68,16 @@ class KFileItemListProperties;
  * and the \p MimeType field which specifies for which types of file items
  * the setup() method should be called.
  *
+ *
  * As with all KDE plugins one needs to install the plugin as a module. In
  * cmake terms this looks roughly as follows:
  *
  * \code
- * kde4_add_plugin(myactionplugin myactionplugin.cpp)
+ * desktop_to_json(myactionplugin.desktop) # generate the json file
+ *
+ * add_library(myactionplugin MODULE ${myactionplugin_SRCS} )
+ * set_target_properties(myactionplugin PROPERTIES PREFIX "") # remove lib prefix from binary
+ *
  * target_link_libraries(myactionplugin ${KDE4_KIO_LIBS})
  * install(TARGETS myactionplugin DESTINATION ${PLUGIN_INSTALL_DIR})
  * install(FILES myactionplugin.desktop DESTINATION ${SERVICES_INSTALL_DIR})

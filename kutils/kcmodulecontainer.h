@@ -170,8 +170,7 @@ class KCModuleContainer##factoryName : public KCModuleContainer \
 }; \
 K_PLUGIN_FACTORY(KCModuleContainer##factoryName##Factory, \
          registerPlugin<KCModuleContainer#factoryName>(); \
-                ) \
-K_EXPORT_PLUGIN(KCModuleContainer##factoryName##Factory)
+                )
 
 #endif // KCMODULECONTAINER_H
 

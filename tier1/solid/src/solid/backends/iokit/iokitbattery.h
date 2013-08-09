@@ -43,14 +43,21 @@ public:
 
     bool isPlugged() const;
     Solid::Battery::BatteryType type() const;
+
     int chargePercent() const;
+    int capacity() const;
+
     bool isRechargeable() const;
+    bool isPowerSupply() const;
+
     Solid::Battery::ChargeState chargeState() const;
 
 Q_SIGNALS:
     void chargePercentChanged(int value, const QString &udi);
+    void capacityChanged(int value, const QString &udi);
     void chargeStateChanged(int newState, const QString &udi);
     void plugStateChanged(bool newState, const QString &udi);
+    void powerSupplyStateChanged(bool newState, const QString &udi);
 };
 }
 }

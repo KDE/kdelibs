@@ -30,8 +30,8 @@ public:
     KStartupInfo_UnitTest()
         : m_listener(true, this),
         m_receivedCount(0) {
-        connect(&m_listener, SIGNAL(gotNewStartup(KStartupInfoId, KStartupInfoData)),
-                this, SLOT(slotNewStartup(KStartupInfoId, KStartupInfoData)));
+        connect(&m_listener, SIGNAL(gotNewStartup(KStartupInfoId,KStartupInfoData)),
+                this, SLOT(slotNewStartup(KStartupInfoId,KStartupInfoData)));
     }
 
 protected Q_SLOTS:

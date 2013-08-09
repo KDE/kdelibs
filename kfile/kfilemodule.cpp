@@ -24,7 +24,6 @@
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(KFileModuleFactory, registerPlugin<KFileModule>();)
-K_EXPORT_PLUGIN(KFileModuleFactory("kfilemodule"))
 
 KFileModule::KFileModule(QObject* parent, const QVariantList&)
     : KAbstractFileModule(parent)

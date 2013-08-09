@@ -57,8 +57,8 @@ private Q_SLOTS:
     void testExtractKnownExtension();
     void testSortByComment();
     void testFromThread();
-
     void testThreads();
+    void testProperties();
 private:
     QString m_nonKdeApp;
     QString m_textPlainApp;

@@ -33,7 +33,7 @@ namespace Backends
 {
 namespace UDev
 {
-    int input_str_to_bitmask(const QByteArray &value, long int* bitmask, size_t max_size);
+    int input_str_to_bitmask(const QByteArray &value, long int* bitmask, size_t max_size, int max_bits);
 }
 }
 }

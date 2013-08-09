@@ -60,7 +60,6 @@
 #include <QtCore/QDir>
 #include <QtCore/QTextCodec>
 #include <QStandardPaths>
-#include <qurlpathinfo.h>
 
 // for keygen
 #include <ksslkeygen.h>

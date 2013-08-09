@@ -40,7 +40,6 @@
 #include <kconfiggroup.h>
 
 K_PLUGIN_FACTORY( KFileAudioPreviewFactory, registerPlugin<KFileAudioPreview>(); )
-K_EXPORT_PLUGIN( KFileAudioPreviewFactory )
 
 
 ///////////////////////////////////////////////////////////////////

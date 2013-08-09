@@ -19,7 +19,7 @@
 #ifndef KIO_PASTE_H
 #define KIO_PASTE_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <QtCore/QString>
 class QWidget;
 class QUrl;
@@ -41,7 +41,7 @@ namespace KIO {
    * @return the job that handles the operation
    * @see pasteData()
    */
-  KIO_EXPORT Job *pasteClipboard( const QUrl& destURL, QWidget* widget, bool move = false );
+  KIOWIDGETS_EXPORT Job *pasteClipboard( const QUrl& destURL, QWidget* widget, bool move = false );
 
   /**
    * Pastes the given @p data to the given destination URL.
@@ -57,7 +57,7 @@ namespace KIO {
    * This method is a candidate for disappearing in KDE5, email faure at kde.org if you
    * are using it in your application, then I'll reconsider.
    */
-  KIO_EXPORT void pasteData( const QUrl& destURL, const QByteArray& data, QWidget* widget );
+  KIOWIDGETS_EXPORT void pasteData( const QUrl& destURL, const QByteArray& data, QWidget* widget );
 
 
   /**
@@ -74,7 +74,7 @@ namespace KIO {
    * This method is a candidate for disappearing in KDE5, email faure at kde.org if you
    * are using it in your application, then I'll reconsider.
    */
-  KIO_EXPORT CopyJob *pasteDataAsync( const QUrl& destURL, const QByteArray& data, QWidget *widget, const QString& dialogText = QString() );
+  KIOWIDGETS_EXPORT CopyJob *pasteDataAsync( const QUrl& destURL, const QByteArray& data, QWidget *widget, const QString& dialogText = QString() );
 
 
   /**
@@ -93,7 +93,7 @@ namespace KIO {
    *
    * @see pasteClipboard()
    */
-  KIO_EXPORT Job* pasteMimeData(const QMimeData* data, const QUrl& destUrl,
+  KIOWIDGETS_EXPORT Job* pasteMimeData(const QMimeData* data, const QUrl& destUrl,
                                 const QString& dialogText, QWidget* widget);
 
   /**
@@ -102,7 +102,7 @@ namespace KIO {
    * Note that you'll have to tell the user in case of an error (no data to paste),
    * while pasteMimeSource did that.
    */
-  KIO_DEPRECATED_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const QUrl& destURL,
+  KIOWIDGETS_DEPRECATED_EXPORT CopyJob* pasteMimeSource( const QMimeData* data, const QUrl& destURL,
                                        const QString& dialogText, QWidget* widget,
                                        bool clipboard = false );
 
@@ -112,7 +112,7 @@ namespace KIO {
    * You can use this method to enable/disable the paste action appropriately.
    * @since 4.3
    */
-  KIO_EXPORT bool canPasteMimeSource(const QMimeData* data);
+  KIOWIDGETS_EXPORT bool canPasteMimeSource(const QMimeData* data);
 
   /**
    * Returns the text to use for the Paste action, when the application supports
@@ -120,7 +120,7 @@ namespace KIO {
    * @return a string suitable for KAction::setText, or an empty string if pasting
    * isn't possible right now.
    */
-  KIO_EXPORT QString pasteActionText();
+  KIOWIDGETS_EXPORT QString pasteActionText();
 }
 
 #endif

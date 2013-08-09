@@ -19,8 +19,8 @@
 #include "kremoteencoding.h"
 
 #include <kstringhandler.h>
-#include <qurlpathinfo.h>
 #include <QTextCodec>
+#include <QUrl>
 
 class KRemoteEncodingPrivate
 {

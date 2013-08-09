@@ -41,6 +41,8 @@ class KEMailSettingsPrivate;
   * a sane way, and allowing any program to manage multiple e-mail 
   * profiles effortlessly
   *
+  * The default profile is automatically selected in the constructor.
+  *
   * @author Alex Zepeda zipzippy@sonic.net
   **/
 class KIOCORE_EXPORT KEMailSettings {
@@ -64,15 +66,37 @@ public:
 		OutServer,
 		OutServerLogin,
 		OutServerPass,
-		OutServerType,
-		OutServerCommand,
-		OutServerTLS,
+#ifndef KDE_NO_DEPRECATED
+                /**
+                 * @deprecated since Frameworks 5.0
+                 */
+                OutServerType,
+                /**
+                 * @deprecated since Frameworks 5.0
+                 */
+                OutServerCommand,
+                /**
+                 * @deprecated since Frameworks 5.0
+                 */
+                OutServerTLS,
+#endif
 		InServer,
 		InServerLogin,
 		InServerPass,
-		InServerType,
-		InServerMBXType,
-		InServerTLS
+#ifndef KDE_NO_DEPRECATED
+                /**
+                 * @deprecated since Frameworks 5.0
+                 */
+                InServerType,
+                /**
+                 * @deprecated since Frameworks 5.0
+                 */
+                InServerMBXType,
+                /**
+                 * @deprecated since Frameworks 5.0
+                 */
+                InServerTLS
+#endif
 	};
 
 	/**
@@ -85,7 +109,8 @@ public:
 	};
 
 	/**
-	  * Default constructor, just sets things up.
+	  * Default constructor, just sets things up and sets the default profile
+	  * as the current profile
 	  **/
 	KEMailSettings();
 
@@ -100,11 +125,14 @@ public:
 	  **/
 	QStringList profiles() const;
 
+#ifndef KDE_NO_DEPRECATED
 	/**
-	 * Returns the name of the current profile.
+	  * @deprecated since Frameworks 5.0
+	  * Returns the name of the current profile.
 	  * @returns what profile we're currently using
 	  **/
-	QString currentProfileName() const;
+	KIOCORE_DEPRECATED QString currentProfileName() const;
+#endif
 
 	/**
 	  * Change the current profile.

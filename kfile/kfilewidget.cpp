@@ -67,7 +67,6 @@
 #include <QApplication>
 #include <QPushButton>
 #include <QStandardPaths>
-#include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 
 #include <kshell.h>
@@ -870,7 +869,7 @@ void KFileWidget::slotOk()
                     }
 
                     // iterate while this item is contained on the top most url
-                    while (!QUrlPathInfo(topMostUrl).isParentOfOrEqual(currUrl)) {
+                    while (!topMostUrl.matches(currUrl, QUrl::StripTrailingSlash) && !topMostUrl.isParentOf(currUrl)) {
                         topMostUrl = KIO::upUrl(topMostUrl);
                     }
                 }
@@ -2508,13 +2507,12 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
         // check to see if they have a home item defined, if not show the home button
         QUrl homeURL;
         homeURL.setPath( QDir::homePath() );
-        QUrlPathInfo pathInfo(homeURL);
         KFilePlacesModel *model = static_cast<KFilePlacesModel*>(placesView->model());
         for (int rowIndex = 0 ; rowIndex < model->rowCount() ; rowIndex++) {
             QModelIndex index = model->index(rowIndex, 0);
             QUrl url = model->url(index);
 
-            if ( pathInfo.equals( url, QUrlPathInfo::CompareWithoutTrailingSlash ) ) {
+            if (homeURL.matches(url, QUrl::StripTrailingSlash)) {
                 toolbar->removeAction( ops->actionCollection()->action( "home" ) );
                 break;
             }

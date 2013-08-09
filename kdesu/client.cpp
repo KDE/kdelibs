@@ -34,7 +34,6 @@
 #include <QDebug>
 
 #include <ktoolinvocation.h>
-#include <kde_file.h>
 
 extern int kdesuDebugArea();
 
@@ -95,7 +94,7 @@ int KDEsuClient::connect()
     d->sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (d->sockfd < 0)
     {
-        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "socket():" << perror;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "socket():" << strerror(errno);
         return -1;
     }
     struct sockaddr_un addr;
@@ -104,7 +103,7 @@ int KDEsuClient::connect()
 
     if (::connect(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
-        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "connect():" << perror;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "connect():" << strerror(errno);
         close(d->sockfd); d->sockfd = -1;
         return -1;
     }
@@ -131,8 +130,8 @@ int KDEsuClient::connect()
     // If the socket was somehow not ours an attacker will be able
     // to delete it after we connect but shouldn't be able to
     // create a socket that is owned by us.
-    KDE_struct_stat s;
-    if (KDE_lstat(d->sock, &s)!=0)
+    struct stat s;
+    if (lstat(d->sock, &s)!=0)
     {
         qWarning() << "stat failed (" << d->sock << ")";
         close(d->sockfd); d->sockfd = -1;
@@ -413,10 +412,10 @@ bool KDEsuClient::isServerSGID()
     if (d->daemon.isEmpty())
        return false;
 
-    KDE_struct_stat sbuf;
-    if (KDE::stat(d->daemon, &sbuf) < 0)
+    struct stat sbuf;
+    if (stat(QFile::encodeName(d->daemon).constData(), &sbuf) < 0)
     {
-        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "stat():" << perror;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "stat():" << strerror(errno);
         return false;
     }
     return (sbuf.st_mode & S_ISGID);

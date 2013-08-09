@@ -237,12 +237,12 @@ Settings* Loader::settings() const
 void Loader::loadPlugins()
 {
     const QStringList libPaths = QCoreApplication::libraryPaths();
-    const QLatin1String pathSuffix("/sonnet_clients/");
+    const QLatin1String pathSuffix("/kf5/sonnet_clients/");
     Q_FOREACH(const QString &libPath, libPaths) {
         QDir dir(libPath + pathSuffix);
         if (!dir.exists()) continue;
-        Q_FOREACH(const QString &plugin, dir.entryList(QDir::Files)) {
-            loadPlugin(plugin);
+        Q_FOREACH(const QString &fileName, dir.entryList(QDir::Files)) {
+            loadPlugin(dir.absoluteFilePath(fileName));
         }
     }
 }
@@ -251,7 +251,7 @@ void Loader::loadPlugin(const QString &pluginPath)
 {
     QPluginLoader plugin(pluginPath);
     if (!plugin.load()) { // We do this separately for better error handling
-        qWarning() << "Unable to load plugin" << plugin.errorString();
+        qWarning() << "Unable to load plugin" << pluginPath << "Error:" << plugin.errorString();
         return;
     }
 

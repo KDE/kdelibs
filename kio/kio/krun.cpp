@@ -41,7 +41,6 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <qmimedatabase.h>
-#include <qurlpathinfo.h>
 #include <QDebug>
 
 #include <kiconloader.h>

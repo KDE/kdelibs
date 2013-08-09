@@ -67,7 +67,7 @@ Manager::Manager(QObject *parent)
     }
 
     if (serviceFound) {
-        connect(&m_manager, SIGNAL(InterfacesAdded(QDBusObjectPath, QVariantMapMap)),
+        connect(&m_manager, SIGNAL(InterfacesAdded(QDBusObjectPath,QVariantMapMap)),
                 this, SLOT(slotInterfacesAdded(QDBusObjectPath,QVariantMapMap)));
         connect(&m_manager, SIGNAL(InterfacesRemoved(QDBusObjectPath,QStringList)),
                 this, SLOT(slotInterfacesRemoved(QDBusObjectPath,QStringList)));
@@ -131,12 +131,6 @@ QStringList Manager::devicesFromQuery(const QString& parentUdi, Solid::DeviceInt
 
 QStringList Manager::allDevices()
 {
-    /* Clear the cache, destroy all backends */
-    while (!m_deviceCache.isEmpty()) {
-        QString udi= m_deviceCache.takeFirst();
-        DeviceBackend::destroyBackend(udi);
-    }
-
     introspect("/org/freedesktop/UDisks2/block_devices", true /*checkOptical*/);
     introspect("/org/freedesktop/UDisks2/drives");
 

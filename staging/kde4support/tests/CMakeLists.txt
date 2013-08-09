@@ -30,6 +30,7 @@ kde4support_examples(
   knuminputtest
   kinputdialogtest
   kiopassdlgtest
+  kmfitest
 )
 
 if (X11_FOUND)

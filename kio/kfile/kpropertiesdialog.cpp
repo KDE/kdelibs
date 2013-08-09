@@ -111,8 +111,8 @@ extern "C" {
 #include <kseparator.h>
 #include <ksqueezedtextlabel.h>
 #include <kmimetypetrader.h>
-#include <kmetaprops.h>
-#include <kpreviewprops.h>
+// #include <kmetaprops.h>
+// #include <kpreviewprops.h>
 #include <krun.h>
 #include <kacl.h>
 #include <kconfiggroup.h>
@@ -453,9 +453,11 @@ bool KPropertiesDialog::canDisplay( const KFileItemList& _items )
             KFilePermissionsPropsPlugin::supports( _items ) ||
             KDesktopPropsPlugin::supports( _items ) ||
             KUrlPropsPlugin::supports( _items ) ||
-            KDevicePropsPlugin::supports( _items ) ||
+            KDevicePropsPlugin::supports( _items ) 
+            /* TODO: maybe they should be made actual plugins now? ||
             KFileMetaPropsPlugin::supports( _items ) ||
-            KPreviewPropsPlugin::supports( _items );
+            KPreviewPropsPlugin::supports( _items )
+    */;
 }
 
 void KPropertiesDialog::slotOk()
@@ -543,15 +545,15 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
         q->insertPlugin(p);
     }
 
-    if ( KFileMetaPropsPlugin::supports( m_items ) ) {
-        KPropertiesDialogPlugin *p = new KFileMetaPropsPlugin(q);
-        q->insertPlugin(p);
-    }
-
-    if ( KPreviewPropsPlugin::supports( m_items ) ) {
-        KPropertiesDialogPlugin *p = new KPreviewPropsPlugin(q);
-        q->insertPlugin(p);
-    }
+//     if ( KFileMetaPropsPlugin::supports( m_items ) ) {
+//         KPropertiesDialogPlugin *p = new KFileMetaPropsPlugin(q);
+//         q->insertPlugin(p);
+//     }
+// 
+//     if ( KPreviewPropsPlugin::supports( m_items ) ) {
+//         KPropertiesDialogPlugin *p = new KPreviewPropsPlugin(q);
+//         q->insertPlugin(p);
+//     }
 
     //plugins
 

@@ -42,7 +42,6 @@
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <kxmlguifactory.h>
-#include <qurlpathinfo.h>
 
 #include <stdio.h>
 #include <unistd.h>

@@ -38,7 +38,6 @@
 #include <QtCore/QMutableStringListIterator>
 #include <QCoreApplication>
 #include <QtCore/QRegExp>
-#include <qurlpathinfo.h>
 
 #include <sys/types.h>
 #include <kconfiggroup.h>

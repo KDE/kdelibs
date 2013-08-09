@@ -40,7 +40,6 @@ namespace KSettings
  * K_PLUGIN_FACTORY(MyAppPluginConfigFactory,
  *                  registerPlugin<MyAppPluginConfig>();
  *                  )
- * K_EXPORT_PLUGIN(MyAppConfigFactory("kcm_myapppluginconfig"));
  *
  * MyAppPluginConfig(QWidget * parent, const QVariantList & args)
  *     : PluginPage(MyAppPluginConfigFactory::componentData(), parent, args)

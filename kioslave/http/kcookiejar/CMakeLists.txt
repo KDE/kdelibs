@@ -18,7 +18,13 @@ qt5_add_dbus_interfaces(kcookiejar_SRCS ${kcookieserver_xml})
 
 kde4_add_executable( kcookiejar4 NOGUI ${kcookiejar_SRCS})
 
-target_link_libraries( kcookiejar4 kdeqt5staging Qt5::DBus ${KCoreAddons_LIBRARIES} KI18n ${KWidgetsAddons_LIBRARIES})
+target_link_libraries( kcookiejar4
+   Qt5::DBus
+   ${KCoreAddons_LIBRARIES}
+   KI18n
+   ${KWidgetsAddons_LIBRARIES}
+   kdeqt5staging # QCommandLineParser
+)
 
 install(TARGETS kcookiejar4 ${INSTALL_TARGETS_DEFAULT_ARGS} )
 

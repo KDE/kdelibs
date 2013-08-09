@@ -1370,12 +1370,13 @@ void JobTest::chmodFile()
     QVERIFY(job->exec());
 
     KFileItem newItem(QUrl::fromLocalFile(filePath));
-    QCOMPARE(QString::number(newItem.permissions(), 16), QString::number(newPerm, 16));
+    QCOMPARE(QString::number(newItem.permissions(), 8), QString::number(newPerm, 8));
     QFile::remove(filePath);
 }
 
 void JobTest::chmodFileError()
 {
+    // chown(root) should fail
     const QString filePath = homeTmpDir() + "fileForChmod";
     createTestFile(filePath);
     KFileItem item(QUrl::fromLocalFile(filePath));
@@ -1384,6 +1385,7 @@ void JobTest::chmodFileError()
     QVERIFY(newPerm != origPerm);
     KFileItemList items; items << item;
     KIO::Job* job = KIO::chmod(items, newPerm, S_IWGRP /*TODO: QFile::WriteGroup*/, QString("root"), QString(), false, KIO::HideProgressInfo);
+    // Simulate the user pressing "Skip" in the dialog.
     PredefinedAnswerJobUiDelegate extension;
     extension.m_skipResult = KIO::S_SKIP;
     job->setUiDelegateExtension(&extension);
@@ -1392,7 +1394,8 @@ void JobTest::chmodFileError()
 
     QCOMPARE(extension.m_askSkipCalled, 1);
     KFileItem newItem(QUrl::fromLocalFile(filePath));
-    QCOMPARE(QString::number(newItem.permissions(), 16), QString::number(origPerm, 16));
+    // We skipped, so the chmod didn't happen.
+    QCOMPARE(QString::number(newItem.permissions(), 8), QString::number(origPerm, 8));
     QFile::remove(filePath);
 }
 
