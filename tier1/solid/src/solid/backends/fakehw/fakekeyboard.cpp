@@ -33,3 +33,13 @@ FakeKeyboard::~FakeKeyboard()
 
 }
 
+QString FakeKeyboard::layout() const
+{
+    return QString::fromLatin1("us");
+}
+
+QString FakeKeyboard::model() const
+{
+    return QString::fromLatin1("pc105");
+}
+

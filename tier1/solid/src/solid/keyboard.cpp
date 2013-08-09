@@ -34,3 +34,15 @@ Solid::Keyboard::~Keyboard()
 
 }
 
+QString Solid::Keyboard::layout() const
+{
+    Q_D(const Keyboard);
+    return_SOLID_CALL(Ifaces::Keyboard *, d->backendObject(), QString(), layout());
+}
+
+QString Solid::Keyboard::model() const
+{
+    Q_D(const Keyboard);
+    return_SOLID_CALL(Ifaces::Keyboard *, d->backendObject(), QString(), model());
+}
+

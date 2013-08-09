@@ -42,6 +42,18 @@ namespace Ifaces
          */
         virtual ~Keyboard();
 
+        /**
+         * Retrieves the model of the keyboard (for example 'pc105')
+         * @return the keyboard model
+         */
+        virtual QString model() const = 0;
+
+        /**
+         * Retrieves the layout of the keyboard (for example 'us')
+         * @return the layout of the keyboard
+         */
+        virtual QString layout() const = 0;
+
     };
 }
 }

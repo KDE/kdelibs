@@ -40,6 +40,8 @@ namespace Solid
     class SOLID_EXPORT Keyboard : public DeviceInterface
     {
         Q_OBJECT
+        Q_PROPERTY(QString model READ model)
+        Q_PROPERTY(QString layout READ layout)
         Q_DECLARE_PRIVATE(Keyboard)
         friend class Device;
 
@@ -67,6 +69,18 @@ namespace Solid
          * @see Solid::DeviceInterface::Type
          */
         static Type deviceInterfaceType() { return DeviceInterface::Keyboard; }
+
+        /**
+         * Retrieves the layout of the keyboard (for example 'us')
+         * @return the layout of the keyboard
+         */
+        QString layout() const;
+
+        /**
+         * Retrieves the model of the keyboard (for example 'pc105')
+         * @return the keyboard model
+         */
+        QString model() const;
 
     };
 }

@@ -39,6 +39,11 @@ public:
     explicit FakeKeyboard(FakeDevice *device);
     ~FakeKeyboard();
 
+public Q_SLOTS:
+    QString layout() const;
+    QString model() const;
+
+
 };
 }
 }
