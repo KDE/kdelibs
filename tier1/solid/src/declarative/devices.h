@@ -37,6 +37,33 @@ class DevicesPrivate;
  * watch only the devices matching a specified query
  * (formatted for Solid::Predicate).
  *
+ * It is intended to be used from QML like this:
+ *
+ * <code>
+ *    Solid.Devices {
+ *        id: allDevices
+ *    }
+ *
+ *    Solid.Devices {
+ *        id: networkShares
+ *        query: "IS NetworkShare"
+ *    }
+ *
+ *    Solid.Devices {
+ *        id: mice
+ *        query: "PointingDevice.type == 'Mouse'"
+ *    }
+ *
+ *    Text {
+ *        text: "Total number of devices: " + allDevices.count
+ *    }
+ *
+ *    Text {
+ *        text: "NFS url: " + networkShares.device(
+ *            networkShares.devices[0]
+ *        ).url
+ *    }
+ *
  */
 class Devices: public QObject {
     Q_OBJECT
@@ -51,22 +78,86 @@ public:
     ~Devices();
 
 Q_SIGNALS:
+    /**
+     * Emitted when a new device matching the specified
+     * query arrives
+     * @param udi UDI of the new device
+     */
     void deviceAdded(const QString & udi) const;
+
+    /**
+     * Emitted when a device matching the specified
+     * query disappears
+     * @param udi UDI of the device
+     */
     void deviceRemoved(const QString & udi) const;
 
+    /**
+     * Emitted when the number of devices that
+     * match the specified query has changed
+     * @param count new device count
+     */
     void countChanged(int count) const;
+
+    /**
+     * Emitted when the list of devices that
+     * match the specified query has changed
+     * @param devices list of UDIs
+     */
     void devicesChanged(const QStringList & devices) const;
+
+    /**
+     * Emitted when the query has changed
+     * @param query new query
+     */
     void queryChanged(const QString & query) const;
+
+    /**
+     * Emitted when the isEmpty property changes
+     * @param empty is the device list empty
+     */
     void isEmptyChanged(bool empty) const;
 
 public Q_SLOTS:
+    /**
+     * Retrieves the number of the devices that
+     * match the specified query
+     * @return device count
+     */
     int count() const;
+
+    /**
+     * Retrieves whether there are devices matching
+     * the specified query
+     * @return true if there are no matching devices
+     */
     bool isEmpty() const;
+
+    /**
+     * Retrieves the list of UDIs of the devices that
+     * match the specified query
+     */
     QStringList devices() const;
 
+    /**
+     * Query to check the devices against. It needs
+     * to be formatted for Solid::Predicate.
+     * @see Solid::Predicate
+     */
     QString query() const;
+
+    /**
+     * Sets the query to filter the devices.
+     * @param query new query
+     */
     void setQuery(const QString & query);
 
+    /**
+     * Retrieves an interface object to the specified device
+     * @param udi udi of the desired device
+     * @param type how to interpret the device
+     * @see Solid::Device::asDeviceInterface
+     */
     QObject * device(const QString & udi, const QString & type);
 
 private:
