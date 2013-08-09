@@ -25,6 +25,9 @@
 #define QT_NO_CAST_FROM_ASCII
 
 #include "file.h"
+
+#include <config-kioslave-file.h>
+
 #include <QDirIterator>
 #include <qplatformdefs.h>
 

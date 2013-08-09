@@ -40,7 +40,6 @@
 
 #include <kconfig.h>
 #include <QDebug>
-#include <kde_file.h>
 #include <klibrary.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
@@ -327,8 +326,8 @@ KLauncher::slotKDEInitData(int)
    if (result == -1)
    {
       // qDebug() << "Exiting on read_socket errno:" << errno;
-      KDE_signal( SIGHUP, SIG_IGN);
-      KDE_signal( SIGTERM, SIG_IGN);
+      signal(SIGHUP, SIG_IGN);
+      signal(SIGTERM, SIG_IGN);
       destruct(); // Exit!
    }
    requestData.resize(request_header.arg_length);

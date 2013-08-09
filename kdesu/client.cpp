@@ -34,7 +34,6 @@
 #include <QDebug>
 
 #include <ktoolinvocation.h>
-#include <kde_file.h>
 
 extern int kdesuDebugArea();
 
@@ -50,7 +49,7 @@ public:
 
 #ifndef SUN_LEN
 #define SUN_LEN(ptr) ((socklen_t) (((struct sockaddr_un *) 0)->sun_path) \
-	             + strlen ((ptr)->sun_path))
+                     + strlen ((ptr)->sun_path))
 #endif
 
 KDEsuClient::KDEsuClient()
@@ -78,25 +77,25 @@ KDEsuClient::KDEsuClient()
 KDEsuClient::~KDEsuClient()
 {
     if (d->sockfd >= 0)
-	close(d->sockfd);
+        close(d->sockfd);
     delete d;
 }
 
 int KDEsuClient::connect()
 {
     if (d->sockfd >= 0)
-	close(d->sockfd);
+        close(d->sockfd);
     if (access(d->sock, R_OK|W_OK))
     {
-	d->sockfd = -1;
-	return -1;
+        d->sockfd = -1;
+        return -1;
     }
 
     d->sockfd = socket(PF_UNIX, SOCK_STREAM, 0);
     if (d->sockfd < 0)
     {
-	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "socket():" << perror;
-	return -1;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "socket():" << strerror(errno);
+        return -1;
     }
     struct sockaddr_un addr;
     addr.sun_family = AF_UNIX;
@@ -104,9 +103,9 @@ int KDEsuClient::connect()
 
     if (::connect(d->sockfd, (struct sockaddr *) &addr, SUN_LEN(&addr)) < 0)
     {
-        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "connect():" << perror;
-	close(d->sockfd); d->sockfd = -1;
-	return -1;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "connect():" << strerror(errno);
+        close(d->sockfd); d->sockfd = -1;
+        return -1;
     }
 
 #if !defined(SO_PEERCRED) || ! HAVE_STRUCT_UCRED
@@ -131,24 +130,24 @@ int KDEsuClient::connect()
     // If the socket was somehow not ours an attacker will be able
     // to delete it after we connect but shouldn't be able to
     // create a socket that is owned by us.
-    KDE_struct_stat s;
-    if (KDE_lstat(d->sock, &s)!=0)
+    struct stat s;
+    if (lstat(d->sock, &s)!=0)
     {
         qWarning() << "stat failed (" << d->sock << ")";
-	close(d->sockfd); d->sockfd = -1;
-	return -1;
+        close(d->sockfd); d->sockfd = -1;
+        return -1;
     }
     if (s.st_uid != getuid())
     {
         qWarning() << "socket not owned by me! socket uid =" << s.st_uid;
-	close(d->sockfd); d->sockfd = -1;
-	return -1;
+        close(d->sockfd); d->sockfd = -1;
+        return -1;
     }
     if (!S_ISSOCK(s.st_mode))
     {
         qWarning() << "socket is not a socket (" << d->sock << ")";
-	close(d->sockfd); d->sockfd = -1;
-	return -1;
+        close(d->sockfd); d->sockfd = -1;
+        return -1;
     }
 # endif
 #else
@@ -194,26 +193,26 @@ QByteArray KDEsuClient::escape(const QByteArray &str)
 int KDEsuClient::command(const QByteArray &cmd, QByteArray *result)
 {
     if (d->sockfd < 0)
-	return -1;
+        return -1;
 
     if (send(d->sockfd, cmd, cmd.length(), 0) != (int) cmd.length())
-	return -1;
+        return -1;
 
     char buf[1024];
     int nbytes = recv(d->sockfd, buf, 1023, 0);
     if (nbytes <= 0)
     {
-	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "no reply from daemon.";
-	return -1;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "no reply from daemon.";
+        return -1;
     }
     buf[nbytes] = '\000';
 
     QByteArray reply = buf;
     if (reply.left(2) != "OK")
-	return -1;
+        return -1;
 
     if (result)
-	*result = reply.mid(3, reply.length()-4);
+        *result = reply.mid(3, reply.length()-4);
     return 0;
 }
 
@@ -413,11 +412,11 @@ bool KDEsuClient::isServerSGID()
     if (d->daemon.isEmpty())
        return false;
 
-    KDE_struct_stat sbuf;
-    if (KDE::stat(d->daemon, &sbuf) < 0)
+    struct stat sbuf;
+    if (stat(QFile::encodeName(d->daemon).constData(), &sbuf) < 0)
     {
-	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "stat():" << perror;
-	return false;
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "stat():" << strerror(errno);
+        return false;
     }
     return (sbuf.st_mode & S_ISGID);
 }
@@ -425,12 +424,12 @@ bool KDEsuClient::isServerSGID()
 int KDEsuClient::startServer()
 {
     if (d->daemon.isEmpty())
-       d->daemon = findDaemon();
+        d->daemon = findDaemon();
     if (d->daemon.isEmpty())
-       return -1;
+        return -1;
 
     if (!isServerSGID()) {
-	qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "kdesud not setgid!";
+        qWarning() << "[" << __FILE__ << ":" << __LINE__ << "] " << "kdesud not setgid!";
     }
 
     // kdesud only forks to the background after it is accepting

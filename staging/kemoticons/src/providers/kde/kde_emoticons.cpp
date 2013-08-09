@@ -28,7 +28,6 @@
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(KdeEmoticonsFactory, registerPlugin<KdeEmoticons>();)
-K_EXPORT_PLUGIN(KdeEmoticonsFactory("KdeEmoticons"))
 
 KdeEmoticons::KdeEmoticons(QObject *parent, const QVariantList &args)
         : KEmoticonsProvider(parent)
@@ -200,5 +199,7 @@ void KdeEmoticons::createNew()
     emoStream << doc.toString(4);
     fp.close();
 }
+
+#include "kde_emoticons.moc"
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

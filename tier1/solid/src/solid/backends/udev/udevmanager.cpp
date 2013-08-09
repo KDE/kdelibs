@@ -38,11 +38,14 @@ public:
     Private();
     ~Private();
 
-    bool isOfInterest(const UdevQt::Device &device);
+
+    bool isOfInterest(const QString &udi, const UdevQt::Device &device);
+    bool checkOfInterest(const UdevQt::Device &device);
     bool isPowerBubtton(const UdevQt::Device &device);
     bool isLidBubtton(const UdevQt::Device &device);
 
     UdevQt::Client *m_client;
+    QStringList m_devicesOfInterest;
     QSet<Solid::DeviceInterface::Type> m_supportedInterfaces;
 };
 
@@ -65,7 +68,21 @@ UDevManager::Private::~Private()
     delete m_client;
 }
 
-bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
+bool UDevManager::Private::isOfInterest(const QString &udi, const UdevQt::Device &device)
+{
+    if (m_devicesOfInterest.contains(udi)) {
+        return true;
+    }
+
+    bool isOfInterest = checkOfInterest(device);
+    if (isOfInterest) {
+        m_devicesOfInterest.append(udi);
+    }
+
+    return isOfInterest;
+}
+
+bool UDevManager::Private::checkOfInterest(const UdevQt::Device &device)
 {
 #ifdef UDEV_DETAILED_OUTPUT
     qDebug() << "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<";
@@ -126,7 +143,7 @@ bool UDevManager::Private::isOfInterest(const UdevQt::Device &device)
 bool UDevManager::Private::isLidBubtton(const UdevQt::Device& device)
 {
     long bitmask[NBITS(SW_MAX)];
-    int nbits = input_str_to_bitmask(device.deviceProperty("SW").toByteArray(), bitmask, sizeof(bitmask));
+    int nbits = input_str_to_bitmask(device.deviceProperty("SW").toByteArray(), bitmask, sizeof(bitmask), NBITS(SW_MAX));
     if (nbits == 1) {
         if (test_bit (SW_LID, bitmask)) {
 //             qDebug() << "Lid button detected";
@@ -140,7 +157,7 @@ bool UDevManager::Private::isLidBubtton(const UdevQt::Device& device)
 bool UDevManager::Private::isPowerBubtton(const UdevQt::Device& device)
 {
     long bitmask[NBITS(KEY_MAX)];
-    int nbits = input_str_to_bitmask(device.deviceProperty("KEY").toByteArray(), bitmask, sizeof(bitmask));
+    int nbits = input_str_to_bitmask(device.deviceProperty("KEY").toByteArray(), bitmask, sizeof(bitmask), NBITS(KEY_MAX));
     if (nbits == 1) {
         if (test_bit (KEY_POWER, bitmask)) {
 //             qDebug() << "Power button detected";
@@ -194,7 +211,7 @@ QStringList UDevManager::allDevices()
     QStringList res;
     const UdevQt::DeviceList deviceList = d->m_client->allDevices();
     Q_FOREACH (const UdevQt::Device &device, deviceList) {
-        if (d->isOfInterest(device)) {
+        if (d->isOfInterest(udiPrefix() + device.sysfsPath(), device)) {
             res << udiPrefix() + device.sysfsPath();
         }
     }
@@ -240,24 +257,28 @@ QObject *UDevManager::createDevice(const QString &udi_)
 
         return device;
     }
+
     const QString udi = udi_.right(udi_.size() - udiPrefix().size());
     UdevQt::Device device = d->m_client->deviceBySysfsPath(udi);
-    if (d->isOfInterest(device) || QFile::exists(udi)) {
+
+    if (d->isOfInterest(udi_, device) || QFile::exists(udi)) {
         return new UDevDevice(device);
     }
+
     return 0;
 }
 
 void UDevManager::slotDeviceAdded(const UdevQt::Device &device)
 {
-    if (d->isOfInterest(device)) {
+    if (d->isOfInterest(udiPrefix() + device.sysfsPath(), device)) {
         emit deviceAdded(udiPrefix() + device.sysfsPath());
     }
 }
 
 void UDevManager::slotDeviceRemoved(const UdevQt::Device &device)
 {
-    if (d->isOfInterest(device)) {
+    if (d->isOfInterest(udiPrefix() + device.sysfsPath(), device)) {
         emit deviceRemoved(udiPrefix() + device.sysfsPath());
+        d->m_devicesOfInterest.removeAll(udiPrefix() + device.sysfsPath());
     }
 }

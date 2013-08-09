@@ -68,16 +68,17 @@ Q_EXTERN_C KSERVICE_EXPORT const quint32 kde_plugin_version = version;
  * Take a look at the documentation of Q_EXPORT_PLUGIN2 for some details.
  */
 
-#pragma message("K_EXPORT_PLUGIN is defined as a hack here, for compat. Port to new plugin system (QT_PLUGIN_METADATA) instead.")
-
 #if defined (Q_OS_WIN32) && defined(Q_CC_BOR)
 #define Q_STANDARD_CALL __stdcall
 #else
 #define Q_STANDARD_CALL
 
+class KSERVICE_DEPRECATED_EXPORT K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING
+{
+};
+
 #define K_EXPORT_PLUGIN(factory) \
-            Q_EXTERN_C Q_DECL_EXPORT QT_PREPEND_NAMESPACE(QObject) * Q_STANDARD_CALL qt_plugin_instance() \
-            Q_PLUGIN_INSTANCE(factory) \
+            K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING dummy; \
             K_PLUGIN_VERIFICATION_DATA
 
 #endif

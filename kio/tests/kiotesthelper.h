@@ -22,8 +22,8 @@
 #include <QDebug>
 #include <QtCore/qglobal.h>
 #include <qstandardpaths.h>
+#include <qplatformdefs.h>
 #include <QDir>
-#include <kde_file.h>
 #ifdef Q_OS_UNIX
 #include <utime.h>
 #else
@@ -79,8 +79,8 @@ static void createTestSymlink( const QString& path, const QByteArray& target = "
     bool ok = symlink( target.constData(), QFile::encodeName( path ) ) == 0; // broken symlink
     if ( !ok )
         qFatal("couldn't create symlink: %s", strerror(errno));
-    KDE_struct_stat buf;
-    QVERIFY( KDE_lstat( QFile::encodeName( path ), &buf ) == 0 );
+    QT_STATBUF buf;
+    QVERIFY( QT_LSTAT( QFile::encodeName( path ), &buf ) == 0 );
     QVERIFY( S_ISLNK( buf.st_mode ) );
     //qDebug( "symlink %s created", qPrintable( path ) );
     QVERIFY( QFileInfo( path ).isSymLink() );

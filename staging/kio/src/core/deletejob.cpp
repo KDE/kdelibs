@@ -33,7 +33,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
 #include <QPointer>
-#include <qurlpathinfo.h>
 
 #include "job_p.h"
 
@@ -180,7 +179,7 @@ void DeleteJobPrivate::slotEntries(KIO::Job* job, const UDSEntryList& list)
                 url = QUrl(urlStr);
             else {
                 url = static_cast<SimpleJob *>(job)->url(); // assumed to be a dir
-                url = QUrlPathInfo::addPathToUrl(url, displayName);
+                url.setPath(url.path() + '/' + displayName);
             }
 
             //qDebug() << displayName << "(" << url << ")";
@@ -476,12 +475,16 @@ DeleteJob *KIO::del(const QUrl& src, JobFlags flags)
 {
     QList<QUrl> srcList;
     srcList.append( src );
-    return DeleteJobPrivate::newJob(srcList, flags);
+    DeleteJob* job = DeleteJobPrivate::newJob(srcList, flags);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
+    return job;
 }
 
 DeleteJob *KIO::del( const QList<QUrl>& src, JobFlags flags )
 {
-    return DeleteJobPrivate::newJob(src, flags);
+    DeleteJob* job = DeleteJobPrivate::newJob(src, flags);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
+    return job;
 }
 
 #include "moc_deletejob.cpp"

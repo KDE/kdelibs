@@ -24,7 +24,6 @@
 #include <QTemporaryFile>
 #include <QtCore/QProcess>
 #include <QUrlQuery>
-#include <qurlpathinfo.h>
 
 #include "qmimedatabase.h"
 #include "karchive.h"

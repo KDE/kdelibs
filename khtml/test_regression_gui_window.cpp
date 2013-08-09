@@ -30,7 +30,6 @@
 #include <QtCore/QTextStream>
 #include <QFileDialog>
 #include <QMainWindow>
-#include <qurlpathinfo.h>
 
 #include <kiconloader.h>
 #include <kmessagebox.h>
@@ -225,8 +224,9 @@ void TestRegressionWindow::initTestsDirectory()
 		grp.writePathEntry("TestsDirectory", m_testsUrl.path());
 
 		// Start listing directory...
-		QUrlPathInfo listUrl(m_testsUrl); listUrl.addPath("tests");
-		KIO::ListJob *job = KIO::listRecursive(listUrl.url(), KIO::HideProgressInfo, false /* no hidden files */);
+		QUrl listUrl(m_testsUrl);
+                listUrl.setPath(listUrl.path() + "/tests");
+		KIO::ListJob *job = KIO::listRecursive(listUrl, KIO::HideProgressInfo, false /* no hidden files */);
 
 		connect(job, SIGNAL(result(KJob*)), SLOT(directoryListingFinished(KJob*)));
 

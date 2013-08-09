@@ -137,7 +137,7 @@ KAboutKdeDialog::KAboutKdeDialog(QWidget *parent)
     tabWidget->addTab(support, i18n("&Support KDE"));
 
     QLabel *image = new QLabel;
-    image->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kdeui/pics/aboutkde.png")));
+    image->setPixmap(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("xmlgui/pics/aboutkde.png")));
 
     QHBoxLayout *midLayout = new QHBoxLayout;
     midLayout->addWidget(image);

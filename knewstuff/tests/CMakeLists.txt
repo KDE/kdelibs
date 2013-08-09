@@ -56,7 +56,7 @@ if(NOT KDE_NO_DEPRECATED)
 
 #kde4_add_executable(kdxspreview TEST ${kdxspreview_SRCS})
 
-#target_link_libraries(kdxspreview ${KDE4_KDECORE_LIBS} knewstuff2)
+#target_link_libraries(kdxspreview knewstuff2)
 #install(FILES kdxspreviewrc DESTINATION ${CONFIG_INSTALL_DIR})
 endif(NOT KDE_NO_DEPRECATED)
 

@@ -140,7 +140,7 @@ void KDateTimeEditPrivate::initDateWidget()
 void KDateTimeEditPrivate::initTimeWidget()
 {
     ui.m_timeCombo->blockSignals(true);
-    ui.m_timeCombo->setVisible((m_options &KDateTimeEdit::ShowDate) == KDateTimeEdit::ShowDate);
+    ui.m_timeCombo->setVisible((m_options &KDateTimeEdit::ShowTime) == KDateTimeEdit::ShowTime);
     KTimeComboBox::Options options;
     if ((m_options &KDateTimeEdit::EditTime) == KDateTimeEdit::EditTime) {
         options = options | KTimeComboBox::EditTime;

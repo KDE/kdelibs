@@ -10,17 +10,11 @@ endif(X11_FOUND)
 
 configure_file(config-kdeui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kdeui.h )
 
-add_subdirectory( about )
 add_subdirectory( tests )
-add_subdirectory( sonnet/tests )
 
 ########### next target ###############
 set(kdeui_LIB_SRCS
- actions/kactionconflictdetector.cpp
- kernel/kstyle.cpp
  util/kglobalsettings.cpp
- util/kimagecache.cpp
- widgets/kdeuiwidgetsproxystyle.cpp
 )
 
 
@@ -53,7 +47,6 @@ target_link_libraries(kdeui LINK_PUBLIC
     ${Sonnet_LIBRARIES}
     ${KAuth_LIBRARIES}
     KGuiAddons
-    KWidgets
     ${KWidgetsAddons_LIBRARIES}
     KI18n
     KTextWidgets
@@ -63,7 +56,6 @@ target_link_libraries(kdeui LINK_PUBLIC
     KNotifications
     KJobWidgets
     KIconThemes
-    ${KDE4_KDECORE_LIBS}
     ${X11_LIBRARIES}
     Qt5::Widgets
     Qt5::Svg
@@ -84,39 +76,31 @@ if(X11_FOUND)
   target_link_libraries(kdeui LINK_PUBLIC Qt5::X11Extras)
 endif()
 
-if(NOT WINCE)
-target_link_libraries(kdeui  Qt5::Svg)
-endif(NOT WINCE)
-
 if(MINGW)
-   target_link_libraries(kdeui gdi32 oleaut32)
+   target_link_libraries(kdeui LINK_PRIVATE gdi32 oleaut32)
 endif(MINGW)
 
 if(APPLE)
-   target_link_libraries(kdeui ${CARBON_LIBRARY})
+   target_link_libraries(kdeui LINK_PRIVATE ${CARBON_LIBRARY})
 endif(APPLE)
 
 if(X11_XTest_FOUND)
-   target_link_libraries(kdeui ${X11_XTest_LIB})
+   target_link_libraries(kdeui LINK_PRIVATE ${X11_XTest_LIB})
 endif(X11_XTest_FOUND)
 
 if(X11_Xcursor_FOUND)
-   target_link_libraries(kdeui ${X11_Xcursor_LIB})
+   target_link_libraries(kdeui LINK_PRIVATE ${X11_Xcursor_LIB})
 endif(X11_Xcursor_FOUND)
 
 if (X11_Xfixes_FOUND)
-   target_link_libraries(kdeui ${X11_Xfixes_LIB})
+   target_link_libraries(kdeui LINK_PRIVATE ${X11_Xfixes_LIB})
 endif(X11_Xfixes_FOUND)
 
 if (X11_Xrender_FOUND)
-   target_link_libraries(kdeui ${X11_Xrender_LIB})
+   target_link_libraries(kdeui LINK_PRIVATE ${X11_Xrender_LIB})
 endif(X11_Xrender_FOUND)
 
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES ${KConfig_GUI_LIBRARY} Qt5::Widgets)
-
-if(NOT WINCE)
-target_link_libraries(kdeui LINK_INTERFACE_LIBRARIES Qt5::Svg)
-endif(NOT WINCE)
+target_link_libraries(kdeui LINK_PUBLIC ${KConfig_GUI_LIBRARY} Qt5::Widgets)
 
 set_target_properties(kdeui PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
@@ -127,22 +111,9 @@ install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 
 
 install( FILES
- dialogs/aboutkde.png
- dialogs/thumb_frame.png
- DESTINATION  ${DATA_INSTALL_DIR}/kdeui/pics )
-
-install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
- kernel/kstyle.h
  util/kglobalsettings.h
- util/kimagecache.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
-
-install(PROGRAMS preparetips DESTINATION ${BIN_INSTALL_DIR} )
-
-if (APPLE)
-  install(PROGRAMS kernel/start-session-bus.sh DESTINATION ${BIN_INSTALL_DIR} )
-endif (APPLE)
 
 install( FILES
     KDEUIMacros.cmake

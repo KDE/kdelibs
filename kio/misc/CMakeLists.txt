@@ -16,7 +16,7 @@ set(kmailservice_SRCS kmailservice.cpp )
 
 kde4_add_executable(kmailservice NOGUI ${kmailservice_SRCS})
 
-target_link_libraries(kmailservice  ${KDE4_KDEUI_LIBS} ${KCoreAddons_LIBRARIES} )
+target_link_libraries(kmailservice ${KCoreAddons_LIBRARIES} Qt5::Widgets)
 
 install(TARGETS kmailservice ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(PROGRAMS kmailservice.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})
@@ -28,7 +28,7 @@ set(ktelnetservice_SRCS ktelnetservice.cpp )
 
 kde4_add_executable(ktelnetservice NOGUI ${ktelnetservice_SRCS})
 
-target_link_libraries(ktelnetservice  ${KDE4_KDEUI_LIBS} ${KCoreAddons_LIBRARIES} )
+target_link_libraries(ktelnetservice ${KCoreAddons_LIBRARIES} KService KConfigGui KWidgetsAddons KI18n Qt5::Widgets)
 
 install(TARGETS ktelnetservice ${INSTALL_TARGETS_DEFAULT_ARGS})
 install(PROGRAMS ktelnetservice.desktop DESTINATION ${XDG_APPS_INSTALL_DIR})

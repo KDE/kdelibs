@@ -20,7 +20,7 @@ set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.co
 
 kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
 
-target_link_libraries(kio_file  ${KDE4_KDECORE_LIBS} kio ${KCoreAddons_LIBRARIES} KI18n)
+target_link_libraries(kio_file kio ${KCoreAddons_LIBRARIES} KI18n)
 
 if (HAVE_VOLMGT AND CMAKE_SYSTEM_NAME MATCHES SunOS)
     target_link_libraries(kio_file -lvolmgt)

@@ -64,7 +64,6 @@
 #include <khtmlview.h>
 #include <khtml_part.h>
 #include <kauthorized.h>
-#include <kdatetime.h>
 #include <khtml_settings.h>
 #include <khtmlpart_p.h>
 
@@ -2002,7 +2001,7 @@ void DocumentImpl::processHttpEquiv(const DOMString &equiv, const DOMString &con
         if (m_docLoader) {
             QString str = content.string().trimmed();
             //QDateTime can't convert from a RFCDate format string
-            QDateTime expire_date = KDateTime::fromString(str, KDateTime::RFCDate).dateTime();
+            QDateTime expire_date = QDateTime::fromString(str, Qt::RFC2822Date);
 
             if (!expire_date.isValid()) {
                 qint64 seconds = str.toLongLong();

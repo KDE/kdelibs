@@ -38,6 +38,7 @@ set(xmlgui_SRCS
   kaboutkdedialog_p.cpp
   kactioncategory.cpp
   kactioncollection.cpp
+  kactionconflictdetector.cpp
   kbugreport.cpp
   kedittoolbar.cpp
   kglobalaccel.cpp
@@ -99,12 +100,12 @@ target_link_libraries(XmlGui LINK_PUBLIC
     Qt5::Network
     Qt5::PrintSupport
 
-    KWidgets
     KWidgetsAddons
     ItemViews
     KI18n
     KCoreAddons
     KConfigCore
+    KConfigWidgets
     KIconThemes
     KTextWidgets
     SonnetUi
@@ -145,3 +146,8 @@ install(FILES
 )
 
 install( FILES ui_standards.rc  DESTINATION  ${CONFIG_INSTALL_DIR}/ui )
+
+install( FILES
+ aboutkde.png
+ thumb_frame.png
+ DESTINATION  ${DATA_INSTALL_DIR}/xmlgui/pics )

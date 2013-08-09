@@ -59,14 +59,13 @@ set(kservice_includes
 target_include_directories(KService PUBLIC "$<BUILD_INTERFACE:${kservice_includes}>")
 
 target_link_libraries(KService
-   Qt5::DBus)
-target_link_libraries(KService
   LINK_PUBLIC
     KConfigCore
     KCoreAddons
   LINK_PRIVATE
     KI18n
     KDBusAddons   # KDEInitInterface
+    Qt5::DBus
 )
 
 set_target_properties(KService PROPERTIES VERSION ${KSERVICE_VERSION_STRING}
@@ -103,3 +102,5 @@ install(FILES
    services/kplugininfo.desktop
    DESTINATION ${SERVICETYPES_INSTALL_DIR}
 )
+
+add_subdirectory(desktoptojson)

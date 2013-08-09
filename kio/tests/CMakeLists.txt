@@ -5,13 +5,13 @@ include(ECMMarkAsTest)
 MACRO(KIO_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kio-${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KIO_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} KWidgets)
+               target_link_libraries(${_testname} ${KDE4_KIO_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES})
        ENDFOREACH(_testname)
 ENDMACRO(KIO_UNIT_TESTS)
 MACRO(KIO_EXECUTABLE_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_executable(${_testname} TEST ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KIO_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} KWidgets)
+               target_link_libraries(${_testname} ${KDE4_KIO_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES})
        ENDFOREACH(_testname)
 ENDMACRO(KIO_EXECUTABLE_TESTS)
 
@@ -30,8 +30,8 @@ KIO_UNIT_TESTS(
   kdirmodeltest
   kdirlistertest
   fileundomanagertest
-  kfilemetainfotest
   dataprotocoltest
+  clipboardupdatertest
 )
 
 set_target_properties(krununittest PROPERTIES COMPILE_FLAGS "-DCMAKE_INSTALL_PREFIX=\\\"${CMAKE_INSTALL_PREFIX}\\\" -DLIBEXEC_INSTALL_DIR=\\\"${LIBEXEC_INSTALL_DIR}\\\"")
@@ -47,7 +47,6 @@ KIO_EXECUTABLE_TESTS(
   previewtest
   kionetrctest
   kpropsdlgtest
-  kmfitest
   ksycocaupdatetest
   netaccesstest
   kdirmodeltest_gui

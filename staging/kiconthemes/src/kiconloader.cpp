@@ -281,6 +281,12 @@ public:
      */
     QString locate(const QString& fileName);
 
+    /**
+     * @internal
+     * React to a global icon theme change
+     */
+    void _k_refreshIcons(int group);
+
     KIconLoader *const q;
 
     QStringList mThemesInTree;
@@ -441,13 +447,19 @@ void KIconLoaderPrivate::drawOverlays(const KIconLoader *iconLoader, KIconLoader
     }
 }
 
+void KIconLoaderPrivate::_k_refreshIcons(int group)
+{
+    q->newIconLoader();
+    emit q->iconChanged(group);
+}
+
 KIconLoader::KIconLoader(const QString& _appname, const QStringList& extraSearchPaths, QObject* parent)
     : QObject(parent)
 {
     setObjectName(_appname);
     d = new KIconLoaderPrivate(this);
 
-    connect(s_globalData, SIGNAL(iconChanged(int)), SLOT(newIconLoader()));
+    connect(s_globalData, SIGNAL(iconChanged(int)), SLOT(_k_refreshIcons(int)));
     d->init(_appname, extraSearchPaths);
 }
 
@@ -1632,3 +1644,4 @@ QIcon KDE::icon(const QString& iconName, const QStringList& overlays, KIconLoade
 }
 
 #include "kiconloader.moc"
+#include "moc_kiconloader.moc"

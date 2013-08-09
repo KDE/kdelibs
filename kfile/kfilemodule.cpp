@@ -24,7 +24,6 @@
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(KFileModuleFactory, registerPlugin<KFileModule>();)
-K_EXPORT_PLUGIN(KFileModuleFactory("kfilemodule"))
 
 KFileModule::KFileModule(QObject* parent, const QVariantList&)
     : KAbstractFileModule(parent)
@@ -53,3 +52,5 @@ QUrl KFileModule::selectDirectory( const QUrl& startDir,
     return KDirSelectDialog::selectDirectory(startDir, localOnly, parent, caption);
 }
 
+
+#include "kfilemodule.moc"

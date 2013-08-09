@@ -27,7 +27,6 @@
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(AdiumEmoticonsFactory, registerPlugin<AdiumEmoticons>();)
-K_EXPORT_PLUGIN(AdiumEmoticonsFactory("AdiumEmoticons"))
 
 AdiumEmoticons::AdiumEmoticons(QObject *parent, const QVariantList &args)
         : KEmoticonsProvider(parent)
@@ -238,5 +237,7 @@ void AdiumEmoticons::createNew()
     emoStream << doc.toString(4);
     fp.close();
 }
+
+#include "adium_emoticons.moc"
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

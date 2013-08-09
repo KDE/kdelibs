@@ -593,6 +593,7 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml
+  ${KDE4_KDECORE_LIBS}
   ${KDE4_KPARTS_LIBS}
   ${PHONON_LIBRARIES}
   KJS
@@ -608,13 +609,12 @@ target_link_libraries(khtml
   ${KWindowSystem_LIBRARIES}
   KWallet
   Qt5::X11Extras
-  KDE4Attic
   KDE4Support # KComponentData (TODO port to KAboutData
 )
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()
-target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio kdeui kdecore Qt5::Widgets)
+target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio kdecore Qt5::Widgets)
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}

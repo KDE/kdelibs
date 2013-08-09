@@ -39,7 +39,6 @@
 #include <QScrollBar>
 #include <QSplitter>
 #include <QWheelEvent>
-#include <qurlpathinfo.h>
 #include <QDebug>
 
 #include <kdirlister.h>
@@ -724,18 +723,20 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
     // The given path may contain any number directories, existent or not.
     // They will all be created, if possible.
 
+    // TODO: very similar to KDirSelectDialog::Private::slotMkdir
+
     bool writeOk = false;
     bool exists = false;
-    QUrlPathInfo urlInfo(d->currUrl);
+    QUrl folderurl(d->currUrl);
 
     const QStringList dirs = directory.split('/', QString::SkipEmptyParts);
     QStringList::ConstIterator it = dirs.begin();
 
     for (; it != dirs.end(); ++it) {
-        urlInfo.addPath(*it);
-        exists = KIO::NetAccess::exists(urlInfo.url(), KIO::NetAccess::DestinationSide, this);
+        folderurl.setPath(folderurl.path() + '/' + *it);
+        exists = KIO::NetAccess::exists(folderurl, KIO::NetAccess::DestinationSide, this);
         if (!exists) {
-            KIO::MkdirJob *job = KIO::mkdir(urlInfo.url());
+            KIO::MkdirJob *job = KIO::mkdir(folderurl);
             KJobWidgets::setWindow(job, this);
             writeOk = job->exec();
         }
@@ -743,12 +744,12 @@ bool KDirOperator::mkdir(const QString& directory, bool enterDirectory)
 
     if (exists) { // url was already existent
         KMessageBox::sorry(d->itemView, i18n("A file or folder named %1 already exists.",
-                    urlInfo.url().toDisplayString(QUrl::PreferLocalFile)));
+                    folderurl.toDisplayString(QUrl::PreferLocalFile)));
     } else if (!writeOk) {
         KMessageBox::sorry(d->itemView, i18n("You do not have permission to "
                                               "create that folder."));
     } else if (enterDirectory) {
-        setUrl(urlInfo.url(), true);
+        setUrl(folderurl, true);
     }
 
     return writeOk;
@@ -1015,13 +1016,13 @@ void KDirOperator::setUrl(const QUrl& _newurl, bool clearforward)
     }
 
     // already set
-    if (QUrlPathInfo(newurl).equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
+    if (newurl.matches(d->currUrl, QUrl::StripTrailingSlash))
         return;
 
     if (!Private::isReadable(newurl)) {
         // maybe newurl is a file? check its parent directory
         newurl = newurl.adjusted(QUrl::RemoveFilename|QUrl::StripTrailingSlash);
-        if (QUrlPathInfo(newurl).equals(d->currUrl, QUrlPathInfo::CompareWithoutTrailingSlash))
+        if (newurl.matches(d->currUrl, QUrl::StripTrailingSlash))
             return; // parent is current dir, nothing to do (fixes #173454, too)
         KIO::UDSEntry entry;
         bool res = KIO::NetAccess::stat(newurl, entry, this);
@@ -2499,8 +2500,7 @@ void KDirOperator::Private::_k_slotExpandToUrl(const QModelIndex &index)
         QList<QUrl>::Iterator it = itemsToBeSetAsCurrent.begin();
         while (it != itemsToBeSetAsCurrent.end()) {
             const QUrl url = *it;
-            const QUrlPathInfo urlInfo(url);
-            if (urlInfo.isParentOfOrEqual(item.url())) {
+            if (url.matches(item.url(), QUrl::StripTrailingSlash) || url.isParentOf(item.url())) {
                 const KFileItem _item = dirLister->findByUrl(url);
                 if (!_item.isNull() && _item.isDir()) {
                     const QModelIndex _index = dirModel->indexForItem(_item);

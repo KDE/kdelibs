@@ -6,8 +6,10 @@ set(kguiaddons_LIB_SRCS
  colors/kcolormimedata.cpp
  text/kwordwrap.cpp
  fonts/kfontutils.cpp
+ util/klocalimagecacheimpl.cpp
  util/kmodifierkeyinfo.cpp
  util/kmodifierkeyinfoprovider.cpp
+ util/urlhandler.cpp
 )
 
 message("Port to Qt5 native filter")
@@ -46,6 +48,8 @@ install( FILES
  colors/kcolormimedata.h
  text/kwordwrap.h
  fonts/kfontutils.h
+ util/kimagecache.h
+ util/klocalimagecacheimpl.h
  util/kmodifierkeyinfo.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )

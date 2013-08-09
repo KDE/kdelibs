@@ -223,10 +223,12 @@ void KEMailSettings::setProfile (const QString &s)
 	}
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KEMailSettings::currentProfileName() const
 {
 	return p->m_sCurrentProfile;
 }
+#endif
 
 QStringList KEMailSettings::profiles() const
 {

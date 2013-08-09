@@ -99,6 +99,43 @@ KPluginInfo::KPluginInfo(const QString & filename /*, QStandardPaths::StandardLo
             "X-KDE-PluginInfo-EnabledByDefault", false);
 }
 
+KPluginInfo::KPluginInfo(const QVariantList &args)
+: d( new KPluginInfoPrivate )
+{
+    QVariantMap meta;
+    static const QString metaData = QStringLiteral("MetaData");
+
+    foreach (const QVariant &v, args) {
+        if (v.canConvert<QVariantMap>()) {
+            const QVariantMap &m = v.toMap();
+            const QVariant &_metadata = m.value(metaData);
+            if (_metadata.canConvert<QVariantMap>()) {
+                meta = _metadata.value<QVariantMap>();
+                break;
+            }
+        }
+    }
+
+    d->hidden = meta.value(QStringLiteral("Hidden")).toBool();
+    if (d->hidden) {
+        return;
+    }
+
+    d->name = meta.value(QStringLiteral("Name")).toString();
+    d->comment = meta.value(QStringLiteral("Comment")).toString();
+    d->icon = meta.value(QStringLiteral("Icon")).toString();
+    d->author = meta.value(QStringLiteral("X-KDE-PluginInfo-Author")).toString();
+    d->email = meta.value(QStringLiteral("X-KDE-PluginInfo-Email")).toString();
+    d->pluginName = meta.value(QStringLiteral("X-KDE-PluginInfo-Name")).toString();
+    d->version = meta.value(QStringLiteral("X-KDE-PluginInfo-Version")).toString();
+    d->website = meta.value(QStringLiteral("X-KDE-PluginInfo-Website")).toString();
+    d->category = meta.value(QStringLiteral("X-KDE-PluginInfo-Category")).toString();
+    d->license = meta.value(QStringLiteral("X-KDE-PluginInfo-License")).toString();
+    d->dependencies = meta.value(QStringLiteral("X-KDE-PluginInfo-Depends")).toStringList();
+    d->enabledbydefault = meta.value(QStringLiteral("X-KDE-PluginInfo-EnabledByDefault")).toBool();
+}
+
+#ifndef KDE_NO_DEPRECATED
 KPluginInfo::KPluginInfo( const KService::Ptr service )
 : d( new KPluginInfoPrivate )
 {
@@ -130,6 +167,7 @@ KPluginInfo::KPluginInfo( const KService::Ptr service )
     QVariant tmp = service->property( QLatin1String("X-KDE-PluginInfo-EnabledByDefault") );
     d->enabledbydefault = tmp.isValid() ? tmp.toBool() : false;
 }
+#endif
 
 KPluginInfo::KPluginInfo()
     : d(0) // isValid() == false

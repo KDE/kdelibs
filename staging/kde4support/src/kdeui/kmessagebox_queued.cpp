@@ -24,7 +24,7 @@
 
 namespace KMessageBox {
 
-extern int KWIDGETS_EXPORT (*KMessageBox_exec_hook)(QDialog*);
+extern int KWIDGETSADDONS_EXPORT (*KMessageBox_exec_hook)(QDialog*);
 
 int queued_dialog_exec(QDialog *dialog)
 {

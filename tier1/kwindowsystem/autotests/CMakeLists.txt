@@ -23,6 +23,8 @@ macro(KWINDOWSYSTEM_EXECUTABLE_TESTS)
 endmacro()
 
 kwindowsystem_unit_tests(
+   # TODO! PORT TO NEW KManagerSelection API!
+   #kmanagerselectiontest
    kstartupinfo_unittest
    kxmessages_unittest
 )

@@ -50,7 +50,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 K_PLUGIN_FACTORY(KdedCookieServerFactory,
                  registerPlugin<KCookieServer>();
     )
-K_EXPORT_PLUGIN(KdedCookieServerFactory("kcookiejar"))
 
 // Cookie field indexes
 enum CookieDetails { CF_DOMAIN=0, CF_PATH, CF_NAME, CF_HOST,
@@ -591,4 +590,5 @@ KCookieServer::shutdown()
    deleteLater();
 }
 
+#include "kcookieserver.moc"
 

@@ -8,7 +8,6 @@ kde4_add_plugin(kcm_ssl ${kcmssl_SRCS})
 target_link_libraries(kcm_ssl
    ${KDE4_KIO_LIBS}
    ${KCoreAddons_LIBRARIES}
-   KWidgets
    KConfigWidgets   # KCModule
 )
 install(TARGETS kcm_ssl DESTINATION ${PLUGIN_INSTALL_DIR})

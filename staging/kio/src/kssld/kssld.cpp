@@ -35,7 +35,6 @@
 using namespace KIO;
 
 K_PLUGIN_FACTORY(KSSLDFactory, registerPlugin<KSSLD>();)
-K_EXPORT_PLUGIN(KSSLDFactory("kssld"))
 //KDECORE_EXPORT void *__kde_do_unload; // TODO re-add support for this?
 
 
@@ -279,3 +278,4 @@ KSslCertificateRule KSSLD::rule(const QSslCertificate &cert, const QString &host
 
 #include "moc_kssld.cpp"
 #include "moc_kssld_adaptor.cpp"
+#include "kssld.moc"

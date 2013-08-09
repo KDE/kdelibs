@@ -29,7 +29,6 @@
 
 
 K_PLUGIN_FACTORY(KcmSslFactory, registerPlugin<KcmSsl>();)
-K_EXPORT_PLUGIN(KcmSslFactory("kcm_ssl"))
 
 
 KcmSsl::KcmSsl(QWidget *parent, const QVariantList &args)
@@ -78,3 +77,4 @@ void KcmSsl::pageChanged(bool isChanged)
     emit changed(isChanged);
 }
 
+#include "kcmssl.moc"

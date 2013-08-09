@@ -28,7 +28,6 @@
 #include <qmimedatabase.h>
 
 K_PLUGIN_FACTORY(XmppEmoticonsFactory, registerPlugin<XmppEmoticons>();)
-K_EXPORT_PLUGIN(XmppEmoticonsFactory("XmppEmoticons"))
 
 XmppEmoticons::XmppEmoticons(QObject *parent, const QVariantList &args)
         : KEmoticonsProvider(parent)
@@ -215,5 +214,7 @@ void XmppEmoticons::createNew()
     emoStream << doc.toString(4);
     fp.close();
 }
+
+#include "xmpp_emoticons.moc"
 
 // kate: space-indent on; indent-width 4; replace-tabs on;

@@ -50,7 +50,6 @@
 #include <QtCore/QFile>
 #include <sys/stat.h> // mode_t
 #include <QPointer>
-#include <qurlpathinfo.h>
 
 #include "job_p.h"
 #include <kdiskfreespaceinfo.h>
@@ -95,6 +94,18 @@ enum CopyJobState {
     STATE_DELETING_DIRS,
     STATE_SETTING_DIR_ATTRIBUTES
 };
+
+static QUrl addPathToUrl(const QUrl &url, const QString &relPath)
+{
+    QString path = url.path();
+    if (!path.endsWith('/')) {
+        path += '/';
+    }
+    path += relPath;
+    QUrl u(url);
+    u.setPath(path);
+    return u;
+}
 
 /** @internal */
 class KIO::CopyJobPrivate: public KIO::JobPrivate
@@ -322,7 +333,7 @@ void CopyJobPrivate::slotResultStating( KJob *job )
             info.uDest = m_dest;
             // Append filename or dirname to destination URL, if allowed
             if (destinationState == DEST_IS_DIR && !m_asMethod) {
-                info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, srcurl.fileName());
+                info.uDest = addPathToUrl(info.uDest, srcurl.fileName());
             }
 
             files.append( info );
@@ -452,7 +463,7 @@ void CopyJobPrivate::sourceStated(const UDSEntry& entry, const QUrl& sourceUrl)
                     else if (!sName.isEmpty())
                         directory = sName;
                 }
-                m_currentDest = QUrlPathInfo::addPathToUrl(m_currentDest, directory);
+                m_currentDest = addPathToUrl(m_currentDest, directory);
             }
         }
         else // (case 3)
@@ -606,7 +617,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const QUrl& 
             url = srcUrl;
             if (srcIsDir) { // Only if src is a directory. Otherwise uSource is fine as is
                 //qDebug() << "adding path" << displayName;
-                url = QUrlPathInfo::addPathToUrl(url, fileName);
+                url = addPathToUrl(url, fileName);
             }
         }
         //qDebug() << "displayName=" << displayName << "url=" << url;
@@ -658,7 +669,7 @@ void CopyJobPrivate::addCopyInfoFromUDSEntry(const UDSEntry& entry, const QUrl& 
             }
 
             //qDebug() << " adding destFileName=" << destFileName;
-            info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, destFileName);
+            info.uDest = addPathToUrl(info.uDest, destFileName);
         }
         //qDebug() << " uDest(2)=" << info.uDest;
         //qDebug() << " " << info.uSource << "->" << info.uDest;
@@ -717,12 +728,12 @@ void CopyJobPrivate::statCurrentSrc()
                     (m_currentSrcURL.userName() == info.uDest.userName()) &&
                     (m_currentSrcURL.password() == info.uDest.password()) ) {
                     // This is the case of creating a real symlink
-                    info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, m_currentSrcURL.fileName());
+                    info.uDest = addPathToUrl(info.uDest, m_currentSrcURL.fileName());
                 } else {
                     // Different protocols, we'll create a .desktop file
                     // We have to change the extension anyway, so while we're at it,
                     // name the file like the URL
-                    info.uDest = QUrlPathInfo::addPathToUrl(info.uDest, KIO::encodeFileName(m_currentSrcURL.toDisplayString()) + ".desktop");
+                    info.uDest = addPathToUrl(info.uDest, KIO::encodeFileName(m_currentSrcURL.toDisplayString()) + ".desktop");
                 }
             }
             files.append( info ); // Files and any symlinks
@@ -836,7 +847,7 @@ void CopyJobPrivate::startRenameJob( const QUrl& slave_url )
     QUrl dest = m_dest;
     // Append filename or dirname to destination URL, if allowed
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
-        dest = QUrlPathInfo::addPathToUrl(dest, m_currentSrcURL.fileName());
+        dest = addPathToUrl(dest, m_currentSrcURL.fileName());
     m_currentDestURL = dest;
     //qDebug() << m_currentSrcURL << "->" << dest << "trying direct rename first";
     state = STATE_RENAMING;
@@ -1810,7 +1821,7 @@ void CopyJobPrivate::slotResultRenaming( KJob* job )
     // Determine dest again
     QUrl dest = m_dest;
     if ( destinationState == DEST_IS_DIR && !m_asMethod )
-        dest = QUrlPathInfo::addPathToUrl(dest, m_currentSrcURL.fileName());
+        dest = addPathToUrl(dest, m_currentSrcURL.fileName());
     if ( err )
     {
         // Direct renaming didn't work. Try renaming to a temp name,
@@ -2149,7 +2160,9 @@ CopyJob *KIO::move(const QUrl& src, const QUrl& dest, JobFlags flags)
     //qDebug() << src << dest;
     QList<QUrl> srcList;
     srcList.append( src );
-    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
+    CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, false, flags);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::moveAs(const QUrl& src, const QUrl& dest, JobFlags flags)
@@ -2157,13 +2170,17 @@ CopyJob *KIO::moveAs(const QUrl& src, const QUrl& dest, JobFlags flags)
     //qDebug() << src << dest;
     QList<QUrl> srcList;
     srcList.append( src );
-    return CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
+    CopyJob* job = CopyJobPrivate::newJob(srcList, dest, CopyJob::Move, true, flags);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::move( const QList<QUrl>& src, const QUrl& dest, JobFlags flags)
 {
     //qDebug() << src << dest;
-    return CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
+    CopyJob* job = CopyJobPrivate::newJob(src, dest, CopyJob::Move, false, flags);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    return job;
 }
 
 CopyJob *KIO::link(const QUrl& src, const QUrl& destDir, JobFlags flags)

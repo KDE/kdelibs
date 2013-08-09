@@ -27,7 +27,7 @@ add_library(KCompletion ${kcompletion_SRCS})
 generate_export_header(KCompletion)
 
 target_link_libraries(KCompletion LINK_PUBLIC Qt5::Widgets)
-target_link_libraries(KCompletion LINK_PRIVATE KNotifications KCoreAddons KConfigCore KWidgetsAddons KIconThemes KWidgets KI18n)
+target_link_libraries(KCompletion LINK_PRIVATE KNotifications KCoreAddons KConfigCore KWidgetsAddons KIconThemes KConfigWidgets KI18n)
 
 set_target_properties(KCompletion PROPERTIES VERSION   ${KCOMPLETION_VERSION_STRING}
                                              SOVERSION ${KCOMPLETION_SOVERSION}

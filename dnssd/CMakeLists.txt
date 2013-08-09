@@ -69,13 +69,11 @@ generate_export_header(kdnssd
   EXPORT_FILE_NAME dnssd_export.h
 )
 
-# Currently uses kdecore for i18n, TODO port to QCoreApplication::translate
-target_link_libraries(kdnssd kdecore KI18n Qt5::Network)
+target_link_libraries(kdnssd KConfigCore KI18n Qt5::Network Qt5::DBus)
 if (HAVE_DNSSD)
   target_link_libraries(kdnssd ${DNSSD_LIBRARIES})
 endif (HAVE_DNSSD)
 
-target_link_libraries(kdnssd  LINK_INTERFACE_LIBRARIES kdecore )
 target_include_directories(kdnssd PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..;${CMAKE_CURRENT_BINARY_DIR}/..>")
 
 set_target_properties(kdnssd PROPERTIES

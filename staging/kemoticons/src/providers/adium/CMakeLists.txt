@@ -4,7 +4,7 @@ set(adiumemoticons_SRCS adium_emoticons.cpp)
 
 kde4_add_plugin(emoticonstheme_adium ${adiumemoticons_SRCS})
 
-target_link_libraries(emoticonstheme_adium KEmoticons ${KDE4_KDEUI_LIBS} Qt5::Xml)
+target_link_libraries(emoticonstheme_adium KEmoticons KService Qt5::Xml)
 
 ########### install files ###############
 

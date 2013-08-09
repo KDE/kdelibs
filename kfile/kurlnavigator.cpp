@@ -50,7 +50,6 @@
 #include <QStyleOption>
 #include <qmimedatabase.h>
 #include <QMimeData>
-#include <qurlpathinfo.h>
 
 using namespace KDEPrivate;
 
@@ -665,8 +664,7 @@ void KUrlNavigator::Private::updateButtonVisibility()
     } else {
         // Check whether going upwards is possible. If this is the case, show the drop-down button.
         QUrl url(m_navButtons.front()->url());
-        // TODO use url.matches(KIO::upUrl(url), QUrl::StripTrailingSlash)
-        const bool visible = !QUrlPathInfo(url).equals(KIO::upUrl(url)) && (url.scheme() != "nepomuksearch");
+        const bool visible = !url.matches(KIO::upUrl(url), QUrl::StripTrailingSlash) && (url.scheme() != "nepomuksearch");
         m_dropDownButton->setVisible(visible);
     }
 }
@@ -1021,9 +1019,8 @@ void KUrlNavigator::setLocationUrl(const QUrl& newUrl)
     // Check whether current history element has the same URL.
     // If this is the case, just ignore setting the URL.
     const LocationData& data = d->m_history[d->m_historyIndex];
-    QUrlPathInfo pathInfo(url);
-    const bool isUrlEqual = pathInfo.equals(locationUrl(), QUrlPathInfo::CompareWithoutTrailingSlash) ||
-                            (!url.isValid() && pathInfo.equals(data.url, QUrlPathInfo::CompareWithoutTrailingSlash));
+    const bool isUrlEqual = url.matches(locationUrl(), QUrl::StripTrailingSlash) ||
+                            (!url.isValid() && url.matches(data.url, QUrl::StripTrailingSlash));
     if (isUrlEqual) {
         return;
     }

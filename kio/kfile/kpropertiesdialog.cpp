@@ -75,7 +75,6 @@ extern "C" {
 #include <QProgressBar>
 #include <QVector>
 #include <QFileInfo>
-#include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 #include <QUrl>
 
@@ -112,8 +111,8 @@ extern "C" {
 #include <kseparator.h>
 #include <ksqueezedtextlabel.h>
 #include <kmimetypetrader.h>
-#include <kmetaprops.h>
-#include <kpreviewprops.h>
+// #include <kmetaprops.h>
+// #include <kpreviewprops.h>
 #include <krun.h>
 #include <kacl.h>
 #include <kconfiggroup.h>
@@ -454,9 +453,11 @@ bool KPropertiesDialog::canDisplay( const KFileItemList& _items )
             KFilePermissionsPropsPlugin::supports( _items ) ||
             KDesktopPropsPlugin::supports( _items ) ||
             KUrlPropsPlugin::supports( _items ) ||
-            KDevicePropsPlugin::supports( _items ) ||
+            KDevicePropsPlugin::supports( _items ) 
+            /* TODO: maybe they should be made actual plugins now? ||
             KFileMetaPropsPlugin::supports( _items ) ||
-            KPreviewPropsPlugin::supports( _items );
+            KPreviewPropsPlugin::supports( _items )
+    */;
 }
 
 void KPropertiesDialog::slotOk()
@@ -544,15 +545,15 @@ void KPropertiesDialog::KPropertiesDialogPrivate::insertPages()
         q->insertPlugin(p);
     }
 
-    if ( KFileMetaPropsPlugin::supports( m_items ) ) {
-        KPropertiesDialogPlugin *p = new KFileMetaPropsPlugin(q);
-        q->insertPlugin(p);
-    }
-
-    if ( KPreviewPropsPlugin::supports( m_items ) ) {
-        KPropertiesDialogPlugin *p = new KPreviewPropsPlugin(q);
-        q->insertPlugin(p);
-    }
+//     if ( KFileMetaPropsPlugin::supports( m_items ) ) {
+//         KPropertiesDialogPlugin *p = new KFileMetaPropsPlugin(q);
+//         q->insertPlugin(p);
+//     }
+// 
+//     if ( KPreviewPropsPlugin::supports( m_items ) ) {
+//         KPropertiesDialogPlugin *p = new KPreviewPropsPlugin(q);
+//         q->insertPlugin(p);
+//     }
 
     //plugins
 
@@ -614,21 +615,13 @@ void KPropertiesDialog::rename( const QString& _name )
     // if we're creating from a template : use currentdir
     if (!d->m_currentDir.isEmpty()) {
         newUrl = d->m_currentDir;
-        QUrlPathInfo pathInfo(newUrl);
-        pathInfo.addPath(_name);
-        newUrl = pathInfo.url();
+        newUrl.setPath(newUrl.path() + '/' + _name);
     } else {
-        QString tmpurl = d->m_singleUrl.url();
-        if (!tmpurl.isEmpty() && tmpurl.at(tmpurl.length() - 1) == '/') {
-            // It's a directory, so strip the trailing slash first
-            tmpurl.truncate(tmpurl.length() - 1);
-        }
-
-        QUrlPathInfo pathInfo;
-        pathInfo.setUrl(QUrl(tmpurl));
-        pathInfo.setFileName(_name);
-
-        newUrl = pathInfo.url();
+        // It's a directory, so strip the trailing slash first
+        newUrl = d->m_singleUrl.adjusted(QUrl::StripTrailingSlash);
+        // Now change the filename
+        newUrl = newUrl.adjusted(QUrl::RemoveFilename); // keep trailing slash
+        newUrl.setPath(newUrl.path() + _name);
     }
     updateUrl(newUrl);
 }
@@ -856,7 +849,6 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         for ( ++kit /*no need to check the first one again*/ ; kit != kend; ++kit )
         {
             const QUrl url = (*kit).url();
-            const QUrlPathInfo info(url);
             // qDebug() << "KFilePropsPlugin::KFilePropsPlugin " << url.toDisplayString();
             // The list of things we check here should match the variables defined
             // at the beginning of this method.

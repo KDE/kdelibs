@@ -25,10 +25,9 @@ LINK_PUBLIC
    ${KWindowSystem_LIBRARIES}
 LINK_PRIVATE
    ${X11_LIBRARIES}
-   KWidgets
    KI18n
    ${KConfig_CORE_LIBRARY}
-   kdeui
+   KWidgetsAddons
 )
 
 if (X11_FOUND)

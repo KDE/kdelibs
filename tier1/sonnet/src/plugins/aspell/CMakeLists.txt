@@ -11,4 +11,4 @@ add_library(kspell_aspell MODULE ${kspell_aspell_PART_SRCS})
 
 target_link_libraries(kspell_aspell SonnetCore ${ASPELL_LIBRARIES} )
 
-install(TARGETS kspell_aspell  DESTINATION ${PLUGIN_INSTALL_DIR}/plugins/sonnet_clients/ )
+install(TARGETS kspell_aspell  DESTINATION ${PLUGIN_INSTALL_DIR}/sonnet_clients/ )

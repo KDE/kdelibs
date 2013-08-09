@@ -29,7 +29,6 @@
 #include <QLabel>
 #include <QMenu>
 #include <QStandardPaths>
-#include <qurlpathinfo.h>
 
 #include <qtemporaryfile.h>
 #include <kactioncollection.h>
@@ -439,9 +438,9 @@ void KNewFileMenuPrivate::executeOtherDesktopFile(const KNewFileMenuSingleton::E
         // KDE5 TODO: remove the "..." from link*.desktop files and use i18n("%1...") when making
         // the action.
 
-        QUrlPathInfo defaultFile(*it);
-        defaultFile.addPath(KIO::encodeFileName(text));
-        if (defaultFile.url().isLocalFile() && QFile::exists(defaultFile.url().toLocalFile()))
+        QUrl defaultFile(*it);
+        defaultFile.setPath(defaultFile.path() + '/' + KIO::encodeFileName(text));
+        if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
             text = KIO::suggestName(*it, text);
 
         const QUrl templateUrl(entry.templatePath);
@@ -464,9 +463,9 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     text = text.trimmed(); // In some languages, there is a space in front of "...", see bug 268895
     m_copyData.m_src = entry.templatePath;
 
-    QUrlPathInfo defaultFile(m_popupFiles.first());
-    defaultFile.addPath(KIO::encodeFileName(text));
-    if (defaultFile.url().isLocalFile() && QFile::exists(defaultFile.url().toLocalFile()))
+    QUrl defaultFile(m_popupFiles.first());
+    defaultFile.setPath(defaultFile.path() + '/' + KIO::encodeFileName(text));
+    if (defaultFile.isLocalFile() && QFile::exists(defaultFile.toLocalFile()))
         text = KIO::suggestName(m_popupFiles.first(), text);
 
     QDialog* fileDialog = new QDialog(m_parentWidget);
@@ -551,10 +550,8 @@ void KNewFileMenuPrivate::executeStrategy()
     // Copy it.
     QList<QUrl>::const_iterator it = m_popupFiles.constBegin();
     for (; it != m_popupFiles.constEnd(); ++it) {
-        QUrlPathInfo pathInfo(*it);
-        pathInfo.addPath(KIO::encodeFileName(chosenFileName));
-
-        QUrl dest(pathInfo.url());
+        QUrl dest = *it;
+        dest.setPath(dest.path() + '/' + KIO::encodeFileName(chosenFileName));
 
         QList<QUrl> lstSrc;
         lstSrc.append(uSrc);
@@ -768,9 +765,9 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
     QString name = expandTilde(m_text);
 
     if (!name.isEmpty()) {
-      if ((name[0] == '/'))
-        url.setPath(name);
-      else {
+      if (QDir::isAbsolutePath(name)) {
+        url = QUrl::fromLocalFile(name);
+      } else {
         if (!m_viewShowsHiddenFiles && name.startsWith('.')) {
           if (!writeHiddenDir) {
             confirmCreatingHiddenDir(name);
@@ -778,10 +775,8 @@ void KNewFileMenuPrivate::_k_slotCreateDirectory(bool writeHiddenDir)
           }
         }
         name = KIO::encodeFileName( name );
-
-        QUrlPathInfo pathInfo(baseUrl);
-        pathInfo.addPath( name );
-        url = pathInfo.url();
+        url = baseUrl;
+        url.setPath(url.path() + '/' + name);
       }
     }
 

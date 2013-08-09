@@ -685,6 +685,8 @@ public:
    * has a leading '/' then this one is stripped.
    *
    * @param txt The text to add. It is considered to be decoded.
+   * @deprecated since 5.0, use u.setPath(u.path() + '/' + txt).
+   * If the path might already have a trailing slash, use u = u.adjusted(QUrl::StripTrailingSlash) first.
    */
   void addPath( const QString& txt );
 
@@ -749,6 +751,8 @@ public:
    *             all text behind the last '/' in the current path is erased and
    *             @p _txt is appended then. It does not matter whether @p _txt starts
    *             with '/' or not.
+   * @deprecated since 5.0, use u = u.adjusted(QUrl::RemoveFileName); followed by
+   * u.setPath(u.path() + txt);
    */
   void setFileName( const QString&_txt );
 
@@ -973,7 +977,11 @@ public:
    * false is returned.
    * @see operator==. This function should be used if you want to
    * set additional options, like ignoring trailing '/' characters.
-   * @deprecated since 5.0, use QUrlPathInfo::equals(u, options)
+   * @deprecated since 5.0, use matches(u, formattingOptions)
+   * equals(u, KUrl::CompareWithoutTrailingSlash) becomes matches(u, QUrl::StripTrailingSlash)
+   * equals(u, KUrl::CompareWithoutFragment) becomes matches(u, QUrl::RemoveFragment)
+   * equals(u, KUrl::CompareWithoutTrailingSlash|KUrl::AllowEmptyPath) needs manual handling
+   * (it was mostly unused).
    */
   bool equals( const KUrl &u, const EqualsOptions& options=0 ) const;
 
@@ -981,9 +989,10 @@ public:
    * Checks whether the given URL is parent of this URL.
    * For instance, ftp://host/dir/ is a parent of ftp://host/dir/subdir/subsubdir/.
    * @return true if this url is a parent of @p u (or the same URL as @p u)
-   * @deprecated since 5.0, use QUrlPathInfo::isParentOfOrEqual
+   * @deprecated since 5.0. url.isParentOf(child) is now
+   *   url.isParentOf(child) || url.matches(child, QUrl::StripTrailingSlash);
    */
-  bool isParentOf( const KUrl& u ) const;
+  bool isParentOf( const KUrl& child ) const;
 
   /**
    * Splits nested URLs like file:///home/weis/kde.tgz#gzip:/#tar:/kdebase

@@ -37,7 +37,6 @@
 #endif
 
 #include <QtCore/QFileSystemWatcher>
-#include <qurlpathinfo.h>
 
 #include <cstdlib>
 #include <ctime>
@@ -45,7 +44,6 @@
 K_PLUGIN_FACTORY(ProxyScoutFactory,
                  registerPlugin<KPAC::ProxyScout>();
     )
-K_EXPORT_PLUGIN(ProxyScoutFactory("KProxyScoutd"))
 
 namespace KPAC
 {
@@ -107,7 +105,7 @@ namespace KPAC
         }
 
         // Never use a proxy for the script itself
-        if (m_downloader && QUrlPathInfo(url).equals(m_downloader->scriptUrl(), QUrlPathInfo::CompareWithoutTrailingSlash)) {
+        if (m_downloader && url.matches(m_downloader->scriptUrl(), QUrl::StripTrailingSlash)) {
             return QStringList (QLatin1String("DIRECT"));
         }
 
@@ -136,7 +134,7 @@ namespace KPAC
         }
 
         // Never use a proxy for the script itself
-        if (m_downloader && QUrlPathInfo(url).equals(m_downloader->scriptUrl(), QUrlPathInfo::CompareWithoutTrailingSlash)) {
+        if (m_downloader && url.matches(m_downloader->scriptUrl(), QUrl::StripTrailingSlash)) {
             return QLatin1String("DIRECT");
         }
 

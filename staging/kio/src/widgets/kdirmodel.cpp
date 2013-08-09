@@ -34,7 +34,6 @@
 #include <QDir>
 #include <QIcon>
 #include <QLocale>
-#include <qurlpathinfo.h>
 #include <sys/types.h>
 #include <dirent.h>
 
@@ -426,14 +425,14 @@ void KDirModelPrivate::_k_slotNewItems(const QUrl& directoryUrl, const KFileItem
         //qDebug() << url;
 
         if (!urlsBeingFetched.isEmpty()) {
-            const QUrlPathInfo dirUrl(url);
+            const QUrl dirUrl(url);
             foreach(const QUrl& urlFetched, urlsBeingFetched) {
-                if (dirUrl.isParentOfOrEqual(urlFetched)) {
+                if (dirUrl.matches(urlFetched, QUrl::StripTrailingSlash) || dirUrl.isParentOf(urlFetched)) {
                     //qDebug() << "Listing found" << dirUrl.url() << "which is a parent of fetched url" << urlFetched;
                     const QModelIndex parentIndex = indexForNode(node, dirNode->m_childNodes.count()-1);
                     Q_ASSERT(parentIndex.isValid());
                     emitExpandFor.append(parentIndex);
-                    if (isDir && dirUrl.url() != urlFetched) {
+                    if (isDir && dirUrl != urlFetched) {
                         q->fetchMore(parentIndex);
                         m_urlsBeingFetched[node].append(urlFetched);
                     }
@@ -790,12 +789,12 @@ bool KDirModel::setData( const QModelIndex & index, const QVariant & value, int 
             const QString newName = value.toString();
             if (newName.isEmpty() || newName == item.text() || (newName == QLatin1String(".")) || (newName == QLatin1String("..")))
                 return true;
-            QUrlPathInfo newUrlInfo(item.url());
-            newUrlInfo.setFileName(KIO::encodeFileName(newName));
-            KIO::Job * job = KIO::moveAs(item.url(), newUrlInfo.url(), item.url().isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
+            QUrl newUrl = item.url().adjusted(QUrl::RemoveFilename);
+            newUrl.setPath(newUrl.path() + KIO::encodeFileName(newName));
+            KIO::Job * job = KIO::moveAs(item.url(), newUrl, item.url().isLocalFile() ? KIO::HideProgressInfo : KIO::DefaultFlags);
             job->ui()->setAutoErrorHandlingEnabled(true);
             // undo handling
-            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Rename, QList<QUrl>() << item.url(), newUrlInfo.url(), job );
+            KIO::FileUndoManager::self()->recordJob( KIO::FileUndoManager::Rename, QList<QUrl>() << item.url(), newUrl, job );
             return true;
         }
         break;

@@ -23,7 +23,6 @@
 #include <kconfig.h>
 #include <kconfiggroup.h>
 #include <QDebug>
-#include <kglobalsettings.h>
 #include <klocalizedstring.h>
 #include <kmessagebox.h>
 #include <khtml_filter_p.h>
@@ -469,7 +468,7 @@ void KHTMLSettings::init( KConfig * config, bool reset )
 
     // Behavior
     if ( reset || cgHtml.hasKey( "ChangeCursor" ) )
-        d->m_bChangeCursor = cgHtml.readEntry( "ChangeCursor", KDE_DEFAULT_CHANGECURSOR );
+        d->m_bChangeCursor = cgHtml.readEntry( "ChangeCursor", true );
 
     if ( reset || cgHtml.hasKey("UnderlineLinks") )
         d->m_underlineLink = cgHtml.readEntry( "UnderlineLinks", true );

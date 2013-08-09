@@ -36,7 +36,6 @@
 #include <QPushButton>
 #include <QtCore/QDir>
 #include <qmimedatabase.h>
-#include <qurlpathinfo.h>
 #include <QDebug>
 
 #include <kiconloader.h>
@@ -373,12 +372,10 @@ void RenameDialog::enableRenameButton(const QString &newDest)
 
 QUrl RenameDialog::newDestUrl()
 {
-    QUrlPathInfo newDest(d->dest);
     const QString fileName = d->m_pLineEdit->text();
-
-    newDest.setFileName(KIO::encodeFileName(fileName));
-
-    return newDest.url();
+    QUrl newDest = d->dest.adjusted(QUrl::RemoveFilename); // keeps trailing slash
+    newDest.setPath(newDest.path() + KIO::encodeFileName(fileName));
+    return newDest;
 }
 
 QUrl RenameDialog::autoDestUrl() const

@@ -5,7 +5,14 @@ project(KIOWidgets)
 #configure_file(config-kiowidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiowidgets.h )
 
 set(kiowidgets_SRCS
+  accessmanager.cpp
+  accessmanagerreply_p.cpp
   fileundomanager.cpp
+  pastedialog.cpp
+  paste.cpp
+  clipboardupdater.cpp
+  kabstractfileitemactionplugin.cpp
+  kbuildsycocaprogressdialog.cpp
   sslui.cpp
   kurlpixmapprovider.cpp
   pixmaploader.cpp
@@ -52,7 +59,6 @@ target_link_libraries(KIOWidgets
     KCompletion   # KUrlCompletion uses KCompletion
   LINK_PRIVATE
     KIconThemes   # KIconLoader
-    kdeqt5staging # QUrlPathInfo
 )
 
 if(ACL_FOUND)
@@ -70,6 +76,11 @@ install(FILES
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install( FILES
+  pastedialog.h
+  paste.h
+  kabstractfileitemactionplugin.h
+  kbuildsycocaprogressdialog.h
+ accessmanager.h
   sslui.h
   pixmaploader.h
   thumbsequencecreator.h
@@ -84,6 +95,10 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
+  pastedialog.h
+  paste.h
+  kabstractfileitemactionplugin.h
+  kbuildsycocaprogressdialog.h
   kurlpixmapprovider.h
   ksslcertificatebox.h
   ksslinfodialog.h

@@ -3,7 +3,6 @@ kde4_add_unit_test(test_kconf_update
     )
 
 target_link_libraries(test_kconf_update
-    ${KDE4_KDECORE_LIBS}
     Qt5::Test
     )
 
@@ -15,6 +14,6 @@ kde4_add_unit_test(test_kconfigutils
     )
 
 target_link_libraries(test_kconfigutils
-    ${KDE4_KDECORE_LIBS}
+    KConfigCore
     Qt5::Test
     )

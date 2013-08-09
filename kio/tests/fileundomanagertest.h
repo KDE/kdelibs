@@ -39,6 +39,7 @@ private Q_SLOTS:
     void testTrashFiles();
     void testModifyFileBeforeUndo(); // #20532
     void testCreateDir();
+    void testPasteClipboardUndo(); // #318757
 
     // TODO find tests that would lead to kio job errors
 

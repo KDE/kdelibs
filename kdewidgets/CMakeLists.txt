@@ -45,7 +45,7 @@ if(Qt5Designer_FOUND)
 
   kde4_add_plugin(kdewidgets ${kdewidgets_PART_SRCS})
 
-  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} KWidgets KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KI18n)
+  target_link_libraries(kdewidgets  ${KDE4_KIO_LIBS}  ${KPlotting_LIBRARIES} KDE4Attic KDE4Support ${KWidgetsAddons_LIBRARIES} KI18n)
   if(NOT WIN32)
     set_target_properties(kdewidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE
@@ -76,7 +76,7 @@ if(Qt5Designer_FOUND)
 
     kde4_add_plugin(kdedeprecated ${kdedeprecated_PART_SRCS})
 
-    target_link_libraries(kdedeprecated KDE4Support ${KDE4_KIO_LIBS} KWidgets KDE4Attic)
+    target_link_libraries(kdedeprecated KDE4Support ${KDE4_KIO_LIBS} KDE4Attic)
     if(NOT WIN32)
       set_target_properties(kdedeprecated PROPERTIES
                                           INSTALL_RPATH_USE_LINK_PATH TRUE
@@ -108,7 +108,7 @@ if(Qt5Designer_FOUND)
 
   kde4_add_plugin(kdewebkitwidgets ${kdewebkitwidgets_PART_SRCS})
 
-  target_link_libraries(kdewebkitwidgets ${KDE4_KDEUI_LIBS} ${KDE4_KDEWEBKIT_LIBS} Qt5::WebKitWidgets)
+  target_link_libraries(kdewebkitwidgets ${KDE4_KDEWEBKIT_LIBS} Qt5::WebKitWidgets)
   if(NOT WIN32)
     set_target_properties(kdewebkitwidgets PROPERTIES
                                      INSTALL_RPATH_USE_LINK_PATH TRUE

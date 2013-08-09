@@ -57,7 +57,6 @@ class KCModulePrivate;
  * #include <KPluginFactory>
  *
  * K_PLUGIN_FACTORY(MyKCModuleFactory, registerPlugin<MyKCModule>() )
- * K_EXPORT_PLUGIN(MyKCModuleFactory("yourLibName","name_of_the_po_file") )
  * \endcode
  *
  * The optional parameter "name_of_the_po_file" has to correspond with the messages target

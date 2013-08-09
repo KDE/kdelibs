@@ -31,7 +31,6 @@
 #include <kiconloader.h>
 #include <ksharedconfig.h>
 #include <kurlmimedata.h>
-#include <qurlpathinfo.h>
 
 #include <QApplication>
 #include <QAbstractItemView>

@@ -26,7 +26,6 @@
 
 #include <QtCore/QTimer>
 #include <QtCore/QFile>
-#include <qurlpathinfo.h>
 
 #include <kauthorized.h>
 #include <klocalizedstring.h>
@@ -459,6 +458,7 @@ void SimpleJob::slotFinished( )
                     org::kde::KDirNotify::emitFileRenamed(src, dst);
 
                 org::kde::KDirNotify::emitFileMoved(src, dst);
+                uiDelegateExtension()->updateUrlInClipboard(src, dst);
             }
         }
         emitResult();
@@ -2347,13 +2347,17 @@ FileCopyJob *KIO::file_copy( const QUrl& src, const QUrl& dest, int permissions,
 FileCopyJob *KIO::file_move( const QUrl& src, const QUrl& dest, int permissions,
                              JobFlags flags )
 {
-    return FileCopyJobPrivate::newJob(src, dest, permissions, true, flags);
+    FileCopyJob* job = FileCopyJobPrivate::newJob(src, dest, permissions, true, flags);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::UpdateContent);
+    return job;
 }
 
 SimpleJob *KIO::file_delete( const QUrl& src, JobFlags flags )
 {
     KIO_ARGS << src << qint8(true); // isFile
-    return SimpleJobPrivate::newJob(src, CMD_DEL, packedArgs, flags);
+    SimpleJob* job = SimpleJobPrivate::newJob(src, CMD_DEL, packedArgs, flags);
+    job->uiDelegateExtension()->createClipboardUpdater(job, JobUiDelegateExtension::RemoveContent);
+    return job;
 }
 
 //////////
@@ -2444,7 +2448,7 @@ void ListJobPrivate::slotListEntries( const KIO::UDSEntryList& list )
                 itemURL = q->url();
                 const QString fileName = entry.stringValue(KIO::UDSEntry::UDS_NAME);
                 Q_ASSERT(!fileName.isEmpty()); // we'll recurse forever otherwise :)
-                itemURL = QUrlPathInfo::addPathToUrl(itemURL, fileName);
+                itemURL.setPath(itemURL.path() + '/' + fileName);
             }
 
             if (entry.isDir() && !entry.isLink()) {

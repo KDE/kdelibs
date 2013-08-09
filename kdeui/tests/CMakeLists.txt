@@ -20,25 +20,6 @@ KDEUI_UNIT_TESTS(
 )
 
 KDEUI_EXECUTABLE_TESTS(
-  kdebugtest_gui
   kglobalsettingsclient # helper program for kglobalsettingstest
-  kpopuptest
 )
 
-if (X11_FOUND)
-find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-
-# TODO! PORT TO NEW KManagerSelection API!
-#KDEUI_UNIT_TESTS(
-#kmanagerselectiontest
-#)
-#target_link_libraries(kmanagerselectiontest ${X11_X11_LIB})
-endif (X11_FOUND)
-
-## kcolorutilsdemo
-
-SET(kcolorUtilsDemoSources kcolorutilsdemo.cpp kimageframe.cpp)
-kde4_add_ui_files(kcolorUtilsDemoSources kcolorutilsdemo.ui)
-add_executable(kcolorutilsdemo ${kcolorUtilsDemoSources})
-ecm_mark_as_test(kcolorutilsdemo)
-target_link_libraries(kcolorutilsdemo ${KDE4_KDEUI_LIBS} ${KDEWIN_LIBRARIES} ${KCoreAddons_LIBRARIES} )

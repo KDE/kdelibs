@@ -65,7 +65,6 @@ and in the cpp file:
 K_PLUGIN_FACTORY(MyAppConfigFactory,
                   registerPlugin<MyAppConfig>();
                  )
-K_EXPORT_PLUGIN(MyAppConfigFactory("kcm_myappconfig"));
 
 MyAppConfig::MyAppConfig(QWidget *parent, const char *, const QVariantList &args)
   : KCModule(MyAppConfigFactory::instance(), parent, args)
@@ -189,7 +188,6 @@ To create a plugin page you need the following code:
 K_PLUGIN_FACTORY(MyAppPluginConfigFactory,
                   registerPlugin<MyAppPluginConfig>();
                  )
-K_EXPORT_PLUGIN(MyAppConfigFactory("kcm_myapppluginconfig"));
 
 MyAppPluginConfig(QWidget * parent, const char *, const QVariantList & args)
     : PluginPage(MyAppPluginConfigFactory::instance(), parent, args)

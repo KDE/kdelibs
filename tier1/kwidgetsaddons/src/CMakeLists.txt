@@ -2,11 +2,18 @@
 set(kwidgetsaddons_SRCS
   kacceleratormanager.cpp
   kcolorbutton.cpp
+  kfontaction.cpp
   fonthelpers.cpp
+  kfontsizeaction.cpp
+  kselectaction.cpp
+  kdragwidgetdecorator.cpp
   kdualaction.cpp
   kfontchooser.cpp
   kguiitem.cpp
   kled.cpp
+  kmessagebox.cpp
+  kstandardguiitem.cpp
+  kurllabel.cpp # Not good enough quality. Needs to use QUrl instead of QString and should not inherit QLabel, but hold it as a member instead.
   kcapacitybar.cpp
   kfontrequester.cpp
   kpassworddialog.cpp
@@ -71,10 +78,18 @@ install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DE
 install(FILES
   kacceleratormanager.h
   kcolorbutton.h
+  kdragwidgetdecorator.h
   kdualaction.h
+  kfontaction.h
   kfontchooser.h
+  kfontsizeaction.h
   kguiitem.h
   kled.h
+  kmessagebox.h
+  kmessageboxdontaskagaininterface.h
+  kselectaction.h
+  kstandardguiitem.h
+  kurllabel.h
   kcapacitybar.h
   kfontrequester.h
   kpassworddialog.h

@@ -67,7 +67,6 @@
 #include <QApplication>
 #include <QPushButton>
 #include <QStandardPaths>
-#include <qurlpathinfo.h>
 #include <qmimedatabase.h>
 
 #include <kshell.h>
@@ -762,11 +761,11 @@ QUrl KFileWidgetPrivate::getCompleteUrl(const QString &_url) const
     if (QDir::isAbsolutePath(url)) {
         u = QUrl::fromLocalFile(url);
     } else {
-        QUrlPathInfo relativeUrlTest(ops->url());
-        relativeUrlTest.addPath(url);
-        if (!ops->dirLister()->findByUrl(relativeUrlTest.url()).isNull() ||
-            !KProtocolInfo::isKnownProtocol(relativeUrlTest.url())) {
-            u = relativeUrlTest.url();
+        QUrl relativeUrlTest(ops->url());
+        relativeUrlTest.setPath(relativeUrlTest.path() + '/' + url);
+        if (!ops->dirLister()->findByUrl(relativeUrlTest).isNull() ||
+            !KProtocolInfo::isKnownProtocol(relativeUrlTest)) {
+            u = relativeUrlTest;
         } else {
             u = QUrl(url); // keep it relative
         }
@@ -870,7 +869,7 @@ void KFileWidget::slotOk()
                     }
 
                     // iterate while this item is contained on the top most url
-                    while (!QUrlPathInfo(topMostUrl).isParentOfOrEqual(currUrl)) {
+                    while (!topMostUrl.matches(currUrl, QUrl::StripTrailingSlash) && !topMostUrl.isParentOf(currUrl)) {
                         topMostUrl = KIO::upUrl(topMostUrl);
                     }
                 }
@@ -1658,19 +1657,19 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
 //     qDebug();
 
     QList<QUrl> urls;
-    QUrl url(ops->url());
-    if (!url.path().endsWith(QLatin1Char('/'))) {
-        url.setPath(url.path() + QLatin1Char('/'));
+    QUrl u(ops->url());
+    if (!u.path().endsWith(QLatin1Char('/'))) {
+        u.setPath(u.path() + QLatin1Char('/'));
     }
-    QUrlPathInfo u(url);
     QString name;
 
     const int count = line.count( QLatin1Char( '"' ) );
     if ( count == 0 ) { // no " " -> assume one single file
         if (!QDir::isAbsolutePath(line)) {
-            u.setFileName( line );
-            if ( u.url().isValid() )
-                urls.append( u.url() );
+            u = u.adjusted(QUrl::RemoveFilename);
+            u.setPath(u.path() + line);
+            if (u.isValid())
+                urls.append(u);
         } else {
             urls << QUrl::fromUserInput(line);
         }
@@ -1690,20 +1689,21 @@ QList<QUrl> KFileWidgetPrivate::tokenize( const QString& line ) const
         // get everything between the " "
         name = line.mid( index1 + 1, index2 - index1 - 1 );
 
-        // since we use setFileName we need to do this under a temporary url
-        QUrlPathInfo _u( u );
+        // since we use setPath we need to do this under a temporary url
+        QUrl _u( u );
         QUrl currUrl( name );
 
-        if ( !QDir::isAbsolutePath(currUrl.url()) ) {
-            _u.setFileName( name );
+        if (!QDir::isAbsolutePath(currUrl.url())) {
+            _u = _u.adjusted(QUrl::RemoveFilename);
+            _u.setPath(_u.path() + name);
         } else {
             // we allow to insert various absolute paths like:
             // "/home/foo/bar.txt" "/boot/grub/menu.lst"
-            _u.setUrl(currUrl);
+            _u = currUrl;
         }
 
-        if ( _u.url().isValid() ) {
-            urls.append( _u.url() );
+        if (_u.isValid()) {
+            urls.append(_u);
         }
 
         start = index2 + 1;
@@ -2507,13 +2507,12 @@ void KFileWidgetPrivate::_k_toggleSpeedbar(bool show)
         // check to see if they have a home item defined, if not show the home button
         QUrl homeURL;
         homeURL.setPath( QDir::homePath() );
-        QUrlPathInfo pathInfo(homeURL);
         KFilePlacesModel *model = static_cast<KFilePlacesModel*>(placesView->model());
         for (int rowIndex = 0 ; rowIndex < model->rowCount() ; rowIndex++) {
             QModelIndex index = model->index(rowIndex, 0);
             QUrl url = model->url(index);
 
-            if ( pathInfo.equals( url, QUrlPathInfo::CompareWithoutTrailingSlash ) ) {
+            if (homeURL.matches(url, QUrl::StripTrailingSlash)) {
                 toolbar->removeAction( ops->actionCollection()->action( "home" ) );
                 break;
             }

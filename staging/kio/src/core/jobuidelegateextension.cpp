@@ -30,6 +30,15 @@ JobUiDelegateExtension::~JobUiDelegateExtension()
 {
 }
 
+ClipboardUpdater* KIO::JobUiDelegateExtension::createClipboardUpdater(Job *, ClipboardUpdaterMode)
+{
+    return NULL;
+}
+
+void KIO::JobUiDelegateExtension::updateUrlInClipboard(const QUrl &, const QUrl &)
+{
+}
+
 static JobUiDelegateExtension *s_extension = 0;
 
 JobUiDelegateExtension *KIO::defaultJobUiDelegateExtension()

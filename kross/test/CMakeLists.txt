@@ -9,5 +9,5 @@ set(krosstest_SRCS
 
 add_executable(krosstest ${krosstest_SRCS})
 ecm_mark_as_test(${krosstest})
-target_link_libraries(krosstest ${KDE4_KDEUI_LIBS} krosscore ${KCoreAddons_LIBRARIES} )
+target_link_libraries(krosstest krosscore ${KCoreAddons_LIBRARIES} KConfigCore kdeqt5staging Qt5::Widgets)
 

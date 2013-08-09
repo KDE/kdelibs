@@ -27,7 +27,6 @@
 #include <QMenu>
 #include <qinputdialog.h>
 #include <qpushbutton.h>
-#include <qurlpathinfo.h>
 
 #include <kactioncollection.h>
 #include <kcoreauthorized.h>
@@ -149,7 +148,7 @@ void KDirSelectDialog::Private::slotMkdir()
 
     for ( ; it != dirs.end(); ++it )
     {
-        folderurl = QUrlPathInfo::addPathToUrl( folderurl, *it );
+        folderurl.setPath(folderurl.path() + '/' + *it);
         exists = KIO::NetAccess::exists( folderurl, KIO::NetAccess::DestinationSide, m_parent );
         if (!exists) {
             KIO::MkdirJob* job = KIO::mkdir(folderurl);
@@ -209,8 +208,8 @@ void KDirSelectDialog::Private::slotComboTextChanged( const QString& text )
     m_treeView->blockSignals(true);
     QUrl url = QUrl::fromUserInput(text);
 #ifdef Q_OS_WIN
-    QUrlPathInfo rootUrlInfo(m_treeView->rootUrl());
-    if(url.isLocalFile() && !rootUrlInfo.isParentOfOrEqual(url)) {
+    QUrl rootUrl(m_treeView->rootUrl());
+    if(url.isLocalFile() && !rootUrl.isParentOf(url) && !rootUrl.matches(url, QUrl::StripTrailingSlash)) {
         QUrl tmp = KIO::upUrl(url);
         while(tmp.path().length() > 1) {
             url = tmp;

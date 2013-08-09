@@ -125,7 +125,6 @@ using namespace DOM;
 #include <QStatusBar>
 #include <QStyle>
 #include <qmimedatabase.h>
-#include <qurlpathinfo.h>
 
 #include "khtmlpart_p.h"
 #include "khtml_iface.h"
@@ -656,17 +655,17 @@ void KHTMLPartPrivate::executeAnchorJump( const QUrl& url, bool lockHistory )
     if (!lockHistory)
         emit m_extension->openUrlNotify();
 
-    const QString &oldRef = QUrl(q->url()).fragment();
-    const QString &newRef = QUrl(url).fragment();
+    DOM::HashChangeEventImpl *hashChangeEvImpl = 0;
+    const QString &oldRef = q->url().fragment();
+    const QString &newRef = url.fragment();
     if ((oldRef != newRef) || (oldRef.isNull() && newRef.isEmpty())) {
-        DOM::HashChangeEventImpl *evImpl = new DOM::HashChangeEventImpl();
-        evImpl->initHashChangeEvent("hashchange",
+        hashChangeEvImpl = new DOM::HashChangeEventImpl();
+        hashChangeEvImpl->initHashChangeEvent("hashchange",
                                     true, //bubble
                                     false, //cancelable
                                     q->url().toString(), //oldURL
                                     url.toString() //newURL
                                     );
-        m_doc->dispatchWindowEvent(evImpl);
     }
 
     if ( !q->gotoAnchor( url.fragment(QUrl::FullyEncoded)) )
@@ -674,6 +673,10 @@ void KHTMLPartPrivate::executeAnchorJump( const QUrl& url, bool lockHistory )
 
     q->setUrl(url);
     emit m_extension->setLocationBarUrl( url.toDisplayString() );
+
+    if (hashChangeEvImpl) {
+        m_doc->dispatchWindowEvent(hashChangeEvImpl);
+    }
 }
 
 bool KHTMLPart::openUrl(const QUrl &_url)
@@ -3540,9 +3543,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
 
   // special case for <a href="">
   if ( url.isEmpty() ) {
-    QUrlPathInfo path(u);
-    path.setFileName( url );
-    u = path.url();
+    u = u.adjusted(QUrl::RemoveFilename);
   }
 
   emit onURL( url );
@@ -3723,9 +3724,7 @@ bool KHTMLPart::urlSelected( const QString &url, int button, int state, const QS
   QUrl cURL = completeURL(url);
   // special case for <a href="">  (IE removes filename, mozilla doesn't)
   if ( url.isEmpty() ) {
-    QUrlPathInfo path(cURL);
-    path.setFileName( url ); // removes filename
-    cURL = path.url();
+    cURL = cURL.adjusted(QUrl::RemoveFilename);
   }
 
   if ( !cURL.isValid() )

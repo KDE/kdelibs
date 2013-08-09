@@ -22,16 +22,16 @@ set(ktextwidgets_INCLUDES
 target_include_directories(KTextWidgets PUBLIC "$<BUILD_INTERFACE:${ktextwidgets_INCLUDES}>"
 )
 
-target_link_libraries(KTextWidgets
+target_link_libraries(KTextWidgets LINK_PUBLIC
   Qt5::Widgets
   Qt5::DBus
   SonnetCore
   SonnetUi
   KI18n
-  KWidgets
   KWidgetsAddons
   KService
   KConfigCore
+  KConfigWidgets
   KWindowSystem
   KIconThemes
   KCompletion

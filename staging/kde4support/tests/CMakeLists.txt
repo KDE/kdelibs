@@ -11,8 +11,10 @@ endmacro()
 
 kde4support_examples(
   kcolordlgtest
+  kdebugtest_gui
   kdialogtest
   kmdcodectest
+  kmessagetest
   kcmdlineargstest
   kdialogbuttonboxtest
   kmessageboxqueuedtest
@@ -28,6 +30,7 @@ kde4support_examples(
   knuminputtest
   kinputdialogtest
   kiopassdlgtest
+  kmfitest
 )
 
 if (X11_FOUND)

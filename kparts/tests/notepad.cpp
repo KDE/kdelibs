@@ -38,7 +38,6 @@
 #include <kpluginfactory.h>
 
 K_PLUGIN_FACTORY(NotepadFactory, registerPlugin<NotepadPart>();)
-K_EXPORT_PLUGIN(NotepadFactory("notepadpart"))
 
 NotepadPart::NotepadPart( QWidget* parentWidget,
                           QObject* parent,
@@ -122,3 +121,4 @@ void NotepadPart::slotSearchReplace()
 {
 }
 
+#include "notepad.moc"

@@ -4,7 +4,7 @@ set(kntlm_LIB_SRCS kntlm.cpp des.cpp )
 kde4_add_library(kntlm ${LIBRARY_TYPE} ${kntlm_LIB_SRCS})
 generate_export_header(kntlm)
 
-target_link_libraries(kntlm  ${KDE4_KDECORE_LIBS} ${KCoreAddons_LIBRARIES} )
+target_link_libraries(kntlm ${KCoreAddons_LIBRARIES})
 
 set_target_properties(kntlm PROPERTIES VERSION ${GENERIC_LIB_VERSION} SOVERSION ${GENERIC_LIB_SOVERSION} )
 
