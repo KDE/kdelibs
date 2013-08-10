@@ -21,8 +21,7 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QStringListModel>
-
-#include <kiconloader.h>
+#include <QIcon>
 
 #include <kcategorizedview.h>
 #include <kcategorydrawer.h>
@@ -44,7 +43,7 @@ public:
                     return index.row() / 10;
                 }
             case Qt::DecorationRole:
-                return DesktopIcon(icons[index.row() % 4], KIconLoader::Desktop);
+		return QIcon::fromTheme(icons[index.row() % 4]).pixmap(QSize(48, 48));
             default:
                 break;
         }
