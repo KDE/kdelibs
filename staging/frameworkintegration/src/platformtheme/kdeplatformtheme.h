@@ -25,6 +25,7 @@
 
 #include <QHash>
 #include <QObject>
+#include <QKeySequence>
 
 class KHintsSettings;
 class KFontSettingsData;
@@ -40,6 +41,7 @@ public:
     virtual const QPalette *palette(Palette type = SystemPalette) const;
     virtual const QFont *font(Font type) const;
     virtual QIconEngine *createIconEngine(const QString &iconName) const;
+    virtual QList<QKeySequence> keyBindings(QKeySequence::StandardKey key) const;
 
 private:
     void loadSettings();

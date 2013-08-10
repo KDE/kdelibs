@@ -35,6 +35,7 @@
 #include <kiconengine_p.h>
 #include <kiconloader.h>
 #include <ksharedconfig.h>
+#include <kstandardshortcut.h>
 
 KdePlatformTheme::KdePlatformTheme()
 {
@@ -112,4 +113,118 @@ void KdePlatformTheme::loadSettings()
 {
     m_fontsData = new KFontSettingsData;
     m_hints = new KHintsSettings;
+}
+
+
+QList<QKeySequence> KdePlatformTheme::keyBindings(QKeySequence::StandardKey key) const
+{
+    switch (key) {
+        case QKeySequence::HelpContents:
+            return KStandardShortcut::shortcut(KStandardShortcut::Help);
+            break;
+        case QKeySequence::WhatsThis:
+            return KStandardShortcut::shortcut(KStandardShortcut::WhatsThis);
+            break;
+        case QKeySequence::Open:
+            return KStandardShortcut::shortcut(KStandardShortcut::Open);
+            break;
+        case QKeySequence::Close:
+            return KStandardShortcut::shortcut(KStandardShortcut::Close);
+            break;
+        case QKeySequence::Save:
+            return KStandardShortcut::shortcut(KStandardShortcut::Save);
+            break;
+        case QKeySequence::New:
+            return KStandardShortcut::shortcut(KStandardShortcut::New);
+            break;
+        case QKeySequence::Cut:
+            return KStandardShortcut::shortcut(KStandardShortcut::Cut);
+            break;
+        case QKeySequence::Copy:
+            return KStandardShortcut::shortcut(KStandardShortcut::Copy);
+            break;
+        case QKeySequence::Paste:
+            return KStandardShortcut::shortcut(KStandardShortcut::Paste);
+            break;
+        case QKeySequence::Undo:
+            return KStandardShortcut::shortcut(KStandardShortcut::Undo);
+            break;
+        case QKeySequence::Redo:
+            return KStandardShortcut::shortcut(KStandardShortcut::Redo);
+            break;
+        case QKeySequence::Back:
+            return KStandardShortcut::shortcut(KStandardShortcut::Back);
+            break;
+        case QKeySequence::Forward:
+            return KStandardShortcut::shortcut(KStandardShortcut::Forward);
+            break;
+        case QKeySequence::Refresh:
+            return KStandardShortcut::shortcut(KStandardShortcut::Reload);
+            break;
+        case QKeySequence::ZoomIn:
+            return KStandardShortcut::shortcut(KStandardShortcut::ZoomIn);
+            break;
+        case QKeySequence::ZoomOut:
+            return KStandardShortcut::shortcut(KStandardShortcut::ZoomOut);
+            break;
+        case QKeySequence::Print:
+            return KStandardShortcut::shortcut(KStandardShortcut::Print);
+            break;
+        case QKeySequence::Find:
+            return KStandardShortcut::shortcut(KStandardShortcut::Find);
+            break;
+        case QKeySequence::FindNext:
+            return KStandardShortcut::shortcut(KStandardShortcut::FindNext);
+            break;
+        case QKeySequence::FindPrevious:
+            return KStandardShortcut::shortcut(KStandardShortcut::FindPrev);
+            break;
+        case QKeySequence::Replace:
+            return KStandardShortcut::shortcut(KStandardShortcut::Replace);
+            break;
+        case QKeySequence::SelectAll:
+            return KStandardShortcut::shortcut(KStandardShortcut::SelectAll);
+            break;
+        case QKeySequence::MoveToNextWord:
+            return KStandardShortcut::shortcut(KStandardShortcut::ForwardWord);
+            break;
+        case QKeySequence::MoveToPreviousWord:
+            return KStandardShortcut::shortcut(KStandardShortcut::BackwardWord);
+            break;
+        case QKeySequence::MoveToNextPage:
+            return KStandardShortcut::shortcut(KStandardShortcut::Next);
+            break;
+        case QKeySequence::MoveToPreviousPage:
+            return KStandardShortcut::shortcut(KStandardShortcut::Prior);
+            break;
+        case QKeySequence::MoveToStartOfLine:
+            return KStandardShortcut::shortcut(KStandardShortcut::BeginningOfLine);
+            break;
+        case QKeySequence::MoveToEndOfLine:
+            return KStandardShortcut::shortcut(KStandardShortcut::EndOfLine);
+            break;
+        case QKeySequence::MoveToStartOfDocument:
+            return KStandardShortcut::shortcut(KStandardShortcut::Home);
+            break;
+        case QKeySequence::MoveToEndOfDocument:
+            return KStandardShortcut::shortcut(KStandardShortcut::End);
+            break;
+        case QKeySequence::SaveAs:
+            return KStandardShortcut::shortcut(KStandardShortcut::SaveAs);
+            break;
+        case QKeySequence::Preferences:
+            return KStandardShortcut::shortcut(KStandardShortcut::Preferences);
+            break;
+        case QKeySequence::Quit:
+            return KStandardShortcut::shortcut(KStandardShortcut::Quit);
+            break;
+        case QKeySequence::FullScreen:
+            return KStandardShortcut::shortcut(KStandardShortcut::FullScreen);
+            break;
+        case QKeySequence::Deselect:
+            return KStandardShortcut::shortcut(KStandardShortcut::Deselect);
+            break;
+        default:
+            return QPlatformTheme::keyBindings(key);
+    }
 }
