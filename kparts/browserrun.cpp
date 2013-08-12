@@ -433,22 +433,22 @@ void KParts::BrowserRun::saveUrl(const QUrl & url, const QString & suggestedFile
     }
 
     // no download manager available, let's do it ourself
-    QFileDialog *dlg = new QFileDialog( window );
-    dlg->setAcceptMode( QFileDialog::AcceptSave );
-    dlg->setWindowTitle( i18n( "Save As" ) );
-    dlg->setConfirmOverwrite( true );
+    QFileDialog *dlg = new QFileDialog(window);
+    dlg->setAcceptMode(QFileDialog::AcceptSave);
+    dlg->setWindowTitle(i18n("Save As"));
+    dlg->setConfirmOverwrite(true);
 
     QString name;
-    if ( !suggestedFileName.isEmpty() )
+    if (!suggestedFileName.isEmpty())
         name = suggestedFileName;
     else
         name = url.fileName(); // can be empty, e.g. in case http://www.kde.org/
 
-    dlg->selectFile( name );
-    if ( dlg->exec() )
+    dlg->selectFile(name);
+    if (dlg->exec())
     {
         QUrl destURL(dlg->selectedUrls().first());
-        if ( destURL.isValid() )
+        if (destURL.isValid())
         {
             saveUrlUsingKIO(url, destURL, window, args.metaData());
         }

@@ -41,7 +41,6 @@
 #include <kconfig.h>
 
 #include <kmessagebox.h>
-#include <kfiledialog.h>
 #include <kpagedialog.h>
 #include <kactioncollection.h>
 #include <kcombobox.h>

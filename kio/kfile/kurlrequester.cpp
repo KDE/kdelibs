@@ -201,6 +201,21 @@ public:
         dlg->setFileMode(fileMode);
     }
 
+    // Converts from "*.foo *.bar|Comment" to "Comment (*.foo *.bar)"
+    QStringList kToQFilters(const QString &filters) const {
+        QStringList qFilters = filters.split('\n', QString::SkipEmptyParts);
+
+        for (QStringList::iterator it = qFilters.begin(); it != qFilters.end(); ++it)
+        {
+            int sep = it->indexOf('|');
+            QString globs = it->left(sep);
+            QString desc  = it->mid(sep+1);
+            *it = QString("%1 (%2)").arg(desc).arg(globs);
+        }
+
+        return qFilters;
+    }
+
     // slots
     void _k_slotUpdateUrl();
     void _k_slotOpenDialog();
@@ -211,7 +226,7 @@ public:
     KLineEdit *edit;
     KComboBox *combo;
     KFile::Modes fileDialogMode;
-    QStringList fileDialogFilters;
+    QString fileDialogFilter;
     KEditListWidget::CustomEditor editor;
     KUrlDragPushButton *myButton;
     QFileDialog *myFileDialog;
@@ -442,25 +457,26 @@ KFile::Modes KUrlRequester::mode() const
     return d->fileDialogMode;
 }
 
-void KUrlRequester::setFilters(const QStringList &filters)
+void KUrlRequester::setFilter(const QString &filter)
 {
-    d->fileDialogFilters = filters;
+    d->fileDialogFilter = filter;
+
     if (d->myFileDialog) {
-        d->myFileDialog->setNameFilters(d->fileDialogFilters);
+        d->myFileDialog->setNameFilters(d->kToQFilters(d->fileDialogFilter));
     }
 }
 
-QStringList KUrlRequester::filters() const
+QString KUrlRequester::filter( ) const
 {
-    return d->fileDialogFilters;
+    return d->fileDialogFilter;
 }
 
-QFileDialog * KUrlRequester::fileDialog() const
+QFileDialog* KUrlRequester::fileDialog() const
 {
     if (!d->myFileDialog) {
         QWidget *p = parentWidget();
         d->myFileDialog = new QFileDialog(p, windowTitle());
-        d->myFileDialog->setNameFilters(d->fileDialogFilters);
+        d->myFileDialog->setNameFilters(d->kToQFilters(d->fileDialogFilter));
 
         d->applyFileMode(d->myFileDialog, d->fileDialogMode);
 

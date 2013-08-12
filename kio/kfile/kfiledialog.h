@@ -45,6 +45,10 @@ class KPreviewWidgetBase;
 class KFileDialogPrivate;
 
 /**
+ * @warning This class should be avoided in new code.
+ * QFileDialog should be used instead.
+ * @see QFileDialog
+ *
  * Provides a user (and developer) friendly way to
  * select files and directories.
  *

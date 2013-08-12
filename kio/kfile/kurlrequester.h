@@ -59,7 +59,7 @@ class KIO_EXPORT KUrlRequester : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
-    Q_PROPERTY( QStringList filters READ filters WRITE setFilters )
+    Q_PROPERTY( QString filter READ filter WRITE setFilter )
     Q_PROPERTY( KFile::Modes mode READ mode WRITE setMode )
     #ifndef KDE_NO_DEPRECATED
     Q_PROPERTY( QString clickMessage READ clickMessage WRITE setClickMessage )
@@ -129,16 +129,16 @@ public:
     KFile::Modes mode() const;
 
     /**
-     * Sets the filters for the file dialog.
+     * Sets the filters for the file dialog, separated by \n.
      * @see QFileDialog::setNameFilters()
      */
-    void setFilters( const QStringList& filters );
+    void setFilter( const QString& filter );
 
     /**
-    * Returns the current filter for the file dialog.
+    * Returns the filters for the file dialog, separated by \n.
     * @see QFileDialog::nameFilters()
     */
-    QStringList filters() const;
+    QString filter() const;
 
     /**
      * @returns a pointer to the filedialog.
