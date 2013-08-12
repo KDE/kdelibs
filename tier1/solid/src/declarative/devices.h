@@ -63,7 +63,7 @@ class DevicesPrivate;
  *            networkShares.devices[0]
  *        ).url
  *    }
- *
+ * </code>
  */
 class Devices: public QObject {
     Q_OBJECT

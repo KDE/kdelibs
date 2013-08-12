@@ -29,80 +29,138 @@
 
 namespace Solid {
 
-DevicesPrivate::DevicesPrivate(Devices * parent)
-    : q(parent)
+// Maps queries to the handler objects
+QHash<QString, QWeakPointer<DevicesQueryPrivate> > DevicesQueryPrivate::handlers;
+
+QSharedPointer<DevicesQueryPrivate> DevicesQueryPrivate::forQuery(const QString & query)
+{
+    if (handlers.contains(query)) {
+        return handlers[query].toStrongRef();
+    }
+
+    // Creating a new shared backend instance
+    QSharedPointer<DevicesQueryPrivate> backend(new DevicesQueryPrivate(query));
+
+    // Storing a weak pointer to the backend
+    handlers[query] = backend;
+
+    // Returns the newly created backend
+    // TODO: It would be nicer with std::move and STL's smart pointers,
+    // but RVO should optimize this out.
+    return backend;
+}
+
+DevicesQueryPrivate::DevicesQueryPrivate(const QString & query)
+    : query(query)
+    , predicate(Solid::Predicate::fromString(query))
     , notifier(Solid::DeviceNotifier::instance())
-    , initialized(false)
 {
     connect(notifier, &Solid::DeviceNotifier::deviceAdded,
-            this,     &DevicesPrivate::addDevice);
+            this,     &DevicesQueryPrivate::addDevice);
     connect(notifier, &Solid::DeviceNotifier::deviceRemoved,
-            this,     &DevicesPrivate::removeDevice);
-}
+            this,     &DevicesQueryPrivate::removeDevice);
 
-void DevicesPrivate::addDevice(const QString & udi)
-{
-    if (!initialized) return;
+    if (!query.isEmpty() && !predicate.isValid()) return;
 
-    if (predicate.matches(Solid::Device(udi))) {
-        devices << udi;
-        emit q->deviceAdded(udi);
-        emitChange();
-
-        if (devices.count() == 1) {
-            emit q->isEmptyChanged(false);
-        }
+    Q_FOREACH(const Solid::Device & device, Solid::Device::listFromQuery(predicate)) {
+        matchingDevices << device.udi();
     }
 }
 
-void DevicesPrivate::removeDevice(const QString & udi)
+DevicesQueryPrivate::~DevicesQueryPrivate()
 {
-    if (!initialized) return;
+    handlers.remove(query);
+}
 
-    if (devices.contains(udi)) {
-        devices.removeAll(udi);
-        emit q->deviceRemoved(udi);
-        emitChange();
-
-        if (devices.count() == 0) {
-            emit q->isEmptyChanged(true);
-        }
+void DevicesQueryPrivate::addDevice(const QString & udi)
+{
+    if (predicate.isValid() && predicate.matches(Solid::Device(udi))) {
+        matchingDevices << udi;
+        emit deviceAdded(udi);
     }
 }
 
-void DevicesPrivate::emitChange() const
+void DevicesQueryPrivate::removeDevice(const QString & udi)
 {
-    emit q->countChanged(devices.count());
-    emit q->devicesChanged(devices);
+    if (predicate.isValid() && matchingDevices.contains(udi)) {
+        matchingDevices.removeAll(udi);
+        emit deviceRemoved(udi);
+    }
+}
+
+const QStringList & DevicesQueryPrivate::devices() const
+{
+    return matchingDevices;
+}
+
+
+DevicesPrivate::DevicesPrivate(Devices * parent)
+    : q(parent)
+{
 }
 
 void DevicesPrivate::initialize()
 {
-    if (initialized) return;
+    if (backend) return;
 
-    qDebug() << "This is the query to be used: " << query;
-    predicate = Solid::Predicate::fromString(query);
-    qDebug() << "Predicate: " << predicate.isValid() << " " << predicate.toString();
+    backend = DevicesQueryPrivate::forQuery(query);
 
-    if (!query.isEmpty() && !predicate.isValid()) return;
+    connect(backend.data(), &DevicesQueryPrivate::deviceAdded,
+            this, &DevicesPrivate::addDevice);
+    connect(backend.data(), &DevicesQueryPrivate::deviceRemoved,
+            this, &DevicesPrivate::removeDevice);
 
-    initialized = true;
+    const int matchesCount = backend->devices().count();
 
-    Q_FOREACH(const Solid::Device & device, Solid::Device::listFromQuery(predicate)) {
-        devices << device.udi();
-    }
-
-    if (devices.count()) {
+    if (matchesCount != 0) {
         emit q->isEmptyChanged(false);
+        emit q->countChanged(matchesCount);
+        emit q->devicesChanged(backend->devices());
     }
 }
 
 void DevicesPrivate::reset()
 {
-    if (!initialized) return;
-    initialized = false;
-    devices.clear();
+    if (!backend) return;
+
+    backend->disconnect(this);
+    backend.reset();
+
+    emit q->isEmptyChanged(true);
+    emit q->countChanged(0);
+    emit q->devicesChanged(QStringList());
 }
+
+void DevicesPrivate::addDevice(const QString & udi)
+{
+    if (!backend) return;
+
+    const int count = backend->devices().count();
+
+    if (count == 1) {
+        emit q->isEmptyChanged(false);
+    }
+
+    emit q->countChanged(count);
+    emit q->devicesChanged(backend->devices());
+    emit q->deviceAdded(udi);
+}
+
+void DevicesPrivate::removeDevice(const QString & udi)
+{
+    if (!backend) return;
+
+    const int count = backend->devices().count();
+
+    if (count == 0) {
+        emit q->isEmptyChanged(true);
+    }
+
+    emit q->countChanged(count);
+    emit q->devicesChanged(backend->devices());
+    emit q->deviceRemoved(udi);
+}
+
 
 Devices::Devices(QObject * parent)
     : QObject(parent), d(new DevicesPrivate(this))
@@ -117,24 +175,24 @@ Devices::~Devices()
 bool Devices::isEmpty() const
 {
     d->initialize();
-    return d->devices.count() == 0;
+    return count() == 0;
 }
 
 int Devices::count() const
 {
     d->initialize();
-    return d->devices.count();
+    return devices().count();
 }
 
 QStringList Devices::devices() const
 {
     d->initialize();
-    return d->devices;
+    return d->backend->devices();
 }
 
 QString Devices::query() const
 {
-    return d->query;
+    return d->backend->query;
 }
 
 void Devices::setQuery(const QString & query)
@@ -142,7 +200,9 @@ void Devices::setQuery(const QString & query)
     if (d->query == query) return;
 
     d->query = query;
+
     d->reset();
+    d->initialize();
 
     emit queryChanged(query);
 }
@@ -153,7 +213,6 @@ QObject * Devices::device(const QString & udi, const QString & _type)
 
     return Solid::Device(udi).asDeviceInterface(type);
 }
-
 } // namespace Solid
 
 #include "devices.moc"
