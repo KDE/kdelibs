@@ -66,7 +66,7 @@ namespace ThreadWeaver {
 	    pointer. When a Nil pointer is returned, it tells the thread to
 	    exit.
 	*/
-        void run();
+        void run() Q_DECL_OVERRIDE;
 
 	/** Returns the thread id.
 	    This id marks the respective Thread object, and must

@@ -46,26 +46,26 @@ class DestructedState : public WeaverImplState
 {
 public:
     explicit DestructedState(Queue *weaver);
-    void shutDown();
-    WeaverImpl* weaver();
-    const WeaverImpl* weaver() const;
-    void setMaximumNumberOfThreads(int cap);
-    int maximumNumberOfThreads() const;
-    int currentNumberOfThreads() const;
-    void registerObserver(WeaverObserver *obs);
-    void enqueue(JobPointer job);
-    bool dequeue(JobPointer job);
-    void dequeue();
-    void finish();
-    bool isEmpty() const;
-    bool isIdle() const;
-    int queueLength() const;
-    void requestAbort();
-    void suspend();
-    void resume();
-    JobPointer applyForWork(Thread *th, JobPointer previous);
-    void waitForAvailableJob ( Thread *th );
-    StateId stateId() const;
+    void shutDown() Q_DECL_OVERRIDE;
+    WeaverImpl* weaver() Q_DECL_OVERRIDE;
+    const WeaverImpl* weaver() const Q_DECL_OVERRIDE;
+    void setMaximumNumberOfThreads(int cap) Q_DECL_OVERRIDE;
+    int maximumNumberOfThreads() const Q_DECL_OVERRIDE;
+    int currentNumberOfThreads() const Q_DECL_OVERRIDE;
+    void registerObserver(WeaverObserver *obs) Q_DECL_OVERRIDE;
+    void enqueue(JobPointer job) Q_DECL_OVERRIDE;
+    bool dequeue(JobPointer job) Q_DECL_OVERRIDE;
+    void dequeue() Q_DECL_OVERRIDE;
+    void finish() Q_DECL_OVERRIDE;
+    bool isEmpty() const Q_DECL_OVERRIDE;
+    bool isIdle() const Q_DECL_OVERRIDE;
+    int queueLength() const Q_DECL_OVERRIDE;
+    void requestAbort() Q_DECL_OVERRIDE;
+    void suspend() Q_DECL_OVERRIDE;
+    void resume() Q_DECL_OVERRIDE;
+    JobPointer applyForWork(Thread *th, JobPointer previous) Q_DECL_OVERRIDE;
+    void waitForAvailableJob ( Thread *th ) Q_DECL_OVERRIDE;
+    StateId stateId() const Q_DECL_OVERRIDE;
 };
 
 }

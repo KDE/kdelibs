@@ -12,6 +12,6 @@ public:
     ManagedJobPointer(JobInterface *job);
 };
 
-};
+}
 
 #endif // MANAGEDJOBPOINTER_H

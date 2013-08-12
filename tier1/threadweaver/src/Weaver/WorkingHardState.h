@@ -45,15 +45,15 @@ class WorkingHardState : public WeaverImplState
 public:
     explicit WorkingHardState( WeaverImpl *weaver);
     /** Suspend job processing. */
-    void suspend();
+    void suspend() Q_DECL_OVERRIDE;
     /** Resume job processing. */
-    void resume();
+    void resume() Q_DECL_OVERRIDE;
     /** Assign a job to an idle thread. */
     JobPointer applyForWork(Thread *th, JobPointer previous);
     /** Overload. */
-    void activated();
+    void activated() Q_DECL_OVERRIDE;
     /** reimpl */
-    StateId stateId() const;
+    StateId stateId() const Q_DECL_OVERRIDE;
 };
 
 }

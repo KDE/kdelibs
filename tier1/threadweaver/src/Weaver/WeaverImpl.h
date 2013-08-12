@@ -64,30 +64,30 @@ public:
     virtual ~WeaverImpl ();
     /** Enter Destructed state.
      * Once this method returns, it is save to delete this object. */
-    void shutDown();
-    void shutDown_p();
+    void shutDown() Q_DECL_OVERRIDE;
+    void shutDown_p() Q_DECL_OVERRIDE;
 
-    const State* state() const;
-    State* state();
+    const State* state() const Q_DECL_OVERRIDE;
+    State* state() Q_DECL_OVERRIDE;
 
-    void setMaximumNumberOfThreads( int cap );
-    int maximumNumberOfThreads() const;
-    int currentNumberOfThreads () const;
+    void setMaximumNumberOfThreads(int cap) Q_DECL_OVERRIDE;
+    int maximumNumberOfThreads() const Q_DECL_OVERRIDE;
+    int currentNumberOfThreads () const Q_DECL_OVERRIDE;
 
     /** Set the object state. */
     void setState( StateId );
-    void registerObserver ( WeaverObserver* );
-    void enqueue(JobPointer job);
-    void enqueueRaw(JobInterface* job);
-    bool dequeue(JobPointer job);
-    bool dequeueRaw(JobInterface* job);
-    void dequeue ();
-    void finish();
-    void suspend( );
-    void resume();
-    bool isEmpty () const;
-    bool isIdle () const;
-    int queueLength () const;
+    void registerObserver(WeaverObserver*) Q_DECL_OVERRIDE;
+    void enqueue(JobPointer job) Q_DECL_OVERRIDE;
+    void enqueueRaw(JobInterface* job) Q_DECL_OVERRIDE;
+    bool dequeue(JobPointer job) Q_DECL_OVERRIDE;
+    bool dequeueRaw(JobInterface* job) Q_DECL_OVERRIDE;
+    void dequeue() Q_DECL_OVERRIDE;
+    void finish() Q_DECL_OVERRIDE;
+    void suspend() Q_DECL_OVERRIDE;
+    void resume() Q_DECL_OVERRIDE;
+    bool isEmpty () const Q_DECL_OVERRIDE;
+    bool isIdle () const Q_DECL_OVERRIDE;
+    int queueLength () const Q_DECL_OVERRIDE;
     /** Assign a job to the calling thread.
         This is supposed to be called from the Thread objects in
         the inventory. Do not call this method from your code.
@@ -99,9 +99,9 @@ public:
         met.
         In *previous*, threads give the job they have completed. If this is
         the first job, previous is zero. */
-    virtual JobPointer applyForWork (Thread *thread, JobPointer previous);
+    virtual JobPointer applyForWork (Thread *thread, JobPointer previous) Q_DECL_OVERRIDE;
     /** Wait for a job to become available. */
-    void waitForAvailableJob(Thread *th);
+    void waitForAvailableJob(Thread *th) Q_DECL_OVERRIDE;
     /** Blocks the calling thread until some actor calls assignJobs. */
     void blockThreadUntilJobsAreBeingAssigned(Thread* th);
     /** Blocks the calling thread until some actor calls assignJobs.
@@ -129,7 +129,7 @@ public:
     /** Schedule enqueued jobs to be executed by idle threads.
      * This will try to distribute as many jobs as possible to all idle threads. */
     void assignJobs();
-    void requestAbort();
+    void requestAbort() Q_DECL_OVERRIDE;
 
     /** Dump the current jobs to the console. Not part of the API. */
     void dumpJobs();
@@ -138,22 +138,22 @@ public:
     friend class WeaverImplState;
     friend class SuspendingState;
     void setState_p( StateId );
-    void setMaximumNumberOfThreads_p(int cap);
-    int maximumNumberOfThreads_p() const;
-    int currentNumberOfThreads_p() const;
-    void registerObserver_p(WeaverObserver*);
-    void enqueue_p(Job* job);
+    void setMaximumNumberOfThreads_p(int cap) Q_DECL_OVERRIDE;
+    int maximumNumberOfThreads_p() const Q_DECL_OVERRIDE;
+    int currentNumberOfThreads_p() const Q_DECL_OVERRIDE;
+    void registerObserver_p(WeaverObserver*) Q_DECL_OVERRIDE;
+//    void enqueue_p(Job* job);
     void enqueue_p(JobPointer job);
-    bool dequeue_p(Job* job);
-    bool dequeue_p(JobPointer job);
-    void dequeue_p();
-    void finish_p();
-    void suspend_p( );
-    void resume_p();
-    bool isEmpty_p() const;
-    bool isIdle_p() const;
-    int queueLength_p() const;
-    void requestAbort_p();
+//    bool dequeue_p(Job* job);
+    bool dequeue_p(JobPointer job) Q_DECL_OVERRIDE;
+    void dequeue_p() Q_DECL_OVERRIDE;
+    void finish_p() Q_DECL_OVERRIDE;
+    void suspend_p() Q_DECL_OVERRIDE;
+    void resume_p() Q_DECL_OVERRIDE;
+    bool isEmpty_p() const Q_DECL_OVERRIDE;
+    bool isIdle_p() const Q_DECL_OVERRIDE;
+    int queueLength_p() const Q_DECL_OVERRIDE;
+    void requestAbort_p() Q_DECL_OVERRIDE;
 
 Q_SIGNALS:
     /** A Thread has been created. */

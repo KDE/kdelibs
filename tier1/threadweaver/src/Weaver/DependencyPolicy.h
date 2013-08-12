@@ -29,6 +29,8 @@
 #ifndef DEPENDENCYPOLICY_H
 #define DEPENDENCYPOLICY_H
 
+#include <QtGlobal>
+
 template <typename T> class QList;
 
 #include "QueuePolicy.h"
@@ -90,13 +92,13 @@ namespace ThreadWeaver {
         // FIXME add factory method for singleton creation
         static DependencyPolicy& instance();
 
-        bool canRun( JobInterface* );
+        bool canRun(JobInterface*) Q_DECL_OVERRIDE;
 
-        void free( JobInterface* );
+        void free(JobInterface*) Q_DECL_OVERRIDE;
 
-        void release( JobInterface* );
+        void release( JobInterface* ) Q_DECL_OVERRIDE;
 
-        void destructed( JobInterface* );
+        void destructed( JobInterface* ) Q_DECL_OVERRIDE;
 
     protected:
         /** Query whether the job has an unresolved dependency.
