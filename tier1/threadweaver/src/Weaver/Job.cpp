@@ -86,8 +86,6 @@ public:
     ~Private()
     {}
 
-    /* The thread that executes this job. Zero when the job is not executed. */
-    QAtomicPointer<Thread> thread;
     /* The list of QueuePolicies assigned to this Job. */
     QueuePolicyList queuePolicies;
 
@@ -123,7 +121,6 @@ Job::~Job()
 
 void Job::execute(JobPointer job, Thread *th)
 {
-    d->thread.loadAcquire();
     Executor* executor = d->executor.loadAcquire();
     Q_ASSERT(executor); //may never be unset!
     executor->begin(job, th);
@@ -131,7 +128,6 @@ void Job::execute(JobPointer job, Thread *th)
     executor->end(job, th);
     setFinished (true);
     executor->cleanup(job, th);
-    d->thread.storeRelease(0);
 }
 
 void Job::operator ()()
@@ -247,11 +243,6 @@ void Job::removeQueuePolicy(QueuePolicy* policy)
 bool Job::isFinished() const
 {
     return d->finished;
-}
-
-Thread* Job::thread()
-{
-    return d->thread.fetchAndAddOrdered(0);
 }
 
 void Job::setFinished(bool status)

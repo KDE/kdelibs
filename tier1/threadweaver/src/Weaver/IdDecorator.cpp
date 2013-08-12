@@ -30,12 +30,6 @@ void IdDecorator::setFinished(bool status)
     job()->setFinished(status);
 }
 
-Thread *IdDecorator::thread()
-{
-    Q_ASSERT(d);
-    return job()->thread();
-}
-
 void IdDecorator::run(JobPointer self, Thread *thread)
 {
     Q_ASSERT(d);

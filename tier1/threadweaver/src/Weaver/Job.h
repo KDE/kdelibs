@@ -210,13 +210,6 @@ protected:
      * decorated expose the decorator's address, not the address of the decorated object. */
     void defaultEnd(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
 
-    /** Return the thread that executes this job.
-     *
-     * Returns zero of the job is not currently executed.
-     * @note Do not confuse with QObject::thread() const!
-     * @todo rename to executingThread() */
-    Thread *thread() Q_DECL_OVERRIDE;
-
     /** Call with status = true to mark this job as done. */
     void setFinished(bool status) Q_DECL_OVERRIDE;
 
