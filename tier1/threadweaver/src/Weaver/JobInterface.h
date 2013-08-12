@@ -40,7 +40,6 @@ public:
     friend class Executor;
     virtual void defaultBegin(JobPointer job, Thread* thread) = 0;
     virtual void defaultEnd(JobPointer job, Thread* thread) = 0;
-    virtual Thread* thread() = 0;
     virtual void setFinished(bool status) = 0;
     virtual QMutex* mutex() const = 0;
 };

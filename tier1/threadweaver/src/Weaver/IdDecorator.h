@@ -57,7 +57,6 @@ protected:
     void defaultBegin(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
     void defaultEnd(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
 
-    Thread* thread() Q_DECL_OVERRIDE;
     void setFinished(bool status) Q_DECL_OVERRIDE;
     QMutex* mutex() const Q_DECL_OVERRIDE;
 
