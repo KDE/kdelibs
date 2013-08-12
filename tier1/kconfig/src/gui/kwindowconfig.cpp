@@ -21,24 +21,20 @@
 
 #include "kwindowconfig.h"
 
-#include <QApplication>
-#include <QDesktopWidget>
-#include <QWidget>
+#include <QScreen>
+#include <QWindow>
 
 static const char* s_initialSizePropertyName = "_kconfig_initial_size";
 static const char* s_initialScreenSizePropertyName = "_kconfig_initial_screen_size";
 
-void KWindowConfig::saveWindowSize(const QWidget *window, KConfigGroup &config, KConfigGroup::WriteConfigFlags options)
+void KWindowConfig::saveWindowSize(const QWindow *window, KConfigGroup &config, KConfigGroup::WriteConfigFlags options)
 {
     if (!window)
         return;
-    const int scnum = QApplication::desktop()->screenNumber(window);
-    const QRect desk = QApplication::desktop()->screenGeometry(scnum);
+    const QRect desk = window->screen()->geometry();
 
     const QSize sizeToSave = window->size();
-    // TODO Qt5: use windowState()
-    // and port to Qt::WindowState instead of bool
-    const bool isMaximized = window->isMaximized();
+    const bool isMaximized = window->windowState() & Qt::WindowMaximized;
 
     const QString screenMaximizedString(QString::fromLatin1("Window-Maximized %1x%2").arg(desk.height()).arg(desk.width()));
     // Save size only if window is not maximized
@@ -60,18 +56,16 @@ void KWindowConfig::saveWindowSize(const QWidget *window, KConfigGroup &config, 
 
 }
 
-void KWindowConfig::restoreWindowSize(QWidget* window, const KConfigGroup& config)
+void KWindowConfig::restoreWindowSize(QWindow* window, const KConfigGroup& config)
 {
     if (!window)
         return;
 
-    const int scnum = QApplication::desktop()->screenNumber(window);
-    const QRect desk = QApplication::desktop()->screenGeometry(scnum);
+    const QRect desk = window->screen()->geometry();
 
-    const int width = config.readEntry(QString::fromLatin1("Width %1").arg(desk.width()), window->sizeHint().width());
-    const int height = config.readEntry(QString::fromLatin1("Height %1").arg(desk.height()), window->sizeHint().height());
-    // TODO Qt5: use of Qt::WindowState instead of bool
-    const int isMaximized = config.readEntry(QString::fromLatin1("Window-Maximized %1x%2").arg(desk.height()).arg(desk.width()), false);
+    const int width = config.readEntry(QString::fromLatin1("Width %1").arg(desk.width()), window->size().width());
+    const int height = config.readEntry(QString::fromLatin1("Height %1").arg(desk.height()), window->size().height());
+    const bool isMaximized = config.readEntry(QString::fromLatin1("Window-Maximized %1x%2").arg(desk.height()).arg(desk.width()), false);
 
     // Check default size
     const QSize defaultSize(window->property(s_initialSizePropertyName).toSize());
@@ -84,8 +78,6 @@ void KWindowConfig::restoreWindowSize(QWidget* window, const KConfigGroup& confi
     // If window is maximized set maximized state and in all case set the size
     window->resize(width, height);
     if (isMaximized) {
-        // TODO Qt5: use set state
-        // window->setState(Qt::WindowMaximized);
-        window->showMaximized();
+        window->setWindowState(Qt::WindowMaximized);
     }
 }

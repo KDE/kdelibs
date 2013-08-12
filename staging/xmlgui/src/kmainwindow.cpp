@@ -534,7 +534,7 @@ void KMainWindow::saveMainWindowSettings(KConfigGroup &cg)
 
     // Called by session management - or if we want to save the window size anyway
     if ( d->autoSaveWindowSize )
-        KWindowConfig::saveWindowSize( this, cg );
+        KWindowConfig::saveWindowSize( windowHandle(), cg );
 
     // One day will need to save the version number, but for now, assume 0
     // Utilise the QMainWindow::saveState() functionality.
@@ -624,7 +624,7 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
     d->letDirtySettings = false;
 
     if (!d->sizeApplied) {
-        KWindowConfig::restoreWindowSize(this, cg);
+        KWindowConfig::restoreWindowSize(windowHandle(), cg);
         d->sizeApplied = true;
     }
 
@@ -685,14 +685,14 @@ void KMainWindow::applyMainWindowSettings(const KConfigGroup &cg, bool force)
 #ifndef KDE_NO_DEPRECATED
 void KMainWindow::restoreWindowSize( const KConfigGroup & cg )
 {
-    KWindowConfig::restoreWindowSize(this, cg);
+    KWindowConfig::restoreWindowSize(windowHandle(), cg);
 }
 #endif
 
 #ifndef KDE_NO_DEPRECATED
 void KMainWindow::saveWindowSize( KConfigGroup & cg ) const
 {
-    KWindowConfig::saveWindowSize(this, cg);
+    KWindowConfig::saveWindowSize(windowHandle(), cg);
 }
 #endif
 
@@ -872,7 +872,7 @@ void KMainWindowPrivate::_k_slotSettingsChanged(int category)
 void KMainWindowPrivate::_k_slotSaveAutoSaveSize()
 {
     if (autoSaveGroup.isValid()) {
-        KWindowConfig::saveWindowSize(q, autoSaveGroup);
+        KWindowConfig::saveWindowSize(q->windowHandle(), autoSaveGroup);
     }
 }
 

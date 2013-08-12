@@ -136,7 +136,7 @@ void KCommentWidget::slotLinkActivated(const QString& link)
     layout->addWidget(buttonBox);
 
     KConfigGroup dialogConfig(KSharedConfig::openConfig(), "Nepomuk KEditCommentDialog");
-    KWindowConfig::restoreWindowSize(dialog, dialogConfig);
+    KWindowConfig::restoreWindowSize(dialog->windowHandle(), dialogConfig);
 
     if (dialog->exec() == QDialog::Accepted) {
         const QString oldText = m_comment;
@@ -149,7 +149,7 @@ void KCommentWidget::slotLinkActivated(const QString& link)
     }
 
     if (dialog != 0) {
-        KWindowConfig::saveWindowSize(dialog, dialogConfig);
+        KWindowConfig::saveWindowSize(dialog->windowHandle(), dialogConfig);
         delete dialog;
         dialog = 0;
     }

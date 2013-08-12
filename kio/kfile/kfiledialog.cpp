@@ -281,8 +281,8 @@ KFileDialog::KFileDialog(const QUrl& startDir, const QString& filter,
         return;
     }
 
-    KWindowConfig::restoreWindowSize(this, d->cfgGroup); // call this before the fileQWidget is set as the main widget.
-                                                           // otherwise the sizes for the components are not obeyed (ereslibre)
+    KWindowConfig::restoreWindowSize(windowHandle(), d->cfgGroup); // call this before the fileQWidget is set as the main widget.
+                                                                   // otherwise the sizes for the components are not obeyed (ereslibre)
 
     d->w->setFilter(filter);
     QVBoxLayout *layout = new QVBoxLayout;
@@ -944,7 +944,7 @@ void KFileDialog::hideEvent( QHideEvent *e )
     if (d->native)
         return;
 
-    KWindowConfig::saveWindowSize(this, d->cfgGroup, KConfigBase::Persistent);
+    KWindowConfig::saveWindowSize(windowHandle(), d->cfgGroup, KConfigBase::Persistent);
 
     QDialog::hideEvent( e );
 }

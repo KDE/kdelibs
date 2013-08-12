@@ -735,16 +735,19 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
         // do not interfere with the "toolbarVisibility" unit test
         KConfigGroup cg(KSharedConfig::openConfig(), "testAutoSaveSettings");
         TestXmlGuiWindow mw(xml);
+        mw.show();
         mw.setAutoSaveSettings(cg);
 
         // Test resizing first (like show() does).
         mw.reallyResize(400, 400);
+        QTest::qWait(200);
 
         mw.createActions(QStringList() << "go_up");
         mw.createGUI();
 
         // Resize again, should be saved
         mw.reallyResize(800, 600);
+        QTest::qWait(200);
 
         KToolBar* mainToolBar = mw.toolBarByName("mainToolBar");
         QCOMPARE(mw.toolBarArea(mainToolBar), Qt::TopToolBarArea);
@@ -767,7 +770,9 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
     {
         KConfigGroup cg(KSharedConfig::openConfig(), "testAutoSaveSettings");
         TestXmlGuiWindow mw2(xml);
+        mw2.show();
         mw2.setAutoSaveSettings(cg);
+        QTest::qWait(200);
         // Check window size was restored
         QCOMPARE(mw2.size(), QSize(800, 600));
 
@@ -776,6 +781,7 @@ void KXmlGui_UnitTest::testAutoSaveSettings()
 
         // Force window layout to happen
         mw2.reallyResize(800, 600);
+        QTest::qWait(200);
 
         // Check toolbar positions were restored
         KToolBar* mainToolBar = mw2.toolBarByName("mainToolBar");
