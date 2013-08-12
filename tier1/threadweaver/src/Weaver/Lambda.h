@@ -6,18 +6,22 @@
 
 namespace ThreadWeaver {
 
-class THREADWEAVER_EXPORT Lambda : public Job
+/** @brief Lambda is a template that takes any type on which operator() is available, and executes it in run(). */
+template <typename T>
+class Lambda : public Job
 {
 public:
-    explicit Lambda(void (*payload)() = 0);
-    ~Lambda();
+    explicit Lambda(T t_)
+        : t(t_)
+    {}
 
 protected:
-    void run(JobPointer self, Thread* thread) Q_DECL_FINAL;
+    void run(JobPointer, Thread*) Q_DECL_FINAL {
+        t();
+    }
 
 private:
-    class Private;
-    Private* const d;
+    T t;
 };
 
 }
