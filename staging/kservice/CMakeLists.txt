@@ -40,6 +40,7 @@ install(EXPORT KServiceTargets DESTINATION "${CMAKECONFIG_INSTALL_DIR}" FILE KSe
 
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfig.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/KServiceConfigVersion.cmake"
+              "${CMAKE_CURRENT_SOURCE_DIR}/KServiceMacros.cmake"
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
        )

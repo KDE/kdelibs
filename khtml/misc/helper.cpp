@@ -28,9 +28,9 @@
 #include <xml/dom_stringimpl.h>
 #include <rendering/render_object.h>
 #include <kconfig.h>
+#include <kcolorscheme.h>
 #include <ksharedconfig.h>
 #include <kconfiggroup.h>
-#include <kglobalsettings.h>
 #include <QToolTip>
 #include "css/cssvalues.h"
 
@@ -175,15 +175,15 @@ QColor khtml::colorForCSSValue( int css_value )
             case CSS_VAL_ACTIVEBORDER:
                 return qApp->palette().color(QPalette::Normal, QPalette::Window);
             case CSS_VAL_ACTIVECAPTION:
-                return KGlobalSettings::activeTitleColor();
+                return KColorScheme(QPalette::Active, KColorScheme::Window).background(KColorScheme::ActiveBackground).color();
             case CSS_VAL_CAPTIONTEXT:
-                return KGlobalSettings::activeTextColor();
+                return KColorScheme(QPalette::Active, KColorScheme::Window).foreground(KColorScheme::ActiveText).color();
             case CSS_VAL_INACTIVEBORDER:
                 return qApp->palette().color(QPalette::Inactive, QPalette::Window);
             case CSS_VAL_INACTIVECAPTION:
-                return KGlobalSettings::inactiveTitleColor();
+                return KColorScheme(QPalette::Inactive, KColorScheme::Window).background().color();
             case CSS_VAL_INACTIVECAPTIONTEXT:
-                return KGlobalSettings::inactiveTextColor();
+                return KColorScheme(QPalette::Inactive, KColorScheme::Window).foreground().color();
             case CSS_VAL_BACKGROUND: // Desktop background - no way to get this information from Plasma
                 return qApp->palette().color(QPalette::Normal, QPalette::Highlight);
             default:

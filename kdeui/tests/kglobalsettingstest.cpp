@@ -49,6 +49,8 @@ void KGlobalSettingsTest::initTestCase()
     if (!QDBusConnection::sessionBus().isConnected() || !(bus = QDBusConnection::sessionBus().interface())) {
         QFAIL("Session bus not found");
     }
+
+    QVERIFY(!KGlobalSettings::showFilePreview(QUrl("audiocd:/")));
 }
 
 #define CREATE_ALL_SPYS \
