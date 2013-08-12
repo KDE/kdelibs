@@ -8,7 +8,7 @@ class AppendCharacterAndVerifyJob : public AppendCharacterJob
 public:
     AppendCharacterAndVerifyJob();
     void setValues(QChar character, QString *stringref, const QString& expected);
-    void run();
+    void run(ThreadWeaver::JobPointer, ThreadWeaver::Thread*);
 
 private:
     QString m_expected;

@@ -13,7 +13,7 @@ public:
     ~Lambda();
 
 protected:
-    void run() Q_DECL_FINAL;
+    void run(JobPointer self, Thread* thread) Q_DECL_FINAL;
 
 private:
     class Private;

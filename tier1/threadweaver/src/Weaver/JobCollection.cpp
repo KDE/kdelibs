@@ -188,7 +188,7 @@ void JobCollection::execute(JobPointer job, Thread *thread)
     Job::execute(job, thread);
 }
 
-void JobCollection::run()
+void JobCollection::run(JobPointer, Thread*)
 {
     //empty
 }

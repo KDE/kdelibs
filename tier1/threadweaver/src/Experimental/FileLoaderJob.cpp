@@ -54,7 +54,7 @@ const char* FileLoaderJob::data () const
     }
 }
 
-void FileLoaderJob::run()
+void FileLoaderJob::run(JobPointer, Thread*)
 {
     if( m_filename.isEmpty() ) {
         qDebug() << "FileLoaderJob::run: empty filename.";

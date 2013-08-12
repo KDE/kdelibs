@@ -20,9 +20,9 @@ void Executor::cleanup(JobPointer, Thread *)
 {
 }
 
-void Executor::run(JobPointer job)
+void Executor::run(JobPointer job, Thread *thread)
 {
-    job->run();
+    job->run(job, thread);
 }
 
 }

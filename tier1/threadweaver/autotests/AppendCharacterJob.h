@@ -4,6 +4,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QMutex>
 
+#include <JobPointer.h>
 #include <Job.h>
 #include <DebuggingAids.h>
 
@@ -26,7 +27,7 @@ public:
         m_stringref = stringref;
     }
 
-    void run()
+    void run(ThreadWeaver::JobPointer, ThreadWeaver::Thread*)
     {
         QMutexLocker locker ( &s_GlobalMutex );
         m_stringref->append( m_c );
@@ -73,9 +74,8 @@ public:
 //        debug(0, "~BusyJob\n");
     }
 
-    void run()
+    void run(ThreadWeaver::JobPointer, ThreadWeaver::Thread*)
     {
-        using namespace ThreadWeaver;
 //        debug(0, "BusyJob: entered run()\n");
         for (int i = 0; i < 100; ++i) {
             int k = (i << 3) + (i >> 4);

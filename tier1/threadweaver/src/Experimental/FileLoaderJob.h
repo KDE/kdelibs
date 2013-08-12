@@ -59,7 +59,7 @@ public:
     int size () const;
 
 protected:
-    void run();
+    void run(JobPointer self, Thread* thread);
 
     /** Filename. */
     const QString m_filename;

@@ -34,11 +34,11 @@ public:
     }
 
     void executeRun() {
-        run();
+        run(ThreadWeaver::JobPointer(), 0);
     }
 
 protected:
-    void run() {
+    void run(ThreadWeaver::JobPointer, ThreadWeaver::Thread*) {
         std::vector<quint64> numbers(m_count);
         std::generate(numbers.begin(), numbers.end(), []() -> quint64 { static quint64 i = 0; return i++; });
         m_result = std::accumulate(numbers.begin(), numbers.end(), 0);

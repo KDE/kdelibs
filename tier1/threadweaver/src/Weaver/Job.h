@@ -186,8 +186,15 @@ protected:
     friend class Executor;
     /** The method that actually performs the job.
      *
-     * It is called from execute(). This method is the one to overload it with the job's task. */
-    virtual void run () = 0;
+     * It is called from execute(). This method is the one to overload it with the job's task.
+     *
+     * The Job will be executed in the specified thread. thread may be zero, indicating that the job is being executed some
+     * other way (for example, synchroneously by some other job). self specifies the job as the queue sees it. Whenever publishing
+     * information about the job to the outside world, for example by emitting signals, use self, not this. self is the reference
+     * counted object handled by the queue. Using it as signal parameters will amongst other things prevent thejob from being
+     * memory managed and deleted.
+     */
+    virtual void run(JobPointer self, Thread* thread) = 0;
 
     /** @brief Perform standard tasks before starting the execution of a job.
      *

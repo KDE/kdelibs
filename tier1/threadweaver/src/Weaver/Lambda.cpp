@@ -18,7 +18,7 @@ Lambda::~Lambda()
     delete d;
 }
 
-void Lambda::run()
+void Lambda::run(JobPointer, Thread*)
 {
     if (d->payload) d->payload();
 }

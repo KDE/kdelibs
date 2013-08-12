@@ -19,7 +19,7 @@ public:
         m_exists = false;
     }
 
-    void run() {}
+    void run(ThreadWeaver::JobPointer, ThreadWeaver::Thread*) {}
 
 private:
     bool& m_exists;

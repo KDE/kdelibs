@@ -39,7 +39,7 @@ public:
     SecondThreadThatQueues();
 
 protected:
-    void run ();
+    void run();
 };
 
 class QueueTests : public QObject
