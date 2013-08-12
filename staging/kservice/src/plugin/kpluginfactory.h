@@ -130,7 +130,7 @@ name::~name() {}
  * class MyPlugin;
  *
  * K_PLUGIN_FACTORY_WITH_JSON(MyPluginFactory,
- *                  metadata.json,
+ *                  "metadata.json",
  *                  registerPlugin<MyPlugin>();
  *                 )
  *
