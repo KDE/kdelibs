@@ -19,10 +19,10 @@ public:
     ExecuteWrapper();
     Executor* wrap(Executor* previous);
     Executor* unwrap(JobPointer job);
-    void begin(JobPointer job, Thread *);
-    void execute(JobPointer job, Thread *thread);
+    void begin(JobPointer job, Thread *) Q_DECL_OVERRIDE;
+    void execute(JobPointer job, Thread *thread) Q_DECL_OVERRIDE;
     void executeWrapped(JobPointer job, Thread* thread);
-    void end(JobPointer job, Thread *);
+    void end(JobPointer job, Thread *) Q_DECL_OVERRIDE;
 
 private:
     QAtomicPointer<Executor> wrapped;

@@ -75,10 +75,10 @@ public:
 
 protected:
     /** Overload to queue the collection. */
-    void aboutToBeQueued_locked(QueueAPI *api);
+    void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** Overload to dequeue the collection. */
-    void aboutToBeDequeued_locked(QueueAPI *api);
+    void aboutToBeDequeued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** Return a reference to the job in the job list at position i. */
     JobPointer jobAt(int i);
@@ -102,12 +102,12 @@ protected:
 
 private:
     /** Overload the execute method. */
-    void execute(Thread*, JobPointer job);
+    void execute(Thread*, JobPointer job) Q_DECL_OVERRIDE;
 
 
     /** Overload run().
      * We have to. */
-    void run();
+    void run() Q_DECL_OVERRIDE;
 
     /** Dequeue all elements of the collection.
      * Note: This will not dequeue the collection itself.

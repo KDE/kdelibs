@@ -46,7 +46,7 @@ public:
 
 protected:
     /** Overload to queue the sequence. */
-    void aboutToBeQueued_locked ( QueueAPI *api );
+    void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** reimplemented */
     void elementFinished(JobPointer job, Thread *thread) Q_DECL_OVERRIDE;

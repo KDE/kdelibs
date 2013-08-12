@@ -29,6 +29,8 @@ $Id: Job.h 32 2005-08-17 08:38:01Z mirko $
 #ifndef RESOURCE_RESTRICTION_POLICY_H
 #define RESOURCE_RESTRICTION_POLICY_H
 
+#include <QtGlobal>
+
 #include "QueuePolicy.h"
 
 namespace ThreadWeaver {
@@ -54,7 +56,7 @@ namespace ThreadWeaver {
     class THREADWEAVER_EXPORT ResourceRestrictionPolicy : public QueuePolicy
     {
     public:
-        explicit ResourceRestrictionPolicy ( int cap = 0);
+        explicit ResourceRestrictionPolicy(int cap = 0);
         ~ResourceRestrictionPolicy();
 
         /**
@@ -65,12 +67,12 @@ namespace ThreadWeaver {
          * than the set amount. This setting only limits the starting of new jobs.
          * @param newCap the new cap to limit the amount of parallel jobs.
          */
-        void setCap (int newCap);
+        void setCap(int newCap);
         int cap() const;
-        bool canRun( JobInterface* );
-        void free (JobInterface*);
-        void release (JobInterface*);
-        void destructed (JobInterface*);
+        bool canRun(JobInterface*) Q_DECL_OVERRIDE;
+        void free(JobInterface*) Q_DECL_OVERRIDE;
+        void release(JobInterface*) Q_DECL_OVERRIDE;
+        void destructed(JobInterface*) Q_DECL_OVERRIDE;
 
     private:
         class Private;

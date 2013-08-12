@@ -48,17 +48,17 @@ public:
     explicit ShuttingDownState(Queue *weaver);
 
     /** Shut down the queue. */
-    void shutDown();
+    void shutDown() Q_DECL_OVERRIDE;
     /** Suspend job processing. */
-    void suspend();
+    void suspend() Q_DECL_OVERRIDE;
     /** Resume job processing. */
-    void resume();
+    void resume() Q_DECL_OVERRIDE;
     /** Assign a job to an idle thread. */
-    JobPointer applyForWork(Thread *th, JobPointer previous);
+    JobPointer applyForWork(Thread *th, JobPointer previous) Q_DECL_OVERRIDE;
     /** Wait (by suspending the calling thread) until a job becomes available. */
-    void waitForAvailableJob(Thread *th);
+    void waitForAvailableJob(Thread *th) Q_DECL_OVERRIDE;
     /** reimpl */
-    StateId stateId() const;
+    StateId stateId() const Q_DECL_OVERRIDE;
 };
 
 }

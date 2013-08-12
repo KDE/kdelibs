@@ -46,46 +46,46 @@ class WeaverImplState : public State
 public:
     explicit WeaverImplState( Queue* weaver );
 
-    const State* state() const;
+    const State* state() const Q_DECL_OVERRIDE;
 
     /** Shut down the queue. */
-    void shutDown();
+    void shutDown() Q_DECL_OVERRIDE;
     /** Set the maximum number of threads this Weaver object may start. */
-    void setMaximumNumberOfThreads( int cap );
+    void setMaximumNumberOfThreads(int cap) Q_DECL_OVERRIDE;
     /** Get the maximum number of threads this Weaver may start. */
-    int maximumNumberOfThreads() const;
+    int maximumNumberOfThreads() const Q_DECL_OVERRIDE;
     /** Returns the current number of threads in the inventory. */
-    int currentNumberOfThreads () const;
+    int currentNumberOfThreads() const Q_DECL_OVERRIDE;
     /** Register an observer. */
-    void registerObserver(WeaverObserver* obs);
+    void registerObserver(WeaverObserver* obs) Q_DECL_OVERRIDE;
     /** Enqueue a job. */
-    void enqueue(JobPointer job);
+    void enqueue(JobPointer job) Q_DECL_OVERRIDE;
     /** Dequeue a job. */
-    bool dequeue(JobPointer job);
+    bool dequeue(JobPointer job) Q_DECL_OVERRIDE;
     /** Dequeue all jobs. */
-    void dequeue();
+    void dequeue() Q_DECL_OVERRIDE;
     /** Finish all queued jobs. */
-    void finish();
+    void finish() Q_DECL_OVERRIDE;
     /** Are no more jobs queued? */
-    bool isEmpty() const;
+    bool isEmpty() const Q_DECL_OVERRIDE;
     /** Are all threads waiting? */
-    bool isIdle() const;
+    bool isIdle() const Q_DECL_OVERRIDE;
     /** How many jobs are currently queued? */
-    int queueLength() const;
+    int queueLength() const Q_DECL_OVERRIDE;
     /** Request abort for all queued and currently executed jobs. */
-    void requestAbort();
+    void requestAbort() Q_DECL_OVERRIDE;
     /** Wait (by suspending the calling thread) until a job becomes available. */
-    void waitForAvailableJob(Thread *th );
+    void waitForAvailableJob(Thread *th ) Q_DECL_OVERRIDE;
 
 protected:
     /** Provide correct return type for WeaverImpl states. */
-    WeaverImpl* weaver();
-    const WeaverImpl* weaver() const;
+    WeaverImpl* weaver() Q_DECL_OVERRIDE;
+    const WeaverImpl* weaver() const Q_DECL_OVERRIDE;
 private:
     /** Enqueue a naked job. Not implemented. */
-    void enqueueRaw(JobInterface* job);
+    void enqueueRaw(JobInterface* job) Q_DECL_OVERRIDE;
     /** Dequeue a raw job. Not implemented. */
-    bool dequeueRaw(JobInterface* job);
+    bool dequeueRaw(JobInterface* job) Q_DECL_OVERRIDE;
 };
 
 }

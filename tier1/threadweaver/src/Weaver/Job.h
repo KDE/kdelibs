@@ -75,7 +75,7 @@ public:
      * job is the Job that the queue is executing. It is not necessarily equal to this. For example, Jobs that are
      * decorated expose the decorator's address, not the address of the decorated object.
      */
-    virtual void execute(Thread*, JobPointer job);
+    virtual void execute(Thread*, JobPointer job) Q_DECL_OVERRIDE;
 
     /** Perform the job synchroneously in the current thread. */
     void operator()();
@@ -85,10 +85,10 @@ public:
      * Returns the previously set executor. The executor can never be unset. If zero is passed in as the new executor, the Job
      * will internally reset to a default executor that only invokes run().
      */
-    Executor* setExecutor(Executor* executor);
+    Executor* setExecutor(Executor* executor) Q_DECL_OVERRIDE;
 
     /** Returns the executor currently set on the Job. */
-    Executor* executor() const;
+    Executor* executor() const Q_DECL_OVERRIDE;
 
     /** The queueing priority of the job.
      * Jobs will be sorted by their queueing priority when enqueued. A higher queueing priority will place the job in front of all
@@ -99,7 +99,7 @@ public:
      *
      * The default implementation returns zero. Only if this method is overloaded for some job classes, priorities will influence
      * the execution order of jobs. */
-    virtual int priority() const;
+    virtual int priority() const Q_DECL_OVERRIDE;
 
     /** Return whether the Job finished successfully or not.
      * The default implementation simply returns true. Overload in derived classes if the derived Job class can fail.
@@ -111,7 +111,7 @@ public:
      * not be executed after a failure, it is important to dequeue those before deleting the failed Job. A JobSequence may be
      * helpful for that purpose.
      */
-    virtual bool success () const;
+    virtual bool success () const Q_DECL_OVERRIDE;
 
     /** Abort the execution of the job.
      *
@@ -134,10 +134,10 @@ public:
      * is save to assume that recursive queueing is atomic from the queues perspective.
      *
      * @param api the QueueAPI object the job will be queued in */
-    void aboutToBeQueued(QueueAPI *api);
+    void aboutToBeQueued(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** Called from aboutToBeQueued() while the mutex is being held. */
-    virtual void aboutToBeQueued_locked ( QueueAPI *api );
+    virtual void aboutToBeQueued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** This Job is about the be dequeued from the weaver's job queue.
      *
@@ -148,10 +148,10 @@ public:
      * Note: The default implementation does nothing.
      *
      * @param weaver the Weaver object from which the job will be dequeued */
-    void aboutToBeDequeued(QueueAPI *api);
+    void aboutToBeDequeued(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** Called from aboutToBeDequeued() while the mutex is being held. */
-    virtual void aboutToBeDequeued_locked(QueueAPI *api);
+    virtual void aboutToBeDequeued_locked(QueueAPI *api) Q_DECL_OVERRIDE;
 
     /** canBeExecuted() returns true if all the jobs queue policies agree to it.
      *
@@ -160,7 +160,7 @@ public:
      *
      * If it returns false, all queue policy resources have been freed, and the method can be called again at a later time.
      */
-    virtual bool canBeExecuted(JobPointer);
+    virtual bool canBeExecuted(JobPointer) Q_DECL_OVERRIDE;
 
     /** Returns true if the jobs's execute method finished. */
     bool isFinished() const;
@@ -170,10 +170,10 @@ public:
      * Queue Policies customize the queueing (running) behaviour of sets of jobs. Examples for queue policies are dependencies
      * and resource restrictions. Every queue policy object can only be assigned once to a job, multiple assignments will be
      * IGNORED. */
-    void assignQueuePolicy(QueuePolicy*);
+    void assignQueuePolicy(QueuePolicy*) Q_DECL_OVERRIDE;
 
     /** Remove a queue policy from this job. */
-    void removeQueuePolicy(QueuePolicy*);
+    void removeQueuePolicy(QueuePolicy*) Q_DECL_OVERRIDE;
 
 private:
     class Private;
@@ -181,7 +181,7 @@ private:
 
 protected:
     /** Free the queue policies acquired before this job has been executed. */
-    void freeQueuePolicyResources();
+    void freeQueuePolicyResources() Q_DECL_OVERRIDE;
 
     friend class Executor;
     /** The method that actually performs the job.
@@ -194,27 +194,27 @@ protected:
      * The default implementation is empty.
      * job is the Job that the queue is executing. It is not necessarily equal to this. For example, Jobs that are
      * decorated expose the decorator's address, not the address of the decorated object. */
-    void defaultBegin(JobPointer job, Thread* thread);
+    void defaultBegin(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
 
     /** @brief Perform standard task after the execution of a job.
      *
      * The default implementation is empty.
      * job is the Job that the queue is executing. It is not necessarily equal to this. For example, Jobs that are
      * decorated expose the decorator's address, not the address of the decorated object. */
-    void defaultEnd(JobPointer job, Thread* thread);
+    void defaultEnd(JobPointer job, Thread* thread) Q_DECL_OVERRIDE;
 
     /** Return the thread that executes this job.
      *
      * Returns zero of the job is not currently executed.
      * @note Do not confuse with QObject::thread() const!
      * @todo rename to executingThread() */
-    Thread *thread();
+    Thread *thread() Q_DECL_OVERRIDE;
 
     /** Call with status = true to mark this job as done. */
-    void setFinished ( bool status );
+    void setFinished(bool status) Q_DECL_OVERRIDE;
 
     /** The mutex used to protect this job. */
-    QMutex* mutex() const;
+    QMutex* mutex() const Q_DECL_OVERRIDE;
 
 };
 
