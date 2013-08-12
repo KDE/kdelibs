@@ -173,7 +173,7 @@ void JobCollection::aboutToBeDequeued_locked(QueueAPI *api )
     Job::aboutToBeDequeued_locked(api);
 }
 
-void JobCollection::execute(Thread *thread, JobPointer job)
+void JobCollection::execute(JobPointer job, Thread *thread)
 {
     Q_ASSERT(d->self.isNull());
     Q_ASSERT(d->api!= 0);
@@ -185,7 +185,7 @@ void JobCollection::execute(Thread *thread, JobPointer job)
             d->api->enqueue(child);
         }
     }
-    Job::execute(thread, job);
+    Job::execute(job, thread);
 }
 
 void JobCollection::run()

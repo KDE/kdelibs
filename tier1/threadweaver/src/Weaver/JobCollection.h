@@ -102,7 +102,7 @@ protected:
 
 private:
     /** Overload the execute method. */
-    void execute(Thread*, JobPointer job) Q_DECL_OVERRIDE;
+    void execute(JobPointer job, Thread*) Q_DECL_OVERRIDE;
 
 
     /** Overload run().

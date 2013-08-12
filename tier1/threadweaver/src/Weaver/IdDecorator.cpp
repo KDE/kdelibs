@@ -138,10 +138,10 @@ Executor *IdDecorator::setExecutor(Executor *executor)
     return job()->setExecutor(executor);
 }
 
-void IdDecorator::execute(ThreadWeaver::Thread* thread, ThreadWeaver::JobPointer self)
+void IdDecorator::execute(ThreadWeaver::JobPointer self, ThreadWeaver::Thread* thread)
 {
     Q_ASSERT(d);
-    job()->execute(thread, self);
+    job()->execute(self, thread);
 }
 
 const ThreadWeaver::JobInterface* IdDecorator::job() const

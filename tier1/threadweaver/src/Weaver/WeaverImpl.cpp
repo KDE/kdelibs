@@ -207,16 +207,17 @@ void WeaverImpl::registerObserver ( WeaverObserver *ext )
 
 void WeaverImpl::registerObserver_p(WeaverObserver *ext)
 {
-    connect ( this,  SIGNAL (stateChanged(ThreadWeaver::State*)),
-              ext,  SIGNAL (weaverStateChanged(ThreadWeaver::State*)) );
-    connect ( this,  SIGNAL (threadStarted(ThreadWeaver::Thread*)),
-              ext,  SIGNAL (threadStarted(ThreadWeaver::Thread*)) );
-    connect ( this,  SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)),
-              ext,  SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)) );
-    connect ( this,  SIGNAL (threadSuspended(ThreadWeaver::Thread*)),
-              ext,  SIGNAL (threadSuspended(ThreadWeaver::Thread*)) );
-    connect ( this,  SIGNAL (threadExited(ThreadWeaver::Thread*)) ,
-              ext,  SIGNAL (threadExited(ThreadWeaver::Thread*)) );
+    //FIXME test and fix, it is broken!
+    connect(this, SIGNAL (stateChanged(ThreadWeaver::State*)),
+            ext, SIGNAL (weaverStateChanged(ThreadWeaver::State*)));
+    connect(this,  SIGNAL (threadStarted(ThreadWeaver::Thread*)),
+            ext,  SIGNAL (threadStarted(ThreadWeaver::Thread*)));
+    connect(this,  SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)),
+            ext,  SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::Job*)));
+    connect(this,  SIGNAL (threadSuspended(ThreadWeaver::Thread*)),
+            ext,  SIGNAL (threadSuspended(ThreadWeaver::Thread*)));
+    connect(this,  SIGNAL (threadExited(ThreadWeaver::Thread*)) ,
+            ext,  SIGNAL (threadExited(ThreadWeaver::Thread*)));
 }
 
 void WeaverImpl::enqueue(JobPointer job)
@@ -407,10 +408,10 @@ void WeaverImpl::adjustInventory ( int numberOfNewJobs )
             Thread *th = createThread();
             th->moveToThread( th ); // be sane from the start
             m_inventory.append(th);
-            connect(th, SIGNAL(jobStarted(ThreadWeaver::Thread*,ThreadWeaver::JobPointer)),
-                      SIGNAL (threadBusy(ThreadWeaver::Thread*,ThreadWeaver::JobPointer)));
+            connect(th, SIGNAL(jobStarted(ThreadWeaver::JobPointer,ThreadWeaver::Thread*)),
+                    SIGNAL (threadBusy(ThreadWeaver::JobPointerThreadWeaver::Thread*)));
             connect(th, SIGNAL(jobDone(ThreadWeaver::JobPointer)),
-                      SIGNAL (jobDone(ThreadWeaver::JobPointer)));
+                    SIGNAL (jobDone(ThreadWeaver::JobPointer)));
             th->start();
             m_createdThreads.ref();
             debug(2, "WeaverImpl::adjustInventory: thread created, "

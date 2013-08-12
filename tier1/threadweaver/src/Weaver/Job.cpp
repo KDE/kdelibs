@@ -121,7 +121,7 @@ Job::~Job()
     delete d;
 }
 
-void Job::execute(Thread *th, JobPointer job)
+void Job::execute(JobPointer job, Thread *th)
 {
     d->thread.loadAcquire();
     Executor* executor = d->executor.loadAcquire();

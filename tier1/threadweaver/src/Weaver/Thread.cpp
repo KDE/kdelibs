@@ -109,8 +109,8 @@ void Thread::run()
                 QMutexLocker l(&d->mutex); Q_UNUSED(l);
                 d->job = newJob;
             }
-            emit jobStarted(this, newJob);
-            newJob->execute (this, newJob);
+            emit jobStarted(newJob, this);
+            newJob->execute (newJob, this);
             emit jobDone(newJob);
         }
     }
