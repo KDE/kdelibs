@@ -10,7 +10,6 @@ set(ThreadWeaver_LIB_SRCS
     Job.cpp
     IdDecorator.cpp
     QObjectJobDecorator.cpp
-    Lambda.cpp
     ManagedJobPointer.cpp
     Executor.cpp
     ExecuteWrapper.cpp

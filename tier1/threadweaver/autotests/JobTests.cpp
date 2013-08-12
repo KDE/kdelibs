@@ -764,7 +764,7 @@ void JobTests::JobSignalsDeliveryTest()
     QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
     WaitForIdleAndFinished w(Weaver::instance());
     for(int count = 0; count < 100; ++count) {
-        QJobPointer job(new QObjectJobDecorator(new Lambda(noOp)));
+        QJobPointer job(new QObjectJobDecorator(new Lambda<void(*)()>(noOp)));
         QVERIFY(connect(job.data(), SIGNAL(done(ThreadWeaver::JobPointer)), SLOT(deliveryTestJobDone(ThreadWeaver::JobPointer))));
         deliveryTestCounter.fetchAndAddRelease(1);
         Weaver::instance()->enqueue(job);
@@ -788,7 +788,7 @@ void JobTests::JobPointerExecutionTest()
     QCOMPARE(deliveryTestCounter.loadAcquire(), 0);
     WaitForIdleAndFinished w(Weaver::instance());
     for(int count = 0; count < 100; ++count) {
-        JobPointer job(new Lambda(decrementCounter));
+        JobPointer job(new Lambda<void(*)()>(decrementCounter));
         deliveryTestCounter.fetchAndAddRelease(1);
         Weaver::instance()->enqueue(job);
     }
