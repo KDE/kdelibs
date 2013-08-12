@@ -36,7 +36,7 @@ public:
     virtual void assignQueuePolicy(QueuePolicy*) = 0;
     virtual void removeQueuePolicy(QueuePolicy*) = 0;
     virtual void freeQueuePolicyResources() = 0;
-    virtual void run() = 0;
+    virtual void run(JobPointer self, Thread* thread) = 0;
     friend class Executor;
     virtual void defaultBegin(JobPointer job, Thread* thread) = 0;
     virtual void defaultEnd(JobPointer job, Thread* thread) = 0;

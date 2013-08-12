@@ -53,7 +53,7 @@ SecondThreadThatQueues::SecondThreadThatQueues()
 {
 }
 
-void SecondThreadThatQueues::run ()
+void SecondThreadThatQueues::run()
 {
     QString sequence;
     AppendCharacterJob a( 'a', &sequence );

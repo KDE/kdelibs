@@ -107,7 +107,7 @@ private:
 
     /** Overload run().
      * We have to. */
-    void run() Q_DECL_OVERRIDE;
+    void run(JobPointer self, Thread* thread) Q_DECL_OVERRIDE;
 
     /** Dequeue all elements of the collection.
      * Note: This will not dequeue the collection itself.

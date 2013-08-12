@@ -11,7 +11,7 @@ void AppendCharacterAndVerifyJob::setValues(QChar c, QString *stringref, const Q
     m_expected = expected;
 }
 
-void AppendCharacterAndVerifyJob::run()
+void AppendCharacterAndVerifyJob::run(ThreadWeaver::JobPointer, ThreadWeaver::Thread*)
 {
     using namespace ThreadWeaver;
     QMutexLocker locker ( &s_GlobalMutex );

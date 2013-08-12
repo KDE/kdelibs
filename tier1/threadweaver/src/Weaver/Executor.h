@@ -21,7 +21,7 @@ public:
     void defaultEnd(JobPointer job, Thread* thread);
     virtual void cleanup(JobPointer, Thread*);
 
-    void run(JobPointer job);
+    void run(JobPointer job, Thread* thread);
 };
 
 }

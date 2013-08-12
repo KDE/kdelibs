@@ -36,10 +36,10 @@ Thread *IdDecorator::thread()
     return job()->thread();
 }
 
-void IdDecorator::run()
+void IdDecorator::run(JobPointer self, Thread *thread)
 {
     Q_ASSERT(d);
-    job()->run();
+    job()->run(self, thread);
 }
 
 void IdDecorator::defaultBegin(JobPointer self, Thread *thread)

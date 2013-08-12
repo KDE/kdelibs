@@ -110,7 +110,7 @@ void Thread::run()
                 d->job = newJob;
             }
             emit jobStarted(newJob, this);
-            newJob->execute (newJob, this);
+            newJob->execute(newJob, this);
             emit jobDone(newJob);
         }
     }

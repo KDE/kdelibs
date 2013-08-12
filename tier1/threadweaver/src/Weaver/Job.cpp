@@ -47,8 +47,8 @@ public:
         defaultBegin(job, thread);
     }
 
-    void execute(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *) Q_DECL_OVERRIDE {
-        run(job);
+    void execute(ThreadWeaver::JobPointer job, ThreadWeaver::Thread* thread) Q_DECL_OVERRIDE {
+        run(job, thread);
     }
 
     void end(ThreadWeaver::JobPointer job, ThreadWeaver::Thread *thread) {
