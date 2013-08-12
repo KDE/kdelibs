@@ -128,7 +128,7 @@ extern "C" {
 #endif
 
 #include <QDebug>
-#include <kde_file.h>
+#include <qplatformdefs.h>
 
 #include <QtCore/Q_PID>
 
@@ -235,7 +235,7 @@ bool KPty::open()
 #elif HAVE_GETPT
   d->masterFd = ::getpt();
 #elif defined(PTM_DEVICE)
-  d->masterFd = KDE_open(PTM_DEVICE, O_RDWR|O_NOCTTY);
+  d->masterFd = QT_OPEN(PTM_DEVICE, QT_OPEN_RDWR|O_NOCTTY);
 #else
 # error No method to open a PTY master detected.
 #endif
@@ -272,7 +272,7 @@ bool KPty::open()
       ptyName = QString().sprintf("/dev/pty%c%c", *s3, *s4).toLatin1();
       d->ttyName = QString().sprintf("/dev/tty%c%c", *s3, *s4).toLatin1();
 
-      d->masterFd = KDE_open(ptyName.data(), O_RDWR);
+      d->masterFd = QT_OPEN(ptyName.data(), QT_OPEN_RDWR);
       if (d->masterFd >= 0)
       {
 #ifdef Q_OS_SOLARIS
@@ -311,13 +311,13 @@ bool KPty::open()
   return false;
 
  gotpty:
-  KDE_struct_stat st;
-  if (KDE_stat(d->ttyName.data(), &st))
+  QFileInfo info(d->ttyName.data());
+  if (!info.exists())
     return false; // this just cannot happen ... *cough*  Yeah right, I just
                   // had it happen when pty #349 was allocated.  I guess
                   // there was some sort of leak?  I only had a few open.
-  if (((st.st_uid != getuid()) ||
-       (st.st_mode & (S_IRGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH))) &&
+  if (((info.ownerId() != getuid()) ||
+       (info.permissions() & (QFile::ReadGroup|QFile::ExeGroup|QFile::ReadOther|QFile::WriteOther|QFile::ExeOther))) &&
       !d->chownpty(true))
   {
     qWarning()
@@ -338,7 +338,7 @@ bool KPty::open()
   ioctl(d->masterFd, TIOCSPTLCK, &flag);
 #endif
 
-  d->slaveFd = KDE_open(d->ttyName.data(), O_RDWR | O_NOCTTY);
+  d->slaveFd = QT_OPEN(d->ttyName.data(), QT_OPEN_RDWR | O_NOCTTY);
   if (d->slaveFd < 0)
   {
     qWarning() << "Can't open slave pseudo teletype";
@@ -431,7 +431,7 @@ bool KPty::openSlave()
         qWarning() << "Attempting to open pty slave while master is closed";
         return false;
     }
-    d->slaveFd = KDE_open(d->ttyName.data(), O_RDWR | O_NOCTTY);
+    d->slaveFd = QT_OPEN(d->ttyName.data(), QT_OPEN_RDWR | O_NOCTTY);
     if (d->slaveFd < 0) {
         qWarning() << "Can't open slave pseudo teletype";
         return false;

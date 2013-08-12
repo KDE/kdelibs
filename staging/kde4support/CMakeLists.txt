@@ -14,6 +14,12 @@ if(NOT WIN32)
     find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS X11Extras)
 endif(NOT WIN32)
 
+find_package(Strigi 0.6.3 QUIET)
+set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
+                       URL "http://strigi.sourceforge.net"
+                       TYPE OPTIONAL
+                       PURPOSE ""
+                      )
 
 include(FeatureSummary)
 

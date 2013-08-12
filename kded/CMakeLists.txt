@@ -81,7 +81,7 @@ target_link_libraries(kdeinit_kbuildsycoca5
 )
 if(NOT KBUILDSYCOCA_NO_KCRASH)
    target_link_libraries(kdeinit_kbuildsycoca5 KCrash)
-endif(KBUILDSYCOCA_NO_KCRASH)
+endif()
 
 install(TARGETS kdeinit_kbuildsycoca5 ${INSTALL_TARGETS_DEFAULT_ARGS})
 

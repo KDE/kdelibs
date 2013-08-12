@@ -25,7 +25,7 @@
 #include <kconfiggroup.h>
 #include <kconfiggui_export.h>
 
-class QWidget;
+class QWindow;
 
 namespace KWindowConfig
 {
@@ -40,8 +40,7 @@ namespace KWindowConfig
      * @param options passed to KConfigGroup::writeEntry()
      * @since 5.0
      */
-    // TODO Qt5: replace QWidget by QWindow
-    KCONFIGGUI_EXPORT void saveWindowSize( const QWidget* window, KConfigGroup& config, KConfigGroup::WriteConfigFlags options = KConfigGroup::Normal );
+    KCONFIGGUI_EXPORT void saveWindowSize( const QWindow* window, KConfigGroup& config, KConfigGroup::WriteConfigFlags options = KConfigGroup::Normal );
 
     /**
      * Restores the dialog's size from the configuration according to
@@ -53,8 +52,7 @@ namespace KWindowConfig
      * @param config The config group to read from.
      * @since 5.0.
      */
-    // TODO Qt5: replace QWidget by QWindow
-    KCONFIGGUI_EXPORT void restoreWindowSize( QWidget* window,  const KConfigGroup& config );
+    KCONFIGGUI_EXPORT void restoreWindowSize( QWindow* window,  const KConfigGroup& config );
 }
 
 #endif // KWINDOWCONFIG_H

@@ -73,7 +73,7 @@ void DownloadDialog::init(const QString& configFile)
 {
     // load the last size from config
     KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
-    KWindowConfig::restoreWindowSize(this, group);
+    KWindowConfig::restoreWindowSize(windowHandle(), group);
     setMinimumSize(700, 400);
 
     setWindowTitle(i18n("Get Hot New Stuff"));
@@ -99,7 +99,7 @@ void DownloadDialog::init(const QString& configFile)
 DownloadDialog::~DownloadDialog()
 {
     KConfigGroup group(KSharedConfig::openConfig(), ConfigGroup);
-    KWindowConfig::saveWindowSize(this, group, KConfigBase::Persistent);
+    KWindowConfig::saveWindowSize(windowHandle(), group, KConfigBase::Persistent);
     delete d;
 }
 

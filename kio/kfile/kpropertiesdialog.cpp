@@ -377,7 +377,7 @@ void KPropertiesDialog::KPropertiesDialogPrivate::init()
     insertPages();
 
     KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
-    KWindowConfig::restoreWindowSize(q, group);
+    KWindowConfig::restoreWindowSize(q->windowHandle(), group);
 }
 
 void KPropertiesDialog::showFileSharingPage()
@@ -410,7 +410,7 @@ KPropertiesDialog::~KPropertiesDialog()
     delete d;
 
     KConfigGroup group(KSharedConfig::openConfig(), "KPropertiesDialog");
-    KWindowConfig::saveWindowSize(this, group, KConfigBase::Persistent);
+    KWindowConfig::saveWindowSize(windowHandle(), group, KConfigBase::Persistent);
 }
 
 void KPropertiesDialog::insertPlugin (KPropertiesDialogPlugin* plugin)
