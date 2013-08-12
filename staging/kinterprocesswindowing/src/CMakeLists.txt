@@ -26,7 +26,6 @@ LINK_PUBLIC
 LINK_PRIVATE
    ${X11_LIBRARIES}
    KI18n
-   ${KConfig_CORE_LIBRARY}
    KWidgetsAddons
 )
 

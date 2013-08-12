@@ -80,7 +80,7 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
     dialog->setLayout(topLayout);
 
     KConfigGroup dialogConfig(KSharedConfig::openConfig(), "KFileMetaPropsPlugin");
-    KWindowConfig::restoreWindowSize(dialog, dialogConfig);
+    KWindowConfig::restoreWindowSize(dialog->windowHandle(), dialogConfig);
 
     if ((dialog->exec() == QDialog::Accepted) && (dialog != 0)) {
         configWidget->save();
@@ -93,7 +93,7 @@ void KFileMetaPropsPlugin::KFileMetaPropsPluginPrivate::configureShownMetaData()
     }
 
     if (dialog != 0) {
-        KWindowConfig::saveWindowSize(dialog, dialogConfig);
+        KWindowConfig::saveWindowSize(dialog->windowHandle(), dialogConfig);
         delete dialog;
         dialog = 0;
     }

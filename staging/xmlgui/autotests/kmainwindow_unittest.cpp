@@ -141,53 +141,73 @@ void KMainWindow_UnitTest::testDeleteOnClose()
 
 void KMainWindow_UnitTest::testSaveWindowSize()
 {
+    QCOMPARE(KSharedConfig::openConfig()->name(), QString::fromLatin1("kmainwindow_unittestrc"));
+    KConfigGroup cfg(KSharedConfig::openConfig(), "TestWindowSize");
+
+    {
     MyMainWindow mw;
+    mw.show();
     KToolBar* tb = new KToolBar(&mw); // we need a toolbar to trigger an old bug in saveMainWindowSettings
     tb->setObjectName("testtb");
     mw.reallyResize(800, 600);
-
-    QCOMPARE(KSharedConfig::openConfig()->name(), QString::fromLatin1("kmainwindow_unittestrc"));
-    KConfigGroup cfg(KSharedConfig::openConfig(), "TestWindowSize");
+    QTest::qWait(200);
     mw.saveMainWindowSettings(cfg);
     mw.close();
+    }
 
     KMainWindow mw2;
-    tb = new KToolBar(&mw2);
+    mw2.show();
+    KToolBar *tb = new KToolBar(&mw2);
     tb->setObjectName("testtb");
     mw2.resize(500, 500);
     mw2.applyMainWindowSettings(cfg);
+    QTest::qWait(200);
     QCOMPARE(mw2.size(), QSize(800, 600));
 }
 
 void KMainWindow_UnitTest::testAutoSaveSettings()
 {
+    const QString group("AutoSaveTestGroup");
+
+    {
     MyMainWindow mw;
+    mw.show();
     KToolBar* tb = new KToolBar(&mw); // we need a toolbar to trigger an old bug in saveMainWindowSettings
     tb->setObjectName("testtb");
-    const QString group("AutoSaveTestGroup");
     mw.setAutoSaveSettings(group);
     mw.reallyResize(800, 600);
+    QTest::qWait(200);
     mw.close();
+    }
 
     KMainWindow mw2;
-    tb = new KToolBar(&mw2);
+    mw2.show();
+    KToolBar *tb = new KToolBar(&mw2);
     tb->setObjectName("testtb");
     mw2.setAutoSaveSettings(group);
+    QTest::qWait(200);
     QCOMPARE(mw2.size(), QSize(800, 600));
 }
 
 void KMainWindow_UnitTest::testNoAutoSave()
 {
+    const QString group("AutoSaveTestGroup");
+
+    {
     // A mainwindow with autosaving, but not of the window size.
     MyMainWindow mw;
-    const QString group("AutoSaveTestGroup");
+    mw.show();
     mw.setAutoSaveSettings(group, false);
     mw.reallyResize(750, 550);
+    QTest::qWait(200);
     mw.close();
+    }
 
     KMainWindow mw2;
+    mw2.show();
     mw2.setAutoSaveSettings(group, false);
     // NOT 750, 550! (the 800,600 comes from testAutoSaveSettings)
+    QTest::qWait(200);
     QCOMPARE(mw2.size(), QSize(800, 600));
 }
 

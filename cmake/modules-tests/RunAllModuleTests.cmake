@@ -45,7 +45,6 @@ else(DEFINED MODULE)
                      QCA2 
                      QImageBlitz
                      Sqlite 
-                     Strigi 
                      USB 
                      Xine 
                      Xmms)

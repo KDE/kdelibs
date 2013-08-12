@@ -20,7 +20,6 @@
 #include <QFile>
 #include <QUrl>
 #include <kprotocolmanager.h>
-#include <kglobalsettings.h>
 #include <QDebug>
 #include <QtTest>
 #include <qstandardpaths.h>
@@ -72,7 +71,6 @@ void KProtocolInfoTest::testShowFilePreview()
 {
     QVERIFY(KProtocolInfo::showFilePreview("file"));
     QVERIFY(!KProtocolInfo::showFilePreview("audiocd"));
-    QVERIFY(!KGlobalSettings::showFilePreview(QUrl("audiocd:/")));
 }
 
 void KProtocolInfoTest::testSlaveProtocol()

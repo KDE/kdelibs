@@ -382,7 +382,7 @@ public:
      *
      * @param contrast Amount roughly specifying the contrast by which to
      * adjust the base color, between -1.0 and 1.0 (values between 0.0 and 1.0
-     * correspond to the value from KGlobalSettings::contrastF)
+     * correspond to the value from KColorScheme::contrastF)
      * @param chromaAdjust (optional) Amount by which to adjust the chroma of
      * the shade (1.0 means no adjustment)
      *

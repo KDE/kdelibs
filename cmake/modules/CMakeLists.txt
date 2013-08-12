@@ -79,7 +79,6 @@ set(cmakeFiles
                FindSharedMimeInfo.cmake
                FindSharedDesktopOntologies.cmake
                FindSqlite.cmake
-               FindStrigi.cmake
                FindTaglib.cmake
                FindUSB.cmake
                FindWcecompat.cmake

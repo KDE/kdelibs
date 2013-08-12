@@ -33,6 +33,10 @@
 #include <QTimer>
 #include <QVariant>
 
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QToolBar>
+#include <QMainWindow>
+
 #include <kcolorscheme.h>
 #include <kconfiggroup.h>
 #include <kiconengine_p.h>
@@ -137,6 +141,8 @@ void KdePlatformTheme::loadSettings()
     loadPalettes();
 
     m_fontsData = new KFontSettingsData;
+
+    connect(KIconLoader::global(), &KIconLoader::iconChanged, this, &KdePlatformTheme::iconChanged);
 }
 
 void KdePlatformTheme::loadHints()
@@ -180,4 +186,26 @@ void KdePlatformTheme::loadPalettes()
 
     KSharedConfig::Ptr globals = KSharedConfig::openConfig("kdeglobals");
     m_palettes[SystemPalette] = new QPalette(KColorScheme::createApplicationPalette(globals));
+}
+
+void KdePlatformTheme::iconChanged(int group)
+{
+    KIconLoader::Group iconGroup = (KIconLoader::Group) group;
+    if (iconGroup != KIconLoader::Toolbar) {
+        return;
+    }
+
+    const int currentSize = KIconLoader::global()->currentSize(KIconLoader::Toolbar);
+    if (m_hints[ToolBarIconSize] == currentSize) {
+        return;
+    }
+
+    m_hints[ToolBarIconSize] = currentSize;
+    QWidgetList widgets = QApplication::allWidgets();
+    Q_FOREACH(QWidget* widget, widgets) {
+        if (qobject_cast<QToolBar*>(widget) || qobject_cast<QMainWindow*>(widget)) {
+            QEvent event(QEvent::StyleChange);
+            QApplication::sendEvent(widget, &event);
+        }
+    }
 }

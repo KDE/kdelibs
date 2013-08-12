@@ -10,12 +10,13 @@ if(NOT HAVE_NEPOMUK)
    set(KIO_NO_NEPOMUK TRUE)
 endif(NOT HAVE_NEPOMUK)
 
-if(NOT STRIGI_FOUND)
+if(NOT Strigi_FOUND)
     set(KIO_NO_STRIGI TRUE)
 else()
+    include_directories(${STRIGI_INCLUDE_DIR} ${STRIGI_INCLUDE_DIRS} ${LIBSTREAMANALYZER_INCLUDE_DIRS})
     add_subdirectory( kio/dummyanalyzers )
     set(KIO_EXTRA_LIBS ${KIO_EXTRA_LIBS} ${STRIGI_STREAMANALYZER_LIBRARY} ${STRIGI_STREAMS_LIBRARY})
-endif(NOT STRIGI_FOUND)
+endif(NOT Strigi_FOUND)
 
 if(NOT KIO_NO_NEPOMUK)
     include_directories(
@@ -259,6 +260,7 @@ install(FILES
     kio/kmimetyperesolver.h
     kio/kfilemetadataconfigurationwidget.h
     kio/kfilemetadatawidget.h
+    kio/kfilemetainfoitem.h
     kio/kfilemetainfowidget.h
     kio/kfilemetainfo.h
     kio/predicateproperties.h

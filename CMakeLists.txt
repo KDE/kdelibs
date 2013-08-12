@@ -138,20 +138,6 @@ set_package_properties(ZLIB PROPERTIES DESCRIPTION "Support for gzip compressed 
                        PURPOSE "Required by the core KDE libraries and some critical kioslaves"
                       )
 
-find_package(Strigi 0.6.3)
-if (WIN32)
-    set (STRIGI_TYPE "OPTIONAL")
-    set (STRIGI_EXTRA_TEXT "")
-else (WIN32)
-    set (STRIGI_TYPE "REQUIRED")
-    set (STRIGI_EXTRA_TEXT "Required by some critical kioslaves")
-endif (WIN32)
-set_package_properties(Strigi PROPERTIES DESCRIPTION "Desktop indexing and search support"
-                       URL "http://strigi.sourceforge.net"
-                       TYPE ${STRIGI_TYPE}
-                       PURPOSE ${STRIGI_EXTRA_TEXT}
-                      )
-
 #optional features
 find_package(X11)
 if(X11_FOUND)
