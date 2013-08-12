@@ -163,7 +163,7 @@ Q_SIGNALS:
     /** A thread has been suspended. */
     void threadSuspended(ThreadWeaver::Thread*);
     /** The thread is busy executing job j. */
-    void threadBusy(ThreadWeaver::Thread*, ThreadWeaver::JobPointer j);
+    void threadBusy(ThreadWeaver::JobPointer, ThreadWeaver::Thread*);
 
 protected:
     /** Adjust active thread count.
