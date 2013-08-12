@@ -283,7 +283,7 @@ QMap<QString, QString> Sonnet::Speller::availableDictionaries() const
 	}  else {
             lIsoName = tag;
         }
-        QLocale loc(tag);
+        //QLocale loc(tag);
         QString description;
 
         if (!cIsoName.isEmpty())
