@@ -33,6 +33,8 @@
 #define  KIO_FTP_PRIVATE_INCLUDE
 #include "ftp.h"
 
+#include <utime.h>
+
 #include <cctype>
 #include <cerrno>
 #include <cstdlib>
@@ -47,11 +49,11 @@
 #include <QtNetwork/QSslSocket>
 #include <QtNetwork/QAuthenticator>
 #include <qmimedatabase.h>
+#include <qplatformdefs.h>
 
 #include <QDebug>
 #include <kio/ioslave_defaults.h>
 #include <kremoteencoding.h>
-#include <kde_file.h>
 #include <kconfiggroup.h>
 
 #if HAVE_STRTOLL
@@ -2151,7 +2153,7 @@ Ftp::StatusCode Ftp::ftpPut(int& iError, int iCopyFile, const QUrl& dest_url,
     offset = m_size;
     if(iCopyFile != -1)
     {
-      if( KDE_lseek(iCopyFile, offset, SEEK_SET) < 0 )
+      if(QT_LSEEK(iCopyFile, offset, SEEK_SET) < 0)
       {
         iError = ERR_CANNOT_RESUME;
         return statusClientError;
@@ -2386,10 +2388,10 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
                                 const QUrl& url, int permissions, KIO::JobFlags flags)
 {
   // check if source is ok ...
-  KDE_struct_stat buff;
-  bool bSrcExists = (KDE::stat( sCopyFile, &buff ) != -1);
+  QFileInfo info(path);
+  bool bSrcExists = info.exists();
   if(bSrcExists)
-  { if(S_ISDIR(buff.st_mode))
+  { if(info.isDir())
     {
       iError = ERR_IS_DIRECTORY;
       return statusClientError;
@@ -2401,7 +2403,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
     return statusClientError;
   }
 
-  iCopyFile = KDE::open( sCopyFile, O_RDONLY );
+  iCopyFile = QT_OPEN(QFile::encodeName(sCopyFile), O_RDONLY);
   if(iCopyFile == -1)
   {
     iError = ERR_CANNOT_OPEN_FOR_READING;
@@ -2409,7 +2411,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
   }
 
   // delegate the real work (iError gets status) ...
-  totalSize(buff.st_size);
+  totalSize(info.size());
 #ifdef  ENABLE_CAN_RESUME
   return ftpPut(iError, iCopyFile, url, permissions, flags & ~KIO::Resume);
 #else
@@ -2422,10 +2424,10 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
                                 const QUrl& url, int permissions, KIO::JobFlags flags)
 {
   // check if destination is ok ...
-  KDE_struct_stat buff;
-  const bool bDestExists = (KDE::stat( sCopyFile, &buff ) != -1);
+  QFileinfo info(sCopyFile);
+  const bool bDestExists = info.exists();
   if(bDestExists)
-  { if(S_ISDIR(buff.st_mode))
+  { if(info.isDir())
     {
       iError = ERR_IS_DIRECTORY;
       return statusClientError;
@@ -2440,19 +2442,20 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   // do we have a ".part" file?
   const QString sPart = sCopyFile + QLatin1String(".part");
   bool bResume = false;
-  const bool bPartExists = (KDE::stat( sPart, &buff ) != -1);
+  QFileInfo sPartInfo(sPart);
+  const bool bPartExists = sPartInfo.exists();
   const bool bMarkPartial = config()->readEntry("MarkPartial", true);
   const QString dest = bMarkPartial ? sPart : sCopyFile;
-  if (bMarkPartial && bPartExists && buff.st_size > 0)
+  if (bMarkPartial && bPartExists && sPartInfo.size() > 0)
   { // must not be a folder! please fix a similar bug in kio_file!!
-    if(S_ISDIR(buff.st_mode))
+    if(sPartInfo.isDir())
     {
       iError = ERR_DIR_ALREADY_EXIST;
       return statusClientError;                            // client side error
     }
     //doesn't work for copy? -> design flaw?
 #ifdef  ENABLE_CAN_RESUME
-    bResume = canResume( buff.st_size );
+    bResume = canResume(sPartInfo.size());
 #else
     bResume = true;
 #endif
@@ -2472,8 +2475,8 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   // open the output file ...
   KIO::fileoffset_t hCopyOffset = 0;
   if (bResume) {
-    iCopyFile = KDE::open( sPart, O_RDWR );  // append if resuming
-    hCopyOffset = KDE_lseek(iCopyFile, 0, SEEK_END);
+    iCopyFile = QT_OPEN(QFile::encodeName(sPart), O_RDWR);  // append if resuming
+    hCopyOffset = QT_LSEEK(iCopyFile, 0, SEEK_END);
     if(hCopyOffset < 0)
     {
       iError = ERR_CANNOT_RESUME;
@@ -2482,7 +2485,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
     // qDebug() << "resuming at " << hCopyOffset;
   }
   else {
-    iCopyFile = KDE::open(dest, O_CREAT | O_TRUNC | O_WRONLY, initialMode);
+    iCopyFile = QT_OPEN(QFile::encodeName(dest), O_CREAT | O_TRUNC | O_WRONLY, initialMode);
   }
 
   if(iCopyFile == -1)
@@ -2507,21 +2510,23 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
   {
     if(iRes == statusSuccess)
     { // rename ".part" on success
-      if ( KDE::rename( sPart, sCopyFile ) )
+      if (QFile::rename( sPart, sCopyFile ))
       {
         // If rename fails, try removing the destination first if it exists.
-        if (!bDestExists || !(QFile::remove(sCopyFile) && KDE::rename(sPart, sCopyFile) == 0)) {
+        if (!bDestExists || !(QFile::remove(sCopyFile) && QFile::rename(sPart, sCopyFile) == 0)) {
             // qDebug() << "cannot rename " << sPart << " to " << sCopyFile;
             iError = ERR_CANNOT_RENAME_PARTIAL;
             iRes = statusClientError;
         }
       }
     }
-    else if(KDE::stat( sPart, &buff ) == 0)
-    { // should a very small ".part" be deleted?
-      int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
-      if (buff.st_size <  size)
-        QFile::remove(sPart);
+    else {
+        sPartInfo.refresh();
+        if (sPartInfo.exists()) { // should a very small ".part" be deleted?
+            int size = config()->readEntry("MinimumKeepSize", DEFAULT_MINIMUM_KEEP_SIZE);
+            if (sPartInfo.size() <  size)
+                QFile::remove(sPart);
+        }
     }
   }
 
@@ -2532,9 +2537,9 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
         if (dt.isValid()) {
           // qDebug() << "Updating modified timestamp to" << mtimeStr;
           struct utimbuf utbuf;
-          utbuf.actime = buff.st_atime; // access time, unchanged
+          utbuf.actime = sPartInfo.lastRead().toTime_t().; // access time, unchanged
           utbuf.modtime = dt.toTime_t(); // modification time
-          KDE::utime(sCopyFile, &utbuf);
+          ::utime(QFile::encodeName(sCopyFile).constData(), &utbuf);
         }
       }
   }
