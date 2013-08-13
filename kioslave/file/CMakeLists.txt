@@ -18,9 +18,9 @@ macro_bool_to_01(ACL_FOUND HAVE_LIBACL HAVE_POSIX_ACL)
 set_package_properties(ACL PROPERTIES DESCRIPTION "LibACL" URL "ftp://oss.sgi.com/projects/xfs/cmd_tars"
                        TYPE RECOMMENDED PURPOSE "Support for manipulating access control lists")
 
-kde4_add_plugin(kio_file ${kio_file_PART_SRCS})
-
-target_link_libraries(kio_file kio ${KCoreAddons_LIBRARIES} KI18n)
+add_library(kio_file MODULE ${kio_file_PART_SRCS})
+set_target_properties(kio_file PROPERTIES PREFIX "")
+target_link_libraries(kio_file KIOCore ${KCoreAddons_LIBRARIES} KI18n)
 
 # This flag is needed in order to be able to support files > 2GB even on
 # 32bit platforms. The default is to use the non-64bit aware syscalls on

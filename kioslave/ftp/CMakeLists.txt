@@ -11,9 +11,9 @@ ftp.cpp
 )
 
 
-kde4_add_plugin(kio_ftp ${kio_ftp_PART_SRCS})
-
-target_link_libraries(kio_ftp  ${KDE4_KDECORE_LIBS} kio ${KCoreAddons_LIBRARIES} KI18n)
+add_library(kio_ftp MODULE ${kio_ftp_PART_SRCS})
+set_target_properties(kio_file PROPERTIES PREFIX "")
+target_link_libraries(kio_ftp Qt5::Network KIOCore ${KCoreAddons_LIBRARIES} KI18n)
 
 install(TARGETS kio_ftp  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
