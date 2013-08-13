@@ -81,7 +81,7 @@
 
 #if HAVE_X11
 #include <kwindowsystem.h>
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
 #include <QDesktopServices>
 #endif
 #include <qplatformdefs.h>
@@ -210,7 +210,7 @@ bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool
     KService::Ptr offer = KMimeTypeTrader::self()->preferredService(_mimetype);
 
     if (!offer) {
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
         // As KDE on windows doesnt know about the windows default applications offers will be empty in nearly all cases.
         // So we use QDesktopServices::openUrl to let windows decide how to open the file
         return QDesktopServices::openUrl(u);
