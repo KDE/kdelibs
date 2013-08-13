@@ -24,15 +24,13 @@
 #include "kwindowsystem.h"
 #include <config-kwindowsystem.h>
 
-#if HAVE_X11
-    #include <X11/Xlib.h>
-    #include <X11/Xatom.h>
-    #include <X11/Xutil.h>
-    #include <QX11Info>
+#include <X11/Xlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xutil.h>
+#include <QX11Info>
 
-    static const char *DASHBOARD_WIN_NAME = "dashboard";
-    static const char *DASHBOARD_WIN_CLASS = "dashboard";
-#endif
+static const char *DASHBOARD_WIN_NAME = "dashboard";
+static const char *DASHBOARD_WIN_CLASS = "dashboard";
 
 namespace KWindowEffects
 {
@@ -42,7 +40,6 @@ bool isEffectAvailable(Effect effect)
     if (!KWindowSystem::self()->compositingActive()) {
         return false;
     }
-#if HAVE_X11
     QString effectName;
 
     switch (effect) {
@@ -83,13 +80,11 @@ bool isEffectAvailable(Effect effect)
         XFree(list);
         return ret;
     }
-#endif
     return false;
 }
 
 void slideWindow(WId id, SlideFromLocation location, int offset)
 {
-#if HAVE_X11
     Display *dpy = QX11Info::display();
     Atom atom = XInternAtom( dpy, "_KDE_SLIDE", False );
     QVarLengthArray<long, 2> data(2);
@@ -118,12 +113,10 @@ void slideWindow(WId id, SlideFromLocation location, int offset)
         XChangeProperty(dpy, id, atom, atom, 32, PropModeReplace,
                         reinterpret_cast<unsigned char *>(data.data()), data.size());
     }
-#endif
 }
 
 void slideWindow(QWidget *widget, SlideFromLocation location)
 {
-#if HAVE_X11
     Display *dpy = QX11Info::display();
     Atom atom = XInternAtom( dpy, "_KDE_SLIDE", False );
     QVarLengthArray<long, 2> data(2);
@@ -151,23 +144,18 @@ void slideWindow(QWidget *widget, SlideFromLocation location)
         XChangeProperty(dpy, widget->effectiveWinId(), atom, atom, 32, PropModeReplace,
                         reinterpret_cast<unsigned char *>(data.data()), data.size());
     }
-#endif
 }
 
 QList<QSize> windowSizes(const QList<WId> &ids)
 {
     QList<QSize> windowSizes;
     Q_FOREACH (WId id, ids) {
-#if HAVE_X11
         if (id > 0) {
             KWindowInfo info = KWindowSystem::windowInfo(id, NET::WMGeometry|NET::WMFrameExtents);
             windowSizes.append(info.frameGeometry().size());
         } else {
             windowSizes.append(QSize());
         }
-#else
-        windowSizes.append(QSize());
-#endif
     }
     return windowSizes;
 }
@@ -177,7 +165,6 @@ void showWindowThumbnails(WId parent, const QList<WId> &windows, const QList<QRe
     if (windows.size() != rects.size()) {
         return;
     }
-#if HAVE_X11
     Display *dpy = QX11Info::display();
     Atom atom = XInternAtom(dpy, "_KDE_WINDOW_PREVIEW", False);
     if (windows.isEmpty()) {
@@ -211,12 +198,10 @@ void showWindowThumbnails(WId parent, const QList<WId> &windows, const QList<QRe
 
     XChangeProperty(dpy, parent, atom, atom, 32, PropModeReplace,
                     reinterpret_cast<unsigned char *>(data.data()), data.size());
-#endif
 }
 
 void presentWindows(WId controller, const QList<WId> &ids)
 {
-#if HAVE_X11
     const int numWindows = ids.count();
     QVarLengthArray<long, 32> data(numWindows);
     int actualCount = 0;
@@ -237,24 +222,20 @@ void presentWindows(WId controller, const QList<WId> &ids)
         XChangeProperty(dpy, controller, atom, atom, 32, PropModeReplace,
                         reinterpret_cast<unsigned char *>(data.data()), data.size());
     }
-#endif
 }
 
 void presentWindows(WId controller, int desktop)
 {
-#if HAVE_X11
     QVarLengthArray<long, 1> data(1);
     data[0] = desktop;
     Display *dpy = QX11Info::display();
     Atom atom = XInternAtom(dpy, "_KDE_PRESENT_WINDOWS_DESKTOP", False);
     XChangeProperty(dpy, controller, atom, atom, 32, PropModeReplace,
                     reinterpret_cast<unsigned char *>(data.data()), data.size());
-#endif
 }
 
 void highlightWindows(WId controller, const QList<WId> &ids)
 {
-#if HAVE_X11
     const int numWindows = ids.count();
     Display *dpy = QX11Info::display();
     Atom atom = XInternAtom(dpy, "_KDE_WINDOW_HIGHLIGHT", False);
@@ -281,12 +262,10 @@ void highlightWindows(WId controller, const QList<WId> &ids)
         XChangeProperty(dpy, controller, atom, atom, 32, PropModeReplace,
                         reinterpret_cast<unsigned char *>(data.data()), data.size());
     }
-#endif
 }
 
 void enableBlurBehind(WId window, bool enable, const QRegion &region)
 {
-#if HAVE_X11
     Display *dpy = QX11Info::display();
     Atom atom = XInternAtom(dpy, "_KDE_NET_WM_BLUR_BEHIND_REGION", False);
 
@@ -302,17 +281,14 @@ void enableBlurBehind(WId window, bool enable, const QRegion &region)
     } else {
         XDeleteProperty(dpy, window, atom);
     }
-#endif
 }
 
 void markAsDashboard(WId window)
 {
-#if HAVE_X11
     XClassHint classHint;
     classHint.res_name = const_cast<char *>(DASHBOARD_WIN_NAME);
     classHint.res_class = const_cast<char *>(DASHBOARD_WIN_CLASS);
     XSetClassHint(QX11Info::display(), window, &classHint);
-#endif
 }
 
 }

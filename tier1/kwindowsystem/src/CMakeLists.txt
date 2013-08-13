@@ -25,7 +25,6 @@ configure_file(config-kwindowsystem.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-k
 set(kwindowsystem_SRCS
     kkeyserver.cpp
     kstartupinfo.cpp
-    kwindoweffects.cpp
     kxerrorhandler.cpp
     kxutils.cpp
     )
@@ -43,18 +42,21 @@ if (HAVE_X11)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kkeyserver_x11.cpp
                                                 kwindowsystem_x11.cpp
                                                 kwindowinfo_x11.cpp
+                                                kwindoweffects_x11.cpp
                                                 kxmessages.cpp
                                                 netwm.cpp )
 endif ()
 
 if (APPLE)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kkeyserver_mac.cpp
+                                                kwindoweffects_dummy.cpp
                                                 kwindowsystem_mac.cpp
                                                 kwindowinfo_mac.cpp)
 endif ()
 
 if (WIN32)
    set(kwindowsystem_SRCS ${kwindowsystem_SRCS} kkeyserver_win.cpp
+                                                kwindoweffects_dummy.cpp
                                                 kwindowsystem_win.cpp
                                                 kwindowinfo_win.cpp)
 endif ()
