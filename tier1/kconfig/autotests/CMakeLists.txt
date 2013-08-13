@@ -30,7 +30,10 @@ kconfigcore_unit_tests(
    kdesktopfiletest
    ksharedconfigtest
    ksharedptrtest
+   test_kconf_update
 )
+
+target_include_directories(test_kconf_update PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/../src/kconf_update)
 
 # compile KEntryMap into the test since it's not exported
 set(kentrymaptest_SRCS kentrymaptest.cpp ../src/core/kconfigdata.cpp)
@@ -38,6 +41,14 @@ add_executable(kentrymaptest ${kentrymaptest_SRCS})
 add_test(kconfigcore-kentrymaptest kentrymaptest)
 target_link_libraries(kentrymaptest KConfigCore Qt5::Test)
 ecm_mark_as_test(kentrymaptest)
+
+# compile KConfigUtils into the test since it's not exported
+set(test_kconfigutils_SRCS test_kconfigutils ../src/kconf_update/kconfigutils.cpp)
+add_executable(test_kconfigutils ${test_kconfigutils_SRCS})
+add_test(kconfigcore-test_kconfigutils test_kconfigutils)
+target_link_libraries(test_kconfigutils KConfigCore Qt5::Test)
+target_include_directories(test_kconfigutils PRIVATE ../src/kconf_update)
+ecm_mark_as_test(test_kconfigutils)
 
 kconfiggui_unit_tests(
    kconfigguitest

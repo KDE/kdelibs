@@ -24,7 +24,7 @@
 #include <qtest.h>
 
 // Local
-#include "../kconfigutils.h"
+#include "kconfigutils.h"
 
 // QT5 TODO QTEST_GUILESS_MAIN(TestKConfigUtils)
 QTEST_MAIN(TestKConfigUtils)

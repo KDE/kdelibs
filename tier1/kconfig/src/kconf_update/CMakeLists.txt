@@ -1,5 +1,4 @@
-
-project(kconf_update)
+find_package(Qt5Core 5.2.0 REQUIRED NO_MODULE)
 
 configure_file(config-kconf.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kconf.h )
 
@@ -11,10 +10,6 @@ set(kconf_update_SRCS
     )
 
 add_executable(kconf_update ${kconf_update_SRCS})
-target_link_libraries(kconf_update kdeqt5staging ${KCoreAddons_LIBRARIES} ${KConfig_CORE_LIBRARY})
+target_link_libraries(kconf_update Qt5::Core kdeqt5staging KConfigCore)
 
 install(TARGETS kconf_update DESTINATION ${LIBEXEC_INSTALL_DIR})
-
-
-add_subdirectory(tests)
-
