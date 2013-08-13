@@ -42,3 +42,10 @@ target_link_libraries(test_configdialog Qt5::Widgets SonnetCore SonnetUi)
 add_executable(test_dictionarycombobox test_dictionarycombobox.cpp)
 ecm_mark_as_test(test_dictionarycombobox)
 target_link_libraries(test_dictionarycombobox Qt5::Widgets SonnetCore SonnetUi)
+
+########### test_textedit ###############
+
+set(test_textedit_SRCS test_textedit.cpp)
+add_executable(test_textedit ${test_textedit_SRCS})
+target_link_libraries(test_textedit Qt5::Widgets SonnetCore SonnetUi)
+ecm_mark_as_test(test_textedit)
