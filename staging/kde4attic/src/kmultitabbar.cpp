@@ -34,8 +34,6 @@
 #include <QStyle>
 #include <QStyleOptionButton>
 
-#include <kiconloader.h>
-#include <QApplication>
 #include <math.h>
 
 /**
@@ -327,8 +325,9 @@ void KMultiTabBarTab::setState(bool newState)
 
 void KMultiTabBarTab::setIcon(const QString& icon)
 {
-	QPixmap pic=SmallIcon(icon);
-	setIcon(pic);
+	const QIcon i = QIcon::fromTheme(icon);
+	const int iconSize = style()->pixelMetric(QStyle::PM_SmallIconSize, 0, this);
+	setIcon(i.pixmap(iconSize));
 }
 
 void KMultiTabBarTab::setIcon(const QPixmap& icon)
