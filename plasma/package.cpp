@@ -502,7 +502,7 @@ bool Package::installPackage(const QString &package,
             archive = new KZip(package);
         } else if (mimetype->is("application/x-compressed-tar") ||
                    mimetype->is("application/x-tar")|| mimetype->is("application/x-bzip-compressed-tar") ||
-                   mimetype->is("application/x-xz") || mimetype->is("application/x-lzma")) {
+                   mimetype->is("application/x-xz-compressed-tar") || mimetype->is("application/x-lzma-compressed-tar")) {
             archive = new KTar(package);
         } else {
             kWarning() << "Could not open package file, unsupported archive format:" << package << mimetype->name();
