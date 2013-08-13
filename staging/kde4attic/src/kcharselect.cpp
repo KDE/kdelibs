@@ -22,6 +22,7 @@
 
 #include "kcharselect_p.h"
 
+#include <QAction>
 #include <QActionEvent>
 #include <QComboBox>
 #include <QDebug>
@@ -35,8 +36,6 @@
 #include <QToolButton>
 #include <QTextBrowser>
 #include <QFontComboBox>
-
-#include <kstandardaction.h>
 
 Q_GLOBAL_STATIC(KCharSelectData, s_data)
 
@@ -323,6 +322,18 @@ KCharSelect::KCharSelect(
     initWidget(controls, actionParent);
 }
 
+void attachToActionParent(QAction *action, QObject *actionParent)
+{
+    if (!action || !actionParent)
+        return;
+
+    action->setParent(actionParent);
+
+    if (actionParent->inherits("KActionCollection")) {
+        QMetaObject::invokeMethod(actionParent, "addAction", Q_ARG(QString, action->objectName()), Q_ARG(QAction*, action));
+    }
+}
+
 void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
 {
     d->actionParent = actionParent;
@@ -337,7 +348,15 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
         d->searchLine->setPlaceholderText(tr("Enter a search term or character here"));
         d->searchLine->setClearButtonEnabled(true);
         d->searchLine->setToolTip(tr("Enter a search term or character here"));
-        KStandardAction::find(this, SLOT(_k_activateSearchLine()), d->actionParent);
+
+        QAction *findAction = new QAction(this);
+        connect(findAction, SIGNAL(triggered(bool)), this, SLOT(_k_activateSearchLine()));
+        findAction->setObjectName("edit_find");
+        findAction->setText(tr("&Find..."));
+        findAction->setIcon(QIcon::fromTheme("edit-find"));
+        findAction->setShortcuts(QKeySequence::keyBindings(QKeySequence::Find));
+        attachToActionParent(findAction, actionParent);
+
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
         connect(d->searchLine, SIGNAL(returnPressed()), this, SLOT(_k_search()));
     }
@@ -365,8 +384,28 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
     d->forwardButton->setIcon(QIcon::fromTheme("go-next"));
     d->forwardButton->setToolTip(tr("Next Character in History"));
 
-    KStandardAction::back(d->backButton, SLOT(animateClick()), d->actionParent);
-    KStandardAction::forward(d->forwardButton, SLOT(animateClick()), d->actionParent);
+    QAction *backAction = new QAction(this);
+    connect(backAction, SIGNAL(triggered(bool)), d->backButton, SLOT(animateClick()));
+    backAction->setObjectName("go_back");
+    backAction->setText(tr("&Back", "go back"));
+    backAction->setIcon(QIcon::fromTheme("go-previous"));
+    backAction->setShortcuts(QKeySequence::keyBindings(QKeySequence::Back));
+    attachToActionParent(backAction, actionParent);
+
+    QAction *forwardAction = new QAction(this);
+    connect(forwardAction, SIGNAL(triggered(bool)), d->forwardButton, SLOT(animateClick()));
+    forwardAction->setObjectName("go_forward");
+    forwardAction->setText(tr("&Forward", "go forward"));
+    forwardAction->setIcon(QIcon::fromTheme("go-next"));
+    forwardAction->setShortcuts(QKeySequence::keyBindings(QKeySequence::Forward));
+    attachToActionParent(forwardAction, actionParent);
+
+    if (QApplication::isRightToLeft()) { // swap the back/forward icons
+        QIcon tmp = backAction->icon();
+        backAction->setIcon(forwardAction->icon());
+        forwardAction->setIcon(tmp);
+    }
+
     connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
