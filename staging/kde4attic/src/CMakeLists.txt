@@ -25,7 +25,6 @@ set(kde4attic_SRCS
   kdatewidget.cpp
   kgesture.cpp
   kgesturemap.cpp
-  kmultitabbar.cpp
   ktimecombobox.cpp
   ktimezonewidget.cpp
   ksslcertificatemanager.cpp
@@ -150,7 +149,6 @@ install(FILES
   kdatewidget.h
   kdeprintdialog.h
   kgesture.h
-  kmultitabbar.h
   ktimecombobox.h
   ktimezonewidget.h
   ktcpsocket.h

@@ -30,7 +30,7 @@
 #include <QtCore/QList>
 #include <QPushButton>
 
-#include <kde4attic_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QPixmap;
 class QPainter;
@@ -54,7 +54,7 @@ class KMultiTabBarInternal;
  *
  * @author Joseph Wenninger
  */
-class KDE4ATTIC_EXPORT KMultiTabBar: public QWidget
+class KWIDGETSADDONS_EXPORT KMultiTabBar: public QWidget
 {
     Q_OBJECT
     Q_ENUMS(KMultiTabBarPosition KMultiTabBarStyle)
@@ -152,7 +152,7 @@ private:
 /**
  * Use KMultiTabBar::appendButton to append a button, which creates a KMultiTabBarButton instance
  */
-class KDE4ATTIC_EXPORT KMultiTabBarButton: public QPushButton
+class KWIDGETSADDONS_EXPORT KMultiTabBarButton: public QPushButton
 {
     Q_OBJECT
 public:
@@ -189,7 +189,7 @@ private:
 /**
  * Use KMultiTabBar::appendTab to append a tab, which creates a KMultiTabBarTab instance
  */
-class KDE4ATTIC_EXPORT KMultiTabBarTab: public KMultiTabBarButton
+class KWIDGETSADDONS_EXPORT KMultiTabBarTab: public KMultiTabBarButton
 {
     Q_OBJECT
 public:
