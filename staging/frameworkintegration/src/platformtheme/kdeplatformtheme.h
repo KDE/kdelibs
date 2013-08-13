@@ -41,6 +41,9 @@ public:
     virtual const QFont *font(Font type) const;
     virtual QIconEngine *createIconEngine(const QString &iconName) const;
 
+private Q_SLOTS:
+    void setupIconLoader();
+
 private:
     void loadSettings();
     void loadHints();
