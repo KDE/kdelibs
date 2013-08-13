@@ -12,7 +12,7 @@ macro(XMLGUI_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(xmlgui-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} Qt5::Test Qt5::Xml XmlGui)
+        target_link_libraries(${_testname} Qt5::Test KI18n KIconThemes XmlGui)
     endforeach(_testname)
 endmacro()
 

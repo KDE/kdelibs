@@ -92,23 +92,23 @@ qt5_wrap_ui(xmlgui_SRCS ${xmlgui_UI} )
 add_library(XmlGui ${xmlgui_SRCS})
 generate_export_header(XmlGui)
 
-target_link_libraries(XmlGui LINK_PUBLIC
-    Qt5::Widgets
+target_link_libraries(XmlGui
+LINK_PUBLIC
     Qt5::DBus
-    Qt5::X11Extras
     Qt5::Xml
+    Qt5::Widgets
+    KConfigCore
+    KCoreAddons
+    KConfigWidgets
+LINK_PRIVATE
     Qt5::Network
     Qt5::PrintSupport
-
+    Qt5::X11Extras
     KWidgetsAddons
     ItemViews
     KI18n
-    KCoreAddons
-    KConfigCore
-    KConfigWidgets
     KIconThemes
     KTextWidgets
-    SonnetUi
     KWindowSystem
     ${XMLGUI_EXTRA_LIBS}
 )

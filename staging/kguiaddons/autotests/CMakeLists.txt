@@ -1,4 +1,4 @@
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test Widgets)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
 
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 
@@ -8,7 +8,7 @@ macro(kguiaddons_unit_tests)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
     add_test(kconfig-${_testname} ${_testname})
-    target_link_libraries(${_testname} KGuiAddons Qt5::Test Qt5::Widgets)
+    target_link_libraries(${_testname} KGuiAddons Qt5::Test)
     ecm_mark_as_test(${_testname})
   endforeach()
 endmacro()

@@ -21,17 +21,16 @@ generate_export_header(KInterProcessWindowing)
 
 target_link_libraries(KInterProcessWindowing
 LINK_PUBLIC
-   Qt5::Widgets
-   ${KWindowSystem_LIBRARIES}
-LINK_PRIVATE
-   ${X11_LIBRARIES}
-   KI18n
+   Qt5::Core
    KWidgetsAddons
+LINK_PRIVATE
+   ${KWindowSystem_LIBRARIES}
+   KI18n
 )
 
 if (X11_FOUND)
   find_package(Qt5X11Extras 5.2.0 REQUIRED NO_MODULE)
-  target_link_libraries(KInterProcessWindowing LINK_PRIVATE Qt5::X11Extras)
+  target_link_libraries(KInterProcessWindowing LINK_PRIVATE Qt5::X11Extras ${X11_LIBRARIES})
 endif()
 
 set_target_properties(KInterProcessWindowing PROPERTIES VERSION   ${ECM_VERSION_STRING}

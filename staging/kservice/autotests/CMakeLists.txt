@@ -13,9 +13,6 @@ macro(KSERVICE_UNIT_TESTS)
     target_link_libraries(${_testname}
        KService
        Qt5::Test
-       Qt5::Xml
-       ${KConfig_CORE_LIBRARY}
-       KI18n
        Qt5::Concurrent
     )
     ecm_mark_as_test(${_testname})

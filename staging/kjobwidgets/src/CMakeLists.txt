@@ -29,10 +29,11 @@ generate_export_header(KJobWidgets)
 
 target_link_libraries(KJobWidgets
    LINK_PUBLIC
-   Qt5::Widgets
-   Qt5::DBus
-   KCoreAddons    # KJob
-   KWidgetsAddons # KSqueezedTextLabel
+      Qt5::Widgets
+      KCoreAddons    # KJob
+   LINK_PRIVATE
+      Qt5::DBus
+      KWidgetsAddons # KSqueezedTextLabel
 )
 
 if (HAVE_X11)

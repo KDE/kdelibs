@@ -1,7 +1,7 @@
 remove_definitions(-DQT_NO_CAST_FROM_ASCII)
 remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Xml Test)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
 
 include(ECMMarkAsTest)
 
@@ -10,7 +10,7 @@ macro(KCOMPLETION_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(kcompletion-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} Qt5::Test Qt5::Xml KCompletion)
+        target_link_libraries(${_testname} Qt5::Test KCompletion)
     endforeach(_testname)
 endmacro()
 

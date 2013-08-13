@@ -13,10 +13,6 @@ macro(KIOCORE_UNIT_TESTS)
     target_link_libraries(${_testname}
        KIOCore
        Qt5::Test
-       Qt5::Xml
-       KI18n
-       Qt5::Concurrent
-       ${KConfig_CORE_LIBRARY}
     )
     ecm_mark_as_test(${_testname})
   endforeach()

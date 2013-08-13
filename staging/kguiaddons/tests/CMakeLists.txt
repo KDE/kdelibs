@@ -3,12 +3,12 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
 include(ECMMarkAsTest)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Xml Test)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
 
 macro(kguiaddons_executable_tests)
   foreach(_testname ${ARGN})
     add_executable(${_testname} ${_testname}.cpp)
-    target_link_libraries(${_testname} KGuiAddons Qt5::Widgets)
+    target_link_libraries(${_testname} KGuiAddons)
     ecm_mark_as_test(${_testname})
   endforeach(_testname)
 endmacro()

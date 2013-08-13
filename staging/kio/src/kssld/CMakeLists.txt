@@ -6,8 +6,10 @@ set(kded_kssld_SRCS kssld.cpp )
 kde4_add_plugin(kded_kssld ${kded_kssld_SRCS})
 
 target_link_libraries(kded_kssld
+LINK_PUBLIC
    KIOCore     # ksslcertificatemanager
    KDBusAddons # kdedmodule
+LINK_PRIVATE
    KConfigCore
    KService    # kpluginfactory
    Qt5::Network

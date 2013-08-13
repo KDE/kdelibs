@@ -29,9 +29,9 @@ target_link_libraries(KWallet LINK_PUBLIC Qt5::Widgets)
 target_link_libraries(KWallet LINK_PRIVATE Qt5::DBus KWindowSystem KConfigCore)
 
 if(APPLE)
-   target_link_libraries(KWallet ${CARBON_LIBRARY})
+   target_link_libraries(KWallet LINK_PRIVATE ${CARBON_LIBRARY})
    if (MAC_USE_OSXKEYCHAIN)
-     target_link_libraries(KWallet ${SECURITY_LIBRARY})
+     target_link_libraries(KWallet LINK_PRIVATE ${SECURITY_LIBRARY})
    endif (MAC_USE_OSXKEYCHAIN)
 endif(APPLE)
 

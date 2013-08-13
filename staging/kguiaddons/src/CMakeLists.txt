@@ -34,7 +34,8 @@ set(kguiaddons_INCLUDES
   ${CMAKE_CURRENT_SOURCE_DIR}/util
   )
 target_include_directories(KGuiAddons PUBLIC "$<BUILD_INTERFACE:${kguiaddons_INCLUDES}>")
-target_link_libraries(KGuiAddons Qt5::Gui)
+target_link_libraries(KGuiAddons LINK_PUBLIC Qt5::Gui)
+
 set_target_properties(KGuiAddons PROPERTIES VERSION   ${KGUIADDONS_VERSION_STRING}
                                             SOVERSION ${KGUIADDONS_SOVERSION} )
 

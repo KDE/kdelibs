@@ -3,7 +3,7 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 
 include(ECMMarkAsTest)
 
-find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Xml Test)
+find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test)
 
 macro(kservice_executable_tests)
   foreach(_testname ${ARGN})

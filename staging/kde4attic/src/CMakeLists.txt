@@ -123,8 +123,8 @@ set(kde4attic_INCLUDES
 )
 target_include_directories(KDE4Attic PUBLIC "$<BUILD_INTERFACE:${kde4attic_INCLUDES}>")
 
-target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::Widgets Qt5::PrintSupport KCompletion XmlGui ${kde4attic_OPTIONAL_LIBS})
-target_link_libraries(KDE4Attic LINK_PRIVATE KUnitConversion Qt5::Concurrent KI18n KIconThemes KNotifications)
+target_link_libraries(KDE4Attic LINK_PUBLIC Qt5::PrintSupport Qt5::Network KCompletion XmlGui)
+target_link_libraries(KDE4Attic LINK_PRIVATE Qt5::Concurrent KI18n KUnitConversion KIconThemes KNotifications ${kde4attic_OPTIONAL_LIBS})
 
 set_target_properties(KDE4Attic PROPERTIES VERSION   ${KDE4ATTIC_VERSION_STRING}
                                            SOVERSION ${KDE4ATTIC_SOVERSION}

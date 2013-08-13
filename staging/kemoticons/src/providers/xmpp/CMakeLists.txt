@@ -4,7 +4,7 @@ set(xmppemoticons_SRCS xmpp_emoticons.cpp)
 
 kde4_add_plugin(emoticonstheme_xmpp ${xmppemoticons_SRCS})
 
-target_link_libraries(emoticonstheme_xmpp KEmoticons KService Qt5::Xml)
+target_link_libraries(emoticonstheme_xmpp LINK_PRIVATE KEmoticons Qt5::Xml)
 
 ########### install files ###############
 

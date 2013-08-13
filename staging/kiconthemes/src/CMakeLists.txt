@@ -14,7 +14,8 @@ set(kiconthemes_SRCS
 add_library(KIconThemes ${kiconthemes_SRCS})
 generate_export_header(KIconThemes)
 
-target_link_libraries(KIconThemes LINK_PUBLIC Qt5::Widgets Qt5::DBus Qt5::Svg ItemViews KConfigGui KConfigCore KConfigWidgets KCoreAddons KGuiAddons KI18n)
+target_link_libraries(KIconThemes LINK_PUBLIC Qt5::Widgets)
+target_link_libraries(KIconThemes LINK_PRIVATE Qt5::DBus Qt5::Svg ItemViews KConfigCore KConfigWidgets KCoreAddons KI18n)
 
 set_target_properties(KIconThemes PROPERTIES VERSION   ${KICONTHEMES_VERSION_STRING}
                                              SOVERSION ${KICONTHEMES_SOVERSION}

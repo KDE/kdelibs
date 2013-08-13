@@ -115,7 +115,6 @@ LINK_PUBLIC
 LINK_PRIVATE
  KI18n
  Qt5::Network
- Qt5::DBus
  Qt5::Concurrent            # QtConcurrentRun in hostinfo.cpp
  ${KConfig_CORE_LIBRARY}
  Qt5::Xml                   # davjob.cpp uses QDom
@@ -123,7 +122,7 @@ LINK_PRIVATE
 )
 
 if(ACL_FOUND)
-  target_link_libraries(KIOCore ${ACL_LIBS})
+  target_link_libraries(KIOCore LINK_PRIVATE ${ACL_LIBS})
 endif(ACL_FOUND)
 
 set_target_properties(KIOCore PROPERTIES VERSION ${KIO_VERSION_STRING}

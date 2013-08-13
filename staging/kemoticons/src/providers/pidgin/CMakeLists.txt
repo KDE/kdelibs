@@ -4,7 +4,7 @@ set(pidginemoticons_SRCS pidgin_emoticons.cpp)
 
 kde4_add_plugin(emoticonstheme_pidgin ${pidginemoticons_SRCS})
 
-target_link_libraries(emoticonstheme_pidgin KEmoticons KService)
+target_link_libraries(emoticonstheme_pidgin LINK_PRIVATE KEmoticons)
 
 ########### install files ###############
 

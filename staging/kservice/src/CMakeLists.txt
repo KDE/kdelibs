@@ -61,11 +61,10 @@ target_include_directories(KService PUBLIC "$<BUILD_INTERFACE:${kservice_include
 target_link_libraries(KService
   LINK_PUBLIC
     KConfigCore
-    KCoreAddons
   LINK_PRIVATE
+    KCoreAddons
     KI18n
     KDBusAddons   # KDEInitInterface
-    Qt5::DBus
 )
 
 set_target_properties(KService PROPERTIES VERSION ${KSERVICE_VERSION_STRING}

@@ -57,7 +57,8 @@ endif(NOT KUNITCONVERSION_NO_SOLID)
 
 add_library(KUnitConversion ${kunitconversion_LIB_SRCS})
 generate_export_header(KUnitConversion)
-target_link_libraries(KUnitConversion ${KUNITCONVERSION_EXTRA_LIBS} ${KCoreAddons_LIBRARIES} KConfigCore KI18n)
+target_link_libraries(KUnitConversion LINK_PUBLIC ${KCoreAddons_LIBRARIES} KConfigCore)
+target_link_libraries(KUnitConversion LINK_PRIVATE ${KUNITCONVERSION_EXTRA_LIBS} KI18n)
 target_include_directories(KUnitConversion PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>" "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/..>")
 
 set_target_properties(KUnitConversion PROPERTIES VERSION   ${KUNITCONVERSION_VERSION_STRING}

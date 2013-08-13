@@ -58,11 +58,14 @@ target_link_libraries(KIOWidgets
     Qt5::Network  # SSL
     KCompletion   # KUrlCompletion uses KCompletion
   LINK_PRIVATE
+    Qt5::DBus
+    KI18n
     KIconThemes   # KIconLoader
+    KWidgetsAddons
 )
 
 if(ACL_FOUND)
-   target_link_libraries(KIOWidgets ${ACL_LIBS})
+   target_link_libraries(KIOWidgets LINK_PRIVATE ${ACL_LIBS})
 endif(ACL_FOUND)
 
 set_target_properties(KIOWidgets PROPERTIES VERSION ${KIO_VERSION_STRING}
