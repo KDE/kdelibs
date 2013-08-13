@@ -20,12 +20,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "test9.h"
 #include <QtCore/QDir>
-#include <QApplication>
+#include <QGuiApplication>
 #include <QDebug>
 
 int main( int argc, char **argv )
 {
-  QApplication app(argc, argv);
+  QGuiApplication app(argc, argv);
   Q_UNUSED(app);
   Test9 *t = new Test9( QString(), QString() );
 

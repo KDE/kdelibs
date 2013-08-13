@@ -20,11 +20,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 #include "test4.h"
-#include <QApplication>
+#include <QGuiApplication>
 
 int main( int argc, char **argv )
 {
-  QApplication app(argc, argv);
+  QGuiApplication app(argc, argv);
   Q_UNUSED(app);
   Test4 *t = Test4::self();
   delete t;
