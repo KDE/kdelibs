@@ -224,7 +224,6 @@ add_subdirectory( kinit  )
 add_subdirectory( includes )
 ecm_optional_add_subdirectory( doc )
 
-add_subdirectory( kimgio )
 find_package(Qt5Quick)
 if(Qt5Quick_FOUND)
   add_subdirectory( experimental )
