@@ -26,8 +26,6 @@
 #include <QWidget>
 #include <kde4attic_export.h>
 
-class KActionCollection;
-
 class QFont;
 class QUrl;
 
@@ -105,12 +103,17 @@ public:
     Q_DECLARE_FLAGS(Controls,
                     Control)
 
-    /** @deprecated */
-#ifndef KDE_NO_DEPRECATED
-    KDE4ATTIC_DEPRECATED explicit KCharSelect(
+    /**
+     * Constructor. @p controls can be used to show a custom set of widgets.
+     *
+     * @param parent     the parent widget for this KCharSelect (see QWidget documentation)
+     * @param controls   selects the visible controls on the KCharSelect widget
+     *
+     * @since 4.2
+     */
+    explicit KCharSelect(
             QWidget *parent,
             const Controls controls = AllGuiElements);
-#endif
 
     /**
      * Constructor. @p controls can be used to show a custom set of widgets.
@@ -124,15 +127,15 @@ public:
      * which you can then manually trigger or place in menus and toolbars.
      *
      * @param parent     the parent widget for this KCharSelect (see QWidget documentation)
-     * @param collection if this is not @c null, KCharSelect will place its actions into this
-     *                   collection
+     * @param actionParent if this is not @c null, KCharSelect will place its actions into this
+     *                     collection
      * @param controls   selects the visible controls on the KCharSelect widget
      *
      * @since 4.2
      */
     explicit KCharSelect(
             QWidget *parent,
-            KActionCollection *collection,
+            QObject *actionParent,
             const Controls controls = AllGuiElements);
 
     ~KCharSelect();
@@ -212,7 +215,7 @@ private:
     class KCharSelectPrivate;
     KCharSelectPrivate* const d;
 
-    void initWidget(const Controls, KActionCollection *);
+    void initWidget(const Controls, QObject *);
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(KCharSelect::Controls)

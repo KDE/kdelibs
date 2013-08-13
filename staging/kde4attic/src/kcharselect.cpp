@@ -37,7 +37,6 @@
 #include <QFontComboBox>
 
 #include <klocalizedstring.h>
-#include <kactioncollection.h>
 #include <kstandardaction.h>
 
 Q_GLOBAL_STATIC(KCharSelectData, s_data)
@@ -78,7 +77,7 @@ public:
           ,searchMode(false)
           ,historyEnabled(false)
           ,inHistory(0)
-          ,actions(NULL)
+          ,actionParent(0)
     {
     }
 
@@ -98,7 +97,7 @@ public:
     bool historyEnabled;
     int inHistory; //index of current char in history
     QList<HistoryItem> history;
-    KActionCollection* actions;
+    QObject *actionParent;
 
     QString createLinks(QString s);
     void historyAdd(const QChar &c, bool fromSearch, const QString &searchString);
@@ -313,21 +312,16 @@ KCharSelect::KCharSelect(QWidget *parent, const Controls controls)
 
 KCharSelect::KCharSelect(
         QWidget *parent
-        ,KActionCollection *collection
+        ,QObject *actionParent
         ,const Controls controls)
     : QWidget(parent), d(new KCharSelectPrivate(this))
 {
-    initWidget(controls, collection);
+    initWidget(controls, actionParent);
 }
 
-void KCharSelect::initWidget(const Controls controls, KActionCollection *collection)
+void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
 {
-    if (collection==NULL) {
-        d->actions = new KActionCollection(this);
-        d->actions->addAssociatedWidget(this);
-    } else {
-        d->actions = collection;
-    }
+    d->actionParent = actionParent;
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setMargin(0);
@@ -339,7 +333,7 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
         d->searchLine->setPlaceholderText(i18n("Enter a search term or character here"));
         d->searchLine->setClearButtonEnabled(true);
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
-        KStandardAction::find(this, SLOT(_k_activateSearchLine()), d->actions);
+        KStandardAction::find(this, SLOT(_k_activateSearchLine()), d->actionParent);
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
         connect(d->searchLine, SIGNAL(returnPressed()), this, SLOT(_k_search()));
     }
@@ -367,8 +361,8 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
     d->forwardButton->setIcon(QIcon::fromTheme("go-next"));
     d->forwardButton->setToolTip(i18n("Next Character in History"));
 
-    KStandardAction::back(d->backButton, SLOT(animateClick()), d->actions);
-    KStandardAction::forward(d->forwardButton, SLOT(animateClick()), d->actions);
+    KStandardAction::back(d->backButton, SLOT(animateClick()), d->actionParent);
+    KStandardAction::forward(d->forwardButton, SLOT(animateClick()), d->actionParent);
     connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
