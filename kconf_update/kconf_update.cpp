@@ -31,7 +31,6 @@
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
-#include <klocalizedstring.h>
 
 #include <qstandardpaths.h>
 #include <qcommandlineparser.h>
