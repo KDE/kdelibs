@@ -23,9 +23,11 @@
 #include "kcharselect_p.h"
 
 #include <QActionEvent>
+#include <QComboBox>
 #include <QDebug>
 #include <QDoubleSpinBox>
 #include <QHeaderView>
+#include <QLineEdit>
 #include <QBoxLayout>
 #include <QShortcut>
 #include <QSplitter>
@@ -34,9 +36,7 @@
 #include <QTextBrowser>
 #include <QFontComboBox>
 
-#include <kcombobox.h>
 #include <klocalizedstring.h>
-#include <klineedit.h>
 #include <kactioncollection.h>
 #include <kstandardaction.h>
 
@@ -86,7 +86,7 @@ public:
 
     QToolButton *backButton;
     QToolButton *forwardButton;
-    KLineEdit* searchLine;
+    QLineEdit* searchLine;
     QFontComboBox *fontCombo;
     QSpinBox *fontSizeSpinBox;
     QComboBox *sectionCombo;
@@ -334,10 +334,10 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
     if (SearchLine & controls) {
         QHBoxLayout *searchLayout = new QHBoxLayout();
         mainLayout->addLayout(searchLayout);
-        d->searchLine = new KLineEdit(this);
+        d->searchLine = new QLineEdit(this);
         searchLayout->addWidget(d->searchLine);
         d->searchLine->setPlaceholderText(i18n("Enter a search term or character here"));
-        d->searchLine->setClearButtonShown(true);
+        d->searchLine->setClearButtonEnabled(true);
         d->searchLine->setToolTip(i18n("Enter a search term or character here"));
         KStandardAction::find(this, SLOT(_k_activateSearchLine()), d->actions);
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
@@ -372,10 +372,10 @@ void KCharSelect::initWidget(const Controls controls, KActionCollection *collect
     connect(d->backButton, SIGNAL(clicked()), this, SLOT(_k_back()));
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
-    d->sectionCombo = new KComboBox(this);
+    d->sectionCombo = new QComboBox(this);
     d->sectionCombo->setToolTip(i18n("Select a category"));
     comboLayout->addWidget(d->sectionCombo);
-    d->blockCombo = new KComboBox(this);
+    d->blockCombo = new QComboBox(this);
     d->blockCombo->setToolTip(i18n("Select a block to be displayed"));
     d->blockCombo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     comboLayout->addWidget(d->blockCombo, 1);
