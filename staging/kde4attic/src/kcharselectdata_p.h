@@ -83,6 +83,7 @@ private:
 
     QByteArray dataFile;
     QFuture<Index> futureIndex;
+    friend class RunIndexCreation;
 };
 
 #endif  /* #ifndef KCHARSELECTDATA_H */

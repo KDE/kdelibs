@@ -24,7 +24,9 @@
 #include <QStringList>
 #include <QFile>
 #include <qendian.h>
-#include <QtConcurrentRun>
+#include <QFutureInterface>
+#include <QRunnable>
+#include <QThreadPool>
 
 #include <string.h>
 #include <qstandardpaths.h>
@@ -39,6 +41,36 @@
 #define TCount 28
 #define NCount (VCount * TCount)
 #define SCount (LCount * NCount)
+
+class RunIndexCreation : public QFutureInterface<Index>, public QRunnable
+{
+public:
+    RunIndexCreation(KCharSelectData *data, const QByteArray &dataFile)
+        : m_data(data), m_dataFile(dataFile)
+    {
+    }
+
+    QFuture<Index> start()
+    {
+        setRunnable(this);
+        reportStarted();
+        QFuture<Index> f = this->future();
+        QThreadPool::globalInstance()->start(this);
+        return f;
+    }
+
+    void run()
+    {
+        Index index = m_data->createIndex(m_dataFile);
+        reportResult(index);
+        reportFinished();
+    }
+
+private:
+    KCharSelectData *m_data;
+    QByteArray m_dataFile;
+};
+
 
 inline QString tr(const char *s, const char *c = 0, int n = -1)
 {
@@ -76,7 +108,7 @@ bool KCharSelectData::openDataFile()
         }
         dataFile = file.readAll();
         file.close();
-        futureIndex = QtConcurrent::run(this, &KCharSelectData::createIndex, dataFile);
+        futureIndex = (new RunIndexCreation(this, dataFile))->start();
         return true;
     }
 }
