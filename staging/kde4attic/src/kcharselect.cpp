@@ -36,7 +36,6 @@
 #include <QTextBrowser>
 #include <QFontComboBox>
 
-#include <klocalizedstring.h>
 #include <kstandardaction.h>
 
 Q_GLOBAL_STATIC(KCharSelectData, s_data)
@@ -79,6 +78,11 @@ public:
           ,inHistory(0)
           ,actionParent(0)
     {
+    }
+
+    QString tr(const char *str)
+    {
+        return KCharSelect::tr(str);
     }
 
     KCharSelect *q;
@@ -330,9 +334,9 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
         mainLayout->addLayout(searchLayout);
         d->searchLine = new QLineEdit(this);
         searchLayout->addWidget(d->searchLine);
-        d->searchLine->setPlaceholderText(i18n("Enter a search term or character here"));
+        d->searchLine->setPlaceholderText(tr("Enter a search term or character here"));
         d->searchLine->setClearButtonEnabled(true);
-        d->searchLine->setToolTip(i18n("Enter a search term or character here"));
+        d->searchLine->setToolTip(tr("Enter a search term or character here"));
         KStandardAction::find(this, SLOT(_k_activateSearchLine()), d->actionParent);
         connect(d->searchLine, SIGNAL(textChanged(QString)), this, SLOT(_k_searchEditChanged()));
         connect(d->searchLine, SIGNAL(returnPressed()), this, SLOT(_k_search()));
@@ -350,16 +354,16 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
     d->backButton = new QToolButton(this);
     comboLayout->addWidget(d->backButton);
     d->backButton->setEnabled(false);
-    d->backButton->setText(i18nc("Goes to previous character", "Previous in History"));
+    d->backButton->setText(tr("Previous in History", "Goes to previous character"));
     d->backButton->setIcon(QIcon::fromTheme("go-previous"));
-    d->backButton->setToolTip(i18n("Previous Character in History"));
+    d->backButton->setToolTip(tr("Previous Character in History"));
 
     d->forwardButton = new QToolButton(this);
     comboLayout->addWidget(d->forwardButton);
     d->forwardButton->setEnabled(false);
-    d->forwardButton->setText(i18nc("Goes to next character", "Next in History"));
+    d->forwardButton->setText(tr("Next in History", "Goes to next character"));
     d->forwardButton->setIcon(QIcon::fromTheme("go-next"));
-    d->forwardButton->setToolTip(i18n("Next Character in History"));
+    d->forwardButton->setToolTip(tr("Next Character in History"));
 
     KStandardAction::back(d->backButton, SLOT(animateClick()), d->actionParent);
     KStandardAction::forward(d->forwardButton, SLOT(animateClick()), d->actionParent);
@@ -367,10 +371,10 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
     connect(d->forwardButton, SIGNAL(clicked()), this, SLOT(_k_forward()));
 
     d->sectionCombo = new QComboBox(this);
-    d->sectionCombo->setToolTip(i18n("Select a category"));
+    d->sectionCombo->setToolTip(tr("Select a category"));
     comboLayout->addWidget(d->sectionCombo);
     d->blockCombo = new QComboBox(this);
-    d->blockCombo->setToolTip(i18n("Select a block to be displayed"));
+    d->blockCombo->setToolTip(tr("Select a block to be displayed"));
     d->blockCombo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
     comboLayout->addWidget(d->blockCombo, 1);
     d->sectionCombo->addItems(s_data()->sectionList());
@@ -383,14 +387,14 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
     comboLayout->addWidget(d->fontCombo);
     d->fontCombo->setEditable(true);
     d->fontCombo->resize(d->fontCombo->sizeHint());
-    d->fontCombo->setToolTip(i18n("Set font"));
+    d->fontCombo->setToolTip(tr("Set font"));
 
     d->fontSizeSpinBox = new QSpinBox(this);
     comboLayout->addWidget(d->fontSizeSpinBox);
     d->fontSizeSpinBox->setValue(QWidget::font().pointSize());
     d->fontSizeSpinBox->setRange(1, 400);
     d->fontSizeSpinBox->setSingleStep(1);
-    d->fontSizeSpinBox->setToolTip(i18n("Set font size"));
+    d->fontSizeSpinBox->setToolTip(tr("Set font size"));
 
     connect(d->fontCombo, SIGNAL(currentIndexChanged(QString)), this, SLOT(_k_fontSelected()));
     connect(d->fontSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(_k_fontSelected()));
@@ -621,13 +625,13 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
 
 void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 {
-    QString html = "<p>" + i18n("Character:") + ' ' + s_data()->display(c, charTable->font()) + ' ' +
+    QString html = "<p>" + tr("Character:") + ' ' + s_data()->display(c, charTable->font()) + ' ' +
                    s_data()->formatCode(c.unicode())  + "<br />";
 
     QString name = s_data()->name(c);
     if (!name.isEmpty()) {
         //is name ever empty? </p> should always be there...
-        html += i18n("Name: ") + name.toHtmlEscaped() + "</p>";
+        html += tr("Name: ") + name.toHtmlEscaped() + "</p>";
     }
     QStringList aliases = s_data()->aliases(c);
     QStringList notes = s_data()->notes(c);
@@ -635,11 +639,11 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     QStringList equivalents = s_data()->equivalents(c);
     QStringList approxEquivalents = s_data()->approximateEquivalents(c);
     if (!(aliases.isEmpty() && notes.isEmpty() && seeAlso.isEmpty() && equivalents.isEmpty() && approxEquivalents.isEmpty())) {
-        html += "<p><b>" + i18n("Annotations and Cross References") + "</b></p>";
+        html += "<p><b>" + tr("Annotations and Cross References") + "</b></p>";
     }
 
     if (!aliases.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += "<p style=\"margin-bottom: 0px;\">" + tr("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &alias, aliases) {
             html += "<li>" + alias.toHtmlEscaped() + "</li>";
         }
@@ -647,7 +651,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     }
 
     if (!notes.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Notes:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += "<p style=\"margin-bottom: 0px;\">" + tr("Notes:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &note, notes) {
             html += "<li>" + createLinks(note.toHtmlEscaped()) + "</li>";
         }
@@ -655,7 +659,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     }
 
     if (!seeAlso.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + i18n("See also:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += "<p style=\"margin-bottom: 0px;\">" + tr("See also:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QChar &c2, seeAlso) {
             html += "<li><a href=\"" + QString::number(c2.unicode(), 16) + "\">";
             if (s_data()->isPrint(c2)) {
@@ -667,7 +671,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     }
 
     if (!equivalents.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += "<p style=\"margin-bottom: 0px;\">" + tr("Equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &equivalent, equivalents) {
             html += "<li>" + createLinks(equivalent.toHtmlEscaped()) + "</li>";
         }
@@ -675,7 +679,7 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     }
 
     if (!approxEquivalents.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + i18n("Approximate equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += "<p style=\"margin-bottom: 0px;\">" + tr("Approximate equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
         foreach(const QString &approxEquivalent, approxEquivalents) {
             html += "<li>" + createLinks(approxEquivalent.toHtmlEscaped()) + "</li>";
         }
@@ -684,60 +688,60 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 
     QStringList unihan = s_data()->unihanInfo(c);
     if (unihan.count() == 7) {
-        html += "<p><b>" + i18n("CJK Ideograph Information") + "</b></p><p>";
+        html += "<p><b>" + tr("CJK Ideograph Information") + "</b></p><p>";
         bool newline = true;
         if (!unihan[0].isEmpty()) {
-            html += i18n("Definition in English: ") + unihan[0];
+            html += tr("Definition in English: ") + unihan[0];
             newline = false;
         }
         if (!unihan[2].isEmpty()) {
             if (!newline) html += "<br>";
-            html += i18n("Mandarin Pronunciation: ") + unihan[2];
+            html += tr("Mandarin Pronunciation: ") + unihan[2];
             newline = false;
         }
         if (!unihan[1].isEmpty()) {
             if (!newline) html += "<br>";
-            html += i18n("Cantonese Pronunciation: ") + unihan[1];
+            html += tr("Cantonese Pronunciation: ") + unihan[1];
             newline = false;
         }
         if (!unihan[6].isEmpty()) {
             if (!newline) html += "<br>";
-            html += i18n("Japanese On Pronunciation: ") + unihan[6];
+            html += tr("Japanese On Pronunciation: ") + unihan[6];
             newline = false;
         }
         if (!unihan[5].isEmpty()) {
             if (!newline) html += "<br>";
-            html += i18n("Japanese Kun Pronunciation: ") + unihan[5];
+            html += tr("Japanese Kun Pronunciation: ") + unihan[5];
             newline = false;
         }
         if (!unihan[3].isEmpty()) {
             if (!newline) html += "<br>";
-            html += i18n("Tang Pronunciation: ") + unihan[3];
+            html += tr("Tang Pronunciation: ") + unihan[3];
             newline = false;
         }
         if (!unihan[4].isEmpty()) {
             if (!newline) html += "<br>";
-            html += i18n("Korean Pronunciation: ") + unihan[4];
+            html += tr("Korean Pronunciation: ") + unihan[4];
             newline = false;
         }
         html += "</p>";
     }
 
-    html += "<p><b>" + i18n("General Character Properties") + "</b><br>";
-    html += i18n("Block: ") + s_data()->block(c) + "<br>";
-    html += i18n("Unicode category: ") + s_data()->categoryText(s_data()->category(c)) + "</p>";
+    html += "<p><b>" + tr("General Character Properties") + "</b><br>";
+    html += tr("Block: ") + s_data()->block(c) + "<br>";
+    html += tr("Unicode category: ") + s_data()->categoryText(s_data()->category(c)) + "</p>";
 
     QByteArray utf8 = QString(c).toUtf8();
 
-    html += "<p><b>" + i18n("Various Useful Representations") + "</b><br>";
-    html += i18n("UTF-8:");
+    html += "<p><b>" + tr("Various Useful Representations") + "</b><br>";
+    html += tr("UTF-8:");
     foreach(unsigned char c, utf8)
     html += ' ' + s_data()->formatCode(c, 2, "0x");
-    html += "<br>" + i18n("UTF-16: ") + s_data()->formatCode(c.unicode(), 4, "0x") + "<br>";
-    html += i18n("C octal escaped UTF-8: ");
+    html += "<br>" + tr("UTF-16: ") + s_data()->formatCode(c.unicode(), 4, "0x") + "<br>";
+    html += tr("C octal escaped UTF-8: ");
     foreach(unsigned char c, utf8)
     html += s_data()->formatCode(c, 3, "\\", 8);
-    html += "<br>" + i18n("XML decimal entity:") + " &amp;#" + QString::number(c.unicode()) + ";</p>";
+    html += "<br>" + tr("XML decimal entity:") + " &amp;#" + QString::number(c.unicode()) + ";</p>";
 
     detailBrowser->setHtml(html);
 }
@@ -865,8 +869,8 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
     QChar c = m_chars[pos];
     if (role == Qt::ToolTipRole) {
         QString result = s_data()->display(c, m_font) + "<br />" + s_data()->name(c).toHtmlEscaped() + "<br />" +
-                         i18n("Unicode code point:") + ' ' + s_data()->formatCode(c.unicode()) + "<br />" +
-                         i18nc("Character", "In decimal:") + ' ' + QString::number(c.unicode());
+                         tr("Unicode code point:") + ' ' + s_data()->formatCode(c.unicode()) + "<br />" +
+                         tr("In decimal", "Character") + ' ' + QString::number(c.unicode());
         return QVariant(result);
     } else if (role == Qt::TextAlignmentRole)
         return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);

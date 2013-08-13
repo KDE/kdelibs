@@ -20,13 +20,13 @@
 
 #include "kcharselectdata_p.h"
 
+#include <QCoreApplication>
 #include <QStringList>
 #include <QFile>
 #include <qendian.h>
 #include <QtConcurrentRun>
 
 #include <string.h>
-#include <klocalizedstring.h>
 #include <qstandardpaths.h>
 
 /* constants for hangul (de)composition, see UAX #15 */
@@ -39,6 +39,11 @@
 #define TCount 28
 #define NCount (VCount * TCount)
 #define SCount (LCount * NCount)
+
+inline QString tr(const char *s, const char *c = 0, int n = -1)
+{
+    return QCoreApplication::translate("KCharSelectData", s, c, n);
+}
 
 static const char JAMO_L_TABLE[][4] =
     {
@@ -196,7 +201,7 @@ QStringList KCharSelectData::sectionList()
     QStringList list;
     quint32 i = stringBegin;
     while(i < stringEnd) {
-        list.append(i18nc("KCharSelect section name", data + i));
+        list.append(tr(data + 1, "KCharSelect section name"));
         i += strlen(data + i) + 1;
     }
 
@@ -239,17 +244,17 @@ QString KCharSelectData::name(const QChar& c)
         return QLatin1String("HANGUL SYLLABLE ") + QLatin1String(JAMO_L_TABLE[LIndex])
             + QLatin1String(JAMO_V_TABLE[VIndex]) + QLatin1String(JAMO_T_TABLE[TIndex]);
     } else if (unicode >= 0xD800 && unicode <= 0xDB7F)
-        return i18n("<Non Private Use High Surrogate>");
+        return tr("<Non Private Use High Surrogate>");
     else if (unicode >= 0xDB80 && unicode <= 0xDBFF)
-        return i18n("<Private Use High Surrogate>");
+        return tr("<Private Use High Surrogate>");
     else if (unicode >= 0xDC00 && unicode <= 0xDFFF)
-        return i18n("<Low Surrogate>");
+        return tr("<Low Surrogate>");
     else if (unicode >= 0xE000 && unicode <= 0xF8FF)
-        return i18n("<Private Use>");
+        return tr("<Private Use>");
 //  else if (unicode >= 0xF0000 && unicode <= 0xFFFFD) // 16 bit!
-//   return i18n("<Plane 15 Private Use>");
+//   return tr("<Plane 15 Private Use>");
 //  else if (unicode >= 0x100000 && unicode <= 0x10FFFD)
-//   return i18n("<Plane 16 Private Use>");
+//   return tr("<Plane 16 Private Use>");
     else {
         const uchar* data = reinterpret_cast<const uchar*>(dataFile.constData());
         const quint32 offsetBegin = qFromLittleEndian<quint32>(data+4);
@@ -275,7 +280,7 @@ QString KCharSelectData::name(const QChar& c)
         }
 
         if (s.isNull()) {
-            return i18n("<not assigned>");
+            return tr("<not assigned>");
         } else {
             return s;
         }
@@ -344,7 +349,7 @@ QString KCharSelectData::blockName(int index)
         currIndex++;
     }
 
-    return i18nc("KCharselect unicode block name", data + i);
+    return tr(data + i, "KCharselect unicode block name");
 }
 
 QString KCharSelectData::sectionName(int index)
@@ -366,7 +371,7 @@ QString KCharSelectData::sectionName(int index)
         currIndex++;
     }
 
-    return i18nc("KCharselect unicode section name", data + i);
+    return tr(data + i, "KCharselect unicode section name");
 }
 
 QStringList KCharSelectData::aliases(const QChar& c)
@@ -610,7 +615,7 @@ bool KCharSelectData::isIgnorable(const QChar& c)
 
 bool KCharSelectData::isCombining(const QChar &c)
 {
-    return section(c) == i18nc("KCharSelect section name", "Combining Diacritical Marks");
+    return section(c) == tr("Combining Diacritical Marks", "KCharSelect section name");
     //FIXME: this is an imperfect test. There are many combining characters 
     //       that are outside of this section. See Grapheme_Extend in
     //       http://www.unicode.org/Public/UNIDATA/DerivedCoreProperties.txt
@@ -619,7 +624,7 @@ bool KCharSelectData::isCombining(const QChar &c)
 QString KCharSelectData::display(const QChar &c, const QFont &font)
 {
     if (!isDisplayable(c)) {
-        return QString("<b>") + i18n("Non-printable") + "</b>";
+        return QString("<b>") + tr("Non-printable") + "</b>";
     } else {
         QString s = QString("<font size=\"+4\" face=\"") + font.family() + "\">";
         if (isCombining(c)) {
@@ -652,37 +657,37 @@ QString KCharSelectData::displayCombining(const QChar &c)
 QString KCharSelectData::categoryText(QChar::Category category)
 {
     switch (category) {
-    case QChar::Other_Control: return i18n("Other, Control");
-    case QChar::Other_Format: return i18n("Other, Format");
-    case QChar::Other_NotAssigned: return i18n("Other, Not Assigned");
-    case QChar::Other_PrivateUse: return i18n("Other, Private Use");
-    case QChar::Other_Surrogate: return i18n("Other, Surrogate");
-    case QChar::Letter_Lowercase: return i18n("Letter, Lowercase");
-    case QChar::Letter_Modifier: return i18n("Letter, Modifier");
-    case QChar::Letter_Other: return i18n("Letter, Other");
-    case QChar::Letter_Titlecase: return i18n("Letter, Titlecase");
-    case QChar::Letter_Uppercase: return i18n("Letter, Uppercase");
-    case QChar::Mark_SpacingCombining: return i18n("Mark, Spacing Combining");
-    case QChar::Mark_Enclosing: return i18n("Mark, Enclosing");
-    case QChar::Mark_NonSpacing: return i18n("Mark, Non-Spacing");
-    case QChar::Number_DecimalDigit: return i18n("Number, Decimal Digit");
-    case QChar::Number_Letter: return i18n("Number, Letter");
-    case QChar::Number_Other: return i18n("Number, Other");
-    case QChar::Punctuation_Connector: return i18n("Punctuation, Connector");
-    case QChar::Punctuation_Dash: return i18n("Punctuation, Dash");
-    case QChar::Punctuation_Close: return i18n("Punctuation, Close");
-    case QChar::Punctuation_FinalQuote: return i18n("Punctuation, Final Quote");
-    case QChar::Punctuation_InitialQuote: return i18n("Punctuation, Initial Quote");
-    case QChar::Punctuation_Other: return i18n("Punctuation, Other");
-    case QChar::Punctuation_Open: return i18n("Punctuation, Open");
-    case QChar::Symbol_Currency: return i18n("Symbol, Currency");
-    case QChar::Symbol_Modifier: return i18n("Symbol, Modifier");
-    case QChar::Symbol_Math: return i18n("Symbol, Math");
-    case QChar::Symbol_Other: return i18n("Symbol, Other");
-    case QChar::Separator_Line: return i18n("Separator, Line");
-    case QChar::Separator_Paragraph: return i18n("Separator, Paragraph");
-    case QChar::Separator_Space: return i18n("Separator, Space");
-    default: return i18n("Unknown");
+    case QChar::Other_Control: return tr("Other, Control");
+    case QChar::Other_Format: return tr("Other, Format");
+    case QChar::Other_NotAssigned: return tr("Other, Not Assigned");
+    case QChar::Other_PrivateUse: return tr("Other, Private Use");
+    case QChar::Other_Surrogate: return tr("Other, Surrogate");
+    case QChar::Letter_Lowercase: return tr("Letter, Lowercase");
+    case QChar::Letter_Modifier: return tr("Letter, Modifier");
+    case QChar::Letter_Other: return tr("Letter, Other");
+    case QChar::Letter_Titlecase: return tr("Letter, Titlecase");
+    case QChar::Letter_Uppercase: return tr("Letter, Uppercase");
+    case QChar::Mark_SpacingCombining: return tr("Mark, Spacing Combining");
+    case QChar::Mark_Enclosing: return tr("Mark, Enclosing");
+    case QChar::Mark_NonSpacing: return tr("Mark, Non-Spacing");
+    case QChar::Number_DecimalDigit: return tr("Number, Decimal Digit");
+    case QChar::Number_Letter: return tr("Number, Letter");
+    case QChar::Number_Other: return tr("Number, Other");
+    case QChar::Punctuation_Connector: return tr("Punctuation, Connector");
+    case QChar::Punctuation_Dash: return tr("Punctuation, Dash");
+    case QChar::Punctuation_Close: return tr("Punctuation, Close");
+    case QChar::Punctuation_FinalQuote: return tr("Punctuation, Final Quote");
+    case QChar::Punctuation_InitialQuote: return tr("Punctuation, Initial Quote");
+    case QChar::Punctuation_Other: return tr("Punctuation, Other");
+    case QChar::Punctuation_Open: return tr("Punctuation, Open");
+    case QChar::Symbol_Currency: return tr("Symbol, Currency");
+    case QChar::Symbol_Modifier: return tr("Symbol, Modifier");
+    case QChar::Symbol_Math: return tr("Symbol, Math");
+    case QChar::Symbol_Other: return tr("Symbol, Other");
+    case QChar::Separator_Line: return tr("Separator, Line");
+    case QChar::Separator_Paragraph: return tr("Separator, Paragraph");
+    case QChar::Separator_Space: return tr("Separator, Space");
+    default: return tr("Unknown");
     }
 }
 
