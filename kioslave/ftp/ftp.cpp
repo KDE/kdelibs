@@ -2388,7 +2388,7 @@ Ftp::StatusCode Ftp::ftpCopyPut(int& iError, int& iCopyFile, const QString &sCop
                                 const QUrl& url, int permissions, KIO::JobFlags flags)
 {
   // check if source is ok ...
-  QFileInfo info(path);
+  QFileInfo info(sCopyFile);
   bool bSrcExists = info.exists();
   if(bSrcExists)
   { if(info.isDir())
@@ -2424,7 +2424,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
                                 const QUrl& url, int permissions, KIO::JobFlags flags)
 {
   // check if destination is ok ...
-  QFileinfo info(sCopyFile);
+  QFileInfo info(sCopyFile);
   const bool bDestExists = info.exists();
   if(bDestExists)
   { if(info.isDir())
@@ -2537,7 +2537,7 @@ Ftp::StatusCode Ftp::ftpCopyGet(int& iError, int& iCopyFile, const QString &sCop
         if (dt.isValid()) {
           // qDebug() << "Updating modified timestamp to" << mtimeStr;
           struct utimbuf utbuf;
-          utbuf.actime = sPartInfo.lastRead().toTime_t().; // access time, unchanged
+          utbuf.actime = sPartInfo.lastRead().toTime_t(); // access time, unchanged
           utbuf.modtime = dt.toTime_t(); // modification time
           ::utime(QFile::encodeName(sCopyFile).constData(), &utbuf);
         }
