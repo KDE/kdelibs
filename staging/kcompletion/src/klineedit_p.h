@@ -68,17 +68,13 @@ public:
             m_animation->setDirection(QPropertyAnimation::Backward);
             m_animation->setDuration(250);
         }
-#pragma message("remove ifdef and use QStyle::SH_Widget_Animate once the patch in Qt hits qt5.git")
-#if 0
-        if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+
+        if (style()->styleHint(QStyle::SH_Widget_Animate, 0, this)) {
             if (m_animation->state() != QPropertyAnimation::Running)
                 m_animation->start();
         } else {
-#endif
             setVisible(m_animation->direction() == QPropertyAnimation::Forward);
-#if 0
         }
-#endif
     }
 
     void setPixmap(const QPixmap& p)
@@ -124,9 +120,8 @@ protected:
         if (m_pixmap.isNull()) {
             return;
         }
-#pragma message("remove ifdef and use QStyle::SH_Widget_Animate once the patch in Qt hits qt5.git")
-#if 0
-        if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+
+        if (style()->styleHint(QStyle::SH_Widget_Animate, 0, this)) {
 
             if (m_opacity == 0) {
                 if (m_animation->direction() == QPropertyAnimation::Backward)
@@ -156,14 +151,11 @@ protected:
                              m_pixmap);
             }
         } else {
-#endif
             QPainter p(this);
             p.drawPixmap((width() - m_pixmap.width()) / 2,
                         (height() - m_pixmap.height()) / 2,
                         m_pixmap);
-#if 0
         }
-#endif
     }
 
 protected:

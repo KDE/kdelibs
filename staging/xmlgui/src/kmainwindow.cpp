@@ -167,9 +167,7 @@ void KMainWindowPrivate::init(KMainWindow *_q)
 
     q = _q;
 
-#if 0
-    q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
-#endif
+    q->setAnimated(q->style()->styleHint(QStyle::SH_Widget_Animate, 0, q));
 
     q->setAttribute( Qt::WA_DeleteOnClose );
 
@@ -864,9 +862,7 @@ void KMainWindowPrivate::_k_slotSettingsChanged(int category)
     // At this level (KMainWindow) the only thing we need to restore is the
     // animations setting (whether the user wants builtin animations or not).
 
-#if 0
-    q->setAnimated(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects);
-#endif
+    q->setAnimated(q->style()->styleHint(QStyle::SH_Widget_Animate, 0, q));
 }
 
 void KMainWindowPrivate::_k_slotSaveAutoSaveSize()

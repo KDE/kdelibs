@@ -19,7 +19,6 @@
 #include <QtCore/QTimer>
 #include <QtCore/QTimeLine>
 
-#include <kglobalsettings.h>
 #include <kconfig.h>
 #include <kiconloader.h>
 #include <QDebug>
@@ -181,7 +180,7 @@ KIO::PreviewJob * KImageFilePreview::createJob( const QUrl& url, int w, int h )
 void KImageFilePreview::gotPreview( const KFileItem& item, const QPixmap& pm )
 {
     if (item.url() == d->currentURL) {  // should always be the case
-        if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+        if (style()->styleHint(QStyle::SH_Widget_Animate, 0, this)) {
             if (d->m_timeLine->state() == QTimeLine::Running) {
                 d->m_timeLine->setCurrentTime(0);
             }
@@ -266,7 +265,7 @@ void KImageFilePreview::clearPreview()
         return;
     }
 
-    if (KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects) {
+    if (style()->styleHint(QStyle::SH_Widget_Animate, 0, this)) {
         d->m_pmTransition = QPixmap();
         //If we add a previous preview then we run the animation
         if (!d->m_pmCurrent.isNull()) {

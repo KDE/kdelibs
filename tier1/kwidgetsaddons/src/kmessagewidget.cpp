@@ -398,13 +398,11 @@ void KMessageWidget::removeAction(QAction* action)
 
 void KMessageWidget::animatedShow()
 {
-#if 0
-    // TODO port to QStyle's SH_Widget_Animate once it is integrated
-    if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+    if (!style()->styleHint(QStyle::SH_Widget_Animate, 0, this)) {
         show();
         return;
     }
-#endif
+
 
     if (isVisible()) {
         return;
@@ -425,13 +423,10 @@ void KMessageWidget::animatedShow()
 
 void KMessageWidget::animatedHide()
 {
-#if 0
-    // TODO port to QStyle's SH_Widget_Animate once it is integrated
-    if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+    if (!style()->styleHint(QStyle::SH_Widget_Animate, 0, this)) {
         hide();
         return;
     }
-#endif
 
     if (!isVisible()) {
         return;

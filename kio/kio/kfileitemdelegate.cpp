@@ -45,7 +45,6 @@
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <kcolorscheme.h>
-#include <kglobalsettings.h>
 #include <ktextedit.h>
 #include <kstringhandler.h>
 
@@ -593,7 +592,7 @@ KIO::AnimationState *KFileItemDelegate::Private::animationState(const QStyleOpti
                                                                 const QModelIndex &index,
                                                                 const QAbstractItemView *view) const
 {
-    if (!(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+    if (!option.widget->style()->styleHint(QStyle::SH_Widget_Animate, 0, option.widget)) {
         return NULL;
     }
 
@@ -1312,7 +1311,7 @@ void KFileItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &opt
 
             if (!cache->checkValidity(opt.state))
             {
-                if ((KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects))
+                if (opt.widget->style()->styleHint(QStyle::SH_Widget_Animate, 0, opt.widget))
                 {
                     // Fade over from the old icon to the new one
                     // Only start a new fade if the previous one is ready

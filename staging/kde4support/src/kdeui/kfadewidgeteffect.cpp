@@ -28,8 +28,7 @@
 #include <QtCore/QEvent>
 #include <QPaintEngine>
 #include <QPainter>
-
-#include <kglobalsettings.h>
+#include <QStyle>
 
 // Cannot use XRender with QPixmap anymore.
 #if 0 //HAVE_X11 && HAVE_XRENDER
@@ -164,7 +163,7 @@ KFadeWidgetEffect::KFadeWidgetEffect(QWidget *destWidget)
     d->q_ptr = this;
     Q_ASSERT(destWidget && destWidget->parentWidget());
     if (!destWidget || !destWidget->parentWidget() || !destWidget->isVisible() ||
-        !(KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects)) {
+        !style()->styleHint(QStyle::SH_Widget_Animate, 0, this)) {
         d->disabled = true;
         hide();
         return;
