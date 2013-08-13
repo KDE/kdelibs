@@ -1,7 +1,10 @@
 
 project(kimgio)
 
-find_package(Qt5PrintSupport 5.2.0 REQUIRED NO_MODULE)
+find_package(Qt5PrintSupport 5.2.0 NO_MODULE)
+set_package_properties(Qt5PrintSupport PROPERTIES DESCRIPTION "Support for Qt printing, necessary for the EPS format"
+                       TYPE OPTIONAL
+                      )
 
 find_package(Jasper)
 set_package_properties(Jasper PROPERTIES DESCRIPTION "Support for JPEG-2000 images"
@@ -35,11 +38,15 @@ endif(JASPER_FOUND)
 
 ##################################
 
-set(kimg_eps_LIB_SRCS eps.cpp)
-kde4_add_plugin(kimg_eps ${kimg_eps_LIB_SRCS})
-target_link_libraries(kimg_eps  Qt5::Gui Qt5::PrintSupport)
+if (Qt5PrintSupport_FOUND)
 
-install(TARGETS kimg_eps  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+    set(kimg_eps_LIB_SRCS eps.cpp)
+    kde4_add_plugin(kimg_eps ${kimg_eps_LIB_SRCS})
+    target_link_libraries(kimg_eps  Qt5::Gui Qt5::PrintSupport)
+
+    install(TARGETS kimg_eps  DESTINATION ${QT_PLUGIN_INSTALL_DIR}/imageformats/ )
+
+endif()
 
 ##################################
 
