@@ -15,8 +15,6 @@ configure_file(localization/config-localization.h.cmake ${CMAKE_CURRENT_BINARY_D
 
 set(kde4attic_SRCS
   kanimatedbutton.cpp
-  kcharselect.cpp
-  kcharselectdata.cpp
   kdatecombobox.cpp
   kdatepicker.cpp
   kdatetable.cpp
@@ -140,7 +138,6 @@ install( FILES
 
 install(FILES
   kanimatedbutton.h
-  kcharselect.h
   kdatecombobox.h
   kdatepicker.h
   kdatetable.h
@@ -169,5 +166,3 @@ install(FILES
 configure_file(localization/all_languages.desktop ${CMAKE_CURRENT_BINARY_DIR}/all_languages @ONLY)
 install( FILES ${CMAKE_CURRENT_BINARY_DIR}/all_languages DESTINATION ${LOCALE_INSTALL_DIR}  )
 install( FILES localization/entry.desktop  DESTINATION  ${LOCALE_INSTALL_DIR}/en_US )
-
-install(FILES kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect)

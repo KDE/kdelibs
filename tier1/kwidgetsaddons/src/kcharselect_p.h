@@ -172,7 +172,7 @@ public:
     QStringList mimeTypes() const
     {
         QStringList types;
-        types << "text/plain";
+        types << QStringLiteral("text/plain");
         return types;
     }
     bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent)

@@ -284,7 +284,7 @@ void KCharSelectTable::keyPressEvent(QKeyEvent *e)
     if (d->model)
         switch (e->key()) {
         case Qt::Key_Space:
-            emit activated(' ');
+            emit activated(QLatin1Char(' '));
             return;
             break;
     case Qt::Key_Enter: case Qt::Key_Return: {
@@ -351,9 +351,9 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
 
         QAction *findAction = new QAction(this);
         connect(findAction, SIGNAL(triggered(bool)), this, SLOT(_k_activateSearchLine()));
-        findAction->setObjectName("edit_find");
+        findAction->setObjectName(QStringLiteral("edit_find"));
         findAction->setText(tr("&Find..."));
-        findAction->setIcon(QIcon::fromTheme("edit-find"));
+        findAction->setIcon(QIcon::fromTheme(QStringLiteral("edit-find")));
         findAction->setShortcuts(QKeySequence::keyBindings(QKeySequence::Find));
         attachToActionParent(findAction, actionParent);
 
@@ -374,29 +374,29 @@ void KCharSelect::initWidget(const Controls controls, QObject *actionParent)
     comboLayout->addWidget(d->backButton);
     d->backButton->setEnabled(false);
     d->backButton->setText(tr("Previous in History", "Goes to previous character"));
-    d->backButton->setIcon(QIcon::fromTheme("go-previous"));
+    d->backButton->setIcon(QIcon::fromTheme(QStringLiteral("go-previous")));
     d->backButton->setToolTip(tr("Previous Character in History"));
 
     d->forwardButton = new QToolButton(this);
     comboLayout->addWidget(d->forwardButton);
     d->forwardButton->setEnabled(false);
     d->forwardButton->setText(tr("Next in History", "Goes to next character"));
-    d->forwardButton->setIcon(QIcon::fromTheme("go-next"));
+    d->forwardButton->setIcon(QIcon::fromTheme(QStringLiteral("go-next")));
     d->forwardButton->setToolTip(tr("Next Character in History"));
 
     QAction *backAction = new QAction(this);
     connect(backAction, SIGNAL(triggered(bool)), d->backButton, SLOT(animateClick()));
-    backAction->setObjectName("go_back");
+    backAction->setObjectName(QStringLiteral("go_back"));
     backAction->setText(tr("&Back", "go back"));
-    backAction->setIcon(QIcon::fromTheme("go-previous"));
+    backAction->setIcon(QIcon::fromTheme(QStringLiteral("go-previous")));
     backAction->setShortcuts(QKeySequence::keyBindings(QKeySequence::Back));
     attachToActionParent(backAction, actionParent);
 
     QAction *forwardAction = new QAction(this);
     connect(forwardAction, SIGNAL(triggered(bool)), d->forwardButton, SLOT(animateClick()));
-    forwardAction->setObjectName("go_forward");
+    forwardAction->setObjectName(QStringLiteral("go_forward"));
     forwardAction->setText(tr("&Forward", "go forward"));
-    forwardAction->setIcon(QIcon::fromTheme("go-next"));
+    forwardAction->setIcon(QIcon::fromTheme(QStringLiteral("go-next")));
     forwardAction->setShortcuts(QKeySequence::keyBindings(QKeySequence::Forward));
     attachToActionParent(forwardAction, actionParent);
 
@@ -664,13 +664,13 @@ void KCharSelect::KCharSelectPrivate::_k_updateCurrentChar(const QChar &c)
 
 void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
 {
-    QString html = "<p>" + tr("Character:") + ' ' + s_data()->display(c, charTable->font()) + ' ' +
-                   s_data()->formatCode(c.unicode())  + "<br />";
+    QString html = QStringLiteral("<p>") + tr("Character:") + QLatin1Char(' ') + s_data()->display(c, charTable->font()) + QLatin1Char(' ') +
+                   s_data()->formatCode(c.unicode())  + QStringLiteral("<br />");
 
     QString name = s_data()->name(c);
     if (!name.isEmpty()) {
         //is name ever empty? </p> should always be there...
-        html += tr("Name: ") + name.toHtmlEscaped() + "</p>";
+        html += tr("Name: ") + name.toHtmlEscaped() + QStringLiteral("</p>");
     }
     QStringList aliases = s_data()->aliases(c);
     QStringList notes = s_data()->notes(c);
@@ -678,116 +678,116 @@ void KCharSelect::KCharSelectPrivate::_k_slotUpdateUnicode(const QChar &c)
     QStringList equivalents = s_data()->equivalents(c);
     QStringList approxEquivalents = s_data()->approximateEquivalents(c);
     if (!(aliases.isEmpty() && notes.isEmpty() && seeAlso.isEmpty() && equivalents.isEmpty() && approxEquivalents.isEmpty())) {
-        html += "<p><b>" + tr("Annotations and Cross References") + "</b></p>";
+        html += QStringLiteral("<p><b>") + tr("Annotations and Cross References") + QStringLiteral("</b></p>");
     }
 
     if (!aliases.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + tr("Alias names:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += QStringLiteral("<p style=\"margin-bottom: 0px;\">") + tr("Alias names:") + QStringLiteral("</p><ul style=\"margin-top: 0px;\">");
         foreach(const QString &alias, aliases) {
-            html += "<li>" + alias.toHtmlEscaped() + "</li>";
+            html += QStringLiteral("<li>") + alias.toHtmlEscaped() + QStringLiteral("</li>");
         }
-        html += "</ul>";
+        html += QStringLiteral("</ul>");
     }
 
     if (!notes.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + tr("Notes:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += QStringLiteral("<p style=\"margin-bottom: 0px;\">") + tr("Notes:") + QStringLiteral("</p><ul style=\"margin-top: 0px;\">");
         foreach(const QString &note, notes) {
-            html += "<li>" + createLinks(note.toHtmlEscaped()) + "</li>";
+            html += QStringLiteral("<li>") + createLinks(note.toHtmlEscaped()) + QStringLiteral("</li>");
         }
-        html += "</ul>";
+        html += QStringLiteral("</ul>");
     }
 
     if (!seeAlso.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + tr("See also:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += QStringLiteral("<p style=\"margin-bottom: 0px;\">") + tr("See also:") + QStringLiteral("</p><ul style=\"margin-top: 0px;\">");
         foreach(const QChar &c2, seeAlso) {
-            html += "<li><a href=\"" + QString::number(c2.unicode(), 16) + "\">";
+            html += QStringLiteral("<li><a href=\"") + QString::number(c2.unicode(), 16) + QStringLiteral("\">");
             if (s_data()->isPrint(c2)) {
-                html += "&#" + QString::number(c2.unicode()) + "; ";
+                html += QStringLiteral("&#") + QString::number(c2.unicode()) + QStringLiteral("; ");
             }
-            html += s_data()->formatCode(c2.unicode()) + ' ' + s_data()->name(c2).toHtmlEscaped() + "</a></li>";
+            html += s_data()->formatCode(c2.unicode()) + QLatin1Char(' ') + s_data()->name(c2).toHtmlEscaped() + QStringLiteral("</a></li>");
         }
-        html += "</ul>";
+        html += QStringLiteral("</ul>");
     }
 
     if (!equivalents.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + tr("Equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += QStringLiteral("<p style=\"margin-bottom: 0px;\">") + tr("Equivalents:") + QStringLiteral("</p><ul style=\"margin-top: 0px;\">");
         foreach(const QString &equivalent, equivalents) {
-            html += "<li>" + createLinks(equivalent.toHtmlEscaped()) + "</li>";
+            html += QStringLiteral("<li>") + createLinks(equivalent.toHtmlEscaped()) + QStringLiteral("</li>");
         }
-        html += "</ul>";
+        html += QStringLiteral("</ul>");
     }
 
     if (!approxEquivalents.isEmpty()) {
-        html += "<p style=\"margin-bottom: 0px;\">" + tr("Approximate equivalents:") + "</p><ul style=\"margin-top: 0px;\">";
+        html += QStringLiteral("<p style=\"margin-bottom: 0px;\">") + tr("Approximate equivalents:") + QStringLiteral("</p><ul style=\"margin-top: 0px;\">");
         foreach(const QString &approxEquivalent, approxEquivalents) {
-            html += "<li>" + createLinks(approxEquivalent.toHtmlEscaped()) + "</li>";
+            html += QStringLiteral("<li>") + createLinks(approxEquivalent.toHtmlEscaped()) + QStringLiteral("</li>");
         }
-        html += "</ul>";
+        html += QStringLiteral("</ul>");
     }
 
     QStringList unihan = s_data()->unihanInfo(c);
     if (unihan.count() == 7) {
-        html += "<p><b>" + tr("CJK Ideograph Information") + "</b></p><p>";
+        html += QStringLiteral("<p><b>") + tr("CJK Ideograph Information") + QStringLiteral("</b></p><p>");
         bool newline = true;
         if (!unihan[0].isEmpty()) {
             html += tr("Definition in English: ") + unihan[0];
             newline = false;
         }
         if (!unihan[2].isEmpty()) {
-            if (!newline) html += "<br>";
+            if (!newline) html += QStringLiteral("<br>");
             html += tr("Mandarin Pronunciation: ") + unihan[2];
             newline = false;
         }
         if (!unihan[1].isEmpty()) {
-            if (!newline) html += "<br>";
+            if (!newline) html += QStringLiteral("<br>");
             html += tr("Cantonese Pronunciation: ") + unihan[1];
             newline = false;
         }
         if (!unihan[6].isEmpty()) {
-            if (!newline) html += "<br>";
+            if (!newline) html += QStringLiteral("<br>");
             html += tr("Japanese On Pronunciation: ") + unihan[6];
             newline = false;
         }
         if (!unihan[5].isEmpty()) {
-            if (!newline) html += "<br>";
+            if (!newline) html += QStringLiteral("<br>");
             html += tr("Japanese Kun Pronunciation: ") + unihan[5];
             newline = false;
         }
         if (!unihan[3].isEmpty()) {
-            if (!newline) html += "<br>";
+            if (!newline) html += QStringLiteral("<br>");
             html += tr("Tang Pronunciation: ") + unihan[3];
             newline = false;
         }
         if (!unihan[4].isEmpty()) {
-            if (!newline) html += "<br>";
+            if (!newline) html += QStringLiteral("<br>");
             html += tr("Korean Pronunciation: ") + unihan[4];
             newline = false;
         }
-        html += "</p>";
+        html += QStringLiteral("</p>");
     }
 
-    html += "<p><b>" + tr("General Character Properties") + "</b><br>";
-    html += tr("Block: ") + s_data()->block(c) + "<br>";
-    html += tr("Unicode category: ") + s_data()->categoryText(s_data()->category(c)) + "</p>";
+    html += QStringLiteral("<p><b>") + tr("General Character Properties") + QStringLiteral("</b><br>");
+    html += tr("Block: ") + s_data()->block(c) + QStringLiteral("<br>");
+    html += tr("Unicode category: ") + s_data()->categoryText(s_data()->category(c)) + QStringLiteral("</p>");
 
     QByteArray utf8 = QString(c).toUtf8();
 
-    html += "<p><b>" + tr("Various Useful Representations") + "</b><br>";
+    html += QStringLiteral("<p><b>") + tr("Various Useful Representations") + QStringLiteral("</b><br>");
     html += tr("UTF-8:");
     foreach(unsigned char c, utf8)
-    html += ' ' + s_data()->formatCode(c, 2, "0x");
-    html += "<br>" + tr("UTF-16: ") + s_data()->formatCode(c.unicode(), 4, "0x") + "<br>";
+    html += QLatin1Char(' ') + s_data()->formatCode(c, 2, QStringLiteral("0x"));
+    html += QStringLiteral("<br>") + tr("UTF-16: ") + s_data()->formatCode(c.unicode(), 4, QStringLiteral("0x")) + QStringLiteral("<br>");
     html += tr("C octal escaped UTF-8: ");
     foreach(unsigned char c, utf8)
-    html += s_data()->formatCode(c, 3, "\\", 8);
-    html += "<br>" + tr("XML decimal entity:") + " &amp;#" + QString::number(c.unicode()) + ";</p>";
+    html += s_data()->formatCode(c, 3, QStringLiteral("\\"), 8);
+    html += QStringLiteral("<br>") + tr("XML decimal entity:") + QStringLiteral(" &amp;#") + QString::number(c.unicode()) + QStringLiteral(";</p>");
 
     detailBrowser->setHtml(html);
 }
 
 QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
 {
-    QRegExp rx("\\b([\\dABCDEF]{4})\\b");
+    QRegExp rx(QStringLiteral("\\b([\\dABCDEF]{4})\\b"));
 
     QStringList chars;
     int pos = 0;
@@ -800,12 +800,12 @@ QString KCharSelect::KCharSelectPrivate::createLinks(QString s)
     QSet<QString> chars2 = QSet<QString>::fromList(chars);
     foreach(const QString &c, chars2) {
         int unicode = c.toInt(0, 16);
-        QString link = "<a href=\"" + c + "\">";
+        QString link = QStringLiteral("<a href=\"") + c + QStringLiteral("\">");
         if (s_data()->isPrint(QChar(unicode))) {
-            link += "&#" + QString::number(unicode) + ";&nbsp;";
+            link += QStringLiteral("&#") + QString::number(unicode) + QStringLiteral(";&nbsp;");
         }
-        link += "U+" + c + ' ';
-        link += s_data()->name(QChar(unicode)).toHtmlEscaped() + "</a>";
+        link += QStringLiteral("U+") + c + QLatin1Char(' ');
+        link += s_data()->name(QChar(unicode)).toHtmlEscaped() + QStringLiteral("</a>");
         s.replace(c, link);
     }
     return s;
@@ -907,9 +907,9 @@ QVariant KCharSelectItemModel::data(const QModelIndex &index, int role) const
 
     QChar c = m_chars[pos];
     if (role == Qt::ToolTipRole) {
-        QString result = s_data()->display(c, m_font) + "<br />" + s_data()->name(c).toHtmlEscaped() + "<br />" +
-                         tr("Unicode code point:") + ' ' + s_data()->formatCode(c.unicode()) + "<br />" +
-                         tr("In decimal", "Character") + ' ' + QString::number(c.unicode());
+        QString result = s_data()->display(c, m_font) + QStringLiteral("<br />") + s_data()->name(c).toHtmlEscaped() + QStringLiteral("<br />") +
+                         tr("Unicode code point:") + QLatin1Char(' ') + s_data()->formatCode(c.unicode()) + QStringLiteral("<br />") +
+                         tr("In decimal", "Character") + QLatin1Char(' ') + QString::number(c.unicode());
         return QVariant(result);
     } else if (role == Qt::TextAlignmentRole)
         return QVariant(Qt::AlignHCenter | Qt::AlignVCenter);

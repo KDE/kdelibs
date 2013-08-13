@@ -102,7 +102,7 @@ bool KCharSelectData::openDataFile()
     if(!dataFile.isEmpty()) {
         return true;
     } else {
-        QFile file(QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kcharselect/kcharselect-data"));
+        QFile file(QStandardPaths::locate(QStandardPaths::GenericDataLocation, QStringLiteral("kcharselect/kcharselect-data")));
         if (!file.open(QIODevice::ReadOnly)) {
             return false;
         }
@@ -158,7 +158,7 @@ QString KCharSelectData::formatCode(ushort code, int length, const QString& pref
 {
     QString s = QString::number(code, base).toUpper();
     while (s.size() < length)
-        s.prepend('0');
+        s.prepend(QLatin1Char('0'));
     s.prepend(prefix);
     return s;
 }
@@ -260,7 +260,7 @@ QString KCharSelectData::name(const QChar& c)
     if ((unicode >= 0x3400 && unicode <= 0x4DB5)
             || (unicode >= 0x4e00 && unicode <= 0x9fa5)) {
         // || (unicode >= 0x20000 && unicode <= 0x2A6D6) // useless, since limited to 16 bit
-        return "CJK UNIFIED IDEOGRAPH-" + QString::number(unicode, 16);
+        return QStringLiteral("CJK UNIFIED IDEOGRAPH-") + QString::number(unicode, 16);
     } else if (c >= 0xac00 && c <= 0xd7af) {
         /* compute hangul syllable name as per UAX #15 */
         int SIndex = c.unicode() - SBase;
@@ -306,7 +306,7 @@ QString KCharSelectData::name(const QChar& c)
                 max = mid - 1;
             else {
                 quint32 offset = qFromLittleEndian<quint32>(data + offsetBegin + mid*6 + 2);
-                s = QString(dataFile.constData() + offset + 1);
+                s = QString::fromUtf8(dataFile.constData() + offset + 1);
                 break;
             }
         }
@@ -656,15 +656,15 @@ bool KCharSelectData::isCombining(const QChar &c)
 QString KCharSelectData::display(const QChar &c, const QFont &font)
 {
     if (!isDisplayable(c)) {
-        return QString("<b>") + tr("Non-printable") + "</b>";
+        return QStringLiteral("<b>") + tr("Non-printable") + QStringLiteral("</b>");
     } else {
-        QString s = QString("<font size=\"+4\" face=\"") + font.family() + "\">";
+        QString s = QStringLiteral("<font size=\"+4\" face=\"") + font.family() + QStringLiteral("\">");
         if (isCombining(c)) {
             s += displayCombining(c);
         } else {
-            s += "&#" + QString::number(c.unicode()) + ';';
+            s += QStringLiteral("&#") + QString::number(c.unicode()) + QLatin1Char(';');
         }
-        s += "</font>";
+        s += QStringLiteral("</font>");
         return s;
     }
 }
@@ -681,8 +681,8 @@ QString KCharSelectData::displayCombining(const QChar &c)
      * Eventually, it would be nice to determine whether the character
      * combines to the left or to the right, etc.
      */
-    QString s = "&nbsp;&#" + QString::number(c.unicode()) + ";&nbsp;" +
-                " (ab&#" + QString::number(c.unicode()) + ";c)";
+    QString s = QStringLiteral("&nbsp;&#") + QString::number(c.unicode()) + QStringLiteral(";&nbsp;") +
+                QStringLiteral(" (ab&#") + QString::number(c.unicode()) + QStringLiteral(";c)");
     return s;
 }
 
@@ -740,7 +740,7 @@ QList<QChar> KCharSelectData::find(const QString& needle)
         return returnRes;
     }
 
-    QRegExp regExp("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$");
+    QRegExp regExp(QStringLiteral("^(|u\\+|U\\+|0x|0X)([A-Fa-f0-9]{4})$"));
     foreach(const QString &s, searchStrings) {
         if(regExp.exactMatch(s)) {
             returnRes.append(regExp.cap(2).toInt(0, 16));
@@ -808,14 +808,14 @@ QStringList KCharSelectData::splitString(const QString& s)
     int end = 0;
     int length = s.length();
     while (end < length) {
-        while (end < length && (s[end].isLetterOrNumber() || s[end] == '+')) {
+        while (end < length && (s[end].isLetterOrNumber() || s[end] == QLatin1Char('+'))) {
             end++;
         }
         if (start != end) {
             result.append(s.mid(start, end - start));
         }
         start = end;
-        while (end < length && !(s[end].isLetterOrNumber() || s[end] == '+')) {
+        while (end < length && !(s[end].isLetterOrNumber() || s[end] == QLatin1Char('+'))) {
             end++;
             start++;
         }
@@ -846,7 +846,7 @@ Index KCharSelectData::createIndex(const QByteArray& dataFile)
     for (int pos = 0; pos <= max; pos++) {
         const quint16 unicode = qFromLittleEndian<quint16>(udata + nameOffsetBegin + pos*6);
         quint32 offset = qFromLittleEndian<quint32>(udata + nameOffsetBegin + pos*6 + 2);
-        appendToIndex(&i, unicode, QString(data + offset + 1));
+        appendToIndex(&i, unicode, QString::fromUtf8(data + offset + 1));
     }
 
     // details

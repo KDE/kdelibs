@@ -1,6 +1,8 @@
 
 set(kwidgetsaddons_SRCS
   kacceleratormanager.cpp
+  kcharselect.cpp
+  kcharselectdata.cpp
   kcolorbutton.cpp
   kfontaction.cpp
   fonthelpers.cpp
@@ -78,6 +80,7 @@ install(TARGETS KWidgetsAddons EXPORT KWidgetsAddonsTargets ${INSTALL_TARGETS_DE
 
 install(FILES
   kacceleratormanager.h
+  kcharselect.h
   kcolorbutton.h
   kdragwidgetdecorator.h
   kdualaction.h
@@ -128,3 +131,5 @@ install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/kwidgetsaddons_export.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+install(FILES kcharselect-data  DESTINATION  ${DATA_INSTALL_DIR}/kcharselect)

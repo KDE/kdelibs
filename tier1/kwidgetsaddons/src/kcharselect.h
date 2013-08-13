@@ -24,7 +24,7 @@
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QWidget>
-#include <kde4attic_export.h>
+#include <kwidgetsaddons_export.h>
 
 class QFont;
 class QUrl;
@@ -55,7 +55,7 @@ class QUrl;
  * @author Daniel Laidig <d.laidig@gmx.de>
  */
 
-class KDE4ATTIC_EXPORT KCharSelect : public QWidget
+class KWIDGETSADDONS_EXPORT KCharSelect : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY(QFont currentFont READ currentFont WRITE setCurrentFont)
