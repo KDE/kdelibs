@@ -2559,7 +2559,11 @@ int KStyle::styleHint (StyleHint hint, const QStyleOption* option, const QWidget
         }
         case SH_ItemView_ArrowKeysNavigateIntoChildren:
             return true;
-
+        case SH_Widget_Animate:
+        {
+            KConfigGroup g(KSharedConfig::openConfig(), "KDE-Global GUI Settings");
+            return g.readEntry("GraphicEffectsLevel", 0);
+        }
         default:
             break;
     };
