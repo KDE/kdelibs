@@ -27,6 +27,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
+#include <xcb/xcb.h>
 #include <QX11Info>
 
 static const char *DASHBOARD_WIN_NAME = "dashboard";
@@ -40,30 +41,30 @@ bool isEffectAvailable(Effect effect)
     if (!KWindowSystem::self()->compositingActive()) {
         return false;
     }
-    QString effectName;
+    QByteArray effectName;
 
     switch (effect) {
     case Slide:
-        effectName = QLatin1String("_KDE_SLIDE");
+        effectName = QByteArrayLiteral("_KDE_SLIDE");
         break;
     case WindowPreview:
-        effectName = QLatin1String("_KDE_WINDOW_PREVIEW");
+        effectName = QByteArrayLiteral("_KDE_WINDOW_PREVIEW");
         break;
     case PresentWindows:
-        effectName = QLatin1String("_KDE_PRESENT_WINDOWS_DESKTOP");
+        effectName = QByteArrayLiteral("_KDE_PRESENT_WINDOWS_DESKTOP");
         break;
     case PresentWindowsGroup:
-        effectName = QLatin1String("_KDE_PRESENT_WINDOWS_GROUP");
+        effectName = QByteArrayLiteral("_KDE_PRESENT_WINDOWS_GROUP");
         break;
     case HighlightWindows:
-        effectName = QLatin1String("_KDE_WINDOW_HIGHLIGHT");
+        effectName = QByteArrayLiteral("_KDE_WINDOW_HIGHLIGHT");
         break;
     case BlurBehind:
-        effectName = QLatin1String("_KDE_NET_WM_BLUR_BEHIND_REGION");
+        effectName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
         break;
     case Dashboard:
         // TODO: Better namespacing for atoms
-        effectName = QLatin1String("_WM_EFFECT_KDE_DASHBOARD");
+        effectName = QByteArrayLiteral("_WM_EFFECT_KDE_DASHBOARD");
         break;
     default:
         return false;
@@ -71,14 +72,20 @@ bool isEffectAvailable(Effect effect)
 
     // hackish way to find out if KWin has the effect enabled,
     // TODO provide proper support
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom(dpy, effectName.toLatin1().data(), False);
-    int cnt;
-    Atom *list = XListProperties(dpy, DefaultRootWindow(dpy), &cnt);
-    if (list != NULL) {
-        bool ret = (qFind(list, list + cnt, atom) != list + cnt);
-        XFree(list);
-        return ret;
+    xcb_connection_t *c = QX11Info::connection();
+    xcb_list_properties_cookie_t propsCookie = xcb_list_properties_unchecked(c, QX11Info::appRootWindow());
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
+
+    QScopedPointer<xcb_list_properties_reply_t, QScopedPointerPodDeleter> props(xcb_list_properties_reply(c, propsCookie, NULL));
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom || !props) {
+        return false;
+    }
+    xcb_atom_t *atoms = xcb_list_properties_atoms(props.data());
+    for (int i = 0; i < props->atoms_len; ++i) {
+        if (atoms[i] == atom->atom) {
+            return true;
+        }
     }
     return false;
 }
