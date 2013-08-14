@@ -92,10 +92,12 @@ bool isEffectAvailable(Effect effect)
 
 void slideWindow(WId id, SlideFromLocation location, int offset)
 {
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom( dpy, "_KDE_SLIDE", False );
-    QVarLengthArray<long, 2> data(2);
+    xcb_connection_t *c = QX11Info::connection();
+    const QByteArray effectName = QByteArrayLiteral("_KDE_SLIDE");
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
 
+    const int size = 2;
+    int32_t data[size];
     data[0] = offset;
 
     switch (location) {
@@ -114,43 +116,20 @@ void slideWindow(WId id, SlideFromLocation location, int offset)
         break;
     }
 
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom) {
+        return;
+    }
     if (location == NoEdge) {
-        XDeleteProperty(dpy, id, atom);
+        xcb_delete_property(c, id, atom->atom);
     } else {
-        XChangeProperty(dpy, id, atom, atom, 32, PropModeReplace,
-                        reinterpret_cast<unsigned char *>(data.data()), data.size());
+        xcb_change_property(c, XCB_PROP_MODE_REPLACE, id, atom->atom, atom->atom, 32, size, data);
     }
 }
 
 void slideWindow(QWidget *widget, SlideFromLocation location)
 {
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom( dpy, "_KDE_SLIDE", False );
-    QVarLengthArray<long, 2> data(2);
-    data[0] = -1;
-
-    switch (location) {
-    case LeftEdge:
-        data[1] = 0;
-        break;
-    case TopEdge:
-        data[1] = 1;
-        break;
-    case RightEdge:
-        data[1] = 2;
-        break;
-    case BottomEdge:
-        data[1] = 3;
-    default:
-        break;
-    }
-
-    if (location == NoEdge) {
-        XDeleteProperty(dpy, widget->effectiveWinId(), atom);
-    } else {
-        XChangeProperty(dpy, widget->effectiveWinId(), atom, atom, 32, PropModeReplace,
-                        reinterpret_cast<unsigned char *>(data.data()), data.size());
-    }
+    slideWindow(widget->effectiveWinId(), location, -1);
 }
 
 QList<QSize> windowSizes(const QList<WId> &ids)

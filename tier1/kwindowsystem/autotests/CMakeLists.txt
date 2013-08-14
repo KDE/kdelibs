@@ -5,6 +5,8 @@ remove_definitions(-DQT_NO_CAST_TO_ASCII)
 include(ECMMarkAsTest)
 
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Test Network)
+find_package(X11)
+find_package(XCB)
 
 macro(KWINDOWSYSTEM_UNIT_TESTS)
    foreach(_testname ${ARGN})
@@ -28,6 +30,12 @@ kwindowsystem_unit_tests(
    kstartupinfo_unittest
    kxmessages_unittest
 )
+
+if(X11_FOUND)
+    kwindowsystem_unit_tests(
+        kwindoweffectstest
+    )
+endif()
 
 kwindowsystem_executable_tests(
    fixx11h_test
