@@ -23,6 +23,7 @@
 #include "kwindowsystem_export.h"
 
 #include <QWidget> // for WId, etc.
+#include <netwm_def.h>
 
 /**
  * Namespace for common standardized window effects
@@ -108,7 +109,7 @@ namespace KWindowEffects
     *                   will be set on this window. It will be removed by the effect
     * @param desktop The desktop whose windows should be presented. -1 for all desktops
     */
-    KWINDOWSYSTEM_EXPORT void presentWindows(WId controller, int desktop = -1);
+    KWINDOWSYSTEM_EXPORT void presentWindows(WId controller, int desktop = NET::OnAllDesktops);
 
    /**
     * Highlight the selected windows, making all the others translucent
