@@ -222,18 +222,25 @@ bool ThemePrivate::useCache()
 {
     if (cacheTheme && !pixmapCache) {
         const bool isRegularTheme = themeName != systemColorsTheme;
-        QString cacheFile = "plasma_theme_" + themeName;
+        const QString cacheFile = "plasma_theme_" + themeName;
 
         if (isRegularTheme) {
-            const QString path = KStandardDirs::locate("data", "desktoptheme/" + themeName + "/metadata.desktop");
-            const KPluginInfo pluginInfo(path);
-
-            // now we check for, and remove if necessary, old caches
             const QString cacheFileBase = cacheFile + "*.kcache";
-            cacheFile += "_v" + pluginInfo.version();
-            const QString currentCacheFileName = cacheFile + ".kcache";
+
+            const QString path = KStandardDirs::locate("data", "desktoptheme/" + themeName + "/metadata.desktop");
+            // if the path is empty, then we haven't found the theme and so
+            // we will leave currentCacheFileName empty, resulting in the deletion of
+            // *all* matching cache files
+            QString currentCacheFileName;
+            if (!path.isEmpty()) {
+                const KPluginInfo pluginInfo(path);
+                currentCacheFileName = cacheFile + "_v" + pluginInfo.version() + ".kcache";
+            }
+
+            // now we check for (and remove) old caches
             foreach (const QString &file, KGlobal::dirs()->findAllResources("cache", cacheFileBase)) {
-                if (!file.endsWith(currentCacheFileName)) {
+                if (currentCacheFileName.isEmpty() ||
+                    !file.endsWith(currentCacheFileName)) {
                     QFile::remove(file);
                 }
             }
