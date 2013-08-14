@@ -28,18 +28,16 @@
 
 #include "krecentdocument.h"
 
+#include <utime.h>
+
 #include <QDebug>
 #include <kio/global.h>
 #include <kdesktopfile.h>
-#include <kde_file.h>
 #include <QtCore/QDir>
-#include <QtCore/QFileInfo>
-#include <QtCore/QTextStream>
-#include <QtCore/QMutableStringListIterator>
 #include <QCoreApplication>
 #include <QtCore/QRegExp>
+#include <qplatformdefs.h>
 
-#include <sys/types.h>
 #include <kconfiggroup.h>
 #include <ksharedconfig.h>
 
@@ -117,8 +115,9 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     while(QFile::exists(ddesktop)){
         // see if it points to the same file and application
         KDesktopFile tmp(ddesktop);
-        if ( tmp.desktopGroup().readEntry("X-KDE-LastOpenedWith") == desktopEntryName ) {
-            KDE::utime(ddesktop, NULL);
+        if (tmp.desktopGroup().readEntry("X-KDE-LastOpenedWith") == desktopEntryName) {
+            // Set access and modification time to current time
+            ::utime(QFile::encodeName(ddesktop).constData(), NULL);
             return;
         }
         // if not append a (num) to it
