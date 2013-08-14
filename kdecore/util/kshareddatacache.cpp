@@ -35,8 +35,6 @@
 #include <QtCore/QFile>
 #include <QtCore/QAtomicInt>
 #include <QtCore/QList>
-#include <QtCore/QMutex>
-#include <QtCore/QMutexLocker>
 
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -1254,7 +1252,7 @@ class KSharedDataCache::Private
             // Locking can fail due to a timeout. If it happens too often even though
             // we're taking corrective action assume there's some disastrous problem
             // and give up.
-            while (!d->lock()) {
+            while (!d->lock() && !isLockedCacheSafe()) {
                 d->recoverCorruptedCache();
 
                 if (!d->shm) {
@@ -1274,65 +1272,38 @@ class KSharedDataCache::Private
             return true;
         }
 
+        // Runs a quick battery of tests on an already-locked cache and returns
+        // false as soon as a sanity check fails. The cache remains locked in this
+        // situation.
+        bool isLockedCacheSafe() const
+        {
+            // Note that cachePageSize() itself runs a check that can throw.
+            uint testSize = SharedMemory::totalSize(d->shm->cacheSize, d->shm->cachePageSize());
+
+            if (KDE_ISUNLIKELY(d->m_mapSize != testSize)) {
+                return false;
+            }
+            if (KDE_ISUNLIKELY(d->shm->version != SharedMemory::PIXMAP_CACHE_VERSION)) {
+                return false;
+            }
+            switch (d->shm->evictionPolicy) {
+                case NoEvictionPreference:   // fallthrough
+                case EvictLeastRecentlyUsed: // fallthrough
+                case EvictLeastOftenUsed:    // fallthrough
+                case EvictOldest:
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
         public:
         CacheLocker(const Private *_d) : d(const_cast<Private *>(_d))
         {
             if (KDE_ISUNLIKELY(!d || !d->shm || !cautiousLock())) {
-                return;
-            }
-
-            uint testSize = SharedMemory::totalSize(d->shm->cacheSize, d->shm->cachePageSize());
-
-            // A while loop? Indeed, think what happens if this happens
-            // twice -- hard to debug race conditions.
-            while (testSize > d->m_mapSize) {
-                kDebug(ksdcArea()) << "Someone enlarged the cache on us,"
-                            << "attempting to match new configuration.";
-
-                // Protect against two threads accessing this same KSDC
-                // from trying to execute the following remapping at the
-                // same time.
-                QMutexLocker d_locker(&d->m_threadLock);
-                if (testSize == d->m_mapSize) {
-                    break; // Bail if the other thread already solved.
-                }
-
-                // Linux supports mremap, but it's not portable. So,
-                // drop the map and (try to) re-establish.
-                d->unlock();
-
-#ifdef KSDC_MSYNC_SUPPORTED
-                ::msync(d->shm, d->m_mapSize, MS_INVALIDATE | MS_ASYNC);
-#endif
-                ::munmap(d->shm, d->m_mapSize);
-                d->m_mapSize = 0;
-                d->shm = 0;
-
-                QFile f(d->m_cacheName);
-                if (!f.open(QFile::ReadWrite)) {
-                    kError(ksdcArea()) << "Unable to re-open cache, unfortunately"
-                                << "the connection had to be dropped for"
-                                << "crash safety -- things will be much"
-                                << "slower now.";
-                    return;
-                }
-
-                void *newMap = ::mmap(0, testSize, PROT_READ | PROT_WRITE,
-                                      MAP_SHARED, f.handle(), 0);
-                if (newMap == MAP_FAILED) {
-                    kError(ksdcArea()) << "Unopen to re-map the cache into memory"
-                                << "things will be much slower now";
-                    return;
-                }
-
-                d->shm = reinterpret_cast<SharedMemory *>(newMap);
-                d->m_mapSize = testSize;
-
-                if (!cautiousLock()) {
-                    return;
-                }
-
-                testSize = SharedMemory::totalSize(d->shm->cacheSize, d->shm->cachePageSize());
+                d = 0;
             }
         }
 
@@ -1350,7 +1321,6 @@ class KSharedDataCache::Private
     };
 
     QString m_cacheName;
-    QMutex m_threadLock;
     SharedMemory *shm;
     QSharedPointer<KSDCLock> m_lock;
     uint m_mapSize;
