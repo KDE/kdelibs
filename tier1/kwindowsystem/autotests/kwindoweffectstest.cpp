@@ -40,15 +40,21 @@ private Q_SLOTS:
     void testPresentWindowsEmptyGroup();
     void testPresentWindowsGroup_data();
     void testPresentWindowsGroup();
+    void testHighlightWindows_data();
+    void testHighlightWindows();
+    void testHighlightWindowsEmpty();
 
 private:
     int32_t locationToValue(KWindowEffects::SlideFromLocation location) const;
     void performSlideWindowTest(xcb_window_t window, int offset, KWindowEffects::SlideFromLocation location) const;
     void performSlideWindowRemoveTest(xcb_window_t window);
+    void performWindowsOnPropertyTest(xcb_atom_t atom, const QList<WId> &windows);
+    void performAtomIsRemoveTest(xcb_window_t window, xcb_atom_t atom);
     void getHelperAtom(const QByteArray &name, xcb_atom_t *atom) const;
     xcb_atom_t m_slide;
     xcb_atom_t m_presentWindows;
     xcb_atom_t m_presentWindowsGroup;
+    xcb_atom_t m_highlightWindows;
     QScopedPointer<QWindow> m_window;
     QScopedPointer<QWidget> m_widget;
 };
@@ -64,6 +70,7 @@ void KWindowEffectsTest::initTestCase()
     getHelperAtom(QByteArrayLiteral("_KDE_SLIDE"), &m_slide);
     getHelperAtom(QByteArrayLiteral("_KDE_PRESENT_WINDOWS_DESKTOP"), &m_presentWindows);
     getHelperAtom(QByteArrayLiteral("_KDE_PRESENT_WINDOWS_GROUP"), &m_presentWindowsGroup);
+    getHelperAtom(QByteArrayLiteral("_KDE_WINDOW_HIGHLIGHT"), &m_highlightWindows);
 }
 
 void KWindowEffectsTest::getHelperAtom(const QByteArray &name, xcb_atom_t *atom) const
@@ -154,8 +161,13 @@ void KWindowEffectsTest::performSlideWindowTest(xcb_window_t window, int offset,
 
 void KWindowEffectsTest::performSlideWindowRemoveTest(xcb_window_t window)
 {
+    performAtomIsRemoveTest(window, m_slide);
+}
+
+void KWindowEffectsTest::performAtomIsRemoveTest(xcb_window_t window, xcb_atom_t atom)
+{
     xcb_connection_t *c = QX11Info::connection();
-    xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, window, m_slide, m_slide, 0, 100);
+    xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, window, atom, atom, 0, 100);
     QScopedPointer<xcb_get_property_reply_t, QScopedPointerPodDeleter> reply(xcb_get_property_reply(c, cookie, NULL));
     QVERIFY(!reply.isNull());
     QCOMPARE(reply->type, xcb_atom_t(XCB_ATOM_NONE));
@@ -230,15 +242,52 @@ void KWindowEffectsTest::testPresentWindowsGroup()
 {
     QFETCH(QList<WId>, windows);
     KWindowEffects::presentWindows(m_window->winId(), windows);
+    performWindowsOnPropertyTest(m_presentWindowsGroup, windows);
+}
 
+void KWindowEffectsTest::testHighlightWindows_data()
+{
+    QTest::addColumn<QList<WId> >("windows");
+
+    QTest::newRow("one") << (QList<WId>() << m_window->winId());
+    QTest::newRow("two") << (QList<WId>() << m_window->winId() << m_widget->effectiveWinId());
+}
+
+void KWindowEffectsTest::testHighlightWindows()
+{
+    QFETCH(QList<WId>, windows);
+    KWindowEffects::highlightWindows(m_window->winId(), windows);
+    performWindowsOnPropertyTest(m_highlightWindows, windows);
+}
+
+void KWindowEffectsTest::testHighlightWindowsEmpty()
+{
+    // ensure it's empty
+    KWindowEffects::highlightWindows(m_window->winId(), QList<WId>());
+    performAtomIsRemoveTest(m_window->winId(), m_highlightWindows);
+
+    // install some windows on the atom
+    QList<WId> windows;
+    windows.append(m_window->winId());
+    windows.append(m_widget->effectiveWinId());
+    KWindowEffects::highlightWindows(m_window->winId(), windows);
+    performWindowsOnPropertyTest(m_highlightWindows, windows);
+
+    // and remove it again
+    KWindowEffects::highlightWindows(m_window->winId(), QList<WId>());
+    performAtomIsRemoveTest(m_window->winId(), m_highlightWindows);
+}
+
+void KWindowEffectsTest::performWindowsOnPropertyTest(xcb_atom_t atom, const QList< WId > &windows)
+{
     xcb_connection_t *c = QX11Info::connection();
     xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, m_window->winId(),
-                                                                  m_presentWindowsGroup, m_presentWindowsGroup, 0, 100);
+                                                                  atom, atom, 0, 100);
     QScopedPointer<xcb_get_property_reply_t, QScopedPointerPodDeleter> reply(xcb_get_property_reply(c, cookie, NULL));
     QVERIFY(!reply.isNull());
+    QCOMPARE(reply->type, atom);
     QCOMPARE(reply->format, uint8_t(32));
     QCOMPARE(reply->value_len, uint32_t(windows.size()));
-    QCOMPARE(reply->type, m_presentWindowsGroup);
     int32_t *data = static_cast<int32_t *>(xcb_get_property_value(reply.data()));
     for (int i = 0; i < windows.size(); ++i) {
         QCOMPARE(data[i], int32_t(windows.at(i)));

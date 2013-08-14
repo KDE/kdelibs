@@ -231,32 +231,37 @@ void presentWindows(WId controller, int desktop)
 
 void highlightWindows(WId controller, const QList<WId> &ids)
 {
-    const int numWindows = ids.count();
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom(dpy, "_KDE_WINDOW_HIGHLIGHT", False);
-
-    if (numWindows == 0) {
-        Atom atom = XInternAtom(dpy, "_KDE_WINDOW_HIGHLIGHT", False);
-        XDeleteProperty(dpy, controller, atom);
+    xcb_connection_t *c = QX11Info::connection();
+    const QByteArray effectName = QByteArrayLiteral("_KDE_WINDOW_HIGHLIGHT");
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom) {
+        return;
     }
 
-    QVarLengthArray<long, 32> data(numWindows);
+    const int numWindows = ids.count();
+    if (numWindows == 0) {
+        xcb_delete_property(c, controller, atom->atom);
+        return;
+    }
+
+    QVarLengthArray<int32_t, 32> data(numWindows);
     int actualCount = 0;
 
     for (int i = 0; i < numWindows; ++i) {
         data[i] = ids.at(i);
         ++actualCount;
-
     }
 
     if (actualCount != numWindows) {
         data.resize(actualCount);
     }
 
-    if (!data.isEmpty()) {
-        XChangeProperty(dpy, controller, atom, atom, 32, PropModeReplace,
-                        reinterpret_cast<unsigned char *>(data.data()), data.size());
+    if (data.isEmpty()) {
+        return;
     }
+    xcb_change_property(c, XCB_PROP_MODE_REPLACE, controller, atom->atom, atom->atom,
+                        32, data.size(), data.constData());
 }
 
 void enableBlurBehind(WId window, bool enable, const QRegion &region)
