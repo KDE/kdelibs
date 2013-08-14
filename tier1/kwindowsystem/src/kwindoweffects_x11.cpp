@@ -189,7 +189,7 @@ void showWindowThumbnails(WId parent, const QList<WId> &windows, const QList<QRe
 void presentWindows(WId controller, const QList<WId> &ids)
 {
     const int numWindows = ids.count();
-    QVarLengthArray<long, 32> data(numWindows);
+    QVarLengthArray<int32_t, 32> data(numWindows);
     int actualCount = 0;
 
     for (int i = 0; i < numWindows; ++i) {
@@ -202,22 +202,31 @@ void presentWindows(WId controller, const QList<WId> &ids)
         data.resize(actualCount);
     }
 
-    if (!data.isEmpty()) {
-        Display *dpy = QX11Info::display();
-        Atom atom = XInternAtom(dpy, "_KDE_PRESENT_WINDOWS_GROUP", False);
-        XChangeProperty(dpy, controller, atom, atom, 32, PropModeReplace,
-                        reinterpret_cast<unsigned char *>(data.data()), data.size());
+    if (data.isEmpty()) {
+        return;
     }
+    xcb_connection_t *c = QX11Info::connection();
+    const QByteArray effectName = QByteArrayLiteral("_KDE_PRESENT_WINDOWS_GROUP");
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom) {
+        return;
+    }
+    xcb_change_property(c, XCB_PROP_MODE_REPLACE, controller, atom->atom, atom->atom, 32, data.size(), data.constData());
 }
 
 void presentWindows(WId controller, int desktop)
 {
-    QVarLengthArray<long, 1> data(1);
-    data[0] = desktop;
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom(dpy, "_KDE_PRESENT_WINDOWS_DESKTOP", False);
-    XChangeProperty(dpy, controller, atom, atom, 32, PropModeReplace,
-                    reinterpret_cast<unsigned char *>(data.data()), data.size());
+    xcb_connection_t *c = QX11Info::connection();
+    const QByteArray effectName = QByteArrayLiteral("_KDE_PRESENT_WINDOWS_DESKTOP");
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom) {
+        return;
+    }
+
+    int32_t data = desktop;
+    xcb_change_property(c, XCB_PROP_MODE_REPLACE, controller, atom->atom, atom->atom, 32, 1, &data);
 }
 
 void highlightWindows(WId controller, const QList<WId> &ids)
