@@ -248,11 +248,11 @@ is no longer available. To simply make the code build, for the sake of porting o
     detector.visuallyOrdered() -&gt; check prober.encoding() hebrew
     detector.autoDetectLanguage() -&gt; prober.proberType()
     detector.setAutoDetectLanguage(script) -&gt; prober.setProberType(proberType)
-    detector.decode(data) -&gt; prober.feed(data) + QTextCodec::codecForName(prober.encoding())->toUnicode(data)
+    detector.decode(data) -&gt; prober.feed(data) + QTextCodec::codecForName(prober.encoding())-&gt;toUnicode(data)
     detector.decodeWithBuffering(data, len) -&gt; prober.feed(data1), feed(data2), feed(data3) + check prober.state() + QTextCodec::codecForName(prober.encoding())-&gt;makeDecoder()
     detector.decodedInvalidCharacters() -&gt; QTextCodec::codecForName(prober.encoding())-&gt;makeDecoder() + hasFailure()
     detector.resetDecoder() -&gt; prober.reset()
-    detector.flush() -&gt; prober.feed(data1), feed(data2), feed(data3) + QTextCodec::codecForName(prober.encoding())->toUnicode
+    detector.flush() -&gt; prober.feed(data1), feed(data2), feed(data3) + QTextCodec::codecForName(prober.encoding())-&gt;toUnicode
     KEncodingDetector::scriptForName(lang) -&gt; KEncodingProber::proberTypeForName(lang)
     KEncodingDetector::nameForScript(script) -&gt; KEncodingProber::nameForProberType(proberType)
     KEncodingDetector::hasAutoDetectionForScript(script) -&gt; if (proberType == KEncodingProber::None) ... else ...
