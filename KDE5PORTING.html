@@ -354,7 +354,7 @@ public:
             return false;
         }
         auto *event = static_cast&lt;xcb_generic_event_t*&gt;(message);
-        switch (event->response_type &amp; 0x80) {
+        switch (event-&gt;response_type &amp; 0x80) {
         case XCB_KEY_PRESS:
             auto *keyEvent = reinterpret_cast&lt;xcb_key_press_event_t*&gt;(event);
             // handle key press event...
