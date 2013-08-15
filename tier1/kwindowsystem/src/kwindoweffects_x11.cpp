@@ -24,13 +24,10 @@
 #include "kwindowsystem.h"
 #include <config-kwindowsystem.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <xcb/xcb.h>
 #include <QX11Info>
 
-static const char *DASHBOARD_WIN_NAME = "dashboard";
-static const char *DASHBOARD_WIN_CLASS = "dashboard";
+static const char *DASHBOARD_WIN_CLASS = "dashboard\0dashboard";
 
 namespace KWindowEffects
 {
@@ -294,10 +291,8 @@ void enableBlurBehind(WId window, bool enable, const QRegion &region)
 
 void markAsDashboard(WId window)
 {
-    XClassHint classHint;
-    classHint.res_name = const_cast<char *>(DASHBOARD_WIN_NAME);
-    classHint.res_class = const_cast<char *>(DASHBOARD_WIN_CLASS);
-    XSetClassHint(QX11Info::display(), window, &classHint);
+    xcb_change_property(QX11Info::connection(), XCB_PROP_MODE_REPLACE, window, XCB_ATOM_WM_CLASS,
+                        XCB_ATOM_STRING, 8, 19, DASHBOARD_WIN_CLASS);
 }
 
 }

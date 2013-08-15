@@ -49,6 +49,7 @@ private Q_SLOTS:
     void testBlur_data();
     void testBlur();
     void testBlurDisable();
+    void testMarkAsDashboard();
 
 private:
     int32_t locationToValue(KWindowEffects::SlideFromLocation location) const;
@@ -420,6 +421,35 @@ void KWindowEffectsTest::testBlurDisable()
     // and disable
     KWindowEffects::enableBlurBehind(m_window->winId(), false);
     performAtomIsRemoveTest(m_window->winId(), m_blur);
+}
+
+void KWindowEffectsTest::testMarkAsDashboard()
+{
+    const QByteArray className = QByteArrayLiteral("dashboard");
+    // should not yet be set
+    xcb_connection_t *c = QX11Info::connection();
+    xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, m_window->winId(),
+                                                                  XCB_ATOM_WM_CLASS, XCB_ATOM_STRING, 0, 100);
+    QScopedPointer<xcb_get_property_reply_t, QScopedPointerPodDeleter> reply(xcb_get_property_reply(c, cookie, NULL));
+    QVERIFY(!reply.isNull());
+    QCOMPARE(reply->type, xcb_atom_t(XCB_ATOM_STRING));
+    QCOMPARE(reply->format, uint8_t(8));
+    char *data = static_cast<char *>(xcb_get_property_value(reply.data()));
+    QVERIFY(QByteArray(data) != className);
+
+    // now mark as dashboard
+    KWindowEffects::markAsDashboard(m_window->winId());
+    cookie = xcb_get_property_unchecked(c, false, m_window->winId(),
+                                        XCB_ATOM_WM_CLASS, XCB_ATOM_STRING, 0, 100);
+    reply.reset(xcb_get_property_reply(c, cookie, NULL));
+    QVERIFY(!reply.isNull());
+    QCOMPARE(reply->type, xcb_atom_t(XCB_ATOM_STRING));
+    QCOMPARE(reply->format, uint8_t(8));
+    QCOMPARE(reply->value_len, uint32_t(19));
+    data = static_cast<char *>(xcb_get_property_value(reply.data()));
+    QCOMPARE(QByteArray(data), className);
+    data = data + 10;
+    QCOMPARE(QByteArray(data), className);
 }
 
 QTEST_MAIN(KWindowEffectsTest)
