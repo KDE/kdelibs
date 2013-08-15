@@ -151,17 +151,22 @@ void showWindowThumbnails(WId parent, const QList<WId> &windows, const QList<QRe
     if (windows.size() != rects.size()) {
         return;
     }
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom(dpy, "_KDE_WINDOW_PREVIEW", False);
+    xcb_connection_t *c = QX11Info::connection();
+    const QByteArray effectName = QByteArrayLiteral("_KDE_WINDOW_PREVIEW");
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom) {
+        return;
+    }
     if (windows.isEmpty()) {
-        XDeleteProperty(dpy, parent, atom);
+        xcb_delete_property(c, parent, atom->atom);
         return;
     }
 
     int numWindows = windows.size();
 
     // 64 is enough for 10 windows and is a nice base 2 number
-    QVarLengthArray<long, 64> data(1 + (6 * numWindows));
+    QVarLengthArray<int32_t, 64> data(1 + (6 * numWindows));
     data[0] = numWindows;
 
     QList<WId>::const_iterator windowsIt;
@@ -182,8 +187,8 @@ void showWindowThumbnails(WId parent, const QList<WId> &windows, const QList<QRe
         ++i;
     }
 
-    XChangeProperty(dpy, parent, atom, atom, 32, PropModeReplace,
-                    reinterpret_cast<unsigned char *>(data.data()), data.size());
+    xcb_change_property(c, XCB_PROP_MODE_REPLACE, parent, atom->atom, atom->atom,
+                        32, data.size(), data.constData());
 }
 
 void presentWindows(WId controller, const QList<WId> &ids)

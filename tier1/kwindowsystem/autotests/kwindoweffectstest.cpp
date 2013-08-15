@@ -43,6 +43,9 @@ private Q_SLOTS:
     void testHighlightWindows_data();
     void testHighlightWindows();
     void testHighlightWindowsEmpty();
+    void testThumbnails_data();
+    void testThumbnails();
+    void testThumbnailsEmpty();
 
 private:
     int32_t locationToValue(KWindowEffects::SlideFromLocation location) const;
@@ -55,6 +58,7 @@ private:
     xcb_atom_t m_presentWindows;
     xcb_atom_t m_presentWindowsGroup;
     xcb_atom_t m_highlightWindows;
+    xcb_atom_t m_thumbnails;
     QScopedPointer<QWindow> m_window;
     QScopedPointer<QWidget> m_widget;
 };
@@ -71,6 +75,7 @@ void KWindowEffectsTest::initTestCase()
     getHelperAtom(QByteArrayLiteral("_KDE_PRESENT_WINDOWS_DESKTOP"), &m_presentWindows);
     getHelperAtom(QByteArrayLiteral("_KDE_PRESENT_WINDOWS_GROUP"), &m_presentWindowsGroup);
     getHelperAtom(QByteArrayLiteral("_KDE_WINDOW_HIGHLIGHT"), &m_highlightWindows);
+    getHelperAtom(QByteArrayLiteral("_KDE_WINDOW_PREVIEW"), &m_thumbnails);
 }
 
 void KWindowEffectsTest::getHelperAtom(const QByteArray &name, xcb_atom_t *atom) const
@@ -292,6 +297,67 @@ void KWindowEffectsTest::performWindowsOnPropertyTest(xcb_atom_t atom, const QLi
     for (int i = 0; i < windows.size(); ++i) {
         QCOMPARE(data[i], int32_t(windows.at(i)));
     }
+}
+
+void KWindowEffectsTest::testThumbnails_data()
+{
+    QTest::addColumn<QList<WId> >("windows");
+    QTest::addColumn<QList<QRect> >("geometries");
+
+    QTest::newRow("one") << (QList<WId>() << m_window->winId()) << (QList<QRect>() << QRect(0, 10, 20, 30));
+    QTest::newRow("two") << (QList<WId>() << m_window->winId() << m_widget->internalWinId()) << (QList<QRect>() << QRect(0, 10, 20, 30) << QRect(40, 50, 60, 70));
+}
+
+void KWindowEffectsTest::testThumbnails()
+{
+    QFETCH(QList<WId>, windows);
+    QFETCH(QList<QRect>, geometries);
+
+    KWindowEffects::showWindowThumbnails(m_window->winId(), windows, geometries);
+    xcb_connection_t *c = QX11Info::connection();
+    xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, m_window->winId(),
+                                                                  m_thumbnails, m_thumbnails, 0, 100);
+    QScopedPointer<xcb_get_property_reply_t, QScopedPointerPodDeleter> reply(xcb_get_property_reply(c, cookie, NULL));
+    QVERIFY(!reply.isNull());
+    QCOMPARE(reply->type, m_thumbnails);
+    QCOMPARE(reply->format, uint8_t(32));
+    QCOMPARE(reply->value_len, uint32_t(1 + 6 * windows.size()));
+    int32_t *data = static_cast<int32_t *>(xcb_get_property_value(reply.data()));
+    int counter = 0;
+    QCOMPARE(data[counter++], int32_t(windows.size()));
+    for (int i = 0; i < windows.size(); ++i) {
+        QCOMPARE(data[counter++], int32_t(5));
+        QCOMPARE(data[counter++], int32_t(windows.at(i)));
+        const QRect &rect = geometries.at(i);
+        QCOMPARE(data[counter++], int32_t(rect.x()));
+        QCOMPARE(data[counter++], int32_t(rect.y()));
+        QCOMPARE(data[counter++], int32_t(rect.width()));
+        QCOMPARE(data[counter++], int32_t(rect.height()));
+    }
+}
+
+void KWindowEffectsTest::testThumbnailsEmpty()
+{
+    // ensure it's empty
+    KWindowEffects::showWindowThumbnails(m_window->winId());
+    performAtomIsRemoveTest(m_window->winId(), m_thumbnails);
+
+    // install some windows on the atom
+    KWindowEffects::showWindowThumbnails(m_window->winId(), QList<WId>() << m_window->winId(), QList<QRect>() << QRect());
+    xcb_connection_t *c = QX11Info::connection();
+    xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, m_window->winId(),
+                                                                  m_thumbnails, m_thumbnails, 0, 100);
+    QScopedPointer<xcb_get_property_reply_t, QScopedPointerPodDeleter> reply(xcb_get_property_reply(c, cookie, NULL));
+    QVERIFY(!reply.isNull());
+    QCOMPARE(reply->type, m_thumbnails);
+
+    // and remove it again
+    KWindowEffects::showWindowThumbnails(m_window->winId());
+    performAtomIsRemoveTest(m_window->winId(), m_thumbnails);
+
+    // mismatch between windows and geometries should not set the property
+    KWindowEffects::showWindowThumbnails(m_window->winId(), QList<WId>() << m_window->winId(), QList<QRect>());
+    performAtomIsRemoveTest(m_window->winId(), m_thumbnails);
 }
 
 QTEST_MAIN(KWindowEffectsTest)
