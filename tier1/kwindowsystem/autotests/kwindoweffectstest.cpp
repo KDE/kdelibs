@@ -46,6 +46,9 @@ private Q_SLOTS:
     void testThumbnails_data();
     void testThumbnails();
     void testThumbnailsEmpty();
+    void testBlur_data();
+    void testBlur();
+    void testBlurDisable();
 
 private:
     int32_t locationToValue(KWindowEffects::SlideFromLocation location) const;
@@ -59,6 +62,7 @@ private:
     xcb_atom_t m_presentWindowsGroup;
     xcb_atom_t m_highlightWindows;
     xcb_atom_t m_thumbnails;
+    xcb_atom_t m_blur;
     QScopedPointer<QWindow> m_window;
     QScopedPointer<QWidget> m_widget;
 };
@@ -76,6 +80,7 @@ void KWindowEffectsTest::initTestCase()
     getHelperAtom(QByteArrayLiteral("_KDE_PRESENT_WINDOWS_GROUP"), &m_presentWindowsGroup);
     getHelperAtom(QByteArrayLiteral("_KDE_WINDOW_HIGHLIGHT"), &m_highlightWindows);
     getHelperAtom(QByteArrayLiteral("_KDE_WINDOW_PREVIEW"), &m_thumbnails);
+    getHelperAtom(QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION"), &m_blur);
 }
 
 void KWindowEffectsTest::getHelperAtom(const QByteArray &name, xcb_atom_t *atom) const
@@ -358,6 +363,63 @@ void KWindowEffectsTest::testThumbnailsEmpty()
     // mismatch between windows and geometries should not set the property
     KWindowEffects::showWindowThumbnails(m_window->winId(), QList<WId>() << m_window->winId(), QList<QRect>());
     performAtomIsRemoveTest(m_window->winId(), m_thumbnails);
+}
+
+void KWindowEffectsTest::testBlur_data()
+{
+    QTest::addColumn<QRegion>("blur");
+
+    QRegion region(0, 0, 10, 10);
+    QTest::newRow("one rect") << region;
+    region = region.united(QRect(20, 20, 5, 5));
+    QTest::newRow("two rects") << region;
+    region = region.united(QRect(100, 100, 20, 20));
+    QTest::newRow("three rects") << region;
+    QTest::newRow("empty") << QRegion();
+}
+
+void KWindowEffectsTest::testBlur()
+{
+    QFETCH(QRegion, blur);
+
+    KWindowEffects::enableBlurBehind(m_window->winId(), true, blur);
+    xcb_connection_t *c = QX11Info::connection();
+    xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, m_window->winId(),
+                                                                  m_blur, XCB_ATOM_CARDINAL, 0, 100);
+    QScopedPointer<xcb_get_property_reply_t, QScopedPointerPodDeleter> reply(xcb_get_property_reply(c, cookie, NULL));
+    QVERIFY(!reply.isNull());
+    QCOMPARE(reply->type, xcb_atom_t(XCB_ATOM_CARDINAL));
+    QCOMPARE(reply->format, uint8_t(32));
+    QCOMPARE(reply->value_len, uint32_t(blur.rectCount() * 4));
+    uint32_t *data = static_cast<uint32_t *>(xcb_get_property_value(reply.data()));
+    QVector<QRect> rects = blur.rects();
+    for (int i = 0; i < rects.count(); ++i) {
+        int counter = i*4;
+        const QRect &rect = rects.at(i);
+        QCOMPARE(data[counter++], uint32_t(rect.x()));
+        QCOMPARE(data[counter++], uint32_t(rect.y()));
+        QCOMPARE(data[counter++], uint32_t(rect.width()));
+        QCOMPARE(data[counter++], uint32_t(rect.height()));
+    }
+}
+
+void KWindowEffectsTest::testBlurDisable()
+{
+    KWindowEffects::enableBlurBehind(m_window->winId(), false);
+    performAtomIsRemoveTest(m_window->winId(), m_blur);
+
+    KWindowEffects::enableBlurBehind(m_window->winId(), true);
+    //verify that it got added
+    xcb_connection_t *c = QX11Info::connection();
+    xcb_get_property_cookie_t cookie = xcb_get_property_unchecked(c, false, m_window->winId(),
+                                                                  m_blur, XCB_ATOM_CARDINAL, 0, 100);
+    QScopedPointer<xcb_get_property_reply_t, QScopedPointerPodDeleter> reply(xcb_get_property_reply(c, cookie, NULL));
+    QVERIFY(!reply.isNull());
+    QCOMPARE(reply->type, xcb_atom_t(XCB_ATOM_CARDINAL));
+
+    // and disable
+    KWindowEffects::enableBlurBehind(m_window->winId(), false);
+    performAtomIsRemoveTest(m_window->winId(), m_blur);
 }
 
 QTEST_MAIN(KWindowEffectsTest)

@@ -25,7 +25,6 @@
 #include <config-kwindowsystem.h>
 
 #include <X11/Xlib.h>
-#include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <xcb/xcb.h>
 #include <QX11Info>
@@ -271,20 +270,25 @@ void highlightWindows(WId controller, const QList<WId> &ids)
 
 void enableBlurBehind(WId window, bool enable, const QRegion &region)
 {
-    Display *dpy = QX11Info::display();
-    Atom atom = XInternAtom(dpy, "_KDE_NET_WM_BLUR_BEHIND_REGION", False);
+    xcb_connection_t *c = QX11Info::connection();
+    const QByteArray effectName = QByteArrayLiteral("_KDE_NET_WM_BLUR_BEHIND_REGION");
+    xcb_intern_atom_cookie_t atomCookie = xcb_intern_atom_unchecked(c, false, effectName.length(), effectName.constData());
+    QScopedPointer<xcb_intern_atom_reply_t, QScopedPointerPodDeleter> atom(xcb_intern_atom_reply(c, atomCookie, NULL));
+    if (!atom) {
+        return;
+    }
 
     if (enable) {
         QVector<QRect> rects = region.rects();
-        QVector<unsigned long> data;
+        QVector<uint32_t> data;
         Q_FOREACH (const QRect &r, rects) {
             data << r.x() << r.y() << r.width() << r.height();
         }
 
-        XChangeProperty(dpy, window, atom, XA_CARDINAL, 32, PropModeReplace,
-                        reinterpret_cast<const unsigned char *>(data.constData()), data.size());
+        xcb_change_property(c, XCB_PROP_MODE_REPLACE, window, atom->atom, XCB_ATOM_CARDINAL,
+                            32, data.size(), data.constData());
     } else {
-        XDeleteProperty(dpy, window, atom);
+        xcb_delete_property(c, window, atom->atom);
     }
 }
 
