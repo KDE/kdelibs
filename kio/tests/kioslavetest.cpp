@@ -28,9 +28,9 @@
 #include <kio/scheduler.h>
 #include <kprotocolinfo.h>
 #include <QtCore/QTimer>
-#include <sys/stat.h>  // S_ISDIR
 #include <qcommandlineparser.h>
 #include <qcommandlineoption.h>
+#include <qplatformdefs.h>
 
 #include "kioslavetest.h"
 
@@ -362,7 +362,7 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
                 {
                     mode_t mode = (mode_t)entry.numberValue(*it);
                     qDebug() << "File Type : " << mode;
-                    if ( S_ISDIR( mode ) )
+                    if ( mode & QT_STAT_DIR )
                     {
                         qDebug() << "is a dir";
                     }

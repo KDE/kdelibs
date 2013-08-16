@@ -34,6 +34,7 @@
 #include <QtCore/QMap>
 #include <QMimeDatabase>
 #include <QDebug>
+#include <qplatformdefs.h>
 
 #include <klocalizedstring.h>
 #include <kdesktopfile.h>
@@ -44,10 +45,6 @@
 #include <ksambashare.h>
 #endif
 #include <kfilesystemtype_p.h>
-
-#ifndef S_ISSOCK
-#define S_ISSOCK(x) false
-#endif
 
 class KFileItemPrivate : public QSharedData
 {
@@ -471,8 +468,9 @@ QString KFileItemPrivate::parsePermissions(mode_t perm) const
     if (m_bLink)
         buffer[0] = 'l';
     else if (m_fileMode != KFileItem::Unknown) {
-        if (S_ISDIR(m_fileMode))
+        if (m_fileMode & QT_STAT_DIR)
             buffer[0] = 'd';
+#ifdef Q_OS_UNIX
         else if (S_ISSOCK(m_fileMode))
             buffer[0] = 's';
         else if (S_ISCHR(m_fileMode))
@@ -481,6 +479,7 @@ QString KFileItemPrivate::parsePermissions(mode_t perm) const
             buffer[0] = 'b';
         else if (S_ISFIFO(m_fileMode))
             buffer[0] = 'p';
+#endif // Q_OS_UNIX
         else
             buffer[0] = '-';
     } else {
@@ -1023,7 +1022,7 @@ QStringList KFileItem::overlays() const
         names.append("emblem-symbolic-link");
     }
 
-    if ( !S_ISDIR( d->m_fileMode ) // Locked dirs have a special icon, use the overlay for files only
+    if ( !(d->m_fileMode & QT_STAT_DIR) // Locked dirs have a special icon, use the overlay for files only
          && !isReadable()) {
         names.append("object-locked");
     }
@@ -1053,7 +1052,7 @@ QStringList KFileItem::overlays() const
     }
 
 #ifndef Q_OS_WIN
-    if( S_ISDIR( d->m_fileMode ) && d->m_bIsLocalUrl)
+    if( (d->m_fileMode & QT_STAT_DIR) && d->m_bIsLocalUrl)
     {
         if (KSambaShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ) ||
             KNFSShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ))
@@ -1166,7 +1165,7 @@ bool KFileItem::isDir() const
         //qDebug() << d << url() << "can't say -> false";
         return false; // can't say for sure, so no
     }
-    return (S_ISDIR(d->m_fileMode));
+    return d->m_fileMode & QT_STAT_DIR;
 }
 
 bool KFileItem::isFile() const
@@ -1220,7 +1219,7 @@ QString KFileItem::getStatusBarInfo() const
     {
         text += i18n(" (Points to %1)", targetUrl().toDisplayString());
     }
-    else if ( S_ISREG( d->m_fileMode ) )
+    else if ( d->m_fileMode & QT_STAT_REG )
     {
         text += QString(" (%1, %2)").arg( comment, KIO::convertSize( size() ) );
     }
@@ -1655,7 +1654,7 @@ bool KFileItem::isRegularFile() const
     if (!d)
         return false;
 
-    return S_ISREG(d->m_fileMode);
+    return d->m_fileMode & QT_STAT_REG;
 }
 
 QDebug operator<<(QDebug stream, const KFileItem& item)

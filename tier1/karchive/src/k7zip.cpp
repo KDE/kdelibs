@@ -23,6 +23,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QBuffer>
 #include <QtCore/QFile>
+#include <qplatformdefs.h>
 
 #include "kcompressiondevice.h"
 #include <kfilterbase.h>
@@ -2635,7 +2636,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         bool symlink = false;
         if (fileInfo->attributes & FILE_ATTRIBUTE_UNIX_EXTENSION) {
             access = fileInfo->attributes >> 16;
-            if (S_ISLNK(access)) {
+            if (access & QT_STAT_LNK) {
                 symlink = true;
             }
         } else {

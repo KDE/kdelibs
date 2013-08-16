@@ -21,12 +21,12 @@
 
 #include "udsentry.h"
 
-#include <sys/stat.h> // S_ISDIR
-
 #include <QtCore/QString>
 #include <QtCore/QHash>
 #include <QtCore/QList>
 #include <QtCore/QDataStream>
+
+#include <qplatformdefs.h>
 
 using namespace KIO;
 
@@ -82,7 +82,7 @@ long long UDSEntry::numberValue(uint field, long long defaultValue) const
 
 bool UDSEntry::isDir() const
 {
-    return S_ISDIR(numberValue(UDS_FILE_TYPE));
+    return numberValue(UDS_FILE_TYPE) & QT_STAT_DIR;
 }
 
 bool UDSEntry::isLink() const

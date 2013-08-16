@@ -77,6 +77,7 @@ extern "C" {
 #include <QFileInfo>
 #include <qmimedatabase.h>
 #include <QUrl>
+#include <qplatformdefs.h>
 
 #if HAVE_POSIX_ACL
 extern "C" {
@@ -895,7 +896,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         directory += ')';
     }
 
-    if (!isTrash && (bDesktopFile || S_ISDIR(mode))
+    if (!isTrash && (bDesktopFile || (mode & QT_STAT_DIR))
         && !d->bMultiple // not implemented for multiple
         && enableIconButton()) // #56857
     {
@@ -1486,7 +1487,7 @@ void KFilePropsPlugin::applyIconChanges()
     if ( url.isLocalFile()) {
         QString path;
 
-        if (S_ISDIR(properties->item().mode()))
+        if (properties->item().mode() & QT_STAT_DIR)
         {
             path = url.toLocalFile() + QString::fromLatin1("/.directory");
             // don't call updateUrl because the other tabs (i.e. permissions)

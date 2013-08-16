@@ -85,7 +85,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
         return;
     }
 
-    if ( S_ISDIR( buff_src.st_mode ) ) {
+    if ( buff_src.st_mode & QT_STAT_DIR ) {
 	error(KIO::ERR_IS_DIRECTORY, src);
 	return;
     }
@@ -98,7 +98,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
     bool dest_exists = (QT_LSTAT(_dest.data(), &buff_dest) != -1);
     if ( dest_exists )
     {
-        if (S_ISDIR(buff_dest.st_mode))
+        if (buff_dest.st_mode & QT_STAT_DIR)
         {
            error(KIO::ERR_DIR_ALREADY_EXIST, dest);
            return;
@@ -119,7 +119,7 @@ void FileProtocol::copy( const QUrl &srcUrl, const QUrl &destUrl,
         // If the destination is a symlink and overwrite is TRUE,
         // remove the symlink first to prevent the scenario where
         // the symlink actually points to current source!
-        if ((_flags & KIO::Overwrite) && S_ISLNK(buff_dest.st_mode))
+        if ((_flags & KIO::Overwrite) && (buff_dest.st_mode & QT_STAT_LNK))
         {
             //qDebug() << "copy(): LINK DESTINATION";
             QFile::remove(dest);
@@ -388,8 +388,8 @@ void FileProtocol::listDir( const QUrl& url)
                 continue; // how can stat fail?
             }
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE,
-                          (S_ISDIR(st.st_mode)) ? S_IFDIR : S_IFREG );
-            const bool isSymLink = S_ISLNK(st.st_mode);
+                          (st.st_mode & QT_STAT_DIR) ? S_IFDIR : S_IFREG );
+            const bool isSymLink = (st.st_mode & QT_STAT_LNK);
 #endif
             if (isSymLink) {
                 // for symlinks obey the UDSEntry contract and provide UDS_LINK_DEST
@@ -437,7 +437,7 @@ void FileProtocol::rename( const QUrl &srcUrl, const QUrl &destUrl,
     bool dest_exists = (QT_LSTAT(_dest.data(), &buff_dest) != -1);
     if ( dest_exists )
     {
-        if (S_ISDIR(buff_dest.st_mode))
+        if (buff_dest.st_mode & QT_STAT_DIR)
         {
            error(KIO::ERR_DIR_ALREADY_EXIST, dest);
            return;
@@ -498,7 +498,7 @@ void FileProtocol::symlink( const QString &target, const QUrl &destUrl, KIO::Job
             else
             {
                 QT_STATBUF buff_dest;
-                if (QT_LSTAT(QFile::encodeName(dest), &buff_dest) == 0 && S_ISDIR(buff_dest.st_mode))
+                if (QT_LSTAT(QFile::encodeName(dest), &buff_dest) == 0 && (buff_dest.st_mode & QT_STAT_DIR))
                     error(KIO::ERR_DIR_ALREADY_EXIST, dest);
                 else
                     error(KIO::ERR_FILE_ALREADY_EXIST, dest);

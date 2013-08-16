@@ -125,6 +125,7 @@ using namespace DOM;
 #include <QStatusBar>
 #include <QStyle>
 #include <qmimedatabase.h>
+#include <qplatformdefs.h>
 
 #include "khtmlpart_p.h"
 #include "khtml_iface.h"
@@ -3586,7 +3587,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
     QString text = Qt::escape(u.toDisplayString());
     QString text2 = text;
 
-    if (ok && S_ISLNK( lbuff.st_mode ) )
+    if (ok && ( lbuff.st_mode & QT_STAT_LNK ) )
     {
       QString tmp;
       if ( com.isEmpty() )
@@ -3609,7 +3610,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
       text += "  ";
       text += tmp;
     }
-    else if ( ok && S_ISREG( buff.st_mode ) )
+    else if ( ok && ( buff.st_mode & QT_STAT_REG ) )
     {
       if (buff.st_size < 1024)
         text = i18np("%2 (%1 byte)", "%2 (%1 bytes)", (long) buff.st_size, text2); // always put the URL last, in case it contains '%'
@@ -3621,7 +3622,7 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
       text += "  ";
       text += com;
     }
-    else if ( ok && S_ISDIR( buff.st_mode ) )
+    else if ( ok && ( buff.st_mode & QT_STAT_DIR ) )
     {
       text += "  ";
       text += com;

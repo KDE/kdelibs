@@ -397,7 +397,7 @@ void KDirWatchPrivate::inotifyEventReceived()
               // so in that case we'll just take both kinds of clients and emit Deleted.
               KDirWatch::WatchModes flag = KDirWatch::WatchSubDirs | KDirWatch::WatchFiles;
               if (QT_STAT(QFile::encodeName(tpath).constData(), &stat_buf) == 0) {
-                bool isDir = S_ISDIR(stat_buf.st_mode);
+                bool isDir = stat_buf.st_mode & QT_STAT_DIR;
                 flag = isDir ? KDirWatch::WatchSubDirs : KDirWatch::WatchFiles;
               }
               int counter = 0;
@@ -815,11 +815,11 @@ void KDirWatchPrivate::addEntry(KDirWatch* instance, const QString& _path,
   Entry* e = &(*newIt);
 
   if (exists) {
-    e->isDir = S_ISDIR(stat_buf.st_mode);
+    e->isDir = stat_buf.st_mode & QT_STAT_DIR;
 
     if (e->isDir && !isDir) {
       if (QT_LSTAT(QFile::encodeName(path).constData(), &stat_buf) == 0) {
-        if (S_ISLNK(stat_buf.st_mode))
+        if (stat_buf.st_mode & QT_STAT_LNK)
           // if it's a symlink, don't follow it
           e->isDir = false;
         else

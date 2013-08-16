@@ -266,7 +266,7 @@ void FileProtocol::mkdir( const QUrl& url, int permissions )
         }
     }
 
-    if ( S_ISDIR( buff.st_mode ) ) {
+    if ( buff.st_mode & QT_STAT_DIR ) {
         // qDebug() << "ERR_DIR_ALREADY_EXIST";
         error(KIO::ERR_DIR_ALREADY_EXIST, path);
         return;
@@ -295,11 +295,11 @@ void FileProtocol::get( const QUrl& url )
         return;
     }
 
-    if ( S_ISDIR( buff.st_mode ) ) {
+    if ( buff.st_mode & QT_STAT_DIR ) {
         error(KIO::ERR_IS_DIRECTORY, path);
         return;
     }
-    if ( !S_ISREG( buff.st_mode ) ) {
+    if ( !( buff.st_mode & QT_STAT_REG ) ) {
         error(KIO::ERR_CANNOT_OPEN_FOR_READING, path);
         return;
     }
@@ -392,11 +392,11 @@ void FileProtocol::open(const QUrl &url, QIODevice::OpenMode mode)
         return;
     }
 
-    if ( S_ISDIR( buff.st_mode ) ) {
+    if ( buff.st_mode & QT_STAT_DIR ) {
         error(KIO::ERR_IS_DIRECTORY, openPath);
         return;
     }
-    if ( !S_ISREG( buff.st_mode ) ) {
+    if ( !( buff.st_mode & QT_STAT_REG ) ) {
         error(KIO::ERR_CANNOT_OPEN_FOR_READING, openPath);
         return;
     }
@@ -513,7 +513,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
         QT_STATBUF buff_part;
         bPartExists = (QT_LSTAT(QFile::encodeName(dest_part).constData(), &buff_part) != -1);
 
-        if (bPartExists && !(_flags & KIO::Resume) && !(_flags & KIO::Overwrite) && buff_part.st_size > 0 && S_ISREG(buff_part.st_mode))
+        if (bPartExists && !(_flags & KIO::Resume) && !(_flags & KIO::Overwrite) && buff_part.st_size > 0 && (buff_part.st_mode & QT_STAT_REG))
         {
             // qDebug() << "calling canResume with" << KIO::number(buff_part.st_size);
 
@@ -528,7 +528,7 @@ void FileProtocol::put( const QUrl& url, int _mode, KIO::JobFlags _flags )
 
     if ( bOrigExists && !(_flags & KIO::Overwrite) && !(_flags & KIO::Resume))
     {
-        if (S_ISDIR(buff_orig.st_mode))
+        if (buff_orig.st_mode & QT_STAT_DIR)
             error( KIO::ERR_DIR_ALREADY_EXIST, dest_orig );
         else
             error( KIO::ERR_FILE_ALREADY_EXIST, dest_orig );
@@ -751,7 +751,7 @@ bool FileProtocol::createUDSEntry( const QString & filename, const QByteArray & 
             entry.insert( KIO::UDSEntry::UDS_INODE, buff.st_ino );
         }
 
-        if (S_ISLNK(buff.st_mode)) {
+        if (buff.st_mode & QT_STAT_LNK) {
 
             char buffer2[ 1000 ];
             int n = readlink( path.data(), buffer2, 999 );
@@ -1211,7 +1211,7 @@ static void appendACLAtoms( const QByteArray & path, UDSEntry& entry, mode_t typ
 
     acl_t acl = 0;
     acl_t defaultAcl = 0;
-    bool isDir = S_ISDIR( type );
+    bool isDir = type & QT_STAT_DIR;
     // do we have an acl for the file, and/or a default acl for the dir, if it is one?
     acl = acl_get_file( path.data(), ACL_TYPE_ACCESS );
     /* Sadly libacl does not provided a means of checking for extended ACL and default
