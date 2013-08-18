@@ -30,6 +30,7 @@
 
 #include <QProgressDialog>
 #include <QStandardPaths>
+#include <qplatformdefs.h>
 #include <qtemporaryfile.h>
 
 #include <assert.h>
@@ -224,8 +225,8 @@ int KSSLKeyGen::generateCSR(const QString& name, const QString& pass, int bits, 
 		return -5;
 	}
 
-	FILE *csr_fs = fopen(QFile::encodeName(csrFile.fileName()), "r+");
-	FILE *p8_fs = fopen(QFile::encodeName(p8File.fileName()), "r+");
+	FILE *csr_fs = QT_FOPEN(QFile::encodeName(csrFile.fileName()), "r+");
+	FILE *p8_fs = QT_FOPEN(QFile::encodeName(p8File.fileName()), "r+");
 
 	kossl->i2d_X509_REQ_fp(csr_fs, req);
 

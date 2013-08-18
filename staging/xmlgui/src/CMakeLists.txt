@@ -1,7 +1,8 @@
 find_package(X11)
 set_package_properties(X11 PROPERTIES TYPE OPTIONAL)
 
-find_package(LibAttica 1.0.0 NO_MODULE)
+set(LibAttica_MIN_VERSION "1.0.0" CACHE STRING "The LibAttica Minimum version")
+find_package(LibAttica ${LibAttica_MIN_VERSION} NO_MODULE)
 set_package_properties(LibAttica PROPERTIES DESCRIPTION "A Qt library that implements the Open Collaboration Services API"
                        PURPOSE "Support for Get Hot New Stuff in XMLGUI"
                        URL "https://projects.kde.org/attica"
@@ -16,11 +17,10 @@ else ()
 endif ()
 
 if (LibAttica_FOUND)
-   set (HAVE_ATTICA 1)
+   set (HAVE_ATTICA 1 CACHE BOOL "TRUE if Attica was found")
    set (XMLGUI_EXTRA_LIBS ${XMLGUI_EXTRA_LIBS} ${LibAttica_LIBRARIES})
-   include_directories( ${LibAttica_INCLUDE_DIRS} )
 else ()
-   set (HAVE_ATTICA 0)
+   set (HAVE_ATTICA 0 CACHE BOOL "TRUE if Attica was found")
 endif ()
 
 configure_file(config-xmlgui.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-xmlgui.h )

@@ -351,7 +351,7 @@ if(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
   set(_REQ_STRING_KDE4 "REQUIRED")
   set(_REQ_STRING_KDE4_MESSAGE "FATAL_ERROR")
 else(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
-  set(_REQ_STRING_KDE4 )
+  set(_REQ_STRING_KDE4 "OPTIONAL")
   set(_REQ_STRING_KDE4_MESSAGE "STATUS")
 endif(KDE4_FIND_REQUIRED  OR  KDE4Internal_FIND_REQUIRED)
 
@@ -381,6 +381,7 @@ endif(NOT PERL_FOUND)
 include (MacroLibrary)
 include (CheckCXXCompilerFlag)
 include (CheckCXXSourceCompiles)
+include (FeatureSummary)
 
 # restore the original CMAKE_MODULE_PATH
 #set(CMAKE_MODULE_PATH ${_kde_cmake_module_path_back})
@@ -476,6 +477,12 @@ include(${CMAKE_CURRENT_LIST_DIR}/KDELibs4LibraryTargets.cmake)
 
 if(NOT TARGET KF5::ThreadWeaver)
    include(${KDE4_LIB_INSTALL_DIR}/cmake/ThreadWeaver/ThreadWeaverTargets.cmake)
+endif()
+
+# Look for Attica if necessary. It is needed by the imported knewstuff3 target (included via KDELibs4LibraryTargets-*.cmake)
+if(NOT TARGET LibAttica::attica)
+  find_package(LibAttica CONFIG)
+  set_package_properties(LibAttica PROPERTIES TYPE ${_REQ_STRING_KDE4})
 endif()
 
 # This one is for compatibility only:

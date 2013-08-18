@@ -19,6 +19,7 @@
 #include "kdirwatchtest_gui.h"
 
 #include <kdirwatch.h>
+#include <qplatformdefs.h>
 #include <QDir>
 #include <QApplication>
 #include <QLabel>
@@ -118,7 +119,7 @@ void KDirWatchTest_GUI::slotDeleteClicked()
 
 void KDirWatchTest_GUI::slotNewClicked()
 {
-  fclose(fopen(file.toLatin1().constData(), "wb"));
+  fclose(QT_FOPEN(file.toLatin1().constData(), "wb"));
   d->setText(QLatin1String("New clicked at ") + QTime::currentTime().toString());
 }
 

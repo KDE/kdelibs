@@ -84,6 +84,7 @@
 #elif defined(Q_WS_WIN)
 #include <QDesktopServices>
 #endif
+#include <qplatformdefs.h>
 #include <qstandardpaths.h>
 
 KRun::KRunPrivate::KRunPrivate(KRun *parent)
@@ -1246,7 +1247,7 @@ void KRun::init()
 
 #if 0 // removed for KF5 (for portability). Reintroduce a bool or flag if useful.
     // Did we already get the information that it is a directory ?
-    if (S_ISDIR(d->m_mode)) {
+    if (d->m_mode & QT_STAT_DIR) {
         mimeTypeDetermined("inode/directory");
         return;
     }
@@ -1415,7 +1416,7 @@ void KRun::slotStatResult(KJob * job)
 
         const KIO::UDSEntry entry = statJob->statResult();
         const mode_t mode = entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE);
-        if (S_ISDIR(mode)) {
+        if (mode & QT_STAT_DIR) {
             d->m_bIsDirectory = true; // it's a dir
         }
         else {

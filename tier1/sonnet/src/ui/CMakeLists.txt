@@ -18,6 +18,7 @@ set(sonnetui_SRCS
     dialog.cpp
     dictionarycombobox.cpp
     highlighter.cpp
+    spellcheckdecorator.cpp
 )
 
 set(sonnetui_UI
@@ -31,6 +32,7 @@ set(sonnetui_HDRS
     configdialog.h
     configwidget.h
     dictionarycombobox.h
+    spellcheckdecorator.h
 )
 
 qt5_wrap_ui(sonnetui_SRCS ${sonnetui_UI})

@@ -142,7 +142,7 @@ void KdePlatformTheme::loadSettings()
 
     m_fontsData = new KFontSettingsData;
 
-    connect(KIconLoader::global(), &KIconLoader::iconChanged, this, &KdePlatformTheme::iconChanged);
+    QTimer::singleShot(0, this, SLOT(setupIconLoader()));
 }
 
 void KdePlatformTheme::loadHints()
@@ -186,6 +186,11 @@ void KdePlatformTheme::loadPalettes()
 
     KSharedConfig::Ptr globals = KSharedConfig::openConfig("kdeglobals");
     m_palettes[SystemPalette] = new QPalette(KColorScheme::createApplicationPalette(globals));
+}
+
+void KdePlatformTheme::setupIconLoader()
+{
+    connect(KIconLoader::global(), &KIconLoader::iconChanged, this, &KdePlatformTheme::iconChanged);
 }
 
 void KdePlatformTheme::iconChanged(int group)

@@ -29,20 +29,11 @@
 #include <QtCore/QFile>
 #include <QtCore/QDate>
 #include <QtCore/QList>
+#include <qplatformdefs.h>
 
 #include <time.h>
 #include <zlib.h>
 #include <string.h>
-
-#ifdef Q_OS_WIN
-#ifndef S_IFLNK
-#define        S_IFLNK  0120000
-#endif
-
-#ifndef S_ISLNK
-#define	S_ISLNK(m)	(((m) & S_IFMT) == S_IFLNK)	/* symbolic link */
-#endif
-#endif
 
 const int max_path_len = 4095;	// maximum number of character a path may contain
 
@@ -708,7 +699,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
             else
             {
             QString symlink;
-        if (S_ISLNK(access)) {
+        if (access & QT_STAT_LNK) {
             symlink = QFile::decodeName(pfi.guessed_symlink);
         }
                 QDateTime mtime = KArchivePrivate::time_tToDateTime(pfi.mtime);

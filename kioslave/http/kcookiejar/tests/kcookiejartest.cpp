@@ -24,6 +24,7 @@
 #include <QtCore/QString>
 
 #include <QtTest/QtTest>
+#include <qplatformdefs.h>
 #include <qstandardpaths.h>
 
 
@@ -219,7 +220,7 @@ static void processLine(QString line)
 
 static void runRegression(const QString &filename)
 {
-   FILE *file = fopen(QFile::encodeName( filename ), "r");
+   FILE *file = QT_FOPEN(QFile::encodeName( filename ), "r");
    if (!file)
       FAIL(QString("Can't open '%1'").arg(filename));
 
