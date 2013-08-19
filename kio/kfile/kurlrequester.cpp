@@ -471,6 +471,7 @@ QString KUrlRequester::filter( ) const
     return d->fileDialogFilter;
 }
 
+#ifndef KDE_NO_DEPRECATED
 QFileDialog* KUrlRequester::fileDialog() const
 {
     if (!d->myFileDialog) {
@@ -486,6 +487,7 @@ QFileDialog* KUrlRequester::fileDialog() const
 
     return d->myFileDialog;
 }
+#endif
 
 void KUrlRequester::clear()
 {

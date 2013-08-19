@@ -149,8 +149,11 @@ public:
      *
      * Important: in "Directory only" mode, a KDirSelectDialog is used
      * instead, so calling this method is useless.
+     * @deprecated since 5.0
      */
-    virtual QFileDialog * fileDialog() const;
+#ifndef KDE_NO_DEPRECATED
+    virtual KIO_DEPRECATED QFileDialog *fileDialog() const;
+#endif
 
     /**
      * @returns a pointer to the lineedit, either the default one, or the
@@ -159,13 +162,13 @@ public:
      * It is provided so that you can e.g. set an own completion object
      * (e.g. KShellCompletion) into it.
      */
-    KLineEdit * lineEdit() const;
+    KLineEdit *lineEdit() const;
 
     /**
      * @returns a pointer to the combobox, in case you have set one using the
      * special constructor. Returns 0L otherwise.
      */
-    KComboBox * comboBox() const;
+    KComboBox *comboBox() const;
 
     /**
      * @returns a pointer to the pushbutton. It is provided so that you can
