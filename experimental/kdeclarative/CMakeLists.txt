@@ -18,7 +18,7 @@ generate_export_header(kdeclarative)
 
 set_target_properties(kdeclarative PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION} SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION})
 
-target_link_libraries(kdeclarative ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} ${KCoreAddons_LIBRARIES} KConfigCore KI18n KIconThemes)
+target_link_libraries(kdeclarative ${Qt5Qml_LIBRARIES} ${Qt5Quick_LIBRARIES} ${KCoreAddons_LIBRARIES} KConfigCore KConfigGui KI18n KIconThemes)
 
 
 ## test
