@@ -736,7 +736,7 @@ void KApplicationPrivate::parseCommandLine( )
 
     if (args && args->isSet("style"))
     {
-        extern QString kde_overrideStyle; // see KGlobalSettings. Should we have a static setter?
+        extern QString kde_overrideStyle; // see KGlobalSettings
         QString reqStyle(args->getOption("style").toLower());
         if (QStyleFactory::keys().contains(reqStyle, Qt::CaseInsensitive))
             kde_overrideStyle = reqStyle;
