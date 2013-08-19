@@ -8,7 +8,7 @@ macro(KDE4ATTIC_TESTS)
         add_executable(${_testname} ${_testname}.cpp)
         add_test(kde4attic-${_testname} ${_testname})
         ecm_mark_as_test(${_testname})
-        target_link_libraries(${_testname} Qt5::Test KDE4Attic)
+        target_link_libraries(${_testname} Qt5::Test KDE4Attic KI18n)
     endforeach(_testname)
 endmacro()
 
