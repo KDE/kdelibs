@@ -21,11 +21,11 @@
 #ifndef KDEUIWIDGETSPROXYSTYLE_P_H
 #define KDEUIWIDGETSPROXYSTYLE_P_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 
 #include <QStyle>
 
-class KDEUI_EXPORT KdeUiProxyStyle : public QStyle
+class KDE4SUPPORT_EXPORT KdeUiProxyStyle : public QStyle
 {
     Q_OBJECT
 public:
