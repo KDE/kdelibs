@@ -190,6 +190,8 @@ target_link_libraries(KDE4Support
    Qt5::Widgets
    Qt5::DBus
    Qt5::Test
+   Qt5::X11Extras
+   Qt5::Svg
    kdecore
    ${KCoreAddons_LIBRARIES}
    KCrash
@@ -203,6 +205,10 @@ target_link_libraries(KDE4Support
    KCompletion
    KDE4Attic
    KNotifications
+   KIconThemes
+   KWindowSystem
+   KGuiAddons
+   KTextWidgets
 )
 
 if(NOT KIO_NO_NEPOMUK)
