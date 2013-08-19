@@ -25,10 +25,10 @@ target_include_directories(KTextWidgets PUBLIC "$<BUILD_INTERFACE:${ktextwidgets
 target_link_libraries(KTextWidgets
 LINK_PUBLIC
   Qt5::Widgets
+  SonnetUi
 LINK_PRIVATE
   Qt5::DBus
   SonnetCore
-  SonnetUi
   KI18n
   KWidgetsAddons
   KService
