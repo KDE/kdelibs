@@ -609,7 +609,11 @@ target_link_libraries(khtml
   ${KWindowSystem_LIBRARIES}
   KWallet
   Qt5::X11Extras
+  Qt5::PrintSupport
   XmlGui
+  KTextWidgets
+  KIconThemes
+  KNotifications
   KDE4Support # KComponentData (TODO port to KAboutData
 )
 if (KJS_DEBUGGER)
@@ -740,7 +744,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
-target_link_libraries(khtmlpart  ${KDE4_KDECORE_LIBS} khtml )
+target_link_libraries(khtmlpart  ${KDE4_KDECORE_LIBS} khtml XmlGui KTextWidgets)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -752,7 +756,7 @@ install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 kde4_add_plugin(khtmlimagepart khtmlimage_init.cpp)
 
 
-target_link_libraries(khtmlimagepart khtml ${KWidgetsAddons_LIBRARIES})
+target_link_libraries(khtmlimagepart khtml ${KWidgetsAddons_LIBRARIES} XmlGui KTextWidgets)
 
 install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -778,7 +782,7 @@ if(NOT MSVC)
 
     kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
-    target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml XmlGui)
+    target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml XmlGui KTextWidgets)
 
     ########### next target ###############
 
@@ -789,7 +793,7 @@ if(NOT MSVC)
 
     kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
-    target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml XmlGui)
+    target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml XmlGui KTextWidgets)
 
     ########### next target ###############
 endif(NOT MSVC)

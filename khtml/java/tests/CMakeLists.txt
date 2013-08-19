@@ -21,6 +21,8 @@ target_link_libraries(testserver
     KDE4Support
     KI18n
     XmlGui
+    KIconThemes
+    KWindowSystem
 )
 
 
