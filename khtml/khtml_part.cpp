@@ -97,7 +97,6 @@ using namespace DOM;
 #include <kauthorized.h>
 #include <kparts/browserinterface.h>
 #include <kparts/scriptableextension.h>
-#include <kde_file.h>
 #include <kactionmenu.h>
 #include <ktoggleaction.h>
 #include <kcodecaction.h>
@@ -126,6 +125,7 @@ using namespace DOM;
 #include <QStyle>
 #include <qmimedatabase.h>
 #include <qplatformdefs.h>
+#include <QFileInfo>
 
 #include "khtmlpart_p.h"
 #include "khtml_iface.h"
@@ -3576,53 +3576,46 @@ void KHTMLPart::overURL( const QString &url, const QString &target, bool /*shift
   {
     // TODO : use KIO::stat() and create a KFileItem out of its result,
     // to use KFileItem::statusBarText()
-    const QString path = QFile::encodeName( u.toLocalFile() );
 
-    KDE_struct_stat buff;
-    bool ok = !KDE::stat( path, &buff );
-
-    KDE_struct_stat lbuff;
-    if (ok) ok = !KDE::lstat( path, &lbuff );
+    QFileInfo info(u.toLocalFile());
+    bool ok = info.exists();
 
     QString text = Qt::escape(u.toDisplayString());
     QString text2 = text;
 
-    if (ok && ( lbuff.st_mode & QT_STAT_LNK ) )
+    if (info.isSymLink())
     {
       QString tmp;
       if ( com.isEmpty() )
         tmp = i18n( "Symbolic Link");
       else
         tmp = i18n("%1 (Link)", com);
-      char buff_two[1024];
       text += " -> ";
-      int n = readlink ( path.toLocal8Bit().data(), buff_two, 1022);
-      if (n == -1)
-      {
+      QString target = info.symLinkTarget();
+      if (target.isEmpty()) {
         text2 += "  ";
         text2 += tmp;
         setStatusBarText(text2, BarHoverText);
         return;
       }
-      buff_two[n] = 0;
 
-      text += buff_two;
+      text += target;
       text += "  ";
       text += tmp;
     }
-    else if ( ok && ( buff.st_mode & QT_STAT_REG ) )
+    else if ( ok && info.isFile() )
     {
-      if (buff.st_size < 1024)
-        text = i18np("%2 (%1 byte)", "%2 (%1 bytes)", (long) buff.st_size, text2); // always put the URL last, in case it contains '%'
+      if (info.size() < 1024)
+        text = i18np("%2 (%1 byte)", "%2 (%1 bytes)", (long) info.size(), text2); // always put the URL last, in case it contains '%'
       else
       {
-        float d = (float) buff.st_size/1024.0;
+        float d = (float) info.size()/1024.0;
         text = i18n("%2 (%1 K)", QLocale().toString(d, 'f', 2), text2); // was %.2f
       }
       text += "  ";
       text += com;
     }
-    else if ( ok && ( buff.st_mode & QT_STAT_DIR ) )
+    else if ( ok && info.isDir() )
     {
       text += "  ";
       text += com;
