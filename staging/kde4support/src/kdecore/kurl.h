@@ -613,7 +613,7 @@ public:
    * @see split
    * @see hasSubUrl
    * @see encodedHtmlRef
-   * @deprecated use QUrl::fragment()
+   * @deprecated use QUrl::fragment(QUrl::FullyDecoded)
    */
   QString htmlRef() const;
 

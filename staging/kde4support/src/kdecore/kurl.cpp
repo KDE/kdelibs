@@ -1346,11 +1346,11 @@ QString KUrl::htmlRef() const
 {
   if ( !hasSubUrl() )
   {
-      return fragment();
+      return fragment(QUrl::FullyDecoded);
   }
 
   const List lst = split( *this );
-  return (*lst.begin()).fragment();
+  return (*lst.begin()).fragment(QUrl::FullyDecoded);
 }
 
 QString KUrl::encodedHtmlRef() const
@@ -1725,10 +1725,7 @@ bool KUrl::hasRef() const
 
 void KUrl::setRef( const QString& fragment )
 {
-  if ( fragment.isEmpty() ) // empty or null
-    setFragment( fragment );
-  else
-    setFragment( QUrl::fromPercentEncoding( fragment.toLatin1() ) );
+    setFragment(fragment);
 }
 
 QString KUrl::ref() const
@@ -1736,7 +1733,7 @@ QString KUrl::ref() const
   if ( fragment().isNull() )
     return QString();
   else
-    return QString::fromLatin1( QUrl::toPercentEncoding( fragment() ).data() );
+    return fragment(QUrl::FullyEncoded);
 }
 
 bool KUrl::isParentOf( const KUrl& u ) const

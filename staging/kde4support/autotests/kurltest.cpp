@@ -127,7 +127,7 @@ void KUrlTest::testEmptyNullReference()
 void KUrlTest::testSetRef()
 {
   KUrl url1 = KUrl( QByteArray( "http://www.kde.org/foo.cgi#foo=bar" ) );
-  QCOMPARE( url1.ref(), QString("foo%3Dbar" ) ); // KDE3 difference: was foo=bar
+  QCOMPARE( url1.ref(), QString("foo=bar" ) ); // KDE3: was foo=bar, KDE4: foo%3Dbar, KF5 (Qt5.2): foo=bar
 #if 0// ditto (TODO)
   url1.setRef( "toto=titi&kde=rocks" );
   QCOMPARE( url1.ref(), QString("toto=titi&kde=rocks" ) );
@@ -168,7 +168,10 @@ void KUrlTest::testSetHTMLRef()
 void KUrlTest::testQUrl()
 {
   QUrl url1( "file:///home/dfaure/my#%2f" );
-  QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#/" ) );
+  // Qt 4.0 to 4.4: #/. Qt 4.5: %2f again.
+  // Qt 5.0 & 5.1: #/. Qt 5.2: %2F again (probably due to 2ff719de8fe7a in qtbase)
+  // See also testSimpleMethods below, for the KUrl history of it.
+  QCOMPARE( url1.toString(), QString( "file:///home/dfaure/my#%2F" ) );
 
 #ifdef Q_OS_WIN
   QUrl url2( "file:///c:/home/dfaure/my#%2f" );
@@ -274,8 +277,9 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
   u1 = "file:///home/dfaure/my#%2f";
   url1 = u1;
-  // KDE3: was %2f, Qt-4.0 to 4.4: #/. 4.5: %2f again. 5.0: #/.
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#/") );
+  // KDE3: was %2f, Qt-4.0 to 4.4: #/. 4.5: %2f again. 5.0 to 5.1: #/. 5.2: %2F.
+  // (see also testQUrl)
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%2F") );
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
@@ -285,7 +289,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
 
   u1 = "file:///home/dfaure/my#%23";
   url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my##") ); // correct too, and 'nicer'
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my#%23") ); // KDE4: #%23. Qt 5.0/5.1 had "##", fixed in c615dcc4416.
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
@@ -319,7 +323,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
-  QCOMPARE( url1.ref(), QString("QObject%3A%3Aconnect") );
+  QCOMPARE( url1.ref(), QString("QObject::connect") ); // used to be %3A%3A but there's not point in encoding that here.
   QCOMPARE( url1.htmlRef(), QString("QObject::connect") );
   QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
@@ -329,7 +333,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
-  QCOMPARE( url1.ref(), QString("QObject%3A%3Aconnect") );
+  QCOMPARE( url1.ref(), QString("QObject::connect") ); // see above
   QCOMPARE( url1.htmlRef(), QString("QObject::connect") );
   QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
@@ -339,7 +343,7 @@ void KUrlTest::testSimpleMethods() // to test parsing, mostly
   QVERIFY( url1.hasRef() );
   QVERIFY( url1.hasHTMLRef() );
   QVERIFY( !url1.hasSubUrl() );
-  QCOMPARE( url1.ref(), QString("QObject%3Aconnect") );
+  QCOMPARE( url1.ref(), QString("QObject:connect") ); // see above
   QCOMPARE( url1.htmlRef(), QString("QObject:connect") );
   QCOMPARE( url1.upUrl().url(), QString("file:///opt/kde2/qt2/doc/html/") );
 
@@ -538,7 +542,7 @@ void KUrlTest::testURLsWithoutPath()
   QCOMPARE( waba1.host(), QString( "a" ) );
   QCOMPARE( waba1.port(), 389 );
   QCOMPARE( waba1.path(), QString( "" ) );
-  QCOMPARE( waba1.ref(), QString( "b%3Dc" ) ); // was b=c with KDE3, but the docu says encoded, so encoding the = is ok
+  QCOMPARE( waba1.ref(), QString( "b=c" ) ); // see testSetRef(), this changed over time
   QCOMPARE( waba1.htmlRef(), QString( "b=c" ) );
   QCOMPARE( waba1.query(), QString() );
 
@@ -559,7 +563,7 @@ void KUrlTest::testPathAndQuery()
 #else
   // So we treat it as part of the fragment
   KUrl tobi0("http://some.host.net/path/to/file#foo?bar");
-  QCOMPARE( tobi0.ref(), QString("foo%3Fbar") );
+  QCOMPARE( tobi0.ref(), QString("foo?bar") ); // was foo%3Fbar, but no need to encode it (Qt 5.2)
   QCOMPARE( tobi0.query(), QString() );
   QCOMPARE( tobi0.prettyUrl(), QString("http://some.host.net/path/to/file#foo?bar") );
 #endif
@@ -1229,7 +1233,7 @@ void KUrlTest::testSetEncodedFragment_data()
     QTest::newRow("basic test") << BA("http://www.kde.org") << BA("abc") << BA("http://www.kde.org#abc");
     QTest::newRow("initial url has fragment") << BA("http://www.kde.org#old") << BA("new") << BA("http://www.kde.org#new");
     QTest::newRow("encoded fragment") << BA("http://www.kde.org") << BA("a%20c") << BA("http://www.kde.org#a%20c");
-    QTest::newRow("with #") << BA("http://www.kde.org") << BA("a#b") << BA("http://www.kde.org#a#b");
+    QTest::newRow("with #") << BA("http://www.kde.org") << BA("a#b") << BA("http://www.kde.org#a%23b"); // see c615dcc4416 in qtbase
     QTest::newRow("empty") << BA("http://www.kde.org") << BA("") << BA("http://www.kde.org#");
 }
 
@@ -1255,12 +1259,9 @@ void KUrlTest::testSubURL()
 {
   QString u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref";
   KUrl url1(u1);
-  // KDE3: was #,#,#, Qt-4.0 to 4.4: #,%23,%23 . 4.5: #,#,#, good
-#if QT_VERSION < 0x040500
+  // KDE3: was #,#,#, Qt-4.0 to 4.4: #,%23,%23 . 4.5, 5.0, 5.1: #,#,#
+  // Qt 5.2: #, %23, %23, see c615dcc441 in qtbase for the reasoning. We don't use sub urls anymore anyway.
   QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/%23myref") );
-#else
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/#myref") );
-#endif
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.isLocalFile() );  // Not strictly local!
   QVERIFY( url1.hasSubUrl() );
@@ -1274,9 +1275,6 @@ void KUrlTest::testSubURL()
   QCOMPARE( splitList[1].url(), QString("gzip:/#myref") );
   QCOMPARE( splitList[2].url(), QString("tar:/#myref") );
 
-#if QT_VERSION < 0x040500
-  QSKIP( "Multiple sub urls not supported with Qt < 4.5" );
-#endif
   KUrl rejoined = KUrl::join(splitList);
   QCOMPARE(rejoined.url(), url1.url());
 
@@ -1290,7 +1288,7 @@ void KUrlTest::testSubURL()
 
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/") );
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
@@ -1299,28 +1297,16 @@ void KUrlTest::testSubURL()
 
   u1 = "file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/";
   url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/") );
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
   QVERIFY( url1.htmlRef().isNull() );
   QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/") );
 
-#if 0
-// This URL is broken, '#' should be escaped.
-  u1 = "file:/home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#";
-  url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#") );
-  QVERIFY( !url1.hasRef() );
-  QVERIFY( !url1.hasHTMLRef() );
-  QVERIFY( url1.hasSubUrl() );
-  QVERIFY( url1.htmlRef().isNull() );
-  QCOMPARE( url1.upUrl().url(), QString("file:///home/dfaure/cdrdao-1.1.5/dao/#CdrDriver.cc#") );
-#endif
-
   u1 = "file:/home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README";
   url1 = u1;
-  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/README") );
+  QCOMPARE( url1.url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/README") );
   QVERIFY( url1.hasRef() );
   QVERIFY( !url1.hasHTMLRef() );
   QVERIFY( url1.hasSubUrl() );
@@ -1332,12 +1318,8 @@ void KUrlTest::testSubURL()
   QCOMPARE(url1Splitted[1].url(), QString("gzip:/"));
   QCOMPARE(url1Splitted[2].url(), QString("tar:/README"));
   const KUrl url1Rejoined = KUrl::join(url1Splitted);
-  // Bug fixed in 4.5.1 by Thiago
-#if QT_VERSION < 0x040501
-  QSKIP("Bug in Qt-4.4/4.5-rc1: setEncodedFragment doesn't work if the initial url has no fragment");
-#endif
   QCOMPARE(url1Rejoined.url(), url1.url());
-  QCOMPARE(url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/#tar:/"));
+  QCOMPARE(url1.upUrl().url(), QString("file:///home/dfaure/my%20tar%20file.tgz#gzip:/%23tar:/"));
 
 }
 
