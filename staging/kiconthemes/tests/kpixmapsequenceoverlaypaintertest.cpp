@@ -8,8 +8,6 @@
 #include <QVariant>
 #include <QEvent>
 
-#include <klocalizedstring.h>
-
 
 Q_DECLARE_METATYPE(Qt::Alignment)
 
