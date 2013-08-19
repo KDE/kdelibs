@@ -31,7 +31,7 @@
 #include <QDialog>
 #include "kcookiejar.h"
 
-class KLineEdit;
+class QLineEdit;
 class QPushButton;
 
 class KCookieDetail : public QGroupBox
@@ -49,12 +49,12 @@ private Q_SLOTS:
 private:
     void displayCookieDetails();
 
-    KLineEdit*   m_name;
-    KLineEdit*   m_value;
-    KLineEdit*   m_expires;
-    KLineEdit*   m_domain;
-    KLineEdit*   m_path;
-    KLineEdit*   m_secure;
+    QLineEdit*   m_name;
+    QLineEdit*   m_value;
+    QLineEdit*   m_expires;
+    QLineEdit*   m_domain;
+    QLineEdit*   m_path;
+    QLineEdit*   m_secure;
 
     KHttpCookieList m_cookieList;
     int m_cookieNumber;

@@ -31,10 +31,10 @@
 
 class QLabel;
 class QCheckBox;
+class QLineEdit;
 class QPushButton;
 class QAbstractItemView;
 
-class KLineEdit;
 class KCategorizedView;
 class KCModuleProxy;
 class KCategoryDrawer;
@@ -74,7 +74,7 @@ public:
     class PluginDelegate;
     class DependenciesWidget;
     KPluginSelector *parent;
-    KLineEdit *lineEdit;
+    QLineEdit *lineEdit;
     KCategorizedView *listView;
     KCategoryDrawer *categoryDrawer;
     PluginModel *pluginModel;

@@ -31,6 +31,7 @@
 #include <QAction>
 #include <QBoxLayout>
 #include <QHeaderView>
+#include <QLineEdit>
 #include <QPushButton>
 #include <QTreeView>
 #include <QLabel>
@@ -44,7 +45,6 @@
 #include <kcombobox.h>
 #include <kiconbutton.h>
 #include <klocalizedstring.h>
-#include <klineedit.h>
 #include <kurlrequester.h>
 
 //#include <ktar.h>
@@ -85,10 +85,10 @@ namespace Kross {
                 return type == ActionType ? action->isEnabled() : collection->isEnabled();
             }
 
-            KLineEdit* nameedit;
-            KLineEdit* textedit;
-            KLineEdit* commentedit;
-            KLineEdit* iconedit;
+            QLineEdit* nameedit;
+            QLineEdit* textedit;
+            QLineEdit* commentedit;
+            QLineEdit* iconedit;
             KComboBox* interpreteredit;
             KUrlRequester* fileedit;
             //QCheckBox* enabledcheckbox;
@@ -147,7 +147,7 @@ void ActionCollectionEditor::initGui()
 
     QLabel* namelabel = new QLabel(i18n("Name:"), w);
     gridlayout->addWidget(namelabel, 0, 0);
-    d->nameedit = new KLineEdit(w);
+    d->nameedit = new QLineEdit(w);
     namelabel->setBuddy(d->nameedit);
     d->nameedit->setText( d->name() );
     d->nameedit->setEnabled(false);
@@ -155,14 +155,14 @@ void ActionCollectionEditor::initGui()
 
     QLabel* textlabel = new QLabel(i18n("Text:"), w);
     gridlayout->addWidget(textlabel, 1, 0);
-    d->textedit = new KLineEdit(w);
+    d->textedit = new QLineEdit(w);
     textlabel->setBuddy(d->textedit);
     d->textedit->setText( d->text() );
     gridlayout->addWidget(d->textedit, 1, 1);
 
     QLabel* commentlabel = new QLabel(i18n("Comment:"), w);
     gridlayout->addWidget(commentlabel, 2, 0);
-    d->commentedit = new KLineEdit(w);
+    d->commentedit = new QLineEdit(w);
     commentlabel->setBuddy(d->commentedit);
     d->commentedit->setText( d->description() );
     gridlayout->addWidget(d->commentedit, 2, 1);
@@ -173,7 +173,7 @@ void ActionCollectionEditor::initGui()
     QHBoxLayout* iconlayout = new QHBoxLayout();
     iconlayout->setMargin(0);
     iconbox->setLayout(iconlayout);
-    d->iconedit = new KLineEdit(iconbox);
+    d->iconedit = new QLineEdit(iconbox);
     iconlabel->setBuddy(d->iconedit);
     d->iconedit->setText( d->iconName() );
     iconlayout->addWidget(d->iconedit, 1);

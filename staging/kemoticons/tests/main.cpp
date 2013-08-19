@@ -21,7 +21,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <qstring.h>
-#include <klineedit.h>
+#include <qlineedit.h>
 #include <qlabel.h>
 #include <kcombobox.h>
 #include <QVBoxLayout>
@@ -38,7 +38,7 @@ class KEmoTest : public QWidget
         void changeTheme(const QString&theme);
     
     private:
-        KLineEdit kl;
+        QLineEdit kl;
         QLabel lb;
         KEmoticons e;
         KEmoticonsTheme t;

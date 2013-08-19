@@ -98,7 +98,7 @@ KFilePlaceEditDialog::KFilePlaceEditDialog(bool allowGlobal, const QUrl& url,
                                  "that will help you remember what this entry refers to. "
                                  "If you do not enter a label, it will be derived from "
                                  "the location's URL.</qt>");
-    m_labelEdit = new KLineEdit(this);
+    m_labelEdit = new QLineEdit(this);
     layout->addRow(i18n("L&abel:"), m_labelEdit);
     m_labelEdit->setText(label);
     m_labelEdit->setPlaceholderText(i18n("Enter descriptive label here"));

@@ -27,6 +27,7 @@
 #include <QVBoxLayout>
 #include <QList>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMenu>
 #include <QStandardPaths>
 
@@ -38,7 +39,6 @@
 #include <kdirwatch.h>
 #include <kjobwidgets.h>
 #include <klocalizedstring.h>
-#include <klineedit.h>
 #include <kmessagebox.h>
 #include <kprotocolinfo.h>
 #include <kprotocolmanager.h>
@@ -475,11 +475,8 @@ void KNewFileMenuPrivate::executeRealFileOrDir(const KNewFileMenuSingleton::Entr
     QVBoxLayout *layout = new QVBoxLayout;
     QLabel *label = new QLabel(entry.comment, fileDialog);
 
-    // We don't set the text of lineEdit in its constructor because the clear button would not be shown then.
-    // It seems that setClearButtonShown(true) must be called *before* the text is set to make it work.
-    // TODO: should probably be investigated and fixed in KLineEdit.
-    KLineEdit *lineEdit = new KLineEdit(fileDialog);
-    lineEdit->setClearButtonShown(true);
+    QLineEdit *lineEdit = new QLineEdit(fileDialog);
+    lineEdit->setClearButtonEnabled(true);
     lineEdit->setText(text);
 
     _k_slotTextChanged(text);
@@ -1045,11 +1042,8 @@ void KNewFileMenu::createDirectory()
     QVBoxLayout *layout = new QVBoxLayout;
     QLabel *label = new QLabel(i18n("Create new folder in:\n%1", baseUrl.toDisplayString(QUrl::PreferLocalFile)), fileDialog);
 
-    // We don't set the text of lineEdit in its constructor because the clear button would not be shown then.
-    // It seems that setClearButtonShown(true) must be called *before* the text is set to make it work.
-    // TODO: should probably be investigated and fixed in KLineEdit.
-    KLineEdit *lineEdit = new KLineEdit(fileDialog);
-    lineEdit->setClearButtonShown(true);
+    QLineEdit *lineEdit = new QLineEdit(fileDialog);
+    lineEdit->setClearButtonEnabled(true);
     lineEdit->setText(name);
 
     d->_k_slotTextChanged(name); // have to save string in d->m_text in case user does not touch dialog

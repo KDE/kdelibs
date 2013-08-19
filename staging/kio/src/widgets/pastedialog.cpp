@@ -19,13 +19,13 @@
 #include "pastedialog.h"
 
 #include <kcombobox.h>
-#include <klineedit.h>
 #include <klocalizedstring.h>
 
 #include <QApplication>
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
 #include <QClipboard>
 
 KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
@@ -48,7 +48,7 @@ KIO::PasteDialog::PasteDialog( const QString &caption, const QString &label,
     m_label = new QLabel( label, frame );
     layout->addWidget( m_label );
 
-    m_lineEdit = new KLineEdit( value, frame );
+    m_lineEdit = new QLineEdit( value, frame );
     layout->addWidget( m_lineEdit );
 
     m_lineEdit->setFocus();

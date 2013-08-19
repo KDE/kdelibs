@@ -28,7 +28,6 @@ target_link_libraries(kcmutils
     ${KCoreAddons_LIBRARIES}
     ${KWidgetsAddons_LIBRARIES}
     KI18n
-    KCompletion
     KIconThemes     # KIconLoader
     ItemViews       # KWidgetItemDelegate
     XmlGui          # KAboutApplicationDialog

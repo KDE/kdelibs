@@ -22,10 +22,10 @@
 #include "klinkdialog_p.h"
 
 #include <klocalizedstring.h>
-#include <klineedit.h>
 
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QGridLayout>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -39,9 +39,9 @@ class KLinkDialogPrivate
 {
 public:
     QLabel *textLabel;
-    KLineEdit *textLineEdit;
+    QLineEdit *textLineEdit;
     QLabel *linkUrlLabel;
-    KLineEdit *linkUrlLineEdit;
+    QLineEdit *linkUrlLineEdit;
     QDialogButtonBox *buttonBox;
 };
 //@endcond
@@ -58,11 +58,11 @@ KLinkDialog::KLinkDialog(QWidget *parent)
     QGridLayout *grid = new QGridLayout;
 
     d->textLabel = new QLabel(i18n("Link Text:"), this);
-    d->textLineEdit = new KLineEdit(this);
-    d->textLineEdit->setClearButtonShown(true);
+    d->textLineEdit = new QLineEdit(this);
+    d->textLineEdit->setClearButtonEnabled(true);
     d->linkUrlLabel = new QLabel(i18n("Link URL:"), this);
-    d->linkUrlLineEdit = new KLineEdit(this);
-    d->linkUrlLineEdit->setClearButtonShown(true);
+    d->linkUrlLineEdit = new QLineEdit(this);
+    d->linkUrlLineEdit->setClearButtonEnabled(true);
 
     grid->addWidget(d->textLabel, 0, 0);
     grid->addWidget(d->textLineEdit, 0, 1);

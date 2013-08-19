@@ -4,7 +4,7 @@
 #include <qwidget.h>
 #include <kio/job.h>
 
-class KLineEdit;
+class QLineEdit;
 class QLabel;
 class KFileItem;
 
@@ -21,7 +21,7 @@ private Q_SLOTS:
     void slotFailed();
 
 private:
-    KLineEdit *m_url;
+    QLineEdit *m_url;
     QLabel *m_preview;
 };
 

@@ -4,10 +4,10 @@
 #include <QLabel>
 #include <QApplication>
 #include <QLayout>
+#include <QLineEdit>
 #include <QPushButton>
 
 #include <QDebug>
-#include <klineedit.h>
 #include <kiconloader.h>
 #include <kio/previewjob.h>
 
@@ -17,7 +17,7 @@ PreviewTest::PreviewTest()
     :QWidget()
 {
     QGridLayout *layout = new QGridLayout(this);
-    m_url = new KLineEdit(this);
+    m_url = new QLineEdit(this);
 
     QString path;
     KIconLoader().loadMimeTypeIcon("video-x-generic", KIconLoader::Desktop, 256,

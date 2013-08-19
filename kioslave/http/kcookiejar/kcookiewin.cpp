@@ -41,6 +41,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <QDialogButtonBox>
 #include <QLabel>
 #include <QLayout>
+#include <QLineEdit>
 #include <QGroupBox>
 #include <QPushButton>
 #include <QRadioButton>
@@ -50,7 +51,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <kwindowsystem.h>
 #include <klocalizedstring.h>
-#include <klineedit.h>
 #include <kusertimestamp.h>
 
 enum {
@@ -259,7 +259,7 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
 
     QLabel* label = new QLabel( i18n("Name:"), this );
     grid->addWidget( label, 1, 0 );
-    m_name = new KLineEdit( this );
+    m_name = new QLineEdit( this );
     m_name->setReadOnly( true );
     m_name->setMaximumWidth( fontMetrics().maxWidth() * 25 );
     grid->addWidget( m_name, 1 ,1 );
@@ -267,35 +267,35 @@ KCookieDetail::KCookieDetail( KHttpCookieList cookieList, int cookieCount,
     //Add the value
     label = new QLabel( i18n("Value:"), this );
     grid->addWidget( label, 2, 0 );
-    m_value = new KLineEdit( this );
+    m_value = new QLineEdit( this );
     m_value->setReadOnly( true );
     m_value->setMaximumWidth( fontMetrics().maxWidth() * 25 );
     grid->addWidget( m_value, 2, 1);
 
     label = new QLabel( i18n("Expires:"), this );
     grid->addWidget( label, 3, 0 );
-    m_expires = new KLineEdit( this );
+    m_expires = new QLineEdit( this );
     m_expires->setReadOnly( true );
     m_expires->setMaximumWidth(fontMetrics().maxWidth() * 25 );
     grid->addWidget( m_expires, 3, 1);
 
     label = new QLabel( i18n("Path:"), this );
     grid->addWidget( label, 4, 0 );
-    m_path = new KLineEdit( this );
+    m_path = new QLineEdit( this );
     m_path->setReadOnly( true );
     m_path->setMaximumWidth( fontMetrics().maxWidth() * 25 );
     grid->addWidget( m_path, 4, 1);
 
     label = new QLabel( i18n("Domain:"), this );
     grid->addWidget( label, 5, 0 );
-    m_domain = new KLineEdit( this );
+    m_domain = new QLineEdit( this );
     m_domain->setReadOnly( true );
     m_domain->setMaximumWidth( fontMetrics().maxWidth() * 25 );
     grid->addWidget( m_domain, 5, 1);
 
     label = new QLabel( i18n("Exposure:"), this );
     grid->addWidget( label, 6, 0 );
-    m_secure = new KLineEdit( this );
+    m_secure = new QLineEdit( this );
     m_secure->setReadOnly( true );
     m_secure->setMaximumWidth( fontMetrics().maxWidth() * 25 );
     grid->addWidget( m_secure, 6, 1 );

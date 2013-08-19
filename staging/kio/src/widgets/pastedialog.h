@@ -22,7 +22,7 @@
 #include <QDialog>
 
 class KComboBox;
-class KLineEdit;
+class QLineEdit;
 class QLabel;
 
 namespace KIO {
@@ -48,7 +48,7 @@ private Q_SLOTS:
 
 private:
     QLabel* m_label;
-    KLineEdit* m_lineEdit;
+    QLineEdit* m_lineEdit;
     KComboBox* m_comboBox;
     bool m_clipboardChanged;
 

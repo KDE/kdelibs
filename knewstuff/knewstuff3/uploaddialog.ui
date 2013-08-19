@@ -71,9 +71,9 @@
         </spacer>
        </item>
        <item row="2" column="1">
-        <widget class="KLineEdit" name="password">
-         <property name="passwordMode">
-          <bool>true</bool>
+        <widget class="QLineEdit" name="password">
+         <property name="echoMode">
+          <bool>QLineEdit::Password</bool>
          </property>
         </widget>
        </item>
@@ -113,7 +113,7 @@
         <widget class="QComboBox" name="providerComboBox"/>
        </item>
        <item row="1" column="1">
-        <widget class="KLineEdit" name="username"/>
+        <widget class="QLineEdit" name="username"/>
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="label_9">
@@ -268,7 +268,7 @@
         </widget>
        </item>
        <item row="3" column="2" colspan="2">
-        <widget class="KLineEdit" name="mVersionEdit"/>
+        <widget class="QLineEdit" name="mVersionEdit"/>
        </item>
        <item row="1" column="1">
         <widget class="QLabel" name="label_4">
@@ -312,7 +312,7 @@
         </widget>
        </item>
        <item row="1" column="2" colspan="2">
-        <widget class="KLineEdit" name="mNameEdit">
+        <widget class="QLineEdit" name="mNameEdit">
          <property name="toolTip">
           <string>Name of the file as it will appear on the website</string>
          </property>
@@ -484,7 +484,7 @@
            </widget>
           </item>
           <item row="1" column="1" colspan="2">
-           <widget class="KLineEdit" name="priceReasonLineEdit"/>
+           <widget class="QLineEdit" name="priceReasonLineEdit"/>
           </item>
          </layout>
         </widget>
@@ -795,11 +795,6 @@
    <class>KTitleWidget</class>
    <extends>QWidget</extends>
    <header>ktitlewidget.h</header>
-  </customwidget>
-  <customwidget>
-   <class>KLineEdit</class>
-   <extends>QLineEdit</extends>
-   <header>klineedit.h</header>
   </customwidget>
   <customwidget>
    <class>KComboBox</class>

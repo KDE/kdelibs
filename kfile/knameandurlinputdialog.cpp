@@ -39,7 +39,7 @@ public:
     /**
      * The line edit widget for the fileName
      */
-    KLineEdit *m_leName;
+    QLineEdit *m_leName;
     /**
      * The URL requester for the URL :)
      */
@@ -64,7 +64,7 @@ KNameAndUrlInputDialog::KNameAndUrlInputDialog(const QString& nameLabel, const Q
     formLayout->setMargin(0);
 
     // First line: filename
-    d->m_leName = new KLineEdit(this);
+    d->m_leName = new QLineEdit(this);
     d->m_leName->setMinimumWidth(d->m_leName->sizeHint().width() * 3);
     d->m_leName->setSelection(0, d->m_leName->text().length()); // autoselect
     connect(d->m_leName, SIGNAL(textChanged(QString)),

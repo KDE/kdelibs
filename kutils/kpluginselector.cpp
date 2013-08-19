@@ -26,6 +26,7 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
+#include <QLineEdit>
 #include <QPainter>
 #include <QBoxLayout>
 #include <QApplication>
@@ -36,7 +37,6 @@
 #include <QStyleOptionViewItemV4>
 
 #include <QDebug>
-#include <klineedit.h>
 #include <kurllabel.h>
 #include <kcmoduleinfo.h>
 #include <kcmoduleproxy.h>
@@ -256,8 +256,8 @@ KPluginSelector::KPluginSelector(QWidget *parent)
     layout->setMargin(0);
     setLayout(layout);
 
-    d->lineEdit = new KLineEdit(this);
-    d->lineEdit->setClearButtonShown(true);
+    d->lineEdit = new QLineEdit(this);
+    d->lineEdit->setClearButtonEnabled(true);
     d->lineEdit->setPlaceholderText(i18n("Search Plugins"));
     d->listView = new KCategorizedView(this);
     d->listView->setVerticalScrollMode(QListView::ScrollPerPixel);

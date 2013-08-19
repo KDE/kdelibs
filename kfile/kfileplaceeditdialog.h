@@ -29,8 +29,8 @@
 
 class QCheckBox;
 class QDialogButtonBox;
+class QLineEdit;
 class KIconButton;
-class KLineEdit;
 class KUrlRequester;
 
 /**
@@ -129,9 +129,9 @@ private:
      */
     KUrlRequester * m_urlEdit;
     /**
-     * The KLineEdit used for editing the label
+     * The QLineEdit used for editing the label
      */
-    KLineEdit     * m_labelEdit;
+    QLineEdit     * m_labelEdit;
     /**
      * The KIconButton to configure the icon
      */
