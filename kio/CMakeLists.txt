@@ -184,7 +184,7 @@ target_include_directories(kio PRIVATE
    ${kiocore_BINARY_DIR}/..   # kio_version.h
 )
 
-target_link_libraries(kio KIOWidgets KIOCore ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets KIconThemes XmlGui ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDECORE_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash)
+target_link_libraries(kio KIOWidgets KIOCore ${KCoreAddons_LIBRARIES} KI18n KCompletion KJobWidgets KIconThemes XmlGui ${KWidgetsAddons_LIBRARIES} ${KWindowSystem_LIBRARIES} ${KDE4_KDECORE_LIBS} ${ZLIB_LIBRARY} Qt5::Network Qt5::Xml Qt5::Svg ${X11_LIBRARIES} ${KIO_EXTRA_LIBS} KWallet KCrash KTextWidgets Qt5::X11Extras)
 target_link_libraries(kio LINK_INTERFACE_LIBRARIES KIOWidgets KIOCore Qt5::Network Qt5::Xml Qt5::Widgets )
 
 if(ACL_FOUND)
