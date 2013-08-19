@@ -498,7 +498,7 @@ void KBuildSycoca::save(QDataStream* str)
    // Write XDG_DATA_DIRS
    (*str) << QStandardPaths::standardLocations(QStandardPaths::GenericDataLocation).join(QString(QLatin1Char(':')));
    (*str) << newTimestamp;
-   (*str) << QLocale().language();
+   (*str) << QLocale::languageToString(QLocale().language());
    // This makes it possible to trigger a ksycoca update for all users (KIOSK feature)
    (*str) << calcResourceHash("kde5/services", "update_ksycoca");
    (*str) << (*g_allResourceDirs);
