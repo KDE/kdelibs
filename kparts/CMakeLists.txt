@@ -33,7 +33,7 @@ generate_export_header(kparts)
 
 target_link_libraries(kparts  kio ${KCoreAddons_LIBRARIES} KI18n XmlGui KWindowSystem KNotifications KIconThemes KTextWidgets)
 target_include_directories(kparts PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>")
-target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio Qt5::Widgets)
+target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES kio Qt5::Widgets XmlGui)
 if(HAVE_NEPOMUK)
   target_link_libraries(kparts  nepomuk nepomukutils)
   target_link_libraries(kparts  LINK_INTERFACE_LIBRARIES nepomuk nepomukutils )
