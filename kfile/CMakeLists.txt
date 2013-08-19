@@ -49,6 +49,7 @@ target_link_libraries(kfile
    KIconThemes
    XmlGui
    KNotifications
+   ItemViews
 )
 
 if(X11_Xrender_FOUND)

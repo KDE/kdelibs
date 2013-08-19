@@ -26,7 +26,6 @@
 #include <QGridLayout>
 #include <QPushButton>
 
-#include <klocalizedstring.h>
 #include <QUrl>
 
 #include <kfiletreeview.h>
