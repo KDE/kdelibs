@@ -72,6 +72,7 @@ target_link_libraries(kprintutils
   LINK_PRIVATE
     ${KDE4_KPARTS_LIBS}
     ${KCoreAddons_LIBRARIES}
+    KI18n
 )
 set_target_properties(kprintutils PROPERTIES
                       VERSION ${GENERIC_LIB_VERSION}

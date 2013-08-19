@@ -609,6 +609,7 @@ target_link_libraries(khtml
   ${KWindowSystem_LIBRARIES}
   KWallet
   Qt5::X11Extras
+  XmlGui
   KDE4Support # KComponentData (TODO port to KAboutData
 )
 if (KJS_DEBUGGER)
@@ -759,7 +760,7 @@ install(TARGETS khtmlimagepart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
 kde4_add_plugin(khtmladaptorpart khtmladaptorpart.cpp)
 
-target_link_libraries(khtmladaptorpart ${KDE4_KPARTS_LIBS} KJS)
+target_link_libraries(khtmladaptorpart ${KDE4_KPARTS_LIBS} KJS KI18n XmlGui)
 
 install(TARGETS khtmladaptorpart DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -777,7 +778,7 @@ if(NOT MSVC)
 
     kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
-    target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml )
+    target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml XmlGui)
 
     ########### next target ###############
 
@@ -788,7 +789,7 @@ if(NOT MSVC)
 
     kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
-    target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml )
+    target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml XmlGui)
 
     ########### next target ###############
 endif(NOT MSVC)

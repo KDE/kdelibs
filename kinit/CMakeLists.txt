@@ -124,11 +124,11 @@ qt5_generate_dbus_interface(klauncher_adaptor.h org.kde.KLauncher.xml)
 kde4_add_kdeinit_executable( klauncher NOGUI ${klauncher_KDEINIT_SRCS})
 set_target_properties(kdeinit_klauncher PROPERTIES DEFINE_SYMBOL MAKE_KLAUNCHER)
 
-target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} ${KCoreAddons_LIBRARIES} KCrash)
+target_link_libraries(kdeinit_klauncher  ${KDE4_KIO_LIBS} ${X11_LIBRARIES} ${KCoreAddons_LIBRARIES} KCrash KI18n KWindowSystem)
 
 install(TARGETS kdeinit_klauncher ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-target_link_libraries( klauncher kdeinit_klauncher )
+target_link_libraries( klauncher kdeinit_klauncher)
 install(TARGETS klauncher DESTINATION ${LIBEXEC_INSTALL_DIR} )
 
 ########### start_kdeinit ###############

@@ -32,7 +32,7 @@ include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/../css
 )
 kde4_add_unit_test( khtmlparttest khtmlparttest.cpp )
-target_link_libraries( khtmlparttest Qt5::Test khtml Qt5::Widgets)
+target_link_libraries( khtmlparttest Qt5::Test khtml Qt5::Widgets XmlGui)
 
 # msvc linker doesn't like "#define protected public"
 if(NOT MSVC)
@@ -45,7 +45,7 @@ if(NOT MSVC)
     qt5_add_resources( khtmltest_SRCS testkhtml.qrc )
     add_executable(khtmltest ${khtmltest_SRCS} )
     ecm_mark_as_test(khtmltest)
-    target_link_libraries( khtmltest khtml )
+    target_link_libraries( khtmltest khtml XmlGui)
 
     ########### next target ###############
 endif(NOT MSVC)

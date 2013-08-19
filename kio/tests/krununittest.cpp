@@ -23,8 +23,6 @@
 
 #include "krununittest.h"
 
-#include <config-kdeui.h>
-
 #include <QtTest/QtTest>
 
 QTEST_GUILESS_MAIN(KRunUnitTest)

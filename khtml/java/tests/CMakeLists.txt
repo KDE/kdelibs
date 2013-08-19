@@ -19,6 +19,8 @@ target_link_libraries(testserver
     ${KDE4_KPARTS_LIBS}
     KInterProcessWindowing
     KDE4Support
+    KI18n
+    XmlGui
 )
 
 

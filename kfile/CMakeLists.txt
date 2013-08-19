@@ -46,6 +46,9 @@ target_link_libraries(kfile
    ${KCoreAddons_LIBRARIES}
    ${KWidgetsAddons_LIBRARIES}
    KI18n
+   KIconThemes
+   XmlGui
+   KNotifications
 )
 
 if(X11_Xrender_FOUND)

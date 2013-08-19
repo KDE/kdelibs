@@ -58,6 +58,11 @@ target_link_libraries(knewstuff3
     ${LibAttica_LIBRARIES}
     ${KArchive_LIBRARIES}
     KI18n
+    ItemViews
+    KIconThemes
+    KWindowSystem
+    KTextWidgets
+    XmlGui
 )
 
 target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui KCompletion Qt5::Widgets)

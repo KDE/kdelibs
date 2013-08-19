@@ -52,7 +52,7 @@ static QRgb qt_colorref2qrgb(COLORREF col)
     return qRgb(GetRValue(col),GetGValue(col),GetBValue(col));
 }
 #endif
-#include <config-kdeui.h>
+#include <config-kde4support.h>
 #if HAVE_X11
 #include <X11/Xlib.h>
 #include <xcb/xcb.h>
@@ -735,7 +735,7 @@ void KGlobalSettings::Private::_k_slotNotifyChange(int changeType, int arg)
 
 // Set by KApplication
 #pragma message("FIXME: KWidgets depends on KApplication")
-KDEUI_EXPORT QString kde_overrideStyle;
+KDE4SUPPORT_EXPORT QString kde_overrideStyle;
 
 void KGlobalSettings::Private::applyGUIStyle()
 {

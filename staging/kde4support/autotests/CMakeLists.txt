@@ -6,7 +6,7 @@ include_directories("${CMAKE_CURRENT_BINARY_DIR}/../../..")
 macro(KDE4SUPPORT_EXECUTABLE_TESTS)
     foreach(_testname ${ARGN})
         add_executable(${_testname} ${_testname}.cpp)
-        target_link_libraries(${_testname} KDE4Support Qt5::Core)
+        target_link_libraries(${_testname} KDE4Support Qt5::Core Qt5::Widgets)
         ecm_mark_as_test(${_testname})
     endforeach()
 endmacro()
@@ -17,12 +17,13 @@ macro(KDE4SUPPORT_UNIT_TESTS)
     add_test(kde4support-${_testname} ${_testname})
     target_link_libraries(${_testname}
        KDE4Support
+       Qt5::Widgets
        Qt5::Test
        Qt5::Network
+       Qt5::Concurrent
        kdecore
        ${KCoreAddons_LIBRARIES}
        KI18n
-       kdeui
        KCrash
        KDE4Attic
        KIOCore
@@ -61,12 +62,12 @@ kde4support_unit_tests(
   klockfiletest
   kurltest
   kfilemetainfotest
+  kglobalsettingstest
 )
 
-
-# Helper for klockfiletest
 kde4support_executable_tests(
-  klockfile_testlock
+  klockfile_testlock         # Helper for klockfiletest
+  kglobalsettingsclient      # Helper for kglobalsettingstest
 )
 
 ########### module for klibloadertest ###############

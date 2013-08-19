@@ -14,7 +14,6 @@ add_subdirectory( tests )
 
 ########### next target ###############
 set(kdeui_LIB_SRCS
- util/kglobalsettings.cpp
 )
 
 
@@ -112,7 +111,6 @@ install(TARGETS kdeui EXPORT kdelibsLibraryTargets ${INSTALL_TARGETS_DEFAULT_ARG
 
 install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
- util/kglobalsettings.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
 install( FILES

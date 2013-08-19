@@ -8,10 +8,12 @@ parts.cpp
 notepad.cpp
 )
 
+set(PARTS_TEST_LIBRARY_DEPENDENCIES ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} KI18n XmlGui)
+
 
 kde4_add_executable(kpartstest TEST ${kpartstest_SRCS})
 
-target_link_libraries(kpartstest  ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
+target_link_libraries(kpartstest ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 
 ########### next target ###############
@@ -25,7 +27,7 @@ notepad.cpp
 
 kde4_add_executable(normalktmtest TEST ${normalktmtest_SRCS})
 
-target_link_libraries(normalktmtest  ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
+target_link_libraries(normalktmtest ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 
 ########### next target ###############
@@ -35,12 +37,12 @@ partviewer.cpp
 )
 
 kde4_add_executable(partviewer TEST ${partviewer_SRCS})
-target_link_libraries(partviewer  ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
+target_link_libraries(partviewer ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 ########### test prog for "open or save question" ###############
 
 kde4_add_executable(openorsavequestion TEST openorsavequestion.cpp)
-target_link_libraries(openorsavequestion  ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
+target_link_libraries(openorsavequestion ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 ########### next target ###############
 
@@ -48,7 +50,7 @@ set(spellcheckplugin_PART_SRCS plugin_spellcheck.cpp )
 
 kde4_add_plugin(spellcheckplugin ${spellcheckplugin_PART_SRCS})
 
-target_link_libraries(spellcheckplugin Qt5::Test ${KDE4_KPARTS_LIBS} )
+target_link_libraries(spellcheckplugin ${PARTS_TEST_LIBRARY_DEPENDENCIES} )
 
 install(TARGETS spellcheckplugin  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -60,7 +62,7 @@ set(notepadpart_PART_SRCS notepad.cpp)
 
 kde4_add_plugin(notepadpart ${notepadpart_PART_SRCS})
 
-target_link_libraries(notepadpart  ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
+target_link_libraries(notepadpart ${PARTS_TEST_LIBRARY_DEPENDENCIES})
 
 install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -70,7 +72,7 @@ install(TARGETS notepadpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 MACRO(KPARTS_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                kde4_add_unit_test(${_testname} TESTNAME kparts-${_testname} ${_testname}.cpp)
-               target_link_libraries(${_testname} ${KDE4_KPARTS_LIBS} Qt5::Test ${KCoreAddons_LIBRARIES} )
+               target_link_libraries(${_testname} ${PARTS_TEST_LIBRARY_DEPENDENCIES})
        ENDFOREACH(_testname)
 ENDMACRO(KPARTS_UNIT_TESTS)
 MACRO(KPARTS_EXECUTABLE_TESTS)

@@ -111,6 +111,7 @@ set(libkde4support_SRCS
     kdeui/ktextbrowser.cpp
     kdeui/keditlistbox.cpp
     kdeui/knuminput.cpp
+    kdeui/kglobalsettings.cpp
 
     kio/kfilemetainfowidget.cpp
     kio/kdiskfreespace.cpp
@@ -194,7 +195,6 @@ target_link_libraries(KDE4Support
    KCrash
    ${KWidgetsAddons_LIBRARIES}
    KConfigWidgets
-   kdeui
    kio
    ${KIO_EXTRA_LIBS}
    KI18n
@@ -202,6 +202,7 @@ target_link_libraries(KDE4Support
    ${X11_LIBRARIES}
    KCompletion
    KDE4Attic
+   KNotifications
 )
 
 if(NOT KIO_NO_NEPOMUK)
@@ -310,6 +311,7 @@ install(FILES
     kdeui/knuminput.h
     kdeui/kviewstatesaver.h
     kdeui/kxerrorhandler.h
+    kdeui/kglobalsettings.h
     ${CMAKE_CURRENT_BINARY_DIR}/kde4support_export.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdemacros.h
     ${CMAKE_CURRENT_BINARY_DIR}/kdeversion.h

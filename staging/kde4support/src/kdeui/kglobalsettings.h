@@ -18,7 +18,7 @@
 #ifndef _KGLOBALSETTINGS_H
 #define _KGLOBALSETTINGS_H
 
-#include <kdeui_export.h>
+#include <kde4support_export.h>
 #include <ksharedconfig.h>
 #include <QtCore/QObject>
 #include <QtCore/QString>
@@ -48,7 +48,7 @@ class QWidget;
  *
  * @author David Faure \<faure@kde.org\>
  */
-class KDEUI_EXPORT KGlobalSettings : public QObject
+class KDE4SUPPORT_EXPORT KGlobalSettings : public QObject
 {
     Q_OBJECT
 
@@ -99,7 +99,7 @@ public:
      * @deprecated since 5.0, use QApplication::startDragDistance() instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDEUI_DEPRECATED int dndEventDelay();
+    static KDE4SUPPORT_DEPRECATED int dndEventDelay();
 #endif
 
     /**
@@ -110,7 +110,7 @@ public:
      * @deprecated since 5.0, use style->styleHint(QStyle::SH_ItemView_ActivateItemOnSingleClick, 0, widget)
      **/
 #ifndef KDE_NO_DEPRECATED
-    static KDEUI_DEPRECATED bool singleClick();
+    static KDE4SUPPORT_DEPRECATED bool singleClick();
 #endif
 
     /**
@@ -197,7 +197,7 @@ public:
      * @return the user's desktop directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DesktopLocation).
      */
-    static KDEUI_DEPRECATED QString desktopPath();
+    static KDE4SUPPORT_DEPRECATED QString desktopPath();
 
     /**
      * The path to the autostart directory of the current user.
@@ -210,35 +210,35 @@ public:
      * @return the path of the document directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation).
      */
-    static KDEUI_DEPRECATED QString documentPath();
+    static KDE4SUPPORT_DEPRECATED QString documentPath();
 
     /**
      * The path where music are stored of the current user.
      * @return the path of the music directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MusicLocation).
      */
-    static KDEUI_DEPRECATED QString musicPath();
+    static KDE4SUPPORT_DEPRECATED QString musicPath();
 
     /**
      * The path where videos are stored of the current user.
      * @return the path of the video directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::MoviesLocation).
      */
-    static KDEUI_DEPRECATED QString videosPath();
+    static KDE4SUPPORT_DEPRECATED QString videosPath();
 
     /**
      * The path where download are stored of the current user.
      * @return the path of the download directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::DownloadLocation).
      */
-    static KDEUI_DEPRECATED QString downloadPath();
+    static KDE4SUPPORT_DEPRECATED QString downloadPath();
 
     /**
      * The path where pictures are stored of the current user.
      * @return the path of the pictures directory
      * @deprecated since 5.0, use QStandardPaths::writableLocation(QStandardPaths::PicturesLocation).
      */
-    static KDEUI_DEPRECATED QString picturesPath();
+    static KDE4SUPPORT_DEPRECATED QString picturesPath();
 
     /**
      * The default color to use for inactive titles.
@@ -248,7 +248,7 @@ public:
      * KColorScheme(QPalette::Inactive, KColorScheme::Window).background().color(),
      * otherwise please read the setting from kdeglobals/WM/inactiveBackground directly
      */
-    static KDEUI_DEPRECATED QColor inactiveTitleColor();
+    static KDE4SUPPORT_DEPRECATED QColor inactiveTitleColor();
 
     /**
      * The default color to use for inactive texts.
@@ -258,7 +258,7 @@ public:
      * KColorScheme(QPalette::Inactive, KColorScheme::Window).foreground().color()
      * otherwise please read the setting from kdeglobals/WM/inactiveForeground directly
      */
-    static KDEUI_DEPRECATED QColor inactiveTextColor();
+    static KDE4SUPPORT_DEPRECATED QColor inactiveTextColor();
 
     /**
      * The default color to use for active titles.
@@ -268,7 +268,7 @@ public:
      * KColorScheme(QPalette::Active, KColorScheme::Window).background(KColorScheme::ActiveBackground).color(),
      * otherwise please read the setting from kdeglobals/WM/activeBackground directly
      */
-    static KDEUI_DEPRECATED QColor activeTitleColor();
+    static KDE4SUPPORT_DEPRECATED QColor activeTitleColor();
 
     /**
      * The default color to use for active texts.
@@ -278,7 +278,7 @@ public:
      * KColorScheme(QPalette::Active, KColorScheme::Window).foreground(KColorScheme::ActiveText).color(),
      * otherwise please read the setting from kdeglobals/WM/activeForeground directly
      */
-    static KDEUI_DEPRECATED QColor activeTextColor();
+    static KDE4SUPPORT_DEPRECATED QColor activeTextColor();
 
     /**
      * Returns the contrast for borders.
@@ -286,7 +286,7 @@ public:
      *         contrast)
      * @deprecated since 5.0, use KColorScheme::contrast()
      */
-    static KDEUI_DEPRECATED int contrast();
+    static KDE4SUPPORT_DEPRECATED int contrast();
 
     /**
      * Returns the contrast for borders as a floating point value.
@@ -296,7 +296,7 @@ public:
      *         contrast)
      * @deprecated since 5.0, use KColorScheme::contrastF(config)
      */
-    static KDEUI_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KDE4SUPPORT_DEPRECATED qreal contrastF(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Returns if the sorted column in a K3ListView shall be drawn with a
@@ -394,7 +394,7 @@ public:
      *         start at (0,0).
      * @deprecated use QApplication::desktop()->screenGeometry(QCursor::pos())
      */
-    static KDEUI_DEPRECATED QRect splashScreenDesktopGeometry();
+    static KDE4SUPPORT_DEPRECATED QRect splashScreenDesktopGeometry();
 
     /**
      * This function returns the desktop geometry for an application that needs
@@ -412,7 +412,7 @@ public:
      *         start at (0,0).
      * @deprecated use QApplication::desktop()->screenGeometry(point)
      */
-    static KDEUI_DEPRECATED QRect desktopGeometry(const QPoint& point);
+    static KDE4SUPPORT_DEPRECATED QRect desktopGeometry(const QPoint& point);
 
     /**
      * This function returns the desktop geometry for an application that needs
@@ -427,7 +427,7 @@ public:
      *         start at (0,0).
      * @deprecated use QApplication::desktop()->screenGeometry(w)
      */
-    static KDEUI_DEPRECATED QRect desktopGeometry(const QWidget* w);
+    static KDE4SUPPORT_DEPRECATED QRect desktopGeometry(const QWidget* w);
 
     /**
      * This function determines if the user wishes to see icons on the
@@ -436,7 +436,7 @@ public:
      * @return Returns true if user wants to show icons.
      * @deprecated since 5.0, use style->styleHint(QStyle::SH_DialogButtonBox_ButtonsHaveIcons, 0, widget);
      */
-    static KDEUI_DEPRECATED bool showIconsOnPushButtons();
+    static KDE4SUPPORT_DEPRECATED bool showIconsOnPushButtons();
 
     /**
      * Returns true, if user visible strings should be sorted in a natural way:
@@ -487,7 +487,7 @@ public:
      * @deprecated since 5.0, use KProtocolInfo::showFilePreview
      */
 #ifndef KDE_NO_DEPRECATED
-    static KDEUI_DEPRECATED bool showFilePreview(const QUrl &);
+    static KDE4SUPPORT_DEPRECATED bool showFilePreview(const QUrl &);
 #endif
 
     /**
@@ -517,7 +517,7 @@ public:
      * 
      * @deprecated since 5.0, use KColorScheme::createApplicationPalette()
      */
-    static KDEUI_DEPRECATED QPalette createApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KDE4SUPPORT_DEPRECATED QPalette createApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * Used to obtain the QPalette that will be used to set the application palette.
@@ -534,7 +534,7 @@ public:
      * 
      * @deprecated since 5.0, use KColorScheme::createApplicationPalette()
      */
-    static KDEUI_DEPRECATED QPalette createNewApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
+    static KDE4SUPPORT_DEPRECATED QPalette createNewApplicationPalette(const KSharedConfigPtr &config = KSharedConfigPtr());
 
     /**
      * An identifier for change signals.
@@ -556,7 +556,7 @@ public:
      * @li emitChange(IconChanged, group) is now KIconLoader::emitChange(group)
      * TODO: complete this list
      */
-    static KDEUI_DEPRECATED void emitChange(ChangeType changeType, int arg = 0);
+    static KDE4SUPPORT_DEPRECATED void emitChange(ChangeType changeType, int arg = 0);
 
     /**
      * Return the KGlobalSettings singleton.
@@ -665,7 +665,7 @@ Q_SIGNALS:
      *
      * @deprecated since 5.0, use KIconLoader::iconChanged(int)
      */
-    KDEUI_DEPRECATED void iconChanged(int group);
+    KDE4SUPPORT_DEPRECATED void iconChanged(int group);
 
     /**
      * Emitted when the cursor theme has been changed.
