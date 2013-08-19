@@ -716,7 +716,11 @@ struct SharedMemory
                 const void *const sourcePage = page(currentPage);
                 void *const destinationPage = page(freeSpot);
 
-                if(KDE_ISUNLIKELY(!sourcePage || !destinationPage)) {
+                // We always move used pages into previously-found empty spots,
+                // so check ordering as well for logic errors.
+                if(KDE_ISUNLIKELY(!sourcePage || !destinationPage ||
+                            sourcePage < destinationPage))
+                {
                     throw KSDCCorrupted();
                 }
 
