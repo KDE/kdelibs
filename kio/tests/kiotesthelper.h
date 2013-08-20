@@ -81,7 +81,7 @@ static void createTestSymlink( const QString& path, const QByteArray& target = "
         qFatal("couldn't create symlink: %s", strerror(errno));
     QT_STATBUF buf;
     QVERIFY( QT_LSTAT( QFile::encodeName( path ), &buf ) == 0 );
-    QVERIFY( buf.st_mode & QT_STAT_LNK );
+    QVERIFY( (buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK );
     //qDebug( "symlink %s created", qPrintable( path ) );
     QVERIFY( QFileInfo( path ).isSymLink() );
 }

@@ -1316,7 +1316,7 @@ void KUrlCompletion::postProcessMatch(QString* pMatch) const
 
             QT_STATBUF sbuff;
             if (QT_STAT(file.constData(), &sbuff) == 0) {
-                if (sbuff.st_mode & QT_STAT_DIR)
+                if ((sbuff.st_mode & QT_STAT_MASK) == QT_STAT_DIR)
                     pMatch->append(QLatin1Char('/'));
             } else {
                 //qDebug() << "Could not stat file" << copy;

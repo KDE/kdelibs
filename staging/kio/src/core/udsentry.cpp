@@ -82,7 +82,7 @@ long long UDSEntry::numberValue(uint field, long long defaultValue) const
 
 bool UDSEntry::isDir() const
 {
-    return numberValue(UDS_FILE_TYPE) & QT_STAT_DIR;
+    return (numberValue(UDS_FILE_TYPE) & QT_STAT_MASK) == QT_STAT_DIR;
 }
 
 bool UDSEntry::isLink() const

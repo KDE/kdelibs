@@ -96,9 +96,9 @@ static void createTestSymlink( const QString& path )
         if ( !ok )
             qFatal("couldn't create symlink: %s", strerror(errno));
         QVERIFY( QT_LSTAT( QFile::encodeName( path ), &buf ) == 0 );
-        QVERIFY( buf.st_mode & QT_STAT_LNK );
+        QVERIFY( (buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK );
     } else {
-        QVERIFY( buf.st_mode & QT_STAT_LNK );
+        QVERIFY( (buf.st_mode & QT_STAT_MASK) == QT_STAT_LNK );
     }
     qDebug( "symlink %s created", qPrintable( path ) );
     QVERIFY( QFileInfo( path ).isSymLink() );

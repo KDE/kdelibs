@@ -699,7 +699,7 @@ bool KZip::openArchive( QIODevice::OpenMode mode )
             else
             {
             QString symlink;
-        if (access & QT_STAT_LNK) {
+        if ((access & QT_STAT_MASK) == QT_STAT_LNK) {
             symlink = QFile::decodeName(pfi.guessed_symlink);
         }
                 QDateTime mtime = KArchivePrivate::time_tToDateTime(pfi.mtime);

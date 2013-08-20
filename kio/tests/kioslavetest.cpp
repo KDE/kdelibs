@@ -362,7 +362,7 @@ void KioslaveTest::printUDSEntry( const KIO::UDSEntry & entry )
                 {
                     mode_t mode = (mode_t)entry.numberValue(*it);
                     qDebug() << "File Type : " << mode;
-                    if ( mode & QT_STAT_DIR )
+                    if ( (mode & QT_STAT_MASK) == QT_STAT_DIR )
                     {
                         qDebug() << "is a dir";
                     }

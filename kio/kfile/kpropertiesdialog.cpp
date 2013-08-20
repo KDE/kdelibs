@@ -896,7 +896,7 @@ KFilePropsPlugin::KFilePropsPlugin( KPropertiesDialog *_props )
         directory += ')';
     }
 
-    if (!isTrash && (bDesktopFile || (mode & QT_STAT_DIR))
+    if (!isTrash && (bDesktopFile || ((mode & QT_STAT_MASK) == QT_STAT_DIR))
         && !d->bMultiple // not implemented for multiple
         && enableIconButton()) // #56857
     {
@@ -1487,7 +1487,7 @@ void KFilePropsPlugin::applyIconChanges()
     if ( url.isLocalFile()) {
         QString path;
 
-        if (properties->item().mode() & QT_STAT_DIR)
+        if ((properties->item().mode() & QT_STAT_MASK) == QT_STAT_DIR)
         {
             path = url.toLocalFile() + QString::fromLatin1("/.directory");
             // don't call updateUrl because the other tabs (i.e. permissions)

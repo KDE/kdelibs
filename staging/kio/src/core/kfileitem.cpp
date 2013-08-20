@@ -468,7 +468,7 @@ QString KFileItemPrivate::parsePermissions(mode_t perm) const
     if (m_bLink)
         buffer[0] = 'l';
     else if (m_fileMode != KFileItem::Unknown) {
-        if (m_fileMode & QT_STAT_DIR)
+        if ((m_fileMode & QT_STAT_MASK) == QT_STAT_DIR)
             buffer[0] = 'd';
 #ifdef Q_OS_UNIX
         else if (S_ISSOCK(m_fileMode))
@@ -1022,7 +1022,7 @@ QStringList KFileItem::overlays() const
         names.append("emblem-symbolic-link");
     }
 
-    if ( !(d->m_fileMode & QT_STAT_DIR) // Locked dirs have a special icon, use the overlay for files only
+    if ( ((d->m_fileMode & QT_STAT_MASK) != QT_STAT_DIR) // Locked dirs have a special icon, use the overlay for files only
          && !isReadable()) {
         names.append("object-locked");
     }
@@ -1052,7 +1052,7 @@ QStringList KFileItem::overlays() const
     }
 
 #ifndef Q_OS_WIN
-    if( (d->m_fileMode & QT_STAT_DIR) && d->m_bIsLocalUrl)
+    if( ((d->m_fileMode & QT_STAT_MASK) == QT_STAT_DIR) && d->m_bIsLocalUrl)
     {
         if (KSambaShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ) ||
             KNFSShare::instance()->isDirectoryShared( d->m_url.toLocalFile() ))
@@ -1165,7 +1165,7 @@ bool KFileItem::isDir() const
         //qDebug() << d << url() << "can't say -> false";
         return false; // can't say for sure, so no
     }
-    return d->m_fileMode & QT_STAT_DIR;
+    return (d->m_fileMode & QT_STAT_MASK) == QT_STAT_DIR;
 }
 
 bool KFileItem::isFile() const
@@ -1219,7 +1219,7 @@ QString KFileItem::getStatusBarInfo() const
     {
         text += i18n(" (Points to %1)", targetUrl().toDisplayString());
     }
-    else if ( d->m_fileMode & QT_STAT_REG )
+    else if ( (d->m_fileMode & QT_STAT_MASK) == QT_STAT_REG )
     {
         text += QString(" (%1, %2)").arg( comment, KIO::convertSize( size() ) );
     }
@@ -1654,7 +1654,7 @@ bool KFileItem::isRegularFile() const
     if (!d)
         return false;
 
-    return d->m_fileMode & QT_STAT_REG;
+    return (d->m_fileMode & QT_STAT_MASK) == QT_STAT_REG;
 }
 
 QDebug operator<<(QDebug stream, const KFileItem& item)

@@ -1247,7 +1247,7 @@ void KRun::init()
 
 #if 0 // removed for KF5 (for portability). Reintroduce a bool or flag if useful.
     // Did we already get the information that it is a directory ?
-    if (d->m_mode & QT_STAT_DIR) {
+    if ((d->m_mode & QT_STAT_MASK) == QT_STAT_DIR) {
         mimeTypeDetermined("inode/directory");
         return;
     }
@@ -1416,7 +1416,7 @@ void KRun::slotStatResult(KJob * job)
 
         const KIO::UDSEntry entry = statJob->statResult();
         const mode_t mode = entry.numberValue(KIO::UDSEntry::UDS_FILE_TYPE);
-        if (mode & QT_STAT_DIR) {
+        if ((mode & QT_STAT_MASK) == QT_STAT_DIR) {
             d->m_bIsDirectory = true; // it's a dir
         }
         else {

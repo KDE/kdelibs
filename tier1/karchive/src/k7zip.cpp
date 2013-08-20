@@ -2636,7 +2636,7 @@ bool K7Zip::openArchive( QIODevice::OpenMode mode )
         bool symlink = false;
         if (fileInfo->attributes & FILE_ATTRIBUTE_UNIX_EXTENSION) {
             access = fileInfo->attributes >> 16;
-            if (access & QT_STAT_LNK) {
+            if ((access & QT_STAT_MASK) == QT_STAT_LNK) {
                 symlink = true;
             }
         } else {
