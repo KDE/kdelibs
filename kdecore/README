@@ -1,4 +1,0 @@
-This is the KDE "core" library.  The kdecore library provides basic non user
-interface functionality. The classes in this library should not require linkage
-to QtGui or any other library that requires a graphical interface.
-
