@@ -26,6 +26,7 @@
 #include <QWidgetAction>
 
 #include "kdatetime.h"
+#include "klocalizedstring.h"
 #include "ksystemtimezone.h"
 #include "kcalendarsystem.h"
 #include "kcombobox.h"
