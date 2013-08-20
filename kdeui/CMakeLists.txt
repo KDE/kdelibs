@@ -113,7 +113,3 @@ install( FILES
  ${CMAKE_CURRENT_BINARY_DIR}/kdeui_export.h
  DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel )
 
-install( FILES
-    KDEUIMacros.cmake
-    kde4uic.cmake
-    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )

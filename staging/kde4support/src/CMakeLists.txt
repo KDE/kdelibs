@@ -354,3 +354,8 @@ install(FILES
     kio/kfilewrite.desktop
     DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel
 )
+
+install( FILES
+    KDEUIMacros.cmake
+    kde4uic.cmake
+    DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
