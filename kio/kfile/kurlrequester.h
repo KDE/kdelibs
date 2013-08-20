@@ -24,7 +24,7 @@
 #include <QUrl>
 
 #include <keditlistwidget.h>
-#include "kio_export.h"
+#include <kio/kio_export.h>
 
 class KComboBox;
 class KFileDialog;
