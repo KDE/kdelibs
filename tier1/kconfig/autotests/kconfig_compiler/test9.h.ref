@@ -4,6 +4,7 @@
 #define TEST9_H
 
 #include <kconfigskeleton.h>
+#include <QCoreApplication>
 #include <QDebug>
 
 #include <qdir.h>

@@ -6,6 +6,7 @@
 #include <test8a.h>
 
 #include <kconfigskeleton.h>
+#include <QCoreApplication>
 #include <QDebug>
 
 class Test8b : public Test8a

@@ -4,6 +4,7 @@
 #define TESTDPOINTER_H
 
 #include <kconfigskeleton.h>
+#include <QCoreApplication>
 #include <QDebug>
 
 class TestDPointerPrivate;

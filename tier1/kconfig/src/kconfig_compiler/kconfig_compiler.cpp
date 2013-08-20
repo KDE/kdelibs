@@ -1122,10 +1122,11 @@ QString translatedString(const CfgConfig &cfg, const QString &string, const QStr
     switch (cfg.translationSystem) {
     case CfgConfig::QtTranslation:
         if (!context.isEmpty()) {
-            result+= "/*: " + context + " */ QObject::tr(";
+            result+= "/*: " + context + " */ QCoreApplication::translate(\"";
         } else {
-            result+= "QObject::tr(";
+            result+= "QCoreApplication::translate(\"";
         }
+        result+= cfg.className + "\", ";
         break;
 
     case CfgConfig::KdeTranslation:
@@ -1545,6 +1546,7 @@ int main( int argc, char **argv )
     h << "#include <kconfigskeleton.h>" << endl;
   }
 
+  h << "#include <QCoreApplication>" << endl;
   h << "#include <QDebug>" << endl << endl;
 
   // Includes

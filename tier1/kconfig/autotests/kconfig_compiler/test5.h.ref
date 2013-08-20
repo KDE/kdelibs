@@ -4,6 +4,7 @@
 #define TEST5_H
 
 #include <kconfigskeleton.h>
+#include <QCoreApplication>
 #include <QDebug>
 
 class Test5 : public KConfigSkeleton

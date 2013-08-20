@@ -4,6 +4,7 @@
 #define TESTSIGNAL_H
 
 #include <kconfigskeleton.h>
+#include <QCoreApplication>
 #include <QDebug>
 
 class TestSignal : public KConfigSkeleton

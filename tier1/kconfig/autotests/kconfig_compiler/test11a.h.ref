@@ -7,6 +7,7 @@
 
 #include <qglobal.h>
 #include <kconfigskeleton.h>
+#include <QCoreApplication>
 #include <QDebug>
 
 #include "test11_types.h"

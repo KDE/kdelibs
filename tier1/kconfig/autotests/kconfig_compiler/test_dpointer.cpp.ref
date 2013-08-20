@@ -72,17 +72,17 @@ TestDPointer::TestDPointer(  )
   setCurrentGroup( QLatin1String( "General" ) );
 
   d->autoSaveItem = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "Auto Save" ), d->autoSave, false );
-  d->autoSaveItem->setLabel( QObject::tr("Enable automatic saving of calendar") );
-  d->autoSaveItem->setWhatsThis( QObject::tr("WhatsThis text for AutoSave option") );
+  d->autoSaveItem->setLabel( QCoreApplication::translate("TestDPointer", "Enable automatic saving of calendar") );
+  d->autoSaveItem->setWhatsThis( QCoreApplication::translate("TestDPointer", "WhatsThis text for AutoSave option") );
   addItem( d->autoSaveItem, QLatin1String( "AutoSave" ) );
   d->autoSaveIntervalItem = new KConfigSkeleton::ItemInt( currentGroup(), QLatin1String( "Auto Save Interval" ), d->autoSaveInterval, 10 );
-  d->autoSaveIntervalItem->setLabel( QObject::tr("Auto Save Interval") );
+  d->autoSaveIntervalItem->setLabel( QCoreApplication::translate("TestDPointer", "Auto Save Interval") );
   addItem( d->autoSaveIntervalItem, QLatin1String( "AutoSaveInterval" ) );
   d->confirmItem = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "Confirm Deletes" ), d->confirm, true );
-  d->confirmItem->setLabel( QObject::tr("Confirm deletes") );
+  d->confirmItem->setLabel( QCoreApplication::translate("TestDPointer", "Confirm deletes") );
   addItem( d->confirmItem, QLatin1String( "Confirm" ) );
   d->archiveFileItem = new KConfigSkeleton::ItemString( currentGroup(), QLatin1String( "Archive File" ), d->archiveFile );
-  d->archiveFileItem->setLabel( QObject::tr("Archive File") );
+  d->archiveFileItem->setLabel( QCoreApplication::translate("TestDPointer", "Archive File") );
   addItem( d->archiveFileItem, QLatin1String( "ArchiveFile" ) );
   QList<KConfigSkeleton::ItemEnum::Choice> valuesDestination;
   {
@@ -98,33 +98,33 @@ TestDPointer::TestDPointer(  )
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl1");
-    choice.label = QObject::tr("Argl1 Label");
+    choice.label = QCoreApplication::translate("TestDPointer", "Argl1 Label");
     valuesDestination.append( choice );
   }
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl2");
-    choice.whatsThis = QObject::tr("Argl2 Whatsthis");
+    choice.whatsThis = QCoreApplication::translate("TestDPointer", "Argl2 Whatsthis");
     valuesDestination.append( choice );
   }
   {
     KConfigSkeleton::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl3");
-    choice.label = QObject::tr("Argl3 Label");
-    choice.whatsThis = QObject::tr("Argl3 Whatsthis");
+    choice.label = QCoreApplication::translate("TestDPointer", "Argl3 Label");
+    choice.whatsThis = QCoreApplication::translate("TestDPointer", "Argl3 Whatsthis");
     valuesDestination.append( choice );
   }
   d->destinationItem = new KConfigSkeleton::ItemEnum( currentGroup(), QLatin1String( "Destination" ), d->destination, valuesDestination, EnumDestination::standardDestination );
-  d->destinationItem->setLabel( QObject::tr("New Events/Todos Should") );
+  d->destinationItem->setLabel( QCoreApplication::translate("TestDPointer", "New Events/Todos Should") );
   addItem( d->destinationItem, QLatin1String( "Destination" ) );
 
   setCurrentGroup( QLatin1String( "Views" ) );
 
   d->hourSizeItem = new KConfigSkeleton::ItemInt( currentGroup(), QLatin1String( "Hour Size" ), d->hourSize, 10 );
-  d->hourSizeItem->setLabel( QObject::tr("Hour Size") );
+  d->hourSizeItem->setLabel( QCoreApplication::translate("TestDPointer", "Hour Size") );
   addItem( d->hourSizeItem, QLatin1String( "HourSize" ) );
   d->selectionStartsEditorItem = new KConfigSkeleton::ItemBool( currentGroup(), QLatin1String( "SelectionStartsEditor" ), d->selectionStartsEditor, false );
-  d->selectionStartsEditorItem->setLabel( QObject::tr("Time range selection in agenda view starts event editor") );
+  d->selectionStartsEditorItem->setLabel( QCoreApplication::translate("TestDPointer", "Time range selection in agenda view starts event editor") );
   addItem( d->selectionStartsEditorItem, QLatin1String( "SelectionStartsEditor" ) );
 
   setCurrentGroup( QLatin1String( "KOrganizer Plugins" ) );
@@ -134,22 +134,22 @@ TestDPointer::TestDPointer(  )
   defaultSelectedPlugins.append( QString::fromUtf8( "webexport" ) );
 
   d->selectedPluginsItem = new KConfigSkeleton::ItemStringList( currentGroup(), QLatin1String( "SelectedPlugins" ), d->selectedPlugins, defaultSelectedPlugins );
-  d->selectedPluginsItem->setLabel( QObject::tr("SelectedPlugins") );
+  d->selectedPluginsItem->setLabel( QCoreApplication::translate("TestDPointer", "SelectedPlugins") );
   addItem( d->selectedPluginsItem, QLatin1String( "SelectedPlugins" ) );
 
   setCurrentGroup( QLatin1String( "Colors" ) );
 
   d->highlightColorItem = new KConfigSkeleton::ItemColor( currentGroup(), QLatin1String( "Highlight Color" ), d->highlightColor, QColor( 100, 100, 255 ) );
-  d->highlightColorItem->setLabel( QObject::tr("Highlight color") );
+  d->highlightColorItem->setLabel( QCoreApplication::translate("TestDPointer", "Highlight color") );
   addItem( d->highlightColorItem, QLatin1String( "HighlightColor" ) );
   d->agendaBgColorItem = new KConfigSkeleton::ItemColor( currentGroup(), QLatin1String( "Agenda Background Color" ), d->agendaBgColor, QColor( 255, 255, 255 ) );
-  d->agendaBgColorItem->setLabel( QObject::tr("Agenda view background color") );
+  d->agendaBgColorItem->setLabel( QCoreApplication::translate("TestDPointer", "Agenda view background color") );
   addItem( d->agendaBgColorItem, QLatin1String( "AgendaBgColor" ) );
 
   setCurrentGroup( QLatin1String( "Fonts" ) );
 
   d->timeBarFontItem = new KConfigSkeleton::ItemFont( currentGroup(), QLatin1String( "TimeBar Font" ), d->timeBarFont );
-  d->timeBarFontItem->setLabel( QObject::tr("Time bar") );
+  d->timeBarFontItem->setLabel( QCoreApplication::translate("TestDPointer", "Time bar") );
   addItem( d->timeBarFontItem, QLatin1String( "TimeBarFont" ) );
 }
 

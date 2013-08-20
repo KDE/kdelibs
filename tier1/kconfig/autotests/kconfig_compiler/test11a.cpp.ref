@@ -9,17 +9,17 @@ Test11a::Test11a(  )
   setCurrentGroup( QLatin1String( "General" ) );
 
   mAutoSaveItem = new MyPrefs::ItemBool( currentGroup(), QLatin1String( "Auto Save" ), mAutoSave, false );
-  mAutoSaveItem->setLabel( QObject::tr("Enable automatic saving of calendar") );
-  mAutoSaveItem->setWhatsThis( QObject::tr("WhatsThis text for AutoSave option") );
+  mAutoSaveItem->setLabel( QCoreApplication::translate("Test11a", "Enable automatic saving of calendar") );
+  mAutoSaveItem->setWhatsThis( QCoreApplication::translate("Test11a", "WhatsThis text for AutoSave option") );
   addItem( mAutoSaveItem, QLatin1String( "AutoSave" ) );
   mAutoSaveIntervalItem = new MyPrefs::ItemInt( currentGroup(), QLatin1String( "Auto Save Interval" ), mAutoSaveInterval, 10 );
-  mAutoSaveIntervalItem->setLabel( QObject::tr("Auto Save Interval") );
+  mAutoSaveIntervalItem->setLabel( QCoreApplication::translate("Test11a", "Auto Save Interval") );
   addItem( mAutoSaveIntervalItem, QLatin1String( "AutoSaveInterval" ) );
   mConfirmItem = new MyPrefs::ItemBool( currentGroup(), QLatin1String( "Confirm Deletes" ), mConfirm, true );
-  mConfirmItem->setLabel( QObject::tr("Confirm deletes") );
+  mConfirmItem->setLabel( QCoreApplication::translate("Test11a", "Confirm deletes") );
   addItem( mConfirmItem, QLatin1String( "Confirm" ) );
   mArchiveFileItem = new MyPrefs::ItemString( currentGroup(), QLatin1String( "Archive File" ), mArchiveFile );
-  mArchiveFileItem->setLabel( QObject::tr("Archive File") );
+  mArchiveFileItem->setLabel( QCoreApplication::translate("Test11a", "Archive File") );
   addItem( mArchiveFileItem, QLatin1String( "ArchiveFile" ) );
   QList<MyPrefs::ItemEnum::Choice> valuesDestination;
   {
@@ -35,33 +35,33 @@ Test11a::Test11a(  )
   {
     MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl1");
-    choice.label = QObject::tr("Argl1 Label");
+    choice.label = QCoreApplication::translate("Test11a", "Argl1 Label");
     valuesDestination.append( choice );
   }
   {
     MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl2");
-    choice.whatsThis = QObject::tr("Argl2 Whatsthis");
+    choice.whatsThis = QCoreApplication::translate("Test11a", "Argl2 Whatsthis");
     valuesDestination.append( choice );
   }
   {
     MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("argl3");
-    choice.label = QObject::tr("Argl3 Label");
-    choice.whatsThis = QObject::tr("Argl3 Whatsthis");
+    choice.label = QCoreApplication::translate("Test11a", "Argl3 Label");
+    choice.whatsThis = QCoreApplication::translate("Test11a", "Argl3 Whatsthis");
     valuesDestination.append( choice );
   }
   mDestinationItem = new MyPrefs::ItemEnum( currentGroup(), QLatin1String( "Destination" ), mDestination, valuesDestination, EnumDestination::standardDestination );
-  mDestinationItem->setLabel( QObject::tr("New Events/Todos Should") );
+  mDestinationItem->setLabel( QCoreApplication::translate("Test11a", "New Events/Todos Should") );
   addItem( mDestinationItem, QLatin1String( "Destination" ) );
 
   setCurrentGroup( QLatin1String( "Views" ) );
 
   mHourSizeItem = new MyPrefs::ItemInt( currentGroup(), QLatin1String( "Hour Size" ), mHourSize, 10 );
-  mHourSizeItem->setLabel( QObject::tr("Hour Size") );
+  mHourSizeItem->setLabel( QCoreApplication::translate("Test11a", "Hour Size") );
   addItem( mHourSizeItem, QLatin1String( "HourSize" ) );
   mSelectionStartsEditorItem = new MyPrefs::ItemBool( currentGroup(), QLatin1String( "SelectionStartsEditor" ), mSelectionStartsEditor, false );
-  mSelectionStartsEditorItem->setLabel( QObject::tr("Time range selection in agenda view starts event editor") );
+  mSelectionStartsEditorItem->setLabel( QCoreApplication::translate("Test11a", "Time range selection in agenda view starts event editor") );
   addItem( mSelectionStartsEditorItem, QLatin1String( "SelectionStartsEditor" ) );
 
   setCurrentGroup( QLatin1String( "KOrganizer Plugins" ) );
@@ -71,22 +71,22 @@ Test11a::Test11a(  )
   defaultSelectedPlugins.append( QString::fromUtf8( "webexport" ) );
 
   mSelectedPluginsItem = new MyPrefs::ItemStringList( currentGroup(), QLatin1String( "SelectedPlugins" ), mSelectedPlugins, defaultSelectedPlugins );
-  mSelectedPluginsItem->setLabel( QObject::tr("SelectedPlugins") );
+  mSelectedPluginsItem->setLabel( QCoreApplication::translate("Test11a", "SelectedPlugins") );
   addItem( mSelectedPluginsItem, QLatin1String( "SelectedPlugins" ) );
 
   setCurrentGroup( QLatin1String( "Colors" ) );
 
   mHighlightColorItem = new MyPrefs::ItemColor( currentGroup(), QLatin1String( "Highlight Color" ), mHighlightColor, QColor( 100, 100, 255 ) );
-  mHighlightColorItem->setLabel( QObject::tr("Highlight color") );
+  mHighlightColorItem->setLabel( QCoreApplication::translate("Test11a", "Highlight color") );
   addItem( mHighlightColorItem, QLatin1String( "HighlightColor" ) );
   mAgendaBgColorItem = new MyPrefs::ItemColor( currentGroup(), QLatin1String( "Agenda Background Color" ), mAgendaBgColor, QColor( 255, 255, 255 ) );
-  mAgendaBgColorItem->setLabel( QObject::tr("Agenda view background color") );
+  mAgendaBgColorItem->setLabel( QCoreApplication::translate("Test11a", "Agenda view background color") );
   addItem( mAgendaBgColorItem, QLatin1String( "AgendaBgColor" ) );
 
   setCurrentGroup( QLatin1String( "Fonts" ) );
 
   mTimeBarFontItem = new MyPrefs::ItemFont( currentGroup(), QLatin1String( "TimeBar Font" ), mTimeBarFont );
-  mTimeBarFontItem->setLabel( QObject::tr("Time bar") );
+  mTimeBarFontItem->setLabel( QCoreApplication::translate("Test11a", "Time bar") );
   addItem( mTimeBarFontItem, QLatin1String( "TimeBarFont" ) );
 
   setCurrentGroup( QLatin1String( "Email" ) );
@@ -95,18 +95,18 @@ Test11a::Test11a(  )
   {
     MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("sendmail");
-    choice.label = /*: @option */ QObject::tr("Sendmail");
+    choice.label = /*: @option */ QCoreApplication::translate("Test11a", "Sendmail");
     valuesEmailClient.append( choice );
   }
   {
     MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("kmail");
-    choice.label = /*: @option */ QObject::tr("KMail");
+    choice.label = /*: @option */ QCoreApplication::translate("Test11a", "KMail");
     valuesEmailClient.append( choice );
   }
   mEmailClientItem = new MyPrefs::ItemEnum( currentGroup(), QLatin1String( "EmailClient" ), mEmailClient, valuesEmailClient, kmail );
-  mEmailClientItem->setLabel( /*: @label */ QObject::tr("Email client") );
-  mEmailClientItem->setWhatsThis( /*: @info:whatsthis */ QObject::tr("<para>How to send email when an email alarm is triggered.<list><item>KMail: The email is sent automatically via <application>KMail</application>. <application>KMail</application> is started first if necessary.</item><item>Sendmail: The email is sent automatically. This option will only work if your system is configured to use <application>sendmail</application> or a sendmail compatible mail transport agent.</item></list></para>") );
+  mEmailClientItem->setLabel( /*: @label */ QCoreApplication::translate("Test11a", "Email client") );
+  mEmailClientItem->setWhatsThis( /*: @info:whatsthis */ QCoreApplication::translate("Test11a", "<para>How to send email when an email alarm is triggered.<list><item>KMail: The email is sent automatically via <application>KMail</application>. <application>KMail</application> is started first if necessary.</item><item>Sendmail: The email is sent automatically. This option will only work if your system is configured to use <application>sendmail</application> or a sendmail compatible mail transport agent.</item></list></para>") );
   addItem( mEmailClientItem, QLatin1String( "EmailClient" ) );
   QList<MyPrefs::ItemEnum::Choice> valuesDefaultReminderUnits;
   {
@@ -117,12 +117,12 @@ Test11a::Test11a(  )
   {
     MyPrefs::ItemEnum::Choice choice;
     choice.name = QLatin1String("HoursMinutes");
-    choice.label = /*: @option */ QObject::tr("Hours/Minutes");
+    choice.label = /*: @option */ QCoreApplication::translate("Test11a", "Hours/Minutes");
     valuesDefaultReminderUnits.append( choice );
   }
   mDefaultReminderUnitsItem = new MyPrefs::ItemEnum( currentGroup(), QLatin1String( "RemindUnits" ), mDefaultReminderUnits, valuesDefaultReminderUnits, TimePeriod::HoursMinutes );
-  mDefaultReminderUnitsItem->setLabel( /*: @label */ QObject::tr("Reminder units") );
-  mDefaultReminderUnitsItem->setWhatsThis( /*: @info:whatsthis */ QObject::tr("Default reminder time units in the alarm edit dialog.") );
+  mDefaultReminderUnitsItem->setLabel( /*: @label */ QCoreApplication::translate("Test11a", "Reminder units") );
+  mDefaultReminderUnitsItem->setWhatsThis( /*: @info:whatsthis */ QCoreApplication::translate("Test11a", "Default reminder time units in the alarm edit dialog.") );
   addItem( mDefaultReminderUnitsItem, QLatin1String( "DefaultReminderUnits" ) );
 
   setCurrentGroup( QLatin1String( "QueueRates" ) );
@@ -150,16 +150,16 @@ Test11a::Test11a(  )
   QList<int> defaultqueueRate;
 
   mQueueRateItem[0] = new MyPrefs::ItemIntList( currentGroup(), QLatin1String( "EmptyingRate 0" ), mQueueRate[0], defaultRate[0] );
-  mQueueRateItem[0]->setLabel( QObject::tr("EmptyingRate queueRate$(QueueIndex)") );
+  mQueueRateItem[0]->setLabel( QCoreApplication::translate("Test11a", "EmptyingRate queueRate$(QueueIndex)") );
   addItem( mQueueRateItem[0], QLatin1String( "queueRate0" ) );
   mQueueRateItem[1] = new MyPrefs::ItemIntList( currentGroup(), QLatin1String( "EmptyingRate 1" ), mQueueRate[1], defaultqueueRate );
-  mQueueRateItem[1]->setLabel( QObject::tr("EmptyingRate queueRate$(QueueIndex)") );
+  mQueueRateItem[1]->setLabel( QCoreApplication::translate("Test11a", "EmptyingRate queueRate$(QueueIndex)") );
   addItem( mQueueRateItem[1], QLatin1String( "queueRate1" ) );
   mQueueRateItem[2] = new MyPrefs::ItemIntList( currentGroup(), QLatin1String( "EmptyingRate 2" ), mQueueRate[2], defaultRate[2] );
-  mQueueRateItem[2]->setLabel( QObject::tr("EmptyingRate queueRate$(QueueIndex)") );
+  mQueueRateItem[2]->setLabel( QCoreApplication::translate("Test11a", "EmptyingRate queueRate$(QueueIndex)") );
   addItem( mQueueRateItem[2], QLatin1String( "queueRate2" ) );
   mShowQueueTunerItem = new MyPrefs::ItemBool( currentGroup(), QLatin1String( "ShowQueueTuner" ), mShowQueueTuner, false );
-  mShowQueueTunerItem->setLabel( QObject::tr("ShowQueueTuner") );
+  mShowQueueTunerItem->setLabel( QCoreApplication::translate("Test11a", "ShowQueueTuner") );
   addItem( mShowQueueTunerItem, QLatin1String( "ShowQueueTuner" ) );
 }
 

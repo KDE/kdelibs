@@ -5,6 +5,7 @@
 
 #include <qglobal.h>
 #include <kconfigskeleton.h>
+#include <QCoreApplication>
 #include <QDebug>
 
 namespace TestNameSpace {
