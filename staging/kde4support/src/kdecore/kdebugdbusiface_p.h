@@ -21,7 +21,6 @@
 #ifndef KDEBUGDBUSIFACE_H
 #define KDEBUGDBUSIFACE_H
 
-#include <kdecore_export.h>
 #include <QtCore/qobject.h>
 
 /**
