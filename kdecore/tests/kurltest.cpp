@@ -234,6 +234,9 @@ void KUrlTest::testIsLocalFile()
   local_file_5a.setPath("c:/foo?bar");
   QCOMPARE( local_file_5a.url(), QString("file:///c:/foo%3Fbar") );
 #endif
+
+  KUrl scummos("inf://localhost/test.txt");
+  QVERIFY(!scummos.isLocalFile());
 }
 
 void KUrlTest::testSimpleMethods() // to test parsing, mostly
