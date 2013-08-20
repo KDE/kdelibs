@@ -922,12 +922,6 @@ bool KCalendarSystem::setDateIsoWeek(QDate &date, int year, int isoWeekNumber, i
     return false;
 }
 
-// Deprecated
-bool KCalendarSystem::setYMD(QDate &date, int year, int month, int day) const
-{
-    return setDate(date, year, month, day);
-}
-
 // NOT VIRTUAL - If override needed use shared-d
 void KCalendarSystem::getDate(const QDate date, int *year, int *month, int *day) const
 {
@@ -1489,115 +1483,6 @@ QString KCalendarSystem::weekDayName(const QDate &date, WeekDayNameFormat format
     }
 
     return QString();
-}
-
-QString KCalendarSystem::yearString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::Year, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::Year, KLocale::LongNumber);
-    }
-}
-
-QString KCalendarSystem::monthString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::Month, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::Month, KLocale::LongNumber);
-    }
-}
-
-QString KCalendarSystem::dayString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::Day, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::Day, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::yearInEraString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::YearInEra, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::YearInEra, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::dayOfYearString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::DayOfYear, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::DayOfYear, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::dayOfWeekString(const QDate &date) const
-{
-    return formatDate(date, KLocale::DayOfWeek, KLocale::ShortNumber);
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::weekNumberString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::Week, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::Week, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::monthsInYearString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::MonthsInYear, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::MonthsInYear, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::weeksInYearString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::WeeksInYear, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::WeeksInYear, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::daysInYearString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::DaysInYear, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::DaysInYear, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::daysInMonthString(const QDate &date, StringFormat format) const
-{
-    if (format == ShortFormat) {
-        return formatDate(date, KLocale::DaysInMonth, KLocale::ShortNumber);
-    } else {
-        return formatDate(date, KLocale::DaysInMonth, KLocale::LongNumber);
-    }
-}
-
-// NOT VIRTUAL - If override needed use shared-d
-QString KCalendarSystem::daysInWeekString(const QDate &date) const
-{
-    return formatDate(date, KLocale::DaysInWeek, KLocale::ShortNumber);
 }
 
 int KCalendarSystem::yearStringToInteger(const QString &yearString, int &readLength) const

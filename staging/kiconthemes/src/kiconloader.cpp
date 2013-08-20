@@ -1617,6 +1617,7 @@ KIconLoader *KIconLoader::global()
     return globalIconLoader();
 }
 
+#ifndef KDE_NO_DEPRECATED
 void KIconLoader::newIconLoader()
 {
     if ( global() == this) {
@@ -1626,6 +1627,7 @@ void KIconLoader::newIconLoader()
     reconfigure(objectName());
     emit iconLoaderSettingsChanged();
 }
+#endif
 
 void KIconLoader::emitChange(KIconLoader::Group g)
 {

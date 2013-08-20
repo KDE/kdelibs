@@ -179,8 +179,10 @@ public:
      * @return A standard help menu.
      * @deprecated use KHelpMenu directly
      */
+#ifndef KDE_NO_DEPRECATED
     XMLGUI_DEPRECATED QMenu* helpMenu(const QString &aboutAppText = QString(),
                                    bool showWhatsThis = true );
+#endif
 
     /**
      * Returns the help menu. Creates a standard help menu if none exists yet.
@@ -205,7 +207,9 @@ public:
      * @return A standard help menu.
      * @deprecated use XMLGUI instead, or KHelpMenu directly
      */
+#ifndef KDE_NO_DEPRECATED
     XMLGUI_DEPRECATED QMenu* customHelpMenu( bool showWhatsThis = true );
+#endif
 
     /**
      * If the session did contain so high a number, @p true is returned,
@@ -630,7 +634,9 @@ protected Q_SLOTS:
     * \endcode
     * @deprecated use KHelpMenu
     */
-    virtual XMLGUI_DEPRECATED void showAboutApplication();
+#ifndef KDE_NO_DEPRECATED
+    virtual XMLGUI_DEPRECATED void showAboutApplication() {}
+#endif
 
    /**
     * This slot should only be called in case you reimplement closeEvent() and

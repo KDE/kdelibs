@@ -46,12 +46,14 @@ public:
     int rightMargin;
 };
 
+#ifndef KDE_NO_DEPRECATED
 KCategoryDrawer::KCategoryDrawer()
     : d(new Private)
 {
     setLeftMargin(2);
     setRightMargin(2);
 }
+#endif
 
 KCategoryDrawer::~KCategoryDrawer()
 {
@@ -195,6 +197,7 @@ KCategoryDrawer &KCategoryDrawer::operator=(const KCategoryDrawer &cd)
     return *this;
 }
 
+#ifndef KDE_NO_DEPRECATED
 KCategoryDrawerV2::KCategoryDrawerV2(QObject *parent)
     : QObject(parent)
     , KCategoryDrawer()
@@ -224,6 +227,7 @@ void KCategoryDrawerV2::mouseButtonDoubleClicked(const QModelIndex&, QMouseEvent
 {
     event->ignore();
 }
+#endif
 
 class KCategoryDrawerV3::Private
 {

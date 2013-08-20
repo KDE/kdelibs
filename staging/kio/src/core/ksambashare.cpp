@@ -451,11 +451,13 @@ KSambaShare::~KSambaShare()
     delete d_ptr;
 }
 
+#ifndef KDE_NO_DEPRECATED
 QString KSambaShare::smbConfPath() const
 {
     Q_D(const KSambaShare);
     return d->smbConf;
 }
+#endif
 
 bool KSambaShare::isDirectoryShared(const QString &path) const
 {

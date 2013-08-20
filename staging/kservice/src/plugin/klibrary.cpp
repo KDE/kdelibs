@@ -151,6 +151,7 @@ static KPluginFactory *kde4Factory(KLibrary *lib)
     return factory;
 }
 
+#ifndef KDE_NO_DEPRECATED
 // deprecated
 KPluginFactory* KLibrary::factory(const char* factoryname)
 {
@@ -164,7 +165,7 @@ KPluginFactory* KLibrary::factory(const char* factoryname)
 
     return factory;
 }
-
+#endif
 
 
 void KLibrary::setFileName(const QString &name)

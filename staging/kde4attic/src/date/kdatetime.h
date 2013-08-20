@@ -1073,10 +1073,12 @@ class KDE4ATTIC_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * @return number of seconds difference
      * @see secsTo(), addSecs(), daysTo()
      */
+#ifndef KDE_NO_DEPRECATED
     KDE4ATTIC_DEPRECATED inline qint64 secsTo_long(const KDateTime &other) const
     {
         return secsTo(other);
     }
+#endif
 
     /**
      * Calculates the number of days from this date/time to the @p other date/time.
@@ -1441,10 +1443,12 @@ class KDE4ATTIC_EXPORT KDateTime //krazy:exclude=dpointer (implicitly shared)
      * @see isValid()
      * @deprecated Since 5.0, we now supports all valid dates.
      */
+#ifndef KDE_NO_DEPRECATED
     KDE4ATTIC_DEPRECATED inline bool outOfRange() const
     {
         return false;
     }
+#endif
 
     /**
      * Compare this instance with another to determine whether they are

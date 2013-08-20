@@ -151,15 +151,6 @@ void KRecentDocument::add(const QUrl& url, const QString& desktopEntryName)
     conf.writeEntry( "Icon", KIO::iconNameForUrl( url ) );
 }
 
-void KRecentDocument::add(const QString &openStr, bool isUrl)
-{
-    if (isUrl) {
-        add(QUrl(openStr));
-    } else {
-        add(QUrl::fromLocalFile(openStr));
-    }
-}
-
 void KRecentDocument::clear()
 {
   const QStringList list = recentDocuments();

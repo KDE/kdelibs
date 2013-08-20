@@ -347,6 +347,7 @@ KMainWindow::~KMainWindow()
     delete k_ptr;
 }
 
+#ifndef KDE_NO_DEPRECATED
 QMenu* KMainWindow::helpMenu( const QString &aboutAppText, bool showWhatsThis )
 {
     K_D(KMainWindow);
@@ -374,6 +375,7 @@ QMenu* KMainWindow::customHelpMenu( bool showWhatsThis )
 
     return d->helpMenu->menu();
 }
+#endif
 
 bool KMainWindow::canBeRestored( int number )
 {
@@ -493,10 +495,6 @@ void KMainWindow::saveGlobalProperties( KConfig*  )
 }
 
 void KMainWindow::readGlobalProperties( KConfig*  )
-{
-}
-
-void KMainWindow::showAboutApplication()
 {
 }
 

@@ -54,7 +54,9 @@ public:
      * @return The factory of the library if there is any, otherwise 0
      * @deprecated use KPluginLoader::factory
      */
+#ifndef KDE_NO_DEPRECATED
     KSERVICE_DEPRECATED KPluginFactory* factory( const char* factoryname = 0 );
+#endif
 
 
     void_function_ptr resolveFunction(const char *name)

@@ -201,10 +201,12 @@ public:
    */
   void insertPlugin (KPropertiesDialogPlugin *plugin);
 
+#ifndef KDE_NO_DEPRECATED
     /**
      * @deprecated since 5.0, use url()
      */
     KIO_DEPRECATED QUrl kurl() const { return url(); }
+#endif
 
     /**
      * The URL of the file that has its properties being displayed.

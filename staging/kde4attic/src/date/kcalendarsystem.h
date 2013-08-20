@@ -131,7 +131,9 @@ public:
      *
      * @return type of calendar system
      */
+#ifndef KDE_NO_DEPRECATED
     KDE4ATTIC_DEPRECATED virtual QString calendarType() const = 0;
+#endif
 
     /**
      * @since 4.6
@@ -319,7 +321,10 @@ public:
      * @param d Day of month
      * @return true if the date is valid; otherwise returns false.
      */
-    KDE4ATTIC_DEPRECATED virtual bool setYMD(QDate &date, int y, int m, int d) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED virtual bool setYMD(QDate &date, int y, int m, int d) const
+    { return setDate(date, y, m, d); }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -622,10 +627,12 @@ public:
      * @param yearNum returns the year the date belongs to
      * @return ISO week number, -1 if input date invalid
      */
+#ifndef KDE_NO_DEPRECATED
     KDE4ATTIC_DEPRECATED inline int weekNumber(const QDate &date, int *yearNum = 0) const
     {
         return week(date, KLocale::IsoWeekNumber, yearNum);
     }
+#endif
 
     /**
      * Returns the localized Week Number for the date.
@@ -832,7 +839,16 @@ public:
      * @return year literal of the date, empty string if any error
      * @see year()
      */
-    KDE4ATTIC_DEPRECATED virtual QString yearString(const QDate &date, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED virtual QString yearString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::Year, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::Year, KLocale::LongNumber);
+        }
+    }
+#endif
 
     /**
      * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
@@ -844,7 +860,16 @@ public:
      * @return The month literal of the date, empty string if any error
      * @see month()
      */
-    KDE4ATTIC_DEPRECATED virtual QString monthString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED virtual QString monthString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::Month, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::Month, KLocale::LongNumber);
+        }
+    }
+#endif
 
     /**
      * @deprecated use formatDate(QDate, KLocale::DateTimeComponent, KLocale::DateTimeComponentFormat)
@@ -856,7 +881,16 @@ public:
      * @return The day literal of the date, empty string if any error
      * @see day()
      */
-    KDE4ATTIC_DEPRECATED virtual QString dayString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED virtual QString dayString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::Day, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::Day, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -870,7 +904,16 @@ public:
      * @param format format to return, either short or long
      * @return Year In Era literal of the date, empty string if any error
      */
-    KDE4ATTIC_DEPRECATED QString yearInEraString(const QDate &date, StringFormat format = ShortFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString yearInEraString(const QDate &date, StringFormat format = ShortFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::YearInEra, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::YearInEra, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -885,7 +928,16 @@ public:
      * @return The day of year literal of the date, empty string if any error
      * @see dayOfYear()
      */
-    KDE4ATTIC_DEPRECATED QString dayOfYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString dayOfYearString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::DayOfYear, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::DayOfYear, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -899,7 +951,10 @@ public:
      * @return The day of week literal of the date, empty string if any error
      * @see dayOfWeek()
      */
-    KDE4ATTIC_DEPRECATED QString dayOfWeekString(const QDate &pDate) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString dayOfWeekString(const QDate &date) const
+    { return formatDate(date, KLocale::DayOfWeek, KLocale::ShortNumber); }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -914,7 +969,16 @@ public:
      * @return The day literal of the date, empty string if any error
      * @see weekNumber()
      */
-    KDE4ATTIC_DEPRECATED QString weekNumberString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString weekNumberString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::Week, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::Week, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -929,7 +993,16 @@ public:
      * @return The months in year literal of the date, empty string if any error
      * @see monthsInYear()
      */
-    KDE4ATTIC_DEPRECATED QString monthsInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString monthsInYearString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::MonthsInYear, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::MonthsInYear, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -944,7 +1017,16 @@ public:
      * @return The weeks in year literal of the date, empty string if any error
      * @see weeksInYear()
      */
-    KDE4ATTIC_DEPRECATED QString weeksInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString weeksInYearString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::WeeksInYear, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::WeeksInYear, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -959,7 +1041,16 @@ public:
      * @return The days in year literal of the date, empty string if any error
      * @see daysInYear()
      */
-    KDE4ATTIC_DEPRECATED QString daysInYearString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString daysInYearString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::DaysInYear, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::DaysInYear, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -974,7 +1065,16 @@ public:
      * @return The days in month literal of the date, empty string if any error
      * @see daysInMonth()
      */
-    KDE4ATTIC_DEPRECATED QString daysInMonthString(const QDate &pDate, StringFormat format = LongFormat) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString daysInMonthString(const QDate &date, StringFormat format = LongFormat) const
+    {
+        if (format == ShortFormat) {
+            return formatDate(date, KLocale::DaysInMonth, KLocale::ShortNumber);
+        } else {
+            return formatDate(date, KLocale::DaysInMonth, KLocale::LongNumber);
+        }
+    }
+#endif
 
     //KDE5 make virtual?
     /**
@@ -988,7 +1088,10 @@ public:
      * @return The days in week literal of the date, empty string if any error
      * @see daysInWeek()
      */
-    KDE4ATTIC_DEPRECATED QString daysInWeekString(const QDate &date) const;
+#ifndef KDE_NO_DEPRECATED
+    KDE4ATTIC_DEPRECATED QString daysInWeekString(const QDate &date) const
+    { return formatDate(date, KLocale::DaysInWeek, KLocale::ShortNumber); }
+#endif
 
     //KDE5 make protected or remove?
     /**

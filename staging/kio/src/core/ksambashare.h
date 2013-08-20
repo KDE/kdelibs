@@ -112,7 +112,9 @@ public:
      *
      * @deprecated
      */
+#ifndef KDE_NO_DEPRECATED
     KIOCORE_DEPRECATED QString smbConfPath() const;
+#endif
 
 Q_SIGNALS:
     /**

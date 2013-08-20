@@ -86,9 +86,11 @@ public:
      *         filter does not exist, the return value depends on @p forceFilter.
      *         The returned KCompressionDevice has to be deleted after using.
      */
+#ifndef KDE_NO_DEPRECATED
     KARCHIVE_DEPRECATED static KCompressionDevice* deviceForFile( const QString & fileName,
                                                                   const QString & mimetype = QString(),
                                                                   bool forceFilter = false );
+#endif
 
     /**
      * @deprecated Use KCompressionDevicea
@@ -116,8 +118,10 @@ public:
      * @param autoDeleteInDevice if true, @p inDevice will be deleted automatically
      * @return a KCompressionDevice that filters the original stream. Must be deleted after using
      */
+#ifndef KDE_NO_DEPRECATED
     KARCHIVE_DEPRECATED static KCompressionDevice* device( QIODevice* inDevice, const QString & mimetype,
                                                            bool autoDeleteInDevice = true );
+#endif
 };
 
 

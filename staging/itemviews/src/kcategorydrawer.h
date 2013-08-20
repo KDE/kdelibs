@@ -43,7 +43,9 @@ class KCategorizedView;
 class ITEMVIEWS_EXPORT KCategoryDrawer
 {
 public:
+#ifndef KDE_NO_DEPRECATED
     ITEMVIEWS_DEPRECATED KCategoryDrawer();
+#endif
 
     virtual ~KCategoryDrawer();
 
@@ -117,6 +119,7 @@ class ITEMVIEWS_EXPORT KCategoryDrawerV2
     Q_OBJECT
 
 public:
+#ifndef KDE_NO_DEPRECATED
     ITEMVIEWS_DEPRECATED KCategoryDrawerV2(QObject *parent = 0);
     virtual ~KCategoryDrawerV2();
 
@@ -127,6 +130,7 @@ public:
     ITEMVIEWS_DEPRECATED virtual void mouseButtonMoved(const QModelIndex &index, QMouseEvent *event);
 
     ITEMVIEWS_DEPRECATED virtual void mouseButtonDoubleClicked(const QModelIndex &index, QMouseEvent *event);
+#endif
 
 Q_SIGNALS:
     /**

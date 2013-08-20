@@ -235,6 +235,7 @@ static QStringList extractFormats(const QMimeData* mimeData)
     return formats;
 }
 
+#ifndef KDE_NO_DEPRECATED
 // The [old] main method for dropping
 KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const QUrl& destUrl,
                                     const QString& dialogText, QWidget* widget, bool clipboard )
@@ -278,6 +279,7 @@ KIO::CopyJob* KIO::pasteMimeSource( const QMimeData* mimeData, const QUrl& destU
     KJobWidgets::setWindow(job, widget);
     return job;
 }
+#endif
 
 KIOWIDGETS_EXPORT bool KIO::canPasteMimeSource(const QMimeData* data)
 {

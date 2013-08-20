@@ -444,7 +444,9 @@ public:
     *
     * @deprecated since 5.0, use emitChange(Group)
     */
+#ifndef KDE_NO_DEPRECATED
     KICONTHEMES_DEPRECATED void newIconLoader();
+#endif
 
     /**
      * Emits an iconChanged() signal on all the KIconLoader instances in the system

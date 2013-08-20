@@ -87,7 +87,16 @@ public:
      * @param isURL Set to @p true if @p documentStr is an URL and not a local file path.
      * @deprecated call add(QUrl(str)) if isURL=true, and add(QUrl::fromLocalFile(str)) if isURL=false.
      */
-    static KIO_DEPRECATED void add(const QString &documentStr, bool isURL = false);
+#ifndef KDE_NO_DEPRECATED
+    static KIO_DEPRECATED void add(const QString &documentStr, bool isUrl = false)
+    {
+        if (isUrl) {
+            add(QUrl(documentStr));
+        } else {
+            add(QUrl::fromLocalFile(documentStr));
+        }
+    }
+#endif
 
     /**
      * Clear the recent document menu of all entries.

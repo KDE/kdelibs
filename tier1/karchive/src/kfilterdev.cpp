@@ -108,7 +108,7 @@ KCompressionDevice::CompressionType KFilterDev::compressionTypeForMimeType(const
     return findCompressionTypeByMimeType(mimetype);
 }
 
-
+#ifndef KDE_NO_DEPRECATED
 //static
 KCompressionDevice* KFilterDev::deviceForFile( const QString & fileName, const QString & mimetype,
                                        bool forceFilter )
@@ -137,3 +137,5 @@ KCompressionDevice * KFilterDev::device( QIODevice* inDevice, const QString & mi
     KCompressionDevice* device = new KCompressionDevice(inDevice, autoDeleteInDevice, type);
     return device;
 }
+#endif
+

@@ -73,6 +73,7 @@ Q_EXTERN_C KSERVICE_EXPORT const quint32 kde_plugin_version = version;
 #else
 #define Q_STANDARD_CALL
 
+#ifndef KDE_NO_DEPRECATED
 class KSERVICE_DEPRECATED_EXPORT K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING
 {
 };
@@ -80,6 +81,7 @@ class KSERVICE_DEPRECATED_EXPORT K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING
 #define K_EXPORT_PLUGIN(factory) \
             K_EXPORT_PLUGIN_is_deprecated_see_KDE5PORTING dummy; \
             K_PLUGIN_VERIFICATION_DATA
+#endif
 
 #endif
 
