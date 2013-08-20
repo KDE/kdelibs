@@ -20,21 +20,14 @@
 
 #include "authinfo.h"
 
-#include <sys/types.h>
-#include <sys/stat.h> // don't move it down the include order, it breaks compilation on MSVC
-#include <stdio.h>
-#include <fcntl.h>
-#include <unistd.h>
-
 #include <QtCore/QByteArray>
 #include <QtCore/QDir>
 #include <QtCore/QFile>
+#include <QtCore/QTextStream>
 #include <QtDBus/QDBusArgument>
 #include <QtDBus/QDBusMetaType>
 
 #include <qstandardpaths.h>
-
-#define NETRC_READ_BUF_SIZE 4096
 
 using namespace KIO;
 
@@ -259,10 +252,18 @@ class NetRC::NetRCPrivate
 {
 public:
     NetRCPrivate()
-        : isDirty(false)
+        : isDirty(false),
+          index(-1)
     {}
+    QString extract(const QString &buf, const QString &key);
+    void getMachinePart(const QString &line);
+    void getMacdefPart(const QString &line);
+
     bool isDirty;
     LoginMap loginMap;
+    QTextStream fstream;
+    QString type;
+    int index;
 };
 
 NetRC* NetRC::instance = 0L;
@@ -302,16 +303,17 @@ bool NetRC::lookup( const QUrl& url, AutoLogin& login, bool userealnetrc,
     d->loginMap.clear();
 
     QString filename = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QLatin1Char('/') + QLatin1String("kionetrc");
-    bool status = parse (openf (filename));
-
+    bool kionetrcStatus = parse(filename);
+    bool netrcStatus = false;
     if ( userealnetrc )
     {
       filename =  QDir::homePath() + QLatin1String("/.netrc");
-      status = status && parse(openf(filename));
+      netrcStatus = parse(filename);
     }
 
-    if ( !status )
+    if (!(kionetrcStatus || netrcStatus)) {
       return false;
+    }
   }
 
   if ( !d->loginMap.contains( type ) )
@@ -368,145 +370,110 @@ void NetRC::reload()
     d->isDirty = true;
 }
 
-int NetRC::openf( const QString& f )
+bool NetRC::parse(const QString &fileName)
 {
-#pragma message("KF5 TODO: port to QFile")
-#if 1
-  return -1;
-#else
-  KDE_struct_stat sbuff;
-  if ( KDE::stat(f, &sbuff) != 0 )
-    return -1;
+    QFile file(fileName);
+    if (file.permissions() != (QFile::ReadOwner | QFile::WriteOwner
+                               | QFile::ReadUser | QFile::WriteUser)) {
+        return false;
 
-  // Security check!!
-  if ( sbuff.st_mode != (S_IFREG|S_IRUSR|S_IWUSR) ||
-       sbuff.st_uid != geteuid() )
-    return -1;
+    }
+    if (!file.open(QIODevice::ReadOnly)) {
+        return false;
+    }
 
-  return KDE::open( f, O_RDONLY );
-#endif
+    d->fstream.setDevice(&file);
+
+    QString line;
+
+    while (!d->fstream.atEnd()) {
+        line = d->fstream.readLine().simplified();
+
+        // If line is a comment or is empty, read next line
+        if ((line.startsWith("#") || line.isEmpty())) {
+            continue;
+        }
+
+        // If line refers to a machine, maybe it is spread in more lines.
+        // getMachinePart() will take care of getting all the info and putting it into loginMap.
+        if ((line.startsWith("machine")
+             || line.startsWith("default")
+             || line.startsWith("preset"))) {
+            d->getMachinePart(line);
+            continue;
+        }
+
+        // If line refers to a macdef, it will be more than one line.
+        // getMacdefPart() will take care of getting all the lines of the macro
+        // and putting them into loginMap
+        if (line.startsWith("macdef")) {
+            d->getMacdefPart(line);
+            continue;
+        }
+    }
+    return true;
 }
 
-QString NetRC::extract( const char* buf, const char* key, int& pos )
+
+QString NetRC::NetRCPrivate::extract(const QString &buf, const QString &key)
 {
-  int idx = pos;
-  int m_len = strlen(key);
-  int b_len = strlen(buf);
-
-  while( idx < b_len )
-  {
-    while( buf[idx] == ' ' || buf[idx] == '\t' )
-      idx++;
-
-    if ( strncasecmp( buf+idx, key, m_len ) != 0 )
-      idx++;
-    else
-    {
-      idx += m_len;
-      while( buf[idx] == ' ' || buf[idx] == '\t' )
-        idx++;
-
-      int start = idx;
-      while( buf[idx] != ' ' && buf[idx] != '\t' &&
-             buf[idx] != '\n' && buf[idx] != '\r' )
-        idx++;
-
-      if ( idx > start )
-      {
-        pos = idx;
-        return QString::fromLatin1( buf+start, idx-start);
-      }
+    QStringList stringList = buf.split(QLatin1Char(' '), QString::SkipEmptyParts);
+    int i = stringList.indexOf(key);
+    if ((i != -1) && (i + 1 < stringList.size())) {
+        return stringList.at(i + 1);
+    } else {
+        return QString();
     }
-  }
-
-  return QString();
 }
 
-bool NetRC::parse( int fd )
+void NetRC::NetRCPrivate::getMachinePart(const QString &line)
 {
-  if (fd == -1)
-    return false;
-
-#pragma message("KF5 TODO: port to QFile")
-#if 0
-  QString type;
-  QString macro;
-
-  uint index = 0;
-  bool isMacro = false;
-  char* buf = new char[NETRC_READ_BUF_SIZE];
-  FILE* fstream = KDE_fdopen( fd,"rb" );
-
-  while ( fgets (buf, NETRC_READ_BUF_SIZE, fstream) != 0L )
-  {
-    int pos = 0;
-
-    while ( buf[pos] == ' ' || buf[pos] == '\t' )
-      pos++;
-
-    if ( buf[pos] == '#' || buf[pos] == '\n' ||
-         buf[pos] == '\r' || buf[pos] == '\0' )
-    {
-      if ( buf[pos] != '#' && isMacro )
-        isMacro = false;
-
-      continue;
+    QString buf = line;
+    while (!(buf.contains("login")
+             && (buf.contains("password") || buf.contains("account") || buf.contains("type")))) {
+        buf += QStringLiteral(" ");
+        buf += fstream.readLine().simplified();
     }
 
-    if ( isMacro )
-    {
-      int tail = strlen(buf);
-      while( buf[tail-1] == '\n' || buf[tail-1] =='\r' )
-        tail--;
-
-      QString mac = QString::fromLatin1(buf, tail).trimmed();
-      if ( !mac.isEmpty() )
-        d->loginMap[type][index].macdef[macro].append( mac );
-
-      continue;
-    }
-
+    // Once we've got all the info, process it.
     AutoLogin l;
-    l.machine = extract( buf, "machine", pos );
-    if ( l.machine.isEmpty() )
-    {
-      if (strncasecmp(buf+pos, "default", 7) == 0 )
-      {
-        pos += 7;
-        l.machine = QLatin1String("default");
-      }
-      else if (strncasecmp(buf+pos, "preset", 6) == 0 )
-      {
-        pos += 6;
-        l.machine = QLatin1String("preset");
-      }
+    l.machine = extract(buf, "machine");
+    if (l.machine.isEmpty()) {
+        if (buf.contains("default")) {
+            l.machine = QStringLiteral("default");
+        } else if (buf.contains("preset")) {
+            l.machine = QStringLiteral("preset");
+        }
     }
-    //qDebug() << "Machine: " << l.machine;
 
-    l.login = extract( buf, "login", pos );
-    //qDebug() << "Login: " << l.login;
+    l.login = extract(buf, "login");
+    l.password = extract(buf, "password");
+    if (l.password.isEmpty()) {
+        l.password = extract(buf, "account");
+    }
 
-    l.password = extract( buf, "password", pos );
-    if ( l.password.isEmpty() )
-      l.password = extract( buf, "account", pos );
-    //qDebug() << "Password: " << l.password;
+    type = l.type = extract(buf, "type");
+    if (l.type.isEmpty() && !l.machine.isEmpty()) {
+        type = l.type = QStringLiteral("ftp");
+    }
 
-    type = l.type = extract( buf, "type", pos );
-    if ( l.type.isEmpty() && !l.machine.isEmpty() )
-      type = l.type = QLatin1String("ftp");
-    //qDebug() << "Type: " << l.type;
+    loginMap[l.type].append(l);
+    index = loginMap[l.type].count()-1;
+}
 
-    macro = extract( buf, "macdef", pos );
-    isMacro = !macro.isEmpty();
-    //qDebug() << "Macro: " << macro;
-
-    d->loginMap[l.type].append(l);
-    index = d->loginMap[l.type].count()-1;
-  }
-
-  delete [] buf;
-  fclose (fstream);
-  close (fd);
-#endif
-  return true;
+void NetRC::NetRCPrivate::getMacdefPart(const QString &line)
+{
+    QString buf = line;
+    QString macro = extract(buf, "macdef");
+    QString newLine;
+    while (!fstream.atEnd()) {
+        newLine = fstream.readLine().simplified();
+        if (!newLine.isEmpty()) {
+            buf += QStringLiteral("\n");
+            buf += newLine;
+        } else {
+            break;
+        }
+    }
+    loginMap[type][index].macdef[macro].append(buf);
 }
