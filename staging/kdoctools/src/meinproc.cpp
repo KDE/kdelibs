@@ -12,7 +12,6 @@
 #include <QtCore/QList>
 #include <qstandardpaths.h>
 
-#include <klocalizedstring.h>
 #include <qurl.h>
 
 #include <libxml/xmlversion.h>
@@ -96,7 +95,6 @@ int main(int argc, char **argv) {
     QCoreApplication app( argc, argv );
     app.setApplicationName("meinproc");
     app.setApplicationVersion("5.0");
-    KLocalizedString::setApplicationDomain("kio_help4");
 
     QCommandLineParser parser;
     parser.addHelpOption(QCoreApplication::translate("main", "KDE Translator for XML"));
@@ -246,7 +244,7 @@ int main(int argc, char **argv) {
 
         if ( !cache.isEmpty() ) {
             if ( !saveToCache( output, cache ) ) {
-                qWarning() << i18n( "Could not write to cache file %1." , cache );
+                qWarning() << QCoreApplication::translate("main", "Could not write to cache file %1.").arg(cache);
             }
             goto end;
         }
