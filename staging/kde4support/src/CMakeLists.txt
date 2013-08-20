@@ -376,6 +376,7 @@ install(FILES
 )
 
 install( FILES
+    KDECoreMacros.cmake
     KDEUIMacros.cmake
     kde4uic.cmake
     DESTINATION ${CMAKECONFIG_INSTALL_DIR} COMPONENT Devel )
