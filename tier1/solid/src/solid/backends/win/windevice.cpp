@@ -111,7 +111,7 @@ WinDevice::WinDevice(const QString &udi) :
         initBatteryDevice();
         break;
     case Solid::DeviceInterface::AcAdapter:
-        m_description = QObject::tr("A/C Adapter");
+        m_description = tr("A/C Adapter");
         break;
     default:
         if(queryDeviceInterface(Solid::DeviceInterface::StorageAccess) || queryDeviceInterface(Solid::DeviceInterface::StorageDrive))
@@ -194,19 +194,19 @@ void WinDevice::initBatteryDevice()
     switch(WinBattery(this).technology())
     {
     case Solid::Battery::LithiumIon:
-        m_description = QObject::tr("Lithium Ion", "battery technology");
+        m_description = tr("Lithium Ion", "battery technology");
         break;
     case Solid::Battery::LeadAcid:
-        m_description =  QObject::tr("Lead Acid", "battery technology");
+        m_description =  tr("Lead Acid", "battery technology");
         break;
     case Solid::Battery::NickelCadmium:
-        m_description = QObject::tr("Nickel Cadmium", "battery technology");
+        m_description = tr("Nickel Cadmium", "battery technology");
         break;
     case Solid::Battery::NickelMetalHydride:
-         m_description = QObject::tr("Nickel Metal Hydride", "battery technology");
+         m_description = tr("Nickel Metal Hydride", "battery technology");
          break;
     default:
-        m_description = QObject::tr("Unknown", "battery technology");
+        m_description = tr("Unknown", "battery technology");
     }
 }
 

@@ -28,6 +28,7 @@ $Id: DebuggingAids.cpp 20 2005-08-08 21:02:51Z mirko $
 
 #include "DependencyPolicy.h"
 
+#include <QtCore/QCoreApplication>
 #include <QtCore/QMutex>
 #include <QtCore/QDebug>
 
@@ -195,10 +196,10 @@ void DependencyPolicy::dumpJobDependencies()
     {
         debug( 0, "  : %p (%s%s) <-- %p (%s%s)\n",
                (void*)it.key(),
-               it.key()->objectName().isEmpty() ? "" : qPrintable ( QString(it.key()->objectName() + QObject::tr ( " of type " )) ),
+               it.key()->objectName().isEmpty() ? "" : qPrintable ( QString(it.key()->objectName() + QCoreApplication::translate ( "DependencyPolicy", " of type " )) ),
                it.key()->metaObject()->className(),
                (void*)it.value(),
-               it.value()->objectName().isEmpty() ? "" : qPrintable ( QString(it.value()->objectName() + QObject::tr ( " of type " )) ),
+               it.value()->objectName().isEmpty() ? "" : qPrintable ( QString(it.value()->objectName() + QCoreApplication::translate ( "DependencyPolicy", " of type " )) ),
                it.value()->metaObject()->className() );
     }
     debug ( 0, "-----------------\n" );

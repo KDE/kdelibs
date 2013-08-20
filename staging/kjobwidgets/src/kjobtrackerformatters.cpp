@@ -24,20 +24,25 @@
 
 #include "kjobtrackerformatters_p.h"
 
-#include <QObject>
+#include <QCoreApplication>
+
+static QString tr(const char *message, const char *disambiguation = 0, int n = -1)
+{
+    return QCoreApplication::translate("KJobTrackerFormatters", message, disambiguation, n);
+}
 
 QString KJobTrackerFormatters::byteSize(double size)
 {
     QList<QString> units;
-    units << QObject::tr("%1 B")
-          << QObject::tr("%1 KiB")
-          << QObject::tr("%1 MiB")
-          << QObject::tr("%1 GiB")
-          << QObject::tr("%1 TiB")
-          << QObject::tr("%1 PiB")
-          << QObject::tr("%1 EiB")
-          << QObject::tr("%1 ZiB")
-          << QObject::tr("%1 YiB");
+    units << tr("%1 B")
+          << tr("%1 KiB")
+          << tr("%1 MiB")
+          << tr("%1 GiB")
+          << tr("%1 TiB")
+          << tr("%1 PiB")
+          << tr("%1 EiB")
+          << tr("%1 ZiB")
+          << tr("%1 YiB");
 
     int unit = 0; // Selects what unit to use
     const double multiplier = 1024.0;
@@ -57,22 +62,22 @@ QString KJobTrackerFormatters::byteSize(double size)
 
 QString KJobTrackerFormatters::daysDuration(int n)
 {
-    return QObject::tr("%n day(s)", "@item:intext", n);
+    return tr("%n day(s)", "@item:intext", n);
 }
 
 QString KJobTrackerFormatters::hoursDuration(int n)
 {
-    return QObject::tr("%n hour(s)", "@item:intext", n);
+    return tr("%n hour(s)", "@item:intext", n);
 }
 
 QString KJobTrackerFormatters::minutesDuration(int n)
 {
-    return QObject::tr("%n minute(s)", "@item:intext", n);
+    return tr("%n minute(s)", "@item:intext", n);
 }
 
 QString KJobTrackerFormatters::secondsDuration(int n)
 {
-    return QObject::tr("%n second(s)", "@item:intext", n);
+    return tr("%n second(s)", "@item:intext", n);
 }
 
 QString KJobTrackerFormatters::duration(unsigned long mSec)
@@ -93,15 +98,15 @@ QString KJobTrackerFormatters::duration(unsigned long mSec)
     }
 
     if (days && hours) {
-        return QObject::tr("%1 and %2", "@item:intext days and hours.").arg(daysDuration(days)).arg(hoursDuration(hours));
+        return tr("%1 and %2", "@item:intext days and hours.").arg(daysDuration(days)).arg(hoursDuration(hours));
     } else if (days) {
         return daysDuration(days);
     } else if (hours && minutes) {
-        return QObject::tr("%1 and %2", "@item:intext hours and minutes.").arg(hoursDuration(hours)).arg(minutesDuration(minutes));
+        return tr("%1 and %2", "@item:intext hours and minutes.").arg(hoursDuration(hours)).arg(minutesDuration(minutes));
     } else if (hours) {
         return hoursDuration(hours);
     } else if (minutes && seconds) {
-        return QObject::tr("%1 and %2", "@item:intext minutes and seconds.").arg(minutesDuration(minutes)).arg(secondsDuration(seconds));
+        return tr("%1 and %2", "@item:intext minutes and seconds.").arg(minutesDuration(minutes)).arg(secondsDuration(seconds));
     } else if (minutes) {
         return minutesDuration(minutes);
     } else {

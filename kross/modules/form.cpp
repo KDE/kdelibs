@@ -727,11 +727,11 @@ QWidget* FormModule::createWidget(QWidget* parent, const QString& className, con
 
 QString FormModule::tr(const QString& str)
 {
-    return QObject::tr(str.toUtf8());
+    return tr(str.toUtf8().constData());
 }
 QString FormModule::tr(const QString& str, const QString& comment)
 {
-    return QObject::tr(str.toUtf8(),comment.toUtf8());
+    return tr(str.toUtf8().constData(), comment.toUtf8().constData());
 }
 
 QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
@@ -746,7 +746,7 @@ QWidget* FormModule::createWidgetFromUI(QWidget* parent, const QString& xml)
     while(--i>=0)
     {
         QDomElement e=strings.at(i).toElement();
-        QString i18nd=e.attribute("comment").isEmpty()?QObject::tr(e.text().toUtf8()):QObject::tr(e.text().toUtf8(),e.attribute("comment").toUtf8());
+        QString i18nd=e.attribute("comment").isEmpty()? tr(e.text()) : tr(e.text(), e.attribute("comment"));
         if (i18nd==e.text())
             continue;
         QDomNode n = e.firstChild();

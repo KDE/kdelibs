@@ -188,7 +188,7 @@ void WinBattery::powerChanged()
     }
     else
     {
-         qDebug() << tech << QObject::tr("Unknown", "battery technology");
+         qDebug() << tech << tr("Unknown", "battery technology");
         m_technology = Solid::Battery::UnknownTechnology;
     }
 

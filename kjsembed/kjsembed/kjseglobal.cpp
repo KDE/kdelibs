@@ -110,7 +110,7 @@ QTextStream &kdWarning( int area )
 
 QString i18n( const char *string )
 {
-	return QObject::tr( string, "qjsembed string");
+	return QCoreApplication::translate( "KJSEmbed", string, "qjsembed string");
 }
 
 #endif

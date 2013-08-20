@@ -33,8 +33,13 @@
 #include <QtCore/QList>
 #include <QHash>
 
+static QString tr(const char *message, const char *disambiguation = 0, int n = -1)
+{
+    return QCoreApplication::translate("KAboutData", message, disambiguation, n);
+}
+
 // PORTING HACK (KDE5 TODO: clean up)
-#define i18nc(a,b) QObject::tr(b, a)
+#define i18nc(a,b) tr(b, a)
 
 class KAboutPerson::Private
 {
@@ -229,13 +234,13 @@ QString KAboutLicense::text() const
         }
         // fall through
     default:
-        result += QObject::tr("No licensing terms for this program have been specified.\n"
+        result += tr("No licensing terms for this program have been specified.\n"
                        "Please check the documentation or the source for any\n"
                        "licensing terms.\n");
     }
 
     if (knownLicense) {
-        result += QObject::tr("This program is distributed under the terms of the %1.").arg(name(KAboutData::ShortName));
+        result += tr("This program is distributed under the terms of the %1.").arg(name(KAboutData::ShortName));
         if (!pathToFile.isEmpty()) {
             result += lineFeed;
         }

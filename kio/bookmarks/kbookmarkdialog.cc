@@ -67,17 +67,17 @@ void KBookmarkDialogPrivate::initLayoutPrivate()
 {
     title = new QLineEdit(q);
     title->setMinimumWidth(300);
-    titleLabel = new QLabel(QObject::tr("Name:", "@label:textbox"), q);
+    titleLabel = new QLabel(q->tr("Name:", "@label:textbox"), q);
     titleLabel->setBuddy( title );
 
     url = new QLineEdit(q);
     url->setMinimumWidth(300);
-    urlLabel = new QLabel(QObject::tr("Location:", "@label:textbox"), q);
+    urlLabel = new QLabel(q->tr("Location:", "@label:textbox"), q);
     urlLabel->setBuddy( url );
 
     comment = new QLineEdit(q);
     comment->setMinimumWidth(300);
-    commentLabel = new QLabel(QObject::tr("Comment:", "@label:textbox"), q);
+    commentLabel = new QLabel(q->tr("Comment:", "@label:textbox"), q);
     commentLabel->setBuddy( comment );
 
     folderTree = new QTreeWidget(q);

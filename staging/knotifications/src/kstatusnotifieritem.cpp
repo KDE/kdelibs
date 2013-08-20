@@ -488,7 +488,7 @@ void KStatusNotifierItem::setAssociatedWidget(QWidget *associatedWidget)
         if (!action) {
             action = new QAction(this);
             d->actionCollection.insert("minimizeRestore", action);
-            action->setText(QObject::tr("&Minimize"));
+            action->setText(tr("&Minimize"));
             connect(action, SIGNAL(triggered(bool)), this, SLOT(minimizeRestore()));
         }
 
@@ -760,7 +760,7 @@ void KStatusNotifierItemPrivate::init(const QString &extraId)
     q->setContextMenu(m);
 
     QAction *action = new QAction(q);
-    action->setText(QObject::tr("Quit"));
+    action->setText(q->tr("Quit"));
     action->setIcon(QIcon::fromTheme("application-exit"));
     QObject::connect(action, SIGNAL(triggered()), q, SLOT(maybeQuit()));
     actionCollection.insert("quit", action);
@@ -933,9 +933,9 @@ void KStatusNotifierItemPrivate::contextMenuAboutToShow()
     if (associatedWidget && associatedWidget != menu) {
         QAction* action = actionCollection.value("minimizeRestore");
         if (checkVisibility(QPoint(0, 0), false)) {
-            action->setText(QObject::tr("&Restore"));
+            action->setText(q->tr("&Restore"));
         } else {
-            action->setText(QObject::tr("&Minimize"));
+            action->setText(q->tr("&Minimize"));
         }
     }
 }
@@ -946,10 +946,10 @@ void KStatusNotifierItemPrivate::maybeQuit()
     if (caption.isEmpty())
         caption = QCoreApplication::applicationName();
 
-    QString query = QObject::tr("<qt>Are you sure you want to quit <b>%1</b>?</qt>", caption.toUtf8());
+    QString query = q->tr("<qt>Are you sure you want to quit <b>%1</b>?</qt>", caption.toUtf8());
 
     if (QMessageBox::question(associatedWidget, 
-                              QObject::tr("Confirm Quit From System Tray"), query)) {
+                              q->tr("Confirm Quit From System Tray"), query)) {
         qApp->quit();
     }
 
