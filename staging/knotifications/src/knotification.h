@@ -235,10 +235,7 @@ public:
 		 * @todo make it work with tabulated widget
 		 */
 		CloseWhenWidgetActivated=0x04,
-		/**
-		 * DEPRECATED - Misspelling of 'Persistent'.  Do not use in new code.
-		 */
-		Persistant = Persistent,
+
 		/**
 		 * @internal
 		 * The event is a standard kde event, and not an event of the application
