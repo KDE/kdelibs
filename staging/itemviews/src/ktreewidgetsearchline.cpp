@@ -219,8 +219,7 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *q, QTreeWidget *treeWidge
   connect( this, SIGNAL(textChanged(QString)),
            this, SLOT(_k_queueSearch(QString)) );
 
-  #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
-  //setClearButtonShown( true );
+  setClearButtonEnabled(true);
   setTreeWidget( treeWidget );
 
   if ( !treeWidget ) {
@@ -235,8 +234,7 @@ KTreeWidgetSearchLine::KTreeWidgetSearchLine( QWidget *q,
   connect( this, SIGNAL(textChanged(QString)),
            this, SLOT(_k_queueSearch(QString)) );
 
-  #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
-  //setClearButtonShown( true );
+  setClearButtonEnabled(true);
   setTreeWidgets( treeWidgets );
 }
 

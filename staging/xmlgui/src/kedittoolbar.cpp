@@ -289,8 +289,7 @@ IconTextEditDialog::IconTextEditDialog(QWidget *parent)
     grid->setMargin(0);
 
     m_lineEdit = new QLineEdit(this);
-    #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
-    //m_lineEdit->setClearButtonShown(true);
+    m_lineEdit->setClearButtonEnabled(true);
     QLabel *label = new QLabel(i18n("Icon te&xt:"), this);
     label->setBuddy(m_lineEdit);
     grid->addWidget(label, 0, 0);

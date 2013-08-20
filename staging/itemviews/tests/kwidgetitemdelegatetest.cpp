@@ -204,7 +204,7 @@ public:
 
         QLineEdit *lineEdit = static_cast<QLineEdit*>(widgets[2]);
 
-        //lineEdit->setClearButtonShown(true);
+        lineEdit->setClearButtonEnabled(true);
         lineEdit->resize(lineEdit->sizeHint());
         lineEdit->move(3 * HARDCODED_BORDER
                      + button->sizeHint().width()

@@ -254,8 +254,7 @@ KBugReport::KBugReport(const KAboutData &aboutData, QWidget * _parent)
     tmpLabel = new QLabel(i18n("S&ubject: "), this);
     hlay->addWidget( tmpLabel );
     d->m_subject = new QLineEdit(this);
-    #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
-    //d->m_subject->setClearButtonShown(true);
+    d->m_subject->setClearButtonEnabled(true);
     d->m_subject->setFocus();
     tmpLabel->setBuddy( d->m_subject );
     hlay->addWidget( d->m_subject );

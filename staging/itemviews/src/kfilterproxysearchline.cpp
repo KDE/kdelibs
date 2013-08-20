@@ -67,8 +67,7 @@ KFilterProxySearchLine::KFilterProxySearchLine( QWidget* parent )
         : QWidget( parent ), d( new Private( this ) )
 {
     d->searchLine = new QLineEdit( this );
-    #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
-    //d->searchLine->setClearButtonShown( true );
+    d->searchLine->setClearButtonEnabled(true);
     d->searchLine->setPlaceholderText(tr("Search"));
 
     QHBoxLayout* layout = new QHBoxLayout( this );

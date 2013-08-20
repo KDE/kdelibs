@@ -168,8 +168,7 @@ void KListWidgetSearchLine::KListWidgetSearchLinePrivate::init( QListWidget *_li
     } else {
         q->setEnabled( false );
     }
-    #pragma message("KF5 TODO: enable clear button in QLineEdit once available")
-    //q->setClearButtonShown(true);
+    q->setClearButtonEnabled(true);
 }
 
 void KListWidgetSearchLine::KListWidgetSearchLinePrivate::updateHiddenState( int start, int end ) {
