@@ -104,6 +104,8 @@ Remember to update your connect statements and your slots!
 </pre>
 <li>KComponentData:
 <ul>
+    <li>The class is in kde4support now. Port away from it. In your main(), just remove the instanciation, use QCoreApplication::setApplicationName
+    and QCoreApplication::setApplicationDisplayName instead. In plugins, see KPluginFactory/KPluginLoader.</li>
     <li>dirs() has been removed. Use KGlobal::dirs() instead.
     The only difference (for other KComponentData instances than the main one),
     is the "appdata" resource, which would now point to the application name
