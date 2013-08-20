@@ -9,7 +9,7 @@ set(kio_metainfo_PART_SRCS metainfo.cpp )
 kde4_add_plugin(kio_metainfo ${kio_metainfo_PART_SRCS})
 
 
-target_link_libraries(kio_metainfo KDE4Support ${KDE4_KDECORE_LIBS} kio ${KCoreAddons_LIBRARIES} KI18n)
+target_link_libraries(kio_metainfo KDE4Support kio ${KCoreAddons_LIBRARIES} KI18n)
 
 install(TARGETS kio_metainfo  DESTINATION ${PLUGIN_INSTALL_DIR} )
 

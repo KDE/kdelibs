@@ -12,8 +12,8 @@ generate_export_header(kpty)
 include(ConfigureChecks.cmake)
 configure_file(config-pty.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-pty.h )
 
-target_link_libraries(kpty ${KDE4_KDECORE_LIBS} ${UTIL_LIBRARY} ${UTEMPTER_LIBRARY})
-target_link_libraries(kpty LINK_INTERFACE_LIBRARIES kdecore KI18n )
+target_link_libraries(kpty Qt5::Core ${UTIL_LIBRARY} ${UTEMPTER_LIBRARY} KCoreAddons KI18n)
+target_link_libraries(kpty LINK_INTERFACE_LIBRARIES KI18n )
 
 target_include_directories(kpty PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/..)
 

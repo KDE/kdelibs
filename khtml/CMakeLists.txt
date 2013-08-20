@@ -593,7 +593,6 @@ kde4_add_ui_files(khtml_LIB_SRCS kjserrordlgbase.ui htmlpageinfo.ui )
 kde4_add_library(khtml ${LIBRARY_TYPE} ${khtml_LIB_SRCS})
 
 target_link_libraries(khtml
-  ${KDE4_KDECORE_LIBS}
   ${KDE4_KPARTS_LIBS}
   ${PHONON_LIBRARIES}
   KJS
@@ -619,7 +618,7 @@ target_link_libraries(khtml
 if (KJS_DEBUGGER)
   target_link_libraries(khtml ktexteditor)
 endif()
-target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio kdecore Qt5::Widgets)
+target_link_libraries(khtml LINK_INTERFACE_LIBRARIES kparts KJS kio Qt5::Widgets KI18n)
 
 set_target_properties(khtml PROPERTIES VERSION ${KDE_NON_GENERIC_LIB_VERSION}
                                        SOVERSION ${KDE_NON_GENERIC_LIB_SOVERSION}
@@ -744,7 +743,7 @@ set(khtmlpart_PART_SRCS khtml_factory.cpp )
 
 kde4_add_plugin(khtmlpart WITH_PREFIX ${khtmlpart_PART_SRCS})
 
-target_link_libraries(khtmlpart  ${KDE4_KDECORE_LIBS} khtml XmlGui KTextWidgets)
+target_link_libraries(khtmlpart khtml XmlGui KTextWidgets)
 
 install(TARGETS khtmlpart  DESTINATION ${PLUGIN_INSTALL_DIR} )
 
@@ -782,7 +781,7 @@ if(NOT MSVC)
 
     kde4_add_executable(testkhtml ${testkhtml_SRCS})
 
-    target_link_libraries(testkhtml  ${KDE4_KDECORE_LIBS} khtml XmlGui KTextWidgets)
+    target_link_libraries(testkhtml khtml XmlGui KTextWidgets)
 
     ########### next target ###############
 
@@ -793,7 +792,7 @@ if(NOT MSVC)
 
     kde4_add_executable(testkhtml_static ${testkhtml_static_SRCS} )
 
-    target_link_libraries(testkhtml_static  ${KDE4_KDECORE_LIBS} khtml XmlGui KTextWidgets)
+    target_link_libraries(testkhtml_static khtml XmlGui KTextWidgets)
 
     ########### next target ###############
 endif(NOT MSVC)
@@ -811,7 +810,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 
     kde4_add_executable(testregression ${testregression_SRCS})
 
-    target_link_libraries(testregression  ${KDE4_KDECORE_LIBS} ${X11_X11_LIB} khtml)
+    target_link_libraries(testregression  ${X11_X11_LIB} khtml)
 
     ########### next target ###############
 
@@ -827,7 +826,7 @@ if (KHTML_BUILD_TESTREGRESSION)
 
     kde4_add_executable(testregressiongui ${testregressiongui_SRCS})
 
-    target_link_libraries(testregressiongui  ${KDE4_KDECORE_LIBS} khtml)
+    target_link_libraries(testregressiongui khtml)
 endif (KHTML_BUILD_TESTREGRESSION)
 
 ########### install files ###############

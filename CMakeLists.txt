@@ -186,7 +186,7 @@ set(KDE4Support_LIBRARIES KDE4Support)
 add_subdirectory( cmake )
 # For convenience only. Move down/remove and find dependencies with more locality instead.
 find_package(Qt5 5.2.0 REQUIRED NO_MODULE COMPONENTS Widgets Test Network Xml Concurrent DBus Svg)
-add_subdirectory( kdecore )
+#add_subdirectory( kdecore )
 add_subdirectory( staging )
 if (UNIX)
    add_subdirectory( kpty )

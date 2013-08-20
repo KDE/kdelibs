@@ -43,6 +43,7 @@ target_link_libraries(kdesu
   LINK_PUBLIC
     ${KDE4_KPTY_LIBS}
   LINK_PRIVATE
+    KCoreAddons
     KI18n
     KService # KToolInvocation::kdeinitExecWait
 )

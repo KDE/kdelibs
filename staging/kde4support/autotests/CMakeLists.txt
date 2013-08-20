@@ -21,7 +21,6 @@ macro(KDE4SUPPORT_UNIT_TESTS)
        Qt5::Test
        Qt5::Network
        Qt5::Concurrent
-       kdecore
        ${KCoreAddons_LIBRARIES}
        KI18n
        KCrash
@@ -78,7 +77,7 @@ if(NOT KDE_NO_DEPRECATED)
   add_library(klibloadertestmodule MODULE ${klibloadertestmodule_PART_SRCS})
   set_target_properties(klibloadertestmodule PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-  target_link_libraries(klibloadertestmodule KDE4Support kdecore KI18n Qt5::Test)
+  target_link_libraries(klibloadertestmodule KDE4Support KI18n Qt5::Test KService KCoreAddons)
 
   set_target_properties(klibloadertestmodule PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 endif(NOT KDE_NO_DEPRECATED)
@@ -90,7 +89,7 @@ set(klibloadertestmodule4_PART_SRCS klibloadertest4_module.cpp )
 add_library(klibloadertestmodule4 MODULE ${klibloadertestmodule4_PART_SRCS})
 set_target_properties(klibloadertestmodule4 PROPERTIES PREFIX "") # remove lib prefix - missing from cmake
 
-target_link_libraries(klibloadertestmodule4 KDE4Support kdecore KI18n Qt5::Test)
+target_link_libraries(klibloadertestmodule4 KDE4Support KI18n Qt5::Test KService KCoreAddons)
 
 set_target_properties(klibloadertestmodule4 PROPERTIES SKIP_BUILD_RPATH FALSE BUILD_WITH_INSTALL_RPATH FALSE)
 
