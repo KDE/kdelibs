@@ -59,6 +59,7 @@
 #include <QPainter>
 #include <QScrollBar>
 #include <QStyleOption>
+#include <QPushButton>
 
 #include <kconfiggroup.h>
 #include <QDebug>
@@ -386,6 +387,13 @@ void KStyle::polish(QWidget *w)
     // Enable hover effects in all itemviews
     if (QAbstractItemView *itemView = qobject_cast<QAbstractItemView*>(w) ) {
         itemView->viewport()->setAttribute(Qt::WA_Hover);
+    }
+
+    if (QDialogButtonBox* box = qobject_cast<QDialogButtonBox*>(w)) {
+        QPushButton* button = box->button(QDialogButtonBox::Ok);
+        if (button && button->shortcut().isEmpty()) {
+            button->setShortcut(Qt::CTRL | Qt::Key_Return);
+        }
     }
 
     QCommonStyle::polish(w);

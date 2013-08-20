@@ -371,6 +371,19 @@ public:
 };
 </pre>
 </li>
+<li>KDialog: It has been deprecated and moved to kde4support. Prefer QDialog.
+Note that there Ctrl+Enter is not set by default for accepting dialogs, we'd suggest to add them explicitly, especially in cases where QTextEdit is used, since then it's very hard to accept the dialog without using the mouse.
+
+You can do so by using:
+<pre>
+QDialogButtonBox* box = ...;
+...;
+button->setShortcut(Qt::CTRL | Qt::Key_Return);
+</pre>
+
+In styles based on KStyle, this will work out of the box.
+
+</li>
 </ul>
 
 <h4 align="right"><a href="#TOC">Return to the Table of Contents</a></h4>
