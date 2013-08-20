@@ -65,7 +65,7 @@ target_link_libraries(knewstuff3
     XmlGui
 )
 
-target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES kdeui KCompletion Qt5::Widgets)
+target_link_libraries(knewstuff3 LINK_INTERFACE_LIBRARIES KCompletion Qt5::Widgets)
 
 generate_export_header(knewstuff3)
 
