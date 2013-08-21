@@ -24,8 +24,6 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/khtml/platform
   ${CMAKE_SOURCE_DIR}/khtml/compat
   ${CMAKE_SOURCE_DIR}/khtml/css
-  ${ki18n_SOURCE_DIR}/src
-  ${ki18n_BINARY_DIR}/src
 )
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}/../java

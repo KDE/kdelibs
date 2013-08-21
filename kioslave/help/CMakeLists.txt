@@ -18,7 +18,7 @@ if(NOT LIBXML2_XMLLINT_EXECUTABLE)
   message(FATAL_ERROR "xmllint is required by the KDE help system to process DocBook XML")
 endif()
 
-include_directories( ${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR} ${CMAKE_SOURCE_DIR}/kdoctools )
+include_directories(${LIBXML2_INCLUDE_DIR} ${LIBXSLT_INCLUDE_DIR})
 
 include(ConfigureChecks.cmake)
 configure_file(config-help.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-help.h )
