@@ -20,7 +20,7 @@
 #ifndef KURLREQUESTER_H
 #define KURLREQUESTER_H
 
-#include <kio/kio_export.h>
+#include "kiowidgets_export.h"
 
 #include <keditlistwidget.h>
 #include <kfile.h>
@@ -55,7 +55,7 @@ class QString;
  * @short A widget to request a filename/url from the user
  * @author Carsten Pfeiffer <pfeiffer@kde.org>
  */
-class KIO_EXPORT KUrlRequester : public QWidget
+class KIOWIDGETS_EXPORT KUrlRequester : public QWidget
 {
     Q_OBJECT
     Q_PROPERTY( QUrl url READ url WRITE setUrl NOTIFY textChanged USER true )
@@ -152,7 +152,7 @@ public:
      * @deprecated since 5.0
      */
 #ifndef KDE_NO_DEPRECATED
-    virtual KIO_DEPRECATED QFileDialog *fileDialog() const;
+    virtual KIOWIDGETS_DEPRECATED QFileDialog *fileDialog() const;
 #endif
 
     /**
@@ -199,7 +199,7 @@ public:
      * @deprecated use KUrlRequester::placeholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED QString clickMessage() const;
+    KIOWIDGETS_DEPRECATED QString clickMessage() const;
 #endif
 
     /**
@@ -208,7 +208,7 @@ public:
      * @deprecated use KUrlRequester::setPlaceholderText instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setClickMessage(const QString& msg);
+    KIOWIDGETS_DEPRECATED void setClickMessage(const QString& msg);
 #endif
 
     /**
@@ -260,7 +260,7 @@ public Q_SLOTS:
      * @deprecated Use setUrl(QUrl::fromLocalFile(path)) instead.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setPath(const QString& path);
+    KIOWIDGETS_DEPRECATED void setPath(const QString& path);
 #endif
 
     /**
@@ -333,7 +333,7 @@ private:
 
 };
 
-class KIO_EXPORT KUrlComboRequester : public KUrlRequester // krazy:exclude=dpointer (For use in Qt Designer)
+class KIOWIDGETS_EXPORT KUrlComboRequester : public KUrlRequester // krazy:exclude=dpointer (For use in Qt Designer)
 {
     Q_OBJECT
 public:

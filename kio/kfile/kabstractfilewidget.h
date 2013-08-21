@@ -28,6 +28,7 @@
 class KPreviewWidgetBase;
 
 #include "kfile.h"
+#include <kio/kio_export.h>
 #include <qmimetype.h>
 
 class QUrl;

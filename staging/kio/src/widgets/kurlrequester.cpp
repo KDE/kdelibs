@@ -24,7 +24,6 @@
 #include <klineedit.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
-#include <kstandardshortcut.h>
 #include <kurlcompletion.h>
 
 #include <QAction>
@@ -32,6 +31,7 @@
 #include <QDebug>
 #include <QDrag>
 #include <QEvent>
+#include <QKeySequence>
 #include <QHBoxLayout>
 #include <QMimeData>
 
@@ -308,7 +308,7 @@ void KUrlRequester::KUrlRequesterPrivate::init()
     setCompletionObject( myCompletion );
 
     QAction* openAction = new QAction(m_parent);
-    openAction->setShortcut(KStandardShortcut::Open);
+    openAction->setShortcut(QKeySequence::Open);
     m_parent->connect(openAction, SIGNAL(triggered(bool)), SLOT(_k_slotOpenDialog()));
 }
 

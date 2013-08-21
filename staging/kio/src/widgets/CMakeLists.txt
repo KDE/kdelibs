@@ -8,11 +8,13 @@ set(kiowidgets_SRCS
   accessmanager.cpp
   accessmanagerreply_p.cpp
   fileundomanager.cpp
+  kfile.cpp
   pastedialog.cpp
   paste.cpp
   clipboardupdater.cpp
   kabstractfileitemactionplugin.cpp
   kbuildsycocaprogressdialog.cpp
+  kurlrequester.cpp
   sslui.cpp
   kurlpixmapprovider.cpp
   pixmaploader.cpp
@@ -83,7 +85,7 @@ install( FILES
   paste.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
- accessmanager.h
+  accessmanager.h
   sslui.h
   pixmaploader.h
   thumbsequencecreator.h
@@ -102,6 +104,7 @@ install( FILES
   paste.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
+  kurlrequester.h
   kurlpixmapprovider.h
   ksslcertificatebox.h
   ksslinfodialog.h

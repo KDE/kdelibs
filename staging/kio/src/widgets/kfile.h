@@ -20,7 +20,7 @@
 
 #include <QtCore/QDir>
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 /**
  * KFile is a class which provides a namespace for some enumerated
@@ -28,7 +28,7 @@
  * construct a KFile object itself.
  */
 
-class KIO_EXPORT KFile
+class KIOWIDGETS_EXPORT KFile
 {
     Q_GADGET
     Q_FLAGS(Modes)

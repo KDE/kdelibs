@@ -108,7 +108,6 @@ set(kfile_STAT_SRCS
   kfile/kabstractfilemodule.cpp
   kfile/kacleditwidget.cpp
   kfile/kencodingfiledialog.cpp
-  kfile/kfile.cpp
   kfile/kfiledialog.cpp
   kfile/kimagefilepreview.cpp
   kfile/kopenwithdialog.cpp
@@ -117,7 +116,6 @@ set(kfile_STAT_SRCS
   kfile/krecentdirs.cpp
   kfile/krecentdocument.cpp
   kfile/kurlcombobox.cpp
-  kfile/kurlrequester.cpp
   kfile/kurlrequesterdialog.cpp
   kfile/getgrouplist-fake.c
   kfile/kfilemetapreview.cpp
@@ -243,7 +241,6 @@ install( FILES
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
   kfile/kencodingfiledialog.h
-  kfile/kfile.h
   kfile/kfiledialog.h
   kfile/kimagefilepreview.h
   kfile/kopenwithdialog.h
@@ -253,7 +250,6 @@ install( FILES
   kfile/krecentdirs.h
   kfile/krecentdocument.h
   kfile/kurlcombobox.h
-  kfile/kurlrequester.h
   kfile/kurlrequesterdialog.h
   bookmarks/kbookmark.h
   bookmarks/kbookmarkexporter.h

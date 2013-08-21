@@ -27,6 +27,7 @@
 #ifndef KFILEDIALOG_H
 #define KFILEDIALOG_H
 
+#include <kio/kio_export.h>
 #include <QDialog>
 #include <kfile.h>
 #include <qmimetype.h>
