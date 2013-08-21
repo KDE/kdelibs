@@ -286,6 +286,7 @@ is no longer available. To simply make the code build, for the sake of porting o
    <li>Use KDBusService for DBus registration, and optional "unique" behavior</li>
    </ul>
 </li>
+<li>KLineEdit: Use QLineEdit instead, setClickMessage(...) becomes setPlaceholderText(...)</li>
 <li>KIntValidator: Use QIntValidator instead, the only difference was that KIntValidator attempted to
   support non-decimal bases (but it was broken with prefix and suffix texts, and therefore unused in KDE SC)</li>
 <li>KDoubleValidator: Use QDoubleValidator instead (as part of KLocale -&gt; QLocale)</li>
