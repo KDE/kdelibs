@@ -137,7 +137,9 @@ KSelectionOwner::~KSelectionOwner()
 
 void KSelectionOwner::Private::claimSucceeded()
 {
-    state = Idle;
+    if (state != KSelectionOwner::Private::WaitingForPreviousOwner) {
+        state = Idle;
+    }
 
     xcb_client_message_event_t ev;
     ev.response_type = XCB_CLIENT_MESSAGE;
@@ -180,14 +182,13 @@ void KSelectionOwner::Private::gotTimestamp()
         return;
     }
 
-    if (prev_owner != XCB_NONE) {
+    if (prev_owner != XCB_NONE && force_kill) {
         // qDebug() << "Waiting for previous owner to disown";
         timer.start(1000, owner);
         state = WaitingForPreviousOwner;
 
         // Note: We've already selected for structure notify events
         //       on the previous owner window
-        return;
     }
 
     // If there was no previous owner, we're done
@@ -207,12 +208,7 @@ void KSelectionOwner::Private::timeout()
         // Ignore any errors from the kill request
         xcb_generic_error_t *err = xcb_request_check(c, xcb_kill_client_checked(c, prev_owner));
         free(err);
-
-        claimSucceeded();
-        return;
     }
-
-    emit owner->failedToClaimOwnership();
 }
 
 void KSelectionOwner::claim(bool force_P, bool force_kill_P)
