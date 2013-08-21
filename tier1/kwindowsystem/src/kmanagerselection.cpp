@@ -106,8 +106,7 @@ protected:
         Q_UNUSED(result);
         if (eventType != "xcb_generic_event_t")
             return false;
-        owner->filterEvent(message);
-        return false;
+        return owner->filterEvent(message);
     }
 
 private:
