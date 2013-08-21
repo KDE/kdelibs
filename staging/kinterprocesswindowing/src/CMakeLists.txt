@@ -33,8 +33,8 @@ if (X11_FOUND)
   target_link_libraries(KInterProcessWindowing LINK_PRIVATE Qt5::X11Extras ${X11_LIBRARIES})
 endif()
 
-set_target_properties(KInterProcessWindowing PROPERTIES VERSION   ${ECM_VERSION_STRING}
-                                                        SOVERSION ${ECM_SOVERSION}
+set_target_properties(KInterProcessWindowing PROPERTIES VERSION   ${KINTERPROCESSWINDOWING_VERSION_STRING}
+                                                        SOVERSION ${KINTERPROCESSWINDOWING_SOVERSION}
 )
 
 install(TARGETS KInterProcessWindowing EXPORT kdelibsLibraryTargets ${ECM_TARGET_DEFAULT_ARGS})
