@@ -235,4 +235,6 @@ class KWINDOWSYSTEM_EXPORT KSelectionWatcher
         Private* const d;
     };
 
+Q_DECLARE_METATYPE(xcb_window_t)
+
 #endif
