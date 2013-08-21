@@ -29,8 +29,8 @@
 
 class KSharedConfig;
 template<class T>
-class KSharedPtr;
-typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
+class QExplicitlySharedDataPointer;
+typedef QExplicitlySharedDataPointer<KSharedConfig> KSharedConfigPtr;
 namespace KIO
 {
     class SlaveConfigPrivate;

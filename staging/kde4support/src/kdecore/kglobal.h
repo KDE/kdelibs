@@ -42,8 +42,8 @@ class KLocale;
 class KStandardDirs;
 class KSharedConfig;
 template <typename T>
-class KSharedPtr;
-typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
+class QExplicitlySharedDataPointer;
+typedef QExplicitlySharedDataPointer<KSharedConfig> KSharedConfigPtr;
 
 /// @cond InternalDocs
 

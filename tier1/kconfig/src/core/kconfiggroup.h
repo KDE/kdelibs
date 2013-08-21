@@ -35,9 +35,7 @@
 class KConfig;
 class KConfigGroupPrivate;
 class KSharedConfig;
-template <typename T> class KSharedPtr;
-typedef KSharedPtr<KSharedConfig> KSharedConfigPtr;
-
+typedef QExplicitlySharedDataPointer<KSharedConfig> KSharedConfigPtr;
 /**
  * \class KConfigGroup kconfiggroup.h <KConfigGroup>
  *

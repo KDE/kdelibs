@@ -118,7 +118,7 @@ KLocalePrivate &KLocalePrivate::operator=(const KLocalePrivate &rhs)
 
 KSharedConfig::Ptr KLocalePrivate::config()
 {
-    if (!m_config.isNull()) {
+    if (m_config) {
         return m_config;
     } else {
         return KSharedConfig::openConfig();

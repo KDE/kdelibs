@@ -23,7 +23,7 @@
 #define KSHAREDCONFIG_H
 
 #include <kconfig.h>
-#include <ksharedptr.h>
+#include <QExplicitlySharedDataPointer>
 
 /**
  * \class KSharedConfig ksharedconfig.h <KSharedConfig>
@@ -40,7 +40,7 @@
 class KCONFIGCORE_EXPORT KSharedConfig : public KConfig, public QSharedData //krazy:exclude=dpointer (only for refcounting)
 {
 public:
-  typedef KSharedPtr<KSharedConfig> Ptr;
+  typedef QExplicitlySharedDataPointer<KSharedConfig> Ptr;
 
 public:
     /**
