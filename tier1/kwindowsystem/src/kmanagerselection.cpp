@@ -642,18 +642,15 @@ void KSelectionWatcher::filterEvent(void* ev_P)
 {
     xcb_generic_event_t* event = reinterpret_cast<xcb_generic_event_t *>(ev_P);
     const uint response_type = event->response_type & ~0x80;
-//    if (response_type == XCB_CLIENT_MESSAGE) {
-//        xcb_client_message_event_t * cm_event = reinterpret_cast<xcb_client_message_event_t *>(event);
+    if (response_type == XCB_CLIENT_MESSAGE) {
+        xcb_client_message_event_t * cm_event = reinterpret_cast<xcb_client_message_event_t *>(event);
 
-//        if( cm_event->type != Private::manager_atom
-//            || cm_event->data.l[ 1 ] != static_cast< long >( d->selection ))
-//            return;
-//        qDebug() << "handling message";
-        //if( static_cast< long >( owner()) == cm_event->data.l[ 2 ] ) {
-            // owner() emits newOwner() if needed, no need to do it twice
-        //}
-//        return;
-//    }
+        if (cm_event->type != Private::manager_atom || cm_event->data.data32[ 1 ] != d->selection)
+            return;
+        // owner() checks whether the owner changed and emits newOwner()
+        owner();
+        return;
+    }
     if (response_type == XCB_DESTROY_NOTIFY) {
         xcb_destroy_notify_event_t* ev = reinterpret_cast<xcb_destroy_notify_event_t *>(event);
         if( d->selection_owner == XCB_NONE || ev->window != d->selection_owner )
