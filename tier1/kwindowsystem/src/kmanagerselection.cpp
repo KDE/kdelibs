@@ -130,6 +130,9 @@ KSelectionOwner::KSelectionOwner(const char *selection_P, int screen_P, QObject 
 KSelectionOwner::~KSelectionOwner()
 {
     release();
+    if (d->window != XCB_WINDOW_NONE) {
+        xcb_destroy_window(QX11Info::connection(), d->window); // also makes the selection not owned
+    }
     delete d;
 }
 
