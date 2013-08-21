@@ -2,6 +2,7 @@
     This file is part of the KDE Libraries
 
     Copyright (C) 2009 Lubos Lunak <l.lunak@kde.org>
+    Copyright (C) 2013 Martin Gräßlin <mgraesslin@kde.org>
 
     This library is free software; you can redistribute it and/or
     modify it under the terms of the GNU Library General Public
@@ -24,23 +25,42 @@
 
 #include <kmanagerselection.h>
 #include <qx11info_x11.h>
-#include <X11/Xlib.h>
 
 #define SNAME "_KDE_KMANAGERSELECTIONTEST"
 
 using namespace QTest;
 
+void KManagerSelectionTest::xSync()
+{
+    xcb_connection_t *c = QX11Info::connection();
+    const xcb_get_input_focus_cookie_t cookie = xcb_get_input_focus(c);
+    xcb_generic_error_t *error = Q_NULLPTR;
+    QScopedPointer<xcb_get_input_focus_reply_t, QScopedPointerPodDeleter> sync(xcb_get_input_focus_reply(c, cookie, &error));
+    if (error) {
+        free(error);
+    }
+}
+
+void KManagerSelectionTest::claim(KSelectionOwner *owner, bool force, bool forceKill)
+{
+    QSignalSpy claimSpy(owner, SIGNAL(claimedOwnership()));
+    owner->claim(force, forceKill);
+    xSync();
+    QVERIFY(claimSpy.wait());
+    QCOMPARE(claimSpy.count(), 1);
+}
+
 void KManagerSelectionTest::testAcquireRelease()
 { // test that newOwner() is emitted when there is a new selection owner
     KSelectionWatcher watcher( SNAME );
     KSelectionOwner owner( SNAME );
-    QVERIFY( owner.ownerWindow() == None );
-    QVERIFY( watcher.owner() == None );
+    QVERIFY( owner.ownerWindow() == XCB_WINDOW_NONE );
+    QVERIFY( watcher.owner() == XCB_WINDOW_NONE );
     SigCheckWatcher sw( watcher );
     SigCheckOwner so( owner );
-    QVERIFY( owner.claim( false ));
+    claim(&owner);
     QSignalSpy newOwnerSpy(&watcher, SIGNAL(newOwner(xcb_window_t)));
-    QVERIFY(newOwnerSpy.wait(2000));
+    QVERIFY(newOwnerSpy.wait());
     QVERIFY( sw.newowner == true );
     QVERIFY( sw.lostowner == false );
     QVERIFY( so.lostownership == false );
@@ -50,7 +70,7 @@ void KManagerSelectionTest::testInitiallyOwned()
 { // test that lostOwner() is emitted when the selection is disowned
     KSelectionOwner owner( SNAME );
     SigCheckOwner so( owner );
-    QVERIFY( owner.claim( false ));
+    claim(&owner);
     KSelectionWatcher watcher( SNAME );
     SigCheckWatcher sw( watcher );
     owner.release();
@@ -65,23 +85,19 @@ void KManagerSelectionTest::testLostOwnership()
 { // test that lostOwnership() is emitted when something else forces taking the ownership
     KSelectionOwner owner1( SNAME );
     KSelectionOwner owner2( SNAME );
-    QVERIFY( owner1.claim( false ));
-    QVERIFY( !owner2.claim( false ));
-    XEvent ev;
-    ev.xselectionclear.type = SelectionClear;
-    ev.xselectionclear.serial = XLastKnownRequestProcessed( QX11Info::display());
-    ev.xselectionclear.send_event = True;
-    ev.xselectionclear.display = QX11Info::display();
-    ev.xselectionclear.window = owner1.ownerWindow();
-    ev.xselectionclear.selection = XInternAtom( QX11Info::display(), SNAME, False );
-    ev.xselectionclear.time = QX11Info::appTime();
-    QVERIFY( owner2.claim( true, false ));
-    // SelectionClear event is not sent to the same X client, so fake it
-    XPutBackEvent( QX11Info::display(), &ev );
+    claim(&owner1);
+
+    QSignalSpy claimSpy(&owner2, SIGNAL(failedToClaimOwnership()));
+    owner2.claim(false);
+    claimSpy.wait();
+    QCOMPARE(claimSpy.count(), 1);
+    claim(&owner2, true, false);
+
+    QEXPECT_FAIL("", "selectionClear event is not sent to the same X client", Abort);
     QSignalSpy lostOwnershipSpy(&owner1, SIGNAL(lostOwnership()));
-    QVERIFY(lostOwnershipSpy.wait(2000));
-    QVERIFY( owner1.ownerWindow() == None );
-    QVERIFY( owner2.ownerWindow() != None );
+    QVERIFY(lostOwnershipSpy.wait());
+    QVERIFY( owner1.ownerWindow() == XCB_WINDOW_NONE );
+    QVERIFY( owner2.ownerWindow() != XCB_WINDOW_NONE );
 }
 
 void KManagerSelectionTest::testWatching()
@@ -90,24 +106,28 @@ void KManagerSelectionTest::testWatching()
     KSelectionOwner owner1( SNAME );
     KSelectionOwner owner2( SNAME );
     SigCheckWatcher sw( watcher );
-    QVERIFY( owner1.claim( false ));
+    claim(&owner1);
     QSignalSpy newOwnerSpy(&watcher, SIGNAL(newOwner(xcb_window_t)));
-    QVERIFY(newOwnerSpy.wait(2000));
+    QVERIFY(newOwnerSpy.wait());
+    QCOMPARE(newOwnerSpy.count(), 1);
     QVERIFY( sw.newowner == true );
     QVERIFY( sw.lostowner == false );
     sw.newowner = sw.lostowner = false;
-    QVERIFY( owner2.claim( true, false ));
+    claim(&owner2, true, false);
+    xSync();
     QVERIFY(newOwnerSpy.wait(2000));
+    QCOMPARE(newOwnerSpy.count(), 2);
     QVERIFY( sw.newowner == true );
     QVERIFY( sw.lostowner == false );
     sw.newowner = sw.lostowner = false;
-    owner2.release();
     QSignalSpy lostOwnerSpy(&watcher, SIGNAL(lostOwner()));
-    QVERIFY(lostOwnerSpy.wait(2000));
+    owner2.release();
+    xSync();
+    QVERIFY(lostOwnerSpy.wait());
     QVERIFY( sw.newowner == false );
     QVERIFY( sw.lostowner == true );
     sw.newowner = sw.lostowner = false;
-    QVERIFY( owner2.claim( false ));
+    claim(&owner2);
     QVERIFY(newOwnerSpy.wait(2000));
     QVERIFY( sw.newowner == true );
     QVERIFY( sw.lostowner == false );

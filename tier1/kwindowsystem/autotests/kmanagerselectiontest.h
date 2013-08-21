@@ -24,6 +24,8 @@
 #include <QtCore/QObject>
 #include <QtTest/QtTest>
 
+class KSelectionOwner;
+
 class KManagerSelectionTest
     : public QObject
     {
@@ -34,9 +36,11 @@ class KManagerSelectionTest
         void testInitiallyOwned();
         void testLostOwnership();
         void testWatching();
+    private:
+        void claim(KSelectionOwner *owner, bool force = false, bool forceKill = true);
+        void xSync();
     };
 
-class KSelectionOwner;
 class KSelectionWatcher;
 
 // For checking whether several signal have or have not been emitted,
