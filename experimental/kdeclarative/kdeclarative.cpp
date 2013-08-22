@@ -19,7 +19,7 @@
 
 #include "kdeclarative.h"
 #include "private/kdeclarative_p.h"
-#include "private/engineaccess_p.h"
+#include "private/rootcontext_p.h"
 #include "private/kiconprovider_p.h"
 
 #include <QCoreApplication>
@@ -71,6 +71,11 @@ void KDeclarative::initialize()
 
 void KDeclarative::setupBindings()
 {
+    /*Create a context object for the root qml context.
+      in this way we can register global functions, in this case the i18n() family*/
+    RootContext *contextObj = new RootContext(d->declarativeEngine.data());
+    d->declarativeEngine.data()->rootContext()->setContextObject(contextObj);
+
     /*tell the engine to search for import in the kde4 plugin dirs.
     addImportPath adds the path at the beginning, so to honour user's
     paths we need to traverse the list in reverse order*/

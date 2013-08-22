@@ -11,6 +11,7 @@ set(kdeclarative_LIB_SRCS
     configpropertymap.cpp
     qmlobject.cpp
     kdeclarative.cpp
+    private/rootcontext.cpp
     private/kiconprovider.cpp)
 
 add_library(kdeclarative SHARED ${kdeclarative_LIB_SRCS})

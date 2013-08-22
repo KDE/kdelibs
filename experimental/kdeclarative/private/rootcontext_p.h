@@ -1,5 +1,5 @@
 /*
- *   Copyright 2010 Marco Martin <mart@kde.org>
+ *   Copyright 2011 Marco Martin <mart@kde.org>
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Library General Public License as
@@ -17,25 +17,20 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-#include "engineaccess_p.h"
-#include "kdeclarative.h"
-#include "kdeclarative_p.h"
+#ifndef ROOTCONTEXT_H
+#define ROOTCONTEXT_H
 
-#include <QtScript/QScriptEngine>
+#include <QObject>
 
-EngineAccess::EngineAccess(KDeclarative *parent)
-    : QObject(0),
-      m_kDeclarative(parent)
+class RootContext : public QObject
 {
-}
+    Q_OBJECT
 
-EngineAccess::~EngineAccess()
-{
-}
+public:
+    RootContext(QObject *parent = 0);
+    ~RootContext();
 
-void EngineAccess::setEngine(QScriptValue val)
-{
-    m_kDeclarative->d->scriptEngine = val.engine();
-}
+    Q_INVOKABLE QString i18n(const QString &message, const QString &param1 = QString(), const QString &param2 = QString(), const QString &param3 = QString(), const QString &param4 = QString(), const QString &param5 = QString(), const QString &param6 = QString(), const QString &param7 = QString(), const QString &param8 = QString(), const QString &param9 = QString(), const QString &param10 = QString()) const;
+};
 
-#include "moc_engineaccess_p.cpp"
+#endif
