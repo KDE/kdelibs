@@ -64,7 +64,7 @@ public:
       * @internal
       */
     QList<QWidget*> findWidgets(const QPersistentModelIndex &index, const QStyleOptionViewItem &option,
-                                UpdateWidgetsEnum updateWidgets = UpdateWidgets) const;
+                                UpdateWidgetsEnum updateWidgets = UpdateWidgets, bool includeNotVisible = false) const;
 
     /**
       * @internal
