@@ -153,6 +153,8 @@ protected:
      */
     QList<QEvent::Type> blockedEventTypes(QWidget *widget) const;
 
+    QList<QWidget*> widgetsForIndex(const QModelIndex& index) const;
+
 private:
     //@cond PRIVATE
     friend class KWidgetItemDelegatePool;
