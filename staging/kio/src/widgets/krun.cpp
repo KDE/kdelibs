@@ -21,7 +21,8 @@
 
 #include "krun.h"
 #include "krun_p.h"
-#include <config-kio.h>
+#include <config-kiowidgets.h> // HAVE_X11
+#include <config-kiocore.h> // CMAKE_INSTALL_PREFIX
 
 #include <assert.h>
 #include <stdlib.h>
@@ -50,13 +51,12 @@
 #include "kio/job.h"
 #include "kio/global.h"
 #include "kio/scheduler.h"
-#include "kio/netaccess.h"
-#include "kfile/kopenwithdialog.h"
-#include "kfile/krecentdocument.h"
+#include "kopenwithdialog.h"
+#include "krecentdocument.h"
 #include "kdesktopfileactions.h"
 
 #include <kauthorized.h>
-#include <kmessageboxwrapper.h>
+#include <kmessagebox.h>
 #include <ktoolinvocation.h>
 #include <klocalizedstring.h>
 #include <kprotocolmanager.h>
@@ -159,7 +159,7 @@ bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool
     bool noRun = false;
     bool noAuth = false;
     if (_mimetype == QLatin1String("inode/directory-locked")) {
-        KMessageBoxWrapper::error(window,
+        KMessageBox::error(window,
                                   i18n("<qt>Unable to enter <b>%1</b>.\nYou do not have access rights to this location.</qt>", u.toDisplayString().toHtmlEscaped()));
         return false;
     }
@@ -199,7 +199,7 @@ bool KRun::runUrl(const QUrl& u, const QString& _mimetype, QWidget* window, bool
         return false;
     }
     if (noAuth) {
-        KMessageBoxWrapper::error(window,
+        KMessageBox::error(window,
                                   i18n("<qt>You do not have permission to run <b>%1</b>.</qt>", u.toDisplayString().toHtmlEscaped()));
         return false;
     }
@@ -778,10 +778,13 @@ static QList<QUrl> resolveURLs(const QList<QUrl>& _urls, const KService& _servic
             //qDebug() << "Looking at url=" << url << " supported=" << supported;
             if (!supported && KProtocolInfo::protocolClass(url.scheme()) == ":local") {
                 // Maybe we can resolve to a local URL?
-                QUrl localURL = KIO::NetAccess::mostLocalUrl(url, 0);
-                if (localURL != url) {
-                    *it = localURL;
-                    //qDebug() << "Changed to " << localURL;
+                KIO::StatJob *job = KIO::mostLocalUrl(url);
+                if (job->exec()) { // ## nasty nested event loop!
+                    const QUrl localURL = job->mostLocalUrl();
+                    if (localURL != url) {
+                        *it = localURL;
+                        //qDebug() << "Changed to" << localURL;
+                    }
                 }
             }
         }
@@ -1168,7 +1171,7 @@ void KRun::init()
     if (!d->m_strURL.isValid()) {
         // TODO KDE5: call virtual method on error (see BrowserRun::init)
         d->m_showingDialog = true;
-        KMessageBoxWrapper::error(d->m_window, i18n("Malformed URL\n%1", d->m_strURL.errorString()));
+        KMessageBox::error(d->m_window, i18n("Malformed URL\n%1", d->m_strURL.errorString()));
         qWarning() << d->m_strURL.errorString();
         d->m_showingDialog = false;
         d->m_bFault = true;
@@ -1179,7 +1182,7 @@ void KRun::init()
     if (!KAuthorized::authorizeUrlAction("open", QUrl(), d->m_strURL)) {
         QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, d->m_strURL.toDisplayString());
         d->m_showingDialog = true;
-        KMessageBoxWrapper::error(d->m_window, msg);
+        KMessageBox::error(d->m_window, msg);
         d->m_showingDialog = false;
         d->m_bFault = true;
         d->m_bFinished = true;
@@ -1195,7 +1198,7 @@ void KRun::init()
         const QString localPath = d->m_strURL.toLocalFile();
         if (!QFile::exists(localPath)) {
             d->m_showingDialog = true;
-            KMessageBoxWrapper::error(d->m_window,
+            KMessageBox::error(d->m_window,
                                       i18n("<qt>Unable to run the command specified. "
                                       "The file or folder <b>%1</b> does not exist.</qt>" ,
                                       localPath.toHtmlEscaped()));
@@ -1219,7 +1222,7 @@ void KRun::init()
             // Unknown mimetype because the file is unreadable, no point in showing an open-with dialog (#261002)
             const QString msg = KIO::buildErrorString(KIO::ERR_ACCESS_DENIED, localPath);
             d->m_showingDialog = true;
-            KMessageBoxWrapper::error(d->m_window, msg);
+            KMessageBox::error(d->m_window, msg);
             d->m_showingDialog = false;
             d->m_bFault = true;
             d->m_bFinished = true;

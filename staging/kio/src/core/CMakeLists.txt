@@ -23,6 +23,7 @@ set(kiocore_SRCS
   klocalsocket.cpp
   socketconnectionbackend.cpp
   connection.cpp
+  krecentdocument.cpp
   kfileitemlistproperties.cpp
   kemailsettings.cpp
   tcpslavebase.cpp
@@ -179,4 +180,5 @@ install(FILES
   ksambasharedata.h
   kprotocolinfo.h
   kprotocolmanager.h
+  krecentdocument.h
   DESTINATION ${INCLUDE_INSTALL_DIR} COMPONENT Devel)

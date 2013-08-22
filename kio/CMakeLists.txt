@@ -54,13 +54,11 @@ set(kiocore_STAT_SRCS
   kio/delegateanimationhandler.cpp
   kio/imagefilter.cpp
   kio/kdbusservicestarter.cpp
-  kio/kdesktopfileactions.cpp
   kio/kfileitemactions.cpp
   kio/kfileitemdelegate.cpp
   kio/kfileshare.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
-  kio/krun.cpp
   kio/kscan.cpp
   kio/netaccess.cpp
 )
@@ -80,15 +78,8 @@ endif(NOT KIO_NO_SOLID)
 
 if(UNIX)
    set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
-       kio/kautomount.cpp
    )
 endif(UNIX)
-
-if(WIN32)
-   set(kiocore_STAT_SRCS ${kiocore_STAT_SRCS}
-       kio/krun_win.cpp
-   )
-endif(WIN32)
 
 set(kbookmarks_STAT_SRCS
   bookmarks/kbookmark.cc
@@ -110,11 +101,9 @@ set(kfile_STAT_SRCS
   kfile/kencodingfiledialog.cpp
   kfile/kfiledialog.cpp
   kfile/kimagefilepreview.cpp
-  kfile/kopenwithdialog.cpp
   kfile/kpreviewwidgetbase.cpp
   kfile/kpropertiesdialog.cpp
   kfile/krecentdirs.cpp
-  kfile/krecentdocument.cpp
   kfile/kurlcombobox.cpp
   kfile/kurlrequesterdialog.cpp
   kfile/getgrouplist-fake.c
@@ -228,27 +217,22 @@ install(  FILES
   DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
-  kio/kautomount.h
   kio/kdbusservicestarter.h
-  kio/kdesktopfileactions.h
   kio/kfileitemactions.h
   kio/kfileitemdelegate.h
   kio/kfileshare.h
   kio/kimageio.h
   kio/kmimetypechooser.h
-  kio/krun.h
   kio/kscan.h
   kfile/kabstractfilemodule.h
   kfile/kabstractfilewidget.h
   kfile/kencodingfiledialog.h
   kfile/kfiledialog.h
   kfile/kimagefilepreview.h
-  kfile/kopenwithdialog.h
   kfile/kpreviewwidgetbase.h
   kfile/kpropertiesdialog.h
   kfile/kpropsdialog.h
   kfile/krecentdirs.h
-  kfile/krecentdocument.h
   kfile/kurlcombobox.h
   kfile/kurlrequesterdialog.h
   bookmarks/kbookmark.h

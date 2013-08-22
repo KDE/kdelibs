@@ -24,7 +24,7 @@
 
 #include <QtGlobal>
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 #ifdef Q_OS_UNIX
 
@@ -42,7 +42,7 @@ class KAutoMountPrivate;
  *
  * @short This class implements synchronous mounting of devices.
  */
-class KIO_EXPORT KAutoMount : public QObject
+class KIOWIDGETS_EXPORT KAutoMount : public QObject
 {
     Q_OBJECT
 public:
@@ -82,7 +82,7 @@ class KAutoUnmountPrivate;
  *
  * @short This class implements synchronous unmounting of devices,
  */
-class KIO_EXPORT KAutoUnmount : public QObject
+class KIOWIDGETS_EXPORT KAutoUnmount : public QObject
 {
     Q_OBJECT
 public:

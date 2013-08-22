@@ -21,7 +21,7 @@
 #define KDESKTOPFILEACTIONS_H
 
 #include <kserviceaction.h>
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 #include <QtCore/QList>
 #include <QtCore/QUrl>
 #include <QDebug>
@@ -38,7 +38,7 @@ namespace KDesktopFileActions
      * by kio itself. Namely mount/unmount for FSDevice files.
      * @return the list of services
      */
-    KIO_EXPORT QList<KServiceAction> builtinServices(const QUrl& url);
+    KIOWIDGETS_EXPORT QList<KServiceAction> builtinServices(const QUrl& url);
 
     /**
      * Returns a list of services defined by the user as possible actions
@@ -50,14 +50,14 @@ namespace KDesktopFileActions
      * (if false, services that don't have %u or %U in the Exec line won't be taken into account).
      * @return the list of user defined actions
      */
-    KIO_EXPORT QList<KServiceAction> userDefinedServices(const QString& path, bool bLocalFiles);
+    KIOWIDGETS_EXPORT QList<KServiceAction> userDefinedServices(const QString& path, bool bLocalFiles);
 
     /**
      * Overload of userDefinedServices but also allows you to pass a list of urls for this file.
      * This allows for the menu to be changed depending on the exact files via
      * the X-KDE-GetActionMenu extension.
      */
-    KIO_EXPORT QList<KServiceAction> userDefinedServices(const QString& path, const KDesktopFile& desktopFile, bool bLocalFiles, const QList<QUrl> & file_list = QList<QUrl>());
+    KIOWIDGETS_EXPORT QList<KServiceAction> userDefinedServices(const QString& path, const KDesktopFile& desktopFile, bool bLocalFiles, const QList<QUrl> & file_list = QList<QUrl>());
 
     /**
      * Returns a list of services defined by the user as possible actions
@@ -73,14 +73,14 @@ namespace KDesktopFileActions
      *
      * @return the list of user defined actions
      */
-    KIO_EXPORT QList<KServiceAction> userDefinedServices(const KService& service, bool bLocalFiles, const QList<QUrl> & file_list = QList<QUrl>());
+    KIOWIDGETS_EXPORT QList<KServiceAction> userDefinedServices(const KService& service, bool bLocalFiles, const QList<QUrl> & file_list = QList<QUrl>());
 
    /**
      * Execute @p service on the list of @p urls.
      * @param urls the list of urls
      * @param service the service to execute
      */
-    KIO_EXPORT void executeService(const QList<QUrl>& urls, const KServiceAction& service);
+    KIOWIDGETS_EXPORT void executeService(const QList<QUrl>& urls, const KServiceAction& service);
 
     /**
      * Invokes the default action for the desktop entry. If the desktop
@@ -93,7 +93,7 @@ namespace KDesktopFileActions
      * @return true on success and false on failure.
      * @see KRun::runUrl
      */
-    KIO_EXPORT bool run(const QUrl& _url, bool _is_local);
+    KIOWIDGETS_EXPORT bool run(const QUrl& _url, bool _is_local);
 }
 
 #endif

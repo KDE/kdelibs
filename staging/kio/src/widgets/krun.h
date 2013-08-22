@@ -22,14 +22,13 @@
 #ifndef KRUN_H
 #define KRUN_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QUrl>
 
 class KService;
-class KStartupInfo;
 class KJob;
 class QTimer;
 
@@ -56,7 +55,7 @@ class Job;
  *
  * @short Opens files with their associated applications in KDE
  */
-class KIO_EXPORT KRun : public QObject
+class KIOWIDGETS_EXPORT KRun : public QObject
 {
     Q_OBJECT
 public:
@@ -316,7 +315,7 @@ public:
      * @param str the string to quote. The quoted string will be written here
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED void shellQuote(QString &str);
+    static KIOWIDGETS_DEPRECATED void shellQuote(QString &str);
 #endif
 
     /**
@@ -494,7 +493,7 @@ protected:
      * so this can be removed.
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED QTimer& timer();
+    KIOWIDGETS_DEPRECATED QTimer& timer();
 #endif
 
     /**
@@ -502,7 +501,7 @@ protected:
      * @deprecated not useful in public API
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setDoScanFile(bool scanFile);
+    KIOWIDGETS_DEPRECATED void setDoScanFile(bool scanFile);
 #endif
 
     /**
@@ -510,7 +509,7 @@ protected:
      * @deprecated not useful in public API
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED bool doScanFile() const;
+    KIOWIDGETS_DEPRECATED bool doScanFile() const;
 #endif
 
     /**
@@ -518,7 +517,7 @@ protected:
      * @deprecated typo in the name, and not useful as a public method
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setIsDirecory(bool isDirectory);
+    KIOWIDGETS_DEPRECATED void setIsDirecory(bool isDirectory);
 #endif
 
     /**
@@ -530,14 +529,14 @@ protected:
      * @deprecated not useful in public API
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED void setInitializeNextAction(bool initialize);
+    KIOWIDGETS_DEPRECATED void setInitializeNextAction(bool initialize);
 #endif
 
     /**
      * @deprecated not useful in public API
      */
 #ifndef KDE_NO_DEPRECATED
-    KIO_DEPRECATED bool initializeNextAction() const;
+    KIOWIDGETS_DEPRECATED bool initializeNextAction() const;
 #endif
 
     /**

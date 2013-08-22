@@ -19,11 +19,12 @@
 
 #include "kdesktopfileactions.h"
 
-#include "config-kio.h"
+#include "config-kiowidgets.h" // KIO_NO_SOLID
+#include "../core/config-kmountpoint.h" // for HAVE_VOLMGT (yes I cheat a bit)
 
 #include "krun.h"
 #include "kautomount.h"
-#include <kmessageboxwrapper.h>
+#include <kmessagebox.h>
 #include <kdirnotify.h>
 #include <kmountpoint.h>
 
@@ -62,7 +63,7 @@ bool KDesktopFileActions::run( const QUrl& u, bool _is_local )
     {
         QString tmp = i18n("The desktop entry file %1 "
                            "has no Type=... entry.", u.toLocalFile() );
-        KMessageBoxWrapper::error( 0, tmp);
+        KMessageBox::error( 0, tmp);
         return false;
     }
 
@@ -77,7 +78,7 @@ bool KDesktopFileActions::run( const QUrl& u, bool _is_local )
         return runLink( u, cfg );
 
     QString tmp = i18n("The desktop entry of type\n%1\nis unknown.",  cfg.readType() );
-    KMessageBoxWrapper::error( 0, tmp);
+    KMessageBox::error( 0, tmp);
 
     return false;
 }
@@ -91,7 +92,7 @@ static bool runFSDevice( const QUrl& _url, const KDesktopFile &cfg )
     if ( dev.isEmpty() )
     {
         QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.toLocalFile() );
-        KMessageBoxWrapper::error( 0, tmp);
+        KMessageBox::error( 0, tmp);
         return retval;
     }
 
@@ -135,7 +136,7 @@ static bool runLink(const QUrl& _url, const KDesktopFile &cfg)
     if ( u.isEmpty() )
     {
         QString tmp = i18n("The desktop entry file\n%1\nis of type Link but has no URL=... entry.",  _url.toString() );
-        KMessageBoxWrapper::error( 0, tmp );
+        KMessageBox::error( 0, tmp );
         return false;
     }
 
@@ -167,7 +168,7 @@ QList<KServiceAction> KDesktopFileActions::builtinServices( const QUrl& _url )
         const QString dev = cfg.readDevice();
         if ( dev.isEmpty() ) {
             QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  _url.toLocalFile() );
-            KMessageBoxWrapper::error(0, tmp);
+            KMessageBox::error(0, tmp);
             return result;
         }
 
@@ -299,7 +300,7 @@ void KDesktopFileActions::executeService( const QList<QUrl>& urls, const KServic
             const QString dev = cfg.readDevice();
             if ( dev.isEmpty() ) {
                 QString tmp = i18n("The desktop entry file\n%1\nis of type FSDevice but has no Dev=... entry.",  path );
-                KMessageBoxWrapper::error( 0, tmp );
+                KMessageBox::error( 0, tmp );
                 return;
             }
             KMountPoint::Ptr mp = KMountPoint::currentMountPoints().findByDevice( dev );

@@ -2,12 +2,26 @@ project(KIOWidgets)
 
 #include (ConfigureChecks.cmake)
 
-#configure_file(config-kiowidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiowidgets.h )
+find_package(X11)
+
+if (X11_FOUND)
+  set (HAVE_X11 1)
+else ()
+  set (HAVE_X11 0)
+endif ()
+
+# Device desktop files aren't really used anymore
+set(KIO_NO_SOLID TRUE)
+
+configure_file(config-kiowidgets.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-kiowidgets.h )
 
 set(kiowidgets_SRCS
   accessmanager.cpp
   accessmanagerreply_p.cpp
   fileundomanager.cpp
+  kautomount.cpp
+  kdesktopfileactions.cpp
+  kopenwithdialog.cpp
   kfile.cpp
   pastedialog.cpp
   paste.cpp
@@ -15,6 +29,7 @@ set(kiowidgets_SRCS
   kabstractfileitemactionplugin.cpp
   kbuildsycocaprogressdialog.cpp
   kurlrequester.cpp
+  krun.cpp
   sslui.cpp
   kurlpixmapprovider.cpp
   pixmaploader.cpp
@@ -34,6 +49,11 @@ set(kiowidgets_SRCS
   kdirlister.cpp
   kdirmodel.cpp
 )
+if (WIN32)
+  LIST(APPEND kiowidgets_SRCS
+    krun_win.cpp
+  )
+endif()
 
 qt5_add_dbus_adaptor(kiowidgets_SRCS org.kde.kio.FileUndoManager.xml fileundomanager_p.h KIO::FileUndoManagerPrivate fileundomanager_adaptor KIOFileUndoManagerAdaptor)
 
@@ -63,7 +83,9 @@ target_link_libraries(KIOWidgets
     Qt5::DBus
     KI18n
     KIconThemes   # KIconLoader
-    KWidgetsAddons
+    kdeqt5staging # QUrlPathInfo
+    KWindowSystem # KStartupInfo
+    KWidgetsAddons # KMessageBox
 )
 
 if(ACL_FOUND)
@@ -81,10 +103,16 @@ install(FILES
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install( FILES
+  kautomount.h
+  kdesktopfileactions.h
+<<<<<<< HEAD
+  kopenwithdialog.h
   pastedialog.h
   paste.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
+=======
+>>>>>>> 0f27987... Move KRecentDocument to kiocore, krun to kiowidgets.
   accessmanager.h
   sslui.h
   pixmaploader.h
@@ -100,11 +128,18 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
+  kautomount.h
+  kdesktopfileactions.h
+  kopenwithdialog.h
+<<<<<<< HEAD
   pastedialog.h
   paste.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
   kurlrequester.h
+=======
+  krun.h
+>>>>>>> 0f27987... Move KRecentDocument to kiocore, krun to kiowidgets.
   kurlpixmapprovider.h
   ksslcertificatebox.h
   ksslinfodialog.h

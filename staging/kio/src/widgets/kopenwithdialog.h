@@ -20,7 +20,7 @@
 #ifndef OPENWITHDIALOG_H
 #define OPENWITHDIALOG_H
 
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 #include <QDialog>
 #include <QUrl>
@@ -36,7 +36,7 @@ class KOpenWithDialogPrivate;
  *
  * @author David Faure <faure@kde.org>
  */
-class KIO_EXPORT KOpenWithDialog : public QDialog
+class KIOWIDGETS_EXPORT KOpenWithDialog : public QDialog
 {
     Q_OBJECT
 public:

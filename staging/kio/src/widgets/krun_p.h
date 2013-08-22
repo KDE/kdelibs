@@ -28,7 +28,7 @@
 #include <QtCore/QEventLoopLocker>
 #include <QtCore/QProcess>
 
-#include "config-kio.h"
+#include <config-kiowidgets.h> // HAVE_X11
 #include "kstartupinfo.h"
 
 /**

@@ -28,7 +28,7 @@
 #ifndef __KRECENTDOCUMENT_H
 #define __KRECENTDOCUMENT_H
 
-#include <kio/kio_export.h>
+#include <kiocore_export.h>
 
 #include <QtCore/QString>
 #include <QUrl>
@@ -49,7 +49,7 @@
  *
  * @author Daniel M. Duley <mosfet@kde.org>
  */
-class KIO_EXPORT KRecentDocument
+class KIOCORE_EXPORT KRecentDocument
 {
 public:
 
@@ -88,7 +88,7 @@ public:
      * @deprecated call add(QUrl(str)) if isURL=true, and add(QUrl::fromLocalFile(str)) if isURL=false.
      */
 #ifndef KDE_NO_DEPRECATED
-    static KIO_DEPRECATED void add(const QString &documentStr, bool isUrl = false)
+    static KIOCORE_DEPRECATED void add(const QString &documentStr, bool isUrl = false)
     {
         if (isUrl) {
             add(QUrl(documentStr));
