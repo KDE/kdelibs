@@ -284,6 +284,9 @@ is no longer available. To simply make the code build, for the sake of porting o
    <li>Call QCoreApplication::setOrganizationDomain("kde.org")</li>
    <li>Call QApplication::setApplicationDisplayName(i18n("...")) for GUI programs</li>
    <li>Use KDBusService for DBus registration, and optional "unique" behavior</li>
+   <li>Important: if you create a QApplication (instead of KApplication) after using KCmdLineArgs,
+       do not pass argc and argv to it, but KCmdLineArgs::qtArgc() and KCmdLineArgs::qtArgv().
+       This can go away when porting away from KCmdLineArgs.</li>
    </ul>
 </li>
 <li>KLineEdit: Use QLineEdit instead, setClickMessage(...) becomes setPlaceholderText(...)</li>
