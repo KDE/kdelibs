@@ -20,7 +20,7 @@
 #ifndef KURLREQUESTER_H
 #define KURLREQUESTER_H
 
-#include "kiowidgets_export.h"
+#include <kio/kiowidgets_export.h>
 
 #include <keditlistwidget.h>
 #include <kfile.h>
