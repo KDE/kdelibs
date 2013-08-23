@@ -66,6 +66,7 @@ set(libkde4support_SRCS
     kdecore/kurl.cpp
 
     kdeui/k3icon.cpp
+    kdeui/k4style.cpp
     kdeui/kaction.cpp
     kdeui/kapplication.cpp
     kdeui/kbuttongroup.cpp
@@ -296,6 +297,7 @@ install(FILES
     kio/kfileshare.h
     kio/kfileitemactionplugin.h
 
+    kdeui/k4style.h
     kdeui/kaccelgen.h
     kdeui/kaction.h
     kdeui/kapplication.h
