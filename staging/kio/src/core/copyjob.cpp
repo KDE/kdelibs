@@ -1692,8 +1692,8 @@ void CopyJobPrivate::setNextDirAttribute()
         for ( ; it != m_directoriesCopied.constEnd() ; ++it ) {
             const QUrl& url = (*it).uDest;
             if ( url.isLocalFile() && (*it).mtime != (time_t)-1 ) {
-                KDE_struct_stat statbuf;
-                if (KDE::lstat(url.path(), &statbuf) == 0) {
+                QT_STATBUF statbuf;
+                if (QT_LSTAT(url.path(), &statbuf) == 0) {
                     struct utimbuf utbuf;
                     utbuf.actime = statbuf.st_atime; // access time, unchanged
                     utbuf.modtime = (*it).mtime; // modification time
