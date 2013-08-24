@@ -21,7 +21,7 @@
 
 #include <QPixmap>
 #include <kiconloader.h>
-#include <kiowidgets_export.h>
+#include <kio/kiowidgets_export.h>
 
 class QUrl;
 

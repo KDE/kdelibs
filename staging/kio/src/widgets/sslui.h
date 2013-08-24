@@ -21,7 +21,7 @@
 #ifndef _KSSLUI_H
 #define _KSSLUI_H
 
-#include <kiowidgets_export.h>
+#include <kio/kiowidgets_export.h>
 #include <kio_ktcpsocket.h>
 
 namespace KIO {

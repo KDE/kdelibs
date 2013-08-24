@@ -24,7 +24,7 @@
 
 #include <QtGlobal>
 
-#include <kiowidgets_export.h>
+#include <kio/kiowidgets_export.h>
 
 #ifdef Q_OS_UNIX
 
