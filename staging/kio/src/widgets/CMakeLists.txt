@@ -130,6 +130,7 @@ install( FILES
   kopenwithdialog.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
+  kfile.h
   kurlrequester.h
   krun.h
   kurlpixmapprovider.h
