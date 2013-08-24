@@ -51,11 +51,8 @@ set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRE
 
 set(kiocore_STAT_SRCS
   kio/defaultviewadapter.cpp
-  kio/delegateanimationhandler.cpp
-  kio/imagefilter.cpp
   kio/kdbusservicestarter.cpp
   kio/kfileitemactions.cpp
-  kio/kfileitemdelegate.cpp
   kio/kfileshare.cpp
   kio/kimageio.cpp
   kio/kmimetypechooser.cpp
@@ -219,7 +216,6 @@ install(  FILES
 install( FILES
   kio/kdbusservicestarter.h
   kio/kfileitemactions.h
-  kio/kfileitemdelegate.h
   kio/kfileshare.h
   kio/kimageio.h
   kio/kmimetypechooser.h

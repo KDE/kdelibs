@@ -19,6 +19,9 @@ set(kiowidgets_SRCS
   accessmanager.cpp
   accessmanagerreply_p.cpp
   fileundomanager.cpp
+  delegateanimationhandler.cpp
+  imagefilter.cpp
+  kfileitemdelegate.cpp
   kautomount.cpp
   kdesktopfileactions.cpp
   kopenwithdialog.cpp
@@ -86,6 +89,7 @@ target_link_libraries(KIOWidgets
     kdeqt5staging # QUrlPathInfo
     KWindowSystem # KStartupInfo
     KWidgetsAddons # KMessageBox
+    KConfigWidgets # KColorScheme
 )
 
 if(ACL_FOUND)
@@ -120,6 +124,7 @@ install( FILES
    DESTINATION ${INCLUDE_INSTALL_DIR}/kio COMPONENT Devel)
 
 install( FILES
+  kfileitemdelegate.h
   kautomount.h
   kdesktopfileactions.h
   kopenwithdialog.h

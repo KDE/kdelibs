@@ -24,7 +24,7 @@
 
 #include <QAbstractItemDelegate>
 #include <QTextOption>
-#include <kio/kio_export.h>
+#include <kiowidgets_export.h>
 
 
 class QAbstractItemModel;
@@ -64,7 +64,7 @@ class QPainter;
  * listview->setItemDelegate(delegate);
  * @endcode
  */
-class KIO_EXPORT KFileItemDelegate : public QAbstractItemDelegate
+class KIOWIDGETS_EXPORT KFileItemDelegate : public QAbstractItemDelegate
 {
     Q_OBJECT
 

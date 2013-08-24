@@ -23,7 +23,7 @@
 #include "kfileitemdelegate.h"
 #include "imagefilter_p.h"
 
-#include <config-kio.h> // for HAVE_XRENDER
+#include <config-kiowidgets.h> // was for HAVE_XRENDER
 
 #include <QApplication>
 #include <QStyle>
@@ -38,6 +38,7 @@
 #include <QPaintEngine>
 #include <qmath.h>
 #include <qmimedatabase.h>
+#include <QTextEdit>
 
 #include <klocalizedstring.h>
 #include <kiconloader.h>
@@ -45,12 +46,11 @@
 #include <kdirmodel.h>
 #include <kfileitem.h>
 #include <kcolorscheme.h>
-#include <ktextedit.h>
 #include <kstringhandler.h>
 
 #include "delegateanimationhandler_p.h"
 
-#if HAVE_X11 && HAVE_XRENDER
+#if 0 // was: HAVE_X11 && HAVE_XRENDER
 #  include <X11/Xlib.h>
 #  include <X11/extensions/Xrender.h>
 #  include <QX11Info>
@@ -646,7 +646,7 @@ QPixmap KFileItemDelegate::Private::transition(const QPixmap &from, const QPixma
         return under;
     }
 // Cannot use XRender with QPixmap anymore.
-#if 0 // HAVE_X11 && defined(HAVE_XRENDER)
+#if 0 // HAVE_X11 && HAVE_XRENDER
     else if (from.paintEngine()->hasFeature(QPaintEngine::PorterDuff)) // We have Xrender support
     {
         // QX11PaintEngine doesn't implement CompositionMode_Plus in Qt 4.3,
@@ -1442,7 +1442,7 @@ QWidget *KFileItemDelegate::createEditor(QWidget *parent, const QStyleOptionView
     QStyleOptionViewItemV4 opt(option);
     d->initStyleOption(&opt, index);
 
-    KTextEdit *edit = new KTextEdit(parent);
+    QTextEdit *edit = new QTextEdit(parent);
     edit->setAcceptRichText(false);
     edit->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     edit->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -1466,7 +1466,7 @@ bool KFileItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *model, co
 
 void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index) const
 {
-    KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
+    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
 
     //Do not update existing text that the user may already have edited.
@@ -1498,7 +1498,7 @@ void KFileItemDelegate::setEditorData(QWidget *editor, const QModelIndex &index)
 
 void KFileItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
+    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
 
     model->setData(index, textedit->toPlainText(), Qt::EditRole);
@@ -1535,7 +1535,7 @@ void KFileItemDelegate::updateEditorGeometry(QWidget *editor, const QStyleOption
         }
     }
 
-    KTextEdit *textedit = qobject_cast<KTextEdit*>(editor);
+    QTextEdit *textedit = qobject_cast<QTextEdit*>(editor);
     Q_ASSERT(textedit != 0);
     const int frame = textedit->frameWidth();
     r.adjust(-frame, -frame, frame, frame);
@@ -1630,7 +1630,7 @@ QRegion KFileItemDelegate::shape(const QStyleOptionViewItem &option, const QMode
 
 bool KFileItemDelegate::eventFilter(QObject *object, QEvent *event)
 {
-    KTextEdit *editor = qobject_cast<KTextEdit*>(object);
+    QTextEdit *editor = qobject_cast<QTextEdit*>(object);
     if (!editor)
         return false;
 
