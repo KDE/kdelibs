@@ -20,7 +20,7 @@
 
 #include <QtCore/QDir>
 
-#include <kiowidgets_export.h>
+#include <kio/kiowidgets_export.h>
 
 /**
  * KFile is a class which provides a namespace for some enumerated
