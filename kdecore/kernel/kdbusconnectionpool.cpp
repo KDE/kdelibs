@@ -21,6 +21,8 @@
 
 #include "kdbusconnectionpool.h"
 #include <QThreadStorage>
+#include <QCoreApplication>
+#include <QThread>
 
 namespace {
 QAtomicInt s_connectionCounter;
@@ -59,6 +61,9 @@ QThreadStorage<KDBusConnectionPoolPrivate *> s_perThreadConnection;
 
 QDBusConnection KDBusConnectionPool::threadConnection()
 {
+    if (QCoreApplication::instance()->thread() == QThread::currentThread()) {
+        return QDBusConnection::sessionBus();
+    }
     if (!s_perThreadConnection.hasLocalData()) {
         s_perThreadConnection.setLocalData(new KDBusConnectionPoolPrivate);
     }
