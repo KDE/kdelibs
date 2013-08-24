@@ -103,16 +103,8 @@ install(FILES
    DESTINATION ${DBUS_INTERFACES_INSTALL_DIR})
 
 install( FILES
-  kautomount.h
-  kdesktopfileactions.h
-<<<<<<< HEAD
-  kopenwithdialog.h
   pastedialog.h
   paste.h
-  kabstractfileitemactionplugin.h
-  kbuildsycocaprogressdialog.h
-=======
->>>>>>> 0f27987... Move KRecentDocument to kiocore, krun to kiowidgets.
   accessmanager.h
   sslui.h
   pixmaploader.h
@@ -131,15 +123,10 @@ install( FILES
   kautomount.h
   kdesktopfileactions.h
   kopenwithdialog.h
-<<<<<<< HEAD
-  pastedialog.h
-  paste.h
   kabstractfileitemactionplugin.h
   kbuildsycocaprogressdialog.h
   kurlrequester.h
-=======
   krun.h
->>>>>>> 0f27987... Move KRecentDocument to kiocore, krun to kiowidgets.
   kurlpixmapprovider.h
   ksslcertificatebox.h
   ksslinfodialog.h
