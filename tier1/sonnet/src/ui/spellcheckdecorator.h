@@ -32,18 +32,39 @@ namespace Sonnet
 
 class Highlighter;
 
+/**
+ * @short Connects a Sonnet::Highlighter to a QTextEdit extending the context menu of the text edit with spell check suggestions
+ * @author Aurélien Gâteau <agateau@kde.org>
+ * @since 5.0
+ **/
+
 class SONNETUI_EXPORT SpellCheckDecorator : public QObject
 {
     Q_OBJECT
 public:
-    explicit SpellCheckDecorator(QTextEdit *);
+    explicit SpellCheckDecorator(QTextEdit *textEdit);
     ~SpellCheckDecorator();
 
+
+    /**
+     * Set a custom highlighter on the decorator.
+     *
+     * SpellCheckDecorator does not take ownership of the new highlighter.
+     */
+    void setHighlighter(Highlighter *highlighter);
+
+    /**
+     * Returns the hightlighter used by the decorator
+     */
     Highlighter *highlighter() const;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) Q_DECL_OVERRIDE;
 
+    /**
+     * Returns true if the spell checking should be enabled for a given block of text
+     * The default implementation always returns true.
+     */
     virtual bool isSpellCheckingEnabledForBlock(const QString &textBlock) const;
 
 private:

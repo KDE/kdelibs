@@ -37,7 +37,7 @@ public:
     Private(SpellCheckDecorator *installer, QTextEdit *textEdit)
     : q(installer)
     , m_textEdit(textEdit)
-    , m_highlighter(new Highlighter(textEdit))
+    , m_highlighter(0)
     {
         // Catch pressing the "menu" key
         m_textEdit->installEventFilter(q);
@@ -47,6 +47,7 @@ public:
 
     bool onContextMenuEvent(QContextMenuEvent *event);
     void execSuggestionMenu(const QPoint &pos, const QString &word, const QTextCursor &cursor);
+    void createDefaultHighlighter();
 
     SpellCheckDecorator *q;
     QTextEdit *m_textEdit;
@@ -55,6 +56,10 @@ public:
 
 bool SpellCheckDecorator::Private::onContextMenuEvent(QContextMenuEvent *event)
 {
+    if (!m_highlighter) {
+        createDefaultHighlighter();
+    }
+
     // Obtain the cursor at the mouse position and the current cursor
     QTextCursor cursorAtMouse = m_textEdit->cursorForPosition(event->pos());
     const int mousePos = cursorAtMouse.position();
@@ -166,6 +171,10 @@ void SpellCheckDecorator::Private::execSuggestionMenu(const QPoint &pos, const Q
     }
 }
 
+void SpellCheckDecorator::Private::createDefaultHighlighter()
+{
+    m_highlighter = new Highlighter(m_textEdit);
+}
 
 SpellCheckDecorator::SpellCheckDecorator(QTextEdit *textEdit)
 : QObject(textEdit)
@@ -178,8 +187,16 @@ SpellCheckDecorator::~SpellCheckDecorator()
     delete d;
 }
 
+void SpellCheckDecorator::setHighlighter(Highlighter *highlighter)
+{
+    d->m_highlighter = highlighter;
+}
+
 Highlighter *SpellCheckDecorator::highlighter() const
 {
+    if (!d->m_highlighter) {
+        d->createDefaultHighlighter();
+    }
     return d->m_highlighter;
 }
 
@@ -193,6 +210,7 @@ bool SpellCheckDecorator::eventFilter(QObject * /*obj*/, QEvent *event)
 
 bool SpellCheckDecorator::isSpellCheckingEnabledForBlock(const QString &textBlock) const
 {
+    Q_UNUSED(textBlock);
     return true;
 }
 
