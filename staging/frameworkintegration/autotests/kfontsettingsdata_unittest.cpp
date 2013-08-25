@@ -28,6 +28,7 @@
 #include <QString>
 #include <QPalette>
 #include <QIconEngine>
+#include <QApplication>
 #include <QDialogButtonBox>
 
 #include <QDBusMessage>
@@ -52,14 +53,24 @@ static void prepareEnvironment()
 
 Q_COREAPP_STARTUP_FUNCTION(prepareEnvironment);
 
-class KFontSettingsData_UnitTest : public QObject
+class KFontSettingsData_UnitTest : public QWidget
 {
     Q_OBJECT
+    public:
+        virtual bool event(QEvent* e)
+        {
+            if (e->type() == QEvent::ApplicationFontChange) {
+                m_appChangedFont = true;
+            }
+            return QWidget::event(e);
+        }
     private:
+        bool m_appChangedFont;
         KFontSettingsData *m_fonts;
     private Q_SLOTS:
         void initTestCase()
         {
+            m_appChangedFont = false;
             m_fonts = new KFontSettingsData;
         }
 
@@ -89,6 +100,7 @@ class KFontSettingsData_UnitTest : public QObject
             QDBusConnection::sessionBus().send(message);
             loop.exec();
 
+            QVERIFY(m_appChangedFont);
             QCOMPARE(m_fonts->font(KFontSettingsData::GeneralFont)->family(), QStringLiteral("ChangedFontTest"));
             QCOMPARE(m_fonts->font(KFontSettingsData::FixedFont)->family(), QStringLiteral("ChangedFixedTest Mono"));
             QCOMPARE(m_fonts->font(KFontSettingsData::ToolbarFont)->family(), QStringLiteral("ChangedToolbarTest"));
