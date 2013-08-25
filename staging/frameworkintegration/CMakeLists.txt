@@ -19,6 +19,7 @@ ecm_setup_version(5 0 0 VARIABLE_PREFIX FRAMEWORKINTEGRATION
                         PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/frameworkintegrationConfigVersion.cmake")
 
 add_subdirectory(src)
+add_subdirectory(autotests)
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 set(CMAKECONFIG_INSTALL_DIR "${CMAKECONFIG_INSTALL_PREFIX}/frameworkintegration")
