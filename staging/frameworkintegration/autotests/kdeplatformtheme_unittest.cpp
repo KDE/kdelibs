@@ -26,6 +26,7 @@
 #include <QDir>
 #include <QFile>
 #include <QString>
+#include <QPalette>
 #include <QDialogButtonBox>
 
 static void prepareEnvironment()
@@ -77,6 +78,39 @@ class KdePlatformTheme_UnitTest : public QObject
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::KeyboardScheme).toInt(), (int) QPlatformTheme::KdeKeyboardScheme);
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::UiEffects).toInt(), 0);
             QCOMPARE(m_qpa->themeHint(QPlatformTheme::IconPixmapSizes).value<QList<int> >(), QList<int>() << 512 << 256 << 128 << 64 << 32 << 22 << 16 << 8);
+        }
+
+        void testPlatformPalette()
+        {
+            const QPalette *palette = m_qpa->palette();
+            QPalette::ColorGroup states[3] = {QPalette::Active, QPalette::Inactive, QPalette::Disabled};
+            QColor greenColor(QColor(0, 128,0));
+            QBrush greenBrush(greenColor);
+            for ( int i = 0; i < 3 ; i++ ) {
+                QCOMPARE(palette->brush(states[i], QPalette::ButtonText), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::WindowText), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Window), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Base), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Text), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Button), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::ButtonText), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Highlight), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::HighlightedText), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::ToolTipBase), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::ToolTipText), greenBrush);
+
+                //KColorScheme applies modifications and we can't disable them, so I extracted
+                //the values and blindly compare them.
+                QCOMPARE(palette->color(states[i], QPalette::Light).green(), 162);
+                QCOMPARE(palette->color(states[i], QPalette::Midlight).green(), 144);
+                QCOMPARE(palette->color(states[i], QPalette::Mid).green(), 109);
+                QCOMPARE(palette->color(states[i], QPalette::Dark).green(), 62);
+                QCOMPARE(palette->color(states[i], QPalette::Shadow).green(), 43);
+
+                QCOMPARE(palette->brush(states[i], QPalette::AlternateBase), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::Link), greenBrush);
+                QCOMPARE(palette->brush(states[i], QPalette::LinkVisited), greenBrush);
+            }
         }
 };
 
