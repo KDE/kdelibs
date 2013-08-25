@@ -53,7 +53,7 @@ class KdePlatformTheme_UnitTest : public QObject
     private:
         KdePlatformTheme *m_qpa;
     private Q_SLOTS:
-        void initTests()
+        void initTestCase()
         {
             m_qpa = new KdePlatformTheme();
         }
