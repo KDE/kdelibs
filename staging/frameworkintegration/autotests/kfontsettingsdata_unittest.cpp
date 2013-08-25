@@ -30,6 +30,9 @@
 #include <QIconEngine>
 #include <QDialogButtonBox>
 
+#include <QDBusMessage>
+#include <QDBusConnection>
+
 #include <QDebug>
 
 static void prepareEnvironment()
@@ -69,6 +72,30 @@ class KFontSettingsData_UnitTest : public QObject
             QCOMPARE(m_fonts->font(KFontSettingsData::WindowTitleFont)->family(), QStringLiteral("OxyActiveTest"));
             QCOMPARE(m_fonts->font(KFontSettingsData::TaskbarFont)->family(), QStringLiteral("OxyTaskbarTest"));
             QCOMPARE(m_fonts->font(KFontSettingsData::SmallestReadableFont)->family(), QStringLiteral("OxySmallestReadableTest"));
+        }
+
+        void testFontsChanged()
+        {
+            QByteArray configPath = qgetenv("XDG_CONFIG_HOME");
+            configPath.append("/kdeglobals");
+            QFile::remove(configPath);
+            QFile::copy(CHANGED_CONFIGFILE, configPath);
+
+            QEventLoop loop;
+            QDBusConnection::sessionBus().connect( QString(), "/KDEPlatformTheme", "org.kde.KDEPlatformTheme",
+                                                      "refreshFonts", &loop, SLOT(quit()) );
+
+            QDBusMessage message = QDBusMessage::createSignal("/KDEPlatformTheme", "org.kde.KDEPlatformTheme", "refreshFonts" );
+            QDBusConnection::sessionBus().send(message);
+            loop.exec();
+
+            QCOMPARE(m_fonts->font(KFontSettingsData::GeneralFont)->family(), QStringLiteral("ChangedFontTest"));
+            QCOMPARE(m_fonts->font(KFontSettingsData::FixedFont)->family(), QStringLiteral("ChangedFixedTest Mono"));
+            QCOMPARE(m_fonts->font(KFontSettingsData::ToolbarFont)->family(), QStringLiteral("ChangedToolbarTest"));
+            QCOMPARE(m_fonts->font(KFontSettingsData::MenuFont)->family(), QStringLiteral("ChangedMenuTest"));
+            QCOMPARE(m_fonts->font(KFontSettingsData::WindowTitleFont)->family(), QStringLiteral("ChangedActiveTest"));
+            QCOMPARE(m_fonts->font(KFontSettingsData::TaskbarFont)->family(), QStringLiteral("ChangedTaskbarTest"));
+            QCOMPARE(m_fonts->font(KFontSettingsData::SmallestReadableFont)->family(), QStringLiteral("ChangedSmallestReadableTest"));
         }
 };
 
