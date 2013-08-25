@@ -22,7 +22,7 @@
 #include <QCoreApplication>
 #include <QString>
 #include <QVariant>
-#include <QGuiApplication>
+#include <QApplication>
 #include <QDBusMessage>
 #include <QDBusConnection>
 #include <qpa/qwindowsysteminterface.h>
@@ -92,6 +92,12 @@ void KFontSettingsData::dropFontSettingsCache()
         delete mFonts[i];
         mFonts[i] = 0;
     }
+
     QWindowSystemInterface::handleThemeChange(0);
-    QGuiApplication::setFont( *font(KFontSettingsData::GeneralFont) );
+
+    if (qobject_cast<QApplication*>(QCoreApplication::instance())) {
+        QApplication::setFont(*font(KFontSettingsData::GeneralFont));
+    } else {
+        QGuiApplication::setFont(*font(KFontSettingsData::GeneralFont));
+    }
 }
