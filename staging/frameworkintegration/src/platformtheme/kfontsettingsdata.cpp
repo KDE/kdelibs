@@ -20,6 +20,7 @@
 
 #include "kfontsettingsdata.h"
 #include <QCoreApplication>
+#include <QString>
 #include <QVariant>
 #include <QGuiApplication>
 #include <QDBusMessage>
@@ -70,7 +71,13 @@ QFont *KFontSettingsData::font( FontTypes fontType )
         cachedFont->setStyleHint( fontData.StyleHint );
 
         const KConfigGroup configGroup(KSharedConfig::openConfig("kdeglobals"), fontData.ConfigGroupKey);
-        *cachedFont = configGroup.readEntry( fontData.ConfigKey, *cachedFont );
+        QString fontInfo = configGroup.readEntry( fontData.ConfigKey, QString() );
+
+        //If we have serialized information for this font, restore it
+        //NOTE: We are not using KConfig directly because we can't call QFont::QFont from here
+        if (!fontInfo.isEmpty()) {
+            cachedFont->fromString(fontInfo);
+        }
 
         mFonts[fontType] = cachedFont;
     }
